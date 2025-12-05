@@ -7,6 +7,12 @@
         </template>
       </Breadcrumbs>
     </template>
+    <template #right-header>
+      <CustomActions
+        v-if="organization._actions?.length"
+        :actions="organization._actions"
+      />
+    </template>
   </LayoutHeader>
   <div v-if="organization.doc" ref="parentRef" class="flex h-full">
     <Resizer
@@ -80,6 +86,7 @@
               </div>
               <div class="flex gap-1.5">
                 <Button
+                  v-if="canDelete"
                   :label="__('Delete')"
                   theme="red"
                   size="sm"
@@ -182,14 +189,22 @@ import CameraIcon from '@/components/Icons/CameraIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
 import DeleteLinkedDocModal from '@/components/DeleteLinkedDocModal.vue'
+import CustomActions from '@/components/CustomActions.vue'
 import { showAddressModal, addressProps } from '@/composables/modals'
 import { useDocument } from '@/data/document'
 import { getSettings } from '@/stores/settings'
+import { globalStore } from '@/stores/global'
 import { getMeta } from '@/stores/meta'
 import { usersStore } from '@/stores/users'
 import { statusesStore } from '@/stores/statuses'
 import { getView } from '@/utils/view'
-import { formatDate, timeAgo, validateIsImageFile } from '@/utils'
+import {
+  formatDate,
+  timeAgo,
+  validateIsImageFile,
+  setupCustomizations,
+  openWebsite as openExternalWebsite,
+} from '@/utils'
 import {
   Breadcrumbs,
   Avatar,
@@ -202,7 +217,7 @@ import {
   toast,
   call,
 } from 'frappe-ui'
-import { h, computed, ref } from 'vue'
+import { h, computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 const props = defineProps({
@@ -213,6 +228,7 @@ const props = defineProps({
 })
 
 const { brand } = getSettings()
+const { $dialog, $socket } = globalStore()
 const { getUser } = usersStore()
 const { getDealStatus } = statusesStore()
 const { doctypeMeta } = getMeta('CRM Organization')
@@ -225,10 +241,13 @@ const errorMessage = ref('')
 
 const showDeleteLinkedDocModal = ref(false)
 
-const { document: organization } = useDocument(
-  'CRM Organization',
-  props.organizationId,
-)
+const {
+  document: organization,
+  permissions,
+  scripts,
+} = useDocument('CRM Organization', props.organizationId)
+
+const canDelete = computed(() => permissions.data?.permissions?.delete || false)
 
 const breadcrumbs = computed(() => {
   let items = [{ label: __('Organizations'), route: { name: 'Organizations' } }]
@@ -306,8 +325,12 @@ function website(url) {
 }
 
 function openWebsite() {
-  if (!organization.doc.website) toast.error(__('No website found'))
-  else window.open(organization.doc.website, '_blank')
+  if (!organization.doc.website) {
+    toast.error(__('No website found'))
+    return
+  }
+
+  openExternalWebsite(organization.doc.website)
 }
 
 const sections = createResource({
@@ -536,4 +559,26 @@ function openAddressModal(_address) {
     address: _address,
   }
 }
+
+// Setup custom actions from Form Scripts
+watch(
+  () => organization.doc,
+  async (_doc) => {
+    if (scripts.data?.length) {
+      let s = await setupCustomizations(scripts.data, {
+        doc: _doc,
+        $dialog,
+        $socket,
+        router,
+        toast,
+        updateField: organization.setValue.submit,
+        createToast: toast.create,
+        deleteDoc: deleteOrganization,
+        call,
+      })
+      organization._actions = s.actions || []
+    }
+  },
+  { once: true },
+)
 </script>

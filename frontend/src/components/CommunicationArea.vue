@@ -36,7 +36,8 @@
         disabled: emailEmpty,
       }"
       :discardButtonProps="{
-        onClick: () => {
+        onClick: async () => {
+          await deleteAttachedFiles()
           showEmailBox = false
           newEmailEditor.subject = subject
           newEmailEditor.toEmails = doc.email ? [doc.email] : []
@@ -67,7 +68,8 @@
         disabled: commentEmpty,
       }"
       :discardButtonProps="{
-        onClick: () => {
+        onClick: async () => {
+          await deleteAttachedFiles()
           showCommentBox = false
           newComment = ''
         },
@@ -110,12 +112,28 @@ const { updateOnboardingStep } = useOnboarding('frappecrm')
 
 const showEmailBox = ref(false)
 const showCommentBox = ref(false)
-const newEmail = useStorage('emailBoxContent', '')
-const newComment = useStorage('commentBoxContent', '')
+const newEmail = useStorage(
+  `emailBoxContent-${getUser().email}-${props.doctype}-${doc.value.name}`,
+  '',
+)
+const newComment = useStorage(
+  `commentBoxContent-${getUser().email}-${props.doctype}-${doc.value.name}`,
+  '',
+)
 const newEmailEditor = ref(null)
 const newCommentEditor = ref(null)
 const sendEmailRef = ref(null)
-const attachments = ref([])
+const attachments = useStorage(
+  `attachments-${getUser().email}-${props.doctype}-${doc.value.name}`,
+  [],
+  localStorage,
+  {
+    serializer: {
+      read: (v) => v ? JSON.parse(v) : [],
+      write: (v) => JSON.stringify(v)
+    }
+  }
+)
 
 const subject = computed(() => {
   let prefix = ''
@@ -217,11 +235,31 @@ async function sendComment() {
   }
 }
 
+async function deleteAttachedFiles() {
+  if (!attachments.value || attachments.value.length === 0) return
+
+  const deletePromises = attachments.value.map(async (file) => {
+    try {
+      await call('frappe.client.delete', {
+        doctype: 'File',
+        name: file.name,
+      })
+    } catch (error) {
+      console.warn(`Failed to delete file ${file.name}:`, error)
+    }
+  })
+
+  await Promise.all(deletePromises)
+
+  attachments.value = []
+}
+
 async function submitEmail() {
   if (emailEmpty.value) return
   showEmailBox.value = false
   await sendMail()
   newEmail.value = ''
+  attachments.value = []
   reload.value = true
   emit('scroll')
   capture('email_sent', { doctype: props.doctype })
@@ -233,6 +271,7 @@ async function submitComment() {
   showCommentBox.value = false
   await sendComment()
   newComment.value = ''
+  attachments.value = []
   reload.value = true
   emit('scroll')
   capture('comment_sent', { doctype: props.doctype })

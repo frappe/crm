@@ -108,6 +108,7 @@
             />
 
             <Button
+              v-if="canDelete"
               :tooltip="__('Delete')"
               variant="subtle"
               icon="trash-2"
@@ -235,16 +236,26 @@
                         </div>
                       </div>
                     </template>
-                    <div
-                      class="flex flex-col gap-1.5 text-base text-ink-gray-8"
-                    >
-                      <div class="flex items-center gap-3 pb-1.5 pl-1 pt-4">
+                    <div class="flex flex-col gap-1.5 text-base">
+                      <div
+                        v-if="contact.email"
+                        class="flex items-center gap-3 pb-1.5 pl-1 pt-4 text-ink-gray-8"
+                      >
                         <Email2Icon class="h-4 w-4" />
                         {{ contact.email }}
                       </div>
-                      <div class="flex items-center gap-3 p-1 py-1.5">
+                      <div
+                        v-if="contact.mobile_no"
+                        class="flex items-center gap-3 p-1 py-1.5 text-ink-gray-8"
+                      >
                         <PhoneIcon class="h-4 w-4" />
                         {{ contact.mobile_no }}
+                      </div>
+                      <div
+                        v-if="!contact.email && !contact.mobile_no"
+                        class="flex items-center justify-center py-4 text-sm text-ink-gray-4"
+                      >
+                        {{ __('No details added') }}
                       </div>
                     </div>
                   </Section>
@@ -400,10 +411,12 @@ const errorTitle = ref('')
 const errorMessage = ref('')
 const showDeleteLinkedDocModal = ref(false)
 
-const { triggerOnChange, assignees, document, scripts, error } = useDocument(
+const { triggerOnChange, assignees, permissions, document, scripts, error } = useDocument(
   'CRM Deal',
   props.dealId,
 )
+
+const canDelete = computed(() => permissions.data?.permissions?.delete || false)
 
 const doc = computed(() => document.doc || {})
 

@@ -4,7 +4,7 @@ import os
 import subprocess
 
 import frappe
-from frappe import safe_decode
+from frappe import _, safe_decode
 from frappe.integrations.frappe_providers.frappecloud_billing import is_fc_site
 from frappe.utils import cint, get_system_timezone
 from frappe.utils.telemetry import capture
@@ -13,6 +13,14 @@ no_cache = 1
 
 
 def get_context():
+	from crm.api import check_app_permission
+
+	if not check_app_permission():
+		frappe.throw(
+			_("You do not have permission to access Frappe CRM"),
+			frappe.PermissionError
+		)
+
 	frappe.db.commit()
 	context = frappe._dict()
 	context.boot = get_boot()
@@ -24,7 +32,7 @@ def get_context():
 @frappe.whitelist(methods=["POST"], allow_guest=True)
 def get_context_for_dev():
 	if not frappe.conf.developer_mode:
-		frappe.throw("This method is only meant for developer mode")
+		frappe.throw(_("This method is only meant for developer mode"))
 	return get_boot()
 
 

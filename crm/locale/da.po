@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2025-09-28 09:35+0000\n"
-"PO-Revision-Date: 2025-10-01 08:38\n"
+"POT-Creation-Date: 2025-11-16 09:35+0000\n"
+"PO-Revision-Date: 2025-11-20 14:09\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Danish\n"
 "MIME-Version: 1.0\n"
@@ -135,13 +135,17 @@ msgstr "<p>Kære {{ lead_name }},</p>\\n\\n<p>Dette er en påmindelse om betalin
 msgid "<span class=\"h5\"><b>PORTAL</b></span>"
 msgstr "<span class=\"h5\"><b>PORTAL</b></span>"
 
-#: frontend/src/components/CommunicationArea.vue:79
+#: frontend/src/components/CommunicationArea.vue:81
 msgid "@John, can you please check this?"
 msgstr "@John, kan du tjekke dette?"
 
-#: crm/fcrm/doctype/crm_lead/crm_lead.py:56
+#: crm/fcrm/doctype/crm_lead/crm_lead.py:107
 msgid "A Lead requires either a person's name or an organization's name"
 msgstr "En Lead kræver enten en persons navn eller en organisations navn"
+
+#: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.py:47
+msgid "A lead sync source is already enabled for this Facebook Lead Form!"
+msgstr ""
 
 #: crm/templates/emails/helpdesk_invitation.html:5
 msgid "A new account has been created for you at {0}"
@@ -198,6 +202,10 @@ msgstr "Accepteret"
 msgid "Accepted At"
 msgstr "Accepteret"
 
+#: frontend/src/pages/NotPermitted.vue:7
+msgid "Access Denied"
+msgstr ""
+
 #. Label of the access_key (Data) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 msgid "Access Key"
@@ -207,6 +215,15 @@ msgstr "Adgangs Nøgle"
 msgid "Access Key is required for Service Provider: {0}"
 msgstr "Adgangsnøgle kræves for tjenesteudbyder: {0}"
 
+#. Label of the access_token (Small Text) field in DocType 'Facebook Page'
+#. Label of the access_token (Password) field in DocType 'Lead Sync Source'
+#: crm/lead_syncing/doctype/facebook_page/facebook_page.json
+#: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:53
+#: frontend/src/components/Settings/LeadSyncing/leadSyncSourceConfig.js:28
+msgid "Access Token"
+msgstr "Adgang Token"
+
 #: frontend/src/components/Settings/CurrencySettings.vue:90
 msgid "Access key"
 msgstr "Adgangs Nøgle"
@@ -214,6 +231,15 @@ msgstr "Adgangs Nøgle"
 #: frontend/src/components/Settings/CurrencySettings.vue:94
 msgid "Access key for Exchangerate Host. Required for fetching exchange rates."
 msgstr "Adgangsnøgle til Exchangerate Host. Kræves for at hente valutakurser."
+
+#: crm/lead_syncing/doctype/lead_sync_source/facebook.py:143
+msgid "Access token is required"
+msgstr ""
+
+#. Label of the account_id (Data) field in DocType 'Facebook Page'
+#: crm/lead_syncing/doctype/facebook_page/facebook_page.json
+msgid "Account ID"
+msgstr "Konto ID"
 
 #: frontend/src/components/Settings/emailConfig.js:13
 msgid "Account Name"
@@ -236,7 +262,7 @@ msgstr "Kontonavn er påkrævet"
 msgid "Actions"
 msgstr "Handlinger"
 
-#: frontend/src/pages/Deal.vue:527 frontend/src/pages/Lead.vue:384
+#: frontend/src/pages/Deal.vue:540 frontend/src/pages/Lead.vue:387
 #: frontend/src/pages/MobileDeal.vue:430 frontend/src/pages/MobileLead.vue:337
 msgid "Activity"
 msgstr "Aktivitet"
@@ -279,7 +305,7 @@ msgstr "Tilføj Filter"
 msgid "Add Lead or Deal"
 msgstr "Tilføj kundeemne eller aftale"
 
-#: frontend/src/components/Controls/Grid.vue:324
+#: frontend/src/components/Controls/Grid.vue:334
 msgid "Add Row"
 msgstr "Tilføj Række"
 
@@ -305,6 +331,10 @@ msgstr "Tilføj Ugentlige Helligdage"
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRulesSection.vue:20
 msgid "Add a condition"
 msgstr "Tilføj en betingelse"
+
+#: frontend/src/components/Settings/LeadSyncing/leadSyncSourceConfig.js:24
+msgid "Add a name for your source"
+msgstr ""
 
 #: frontend/src/components/Telephony/ExotelCallUI.vue:183
 #: frontend/src/components/Telephony/TwilioCallUI.vue:57
@@ -385,6 +415,10 @@ msgstr "Tilføj din første kommentar"
 msgid "Add, edit, and manage email templates for various CRM communications"
 msgstr "Tilføj, rediger og administrer e-mail-skabeloner til forskellige CRM-kommunikationer"
 
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:12
+msgid "Add, edit, and manage sources for automatic lead syncing to your CRM"
+msgstr ""
+
 #. Label of the address (Link) field in DocType 'CRM Organization'
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
 msgid "Address"
@@ -428,9 +462,9 @@ msgstr "Hele dagen"
 
 #. Label of the amount (Currency) field in DocType 'CRM Products'
 #: crm/fcrm/doctype/crm_products/crm_products.json
-#: frontend/src/pages/Contact.vue:499 frontend/src/pages/MobileContact.vue:507
-#: frontend/src/pages/MobileOrganization.vue:451
-#: frontend/src/pages/Organization.vue:472
+#: frontend/src/pages/Contact.vue:510 frontend/src/pages/MobileContact.vue:510
+#: frontend/src/pages/MobileOrganization.vue:463
+#: frontend/src/pages/Organization.vue:495
 msgid "Amount"
 msgstr "Beløb"
 
@@ -443,7 +477,7 @@ msgstr "Beløb efter rabat"
 msgid "An error occurred"
 msgstr "Der opstod en fejl"
 
-#: frontend/src/data/document.js:66
+#: frontend/src/data/document.js:67
 msgid "An error occurred while updating the document"
 msgstr "Der opstod en fejl under opdatering af dokumentet"
 
@@ -474,6 +508,10 @@ msgstr "Årlig Omsætning"
 #: frontend/src/components/Modals/LeadModal.vue:141
 msgid "Annual Revenue should be a number"
 msgstr "Årlig Omsætning skal være et tal"
+
+#: frontend/src/components/Settings/LeadSyncing/FailureLogs.vue:39
+msgid "Any failed lead syncs will show up here"
+msgstr ""
 
 #: frontend/src/components/Settings/BrandSettings.vue:55
 msgid "Appears in the left sidebar. Recommended size is 32x32 px in PNG or SVG"
@@ -510,7 +548,7 @@ msgstr "Apps"
 msgid "Are you sure you want to delete this attachment?"
 msgstr ""
 
-#: frontend/src/pages/MobileContact.vue:260
+#: frontend/src/pages/MobileContact.vue:263
 msgid "Are you sure you want to delete this contact?"
 msgstr ""
 
@@ -519,7 +557,7 @@ msgstr ""
 msgid "Are you sure you want to delete this event?"
 msgstr ""
 
-#: frontend/src/pages/MobileOrganization.vue:261
+#: frontend/src/pages/MobileOrganization.vue:269
 msgid "Are you sure you want to delete this organization?"
 msgstr ""
 
@@ -646,7 +684,7 @@ msgid "Assignment rule {0} updated"
 msgstr ""
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRules.vue:7
-#: frontend/src/components/Settings/Settings.vue:163
+#: frontend/src/components/Settings/Settings.vue:164
 msgid "Assignment rules"
 msgstr ""
 
@@ -669,14 +707,14 @@ msgstr "Vedhæft"
 msgid "Attach a file"
 msgstr "Vedhæft fil"
 
-#: frontend/src/pages/Deal.vue:567 frontend/src/pages/Lead.vue:424
-#: frontend/src/pages/MobileDeal.vue:466 frontend/src/pages/MobileLead.vue:373
+#: frontend/src/pages/Deal.vue:580 frontend/src/pages/Lead.vue:427
+#: frontend/src/pages/MobileDeal.vue:466 frontend/src/pages/MobileLead.vue:372
 msgid "Attachments"
 msgstr "Vedhæftninger"
 
 #: frontend/src/components/Modals/EventModal.vue:120
 msgid "Attendees"
-msgstr ""
+msgstr "Deltagere"
 
 #. Label of the auth_token (Password) field in DocType 'CRM Twilio Settings'
 #: crm/fcrm/doctype/crm_twilio_settings/crm_twilio_settings.json
@@ -708,27 +746,27 @@ msgstr ""
 msgid "Automatically update \"Expected Deal Value\" based on the total value of associated products in a deal"
 msgstr ""
 
-#: frontend/src/components/Settings/Settings.vue:160
+#: frontend/src/components/Settings/Settings.vue:161
 msgid "Automation & Rules"
 msgstr ""
 
-#: crm/api/dashboard.py:238
+#: crm/api/dashboard.py:250
 msgid "Average deal value of non won/lost deals"
 msgstr ""
 
-#: crm/api/dashboard.py:411
+#: crm/api/dashboard.py:429
 msgid "Average deal value of ongoing & won deals"
 msgstr ""
 
-#: crm/api/dashboard.py:354
+#: crm/api/dashboard.py:370
 msgid "Average deal value of won deals"
 msgstr ""
 
-#: crm/api/dashboard.py:518
+#: crm/api/dashboard.py:534
 msgid "Average time taken from deal creation to deal closure"
 msgstr ""
 
-#: crm/api/dashboard.py:464
+#: crm/api/dashboard.py:481
 msgid "Average time taken from lead creation to deal closure"
 msgstr ""
 
@@ -752,23 +790,23 @@ msgstr ""
 msgid "Avg won deal value"
 msgstr "Gennemsnitlig vundet aftaleværdi"
 
-#: crm/api/dashboard.py:410
+#: crm/api/dashboard.py:428
 msgid "Avg. deal value"
 msgstr "Gennemsnitlig aftaleværdi"
 
-#: crm/api/dashboard.py:237
+#: crm/api/dashboard.py:249
 msgid "Avg. ongoing deal value"
 msgstr "Gennemsnitlig løbende aftaleværdi"
 
-#: crm/api/dashboard.py:517
+#: crm/api/dashboard.py:533
 msgid "Avg. time to close a deal"
 msgstr "Gennemsnitlig tid til at lukke aftale"
 
-#: crm/api/dashboard.py:463
+#: crm/api/dashboard.py:480
 msgid "Avg. time to close a lead"
 msgstr ""
 
-#: crm/api/dashboard.py:353
+#: crm/api/dashboard.py:369
 msgid "Avg. won deal value"
 msgstr "Gennemsnitlig vundet aftaleværdi"
 
@@ -789,9 +827,20 @@ msgstr "BCC"
 msgid "Back"
 msgstr "Tilbage"
 
+#: frontend/src/components/Settings/LeadSyncing/FailureLogs.vue:5
+msgid "Back to all logs"
+msgstr ""
+
 #: frontend/src/components/FilesUploader/FilesUploader.vue:31
 msgid "Back to file upload"
 msgstr "Tilbage til fil upload"
+
+#. Label of the background_sync_frequency (Select) field in DocType 'Lead Sync
+#. Source'
+#: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:50
+msgid "Background Sync Frequency"
+msgstr ""
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Task'
 #: crm/fcrm/doctype/crm_task/crm_task.json
@@ -802,7 +851,7 @@ msgstr "Efterslæb"
 msgid "Between"
 msgstr "Mellem"
 
-#: frontend/src/components/Settings/Settings.vue:118
+#: frontend/src/components/Settings/Settings.vue:119
 msgid "Brand Settings"
 msgstr ""
 
@@ -960,6 +1009,11 @@ msgid "CRM Products"
 msgstr "Artikler"
 
 #. Name of a DocType
+#: crm/fcrm/doctype/crm_rolling_response_time/crm_rolling_response_time.json
+msgid "CRM Rolling Response Time"
+msgstr ""
+
+#. Name of a DocType
 #: crm/fcrm/doctype/crm_service_day/crm_service_day.json
 msgid "CRM Service Day"
 msgstr "Service Dag"
@@ -1059,7 +1113,7 @@ msgstr "Opkalds Medium"
 msgid "Calling..."
 msgstr "Opkald..."
 
-#: frontend/src/pages/Deal.vue:552 frontend/src/pages/Lead.vue:409
+#: frontend/src/pages/Deal.vue:565 frontend/src/pages/Lead.vue:412
 #: frontend/src/pages/MobileDeal.vue:450 frontend/src/pages/MobileLead.vue:357
 msgid "Calls"
 msgstr "Opkald"
@@ -1067,6 +1121,10 @@ msgstr "Opkald"
 #: frontend/src/components/FilesUploader/FilesUploaderArea.vue:51
 msgid "Camera"
 msgstr "Kamera"
+
+#: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.py:28
+msgid "Can't retry sync for this without source!"
+msgstr ""
 
 #: frontend/src/components/BulkDeleteLinkedDocModal.vue:81
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:620
@@ -1110,6 +1168,11 @@ msgstr ""
 msgid "Capturing leads"
 msgstr ""
 
+#. Label of the category (Data) field in DocType 'Facebook Page'
+#: crm/lead_syncing/doctype/facebook_page/facebook_page.json
+msgid "Category"
+msgstr "Kategori"
+
 #: frontend/src/components/Controls/ImageUploader.vue:19
 #: frontend/src/components/Layouts/AppSidebar.vue:490
 msgid "Change"
@@ -1126,10 +1189,10 @@ msgid "Change deal status"
 msgstr "Ændre Aftale Status"
 
 #: frontend/src/components/Settings/ProfileSettings.vue:26
-#: frontend/src/pages/Contact.vue:41 frontend/src/pages/Lead.vue:88
+#: frontend/src/pages/Contact.vue:47 frontend/src/pages/Lead.vue:88
 #: frontend/src/pages/MobileContact.vue:37
 #: frontend/src/pages/MobileOrganization.vue:37
-#: frontend/src/pages/Organization.vue:41
+#: frontend/src/pages/Organization.vue:47
 msgid "Change image"
 msgstr ""
 
@@ -1255,12 +1318,12 @@ msgstr "Kolonner"
 msgid "Comment"
 msgstr "Kommentar"
 
-#: frontend/src/pages/Deal.vue:537 frontend/src/pages/Lead.vue:394
+#: frontend/src/pages/Deal.vue:550 frontend/src/pages/Lead.vue:397
 #: frontend/src/pages/MobileDeal.vue:440 frontend/src/pages/MobileLead.vue:347
 msgid "Comments"
 msgstr "Kommentarer"
 
-#: crm/api/dashboard.py:884
+#: crm/api/dashboard.py:920
 msgid "Common reasons for losing deals"
 msgstr ""
 
@@ -1335,6 +1398,7 @@ msgstr "Bekræft"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:139
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:239
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:209
 msgid "Confirm Delete"
 msgstr "Bekræft Sletning"
 
@@ -1364,7 +1428,7 @@ msgstr "Tilslut din e-mail"
 msgid "Contact"
 msgstr "Kontakt"
 
-#: crm/fcrm/doctype/crm_lead/crm_lead.py:212
+#: crm/fcrm/doctype/crm_lead/crm_lead.py:263
 msgid "Contact Already Exists"
 msgstr "Kontakt Findes Allerede"
 
@@ -1376,32 +1440,32 @@ msgstr "Kontakt Support"
 msgid "Contact Us"
 msgstr "Kontakt Os"
 
-#: frontend/src/pages/Deal.vue:647 frontend/src/pages/MobileDeal.vue:544
+#: frontend/src/pages/Deal.vue:660 frontend/src/pages/MobileDeal.vue:544
 msgid "Contact added"
 msgstr "Kontakt tilføjet"
 
-#: frontend/src/pages/Deal.vue:637 frontend/src/pages/MobileDeal.vue:534
+#: frontend/src/pages/Deal.vue:650 frontend/src/pages/MobileDeal.vue:534
 msgid "Contact already added"
 msgstr "Kontakt allerede tilføjet"
 
-#: crm/fcrm/doctype/crm_lead/crm_lead.py:211
+#: crm/fcrm/doctype/crm_lead/crm_lead.py:262
 msgid "Contact already exists with {0}"
 msgstr ""
 
-#: frontend/src/pages/Contact.vue:279 frontend/src/pages/MobileContact.vue:252
+#: frontend/src/pages/Contact.vue:290 frontend/src/pages/MobileContact.vue:255
 msgid "Contact image updated"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:658 frontend/src/pages/MobileDeal.vue:555
+#: frontend/src/pages/Deal.vue:671 frontend/src/pages/MobileDeal.vue:555
 msgid "Contact removed"
 msgstr ""
 
-#: frontend/src/pages/Contact.vue:424 frontend/src/pages/Contact.vue:437
-#: frontend/src/pages/Contact.vue:450 frontend/src/pages/Contact.vue:460
-#: frontend/src/pages/MobileContact.vue:432
-#: frontend/src/pages/MobileContact.vue:445
-#: frontend/src/pages/MobileContact.vue:458
-#: frontend/src/pages/MobileContact.vue:468
+#: frontend/src/pages/Contact.vue:435 frontend/src/pages/Contact.vue:448
+#: frontend/src/pages/Contact.vue:461 frontend/src/pages/Contact.vue:471
+#: frontend/src/pages/MobileContact.vue:435
+#: frontend/src/pages/MobileContact.vue:448
+#: frontend/src/pages/MobileContact.vue:461
+#: frontend/src/pages/MobileContact.vue:471
 msgid "Contact updated"
 msgstr ""
 
@@ -1410,8 +1474,8 @@ msgstr ""
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
-#: frontend/src/pages/Contact.vue:234 frontend/src/pages/MobileContact.vue:212
-#: frontend/src/pages/MobileOrganization.vue:331
+#: frontend/src/pages/Contact.vue:245 frontend/src/pages/MobileContact.vue:215
+#: frontend/src/pages/MobileOrganization.vue:343
 msgid "Contacts"
 msgstr "Kontakter"
 
@@ -1430,8 +1494,8 @@ msgstr ""
 msgid "Content Type"
 msgstr ""
 
-#: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:160
-#: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:164
+#: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:159
+#: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:163
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:162
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:166
 msgid "Content is required"
@@ -1465,18 +1529,18 @@ msgstr "Konverteret"
 msgid "Converted successfully"
 msgstr "Konverteret"
 
-#: frontend/src/utils/index.js:338
+#: frontend/src/utils/index.js:373
 msgid "Copied to clipboard"
 msgstr "Kopieret til udklipsholder"
 
-#: crm/api/dashboard.py:607 crm/api/dashboard.py:736 crm/api/dashboard.py:794
-#: crm/api/dashboard.py:891
+#: crm/api/dashboard.py:626 crm/api/dashboard.py:763 crm/api/dashboard.py:824
+#: crm/api/dashboard.py:927
 msgid "Count"
 msgstr "Antal"
 
 #: frontend/src/components/Modals/AddressModal.vue:98
 #: frontend/src/components/Modals/CallLogModal.vue:101
-#: frontend/src/components/Modals/ContactModal.vue:40
+#: frontend/src/components/Modals/ContactModal.vue:41
 #: frontend/src/components/Modals/CreateDocumentModal.vue:92
 #: frontend/src/components/Modals/DealModal.vue:66
 #: frontend/src/components/Modals/EmailTemplateSelectorModal.vue:20
@@ -1488,6 +1552,7 @@ msgstr "Antal"
 #: frontend/src/components/Modals/ViewModal.vue:43
 #: frontend/src/components/Settings/EmailAdd.vue:85
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:23
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:21
 #: frontend/src/pages/Calendar.vue:10 frontend/src/pages/CallLogs.vue:13
 #: frontend/src/pages/Contacts.vue:13 frontend/src/pages/Contacts.vue:60
 #: frontend/src/pages/Deals.vue:13 frontend/src/pages/Deals.vue:236
@@ -1571,7 +1636,7 @@ msgstr ""
 msgid "Currency"
 msgstr "Valuta"
 
-#: frontend/src/components/Settings/Settings.vue:113
+#: frontend/src/components/Settings/Settings.vue:114
 msgid "Currency & Exchange Rate"
 msgstr ""
 
@@ -1583,7 +1648,7 @@ msgstr ""
 msgid "Currency set as {0} successfully"
 msgstr ""
 
-#: crm/api/dashboard.py:839
+#: crm/api/dashboard.py:872
 msgid "Current pipeline distribution"
 msgstr ""
 
@@ -1607,12 +1672,12 @@ msgstr ""
 msgid "Custom statuses"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:466
+#: frontend/src/pages/Deal.vue:479
 msgid "Customer created successfully"
 msgstr ""
 
 #: frontend/src/components/Layouts/AppSidebar.vue:587
-#: frontend/src/components/Settings/Settings.vue:170
+#: frontend/src/components/Settings/Settings.vue:171
 msgid "Customization"
 msgstr ""
 
@@ -1620,13 +1685,19 @@ msgstr ""
 msgid "Customize quick filters"
 msgstr ""
 
-#: crm/api/dashboard.py:599
+#. Option for the 'Background Sync Frequency' (Select) field in DocType 'Lead
+#. Sync Source'
+#: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
+msgid "Daily"
+msgstr ""
+
+#: crm/api/dashboard.py:618
 msgid "Daily performance of leads, deals, and wins"
 msgstr ""
 
 #: frontend/src/components/Activities/DataFields.vue:6
 #: frontend/src/components/Layouts/AppSidebar.vue:580
-#: frontend/src/pages/Deal.vue:542 frontend/src/pages/Lead.vue:399
+#: frontend/src/pages/Deal.vue:555 frontend/src/pages/Lead.vue:402
 #: frontend/src/pages/MobileDeal.vue:445 frontend/src/pages/MobileLead.vue:352
 msgid "Data"
 msgstr "Data"
@@ -1637,7 +1708,7 @@ msgid "Data Fields"
 msgstr "Data Felter"
 
 #. Label of the date (Date) field in DocType 'CRM Holiday'
-#: crm/api/dashboard.py:601 crm/fcrm/doctype/crm_holiday/crm_holiday.json
+#: crm/api/dashboard.py:620 crm/fcrm/doctype/crm_holiday/crm_holiday.json
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:202
 msgid "Date"
 msgstr "Dato"
@@ -1680,49 +1751,49 @@ msgstr "Aftale Statuser"
 msgid "Deal Value"
 msgstr "Aftal Værdi"
 
-#: crm/api/dashboard.py:977
+#: crm/api/dashboard.py:1019
 msgid "Deal generation channel analysis"
 msgstr ""
 
-#: frontend/src/pages/Contact.vue:520 frontend/src/pages/MobileContact.vue:528
-#: frontend/src/pages/MobileOrganization.vue:472
-#: frontend/src/pages/Organization.vue:493
+#: frontend/src/pages/Contact.vue:531 frontend/src/pages/MobileContact.vue:531
+#: frontend/src/pages/MobileOrganization.vue:484
+#: frontend/src/pages/Organization.vue:516
 msgid "Deal owner"
 msgstr ""
 
-#: crm/api/dashboard.py:1030 crm/api/dashboard.py:1087
+#: crm/api/dashboard.py:1075 crm/api/dashboard.py:1135
 msgid "Deal value"
 msgstr ""
 
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
-#: frontend/src/pages/Deal.vue:480 frontend/src/pages/MobileContact.vue:288
+#: frontend/src/pages/Deal.vue:493 frontend/src/pages/MobileContact.vue:291
 #: frontend/src/pages/MobileDeal.vue:384
-#: frontend/src/pages/MobileOrganization.vue:325
+#: frontend/src/pages/MobileOrganization.vue:337
 msgid "Deals"
 msgstr ""
 
-#: crm/api/dashboard.py:788
+#: crm/api/dashboard.py:818
 #: frontend/src/components/Dashboard/AddChartModal.vue:97
 msgid "Deals by ongoing & won stage"
 msgstr ""
 
-#: crm/api/dashboard.py:1076
+#: crm/api/dashboard.py:1124
 #: frontend/src/components/Dashboard/AddChartModal.vue:100
 msgid "Deals by salesperson"
 msgstr ""
 
-#: crm/api/dashboard.py:976
+#: crm/api/dashboard.py:1018
 #: frontend/src/components/Dashboard/AddChartModal.vue:107
 msgid "Deals by source"
 msgstr ""
 
-#: crm/api/dashboard.py:838
+#: crm/api/dashboard.py:871
 #: frontend/src/components/Dashboard/AddChartModal.vue:105
 msgid "Deals by stage"
 msgstr ""
 
-#: crm/api/dashboard.py:1019
+#: crm/api/dashboard.py:1064
 #: frontend/src/components/Dashboard/AddChartModal.vue:99
 msgid "Deals by territory"
 msgstr ""
@@ -1768,7 +1839,7 @@ msgstr ""
 msgid "Default Sending and Inbox"
 msgstr ""
 
-#: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.py:33
+#: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.py:61
 msgid "Default Service Level Agreement already exists for {0}"
 msgstr ""
 
@@ -1801,7 +1872,7 @@ msgstr ""
 #: frontend/src/components/BulkDeleteLinkedDocModal.vue:48
 #: frontend/src/components/BulkDeleteLinkedDocModal.vue:73
 #: frontend/src/components/BulkDeleteLinkedDocModal.vue:121
-#: frontend/src/components/Controls/Grid.vue:319
+#: frontend/src/components/Controls/Grid.vue:329
 #: frontend/src/components/DeleteLinkedDocModal.vue:10
 #: frontend/src/components/DeleteLinkedDocModal.vue:90
 #: frontend/src/components/Kanban/KanbanView.vue:222
@@ -1811,16 +1882,17 @@ msgstr ""
 #: frontend/src/components/PrimaryDropdownItem.vue:42
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:129
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:229
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:199
 #: frontend/src/components/ViewControls.vue:1116
 #: frontend/src/components/ViewControls.vue:1127
 #: frontend/src/pages/Calendar.vue:299 frontend/src/pages/Calendar.vue:303
-#: frontend/src/pages/Contact.vue:100 frontend/src/pages/Deal.vue:111
-#: frontend/src/pages/Lead.vue:157 frontend/src/pages/MobileContact.vue:79
-#: frontend/src/pages/MobileContact.vue:263
+#: frontend/src/pages/Contact.vue:107 frontend/src/pages/Deal.vue:112
+#: frontend/src/pages/Lead.vue:158 frontend/src/pages/MobileContact.vue:80
+#: frontend/src/pages/MobileContact.vue:266
 #: frontend/src/pages/MobileDeal.vue:515
-#: frontend/src/pages/MobileOrganization.vue:72
-#: frontend/src/pages/MobileOrganization.vue:264
-#: frontend/src/pages/Notes.vue:43 frontend/src/pages/Organization.vue:83
+#: frontend/src/pages/MobileOrganization.vue:73
+#: frontend/src/pages/MobileOrganization.vue:272
+#: frontend/src/pages/Notes.vue:43 frontend/src/pages/Organization.vue:90
 #: frontend/src/pages/Tasks.vue:371
 msgid "Delete"
 msgstr ""
@@ -1847,7 +1919,7 @@ msgstr ""
 msgid "Delete attachment"
 msgstr ""
 
-#: frontend/src/pages/MobileContact.vue:259
+#: frontend/src/pages/MobileContact.vue:262
 msgid "Delete contact"
 msgstr ""
 
@@ -1871,7 +1943,7 @@ msgstr ""
 msgid "Delete or unlink these linked documents before deleting this document"
 msgstr ""
 
-#: frontend/src/pages/MobileOrganization.vue:260
+#: frontend/src/pages/MobileOrganization.vue:268
 msgid "Delete organization"
 msgstr ""
 
@@ -1911,9 +1983,10 @@ msgstr ""
 #. Label of the details (Text Editor) field in DocType 'CRM Lead Source'
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: crm/fcrm/doctype/crm_lead_source/crm_lead_source.json
-#: frontend/src/pages/MobileContact.vue:283
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:131
+#: frontend/src/pages/MobileContact.vue:286
 #: frontend/src/pages/MobileDeal.vue:424 frontend/src/pages/MobileLead.vue:331
-#: frontend/src/pages/MobileOrganization.vue:320
+#: frontend/src/pages/MobileOrganization.vue:332
 msgid "Details"
 msgstr ""
 
@@ -1967,7 +2040,7 @@ msgstr ""
 msgid "Document Type"
 msgstr ""
 
-#: frontend/src/data/document.js:30
+#: frontend/src/data/document.js:31
 msgid "Document does not exist"
 msgstr ""
 
@@ -1975,7 +2048,7 @@ msgstr ""
 msgid "Document not found"
 msgstr ""
 
-#: frontend/src/data/document.js:45
+#: frontend/src/data/document.js:46
 msgid "Document updated successfully"
 msgstr ""
 
@@ -2016,12 +2089,15 @@ msgstr ""
 msgid "Due Date"
 msgstr ""
 
+#. Option for the 'Type' (Select) field in DocType 'Failed Lead Sync Log'
+#: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.json
 #: frontend/src/components/Modals/EventModal.vue:158
 #: frontend/src/components/Modals/ViewModal.vue:42
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:57
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:119
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:224
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:23
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:194
 #: frontend/src/components/ViewControls.vue:1068
 msgid "Duplicate"
 msgstr ""
@@ -2056,7 +2132,7 @@ msgid "Duration"
 msgstr ""
 
 #: frontend/src/components/Layouts/AppSidebar.vue:604
-#: frontend/src/components/Settings/Settings.vue:196
+#: frontend/src/components/Settings/Settings.vue:197
 msgid "ERPNext"
 msgstr ""
 
@@ -2175,7 +2251,7 @@ msgstr ""
 msgid "Edit note"
 msgstr ""
 
-#: frontend/src/components/Controls/Grid.vue:287
+#: frontend/src/components/Controls/Grid.vue:297
 msgid "Edit row"
 msgstr ""
 
@@ -2196,16 +2272,16 @@ msgstr ""
 #. Label of the email (Data) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_contacts/crm_contacts.json
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.json
-#: crm/fcrm/doctype/crm_lead/crm_lead.json frontend/src/pages/Contact.vue:510
-#: frontend/src/pages/MobileContact.vue:518
-#: frontend/src/pages/MobileOrganization.vue:462
-#: frontend/src/pages/MobileOrganization.vue:490
-#: frontend/src/pages/Organization.vue:483
-#: frontend/src/pages/Organization.vue:511
+#: crm/fcrm/doctype/crm_lead/crm_lead.json frontend/src/pages/Contact.vue:521
+#: frontend/src/pages/MobileContact.vue:521
+#: frontend/src/pages/MobileOrganization.vue:474
+#: frontend/src/pages/MobileOrganization.vue:502
+#: frontend/src/pages/Organization.vue:506
+#: frontend/src/pages/Organization.vue:534
 msgid "Email"
 msgstr "E-mail"
 
-#: frontend/src/components/Settings/Settings.vue:147
+#: frontend/src/components/Settings/Settings.vue:148
 msgid "Email Accounts"
 msgstr ""
 
@@ -2218,12 +2294,12 @@ msgstr ""
 msgid "Email Sent At"
 msgstr ""
 
-#: frontend/src/components/Settings/Settings.vue:144
+#: frontend/src/components/Settings/Settings.vue:145
 msgid "Email Settings"
 msgstr ""
 
 #: frontend/src/components/Modals/EmailTemplateSelectorModal.vue:4
-#: frontend/src/components/Settings/Settings.vue:153
+#: frontend/src/components/Settings/Settings.vue:154
 msgid "Email Templates"
 msgstr ""
 
@@ -2255,7 +2331,7 @@ msgstr ""
 msgid "Email templates"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:532 frontend/src/pages/Lead.vue:389
+#: frontend/src/pages/Deal.vue:545 frontend/src/pages/Lead.vue:392
 #: frontend/src/pages/MobileDeal.vue:435 frontend/src/pages/MobileLead.vue:342
 msgid "Emails"
 msgstr ""
@@ -2310,8 +2386,15 @@ msgstr ""
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:18
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:85
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:20
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:14
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:61
 msgid "Enabled"
 msgstr ""
+
+#. Label of the enabled (Check) field in DocType 'Lead Sync Source'
+#: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
+msgid "Enabled?"
+msgstr "Aktiveret?"
 
 #. Label of the end_date (Date) field in DocType 'CRM Service Level Agreement'
 #: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.json
@@ -2331,6 +2414,14 @@ msgstr ""
 msgid "End time should be after start time"
 msgstr ""
 
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:53
+msgid "Enter Access Token"
+msgstr ""
+
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:45
+msgid "Enter Source Name"
+msgstr ""
+
 #: frontend/src/components/Settings/CurrencySettings.vue:115
 msgid "Enter access key"
 msgstr ""
@@ -2339,7 +2430,11 @@ msgstr ""
 msgid "Enter brand name"
 msgstr ""
 
-#: frontend/src/components/FieldLayout/Field.vue:339
+#: frontend/src/components/Settings/LeadSyncing/leadSyncSourceConfig.js:30
+msgid "Enter your Facebook Access Token"
+msgstr ""
+
+#: frontend/src/components/FieldLayout/Field.vue:347
 msgid "Enter {0}"
 msgstr ""
 
@@ -2357,8 +2452,24 @@ msgstr ""
 msgid "Error converting to deal: {0}"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:731 frontend/src/pages/Lead.vue:469
-#: frontend/src/pages/MobileDeal.vue:612 frontend/src/pages/MobileLead.vue:413
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:224
+msgid "Error creating Lead Sync Source"
+msgstr ""
+
+#: frontend/src/components/Settings/LeadSyncing/FailureLogs.vue:100
+msgid "Error syncing lead"
+msgstr ""
+
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:341
+msgid "Error syncing leads"
+msgstr ""
+
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:205
+msgid "Error updating Lead Sync Source"
+msgstr ""
+
+#: frontend/src/pages/Deal.vue:744 frontend/src/pages/Lead.vue:472
+#: frontend/src/pages/MobileDeal.vue:612 frontend/src/pages/MobileLead.vue:412
 msgid "Error updating field"
 msgstr ""
 
@@ -2386,8 +2497,26 @@ msgstr ""
 msgid "Event title"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:547 frontend/src/pages/Lead.vue:404
+#: frontend/src/pages/Deal.vue:560 frontend/src/pages/Lead.vue:407
 msgid "Events"
+msgstr ""
+
+#. Option for the 'Background Sync Frequency' (Select) field in DocType 'Lead
+#. Sync Source'
+#: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
+msgid "Every 10 Minutes"
+msgstr ""
+
+#. Option for the 'Background Sync Frequency' (Select) field in DocType 'Lead
+#. Sync Source'
+#: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
+msgid "Every 15 Minutes"
+msgstr ""
+
+#. Option for the 'Background Sync Frequency' (Select) field in DocType 'Lead
+#. Sync Source'
+#: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
+msgid "Every 5 Minutes"
 msgstr ""
 
 #: frontend/src/components/ViewControls.vue:268
@@ -2458,7 +2587,7 @@ msgstr ""
 msgid "Expected Closure Date"
 msgstr ""
 
-#: crm/fcrm/doctype/crm_deal/crm_deal.py:173
+#: crm/fcrm/doctype/crm_deal/crm_deal.py:234
 msgid "Expected Closure Date is required."
 msgstr ""
 
@@ -2467,7 +2596,7 @@ msgstr ""
 msgid "Expected Deal Value"
 msgstr ""
 
-#: crm/fcrm/doctype/crm_deal/crm_deal.py:171
+#: crm/fcrm/doctype/crm_deal/crm_deal.py:232
 msgid "Expected Deal Value is required."
 msgstr ""
 
@@ -2499,6 +2628,42 @@ msgstr ""
 msgid "FCRM Settings"
 msgstr ""
 
+#. Option for the 'Type' (Select) field in DocType 'Lead Sync Source'
+#. Label of the facebook_section (Section Break) field in DocType 'Lead Sync
+#. Source'
+#: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
+msgid "Facebook"
+msgstr ""
+
+#. Label of the facebook_form_id (Data) field in DocType 'CRM Lead'
+#: crm/fcrm/doctype/crm_lead/crm_lead.json
+msgid "Facebook Form ID"
+msgstr ""
+
+#. Name of a DocType
+#. Label of the facebook_lead_form (Link) field in DocType 'Lead Sync Source'
+#: crm/lead_syncing/doctype/facebook_lead_form/facebook_lead_form.json
+#: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
+msgid "Facebook Lead Form"
+msgstr ""
+
+#. Name of a DocType
+#: crm/lead_syncing/doctype/facebook_lead_form_question/facebook_lead_form_question.json
+msgid "Facebook Lead Form Question"
+msgstr ""
+
+#. Label of the facebook_lead_id (Data) field in DocType 'CRM Lead'
+#: crm/fcrm/doctype/crm_lead/crm_lead.json
+msgid "Facebook Lead ID"
+msgstr ""
+
+#. Name of a DocType
+#. Label of the facebook_page (Link) field in DocType 'Lead Sync Source'
+#: crm/lead_syncing/doctype/facebook_page/facebook_page.json
+#: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
+msgid "Facebook Page"
+msgstr ""
+
 #. Option for the 'Status' (Select) field in DocType 'CRM Call Log'
 #. Option for the 'SLA Status' (Select) field in DocType 'CRM Deal'
 #. Option for the 'SLA Status' (Select) field in DocType 'CRM Lead'
@@ -2506,6 +2671,11 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Failed"
+msgstr ""
+
+#. Name of a DocType
+#: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.json
+msgid "Failed Lead Sync Log"
 msgstr ""
 
 #: frontend/src/components/Modals/AddExistingUserModal.vue:111
@@ -2524,6 +2694,10 @@ msgstr ""
 msgid "Failed to create template"
 msgstr ""
 
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:186
+msgid "Failed to delete Lead Sync Source"
+msgstr ""
+
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:216
 msgid "Failed to delete template"
 msgstr ""
@@ -2536,7 +2710,7 @@ msgstr ""
 msgid "Failed to load form controller: {0}"
 msgstr ""
 
-#: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:243
+#: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:242
 msgid "Failed to rename template"
 msgstr ""
 
@@ -2556,9 +2730,22 @@ msgstr ""
 msgid "Failed to update profile"
 msgstr ""
 
-#: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:209
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:171
+msgid "Failed to update source"
+msgstr ""
+
+#: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:208
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:201
 msgid "Failed to update template"
+msgstr ""
+
+#. Option for the 'Type' (Select) field in DocType 'Failed Lead Sync Log'
+#: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.json
+msgid "Failure"
+msgstr ""
+
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:138
+msgid "Failure Logs"
 msgstr ""
 
 #. Label of the favicon (Attach) field in DocType 'FCRM Settings'
@@ -2652,13 +2839,13 @@ msgstr ""
 msgid "For"
 msgstr ""
 
-#: crm/api/dashboard.py:666
+#: crm/api/dashboard.py:688
 #: frontend/src/components/Dashboard/AddChartModal.vue:95
 msgid "Forecasted revenue"
 msgstr ""
 
 #: frontend/src/components/Settings/ForecastingSettings.vue:5
-#: frontend/src/components/Settings/Settings.vue:108
+#: frontend/src/components/Settings/Settings.vue:109
 msgid "Forecasting"
 msgstr ""
 
@@ -2673,6 +2860,11 @@ msgstr ""
 #. Option for the 'Apply To' (Select) field in DocType 'CRM Form Script'
 #: crm/fcrm/doctype/crm_form_script/crm_form_script.json
 msgid "Form"
+msgstr ""
+
+#. Label of the form_name (Data) field in DocType 'Facebook Lead Form'
+#: crm/lead_syncing/doctype/facebook_lead_form/facebook_lead_form.json
+msgid "Form Name"
 msgstr ""
 
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.js:19
@@ -2733,7 +2925,7 @@ msgstr ""
 msgid "Full Name"
 msgstr ""
 
-#: crm/api/dashboard.py:728
+#: crm/api/dashboard.py:755
 #: frontend/src/components/Dashboard/AddChartModal.vue:96
 msgid "Funnel conversion"
 msgstr ""
@@ -2751,7 +2943,7 @@ msgstr ""
 msgid "Gender"
 msgstr ""
 
-#: crm/api/dashboard.py:1020
+#: crm/api/dashboard.py:1065
 msgid "Geographic distribution of deals and revenue"
 msgstr ""
 
@@ -2804,7 +2996,7 @@ msgstr ""
 msgid "Help"
 msgstr ""
 
-#: frontend/src/components/Settings/Settings.vue:202
+#: frontend/src/components/Settings/Settings.vue:203
 msgid "Helpdesk"
 msgstr ""
 
@@ -2841,7 +3033,7 @@ msgstr ""
 msgid "Helpdesk settings updated"
 msgstr ""
 
-#: frontend/src/components/CommunicationArea.vue:56
+#: frontend/src/components/CommunicationArea.vue:57
 msgid "Hi John, \\n\\nCan you please provide more details on this..."
 msgstr ""
 
@@ -2900,7 +3092,7 @@ msgstr ""
 msgid "Holidays"
 msgstr ""
 
-#: frontend/src/components/Settings/Settings.vue:173
+#: frontend/src/components/Settings/Settings.vue:174
 msgid "Home Actions"
 msgstr ""
 
@@ -2909,13 +3101,26 @@ msgstr ""
 msgid "Home actions"
 msgstr ""
 
+#. Option for the 'Background Sync Frequency' (Select) field in DocType 'Lead
+#. Sync Source'
+#: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
+msgid "Hourly"
+msgstr ""
+
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:199
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:283
 msgid "I understand, add conditions"
 msgstr ""
 
 #. Label of the id (Data) field in DocType 'CRM Call Log'
+#. Label of the id (Data) field in DocType 'Facebook Lead Form'
+#. Label of the id (Data) field in DocType 'Facebook Lead Form Question'
+#. Label of the id (Data) field in DocType 'Facebook Page'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
+#: crm/lead_syncing/doctype/facebook_lead_form/facebook_lead_form.json
+#: crm/lead_syncing/doctype/facebook_lead_form_question/facebook_lead_form_question.json
+#: crm/lead_syncing/doctype/facebook_page/facebook_page.json
+#: frontend/src/components/Settings/LeadSyncing/FailureLogs.vue:77
 msgid "ID"
 msgstr ""
 
@@ -3027,7 +3232,7 @@ msgstr ""
 msgid "Integration Not Enabled"
 msgstr ""
 
-#: frontend/src/components/Settings/Settings.vue:181
+#: frontend/src/components/Settings/Settings.vue:182
 msgctxt "FCRM"
 msgid "Integrations"
 msgstr ""
@@ -3050,7 +3255,11 @@ msgstr ""
 msgid "Invalid Exotel Number"
 msgstr ""
 
-#: crm/api/dashboard.py:73
+#: crm/lead_syncing/doctype/lead_sync_source/facebook.py:147
+msgid "Invalid access token provided for Facebook."
+msgstr ""
+
+#: crm/api/dashboard.py:77
 msgid "Invalid chart name"
 msgstr ""
 
@@ -3074,11 +3283,15 @@ msgstr ""
 msgid "Invalid start or end time"
 msgstr ""
 
+#: frontend/src/utils/index.js:272
+msgid "Invalid website URL"
+msgstr ""
+
 #: frontend/src/components/Settings/Users.vue:25
 msgid "Invite New User"
 msgstr ""
 
-#: frontend/src/components/Settings/Settings.vue:135
+#: frontend/src/components/Settings/Settings.vue:136
 msgid "Invite User"
 msgstr ""
 
@@ -3205,14 +3418,18 @@ msgid "Kanban Settings"
 msgstr ""
 
 #. Label of the key (Data) field in DocType 'CRM Invitation'
+#. Label of the key (Data) field in DocType 'Facebook Lead Form Question'
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.json
+#: crm/lead_syncing/doctype/facebook_lead_form_question/facebook_lead_form_question.json
 msgid "Key"
 msgstr ""
 
 #. Label of the label (Data) field in DocType 'CRM Dropdown Item'
 #. Label of the label (Data) field in DocType 'CRM View Settings'
+#. Label of the label (Data) field in DocType 'Facebook Lead Form Question'
 #: crm/fcrm/doctype/crm_dropdown_item/crm_dropdown_item.json
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
+#: crm/lead_syncing/doctype/facebook_lead_form_question/facebook_lead_form_question.json
 #: frontend/src/components/ColumnSettings.vue:100
 msgid "Label"
 msgstr ""
@@ -3240,10 +3457,30 @@ msgstr ""
 msgid "Last Quarter"
 msgstr ""
 
+#. Label of the last_responded_on (Datetime) field in DocType 'CRM Deal'
+#. Label of the last_responded_on (Datetime) field in DocType 'CRM Lead'
+#: crm/fcrm/doctype/crm_deal/crm_deal.json
+#: crm/fcrm/doctype/crm_lead/crm_lead.json
+msgid "Last Responded On"
+msgstr ""
+
+#. Label of the last_response_time (Duration) field in DocType 'CRM Deal'
+#. Label of the last_response_time (Duration) field in DocType 'CRM Lead'
+#: crm/fcrm/doctype/crm_deal/crm_deal.json
+#: crm/fcrm/doctype/crm_lead/crm_lead.json
+msgid "Last Response Time"
+msgstr ""
+
 #. Label of the last_status_change_log (Link) field in DocType 'CRM Status
 #. Change Log'
 #: crm/fcrm/doctype/crm_status_change_log/crm_status_change_log.json
 msgid "Last Status Change Log"
+msgstr ""
+
+#. Label of the last_synced_at (Datetime) field in DocType 'Lead Sync Source'
+#: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:63
+msgid "Last Synced At"
 msgstr ""
 
 #: frontend/src/components/Filter.vue:603
@@ -3254,11 +3491,11 @@ msgstr ""
 msgid "Last Year"
 msgstr ""
 
-#: frontend/src/pages/Contact.vue:525 frontend/src/pages/MobileContact.vue:533
-#: frontend/src/pages/MobileOrganization.vue:477
-#: frontend/src/pages/MobileOrganization.vue:505
-#: frontend/src/pages/Organization.vue:498
-#: frontend/src/pages/Organization.vue:526
+#: frontend/src/pages/Contact.vue:536 frontend/src/pages/MobileContact.vue:536
+#: frontend/src/pages/MobileOrganization.vue:489
+#: frontend/src/pages/MobileOrganization.vue:517
+#: frontend/src/pages/Organization.vue:521
+#: frontend/src/pages/Organization.vue:549
 msgid "Last modified"
 msgstr ""
 
@@ -3291,6 +3528,12 @@ msgstr ""
 msgid "Lead"
 msgstr ""
 
+#. Label of the lead_data (Code) field in DocType 'Failed Lead Sync Log'
+#: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.json
+#: frontend/src/components/Settings/LeadSyncing/FailureLogs.vue:21
+msgid "Lead Data"
+msgstr ""
+
 #. Label of the lead_details_tab (Tab Break) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 msgid "Lead Details"
@@ -3306,7 +3549,7 @@ msgstr ""
 msgid "Lead Owner"
 msgstr ""
 
-#: crm/fcrm/doctype/crm_lead/crm_lead.py:73
+#: crm/fcrm/doctype/crm_lead/crm_lead.py:124
 msgid "Lead Owner cannot be same as the Lead Email Address"
 msgstr ""
 
@@ -3320,22 +3563,47 @@ msgstr ""
 msgid "Lead Statuses"
 msgstr ""
 
-#: crm/api/dashboard.py:935
+#. Name of a DocType
+#: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
+msgid "Lead Sync Source"
+msgstr ""
+
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:219
+msgid "Lead Sync Source created successfully"
+msgstr ""
+
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:183
+msgid "Lead Sync Source deleted successfully"
+msgstr ""
+
+#: frontend/src/components/Settings/Settings.vue:209
+msgid "Lead Syncing"
+msgstr ""
+
+#: crm/api/dashboard.py:974
 msgid "Lead generation channel analysis"
 msgstr ""
 
-#: crm/api/dashboard.py:729
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:7
+msgid "Lead sources"
+msgstr ""
+
+#: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.js:8
+msgid "Lead sync initiated."
+msgstr ""
+
+#: crm/api/dashboard.py:756
 msgid "Lead to deal conversion pipeline"
 msgstr ""
 
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
-#: frontend/src/pages/InvalidPage.vue:9 frontend/src/pages/Lead.vue:340
+#: frontend/src/pages/InvalidPage.vue:9 frontend/src/pages/Lead.vue:343
 #: frontend/src/pages/MobileLead.vue:291
 msgid "Leads"
 msgstr ""
 
-#: crm/api/dashboard.py:934
+#: crm/api/dashboard.py:973
 #: frontend/src/components/Dashboard/AddChartModal.vue:106
 msgid "Leads by source"
 msgstr ""
@@ -3393,13 +3661,14 @@ msgstr ""
 
 #: frontend/src/components/Kanban/KanbanView.vue:140
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:142
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:120
 #: frontend/src/components/Settings/Users.vue:155
 msgid "Load More"
 msgstr ""
 
 #: frontend/src/components/Activities/Activities.vue:22
 #: frontend/src/components/Activities/DataFields.vue:35
-#: frontend/src/pages/Deal.vue:176 frontend/src/pages/MobileDeal.vue:117
+#: frontend/src/pages/Deal.vue:177 frontend/src/pages/MobileDeal.vue:117
 msgid "Loading..."
 msgstr ""
 
@@ -3410,6 +3679,10 @@ msgstr ""
 msgid "Log"
 msgstr ""
 
+#: frontend/src/components/Settings/LeadSyncing/FailureLogs.vue:14
+msgid "Log ID"
+msgstr ""
+
 #: frontend/src/components/Activities/Activities.vue:814
 #: frontend/src/components/Activities/ActivityHeader.vue:133
 #: frontend/src/components/Activities/ActivityHeader.vue:176
@@ -3418,6 +3691,10 @@ msgstr ""
 
 #: frontend/src/composables/frappecloud.js:23
 msgid "Login to Frappe Cloud?"
+msgstr ""
+
+#: frontend/src/pages/NotPermitted.vue:21
+msgid "Login with different account"
 msgstr ""
 
 #. Label of the brand_logo (Attach) field in DocType 'FCRM Settings'
@@ -3442,7 +3719,7 @@ msgstr ""
 msgid "Lost Reason"
 msgstr ""
 
-#: crm/api/dashboard.py:883
+#: crm/api/dashboard.py:919
 #: frontend/src/components/Dashboard/AddChartModal.vue:98
 msgid "Lost deal reasons"
 msgstr ""
@@ -3469,7 +3746,7 @@ msgstr ""
 msgid "Low"
 msgstr ""
 
-#: frontend/src/pages/Contact.vue:94 frontend/src/pages/MobileContact.vue:73
+#: frontend/src/pages/Contact.vue:100 frontend/src/pages/MobileContact.vue:73
 msgid "Make Call"
 msgstr ""
 
@@ -3538,17 +3815,27 @@ msgstr ""
 msgid "Manager"
 msgstr ""
 
-#: frontend/src/data/document.js:57
+#: frontend/src/data/document.js:58
 msgid "Mandatory field error: {0}"
 msgstr ""
 
-#: frontend/src/data/document.js:186 frontend/src/data/document.js:189
+#: crm/lead_syncing/doctype/facebook_lead_form/facebook_lead_form.py:49
+msgid "Mandatory field(s) {0} must be mapped"
+msgstr ""
+
+#: frontend/src/data/document.js:203 frontend/src/data/document.js:206
 msgid "Mandatory fields required: {0}"
 msgstr ""
 
 #. Option for the 'Telephony Medium' (Select) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 msgid "Manual"
+msgstr ""
+
+#. Label of the mapped_to_crm_field (Autocomplete) field in DocType 'Facebook
+#. Lead Form Question'
+#: crm/lead_syncing/doctype/facebook_lead_form_question/facebook_lead_form_question.json
+msgid "Mapped to CRM Field"
 msgstr ""
 
 #: frontend/src/components/Notifications.vue:20
@@ -3621,9 +3908,9 @@ msgstr ""
 msgid "Mobile app installation"
 msgstr ""
 
-#: frontend/src/pages/Contact.vue:515 frontend/src/pages/MobileContact.vue:523
-#: frontend/src/pages/MobileOrganization.vue:467
-#: frontend/src/pages/Organization.vue:488
+#: frontend/src/pages/Contact.vue:526 frontend/src/pages/MobileContact.vue:526
+#: frontend/src/pages/MobileOrganization.vue:479
+#: frontend/src/pages/Organization.vue:511
 msgid "Mobile no"
 msgstr ""
 
@@ -3634,8 +3921,14 @@ msgstr ""
 msgid "Monday"
 msgstr ""
 
-#: crm/api/dashboard.py:669
+#: crm/api/dashboard.py:691
 msgid "Month"
+msgstr ""
+
+#. Option for the 'Background Sync Frequency' (Select) field in DocType 'Lead
+#. Sync Source'
+#: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
+msgid "Monthly"
 msgstr ""
 
 #: frontend/src/components/ViewControls.vue:221
@@ -3672,14 +3965,16 @@ msgstr ""
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:52
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:39
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:39
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:59
+#: frontend/src/components/Settings/LeadSyncing/leadSyncSourceConfig.js:22
 #: frontend/src/components/ViewControls.vue:779
-#: frontend/src/pages/MobileOrganization.vue:485
-#: frontend/src/pages/Organization.vue:506
+#: frontend/src/pages/MobileOrganization.vue:497
+#: frontend/src/pages/Organization.vue:529
 msgid "Name"
 msgstr ""
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:417
-#: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:152
+#: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:151
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:154
 msgid "Name is required"
 msgstr ""
@@ -3710,6 +4005,7 @@ msgstr ""
 #: frontend/src/components/Activities/ActivityHeader.vue:76
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRules.vue:19
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:19
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:20
 #: frontend/src/components/Settings/Users.vue:30
 msgid "New"
 msgstr ""
@@ -3744,6 +4040,10 @@ msgstr ""
 #: frontend/src/components/Activities/ActivityHeader.vue:12
 #: frontend/src/components/Activities/ActivityHeader.vue:118
 msgid "New Email"
+msgstr ""
+
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:7
+msgid "New Lead Sync Source"
 msgstr ""
 
 #: frontend/src/components/Activities/ActivityHeader.vue:66
@@ -3840,7 +4140,7 @@ msgstr ""
 msgid "No Answer"
 msgstr ""
 
-#: frontend/src/components/Controls/Grid.vue:312
+#: frontend/src/components/Controls/Grid.vue:322
 msgid "No Data"
 msgstr ""
 
@@ -3859,8 +4159,12 @@ msgid "No changes made"
 msgstr ""
 
 #: frontend/src/components/Modals/SidePanelModal.vue:51
-#: frontend/src/pages/Deal.vue:261 frontend/src/pages/MobileDeal.vue:205
+#: frontend/src/pages/Deal.vue:272 frontend/src/pages/MobileDeal.vue:205
 msgid "No contacts added"
+msgstr ""
+
+#: frontend/src/pages/Deal.vue:258
+msgid "No details added"
 msgstr ""
 
 #: frontend/src/pages/Deal.vue:90 frontend/src/pages/Lead.vue:137
@@ -3871,6 +4175,10 @@ msgstr ""
 msgid "No email templates found"
 msgstr ""
 
+#: frontend/src/components/Settings/LeadSyncing/FailureLogs.vue:38
+msgid "No failure logs found"
+msgstr ""
+
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRulesList.vue:14
 msgid "No items in the list"
 msgstr ""
@@ -3879,7 +4187,11 @@ msgstr ""
 msgid "No label"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:697
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:49
+msgid "No lead sources found"
+msgstr ""
+
+#: frontend/src/pages/Deal.vue:710
 msgid "No mobile number set"
 msgstr ""
 
@@ -3892,7 +4204,7 @@ msgstr ""
 msgid "No phone number set"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:692
+#: frontend/src/pages/Deal.vue:705
 msgid "No primary contact set"
 msgstr ""
 
@@ -3912,8 +4224,8 @@ msgstr ""
 msgid "No users found"
 msgstr ""
 
-#: frontend/src/pages/MobileOrganization.vue:281
-#: frontend/src/pages/Organization.vue:309
+#: frontend/src/pages/MobileOrganization.vue:290
+#: frontend/src/pages/Organization.vue:329
 msgid "No website found"
 msgstr ""
 
@@ -3925,11 +4237,11 @@ msgstr ""
 msgid "No {0} Available"
 msgstr ""
 
-#: frontend/src/pages/CallLogs.vue:59 frontend/src/pages/Contact.vue:156
+#: frontend/src/pages/CallLogs.vue:59 frontend/src/pages/Contact.vue:163
 #: frontend/src/pages/Contacts.vue:58 frontend/src/pages/Deals.vue:234
-#: frontend/src/pages/Leads.vue:260 frontend/src/pages/MobileContact.vue:147
-#: frontend/src/pages/MobileOrganization.vue:139
-#: frontend/src/pages/Notes.vue:95 frontend/src/pages/Organization.vue:152
+#: frontend/src/pages/Leads.vue:260 frontend/src/pages/MobileContact.vue:148
+#: frontend/src/pages/MobileOrganization.vue:140
+#: frontend/src/pages/Notes.vue:95 frontend/src/pages/Organization.vue:159
 #: frontend/src/pages/Organizations.vue:58 frontend/src/pages/Tasks.vue:184
 msgid "No {0} Found"
 msgstr ""
@@ -3985,20 +4297,28 @@ msgstr ""
 msgid "Not Saved"
 msgstr ""
 
-#: crm/fcrm/doctype/crm_deal/crm_deal.py:272
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:81
+msgid "Not Synced"
+msgstr ""
+
+#: crm/fcrm/doctype/crm_deal/crm_deal.py:333
 msgid "Not allowed to add contact to Deal"
 msgstr ""
 
-#: crm/fcrm/doctype/crm_lead/crm_lead.py:408
+#: crm/fcrm/doctype/crm_lead/crm_lead.py:459
 msgid "Not allowed to convert Lead to Deal"
 msgstr ""
 
-#: crm/fcrm/doctype/crm_deal/crm_deal.py:283
+#: crm/fcrm/doctype/crm_deal/crm_deal.py:344
 msgid "Not allowed to remove contact from Deal"
 msgstr ""
 
-#: crm/fcrm/doctype/crm_deal/crm_deal.py:294
+#: crm/fcrm/doctype/crm_deal/crm_deal.py:355
 msgid "Not allowed to set primary contact for Deal"
+msgstr ""
+
+#: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.py:32
+msgid "Not implemented yet!"
 msgstr ""
 
 #. Label of the note (Link) field in DocType 'CRM Call Log'
@@ -4007,8 +4327,8 @@ msgstr ""
 msgid "Note"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:562 frontend/src/pages/Lead.vue:419
-#: frontend/src/pages/MobileDeal.vue:461 frontend/src/pages/MobileLead.vue:368
+#: frontend/src/pages/Deal.vue:575 frontend/src/pages/Lead.vue:422
+#: frontend/src/pages/MobileDeal.vue:461 frontend/src/pages/MobileLead.vue:367
 msgid "Notes"
 msgstr ""
 
@@ -4055,11 +4375,11 @@ msgstr ""
 msgid "Number chart"
 msgstr ""
 
-#: crm/api/dashboard.py:1027 crm/api/dashboard.py:1084
+#: crm/api/dashboard.py:1072 crm/api/dashboard.py:1132
 msgid "Number of deals"
 msgstr ""
 
-#: crm/api/dashboard.py:1077
+#: crm/api/dashboard.py:1125
 msgid "Number of deals and total value per salesperson"
 msgstr ""
 
@@ -4083,16 +4403,16 @@ msgstr ""
 msgid "Ongoing"
 msgstr ""
 
-#: crm/api/dashboard.py:181
+#: crm/api/dashboard.py:190
 #: frontend/src/components/Dashboard/AddChartModal.vue:77
 msgid "Ongoing deals"
 msgstr ""
 
-#: frontend/src/utils/index.js:474
+#: frontend/src/utils/index.js:509
 msgid "Only image files are allowed"
 msgstr ""
 
-#: crm/fcrm/doctype/crm_deal/crm_deal.py:60
+#: crm/fcrm/doctype/crm_deal/crm_deal.py:121
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.py:23
 msgid "Only one {0} can be set as primary."
 msgstr ""
@@ -4126,7 +4446,7 @@ msgstr ""
 msgid "Open nested conditions"
 msgstr ""
 
-#: frontend/src/pages/Organization.vue:90
+#: frontend/src/pages/Organization.vue:97
 msgid "Open website"
 msgstr ""
 
@@ -4153,12 +4473,12 @@ msgstr ""
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: frontend/src/components/Layouts/AppSidebar.vue:553
 #: frontend/src/components/Modals/ConvertToDealModal.vue:25
-#: frontend/src/pages/Contact.vue:494 frontend/src/pages/MobileContact.vue:502
+#: frontend/src/pages/Contact.vue:505 frontend/src/pages/MobileContact.vue:505
 #: frontend/src/pages/MobileLead.vue:118
-#: frontend/src/pages/MobileOrganization.vue:446
-#: frontend/src/pages/MobileOrganization.vue:500
-#: frontend/src/pages/Organization.vue:467
-#: frontend/src/pages/Organization.vue:521
+#: frontend/src/pages/MobileOrganization.vue:458
+#: frontend/src/pages/MobileOrganization.vue:512
+#: frontend/src/pages/Organization.vue:490
+#: frontend/src/pages/Organization.vue:544
 msgid "Organization"
 msgstr ""
 
@@ -4187,8 +4507,8 @@ msgstr ""
 
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
-#: frontend/src/pages/MobileOrganization.vue:205
-#: frontend/src/pages/Organization.vue:234
+#: frontend/src/pages/MobileOrganization.vue:213
+#: frontend/src/pages/Organization.vue:253
 msgid "Organizations"
 msgstr ""
 
@@ -4221,6 +4541,16 @@ msgstr ""
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:102
 msgid "Owner: {0}"
+msgstr ""
+
+#. Label of the page (Link) field in DocType 'Facebook Lead Form'
+#: crm/lead_syncing/doctype/facebook_lead_form/facebook_lead_form.json
+msgid "Page"
+msgstr ""
+
+#. Label of the page_name (Data) field in DocType 'Facebook Page'
+#: crm/lead_syncing/doctype/facebook_page/facebook_page.json
+msgid "Page Name"
 msgstr ""
 
 #. Label of the parent_crm_territory (Link) field in DocType 'CRM Territory'
@@ -4275,7 +4605,7 @@ msgstr ""
 msgid "Person"
 msgstr ""
 
-#: frontend/src/components/Settings/Settings.vue:89
+#: frontend/src/components/Settings/Settings.vue:90
 msgid "Personal Settings"
 msgstr ""
 
@@ -4285,8 +4615,8 @@ msgstr ""
 #: crm/fcrm/doctype/crm_contacts/crm_contacts.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
-#: frontend/src/pages/MobileOrganization.vue:495
-#: frontend/src/pages/Organization.vue:516
+#: frontend/src/pages/MobileOrganization.vue:507
+#: frontend/src/pages/Organization.vue:539
 msgid "Phone"
 msgstr ""
 
@@ -4320,6 +4650,10 @@ msgstr ""
 msgid "Please add an email account to continue."
 msgstr ""
 
+#: crm/lead_syncing/doctype/lead_sync_source/facebook.py:167
+msgid "Please check your access token"
+msgstr ""
+
 #: crm/integrations/twilio/twilio_handler.py:119
 msgid "Please enable twilio settings before making a call."
 msgstr ""
@@ -4340,13 +4674,17 @@ msgstr ""
 msgid "Please select a currency before saving."
 msgstr ""
 
+#: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.py:65
+msgid "Please select a lead gen form before syncing!"
+msgstr ""
+
 #: frontend/src/components/Modals/ConvertToDealModal.vue:136
-#: frontend/src/pages/MobileLead.vue:432
+#: frontend/src/pages/MobileLead.vue:431
 msgid "Please select an existing contact"
 msgstr ""
 
 #: frontend/src/components/Modals/ConvertToDealModal.vue:141
-#: frontend/src/pages/MobileLead.vue:437
+#: frontend/src/pages/MobileLead.vue:436
 msgid "Please select an existing organization"
 msgstr ""
 
@@ -4358,11 +4696,11 @@ msgstr ""
 msgid "Please setup Exotel intergration"
 msgstr ""
 
-#: crm/fcrm/doctype/crm_deal/crm_deal.py:181
+#: crm/fcrm/doctype/crm_deal/crm_deal.py:242
 msgid "Please specify a reason for losing the deal."
 msgstr ""
 
-#: crm/fcrm/doctype/crm_deal/crm_deal.py:183
+#: crm/fcrm/doctype/crm_deal/crm_deal.py:244
 msgid "Please specify the reason for losing the deal."
 msgstr ""
 
@@ -4373,7 +4711,7 @@ msgstr ""
 msgid "Position"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:205 frontend/src/pages/MobileDeal.vue:149
+#: frontend/src/pages/Deal.vue:206 frontend/src/pages/MobileDeal.vue:149
 msgid "Primary"
 msgstr ""
 
@@ -4392,7 +4730,7 @@ msgstr ""
 msgid "Primary Phone"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:669 frontend/src/pages/MobileDeal.vue:566
+#: frontend/src/pages/Deal.vue:682 frontend/src/pages/MobileDeal.vue:566
 msgid "Primary contact set"
 msgstr ""
 
@@ -4451,7 +4789,7 @@ msgid "Products"
 msgstr ""
 
 #: frontend/src/components/Layouts/AppSidebar.vue:540
-#: frontend/src/components/Settings/Settings.vue:93
+#: frontend/src/components/Settings/Settings.vue:94
 msgid "Profile"
 msgstr ""
 
@@ -4459,7 +4797,7 @@ msgstr ""
 msgid "Profile updated successfully"
 msgstr ""
 
-#: crm/api/dashboard.py:667
+#: crm/api/dashboard.py:689
 msgid "Projected vs actual revenue based on deal probability"
 msgstr ""
 
@@ -4479,6 +4817,11 @@ msgstr ""
 #. Label of the qty (Float) field in DocType 'CRM Products'
 #: crm/fcrm/doctype/crm_products/crm_products.json
 msgid "Quantity"
+msgstr ""
+
+#. Label of the questions (Table) field in DocType 'Facebook Lead Form'
+#: crm/lead_syncing/doctype/facebook_lead_form/facebook_lead_form.json
+msgid "Questions"
 msgstr ""
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Call Log'
@@ -4514,7 +4857,8 @@ msgstr "Pris"
 msgid "Read"
 msgstr ""
 
-#: crm/api/dashboard.py:886
+#: crm/api/dashboard.py:922
+#: frontend/src/components/Settings/LeadSyncing/FailureLogs.vue:16
 msgid "Reason"
 msgstr ""
 
@@ -4580,7 +4924,7 @@ msgstr ""
 #: frontend/src/components/ConditionsFilter/CFCondition.vue:192
 #: frontend/src/components/Controls/ImageUploader.vue:25
 #: frontend/src/components/Settings/Users.vue:218
-#: frontend/src/pages/Deal.vue:618
+#: frontend/src/pages/Deal.vue:631
 msgid "Remove"
 msgstr ""
 
@@ -4601,10 +4945,10 @@ msgid "Remove group"
 msgstr ""
 
 #: frontend/src/components/Settings/ProfileSettings.vue:32
-#: frontend/src/pages/Contact.vue:47 frontend/src/pages/Lead.vue:94
+#: frontend/src/pages/Contact.vue:53 frontend/src/pages/Lead.vue:94
 #: frontend/src/pages/MobileContact.vue:43
 #: frontend/src/pages/MobileOrganization.vue:43
-#: frontend/src/pages/Organization.vue:47
+#: frontend/src/pages/Organization.vue:53
 msgid "Remove image"
 msgstr ""
 
@@ -4658,6 +5002,12 @@ msgstr ""
 msgid "Reset to default"
 msgstr ""
 
+#. Label of the responded_on (Datetime) field in DocType 'CRM Rolling Response
+#. Time'
+#: crm/fcrm/doctype/crm_rolling_response_time/crm_rolling_response_time.json
+msgid "Responded On"
+msgstr ""
+
 #. Label of the response_by (Datetime) field in DocType 'CRM Deal'
 #. Label of the response_by (Datetime) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
@@ -4674,10 +5024,22 @@ msgstr ""
 msgid "Response Details"
 msgstr ""
 
+#. Label of the response_time (Duration) field in DocType 'CRM Rolling Response
+#. Time'
+#: crm/fcrm/doctype/crm_rolling_response_time/crm_rolling_response_time.json
+msgid "Response Time"
+msgstr ""
+
 #. Label of the section_break_ufaf (Section Break) field in DocType 'CRM
 #. Service Level Agreement'
 #: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.json
 msgid "Response and Follow Up"
+msgstr ""
+
+#. Description of the 'Rolling Responses' (Check) field in DocType 'CRM Service
+#. Level Agreement'
+#: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.json
+msgid "Restart the SLA each time the customer replies (status changes to Open) and fulfill it when marked as Replied"
 msgstr ""
 
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.js:14
@@ -4694,7 +5056,12 @@ msgstr ""
 msgid "Retake"
 msgstr ""
 
-#: crm/api/dashboard.py:675
+#: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.js:6
+#: frontend/src/components/Settings/LeadSyncing/FailureLogs.vue:9
+msgid "Retry Sync"
+msgstr ""
+
+#: crm/api/dashboard.py:697
 msgid "Revenue"
 msgstr ""
 
@@ -4722,6 +5089,23 @@ msgstr ""
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.json
 #: frontend/src/components/Modals/AddExistingUserModal.vue:46
 msgid "Role"
+msgstr ""
+
+#. Option for the 'SLA Status' (Select) field in DocType 'CRM Deal'
+#. Option for the 'SLA Status' (Select) field in DocType 'CRM Lead'
+#: crm/fcrm/doctype/crm_deal/crm_deal.json
+#: crm/fcrm/doctype/crm_lead/crm_lead.json
+msgid "Rolling Response Due"
+msgstr ""
+
+#. Label of the rolling_responses (Table) field in DocType 'CRM Deal'
+#. Label of the rolling_responses (Table) field in DocType 'CRM Lead'
+#. Label of the rolling_responses (Check) field in DocType 'CRM Service Level
+#. Agreement'
+#: crm/fcrm/doctype/crm_deal/crm_deal.json
+#: crm/fcrm/doctype/crm_lead/crm_lead.json
+#: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.json
+msgid "Rolling Responses"
 msgstr ""
 
 #. Option for the 'Type' (Select) field in DocType 'CRM Dropdown Item'
@@ -4836,7 +5220,7 @@ msgstr ""
 msgid "Sales User"
 msgstr ""
 
-#: crm/api/dashboard.py:598
+#: crm/api/dashboard.py:617
 #: frontend/src/components/Dashboard/AddChartModal.vue:94
 msgid "Sales trend"
 msgstr ""
@@ -4845,7 +5229,7 @@ msgstr ""
 msgid "Sales user"
 msgstr ""
 
-#: crm/api/dashboard.py:1079
+#: crm/api/dashboard.py:1127
 msgid "Salesperson"
 msgstr ""
 
@@ -4937,6 +5321,10 @@ msgstr ""
 msgid "Select Range"
 msgstr ""
 
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:34
+msgid "Select Source Type"
+msgstr ""
+
 #: frontend/src/components/Settings/CurrencySettings.vue:51
 msgid "Select currency"
 msgstr ""
@@ -4949,7 +5337,7 @@ msgstr ""
 msgid "Select the assignees for {0}."
 msgstr ""
 
-#: frontend/src/components/FieldLayout/Field.vue:337
+#: frontend/src/components/FieldLayout/Field.vue:345
 msgid "Select {0}"
 msgstr ""
 
@@ -5012,7 +5400,7 @@ msgstr ""
 msgid "Set an organization"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:626 frontend/src/pages/MobileDeal.vue:523
+#: frontend/src/pages/Deal.vue:639 frontend/src/pages/MobileDeal.vue:523
 msgid "Set as Primary Contact"
 msgstr ""
 
@@ -5151,15 +5539,31 @@ msgstr ""
 
 #. Label of the source (Link) field in DocType 'CRM Deal'
 #. Label of the source (Link) field in DocType 'CRM Lead'
+#. Label of the source (Link) field in DocType 'Failed Lead Sync Log'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
+#: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.json
 #: frontend/src/components/Modals/EditValueModal.vue:10
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:60
 msgid "Source"
 msgstr ""
 
 #. Label of the source_name (Data) field in DocType 'CRM Lead Source'
 #: crm/fcrm/doctype/crm_lead_source/crm_lead_source.json
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:45
 msgid "Source Name"
+msgstr ""
+
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:33
+msgid "Source Type"
+msgstr ""
+
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:167
+msgid "Source disabled successfully"
+msgstr ""
+
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:166
+msgid "Source enabled successfully"
 msgstr ""
 
 #: frontend/src/components/Dashboard/AddChartModal.vue:68
@@ -5167,7 +5571,7 @@ msgstr ""
 msgid "Spacer"
 msgstr ""
 
-#: crm/api/dashboard.py:731 crm/api/dashboard.py:790
+#: crm/api/dashboard.py:758 crm/api/dashboard.py:820
 msgid "Stage"
 msgstr ""
 
@@ -5224,10 +5628,10 @@ msgstr ""
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
-#: crm/fcrm/doctype/crm_task/crm_task.json frontend/src/pages/Contact.vue:505
-#: frontend/src/pages/MobileContact.vue:513
-#: frontend/src/pages/MobileOrganization.vue:457
-#: frontend/src/pages/Organization.vue:478
+#: crm/fcrm/doctype/crm_task/crm_task.json frontend/src/pages/Contact.vue:516
+#: frontend/src/pages/MobileContact.vue:516
+#: frontend/src/pages/MobileOrganization.vue:469
+#: frontend/src/pages/Organization.vue:501
 msgid "Status"
 msgstr ""
 
@@ -5253,7 +5657,7 @@ msgstr ""
 msgid "Subject"
 msgstr ""
 
-#: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:156
+#: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:155
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:158
 msgid "Subject is required"
 msgstr ""
@@ -5277,11 +5681,38 @@ msgstr ""
 msgid "Switch camera"
 msgstr ""
 
+#: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.js:6
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:17
+msgid "Sync Now"
+msgstr ""
+
+#: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.js:12
+msgid "Sync Successful, CRM Lead: ${frappe.utils.get_form_link(\"CRM Lead\", message.name, true)}!"
+msgstr ""
+
+#: frontend/src/components/Settings/LeadSyncing/FailureLogs.vue:97
+msgid "Sync successful!"
+msgstr ""
+
 #: frontend/src/pages/Welcome.vue:32
 msgid "Sync your contacts,email and calenders"
 msgstr ""
 
-#: frontend/src/components/Settings/Settings.vue:105
+#. Option for the 'Type' (Select) field in DocType 'Failed Lead Sync Log'
+#: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.json
+msgid "Synced"
+msgstr ""
+
+#. Label of the syncing_tab (Tab Break) field in DocType 'CRM Lead'
+#: crm/fcrm/doctype/crm_lead/crm_lead.json
+msgid "Syncing"
+msgstr ""
+
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:338
+msgid "Syncing started in background"
+msgstr ""
+
+#: frontend/src/components/Settings/Settings.vue:106
 msgid "System Configuration"
 msgstr ""
 
@@ -5301,6 +5732,10 @@ msgstr ""
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.json
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 #: crm/fcrm/doctype/helpdesk_crm_settings/helpdesk_crm_settings.json
+#: crm/lead_syncing/doctype/facebook_lead_form/facebook_lead_form.json
+#: crm/lead_syncing/doctype/facebook_page/facebook_page.json
+#: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.json
+#: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
 msgid "System Manager"
 msgstr ""
 
@@ -5318,8 +5753,8 @@ msgstr ""
 msgid "Task"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:557 frontend/src/pages/Lead.vue:414
-#: frontend/src/pages/MobileDeal.vue:456 frontend/src/pages/MobileLead.vue:363
+#: frontend/src/pages/Deal.vue:570 frontend/src/pages/Lead.vue:417
+#: frontend/src/pages/MobileDeal.vue:456 frontend/src/pages/MobileLead.vue:362
 msgid "Tasks"
 msgstr ""
 
@@ -5327,7 +5762,7 @@ msgstr ""
 msgid "Telegram Channel"
 msgstr ""
 
-#: frontend/src/components/Settings/Settings.vue:184
+#: frontend/src/components/Settings/Settings.vue:185
 msgid "Telephony"
 msgstr ""
 
@@ -5360,11 +5795,11 @@ msgstr ""
 msgid "Template name"
 msgstr ""
 
-#: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:240
+#: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:239
 msgid "Template renamed successfully"
 msgstr ""
 
-#: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:205
+#: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:204
 msgid "Template updated successfully"
 msgstr ""
 
@@ -5376,7 +5811,7 @@ msgstr ""
 #. Label of the territory (Link) field in DocType 'CRM Deal'
 #. Label of the territory (Link) field in DocType 'CRM Lead'
 #. Label of the territory (Link) field in DocType 'CRM Organization'
-#: crm/api/dashboard.py:1022 crm/fcrm/doctype/crm_deal/crm_deal.json
+#: crm/api/dashboard.py:1067 crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
 msgid "Territory"
@@ -5396,7 +5831,7 @@ msgstr ""
 msgid "Thanks"
 msgstr ""
 
-#: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.py:46
+#: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.py:71
 msgid "The Condition '{0}' is invalid: {1}"
 msgstr ""
 
@@ -5411,7 +5846,7 @@ msgstr ""
 msgid "The rate used to convert the organization’s currency to your crm's base currency (set in CRM Settings). It is set once when the currency is first added and doesn't change automatically."
 msgstr ""
 
-#: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.js:14
+#: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.js:29
 msgid "There can only be one default priority in Priorities table"
 msgstr ""
 
@@ -5558,21 +5993,27 @@ msgstr ""
 msgid "Total after discount"
 msgstr ""
 
-#: crm/api/dashboard.py:123
+#: crm/api/dashboard.py:129
 #: frontend/src/components/Dashboard/AddChartModal.vue:76
 msgid "Total leads"
 msgstr ""
 
-#: crm/api/dashboard.py:124
+#: crm/api/dashboard.py:130
 msgid "Total number of leads"
 msgstr ""
 
-#: crm/api/dashboard.py:182
+#: crm/api/dashboard.py:191
 msgid "Total number of non won/lost deals"
 msgstr ""
 
-#: crm/api/dashboard.py:297
+#: crm/api/dashboard.py:311
 msgid "Total number of won deals based on its closure date"
+msgstr ""
+
+#. Label of the traceback (Code) field in DocType 'Failed Lead Sync Log'
+#: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.json
+#: frontend/src/components/Settings/LeadSyncing/FailureLogs.vue:25
+msgid "Traceback"
 msgstr ""
 
 #. Option for the 'Weekly Off' (Select) field in DocType 'CRM Holiday List'
@@ -5628,6 +6069,9 @@ msgstr ""
 #. Label of the type (Select) field in DocType 'CRM Global Settings'
 #. Label of the type (Select) field in DocType 'CRM Notification'
 #. Label of the type (Select) field in DocType 'CRM View Settings'
+#. Label of the type (Data) field in DocType 'Facebook Lead Form Question'
+#. Label of the type (Select) field in DocType 'Failed Lead Sync Log'
+#. Label of the type (Select) field in DocType 'Lead Sync Source'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
 #: crm/fcrm/doctype/crm_dropdown_item/crm_dropdown_item.json
@@ -5635,6 +6079,10 @@ msgstr ""
 #: crm/fcrm/doctype/crm_global_settings/crm_global_settings.json
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
+#: crm/lead_syncing/doctype/facebook_lead_form_question/facebook_lead_form_question.json
+#: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.json
+#: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
+#: frontend/src/components/Settings/LeadSyncing/FailureLogs.vue:81
 msgid "Type"
 msgstr ""
 
@@ -5726,6 +6174,7 @@ msgstr ""
 #: frontend/src/components/Settings/CurrencySettings.vue:17
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:21
 #: frontend/src/components/Settings/HomeActions.vue:15
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:21
 #: frontend/src/components/Settings/ProfileSettings.vue:95
 #: frontend/src/components/Settings/SettingsPage.vue:20
 #: frontend/src/components/Settings/TelephonySettings.vue:23
@@ -5765,10 +6214,10 @@ msgid "Upload Video"
 msgstr ""
 
 #: frontend/src/components/Settings/ProfileSettings.vue:27
-#: frontend/src/pages/Contact.vue:42 frontend/src/pages/Lead.vue:89
+#: frontend/src/pages/Contact.vue:48 frontend/src/pages/Lead.vue:89
 #: frontend/src/pages/MobileContact.vue:38
 #: frontend/src/pages/MobileOrganization.vue:38
-#: frontend/src/pages/Organization.vue:42
+#: frontend/src/pages/Organization.vue:48
 msgid "Upload image"
 msgstr ""
 
@@ -5785,7 +6234,7 @@ msgstr ""
 msgid "User"
 msgstr ""
 
-#: frontend/src/components/Settings/Settings.vue:126
+#: frontend/src/components/Settings/Settings.vue:127
 msgid "User Management"
 msgstr ""
 
@@ -5799,7 +6248,7 @@ msgid "User {0} has been removed"
 msgstr ""
 
 #: frontend/src/components/Modals/AddExistingUserModal.vue:20
-#: frontend/src/components/Settings/Settings.vue:129
+#: frontend/src/components/Settings/Settings.vue:130
 #: frontend/src/components/Settings/Users.vue:7
 msgid "Users"
 msgstr ""
@@ -5826,7 +6275,7 @@ msgstr ""
 msgid "View Name"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:219
+#: frontend/src/pages/Deal.vue:220
 msgid "View contact"
 msgstr ""
 
@@ -5883,9 +6332,9 @@ msgstr ""
 #. Option for the 'Type' (Select) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
 #: frontend/src/components/Layouts/AppSidebar.vue:603
-#: frontend/src/components/Settings/Settings.vue:190
-#: frontend/src/pages/Deal.vue:572 frontend/src/pages/Lead.vue:429
-#: frontend/src/pages/MobileDeal.vue:471 frontend/src/pages/MobileLead.vue:378
+#: frontend/src/components/Settings/Settings.vue:191
+#: frontend/src/pages/Deal.vue:585 frontend/src/pages/Lead.vue:432
+#: frontend/src/pages/MobileDeal.vue:471 frontend/src/pages/MobileLead.vue:377
 msgid "WhatsApp"
 msgstr ""
 
@@ -5911,7 +6360,7 @@ msgstr ""
 msgid "Won"
 msgstr ""
 
-#: crm/api/dashboard.py:296
+#: crm/api/dashboard.py:310
 #: frontend/src/components/Dashboard/AddChartModal.vue:79
 msgid "Won deals"
 msgstr ""
@@ -5933,7 +6382,7 @@ msgstr ""
 msgid "Yesterday"
 msgstr ""
 
-#: crm/api/whatsapp.py:43 crm/api/whatsapp.py:223 crm/api/whatsapp.py:237
+#: crm/api/whatsapp.py:44 crm/api/whatsapp.py:189 crm/api/whatsapp.py:203
 #: frontend/src/components/Activities/WhatsAppArea.vue:34
 #: frontend/src/components/Activities/WhatsAppBox.vue:14
 msgid "You"
@@ -5963,11 +6412,15 @@ msgstr ""
 msgid "You do not have Exotel Number set in your Telephony Agent"
 msgstr ""
 
+#: frontend/src/pages/NotPermitted.vue:12
+msgid "You do not have enough permissions to access Frappe CRM. Please contact your administrator if you believe this is an error."
+msgstr ""
+
 #: crm/integrations/exotel/handler.py:93
 msgid "You do not have mobile number set in your Telephony Agent"
 msgstr ""
 
-#: frontend/src/data/document.js:34
+#: frontend/src/data/document.js:35
 msgid "You do not have permission to access this document"
 msgstr ""
 
@@ -5977,6 +6430,10 @@ msgstr ""
 
 #: frontend/src/components/Settings/AssignmentRules/AssigneeSearch.vue:150
 msgid "You will be redirected to invite user page, unsaved changes will be lost."
+msgstr ""
+
+#: frontend/src/components/Settings/LeadSyncing/leadSyncSourceConfig.js:9
+msgid "You will need a Meta developer account and an access token to sync leads from Facebook. Read more "
 msgstr ""
 
 #: crm/api/todo.py:100
@@ -6243,7 +6700,7 @@ msgstr ""
 msgid "purple"
 msgstr ""
 
-#: crm/api/whatsapp.py:44
+#: crm/api/whatsapp.py:45
 msgid "received a whatsapp message in {0}"
 msgstr ""
 

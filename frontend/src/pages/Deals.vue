@@ -434,7 +434,7 @@ function parseRows(rows, columns = []) {
             : deal.sla_status == 'Fulfilled'
               ? 'green'
               : 'orange'
-        if (value == 'First Response Due') {
+        if (value == 'First Response Due' || value == 'Rolling Response Due') {
           value = __(timeAgo(deal.response_by))
           tooltipText = formatDate(deal.response_by)
           if (new Date(deal.response_by) < new Date()) {
