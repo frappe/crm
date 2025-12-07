@@ -7,8 +7,13 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Frappe CRM VERSION\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
+<<<<<<< HEAD
 "POT-Creation-Date: 2025-11-30 09:35+0000\n"
 "PO-Revision-Date: 2025-11-30 09:35+0000\n"
+=======
+"POT-Creation-Date: 2025-12-07 09:36+0000\n"
+"PO-Revision-Date: 2025-12-07 09:36+0000\n"
+>>>>>>> d9a8f327 (chore: update POT file)
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: shariq@frappe.io\n"
 "MIME-Version: 1.0\n"
