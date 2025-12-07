@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-11-23 09:36+0000\n"
-"PO-Revision-Date: 2025-12-05 16:38\n"
+"PO-Revision-Date: 2025-12-07 17:01\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Slovenian\n"
 "MIME-Version: 1.0\n"
@@ -1240,13 +1240,13 @@ msgstr ""
 
 #: frontend/src/components/Controls/Link.vue:59
 msgid "Clear"
-msgstr ""
+msgstr "Počisti"
 
 #: frontend/src/components/ListBulkActions.vue:136
 #: frontend/src/components/ListBulkActions.vue:144
 #: frontend/src/components/ListBulkActions.vue:190
 msgid "Clear Assignment"
-msgstr ""
+msgstr "Počisti dodelitev"
 
 #: frontend/src/components/SortBy.vue:153
 msgid "Clear Sort"
@@ -1268,7 +1268,7 @@ msgstr ""
 #: frontend/src/components/Notifications.vue:26
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:54
 msgid "Close"
-msgstr ""
+msgstr "Zapri"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:38
 msgid "Close panel"
@@ -1292,11 +1292,11 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
 msgid "Color"
-msgstr ""
+msgstr "Barva"
 
 #: frontend/src/components/FieldLayoutEditor.vue:417
 msgid "Column"
-msgstr ""
+msgstr "Stolpec"
 
 #. Label of the column_field (Data) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
@@ -1316,7 +1316,7 @@ msgstr ""
 #: frontend/src/components/CommunicationArea.vue:16
 #: frontend/src/components/Layouts/AppSidebar.vue:579
 msgid "Comment"
-msgstr ""
+msgstr "Komentar"
 
 #: frontend/src/pages/Deal.vue:550 frontend/src/pages/Lead.vue:397
 #: frontend/src/pages/MobileDeal.vue:440 frontend/src/pages/MobileLead.vue:347
