@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2025-11-16 09:35+0000\n"
-"PO-Revision-Date: 2025-11-18 13:57\n"
+"POT-Creation-Date: 2025-11-23 09:36+0000\n"
+"PO-Revision-Date: 2025-11-29 15:49\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Swedish\n"
 "MIME-Version: 1.0\n"
@@ -2667,9 +2667,12 @@ msgstr "Facebook Sida"
 #. Option for the 'Status' (Select) field in DocType 'CRM Call Log'
 #. Option for the 'SLA Status' (Select) field in DocType 'CRM Deal'
 #. Option for the 'SLA Status' (Select) field in DocType 'CRM Lead'
+#. Option for the 'Status' (Select) field in DocType 'CRM Rolling Response
+#. Time'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
+#: crm/fcrm/doctype/crm_rolling_response_time/crm_rolling_response_time.json
 msgid "Failed"
 msgstr "Misslyckad"
 
@@ -2913,8 +2916,11 @@ msgstr "Från Användare"
 
 #. Option for the 'SLA Status' (Select) field in DocType 'CRM Deal'
 #. Option for the 'SLA Status' (Select) field in DocType 'CRM Lead'
+#. Option for the 'Status' (Select) field in DocType 'CRM Rolling Response
+#. Time'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
+#: crm/fcrm/doctype/crm_rolling_response_time/crm_rolling_response_time.json
 msgid "Fulfilled"
 msgstr "Uppfylld"
 
@@ -5626,6 +5632,7 @@ msgstr "Börja med exempel på 10 potentiella kunder"
 #. Label of the status (Select) field in DocType 'CRM Invitation'
 #. Label of the status (Link) field in DocType 'CRM Lead'
 #. Label of the lead_status (Data) field in DocType 'CRM Lead Status'
+#. Label of the status (Select) field in DocType 'CRM Rolling Response Time'
 #. Label of the status (Select) field in DocType 'CRM Task'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 #: crm/fcrm/doctype/crm_communication_status/crm_communication_status.json
@@ -5634,6 +5641,7 @@ msgstr "Börja med exempel på 10 potentiella kunder"
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
+#: crm/fcrm/doctype/crm_rolling_response_time/crm_rolling_response_time.json
 #: crm/fcrm/doctype/crm_task/crm_task.json frontend/src/pages/Contact.vue:516
 #: frontend/src/pages/MobileContact.vue:516
 #: frontend/src/pages/MobileOrganization.vue:469
@@ -5876,6 +5884,10 @@ msgstr "Denna Vecka"
 #: frontend/src/components/Filter.vue:647
 msgid "This Year"
 msgstr "I År"
+
+#: crm/www/crm.py:35
+msgid "This method is only meant for developer mode"
+msgstr "Denna metod är endast avsedd för utvecklarläge"
 
 #: frontend/src/components/SidePanelLayoutEditor.vue:116
 msgid "This section is not editable"
@@ -6388,7 +6400,7 @@ msgstr "Arbets Timmar"
 msgid "Yesterday"
 msgstr "Igår"
 
-#: crm/api/whatsapp.py:44 crm/api/whatsapp.py:189 crm/api/whatsapp.py:203
+#: crm/api/whatsapp.py:38 crm/api/whatsapp.py:183 crm/api/whatsapp.py:197
 #: frontend/src/components/Activities/WhatsAppArea.vue:34
 #: frontend/src/components/Activities/WhatsAppBox.vue:14
 msgid "You"
@@ -6425,6 +6437,10 @@ msgstr "Du har inte tillräcklig behörighet för att komma åt Säljstöd. Kont
 #: crm/integrations/exotel/handler.py:93
 msgid "You do not have mobile number set in your Telephony Agent"
 msgstr "Du har inget Mobil Nummer angiven i din Telefoni Agent"
+
+#: crm/www/crm.py:20
+msgid "You do not have permission to access Frappe CRM"
+msgstr "Du har inte åtkomstbehörighet till Säljstöd"
 
 #: frontend/src/data/document.js:35
 msgid "You do not have permission to access this document"
@@ -6706,7 +6722,7 @@ msgstr "publik"
 msgid "purple"
 msgstr "lila"
 
-#: crm/api/whatsapp.py:45
+#: crm/api/whatsapp.py:39
 msgid "received a whatsapp message in {0}"
 msgstr "fick whatsapp meddelande i {0}"
 
