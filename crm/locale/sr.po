@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2025-11-16 09:35+0000\n"
-"PO-Revision-Date: 2025-11-18 13:57\n"
+"POT-Creation-Date: 2025-11-23 09:36+0000\n"
+"PO-Revision-Date: 2025-11-30 16:06\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Serbian (Cyrillic)\n"
 "MIME-Version: 1.0\n"
@@ -2667,9 +2667,12 @@ msgstr "Facebook страница"
 #. Option for the 'Status' (Select) field in DocType 'CRM Call Log'
 #. Option for the 'SLA Status' (Select) field in DocType 'CRM Deal'
 #. Option for the 'SLA Status' (Select) field in DocType 'CRM Lead'
+#. Option for the 'Status' (Select) field in DocType 'CRM Rolling Response
+#. Time'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
+#: crm/fcrm/doctype/crm_rolling_response_time/crm_rolling_response_time.json
 msgid "Failed"
 msgstr "Неуспешно"
 
@@ -2913,8 +2916,11 @@ msgstr "Од стране корисника"
 
 #. Option for the 'SLA Status' (Select) field in DocType 'CRM Deal'
 #. Option for the 'SLA Status' (Select) field in DocType 'CRM Lead'
+#. Option for the 'Status' (Select) field in DocType 'CRM Rolling Response
+#. Time'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
+#: crm/fcrm/doctype/crm_rolling_response_time/crm_rolling_response_time.json
 msgid "Fulfilled"
 msgstr "Испуњено"
 
@@ -5620,6 +5626,7 @@ msgstr "Започни са 10 пробних потенцијалних кли�
 #. Label of the status (Select) field in DocType 'CRM Invitation'
 #. Label of the status (Link) field in DocType 'CRM Lead'
 #. Label of the lead_status (Data) field in DocType 'CRM Lead Status'
+#. Label of the status (Select) field in DocType 'CRM Rolling Response Time'
 #. Label of the status (Select) field in DocType 'CRM Task'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 #: crm/fcrm/doctype/crm_communication_status/crm_communication_status.json
@@ -5628,6 +5635,7 @@ msgstr "Започни са 10 пробних потенцијалних кли�
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
+#: crm/fcrm/doctype/crm_rolling_response_time/crm_rolling_response_time.json
 #: crm/fcrm/doctype/crm_task/crm_task.json frontend/src/pages/Contact.vue:516
 #: frontend/src/pages/MobileContact.vue:516
 #: frontend/src/pages/MobileOrganization.vue:469
@@ -5870,6 +5878,10 @@ msgstr "Ове недеље"
 #: frontend/src/components/Filter.vue:647
 msgid "This Year"
 msgstr "Ове године"
+
+#: crm/www/crm.py:35
+msgid "This method is only meant for developer mode"
+msgstr "Ова метода је намењена само за развојни режим"
 
 #: frontend/src/components/SidePanelLayoutEditor.vue:116
 msgid "This section is not editable"
@@ -6382,7 +6394,7 @@ msgstr "Радно време"
 msgid "Yesterday"
 msgstr "Јуче"
 
-#: crm/api/whatsapp.py:44 crm/api/whatsapp.py:189 crm/api/whatsapp.py:203
+#: crm/api/whatsapp.py:38 crm/api/whatsapp.py:183 crm/api/whatsapp.py:197
 #: frontend/src/components/Activities/WhatsAppArea.vue:34
 #: frontend/src/components/Activities/WhatsAppBox.vue:14
 msgid "You"
@@ -6419,6 +6431,10 @@ msgstr "Немате довољно дозвола за приступ Frappe CR
 #: crm/integrations/exotel/handler.py:93
 msgid "You do not have mobile number set in your Telephony Agent"
 msgstr "Немате подешен број мобилног телефона у свом агенту телефоније"
+
+#: crm/www/crm.py:20
+msgid "You do not have permission to access Frappe CRM"
+msgstr "Немате дозволу за приступ Frappe CRM"
 
 #: frontend/src/data/document.js:35
 msgid "You do not have permission to access this document"
@@ -6700,7 +6716,7 @@ msgstr "јавно"
 msgid "purple"
 msgstr "пурпурна"
 
-#: crm/api/whatsapp.py:45
+#: crm/api/whatsapp.py:39
 msgid "received a whatsapp message in {0}"
 msgstr "примљена WhatsApp порука у {0}"
 
