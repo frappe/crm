@@ -7,6 +7,7 @@ import frappe
 from frappe import _, safe_decode
 from frappe.integrations.frappe_providers.frappecloud_billing import is_fc_site
 from frappe.utils import cint, get_system_timezone
+from frappe.utils.jinja_globals import is_rtl
 from frappe.utils.telemetry import capture
 
 no_cache = 1
@@ -16,10 +17,7 @@ def get_context():
 	from crm.api import check_app_permission
 
 	if not check_app_permission():
-		frappe.throw(
-			_("You do not have permission to access Frappe CRM"),
-			frappe.PermissionError
-		)
+		frappe.throw(_("You do not have permission to access Frappe CRM"), frappe.PermissionError)
 
 	frappe.db.commit()
 	context = frappe._dict()
@@ -53,6 +51,7 @@ def get_boot():
 				"user": frappe.db.get_value("User", frappe.session.user, "time_zone")
 				or get_system_timezone(),
 			},
+			"dir": "rtl" if is_rtl() else "ltr",
 		}
 	)
 

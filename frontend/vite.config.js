@@ -80,6 +80,9 @@ export default defineConfig(async ({ mode }) => {
         'interactjs',
       ],
     },
+    server: {
+      allowedHosts: true,
+    },
   }
 
   // Add local frappe-ui alias only in development if the local frappe-ui exists
@@ -89,16 +92,18 @@ export default defineConfig(async ({ mode }) => {
       const fs = await import('node:fs')
       const localFrappeUIPath = path.resolve(__dirname, '../frappe-ui')
       const vitePluginPath = path.resolve(localFrappeUIPath, 'vite.js')
-      
+
       if (fs.existsSync(localFrappeUIPath) && fs.existsSync(vitePluginPath)) {
         config.resolve.alias['frappe-ui'] = localFrappeUIPath
       } else {
-        console.warn('Local frappe-ui directory not found or incomplete, using npm package')
+        console.warn(
+          'Local frappe-ui directory not found or incomplete, using npm package'
+        )
       }
     } catch (error) {
       console.warn(
         'Error checking for local frappe-ui, using npm package:',
-        error.message,
+        error.message
       )
     }
   }
@@ -111,8 +116,11 @@ async function importFrappeUIPlugin(isDev) {
     try {
       // Check if local frappe-ui has the vite plugin file
       const fs = await import('node:fs')
-      const localVitePluginPath = path.resolve(__dirname, '../frappe-ui/vite.js')
-      
+      const localVitePluginPath = path.resolve(
+        __dirname,
+        '../frappe-ui/vite.js'
+      )
+
       if (fs.existsSync(localVitePluginPath)) {
         const module = await import('../frappe-ui/vite')
         return module.default
@@ -122,7 +130,7 @@ async function importFrappeUIPlugin(isDev) {
     } catch (error) {
       console.warn(
         'Local frappe-ui not found, falling back to npm package:',
-        error.message,
+        error.message
       )
     }
   }
