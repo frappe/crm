@@ -61,7 +61,8 @@ def notify_agent(doc):
 def is_whatsapp_enabled():
 	if not frappe.db.exists("DocType", "WhatsApp Settings"):
 		return False
-	return frappe.get_cached_value("WhatsApp Settings", "WhatsApp Settings", "enabled")
+	default_outgoing = frappe.get_cached_value("WhatsApp Settings", "WhatsApp Settings", "default_outgoing_account")
+	return frappe.get_cached_value("WhatsApp Account", default_outgoing, "status")
 
 
 @frappe.whitelist()
