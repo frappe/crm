@@ -8,10 +8,9 @@ createResource({
   cache: 'Is Whatsapp Enabled',
   auto: true,
   onSuccess: (data) => {
-    whatsappEnabled.value = data === 'Active'
+    whatsappEnabled.value = Boolean(data)
   },
 })
-
 createResource({
   url: 'crm.api.whatsapp.is_whatsapp_installed',
   cache: 'Is Whatsapp Installed',
