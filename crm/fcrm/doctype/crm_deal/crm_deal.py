@@ -263,9 +263,9 @@ class CRMDeal(Document):
 				"width": "11rem",
 			},
 			{
-				"label": "Annual Revenue",
+				"label": "Deal Value",
 				"type": "Currency",
-				"key": "annual_revenue",
+				"key": "deal_value",
 				"align": "right",
 				"width": "9rem",
 			},
@@ -303,7 +303,7 @@ class CRMDeal(Document):
 		rows = [
 			"name",
 			"organization",
-			"annual_revenue",
+			"deal_value",
 			"status",
 			"email",
 			"currency",
