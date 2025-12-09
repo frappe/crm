@@ -13,7 +13,7 @@
     "@tiptap/extension-paragraph": "^2.12.0",
     "@twilio/voice-sdk": "^2.10.2",
     "@vueuse/integrations": "^10.3.0",
-    "frappe-ui": "^0.1.201",
+    "frappe-ui": "0.1.235",
     "gemoji": "^8.1.0",
     "lodash": "^4.17.21",
     "mime": "^4.0.1",
