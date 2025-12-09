@@ -34,25 +34,17 @@ def add_default_lead_statuses():
 			"color": "gray",
 			"position": 1,
 		},
-		"Contacted": {
-			"color": "orange",
+		"Qualified": {
+			"color": "gray",
 			"position": 2,
 		},
-		"Nurture": {
-			"color": "blue",
-			"position": 3,
-		},
-		"Qualified": {
-			"color": "green",
-			"position": 4,
-		},
 		"Unqualified": {
-			"color": "red",
-			"position": 5,
+			"color": "gray",
+			"position": 3,
 		},
 		"Junk": {
 			"color": "purple",
-			"position": 6,
+			"position": 4,
 		},
 	}
 
@@ -75,40 +67,40 @@ def add_default_deal_statuses():
 			"probability": 10,
 			"position": 1,
 		},
-		"Demo/Making": {
-			"color": "orange",
-			"type": "Ongoing",
-			"probability": 25,
-			"position": 2,
-		},
-		"Proposal/Quotation": {
+		"Quotation": {
 			"color": "blue",
 			"type": "Ongoing",
 			"probability": 50,
-			"position": 3,
+			"position": 2,
 		},
-		"Negotiation": {
-			"color": "yellow",
+		"Followup": {
+			"color": "gray",
 			"type": "Ongoing",
-			"probability": 70,
-			"position": 4,
+			"probability": 40,
+			"position": 3,
 		},
 		"Ready to Close": {
 			"color": "purple",
 			"type": "Ongoing",
 			"probability": 90,
-			"position": 5,
+			"position": 4,
 		},
 		"Won": {
 			"color": "green",
 			"type": "Won",
 			"probability": 100,
-			"position": 6,
+			"position": 5,
 		},
 		"Lost": {
 			"color": "red",
 			"type": "Lost",
 			"probability": 0,
+			"position": 6,
+		},
+		"Hold": {
+			"color": "purple",
+			"type": "On Hold",
+			"probability": 30,
 			"position": 7,
 		},
 	}

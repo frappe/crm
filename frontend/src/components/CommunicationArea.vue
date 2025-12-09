@@ -50,6 +50,7 @@
           newEmailEditor.bccEmails = []
           newEmailEditor.cc = false
           newEmailEditor.bcc = false
+          newEmailEditor.fromEmailAccount = null
           newEmail = ''
         },
       }"
@@ -187,11 +188,14 @@ async function sendMail() {
   let subject = newEmailEditor.value.subject
   let cc = newEmailEditor.value.ccEmails || []
   let bcc = newEmailEditor.value.bccEmails || []
+  let emailAccount = newEmailEditor.value.fromEmailAccount
 
   if (attachments.value.length) {
     capture('email_attachments_added')
   }
-  await call('frappe.core.doctype.communication.email.make', {
+  
+  // Create communication first without sending
+  let result = await call('frappe.core.doctype.communication.email.make', {
     recipients: recipients.join(', '),
     attachments: attachments.value.map((x) => x.name),
     cc: cc.join(', '),
@@ -200,10 +204,18 @@ async function sendMail() {
     content: newEmail.value,
     doctype: props.doctype,
     name: doc.value.data.name,
-    send_email: 1,
+    send_email: 0, // Don't send yet, we need to set email_account first
     sender: getUser().email,
     sender_full_name: getUser()?.full_name || undefined,
   })
+  
+  // Send the email with the selected email_account
+  if (result.name) {
+    await call('crm.api.settings.send_communication_email', {
+      communication_name: result.name,
+      email_account: emailAccount || undefined,
+    })
+  }
 }
 
 async function sendComment() {

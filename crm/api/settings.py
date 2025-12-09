@@ -46,6 +46,49 @@ def create_email_account(data):
 		frappe.throw(str(e))
 
 
+@frappe.whitelist()
+def get_outgoing_email_accounts():
+	"""Get outgoing email accounts for the logged-in user"""
+	user = frappe.session.user
+	
+	# Get email accounts from User Email child table where enable_outgoing=1
+	accounts = frappe.get_all(
+		"User Email",
+		filters={"parent": user, "enable_outgoing": 1},
+		fields=["email_account", "email_id"],
+		distinct=True,
+		order_by="idx",
+	)
+	
+	# Format as options for select component
+	email_accounts = []
+	for account in accounts:
+		email_accounts.append({
+			"label": account.email_id,
+			"value": account.email_account,
+			"email_id": account.email_id,
+		})
+	
+	# If no accounts found, return empty list
+	return email_accounts
+
+
+@frappe.whitelist()
+def send_communication_email(communication_name, email_account=None):
+	"""Send email from a Communication document with optional email_account"""
+	comm = frappe.get_doc("Communication", communication_name)
+	
+	# Set email_account if provided
+	if email_account:
+		comm.email_account = email_account
+		comm.save(ignore_permissions=True)
+	
+	# Send the email
+	comm.send_email()
+	
+	return {"name": comm.name}
+
+
 email_service_config = {
 	"Frappe Mail": {
 		"domain": None,

@@ -19,6 +19,15 @@
     <template #top>
       <div class="flex flex-col gap-3">
         <div class="sm:mx-10 mx-4 flex items-center gap-2 border-t pt-2.5">
+          <span class="text-xs text-ink-gray-4">{{ __('FROM') }}:</span>
+          <SingleSelectEmailInput
+            class="flex-1"
+            variant="ghost"
+            v-model="fromEmailAccount"
+            :placeholder="__('Select email account')"
+          />
+        </div>
+        <div class="sm:mx-10 mx-4 flex items-center gap-2">
           <span class="text-xs text-ink-gray-4">{{ __('TO') }}:</span>
           <MultiSelectEmailInput
             class="flex-1"
@@ -180,6 +189,7 @@ import EmailTemplateIcon from '@/components/Icons/EmailTemplateIcon.vue'
 import AttachmentIcon from '@/components/Icons/AttachmentIcon.vue'
 import AttachmentItem from '@/components/AttachmentItem.vue'
 import MultiSelectEmailInput from '@/components/Controls/MultiSelectEmailInput.vue'
+import SingleSelectEmailInput from '@/components/Controls/SingleSelectEmailInput.vue'
 import EmailTemplateSelectorModal from '@/components/Modals/EmailTemplateSelectorModal.vue'
 import { TextEditorBubbleMenu, TextEditor, FileUploader, call } from 'frappe-ui'
 import { capture } from '@/telemetry'
@@ -247,6 +257,7 @@ const bcc = ref(false)
 const emoji = ref('')
 
 const subject = ref(props.subject)
+const fromEmailAccount = ref(null)
 const toEmails = ref(modelValue.value.email ? [modelValue.value.email] : [])
 const ccEmails = ref([])
 const bccEmails = ref([])
@@ -309,6 +320,7 @@ defineExpose({
   toEmails,
   ccEmails,
   bccEmails,
+  fromEmailAccount,
 })
 
 const textEditorMenuButtons = [

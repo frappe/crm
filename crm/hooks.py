@@ -44,7 +44,10 @@ add_to_apps_screen = [
 # page_js = {"page" : "public/js/file.js"}
 
 # include js in doctype views
-# doctype_js = {"doctype" : "public/js/doctype.js"}
+doctype_js = {
+	"CRM Lead": "public/js/order_history.js",
+	"CRM Deal": "public/js/order_history.js"
+}
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
@@ -132,6 +135,7 @@ before_uninstall = "crm.uninstall.before_uninstall"
 override_doctype_class = {
 	"Contact": "crm.overrides.contact.CustomContact",
 	"Email Template": "crm.overrides.email_template.CustomEmailTemplate",
+	"Communication": "crm.overrides.communication.CustomCommunication",
 }
 
 # Document Events
@@ -193,9 +197,10 @@ doc_events = {
 # Overriding Methods
 # ------------------------------
 #
-# override_whitelisted_methods = {
-# "frappe.desk.doctype.event.event.get_events": "crm.event.get_events"
-# }
+override_whitelisted_methods = {
+	"crm.api.order_history.fetch_lead_order_history": "crm.api.order_history.fetch_lead_order_history",
+	"crm.api.order_history.fetch_deal_order_history": "crm.api.order_history.fetch_deal_order_history"
+}
 #
 # each overriding function accepts a `data` argument;
 # generated from the base implementation of the doctype dashboard,

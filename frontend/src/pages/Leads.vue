@@ -311,7 +311,7 @@ import { callEnabled } from '@/composables/settings'
 import { formatDate, timeAgo, website, formatTime } from '@/utils'
 import { Avatar, Tooltip, Dropdown } from 'frappe-ui'
 import { useRoute } from 'vue-router'
-import { ref, computed, reactive, h } from 'vue'
+import { ref, computed, reactive, h, onMounted, onBeforeUnmount, nextTick, watch } from 'vue'
 
 const { getFormattedPercent, getFormattedFloat, getFormattedCurrency } =
   getMeta('CRM Lead')
@@ -332,6 +332,59 @@ const loadMore = ref(1)
 const triggerResize = ref(1)
 const updatedPageCount = ref(20)
 const viewControls = ref(null)
+
+// Auto-refresh interval (30 seconds)
+let refreshInterval = null
+
+function startAutoRefresh() {
+  // Clear any existing interval
+  if (refreshInterval) {
+    clearInterval(refreshInterval)
+    refreshInterval = null
+  }
+
+  // Set up auto-refresh every 30 seconds
+  refreshInterval = setInterval(() => {
+    if (viewControls.value && typeof viewControls.value.reload === 'function') {
+      console.log('🔄 Auto-refreshing Leads list...')
+      viewControls.value.reload()
+    } else {
+      console.warn('⚠️ ViewControls not available for auto-refresh')
+    }
+  }, 30000) // 30 seconds = 30000 milliseconds
+  
+  console.log('✅ Auto-refresh interval started (30 seconds)')
+}
+
+// Watch for viewControls to become available
+watch(
+  () => viewControls.value,
+  (newValue) => {
+    if (newValue && !refreshInterval) {
+      console.log('📊 ViewControls available, starting auto-refresh')
+      startAutoRefresh()
+    }
+  },
+  { immediate: true }
+)
+
+onMounted(() => {
+  // Wait for next tick to ensure viewControls ref is set
+  nextTick(() => {
+    if (viewControls.value && !refreshInterval) {
+      startAutoRefresh()
+    }
+  })
+})
+
+onBeforeUnmount(() => {
+  // Clean up interval when component is unmounted
+  if (refreshInterval) {
+    console.log('🛑 Stopping auto-refresh interval')
+    clearInterval(refreshInterval)
+    refreshInterval = null
+  }
+})
 
 function getRow(name, field) {
   function getValue(value) {

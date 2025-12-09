@@ -21,6 +21,16 @@
         :data="document.doc"
         doctype="CRM Lead"
       />
+      <Button
+        v-if="lead.data && !lead.data.__islocal"
+        variant="outline"
+        :label="__('Transfer to HD Ticket')"
+        @click="openTransferDialog"
+      >
+        <template #prefix>
+          <FeatherIcon name="mail" class="h-4 w-4" />
+        </template>
+      </Button>
       <Dropdown
         v-if="document.doc"
         :options="
@@ -242,6 +252,14 @@
     :docname="props.leadId"
     name="Leads"
   />
+  <EmailTransferDialog
+    v-model="showTransferDialog"
+    :source-doc="lead.data"
+    :emails="transferEmails"
+    target-type="HD Ticket"
+    @transfer="handleTransfer"
+    @close="showTransferDialog = false"
+  />
 </template>
 <script setup>
 import ErrorPage from '@/components/ErrorPage.vue'
@@ -256,6 +274,7 @@ import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
+import OrderDetailsIcon from '@/components/Icons/OrderDetailsIcon.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import CameraIcon from '@/components/Icons/CameraIcon.vue'
 import LinkIcon from '@/components/Icons/LinkIcon.vue'
@@ -268,12 +287,14 @@ import SidePanelLayout from '@/components/SidePanelLayout.vue'
 import SLASection from '@/components/SLASection.vue'
 import CustomActions from '@/components/CustomActions.vue'
 import ConvertToDealModal from '@/components/Modals/ConvertToDealModal.vue'
+import EmailTransferDialog from '@/components/EmailTransferDialog.vue'
 import {
   openWebsite,
   setupCustomizations,
   copyToClipboard,
   validateIsImageFile,
 } from '@/utils'
+import { getCommunicationsForTransfer, transferToHelpdesk } from '@/api/transfer'
 import { getView } from '@/utils/view'
 import { getSettings } from '@/stores/settings'
 import { globalStore } from '@/stores/global'
@@ -316,6 +337,9 @@ const errorTitle = ref('')
 const errorMessage = ref('')
 const showDeleteLinkedDocModal = ref(false)
 const showConvertToDealModal = ref(false)
+const showTransferDialog = ref(false)
+const transferEmails = ref([])
+const isLoadingEmails = ref(false)
 
 const { triggerOnChange, assignees, document } = useDocument(
   'CRM Lead',
@@ -480,6 +504,11 @@ const tabs = computed(() => {
       icon: AttachmentIcon,
     },
     {
+      name: 'Order Details',
+      label: __('Order Details'),
+      icon: OrderDetailsIcon,
+    },
+    {
       name: 'WhatsApp',
       label: __('WhatsApp'),
       icon: WhatsAppIcon,
@@ -522,6 +551,41 @@ async function deleteLead(name) {
     name,
   })
   router.push({ name: 'Leads' })
+}
+
+async function openTransferDialog() {
+  if (!lead.data || lead.data.__islocal) return
+  
+  isLoadingEmails.value = true
+  showTransferDialog.value = true
+  
+  try {
+    transferEmails.value = await getCommunicationsForTransfer('CRM Lead', props.leadId)
+  } catch (error) {
+    console.error('Error fetching communications:', error)
+    toast.error(__('Error loading emails'))
+    showTransferDialog.value = false
+  } finally {
+    isLoadingEmails.value = false
+  }
+}
+
+async function handleTransfer(selectedEmailIds) {
+  if (!lead.data || selectedEmailIds.length === 0) return
+  
+  try {
+    const result = await transferToHelpdesk(props.leadId, selectedEmailIds, true)
+    
+    if (result.success) {
+      showTransferDialog.value = false
+      
+      // Navigate to tickets list (not leads list)
+      router.push({ name: 'Tickets' })
+    }
+  } catch (error) {
+    console.error('Error transferring to helpdesk:', error)
+    // Error toast is already shown by transferToHelpdesk
+  }
 }
 
 async function deleteLeadWithModal(name) {
