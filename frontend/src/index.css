@@ -1,8 +1,8 @@
-@import "frappe-ui/src/style.css";
+@import 'frappe-ui/style.css';
 
 @layer components {
-	.prose-f {
-		@apply break-all
+  .prose-f {
+    @apply break-all
 			max-w-none
 			prose
 			prose-code:break-all
@@ -20,5 +20,5 @@
 			prose-th:border-outline-gray-2
 			prose-th:p-2
 			prose-th:relative;
-	}
+  }
 }
