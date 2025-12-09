@@ -341,6 +341,7 @@ import {
   Select,
   Switch,
   toast,
+  ConfirmDialog,
 } from 'frappe-ui'
 import {
   onMounted,
@@ -354,7 +355,6 @@ import {
 import AssignmentRulesSection from './AssignmentRulesSection.vue'
 import AssignmentSchedule from './AssignmentSchedule.vue'
 import AssigneeRules from './AssigneeRules.vue'
-import ConfirmDialog from 'frappe-ui/src/components/ConfirmDialog.vue'
 import { globalStore } from '@/stores/global'
 import { disableSettingModalOutsideClick } from '@/composables/settings'
 import { convertToConditions, validateConditions } from '@/utils'

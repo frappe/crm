@@ -2572,10 +2572,10 @@ fraction.js@^4.3.7:
   resolved "https://registry.yarnpkg.com/fraction.js/-/fraction.js-4.3.7.tgz#06ca0085157e42fda7f9e726e79fefc4068840f7"
   integrity sha512-ZsDfxO51wGAXREY55a7la9LScWpwv9RxIrYABrlvOFBlH/ShPnrtsXeuUIfXKKOVicNxQ+o8JTbJvjS4M89yew==
 
-frappe-ui@^0.1.201:
-  version "0.1.201"
-  resolved "https://registry.yarnpkg.com/frappe-ui/-/frappe-ui-0.1.201.tgz#12a18f08b97489facd4a170b4cbfc8adbbf1f109"
-  integrity sha512-kVz9K3W22ZuxGScSCct2kUFexZ1uZPM6FCc5BWAep3UcEzHRSbHzmLyEKCu0FKzftXtDHwNG8AoUDyHrDPkvCw==
+frappe-ui@0.1.235:
+  version "0.1.235"
+  resolved "https://registry.yarnpkg.com/frappe-ui/-/frappe-ui-0.1.235.tgz#10b46f07454229de4bc04deb8ab6fe93f58bfd32"
+  integrity sha512-z4lOMR6uvYTtva3+wuKNfmYCNcja7xUZ2Mjk2DGD/t0izDTG1IFsfhXMChnFqKllQjpw33k+APeeMih0/pc8hA==
   dependencies:
     "@floating-ui/vue" "^1.1.6"
     "@headlessui/vue" "^1.7.14"
@@ -2584,6 +2584,7 @@ frappe-ui@^0.1.201:
     "@tailwindcss/line-clamp" "^0.4.4"
     "@tailwindcss/typography" "^0.5.16"
     "@tiptap/core" "^2.26.1"
+    "@tiptap/extension-code" "^2.26.1"
     "@tiptap/extension-code-block" "^2.26.1"
     "@tiptap/extension-code-block-lowlight" "^2.26.1"
     "@tiptap/extension-color" "^2.26.1"
