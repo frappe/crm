@@ -80,7 +80,7 @@
             </template>
             <template #body="{ togglePopover }">
               <div
-                class="p-1 text-ink-gray-6 top-1 absolute w-full bg-white shadow-2xl rounded"
+                class="p-1 text-ink-gray-6 top-1 absolute bg-white shadow-2xl rounded w-[--reka-popper-anchor-width]"
               >
                 <div
                   v-for="option in priorityOptions"
