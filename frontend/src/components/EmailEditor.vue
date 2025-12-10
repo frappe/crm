@@ -191,12 +191,12 @@ import AttachmentItem from '@/components/AttachmentItem.vue'
 import MultiSelectEmailInput from '@/components/Controls/MultiSelectEmailInput.vue'
 import SingleSelectEmailInput from '@/components/Controls/SingleSelectEmailInput.vue'
 import EmailTemplateSelectorModal from '@/components/Modals/EmailTemplateSelectorModal.vue'
-import { TextEditorBubbleMenu, TextEditor, FileUploader, call } from 'frappe-ui'
+import { TextEditorBubbleMenu, TextEditor, FileUploader, call, createResource } from 'frappe-ui'
 import { capture } from '@/telemetry'
 import { validateEmail } from '@/utils'
 import Paragraph from '@tiptap/extension-paragraph'
 import { EditorContent } from '@tiptap/vue-3'
-import { ref, computed, nextTick } from 'vue'
+import { ref, computed, nextTick, watch } from 'vue'
 
 const props = defineProps({
   placeholder: {
@@ -263,6 +263,28 @@ const ccEmails = ref([])
 const bccEmails = ref([])
 const ccInput = ref(null)
 const bccInput = ref(null)
+
+// Fetch email accounts and set default to sales@zipcushions.com
+const emailAccounts = createResource({
+  url: 'crm.api.settings.get_outgoing_email_accounts',
+  auto: true,
+})
+
+// Watch for accounts and set default
+watch(
+  () => emailAccounts.data,
+  (accounts) => {
+    if (accounts && accounts.length > 0 && !fromEmailAccount.value) {
+      const salesAccount = accounts.find(
+        (acc) => acc.email_id === 'sales@zipcushions.com'
+      )
+      if (salesAccount) {
+        fromEmailAccount.value = salesAccount.value
+      }
+    }
+  },
+  { immediate: true }
+)
 
 const editor = computed(() => {
   return textEditor.value.editor
