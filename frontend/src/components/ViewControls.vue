@@ -200,6 +200,18 @@
               hideLabel: true,
               items: [
                 {
+                  label: __('Import'),
+                  icon: () => h(ImportIcon, { class: 'h-4 w-4' }),
+                  onClick: () =>
+                    router.push({
+                      name: 'NewDataImport',
+                      params: { doctype: doctype },
+                    }),
+                  condition: () =>
+                    !options.hideColumnsButton &&
+                    route.params.viewType !== 'kanban',
+                },
+                {
                   label: __('Export'),
                   icon: () => h(ExportIcon, { class: 'h-4 w-4' }),
                   onClick: () => (showExportDialog = true),
@@ -328,6 +340,7 @@ import { useDebounceFn } from '@vueuse/core'
 import { isMobileView } from '@/composables/settings'
 import Draggable from 'vuedraggable'
 import _ from 'lodash'
+import ImportIcon from '~icons/lucide/import'
 
 const props = defineProps({
   doctype: {
