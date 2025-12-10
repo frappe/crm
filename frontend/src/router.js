@@ -85,6 +85,28 @@ const routes = [
     component: () => import('@/pages/CallLogs.vue'),
   },
   {
+    path: '/calendar',
+    name: 'Calendar',
+    component: () => import('@/pages/Calendar.vue'),
+  },
+  {
+    path: '/data-import',
+    name: 'DataImportList',
+    component: () => import('@/pages/DataImport.vue'),
+  },
+  {
+    path: '/data-import/doctype/:doctype',
+    name: 'NewDataImport',
+    component: () => import('@/pages/DataImport.vue'),
+    props: true,
+  },
+  {
+    path: '/data-import/:importName',
+    name: 'DataImport',
+    component: () => import('@/pages/DataImport.vue'),
+    props: true,
+  },
+  {
     path: '/welcome',
     name: 'Welcome',
     component: () => import('@/pages/Welcome.vue'),
