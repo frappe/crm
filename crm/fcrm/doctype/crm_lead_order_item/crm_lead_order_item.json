@@ -1,12 +1,12 @@
 {
  "actions": [],
  "allow_rename": 1,
- "creation": "2025-12-02 00:00:00",
+ "creation": "2025-12-10 14:18:39.914474",
  "doctype": "DocType",
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "section_break_g08t",
+  "section_break_hixf",
   "sales_order",
   "order_date",
   "item_code",
@@ -24,7 +24,7 @@
  ],
  "fields": [
   {
-   "fieldname": "section_break_g08t",
+   "fieldname": "section_break_hixf",
    "fieldtype": "Section Break"
   },
   {
@@ -41,88 +41,77 @@
   {
    "fieldname": "item_code",
    "fieldtype": "Link",
-   "hidden": 1,
    "label": "Item Code",
    "options": "Item"
   },
   {
    "fieldname": "item_name",
    "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "Item Name",
-   "reqd": 1
+   "label": "Item Name"
   },
   {
    "fieldname": "qty",
    "fieldtype": "Float",
-   "in_list_view": 1,
    "label": "Quantity"
   },
   {
    "fieldname": "rate",
    "fieldtype": "Currency",
-   "hidden": 1,
    "label": "Rate"
   },
   {
    "fieldname": "amount",
    "fieldtype": "Currency",
-   "in_list_view": 1,
    "label": "Amount"
   },
   {
    "fieldname": "delivery_status",
    "fieldtype": "Data",
-   "in_list_view": 1,
    "label": "Delivery Status"
   },
   {
    "fieldname": "delivery_date",
-   "fieldtype": "Date",
+   "fieldtype": "Data",
    "label": "Delivery Date"
   },
   {
    "fieldname": "order_status",
    "fieldtype": "Data",
-   "in_list_view": 1,
    "label": "Order Status"
   },
   {
    "fieldname": "qa_status",
    "fieldtype": "Data",
-   "in_list_view": 1,
    "label": "QA Status"
+  },
+  {
+   "fieldname": "custom_ingredients_status",
+   "fieldtype": "Data",
+   "label": "Ingredient Status"
   },
   {
    "fieldname": "pro_status",
    "fieldtype": "Data",
-   "in_list_view": 1,
    "label": "Production Status"
   },
   {
    "fieldname": "ops_status",
    "fieldtype": "Data",
-   "in_list_view": 1,
    "label": "OPS Status"
-  },
-  {
-   "fieldname": "custom_ingredients_status",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "Ingredient Status"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-12-08 15:26:17.282401",
+ "modified": "2025-12-10 14:22:04.662409",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Lead Order Item",
  "owner": "Administrator",
  "permissions": [],
  "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []
