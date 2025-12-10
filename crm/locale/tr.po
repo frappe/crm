@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-11-23 09:36+0000\n"
-"PO-Revision-Date: 2025-11-28 15:49\n"
+"PO-Revision-Date: 2025-12-09 17:13\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Turkish\n"
 "MIME-Version: 1.0\n"
@@ -4204,7 +4204,7 @@ msgstr ""
 #: frontend/src/components/Notifications.vue:77
 #: frontend/src/pages/MobileNotification.vue:61
 msgid "No new notifications"
-msgstr "Yeni bildirim yok"
+msgstr ""
 
 #: frontend/src/pages/Lead.vue:129
 msgid "No phone number set"
