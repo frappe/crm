@@ -268,22 +268,64 @@ const bccInput = ref(null)
 const emailAccounts = createResource({
   url: 'crm.api.settings.get_outgoing_email_accounts',
   auto: true,
+  cache: 'user-outgoing-email-accounts',
 })
 
-// Watch for accounts and set default
+// Watch for email accounts to load and set default to sales@zipcushions.com
+// Use multiple delayed attempts to override SingleSelectEmailInput's auto-select
 watch(
   () => emailAccounts.data,
   (accounts) => {
-    if (accounts && accounts.length > 0 && !fromEmailAccount.value) {
+    if (accounts && accounts.length > 0) {
       const salesAccount = accounts.find(
-        (acc) => acc.email_id === 'sales@zipcushions.com'
+        (acc) => acc.email_id?.toLowerCase() === 'sales@zipcushions.com'
       )
       if (salesAccount) {
-        fromEmailAccount.value = salesAccount.value
+        // Use multiple delayed attempts to ensure we override SingleSelectEmailInput's auto-select
+        // SingleSelectEmailInput auto-selects at ~0ms, so we need to run after that
+        const setDefault = () => {
+          // Only set if fromEmailAccount is null or matches first account (auto-selected)
+          const firstAccount = accounts[0]
+          if (
+            !fromEmailAccount.value ||
+            fromEmailAccount.value === firstAccount?.value
+          ) {
+            fromEmailAccount.value = salesAccount.value
+          }
+        }
+        // Try immediately (might be too early)
+        setDefault()
+        // Try after SingleSelectEmailInput's watch runs
+        setTimeout(setDefault, 50)
+        setTimeout(setDefault, 150)
+        setTimeout(setDefault, 300)
+        setTimeout(setDefault, 500)
       }
     }
   },
   { immediate: true }
+)
+
+// Also watch fromEmailAccount to catch when SingleSelectEmailInput changes it
+watch(
+  () => fromEmailAccount.value,
+  (currentValue) => {
+    if (emailAccounts.data && emailAccounts.data.length > 0 && currentValue) {
+      const salesAccount = emailAccounts.data.find(
+        (acc) => acc.email_id?.toLowerCase() === 'sales@zipcushions.com'
+      )
+      if (salesAccount && currentValue !== salesAccount.value) {
+        // Check if it's the first account (auto-selected by SingleSelectEmailInput)
+        const firstAccount = emailAccounts.data[0]
+        if (currentValue === firstAccount?.value) {
+          // It was auto-selected, override with sales account after a short delay
+          setTimeout(() => {
+            fromEmailAccount.value = salesAccount.value
+          }, 100)
+        }
+      }
+    }
+  }
 )
 
 const editor = computed(() => {

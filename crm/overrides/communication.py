@@ -41,6 +41,23 @@ class CustomCommunication(Communication):
 		# PRIORITY 3: Fall back to parent class method (default behavior)
 		return super().mail_sender()
 
+	def mail_sender_fullname(self):
+		"""Override to return 'ZIPCushions Support' for sales@zipcushions.com and support@zipcushions.com"""
+		# Check if email_account is set (FROM field was used)
+		if self.email_account:
+			try:
+				email_account = EmailAccount.find(self.email_account)
+				if email_account and email_account.email_id:
+					email_id_lower = email_account.email_id.lower()
+					# Check if it's sales@zipcushions.com or support@zipcushions.com
+					if email_id_lower in ['sales@zipcushions.com', 'support@zipcushions.com']:
+						return "ZIPCushions Support"
+			except Exception:
+				pass
+		
+		# Fall back to parent class method (default behavior)
+		return super().mail_sender_fullname()
+
 	def get_mail_sender_with_displayname(self):
 		"""Override to use email_account (FROM field) first, then alias, then default"""
 		# PRIORITY 1: If email_account is set (FROM field was used), use that
