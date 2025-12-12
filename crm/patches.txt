@@ -17,3 +17,4 @@ crm.patches.v1_0.update_deal_status_probabilities
 crm.patches.v1_0.update_deal_status_type
 crm.patches.v1_52.add_order_history_fields
 crm.patches.v1_53.update_crm_statuses
+crm.patches.v1_54.add_alternate_email_mobile_fields

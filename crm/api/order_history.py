@@ -21,13 +21,30 @@ def fetch_lead_order_history(lead_name, customer_name):
 				'message': 'Lead name is required'
 			}
 
-		# Find customer(s) matching this lead name (case-insensitive)
-		customers = frappe.db.sql("""
-			SELECT name, customer_name
-			FROM `tabCustomer`
-			WHERE LOWER(customer_name) LIKE LOWER(%s)
-			OR lead_name = %s
-		""", (f"%{customer_name}%", lead_name), as_dict=True)
+		# Find customer(s) matching this lead name
+		# Strip whitespace from customer_name
+		customer_name = customer_name.strip() if customer_name else ""
+		
+		# If customer_name has spaces (full name), match exact full name
+		# If customer_name has no spaces (just first name), match only customers with exactly that first name (no last name)
+		if ' ' in customer_name:
+			# Full name: exact match
+			customers = frappe.db.sql("""
+				SELECT name, customer_name
+				FROM `tabCustomer`
+				WHERE LOWER(TRIM(customer_name)) = LOWER(%s)
+				OR lead_name = %s
+			""", (customer_name, lead_name), as_dict=True)
+		else:
+			# Just first name: match only customers whose full name is exactly that first name (no spaces in customer_name)
+			# This ensures "Nancy" only matches "Nancy", not "Nancy Gasper Smith"
+			# Remove OR lead_name condition to prevent over-matching
+			customers = frappe.db.sql("""
+				SELECT name, customer_name
+				FROM `tabCustomer`
+				WHERE LOWER(TRIM(customer_name)) = LOWER(%s) 
+				AND customer_name NOT LIKE '%% %%'
+			""", customer_name, as_dict=True)
 
 		if not customers:
 			return {
@@ -63,7 +80,59 @@ def fetch_lead_order_history(lead_name, customer_name):
 		# Process each Sales Order
 		total_items_added = 0
 
+		#test print all_sales_orders
+
 		for so in all_sales_orders:
+			# Calculate aggregate production status for this Sales Order (across ALL Work Orders)
+			# Work Orders can be linked directly OR through Inter Company Sales Order
+			# Try both paths to get all Work Orders
+			all_work_orders = []
+			
+			# Path 1: Direct link (Work Order.sales_order = Sales Order)
+			direct_work_orders = frappe.db.sql("""
+				SELECT name, custom_production_status
+				FROM `tabWork Order`
+				WHERE sales_order = %s
+				AND docstatus != 2
+			""", so.name, as_dict=True)
+			all_work_orders.extend(direct_work_orders)
+			
+			# Path 2: Through Purchase Order → Inter Company SO
+			# Get Purchase Orders linked to this Sales Order
+			purchase_orders = frappe.db.sql("""
+				SELECT DISTINCT poi.parent
+				FROM `tabPurchase Order Item` poi
+				WHERE poi.sales_order = %s
+			""", so.name, as_dict=True)
+			
+			for po_result in purchase_orders:
+				try:
+					po = frappe.get_doc("Purchase Order", po_result.parent)
+					inter_company_so = po.get("inter_company_order_reference")
+					
+					if inter_company_so:
+						# Get Work Orders linked to Inter Company SO
+						inter_company_work_orders = frappe.db.sql("""
+							SELECT name, custom_production_status
+							FROM `tabWork Order`
+							WHERE sales_order = %s
+							AND docstatus != 2
+						""", inter_company_so, as_dict=True)
+						all_work_orders.extend(inter_company_work_orders)
+				except Exception:
+					pass
+			
+			# Remove duplicates (in case a Work Order appears in both paths)
+			seen = set()
+			unique_work_orders = []
+			for wo in all_work_orders:
+				if wo['name'] not in seen:
+					seen.add(wo['name'])
+					unique_work_orders.append(wo)
+			
+			# Calculate aggregate production status once per Sales Order
+			aggregate_production_status = _calculate_aggregate_production_status(unique_work_orders)
+			
 			# Get items for this Sales Order (include name field for Sales Order Item)
 			so_items = frappe.db.sql("""
 				SELECT name, item_code, item_name, qty, rate
@@ -91,9 +160,10 @@ def fetch_lead_order_history(lead_name, customer_name):
 					# UPDATE existing item with current statuses
 					existing_item = existing_items[0]
 					existing_item.ops_status = ops_status
-					existing_item.mat_status = mat_status
+					existing_item.custom_ingredients_status = mat_status
 					existing_item.pro_status = pro_status
 					existing_item.qa_status = qa_status
+					existing_item.aggregate_production_status = aggregate_production_status
 					existing_item.order_status = so.status
 					existing_item.delivery_status = so.delivery_status or "Not Delivered"
 					existing_item.delivery_date = so.delivery_date
@@ -113,9 +183,10 @@ def fetch_lead_order_history(lead_name, customer_name):
 						"delivery_date": so.delivery_date,
 						"order_status": so.status,
 						"ops_status": ops_status,
-						"mat_status": mat_status,
+						"custom_ingredients_status": mat_status,
 						"pro_status": pro_status,
-						"qa_status": qa_status
+						"qa_status": qa_status,
+						"aggregate_production_status": aggregate_production_status
 					})
 
 					total_items_added += 1
@@ -155,12 +226,27 @@ def fetch_deal_order_history(deal_name, customer_name):
 				'message': 'Deal name is required'
 			}
 
-		# Find customer(s) matching this customer name (case-insensitive)
-		customers = frappe.db.sql("""
-			SELECT name, customer_name
-			FROM `tabCustomer`
-			WHERE LOWER(customer_name) LIKE LOWER(%s)
-		""", f"%{customer_name}%", as_dict=True)
+		# Find customer(s) matching this customer name
+		# Strip whitespace from customer_name
+		customer_name = customer_name.strip() if customer_name else ""
+		
+		# If customer_name has spaces (full name), match exact full name
+		# If customer_name has no spaces (just first name), match only customers with exactly that first name (no last name)
+		if ' ' in customer_name:
+			# Full name: exact match
+			customers = frappe.db.sql("""
+				SELECT name, customer_name
+				FROM `tabCustomer`
+				WHERE LOWER(TRIM(customer_name)) = LOWER(%s)
+			""", customer_name, as_dict=True)
+		else:
+			# Just first name: match only customers whose full name is exactly that first name (no spaces in customer_name)
+			# This ensures "Nancy" only matches "Nancy", not "Nancy Gasper Smith"
+			customers = frappe.db.sql("""
+				SELECT name, customer_name
+				FROM `tabCustomer`
+				WHERE LOWER(TRIM(customer_name)) = LOWER(%s) AND customer_name NOT LIKE '%% %%'
+			""", customer_name, as_dict=True)
 
 		if not customers:
 			return {
@@ -197,6 +283,56 @@ def fetch_deal_order_history(deal_name, customer_name):
 		total_items_added = 0
 
 		for so in all_sales_orders:
+			# Calculate aggregate production status for this Sales Order (across ALL Work Orders)
+			# Work Orders can be linked directly OR through Inter Company Sales Order
+			# Try both paths to get all Work Orders
+			all_work_orders = []
+			
+			# Path 1: Direct link (Work Order.sales_order = Sales Order)
+			direct_work_orders = frappe.db.sql("""
+				SELECT name, custom_production_status
+				FROM `tabWork Order`
+				WHERE sales_order = %s
+				AND docstatus != 2
+			""", so.name, as_dict=True)
+			all_work_orders.extend(direct_work_orders)
+			
+			# Path 2: Through Purchase Order → Inter Company SO
+			# Get Purchase Orders linked to this Sales Order
+			purchase_orders = frappe.db.sql("""
+				SELECT DISTINCT poi.parent
+				FROM `tabPurchase Order Item` poi
+				WHERE poi.sales_order = %s
+			""", so.name, as_dict=True)
+			
+			for po_result in purchase_orders:
+				try:
+					po = frappe.get_doc("Purchase Order", po_result.parent)
+					inter_company_so = po.get("inter_company_order_reference")
+					
+					if inter_company_so:
+						# Get Work Orders linked to Inter Company SO
+						inter_company_work_orders = frappe.db.sql("""
+							SELECT name, custom_production_status
+							FROM `tabWork Order`
+							WHERE sales_order = %s
+							AND docstatus != 2
+						""", inter_company_so, as_dict=True)
+						all_work_orders.extend(inter_company_work_orders)
+				except Exception:
+					pass
+			
+			# Remove duplicates (in case a Work Order appears in both paths)
+			seen = set()
+			unique_work_orders = []
+			for wo in all_work_orders:
+				if wo['name'] not in seen:
+					seen.add(wo['name'])
+					unique_work_orders.append(wo)
+			
+			# Calculate aggregate production status once per Sales Order
+			aggregate_production_status = _calculate_aggregate_production_status(unique_work_orders)
+			
 			# Get items for this Sales Order
 			so_items = frappe.db.sql("""
 				SELECT name, item_code, item_name, qty, rate
@@ -224,9 +360,10 @@ def fetch_deal_order_history(deal_name, customer_name):
 					# UPDATE existing item
 					existing_item = existing_items[0]
 					existing_item.ops_status = ops_status
-					existing_item.mat_status = mat_status
+					existing_item.custom_ingredients_status = mat_status
 					existing_item.pro_status = pro_status
 					existing_item.qa_status = qa_status
+					existing_item.aggregate_production_status = aggregate_production_status
 					existing_item.order_status = so.status
 					existing_item.delivery_status = so.delivery_status or "Not Delivered"
 					existing_item.delivery_date = so.delivery_date
@@ -245,9 +382,10 @@ def fetch_deal_order_history(deal_name, customer_name):
 						"delivery_date": so.delivery_date,
 						"order_status": so.status,
 						"ops_status": ops_status,
-						"mat_status": mat_status,
+						"custom_ingredients_status": mat_status,
 						"pro_status": pro_status,
-						"qa_status": qa_status
+						"qa_status": qa_status,
+						"aggregate_production_status": aggregate_production_status
 					})
 
 					total_items_added += 1
@@ -268,6 +406,99 @@ def fetch_deal_order_history(deal_name, customer_name):
 			'success': False,
 			'message': f'Error: {str(e)}'
 		}
+
+
+def _calculate_aggregate_production_status(work_orders):
+	"""
+	Calculate aggregate production status from multiple Work Orders
+	Uses priority-based logic matching the Sales Dashboard client script
+	
+	Priority order:
+	1. CANCELLED
+	2. BLOCKED FACTORY / BLOCKED_FACTORY
+	3. BLOCKED OPS / BLOCKED_OPS
+	4. QA REWORK
+	
+	Then progression logic:
+	- If all DONE/COMPLETED → DONE
+	- If has NEW → NEW (farthest from completion)
+	- If has WIP/IN PROGRESS → WIP
+	- Default: first status
+	
+	Args:
+		work_orders: List of Work Order documents or dicts
+		
+	Returns:
+		str: Aggregate production status
+	"""
+	if not work_orders or len(work_orders) == 0:
+		return 'N/A'
+	
+	# Priority mapping (lower number = higher priority)
+	PRODUCTION_STATUS_PRIORITY = {
+		'CANCELLED': 1,
+		'BLOCKED FACTORY': 2,
+		'BLOCKED_FACTORY': 2,
+		'BLOCKED OPS': 3,
+		'BLOCKED_OPS': 3,
+		'QA REWORK': 4
+	}
+	
+	# Extract production statuses from work orders
+	production_statuses = []
+	for wo in work_orders:
+		# Handle both dict and document objects
+		if isinstance(wo, dict):
+			status = wo.get('custom_production_status') or wo.get('production_status')
+		else:
+			wo_dict = wo.as_dict() if hasattr(wo, 'as_dict') else {}
+			status = wo_dict.get('custom_production_status') or wo_dict.get('production_status')
+		
+		if status and str(status).strip():
+			production_statuses.append(str(status).strip())
+	
+	if not production_statuses:
+		return 'N/A'
+	
+	# STEP 1: Check for PRIORITY statuses (CANCELLED, BLOCKED FACTORY, BLOCKED OPS, QA REWORK)
+	# Return the one with highest priority (lowest number)
+	highest_priority_status = None
+	highest_priority_value = 999
+	
+	for status in production_statuses:
+		status_upper = status.upper().strip()
+		priority_value = PRODUCTION_STATUS_PRIORITY.get(status_upper)
+		
+		if priority_value and priority_value < highest_priority_value:
+			highest_priority_value = priority_value
+			highest_priority_status = status  # Return original case
+	
+	if highest_priority_status:
+		return highest_priority_status
+	
+	# STEP 2: Check progression statuses (NEW -> WIP -> DONE)
+	# Return the FARTHEST from completion
+	
+	upper_statuses = [s.upper().strip() for s in production_statuses]
+	
+	# Check if all are DONE/COMPLETED
+	all_done = all(s == 'DONE' or s == 'COMPLETED' for s in upper_statuses)
+	if all_done:
+		return 'DONE'
+	
+	# Check for NEW (farthest from completion)
+	has_new = next((s for s in production_statuses if s.upper().strip() == 'NEW'), None)
+	if has_new:
+		return has_new
+	
+	# Check for WIP/IN PROGRESS
+	has_wip = next((s for s in production_statuses 
+					if s.upper().strip() in ['WIP', 'IN PROGRESS']), None)
+	if has_wip:
+		return has_wip
+	
+	# Default: return the first status
+	return production_statuses[0]
 
 
 def _get_work_order_statuses(sales_order_name, item_code, sales_order_item_name=None):

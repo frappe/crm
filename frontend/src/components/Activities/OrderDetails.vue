@@ -67,6 +67,9 @@
             <th class="px-4 py-3 text-left text-sm font-medium text-ink-gray-7">
               {{ __('Production Status') }}
             </th>
+            <th class="px-4 py-3 text-left text-sm font-medium text-ink-gray-7">
+              {{ __('Aggregate Production Status') }}
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -97,28 +100,34 @@
               {{ formatCurrency(order.amount) }}
             </td>
             <td class="px-4 py-3 text-sm">
-              <Badge
-                :label="order.qa_status || __('N/A')"
-                :theme="getStatusTheme(order.qa_status)"
-              />
+              <span v-if="order.qa_status" class="status-badge-crm" :class="'status-badge-' + getStatusColor(order.qa_status)">
+                {{ getStatusIcon(order.qa_status) }} {{ order.qa_status }}
+              </span>
+              <span v-else class="text-gray-400">-</span>
             </td>
             <td class="px-4 py-3 text-sm">
-              <Badge
-                :label="order.ops_status || __('N/A')"
-                :theme="getStatusTheme(order.ops_status)"
-              />
+              <span v-if="order.ops_status" class="status-badge-crm" :class="'status-badge-' + getStatusColor(order.ops_status)">
+                {{ getStatusIcon(order.ops_status) }} {{ order.ops_status }}
+              </span>
+              <span v-else class="text-gray-400">-</span>
             </td>
             <td class="px-4 py-3 text-sm">
-              <Badge
-                :label="order.mat_status || __('N/A')"
-                :theme="getStatusTheme(order.mat_status)"
-              />
+              <span v-if="order.custom_ingredients_status" class="status-badge-crm" :class="'status-badge-' + getStatusColor(order.custom_ingredients_status)">
+                {{ getStatusIcon(order.custom_ingredients_status) }} {{ order.custom_ingredients_status }}
+              </span>
+              <span v-else class="text-gray-400">-</span>
             </td>
             <td class="px-4 py-3 text-sm">
-              <Badge
-                :label="order.pro_status || __('N/A')"
-                :theme="getStatusTheme(order.pro_status)"
-              />
+              <span v-if="order.pro_status" class="status-badge-crm" :class="'status-badge-' + getStatusColor(order.pro_status)">
+                {{ getStatusIcon(order.pro_status) }} {{ order.pro_status }}
+              </span>
+              <span v-else class="text-gray-400">-</span>
+            </td>
+            <td class="px-4 py-3 text-sm">
+              <span v-if="order.aggregate_production_status" class="status-badge-crm" :class="'status-badge-' + getStatusColor(order.aggregate_production_status)">
+                {{ getStatusIcon(order.aggregate_production_status) }} {{ order.aggregate_production_status }}
+              </span>
+              <span v-else class="text-gray-400">-</span>
             </td>
           </tr>
         </tbody>
@@ -128,7 +137,7 @@
 </template>
 
 <script setup>
-import { createResource, call, Badge, toast } from 'frappe-ui'
+import { createResource, call, toast } from 'frappe-ui'
 import { ref, computed, onMounted, watch } from 'vue'
 import LoadingIndicator from '@/components/Icons/LoadingIndicator.vue'
 import DocumentIcon from '@/components/Icons/DocumentIcon.vue'
@@ -310,6 +319,53 @@ onMounted(() => {
     fetching: fetching.value,
   })
 
+  // Add status badge styles - EXACT match to Helpdesk script
+  if (!document.getElementById('crm-status-badge-styles')) {
+    const styles = document.createElement('style')
+    styles.id = 'crm-status-badge-styles'
+    styles.textContent = `
+      .status-badge-crm {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+        white-space: nowrap;
+        border: 1px solid;
+      }
+      .status-badge-green {
+        background: #ecfdf5;
+        color: #059669;
+        border-color: #a7f3d0;
+      }
+      .status-badge-blue {
+        background: #eff6ff;
+        color: #2563eb;
+        border-color: #bfdbfe;
+      }
+      .status-badge-yellow {
+        background: #fffbeb;
+        color: #d97706;
+        border-color: #fde68a;
+      }
+      .status-badge-red {
+        background: #fef2f2;
+        color: #dc2626;
+        border-color: #fecaca;
+      }
+      .status-badge-gray {
+        background: #f9fafb;
+        color: #6b7280;
+        border-color: #e5e7eb;
+      }
+    `
+    document.head.appendChild(styles)
+  }
+
   if (props.docname && !hasFetched.value && !fetching.value) {
     // Small delay to ensure orderHistory resource has loaded
     setTimeout(() => {
@@ -348,24 +404,67 @@ function getDeliveryStatusTheme(status) {
   return 'gray'
 }
 
-function getStatusTheme(status) {
+// Status badge helper functions - EXACT match to Helpdesk script
+function getStatusColor(status) {
   if (!status) return 'gray'
-  const upperStatus = status.toUpperCase()
-  if (
-    ['APPROVED', 'READY', 'DONE', 'PASS'].includes(upperStatus)
-  ) {
+  const statusUpper = String(status).toUpperCase().trim()
+  
+  // Green - Complete/Approved
+  if (['APPROVED', 'IN_STOCK', 'DONE', 'PASS'].includes(statusUpper)) {
     return 'green'
   }
-  if (['WIP', 'IN PROGRESS'].includes(upperStatus)) {
+  
+  // Blue - Active/In Progress
+  if (['WIP', 'IN PROGRESS', 'CONFIRMATION PENDING'].includes(statusUpper)) {
     return 'blue'
   }
-  if (['NEW', 'AWAITING', 'NO RECIPE'].includes(upperStatus)) {
-    return 'orange'
+  
+  // Yellow - Warning/Review/Pending
+  if (['NEW', 'AWAITING', 'REVIEW_REQUIRED', 'IN_STOCK_TENTATIVE', 
+       'OPS REVIEW', 'EXPECTED', 'QA REWORK', 'ALTERNATE FABRIC', 
+       'BLOCK REVIEW', 'NO RECIPE', 'NOT STARTED', 'NO_RECIPE'].includes(statusUpper)) {
+    return 'yellow'
   }
-  if (['NOT_AVAILABLE', 'BLOCKED', 'FAIL'].includes(upperStatus)) {
+  
+  // Red - Error/Blocked/Not Available
+  if (['NOT_AVAILABLE', 'NOT AVAILABLE', 'BLOCKED_FACTORY', 'BLOCKED_OPS', 
+       'FAIL', 'CANCEL REQUEST', 'POST APPROVAL HOLD OR CHANGE REQUEST', 
+       'PRE_APPROVAL_CUSTOMER HOLD'].includes(statusUpper)) {
     return 'red'
   }
+  
+  // Gray - Default
   return 'gray'
+}
+
+function getStatusIcon(status) {
+  if (!status) return '📋'
+  const statusUpper = String(status).toUpperCase().trim()
+  
+  const iconMap = {
+    'APPROVED': '✅',
+    'IN_STOCK': '✅',
+    'DONE': '✅',
+    'PASS': '✅',
+    'WIP': '⚙️',
+    'IN PROGRESS': '🔍',
+    'NEW': '🆕',
+    'AWAITING': '⏳',
+    'REVIEW_REQUIRED': '⚠️',
+    'OPS REVIEW': '👀',
+    'NOT_AVAILABLE': '🔴',
+    'NOT AVAILABLE': '🔴',
+    'BLOCKED_FACTORY': '🚧',
+    'BLOCKED_OPS': '⚠️',
+    'FAIL': '❌',
+    'EXPECTED': '📦',
+    'NO RECIPE': '📝',
+    'NO_RECIPE': '📝',
+    'NOT STARTED': '🔵',
+    'QA REWORK': '🔄'
+  }
+  
+  return iconMap[statusUpper] || '📋'
 }
 
 

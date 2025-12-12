@@ -23,7 +23,9 @@
   "first_name",
   "last_name",
   "email",
+  "alternate_email",
   "mobile_no",
+  "alternate_mobile_no",
   "organization_tab",
   "section_break_uixv",
   "naming_series",
@@ -111,6 +113,13 @@
    "search_index": 1
   },
   {
+   "fieldname": "alternate_email",
+   "fieldtype": "Data",
+   "insert_after": "email",
+   "label": "Alternate Email",
+   "options": "Email"
+  },
+  {
    "fieldname": "website",
    "fieldtype": "Data",
    "label": "Website"
@@ -119,6 +128,13 @@
    "fieldname": "mobile_no",
    "fieldtype": "Data",
    "label": "Mobile No",
+   "options": "Phone"
+  },
+  {
+   "fieldname": "alternate_mobile_no",
+   "fieldtype": "Data",
+   "insert_after": "mobile_no",
+   "label": "Alternate Mobile No",
    "options": "Phone"
   },
   {
@@ -331,7 +347,7 @@
  "image_field": "image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-05-14 19:51:06.184569",
+ "modified": "2025-12-11 15:27:02.950553",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Lead",
