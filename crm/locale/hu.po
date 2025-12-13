@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-11-23 09:36+0000\n"
-"PO-Revision-Date: 2025-12-12 18:16\n"
+"PO-Revision-Date: 2025-12-13 18:38\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Hungarian\n"
 "MIME-Version: 1.0\n"
@@ -3869,7 +3869,7 @@ msgstr ""
 #. Option for the 'Type' (Select) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
 msgid "Mention"
-msgstr ""
+msgstr "Említés"
 
 #. Label of the message (HTML Editor) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
@@ -5658,7 +5658,7 @@ msgstr ""
 #. Label of the subdomain (Data) field in DocType 'CRM Exotel Settings'
 #: crm/fcrm/doctype/crm_exotel_settings/crm_exotel_settings.json
 msgid "Subdomain"
-msgstr ""
+msgstr "Aldomén"
 
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:68
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:68
@@ -6253,7 +6253,7 @@ msgstr ""
 #. Label of the user_name (Data) field in DocType 'CRM Telephony Agent'
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
 msgid "User Name"
-msgstr ""
+msgstr "Felhasználónév"
 
 #: frontend/src/components/Settings/Users.vue:296
 msgid "User {0} has been removed"
@@ -6714,7 +6714,7 @@ msgstr "nyilvános"
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
 msgid "purple"
-msgstr ""
+msgstr "lila"
 
 #: crm/api/whatsapp.py:39
 msgid "received a whatsapp message in {0}"
@@ -6725,7 +6725,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
 msgid "red"
-msgstr ""
+msgstr "piros"
 
 #. Option for the 'Color' (Select) field in DocType 'CRM Deal Status'
 #. Option for the 'Color' (Select) field in DocType 'CRM Lead Status'
