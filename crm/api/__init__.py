@@ -10,9 +10,11 @@ from frappe.utils.telemetry import POSTHOG_HOST_FIELD, POSTHOG_PROJECT_FIELD
 @frappe.whitelist(allow_guest=True)
 def get_translations():
 	if frappe.session.user != "Guest":
-		language = frappe.db.get_value("User", frappe.session.user, "language") or "en"
+		language = frappe.db.get_value("User", frappe.session.user, "language")
 	else:
 		language = frappe.db.get_single_value("System Settings", "language")
+	# fallback to system language if user language is not set
+	language = language or frappe.db.get_single_value("System Settings", "language")
 
 	return get_all_translations(language)
 
