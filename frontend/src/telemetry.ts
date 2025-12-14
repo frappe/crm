@@ -24,6 +24,7 @@ let posthog: typeof window.posthog = window.posthog
 // Posthog Settings
 let posthogSettings = createResource({
   url: 'crm.api.get_posthog_settings',
+  method: 'GET',
   cache: 'posthog_settings',
   onSuccess: (ps: PosthogSettings) => initPosthog(ps),
 })
