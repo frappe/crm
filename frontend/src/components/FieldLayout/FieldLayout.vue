@@ -6,9 +6,13 @@
       'border-outline-gray-modals': hasTabs,
     }"
   >
-    <Tabs as="div" v-model="tabIndex" :tabs="tabs">
-      <TabList :class="!hasTabs ? 'hidden' : 'border-outline-gray-modals'" />
-      <TabPanel v-slot="{ tab }">
+    <Tabs
+      as="div"
+      v-model="tabIndex"
+      :tabs="tabs"
+      :class="!hasTabs ? `[&_[role='tablist']]:hidden` : ''"
+    >
+      <template #tab-panel="{ tab }">
         <div
           class="sections overflow-hidden"
           :class="{ 'my-4 sm:my-5': hasTabs }"
@@ -17,14 +21,14 @@
             <Section :section="section" :data-name="section.name" />
           </template>
         </div>
-      </TabPanel>
+      </template>
     </Tabs>
   </div>
 </template>
 
 <script setup>
 import Section from '@/components/FieldLayout/Section.vue'
-import { Tabs, TabList, TabPanel } from 'frappe-ui'
+import { Tabs } from 'frappe-ui'
 import { ref, computed, provide } from 'vue'
 
 const props = defineProps({
