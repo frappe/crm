@@ -160,7 +160,7 @@ def copy_communication(comm_name, target_doctype, target_name):
 		return new_comm.name
 	except Exception as e:
 		error_msg = f"Error copying communication {comm_name}: {str(e)}\n{frappe.get_traceback()}"
-		frappe.log_error(error_msg, "Communication Copy Error")
+		frappe.log_error(error_msg, "Comm Copy Error")
 		raise
 
 
@@ -170,16 +170,40 @@ def get_communications_for_transfer(doctype, name):
 	if not frappe.has_permission(doctype, "read", name):
 		frappe.throw(_("Not permitted"), frappe.PermissionError)
 	
-	communications = frappe.get_all(
+	# Get communication names first
+	comm_names = frappe.get_all(
 		"Communication",
 		filters={
 			"reference_doctype": doctype,
 			"reference_name": name,
 			"communication_medium": "Email",
 		},
-		fields=["name", "subject", "sender", "recipients", "creation", "content"],
+		fields=["name"],
 		order_by="creation asc",
 	)
+	
+	# Load full Communication documents to ensure all fields (especially content) are available
+	communications = []
+	for comm_name in comm_names:
+		try:
+			comm = frappe.get_doc("Communication", comm_name.name)
+			communications.append({
+				"name": comm.name,
+				"subject": comm.subject,
+				"sender": comm.sender,
+				"recipients": comm.recipients,
+				"creation": comm.creation,
+				"content": comm.content,
+				"text_content": comm.text_content,
+			})
+			
+			frappe.log_error(
+				f"Loaded comm {comm.name}: has_content={bool(comm.content)}, has_text={bool(comm.text_content)}",
+				"CRM: Comm Load"
+			)
+		except Exception as e:
+			frappe.log_error(f"Error loading communication {comm_name.name}: {str(e)}", "CRM: Comm Load Error")
+			continue
 	
 	return communications
 
@@ -377,7 +401,7 @@ def transfer_to_helpdesk(lead_name, communication_ids=None, delete_source=True):
 						)
 				except Exception as e:
 					error_details = f"Error copying communication {comm['name']} to HD Ticket {ticket.name}: {str(e)}\n{frappe.get_traceback()}"
-					frappe.log_error(error_details, "Communication Copy Error")
+					frappe.log_error(error_details, "Comm Copy Error")
 					# Continue with other emails even if one fails
 			
 			# Log summary of all created communications
