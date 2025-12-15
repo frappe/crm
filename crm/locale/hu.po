@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-11-23 09:36+0000\n"
-"PO-Revision-Date: 2025-12-09 17:13\n"
+"PO-Revision-Date: 2025-12-13 18:38\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Hungarian\n"
 "MIME-Version: 1.0\n"
@@ -2633,7 +2633,7 @@ msgstr ""
 #. Source'
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
 msgid "Facebook"
-msgstr ""
+msgstr "Facebook"
 
 #. Label of the facebook_form_id (Data) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
@@ -3450,7 +3450,7 @@ msgstr ""
 
 #: frontend/src/components/Filter.vue:607
 msgid "Last Month"
-msgstr ""
+msgstr "Múlt Hónap"
 
 #. Label of the last_name (Data) field in DocType 'CRM Deal'
 #. Label of the last_name (Data) field in DocType 'CRM Lead'
@@ -3461,7 +3461,7 @@ msgstr "Keresztnév"
 
 #: frontend/src/components/Filter.vue:611
 msgid "Last Quarter"
-msgstr ""
+msgstr "Utolsó Negyedév"
 
 #. Label of the last_responded_on (Datetime) field in DocType 'CRM Deal'
 #. Label of the last_responded_on (Datetime) field in DocType 'CRM Lead'
@@ -3491,11 +3491,11 @@ msgstr ""
 
 #: frontend/src/components/Filter.vue:603
 msgid "Last Week"
-msgstr ""
+msgstr "Múlt Hét"
 
 #: frontend/src/components/Filter.vue:619
 msgid "Last Year"
-msgstr ""
+msgstr "Tavaly"
 
 #: frontend/src/pages/Contact.vue:536 frontend/src/pages/MobileContact.vue:536
 #: frontend/src/pages/MobileOrganization.vue:489
@@ -3653,7 +3653,7 @@ msgstr "Összekapcsolások"
 #: frontend/src/components/ViewControls.vue:374
 #: frontend/src/components/ViewControls.vue:589 frontend/src/utils/view.js:12
 msgid "List"
-msgstr ""
+msgstr "Lista"
 
 #: frontend/src/components/Activities/CallArea.vue:75
 msgid "Listen"
@@ -3683,7 +3683,7 @@ msgstr "Betöltés..."
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Log"
-msgstr ""
+msgstr "Napló"
 
 #: frontend/src/components/Settings/LeadSyncing/FailureLogs.vue:14
 msgid "Log ID"
@@ -3869,7 +3869,7 @@ msgstr ""
 #. Option for the 'Type' (Select) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
 msgid "Mention"
-msgstr ""
+msgstr "Említés"
 
 #. Label of the message (HTML Editor) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
@@ -3879,7 +3879,7 @@ msgstr "Üzenet"
 #. Label of the middle_name (Data) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Middle Name"
-msgstr ""
+msgstr "Középső Név"
 
 #: frontend/src/components/Telephony/ExotelCallUI.vue:127
 msgid "Minimize"
@@ -4557,7 +4557,7 @@ msgstr "oldal"
 #. Label of the page_name (Data) field in DocType 'Facebook Page'
 #: crm/lead_syncing/doctype/facebook_page/facebook_page.json
 msgid "Page Name"
-msgstr ""
+msgstr "Oldal Neve"
 
 #. Label of the parent_crm_territory (Link) field in DocType 'CRM Territory'
 #: crm/fcrm/doctype/crm_territory/crm_territory.json
@@ -4715,11 +4715,11 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
 msgid "Position"
-msgstr ""
+msgstr "Pozíció"
 
 #: frontend/src/pages/Deal.vue:206 frontend/src/pages/MobileDeal.vue:149
 msgid "Primary"
-msgstr ""
+msgstr "Elsődleges"
 
 #. Label of the email (Data) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
@@ -5301,7 +5301,7 @@ msgstr ""
 #. Label of the script (Code) field in DocType 'CRM Form Script'
 #: crm/fcrm/doctype/crm_form_script/crm_form_script.json
 msgid "Script"
-msgstr ""
+msgstr "Szkript"
 
 #: frontend/src/components/Settings/AssignmentRules/AssigneeSearch.vue:22
 msgid "Search"
@@ -5317,7 +5317,7 @@ msgstr ""
 
 #: frontend/src/components/FieldLayoutEditor.vue:336
 msgid "Section"
-msgstr ""
+msgstr "Szakasz"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:130
 msgid "See all participants"
@@ -5374,7 +5374,7 @@ msgstr ""
 #. Option for the 'Type' (Select) field in DocType 'CRM Dropdown Item'
 #: crm/fcrm/doctype/crm_dropdown_item/crm_dropdown_item.json
 msgid "Separator"
-msgstr ""
+msgstr "Szétválasztó"
 
 #. Label of the naming_series (Select) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
@@ -5658,7 +5658,7 @@ msgstr ""
 #. Label of the subdomain (Data) field in DocType 'CRM Exotel Settings'
 #: crm/fcrm/doctype/crm_exotel_settings/crm_exotel_settings.json
 msgid "Subdomain"
-msgstr ""
+msgstr "Aldomén"
 
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:68
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:68
@@ -5928,7 +5928,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
 #: frontend/src/components/Kanban/KanbanSettings.vue:29
 msgid "Title Field"
-msgstr ""
+msgstr "Cím Mező"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:545
 #: frontend/src/components/Modals/EventModal.vue:320
@@ -6026,7 +6026,7 @@ msgstr ""
 #: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.json
 #: frontend/src/components/Settings/LeadSyncing/FailureLogs.vue:25
 msgid "Traceback"
-msgstr ""
+msgstr "Visszakövetés"
 
 #. Option for the 'Weekly Off' (Select) field in DocType 'CRM Holiday List'
 #. Option for the 'Workday' (Select) field in DocType 'CRM Service Day'
@@ -6129,7 +6129,7 @@ msgstr ""
 #: frontend/src/components/Telephony/TwilioCallUI.vue:24
 #: frontend/src/components/Telephony/TwilioCallUI.vue:123
 msgid "Unknown"
-msgstr ""
+msgstr "Ismeretlen"
 
 #: frontend/src/components/BulkDeleteLinkedDocModal.vue:132
 msgid "Unlink"
@@ -6253,7 +6253,7 @@ msgstr ""
 #. Label of the user_name (Data) field in DocType 'CRM Telephony Agent'
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
 msgid "User Name"
-msgstr ""
+msgstr "Felhasználónév"
 
 #: frontend/src/components/Settings/Users.vue:296
 msgid "User {0} has been removed"
@@ -6499,7 +6499,7 @@ msgstr "fekete"
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
 msgid "blue"
-msgstr ""
+msgstr "kék"
 
 #: frontend/src/components/Activities/Activities.vue:239
 msgid "changes from"
@@ -6507,7 +6507,7 @@ msgstr ""
 
 #: frontend/src/components/Activities/CommentArea.vue:11
 msgid "comment"
-msgstr ""
+msgstr "megjegyzés"
 
 #: frontend/src/components/ConditionsFilter/CFCondition.vue:65
 #: frontend/src/components/ConditionsFilter/CFCondition.vue:73
@@ -6559,7 +6559,7 @@ msgstr "szürke"
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
 msgid "green"
-msgstr ""
+msgstr "zöld"
 
 #. Option for the 'Type' (Select) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
@@ -6664,7 +6664,7 @@ msgstr ""
 #. Option for the 'Type' (Select) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
 msgid "list"
-msgstr ""
+msgstr "lista"
 
 #: crm/api/comment.py:36 frontend/src/components/Notifications.vue:59
 #: frontend/src/pages/MobileNotification.vue:46
@@ -6714,7 +6714,7 @@ msgstr "nyilvános"
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
 msgid "purple"
-msgstr ""
+msgstr "lila"
 
 #: crm/api/whatsapp.py:39
 msgid "received a whatsapp message in {0}"
@@ -6725,7 +6725,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
 msgid "red"
-msgstr ""
+msgstr "piros"
 
 #. Option for the 'Color' (Select) field in DocType 'CRM Deal Status'
 #. Option for the 'Color' (Select) field in DocType 'CRM Lead Status'
@@ -6760,7 +6760,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
 msgid "yellow"
-msgstr ""
+msgstr "sárga"
 
 #: frontend/src/utils/index.js:179
 msgid "yesterday"
