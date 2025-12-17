@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-12-14 09:36+0000\n"
-"PO-Revision-Date: 2025-12-15 19:49\n"
+"PO-Revision-Date: 2025-12-17 20:08\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Bosnian\n"
 "MIME-Version: 1.0\n"
@@ -3143,7 +3143,7 @@ msgstr "Ako je omogućeno, sve odlazne e-poruke će biti poslane s ovog računa.
 
 #: frontend/src/components/Settings/emailConfig.js:47
 msgid "If enabled, all replies to your company (eg: replies@yourcomany.com) will come to this account. Note: Only one account can be default incoming."
-msgstr "Ako je omogućeno, svi odgovori vašem poduzeću (npr.: odgovori@poduzece.com) će stizati na ovaj račun. Napomena: Samo jedan račun može biti standard dolazni."
+msgstr "Ako je omogućeno, svi odgovori vašem poduzeću (npr.: odgovori@poduzece.ba) će stizati na ovaj račun. Napomena: Samo jedan račun može biti standard dolazni."
 
 #: frontend/src/components/Settings/emailConfig.js:39
 msgid "If enabled, outgoing emails can be sent from this account."
