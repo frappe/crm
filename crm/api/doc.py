@@ -451,11 +451,7 @@ def get_data(
 						page_length=page_length,
 					)
 
-				all_count = frappe.get_list(
-					doctype,
-					filters=column_filters,
-					fields="count(*) as total_count",
-				)[0].total_count
+				all_count = frappe.db.count(doctype, filters=column_filters)
 
 				kc["all_count"] = all_count
 				kc["count"] = len(column_data)
@@ -554,9 +550,7 @@ def get_data(
 		"page_length_count": page_length_count,
 		"is_default": is_default,
 		"views": get_views(doctype),
-		"total_count": frappe.get_list(doctype, filters=filters, fields="count(*) as total_count")[
-			0
-		].total_count,
+		"total_count": frappe.db.count(doctype, filters=filters),
 		"row_count": len(data),
 		"form_script": get_form_script(doctype),
 		"list_script": get_form_script(doctype, "List"),
