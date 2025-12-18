@@ -2572,10 +2572,10 @@ fraction.js@^4.3.7:
   resolved "https://registry.yarnpkg.com/fraction.js/-/fraction.js-4.3.7.tgz#06ca0085157e42fda7f9e726e79fefc4068840f7"
   integrity sha512-ZsDfxO51wGAXREY55a7la9LScWpwv9RxIrYABrlvOFBlH/ShPnrtsXeuUIfXKKOVicNxQ+o8JTbJvjS4M89yew==
 
-frappe-ui@0.1.238:
-  version "0.1.238"
-  resolved "https://registry.yarnpkg.com/frappe-ui/-/frappe-ui-0.1.238.tgz#6a36faa7c60a0613155ca4e70aa6777500313eab"
-  integrity sha512-xk0eWB0bxZ55lX8yYzQD4+dn6Pzp0Pfwmh/TsAOPCOscj641qyRiwVXtvsFMmcbpOnCYn41/5xnkf8N2k67cBQ==
+frappe-ui@0.1.240:
+  version "0.1.240"
+  resolved "https://registry.yarnpkg.com/frappe-ui/-/frappe-ui-0.1.240.tgz#191ad7c987283579609dac0b22e7779f5aa7cd2a"
+  integrity sha512-tVesvxstRoOgHd9pcvR8IM0ni+/B5zSSfbKzAVxu3b79N8X04UN2BBVadEi11yuxx+Mgi+PXkxMtQwd17+BLiQ==
   dependencies:
     "@floating-ui/vue" "^1.1.6"
     "@headlessui/vue" "^1.7.14"
