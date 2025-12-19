@@ -80,6 +80,15 @@ export function useDocument(doctype, docname, resourceOverrides = {}) {
     }
   }
 
+  if (!docname) {
+    onUnmounted(() => {
+      delete documentsCache[doctype][docname || '']
+      delete assigneesCache[doctype][docname || '']
+      delete permissionsCache[doctype][docname || '']
+      delete controllersCache[doctype]?.[docname || '']
+    })
+  }
+
   assigneesCache[doctype] = assigneesCache[doctype] || {}
 
   if (!assigneesCache[doctype][docname || '']) {
@@ -109,13 +118,6 @@ export function useDocument(doctype, docname, resourceOverrides = {}) {
       initialData: { permissions: {} },
     })
   }
-
-  onUnmounted(() => {
-    delete documentsCache[doctype][docname || '']
-    delete assigneesCache[doctype][docname || '']
-    delete permissionsCache[doctype][docname || '']
-    delete controllersCache[doctype]?.[docname || '']
-  })
 
   async function setupFormScript() {
     if (
