@@ -80,13 +80,22 @@
               </Tooltip>
             </template>
           </Link>
-          <div class="w-36">
-            <DateTimePicker
-              class="datepicker"
-              v-model="_task.due_date"
-              :placeholder="__('01/04/2024 11:30 PM')"
-              :formatter="(date) => getFormat(date, '', true, true)"
-              input-class="border-none"
+          <div class="flex items-center gap-2 w-48">
+            <DatePicker
+              class="datepicker w-[112px]"
+              variant="outline"
+              :modelValue="dueDate"
+              :format="'MMM D, YYYY'"
+              :placeholder="__('May 1, 2025')"
+              :clearable="true"
+              @update:modelValue="(date) => (dueDate = date)"
+            />
+            <TimePicker
+              class="max-w-[112px]"
+              variant="outline"
+              :modelValue="dueTime"
+              :placeholder="__('Time')"
+              @update:modelValue="(time) => (dueTime = time)"
             />
           </div>
           <Dropdown :options="taskPriorityOptions(updateTaskPriority)">
@@ -121,7 +130,15 @@ import Link from '@/components/Controls/Link.vue'
 import { taskStatusOptions, taskPriorityOptions, getFormat } from '@/utils'
 import { usersStore } from '@/stores/users'
 import { capture } from '@/telemetry'
-import { TextEditor, Dropdown, Tooltip, call, DateTimePicker } from 'frappe-ui'
+import {
+  TextEditor,
+  Dropdown,
+  Tooltip,
+  call,
+  DatePicker,
+  TimePicker,
+  dayjs,
+} from 'frappe-ui'
 import { useOnboarding } from 'frappe-ui/frappe'
 import { ref, watch, nextTick, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
@@ -153,6 +170,8 @@ const { updateOnboardingStep } = useOnboarding('frappecrm')
 const error = ref(null)
 const title = ref(null)
 const editMode = ref(false)
+const dueDate = ref('')
+const dueTime = ref('')
 const _task = ref({
   title: '',
   description: '',
@@ -186,6 +205,15 @@ async function updateTask() {
   if (!_task.value.assigned_to) {
     _task.value.assigned_to = getUser().name
   }
+
+  if (dueDate.value) {
+    _task.value.due_date = dueTime.value
+      ? `${dueDate.value} ${dueTime.value}`
+      : dueDate.value
+  } else {
+    _task.value.due_date = ''
+  }
+
   if (_task.value.name) {
     let d = await call('frappe.client.set_value', {
       doctype: 'CRM Task',
@@ -230,6 +258,14 @@ function render() {
   setTimeout(() => title.value?.el?.focus?.(), 100)
   nextTick(() => {
     _task.value = { ...props.task }
+    if (_task.value.due_date) {
+      const d = dayjs(_task.value.due_date)
+      dueDate.value = d.isValid() ? d.format('YYYY-MM-DD') : ''
+      dueTime.value = d.isValid() ? d.format('HH:mm') : ''
+    } else {
+      dueDate.value = ''
+      dueTime.value = ''
+    }
     if (_task.value.title) {
       editMode.value = true
     }
