@@ -37,6 +37,7 @@
   "annual_revenue",
   "image",
   "converted",
+  "previously_assigned",
   "products_tab",
   "products",
   "section_break_ggwh",
@@ -390,6 +391,13 @@
   {
    "fieldname": "column_break_ygds",
    "fieldtype": "Column Break",
+   "read_only": 1
+  },
+  {
+   "fieldname": "previously_assigned",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Previously Assigned",
    "read_only": 1
   }
  ],
