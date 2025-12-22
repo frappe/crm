@@ -164,6 +164,10 @@ doc_events = {
 		"before_validate": ["crm.api.demo.validate_user"],
 		"validate_reset_password": ["crm.api.demo.validate_reset_password"],
 	},
+	"Event": {
+		"after_insert": "crm.assignment_api.sync_event_to_lead_appointment",
+		"on_update": "crm.assignment_api.sync_event_to_lead_appointment",
+	},
 }
 
 # Scheduled Tasks
@@ -189,6 +193,9 @@ scheduler_events = {
         "*/15 * * * *": [
 			"crm.lead_syncing.background_sync.sync_leads_from_sources_15_minutes"
 		],
+		"30 18 * * *": [
+			"crm.assignment_api.auto_mark_no_show"
+		]
 	}
 }
 
