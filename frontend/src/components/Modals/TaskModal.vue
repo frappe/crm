@@ -80,9 +80,9 @@
               </Tooltip>
             </template>
           </Link>
-          <div class="flex items-center gap-2 w-48">
+          <div class="flex items-center gap-2">
             <DatePicker
-              class="datepicker w-[112px]"
+              class="datepicker w-[150px]"
               variant="outline"
               :modelValue="dueDate"
               :format="'MMM D, YYYY'"
