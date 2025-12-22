@@ -4,6 +4,12 @@
       <ViewBreadcrumbs v-model="viewControls" routeName="Leads" />
     </template>
     <template #right-header>
+      <Button
+        variant="outline"
+        :label="__('Appointment')"
+        iconLeft="calendar"
+        @click="showAppointmentLeads"
+      />
       <CustomActions
         v-if="leadsListView?.customListActions"
         :actions="leadsListView.customListActions"
@@ -312,7 +318,7 @@ import { callEnabled } from '@/composables/settings'
 import { formatDate, timeAgo, website, formatTime } from '@/utils'
 import { Avatar, Tooltip, Dropdown } from 'frappe-ui'
 import { useRoute } from 'vue-router'
-import { ref, computed, reactive, h } from 'vue'
+import { ref, computed, reactive, h, onMounted, watch } from 'vue'
 
 const { getFormattedPercent, getFormattedFloat, getFormattedCurrency } =
   getMeta('CRM Lead')
@@ -333,6 +339,41 @@ const loadMore = ref(1)
 const triggerResize = ref(1)
 const updatedPageCount = ref(20)
 const viewControls = ref(null)
+
+function applyFieldFilter(field, value) {
+  if (!viewControls.value) return
+  const dummyEvent = {
+    stopPropagation() {},
+    preventDefault() {},
+  }
+  viewControls.value.applyFilter({
+    event: dummyEvent,
+    idx: 1,
+    column: { key: field, type: 'Data' },
+    item: value,
+    firstColumn: { key: 'name' },
+  })
+}
+
+function showAppointmentLeads() {
+  applyFieldFilter('status', 'Connected')
+  applyFieldFilter('custom_sub_status', 'Appointment')
+}
+
+onMounted(() => {
+  if (route.query.appointment) {
+    showAppointmentLeads()
+  }
+})
+
+watch(
+  () => route.query.appointment,
+  (val) => {
+    if (val) {
+      showAppointmentLeads()
+    }
+  },
+)
 
 function getRow(name, field) {
   function getValue(value) {
