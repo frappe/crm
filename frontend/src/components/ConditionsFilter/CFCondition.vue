@@ -54,7 +54,7 @@
             v-model="props.condition[1]"
             @change="updateOperator"
             :options="getOperators()"
-            class="w-max min-w-[100px]"
+            class="w-max min-w-[100px] text-ink-gray-8"
           />
         </div>
         <div id="value" class="w-full">
@@ -80,6 +80,7 @@
         :isChild="true"
         :level="props.level"
         :disableAddCondition="props.disableAddCondition"
+        :doctype="props.doctype"
       />
       <Button
         variant="outline"
@@ -104,6 +105,7 @@
         :isChild="true"
         :level="props.level"
         :disableAddCondition="props.disableAddCondition"
+        :doctype="props.doctype"
       />
     </template>
   </Dialog>
@@ -162,6 +164,9 @@ const props = defineProps({
   disableAddCondition: {
     type: Boolean,
     default: false,
+  },
+  doctype: {
+    type: String,
   },
 })
 
