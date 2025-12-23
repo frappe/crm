@@ -138,6 +138,7 @@ const deleteItem = (event) => {
     slaData.value.priorities.indexOf(props.priority),
     1,
   )
+  dialog.value = false
 }
 
 const onSave = () => {

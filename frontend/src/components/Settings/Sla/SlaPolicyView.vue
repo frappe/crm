@@ -97,7 +97,7 @@
             </div>
           </div>
         </div>
-        <hr class="my-8" />
+        <hr class="my-8 border-outline-gray-2" />
         <div>
           <div class="flex flex-col gap-1">
             <span class="text-lg font-semibold text-ink-gray-8">{{
@@ -135,7 +135,7 @@
                 </Popover>
               </div>
             </div>
-            <div class="mt-5" v-if="!slaData.default">
+            <div class="mt-5">
               <div
                 class="flex flex-col gap-3 items-center text-center text-ink-gray-7 text-sm mb-2 border border-outline-gray-3 rounded-md p-3 py-4"
                 v-if="!useNewUI"
@@ -161,7 +161,7 @@
             </div>
           </div>
         </div>
-        <hr class="my-8" />
+        <hr class="my-8 border-outline-gray-2" />
         <div>
           <div class="flex flex-col gap-1">
             <span class="text-lg font-semibold text-ink-gray-8">
@@ -208,7 +208,7 @@
             </div>
           </div>
         </div>
-        <hr class="my-8" />
+        <hr class="my-8 border-outline-gray-2" />
         <div>
           <div class="flex flex-col gap-1">
             <span class="text-lg font-semibold text-ink-gray-8">
@@ -228,7 +228,7 @@
             </div>
           </div>
         </div>
-        <hr class="my-8" />
+        <hr class="my-8 border-outline-gray-2" />
         <SlaHolidays />
       </div>
     </template>
@@ -433,6 +433,12 @@ const createSla = () => {
           name: data.name,
         })
       },
+      onError(err) {
+        const message = err?.messages?.[0]
+        toast.error(
+          message || __('Some error occurred while creating SLA policy'),
+        )
+      },
     },
   )
 }
@@ -467,7 +473,7 @@ const updateSla = async () => {
       onError(err) {
         const message = err?.messages?.[0]
         toast.error(
-          message || __('Some error occurred while updating assignment rule'),
+          message || __('Some error occurred while updating SLA policy'),
         )
       },
     },
@@ -476,8 +482,7 @@ const updateSla = async () => {
   if (slaData.value.name !== slaData.value.sla_name) {
     await renameSlaResource.submit().catch(async (er) => {
       const error =
-        er?.messages?.[0] ||
-        __('Some error occurred while renaming assignment rule')
+        er?.messages?.[0] || __('Some error occurred while renaming SLA policy')
       toast.error(error)
       // Reset assignment rule to previous state
       await getSlaResource.reload()

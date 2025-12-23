@@ -29,7 +29,7 @@
           class="flex flex-col items-center justify-center gap-4 h-full"
         >
           <div
-            class="p-4 size-14.5 rounded-full bg-surface-gray-1 flex justify-center items-center"
+            class="p-4 size-14.5 rounded-full bg-surface-gray-2 flex justify-center items-center"
           >
             <ShieldCheck class="size-6 text-ink-gray-6" />
           </div>
@@ -58,7 +58,7 @@
             <div class="col-span-1">{{ __('Apply on') }}</div>
             <div class="col-span-1">{{ __('Enabled') }}</div>
           </div>
-          <hr class="mt-2 mx-2" />
+          <hr class="mt-2 mx-2 border-outline-gray-2" />
           <div
             v-for="(sla, index) in slaPolicyListResource.data"
             :key="sla.name"
@@ -109,7 +109,7 @@
             </div>
             <hr
               v-if="index !== slaPolicyListResource.list.data.length - 1"
-              class="mx-2"
+              class="mx-2 border-outline-gray-2"
             />
             <Dialog
               :options="{ title: __('Duplicate SLA Policy') }"
