@@ -65,7 +65,6 @@ export const resetSlaData = () => {
 
 export const slaDataErrors = ref({
   sla_name: '',
-  description: '',
   enabled: '',
   default_sla: '',
   apply_sla_for_resolution: '',
@@ -81,7 +80,6 @@ export const slaDataErrors = ref({
 export const resetSlaDataErrors = () => {
   slaDataErrors.value = {
     sla_name: '',
-    description: '',
     enabled: '',
     default_sla: '',
     apply_sla_for_resolution: '',

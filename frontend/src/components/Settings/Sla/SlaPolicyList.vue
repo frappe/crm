@@ -92,22 +92,12 @@
             >
               <div
                 @click="updateStep('view', sla, true)"
-                class="w-full pl-2 col-span-5 flex flex-col justify-center h-14"
+                class="w-full pl-2 col-span-5 flex items-center h-14 gap-2"
               >
-                <div
-                  class="text-base text-ink-gray-7 font-medium flex items-center gap-2"
-                >
+                <div class="text-base text-ink-gray-7 font-medium truncate">
                   {{ sla.name }}
-                  <Badge v-if="sla.default" color="gray" size="sm"
-                    >Default</Badge
-                  >
                 </div>
-                <div
-                  v-if="sla.description && sla.description.length > 0"
-                  class="text-sm w-full text-ink-gray-5 mt-1 truncate"
-                >
-                  {{ sla.description }}
-                </div>
+                <Badge v-if="sla.default" color="gray" size="sm">Default</Badge>
               </div>
               <div class="col-span-1 text-ink-gray-8 text-sm">
                 {{ sla.apply_on == 'CRM Lead' ? 'Lead' : 'Deal' }}
