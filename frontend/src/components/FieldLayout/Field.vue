@@ -130,6 +130,14 @@
         </Tooltip>
       </template>
     </Link>
+    <Combobox
+      v-else-if="field.fieldtype === 'Autocomplete'"
+      v-model="data[field.fieldname]"
+      @update:modelValue="(v) => fieldChange(v, field, data)"
+      :options="getOptions(field.options)"
+      :placeholder="getPlaceholder(field)"
+      :disabled="Boolean(field.read_only)"
+    />
     <TimePicker
       v-else-if="field.fieldtype === 'Time'"
       :value="data[field.fieldname]"
@@ -233,7 +241,13 @@ import { flt } from '@/utils/numberFormat.js'
 import { getMeta } from '@/stores/meta'
 import { usersStore } from '@/stores/users'
 import { useDocument } from '@/data/document'
-import { Tooltip, DatePicker, DateTimePicker, TimePicker } from 'frappe-ui'
+import {
+  Combobox,
+  Tooltip,
+  DatePicker,
+  DateTimePicker,
+  TimePicker,
+} from 'frappe-ui'
 import { computed, provide, inject } from 'vue'
 
 const props = defineProps({
@@ -321,17 +335,15 @@ const field = computed(() => {
 function isFieldVisible(field) {
   if (preview.value) return true
 
-  const hideEmptyReadOnly = Number(window.sysdefaults?.hide_empty_read_only_fields ?? 1)
-
-  const shouldShowReadOnly = field.read_only && (
-    data.value[field.fieldname] ||
-    !hideEmptyReadOnly
+  const hideEmptyReadOnly = Number(
+    window.sysdefaults?.hide_empty_read_only_fields ?? 1,
   )
 
+  const shouldShowReadOnly =
+    field.read_only && (data.value[field.fieldname] || !hideEmptyReadOnly)
+
   return (
-    (field.fieldtype == 'Check' ||
-      shouldShowReadOnly ||
-      !field.read_only) &&
+    (field.fieldtype == 'Check' || shouldShowReadOnly || !field.read_only) &&
     (!field.depends_on || field.display_via_depends_on) &&
     !field.hidden
   )
@@ -348,7 +360,20 @@ const getPlaceholder = (field) => {
   }
 }
 
+const getOptions = (options) => {
+  if (Array.isArray(options)) {
+    return options
+  } else if (typeof options === 'string') {
+    return options.split('\n').map((option) => {
+      return { label: option, value: option }
+    })
+  } else {
+    return []
+  }
+}
+
 function fieldChange(value, df) {
+  value = typeof value === 'object' && value !== null ? value.value : value
   if (isGridRow) {
     triggerOnChange(df.fieldname, value, data.value)
   } else {
