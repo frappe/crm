@@ -63,7 +63,7 @@
               v-model="slaData.sla_name"
               required
               @change="validateSlaData('sla_name')"
-              maxlength="50"
+              maxlength="100"
             />
             <ErrorMessage :message="slaDataErrors.sla_name" class="mt-2" />
           </div>

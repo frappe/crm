@@ -135,6 +135,7 @@
                     :label="__('New SLA Policy Name')"
                     type="text"
                     v-model="duplicateDialog.name"
+                    maxlength="100"
                   />
                 </div>
               </template>
