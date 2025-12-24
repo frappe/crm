@@ -34,6 +34,7 @@
             :class="[n.read ? 'bg-transparent' : 'bg-surface-gray-7']"
           />
           <WhatsAppIcon v-if="n.type == 'WhatsApp'" class="size-7" />
+          <Email2Icon v-else-if="n.type == 'Email'" class="size-7" />
           <UserAvatar v-else :user="n.from_user.name" size="lg" />
         </div>
         <div>
@@ -66,6 +67,7 @@
 <script setup>
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
+import Email2Icon from '@/components/Icons/Email2Icon.vue'
 import MarkAsDoneIcon from '@/components/Icons/MarkAsDoneIcon.vue'
 import NotificationsIcon from '@/components/Icons/NotificationsIcon.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
