@@ -6,6 +6,27 @@ from frappe.model.document import Document
 
 
 class CRMProducts(Document):
+	# begin: auto-generated types
+	# This code is auto-generated. Do not modify anything in this block.
+
+	from typing import TYPE_CHECKING
+
+	if TYPE_CHECKING:
+		from frappe.types import DF
+
+		amount: DF.Currency
+		discount_amount: DF.Currency
+		discount_percentage: DF.Percent
+		net_amount: DF.Currency
+		parent: DF.Data
+		parentfield: DF.Data
+		parenttype: DF.Data
+		product_code: DF.Link | None
+		product_name: DF.Data
+		qty: DF.Float
+		rate: DF.Currency
+	# end: auto-generated types
+
 	pass
 
 
