@@ -12,7 +12,7 @@
       />
     </template>
     <template
-      v-if="slaPolicyListResource.data?.length > 0 || slaSearchQuery.length"
+      v-if="slaPolicyListResource.data?.length > 9 || slaSearchQuery.length"
       #header-bottom
     >
       <div class="relative">
