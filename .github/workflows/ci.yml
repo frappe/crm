@@ -32,9 +32,6 @@ jobs:
     strategy:
       fail-fast: false
 
-      matrix:
-        container: [1, 2]
-
     name: Server
 
     services:
