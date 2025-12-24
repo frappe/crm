@@ -265,13 +265,13 @@
                     :disabled="Boolean(field.read_only)"
                     @change="fieldChange(flt($event.target.value), field, row)"
                   />
-                  <Autocomplete
+                  <Combobox
                     v-else-if="field.fieldtype === 'Autocomplete'"
-                    class="text-sm text-ink-gray-8"
-                    :modelValue="row[field.fieldname]"
-                    @update:modelValue="(v) => row[field.fieldname] = typeof v == 'object' ? v.value : v"
-                    @change="(v) => fieldChange(typeof v == 'object' ? v.value : v, field, row)"
-                    :options="field.options"
+                    class="combobox"
+                    v-model="row[field.fieldname]"
+                    variant="outline"
+                    @update:modelValue="(v) => fieldChange(v, field, row)"
+                    :options="getOptions(field.options)"
                     :placeholder="field.placeholder"
                     :disabled="Boolean(field.read_only)"
                   />
@@ -363,7 +363,7 @@ import {
   DatePicker,
   Tooltip,
   dayjs,
-  Autocomplete
+  Combobox,
 } from 'frappe-ui'
 import Draggable from 'vuedraggable'
 import { ref, reactive, computed, inject, provide } from 'vue'
@@ -388,7 +388,7 @@ const props = defineProps({
   overrides: {
     type: Object,
     default: () => ({}),
-  }
+  },
 })
 
 const triggerOnChange = inject('triggerOnChange', () => {})
@@ -457,17 +457,15 @@ function getFieldObj(field) {
     })
   }
 
-  const fieldObjWithFilters ={
+  const fieldObjWithFilters = {
     ...field,
     filters: field.link_filters && JSON.parse(field.link_filters),
     placeholder: field.placeholder || field.label,
   }
-  
+
   return {
     ...fieldObjWithFilters,
-    ...props.overrides.fields?.find(
-      (f) => f.fieldname === field.fieldname,
-    ),
+    ...props.overrides.fields?.find((f) => f.fieldname === field.fieldname),
   }
 }
 
@@ -544,8 +542,8 @@ const reorder = () => {
   })
 }
 
-
 function fieldChange(value, field, row) {
+  value = typeof value === 'object' && value !== null ? value.value : value
   triggerOnChange(field.fieldname, value, row)
 }
 
@@ -579,6 +577,18 @@ function getDefaultValue(defaultValue, fieldtype) {
 
   return defaultValue
 }
+
+const getOptions = (options) => {
+  if (Array.isArray(options)) {
+    return options
+  } else if (typeof options === 'string') {
+    return options.split('\n').map((option) => {
+      return { label: option, value: option }
+    })
+  } else {
+    return []
+  }
+}
 </script>
 
 <style scoped>
@@ -608,8 +618,9 @@ function getDefaultValue(defaultValue, fieldtype) {
   height: 38px;
 }
 
-/* For Autocomplete */
-:deep(.grid-row button) {
+/* For Autocomplete, Link */
+:deep(.grid-row button),
+:deep(.grid-row .combobox > div > div) {
   border: none;
   border-radius: 0;
   background-color: var(--surface-white);
