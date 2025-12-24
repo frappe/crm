@@ -588,7 +588,6 @@ import {
 } from 'frappe-ui'
 import { ref, computed, watch, h, inject } from 'vue'
 import { useRouter } from 'vue-router'
-import FeatherIcon from 'frappe-ui/src/components/FeatherIcon.vue'
 
 const props = defineProps({
   mode: {
