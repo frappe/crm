@@ -130,8 +130,6 @@
         </Tooltip>
       </template>
     </Link>
-<<<<<<< HEAD
-=======
     <Combobox
       v-else-if="field.fieldtype === 'Autocomplete'"
       v-model="data[field.fieldname]"
@@ -140,15 +138,6 @@
       :placeholder="getPlaceholder(field)"
       :disabled="Boolean(field.read_only)"
     />
-    <TimePicker
-      v-else-if="field.fieldtype === 'Time'"
-      :value="data[field.fieldname]"
-      :format="getFormat('', '', false, true, false)"
-      :placeholder="getPlaceholder(field)"
-      input-class="border-none"
-      @change="(v) => fieldChange(v, field)"
-    />
->>>>>>> 01c9be30 (fix: use combobox instead of Autocomplete)
     <DateTimePicker
       v-else-if="field.fieldtype === 'Datetime'"
       :value="data[field.fieldname]"
@@ -244,17 +233,7 @@ import { flt } from '@/utils/numberFormat.js'
 import { getMeta } from '@/stores/meta'
 import { usersStore } from '@/stores/users'
 import { useDocument } from '@/data/document'
-<<<<<<< HEAD
-import { Tooltip, DatePicker, DateTimePicker } from 'frappe-ui'
-=======
-import {
-  Combobox,
-  Tooltip,
-  DatePicker,
-  DateTimePicker,
-  TimePicker,
-} from 'frappe-ui'
->>>>>>> 01c9be30 (fix: use combobox instead of Autocomplete)
+import { Combobox, Tooltip, DatePicker, DateTimePicker } from 'frappe-ui'
 import { computed, provide, inject } from 'vue'
 
 const props = defineProps({
