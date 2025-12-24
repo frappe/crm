@@ -19,7 +19,7 @@
       </div>
       <slot name="header-actions" v-if="Boolean($slots['header-actions'])" />
     </div>
-    <div class="mt-6" v-if="Boolean($slots['header-bottom'])">
+    <div class="p-8 pt-0" v-if="Boolean($slots['header-bottom'])">
       <slot name="header-bottom" />
     </div>
     <div class="h-full overflow-y-auto p-8 pt-0">

@@ -11,6 +11,30 @@
         @click="createNewSlaPolicy"
       />
     </template>
+    <template
+      v-if="slaPolicyListResource.data?.length > 0 || slaSearchQuery.length"
+      #header-bottom
+    >
+      <div class="relative">
+        <Input
+          :model-value="slaSearchQuery"
+          @input="slaSearchQuery = $event"
+          :placeholder="__('Search')"
+          type="text"
+          class="bg-surface-gray-2 hover:bg-surface-gray-2 focus:ring-0 border-outline-gray-2 rounded"
+          icon-left="search"
+          debounce="300"
+          inputClass="p-4 pr-12"
+        />
+        <Button
+          v-if="slaSearchQuery"
+          icon="x"
+          variant="ghost"
+          @click="slaSearchQuery = ''"
+          class="absolute right-1 top-1/2 -translate-y-1/2"
+        />
+      </div>
+    </template>
     <template #content>
       <div
         v-if="
@@ -159,13 +183,14 @@ import {
   toast,
 } from 'frappe-ui'
 import SettingsLayoutBase from '../../Layouts/SettingsLayoutBase.vue'
-import { inject, ref } from 'vue'
+import { inject, ref, watch } from 'vue'
 import ShieldCheck from '~icons/lucide/shield-check'
 import { ConfirmDelete } from '../../../utils'
 import { resetSlaData } from './utils'
 
 const slaPolicyListResource = inject('slaPolicyListResource')
 const updateStep = inject('updateStep')
+const slaSearchQuery = inject('slaSearchQuery')
 
 function createNewSlaPolicy() {
   resetSlaData()
@@ -267,4 +292,15 @@ const onToggle = (sla) => {
     },
   )
 }
+
+watch(slaSearchQuery, (newValue) => {
+  slaPolicyListResource.filters = {
+    name: ['like', `%${newValue}%`],
+  }
+  if (!newValue) {
+    slaPolicyListResource.start = 0
+    slaPolicyListResource.pageLength = 10
+  }
+  slaPolicyListResource.reload()
+})
 </script>
