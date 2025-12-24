@@ -102,8 +102,8 @@ function showEvent(e = {}) {
   activeEvent.value = e
 }
 
-const { events, startEndTime, startDate } = useEvent(
-  props.doctype,
-  props.docname,
-)
+const { events, startEndTime, startDate } = useEvent({
+  doctype: props.doctype,
+  docname: props.docname,
+})
 </script>

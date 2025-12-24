@@ -129,6 +129,44 @@
             />
           </div>
         </div>
+        <div class="flex items-start">
+          <div class="text-base text-ink-gray-7 mt-1.5 w-3/12">
+            {{ __('Visibility') }}
+          </div>
+          <div class="w-9/12">
+            <FormControl
+              class="w-full"
+              type="select"
+              :options="[
+                {
+                  label: __('Private'),
+                  value: 'Private',
+                },
+                {
+                  label: __('Public'),
+                  value: 'Public',
+                },
+              ]"
+              v-model="_event.eventType"
+              variant="outline"
+              :placeholder="__('Private or Public')"
+            />
+          </div>
+        </div>
+        <div class="flex items-start">
+          <div class="text-base text-ink-gray-7 mt-1.5 w-3/12">
+            {{ __('Location') }}
+          </div>
+          <div class="w-9/12">
+            <TextInput
+              class="w-full"
+              size="sm"
+              variant="outline"
+              v-model="_event.location"
+              :placeholder="__('Add location')"
+            />
+          </div>
+        </div>
         <div class="flex">
           <div class="mt-2 text-base text-ink-gray-7 w-3/12">
             {{ __('Description') }}
@@ -143,34 +181,54 @@
             />
           </div>
         </div>
-        <ErrorMessage class="mt-4" v-if="error" :message="__(error)" />
+        <div class="border-t border-outline-gray-1" />
+        <div class="flex">
+          <div class="mt-1.5 text-base text-ink-gray-7 w-3/12">
+            {{ __('Notifications') }}
+          </div>
+          <div class="w-9/12">
+            <EventNotifications
+              v-model="_event.notifications"
+              :isAllDay="_event.isFullDay"
+            />
+          </div>
+        </div>
       </div>
     </template>
     <template #actions>
-      <div v-if="eventsResource" class="flex gap-2 justify-end">
-        <Button :label="__('Cancel')" @click="show = false" />
-        <Button
-          variant="solid"
-          :label="
-            mode === 'edit'
-              ? __('Update')
-              : mode === 'duplicate'
-                ? __('Duplicate')
-                : __('Create')
-          "
-          :disabled="!dirty"
-          :loading="
-            mode === 'edit'
-              ? eventsResource.setValue.loading
-              : eventsResource.insert.loading
-          "
-          @click="update"
-        />
+      <div
+        v-if="eventsResource"
+        class="flex w-full items-center justify-between"
+      >
+        <div>
+          <ErrorMessage v-if="error" :message="__(error)" />
+        </div>
+        <div class="flex gap-2 justify-end">
+          <Button :label="__('Cancel')" @click="show = false" />
+          <Button
+            variant="solid"
+            :label="
+              mode === 'edit'
+                ? __('Update')
+                : mode === 'duplicate'
+                  ? __('Duplicate')
+                  : __('Create')
+            "
+            :disabled="!dirty"
+            :loading="
+              mode === 'edit'
+                ? eventsResource.setValue.loading
+                : eventsResource.insert.loading
+            "
+            @click="update"
+          />
+        </div>
       </div>
     </template>
   </Dialog>
 </template>
 <script setup>
+import EventNotifications from '@/components/Calendar/EventNotifications.vue'
 import Attendee from '@/components/Calendar/Attendee.vue'
 import {
   Switch,
@@ -213,7 +271,10 @@ const { $dialog } = globalStore()
 
 const show = defineModel()
 
-const { eventsResource } = useEvent(props.doctype, props.docname)
+const { eventsResource } = useEvent({
+  doctype: props.doctype,
+  docname: props.docname,
+})
 
 const title = ref(null)
 const error = ref(null)
@@ -235,10 +296,12 @@ const _event = ref({
   toTime: '',
   isFullDay: false,
   eventType: 'Public',
+  location: '',
   color: 'green',
   referenceDoctype: '',
   referenceDocname: '',
   event_participants: [],
+  notifications: [],
 })
 
 const dirty = computed(() => {
@@ -274,10 +337,12 @@ onMounted(() => {
       toTime: end.format('HH:mm'),
       isFullDay: props.event.all_day,
       eventType: props.event.event_type,
+      location: props.event.location || '',
       color: props.event.color,
       referenceDoctype: props.event.reference_doctype,
       referenceDocname: props.event.reference_docname,
       event_participants: props.event.event_participants || [],
+      notifications: props.event.notifications || [],
     }
 
     oldEvent.value = JSON.parse(JSON.stringify(_event.value))
@@ -349,10 +414,12 @@ function createEvent() {
       ends_on: _event.value.toDate + ' ' + _event.value.toTime,
       all_day: _event.value.isFullDay || false,
       event_type: _event.value.eventType,
+      location: _event.value.location || '',
       color: _event.value.color,
       reference_doctype: props.doctype,
       reference_docname: props.docname,
       event_participants: _event.value.event_participants,
+      notifications: _event.value.notifications,
     },
     {
       onSuccess: async () => {
@@ -378,10 +445,12 @@ function updateEvent() {
       ends_on: _event.value.toDate + ' ' + _event.value.toTime,
       all_day: _event.value.isFullDay,
       event_type: _event.value.eventType,
+      location: _event.value.location || '',
       color: _event.value.color,
       reference_doctype: props.doctype,
       reference_docname: props.docname,
       event_participants: _event.value.event_participants,
+      notifications: _event.value.notifications,
     },
     {
       onSuccess: async () => {
