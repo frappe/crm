@@ -2,8 +2,7 @@
 # See license.txt
 
 # import frappe
-from frappe.tests import IntegrationTestCase, UnitTestCase
-
+from frappe.tests.utils import FrappeTestCase
 
 # On IntegrationTestCase, the doctype test records and all
 # link-field test record dependencies are recursively loaded
@@ -12,16 +11,7 @@ EXTRA_TEST_RECORD_DEPENDENCIES = []  # eg. ["User"]
 IGNORE_TEST_RECORD_DEPENDENCIES = []  # eg. ["User"]
 
 
-class UnitTestCRMGlobalSettings(UnitTestCase):
-	"""
-	Unit tests for CRMGlobalSettings.
-	Use this class for testing individual functions and methods.
-	"""
-
-	pass
-
-
-class IntegrationTestCRMGlobalSettings(IntegrationTestCase):
+class TestCRMGlobalSettings(FrappeTestCase):
 	"""
 	Integration tests for CRMGlobalSettings.
 	Use this class for testing interactions between multiple components.
