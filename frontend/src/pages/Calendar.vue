@@ -21,7 +21,7 @@
       class="flex-1 overflow-hidden"
       ref="calendar"
       :config="{
-        defaultMode: 'Week',
+        defaultMode: defaultMode,
         isEditMode: true,
         eventIcons: {},
         allowCustomClickEvents: true,
@@ -32,6 +32,7 @@
       @create="(event) => createEvent(event)"
       @update="(event) => updateEvent(event, true)"
       @delete="(eventID) => deleteEvent(eventID)"
+      @rangeChange="handleRangeChange"
       :onClick="showDetails"
       :onDblClick="editDetails"
       :onCellClick="newEvent"
@@ -39,7 +40,6 @@
       <template
         #header="{
           currentMonthYear,
-          enabledModes,
           activeView,
           selectedMonthDate,
           decrement,
@@ -82,13 +82,45 @@
             />
             <Button @click="increment" variant="ghost" icon="chevron-right" />
 
-            <!--  View change button, default is months or can be set via props!  -->
-            <TabButtons
-              :buttons="enabledModes"
-              class="ml-2"
+            <!-- View Buttons -->
+            <FormControl
+              type="select"
+              class="mr-1 w-24"
               :modelValue="activeView"
               @update:modelValue="updateActiveView($event)"
+              :options="[
+                { label: __('Day'), value: 'Day' },
+                { label: __('Week'), value: 'Week' },
+                { label: __('Month'), value: 'Month' },
+              ]"
+              :placeholder="__('Operator')"
             />
+
+            <Link
+              class="form-control"
+              :value="getUser(currentUser).full_name"
+              doctype="User"
+              @change="(option) => updateUser(option)"
+              :placeholder="__('John Doe')"
+              :filters="{
+                name: ['in', users.data.crmUsers?.map((user) => user.name)],
+              }"
+              :hideMe="true"
+            >
+              <template #prefix>
+                <UserAvatar class="mr-2 !h-4 !w-4" :user="currentUser" />
+              </template>
+              <template #item-prefix="{ option }">
+                <UserAvatar class="mr-2" :user="option.value" size="sm" />
+              </template>
+              <template #item-label="{ option }">
+                <Tooltip :text="option.value">
+                  <div class="cursor-pointer text-ink-gray-9">
+                    {{ getUser(option.value).full_name }}
+                  </div>
+                </Tooltip>
+              </template>
+            </Link>
           </div>
         </div>
       </template>
@@ -126,42 +158,92 @@ import CalendarEventPanel from '@/components/Calendar/CalendarEventPanel.vue'
 import ViewBreadcrumbs from '@/components/ViewBreadcrumbs.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import ShortcutTooltip from '@/components/ShortcutTooltip.vue'
+import Link from '@/components/Controls/Link.vue'
 import { sessionStore } from '@/stores/session'
+import { usersStore } from '@/stores/users'
 import { globalStore } from '@/stores/global'
+import { getSettings } from '@/stores/settings'
 import { useKeyboardShortcuts } from '@/composables/useKeyboardShortcuts'
 import {
   Calendar,
   createListResource,
-  TabButtons,
   dayjs,
   DatePicker,
+  Tooltip,
   CalendarActiveEvent as activeEvent,
   call,
+  toast,
 } from 'frappe-ui'
-import { onMounted, ref, computed, provide } from 'vue'
+import { onMounted, ref, computed, provide, nextTick } from 'vue'
+import { useRoute } from 'vue-router'
 
 const { user } = sessionStore()
 const { $dialog } = globalStore()
+const { settings } = getSettings()
+const { users, getUser } = usersStore()
+const route = useRoute()
+
+const modeMap = {
+  Daily: 'Day',
+  Weekly: 'Week',
+  Monthly: 'Month',
+}
+
+const defaultMode = computed(() => {
+  return modeMap[settings.value?.default_calendar_view] || 'Week'
+})
 
 const calendar = ref(null)
+const activeRangeKey = ref('')
+const currentUser = ref(user)
+
+async function updateUser(u) {
+  currentUser.value = u
+  events.update({
+    orFilters: buildEventOrFilters(),
+  })
+  await events.reload()
+}
+
+function buildEventFilters(range) {
+  const filters = [['status', '=', 'Open']]
+  if (range?.startDate && range?.endDate) {
+    const start = dayjs(range.startDate)
+      .startOf('day')
+      .format('YYYY-MM-DD HH:mm:ss')
+    const end = dayjs(range.endDate).endOf('day').format('YYYY-MM-DD HH:mm:ss')
+    filters.push(['starts_on', '<=', end])
+    filters.push(['ends_on', '>=', start])
+  }
+  return filters
+}
+
+function buildEventOrFilters() {
+  return [
+    ['owner', '=', currentUser.value],
+    ['Event Participants', 'email', '=', currentUser.value],
+  ]
+}
 
 const events = createListResource({
   doctype: 'Event',
-  cache: ['calendar', user],
   fields: [
     'name',
     'status',
     'subject',
     'description',
+    'location',
     'starts_on',
     'ends_on',
     'all_day',
     'event_type',
     'color',
+    'attending',
     'reference_doctype',
     'reference_docname',
   ],
-  filters: { status: 'Open', owner: user },
+  filters: buildEventFilters(),
+  orFilters: buildEventOrFilters(),
   pageLength: 9999,
   auto: true,
   transform: (data) =>
@@ -176,7 +258,9 @@ const events = createListResource({
       toTime: dayjs(ev.ends_on).format('HH:mm'),
       isFullDay: ev.all_day,
       eventType: ev.event_type,
+      location: ev.location,
       color: ev.color,
+      attending: ev.attending,
       referenceDoctype: ev.reference_doctype,
       referenceDocname: ev.reference_docname,
     })),
@@ -224,10 +308,13 @@ function buildEventPayload(_event) {
     ends_on: `${_event.toDate} ${_event.toTime}`,
     all_day: _event.isFullDay || false,
     event_type: _event.eventType,
+    location: _event.location,
     color: _event.color,
+    attending: _event.attending,
     reference_doctype: _event.referenceDoctype,
     reference_docname: _event.referenceDocname,
     event_participants: _event.event_participants,
+    notifications: _event.notifications,
   }
 }
 
@@ -235,8 +322,13 @@ function createEvent(_event) {
   if (!_event?.title) return
   events.insert.submit(buildEventPayload(_event), {
     onSuccess: async (e) => {
-      await events.reload()
+      await updateUser(user)
+      toast.success(__('Event created successfully'))
       showDetails({ id: e.name })
+    },
+    onError: (err) => {
+      toast.error(err.messages[0])
+      console.error('Failed creating event', err)
     },
   })
 }
@@ -285,6 +377,10 @@ async function updateEvent(_event, afterDrag = false) {
           await events.reload()
           showEventPanel.value && showDetails({ id: e.name }, true)
         },
+        onError: (err) => {
+          toast.error(err.messages[0])
+          console.error('Failed updating event', err)
+        },
       },
     )
   } else {
@@ -305,7 +401,14 @@ function deleteEvent(eventID) {
         theme: 'red',
         onClick: (close) => {
           events.delete.submit(eventID, {
-            onSuccess: () => events.reload(),
+            onSuccess: () => {
+              toast.success(__('Event deleted successfully'))
+              events.reload()
+            },
+            onError: (err) => {
+              toast.error(err.messages[0])
+              console.error('Failed deleting event', err)
+            },
           })
           showEventPanel.value = false
           event.value = {}
@@ -319,14 +422,43 @@ function deleteEvent(eventID) {
 }
 
 function syncEvent(eventID, _event) {
-  if (!eventID) return
-  Object.assign(events.data.filter((event) => event.id === eventID)[0], _event)
+  if (!eventID || !Array.isArray(events.data)) return
+  const target = events.data.find((event) => event.id === eventID)
+  if (!target) return
+  Object.assign(target, _event)
 }
 
-onMounted(() => {
+async function handleRangeChange(range) {
+  if (!range?.startDate || !range?.endDate) return
+  const key = `${range.view}-${range.startDate}-${range.endDate}`
+  if (key === activeRangeKey.value) {
+    if (events.list?.loading || events.list?.fetched) return
+  }
+  activeRangeKey.value = key
+  events.update({
+    filters: buildEventFilters(range),
+    orFilters: buildEventOrFilters(),
+  })
+  await events.reload()
+}
+
+onMounted(async () => {
   activeEvent.value = ''
   mode.value = ''
   showEventPanel.value = false
+
+  const { eventId, date } = route.query
+  if (eventId && date) {
+    await events.promise
+    await nextTick()
+
+    // Set calendar date to the event's date
+    if (calendar.value.onMonthYearChange) {
+      calendar.value.onMonthYearChange(dayjs(date).toDate())
+    }
+
+    showDetails({ id: eventId })
+  }
 })
 
 // Global shortcut: Cmd/Ctrl + E -> new event (when not already creating/editing)
@@ -357,8 +489,9 @@ function editDetails(e) {
   openEvent(e, 'edit')
 }
 
-function buildTempEvent(e, duplicate) {
+function buildTempEvent(e = {}, duplicate = false) {
   const id = duplicate ? 'duplicate-event' : 'new-event'
+
   return {
     id,
     title: e.title,
@@ -368,12 +501,15 @@ function buildTempEvent(e, duplicate) {
     toDate: e.toDate,
     fromTime: e.fromTime,
     toTime: e.toTime,
+    location: e.location || '',
     isFullDay: e.isFullDay || false,
-    eventType: e.eventType || 'Public',
+    eventType: e.eventType || 'Private',
     color: e.color || 'green',
+    attending: e.attending || 'Yes',
     referenceDoctype: e.referenceDoctype,
     referenceDocname: e.referenceDocname,
     event_participants: e.event_participants || [],
+    notifications: e.notifications || [],
   }
 }
 
@@ -395,6 +531,9 @@ function newEvent(e = {}, duplicate = false) {
   }
 
   event.value = buildTempEvent(base, duplicate)
+  if (!Array.isArray(events.data)) {
+    events.data = []
+  }
   events.data.push(event.value)
   showEventPanel.value = true
   activeEvent.value = event.value.id

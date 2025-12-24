@@ -88,8 +88,8 @@ export default defineConfig(async ({ mode }) => {
       // Check if the local frappe-ui directory exists
       const fs = await import('node:fs')
       const localFrappeUIPath = path.resolve(__dirname, '../frappe-ui')
-      const vitePluginPath = path.resolve(localFrappeUIPath, 'vite.js')
-      
+      const vitePluginPath = path.resolve(localFrappeUIPath, 'vite')
+
       if (fs.existsSync(localFrappeUIPath) && fs.existsSync(vitePluginPath)) {
         config.resolve.alias['frappe-ui'] = localFrappeUIPath
       } else {
