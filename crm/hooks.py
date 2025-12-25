@@ -141,6 +141,9 @@ override_doctype_class = {
 # Hook on document methods and events
 
 doc_events = {
+	"Communication": {
+		"on_update": ["crm.api.communication.update_lead_communication_status"],
+	},
 	"Contact": {
 		"validate": ["crm.api.contact.validate"],
 	},
