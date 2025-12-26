@@ -12,6 +12,7 @@ export const usersStore = defineStore('crm-users', () => {
 
   const users = createResource({
     url: 'crm.api.session.get_users',
+     method: 'GET',
     cache: 'crm-users',
     initialData: [],
     auto: true,
