@@ -2,8 +2,7 @@
 # See license.txt
 
 # import frappe
-from frappe.tests import IntegrationTestCase
-
+from frappe.tests.utils import FrappeTestCase
 
 # On IntegrationTestCase, the doctype test records and all
 # link-field test record dependencies are recursively loaded
@@ -12,8 +11,7 @@ EXTRA_TEST_RECORD_DEPENDENCIES = []  # eg. ["User"]
 IGNORE_TEST_RECORD_DEPENDENCIES = []  # eg. ["User"]
 
 
-
-class IntegrationTestFailedLeadSyncLog(IntegrationTestCase):
+class TestFailedLeadSyncLog(FrappeTestCase):
 	"""
 	Integration tests for FailedLeadSyncLog.
 	Use this class for testing interactions between multiple components.
