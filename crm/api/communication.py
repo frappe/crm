@@ -29,4 +29,6 @@ def update_lead_communication_status(doc, method=None):
 
 	# Only update if the current communication is the latest one
 	if latest_communication == doc.name:
-		frappe.db.set_value("CRM Lead", doc.reference_name, "communication_status", status)
+		lead_doc = frappe.get_doc("CRM Lead", doc.reference_name)
+		lead_doc.communication_status = status
+		lead_doc.save(ignore_permissions=True)
