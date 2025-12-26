@@ -81,6 +81,8 @@ import {
 import { Dialog, Avatar } from 'frappe-ui'
 import { ref, markRaw, computed, watch, h } from 'vue'
 import AssignmentRulePage from './AssignmentRules/AssignmentRulePage.vue'
+import ShieldCheck from '~icons/lucide/shield-check'
+import SlaConfig from './Sla/SlaConfig.vue'
 
 const { isManager, isTelephonyAgent, getUser } = usersStore()
 
@@ -171,6 +173,11 @@ const tabs = computed(() => {
           label: __('Assignment rules'),
           icon: markRaw(h(SettingsIcon2, { class: 'rotate-90' })),
           component: markRaw(AssignmentRulePage),
+        },
+        {
+          label: __('SLA Policies'),
+          icon: markRaw(h(ShieldCheck)),
+          component: markRaw(SlaConfig),
         },
       ],
     },

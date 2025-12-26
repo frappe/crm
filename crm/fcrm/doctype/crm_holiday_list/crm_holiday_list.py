@@ -1,9 +1,85 @@
 # Copyright (c) 2023, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 
-# import frappe
+import json
+
+import frappe
+from frappe import _, throw
 from frappe.model.document import Document
+from frappe.utils import cint, formatdate, getdate, today
 
 
 class CRMHolidayList(Document):
-	pass
+	# begin: auto-generated types
+	# This code is auto-generated. Do not modify anything in this block.
+
+	from typing import TYPE_CHECKING
+
+	if TYPE_CHECKING:
+		from crm.fcrm.doctype.crm_holiday.crm_holiday import CRMHoliday
+		from frappe.types import DF
+
+		from_date: DF.Date
+		holiday_list_name: DF.Data
+		holidays: DF.Table[CRMHoliday]
+		to_date: DF.Date
+		total_holidays: DF.Int
+		weekly_off: DF.Literal["", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+	# end: auto-generated types
+
+	def validate(self):
+		self.validate_days()
+		self.total_holidays = len(self.holidays)
+
+	@frappe.whitelist()
+	def get_weekly_off_dates(self):
+		self.validate_values()
+		date_list = self.get_weekly_off_date_list(self.from_date, self.to_date)
+		last_idx = max(
+			[cint(d.idx) for d in self.get("holidays")]
+			or [
+				0,
+			]
+		)
+		for i, d in enumerate(date_list):
+			ch = self.append("holidays", {})
+			ch.description = _(self.weekly_off)
+			ch.date = d
+			ch.weekly_off = 1
+			ch.idx = last_idx + i + 1
+
+	def validate_values(self):
+		if not self.weekly_off:
+			throw(_("Please select weekly off day"))
+
+	def validate_days(self):
+		if getdate(self.from_date) > getdate(self.to_date):
+			throw(_("To Date cannot be before From Date"))
+
+		for day in self.get("holidays"):
+			if not (getdate(self.from_date) <= getdate(day.date) <= getdate(self.to_date)):
+				frappe.throw(
+					_("The holiday on {0} is not between From Date and To Date").format(formatdate(day.date))
+				)
+
+	def get_weekly_off_date_list(self, start_date, end_date):
+		start_date, end_date = getdate(start_date), getdate(end_date)
+
+		import calendar
+		from datetime import timedelta
+
+		from dateutil import relativedelta
+
+		date_list = []
+		existing_date_list = []
+		weekday = getattr(calendar, (self.weekly_off).upper())
+		reference_date = start_date + relativedelta.relativedelta(weekday=weekday)
+
+		existing_date_list = [getdate(holiday.date) for holiday in self.get("holidays")]
+
+		while reference_date <= end_date:
+			if reference_date not in existing_date_list:
+				date_list.append(reference_date)
+			reference_date += timedelta(days=7)
+
+		return date_list
