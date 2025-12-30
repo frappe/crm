@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-12-21 09:37+0000\n"
-"PO-Revision-Date: 2025-12-23 22:58\n"
+"PO-Revision-Date: 2025-12-30 00:04\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Spanish\n"
 "MIME-Version: 1.0\n"
@@ -145,7 +145,7 @@ msgstr "Un cliente potencial requiere el nombre de una persona o el nombre de un
 
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.py:47
 msgid "A lead sync source is already enabled for this Facebook Lead Form!"
-msgstr ""
+msgstr "¡Ya se ha habilitado una fuente de sincronización de clientes potenciales para este formulario de clientes potenciales de Facebook!"
 
 #: crm/templates/emails/helpdesk_invitation.html:5
 msgid "A new account has been created for you at {0}"
@@ -334,7 +334,7 @@ msgstr "Añadir una condición"
 
 #: frontend/src/components/Settings/LeadSyncing/leadSyncSourceConfig.js:24
 msgid "Add a name for your source"
-msgstr ""
+msgstr "Añada un nombre para su fuente"
 
 #: frontend/src/components/Telephony/ExotelCallUI.vue:183
 #: frontend/src/components/Telephony/TwilioCallUI.vue:57
@@ -375,7 +375,7 @@ msgstr "Añadir descripción."
 
 #: frontend/src/components/Telephony/TaskPanel.vue:17
 msgid "Add description..."
-msgstr ""
+msgstr "Añadir descripción..."
 
 #: frontend/src/components/Modals/AddExistingUserModal.vue:12
 msgid "Add existing system users to this CRM. Assign them a role to grant access with their current credentials."
@@ -417,7 +417,7 @@ msgstr "Añadir, editar y administrar plantillas de correo electrónico para var
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:12
 msgid "Add, edit, and manage sources for automatic lead syncing to your CRM"
-msgstr ""
+msgstr "Añada, edite y gestione fuentes para la sincronización automática de clientes potenciales con su CRM"
 
 #. Label of the address (Link) field in DocType 'CRM Organization'
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
@@ -479,7 +479,7 @@ msgstr "Se ha producido un error"
 
 #: frontend/src/data/document.js:67
 msgid "An error occurred while updating the document"
-msgstr ""
+msgstr "Ocurrió un error cuando se actualizaba el documento"
 
 #. Description of the 'Favicon' (Attach) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
@@ -511,7 +511,7 @@ msgstr "Los ingresos anuales deben ser un número"
 
 #: frontend/src/components/Settings/LeadSyncing/FailureLogs.vue:39
 msgid "Any failed lead syncs will show up here"
-msgstr ""
+msgstr "Cualquier sincronización fallida de clientes potenciales se mostrará aquí"
 
 #: frontend/src/components/Settings/BrandSettings.vue:55
 msgid "Appears in the left sidebar. Recommended size is 32x32 px in PNG or SVG"
@@ -608,12 +608,12 @@ msgstr "Se requiere una condición de asignación"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:438
 msgid "Assign conditions are invalid"
-msgstr ""
+msgstr "Las condiciones de asignación son inválidas"
 
 #: frontend/src/components/AssignTo.vue:11
 #: frontend/src/components/AssignToBody.vue:5
 msgid "Assign to"
-msgstr ""
+msgstr "Asignar a"
 
 #: frontend/src/components/AssignToBody.vue:63
 msgid "Assign to me"
@@ -644,7 +644,7 @@ msgstr "Regla de asignación"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:302
 msgid "Assignment Schedule"
-msgstr "Calendario de tareas"
+msgstr "Calendario de asignaciones"
 
 #: frontend/src/components/ListBulkActions.vue:154
 msgid "Assignment cleared successfully"
@@ -656,45 +656,45 @@ msgstr "Condición de asignación"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:471
 msgid "Assignment days are required"
-msgstr ""
+msgstr "Se requieren días de asignación"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:582
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRulesList.vue:19
 msgid "Assignment rule"
-msgstr ""
+msgstr "Regla de asignación"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:667
 msgid "Assignment rule created"
-msgstr ""
+msgstr "Regla de asignación creada"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:119
 msgid "Assignment rule deleted"
-msgstr ""
+msgstr "Regla de asignación borrada"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:164
 msgid "Assignment rule duplicated"
-msgstr ""
+msgstr "Regla de asignación duplicada"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:749
 msgid "Assignment rule updated"
-msgstr ""
+msgstr "Regla de asignación actualizada"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:196
 msgid "Assignment rule {0} updated"
-msgstr ""
+msgstr "Regla de asignación {0} actualizada"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRules.vue:7
 #: frontend/src/components/Settings/Settings.vue:164
 msgid "Assignment rules"
-msgstr ""
+msgstr "Reglas de asignación"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRules.vue:11
 msgid "Assignment rules automatically assign lead/deal to the right sales user based on predefined conditions"
-msgstr ""
+msgstr "Las reglas de asignación asignan automáticamente clientes potenciales o acuerdos al usuario de ventas correcto según condiciones predefinidas"
 
 #: frontend/src/components/Controls/GridFieldsEditorModal.vue:173
 msgid "At least one field is required"
-msgstr ""
+msgstr "Se requiere al menos un campo"
 
 #: frontend/src/components/FilesUploader/FilesUploader.vue:5
 #: frontend/src/components/FilesUploader/FilesUploader.vue:73
@@ -705,7 +705,7 @@ msgstr "Adjuntar"
 #: frontend/src/components/EmailEditor.vue:146 frontend/src/pages/Deal.vue:110
 #: frontend/src/pages/Lead.vue:155
 msgid "Attach a file"
-msgstr ""
+msgstr "Adjuntar un archivo"
 
 #: frontend/src/pages/Deal.vue:583 frontend/src/pages/Lead.vue:429
 #: frontend/src/pages/MobileDeal.vue:468 frontend/src/pages/MobileLead.vue:374
@@ -719,80 +719,80 @@ msgstr "Asistentes"
 #. Label of the auth_token (Password) field in DocType 'CRM Twilio Settings'
 #: crm/fcrm/doctype/crm_twilio_settings/crm_twilio_settings.json
 msgid "Auth Token"
-msgstr ""
+msgstr "Token de Autenticación"
 
 #. Label of the auto_update_expected_deal_value (Check) field in DocType 'FCRM
 #. Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 msgid "Auto Update Expected Deal Value"
-msgstr ""
+msgstr "Actualización automática del valor esperado del acuerdo"
 
 #: frontend/src/components/Settings/ForecastingSettings.vue:42
 msgid "Auto update expected deal value"
-msgstr ""
+msgstr "Actualización automática del valor esperado del acuerdo"
 
 #: frontend/src/components/Settings/ForecastingSettings.vue:88
 msgid "Auto update of expected deal value disabled"
-msgstr ""
+msgstr "Actualización automática del valor esperado del acuerdo deshabilitada"
 
 #: frontend/src/components/Settings/ForecastingSettings.vue:87
 msgid "Auto update of expected deal value enabled"
-msgstr ""
+msgstr "Actualización automática del valor esperado del acuerdo habilitada"
 
 #. Description of the 'Auto Update Expected Deal Value' (Check) field in
 #. DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 #: frontend/src/components/Settings/ForecastingSettings.vue:46
 msgid "Automatically update \"Expected Deal Value\" based on the total value of associated products in a deal"
-msgstr ""
+msgstr "Actualizar automáticamente el \"Valor esperado de la oferta\" basado en el valor total de los productos asociados en un acuerdo"
 
 #: frontend/src/components/Settings/Settings.vue:161
 msgid "Automation & Rules"
-msgstr ""
+msgstr "Automatización y Reglas"
 
 #: crm/api/dashboard.py:250
 msgid "Average deal value of non won/lost deals"
-msgstr ""
+msgstr "Valor promedio de Acuerdos perdidos"
 
 #: crm/api/dashboard.py:429
 msgid "Average deal value of ongoing & won deals"
-msgstr ""
+msgstr "Valor promedio de Acuerdos en curso & Acuerdos ganados"
 
 #: crm/api/dashboard.py:370
 msgid "Average deal value of won deals"
-msgstr ""
+msgstr "Valor promedio de Acuerdos ganados"
 
 #: crm/api/dashboard.py:534
 msgid "Average time taken from deal creation to deal closure"
-msgstr ""
+msgstr "Tiempo medio transcurrido desde la creación del acuerdo hasta su cierre"
 
 #: crm/api/dashboard.py:481
 msgid "Average time taken from lead creation to deal closure"
-msgstr ""
+msgstr "Tiempo medio transcurrido desde la creación del cliente potencial hasta el cierre del Acuerdo"
 
 #: frontend/src/components/Dashboard/AddChartModal.vue:81
 msgid "Avg deal value"
-msgstr ""
+msgstr "Valor promedio de Acuerdo"
 
 #: frontend/src/components/Dashboard/AddChartModal.vue:78
 msgid "Avg ongoing deal value"
-msgstr ""
+msgstr "Valor promedio de Acuerdos en curso"
 
 #: frontend/src/components/Dashboard/AddChartModal.vue:87
 msgid "Avg time to close a deal"
-msgstr ""
+msgstr "Tiempo promedio para cerrar un Acuerdo"
 
 #: frontend/src/components/Dashboard/AddChartModal.vue:83
 msgid "Avg time to close a lead"
-msgstr ""
+msgstr "Tiempo medio para cerrar un cliente potencial"
 
 #: frontend/src/components/Dashboard/AddChartModal.vue:80
 msgid "Avg won deal value"
-msgstr ""
+msgstr "Valor medio de las operaciónes ganadas"
 
 #: crm/api/dashboard.py:428
 msgid "Avg. deal value"
-msgstr ""
+msgstr "Valor medio de las operaciones"
 
 #: crm/api/dashboard.py:249
 msgid "Avg. ongoing deal value"
@@ -4861,7 +4861,7 @@ msgstr "Precio"
 #. Label of the read (Check) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
 msgid "Read"
-msgstr "Leer"
+msgstr "Leído"
 
 #: crm/api/dashboard.py:922
 #: frontend/src/components/Settings/LeadSyncing/FailureLogs.vue:16
