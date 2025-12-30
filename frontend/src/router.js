@@ -2,8 +2,9 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { usersStore } from '@/stores/users'
 import { sessionStore } from '@/stores/session'
 import { viewsStore } from '@/stores/views'
+import generateRoutes from '@/doctype/generateRoutes'
 
-const routes = [
+const staticRoutes = [
   {
     path: '/',
     name: 'Home',
@@ -127,59 +128,64 @@ const handleMobileView = (componentName) => {
   return window.innerWidth < 768 ? `Mobile${componentName}` : componentName
 }
 
-let router = createRouter({
-  history: createWebHistory('/crm'),
-  routes,
-})
+export default async function createVueRouter() {
+  const dynamicRoutes = await generateRoutes()
+  const routes = [...staticRoutes, ...dynamicRoutes]
 
-router.beforeEach(async (to, from, next) => {
-  const { isLoggedIn } = sessionStore()
-  const { users, isWebsiteUser } = usersStore()
+  const router = createRouter({
+    history: createWebHistory('/crm'),
+    routes,
+  })
 
-  if (isLoggedIn && !users.fetched) {
-    try {
-      await users.promise
-    } catch (error) {
-      console.error('Error loading users', error)
-    }
-  }
+  router.beforeEach(async (to, from, next) => {
+    const { isLoggedIn } = sessionStore()
+    const { users, isWebsiteUser } = usersStore()
 
-  if (isLoggedIn && to.name !== 'Not Permitted' && isWebsiteUser()) {
-    next({ name: 'Not Permitted' })
-  } else if (to.name === 'Home' && isLoggedIn) {
-    const { views, getDefaultView } = viewsStore()
-    await views.promise
-
-    let defaultView = getDefaultView()
-    if (!defaultView) {
-      next({ name: 'Leads' })
-      return
+    if (isLoggedIn && !users.fetched) {
+      try {
+        await users.promise
+      } catch (error) {
+        console.error('Error loading users', error)
+      }
     }
 
-    let { route_name, type, name, is_standard } = defaultView
-    route_name = route_name || 'Leads'
+    if (isLoggedIn && to.name !== 'Not Permitted' && isWebsiteUser()) {
+      next({ name: 'Not Permitted' })
+    } else if (to.name === 'Home' && isLoggedIn) {
+      const { views, getDefaultView } = viewsStore()
+      await views.promise
 
-    if (name && !is_standard) {
-      next({
-        name: route_name,
-        params: { viewType: type },
-        query: { view: name },
-      })
+      let defaultView = getDefaultView()
+      if (!defaultView) {
+        next({ name: 'Leads' })
+        return
+      }
+
+      let { route_name, type, name, is_standard } = defaultView
+      route_name = route_name || 'Leads'
+
+      if (name && !is_standard) {
+        next({
+          name: route_name,
+          params: { viewType: type },
+          query: { view: name },
+        })
+      } else {
+        next({ name: route_name, params: { viewType: type } })
+      }
+    } else if (!isLoggedIn) {
+      window.location.href = '/login?redirect-to=/crm'
+    } else if (to.matched.length === 0) {
+      next({ name: 'Invalid Page' })
+    } else if (['Deal', 'Lead'].includes(to.name) && !to.hash) {
+      let storageKey = to.name === 'Deal' ? 'lastDealTab' : 'lastLeadTab'
+      const activeTab = localStorage.getItem(storageKey) || 'activity'
+      const hash = '#' + activeTab
+      next({ ...to, hash })
     } else {
-      next({ name: route_name, params: { viewType: type } })
+      next()
     }
-  } else if (!isLoggedIn) {
-    window.location.href = '/login?redirect-to=/crm'
-  } else if (to.matched.length === 0) {
-    next({ name: 'Invalid Page' })
-  } else if (['Deal', 'Lead'].includes(to.name) && !to.hash) {
-    let storageKey = to.name === 'Deal' ? 'lastDealTab' : 'lastLeadTab'
-    const activeTab = localStorage.getItem(storageKey) || 'activity'
-    const hash = '#' + activeTab
-    next({ ...to, hash })
-  } else {
-    next()
-  }
-})
+  })
 
-export default router
+  return router
+}
