@@ -56,6 +56,7 @@
       :placeholder="
         __('Hi John, \n\nCan you please provide more details on this...')
       "
+      @sender-change="onSenderChange"
     />
   </div>
   <div v-show="showCommentBox">
@@ -155,9 +156,10 @@ const userSignature = createResource({
   url: 'crm.api.get_user_signature',
 })
 
-function setSignature(editor) {
-  let sig = userSignature.data || signature.data
-  
+function setSignature(editor, explicitSignature) {
+  let sig =
+    explicitSignature !== undefined ? explicitSignature : signature.data
+
   let emailContent = editor.getHTML()
   let hasSignature = emailContent.includes('<p class="signature">')
 
@@ -196,17 +198,14 @@ watch(
   },
 )
 
-watch(
-  () => newEmailEditor.value?.fromEmails,
-  (value) => {
-    if (value && value.length) {
-      userSignature.submit({ sender: value[0] }).then(() => {
-        let editor = newEmailEditor.value.editor
-        setSignature(editor)
-      })
-    }
-  },
-)
+function onSenderChange(value) {
+  if (value && value.length) {
+    userSignature.submit({ sender: value[0] }).then((data) => {
+      let editor = newEmailEditor.value.editor
+      setSignature(editor, data)
+    })
+  }
+}
 
 watch(
   () => showCommentBox.value,

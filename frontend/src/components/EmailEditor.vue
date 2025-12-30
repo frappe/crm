@@ -203,6 +203,7 @@ import Paragraph from '@tiptap/extension-paragraph'
 import { EditorContent } from '@tiptap/vue-3'
 import { ref, computed, nextTick } from 'vue'
 import { createResource } from 'frappe-ui'
+const emit = defineEmits(['sender-change'])
 const props = defineProps({
   placeholder: {
     type: String,
@@ -330,6 +331,14 @@ function toggleBCC() {
   bcc.value = !bcc.value
   bcc.value && nextTick(() => bccInput.value.setFocus())
 }
+
+watch(
+  () => fromEmails.value,
+  (val) => {
+    emit('sender-change', val)
+  },
+  { deep: true },
+)
 
 defineExpose({
   editor,

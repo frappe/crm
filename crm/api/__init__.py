@@ -36,8 +36,7 @@ def get_user_signature(sender=None):
 			{"email_id": sender, "add_signature": 1},
 			"signature",
 		)
-		if signature:
-			return format_signature(signature)
+		return format_signature(signature)
 
 	signature = user_email_signature or frappe.db.get_value(
 		"Email Account",
