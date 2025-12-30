@@ -151,14 +151,37 @@ const signature = createResource({
   auto: true,
 })
 
+const userSignature = createResource({
+  url: 'crm.api.get_user_signature',
+})
+
 function setSignature(editor) {
-  if (!signature.data) return
-  signature.data = signature.data.replace(/\n/g, '<br>')
+  let sig = userSignature.data || signature.data
+  
   let emailContent = editor.getHTML()
+  let hasSignature = emailContent.includes('<p class="signature">')
+
+  if (!sig) {
+    if (hasSignature) {
+       // Remove existing signature if new signature is empty
+       emailContent = emailContent.replace(/<br><p class="signature">.*<\/p>/s, '')
+       emailContent = emailContent.replace(/<p class="signature">.*<\/p>/s, '')
+       editor.commands.setContent(emailContent)
+    }
+    return
+  }
+
+  sig = sig.replace(/\n/g, '<br>')
   emailContent = emailContent.startsWith('<p></p>')
     ? emailContent.slice(7)
     : emailContent
-  editor.commands.setContent(signature.data + emailContent)
+  
+  if (hasSignature) {
+    emailContent = emailContent.replace(/<p class="signature">.*<\/p>/s, sig)
+    editor.commands.setContent(emailContent)
+  } else {
+    editor.commands.setContent(sig + emailContent)
+  }
   editor.commands.focus('start')
 }
 
@@ -169,6 +192,18 @@ watch(
       let editor = newEmailEditor.value.editor
       editor.commands.focus()
       setSignature(editor)
+    }
+  },
+)
+
+watch(
+  () => newEmailEditor.value?.fromEmails,
+  (value) => {
+    if (value && value.length) {
+      userSignature.submit({ sender: value[0] }).then(() => {
+        let editor = newEmailEditor.value.editor
+        setSignature(editor)
+      })
     }
   },
 )
