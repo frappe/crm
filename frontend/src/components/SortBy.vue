@@ -1,6 +1,6 @@
 <template>
   <Autocomplete
-    v-if="!sortValues?.size"
+    v-if="!sortValues?.length"
     :options="options"
     value=""
     :placeholder="__('First Name')"
@@ -11,7 +11,7 @@
         <template v-if="hideLabel">
           <SortIcon class="h-4" />
         </template>
-        <template v-if="!hideLabel && !sortValues?.size" #prefix>
+        <template v-if="!hideLabel && !sortValues?.length" #prefix>
           <SortIcon class="h-4" />
         </template>
       </Button>
@@ -20,45 +20,37 @@
   <Popover placement="bottom-end" v-else>
     <template #target="{ isOpen, togglePopover }">
       <Button
-        v-if="sortValues.size > 1"
+        v-if="sortValues.length > 1"
         :label="__('Sort')"
         :icon="hideLabel && SortIcon"
         :iconLeft="!hideLabel && SortIcon"
         @click="togglePopover"
       >
-        <template v-if="sortValues?.size" #suffix>
+        <template v-if="sortValues?.length" #suffix>
           <div
             class="flex h-5 w-5 items-center justify-center rounded-[5px] bg-surface-white pt-px text-xs font-medium text-ink-gray-8 shadow-sm"
           >
-            {{ sortValues.size }}
+            {{ sortValues.length }}
           </div>
         </template>
       </Button>
       <div v-else class="flex items-center justify-center">
         <Button
-          v-if="sortValues.size"
+          v-if="sortValues.length"
           class="rounded-r-none border-r"
           :icon="
-            Array.from(sortValues)[0].direction == 'asc'
-              ? AscendingIcon
-              : DesendingIcon
+            sortValues[0].direction == 'asc' ? AscendingIcon : DesendingIcon
           "
-          @click.stop="
-            () => {
-              Array.from(sortValues)[0].direction =
-                Array.from(sortValues)[0].direction == 'asc' ? 'desc' : 'asc'
-              apply()
-            }
-          "
+          @click.stop="toggleDirection(0)"
         />
         <Button
           :label="getSortLabel()"
           class="shrink-0 [&_svg]:text-ink-gray-5"
-          :iconLeft="!hideLabel && !sortValues?.size && SortIcon"
+          :iconLeft="!hideLabel && !sortValues?.length && SortIcon"
           :iconRight="
-            sortValues?.size && (isOpen ? 'chevron-up' : 'chevron-down')
+            sortValues?.length && (isOpen ? 'chevron-up' : 'chevron-down')
           "
-          :class="sortValues.size ? 'rounded-l-none' : ''"
+          :class="sortValues.length ? 'rounded-l-none' : ''"
           @click.stop="togglePopover"
         />
       </div>
@@ -69,7 +61,7 @@
       >
         <div class="min-w-60 p-2">
           <div
-            v-if="sortValues?.size"
+            v-if="sortValues?.length"
             id="sort-list"
             class="mb-3 flex flex-col gap-2"
           >
@@ -88,12 +80,7 @@
                   :icon="
                     sort.direction == 'asc' ? AscendingIcon : DesendingIcon
                   "
-                  @click="
-                    () => {
-                      sort.direction = sort.direction == 'asc' ? 'desc' : 'asc'
-                      apply()
-                    }
-                  "
+                  @click="toggleDirection(i)"
                 />
                 <Autocomplete
                   class="[&>_div]:w-full"
@@ -147,7 +134,7 @@
               </template>
             </Autocomplete>
             <Button
-              v-if="sortValues?.size"
+              v-if="sortValues?.length"
               class="!text-ink-gray-5"
               variant="ghost"
               :label="__('Clear Sort')"
@@ -167,6 +154,7 @@ import SortIcon from '@/components/Icons/SortIcon.vue'
 import DragIcon from '@/components/Icons/DragIcon.vue'
 import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import { useSortable } from '@vueuse/integrations/useSortable'
+import { useViews } from '@/stores/view'
 import { createResource, Popover } from 'frappe-ui'
 import { computed, nextTick, onMounted } from 'vue'
 
@@ -181,8 +169,9 @@ const props = defineProps({
   },
 })
 
+const { currentView } = useViews(props.doctype)
+
 const emit = defineEmits(['update'])
-const list = defineModel()
 
 const sortOptions = createResource({
   url: 'crm.api.doc.sort_options',
@@ -197,77 +186,86 @@ onMounted(() => {
 
 const sortValues = computed({
   get: () => {
-    if (!list.value?.data) return new Set()
-    let allSortValues = list.value?.params?.order_by
-    if (!allSortValues || !sortOptions.data) return new Set()
-    if (allSortValues.trim() === 'modified desc') return new Set()
+    if (!currentView.value) return []
+    let allSortValues = currentView.value.order_by
+    if (!allSortValues || !sortOptions.data) return []
+    if (allSortValues.trim() === 'modified desc') return []
     allSortValues = allSortValues.split(', ').map((sortValue) => {
       const [fieldname, direction] = sortValue.split(' ')
       return { fieldname, direction }
     })
-    return new Set(allSortValues)
+    return allSortValues
   },
   set: (value) => {
-    list.value.params.order_by = convertToString(value)
+    currentView.value.order_by = convertToString(value)
   },
 })
 
 const options = computed(() => {
   if (!sortOptions.data) return []
-  if (!sortValues.value.size) return sortOptions.data
-  const selectedOptions = [...sortValues.value].map((sort) => sort.fieldname)
-  restartSort()
+  if (!sortValues.value.length) return sortOptions.data
+  const selectedOptions = sortValues.value.map((sort) => sort.fieldname)
   return sortOptions.data.filter((option) => {
-    return !selectedOptions.includes(option.fieldname)
+    return !selectedOptions.includes(option.value)
   })
 })
 
-const sortSortable = useSortable('#sort-list', sortValues, {
+const sortSortable = useSortable('#sort-list', sortValues.value, {
   handle: '.handle',
   animation: 200,
-  onEnd: () => apply(),
+  onUpdate: () => apply(),
 })
 
+function toggleDirection(index) {
+  const newValues = [...sortValues.value]
+  const sort = newValues[index]
+  sort.direction = sort.direction === 'asc' ? 'desc' : 'asc'
+  sortValues.value = newValues
+  apply()
+}
+
 function getSortLabel() {
-  if (!sortValues.value.size) return __('Sort')
-  let values = Array.from(sortValues.value)
+  if (!sortValues.value.length) return __('Sort')
   let label = sortOptions.data?.find(
-    (option) => option.fieldname === values[0].fieldname,
+    (option) => option.value === sortValues.value[0].fieldname,
   )?.label
-  return label || values[0].fieldname
+  return label || sortValues.value[0].fieldname
 }
 
 function setSort(data) {
-  sortValues.value.add({ fieldname: data.fieldname, direction: 'asc' })
-  restartSort()
+  sortValues.value = [
+    ...sortValues.value,
+    { fieldname: data.value, direction: 'asc' },
+  ]
   apply()
 }
 
 function updateSort(data, index) {
-  let oldSort = Array.from(sortValues.value)[index]
-  sortValues.value.delete(oldSort)
-  sortValues.value.add({
-    fieldname: data.fieldname,
+  const newValues = [...sortValues.value]
+  const oldSort = newValues[index]
+  newValues[index] = {
+    fieldname: data.value,
     direction: oldSort.direction,
-  })
+  }
+  sortValues.value = newValues
   apply()
 }
 
 function removeSort(index) {
-  sortValues.value.delete(Array.from(sortValues.value)[index])
+  const newValues = [...sortValues.value]
+  newValues.splice(index, 1)
+  sortValues.value = newValues
   apply()
 }
 
 function clearSort(close) {
-  sortValues.value.clear()
+  sortValues.value = []
   apply()
   close()
 }
 
 function apply() {
-  nextTick(() => {
-    emit('update', convertToString(sortValues.value))
-  })
+  emit('update')
 }
 
 function convertToString(values) {
@@ -277,10 +275,5 @@ function convertToString(values) {
   })
   _sortValues = _sortValues.slice(0, -2)
   return _sortValues
-}
-
-function restartSort() {
-  sortSortable.stop()
-  sortSortable.start()
 }
 </script>
