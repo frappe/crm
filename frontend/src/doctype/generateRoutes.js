@@ -42,7 +42,11 @@ export default async function generateRoutes() {
         path: object.route,
         component: () => import('@/pages/DynamicList.vue'),
         props: (route) => {
-          return { ...object, ...route.params }
+          return {
+            doctype: object.doctype,
+            routeName: object.routeName,
+            ...route.params,
+          }
         },
       }
       routes.push(_route)
