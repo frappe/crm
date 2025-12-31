@@ -148,9 +148,8 @@ import Draggable from 'vuedraggable'
 import { useViews } from '@/stores/view'
 import { isTouchScreenDevice } from '@/utils'
 import { watchOnce } from '@vueuse/core'
-import { Popover, Tooltip, call } from 'frappe-ui'
+import { Popover, Tooltip } from 'frappe-ui'
 import { computed, ref } from 'vue'
-import { useRoute } from 'vue-router'
 
 const props = defineProps({
   doctype: {
@@ -162,8 +161,6 @@ const props = defineProps({
     default: false,
   },
 })
-
-const route = useRoute()
 
 const { getColumnFields } = getMeta(props.doctype)
 const { currentView } = useViews(props.doctype)
@@ -280,19 +277,7 @@ function apply(reset = false) {
     columnsUpdated.value = true
   }
 
-  createOrUpdateStandardView()
-}
-
-function createOrUpdateStandardView() {
-  if (route.query.view) return
-  currentView.value.doctype = props.doctype
-  currentView.value.route_name = route.name
-  call(
-    'crm.fcrm.doctype.crm_view_settings.crm_view_settings.create_or_update_standard_view',
-    { view: currentView.value },
-  ).then(() => {
-    columnsUpdated.value = false
-  })
+  emit('update')
 }
 
 watchOnce(

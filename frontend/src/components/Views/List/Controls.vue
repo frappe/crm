@@ -68,7 +68,7 @@
         <ColumnSettings
           v-else-if="!options?.hideColumnsButton"
           :doctype="doctype"
-          @update="(isDefault) => updateColumns(isDefault)"
+          @update="updateColumns"
         />
         <Dropdown
           v-if="route?.params.viewType !== 'kanban' || isManager()"
@@ -126,7 +126,8 @@ import FadedScrollableDiv from '@/components/FadedScrollableDiv.vue'
 import CustomizeQuickFilter from './CustomizeQuickFilter.vue'
 import { useQuickFilters } from './quickFilter'
 import { usersStore } from '@/stores/users'
-import { Dropdown } from 'frappe-ui'
+import { useViews } from '@/stores/view'
+import { Dropdown, call } from 'frappe-ui'
 import { h } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 
@@ -147,7 +148,9 @@ const props = defineProps({
 
 const router = useRouter()
 const route = useRoute()
+
 const { isManager } = usersStore()
+const { currentView } = useViews(props.doctype)
 
 const list = defineModel()
 
@@ -157,4 +160,21 @@ const {
   quickFilterList,
   applyQuickFilter,
 } = useQuickFilters(list.value, props.doctype)
+
+// Columns
+function updateColumns() {
+  createOrUpdateStandardView()
+}
+
+function createOrUpdateStandardView() {
+  if (route.query.view) return
+
+  currentView.value.doctype = props.doctype
+  currentView.value.route_name = route.name
+
+  call(
+    'crm.fcrm.doctype.crm_view_settings.crm_view_settings.create_or_update_standard_view',
+    { view: currentView.value },
+  )
+}
 </script>
