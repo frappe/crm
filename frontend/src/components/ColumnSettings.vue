@@ -70,6 +70,13 @@
                   @click="togglePopover"
                 />
               </template>
+              <template #item-label="{ option }">
+                <Tooltip :text="option.fieldname">
+                  <div class="flex-1 truncate text-ink-gray-7">
+                    {{ option.label }}
+                  </div>
+                </Tooltip>
+              </template>
             </Autocomplete>
             <Button
               v-if="columnsUpdated"
@@ -144,8 +151,9 @@ import EditIcon from '@/components/Icons/EditIcon.vue'
 import DragIcon from '@/components/Icons/DragIcon.vue'
 import ReloadIcon from '@/components/Icons/ReloadIcon.vue'
 import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
+import { getMeta } from '@/stores/meta'
 import { isTouchScreenDevice } from '@/utils'
-import { Popover } from 'frappe-ui'
+import { Popover, Tooltip } from 'frappe-ui'
 import Draggable from 'vuedraggable'
 import { computed, ref } from 'vue'
 import { watchOnce } from '@vueuse/core'
@@ -160,6 +168,8 @@ const props = defineProps({
     default: false,
   },
 })
+
+const { getColumnFields } = getMeta(props.doctype)
 
 const emit = defineEmits(['update'])
 const columnsUpdated = ref(false)
@@ -201,11 +211,11 @@ const rows = computed({
 })
 
 const fields = computed(() => {
-  let allFields = list.value?.data?.fields
+  let allFields = getColumnFields()
   if (!allFields) return []
 
   return allFields.filter((field) => {
-    return !columns.value.find((column) => column.key === field.fieldname)
+    return !columns.value?.find((column) => column.key === field.fieldname)
   })
 })
 

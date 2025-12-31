@@ -1,7 +1,7 @@
 <template>
   <LayoutHeader>
     <template #left-header>
-      <ViewBreadcrumbs v-model="viewControls" :routeName="routeName" />
+      <ViewBreadcrumbs v-model="controls" :routeName="routeName" />
     </template>
     <template #right-header>
       <Button
@@ -12,7 +12,7 @@
       />
     </template>
   </LayoutHeader>
-  <Controls v-model="list" :doctype="doctype" />
+  <Controls ref="controls" v-model="list" :doctype="doctype" />
 </template>
 <script setup>
 import LayoutHeader from '@/components/LayoutHeader.vue'
@@ -32,6 +32,6 @@ const props = defineProps({
 })
 
 const list = ref({})
-const viewControls = ref(null)
+const controls = ref(null)
 const showQuickEntryModal = ref(false)
 </script>
