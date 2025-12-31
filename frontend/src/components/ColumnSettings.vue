@@ -86,14 +86,6 @@
               :iconLeft="ReloadIcon"
               @click="reset(close)"
             />
-            <Button
-              v-if="!is_default"
-              class="w-full !justify-start !text-ink-gray-5"
-              variant="ghost"
-              :label="__('Reset to Default')"
-              :iconLeft="ReloadIcon"
-              @click="resetToDefault(close)"
-            />
           </div>
         </div>
         <div v-else>
@@ -152,11 +144,13 @@ import DragIcon from '@/components/Icons/DragIcon.vue'
 import ReloadIcon from '@/components/Icons/ReloadIcon.vue'
 import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import { getMeta } from '@/stores/meta'
-import { isTouchScreenDevice } from '@/utils'
-import { Popover, Tooltip } from 'frappe-ui'
 import Draggable from 'vuedraggable'
-import { computed, ref } from 'vue'
+import { useViews } from '@/stores/view'
+import { isTouchScreenDevice } from '@/utils'
 import { watchOnce } from '@vueuse/core'
+import { Popover, Tooltip, call } from 'frappe-ui'
+import { computed, ref } from 'vue'
+import { useRoute } from 'vue-router'
 
 const props = defineProps({
   doctype: {
@@ -169,7 +163,10 @@ const props = defineProps({
   },
 })
 
+const route = useRoute()
+
 const { getColumnFields } = getMeta(props.doctype)
+const { currentView } = useViews(props.doctype)
 
 const emit = defineEmits(['update'])
 const columnsUpdated = ref(false)
@@ -180,7 +177,6 @@ const oldValues = ref({
   isDefault: false,
 })
 
-const list = defineModel()
 const edit = ref(false)
 const column = ref({
   old: {},
@@ -189,24 +185,24 @@ const column = ref({
   width: '10rem',
 })
 
-const is_default = computed({
-  get: () => list.value?.data?.is_default,
+const isDefault = computed({
+  get: () => currentView?.value?.is_default,
   set: (val) => {
-    list.value.data.is_default = val
+    currentView.value.is_default = val
   },
 })
 
 const columns = computed({
-  get: () => list.value?.data?.columns,
+  get: () => currentView?.value?.columns,
   set: (val) => {
-    list.value.data.columns = val
+    currentView.value.columns = val
   },
 })
 
 const rows = computed({
-  get: () => list.value?.data?.rows,
+  get: () => currentView?.value?.rows,
   set: (val) => {
-    list.value.data.rows = val
+    currentView.value.rows = val
   },
 })
 
@@ -233,7 +229,7 @@ function addColumn(c) {
   }
   columns.value.push(_column)
   rows.value.push(c.value)
-  apply(true)
+  apply()
 }
 
 function removeColumn(c) {
@@ -270,38 +266,37 @@ function cancelUpdate() {
 }
 
 function reset(close) {
-  apply(true, false, true)
+  apply(true)
   close()
 }
 
-function resetToDefault(close) {
-  apply(true, true)
-  close()
+function apply(reset = false) {
+  if (reset) {
+    columns.value = JSON.parse(JSON.stringify(oldValues.value.columns))
+    rows.value = JSON.parse(JSON.stringify(oldValues.value.rows))
+    isDefault.value = oldValues.value.isDefault
+    columnsUpdated.value = false
+  } else {
+    columnsUpdated.value = true
+  }
+
+  createOrUpdateStandardView()
 }
 
-function apply(reload = false, isDefault = false, reset = false) {
-  is_default.value = isDefault
-  columnsUpdated.value = true
-  let obj = {
-    columns: reset ? oldValues.value.columns : columns.value,
-    rows: reset ? oldValues.value.rows : rows.value,
-    isDefault: reset ? oldValues.value.isDefault : isDefault,
-    reload,
-    reset,
-  }
-  emit('update', obj)
-
-  if (reload) {
-    // will have think of a better way to do this
-    setTimeout(() => {
-      is_default.value = reset ? oldValues.value.isDefault : isDefault
-      columnsUpdated.value = !reset
-    }, 100)
-  }
+function createOrUpdateStandardView() {
+  if (route.query.view) return
+  currentView.value.doctype = props.doctype
+  currentView.value.route_name = route.name
+  call(
+    'crm.fcrm.doctype.crm_view_settings.crm_view_settings.create_or_update_standard_view',
+    { view: currentView.value },
+  ).then(() => {
+    columnsUpdated.value = false
+  })
 }
 
 watchOnce(
-  () => list.value.data,
+  () => currentView.value,
   (val) => {
     if (!val) return
     oldValues.value.columns = JSON.parse(JSON.stringify(val.columns))

@@ -67,7 +67,6 @@
         />
         <ColumnSettings
           v-else-if="!options?.hideColumnsButton"
-          v-model="list"
           :doctype="doctype"
           @update="(isDefault) => updateColumns(isDefault)"
         />
