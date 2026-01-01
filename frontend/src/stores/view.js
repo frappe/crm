@@ -1,40 +1,49 @@
 import { createResource } from 'frappe-ui'
-import { computed, ref } from 'vue'
+import { reactive, watch, toRefs } from 'vue'
 
-const store = {}
+const views = reactive({})
 
 export function useViews(doctype) {
-  if (!store[doctype]) {
-    store[doctype] = createState(doctype)
+  if (!views[doctype]) {
+    const resource = createResource({
+      url: 'crm.api.views.get_doctype_views',
+      params: { doctype: doctype || '' },
+      cache: 'CRM Views' + doctype,
+      auto: true,
+      transform(_views) {
+        _views.forEach((view) => {
+          view.columns = JSON.parse(view.columns || '[]')
+          view.rows = JSON.parse(view.rows || '[]')
+          view.filters = JSON.parse(view.filters || '{}')
+        })
+        return _views
+      },
+      onSuccess() {
+        setCurrentView()
+      },
+    })
+
+    views[doctype] = reactive({
+      ...toRefs(resource),
+      currentView: null,
+    })
   }
-  return store[doctype]
-}
 
-function createState(doctype) {
-  const views = ref([])
+  function setCurrentView(view = null) {
+    if (!views[doctype]?.data) return
 
-  const currentView = computed(() => {
-    if (!views.value.length) return null
-    return views.value.find((v) => v.is_default) || null
-  })
+    views[doctype].currentView =
+      view || views[doctype].data.find((view) => view.is_default) || null
+  }
 
-  createResource({
-    url: 'crm.api.views.get_doctype_views',
-    params: { doctype: doctype || '' },
-    cache: 'CRM Views',
-    auto: true,
-    transform(_views) {
-      _views.forEach((view) => {
-        view.columns = JSON.parse(view.columns || '[]')
-        view.rows = JSON.parse(view.rows || '[]')
-      })
-      views.value = _views
-      return _views
-    },
-  })
+  watch(
+    () => doctype,
+    () => setCurrentView(),
+    { immediate: true },
+  )
 
   return {
-    views,
-    currentView,
+    views: toRefs(views[doctype]).data,
+    currentView: toRefs(views[doctype]).currentView,
   }
 }
