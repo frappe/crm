@@ -161,6 +161,11 @@ const {
   applyQuickFilter,
 } = useQuickFilters(list.value, props.doctype)
 
+// Filter
+function updateFilter() {
+  createOrUpdateStandardView()
+}
+
 // Sort
 function updateSort() {
   createOrUpdateStandardView()

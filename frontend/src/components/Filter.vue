@@ -4,20 +4,20 @@
       <div class="flex items-center">
         <Button
           :label="__('Filter')"
-          :class="filters?.size ? 'rounded-r-none' : ''"
+          :class="filters?.length ? 'rounded-r-none' : ''"
           :iconLeft="FilterIcon"
           @click="togglePopover"
         >
-          <template v-if="filters?.size" #suffix>
+          <template v-if="filters?.length" #suffix>
             <div
               class="flex h-5 w-5 items-center justify-center rounded-[5px] bg-surface-white pt-px text-xs font-medium text-ink-gray-8 shadow-sm"
             >
-              {{ filters.size }}
+              {{ filters.length }}
             </div>
           </template>
         </Button>
         <Button
-          v-if="filters?.size"
+          v-if="filters?.length"
           :tooltip="__('Clear all Filter')"
           class="rounded-l-none border-l"
           icon="x"
@@ -29,13 +29,12 @@
       <div
         class="my-2 min-w-40 rounded-lg bg-surface-modal shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
       >
-        <div class="min-w-72 p-2 sm:min-w-[400px]">
+        <div class="filters min-w-72 p-2 sm:min-w-[400px]">
           <div
-            v-if="filters?.size"
+            v-if="filters?.length"
             v-for="(f, i) in filters"
             :key="i"
-            id="filter-list"
-            class="mb-4 sm:mb-3"
+            class="filter mb-4 sm:mb-3"
           >
             <div v-if="isMobileView" class="flex flex-col gap-2">
               <div class="-mb-2 flex w-full items-center justify-between">
@@ -140,7 +139,7 @@
               </template>
             </Autocomplete>
             <Button
-              v-if="filters?.size"
+              v-if="filters?.length"
               class="!text-ink-gray-5"
               variant="ghost"
               :label="__('Clear all Filter')"
@@ -156,6 +155,7 @@
 import FilterIcon from '@/components/Icons/FilterIcon.vue'
 import Link from '@/components/Controls/Link.vue'
 import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
+import { useViews } from '@/stores/view'
 import {
   FormControl,
   createResource,
@@ -164,7 +164,7 @@ import {
   DateTimePicker,
   DateRangePicker,
 } from 'frappe-ui'
-import { h, computed, onMounted } from 'vue'
+import { h, computed, onMounted, ref, watch } from 'vue'
 import { isMobileView } from '@/composables/settings'
 
 const typeCheck = ['Check']
@@ -173,6 +173,45 @@ const typeNumber = ['Float', 'Int', 'Currency', 'Percent']
 const typeSelect = ['Select']
 const typeString = ['Data', 'Long Text', 'Small Text', 'Text Editor', 'Text']
 const typeDate = ['Date', 'Datetime']
+
+const operatorMap = {
+  is: 'is',
+  'is not': 'is not',
+  in: 'in',
+  'not in': 'not in',
+  equals: '=',
+  'not equals': '!=',
+  yes: true,
+  no: false,
+  like: 'LIKE',
+  'not like': 'NOT LIKE',
+  '>': '>',
+  '<': '<',
+  '>=': '>=',
+  '<=': '<=',
+  between: 'between',
+  timespan: 'timespan',
+}
+
+const oppositeOperatorMap = {
+  is: 'is',
+  '=': 'equals',
+  '!=': 'not equals',
+  equals: 'equals',
+  'is not': 'is not',
+  true: 'yes',
+  false: 'no',
+  LIKE: 'like',
+  'NOT LIKE': 'not like',
+  in: 'in',
+  'not in': 'not in',
+  '>': '>',
+  '<': '<',
+  '>=': '>=',
+  '<=': '<=',
+  between: 'between',
+  timespan: 'timespan',
+}
 
 const props = defineProps({
   doctype: {
@@ -185,9 +224,9 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['update'])
+const { currentView } = useViews(props.doctype)
 
-const list = defineModel()
+const emit = defineEmits(['update'])
 
 const filterableFields = createResource({
   url: 'crm.api.doc.get_filterable_fields',
@@ -200,25 +239,36 @@ onMounted(() => {
   filterableFields.fetch()
 })
 
-const filters = computed(() => {
-  if (!list.value?.data) return new Set()
-  let allFilters =
-    list.value?.params?.filters || list.value.data?.params?.filters
-  if (!allFilters || !filterableFields.data) return new Set()
-  // remove default filters
-  if (props.default_filters) {
-    allFilters = removeCommonFilters(props.default_filters, allFilters)
-  }
-  return convertFilters(filterableFields.data, allFilters)
-})
+const filters = ref([])
+
+watch(
+  () => currentView.value?.filters,
+  (newFilters) => {
+    if (!newFilters || !filterableFields.data) {
+      filters.value = []
+      return
+    }
+
+    if (typeof newFilters === 'object' && !Array.isArray(newFilters)) {
+      newFilters = JSON.stringify(newFilters)
+    }
+
+    let allFilters = JSON.parse(newFilters)
+    if (props.default_filters) {
+      allFilters = removeCommonFilters(props.default_filters, allFilters)
+    }
+
+    filters.value = convertFilters(filterableFields.data, allFilters) || []
+  },
+  { deep: true, immediate: true },
+)
 
 const availableFilters = computed(() => {
   if (!filterableFields.data) return []
 
-  const selectedFieldNames = new Set()
-  for (const filter of filters.value) {
-    selectedFieldNames.add(filter.fieldname)
-  }
+  const selectedFieldNames = new Set(
+    filters.value.map((filter) => filter.fieldname),
+  )
 
   return filterableFields.data.filter(
     (field) => !selectedFieldNames.has(field.fieldname),
@@ -256,7 +306,7 @@ function convertFilters(data, allFilters) {
       })
     }
   }
-  return new Set(f)
+  return f
 }
 
 function getOperators(fieldtype, fieldname) {
@@ -440,7 +490,7 @@ function getSelectOptions(options) {
 
 function setfilter(data) {
   if (!data) return
-  filters.value.add({
+  filters.value.push({
     field: {
       label: data.label,
       fieldname: data.fieldname,
@@ -457,8 +507,7 @@ function setfilter(data) {
 function updateFilter(data, index) {
   if (!data.fieldname) return
 
-  filters.value.delete(Array.from(filters.value)[index])
-  filters.value.add({
+  filters.value.splice(index, 1, {
     fieldname: data.fieldname,
     operator: getDefaultOperator(data.fieldtype),
     value: getDefaultValue(data),
@@ -473,12 +522,12 @@ function updateFilter(data, index) {
 }
 
 function removeFilter(index) {
-  filters.value.delete(Array.from(filters.value)[index])
+  filters.value.splice(index, 1)
   apply()
 }
 
 function clearfilter(close) {
-  filters.value.clear()
+  filters.value.length = 0
   apply()
   close()
 }
@@ -534,7 +583,8 @@ function apply() {
       value: f.value,
     })
   })
-  emit('update', parseFilters(_filters))
+  currentView.value.filters = parseFilters(_filters) || {}
+  emit('update')
 }
 
 function parseFilters(filters) {
@@ -557,45 +607,6 @@ function transformIn(f) {
     f.value = `%${f.value}%`
   }
   return f
-}
-
-const operatorMap = {
-  is: 'is',
-  'is not': 'is not',
-  in: 'in',
-  'not in': 'not in',
-  equals: '=',
-  'not equals': '!=',
-  yes: true,
-  no: false,
-  like: 'LIKE',
-  'not like': 'NOT LIKE',
-  '>': '>',
-  '<': '<',
-  '>=': '>=',
-  '<=': '<=',
-  between: 'between',
-  timespan: 'timespan',
-}
-
-const oppositeOperatorMap = {
-  is: 'is',
-  '=': 'equals',
-  '!=': 'not equals',
-  equals: 'equals',
-  'is not': 'is not',
-  true: 'yes',
-  false: 'no',
-  LIKE: 'like',
-  'NOT LIKE': 'not like',
-  in: 'in',
-  'not in': 'not in',
-  '>': '>',
-  '<': '<',
-  '>=': '>=',
-  '<=': '<=',
-  between: 'between',
-  timespan: 'timespan',
 }
 
 const timespanOptions = [
