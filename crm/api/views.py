@@ -55,7 +55,7 @@ def add_default_view(views, doctype):
 		"dt": doctype,
 		"columns": json.dumps(columns),
 		"rows": json.dumps(rows),
-		"filters": json.dumps([]),
+		"filters": json.dumps({}),
 		"order_by": "modified desc",
 	}
 

@@ -273,10 +273,11 @@ const filters = computed(() => getInitialFilters())
 
 function getInitialFilters(_filters) {
   let initialFilters = _filters || currentView.value?.filters || {}
-  if (typeof initialFilters === 'object' && !Array.isArray(initialFilters)) {
+
+  if (typeof initialFilters === 'object') {
     initialFilters = JSON.stringify(initialFilters)
   }
-  initialFilters = JSON.parse(initialFilters)
+  initialFilters = JSON.parse(initialFilters) || {}
 
   if (props.default_filters) {
     initialFilters = removeCommonFilters(props.default_filters, initialFilters)

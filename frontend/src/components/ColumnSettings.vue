@@ -280,13 +280,10 @@ function apply(reset = false) {
   emit('update')
 }
 
-watchOnce(
-  () => currentView.value,
-  (val) => {
-    if (!val) return
-    oldValues.value.columns = JSON.parse(JSON.stringify(val.columns))
-    oldValues.value.rows = JSON.parse(JSON.stringify(val.rows))
-    oldValues.value.isDefault = val.is_default
-  },
-)
+watchOnce(currentView, (val) => {
+  if (!val) return
+  oldValues.value.columns = JSON.parse(JSON.stringify(val.columns))
+  oldValues.value.rows = JSON.parse(JSON.stringify(val.rows))
+  oldValues.value.isDefault = val.is_default
+})
 </script>
