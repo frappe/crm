@@ -60,62 +60,57 @@
         class="my-2 min-w-40 rounded-lg bg-surface-modal shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
       >
         <div class="min-w-60 p-2">
-          <div
+          <Draggable
             v-if="sortValues?.length"
-            id="sort-list"
-            class="mb-3 flex flex-col gap-2"
+            v-model="sortValues"
+            class="sort-items mb-3 flex flex-col gap-2"
+            item-key="fieldname"
+            handle=".handle"
+            @end="apply"
           >
-            <div
-              v-for="(sort, i) in sortValues"
-              :key="sort.fieldname"
-              class="flex items-center gap-1"
-            >
-              <div class="handle flex h-7 w-7 items-center justify-center">
-                <DragIcon class="h-4 w-4 cursor-grab text-ink-gray-5" />
-              </div>
-              <div class="flex flex-1">
-                <Button
-                  size="md"
-                  class="rounded-r-none border-r"
-                  :icon="
-                    sort.direction == 'asc' ? AscendingIcon : DesendingIcon
-                  "
-                  @click="toggleDirection(i)"
-                />
-                <Autocomplete
-                  class="[&>_div]:w-full"
-                  :value="sort.fieldname"
-                  :options="sortOptions.data"
-                  @change="(e) => updateSort(e, i)"
-                  :placeholder="__('First Name')"
-                >
-                  <template
-                    #target="{
-                      open,
-                      togglePopover,
-                      selectedValue,
-                      displayValue,
-                    }"
+            <template #item="{ element: sort, index: i }">
+              <div class="sort-item flex items-center gap-1">
+                <div class="handle flex h-7 w-7 items-center justify-center">
+                  <DragIcon class="h-4 w-4 cursor-grab text-ink-gray-5" />
+                </div>
+                <div class="flex flex-1">
+                  <Button
+                    size="md"
+                    class="rounded-r-none border-r"
+                    :icon="
+                      sort.direction == 'asc' ? AscendingIcon : DesendingIcon
+                    "
+                    @click="toggleDirection(i)"
+                  />
+                  <Autocomplete
+                    class="[&>_div]:w-full"
+                    :value="sort.fieldname"
+                    :options="sortOptions.data"
+                    @change="(e) => updateSort(e, i)"
+                    :placeholder="__('First Name')"
                   >
-                    <Button
-                      class="flex w-full items-center justify-between rounded-l-none !text-ink-gray-5"
-                      size="md"
-                      :label="displayValue(selectedValue)"
-                      :iconRight="open ? 'chevron-down' : 'chevron-up'"
-                      @click="togglePopover()"
-                    />
-                  </template>
-                </Autocomplete>
+                    <template
+                      #target="{
+                        open,
+                        togglePopover,
+                        selectedValue,
+                        displayValue,
+                      }"
+                    >
+                      <Button
+                        class="flex w-full items-center justify-between rounded-l-none !text-ink-gray-5"
+                        size="md"
+                        :label="displayValue(selectedValue)"
+                        :iconRight="open ? 'chevron-down' : 'chevron-up'"
+                        @click="togglePopover()"
+                      />
+                    </template>
+                  </Autocomplete>
+                </div>
+                <Button variant="ghost" icon="x" @click="removeSort(i)" />
               </div>
-              <Button variant="ghost" icon="x" @click="removeSort(i)" />
-            </div>
-          </div>
-          <div
-            v-else
-            class="mb-3 flex h-7 items-center px-3 text-sm text-ink-gray-5"
-          >
-            {{ __('Empty - Choose a field to sort by') }}
-          </div>
+            </template>
+          </Draggable>
           <div class="flex items-center justify-between gap-2">
             <Autocomplete
               :options="options"
@@ -152,11 +147,11 @@ import AscendingIcon from '@/components/Icons/AscendingIcon.vue'
 import DesendingIcon from '@/components/Icons/DesendingIcon.vue'
 import SortIcon from '@/components/Icons/SortIcon.vue'
 import DragIcon from '@/components/Icons/DragIcon.vue'
+import Draggable from 'vuedraggable'
 import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
-import { useSortable } from '@vueuse/integrations/useSortable'
 import { useViews } from '@/stores/view'
 import { createResource, Popover } from 'frappe-ui'
-import { computed, nextTick, onMounted } from 'vue'
+import { computed, onMounted } from 'vue'
 
 const props = defineProps({
   doctype: {
@@ -208,12 +203,6 @@ const options = computed(() => {
   return sortOptions.data.filter((option) => {
     return !selectedOptions.includes(option.value)
   })
-})
-
-const sortSortable = useSortable('#sort-list', sortValues.value, {
-  handle: '.handle',
-  animation: 200,
-  onUpdate: () => apply(),
 })
 
 function toggleDirection(index) {
