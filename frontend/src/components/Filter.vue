@@ -51,10 +51,18 @@
               <div id="fieldname" class="w-full">
                 <Autocomplete
                   :value="f.field.fieldname"
-                  :options="filterableFields.data"
+                  :options="filterableFields"
                   @change="(e) => updateFilter(e, i)"
                   :placeholder="__('First Name')"
-                />
+                >
+                  <template #item-label="{ option }">
+                    <Tooltip :text="option.fieldname">
+                      <div class="flex-1 truncate text-ink-gray-7">
+                        {{ option.label }}
+                      </div>
+                    </Tooltip>
+                  </template>
+                </Autocomplete>
               </div>
               <div id="operator">
                 <FormControl
@@ -82,10 +90,18 @@
                 <div id="fieldname" class="!min-w-[140px]">
                   <Autocomplete
                     :value="f.field.fieldname"
-                    :options="filterableFields.data"
+                    :options="filterableFields"
                     @change="(e) => updateFilter(e, i)"
                     :placeholder="__('First Name')"
-                  />
+                  >
+                    <template #item-label="{ option }">
+                      <Tooltip :text="option.fieldname">
+                        <div class="flex-1 truncate text-ink-gray-7">
+                          {{ option.label }}
+                        </div>
+                      </Tooltip>
+                    </template>
+                  </Autocomplete>
                 </div>
                 <div id="operator">
                   <FormControl
@@ -137,6 +153,13 @@
                   @click="togglePopover()"
                 />
               </template>
+              <template #item-label="{ option }">
+                <Tooltip :text="option.fieldname">
+                  <div class="flex-1 truncate text-ink-gray-7">
+                    {{ option.label }}
+                  </div>
+                </Tooltip>
+              </template>
             </Autocomplete>
             <Button
               v-if="filters?.length"
@@ -155,17 +178,18 @@
 import FilterIcon from '@/components/Icons/FilterIcon.vue'
 import Link from '@/components/Controls/Link.vue'
 import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
+import { isMobileView } from '@/composables/settings'
+import { getMeta } from '@/stores/meta'
 import { useViews } from '@/stores/view'
 import {
   FormControl,
-  createResource,
+  Tooltip,
   Popover,
   DatePicker,
   DateTimePicker,
   DateRangePicker,
 } from 'frappe-ui'
-import { h, computed, onMounted, ref, watch } from 'vue'
-import { isMobileView } from '@/composables/settings'
+import { h, computed } from 'vue'
 
 const typeCheck = ['Check']
 const typeLink = ['Link', 'Dynamic Link']
@@ -224,53 +248,50 @@ const props = defineProps({
   },
 })
 
+const { getValueFields } = getMeta(props.doctype)
 const { currentView } = useViews(props.doctype)
 
 const emit = defineEmits(['update'])
 
-const filterableFields = createResource({
-  url: 'crm.api.doc.get_filterable_fields',
-  cache: ['filterableFields', props.doctype],
-  params: { doctype: props.doctype },
+const filterableFields = computed(() => {
+  let _fields = getValueFields() || []
+
+  if (props.default_filters) {
+    _fields = _fields.filter((field) => {
+      return !Object.keys(props.default_filters).includes(field.fieldname)
+    })
+  }
+
+  return _fields.map((field) => ({
+    ...field,
+    label: field.label,
+    value: field.fieldname,
+  }))
 })
 
-onMounted(() => {
-  if (filterableFields.data?.length) return
-  filterableFields.fetch()
-})
+const filters = computed(() => getInitialFilters())
 
-const filters = ref([])
+function getInitialFilters(_filters) {
+  let initialFilters = _filters || currentView.value?.filters || {}
+  if (typeof initialFilters === 'object' && !Array.isArray(initialFilters)) {
+    initialFilters = JSON.stringify(initialFilters)
+  }
+  initialFilters = JSON.parse(initialFilters)
 
-watch(
-  () => currentView.value?.filters,
-  (newFilters) => {
-    if (!newFilters || !filterableFields.data) {
-      filters.value = []
-      return
-    }
-
-    if (typeof newFilters === 'object' && !Array.isArray(newFilters)) {
-      newFilters = JSON.stringify(newFilters)
-    }
-
-    let allFilters = JSON.parse(newFilters)
-    if (props.default_filters) {
-      allFilters = removeCommonFilters(props.default_filters, allFilters)
-    }
-
-    filters.value = convertFilters(filterableFields.data, allFilters) || []
-  },
-  { deep: true, immediate: true },
-)
+  if (props.default_filters) {
+    initialFilters = removeCommonFilters(props.default_filters, initialFilters)
+  }
+  return convertFilters(initialFilters) || []
+}
 
 const availableFilters = computed(() => {
-  if (!filterableFields.data) return []
+  if (!filterableFields.value) return []
 
   const selectedFieldNames = new Set(
     filters.value.map((filter) => filter.fieldname),
   )
 
-  return filterableFields.data.filter(
+  return filterableFields.value.filter(
     (field) => !selectedFieldNames.has(field.fieldname),
   )
 })
@@ -286,10 +307,10 @@ function removeCommonFilters(commonFilters, allFilters) {
   return allFilters
 }
 
-function convertFilters(data, allFilters) {
+function convertFilters(allFilters) {
   let f = []
   for (let [key, value] of Object.entries(allFilters)) {
-    let field = data.find((f) => f.fieldname === key)
+    let field = filterableFields.value.find((f) => f.fieldname === key)
     if (typeof value !== 'object' || !value) {
       value = ['=', value]
       if (field?.fieldtype === 'Check') {
@@ -298,10 +319,15 @@ function convertFilters(data, allFilters) {
     }
 
     if (field) {
+      let operator = oppositeOperatorMap[value[0]]
+      if (['like', 'not like'].includes(operator)) {
+        value[1] = value[1].replace(/%/g, '')
+      }
+
       f.push({
         field,
         fieldname: key,
-        operator: oppositeOperatorMap[value[0]],
+        operator: operator,
         value: value[1],
       })
     }
