@@ -123,7 +123,7 @@ function getAliases(config) {
     ...config.resolve.alias,
     'frappe-ui/tailwind': path.resolve(
       __dirname,
-      '../frappe-ui/src/tailwind/preset.js',
+      '../frappe-ui/tailwind/preset.js',
     ),
     'frappe-ui/style.css': path.resolve(
       __dirname,
