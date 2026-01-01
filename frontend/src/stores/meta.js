@@ -102,11 +102,13 @@ export function getMeta(doctype) {
     })
   }
 
-  function getColumnFields(dt = null) {
+  function getValueFields(dt = null) {
     dt = dt || doctype
-    let fields = doctypeMeta[dt]?.fields.filter(
-      (f) => f.fieldtype && !NO_VALUE_TYPE.includes(f.fieldtype),
-    )
+
+    let fields =
+      doctypeMeta[dt]?.fields?.filter(
+        (f) => f.fieldtype && !NO_VALUE_TYPE.includes(f.fieldtype),
+      ) || []
 
     fields = [...fields, ...STANDARD_FIELDS]
 
@@ -146,7 +148,7 @@ export function getMeta(doctype) {
     doctypeMeta,
     userSettings,
     getFields,
-    getColumnFields,
+    getValueFields,
     getGridSettings,
     getGridViewSettings,
     saveUserSettings,

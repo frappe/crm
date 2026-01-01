@@ -162,7 +162,7 @@ const props = defineProps({
   },
 })
 
-const { getColumnFields } = getMeta(props.doctype)
+const { getValueFields } = getMeta(props.doctype)
 const { currentView } = useViews(props.doctype)
 
 const emit = defineEmits(['update'])
@@ -204,7 +204,7 @@ const rows = computed({
 })
 
 const fields = computed(() => {
-  let allFields = getColumnFields()
+  let allFields = getValueFields()
   if (!allFields) return []
 
   return allFields.filter((field) => {

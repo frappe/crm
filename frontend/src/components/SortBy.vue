@@ -16,6 +16,13 @@
         </template>
       </Button>
     </template>
+    <template #item-label="{ option }">
+      <Tooltip :text="option.fieldname">
+        <div class="flex-1 truncate text-ink-gray-7">
+          {{ option.label }}
+        </div>
+      </Tooltip>
+    </template>
   </Autocomplete>
   <Popover placement="bottom-end" v-else>
     <template #target="{ isOpen, togglePopover }">
@@ -85,7 +92,7 @@
                   <Autocomplete
                     class="[&>_div]:w-full"
                     :value="sort.fieldname"
-                    :options="sortOptions.data"
+                    :options="sortOptions"
                     @change="(e) => updateSort(e, i)"
                     :placeholder="__('First Name')"
                   >
@@ -104,6 +111,13 @@
                         :iconRight="open ? 'chevron-down' : 'chevron-up'"
                         @click="togglePopover()"
                       />
+                    </template>
+                    <template #item-label="{ option }">
+                      <Tooltip :text="option.fieldname">
+                        <div class="flex-1 truncate text-ink-gray-7">
+                          {{ option.label }}
+                        </div>
+                      </Tooltip>
                     </template>
                   </Autocomplete>
                 </div>
@@ -127,6 +141,13 @@
                   @click="togglePopover()"
                 />
               </template>
+              <template #item-label="{ option }">
+                <Tooltip :text="option.fieldname">
+                  <div class="flex-1 truncate text-ink-gray-7">
+                    {{ option.label }}
+                  </div>
+                </Tooltip>
+              </template>
             </Autocomplete>
             <Button
               v-if="sortValues?.length"
@@ -149,9 +170,10 @@ import SortIcon from '@/components/Icons/SortIcon.vue'
 import DragIcon from '@/components/Icons/DragIcon.vue'
 import Draggable from 'vuedraggable'
 import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
+import { getMeta } from '@/stores/meta'
 import { useViews } from '@/stores/view'
-import { createResource, Popover } from 'frappe-ui'
-import { computed, onMounted } from 'vue'
+import { Popover, Tooltip } from 'frappe-ui'
+import { computed } from 'vue'
 
 const props = defineProps({
   doctype: {
@@ -164,26 +186,26 @@ const props = defineProps({
   },
 })
 
+const { getValueFields } = getMeta(props.doctype)
 const { currentView } = useViews(props.doctype)
 
 const emit = defineEmits(['update'])
 
-const sortOptions = createResource({
-  url: 'crm.api.doc.sort_options',
-  cache: ['sortOptions', props.doctype],
-  params: { doctype: props.doctype },
-})
-
-onMounted(() => {
-  if (sortOptions.data?.length) return
-  sortOptions.fetch()
+const sortOptions = computed(() => {
+  let _options = getValueFields() || []
+  _options = _options.map((f) => ({
+    fieldname: f.fieldname,
+    label: f.label,
+    value: f.fieldname,
+  }))
+  return _options
 })
 
 const sortValues = computed({
   get: () => {
     if (!currentView.value) return []
     let allSortValues = currentView.value.order_by
-    if (!allSortValues || !sortOptions.data) return []
+    if (!allSortValues || !sortOptions.value) return []
     if (allSortValues.trim() === 'modified desc') return []
     allSortValues = allSortValues.split(', ').map((sortValue) => {
       const [fieldname, direction] = sortValue.split(' ')
@@ -197,10 +219,10 @@ const sortValues = computed({
 })
 
 const options = computed(() => {
-  if (!sortOptions.data) return []
-  if (!sortValues.value.length) return sortOptions.data
+  if (!sortOptions.value) return []
+  if (!sortValues.value.length) return sortOptions.value
   const selectedOptions = sortValues.value.map((sort) => sort.fieldname)
-  return sortOptions.data.filter((option) => {
+  return sortOptions.value.filter((option) => {
     return !selectedOptions.includes(option.value)
   })
 })
@@ -215,7 +237,7 @@ function toggleDirection(index) {
 
 function getSortLabel() {
   if (!sortValues.value.length) return __('Sort')
-  let label = sortOptions.data?.find(
+  let label = sortOptions.value?.find(
     (option) => option.value === sortValues.value[0].fieldname,
   )?.label
   return label || sortValues.value[0].fieldname
