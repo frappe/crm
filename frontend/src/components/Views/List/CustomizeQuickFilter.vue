@@ -1,5 +1,5 @@
 <template>
-  <div class="flex items-center justify-between gap-2 p-5">
+  <div class="flex items-center justify-between gap-2 px-5 py-4">
     <div class="flex flex-1 items-center overflow-hidden pl-1 gap-2">
       <FadedScrollableDiv
         class="flex overflow-x-auto -ml-1"

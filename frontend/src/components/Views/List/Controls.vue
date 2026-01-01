@@ -14,7 +14,7 @@
       <div
         v-for="filter in quickFilterList"
         :key="filter.fieldname"
-        class="m-1 min-w-36"
+        class="mx-1 min-w-36"
       >
         <QuickFilterField
           :filter="filter"
