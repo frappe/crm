@@ -106,8 +106,8 @@
                 <div id="operator">
                   <FormControl
                     type="select"
-                    v-model="f.operator"
-                    @change="(e) => updateOperator(e, f)"
+                    :defaultValue="f.operator"
+                    @update:modelValue="(v) => updateOperator(v, f)"
                     :options="
                       getOperators(f.field.fieldtype, f.field.fieldname)
                     "
@@ -568,10 +568,10 @@ function updateValue(value, filter) {
   apply()
 }
 
-function updateOperator(event, filter) {
-  let oldOperatorValue = event.target._value
-  let newOperatorValue = event.target.value
-  filter.operator = event.target.value
+function updateOperator(value, filter) {
+  let oldOperatorValue = filter.operator
+  let newOperatorValue = value
+  filter.operator = value
   if (!isSameTypeOperator(oldOperatorValue, newOperatorValue)) {
     filter.value = getDefaultValue(filter.field)
   }
