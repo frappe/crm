@@ -7,7 +7,7 @@ from frappe.utils.modules import get_modules_from_all_apps_for_user
 from frappe.utils.telemetry import POSTHOG_HOST_FIELD, POSTHOG_PROJECT_FIELD
 
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist(methods=["GET"], allow_guest=True)
 def get_translations():
 	if frappe.session.user != "Guest":
 		language = frappe.db.get_value("User", frappe.session.user, "language")
@@ -50,7 +50,7 @@ def get_user_signature():
 	return content
 
 
-@frappe.whitelist()
+@frappe.whitelist(methods=["GET"])
 def get_posthog_settings():
 	return {
 		"posthog_project_id": frappe.conf.get(POSTHOG_PROJECT_FIELD),
