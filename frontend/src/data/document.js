@@ -4,7 +4,7 @@ import { getMeta } from '@/stores/meta'
 import { showSettings, activeSettingsPage } from '@/composables/settings'
 import { runSequentially, parseAssignees, evaluateExpression } from '@/utils'
 import { createDocumentResource, createResource, toast } from 'frappe-ui'
-import { ref, reactive } from 'vue'
+import { ref, reactive, onUnmounted } from 'vue'
 
 const documentsCache = {}
 const controllersCache = {}
@@ -78,6 +78,15 @@ export function useDocument(doctype, docname, resourceOverrides = {}) {
       })
       setupFormScript()
     }
+  }
+
+  if (!docname) {
+    onUnmounted(() => {
+      delete documentsCache[doctype][docname || '']
+      delete assigneesCache[doctype][docname || '']
+      delete permissionsCache[doctype][docname || '']
+      delete controllersCache[doctype]?.[docname || '']
+    })
   }
 
   assigneesCache[doctype] = assigneesCache[doctype] || {}
