@@ -189,6 +189,10 @@ import { capture } from '@/telemetry'
 import router from '@/router'
 import { useStorage } from '@vueuse/core'
 import { ref, reactive, computed, h, markRaw, onMounted } from 'vue'
+import {
+  sidebarLayouts,
+  fetchSidebarLayouts,
+} from '@/doctype/generateRoutes.js'
 
 const { getPinnedViews, getPublicViews } = viewsStore()
 const { toggle: toggleNotificationPanel } = notificationsStore()
@@ -198,53 +202,39 @@ const isSidebarCollapsed = useStorage('isSidebarCollapsed', false)
 const isFCSite = ref(window.is_fc_site)
 const isDemoSite = ref(window.is_demo_site)
 
-const links = [
-  {
-    label: 'Dashboard',
-    icon: LucideLayoutDashboard,
-    to: 'Dashboard',
-  },
-  {
-    label: 'Leads',
-    icon: LeadsIcon,
-    to: 'Leads',
-  },
-  {
-    label: 'Deals',
-    icon: DealsIcon,
-    to: 'Deals',
-  },
-  {
-    label: 'Contacts',
-    icon: ContactsIcon,
-    to: 'Contacts',
-  },
-  {
-    label: 'Organizations',
-    icon: OrganizationsIcon,
-    to: 'Organizations',
-  },
-  {
-    label: 'Notes',
-    icon: NoteIcon,
-    to: 'Notes',
-  },
-  {
-    label: 'Tasks',
-    icon: TaskIcon,
-    to: 'Tasks',
-  },
-  {
-    label: 'Calendar',
-    icon: CalendarIcon,
-    to: 'Calendar',
-  },
-  {
-    label: 'Call Logs',
-    icon: PhoneIcon,
-    to: 'Call Logs',
-  },
-]
+const iconMap = {
+  Dashboard: LucideLayoutDashboard,
+  Leads: LeadsIcon,
+  Deals: DealsIcon,
+  Contacts: ContactsIcon,
+  Organizations: OrganizationsIcon,
+  Notes: NoteIcon,
+  Tasks: TaskIcon,
+  Calendar: CalendarIcon,
+  'Call Logs': PhoneIcon,
+}
+
+const links = computed(() => {
+  let staticLinks = Object.keys(iconMap).map((key) => {
+    return {
+      label: key,
+      icon: iconMap[key],
+      to: key,
+    }
+  })
+
+  if (!sidebarLayouts.value?.length) return staticLinks
+
+  const dynamicLinks = sidebarLayouts.value.map((link) => {
+    return {
+      label: link.label || link.routeName,
+      icon: iconMap[link.label || link.routeName] || link.icon,
+      to: link.routeName,
+    }
+  })
+
+  return dynamicLinks
+})
 
 const allViews = computed(() => {
   let _views = [
@@ -252,7 +242,7 @@ const allViews = computed(() => {
       name: 'All Views',
       hideLabel: true,
       opened: true,
-      views: links.filter((link) => {
+      views: links.value.filter((link) => {
         if (link.condition) {
           return link.condition()
         }
@@ -295,22 +285,7 @@ function parseView(views) {
 function getIcon(routeName, icon) {
   if (icon) return h('div', { class: 'size-auto' }, icon)
 
-  switch (routeName) {
-    case 'Leads':
-      return LeadsIcon
-    case 'Deals':
-      return DealsIcon
-    case 'Contacts':
-      return ContactsIcon
-    case 'Organizations':
-      return OrganizationsIcon
-    case 'Notes':
-      return NoteIcon
-    case 'Call Logs':
-      return PhoneIcon
-    default:
-      return PinIcon
-  }
+  return iconMap[routeName] || PinIcon
 }
 
 // onboarding
@@ -511,6 +486,7 @@ const steps = reactive([
 ])
 
 onMounted(async () => {
+  fetchSidebarLayouts()
   await users.promise
 
   const filteredSteps = steps.filter((step) => {

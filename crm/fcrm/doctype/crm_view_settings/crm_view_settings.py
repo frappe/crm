@@ -112,12 +112,13 @@ def pin(name, value):
 
 
 def remove_duplicates(l):
+	l = [item for item in l if item is not None]
 	return list(dict.fromkeys(l))
 
 
 def sync_default_rows(doctype, type="list"):
 	list = get_controller(doctype)
-	rows = []
+	rows = ["name"]
 
 	if hasattr(list, "default_list_data"):
 		rows = list.default_list_data().get("rows")
@@ -127,7 +128,10 @@ def sync_default_rows(doctype, type="list"):
 
 def sync_default_columns(view):
 	list = get_controller(view.doctype)
-	columns = []
+	columns = [
+		{"label": "Name", "type": "Data", "key": "name", "width": "16rem"},
+		{"label": "Last Updated On", "type": "Datetime", "key": "modified", "width": "8rem"},
+	]
 
 	if view.type == "kanban" and view.column_field:
 		field_meta = frappe.get_meta(view.doctype).get_field(view.column_field)
