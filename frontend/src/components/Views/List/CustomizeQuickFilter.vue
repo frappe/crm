@@ -1,6 +1,6 @@
 <template>
   <div class="flex items-center justify-between gap-2 px-5 py-4">
-    <div class="flex flex-1 items-center overflow-hidden pl-1 gap-2">
+    <div class="flex flex-1 items-center overflow-hidden pl-1 gap-2 h-9">
       <FadedScrollableDiv
         class="flex overflow-x-auto -ml-1"
         orientation="horizontal"

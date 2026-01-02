@@ -10,7 +10,7 @@ export function useViews(doctype) {
       params: { doctype: doctype || '' },
       cache: 'CRM Views' + doctype,
       auto: true,
-      transform(_views) {
+      transform: (_views) => {
         _views.forEach((view) => {
           view.columns = JSON.parse(view.columns || '[]')
           view.rows = JSON.parse(view.rows || '[]')
@@ -18,9 +18,7 @@ export function useViews(doctype) {
         })
         return _views
       },
-      onSuccess() {
-        setCurrentView()
-      },
+      onSuccess: () => setCurrentView(),
     })
 
     views[doctype] = reactive({
