@@ -64,7 +64,8 @@
   {
    "fieldname": "add_to_holidays",
    "fieldtype": "Button",
-   "label": "Add to Holidays"
+   "label": "Add to Holidays",
+   "options": "add_to_holidays"
   },
   {
    "fieldname": "holidays_section",
@@ -74,7 +75,8 @@
   {
    "fieldname": "clear_table",
    "fieldtype": "Button",
-   "label": "Clear Table"
+   "label": "Clear Table",
+   "options": "clear_table"
   },
   {
    "fieldname": "holidays",
@@ -85,7 +87,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-01-19 21:54:54.809445",
+ "modified": "2025-12-23 15:43:30.328630",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Holiday List",
@@ -117,6 +119,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []

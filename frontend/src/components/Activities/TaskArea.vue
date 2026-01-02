@@ -39,12 +39,12 @@
         <div class="flex items-center gap-1">
           <Dropdown
             :options="taskStatusOptions(modalRef.updateTaskStatus, task)"
-            @click.stop
           >
             <Button
               :tooltip="__('Change status')"
               variant="ghosted"
               class="hover:bg-surface-gray-4"
+              @click.stop.prevent
             >
               <TaskStatusIcon :status="task.status" />
             </Button>
@@ -73,12 +73,12 @@
                 },
               },
             ]"
-            @click.stop
           >
             <Button
               icon="more-horizontal"
               variant="ghosted"
               class="hover:bg-surface-gray-4 text-ink-gray-9"
+              @click.stop.prevent
             />
           </Dropdown>
         </div>

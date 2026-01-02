@@ -1,5 +1,7 @@
 <template>
-  <div class="rounded-lg border border-outline-gray-2 p-3 flex flex-col gap-4 w-full">
+  <div
+    class="rounded-lg border border-outline-gray-2 p-3 flex flex-col gap-4 w-full"
+  >
     <template v-for="(condition, i) in props.conditions" :key="condition.field">
       <CFCondition
         v-if="Array.isArray(condition)"
@@ -14,6 +16,7 @@
         :conjunction="getConjunction()"
         @turnIntoGroup="turnIntoGroup(condition)"
         :disableAddCondition="props.disableAddCondition"
+        :doctype="props.doctype"
       />
     </template>
     <div v-if="props.isChild" class="flex">

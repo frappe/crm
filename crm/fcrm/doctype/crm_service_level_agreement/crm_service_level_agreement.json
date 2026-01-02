@@ -17,6 +17,7 @@
   "end_date",
   "column_break_pzjg",
   "condition",
+  "condition_json",
   "section_break_ufaf",
   "priorities",
   "section_break_rmgo",
@@ -50,10 +51,12 @@
    "fieldtype": "Column Break"
   },
   {
+   "depends_on": "eval: !doc.condition_json",
    "description": "Simple Python Expression, Example: doc.status == 'Open' and doc.lead_source == 'Ads'",
    "fieldname": "condition",
    "fieldtype": "Code",
    "label": "Condition",
+   "max_height": "5rem",
    "options": "Python"
   },
   {
@@ -119,11 +122,19 @@
    "fieldname": "rolling_responses",
    "fieldtype": "Check",
    "label": "Rolling Responses"
+  },
+  {
+   "depends_on": "eval: doc.condition_json",
+   "description": "Auto-generated from the portal view \u2014 do not edit directly unless you know what you're doing! ",
+   "fieldname": "condition_json",
+   "fieldtype": "Code",
+   "label": "Condition",
+   "max_height": "5rem"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-11-10 19:38:32.968791",
+ "modified": "2025-12-23 14:06:01.973666",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Service Level Agreement",
