@@ -428,7 +428,7 @@ watch(error, (err) => {
     errorTitle.value = __(
       err.exc_type == 'DoesNotExistError'
         ? 'Document not found'
-        : 'Error occurred',
+        : 'Error occurred'
     )
     errorMessage.value = __(err.messages?.[0] || 'An error occurred')
   } else {
@@ -456,7 +456,7 @@ watch(
       document._statuses = s.statuses || []
     }
   },
-  { once: true },
+  { once: true }
 )
 
 const organizationDocument = ref(null)
@@ -467,12 +467,12 @@ watch(
     if (org && !organizationDocument.value?.doc) {
       let { document: _organizationDocument } = useDocument(
         'CRM Organization',
-        org,
+        org
       )
       organizationDocument.value = _organizationDocument
     }
   },
-  { immediate: true },
+  { immediate: true }
 )
 
 const organization = computed(() => organizationDocument.value?.doc || {})
@@ -636,6 +636,15 @@ function contactOptions(contact) {
       onClick: () => removeContact(contact.name),
     },
   ]
+
+  // Add Call option for each linked contact (uses global makeCall)
+  if (contact.mobile_no) {
+    options.unshift({
+      label: __('Call'),
+      icon: h(PhoneIcon, { class: 'h-4 w-4' }),
+      onClick: () => makeCall(contact.mobile_no),
+    })
+  }
 
   if (!contact.is_primary) {
     options.push({
