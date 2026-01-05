@@ -1,4 +1,5 @@
 import { getMeta } from '@/stores/meta'
+import { useViews } from '@/stores/view'
 import { createResource, toast } from 'frappe-ui'
 import { ref, computed } from 'vue'
 
@@ -16,6 +17,7 @@ function createState(doctype) {
   const newQuickFilters = ref([])
 
   const { getFields } = getMeta(doctype)
+  const { currentView } = useViews(doctype)
 
   const quickFilters = createResource({
     url: 'crm.api.doc.get_quick_filters',
@@ -118,8 +120,8 @@ function createState(doctype) {
 
     filters.forEach((filter) => {
       filter['value'] = filter.fieldtype == 'Check' ? false : ''
-      if (list.value?.params?.filters[filter.fieldname]) {
-        let value = list.value?.params.filters[filter.fieldname]
+      if (currentView.value?.filters[filter.fieldname]) {
+        let value = currentView.value.filters[filter.fieldname]
         if (Array.isArray(value)) {
           if (
             (['Check', 'Select', 'Link', 'Date', 'Datetime'].includes(
@@ -149,8 +151,8 @@ function createState(doctype) {
     }))
   }
 
-  function applyQuickFilter(filter, value) {
-    let filters = { ...list.value?.params.filters }
+  function applyQuickFilter(filter, value, updateFilter) {
+    let filters = currentView.value?.filters || {}
     let field = filter.fieldname
     if (value) {
       if (
@@ -167,7 +169,8 @@ function createState(doctype) {
       delete filters[field]
       filter['value'] = ''
     }
-    updateFilter(filters)
+
+    updateFilter()
   }
 
   return {

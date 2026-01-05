@@ -16,7 +16,7 @@
       >
         <QuickFilterField
           :filter="filter"
-          @applyQuickFilter="(f, v) => applyQuickFilter(f, v)"
+          @applyQuickFilter="(f, v) => applyQuickFilter(f, v, updateFilter)"
         />
       </div>
     </FadedScrollableDiv>
