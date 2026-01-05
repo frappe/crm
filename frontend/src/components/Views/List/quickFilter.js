@@ -4,15 +4,14 @@ import { ref, computed } from 'vue'
 
 const store = {}
 
-export function useQuickFilters(list, doctype) {
+export function useQuickFilters(doctype) {
   if (!store[doctype]) {
-    store[doctype] = createState(list, doctype)
+    store[doctype] = createState(doctype)
   }
-  store[doctype].list = list
   return store[doctype]
 }
 
-function createState(list, doctype) {
+function createState(doctype) {
   const customizeQuickFilter = ref(false)
   const newQuickFilters = ref([])
 
@@ -182,7 +181,5 @@ function createState(list, doctype) {
     showCustomizeQuickFilter,
     updateQuickFilters,
     applyQuickFilter,
-    list,
   }
 }
-

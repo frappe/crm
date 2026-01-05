@@ -12,13 +12,13 @@
       />
     </template>
   </LayoutHeader>
-  <Controls ref="controls" v-model="list" :doctype="doctype" />
+  <Controls ref="controls" />
 </template>
 <script setup>
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import ViewBreadcrumbs from '@/components/ViewBreadcrumbs.vue'
 import Controls from '@/components/Views/List/Controls.vue'
-import { ref } from 'vue'
+import { ref, provide } from 'vue'
 
 const props = defineProps({
   routeName: {
@@ -31,7 +31,8 @@ const props = defineProps({
   },
 })
 
-const list = ref({})
+provide('doctype', props.doctype)
+
 const controls = ref(null)
 const showQuickEntryModal = ref(false)
 </script>

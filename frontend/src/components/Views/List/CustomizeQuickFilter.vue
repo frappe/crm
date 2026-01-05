@@ -72,15 +72,9 @@ import FadedScrollableDiv from '@/components/FadedScrollableDiv.vue'
 import Draggable from 'vuedraggable'
 import { useQuickFilters } from './quickFilter'
 import { Autocomplete, Button, Tooltip, FeatherIcon } from 'frappe-ui'
+import { inject } from 'vue'
 
-const props = defineProps({
-  doctype: {
-    type: String,
-    required: true,
-  },
-})
-
-const list = defineModel()
+const doctype = inject('doctype')
 
 const emit = defineEmits(['close'])
 
@@ -91,5 +85,5 @@ const {
   removeQuickFilter,
   saveQuickFilters,
   updateQuickFilters,
-} = useQuickFilters(list.value, props.doctype)
+} = useQuickFilters(doctype)
 </script>

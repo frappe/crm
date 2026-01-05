@@ -1,8 +1,6 @@
 <template>
   <CustomizeQuickFilter
     v-if="customizeQuickFilter"
-    v-model="list"
-    :doctype="doctype"
     @close="customizeQuickFilter = false"
   />
   <div v-else class="flex items-center justify-between gap-2 px-5 py-4">
@@ -128,14 +126,10 @@ import { useQuickFilters } from './quickFilter'
 import { usersStore } from '@/stores/users'
 import { useViews } from '@/stores/view'
 import { Dropdown, call } from 'frappe-ui'
-import { h } from 'vue'
+import { h, inject } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 
 const props = defineProps({
-  doctype: {
-    type: String,
-    required: true,
-  },
   filters: {
     type: Object,
     default: {},
@@ -146,20 +140,19 @@ const props = defineProps({
   },
 })
 
+const doctype = inject('doctype')
 const router = useRouter()
 const route = useRoute()
 
 const { isManager } = usersStore()
-const { currentView } = useViews(props.doctype)
-
-const list = defineModel()
+const { currentView } = useViews(doctype)
 
 const {
   customizeQuickFilter,
   showCustomizeQuickFilter,
   quickFilterList,
   applyQuickFilter,
-} = useQuickFilters(list.value, props.doctype)
+} = useQuickFilters(doctype)
 
 // Filter
 function updateFilter() {
@@ -179,7 +172,7 @@ function updateColumns() {
 function createOrUpdateStandardView() {
   if (route.query.view) return
 
-  currentView.value.doctype = props.doctype
+  currentView.value.doctype = doctype
   currentView.value.route_name = route.name
 
   call(
