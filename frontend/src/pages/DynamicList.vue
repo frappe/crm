@@ -13,11 +13,13 @@
     </template>
   </LayoutHeader>
   <Controls ref="controls" />
+  <List />
 </template>
 <script setup>
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import ViewBreadcrumbs from '@/components/ViewBreadcrumbs.vue'
 import Controls from '@/components/Views/List/Controls.vue'
+import List from '@/components/Views/List/List.vue'
 import { ref, provide } from 'vue'
 
 const props = defineProps({

@@ -130,6 +130,7 @@ function getAliases(config) {
       '../frappe-ui/src/style.css',
     ),
     'frappe-ui/frappe': path.resolve(__dirname, '../frappe-ui/frappe/index.js'),
+    'frappe-ui/data-fetching': path.resolve(__dirname, '../frappe-ui/src/data-fetching'),
     'frappe-ui': path.resolve(__dirname, '../frappe-ui/src/index.ts'),
   }
 }
