@@ -2,7 +2,7 @@
   <ListView
     :columns="columns"
     :rows="rows"
-    :options="{ resizeColumn: true }"
+    :options="{ showTooltip: false, resizeColumn: true }"
     row-key="name"
   >
     <ListHeader class="sm:mx-5 mx-3">
@@ -10,7 +10,7 @@
         v-for="column in columns"
         :key="column.key"
         :item="column"
-        @columnWidthUpdated="columnWidthUpdated()"
+        @columnWidthUpdated="updateColumns()"
       >
         <Button
           v-if="column.key == '_liked_by'"
@@ -26,7 +26,7 @@
     <ListRows
       :rows="rows"
       v-slot="{ idx, column, item, row }"
-      doctype="CRM Lead"
+      :doctype="doctype"
     >
       <div v-if="column.key === '_assign'" class="flex items-center">
         <MultipleAvatar
@@ -34,7 +34,7 @@
           size="sm"
           @click="
             (event) =>
-              applyFilter({
+              applyRowItemFilter({
                 event,
                 idx,
                 column,
@@ -51,7 +51,7 @@
             class="truncate text-base"
             @click="
               (event) =>
-                applyFilter({
+                applyRowItemFilter({
                   event,
                   idx,
                   column,
@@ -68,7 +68,9 @@
             <Button
               v-if="column.key == '_liked_by'"
               variant="ghosted"
-              :class="isLiked(item) ? 'fill-red-500' : 'fill-white'"
+              :class="
+                isLiked(item) ? 'fill-red-500 text-ink-red-3' : 'fill-white'
+              "
               @click.stop.prevent="
                 () =>
                   likeDoc({
@@ -93,7 +95,7 @@
             class="truncate text-base"
             @click="
               (event) =>
-                applyFilter({
+                applyRowItemFilter({
                   event,
                   idx,
                   column,
@@ -131,13 +133,13 @@
 </template>
 
 <script setup>
-import { useViews } from '@/stores/view'
-import { sessionStore } from '@/stores/session'
+import HeartIcon from '@/components/Icons/HeartIcon.vue'
+import MultipleAvatar from '@/components/MultipleAvatar.vue'
 import { formatDate, timeAgo } from '@/utils'
 import { useControls } from './controls'
-import { useList } from 'frappe-ui/data-fetching'
+import { useList } from './list'
+import { useLike } from './like'
 import {
-  Avatar,
   ListView,
   ListHeader,
   ListHeaderItem,
@@ -146,106 +148,14 @@ import {
   ListFooter,
   Dropdown,
   Tooltip,
-  createResource,
+  Button,
+  FormControl,
 } from 'frappe-ui'
-import { computed, inject } from 'vue'
+import { inject } from 'vue'
 
 const doctype = inject('doctype')
 
-const { currentView } = useViews(doctype)
-const { updateColumns, updateFilter } = useControls()
-
-const columns = computed(() => {
-  return currentView.value?.columns || []
-})
-
-const rows = computed(() => {
-  return list.data || []
-})
-
-const fields = () => currentView.value?.columns?.map((col) => col.key) || []
-
-const filters = () => currentView.value?.filters || {}
-
-const orderBy = () => currentView.value?.order_by || 'modified asc'
-
-const list = useList({
-  doctype: doctype,
-  cacheKey: ['List', doctype],
-  fields,
-  filters,
-  orderBy,
-  start: 0,
-  limit: 20,
-  immediate: false,
-})
-
-function columnWidthUpdated() {
-  updateColumns()
-}
-
-function applyFilter({ event, idx, column, item, firstColumn }) {
-  let restrictedFieldtypes = ['Duration', 'Datetime', 'Time']
-  if (restrictedFieldtypes.includes(column.type) || idx === 0) return
-  if (idx === 1 && firstColumn.key == '_liked_by') return
-
-  event.stopPropagation()
-  event.preventDefault()
-
-  let filters = currentView.value?.filters || {}
-
-  let value = item.name || item.label || item
-
-  if (value) {
-    filters[column.key] = value
-  } else {
-    delete filters[column.key]
-  }
-
-  if (column.key == '_assign') {
-    if (item.length > 1) {
-      let target = event.target.closest('.user-avatar')
-      if (target) {
-        let name = target.getAttribute('data-name')
-        filters['_assign'] = ['LIKE', `%${name}%`]
-      }
-    } else {
-      filters['_assign'] = ['LIKE', `%${item[0].name}%`]
-    }
-  }
-  updateFilter()
-}
-
-// Like functionality
-const { user } = sessionStore()
-
-const isLikeFilterApplied = computed(() => {
-  return currentView.value?.filters?._liked_by ? true : false
-})
-
-function isLiked(item) {
-  if (item) {
-    let likedByMe = JSON.parse(item)
-    return likedByMe.includes(user)
-  }
-}
-
-function applyLikeFilter() {
-  let filters = currentView.value?.filters || {}
-  if (!filters._liked_by) {
-    filters['_liked_by'] = ['LIKE', `%@me%`]
-  } else {
-    delete filters['_liked_by']
-  }
-  updateFilter()
-}
-
-function likeDoc({ name, liked }) {
-  createResource({
-    url: 'frappe.desk.like.toggle_like',
-    params: { doctype: doctype, name: name, add: liked ? 'No' : 'Yes' },
-    auto: true,
-    onSuccess: () => list.reload(),
-  })
-}
+const { updateColumns, applyRowItemFilter } = useControls()
+const { columns, rows } = useList()
+const { isLikeFilterApplied, isLiked, applyLikeFilter, likeDoc } = useLike()
 </script>

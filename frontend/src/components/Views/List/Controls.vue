@@ -36,8 +36,8 @@
         <Button
           :tooltip="__('Refresh')"
           :icon="RefreshIcon"
-          :loading="isLoading"
-          @click="reload()"
+          :loading="list?.loading"
+          @click="reload"
         />
         <GroupBy
           v-if="route?.params.viewType === 'group_by'"
@@ -125,8 +125,9 @@ import CustomizeQuickFilter from './CustomizeQuickFilter.vue'
 import { usersStore } from '@/stores/users'
 import { useQuickFilters } from './quickFilter'
 import { useControls } from './controls'
+import { useList } from './list'
 import { Dropdown } from 'frappe-ui'
-import { h, inject } from 'vue'
+import { h, inject, ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 
 const props = defineProps({
@@ -144,6 +145,8 @@ const doctype = inject('doctype')
 const router = useRouter()
 const route = useRoute()
 
+const viewUpdated = ref(false)
+
 const { isManager } = usersStore()
 
 const {
@@ -153,5 +156,6 @@ const {
   applyQuickFilter,
 } = useQuickFilters(doctype)
 
+const { list, reload } = useList()
 const { updateFilter, updateSort, updateColumns } = useControls()
 </script>

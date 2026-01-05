@@ -1,7 +1,7 @@
 <template>
   <LayoutHeader>
     <template #left-header>
-      <ViewBreadcrumbs v-model="controls" :routeName="routeName" />
+      <ViewBreadcrumbs :routeName="routeName" />
     </template>
     <template #right-header>
       <Button
@@ -12,7 +12,7 @@
       />
     </template>
   </LayoutHeader>
-  <Controls ref="controls" />
+  <Controls />
   <List />
 </template>
 <script setup>
@@ -20,6 +20,7 @@ import LayoutHeader from '@/components/LayoutHeader.vue'
 import ViewBreadcrumbs from '@/components/ViewBreadcrumbs.vue'
 import Controls from '@/components/Views/List/Controls.vue'
 import List from '@/components/Views/List/List.vue'
+import { useViews } from '@/stores/view'
 import { ref, provide } from 'vue'
 
 const props = defineProps({
@@ -33,8 +34,10 @@ const props = defineProps({
   },
 })
 
-provide('doctype', props.doctype)
+const { currentView } = useViews(props.doctype)
 
-const controls = ref(null)
+provide('doctype', props.doctype)
+provide('currentView', currentView)
+
 const showQuickEntryModal = ref(false)
 </script>
