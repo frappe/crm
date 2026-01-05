@@ -122,10 +122,10 @@ import QuickFilterIcon from '@/components/Icons/QuickFilterIcon.vue'
 import ImportIcon from '~icons/lucide/import'
 import FadedScrollableDiv from '@/components/FadedScrollableDiv.vue'
 import CustomizeQuickFilter from './CustomizeQuickFilter.vue'
-import { useQuickFilters } from './quickFilter'
 import { usersStore } from '@/stores/users'
-import { useViews } from '@/stores/view'
-import { Dropdown, call } from 'frappe-ui'
+import { useQuickFilters } from './quickFilter'
+import { useControls } from './controls'
+import { Dropdown } from 'frappe-ui'
 import { h, inject } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 
@@ -145,7 +145,6 @@ const router = useRouter()
 const route = useRoute()
 
 const { isManager } = usersStore()
-const { currentView } = useViews(doctype)
 
 const {
   customizeQuickFilter,
@@ -154,30 +153,5 @@ const {
   applyQuickFilter,
 } = useQuickFilters(doctype)
 
-// Filter
-function updateFilter() {
-  createOrUpdateStandardView()
-}
-
-// Sort
-function updateSort() {
-  createOrUpdateStandardView()
-}
-
-// Columns
-function updateColumns() {
-  createOrUpdateStandardView()
-}
-
-function createOrUpdateStandardView() {
-  if (route.query.view) return
-
-  currentView.value.doctype = doctype
-  currentView.value.route_name = route.name
-
-  call(
-    'crm.fcrm.doctype.crm_view_settings.crm_view_settings.create_or_update_standard_view',
-    { view: currentView.value },
-  )
-}
+const { updateFilter, updateSort, updateColumns } = useControls()
 </script>
