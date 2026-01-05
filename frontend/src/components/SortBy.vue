@@ -1,6 +1,6 @@
 <template>
   <Autocomplete
-    v-if="!sortValues?.length"
+    v-if="!sortValues?.size"
     :options="options"
     value=""
     :placeholder="__('First Name')"
@@ -11,53 +11,54 @@
         <template v-if="hideLabel">
           <SortIcon class="h-4" />
         </template>
-        <template v-if="!hideLabel && !sortValues?.length" #prefix>
+        <template v-if="!hideLabel && !sortValues?.size" #prefix>
           <SortIcon class="h-4" />
         </template>
       </Button>
-    </template>
-    <template #item-label="{ option }">
-      <Tooltip :text="option.fieldname">
-        <div class="flex-1 truncate text-ink-gray-7">
-          {{ option.label }}
-        </div>
-      </Tooltip>
     </template>
   </Autocomplete>
   <Popover placement="bottom-end" v-else>
     <template #target="{ isOpen, togglePopover }">
       <Button
-        v-if="sortValues.length > 1"
+        v-if="sortValues.size > 1"
         :label="__('Sort')"
         :icon="hideLabel && SortIcon"
         :iconLeft="!hideLabel && SortIcon"
         @click="togglePopover"
       >
-        <template v-if="sortValues?.length" #suffix>
+        <template v-if="sortValues?.size" #suffix>
           <div
             class="flex h-5 w-5 items-center justify-center rounded-[5px] bg-surface-white pt-px text-xs font-medium text-ink-gray-8 shadow-sm"
           >
-            {{ sortValues.length }}
+            {{ sortValues.size }}
           </div>
         </template>
       </Button>
       <div v-else class="flex items-center justify-center">
         <Button
-          v-if="sortValues.length"
+          v-if="sortValues.size"
           class="rounded-r-none border-r"
           :icon="
-            sortValues[0].direction == 'asc' ? AscendingIcon : DesendingIcon
+            Array.from(sortValues)[0].direction == 'asc'
+              ? AscendingIcon
+              : DesendingIcon
           "
-          @click.stop="toggleDirection(0)"
+          @click.stop="
+            () => {
+              Array.from(sortValues)[0].direction =
+                Array.from(sortValues)[0].direction == 'asc' ? 'desc' : 'asc'
+              apply()
+            }
+          "
         />
         <Button
           :label="getSortLabel()"
           class="shrink-0 [&_svg]:text-ink-gray-5"
-          :iconLeft="!hideLabel && !sortValues?.length && SortIcon"
+          :iconLeft="!hideLabel && !sortValues?.size && SortIcon"
           :iconRight="
-            sortValues?.length && (isOpen ? 'chevron-up' : 'chevron-down')
+            sortValues?.size && (isOpen ? 'chevron-up' : 'chevron-down')
           "
-          :class="sortValues.length ? 'rounded-l-none' : ''"
+          :class="sortValues.size ? 'rounded-l-none' : ''"
           @click.stop="togglePopover"
         />
       </div>
@@ -67,64 +68,67 @@
         class="my-2 min-w-40 rounded-lg bg-surface-modal shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
       >
         <div class="min-w-60 p-2">
-          <Draggable
-            v-if="sortValues?.length"
-            v-model="sortValues"
-            class="sort-items mb-3 flex flex-col gap-2"
-            item-key="fieldname"
-            handle=".handle"
-            @end="apply"
+          <div
+            v-if="sortValues?.size"
+            id="sort-list"
+            class="mb-3 flex flex-col gap-2"
           >
-            <template #item="{ element: sort, index: i }">
-              <div class="sort-item flex items-center gap-1">
-                <div class="handle flex h-7 w-7 items-center justify-center">
-                  <DragIcon class="h-4 w-4 cursor-grab text-ink-gray-5" />
-                </div>
-                <div class="flex flex-1">
-                  <Button
-                    size="md"
-                    class="rounded-r-none border-r"
-                    :icon="
-                      sort.direction == 'asc' ? AscendingIcon : DesendingIcon
-                    "
-                    @click="toggleDirection(i)"
-                  />
-                  <Autocomplete
-                    class="[&>_div]:w-full"
-                    :value="sort.fieldname"
-                    :options="sortOptions"
-                    @change="(e) => updateSort(e, i)"
-                    :placeholder="__('First Name')"
-                  >
-                    <template
-                      #target="{
-                        open,
-                        togglePopover,
-                        selectedValue,
-                        displayValue,
-                      }"
-                    >
-                      <Button
-                        class="flex w-full items-center justify-between rounded-l-none !text-ink-gray-5"
-                        size="md"
-                        :label="displayValue(selectedValue)"
-                        :iconRight="open ? 'chevron-down' : 'chevron-up'"
-                        @click="togglePopover()"
-                      />
-                    </template>
-                    <template #item-label="{ option }">
-                      <Tooltip :text="option.fieldname">
-                        <div class="flex-1 truncate text-ink-gray-7">
-                          {{ option.label }}
-                        </div>
-                      </Tooltip>
-                    </template>
-                  </Autocomplete>
-                </div>
-                <Button variant="ghost" icon="x" @click="removeSort(i)" />
+            <div
+              v-for="(sort, i) in sortValues"
+              :key="sort.fieldname"
+              class="flex items-center gap-1"
+            >
+              <div class="handle flex h-7 w-7 items-center justify-center">
+                <DragIcon class="h-4 w-4 cursor-grab text-ink-gray-5" />
               </div>
-            </template>
-          </Draggable>
+              <div class="flex flex-1">
+                <Button
+                  size="md"
+                  class="rounded-r-none border-r"
+                  :icon="
+                    sort.direction == 'asc' ? AscendingIcon : DesendingIcon
+                  "
+                  @click="
+                    () => {
+                      sort.direction = sort.direction == 'asc' ? 'desc' : 'asc'
+                      apply()
+                    }
+                  "
+                />
+                <Autocomplete
+                  class="[&>_div]:w-full"
+                  :value="sort.fieldname"
+                  :options="sortOptions.data"
+                  @change="(e) => updateSort(e, i)"
+                  :placeholder="__('First Name')"
+                >
+                  <template
+                    #target="{
+                      open,
+                      togglePopover,
+                      selectedValue,
+                      displayValue,
+                    }"
+                  >
+                    <Button
+                      class="flex w-full items-center justify-between rounded-l-none !text-ink-gray-5"
+                      size="md"
+                      :label="displayValue(selectedValue)"
+                      :iconRight="open ? 'chevron-down' : 'chevron-up'"
+                      @click="togglePopover()"
+                    />
+                  </template>
+                </Autocomplete>
+              </div>
+              <Button variant="ghost" icon="x" @click="removeSort(i)" />
+            </div>
+          </div>
+          <div
+            v-else
+            class="mb-3 flex h-7 items-center px-3 text-sm text-ink-gray-5"
+          >
+            {{ __('Empty - Choose a field to sort by') }}
+          </div>
           <div class="flex items-center justify-between gap-2">
             <Autocomplete
               :options="options"
@@ -141,16 +145,9 @@
                   @click="togglePopover()"
                 />
               </template>
-              <template #item-label="{ option }">
-                <Tooltip :text="option.fieldname">
-                  <div class="flex-1 truncate text-ink-gray-7">
-                    {{ option.label }}
-                  </div>
-                </Tooltip>
-              </template>
             </Autocomplete>
             <Button
-              v-if="sortValues?.length"
+              v-if="sortValues?.size"
               class="!text-ink-gray-5"
               variant="ghost"
               :label="__('Clear Sort')"
@@ -168,12 +165,10 @@ import AscendingIcon from '@/components/Icons/AscendingIcon.vue'
 import DesendingIcon from '@/components/Icons/DesendingIcon.vue'
 import SortIcon from '@/components/Icons/SortIcon.vue'
 import DragIcon from '@/components/Icons/DragIcon.vue'
-import Draggable from 'vuedraggable'
 import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
-import { getMeta } from '@/stores/meta'
-import { useViews } from '@/stores/view'
-import { Popover, Tooltip } from 'frappe-ui'
-import { computed } from 'vue'
+import { useSortable } from '@vueuse/integrations/useSortable'
+import { createResource, Popover } from 'frappe-ui'
+import { computed, nextTick, onMounted } from 'vue'
 
 const props = defineProps({
   doctype: {
@@ -186,97 +181,93 @@ const props = defineProps({
   },
 })
 
-const { getValueFields } = getMeta(props.doctype)
-const { currentView } = useViews(props.doctype)
-
 const emit = defineEmits(['update'])
+const list = defineModel()
 
-const sortOptions = computed(() => {
-  let _options = getValueFields() || []
-  _options = _options.map((f) => ({
-    fieldname: f.fieldname,
-    label: f.label,
-    value: f.fieldname,
-  }))
-  return _options
+const sortOptions = createResource({
+  url: 'crm.api.doc.sort_options',
+  cache: ['sortOptions', props.doctype],
+  params: { doctype: props.doctype },
+})
+
+onMounted(() => {
+  if (sortOptions.data?.length) return
+  sortOptions.fetch()
 })
 
 const sortValues = computed({
   get: () => {
-    if (!currentView.value) return []
-    let allSortValues = currentView.value.order_by
-    if (!allSortValues || !sortOptions.value) return []
-    if (allSortValues.trim() === 'modified desc') return []
+    if (!list.value?.data) return new Set()
+    let allSortValues = list.value?.params?.order_by
+    if (!allSortValues || !sortOptions.data) return new Set()
+    if (allSortValues.trim() === 'modified desc') return new Set()
     allSortValues = allSortValues.split(', ').map((sortValue) => {
       const [fieldname, direction] = sortValue.split(' ')
       return { fieldname, direction }
     })
-    return allSortValues
+    return new Set(allSortValues)
   },
   set: (value) => {
-    currentView.value.order_by = convertToString(value)
+    list.value.params.order_by = convertToString(value)
   },
 })
 
 const options = computed(() => {
-  if (!sortOptions.value) return []
-  if (!sortValues.value.length) return sortOptions.value
-  const selectedOptions = sortValues.value.map((sort) => sort.fieldname)
-  return sortOptions.value.filter((option) => {
-    return !selectedOptions.includes(option.value)
+  if (!sortOptions.data) return []
+  if (!sortValues.value.size) return sortOptions.data
+  const selectedOptions = [...sortValues.value].map((sort) => sort.fieldname)
+  restartSort()
+  return sortOptions.data.filter((option) => {
+    return !selectedOptions.includes(option.fieldname)
   })
 })
 
-function toggleDirection(index) {
-  const newValues = [...sortValues.value]
-  const sort = newValues[index]
-  sort.direction = sort.direction === 'asc' ? 'desc' : 'asc'
-  sortValues.value = newValues
-  apply()
-}
+const sortSortable = useSortable('#sort-list', sortValues, {
+  handle: '.handle',
+  animation: 200,
+  onEnd: () => apply(),
+})
 
 function getSortLabel() {
-  if (!sortValues.value.length) return __('Sort')
-  let label = sortOptions.value?.find(
-    (option) => option.value === sortValues.value[0].fieldname,
+  if (!sortValues.value.size) return __('Sort')
+  let values = Array.from(sortValues.value)
+  let label = sortOptions.data?.find(
+    (option) => option.fieldname === values[0].fieldname,
   )?.label
-  return label || sortValues.value[0].fieldname
+  return label || values[0].fieldname
 }
 
 function setSort(data) {
-  sortValues.value = [
-    ...sortValues.value,
-    { fieldname: data.value, direction: 'asc' },
-  ]
+  sortValues.value.add({ fieldname: data.fieldname, direction: 'asc' })
+  restartSort()
   apply()
 }
 
 function updateSort(data, index) {
-  const newValues = [...sortValues.value]
-  const oldSort = newValues[index]
-  newValues[index] = {
-    fieldname: data.value,
+  let oldSort = Array.from(sortValues.value)[index]
+  sortValues.value.delete(oldSort)
+  sortValues.value.add({
+    fieldname: data.fieldname,
     direction: oldSort.direction,
-  }
-  sortValues.value = newValues
+  })
   apply()
 }
 
 function removeSort(index) {
-  const newValues = [...sortValues.value]
-  newValues.splice(index, 1)
-  sortValues.value = newValues
+  sortValues.value.delete(Array.from(sortValues.value)[index])
   apply()
 }
 
 function clearSort(close) {
-  sortValues.value = []
+  sortValues.value.clear()
   apply()
   close()
 }
 
 function apply() {
-  emit('update')
+  nextTick(() => {
+    emit('update', convertToString(sortValues.value))
+  })
 }
 
 function convertToString(values) {
@@ -286,5 +277,10 @@ function convertToString(values) {
   })
   _sortValues = _sortValues.slice(0, -2)
   return _sortValues
+}
+
+function restartSort() {
+  sortSortable.stop()
+  sortSortable.start()
 }
 </script>

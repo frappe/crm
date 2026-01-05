@@ -39,35 +39,9 @@
           :loading="list?.loading"
           @click="reload"
         />
-        <GroupBy
-          v-if="route?.params.viewType === 'group_by'"
-          v-model="list"
-          :doctype="doctype"
-          @update="updateGroupBy"
-        />
-        <Filter
-          v-model="list"
-          :doctype="doctype"
-          :default_filters="filters"
-          @update="updateFilter"
-        />
-        <SortBy
-          v-if="route?.params.viewType !== 'kanban'"
-          v-model="list"
-          :doctype="doctype"
-          @update="updateSort"
-        />
-        <KanbanSettings
-          v-if="route?.params.viewType === 'kanban'"
-          v-model="list"
-          :doctype="doctype"
-          @update="updateKanbanSettings"
-        />
-        <ColumnSettings
-          v-else-if="!options?.hideColumnsButton"
-          :doctype="doctype"
-          @update="updateColumns"
-        />
+        <Filter :default_filters="filters" @update="updateFilter" />
+        <SortBy @update="updateSort" />
+        <ColumnSettings @update="updateColumns" />
         <Dropdown
           v-if="route?.params.viewType !== 'kanban' || isManager()"
           placement="right"
@@ -115,6 +89,9 @@
   </div>
 </template>
 <script setup>
+import Filter from '@/components/Views/List/Filter.vue'
+import SortBy from '@/components/Views/List/SortBy.vue'
+import ColumnSettings from '@/components/Views/List/ColumnSettings.vue'
 import QuickFilterField from '@/components/QuickFilterField.vue'
 import RefreshIcon from '@/components/Icons/RefreshIcon.vue'
 import ExportIcon from '@/components/Icons/ExportIcon.vue'

@@ -17,6 +17,35 @@ COUNT_NAME = (
     {"COUNT": "name", "as": "total_count"} if is_version_16() else "count(name) as total_count"
 )
 
+@frappe.whitelist()
+def sort_options(doctype: str):
+	fields = frappe.get_meta(doctype).fields
+	fields = [field for field in fields if field.fieldtype not in no_value_fields]
+	fields = [
+		{
+			"label": _(field.label),
+			"value": field.fieldname,
+			"fieldname": field.fieldname,
+		}
+		for field in fields
+		if field.label and field.fieldname
+	]
+
+	standard_fields = [
+		{"label": "Name", "fieldname": "name"},
+		{"label": "Created On", "fieldname": "creation"},
+		{"label": "Last Modified", "fieldname": "modified"},
+		{"label": "Modified By", "fieldname": "modified_by"},
+		{"label": "Owner", "fieldname": "owner"},
+	]
+
+	for field in standard_fields:
+		field["label"] = _(field["label"])
+		field["value"] = field["fieldname"]
+		fields.append(field)
+
+	return fields
+
 
 @frappe.whitelist()
 def get_filterable_fields(doctype: str):

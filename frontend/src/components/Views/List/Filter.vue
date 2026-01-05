@@ -4,20 +4,20 @@
       <div class="flex items-center">
         <Button
           :label="__('Filter')"
-          :class="filters?.size ? 'rounded-r-none' : ''"
+          :class="filters?.length ? 'rounded-r-none' : ''"
           :iconLeft="FilterIcon"
           @click="togglePopover"
         >
-          <template v-if="filters?.size" #suffix>
+          <template v-if="filters?.length" #suffix>
             <div
               class="flex h-5 w-5 items-center justify-center rounded-[5px] bg-surface-white pt-px text-xs font-medium text-ink-gray-8 shadow-sm"
             >
-              {{ filters.size }}
+              {{ filters.length }}
             </div>
           </template>
         </Button>
         <Button
-          v-if="filters?.size"
+          v-if="filters?.length"
           :tooltip="__('Clear all Filter')"
           class="rounded-l-none border-l"
           icon="x"
@@ -29,13 +29,12 @@
       <div
         class="my-2 min-w-40 rounded-lg bg-surface-modal shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
       >
-        <div class="min-w-72 p-2 sm:min-w-[400px]">
+        <div class="filters min-w-72 p-2 sm:min-w-[400px]">
           <div
-            v-if="filters?.size"
+            v-if="filters?.length"
             v-for="(f, i) in filters"
             :key="i"
-            id="filter-list"
-            class="mb-4 sm:mb-3"
+            class="filter mb-4 sm:mb-3"
           >
             <div v-if="isMobileView" class="flex flex-col gap-2">
               <div class="-mb-2 flex w-full items-center justify-between">
@@ -52,10 +51,18 @@
               <div id="fieldname" class="w-full">
                 <Autocomplete
                   :value="f.field.fieldname"
-                  :options="filterableFields.data"
+                  :options="filterableFields"
                   @change="(e) => updateFilter(e, i)"
                   :placeholder="__('First Name')"
-                />
+                >
+                  <template #item-label="{ option }">
+                    <Tooltip :text="option.fieldname">
+                      <div class="flex-1 truncate text-ink-gray-7">
+                        {{ option.label }}
+                      </div>
+                    </Tooltip>
+                  </template>
+                </Autocomplete>
               </div>
               <div id="operator">
                 <FormControl
@@ -83,16 +90,24 @@
                 <div id="fieldname" class="!min-w-[140px]">
                   <Autocomplete
                     :value="f.field.fieldname"
-                    :options="filterableFields.data"
+                    :options="filterableFields"
                     @change="(e) => updateFilter(e, i)"
                     :placeholder="__('First Name')"
-                  />
+                  >
+                    <template #item-label="{ option }">
+                      <Tooltip :text="option.fieldname">
+                        <div class="flex-1 truncate text-ink-gray-7">
+                          {{ option.label }}
+                        </div>
+                      </Tooltip>
+                    </template>
+                  </Autocomplete>
                 </div>
                 <div id="operator">
                   <FormControl
                     type="select"
-                    v-model="f.operator"
-                    @change="(e) => updateOperator(e, f)"
+                    :defaultValue="f.operator"
+                    @update:modelValue="(v) => updateOperator(v, f)"
                     :options="
                       getOperators(f.field.fieldtype, f.field.fieldname)
                     "
@@ -138,9 +153,16 @@
                   @click="togglePopover()"
                 />
               </template>
+              <template #item-label="{ option }">
+                <Tooltip :text="option.fieldname">
+                  <div class="flex-1 truncate text-ink-gray-7">
+                    {{ option.label }}
+                  </div>
+                </Tooltip>
+              </template>
             </Autocomplete>
             <Button
-              v-if="filters?.size"
+              v-if="filters?.length"
               class="!text-ink-gray-5"
               variant="ghost"
               :label="__('Clear all Filter')"
@@ -156,16 +178,17 @@
 import FilterIcon from '@/components/Icons/FilterIcon.vue'
 import Link from '@/components/Controls/Link.vue'
 import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
+import { isMobileView } from '@/composables/settings'
+import { getMeta } from '@/stores/meta'
 import {
   FormControl,
-  createResource,
+  Tooltip,
   Popover,
   DatePicker,
   DateTimePicker,
   DateRangePicker,
 } from 'frappe-ui'
-import { h, computed, onMounted } from 'vue'
-import { isMobileView } from '@/composables/settings'
+import { h, computed, inject } from 'vue'
 
 const typeCheck = ['Check']
 const typeLink = ['Link', 'Dynamic Link']
@@ -174,53 +197,99 @@ const typeSelect = ['Select']
 const typeString = ['Data', 'Long Text', 'Small Text', 'Text Editor', 'Text']
 const typeDate = ['Date', 'Datetime']
 
+const operatorMap = {
+  is: 'is',
+  'is not': 'is not',
+  in: 'in',
+  'not in': 'not in',
+  equals: '=',
+  'not equals': '!=',
+  yes: true,
+  no: false,
+  like: 'LIKE',
+  'not like': 'NOT LIKE',
+  '>': '>',
+  '<': '<',
+  '>=': '>=',
+  '<=': '<=',
+  between: 'between',
+  timespan: 'timespan',
+}
+
+const oppositeOperatorMap = {
+  is: 'is',
+  '=': 'equals',
+  '!=': 'not equals',
+  equals: 'equals',
+  'is not': 'is not',
+  true: 'yes',
+  false: 'no',
+  LIKE: 'like',
+  'NOT LIKE': 'not like',
+  in: 'in',
+  'not in': 'not in',
+  '>': '>',
+  '<': '<',
+  '>=': '>=',
+  '<=': '<=',
+  between: 'between',
+  timespan: 'timespan',
+}
+
 const props = defineProps({
-  doctype: {
-    type: String,
-    required: true,
-  },
   default_filters: {
     type: Object,
     default: {},
   },
 })
 
+const doctype = inject('doctype')
+const currentView = inject('currentView')
+
+const { getValueFields } = getMeta(doctype)
+
 const emit = defineEmits(['update'])
 
-const list = defineModel()
+const filterableFields = computed(() => {
+  let _fields = getValueFields() || []
 
-const filterableFields = createResource({
-  url: 'crm.api.doc.get_filterable_fields',
-  cache: ['filterableFields', props.doctype],
-  params: { doctype: props.doctype },
-})
-
-onMounted(() => {
-  if (filterableFields.data?.length) return
-  filterableFields.fetch()
-})
-
-const filters = computed(() => {
-  if (!list.value?.data) return new Set()
-  let allFilters =
-    list.value?.params?.filters || list.value.data?.params?.filters
-  if (!allFilters || !filterableFields.data) return new Set()
-  // remove default filters
   if (props.default_filters) {
-    allFilters = removeCommonFilters(props.default_filters, allFilters)
+    _fields = _fields.filter((field) => {
+      return !Object.keys(props.default_filters).includes(field.fieldname)
+    })
   }
-  return convertFilters(filterableFields.data, allFilters)
+
+  return _fields.map((field) => ({
+    ...field,
+    label: field.label,
+    value: field.fieldname,
+  }))
 })
+
+const filters = computed(() => getInitialFilters())
+
+function getInitialFilters(_filters) {
+  let initialFilters = _filters || currentView.value?.filters || {}
+
+  if (typeof initialFilters === 'object') {
+    initialFilters = JSON.stringify(initialFilters)
+  }
+  initialFilters = JSON.parse(initialFilters) || {}
+
+  if (props.default_filters) {
+    initialFilters = removeCommonFilters(props.default_filters, initialFilters)
+  }
+  return convertFilters(initialFilters) || []
+}
 
 const availableFilters = computed(() => {
-  if (!filterableFields.data) return []
+  if (!filterableFields.value) return []
 
-  const selectedFieldNames = new Set()
-  for (const filter of filters.value) {
-    selectedFieldNames.add(filter.fieldname)
-  }
+  const selectedFieldNames = new Set(
+    filters.value.map((filter) => filter.fieldname),
+  )
 
-  return filterableFields.data.filter(
+  return filterableFields.value.filter(
     (field) => !selectedFieldNames.has(field.fieldname),
   )
 })
@@ -236,10 +305,10 @@ function removeCommonFilters(commonFilters, allFilters) {
   return allFilters
 }
 
-function convertFilters(data, allFilters) {
+function convertFilters(allFilters) {
   let f = []
   for (let [key, value] of Object.entries(allFilters)) {
-    let field = data.find((f) => f.fieldname === key)
+    let field = filterableFields.value.find((f) => f.fieldname === key)
     if (typeof value !== 'object' || !value) {
       value = ['=', value]
       if (field?.fieldtype === 'Check') {
@@ -248,15 +317,20 @@ function convertFilters(data, allFilters) {
     }
 
     if (field) {
+      let operator = oppositeOperatorMap[value[0]]
+      if (['like', 'not like'].includes(operator)) {
+        value[1] = value[1].replace(/%/g, '')
+      }
+
       f.push({
         field,
         fieldname: key,
-        operator: oppositeOperatorMap[value[0]],
+        operator: operator,
         value: value[1],
       })
     }
   }
-  return new Set(f)
+  return f
 }
 
 function getOperators(fieldtype, fieldname) {
@@ -440,7 +514,7 @@ function getSelectOptions(options) {
 
 function setfilter(data) {
   if (!data) return
-  filters.value.add({
+  filters.value.push({
     field: {
       label: data.label,
       fieldname: data.fieldname,
@@ -457,8 +531,7 @@ function setfilter(data) {
 function updateFilter(data, index) {
   if (!data.fieldname) return
 
-  filters.value.delete(Array.from(filters.value)[index])
-  filters.value.add({
+  filters.value.splice(index, 1, {
     fieldname: data.fieldname,
     operator: getDefaultOperator(data.fieldtype),
     value: getDefaultValue(data),
@@ -473,12 +546,12 @@ function updateFilter(data, index) {
 }
 
 function removeFilter(index) {
-  filters.value.delete(Array.from(filters.value)[index])
+  filters.value.splice(index, 1)
   apply()
 }
 
 function clearfilter(close) {
-  filters.value.clear()
+  filters.value.length = 0
   apply()
   close()
 }
@@ -493,10 +566,10 @@ function updateValue(value, filter) {
   apply()
 }
 
-function updateOperator(event, filter) {
-  let oldOperatorValue = event.target._value
-  let newOperatorValue = event.target.value
-  filter.operator = event.target.value
+function updateOperator(value, filter) {
+  let oldOperatorValue = filter.operator
+  let newOperatorValue = value
+  filter.operator = value
   if (!isSameTypeOperator(oldOperatorValue, newOperatorValue)) {
     filter.value = getDefaultValue(filter.field)
   }
@@ -534,7 +607,8 @@ function apply() {
       value: f.value,
     })
   })
-  emit('update', parseFilters(_filters))
+  currentView.value.filters = parseFilters(_filters) || {}
+  emit('update')
 }
 
 function parseFilters(filters) {
@@ -557,45 +631,6 @@ function transformIn(f) {
     f.value = `%${f.value}%`
   }
   return f
-}
-
-const operatorMap = {
-  is: 'is',
-  'is not': 'is not',
-  in: 'in',
-  'not in': 'not in',
-  equals: '=',
-  'not equals': '!=',
-  yes: true,
-  no: false,
-  like: 'LIKE',
-  'not like': 'NOT LIKE',
-  '>': '>',
-  '<': '<',
-  '>=': '>=',
-  '<=': '<=',
-  between: 'between',
-  timespan: 'timespan',
-}
-
-const oppositeOperatorMap = {
-  is: 'is',
-  '=': 'equals',
-  '!=': 'not equals',
-  equals: 'equals',
-  'is not': 'is not',
-  true: 'yes',
-  false: 'no',
-  LIKE: 'like',
-  'NOT LIKE': 'not like',
-  in: 'in',
-  'not in': 'not in',
-  '>': '>',
-  '<': '<',
-  '>=': '>=',
-  '<=': '<=',
-  between: 'between',
-  timespan: 'timespan',
 }
 
 const timespanOptions = [
