@@ -264,6 +264,8 @@ function reset(close) {
 }
 
 function apply(reset = false) {
+  reset = typeof reset === 'object' ? false : reset
+
   if (reset) {
     columns.value = JSON.parse(JSON.stringify(oldValues.value.columns))
     rows.value = JSON.parse(JSON.stringify(oldValues.value.rows))
