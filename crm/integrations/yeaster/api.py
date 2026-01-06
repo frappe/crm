@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 
 @frappe.whitelist(allow_guest=True)
-def make_call(caller: str, callee: str, auto_answer: str = "yes") -> None:
+def make_call(caller: str, callee: str, auto_answer: str = "yes") -> dict[str, str]:
     is_yeaster_enabled()
 
     request_url = url_builder("/call/dial")
@@ -14,7 +14,7 @@ def make_call(caller: str, callee: str, auto_answer: str = "yes") -> None:
         "auto_answer": auto_answer,
     }
 
-    make_http_request(
+    return make_http_request(
         endpoint=request_url,
         method="POST",
         request_type="make_call",
@@ -22,12 +22,55 @@ def make_call(caller: str, callee: str, auto_answer: str = "yes") -> None:
     )
 
 
+@frappe.whitelist(allow_guest=True)
+def handle_incoming_call() -> None:
+    data: dict[str, str] = frappe.request.get_json()
+    if not data:
+        frappe.log_error(
+            "No data received in the incoming call webhook.",
+            "Yeastar Incoming Call Webhook Error",
+        )
+        frappe.throw("No data received from the incoming call webhook.")
+
+    members: list[dict] = data.get("msg").get("members")
+    inbound_info_data: dict = members[0].get("inbound")
+
+    caller = inbound_info_data.get("from")
+    callee = inbound_info_data.get("to")
+    channel_id = inbound_info_data.get("channel_id")
+
+    details = IncomingCallDetails(caller=caller, callee=callee, channel_id=channel_id)
+
+    create_socket_connection(details)
+
+
+@dataclass
+class IncomingCallDetails:
+    caller: str
+    callee: str
+    channel_id: str
+
+
+def create_socket_connection(details: IncomingCallDetails) -> None:
+
+    frappe.publish_realtime(
+        event="yeastar_incoming_call",
+        message=details.__dict__,
+        user=frappe.session.user,
+    )
+
+
+@frappe.whitelist(allow_guest=True)
+def accept_call():
+    pass
+
+
 def make_http_request(
     endpoint: str,
     method: str,
     request_type: str,
     data: dict | None = None,
-) -> None:
+) -> dict[str, str]:
     headers = {"Content-Type": "application/json"}
 
     try:
@@ -43,6 +86,8 @@ def make_http_request(
             frappe.throw(
                 f"{response_data.get('errmsg', 'Unknown error')}. ERROR CODE: {response_data.get('errcode')}"
             )
+
+        return response_data
 
     except Exception as e:
         frappe.log_error(
