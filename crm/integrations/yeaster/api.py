@@ -61,8 +61,16 @@ def create_socket_connection(details: IncomingCallDetails) -> None:
 
 
 @frappe.whitelist(allow_guest=True)
-def accept_call():
-    pass
+def respond_to_call(channel_id: str, action: str = "accept" | "refuse") -> dict:
+
+    request_url = url_builder(f"/call/{action}_inbound")
+    data = {"channel_id": channel_id}
+    return make_http_request(
+        endpoint=request_url,
+        method="POST",
+        request_type=f"{action}_call",
+        data=data,
+    )
 
 
 def make_http_request(
