@@ -388,6 +388,8 @@ function getValueControl(f) {
         label: o,
         value: o,
       })),
+      modelValue: f.value,
+      'onUpdate:modelValue': (v) => updateValue(v, f),
     })
   } else if (typeLink.includes(fieldtype)) {
     if (fieldtype == 'Dynamic Link') {
