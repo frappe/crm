@@ -67,8 +67,8 @@
               <div id="operator">
                 <FormControl
                   type="select"
-                  v-model="f.operator"
-                  @change="(e) => updateOperator(e, f)"
+                  :value="f.operator"
+                  @update:modelValue="(v) => updateOperator(v, f)"
                   :options="getOperators(f.field.fieldtype, f.field.fieldname)"
                   :placeholder="__('Equals')"
                 />
@@ -457,11 +457,13 @@ function getValueControl(f) {
     const _options =
       fieldtype == 'Check' ? ['Yes', 'No'] : getSelectOptions(options)
     return h(FormControl, {
+      value: f.value,
       type: 'select',
       options: _options.map((o) => ({
         label: o,
         value: o,
       })),
+      'onUpdate:modelValue': (v) => updateValue(v, f),
     })
   } else if (typeLink.includes(fieldtype)) {
     if (fieldtype == 'Dynamic Link') {
