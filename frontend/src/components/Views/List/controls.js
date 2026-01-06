@@ -1,10 +1,12 @@
 import { useCall } from 'frappe-ui'
+import { useList } from './list.js'
 import { inject } from 'vue'
 import { useRoute } from 'vue-router'
 
 export function useControls() {
   const doctype = inject('doctype')
   const currentView = inject('currentView')
+  const { reload } = useList()
 
   const route = useRoute()
 
@@ -18,6 +20,7 @@ export function useControls() {
       url: '/api/v2/method/crm.fcrm.doctype.crm_view_settings.crm_view_settings.create_or_update_standard_view',
       method: 'POST',
       params: { view: currentView.value },
+      onSuccess: () => reload(),
     })
   }
 

@@ -14,7 +14,6 @@ export function useList() {
   if (!listCache[doctype]) {
     listCache[doctype] = _useList({
       doctype: doctype,
-      cacheKey: ['List', doctype],
       fields,
       filters,
       orderBy,

@@ -179,21 +179,21 @@ const column = ref({
 })
 
 const isDefault = computed({
-  get: () => currentView?.value?.is_default,
+  get: () => currentView.value?.is_default,
   set: (val) => {
     currentView.value.is_default = val
   },
 })
 
 const columns = computed({
-  get: () => currentView?.value?.columns,
+  get: () => currentView.value?.columns,
   set: (val) => {
     currentView.value.columns = val
   },
 })
 
 const rows = computed({
-  get: () => currentView?.value?.rows,
+  get: () => currentView.value?.rows,
   set: (val) => {
     currentView.value.rows = val
   },
