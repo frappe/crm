@@ -326,6 +326,9 @@ const field = computed(() => {
       field.mandatory_depends_on,
       data.value,
     ),
+    read_only: field.read_only_depends_on 
+      ? evaluateDependsOnValue(field.read_only_depends_on, data.value)
+      : field.read_only,
   }
 
   _field.visible = isFieldVisible(_field)
