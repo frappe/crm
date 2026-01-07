@@ -38,6 +38,7 @@ function translate(message, replace, context = null) {
 function fetchTranslations(lang) {
   createResource({
     url: 'crm.api.get_translations',
+    method: 'GET',
     cache: 'translations',
     auto: true,
     transform: (data) => {
