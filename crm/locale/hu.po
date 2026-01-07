@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-12-21 09:37+0000\n"
-"PO-Revision-Date: 2026-01-06 01:06\n"
+"PO-Revision-Date: 2026-01-07 01:06\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Hungarian\n"
 "MIME-Version: 1.0\n"
@@ -103,7 +103,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
 msgid "501-1000"
-msgstr ""
+msgstr "501-1000"
 
 #. Option for the 'No. of Employees' (Select) field in DocType 'CRM Deal'
 #. Option for the 'No. of Employees' (Select) field in DocType 'CRM Lead'
@@ -113,7 +113,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
 msgid "51-200"
-msgstr ""
+msgstr "51-200"
 
 #. Paragraph text in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
@@ -466,7 +466,7 @@ msgstr ""
 #: frontend/src/pages/MobileOrganization.vue:466
 #: frontend/src/pages/Organization.vue:500
 msgid "Amount"
-msgstr ""
+msgstr "Összeg"
 
 #. Description of the 'Net Amount' (Currency) field in DocType 'CRM Products'
 #: crm/fcrm/doctype/crm_products/crm_products.json
@@ -507,7 +507,7 @@ msgstr ""
 #: frontend/src/components/Modals/DealModal.vue:200
 #: frontend/src/components/Modals/LeadModal.vue:141
 msgid "Annual Revenue should be a number"
-msgstr ""
+msgstr "Az éves bevételnek egy számnak kell lennie"
 
 #: frontend/src/components/Settings/LeadSyncing/FailureLogs.vue:39
 msgid "Any failed lead syncs will show up here"
@@ -550,7 +550,7 @@ msgstr ""
 
 #: frontend/src/pages/MobileContact.vue:269
 msgid "Are you sure you want to delete this contact?"
-msgstr ""
+msgstr "Biztosan törölni szeretnéd ezt a kapcsolatot?"
 
 #: frontend/src/components/Modals/EventModal.vue:408
 #: frontend/src/pages/Calendar.vue:300
@@ -583,7 +583,7 @@ msgstr ""
 
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.js:9
 msgid "Are you sure you want to reset 'Create Quotation from CRM Deal' Form Script?"
-msgstr ""
+msgstr "Biztosan vissza szeretné állítani az „Árajánlat létrehozása CRM ügyletből” űrlap szkriptet?"
 
 #: frontend/src/components/Settings/CurrencySettings.vue:165
 msgid "Are you sure you want to set the currency as {0}? This cannot be changed later."
@@ -900,7 +900,7 @@ msgstr ""
 #. Name of a DocType
 #: crm/fcrm/doctype/crm_contacts/crm_contacts.json
 msgid "CRM Contacts"
-msgstr ""
+msgstr "CRM kapcsolatok"
 
 #. Name of a DocType
 #: crm/fcrm/doctype/crm_dashboard/crm_dashboard.json
@@ -1194,7 +1194,7 @@ msgstr ""
 #: frontend/src/pages/MobileOrganization.vue:37
 #: frontend/src/pages/Organization.vue:47
 msgid "Change image"
-msgstr ""
+msgstr "Kép módosítása"
 
 #: frontend/src/components/Activities/TaskArea.vue:45
 msgid "Change status"
@@ -1426,11 +1426,11 @@ msgstr ""
 #: frontend/src/components/Modals/ConvertToDealModal.vue:51
 #: frontend/src/pages/MobileLead.vue:149
 msgid "Contact"
-msgstr "Névjegy"
+msgstr "Kapcsolat"
 
 #: crm/fcrm/doctype/crm_lead/crm_lead.py:263
 msgid "Contact Already Exists"
-msgstr ""
+msgstr "A kapcsolat már létezik"
 
 #: frontend/src/components/Modals/AboutModal.vue:77
 msgid "Contact Support"
@@ -1442,15 +1442,15 @@ msgstr "Lépjen kapcsolatba velünk"
 
 #: frontend/src/pages/Deal.vue:663 frontend/src/pages/MobileDeal.vue:546
 msgid "Contact added"
-msgstr ""
+msgstr "Kapcsolat hozzáadva"
 
 #: frontend/src/pages/Deal.vue:653 frontend/src/pages/MobileDeal.vue:536
 msgid "Contact already added"
-msgstr ""
+msgstr "A kapcsolat már hozzáadva"
 
 #: crm/fcrm/doctype/crm_lead/crm_lead.py:262
 msgid "Contact already exists with {0}"
-msgstr ""
+msgstr "A kapcsolat már létezik a következővel: {0}"
 
 #: frontend/src/pages/Contact.vue:304 frontend/src/pages/MobileContact.vue:261
 msgid "Contact image updated"
@@ -1458,7 +1458,7 @@ msgstr ""
 
 #: frontend/src/pages/Deal.vue:674 frontend/src/pages/MobileDeal.vue:557
 msgid "Contact removed"
-msgstr ""
+msgstr "Kapcsolat eltávolítva"
 
 #: frontend/src/pages/Contact.vue:449 frontend/src/pages/Contact.vue:462
 #: frontend/src/pages/Contact.vue:475 frontend/src/pages/Contact.vue:485
@@ -1759,7 +1759,7 @@ msgstr ""
 #: frontend/src/pages/MobileOrganization.vue:487
 #: frontend/src/pages/Organization.vue:521
 msgid "Deal owner"
-msgstr ""
+msgstr "Ügylet tulajdonosa"
 
 #: crm/api/dashboard.py:1075 crm/api/dashboard.py:1135
 msgid "Deal value"
@@ -1771,7 +1771,7 @@ msgstr ""
 #: frontend/src/pages/MobileDeal.vue:386
 #: frontend/src/pages/MobileOrganization.vue:340
 msgid "Deals"
-msgstr ""
+msgstr "Ügyletek"
 
 #: crm/api/dashboard.py:818
 #: frontend/src/components/Dashboard/AddChartModal.vue:97
@@ -1921,7 +1921,7 @@ msgstr ""
 
 #: frontend/src/pages/MobileContact.vue:268
 msgid "Delete contact"
-msgstr ""
+msgstr "Kapcsolat törlése"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:25
 msgid "Delete event"
@@ -2241,7 +2241,7 @@ msgstr ""
 #: frontend/src/components/Modals/LeadModal.vue:16
 #: frontend/src/components/Modals/OrganizationModal.vue:16
 msgid "Edit fields layout"
-msgstr ""
+msgstr "Mezők elrendezésének szerkesztése"
 
 #: frontend/src/components/Controls/Grid.vue:57
 msgid "Edit grid fields"
@@ -2829,7 +2829,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "First Response Time"
-msgstr ""
+msgstr "Első válaszidő"
 
 #: frontend/src/components/Filter.vue:130
 #: frontend/src/components/Settings/ProfileSettings.vue:78
@@ -2922,7 +2922,7 @@ msgstr "Felhasználótól"
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: crm/fcrm/doctype/crm_rolling_response_time/crm_rolling_response_time.json
 msgid "Fulfilled"
-msgstr ""
+msgstr "Teljesített"
 
 #. Label of the full_name (Data) field in DocType 'CRM Contacts'
 #. Label of the lead_name (Data) field in DocType 'CRM Lead'
@@ -3210,7 +3210,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
 msgid "Industry"
-msgstr ""
+msgstr "Ipar"
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
@@ -3532,7 +3532,7 @@ msgstr ""
 #: frontend/src/components/Telephony/ExotelCallUI.vue:200
 #: frontend/src/pages/Tasks.vue:133
 msgid "Lead"
-msgstr ""
+msgstr "Érdeklődés"
 
 #. Label of the lead_data (Code) field in DocType 'Failed Lead Sync Log'
 #: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.json
@@ -3543,17 +3543,17 @@ msgstr ""
 #. Label of the lead_details_tab (Tab Break) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 msgid "Lead Details"
-msgstr ""
+msgstr "Érdeklődés adatai"
 
 #. Label of the lead_name (Data) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 msgid "Lead Name"
-msgstr ""
+msgstr "Érdeklődő neve"
 
 #. Label of the lead_owner (Link) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Lead Owner"
-msgstr ""
+msgstr "Érdeklődés tulajdonosa"
 
 #: crm/fcrm/doctype/crm_lead/crm_lead.py:124
 msgid "Lead Owner cannot be same as the Lead Email Address"
@@ -3754,7 +3754,7 @@ msgstr "Alacsony"
 
 #: frontend/src/pages/Contact.vue:100 frontend/src/pages/MobileContact.vue:73
 msgid "Make Call"
-msgstr ""
+msgstr "Hívás kezdeményezése"
 
 #: frontend/src/components/ViewControls.vue:1101
 msgid "Make Private"
@@ -3769,11 +3769,11 @@ msgstr ""
 #: frontend/src/components/Activities/ActivityHeader.vue:181
 #: frontend/src/pages/Deals.vue:505 frontend/src/pages/Leads.vue:532
 msgid "Make a Call"
-msgstr ""
+msgstr "Hívásindítás"
 
 #: frontend/src/pages/Deal.vue:86 frontend/src/pages/Lead.vue:127
 msgid "Make a call"
-msgstr ""
+msgstr "Hívásindítás"
 
 #: frontend/src/components/Activities/AttachmentArea.vue:98
 msgid "Make attachment {0}"
@@ -3890,7 +3890,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_contacts/crm_contacts.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Mobile No"
-msgstr "Mobil:"
+msgstr "Mobilszám"
 
 #: frontend/src/components/Modals/DealModal.vue:208
 #: frontend/src/components/Modals/LeadModal.vue:149
@@ -4006,7 +4006,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Net Total"
-msgstr ""
+msgstr "Nettó összesen"
 
 #: frontend/src/components/Activities/ActivityHeader.vue:76
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRules.vue:19
@@ -4093,7 +4093,7 @@ msgstr ""
 #: frontend/src/components/Modals/ConvertToDealModal.vue:67
 #: frontend/src/pages/MobileLead.vue:166
 msgid "New contact will be created based on the person's details"
-msgstr ""
+msgstr "Új kapcsolat jön létre a személy adatai alapján"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:431
 msgid "New event"
@@ -4167,7 +4167,8 @@ msgstr "Nem történt változás"
 #: frontend/src/components/Modals/SidePanelModal.vue:51
 #: frontend/src/pages/Deal.vue:277 frontend/src/pages/MobileDeal.vue:209
 msgid "No contacts added"
-msgstr ""
+msgstr "Nincsenek hozzáadott \n"
+"kapcsolatok"
 
 #: frontend/src/pages/Deal.vue:263
 msgid "No details added"
@@ -4212,7 +4213,7 @@ msgstr ""
 
 #: frontend/src/pages/Deal.vue:708
 msgid "No primary contact set"
-msgstr ""
+msgstr "Nincs beállítva elsődleges kapcsolattartó"
 
 #: frontend/src/components/Calendar/Attendee.vue:232
 #: frontend/src/components/Controls/EmailMultiSelect.vue:133
@@ -4309,7 +4310,7 @@ msgstr ""
 
 #: crm/fcrm/doctype/crm_deal/crm_deal.py:333
 msgid "Not allowed to add contact to Deal"
-msgstr ""
+msgstr "Nem engedélyezett kapcsolat hozzáadása az ügylethez"
 
 #: crm/fcrm/doctype/crm_lead/crm_lead.py:459
 msgid "Not allowed to convert Lead to Deal"
@@ -4317,11 +4318,11 @@ msgstr ""
 
 #: crm/fcrm/doctype/crm_deal/crm_deal.py:344
 msgid "Not allowed to remove contact from Deal"
-msgstr ""
+msgstr "Nem engedélyezett kapcsolat eltávolítása az ügyletből"
 
 #: crm/fcrm/doctype/crm_deal/crm_deal.py:355
 msgid "Not allowed to set primary contact for Deal"
-msgstr ""
+msgstr "Nem engedélyezett elsődleges kapcsolat hozzáadása az ügylethez"
 
 #: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.py:32
 msgid "Not implemented yet!"
@@ -4336,7 +4337,7 @@ msgstr "Jegyzet"
 #: frontend/src/pages/Deal.vue:578 frontend/src/pages/Lead.vue:424
 #: frontend/src/pages/MobileDeal.vue:463 frontend/src/pages/MobileLead.vue:369
 msgid "Notes"
-msgstr ""
+msgstr "Jegyzetek"
 
 #: frontend/src/pages/Notes.vue:23
 msgid "Notes View"
@@ -4486,7 +4487,7 @@ msgstr ""
 #: frontend/src/pages/Organization.vue:495
 #: frontend/src/pages/Organization.vue:549
 msgid "Organization"
-msgstr ""
+msgstr "Szervezet"
 
 #. Label of the organization_details_section (Section Break) field in DocType
 #. 'CRM Deal'
@@ -4687,7 +4688,7 @@ msgstr ""
 #: frontend/src/components/Modals/ConvertToDealModal.vue:136
 #: frontend/src/pages/MobileLead.vue:433
 msgid "Please select an existing contact"
-msgstr ""
+msgstr "Kérjük egy meglévő kapcsolatot válasszon"
 
 #: frontend/src/components/Modals/ConvertToDealModal.vue:141
 #: frontend/src/pages/MobileLead.vue:438
@@ -4738,7 +4739,7 @@ msgstr "Elsődleges Telefon Szám"
 
 #: frontend/src/pages/Deal.vue:685 frontend/src/pages/MobileDeal.vue:568
 msgid "Primary contact set"
-msgstr ""
+msgstr "Elsődleges kapcsolattartó beállítása"
 
 #. Label of the priorities (Table) field in DocType 'CRM Service Level
 #. Agreement'
@@ -4792,7 +4793,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Products"
-msgstr ""
+msgstr "Termékek"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:540
 #: frontend/src/components/Settings/Settings.vue:94
@@ -5028,7 +5029,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Response Details"
-msgstr ""
+msgstr "Válasz részletei"
 
 #. Label of the response_time (Duration) field in DocType 'CRM Rolling Response
 #. Time'
@@ -5379,7 +5380,7 @@ msgstr "Szétválasztó"
 #. Label of the naming_series (Select) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Series"
-msgstr ""
+msgstr "Sorozat"
 
 #. Label of the service_provider (Select) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
@@ -5562,7 +5563,7 @@ msgstr "Forrás Neve"
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:33
 msgid "Source Type"
-msgstr ""
+msgstr "Forrás típusa"
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:167
 msgid "Source disabled successfully"
@@ -5704,7 +5705,7 @@ msgstr ""
 
 #: frontend/src/pages/Welcome.vue:32
 msgid "Sync your contacts,email and calenders"
-msgstr ""
+msgstr "Szinkronizálja kapcsolatait, e-mailjeit és naptárait"
 
 #. Option for the 'Type' (Select) field in DocType 'Failed Lead Sync Log'
 #: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.json
@@ -6289,7 +6290,7 @@ msgstr ""
 
 #: frontend/src/pages/Deal.vue:225
 msgid "View contact"
-msgstr ""
+msgstr "Kapcsolat megtekintése"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:566
 msgid "Views"
@@ -6426,7 +6427,7 @@ msgstr ""
 
 #: frontend/src/pages/NotPermitted.vue:12
 msgid "You do not have enough permissions to access Frappe CRM. Please contact your administrator if you believe this is an error."
-msgstr ""
+msgstr "Nincs elegendő jogosultsága a Frappe CRM eléréséhez. Ha úgy gondolja, hogy hiba történt, kérjük, vegye fel a kapcsolatot a rendszergazdával."
 
 #: crm/integrations/exotel/handler.py:93
 msgid "You do not have mobile number set in your Telephony Agent"
