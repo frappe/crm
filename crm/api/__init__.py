@@ -3,9 +3,8 @@ from bs4 import BeautifulSoup
 from frappe.core.api.file import get_max_file_size
 from frappe.translate import get_all_translations
 from frappe.utils import cstr, split_emails, validate_email_address
-from frappe.utils.modules import get_modules_from_all_apps_for_user
 from frappe.utils.telemetry import POSTHOG_HOST_FIELD, POSTHOG_PROJECT_FIELD
-
+from frappe.config import get_modules_from_all_apps_for_user
 
 @frappe.whitelist(allow_guest=True)
 def get_translations():
