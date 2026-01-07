@@ -1,6 +1,16 @@
 import { ref } from 'vue'
 import { validateConditions } from '../../../utils'
 
+export const slaActiveStep = ref({
+  screen: 'list',
+  data: null,
+  fetchData: false,
+})
+
+export function updateStep(newStep, data, fetchData) {
+  slaActiveStep.value = { screen: newStep, data, fetchData }
+}
+
 const working_hours = [
   {
     workday: 'Monday',

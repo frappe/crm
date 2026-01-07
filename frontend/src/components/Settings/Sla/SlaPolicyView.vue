@@ -35,7 +35,7 @@
           theme="gray"
           variant="solid"
           @click="saveSla()"
-          :disabled="Boolean(!isDirty && step.data)"
+          :disabled="Boolean(!isDirty && slaActiveStep.data)"
           :loading="
             slaPolicyListResource.setValue.loading ||
             renameSlaResource.loading ||
@@ -115,7 +115,7 @@
                 @update:model-value="toggleDefaultSla"
                 class="text-ink-gray-6 text-base font-medium"
               />
-              <div v-if="isOldSla && step.data && !slaData.default">
+              <div v-if="isOldSla && slaActiveStep.data && !slaData.default">
                 <Popover trigger="hover" :hoverDelay="0.25" placement="top-end">
                   <template #target>
                     <div
@@ -181,7 +181,7 @@
                 class="w-full"
                 id="start_date"
                 @change="validateSlaData('start_date')"
-                :formatter="(date) => getFormattedDate(date)"
+                :format="getFormat()"
               >
                 <template #prefix>
                   <LucideCalendar class="size-4" />
@@ -198,7 +198,7 @@
                 class="w-full"
                 id="end_date"
                 @change="validateSlaData('end_date')"
-                :formatter="(date) => getFormattedDate(date)"
+                :format="getFormat()"
               >
                 <template #prefix>
                   <LucideCalendar class="size-4" />
@@ -264,13 +264,15 @@ import { inject, onMounted, onUnmounted, ref, watch } from 'vue'
 import SettingsLayoutBase from '../../Layouts/SettingsLayoutBase.vue'
 import {
   resetSlaDataErrors,
+  slaActiveStep,
   slaData,
   slaDataErrors,
+  updateStep,
   validateSlaData,
 } from './utils'
 import SlaAssignmentConditions from './SlaAssignmentConditions.vue'
 import { disableSettingModalOutsideClick } from '../../../composables/settings'
-import { convertToConditions } from '../../../utils'
+import { convertToConditions, getFormat } from '../../../utils'
 import SlaHolidays from './SlaHolidays.vue'
 import SlaPriorityList from './SlaPriorityList.vue'
 
@@ -286,16 +288,14 @@ const showConfirmDialog = ref({
 })
 
 const slaPolicyListResource = inject('slaPolicyListResource')
-const step = inject('step')
-const updateStep = inject('updateStep')
 
-const deskUrl = `${window.location.origin}/app/crm-service-level-agreement/${step.value.data?.name}`
+const deskUrl = `${window.location.origin}/app/crm-service-level-agreement/${slaActiveStep.value.data?.name}`
 
 const getSlaResource = createResource({
   url: 'frappe.client.get',
   params: {
     doctype: 'CRM Service Level Agreement',
-    name: step.value.data?.name,
+    name: slaActiveStep.value.data?.name,
   },
   onSuccess(data) {
     let condition_json
@@ -319,7 +319,7 @@ const getSlaResource = createResource({
       condition_json: condition_json,
     }
     slaData.value = newData
-    step.value.data = newData
+    slaActiveStep.value.data = newData
 
     initialData.value = JSON.stringify(newData)
     const conditionsAvailable = slaData.value.condition?.length > 0
@@ -334,7 +334,7 @@ const getSlaResource = createResource({
   },
 })
 
-if (step.value.data && step.value.fetchData) {
+if (slaActiveStep.value.data && slaActiveStep.value.fetchData) {
   getSlaResource.submit()
 } else {
   disableSettingModalOutsideClick.value = true
@@ -353,13 +353,13 @@ const goBack = () => {
     showConfirmDialog.value = confirmDialogInfo
     return
   }
-  if (!step.value.data && !showConfirmDialog.value.show) {
+  if (!slaActiveStep.value.data && !showConfirmDialog.value.show) {
     showConfirmDialog.value = confirmDialogInfo
     return
   }
   // Workaround fix for settings modal not closing after going back
   setTimeout(() => {
-    step.value = {
+    slaActiveStep.value = {
       screen: 'list',
       data: null,
       fetchData: true,
@@ -393,7 +393,7 @@ const saveSla = () => {
     return
   }
 
-  if (step.value.data) {
+  if (slaActiveStep.value.data) {
     if (isOldSla.value && useNewUI.value) {
       showConfirmDialog.value = {
         show: true,
@@ -448,7 +448,7 @@ const renameSlaResource = createResource({
   makeParams() {
     return {
       doctype: 'CRM Service Level Agreement',
-      old_name: step.value.data.name,
+      old_name: slaActiveStep.value.data.name,
       new_name: slaData.value.sla_name,
     }
   },
@@ -458,7 +458,7 @@ const updateSla = async () => {
   await slaPolicyListResource.setValue.submit(
     {
       ...slaData.value,
-      name: step.value.data.name,
+      name: slaActiveStep.value.data.name,
       condition: useNewUI.value
         ? convertToConditions({
             conditions: slaData.value.condition_json,
