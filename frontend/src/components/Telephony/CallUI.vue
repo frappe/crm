@@ -24,8 +24,8 @@
         <FormControl
           type="select"
           v-model="callMedium"
-          :label="__('Calling medium')"
-          :options="['Twilio', 'Exotel']"
+          :label="__('Calling Medium')"
+          :options="['Twilio', 'Exotel', 'Yeastar']"
         />
         <div class="flex flex-col gap-1">
           <FormControl
@@ -50,6 +50,7 @@ import ExotelCallUI from '@/components/Telephony/ExotelCallUI.vue'
 import {
   twilioEnabled,
   exotelEnabled,
+  yeastarEnabled,
   defaultCallingMedium,
 } from '@/composables/settings'
 import { globalStore } from '@/stores/global'
@@ -71,6 +72,7 @@ function makeCall(number) {
   if (
     twilioEnabled.value &&
     exotelEnabled.value &&
+    yeastarEnabled.value &&
     !defaultCallingMedium.value
   ) {
     mobileNumber.value = number
@@ -78,7 +80,11 @@ function makeCall(number) {
     return
   }
 
-  callMedium.value = twilioEnabled.value ? 'Twilio' : 'Exotel'
+  callMedium.value = twilioEnabled.value
+    ? 'Twilio'
+    : exotelEnabled.value
+      ? 'Exotel'
+      : 'Yeastar'
   if (defaultCallingMedium.value) {
     callMedium.value = defaultCallingMedium.value
   }
@@ -99,6 +105,11 @@ function makeCallUsing() {
   if (callMedium.value === 'Exotel') {
     exotel.value.makeOutgoingCall(mobileNumber.value)
   }
+
+  if (callMedium.value === 'Yeastar') {
+    // TODO: Implement Yeastar outgoing call
+    console.log('Yeastar call to:', mobileNumber.value)
+  }
   show.value = false
 }
 
@@ -114,8 +125,8 @@ async function setDefaultCallingMedium() {
 }
 
 watch(
-  [twilioEnabled, exotelEnabled],
-  ([twilioValue, exotelValue]) =>
+  [twilioEnabled, exotelEnabled, yeastarEnabled],
+  ([twilioValue, exotelValue, yeastarValue]) => {
     nextTick(() => {
       if (twilioValue) {
         twilio.value.setup()
@@ -127,11 +138,16 @@ watch(
         callMedium.value = 'Exotel'
       }
 
-      if (twilioValue || exotelValue) {
+      if (yeastarValue) {
+        callMedium.value = 'Yeastar'
+      }
+
+      if (twilioValue || exotelValue || yeastarValue) {
         callMedium.value = 'Twilio'
         setMakeCall(makeCall)
       }
-    }),
+    })
+  },
   { immediate: true },
 )
 </script>
