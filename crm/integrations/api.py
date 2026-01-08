@@ -9,10 +9,12 @@ from crm.utils import are_same_phone_number, parse_phone_number
 def is_call_integration_enabled():
 	twilio_enabled = frappe.db.get_single_value("CRM Twilio Settings", "enabled")
 	exotel_enabled = frappe.db.get_single_value("CRM Exotel Settings", "enabled")
+	yeastar_enabled = frappe.db.get_single_value("CRM Yeastar Settings", "enabled")
 
 	return {
 		"twilio_enabled": twilio_enabled,
 		"exotel_enabled": exotel_enabled,
+		"yeastar_enabled": yeastar_enabled,
 		"default_calling_medium": get_user_default_calling_medium(),
 	}
 
