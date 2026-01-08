@@ -10,18 +10,22 @@ export function useControls() {
 
   const route = useRoute()
 
+  const createOrUpdateStandardViewCall = useCall({
+    url: '/api/v2/method/crm.fcrm.doctype.crm_view_settings.crm_view_settings.create_or_update_standard_view',
+    method: 'POST',
+    immediate: false,
+    onSuccess: () => reload(),
+  })
+
   function createOrUpdateStandardView() {
     if (route.query.view) return
 
     currentView.value.doctype = doctype
     currentView.value.route_name = route.name
 
-    useCall({
-      url: '/api/v2/method/crm.fcrm.doctype.crm_view_settings.crm_view_settings.create_or_update_standard_view',
-      method: 'POST',
-      params: { view: currentView.value },
-      onSuccess: () => reload(),
-    })
+    if (!createOrUpdateStandardViewCall.isFetching) {
+      createOrUpdateStandardViewCall.submit({ view: currentView.value })
+    }
   }
 
   function updateFilter() {

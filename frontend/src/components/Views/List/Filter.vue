@@ -180,6 +180,7 @@ import Link from '@/components/Controls/Link.vue'
 import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import { isMobileView } from '@/composables/settings'
 import { getMeta } from '@/stores/meta'
+import { useViews } from '@/stores/view'
 import {
   FormControl,
   Tooltip,
@@ -188,7 +189,8 @@ import {
   DateTimePicker,
   DateRangePicker,
 } from 'frappe-ui'
-import { h, computed, inject } from 'vue'
+import { h, computed, inject, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 
 const typeCheck = ['Check']
 const typeLink = ['Link', 'Dynamic Link']
@@ -244,7 +246,10 @@ const props = defineProps({
 })
 
 const doctype = inject('doctype')
-const currentView = inject('currentView')
+const { currentView, resource } = useViews(doctype)
+
+const route = useRoute()
+const router = useRouter()
 
 const { getValueFields } = getMeta(doctype)
 
@@ -281,6 +286,71 @@ function getInitialFilters(_filters) {
   }
   return convertFilters(initialFilters) || []
 }
+
+function getFiltersAsQuery(filters) {
+  const query = {}
+  for (const [key, value] of Object.entries(filters || {})) {
+    query[key] = Array.isArray(value) ? JSON.stringify(value) : value
+  }
+  return query
+}
+
+function parseQueryToFilters(query) {
+  const filters = {}
+  for (const [key, value] of Object.entries(query || {})) {
+    try {
+      const parsed = JSON.parse(value)
+      filters[key] = parsed
+      continue
+    } catch (e) {
+      // value stays as-is when not JSON
+    }
+    filters[key] = value
+  }
+  return filters
+}
+
+function isSameObject(a, b) {
+  return JSON.stringify(a || {}) === JSON.stringify(b || {})
+}
+
+function isEmptyQuery(query) {
+  return !query || Object.keys(query).length === 0
+}
+
+watch(
+  () => currentView.value?.filters,
+  async (newFilters, oldFilters) => {
+    if (newFilters == undefined && oldFilters == undefined) return
+    if (!currentView.value) await resource.promise.value
+
+    const queryFromFilters = getFiltersAsQuery(newFilters || {})
+    const routeMatchesFilters = isSameObject(route.query, queryFromFilters)
+
+    if (!routeMatchesFilters) {
+      router.replace({ query: queryFromFilters })
+    }
+  },
+  { deep: true, immediate: true },
+)
+
+watch(
+  () => route.query,
+  async (newQuery, oldQuery) => {
+    if (!currentView.value) await resource.promise.value
+    const filtersFromQuery = parseQueryToFilters(newQuery)
+    const filtersMatchQuery = isSameObject(
+      currentView.value.filters,
+      filtersFromQuery,
+    )
+
+    if (!isEmptyQuery(newQuery) && !filtersMatchQuery) {
+      currentView.value.filters = filtersFromQuery
+      emit('update')
+    }
+  },
+  { deep: true, immediate: true },
+)
 
 const availableFilters = computed(() => {
   if (!filterableFields.value) return []

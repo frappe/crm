@@ -41,6 +41,7 @@ export function useViews(doctype) {
   )
 
   return {
+    resource: toRefs(views[doctype]),
     views: toRefs(views[doctype]).data,
     currentView: toRefs(views[doctype]).currentView,
   }
