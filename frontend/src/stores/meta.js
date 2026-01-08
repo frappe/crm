@@ -110,6 +110,8 @@ export function getMeta(doctype) {
         (f) => f.fieldtype && !NO_VALUE_TYPE.includes(f.fieldtype),
       ) || []
 
+    STANDARD_FIELDS[0].options = dt
+
     fields = [...fields, ...STANDARD_FIELDS]
 
     return fields
