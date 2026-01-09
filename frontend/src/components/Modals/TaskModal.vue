@@ -186,6 +186,19 @@ async function updateTask() {
   if (!_task.value.assigned_to) {
     _task.value.assigned_to = getUser().name
   }
+  error.value = null
+  const referenceDocname = props.doc || _task.value.reference_docname
+  if (
+    !_task.value.name &&
+    props.doctype === 'CRM Lead' &&
+    referenceDocname &&
+    (await hasOpenLeadTask(referenceDocname))
+  ) {
+    error.value = __(
+      'Close the previous task on this lead before creating a new one.',
+    )
+    return
+  }
   if (_task.value.name) {
     let d = await call('frappe.client.set_value', {
       doctype: 'CRM Task',
@@ -223,6 +236,27 @@ async function updateTask() {
     }
   }
   show.value = false
+}
+
+async function hasOpenLeadTask(referenceDocname) {
+  const closedStatuses = ['Done', 'Canceled', 'Cancelled', 'Completed', 'Closed']
+  try {
+    const result = await call('frappe.client.get_list', {
+      doctype: 'CRM Task',
+      fields: ['name', 'status'],
+      filters: [
+        ['reference_docname', '=', referenceDocname],
+        ['reference_doctype', '=', 'CRM Lead'],
+        ['status', 'not in', closedStatuses],
+      ],
+      limit_page_length: 1,
+      order_by: 'modified desc',
+    })
+    return Array.isArray(result) && result.length > 0
+  } catch (err) {
+    console.error('Failed to check existing tasks for lead', err)
+    return false
+  }
 }
 
 function render() {

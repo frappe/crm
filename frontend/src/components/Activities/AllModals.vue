@@ -36,7 +36,7 @@ import NoteModal from '@/components/Modals/NoteModal.vue'
 import CallLogModal from '@/components/Modals/CallLogModal.vue'
 import EventModal from '@/components/Modals/EventModal.vue'
 import { showEventModal, activeEvent } from '@/composables/event'
-import { call } from 'frappe-ui'
+import { call, toast } from 'frappe-ui'
 import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
@@ -58,6 +58,16 @@ const showTaskModal = ref(false)
 const task = ref({})
 
 function showTask(t) {
+  if (
+    props.doctype === 'CRM Lead' &&
+    !t?.name &&
+    hasOpenLeadTask(activities.value?.data?.tasks)
+  ) {
+    toast.error(
+      __('Close the previous task on this lead before creating a new one.'),
+    )
+    return
+  }
   task.value = t || {
     title: '',
     description: '',
@@ -67,6 +77,12 @@ function showTask(t) {
     status: 'Backlog',
   }
   showTaskModal.value = true
+}
+
+function hasOpenLeadTask(tasks) {
+  if (!tasks || !tasks.length) return false
+  const closedStatuses = ['Done', 'Canceled', 'Cancelled', 'Completed', 'Closed']
+  return tasks.some((t) => !closedStatuses.includes(t.status))
 }
 
 async function deleteTask(name) {

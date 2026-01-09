@@ -27,6 +27,77 @@
         </div>
         <div>
           <FieldLayout v-if="tabs.data" :tabs="tabs.data" :data="lead.doc" />
+          <div
+            class="mt-6 rounded-lg border border-outline-gray-2 bg-surface-white p-4"
+          >
+            <div class="flex flex-col gap-1">
+              <div class="text-lg font-semibold leading-6 text-ink-gray-9">
+                {{ __('Assign Task (required)') }}
+              </div>
+              <div class="text-sm leading-5 text-ink-gray-6">
+                {{
+                  __(
+                    'Every new lead needs an assigned task. It will be created along with the lead.',
+                  )
+                }}
+              </div>
+            </div>
+            <div class="mt-4 grid gap-4 sm:grid-cols-2">
+              <div class="sm:col-span-2">
+                <div class="mb-1.5 text-xs text-ink-gray-5">
+                  {{ __('Task Title') }}
+                </div>
+                <TextInput
+                  v-model="task.title"
+                  :placeholder="__('Call with John Doe')"
+                  required
+                />
+              </div>
+              <div>
+                <div class="mb-1.5 text-xs text-ink-gray-5">
+                  {{ __('Assign To') }}
+                </div>
+                <Link
+                  class="form-control"
+                  :value="getUser(task.assigned_to).full_name"
+                  doctype="User"
+                  @change="(option) => (task.assigned_to = option)"
+                  :placeholder="__('John Doe')"
+                  :filters="{
+                    name: ['in', users.data.crmUsers?.map((user) => user.name)],
+                  }"
+                  :hideMe="true"
+                >
+                  <template #prefix>
+                    <UserAvatar
+                      class="mr-2 !h-4 !w-4"
+                      :user="task.assigned_to"
+                    />
+                  </template>
+                  <template #item-prefix="{ option }">
+                    <UserAvatar class="mr-2" :user="option.value" size="sm" />
+                  </template>
+                  <template #item-label="{ option }">
+                    <div class="cursor-pointer text-ink-gray-9">
+                      {{ getUser(option.value).full_name }}
+                    </div>
+                  </template>
+                </Link>
+              </div>
+              <div>
+                <div class="mb-1.5 text-xs text-ink-gray-5">
+                  {{ __('Due Date (optional)') }}
+                </div>
+                <DateTimePicker
+                  class="datepicker"
+                  v-model="task.due_date"
+                  :placeholder="__('01/04/2024 11:30 PM')"
+                  :format="dateTimeFormat"
+                  input-class="border-none"
+                />
+              </div>
+            </div>
+          </div>
           <ErrorMessage class="mt-4" v-if="error" :message="__(error)" />
         </div>
       </div>
@@ -47,16 +118,19 @@
 <script setup>
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import FieldLayout from '@/components/FieldLayout/FieldLayout.vue'
+import Link from '@/components/Controls/Link.vue'
+import UserAvatar from '@/components/UserAvatar.vue'
 import { usersStore } from '@/stores/users'
 import { statusesStore } from '@/stores/statuses'
 import { sessionStore } from '@/stores/session'
 import { isMobileView } from '@/composables/settings'
 import { showQuickEntryModal, quickEntryProps } from '@/composables/modals'
 import { capture } from '@/telemetry'
-import { createResource } from 'frappe-ui'
+import { TextInput, DateTimePicker, createResource, call } from 'frappe-ui'
 import { useOnboarding } from 'frappe-ui/frappe'
+import { getFormat } from '@/utils'
 import { useDocument } from '@/data/document'
-import { computed, onMounted, ref, nextTick } from 'vue'
+import { computed, onMounted, reactive, ref, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 
 const props = defineProps({
@@ -64,7 +138,7 @@ const props = defineProps({
 })
 
 const { user } = sessionStore()
-const { getUser, isManager } = usersStore()
+const { getUser, isManager, users } = usersStore()
 const { getLeadStatus, statusOptions } = statusesStore()
 const { updateOnboardingStep } = useOnboarding('frappecrm')
 
@@ -72,6 +146,16 @@ const show = defineModel()
 const router = useRouter()
 const error = ref(null)
 const isLeadCreating = ref(false)
+
+const task = reactive({
+  title: '',
+  assigned_to: '',
+  due_date: '',
+  status: 'Backlog',
+  priority: 'Low',
+})
+
+const dateTimeFormat = getFormat('', '', true, true, false)
 
 const { document: lead, triggerOnBeforeCreate } = useDocument('CRM Lead')
 
@@ -114,6 +198,8 @@ const createLead = createResource({
 })
 
 async function createNewLead() {
+  task.assigned_to = task.assigned_to || getUser().name
+
   if (lead.doc.website && !lead.doc.website.startsWith('http')) {
     lead.doc.website = 'https://' + lead.doc.website
   }
@@ -130,6 +216,10 @@ async function createNewLead() {
     {
       validate() {
         error.value = null
+        if (!task.title || !task.title.trim()) {
+          error.value = __('Task Title is mandatory')
+          return error.value
+        }
         if (!lead.doc.first_name) {
           error.value = __('First Name is mandatory')
           return error.value
@@ -159,14 +249,24 @@ async function createNewLead() {
         }
         isLeadCreating.value = true
       },
-      onSuccess(data) {
-        capture('lead_created')
-        isLeadCreating.value = false
-        show.value = false
-        router.push({ name: 'Lead', params: { leadId: data.name } })
-        updateOnboardingStep('create_first_lead', true, false, () => {
-          localStorage.setItem('firstLead' + user, data.name)
-        })
+      async onSuccess(data) {
+        try {
+          await createTaskForLead(data.name)
+          capture('lead_created')
+          show.value = false
+          router.push({ name: 'Lead', params: { leadId: data.name } })
+          updateOnboardingStep('create_first_lead', true, false, () => {
+            localStorage.setItem('firstLead' + user, data.name)
+          })
+        } catch (taskError) {
+          await rollbackLeadCreation(data.name)
+          error.value =
+            taskError?.message ||
+            __('Task could not be created. Lead was not saved.')
+          return
+        } finally {
+          isLeadCreating.value = false
+        }
       },
       onError(err) {
         isLeadCreating.value = false
@@ -178,6 +278,42 @@ async function createNewLead() {
       },
     },
   )
+}
+
+async function createTaskForLead(leadName) {
+  const payload = {
+    doctype: 'CRM Task',
+    reference_doctype: 'CRM Lead',
+    reference_docname: leadName,
+    title: task.title?.trim(),
+    assigned_to: task.assigned_to || getUser().name,
+    due_date: task.due_date || null,
+    status: task.status,
+    priority: task.priority,
+  }
+
+  try {
+    return await call('frappe.client.insert', { doc: payload })
+  } catch (err) {
+    if (err?.messages?.length) {
+      throw new Error(err.messages.join('\n'))
+    }
+    throw new Error(err?.message || __('Failed to create task'))
+  }
+}
+
+async function rollbackLeadCreation(leadName) {
+  try {
+    await call('frappe.client.delete', {
+      doctype: 'CRM Lead',
+      name: leadName,
+    })
+  } catch (rollbackError) {
+    console.error(
+      'Failed to rollback lead after task creation failure',
+      rollbackError,
+    )
+  }
 }
 
 function openQuickEntryModal() {
@@ -195,6 +331,9 @@ onMounted(() => {
   }
   if (!lead.doc?.status && leadStatuses.value[0]?.value) {
     lead.doc.status = leadStatuses.value[0].value
+  }
+  if (!task.assigned_to) {
+    task.assigned_to = getUser().name
   }
 })
 </script>
