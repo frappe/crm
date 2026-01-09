@@ -40,7 +40,21 @@
     v-if="doc.name"
     class="flex h-12 items-center justify-between gap-2 border-b px-3 py-2.5"
   >
-    <AssignTo v-model="assignees.data" doctype="CRM Lead" :docname="leadId" />
+    <AssignTo
+      v-if="canChangeLeadOwner"
+      v-model="assignees.data"
+      doctype="CRM Lead"
+      :docname="leadId"
+    />
+    <div v-else class="flex items-center gap-2">
+      <UserAvatar :user="leadOwner" size="sm" />
+      <div class="leading-4">
+        <div class="text-xs text-ink-gray-5">{{ __('Lead Owner') }}</div>
+        <div class="text-sm font-medium text-ink-gray-9">
+          {{ getUser(leadOwner).full_name }}
+        </div>
+      </div>
+    </div>
     <div class="flex items-center gap-2">
       <CustomActions
         v-if="document._actions?.length"
@@ -199,12 +213,15 @@ import Link from '@/components/Controls/Link.vue'
 import SidePanelLayout from '@/components/SidePanelLayout.vue'
 import SLASection from '@/components/SLASection.vue'
 import CustomActions from '@/components/CustomActions.vue'
+import UserAvatar from '@/components/UserAvatar.vue'
 import { setupCustomizations } from '@/utils'
 import { getView } from '@/utils/view'
 import { getSettings } from '@/stores/settings'
 import { globalStore } from '@/stores/global'
 import { statusesStore } from '@/stores/statuses'
 import { getMeta } from '@/stores/meta'
+import { usersStore } from '@/stores/users'
+import { sessionStore } from '@/stores/session'
 import { useDocument } from '@/data/document'
 import {
   whatsappEnabled,
@@ -230,6 +247,8 @@ const { brand } = getSettings()
 const { $dialog, $socket } = globalStore()
 const { statusOptions, getLeadStatus } = statusesStore()
 const { doctypeMeta } = getMeta('CRM Lead')
+const session = sessionStore()
+const { getUser, getUserRole, isAdmin } = usersStore()
 const route = useRoute()
 const router = useRouter()
 
@@ -250,6 +269,12 @@ const { triggerOnChange, assignees, document, scripts, error } = useDocument(
 )
 
 const doc = computed(() => document.doc || {})
+const leadOwner = computed(() => doc.value?.lead_owner || doc.value?.owner || '')
+const canChangeLeadOwner = computed(() => {
+  const role = getUserRole(session.user)
+  if (isAdmin(session.user)) return true
+  return ['Sales Manager', 'Sales Master Manager'].includes(role)
+})
 
 watch(error, (err) => {
   if (err) {
@@ -394,6 +419,18 @@ const sections = createResource({
 })
 
 function updateField(name, value) {
+  const leadOwnerFields =
+    name === 'lead_owner' ||
+    (Array.isArray(name) && name.includes('lead_owner'))
+  if (leadOwnerFields && !canChangeLeadOwner.value) {
+    toast.error(
+      __(
+        'Only Admin or Sales Manager/Sales Master Manager can change the Lead Owner.',
+      ),
+    )
+    return
+  }
+
   value = Array.isArray(name) ? '' : value
   let oldValues = Array.isArray(name) ? {} : doc.value[name]
 

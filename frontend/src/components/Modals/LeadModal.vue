@@ -138,7 +138,7 @@ const props = defineProps({
 })
 
 const { user } = sessionStore()
-const { getUser, isManager, users } = usersStore()
+const { getUser, isManager, users, getUserRole } = usersStore()
 const { getLeadStatus, statusOptions } = statusesStore()
 const { updateOnboardingStep } = useOnboarding('frappecrm')
 
@@ -156,6 +156,11 @@ const task = reactive({
 })
 
 const dateTimeFormat = getFormat('', '', true, true, false)
+const canChangeLeadOwner = computed(() => {
+  const role = getUserRole(user)
+  if (isManager(user)) return true
+  return role === 'Sales Master Manager'
+})
 
 const { document: lead, triggerOnBeforeCreate } = useDocument('CRM Lead')
 
@@ -182,6 +187,10 @@ const tabs = createResource({
               field.options = leadStatuses.value
               field.prefix = getLeadStatus(lead.doc.status).color
             }
+            if (field.fieldname === 'lead_owner' && !canChangeLeadOwner.value) {
+              field.read_only = true
+              lead.doc[field.fieldname] = getUser().name
+            }
 
             if (field.fieldtype === 'Table') {
               lead.doc[field.fieldname] = []
@@ -199,6 +208,9 @@ const createLead = createResource({
 
 async function createNewLead() {
   task.assigned_to = task.assigned_to || getUser().name
+  if (!canChangeLeadOwner.value) {
+    lead.doc.lead_owner = getUser().name
+  }
 
   if (lead.doc.website && !lead.doc.website.startsWith('http')) {
     lead.doc.website = 'https://' + lead.doc.website
@@ -327,6 +339,9 @@ onMounted(() => {
   Object.assign(lead.doc, props.defaults)
 
   if (!lead.doc?.lead_owner) {
+    lead.doc.lead_owner = getUser().name
+  }
+  if (!canChangeLeadOwner.value) {
     lead.doc.lead_owner = getUser().name
   }
   if (!lead.doc?.status && leadStatuses.value[0]?.value) {

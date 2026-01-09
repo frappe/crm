@@ -324,10 +324,11 @@ import UserAvatar from '@/components/UserAvatar.vue'
 import SidePanelModal from '@/components/Modals/SidePanelModal.vue'
 import { getMeta } from '@/stores/meta'
 import { usersStore } from '@/stores/users'
+import { sessionStore } from '@/stores/session'
 import { isMobileView } from '@/composables/settings'
 import { getFormat, evaluateDependsOnValue } from '@/utils'
 import { flt } from '@/utils/numberFormat.js'
-import { Tooltip, DateTimePicker, DatePicker, TimePicker } from 'frappe-ui'
+import { Tooltip, DateTimePicker, DatePicker, TimePicker, toast } from 'frappe-ui'
 import { useDocument } from '@/data/document'
 import { ref, computed, getCurrentInstance } from 'vue'
 
@@ -358,7 +359,8 @@ const emit = defineEmits(['beforeFieldChange', 'afterFieldChange', 'reload'])
 const { getFormattedPercent, getFormattedFloat, getFormattedCurrency } =
   getMeta(props.doctype)
 
-const { users, isManager, getUser } = usersStore()
+const { users, isManager, getUser, getUserRole, isAdmin } = usersStore()
+const session = sessionStore()
 
 const showSidePanelModal = ref(false)
 
@@ -372,6 +374,13 @@ if (props.docname) {
 }
 
 const doc = computed(() => document.doc || {})
+
+const canChangeLeadOwner = computed(() => {
+  if (props.doctype !== 'CRM Lead') return true
+  const role = getUserRole(session.user)
+  if (isAdmin(session.user)) return true
+  return ['Sales Manager', 'Sales Master Manager'].includes(role)
+})
 
 const _sections = computed(() => {
   if (!props.sections?.length) return []
@@ -420,6 +429,14 @@ function parsedField(field) {
     ),
   }
 
+  if (
+    props.doctype === 'CRM Lead' &&
+    _field.fieldname === 'lead_owner' &&
+    !canChangeLeadOwner.value
+  ) {
+    _field.read_only = true
+  }
+
   _field.visible = isFieldVisible(_field)
   return _field
 }
@@ -429,6 +446,18 @@ const attrs = instance?.vnode?.props ?? {}
 
 async function fieldChange(value, df) {
   if (props.preview) return
+  if (
+    props.doctype === 'CRM Lead' &&
+    df.fieldname === 'lead_owner' &&
+    !canChangeLeadOwner.value
+  ) {
+    toast.error(
+      __(
+        'Only Admin or Sales Manager/Sales Master Manager can change the Lead Owner.',
+      ),
+    )
+    return
+  }
 
   await triggerOnChange(df.fieldname, value)
 
