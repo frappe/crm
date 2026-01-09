@@ -13,9 +13,8 @@ class CRMTelephonyAgent(Document):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
-		from frappe.types import DF
-
 		from crm.fcrm.doctype.crm_telephony_phone.crm_telephony_phone import CRMTelephonyPhone
+		from frappe.types import DF
 
 		call_receiving_device: DF.Literal["Computer", "Phone"]
 		default_medium: DF.Literal["", "Twilio", "Exotel"]
@@ -27,8 +26,9 @@ class CRMTelephonyAgent(Document):
 		twilio_number: DF.Data | None
 		user: DF.Link
 		user_name: DF.Data | None
+		yeastar: DF.Check
+		yeastar_number: DF.Data | None
 	# end: auto-generated types
-
 	def validate(self):
 		self.set_primary()
 
