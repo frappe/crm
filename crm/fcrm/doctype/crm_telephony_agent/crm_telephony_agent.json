@@ -18,6 +18,9 @@
   "column_break_aydj",
   "exotel",
   "exotel_number",
+  "column_break_qysx",
+  "yeastar",
+  "yeastar_number",
   "section_break_phlq",
   "phone_nos"
  ],
@@ -109,12 +112,29 @@
    "fieldtype": "Select",
    "label": "Device",
    "options": "Computer\nPhone"
+  },
+  {
+   "fieldname": "column_break_qysx",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "yeastar",
+   "fieldtype": "Check",
+   "label": "Yeastar"
+  },
+  {
+   "depends_on": "yeastar",
+   "fieldname": "yeastar_number",
+   "fieldtype": "Data",
+   "label": "Caller Number",
+   "mandatory_depends_on": "yeastar"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-01-22 13:55:13.632693",
- "modified_by": "shariq@frappe.io",
+ "modified": "2026-01-09 10:47:13.011724",
+ "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Telephony Agent",
  "naming_rule": "By fieldname",
