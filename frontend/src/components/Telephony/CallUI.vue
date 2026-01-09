@@ -1,6 +1,7 @@
 <template>
   <TwilioCallUI ref="twilio" />
   <ExotelCallUI ref="exotel" />
+  <YeasterCallUI ref="yeastar" />
   <Dialog
     v-model="show"
     :options="{
@@ -56,11 +57,13 @@ import {
 import { globalStore } from '@/stores/global'
 import { FormControl, call, toast } from 'frappe-ui'
 import { nextTick, ref, watch } from 'vue'
+import YeasterCallUI from './YeastarCallUI.vue'
 
 const { setMakeCall } = globalStore()
 
 const twilio = ref(null)
 const exotel = ref(null)
+const yeastar = ref(null)
 
 const callMedium = ref('Twilio')
 const isDefaultMedium = ref(false)
@@ -107,8 +110,7 @@ function makeCallUsing() {
   }
 
   if (callMedium.value === 'Yeastar') {
-    // TODO: Implement Yeastar outgoing call
-    console.log('Yeastar call to:', mobileNumber.value)
+    yeastar.value.makeOutgoingCall(mobileNumber.value)
   }
   show.value = false
 }
