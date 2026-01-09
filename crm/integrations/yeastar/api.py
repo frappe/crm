@@ -1,13 +1,17 @@
 import frappe
 import requests
 from dataclasses import dataclass
+from typing import Literal
 
 
 @frappe.whitelist(allow_guest=True)
-def make_call(caller: str, callee: str, auto_answer: str = "yes") -> dict[str, str]:
+def make_call(callee: str, auto_answer: str = "yes") -> dict[str, str]:
     is_yeaster_enabled()
 
     request_url = url_builder("/call/dial")
+
+    caller = get_yeaster_number()
+    print("Caller Yeastar Number:", caller)
     data = {
         "caller": caller,
         "callee": callee,
@@ -20,6 +24,18 @@ def make_call(caller: str, callee: str, auto_answer: str = "yes") -> dict[str, s
         request_type="make_call",
         data=data,
     )
+
+
+def get_yeaster_number() -> str:
+    CTA = "CRM Telephony Agent"
+    if not frappe.db.exists(CTA, {"user": frappe.session.user, "yeastar": 1}):
+        frappe.throw("No Yeaster Telephony Agent found. Please configure one first.")
+
+    caller = frappe.db.get_value(
+        CTA, {"user": frappe.session.user, "yeastar": 1}, "yeastar_number"
+    )
+
+    return caller
 
 
 @frappe.whitelist(allow_guest=True)
@@ -50,7 +66,6 @@ class IncomingCallDetails:
     callee: str
     channel_id: str
 
-
 def create_socket_connection(details: IncomingCallDetails) -> None:
 
     frappe.publish_realtime(
@@ -61,7 +76,7 @@ def create_socket_connection(details: IncomingCallDetails) -> None:
 
 
 @frappe.whitelist(allow_guest=True)
-def respond_to_call(channel_id: str, action: str = "accept" | "refuse") -> dict:
+def respond_to_call(channel_id: str, action: Literal["accept", "refuse"]) -> dict:
 
     request_url = url_builder(f"/call/{action}_inbound")
     data = {"channel_id": channel_id}
