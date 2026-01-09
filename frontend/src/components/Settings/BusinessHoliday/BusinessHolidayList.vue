@@ -212,7 +212,6 @@ const dropdownOptions = (holidayList) => [
 ]
 
 const duplicate = () => {
-  console.log('duplicate', duplicateDialog.value)
   createResource({
     url: 'frappe.client.get',
     params: {

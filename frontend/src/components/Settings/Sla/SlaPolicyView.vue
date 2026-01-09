@@ -38,6 +38,7 @@
           :disabled="Boolean(!isDirty && slaActiveStep.data)"
           :loading="
             slaPolicyListResource.setValue.loading ||
+            slaPolicyListResource.insert.loading ||
             renameSlaResource.loading ||
             getSlaResource.loading
           "
