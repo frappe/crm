@@ -1,3 +1,4 @@
+import { toKebabCase } from '@/utils'
 import { createResource, FeatherIcon } from 'frappe-ui'
 import { ref, h } from 'vue'
 
@@ -39,7 +40,7 @@ export default async function generateRoutes() {
       object.routeName = routeName
       const _route = {
         name: routeName,
-        path: object.route,
+        path: object.route || `/${toKebabCase(object.doctype)}`,
         component: () => import('@/pages/DynamicList.vue'),
         children: [
           {

@@ -9,7 +9,7 @@
           : 'text-ink-gray-7',
       ]"
     >
-      {{ __(routeName) }}
+      {{ __(title || routeName) }}
     </router-link>
     <span
       v-if="viewControls"
@@ -86,6 +86,10 @@ import Icon from '@/components/Icon.vue'
 import { Dropdown } from 'frappe-ui'
 
 const props = defineProps({
+  title: {
+    type: String,
+    default: null,
+  },
   routeName: {
     type: String,
     required: true,

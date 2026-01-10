@@ -1,7 +1,7 @@
 <template>
   <LayoutHeader>
     <template #left-header>
-      <ViewBreadcrumbs :routeName="routeName" />
+      <ViewBreadcrumbs :routeName="routeName" :title="doctype" />
     </template>
     <template #right-header>
       <Button

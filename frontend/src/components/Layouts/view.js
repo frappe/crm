@@ -41,7 +41,7 @@ export const links = computed(() => {
 
   return sidebarLayouts.value.map((link) => {
     return {
-      label: link.label || link.routeName,
+      label: link.label || link.doctype ||link.routeName,
       icon: iconMap[link.label || link.routeName] || link.icon,
       to: link.routeName,
     }

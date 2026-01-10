@@ -45,6 +45,7 @@ def get_current_view(doctype=None, view_name=None):
 
 def add_default_view(doctype):
 	columns = [
+		{"label": "Like", "type": "Data", "key": "_liked_by", "width": "50px"},
 		{"label": "Name", "type": "Data", "key": "name", "width": "16rem"},
 		{"label": "Last Updated On", "type": "Datetime", "key": "modified", "width": "8rem"},
 	]
