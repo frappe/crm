@@ -39,3 +39,12 @@ class FailedLeadSyncLog(Document):
 		self.type = "Synced"
 		self.save()
 		return crm_lead
+	@staticmethod
+	def clear_old_logs(days=180):
+		from frappe.query_builder import Interval
+		from frappe.query_builder.functions import Now
+		
+		table = frappe.qb.DocType("Custom Logging Doctype")
+		frappe.db.delete(table, filters=(table.modified < (Now() - Interval(days=days))))
+
+
