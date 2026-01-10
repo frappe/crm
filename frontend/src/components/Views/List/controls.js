@@ -10,34 +10,34 @@ export function useControls() {
 
   const route = useRoute()
 
-  const createOrUpdateStandardViewCall = useCall({
-    url: '/api/v2/method/crm.fcrm.doctype.crm_view_settings.crm_view_settings.create_or_update_standard_view',
+  const createOrUpdateViewCall = useCall({
+    url: '/api/v2/method/crm.fcrm.doctype.crm_view_settings.crm_view_settings.create_or_update_view',
     method: 'POST',
     immediate: false,
     onSuccess: () => reload(),
   })
 
-  function createOrUpdateStandardView() {
+  function createOrUpdateView() {
     if (route.query.view) return
 
     currentView.value.doctype = doctype
     currentView.value.route_name = route.name
 
-    if (!createOrUpdateStandardViewCall.isFetching) {
-      createOrUpdateStandardViewCall.submit({ view: currentView.value })
+    if (!createOrUpdateViewCall.isFetching) {
+      createOrUpdateViewCall.submit({ view: currentView.value })
     }
   }
 
   function updateFilter() {
-    createOrUpdateStandardView()
+    createOrUpdateView()
   }
 
   function updateSort() {
-    createOrUpdateStandardView()
+    createOrUpdateView()
   }
 
   function updateColumns() {
-    createOrUpdateStandardView()
+    createOrUpdateView()
   }
 
   function applyRowItemFilter({ event, idx, column, item, firstColumn }) {
@@ -77,6 +77,6 @@ export function useControls() {
     updateFilter,
     updateSort,
     updateColumns,
-    createOrUpdateStandardView,
+    createOrUpdateView,
   }
 }

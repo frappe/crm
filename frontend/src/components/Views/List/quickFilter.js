@@ -1,23 +1,23 @@
 import { getMeta } from '@/stores/meta'
-import { useViews } from '@/stores/view'
+import { useView } from '@/stores/view'
 import { createResource, toast } from 'frappe-ui'
 import { ref, computed } from 'vue'
 
 const store = {}
 
-export function useQuickFilters(doctype) {
+export function useQuickFilters(doctype, viewName = null) {
   if (!store[doctype]) {
-    store[doctype] = createState(doctype)
+    store[doctype] = createState(doctype, viewName)
   }
   return store[doctype]
 }
 
-function createState(doctype) {
+function createState(doctype, viewName) {
   const customizeQuickFilter = ref(false)
   const newQuickFilters = ref([])
 
   const { getFields } = getMeta(doctype)
-  const { currentView } = useViews(doctype)
+  const { currentView } = useView(doctype, viewName)
 
   const quickFilters = createResource({
     url: 'crm.api.doc.get_quick_filters',

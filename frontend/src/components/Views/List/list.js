@@ -5,14 +5,18 @@ const listCache = {}
 
 export function useList() {
   const doctype = inject('doctype')
+  const viewName = inject('viewName')
   const currentView = inject('currentView')
 
   const fields = () => currentView.value?.columns?.map((col) => col.key) || []
   const filters = () => currentView.value?.filters || {}
   const orderBy = () => currentView.value?.order_by || 'modified asc'
 
-  if (!listCache[doctype]) {
-    listCache[doctype] = _useList({
+  if (!listCache[doctype]?.[viewName]) {
+    if (!listCache[doctype]) {
+      listCache[doctype] = {}
+    }
+    listCache[doctype][viewName] = _useList({
       doctype: doctype,
       fields,
       filters,
@@ -28,15 +32,15 @@ export function useList() {
   })
 
   const rows = computed(() => {
-    return listCache[doctype]?.data || []
+    return listCache[doctype][viewName]?.data || []
   })
 
   function reload() {
-    listCache[doctype].reload()
+    listCache[doctype][viewName].reload()
   }
 
   return {
-    list: listCache[doctype],
+    list: listCache[doctype][viewName],
     columns,
     rows,
     reload,

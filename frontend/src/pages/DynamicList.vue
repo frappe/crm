@@ -20,23 +20,28 @@ import LayoutHeader from '@/components/LayoutHeader.vue'
 import ViewBreadcrumbs from '@/components/ViewBreadcrumbs.vue'
 import Controls from '@/components/Views/List/Controls.vue'
 import List from '@/components/Views/List/List.vue'
-import { useViews } from '@/stores/view'
+import { useView } from '@/stores/view'
 import { ref, provide } from 'vue'
 
 const props = defineProps({
-  routeName: {
-    type: String,
-    required: true,
-  },
   doctype: {
     type: String,
     required: true,
   },
+  routeName: {
+    type: String,
+    required: true,
+  },
+  viewName: {
+    type: String,
+    default: null,
+  },
 })
 
-const { currentView } = useViews(props.doctype)
+const { currentView } = useView(props.doctype, props.viewName)
 
 provide('doctype', props.doctype)
+provide('viewName', props.viewName)
 provide('currentView', currentView)
 
 const showQuickEntryModal = ref(false)

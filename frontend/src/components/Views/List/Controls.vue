@@ -119,6 +119,7 @@ const props = defineProps({
 })
 
 const doctype = inject('doctype')
+const viewName = inject('viewName')
 const router = useRouter()
 const route = useRoute()
 
@@ -131,7 +132,7 @@ const {
   showCustomizeQuickFilter,
   quickFilterList,
   applyQuickFilter,
-} = useQuickFilters(doctype)
+} = useQuickFilters(doctype, viewName)
 
 const { list, reload } = useList()
 const { updateFilter, updateSort, updateColumns } = useControls()

@@ -180,7 +180,7 @@ import Link from '@/components/Controls/Link.vue'
 import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import { isMobileView } from '@/composables/settings'
 import { getMeta } from '@/stores/meta'
-import { useViews } from '@/stores/view'
+import { useView } from '@/stores/view'
 import {
   FormControl,
   Tooltip,
@@ -246,7 +246,8 @@ const props = defineProps({
 })
 
 const doctype = inject('doctype')
-const { currentView, resource } = useViews(doctype)
+const viewName = inject('viewName')
+const { currentView, resource } = useView(doctype, viewName)
 
 const route = useRoute()
 const router = useRouter()
@@ -323,6 +324,7 @@ watch(
   async (newFilters, oldFilters) => {
     if (newFilters == undefined && oldFilters == undefined) return
     if (!currentView.value) await resource.promise.value
+    if (!currentView.value) return
 
     const queryFromFilters = getFiltersAsQuery(newFilters || {})
     const routeMatchesFilters = isSameObject(route.query, queryFromFilters)
@@ -338,6 +340,7 @@ watch(
   () => route.query,
   async (newQuery, oldQuery) => {
     if (!currentView.value) await resource.promise.value
+    if (!currentView.value) return
     const filtersFromQuery = parseQueryToFilters(newQuery)
     const filtersMatchQuery = isSameObject(
       currentView.value.filters,
