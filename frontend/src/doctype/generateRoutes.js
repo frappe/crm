@@ -41,12 +41,12 @@ export default async function generateRoutes() {
       const _route = {
         name: routeName,
         path: object.route || `/${toKebabCase(object.doctype)}`,
-        component: () => import('@/pages/DynamicList.vue'),
+        component: () => import('@/pages/List.vue'),
         children: [
           {
             name: `${routeName} View`,
             path: 'view/:viewName?',
-            component: () => import('@/pages/DynamicList.vue'),
+            component: () => import('@/pages/List.vue'),
             props: (route) => ({
               doctype: object.doctype,
               routeName: object.routeName,

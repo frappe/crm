@@ -13,7 +13,6 @@ function normalizeView(view) {
 }
 
 export function useView(doctype, viewName = null) {
-
   if (!view[doctype]?.[viewName]) {
     const resource = createResource({
       url: 'crm.api.views.get_current_view',

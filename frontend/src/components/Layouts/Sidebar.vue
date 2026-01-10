@@ -117,7 +117,7 @@ import HelpIcon from '@/components/Icons/HelpIcon.vue'
 import SidebarLink from '@/components/SidebarLink.vue'
 import Notifications from '@/components/Notifications.vue'
 import Settings from '@/components/Settings/Settings.vue'
-import ViewsSidebarSection from '@/components/Layouts/ViewsSidebarSection.vue'
+import ViewsSidebarSection from '@/components/Views/ViewsSidebarSection.vue'
 import {
   unreadNotificationsCount,
   notificationsStore,

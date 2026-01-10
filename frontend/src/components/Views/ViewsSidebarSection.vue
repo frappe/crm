@@ -48,8 +48,8 @@
 <script setup>
 import CollapsibleSection from '@/components/CollapsibleSection.vue'
 import SidebarLink from '@/components/SidebarLink.vue'
-import { FeatherIcon } from 'frappe-ui'
 import { allViews } from './view.js'
+import { FeatherIcon } from 'frappe-ui'
 
 defineProps({
   isSidebarCollapsed: {
