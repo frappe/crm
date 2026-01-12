@@ -1,13 +1,17 @@
 import { useCall } from 'frappe-ui'
 import { useList } from './list.js'
-import { inject } from 'vue'
+import { useView } from '@/stores/view'
+import { inject, reactive } from 'vue'
 import { useRoute } from 'vue-router'
+
+export const viewUpdated = reactive({})
 
 export function useControls() {
   const doctype = inject('doctype')
-  const currentView = inject('currentView')
-  const { reload } = useList()
+  const viewName = inject('viewName')
 
+  const { currentView, reloadCurrentView } = useView(doctype, viewName)
+  const { reload } = useList()
   const route = useRoute()
 
   const createOrUpdateViewCall = useCall({
@@ -18,26 +22,38 @@ export function useControls() {
   })
 
   function createOrUpdateView() {
-    if (route.query.view) return
-
     currentView.value.doctype = doctype
     currentView.value.route_name = route.name
 
     if (!createOrUpdateViewCall.isFetching) {
       createOrUpdateViewCall.submit({ view: currentView.value })
     }
+
+    viewUpdated[viewName] = false
   }
 
   function updateFilter() {
-    createOrUpdateView()
+    if (viewName) {
+      viewUpdated[viewName] = true
+    } else {
+      createOrUpdateView()
+    }
   }
 
   function updateSort() {
-    createOrUpdateView()
+    if (viewName) {
+      viewUpdated[viewName] = true
+    } else {
+      createOrUpdateView()
+    }
   }
 
   function updateColumns() {
-    createOrUpdateView()
+    if (viewName) {
+      viewUpdated[viewName] = true
+    } else {
+      createOrUpdateView()
+    }
   }
 
   function applyRowItemFilter({ event, idx, column, item, firstColumn }) {
@@ -72,11 +88,22 @@ export function useControls() {
     updateFilter()
   }
 
+  function saveView() {
+    createOrUpdateView()
+  }
+
+  function cancelChanges() {
+    viewUpdated[viewName] = false
+    reloadCurrentView()
+  }
+
   return {
     applyRowItemFilter,
     updateFilter,
     updateSort,
     updateColumns,
     createOrUpdateView,
+    saveView,
+    cancelChanges,
   }
 }

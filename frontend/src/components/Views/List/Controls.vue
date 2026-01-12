@@ -26,7 +26,11 @@
     <!-- Filter, Sort, Columns -->
     <div class="flex items-center gap-2">
       <div
-        v-if="viewUpdated && route.query.view && (!view.public || isManager())"
+        v-if="
+          viewName &&
+          viewUpdated[viewName] &&
+          (!currentView?.public || isManager())
+        "
         class="flex items-center gap-2 border-r pr-2"
       >
         <Button :label="__('Cancel')" @click="cancelChanges" />
@@ -101,10 +105,10 @@ import FadedScrollableDiv from '@/components/FadedScrollableDiv.vue'
 import CustomizeQuickFilter from './CustomizeQuickFilter.vue'
 import { usersStore } from '@/stores/users'
 import { useQuickFilters } from './quickFilter'
-import { useControls } from './controls'
+import { useControls, viewUpdated } from './controls'
 import { useList } from './list'
 import { Dropdown } from 'frappe-ui'
-import { h, inject, ref } from 'vue'
+import { h, inject } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 
 const props = defineProps({
@@ -118,12 +122,12 @@ const props = defineProps({
   },
 })
 
+const currentView = inject('currentView')
 const doctype = inject('doctype')
 const viewName = inject('viewName')
+
 const router = useRouter()
 const route = useRoute()
-
-const viewUpdated = ref(false)
 
 const { isManager } = usersStore()
 
@@ -135,5 +139,6 @@ const {
 } = useQuickFilters(doctype, viewName)
 
 const { list, reload } = useList()
-const { updateFilter, updateSort, updateColumns } = useControls()
+const { updateFilter, updateSort, updateColumns, saveView, cancelChanges } =
+  useControls()
 </script>
