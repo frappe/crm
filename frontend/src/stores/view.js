@@ -40,6 +40,10 @@ export function useView(doctype, viewName = null) {
       v || view[doctype][viewName].data || null
   }
 
+  function reload() {
+    view[doctype][viewName].reload()
+  }
+
   watch(
     () => doctype,
     () => setCurrentView(),
@@ -51,6 +55,7 @@ export function useView(doctype, viewName = null) {
     resource: viewRefs,
     view: viewRefs.data,
     currentView: viewRefs.currentView,
+    reloadCurrentView: reload,
   }
 }
 
@@ -66,6 +71,7 @@ export function useViews() {
     views.resource = reactive(resource)
     views.publicViews = reactive([])
     views.pinnedViews = reactive([])
+    views.allViews = reactive([])
   }
 
   function parseViews(_views) {
@@ -81,6 +87,7 @@ export function useViews() {
 
     views.pinnedViews.splice(0, views.pinnedViews.length, ...pinned)
     views.publicViews.splice(0, views.publicViews.length, ...publics)
+    views.allViews = parsed
 
     return parsed
   }
@@ -88,7 +95,9 @@ export function useViews() {
   const viewRefs = toRefs(views)
   return {
     resource: viewRefs.resource,
+    allViews: viewRefs.allViews,
     publicViews: viewRefs.publicViews,
     pinnedViews: viewRefs.pinnedViews,
+    reloadViews: views.resource.reload,
   }
 }
