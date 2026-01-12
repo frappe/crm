@@ -2,16 +2,20 @@ import frappe
 import requests
 from dataclasses import dataclass
 from typing import Literal
+from datetime import datetime, timedelta
+
+from frappe.utils import get_datetime
 
 
 @frappe.whitelist(allow_guest=True)
 def make_call(callee: str, auto_answer: str = "yes") -> dict[str, str]:
     is_yeaster_enabled()
 
+    validate_token()
+
     request_url = url_builder("/call/dial")
 
     caller = get_yeaster_number()
-    print("Caller Yeastar Number:", caller)
     data = {
         "caller": caller,
         "callee": callee,
@@ -66,6 +70,7 @@ class IncomingCallDetails:
     callee: str
     channel_id: str
 
+
 def create_socket_connection(details: IncomingCallDetails) -> None:
 
     frappe.publish_realtime(
@@ -94,6 +99,7 @@ def make_http_request(
     request_type: str,
     data: dict | None = None,
 ) -> dict[str, str]:
+
     headers = {"Content-Type": "application/json"}
 
     try:
@@ -114,10 +120,21 @@ def make_http_request(
 
     except Exception as e:
         frappe.log_error(
-            f"Error while making request of type {request_type.upper()} to Yeastar API: {str(e)}",
-            "Yeastar API Request Error",
+            title=f"Error while making request of type {request_type.upper()} to Yeastar API: {str(e)}",
+            message=frappe.get_traceback(),
         )
         frappe.throw("There was an error connecting to the Yeastar API.")
+
+
+def validate_token() -> None:
+    settings = yeaster_settings()
+
+    expiry_date = get_datetime(settings.access_token_expiry)
+    now = datetime.now()
+
+    if expiry_date < now:
+        settings.generate_access_token()
+        settings.save(ignore_permissions=True)
 
 
 def url_builder(path: str) -> str:
