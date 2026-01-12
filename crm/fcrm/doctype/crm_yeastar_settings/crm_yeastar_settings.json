@@ -11,8 +11,13 @@
   "column_break_qkzj",
   "username",
   "password",
+  "token_detail_section",
   "access_token",
-  "refresh_token"
+  "access_token_expire_duration",
+  "access_token_expiry",
+  "column_break_bzuv",
+  "refresh_token",
+  "refresh_token_expire_duration"
  ],
  "fields": [
   {
@@ -62,13 +67,42 @@
    "fieldtype": "Data",
    "label": "Refresh Token",
    "read_only": 1
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "token_detail_section",
+   "fieldtype": "Section Break",
+   "label": "Token Details"
+  },
+  {
+   "fieldname": "access_token_expiry",
+   "fieldtype": "Datetime",
+   "label": "Access Token Expiry",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_bzuv",
+   "fieldtype": "Column Break"
+  },
+  {
+   "description": "In Seconds",
+   "fieldname": "access_token_expire_duration",
+   "fieldtype": "Int",
+   "label": "Access Token Expire Duration"
+  },
+  {
+   "description": "In Seconds",
+   "fieldname": "refresh_token_expire_duration",
+   "fieldtype": "Int",
+   "label": "Refresh Token Expire Duration",
+   "read_only": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-12-11 11:35:58.715130",
+ "modified": "2026-01-12 12:20:46.608063",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Yeastar Settings",
