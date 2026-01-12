@@ -4,6 +4,7 @@ pull_request_rules:
           - and:
                 - and:
                       - author!=shariquerik
+                      - author!=pratikb64
                       - author!=frappe-pr-bot
                       - author!=mergify[bot]
                 - or:

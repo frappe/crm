@@ -37,7 +37,12 @@
     </template>
   </LayoutHeader>
   <div v-if="doc.name" class="flex h-full overflow-hidden">
-    <Tabs as="div" v-model="tabIndex" :tabs="tabs">
+    <Tabs
+      as="div"
+      v-model="tabIndex"
+      :tabs="tabs"
+      class="flex flex-1 overflow-hidden flex-col [&_[role='tab']]:px-0 [&_[role='tablist']]:px-5 [&_[role='tablist']]:gap-7.5 [&_[role='tabpanel']:not([hidden])]:flex [&_[role='tabpanel']:not([hidden])]:grow"
+    >
       <template #tab-panel>
         <Activities
           ref="activities"
@@ -53,7 +58,7 @@
     </Tabs>
     <Resizer side="right" class="flex flex-col justify-between border-l">
       <div
-        class="flex h-10.5 cursor-copy items-center border-b px-5 py-2.5 text-lg font-medium text-ink-gray-9"
+        class="flex h-[45px] cursor-copy items-center border-b px-5 py-2.5 text-lg font-medium text-ink-gray-9"
         @click="copyToClipboard(dealId)"
       >
         {{ __(dealId) }}
@@ -182,7 +187,7 @@
                 :key="contact.name"
               >
                 <div class="px-2 pb-2.5" :class="[i == 0 ? 'pt-5' : 'pt-2.5']">
-                  <Section :opened="contact.opened">
+                  <CollapsibleSection :opened="contact.opened">
                     <template #header="{ opened, toggle }">
                       <div
                         class="flex cursor-pointer items-center justify-between gap-2 pr-1 text-base leading-5 text-ink-gray-7"
@@ -258,7 +263,7 @@
                         {{ __('No details added') }}
                       </div>
                     </div>
-                  </Section>
+                  </CollapsibleSection>
                 </div>
                 <div
                   v-if="i != dealContacts.data.length - 1"
@@ -353,7 +358,7 @@ import AssignTo from '@/components/AssignTo.vue'
 import FilesUploader from '@/components/FilesUploader/FilesUploader.vue'
 import ContactModal from '@/components/Modals/ContactModal.vue'
 import Link from '@/components/Controls/Link.vue'
-import Section from '@/components/Section.vue'
+import CollapsibleSection from '@/components/CollapsibleSection.vue'
 import SidePanelLayout from '@/components/SidePanelLayout.vue'
 import SLASection from '@/components/SLASection.vue'
 import CustomActions from '@/components/CustomActions.vue'
@@ -411,10 +416,8 @@ const errorTitle = ref('')
 const errorMessage = ref('')
 const showDeleteLinkedDocModal = ref(false)
 
-const { triggerOnChange, assignees, permissions, document, scripts, error } = useDocument(
-  'CRM Deal',
-  props.dealId,
-)
+const { triggerOnChange, assignees, permissions, document, scripts, error } =
+  useDocument('CRM Deal', props.dealId)
 
 const canDelete = computed(() => permissions.data?.permissions?.delete || false)
 

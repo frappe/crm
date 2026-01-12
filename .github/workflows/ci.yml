@@ -2,10 +2,20 @@
 name: CI
 
 on:
-  push:
-    branches:
-      - develop
   pull_request:
+    paths-ignore:
+      - "**.css"
+      - "**.js"
+      - "**.md"
+      - "**.html"
+      - "**.csv"
+      - "**.po"
+      - "**.pot"
+  schedule:
+    # Run everday at midnight UTC / 5:30 IST
+    - cron: "0 0 * * *"
+env:
+    CRM_BRANCH: ${{ github.base_ref || github.ref_name }}
 
 concurrency:
   group: develop-crm-${{ github.event.number }}
@@ -13,21 +23,14 @@ concurrency:
 
 jobs:
   tests:
+    name: Server
     runs-on: ubuntu-latest
+    timeout-minutes: 60
     strategy:
       fail-fast: false
-    name: Server
 
     services:
-      redis-cache:
-        image: redis:alpine
-        ports:
-          - 13000:6379
-      redis-queue:
-        image: redis:alpine
-        ports:
-          - 11000:6379
-      mariadb:
+      mysql:
         image: mariadb:10.6
         env:
           MYSQL_ROOT_PASSWORD: root
@@ -37,26 +40,52 @@ jobs:
 
     steps:
       - name: Clone
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
 
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v6
         with:
-          python-version: '3.10'
+          python-version: '3.14'
+
+      - name: Check for valid Python & Merge Conflicts
+        run: |
+          python -m compileall -f "${GITHUB_WORKSPACE}"
+          if grep -lr --exclude-dir=node_modules "^<<<<<<< " "${GITHUB_WORKSPACE}"
+              then echo "Found merge conflicts"
+              exit 1
+          fi
 
       - name: Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v6
         with:
-          node-version: 18
+          node-version: 24
           check-latest: true
+
+      - name: Install Yarn
+        run: npm install -g yarn
+
+      - name: Add to Hosts
+        run: echo "127.0.0.1 test_site" | sudo tee -a /etc/hosts
 
       - name: Cache pip
         uses: actions/cache@v4
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/*requirements.txt', '**/pyproject.toml', '**/setup.py', '**/setup.cfg') }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/*requirements.txt', '**/pyproject.toml') }}
           restore-keys: |
             ${{ runner.os }}-pip-
+            ${{ runner.os }}-
+
+      - name: Cache node modules
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
             ${{ runner.os }}-
 
       - name: Get yarn cache directory path
@@ -71,23 +100,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
 
-      - name: Setup
-        run: |
-          pip install frappe-bench
-          bench init --skip-redis-config-generation --skip-assets --python "$(which python)" ~/frappe-bench
-          mysql --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL character_set_server = 'utf8mb4'"
-          mysql --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL collation_server = 'utf8mb4_unicode_ci'"
-
       - name: Install
-        working-directory: /home/runner/frappe-bench
         run: |
-          bench get-app crm $GITHUB_WORKSPACE
-          bench setup requirements --dev
-          bench new-site --db-root-password root --admin-password admin test_site
-          bench --site test_site install-app crm
-          bench build
+          bash ${GITHUB_WORKSPACE}/.github/helper/install.sh
         env:
-          CI: 'Yes'
+          TYPE: server
 
       - name: Run Tests
         working-directory: /home/runner/frappe-bench

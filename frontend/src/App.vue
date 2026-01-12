@@ -5,11 +5,13 @@
       <router-view :key="$route.fullPath" />
     </Layout>
     <Dialogs />
+    <EventNotificationPopup />
   </FrappeUIProvider>
 </template>
 
 <script setup>
 import NotPermitted from '@/pages/NotPermitted.vue'
+import EventNotificationPopup from '@/components/EventNotificationPopup.vue'
 import { Dialogs } from '@/utils/dialogs'
 import { sessionStore as session } from '@/stores/session'
 import { FrappeUIProvider, setConfig } from 'frappe-ui'

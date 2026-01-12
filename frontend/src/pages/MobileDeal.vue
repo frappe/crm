@@ -53,9 +53,13 @@
     </div>
   </div>
   <div v-if="doc.name" class="flex h-full overflow-hidden">
-    <Tabs as="div" v-model="tabIndex" :tabs="tabs" class="overflow-auto">
-      <TabList class="!px-3" />
-      <TabPanel v-slot="{ tab }">
+    <Tabs
+      as="div"
+      v-model="tabIndex"
+      :tabs="tabs"
+      class="flex flex-1 overflow-auto flex-col [&_[role='tab']]:px-0 [&_[role='tablist']]:px-3 [&_[role='tablist']]:gap-7.5 [&_[role='tabpanel']:not([hidden])]:flex [&_[role='tabpanel']:not([hidden])]:grow"
+    >
+      <template #tab-panel="{ tab }">
         <div v-if="tab.name == 'Details'">
           <SLASection
             v-if="doc.sla_status"
@@ -125,7 +129,7 @@
                       class="px-2 pb-2.5"
                       :class="[i == 0 ? 'pt-5' : 'pt-2.5']"
                     >
-                      <Section :opened="contact.opened">
+                      <CollapsibleSection :opened="contact.opened">
                         <template #header="{ opened, toggle }">
                           <div
                             class="flex cursor-pointer items-center justify-between gap-2 pr-1 text-base leading-5 text-ink-gray-7"
@@ -191,7 +195,7 @@
                             {{ contact.mobile_no }}
                           </div>
                         </div>
-                      </Section>
+                      </CollapsibleSection>
                     </div>
                     <div
                       v-if="i != section.contacts.length - 1"
@@ -219,7 +223,7 @@
           @beforeSave="beforeStatusChange"
           @afterSave="reloadAssignees"
         />
-      </TabPanel>
+      </template>
     </Tabs>
   </div>
   <ErrorPage
@@ -282,7 +286,7 @@ import OrganizationModal from '@/components/Modals/OrganizationModal.vue'
 import LostReasonModal from '@/components/Modals/LostReasonModal.vue'
 import AssignTo from '@/components/AssignTo.vue'
 import ContactModal from '@/components/Modals/ContactModal.vue'
-import Section from '@/components/Section.vue'
+import CollapsibleSection from '@/components/CollapsibleSection.vue'
 import Link from '@/components/Controls/Link.vue'
 import SidePanelLayout from '@/components/SidePanelLayout.vue'
 import SLASection from '@/components/SLASection.vue'
@@ -305,8 +309,6 @@ import {
   Dropdown,
   Avatar,
   Tabs,
-  TabList,
-  TabPanel,
   Breadcrumbs,
   call,
   usePageMeta,

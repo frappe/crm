@@ -1,6 +1,6 @@
 <template>
   <TransitionRoot :show="sidebarOpened">
-    <Dialog as="div" @close="sidebarOpened = false" class="fixed inset-0 z-40">
+    <Dialog as="div" @close="sidebarOpened = false" class="fixed inset-0">
       <TransitionChild
         as="template"
         enter="transition ease-in-out duration-200 transform"
@@ -35,7 +35,7 @@
               </SidebarLink>
             </div>
             <div v-for="view in allViews" :key="view.label">
-              <Section
+              <CollapsibleSection
                 :label="view.name"
                 :hideLabel="view.hideLabel"
                 :opened="view.opened"
@@ -63,7 +63,7 @@
                     class="mx-2 my-0.5"
                   />
                 </nav>
-              </Section>
+              </CollapsibleSection>
             </div>
           </div>
         </div>
@@ -89,7 +89,7 @@ import {
   Dialog,
   DialogOverlay,
 } from '@headlessui/vue'
-import Section from '@/components/Section.vue'
+import CollapsibleSection from '@/components/CollapsibleSection.vue'
 import Email2Icon from '@/components/Icons/Email2Icon.vue'
 import PinIcon from '@/components/Icons/PinIcon.vue'
 import UserDropdown from '@/components/UserDropdown.vue'
@@ -146,11 +146,6 @@ const links = [
     label: 'Call Logs',
     icon: PhoneIcon,
     to: 'Call Logs',
-  },
-  {
-    label: 'Email Templates',
-    icon: Email2Icon,
-    to: 'Email Templates',
   },
 ]
 

@@ -47,6 +47,7 @@
 import CircleDollarSignIcon from '~icons/lucide/circle-dollar-sign'
 import TrendingUpDownIcon from '~icons/lucide/trending-up-down'
 import SparkleIcon from '@/components/Icons/SparkleIcon.vue'
+import CalendarIcon from '@/components/Icons/CalendarIcon.vue'
 import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import ERPNextIcon from '@/components/Icons/ERPNextIcon.vue'
 import HelpdeskIcon from '@/components/Icons/HelpdeskIcon.vue'
@@ -62,6 +63,7 @@ import ERPNextSettings from '@/components/Settings/ERPNextSettings.vue'
 import HelpdeskSettings from '@/components/Settings/HelpdeskSettings.vue'
 import LeadSyncSourcePage from '@/components/Settings/LeadSyncing/LeadSyncSourcePage.vue'
 import BrandSettings from '@/components/Settings/BrandSettings.vue'
+import CalendarSettings from '@/components/Settings/CalendarSettings.vue'
 import HomeActions from '@/components/Settings/HomeActions.vue'
 import ForecastingSettings from '@/components/Settings/ForecastingSettings.vue'
 import CurrencySettings from '@/components/Settings/CurrencySettings.vue'
@@ -79,6 +81,8 @@ import {
 import { Dialog, Avatar } from 'frappe-ui'
 import { ref, markRaw, computed, watch, h } from 'vue'
 import AssignmentRulePage from './AssignmentRules/AssignmentRulePage.vue'
+import ShieldCheck from '~icons/lucide/shield-check'
+import SlaConfig from './Sla/SlaConfig.vue'
 
 const { isManager, isTelephonyAgent, getUser } = usersStore()
 
@@ -119,6 +123,11 @@ const tabs = computed(() => {
           label: __('Brand Settings'),
           icon: SparkleIcon,
           component: markRaw(BrandSettings),
+        },
+        {
+          label: __('Calendar'),
+          icon: CalendarIcon,
+          component: markRaw(CalendarSettings),
         },
       ],
       condition: () => isManager(),
@@ -164,6 +173,11 @@ const tabs = computed(() => {
           label: __('Assignment rules'),
           icon: markRaw(h(SettingsIcon2, { class: 'rotate-90' })),
           component: markRaw(AssignmentRulePage),
+        },
+        {
+          label: __('SLA Policies'),
+          icon: markRaw(h(ShieldCheck)),
+          component: markRaw(SlaConfig),
         },
       ],
     },
