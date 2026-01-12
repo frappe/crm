@@ -268,8 +268,24 @@ def sales_user_only(fn):
 
 	return wrapper
 
-def is_version_16():
-    from frappe.pulse.utils import get_frappe_version
 
-    version = get_frappe_version()
-    return version.startswith("16.")
+def is_version_15():
+	from frappe.pulse.utils import get_frappe_version
+
+	version = get_frappe_version()
+	return version.startswith("15.")
+
+
+def is_version_16():
+	from frappe.pulse.utils import get_frappe_version
+
+	version = get_frappe_version()
+	return version.startswith("16.")
+
+
+def is_version_16_above():
+	from frappe.pulse.utils import get_frappe_version
+
+	version = get_frappe_version()
+	major_version = int(version.split(".")[0])
+	return major_version >= 16
