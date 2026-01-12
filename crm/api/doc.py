@@ -15,7 +15,7 @@ from crm.utils import get_dynamic_linked_docs, get_linked_docs, is_frappe_versio
 
 COUNT_NAME = (
 	{"COUNT": "name", "as": "total_count"}
-	if is_frappe_version("16", above=True)
+	if is_frappe_version("16") or is_frappe_version("16", above=True)
 	else "count(name) as total_count"
 )
 
