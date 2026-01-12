@@ -5,7 +5,7 @@ from frappe.translate import get_all_translations
 from frappe.utils import cstr, split_emails, validate_email_address
 from frappe.utils.telemetry import POSTHOG_HOST_FIELD, POSTHOG_PROJECT_FIELD
 
-from crm.utils import is_version_15, is_version_16_above
+from crm.utils import is_frappe_version
 
 
 @frappe.whitelist(allow_guest=True)
@@ -65,9 +65,9 @@ def check_app_permission():
 	if frappe.session.user == "Administrator":
 		return True
 
-	if is_version_15():
+	if is_frappe_version('15'):
 		allowed_modules = frappe.config.get_modules_from_all_apps_for_user()
-	elif is_version_16_above():
+	elif is_frappe_version('16', above=True):
 		allowed_modules = frappe.utils.modules.get_modules_from_all_apps_for_user()
 
 	allowed_modules = [x["module_name"] for x in allowed_modules]
