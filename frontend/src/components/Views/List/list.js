@@ -17,7 +17,7 @@ export function useList() {
       listCache[doctype] = {}
     }
     listCache[doctype][viewName] = _useList({
-      doctype: doctype,
+      doctype,
       fields,
       filters,
       orderBy,
@@ -36,6 +36,7 @@ export function useList() {
   })
 
   function reload() {
+    if (listCache[doctype][viewName].isFetching) return
     listCache[doctype][viewName].reload()
   }
 

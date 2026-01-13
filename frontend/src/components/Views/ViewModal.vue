@@ -80,6 +80,8 @@ const router = useRouter()
 
 function create() {
   view.value.doctype = doctype
+  view.value.route_name = ''
+  view.value.is_standard = 0
 
   useCall({
     url: '/api/v2/method/crm.fcrm.doctype.crm_view_settings.crm_view_settings.create',

@@ -42,9 +42,9 @@ export function useView(doctype, viewName = null) {
     view[doctype][viewName].currentView = viewData || null
   }
 
-  function reload() {
+  function reload(reloadList = null) {
     if (view[doctype][viewName].isFetching) return
-    view[doctype][viewName].reload()
+    view[doctype][viewName].reload().then(() => reloadList?.())
   }
 
   const viewRefs = toRefs(view[doctype][viewName])

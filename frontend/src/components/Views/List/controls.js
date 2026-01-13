@@ -1,7 +1,7 @@
 import { useCall } from 'frappe-ui'
 import { useList } from './list.js'
 import { useView } from '@/stores/view'
-import { inject, reactive } from 'vue'
+import { inject, reactive, nextTick } from 'vue'
 import { useRoute } from 'vue-router'
 
 export const viewUpdated = reactive({})
@@ -35,6 +35,7 @@ export function useControls() {
   function updateFilter() {
     if (viewName) {
       viewUpdated[viewName] = true
+      nextTick(() => reload())
     } else {
       createOrUpdateView()
     }
@@ -43,6 +44,7 @@ export function useControls() {
   function updateSort() {
     if (viewName) {
       viewUpdated[viewName] = true
+      nextTick(() => reload())
     } else {
       createOrUpdateView()
     }
@@ -51,6 +53,7 @@ export function useControls() {
   function updateColumns() {
     if (viewName) {
       viewUpdated[viewName] = true
+      nextTick(() => reload())
     } else {
       createOrUpdateView()
     }
@@ -94,7 +97,7 @@ export function useControls() {
 
   function cancelChanges() {
     viewUpdated[viewName] = false
-    reloadCurrentView()
+    reloadCurrentView(reload)
   }
 
   return {
