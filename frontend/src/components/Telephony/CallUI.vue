@@ -141,6 +141,7 @@ watch(
       }
 
       if (yeastarValue) {
+        yeastar.value.setup()
         callMedium.value = 'Yeastar'
       }
 
