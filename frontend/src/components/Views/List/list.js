@@ -8,7 +8,17 @@ export function useList() {
   const viewName = inject('viewName')
   const currentView = inject('currentView')
 
-  const fields = () => currentView.value?.columns?.map((col) => col.key) || []
+  const fields = () => {
+    let _fields = currentView.value?.columns?.map((col) => col.key) || []
+
+    const requiredFields = currentView.value?.rows || ['name']
+    requiredFields.forEach((field) => {
+      if (!_fields.includes(field)) {
+        _fields.push(field)
+      }
+    })
+    return _fields
+  }
   const filters = () => currentView.value?.filters || {}
   const orderBy = () => currentView.value?.order_by || 'modified asc'
 
