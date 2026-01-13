@@ -71,7 +71,7 @@
     </div>
     <Button
       class="absolute -bottom-10 -right-5"
-      variant="subtle"
+      variant="outline"
       theme="red"
       size="lg"
       icon="x"
@@ -91,7 +91,7 @@ import {
   toast,
 } from 'frappe-ui'
 import { nextTick, onBeforeUnmount, reactive, ref, watch } from 'vue'
-import { useDraggable, useWindowSize } from '@vueuse/core'
+import { set, useDraggable, useWindowSize } from '@vueuse/core'
 import { globalStore } from '../../stores/global'
 
 const showCallPopup = ref(false)
@@ -109,6 +109,7 @@ const callData = reactive({
   channelId: '',
 })
 const incomingCall = ref(false)
+const ringtone = ref(null)
 
 const { $socket } = globalStore()
 
@@ -132,10 +133,23 @@ function makeOutgoingCall(number) {
 }
 
 function playAudio() {
-  const playAudio = new Audio(
+  ringtone.value = new Audio(
     'http://soundbible.com/mp3/Air Plane Ding-SoundBible.com-496729130.mp3',
   )
-  playAudio.play()
+  ringtone.value.loop = true
+  ringtone.value.play()
+
+  setTimeout(() => {
+    stopAudio()
+  }, 10000)
+}
+
+function stopAudio() {
+  if (ringtone.value) {
+    ringtone.value.pause()
+    ringtone.value.currentTime = 0
+    ringtone.value = null
+  }
 }
 
 function setup() {
