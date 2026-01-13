@@ -45,6 +45,7 @@ def get_yeaster_number() -> str:
 @frappe.whitelist(allow_guest=True)
 def handle_incoming_call() -> None:
     data: dict[str, str] = frappe.request.get_json()
+
     if not data:
         frappe.log_error(
             "No data received in the incoming call webhook.",
@@ -52,7 +53,7 @@ def handle_incoming_call() -> None:
         )
         frappe.throw("No data received from the incoming call webhook.")
 
-    members: list[dict] = data.get("msg").get("members")
+    members: list[dict] = data.get("members")
     inbound_info_data: dict = members[0].get("inbound")
 
     caller = inbound_info_data.get("from")
@@ -76,7 +77,6 @@ def create_socket_connection(details: IncomingCallDetails) -> None:
     frappe.publish_realtime(
         event="yeastar_incoming_call",
         message=details.__dict__,
-        user=frappe.session.user,
     )
 
 
