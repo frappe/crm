@@ -1,26 +1,31 @@
-import { createResource } from 'frappe-ui'
-import { reactive, watch, toRefs } from 'vue'
+import { useCall } from 'frappe-ui'
+import { reactive, toRefs } from 'vue'
 
 const view = reactive({})
 const views = reactive({})
 
-function normalizeView(view) {
-  view.columns = JSON.parse(view.columns || '[]')
-  view.rows = JSON.parse(view.rows || '[]')
-  view.filters = JSON.parse(view.filters || '{}')
-  view.type = view.type || 'list'
-  return view
+function normalizeView(v) {
+  if (!v) return null
+
+  v.columns =
+    typeof v.columns == 'string' ? JSON.parse(v.columns || '[]') : v.columns
+  v.rows = typeof v.rows == 'string' ? JSON.parse(v.rows || '[]') : v.rows
+  v.filters =
+    typeof v.filters == 'string' ? JSON.parse(v.filters || '{}') : v.filters
+  v.type = v.type || 'list'
+  return v
 }
 
 export function useView(doctype, viewName = null) {
   if (!view[doctype]?.[viewName]) {
-    const resource = createResource({
-      url: 'crm.api.views.get_current_view',
-      params: { doctype: doctype, view_name: viewName },
-      cache: ['CRM Views', doctype, viewName],
-      auto: true,
-      transform: (view) => normalizeView(view),
-      onSuccess: () => setCurrentView(),
+    const resource = useCall({
+      url: '/api/v2/method/crm.api.views.get_current_view',
+      method: 'GET',
+      params: { doctype, view_name: viewName },
+      cacheKey: ['Current View', doctype, viewName],
+      refetch: true,
+      transform: (v) => normalizeView(v),
+      onSuccess: (v) => setCurrentView(v),
     })
 
     if (!view[doctype]) {
@@ -33,27 +38,18 @@ export function useView(doctype, viewName = null) {
     })
   }
 
-  function setCurrentView(v = null) {
-    if (!view[doctype]?.[viewName]?.data) return
-
-    view[doctype][viewName].currentView =
-      v || view[doctype][viewName].data || null
+  function setCurrentView(viewData) {
+    view[doctype][viewName].currentView = viewData || null
   }
 
   function reload() {
+    if (view[doctype][viewName].isFetching) return
     view[doctype][viewName].reload()
   }
-
-  watch(
-    () => doctype,
-    () => setCurrentView(),
-    { immediate: true },
-  )
 
   const viewRefs = toRefs(view[doctype][viewName])
   return {
     resource: viewRefs,
-    view: viewRefs.data,
     currentView: viewRefs.currentView,
     reloadCurrentView: reload,
   }
@@ -61,10 +57,10 @@ export function useView(doctype, viewName = null) {
 
 export function useViews() {
   if (!views?.resource) {
-    const resource = createResource({
-      url: 'crm.api.views.get_views',
-      cache: 'All Views',
-      auto: true,
+    const resource = useCall({
+      url: '/api/v2/method/crm.api.views.get_views',
+      method: 'GET',
+      cacheKey: 'All Views',
       transform: (_views) => parseViews(_views),
     })
 
