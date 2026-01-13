@@ -17,7 +17,7 @@ class CRMTelephonyAgent(Document):
 		from frappe.types import DF
 
 		call_receiving_device: DF.Literal["Computer", "Phone"]
-		default_medium: DF.Literal["", "Twilio", "Exotel"]
+		default_medium: DF.Literal["", "Twilio", "Exotel", "Yeastar"]
 		exotel: DF.Check
 		exotel_number: DF.Data | None
 		mobile_no: DF.Data | None
