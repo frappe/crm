@@ -102,8 +102,8 @@
   {
    "fieldname": "default_medium",
    "fieldtype": "Select",
-   "label": "Default medium",
-   "options": "\nTwilio\nExotel"
+   "label": "Default Medium",
+   "options": "\nTwilio\nExotel\nYeastar"
   },
   {
    "default": "Computer",
@@ -133,7 +133,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-01-09 10:47:13.011724",
+ "modified": "2026-01-13 12:39:40.663367",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Telephony Agent",
