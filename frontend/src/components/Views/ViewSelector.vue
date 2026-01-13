@@ -289,7 +289,12 @@ function deleteView(v, close) {
   call('crm.fcrm.doctype.crm_view_settings.crm_view_settings.delete', {
     name: v.name,
   }).then(() => {
-    router.push({ name: route.name })
+    const firstMatchedRoute = route.matched?.[0]
+    if (firstMatchedRoute) {
+      router.push({ name: firstMatchedRoute.name })
+    } else {
+      router.push({ name: 'Home' })
+    }
     reloadViews()
   })
   close()
