@@ -83,6 +83,8 @@ def create_socket_connection(details: IncomingCallDetails) -> None:
 @frappe.whitelist(allow_guest=True)
 def respond_to_call(channel_id: str, action: Literal["accept", "refuse"]) -> dict:
 
+    validate_token()
+
     request_url = url_builder(f"/call/{action}_inbound")
     data = {"channel_id": channel_id}
     return make_http_request(
@@ -133,7 +135,6 @@ def validate_token() -> None:
     now = datetime.now()
 
     if expiry_date < now:
-        settings.generate_access_token()
         settings.save(ignore_permissions=True)
 
 

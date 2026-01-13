@@ -197,6 +197,8 @@ watch(showCallPopup, (newVal) => {
     errorMessage.value = ''
     calleeNumber.value = ''
     callStatus.value = ''
+    resourceStatus.value = null
+    incomingCall.value = false
   }
 })
 
