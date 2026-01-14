@@ -89,8 +89,8 @@ This app is compatible with the following versions of Frappe and ERPNext:
 
 | CRM branch            | Stability | Frappe branch        | ERPNext branch       |
 | :-------------------- | :-------- | :------------------- | :------------------- |
-| main - v1.x           | stable    | v15.x                | v15.x                |
-| develop - future/v2.x | unstable  | develop - future/v16 | develop - future/v16 |
+| main - v1.x           | stable    | v15.x & v16.x        | v15.x & v16.x        |
+| develop - future/v2.x | unstable  | develop - future/v17 | develop - future/v17 |
 
 ## Getting Started (Production)
 
