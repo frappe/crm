@@ -1,67 +1,58 @@
 import { toKebabCase } from '@/utils'
-import { createResource, FeatherIcon } from 'frappe-ui'
-import { ref, h } from 'vue'
+import { useCall } from 'frappe-ui'
+import { ref } from 'vue'
 
 export const sidebarLayouts = ref([])
+export const doctypeRoutes = ref([])
 
-const sidebarLayoutResource = createResource({
-  url: 'crm.fcrm.doctype.crm_ui_customization.crm_ui_customization.get_sidebar_layout',
-  cache: 'App Sidebar',
+useCall({
+  url: '/api/v2/method/crm.fcrm.doctype.crm_ui_customization.crm_ui_customization.get_sidebar_layout',
+  cacheKey: 'App Sidebar Layouts',
   onSuccess: (data) => {
-    if (data) {
-      sidebarLayouts.value = data.map((item) => {
-        return {
-          ...item,
-          icon: () => h(FeatherIcon, { name: item.icon || 'list' }),
-        }
-      })
-    }
+    sidebarLayouts.value =
+      data?.map((item) => ({ ...item, icon: item.icon || 'list' })) || []
   },
 })
 
-export function fetchSidebarLayouts() {
-  if (sidebarLayouts.value.length === 0) {
-    return sidebarLayoutResource.fetch()
-  }
-}
+const doctypesList = useCall({
+  url: '/api/v2/method/crm.api.views.get_doctype_list',
+  cacheKey: 'DocType List',
+  onSuccess: (data) => (doctypeRoutes.value = data || []),
+})
 
 export default async function generateRoutes() {
   let routes = []
-  await fetchSidebarLayouts()
-  const layouts = sidebarLayouts.value
 
-  if (!layouts) {
-    return routes
-  }
+  await doctypesList.promise
 
-  for (const object of layouts) {
-    if (object.type == 'dynamic') {
-      let routeName = `${object.doctype} List`
-      object.routeName = routeName
-      const _route = {
-        name: routeName,
-        path: object.route || `/${toKebabCase(object.doctype)}`,
-        component: () => import('@/pages/List.vue'),
-        children: [
-          {
-            name: `${routeName} View`,
-            path: 'view/:viewName?',
-            component: () => import('@/pages/List.vue'),
-            props: (route) => ({
-              doctype: object.doctype,
-              routeName: object.routeName,
-              ...route.params,
-            }),
-          },
-        ],
-        props: (route) => ({
-          doctype: object.doctype,
-          routeName: object.routeName,
-          ...route.params,
-        }),
-      }
-      routes.push(_route)
+  if (!doctypeRoutes.value?.length) return routes
+
+  for (const r of doctypeRoutes.value) {
+    let routeName = `${r.name} List`
+    r.routeName = routeName
+    const _route = {
+      name: routeName,
+      path: r.route || `/${toKebabCase(r.name)}`,
+      component: () => import('@/pages/List.vue'),
+      children: [
+        {
+          name: `${routeName} View`,
+          path: 'view/:viewName?',
+          component: () => import('@/pages/List.vue'),
+          props: (route) => ({
+            doctype: r.name,
+            routeName: r.routeName,
+            ...route.params,
+          }),
+        },
+      ],
+      props: (route) => ({
+        doctype: r.name,
+        routeName: r.routeName,
+        ...route.params,
+      }),
     }
+    routes.push(_route)
   }
 
   return routes

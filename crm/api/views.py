@@ -6,6 +6,18 @@ from pypika import Criterion
 
 
 @frappe.whitelist()
+def get_doctype_list():
+	doctypes = (
+		frappe.qb.from_("DocType")
+		.select("name")
+		.where(Criterion.all([frappe.qb.Field("issingle") == 0, frappe.qb.Field("istable") == 0]))
+		.orderby("name")
+		.run(as_dict=True)
+	)
+	return doctypes
+
+
+@frappe.whitelist()
 def get_views(doctype=None):
 	View = frappe.qb.DocType("CRM View Settings")
 	query = (

@@ -141,7 +141,6 @@ import { capture } from '@/telemetry'
 import router from '@/router'
 import { useStorage } from '@vueuse/core'
 import { ref, reactive, markRaw, onMounted } from 'vue'
-import { fetchSidebarLayouts } from '@/doctype/generateRoutes.js'
 
 const { toggle: toggleNotificationPanel } = notificationsStore()
 
@@ -348,7 +347,6 @@ const steps = reactive([
 ])
 
 onMounted(async () => {
-  fetchSidebarLayouts()
   await users.promise
 
   const filteredSteps = steps.filter((step) => {

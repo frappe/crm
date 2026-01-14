@@ -189,10 +189,6 @@ import { capture } from '@/telemetry'
 import router from '@/router'
 import { useStorage } from '@vueuse/core'
 import { ref, reactive, computed, h, markRaw, onMounted } from 'vue'
-import {
-  sidebarLayouts,
-  fetchSidebarLayouts,
-} from '@/doctype/generateRoutes.js'
 
 const { getPinnedViews, getPublicViews } = viewsStore()
 const { toggle: toggleNotificationPanel } = notificationsStore()
@@ -223,9 +219,7 @@ const links = computed(() => {
     }
   })
 
-  if (!sidebarLayouts.value?.length) return staticLinks
-
-  const dynamicLinks = sidebarLayouts.value.map((link) => {
+  const dynamicLinks = staticLinks.map((link) => {
     return {
       label: link.label || link.routeName,
       icon: iconMap[link.label || link.routeName] || link.icon,
@@ -486,7 +480,6 @@ const steps = reactive([
 ])
 
 onMounted(async () => {
-  fetchSidebarLayouts()
   await users.promise
 
   const filteredSteps = steps.filter((step) => {
