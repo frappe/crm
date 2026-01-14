@@ -1,57 +1,116 @@
 <template>
-  <div
-    v-show="showCallPopup"
-    :style="style"
-    @click.stop
-    ref="callPopupHeader"
-    class="fixed z-20 cursor-pointer"
-  >
+  <div v-show="showCallPopup" :style="style" @click.stop class="fixed z-20">
     <div
       class="w-[300px] rounded-2xl bg-gray-900 shadow-2xl p-4 text-white border border-gray-800"
     >
-      <div class="flex items-center gap-3 mb-4">
+      <div v-show="!showNote">
         <div
-          class="h-9 w-9 flex items-center justify-center rounded-full bg-blue-600/20"
+          ref="callPopupHeader"
+          class="flex items-center gap-3 mb-4 cursor-move active:cursor-grabbing select-none"
         >
-          <PhoneIcon class="h-4 w-4 text-blue-500 animate-pulse" />
+          <div
+            class="h-9 w-9 flex items-center justify-center rounded-full bg-blue-600/20"
+          >
+            <PhoneIcon class="h-4 w-4 text-blue-500 animate-pulse" />
+          </div>
+
+          <div class="flex flex-col">
+            <span class="text-sm text-gray-400">Call Status</span>
+            <span class="font-semibold text-lg leading-tight">
+              {{ callStatus || 'Ready' }}
+            </span>
+          </div>
         </div>
 
-        <div class="flex flex-col">
-          <span class="text-sm text-gray-400">Call Status</span>
-          <span class="font-semibold text-lg leading-tight">
-            {{ callStatus }}
-          </span>
+        <div class="flex items-center gap-4 mb-4">
+          <Avatar shape="circle" label="U" size="lg" />
+
+          <div class="flex flex-col">
+            <span class="font-medium text-white"></span>
+            <small>Yeastar</small>
+            <span class="text-sm text-gray-400">
+              ({{ calleeNumber ? calleeNumber : callData.caller || 'Unknown' }})
+            </span>
+          </div>
         </div>
-      </div>
 
-      <div class="flex items-center gap-4 mb-4">
-        <Avatar shape="circle" label="U" size="lg" />
-
-        <div class="flex flex-col">
-          <span class="font-medium text-white"></span>
-          <small>Yeastar</small>
-          <span class="text-sm text-gray-400">
-            ({{ calleeNumber ? calleeNumber : callData.caller }})
+        <div
+          v-show="resourceStatus"
+          class="mt-3 rounded-lg bg-gray-800/60 px-3 py-2 text-sm text-gray-300"
+        >
+          <span class="text-green-400 font-medium">
+            Connection successful
           </span>
+          <div class="text-xs mt-1 text-gray-400">
+            Pick up your Yeastar IP phone to start the call
+          </div>
         </div>
       </div>
 
       <div
-        v-show="resourceStatus"
-        class="mt-3 rounded-lg bg-gray-800/60 px-3 py-2 text-sm text-gray-300"
+        v-show="incomingCall || resourceStatus"
+        class="mt-4 border-t border-gray-800 pt-3"
       >
-        <span class="text-green-400 font-medium"> Connection successful </span>
-        <div class="text-xs mt-1 text-gray-400">
-          Pick up your Yeastar IP phone to start the call
+        <div
+          class="flex items-center justify-between group cursor-pointer mb-2"
+          @click="showNoteWindow"
+        >
+          <span
+            class="text-xs font-medium uppercase tracking-wider text-gray-500"
+            >Call Notes</span
+          >
+          <Button
+            class="bg-surface-gray-6 text-ink-white hover:bg-surface-gray-5"
+            :tooltip="showNote ? 'Hide Note' : 'Show Note'"
+            :icon="showNote ? 'chevron-up' : NoteIcon"
+            size="sm"
+          />
+        </div>
+
+        <div
+          v-if="showNote"
+          class="space-y-3 transition-all duration-300 ease-in-out"
+        >
+          <div class="text-white bg-surface-gray-6 -800 rounded-md p-2">
+            <TextEditor
+              variant="ghost"
+              ref="content"
+              editor-class="prose-sm h-[200px] text-ink-white overflow-auto "
+              :bubbleMenu="true"
+              :content="note.content"
+              @change="(val) => (note.content = val)"
+              :placeholder="'Take a note...'"
+            />
+          </div>
+
+          <div class="flex items-center justify-end gap-2">
+            <Button
+              variant="ghost"
+              theme=""
+              class="text-gray-400"
+              size="sm"
+              label="Clear"
+              @click="note.content = ''"
+              v-if="note.content"
+            />
+            <Button
+              class="bg-surface-white !text-ink-gray-9 hover:!bg-surface-gray-3"
+              variant="solid"
+              :label="__('Save')"
+              size="md"
+              :disabled="!note.content"
+              @click="createUpdateNote"
+            />
+          </div>
         </div>
       </div>
 
       <div
         v-show="incomingCall"
-        class="flex flex-row p-2 border-white justify-between"
+        class="flex flex-row p-2 mt-4 justify-between gap-2"
       >
         <Button
-          class=""
+          class="flex-1"
           variant="solid"
           theme="green"
           size="sm"
@@ -59,7 +118,7 @@
           >Accept</Button
         >
         <Button
-          class=" "
+          class="flex-1"
           variant="solid"
           theme="red"
           size="sm"
@@ -69,6 +128,7 @@
       </div>
       <ErrorMessage :message="errorMessage" />
     </div>
+
     <Button
       class="absolute -bottom-10 -right-5"
       variant="outline"
@@ -82,17 +142,17 @@
 
 <script setup>
 import {
-  Alert,
   Avatar,
   Button,
-  call,
   createResource,
   ErrorMessage,
   toast,
+  TextEditor,
 } from 'frappe-ui'
-import { nextTick, onBeforeUnmount, reactive, ref, watch } from 'vue'
-import { set, useDraggable, useWindowSize } from '@vueuse/core'
+import { onBeforeUnmount, reactive, ref, watch, nextTick } from 'vue'
+import { useDraggable, useWindowSize } from '@vueuse/core'
 import { globalStore } from '../../stores/global'
+import NoteIcon from '@/components/Icons/NoteIcon.vue'
 
 const showCallPopup = ref(false)
 const callPopupHeader = ref(null)
@@ -100,32 +160,42 @@ const calleeNumber = ref('')
 const callStatus = ref('')
 const errorMessage = ref('')
 const resourceStatus = ref(null)
-const contact = reactive({
-  name: '',
-  image: '',
-})
+
 const callData = reactive({
   caller: '',
   channelId: '',
 })
 const incomingCall = ref(false)
 const ringtone = ref(null)
+const showNote = ref(false)
+const showTask = ref(false)
+const note = ref({
+  value: '',
+  content: '',
+})
 
 const { $socket } = globalStore()
+const { width, height } = useWindowSize()
+
+const { x, y, style } = useDraggable(callPopupHeader, {
+  initialValue: { x: width.value - 350, y: height.value - 450 },
+  preventDefault: true,
+})
 
 function makeOutgoingCall(number) {
   showCallPopup.value = true
   calleeNumber.value = number
   callStatus.value = 'Connecting...'
+
   createResource({
     url: 'crm.integrations.yeastar.api.make_call',
     params: { callee: number },
     auto: true,
-    onSuccess(response) {
+    onSuccess() {
       callStatus.value = 'Connected'
       resourceStatus.value = true
     },
-    onError(error) {
+    onError() {
       toast.error('Error initiating call')
       errorMessage.value = 'An error occurred while initiating the call.'
     },
@@ -142,6 +212,23 @@ function playAudio() {
   setTimeout(() => {
     stopAudio()
   }, 10000)
+}
+
+function createUpdateNote() {
+  createResource({
+    url: 'crm.integrations.api.add_note_to_call_log',
+    params: {
+      call_sid: callData.caller,
+      note: note.value,
+    },
+    auto: true,
+    onSuccess(_note) {
+      note.value['name'] = _note.name
+      nextTick(() => {
+        dirty.value = false
+      })
+    },
+  })
 }
 
 function stopAudio() {
@@ -167,14 +254,15 @@ function responseToCall(action) {
   handleCallResponse(action).submit(
     {},
     {
-      onSuccess(response) {
+      onSuccess() {
         incomingCall.value = false
+        stopAudio()
         callStatus.value =
           action === 'accept' ? 'Call Accepted' : 'Call Declined'
         resourceStatus.value =
           action === 'accept' ? true : 'Call has been declined.'
       },
-      onError(error) {
+      onError() {
         toast.error('Error responding to call')
         errorMessage.value = 'An error occurred while responding to the call.'
       },
@@ -190,25 +278,48 @@ const handleCallResponse = (action) =>
     },
   })
 
-const { width, height } = useWindowSize()
+function saveNote() {
+  toast.success('Note saved successfully')
+}
+
+function showNoteWindow() {
+  showNote.value = !showNote.value
+  updateWindowHeight(showNote.value)
+  if (showNote.value) {
+    showTask.value = false
+  }
+}
+
+function updateWindowHeight(isOpening) {
+  const offset = 224
+  if (isOpening) {
+    y.value = y.value - offset
+  } else {
+    y.value = y.value + offset
+  }
+
+  if (y.value < 10) y.value = 10
+}
+
+function closeCallPopup() {
+  showCallPopup.value = false
+  errorMessage.value = ''
+  calleeNumber.value = ''
+  callStatus.value = ''
+  resourceStatus.value = null
+  incomingCall.value = false
+  stopAudio()
+}
 
 watch(showCallPopup, (newVal) => {
   if (!newVal) {
-    errorMessage.value = ''
-    calleeNumber.value = ''
-    callStatus.value = ''
-    resourceStatus.value = null
-    incomingCall.value = false
+    closeCallPopup()
   }
-})
-
-let { style } = useDraggable(callPopupHeader, {
-  initialValue: { x: width.value - 350, y: height.value - 250 },
-  preventDefault: true,
 })
 
 onBeforeUnmount(() => {
   $socket.off('yeastar_incoming_call')
 })
+
 defineExpose({ makeOutgoingCall, setup })
 </script>
