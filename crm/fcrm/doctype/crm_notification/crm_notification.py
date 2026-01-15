@@ -9,7 +9,8 @@ from frappe.model.document import Document
 class CRMNotification(Document):
 	def on_update(self):
 		if self.to_user:
-			frappe.publish_realtime("crm_notification", user= self.to_user)
+			frappe.publish_realtime("crm_notification", user=self.to_user)
+
 
 def notify_user(args):
 	"""

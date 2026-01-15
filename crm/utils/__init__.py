@@ -2,7 +2,6 @@ import functools
 
 import frappe
 import phonenumbers
-import requests
 from frappe import _
 from frappe.model.docstatus import DocStatus
 from frappe.model.dynamic_links import get_dynamic_link_map
@@ -268,8 +267,9 @@ def sales_user_only(fn):
 
 	return wrapper
 
-def is_version_16():
-    from frappe.pulse.utils import get_frappe_version
 
-    version = get_frappe_version()
-    return version.startswith("16.")
+def is_version_16():
+	from frappe.pulse.utils import get_frappe_version
+
+	version = get_frappe_version()
+	return version.startswith("16.")

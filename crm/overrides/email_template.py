@@ -8,34 +8,34 @@ class CustomEmailTemplate(EmailTemplate):
 	def default_list_data():
 		columns = [
 			{
-				'label': 'Name',
-				'type': 'Data',
-				'key': 'name',
-				'width': '17rem',
+				"label": "Name",
+				"type": "Data",
+				"key": "name",
+				"width": "17rem",
 			},
 			{
-				'label': 'Subject',
-				'type': 'Data',
-				'key': 'subject',
-				'width': '12rem',
+				"label": "Subject",
+				"type": "Data",
+				"key": "subject",
+				"width": "12rem",
 			},
 			{
-				'label': 'Enabled',
-				'type': 'Check',
-				'key': 'enabled',
-				'width': '6rem',
+				"label": "Enabled",
+				"type": "Check",
+				"key": "enabled",
+				"width": "6rem",
 			},
 			{
-				'label': 'Doctype',
-				'type': 'Link',
-				'key': 'reference_doctype',
-				'width': '12rem',
+				"label": "Doctype",
+				"type": "Link",
+				"key": "reference_doctype",
+				"width": "12rem",
 			},
 			{
-				'label': 'Last Modified',
-				'type': 'Datetime',
-				'key': 'modified',
-				'width': '8rem',
+				"label": "Last Modified",
+				"type": "Datetime",
+				"key": "modified",
+				"width": "8rem",
 			},
 		]
 		rows = [
@@ -48,4 +48,4 @@ class CustomEmailTemplate(EmailTemplate):
 			"response_html",
 			"modified",
 		]
-		return {'columns': columns, 'rows': rows}
+		return {"columns": columns, "rows": rows}
