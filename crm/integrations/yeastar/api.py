@@ -30,7 +30,6 @@ def make_call(callee: str, auto_answer: str = "yes") -> dict[str, str]:
 
 @dataclass
 class IncomingCallDetails:
-    event_type: str
     caller: str
     callee: str
     channel_id: str
@@ -47,7 +46,6 @@ def handle_incoming_call() -> None:
         )
         frappe.throw("No data received from the incoming call webhook.")
 
-    event_type = data.get("type")
     members: list[dict] = data.get("members")
     inbound_info_data: dict = members[0].get("inbound")
 
@@ -55,9 +53,7 @@ def handle_incoming_call() -> None:
     callee = inbound_info_data.get("to")
     channel_id = inbound_info_data.get("channel_id")
 
-    details = IncomingCallDetails(
-        event_type=event_type, caller=caller, callee=callee, channel_id=channel_id
-    )
+    details = IncomingCallDetails(caller=caller, callee=callee, channel_id=channel_id)
 
     create_socket_connection(details)
 
@@ -79,7 +75,6 @@ def respond_to_call(channel_id: str, action: Literal["accept", "refuse"]) -> dic
 
 @dataclass
 class CallStatusDetails:
-    even_type: str
     status: str
     callee: int | None
     channel_id: str
@@ -93,28 +88,62 @@ def call_status_changed():
             "No data received in the call status changed webhook.",
             "Yeastar Call Status Changed Webhook Error",
         )
+
+    data_parsed = parse_call_state(data)
     frappe.log_error(
         title="Yeastar Call Status Changed Webhook Data",
-        message=str(data),
+        message=str(data_parsed),
     )
 
-    members: list[dict[dict]] = data.get("msg").get("members")
-    caller = members[1].get("outbound").get("from")
-    if caller != get_yeaster_number():
-        return
-
-    event_type = data.get("type")
-    status = members[1].get("outbound").get("member_status")
-    channel_id = members[1].get("outbound").get("channel_id")
-
     details = CallStatusDetails(
-        even_type=event_type,
-        status=status,
-        callee=members[1].get("outbound").get("to"),
-        channel_id=channel_id,
+        status=data_parsed["status"],
+        callee=data_parsed["client_number"],
+        channel_id=data_parsed["channel_id"],
     )
 
     create_socket_connection(details)
+
+
+def parse_call_state(payload: dict) -> dict:
+
+    MY_EXTENSION = get_yeaster_number()
+
+    members: list[dict] = payload.get("members", [])
+
+    my_extension_present = any(
+        m.get("extension", {}).get("number") == MY_EXTENSION for m in members
+    )
+
+    if not my_extension_present:
+        return
+
+    connection = None
+    direction = None
+
+    for member in members:
+        if member.get("outbound"):
+            connection = member["outbound"]
+            direction = "outbound"
+            break
+        if member.get("inbound"):
+            connection = member["inbound"]
+            direction = "inbound"
+            break
+
+    if not connection:
+        return
+
+    status = connection.get("member_status")
+    client_number = (
+        connection.get("to") if direction == "outbound" else connection.get("from")
+    )
+    channel_id = connection.get("channel_id")
+
+    return {
+        "status": status,
+        "client_number": client_number,
+        "channel_id": channel_id,
+    }
 
 
 def create_socket_connection(details: IncomingCallDetails | CallStatusDetails) -> None:
