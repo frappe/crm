@@ -22,25 +22,25 @@
       </template>
       <template #body>
         <div
-          class="my-2 min-w-40 rounded-lg bg-surface-modal shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
+          class="my-2 w-64 rounded-lg bg-surface-modal shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
         >
           <div class="max-h-52 overflow-y-auto p-1">
             <div
               v-for="holiday in holidayListData.data"
               :key="holiday.name"
-              class="flex items-center justify-between gap-4 rounded px-2 py-1.5 text-base text-ink-gray-8 cursor-pointer hover:bg-surface-gray-3"
+              class="flex items-center justify-between rounded px-2 py-1.5 text-base text-ink-gray-8 cursor-pointer hover:bg-surface-gray-3 gap-1"
               @click="
                 slaData.holiday_list =
                   slaData.holiday_list === holiday.name ? '' : holiday.name
               "
             >
-              <div class="flex items-center gap-2 w-full">
+              <div class="flex items-center gap-2 min-w-0">
                 <input
                   name="holiday_list"
                   :checked="holiday.name === slaData.holiday_list"
                   type="radio"
                 />
-                <div class="select-none">{{ holiday.name }}</div>
+                <div class="select-none truncate">{{ holiday.name }}</div>
               </div>
               <div class="flex cursor-pointer items-center gap-1">
                 <Button

@@ -1,6 +1,6 @@
 <template>
   <SettingsLayoutBase
-    :title="__('Holiday List')"
+    :title="__('Business Holidays')"
     :description="__('Manage your business holiday lists')"
   >
     <template #header-actions>

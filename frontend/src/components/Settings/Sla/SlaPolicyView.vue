@@ -213,7 +213,7 @@
         <div>
           <div class="flex flex-col gap-1">
             <span class="text-lg font-semibold text-ink-gray-8">
-              {{ __('Response and Follow Up') }}
+              {{ __('Response and follow up') }}
             </span>
             <span class="text-p-sm text-ink-gray-6">
               {{
@@ -266,6 +266,7 @@ import SettingsLayoutBase from '../../Layouts/SettingsLayoutBase.vue'
 import {
   initialSlaData,
   isSlaDirty,
+  isSlaNew,
   resetSlaDataErrors,
   slaActiveStep,
   slaData,
@@ -368,6 +369,7 @@ const goBack = () => {
     }
   }, 250)
   showConfirmDialog.value.show = false
+  isSlaNew.value = false
 }
 
 const toggleEnabled = () => {
@@ -395,7 +397,7 @@ const saveSla = () => {
     return
   }
 
-  if (slaActiveStep.value.data) {
+  if (slaActiveStep.value.data && !isSlaNew.value) {
     if (isOldSla.value && useNewUI.value) {
       showConfirmDialog.value = {
         show: true,
@@ -429,6 +431,7 @@ const createSla = () => {
     {
       onSuccess(data) {
         toast.success(__('SLA policy created'))
+        isSlaNew.value = false
         updateStep('view', data, true)
         getSlaResource.submit({
           doctype: 'CRM Service Level Agreement',

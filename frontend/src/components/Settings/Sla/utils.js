@@ -2,6 +2,7 @@ import { ref } from 'vue'
 import { validateConditions } from '../../../utils'
 
 export const isSlaDirty = ref(false)
+export const isSlaNew = ref(false)
 export const initialSlaData = ref(null)
 
 export const slaActiveStep = ref({

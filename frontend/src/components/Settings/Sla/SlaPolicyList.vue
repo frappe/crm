@@ -177,7 +177,7 @@ import SettingsLayoutBase from '../../Layouts/SettingsLayoutBase.vue'
 import { inject, ref, watch } from 'vue'
 import ShieldCheck from '~icons/lucide/shield-check'
 import { ConfirmDelete } from '../../../utils'
-import { resetSlaData, updateStep } from './utils'
+import { isSlaNew, resetSlaData, updateStep } from './utils'
 
 const slaPolicyListResource = inject('slaPolicyListResource')
 const slaSearchQuery = inject('slaSearchQuery')
@@ -185,6 +185,7 @@ const slaSearchQuery = inject('slaSearchQuery')
 function createNewSlaPolicy() {
   resetSlaData()
   updateStep('view', null)
+  isSlaNew.value = true
 }
 
 const duplicateDialog = ref({
