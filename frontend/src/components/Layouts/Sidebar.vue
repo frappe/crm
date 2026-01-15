@@ -4,9 +4,12 @@
     :class="isSidebarCollapsed ? 'w-12' : 'w-[220px]'"
   >
     <div class="p-2">
-      <UserDropdown :isCollapsed="isSidebarCollapsed" />
+      <UserDropdown
+        :isCollapsed="isSidebarCollapsed"
+        @update:isCollapsed="(val) => (isSidebarCollapsed = val)"
+      />
     </div>
-    <div class="flex-1 overflow-y-auto">
+    <div class="flex-1 overflow-y-auto overflow-hidden">
       <div class="mb-3 flex flex-col">
         <SidebarLink
           id="notifications-btn"
@@ -29,9 +32,23 @@
           </template>
         </SidebarLink>
       </div>
-      <ViewsSidebarSection :isSidebarCollapsed="isSidebarCollapsed" />
+      <ViewsSidebarSection
+        ref="viewsSidebarSection"
+        :isSidebarCollapsed="isSidebarCollapsed"
+      />
     </div>
-    <div class="m-2 flex flex-col gap-1">
+    <div v-if="editSidebar" class="m-2 flex justify-between gap-1">
+      <Button
+        :label="__('Discard')"
+        @click="viewsSidebarSection.resetSidebar()"
+      />
+      <Button
+        :label="__('Save')"
+        variant="solid"
+        @click="viewsSidebarSection.saveSidebar()"
+      />
+    </div>
+    <div v-else class="m-2 flex flex-col gap-1">
       <div class="flex flex-col gap-2 mb-1">
         <SignupBanner
           v-if="isDemoSite"
@@ -124,9 +141,13 @@ import {
 } from '@/stores/notifications'
 import { usersStore } from '@/stores/users'
 import { sessionStore } from '@/stores/session'
-import { showSettings, activeSettingsPage } from '@/composables/settings'
+import {
+  showSettings,
+  activeSettingsPage,
+  editSidebar,
+} from '@/composables/settings'
 import { showChangePasswordModal } from '@/composables/modals'
-import { call } from 'frappe-ui'
+import { Button, call } from 'frappe-ui'
 import {
   SignupBanner,
   TrialBanner,
@@ -148,6 +169,8 @@ const isSidebarCollapsed = useStorage('isSidebarCollapsed', false)
 
 const isFCSite = ref(window.is_fc_site)
 const isDemoSite = ref(window.is_demo_site)
+
+const viewsSidebarSection = ref(null)
 
 // onboarding
 const { user } = sessionStore()
