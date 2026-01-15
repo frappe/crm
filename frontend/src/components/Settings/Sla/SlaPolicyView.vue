@@ -178,7 +178,7 @@
               <DatePicker
                 v-model="slaData.start_date"
                 variant="subtle"
-                placeholder="11/01/2025"
+                placeholder="2025-11-01"
                 class="w-full"
                 id="start_date"
                 @change="validateSlaData('start_date')"
@@ -195,7 +195,7 @@
               <DatePicker
                 v-model="slaData.end_date"
                 variant="subtle"
-                placeholder="25/12/2025"
+                placeholder="2025-12-25"
                 class="w-full"
                 id="end_date"
                 @change="validateSlaData('end_date')"

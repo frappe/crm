@@ -15,7 +15,7 @@
     <NestedPopover>
       <template #target="{ open }">
         <Button
-          class="text-sm"
+          class="text-sm max-w-40"
           :icon-right="open ? 'chevron-up' : 'chevron-down'"
           :label="slaData.holiday_list || __('Select holiday list')"
         />

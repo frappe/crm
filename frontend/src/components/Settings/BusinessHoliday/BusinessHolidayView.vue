@@ -81,7 +81,7 @@
               <DatePicker
                 v-model="holidayListData.from_date"
                 variant="subtle"
-                placeholder="11/01/2025"
+                placeholder="2025-01-11"
                 class="w-full"
                 id="from_date"
                 :format="getFormat()"
@@ -104,7 +104,7 @@
               <DatePicker
                 v-model="holidayListData.to_date"
                 variant="subtle"
-                placeholder="25/12/2025"
+                placeholder="2025-12-25"
                 class="w-full"
                 id="to_date"
                 :format="getFormat()"
