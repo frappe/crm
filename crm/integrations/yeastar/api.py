@@ -88,7 +88,11 @@ def call_status_changed():
             "No data received in the call status changed webhook.",
             "Yeastar Call Status Changed Webhook Error",
         )
-
+    
+    frappe.log_error(
+        title="Yeastar Call Status Changed Webhook Data",
+        message=str(data),
+    )
     data_parsed = parse_call_state(data)
     frappe.log_error(
         title="Yeastar Call Status Changed Webhook Data",
