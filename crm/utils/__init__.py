@@ -268,13 +268,6 @@ def sales_user_only(fn):
 
 	return wrapper
 
-<<<<<<< HEAD
-def is_version_16():
-    from frappe.pulse.utils import get_frappe_version
-
-    version = get_frappe_version()
-    return version.startswith("16.")
-=======
 
 def is_frappe_version(version: str, above: bool = False, below: bool = False):
 	from frappe.pulse.utils import get_frappe_version
@@ -288,4 +281,3 @@ def is_frappe_version(version: str, above: bool = False, below: bool = False):
 	if below:
 		return major_version < target_version
 	return major_version == target_version
->>>>>>> 8d84d617 (fix: update version handling and dependencies for Frappe compatibility)
