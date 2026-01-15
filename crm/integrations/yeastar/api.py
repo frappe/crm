@@ -14,6 +14,7 @@ def make_call(callee: str, auto_answer: str = "yes") -> dict[str, str]:
     request_url = url_builder("/call/dial")
 
     caller = get_yeaster_number()
+    print("Caller Number:", type(caller), caller)
     data = {
         "caller": caller,
         "callee": callee,
@@ -116,59 +117,69 @@ def call_status_changed():
 
 
 def parse_call_state(payload: dict) -> dict | None:
-
-    MY_EXTENSION = get_yeaster_number()
-
-    members: list[dict] = payload.get("members", [])
-
     frappe.log_error(
-        title="Yeastar Call Status Changed Webhook - Members Data",
-        message=str(members),
+        title="Yeastar Call Status Changed Webhook - Payload Received",
+        message=str(payload),
     )
+    try:
+        MY_EXTENSION = get_yeaster_number()
 
-    my_extension_present = any(
-        m.get("extension", {}).get("number") == MY_EXTENSION for m in members
-    )
-    frappe.log_error(
-        title="Yeastar Call Status Changed Webhook - My Extension Present Check",
-        message=f"My Extension Present: {my_extension_present}",
-    )
+        members: list[dict] = payload.get("members", [])
 
-    if not my_extension_present:
+        frappe.log_error(
+            title="Yeastar Call Status Changed Webhook - Members Data",
+            message=str(members),
+        )
+
+        my_extension_present = any(
+            m.get("extension", {}).get("number") == MY_EXTENSION for m in members
+        )
+        frappe.log_error(
+            title="Yeastar Call Status Changed Webhook - My Extension Present Check",
+            message=f"My Extension Present: {my_extension_present}",
+        )
+
+        if not my_extension_present:
+            return None
+
+        connection = None
+        direction = None
+
+        for member in members:
+            if member.get("outbound"):
+                connection = member["outbound"]
+                direction = "outbound"
+                break
+            if member.get("inbound"):
+                connection = member["inbound"]
+                direction = "inbound"
+                break
+
+        if not connection:
+            return None
+
+        frappe.log_error(
+            title="Yeastar Call Status Changed Webhook - Connection Data",
+            message=str(connection),
+        )
+
+        status = connection.get("member_status")
+        client_number = (
+            connection.get("to") if direction == "outbound" else connection.get("from")
+        )
+        channel_id = connection.get("channel_id")
+
+        return {
+            "status": status,
+            "client_number": client_number,
+            "channel_id": channel_id,
+        }
+    except Exception as e:
+        frappe.log_error(
+            title="Error parsing call state from Yeastar webhook",
+            message=str(e),
+        )
         return None
-
-    connection = None
-    direction = None
-
-    for member in members:
-        if member.get("outbound"):
-            connection = member["outbound"]
-            direction = "outbound"
-            break
-        if member.get("inbound"):
-            connection = member["inbound"]
-            direction = "inbound"
-            break
-
-    if not connection:
-        return None
-
-    frappe.log_error(
-        title="Yeastar Call Status Changed Webhook - Connection Data",
-        message=str(connection),
-    )
-
-    status = connection.get("member_status")
-    client_number = (
-        connection.get("to") if direction == "outbound" else connection.get("from")
-    )
-    channel_id = connection.get("channel_id")
-
-    return {
-        "status": status,
-        "client_number": client_number,
-        "channel_id": channel_id,
-    }
 
 
 def create_socket_connection(details: IncomingCallDetails | CallStatusDetails) -> None:
