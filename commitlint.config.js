@@ -19,8 +19,8 @@ module.exports = {
 				"revert",
 				"style",
 				"test",
-				"patch"
-			]
-		]
-	}
+				"patch",
+			],
+		],
+	},
 };
