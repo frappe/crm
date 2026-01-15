@@ -34,12 +34,10 @@ def get_sla(doc: Document) -> Document:
 	sla_list = q.run(as_dict=True)
 	res = None
 
-	# move default sla to the end of the list
-	for sla in sla_list:
-		if sla.get("default"):
-			sla_list.remove(sla)
-			sla_list.append(sla)
-			break
+	# move default SLA to the end if present without mutating during iteration
+	default_index = next((i for i, sla in enumerate(sla_list) if sla.get("default")), None)
+	if default_index is not None:
+		sla_list.append(sla_list.pop(default_index))
 
 	for sla in sla_list:
 		cond = sla.get("condition")

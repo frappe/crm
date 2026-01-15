@@ -12,13 +12,9 @@ frappe.ui.form.on("Failed Lead Sync Log", {
         })
         .then(({ message }) => {
           frappe.show_alert(
-            __(
-              `Sync Successful, CRM Lead: ${frappe.utils.get_form_link(
-                "CRM Lead",
-                message.name,
-                true,
-              )}!`,
-            ),
+            __("Sync Successful, CRM Lead: {0}!", [
+              frappe.utils.get_form_link("CRM Lead", message.name, true),
+            ]),
           );
         });
     });
