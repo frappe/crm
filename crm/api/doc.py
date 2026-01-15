@@ -11,9 +11,13 @@ from pypika import Criterion
 
 from crm.api.views import get_views
 from crm.fcrm.doctype.crm_form_script.crm_form_script import get_form_script
-from crm.utils import get_dynamic_linked_docs, get_linked_docs, is_version_16
+from crm.utils import get_dynamic_linked_docs, get_linked_docs, is_frappe_version
 
-COUNT_NAME = {"COUNT": "name", "as": "total_count"} if is_version_16() else "count(name) as total_count"
+COUNT_NAME = (
+	{"COUNT": "name", "as": "total_count"}
+	if is_frappe_version("16", above=True)
+	else "count(name) as total_count"
+)
 
 
 @frappe.whitelist()
