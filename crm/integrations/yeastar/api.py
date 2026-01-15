@@ -110,8 +110,17 @@ def parse_call_state(payload: dict) -> dict:
 
     members: list[dict] = payload.get("members", [])
 
+    frappe.log_error(
+        title="Yeastar Call Status Changed Webhook - Members Data",
+        message=str(members),
+    )
+
     my_extension_present = any(
         m.get("extension", {}).get("number") == MY_EXTENSION for m in members
+    )
+    frappe.log_error(
+        title="Yeastar Call Status Changed Webhook - My Extension Present Check",
+        message=f"My Extension Present: {my_extension_present}",
     )
 
     if not my_extension_present:
@@ -132,6 +141,11 @@ def parse_call_state(payload: dict) -> dict:
 
     if not connection:
         return
+    
+    frappe.log_error(
+        title="Yeastar Call Status Changed Webhook - Connection Data",
+        message=str(connection),
+    )
 
     status = connection.get("member_status")
     client_number = (
