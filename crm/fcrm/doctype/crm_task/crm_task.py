@@ -3,8 +3,10 @@
 
 import frappe
 from frappe import _
+from frappe.desk.form.assign_to import add as assign
+from frappe.desk.form.assign_to import remove as unassign
 from frappe.model.document import Document
-from frappe.desk.form.assign_to import add as assign, remove as unassign
+
 from crm.fcrm.doctype.crm_notification.crm_notification import notify_user
 
 
