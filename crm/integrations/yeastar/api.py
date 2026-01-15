@@ -14,7 +14,6 @@ def make_call(callee: str, auto_answer: str = "yes") -> dict[str, str]:
     request_url = url_builder("/call/dial")
 
     caller = get_yeaster_number()
-    print("Caller Number:", type(caller), caller)
     data = {
         "caller": caller,
         "callee": callee,
