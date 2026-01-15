@@ -14,4 +14,3 @@ def merge_dicts(d1: dict, d2: dict):
 	... {'name1': {'age': 20, 'phone': '+xxx'}, 'name2': {'age': 30, 'phone': '+yyy'}}
 	"""
 	return {k: {**v, **d2.get(k, {})} for k, v in d1.items()}
-

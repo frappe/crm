@@ -16,15 +16,18 @@ class CRMHolidayList(Document):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
-		from crm.fcrm.doctype.crm_holiday.crm_holiday import CRMHoliday
 		from frappe.types import DF
+
+		from crm.fcrm.doctype.crm_holiday.crm_holiday import CRMHoliday
 
 		from_date: DF.Date
 		holiday_list_name: DF.Data
 		holidays: DF.Table[CRMHoliday]
 		to_date: DF.Date
 		total_holidays: DF.Int
-		weekly_off: DF.Literal["", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+		weekly_off: DF.Literal[
+			"", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
+		]
 	# end: auto-generated types
 
 	def validate(self):

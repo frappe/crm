@@ -13,9 +13,8 @@ from crm.api.views import get_views
 from crm.fcrm.doctype.crm_form_script.crm_form_script import get_form_script
 from crm.utils import get_dynamic_linked_docs, get_linked_docs, is_version_16
 
-COUNT_NAME = (
-    {"COUNT": "name", "as": "total_count"} if is_version_16() else "count(name) as total_count"
-)
+COUNT_NAME = {"COUNT": "name", "as": "total_count"} if is_version_16() else "count(name) as total_count"
+
 
 @frappe.whitelist()
 def sort_options(doctype: str):
@@ -285,10 +284,10 @@ def get_data(
 	page_length_count=20,
 	column_field=None,
 	title_field=None,
-	columns=[],
-	rows=[],
-	kanban_columns=[],
-	kanban_fields=[],
+	columns=None,
+	rows=None,
+	kanban_columns=None,
+	kanban_fields=None,
 	view=None,
 	default_filters=None,
 ):
@@ -557,9 +556,7 @@ def get_data(
 		"page_length_count": page_length_count,
 		"is_default": is_default,
 		"views": get_views(doctype),
-		"total_count": frappe.get_list(doctype, filters=filters, fields=[COUNT_NAME])[
-			0
-		].total_count,
+		"total_count": frappe.get_list(doctype, filters=filters, fields=[COUNT_NAME])[0].total_count,
 		"row_count": len(data),
 		"form_script": get_form_script(doctype),
 		"list_script": get_form_script(doctype, "List"),
@@ -905,9 +902,7 @@ def delete_bulk_docs(doctype, items, delete_linked=False):
 					delete=delete_linked,
 				)
 		except Exception as e:
-			frappe.log_error(
-				f"Error processing linked docs for {doctype} {doc}: {str(e)}", "Bulk Delete Error"
-			)
+			frappe.log_error(f"Error processing linked docs for {doctype} {doc}: {e!s}", "Bulk Delete Error")
 
 	if len(items) > 10:
 		frappe.enqueue("frappe.desk.reportview.delete_bulk", doctype=doctype, items=items)

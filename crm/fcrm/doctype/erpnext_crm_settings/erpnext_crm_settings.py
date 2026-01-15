@@ -290,7 +290,7 @@ async function setupForm({ doc, call, $dialog, updateField, toast }) {
 			label: __("Create Quotation"),
 			onClick: async () => {
 				let quotation_url = await call(
-					"crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.get_quotation_url", 
+					"crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.get_quotation_url",
 					{
 						crm_deal: doc.name,
 						organization: doc.organization

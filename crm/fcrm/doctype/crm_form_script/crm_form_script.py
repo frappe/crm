@@ -23,6 +23,7 @@ class CRMFormScript(Document):
 			else:
 				frappe.throw(_("You need to be in developer mode to edit a Standard Form Script"))
 
+
 def get_form_script(dt, view="Form"):
 	"""Returns the form script for the given doctype"""
 	FormScript = frappe.qb.DocType("CRM Form Script")
