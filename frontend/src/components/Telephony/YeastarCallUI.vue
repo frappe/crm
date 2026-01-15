@@ -236,18 +236,31 @@ function stopAudio() {
     ringtone.value.pause()
     ringtone.value.currentTime = 0
     ringtone.value = null
+    showCallPopup.value = false
   }
 }
 
 function setup() {
+  initiateSockets()
+}
+
+function initiateSockets() {
   $socket.on('yeastar_incoming_call', (data) => {
-    callData.caller = data.caller
-    callData.channelId = data.channel_id
-    callStatus.value = 'Incoming Call...'
-    incomingCall.value = true
-    showCallPopup.value = true
-    playAudio()
+    closeCallPopup()
+    initiateIncomingCall(data)
   })
+  $socket.on('yeastar_call_status_changed', (data) => {
+    console.log('Call status changed:', data)
+  })
+}
+
+function initiateIncomingCall(data) {
+  callData.caller = data.caller
+  callData.channelId = data.channel_id
+  callStatus.value = 'Incoming Call...'
+  incomingCall.value = true
+  showCallPopup.value = true
+  playAudio()
 }
 
 function responseToCall(action) {
