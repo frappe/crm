@@ -15,7 +15,7 @@
           theme="orange"
           size="sm"
           :label="__('Unsaved')"
-          v-if="isDirty"
+          v-if="isSlaDirty"
         />
       </div>
     </template>
@@ -35,7 +35,7 @@
           theme="gray"
           variant="solid"
           @click="saveSla()"
-          :disabled="Boolean(!isDirty && slaActiveStep.data)"
+          :disabled="Boolean(!isSlaDirty && slaActiveStep.data)"
           :loading="
             slaPolicyListResource.setValue.loading ||
             slaPolicyListResource.insert.loading ||
@@ -264,6 +264,8 @@ import {
 import { inject, onMounted, onUnmounted, ref, watch } from 'vue'
 import SettingsLayoutBase from '../../Layouts/SettingsLayoutBase.vue'
 import {
+  initialSlaData,
+  isSlaDirty,
   resetSlaDataErrors,
   slaActiveStep,
   slaData,
@@ -277,8 +279,6 @@ import { convertToConditions, getFormat } from '../../../utils'
 import SlaHolidays from './SlaHolidays.vue'
 import SlaPriorityList from './SlaPriorityList.vue'
 
-const isDirty = ref(false)
-const initialData = ref(null)
 const useNewUI = ref(true)
 const isOldSla = ref(false)
 const showConfirmDialog = ref({
@@ -322,7 +322,7 @@ const getSlaResource = createResource({
     slaData.value = newData
     slaActiveStep.value.data = newData
 
-    initialData.value = JSON.stringify(newData)
+    initialSlaData.value = JSON.stringify(newData)
     const conditionsAvailable = slaData.value.condition?.length > 0
     const conditionsJsonAvailable = slaData.value.condition_json?.length > 0
     if (conditionsAvailable && !conditionsJsonAvailable) {
@@ -339,6 +339,7 @@ if (slaActiveStep.value.data && slaActiveStep.value.fetchData) {
   getSlaResource.submit()
 } else {
   disableSettingModalOutsideClick.value = true
+  initialSlaData.value = JSON.stringify(slaData.value)
 }
 
 const goBack = () => {
@@ -350,7 +351,7 @@ const goBack = () => {
     ),
     onConfirm: goBack,
   }
-  if (isDirty.value && !showConfirmDialog.value.show) {
+  if (isSlaDirty.value && !showConfirmDialog.value.show) {
     showConfirmDialog.value = confirmDialogInfo
     return
   }
@@ -505,9 +506,9 @@ const updateSla = async () => {
 watch(
   slaData,
   (newVal) => {
-    if (!initialData.value) return
-    isDirty.value = JSON.stringify(newVal) != initialData.value
-    if (isDirty.value) {
+    if (!initialSlaData.value) return
+    isSlaDirty.value = JSON.stringify(newVal) != initialSlaData.value
+    if (isSlaDirty.value) {
       disableSettingModalOutsideClick.value = true
     } else {
       disableSettingModalOutsideClick.value = false
@@ -517,7 +518,7 @@ watch(
 )
 
 const beforeUnloadHandler = (event) => {
-  if (!isDirty.value) return
+  if (!isSlaDirty.value) return
   event.preventDefault()
   event.returnValue = true
 }

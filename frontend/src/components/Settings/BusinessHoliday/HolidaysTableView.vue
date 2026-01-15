@@ -46,7 +46,7 @@
           </Dropdown>
         </div>
       </div>
-      <hr v-if="index !== holidays.length - 1" />
+      <hr class="border-outline-gray-2" v-if="index !== holidays.length - 1" />
     </div>
     <div v-if="holidays?.length === 0" class="text-center p-4 text-gray-600">
       {{ __('No items in the list') }}

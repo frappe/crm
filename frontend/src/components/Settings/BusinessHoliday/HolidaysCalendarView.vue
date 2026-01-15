@@ -14,12 +14,12 @@
           </template>
           <template #body-main="{ togglePopover }">
             <div class="w-24">
-              <div ref="yearsContainer" class="max-h-60 overflow-y-auto py-1">
+              <div ref="yearsContainer" class="max-h-60 overflow-y-auto">
                 <div
                   v-for="year in yearsList"
                   :key="year"
                   ref="yearItems"
-                  class="cursor-pointer px-3 py-1.5 text-sm hover:bg-gray-100 flex items-center justify-between"
+                  class="cursor-pointer px-3 py-1.5 text-sm hover:bg-surface-gray-2 flex items-center justify-between text-ink-gray-8 rounded"
                   @click="onYearChange(togglePopover, year)"
                 >
                   {{ year }}
@@ -85,8 +85,8 @@
         :class="[
           'size-1.5 rounded-full cursor-pointer',
           {
-            'bg-black': visibleMonths === 'first-half',
-            'bg-gray-400': visibleMonths === 'second-half',
+            'bg-surface-gray-7': visibleMonths === 'first-half',
+            'bg-surface-gray-4': visibleMonths === 'second-half',
           },
         ]"
         @click="visibleMonths = 'first-half'"
@@ -95,8 +95,8 @@
         :class="[
           'size-1.5 rounded-full cursor-pointer',
           {
-            'bg-black': visibleMonths === 'second-half',
-            'bg-gray-400': visibleMonths === 'first-half',
+            'bg-surface-gray-7': visibleMonths === 'second-half',
+            'bg-surface-gray-4': visibleMonths === 'first-half',
           },
         ]"
         @click="visibleMonths = 'second-half'"
@@ -128,14 +128,11 @@ const yearsList = computed(() => {
 
 const onYearChange = (togglePopover, year) => {
   currentYear.value = year
-  if (year === dayjs(holidayListData.value.from_date).year()) {
-    if (dayjs(holidayListData.value.from_date).month() >= 6) {
-      visibleMonths.value = 'second-half'
-    }
-  } else if (year === dayjs(holidayListData.value.to_date).year()) {
-    if (dayjs(holidayListData.value.to_date).month() >= 6) {
-      visibleMonths.value = 'first-half'
-    }
+  if (
+    year === dayjs(holidayListData.value.from_date).year() &&
+    dayjs(holidayListData.value.from_date).month() >= 6
+  ) {
+    visibleMonths.value = 'second-half'
   } else {
     visibleMonths.value = 'first-half'
   }

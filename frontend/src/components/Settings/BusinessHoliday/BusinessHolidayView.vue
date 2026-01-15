@@ -305,6 +305,7 @@ if (holidayListActiveStep.value.data) {
   getBusinessHolidayResource.submit()
 } else {
   disableSettingModalOutsideClick.value = true
+  initialData.value = JSON.stringify(holidayListData.value)
 }
 
 const goBack = () => {
@@ -326,7 +327,7 @@ const goBack = () => {
     slaActiveStep.value = {
       screen: 'view',
       data: { name: holidayListActiveStep.value.previousScreen.data },
-      fetchData: true,
+      fetchData: false,
     }
     holidayListActiveStep.value = {
       screen: 'list',
