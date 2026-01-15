@@ -6,7 +6,7 @@
 	"configurations": [
 		{
 			"name": "Bench Web",
-			"type": "python",
+			"type": "debugpy",
 			"request": "launch",
 			"program": "${workspaceFolder}/frappe-bench/apps/frappe/frappe/utils/bench_helper.py",
 			"args": [
@@ -24,7 +24,7 @@
 		},
 		{
 			"name": "Bench Default Worker",
-			"type": "python",
+			"type": "debugpy",
 			"request": "launch",
 			"program": "${workspaceFolder}/frappe-bench/apps/frappe/frappe/utils/bench_helper.py",
 			"args": ["frappe", "worker", "--queue", "default"],
@@ -35,7 +35,7 @@
 		},
 		{
 			"name": "Bench Short Worker",
-			"type": "python",
+			"type": "debugpy",
 			"request": "launch",
 			"program": "${workspaceFolder}/frappe-bench/apps/frappe/frappe/utils/bench_helper.py",
 			"args": ["frappe", "worker", "--queue", "short"],
@@ -46,7 +46,7 @@
 		},
 		{
 			"name": "Bench Long Worker",
-			"type": "python",
+			"type": "debugpy",
 			"request": "launch",
 			"program": "${workspaceFolder}/frappe-bench/apps/frappe/frappe/utils/bench_helper.py",
 			"args": ["frappe", "worker", "--queue", "long"],
@@ -57,7 +57,7 @@
 		},
 		{
 			"name": "Honcho SocketIO Watch Schedule Worker",
-			"type": "python",
+			"type": "debugpy",
 			"request": "launch",
 			"program": "/home/frappe/.local/bin/honcho",
 			"cwd": "${workspaceFolder}/frappe-bench",
