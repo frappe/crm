@@ -88,12 +88,19 @@ def call_status_changed():
             "No data received in the call status changed webhook.",
             "Yeastar Call Status Changed Webhook Error",
         )
-    
+
     frappe.log_error(
         title="Yeastar Call Status Changed Webhook Data",
         message=str(data),
     )
     data_parsed = parse_call_state(data)
+    if not data_parsed:
+        frappe.log_error(
+            title="Yeastar Call Status Changed Webhook - My Extension Not Present",
+            message="The call does not involve the configured Yeastar extension.",
+        )
+        return
+
     frappe.log_error(
         title="Yeastar Call Status Changed Webhook Data",
         message=str(data_parsed),
@@ -108,7 +115,7 @@ def call_status_changed():
     create_socket_connection(details)
 
 
-def parse_call_state(payload: dict) -> dict:
+def parse_call_state(payload: dict) -> dict | None:
 
     MY_EXTENSION = get_yeaster_number()
 
@@ -128,7 +135,7 @@ def parse_call_state(payload: dict) -> dict:
     )
 
     if not my_extension_present:
-        return
+        return None
 
     connection = None
     direction = None
@@ -144,8 +151,8 @@ def parse_call_state(payload: dict) -> dict:
             break
 
     if not connection:
-        return
-    
+        return None
+
     frappe.log_error(
         title="Yeastar Call Status Changed Webhook - Connection Data",
         message=str(connection),
