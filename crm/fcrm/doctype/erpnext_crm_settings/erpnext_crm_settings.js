@@ -17,5 +17,5 @@ frappe.ui.form.on("ERPNext CRM Settings", {
 		let script = await frm.call("reset_erpnext_form_script");
 		script.message &&
 			frappe.msgprint(__("Form Script updated successfully"));
-	},
+	}
 });
