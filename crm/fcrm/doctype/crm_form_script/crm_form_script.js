@@ -5,8 +5,8 @@ frappe.ui.form.on("CRM Form Script", {
 	refresh(frm) {
 		frm.set_query("dt", {
 			filters: {
-				istable: 0,
-			},
+				istable: 0
+			}
 		});
 
 		if (frm.doc.is_standard && !frappe.boot.developer_mode) {
@@ -61,5 +61,5 @@ function setupList({ list }) {
 	}
 }`.trim();
 		}
-	},
+	}
 });
