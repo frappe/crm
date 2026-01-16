@@ -141,6 +141,18 @@
           >Decline</Button
         >
       </div>
+
+      <div class="flex justify-end">
+        <Button
+          v-if="agentAnswered"
+          variant="solid"
+          theme="red"
+          size="sm"
+          @click="hangUpCall(callData.channelId)"
+          >Hang up</Button
+        >
+      </div>
+
       <ErrorMessage :message="errorMessage" />
     </div>
 
@@ -163,19 +175,20 @@ import {
   ErrorMessage,
   toast,
   TextEditor,
-  call,
 } from 'frappe-ui'
-import { onBeforeUnmount, reactive, ref, watch, nextTick, computed } from 'vue'
+import { onBeforeUnmount, reactive, ref, watch, nextTick } from 'vue'
 import { useDraggable, useWindowSize } from '@vueuse/core'
 import { globalStore } from '../../stores/global'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 
-const showCallPopup = ref(false)
+const showCallPopup = ref(true)
 const callPopupHeader = ref(null)
 const calleeNumber = ref('')
 const callStatus = ref('')
 const errorMessage = ref('')
-const resourceStatus = ref(true)
+const resourceStatus = ref(false)
+
+const agentAnswered = ref(false)
 
 const callData = reactive({
   caller: '',
@@ -284,7 +297,7 @@ function stopAudio() {
     ringtone.value.pause()
     ringtone.value.currentTime = 0
     ringtone.value = null
-    showCallPopup.value = false
+    agentAnswered.value ? (showCallPopup.value = true) : false
   }
 }
 
@@ -319,11 +332,17 @@ function responseToCall(action) {
     {
       onSuccess() {
         incomingCall.value = false
+        if (action === 'accept') {
+          callStatus.value = 'Call Accepted'
+          agentAnswered.value = true
+          resourceStatus.value = true
+        } else {
+          callStatus.value = 'Call Declined'
+          agentAnswered.value = false
+          resourceStatus.value = 'Call has been declined.'
+          showCallPopup.value = false
+        }
         stopAudio()
-        callStatus.value =
-          action === 'accept' ? 'Call Accepted' : 'Call Declined'
-        resourceStatus.value =
-          action === 'accept' ? true : 'Call has been declined.'
       },
       onError() {
         toast.error('Error responding to call')
