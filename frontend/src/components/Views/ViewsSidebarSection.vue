@@ -60,7 +60,6 @@
                   <Dropdown placement="right" :options="sectionOptions(view)">
                     <template #default="slotProps">
                       <Button
-                        v-bind="slotProps"
                         variant="ghost"
                         class="!size-5.5 !p-1 cursor-pointer shrink-0"
                         icon="more-horizontal"
@@ -120,7 +119,6 @@
                       <Dropdown placement="right" :options="viewOptions(link)">
                         <template #default="slotProps">
                           <Button
-                            v-bind="slotProps"
                             variant="ghost"
                             class="!size-5.5 !p-1 cursor-pointer shrink-0"
                             icon="more-horizontal"
