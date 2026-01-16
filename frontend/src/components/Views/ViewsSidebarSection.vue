@@ -25,7 +25,9 @@
               <div
                 v-if="!hide"
                 class="group my-2 flex gap-2 min-h-7 items-center justify-between px-1 text-base font-medium text-ink-gray-5 transition-all duration-300 ease-in-out truncate"
-                :class="{ 'bg-surface-gray-1': isSectionDropdownOpen(view.name) }"
+                :class="{
+                  'bg-surface-gray-1': !!sectionDropdownState[view.name],
+                }"
               >
                 <div
                   class="flex ml-2 h-7 cursor-pointer items-center gap-1.5 transition-all duration-300 ease-in-out truncate"
@@ -43,9 +45,9 @@
                 <div
                   class="flex items-center gap-1 mr-1 transition-[width,opacity] flex-shrink-0"
                   :class="[
-                    isSectionDropdownOpen(view.name)
+                    !!sectionDropdownState[view.name]
                       ? 'w-auto opacity-100 pointer-events-auto'
-                      : 'w-0 overflow-hidden opacity-0 pointer-events-none group-hover:w-auto group-hover:opacity-100 group-hover:pointer-events-auto'
+                      : 'w-0 overflow-hidden opacity-0 pointer-events-none group-hover:w-auto group-hover:opacity-100 group-hover:pointer-events-auto',
                   ]"
                 >
                   <Button
@@ -55,10 +57,7 @@
                   >
                     <DragIcon class="size-3.5" />
                   </Button>
-                  <Dropdown
-                    placement="right"
-                    :options="sectionOptions(view)"
-                  >
+                  <Dropdown placement="right" :options="sectionOptions(view)">
                     <template #default="slotProps">
                       <Button
                         v-bind="slotProps"
@@ -66,7 +65,9 @@
                         class="!size-5.5 !p-1 cursor-pointer shrink-0"
                         icon="more-horizontal"
                         @click.stop
-                        :data-open="syncSectionDropdown(view.name, slotProps.open)"
+                        :data-open="
+                          syncDropdownState(view.name, slotProps.open, true)
+                        "
                       />
                     </template>
                   </Dropdown>
@@ -86,7 +87,9 @@
                 <template #item="{ element: link }">
                   <div
                     class="group w-full flex justify-between gap-2 h-7 px-2 py-1 cursor-pointer items-center rounded text-ink-gray-7 transition-all duration-300 ease-in-out focus:outline-none focus:transition-none focus-visible:rounded focus-visible:ring-2 focus-visible:ring-outline-gray-3 hover:bg-surface-gray-2"
-                    :class="{ 'bg-surface-gray-2': isItemDropdownOpen(link.name) }"
+                    :class="{
+                      'bg-surface-gray-2': !!itemDropdownState[link.name],
+                    }"
                   >
                     <div class="flex items-center truncate">
                       <Icon :icon="link.icon" class="size-4" />
@@ -101,9 +104,9 @@
                     <div
                       class="flex items-center gap-1 transition-[width,opacity] flex-shrink-0"
                       :class="[
-                        isItemDropdownOpen(link.name)
+                        !!itemDropdownState[link.name]
                           ? 'w-auto opacity-100 pointer-events-auto'
-                          : 'w-0 overflow-hidden opacity-0 pointer-events-none group-hover:w-auto group-hover:opacity-100 group-hover:pointer-events-auto'
+                          : 'w-0 overflow-hidden opacity-0 pointer-events-none group-hover:w-auto group-hover:opacity-100 group-hover:pointer-events-auto',
                       ]"
                     >
                       <Button
@@ -114,10 +117,7 @@
                           <DragIcon class="size-3.5" />
                         </template>
                       </Button>
-                      <Dropdown
-                        placement="right"
-                        :options="viewOptions(link)"
-                      >
+                      <Dropdown placement="right" :options="viewOptions(link)">
                         <template #default="slotProps">
                           <Button
                             v-bind="slotProps"
@@ -125,7 +125,9 @@
                             class="!size-5.5 !p-1 cursor-pointer shrink-0"
                             icon="more-horizontal"
                             @click.stop
-                            :data-open="syncItemDropdown(link.name, slotProps.open)"
+                            :data-open="
+                              syncDropdownState(link.name, slotProps.open)
+                            "
                           />
                         </template>
                       </Dropdown>
@@ -307,28 +309,12 @@ watch(
   { immediate: true, deep: true },
 )
 
-function isSectionDropdownOpen(name) {
-  return !!sectionDropdownState[name]
-}
-
-function isItemDropdownOpen(name) {
-  return !!itemDropdownState[name]
-}
-
-function syncSectionDropdown(name, open) {
+function syncDropdownState(name, open, isSection = false) {
+  let state = isSection ? sectionDropdownState : itemDropdownState
   if (open) {
-    sectionDropdownState[name] = true
+    state[name] = true
   } else {
-    delete sectionDropdownState[name]
-  }
-  return open
-}
-
-function syncItemDropdown(name, open) {
-  if (open) {
-    itemDropdownState[name] = true
-  } else {
-    delete itemDropdownState[name]
+    delete state[name]
   }
   return open
 }
