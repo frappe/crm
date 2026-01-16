@@ -279,7 +279,7 @@ const baseViewGroups = computed(() => {
   if (publicViews.value?.length) {
     viewGroups.push({
       name: 'public-views',
-      label: __('Public & New Mandatory Views'),
+      label: __('Public Views'),
       opened: true,
       views: parseView(publicViews.value),
     })
