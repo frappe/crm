@@ -1,7 +1,7 @@
 import frappe
 
 
-@frappe.whitelist()
+@frappe.whitelist(methods=["GET"])
 def get_users():
 	users = frappe.qb.get_query(
 		"User",
