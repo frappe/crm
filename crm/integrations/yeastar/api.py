@@ -2,7 +2,13 @@ import frappe
 import requests
 from dataclasses import dataclass
 from typing import Literal
-from .utils import is_yeaster_enabled, url_builder, validate_token, get_yeaster_number
+from .utils import (
+    is_yeaster_enabled,
+    url_builder,
+    validate_token,
+    get_yeaster_number,
+    get_yeastar_agents,
+)
 
 
 @frappe.whitelist(allow_guest=True)
@@ -75,8 +81,9 @@ def respond_to_call(channel_id: str, action: Literal["accept", "refuse"]) -> dic
 
 @dataclass
 class CallStatusDetails:
+    user: str
     status: str
-    callee: int | None
+    client_number: str
     channel_id: str
 
 
@@ -103,80 +110,92 @@ def call_status_changed():
 
     frappe.log_error(
         title="Yeastar Call Status Changed Webhook Data",
-        message=str(data_parsed),
+        message=data_parsed,
     )
 
-    details = CallStatusDetails(
-        status=data_parsed["status"],
-        callee=data_parsed["client_number"],
-        channel_id=data_parsed["channel_id"],
-    )
+    for entry in data_parsed:
+        details = CallStatusDetails(
+            user=entry["user"],
+            status=entry["status"],
+            client_number=entry["client_number"],
+            channel_id=entry["channel_id"],
+        )
 
-    create_socket_connection(details)
+        create_socket_connection(details)
 
 
-def parse_call_state(payload: dict) -> dict | None:
+def parse_call_state(payload: dict) -> list[dict] | None:
     frappe.log_error(
         title="Yeastar Call Status Changed Webhook - Payload Received",
         message=str(payload),
     )
     try:
-        MY_EXTENSION = get_yeaster_number()
 
         members: list[dict] = payload.get("members", [])
-
-        frappe.log_error(
-            title="Yeastar Call Status Changed Webhook - Members Data",
-            message=str(members),
-        )
-
-        my_extension_present = any(
-            m.get("extension", {}).get("number") == MY_EXTENSION for m in members
-        )
-        frappe.log_error(
-            title="Yeastar Call Status Changed Webhook - My Extension Present Check",
-            message=f"My Extension Present: {my_extension_present}",
-        )
-
-        if not my_extension_present:
+        if not members:
             return None
 
-        connection = None
-        direction = None
+        yeaster_agents = get_yeastar_agents()
+        if not yeaster_agents:
+            return None
+
+        agent_lookup = {agent["yeastar_number"]: agent for agent in yeaster_agents}
+        frappe.log_error(
+            title="Yeastar Call Status Changed Webhook - Agent Lookup",
+            message=str(agent_lookup),
+        )
+
+        results = []
 
         for member in members:
-            if member.get("outbound"):
-                connection = member["outbound"]
-                direction = "outbound"
-                break
-            if member.get("inbound"):
-                connection = member["inbound"]
-                direction = "inbound"
-                break
+            if "extension" in member:
+                ext_data = member["extension"]
+                ext_number = ext_data.get("number")
+                channel_id = ext_data.get("channel_id")
 
-        if not connection:
-            return None
+                if ext_number in agent_lookup:
+                    agent = agent_lookup[ext_number]
 
+                    external_party = None
+                    direction = None
+
+                    for m in members:
+                        if "inbound" in m:
+                            external_party = m["inbound"]
+                            direction = "inbound"
+                            break
+                        elif "outbound" in m:
+                            external_party = m["outbound"]
+                            direction = "outbound"
+                            break
+
+                    if external_party and direction:
+                        client_number = (
+                            external_party.get("from")
+                            if direction == "inbound"
+                            else external_party.get("to")
+                        )
+
+                        client_status = external_party.get("member_status")
+
+                        results.append(
+                            {
+                                "user": agent["user"],
+                                "status": client_status,
+                                "client_number": client_number,
+                                "channel_id": channel_id,
+                            }
+                        )
         frappe.log_error(
-            title="Yeastar Call Status Changed Webhook - Connection Data",
-            message=str(connection),
+            title="Yeastar Call Status Changed Webhook - Parsed Results",
+            message=str(results),
         )
 
-        status = connection.get("member_status")
-        client_number = (
-            connection.get("to") if direction == "outbound" else connection.get("from")
-        )
-        channel_id = connection.get("channel_id")
-
-        return {
-            "status": status,
-            "client_number": client_number,
-            "channel_id": channel_id,
-        }
+        return results if results else None
     except Exception as e:
         frappe.log_error(
             title="Error parsing call state from Yeastar webhook",
-            message=str(e),
+            message=frappe.get_traceback(),
         )
         return None
 
