@@ -17,4 +17,4 @@ class FCRMNote(Document):
 			"owner",
 			"modified",
 		]
-		return {'columns': [], 'rows': rows}
+		return {"columns": [], "rows": rows}
