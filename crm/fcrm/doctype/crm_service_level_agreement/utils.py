@@ -1,9 +1,10 @@
 import frappe
 from frappe.model.document import Document
 from frappe.query_builder import JoinType
-from frappe.utils.safe_exec import get_safe_globals
 from frappe.utils import now_datetime
+from frappe.utils.safe_exec import get_safe_globals
 from pypika import Criterion
+
 
 def get_sla(doc: Document) -> Document:
 	"""
@@ -46,6 +47,7 @@ def get_sla(doc: Document) -> Document:
 			res = sla
 			break
 	return res
+
 
 def get_context(d: Document) -> dict:
 	"""
