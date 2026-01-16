@@ -28,9 +28,14 @@
           <div class="flex flex-col">
             <span class="font-medium text-white"></span>
             <small>Yeastar</small>
-            <span class="text-sm text-gray-400">
-              ({{ calleeNumber ? calleeNumber : callData.caller || 'Unknown' }})
-            </span>
+            <div>
+              <span class="text-sm text-gray-400">
+                ({{
+                  calleeNumber ? calleeNumber : callData.caller || 'Unknown'
+                }})
+              </span>
+              <small>{{ stateMap(callStatusChangeState.status) }}....</small>
+            </div>
           </div>
         </div>
 
@@ -43,6 +48,16 @@
           </span>
           <div class="text-xs mt-1 text-gray-400">
             Pick up your Yeastar IP phone to start the call
+          </div>
+          <div class="flex justify-end mt-2">
+            <Button
+              v-if="callStatusChangeState.channelId"
+              variant="solid"
+              theme="red"
+              size="sm"
+              @click="hangUpCall(callStatusChangeState.channelId)"
+              >Hang up</Button
+            >
           </div>
         </div>
       </div>
@@ -148,8 +163,9 @@ import {
   ErrorMessage,
   toast,
   TextEditor,
+  call,
 } from 'frappe-ui'
-import { onBeforeUnmount, reactive, ref, watch, nextTick } from 'vue'
+import { onBeforeUnmount, reactive, ref, watch, nextTick, computed } from 'vue'
 import { useDraggable, useWindowSize } from '@vueuse/core'
 import { globalStore } from '../../stores/global'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
@@ -159,7 +175,7 @@ const callPopupHeader = ref(null)
 const calleeNumber = ref('')
 const callStatus = ref('')
 const errorMessage = ref('')
-const resourceStatus = ref(null)
+const resourceStatus = ref(true)
 
 const callData = reactive({
   caller: '',
@@ -174,6 +190,11 @@ const note = ref({
   content: '',
 })
 
+const callStatusChangeState = reactive({
+  channelId: '',
+  status: '',
+})
+
 const { $socket } = globalStore()
 const { width, height } = useWindowSize()
 
@@ -181,6 +202,33 @@ const { x, y, style } = useDraggable(callPopupHeader, {
   initialValue: { x: width.value - 350, y: height.value - 450 },
   preventDefault: true,
 })
+
+function hangUpCall(channelId) {
+  createResource({
+    url: 'crm.integrations.yeastar.api.hangup_call',
+    params: { channel_id: channelId },
+    auto: true,
+    onSuccess() {
+      toast.success('Call ended successfully')
+      callStatus.value = 'Call Ended'
+      resourceStatus.value = null
+      showCallPopup.value = false
+    },
+    onError() {
+      toast.error('Error ending call')
+      errorMessage.value = 'An error occurred while ending the call.'
+    },
+  })
+}
+
+function stateMap(state) {
+  const states = {
+    RING: 'Ringing',
+    ANSWER: 'In Progress',
+    BYE: 'Declined',
+  }
+  return states[state] || state
+}
 
 function makeOutgoingCall(number) {
   showCallPopup.value = true
@@ -251,6 +299,8 @@ function initiateSockets() {
   })
   $socket.on('yeastar_call_status_changed', (data) => {
     console.log('Call status changed:', data)
+    callStatusChangeState.channelId = data.channel_id
+    callStatusChangeState.status = data.status
   })
 }
 
@@ -321,8 +371,20 @@ function closeCallPopup() {
   callStatus.value = ''
   resourceStatus.value = null
   incomingCall.value = false
+  callStatusChangeState.channelId = ''
+  callStatusChangeState.status = ''
   stopAudio()
 }
+
+watch(
+  () => callStatusChangeState.status,
+  (newStatus) => {
+    if (newStatus === 'BYE') {
+      toast.info('Call Ended by Client')
+      showCallPopup.value = false
+    }
+  },
+)
 
 watch(showCallPopup, (newVal) => {
   if (!newVal) {
@@ -332,6 +394,7 @@ watch(showCallPopup, (newVal) => {
 
 onBeforeUnmount(() => {
   $socket.off('yeastar_incoming_call')
+  $socket.off('yeastar_call_status_changed')
 })
 
 defineExpose({ makeOutgoingCall, setup })
