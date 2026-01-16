@@ -2,6 +2,8 @@ import frappe
 from datetime import datetime
 from frappe.utils import get_datetime
 
+CTA = "CRM Telephony Agent"
+
 
 def yeaster_settings():
     return frappe.get_doc("CRM Yeastar Settings")
@@ -30,7 +32,7 @@ def validate_token() -> None:
 
 
 def get_yeaster_number() -> str:
-    CTA = "CRM Telephony Agent"
+
     if not frappe.db.exists(CTA, {"user": frappe.session.user, "yeastar": 1}):
         frappe.throw("No Yeaster Telephony Agent found. Please configure one first.")
 
@@ -41,3 +43,9 @@ def get_yeaster_number() -> str:
     return caller
 
 
+def get_yeastar_agents() -> list[dict[str, str]]:
+    return frappe.db.get_all(
+        CTA,
+        filters={"yeastar": 1},
+        fields=["user", "yeastar_number"],
+    )
