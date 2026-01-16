@@ -16,7 +16,8 @@
   "add_to_holidays",
   "holidays_section",
   "holidays",
-  "clear_table"
+  "clear_table",
+  "recurring_holidays"
  ],
  "fields": [
   {
@@ -83,11 +84,17 @@
    "fieldtype": "Table",
    "label": "Holidays",
    "options": "CRM Holiday"
+  },
+  {
+   "fieldname": "recurring_holidays",
+   "fieldtype": "JSON",
+   "hidden": 1,
+   "label": "Recurring holidays"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-12-23 15:43:30.328630",
+ "modified": "2026-01-06 10:45:12.868437",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Holiday List",

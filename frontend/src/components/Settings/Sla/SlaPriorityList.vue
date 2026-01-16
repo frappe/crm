@@ -128,7 +128,7 @@ import {
   Popover,
   toast,
 } from 'frappe-ui'
-import { slaData, slaDataErrors, validateSlaData } from './utils'
+import { slaActiveStep, slaData, slaDataErrors, validateSlaData } from './utils'
 import {
   ConfirmDelete,
   formatTimeHMS,
@@ -139,7 +139,6 @@ import EditResponseResolutionModal from './EditResponseResolutionModal.vue'
 import DurationPicker from '../../Controls/DurationPicker.vue'
 import { watchDebounced } from '@vueuse/core'
 
-const step = inject('step')
 const isConfirmingDelete = ref(false)
 const dialog = ref(false)
 const priorityData = ref({
@@ -167,7 +166,7 @@ createResource({
         }
       }),
     )
-    if (!step.value.data) {
+    if (!slaActiveStep.value.data) {
       slaData.value.priorities = priorityOptions.map((p, index) => {
         return {
           priority: p.value,

@@ -1,24 +1,26 @@
 <template>
   <SettingsLayoutBase
-    :title="__('SLA Policies')"
-    :description="__('Manage your service level agreement policies')"
+    :title="__('Business Holidays')"
+    :description="__('Manage your business holiday lists')"
   >
     <template #header-actions>
       <Button
         :label="__('New')"
         variant="solid"
         icon-left="plus"
-        @click="createNewSlaPolicy"
+        @click="createNewHolidayList"
       />
     </template>
     <template
-      v-if="slaPolicyListResource.data?.length > 9 || slaSearchQuery.length"
+      v-if="
+        holidayListResource?.data?.length > 9 || holidayListSearchQuery.length
+      "
       #header-bottom
     >
       <div class="relative">
         <Input
-          :model-value="slaSearchQuery"
-          @input="slaSearchQuery = $event"
+          :model-value="holidayListSearchQuery"
+          @input="holidayListSearchQuery = $event"
           :placeholder="__('Search')"
           type="text"
           class="bg-surface-gray-2 hover:bg-surface-gray-2 focus:ring-0 border-outline-gray-2 rounded"
@@ -27,10 +29,10 @@
           inputClass="p-4 pr-12"
         />
         <Button
-          v-if="slaSearchQuery"
+          v-if="holidayListSearchQuery"
           icon="x"
           variant="ghost"
-          @click="slaSearchQuery = ''"
+          @click="holidayListSearchQuery = ''"
           class="absolute right-1 top-1/2 -translate-y-1/2"
         />
       </div>
@@ -38,7 +40,7 @@
     <template #content>
       <div
         v-if="
-          slaPolicyListResource.list.loading && !slaPolicyListResource.list.data
+          holidayListResource.list.loading && !holidayListResource.list.data
         "
         class="flex items-center justify-center mt-12"
       >
@@ -47,19 +49,18 @@
       <div v-else class="h-full">
         <div
           v-if="
-            !slaPolicyListResource.list.loading &&
-            !slaPolicyListResource.list.data?.length
+            !holidayListResource.loading && !holidayListResource.data?.length
           "
           class="flex flex-col items-center justify-center gap-4 h-full"
         >
           <div
             class="p-4 size-14.5 rounded-full bg-surface-gray-2 flex justify-center items-center"
           >
-            <ShieldCheck class="size-6 text-ink-gray-6" />
+            <Briefcase class="size-6 text-ink-gray-6" />
           </div>
           <div class="flex flex-col items-center gap-1">
             <div class="text-base font-medium text-ink-gray-6">
-              {{ __('No SLA found') }}
+              {{ __('No Holiday List found') }}
             </div>
             <div class="text-p-sm text-ink-gray-5 max-w-60 text-center">
               {{ __('Add one to get started.') }}
@@ -69,60 +70,46 @@
             :label="__('New')"
             variant="outline"
             icon-left="plus"
-            @click="createNewSlaPolicy()"
+            @click="createNewHolidayList()"
           />
         </div>
         <div v-else class="-ml-2">
-          <div
-            class="grid grid-cols-7 items-center gap-3 text-sm text-gray-600 ml-2"
-          >
+          <div class="flex text-sm text-gray-600 ml-2">
             <div class="col-span-5">
-              {{ __('Policy Name') }}
+              {{ __('Holiday List Name') }}
             </div>
-            <div class="col-span-1">{{ __('Apply on') }}</div>
-            <div class="col-span-1">{{ __('Enabled') }}</div>
           </div>
           <hr class="mt-2 mx-2 border-outline-gray-2" />
           <div
-            v-for="(sla, index) in slaPolicyListResource.data"
-            :key="sla.name"
+            v-for="(holidayList, index) in holidayListResource.data"
+            :key="holidayList.name"
           >
             <div
-              class="grid grid-cols-7 items-center gap-4 cursor-pointer hover:bg-surface-menu-bar rounded"
+              class="flex items-center gap-4 cursor-pointer hover:bg-surface-menu-bar rounded"
             >
               <div
-                @click="updateStep('view', sla, true)"
+                @click="updateToView(holidayList)"
                 class="w-full pl-2 col-span-5 flex items-center h-14 gap-2"
               >
                 <div class="text-base text-ink-gray-7 font-medium truncate">
-                  {{ sla.name }}
+                  {{ holidayList.name }}
                 </div>
-                <Badge v-if="sla.default" color="gray" size="sm">Default</Badge>
               </div>
-              <div class="col-span-1 text-ink-gray-8 text-sm">
-                {{ sla.apply_on == 'CRM Lead' ? 'Lead' : 'Deal' }}
-              </div>
-              <div class="flex justify-between items-center w-full pr-2">
-                <div>
-                  <Switch
-                    size="sm"
-                    :modelValue="sla.enabled"
-                    @update:modelValue="onToggle(sla)"
+              <div class="pr-2">
+                <Dropdown
+                  placement="right"
+                  :options="dropdownOptions(holidayList)"
+                >
+                  <Button
+                    icon="more-horizontal"
+                    variant="ghost"
+                    @click="isConfirmingDelete = false"
                   />
-                </div>
-                <div>
-                  <Dropdown placement="right" :options="dropdownOptions(sla)">
-                    <Button
-                      icon="more-horizontal"
-                      variant="ghost"
-                      @click="isConfirmingDelete = false"
-                    />
-                  </Dropdown>
-                </div>
+                </Dropdown>
               </div>
             </div>
             <hr
-              v-if="index !== slaPolicyListResource.list.data.length - 1"
+              v-if="index !== holidayListResource.list.data.length - 1"
               class="mx-2 border-outline-gray-2"
             />
           </div>
@@ -131,13 +118,13 @@
     </template>
   </SettingsLayoutBase>
   <Dialog
-    :options="{ title: __('Duplicate SLA Policy') }"
+    :options="{ title: __('Duplicate Holiday List') }"
     v-model="duplicateDialog.show"
   >
     <template #body-content>
       <div class="flex flex-col gap-4">
         <FormControl
-          :label="__('New SLA Policy Name')"
+          :label="__('New Holiday List Name')"
           type="text"
           v-model="duplicateDialog.newName"
           maxlength="100"
@@ -154,7 +141,7 @@
         <Button
           variant="solid"
           :label="__('Duplicate')"
-          @click="() => duplicate()"
+          @click="() => duplicate(holidayList)"
         />
       </div>
     </template>
@@ -163,29 +150,39 @@
 
 <script setup>
 import {
-  Badge,
   Button,
   createResource,
   Dialog,
   Dropdown,
   FormControl,
   LoadingIndicator,
-  Switch,
   toast,
 } from 'frappe-ui'
 import SettingsLayoutBase from '../../Layouts/SettingsLayoutBase.vue'
 import { inject, ref, watch } from 'vue'
-import ShieldCheck from '~icons/lucide/shield-check'
 import { ConfirmDelete } from '../../../utils'
-import { isSlaNew, resetSlaData, updateStep } from './utils'
+import {
+  resetHolidayListData,
+  holidayListData,
+  holidayListActiveStep,
+} from './utils'
+import Briefcase from '~icons/lucide/briefcase'
 
-const slaPolicyListResource = inject('slaPolicyListResource')
-const slaSearchQuery = inject('slaSearchQuery')
+const holidayListResource = inject('holidayListResource')
+const holidayListSearchQuery = inject('holidayListSearchQuery')
 
-function createNewSlaPolicy() {
-  resetSlaData()
-  updateStep('view', null)
-  isSlaNew.value = true
+function createNewHolidayList() {
+  resetHolidayListData()
+  holidayListActiveStep.value = { screen: 'view', data: null }
+}
+
+function updateToView(holidayList) {
+  holidayListData.value = holidayList
+  holidayListActiveStep.value = {
+    screen: 'view',
+    data: holidayList,
+    previousScreen: null,
+  }
 }
 
 const duplicateDialog = ref({
@@ -196,20 +193,20 @@ const duplicateDialog = ref({
 
 const isConfirmingDelete = ref(false)
 
-const dropdownOptions = (sla) => [
+const dropdownOptions = (holidayList) => [
   {
     label: __('Duplicate'),
     onClick: () => {
       duplicateDialog.value = {
         show: true,
-        newName: sla.name + ' (Copy)',
-        name: sla.name,
+        newName: holidayList.name + ' (Copy)',
+        name: holidayList.name,
       }
     },
     icon: 'copy',
   },
   ...ConfirmDelete({
-    onConfirmDelete: () => deleteSla(sla),
+    onConfirmDelete: () => deleteHolidayList(holidayList),
     isConfirmingDelete,
   }),
 ]
@@ -218,7 +215,7 @@ const duplicate = () => {
   createResource({
     url: 'frappe.client.get',
     params: {
-      doctype: 'CRM Service Level Agreement',
+      doctype: 'CRM Holiday List',
       name: duplicateDialog.value.name,
     },
     onSuccess: (data) => {
@@ -227,21 +224,25 @@ const duplicate = () => {
         params: {
           doc: {
             ...data,
-            default: false,
-            sla_name: duplicateDialog.value.newName,
+            holiday_list_name: duplicateDialog.value.newName,
+            name: duplicateDialog.value.newName,
           },
         },
         auto: true,
-        onSuccess(newSlaData) {
-          slaPolicyListResource.reload()
-          toast.success(__('SLA policy duplicated'))
+        onSuccess(newHolidayListData) {
+          holidayListResource.reload()
+          toast.success(__('Holiday list duplicated'))
           duplicateDialog.value = {
             show: false,
             newName: '',
           }
-          resetSlaData()
+          resetHolidayListData()
           setTimeout(() => {
-            updateStep('view', newSlaData, true)
+            holidayListData.value = newHolidayListData
+            holidayListActiveStep.value = {
+              screen: 'view',
+              data: newHolidayListData,
+            }
           }, 250)
         },
       })
@@ -250,15 +251,15 @@ const duplicate = () => {
   })
 }
 
-const deleteSla = (sla) => {
+const deleteHolidayList = (holidayList) => {
   if (!isConfirmingDelete.value) {
     isConfirmingDelete.value = true
     return
   }
 
-  slaPolicyListResource.delete.submit(sla.name, {
+  holidayListResource.delete.submit(holidayList.name, {
     onSuccess: () => {
-      toast.success(__('SLA policy deleted'))
+      toast.success(__('Holiday list deleted'))
     },
     onError: (err) => {
       const message =
@@ -268,32 +269,14 @@ const deleteSla = (sla) => {
   })
 }
 
-const onToggle = (sla) => {
-  if (sla.default) {
-    toast.error(__('SLA set as default cannot be disabled'))
-    return
-  }
-  slaPolicyListResource.setValue.submit(
-    {
-      name: sla.name,
-      enabled: !sla.enabled,
-    },
-    {
-      onSuccess: () => {
-        toast.success(__('SLA policy status updated'))
-      },
-    },
-  )
-}
-
-watch(slaSearchQuery, (newValue) => {
-  slaPolicyListResource.filters = {
+watch(holidayListSearchQuery, (newValue) => {
+  holidayListResource.filters = {
     name: ['like', `%${newValue}%`],
   }
   if (!newValue) {
-    slaPolicyListResource.start = 0
-    slaPolicyListResource.pageLength = 10
+    holidayListResource.start = 0
+    holidayListResource.pageLength = 10
   }
-  slaPolicyListResource.reload()
+  holidayListResource.reload()
 })
 </script>
