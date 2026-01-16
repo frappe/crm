@@ -79,6 +79,21 @@ def respond_to_call(channel_id: str, action: Literal["accept", "refuse"]) -> dic
     )
 
 
+@frappe.whitelist(allow_guest=True)
+def hangup_call(channel_id: str) -> dict:
+
+    validate_token()
+
+    request_url = url_builder("/call/hangup")
+    data = {"channel_id": channel_id}
+    return make_http_request(
+        endpoint=request_url,
+        method="POST",
+        request_type="hangup_call",
+        data=data,
+    )
+
+
 @dataclass
 class CallStatusDetails:
     user: str
