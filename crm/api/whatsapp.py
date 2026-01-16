@@ -16,6 +16,7 @@ def validate(doc, method):
 			doc.reference_doctype = doctype
 			doc.reference_name = name
 
+
 def on_update(doc, method):
 	frappe.publish_realtime(
 		"whatsapp_message",
@@ -59,13 +60,16 @@ def notify_agent(doc):
 
 @frappe.whitelist()
 def is_whatsapp_enabled():
-  if not frappe.db.exists("DocType", "WhatsApp Settings"):
-      return False
-  default_outgoing = frappe.get_cached_value("WhatsApp Settings", "WhatsApp Settings", "default_outgoing_account")
-  if not default_outgoing:
-      return False
-  status = frappe.get_cached_value("WhatsApp Account", default_outgoing, "status")
-  return status == "Active"
+	if not frappe.db.exists("DocType", "WhatsApp Settings"):
+		return False
+	default_outgoing = frappe.get_cached_value(
+		"WhatsApp Settings", "WhatsApp Settings", "default_outgoing_account"
+	)
+	if not default_outgoing:
+		return False
+	status = frappe.get_cached_value("WhatsApp Account", default_outgoing, "status")
+	return status == "Active"
+
 
 @frappe.whitelist()
 def is_whatsapp_installed():

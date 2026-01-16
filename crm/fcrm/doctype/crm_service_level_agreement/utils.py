@@ -1,9 +1,10 @@
 import frappe
 from frappe.model.document import Document
 from frappe.query_builder import JoinType
-from frappe.utils.safe_exec import get_safe_globals
 from frappe.utils import now_datetime
+from frappe.utils.safe_exec import get_safe_globals
 from pypika import Criterion
+
 
 def get_sla(doc: Document) -> Document:
 	"""
@@ -20,7 +21,7 @@ def get_sla(doc: Document) -> Document:
 		frappe.qb.from_(SLA)
 		.select(SLA.name, SLA.condition)
 		.where(SLA.apply_on == doc.doctype)
-		.where(SLA.enabled == True)
+		.where(SLA.enabled)
 		.where(Criterion.any([SLA.start_date.isnull(), SLA.start_date <= now]))
 		.where(Criterion.any([SLA.end_date.isnull(), SLA.end_date >= now]))
 	)
@@ -33,12 +34,10 @@ def get_sla(doc: Document) -> Document:
 	sla_list = q.run(as_dict=True)
 	res = None
 
-	# move default sla to the end of the list
-	for sla in sla_list:
-		if sla.get("default") == True:
-			sla_list.remove(sla)
-			sla_list.append(sla)
-			break
+	# move default SLA to the end if present without mutating during iteration
+	default_index = next((i for i, sla in enumerate(sla_list) if sla.get("default")), None)
+	if default_index is not None:
+		sla_list.append(sla_list.pop(default_index))
 
 	for sla in sla_list:
 		cond = sla.get("condition")
@@ -46,6 +45,7 @@ def get_sla(doc: Document) -> Document:
 			res = sla
 			break
 	return res
+
 
 def get_context(d: Document) -> dict:
 	"""

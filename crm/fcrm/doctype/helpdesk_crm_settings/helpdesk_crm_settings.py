@@ -69,6 +69,7 @@ def get_helpdesk_script():
     }
 }"""
 
+
 # Helpdesk methods TODO: move to helpdesk.integrations.crm.api
 def create_customer(name, email):
 	customer = frappe.db.exists("HD Customer", name)
@@ -86,9 +87,7 @@ def create_customer(name, email):
 	contact = frappe.db.exists("Contact", {"email_id": email})
 	if contact:
 		contact = frappe.get_doc("Contact", contact)
-		contact.append(
-			"links", {"link_doctype": "HD Customer", "link_name": customer.name}
-		)
+		contact.append("links", {"link_doctype": "HD Customer", "link_name": customer.name})
 		contact.save(ignore_permissions=True)
 	else:
 		contact = frappe.get_doc(
@@ -132,7 +131,7 @@ def invite_user(contact: str):
 			"last_name": contact.last_name,
 			"email": contact.email_id,
 			"user_type": "Website User",
-			"send_welcome_email": 0
+			"send_welcome_email": 0,
 		}
 	).insert()
 
@@ -166,7 +165,7 @@ def send_welcome_mail_to_user(user):
 		"login_url": get_url(),
 		"created_by": created_by,
 		"site_url": site_url,
-		"link": link
+		"link": link,
 	}
 
 	frappe.sendmail(

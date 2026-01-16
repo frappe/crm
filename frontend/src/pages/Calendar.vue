@@ -247,23 +247,27 @@ const events = createListResource({
   pageLength: 9999,
   auto: true,
   transform: (data) =>
-    data.map((ev) => ({
-      id: ev.name,
-      title: ev.subject,
-      description: ev.description,
-      status: ev.status,
-      fromDate: dayjs(ev.starts_on).format('YYYY-MM-DD'),
-      toDate: dayjs(ev.ends_on).format('YYYY-MM-DD'),
-      fromTime: dayjs(ev.starts_on).format('HH:mm'),
-      toTime: dayjs(ev.ends_on).format('HH:mm'),
-      isFullDay: ev.all_day,
-      eventType: ev.event_type,
-      location: ev.location,
-      color: ev.color,
-      attending: ev.attending,
-      referenceDoctype: ev.reference_doctype,
-      referenceDocname: ev.reference_docname,
-    })),
+    data
+      .map((ev) => ({
+        id: ev.name,
+        title: ev.subject,
+        description: ev.description,
+        status: ev.status,
+        fromDate: dayjs(ev.starts_on).format('YYYY-MM-DD'),
+        toDate: dayjs(ev.ends_on).format('YYYY-MM-DD'),
+        fromTime: dayjs(ev.starts_on).format('HH:mm'),
+        toTime: dayjs(ev.ends_on).format('HH:mm'),
+        isFullDay: ev.all_day,
+        eventType: ev.event_type,
+        location: ev.location,
+        color: ev.color,
+        attending: ev.attending,
+        referenceDoctype: ev.reference_doctype,
+        referenceDocname: ev.reference_docname,
+      }))
+      .filter(
+        (ev, index, self) => index === self.findIndex((e) => e.id === ev.id),
+      ),
 })
 
 provide('events', events)
