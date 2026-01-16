@@ -31,10 +31,9 @@ class FailedLeadSyncLog(Document):
 		if source.type != "Facebook":
 			frappe.throw(frappe._("Not implemented yet!"))
 
-		crm_lead = FacebookSyncSource(source.get_password("access_token"), source.facebook_lead_form).sync_single_lead(
-			frappe.parse_json(self.lead_data),
-			raise_exception=True
-		)
+		crm_lead = FacebookSyncSource(
+			source.get_password("access_token"), source.facebook_lead_form
+		).sync_single_lead(frappe.parse_json(self.lead_data), raise_exception=True)
 
 		self.type = "Synced"
 		self.save()

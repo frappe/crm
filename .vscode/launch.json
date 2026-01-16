@@ -1,12 +1,9 @@
 {
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
         {
             "name": "Bench Web",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/frappe-bench/apps/frappe/frappe/utils/bench_helper.py",
             "args": [
@@ -19,7 +16,7 @@
         },
         {
             "name": "Bench Default Worker",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/frappe-bench/apps/frappe/frappe/utils/bench_helper.py",
             "args": [
@@ -32,7 +29,7 @@
         },
         {
             "name": "Bench Short Worker",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/frappe-bench/apps/frappe/frappe/utils/bench_helper.py",
             "args": [
@@ -45,7 +42,7 @@
         },
         {
             "name": "Bench Long Worker",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/frappe-bench/apps/frappe/frappe/utils/bench_helper.py",
             "args": [
@@ -58,7 +55,7 @@
         },
         {
             "name": "Honcho SocketIO Watch Schedule Worker",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "program": "/home/frappe/.local/bin/honcho",
             "cwd": "${workspaceFolder}/frappe-bench",
