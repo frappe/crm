@@ -1,4 +1,5 @@
 import { createResource } from 'frappe-ui'
+import { NO_VALUE_TYPE, STANDARD_FIELDS } from '@/stores/model.js'
 import { formatCurrency, formatNumber } from '@/utils/numberFormat.js'
 import { reactive } from 'vue'
 
@@ -8,11 +9,7 @@ const userSettings = reactive({})
 export function getMeta(doctype) {
   const meta = createResource({
     url: 'frappe.desk.form.load.getdoctype',
-    params: {
-      doctype: doctype,
-      with_parent: 1,
-      cached_timestamp: null,
-    },
+    params: { doctype: doctype, with_parent: 1 },
     cache: ['Meta', doctype],
     onSuccess: (res) => {
       let dtMetas = res.docs
@@ -105,6 +102,21 @@ export function getMeta(doctype) {
     })
   }
 
+  function getValueFields(dt = null) {
+    dt = dt || doctype
+
+    let fields =
+      doctypeMeta[dt]?.fields?.filter(
+        (f) => f.fieldtype && !NO_VALUE_TYPE.includes(f.fieldtype),
+      ) || []
+
+    STANDARD_FIELDS[0].options = dt
+
+    fields = [...fields, ...STANDARD_FIELDS]
+
+    return fields
+  }
+
   function saveUserSettings(parentDoctype, key, value, callback) {
     let oldUserSettings = userSettings[parentDoctype] || {}
     let newUserSettings = JSON.parse(JSON.stringify(oldUserSettings))
@@ -138,6 +150,7 @@ export function getMeta(doctype) {
     doctypeMeta,
     userSettings,
     getFields,
+    getValueFields,
     getGridSettings,
     getGridViewSettings,
     saveUserSettings,

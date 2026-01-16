@@ -11,7 +11,7 @@
   </div>
 </template>
 <script setup>
-import AppSidebar from '@/components/Layouts/AppSidebar.vue'
+import AppSidebar from '@/components/Layouts/Sidebar.vue'
 import AppHeader from '@/components/Layouts/AppHeader.vue'
 import GlobalModals from '@/components/Modals/GlobalModals.vue'
 </script>

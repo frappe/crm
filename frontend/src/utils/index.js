@@ -882,3 +882,7 @@ export function getGridTemplateColumnsForTable(columns) {
     .join(' ')
   return columnsWidth + ' 22px'
 }
+
+export function toKebabCase(str) {
+  return str.toLowerCase().replace(/\s+/g, '-')
+}

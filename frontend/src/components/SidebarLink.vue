@@ -84,8 +84,8 @@ function handleClick() {
 }
 
 let isActive = computed(() => {
-  if (route.query.view) {
-    return route.query.view == props.to?.query?.view
+  if (route.params.viewName) {
+    return route.params.viewName == props.to?.params?.viewName
   }
   return route.name === props.to
 })

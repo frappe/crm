@@ -148,7 +148,7 @@ import { ref, computed, useAttrs, useSlots, watch, nextTick } from 'vue'
 
 const props = defineProps({
   modelValue: {
-    type: String,
+    type: [String, Object],
     default: '',
   },
   options: {

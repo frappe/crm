@@ -2,7 +2,7 @@
   <FrappeUIProvider>
     <NotPermitted v-if="$route.name === 'Not Permitted'" />
     <Layout class="isolate" v-else-if="session().isLoggedIn">
-      <router-view :key="$route.fullPath" />
+      <router-view :key="routeKey" />
     </Layout>
     <Dialogs />
     <EventNotificationPopup />
@@ -16,6 +16,7 @@ import { Dialogs } from '@/utils/dialogs'
 import { sessionStore as session } from '@/stores/session'
 import { FrappeUIProvider, setConfig } from 'frappe-ui'
 import { computed, defineAsyncComponent } from 'vue'
+import { useRoute } from 'vue-router'
 
 const MobileLayout = defineAsyncComponent(
   () => import('./components/Layouts/MobileLayout.vue'),
@@ -23,6 +24,9 @@ const MobileLayout = defineAsyncComponent(
 const DesktopLayout = defineAsyncComponent(
   () => import('./components/Layouts/DesktopLayout.vue'),
 )
+const route = useRoute()
+const routeKey = computed(() => route.path)
+
 const Layout = computed(() => {
   if (window.innerWidth < 640) {
     return MobileLayout

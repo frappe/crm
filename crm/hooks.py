@@ -295,6 +295,14 @@ standard_dropdown_items = [
 		"is_standard": 1,
 	},
 	{
+		"name1": "edit_sidebar",
+		"label": "Edit Sidebar",
+		"type": "Route",
+		"icon": "edit",
+		"route": "#",
+		"is_standard": 1,
+	},
+	{
 		"name1": "separator",
 		"label": "",
 		"type": "Separator",
