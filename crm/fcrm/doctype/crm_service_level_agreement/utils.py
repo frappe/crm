@@ -21,7 +21,7 @@ def get_sla(doc: Document) -> Document:
 		frappe.qb.from_(SLA)
 		.select(SLA.name, SLA.condition)
 		.where(SLA.apply_on == doc.doctype)
-		.where(SLA.enabled == True)
+		.where(SLA.enabled)
 		.where(Criterion.any([SLA.start_date.isnull(), SLA.start_date <= now]))
 		.where(Criterion.any([SLA.end_date.isnull(), SLA.end_date >= now]))
 	)
@@ -36,7 +36,7 @@ def get_sla(doc: Document) -> Document:
 
 	# move default sla to the end of the list
 	for sla in sla_list:
-		if sla.get("default") == True:
+		if sla.get("default"):
 			sla_list.remove(sla)
 			sla_list.append(sla)
 			break
