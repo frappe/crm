@@ -210,6 +210,7 @@ def create_socket_connection(details: IncomingCallDetails | CallStatusDetails) -
     frappe.publish_realtime(
         event=event_name,
         message=details.__dict__,
+        user=details.user if hasattr(details, "user") else None,
     )
 
 
