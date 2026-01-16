@@ -181,7 +181,7 @@ import { useDraggable, useWindowSize } from '@vueuse/core'
 import { globalStore } from '../../stores/global'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 
-const showCallPopup = ref(true)
+const showCallPopup = ref(false)
 const callPopupHeader = ref(null)
 const calleeNumber = ref('')
 const callStatus = ref('')
