@@ -30,9 +30,7 @@
             <small>Yeastar</small>
             <div>
               <span class="text-sm text-gray-400">
-                ({{
-                  calleeNumber ? calleeNumber : callData.caller || 'Unknown'
-                }})
+                ({{ contactDetails.number }})
               </span>
               <small>{{ stateMap(callStatusChangeState.status) }}....</small>
             </div>
@@ -40,7 +38,7 @@
         </div>
 
         <div
-          v-show="resourceStatus"
+          v-if="initiateCallResource.data && isOutgoing"
           class="mt-3 rounded-lg bg-gray-800/60 px-3 py-2 text-sm text-gray-300"
         >
           <span class="text-green-400 font-medium">
@@ -49,23 +47,10 @@
           <div class="text-xs mt-1 text-gray-400">
             Pick up your Yeastar IP phone to start the call
           </div>
-          <div class="flex justify-end mt-2">
-            <Button
-              v-if="callStatusChangeState.channelId"
-              variant="solid"
-              theme="red"
-              size="sm"
-              @click="hangUpCall(callStatusChangeState.channelId)"
-              >Hang up</Button
-            >
-          </div>
         </div>
       </div>
 
-      <div
-        v-show="incomingCall || resourceStatus"
-        class="mt-4 border-t border-gray-800 pt-3"
-      >
+      <div class="mt-4 border-t border-gray-800 pt-3">
         <div
           class="flex items-center justify-between group cursor-pointer mb-2"
           @click="showNoteWindow"
@@ -121,7 +106,7 @@
       </div>
 
       <div
-        v-show="incomingCall"
+        v-show="isIncoming && !agentAnswered"
         class="flex flex-row p-2 mt-4 justify-between gap-2"
       >
         <Button
@@ -142,18 +127,18 @@
         >
       </div>
 
-      <div class="flex justify-end">
+      <div class="flex justify-end mt-2">
         <Button
-          v-if="agentAnswered"
+          v-if="(initiateCallResource.data && isOutgoing) || agentAnswered"
           variant="solid"
           theme="red"
           size="sm"
-          @click="hangUpCall(callData.channelId)"
+          @click="hangUpCall"
           >Hang up</Button
         >
       </div>
 
-      <ErrorMessage :message="errorMessage" />
+      <ErrorMessage :message="errorMessage" class="mt-2" />
     </div>
 
     <Button
@@ -162,7 +147,7 @@
       theme="red"
       size="lg"
       icon="x"
-      @click="showCallPopup = false"
+      @click="direction = 'idle'"
     />
   </div>
 </template>
@@ -176,36 +161,45 @@ import {
   toast,
   TextEditor,
 } from 'frappe-ui'
-import { onBeforeUnmount, reactive, ref, watch, nextTick } from 'vue'
+import { onBeforeUnmount, reactive, ref, watch, nextTick, computed } from 'vue'
 import { useDraggable, useWindowSize } from '@vueuse/core'
 import { globalStore } from '../../stores/global'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 
-const showCallPopup = ref(false)
-const callPopupHeader = ref(null)
-const calleeNumber = ref('')
 const callStatus = ref('')
-const errorMessage = ref('')
-const resourceStatus = ref(false)
+const direction = ref('idle') // 'idle', 'incoming', 'outgoing'
 
+const isIdle = computed(() => direction.value === 'idle')
+const isIncoming = computed(() => direction.value === 'incoming')
+const isOutgoing = computed(() => direction.value === 'outgoing')
+const showCallPopup = computed(() => !isIdle.value)
+
+const contactDetails = reactive({
+  name: '',
+  number: '',
+  image: '',
+})
+
+const channelId = ref('')
+
+const callStatusChangeState = ref('')
+
+const errorMessage = ref('')
+const callPopupHeader = ref(null)
 const agentAnswered = ref(false)
+
+// old
 
 const callData = reactive({
   caller: '',
   channelId: '',
 })
-const incomingCall = ref(false)
 const ringtone = ref(null)
 const showNote = ref(false)
 const showTask = ref(false)
 const note = ref({
   value: '',
   content: '',
-})
-
-const callStatusChangeState = reactive({
-  channelId: '',
-  status: '',
 })
 
 const { $socket } = globalStore()
@@ -216,16 +210,14 @@ const { x, y, style } = useDraggable(callPopupHeader, {
   preventDefault: true,
 })
 
-function hangUpCall(channelId) {
+function hangUpCall() {
   createResource({
     url: 'crm.integrations.yeastar.api.hangup_call',
-    params: { channel_id: channelId },
+    params: { channel_id: channelId.value },
     auto: true,
     onSuccess() {
       toast.success('Call ended successfully')
-      callStatus.value = 'Call Ended'
-      resourceStatus.value = null
-      showCallPopup.value = false
+      direction.value = 'idle'
     },
     onError() {
       toast.error('Error ending call')
@@ -240,27 +232,34 @@ function stateMap(state) {
     ANSWER: 'In Progress',
     BYE: 'Declined',
   }
-  return states[state] || state
+  return states[state]
 }
 
+const initiateCallResource = createResource({
+  url: 'crm.integrations.yeastar.api.make_call',
+  makeParams() {
+    return { callee: contactDetails.number }
+  },
+})
+
 function makeOutgoingCall(number) {
-  showCallPopup.value = true
-  calleeNumber.value = number
+  direction.value = 'outgoing'
+  contactDetails.number = number
   callStatus.value = 'Connecting...'
 
-  createResource({
-    url: 'crm.integrations.yeastar.api.make_call',
-    params: { callee: number },
-    auto: true,
-    onSuccess() {
-      callStatus.value = 'Connected'
-      resourceStatus.value = true
+  initiateCallResource.submit(
+    {},
+    {
+      onSuccess(data) {
+        callStatus.value = 'Success'
+        console.log('data', data)
+      },
+      onError() {
+        toast.error('Error initiating call')
+        errorMessage.value = 'An error occurred while initiating the call.'
+      },
     },
-    onError() {
-      toast.error('Error initiating call')
-      errorMessage.value = 'An error occurred while initiating the call.'
-    },
-  })
+  )
 }
 
 function playAudio() {
@@ -297,7 +296,7 @@ function stopAudio() {
     ringtone.value.pause()
     ringtone.value.currentTime = 0
     ringtone.value = null
-    agentAnswered.value ? (showCallPopup.value = true) : false
+    agentAnswered.value ? (direction.value = 'idle') : 'incoming'
   }
 }
 
@@ -312,17 +311,17 @@ function initiateSockets() {
   })
   $socket.on('yeastar_call_status_changed', (data) => {
     console.log('Call status changed:', data)
-    callStatusChangeState.channelId = data.channel_id
-    callStatusChangeState.status = data.status
+    channelId.value = data.channel_id
+    callStatusChangeState.value = data.status
   })
 }
 
 function initiateIncomingCall(data) {
-  callData.caller = data.caller
-  callData.channelId = data.channel_id
+  contactDetails.number = data.caller
+  channelId.value = data.channel_id
   callStatus.value = 'Incoming Call...'
-  incomingCall.value = true
-  showCallPopup.value = true
+  direction.value = 'incoming'
+
   playAudio()
 }
 
@@ -331,16 +330,12 @@ function responseToCall(action) {
     {},
     {
       onSuccess() {
-        incomingCall.value = false
         if (action === 'accept') {
           callStatus.value = 'Call Accepted'
           agentAnswered.value = true
-          resourceStatus.value = true
         } else {
           callStatus.value = 'Call Declined'
-          agentAnswered.value = false
-          resourceStatus.value = 'Call has been declined.'
-          showCallPopup.value = false
+          direction.value = 'idle'
         }
         stopAudio()
       },
@@ -359,10 +354,6 @@ const handleCallResponse = (action) =>
       return { channel_id: callData.channelId, action: action }
     },
   })
-
-function saveNote() {
-  toast.success('Note saved successfully')
-}
 
 function showNoteWindow() {
   showNote.value = !showNote.value
@@ -384,26 +375,22 @@ function updateWindowHeight(isOpening) {
 }
 
 function closeCallPopup() {
-  showCallPopup.value = false
+  initiateCallResource.reset()
   errorMessage.value = ''
-  calleeNumber.value = ''
+  contactDetails.number = ''
   callStatus.value = ''
-  resourceStatus.value = null
-  incomingCall.value = false
-  callStatusChangeState.channelId = ''
-  callStatusChangeState.status = ''
+  channelId.value = ''
+  callStatusChangeState.value = ''
+  agentAnswered.value = false
   stopAudio()
 }
 
-watch(
-  () => callStatusChangeState.status,
-  (newStatus) => {
-    if (newStatus === 'BYE') {
-      toast.info('Call Ended by Client')
-      showCallPopup.value = false
-    }
-  },
-)
+watch(callStatusChangeState, (newStatus) => {
+  if (newStatus === 'BYE') {
+    toast.info('Call Ended by Client')
+    direction.value = 'idle'
+  }
+})
 
 watch(showCallPopup, (newVal) => {
   if (!newVal) {
