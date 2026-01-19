@@ -292,10 +292,14 @@ function updateRole(user, newRole) {
 function removeUser(user) {
   call('crm.api.user.remove_user', {
     user: user.name,
-  }).then(() => {
-    toast.success(__('User {0} has been removed', [user.full_name]))
-    users.reload()
   })
+    .then(() => {
+      toast.success(__('User {0} has been removed', [user.full_name]))
+      users.reload()
+    })
+    .catch((e) => {
+      toast.error(e?.messages?.[0] || __('Something went wrong'))
+    })
 }
 
 onMounted(() => {
