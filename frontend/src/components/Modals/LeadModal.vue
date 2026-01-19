@@ -26,7 +26,7 @@
           </div>
         </div>
         <div>
-          <FieldLayout v-if="tabs.data" :tabs="tabs.data" :data="lead.doc" />
+          <FieldLayout v-if="currentTabs" :tabs="currentTabs" :data="lead.doc" />
           <ErrorMessage class="mt-4" v-if="error" :message="__(error)" />
         </div>
       </div>
@@ -37,6 +37,18 @@
             :label="__('Create')"
             :loading="isLeadCreating"
             @click="createNewLead"
+          />
+          <Button
+            v-if="isCRMManager()"
+            :variant="formMode === 'long' ? 'solid' : 'outline'"
+            :label="__('Long Form')"
+            @click="formMode = 'long'"
+          />
+          <Button
+            v-if="isCRMManager()"
+            :variant="formMode === 'short' ? 'solid' : 'outline'"
+            :label="__('Short Form')"
+            @click="formMode = 'short'"
           />
         </div>
       </div>
@@ -56,7 +68,7 @@ import { capture } from '@/telemetry'
 import { createResource } from 'frappe-ui'
 import { useOnboarding } from 'frappe-ui/frappe'
 import { useDocument } from '@/data/document'
-import { computed, onMounted, ref, nextTick } from 'vue'
+import { computed, onMounted, ref, nextTick, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 const props = defineProps({
@@ -64,7 +76,7 @@ const props = defineProps({
 })
 
 const { user } = sessionStore()
-const { getUser, isManager } = usersStore()
+const { getUser, isManager, isCRMManager } = usersStore()
 const { getLeadStatus, statusOptions } = statusesStore()
 const { updateOnboardingStep } = useOnboarding('frappecrm')
 
@@ -72,6 +84,7 @@ const show = defineModel()
 const router = useRouter()
 const error = ref(null)
 const isLeadCreating = ref(false)
+const formMode = ref('short') // 'short' for Quick Entry, 'long' for Long Form
 
 const { document: lead, triggerOnBeforeCreate } = useDocument('CRM Lead')
 
@@ -83,30 +96,47 @@ const leadStatuses = computed(() => {
   return statuses
 })
 
-const tabs = createResource({
+function transformTabs(_tabs) {
+  _tabs.forEach((tab) => {
+    tab.sections.forEach((section) => {
+      section.columns.forEach((column) => {
+        column.fields.forEach((field) => {
+          if (field.fieldname == 'status') {
+            field.fieldtype = 'Select'
+            field.options = leadStatuses.value
+            field.prefix = getLeadStatus(lead.doc.status).color
+          }
+
+          if (field.fieldtype === 'Table') {
+            lead.doc[field.fieldname] = []
+          }
+        })
+      })
+    })
+  })
+  return _tabs
+}
+
+const shortFormTabs = createResource({
   url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_fields_layout',
   cache: ['QuickEntry', 'CRM Lead'],
   params: { doctype: 'CRM Lead', type: 'Quick Entry' },
   auto: true,
-  transform: (_tabs) => {
-    return _tabs.forEach((tab) => {
-      tab.sections.forEach((section) => {
-        section.columns.forEach((column) => {
-          column.fields.forEach((field) => {
-            if (field.fieldname == 'status') {
-              field.fieldtype = 'Select'
-              field.options = leadStatuses.value
-              field.prefix = getLeadStatus(lead.doc.status).color
-            }
+  transform: transformTabs,
+})
 
-            if (field.fieldtype === 'Table') {
-              lead.doc[field.fieldname] = []
-            }
-          })
-        })
-      })
-    })
-  },
+const longFormTabs = createResource({
+  url: 'singhania_customizations.singhania_customizations.api.get_crm_lead_long_form_layout',
+  cache: ['LongForm', 'CRM Lead'],
+  auto: true,
+  transform: transformTabs,
+})
+
+const currentTabs = computed(() => {
+  if (formMode.value === 'long') {
+    return longFormTabs.data || shortFormTabs.data
+  }
+  return shortFormTabs.data
 })
 
 const createLead = createResource({
