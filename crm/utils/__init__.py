@@ -277,7 +277,7 @@ def is_frappe_version(version: str, above: bool = False, below: bool = False):
 	target_version = int(version.split(".")[0])
 
 	if above:
-		return major_version > target_version
+		return major_version >= target_version
 	if below:
 		return major_version < target_version
 	return major_version == target_version
