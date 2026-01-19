@@ -203,7 +203,9 @@ function stopAudio() {
     ringtone.value.pause()
     ringtone.value.currentTime = 0
     ringtone.value = null
-    agentAnswered.value ? (direction.value = 'idle') : 'incoming'
+    agentAnswered.value
+      ? (direction.value = 'incoming')
+      : (direction.value = 'idle')
   }
 }
 
