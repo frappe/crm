@@ -32,7 +32,7 @@
               <span class="text-sm text-gray-400">
                 ({{ contactDetails.number }})
               </span>
-              <small>{{ stateMap(callStatusChangeState.status) }}....</small>
+              <small>{{ stateMap(callStatusChangeState) }}....</small>
             </div>
           </div>
         </div>
@@ -281,6 +281,14 @@ watch(callStatusChangeState, (newStatus) => {
     direction.value = 'idle'
   }
 })
+
+watch(
+  channelId,
+  (newChannelId) => {
+    console.log('new value', newChannelId)
+  },
+  { immediate: true },
+)
 
 watch(showCallPopup, (newVal) => {
   if (!newVal) {
