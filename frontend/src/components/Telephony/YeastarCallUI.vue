@@ -135,6 +135,7 @@ const { style } = useDraggable(callPopupHeader, {
 })
 
 function hangUpCall() {
+  console.log('Hanging up call with channel ID:', channelId.value)
   createResource({
     url: 'crm.integrations.yeastar.api.hangup_call',
     params: { channel_id: channelId.value },
