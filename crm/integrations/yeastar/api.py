@@ -7,7 +7,7 @@ from .utils import (
     url_builder,
     validate_token,
     get_yeaster_number,
-    get_yeastar_agents,
+    parse_call_state,
 )
 
 
@@ -111,10 +111,6 @@ def call_status_changed():
             "Yeastar Call Status Changed Webhook Error",
         )
 
-    frappe.log_error(
-        title="Yeastar Call Status Changed Webhook Data",
-        message=str(data),
-    )
     data_parsed = parse_call_state(data)
     if not data_parsed:
         frappe.log_error(
@@ -122,11 +118,6 @@ def call_status_changed():
             message="The call does not involve the configured Yeastar extension.",
         )
         return
-
-    frappe.log_error(
-        title="Yeastar Call Status Changed Webhook Data",
-        message=data_parsed,
-    )
 
     for entry in data_parsed:
         details = CallStatusDetails(
@@ -137,82 +128,6 @@ def call_status_changed():
         )
 
         create_socket_connection(details)
-
-
-def parse_call_state(payload: dict) -> list[dict] | None:
-    frappe.log_error(
-        title="Yeastar Call Status Changed Webhook - Payload Received",
-        message=str(payload),
-    )
-    try:
-
-        members: list[dict] = payload.get("members", [])
-        if not members:
-            return None
-
-        yeaster_agents = get_yeastar_agents()
-        if not yeaster_agents:
-            return None
-
-        agent_lookup = {agent["yeastar_number"]: agent for agent in yeaster_agents}
-        frappe.log_error(
-            title="Yeastar Call Status Changed Webhook - Agent Lookup",
-            message=str(agent_lookup),
-        )
-
-        results = []
-
-        for member in members:
-            if "extension" in member:
-                ext_data = member["extension"]
-                ext_number = ext_data.get("number")
-                channel_id = ext_data.get("channel_id")
-
-                if ext_number in agent_lookup:
-                    agent = agent_lookup[ext_number]
-
-                    external_party = None
-                    direction = None
-
-                    for m in members:
-                        if "inbound" in m:
-                            external_party = m["inbound"]
-                            direction = "inbound"
-                            break
-                        elif "outbound" in m:
-                            external_party = m["outbound"]
-                            direction = "outbound"
-                            break
-
-                    if external_party and direction:
-                        client_number = (
-                            external_party.get("from")
-                            if direction == "inbound"
-                            else external_party.get("to")
-                        )
-
-                        client_status = external_party.get("member_status")
-
-                        results.append(
-                            {
-                                "user": agent["user"],
-                                "status": client_status,
-                                "client_number": client_number,
-                                "channel_id": channel_id,
-                            }
-                        )
-        frappe.log_error(
-            title="Yeastar Call Status Changed Webhook - Parsed Results",
-            message=str(results),
-        )
-
-        return results if results else None
-    except Exception as e:
-        frappe.log_error(
-            title="Error parsing call state from Yeastar webhook",
-            message=frappe.get_traceback(),
-        )
-        return None
 
 
 def create_socket_connection(details: IncomingCallDetails | CallStatusDetails) -> None:
