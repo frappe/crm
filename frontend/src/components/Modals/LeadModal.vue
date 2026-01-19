@@ -5,7 +5,7 @@
         <div class="mb-5 flex items-center justify-between">
           <div>
             <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9">
-              {{ __('Create Leads') }}
+              {{ __('Create Lead') }}
             </h3>
           </div>
           <div class="flex items-center gap-1">
@@ -39,11 +39,13 @@
             @click="createNewLead"
           />
           <Button
+            v-if="isCRMManager()"
             :variant="formMode === 'long' ? 'solid' : 'outline'"
             :label="__('Long Form')"
             @click="formMode = 'long'"
           />
           <Button
+            v-if="isCRMManager()"
             :variant="formMode === 'short' ? 'solid' : 'outline'"
             :label="__('Short Form')"
             @click="formMode = 'short'"
@@ -74,7 +76,7 @@ const props = defineProps({
 })
 
 const { user } = sessionStore()
-const { getUser, isManager } = usersStore()
+const { getUser, isManager, isCRMManager } = usersStore()
 const { getLeadStatus, statusOptions } = statusesStore()
 const { updateOnboardingStep } = useOnboarding('frappecrm')
 
