@@ -1,4 +1,5 @@
 import frappe
+from frappe import _
 
 
 @frappe.whitelist()
@@ -62,6 +63,12 @@ def remove_user(user):
 	frappe.only_for(["System Manager", "Sales Manager"])
 
 	user_doc = frappe.get_doc("User", user)
+
+	if user_doc.role_profiles:
+		return frappe.throw(
+			_("User {0} cannot be removed as it has a Role Profile assigned to it.").format(user)
+		)
+
 	roles = [d.role for d in user_doc.roles]
 
 	if "Sales User" in roles:
@@ -70,7 +77,7 @@ def remove_user(user):
 		user_doc.remove_roles("Sales Manager")
 
 	user_doc.save(ignore_permissions=True)
-	frappe.msgprint(f"User {user} has been removed from CRM roles.")
+	frappe.msgprint(_("User {0} has been removed from CRM roles.").format(user))
 
 
 def update_module_in_user(user, module):

@@ -527,12 +527,13 @@ export function runSequentially(functions) {
   }, Promise.resolve())
 }
 
-export function DropdownOption({ option, icon, selected }) {
+export function DropdownOption({ option, icon, selected, onClick }) {
   return h(
     'button',
     {
       class:
         'group flex w-full text-ink-gray-8 justify-between items-center rounded-md px-2 py-2 text-sm hover:bg-surface-gray-2',
+      onClick,
     },
     [
       h('div', { class: 'flex gap-2' }, [
@@ -553,6 +554,32 @@ export function DropdownOption({ option, icon, selected }) {
         : null,
     ],
   )
+}
+
+export function deepClone(obj) {
+  if (obj === null || typeof obj !== 'object') {
+    return obj
+  }
+
+  if (obj instanceof Date) {
+    return new Date(obj.getTime())
+  }
+
+  if (Array.isArray(obj)) {
+    return obj.map((item) => deepClone(item))
+  }
+
+  if (typeof obj === 'object') {
+    const cloned = {}
+    for (const key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        cloned[key] = deepClone(obj[key])
+      }
+    }
+    return cloned
+  }
+
+  return obj
 }
 
 export function copy(obj) {
