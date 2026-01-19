@@ -3,7 +3,7 @@
     <div
       class="w-[300px] rounded-2xl bg-gray-900 shadow-2xl p-4 text-white border border-gray-800"
     >
-      <div v-show="!showNote">
+      <div>
         <div
           ref="callPopupHeader"
           class="flex items-center gap-3 mb-4 cursor-move active:cursor-grabbing select-none"
@@ -46,61 +46,6 @@
           </span>
           <div class="text-xs mt-1 text-gray-400">
             Pick up your Yeastar IP phone to start the call
-          </div>
-        </div>
-      </div>
-
-      <div class="mt-4 border-t border-gray-800 pt-3">
-        <div
-          class="flex items-center justify-between group cursor-pointer mb-2"
-          @click="showNoteWindow"
-        >
-          <span
-            class="text-xs font-medium uppercase tracking-wider text-gray-500"
-            >Call Notes</span
-          >
-          <Button
-            class="bg-surface-gray-6 text-ink-white hover:bg-surface-gray-5"
-            :tooltip="showNote ? 'Hide Note' : 'Show Note'"
-            :icon="showNote ? 'chevron-up' : NoteIcon"
-            size="sm"
-          />
-        </div>
-
-        <div
-          v-if="showNote"
-          class="space-y-3 transition-all duration-300 ease-in-out"
-        >
-          <div class="text-white bg-surface-gray-6 -800 rounded-md p-2">
-            <TextEditor
-              variant="ghost"
-              ref="content"
-              editor-class="prose-sm h-[200px] text-ink-white overflow-auto "
-              :bubbleMenu="true"
-              :content="note.content"
-              @change="(val) => (note.content = val)"
-              :placeholder="'Take a note...'"
-            />
-          </div>
-
-          <div class="flex items-center justify-end gap-2">
-            <Button
-              variant="ghost"
-              theme=""
-              class="text-gray-400"
-              size="sm"
-              label="Clear"
-              @click="note.content = ''"
-              v-if="note.content"
-            />
-            <Button
-              class="bg-surface-white !text-ink-gray-9 hover:!bg-surface-gray-3"
-              variant="solid"
-              :label="__('Save')"
-              size="md"
-              :disabled="!note.content"
-              @click="createUpdateNote"
-            />
           </div>
         </div>
       </div>
@@ -153,18 +98,10 @@
 </template>
 
 <script setup>
-import {
-  Avatar,
-  Button,
-  createResource,
-  ErrorMessage,
-  toast,
-  TextEditor,
-} from 'frappe-ui'
-import { onBeforeUnmount, reactive, ref, watch, nextTick, computed } from 'vue'
+import { Avatar, Button, createResource, ErrorMessage, toast } from 'frappe-ui'
+import { onBeforeUnmount, reactive, ref, watch, computed } from 'vue'
 import { useDraggable, useWindowSize } from '@vueuse/core'
 import { globalStore } from '../../stores/global'
-import NoteIcon from '@/components/Icons/NoteIcon.vue'
 
 const callStatus = ref('')
 const direction = ref('idle') // 'idle', 'incoming', 'outgoing'
@@ -187,25 +124,12 @@ const callStatusChangeState = ref('')
 const errorMessage = ref('')
 const callPopupHeader = ref(null)
 const agentAnswered = ref(false)
-
-// old
-
-const callData = reactive({
-  caller: '',
-  channelId: '',
-})
 const ringtone = ref(null)
-const showNote = ref(false)
-const showTask = ref(false)
-const note = ref({
-  value: '',
-  content: '',
-})
 
 const { $socket } = globalStore()
 const { width, height } = useWindowSize()
 
-const { x, y, style } = useDraggable(callPopupHeader, {
+const { style } = useDraggable(callPopupHeader, {
   initialValue: { x: width.value - 350, y: height.value - 450 },
   preventDefault: true,
 })
@@ -274,23 +198,6 @@ function playAudio() {
   }, 10000)
 }
 
-function createUpdateNote() {
-  createResource({
-    url: 'crm.integrations.api.add_note_to_call_log',
-    params: {
-      call_sid: callData.caller,
-      note: note.value,
-    },
-    auto: true,
-    onSuccess(_note) {
-      note.value['name'] = _note.name
-      nextTick(() => {
-        dirty.value = false
-      })
-    },
-  })
-}
-
 function stopAudio() {
   if (ringtone.value) {
     ringtone.value.pause()
@@ -351,28 +258,9 @@ const handleCallResponse = (action) =>
   createResource({
     url: 'crm.integrations.yeastar.api.respond_to_call',
     makeParams() {
-      return { channel_id: callData.channelId, action: action }
+      return { channel_id: channelId.value, action: action }
     },
   })
-
-function showNoteWindow() {
-  showNote.value = !showNote.value
-  updateWindowHeight(showNote.value)
-  if (showNote.value) {
-    showTask.value = false
-  }
-}
-
-function updateWindowHeight(isOpening) {
-  const offset = 224
-  if (isOpening) {
-    y.value = y.value - offset
-  } else {
-    y.value = y.value + offset
-  }
-
-  if (y.value < 10) y.value = 10
-}
 
 function closeCallPopup() {
   initiateCallResource.reset()
