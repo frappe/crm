@@ -118,6 +118,7 @@ const contactDetails = reactive({
 })
 
 const channelId = ref('')
+const activeChannelId = ref('')
 
 const callStatusChangeState = ref('')
 
@@ -135,10 +136,15 @@ const { style } = useDraggable(callPopupHeader, {
 })
 
 function hangUpCall() {
-  console.log('Hanging up call with channel ID:', channelId.value)
+  let currentChannelId
+
+  activeChannelId.value
+    ? (currentChannelId = activeChannelId.value)
+    : (currentChannelId = channelId.value)
+
   createResource({
     url: 'crm.integrations.yeastar.api.hangup_call',
-    params: { channel_id: channelId.value },
+    params: { channel_id: currentChannelId },
     auto: true,
     onSuccess() {
       toast.success('Call ended successfully')
@@ -220,7 +226,9 @@ function initiateSockets() {
     initiateIncomingCall(data)
   })
   $socket.on('yeastar_call_status_changed', (data) => {
-    console.log('Call status changed:', data)
+    if (!activeChannelId.value && direction.value === 'outgoing') {
+      activeChannelId.value = data.channel_id
+    }
     channelId.value = data.channel_id
     callStatusChangeState.value = data.status
   })
@@ -273,6 +281,7 @@ function closeCallPopup() {
   channelId.value = ''
   callStatusChangeState.value = ''
   agentAnswered.value = false
+  activeChannelId.value = ''
   stopAudio()
 }
 
