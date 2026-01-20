@@ -28,11 +28,16 @@
           <div class="flex flex-col">
             <span class="font-medium text-white"></span>
             <small>Yeastar</small>
-            <div>
-              <span class="text-sm text-gray-400">
-                ({{ contactDetails.number }})
-              </span>
-              <small>{{ stateMap(callStatusChangeState) }}....</small>
+            <div class="flex flex-col">
+              <div>
+                <span class="text-sm text-gray-400">
+                  ({{ contactDetails.number }})
+                </span>
+                <small>{{ stateMap(callStatusChangeState) }}....</small>
+              </div>
+              <small v-show="isCallActive">
+                {{ counterUpTimer?.updatedTime }}
+              </small>
             </div>
           </div>
         </div>
@@ -94,14 +99,23 @@
       icon="x"
       @click="direction = 'idle'"
     />
+    <CountUpTimer ref="counterUpTimer" />
   </div>
 </template>
 
 <script setup>
-import { Avatar, Button, createResource, ErrorMessage, toast } from 'frappe-ui'
-import { onBeforeUnmount, reactive, ref, watch, computed } from 'vue'
+import {
+  Avatar,
+  Button,
+  call,
+  createResource,
+  ErrorMessage,
+  toast,
+} from 'frappe-ui'
+import { onBeforeUnmount, reactive, ref, watch, computed, onMounted } from 'vue'
 import { useDraggable, useWindowSize } from '@vueuse/core'
 import { globalStore } from '../../stores/global'
+import CountUpTimer from '../CountUpTimer.vue'
 
 const callStatus = ref('')
 const direction = ref('idle') // 'idle', 'incoming', 'outgoing'
@@ -110,6 +124,8 @@ const isIdle = computed(() => direction.value === 'idle')
 const isIncoming = computed(() => direction.value === 'incoming')
 const isOutgoing = computed(() => direction.value === 'outgoing')
 const showCallPopup = computed(() => !isIdle.value)
+const isCallActive = computed(() => callStatus.value === 'ANSWER')
+const callDuration = ref(0)
 
 const contactDetails = reactive({
   name: '',
@@ -126,6 +142,8 @@ const errorMessage = ref('')
 const callPopupHeader = ref(null)
 const agentAnswered = ref(false)
 const ringtone = ref(null)
+
+const counterUpTimer = ref(null)
 
 const { $socket } = globalStore()
 const { width, height } = useWindowSize()
@@ -153,6 +171,30 @@ function hangUpCall() {
     onError() {
       toast.error('Error ending call')
       errorMessage.value = 'An error occurred while ending the call.'
+    },
+  })
+}
+
+function createCallLogEntry() {
+  let durationInSeconds = counterUpTimer.value.timeToSeconds(callDuration.value)
+  createResource({
+    url: 'crm.integrations.api.create_call_log_entry',
+    makeParams() {
+      return {
+        telephony_medium: 'Yeastar',
+        status: 'Completed',
+        type: isOutgoing.value ? 'Outgoing' : 'Incoming',
+        from: isOutgoing.value ? 'session_user' : contactDetails.number,
+        to: isOutgoing.value ? contactDetails.number : 'session_user',
+        duration: durationInSeconds,
+      }
+    },
+    onSuccess() {
+      callStatus.value = ''
+      direction.value = 'idle'
+    },
+    onError() {
+      toast.error('Error creating call log entry')
     },
   })
 }
@@ -251,6 +293,7 @@ function responseToCall(action) {
         if (action === 'accept') {
           callStatus.value = 'Call Accepted'
           agentAnswered.value = true
+          counterUpTimer.value.start()
         } else {
           callStatus.value = 'Call Declined'
           direction.value = 'idle'
@@ -282,27 +325,25 @@ function closeCallPopup() {
   callStatusChangeState.value = ''
   agentAnswered.value = false
   activeChannelId.value = ''
+  callDuration.value = 0
+
   stopAudio()
 }
 
 watch(callStatusChangeState, (newStatus) => {
   if (newStatus === 'BYE') {
-    toast.info('Call Ended by Client')
     direction.value = 'idle'
   }
 })
 
-watch(
-  channelId,
-  (newChannelId) => {
-    console.log('new value', newChannelId)
-  },
-  { immediate: true },
-)
-
 watch(showCallPopup, (newVal) => {
   if (!newVal) {
-    closeCallPopup()
+    if (isCallActive.value) {
+      callDuration.value = counterUpTimer.value.stop()
+      createCallLogEntry()
+    } else {
+      closeCallPopup()
+    }
   }
 })
 
