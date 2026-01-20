@@ -100,6 +100,7 @@ class CallStatusDetails:
     status: str
     client_number: str
     channel_id: str
+    call_id: str
 
 
 @frappe.whitelist(allow_guest=True)
@@ -125,6 +126,7 @@ def call_status_changed():
             status=entry["status"],
             client_number=entry["client_number"],
             channel_id=entry["channel_id"],
+            call_id=entry["call_id"],
         )
 
         create_socket_connection(details)
@@ -175,3 +177,42 @@ def make_http_request(
             message=frappe.get_traceback(),
         )
         frappe.throw("There was an error connecting to the Yeastar API.")
+
+
+@frappe.whitelist()
+def create_call_log_entry(call_details: dict):
+
+    try:
+
+        _from = (
+            frappe.session.user
+            if call_details["from"] == "session_user"
+            else call_details["from"]
+        )
+        _to = (
+            frappe.session.user
+            if call_details["to"] == "session_user"
+            else call_details["to"]
+        )
+
+        if call_details["to"] == "session_user":
+            _to = frappe.session.user
+
+        crm_call_log_doc = frappe.get_doc(
+            {
+                "doctype": "CRM Call Log",
+                "telephony_medium": call_details["telephony_medium"],
+                "status": call_details["status"],
+                "type": call_details["type"],
+                "from": _from,
+                "to": _to,
+                "duration": call_details["duration"],
+            }
+        )
+
+        crm_call_log_doc.insert(ignore_permissions=True)
+    except Exception as e:
+        frappe.log_error(
+            message=frappe.get_traceback(),
+            title=f"Error creating call log entry: {str(e)}",
+        )
