@@ -146,8 +146,8 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "in_standard_filter": 1,
-   "label": "Telephony medium",
-   "options": "\nManual\nTwilio\nExotel",
+   "label": "Telephony Medium",
+   "options": "\nManual\nTwilio\nExotel\nYeastar",
    "read_only": 1
   },
   {
@@ -157,8 +157,8 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-01-22 14:12:46.553240",
- "modified_by": "shariq@frappe.io",
+ "modified": "2026-01-20 11:33:45.517871",
+ "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Call Log",
  "naming_rule": "By fieldname",
