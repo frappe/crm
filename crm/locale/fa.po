@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-12-21 09:37+0000\n"
-"PO-Revision-Date: 2026-01-05 00:48\n"
+"PO-Revision-Date: 2026-01-20 10:37\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Persian\n"
 "MIME-Version: 1.0\n"
@@ -1146,7 +1146,7 @@ msgstr "لغو"
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 #: crm/fcrm/doctype/crm_task/crm_task.json
 msgid "Canceled"
-msgstr "لغو شده"
+msgstr ""
 
 #: frontend/src/components/Settings/Users.vue:124
 msgid "Cannot change role of user with Admin access"
@@ -2850,7 +2850,7 @@ msgstr ""
 #: frontend/src/components/Settings/ForecastingSettings.vue:5
 #: frontend/src/components/Settings/Settings.vue:109
 msgid "Forecasting"
-msgstr "پیش بینی"
+msgstr ""
 
 #: frontend/src/components/Settings/ForecastingSettings.vue:76
 msgid "Forecasting disabled successfully"
