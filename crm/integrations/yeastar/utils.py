@@ -55,6 +55,8 @@ def parse_call_state(payload: dict) -> list[dict] | None:
 
     try:
 
+        call_id = payload.get("call_id", "")
+
         members: list[dict] = payload.get("members", [])
         if not members:
             return None
@@ -104,6 +106,7 @@ def parse_call_state(payload: dict) -> list[dict] | None:
                                 "status": client_status,
                                 "client_number": client_number,
                                 "channel_id": channel_id,
+                                "call_id": call_id,
                             }
                         )
 
