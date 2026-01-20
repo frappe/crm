@@ -161,7 +161,7 @@ import CountUpTimer from '../CountUpTimer.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 
 const callStatus = ref('')
-const direction = ref('incoming') // 'idle', 'incoming', 'outgoing'
+const direction = ref('idle') // 'idle', 'incoming', 'outgoing'
 const showNote = ref(false)
 
 const isIdle = computed(() => direction.value === 'idle')
