@@ -215,4 +215,5 @@ def create_call_log_entry(call_details: dict):
         frappe.log_error(
             message=frappe.get_traceback(),
             title=f"Error creating call log entry: {str(e)}",
+            reference_doctype="CRM Call Log",
         )
