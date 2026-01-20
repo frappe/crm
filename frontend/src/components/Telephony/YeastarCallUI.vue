@@ -255,22 +255,22 @@ function hangUpCall() {
 
 function createCallLogEntry() {
   let durationInSeconds = counterUpTimer.value.timeToSeconds(callDuration.value)
+  console.log('durationInSeconds', durationInSeconds)
   createResource({
     url: 'crm.integrations.yeastar.api.create_call_log_entry',
     makeParams() {
       return {
-       call_details: {
-         telephony_medium: 'Yeastar',
-        status: 'Completed',
-        type: isOutgoing.value ? 'Outgoing' : 'Incoming',
-        from: isOutgoing.value ? 'session_user' : contactDetails.number,
-        to: isOutgoing.value ? contactDetails.number : 'session_user',
-        duration: durationInSeconds,
-       }
+        call_details: {
+          telephony_medium: 'Yeastar',
+          status: 'Completed',
+          type: isOutgoing.value ? 'Outgoing' : 'Incoming',
+          from: isOutgoing.value ? 'session_user' : contactDetails.number,
+          to: isOutgoing.value ? contactDetails.number : 'session_user',
+          duration: durationInSeconds,
+        },
       }
     },
     onSuccess() {
-      callStatus.value = ''
       direction.value = 'idle'
     },
     onError() {
@@ -410,6 +410,7 @@ function closeCallPopup() {
   callDuration.value = 0
   showNote.value = false
   callData.call_sid = ''
+  callStatus.value = ''
 
   stopAudio()
 }
@@ -422,12 +423,7 @@ watch(callStatusChangeState, (newStatus) => {
 
 watch(showCallPopup, (newVal) => {
   if (!newVal) {
-    if (isCallActive.value) {
-      callDuration.value = counterUpTimer.value.stop()
-      createCallLogEntry()
-    } else {
-      closeCallPopup()
-    }
+    createCallLogEntry()
   }
 })
 
