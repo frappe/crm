@@ -81,7 +81,7 @@
               size="sm"
             />
           </div>
-          <div v-else-if="column.key === 'mobile_no'">
+          <div v-else-if="column.key === 'mobile_no' && item">
             <PhoneIcon class="h-4 w-4" />
           </div>
         </template>
