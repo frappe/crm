@@ -47,22 +47,11 @@
       (selections) => viewControls.updateSelections(selections)
     "
   />
-  <div
-    v-else-if="contacts.data"
-    class="flex h-full items-center justify-center"
-  >
-    <div
-      class="flex flex-col items-center gap-3 text-xl font-medium text-ink-gray-4"
-    >
-      <ContactsIcon class="h-10 w-10" />
-      <span>{{ __('No {0} Found', [__('Contacts')]) }}</span>
-      <Button
-        :label="__('Create')"
-        iconLeft="plus"
-        @click="showContactModal = true"
-      />
-    </div>
-  </div>
+  <EmptyState
+    v-else-if="contacts.data && !rows.length"
+    name="contacts"
+    :icon="ContactsIcon"
+  />
   <ContactModal
     v-if="showContactModal"
     v-model="showContactModal"
@@ -77,6 +66,7 @@ import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import ContactModal from '@/components/Modals/ContactModal.vue'
 import ContactsListView from '@/components/ListViews/ContactsListView.vue'
+import EmptyState from '@/components/ListViews/EmptyState.vue'
 import ViewControls from '@/components/ViewControls.vue'
 import { getMeta } from '@/stores/meta'
 import { organizationsStore } from '@/stores/organizations.js'
