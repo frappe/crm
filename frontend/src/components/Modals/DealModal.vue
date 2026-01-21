@@ -220,6 +220,7 @@ async function createDeal() {
     },
     onSuccess(name) {
       capture('deal_created')
+      $telemetry.capture("deal_created", true);
       isDealCreating.value = false
       show.value = false
       router.push({ name: 'Deal', params: { dealId: name } })
