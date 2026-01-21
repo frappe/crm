@@ -70,16 +70,18 @@
       </div>
     </div>
   </div>
-  <div
+  <EmptyState
     v-else
-    class="flex h-full flex-1 flex-col items-center justify-center gap-3 text-xl font-medium text-ink-gray-4"
-  >
-    <CalendarIcon class="h-10 w-10" />
-    <span>{{ __('No Events Scheduled') }}</span>
-    <Button :label="__('Schedule an Event')" @click="showEvent()" />
-  </div>
+    :title="__('No events scheduled')"
+    :description="
+      __('No events coming up. Create a new one to keep things on track.')
+    "
+    :icon="CalendarIcon"
+    top="30%"
+  />
 </template>
 <script setup>
+import EmptyState from '@/components/ListViews/EmptyState.vue'
 import CalendarIcon from '@/components/Icons/CalendarIcon.vue'
 import MultipleAvatar from '@/components/MultipleAvatar.vue'
 import { useEvent, showEventModal, activeEvent } from '@/composables/event'
