@@ -86,8 +86,7 @@ const user = computed(() => getUser() || {})
 const tabs = computed(() => {
   let _tabs = [
     {
-      label: __('Personal Settings'),
-      hideLabel: true,
+      label: __('My settings'),
       items: [
         {
           label: __('Profile'),
@@ -102,7 +101,7 @@ const tabs = computed(() => {
       ],
     },
     {
-      label: __('System Configuration'),
+      label: __('System configuration'),
       items: [
         {
           label: __('Forecasting'),
@@ -110,12 +109,12 @@ const tabs = computed(() => {
           icon: TrendingUpDownIcon,
         },
         {
-          label: __('Currency & Exchange Rate'),
+          label: __('Currency & Exchange rate'),
           icon: CircleDollarSignIcon,
           component: markRaw(CurrencySettings),
         },
         {
-          label: __('Brand Settings'),
+          label: __('Brand settings'),
           icon: SparkleIcon,
           component: markRaw(BrandSettings),
         },
@@ -123,7 +122,7 @@ const tabs = computed(() => {
       condition: () => isManager(),
     },
     {
-      label: __('User Management'),
+      label: __('User management'),
       items: [
         {
           label: __('Users'),
@@ -132,7 +131,7 @@ const tabs = computed(() => {
           condition: () => isManager(),
         },
         {
-          label: __('Invite User'),
+          label: __('Invite user'),
           icon: 'user-plus',
           component: markRaw(InviteUserPage),
           condition: () => isManager(),
@@ -141,16 +140,16 @@ const tabs = computed(() => {
       condition: () => isManager(),
     },
     {
-      label: __('Email Settings'),
+      label: __('Email settings'),
       items: [
         {
-          label: __('Email Accounts'),
+          label: __('Email accounts'),
           icon: Email2Icon,
           component: markRaw(EmailConfig),
           condition: () => isManager(),
         },
         {
-          label: __('Email Templates'),
+          label: __('Email templates'),
           icon: EmailTemplateIcon,
           component: markRaw(EmailTemplatePage),
         },
@@ -164,13 +163,21 @@ const tabs = computed(() => {
           icon: markRaw(h(SettingsIcon2, { class: 'rotate-90' })),
           component: markRaw(AssignmentRulePage),
         },
+<<<<<<< HEAD
+=======
+        {
+          label: __('SLA policies'),
+          icon: markRaw(h(ShieldCheck)),
+          component: markRaw(SlaConfig),
+        },
+>>>>>>> 099cac8d (refactor: standardize label casing in settings components)
       ],
     },
     {
       label: __('Customization'),
       items: [
         {
-          label: __('Home Actions'),
+          label: __('Home actions'),
           component: markRaw(HomeActions),
           icon: 'home',
         },
@@ -199,7 +206,17 @@ const tabs = computed(() => {
           condition: () => isManager(),
         },
         {
+<<<<<<< HEAD
           label: __('Lead Syncing'),
+=======
+          label: __('Helpdesk'),
+          icon: HelpdeskIcon,
+          component: markRaw(HelpdeskSettings),
+          condition: () => isManager(),
+        },
+        {
+          label: __('Lead syncing'),
+>>>>>>> 099cac8d (refactor: standardize label casing in settings components)
           icon: 'refresh-cw',
           component: markRaw(LeadSyncSourcePage),
           condition: () => isManager(),

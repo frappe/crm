@@ -6,7 +6,7 @@
           variant="subtle"
           icon-left="plus"
           @click="togglePopover()"
-          :label="__('Add Assignee')"
+          :label="__('Add assignee')"
         />
       </template>
       <template #body="{ togglePopover }">
