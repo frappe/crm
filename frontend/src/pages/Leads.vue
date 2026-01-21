@@ -252,19 +252,11 @@
       (selections) => viewControls.updateSelections(selections)
     "
   />
-  <div v-else-if="leads.data" class="flex h-full items-center justify-center">
-    <div
-      class="flex flex-col items-center gap-3 text-xl font-medium text-ink-gray-4"
-    >
-      <LeadsIcon class="h-10 w-10" />
-      <span>{{ __('No {0} Found', [__('Leads')]) }}</span>
-      <Button
-        :label="__('Create')"
-        iconLeft="plus"
-        @click="showLeadModal = true"
-      />
-    </div>
-  </div>
+  <EmptyState
+    v-else-if="leads.data && !rows.length"
+    name="leads"
+    :icon="LeadsIcon"
+  />
   <LeadModal
     v-if="showLeadModal"
     v-model="showLeadModal"
@@ -299,6 +291,7 @@ import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import LeadsListView from '@/components/ListViews/LeadsListView.vue'
+import EmptyState from '@/components/ListViews/EmptyState.vue'
 import KanbanView from '@/components/Kanban/KanbanView.vue'
 import LeadModal from '@/components/Modals/LeadModal.vue'
 import NoteModal from '@/components/Modals/NoteModal.vue'

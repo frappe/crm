@@ -48,17 +48,11 @@
       (selections) => viewControls.updateSelections(selections)
     "
   />
-  <div
-    v-else-if="callLogs.data"
-    class="flex h-full items-center justify-center"
-  >
-    <div
-      class="flex flex-col items-center gap-3 text-xl font-medium text-ink-gray-4"
-    >
-      <PhoneIcon class="h-10 w-10" />
-      <span>{{ __('No {0} Found', [__('Logs')]) }}</span>
-    </div>
-  </div>
+  <EmptyState
+    v-else-if="callLogs.data && !rows.length"
+    name="call logs"
+    :icon="PhoneIcon"
+  />
   <CallLogDetailModal
     v-model="showCallLogDetailModal"
     v-model:callLogModal="showCallLogModal"
@@ -79,6 +73,7 @@ import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import ViewControls from '@/components/ViewControls.vue'
 import CallLogsListView from '@/components/ListViews/CallLogsListView.vue'
+import EmptyState from '@/components/ListViews/EmptyState.vue'
 import CallLogDetailModal from '@/components/Modals/CallLogDetailModal.vue'
 import CallLogModal from '@/components/Modals/CallLogModal.vue'
 import { getCallLogDetail } from '@/utils/callLog'
