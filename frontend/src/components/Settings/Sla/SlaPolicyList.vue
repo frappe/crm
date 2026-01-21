@@ -1,6 +1,6 @@
 <template>
   <SettingsLayoutBase
-    :title="__('SLA Policies')"
+    :title="__('SLA policies')"
     :description="__('Manage your service level agreement policies')"
   >
     <template #header-actions>
@@ -126,13 +126,13 @@
               class="mx-2 border-outline-gray-2"
             />
             <Dialog
-              :options="{ title: __('Duplicate SLA Policy') }"
+              :options="{ title: __('Duplicate SLA policy') }"
               v-model="duplicateDialog.show"
             >
               <template #body-content>
                 <div class="flex flex-col gap-4">
                   <FormControl
-                    :label="__('New SLA Policy Name')"
+                    :label="__('New SLA policy name')"
                     type="text"
                     v-model="duplicateDialog.name"
                     maxlength="100"
