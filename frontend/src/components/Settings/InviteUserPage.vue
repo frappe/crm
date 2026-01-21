@@ -98,7 +98,7 @@
 import { validateEmail, convertArrayToString } from '@/utils'
 import { usersStore } from '@/stores/users'
 import { createListResource, createResource, FormControl } from 'frappe-ui'
-import { useOnboarding } from 'frappe-ui/frappe'
+import { useOnboarding, useTelemetry } from 'frappe-ui/frappe'
 import { ref, computed } from 'vue'
 
 const { updateOnboardingStep } = useOnboarding('frappecrm')
@@ -107,6 +107,7 @@ const { users, isAdmin, isManager } = usersStore()
 const invitees = ref([])
 const role = ref('Sales User')
 const error = ref(null)
+const $telemetry = useTelemetry()
 
 const userExistMessage = computed(() => {
   const inviteesSet = new Set(invitees.value)
@@ -186,7 +187,7 @@ const inviteByEmail = createResource({
     invitees.value = []
     pendingInvitations.reload()
     updateOnboardingStep('invite_your_team')
-    $telemetry.capture("user_invited", true);
+    $telemetry.capture('user_invited', true)
   },
   onError(err) {
     error.value = err?.messages?.[0]
