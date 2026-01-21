@@ -235,7 +235,7 @@
     v-model="leads.data.page_length_count"
     v-model:list="leads"
     :rows="rows"
-    :columns="leads.data.columns"
+    :columns="columns"
     :options="{
       showTooltip: false,
       resizeColumn: true,
@@ -352,6 +352,22 @@ const rows = computed(() => {
   } else {
     return parseRows(leads.value?.data.data, leads.value.data.columns)
   }
+})
+
+const columns = computed(() => {
+  let _columns = leads.value?.data?.columns || []
+
+  // Set align right for last column
+  if (_columns.length) {
+    _columns = _columns.map((col, index) => {
+      if (index === _columns.length - 1) {
+        return { ...col, align: 'right' }
+      }
+      return col
+    })
+  }
+
+  return _columns
 })
 
 function getGroupedByRows(listRows, groupByField, columns) {

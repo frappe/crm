@@ -30,7 +30,7 @@
     v-model="organizations.data.page_length_count"
     v-model:list="organizations"
     :rows="rows"
-    :columns="organizations.data.columns"
+    :columns="columns"
     :options="{
       showTooltip: false,
       resizeColumn: true,
@@ -140,5 +140,21 @@ const rows = computed(() => {
     })
     return _rows
   })
+})
+
+const columns = computed(() => {
+  let _columns = organizations.value?.data?.columns || []
+
+  // Set align right for last column
+  if (_columns.length) {
+    _columns = _columns.map((col, index) => {
+      if (index === _columns.length - 1) {
+        return { ...col, align: 'right' }
+      }
+      return col
+    })
+  }
+
+  return _columns
 })
 </script>

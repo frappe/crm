@@ -158,7 +158,7 @@
     v-model="tasks.data.page_length_count"
     v-model:list="tasks"
     :rows="rows"
-    :columns="tasks.data.columns"
+    :columns="columns"
     :options="{
       showTooltip: false,
       resizeColumn: true,
@@ -243,6 +243,22 @@ const rows = computed(() => {
 
   openTaskFromURL()
   return parseRows(tasks.value?.data.data, tasks.value?.data.columns)
+})
+
+const columns = computed(() => {
+  let _columns = tasks.value?.data?.columns || []
+
+  // Set align right for last column
+  if (_columns.length) {
+    _columns = _columns.map((col, index) => {
+      if (index === _columns.length - 1) {
+        return { ...col, align: 'right' }
+      }
+      return col
+    })
+  }
+
+  return _columns
 })
 
 function getKanbanRows(data, columns) {

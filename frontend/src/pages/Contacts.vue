@@ -30,7 +30,7 @@
     v-model="contacts.data.page_length_count"
     v-model:list="contacts"
     :rows="rows"
-    :columns="contacts.data.columns"
+    :columns="columns"
     :options="{
       showTooltip: false,
       resizeColumn: true,
@@ -143,5 +143,21 @@ const rows = computed(() => {
     })
     return _rows
   })
+})
+
+const columns = computed(() => {
+  let _columns = contacts.value?.data?.columns || []
+
+  // Set align right for last column
+  if (_columns.length) {
+    _columns = _columns.map((col, index) => {
+      if (index === _columns.length - 1) {
+        return { ...col, align: 'right' }
+      }
+      return col
+    })
+  }
+
+  return _columns
 })
 </script>
