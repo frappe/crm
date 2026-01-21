@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-12-21 09:37+0000\n"
-"PO-Revision-Date: 2025-12-23 22:58\n"
+"PO-Revision-Date: 2026-01-21 11:42\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Slovenian\n"
 "MIME-Version: 1.0\n"
@@ -2296,7 +2296,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/Settings.vue:145
 msgid "Email Settings"
-msgstr ""
+msgstr "Nastavitve e-pošte"
 
 #: frontend/src/components/Modals/EmailTemplateSelectorModal.vue:4
 #: frontend/src/components/Settings/Settings.vue:154
