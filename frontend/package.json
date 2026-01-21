@@ -15,7 +15,7 @@
     "@vitejs/plugin-vue": "^4.2.3",
     "@vitejs/plugin-vue-jsx": "^3.0.1",
     "@vueuse/integrations": "^10.3.0",
-    "frappe-ui": "0.1.248",
+    "frappe-ui": "0.1.261",
     "gemoji": "^8.1.0",
     "lodash": "^4.17.21",
     "mime": "^4.0.1",

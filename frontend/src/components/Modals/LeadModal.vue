@@ -167,6 +167,7 @@ async function createNewLead() {
         updateOnboardingStep('create_first_lead', true, false, () => {
           localStorage.setItem('firstLead' + user, data.name)
         })
+        $telemetry.capture("lead_created", true);
       },
       onError(err) {
         isLeadCreating.value = false

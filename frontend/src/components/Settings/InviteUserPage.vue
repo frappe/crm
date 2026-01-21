@@ -186,6 +186,7 @@ const inviteByEmail = createResource({
     invitees.value = []
     pendingInvitations.reload()
     updateOnboardingStep('invite_your_team')
+    $telemetry.capture("user_invited", true);
   },
   onError(err) {
     error.value = err?.messages?.[0]

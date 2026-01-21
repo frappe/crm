@@ -152,6 +152,7 @@ function createEmailAccount() {
   if (error.value) return
 
   addEmailRes.submit({ data: state })
+  $telemetry.capture("email_account_created", true);
 }
 </script>
 
