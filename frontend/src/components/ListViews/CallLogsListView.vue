@@ -112,7 +112,7 @@
             </Button>
           </div>
           <div
-            v-else
+            v-else-if="label"
             class="truncate text-base"
             @click="
               (event) =>

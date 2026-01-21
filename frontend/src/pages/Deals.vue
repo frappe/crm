@@ -209,7 +209,7 @@
     v-model="deals.data.page_length_count"
     v-model:list="deals"
     :rows="rows"
-    :columns="deals.data.columns"
+    :columns="columns"
     :options="{
       showTooltip: false,
       resizeColumn: true,
@@ -328,6 +328,21 @@ const rows = computed(() => {
   } else {
     return parseRows(deals.value?.data.data, deals.value.data.columns)
   }
+})
+
+const columns = computed(() => {
+  let _columns = deals.value?.data?.columns || []
+
+  if (_columns.length) {
+    _columns = _columns.map((col, index) => {
+      if (index === _columns.length - 1) {
+        return { ...col, align: 'right' }
+      }
+      return col
+    })
+  }
+
+  return _columns
 })
 
 function getGroupedByRows(listRows, groupByField, columns) {
