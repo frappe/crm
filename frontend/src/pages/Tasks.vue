@@ -176,19 +176,11 @@
       (selections) => viewControls.updateSelections(selections)
     "
   />
-  <div v-else-if="tasks.data" class="flex h-full items-center justify-center">
-    <div
-      class="flex flex-col items-center gap-3 text-xl font-medium text-ink-gray-4"
-    >
-      <Email2Icon class="h-10 w-10" />
-      <span>{{ __('No {0} Found', [__('Tasks')]) }}</span>
-      <Button
-        :label="__('Create')"
-        iconLeft="plus"
-        @click="showTaskModal = true"
-      />
-    </div>
-  </div>
+  <EmptyState
+    v-else-if="tasks.data && !rows.length"
+    name="tasks"
+    :icon="Email2Icon"
+  />
   <TaskModal
     v-if="showTaskModal"
     v-model="showTaskModal"
@@ -207,6 +199,7 @@ import Email2Icon from '@/components/Icons/Email2Icon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import ViewControls from '@/components/ViewControls.vue'
 import TasksListView from '@/components/ListViews/TasksListView.vue'
+import EmptyState from '@/components/ListViews/EmptyState.vue'
 import KanbanView from '@/components/Kanban/KanbanView.vue'
 import TaskModal from '@/components/Modals/TaskModal.vue'
 import { getMeta } from '@/stores/meta'

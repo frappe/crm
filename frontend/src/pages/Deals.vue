@@ -226,19 +226,11 @@
       (selections) => viewControls.updateSelections(selections)
     "
   />
-  <div v-else-if="deals.data" class="flex h-full items-center justify-center">
-    <div
-      class="flex flex-col items-center gap-3 text-xl font-medium text-ink-gray-4"
-    >
-      <DealsIcon class="h-10 w-10" />
-      <span>{{ __('No {0} Found', [__('Deals')]) }}</span>
-      <Button
-        :label="__('Create')"
-        iconLeft="plus"
-        @click="showDealModal = true"
-      />
-    </div>
-  </div>
+  <EmptyState
+    v-else-if="deals.data && !rows.length"
+    name="deals"
+    :icon="DealsIcon"
+  />
   <DealModal
     v-if="showDealModal"
     v-model="showDealModal"
@@ -273,6 +265,7 @@ import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import DealsListView from '@/components/ListViews/DealsListView.vue'
+import EmptyState from '@/components/ListViews/EmptyState.vue'
 import KanbanView from '@/components/Kanban/KanbanView.vue'
 import DealModal from '@/components/Modals/DealModal.vue'
 import NoteModal from '@/components/Modals/NoteModal.vue'
