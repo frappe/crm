@@ -7,34 +7,35 @@
   >
     <template #body>
       <div class="flex h-[calc(100vh_-_8rem)]">
-        <div class="flex flex-col p-1 w-52 shrink-0 bg-surface-gray-2">
-          <h1 class="px-3 pt-3 pb-2 text-lg font-semibold text-ink-gray-8">
-            {{ __('Settings') }}
-          </h1>
-          <div class="flex flex-col overflow-y-auto">
-            <template v-for="tab in tabs" :key="tab.label">
-              <div
-                v-if="!tab.hideLabel"
-                class="py-[7px] px-2 my-1 flex cursor-pointer gap-1.5 text-base text-ink-gray-5 transition-all duration-300 ease-in-out"
-              >
-                <span>{{ __(tab.label) }}</span>
-              </div>
-              <nav class="space-y-1 px-1">
-                <SidebarLink
-                  v-for="i in tab.items"
-                  :icon="i.icon"
-                  :label="__(i.label)"
-                  class="w-full"
-                  :class="
-                    activeTab?.label == i.label
-                      ? 'bg-surface-selected shadow-sm hover:bg-surface-selected'
-                      : 'hover:bg-surface-gray-3'
-                  "
-                  @click="activeSettingsPage = i.label"
-                />
-              </nav>
-            </template>
-          </div>
+        <div
+          class="flex flex-col p-1 w-52 shrink-0 bg-surface-menu-bar overflow-y-auto"
+        >
+          <template v-for="(tab, i) in tabs" :key="tab.label">
+            <div
+              v-if="!tab.hideLabel && i != 0"
+              class="border-t mx-1 mb-2 mt-[11px]"
+            />
+            <div
+              v-if="!tab.hideLabel"
+              class="h-7.5 px-2 py-[7px] my-[3px] flex cursor-pointer gap-1.5 text-base text-ink-gray-5 transition-all duration-300 ease-in-out"
+            >
+              <span>{{ __(tab.label) }}</span>
+            </div>
+            <nav class="space-y-[3px] px-1">
+              <SidebarLink
+                v-for="i in tab.items"
+                :icon="i.icon"
+                :label="__(i.label)"
+                class="w-full"
+                :class="
+                  activeTab?.label == i.label
+                    ? 'bg-surface-selected shadow-sm hover:bg-surface-selected'
+                    : 'hover:bg-surface-gray-3'
+                "
+                @click="activeSettingsPage = i.label"
+              />
+            </nav>
+          </template>
         </div>
         <div class="flex flex-col flex-1 overflow-y-auto bg-surface-modal">
           <component :is="activeTab.component" v-if="activeTab" />
