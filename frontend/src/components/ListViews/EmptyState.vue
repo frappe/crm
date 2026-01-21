@@ -1,6 +1,9 @@
 <template>
-  <div class="flex h-full mb-28 items-center justify-center">
-    <div class="flex flex-col items-center gap-3 w-96">
+  <div class="container relative flex h-full justify-center">
+    <div
+      class="content absolute left-1/2 flex w-4/12 -translate-x-1/2 flex-col items-center gap-3"
+      :style="{ top: top }"
+    >
       <component :is="icon" class="size-7.5 text-ink-gray-5" />
       <div class="flex flex-col items-center gap-1">
         <span class="text-lg font-medium text-ink-gray-8">
@@ -24,6 +27,7 @@ const props = defineProps({
     type: Object,
     default: () => import('@/components/Icons/LeadsIcon.vue'),
   },
+  top: { type: String, default: '35%' },
 })
 
 const computedTitle = computed(() => {
