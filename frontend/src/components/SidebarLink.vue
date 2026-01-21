@@ -1,24 +1,22 @@
 <template>
   <button
-    class="flex h-7 cursor-pointer items-center rounded text-ink-gray-7 duration-300 ease-in-out focus:outline-none focus:transition-none focus-visible:rounded focus-visible:ring-2 focus-visible:ring-outline-gray-3"
-    :class="isActive ? 'bg-surface-selected shadow-sm' : 'hover:bg-surface-gray-2'"
+    class="flex h-7.5 cursor-pointer items-center rounded text-ink-gray-8 duration-300 ease-in-out focus:outline-none focus:transition-none focus-visible:rounded focus-visible:ring-2 focus-visible:ring-outline-gray-3"
+    :class="
+      isActive ? 'bg-surface-selected shadow-sm' : 'hover:bg-surface-gray-2'
+    "
     @click="handleClick"
   >
     <div
       class="flex w-full items-center justify-between duration-300 ease-in-out"
-      :class="isCollapsed ? 'ml-[3px] p-1' : 'px-2 py-1'"
+      :class="isCollapsed ? 'ml-[3px] p-1' : 'px-2 py-[7px]'"
     >
       <div class="flex items-center truncate">
         <Tooltip :text="label" placement="right" :disabled="!isCollapsed">
           <slot name="icon">
-            <span class="grid flex-shrink-0 place-items-center">
-              <FeatherIcon
-                v-if="typeof icon == 'string'"
-                :name="icon"
-                class="size-4 text-ink-gray-7"
-              />
-              <component v-else :is="icon" class="size-4 text-ink-gray-7" />
-            </span>
+            <Icon
+              :icon="icon"
+              class="flex items-center size-4 text-ink-gray-8"
+            />
           </slot>
         </Tooltip>
         <Tooltip
@@ -45,6 +43,7 @@
 </template>
 
 <script setup>
+import Icon from '@/components/Icon.vue'
 import { Tooltip } from 'frappe-ui'
 import { computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
