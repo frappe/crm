@@ -9,7 +9,7 @@
           variant="ghost"
           icon-left="chevron-left"
           :label="
-            assignmentRuleData.assignmentRuleName || __('New Assignment Rule')
+            assignmentRuleData.assignmentRuleName || __('New assignment rule')
           "
           size="md"
           @click="goBack()"
@@ -299,7 +299,7 @@
       <div>
         <div class="flex flex-col gap-1">
           <span class="text-lg font-semibold text-ink-gray-8">{{
-            __('Assignment Schedule')
+            __('Assignment schedule')
           }}</span>
           <span class="text-p-sm text-ink-gray-6">
             {{
