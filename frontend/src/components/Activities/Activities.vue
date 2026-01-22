@@ -570,6 +570,13 @@ const whatsappMessages = createResource({
   onSuccess: () => nextTick(() => scroll()),
 })
 
+// Fix: Watch whatsappEnabled and reload messages when it becomes true
+watch(whatsappEnabled, (newVal) => {
+  if (newVal) {
+    whatsappMessages.reload()
+  }
+})
+
 onBeforeUnmount(() => {
   $socket.off('whatsapp_message')
 })
