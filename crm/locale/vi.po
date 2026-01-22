@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-12-21 09:37+0000\n"
-"PO-Revision-Date: 2025-12-23 22:58\n"
+"PO-Revision-Date: 2026-01-21 11:42\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Vietnamese\n"
 "MIME-Version: 1.0\n"
@@ -363,7 +363,7 @@ msgstr ""
 #: frontend/src/components/ConditionsFilter/CFConditions.vue:91
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRulesSection.vue:70
 msgid "Add condition group"
-msgstr ""
+msgstr "Thêm nhóm điều kiện"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:325
 msgid "Add description"
@@ -575,7 +575,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:576
 msgid "Are you sure you want to go back? Unsaved changes will be lost."
-msgstr ""
+msgstr "Bạn chắc chắn muốn quay lại? Các thay đổi chưa lưu sẽ bị mất."
 
 #: frontend/src/composables/frappecloud.js:24
 msgid "Are you sure you want to login to your Frappe Cloud dashboard?"
@@ -661,27 +661,27 @@ msgstr ""
 #: frontend/src/components/Layouts/AppSidebar.vue:582
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRulesList.vue:19
 msgid "Assignment rule"
-msgstr ""
+msgstr "Quy tắc phân công"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:667
 msgid "Assignment rule created"
-msgstr ""
+msgstr "Quy tắc phân công đã được tạo"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:119
 msgid "Assignment rule deleted"
-msgstr ""
+msgstr "Quy tắc phân công đã bị xóa"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:164
 msgid "Assignment rule duplicated"
-msgstr ""
+msgstr "Quy tắc phân công đã được sao chép"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:749
 msgid "Assignment rule updated"
-msgstr ""
+msgstr "Quy tắc phân công đã được cập nhật"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:196
 msgid "Assignment rule {0} updated"
-msgstr ""
+msgstr "Quy tắc phân công {0} đã được cập nhật"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRules.vue:7
 #: frontend/src/components/Settings/Settings.vue:164
@@ -861,7 +861,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/BrandSettings.vue:32
 msgid "Brand name"
-msgstr ""
+msgstr "Tên thương hiệu"
 
 #: frontend/src/components/Settings/BrandSettings.vue:7
 msgid "Brand settings"
@@ -1158,7 +1158,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:179
 msgid "Cannot enable rule without adding users in it"
-msgstr ""
+msgstr "Không thể kích hoạt quy tắc mà không thêm người dùng vào đó"
 
 #: frontend/src/components/FilesUploader/FilesUploader.vue:91
 msgid "Capture"
@@ -1232,7 +1232,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/EmailAdd.vue:9
 msgid "Choose the email service provider you want to configure."
-msgstr ""
+msgstr "Chọn nhà cung cấp dịch vụ email mà bạn muốn cấu hình."
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:229
 msgid "Choose which {0} are affected by this un-assignment rule."
@@ -1412,7 +1412,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:609
 msgid "Confirm overwrite"
-msgstr ""
+msgstr "Xác nhận ghi đè"
 
 #: frontend/src/pages/Welcome.vue:35
 msgid "Connect your email"
@@ -2189,7 +2189,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/EmailEdit.vue:6
 msgid "Edit Email"
-msgstr ""
+msgstr "Chỉnh sửa email"
 
 #: frontend/src/components/Modals/SidePanelModal.vue:7
 msgid "Edit Field Layout"
@@ -2283,7 +2283,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/Settings.vue:148
 msgid "Email Accounts"
-msgstr ""
+msgstr "Tài khoản email"
 
 #: frontend/src/components/Settings/emailConfig.js:168
 msgid "Email ID is required"
@@ -2309,7 +2309,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/EmailEdit.vue:208
 msgid "Email account updated successfully"
-msgstr ""
+msgstr "Cập nhật tài khoản email thành công"
 
 #: frontend/src/components/Settings/EmailAccountList.vue:7
 msgid "Email accounts"
@@ -2428,7 +2428,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/BrandSettings.vue:33
 msgid "Enter brand name"
-msgstr ""
+msgstr "Nhập tên thương hiệu"
 
 #: frontend/src/components/Settings/LeadSyncing/leadSyncSourceConfig.js:30
 msgid "Enter your Facebook Access Token"
@@ -2691,7 +2691,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/EmailAdd.vue:145
 msgid "Failed to create email account, Invalid credentials"
-msgstr ""
+msgstr "Lỗi khi tạo tài khoản email, thông tin đăng nhập không hợp lệ"
 
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:179
 msgid "Failed to create template"
@@ -2723,7 +2723,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/EmailEdit.vue:213
 msgid "Failed to update email account, Invalid credentials"
-msgstr ""
+msgstr "Lỗi khi cập nhật tài khoản email, thông tin đăng nhập không hợp lệ"
 
 #: frontend/src/components/Modals/ChangePasswordModal.vue:95
 msgid "Failed to update password"
@@ -3116,7 +3116,7 @@ msgstr "Hàng Giờ"
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:199
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:283
 msgid "I understand, add conditions"
-msgstr ""
+msgstr "Xác nhận và thêm điều kiện"
 
 #. Label of the id (Data) field in DocType 'CRM Call Log'
 #. Label of the id (Data) field in DocType 'Facebook Lead Form'
@@ -3279,7 +3279,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:601
 msgid "Invalid fields, check if all are filled in and values are correct."
-msgstr ""
+msgstr "Trường dữ liệu không hợp lệ, vui lòng kiểm tra lại xem tất cả đã được điền đủ và đúng giá trị chưa."
 
 #: frontend/src/pages/InvalidPage.vue:6
 msgid "Invalid page or not permitted to access"
@@ -4022,7 +4022,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:12
 msgid "New Assignment Rule"
-msgstr ""
+msgstr "Quy tắc phân công mới"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:52
 msgid "New Assignment Rule Name"
@@ -4218,7 +4218,7 @@ msgstr ""
 #: frontend/src/components/Controls/EmailMultiSelect.vue:133
 #: frontend/src/components/Settings/AssignmentRules/AssigneeSearch.vue:70
 msgid "No results found"
-msgstr ""
+msgstr "Không tìm thấy kết quả nào"
 
 #: frontend/src/components/Modals/EmailTemplateSelectorModal.vue:66
 #: frontend/src/components/Modals/WhatsappTemplateSelectorModal.vue:42
@@ -4578,7 +4578,7 @@ msgstr ""
 
 #: frontend/src/components/Modals/ChangePasswordModal.vue:88
 msgid "Password updated successfully"
-msgstr ""
+msgstr "Mật khẩu đã được cập nhật thành công"
 
 #: frontend/src/components/Modals/EmailTemplateSelectorModal.vue:13
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:38
@@ -5469,7 +5469,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/EmailAdd.vue:6
 msgid "Setup Email"
-msgstr ""
+msgstr "Thiết lập Email"
 
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.py:199
 msgid "Setup the Exchange Rate Provider as 'Exchangerate Host' in settings, as default provider does not support currency conversion for {0} to {1}."
@@ -5532,11 +5532,11 @@ msgstr ""
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:735
 msgid "Some error occurred while renaming assignment rule"
-msgstr ""
+msgstr "Đã xảy ra lỗi khi đổi tên quy tắc phân công"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:720
 msgid "Some error occurred while updating assignment rule"
-msgstr ""
+msgstr "Đã xảy ra lỗi khi cập nhật quy tắc phân công"
 
 #: frontend/src/components/SortBy.vue:10 frontend/src/components/SortBy.vue:24
 #: frontend/src/components/SortBy.vue:232
