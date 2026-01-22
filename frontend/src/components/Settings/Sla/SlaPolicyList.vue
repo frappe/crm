@@ -45,33 +45,15 @@
         <LoadingIndicator class="w-4" />
       </div>
       <div v-else class="h-full">
-        <div
+        <EmptyState
           v-if="
             !slaPolicyListResource.list.loading &&
             !slaPolicyListResource.list.data?.length
           "
-          class="flex flex-col items-center justify-center gap-4 h-full"
-        >
-          <div
-            class="p-4 size-14.5 rounded-full bg-surface-gray-2 flex justify-center items-center"
-          >
-            <ShieldCheck class="size-6 text-ink-gray-6" />
-          </div>
-          <div class="flex flex-col items-center gap-1">
-            <div class="text-base font-medium text-ink-gray-6">
-              {{ __('No SLA found') }}
-            </div>
-            <div class="text-p-sm text-ink-gray-5 max-w-60 text-center">
-              {{ __('Add one to get started.') }}
-            </div>
-          </div>
-          <Button
-            :label="__('New')"
-            variant="outline"
-            icon-left="plus"
-            @click="createNewSlaPolicy()"
-          />
-        </div>
+          title="No SLA found"
+          description="Add one to get started."
+          :icon="ShieldCheck"
+        />
         <div v-else class="-ml-2">
           <div
             class="grid grid-cols-7 items-center gap-3 text-sm text-gray-600 ml-2"
@@ -162,6 +144,9 @@
 </template>
 
 <script setup>
+import SettingsLayoutBase from '@/components/Layouts/SettingsLayoutBase.vue'
+import EmptyState from '@/components/ListViews/EmptyState.vue'
+import ShieldCheck from '~icons/lucide/shield-check'
 import {
   Badge,
   Button,
@@ -173,11 +158,9 @@ import {
   Switch,
   toast,
 } from 'frappe-ui'
-import SettingsLayoutBase from '../../Layouts/SettingsLayoutBase.vue'
-import { inject, ref, watch } from 'vue'
-import ShieldCheck from '~icons/lucide/shield-check'
-import { ConfirmDelete } from '../../../utils'
+import { ConfirmDelete } from '@/utils'
 import { resetSlaData } from './utils'
+import { inject, ref, watch } from 'vue'
 
 const slaPolicyListResource = inject('slaPolicyListResource')
 const updateStep = inject('updateStep')
