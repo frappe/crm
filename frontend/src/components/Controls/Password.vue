@@ -16,7 +16,7 @@
             class="rounded bg-surface-gray-7 py-1.5 px-2 text-xs text-ink-white shadow-xl"
           >
             <span class="flex items-center gap-1">
-              {{ show ? __('Hide Password') : __('Show Password') }}
+              {{ show ? __('Hide password') : __('Show password') }}
               <KeyboardShortcut
                 bg
                 ctrl

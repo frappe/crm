@@ -9,6 +9,43 @@ from crm.utils import seconds_to_duration
 
 
 class CRMCallLog(Document):
+	# begin: auto-generated types
+	# This code is auto-generated. Do not modify anything in this block.
+
+	from typing import TYPE_CHECKING
+
+	if TYPE_CHECKING:
+		from frappe.core.doctype.dynamic_link.dynamic_link import DynamicLink
+		from frappe.types import DF
+
+		caller: DF.Link | None
+		duration: DF.Duration | None
+		end_time: DF.Datetime | None
+		id: DF.Data | None
+		links: DF.Table[DynamicLink]
+		medium: DF.Data | None
+		note: DF.Link | None
+		receiver: DF.Link | None
+		recording_url: DF.Data | None
+		reference_docname: DF.DynamicLink | None
+		reference_doctype: DF.Link | None
+		start_time: DF.Datetime | None
+		status: DF.Literal[
+			"Initiated",
+			"Ringing",
+			"In Progress",
+			"Completed",
+			"Failed",
+			"Busy",
+			"No Answer",
+			"Queued",
+			"Canceled",
+		]
+		telephony_medium: DF.Literal["", "Manual", "Twilio", "Exotel"]
+		to: DF.Data
+		type: DF.Literal["Incoming", "Outgoing"]
+	# end: auto-generated types
+
 	@staticmethod
 	def default_list_data():
 		columns = [
@@ -57,7 +94,7 @@ class CRMCallLog(Document):
 				"width": "9rem",
 			},
 			{
-				"label": "Created On",
+				"label": "Created on",
 				"type": "Datetime",
 				"key": "creation",
 				"width": "8rem",

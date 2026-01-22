@@ -4,10 +4,10 @@
       <h3
         class="flex items-center gap-2 text-2xl font-semibold leading-6 text-ink-gray-9"
       >
-        <div>{{ __('Edit Quick Entry Layout') }}</div>
+        <div>{{ __('Edit quick entry layout') }}</div>
         <Badge
           v-if="dirty"
-          :label="__('Not Saved')"
+          :label="__('Not saved')"
           variant="subtle"
           theme="orange"
         />

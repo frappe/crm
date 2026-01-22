@@ -105,7 +105,7 @@
   <Dialog
     v-model="showConvertToDealModal"
     :options="{
-      title: __('Convert to Deal'),
+      title: __('Convert to deal'),
       size: 'xl',
       actions: [
         {
@@ -123,7 +123,7 @@
       </div>
       <div class="ml-6">
         <div class="flex items-center justify-between text-base">
-          <div>{{ __('Choose Existing') }}</div>
+          <div>{{ __('Choose existing') }}</div>
           <Switch v-model="existingOrganizationChecked" />
         </div>
         <Link
@@ -150,7 +150,7 @@
       </div>
       <div class="ml-6">
         <div class="flex items-center justify-between text-base">
-          <div>{{ __('Choose Existing') }}</div>
+          <div>{{ __('Choose existing') }}</div>
           <Switch v-model="existingContactChecked" />
         </div>
         <Link

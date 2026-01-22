@@ -9,7 +9,7 @@
         <FormControl
           v-model="chartType"
           type="select"
-          :label="__('Chart Type')"
+          :label="__('Chart type')"
           :options="chartTypes"
         />
         <FormControl

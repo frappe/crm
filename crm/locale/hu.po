@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-12-21 09:37+0000\n"
-"PO-Revision-Date: 2026-01-17 03:13\n"
+"PO-Revision-Date: 2026-01-21 11:42\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Hungarian\n"
 "MIME-Version: 1.0\n"
@@ -575,7 +575,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:576
 msgid "Are you sure you want to go back? Unsaved changes will be lost."
-msgstr ""
+msgstr "Biztosan vissza akarsz menni? A nem mentett módosítások elvesznek."
 
 #: frontend/src/composables/frappecloud.js:24
 msgid "Are you sure you want to login to your Frappe Cloud dashboard?"
@@ -4802,7 +4802,7 @@ msgstr "Profil"
 
 #: frontend/src/components/Settings/ProfileSettings.vue:147
 msgid "Profile updated successfully"
-msgstr ""
+msgstr "A profil sikeresen frissítve"
 
 #: crm/api/dashboard.py:689
 msgid "Projected vs actual revenue based on deal probability"
@@ -6478,7 +6478,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
 msgid "amber"
-msgstr ""
+msgstr "borostyán sárga"
 
 #: crm/api/todo.py:109
 msgid "assigned a new task {0} to you"
@@ -6525,7 +6525,7 @@ msgstr "cián"
 #: frontend/src/components/Settings/AssignmentRules/AssigneeRules.vue:131
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:380
 msgid "deals"
-msgstr ""
+msgstr "ügyletek"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:190
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:274
@@ -6742,7 +6742,7 @@ msgstr ""
 
 #: frontend/src/utils/index.js:105 frontend/src/utils/index.js:152
 msgid "tomorrow"
-msgstr ""
+msgstr "holnap"
 
 #. Option for the 'Color' (Select) field in DocType 'CRM Deal Status'
 #. Option for the 'Color' (Select) field in DocType 'CRM Lead Status'

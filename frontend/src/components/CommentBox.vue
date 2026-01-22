@@ -46,7 +46,7 @@
               @update:modelValue="() => appendEmoji()"
             >
               <Button
-                :tooltip="__('Insert Emoji')"
+                :tooltip="__('Insert emoji')"
                 :icon="SmileIcon"
                 variant="ghost"
                 @click="togglePopover()"

@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-12-21 09:37+0000\n"
-"PO-Revision-Date: 2025-12-23 22:58\n"
+"PO-Revision-Date: 2026-01-21 11:42\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: German\n"
 "MIME-Version: 1.0\n"
@@ -484,7 +484,7 @@ msgstr ""
 #. Description of the 'Favicon' (Attach) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 msgid "An icon file with .ico extension. Should be 16 x 16 px. Generated using a favicon generator. [favicon-generator.org]"
-msgstr "Eine Icon-Datei mit ICO-Erweiterung. Sie sollte 16 x 16 pixel groß sein. Wurde unter Verwendung eines Favicon-Generators erstellt. [favicon-generator.org]"
+msgstr "Eine Icon-Datei mit der Erweiterung .ico. Sollte 16 x 16 px groß sein. Erzeugt mit einem Favicon-Generator. [favicon-generator.org]"
 
 #. Description of the 'Logo' (Attach) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
@@ -1285,7 +1285,7 @@ msgstr "Zuklappen"
 
 #: frontend/src/components/FieldLayoutEditor.vue:344
 msgid "Collapsible"
-msgstr "Faltbar"
+msgstr "Zusammenklappbar"
 
 #. Label of the color (Select) field in DocType 'CRM Deal Status'
 #. Label of the color (Select) field in DocType 'CRM Lead Status'
@@ -2350,7 +2350,7 @@ msgstr ""
 
 #: crm/fcrm/doctype/crm_form_script/crm_form_script.js:30
 msgid "Enable"
-msgstr "ermöglichen"
+msgstr "Aktivieren"
 
 #. Label of the enable_forecasting (Check) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
@@ -2517,7 +2517,7 @@ msgstr ""
 #. Sync Source'
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
 msgid "Every 5 Minutes"
-msgstr ""
+msgstr "Alle 5 Minuten"
 
 #: frontend/src/components/ViewControls.vue:268
 #: frontend/src/components/ViewControls.vue:277
@@ -3450,7 +3450,7 @@ msgstr "Letzte 6 Monate"
 
 #: frontend/src/components/Filter.vue:607
 msgid "Last Month"
-msgstr "Vergangener Monat"
+msgstr "Letzter Monat"
 
 #. Label of the last_name (Data) field in DocType 'CRM Deal'
 #. Label of the last_name (Data) field in DocType 'CRM Lead'
@@ -3461,7 +3461,7 @@ msgstr "Nachname"
 
 #: frontend/src/components/Filter.vue:611
 msgid "Last Quarter"
-msgstr "Vergangenes Quartal"
+msgstr "Letztes Quartal"
 
 #. Label of the last_responded_on (Datetime) field in DocType 'CRM Deal'
 #. Label of the last_responded_on (Datetime) field in DocType 'CRM Lead'
@@ -3491,11 +3491,11 @@ msgstr "Zuletzt synchronisiert am"
 
 #: frontend/src/components/Filter.vue:603
 msgid "Last Week"
-msgstr "Vergangene Woche"
+msgstr "Letzte Woche"
 
 #: frontend/src/components/Filter.vue:619
 msgid "Last Year"
-msgstr "Vergangenes Jahr"
+msgstr "Letztes Jahr"
 
 #: frontend/src/pages/Contact.vue:550 frontend/src/pages/MobileContact.vue:542
 #: frontend/src/pages/MobileOrganization.vue:492
@@ -3869,7 +3869,7 @@ msgstr "Mittel"
 #. Option for the 'Type' (Select) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
 msgid "Mention"
-msgstr "Erwähnen"
+msgstr "Erwähnung"
 
 #. Label of the message (HTML Editor) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
@@ -5317,7 +5317,7 @@ msgstr ""
 
 #: frontend/src/components/FieldLayoutEditor.vue:336
 msgid "Section"
-msgstr "Sektion"
+msgstr "Abschnitt"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:130
 msgid "See all participants"
@@ -5928,7 +5928,7 @@ msgstr "Titel"
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
 #: frontend/src/components/Kanban/KanbanSettings.vue:29
 msgid "Title Field"
-msgstr "Bezeichnungs-Feld"
+msgstr "Titelfeld"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:545
 #: frontend/src/components/Modals/EventModal.vue:320
@@ -6026,7 +6026,7 @@ msgstr ""
 #: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.json
 #: frontend/src/components/Settings/LeadSyncing/FailureLogs.vue:25
 msgid "Traceback"
-msgstr "Zurück verfolgen"
+msgstr "Rückverfolgung"
 
 #. Option for the 'Weekly Off' (Select) field in DocType 'CRM Holiday List'
 #. Option for the 'Workday' (Select) field in DocType 'CRM Service Day'
@@ -6559,7 +6559,7 @@ msgstr "grau"
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
 msgid "green"
-msgstr "Grün"
+msgstr "grün"
 
 #. Option for the 'Type' (Select) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
@@ -6688,7 +6688,7 @@ msgstr "bediener"
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
 msgid "orange"
-msgstr "Orange"
+msgstr "orange"
 
 #. Option for the 'Color' (Select) field in DocType 'CRM Deal Status'
 #. Option for the 'Color' (Select) field in DocType 'CRM Lead Status'

@@ -33,13 +33,13 @@
    "default": "CRM Lead",
    "fieldname": "reference_doctype",
    "fieldtype": "Link",
-   "label": "Reference Document Type",
+   "label": "Reference document type",
    "options": "DocType"
   },
   {
    "fieldname": "reference_docname",
    "fieldtype": "Dynamic Link",
-   "label": "Reference Doc",
+   "label": "Reference doc",
    "options": "reference_doctype"
   }
  ],
@@ -50,8 +50,8 @@
    "link_fieldname": "note"
   }
  ],
- "modified": "2025-04-01 15:30:14.742001",
- "modified_by": "Administrator",
+ "modified": "2026-01-22 14:13:02.372344",
+ "modified_by": "shariq@frappe.io",
  "module": "FCRM",
  "name": "FCRM Note",
  "owner": "Administrator",
@@ -81,6 +81,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],

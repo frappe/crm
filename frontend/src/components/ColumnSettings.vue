@@ -65,7 +65,7 @@
                 <Button
                   class="w-full !justify-start !text-ink-gray-5"
                   variant="ghost"
-                  :label="__('Add Column')"
+                  :label="__('Add column')"
                   iconLeft="plus"
                   @click="togglePopover"
                 />
@@ -75,7 +75,7 @@
               v-if="columnsUpdated"
               class="w-full !justify-start !text-ink-gray-5"
               variant="ghost"
-              :label="__('Reset Changes')"
+              :label="__('Reset changes')"
               :iconLeft="ReloadIcon"
               @click="reset(close)"
             />
@@ -83,7 +83,7 @@
               v-if="!is_default"
               class="w-full !justify-start !text-ink-gray-5"
               variant="ghost"
-              :label="__('Reset to Default')"
+              :label="__('Reset to default')"
               :iconLeft="ReloadIcon"
               @click="resetToDefault(close)"
             />
@@ -100,7 +100,7 @@
                 :label="__('Label')"
                 v-model="column.label"
                 class="sm:w-full w-52"
-                :placeholder="__('First Name')"
+                :placeholder="__('First name')"
               />
               <FormControl
                 type="text"

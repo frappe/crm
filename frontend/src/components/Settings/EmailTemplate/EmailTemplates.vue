@@ -38,16 +38,12 @@
     </div>
 
     <!-- Empty State -->
-    <div
-      v-if="!templates.loading && !templates.data?.length"
-      class="flex justify-between w-full h-full"
-    >
-      <div
-        class="text-ink-gray-4 border border-dashed rounded w-full flex items-center justify-center"
-      >
-        {{ __('No email templates found') }}
-      </div>
-    </div>
+    <EmptyState
+      v-else-if="!templates.loading && !templates.data?.length"
+      name="email templates"
+      description="Add one to get started."
+      :icon="EmailTemplateIcon"
+    />
 
     <!-- Email template list -->
     <div
@@ -139,7 +135,7 @@
             class="mt-3.5 p-2"
             @click="() => templates.next()"
             :loading="templates.loading"
-            :label="__('Load More')"
+            :label="__('Load more')"
             icon-left="refresh-cw"
           />
         </div>
@@ -148,6 +144,8 @@
   </div>
 </template>
 <script setup>
+import EmailTemplateIcon from '@/components/Icons/EmailTemplateIcon.vue'
+import EmptyState from '../../ListViews/EmptyState.vue'
 import {
   TextInput,
   FormControl,
@@ -236,7 +234,7 @@ function getDropdownOptions(template) {
       condition: () => !confirmDelete.value,
     },
     {
-      label: __('Confirm Delete'),
+      label: __('Confirm delete'),
       icon: 'trash-2',
       theme: 'red',
       onClick: () => deleteTemplate(template),
