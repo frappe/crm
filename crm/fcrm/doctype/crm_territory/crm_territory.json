@@ -1,4 +1,5 @@
 {
+ "_liked_by": "[]",
  "actions": [],
  "allow_import": 1,
  "allow_rename": 1,
@@ -23,7 +24,7 @@
    "fieldname": "territory_name",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Territory Name",
+   "label": "Territory name",
    "reqd": 1,
    "unique": 1
   },
@@ -34,7 +35,7 @@
   {
    "fieldname": "territory_manager",
    "fieldtype": "Link",
-   "label": "Territory Manager",
+   "label": "Territory manager",
    "options": "User"
   },
   {
@@ -62,14 +63,14 @@
   {
    "fieldname": "old_parent",
    "fieldtype": "Link",
-   "label": "Old Parent",
+   "label": "Old parent",
    "options": "CRM Territory"
   },
   {
    "fieldname": "parent_crm_territory",
    "fieldtype": "Link",
    "ignore_user_permissions": 1,
-   "label": "Parent CRM Territory",
+   "label": "Parent CRM territory",
    "options": "CRM Territory"
   },
   {
@@ -84,8 +85,8 @@
  "index_web_pages_for_search": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2024-01-19 21:53:53.451891",
- "modified_by": "Administrator",
+ "modified": "2026-01-22 14:01:25.075470",
+ "modified_by": "shariq@frappe.io",
  "module": "FCRM",
  "name": "CRM Territory",
  "naming_rule": "By fieldname",
@@ -117,6 +118,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []

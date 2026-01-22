@@ -23,7 +23,7 @@
   {
    "fieldname": "organization_name",
    "fieldtype": "Data",
-   "label": "Organization Name",
+   "label": "Organization name",
    "unique": 1
   },
   {
@@ -34,12 +34,12 @@
   {
    "fieldname": "organization_logo",
    "fieldtype": "Attach Image",
-   "label": "Organization Logo"
+   "label": "Organization logo"
   },
   {
    "fieldname": "no_of_employees",
    "fieldtype": "Select",
-   "label": "No. of Employees",
+   "label": "No. of employees",
    "options": "1-10\n11-50\n51-200\n201-500\n501-1000\n1000+"
   },
   {
@@ -49,7 +49,7 @@
   {
    "fieldname": "annual_revenue",
    "fieldtype": "Currency",
-   "label": "Annual Revenue",
+   "label": "Annual revenue",
    "options": "currency"
   },
   {
@@ -80,14 +80,14 @@
    "description": "The rate used to convert the organization\u2019s currency to your crm's base currency (set in CRM Settings). It is set once when the currency is first added and doesn't change automatically.",
    "fieldname": "exchange_rate",
    "fieldtype": "Float",
-   "label": "Exchange Rate"
+   "label": "Exchange rate"
   }
  ],
  "image_field": "organization_logo",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-07-15 11:40:12.175598",
- "modified_by": "Administrator",
+ "modified": "2026-01-22 14:11:41.746776",
+ "modified_by": "shariq@frappe.io",
  "module": "FCRM",
  "name": "CRM Organization",
  "naming_rule": "By fieldname",

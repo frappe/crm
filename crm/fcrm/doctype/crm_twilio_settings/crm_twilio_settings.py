@@ -8,6 +8,23 @@ from twilio.rest import Client
 
 
 class CRMTwilioSettings(Document):
+	# begin: auto-generated types
+	# This code is auto-generated. Do not modify anything in this block.
+
+	from typing import TYPE_CHECKING
+
+	if TYPE_CHECKING:
+		from frappe.types import DF
+
+		account_sid: DF.Data | None
+		api_key: DF.Data | None
+		api_secret: DF.Password | None
+		auth_token: DF.Password | None
+		enabled: DF.Check
+		record_calls: DF.Check
+		twiml_sid: DF.Data | None
+	# end: auto-generated types
+
 	friendly_resource_name = "Frappe CRM"  # System creates TwiML app & API keys with this name.
 
 	def validate(self):

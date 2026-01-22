@@ -24,21 +24,21 @@
    "depends_on": "eval:doc.enabled && doc.is_erpnext_in_different_site",
    "fieldname": "api_key",
    "fieldtype": "Data",
-   "label": "API Key",
+   "label": "API key",
    "mandatory_depends_on": "is_erpnext_in_different_site"
   },
   {
    "depends_on": "eval:doc.enabled && doc.is_erpnext_in_different_site",
    "fieldname": "api_secret",
    "fieldtype": "Password",
-   "label": "API Secret",
+   "label": "API secret",
    "mandatory_depends_on": "is_erpnext_in_different_site"
   },
   {
    "depends_on": "enabled",
    "fieldname": "section_break_oubd",
    "fieldtype": "Section Break",
-   "label": "ERPNext Site API's"
+   "label": "ERPNext site API's"
   },
   {
    "fieldname": "column_break_fllx",
@@ -48,14 +48,14 @@
    "depends_on": "eval:doc.enabled && doc.is_erpnext_in_different_site",
    "fieldname": "erpnext_site_url",
    "fieldtype": "Data",
-   "label": "ERPNext Site URL",
+   "label": "ERPNext site URL",
    "mandatory_depends_on": "is_erpnext_in_different_site"
   },
   {
    "depends_on": "enabled",
    "fieldname": "erpnext_company",
    "fieldtype": "Data",
-   "label": "Company in ERPNext Site",
+   "label": "Company in ERPNext site",
    "mandatory_depends_on": "enabled"
   },
   {
@@ -94,7 +94,7 @@
    "depends_on": "eval:doc.enabled && doc.create_customer_on_status_change",
    "fieldname": "deal_status",
    "fieldtype": "Link",
-   "label": "Deal Status",
+   "label": "Deal status",
    "mandatory_depends_on": "create_customer_on_status_change",
    "options": "CRM Deal Status"
   }
@@ -102,8 +102,8 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-12-31 23:24:29.636820",
- "modified_by": "Administrator",
+ "modified": "2026-01-22 13:59:29.507022",
+ "modified_by": "shariq@frappe.io",
  "module": "FCRM",
  "name": "ERPNext CRM Settings",
  "owner": "Administrator",
@@ -129,6 +129,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "creation",
  "sort_order": "DESC",
  "states": []

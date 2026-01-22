@@ -18,7 +18,7 @@
    "fieldtype": "Link",
    "in_list_view": 1,
    "in_standard_filter": 1,
-   "label": "Document Type",
+   "label": "Document type",
    "options": "DocType"
   },
   {
@@ -46,11 +46,11 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-02-21 13:09:49.573515",
- "modified_by": "Administrator",
+ "modified": "2026-01-22 13:59:41.936780",
+ "modified_by": "shariq@frappe.io",
  "module": "FCRM",
  "name": "CRM Fields Layout",
- "naming_rule": "Expression",
+ "naming_rule": "Expression (old style)",
  "owner": "Administrator",
  "permissions": [
   {
@@ -75,6 +75,7 @@
    "share": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "creation",
  "sort_order": "DESC",
  "states": []

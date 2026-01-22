@@ -20,9 +20,7 @@ class LeadSyncSource(Document):
 		from frappe.types import DF
 
 		access_token: DF.Password
-		background_sync_frequency: DF.Literal[
-			"Every 5 Minutes", "Every 10 Minutes", "Every 15 Minutes", "Hourly", "Daily", "Monthly"
-		]
+		background_sync_frequency: DF.Literal["Every 5 Minutes", "Every 10 Minutes", "Every 15 Minutes", "Hourly", "Daily", "Monthly"]
 		enabled: DF.Check
 		facebook_lead_form: DF.Link | None
 		facebook_page: DF.Link | None

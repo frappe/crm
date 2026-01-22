@@ -23,7 +23,7 @@
    "fieldname": "holiday_list_name",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Holiday List Name",
+   "label": "Holiday list name",
    "reqd": 1,
    "unique": 1
   },
@@ -31,14 +31,14 @@
    "fieldname": "from_date",
    "fieldtype": "Date",
    "in_list_view": 1,
-   "label": "From Date",
+   "label": "From date",
    "reqd": 1
   },
   {
    "fieldname": "to_date",
    "fieldtype": "Date",
    "in_list_view": 1,
-   "label": "To Date",
+   "label": "To date",
    "reqd": 1
   },
   {
@@ -48,7 +48,7 @@
   {
    "fieldname": "total_holidays",
    "fieldtype": "Int",
-   "label": "Total Holidays"
+   "label": "Total holidays"
   },
   {
    "fieldname": "add_weekly_holidays_section",
@@ -58,13 +58,13 @@
   {
    "fieldname": "weekly_off",
    "fieldtype": "Select",
-   "label": "Weekly Off",
+   "label": "Weekly off",
    "options": "\nMonday\nTuesday\nWednesday\nThursday\nFriday\nSaturday\nSunday"
   },
   {
    "fieldname": "add_to_holidays",
    "fieldtype": "Button",
-   "label": "Add to Holidays",
+   "label": "Add to holidays",
    "options": "add_to_holidays"
   },
   {
@@ -87,8 +87,8 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-12-23 15:43:30.328630",
- "modified_by": "Administrator",
+ "modified": "2026-01-22 14:02:51.920209",
+ "modified_by": "shariq@frappe.io",
  "module": "FCRM",
  "name": "CRM Holiday List",
  "naming_rule": "By fieldname",
