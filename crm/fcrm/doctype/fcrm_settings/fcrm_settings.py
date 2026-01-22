@@ -17,9 +17,10 @@ class FCRMSettings(Document):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
-		from crm.fcrm.doctype.crm_dropdown_item.crm_dropdown_item import CRMDropdownItem
 		from frappe.desk.doctype.event_notifications.event_notifications import EventNotifications
 		from frappe.types import DF
+
+		from crm.fcrm.doctype.crm_dropdown_item.crm_dropdown_item import CRMDropdownItem
 
 		access_key: DF.Data | None
 		all_day_event_notifications: DF.Table[EventNotifications]

@@ -13,8 +13,11 @@ class FacebookLeadForm(Document):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
-		from crm.lead_syncing.doctype.facebook_lead_form_question.facebook_lead_form_question import FacebookLeadFormQuestion
 		from frappe.types import DF
+
+		from crm.lead_syncing.doctype.facebook_lead_form_question.facebook_lead_form_question import (
+			FacebookLeadFormQuestion,
+		)
 
 		form_name: DF.Data | None
 		id: DF.Data | None
