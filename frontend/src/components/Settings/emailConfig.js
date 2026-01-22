@@ -94,48 +94,54 @@ export const services = [
   {
     name: 'GMail',
     icon: LogoGmail,
-    info: __(`Setting up gmail requires you to enable two factor authentication
-		  and app specific passwords. Read more`),
+    info: __(
+      'Setting up gmail requires you to enable two factor authentication and app specific passwords. Read more',
+    ),
     link: 'https://support.google.com/accounts/answer/185833',
     custom: false,
   },
   {
     name: 'Outlook',
     icon: LogoOutlook,
-    info: __(`Setting up outlook requires you to enable two factor authentication
-		  and app specific passwords. Read more`),
+    info: __(
+      'Setting up outlook requires you to enable two factor authentication and app specific passwords. Read more',
+    ),
     link: 'https://support.microsoft.com/en-us/account-billing/how-to-get-and-use-app-passwords-5896ed9b-4263-e681-128a-a6f2979a7944',
     custom: false,
   },
   {
     name: 'Sendgrid',
     icon: LogoSendgrid,
-    info: __(`Setting up sendgrid requires you to enable two factor authentication
-		  and app specific passwords. Read more `),
+    info: __(
+      'Setting up sendgrid requires you to enable two factor authentication and app specific passwords. Read more',
+    ),
     link: 'https://sendgrid.com/docs/ui/account-and-settings/two-factor-authentication/',
     custom: false,
   },
   {
     name: 'SparkPost',
     icon: LogoSparkpost,
-    info: __(`Setting up sparkpost requires you to enable two factor authentication
-		  and app specific passwords. Read more `),
+    info: __(
+      'Setting up sparkpost requires you to enable two factor authentication and app specific passwords. Read more',
+    ),
     link: 'https://support.sparkpost.com/docs/my-account-and-profile/enabling-two-factor-authentication',
     custom: false,
   },
   {
     name: 'Yahoo',
     icon: LogoYahoo,
-    info: __(`Setting up yahoo requires you to enable two factor authentication
-		  and app specific passwords. Read more `),
+    info: __(
+      'Setting up yahoo requires you to enable two factor authentication and app specific passwords. Read more',
+    ),
     link: 'https://help.yahoo.com/kb/SLN15241.html',
     custom: false,
   },
   {
     name: 'Yandex',
     icon: LogoYandex,
-    info: __(`Setting up yandex requires you to enable two factor authentication
-		  and app specific passwords. Read more `),
+    info: __(
+      'Setting up yandex requires you to enable two factor authentication and app specific passwords. Read more',
+    ),
     link: 'https://yandex.com/support/id/authorization/app-passwords.html',
     custom: false,
   },
@@ -143,7 +149,7 @@ export const services = [
     name: 'Frappe Mail',
     icon: LogoFrappeMail,
     info: __(
-      `Setting up frappe mail requires you to have an API key and API Secret of your email account. Read more `,
+      'Setting up frappe mail requires you to have an API key and API Secret of your email account. Read more',
     ),
     link: 'https://github.com/frappe/mail',
     custom: true,
