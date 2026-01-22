@@ -24,6 +24,8 @@ import {
   FeatherIcon,
 } from 'frappe-ui'
 
+import { telemetryPlugin } from "frappe-ui/frappe";
+
 let globalComponents = {
   Button,
   TextInput,
@@ -50,6 +52,7 @@ app.use(posthogPlugin)
 for (let key in globalComponents) {
   app.component(key, globalComponents[key])
 }
+app.use(telemetryPlugin, { app_name: "crm" });
 
 app.config.globalProperties.$dialog = createDialog
 
