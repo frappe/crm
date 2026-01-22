@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-12-21 09:37+0000\n"
-"PO-Revision-Date: 2026-01-21 11:42\n"
+"PO-Revision-Date: 2026-01-22 12:22\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Bosnian\n"
 "MIME-Version: 1.0\n"
@@ -1069,7 +1069,7 @@ msgstr "CRM valuta za sve novčane vrijednosti. Nakon što se postavi, ne može 
 
 #: frontend/src/components/ViewControls.vue:272
 msgid "CSV"
-msgstr ""
+msgstr "CSV"
 
 #: frontend/src/components/Modals/CallLogDetailModal.vue:8
 msgid "Call Details"
@@ -2522,7 +2522,7 @@ msgstr "Svakih 5 minuta"
 #: frontend/src/components/ViewControls.vue:268
 #: frontend/src/components/ViewControls.vue:277
 msgid "Excel"
-msgstr ""
+msgstr "Excel"
 
 #. Label of the exchange_rate (Float) field in DocType 'CRM Deal'
 #. Label of the exchange_rate (Float) field in DocType 'CRM Organization'
@@ -2633,7 +2633,7 @@ msgstr "Postavke"
 #. Source'
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
 msgid "Facebook"
-msgstr ""
+msgstr "Facebook"
 
 #. Label of the facebook_form_id (Data) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
@@ -3384,7 +3384,7 @@ msgstr "\"Očekivani datum zaključenja\" i \"Očekivana vrijednost posla\" će 
 #. Label of the json (JSON) field in DocType 'CRM Global Settings'
 #: crm/fcrm/doctype/crm_global_settings/crm_global_settings.json
 msgid "JSON"
-msgstr ""
+msgstr "JSON"
 
 #. Label of the job_title (Data) field in DocType 'CRM Deal'
 #. Label of the job_title (Data) field in DocType 'CRM Lead'
@@ -5374,7 +5374,7 @@ msgstr "Pošalji pozivnice"
 #. Option for the 'Type' (Select) field in DocType 'CRM Dropdown Item'
 #: crm/fcrm/doctype/crm_dropdown_item/crm_dropdown_item.json
 msgid "Separator"
-msgstr ""
+msgstr "Separator"
 
 #. Label of the naming_series (Select) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
