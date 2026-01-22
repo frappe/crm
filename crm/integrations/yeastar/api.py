@@ -8,7 +8,9 @@ from .utils import (
     validate_token,
     get_yeaster_number,
     parse_call_state,
+    get_yeaster_agent_by_number,
 )
+from crm.integrations.exotel.handler import create_call_log
 
 
 @frappe.whitelist(allow_guest=True)
@@ -26,12 +28,25 @@ def make_call(callee: str, auto_answer: str = "yes") -> dict[str, str]:
         "auto_answer": auto_answer,
     }
 
-    return make_http_request(
+    response = make_http_request(
         endpoint=request_url,
         method="POST",
         request_type="make_call",
         data=data,
     )
+
+    if create_call_log(
+        call_id=response["call_id"],
+        from_number=caller,
+        to_number=callee,
+        medium=callee,
+        status="Ringing",
+        call_type="Outgoing",
+        telephony_medium="Yeastar",
+        agent=frappe.session.user,
+    ):
+
+        return response
 
 
 @dataclass
@@ -39,6 +54,7 @@ class IncomingCallDetails:
     caller: str
     callee: str
     channel_id: str
+    call_id: str
 
 
 @frappe.whitelist(allow_guest=True)
@@ -52,6 +68,7 @@ def handle_incoming_call() -> None:
         )
         frappe.throw("No data received from the incoming call webhook.")
 
+    call_id = data.get("call_id")
     members: list[dict] = data.get("members")
     inbound_info_data: dict = members[0].get("inbound")
 
@@ -59,7 +76,9 @@ def handle_incoming_call() -> None:
     callee = inbound_info_data.get("to")
     channel_id = inbound_info_data.get("channel_id")
 
-    details = IncomingCallDetails(caller=caller, callee=callee, channel_id=channel_id)
+    details = IncomingCallDetails(
+        caller=caller, callee=callee, channel_id=channel_id, call_id=call_id
+    )
 
     create_socket_connection(details)
 
@@ -101,6 +120,7 @@ class CallStatusDetails:
     client_number: str
     channel_id: str
     call_id: str
+    direction: str
 
 
 @frappe.whitelist(allow_guest=True)
@@ -127,6 +147,7 @@ def call_status_changed():
             client_number=entry["client_number"],
             channel_id=entry["channel_id"],
             call_id=entry["call_id"],
+            direction=entry["direction"],
         )
 
         create_socket_connection(details)
@@ -144,6 +165,60 @@ def create_socket_connection(details: IncomingCallDetails | CallStatusDetails) -
         message=details.__dict__,
         user=details.user if hasattr(details, "user") else None,
     )
+
+    if isinstance(details, IncomingCallDetails):
+        create_call_log(
+            call_id=details.call_id,
+            from_number=details.caller,
+            to_number=details.callee,
+            medium=details.callee,
+            status="Ringing",
+            call_type="Incoming",
+            telephony_medium="Yeastar",
+            agent=get_yeaster_agent_by_number(details.caller),
+        )
+
+
+@frappe.whitelist(allow_guest=True)
+def update_call_log():
+
+    data: dict[str, str] = frappe.request.get_json()
+    if not data:
+        frappe.log_error(
+            "No data received in the update call log webhook.",
+            "Yeastar Update Call Log Webhook Error",
+        )
+        return
+    frappe.log_error(
+        title="Yeastar Update Call Log Webhook Data",
+        message=str(data),
+    )
+
+    if call_log_doc := get_call_log(data["call_id"]):
+        call_log_doc.status = map_call_log_status(data["status"])
+        call_log_doc.duration = data["duration"]
+        call_log_doc.start_time = data["start_time"]
+        call_log_doc.end_time = data["end_time"]
+        
+
+
+        call_log_doc.save()
+
+
+def map_call_log_status(status: str) -> str:
+
+    status_map = {
+        "ANSWERED": "Completed",
+        "BUSY": "Busy",
+        "NO ANSWER": "No Answer",
+    }
+
+    return status_map[status] if status in status_map else "Missed"
+
+
+def get_call_log(call_log_id: str):
+    if frappe.db.exists("CRM Call Log", call_log_id):
+        return frappe.get_doc("CRM Call Log", call_log_id)
 
 
 def make_http_request(
@@ -177,43 +252,3 @@ def make_http_request(
             message=frappe.get_traceback(),
         )
         frappe.throw("There was an error connecting to the Yeastar API.")
-
-
-@frappe.whitelist()
-def create_call_log_entry(call_details: dict):
-
-    try:
-
-        _from = (
-            frappe.session.user
-            if call_details["from"] == "session_user"
-            else call_details["from"]
-        )
-        _to = (
-            frappe.session.user
-            if call_details["to"] == "session_user"
-            else call_details["to"]
-        )
-
-        if call_details["to"] == "session_user":
-            _to = frappe.session.user
-
-        crm_call_log_doc = frappe.get_doc(
-            {
-                "doctype": "CRM Call Log",
-                "telephony_medium": call_details["telephony_medium"],
-                "status": call_details["status"],
-                "type": call_details["type"],
-                "from": _from,
-                "to": _to,
-                "duration": call_details["duration"],
-            }
-        )
-
-        crm_call_log_doc.insert(ignore_permissions=True)
-    except Exception as e:
-        frappe.log_error(
-            message=frappe.get_traceback(),
-            title=f"Error creating call log entry: {str(e)}",
-            reference_doctype="CRM Call Log",
-        )
