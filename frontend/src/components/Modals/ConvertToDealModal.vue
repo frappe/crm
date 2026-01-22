@@ -98,7 +98,7 @@ import { statusesStore } from '@/stores/statuses'
 import { showQuickEntryModal, quickEntryProps } from '@/composables/modals'
 import { isMobileView } from '@/composables/settings'
 import { capture } from '@/telemetry'
-import { useOnboarding } from 'frappe-ui/frappe'
+import { useOnboarding, useTelemetry } from 'frappe-ui/frappe'
 import { Switch, Dialog, createResource, call } from 'frappe-ui'
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
@@ -125,6 +125,7 @@ const existingOrganizationChecked = ref(false)
 const existingContact = ref('')
 const existingOrganization = ref('')
 const error = ref('')
+const $telemetry = useTelemetry()
 
 const { triggerConvertToDeal } = useDocument('CRM Lead', props.lead.name)
 const { document: deal } = useDocument('CRM Deal')
@@ -186,6 +187,7 @@ async function convertToDeal() {
       localStorage.setItem('firstDeal' + user, _deal)
     })
     capture('convert_lead_to_deal')
+    $telemetry.capture('convert_lead_to_deal', true)
     router.push({ name: 'Deal', params: { dealId: _deal } })
   }
 }
