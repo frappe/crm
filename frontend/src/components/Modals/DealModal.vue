@@ -85,6 +85,7 @@ import { capture } from '@/telemetry'
 import { Switch, createResource } from 'frappe-ui'
 import { computed, ref, onMounted, nextTick, watch } from 'vue'
 import { useRouter } from 'vue-router'
+import { useTelemetry } from 'frappe-ui/frappe'
 
 const props = defineProps({
   defaults: Object,
@@ -106,6 +107,7 @@ const isDealCreating = ref(false)
 const chooseExistingContact = ref(false)
 const chooseExistingOrganization = ref(false)
 const fieldLayoutRef = ref(null)
+const $telemetry = useTelemetry()
 
 watch(
   [chooseExistingOrganization, chooseExistingContact],
@@ -220,6 +222,7 @@ async function createDeal() {
     },
     onSuccess(name) {
       capture('deal_created')
+      $telemetry.capture('deal_created', true)
       isDealCreating.value = false
       show.value = false
       router.push({ name: 'Deal', params: { dealId: name } })

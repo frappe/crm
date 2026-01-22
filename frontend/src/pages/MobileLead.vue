@@ -225,6 +225,7 @@ import {
 } from 'frappe-ui'
 import { ref, computed, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { useTelemetry } from 'frappe-ui/frappe'
 
 const { brand } = getSettings()
 const { $dialog, $socket } = globalStore()
@@ -232,6 +233,7 @@ const { statusOptions, getLeadStatus } = statusesStore()
 const { doctypeMeta } = getMeta('CRM Lead')
 const route = useRoute()
 const router = useRouter()
+const $telemetry = useTelemetry()
 
 const props = defineProps({
   leadId: {
@@ -460,6 +462,7 @@ async function convertToDeal() {
     existingContact.value = ''
     existingOrganization.value = ''
     capture('convert_lead_to_deal')
+    $telemetry.capture('convert_lead_to_deal', true)
     router.push({ name: 'Deal', params: { dealId: deal } })
   }
 }
