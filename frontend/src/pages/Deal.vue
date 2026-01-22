@@ -639,7 +639,7 @@ function contactOptions(contact) {
 
   if (!contact.is_primary) {
     options.push({
-      label: __('Set as Primary Contact'),
+      label: __('Set as primary contact'),
       icon: h(SuccessIcon, { class: 'h-4 w-4' }),
       onClick: () => setPrimaryContact(contact.name),
     })

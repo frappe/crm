@@ -5,7 +5,7 @@
         :label="
           hideLabel
             ? groupByValue?.label
-            : __('Group By: ') + groupByValue?.label
+            : __('Group by: ') + groupByValue?.label
         "
         :iconLeft="DetailsIcon"
         :iconRight="isOpen ? 'chevron-up' : 'chevron-down'"

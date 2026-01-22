@@ -232,9 +232,9 @@ class CRMDeal(Document):
 		self.update_expected_deal_value()
 		if frappe.db.get_single_value("FCRM Settings", "enable_forecasting"):
 			if not self.expected_deal_value or self.expected_deal_value == 0:
-				frappe.throw(_("Expected Deal Value is required."), frappe.MandatoryError)
+				frappe.throw(_("Expected deal value is required."), frappe.MandatoryError)
 			if not self.expected_closure_date:
-				frappe.throw(_("Expected Closure Date is required."), frappe.MandatoryError)
+				frappe.throw(_("Expected closure date is required."), frappe.MandatoryError)
 
 	def validate_lost_reason(self):
 		"""
@@ -266,7 +266,7 @@ class CRMDeal(Document):
 				"width": "11rem",
 			},
 			{
-				"label": "Annual Revenue",
+				"label": "Annual revenue",
 				"type": "Currency",
 				"key": "annual_revenue",
 				"align": "right",
@@ -285,19 +285,19 @@ class CRMDeal(Document):
 				"width": "12rem",
 			},
 			{
-				"label": "Mobile No",
+				"label": "Mobile no",
 				"type": "Data",
 				"key": "mobile_no",
 				"width": "11rem",
 			},
 			{
-				"label": "Assigned To",
+				"label": "Assigned to",
 				"type": "Text",
 				"key": "_assign",
 				"width": "10rem",
 			},
 			{
-				"label": "Last Modified",
+				"label": "Last modified",
 				"type": "Datetime",
 				"key": "modified",
 				"width": "8rem",

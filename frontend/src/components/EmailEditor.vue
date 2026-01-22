@@ -127,7 +127,7 @@
               @update:modelValue="() => appendEmoji()"
             >
               <Button
-                :tooltip="__('Insert Emoji')"
+                :tooltip="__('Insert emoji')"
                 :icon="SmileIcon"
                 variant="ghost"
                 @click="togglePopover()"
@@ -151,7 +151,7 @@
               </template>
             </FileUploader>
             <Button
-              :tooltip="__('Insert Email Template')"
+              :tooltip="__('Insert email template')"
               variant="ghost"
               :icon="EmailTemplateIcon"
               @click="showEmailTemplateSelectorModal = true"
@@ -206,7 +206,7 @@ const props = defineProps({
   },
   subject: {
     type: String,
-    default: __('Email from Lead'),
+    default: __('Email from lead'),
   },
   editorProps: {
     type: Object,

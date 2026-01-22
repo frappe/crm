@@ -5,7 +5,7 @@
         <Button
           variant="ghost"
           icon-left="chevron-left"
-          :label="slaData.sla_name || __('New SLA Policy')"
+          :label="slaData.sla_name || __('New SLA policy')"
           size="md"
           @click="goBack()"
           class="cursor-pointer -ml-4 hover:bg-transparent focus:bg-transparent focus:outline-none focus:ring-0 focus:ring-offset-0 focus-visible:none active:bg-transparent active:outline-none active:ring-0 active:ring-offset-0 active:text-ink-gray-5 font-semibold text-ink-gray-7 text-lg hover:opacity-70 !pr-0 !max-w-96 !justify-start"
@@ -212,7 +212,7 @@
         <div>
           <div class="flex flex-col gap-1">
             <span class="text-lg font-semibold text-ink-gray-8">
-              {{ __('Response and Follow Up') }}
+              {{ __('Response & Follow up') }}
             </span>
             <span class="text-p-sm text-ink-gray-6">
               {{

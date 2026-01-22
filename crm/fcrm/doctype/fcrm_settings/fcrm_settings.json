@@ -31,7 +31,7 @@
   {
    "fieldname": "restore_defaults",
    "fieldtype": "Button",
-   "label": "Restore Defaults"
+   "label": "Restore defaults"
   },
   {
    "fieldname": "dropdown_items",
@@ -57,7 +57,7 @@
   {
    "fieldname": "dropdown_items_tab",
    "fieldtype": "Tab Break",
-   "label": "Dropdown Items"
+   "label": "Dropdown items"
   },
   {
    "fieldname": "brand_name",
@@ -72,10 +72,10 @@
   },
   {
    "default": "0",
-   "description": "It will make deal's \"Expected Closure Date\" & \"Expected Deal Value\" mandatory to get accurate forecasting insights",
+   "description": "It will make deal's \"Expected closure date\" & \"Expected deal value\" mandatory to get accurate forecasting insights",
    "fieldname": "enable_forecasting",
    "fieldtype": "Check",
-   "label": "Enable Forecasting"
+   "label": "Enable forecasting"
   },
   {
    "fieldname": "currency",
@@ -98,14 +98,14 @@
    "default": "frankfurter.app",
    "fieldname": "service_provider",
    "fieldtype": "Select",
-   "label": "Service Provider",
+   "label": "Service provider",
    "options": "frankfurter.app\nexchangerate.host"
   },
   {
    "depends_on": "eval:doc.service_provider == 'exchangerate.host';",
    "fieldname": "access_key",
    "fieldtype": "Data",
-   "label": "Access Key",
+   "label": "Access key",
    "mandatory_depends_on": "eval:doc.service_provider == 'exchangerate.host';"
   },
   {
@@ -114,10 +114,10 @@
   },
   {
    "default": "1",
-   "description": "Automatically update \"Expected Deal Value\" based on the total value of associated products in a deal",
+   "description": "Automatically update \"Expected deal value\" based on the total value of associated products in a deal",
    "fieldname": "auto_update_expected_deal_value",
    "fieldtype": "Check",
-   "label": "Auto Update Expected Deal Value"
+   "label": "Auto update Expected deal value"
   },
   {
    "fieldname": "calendar_tab",
@@ -153,8 +153,8 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-09-24 14:43:50.510563",
- "modified_by": "Administrator",
+ "modified": "2026-01-22 13:58:07.553441",
+ "modified_by": "shariq@frappe.io",
  "module": "FCRM",
  "name": "FCRM Settings",
  "owner": "Administrator",

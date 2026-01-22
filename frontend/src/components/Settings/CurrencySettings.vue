@@ -148,7 +148,7 @@ function updateSettings() {
         !settings.doc.access_key
       ) {
         errorMessage.value = __(
-          'Please enter the Exchangerate Host access key.',
+          'Please enter the exchangerate host access key.',
         )
         return errorMessage.value
       }

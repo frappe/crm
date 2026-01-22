@@ -7,6 +7,21 @@ from frappe.model.document import Document
 
 
 class HelpdeskCRMSettings(Document):
+	# begin: auto-generated types
+	# This code is auto-generated. Do not modify anything in this block.
+
+	from typing import TYPE_CHECKING
+
+	if TYPE_CHECKING:
+		from frappe.types import DF
+
+		api_key: DF.Data | None
+		api_secret: DF.Password | None
+		enabled: DF.Check
+		helpdesk_site_url: DF.Data | None
+		is_helpdesk_in_different_site: DF.Check
+	# end: auto-generated types
+
 	def validate(self):
 		if self.enabled:
 			self.validate_if_helpdesk_installed()

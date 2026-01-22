@@ -7,6 +7,27 @@ from frappe.model.document import Document
 
 
 class CRMNotification(Document):
+	# begin: auto-generated types
+	# This code is auto-generated. Do not modify anything in this block.
+
+	from typing import TYPE_CHECKING
+
+	if TYPE_CHECKING:
+		from frappe.types import DF
+
+		comment: DF.Link | None
+		from_user: DF.Link | None
+		message: DF.HTMLEditor | None
+		notification_text: DF.Text | None
+		notification_type_doc: DF.DynamicLink | None
+		notification_type_doctype: DF.Link | None
+		read: DF.Check
+		reference_doctype: DF.Link | None
+		reference_name: DF.DynamicLink | None
+		to_user: DF.Link
+		type: DF.Literal["Mention", "Task", "Assignment", "WhatsApp"]
+	# end: auto-generated types
+
 	def on_update(self):
 		if self.to_user:
 			frappe.publish_realtime("crm_notification", user=self.to_user)

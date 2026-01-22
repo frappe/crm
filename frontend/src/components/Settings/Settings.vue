@@ -7,34 +7,35 @@
   >
     <template #body>
       <div class="flex h-[calc(100vh_-_8rem)]">
-        <div class="flex flex-col p-1 w-52 shrink-0 bg-surface-gray-2">
-          <h1 class="px-3 pt-3 pb-2 text-lg font-semibold text-ink-gray-8">
-            {{ __('Settings') }}
-          </h1>
-          <div class="flex flex-col overflow-y-auto">
-            <template v-for="tab in tabs" :key="tab.label">
-              <div
-                v-if="!tab.hideLabel"
-                class="py-[7px] px-2 my-1 flex cursor-pointer gap-1.5 text-base text-ink-gray-5 transition-all duration-300 ease-in-out"
-              >
-                <span>{{ __(tab.label) }}</span>
-              </div>
-              <nav class="space-y-1 px-1">
-                <SidebarLink
-                  v-for="i in tab.items"
-                  :icon="i.icon"
-                  :label="__(i.label)"
-                  class="w-full"
-                  :class="
-                    activeTab?.label == i.label
-                      ? 'bg-surface-selected shadow-sm hover:bg-surface-selected'
-                      : 'hover:bg-surface-gray-3'
-                  "
-                  @click="activeSettingsPage = i.label"
-                />
-              </nav>
-            </template>
-          </div>
+        <div
+          class="flex flex-col p-1 w-52 shrink-0 bg-surface-menu-bar overflow-y-auto"
+        >
+          <template v-for="(tab, i) in tabs" :key="tab.label">
+            <div
+              v-if="!tab.hideLabel && i != 0"
+              class="border-t mx-1 mb-2 mt-[11px]"
+            />
+            <div
+              v-if="!tab.hideLabel"
+              class="h-7.5 px-2 py-[7px] my-[3px] flex cursor-pointer gap-1.5 text-base text-ink-gray-5 transition-all duration-300 ease-in-out"
+            >
+              <span>{{ __(tab.label) }}</span>
+            </div>
+            <nav class="space-y-[3px] px-1">
+              <SidebarLink
+                v-for="i in tab.items"
+                :icon="i.icon"
+                :label="__(i.label)"
+                class="w-full"
+                :class="
+                  activeTab?.label == i.label
+                    ? 'bg-surface-selected shadow-sm hover:bg-surface-selected'
+                    : 'hover:bg-surface-gray-3'
+                "
+                @click="activeSettingsPage = i.label"
+              />
+            </nav>
+          </template>
         </div>
         <div class="flex flex-col flex-1 overflow-y-auto bg-surface-modal">
           <component :is="activeTab.component" v-if="activeTab" />
@@ -68,7 +69,7 @@ import HomeActions from '@/components/Settings/HomeActions.vue'
 import ForecastingSettings from '@/components/Settings/ForecastingSettings.vue'
 import CurrencySettings from '@/components/Settings/CurrencySettings.vue'
 import EmailTemplatePage from '@/components/Settings/EmailTemplate/EmailTemplatePage.vue'
-import TelephonySettings from '@/components/Settings/TelephonySettings.vue'
+import TelephonyPage from '@/components/Settings/Telephony/TelephonyPage.vue'
 import EmailConfig from '@/components/Settings/EmailConfig.vue'
 import SidebarLink from '@/components/SidebarLink.vue'
 import { usersStore } from '@/stores/users'
@@ -91,8 +92,7 @@ const user = computed(() => getUser() || {})
 const tabs = computed(() => {
   let _tabs = [
     {
-      label: __('Personal Settings'),
-      hideLabel: true,
+      label: __('My settings'),
       items: [
         {
           label: __('Profile'),
@@ -107,7 +107,7 @@ const tabs = computed(() => {
       ],
     },
     {
-      label: __('System Configuration'),
+      label: __('System configuration'),
       items: [
         {
           label: __('Forecasting'),
@@ -115,12 +115,12 @@ const tabs = computed(() => {
           icon: TrendingUpDownIcon,
         },
         {
-          label: __('Currency & Exchange Rate'),
+          label: __('Currency & Exchange rate'),
           icon: CircleDollarSignIcon,
           component: markRaw(CurrencySettings),
         },
         {
-          label: __('Brand Settings'),
+          label: __('Brand settings'),
           icon: SparkleIcon,
           component: markRaw(BrandSettings),
         },
@@ -133,7 +133,7 @@ const tabs = computed(() => {
       condition: () => isManager(),
     },
     {
-      label: __('User Management'),
+      label: __('User management'),
       items: [
         {
           label: __('Users'),
@@ -142,7 +142,7 @@ const tabs = computed(() => {
           condition: () => isManager(),
         },
         {
-          label: __('Invite User'),
+          label: __('Invite user'),
           icon: 'user-plus',
           component: markRaw(InviteUserPage),
           condition: () => isManager(),
@@ -151,16 +151,16 @@ const tabs = computed(() => {
       condition: () => isManager(),
     },
     {
-      label: __('Email Settings'),
+      label: __('Email settings'),
       items: [
         {
-          label: __('Email Accounts'),
+          label: __('Email accounts'),
           icon: Email2Icon,
           component: markRaw(EmailConfig),
           condition: () => isManager(),
         },
         {
-          label: __('Email Templates'),
+          label: __('Email templates'),
           icon: EmailTemplateIcon,
           component: markRaw(EmailTemplatePage),
         },
@@ -175,7 +175,7 @@ const tabs = computed(() => {
           component: markRaw(AssignmentRulePage),
         },
         {
-          label: __('SLA Policies'),
+          label: __('SLA policies'),
           icon: markRaw(h(ShieldCheck)),
           component: markRaw(SlaConfig),
         },
@@ -185,7 +185,7 @@ const tabs = computed(() => {
       label: __('Customization'),
       items: [
         {
-          label: __('Home Actions'),
+          label: __('Home actions'),
           component: markRaw(HomeActions),
           icon: 'home',
         },
@@ -198,7 +198,7 @@ const tabs = computed(() => {
         {
           label: __('Telephony'),
           icon: PhoneIcon,
-          component: markRaw(TelephonySettings),
+          component: markRaw(TelephonyPage),
           condition: () => isManager() || isTelephonyAgent(),
         },
         {
@@ -220,7 +220,7 @@ const tabs = computed(() => {
           condition: () => isManager(),
         },
         {
-          label: __('Lead Syncing'),
+          label: __('Lead syncing'),
           icon: 'refresh-cw',
           component: markRaw(LeadSyncSourcePage),
           condition: () => isManager(),

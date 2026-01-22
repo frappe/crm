@@ -42,25 +42,25 @@
       v-slot="{ idx, column, item, row }"
       doctype="CRM Deal"
     >
-      <div v-if="column.key === '_assign'" class="flex items-center">
-        <MultipleAvatar
-          :avatars="item"
-          size="sm"
-          @click="
-            (event) =>
-              emit('applyFilter', {
-                event,
-                idx,
-                column,
-                item,
-                firstColumn: columns[0],
-              })
-          "
-        />
-      </div>
-      <ListRowItem v-else :item="item" :align="column.align">
+      <ListRowItem :item="item" :align="column.align">
         <template #prefix>
-          <div v-if="column.key === 'status'">
+          <div v-if="column.key === '_assign'" class="flex items-center">
+            <MultipleAvatar
+              :avatars="item"
+              size="sm"
+              @click="
+                (event) =>
+                  emit('applyFilter', {
+                    event,
+                    idx,
+                    column,
+                    item,
+                    firstColumn: columns[0],
+                  })
+              "
+            />
+          </div>
+          <div v-else-if="column.key === 'status'">
             <IndicatorIcon :class="item.color" />
           </div>
           <div v-else-if="column.key === 'organization'">
@@ -81,7 +81,7 @@
               size="sm"
             />
           </div>
-          <div v-else-if="column.key === 'mobile_no'">
+          <div v-else-if="column.key === 'mobile_no' && item">
             <PhoneIcon class="h-4 w-4" />
           </div>
           <div v-else-if="column.key === '_liked_by'">
@@ -155,7 +155,7 @@
             />
           </div>
           <div
-            v-else
+            v-else-if="label"
             class="truncate text-base"
             @click="
               (event) =>
