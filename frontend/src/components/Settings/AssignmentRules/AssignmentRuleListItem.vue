@@ -143,7 +143,7 @@ const dropdownOptions = [
     condition: () => !isConfirmingDelete.value,
   },
   {
-    label: __('Confirm Delete'),
+    label: __('Confirm delete'),
     icon: 'trash-2',
     theme: 'red',
     onClick: () => deleteAssignmentRule(),

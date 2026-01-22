@@ -3,15 +3,15 @@
     <template #body-title>
       <div class="flex items-center gap-3">
         <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9">
-          {{ editMode ? __('Edit Note') : __('Create Note') }}
+          {{ editMode ? __('Edit note') : __('Create note') }}
         </h3>
         <Button
           v-if="_note?.reference_docname"
           size="sm"
           :label="
             _note.reference_doctype == 'CRM Deal'
-              ? __('Open Deal')
-              : __('Open Lead')
+              ? __('Open deal')
+              : __('Open lead')
           "
           :iconRight="ArrowUpRightIcon"
           @click="redirect()"

@@ -87,7 +87,7 @@ function completeAlert(id) {
 
 function formatEventTime(notification) {
   if (notification.all_day_event) {
-    return __('All Day')
+    return __('All day')
   } else if (notification.starts_on) {
     const startTime = dayjs(notification.starts_on).format('h:mm a')
     const endTime = dayjs(notification.ends_on).format('h:mm a')

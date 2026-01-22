@@ -131,7 +131,7 @@
           <PeopleIcon class="size-4" />
           <div class="flex flex-col">
             <div class="text-ink-gray-7">
-              {{ __('{0} Attendees', [peoples.length + 1]) }}
+              {{ __('{0} attendees', [peoples.length + 1]) }}
             </div>
             <div class="text-p-base">{{ attendees }}</div>
           </div>
@@ -334,7 +334,7 @@
             class="w-full"
             variant="outline"
             :modelValue="_event.fromTime"
-            :placeholder="__('Start Time')"
+            :placeholder="__('Start time')"
             @update:modelValue="(time) => updateTime(time, true)"
           />
           <TimePicker
@@ -342,7 +342,7 @@
             variant="outline"
             :modelValue="_event.toTime"
             :options="toOptions"
-            :placeholder="__('End Time')"
+            :placeholder="__('End time')"
             placement="bottom-end"
             @update:modelValue="(time) => updateTime(time)"
           />
@@ -426,7 +426,7 @@
               ]"
               v-model="_event.referenceDoctype"
               variant="outline"
-              :placeholder="__('Add Lead or Deal')"
+              :placeholder="__('Add lead or deal')"
               @change="
                 () => {
                   _event.referenceDocname = ''

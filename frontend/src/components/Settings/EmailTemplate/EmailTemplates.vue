@@ -139,7 +139,7 @@
             class="mt-3.5 p-2"
             @click="() => templates.next()"
             :loading="templates.loading"
-            :label="__('Load More')"
+            :label="__('Load more')"
             icon-left="refresh-cw"
           />
         </div>
@@ -236,7 +236,7 @@ function getDropdownOptions(template) {
       condition: () => !confirmDelete.value,
     },
     {
-      label: __('Confirm Delete'),
+      label: __('Confirm delete'),
       icon: 'trash-2',
       theme: 'red',
       onClick: () => deleteTemplate(template),

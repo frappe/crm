@@ -100,7 +100,7 @@
               class="max-w-[112px]"
               variant="outline"
               :modelValue="_event.fromTime"
-              :placeholder="__('Start Time')"
+              :placeholder="__('Start time')"
               @update:modelValue="(time) => updateTime(time, true)"
             />
             <TimePicker
@@ -109,7 +109,7 @@
               variant="outline"
               :modelValue="_event.toTime"
               :options="toOptions"
-              :placeholder="__('End Time')"
+              :placeholder="__('End time')"
               placement="bottom-end"
               @update:modelValue="(time) => updateTime(time)"
             />

@@ -164,7 +164,7 @@
                   <div
                     class="text-sm text-ink-gray-6 flex gap-1 cursor-default text-nowrap items-center"
                   >
-                    <span>{{ __('Old Condition') }}</span>
+                    <span>{{ __('Old condition') }}</span>
                     <FeatherIcon name="info" class="size-4" />
                   </div>
                 </template>
@@ -248,7 +248,7 @@
                   <div
                     class="text-sm text-ink-gray-6 flex gap-1 cursor-default text-nowrap items-center"
                   >
-                    <span> {{ __('Old Condition') }} </span>
+                    <span> {{ __('Old condition') }} </span>
                     <FeatherIcon name="info" class="size-4" />
                   </div>
                 </template>
