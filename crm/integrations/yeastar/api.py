@@ -12,7 +12,7 @@ from .utils import (
 )
 from crm.integrations.exotel.handler import create_call_log
 from frappe.model.document import Document
-
+from frappe.utils import get_datetime
 
 
 @frappe.whitelist(allow_guest=True)
@@ -136,10 +136,6 @@ def call_status_changed():
 
     data_parsed = parse_call_state(data)
     if not data_parsed:
-        frappe.log_error(
-            title="Yeastar Call Status Changed Webhook - My Extension Not Present",
-            message="The call does not involve the configured Yeastar extension.",
-        )
         return
 
     for entry in data_parsed:
@@ -184,28 +180,44 @@ def create_socket_connection(details: IncomingCallDetails | CallStatusDetails) -
 @frappe.whitelist(allow_guest=True)
 def update_call_log():
 
-    data: dict[str, str] = frappe.request.get_json()
-    if not data:
+    try:
+
+        frappe.set_user("Yeastar Call Log Webhook")
+
+        data: dict[str, str] = frappe.request.get_json()
+        if not data:
+            frappe.log_error(
+                "No data received in the update call log webhook.",
+                "Yeastar Update Call Log Webhook Error",
+            )
+            return
         frappe.log_error(
-            "No data received in the update call log webhook.",
-            "Yeastar Update Call Log Webhook Error",
+            title="Call Log Webhook Data",
+            message=str(data),
         )
-        return
-    frappe.log_error(
-        title="Call Log Webhook Data",
-        message=str(data),
-    )
 
-    if call_log_doc := get_call_log(data["call_id"]):
-        call_log_doc.status = map_call_log_status(data["status"])
-        call_log_doc.duration = data["talk_duration"]
-        call_log_doc.start_time = data["start_time"]
-        call_log_doc.end_time = data["end_time"]
+        if call_log_doc := get_call_log(data["call_id"]):
+            call_log_doc.status = map_call_log_status(data["status"])
+            call_log_doc.duration = data["talk_duration"]
+            call_log_doc.start_time = data["time_start"]
+            call_log_doc.end_time = get_datetime()
 
-        call_log_doc.save(ignore_permissions=True)
-        frappe.log_error(title="Call Log Updated", message=f"Call Log {call_log_doc.as_dict()} updated.")
-        frappe.db.commit()
+            call_log_doc.save(ignore_permissions=True)
+            frappe.db.commit()
 
+            frappe.log_error(
+                title="Call Log Updated",
+                message=f"Call Log {call_log_doc.as_dict()} updated.",
+            )
+
+    except Exception:
+        frappe.log_error(
+            title="Error while updating call log from Yeastar webhook",
+            message=frappe.get_traceback(),
+        )
+
+    finally:
+        frappe.set_user("Guest")
 
 
 def map_call_log_status(status: str) -> str:
@@ -216,10 +228,10 @@ def map_call_log_status(status: str) -> str:
         "NO ANSWER": "No Answer",
     }
 
-    return status_map[status] if status in status_map else "Missed"
+    return status_map[status] if status in status_map else "Failed"
 
 
-def get_call_log(call_log_id: str)-> "Document":
+def get_call_log(call_log_id: str) -> "Document":
     if frappe.db.exists("CRM Call Log", call_log_id):
         return frappe.get_doc("CRM Call Log", call_log_id)
 
