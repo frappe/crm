@@ -98,6 +98,17 @@ import { ref, onMounted, onBeforeUnmount } from 'vue'
 
 const { $socket } = globalStore()
 const { mark_as_read, toggle, mark_doc_as_read } = notificationsStore()
+<<<<<<< HEAD
+=======
+const { handleEventNotification } = useEventNotificationAlert()
+
+const activeTab = ref('all')
+const tabs = [
+  { label: __('All'), value: 'all' },
+  { label: __('Events'), value: 'events' },
+  // { label: __('Mentions'), value: 'mentions' },
+]
+>>>>>>> 92b4ced0 (refactor: set default active tab to 'all' in Notifications component)
 
 const target = ref(null)
 onClickOutside(
