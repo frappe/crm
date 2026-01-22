@@ -131,14 +131,6 @@
         :icon="NoteIcon"
         @click="toggleNoteWindow"
       />
-      <Button
-        class=""
-        variant="outline"
-        theme="red"
-        size="sm"
-        icon="x"
-        @click="direction = 'idle'"
-      />
     </div>
 
     <CountUpTimer ref="counterUpTimer" />

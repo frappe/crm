@@ -11,6 +11,8 @@ from .utils import (
     get_yeaster_agent_by_number,
 )
 from crm.integrations.exotel.handler import create_call_log
+from frappe.model.document import Document
+
 
 
 @frappe.whitelist(allow_guest=True)
@@ -200,7 +202,10 @@ def update_call_log():
         call_log_doc.start_time = data["start_time"]
         call_log_doc.end_time = data["end_time"]
 
-        call_log_doc.save()
+        call_log_doc.save(ignore_permissions=True)
+        frappe.log_error(title="Call Log Updated", message=f"Call Log {call_log_doc.as_dict()} updated.")
+        frappe.db.commit()
+
 
 
 def map_call_log_status(status: str) -> str:
@@ -214,7 +219,7 @@ def map_call_log_status(status: str) -> str:
     return status_map[status] if status in status_map else "Missed"
 
 
-def get_call_log(call_log_id: str):
+def get_call_log(call_log_id: str)-> "Document":
     if frappe.db.exists("CRM Call Log", call_log_id):
         return frappe.get_doc("CRM Call Log", call_log_id)
 
