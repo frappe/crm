@@ -25,9 +25,12 @@ class CRMServiceLevelAgreement(Document):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
-		from crm.fcrm.doctype.crm_service_day.crm_service_day import CRMServiceDay
-		from crm.fcrm.doctype.crm_service_level_priority.crm_service_level_priority import CRMServiceLevelPriority
 		from frappe.types import DF
+
+		from crm.fcrm.doctype.crm_service_day.crm_service_day import CRMServiceDay
+		from crm.fcrm.doctype.crm_service_level_priority.crm_service_level_priority import (
+			CRMServiceLevelPriority,
+		)
 
 		apply_on: DF.Link
 		condition: DF.Code | None
