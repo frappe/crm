@@ -69,7 +69,7 @@ import HomeActions from '@/components/Settings/HomeActions.vue'
 import ForecastingSettings from '@/components/Settings/ForecastingSettings.vue'
 import CurrencySettings from '@/components/Settings/CurrencySettings.vue'
 import EmailTemplatePage from '@/components/Settings/EmailTemplate/EmailTemplatePage.vue'
-import TelephonySettings from '@/components/Settings/TelephonySettings.vue'
+import TelephonyPage from '@/components/Settings/Telephony/TelephonyPage.vue'
 import EmailConfig from '@/components/Settings/EmailConfig.vue'
 import SidebarLink from '@/components/SidebarLink.vue'
 import { usersStore } from '@/stores/users'
@@ -198,7 +198,7 @@ const tabs = computed(() => {
         {
           label: __('Telephony'),
           icon: PhoneIcon,
-          component: markRaw(TelephonySettings),
+          component: markRaw(TelephonyPage),
           condition: () => isManager() || isTelephonyAgent(),
         },
         {
