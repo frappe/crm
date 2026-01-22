@@ -253,32 +253,6 @@ function hangUpCall() {
   })
 }
 
-function createCallLogEntry() {
-  let durationInSeconds = counterUpTimer.value.timeToSeconds(callDuration.value)
-  console.log('durationInSeconds', durationInSeconds)
-  createResource({
-    url: 'crm.integrations.yeastar.api.create_call_log_entry',
-    makeParams() {
-      return {
-        call_details: {
-          telephony_medium: 'Yeastar',
-          status: 'Completed',
-          type: isOutgoing.value ? 'Outgoing' : 'Incoming',
-          from: isOutgoing.value ? 'session_user' : contactDetails.number,
-          to: isOutgoing.value ? contactDetails.number : 'session_user',
-          duration: durationInSeconds,
-        },
-      }
-    },
-    onSuccess() {
-      direction.value = 'idle'
-    },
-    onError() {
-      toast.error('Error creating call log entry')
-    },
-  })
-}
-
 function stateMap(state) {
   const states = {
     RING: 'Ringing',
@@ -423,7 +397,7 @@ watch(callStatusChangeState, (newStatus) => {
 
 watch(showCallPopup, (newVal) => {
   if (!newVal) {
-    createCallLogEntry()
+    closeCallPopup()
   }
 })
 
