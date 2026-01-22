@@ -105,10 +105,7 @@ def add_task_to_call_log(call_sid, task):
 
 	return _task
 
-
-frappe.whitelist()
-
-
+@frappe.whitelist()
 def get_contact_lead_or_deal_from_number(number):
 	"""Get contact, lead or deal from the given number."""
 	contact = get_contact_by_phone_number(number)
@@ -203,40 +200,4 @@ def get_contact(phone_number, country="IN", exact_match=False):
 
 	return {"mobile_no": phone_number}
 
-@frappe.whitelist()
-def create_call_log_entry(call_details: dict):
 
-    try:
-
-        _from = (
-            frappe.session.user
-            if call_details["from"] == "session_user"
-            else call_details["from"]
-        )
-        _to = (
-            frappe.session.user
-            if call_details["to"] == "session_user"
-            else call_details["to"]
-        )
-
-        if call_details["to"] == "session_user":
-            _to = frappe.session.user
-
-        crm_call_log_doc = frappe.get_doc(
-            {
-                "doctype": "CRM Call Log",
-                "telephony_medium": call_details["telephony_medium"],
-                "status": call_details["status"],
-                "type": call_details["type"],
-                "from": _from,
-                "to": _to,
-                "duration": call_details["duration"],
-            }
-        )
-
-        crm_call_log_doc.insert(ignore_permissions=True)
-    except Exception as e:
-        frappe.log_error(
-            message=frappe.get_traceback(),
-            title=f"Error creating call log entry: {str(e)}",
-        )
