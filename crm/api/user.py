@@ -64,7 +64,7 @@ def remove_user(user):
 
 	user_doc = frappe.get_doc("User", user)
 
-	if user_doc.role_profiles:
+	if user_doc.get("role_profiles") or user_doc.get("role_profile_name"):
 		return frappe.throw(
 			_("User {0} cannot be removed as it has a Role Profile assigned to it.").format(user)
 		)
