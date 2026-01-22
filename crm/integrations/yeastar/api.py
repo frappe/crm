@@ -190,17 +190,15 @@ def update_call_log():
         )
         return
     frappe.log_error(
-        title="Yeastar Update Call Log Webhook Data",
+        title="Call Log Webhook Data",
         message=str(data),
     )
 
     if call_log_doc := get_call_log(data["call_id"]):
         call_log_doc.status = map_call_log_status(data["status"])
-        call_log_doc.duration = data["duration"]
+        call_log_doc.duration = data["talk_duration"]
         call_log_doc.start_time = data["start_time"]
         call_log_doc.end_time = data["end_time"]
-        
-
 
         call_log_doc.save()
 
