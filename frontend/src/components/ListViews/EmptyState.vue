@@ -1,10 +1,10 @@
 <template>
-  <div class="container relative flex h-full justify-center">
+  <div class="relative flex h-full w-full justify-center">
     <div
-      class="content absolute left-1/2 flex w-4/12 -translate-x-1/2 flex-col items-center gap-3"
+      class="absolute left-1/2 flex w-4/12 -translate-x-1/2 flex-col items-center gap-3"
       :style="{ top: top }"
     >
-      <component :is="icon" class="size-7.5 text-ink-gray-5" />
+      <Icon :icon="icon" class="size-7.5 text-ink-gray-5" />
       <div class="flex flex-col items-center gap-1">
         <span class="text-lg font-medium text-ink-gray-8">
           {{ computedTitle }}
@@ -17,6 +17,7 @@
   </div>
 </template>
 <script setup>
+import Icon from '@/components/Icon.vue'
 import { computed } from 'vue'
 
 const props = defineProps({
@@ -24,8 +25,8 @@ const props = defineProps({
   title: { type: String, default: '' },
   description: { type: String, default: '' },
   icon: {
-    type: Object,
-    default: () => import('@/components/Icons/LeadsIcon.vue'),
+    type: [String, Object],
+    default: 'file-text',
   },
   top: { type: String, default: '35%' },
 })
@@ -38,7 +39,7 @@ const computedDescription = computed(() => {
   return props.description
     ? props.description
     : __(
-        'It appears that there are currently no {0} available. you can create more {0} by using the Create button.',
+        'It appears that there are currently no {0} available. You can create more {0} by using the Create button.',
         [__(props.name)],
       )
 })
