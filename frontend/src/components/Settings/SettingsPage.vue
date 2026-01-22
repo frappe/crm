@@ -44,7 +44,7 @@
       />
     </div>
     <div v-else class="flex flex-1 items-center justify-center">
-      <Spinner class="size-8" />
+      <LoadingIndicator class="size-8" />
     </div>
     <ErrorMessage :message="data.save.error" />
   </div>
@@ -54,7 +54,7 @@ import FieldLayout from '@/components/FieldLayout/FieldLayout.vue'
 import {
   createDocumentResource,
   createResource,
-  Spinner,
+  LoadingIndicator,
   Badge,
   toast,
   ErrorMessage,
