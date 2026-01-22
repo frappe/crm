@@ -17,6 +17,7 @@ def get_users():
 		],
 		order_by="full_name asc",
 		distinct=True,
+		filters={"enabled": 1},
 	).run(as_dict=1)
 
 	for user in users:
