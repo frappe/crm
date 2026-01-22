@@ -83,12 +83,12 @@
   {
    "fieldname": "order_by_tab",
    "fieldtype": "Tab Break",
-   "label": "Order By"
+   "label": "Order by"
   },
   {
    "fieldname": "order_by",
    "fieldtype": "Code",
-   "label": "Order By"
+   "label": "Order by"
   },
   {
    "default": "0",
@@ -99,13 +99,13 @@
   {
    "fieldname": "route_name",
    "fieldtype": "Data",
-   "label": "Route Name"
+   "label": "Route name"
   },
   {
    "default": "0",
    "fieldname": "load_default_columns",
    "fieldtype": "Check",
-   "label": "Load Default Columns"
+   "label": "Load default columns"
   },
   {
    "default": "0",
@@ -128,12 +128,12 @@
   {
    "fieldname": "group_by_tab",
    "fieldtype": "Tab Break",
-   "label": "Group By"
+   "label": "Group by"
   },
   {
    "fieldname": "group_by_field",
    "fieldtype": "Data",
-   "label": "Group By Field"
+   "label": "Group by field"
   },
   {
    "fieldname": "list_section",
@@ -146,7 +146,7 @@
   {
    "fieldname": "column_field",
    "fieldtype": "Data",
-   "label": "Column Field"
+   "label": "Column field"
   },
   {
    "fieldname": "list_tab",
@@ -161,35 +161,35 @@
   {
    "fieldname": "kanban_columns",
    "fieldtype": "Code",
-   "label": "Kanban Columns"
+   "label": "Kanban columns"
   },
   {
    "fieldname": "kanban_fields",
    "fieldtype": "Code",
-   "label": "Kanban Fields"
+   "label": "Kanban fields"
   },
   {
    "fieldname": "title_field",
    "fieldtype": "Data",
-   "label": "Title Field"
+   "label": "Title field"
   },
   {
    "default": "0",
    "fieldname": "is_standard",
    "fieldtype": "Check",
-   "label": "Is Standard"
+   "label": "Is standard"
   },
   {
    "default": "0",
    "fieldname": "is_default",
    "fieldtype": "Check",
-   "label": "Is Default"
+   "label": "Is default"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-02-20 15:36:55.059065",
- "modified_by": "Administrator",
+ "modified": "2026-01-22 14:06:56.671644",
+ "modified_by": "shariq@frappe.io",
  "module": "FCRM",
  "name": "CRM View Settings",
  "naming_rule": "Autoincrement",
@@ -221,8 +221,11 @@
   }
  ],
  "read_only": 1,
+ "row_format": "Dynamic",
+ "show_title_field_in_link": 1,
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],
+ "title_field": "label",
  "track_changes": 1
 }

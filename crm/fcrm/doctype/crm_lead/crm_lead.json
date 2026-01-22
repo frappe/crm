@@ -85,18 +85,18 @@
   {
    "fieldname": "first_name",
    "fieldtype": "Data",
-   "label": "First Name",
+   "label": "First name",
    "reqd": 1
   },
   {
    "fieldname": "middle_name",
    "fieldtype": "Data",
-   "label": "Middle Name"
+   "label": "Middle name"
   },
   {
    "fieldname": "last_name",
    "fieldtype": "Data",
-   "label": "Last Name"
+   "label": "Last name"
   },
   {
    "fieldname": "gender",
@@ -129,7 +129,7 @@
   {
    "fieldname": "mobile_no",
    "fieldtype": "Data",
-   "label": "Mobile No",
+   "label": "Mobile no",
    "options": "Phone"
   },
   {
@@ -149,18 +149,18 @@
   {
    "fieldname": "no_of_employees",
    "fieldtype": "Select",
-   "label": "No. of Employees",
+   "label": "No. of employees",
    "options": "1-10\n11-50\n51-200\n201-500\n501-1000\n1000+"
   },
   {
    "fieldname": "annual_revenue",
    "fieldtype": "Currency",
-   "label": "Annual Revenue"
+   "label": "Annual revenue"
   },
   {
    "fieldname": "lead_owner",
    "fieldtype": "Link",
-   "label": "Lead Owner",
+   "label": "Lead owner",
    "options": "User"
   },
   {
@@ -185,13 +185,13 @@
   {
    "fieldname": "lead_name",
    "fieldtype": "Data",
-   "label": "Full Name",
+   "label": "Full name",
    "search_index": 1
   },
   {
    "fieldname": "job_title",
    "fieldtype": "Data",
-   "label": "Job Title"
+   "label": "Job title"
   },
   {
    "fieldname": "organization_tab",
@@ -237,7 +237,7 @@
   {
    "fieldname": "sla_creation",
    "fieldtype": "Datetime",
-   "label": "SLA Creation",
+   "label": "SLA creation",
    "read_only": 1
   },
   {
@@ -247,19 +247,19 @@
   {
    "fieldname": "sla_status",
    "fieldtype": "Select",
-   "label": "SLA Status",
+   "label": "SLA status",
    "options": "\nFirst Response Due\nRolling Response Due\nFailed\nFulfilled",
    "read_only": 1
   },
   {
    "fieldname": "response_details_section",
    "fieldtype": "Section Break",
-   "label": "Response Details"
+   "label": "Response details"
   },
   {
    "fieldname": "response_by",
    "fieldtype": "Datetime",
-   "label": "Response By",
+   "label": "Response by",
    "read_only": 1
   },
   {
@@ -269,20 +269,20 @@
   {
    "fieldname": "first_response_time",
    "fieldtype": "Duration",
-   "label": "First Response Time",
+   "label": "First response time",
    "read_only": 1
   },
   {
    "fieldname": "first_responded_on",
    "fieldtype": "Datetime",
-   "label": "First Responded On",
+   "label": "First responded on",
    "read_only": 1
   },
   {
    "default": "Open",
    "fieldname": "communication_status",
    "fieldtype": "Link",
-   "label": "Communication Status",
+   "label": "Communication status",
    "options": "CRM Communication Status"
   },
   {
@@ -300,7 +300,7 @@
   {
    "fieldname": "status_change_log",
    "fieldtype": "Table",
-   "label": "Status Change Log",
+   "label": "Status change log",
    "options": "CRM Status Change Log"
   },
   {
@@ -333,7 +333,7 @@
    "description": "Total after discount",
    "fieldname": "net_total",
    "fieldtype": "Currency",
-   "label": "Net Total",
+   "label": "Net total",
    "options": "currency",
    "read_only": 1
   },
@@ -345,7 +345,7 @@
   {
    "fieldname": "facebook_lead_id",
    "fieldtype": "Data",
-   "label": "Facebook Lead ID",
+   "label": "Facebook lead ID",
    "unique": 1
   },
   {
@@ -355,7 +355,7 @@
   {
    "fieldname": "facebook_form_id",
    "fieldtype": "Data",
-   "label": "Facebook Form ID"
+   "label": "Facebook form ID"
   },
   {
    "fieldname": "section_break_kikl",
@@ -397,8 +397,8 @@
  "image_field": "image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-11-10 21:21:50.089284",
- "modified_by": "Administrator",
+ "modified": "2026-01-22 14:11:17.993170",
+ "modified_by": "shariq@frappe.io",
  "module": "FCRM",
  "name": "CRM Lead",
  "naming_rule": "By \"Naming Series\" field",
