@@ -23,6 +23,7 @@ class CRMHolidayList(Document):
 		from_date: DF.Date
 		holiday_list_name: DF.Data
 		holidays: DF.Table[CRMHoliday]
+		recurring_holidays: DF.JSON | None
 		to_date: DF.Date
 		total_holidays: DF.Int
 		weekly_off: DF.Literal[

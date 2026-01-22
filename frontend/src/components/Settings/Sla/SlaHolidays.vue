@@ -15,32 +15,32 @@
     <NestedPopover>
       <template #target="{ open }">
         <Button
-          class="text-sm"
+          class="text-sm max-w-40"
           :icon-right="open ? 'chevron-up' : 'chevron-down'"
           :label="slaData.holiday_list || __('Select holiday list')"
         />
       </template>
       <template #body>
         <div
-          class="my-2 min-w-40 rounded-lg bg-surface-modal shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
+          class="my-2 w-64 rounded-lg bg-surface-modal shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
         >
           <div class="max-h-52 overflow-y-auto p-1">
             <div
               v-for="holiday in holidayListData.data"
               :key="holiday.name"
-              class="flex items-center justify-between gap-4 rounded px-2 py-1.5 text-base text-ink-gray-8 cursor-pointer hover:bg-surface-gray-3"
+              class="flex items-center justify-between rounded px-2 py-1.5 text-base text-ink-gray-8 cursor-pointer hover:bg-surface-gray-3 gap-1"
               @click="
                 slaData.holiday_list =
                   slaData.holiday_list === holiday.name ? '' : holiday.name
               "
             >
-              <div class="flex items-center gap-2 w-full">
+              <div class="flex items-center gap-2 min-w-0">
                 <input
                   name="holiday_list"
                   :checked="holiday.name === slaData.holiday_list"
                   type="radio"
                 />
-                <div class="select-none">{{ holiday.name }}</div>
+                <div class="select-none truncate">{{ holiday.name }}</div>
               </div>
               <div class="flex cursor-pointer items-center gap-1">
                 <Button
@@ -182,6 +182,11 @@ import { ConfirmDelete, getGridTemplateColumnsForTable } from '../../../utils'
 import { slaData, slaDataErrors } from './utils'
 import { ref } from 'vue'
 import WorkDayModal from './WorkDayModal.vue'
+import { setSettingsActiveTab } from '../../../composables/settings'
+import {
+  holidayListActiveStep,
+  resetHolidayListData,
+} from '../BusinessHoliday/utils'
 
 const dialog = ref({
   show: false,
@@ -238,7 +243,16 @@ const workDayOptions = [
 ]
 
 const createNewHolidayList = () => {
-  window.open(`${window.location.origin}/app/crm-holiday-list`)
+  resetHolidayListData()
+  holidayListActiveStep.value = {
+    screen: 'view',
+    data: null,
+    previousScreen: {
+      screen: 'view',
+      data: slaData.value.name,
+    },
+  }
+  setSettingsActiveTab('Business Holidays')
 }
 
 const deleteWorkDay = (workDay) => {
@@ -280,9 +294,17 @@ const addWorkDay = () => {
 }
 
 const editHolidayList = (holidayList) => {
-  window.open(
-    `${window.location.origin}/app/crm-holiday-list/${holidayList.name}`,
-  )
+  holidayListActiveStep.value = {
+    screen: 'view',
+    data: {
+      name: holidayList.name,
+    },
+    previousScreen: {
+      screen: 'view',
+      data: slaData.value.name,
+    },
+  }
+  setSettingsActiveTab('Business Holidays')
 }
 
 const formatTime = (time) => {
