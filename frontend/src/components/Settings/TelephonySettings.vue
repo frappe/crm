@@ -71,7 +71,7 @@
       </div>
     </div>
     <div v-else class="flex flex-1 items-center justify-center">
-      <Spinner class="size-8" />
+      <LoadingIndicator class="size-8" />
     </div>
     <ErrorMessage :message="twilio.save.error || exotel.save.error || error" />
   </div>
@@ -82,7 +82,7 @@ import {
   createDocumentResource,
   createResource,
   FormControl,
-  Spinner,
+  LoadingIndicator,
   Badge,
   ErrorMessage,
   call,
