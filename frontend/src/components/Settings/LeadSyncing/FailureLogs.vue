@@ -6,7 +6,7 @@
             </Button>
             <Button v-if="logDoc?.document?.retrySync && selectedLog.type != 'Synced'" :loading="logDoc?.document?.retrySync.loading"
                 @click="logDoc?.document?.retrySync.submit()">
-                {{ __("Retry Sync") }}
+                {{ __("Retry sync") }}
             </Button>
         </div>
 
@@ -18,7 +18,7 @@
 
         <div class="mt-4 flex flex-col gap-8">
             <div>
-                <Textarea class="h-[250px]" :label="__('Lead Data')" :value="selectedLog.lead_data" disabled />
+                <Textarea class="h-[250px]" :label="__('Lead data')" :value="selectedLog.lead_data" disabled />
             </div>
 
             <div>

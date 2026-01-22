@@ -6,7 +6,7 @@ export const supportedSourceTypes = [
     label: 'Facebook',
 	value: 'Facebook',
     icon: LogoFacebook,
-    info: __("You will need a Meta developer account and an access token to sync leads from Facebook. Read more "),
+    info: __("You will need a Meta developer account and an access token to sync leads from facebook. Read more "),
     link: 'https://www.facebook.com/business/help/503306463479099?id=2190812977867143',
     custom: false,
   }
@@ -25,8 +25,8 @@ export const fbSourceFields = [
 	},
 	{
 		name: "access_token",
-		label: __("Access Token"),
+		label: __("Access token"),
 		type: "password",
-		placeholder: __("Enter your Facebook Access Token"),
+		placeholder: __("Enter your facebook access token"),
 	}
 ];

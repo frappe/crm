@@ -8,7 +8,7 @@
           {{ __('Telephony settings') }}
           <Badge
             v-if="twilio.isDirty || exotel.isDirty || mediumChanged"
-            :label="__('Not Saved')"
+            :label="__('Not saved')"
             variant="subtle"
             theme="orange"
           />

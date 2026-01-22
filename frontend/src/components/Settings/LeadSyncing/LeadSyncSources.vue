@@ -117,7 +117,7 @@
                 class="mt-3.5 p-2"
                 @click="() => sources.next()"
                 :loading="sources.loading"
-                :label="__('Load More')"
+                :label="__('Load more')"
                 icon-left="refresh-cw"
             />
             </div>
@@ -180,10 +180,10 @@ function deleteLeadSource(source) {
 	confirmDelete.value = false;
 	sources.delete.submit(source.name, {
 		onSuccess: () => {
-			toast.success(__("Lead Sync Source deleted successfully"));
+			toast.success(__("Lead sync source deleted successfully"));
 		},
 		onError: (error) => {
-			toast.error(error.messages[0] || __("Failed to delete Lead Sync Source"));
+			toast.error(error.messages[0] || __("Failed to delete lead sync source"));
 		},
 	});
 }
@@ -206,7 +206,7 @@ function getDropdownOptions(source) {
 			condition: () => !confirmDelete.value,
 		},
 		{
-			label: __("Confirm Delete"),
+			label: __("Confirm delete"),
 			icon: "trash-2",
 			theme: "red",
 			onClick: () => deleteLeadSource(source),

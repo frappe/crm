@@ -1,7 +1,7 @@
 <template>
   <Dialog
     v-model="show"
-    :options="{ title: __('Email Templates'), size: '4xl' }"
+    :options="{ title: __('Email templates'), size: '4xl' }"
   >
     <template #body-content>
       <div class="flex items-center gap-2">
@@ -10,7 +10,7 @@
           ref="searchInput"
           v-model="search"
           type="text"
-          :placeholder="__('Payment Reminder')"
+          :placeholder="__('Payment reminder')"
         >
           <template #prefix>
             <FeatherIcon name="search" class="h-4 w-4 text-ink-gray-4" />
@@ -66,7 +66,7 @@
             {{ __('No templates found') }}
           </div>
           <Button
-            :label="__('Create New')"
+            :label="__('Create new')"
             class="mt-4"
             @click="
               () => {

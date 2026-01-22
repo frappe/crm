@@ -68,7 +68,7 @@
         >
           {{ getRow(itemName, titleField).label }}
         </div>
-        <div class="text-ink-gray-4" v-else>{{ __('No Title') }}</div>
+        <div class="text-ink-gray-4" v-else>{{ __('No title') }}</div>
       </div>
     </template>
     <template #fields="{ fieldName, itemName }">
