@@ -57,7 +57,7 @@ class CRMCallLog(Document):
 				"width": "9rem",
 			},
 			{
-				"label": "Created On",
+				"label": "Created on",
 				"type": "Datetime",
 				"key": "creation",
 				"width": "8rem",

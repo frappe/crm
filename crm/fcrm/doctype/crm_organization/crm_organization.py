@@ -43,13 +43,13 @@ class CRMOrganization(Document):
 				"width": "14rem",
 			},
 			{
-				"label": "Annual Revenue",
+				"label": "Annual revenue",
 				"type": "Currency",
 				"key": "annual_revenue",
 				"width": "14rem",
 			},
 			{
-				"label": "Last Modified",
+				"label": "Last modified",
 				"type": "Datetime",
 				"key": "modified",
 				"width": "8rem",
