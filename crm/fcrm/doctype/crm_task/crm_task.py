@@ -11,6 +11,26 @@ from crm.fcrm.doctype.crm_notification.crm_notification import notify_user
 
 
 class CRMTask(Document):
+	# begin: auto-generated types
+	# This code is auto-generated. Do not modify anything in this block.
+
+	from typing import TYPE_CHECKING
+
+	if TYPE_CHECKING:
+		from frappe.types import DF
+
+		assigned_to: DF.Link | None
+		description: DF.TextEditor | None
+		due_date: DF.Datetime | None
+		name: DF.Int | None
+		priority: DF.Literal["Low", "Medium", "High"]
+		reference_docname: DF.DynamicLink | None
+		reference_doctype: DF.Link | None
+		start_date: DF.Date | None
+		status: DF.Literal["Backlog", "Todo", "In Progress", "Done", "Canceled"]
+		title: DF.Data
+	# end: auto-generated types
+
 	def after_insert(self):
 		self.assign_to()
 

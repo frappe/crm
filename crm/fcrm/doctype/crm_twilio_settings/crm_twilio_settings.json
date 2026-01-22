@@ -34,7 +34,7 @@
    "depends_on": "enabled",
    "fieldname": "api_key",
    "fieldtype": "Data",
-   "label": "API Key",
+   "label": "API key",
    "permlevel": 1,
    "read_only": 1
   },
@@ -42,7 +42,7 @@
    "depends_on": "enabled",
    "fieldname": "api_secret",
    "fieldtype": "Password",
-   "label": "API Secret",
+   "label": "API secret",
    "permlevel": 1,
    "read_only": 1
   },
@@ -55,7 +55,7 @@
    "fieldname": "auth_token",
    "fieldtype": "Password",
    "in_list_view": 1,
-   "label": "Auth Token",
+   "label": "Auth token",
    "mandatory_depends_on": "eval: doc.enabled"
   },
   {
@@ -74,7 +74,7 @@
    "depends_on": "enabled",
    "fieldname": "record_calls",
    "fieldtype": "Check",
-   "label": "Record Calls"
+   "label": "Record calls"
   },
   {
    "fieldname": "column_break_avmt",
@@ -104,8 +104,8 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-08-19 13:36:19.823197",
- "modified_by": "Administrator",
+ "modified": "2026-01-22 14:13:36.033569",
+ "modified_by": "shariq@frappe.io",
  "module": "FCRM",
  "name": "CRM Twilio Settings",
  "owner": "Administrator",

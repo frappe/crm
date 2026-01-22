@@ -22,7 +22,7 @@
           <div class="text-p-sm text-ink-gray-5 truncate">
             {{
               __(
-                'Makes "Expected Closure Date" and "Expected Deal Value" mandatory for deal value forecasting',
+                'Makes "Expected closure date" and "Expected deal value" mandatory for deal value forecasting',
               )
             }}
           </div>
@@ -44,7 +44,7 @@
           <div class="text-p-sm text-ink-gray-5 truncate">
             {{
               __(
-                'Automatically update "Expected Deal Value" based on the total value of associated products in a deal',
+                'Automatically update "Expected deal value" based on the total value of associated products in a deal',
               )
             }}
           </div>

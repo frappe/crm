@@ -29,7 +29,7 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "in_standard_filter": 1,
-   "label": "SLA Name",
+   "label": "SLA name",
    "reqd": 1,
    "unique": 1
   },
@@ -59,7 +59,7 @@
   {
    "fieldname": "apply_on",
    "fieldtype": "Link",
-   "label": "Apply On",
+   "label": "Apply on",
    "link_filters": "[[{\"fieldname\":\"apply_on\",\"field_option\":\"DocType\"},\"name\",\"in\",[\"CRM Lead\",\"CRM Deal\"]]]",
    "options": "DocType",
    "reqd": 1
@@ -67,7 +67,7 @@
   {
    "fieldname": "section_break_ufaf",
    "fieldtype": "Section Break",
-   "label": "Response and Follow Up"
+   "label": "Response & Follow up"
   },
   {
    "fieldname": "priorities",
@@ -79,12 +79,12 @@
   {
    "fieldname": "section_break_rmgo",
    "fieldtype": "Section Break",
-   "label": "Working Hours"
+   "label": "Working hours"
   },
   {
    "fieldname": "working_hours",
    "fieldtype": "Table",
-   "label": "Working Hours",
+   "label": "Working hours",
    "options": "CRM Service Day",
    "reqd": 1
   },
@@ -96,7 +96,7 @@
   {
    "fieldname": "start_date",
    "fieldtype": "Date",
-   "label": "Start Date"
+   "label": "Start date"
   },
   {
    "fieldname": "column_break_pzjg",
@@ -105,12 +105,12 @@
   {
    "fieldname": "end_date",
    "fieldtype": "Date",
-   "label": "End Date"
+   "label": "End date"
   },
   {
    "fieldname": "holiday_list",
    "fieldtype": "Link",
-   "label": "Holiday List",
+   "label": "Holiday list",
    "options": "CRM Holiday List"
   },
   {
@@ -118,13 +118,13 @@
    "description": "Restart the SLA each time the customer replies (status changes to Open) and fulfill it when marked as Replied",
    "fieldname": "rolling_responses",
    "fieldtype": "Check",
-   "label": "Rolling Responses"
+   "label": "Rolling responses"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-11-10 19:38:32.968791",
- "modified_by": "Administrator",
+ "modified": "2026-01-22 14:04:41.742269",
+ "modified_by": "shariq@frappe.io",
  "module": "FCRM",
  "name": "CRM Service Level Agreement",
  "naming_rule": "By fieldname",
