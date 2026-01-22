@@ -77,8 +77,8 @@ function editValues(selections, unselectAll) {
 
 function convertToDeal(selections, unselectAll) {
   $dialog({
-    title: __('Convert to Deal'),
-    message: __('Are you sure you want to convert {0} Lead(s) to Deal(s)?', [
+    title: __('Convert to deal'),
+    message: __('Are you sure you want to convert {0} lead(s) to deal(s)?', [
       selections.size,
     ]),
     variant: 'solid',
@@ -133,7 +133,7 @@ function assignValues(selections, unselectAll) {
 
 function clearAssignemnts(selections, unselectAll) {
   $dialog({
-    title: __('Clear Assignment'),
+    title: __('Clear assignment'),
     message: __('Are you sure you want to clear assignment for {0} item(s)?', [
       selections.size,
     ]),
@@ -141,7 +141,7 @@ function clearAssignemnts(selections, unselectAll) {
     theme: 'red',
     actions: [
       {
-        label: __('Clear Assignment'),
+        label: __('Clear assignment'),
         variant: 'solid',
         theme: 'red',
         onClick: (close) => {
@@ -183,18 +183,18 @@ function bulkActions(selections, unselectAll) {
 
   if (!props.options.hideAssign) {
     actions.push({
-      label: __('Assign To'),
+      label: __('Assign to'),
       onClick: () => assignValues(selections, unselectAll),
     })
     actions.push({
-      label: __('Clear Assignment'),
+      label: __('Clear assignment'),
       onClick: () => clearAssignemnts(selections, unselectAll),
     })
   }
 
   if (props.doctype === 'CRM Lead') {
     actions.push({
-      label: __('Convert to Deal'),
+      label: __('Convert to deal'),
       onClick: () => convertToDeal(selections, unselectAll),
     })
   }

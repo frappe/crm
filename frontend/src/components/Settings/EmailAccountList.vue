@@ -16,7 +16,7 @@
       </div>
       <div class="flex item-center space-x-2 w-3/12 justify-end">
         <Button
-          :label="__('Add Account')"
+          :label="__('Add account')"
           theme="gray"
           variant="solid"
           icon-left="plus"

@@ -30,7 +30,7 @@
           />
           <div v-if="!options?.length">
             <div class="p-1.5 pl-3 pr-4 text-base text-ink-gray-4">
-              {{ __('No {0} Available', [label]) }}
+              {{ __('No {0} available', [label]) }}
             </div>
           </div>
         </div>
@@ -38,7 +38,7 @@
           <Button
             variant="ghost"
             class="w-full !justify-start"
-            :label="__('Create New')"
+            :label="__('Create new')"
             iconLeft="plus"
             @click="create && create()"
           />

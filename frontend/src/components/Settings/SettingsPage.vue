@@ -8,7 +8,7 @@
           {{ title || __(doctype) }}
           <Badge
             v-if="data.isDirty"
-            :label="__('Not Saved')"
+            :label="__('Not saved')"
             variant="subtle"
             theme="orange"
           />

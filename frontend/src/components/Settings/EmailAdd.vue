@@ -3,7 +3,7 @@
     <!-- title and desc -->
     <div role="heading" aria-level="1" class="flex flex-col gap-1">
       <h2 class="text-xl font-semibold text-ink-gray-8">
-        {{ __('Setup Email') }}
+        {{ __('Setup email') }}
       </h2>
       <p class="text-sm text-ink-gray-5">
         {{ __('Choose the email service provider you want to configure.') }}

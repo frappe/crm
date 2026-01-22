@@ -1,7 +1,7 @@
 <template>
   <Dialog
     v-model="show"
-    :options="{ title: __('Assign To'), size: 'xl' }"
+    :options="{ title: __('Assign to'), size: 'xl' }"
     @close="() => (assignees = [...oldAssignees])"
   >
     <template #body-content>

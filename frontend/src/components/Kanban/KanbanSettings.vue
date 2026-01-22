@@ -1,15 +1,15 @@
 <template>
   <Button
-    :label="__('Kanban Settings')"
+    :label="__('Kanban settings')"
     @click="showDialog = true"
     v-bind="$attrs"
     :iconLeft="KanbanIcon"
   />
-  <Dialog v-model="showDialog" :options="{ title: __('Kanban Settings') }">
+  <Dialog v-model="showDialog" :options="{ title: __('Kanban settings') }">
     <template #body-content>
       <div>
         <div class="text-base text-ink-gray-8 mb-2">
-          {{ __('Column Field') }}
+          {{ __('Column field') }}
         </div>
         <Autocomplete
           v-if="columnFields"
@@ -26,7 +26,7 @@
           </template>
         </Autocomplete>
         <div class="text-base text-ink-gray-8 mb-2 mt-4">
-          {{ __('Title Field') }}
+          {{ __('Title field') }}
         </div>
         <Autocomplete
           v-if="fields.data"
@@ -45,7 +45,7 @@
       </div>
       <div class="mt-4">
         <div class="text-base text-ink-gray-8 mb-2">
-          {{ __('Fields Order') }}
+          {{ __('Fields order') }}
         </div>
         <Draggable
           :list="allFields"
@@ -77,7 +77,7 @@
           <template #target="{ togglePopover }">
             <Button
               class="w-full mt-2"
-              :label="__('Add Field')"
+              :label="__('Add field')"
               iconLeft="plus"
               @click="togglePopover()"
             />

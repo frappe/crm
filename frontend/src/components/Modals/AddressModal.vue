@@ -90,7 +90,7 @@ const { document: _address, triggerOnBeforeCreate } = useDocument(
 
 const dialogOptions = computed(() => {
   let title = !editMode.value
-    ? __('New Address')
+    ? __('New address')
     : __(_address.doc?.address_title)
   let size = 'xl'
   let actions = [

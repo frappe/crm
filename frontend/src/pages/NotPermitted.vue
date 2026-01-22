@@ -4,7 +4,7 @@
   >
     <div class="text-center max-w-md">
       <h1 class="text-ink-gray-5 text-3xl font-semibold">
-        {{ __('Access Denied') }}
+        {{ __('Access denied') }}
       </h1>
       <div class="border-t w-full my-[15px]" />
       <p class="text-ink-gray-4 text-p-base">

@@ -20,7 +20,7 @@
     doctype="FCRM Note"
     :options="{
       hideColumnsButton: true,
-      defaultViewName: __('Notes View'),
+      defaultViewName: __('Notes view'),
     }"
   />
   <div class="flex-1 overflow-y-auto">

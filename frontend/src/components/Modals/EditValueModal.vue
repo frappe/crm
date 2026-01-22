@@ -1,5 +1,5 @@
 <template>
-  <Dialog v-model="show" :options="{ title: __('Bulk Edit') }">
+  <Dialog v-model="show" :options="{ title: __('Bulk edit') }">
     <template #body-content>
       <div class="mb-4">
         <div class="mb-1.5 text-sm text-ink-gray-5">{{ __('Field') }}</div>
@@ -17,7 +17,7 @@
           :value="newValue"
           size="md"
           @change="(v) => updateValue(v)"
-          :placeholder="__('Contact Us')"
+          :placeholder="__('Contact us')"
         />
       </div>
     </template>
@@ -27,7 +27,7 @@
         variant="solid"
         @click="updateValues"
         :loading="loading"
-        :label="__('Update {0} Records', [recordCount])"
+        :label="__('Update {0} records', [recordCount])"
       />
     </template>
   </Dialog>

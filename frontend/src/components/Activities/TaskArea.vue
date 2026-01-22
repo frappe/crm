@@ -56,7 +56,7 @@
                 icon: 'trash-2',
                 onClick: () => {
                   $dialog({
-                    title: __('Delete Task'),
+                    title: __('Delete task'),
                     message: __('Are you sure you want to delete this task?'),
                     actions: [
                       {
