@@ -47,16 +47,12 @@
     </div>
 
     <!-- Empty State -->
-    <div
+    <EmptyState
       v-if="!users.loading && users.data?.crmUsers?.length == 1"
-      class="flex justify-between w-full h-full"
-    >
-      <div
-        class="text-ink-gray-4 border border-dashed rounded w-full flex items-center justify-center"
-      >
-        {{ __('No users found') }}
-      </div>
-    </div>
+      name="users"
+      description="Add one to get started."
+      icon="user"
+    />
 
     <!-- Users List -->
     <div
@@ -167,6 +163,7 @@
 
 <script setup>
 import AddExistingUserModal from '@/components/Modals/AddExistingUserModal.vue'
+import EmptyState from '@/components/ListViews/EmptyState.vue'
 import { activeSettingsPage } from '@/composables/settings'
 import { usersStore } from '@/stores/users'
 import { DropdownOption } from '@/utils'
