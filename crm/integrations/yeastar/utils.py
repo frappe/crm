@@ -51,6 +51,14 @@ def get_yeastar_agents() -> list[dict[str, str]]:
     )
 
 
+def get_yeaster_agent_by_number(number: str) -> str:
+    return frappe.db.get_value(
+        CTA,
+        {"yeastar": 1, "yeastar_number": number},
+        "user",
+    )
+
+
 def parse_call_state(payload: dict) -> list[dict] | None:
 
     try:
@@ -107,6 +115,7 @@ def parse_call_state(payload: dict) -> list[dict] | None:
                                 "client_number": client_number,
                                 "channel_id": channel_id,
                                 "call_id": call_id,
+                                "direction": direction,
                             }
                         )
 
