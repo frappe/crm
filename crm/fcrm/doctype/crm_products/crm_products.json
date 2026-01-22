@@ -1,4 +1,5 @@
 {
+ "_liked_by": "[]",
  "actions": [],
  "allow_rename": 1,
  "creation": "2025-04-28 12:50:49.812915",
@@ -21,7 +22,8 @@
   "column_break_pozr",
   "amount",
   "column_break_ejqw",
-  "net_amount"
+  "net_amount",
+  "autocomplete"
  ],
  "fields": [
   {
@@ -31,7 +33,7 @@
   {
    "fieldname": "product_name",
    "fieldtype": "Data",
-   "label": "Product Name",
+   "label": "Product name",
    "reqd": 1
   },
   {
@@ -51,7 +53,7 @@
   {
    "fieldname": "discount_amount",
    "fieldtype": "Currency",
-   "label": "Discount Amount",
+   "label": "Discount amount",
    "options": "currency",
    "read_only": 1
   },
@@ -86,7 +88,7 @@
    "description": "Amount after discount",
    "fieldname": "net_amount",
    "fieldtype": "Currency",
-   "label": "Net Amount",
+   "label": "Net amount",
    "options": "currency",
    "read_only": 1
   },
@@ -117,14 +119,20 @@
   {
    "fieldname": "column_break_ejqw",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "autocomplete",
+   "fieldtype": "Autocomplete",
+   "label": "Autocomplete",
+   "options": "A\nB\nC\nD\nE\nF\nG\nH\nI\nJ\nK\nL\nM\nN\nO\nP\nQ\nR\nS\nT\nU\nV\nW\nX\nY\nZ"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-05-14 18:52:26.183306",
- "modified_by": "Administrator",
+ "modified": "2026-01-22 13:54:02.525549",
+ "modified_by": "shariq@frappe.io",
  "module": "FCRM",
  "name": "CRM Products",
  "owner": "Administrator",

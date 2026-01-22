@@ -34,26 +34,26 @@
   {
    "fieldname": "last_synced_at",
    "fieldtype": "Datetime",
-   "label": "Last Synced At",
+   "label": "Last synced at",
    "read_only": 1
   },
   {
    "fieldname": "access_token",
    "fieldtype": "Password",
-   "label": "Access Token",
+   "label": "Access token",
    "length": 500,
    "reqd": 1
   },
   {
    "fieldname": "facebook_page",
    "fieldtype": "Link",
-   "label": "Facebook Page",
+   "label": "Facebook page",
    "options": "Facebook Page"
   },
   {
    "fieldname": "facebook_lead_form",
    "fieldtype": "Link",
-   "label": "Facebook Lead Form",
+   "label": "Facebook lead form",
    "options": "Facebook Lead Form",
    "unique": 1
   },
@@ -77,7 +77,7 @@
    "default": "Hourly",
    "fieldname": "background_sync_frequency",
    "fieldtype": "Select",
-   "label": "Background Sync Frequency",
+   "label": "Background sync frequency",
    "options": "Every 5 Minutes\nEvery 10 Minutes\nEvery 15 Minutes\nHourly\nDaily\nMonthly",
    "reqd": 1
   }
@@ -90,8 +90,8 @@
    "link_fieldname": "source"
   }
  ],
- "modified": "2025-10-19 18:57:54.288252",
- "modified_by": "Administrator",
+ "modified": "2026-01-22 14:15:05.664659",
+ "modified_by": "shariq@frappe.io",
  "module": "Lead Syncing",
  "name": "Lead Sync Source",
  "naming_rule": "Set by user",

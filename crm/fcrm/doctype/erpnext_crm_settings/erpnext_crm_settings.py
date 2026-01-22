@@ -12,6 +12,24 @@ from frappe.utils import get_url_to_form, get_url_to_list
 
 
 class ERPNextCRMSettings(Document):
+	# begin: auto-generated types
+	# This code is auto-generated. Do not modify anything in this block.
+
+	from typing import TYPE_CHECKING
+
+	if TYPE_CHECKING:
+		from frappe.types import DF
+
+		api_key: DF.Data | None
+		api_secret: DF.Password | None
+		create_customer_on_status_change: DF.Check
+		deal_status: DF.Link | None
+		enabled: DF.Check
+		erpnext_company: DF.Data | None
+		erpnext_site_url: DF.Data | None
+		is_erpnext_in_different_site: DF.Check
+	# end: auto-generated types
+
 	def validate(self):
 		if self.enabled:
 			self.validate_if_erpnext_installed()

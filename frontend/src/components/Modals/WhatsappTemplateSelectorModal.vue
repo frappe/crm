@@ -1,14 +1,14 @@
 <template>
   <Dialog
     v-model="show"
-    :options="{ title: __('WhatsApp Templates'), size: '4xl' }"
+    :options="{ title: __('WhatsApp templates'), size: '4xl' }"
   >
     <template #body-content>
       <TextInput
         ref="searchInput"
         v-model="search"
         type="text"
-        :placeholder="__('Welcome Message')"
+        :placeholder="__('Welcome message')"
       >
         <template #prefix>
           <FeatherIcon name="search" class="h-4 w-4 text-ink-gray-4" />
@@ -42,7 +42,7 @@
             {{ __('No templates found') }}
           </div>
           <Button
-            :label="__('Create New')"
+            :label="__('Create new')"
             class="mt-4"
             @click="newWhatsappTemplate"
           />

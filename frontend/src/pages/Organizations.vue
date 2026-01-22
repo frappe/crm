@@ -30,7 +30,7 @@
     v-model="organizations.data.page_length_count"
     v-model:list="organizations"
     :rows="rows"
-    :columns="organizations.data.columns"
+    :columns="columns"
     :options="{
       showTooltip: false,
       resizeColumn: true,
@@ -47,22 +47,11 @@
       (selections) => viewControls.updateSelections(selections)
     "
   />
-  <div
-    v-else-if="organizations.data"
-    class="flex h-full items-center justify-center"
-  >
-    <div
-      class="flex flex-col items-center gap-3 text-xl font-medium text-ink-gray-4"
-    >
-      <OrganizationsIcon class="h-10 w-10" />
-      <span>{{ __('No {0} Found', [__('Organizations')]) }}</span>
-      <Button
-        :label="__('Create')"
-        iconLeft="plus"
-        @click="showOrganizationModal = true"
-      />
-    </div>
-  </div>
+  <EmptyState
+    v-else-if="organizations.data && !rows.length"
+    name="organizations"
+    :icon="OrganizationsIcon"
+  />
   <OrganizationModal
     v-if="showOrganizationModal"
     v-model="showOrganizationModal"
@@ -80,6 +69,7 @@ import { getMeta } from '@/stores/meta'
 import { formatDate, timeAgo, website } from '@/utils'
 import { call } from 'frappe-ui'
 import { ref, computed } from 'vue'
+import EmptyState from '../components/ListViews/EmptyState.vue'
 
 const { getFormattedPercent, getFormattedFloat, getFormattedCurrency } =
   getMeta('CRM Organization')
@@ -150,5 +140,21 @@ const rows = computed(() => {
     })
     return _rows
   })
+})
+
+const columns = computed(() => {
+  let _columns = organizations.value?.data?.columns || []
+
+  // Set align right for last column
+  if (_columns.length) {
+    _columns = _columns.map((col, index) => {
+      if (index === _columns.length - 1) {
+        return { ...col, align: 'right' }
+      }
+      return col
+    })
+  }
+
+  return _columns
 })
 </script>

@@ -8,6 +8,37 @@ from frappe.utils import parse_json
 
 
 class CRMViewSettings(Document):
+	# begin: auto-generated types
+	# This code is auto-generated. Do not modify anything in this block.
+
+	from typing import TYPE_CHECKING
+
+	if TYPE_CHECKING:
+		from frappe.types import DF
+
+		column_field: DF.Data | None
+		columns: DF.Code | None
+		dt: DF.Link | None
+		filters: DF.Code | None
+		group_by_field: DF.Data | None
+		icon: DF.Data | None
+		is_default: DF.Check
+		is_standard: DF.Check
+		kanban_columns: DF.Code | None
+		kanban_fields: DF.Code | None
+		label: DF.Data | None
+		load_default_columns: DF.Check
+		name: DF.Int | None
+		order_by: DF.Code | None
+		pinned: DF.Check
+		public: DF.Check
+		route_name: DF.Data | None
+		rows: DF.Code | None
+		title_field: DF.Data | None
+		type: DF.Literal["list", "group_by", "kanban"]
+		user: DF.Link | None
+	# end: auto-generated types
+
 	pass
 
 

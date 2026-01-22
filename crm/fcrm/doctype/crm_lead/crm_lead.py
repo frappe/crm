@@ -408,19 +408,19 @@ class CRMLead(Document):
 				"width": "12rem",
 			},
 			{
-				"label": "Mobile No",
+				"label": "Mobile no",
 				"type": "Data",
 				"key": "mobile_no",
 				"width": "11rem",
 			},
 			{
-				"label": "Assigned To",
+				"label": "Assigned to",
 				"type": "Text",
 				"key": "_assign",
 				"width": "10rem",
 			},
 			{
-				"label": "Last Modified",
+				"label": "Last modified",
 				"type": "Datetime",
 				"key": "modified",
 				"width": "8rem",

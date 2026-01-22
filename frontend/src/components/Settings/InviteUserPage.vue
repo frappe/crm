@@ -15,7 +15,7 @@
       </div>
       <div class="flex item-center space-x-2 w-3/12 justify-end">
         <Button
-          :label="__('Send Invites')"
+          :label="__('Send invites')"
           variant="solid"
           :disabled="!invitees.length"
           @click="inviteByEmail.submit()"
@@ -58,7 +58,7 @@
           <div
             class="flex items-center justify-between text-base font-semibold"
           >
-            <div>{{ __('Pending Invites') }}</div>
+            <div>{{ __('Pending invites') }}</div>
           </div>
           <ul class="flex flex-col gap-1">
             <li
@@ -154,14 +154,14 @@ const description = computed(() => {
 
 const roleOptions = computed(() => {
   return [
-    { value: 'Sales User', label: __('Sales User') },
+    { value: 'Sales User', label: __('Sales user') },
     ...(isManager() ? [{ value: 'Sales Manager', label: __('Manager') }] : []),
     ...(isAdmin() ? [{ value: 'System Manager', label: __('Admin') }] : []),
   ]
 })
 
 const roleMap = {
-  'Sales User': __('Sales User'),
+  'Sales User': __('Sales user'),
   'Sales Manager': __('Manager'),
   'System Manager': __('Admin'),
 }
