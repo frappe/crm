@@ -184,6 +184,7 @@ def create_call_log(
 	agent,
 	status="Ringing",
 	call_type="Incoming",
+	telephony_medium="Exotel",
 ):
 	call_log = frappe.new_doc("CRM Call Log")
 	call_log.id = call_id
@@ -191,7 +192,7 @@ def create_call_log(
 	call_log.medium = medium
 	call_log.type = call_type
 	call_log.status = status
-	call_log.telephony_medium = "Exotel"
+	call_log.telephony_medium = telephony_medium
 	setattr(call_log, "from", from_number)
 
 	if call_type == "Incoming":
