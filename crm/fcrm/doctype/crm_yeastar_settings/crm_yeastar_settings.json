@@ -102,7 +102,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2026-01-12 12:20:46.608063",
+ "modified": "2026-01-23 08:44:36.886137",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Yeastar Settings",
@@ -123,5 +123,6 @@
  "rows_threshold_for_grid_search": 20,
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "track_changes": 1
 }
