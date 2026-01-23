@@ -7,7 +7,12 @@
         >
           {{ __('Telephony settings') }}
           <Badge
-            v-if="twilio.isDirty || exotel.isDirty || mediumChanged"
+            v-if="
+              twilio.isDirty ||
+              exotel.isDirty ||
+              yeastar.isDirty ||
+              mediumChanged
+            "
             :label="__('Not Saved')"
             variant="subtle"
             theme="orange"
@@ -19,7 +24,9 @@
       </div>
       <div class="flex item-center space-x-2 w-3/12 justify-end">
         <Button
-          :loading="twilio.save.loading || exotel.save.loading"
+          :loading="
+            twilio.save.loading || exotel.save.loading || yeastar.save.loading
+          "
           :label="__('Update')"
           variant="solid"
           @click="update"
@@ -27,7 +34,7 @@
       </div>
     </div>
     <div
-      v-if="!twilio.get.loading || !exotel.get.loading"
+      v-if="!twilio.get.loading || !exotel.get.loading || !yeastar.get.loading"
       class="flex-1 flex flex-col gap-8 overflow-y-auto"
     >
       <!-- General -->
@@ -39,6 +46,7 @@
           { label: __(''), value: '' },
           { label: __('Twilio'), value: 'Twilio' },
           { label: __('Exotel'), value: 'Exotel' },
+          { label: __('Yeastar'), value: 'Yeastar' },
         ]"
         class="w-1/2"
         :description="__('Default calling medium for logged in user')"
@@ -69,7 +77,6 @@
           doctype="CRM Exotel Settings"
         />
       </div>
-
       <!-- Yeastar -->
       <div v-if="isManager()" class="flex flex-col justify-between gap-4">
         <span class="text-base font-semibold text-ink-gray-8">
@@ -86,7 +93,11 @@
     <div v-else class="flex flex-1 items-center justify-center">
       <Spinner class="size-8" />
     </div>
-    <ErrorMessage :message="twilio.save.error || exotel.save.error || error" />
+    <ErrorMessage
+      :message="
+        twilio.save.error || exotel.save.error || yeastar.save.error || error
+      "
+    />
   </div>
 </template>
 <script setup>
@@ -359,6 +370,9 @@ function update() {
   if (exotel.isDirty) {
     exotel.save.submit()
   }
+  if (yeastar.isDirty) {
+    yeastar.save.submit()
+  }
 }
 
 async function updateMedium() {
@@ -381,6 +395,11 @@ function validateIfDefaultMediumIsEnabled() {
   }
   if (defaultCallingMedium.value === 'Exotel' && !exotel.doc.enabled) {
     error.value = __('Exotel is not enabled')
+    return false
+  }
+
+  if (defaultCallingMedium.value === 'Yeastar' && !yeastar.doc.enabled) {
+    error.value = __('Yeastar is not enabled')
     return false
   }
   return true
