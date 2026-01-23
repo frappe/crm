@@ -127,28 +127,38 @@ class CallStatusDetails:
 
 @frappe.whitelist(allow_guest=True)
 def call_status_changed():
-    data: dict = frappe.request.get_json()
-    if not data:
+
+    try:
+        frappe.set_user("Yeastar Webhook")
+        data: dict = frappe.request.get_json()
+        if not data:
+            frappe.log_error(
+                "No data received in the call status changed webhook.",
+                "Yeastar Call Status Changed Webhook Error",
+            )
+
+        data_parsed = parse_call_state(data)
+        if not data_parsed:
+            return
+
+        for entry in data_parsed:
+            details = CallStatusDetails(
+                user=entry["user"],
+                status=entry["status"],
+                client_number=entry["client_number"],
+                channel_id=entry["channel_id"],
+                call_id=entry["call_id"],
+                direction=entry["direction"],
+            )
+
+            create_socket_connection(details)
+    except Exception:
         frappe.log_error(
-            "No data received in the call status changed webhook.",
-            "Yeastar Call Status Changed Webhook Error",
+            title="Error while processing call status changed webhook from Yeastar",
+            message=frappe.get_traceback(),
         )
-
-    data_parsed = parse_call_state(data)
-    if not data_parsed:
-        return
-
-    for entry in data_parsed:
-        details = CallStatusDetails(
-            user=entry["user"],
-            status=entry["status"],
-            client_number=entry["client_number"],
-            channel_id=entry["channel_id"],
-            call_id=entry["call_id"],
-            direction=entry["direction"],
-        )
-
-        create_socket_connection(details)
+    finally:
+        frappe.set_user("Guest")
 
 
 def create_socket_connection(details: IncomingCallDetails | CallStatusDetails) -> None:
@@ -182,7 +192,7 @@ def update_call_log():
 
     try:
 
-        frappe.set_user("Yeastar Call Log Webhook")
+        frappe.set_user("Yeastar Webhook")
 
         data: dict[str, str] = frappe.request.get_json()
         if not data:
