@@ -30,7 +30,7 @@
     >
       <div v-if="column.key === '_assign'" class="flex items-center">
         <MultipleAvatar
-          :avatars="item"
+          :avatars="getAvatars(item)"
           size="sm"
           @click="
             (event) =>
@@ -136,6 +136,7 @@
 import HeartIcon from '@/components/Icons/HeartIcon.vue'
 import MultipleAvatar from '@/components/MultipleAvatar.vue'
 import { formatDate, timeAgo } from '@/utils'
+import { usersStore } from '@/stores/users'
 import { useControls } from './controls'
 import { useList } from './list'
 import { useLike } from './like'
@@ -158,4 +159,17 @@ const doctype = inject('doctype')
 const { updateColumns, applyRowItemFilter } = useControls()
 const { columns, rows } = useList()
 const { isLikeFilterApplied, isLiked, applyLikeFilter, likeDoc } = useLike()
+const { allUsers: users } = usersStore()
+
+function getAvatars(item) {
+  const assignees = JSON.parse(item) || []
+  return assignees.map((assignee) => {
+    const user = users.find((user) => user.name === assignee)
+    return {
+      name: assignee,
+      label: user?.full_name || assignee,
+      image: user?.user_image || '',
+    }
+  })
+}
 </script>
