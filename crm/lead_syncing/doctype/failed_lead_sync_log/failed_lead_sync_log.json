@@ -27,7 +27,7 @@
   {
    "fieldname": "lead_data",
    "fieldtype": "Code",
-   "label": "Lead Data",
+   "label": "Lead data",
    "options": "JSON",
    "read_only": 1
   },
@@ -63,8 +63,8 @@
  "in_create": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-11-07 10:58:10.896524",
- "modified_by": "Administrator",
+ "modified": "2026-01-22 14:14:10.198520",
+ "modified_by": "shariq@frappe.io",
  "module": "Lead Syncing",
  "name": "Failed Lead Sync Log",
  "owner": "Administrator",

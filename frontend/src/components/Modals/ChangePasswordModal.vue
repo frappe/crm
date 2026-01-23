@@ -1,9 +1,9 @@
 <template>
-  <Dialog v-model="show" :options="{ title: __('Change Password') }">
+  <Dialog v-model="show" :options="{ title: __('Change password') }">
     <template #body-content>
       <div class="flex flex-col gap-4">
         <div>
-          <Password v-model="newPassword" :placeholder="__('New Password')">
+          <Password v-model="newPassword" :placeholder="__('New password')">
             <template #prefix>
               <LockKeyhole class="size-4 text-ink-gray-4" />
             </template>
@@ -15,7 +15,7 @@
         <div>
           <Password
             v-model="confirmPassword"
-            :placeholder="__('Confirm Password')"
+            :placeholder="__('Confirm password')"
           >
             <template #prefix>
               <LockKeyhole class="size-4 text-ink-gray-4" />

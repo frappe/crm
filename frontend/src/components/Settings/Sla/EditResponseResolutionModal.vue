@@ -11,7 +11,7 @@
           type="select"
           size="sm"
           variant="subtle"
-          :placeholder="__('Select Priority')"
+          :placeholder="__('Select priority')"
           :label="__('Priority')"
           v-model="priorityData.priority"
           :options="priorityOptions"
@@ -54,7 +54,7 @@
           <Button
             variant="subtle"
             :theme="isConfirmingDelete ? 'red' : 'gray'"
-            :label="isConfirmingDelete ? __('Confirm Delete') : __('Delete')"
+            :label="isConfirmingDelete ? __('Confirm delete') : __('Delete')"
             @click="deleteItem"
             icon-left="trash-2"
           />

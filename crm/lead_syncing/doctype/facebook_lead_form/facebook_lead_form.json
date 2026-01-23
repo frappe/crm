@@ -35,7 +35,7 @@
   {
    "fieldname": "form_name",
    "fieldtype": "Data",
-   "label": "Form Name"
+   "label": "Form name"
   },
   {
    "fieldname": "section_break_iqhq",
@@ -52,8 +52,8 @@
  "in_create": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-09-29 18:50:19.215513",
- "modified_by": "Administrator",
+ "modified": "2026-01-22 14:14:29.835020",
+ "modified_by": "shariq@frappe.io",
  "module": "Lead Syncing",
  "name": "Facebook Lead Form",
  "naming_rule": "By fieldname",

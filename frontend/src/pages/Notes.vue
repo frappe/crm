@@ -20,7 +20,7 @@
     doctype="FCRM Note"
     :options="{
       hideColumnsButton: true,
-      defaultViewName: __('Notes View'),
+      defaultViewName: __('Notes view'),
     }"
   />
   <div class="flex-1 overflow-y-auto">
@@ -87,15 +87,7 @@
     }"
     @loadMore="() => loadMore++"
   />
-  <div v-else class="flex h-full items-center justify-center">
-    <div
-      class="flex flex-col items-center gap-3 text-xl font-medium text-ink-gray-4"
-    >
-      <NoteIcon class="h-10 w-10" />
-      <span>{{ __('No {0} Found', [__('Notes')]) }}</span>
-      <Button :label="__('Create')" iconLeft="plus" @click="createNote" />
-    </div>
-  </div>
+  <EmptyState v-else name="notes" :icon="NoteIcon" />
   <NoteModal
     v-model="showNoteModal"
     v-model:reloadNotes="notes"
@@ -110,6 +102,7 @@ import UserAvatar from '@/components/UserAvatar.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import NoteModal from '@/components/Modals/NoteModal.vue'
 import ViewControls from '@/components/ViewControls.vue'
+import EmptyState from '@/components/ListViews/EmptyState.vue'
 import { usersStore } from '@/stores/users'
 import { timeAgo, formatDate } from '@/utils'
 import { TextEditor, call, Dropdown, Tooltip, ListFooter } from 'frappe-ui'

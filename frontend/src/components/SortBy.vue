@@ -3,7 +3,7 @@
     v-if="!sortValues?.size"
     :options="options"
     value=""
-    :placeholder="__('First Name')"
+    :placeholder="__('First name')"
     @change="(e) => setSort(e)"
   >
     <template #target="{ togglePopover }">
@@ -100,7 +100,7 @@
                   :value="sort.fieldname"
                   :options="sortOptions.data"
                   @change="(e) => updateSort(e, i)"
-                  :placeholder="__('First Name')"
+                  :placeholder="__('First name')"
                 >
                   <template
                     #target="{
@@ -133,13 +133,13 @@
             <Autocomplete
               :options="options"
               value=""
-              :placeholder="__('First Name')"
+              :placeholder="__('First name')"
               @change="(e) => setSort(e)"
             >
               <template #target="{ togglePopover }">
                 <Button
                   class="!text-ink-gray-5"
-                  :label="__('Add Sort')"
+                  :label="__('Add sort')"
                   variant="ghost"
                   iconLeft="plus"
                   @click="togglePopover()"
@@ -150,7 +150,7 @@
               v-if="sortValues?.size"
               class="!text-ink-gray-5"
               variant="ghost"
-              :label="__('Clear Sort')"
+              :label="__('Clear sort')"
               @click="clearSort(close)"
             />
           </div>

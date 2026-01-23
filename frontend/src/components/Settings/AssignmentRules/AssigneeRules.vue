@@ -2,7 +2,7 @@
   <div>
     <div class="flex flex-col gap-1">
       <span class="text-lg font-semibold text-ink-gray-8">{{
-        __('Assignee Rules')
+        __('Assignee rules')
       }}</span>
       <span class="text-p-sm text-ink-gray-6">
         {{
@@ -14,7 +14,7 @@
       <div>
         <div class="text-base font-medium text-ink-gray-8">
           {{
-            __('{0} Routing', [
+            __('{0} routing', [
               assignmentRuleData.documentType == 'CRM Lead'
                 ? __('Lead')
                 : __('Deal'),

@@ -51,7 +51,7 @@
    "fieldname": "view",
    "fieldtype": "Select",
    "in_list_view": 1,
-   "label": "Apply To",
+   "label": "Apply to",
    "options": "Form\nList",
    "set_only_once": 1
   },
@@ -59,14 +59,14 @@
    "default": "0",
    "fieldname": "is_standard",
    "fieldtype": "Check",
-   "label": "Is Standard",
+   "label": "Is standard",
    "no_copy": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-05-19 17:57:24.610295",
- "modified_by": "Administrator",
+ "modified": "2026-01-22 14:01:40.479848",
+ "modified_by": "shariq@frappe.io",
  "module": "FCRM",
  "name": "CRM Form Script",
  "naming_rule": "Set by user",

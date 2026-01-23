@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-12-21 09:37+0000\n"
-"PO-Revision-Date: 2025-12-23 22:58\n"
+"PO-Revision-Date: 2026-01-22 12:22\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Bosnian\n"
 "MIME-Version: 1.0\n"
@@ -160,7 +160,7 @@ msgstr "Za vas je kreiran novi račun na {0}"
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.json
 #: crm/fcrm/doctype/helpdesk_crm_settings/helpdesk_crm_settings.json
 msgid "API Key"
-msgstr "API ključ"
+msgstr "API Ključ"
 
 #: frontend/src/components/Settings/emailConfig.js:179
 msgid "API Key is required"
@@ -222,7 +222,7 @@ msgstr "Pristupni ključ je potreban za davaoca usluga: {0}"
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:53
 #: frontend/src/components/Settings/LeadSyncing/leadSyncSourceConfig.js:28
 msgid "Access Token"
-msgstr "Pristupni token"
+msgstr "Pristupni Token"
 
 #: frontend/src/components/Settings/CurrencySettings.vue:90
 msgid "Access key"
@@ -1181,7 +1181,7 @@ msgstr "Promjeni"
 #: frontend/src/components/Modals/ChangePasswordModal.vue:2
 #: frontend/src/components/Settings/ProfileSettings.vue:65
 msgid "Change Password"
-msgstr "Promjeni lozinku"
+msgstr "Promjeni Lozinku"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:481
 #: frontend/src/components/Layouts/AppSidebar.vue:489
@@ -1492,7 +1492,7 @@ msgstr "Sadržaj"
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:78
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:78
 msgid "Content Type"
-msgstr "Vrsta sadržaja"
+msgstr "Tip Sadržaja"
 
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:159
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:163
@@ -3111,7 +3111,7 @@ msgstr "Kućne akcije"
 #. Sync Source'
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
 msgid "Hourly"
-msgstr "Po satu"
+msgstr "Svaki Sat"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:199
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:283
@@ -3364,7 +3364,7 @@ msgstr "Da li je Helpdesk instaliran na drugom sajtu?"
 #: crm/fcrm/doctype/crm_contacts/crm_contacts.json
 #: crm/fcrm/doctype/crm_telephony_phone/crm_telephony_phone.json
 msgid "Is Primary"
-msgstr "Primarno je"
+msgstr "Je Primarno"
 
 #. Label of the is_standard (Check) field in DocType 'CRM Dropdown Item'
 #. Label of the is_standard (Check) field in DocType 'CRM Form Script'
@@ -3373,7 +3373,7 @@ msgstr "Primarno je"
 #: crm/fcrm/doctype/crm_form_script/crm_form_script.json
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
 msgid "Is Standard"
-msgstr "Je standardno"
+msgstr "Je Standard"
 
 #. Description of the 'Enable Forecasting' (Check) field in DocType 'FCRM
 #. Settings'
@@ -3450,7 +3450,7 @@ msgstr "Poslednjih 6 Meseci"
 
 #: frontend/src/components/Filter.vue:607
 msgid "Last Month"
-msgstr "Zadnji mjesec"
+msgstr "Prošli Mjesec"
 
 #. Label of the last_name (Data) field in DocType 'CRM Deal'
 #. Label of the last_name (Data) field in DocType 'CRM Lead'
@@ -3461,7 +3461,7 @@ msgstr "Prezime"
 
 #: frontend/src/components/Filter.vue:611
 msgid "Last Quarter"
-msgstr "Zadnji kvartal"
+msgstr "Prošli Kvartal"
 
 #. Label of the last_responded_on (Datetime) field in DocType 'CRM Deal'
 #. Label of the last_responded_on (Datetime) field in DocType 'CRM Lead'
@@ -3491,11 +3491,11 @@ msgstr "Zadnja Sinhronizacija"
 
 #: frontend/src/components/Filter.vue:603
 msgid "Last Week"
-msgstr "Prošle sedmice"
+msgstr "Prošle Sedmice"
 
 #: frontend/src/components/Filter.vue:619
 msgid "Last Year"
-msgstr "Prošle godine"
+msgstr "Prošle Godine"
 
 #: frontend/src/pages/Contact.vue:550 frontend/src/pages/MobileContact.vue:542
 #: frontend/src/pages/MobileOrganization.vue:492
@@ -3869,7 +3869,7 @@ msgstr "Srednje"
 #. Option for the 'Type' (Select) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
 msgid "Mention"
-msgstr "Spominjanje"
+msgstr "Pomeni"
 
 #. Label of the message (HTML Editor) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
@@ -3879,7 +3879,7 @@ msgstr "Poruka"
 #. Label of the middle_name (Data) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Middle Name"
-msgstr "Srednje ime"
+msgstr "Srednje Ime"
 
 #: frontend/src/components/Telephony/ExotelCallUI.vue:127
 msgid "Minimize"
@@ -4557,7 +4557,7 @@ msgstr "Stranica"
 #. Label of the page_name (Data) field in DocType 'Facebook Page'
 #: crm/lead_syncing/doctype/facebook_page/facebook_page.json
 msgid "Page Name"
-msgstr "Naziv stranice"
+msgstr "Naziv Stranice"
 
 #. Label of the parent_crm_territory (Link) field in DocType 'CRM Territory'
 #: crm/fcrm/doctype/crm_territory/crm_territory.json
@@ -4719,7 +4719,7 @@ msgstr "Pozicija"
 
 #: frontend/src/pages/Deal.vue:211 frontend/src/pages/MobileDeal.vue:153
 msgid "Primary"
-msgstr "Primarni"
+msgstr "Primarno"
 
 #. Label of the email (Data) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
@@ -5317,7 +5317,7 @@ msgstr "Korisnik Pretrage"
 
 #: frontend/src/components/FieldLayoutEditor.vue:336
 msgid "Section"
-msgstr "Odjeljak"
+msgstr "Sekcija"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:130
 msgid "See all participants"
@@ -5520,7 +5520,7 @@ msgstr "Bočni Panel"
 #. Option for the 'Type' (Select) field in DocType 'CRM Global Settings'
 #: crm/fcrm/doctype/crm_global_settings/crm_global_settings.json
 msgid "Sidebar Items"
-msgstr "Stavke bočne trake"
+msgstr "Stavke Bočne Trake"
 
 #. Description of the 'Condition' (Code) field in DocType 'CRM Service Level
 #. Agreement'
@@ -5934,7 +5934,7 @@ msgstr "Naziv"
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
 #: frontend/src/components/Kanban/KanbanSettings.vue:29
 msgid "Title Field"
-msgstr "Polje naslova"
+msgstr "Polje Naziva"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:545
 #: frontend/src/components/Modals/EventModal.vue:320
@@ -6032,7 +6032,7 @@ msgstr "Ukupan broj dobivenih poslova na osnovu datuma zaključenja"
 #: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.json
 #: frontend/src/components/Settings/LeadSyncing/FailureLogs.vue:25
 msgid "Traceback"
-msgstr "Povratno praćenje"
+msgstr "Povratno Praćenje"
 
 #. Option for the 'Weekly Off' (Select) field in DocType 'CRM Holiday List'
 #. Option for the 'Workday' (Select) field in DocType 'CRM Service Day'
@@ -6259,7 +6259,7 @@ msgstr "Upravljanje Korisnicima"
 #. Label of the user_name (Data) field in DocType 'CRM Telephony Agent'
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
 msgid "User Name"
-msgstr "Korisničko ime"
+msgstr "Korisničko Ime"
 
 #: frontend/src/components/Settings/Users.vue:296
 msgid "User {0} has been removed"

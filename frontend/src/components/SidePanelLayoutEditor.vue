@@ -94,7 +94,7 @@
                 <Button
                   class="w-full h-8 mt-1.5 !bg-surface-gray-1"
                   variant="outline"
-                  :label="__('Add Field')"
+                  :label="__('Add field')"
                   iconLeft="plus"
                   @click="togglePopover()"
                 />
@@ -124,11 +124,11 @@
       <Button
         class="w-full h-8"
         variant="subtle"
-        :label="__('Add Section')"
+        :label="__('Add section')"
         iconLeft="plus"
         @click="
           sections.push({
-            label: __('New Section'),
+            label: __('New section'),
             opened: true,
             name: 'section_' + getRandom(),
             columns: [{ name: 'column_' + getRandom(), fields: [] }],

@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-12-21 09:37+0000\n"
-"PO-Revision-Date: 2026-01-05 00:48\n"
+"PO-Revision-Date: 2026-01-21 11:42\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Persian\n"
 "MIME-Version: 1.0\n"
@@ -484,7 +484,7 @@ msgstr ""
 #. Description of the 'Favicon' (Attach) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 msgid "An icon file with .ico extension. Should be 16 x 16 px. Generated using a favicon generator. [favicon-generator.org]"
-msgstr "یک فایل نماد با پسوند ico. باید 16 در 16 پیکسل باشد. با استفاده از یک ژنراتور فاویکون تولید شده است. [favicon-generator.org]"
+msgstr ""
 
 #. Description of the 'Logo' (Attach) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
@@ -534,7 +534,7 @@ msgstr "اعمال روی"
 #. Label of the view (Select) field in DocType 'CRM Form Script'
 #: crm/fcrm/doctype/crm_form_script/crm_form_script.json
 msgid "Apply To"
-msgstr "درخواست به"
+msgstr ""
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:125
 msgid "Apply on"
@@ -1146,7 +1146,7 @@ msgstr "لغو"
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 #: crm/fcrm/doctype/crm_task/crm_task.json
 msgid "Canceled"
-msgstr "لغو شده"
+msgstr ""
 
 #: frontend/src/components/Settings/Users.vue:124
 msgid "Cannot change role of user with Admin access"
@@ -1285,7 +1285,7 @@ msgstr "جمع شدن"
 
 #: frontend/src/components/FieldLayoutEditor.vue:344
 msgid "Collapsible"
-msgstr "تاشو"
+msgstr ""
 
 #. Label of the color (Select) field in DocType 'CRM Deal Status'
 #. Label of the color (Select) field in DocType 'CRM Lead Status'
@@ -2296,7 +2296,7 @@ msgstr "ایمیل ارسال شده در"
 
 #: frontend/src/components/Settings/Settings.vue:145
 msgid "Email Settings"
-msgstr "تنظیمات ایمیل"
+msgstr ""
 
 #: frontend/src/components/Modals/EmailTemplateSelectorModal.vue:4
 #: frontend/src/components/Settings/Settings.vue:154
@@ -2350,7 +2350,7 @@ msgstr ""
 
 #: crm/fcrm/doctype/crm_form_script/crm_form_script.js:30
 msgid "Enable"
-msgstr "فعال کردن"
+msgstr ""
 
 #. Label of the enable_forecasting (Check) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
@@ -2633,7 +2633,7 @@ msgstr ""
 #. Source'
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
 msgid "Facebook"
-msgstr "فیس بوک"
+msgstr ""
 
 #. Label of the facebook_form_id (Data) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
@@ -2850,7 +2850,7 @@ msgstr ""
 #: frontend/src/components/Settings/ForecastingSettings.vue:5
 #: frontend/src/components/Settings/Settings.vue:109
 msgid "Forecasting"
-msgstr "پیش بینی"
+msgstr ""
 
 #: frontend/src/components/Settings/ForecastingSettings.vue:76
 msgid "Forecasting disabled successfully"
@@ -3111,7 +3111,7 @@ msgstr ""
 #. Sync Source'
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
 msgid "Hourly"
-msgstr "ساعتی"
+msgstr ""
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:199
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:283
@@ -3428,7 +3428,7 @@ msgstr "تنظیمات کانبان"
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.json
 #: crm/lead_syncing/doctype/facebook_lead_form_question/facebook_lead_form_question.json
 msgid "Key"
-msgstr "کلید"
+msgstr ""
 
 #. Label of the label (Data) field in DocType 'CRM Dropdown Item'
 #. Label of the label (Data) field in DocType 'CRM View Settings'
@@ -3653,7 +3653,7 @@ msgstr "پیوندها"
 #: frontend/src/components/ViewControls.vue:374
 #: frontend/src/components/ViewControls.vue:589 frontend/src/utils/view.js:12
 msgid "List"
-msgstr "لیست"
+msgstr ""
 
 #: frontend/src/components/Activities/CallArea.vue:75
 msgid "Listen"
@@ -3869,7 +3869,7 @@ msgstr "متوسط"
 #. Option for the 'Type' (Select) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
 msgid "Mention"
-msgstr "اشاره"
+msgstr ""
 
 #. Label of the message (HTML Editor) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
@@ -4374,7 +4374,7 @@ msgstr "اعلان‌ها"
 #. Label of the number (Data) field in DocType 'CRM Telephony Phone'
 #: crm/fcrm/doctype/crm_telephony_phone/crm_telephony_phone.json
 msgid "Number"
-msgstr "شماره"
+msgstr ""
 
 #: frontend/src/components/Dashboard/AddChartModal.vue:19
 #: frontend/src/components/Dashboard/AddChartModal.vue:69
@@ -4578,7 +4578,7 @@ msgstr ""
 
 #: frontend/src/components/Modals/ChangePasswordModal.vue:88
 msgid "Password updated successfully"
-msgstr ""
+msgstr "گذرواژه با موفقیت به‌روزرسانی شد"
 
 #: frontend/src/components/Modals/EmailTemplateSelectorModal.vue:13
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:38
@@ -4715,7 +4715,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
 msgid "Position"
-msgstr "موقعیت"
+msgstr ""
 
 #: frontend/src/pages/Deal.vue:211 frontend/src/pages/MobileDeal.vue:153
 msgid "Primary"
@@ -4891,7 +4891,7 @@ msgstr "URL ضبط"
 #: crm/fcrm/doctype/crm_task/crm_task.json
 #: crm/fcrm/doctype/fcrm_note/fcrm_note.json
 msgid "Reference Doc"
-msgstr ""
+msgstr "سند مرجع"
 
 #. Label of the reference_doctype (Link) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
@@ -5301,7 +5301,7 @@ msgstr "زمان‌بندی یک رویداد"
 #. Label of the script (Code) field in DocType 'CRM Form Script'
 #: crm/fcrm/doctype/crm_form_script/crm_form_script.json
 msgid "Script"
-msgstr "اسکریپت"
+msgstr ""
 
 #: frontend/src/components/Settings/AssignmentRules/AssigneeSearch.vue:22
 msgid "Search"
@@ -5317,7 +5317,7 @@ msgstr ""
 
 #: frontend/src/components/FieldLayoutEditor.vue:336
 msgid "Section"
-msgstr "بخش"
+msgstr ""
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:130
 msgid "See all participants"
@@ -5353,7 +5353,7 @@ msgstr "ارسال"
 
 #: frontend/src/components/Settings/InviteUserPage.vue:18
 msgid "Send Invites"
-msgstr ""
+msgstr "ارسال دعوتنامه"
 
 #: frontend/src/components/Activities/ActivityHeader.vue:61
 msgid "Send Template"
@@ -5374,7 +5374,7 @@ msgstr ""
 #. Option for the 'Type' (Select) field in DocType 'CRM Dropdown Item'
 #: crm/fcrm/doctype/crm_dropdown_item/crm_dropdown_item.json
 msgid "Separator"
-msgstr "جداکننده"
+msgstr ""
 
 #. Label of the naming_series (Select) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
@@ -5469,7 +5469,7 @@ msgstr "تنظیمات"
 
 #: frontend/src/components/Settings/EmailAdd.vue:6
 msgid "Setup Email"
-msgstr ""
+msgstr "تنظیم ایمیل"
 
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.py:199
 msgid "Setup the Exchange Rate Provider as 'Exchangerate Host' in settings, as default provider does not support currency conversion for {0} to {1}."
@@ -5514,7 +5514,7 @@ msgstr "پنل کناری"
 #. Option for the 'Type' (Select) field in DocType 'CRM Global Settings'
 #: crm/fcrm/doctype/crm_global_settings/crm_global_settings.json
 msgid "Sidebar Items"
-msgstr "موارد نوار کناری"
+msgstr ""
 
 #. Description of the 'Condition' (Code) field in DocType 'CRM Service Level
 #. Agreement'
@@ -5658,7 +5658,7 @@ msgstr ""
 #. Label of the subdomain (Data) field in DocType 'CRM Exotel Settings'
 #: crm/fcrm/doctype/crm_exotel_settings/crm_exotel_settings.json
 msgid "Subdomain"
-msgstr "زیر دامنه"
+msgstr ""
 
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:68
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:68
@@ -5928,7 +5928,7 @@ msgstr "عنوان"
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
 #: frontend/src/components/Kanban/KanbanSettings.vue:29
 msgid "Title Field"
-msgstr "فیلد عنوان"
+msgstr ""
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:545
 #: frontend/src/components/Modals/EventModal.vue:320
@@ -5962,7 +5962,7 @@ msgstr "به کاربر"
 
 #: frontend/src/components/Settings/EmailEdit.vue:118
 msgid "To know more about setting up email accounts, click"
-msgstr ""
+msgstr "برای کسب اطلاعات بیشتر در مورد تنظیم حساب‌های ایمیل، کلیک کنید"
 
 #: frontend/src/components/Filter.vue:627 frontend/src/pages/Calendar.vue:79
 msgid "Today"
@@ -6026,7 +6026,7 @@ msgstr ""
 #: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.json
 #: frontend/src/components/Settings/LeadSyncing/FailureLogs.vue:25
 msgid "Traceback"
-msgstr "ردیابی"
+msgstr ""
 
 #. Option for the 'Weekly Off' (Select) field in DocType 'CRM Holiday List'
 #. Option for the 'Workday' (Select) field in DocType 'CRM Service Day'
@@ -6196,7 +6196,7 @@ msgstr "به‌روزرسانی"
 
 #: frontend/src/components/Settings/EmailEdit.vue:74
 msgid "Update Account"
-msgstr ""
+msgstr "به‌روز‌رسانی حساب کاربری"
 
 #: frontend/src/components/Modals/EditValueModal.vue:30
 msgid "Update {0} Records"
@@ -6253,7 +6253,7 @@ msgstr "مدیریت کاربر"
 #. Label of the user_name (Data) field in DocType 'CRM Telephony Agent'
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
 msgid "User Name"
-msgstr "نام کاربری"
+msgstr ""
 
 #: frontend/src/components/Settings/Users.vue:296
 msgid "User {0} has been removed"
@@ -6277,7 +6277,7 @@ msgstr ""
 #. Service Level Agreement'
 #: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.json
 msgid "Validity"
-msgstr "اعتبار"
+msgstr ""
 
 #: frontend/src/components/Modals/EditValueModal.vue:14
 msgid "Value"
@@ -6402,7 +6402,7 @@ msgstr "شما"
 
 #: crm/utils/__init__.py:262
 msgid "You are not permitted to access this resource."
-msgstr "شما مجاز به دسترسی به این منبع نیستید."
+msgstr ""
 
 #: crm/templates/emails/helpdesk_invitation.html:22
 msgid "You can also copy-paste following link in your browser"

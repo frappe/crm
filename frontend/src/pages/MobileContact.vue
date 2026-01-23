@@ -70,7 +70,7 @@
               <div class="flex items-center gap-1.5">
                 <Button
                   v-if="callEnabled && contact.doc.mobile_no"
-                  :label="__('Make Call')"
+                  :label="__('Make a call')"
                   size="sm"
                   :iconLeft="PhoneIcon"
                   @click="callEnabled && makeCall(contact.doc.mobile_no)"
@@ -150,7 +150,7 @@
         >
           <div class="flex flex-col items-center justify-center space-y-3">
             <component :is="tab.icon" class="!h-10 !w-10" />
-            <div>{{ __('No {0} Found', [__(tab.label)]) }}</div>
+            <div>{{ __('No {0} found', [__(tab.label.toLowerCase())]) }}</div>
           </div>
         </div>
       </template>

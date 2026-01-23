@@ -33,8 +33,8 @@
           <div>
             {{
               activity.type == 'Incoming'
-                ? __('Inbound Call')
-                : __('Outbound Call')
+                ? __('Inbound call')
+                : __('Outbound call')
             }}
           </div>
         </div>
@@ -72,7 +72,7 @@
         </Badge>
         <Badge
           v-if="activity.recording_url"
-          :label="activity.show_recording ? __('Hide Recording') : __('Listen')"
+          :label="activity.show_recording ? __('Hide recording') : __('Listen')"
           class="cursor-pointer"
           @click.stop="activity.show_recording = !activity.show_recording"
         >

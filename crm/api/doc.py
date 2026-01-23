@@ -36,9 +36,9 @@ def sort_options(doctype: str):
 
 	standard_fields = [
 		{"label": "Name", "fieldname": "name"},
-		{"label": "Created On", "fieldname": "creation"},
-		{"label": "Last Modified", "fieldname": "modified"},
-		{"label": "Modified By", "fieldname": "modified_by"},
+		{"label": "Created on", "fieldname": "creation"},
+		{"label": "Last modified", "fieldname": "modified"},
+		{"label": "Modified by", "fieldname": "modified_by"},
 		{"label": "Owner", "fieldname": "owner"},
 	]
 
@@ -90,19 +90,19 @@ def get_filterable_fields(doctype: str):
 	# append standard fields (getting error when using frappe.model.std_fields)
 	standard_fields = [
 		{"fieldname": "name", "fieldtype": "Link", "label": "ID", "options": doctype},
-		{"fieldname": "owner", "fieldtype": "Link", "label": "Created By", "options": "User"},
+		{"fieldname": "owner", "fieldtype": "Link", "label": "Created by", "options": "User"},
 		{
 			"fieldname": "modified_by",
 			"fieldtype": "Link",
-			"label": "Last Updated By",
+			"label": "Last updated by",
 			"options": "User",
 		},
 		{"fieldname": "_user_tags", "fieldtype": "Data", "label": "Tags"},
 		{"fieldname": "_liked_by", "fieldtype": "Data", "label": "Like"},
 		{"fieldname": "_comments", "fieldtype": "Text", "label": "Comments"},
-		{"fieldname": "_assign", "fieldtype": "Text", "label": "Assigned To"},
-		{"fieldname": "creation", "fieldtype": "Datetime", "label": "Created On"},
-		{"fieldname": "modified", "fieldtype": "Datetime", "label": "Last Updated On"},
+		{"fieldname": "_assign", "fieldtype": "Text", "label": "Assigned to"},
+		{"fieldname": "creation", "fieldtype": "Datetime", "label": "Created on"},
+		{"fieldname": "modified", "fieldtype": "Datetime", "label": "Last updated on"},
 	]
 	for field in standard_fields:
 		if field.get("fieldname") not in restricted_fields and field.get("fieldtype") in allowed_fieldtypes:
@@ -149,15 +149,15 @@ def get_group_by_fields(doctype: str):
 
 	standard_fields = [
 		{"label": "Name", "fieldname": "name"},
-		{"label": "Created On", "fieldname": "creation"},
-		{"label": "Last Modified", "fieldname": "modified"},
-		{"label": "Modified By", "fieldname": "modified_by"},
+		{"label": "Created on", "fieldname": "creation"},
+		{"label": "Last modified", "fieldname": "modified"},
+		{"label": "Modified by", "fieldname": "modified_by"},
 		{"label": "Owner", "fieldname": "owner"},
-		{"label": "Liked By", "fieldname": "_liked_by"},
-		{"label": "Assigned To", "fieldname": "_assign"},
+		{"label": "Liked by", "fieldname": "_liked_by"},
+		{"label": "Assigned to", "fieldname": "_assign"},
 		{"label": "Comments", "fieldname": "_comments"},
-		{"label": "Created On", "fieldname": "creation"},
-		{"label": "Modified On", "fieldname": "modified"},
+		{"label": "Created on", "fieldname": "creation"},
+		{"label": "Modified on", "fieldname": "modified"},
 	]
 
 	for field in standard_fields:
@@ -341,7 +341,7 @@ def get_data(
 		if not columns:
 			columns = [
 				{"label": "Name", "type": "Data", "key": "name", "width": "16rem"},
-				{"label": "Last Modified", "type": "Datetime", "key": "modified", "width": "8rem"},
+				{"label": "Last modified", "type": "Datetime", "key": "modified", "width": "8rem"},
 			]
 
 		if not rows:
@@ -489,15 +489,15 @@ def get_data(
 
 	std_fields = [
 		{"label": "Name", "fieldtype": "Data", "fieldname": "name"},
-		{"label": "Created On", "fieldtype": "Datetime", "fieldname": "creation"},
-		{"label": "Last Modified", "fieldtype": "Datetime", "fieldname": "modified"},
+		{"label": "Created on", "fieldtype": "Datetime", "fieldname": "creation"},
+		{"label": "Last modified", "fieldtype": "Datetime", "fieldname": "modified"},
 		{
-			"label": "Modified By",
+			"label": "Modified by",
 			"fieldtype": "Link",
 			"fieldname": "modified_by",
 			"options": "User",
 		},
-		{"label": "Assigned To", "fieldtype": "Text", "fieldname": "_assign"},
+		{"label": "Assigned to", "fieldtype": "Text", "fieldname": "_assign"},
 		{"label": "Owner", "fieldtype": "Link", "fieldname": "owner", "options": "User"},
 		{"label": "Like", "fieldtype": "Data", "fieldname": "_liked_by"},
 	]
@@ -630,19 +630,19 @@ def get_fields_meta(doctype, restricted_fieldtypes=None, as_array=False, only_re
 
 	standard_fields = [
 		{"fieldname": "name", "fieldtype": "Link", "label": "ID", "options": doctype},
-		{"fieldname": "owner", "fieldtype": "Link", "label": "Created By", "options": "User"},
+		{"fieldname": "owner", "fieldtype": "Link", "label": "Created by", "options": "User"},
 		{
 			"fieldname": "modified_by",
 			"fieldtype": "Link",
-			"label": "Last Updated By",
+			"label": "Last updated by",
 			"options": "User",
 		},
 		{"fieldname": "_user_tags", "fieldtype": "Data", "label": "Tags"},
 		{"fieldname": "_liked_by", "fieldtype": "Data", "label": "Like"},
 		{"fieldname": "_comments", "fieldtype": "Text", "label": "Comments"},
-		{"fieldname": "_assign", "fieldtype": "Text", "label": "Assigned To"},
-		{"fieldname": "creation", "fieldtype": "Datetime", "label": "Created On"},
-		{"fieldname": "modified", "fieldtype": "Datetime", "label": "Last Updated On"},
+		{"fieldname": "_assign", "fieldtype": "Text", "label": "Assigned to"},
+		{"fieldname": "creation", "fieldtype": "Datetime", "label": "Created on"},
+		{"fieldname": "modified", "fieldtype": "Datetime", "label": "Last updated on"},
 	]
 
 	for field in standard_fields:

@@ -47,7 +47,7 @@
           <Button
             variant="ghost"
             class="w-full !justify-start"
-            :label="__('Create New')"
+            :label="__('Create new')"
             iconLeft="plus"
             @click="() => attrs.onCreate(value, close)"
           />

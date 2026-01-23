@@ -24,6 +24,8 @@ import {
   FeatherIcon,
 } from 'frappe-ui'
 
+import { telemetryPlugin } from "frappe-ui/frappe";
+
 let globalComponents = {
   Button,
   TextInput,
@@ -79,5 +81,6 @@ async function initializeApp() {
     window.$dialog = createDialog
   }
 }
+app.use(telemetryPlugin, { app_name: "crm" });
 
 initializeApp()

@@ -62,7 +62,7 @@
           </template>
         </FileUploader>
         <Button
-          :label="__('Change Password')"
+          :label="__('Change password')"
           icon-left="lock"
           @click="showChangePasswordModal = true"
         />

@@ -19,12 +19,12 @@
         <FormControl
           type="text"
           v-model="mobileNumber"
-          :label="__('Mobile Number')"
+          :label="__('Mobile number')"
         />
         <FormControl
           type="select"
           v-model="callMedium"
-          :label="__('Calling Medium')"
+          :label="__('Calling medium')"
           :options="['Twilio', 'Exotel']"
         />
         <div class="flex flex-col gap-1">
