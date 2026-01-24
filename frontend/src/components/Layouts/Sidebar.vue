@@ -10,14 +10,14 @@
       />
     </div>
     <div class="flex-1 overflow-y-auto overflow-hidden">
-      <div class="mb-3 flex flex-col">
+      <div class="flex flex-col">
         <SidebarLink
           id="notifications-btn"
           :label="__('Notifications')"
           :icon="NotificationsIcon"
           :isCollapsed="isSidebarCollapsed"
           @click="() => toggleNotificationPanel()"
-          class="relative mx-2 my-0.5"
+          class="relative mx-2 my-[1.5px]"
         >
           <template #right>
             <Badge

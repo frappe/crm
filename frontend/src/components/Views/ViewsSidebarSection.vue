@@ -12,10 +12,7 @@
     >
       <template #item="{ element: view }">
         <div :key="view.name">
-          <div
-            v-if="!view.hideLabel && isSidebarCollapsed && view.views?.length"
-            class="mx-2 my-2 h-1 border-b"
-          />
+          <div class="border-t mx-2 my-1.5" />
           <CollapsibleSection
             :label="view.label"
             :hideLabel="view.hideLabel"
@@ -24,13 +21,13 @@
             <template #header="{ opened, hide, toggle }">
               <div
                 v-if="!hide"
-                class="group my-2 flex gap-2 min-h-7 items-center justify-between px-1 text-base font-medium text-ink-gray-5 transition-all duration-300 ease-in-out truncate"
+                class="group px-4 pt-[11px] pb-2.5 flex gap-2 items-center justify-between text-base text-ink-gray-5 transition-all duration-300 ease-in-out truncate"
                 :class="{
                   'bg-surface-gray-1': !!sectionDropdownState[view.name],
                 }"
               >
                 <div
-                  class="flex ml-2 h-7 cursor-pointer items-center gap-1.5 transition-all duration-300 ease-in-out truncate"
+                  class="flex h-5.5 cursor-pointer items-center gap-2 transition-all duration-300 ease-in-out truncate"
                   @click="toggle()"
                 >
                   <FeatherIcon
@@ -81,20 +78,23 @@
                 :group="{ name: 'views-items', pull: true, put: true }"
                 handle=".item-drag-handle"
                 item-key="name"
-                class="list-group flex flex-col gap-1 mx-2 my-0.5"
+                class="list-group flex flex-col gap-[3px] mx-2 my-[1.5px]"
               >
                 <template #item="{ element: link }">
                   <div
-                    class="group w-full flex justify-between gap-2 h-7 px-2 py-1 cursor-pointer items-center rounded text-ink-gray-7 transition-all duration-300 ease-in-out focus:outline-none focus:transition-none focus-visible:rounded focus-visible:ring-2 focus-visible:ring-outline-gray-3 hover:bg-surface-gray-2"
+                    class="group w-full flex justify-between gap-2 h-7.5 px-2 py-1 cursor-pointer items-center rounded text-ink-gray-7 transition-all duration-300 ease-in-out focus:outline-none focus:transition-none focus-visible:rounded focus-visible:ring-2 focus-visible:ring-outline-gray-3 hover:bg-surface-gray-2"
                     :class="{
                       'bg-surface-gray-2': !!itemDropdownState[link.name],
                     }"
                   >
-                    <div class="flex items-center truncate">
-                      <Icon :icon="link.icon" class="size-4" />
+                    <div class="flex items-center gap-2 truncate">
+                      <Icon
+                        :icon="link.icon"
+                        class="flex items-center size-4 text-ink-gray-8"
+                      />
                       <Tooltip :text="link.label" :hoverDelay="1.5">
                         <span
-                          class="ml-2 flex-1 flex-shrink-0 truncate text-sm duration-300 ease-in-out"
+                          class="flex-1 flex-shrink-0 truncate text-sm duration-300 ease-in-out"
                         >
                           {{ __(link.label) }}
                         </span>
@@ -140,10 +140,7 @@
     </Draggable>
     <template v-else>
       <div v-for="view in allViews" :key="view.name">
-        <div
-          v-if="!view.hideLabel && isSidebarCollapsed && view.views?.length"
-          class="mx-2 my-2 h-1 border-b"
-        />
+        <div class="border-t mx-2 my-1.5" />
         <CollapsibleSection
           :label="view.label"
           :hideLabel="view.hideLabel"
@@ -152,11 +149,11 @@
           <template #header="{ opened, hide, toggle }">
             <div
               v-if="!hide"
-              class="flex items-center cursor-pointer gap-1.5 px-1 text-base font-medium text-ink-gray-5 transition-all duration-300 ease-in-out"
+              class="flex items-center cursor-pointer gap-2 text-base text-ink-gray-5 transition-all duration-300 ease-in-out"
               :class="
                 isSidebarCollapsed
-                  ? 'ml-0 h-0 overflow-hidden opacity-0'
-                  : 'ml-2 my-2 h-7 w-auto opacity-100'
+                  ? 'h-0 overflow-hidden opacity-0'
+                  : 'px-4 pt-[11px] pb-2.5 w-auto opacity-100'
               "
               @click="toggle()"
             >
@@ -166,7 +163,9 @@
                 :class="{ 'rotate-90': opened }"
               />
               <Tooltip :text="view.label" placement="right">
-                <span class="truncate">{{ __(view.label) }}</span>
+                <span class="flex items-center h-5.5 truncate">
+                  {{ __(view.label) }}
+                </span>
               </Tooltip>
             </div>
           </template>
@@ -178,7 +177,7 @@
               :label="__(link.label)"
               :to="link.to"
               :isCollapsed="isSidebarCollapsed"
-              class="mx-2 my-0.5"
+              class="mx-2 my-[1.5px]"
             />
           </nav>
         </CollapsibleSection>
@@ -210,7 +209,7 @@ import { sidebarLayouts } from '@/doctype/generateRoutes.js'
 import { editSidebar } from '@/composables/settings.js'
 import { isTouchScreenDevice } from '@/utils'
 import { Tooltip, FeatherIcon, Dropdown } from 'frappe-ui'
-import { computed, h, reactive, ref, watch } from 'vue'
+import { computed, reactive, ref, watch } from 'vue'
 
 defineProps({
   isSidebarCollapsed: {
@@ -332,11 +331,7 @@ function parseView(views) {
 }
 
 function getIcon(routeName, icon) {
-  if (icon) {
-    return h('div', { class: 'size-auto' }, icon)
-  }
-
-  return iconMap[routeName] || PinIcon
+  return icon || iconMap[routeName] || PinIcon
 }
 
 function cloneGroups(groups) {
