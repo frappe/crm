@@ -26,7 +26,7 @@ frappe.ui.form.on("CRM Service Level Agreement", {
     });
     if (default_priority_count > 1) {
       frappe.throw(
-        __("There can only be one default priority in Priorities table"),
+        __("There can only be one default priority in priorities table"),
       );
     }
   },

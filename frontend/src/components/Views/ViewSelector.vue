@@ -88,7 +88,7 @@ const standardViews = []
 const viewsDropdownOptions = computed(() => {
   let _views = [
     {
-      group: __('Standard Views'),
+      group: __('Standard views'),
       hideLabel: true,
       items: standardViews,
     },
@@ -114,17 +114,17 @@ const viewsDropdownOptions = computed(() => {
     let pinnedViews = allViews.value.filter((v) => v.pinned)
     savedViews.length &&
       _views.push({
-        group: __('Saved Views'),
+        group: __('Saved views'),
         items: savedViews,
       })
     publicViews.length &&
       _views.push({
-        group: __('Public Views'),
+        group: __('Public views'),
         items: publicViews,
       })
     pinnedViews.length &&
       _views.push({
-        group: __('Pinned Views'),
+        group: __('Pinned views'),
         items: pinnedViews,
       })
   }
@@ -134,7 +134,7 @@ const viewsDropdownOptions = computed(() => {
     hideLabel: true,
     items: [
       {
-        label: __('Create View'),
+        label: __('Create view'),
         icon: 'plus',
         onClick: () => createView(),
       },
@@ -188,7 +188,7 @@ const viewActions = (v, close) => {
 
     if (!v.public) {
       actions[0].items.push({
-        label: v.pinned ? __('Unpin View') : __('Pin View'),
+        label: v.pinned ? __('Unpin view') : __('Pin view'),
         icon: () => h(v.pinned ? UnpinIcon : PinIcon, { class: 'h-4 w-4' }),
         onClick: () => pinView(v),
       })
@@ -196,7 +196,7 @@ const viewActions = (v, close) => {
 
     if (isManager()) {
       actions[0].items.push({
-        label: v.public ? __('Make Private') : __('Make Public'),
+        label: v.public ? __('Make private') : __('Make public'),
         icon: () =>
           h(FeatherIcon, {
             name: v.public ? 'lock' : 'unlock',
@@ -207,7 +207,7 @@ const viewActions = (v, close) => {
     }
 
     actions.push({
-      group: __('Delete View'),
+      group: __('Delete view'),
       hideLabel: true,
       items: [
         {
@@ -215,7 +215,7 @@ const viewActions = (v, close) => {
           icon: 'trash-2',
           onClick: () =>
             $dialog({
-              title: __('Delete View'),
+              title: __('Delete view'),
               message: __('Are you sure you want to delete "{0}" view?', [
                 v.label,
               ]),

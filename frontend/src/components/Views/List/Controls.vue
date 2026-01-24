@@ -34,7 +34,7 @@
         class="flex items-center gap-2 border-r pr-2"
       >
         <Button :label="__('Cancel')" @click="cancelChanges" />
-        <Button :label="__('Save Changes')" @click="saveView" />
+        <Button :label="__('Save changes')" @click="saveView" />
       </div>
       <div class="flex items-center gap-2">
         <Button
@@ -85,7 +85,7 @@
           ]"
         >
           <template #default>
-            <Button :tooltip="__('More Options')" icon="more-horizontal" />
+            <Button :tooltip="__('More options')" icon="more-horizontal" />
           </template>
         </Dropdown>
       </div>

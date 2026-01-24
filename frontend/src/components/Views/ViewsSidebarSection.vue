@@ -263,7 +263,7 @@ const baseViewGroups = computed(() => {
   const viewGroups = [
     {
       name: 'all-views',
-      label: __('All Views'),
+      label: __('All views'),
       hideLabel: true,
       opened: true,
       views: links.value.filter((link) => {
@@ -278,7 +278,7 @@ const baseViewGroups = computed(() => {
   if (publicViews.value?.length) {
     viewGroups.push({
       name: 'public-views',
-      label: __('Public Views'),
+      label: __('Public views'),
       opened: true,
       views: parseView(publicViews.value),
     })
@@ -287,7 +287,7 @@ const baseViewGroups = computed(() => {
   if (pinnedViews.value?.length) {
     viewGroups.push({
       name: 'pinned-views',
-      label: __('Pinned Views'),
+      label: __('Pinned views'),
       opened: true,
       views: parseView(pinnedViews.value),
     })
@@ -365,7 +365,7 @@ function viewOptions(link) {
       },
     },
     {
-      group: __('Delete View'),
+      group: __('Delete view'),
       hideLabel: true,
       items: [
         {
@@ -397,7 +397,7 @@ function sectionOptions(section) {
       },
     },
     {
-      group: __('Delete Section'),
+      group: __('Delete section'),
       hideLabel: true,
       items: [
         {

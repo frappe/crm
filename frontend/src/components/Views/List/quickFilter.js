@@ -58,7 +58,7 @@ function createState(doctype, viewName) {
 
       quickFilters.update({ params: { doctype: doctype, cached: false } })
       quickFilters.reload()
-      toast.success(__('Quick Filters updated successfully'))
+      toast.success(__('Quick filters updated successfully'))
     },
   })
 

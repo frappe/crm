@@ -13,7 +13,7 @@ frappe.ui.form.on("CRM Form Script", {
       frm.disable_form();
       frappe.show_alert(
         __(
-          "Standard Form Scripts can not be modified, duplicate the Form Script instead.",
+          "Standard form scripts can not be modified, duplicate the form script instead.",
         ),
       );
     }

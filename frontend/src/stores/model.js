@@ -2,16 +2,16 @@ import { __ } from '@/translation'
 
 export const STANDARD_FIELDS = [
   { fieldname: 'name', fieldtype: 'Link', label: __('Name') },
-  { fieldname: 'creation', fieldtype: 'Datetime', label: __('Created On') },
+  { fieldname: 'creation', fieldtype: 'Datetime', label: __('Created on') },
   {
     fieldname: 'modified',
     fieldtype: 'Datetime',
-    label: __('Last Updated On'),
+    label: __('Last updated on'),
   },
   {
     fieldname: 'modified_by',
     fieldtype: 'Link',
-    label: __('Last Updated By'),
+    label: __('Last updated by'),
     options: 'User',
   },
   {
@@ -20,7 +20,7 @@ export const STANDARD_FIELDS = [
     label: __('Owner'),
     options: 'User',
   },
-  { fieldname: '_assign', fieldtype: 'Text', label: __('Assigned To') },
+  { fieldname: '_assign', fieldtype: 'Text', label: __('Assigned to') },
   { fieldname: '_liked_by', fieldtype: 'Data', label: __('Like') },
 ]
 
