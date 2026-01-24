@@ -272,7 +272,6 @@ function makeOutgoingCall(number) {
       onSuccess(data) {
         callStatus.value = 'Success'
         callData.call_sid = data.call_id
-        console.log('data', data)
       },
       onError() {
         toast.error('Error initiating call')
