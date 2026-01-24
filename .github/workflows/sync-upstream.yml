@@ -1,0 +1,148 @@
+name: Sync Frappe CRM Upstream
+
+on:
+  schedule:
+    # Run every 6 hours
+    - cron: '0 */6 * * *'
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+      
+      - name: Add Upstream Remote
+        run: |
+          git remote add upstream https://github.com/frappe/crm.git || true
+          git fetch upstream
+      
+      - name: Check for Upstream Changes
+        id: check
+        run: |
+          UPSTREAM_COMMIT=$(git rev-parse upstream/main)
+          MERGE_BASE=$(git merge-base main upstream/main)
+          
+          if [ "$UPSTREAM_COMMIT" != "$MERGE_BASE" ]; then
+            echo "changes=true" >> $GITHUB_OUTPUT
+            echo "✨ Upstream has new changes to sync"
+            COMMITS_BEHIND=$(git rev-list --count main..upstream/main)
+            echo "commits_behind=$COMMITS_BEHIND" >> $GITHUB_OUTPUT
+            echo "📊 Behind upstream by $COMMITS_BEHIND commits"
+          else
+            echo "changes=false" >> $GITHUB_OUTPUT
+            echo "✅ Already up to date with upstream"
+          fi
+          
+          PATCHES=$(git rev-list --count upstream/main..main)
+          echo "patches=$PATCHES" >> $GITHUB_OUTPUT
+          if [ "$PATCHES" -gt 0 ]; then
+            echo "🔧 Local patches: $PATCHES"
+          fi
+      
+      - name: Rebase on Upstream
+        if: steps.check.outputs.changes == 'true'
+        id: rebase
+        run: |
+          git branch -f develop-upstream upstream/main
+          
+          echo "🔄 Rebasing ${{ steps.check.outputs.patches }} local patches on upstream..."
+          
+          if git rebase develop-upstream; then
+            echo "✅ Rebase successful!"
+            echo "status=success" >> $GITHUB_OUTPUT
+            echo "📝 Rebased commits:"
+            git log develop-upstream..main --oneline
+          else
+            echo "❌ Rebase failed - conflicts detected"
+            echo "status=failed" >> $GITHUB_OUTPUT
+            echo "⚠️ Conflicting files:"
+            git diff --name-only --diff-filter=U
+            git rebase --abort
+            exit 1
+          fi
+      
+      - name: Push to Fork
+        if: steps.check.outputs.changes == 'true' && steps.rebase.outputs.status == 'success'
+        run: |
+          echo "📤 Pushing rebased changes to puzzo-dev/crm..."
+          git push origin main --force-with-lease
+          echo "✅ Successfully synced with upstream!"
+      
+      - name: Create Issue on Conflict
+        if: failure() && steps.check.outputs.changes == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const commits_behind = '${{ steps.check.outputs.commits_behind }}';
+            const patches = '${{ steps.check.outputs.patches }}';
+            
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: '🚨 Upstream Sync Failed - Manual Rebase Required',
+              body: `## Automated Sync Failure
+              
+              The automated sync from **frappe/crm** failed due to rebase conflicts.
+              
+              ### Status
+              - **Upstream commits to sync**: ${commits_behind}
+              - **Local patches**: ${patches}
+              - **Failed workflow**: [View Run](${context.payload.repository.html_url}/actions/runs/${context.runId})
+              
+              ### Manual Resolution Required
+              
+              \`\`\`bash
+              cd /home/puxxo/CodeBase/erpNext/frappe-bench-v15/apps/crm
+              git fetch upstream
+              git checkout develop-upstream && git merge --ff-only upstream/main
+              git checkout main && git rebase develop-upstream
+              # Resolve conflicts, then:
+              git add <resolved-files>
+              git rebase --continue
+              git push origin main --force-with-lease
+              \`\`\`
+              
+              See [FORK-MAINTENANCE.md](./FORK-MAINTENANCE.md) for details.`,
+              labels: ['upstream-sync', 'needs-attention', 'manual-intervention']
+            })
+      
+      - name: Close Resolved Issues
+        if: success() && steps.check.outputs.changes == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const commits_behind = '${{ steps.check.outputs.commits_behind }}';
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: 'upstream-sync',
+              state: 'open'
+            });
+            
+            for (const issue of issues.data) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                body: `✅ Upstream sync completed successfully!\n\nSynced ${commits_behind} commits from frappe/crm.`
+              });
+              
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                state: 'closed'
+              });
+            }
