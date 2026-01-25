@@ -647,7 +647,12 @@ const activities = computed(() => {
 })
 
 function sortByCreation(list) {
-  return list.sort((a, b) => new Date(a.creation) - new Date(b.creation))
+  return list.sort((a, b) => {
+    // checks communication_date first, then creation
+    const dateA = new Date(a.communication_date || a.creation)
+    const dateB = new Date(b.communication_date || b.creation)
+    return dateA - dateB
+  })
 }
 function sortByModified(list) {
   return list.sort((b, a) => new Date(a.modified) - new Date(b.modified))
