@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-12-21 09:37+0000\n"
-"PO-Revision-Date: 2026-01-21 11:42\n"
+"PO-Revision-Date: 2026-01-23 12:26\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Arabic\n"
 "MIME-Version: 1.0\n"
@@ -63,7 +63,7 @@ msgstr "منذ سنة"
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
 msgid "1-10"
-msgstr ""
+msgstr "1-10"
 
 #. Option for the 'No. of Employees' (Select) field in DocType 'CRM Deal'
 #. Option for the 'No. of Employees' (Select) field in DocType 'CRM Lead'
@@ -73,7 +73,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
 msgid "1000+"
-msgstr ""
+msgstr "1000+"
 
 #. Option for the 'No. of Employees' (Select) field in DocType 'CRM Deal'
 #. Option for the 'No. of Employees' (Select) field in DocType 'CRM Lead'
@@ -103,7 +103,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
 msgid "501-1000"
-msgstr ""
+msgstr "501-1000"
 
 #. Option for the 'No. of Employees' (Select) field in DocType 'CRM Deal'
 #. Option for the 'No. of Employees' (Select) field in DocType 'CRM Lead'
@@ -113,7 +113,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
 msgid "51-200"
-msgstr ""
+msgstr "51-200"
 
 #. Paragraph text in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
@@ -209,11 +209,11 @@ msgstr ""
 #. Label of the access_key (Data) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 msgid "Access Key"
-msgstr ""
+msgstr "مفتاح الوصول"
 
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.py:156
 msgid "Access Key is required for Service Provider: {0}"
-msgstr ""
+msgstr "مفتاح الوصول مطلوب لموفر الخدمة: {0}"
 
 #. Label of the access_token (Small Text) field in DocType 'Facebook Page'
 #. Label of the access_token (Password) field in DocType 'Lead Sync Source'
@@ -534,7 +534,7 @@ msgstr "تنطبق على"
 #. Label of the view (Select) field in DocType 'CRM Form Script'
 #: crm/fcrm/doctype/crm_form_script/crm_form_script.json
 msgid "Apply To"
-msgstr ""
+msgstr "التقديم إلى"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:125
 msgid "Apply on"
@@ -819,7 +819,7 @@ msgstr ""
 #: frontend/src/components/EmailEditor.vue:45
 #: frontend/src/components/EmailEditor.vue:71
 msgid "BCC"
-msgstr ""
+msgstr "بي سي سي"
 
 #: frontend/src/components/FilesUploader/FilesUploader.vue:31
 #: frontend/src/components/Settings/EmailAdd.vue:79
@@ -1069,7 +1069,7 @@ msgstr ""
 
 #: frontend/src/components/ViewControls.vue:272
 msgid "CSV"
-msgstr ""
+msgstr "ملف CSV"
 
 #: frontend/src/components/Modals/CallLogDetailModal.vue:8
 msgid "Call Details"
@@ -1734,7 +1734,7 @@ msgstr ""
 #. Label of the deal_owner (Link) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 msgid "Deal Owner"
-msgstr ""
+msgstr "صاحب الصفقة"
 
 #. Label of the deal_status (Link) field in DocType 'ERPNext CRM Settings'
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.json
@@ -2033,7 +2033,7 @@ msgstr "قيمة الخصم"
 #: crm/fcrm/doctype/crm_global_settings/crm_global_settings.json
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
 msgid "DocType"
-msgstr ""
+msgstr "نوع المستند"
 
 #. Label of the dt (Link) field in DocType 'CRM Fields Layout'
 #: crm/fcrm/doctype/crm_fields_layout/crm_fields_layout.json
@@ -2054,7 +2054,7 @@ msgstr ""
 
 #: frontend/src/components/Modals/AboutModal.vue:62
 msgid "Documentation"
-msgstr ""
+msgstr "الوثائق"
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Task'
 #: crm/fcrm/doctype/crm_task/crm_task.json
@@ -2073,11 +2073,11 @@ msgstr "تحميل"
 
 #: frontend/src/components/FilesUploader/FilesUploaderArea.vue:24
 msgid "Drag and drop files here or upload from"
-msgstr ""
+msgstr "اسحب الملفات وأفلتها هنا أو قم بتحميلها من"
 
 #: frontend/src/components/FilesUploader/FilesUploaderArea.vue:56
 msgid "Drop files here"
-msgstr ""
+msgstr "قم بإسقاط الملفات هنا"
 
 #. Label of the dropdown_items_tab (Tab Break) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
@@ -2205,7 +2205,7 @@ msgstr ""
 
 #: frontend/src/components/Modals/NoteModal.vue:6
 msgid "Edit Note"
-msgstr ""
+msgstr "ملاحظة تحريرية"
 
 #: frontend/src/components/Modals/QuickEntryModal.vue:7
 msgid "Edit Quick Entry Layout"
@@ -2769,7 +2769,7 @@ msgstr ""
 
 #: frontend/src/components/FilesUploader/FilesUploaderArea.vue:333
 msgid "File \"{0}\" was skipped because of invalid file type"
-msgstr ""
+msgstr "تم تخطي الملف \"{0}\" بسبب نوع ملف غير صالح"
 
 #: frontend/src/components/FilesUploader/FilesUploaderArea.vue:354
 msgid "File \"{0}\" was skipped because only {1} uploads are allowed"
@@ -2816,7 +2816,7 @@ msgstr "أجاب أولا على"
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "First Response Due"
-msgstr ""
+msgstr "الاستجابة الأولى مطلوبة"
 
 #. Label of the first_response_time (Duration) field in DocType 'CRM Service
 #. Level Priority'
@@ -2959,7 +2959,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:582
 msgid "Go back"
-msgstr ""
+msgstr "عُد"
 
 #: frontend/src/components/Settings/AssignmentRules/AssigneeSearch.vue:156
 msgid "Go to invite page"
@@ -3384,7 +3384,7 @@ msgstr ""
 #. Label of the json (JSON) field in DocType 'CRM Global Settings'
 #: crm/fcrm/doctype/crm_global_settings/crm_global_settings.json
 msgid "JSON"
-msgstr ""
+msgstr "JSON"
 
 #. Label of the job_title (Data) field in DocType 'CRM Deal'
 #. Label of the job_title (Data) field in DocType 'CRM Lead'
@@ -3421,7 +3421,7 @@ msgstr ""
 #: frontend/src/components/Kanban/KanbanSettings.vue:3
 #: frontend/src/components/Kanban/KanbanSettings.vue:8
 msgid "Kanban Settings"
-msgstr ""
+msgstr "إعدادات كانبان"
 
 #. Label of the key (Data) field in DocType 'CRM Invitation'
 #. Label of the key (Data) field in DocType 'Facebook Lead Form Question'
@@ -3557,7 +3557,7 @@ msgstr "مالك الزبون المحتمل"
 
 #: crm/fcrm/doctype/crm_lead/crm_lead.py:124
 msgid "Lead Owner cannot be same as the Lead Email Address"
-msgstr ""
+msgstr "لا يمكن أن يكون مالك العميل المحتمل هو نفسه عنوان البريد الإلكتروني للعميل المحتمل"
 
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
@@ -3607,7 +3607,7 @@ msgstr ""
 #: frontend/src/pages/InvalidPage.vue:9 frontend/src/pages/Lead.vue:345
 #: frontend/src/pages/MobileLead.vue:293
 msgid "Leads"
-msgstr ""
+msgstr "العملاء المحتملين"
 
 #: crm/api/dashboard.py:973
 #: frontend/src/components/Dashboard/AddChartModal.vue:106
@@ -3819,7 +3819,7 @@ msgstr ""
 #: frontend/src/components/Settings/Users.vue:253
 #: frontend/src/components/Settings/Users.vue:256
 msgid "Manager"
-msgstr ""
+msgstr "مدير"
 
 #: frontend/src/data/document.js:58
 msgid "Mandatory field error: {0}"
@@ -4060,7 +4060,7 @@ msgstr ""
 #: frontend/src/components/Activities/ActivityHeader.vue:144
 #: frontend/src/pages/Deals.vue:511 frontend/src/pages/Leads.vue:538
 msgid "New Note"
-msgstr ""
+msgstr "ملاحظة جديدة"
 
 #: frontend/src/components/Modals/OrganizationModal.vue:8
 msgid "New Organization"
@@ -4084,7 +4084,7 @@ msgstr ""
 #: frontend/src/components/Activities/ActivityHeader.vue:149
 #: frontend/src/pages/Deals.vue:516 frontend/src/pages/Leads.vue:543
 msgid "New Task"
-msgstr ""
+msgstr "مهمة جديدة"
 
 #: frontend/src/components/Activities/ActivityHeader.vue:159
 msgid "New WhatsApp Message"
@@ -4144,7 +4144,7 @@ msgstr "لا"
 #. Option for the 'Status' (Select) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 msgid "No Answer"
-msgstr ""
+msgstr "لا يوجد رد"
 
 #: frontend/src/components/Controls/Grid.vue:322
 msgid "No Data"
@@ -4162,7 +4162,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/EmailEdit.vue:150
 msgid "No changes made"
-msgstr ""
+msgstr "لم يتم إجراء أي تغييرات"
 
 #: frontend/src/components/Modals/SidePanelModal.vue:51
 #: frontend/src/pages/Deal.vue:277 frontend/src/pages/MobileDeal.vue:209
@@ -4259,7 +4259,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
 msgid "No. of Employees"
-msgstr ""
+msgstr "عدد الموظفين"
 
 #: frontend/src/components/Activities/AudioPlayer.vue:148
 msgid "Normal"
@@ -4734,7 +4734,7 @@ msgstr ""
 #. Label of the phone (Data) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 msgid "Primary Phone"
-msgstr ""
+msgstr "رقم الهاتف الرئيسي"
 
 #: frontend/src/pages/Deal.vue:685 frontend/src/pages/MobileDeal.vue:568
 msgid "Primary contact set"
@@ -4766,7 +4766,7 @@ msgstr "خاص"
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
 msgid "Probability"
-msgstr ""
+msgstr "احتمال"
 
 #. Label of the product_code (Link) field in DocType 'CRM Products'
 #: crm/fcrm/doctype/crm_products/crm_products.json
@@ -4797,7 +4797,7 @@ msgstr "المنتجات"
 #: frontend/src/components/Layouts/AppSidebar.vue:540
 #: frontend/src/components/Settings/Settings.vue:94
 msgid "Profile"
-msgstr ""
+msgstr "حساب تعريفي"
 
 #: frontend/src/components/Settings/ProfileSettings.vue:147
 msgid "Profile updated successfully"
@@ -4944,7 +4944,7 @@ msgstr ""
 
 #: frontend/src/components/FieldLayoutEditor.vue:432
 msgid "Remove column"
-msgstr ""
+msgstr "إزالة العمود"
 
 #: frontend/src/components/ConditionsFilter/CFCondition.vue:200
 msgid "Remove group"
@@ -4960,11 +4960,11 @@ msgstr ""
 
 #: frontend/src/components/FieldLayoutEditor.vue:359
 msgid "Remove section"
-msgstr ""
+msgstr "إزالة القسم"
 
 #: frontend/src/components/FieldLayoutEditor.vue:318
 msgid "Remove tab"
-msgstr ""
+msgstr "إزالة علامة التبويب"
 
 #: frontend/src/components/Activities/EmailArea.vue:34
 #: frontend/src/components/CommunicationArea.vue:10
@@ -4977,7 +4977,7 @@ msgstr "الرد على الجميع"
 
 #: frontend/src/components/Modals/AboutModal.vue:72
 msgid "Report an Issue"
-msgstr ""
+msgstr "الإبلاغ عن مشكلة"
 
 #. Option for the 'Type' (Select) field in DocType 'CRM Fields Layout'
 #: crm/fcrm/doctype/crm_fields_layout/crm_fields_layout.json
@@ -4994,7 +4994,7 @@ msgstr "إعادة تعيين"
 
 #: frontend/src/components/ColumnSettings.vue:78
 msgid "Reset Changes"
-msgstr ""
+msgstr "إعادة ضبط التغييرات"
 
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.js:7
 msgid "Reset ERPNext Form Script"
@@ -5006,7 +5006,7 @@ msgstr ""
 
 #: frontend/src/pages/Dashboard.vue:28
 msgid "Reset to default"
-msgstr ""
+msgstr "إعادة الضبط إلى الوضع الافتراضي"
 
 #. Label of the responded_on (Datetime) field in DocType 'CRM Rolling Response
 #. Time'
@@ -5069,7 +5069,7 @@ msgstr ""
 
 #: crm/api/dashboard.py:697
 msgid "Revenue"
-msgstr ""
+msgstr "ربح"
 
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:81
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:81
@@ -5384,7 +5384,7 @@ msgstr "سلسلة التسمية"
 #. Label of the service_provider (Select) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 msgid "Service Provider"
-msgstr ""
+msgstr "مزود الخدمة"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:581
 msgid "Service level agreement"
@@ -5575,11 +5575,11 @@ msgstr ""
 #: frontend/src/components/Dashboard/AddChartModal.vue:68
 #: frontend/src/components/Dashboard/DashboardItem.vue:21
 msgid "Spacer"
-msgstr ""
+msgstr "فاصل"
 
 #: crm/api/dashboard.py:758 crm/api/dashboard.py:820
 msgid "Stage"
-msgstr ""
+msgstr "منصة"
 
 #: crm/fcrm/doctype/crm_form_script/crm_form_script.js:15
 msgid "Standard Form Scripts can not be modified, duplicate the Form Script instead."
@@ -5692,7 +5692,7 @@ msgstr ""
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.js:6
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:17
 msgid "Sync Now"
-msgstr ""
+msgstr "مزامنة الآن"
 
 #: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.js:12
 msgid "Sync Successful, CRM Lead: ${frappe.utils.get_form_link(\"CRM Lead\", message.name, true)}!"
@@ -6026,7 +6026,7 @@ msgstr ""
 #: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.json
 #: frontend/src/components/Settings/LeadSyncing/FailureLogs.vue:25
 msgid "Traceback"
-msgstr ""
+msgstr "تتبع الأخطاء"
 
 #. Option for the 'Weekly Off' (Select) field in DocType 'CRM Holiday List'
 #. Option for the 'Workday' (Select) field in DocType 'CRM Service Day'
@@ -6406,7 +6406,7 @@ msgstr ""
 
 #: crm/templates/emails/helpdesk_invitation.html:22
 msgid "You can also copy-paste following link in your browser"
-msgstr ""
+msgstr "يمكنك أيضًا نسخ الرابط التالي ولصقه في متصفحك"
 
 #: frontend/src/components/Telephony/CallUI.vue:39
 msgid "You can change the default calling medium from the settings"
@@ -6540,7 +6540,7 @@ msgstr ""
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 #: frontend/src/components/Settings/CurrencySettings.vue:106
 msgid "exchangerate.host"
-msgstr ""
+msgstr "exchangerate.host"
 
 #. Option for the 'Service Provider' (Select) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
@@ -6695,7 +6695,7 @@ msgstr "البرتقالي"
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
 msgid "pink"
-msgstr ""
+msgstr "لون القرنفل"
 
 #: frontend/src/components/FieldLayoutEditor.vue:368
 msgid "previous"

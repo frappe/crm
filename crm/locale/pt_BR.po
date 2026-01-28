@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-12-21 09:37+0000\n"
-"PO-Revision-Date: 2026-01-21 11:42\n"
+"PO-Revision-Date: 2026-01-27 12:48\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Portuguese, Brazilian\n"
 "MIME-Version: 1.0\n"
@@ -2798,7 +2798,7 @@ msgstr ""
 #: frontend/src/components/SortBy.vue:6 frontend/src/components/SortBy.vue:103
 #: frontend/src/components/SortBy.vue:136
 msgid "First Name"
-msgstr ""
+msgstr "Nome"
 
 #: frontend/src/components/Modals/LeadModal.vue:134
 msgid "First Name is mandatory"
@@ -2929,7 +2929,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_contacts/crm_contacts.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Full Name"
-msgstr ""
+msgstr "Nome Completo"
 
 #: crm/api/dashboard.py:755
 #: frontend/src/components/Dashboard/AddChartModal.vue:96
