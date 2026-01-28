@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-12-21 09:37+0000\n"
-"PO-Revision-Date: 2026-01-22 12:22\n"
+"PO-Revision-Date: 2026-01-23 12:26\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Bosnian\n"
 "MIME-Version: 1.0\n"
@@ -307,7 +307,7 @@ msgstr "Dodaj Potencijalnog Klijenta ili Ponudu"
 
 #: frontend/src/components/Controls/Grid.vue:334
 msgid "Add Row"
-msgstr "Dodaj Red"
+msgstr "Dodaj red"
 
 #: frontend/src/components/FieldLayoutEditor.vue:197
 #: frontend/src/components/SidePanelLayoutEditor.vue:127
