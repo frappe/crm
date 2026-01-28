@@ -465,10 +465,10 @@ import FilesUploader from '@/components/FilesUploader/FilesUploader.vue'
 import { timeAgo, formatDate, startCase } from '@/utils'
 import { globalStore } from '@/stores/global'
 import { usersStore } from '@/stores/users'
-import { whatsappEnabled, callEnabled } from '@/composables/settings'
+import { whatsappEnabled } from '@/composables/settings'
 import { useDocument } from '@/data/document'
 import { capture } from '@/telemetry'
-import { Button, Tooltip, createResource } from 'frappe-ui'
+import { Button, Tooltip, createResource, toast } from 'frappe-ui'
 import { useElementVisibility } from '@vueuse/core'
 import {
   ref,
@@ -584,6 +584,10 @@ function sendTemplate(template) {
       template,
     },
     auto: true,
+    onError: (error) => {
+      toast.error(error.messages?.[0] || __('Failed to send WhatsApp template'))
+    },
+    onSuccess: () => whatsappMessages.reload(),
   })
 }
 

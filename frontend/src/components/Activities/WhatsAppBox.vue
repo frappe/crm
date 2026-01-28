@@ -9,7 +9,9 @@
     >
       <div
         class="mb-1 text-sm font-bold"
-        :class="reply.type == 'Incoming' ? 'text-ink-green-2' : 'text-ink-blue-link'"
+        :class="
+          reply.type == 'Incoming' ? 'text-ink-green-2' : 'text-ink-blue-link'
+        "
       >
         {{ reply.from_name || __('You') }}
       </div>
@@ -67,7 +69,13 @@
 import IconPicker from '@/components/IconPicker.vue'
 import SmileIcon from '@/components/Icons/SmileIcon.vue'
 import { capture } from '@/telemetry'
-import { createResource, Textarea, FileUploader, Dropdown } from 'frappe-ui'
+import {
+  createResource,
+  Textarea,
+  FileUploader,
+  Dropdown,
+  toast,
+} from 'frappe-ui'
 import { ref, nextTick, watch } from 'vue'
 
 const props = defineProps({
@@ -123,6 +131,10 @@ async function sendWhatsAppMessage() {
     url: 'crm.api.whatsapp.create_whatsapp_message',
     params: args,
     auto: true,
+    onSuccess: () => whatsapp.value.reload(),
+    onError: (error) => {
+      toast.error(error.messages?.[0] || __('Failed to send WhatsApp message'))
+    },
   })
 }
 
