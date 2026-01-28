@@ -86,6 +86,11 @@ class CRMLead(Document):
 		self.create_auto_follow_up()
 
 	def after_insert(self):
+		# Auto-assign lead to creator if no lead_owner is set
+		if not self.lead_owner:
+			self.lead_owner = frappe.session.user
+			self.db_set("lead_owner", frappe.session.user, update_modified=False)
+		
 		if self.lead_owner:
 			self.assign_agent(self.lead_owner)
 
