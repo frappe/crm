@@ -47,11 +47,11 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-03-02 14:03:49.372132",
- "modified_by": "Administrator",
+ "modified": "2026-01-28 17:08:50.091145",
+ "modified_by": "shariq@frappe.io",
  "module": "FCRM",
  "name": "CRM Global Settings",
- "naming_rule": "Expression",
+ "naming_rule": "Expression (old style)",
  "owner": "Administrator",
  "permissions": [
   {
@@ -74,7 +74,7 @@
    "print": 1,
    "read": 1,
    "report": 1,
-   "role": "Sales User",
+   "role": "Sales Manager",
    "share": 1,
    "write": 1
   },
@@ -86,7 +86,7 @@
    "print": 1,
    "read": 1,
    "report": 1,
-   "role": "Sales Manager",
+   "role": "Sales User",
    "share": 1,
    "write": 1
   }

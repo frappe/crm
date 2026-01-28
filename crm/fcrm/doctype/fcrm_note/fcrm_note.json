@@ -50,7 +50,7 @@
    "link_fieldname": "note"
   }
  ],
- "modified": "2026-01-22 14:13:02.372344",
+ "modified": "2026-01-28 17:07:22.055857",
  "modified_by": "shariq@frappe.io",
  "module": "FCRM",
  "name": "FCRM Note",
@@ -64,7 +64,7 @@
    "print": 1,
    "read": 1,
    "report": 1,
-   "role": "Sales User",
+   "role": "System Manager",
    "share": 1,
    "write": 1
   },
@@ -77,6 +77,18 @@
    "read": 1,
    "report": 1,
    "role": "Sales Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales User",
    "share": 1,
    "write": 1
   }
