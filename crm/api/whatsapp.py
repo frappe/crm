@@ -173,6 +173,7 @@ def get_whatsapp_messages(reference_doctype, reference_name):
 
 	# Filter messages to get only reaction messages
 	reaction_messages = [message for message in messages if message["content_type"] == "reaction"]
+	reaction_messages.reverse()
 
 	# Iterate through reaction messages
 	for reaction_message in reaction_messages:
