@@ -11,9 +11,6 @@ from crm.fcrm.doctype.crm_call_log.crm_call_log import parse_call_log
 
 @frappe.whitelist()
 def get_activities(name: str):
-	if not isinstance(name, str) or not name:
-		frappe.throw(_("Invalid document name"), frappe.DataError)
-
 	if frappe.db.exists("CRM Deal", name):
 		return get_deal_activities(name)
 	elif frappe.db.exists("CRM Lead", name):
