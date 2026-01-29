@@ -78,5 +78,18 @@ function getTime(_seconds = 0) {
   return hoursCount + minutesCount + ':' + secondsCount
 }
 
-defineExpose({ start, stop, getTime, updatedTime })
+function timeToSeconds(time) {
+  if (!time) return 0
+
+  if (typeof time === 'number') return time
+
+  const parts = time.split(':').map(Number)
+  if (parts.some(isNaN)) return 0
+
+  return parts
+    .reverse()
+    .reduce((total, value, index) => total + value * 60 ** index, 0)
+}
+
+defineExpose({ start, stop, getTime, updatedTime, timeToSeconds })
 </script>
