@@ -2,6 +2,7 @@
 # For license information, please see license.txt
 
 import frappe
+from frappe import _
 from frappe.model.document import Document
 
 from crm.integrations.api import get_contact_by_phone_number
@@ -228,24 +229,52 @@ def get_call_log(name):
 
 @frappe.whitelist()
 def create_lead_from_call_log(call_log, lead_details=None):
+	call_log_data = frappe.parse_json(call_log or {})
+
+	if isinstance(call_log_data, str):
+		call_log_name = call_log_data
+	elif isinstance(call_log_data, dict):
+		call_log_name = call_log_data.get("name")
+	else:
+		call_log_name = None
+
+	if not call_log_name:
+		frappe.throw(_("A valid call log is required."), frappe.ValidationError)
+
+	call_doc = frappe.get_doc("CRM Call Log", call_log_name)
+
+	if not call_doc.has_permission("write"):
+		frappe.throw(_("You are not permitted to update this call log."), frappe.PermissionError)
+
+	if not frappe.has_permission("CRM Lead", "create"):
+		frappe.throw(_("You are not permitted to create leads."), frappe.PermissionError)
+
+	lead_details_data = frappe.parse_json(lead_details or {})
+	if lead_details_data and not isinstance(lead_details_data, dict):
+		frappe.throw(_("Invalid lead details supplied."), frappe.ValidationError)
+
 	lead = frappe.new_doc("CRM Lead")
-	lead_details = frappe.parse_json(lead_details or "{}")
+	meta = frappe.get_meta("CRM Lead")
+	valid_fieldnames = [df.fieldname for df in meta.fields]
 
-	if not lead_details.get("lead_owner"):
-		lead_details["lead_owner"] = frappe.session.user
-	if not lead_details.get("mobile_no"):
-		lead_details["mobile_no"] = call_log.get("from") or ""
-	if not lead_details.get("first_name"):
-		lead_details["first_name"] = "Lead from call " + (
-			lead_details.get("mobile_no") or call_log.get("name")
-		)
+	sanitized_details = {
+		key: value for key, value in (lead_details_data or {}).items() if key in valid_fieldnames
+	}
 
-	lead.update(lead_details)
-	lead.save(ignore_permissions=True)
+	if "lead_owner" in valid_fieldnames and not sanitized_details.get("lead_owner"):
+		sanitized_details["lead_owner"] = frappe.session.user
 
-	# link call log with lead
-	call_log = frappe.get_doc("CRM Call Log", call_log.get("name"))
-	call_log.link_with_reference_doc("CRM Lead", lead.name)
-	call_log.save(ignore_permissions=True)
+	if "mobile_no" in valid_fieldnames and not sanitized_details.get("mobile_no"):
+		sanitized_details["mobile_no"] = call_doc.get("from") or ""
+
+	if "first_name" in valid_fieldnames and not sanitized_details.get("first_name"):
+		reference_label = sanitized_details.get("mobile_no") or call_doc.name
+		sanitized_details["first_name"] = _("Lead from call {0}").format(reference_label)
+
+	lead.update(sanitized_details)
+	lead.insert()
+
+	call_doc.link_with_reference_doc("CRM Lead", lead.name)
+	call_doc.save()
 
 	return lead.name
