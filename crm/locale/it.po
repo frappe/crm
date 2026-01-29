@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-12-21 09:37+0000\n"
-"PO-Revision-Date: 2026-01-27 12:48\n"
+"PO-Revision-Date: 2026-01-29 12:57\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Italian\n"
 "MIME-Version: 1.0\n"
@@ -3128,7 +3128,7 @@ msgstr ""
 #: crm/lead_syncing/doctype/facebook_page/facebook_page.json
 #: frontend/src/components/Settings/LeadSyncing/FailureLogs.vue:77
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #. Label of the icon (Code) field in DocType 'CRM Dropdown Item'
 #. Label of the icon (Data) field in DocType 'CRM View Settings'
@@ -4345,7 +4345,7 @@ msgstr ""
 #: frontend/src/components/Activities/EmailArea.vue:15
 #: frontend/src/components/Layouts/AppSidebar.vue:583
 msgid "Notification"
-msgstr ""
+msgstr "Notifiche"
 
 #. Label of the notification_text (Text) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
@@ -6788,7 +6788,7 @@ msgstr ""
 
 #: frontend/src/utils/index.js:121
 msgid "{0} h"
-msgstr ""
+msgstr "{0} h"
 
 #: frontend/src/components/Settings/Users.vue:286
 msgid "{0} has been granted {1} access"
@@ -6817,7 +6817,7 @@ msgstr ""
 
 #: frontend/src/utils/index.js:119
 msgid "{0} m"
-msgstr ""
+msgstr "{0} m"
 
 #: frontend/src/composables/event.js:157
 msgid "{0} mins"
@@ -6825,7 +6825,7 @@ msgstr ""
 
 #: frontend/src/utils/index.js:170
 msgid "{0} minutes ago"
-msgstr ""
+msgstr "{0} minuti fa"
 
 #: frontend/src/utils/index.js:189
 msgid "{0} months ago"
