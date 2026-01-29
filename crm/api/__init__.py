@@ -104,10 +104,15 @@ def accept_invitation(key: str | None = None):
 
 @frappe.whitelist()
 def invite_by_email(emails: str, role: str):
-	frappe.only_for(["Sales Manager", "System Manager"])
+	frappe.only_for(["Sales Manager", "System Manager"], True)
+
+	user_roles = frappe.get_roles(frappe.session.user)
+
+	if role == "System Manager" and "System Manager" not in user_roles:
+		frappe.throw("You are not allowed to invite System Managers", frappe.PermissionError)
 
 	if role not in ["System Manager", "Sales Manager", "Sales User"]:
-		frappe.throw("Cannot invite for this role")
+		frappe.throw("Cannot invite for this role", frappe.PermissionError)
 
 	if not emails:
 		return
