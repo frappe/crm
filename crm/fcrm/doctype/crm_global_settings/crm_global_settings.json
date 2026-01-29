@@ -1,7 +1,6 @@
 {
  "actions": [],
- "allow_rename": 1,
- "autoname": "format:{type}-{dt}",
+ "autoname": "hash",
  "creation": "2025-02-28 14:37:10.002433",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -47,11 +46,11 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-01-28 17:08:50.091145",
+ "modified": "2026-01-29 16:27:28.090170",
  "modified_by": "shariq@frappe.io",
  "module": "FCRM",
  "name": "CRM Global Settings",
- "naming_rule": "Expression (old style)",
+ "naming_rule": "Random",
  "owner": "Administrator",
  "permissions": [
   {
