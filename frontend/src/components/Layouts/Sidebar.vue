@@ -4,9 +4,12 @@
     :class="isSidebarCollapsed ? 'w-12' : 'w-[220px]'"
   >
     <div class="p-2">
-      <UserDropdown :isCollapsed="isSidebarCollapsed" />
+      <UserDropdown
+        :isCollapsed="isSidebarCollapsed"
+        @update:isCollapsed="(val) => (isSidebarCollapsed = val)"
+      />
     </div>
-    <div class="flex-1 overflow-y-auto">
+    <div class="flex-1 overflow-y-auto overflow-hidden">
       <div class="flex flex-col">
         <SidebarLink
           id="notifications-btn"
@@ -29,46 +32,23 @@
           </template>
         </SidebarLink>
       </div>
-      <div v-for="view in allViews" :key="view.label">
-        <div class="border-t mx-2 my-1.5" />
-        <CollapsibleSection
-          :label="view.name"
-          :hideLabel="view.hideLabel"
-          :opened="view.opened"
-        >
-          <template #header="{ opened, hide, toggle }">
-            <div
-              v-if="!hide"
-              class="flex items-center cursor-pointer gap-1.5 text-base text-ink-gray-5 transition-all duration-300 ease-in-out"
-              :class="
-                isSidebarCollapsed
-                  ? 'h-0 overflow-hidden opacity-0'
-                  : 'px-4 pt-[11px] pb-2.5 w-auto opacity-100'
-              "
-              @click="toggle()"
-            >
-              <FeatherIcon
-                name="chevron-right"
-                class="h-4 text-ink-gray-9 transition-all duration-300 ease-in-out"
-                :class="{ 'rotate-90': opened }"
-              />
-              <span>{{ __(view.name) }}</span>
-            </div>
-          </template>
-          <nav class="flex flex-col">
-            <SidebarLink
-              v-for="link in view.views"
-              :icon="link.icon"
-              :label="__(link.label)"
-              :to="link.to"
-              :isCollapsed="isSidebarCollapsed"
-              class="mx-2 my-[1.5px]"
-            />
-          </nav>
-        </CollapsibleSection>
-      </div>
+      <ViewsSidebarSection
+        ref="viewsSidebarSection"
+        :isSidebarCollapsed="isSidebarCollapsed"
+      />
     </div>
-    <div class="m-2 flex flex-col gap-1">
+    <div v-if="editSidebar" class="m-2 flex justify-between gap-1">
+      <Button
+        :label="__('Discard')"
+        @click="viewsSidebarSection.resetSidebar()"
+      />
+      <Button
+        :label="__('Save')"
+        variant="solid"
+        @click="viewsSidebarSection.saveSidebar()"
+      />
+    </div>
+    <div v-else class="m-2 flex flex-col gap-1">
       <div class="flex flex-col gap-2 mb-1">
         <SignupBanner
           v-if="isDemoSite"
@@ -137,41 +117,37 @@
 </template>
 
 <script setup>
-import LucideLayoutDashboard from '~icons/lucide/layout-dashboard'
 import CRMLogo from '@/components/Icons/CRMLogo.vue'
 import InviteIcon from '@/components/Icons/InviteIcon.vue'
 import ConvertIcon from '@/components/Icons/ConvertIcon.vue'
 import CommentIcon from '@/components/Icons/CommentIcon.vue'
 import EmailIcon from '@/components/Icons/EmailIcon.vue'
 import StepsIcon from '@/components/Icons/StepsIcon.vue'
-import CollapsibleSection from '@/components/CollapsibleSection.vue'
-import PinIcon from '@/components/Icons/PinIcon.vue'
 import UserDropdown from '@/components/UserDropdown.vue'
 import SquareAsterisk from '@/components/Icons/SquareAsterisk.vue'
 import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
-import DealsIcon from '@/components/Icons/DealsIcon.vue'
-import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
-import OrganizationsIcon from '@/components/Icons/OrganizationsIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
-import CalendarIcon from '@/components/Icons/CalendarIcon.vue'
-import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import CollapseSidebar from '@/components/Icons/CollapseSidebar.vue'
 import NotificationsIcon from '@/components/Icons/NotificationsIcon.vue'
 import HelpIcon from '@/components/Icons/HelpIcon.vue'
 import SidebarLink from '@/components/SidebarLink.vue'
 import Notifications from '@/components/Notifications.vue'
 import Settings from '@/components/Settings/Settings.vue'
-import { viewsStore } from '@/stores/views'
+import ViewsSidebarSection from '@/components/Views/ViewsSidebarSection.vue'
 import {
   unreadNotificationsCount,
   notificationsStore,
 } from '@/stores/notifications'
 import { usersStore } from '@/stores/users'
 import { sessionStore } from '@/stores/session'
-import { showSettings, activeSettingsPage } from '@/composables/settings'
+import {
+  showSettings,
+  activeSettingsPage,
+  editSidebar,
+} from '@/composables/settings'
 import { showChangePasswordModal } from '@/composables/modals'
-import { FeatherIcon, call } from 'frappe-ui'
+import { Button, call } from 'frappe-ui'
 import {
   SignupBanner,
   TrialBanner,
@@ -185,9 +161,8 @@ import {
 import { capture } from '@/telemetry'
 import router from '@/router'
 import { useStorage } from '@vueuse/core'
-import { ref, reactive, computed, markRaw, onMounted } from 'vue'
+import { ref, reactive, markRaw, onMounted } from 'vue'
 
-const { getPinnedViews, getPublicViews } = viewsStore()
 const { toggle: toggleNotificationPanel } = notificationsStore()
 
 const isSidebarCollapsed = useStorage('isSidebarCollapsed', false)
@@ -195,89 +170,7 @@ const isSidebarCollapsed = useStorage('isSidebarCollapsed', false)
 const isFCSite = ref(window.is_fc_site)
 const isDemoSite = ref(window.is_demo_site)
 
-const iconMap = {
-  Dashboard: LucideLayoutDashboard,
-  Leads: LeadsIcon,
-  Deals: DealsIcon,
-  Contacts: ContactsIcon,
-  Organizations: OrganizationsIcon,
-  Notes: NoteIcon,
-  Tasks: TaskIcon,
-  Calendar: CalendarIcon,
-  'Call Logs': PhoneIcon,
-}
-
-const links = computed(() => {
-  let staticLinks = Object.keys(iconMap).map((key) => {
-    return {
-      label: key,
-      icon: iconMap[key],
-      to: key,
-    }
-  })
-
-  const dynamicLinks = staticLinks.map((link) => {
-    return {
-      label: link.label || link.routeName,
-      icon: iconMap[link.label || link.routeName] || link.icon,
-      to: link.routeName,
-    }
-  })
-
-  return dynamicLinks
-})
-
-const allViews = computed(() => {
-  let _views = [
-    {
-      name: 'All Views',
-      hideLabel: true,
-      opened: true,
-      views: links.value.filter((link) => {
-        if (link.condition) {
-          return link.condition()
-        }
-        return true
-      }),
-    },
-  ]
-  if (getPublicViews().length) {
-    _views.push({
-      name: 'Public views',
-      opened: true,
-      views: parseView(getPublicViews()),
-    })
-  }
-
-  if (getPinnedViews().length) {
-    _views.push({
-      name: 'Pinned views',
-      opened: true,
-      views: parseView(getPinnedViews()),
-    })
-  }
-  return _views
-})
-
-function parseView(views) {
-  return views.map((view) => {
-    return {
-      label: view.label,
-      icon: getIcon(view.route_name, view.icon),
-      to: {
-        name: view.route_name,
-        params: { viewType: view.type || 'list' },
-        query: { view: view.name },
-      },
-    }
-  })
-}
-
-function getIcon(routeName, icon) {
-  if (icon) return icon
-
-  return iconMap[routeName] || PinIcon
-}
+const viewsSidebarSection = ref(null)
 
 // onboarding
 const { user } = sessionStore()

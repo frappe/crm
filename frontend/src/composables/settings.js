@@ -45,3 +45,5 @@ export const showSettings = ref(false)
 export const disableSettingModalOutsideClick = ref(false)
 
 export const activeSettingsPage = ref('')
+
+export const editSidebar = ref(false)

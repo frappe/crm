@@ -45,3 +45,5 @@ function fetchTranslations(lang) {
     },
   })
 }
+
+export const __ = translate

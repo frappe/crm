@@ -3,7 +3,7 @@
 
 frappe.ui.form.on("Failed Lead Sync Log", {
   refresh(frm) {
-    const btn = frm.add_custom_button(__("Retry Sync"), () => {
+    const btn = frm.add_custom_button(__("Retry sync"), () => {
       frm
         .call({
           doc: frm.doc,
@@ -12,7 +12,7 @@ frappe.ui.form.on("Failed Lead Sync Log", {
         })
         .then(({ message }) => {
           frappe.show_alert(
-            __("Sync Successful, CRM Lead: {0}!", [
+            __("Sync successful, CRM Lead: {0}!", [
               frappe.utils.get_form_link("CRM Lead", message.name, true),
             ]),
           );

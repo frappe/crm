@@ -55,7 +55,7 @@ import Apps from '@/components/Apps.vue'
 import { sessionStore } from '@/stores/session'
 import { usersStore } from '@/stores/users'
 import { getSettings } from '@/stores/settings'
-import { showSettings, isMobileView } from '@/composables/settings'
+import { showSettings, isMobileView, editSidebar } from '@/composables/settings'
 import { showAboutModal } from '@/composables/modals'
 import { confirmLoginToFrappeCloud } from '@/composables/frappecloud'
 import { Dropdown, useTheme } from 'frappe-ui'
@@ -67,6 +67,7 @@ const props = defineProps({
     default: false,
   },
 })
+const emit = defineEmits(['update:isCollapsed'])
 
 const { settings, brand } = getSettings()
 const { logout } = sessionStore()
@@ -157,6 +158,15 @@ function getStandardItem(item) {
         icon: item.icon,
         label: __(item.label),
         onClick: () => (showAboutModal.value = true),
+      }
+    case 'edit_sidebar':
+      return {
+        icon: item.icon,
+        label: __(item.label),
+        onClick: () => {
+          emit('update:isCollapsed', false)
+          editSidebar.value = true
+        },
       }
     case 'logout':
       return {

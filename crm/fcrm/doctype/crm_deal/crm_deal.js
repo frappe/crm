@@ -3,7 +3,7 @@
 
 frappe.ui.form.on("CRM Deal", {
   refresh(frm) {
-    frm.add_web_link(`/crm/deals/${frm.doc.name}`, __("Open in Portal"));
+    frm.add_web_link(`/crm/deals/${frm.doc.name}`, __("Open in portal"));
   },
   update_total: function (frm) {
     let total = 0;

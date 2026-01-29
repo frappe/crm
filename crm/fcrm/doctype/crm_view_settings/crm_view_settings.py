@@ -68,7 +68,7 @@ def create(view):
 	doc.icon = view.icon
 	doc.dt = view.doctype
 	doc.user = frappe.session.user
-	doc.route_name = view.route_name or get_route_name(view.doctype)
+	doc.route_name = view.route_name or get_route_name(view)
 	doc.load_default_columns = view.load_default_columns or False
 	doc.filters = json.dumps(view.filters)
 	doc.order_by = view.order_by
@@ -101,7 +101,7 @@ def update(view):
 	doc.label = view.label
 	doc.type = view.type or "list"
 	doc.icon = view.icon
-	doc.route_name = view.route_name or get_route_name(view.doctype)
+	doc.route_name = view.route_name or get_route_name(view)
 	doc.load_default_columns = view.load_default_columns or False
 	doc.filters = json.dumps(filters)
 	doc.order_by = view.order_by
@@ -143,12 +143,13 @@ def pin(name, value):
 
 
 def remove_duplicates(l):
+	l = [item for item in l if item is not None]
 	return list(dict.fromkeys(l))
 
 
 def sync_default_rows(doctype, type="list"):
 	list = get_controller(doctype)
-	rows = []
+	rows = ["name"]
 
 	if hasattr(list, "default_list_data"):
 		rows = list.default_list_data().get("rows")
@@ -158,7 +159,10 @@ def sync_default_rows(doctype, type="list"):
 
 def sync_default_columns(view):
 	list = get_controller(view.doctype)
-	columns = []
+	columns = [
+		{"label": "Name", "type": "Data", "key": "name", "width": "16rem"},
+		{"label": "Last Updated On", "type": "Datetime", "key": "modified", "width": "8rem"},
+	]
 
 	if view.type == "kanban" and view.column_field:
 		field_meta = frappe.get_meta(view.doctype).get_field(view.column_field)
@@ -221,7 +225,7 @@ def create_or_update_standard_view(view):
 		doc = frappe.get_doc("CRM View Settings", doc)
 		doc.label = view.label
 		doc.type = view.type or "list"
-		doc.route_name = view.route_name or get_route_name(view.doctype)
+		doc.route_name = view.route_name or get_route_name(view)
 		doc.load_default_columns = view.load_default_columns or False
 		doc.filters = json.dumps(filters)
 		doc.order_by = view.order_by or "modified desc"
@@ -248,7 +252,7 @@ def create_or_update_standard_view(view):
 		doc.type = view.type or "list"
 		doc.dt = view.doctype
 		doc.user = frappe.session.user
-		doc.route_name = view.route_name or get_route_name(view.doctype)
+		doc.route_name = view.route_name or get_route_name(view)
 		doc.load_default_columns = view.load_default_columns or False
 		doc.filters = json.dumps(filters)
 		doc.order_by = view.order_by or "modified desc"
@@ -266,12 +270,21 @@ def create_or_update_standard_view(view):
 	return doc
 
 
-def get_route_name(doctype):
-	# Example: "CRM Lead" -> "Leads"
-	if doctype.startswith("CRM "):
-		doctype = doctype[4:]
+def get_route_name(view):
+	name = view.doctype + " List"
+	if not view.is_standard:
+		name = name + " View"
+	return name
 
-	if doctype[-1] != "s":
-		doctype += "s"
 
-	return doctype
+@frappe.whitelist()
+def create_or_update_view(view):
+	view = frappe._dict(view)
+
+	if view.is_standard:
+		return create_or_update_standard_view(view)
+	else:
+		if frappe.db.exists("CRM View Settings", view.name):
+			return update(view)
+		else:
+			return create(view)

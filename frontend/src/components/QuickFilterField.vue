@@ -13,7 +13,7 @@
     v-model="filter.value"
     :options="filter.options"
     :placeholder="filter.label"
-    @update:modelValue="updateFilter(filter, $event)"
+    @update:modelValue="(v) => updateFilter(filter, v)"
   />
   <Link
     v-else-if="filter.fieldtype === 'Link'"

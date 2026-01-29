@@ -9,7 +9,7 @@
           : 'text-ink-gray-7',
       ]"
     >
-      {{ __(routeName) }}
+      {{ __(title || routeName) }}
     </router-link>
     <span
       v-if="viewControls"
@@ -18,19 +18,16 @@
     >
       /
     </span>
-    <Dropdown
-      v-if="viewControls"
-      :options="viewControls.viewsDropdownOptions"
-    >
+    <Dropdown v-if="viewControls" :options="viewControls.viewsDropdownOptions">
       <template #default="{ open }">
         <Button
           variant="ghost"
           class="text-lg font-medium text-nowrap"
-          :label="__(viewControls.currentView.label)"
+          :label="__(viewControls.currentView?.label)"
           :iconRight="open ? 'chevron-up' : 'chevron-down'"
         >
           <template #prefix>
-            <Icon :icon="viewControls.currentView.icon" class="h-4" />
+            <Icon :icon="viewControls.currentView?.icon" class="h-4" />
           </template>
         </Button>
       </template>
@@ -62,7 +59,7 @@
             <Dropdown
               side="right"
               :offset="15"
-              :options="viewControls.viewActions(item, close)"
+              :options="viewControls.viewActions?.(item, close)"
             >
               <template #default>
                 <Button
@@ -89,6 +86,10 @@ import Icon from '@/components/Icon.vue'
 import { Dropdown } from 'frappe-ui'
 
 const props = defineProps({
+  title: {
+    type: String,
+    default: null,
+  },
   routeName: {
     type: String,
     required: true,
@@ -98,6 +99,6 @@ const props = defineProps({
 const viewControls = defineModel()
 
 const isCurrentView = (item) => {
-  return item.name === viewControls.value.currentView.name
+  return item.name === viewControls.value?.currentView?.name
 }
 </script>

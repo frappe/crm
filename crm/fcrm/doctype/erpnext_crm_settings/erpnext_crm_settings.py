@@ -305,7 +305,7 @@ async function setupForm({ doc, call, $dialog, updateField, toast }) {
 	let is_erpnext_integration_enabled = await call("frappe.client.get_single_value", {doctype: "ERPNext CRM Settings", field: "enabled"});
 	if (!["Lost", "Won"].includes(doc?.status) && is_erpnext_integration_enabled) {
 		actions.push({
-			label: __("Create Quotation"),
+			label: __("Create quotation"),
 			onClick: async () => {
 				let quotation_url = await call(
 					"crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.get_quotation_url",
@@ -327,7 +327,7 @@ async function setupForm({ doc, call, $dialog, updateField, toast }) {
 		});
 		if (customer_url) {
 			actions.push({
-				label: __("View Customer"),
+				label: __("View customer"),
 				onClick: () => window.open(customer_url, '_blank')
 			});
 		}

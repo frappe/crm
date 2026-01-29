@@ -71,7 +71,7 @@
 <script setup>
 import { Popover } from 'frappe-ui'
 import { gemoji } from 'gemoji'
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 
 const search = ref('')
 const emoji = defineModel()
@@ -113,6 +113,12 @@ function setRandom() {
 function randomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min)
 }
+
+onMounted(() => {
+  if (!emoji.value) {
+    setRandom()
+  }
+})
 
 defineExpose({ setRandom })
 </script>

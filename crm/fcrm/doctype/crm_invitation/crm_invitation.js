@@ -4,7 +4,7 @@
 frappe.ui.form.on("CRM Invitation", {
   refresh(frm) {
     if (frm.doc.status != "Accepted") {
-      frm.add_custom_button(__("Accept Invitation"), () => {
+      frm.add_custom_button(__("Accept invitation"), () => {
         return frm.call("accept_invitation");
       });
     }
