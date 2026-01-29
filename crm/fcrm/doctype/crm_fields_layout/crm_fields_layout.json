@@ -46,7 +46,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-01-22 13:59:41.936780",
+ "modified": "2026-01-28 17:04:01.098156",
  "modified_by": "shariq@frappe.io",
  "module": "FCRM",
  "name": "CRM Fields Layout",
@@ -66,12 +66,24 @@
    "write": 1
   },
   {
+   "create": 1,
+   "delete": 1,
    "email": 1,
    "export": 1,
    "print": 1,
    "read": 1,
    "report": 1,
-   "role": "All",
+   "role": "Sales Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales User",
    "share": 1
   }
  ],

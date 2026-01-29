@@ -249,7 +249,10 @@ ignore_links_on_delete = ["Failed Lead Sync Log"]
 # "crm.auth.validate"
 # ]
 
-after_migrate = ["crm.fcrm.doctype.fcrm_settings.fcrm_settings.after_migrate"]
+after_migrate = [
+	"crm.fcrm.doctype.fcrm_settings.fcrm_settings.after_migrate",
+	"crm.api.whatsapp.add_roles",
+]
 
 standard_dropdown_items = [
 	{

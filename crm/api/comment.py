@@ -3,6 +3,8 @@ from collections.abc import Iterable
 import frappe
 from bs4 import BeautifulSoup
 from frappe import _
+from frappe.desk.form.utils import add_comment as frappe_add_comment
+from frappe.utils import get_fullname
 
 from crm.fcrm.doctype.crm_notification.crm_notification import notify_user
 
@@ -64,6 +66,29 @@ def extract_mentions(html):
 
 
 @frappe.whitelist()
+def add_comment(reference_doctype, reference_name, content, attachments=None):
+	"""Add a comment to the given document
+
+	:param reference_doctype: Reference Doctype
+	:param reference_name: Reference Document Name
+	:param content: Comment Content (HTML)
+	:param attachments: List of File names or dicts with keys "fname" and "fcontent"
+	:return: Comment Document
+	"""
+	comment = frappe_add_comment(
+		reference_doctype,
+		reference_name,
+		content,
+		comment_email=frappe.session.user,
+		comment_by=get_fullname(frappe.session.user),
+	)
+
+	if attachments and comment.name:
+		add_attachments(comment.name, attachments)
+
+	return comment
+
+
 def add_attachments(name: str, attachments: Iterable[str | dict]) -> None:
 	"""Add attachments to the given Comment
 

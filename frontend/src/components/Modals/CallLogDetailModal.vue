@@ -175,7 +175,7 @@ import FadedScrollableDiv from '@/components/FadedScrollableDiv.vue'
 import { getCallLogDetail } from '@/utils/callLog'
 import { isMobileView } from '@/composables/settings'
 import { useDocument } from '@/data/document'
-import { FeatherIcon, Dropdown, Avatar, Tooltip, call } from 'frappe-ui'
+import { FeatherIcon, Dropdown, Avatar, Tooltip, call, toast } from 'frappe-ui'
 import { ref, computed, h, nextTick, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -304,11 +304,17 @@ async function createLead() {
   call('crm.fcrm.doctype.crm_call_log.crm_call_log.create_lead_from_call_log', {
     call_log: callLog.value?.data,
     lead_details: leadDetails.value,
-  }).then((d) => {
-    if (d) {
-      router.push({ name: 'Lead', params: { leadId: d } })
-    }
   })
+    .then((d) => {
+      if (d) {
+        router.push({ name: 'Lead', params: { leadId: d } })
+      }
+    })
+    .catch((err) => {
+      toast.error(
+        __('Error creating lead: {0}', [err.messages?.[0] || err.message]),
+      )
+    })
 }
 
 const showCallLogModal = defineModel('callLogModal')
