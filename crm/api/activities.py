@@ -10,7 +10,10 @@ from crm.fcrm.doctype.crm_call_log.crm_call_log import parse_call_log
 
 
 @frappe.whitelist()
-def get_activities(name):
+def get_activities(name: str):
+	if not isinstance(name, str) or not name:
+		frappe.throw(_("Invalid document name"), frappe.DataError)
+
 	if frappe.db.exists("CRM Deal", name):
 		return get_deal_activities(name)
 	elif frappe.db.exists("CRM Lead", name):
@@ -19,7 +22,7 @@ def get_activities(name):
 		frappe.throw(_("Document not found"), frappe.DoesNotExistError)
 
 
-def get_deal_activities(name):
+def get_deal_activities(name: str):
 	get_docinfo("", "CRM Deal", name)
 	docinfo = frappe.response["docinfo"]
 	deal_meta = frappe.get_meta("CRM Deal")
@@ -164,7 +167,7 @@ def get_deal_activities(name):
 	return activities, calls, notes, tasks, attachments
 
 
-def get_lead_activities(name):
+def get_lead_activities(name: str):
 	get_docinfo("", "CRM Lead", name)
 	docinfo = frappe.response["docinfo"]
 	lead_meta = frappe.get_meta("CRM Lead")
@@ -296,7 +299,7 @@ def get_lead_activities(name):
 	return activities, calls, notes, tasks, attachments
 
 
-def get_attachments(doctype, name):
+def get_attachments(doctype: str, name: str):
 	return (
 		frappe.db.get_all(
 			"File",
@@ -317,7 +320,7 @@ def get_attachments(doctype, name):
 	)
 
 
-def handle_multiple_versions(versions):
+def handle_multiple_versions(versions: list):
 	activities = []
 	grouped_versions = []
 	old_version = None
@@ -345,7 +348,7 @@ def handle_multiple_versions(versions):
 	return activities
 
 
-def parse_grouped_versions(versions):
+def parse_grouped_versions(versions: list):
 	version = versions[0]
 	if len(versions) == 1:
 		return version
@@ -354,7 +357,7 @@ def parse_grouped_versions(versions):
 	return version
 
 
-def get_linked_calls(name):
+def get_linked_calls(name: str):
 	calls = frappe.db.get_all(
 		"CRM Call Log",
 		filters={"reference_docname": name},
@@ -448,7 +451,7 @@ def get_linked_calls(name):
 	return {"calls": calls, "notes": notes, "tasks": tasks}
 
 
-def get_linked_notes(name):
+def get_linked_notes(name: str):
 	notes = frappe.db.get_all(
 		"FCRM Note",
 		filters={"reference_docname": name},
@@ -457,7 +460,7 @@ def get_linked_notes(name):
 	return notes or []
 
 
-def get_linked_tasks(name):
+def get_linked_tasks(name: str):
 	tasks = frappe.db.get_all(
 		"CRM Task",
 		filters={"reference_docname": name},
@@ -475,7 +478,7 @@ def get_linked_tasks(name):
 	return tasks or []
 
 
-def parse_attachment_log(html, type):
+def parse_attachment_log(html: str, type: str):
 	soup = BeautifulSoup(html, "html.parser")
 	a_tag = soup.find("a")
 	type = "added" if type == "Attachment" else "removed"
