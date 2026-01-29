@@ -52,7 +52,7 @@ class CRMInvitation(Document):
 
 	@frappe.whitelist()
 	def accept_invitation(self):
-		frappe.only_for(["System Manager", "Sales Manager"])
+		frappe.only_for(["System Manager", "Sales Manager"], True)
 		self.accept()
 
 	def accept(self):
