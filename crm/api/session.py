@@ -19,7 +19,7 @@ def get_session_role_flags():
 	}
 
 
-@frappe.whitelist()
+@frappe.whitelist(methods=["GET"])
 def get_users():
 	session_roles = get_session_role_flags()
 
