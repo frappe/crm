@@ -8,6 +8,31 @@ from crm.api.doc import get_assigned_users
 from crm.fcrm.doctype.crm_notification.crm_notification import notify_user
 from crm.integrations.api import get_contact_lead_or_deal_from_number
 
+ALLOWED_WHATSAPP_ROLES = ["System Manager", "Sales Manager", "Sales User"]
+
+
+def validate_access(reference_doctype=None, reference_name=None, permtype="read"):
+	if not any(role in ALLOWED_WHATSAPP_ROLES for role in frappe.get_roles()):
+		frappe.throw(_("Only sales users can access WhatsApp features."), frappe.PermissionError)
+
+	if reference_doctype and reference_name:
+		if not frappe.db.exists(reference_doctype, reference_name):
+			frappe.throw(
+				_("Reference document {0} {1} does not exist.").format(reference_doctype, reference_name),
+				frappe.DoesNotExistError,
+			)
+		reference_doc = frappe.get_doc(reference_doctype, reference_name)
+		if not reference_doc.has_permission(permtype):
+			frappe.throw(
+				_("Not permitted to access reference document {0} {1}.").format(
+					reference_doctype, reference_name
+				),
+				frappe.PermissionError,
+			)
+		return reference_doc
+
+	return None
+
 
 def validate(doc, method):
 	phone_number = doc.get("from") if doc.type == "Incoming" else doc.get("to")
@@ -81,6 +106,7 @@ def is_whatsapp_installed():
 
 @frappe.whitelist()
 def get_whatsapp_messages(reference_doctype, reference_name):
+	reference_doc = validate_access(reference_doctype, reference_name)
 	# twilio integration app is not compatible with crm app
 	# crm has its own twilio integration in built
 	if "twilio_integration" in frappe.get_installed_apps():
@@ -90,8 +116,9 @@ def get_whatsapp_messages(reference_doctype, reference_name):
 	messages = []
 
 	if reference_doctype == "CRM Deal":
-		lead = frappe.db.get_value(reference_doctype, reference_name, "lead")
+		lead = reference_doc.get("lead")
 		if lead:
+			validate_access("CRM Lead", lead)
 			messages = frappe.get_all(
 				"WhatsApp Message",
 				filters={
@@ -228,10 +255,16 @@ def create_whatsapp_message(
 	reply_to,
 	content_type="text",
 ):
+	validate_access(reference_doctype, reference_name)
 	doc = frappe.new_doc("WhatsApp Message")
 
 	if reply_to:
 		reply_doc = frappe.get_doc("WhatsApp Message", reply_to)
+		if not reply_doc.has_permission("read"):
+			frappe.throw(
+				_("Not permitted to access the referenced WhatsApp message."), frappe.PermissionError
+			)
+		validate_access(reply_doc.reference_doctype, reply_doc.reference_name)
 		doc.update(
 			{
 				"is_reply": True,
@@ -255,6 +288,7 @@ def create_whatsapp_message(
 
 @frappe.whitelist()
 def send_whatsapp_template(reference_doctype, reference_name, template, to):
+	validate_access(reference_doctype, reference_name)
 	doc = frappe.new_doc("WhatsApp Message")
 	doc.update(
 		{
@@ -274,7 +308,14 @@ def send_whatsapp_template(reference_doctype, reference_name, template, to):
 
 @frappe.whitelist()
 def react_on_whatsapp_message(emoji, reply_to_name):
+	validate_access()
 	reply_to_doc = frappe.get_doc("WhatsApp Message", reply_to_name)
+
+	if not reply_to_doc.has_permission("read"):
+		frappe.throw(_("Not permitted to access the referenced WhatsApp message."), frappe.PermissionError)
+
+	validate_access(reply_to_doc.reference_doctype, reply_to_doc.reference_name)
+
 	to = (reply_to_doc.type == "Incoming" and reply_to_doc.get("from")) or reply_to_doc.to
 	doc = frappe.new_doc("WhatsApp Message")
 	doc.update(
