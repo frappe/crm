@@ -30,7 +30,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-01-22 14:13:44.546298",
+ "modified": "2026-01-28 16:59:48.552989",
  "modified_by": "shariq@frappe.io",
  "module": "FCRM",
  "name": "CRM Lead Source",
@@ -68,15 +68,6 @@
    "read": 1,
    "report": 1,
    "role": "Sales User",
-   "share": 1
-  },
-  {
-   "email": 1,
-   "export": 1,
-   "print": 1,
-   "read": 1,
-   "report": 1,
-   "role": "All",
    "share": 1
   }
  ],

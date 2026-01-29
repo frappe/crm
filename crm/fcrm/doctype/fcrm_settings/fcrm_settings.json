@@ -118,7 +118,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2026-01-22 13:58:07.553441",
+ "modified": "2026-01-28 17:26:11.672401",
  "modified_by": "shariq@frappe.io",
  "module": "FCRM",
  "name": "FCRM Settings",
@@ -148,7 +148,7 @@
    "email": 1,
    "print": 1,
    "read": 1,
-   "role": "All",
+   "role": "Sales User",
    "share": 1
   }
  ],
