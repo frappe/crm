@@ -62,3 +62,11 @@ typing-modules = ["frappe.types.DF"]
 quote-style = "double"
 indent-style = "tab"
 docstring-code-format = true
+
+[tool.bench.frappe-dependencies]
+frappe = ">=16.0.0-dev,<=17.0.0-dev"
+
+[tool.bench.assets]
+build_dir = "./frontend"
+out_dir = "../crm/public/frontend"
+index_html_path = "../crm/www/crm.html"
