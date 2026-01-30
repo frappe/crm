@@ -264,6 +264,9 @@ def create_customer_in_erpnext(doc, method):
 	):
 		return
 
+	if not doc.organization:
+		frappe.throw(_("Organization is required to create a customer"))
+
 	contacts = get_contacts(doc)
 	address = get_organization_address(doc.organization)
 	customer = {
