@@ -93,11 +93,28 @@ import {
 import { globalStore } from '@/stores/global'
 import { timeAgo } from '@/utils'
 import { onClickOutside } from '@vueuse/core'
+<<<<<<< HEAD
 import { capture } from '@/telemetry'
+=======
+import { useTelemetry } from 'frappe-ui/frappe'
+import { TabButtons } from 'frappe-ui'
+>>>>>>> f04704e5 (refactor: replace telemetry implementation with frappe-ui integration and remove deprecated telemetry code)
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 
 const { $socket } = globalStore()
 const { mark_as_read, toggle, mark_doc_as_read } = notificationsStore()
+<<<<<<< HEAD
+=======
+const { handleEventNotification } = useEventNotificationAlert()
+const { capture } = useTelemetry()
+
+const activeTab = ref('all')
+const tabs = [
+  { label: __('All'), value: 'all' },
+  { label: __('Events'), value: 'events' },
+  // { label: __('Mentions'), value: 'mentions' },
+]
+>>>>>>> f04704e5 (refactor: replace telemetry implementation with frappe-ui integration and remove deprecated telemetry code)
 
 const target = ref(null)
 onClickOutside(

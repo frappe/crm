@@ -60,7 +60,7 @@ import {
   addressProps,
 } from '@/composables/modals'
 import { useDocument } from '@/data/document'
-import { capture } from '@/telemetry'
+import { useTelemetry } from 'frappe-ui/frappe'
 import { call, createResource } from 'frappe-ui'
 import { ref, nextTick, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
@@ -80,6 +80,7 @@ const props = defineProps({
 })
 
 const { isManager } = usersStore()
+const { capture } = useTelemetry()
 
 const router = useRouter()
 const show = defineModel()
