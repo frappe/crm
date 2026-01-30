@@ -18,7 +18,24 @@
   >
     <template #top>
       <div class="flex flex-col gap-3">
+        <!-- MODIFIED FROM FIELD HERE -->
         <div class="sm:mx-10 mx-4 flex items-center gap-2 border-t pt-2.5">
+          <span class="text-xs text-ink-gray-4">{{ __('FROM') }}:</span>
+          <SingleSelectEmailInput
+            class="flex-1"
+            variant="ghost"
+            v-model="fromEmails"
+            :validate="validateEmail"
+            :options="emailAccountOptions"
+            :error-message="
+              (value) => __('{0} is an invalid email address', [value])
+            "
+            placeholder="Select sender email"
+          />
+        </div>
+
+        <!-- EXISTING TO FIELD -->
+        <div class="sm:mx-10 mx-4 flex items-center gap-2">
           <span class="text-xs text-ink-gray-4">{{ __('TO') }}:</span>
           <EmailMultiSelect
             class="flex-1"
@@ -182,6 +199,7 @@ import SmileIcon from '@/components/Icons/SmileIcon.vue'
 import EmailTemplateIcon from '@/components/Icons/EmailTemplateIcon.vue'
 import AttachmentIcon from '@/components/Icons/AttachmentIcon.vue'
 import AttachmentItem from '@/components/AttachmentItem.vue'
+import SingleSelectEmailInput from '@/components/Controls/SingleSelectEmailInput.vue'
 import EmailMultiSelect from '@/components/Controls/EmailMultiSelect.vue'
 import EmailTemplateSelectorModal from '@/components/Modals/EmailTemplateSelectorModal.vue'
 import { TextEditorBubbleMenu, TextEditor, FileUploader, call } from 'frappe-ui'
@@ -189,7 +207,7 @@ import { useTelemetry } from 'frappe-ui/frappe'
 import { validateEmail } from '@/utils'
 import Paragraph from '@tiptap/extension-paragraph'
 import { EditorContent } from '@tiptap/vue-3'
-import { ref, computed, nextTick } from 'vue'
+import { ref, computed, nextTick, onMounted } from 'vue'
 
 const props = defineProps({
   placeholder: {
@@ -251,6 +269,13 @@ const cc = ref(false)
 const bcc = ref(false)
 const emoji = ref('')
 
+// FROM functionality - keeping existing structure but removing limitFromEmails
+const emailAccounts = ref([])
+const fromEmails = ref([])
+const emailAccountOptions = computed(() =>
+  emailAccounts.value.map((account) => account.email_id),
+)
+
 const subject = ref(props.subject)
 const toEmails = ref(modelValue.value.email ? [modelValue.value.email] : [])
 const ccEmails = ref([])
@@ -260,6 +285,23 @@ const bccInput = ref(null)
 
 const editor = computed(() => {
   return textEditor.value.editor
+})
+
+async function getEmailAccounts() {
+  try {
+    const response = await call('crm.api.email.get_user_email_accounts')
+    emailAccounts.value = response || []
+
+    if (emailAccounts.value.length > 0 && fromEmails.value.length === 0) {
+      fromEmails.value = [emailAccounts.value[0].email_id]
+    }
+  } catch (error) {
+    console.error('Error fetching email accounts:', error)
+  }
+}
+
+onMounted(() => {
+  getEmailAccounts()
 })
 
 function removeAttachment(attachment) {
@@ -314,6 +356,7 @@ defineExpose({
   toEmails,
   ccEmails,
   bccEmails,
+  fromEmails,
 })
 
 const textEditorMenuButtons = [
