@@ -295,5 +295,6 @@ defineExpose({
   show: showEmailBox,
   showComment: showCommentBox,
   editor: newEmailEditor,
+  attachments: attachments,
 })
 </script>
