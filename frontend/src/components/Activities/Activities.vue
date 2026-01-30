@@ -462,7 +462,7 @@ import { globalStore } from '@/stores/global'
 import { usersStore } from '@/stores/users'
 import { whatsappEnabled } from '@/composables/settings'
 import { useDocument } from '@/data/document'
-import { capture } from '@/telemetry'
+import { useTelemetry } from 'frappe-ui/frappe'
 import { Button, Tooltip, createResource, toast } from 'frappe-ui'
 import { useElementVisibility } from '@vueuse/core'
 import {
@@ -477,8 +477,9 @@ import {
 } from 'vue'
 import { useRoute } from 'vue-router'
 
-const { makeCall, $socket } = globalStore()
+const { $socket } = globalStore()
 const { getUser } = usersStore()
+const { capture } = useTelemetry()
 
 const props = defineProps({
   doctype: {

@@ -35,7 +35,7 @@ import EditValueModal from '@/components/Modals/EditValueModal.vue'
 import AssignmentModal from '@/components/Modals/AssignmentModal.vue'
 import { setupListCustomizations } from '@/utils'
 import { globalStore } from '@/stores/global'
-import { capture } from '@/telemetry'
+import { useTelemetry } from 'frappe-ui/frappe'
 import { call, toast } from 'frappe-ui'
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
@@ -60,6 +60,7 @@ const list = defineModel()
 const router = useRouter()
 
 const { $dialog, $socket } = globalStore()
+const { capture } = useTelemetry()
 
 const showEditModal = ref(false)
 const selectedValues = ref([])

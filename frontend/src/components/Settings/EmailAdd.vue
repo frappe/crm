@@ -94,6 +94,7 @@
 <script setup>
 import { computed, reactive, ref } from 'vue'
 import { createResource, toast } from 'frappe-ui'
+import { useTelemetry } from 'frappe-ui/frappe'
 import CircleAlert from '~icons/lucide/circle-alert'
 import {
   customProviderFields,
@@ -103,7 +104,6 @@ import {
   incomingOutgoingFields,
 } from './emailConfig'
 import EmailProviderIcon from './EmailProviderIcon.vue'
-import { useTelemetry } from 'frappe-ui/frappe'
 
 const emit = defineEmits()
 
@@ -120,7 +120,7 @@ const state = reactive({
   default_incoming: false,
   default_outgoing: false,
 })
-const $telemetry = useTelemetry()
+const { capture } = useTelemetry()
 
 const selectedService = ref(null)
 const fields = computed(() =>
@@ -154,7 +154,7 @@ function createEmailAccount() {
   if (error.value) return
 
   addEmailRes.submit({ data: state })
-  $telemetry.capture('email_account_created', true)
+  capture('email_account_created')
 }
 </script>
 
