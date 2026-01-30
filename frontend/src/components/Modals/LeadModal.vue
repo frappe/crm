@@ -52,9 +52,8 @@ import { statusesStore } from '@/stores/statuses'
 import { sessionStore } from '@/stores/session'
 import { isMobileView } from '@/composables/settings'
 import { showQuickEntryModal, quickEntryProps } from '@/composables/modals'
-import { capture } from '@/telemetry'
-import { createResource } from 'frappe-ui'
 import { useOnboarding, useTelemetry } from 'frappe-ui/frappe'
+import { createResource } from 'frappe-ui'
 import { useDocument } from '@/data/document'
 import { computed, onMounted, ref, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
@@ -75,7 +74,7 @@ const isLeadCreating = ref(false)
 
 const { document: lead, triggerOnBeforeCreate } = useDocument('CRM Lead')
 
-const $telemetry = useTelemetry()
+const { capture } = useTelemetry()
 
 const leadStatuses = computed(() => {
   let statuses = statusOptions('lead')
@@ -169,7 +168,6 @@ async function createNewLead() {
         updateOnboardingStep('create_first_lead', true, false, () => {
           localStorage.setItem('firstLead' + user, data.name)
         })
-        $telemetry.capture('lead_created', true)
       },
       onError(err) {
         isLeadCreating.value = false
