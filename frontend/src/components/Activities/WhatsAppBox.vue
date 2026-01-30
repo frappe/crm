@@ -68,7 +68,7 @@
 <script setup>
 import IconPicker from '@/components/IconPicker.vue'
 import SmileIcon from '@/components/Icons/SmileIcon.vue'
-import { capture } from '@/telemetry'
+import { useTelemetry } from 'frappe-ui/frappe'
 import {
   createResource,
   Textarea,
@@ -85,6 +85,9 @@ const props = defineProps({
 const doc = defineModel()
 const whatsapp = defineModel('whatsapp')
 const reply = defineModel('reply')
+
+const { capture } = useTelemetry()
+
 const rows = ref(1)
 const textareaRef = ref(null)
 const emoji = ref('')
