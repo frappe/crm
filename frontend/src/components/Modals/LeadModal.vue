@@ -160,10 +160,76 @@ async function createNewLead() {
     {
       validate() {
         error.value = null
+        
+        // Common validations for both forms
         if (!lead.doc.first_name) {
           error.value = __('First Name is mandatory')
           return error.value
         }
+        
+        // For short form, status is still required
+        if (formMode.value === 'short' && !lead.doc.status) {
+          error.value = __('Status is required')
+          return error.value
+        }
+        
+        // Long form specific mandatory validations
+        if (formMode.value === 'long') {
+          const requiredFields = [
+            { field: 'custom_mother_name', label: 'Mother Name' },
+            { field: 'custom_father_name', label: 'Father Name' },
+            { field: 'custom_grade_interested_in', label: 'Grade Interested In' },
+            { field: 'custom_child_date_of_birth', label: 'Child Date of Birth' },
+            { field: 'custom_child_gender', label: 'Child Gender' },
+            { field: 'custom_father_qualification', label: 'Father Educational Qualification' },
+            { field: 'custom_mother_qualification', label: 'Mother Educational Qualification' },
+            { field: 'custom_father_designation', label: 'Father Occupation' },
+            { field: 'custom_father_organization', label: 'Father Organization' },
+            { field: 'custom_mother_designation', label: 'Mother Occupation' },
+            { field: 'custom_mother_organization', label: 'Mother Organization' },
+            { field: 'custom_address_line_1', label: 'Address Line 1' },
+            { field: 'custom_city', label: 'City' },
+            { field: 'custom_zip_code', label: 'Zip Code' },
+            { field: 'custom_father_mobile', label: 'Father Mobile Number' },
+            { field: 'custom_mother_mobile', label: 'Mother Mobile Number' },
+            { field: 'custom_father_email', label: 'Father Email Address' }
+          ]
+          
+          for (const { field, label } of requiredFields) {
+            if (!lead.doc[field]) {
+              error.value = __(label + ' is mandatory')
+              return error.value
+            }
+          }
+          
+          // Email validation for long form
+          const emailFields = [
+            { field: 'custom_father_email', label: 'Father Email' },
+            { field: 'custom_mother_email', label: 'Mother Email' }
+          ]
+          
+          for (const { field, label } of emailFields) {
+            if (lead.doc[field] && !lead.doc[field].includes('@')) {
+              error.value = __(label + ' is invalid')
+              return error.value
+            }
+          }
+          
+          // Phone validation for long form
+          const phoneFields = [
+            { field: 'custom_father_mobile', label: 'Father Mobile Number' },
+            { field: 'custom_mother_mobile', label: 'Mother Mobile Number' }
+          ]
+          
+          for (const { field, label } of phoneFields) {
+            if (lead.doc[field] && isNaN(lead.doc[field].replace(/[-+() ]/g, ''))) {
+              error.value = __(label + ' should be a number')
+              return error.value
+            }
+          }
+        }
+        
+        // Short form validations
         if (lead.doc.annual_revenue) {
           if (typeof lead.doc.annual_revenue === 'string') {
             lead.doc.annual_revenue = lead.doc.annual_revenue.replace(/,/g, '')
@@ -183,10 +249,7 @@ async function createNewLead() {
           error.value = __('Invalid Email')
           return error.value
         }
-        if (!lead.doc.status) {
-          error.value = __('Status is required')
-          return error.value
-        }
+        
         isLeadCreating.value = true
       },
       onSuccess(data) {

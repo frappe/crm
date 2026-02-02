@@ -1,11 +1,12 @@
 <template>
   <div v-if="field.visible" class="field">
-    <div v-if="field.fieldtype != 'Check'" class="mb-2 text-sm text-ink-gray-5">
+    <div v-if="field.fieldtype != 'Check'" class="mb-2 text-sm" :class="field.label_class || 'text-ink-gray-5'">
       {{ __(field.label) }}
       <span
         v-if="
           field.reqd ||
-          (field.mandatory_depends_on && field.mandatory_via_depends_on)
+          (field.mandatory_depends_on && field.mandatory_via_depends_on) ||
+          field.mandatory_in_school_form
         "
         class="text-ink-red-2"
         >*</span
