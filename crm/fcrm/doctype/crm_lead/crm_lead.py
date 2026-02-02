@@ -1,11 +1,16 @@
 # Copyright (c) 2023, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 
+import json
+
 import frappe
 from frappe import _
-from frappe.desk.form.assign_to import add as assign
+from frappe.desk.form.assign_to import add, clear
 from frappe.model.document import Document
-from frappe.utils import has_gravatar, validate_email_address
+from frappe.utils import add_days, has_gravatar, today, validate_email_address
+
+# Alias for backward compatibility
+assign = add
 
 from crm.fcrm.doctype.crm_service_level_agreement.utils import get_sla
 from crm.fcrm.doctype.crm_status_change_log.crm_status_change_log import (
@@ -21,7 +26,9 @@ class CRMLead(Document):
 
 	if TYPE_CHECKING:
 		from crm.fcrm.doctype.crm_products.crm_products import CRMProducts
-		from crm.fcrm.doctype.crm_rolling_response_time.crm_rolling_response_time import CRMRollingResponseTime
+		from crm.fcrm.doctype.crm_rolling_response_time.crm_rolling_response_time import (
+			CRMRollingResponseTime,
+		)
 		from crm.fcrm.doctype.crm_status_change_log.crm_status_change_log import CRMStatusChangeLog
 		from frappe.types import DF
 
@@ -78,10 +85,10 @@ class CRMLead(Document):
 			self.assign_agent(self.lead_owner)
 		if self.has_value_changed("status"):
 			add_status_change_log(self)
-		
+
 		# Handle assignment tracking and auto-assignment logic
 		self.handle_assignment_logic()
-		
+
 		# Handle follow-up date setting
 		self.create_auto_follow_up()
 
@@ -90,7 +97,7 @@ class CRMLead(Document):
 		if not self.lead_owner:
 			self.lead_owner = frappe.session.user
 			self.db_set("lead_owner", frappe.session.user, update_modified=False)
-		
+
 		if self.lead_owner:
 			self.assign_agent(self.lead_owner)
 
@@ -465,38 +472,48 @@ class CRMLead(Document):
 		"""Handle assignment tracking and auto-assignment logic"""
 		try:
 			# Define telecaller emails
-			TELECALLERS = ["nikitachaure@questplus.in", "monikabarman@questplus.in"]
-			JENNIFER_EMAIL = "jennifercruze@questplus.in"
-			
+			TELECALLERS = get_calling_team_members()
+
 			# Get current assignees
 			current_assignees = self.get_current_assignees()
-			
-			# Track previous assignee when assigning to telecallers
+
+			# Track telecaller as previous assignee for future No Show reassignment
 			if current_assignees:
-				# Store previous assignee if:
+				# Store telecaller as previously_assigned if:
 				# 1. There are current assignees
-				# 2. No previous assignee is stored yet  
+				# 2. No previous assignee is stored yet (or override if current is telecaller)
 				# 3. Current assignee is one of the telecallers
-				if not self.previously_assigned and current_assignees[0] in TELECALLERS:
+				if current_assignees[0] in TELECALLERS and not self.previously_assigned:
 					self.previously_assigned = current_assignees[0]
-					frappe.logger().info(f"Lead {self.name}: Stored telecaller {current_assignees[0]} as previous assignee")
-			
+					self.db_set("previously_assigned", current_assignees[0], update_modified=False)
+					frappe.logger().info(
+						f"Lead {self.name}: Stored telecaller {current_assignees[0]} as previously_assigned"
+					)
+
 			# Get sub-status text from the linked CRM Lead Sub Status record
 			sub_status_name = self.get_lead_sub_status_name()
-			
-			# Handle Connected + Appointment assignment to Jennifer
-			if self.status == "Connected" and sub_status_name == "Appointment":
-				frappe.logger().info(f"Triggering appointment assignment for lead {self.name}")
-				self.handle_appointment_assignment(current_assignees, JENNIFER_EMAIL)
-			
+
+			# Handle Connected + Appointment assignment using Assignment Rule
+			# Only assign if custom_appointment_date is set
+			if (
+				self.status == "Connected"
+				and sub_status_name == "Appointment"
+				and hasattr(self, "custom_appointment_date")
+				and self.custom_appointment_date
+			):
+				frappe.logger().info(
+					f"Triggering appointment assignment for lead {self.name} with appointment date {self.custom_appointment_date}"
+				)
+				self.handle_appointment_assignment_via_rule(current_assignees)
+
 			# Handle No Show specific logic - reassign back to previous assignee
 			elif sub_status_name == "No Show":
-				self.handle_no_show_assignment(current_assignees)
-				
+				self.handle_no_show_assignment()
+
 		except Exception as e:
 			frappe.log_error(
 				title="CRM Lead Assignment Logic Error",
-				message=f"Error handling assignment logic for {self.name}: {str(e)}"
+				message=f"Error handling assignment logic for {self.name}: {str(e)}",
 			)
 
 	def get_current_assignees(self):
@@ -504,12 +521,8 @@ class CRMLead(Document):
 		try:
 			assignees = frappe.db.get_list(
 				"ToDo",
-				filters={
-					"reference_type": self.doctype,
-					"reference_name": self.name,
-					"status": "Open"
-				},
-				fields=["allocated_to"]
+				filters={"reference_type": self.doctype, "reference_name": self.name, "status": "Open"},
+				fields=["allocated_to"],
 			)
 			return [assignee.allocated_to for assignee in assignees if assignee.allocated_to]
 		except Exception:
@@ -517,127 +530,215 @@ class CRMLead(Document):
 
 	def get_lead_sub_status_name(self):
 		"""Get the sub-status name from CRM Lead"""
-		if hasattr(self, 'custom_sub_status') and self.custom_sub_status:
+		if hasattr(self, "custom_sub_status") and self.custom_sub_status:
 			# Return the name field (not status field) as that contains the actual sub-status
 			return self.custom_sub_status
 		return None
 
-	def handle_appointment_assignment(self, current_assignees, jennifer_email):
-		"""Auto-assign to Jennifer when status is Connected + Appointment"""
+	def handle_appointment_assignment_via_rule(self, current_assignees):
+		"""Auto-assign using Assignment Rule when status is Connected + Appointment"""
 		try:
+			# Get the Assignment Rule for appointments
+			assignment_rule = frappe.get_doc("Assignment Rule", "Appointment Assignment")
+
+			if not assignment_rule or assignment_rule.disabled:
+				frappe.log_error(
+					title="Assignment Rule Error", message="Appointment Assignment rule not found or disabled"
+				)
+				return
+
+			# Check if assignment rule condition matches
+			if not self.eval_assignment_condition(assignment_rule.assign_condition):
+				return
+
+			# Get the next user based on round-robin logic
+			next_user = self.get_next_round_robin_user(assignment_rule)
+
+			if not next_user:
+				frappe.log_error(
+					title="Assignment Rule Error",
+					message="No users configured in Appointment Assignment rule",
+				)
+				return
+
 			# Check current assignment state from database
 			current_assign_db = frappe.db.get_value("CRM Lead", self.name, "_assign") or "[]"
-			import json
+
 			current_assign_list = json.loads(current_assign_db)
-			
-			# If Jennifer is already the only assignee, skip
-			if current_assign_list == [jennifer_email]:
+
+			# If the selected user is already the only assignee, skip
+			if current_assign_list == [next_user]:
 				return
-			
-			# Store current assignee before changing
-			if current_assignees and current_assignees[0] != jennifer_email:
-				self.previously_assigned = current_assignees[0]
-				self.db_set("previously_assigned", current_assignees[0], update_modified=False)
-			
+
+			# Store current assignee as previous only if it's a telecaller (not counselor)
+			if current_assignees and current_assignees[0] != next_user:
+				# Only store telecaller as previously_assigned, not other counselors
+				telecaller_emails = get_calling_team_members()
+				if current_assignees[0] in telecaller_emails and not self.previously_assigned:
+					self.previously_assigned = current_assignees[0]
+					self.db_set("previously_assigned", current_assignees[0], update_modified=False)
+					frappe.logger().info(f"Stored telecaller {current_assignees[0]} as previously_assigned for lead {self.name}")
+
 			# Use Frappe's native assignment API for clean assignment
-			from frappe.desk.form.assign_to import clear, add
-			
-			# Clear all current assignments (no notifications)
+			# Clear all current assignments
 			clear("CRM Lead", self.name)
-			
-			# Add Jennifer as the only assignee (disable notifications)
-			add({
-				"doctype": "CRM Lead",
-				"name": self.name,
-				"assign_to": [jennifer_email],
-				"description": "Auto-assigned for Appointment",
-				"notify": 0  # Disable email notifications
-			})
-			
-			frappe.msgprint(f"Lead {self.lead_name} auto-assigned to Jennifer for appointment scheduling")
-				
+
+			# Add the selected user as the only assignee
+			add(
+				{
+					"doctype": "CRM Lead",
+					"name": self.name,
+					"assign_to": [next_user],
+					"description": "Auto-assigned for Appointment via Assignment Rule",
+					"notify": 0,  # Disable email notifications
+				}
+			)
+
+			# Update the last_user in Assignment Rule for next round-robin assignment
+			assignment_rule.last_user = next_user
+			assignment_rule.save(ignore_permissions=True)
+
+			user_name = frappe.get_value("User", next_user, "full_name") or next_user
+			frappe.msgprint(f"Lead {self.lead_name} auto-assigned to {user_name} for appointment scheduling")
+
 		except Exception as e:
 			frappe.log_error(
 				title="Appointment Assignment Error",
-				message=f"Error assigning appointment lead {self.name} to Jennifer: {str(e)}"
+				message=f"Error assigning appointment lead {self.name} using Assignment Rule: {str(e)}",
 			)
 
-	def handle_no_show_assignment(self, current_assignees):
+	def eval_assignment_condition(self, condition):
+		"""Evaluate assignment rule condition against this lead"""
+		try:
+			if not condition:
+				return True
+
+			# Create evaluation context with lead fields
+			context = {
+				"status": self.status,
+				"custom_sub_status": self.custom_sub_status,
+			}
+
+			# Use eval with the context as local variables
+			return eval(condition, {"__builtins__": {}}, context)
+
+		except Exception as e:
+			frappe.log_error(
+				title="Assignment Condition Evaluation Error",
+				message=f"Error evaluating condition '{condition}' for {self.name}: {str(e)}",
+			)
+			return False
+
+	def get_next_round_robin_user(self, assignment_rule):
+		"""Get the next user in round-robin sequence from Assignment Rule"""
+		try:
+			if not assignment_rule.users:
+				return None
+
+			# Get all users from the assignment rule
+			users = [user.user for user in assignment_rule.users if user.user]
+
+			if not users:
+				return None
+
+			# If no last_user is set, start with the first user
+			if not assignment_rule.last_user:
+				return users[0]
+
+			# Find the current user's position and get the next one
+			try:
+				current_index = users.index(assignment_rule.last_user)
+				next_index = (current_index + 1) % len(users)
+				return users[next_index]
+			except ValueError:
+				# last_user not found in current users list, start from beginning
+				return users[0]
+
+		except Exception as e:
+			frappe.log_error(
+				title="Round Robin User Selection Error",
+				message=f"Error selecting next user from Assignment Rule: {str(e)}",
+			)
+			return None
+
+	def handle_no_show_assignment(self):
 		"""Handle assignment back to previous assignee for No Show cases"""
 		try:
 			# Get the previous assignee (telecaller who had the lead before Jennifer)
 			previous_assignee = self.previously_assigned
-			
+
 			if previous_assignee:
 				# Check current assignment state from database
 				current_assign_db = frappe.db.get_value("CRM Lead", self.name, "_assign") or "[]"
-				import json
+
 				current_assign_list = json.loads(current_assign_db)
-				
+
 				# If previous assignee is already the only assignee, skip
 				if current_assign_list == [previous_assignee]:
 					return
-				
+
 				# Use Frappe's native assignment API for clean assignment
-				from frappe.desk.form.assign_to import clear, add
-				
 				# Clear all current assignments (no notifications)
 				clear("CRM Lead", self.name)
-				
+
 				# Add previous assignee back (disable notifications)
-				add({
-					"doctype": "CRM Lead",
-					"name": self.name,
-					"assign_to": [previous_assignee],
-					"description": "Auto-assigned back for No Show follow-up",
-					"notify": 0  # Disable email notifications
-				})
-				
-				previous_assignee_name = frappe.get_value('User', previous_assignee, 'full_name')
-				frappe.msgprint(f"Lead {self.lead_name} auto-assigned back to {previous_assignee_name} due to No Show status")
+				add(
+					{
+						"doctype": "CRM Lead",
+						"name": self.name,
+						"assign_to": [previous_assignee],
+						"description": "Auto-assigned back for No Show follow-up",
+						"notify": 0,  # Disable email notifications
+					}
+				)
+
+				previous_assignee_name = frappe.get_value("User", previous_assignee, "full_name")
+				frappe.msgprint(
+					f"Lead {self.lead_name} auto-assigned back to {previous_assignee_name} due to No Show status"
+				)
 			else:
-				frappe.msgprint(f"No previous assignee found for lead {self.lead_name} - manual assignment required")
-			
+				frappe.msgprint(
+					f"No previous assignee found for lead {self.lead_name} - manual assignment required"
+				)
+
 		except Exception as e:
 			frappe.log_error(
 				title="No Show Assignment Error",
-				message=f"Error handling No Show assignment for {self.name}: {str(e)}"
+				message=f"Error handling No Show assignment for {self.name}: {str(e)}",
 			)
 
 	def create_auto_follow_up(self):
 		"""Create automatic follow-up based on configurable settings"""
 		try:
-			from frappe.utils import add_days, today
-			
 			sub_status_name = self.get_lead_sub_status_name()
-			
+
 			# Find matching follow-up setting
-			filters = {
-				"enabled": 1,
-				"main_status": self.status
-			}
-			
+			filters = {"enabled": 1, "main_status": self.status}
+
 			if sub_status_name:
 				filters["sub_status"] = self.custom_sub_status
-			
+
 			settings = frappe.get_all(
 				"CRM Follow Up Settings",
 				filters=filters,
 				fields=["follow_up_days", "preserve_assignment"],
-				limit=1
+				limit=1,
 			)
-			
+
 			if settings:
 				setting = settings[0]
-				
+
 				# Calculate follow-up date
 				follow_up_date = add_days(today(), setting.follow_up_days)
-				
+
 				# Set follow-up date
-				if not getattr(self, 'custom_follow_up_date', None) or self.custom_follow_up_date < follow_up_date:
+				if (
+					not getattr(self, "custom_follow_up_date", None)
+					or self.custom_follow_up_date < follow_up_date
+				):
 					self.db_set("custom_follow_up_date", follow_up_date, update_modified=False)
 					frappe.logger().info(f"Set follow-up date for lead {self.name}: {follow_up_date}")
-				
+
 				# Handle assignment preservation
 				if setting.preserve_assignment:
 					previous_assignee = self.previously_assigned
@@ -645,19 +746,20 @@ class CRMLead(Document):
 						current_assignees = self.get_current_assignees()
 						if previous_assignee not in current_assignees:
 							# Re-assign to previous assignee for follow-up (disable notifications)
-							from frappe.desk.form.assign_to import add
-							add({
-								"doctype": "CRM Lead",
-								"name": self.name,
-								"assign_to": [previous_assignee],
-								"description": f"Auto-assigned for {sub_status_name or self.status} follow-up",
-								"notify": 0  # Disable email notifications
-							})
-							
+							add(
+								{
+									"doctype": "CRM Lead",
+									"name": self.name,
+									"assign_to": [previous_assignee],
+									"description": f"Auto-assigned for {sub_status_name or self.status} follow-up",
+									"notify": 0,  # Disable email notifications
+								}
+							)
+
 		except Exception as e:
 			frappe.log_error(
 				title="Auto Follow-Up Error",
-				message=f"Error creating auto follow-up for {self.name}: {str(e)}"
+				message=f"Error creating auto follow-up for {self.name}: {str(e)}",
 			)
 
 
@@ -678,3 +780,11 @@ def convert_to_deal(lead, doc=None, deal=None, existing_contact=None, existing_o
 	organization = lead.create_organization(existing_organization)
 	_deal = lead.create_deal(contact, organization, deal)
 	return _deal
+
+
+def get_calling_team_members():
+    """Get the calling team members from Assignment Rule"""
+    assignment_rule = frappe.get_doc("Assignment Rule", "Calling Assignment")
+    if assignment_rule and assignment_rule.users:
+        return [user.user for user in assignment_rule.users if user.user]
+    return []
