@@ -1,4 +1,4 @@
-name: Test
+name: Server
 
 on:
     pull_request:
@@ -22,7 +22,7 @@ concurrency:
 
 jobs:
     test:
-        name: Server Tests
+        name: Tests
         runs-on: ubuntu-latest
         timeout-minutes: 60
         strategy:
