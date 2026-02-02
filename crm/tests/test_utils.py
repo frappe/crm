@@ -1,9 +1,9 @@
-from frappe.tests import UnitTestCase
+from frappe.tests.utils import FrappeTestCase
 
 from crm.utils import are_same_phone_number, seconds_to_duration
 
 
-class TestUtils(UnitTestCase):
+class TestUtils(FrappeTestCase):
 	def test_seconds_to_duration(self):
 		# 3661 seconds = 1 hour, 1 minute, and 1 second
 		self.assertEqual(seconds_to_duration(3661), "1h 1m 1s")
