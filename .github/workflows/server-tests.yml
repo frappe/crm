@@ -59,6 +59,7 @@ jobs:
                   ci-build-id: ${{ github.run_id }}
 
             - name: Persist coverage artifact
+              if: github.base_ref == 'develop' || github.ref_name == 'develop'
               uses: ./.github/actions/upload-coverage
               with:
                   artifact-name: coverage-${{ matrix.container }}
@@ -67,8 +68,8 @@ jobs:
     coverage:
         name: Coverage Wrap Up
         needs: test
+        if: github.base_ref == 'develop' || github.ref_name == 'develop'
         runs-on: ubuntu-latest
-        if: ${{ github.event_name != 'pull_request' }}
         steps:
             - name: Clone
               uses: actions/checkout@v6
