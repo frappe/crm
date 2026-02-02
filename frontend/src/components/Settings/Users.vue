@@ -50,7 +50,7 @@
     <EmptyState
       v-if="!users.loading && users.data?.crmUsers?.length == 1"
       name="users"
-      description="Add one to get started."
+      :description="__('Add one to get started.')"
       icon="user"
     />
 
