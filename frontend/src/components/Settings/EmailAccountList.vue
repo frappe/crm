@@ -48,7 +48,7 @@
     <EmptyState
       v-else
       name="email accounts"
-      description="Add one to get started."
+      :description="__('Add one to get started.')"
       :icon="Email2Icon"
     />
   </div>

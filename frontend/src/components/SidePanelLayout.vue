@@ -132,7 +132,9 @@
                           doctype="User"
                           :filters="field.filters"
                           @change="(v) => fieldChange(v, field)"
-                          :placeholder="'Select' + ' ' + field.label + '...'"
+                          :placeholder="
+                            __('Select') + ' ' + field.label + '...'
+"
                           :hideMe="true"
                         >
                           <template v-if="doc[field.fieldname]" #prefix>
