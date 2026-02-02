@@ -17,7 +17,7 @@
               document.statuses?.length
                 ? document.statuses
                 : document._statuses,
-              triggerStatusChange,
+              triggerStatusChange
             )
           "
         >
@@ -318,7 +318,7 @@ import { ref, computed, h, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 const { brand } = getSettings()
-const { $dialog, $socket } = globalStore()
+const { $dialog, $socket, makeCall } = globalStore()
 const { statusOptions, getDealStatus } = statusesStore()
 const { doctypeMeta } = getMeta('CRM Deal')
 const route = useRoute()
@@ -337,7 +337,7 @@ const showDeleteLinkedDocModal = ref(false)
 
 const { triggerOnChange, assignees, document, scripts, error } = useDocument(
   'CRM Deal',
-  props.dealId,
+  props.dealId
 )
 
 const doc = computed(() => document.doc || {})
@@ -347,7 +347,7 @@ watch(error, (err) => {
     errorTitle.value = __(
       err.exc_type == 'DoesNotExistError'
         ? 'Document not found'
-        : 'Error occurred',
+        : 'Error occurred'
     )
     errorMessage.value = __(err.messages?.[0] || 'An error occurred')
   } else {
@@ -375,7 +375,7 @@ watch(
       document._statuses = s.statuses || []
     }
   },
-  { once: true },
+  { once: true }
 )
 
 const reload = ref(false)
@@ -520,7 +520,21 @@ function contactOptions(contact) {
     },
   ]
 
-  if (!contact.is_primary) {
+  // Add Call option for each linked contact (uses global makeCall)
+  const phone =
+    typeof contact === 'string'
+      ? dealContacts.data?.find((c) => c.name === contact)?.mobile_no
+      : contact?.mobile_no
+
+  if (phone) {
+    options.unshift({
+      label: __('Call'),
+      icon: h(PhoneIcon, { class: 'h-4 w-4' }),
+      onClick: () => makeCall(phone),
+    })
+  }
+
+  if (typeof contact !== 'string' && !contact.is_primary) {
     options.push({
       label: __('Set as primary contact'),
       icon: h(SuccessIcon, { class: 'h-4 w-4' }),
@@ -576,7 +590,7 @@ const dealContacts = createResource({
   auto: true,
   onSuccess: (data) => {
     let contactSection = sections.data?.find(
-      (section) => section.name == 'contacts_section',
+      (section) => section.name == 'contacts_section'
     )
     if (!contactSection) return
     contactSection.contacts = data.map((contact) => {
