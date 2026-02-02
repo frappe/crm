@@ -68,7 +68,6 @@ jobs:
         name: Coverage Wrap Up
         needs: test
         runs-on: ubuntu-latest
-        if: ${{ github.event_name != 'pull_request' }}
         steps:
             - name: Clone
               uses: actions/checkout@v6
