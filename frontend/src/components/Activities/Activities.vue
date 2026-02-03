@@ -713,7 +713,7 @@ const emptyTextDescription = computed(() => {
     'There are no activities to display here. Go ahead and make some changes.'
   if (title.value == 'Emails') {
     description =
-      'No emails found in your inbox. new messages will appear here soon.'
+      'No emails found in your inbox. New messages will appear here soon.'
   } else if (title.value == 'Comments') {
     description = 'No comments yet. Be the first to add one.'
   } else if (title.value == 'Data') {
@@ -721,10 +721,10 @@ const emptyTextDescription = computed(() => {
   } else if (title.value == 'Calls') {
     description = 'No recent calls to display. Log a call or call someone now!'
   } else if (title.value == 'Notes') {
-    description = 'Nothing here for now. add a note to keep track of things.'
+    description = 'Nothing here for now. Add a note to keep track of things.'
   } else if (title.value == 'Tasks') {
     description =
-      'Nothing to do at the moment. start organizing by adding one here.'
+      'Nothing to do at the moment. Start organizing by adding one here.'
   } else if (title.value == 'Attachments') {
     description =
       'No files have been attached yet. Upload files to see them here.'
