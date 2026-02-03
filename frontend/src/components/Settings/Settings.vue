@@ -109,7 +109,7 @@ const tabs = computed(() => {
           icon: TrendingUpDownIcon,
         },
         {
-          label: __('Currency & Exchange rate'),
+          label: __('Currency & exchange rate'),
           icon: CircleDollarSignIcon,
           component: markRaw(CurrencySettings),
         },
@@ -156,7 +156,7 @@ const tabs = computed(() => {
       ],
     },
     {
-      label: __('Automation & Rules'),
+      label: __('Automation & rules'),
       items: [
         {
           label: __('Assignment rules'),
