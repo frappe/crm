@@ -40,6 +40,8 @@ def get_users():
 		filters={"enabled": 1},
 	).run(as_dict=1)
 
+	crm_users = []
+
 	for user in users:
 		if frappe.session.user == user.name:
 			user.session_user = True
@@ -62,11 +64,7 @@ def get_users():
 
 		user.is_telephony_agent = frappe.db.exists("CRM Telephony Agent", {"user": user.name})
 
-	crm_users = []
-
-	# crm users are users with role Sales User or Sales Manager
-	for user in users:
-		if "Sales User" in user.roles or "Sales Manager" in user.roles:
+		if user.role in ("System Manager", "Sales Manager", "Sales User"):
 			crm_users.append(user)
 
 	if not session_roles["is_system_manager"]:
