@@ -134,7 +134,7 @@ let router = createRouter({
 
 router.beforeEach(async (to, from, next) => {
   const { isLoggedIn } = sessionStore()
-  const { users, isWebsiteUser } = usersStore()
+  const { users, isCrmUser } = usersStore()
 
   if (isLoggedIn && !users.fetched) {
     try {
@@ -143,8 +143,8 @@ router.beforeEach(async (to, from, next) => {
       console.error('Error loading users', error)
     }
   }
-
-  if (isLoggedIn && to.name !== 'Not Permitted' && isWebsiteUser()) {
+  
+  if (isLoggedIn && to.name !== 'Not Permitted' && !isCrmUser()) {
     next({ name: 'Not Permitted' })
   } else if (to.name === 'Home' && isLoggedIn) {
     const { views, getDefaultView } = viewsStore()
