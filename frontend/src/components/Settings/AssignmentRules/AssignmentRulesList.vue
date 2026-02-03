@@ -8,8 +8,8 @@
   <EmptyState
     v-else-if="assignmentRulesList.data?.length === 0"
     title="No assignment rules found"
-    description="Add one to get started."
-    :icon="h(SettingsIcon2, { class: 'rotate-90'})"
+    :description="__('Add one to get started.')"
+    :icon="h(SettingsIcon2, { class: 'rotate-90' })"
   />
   <div v-else>
     <div class="flex items-center py-2 px-4 text-sm text-ink-gray-5">

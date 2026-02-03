@@ -1,4 +1,3 @@
-import bleach
 import frappe
 import requests
 from frappe import _
@@ -111,7 +110,7 @@ def make_a_call(to_number, from_number=None, caller_id=None):
 		response.raise_for_status()
 	except requests.exceptions.HTTPError:
 		if exc := response.json().get("RestException"):
-			frappe.throw(bleach.linkify(exc.get("Message")), title=_("Exotel Exception"))
+			frappe.throw(exc.get("Message"), title=_("Exotel Exception"))
 	else:
 		res = response.json()
 		call_payload = res.get("Call", {})

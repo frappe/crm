@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-12-21 09:37+0000\n"
-"PO-Revision-Date: 2026-01-29 12:57\n"
+"PO-Revision-Date: 2026-02-01 13:03\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Italian\n"
 "MIME-Version: 1.0\n"
@@ -213,7 +213,7 @@ msgstr ""
 
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.py:156
 msgid "Access Key is required for Service Provider: {0}"
-msgstr ""
+msgstr "La chiave di accesso è richiesta per il fornitore di servizi: {0}"
 
 #. Label of the access_token (Small Text) field in DocType 'Facebook Page'
 #. Label of the access_token (Password) field in DocType 'Lead Sync Source'
@@ -737,7 +737,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/ForecastingSettings.vue:87
 msgid "Auto update of expected deal value enabled"
-msgstr ""
+msgstr "Aggiornamento automatico del valore previsto della vendita abilitato"
 
 #. Description of the 'Auto Update Expected Deal Value' (Check) field in
 #. DocType 'FCRM Settings'
@@ -1577,7 +1577,7 @@ msgstr ""
 #: frontend/src/components/Modals/WhatsappTemplateSelectorModal.vue:45
 #: frontend/src/components/PrimaryDropdown.vue:41
 msgid "Create New"
-msgstr "Crea Nuovo"
+msgstr "Crea nuovo"
 
 #: frontend/src/components/Activities/Activities.vue:385
 #: frontend/src/components/Modals/NoteModal.vue:6
@@ -3185,7 +3185,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/EmailAccountCard.vue:45
 msgid "Inbox"
-msgstr ""
+msgstr "Posta in arrivo"
 
 #. Option for the 'Type' (Select) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
@@ -3532,7 +3532,7 @@ msgstr ""
 #: frontend/src/components/Telephony/ExotelCallUI.vue:200
 #: frontend/src/pages/Tasks.vue:133
 msgid "Lead"
-msgstr "Opportunità"
+msgstr "Lead"
 
 #. Label of the lead_data (Code) field in DocType 'Failed Lead Sync Log'
 #: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.json
@@ -4162,7 +4162,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/EmailEdit.vue:150
 msgid "No changes made"
-msgstr ""
+msgstr "Nessuna modifica apportata"
 
 #: frontend/src/components/Modals/SidePanelModal.vue:51
 #: frontend/src/pages/Deal.vue:277 frontend/src/pages/MobileDeal.vue:209
@@ -6645,7 +6645,7 @@ msgstr ""
 
 #: frontend/src/utils/index.js:140 frontend/src/utils/index.js:166
 msgid "just now"
-msgstr ""
+msgstr "proprio adesso"
 
 #. Option for the 'Type' (Select) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
@@ -6784,7 +6784,7 @@ msgstr "{0} giorni"
 
 #: frontend/src/utils/index.js:181
 msgid "{0} days ago"
-msgstr ""
+msgstr "{0} giorni fa"
 
 #: frontend/src/utils/index.js:121
 msgid "{0} h"
@@ -6796,7 +6796,7 @@ msgstr ""
 
 #: frontend/src/utils/index.js:174
 msgid "{0} hours ago"
-msgstr ""
+msgstr "{0} ore fa"
 
 #: frontend/src/composables/event.js:163
 msgid "{0} hrs"
@@ -6829,7 +6829,7 @@ msgstr "{0} minuti fa"
 
 #: frontend/src/utils/index.js:189
 msgid "{0} months ago"
-msgstr ""
+msgstr "{0} mesi fa"
 
 #: frontend/src/utils/index.js:128
 msgid "{0} w"
