@@ -49,6 +49,36 @@ class TestCRMLead(IntegrationTestCase):
 				email="not-an-email",
 			)
 
+	def test_set_lead_name_scenarios(self):
+		"""Test various scenarios for setting lead_name"""
+		# Test 1: lead_name from organization when no first_name
+		lead1 = frappe.get_doc({"doctype": "CRM Lead", "organization": "Tech Corp"})
+		lead1.flags.ignore_mandatory = True
+		lead1.insert()
+		self.assertEqual(lead1.lead_name, "Tech Corp")
+		self.assertEqual(lead1.title, "Tech Corp")
+
+		# Test 2: lead_name from email prefix when no first_name or organization
+		lead2 = frappe.get_doc({"doctype": "CRM Lead", "email": "contact@company.com"})
+		lead2.flags.ignore_mandatory = True
+		lead2.insert()
+		self.assertEqual(lead2.lead_name, "contact")
+		self.assertEqual(lead2.title, "contact")
+
+		# Test 3: Throws error without first_name, organization, or email
+		with self.assertRaises(frappe.exceptions.ValidationError) as context:
+			create_lead()
+		self.assertIn(
+			"A Lead requires either a person's name or an organization's name", str(context.exception)
+		)
+
+		# Test 4: lead_name set to 'Unnamed Lead' with ignore_mandatory flag
+		lead3 = frappe.get_doc({"doctype": "CRM Lead"})
+		lead3.flags.ignore_mandatory = True
+		lead3.insert()
+		self.assertEqual(lead3.lead_name, "Unnamed Lead")
+		self.assertEqual(lead3.title, "Unnamed Lead")
+
 	def test_lead_title_generation(self):
 		"""Test that title is set correctly"""
 		lead = create_lead(
@@ -76,6 +106,101 @@ class TestCRMLead(IntegrationTestCase):
 				lead_owner="test@example.com",
 			)
 		self.assertIn("Lead Owner cannot be same as the Lead Email Address", str(context.exception))
+
+	def test_update_lead_owner(self):
+		"""Test that updating lead owner assigns and shares with the new owner"""
+		# Create a lead without owner
+		lead = create_lead(
+			first_name="Owner",
+			last_name="Test",
+			email="ownertest@example.com",
+		)
+
+		self.assertFalse(lead.lead_owner)
+
+		# Update lead owner
+		lead.lead_owner = "Administrator"
+		lead.save()
+
+		# Verify owner was updated
+		lead.reload()
+		self.assertEqual(lead.lead_owner, "Administrator")
+
+		# Verify agent was assigned
+		assignees = lead.get_assigned_users()
+		self.assertIn("Administrator", assignees)
+		initial_assignees_count = len(assignees)
+
+		# Verify document was shared with agent
+		docshare = frappe.db.exists(
+			"DocShare",
+			{"user": "Administrator", "share_name": lead.name, "share_doctype": "CRM Lead"},
+		)
+		self.assertTrue(docshare)
+
+		# Try to assign the same agent again - should not duplicate
+		lead.assign_agent("Administrator")
+		assignees_after = lead.get_assigned_users()
+		self.assertEqual(len(assignees_after), initial_assignees_count)
+		self.assertIn("Administrator", assignees_after)
+
+		# Share with same agent again - should not duplicate docshare
+		initial_docshares = frappe.get_all(
+			"DocShare",
+			filters={"share_name": lead.name, "share_doctype": "CRM Lead"},
+		)
+		initial_docshare_count = len(initial_docshares)
+		lead.share_with_agent("Administrator")
+		after_docshares = frappe.get_all(
+			"DocShare",
+			filters={"share_name": lead.name, "share_doctype": "CRM Lead"},
+		)
+		self.assertEqual(len(after_docshares), initial_docshare_count)
+
+		# Change lead owner to different user - old share should be removed
+		if not frappe.db.exists("User", "test@example.com"):
+			frappe.get_doc(
+				{
+					"doctype": "User",
+					"email": "test@example.com",
+					"first_name": "Test",
+				}
+			).insert()
+
+		lead.lead_owner = "test@example.com"
+		lead.save()
+		lead.reload()
+
+		# Verify new owner is assigned and shared
+		self.assertEqual(lead.lead_owner, "test@example.com")
+		new_docshare = frappe.db.exists(
+			"DocShare",
+			{"user": "test@example.com", "share_name": lead.name, "share_doctype": "CRM Lead"},
+		)
+		self.assertTrue(new_docshare)
+
+		# Verify old owner's share was removed
+		old_docshare = frappe.db.exists(
+			"DocShare",
+			{"user": "Administrator", "share_name": lead.name, "share_doctype": "CRM Lead"},
+		)
+		self.assertFalse(old_docshare)
+
+	def test_lead_creation_with_owner(self):
+		"""Test creating a lead with lead owner assigns agent on insert"""
+		lead = create_lead(
+			first_name="Owned",
+			last_name="Lead",
+			email="ownedlead@example.com",
+			lead_owner="Administrator",
+		)
+
+		# Verify lead was created with owner
+		self.assertEqual(lead.lead_owner, "Administrator")
+
+		# Verify agent was assigned during after_insert
+		assignees = lead.get_assigned_users()
+		self.assertIn("Administrator", assignees)
 
 	def test_create_contact_from_lead(self):
 		"""Test creating a contact from lead data"""
