@@ -1,9 +1,13 @@
 # Copyright (c) 2024, Frappe Technologies Pvt. Ltd. and Contributors
 # See license.txt
 
+import json
+import os
+
 import frappe
 from frappe.tests import IntegrationTestCase
-from frappe.utils import add_days, get_first_day, get_last_day, nowdate
+from frappe.tests.utils import make_test_records
+from frappe.utils import get_first_day, get_last_day, nowdate
 
 from crm.api.dashboard import (
 	get_average_deal_value,
@@ -32,219 +36,140 @@ from crm.api.dashboard import (
 
 
 class TestDashboard(IntegrationTestCase):
-	def setUp(self):
-		"""Set up test data"""
-		self.from_date = get_first_day(nowdate())
-		self.to_date = get_last_day(nowdate())
+	@classmethod
+	def setUpClass(cls):
+		"""Set up test records once for all tests"""
+		super().setUpClass()
 
-		# Create test lead status if not exists
-		if not frappe.db.exists("CRM Lead Status", "New Lead"):
-			frappe.get_doc({"doctype": "CRM Lead Status", "lead_status": "New Lead"}).insert(
-				ignore_if_duplicate=True
-			)
+		# Mark timestamp before creating test data
+		cls.test_start_time = frappe.utils.now()
 
-		# Create test deal statuses
-		self.create_test_deal_statuses()
+		# Load CRM user test records from crm/tests/test_records.json
+		cls.load_crm_user_test_records()
 
-		# Create test currency
-		if not frappe.db.exists("Currency", "USD"):
-			frappe.get_doc(
-				{
-					"doctype": "Currency",
-					"currency_name": "US Dollar",
-					"symbol": "$",
-				}
-			).insert(ignore_if_duplicate=True)
+		cls.from_date = get_first_day(nowdate())
+		cls.to_date = get_last_day(nowdate())
+		cls.user = "crm.manager@example.com"  # CRM manager from test_records.json
+		cls.user2_email = "crm.user1@example.com"  # Test user from test_records.json
 
-	def tearDown(self):
+		# Load test records from test_records.json files in dependency order
+		make_test_records("CRM Lead Status")
+		make_test_records("CRM Deal Status")
+		make_test_records("CRM Lead Source")
+		make_test_records("CRM Lost Reason")
+		make_test_records("CRM Organization")  # Load organizations before deals
+		make_test_records("CRM Lead")
+		make_test_records("CRM Deal")
+
+	@classmethod
+	def tearDownClass(cls):
+		"""Clean up test records after all tests"""
 		frappe.db.rollback()
+		super().tearDownClass()
 
-	def create_test_deal_statuses(self):
-		"""Create test deal statuses"""
-		statuses = [
-			{"status": "Qualification", "type": "Open", "position": 1},
-			{"status": "Negotiation", "type": "Open", "position": 2},
-			{"status": "Won", "type": "Won", "position": 3},
-			{"status": "Lost", "type": "Lost", "position": 4},
-		]
+	@classmethod
+	def load_crm_user_test_records(cls):
+		"""Load CRM user test records from crm/tests/test_records.json"""
+		test_records_path = os.path.join(os.path.dirname(__file__), "test_records.json")
 
-		for status_data in statuses:
-			if not frappe.db.exists("CRM Deal Status", status_data["status"]):
-				frappe.get_doc({"doctype": "CRM Deal Status", **status_data}).insert(ignore_if_duplicate=True)
+		if os.path.exists(test_records_path):
+			with open(test_records_path) as f:
+				test_records = json.load(f)
 
-	def create_test_organization(self, org_name):
-		"""Create test organization"""
-		if not frappe.db.exists("CRM Organization", org_name):
-			return frappe.get_doc(
-				{
-					"doctype": "CRM Organization",
-					"organization_name": org_name,
-				}
-			).insert()
-		return frappe.get_doc("CRM Organization", org_name)
+			for record in test_records:
+				if not frappe.db.exists("User", record.get("email")):
+					doc = frappe.get_doc(record)
+					doc.insert(ignore_permissions=True, ignore_if_duplicate=True)
 
 	def test_get_total_leads(self):
 		"""Test get_total_leads returns lead count with delta"""
-		# Create test leads
-		for i in range(3):
-			frappe.get_doc(
-				{
-					"doctype": "CRM Lead",
-					"first_name": f"Test Lead {i}",
-					"email": f"testlead{i}@example.com",
-				}
-			).insert()
-
 		result = get_total_leads(self.from_date, self.to_date)
 
 		self.assertIn("title", result)
 		self.assertIn("value", result)
 		self.assertIn("delta", result)
 		self.assertEqual(result["title"], "Total leads")
-		self.assertGreaterEqual(result["value"], 3)
+		self.assertEqual(result["value"], 35)  # 35 leads from test_records.json
 
-	def test_get_total_leads_with_user_filter(self):
-		"""Test get_total_leads filters by user"""
-		user = frappe.session.user
-
-		# Create lead owned by current user
-		frappe.get_doc(
-			{
-				"doctype": "CRM Lead",
-				"first_name": "User Lead",
-				"email": "userlead@example.com",
-				"lead_owner": user,
-			}
-		).insert()
-
-		result = get_total_leads(self.from_date, self.to_date, user)
-
-		self.assertGreaterEqual(result["value"], 1)
+		# Test with user filter - crm.user1@example.com owns 3 leads
+		result_user = get_total_leads(self.from_date, self.to_date, self.user2_email)
+		self.assertEqual(result_user["value"], 3)
+		self.assertLessEqual(result_user["value"], result["value"])
 
 	def test_get_ongoing_deals(self):
 		"""Test get_ongoing_deals returns non-won/lost deal count"""
-		# Create test organization and deal
-		self.create_test_organization("Test Org")
-		frappe.get_doc(
-			{
-				"doctype": "CRM Deal",
-				"organization": "Test Org",
-				"status": "Qualification",
-			}
-		).insert()
-
 		result = get_ongoing_deals(self.from_date, self.to_date)
 
 		self.assertIn("title", result)
 		self.assertIn("value", result)
 		self.assertEqual(result["title"], "Ongoing deals")
-		self.assertGreaterEqual(result["value"], 1)
+		self.assertEqual(result["value"], 21)  # 21 ongoing deals (13 Qualification + 8 Negotiation)
+
+		# Test with user filter - crm.user1@example.com owns 2 ongoing deals
+		result_user = get_ongoing_deals(self.from_date, self.to_date, self.user2_email)
+		self.assertEqual(result_user["value"], 2)
+		self.assertLessEqual(result_user["value"], result["value"])
 
 	def test_get_average_ongoing_deal_value(self):
 		"""Test get_average_ongoing_deal_value calculates average"""
-		# Create test organization and deal with value
-		self.create_test_organization("Test Org Avg")
-		frappe.get_doc(
-			{
-				"doctype": "CRM Deal",
-				"organization": "Test Org Avg",
-				"status": "Qualification",
-				"deal_value": 10000,
-				"exchange_rate": 1,
-			}
-		).insert()
-
+		# Test without user filter - filters by creation date within range
 		result = get_average_ongoing_deal_value(self.from_date, self.to_date)
 
 		self.assertIn("title", result)
 		self.assertIn("value", result)
 		self.assertIn("prefix", result)
 		self.assertEqual(result["title"], "Avg. ongoing deal value")
+		self.assertGreaterEqual(result["value"], 0)  # Average of ongoing deals created in current month
+
+		# Test with user filter
+		result_user = get_average_ongoing_deal_value(self.from_date, self.to_date, self.user2_email)
+		self.assertGreaterEqual(result_user["value"], 0)
 
 	def test_get_won_deals(self):
 		"""Test get_won_deals returns won deal count"""
-		# Create organization and won deal
-		self.create_test_organization("Won Deal Org")
-		frappe.get_doc(
-			{
-				"doctype": "CRM Deal",
-				"organization": "Won Deal Org",
-				"status": "Won",
-				"closed_date": nowdate(),
-			}
-		).insert()
-
 		result = get_won_deals(self.from_date, self.to_date)
 
 		self.assertIn("title", result)
 		self.assertIn("value", result)
 		self.assertEqual(result["title"], "Won deals")
-		self.assertGreaterEqual(result["value"], 1)
+		self.assertEqual(result["value"], 8)  # 8 won deals from test_records.json
+
+		# Test with user filter - crm.user1@example.com owns 0 won deals
+		result_user = get_won_deals(self.from_date, self.to_date, self.user2_email)
+		self.assertEqual(result_user["value"], 0)
+		self.assertLessEqual(result_user["value"], result["value"])
 
 	def test_get_average_won_deal_value(self):
 		"""Test get_average_won_deal_value calculates average for won deals"""
-		# Create organization and won deal with value
-		self.create_test_organization("Won Value Org")
-		frappe.get_doc(
-			{
-				"doctype": "CRM Deal",
-				"organization": "Won Value Org",
-				"status": "Won",
-				"closed_date": nowdate(),
-				"deal_value": 50000,
-				"exchange_rate": 1,
-			}
-		).insert()
-
+		# Test without user filter - filters by closed_date within range
 		result = get_average_won_deal_value(self.from_date, self.to_date)
 
 		self.assertIn("title", result)
 		self.assertIn("value", result)
 		self.assertEqual(result["title"], "Avg. won deal value")
+		self.assertGreaterEqual(result["value"], 0)  # Average of won deals closed in current month
+
+		# Test with user filter
+		result_user = get_average_won_deal_value(self.from_date, self.to_date, self.user2_email)
+		self.assertGreaterEqual(result_user["value"], 0)
 
 	def test_get_average_deal_value(self):
 		"""Test get_average_deal_value for all non-lost deals"""
-		# Create organization and deal
-		self.create_test_organization("Avg Deal Org")
-		frappe.get_doc(
-			{
-				"doctype": "CRM Deal",
-				"organization": "Avg Deal Org",
-				"status": "Qualification",
-				"deal_value": 30000,
-				"exchange_rate": 1,
-			}
-		).insert()
-
+		# Test without user filter - filters by creation date within range
 		result = get_average_deal_value(self.from_date, self.to_date)
 
 		self.assertIn("title", result)
 		self.assertIn("value", result)
 		self.assertEqual(result["title"], "Avg. deal value")
+		self.assertGreaterEqual(result["value"], 0)  # Average of non-lost deals created in current month
+
+		# Test with user filter
+		result_user = get_average_deal_value(self.from_date, self.to_date, self.user2_email)
+		self.assertGreaterEqual(result_user["value"], 0)
 
 	def test_get_average_time_to_close_a_lead(self):
 		"""Test get_average_time_to_close_a_lead calculates time from lead creation"""
-		# Create lead
-		lead = frappe.get_doc(
-			{
-				"doctype": "CRM Lead",
-				"first_name": "Time Test Lead",
-				"email": "timetest@example.com",
-			}
-		).insert()
-
-		# Create organization and won deal from lead
-		self.create_test_organization("Time Test Org")
-		frappe.get_doc(
-			{
-				"doctype": "CRM Deal",
-				"organization": "Time Test Org",
-				"status": "Won",
-				"lead": lead.name,
-				"closed_date": add_days(nowdate(), 5),
-			}
-		).insert()
-
+		# Test without user filter
 		result = get_average_time_to_close_a_lead(self.from_date, self.to_date)
 
 		self.assertIn("title", result)
@@ -252,70 +177,48 @@ class TestDashboard(IntegrationTestCase):
 		self.assertIn("suffix", result)
 		self.assertEqual(result["title"], "Avg. time to close a lead")
 		self.assertEqual(result["suffix"], " days")
+		self.assertEqual(result["value"], 0)  # Test records created on same day
+
+		# Test with user filter
+		result_user = get_average_time_to_close_a_lead(self.from_date, self.to_date, self.user2_email)
+		self.assertEqual(result_user["value"], 0)  # Test records created on same day
 
 	def test_get_average_time_to_close_a_deal(self):
 		"""Test get_average_time_to_close_a_deal calculates time from deal creation"""
-		# Create organization and won deal
-		self.create_test_organization("Deal Time Org")
-		frappe.get_doc(
-			{
-				"doctype": "CRM Deal",
-				"organization": "Deal Time Org",
-				"status": "Won",
-				"closed_date": add_days(nowdate(), 3),
-			}
-		).insert()
-
+		# Test without user filter
 		result = get_average_time_to_close_a_deal(self.from_date, self.to_date)
 
 		self.assertIn("title", result)
 		self.assertIn("value", result)
 		self.assertEqual(result["title"], "Avg. time to close a deal")
+		self.assertEqual(result["value"], 0)  # Test records created on same day
+
+		# Test with user filter
+		result_user = get_average_time_to_close_a_deal(self.from_date, self.to_date, self.user2_email)
+		self.assertEqual(result_user["value"], 0)  # Test records created on same day
 
 	def test_get_sales_trend(self):
 		"""Test get_sales_trend returns daily performance data"""
-		# Create test data
-		frappe.get_doc(
-			{
-				"doctype": "CRM Lead",
-				"first_name": "Trend Lead",
-				"email": "trend@example.com",
-			}
-		).insert()
-
-		self.create_test_organization("Trend Org")
-		frappe.get_doc(
-			{
-				"doctype": "CRM Deal",
-				"organization": "Trend Org",
-				"status": "Won",
-			}
-		).insert()
-
+		# Test without user filter
 		result = get_sales_trend(self.from_date, self.to_date)
 
 		self.assertIn("data", result)
 		self.assertIn("title", result)
 		self.assertIn("series", result)
 		self.assertEqual(result["title"], "Sales trend")
-		self.assertTrue(len(result["series"]) >= 3)
+		self.assertEqual(len(result["series"]), 3)  # leads, deals, won_deals
+		self.assertEqual(result["series"][0]["name"], "leads")
+		self.assertEqual(result["series"][1]["name"], "deals")
+		self.assertEqual(result["series"][2]["name"], "won_deals")
+
+		# Test with user filter
+		result_user = get_sales_trend(self.from_date, self.to_date, self.user2_email)
+		self.assertIn("data", result_user)
+		self.assertEqual(len(result_user["series"]), 3)
 
 	def test_get_forecasted_revenue(self):
 		"""Test get_forecasted_revenue returns forecasted vs actual revenue"""
-		# Create organization and deal with forecast
-		self.create_test_organization("Forecast Org")
-		frappe.get_doc(
-			{
-				"doctype": "CRM Deal",
-				"organization": "Forecast Org",
-				"status": "Qualification",
-				"expected_deal_value": 100000,
-				"probability": 50,
-				"expected_closure_date": add_days(nowdate(), 30),
-				"exchange_rate": 1,
-			}
-		).insert()
-
+		# Test without user filter
 		result = get_forecasted_revenue(self.from_date, self.to_date)
 
 		self.assertIn("data", result)
@@ -323,195 +226,119 @@ class TestDashboard(IntegrationTestCase):
 		self.assertIn("series", result)
 		self.assertEqual(result["title"], "Forecasted revenue")
 
+		# Test with user filter
+		result_user = get_forecasted_revenue(self.from_date, self.to_date, self.user2_email)
+		self.assertIn("data", result_user)
+		self.assertIn("series", result_user)
+
 	def test_get_funnel_conversion(self):
 		"""Test get_funnel_conversion returns pipeline stages"""
-		# Create lead
-		frappe.get_doc(
-			{
-				"doctype": "CRM Lead",
-				"first_name": "Funnel Lead",
-				"email": "funnel@example.com",
-			}
-		).insert()
-
 		result = get_funnel_conversion(self.from_date, self.to_date)
 
 		self.assertIn("data", result)
 		self.assertIn("title", result)
 		self.assertEqual(result["title"], "Funnel conversion")
-		self.assertTrue(len(result["data"]) >= 1)
+		self.assertGreater(len(result["data"]), 0)
+		self.assertEqual(result["data"][0]["stage"], "Leads")
+		self.assertEqual(result["data"][0]["count"], 35)  # 35 leads from test_records.json
+
+		# Test with user filter - crm.user1@example.com owns 3 leads
+		result_user = get_funnel_conversion(self.from_date, self.to_date, self.user2_email)
+		self.assertIn("data", result_user)
+		self.assertGreater(len(result_user["data"]), 0)
+		self.assertEqual(result_user["data"][0]["stage"], "Leads")
+		self.assertEqual(result_user["data"][0]["count"], 3)
 
 	def test_get_deals_by_stage_axis(self):
 		"""Test get_deals_by_stage_axis returns deal distribution"""
-		# Create organization and deal
-		self.create_test_organization("Stage Org")
-		frappe.get_doc(
-			{
-				"doctype": "CRM Deal",
-				"organization": "Stage Org",
-				"status": "Qualification",
-			}
-		).insert()
-
+		# Test without user filter
 		result = get_deals_by_stage_axis(self.from_date, self.to_date)
 
 		self.assertIn("data", result)
 		self.assertIn("title", result)
 		self.assertEqual(result["title"], "Deals by ongoing & won stage")
 
+		# Test with user filter
+		result_user = get_deals_by_stage_axis(self.from_date, self.to_date, self.user2_email)
+		self.assertIn("data", result_user)
+
 	def test_get_deals_by_stage_donut(self):
 		"""Test get_deals_by_stage_donut returns deal distribution for donut chart"""
-		# Create organization and deal
-		self.create_test_organization("Donut Org")
-		frappe.get_doc(
-			{
-				"doctype": "CRM Deal",
-				"organization": "Donut Org",
-				"status": "Negotiation",
-			}
-		).insert()
-
+		# Test without user filter
 		result = get_deals_by_stage_donut(self.from_date, self.to_date)
 
 		self.assertIn("data", result)
 		self.assertIn("title", result)
 		self.assertEqual(result["title"], "Deals by stage")
 
+		# Test with user filter
+		result_user = get_deals_by_stage_donut(self.from_date, self.to_date, self.user2_email)
+		self.assertIn("data", result_user)
+
 	def test_get_lost_deal_reasons(self):
 		"""Test get_lost_deal_reasons returns reasons for lost deals"""
-		# Create lost reason if not exists
-		if not frappe.db.exists("CRM Lost Reason", "Price too high"):
-			frappe.get_doc(
-				{
-					"doctype": "CRM Lost Reason",
-					"lost_reason": "Price too high",
-				}
-			).insert(ignore_if_duplicate=True)
-
-		# Create organization and lost deal with reason
-		self.create_test_organization("Lost Org")
-		frappe.get_doc(
-			{
-				"doctype": "CRM Deal",
-				"organization": "Lost Org",
-				"status": "Lost",
-				"lost_reason": "Price too high",
-			}
-		).insert()
-
+		# Test without user filter
 		result = get_lost_deal_reasons(self.from_date, self.to_date)
 
 		self.assertIn("data", result)
 		self.assertIn("title", result)
 		self.assertEqual(result["title"], "Lost deal reasons")
 
+		# Test with user filter
+		result_user = get_lost_deal_reasons(self.from_date, self.to_date, self.user2_email)
+		self.assertIn("data", result_user)
+
 	def test_get_leads_by_source(self):
 		"""Test get_leads_by_source returns lead source distribution"""
-		# Create source if not exists
-		if not frappe.db.exists("CRM Lead Source", "Website"):
-			frappe.get_doc(
-				{
-					"doctype": "CRM Lead Source",
-					"source_name": "Website",
-				}
-			).insert(ignore_if_duplicate=True)
-
-		# Create lead with source
-		frappe.get_doc(
-			{
-				"doctype": "CRM Lead",
-				"first_name": "Source Lead",
-				"email": "source@example.com",
-				"source": "Website",
-			}
-		).insert()
-
+		# Test without user filter
 		result = get_leads_by_source(self.from_date, self.to_date)
 
 		self.assertIn("data", result)
 		self.assertIn("title", result)
 		self.assertEqual(result["title"], "Leads by source")
 
+		# Test with user filter
+		result_user = get_leads_by_source(self.from_date, self.to_date, self.user2_email)
+		self.assertIn("data", result_user)
+
 	def test_get_deals_by_source(self):
 		"""Test get_deals_by_source returns deal source distribution"""
-		# Create source if not exists
-		if not frappe.db.exists("CRM Lead Source", "Referral"):
-			frappe.get_doc(
-				{
-					"doctype": "CRM Lead Source",
-					"source_name": "Referral",
-				}
-			).insert(ignore_if_duplicate=True)
-
-		# Create organization and deal with source
-		self.create_test_organization("Source Org")
-		frappe.get_doc(
-			{
-				"doctype": "CRM Deal",
-				"organization": "Source Org",
-				"status": "Qualification",
-				"source": "Referral",
-			}
-		).insert()
-
+		# Test without user filter
 		result = get_deals_by_source(self.from_date, self.to_date)
 
 		self.assertIn("data", result)
 		self.assertIn("title", result)
 		self.assertEqual(result["title"], "Deals by source")
 
+		# Test with user filter
+		result_user = get_deals_by_source(self.from_date, self.to_date, self.user2_email)
+		self.assertIn("data", result_user)
+
 	def test_get_deals_by_territory(self):
 		"""Test get_deals_by_territory returns geographic distribution"""
-		# Create territory if not exists
-		if not frappe.db.exists("CRM Territory", "North America"):
-			frappe.get_doc(
-				{
-					"doctype": "CRM Territory",
-					"territory_name": "North America",
-				}
-			).insert(ignore_if_duplicate=True)
-
-		# Create organization and deal with territory
-		self.create_test_organization("Territory Org")
-		frappe.get_doc(
-			{
-				"doctype": "CRM Deal",
-				"organization": "Territory Org",
-				"status": "Qualification",
-				"territory": "North America",
-				"deal_value": 25000,
-				"exchange_rate": 1,
-			}
-		).insert()
-
+		# Test without user filter
 		result = get_deals_by_territory(self.from_date, self.to_date)
 
 		self.assertIn("data", result)
 		self.assertIn("title", result)
 		self.assertEqual(result["title"], "Deals by territory")
 
+		# Test with user filter
+		result_user = get_deals_by_territory(self.from_date, self.to_date, self.user2_email)
+		self.assertIn("data", result_user)
+
 	def test_get_deals_by_salesperson(self):
 		"""Test get_deals_by_salesperson returns salesperson performance"""
-		user = frappe.session.user
-
-		# Create organization and deal owned by user
-		self.create_test_organization("Sales Org")
-		frappe.get_doc(
-			{
-				"doctype": "CRM Deal",
-				"organization": "Sales Org",
-				"status": "Qualification",
-				"deal_owner": user,
-				"deal_value": 15000,
-				"exchange_rate": 1,
-			}
-		).insert()
-
+		# Test without user filter
 		result = get_deals_by_salesperson(self.from_date, self.to_date)
 
 		self.assertIn("data", result)
 		self.assertIn("title", result)
 		self.assertEqual(result["title"], "Deals by salesperson")
+
+		# Test with user filter
+		result_user = get_deals_by_salesperson(self.from_date, self.to_date, self.user2_email)
+		self.assertIn("data", result_user)
 
 	def test_get_base_currency_symbol(self):
 		"""Test get_base_currency_symbol returns currency symbol"""
@@ -524,7 +351,7 @@ class TestDashboard(IntegrationTestCase):
 				}
 			).insert()
 		else:
-			frappe.db.set_value("FCRM Settings", None, "currency", "USD")
+			frappe.db.set_single_value("FCRM Settings", "currency", "USD")
 
 		symbol = get_base_currency_symbol()
 
@@ -556,62 +383,23 @@ class TestDashboard(IntegrationTestCase):
 
 	def test_get_deal_status_change_counts(self):
 		"""Test get_deal_status_change_counts returns status changes"""
-		# Create organization and deal with status changes
-		self.create_test_organization("Status Change Org")
-		deal = frappe.get_doc(
-			{
-				"doctype": "CRM Deal",
-				"organization": "Status Change Org",
-				"status": "Qualification",
-			}
-		).insert()
-
-		# Create status change log
-		frappe.get_doc(
-			{
-				"doctype": "CRM Status Change Log",
-				"parent": deal.name,
-				"parenttype": "CRM Deal",
-				"parentfield": "status_changes",
-				"from": "Qualification",
-				"to": "Negotiation",
-			}
-		).insert()
-
+		# Test records have deals, status changes may or may not exist
 		result = get_deal_status_change_counts(self.from_date, self.to_date)
 
 		self.assertIsInstance(result, list)
 
 	def test_user_filtering_isolation(self):
 		"""Test that user filtering correctly isolates data"""
-		user1 = frappe.session.user
-
-		# Create lead for user1
-		frappe.get_doc(
-			{
-				"doctype": "CRM Lead",
-				"first_name": "User1 Lead",
-				"email": "user1lead@example.com",
-				"lead_owner": user1,
-			}
-		).insert()
-
-		# Get results for user1
-		result_user1 = get_total_leads(self.from_date, self.to_date, user1)
-
-		# Get results for all users
+		result_crm_user = get_total_leads(self.from_date, self.to_date, self.user2_email)
 		result_all = get_total_leads(self.from_date, self.to_date, "")
 
-		# All users should have >= user1's count
-		self.assertGreaterEqual(result_all["value"], result_user1["value"])
+		self.assertEqual(result_crm_user["value"], 3)  # crm.user1@example.com owns 3 leads
+		self.assertEqual(result_all["value"], 35)  # 35 total leads
+		self.assertGreaterEqual(result_all["value"], result_crm_user["value"])
 
 	def test_date_range_filtering(self):
 		"""Test that date range filtering works correctly"""
-		# Create lead in past month
-		add_days(self.from_date, -60)
-
 		result_current = get_total_leads(self.from_date, self.to_date)
 
-		# Current month should be valid
 		self.assertIsNotNone(result_current["value"])
-		self.assertGreaterEqual(result_current["value"], 0)
+		self.assertGreater(result_current["value"], 0)  # Should have leads created
