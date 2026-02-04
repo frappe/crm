@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-12-21 09:37+0000\n"
-"PO-Revision-Date: 2026-02-01 13:03\n"
+"PO-Revision-Date: 2026-02-04 15:48\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Italian\n"
 "MIME-Version: 1.0\n"
@@ -768,7 +768,7 @@ msgstr "Tempo medio impiegato dalla creazione dell'offerta alla sua chiusura"
 
 #: crm/api/dashboard.py:481
 msgid "Average time taken from lead creation to deal closure"
-msgstr "Tempo medio impiegato dalla creazione del potenziale cliente alla chiusura dell'offerta"
+msgstr "Tempo medio impiegato dalla creazione del potenziale cliente alla chiusura dell'accordo"
 
 #: frontend/src/components/Dashboard/AddChartModal.vue:81
 msgid "Avg deal value"
@@ -6529,7 +6529,7 @@ msgstr "offerte"
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:190
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:274
 msgid "desk"
-msgstr "scrivania"
+msgstr "desk"
 
 #: frontend/src/components/Calendar/Attendee.vue:295
 #: frontend/src/components/Controls/EmailMultiSelect.vue:254
