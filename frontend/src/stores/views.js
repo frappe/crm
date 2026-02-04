@@ -19,6 +19,7 @@ export const viewsStore = defineStore('crm-views', (doctype) => {
     transform(views) {
       pinnedViews.value = []
       publicViews.value = []
+      defaultView.value = null
       for (let view of views) {
         viewsByName[view.name] = view
         view.type = view.type || 'list'
