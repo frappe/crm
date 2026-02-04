@@ -138,7 +138,7 @@ router.beforeEach(async (to, from, next) => {
       console.error('Error loading users', error)
     }
   }
-  
+
   if (isLoggedIn && to.name !== 'Not Permitted' && !isCrmUser()) {
     next({ name: 'Not Permitted' })
   } else if (to.name === 'Home' && isLoggedIn) {
@@ -172,6 +172,87 @@ router.beforeEach(async (to, from, next) => {
     const activeTab = localStorage.getItem(storageKey) || 'activity'
     const hash = '#' + activeTab
     next({ ...to, hash })
+  } else if (
+    [
+      'Leads',
+      'Deals',
+      'Contacts',
+      'Organizations',
+      'Notes',
+      'Tasks',
+      'Call Logs',
+    ].includes(to.name) &&
+    !to.query?.view
+  ) {
+    const { views, standardViews, getDefaultView } = viewsStore()
+    await views.promise
+
+    const viewType = to.params?.viewType ?? ''
+    const standardViewTypes = ['list', 'kanban', 'group_by']
+
+    if (!viewType) {
+      const doctypeMap = {
+        Leads: 'CRM Lead',
+        Deals: 'CRM Deal',
+        Contacts: 'Contact',
+        Organizations: 'CRM Organization',
+        Notes: 'FCRM Note',
+        Tasks: 'CRM Task',
+        'Call Logs': 'CRM Call Log',
+      }
+
+      const doctype = doctypeMap[to.name]
+      let defaultViewType = 'list'
+
+      let globalDefault = getDefaultView()
+      if (globalDefault && globalDefault.route_name === to.name) {
+        defaultViewType = globalDefault.type || 'list'
+        if (globalDefault.name && !globalDefault.is_standard) {
+          next({
+            name: to.name,
+            params: { viewType: defaultViewType },
+            query: { ...to.query, view: globalDefault.name },
+          })
+          return
+        }
+      }
+
+      for (const viewType of standardViewTypes) {
+        const standardView = standardViews.value?.[doctype + ' ' + viewType]
+        if (standardView?.is_default) {
+          defaultViewType = viewType
+          break
+        }
+      }
+
+      next({
+        name: to.name,
+        params: { viewType: defaultViewType },
+        query: to.query,
+      })
+    } else if (!standardViewTypes.includes(viewType)) {
+      const viewNameOrLabel = viewType
+
+      let view = views.data?.find(
+        (v) => v.name == viewNameOrLabel || v.label === viewNameOrLabel,
+      )
+
+      if (view) {
+        next({
+          name: to.name,
+          params: { viewType: view.type || 'list' },
+          query: { ...to.query, view: view.name },
+        })
+      } else {
+        next({
+          name: to.name,
+          params: { viewType: 'list' },
+          query: to.query,
+        })
+      }
+    } else {
+      next()
+    }
   } else {
     next()
   }
