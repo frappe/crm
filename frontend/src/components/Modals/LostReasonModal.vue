@@ -15,6 +15,7 @@
             <span class="text-ink-red-2">*</span>
           </div>
           <Link
+            ref="linkRef"
             class="form-control flex-1 truncate"
             :value="lostReason"
             doctype="CRM Lost Reason"
@@ -62,6 +63,7 @@ const props = defineProps({
 
 const show = defineModel()
 
+const linkRef = ref(null)
 const lostReason = ref(props.deal.doc.lost_reason || '')
 const lostNotes = ref(props.deal.doc.lost_notes || '')
 const error = ref('')
@@ -93,6 +95,9 @@ function save() {
 }
 
 function onCreate(value, close) {
-  createDocument('CRM Lost Reason', value, close)
+  createDocument('CRM Lost Reason', value, close, (doc) => {
+    lostReason.value = doc.name
+    linkRef.value?.reload('', true)
+  })
 }
 </script>
