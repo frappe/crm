@@ -341,7 +341,7 @@ function showTask(name) {
     name: t.name,
     title: t.title,
     description: t.description,
-    assigned_to: t.assigned_to?.email || '',
+    assigned_to: t.assigned_to?.name || '',
     due_date: t.due_date,
     status: t.status,
     priority: t.priority,
