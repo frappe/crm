@@ -53,7 +53,7 @@ def add_default_lead_statuses():
 			"position": 4,
 		},
 		"Converted": {
-			"color": "green",
+			"color": "teal",
 			"type": "Won",
 			"position": 5,
 		},

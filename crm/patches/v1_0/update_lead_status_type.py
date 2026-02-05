@@ -2,6 +2,18 @@ import frappe
 
 
 def execute():
+	if not frappe.db.exists("CRM Lead Status", "Converted"):
+		status_doc = frappe.get_doc(
+			{
+				"doctype": "CRM Lead Status",
+				"lead_status": "Converted",
+				"color": "teal",
+				"type": "Won",
+				"position": 5,
+			}
+		)
+		status_doc.insert()
+
 	lead_statuses = frappe.get_all("CRM Lead Status", fields=["name", "type", "lead_status"])
 
 	openStatuses = ["New", "Open", "Unassigned"]
