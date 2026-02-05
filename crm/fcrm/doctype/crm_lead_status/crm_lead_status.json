@@ -40,6 +40,7 @@
    "default": "Open",
    "fieldname": "type",
    "fieldtype": "Select",
+   "in_list_view": 1,
    "label": "Type",
    "options": "Open\nOngoing\nOn Hold\nWon\nLost"
   },
@@ -50,7 +51,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-02-05 16:59:28.342340",
+ "modified": "2026-02-05 17:16:11.897087",
  "modified_by": "shariq@frappe.io",
  "module": "FCRM",
  "name": "CRM Lead Status",
