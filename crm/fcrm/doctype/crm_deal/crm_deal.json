@@ -14,8 +14,6 @@
   "column_break_ijan",
   "status",
   "deal_owner",
-  "lost_reason",
-  "lost_notes",
   "section_break_jgpm",
   "probability",
   "expected_deal_value",
@@ -75,7 +73,10 @@
   "column_break_evzj",
   "last_responded_on",
   "log_tab",
-  "status_change_log"
+  "status_change_log",
+  "lost_details_tab",
+  "lost_reason",
+  "lost_notes"
  ],
  "fields": [
   {
@@ -463,12 +464,17 @@
    "fieldtype": "Datetime",
    "label": "Last Responded On",
    "read_only": 1
+  },
+  {
+   "fieldname": "lost_details_tab",
+   "fieldtype": "Tab Break",
+   "label": "Lost Details"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-01-28 17:06:40.537213",
+ "modified": "2026-02-05 17:01:07.036502",
  "modified_by": "shariq@frappe.io",
  "module": "FCRM",
  "name": "CRM Deal",
