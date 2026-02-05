@@ -66,7 +66,10 @@
   "syncing_tab",
   "facebook_lead_id",
   "column_break_ixmu",
-  "facebook_form_id"
+  "facebook_form_id",
+  "lost_details_tab",
+  "lost_reason",
+  "lost_notes"
  ],
  "fields": [
   {
@@ -391,13 +394,30 @@
    "fieldname": "column_break_ygds",
    "fieldtype": "Column Break",
    "read_only": 1
+  },
+  {
+   "fieldname": "lost_details_tab",
+   "fieldtype": "Tab Break",
+   "label": "Lost Details"
+  },
+  {
+   "fieldname": "lost_reason",
+   "fieldtype": "Link",
+   "label": "Lost Reason",
+   "options": "CRM Lost Reason"
+  },
+  {
+   "fieldname": "lost_notes",
+   "fieldtype": "Text",
+   "label": "Lost Notes",
+   "mandatory_depends_on": "eval: doc.lost_reason == \"Other\""
   }
  ],
  "grid_page_length": 50,
  "image_field": "image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-01-28 16:58:30.039401",
+ "modified": "2026-02-05 17:02:50.942242",
  "modified_by": "shariq@frappe.io",
  "module": "FCRM",
  "name": "CRM Lead",

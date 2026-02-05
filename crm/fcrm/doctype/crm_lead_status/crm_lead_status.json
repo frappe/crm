@@ -7,6 +7,8 @@
  "engine": "InnoDB",
  "field_order": [
   "lead_status",
+  "type",
+  "column_break_qwtp",
   "color",
   "position"
  ],
@@ -33,11 +35,22 @@
    "fieldtype": "Int",
    "in_list_view": 1,
    "label": "Position"
+  },
+  {
+   "default": "Open",
+   "fieldname": "type",
+   "fieldtype": "Select",
+   "label": "Type",
+   "options": "Open\nOngoing\nOn Hold\nWon\nLost"
+  },
+  {
+   "fieldname": "column_break_qwtp",
+   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-01-28 17:05:53.288890",
+ "modified": "2026-02-05 16:59:28.342340",
  "modified_by": "shariq@frappe.io",
  "module": "FCRM",
  "name": "CRM Lead Status",
