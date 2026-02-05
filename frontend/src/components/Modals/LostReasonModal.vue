@@ -6,7 +6,12 @@
   >
     <template #body-content>
       <div class="-mt-3 mb-4 text-p-base text-ink-gray-7">
-        {{ __('Please provide a reason for marking this deal as lost') }}
+        {{
+          __(
+            'Please provide a reason for marking this {0} as lost',
+            [doctype.toLowerCase().replace('crm ', '')]
+          )
+        }}
       </div>
       <div class="flex flex-col gap-3">
         <div>
@@ -55,7 +60,11 @@ import { Dialog } from 'frappe-ui'
 import { ref } from 'vue'
 
 const props = defineProps({
-  deal: {
+  doctype: {
+    type: String,
+    default: 'CRM Lead',
+  },
+  document: {
     type: Object,
     required: true,
   },
@@ -64,8 +73,8 @@ const props = defineProps({
 const show = defineModel()
 
 const linkRef = ref(null)
-const lostReason = ref(props.deal.doc.lost_reason || '')
-const lostNotes = ref(props.deal.doc.lost_notes || '')
+const lostReason = ref(props.document.doc.lost_reason || '')
+const lostNotes = ref(props.document.doc.lost_notes || '')
 const error = ref('')
 
 function cancel() {
@@ -73,7 +82,7 @@ function cancel() {
   error.value = ''
   lostReason.value = ''
   lostNotes.value = ''
-  props.deal.doc.status = props.deal.originalDoc.status
+  props.document.doc.status = props.document.originalDoc.status
 }
 
 function save() {
@@ -89,9 +98,9 @@ function save() {
   error.value = ''
   show.value = false
 
-  props.deal.doc.lost_reason = lostReason.value
-  props.deal.doc.lost_notes = lostNotes.value
-  props.deal.save.submit()
+  props.document.doc.lost_reason = lostReason.value
+  props.document.doc.lost_notes = lostNotes.value
+  props.document.save.submit()
 }
 
 function onCreate(value, close) {
