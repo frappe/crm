@@ -20,8 +20,9 @@
     </template>
     <template #body-content>
       <div class="flex flex-col gap-4">
-        <div>
-          <FormControl
+        <div class="space-y-1.5">
+          <FormLabel :label="__('Title')" required />
+          <TextInput
             ref="title"
             :label="__('Title')"
             v-model="_task.title"
@@ -125,6 +126,9 @@ import {
   Tooltip,
   DateTimePicker,
   createResource,
+  toast,
+  TextInput,
+  FormLabel,
 } from 'frappe-ui'
 import { useOnboarding } from 'frappe-ui/frappe'
 import { ref, watch, nextTick, onMounted } from 'vue'
@@ -168,6 +172,14 @@ const _task = ref({
   reference_docname: null,
 })
 
+const validateTask = () => {
+  if (!_task.value.title) {
+    toast.error(__('Title is required'))
+    return false
+  }
+  return true
+}
+
 const createTaskResource = createResource({
   url: 'frappe.client.insert',
   makeParams() {
@@ -180,6 +192,7 @@ const createTaskResource = createResource({
       },
     }
   },
+  validate: validateTask,
   onSuccess(d) {
     if (d.name) {
       updateOnboardingStep('create_first_task')
@@ -187,6 +200,7 @@ const createTaskResource = createResource({
       tasks.value?.reload()
       emit('after', d, true)
       show.value = false
+      toast.success(__('Task created'))
     }
   },
 })
@@ -200,6 +214,7 @@ const updateTaskResource = createResource({
       fieldname: _task.value,
     }
   },
+  validate: validateTask,
   onSuccess(d) {
     if (d.name) {
       tasks.value?.reload()
