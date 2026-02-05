@@ -591,7 +591,6 @@ const { tabIndex } = useActiveTabManager(tabs, 'lastDealTab')
 
 const sections = createResource({
   url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_sidepanel_sections',
-  cache: ['sidePanelSections', 'CRM Deal'],
   params: { doctype: 'CRM Deal' },
   transform: (data) => getParsedSections(data),
 })
