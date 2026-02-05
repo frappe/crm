@@ -20,14 +20,9 @@
     </template>
     <template #body-content>
       <div class="flex flex-col gap-4">
-<<<<<<< HEAD
-        <div>
-          <FormControl
-=======
         <div class="space-y-1.5">
           <FormLabel :label="__('Title')" required />
           <TextInput
->>>>>>> 73f31c60 (fix: task validation & settings labels)
             ref="title"
             :label="__('Title')"
             v-model="_task.title"
