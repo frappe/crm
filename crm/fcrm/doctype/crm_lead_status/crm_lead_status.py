@@ -31,6 +31,7 @@ class CRMLeadStatus(Document):
 		]
 		lead_status: DF.Data
 		position: DF.Int
+		type: DF.Literal["Open", "Ongoing", "On Hold", "Won", "Lost"]
 	# end: auto-generated types
 
 	pass
