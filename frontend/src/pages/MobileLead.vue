@@ -80,6 +80,7 @@
               doctype="CRM Lead"
               :docname="leadId"
               @reload="sections.reload"
+              @beforeFieldChange="beforeStatusChange"
               @afterFieldChange="reloadAssignees"
             />
           </div>
@@ -91,7 +92,7 @@
           :tabs="tabs"
           v-model:reload="reload"
           v-model:tabIndex="tabIndex"
-          @beforeSave="saveChanges"
+          @beforeSave="beforeStatusChange"
           @afterSave="reloadAssignees"
         />
       </template>
@@ -175,6 +176,12 @@
     :docname="leadId"
     name="Leads"
   />
+  <LostReasonModal
+    v-if="showLostReasonModal"
+    v-model="showLostReasonModal"
+    doctype="CRM Lead"
+    :document="document"
+  />
 </template>
 <script setup>
 import DeleteLinkedDocModal from '@/components/DeleteLinkedDocModal.vue'
@@ -192,6 +199,7 @@ import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import OrganizationsIcon from '@/components/Icons/OrganizationsIcon.vue'
 import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
+import LostReasonModal from '@/components/Modals/LostReasonModal.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import Activities from '@/components/Activities/Activities.vue'
 import AssignTo from '@/components/AssignTo.vue'
@@ -464,15 +472,36 @@ async function convertToDeal() {
 
 async function triggerStatusChange(value) {
   await triggerOnChange('status', value)
-  document.save.submit()
+  setLostReason()
 }
 
-function saveChanges(data) {
-  document.save.submit(null, {
-    onSuccess: () => reloadAssignees(data),
-  })
+const showLostReasonModal = ref(false)
+
+function setLostReason() {
+  if (
+    getLeadStatus(doc.status).type !== 'Lost' ||
+    (doc.lost_reason && doc.lost_reason !== 'Other') ||
+    (doc.lost_reason === 'Other' && doc.lost_notes)
+  ) {
+    document.save.submit()
+    return
+  }
+
+  showLostReasonModal.value = true
 }
 
+function beforeStatusChange(data) {
+  if (
+    data?.hasOwnProperty('status') &&
+    getLeadStatus(data.status).type == 'Lost'
+  ) {
+    setLostReason()
+  } else {
+    document.save.submit(null, {
+      onSuccess: () => reloadAssignees(data),
+    })
+  }
+}
 function reloadAssignees(data) {
   if (data?.hasOwnProperty('lead_owner')) {
     assignees.reload()
