@@ -114,7 +114,7 @@ const tabs = computed(() => {
           component: markRaw(CurrencySettings),
         },
         {
-          label: __('Brand settings'),
+          label: __('Brand'),
           icon: SparkleIcon,
           component: markRaw(BrandSettings),
         },
@@ -140,16 +140,16 @@ const tabs = computed(() => {
       condition: () => isManager(),
     },
     {
-      label: __('Email settings'),
+      label: __('Email'),
       items: [
         {
-          label: __('Email accounts'),
+          label: __('Accounts'),
           icon: Email2Icon,
           component: markRaw(EmailConfig),
           condition: () => isManager(),
         },
         {
-          label: __('Email templates'),
+          label: __('Templates'),
           icon: EmailTemplateIcon,
           component: markRaw(EmailTemplatePage),
         },
