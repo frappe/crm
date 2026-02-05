@@ -134,7 +134,7 @@
                           @change="(v) => fieldChange(v, field)"
                           :placeholder="
                             __('Select') + ' ' + field.label + '...'
-"
+                          "
                           :hideMe="true"
                         >
                           <template v-if="doc[field.fieldname]" #prefix>
@@ -406,6 +406,11 @@ function parsedField(field) {
     })
   }
 
+  const read_only_via_depends_on = evaluateDependsOnValue(
+    field.read_only_depends_on,
+    doc.value,
+  )
+
   let _field = {
     ...field,
     filters: field.link_filters && JSON.parse(field.link_filters),
@@ -415,6 +420,9 @@ function parsedField(field) {
       field.mandatory_depends_on,
       doc.value,
     ),
+    read_only:
+      field.read_only ||
+      (field.read_only_depends_on && read_only_via_depends_on),
   }
 
   _field.visible = isFieldVisible(_field)
@@ -459,17 +467,15 @@ function parsedSection(section, editButtonAdded) {
 function isFieldVisible(field) {
   if (props.preview) return true
 
-  const hideEmptyReadOnly = Number(window.sysdefaults?.hide_empty_read_only_fields ?? 1)
-
-  const shouldShowReadOnly = field.read_only && (
-    doc.value?.[field.fieldname] ||
-    !hideEmptyReadOnly
+  const hideEmptyReadOnly = Number(
+    window.sysdefaults?.hide_empty_read_only_fields ?? 1,
   )
 
+  const shouldShowReadOnly =
+    field.read_only && (doc.value?.[field.fieldname] || !hideEmptyReadOnly)
+
   return (
-    (field.fieldtype == 'Check' ||
-      shouldShowReadOnly ||
-      !field.read_only) &&
+    (field.fieldtype == 'Check' || shouldShowReadOnly || !field.read_only) &&
     (!field.depends_on || field.display_via_depends_on) &&
     !field.hidden
   )
