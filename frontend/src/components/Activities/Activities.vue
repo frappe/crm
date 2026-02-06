@@ -300,7 +300,10 @@
             class="flex flex-col gap-0.5"
           >
             <div
-              v-for="activity in [activity, ...activity.other_versions]"
+              v-for="activity in sortByCreation([
+                activity,
+                ...activity.other_versions,
+              ])"
               class="flex items-start justify-stretch gap-2 py-1.5 text-base"
             >
               <div class="inline-flex flex-wrap gap-1 text-ink-gray-5">

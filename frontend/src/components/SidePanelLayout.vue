@@ -115,7 +115,7 @@
                         />
                         <FormControl
                           v-else-if="field.fieldtype === 'Select'"
-                          class="form-control cursor-pointer [&_select]:cursor-pointer truncate"
+                          class="form-control cursor-pointer [&_select]:cursor-pointer truncate [&>*]:!ring-0"
                           type="select"
                           v-model="doc[field.fieldname]"
                           :options="field.options"
