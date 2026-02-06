@@ -32,7 +32,7 @@ class TestCRMLead(IntegrationTestCase):
 					"user_type": "System User",
 				}
 			).insert(ignore_permissions=True)
-			frappe.db.commit()
+			frappe.db.commit()  # nosemgrep
 
 		super().setUpClass()
 
@@ -40,11 +40,9 @@ class TestCRMLead(IntegrationTestCase):
 	def tearDownClass(cls):
 		"""Clean up test records after all tests"""
 		frappe.db.rollback()
-		# Clean up test user using raw SQL to avoid commit
-		if frappe.db.exists("User", "crm.user1@example.com"):
-			frappe.db.sql("DELETE FROM `tabUser` WHERE email = %s", ("crm.user1@example.com",))
-			frappe.db.sql("DELETE FROM `tabContact` WHERE email_id = %s", ("crm.user1@example.com",))
-			frappe.db.commit()
+		frappe.delete_doc_if_exists("User", "crm.user1@example.com")
+		frappe.delete_doc_if_exists("Contact", "CRM User1")
+		frappe.db.commit()  # nosemgrep
 		super().tearDownClass()
 
 	def tearDown(self):
