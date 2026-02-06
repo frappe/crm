@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-12-21 09:37+0000\n"
-"PO-Revision-Date: 2026-01-21 11:42\n"
+"PO-Revision-Date: 2026-02-04 15:48\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Italian\n"
 "MIME-Version: 1.0\n"
@@ -213,7 +213,7 @@ msgstr ""
 
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.py:156
 msgid "Access Key is required for Service Provider: {0}"
-msgstr ""
+msgstr "La chiave di accesso è richiesta per il fornitore di servizi: {0}"
 
 #. Label of the access_token (Small Text) field in DocType 'Facebook Page'
 #. Label of the access_token (Password) field in DocType 'Lead Sync Source'
@@ -737,7 +737,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/ForecastingSettings.vue:87
 msgid "Auto update of expected deal value enabled"
-msgstr ""
+msgstr "Aggiornamento automatico del valore previsto della vendita abilitato"
 
 #. Description of the 'Auto Update Expected Deal Value' (Check) field in
 #. DocType 'FCRM Settings'
@@ -768,7 +768,7 @@ msgstr "Tempo medio impiegato dalla creazione dell'offerta alla sua chiusura"
 
 #: crm/api/dashboard.py:481
 msgid "Average time taken from lead creation to deal closure"
-msgstr "Tempo medio impiegato dalla creazione del potenziale cliente alla chiusura dell'offerta"
+msgstr "Tempo medio impiegato dalla creazione del potenziale cliente alla chiusura dell'accordo"
 
 #: frontend/src/components/Dashboard/AddChartModal.vue:81
 msgid "Avg deal value"
@@ -1268,7 +1268,7 @@ msgstr ""
 #: frontend/src/components/Notifications.vue:26
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:62
 msgid "Close"
-msgstr "Vicino"
+msgstr "Chiudi"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:38
 msgid "Close panel"
@@ -1577,7 +1577,7 @@ msgstr ""
 #: frontend/src/components/Modals/WhatsappTemplateSelectorModal.vue:45
 #: frontend/src/components/PrimaryDropdown.vue:41
 msgid "Create New"
-msgstr "Crea Nuovo"
+msgstr "Crea nuovo"
 
 #: frontend/src/components/Activities/Activities.vue:385
 #: frontend/src/components/Modals/NoteModal.vue:6
@@ -3128,7 +3128,7 @@ msgstr ""
 #: crm/lead_syncing/doctype/facebook_page/facebook_page.json
 #: frontend/src/components/Settings/LeadSyncing/FailureLogs.vue:77
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #. Label of the icon (Code) field in DocType 'CRM Dropdown Item'
 #. Label of the icon (Data) field in DocType 'CRM View Settings'
@@ -3185,7 +3185,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/EmailAccountCard.vue:45
 msgid "Inbox"
-msgstr ""
+msgstr "Posta in arrivo"
 
 #. Option for the 'Type' (Select) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
@@ -3532,7 +3532,7 @@ msgstr ""
 #: frontend/src/components/Telephony/ExotelCallUI.vue:200
 #: frontend/src/pages/Tasks.vue:133
 msgid "Lead"
-msgstr "Opportunità"
+msgstr "Lead"
 
 #. Label of the lead_data (Code) field in DocType 'Failed Lead Sync Log'
 #: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.json
@@ -4162,7 +4162,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/EmailEdit.vue:150
 msgid "No changes made"
-msgstr ""
+msgstr "Nessuna modifica apportata"
 
 #: frontend/src/components/Modals/SidePanelModal.vue:51
 #: frontend/src/pages/Deal.vue:277 frontend/src/pages/MobileDeal.vue:209
@@ -4345,7 +4345,7 @@ msgstr ""
 #: frontend/src/components/Activities/EmailArea.vue:15
 #: frontend/src/components/Layouts/AppSidebar.vue:583
 msgid "Notification"
-msgstr ""
+msgstr "Notifiche"
 
 #. Label of the notification_text (Text) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
@@ -6529,7 +6529,7 @@ msgstr "offerte"
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:190
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:274
 msgid "desk"
-msgstr "scrivania"
+msgstr "desk"
 
 #: frontend/src/components/Calendar/Attendee.vue:295
 #: frontend/src/components/Controls/EmailMultiSelect.vue:254
@@ -6645,7 +6645,7 @@ msgstr ""
 
 #: frontend/src/utils/index.js:140 frontend/src/utils/index.js:166
 msgid "just now"
-msgstr ""
+msgstr "proprio adesso"
 
 #. Option for the 'Type' (Select) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
@@ -6784,11 +6784,11 @@ msgstr "{0} giorni"
 
 #: frontend/src/utils/index.js:181
 msgid "{0} days ago"
-msgstr ""
+msgstr "{0} giorni fa"
 
 #: frontend/src/utils/index.js:121
 msgid "{0} h"
-msgstr ""
+msgstr "{0} h"
 
 #: frontend/src/components/Settings/Users.vue:286
 msgid "{0} has been granted {1} access"
@@ -6796,7 +6796,7 @@ msgstr ""
 
 #: frontend/src/utils/index.js:174
 msgid "{0} hours ago"
-msgstr ""
+msgstr "{0} ore fa"
 
 #: frontend/src/composables/event.js:163
 msgid "{0} hrs"
@@ -6817,7 +6817,7 @@ msgstr ""
 
 #: frontend/src/utils/index.js:119
 msgid "{0} m"
-msgstr ""
+msgstr "{0} m"
 
 #: frontend/src/composables/event.js:157
 msgid "{0} mins"
@@ -6825,11 +6825,11 @@ msgstr ""
 
 #: frontend/src/utils/index.js:170
 msgid "{0} minutes ago"
-msgstr ""
+msgstr "{0} minuti fa"
 
 #: frontend/src/utils/index.js:189
 msgid "{0} months ago"
-msgstr ""
+msgstr "{0} mesi fa"
 
 #: frontend/src/utils/index.js:128
 msgid "{0} w"

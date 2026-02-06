@@ -129,7 +129,6 @@ function reply(email, reply_all = false) {
   editor.editor
     .chain()
     .clearContent()
-    .insertContent('<p>.</p>')
     .updateAttributes('paragraph', { class: 'reply-to-content' })
     .insertContent(repliedMessage)
     .focus('all')

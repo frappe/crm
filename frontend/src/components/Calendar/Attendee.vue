@@ -126,7 +126,7 @@ const props = defineProps({
   },
   placeholder: {
     type: String,
-    default: 'Add attendee',
+    default: __('Add attendee'),
   },
   inputClass: {
     type: String,
@@ -134,7 +134,7 @@ const props = defineProps({
   },
   errorMessage: {
     type: Function,
-    default: (value) => `${value} is an Invalid value`,
+    default: (value) => __('{0} is an Invalid value', [value]),
   },
   fetchContacts: {
     type: Boolean,

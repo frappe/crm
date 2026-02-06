@@ -1,18 +1,21 @@
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
-import { capture } from '@/telemetry'
 import { parseColor } from '@/utils'
 import { defineStore } from 'pinia'
+import { useTelemetry } from 'frappe-ui/frappe'
 import { createListResource } from 'frappe-ui'
 import { reactive, h } from 'vue'
+
 
 export const statusesStore = defineStore('crm-statuses', () => {
   let leadStatusesByName = reactive({})
   let dealStatusesByName = reactive({})
   let communicationStatusesByName = reactive({})
 
+  const { capture } = useTelemetry()
+
   const leadStatuses = createListResource({
     doctype: 'CRM Lead Status',
-    fields: ['name', 'color', 'position'],
+    fields: ['name', 'color', 'position', 'type'],
     orderBy: 'position asc',
     cache: 'lead-statuses',
     initialData: [],

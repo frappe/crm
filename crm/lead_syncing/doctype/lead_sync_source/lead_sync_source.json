@@ -90,7 +90,7 @@
    "link_fieldname": "source"
   }
  ],
- "modified": "2026-01-22 14:15:05.664659",
+ "modified": "2026-01-28 17:11:42.110762",
  "modified_by": "shariq@frappe.io",
  "module": "Lead Syncing",
  "name": "Lead Sync Source",
@@ -106,6 +106,18 @@
    "read": 1,
    "report": 1,
    "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales Manager",
    "share": 1,
    "write": 1
   }

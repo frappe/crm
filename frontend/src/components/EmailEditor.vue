@@ -200,7 +200,7 @@ import EmailMultiSelect from '@/components/Controls/EmailMultiSelect.vue'
 import SingleSelectEmailInput from '@/components/Controls/SingleSelectEmailInput.vue'
 import EmailTemplateSelectorModal from '@/components/Modals/EmailTemplateSelectorModal.vue'
 import { TextEditorBubbleMenu, TextEditor, FileUploader, call } from 'frappe-ui'
-import { capture } from '@/telemetry'
+import { useTelemetry } from 'frappe-ui/frappe'
 import { validateEmail } from '@/utils'
 import Paragraph from '@tiptap/extension-paragraph'
 import { EditorContent } from '@tiptap/vue-3'
@@ -258,6 +258,8 @@ const CustomParagraph = Paragraph.extend({
 const modelValue = defineModel()
 const attachments = defineModel('attachments')
 const content = defineModel('content')
+
+const { capture } = useTelemetry()
 
 const textEditor = ref(null)
 const cc = ref(false)

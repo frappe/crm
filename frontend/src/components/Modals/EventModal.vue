@@ -75,7 +75,7 @@
         <div class="border-t border-outline-gray-1" />
         <div class="flex items-center">
           <div class="text-base text-ink-gray-7 w-3/12">
-            {{ __('Date & Time') }}
+            {{ __('Date & time') }}
           </div>
           <div class="flex gap-2 w-9/12">
             <DatePicker

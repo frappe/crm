@@ -101,13 +101,14 @@ import { useEventNotificationAlert } from '@/data/notifications'
 import { globalStore } from '@/stores/global'
 import { timeAgo } from '@/utils'
 import { onClickOutside } from '@vueuse/core'
-import { capture } from '@/telemetry'
+import { useTelemetry } from 'frappe-ui/frappe'
 import { TabButtons } from 'frappe-ui'
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 
 const { $socket } = globalStore()
 const { mark_as_read, toggle, mark_doc_as_read } = notificationsStore()
 const { handleEventNotification } = useEventNotificationAlert()
+const { capture } = useTelemetry()
 
 const activeTab = ref('all')
 const tabs = [

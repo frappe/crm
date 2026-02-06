@@ -13,6 +13,12 @@
         :id="whatsapp.name"
         class="group/message relative max-w-[90%] rounded-md bg-surface-gray-1 text-ink-gray-9 p-1.5 pl-2 text-base shadow-sm"
       >
+        <Badge
+          v-if="whatsapp.status == 'failed'"
+          theme="red"
+          :label="whatsapp.status"
+          class="absolute -top-2 right-0"
+        />
         <div
           v-if="whatsapp.is_reply"
           @click="() => scrollToMessage(whatsapp.reply_to)"
@@ -45,6 +51,7 @@
         </div>
         <div class="flex gap-2 justify-between">
           <div
+            v-if="whatsapp.status != 'failed'"
             class="absolute -right-0.5 -top-0.5 flex cursor-pointer gap-1 rounded-full bg-surface-white pb-2 pl-2 pr-1.5 pt-1.5 opacity-0 group-hover/message:opacity-100"
             :style="{
               background:
@@ -147,6 +154,7 @@
         </div>
       </div>
       <div
+        v-if="whatsapp.status != 'failed'"
         class="flex items-center justify-center opacity-0 transition-all ease-in group-hover:opacity-100"
       >
         <IconPicker
@@ -176,8 +184,8 @@ import DoubleCheckIcon from '@/components/Icons/DoubleCheckIcon.vue'
 import DocumentIcon from '@/components/Icons/DocumentIcon.vue'
 import ReactIcon from '@/components/Icons/ReactIcon.vue'
 import { formatDate } from '@/utils'
-import { capture } from '@/telemetry'
-import { Tooltip, Dropdown, createResource } from 'frappe-ui'
+import { useTelemetry } from 'frappe-ui/frappe'
+import { Tooltip, Dropdown, createResource, toast } from 'frappe-ui'
 import { ref } from 'vue'
 
 const props = defineProps({
@@ -185,6 +193,8 @@ const props = defineProps({
 })
 
 const list = defineModel()
+
+const { capture } = useTelemetry()
 
 function openFileInAnotherTab(url) {
   window.open(url, '_blank')
@@ -227,6 +237,11 @@ function reactOnMessage(name, emoji) {
     onSuccess() {
       capture('whatsapp_react_on_message')
       list.value.reload()
+    },
+    onError(error) {
+      toast.error(
+        error.messages?.[0] || __('Failed to add reaction to the message'),
+      )
     },
   })
 }
