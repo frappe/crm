@@ -269,9 +269,8 @@ def sales_user_only(fn):
 
 
 def is_frappe_version(version: str, above: bool = False, below: bool = False):
-	from frappe.pulse.utils import get_frappe_version
 
-	current_version = get_frappe_version()
+	current_version = frappe.__version__
 	major_version = int(current_version.split(".")[0])
 	target_version = int(version.split(".")[0])
 
