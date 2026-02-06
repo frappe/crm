@@ -465,10 +465,10 @@ import FilesUploader from '@/components/FilesUploader/FilesUploader.vue'
 import { timeAgo, formatDate, startCase } from '@/utils'
 import { globalStore } from '@/stores/global'
 import { usersStore } from '@/stores/users'
-import { whatsappEnabled, callEnabled } from '@/composables/settings'
+import { whatsappEnabled } from '@/composables/settings'
 import { useDocument } from '@/data/document'
-import { capture } from '@/telemetry'
-import { Button, Tooltip, createResource } from 'frappe-ui'
+import { useTelemetry } from 'frappe-ui/frappe'
+import { Button, Tooltip, createResource, toast } from 'frappe-ui'
 import { useElementVisibility } from '@vueuse/core'
 import {
   ref,
@@ -482,8 +482,9 @@ import {
 } from 'vue'
 import { useRoute } from 'vue-router'
 
-const { makeCall, $socket } = globalStore()
+const { $socket } = globalStore()
 const { getUser } = usersStore()
+const { capture } = useTelemetry()
 
 const props = defineProps({
   doctype: {
@@ -584,6 +585,10 @@ function sendTemplate(template) {
       template,
     },
     auto: true,
+    onError: (error) => {
+      toast.error(error.messages?.[0] || __('Failed to send WhatsApp template'))
+    },
+    onSuccess: () => whatsappMessages.reload(),
   })
 }
 
@@ -708,7 +713,7 @@ const emptyTextDescription = computed(() => {
     'There are no activities to display here. Go ahead and make some changes.'
   if (title.value == 'Emails') {
     description =
-      'No emails found in your inbox. new messages will appear here soon.'
+      'No emails found in your inbox. New messages will appear here soon.'
   } else if (title.value == 'Comments') {
     description = 'No comments yet. Be the first to add one.'
   } else if (title.value == 'Data') {
@@ -716,10 +721,10 @@ const emptyTextDescription = computed(() => {
   } else if (title.value == 'Calls') {
     description = 'No recent calls to display. Log a call or call someone now!'
   } else if (title.value == 'Notes') {
-    description = 'Nothing here for now. add a note to keep track of things.'
+    description = 'Nothing here for now. Add a note to keep track of things.'
   } else if (title.value == 'Tasks') {
     description =
-      'Nothing to do at the moment. start organizing by adding one here.'
+      'Nothing to do at the moment. Start organizing by adding one here.'
   } else if (title.value == 'Attachments') {
     description =
       'No files have been attached yet. Upload files to see them here.'

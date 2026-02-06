@@ -5,7 +5,7 @@
         <div class="mb-5 flex items-center justify-between">
           <div>
             <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9">
-              {{ __('Create deal') }}
+              {{ __('Create Deal') }}
             </h3>
           </div>
           <div class="flex items-center gap-1">
@@ -50,7 +50,6 @@
             class="h-px w-full border-t my-5"
           />
           <FieldLayout
-            ref="fieldLayoutRef"
             v-if="tabs.data?.length"
             :tabs="tabs.data"
             :data="deal.doc"
@@ -81,11 +80,10 @@ import { statusesStore } from '@/stores/statuses'
 import { isMobileView } from '@/composables/settings'
 import { showQuickEntryModal, quickEntryProps } from '@/composables/modals'
 import { useDocument } from '@/data/document'
-import { capture } from '@/telemetry'
+import { useTelemetry } from 'frappe-ui/frappe'
 import { Switch, createResource } from 'frappe-ui'
 import { computed, ref, onMounted, nextTick, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import { useTelemetry } from 'frappe-ui/frappe'
 
 const props = defineProps({
   defaults: Object,
@@ -106,8 +104,7 @@ const hasContactSections = ref(true)
 const isDealCreating = ref(false)
 const chooseExistingContact = ref(false)
 const chooseExistingOrganization = ref(false)
-const fieldLayoutRef = ref(null)
-const $telemetry = useTelemetry()
+const { capture } = useTelemetry()
 
 watch(
   [chooseExistingOrganization, chooseExistingContact],
@@ -222,7 +219,6 @@ async function createDeal() {
     },
     onSuccess(name) {
       capture('deal_created')
-      $telemetry.capture('deal_created', true)
       isDealCreating.value = false
       show.value = false
       router.push({ name: 'Deal', params: { dealId: name } })

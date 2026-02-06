@@ -1,7 +1,6 @@
 {
  "actions": [],
- "allow_rename": 1,
- "autoname": "format:{type}-{dt}",
+ "autoname": "hash",
  "creation": "2025-02-28 14:37:10.002433",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -47,11 +46,11 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-03-02 14:03:49.372132",
- "modified_by": "Administrator",
+ "modified": "2026-01-29 16:27:28.090170",
+ "modified_by": "shariq@frappe.io",
  "module": "FCRM",
  "name": "CRM Global Settings",
- "naming_rule": "Expression",
+ "naming_rule": "Random",
  "owner": "Administrator",
  "permissions": [
   {
@@ -74,7 +73,7 @@
    "print": 1,
    "read": 1,
    "report": 1,
-   "role": "Sales User",
+   "role": "Sales Manager",
    "share": 1,
    "write": 1
   },
@@ -86,7 +85,7 @@
    "print": 1,
    "read": 1,
    "report": 1,
-   "role": "Sales Manager",
+   "role": "Sales User",
    "share": 1,
    "write": 1
   }

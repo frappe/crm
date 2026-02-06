@@ -34,27 +34,38 @@ def add_default_lead_statuses():
 	statuses = {
 		"New": {
 			"color": "gray",
+			"type": "Open",
 			"position": 1,
 		},
 		"Contacted": {
 			"color": "orange",
+			"type": "Ongoing",
 			"position": 2,
 		},
 		"Nurture": {
 			"color": "blue",
+			"type": "Ongoing",
 			"position": 3,
 		},
 		"Qualified": {
 			"color": "green",
+			"type": "Won",
 			"position": 4,
+		},
+		"Converted": {
+			"color": "teal",
+			"type": "Won",
+			"position": 5,
 		},
 		"Unqualified": {
 			"color": "red",
-			"position": 5,
+			"type": "Lost",
+			"position": 6,
 		},
 		"Junk": {
 			"color": "purple",
-			"position": 6,
+			"type": "Lost",
+			"position": 7,
 		},
 	}
 
@@ -65,6 +76,7 @@ def add_default_lead_statuses():
 		doc = frappe.new_doc("CRM Lead Status")
 		doc.lead_status = status
 		doc.color = statuses[status]["color"]
+		doc.type = statuses[status]["type"]
 		doc.position = statuses[status]["position"]
 		doc.insert()
 

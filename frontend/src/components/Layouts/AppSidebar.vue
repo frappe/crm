@@ -181,14 +181,15 @@ import {
   showHelpModal,
   minimize,
   IntermediateStepModal,
+  useTelemetry,
 } from 'frappe-ui/frappe'
-import { capture } from '@/telemetry'
 import router from '@/router'
 import { useStorage } from '@vueuse/core'
 import { ref, reactive, computed, markRaw, onMounted } from 'vue'
 
 const { getPinnedViews, getPublicViews } = viewsStore()
 const { toggle: toggleNotificationPanel } = notificationsStore()
+const { capture } = useTelemetry()
 
 const isSidebarCollapsed = useStorage('isSidebarCollapsed', false)
 

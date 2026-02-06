@@ -50,7 +50,7 @@
     <EmptyState
       v-if="!users.loading && users.data?.crmUsers?.length == 1"
       name="users"
-      description="Add one to get started."
+      :description="__('Add one to get started.')"
       icon="user"
     />
 
@@ -210,7 +210,7 @@ const usersList = computed(() => {
 const confirmRemove = ref(false)
 
 function getMoreOptions(user) {
-  let options = [
+  return [
     {
       label: __('Remove'),
       icon: 'trash-2',
@@ -229,8 +229,6 @@ function getMoreOptions(user) {
       condition: () => confirmRemove.value,
     },
   ]
-
-  return options.filter((option) => option.condition?.() || true)
 }
 
 function getDropdownOptions(user) {
@@ -278,16 +276,23 @@ function updateRole(user, newRole) {
   call('crm.api.user.update_user_role', {
     user: user.name,
     new_role: newRole,
-  }).then(() => {
-    toast.success(
-      __('{0} has been granted {1} access', [user.full_name, roleMap[newRole]]),
-    )
-    users.reload()
   })
+    .then(() => {
+      toast.success(
+        __('{0} has been granted {1} access', [
+          user.full_name,
+          roleMap[newRole],
+        ]),
+      )
+      users.reload()
+    })
+    .catch((e) => {
+      toast.error(e?.messages?.[0] || __('Something went wrong'))
+    })
 }
 
 function removeUser(user) {
-  call('crm.api.user.remove_user', {
+  call('crm.api.user.remove_crm_roles_from_user', {
     user: user.name,
   })
     .then(() => {
