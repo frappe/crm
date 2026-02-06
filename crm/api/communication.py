@@ -1,0 +1,29 @@
+import frappe
+
+def update_lead_communication_status(doc, method=None):
+	if doc.reference_doctype != "CRM Lead":
+		return
+
+	if doc.sent_or_received not in ("Sent", "Received"):
+		return
+
+	# Determine the new status based on the current communication
+	status = "Replied" if doc.sent_or_received == "Received" else "Open"
+
+	# Check if this is the latest communication for the lead
+	latest_communication = frappe.db.get_value(
+		"Communication",
+		{
+			"reference_doctype": "CRM Lead",
+			"reference_name": doc.reference_name,
+			"sent_or_received": ["in", ["Sent", "Received"]]
+		},
+		"name",
+		order_by="creation desc"
+	)
+
+	# Only update if the current communication is the latest one
+	if latest_communication == doc.name:
+		lead_doc = frappe.get_doc("CRM Lead", doc.reference_name)
+		lead_doc.communication_status = status
+		lead_doc.save(ignore_permissions=True)
