@@ -39,15 +39,8 @@ def upsert(filters=None, **kwargs):
 	if docname:
 		try:
 			doc = frappe.get_doc(doctype, docname)
-			
-			is_changed = False
-			for key, value in kwargs.items():
-				if doc.get(key) != value:
-					doc.set(key, value)
-					is_changed = True
-
-			if is_changed:
-				doc.save()
+			doc.update(kwargs)
+			doc.save()
 			return doc
 		except frappe.DoesNotExistError:
 			docname = None
