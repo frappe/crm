@@ -45,6 +45,7 @@
           newEmailEditor.cc = false
           newEmailEditor.bcc = false
           newEmail = ''
+          attachments.value = []
         },
       }"
       :editable="showEmailBox"
@@ -71,6 +72,7 @@
           await deleteAttachedFiles()
           showCommentBox = false
           newComment = ''
+          attachments.value = []
         },
       }"
       :editable="showCommentBox"
@@ -303,5 +305,6 @@ defineExpose({
   show: showEmailBox,
   showComment: showCommentBox,
   editor: newEmailEditor,
+  attachments: attachments,
 })
 </script>
