@@ -34,6 +34,10 @@ class TestCRMLead(IntegrationTestCase):
 			).insert(ignore_permissions=True)
 			frappe.db.commit()  # nosemgrep
 
+		if not frappe.db.exists("Salutation", "Mr"):
+			frappe.get_doc({"doctype": "Salutation", "salutation": "Mr"}).insert(ignore_permissions=True)
+			frappe.db.commit()  # nosemgrep
+
 		super().setUpClass()
 
 	@classmethod
