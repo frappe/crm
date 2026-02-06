@@ -1,0 +1,26 @@
+[
+	{
+		"doctype": "CRM Deal Status",
+		"deal_status": "Qualification",
+		"type": "Open",
+		"position": 1
+	},
+	{
+		"doctype": "CRM Deal Status",
+		"deal_status": "Negotiation",
+		"type": "Open",
+		"position": 2
+	},
+	{
+		"doctype": "CRM Deal Status",
+		"deal_status": "Won",
+		"type": "Won",
+		"position": 3
+	},
+	{
+		"doctype": "CRM Deal Status",
+		"deal_status": "Lost",
+		"type": "Lost",
+		"position": 4
+	}
+]
