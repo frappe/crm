@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-12-21 09:37+0000\n"
-"PO-Revision-Date: 2026-02-04 15:48\n"
+"PO-Revision-Date: 2026-02-06 16:39\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Italian\n"
 "MIME-Version: 1.0\n"
@@ -3320,7 +3320,7 @@ msgstr ""
 
 #: frontend/src/components/Layouts/AppSidebar.vue:359
 msgid "Invite your team"
-msgstr ""
+msgstr "Invita il tuo team"
 
 #. Label of the invited_by (Link) field in DocType 'CRM Invitation'
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.json
@@ -3468,7 +3468,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Last Responded On"
-msgstr ""
+msgstr "Ultima risposta il"
 
 #. Label of the last_response_time (Duration) field in DocType 'CRM Deal'
 #. Label of the last_response_time (Duration) field in DocType 'CRM Lead'
@@ -4464,7 +4464,7 @@ msgstr ""
 
 #: frontend/src/pages/Welcome.vue:40
 msgid "Or create leads manually"
-msgstr ""
+msgstr "Oppure crea lead manualmente"
 
 #. Label of the order_by_tab (Tab Break) field in DocType 'CRM View Settings'
 #. Label of the order_by (Code) field in DocType 'CRM View Settings'
@@ -5428,7 +5428,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/emailConfig.js:145
 msgid "Setting up Frappe Mail requires you to have an API key and API Secret of your email account. Read more "
-msgstr ""
+msgstr "Per configurare Frappe Mail è necessario disporre di una chiave API e di una password API del tuo account di posta elettronica. Scopri di più "
 
 #: frontend/src/components/Settings/emailConfig.js:97
 msgid "Setting up GMail requires you to enable two factor authentication\n"
