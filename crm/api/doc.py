@@ -21,6 +21,38 @@ COUNT_NAME = (
 
 
 @frappe.whitelist()
+def upsert(filters=None, **kwargs):
+	if isinstance(filters, str):
+		filters = frappe.parse_json(filters)
+
+	if not filters or not isinstance(filters, list) or len(filters) == 0:
+		frappe.throw("Filters must be a list of lists, e.g. [['DocType', 'field', '=', 'value']]")
+
+	doctype = filters[0][0]
+	names = frappe.get_list(doctype, filters=filters, limit=1, pluck="name")
+	docname = names[0] if names else None
+
+	if docname:
+		try:
+			doc = frappe.get_doc(doctype, docname)
+			doc.update(kwargs)
+			doc.save()
+			return doc
+		except frappe.DoesNotExistError:
+			docname = None
+
+	if not docname:
+		doc = frappe.new_doc(doctype)
+		for f in filters:
+			if len(f) == 4 and f[2] == "=":
+				doc.set(f[1], f[3])
+
+		doc.update(kwargs)
+		doc.insert()
+		return doc
+
+
+@frappe.whitelist()
 def sort_options(doctype: str):
 	fields = frappe.get_meta(doctype).fields
 	fields = [field for field in fields if field.fieldtype not in no_value_fields]
