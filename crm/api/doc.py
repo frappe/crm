@@ -22,6 +22,18 @@ COUNT_NAME = (
 
 @frappe.whitelist()
 def upsert(filters=None, **kwargs):
+	if frappe.form_dict.data is None:
+		data = frappe.safe_decode(frappe.request.get_data())
+	else:
+		data = frappe.form_dict.data
+
+	try:
+		data = frappe.parse_json(data)
+		if isinstance(data, dict):
+			kwargs.update(data)
+	except ValueError:
+		pass
+
 	if isinstance(filters, str):
 		filters = frappe.parse_json(filters)
 
