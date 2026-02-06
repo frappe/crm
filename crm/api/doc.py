@@ -22,17 +22,9 @@ COUNT_NAME = (
 
 @frappe.whitelist()
 def upsert(filters=None, **kwargs):
-	if frappe.form_dict.data is None:
-		data = frappe.safe_decode(frappe.request.get_data())
-	else:
-		data = frappe.form_dict.data
-
-	try:
-		data = frappe.parse_json(data)
-		if isinstance(data, dict):
-			kwargs.update(data)
-	except ValueError:
-		pass
+	# If filters are passed in query params and body is JSON, filters might be dropped from form_dict
+	if filters is None and frappe.request and frappe.request.args.get("filters"):
+		filters = frappe.request.args.get("filters")
 
 	if isinstance(filters, str):
 		filters = frappe.parse_json(filters)
