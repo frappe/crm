@@ -16,7 +16,38 @@ from crm.fcrm.doctype.crm_lead.crm_lead import convert_to_deal
 
 
 class TestCRMLead(IntegrationTestCase):
-	def tearDown(self) -> None:
+	@classmethod
+	def setUpClass(cls):
+		"""Set up test records once for all tests"""
+		# Create test user if it doesn't exist
+		if not frappe.db.exists("User", "crm.user1@example.com"):
+			frappe.get_doc(
+				{
+					"doctype": "User",
+					"email": "crm.user1@example.com",
+					"first_name": "CRM",
+					"last_name": "User1",
+					"send_welcome_email": 0,
+					"roles": [{"doctype": "Has Role", "parentfield": "roles", "role": "Sales User"}],
+					"user_type": "System User",
+				}
+			).insert(ignore_permissions=True)
+			frappe.db.commit()
+
+		super().setUpClass()
+
+	@classmethod
+	def tearDownClass(cls):
+		"""Clean up test records after all tests"""
+		frappe.db.rollback()
+		# Clean up test user using raw SQL to avoid commit
+		if frappe.db.exists("User", "crm.user1@example.com"):
+			frappe.db.sql("DELETE FROM `tabUser` WHERE email = %s", ("crm.user1@example.com",))
+			frappe.db.sql("DELETE FROM `tabContact` WHERE email_id = %s", ("crm.user1@example.com",))
+			frappe.db.commit()
+		super().tearDownClass()
+
+	def tearDown(self):
 		frappe.db.rollback()
 
 	def test_lead_creation_with_first_name(self):
@@ -107,11 +138,12 @@ class TestCRMLead(IntegrationTestCase):
 
 	def test_lead_owner_cannot_be_same_as_email(self):
 		"""Test that lead owner cannot be same as lead email address"""
+
 		with self.assertRaises(frappe.exceptions.ValidationError) as context:
 			create_lead(
 				first_name="Test",
-				email="test@example.com",
-				lead_owner="test@example.com",
+				email="crm.user1@example.com",
+				lead_owner="crm.user1@example.com",
 			)
 		self.assertIn("Lead Owner cannot be same as the Lead Email Address", str(context.exception))
 
@@ -165,25 +197,15 @@ class TestCRMLead(IntegrationTestCase):
 		)
 		self.assertEqual(len(after_docshares), initial_docshare_count)
 
-		# Change lead owner to different user - old share should be removed
-		if not frappe.db.exists("User", "test@example.com"):
-			frappe.get_doc(
-				{
-					"doctype": "User",
-					"email": "test@example.com",
-					"first_name": "Test",
-				}
-			).insert()
-
-		lead.lead_owner = "test@example.com"
+		lead.lead_owner = "crm.user1@example.com"
 		lead.save()
 		lead.reload()
 
 		# Verify new owner is assigned and shared
-		self.assertEqual(lead.lead_owner, "test@example.com")
+		self.assertEqual(lead.lead_owner, "crm.user1@example.com")
 		new_docshare = frappe.db.exists(
 			"DocShare",
-			{"user": "test@example.com", "share_name": lead.name, "share_doctype": "CRM Lead"},
+			{"user": "crm.user1@example.com", "share_name": lead.name, "share_doctype": "CRM Lead"},
 		)
 		self.assertTrue(new_docshare)
 
