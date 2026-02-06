@@ -14,6 +14,7 @@ def before_install():
 
 def after_install(force=False):
 	add_default_lead_statuses()
+	add_default_enquiry_statuses()
 	add_default_deal_statuses()
 	add_default_communication_statuses()
 	add_default_fields_layout(force)
@@ -75,6 +76,42 @@ def add_default_lead_statuses():
 
 		doc = frappe.new_doc("CRM Lead Status")
 		doc.lead_status = status
+		doc.color = statuses[status]["color"]
+		doc.type = statuses[status]["type"]
+		doc.position = statuses[status]["position"]
+		doc.insert()
+
+
+def add_default_enquiry_statuses():
+	statuses = {
+		"New": {
+			"color": "gray",
+			"type": "Open",
+			"position": 1,
+		},
+		"Contacted": {
+			"color": "orange",
+			"type": "Ongoing",
+			"position": 2,
+		},
+		"Qualified": {
+			"color": "green",
+			"type": "Won",
+			"position": 3,
+		},
+		"Unqualified": {
+			"color": "red",
+			"type": "Lost",
+			"position": 4,
+		},
+	}
+
+	for status in statuses:
+		if frappe.db.exists("CRM Enquiry Status", status):
+			continue
+
+		doc = frappe.new_doc("CRM Enquiry Status")
+		doc.enquiry_status = status
 		doc.color = statuses[status]["color"]
 		doc.type = statuses[status]["type"]
 		doc.position = statuses[status]["position"]

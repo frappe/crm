@@ -24,6 +24,7 @@
   "last_name",
   "email",
   "mobile_no",
+  "notes",
   "organization_tab",
   "section_break_uixv",
   "naming_series",
@@ -134,6 +135,11 @@
    "fieldtype": "Data",
    "label": "Mobile no",
    "options": "Phone"
+  },
+  {
+   "fieldname": "notes",
+   "fieldtype": "Text",
+   "label": "Notes"
   },
   {
    "fieldname": "phone",

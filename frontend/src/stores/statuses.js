@@ -9,6 +9,7 @@ import { reactive, h } from 'vue'
 export const statusesStore = defineStore('crm-statuses', () => {
   let leadStatusesByName = reactive({})
   let dealStatusesByName = reactive({})
+  let enquiryStatusesByName = reactive({})
   let communicationStatusesByName = reactive({})
 
   const { capture } = useTelemetry()
@@ -45,6 +46,22 @@ export const statusesStore = defineStore('crm-statuses', () => {
     },
   })
 
+  const enquiryStatuses = createListResource({
+    doctype: 'CRM Enquiry Status',
+    fields: ['name', 'color', 'position', 'type'],
+    orderBy: 'position asc',
+    cache: 'enquiry-statuses',
+    initialData: [],
+    auto: true,
+    transform(statuses) {
+      for (let status of statuses) {
+        status.color = parseColor(status.color)
+        enquiryStatusesByName[status.name] = status
+      }
+      return statuses
+    },
+  })
+
   const communicationStatuses = createListResource({
     doctype: 'CRM Communication Status',
     fields: ['name'],
@@ -73,6 +90,13 @@ export const statusesStore = defineStore('crm-statuses', () => {
     return dealStatusesByName[name]
   }
 
+  function getEnquiryStatus(name) {
+    if (!name) {
+      name = enquiryStatuses.data[0].name
+    }
+    return enquiryStatusesByName[name]
+  }
+
   function getCommunicationStatus(name) {
     if (!name) {
       name = communicationStatuses.data[0].name
@@ -81,8 +105,12 @@ export const statusesStore = defineStore('crm-statuses', () => {
   }
 
   function statusOptions(doctype, statuses = [], triggerStatusChange = null) {
-    let statusesByName =
-      doctype == 'deal' ? dealStatusesByName : leadStatusesByName
+    let statusesByName = leadStatusesByName
+    if (doctype === 'deal') {
+      statusesByName = dealStatusesByName
+    } else if (doctype === 'enquiry') {
+      statusesByName = enquiryStatusesByName
+    }
 
     if (statuses?.length) {
       statusesByName = statuses.reduce((acc, status) => {
@@ -109,9 +137,11 @@ export const statusesStore = defineStore('crm-statuses', () => {
   return {
     leadStatuses,
     dealStatuses,
+    enquiryStatuses,
     communicationStatuses,
     getLeadStatus,
     getDealStatus,
+    getEnquiryStatus,
     getCommunicationStatus,
     statusOptions,
   }

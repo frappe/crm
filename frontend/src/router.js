@@ -25,9 +25,21 @@ const routes = [
     component: () => import('@/pages/Leads.vue'),
   },
   {
+    alias: '/enquiries',
+    path: '/enquiries/view/:viewType?',
+    name: 'Enquiries',
+    component: () => import('@/pages/Enquiries.vue'),
+  },
+  {
     path: '/leads/:leadId',
     name: 'Lead',
     component: () => import(`@/pages/${handleMobileView('Lead')}.vue`),
+    props: true,
+  },
+  {
+    path: '/enquiries/:enquiryId',
+    name: 'Enquiry',
+    component: () => import(`@/pages/${handleMobileView('Enquiry')}.vue`),
     props: true,
   },
   {
@@ -180,6 +192,7 @@ router.beforeEach(async (to, from, next) => {
   } else if (
     [
       'Leads',
+      'Enquiries',
       'Deals',
       'Contacts',
       'Organizations',
@@ -198,6 +211,7 @@ router.beforeEach(async (to, from, next) => {
     if (!viewType) {
       const doctypeMap = {
         Leads: 'CRM Lead',
+        Enquiries: 'CRM Enquiry',
         Deals: 'CRM Deal',
         Contacts: 'Contact',
         Organizations: 'CRM Organization',
