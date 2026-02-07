@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-12-21 09:37+0000\n"
-"PO-Revision-Date: 2026-02-04 15:48\n"
+"PO-Revision-Date: 2026-02-07 16:44\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Italian\n"
 "MIME-Version: 1.0\n"
@@ -303,7 +303,7 @@ msgstr "Aggiungi Filtro"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:273
 msgid "Add Lead or Deal"
-msgstr ""
+msgstr "Aggiungi Lead o Deal"
 
 #: frontend/src/components/Controls/Grid.vue:334
 msgid "Add Row"
@@ -768,7 +768,7 @@ msgstr "Tempo medio impiegato dalla creazione dell'offerta alla sua chiusura"
 
 #: crm/api/dashboard.py:481
 msgid "Average time taken from lead creation to deal closure"
-msgstr "Tempo medio impiegato dalla creazione del potenziale cliente alla chiusura dell'accordo"
+msgstr "Tempo medio tra creazione Lead e chiusura deal"
 
 #: frontend/src/components/Dashboard/AddChartModal.vue:81
 msgid "Avg deal value"
@@ -976,7 +976,7 @@ msgstr ""
 #. Name of a DocType
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
 msgid "CRM Lead Status"
-msgstr ""
+msgstr "Stato lead CRM"
 
 #. Name of a DocType
 #: crm/fcrm/doctype/crm_lost_reason/crm_lost_reason.json
@@ -2699,7 +2699,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:186
 msgid "Failed to delete Lead Sync Source"
-msgstr ""
+msgstr "Impossibile eliminare la fonte di sincronizzazione Lead"
 
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:216
 msgid "Failed to delete template"
@@ -3320,7 +3320,7 @@ msgstr ""
 
 #: frontend/src/components/Layouts/AppSidebar.vue:359
 msgid "Invite your team"
-msgstr ""
+msgstr "Invita il tuo team"
 
 #. Label of the invited_by (Link) field in DocType 'CRM Invitation'
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.json
@@ -3468,7 +3468,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Last Responded On"
-msgstr ""
+msgstr "Ultima risposta il"
 
 #. Label of the last_response_time (Duration) field in DocType 'CRM Deal'
 #. Label of the last_response_time (Duration) field in DocType 'CRM Lead'
@@ -3741,7 +3741,7 @@ msgstr ""
 #: frontend/src/components/Modals/LostReasonModal.vue:4
 #: frontend/src/components/Modals/LostReasonModal.vue:14
 msgid "Lost reason"
-msgstr ""
+msgstr "Motivo della perdita"
 
 #: frontend/src/components/Modals/LostReasonModal.vue:79
 msgid "Lost reason is required"
@@ -4084,7 +4084,7 @@ msgstr ""
 #: frontend/src/components/Activities/ActivityHeader.vue:149
 #: frontend/src/pages/Deals.vue:516 frontend/src/pages/Leads.vue:543
 msgid "New Task"
-msgstr ""
+msgstr "Nuovo task"
 
 #: frontend/src/components/Activities/ActivityHeader.vue:159
 msgid "New WhatsApp Message"
@@ -4464,7 +4464,7 @@ msgstr ""
 
 #: frontend/src/pages/Welcome.vue:40
 msgid "Or create leads manually"
-msgstr ""
+msgstr "Oppure crea lead manualmente"
 
 #. Label of the order_by_tab (Tab Break) field in DocType 'CRM View Settings'
 #. Label of the order_by (Code) field in DocType 'CRM View Settings'
@@ -5428,7 +5428,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/emailConfig.js:145
 msgid "Setting up Frappe Mail requires you to have an API key and API Secret of your email account. Read more "
-msgstr ""
+msgstr "La configurazione di Frappe Mail richiede una chiave API e un API Secret del tuo account email. Leggi di più "
 
 #: frontend/src/components/Settings/emailConfig.js:97
 msgid "Setting up GMail requires you to enable two factor authentication\n"
@@ -6597,7 +6597,7 @@ msgstr ""
 
 #: frontend/src/utils/index.js:107
 msgid "in {0} d"
-msgstr ""
+msgstr "in {0} d"
 
 #: frontend/src/utils/index.js:154
 msgid "in {0} days"
