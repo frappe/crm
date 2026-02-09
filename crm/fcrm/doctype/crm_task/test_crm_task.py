@@ -38,9 +38,9 @@ class TestCRMTask(IntegrationTestCase):
 			assigned_to="Administrator",
 		)
 
-		# Verify task was assigned
+		# Verify task was assigned to exactly one user
 		assignees = task.get_assigned_users()
-		self.assertIn("Administrator", assignees)
+		self.assertEqual(assignees, {"Administrator"})
 
 	def test_update_assigned_user(self):
 		"""Test updating assigned user unassigns previous and assigns new user"""
@@ -116,28 +116,77 @@ class TestCRMTask(IntegrationTestCase):
 		self.assertTrue(task.due_date)
 		self.assertTrue(task.start_date)
 
-	def test_task_priority_levels(self):
-		"""Test different priority levels"""
-		priorities = ["Low", "Medium", "High"]
+	def test_task_priority_ordering(self):
+		"""Test that tasks can be ordered by priority for proper display"""
+		# Create tasks with different priorities
+		low_task = create_test_task(
+			title="Low Priority Task",
+			priority="Low",
+			status="Todo",
+		)
+		medium_task = create_test_task(
+			title="Medium Priority Task",
+			priority="Medium",
+			status="Todo",
+		)
+		high_task = create_test_task(
+			title="High Priority Task",
+			priority="High",
+			status="Todo",
+		)
 
-		for priority in priorities:
-			task = create_test_task(
-				title=f"{priority} Priority Task",
-				priority=priority,
-			)
-			self.assertEqual(task.priority, priority)
+		# Verify priorities are set
+		self.assertEqual(low_task.priority, "Low")
+		self.assertEqual(medium_task.priority, "Medium")
+		self.assertEqual(high_task.priority, "High")
 
-	def test_task_status_workflow(self):
-		"""Test task status transitions"""
+		# Test priority-based filtering
+		high_priority_tasks = frappe.get_all(
+			"CRM Task",
+			filters={"priority": "High", "status": "Todo"},
+			fields=["name", "priority"],
+		)
+
+		# Verify high priority task is in filtered results
+		high_task_names = [t.name for t in high_priority_tasks]
+		self.assertIn(high_task.name, high_task_names)
+		self.assertNotIn(low_task.name, high_task_names)
+
+	def test_task_status_workflow_and_filtering(self):
+		"""Test task status transitions and filtering by status"""
 		statuses = ["Backlog", "Todo", "In Progress", "Done", "Canceled"]
 
 		task = create_test_task(title="Status Workflow Task", status="Backlog")
+		initial_name = task.name
 
-		for status in statuses[1:]:
+		# Test status transitions up to Done
+		for status in statuses[1:4]:  # Backlog -> Todo -> In Progress -> Done
 			task.status = status
 			task.save()
 			task.reload()
 			self.assertEqual(task.status, status)
+
+		# Test filtering by completed status (task should be Done now)
+		done_tasks = frappe.get_all("CRM Task", filters={"status": "Done"}, fields=["name"])
+		done_task_names = [str(t.name) for t in done_tasks]
+		self.assertIn(str(initial_name), done_task_names)
+
+		# Test filtering by active statuses (excluding Done and Canceled)
+		task2 = create_test_task(title="Active Task", status="In Progress")
+		active_tasks = frappe.get_all(
+			"CRM Task",
+			filters={"status": ["in", ["Backlog", "Todo", "In Progress"]]},
+			fields=["name"],
+		)
+		active_task_names = [str(t.name) for t in active_tasks]
+		self.assertIn(str(task2.name), active_task_names)
+		self.assertNotIn(str(initial_name), active_task_names)  # task is Done, not active
+
+		# Test Canceled status separately
+		task3 = create_test_task(title="Canceled Task", status="Canceled")
+		canceled_tasks = frappe.get_all("CRM Task", filters={"status": "Canceled"}, fields=["name"])
+		canceled_task_names = [str(t.name) for t in canceled_tasks]
+		self.assertIn(str(task3.name), canceled_task_names)
 
 	def test_task_without_assigned_user(self):
 		"""Test creating task without assigned user"""

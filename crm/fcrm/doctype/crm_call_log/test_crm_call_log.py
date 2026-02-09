@@ -142,9 +142,23 @@ class TestCRMCallLog(IntegrationTestCase):
 		# Should only have one link
 		self.assertEqual(len(call.links), 1)
 
-	def test_default_list_data(self):
-		"""Test default_list_data static method returns proper structure"""
+	def test_default_list_data_returns_actual_logs(self):
+		"""Test default_list_data returns actual call log data"""
 		from crm.fcrm.doctype.crm_call_log.crm_call_log import CRMCallLog
+
+		# Create test call logs with valid users
+		create_test_call_log(
+			type="Incoming",
+			caller=None,
+			receiver="Administrator",
+			status="Completed",
+		)
+		create_test_call_log(
+			type="Outgoing",
+			caller="Administrator",
+			receiver=None,
+			status="Failed",
+		)
 
 		data = CRMCallLog.default_list_data()
 
@@ -154,7 +168,7 @@ class TestCRMCallLog(IntegrationTestCase):
 		self.assertIsInstance(data["columns"], list)
 		self.assertIsInstance(data["rows"], list)
 
-		# Verify columns
+		# Verify columns contain required fields
 		self.assertTrue(len(data["columns"]) > 0)
 		column_keys = [col["key"] for col in data["columns"]]
 		self.assertIn("caller", column_keys)
@@ -162,10 +176,12 @@ class TestCRMCallLog(IntegrationTestCase):
 		self.assertIn("type", column_keys)
 		self.assertIn("status", column_keys)
 
-		# Verify rows
+		# Verify rows contain data fields
 		self.assertIn("name", data["rows"])
 		self.assertIn("caller", data["rows"])
 		self.assertIn("receiver", data["rows"])
+		self.assertIn("type", data["rows"])
+		self.assertIn("status", data["rows"])
 
 	def test_parse_call_log_incoming(self):
 		"""Test parse_call_log function with incoming call"""
@@ -189,11 +205,17 @@ class TestCRMCallLog(IntegrationTestCase):
 
 		parsed = parse_call_log(call_data)
 
-		# Verify parsed data
+		# Verify parsed data with actual values
 		self.assertEqual(parsed["activity_type"], "incoming_call")
 		self.assertEqual(parsed["_duration"], "2m")
-		self.assertIn("_caller", parsed)
-		self.assertIn("_receiver", parsed)
+		# _caller and _receiver are dicts with label and image
+		self.assertIsInstance(parsed["_caller"], dict)
+		self.assertIn("label", parsed["_caller"])
+		self.assertEqual(parsed["_caller"]["label"], "Unknown")  # Phone number resolves to Unknown
+		self.assertIsInstance(parsed["_receiver"], dict)
+		self.assertIn("label", parsed["_receiver"])
+		self.assertEqual(parsed["from"], "+1234567890")
+		self.assertEqual(parsed["to"], "+0987654321")
 
 	def test_parse_call_log_outgoing(self):
 		"""Test parse_call_log function with outgoing call"""
@@ -207,11 +229,16 @@ class TestCRMCallLog(IntegrationTestCase):
 
 		parsed = parse_call_log(call_data)
 
-		# Verify parsed data
+		# Verify parsed data with actual values
 		self.assertEqual(parsed["activity_type"], "outgoing_call")
 		self.assertEqual(parsed["_duration"], "3m")
-		self.assertIn("_caller", parsed)
-		self.assertIn("_receiver", parsed)
+		# _caller and _receiver are dicts with label and image
+		self.assertIsInstance(parsed["_caller"], dict)
+		self.assertEqual(parsed["_caller"]["label"], "Administrator")
+		self.assertIsInstance(parsed["_receiver"], dict)
+		self.assertEqual(parsed["_receiver"]["label"], "Unknown")  # Phone number resolves to Unknown
+		self.assertEqual(parsed["from"], "+1234567890")
+		self.assertEqual(parsed["to"], "+0987654321")
 
 	def test_get_call_log_api(self):
 		"""Test get_call_log API function"""
@@ -367,13 +394,33 @@ class TestCRMCallLog(IntegrationTestCase):
 		with self.assertRaises(frappe.ValidationError):
 			create_lead_from_call_log(call_log=frappe.as_json({}))
 
-	def test_call_log_with_multiple_statuses(self):
-		"""Test call log with different status values"""
-		statuses = ["Initiated", "Ringing", "In Progress", "Completed", "Failed", "Busy", "No Answer"]
+	def test_call_log_status_filtering(self):
+		"""Test that call logs can be filtered by status"""
+		# Create calls with different statuses
+		completed_call = create_test_call_log(status="Completed", type="Incoming")
+		failed_call = create_test_call_log(status="Failed", type="Outgoing")
+		busy_call = create_test_call_log(status="Busy", type="Incoming")
 
-		for status in statuses:
-			call = create_test_call_log(status=status)
-			self.assertEqual(call.status, status)
+		# Verify statuses are set correctly
+		self.assertEqual(completed_call.status, "Completed")
+		self.assertEqual(failed_call.status, "Failed")
+		self.assertEqual(busy_call.status, "Busy")
+
+		# Test filtering by status
+		completed_logs = frappe.get_all("CRM Call Log", filters={"status": "Completed"})
+		failed_logs = frappe.get_all("CRM Call Log", filters={"status": "Failed"})
+
+		self.assertGreaterEqual(len(completed_logs), 1)
+		self.assertGreaterEqual(len(failed_logs), 1)
+
+		# Verify our specific calls are in the right filtered lists
+		completed_names = [log.name for log in completed_logs]
+		failed_names = [log.name for log in failed_logs]
+
+		self.assertIn(completed_call.name, completed_names)
+		self.assertIn(failed_call.name, failed_names)
+		self.assertNotIn(busy_call.name, completed_names)
+		self.assertNotIn(busy_call.name, failed_names)
 
 	def test_call_log_with_telephony_medium(self):
 		"""Test call log with different telephony mediums"""
