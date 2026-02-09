@@ -8,6 +8,7 @@ from crm.integrations.api import (
 	add_note_to_call_log,
 	add_task_to_call_log,
 	get_contact_by_phone_number,
+	get_contact_lead_or_deal_from_number,
 	get_user_default_calling_medium,
 	is_call_integration_enabled,
 	set_default_calling_medium,
@@ -390,6 +391,109 @@ class TestIntegrations(IntegrationTestCase):
 		self.assertEqual(len(task_links), 1)
 		self.assertEqual(note_links[0].link_name, note.name)
 		self.assertEqual(task_links[0].link_name, str(task.name))
+
+	def test_get_contact_lead_or_deal_from_number_returns_contact(self):
+		"""Test get_contact_lead_or_deal_from_number returns contact when no lead/deal"""
+		# Create a standalone contact
+		contact = frappe.get_doc(
+			{
+				"doctype": "Contact",
+				"first_name": "Standalone",
+				"last_name": "Contact",
+				"mobile_no": "4155550400",
+			}
+		).insert()
+
+		docname, doctype = get_contact_lead_or_deal_from_number("4155550400")
+
+		# Should return contact
+		if docname:
+			self.assertEqual(doctype, "Contact")
+			self.assertEqual(docname, contact.name)
+
+	def test_get_contact_lead_or_deal_from_number_returns_lead(self):
+		"""Test get_contact_lead_or_deal_from_number prioritizes lead over contact"""
+		# Create a lead
+		lead = frappe.get_doc(
+			{
+				"doctype": "CRM Lead",
+				"first_name": "Test",
+				"last_name": "Lead",
+				"mobile_no": "+91 98765 43212",
+				"lead_owner": "Administrator",
+			}
+		).insert()
+
+		docname, doctype = get_contact_lead_or_deal_from_number("+91 98765 43212")
+
+		# Should return lead
+		if docname:
+			self.assertEqual(doctype, "CRM Lead")
+			self.assertEqual(docname, lead.name)
+
+	def test_get_contact_lead_or_deal_from_number_returns_deal(self):
+		"""Test get_contact_lead_or_deal_from_number prioritizes deal over contact"""
+		# Create organization and contact with deal
+		org = frappe.get_doc(
+			{
+				"doctype": "CRM Organization",
+				"organization_name": "Deal Test Org",
+			}
+		).insert()
+
+		contact = frappe.get_doc(
+			{
+				"doctype": "Contact",
+				"first_name": "Deal",
+				"last_name": "Contact",
+				"mobile_no": "4155550500",
+			}
+		).insert()
+
+		deal = frappe.get_doc(
+			{
+				"doctype": "CRM Deal",
+				"organization": org.name,
+				"deal_owner": "Administrator",
+			}
+		)
+		deal.append("contacts", {"contact": contact.name, "is_primary": 1})
+		deal.insert()
+
+		docname, doctype = get_contact_lead_or_deal_from_number("4155550500")
+
+		# Should return deal (prioritized over contact)
+		if docname:
+			self.assertEqual(doctype, "CRM Deal")
+			self.assertEqual(docname, deal.name)
+
+	def test_get_contact_lead_or_deal_from_number_returns_none_when_not_found(self):
+		"""Test get_contact_lead_or_deal_from_number returns None when nothing found"""
+		docname, doctype = get_contact_lead_or_deal_from_number("+1 999-999-9999")
+
+		# Should return None, None
+		self.assertIsNone(docname)
+		self.assertIsNone(doctype)
+
+	def test_get_contact_lead_or_deal_from_number_ignores_converted_leads(self):
+		"""Test get_contact_lead_or_deal_from_number doesn't return converted leads"""
+		# Create a converted lead
+		frappe.get_doc(
+			{
+				"doctype": "CRM Lead",
+				"first_name": "Converted",
+				"last_name": "Lead",
+				"mobile_no": "+91 98765 43213",
+				"lead_owner": "Administrator",
+				"converted": 1,
+			}
+		).insert()
+
+		docname, doctype = get_contact_lead_or_deal_from_number("+91 98765 43213")
+
+		# Should return None since lead is converted
+		self.assertIsNone(docname)
+		self.assertIsNone(doctype)
 
 
 def create_test_call_log(**kwargs):
