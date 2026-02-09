@@ -1,16 +1,8 @@
 # Copyright (c) 2023, Frappe Technologies Pvt. Ltd. and Contributors
 # See license.txt
 
-<<<<<<< HEAD
-# import frappe
-from frappe.tests.utils import FrappeTestCase
-
-
-class TestCRMCallLog(FrappeTestCase):
-	pass
-=======
 import frappe
-from frappe.tests import IntegrationTestCase
+from frappe.tests.utils import FrappeTestCase
 
 from crm.fcrm.doctype.crm_call_log.crm_call_log import (
 	create_lead_from_call_log,
@@ -19,7 +11,7 @@ from crm.fcrm.doctype.crm_call_log.crm_call_log import (
 )
 
 
-class TestCRMCallLog(IntegrationTestCase):
+class TestCRMCallLog(FrappeTestCase):
 	def tearDown(self):
 		frappe.db.rollback()
 
@@ -458,4 +450,3 @@ def create_test_call_log(**kwargs):
 	call_log = frappe.get_doc(data)
 	call_log.insert()
 	return call_log
->>>>>>> 7efbc20e (test: added test for CRM Call Log)
