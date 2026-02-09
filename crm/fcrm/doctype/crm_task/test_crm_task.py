@@ -1,19 +1,11 @@
 # Copyright (c) 2023, Frappe Technologies Pvt. Ltd. and Contributors
 # See license.txt
 
-<<<<<<< HEAD
-# import frappe
+import frappe
 from frappe.tests.utils import FrappeTestCase
 
 
 class TestCRMTask(FrappeTestCase):
-	pass
-=======
-import frappe
-from frappe.tests import IntegrationTestCase
-
-
-class TestCRMTask(IntegrationTestCase):
 	def tearDown(self) -> None:
 		frappe.db.rollback()
 
@@ -234,4 +226,3 @@ def create_test_task(**kwargs):
 	data = {"doctype": "CRM Task"}
 	data.update(kwargs)
 	return frappe.get_doc(data).insert()
->>>>>>> 7e2d7aa9 (test: added test for crm task)
