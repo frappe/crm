@@ -15,6 +15,8 @@ def get_translations():
 		language = frappe.db.get_value("User", frappe.session.user, "language")
 	else:
 		language = frappe.db.get_single_value("System Settings", "language")
+	# fallback to system language if user language is not set
+	language = language or frappe.db.get_single_value("System Settings", "language")
 
 	return get_all_translations(language)
 
