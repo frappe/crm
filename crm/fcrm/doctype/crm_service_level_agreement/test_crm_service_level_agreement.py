@@ -1,26 +1,14 @@
 # Copyright (c) 2023, Frappe Technologies Pvt. Ltd. and Contributors
 # See license.txt
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-# import frappe
-from frappe.tests.utils import FrappeTestCase
-
-
-class TestCRMServiceLevelAgreement(FrappeTestCase):
-	pass
-=======
-from datetime import datetime, time, timedelta
-=======
 from datetime import datetime, time
->>>>>>> ffd58246 (test: enhance CRM Call Log tests with actual log data and status filtering)
 
 import frappe
-from frappe.tests import IntegrationTestCase
+from frappe.tests.utils import FrappeTestCase
 from frappe.utils import add_to_date, get_datetime, now_datetime
 
 
-class TestCRMServiceLevelAgreement(IntegrationTestCase):
+class TestCRMServiceLevelAgreement(FrappeTestCase):
 	def tearDown(self):
 		frappe.db.rollback()
 
@@ -656,4 +644,3 @@ def create_test_holiday_list():
 
 	holiday_list.insert()
 	return holiday_list
->>>>>>> f3a49e98 (test: add comprehensive tests for CRM Service Level Agreement functionality)
