@@ -2,7 +2,7 @@
 # See license.txt
 
 import frappe
-from frappe.tests import IntegrationTestCase
+from frappe.tests.utils import FrappeTestCase
 
 from crm.integrations.api import (
 	add_note_to_call_log,
@@ -15,7 +15,7 @@ from crm.integrations.api import (
 )
 
 
-class TestIntegrations(IntegrationTestCase):
+class TestIntegrations(FrappeTestCase):
 	def tearDown(self):
 		frappe.db.rollback()
 
