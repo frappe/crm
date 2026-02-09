@@ -1,16 +1,8 @@
 # Copyright (c) 2023, Frappe Technologies Pvt. Ltd. and Contributors
 # See license.txt
 
-<<<<<<< HEAD
-# import frappe
-from frappe.tests.utils import FrappeTestCase
-
-
-class TestCRMDeal(FrappeTestCase):
-	pass
-=======
 import frappe
-from frappe.tests import IntegrationTestCase
+from frappe.tests.utils import FrappeTestCase
 
 from crm.fcrm.doctype.crm_deal.crm_deal import (
 	add_contact,
@@ -20,7 +12,7 @@ from crm.fcrm.doctype.crm_deal.crm_deal import (
 )
 
 
-class TestCRMDeal(IntegrationTestCase):
+class TestCRMDeal(FrappeTestCase):
 	def tearDown(self) -> None:
 		frappe.db.rollback()
 
@@ -407,4 +399,3 @@ def create_test_contact(**kwargs):
 
 	contact.insert(ignore_permissions=True)
 	return contact
->>>>>>> 3a6e1168 (test: added test for crm deal)
