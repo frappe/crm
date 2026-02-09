@@ -1,7 +1,7 @@
 # Copyright (c) 2023, Frappe Technologies Pvt. Ltd. and Contributors
 # See license.txt
 
-from datetime import datetime, time, timedelta
+from datetime import datetime, time
 
 import frappe
 from frappe.tests import IntegrationTestCase
@@ -158,9 +158,14 @@ class TestCRMServiceLevelAgreement(IntegrationTestCase):
 			{"doctype": "CRM Lead", "first_name": "Test Handle Creation", "sla_creation": None}
 		)
 
+		before_time = now_datetime()
 		sla.handle_creation(doc)
+		after_time = now_datetime()
 
+		# Verify timestamp is set and within reasonable time window
 		self.assertIsNotNone(doc.sla_creation)
+		self.assertGreaterEqual(doc.sla_creation, before_time)
+		self.assertLessEqual(doc.sla_creation, after_time)
 
 	def test_handle_creation_existing_timestamp(self):
 		"""Test handle_creation doesn't override existing timestamp"""
@@ -229,7 +234,11 @@ class TestCRMServiceLevelAgreement(IntegrationTestCase):
 
 		sla.set_response_by(doc)
 
+		# High priority has 3600 seconds (1 hour) response time
+		# Response by should be 1 hour after creation (11:00 AM)
 		self.assertIsNotNone(doc.response_by)
+		expected_response = get_datetime("2024-01-01 11:00:00")
+		self.assertEqual(doc.response_by, expected_response)
 
 	def test_set_response_by_existing(self):
 		"""Test set_response_by doesn't override existing response_by"""
@@ -410,7 +419,8 @@ class TestCRMServiceLevelAgreement(IntegrationTestCase):
 
 		self.assertEqual(len(doc.rolling_responses), 1)
 		self.assertEqual(doc.rolling_responses[0].response_time, 100)
-		self.assertIn(doc.rolling_responses[0].status, ["Fulfilled", "Failed"])
+		# Response before deadline (response_by is 1 hour in future) should be Fulfilled
+		self.assertEqual(doc.rolling_responses[0].status, "Fulfilled")
 
 	def test_handle_rolling_sla_status(self):
 		"""Test handle_rolling_sla_status sets rolling SLA status"""
