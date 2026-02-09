@@ -44,6 +44,13 @@
             class="text-ink-gray-7"
             @click="reply(activity.data, true)"
           />
+          <Button
+            :tooltip="__('Forward')"
+            variant="ghost"
+            :icon="ForwardIcon"
+            class="text-ink-gray-7"
+            @click="forward(activity.data)"
+          />
         </div>
       </div>
     </div>
@@ -79,6 +86,7 @@
 <script setup>
 import ReplyIcon from '@/components/Icons/ReplyIcon.vue'
 import ReplyAllIcon from '@/components/Icons/ReplyAllIcon.vue'
+import ForwardIcon from '@/components/Icons/ForwardIcon.vue'
 import AttachmentItem from '@/components/AttachmentItem.vue'
 import EmailContent from '@/components/Activities/EmailContent.vue'
 import { Badge, Tooltip } from 'frappe-ui'
@@ -132,6 +140,34 @@ function reply(email, reply_all = false) {
     .updateAttributes('paragraph', { class: 'reply-to-content' })
     .insertContent(repliedMessage)
     .focus('all')
+    .insertContentAt(0, { type: 'paragraph' })
+    .focus('start')
+    .run()
+}
+
+function forward(email) {
+  props.emailBox.show = true
+  let editor = props.emailBox.editor
+
+  editor.toEmails = []
+  editor.ccEmails = []
+  editor.bccEmails = []
+  editor.cc = editor.bcc = false
+
+  if (email.attachments?.length) {
+    props.emailBox.attachments = [...email.attachments]
+  } else {
+    props.emailBox.attachments = []
+  }
+
+  editor.subject = email.subject.startsWith('Fw:')
+    ? email.subject
+    : `Fw: ${email.subject}`
+
+  editor.editor
+    .chain()
+    .clearContent()
+    .insertContent(`<blockquote>${email.content}</blockquote>`)
     .insertContentAt(0, { type: 'paragraph' })
     .focus('start')
     .run()
