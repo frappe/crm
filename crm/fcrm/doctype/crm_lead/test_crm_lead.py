@@ -1,21 +1,13 @@
 # Copyright (c) 2023, Frappe Technologies Pvt. Ltd. and Contributors
 # See license.txt
 
-<<<<<<< HEAD
-# import frappe
-from frappe.tests.utils import FrappeTestCase
-
-
-class TestCRMLead(FrappeTestCase):
-	pass
-=======
 import frappe
-from frappe.tests import IntegrationTestCase
+from frappe.tests.utils import FrappeTestCase
 
 from crm.fcrm.doctype.crm_lead.crm_lead import convert_to_deal
 
 
-class TestCRMLead(IntegrationTestCase):
+class TestCRMLead(FrappeTestCase):
 	@classmethod
 	def setUpClass(cls):
 		"""Set up test records once for all tests"""
@@ -518,4 +510,3 @@ def create_lead(**kwargs):
 	data = {"doctype": "CRM Lead"}
 	data.update(kwargs)
 	return frappe.get_doc(data).insert()
->>>>>>> d17f0f30 (test: added unit tests for crm lead)
