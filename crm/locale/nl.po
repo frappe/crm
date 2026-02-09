@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-12-21 09:37+0000\n"
-"PO-Revision-Date: 2026-01-06 01:06\n"
+"PO-Revision-Date: 2026-01-26 12:46\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Dutch\n"
 "MIME-Version: 1.0\n"
@@ -1895,7 +1895,7 @@ msgstr "Standaardstatussen, aangepaste velden en lay-outs succesvol hersteld."
 #: frontend/src/pages/Notes.vue:43 frontend/src/pages/Organization.vue:90
 #: frontend/src/pages/Tasks.vue:371
 msgid "Delete"
-msgstr "Verwijder"
+msgstr ""
 
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.js:26
 msgid "Delete & Restore"

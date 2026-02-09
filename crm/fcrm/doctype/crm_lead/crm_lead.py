@@ -46,6 +46,8 @@ class CRMLead(Document):
 		last_response_time: DF.Duration | None
 		lead_name: DF.Data | None
 		lead_owner: DF.Link | None
+		lost_notes: DF.Text | None
+		lost_reason: DF.Link | None
 		middle_name: DF.Data | None
 		mobile_no: DF.Data | None
 		naming_series: DF.Literal["CRM-LEAD-.YYYY.-"]

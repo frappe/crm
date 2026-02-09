@@ -47,8 +47,8 @@
 import FieldLayout from '@/components/FieldLayout/FieldLayout.vue'
 import FieldLayoutEditor from '@/components/FieldLayoutEditor.vue'
 import { useDebounceFn } from '@vueuse/core'
-import { capture } from '@/telemetry'
-import { Dialog, Badge, Switch, call, createResource } from 'frappe-ui'
+import { useTelemetry } from 'frappe-ui/frappe'
+import { Dialog, Badge, call, createResource } from 'frappe-ui'
 import { ref, watch, onMounted, nextTick } from 'vue'
 
 const props = defineProps({
@@ -61,6 +61,8 @@ const props = defineProps({
     default: false,
   },
 })
+
+const { capture } = useTelemetry()
 
 const show = defineModel()
 const _doctype = ref(props.doctype)

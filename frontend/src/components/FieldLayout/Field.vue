@@ -314,6 +314,11 @@ const field = computed(() => {
     }
   }
 
+  const read_only_via_depends_on = evaluateDependsOnValue(
+    field.read_only_depends_on,
+    data.value,
+  )
+
   let _field = {
     ...field,
     filters: field.link_filters && JSON.parse(field.link_filters),
@@ -326,6 +331,9 @@ const field = computed(() => {
       field.mandatory_depends_on,
       data.value,
     ),
+    read_only:
+      field.read_only ||
+      (field.read_only_depends_on && read_only_via_depends_on),
   }
 
   _field.visible = isFieldVisible(_field)

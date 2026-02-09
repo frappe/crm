@@ -38,13 +38,14 @@
 import { Dropdown, Tooltip } from 'frappe-ui'
 import { timeAgo, formatDate, formatTime } from '@/utils'
 import { statusesStore } from '@/stores/statuses'
-import { capture } from '@/telemetry'
+import { useTelemetry } from 'frappe-ui/frappe'
 import { computed } from 'vue'
 
 const data = defineModel()
 const emit = defineEmits(['updateField'])
 
 const { communicationStatuses } = statusesStore()
+const { capture } = useTelemetry()
 
 let slaSection = computed(() => {
   let sections = []

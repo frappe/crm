@@ -259,7 +259,8 @@
   <LostReasonModal
     v-if="showLostReasonModal"
     v-model="showLostReasonModal"
-    :deal="document"
+    doctype="CRM Deal"
+    :document="document"
   />
 </template>
 <script setup>
@@ -346,8 +347,8 @@ watch(error, (err) => {
   if (err) {
     errorTitle.value = __(
       err.exc_type == 'DoesNotExistError'
-        ? 'Document not found'
-        : 'Error occurred',
+        ? __('Document not found')
+        : __('Error occurred'),
     )
     errorMessage.value = __(err.messages?.[0] || 'An error occurred')
   } else {

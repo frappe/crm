@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-12-21 09:37+0000\n"
-"PO-Revision-Date: 2026-01-21 11:42\n"
+"PO-Revision-Date: 2026-01-31 12:58\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Portuguese, Brazilian\n"
 "MIME-Version: 1.0\n"
@@ -1634,7 +1634,7 @@ msgstr ""
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 #: frontend/src/components/Settings/CurrencySettings.vue:31
 msgid "Currency"
-msgstr ""
+msgstr "Moeda"
 
 #: frontend/src/components/Settings/Settings.vue:114
 msgid "Currency & Exchange Rate"
@@ -1711,7 +1711,7 @@ msgstr ""
 #: crm/api/dashboard.py:620 crm/fcrm/doctype/crm_holiday/crm_holiday.json
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:202
 msgid "Date"
-msgstr ""
+msgstr "Data"
 
 #: frontend/src/components/Modals/EventModal.vue:78
 msgid "Date & Time"
@@ -1969,7 +1969,7 @@ msgstr ""
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:112
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:113
 msgid "Description"
-msgstr ""
+msgstr "Descrição"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:426
 msgid "Description is required"
@@ -1988,7 +1988,7 @@ msgstr ""
 #: frontend/src/pages/MobileDeal.vue:426 frontend/src/pages/MobileLead.vue:333
 #: frontend/src/pages/MobileOrganization.vue:335
 msgid "Details"
-msgstr ""
+msgstr "Detalhes"
 
 #. Label of the call_receiving_device (Select) field in DocType 'CRM Telephony
 #. Agent'
@@ -2004,7 +2004,7 @@ msgstr ""
 #. Label of the disabled (Check) field in DocType 'CRM Product'
 #: crm/fcrm/doctype/crm_product/crm_product.json
 msgid "Disabled"
-msgstr ""
+msgstr "Desativado"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:626
 #: frontend/src/components/CommentBox.vue:74
@@ -2279,7 +2279,7 @@ msgstr ""
 #: frontend/src/pages/Organization.vue:511
 #: frontend/src/pages/Organization.vue:539
 msgid "Email"
-msgstr ""
+msgstr "E-Mail\n"
 
 #: frontend/src/components/Settings/Settings.vue:148
 msgid "Email Accounts"
@@ -2798,7 +2798,7 @@ msgstr ""
 #: frontend/src/components/SortBy.vue:6 frontend/src/components/SortBy.vue:103
 #: frontend/src/components/SortBy.vue:136
 msgid "First Name"
-msgstr ""
+msgstr "Nome"
 
 #: frontend/src/components/Modals/LeadModal.vue:134
 msgid "First Name is mandatory"
@@ -2834,7 +2834,7 @@ msgstr "Tempo de Primeira Resposta"
 #: frontend/src/components/Filter.vue:130
 #: frontend/src/components/Settings/ProfileSettings.vue:78
 msgid "First name"
-msgstr ""
+msgstr "Nome"
 
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:48
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:84
@@ -2929,7 +2929,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_contacts/crm_contacts.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Full Name"
-msgstr ""
+msgstr "Nome Completo"
 
 #: crm/api/dashboard.py:755
 #: frontend/src/components/Dashboard/AddChartModal.vue:96
@@ -2947,7 +2947,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Gender"
-msgstr ""
+msgstr "Gênero"
 
 #: crm/api/dashboard.py:1065
 msgid "Geographic distribution of deals and revenue"
@@ -3158,7 +3158,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: crm/fcrm/doctype/crm_product/crm_product.json
 msgid "Image"
-msgstr ""
+msgstr "Imagem"
 
 #: frontend/src/components/Filter.vue:271
 #: frontend/src/components/Filter.vue:292
@@ -3210,7 +3210,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
 msgid "Industry"
-msgstr ""
+msgstr "Segmento"
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
@@ -3391,7 +3391,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Job Title"
-msgstr ""
+msgstr "Cargo"
 
 #: frontend/src/components/AssignToBody.vue:11
 #: frontend/src/components/Filter.vue:74 frontend/src/components/Filter.vue:107
@@ -3457,7 +3457,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Last Name"
-msgstr ""
+msgstr "Sobrenome"
 
 #: frontend/src/components/Filter.vue:611
 msgid "Last Quarter"
@@ -3507,7 +3507,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/ProfileSettings.vue:83
 msgid "Last name"
-msgstr ""
+msgstr "Sobrenome"
 
 #: frontend/src/components/Settings/AssignmentRules/AssigneeRules.vue:101
 msgid "Last user assigned by this rule"
@@ -3553,7 +3553,7 @@ msgstr ""
 #. Label of the lead_owner (Link) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Lead Owner"
-msgstr ""
+msgstr "Proprietário do Lead"
 
 #: crm/fcrm/doctype/crm_lead/crm_lead.py:124
 msgid "Lead Owner cannot be same as the Lead Email Address"
@@ -3890,7 +3890,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_contacts/crm_contacts.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Mobile No"
-msgstr "Telefone Celular"
+msgstr "Celular"
 
 #: frontend/src/components/Modals/DealModal.vue:208
 #: frontend/src/components/Modals/LeadModal.vue:149
@@ -3918,7 +3918,7 @@ msgstr ""
 #: frontend/src/pages/MobileOrganization.vue:482
 #: frontend/src/pages/Organization.vue:516
 msgid "Mobile no"
-msgstr ""
+msgstr "Celular"
 
 #. Option for the 'Weekly Off' (Select) field in DocType 'CRM Holiday List'
 #. Option for the 'Workday' (Select) field in DocType 'CRM Service Day'
@@ -4060,7 +4060,7 @@ msgstr ""
 #: frontend/src/components/Activities/ActivityHeader.vue:144
 #: frontend/src/pages/Deals.vue:511 frontend/src/pages/Leads.vue:538
 msgid "New Note"
-msgstr ""
+msgstr "Nova Anotação"
 
 #: frontend/src/components/Modals/OrganizationModal.vue:8
 msgid "New Organization"
@@ -4336,7 +4336,7 @@ msgstr ""
 #: frontend/src/pages/Deal.vue:578 frontend/src/pages/Lead.vue:424
 #: frontend/src/pages/MobileDeal.vue:463 frontend/src/pages/MobileLead.vue:369
 msgid "Notes"
-msgstr "Notas"
+msgstr "Anotações"
 
 #: frontend/src/pages/Notes.vue:23
 msgid "Notes View"
@@ -4505,7 +4505,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
 msgid "Organization Name"
-msgstr ""
+msgstr "Nome da Organização"
 
 #: frontend/src/pages/Deal.vue:67
 msgid "Organization logo"
@@ -4624,7 +4624,7 @@ msgstr ""
 #: frontend/src/pages/MobileOrganization.vue:510
 #: frontend/src/pages/Organization.vue:544
 msgid "Phone"
-msgstr ""
+msgstr "Telefone"
 
 #. Label of the phone_nos (Table) field in DocType 'CRM Telephony Agent'
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
@@ -5552,7 +5552,7 @@ msgstr ""
 #: frontend/src/components/Modals/EditValueModal.vue:10
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:60
 msgid "Source"
-msgstr ""
+msgstr "Origem"
 
 #. Label of the source_name (Data) field in DocType 'CRM Lead Source'
 #: crm/fcrm/doctype/crm_lead_source/crm_lead_source.json
@@ -5641,7 +5641,7 @@ msgstr ""
 #: frontend/src/pages/MobileOrganization.vue:472
 #: frontend/src/pages/Organization.vue:506
 msgid "Status"
-msgstr ""
+msgstr "Situação"
 
 #. Label of the status_change_log (Table) field in DocType 'CRM Deal'
 #. Label of the status_change_log (Table) field in DocType 'CRM Lead'
@@ -6313,7 +6313,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
 #: frontend/src/components/Modals/AboutModal.vue:52
 msgid "Website"
-msgstr ""
+msgstr "Site"
 
 #. Option for the 'Weekly Off' (Select) field in DocType 'CRM Holiday List'
 #. Option for the 'Workday' (Select) field in DocType 'CRM Service Day'
@@ -6348,7 +6348,7 @@ msgstr ""
 #: frontend/src/pages/Deal.vue:588 frontend/src/pages/Lead.vue:434
 #: frontend/src/pages/MobileDeal.vue:473 frontend/src/pages/MobileLead.vue:379
 msgid "WhatsApp"
-msgstr ""
+msgstr "WhatsApp"
 
 #: frontend/src/components/Modals/WhatsappTemplateSelectorModal.vue:4
 msgid "WhatsApp Templates"
