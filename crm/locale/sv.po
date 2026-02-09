@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-12-21 09:37+0000\n"
-"PO-Revision-Date: 2026-01-22 12:22\n"
+"PO-Revision-Date: 2026-02-09 17:38\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Swedish\n"
 "MIME-Version: 1.0\n"
@@ -6167,7 +6167,7 @@ msgstr "Lossa Vy"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:22
 msgid "Unsaved"
-msgstr "Osparad"
+msgstr "Ej Sparad"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:575
 msgid "Unsaved changes"
