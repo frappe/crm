@@ -600,19 +600,34 @@ const sections = createResource({
   url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_sidepanel_sections',
   params: { doctype: 'CRM Deal' },
   transform: (data) => getParsedSections(data),
+  auto : true,
 })
+
+watch(
+  () => sections.data,
+  (data) => {
+    if (data) {
+      getParsedSections(data)
+    }
+  },
+  { immediate: true, deep: true }
+)
+
 
 if (!sections.data) sections.fetch()
 
 function getParsedSections(_sections) {
+  if (!_sections) return _sections
   _sections.forEach((section) => {
     if (section.name == 'contacts_section') return
     section.columns[0].fields.forEach((field) => {
       if (field.fieldname == 'organization') {
         field.create = (value, close) => {
-          _organization.value.organization_name = value
-          showOrganizationModal.value = true
+          _organization.value = { organization_name: value }
           close()
+          nextTick(() => {
+            showOrganizationModal.value = true
+          })
         }
         field.link = (org) =>
           router.push({
