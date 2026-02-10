@@ -50,7 +50,10 @@
                   </div>
                 </template>
               </Popover>
-              <div class="text-ink-gray-9">{{ column.column.name }}</div>
+              <div class="text-ink-gray-9">
+                {{ column.column.name }}
+                <span class="text-sm text-ink-gray-5">({{ column.column.all_count }})</span>
+              </div>
             </div>
             <div class="flex">
               <Dropdown :options="actions(column)">
@@ -132,6 +135,12 @@
                 </component>
               </template>
             </Draggable>
+            <div
+              v-if="column.data && column.data.length === 0"
+              class="flex-1 flex items-center justify-center py-12 text-ink-gray-4 text-sm"
+            >
+              {{ __('No items') }}
+            </div>
             <div
               v-if="column.column.count < column.column.all_count"
               class="flex items-center justify-center"
