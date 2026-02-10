@@ -146,8 +146,8 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "in_standard_filter": 1,
-   "label": "Telephony medium",
-   "options": "\nManual\nTwilio\nExotel",
+   "label": "Telephony Medium",
+   "options": "\nManual\nTwilio\nExotel\nYeastar",
    "read_only": 1
   },
   {

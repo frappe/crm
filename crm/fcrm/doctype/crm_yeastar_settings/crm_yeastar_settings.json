@@ -1,0 +1,128 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-12-11 10:00:06.410773",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "enabled",
+  "section_break_awtx",
+  "request_url",
+  "column_break_qkzj",
+  "username",
+  "password",
+  "token_detail_section",
+  "access_token",
+  "access_token_expire_duration",
+  "access_token_expiry",
+  "column_break_bzuv",
+  "refresh_token",
+  "refresh_token_expire_duration"
+ ],
+ "fields": [
+  {
+   "default": "0",
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "label": "Enabled"
+  },
+  {
+   "depends_on": "eval:doc.enabled",
+   "fieldname": "section_break_awtx",
+   "fieldtype": "Section Break"
+  },
+  {
+   "description": "The full Yeastar API base URL, e.g. https://your-organization.com/openapi/v1.0",
+   "fieldname": "request_url",
+   "fieldtype": "Data",
+   "label": "Request Url",
+   "mandatory_depends_on": "eval:doc.enabled"
+  },
+  {
+   "fieldname": "column_break_qkzj",
+   "fieldtype": "Column Break"
+  },
+  {
+   "description": "The username from the Client ID on PBX web portal",
+   "fieldname": "username",
+   "fieldtype": "Data",
+   "label": "Username",
+   "mandatory_depends_on": "eval:doc.enabled"
+  },
+  {
+   "description": "The password from the Client Secret on PBX web portal\n\n",
+   "fieldname": "password",
+   "fieldtype": "Data",
+   "label": "Password",
+   "mandatory_depends_on": "eval:doc.enabled"
+  },
+  {
+   "fieldname": "access_token",
+   "fieldtype": "Data",
+   "label": "Access Token",
+   "read_only": 1
+  },
+  {
+   "fieldname": "refresh_token",
+   "fieldtype": "Data",
+   "label": "Refresh Token",
+   "read_only": 1
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "token_detail_section",
+   "fieldtype": "Section Break",
+   "label": "Token Details"
+  },
+  {
+   "fieldname": "access_token_expiry",
+   "fieldtype": "Datetime",
+   "label": "Access Token Expiry",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_bzuv",
+   "fieldtype": "Column Break"
+  },
+  {
+   "description": "In Seconds",
+   "fieldname": "access_token_expire_duration",
+   "fieldtype": "Int",
+   "label": "Access Token Expire Duration"
+  },
+  {
+   "description": "In Seconds",
+   "fieldname": "refresh_token_expire_duration",
+   "fieldtype": "Int",
+   "label": "Refresh Token Expire Duration",
+   "read_only": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2026-01-23 08:44:36.886137",
+ "modified_by": "Administrator",
+ "module": "FCRM",
+ "name": "CRM Yeastar Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

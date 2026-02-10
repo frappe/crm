@@ -31,22 +31,11 @@ class CRMCallLog(Document):
 		reference_docname: DF.DynamicLink | None
 		reference_doctype: DF.Link | None
 		start_time: DF.Datetime | None
-		status: DF.Literal[
-			"Initiated",
-			"Ringing",
-			"In Progress",
-			"Completed",
-			"Failed",
-			"Busy",
-			"No Answer",
-			"Queued",
-			"Canceled",
-		]
-		telephony_medium: DF.Literal["", "Manual", "Twilio", "Exotel"]
+		status: DF.Literal["Initiated", "Ringing", "In Progress", "Completed", "Failed", "Busy", "No Answer", "Queued", "Canceled"]
+		telephony_medium: DF.Literal["", "Manual", "Twilio", "Exotel", "Yeastar"]
 		to: DF.Data
 		type: DF.Literal["Incoming", "Outgoing"]
 	# end: auto-generated types
-
 	@staticmethod
 	def default_list_data():
 		columns = [
