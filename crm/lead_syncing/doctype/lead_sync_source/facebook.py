@@ -153,6 +153,7 @@ def fetch_and_store_pages_from_facebook(access_token: str) -> list[dict]:
 	for page in pages:
 		page_id = page["id"]
 		already_synced = frappe.db.exists("Facebook Page", page_id)
+		page["is_new"] = not already_synced
 		if not already_synced:
 			create_facebook_page_in_db(page, account_details)
 		forms = fetch_and_store_leadgen_forms_from_facebook(page_id, page["access_token"])
@@ -197,6 +198,7 @@ def fetch_and_store_leadgen_forms_from_facebook(page_id: str, page_access_token:
 	for form in forms:
 		form_id = form["id"]
 		already_synced = frappe.db.exists("Facebook Lead Form", form_id)
+		form["is_new"] = not already_synced
 		if already_synced:
 			continue
 		create_facebook_lead_form_in_db(form, page_id)
@@ -224,3 +226,35 @@ def get_pages_with_forms() -> list[dict]:
 		forms = frappe.db.get_all("Facebook Lead Form", filters={"page": page["id"]}, fields=["id", "name"])
 		page["forms"] = forms
 	return pages
+
+
+@frappe.whitelist()
+def refresh_facebook_forms(source_name: str) -> dict:
+	"""Refresh Facebook pages and forms for an existing sync source.
+
+	This fetches any new pages and forms that were created on Facebook
+	after the sync source was initially set up.
+	"""
+	source = frappe.get_doc("Lead Sync Source", source_name)
+	if source.type != "Facebook":
+		frappe.throw(frappe._("This sync source is not a Facebook source"))
+
+	access_token = source.get_password("access_token")
+	if not access_token:
+		frappe.throw(frappe._("Access token is required"))
+
+	pages = fetch_and_store_pages_from_facebook(access_token)
+
+	new_forms_count = 0
+	new_pages_count = 0
+	for page in pages:
+		if page.get("is_new"):
+			new_pages_count += 1
+		for form in page.get("forms", []):
+			if form.get("is_new"):
+				new_forms_count += 1
+
+	return {
+		"new_pages_count": new_pages_count,
+		"new_forms_count": new_forms_count,
+	}

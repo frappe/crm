@@ -62,8 +62,16 @@
 						<FormControl v-if="!isLocal && sourceDoc && sourceDoc.last_synced_at"
 							:modelValue="formatDate(sourceDoc.last_synced_at)" disabled type="datetime" :label="__('Last synced at')" />
 
-						<Link v-if="!isLocal" label="Facebook Page" v-model="syncSource.facebook_page"
-							doctype="Facebook Page" />
+						<div v-if="!isLocal" class="flex items-end gap-2">
+							<Link class="flex-1" label="Facebook Page" v-model="syncSource.facebook_page"
+								doctype="Facebook Page" />
+							<Button variant="outline" :loading="refreshFormsResource.loading"
+								@click="refreshForms" :title="__('Refresh pages and forms from Facebook')">
+								<template #icon>
+									<LucideRefreshCw class="size-4" />
+								</template>
+							</Button>
+						</div>
 
 						<Link v-if="!isLocal && syncSource.facebook_page" label="Lead Form"
 							v-model="syncSource.facebook_lead_form" doctype="Facebook Lead Form" :filters="{
@@ -112,6 +120,7 @@ import { getMeta } from "@/stores/meta";
 import Link from "@/components/Controls/Link.vue";
 import Grid from "@/components/Controls/Grid.vue";
 import LucideCircleQuestionMark from '~icons/lucide/circle-question-mark';
+import LucideRefreshCw from '~icons/lucide/refresh-cw';
 import FailureLogs from "./FailureLogs.vue";
 import DetailsIcon from '@/components/Icons/DetailsIcon.vue'
 import RefreshIcon from '@/components/Icons/RefreshIcon.vue'
@@ -318,6 +327,26 @@ const leadFields = createResource({
 		return data.filter((field) => !restrictedFields.includes(field.fieldname));
 	},
 });
+
+const refreshFormsResource = createResource({
+	url: "crm.lead_syncing.doctype.lead_sync_source.facebook.refresh_facebook_forms",
+	onSuccess: (data) => {
+		if (data.new_forms_count > 0 || data.new_pages_count > 0) {
+			toast.success(__("{0} new page(s) and {1} new form(s) synced", [data.new_pages_count, data.new_forms_count]));
+		} else {
+			toast.info(__("No new pages or forms found"));
+		}
+	},
+	onError: (e) => {
+		toast.error(e.messages?.[0] || __("Error refreshing forms"));
+	},
+});
+
+function refreshForms() {
+	refreshFormsResource.submit({
+		source_name: syncSource.value.name,
+	});
+}
 
 const getCRMLeadFields = computed(() => {
 	if (leadFields.data) {
