@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-12-21 09:37+0000\n"
-"PO-Revision-Date: 2025-12-23 22:58\n"
+"PO-Revision-Date: 2026-02-11 18:02\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Burmese\n"
 "MIME-Version: 1.0\n"
@@ -20,7 +20,7 @@ msgstr ""
 
 #: frontend/src/components/ViewControls.vue:1172
 msgid " (New)"
-msgstr ""
+msgstr " (အသစ်)"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:58
 msgid "(No title)"
@@ -33,7 +33,7 @@ msgstr ""
 
 #: frontend/src/utils/index.js:172
 msgid "1 hour ago"
-msgstr ""
+msgstr "လွန်ခဲ့သော 1 နာရီက"
 
 #: frontend/src/composables/event.js:163
 msgid "1 hr"
@@ -41,19 +41,19 @@ msgstr ""
 
 #: frontend/src/utils/index.js:168
 msgid "1 minute ago"
-msgstr ""
+msgstr "လွန်ခဲ့သော 1 မိနစ်က"
 
 #: frontend/src/utils/index.js:187
 msgid "1 month ago"
-msgstr ""
+msgstr "လွန်ခဲ့သော 1 လ"
 
 #: frontend/src/utils/index.js:183
 msgid "1 week ago"
-msgstr ""
+msgstr "လွန်ခဲ့သော ၁ ပတ်က"
 
 #: frontend/src/utils/index.js:191
 msgid "1 year ago"
-msgstr ""
+msgstr "လွန်ခဲ့သော 1 နှစ်"
 
 #. Option for the 'No. of Employees' (Select) field in DocType 'CRM Deal'
 #. Option for the 'No. of Employees' (Select) field in DocType 'CRM Lead'
@@ -5269,7 +5269,7 @@ msgstr ""
 #: frontend/src/components/ViewControls.vue:125
 #: frontend/src/pages/Dashboard.vue:36
 msgid "Save"
-msgstr ""
+msgstr "သိမ်းမည်။"
 
 #: frontend/src/components/Modals/ViewModal.vue:40
 #: frontend/src/components/ViewControls.vue:58
@@ -6398,7 +6398,7 @@ msgstr ""
 #: frontend/src/components/Activities/WhatsAppArea.vue:34
 #: frontend/src/components/Activities/WhatsAppBox.vue:14
 msgid "You"
-msgstr ""
+msgstr "သင်"
 
 #: crm/utils/__init__.py:262
 msgid "You are not permitted to access this resource."
@@ -6784,7 +6784,7 @@ msgstr ""
 
 #: frontend/src/utils/index.js:181
 msgid "{0} days ago"
-msgstr ""
+msgstr "လွန်ခဲ့တဲ့ {0} ရက်ပတ်လုံး"
 
 #: frontend/src/utils/index.js:121
 msgid "{0} h"
@@ -6796,7 +6796,7 @@ msgstr ""
 
 #: frontend/src/utils/index.js:174
 msgid "{0} hours ago"
-msgstr ""
+msgstr "{0} နာရီအကြာက"
 
 #: frontend/src/composables/event.js:163
 msgid "{0} hrs"
@@ -6825,11 +6825,11 @@ msgstr ""
 
 #: frontend/src/utils/index.js:170
 msgid "{0} minutes ago"
-msgstr ""
+msgstr "{0} မိနစ်အကြာက"
 
 #: frontend/src/utils/index.js:189
 msgid "{0} months ago"
-msgstr ""
+msgstr "{0} လ အကြာက"
 
 #: frontend/src/utils/index.js:128
 msgid "{0} w"
@@ -6837,7 +6837,7 @@ msgstr ""
 
 #: frontend/src/utils/index.js:185
 msgid "{0} weeks ago"
-msgstr ""
+msgstr "{0} ရက်သတ္တပတ်များ အကြာက"
 
 #: frontend/src/utils/index.js:132
 msgid "{0} y"
@@ -6845,7 +6845,7 @@ msgstr ""
 
 #: frontend/src/utils/index.js:193
 msgid "{0} years ago"
-msgstr ""
+msgstr "{0} လွန်ခဲ့တဲ့နှစ်ပေါင်း အကြာက"
 
 #: frontend/src/data/script.js:326
 msgid "⚠️ Avoid using \"trigger\" as a field name — it conflicts with the built-in trigger() method."
