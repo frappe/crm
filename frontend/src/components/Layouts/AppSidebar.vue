@@ -7,14 +7,14 @@
       <UserDropdown :isCollapsed="isSidebarCollapsed" />
     </div>
     <div class="flex-1 overflow-y-auto">
-      <div class="mb-3 flex flex-col">
+      <div class="flex flex-col">
         <SidebarLink
           id="notifications-btn"
           :label="__('Notifications')"
           :icon="NotificationsIcon"
           :isCollapsed="isSidebarCollapsed"
           @click="() => toggleNotificationPanel()"
-          class="relative mx-2 my-0.5"
+          class="relative mx-2 my-[1.5px]"
         >
           <template #right>
             <Badge
@@ -30,11 +30,8 @@
         </SidebarLink>
       </div>
       <div v-for="view in allViews" :key="view.label">
-        <div
-          v-if="!view.hideLabel && isSidebarCollapsed && view.views?.length"
-          class="mx-2 my-2 h-1 border-b"
-        />
-        <Section
+        <div class="border-t mx-2 my-1.5" />
+        <CollapsibleSection
           :label="view.name"
           :hideLabel="view.hideLabel"
           :opened="view.opened"
@@ -42,11 +39,11 @@
           <template #header="{ opened, hide, toggle }">
             <div
               v-if="!hide"
-              class="flex cursor-pointer gap-1.5 px-1 text-base font-medium text-ink-gray-5 transition-all duration-300 ease-in-out"
+              class="flex items-center cursor-pointer gap-1.5 text-base text-ink-gray-5 transition-all duration-300 ease-in-out"
               :class="
                 isSidebarCollapsed
-                  ? 'ml-0 h-0 overflow-hidden opacity-0'
-                  : 'ml-2 mt-4 h-7 w-auto opacity-100'
+                  ? 'h-0 overflow-hidden opacity-0'
+                  : 'px-4 pt-[11px] pb-2.5 w-auto opacity-100'
               "
               @click="toggle()"
             >
@@ -65,10 +62,10 @@
               :label="__(link.label)"
               :to="link.to"
               :isCollapsed="isSidebarCollapsed"
-              class="mx-2 my-0.5"
+              class="mx-2 my-[1.5px]"
             />
           </nav>
-        </Section>
+        </CollapsibleSection>
       </div>
     </div>
     <div class="m-2 flex flex-col gap-1">
@@ -147,7 +144,7 @@ import ConvertIcon from '@/components/Icons/ConvertIcon.vue'
 import CommentIcon from '@/components/Icons/CommentIcon.vue'
 import EmailIcon from '@/components/Icons/EmailIcon.vue'
 import StepsIcon from '@/components/Icons/StepsIcon.vue'
-import Section from '@/components/Section.vue'
+import CollapsibleSection from '@/components/CollapsibleSection.vue'
 import PinIcon from '@/components/Icons/PinIcon.vue'
 import UserDropdown from '@/components/UserDropdown.vue'
 import SquareAsterisk from '@/components/Icons/SquareAsterisk.vue'
@@ -184,14 +181,15 @@ import {
   showHelpModal,
   minimize,
   IntermediateStepModal,
+  useTelemetry,
 } from 'frappe-ui/frappe'
-import { capture } from '@/telemetry'
 import router from '@/router'
 import { useStorage } from '@vueuse/core'
-import { ref, reactive, computed, h, markRaw, onMounted } from 'vue'
+import { ref, reactive, computed, markRaw, onMounted } from 'vue'
 
 const { getPinnedViews, getPublicViews } = viewsStore()
 const { toggle: toggleNotificationPanel } = notificationsStore()
+const { capture } = useTelemetry()
 
 const isSidebarCollapsed = useStorage('isSidebarCollapsed', false)
 
@@ -293,7 +291,7 @@ function parseView(views) {
 }
 
 function getIcon(routeName, icon) {
-  if (icon) return h('div', { class: 'size-auto' }, icon)
+  if (icon) return icon
 
   switch (routeName) {
     case 'Leads':

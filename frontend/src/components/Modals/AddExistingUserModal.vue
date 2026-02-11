@@ -1,7 +1,7 @@
 <template>
   <Dialog
     v-model="show"
-    :options="{ title: __('Add Existing User') }"
+    :options="{ title: __('Add existing user') }"
     @close="show = false"
   >
     <template #body-content>
@@ -89,7 +89,7 @@ const description = computed(() => {
 
 const roleOptions = computed(() => {
   return [
-    { value: 'Sales User', label: __('Sales User') },
+    { value: 'Sales User', label: __('Sales user') },
     ...(isManager() ? [{ value: 'Sales Manager', label: __('Manager') }] : []),
     ...(isAdmin() ? [{ value: 'System Manager', label: __('Admin') }] : []),
   ]

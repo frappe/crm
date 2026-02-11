@@ -3,15 +3,15 @@
     <template #body-title>
       <div class="flex items-center gap-3">
         <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9">
-          {{ editMode ? __('Edit Task') : __('Create Task') }}
+          {{ editMode ? __('Edit task') : __('Create task') }}
         </h3>
         <Button
           v-if="task?.reference_docname"
           size="sm"
           :label="
             task.reference_doctype == 'CRM Deal'
-              ? __('Open Deal')
-              : __('Open Lead')
+              ? __('Open deal')
+              : __('Open lead')
           "
           :iconRight="ArrowUpRightIcon"
           @click="redirect()"
@@ -20,10 +20,8 @@
     </template>
     <template #body-content>
       <div class="flex flex-col gap-4">
-        <div>
-          <div class="mb-1.5 text-xs text-ink-gray-5">
-            {{ __('Title') }}
-          </div>
+        <div class="space-y-1.5">
+          <FormLabel :label="__('Title')" required />
           <TextInput
             ref="title"
             v-model="_task.title"
@@ -106,7 +104,6 @@
             </Button>
           </Dropdown>
         </div>
-        <ErrorMessage class="mt-4" v-if="error" :message="__(error)" />
       </div>
     </template>
     <template #actions>
@@ -114,6 +111,7 @@
         <Button
           :label="editMode ? __('Update') : __('Create')"
           variant="solid"
+          :loading="createTaskResource.loading || updateTaskResource.loading"
           @click="updateTask"
         />
       </div>
@@ -129,15 +127,16 @@ import UserAvatar from '@/components/UserAvatar.vue'
 import Link from '@/components/Controls/Link.vue'
 import { taskStatusOptions, taskPriorityOptions, getFormat } from '@/utils'
 import { usersStore } from '@/stores/users'
-import { capture } from '@/telemetry'
+import { useTelemetry } from 'frappe-ui/frappe'
 import {
   TextEditor,
   Dropdown,
   Tooltip,
-  call,
-  DatePicker,
-  TimePicker,
-  dayjs,
+  DateTimePicker,
+  createResource,
+  toast,
+  TextInput,
+  FormLabel,
 } from 'frappe-ui'
 import { useOnboarding } from 'frappe-ui/frappe'
 import { ref, watch, nextTick, onMounted } from 'vue'
@@ -166,8 +165,8 @@ const emit = defineEmits(['updateTask', 'after'])
 const router = useRouter()
 const { users, getUser } = usersStore()
 const { updateOnboardingStep } = useOnboarding('frappecrm')
+const { capture } = useTelemetry()
 
-const error = ref(null)
 const title = ref(null)
 const editMode = ref(false)
 const dueDate = ref('')
@@ -181,6 +180,58 @@ const _task = ref({
   priority: 'Low',
   reference_doctype: props.doctype,
   reference_docname: null,
+})
+
+const validateTask = () => {
+  if (!_task.value.title) {
+    toast.error(__('Title is required'))
+    return false
+  }
+  return true
+}
+
+const createTaskResource = createResource({
+  url: 'frappe.client.insert',
+  makeParams() {
+    return {
+      doc: {
+        doctype: 'CRM Task',
+        reference_doctype: props.doctype,
+        reference_docname: props.doc || null,
+        ..._task.value,
+      },
+    }
+  },
+  validate: validateTask,
+  onSuccess(d) {
+    if (d.name) {
+      updateOnboardingStep('create_first_task')
+      capture('task_created')
+      tasks.value?.reload()
+      emit('after', d, true)
+      show.value = false
+      toast.success(__('Task created'))
+    }
+  },
+})
+
+const updateTaskResource = createResource({
+  url: 'frappe.client.set_value',
+  makeParams() {
+    return {
+      doctype: 'CRM Task',
+      name: _task.value.name,
+      fieldname: _task.value,
+    }
+  },
+  validate: validateTask,
+  onSuccess(d) {
+    if (d.name) {
+      tasks.value?.reload()
+      emit('after', d)
+      show.value = false
+    }
+  },
 })
 
 function updateTaskStatus(status) {
@@ -215,42 +266,10 @@ async function updateTask() {
   }
 
   if (_task.value.name) {
-    let d = await call('frappe.client.set_value', {
-      doctype: 'CRM Task',
-      name: _task.value.name,
-      fieldname: _task.value,
-    })
-    if (d.name) {
-      tasks.value?.reload()
-      emit('after', d)
-    }
+    updateTaskResource.submit()
   } else {
-    let d = await call(
-      'frappe.client.insert',
-      {
-        doc: {
-          doctype: 'CRM Task',
-          reference_doctype: props.doctype,
-          reference_docname: props.doc || null,
-          ..._task.value,
-        },
-      },
-      {
-        onError: (err) => {
-          if (err.error.exc_type == 'MandatoryError') {
-            error.value = 'Title is mandatory'
-          }
-        },
-      },
-    )
-    if (d.name) {
-      updateOnboardingStep('create_first_task')
-      capture('task_created')
-      tasks.value?.reload()
-      emit('after', d, true)
-    }
+    createTaskResource.submit()
   }
-  show.value = false
 }
 
 function render() {

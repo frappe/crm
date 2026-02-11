@@ -32,7 +32,7 @@
       </div>
       <div v-if="!props.isGroup" class="flex items-center gap-2 w-full">
         <div id="fieldname" class="w-full">
-          <Autocomplete
+          <Combobox
             :options="filterableFields.data"
             v-model="props.condition[0]"
             :placeholder="__('Field')"
@@ -54,7 +54,7 @@
             v-model="props.condition[1]"
             @change="updateOperator"
             :options="getOperators()"
-            class="w-max min-w-[100px]"
+            class="w-max min-w-[100px] text-ink-gray-8"
           />
         </div>
         <div id="value" class="w-full">
@@ -80,6 +80,7 @@
         :isChild="true"
         :level="props.level"
         :disableAddCondition="props.disableAddCondition"
+        :doctype="props.doctype"
       />
       <Button
         variant="outline"
@@ -104,6 +105,7 @@
         :isChild="true"
         :level="props.level"
         :disableAddCondition="props.disableAddCondition"
+        :doctype="props.doctype"
       />
     </template>
   </Dialog>
@@ -111,8 +113,8 @@
 
 <script setup>
 import {
-  Autocomplete,
   Button,
+  Combobox,
   DatePicker,
   DateRangePicker,
   DateTimePicker,
@@ -162,6 +164,9 @@ const props = defineProps({
   disableAddCondition: {
     type: Boolean,
     default: false,
+  },
+  doctype: {
+    type: String,
   },
 })
 
@@ -219,8 +224,7 @@ function toggleConjunction() {
   emit('toggleConjunction', props.conjunction)
 }
 
-const updateField = (field) => {
-  props.condition[0] = field?.fieldname
+const updateField = () => {
   resetConditionValue()
 }
 

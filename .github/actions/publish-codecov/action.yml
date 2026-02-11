@@ -1,0 +1,28 @@
+name: Publish Coverage to Codecov
+description: Upload downloaded coverage artifacts to Codecov.
+inputs:
+    name:
+        description: Coverage upload name in Codecov
+        required: false
+        default: "MariaDB"
+    token:
+        description: Codecov upload token
+        required: true
+    fail-ci-if-error:
+        description: Fail workflow if Codecov upload fails
+        required: false
+        default: "true"
+    verbose:
+        description: Enable verbose Codecov logging
+        required: false
+        default: "true"
+runs:
+    using: composite
+    steps:
+        - name: Upload coverage data
+          uses: codecov/codecov-action@v4
+          with:
+              name: ${{ inputs.name }}
+              token: ${{ inputs.token }}
+              fail_ci_if_error: ${{ inputs.fail-ci-if-error }}
+              verbose: ${{ inputs.verbose }}

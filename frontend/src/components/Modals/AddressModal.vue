@@ -57,8 +57,8 @@ import { usersStore } from '@/stores/users'
 import { isMobileView } from '@/composables/settings'
 import { showQuickEntryModal, quickEntryProps } from '@/composables/modals'
 import { useDocument } from '@/data/document'
-import { capture } from '@/telemetry'
-import { FeatherIcon, createResource, ErrorMessage } from 'frappe-ui'
+import { useTelemetry } from 'frappe-ui/frappe'
+import { createResource, ErrorMessage } from 'frappe-ui'
 import { ref, nextTick, computed, onMounted } from 'vue'
 
 const props = defineProps({
@@ -75,12 +75,12 @@ const props = defineProps({
 })
 
 const { isManager } = usersStore()
+const { capture } = useTelemetry()
 
 const show = defineModel()
 
 const loading = ref(false)
 const error = ref(null)
-const title = ref(null)
 const editMode = ref(false)
 
 const { document: _address, triggerOnBeforeCreate } = useDocument(
@@ -90,7 +90,7 @@ const { document: _address, triggerOnBeforeCreate } = useDocument(
 
 const dialogOptions = computed(() => {
   let title = !editMode.value
-    ? __('New Address')
+    ? __('New address')
     : __(_address.doc?.address_title)
   let size = 'xl'
   let actions = [

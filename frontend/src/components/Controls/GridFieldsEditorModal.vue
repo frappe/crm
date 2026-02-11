@@ -4,10 +4,10 @@
       <h3
         class="flex items-center gap-2 text-2xl font-semibold leading-6 text-ink-gray-9"
       >
-        <div>{{ __('Edit Grid Fields Layout') }}</div>
+        <div>{{ __('Edit grid fields layout') }}</div>
         <Badge
           v-if="dirty"
-          :label="__('Not Saved')"
+          :label="__('Not saved')"
           variant="subtle"
           theme="orange"
         />
@@ -16,7 +16,7 @@
     <template #body-content>
       <div class="mt-4">
         <div class="text-base text-ink-gray-8 mb-2">
-          {{ __('Fields Order') }}
+          {{ __('Fields order') }}
         </div>
         <Draggable
           v-if="oldFields?.length"
@@ -54,7 +54,7 @@
           <template #target="{ togglePopover }">
             <Button
               class="w-full mt-2"
-              :label="__('Add Field')"
+              :label="__('Add field')"
               iconLeft="plus"
               @click="togglePopover()"
             />

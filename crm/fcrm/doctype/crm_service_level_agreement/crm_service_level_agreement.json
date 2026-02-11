@@ -17,6 +17,7 @@
   "end_date",
   "column_break_pzjg",
   "condition",
+  "condition_json",
   "section_break_ufaf",
   "priorities",
   "section_break_rmgo",
@@ -29,7 +30,7 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "in_standard_filter": 1,
-   "label": "SLA Name",
+   "label": "SLA name",
    "reqd": 1,
    "unique": 1
   },
@@ -50,16 +51,18 @@
    "fieldtype": "Column Break"
   },
   {
+   "depends_on": "eval: !doc.condition_json",
    "description": "Simple Python Expression, Example: doc.status == 'Open' and doc.lead_source == 'Ads'",
    "fieldname": "condition",
    "fieldtype": "Code",
    "label": "Condition",
+   "max_height": "5rem",
    "options": "Python"
   },
   {
    "fieldname": "apply_on",
    "fieldtype": "Link",
-   "label": "Apply On",
+   "label": "Apply on",
    "link_filters": "[[{\"fieldname\":\"apply_on\",\"field_option\":\"DocType\"},\"name\",\"in\",[\"CRM Lead\",\"CRM Deal\"]]]",
    "options": "DocType",
    "reqd": 1
@@ -67,7 +70,7 @@
   {
    "fieldname": "section_break_ufaf",
    "fieldtype": "Section Break",
-   "label": "Response and Follow Up"
+   "label": "Response & follow up"
   },
   {
    "fieldname": "priorities",
@@ -79,12 +82,12 @@
   {
    "fieldname": "section_break_rmgo",
    "fieldtype": "Section Break",
-   "label": "Working Hours"
+   "label": "Working hours"
   },
   {
    "fieldname": "working_hours",
    "fieldtype": "Table",
-   "label": "Working Hours",
+   "label": "Working hours",
    "options": "CRM Service Day",
    "reqd": 1
   },
@@ -96,7 +99,7 @@
   {
    "fieldname": "start_date",
    "fieldtype": "Date",
-   "label": "Start Date"
+   "label": "Start date"
   },
   {
    "fieldname": "column_break_pzjg",
@@ -105,12 +108,12 @@
   {
    "fieldname": "end_date",
    "fieldtype": "Date",
-   "label": "End Date"
+   "label": "End date"
   },
   {
    "fieldname": "holiday_list",
    "fieldtype": "Link",
-   "label": "Holiday List",
+   "label": "Holiday list",
    "options": "CRM Holiday List"
   },
   {
@@ -118,18 +121,38 @@
    "description": "Restart the SLA each time the customer replies (status changes to Open) and fulfill it when marked as Replied",
    "fieldname": "rolling_responses",
    "fieldtype": "Check",
-   "label": "Rolling Responses"
+   "label": "Rolling responses"
+  },
+  {
+   "depends_on": "eval: doc.condition_json",
+   "description": "Auto-generated from the portal view \u2014 do not edit directly unless you know what you're doing! ",
+   "fieldname": "condition_json",
+   "fieldtype": "Code",
+   "label": "Condition",
+   "max_height": "5rem"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-11-10 19:38:32.968791",
- "modified_by": "Administrator",
+ "modified": "2026-01-28 17:06:16.455548",
+ "modified_by": "shariq@frappe.io",
  "module": "FCRM",
  "name": "CRM Service Level Agreement",
  "naming_rule": "By fieldname",
  "owner": "Administrator",
  "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
   {
    "create": 1,
    "delete": 1,

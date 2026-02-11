@@ -25,12 +25,13 @@ class CRMLead(Document):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
+		from frappe.types import DF
+
 		from crm.fcrm.doctype.crm_products.crm_products import CRMProducts
 		from crm.fcrm.doctype.crm_rolling_response_time.crm_rolling_response_time import (
 			CRMRollingResponseTime,
 		)
 		from crm.fcrm.doctype.crm_status_change_log.crm_status_change_log import CRMStatusChangeLog
-		from frappe.types import DF
 
 		annual_revenue: DF.Currency
 		communication_status: DF.Link | None
@@ -50,6 +51,8 @@ class CRMLead(Document):
 		last_response_time: DF.Duration | None
 		lead_name: DF.Data | None
 		lead_owner: DF.Link | None
+		lost_notes: DF.Text | None
+		lost_reason: DF.Link | None
 		middle_name: DF.Data | None
 		mobile_no: DF.Data | None
 		naming_series: DF.Literal["CRM-LEAD-.YYYY.-"]
@@ -424,19 +427,19 @@ class CRMLead(Document):
 				"width": "12rem",
 			},
 			{
-				"label": "Mobile No",
+				"label": "Mobile no",
 				"type": "Data",
 				"key": "mobile_no",
 				"width": "11rem",
 			},
 			{
-				"label": "Assigned To",
+				"label": "Assigned to",
 				"type": "Text",
 				"key": "_assign",
 				"width": "10rem",
 			},
 			{
-				"label": "Last Modified",
+				"label": "Last modified",
 				"type": "Datetime",
 				"key": "modified",
 				"width": "8rem",

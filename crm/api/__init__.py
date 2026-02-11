@@ -1,10 +1,12 @@
 import frappe
 from bs4 import BeautifulSoup
+from frappe import _
 from frappe.core.api.file import get_max_file_size
 from frappe.translate import get_all_translations
 from frappe.utils import cstr, split_emails, validate_email_address
-from frappe.utils.modules import get_modules_from_all_apps_for_user
 from frappe.utils.telemetry import POSTHOG_HOST_FIELD, POSTHOG_PROJECT_FIELD
+
+from crm.utils import is_frappe_version
 
 
 @frappe.whitelist(allow_guest=True)
@@ -50,29 +52,23 @@ def get_user_signature():
 	return content
 
 
-@frappe.whitelist()
-def get_posthog_settings():
-	return {
-		"posthog_project_id": frappe.conf.get(POSTHOG_PROJECT_FIELD),
-		"posthog_host": frappe.conf.get(POSTHOG_HOST_FIELD),
-		"enable_telemetry": frappe.get_system_settings("enable_telemetry"),
-		"telemetry_site_age": frappe.utils.telemetry.site_age(),
-	}
-
-
 def check_app_permission():
 	if frappe.session.user == "Administrator":
 		return True
 
-	allowed_modules = get_modules_from_all_apps_for_user()
+	allowed_modules = []
+
+	if is_frappe_version("15"):
+		allowed_modules = frappe.config.get_modules_from_all_apps_for_user()
+	elif is_frappe_version("16", above=True):
+		allowed_modules = frappe.utils.modules.get_modules_from_all_apps_for_user()
+
 	allowed_modules = [x["module_name"] for x in allowed_modules]
 	if "FCRM" not in allowed_modules:
 		return False
 
 	roles = frappe.get_roles()
-	if any(
-		role in ["System Manager", "Sales User", "Sales Manager"] for role in roles
-	):
+	if any(role in ["System Manager", "Sales User", "Sales Manager"] for role in roles):
 		return True
 
 	return False
@@ -81,12 +77,11 @@ def check_app_permission():
 @frappe.whitelist(allow_guest=True)
 def accept_invitation(key: str | None = None):
 	if not key:
-		frappe.throw("Invalid or expired key")
+		frappe.throw(_("Invalid or expired key"))
 
 	result = frappe.db.get_all("CRM Invitation", filters={"key": key}, pluck="name")
 	if not result:
-		frappe.throw("Invalid or expired key")
-
+		frappe.throw(_("Invalid or expired key"))
 	invitation = frappe.get_doc("CRM Invitation", result[0])
 	invitation.accept()
 	invitation.reload()
@@ -99,10 +94,15 @@ def accept_invitation(key: str | None = None):
 
 @frappe.whitelist()
 def invite_by_email(emails: str, role: str):
-	frappe.only_for(["Sales Manager", "System Manager"])
+	frappe.only_for(["Sales Manager", "System Manager"], True)
+
+	user_roles = frappe.get_roles(frappe.session.user)
+
+	if role == "System Manager" and "System Manager" not in user_roles:
+		frappe.throw(_("You are not allowed to invite System Managers"), frappe.PermissionError)
 
 	if role not in ["System Manager", "Sales Manager", "Sales User"]:
-		frappe.throw("Cannot invite for this role")
+		frappe.throw(_("Cannot invite for this role"), frappe.PermissionError)
 
 	if not emails:
 		return

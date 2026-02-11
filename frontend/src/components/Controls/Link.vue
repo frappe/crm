@@ -47,7 +47,7 @@
           <Button
             variant="ghost"
             class="w-full !justify-start"
-            :label="__('Create New')"
+            :label="__('Create new')"
             iconLeft="plus"
             @click="() => attrs.onCreate(value, close)"
           />
@@ -162,14 +162,14 @@ const options = createResource({
   },
 })
 
-function reload(val, force=false) {
+function reload(val, force = false) {
   if (!props.doctype) return
   if (
     !force &&
     options.data?.length &&
     val === options.params?.txt &&
     props.doctype === options.params?.doctype
-  ) 
+  )
     return
 
   options.update({
@@ -196,4 +196,6 @@ const labelClasses = computed(() => {
     'text-ink-gray-5',
   ]
 })
+
+defineExpose({ reload })
 </script>

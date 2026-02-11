@@ -11,6 +11,31 @@ from crm.install import after_install
 
 
 class FCRMSettings(Document):
+	# begin: auto-generated types
+	# This code is auto-generated. Do not modify anything in this block.
+
+	from typing import TYPE_CHECKING
+
+	if TYPE_CHECKING:
+		from frappe.desk.doctype.event_notifications.event_notifications import EventNotifications
+		from frappe.types import DF
+
+		from crm.fcrm.doctype.crm_dropdown_item.crm_dropdown_item import CRMDropdownItem
+
+		access_key: DF.Data | None
+		all_day_event_notifications: DF.Table[EventNotifications]
+		auto_update_expected_deal_value: DF.Check
+		brand_logo: DF.Attach | None
+		brand_name: DF.Data | None
+		currency: DF.Link | None
+		default_calendar_view: DF.Literal["Daily", "Weekly", "Monthly"]
+		dropdown_items: DF.Table[CRMDropdownItem]
+		enable_forecasting: DF.Check
+		event_notifications: DF.Table[EventNotifications]
+		favicon: DF.Attach | None
+		service_provider: DF.Literal["frankfurter.app", "exchangerate.host"]
+	# end: auto-generated types
+
 	@frappe.whitelist()
 	def restore_defaults(self, force=False):
 		after_install(force)

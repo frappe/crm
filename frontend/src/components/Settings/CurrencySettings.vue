@@ -4,7 +4,7 @@
     <div class="flex justify-between px-2 text-ink-gray-8">
       <div class="flex flex-col gap-1">
         <h2 class="flex gap-2 text-xl font-semibold leading-none h-5">
-          {{ __('Currency & Exchange rate provider') }}
+          {{ __('Currency & exchange rate provider') }}
         </h2>
         <p class="text-p-base text-ink-gray-6">
           {{
@@ -148,7 +148,7 @@ function updateSettings() {
         !settings.doc.access_key
       ) {
         errorMessage.value = __(
-          'Please enter the Exchangerate Host access key.',
+          'Please enter the exchangerate host access key.',
         )
         return errorMessage.value
       }

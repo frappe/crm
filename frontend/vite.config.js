@@ -7,20 +7,8 @@ import { VitePWA } from 'vite-plugin-pwa'
 // https://vitejs.dev/config/
 export default defineConfig(async ({ mode }) => {
   const isDev = mode === 'development'
-  const frappeui = await importFrappeUIPlugin(isDev)
-
   const config = {
     plugins: [
-      frappeui({
-        frappeProxy: true,
-        lucideIcons: true,
-        jinjaBootData: true,
-        buildConfig: {
-          indexHtmlPath: '../crm/www/crm.html',
-          emptyOutDir: true,
-          sourcemap: true,
-        },
-      }),
       vue(),
       vueJsx(),
       VitePWA({
@@ -72,7 +60,6 @@ export default defineConfig(async ({ mode }) => {
     optimizeDeps: {
       include: [
         'feather-icons',
-        'showdown',
         'tailwind.config.js',
         'prosemirror-state',
         'prosemirror-view',
@@ -80,41 +67,41 @@ export default defineConfig(async ({ mode }) => {
         'interactjs',
       ],
     },
+    server: {
+      fs: {
+        allow: [path.resolve(__dirname, '..')],
+      },
+    },
   }
 
-  // Add local frappe-ui alias only in development if the local frappe-ui exists
-  if (isDev) {
-    try {
-      // Check if the local frappe-ui directory exists
-      const fs = await import('node:fs')
-      const localFrappeUIPath = path.resolve(__dirname, '../frappe-ui')
-      const vitePluginPath = path.resolve(localFrappeUIPath, 'vite.js')
-      
-      if (fs.existsSync(localFrappeUIPath) && fs.existsSync(vitePluginPath)) {
-        config.resolve.alias['frappe-ui'] = localFrappeUIPath
-      } else {
-        console.warn('Local frappe-ui directory not found or incomplete, using npm package')
-      }
-    } catch (error) {
-      console.warn(
-        'Error checking for local frappe-ui, using npm package:',
-        error.message,
-      )
-    }
-  }
+  const frappeui = await importFrappeUIPlugin(isDev, config)
+  config.plugins.unshift(
+    frappeui({
+      frappeProxy: true,
+      lucideIcons: true,
+      jinjaBootData: true,
+      buildConfig: {
+        indexHtmlPath: '../crm/www/crm.html',
+        emptyOutDir: true,
+        sourcemap: true,
+      },
+    }),
+  )
 
   return config
 })
 
-async function importFrappeUIPlugin(isDev) {
+async function importFrappeUIPlugin(isDev, config) {
   if (isDev) {
     try {
       // Check if local frappe-ui has the vite plugin file
       const fs = await import('node:fs')
-      const localVitePluginPath = path.resolve(__dirname, '../frappe-ui/vite.js')
-      
+      const localVitePluginPath = path.resolve(__dirname, '../frappe-ui/vite')
+
       if (fs.existsSync(localVitePluginPath)) {
         const module = await import('../frappe-ui/vite')
+        console.info('Local frappe-ui vite plugin found, using local plugin')
+        config.resolve.alias = getAliases(config)
         return module.default
       } else {
         console.warn('Local frappe-ui vite plugin not found, using npm package')
@@ -129,4 +116,20 @@ async function importFrappeUIPlugin(isDev) {
   // Fall back to npm package if local import fails
   const module = await import('frappe-ui/vite')
   return module.default
+}
+
+function getAliases(config) {
+  return {
+    ...config.resolve.alias,
+    'frappe-ui/tailwind': path.resolve(
+      __dirname,
+      '../frappe-ui/tailwind/preset.js',
+    ),
+    'frappe-ui/style.css': path.resolve(
+      __dirname,
+      '../frappe-ui/src/style.css',
+    ),
+    'frappe-ui/frappe': path.resolve(__dirname, '../frappe-ui/frappe/index.js'),
+    'frappe-ui': path.resolve(__dirname, '../frappe-ui/src/index.ts'),
+  }
 }

@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2025-12-14 09:36+0000\n"
-"PO-Revision-Date: 2025-12-15 19:49\n"
+"POT-Creation-Date: 2025-12-21 09:37+0000\n"
+"PO-Revision-Date: 2026-01-21 11:42\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Portuguese\n"
 "MIME-Version: 1.0\n"
@@ -1492,7 +1492,7 @@ msgstr "Conteúdo"
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:78
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:78
 msgid "Content Type"
-msgstr "Tipo de Conteúdo"
+msgstr ""
 
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:159
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:163
@@ -6394,7 +6394,7 @@ msgstr "Horas de trabalho"
 msgid "Yesterday"
 msgstr "Ontem"
 
-#: crm/api/whatsapp.py:38 crm/api/whatsapp.py:183 crm/api/whatsapp.py:197
+#: crm/api/whatsapp.py:38 crm/api/whatsapp.py:186 crm/api/whatsapp.py:200
 #: frontend/src/components/Activities/WhatsAppArea.vue:34
 #: frontend/src/components/Activities/WhatsAppBox.vue:14
 msgid "You"
@@ -6652,7 +6652,7 @@ msgstr ""
 msgid "kanban"
 msgstr "kanban"
 
-#: crm/api/doc.py:40 crm/api/doc.py:158 crm/api/doc.py:503
+#: crm/api/doc.py:43 crm/api/doc.py:161 crm/api/doc.py:506
 msgid "label"
 msgstr "etiqueta"
 

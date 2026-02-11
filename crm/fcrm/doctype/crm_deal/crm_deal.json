@@ -14,8 +14,6 @@
   "column_break_ijan",
   "status",
   "deal_owner",
-  "lost_reason",
-  "lost_notes",
   "section_break_jgpm",
   "probability",
   "expected_deal_value",
@@ -75,7 +73,10 @@
   "column_break_evzj",
   "last_responded_on",
   "log_tab",
-  "status_change_log"
+  "status_change_log",
+  "lost_details_tab",
+  "lost_reason",
+  "lost_notes"
  ],
  "fields": [
   {
@@ -93,7 +94,7 @@
    "fetch_from": ".annual_revenue",
    "fieldname": "annual_revenue",
    "fieldtype": "Currency",
-   "label": "Annual Revenue",
+   "label": "Annual revenue",
    "options": "currency"
   },
   {
@@ -105,7 +106,7 @@
   {
    "fieldname": "next_step",
    "fieldtype": "Data",
-   "label": "Next Step"
+   "label": "Next step"
   },
   {
    "fieldname": "lead",
@@ -116,14 +117,14 @@
   {
    "fieldname": "deal_owner",
    "fieldtype": "Link",
-   "label": "Deal Owner",
+   "label": "Deal owner",
    "options": "User"
   },
   {
    "default": "CRM-DEAL-.YYYY.-",
    "fieldname": "naming_series",
    "fieldtype": "Select",
-   "label": "Naming Series",
+   "label": "Naming series",
    "options": "CRM-DEAL-.YYYY.-"
   },
   {
@@ -134,13 +135,13 @@
   {
    "fieldname": "email",
    "fieldtype": "Data",
-   "label": "Primary Email",
+   "label": "Primary email",
    "options": "Email"
   },
   {
    "fieldname": "mobile_no",
    "fieldtype": "Data",
-   "label": "Primary Mobile No",
+   "label": "Primary mobile no",
    "options": "Phone"
   },
   {
@@ -179,7 +180,7 @@
   {
    "fieldname": "response_by",
    "fieldtype": "Datetime",
-   "label": "Response By",
+   "label": "Response by",
    "read_only": 1
   },
   {
@@ -189,20 +190,20 @@
   {
    "fieldname": "sla_status",
    "fieldtype": "Select",
-   "label": "SLA Status",
+   "label": "SLA status",
    "options": "\nFirst Response Due\nRolling Response Due\nFailed\nFulfilled",
    "read_only": 1
   },
   {
    "fieldname": "sla_creation",
    "fieldtype": "Datetime",
-   "label": "SLA Creation",
+   "label": "SLA creation",
    "read_only": 1
   },
   {
    "fieldname": "response_details_section",
    "fieldtype": "Section Break",
-   "label": "Response Details"
+   "label": "Response details"
   },
   {
    "fieldname": "column_break_hpvj",
@@ -211,20 +212,20 @@
   {
    "fieldname": "first_response_time",
    "fieldtype": "Duration",
-   "label": "First Response Time",
+   "label": "First response time",
    "read_only": 1
   },
   {
    "fieldname": "first_responded_on",
    "fieldtype": "Datetime",
-   "label": "First Responded On",
+   "label": "First responded on",
    "read_only": 1
   },
   {
    "default": "Open",
    "fieldname": "communication_status",
    "fieldtype": "Link",
-   "label": "Communication Status",
+   "label": "Communication status",
    "options": "CRM Communication Status"
   },
   {
@@ -243,18 +244,18 @@
   {
    "fieldname": "no_of_employees",
    "fieldtype": "Select",
-   "label": "No. of Employees",
+   "label": "No. of employees",
    "options": "1-10\n11-50\n51-200\n201-500\n501-1000\n1000+"
   },
   {
    "fieldname": "job_title",
    "fieldtype": "Data",
-   "label": "Job Title"
+   "label": "Job title"
   },
   {
    "fieldname": "phone",
    "fieldtype": "Data",
-   "label": "Primary Phone",
+   "label": "Primary phone",
    "options": "Phone"
   },
   {
@@ -266,13 +267,13 @@
   {
    "fieldname": "status_change_log",
    "fieldtype": "Table",
-   "label": "Status Change Log",
+   "label": "Status change log",
    "options": "CRM Status Change Log"
   },
   {
    "fieldname": "lead_name",
    "fieldtype": "Data",
-   "label": "Lead Name"
+   "label": "Lead name"
   },
   {
    "fieldname": "column_break_ijan",
@@ -281,7 +282,7 @@
   {
    "fieldname": "lead_details_tab",
    "fieldtype": "Tab Break",
-   "label": "Lead Details"
+   "label": "Lead details"
   },
   {
    "fieldname": "column_break_wsde",
@@ -290,12 +291,12 @@
   {
    "fieldname": "organization_details_section",
    "fieldtype": "Section Break",
-   "label": "Organization Details"
+   "label": "Organization details"
   },
   {
    "fieldname": "organization_name",
    "fieldtype": "Data",
-   "label": "Organization Name"
+   "label": "Organization name"
   },
   {
    "fieldname": "column_break_xbyf",
@@ -321,12 +322,12 @@
   {
    "fieldname": "first_name",
    "fieldtype": "Data",
-   "label": "First Name"
+   "label": "First name"
   },
   {
    "fieldname": "last_name",
    "fieldtype": "Data",
-   "label": "Last Name"
+   "label": "Last name"
   },
   {
    "fieldname": "column_break_xjmy",
@@ -380,7 +381,7 @@
    "description": "Total after discount",
    "fieldname": "net_total",
    "fieldtype": "Currency",
-   "label": "Net Total",
+   "label": "Net total",
    "options": "currency",
    "read_only": 1
   },
@@ -391,7 +392,7 @@
   {
    "fieldname": "deal_value",
    "fieldtype": "Currency",
-   "label": "Deal Value",
+   "label": "Deal value",
    "options": "currency"
   },
   {
@@ -401,14 +402,14 @@
   {
    "fieldname": "lost_reason",
    "fieldtype": "Link",
-   "label": "Lost Reason",
+   "label": "Lost reason",
    "mandatory_depends_on": "eval: doc.status == \"Lost\"",
    "options": "CRM Lost Reason"
   },
   {
    "fieldname": "lost_notes",
    "fieldtype": "Text",
-   "label": "Lost Notes",
+   "label": "Lost notes",
    "mandatory_depends_on": "eval: doc.lost_reason == \"Other\""
   },
   {
@@ -416,23 +417,23 @@
    "description": "The rate used to convert the deal\u2019s currency to your crm's base currency (set in CRM Settings). It is set once when the currency is first added and doesn't change automatically.",
    "fieldname": "exchange_rate",
    "fieldtype": "Float",
-   "label": "Exchange Rate"
+   "label": "Exchange rate"
   },
   {
    "fieldname": "expected_deal_value",
    "fieldtype": "Currency",
-   "label": "Expected Deal Value",
+   "label": "Expected deal value",
    "options": "currency"
   },
   {
    "fieldname": "expected_closure_date",
    "fieldtype": "Date",
-   "label": "Expected Closure Date"
+   "label": "Expected closure date"
   },
   {
    "fieldname": "closed_date",
    "fieldtype": "Date",
-   "label": "Closed Date"
+   "label": "Closed date"
   },
   {
    "fieldname": "section_break_mwvg",
@@ -463,13 +464,18 @@
    "fieldtype": "Datetime",
    "label": "Last Responded On",
    "read_only": 1
+  },
+  {
+   "fieldname": "lost_details_tab",
+   "fieldtype": "Tab Break",
+   "label": "Lost Details"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-11-10 21:26:42.554091",
- "modified_by": "Administrator",
+ "modified": "2026-02-05 17:01:07.036502",
+ "modified_by": "shariq@frappe.io",
  "module": "FCRM",
  "name": "CRM Deal",
  "naming_rule": "By \"Naming Series\" field",
@@ -483,7 +489,7 @@
    "print": 1,
    "read": 1,
    "report": 1,
-   "role": "Sales User",
+   "role": "System Manager",
    "share": 1,
    "write": 1
   },
@@ -496,6 +502,18 @@
    "read": 1,
    "report": 1,
    "role": "Sales Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales User",
    "share": 1,
    "write": 1
   }

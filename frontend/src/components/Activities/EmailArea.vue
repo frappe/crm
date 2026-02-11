@@ -38,7 +38,7 @@
             @click="reply(activity.data)"
           />
           <Button
-            :tooltip="__('Reply All')"
+            :tooltip="__('Reply all')"
             variant="ghost"
             :icon="ReplyAllIcon"
             class="text-ink-gray-7"
@@ -129,7 +129,6 @@ function reply(email, reply_all = false) {
   editor.editor
     .chain()
     .clearContent()
-    .insertContent('<p>.</p>')
     .updateAttributes('paragraph', { class: 'reply-to-content' })
     .insertContent(repliedMessage)
     .focus('all')

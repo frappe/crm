@@ -1,0 +1,78 @@
+name: Linters
+
+on:
+    pull_request:
+    workflow_dispatch:
+
+permissions:
+    contents: read
+    pull-requests: read
+
+jobs:
+    commit-lint:
+        name: Semantic Commits
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v6
+              with:
+                  fetch-depth: 200
+
+            - uses: actions/setup-node@v6
+              with:
+                  node-version: "24"
+                  check-latest: true
+
+            - name: Install commitlint
+              run: npm install --no-save @commitlint/cli @commitlint/config-conventional
+
+            - name: Check commit titles
+              run: npx commitlint --verbose --from "${{ github.event.pull_request.base.sha }}" --to "${{ github.event.pull_request.head.sha }}"
+
+    semgrep:
+        name: Semgrep Rules
+        runs-on: ubuntu-latest
+
+        env:
+            PIP_DISABLE_PIP_VERSION_CHECK: "1"
+            PYTHONDONTWRITEBYTECODE: "1"
+
+        steps:
+            - uses: actions/checkout@v6
+
+            - name: Set up Python
+              uses: actions/setup-python@v6
+              with:
+                  python-version: "3.14"
+                  cache: pip
+
+            - name: Install Semgrep
+              run: pip install --upgrade semgrep
+
+            - name: Download Semgrep rules
+              run: git clone --depth 1 https://github.com/frappe/semgrep-rules.git frappe-semgrep-rules
+
+            - name: Run Semgrep rules
+              run: semgrep ci --config ./frappe-semgrep-rules/rules --config r/python.lang.correctness
+
+    pre-commit:
+        name: Pre-commit Checks
+        runs-on: ubuntu-latest
+
+        env:
+            PIP_DISABLE_PIP_VERSION_CHECK: "1"
+            PYTHONDONTWRITEBYTECODE: "1"
+
+        steps:
+            - uses: actions/checkout@v6
+
+            - name: Set up Python
+              uses: actions/setup-python@v6
+              with:
+                  python-version: "3.14"
+                  cache: pip
+
+            - name: Run Pre-commit
+              uses: pre-commit/action@v3.0.1
+              with:
+                  extra_args: --all-files

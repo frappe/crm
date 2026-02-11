@@ -6,6 +6,20 @@ from frappe.model.document import Document
 
 
 class FCRMNote(Document):
+	# begin: auto-generated types
+	# This code is auto-generated. Do not modify anything in this block.
+
+	from typing import TYPE_CHECKING
+
+	if TYPE_CHECKING:
+		from frappe.types import DF
+
+		content: DF.TextEditor | None
+		reference_docname: DF.DynamicLink | None
+		reference_doctype: DF.Link | None
+		title: DF.Data
+	# end: auto-generated types
+
 	@staticmethod
 	def default_list_data():
 		rows = [
@@ -17,4 +31,4 @@ class FCRMNote(Document):
 			"owner",
 			"modified",
 		]
-		return {'columns': [], 'rows': rows}
+		return {"columns": [], "rows": rows}

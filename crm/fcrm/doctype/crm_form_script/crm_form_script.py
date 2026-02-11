@@ -7,6 +7,21 @@ from frappe.model.document import Document
 
 
 class CRMFormScript(Document):
+	# begin: auto-generated types
+	# This code is auto-generated. Do not modify anything in this block.
+
+	from typing import TYPE_CHECKING
+
+	if TYPE_CHECKING:
+		from frappe.types import DF
+
+		dt: DF.Link
+		enabled: DF.Check
+		is_standard: DF.Check
+		script: DF.Code | None
+		view: DF.Literal["Form", "List"]
+	# end: auto-generated types
+
 	def validate(self):
 		in_user_env = not (
 			frappe.flags.in_install
@@ -22,6 +37,7 @@ class CRMFormScript(Document):
 				self.enabled = enabled_value
 			else:
 				frappe.throw(_("You need to be in developer mode to edit a Standard Form Script"))
+
 
 def get_form_script(dt, view="Form"):
 	"""Returns the form script for the given doctype"""

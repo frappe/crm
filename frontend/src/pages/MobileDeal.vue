@@ -129,7 +129,7 @@
                       class="px-2 pb-2.5"
                       :class="[i == 0 ? 'pt-5' : 'pt-2.5']"
                     >
-                      <Section :opened="contact.opened">
+                      <CollapsibleSection :opened="contact.opened">
                         <template #header="{ opened, toggle }">
                           <div
                             class="flex cursor-pointer items-center justify-between gap-2 pr-1 text-base leading-5 text-ink-gray-7"
@@ -195,7 +195,7 @@
                             {{ contact.mobile_no }}
                           </div>
                         </div>
-                      </Section>
+                      </CollapsibleSection>
                     </div>
                     <div
                       v-if="i != section.contacts.length - 1"
@@ -259,7 +259,8 @@
   <LostReasonModal
     v-if="showLostReasonModal"
     v-model="showLostReasonModal"
-    :deal="document"
+    doctype="CRM Deal"
+    :document="document"
   />
 </template>
 <script setup>
@@ -286,7 +287,7 @@ import OrganizationModal from '@/components/Modals/OrganizationModal.vue'
 import LostReasonModal from '@/components/Modals/LostReasonModal.vue'
 import AssignTo from '@/components/AssignTo.vue'
 import ContactModal from '@/components/Modals/ContactModal.vue'
-import Section from '@/components/Section.vue'
+import CollapsibleSection from '@/components/CollapsibleSection.vue'
 import Link from '@/components/Controls/Link.vue'
 import SidePanelLayout from '@/components/SidePanelLayout.vue'
 import SLASection from '@/components/SLASection.vue'
@@ -346,8 +347,8 @@ watch(error, (err) => {
   if (err) {
     errorTitle.value = __(
       err.exc_type == 'DoesNotExistError'
-        ? 'Document not found'
-        : 'Error occurred',
+        ? __('Document not found')
+        : __('Error occurred'),
     )
     errorMessage.value = __(err.messages?.[0] || 'An error occurred')
   } else {
@@ -522,7 +523,7 @@ function contactOptions(contact) {
 
   if (!contact.is_primary) {
     options.push({
-      label: __('Set as Primary Contact'),
+      label: __('Set as primary contact'),
       icon: h(SuccessIcon, { class: 'h-4 w-4' }),
       onClick: () => setPrimaryContact(contact.name),
     })

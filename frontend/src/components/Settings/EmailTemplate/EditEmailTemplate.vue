@@ -35,7 +35,7 @@
           <FormControl
             size="md"
             v-model="template.name"
-            :placeholder="__('Payment Reminder')"
+            :placeholder="__('Payment reminder')"
             :label="__('Name')"
             :required="true"
           />
@@ -66,7 +66,7 @@
           size="md"
           v-model="template.subject"
           :label="__('Subject')"
-          :placeholder="__('Payment Reminder from Frappé - (#{{ name }})')"
+          :placeholder="__('Payment reminder from Frappé - (#{{ name }})')"
           :required="true"
         />
       </div>
@@ -75,10 +75,10 @@
           type="select"
           size="md"
           v-model="template.content_type"
-          :label="__('Content Type')"
+          :label="__('Content type')"
           default="Rich Text"
           :options="['Rich Text', 'HTML']"
-          :placeholder="__('Rich Text')"
+          :placeholder="__('Rich text')"
         />
       </div>
       <div>

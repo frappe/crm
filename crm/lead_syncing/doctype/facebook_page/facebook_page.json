@@ -36,12 +36,12 @@
   {
    "fieldname": "access_token",
    "fieldtype": "Small Text",
-   "label": "Access Token"
+   "label": "Access token"
   },
   {
    "fieldname": "page_name",
    "fieldtype": "Data",
-   "label": "Page Name"
+   "label": "Page name"
   }
  ],
  "grid_page_length": 50,
@@ -53,8 +53,8 @@
    "link_fieldname": "page"
   }
  ],
- "modified": "2025-09-26 19:36:59.413214",
- "modified_by": "Administrator",
+ "modified": "2026-01-28 17:11:34.619999",
+ "modified_by": "shariq@frappe.io",
  "module": "Lead Syncing",
  "name": "Facebook Page",
  "naming_rule": "By fieldname",
@@ -69,6 +69,18 @@
    "read": 1,
    "report": 1,
    "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales Manager",
    "share": 1,
    "write": 1
   }

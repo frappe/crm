@@ -9,7 +9,7 @@
           variant="ghost"
           icon-left="chevron-left"
           :label="
-            assignmentRuleData.assignmentRuleName || __('New Assignment Rule')
+            assignmentRuleData.assignmentRuleName || __('New assignment rule')
           "
           size="md"
           @click="goBack()"
@@ -164,7 +164,7 @@
                   <div
                     class="text-sm text-ink-gray-6 flex gap-1 cursor-default text-nowrap items-center"
                   >
-                    <span>{{ __('Old Condition') }}</span>
+                    <span>{{ __('Old condition') }}</span>
                     <FeatherIcon name="info" class="size-4" />
                   </div>
                 </template>
@@ -248,7 +248,7 @@
                   <div
                     class="text-sm text-ink-gray-6 flex gap-1 cursor-default text-nowrap items-center"
                   >
-                    <span> {{ __('Old Condition') }} </span>
+                    <span> {{ __('Old condition') }} </span>
                     <FeatherIcon name="info" class="size-4" />
                   </div>
                 </template>
@@ -299,7 +299,7 @@
       <div>
         <div class="flex flex-col gap-1">
           <span class="text-lg font-semibold text-ink-gray-8">{{
-            __('Assignment Schedule')
+            __('Assignment schedule')
           }}</span>
           <span class="text-p-sm text-ink-gray-6">
             {{
@@ -596,10 +596,41 @@ const goBack = () => {
 
 const saveAssignmentRule = () => {
   const validationErrors = validateAssignmentRule(undefined, !useNewUI.value)
-  if (Object.values(validationErrors).some((error) => error)) {
-    toast.error(
-      __('Invalid fields, check if all are filled in and values are correct.'),
-    )
+  const expandedErrors = Object.keys(validationErrors)
+    .filter((key) => validationErrors[key])
+    .map((key) => {
+      const fieldLabels = {
+        assignmentRuleName: __('Name'),
+        description: __('Description'),
+        assignCondition: __('Assignment Condition'),
+        assignConditionError: __('Assignment Condition'),
+        unassignConditionError: __('Unassignment Condition'),
+        users: __('Users'),
+        assignmentDays: __('Assignment Days'),
+      }
+      return {
+        key,
+        message: validationErrors[key],
+        label: fieldLabels[key] || key,
+      }
+    })
+
+  if (expandedErrors.length > 0) {
+    let missingFields = expandedErrors
+      .filter((e) => e.message.toLowerCase().includes('required'))
+      .map((e) => e.label)
+    let invalidFields = expandedErrors
+      .filter((e) => !e.message.toLowerCase().includes('required'))
+      .map((e) => e.label)
+
+    let message = ''
+    if (missingFields.length > 0) {
+      message = __('Missing mandatory fields: {0}', [missingFields.join(', ')])
+    }
+    if (!missingFields.length && invalidFields.length > 0) {
+      message = __('Invalid fields: {0}', [invalidFields.join(', ')])
+    }
+    toast.error(message)
     return
   }
   if (step.value.data) {

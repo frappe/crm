@@ -3,7 +3,7 @@
     <!-- title and desc -->
     <div role="heading" aria-level="1" class="flex justify-between gap-1">
       <h2 class="text-xl font-semibold text-ink-gray-8">
-        {{ __('Edit Email') }}
+        {{ __('Edit email') }}
       </h2>
     </div>
     <div class="w-fit">
@@ -71,7 +71,7 @@
         @click="emit('update:step', 'email-list')"
       />
       <Button
-        :label="__('Update Account')"
+        :label="__('Update account')"
         variant="solid"
         @click="updateAccount"
         :loading="loading"

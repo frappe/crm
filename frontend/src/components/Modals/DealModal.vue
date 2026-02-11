@@ -34,14 +34,14 @@
               v-if="hasOrganizationSections"
               class="flex items-center gap-3 text-sm text-ink-gray-5"
             >
-              <div>{{ __('Choose Existing Organization') }}</div>
+              <div>{{ __('Choose existing organization') }}</div>
               <Switch v-model="chooseExistingOrganization" />
             </div>
             <div
               v-if="hasContactSections"
               class="flex items-center gap-3 text-sm text-ink-gray-5"
             >
-              <div>{{ __('Choose Existing Contact') }}</div>
+              <div>{{ __('Choose existing contact') }}</div>
               <Switch v-model="chooseExistingContact" />
             </div>
           </div>
@@ -50,7 +50,6 @@
             class="h-px w-full border-t my-5"
           />
           <FieldLayout
-            ref="fieldLayoutRef"
             v-if="tabs.data?.length"
             :tabs="tabs.data"
             :data="deal.doc"
@@ -81,7 +80,7 @@ import { statusesStore } from '@/stores/statuses'
 import { isMobileView } from '@/composables/settings'
 import { showQuickEntryModal, quickEntryProps } from '@/composables/modals'
 import { useDocument } from '@/data/document'
-import { capture } from '@/telemetry'
+import { useTelemetry } from 'frappe-ui/frappe'
 import { Switch, createResource } from 'frappe-ui'
 import { computed, ref, onMounted, nextTick, watch } from 'vue'
 import { useRouter } from 'vue-router'
@@ -105,7 +104,7 @@ const hasContactSections = ref(true)
 const isDealCreating = ref(false)
 const chooseExistingContact = ref(false)
 const chooseExistingOrganization = ref(false)
-const fieldLayoutRef = ref(null)
+const { capture } = useTelemetry()
 
 watch(
   [chooseExistingOrganization, chooseExistingContact],
@@ -197,7 +196,7 @@ async function createDeal() {
         if (typeof deal.doc.annual_revenue === 'string') {
           deal.doc.annual_revenue = deal.doc.annual_revenue.replace(/,/g, '')
         } else if (isNaN(deal.doc.annual_revenue)) {
-          error.value = __('Annual Revenue should be a number')
+          error.value = __('Annual revenue should be a number')
           return error.value
         }
       }
@@ -205,11 +204,11 @@ async function createDeal() {
         deal.doc.mobile_no &&
         isNaN(deal.doc.mobile_no.replace(/[-+() ]/g, ''))
       ) {
-        error.value = __('Mobile No should be a number')
+        error.value = __('Mobile no should be a number')
         return error.value
       }
       if (deal.doc.email && !deal.doc.email.includes('@')) {
-        error.value = __('Invalid Email')
+        error.value = __('Invalid email address')
         return error.value
       }
       if (!deal.doc.status) {

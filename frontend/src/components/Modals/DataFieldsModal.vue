@@ -4,10 +4,10 @@
       <h3
         class="flex items-center gap-2 text-2xl font-semibold leading-6 text-ink-gray-9"
       >
-        <div>{{ __('Edit Data Fields Layout') }}</div>
+        <div>{{ __('Edit data fields layout') }}</div>
         <Badge
           v-if="dirty"
-          :label="__('Not Saved')"
+          :label="__('Not saved')"
           variant="subtle"
           theme="orange"
         />
@@ -51,7 +51,7 @@
 import FieldLayout from '@/components/FieldLayout/FieldLayout.vue'
 import FieldLayoutEditor from '@/components/FieldLayoutEditor.vue'
 import { useDebounceFn } from '@vueuse/core'
-import { capture } from '@/telemetry'
+import { useTelemetry } from 'frappe-ui/frappe'
 import { Dialog, Badge, call, createResource } from 'frappe-ui'
 import { ref, watch, onMounted, nextTick } from 'vue'
 
@@ -63,6 +63,8 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['reload'])
+
+const { capture } = useTelemetry()
 
 const show = defineModel()
 const _doctype = ref(props.doctype)

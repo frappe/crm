@@ -1,7 +1,7 @@
 <template>
   <Dialog
     v-model="show"
-    :options="{ title: __('Assign To'), size: 'xl' }"
+    :options="{ title: __('Assign to'), size: 'xl' }"
     @close="() => (assignees = [...oldAssignees])"
   >
     <template #body-content>
@@ -89,7 +89,7 @@
 import UserAvatar from '@/components/UserAvatar.vue'
 import Link from '@/components/Controls/Link.vue'
 import { usersStore } from '@/stores/users'
-import { capture } from '@/telemetry'
+import { useTelemetry } from 'frappe-ui/frappe'
 import { Tooltip, call } from 'frappe-ui'
 import { ref, computed, onMounted } from 'vue'
 
@@ -117,6 +117,7 @@ const oldAssignees = ref([])
 const error = ref('')
 
 const { users, getUser } = usersStore()
+const { capture } = useTelemetry()
 
 const removeValue = (value) => {
   assignees.value = assignees.value.filter(

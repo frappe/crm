@@ -128,7 +128,7 @@ const props = defineProps({
   validate: { type: Function, default: null },
   errorMessage: {
     type: Function,
-    default: (value) => `${value} is an Invalid value`,
+    default: (value) => __('{0} is an Invalid value', [value]),
   },
   emptyPlaceholder: { type: String, default: __('No results found') },
   // UI

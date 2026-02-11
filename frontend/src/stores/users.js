@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { createResource } from 'frappe-ui'
 import { sessionStore } from './session'
-import { reactive } from 'vue'
+import { computed, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 
 export const usersStore = defineStore('crm-users', () => {
@@ -81,8 +81,15 @@ export const usersStore = defineStore('crm-users', () => {
     return null
   }
 
+  const isCrmUser = (user)=>{
+    user = user || session.user
+    return users.data.crmUsers?.find(u=>u.name === user)
+  }
+
   return {
     users,
+    allUsers: computed(() => users.data.allUsers),
+    crmUsers: computed(() => users.data.crmUsers),
     getUser,
     isAdmin,
     isManager,
@@ -91,5 +98,6 @@ export const usersStore = defineStore('crm-users', () => {
     isTelephonyAgent,
     getUserRole,
     isWebsiteUser,
+    isCrmUser,
   }
 })

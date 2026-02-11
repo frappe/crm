@@ -67,7 +67,10 @@
   "syncing_tab",
   "facebook_lead_id",
   "column_break_ixmu",
-  "facebook_form_id"
+  "facebook_form_id",
+  "lost_details_tab",
+  "lost_reason",
+  "lost_notes"
  ],
  "fields": [
   {
@@ -86,18 +89,18 @@
   {
    "fieldname": "first_name",
    "fieldtype": "Data",
-   "label": "First Name",
+   "label": "First name",
    "reqd": 1
   },
   {
    "fieldname": "middle_name",
    "fieldtype": "Data",
-   "label": "Middle Name"
+   "label": "Middle name"
   },
   {
    "fieldname": "last_name",
    "fieldtype": "Data",
-   "label": "Last Name"
+   "label": "Last name"
   },
   {
    "fieldname": "gender",
@@ -130,7 +133,7 @@
   {
    "fieldname": "mobile_no",
    "fieldtype": "Data",
-   "label": "Mobile No",
+   "label": "Mobile no",
    "options": "Phone"
   },
   {
@@ -150,18 +153,18 @@
   {
    "fieldname": "no_of_employees",
    "fieldtype": "Select",
-   "label": "No. of Employees",
+   "label": "No. of employees",
    "options": "1-10\n11-50\n51-200\n201-500\n501-1000\n1000+"
   },
   {
    "fieldname": "annual_revenue",
    "fieldtype": "Currency",
-   "label": "Annual Revenue"
+   "label": "Annual revenue"
   },
   {
    "fieldname": "lead_owner",
    "fieldtype": "Link",
-   "label": "Lead Owner",
+   "label": "Lead owner",
    "options": "User"
   },
   {
@@ -186,13 +189,13 @@
   {
    "fieldname": "lead_name",
    "fieldtype": "Data",
-   "label": "Full Name",
+   "label": "Full name",
    "search_index": 1
   },
   {
    "fieldname": "job_title",
    "fieldtype": "Data",
-   "label": "Job Title"
+   "label": "Job title"
   },
   {
    "fieldname": "organization_tab",
@@ -238,7 +241,7 @@
   {
    "fieldname": "sla_creation",
    "fieldtype": "Datetime",
-   "label": "SLA Creation",
+   "label": "SLA creation",
    "read_only": 1
   },
   {
@@ -248,19 +251,19 @@
   {
    "fieldname": "sla_status",
    "fieldtype": "Select",
-   "label": "SLA Status",
+   "label": "SLA status",
    "options": "\nFirst Response Due\nRolling Response Due\nFailed\nFulfilled",
    "read_only": 1
   },
   {
    "fieldname": "response_details_section",
    "fieldtype": "Section Break",
-   "label": "Response Details"
+   "label": "Response details"
   },
   {
    "fieldname": "response_by",
    "fieldtype": "Datetime",
-   "label": "Response By",
+   "label": "Response by",
    "read_only": 1
   },
   {
@@ -270,20 +273,20 @@
   {
    "fieldname": "first_response_time",
    "fieldtype": "Duration",
-   "label": "First Response Time",
+   "label": "First response time",
    "read_only": 1
   },
   {
    "fieldname": "first_responded_on",
    "fieldtype": "Datetime",
-   "label": "First Responded On",
+   "label": "First responded on",
    "read_only": 1
   },
   {
    "default": "Open",
    "fieldname": "communication_status",
    "fieldtype": "Link",
-   "label": "Communication Status",
+   "label": "Communication status",
    "options": "CRM Communication Status"
   },
   {
@@ -301,7 +304,7 @@
   {
    "fieldname": "status_change_log",
    "fieldtype": "Table",
-   "label": "Status Change Log",
+   "label": "Status change log",
    "options": "CRM Status Change Log"
   },
   {
@@ -334,7 +337,7 @@
    "description": "Total after discount",
    "fieldname": "net_total",
    "fieldtype": "Currency",
-   "label": "Net Total",
+   "label": "Net total",
    "options": "currency",
    "read_only": 1
   },
@@ -346,7 +349,7 @@
   {
    "fieldname": "facebook_lead_id",
    "fieldtype": "Data",
-   "label": "Facebook Lead ID",
+   "label": "Facebook lead ID",
    "unique": 1
   },
   {
@@ -356,7 +359,7 @@
   {
    "fieldname": "facebook_form_id",
    "fieldtype": "Data",
-   "label": "Facebook Form ID"
+   "label": "Facebook form ID"
   },
   {
    "fieldname": "section_break_kikl",
@@ -399,14 +402,30 @@
    "hidden": 1,
    "label": "Previously Assigned",
    "read_only": 1
+  },
+   "fieldname": "lost_details_tab",
+   "fieldtype": "Tab Break",
+   "label": "Lost Details"
+  },
+  {
+   "fieldname": "lost_reason",
+   "fieldtype": "Link",
+   "label": "Lost Reason",
+   "options": "CRM Lost Reason"
+  },
+  {
+   "fieldname": "lost_notes",
+   "fieldtype": "Text",
+   "label": "Lost Notes",
+   "mandatory_depends_on": "eval: doc.lost_reason == \"Other\""
   }
  ],
  "grid_page_length": 50,
  "image_field": "image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-11-10 21:21:50.089284",
- "modified_by": "Administrator",
+ "modified": "2026-02-05 17:02:50.942242",
+ "modified_by": "shariq@frappe.io",
  "module": "FCRM",
  "name": "CRM Lead",
  "naming_rule": "By \"Naming Series\" field",
@@ -420,7 +439,7 @@
    "print": 1,
    "read": 1,
    "report": 1,
-   "role": "Sales User",
+   "role": "System Manager",
    "share": 1,
    "write": 1
   },
@@ -437,13 +456,16 @@
    "write": 1
   },
   {
+   "create": 1,
+   "delete": 1,
    "email": 1,
    "export": 1,
    "print": 1,
    "read": 1,
    "report": 1,
-   "role": "All",
-   "share": 1
+   "role": "Sales User",
+   "share": 1,
+   "write": 1
   }
  ],
  "row_format": "Dynamic",
