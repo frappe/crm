@@ -412,6 +412,7 @@ def create_contact(doc):
 			"last_name": doc.get("last_name"),
 			"salutation": doc.get("salutation"),
 			"company_name": doc.get("organization") or doc.get("organization_name"),
+			"gender": doc.get("gender"),
 		}
 	)
 
