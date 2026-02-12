@@ -20,23 +20,33 @@ def get_translations():
 
 
 @frappe.whitelist()
-def get_user_signature():
+def get_user_signature(sender_email=None):
 	user = frappe.session.user
-	user_email_signature = (
-		frappe.db.get_value(
-			"User",
-			user,
-			"email_signature",
-		)
-		if user
-		else None
-	)
+	signature = None
 
-	signature = user_email_signature or frappe.db.get_value(
-		"Email Account",
-		{"default_outgoing": 1, "add_signature": 1},
-		"signature",
-	)
+	if sender_email:
+		signature = frappe.db.get_value(
+			"Email Account",
+			{"email_id": sender_email, "add_signature": 1},
+			"signature",
+		)
+
+	if not signature:
+		user_email_signature = (
+			frappe.db.get_value(
+				"User",
+				user,
+				"email_signature",
+			)
+			if user
+			else None
+		)
+
+		signature = user_email_signature or frappe.db.get_value(
+			"Email Account",
+			{"default_outgoing": 1, "add_signature": 1},
+			"signature",
+		)
 
 	if not signature:
 		return
