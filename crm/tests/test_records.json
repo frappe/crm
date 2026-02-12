@@ -1,0 +1,192 @@
+[
+	{
+		"doctype": "User",
+		"email": "crm.manager@example.com",
+		"enabled": 1,
+		"first_name": "Sales",
+		"last_name": "Manager",
+		"full_name": "Sales Manager",
+		"new_password": "CRM_Manager_2026",
+		"roles": [
+			{
+				"doctype": "Has Role",
+				"parentfield": "roles",
+				"role": "Sales Manager"
+			},
+			{
+				"doctype": "Has Role",
+				"parentfield": "roles",
+				"role": "Sales User"
+			}
+		],
+		"user_type": "System User"
+	},
+	{
+		"doctype": "User",
+		"email": "crm.user1@example.com",
+		"enabled": 1,
+		"first_name": "John",
+		"last_name": "Sales",
+		"full_name": "John Sales",
+		"new_password": "CRM_User1_2026",
+		"roles": [
+			{
+				"doctype": "Has Role",
+				"parentfield": "roles",
+				"role": "Sales User"
+			}
+		],
+		"user_type": "System User"
+	},
+	{
+		"doctype": "User",
+		"email": "crm.user2@example.com",
+		"enabled": 1,
+		"first_name": "Jane",
+		"last_name": "Sales",
+		"full_name": "Jane Sales",
+		"new_password": "CRM_User2_2026",
+		"roles": [
+			{
+				"doctype": "Has Role",
+				"parentfield": "roles",
+				"role": "Sales User"
+			}
+		],
+		"user_type": "System User"
+	},
+	{
+		"doctype": "User",
+		"email": "crm.user3@example.com",
+		"enabled": 1,
+		"first_name": "Michael",
+		"last_name": "Sales",
+		"full_name": "Michael Sales",
+		"new_password": "CRM_User3_2026",
+		"roles": [
+			{
+				"doctype": "Has Role",
+				"parentfield": "roles",
+				"role": "Sales User"
+			}
+		],
+		"user_type": "System User"
+	},
+	{
+		"doctype": "User",
+		"email": "crm.user4@example.com",
+		"enabled": 1,
+		"first_name": "Sarah",
+		"last_name": "Sales",
+		"full_name": "Sarah Sales",
+		"new_password": "CRM_User4_2026",
+		"roles": [
+			{
+				"doctype": "Has Role",
+				"parentfield": "roles",
+				"role": "Sales User"
+			}
+		],
+		"user_type": "System User"
+	},
+	{
+		"doctype": "User",
+		"email": "crm.user5@example.com",
+		"enabled": 1,
+		"first_name": "David",
+		"last_name": "Sales",
+		"full_name": "David Sales",
+		"new_password": "CRM_User5_2026",
+		"roles": [
+			{
+				"doctype": "Has Role",
+				"parentfield": "roles",
+				"role": "Sales User"
+			}
+		],
+		"user_type": "System User"
+	},
+	{
+		"doctype": "User",
+		"email": "crm.supervisor@example.com",
+		"enabled": 1,
+		"first_name": "Lisa",
+		"last_name": "Supervisor",
+		"full_name": "Lisa Supervisor",
+		"new_password": "CRM_Supervisor_2026",
+		"roles": [
+			{
+				"doctype": "Has Role",
+				"parentfield": "roles",
+				"role": "Sales Manager"
+			},
+			{
+				"doctype": "Has Role",
+				"parentfield": "roles",
+				"role": "Sales User"
+			}
+		],
+		"user_type": "System User"
+	},
+	{
+		"doctype": "User",
+		"email": "crm.rep1@example.com",
+		"enabled": 1,
+		"first_name": "Robert",
+		"last_name": "Representative",
+		"full_name": "Robert Representative",
+		"new_password": "CRM_Rep1_2026",
+		"roles": [
+			{
+				"doctype": "Has Role",
+				"parentfield": "roles",
+				"role": "Sales User"
+			}
+		],
+		"user_type": "System User"
+	},
+	{
+		"doctype": "User",
+		"email": "crm.rep2@example.com",
+		"enabled": 1,
+		"first_name": "Emily",
+		"last_name": "Representative",
+		"full_name": "Emily Representative",
+		"new_password": "CRM_Rep2_2026",
+		"roles": [
+			{
+				"doctype": "Has Role",
+				"parentfield": "roles",
+				"role": "Sales User"
+			}
+		],
+		"user_type": "System User"
+	},
+	{
+		"doctype": "User",
+		"email": "crm.admin@example.com",
+		"enabled": 1,
+		"first_name": "CRM",
+		"last_name": "Administrator",
+		"full_name": "CRM Administrator",
+		"new_password": "CRM_Admin_2026",
+		"roles": [
+			{
+				"doctype": "Has Role",
+				"parentfield": "roles",
+				"role": "System Manager"
+			},
+			{
+				"doctype": "Has Role",
+				"parentfield": "roles",
+				"role": "Sales Manager"
+			},
+			{
+				"doctype": "Has Role",
+				"parentfield": "roles",
+				"role": "Sales User"
+			}
+		],
+		"user_type": "System User"
+	}
+]

@@ -216,9 +216,21 @@ class CRMServiceLevelAgreement(Document):
 				continue
 			today_workday = workdays[today_weekday]
 			now_in_seconds = time_diff_in_seconds(today, today_day)
-			start_time = max(today_workday.start_time.total_seconds(), now_in_seconds)
+
+			start_time_seconds = (
+				today_workday.start_time.hour * 3600
+				+ today_workday.start_time.minute * 60
+				+ today_workday.start_time.second
+			)
+			end_time_seconds = (
+				today_workday.end_time.hour * 3600
+				+ today_workday.end_time.minute * 60
+				+ today_workday.end_time.second
+			)
+
+			start_time = max(start_time_seconds, now_in_seconds)
 			till_start_time = max(start_time - now_in_seconds, 0)
-			end_time = max(today_workday.end_time.total_seconds(), now_in_seconds)
+			end_time = max(end_time_seconds, now_in_seconds)
 			time_left = max(end_time - start_time, 0)
 			if not time_left:
 				res = getdate(add_to_date(res, days=1, as_datetime=True))
@@ -304,8 +316,23 @@ class CRMServiceLevelAgreement(Document):
 	def is_working_time(self, date_time, working_hours):
 		day_of_week = get_weekdays()[date_time.weekday()]
 		start_time, end_time = working_hours.get(day_of_week, (0, 0))
-		date_time = timedelta(hours=date_time.hour, minutes=date_time.minute, seconds=date_time.second)
-		return start_time <= date_time < end_time
+
+		if start_time == 0 and end_time == 0:
+			return False
+
+		date_time_seconds = timedelta(
+			hours=date_time.hour, minutes=date_time.minute, seconds=date_time.second
+		).total_seconds()
+
+		start_time_seconds = timedelta(
+			hours=start_time.hour, minutes=start_time.minute, seconds=start_time.second
+		).total_seconds()
+
+		end_time_seconds = timedelta(
+			hours=end_time.hour, minutes=end_time.minute, seconds=end_time.second
+		).total_seconds()
+
+		return start_time_seconds <= date_time_seconds < end_time_seconds
 
 	def get_holidays(self):
 		res = []
