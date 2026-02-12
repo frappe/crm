@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-12-21 09:37+0000\n"
-"PO-Revision-Date: 2026-01-31 12:58\n"
+"PO-Revision-Date: 2026-02-12 17:58\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Spanish\n"
 "MIME-Version: 1.0\n"
@@ -2279,7 +2279,7 @@ msgstr ""
 #: frontend/src/pages/Organization.vue:511
 #: frontend/src/pages/Organization.vue:539
 msgid "Email"
-msgstr ""
+msgstr "Correo electrónico"
 
 #: frontend/src/components/Settings/Settings.vue:148
 msgid "Email Accounts"
@@ -2888,7 +2888,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
 #: crm/fcrm/doctype/crm_service_day/crm_service_day.json
 msgid "Friday"
-msgstr ""
+msgstr "Viernes"
 
 #. Label of the from (Data) field in DocType 'CRM Call Log'
 #. Label of the from (Data) field in DocType 'CRM Status Change Log'
@@ -3925,7 +3925,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
 #: crm/fcrm/doctype/crm_service_day/crm_service_day.json
 msgid "Monday"
-msgstr ""
+msgstr "Lunes"
 
 #: crm/api/dashboard.py:691
 msgid "Month"
@@ -5251,7 +5251,7 @@ msgstr "Saludo."
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
 #: crm/fcrm/doctype/crm_service_day/crm_service_day.json
 msgid "Saturday"
-msgstr ""
+msgstr "Sábado"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:345
 #: frontend/src/components/Controls/GridFieldsEditorModal.vue:84
@@ -5305,7 +5305,7 @@ msgstr "Script"
 
 #: frontend/src/components/Settings/AssignmentRules/AssigneeSearch.vue:22
 msgid "Search"
-msgstr ""
+msgstr "Buscar"
 
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:64
 msgid "Search template"
@@ -5679,7 +5679,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
 #: crm/fcrm/doctype/crm_service_day/crm_service_day.json
 msgid "Sunday"
-msgstr ""
+msgstr "Domingo"
 
 #: frontend/src/components/Settings/emailConfig.js:16
 msgid "Support / Sales"
@@ -5745,7 +5745,7 @@ msgstr ""
 #: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.json
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
 msgid "System Manager"
-msgstr ""
+msgstr "Administrador del sistema"
 
 #: frontend/src/components/EmailEditor.vue:22
 msgid "TO"
@@ -5904,7 +5904,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
 #: crm/fcrm/doctype/crm_service_day/crm_service_day.json
 msgid "Thursday"
-msgstr ""
+msgstr "Jueves"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:227
 msgid "Time"
@@ -6033,7 +6033,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
 #: crm/fcrm/doctype/crm_service_day/crm_service_day.json
 msgid "Tuesday"
-msgstr ""
+msgstr "Martes"
 
 #: frontend/src/components/ConditionsFilter/CFCondition.vue:173
 msgid "Turn into a group"
@@ -6320,7 +6320,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
 #: crm/fcrm/doctype/crm_service_day/crm_service_day.json
 msgid "Wednesday"
-msgstr ""
+msgstr "Miércoles"
 
 #. Label of the weekly_off (Check) field in DocType 'CRM Holiday'
 #. Label of the weekly_off (Select) field in DocType 'CRM Holiday List'
