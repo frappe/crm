@@ -90,7 +90,7 @@ import Email2Icon from '@/components/Icons/Email2Icon.vue'
 import { usersStore } from '@/stores/users'
 import { useStorage } from '@vueuse/core'
 import { useOnboarding, useTelemetry } from 'frappe-ui/frappe'
-import { call, createResource } from 'frappe-ui'
+import { call, createResource, toast } from 'frappe-ui'
 import { ref, watch, computed } from 'vue'
 
 const props = defineProps({
@@ -256,7 +256,11 @@ async function deleteAttachedFiles() {
 async function submitEmail() {
   if (emailEmpty.value) return
   showEmailBox.value = false
-  await sendMail()
+  await toast.promise(sendMail(), {
+    loading: __('Sending email...'),
+    success: __('Email sent!'),
+    error: (e) => e?.messages?.[0] || __('Failed to send email!'),
+  })
   newEmail.value = ''
   attachments.value = []
   reload.value = true
@@ -268,7 +272,11 @@ async function submitEmail() {
 async function submitComment() {
   if (commentEmpty.value) return
   showCommentBox.value = false
-  await sendComment()
+  await toast.promise(sendComment(), {
+    loading: __('Sending comment...'),
+    success: __('Comment sent!'),
+    error: (e) => e?.messages?.[0] || __('Failed to send comment!'),
+  })
   newComment.value = ''
   attachments.value = []
   reload.value = true

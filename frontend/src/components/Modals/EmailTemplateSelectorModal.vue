@@ -23,7 +23,7 @@
             () => {
               show = false
               showSettings = true
-              activeSettingsPage = 'Email Templates'
+              activeSettingsPage = 'Templates'
             }
           "
         />
@@ -72,7 +72,7 @@
               () => {
                 show = false
                 showSettings = true
-                activeSettingsPage = 'Email Templates'
+                activeSettingsPage = 'Templates'
               }
             "
           />
