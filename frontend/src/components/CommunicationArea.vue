@@ -159,11 +159,11 @@ const oldSignature = ref(null)
 function setSignature(editor, signatureData) {
   if (!signatureData) return
 
-  // Wrap signature in a p tag with class to easily identify it later
-  // We use p instead of div because TipTap (ProseMirror) schema in this app allows class attribute on paragraphs
-  // but might strip generic divs or their attributes.
+  // Wrap signature in a div with class to easily identify it later
+  // We use div instead of p because signature data might contain block elements (like <p>, <div>, etc.)
+  // and nesting them inside a <p> tag is invalid HTML which browsers will auto-correct by breaking it up.
   signatureData = signatureData.replace(/\n/g, '<br>')
-  const wrappedSignature = `<p class="crm-signature">${signatureData}</p><p></p>`
+  const wrappedSignature = `<div class="crm-signature">${signatureData}</div><p></p>`
 
   let emailContent = editor.getHTML()
 
@@ -179,6 +179,11 @@ function setSignature(editor, signatureData) {
 
   // Remove any leading <p></p> tags left after signature removal
   while (tempDiv.firstChild && tempDiv.firstChild.tagName === 'P' && tempDiv.firstChild.innerHTML === '') {
+    tempDiv.firstChild.remove()
+  }
+  
+  // Also check for leading <p><br></p> which might be left over
+  while (tempDiv.firstChild && tempDiv.firstChild.tagName === 'P' && tempDiv.firstChild.innerHTML === '<br>') {
     tempDiv.firstChild.remove()
   }
 
