@@ -178,12 +178,12 @@ function setSignature(editor, signatureData) {
   }
 
   // Remove any leading <p></p> tags left after signature removal
-  while (tempDiv.firstChild && tempDiv.firstChild.tagName === 'P' && tempDiv.firstChild.innerHTML === '') {
-    tempDiv.firstChild.remove()
-  }
-  
-  // Also check for leading <p><br></p> which might be left over
-  while (tempDiv.firstChild && tempDiv.firstChild.tagName === 'P' && tempDiv.firstChild.innerHTML === '<br>') {
+  while (
+    tempDiv.firstChild &&
+    tempDiv.firstChild.tagName === 'P' &&
+    (tempDiv.firstChild.innerHTML === '' ||
+      tempDiv.firstChild.innerHTML === '<br>')
+  ) {
     tempDiv.firstChild.remove()
   }
 

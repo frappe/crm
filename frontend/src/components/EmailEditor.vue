@@ -14,7 +14,7 @@
     }"
     :placeholder="placeholder"
     :editable="editable"
-    :extensions="[CustomParagraph]"
+    :extensions="[CustomParagraph, SignatureExtension]"
   >
     <template #top>
       <div class="flex flex-col gap-3">
@@ -234,6 +234,26 @@ const props = defineProps({
   discardButtonProps: {
     type: Object,
     default: () => ({}),
+  },
+})
+
+const SignatureExtension = Paragraph.extend({
+  name: 'signature',
+  group: 'block',
+  content: 'inline*',
+
+  parseHTML() {
+    return [
+      {
+        tag: 'div',
+        getAttrs: (element) =>
+          element.classList.contains('crm-signature') && null,
+      },
+    ]
+  },
+
+  renderHTML() {
+    return ['div', { class: 'crm-signature' }, 0]
   },
 })
 
