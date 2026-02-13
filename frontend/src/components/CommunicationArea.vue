@@ -158,21 +158,35 @@ const oldSignature = ref(null)
 
 function setSignature(editor, signatureData) {
   if (!signatureData) return
+
+  // Wrap signature in a p tag with class to easily identify it later
+  // We use p instead of div because TipTap (ProseMirror) schema in this app allows class attribute on paragraphs
+  // but might strip generic divs or their attributes.
   signatureData = signatureData.replace(/\n/g, '<br>')
+  const wrappedSignature = `<p class="crm-signature">${signatureData}</p><p></p>`
 
   let emailContent = editor.getHTML()
 
-  if (oldSignature.value) {
-    emailContent = emailContent.replace(oldSignature.value, '')
+  // Create a temporary DOM element to parse and manipulate the HTML
+  const tempDiv = document.createElement('div')
+  tempDiv.innerHTML = emailContent
+
+  // Remove existing signature if present
+  const existingSignature = tempDiv.querySelector('.crm-signature')
+  if (existingSignature) {
+    existingSignature.remove()
   }
 
-  emailContent = emailContent.startsWith('<p></p>')
-    ? emailContent.slice(7)
-    : emailContent
+  // Remove any leading <p></p> tags left after signature removal
+  while (tempDiv.firstChild && tempDiv.firstChild.tagName === 'P' && tempDiv.firstChild.innerHTML === '') {
+    tempDiv.firstChild.remove()
+  }
 
-  editor.commands.setContent(signatureData + emailContent)
+  // Prepend new signature
+  tempDiv.innerHTML = wrappedSignature + tempDiv.innerHTML
+
+  editor.commands.setContent(tempDiv.innerHTML)
   editor.commands.focus('start')
-  oldSignature.value = signatureData
 }
 
 watch(
