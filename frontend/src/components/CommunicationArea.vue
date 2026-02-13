@@ -150,15 +150,29 @@ const signature = createResource({
   auto: true,
 })
 
-function setSignature(editor) {
-  if (!signature.data) return
-  signature.data = signature.data.replace(/\n/g, '<br>')
+const getSignature = createResource({
+  url: 'crm.api.get_user_signature',
+})
+
+const oldSignature = ref(null)
+
+function setSignature(editor, signatureData) {
+  if (!signatureData) return
+  signatureData = signatureData.replace(/\n/g, '<br>')
+
   let emailContent = editor.getHTML()
+
+  if (oldSignature.value) {
+    emailContent = emailContent.replace(oldSignature.value, '')
+  }
+
   emailContent = emailContent.startsWith('<p></p>')
     ? emailContent.slice(7)
     : emailContent
-  editor.commands.setContent(signature.data + emailContent)
+
+  editor.commands.setContent(signatureData + emailContent)
   editor.commands.focus('start')
+  oldSignature.value = signatureData
 }
 
 watch(
@@ -167,8 +181,22 @@ watch(
     if (value) {
       let editor = newEmailEditor.value.editor
       editor.commands.focus()
-      setSignature(editor)
+      setSignature(editor, signature.data)
     }
+  },
+)
+
+watch(
+  () => newEmailEditor.value?.fromEmails,
+  (val) => {
+    if (!val) return
+    let sender = val[0]
+    if (!sender) return
+
+    getSignature.submit({ sender_email: sender }).then((data) => {
+      let editor = newEmailEditor.value.editor
+      setSignature(editor, data)
+    })
   },
 )
 
