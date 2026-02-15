@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-12-21 09:37+0000\n"
-"PO-Revision-Date: 2026-02-07 16:44\n"
+"PO-Revision-Date: 2026-02-15 18:35\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Italian\n"
 "MIME-Version: 1.0\n"
@@ -3879,7 +3879,7 @@ msgstr "Messaggio"
 #. Label of the middle_name (Data) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Middle Name"
-msgstr "Secondo Nome"
+msgstr "Secondo nome"
 
 #: frontend/src/components/Telephony/ExotelCallUI.vue:127
 msgid "Minimize"

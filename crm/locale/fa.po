@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2025-12-21 09:37+0000\n"
-"PO-Revision-Date: 2026-02-02 13:03\n"
+"PO-Revision-Date: 2026-02-15 18:35\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Persian\n"
 "MIME-Version: 1.0\n"
@@ -996,7 +996,7 @@ msgstr "سازمان CRM"
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
 msgid "CRM Portal Page"
-msgstr ""
+msgstr "صفحه پورتال CRM"
 
 #. Name of a DocType
 #: crm/fcrm/doctype/crm_product/crm_product.json
@@ -1006,7 +1006,7 @@ msgstr ""
 #. Name of a DocType
 #: crm/fcrm/doctype/crm_products/crm_products.json
 msgid "CRM Products"
-msgstr ""
+msgstr "محصولات CRM"
 
 #. Name of a DocType
 #: crm/fcrm/doctype/crm_rolling_response_time/crm_rolling_response_time.json
@@ -1016,7 +1016,7 @@ msgstr ""
 #. Name of a DocType
 #: crm/fcrm/doctype/crm_service_day/crm_service_day.json
 msgid "CRM Service Day"
-msgstr ""
+msgstr "روز خدمات CRM"
 
 #. Name of a DocType
 #: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.json
@@ -1171,7 +1171,7 @@ msgstr ""
 #. Label of the category (Data) field in DocType 'Facebook Page'
 #: crm/lead_syncing/doctype/facebook_page/facebook_page.json
 msgid "Category"
-msgstr "دسته بندی"
+msgstr "دسته‌بندی"
 
 #: frontend/src/components/Controls/ImageUploader.vue:19
 #: frontend/src/components/Layouts/AppSidebar.vue:490
@@ -2139,7 +2139,7 @@ msgstr "ERPNext"
 #. Name of a DocType
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.json
 msgid "ERPNext CRM Settings"
-msgstr ""
+msgstr "تنظیمات ERPNext CRM"
 
 #. Label of the section_break_oubd (Section Break) field in DocType 'ERPNext
 #. CRM Settings'
@@ -2979,7 +2979,7 @@ msgstr ""
 #: frontend/src/components/ViewControls.vue:379
 #: frontend/src/components/ViewControls.vue:611 frontend/src/utils/view.js:16
 msgid "Group By"
-msgstr "دسته بندی بر اساس"
+msgstr "دسته‌بندی بر اساس"
 
 #. Label of the group_by_field (Data) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
@@ -2988,7 +2988,7 @@ msgstr ""
 
 #: frontend/src/components/GroupBy.vue:8
 msgid "Group By: "
-msgstr "دسته بندی بر اساس: "
+msgstr "دسته‌بندی بر اساس: "
 
 #: frontend/src/components/Telephony/TwilioCallUI.vue:63
 msgid "Hang up"
@@ -4006,7 +4006,7 @@ msgstr "مبلغ خالص"
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Net Total"
-msgstr "کل خالص"
+msgstr "مجموع خالص"
 
 #: frontend/src/components/Activities/ActivityHeader.vue:76
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRules.vue:19
