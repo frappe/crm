@@ -150,47 +150,14 @@ const signature = createResource({
   auto: true,
 })
 
-const getSignature = createResource({
-  url: 'crm.api.get_user_signature',
-})
-
-const oldSignature = ref(null)
-
-function setSignature(editor, signatureData) {
-  if (!signatureData) return
-
-  // Wrap signature in a div with class to easily identify it later
-  // We use div instead of p because signature data might contain block elements (like <p>, <div>, etc.)
-  // and nesting them inside a <p> tag is invalid HTML which browsers will auto-correct by breaking it up.
-  signatureData = signatureData.replace(/\n/g, '<br>')
-  const wrappedSignature = `<div class="crm-signature">${signatureData}</div><p></p>`
-
+function setSignature(editor) {
+  if (!signature.data) return
+  signature.data = signature.data.replace(/\n/g, '<br>')
   let emailContent = editor.getHTML()
-
-  // Create a temporary DOM element to parse and manipulate the HTML
-  const tempDiv = document.createElement('div')
-  tempDiv.innerHTML = emailContent
-
-  // Remove existing signature if present
-  const existingSignature = tempDiv.querySelector('.crm-signature')
-  if (existingSignature) {
-    existingSignature.remove()
-  }
-
-  // Remove any leading <p></p> tags left after signature removal
-  while (
-    tempDiv.firstChild &&
-    tempDiv.firstChild.tagName === 'P' &&
-    (tempDiv.firstChild.innerHTML === '' ||
-      tempDiv.firstChild.innerHTML === '<br>')
-  ) {
-    tempDiv.firstChild.remove()
-  }
-
-  // Prepend new signature
-  tempDiv.innerHTML = wrappedSignature + tempDiv.innerHTML
-
-  editor.commands.setContent(tempDiv.innerHTML)
+  emailContent = emailContent.startsWith('<p></p>')
+    ? emailContent.slice(7)
+    : emailContent
+  editor.commands.setContent(signature.data + emailContent)
   editor.commands.focus('start')
 }
 
@@ -200,22 +167,8 @@ watch(
     if (value) {
       let editor = newEmailEditor.value.editor
       editor.commands.focus()
-      setSignature(editor, signature.data)
+      setSignature(editor)
     }
-  },
-)
-
-watch(
-  () => newEmailEditor.value?.fromEmails,
-  (val) => {
-    if (!val) return
-    let sender = val[0]
-    if (!sender) return
-
-    getSignature.submit({ sender_email: sender }).then((data) => {
-      let editor = newEmailEditor.value.editor
-      setSignature(editor, data)
-    })
   },
 )
 
@@ -245,7 +198,7 @@ async function sendMail() {
   let subject = newEmailEditor.value.subject
   let cc = newEmailEditor.value.ccEmails || []
   let bcc = newEmailEditor.value.bccEmails || []
-  let senderEmail = newEmailEditor.value.fromEmails?.[0]
+
   if (attachments.value.length) {
     capture('email_attachments_added')
   }
@@ -259,7 +212,7 @@ async function sendMail() {
     doctype: props.doctype,
     name: doc.value.name,
     send_email: 1,
-    sender: senderEmail,
+    sender: getUser().email,
     sender_full_name: getUser()?.full_name || undefined,
   })
 }
