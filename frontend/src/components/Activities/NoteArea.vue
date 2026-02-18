@@ -6,24 +6,26 @@
       <div class="truncate text-lg font-medium text-ink-gray-8">
         {{ note.title }}
       </div>
-      <Dropdown
-        :options="[
-          {
-            label: __('Delete'),
-            icon: 'trash-2',
-            onClick: () => deleteNote(note.name),
-          },
-        ]"
-        @click.stop
-        class="h-6 w-6"
-      >
-        <Button
-          icon="more-horizontal"
-          variant="ghosted"
-          class="!h-6 !w-6 hover:bg-surface-gray-2"
-          @click.stop.prevent
-        />
-      </Dropdown>
+      <div class="h-6 w-6" @click.stop>
+        <Dropdown
+          :options="[
+            {
+              label: __('Delete'),
+              icon: 'trash-2',
+              onClick: () => deleteNote(note.name),
+            },
+          ]"
+          @click.stop
+          class="h-6 w-6"
+        >
+          <Button
+            icon="more-horizontal"
+            variant="ghosted"
+            class="!h-6 !w-6 hover:bg-surface-gray-2"
+            @click.stop.prevent
+          />
+        </Dropdown>
+      </div>
     </div>
     <TextEditor
       v-if="note.content"
