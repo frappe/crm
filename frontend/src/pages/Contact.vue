@@ -144,6 +144,20 @@
         </button>
       </template>
       <template #tab-panel="{ tab }">
+        <div
+          v-if="tab.label === 'Notes'"
+          class="mx-4 my-3 flex items-center justify-between text-lg font-medium sm:mx-10 sm:mb-4 sm:mt-8"
+        >
+          <div class="flex h-8 items-center text-xl font-semibold text-ink-gray-8">
+            {{ __('Notes') }}
+          </div>
+          <Button
+            variant="solid"
+            :label="__('New note')"
+            iconLeft="plus"
+            @click="showNote()"
+          />
+        </div>
         <DealsListView
           v-if="tab.label === 'Deals' && rows.length"
           class="mt-4"
@@ -151,7 +165,28 @@
           :columns="columns"
           :options="{ selectable: false, showTooltip: false }"
         />
-        <EmptyState v-if="!rows.length" :icon="tab.icon" name="deals" />
+        <div
+          v-if="tab.label === 'Notes' && notesList.length"
+          class="grid grid-cols-1 gap-4 px-3 pb-3 sm:px-10 sm:pb-5 lg:grid-cols-2 xl:grid-cols-3"
+        >
+          <div
+            v-for="noteItem in notesList"
+            :key="noteItem.name"
+            @click="showNote(noteItem)"
+          >
+            <NoteArea :note="noteItem" v-model="notes" />
+          </div>
+        </div>
+        <EmptyState
+          v-if="tab.label === 'Deals' && !rows.length"
+          :icon="tab.icon"
+          name="deals"
+        />
+        <EmptyState
+          v-if="tab.label === 'Notes' && !notesList.length"
+          :icon="tab.icon"
+          name="notes"
+        />
       </template>
     </Tabs>
   </div>
@@ -167,6 +202,13 @@
     :docname="contact.doc.name"
     name="Contacts"
   />
+  <NoteModal
+    v-model="showNoteModal"
+    v-model:reloadNotes="notes"
+    :note="note"
+    :doctype="'Contact'"
+    :doc="contact.doc?.name"
+  />
 </template>
 
 <script setup>
@@ -178,7 +220,10 @@ import LayoutHeader from '@/components/LayoutHeader.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import CameraIcon from '@/components/Icons/CameraIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
+import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import DealsListView from '@/components/ListViews/DealsListView.vue'
+import NoteArea from '@/components/Activities/NoteArea.vue'
+import NoteModal from '@/components/Modals/NoteModal.vue'
 import CustomActions from '@/components/CustomActions.vue'
 import {
   formatDate,
@@ -298,6 +343,11 @@ const tabs = [
     icon: h(DealsIcon, { class: 'h-4 w-4' }),
     count: computed(() => deals.data?.length),
   },
+  {
+    label: 'Notes',
+    icon: h(NoteIcon, { class: 'h-4 w-4' }),
+    count: computed(() => notesList.value.length),
+  },
 ]
 
 const deals = createResource({
@@ -307,11 +357,42 @@ const deals = createResource({
   auto: true,
 })
 
+const notes = createResource({
+  url: 'frappe.client.get_list',
+  cache: ['notes', 'Contact', props.contactId],
+  params: {
+    doctype: 'FCRM Note',
+    fields: ['name', 'title', 'content', 'owner', 'modified'],
+    filters: {
+      reference_doctype: 'Contact',
+      reference_docname: props.contactId,
+    },
+    order_by: 'modified desc',
+    limit_page_length: 100,
+  },
+  auto: true,
+})
+
+const notesList = computed(() => notes.data || [])
+
+const showNoteModal = ref(false)
+const note = ref({})
+
 const rows = computed(() => {
   if (!deals.data || deals.data == []) return []
 
   return deals.data.map((row) => getDealRowObject(row))
 })
+
+function showNote(selectedNote = null) {
+  note.value = selectedNote
+    ? { ...selectedNote }
+    : {
+        title: '',
+        content: '',
+      }
+  showNoteModal.value = true
+}
 
 const sections = createResource({
   url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_sidepanel_sections',

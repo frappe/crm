@@ -141,6 +141,20 @@
         </button>
       </template>
       <template #tab-panel="{ tab }">
+        <div
+          v-if="tab.label === 'Notes'"
+          class="mx-4 my-3 flex items-center justify-between text-lg font-medium sm:mx-10 sm:mb-4 sm:mt-8"
+        >
+          <div class="flex h-8 items-center text-xl font-semibold text-ink-gray-8">
+            {{ __('Notes') }}
+          </div>
+          <Button
+            variant="solid"
+            :label="__('New note')"
+            iconLeft="plus"
+            @click="showNote()"
+          />
+        </div>
         <DealsListView
           class="mt-4"
           v-if="tab.label === 'Deals' && rows.length"
@@ -156,7 +170,23 @@
           :options="{ selectable: false, showTooltip: false }"
         />
         <div
-          v-if="!rows.length"
+          v-if="tab.label === 'Notes' && notesList.length"
+          class="grid grid-cols-1 gap-4 px-3 pb-3 sm:px-10 sm:pb-5 lg:grid-cols-2 xl:grid-cols-3"
+        >
+          <div
+            v-for="noteItem in notesList"
+            :key="noteItem.name"
+            @click="showNote(noteItem)"
+          >
+            <NoteArea :note="noteItem" v-model="notes" />
+          </div>
+        </div>
+        <div
+          v-if="
+            (tab.label === 'Deals' && !rows.length) ||
+            (tab.label === 'Contacts' && !rows.length) ||
+            (tab.label === 'Notes' && !notesList.length)
+          "
           class="grid flex-1 place-items-center text-xl font-medium text-ink-gray-4"
         >
           <div class="flex flex-col items-center justify-center space-y-3">
@@ -179,6 +209,13 @@
     :docname="props.organizationId"
     name="Organizations"
   />
+  <NoteModal
+    v-model="showNoteModal"
+    v-model:reloadNotes="notes"
+    :note="note"
+    :doctype="'CRM Organization'"
+    :doc="organization.doc?.name"
+  />
 </template>
 
 <script setup>
@@ -193,7 +230,10 @@ import WebsiteIcon from '@/components/Icons/WebsiteIcon.vue'
 import CameraIcon from '@/components/Icons/CameraIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
+import NoteIcon from '@/components/Icons/NoteIcon.vue'
+import NoteArea from '@/components/Activities/NoteArea.vue'
 import DeleteLinkedDocModal from '@/components/DeleteLinkedDocModal.vue'
+import NoteModal from '@/components/Modals/NoteModal.vue'
 import CustomActions from '@/components/CustomActions.vue'
 import { showAddressModal, addressProps } from '@/composables/modals'
 import { useDocument } from '@/data/document'
@@ -381,6 +421,11 @@ const tabs = [
     icon: h(ContactsIcon, { class: 'h-4 w-4' }),
     count: computed(() => contacts.data?.length),
   },
+  {
+    label: 'Notes',
+    icon: h(NoteIcon, { class: 'h-4 w-4' }),
+    count: computed(() => notesList.value.length),
+  },
 ]
 
 const deals = createListResource({
@@ -427,6 +472,27 @@ const contacts = createListResource({
   auto: true,
 })
 
+const notes = createResource({
+  url: 'frappe.client.get_list',
+  cache: ['notes', 'CRM Organization', props.organizationId],
+  params: {
+    doctype: 'FCRM Note',
+    fields: ['name', 'title', 'content', 'owner', 'modified'],
+    filters: {
+      reference_doctype: 'CRM Organization',
+      reference_docname: props.organizationId,
+    },
+    order_by: 'modified desc',
+    limit_page_length: 100,
+  },
+  auto: true,
+})
+
+const notesList = computed(() => notes.data || [])
+
+const showNoteModal = ref(false)
+const note = ref({})
+
 const rows = computed(() => {
   let list = []
   list = !tabIndex.value ? deals : contacts
@@ -443,6 +509,16 @@ const { getFormattedCurrency } = getMeta('CRM Deal')
 const columns = computed(() => {
   return tabIndex.value === 0 ? dealColumns : contactColumns
 })
+
+function showNote(selectedNote = null) {
+  note.value = selectedNote
+    ? { ...selectedNote }
+    : {
+        title: '',
+        content: '',
+      }
+  showNoteModal.value = true
+}
 
 function getDealRowObject(deal) {
   return {
