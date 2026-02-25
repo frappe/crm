@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-02-24 07:27+0000\n"
-"PO-Revision-Date: 2026-02-24 20:01\n"
+"PO-Revision-Date: 2026-02-25 19:59\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Spanish\n"
 "MIME-Version: 1.0\n"
@@ -4896,7 +4896,7 @@ msgstr ""
 #. Label of the old_parent (Link) field in DocType 'CRM Territory'
 #: crm/fcrm/doctype/crm_territory/crm_territory.json
 msgid "Old Parent"
-msgstr ""
+msgstr "Antiguo Padre"
 
 #. Option for the 'Type' (Select) field in DocType 'CRM Deal Status'
 #. Option for the 'Type' (Select) field in DocType 'CRM Lead Status'
@@ -5358,7 +5358,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
 msgid "Probability"
-msgstr ""
+msgstr "Probabilidad"
 
 #. Label of the product_code (Link) field in DocType 'CRM Products'
 #: crm/fcrm/doctype/crm_products/crm_products.json
@@ -5676,7 +5676,7 @@ msgstr ""
 
 #: crm/api/dashboard.py:727
 msgid "Revenue"
-msgstr ""
+msgstr "Ganancia"
 
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:81
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:81
