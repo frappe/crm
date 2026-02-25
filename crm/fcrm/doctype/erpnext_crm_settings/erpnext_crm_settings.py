@@ -39,7 +39,7 @@ class ERPNextCRMSettings(Document):
 
 	def validate_if_erpnext_installed(self):
 		if not self.is_erpnext_in_different_site:
-			if "erpnext" not in frappe.get_installed_apps():
+			if not is_erpnext_installed():
 				frappe.throw(_("ERPNext is not installed in the current site"))
 
 	def add_quotation_to_option(self):
@@ -107,6 +107,11 @@ def get_erpnext_site_client(erpnext_crm_settings):
 	api_secret = erpnext_crm_settings.get_password("api_secret", raise_exception=False)
 
 	return FrappeClient(site_url, api_key=api_key, api_secret=api_secret)
+
+
+@frappe.whitelist()
+def is_erpnext_installed():
+	return "erpnext" in frappe.get_installed_apps()
 
 
 @frappe.whitelist()
@@ -306,7 +311,7 @@ def get_crm_form_script():
 async function setupForm({ doc, call, $dialog, updateField, toast }) {
 	let actions = [];
 	let is_erpnext_integration_enabled = await call("frappe.client.get_single_value", {doctype: "ERPNext CRM Settings", field: "enabled"});
-	if (!["Lost", "Won"].includes(doc?.status) && is_erpnext_integration_enabled) {
+	if (is_erpnext_integration_enabled) {
 		actions.push({
 			label: __("Create Quotation"),
 			onClick: async () => {
@@ -323,8 +328,6 @@ async function setupForm({ doc, call, $dialog, updateField, toast }) {
 				}
 			}
 		})
-	}
-	if (is_erpnext_integration_enabled) {
 		let customer_url = await call("crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.get_customer_link", {
 			crm_deal: doc.name
 		});
@@ -340,3 +343,13 @@ async function setupForm({ doc, call, $dialog, updateField, toast }) {
 	};
 }
 """
+
+
+@frappe.whitelist()
+def get_external_companies(site_url: str, api_key: str, api_secret: str):
+	if "***" in api_secret:
+		erpnext_crm_settings = frappe.get_single("ERPNext CRM Settings")
+		client = get_erpnext_site_client(erpnext_crm_settings)
+	else:
+		client = FrappeClient(site_url, api_key=api_key, api_secret=api_secret)
+	return client.get_list("Company", fields=["company_name"])
