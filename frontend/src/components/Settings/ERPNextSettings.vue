@@ -41,7 +41,7 @@
         <LoadingIndicator class="size-6" />
       </div>
       <div v-else class="h-full">
-        <div v-if="erpnextCrmSettingsData.enabled" class="space-y-4">
+        <div v-if="erpnextCrmSettingsData.enabled">
           <div
             v-if="erpnextCrmSettingsData.isErpnextInDifferentSite"
             class="space-y-4"
@@ -102,7 +102,7 @@
               getExternalCompanies.data?.length &&
               erpnextCrmSettingsData.isErpnextInDifferentSite
             "
-            class="h-px border-t mb-2 border-outline-gray-modals"
+            class="h-px border-t my-6 mb-4 border-outline-gray-modals"
           />
           <div
             v-if="
@@ -147,8 +147,6 @@
                 />
               </div>
             </div>
-            <div class="h-px border-t mx-2 border-outline-gray-modals" />
-
             <div class="flex items-center justify-between py-3 px-2">
               <div class="flex flex-col">
                 <div class="text-p-base font-medium text-ink-gray-7 truncate">
@@ -170,8 +168,6 @@
               </div>
             </div>
             <div v-if="erpnextCrmSettingsData.createCustomerOnStatusChange">
-              <div class="h-px border-t mx-2 border-outline-gray-modals" />
-
               <div class="flex items-center justify-between py-3 px-2 gap-4">
                 <div class="flex flex-col">
                   <div class="text-p-base font-medium text-ink-gray-7">
