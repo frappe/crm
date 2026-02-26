@@ -3,28 +3,40 @@
     :title="__('ERPNext Settings')"
     :description="__('Manage ERPNext integration settings')"
   >
+    <template #title>
+      <div class="flex gap-2 items-center">
+        <h2 class="flex text-xl font-semibold leading-none h-5">
+          {{ __('ERPNext Settings') }}
+        </h2>
+        <Tooltip text="View documentation">
+          <a href="https://docs.frappe.io/crm/erpnext" target="_blank">
+            <lucide-circle-question-mark class="h-4 w-4 text-ink-gray-6" />
+          </a>
+        </Tooltip>
+      </div>
+    </template>
     <template #header-actions>
       <div
         v-if="
-          !erpnextCrmSettingsResource.loading && erpnextCrmSettingsData.enabled
+          erpnextCRMSettingsResource.doc &&
+          !erpnextCRMSettingsResource.get.loading &&
+          erpnextCRMSettingsResource.doc.enabled
         "
-        class="flex gap-4 items-center"
+        class="flex gap-2 items-center"
       >
-        <div
-          class="flex items-center gap-2"
-          @click="toggleEnable(erpnextCrmSettingsData.enabled)"
-        >
-          <Switch :model-value="erpnextCrmSettingsData.enabled" />
-          <span
-            class="text-sm text-ink-gray-7 font-medium cursor-pointer select-none"
-            >{{ __('Enabled') }}</span
-          >
-        </div>
         <Button
+          v-if="isDisableButtonVisible"
+          variant="subtle"
+          @click="toggleEnable(erpnextCRMSettingsResource.doc.enabled)"
+        >
+          {{ __('Disable') }}
+        </Button>
+        <Button
+          v-if="isUpdateButtonVisible"
           variant="solid"
           @click="saveSettings"
-          :loading="saveErpnextCrmSettings.loading"
-          :disabled="!isDirty || isDisabled"
+          :loading="erpnextCRMSettingsResource.setValue.loading"
+          :disabled="!erpnextCRMSettingsResource.isDirty || isDisabled"
         >
           {{ __('Update') }}
         </Button>
@@ -33,81 +45,82 @@
     <template #content>
       <div
         v-if="
-          (erpnextCrmSettingsResource.loading || isErpnextInstalled.loading) &&
-          !erpnextCrmSettingsResource.data
+          erpnextCRMSettingsResource.get.loading ||
+          erpnextCRMSettingsResource.isERPNextInstalled.loading ||
+          (erpnextCRMSettingsResource.getExternalCompanies.loading &&
+            !erpnextCRMSettingsResource.getExternalCompanies.data?.length) ||
+          !erpnextCRMSettingsResource.doc
         "
         class="flex items-center justify-center mt-[35%]"
       >
         <LoadingIndicator class="size-6" />
       </div>
       <div v-else class="h-full">
-        <div v-if="erpnextCrmSettingsData.enabled">
+        <div v-if="erpnextCRMSettingsResource.doc.enabled">
           <div
-            v-if="erpnextCrmSettingsData.isErpnextInDifferentSite"
+            v-if="!erpnextCRMSettingsResource.isERPNextInstalled.data"
             class="space-y-4"
           >
             <FormControl
-              v-model="erpnextCrmSettingsData.erpnextSiteUrl"
+              v-model="erpnextCRMSettingsResource.doc.erpnext_site_url"
               :label="__('Site URL')"
               type="text"
               placeholder="https://erpnext.example.com"
               required
               :description="
                 __(
-                  'ERPNext is not installed on this site. Enter the URL of your ERPNext site to connect it with this CRM',
+                  'ERPNext is not installed on this site either install it or enter the URL of your ERPNext site to connect',
                 )
               "
+              autocomplete="off"
             />
             <div class="grid grid-cols-2 gap-4">
               <FormControl
-                v-model="erpnextCrmSettingsData.apiKey"
+                v-model="erpnextCRMSettingsResource.doc.api_key"
                 :label="__('API Key')"
                 type="text"
                 placeholder="9g3f7693gho2ih23hiuhsad"
                 required
+                autocomplete="off"
               />
               <FormControl
-                v-model="erpnextCrmSettingsData.apiSecret"
+                v-model="erpnextCRMSettingsResource.doc.api_secret"
                 :label="__('API Secret')"
                 type="text"
                 placeholder="o2ih23hiuhsado2ih23hiuhsad"
                 required
+                autocomplete="off"
               />
             </div>
-            <div class="flex items-center justify-between gap-2">
-              <Button
-                v-if="erpnextCrmSettingsData.isErpnextInDifferentSite"
-                variant="subtle"
-                @click="
-                  getExternalCompanies.submit({
-                    site_url: erpnextCrmSettingsData.erpnextSiteUrl,
-                    api_key: erpnextCrmSettingsData.apiKey,
-                    api_secret: erpnextCrmSettingsData.apiSecret,
-                  })
-                "
-                :disabled="
-                  getExternalCompanies.loading ||
-                  !erpnextCrmSettingsData.erpnextSiteUrl ||
-                  !erpnextCrmSettingsData.apiKey ||
-                  !erpnextCrmSettingsData.apiSecret
-                "
-                icon-left="download"
-              >
-                {{ __('Fetch Companies') }}
-              </Button>
-            </div>
+            <Button
+              v-if="
+                !erpnextCRMSettingsResource.isERPNextInstalled.data &&
+                areSiteSettingsChanged
+              "
+              variant="subtle"
+              @click="verifyConnection"
+              :disabled="
+                erpnextCRMSettingsResource.getExternalCompanies.loading ||
+                !erpnextCRMSettingsResource.doc.erpnext_site_url ||
+                !erpnextCRMSettingsResource.doc.api_key ||
+                !erpnextCRMSettingsResource.doc.api_secret
+              "
+              :loading="erpnextCRMSettingsResource.setValue.loading"
+            >
+              {{ __('Verify Connection') }}
+            </Button>
           </div>
           <div
             v-if="
-              getExternalCompanies.data?.length &&
-              erpnextCrmSettingsData.isErpnextInDifferentSite
+              erpnextCRMSettingsResource.getExternalCompanies.data?.length &&
+              !erpnextCRMSettingsResource.isERPNextInstalled.data
             "
-            class="h-px border-t my-6 mb-4 border-outline-gray-modals"
+            class="h-px border-t my-4 border-outline-gray-modals"
           />
           <div
             v-if="
-              getExternalCompanies.data?.length ||
-              !erpnextCrmSettingsData.isErpnextInDifferentSite
+              erpnextCRMSettingsResource.getExternalCompanies.data?.length ||
+              erpnextCRMSettingsResource.isERPNextInstalled.data
             "
             class="-mx-2"
           >
@@ -117,45 +130,68 @@
                   {{ __('Company Name') }}
                 </div>
                 <div class="text-p-sm text-ink-gray-5 truncate">
-                  {{ __('Select the company name that is used in ERPNext') }}
+                  {{ __('Select your ERPNext company to connect with') }}
                 </div>
               </div>
               <div class="w-48">
                 <Autocomplete
-                  v-if="erpnextCrmSettingsData.isErpnextInDifferentSite"
-                  :model-value="erpnextCrmSettingsData.erpnextCompany"
+                  v-if="!erpnextCRMSettingsResource.isERPNextInstalled.data"
+                  :model-value="erpnextCRMSettingsResource.doc.erpnext_company"
                   @update:modelValue="
-                    erpnextCrmSettingsData.erpnextCompany = $event?.value
+                    erpnextCRMSettingsResource.doc.erpnext_company =
+                      $event?.value
                   "
                   :options="
-                    getExternalCompanies.data?.map((company) => ({
-                      label: company.company_name,
-                      value: company.company_name,
-                    })) || []
+                    erpnextCRMSettingsResource.getExternalCompanies.data?.map(
+                      (company) => ({
+                        label: company.company_name,
+                        value: company.company_name,
+                      }),
+                    ) || []
                   "
                   required
                   class="pb-0.5"
-                  :disabled="!getExternalCompanies.data?.length"
-                />
+                  :disabled="
+                    !erpnextCRMSettingsResource.getExternalCompanies.data
+                      ?.length
+                  "
+                >
+                  <template #footer>
+                    <Button
+                      :label="__('Refresh Companies')"
+                      theme="gray"
+                      variant="ghost"
+                      class="w-full"
+                      icon-left="refresh-cw"
+                      @click="
+                        erpnextCRMSettingsResource.getExternalCompanies.submit()
+                      "
+                      :loading="
+                        erpnextCRMSettingsResource.getExternalCompanies.loading
+                      "
+                    />
+                  </template>
+                </Autocomplete>
                 <Link
                   v-else
                   :doc="'Company'"
                   :doctype="'Company'"
                   :placeholder="__('Select Company')"
-                  v-model="erpnextCrmSettingsData.erpnextCompany"
+                  v-model="erpnextCRMSettingsResource.doc.erpnext_company"
                   class="w-48 flex-shrink-0"
                 />
               </div>
             </div>
+            <div class="h-px border-t border-outline-gray-modals" />
             <div class="flex items-center justify-between py-3 px-2">
               <div class="flex flex-col">
                 <div class="text-p-base font-medium text-ink-gray-7 truncate">
-                  {{ __('Create Customer On Deal Status Change') }}
+                  {{ __('Auto Create Customer') }}
                 </div>
                 <div class="text-p-sm text-ink-gray-5 truncate">
                   {{
                     __(
-                      'Create customer in ERPNext when a deal status is changed',
+                      'Create customer in ERPNext when the deal status is changed',
                     )
                   }}
                 </div>
@@ -163,11 +199,18 @@
               <div>
                 <Switch
                   size="sm"
-                  v-model="erpnextCrmSettingsData.createCustomerOnStatusChange"
+                  v-model="
+                    erpnextCRMSettingsResource.doc
+                      .create_customer_on_status_change
+                  "
                 />
               </div>
             </div>
-            <div v-if="erpnextCrmSettingsData.createCustomerOnStatusChange">
+            <div
+              v-if="
+                erpnextCRMSettingsResource.doc.create_customer_on_status_change
+              "
+            >
               <div class="flex items-center justify-between py-3 px-2 gap-4">
                 <div class="flex flex-col">
                   <div class="text-p-base font-medium text-ink-gray-7">
@@ -182,11 +225,12 @@
                   </div>
                 </div>
                 <Link
-                  v-model="erpnextCrmSettingsData.dealStatus"
+                  v-model="erpnextCRMSettingsResource.doc.deal_status"
                   doctype="CRM Deal Status"
                   :placeholder="__('Won')"
                   :disabled="
-                    !erpnextCrmSettingsData.createCustomerOnStatusChange
+                    !erpnextCRMSettingsResource.doc
+                      .create_customer_on_status_change
                   "
                   class="w-48 flex-shrink-0"
                 />
@@ -208,13 +252,13 @@
               <span class="text-center text-p-base text-ink-gray-6">
                 {{
                   __(
-                    'Enable the ERPNext integration to configure it for your CRM.',
+                    'Enable the integration to create quotations and auto create customers in ERPNext.',
                   )
                 }}
               </span>
               <Button
                 variant="solid"
-                @click="erpnextCrmSettingsData.enabled = true"
+                @click="erpnextCRMSettingsResource.doc.enabled = true"
               >
                 {{ __('Enable') }}
               </Button>
@@ -229,201 +273,223 @@
 <script setup>
 import {
   Button,
-  createResource,
+  createDocumentResource,
   FormControl,
   LoadingIndicator,
   Switch,
   toast,
+  Tooltip,
 } from 'frappe-ui'
 import SettingsLayoutBase from '@/components/Layouts/SettingsLayoutBase.vue'
-import { computed, ref } from 'vue'
+import { computed, onMounted } from 'vue'
 import Link from '../Controls/Link.vue'
 import { globalStore } from '@/stores/global'
 
 const { $dialog } = globalStore()
 
-const transformData = (data) => {
-  if (!data) return {}
-  return {
-    enabled: Boolean(data.enabled),
-    isErpnextInDifferentSite: Boolean(data.is_erpnext_in_different_site),
-    createCustomerOnStatusChange: Boolean(
-      data.create_customer_on_status_change,
-    ),
-    erpnextCompany: data.erpnext_company,
-    dealStatus: data.deal_status,
-    erpnextSiteUrl: data.erpnext_site_url,
-    apiKey: data.api_key,
-    apiSecret: data.api_secret,
-  }
-}
-
-const erpnextCrmSettingsData = ref({
-  enabled: false,
-  isErpnextInDifferentSite: false,
-  createCustomerOnStatusChange: false,
-  erpnextCompany: '',
-  dealStatus: '',
-  erpnextSiteUrl: '',
-  apiKey: '',
-  apiSecret: '',
-})
-
-const erpnextCrmSettingsResource = createResource({
-  url: 'frappe.client.get',
-  params: {
-    doctype: 'ERPNext CRM Settings',
-    name: 'ERPNext CRM Settings',
+const erpnextCRMSettingsResource = createDocumentResource({
+  doctype: 'ERPNext CRM Settings',
+  name: 'ERPNext CRM Settings',
+  whitelistedMethods: {
+    isERPNextInstalled: 'is_erpnext_installed',
+    getExternalCompanies: 'get_external_companies',
+  },
+  setValue: {
+    onSuccess() {
+      toast.success(__('Settings saved'))
+    },
+    onError(error) {
+      const message = error?.messages?.[0] || __('Failed to save settings')
+      toast.error(message)
+    },
   },
   auto: true,
-  onSuccess(data) {
-    erpnextCrmSettingsData.value = transformData(data)
-    isErpnextInstalled.submit()
-    if (data.is_erpnext_in_different_site) {
-      getExternalCompanies.submit({
-        site_url: data.erpnext_site_url,
-        api_key: data.api_key,
-        api_secret: data.api_secret,
-      })
-    }
-  },
-})
-
-const saveErpnextCrmSettings = createResource({
-  url: 'frappe.client.set_value',
-  makeParams: () => {
-    return {
-      doctype: 'ERPNext CRM Settings',
-      name: 'ERPNext CRM Settings',
-      fieldname: {
-        enabled: erpnextCrmSettingsData.value.enabled,
-        is_erpnext_in_different_site:
-          erpnextCrmSettingsData.value.isErpnextInDifferentSite,
-        create_customer_on_status_change:
-          erpnextCrmSettingsData.value.createCustomerOnStatusChange,
-        erpnext_company: erpnextCrmSettingsData.value.erpnextCompany,
-        deal_status: erpnextCrmSettingsData.value.dealStatus,
-        erpnext_site_url: erpnextCrmSettingsData.value.erpnextSiteUrl,
-        api_key: erpnextCrmSettingsData.value.apiKey,
-        api_secret: erpnextCrmSettingsData.value.apiSecret,
-      },
-    }
-  },
-  onSuccess() {
-    erpnextCrmSettingsResource.reload()
-    toast.success(__('Settings saved'))
-  },
-  onError(err) {
-    let message =
-      err?.messages?.[0] || __('Failed to update ERPNext CRM Settings')
-    if (message.includes('custom field')) {
-      message = __('Error connecting to ERPNext, check your API key & secret')
-    }
-    toast.error(message)
-  },
-})
-
-const isErpnextInstalled = createResource({
-  url: 'crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.is_erpnext_installed',
-  onSuccess(data) {
-    erpnextCrmSettingsData.value.isErpnextInDifferentSite = !data
-  },
-})
-
-const getExternalCompanies = createResource({
-  url: 'crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.get_external_companies',
-  onSuccess(data) {
-    if (data?.length === 0) {
-      return toast.error(
-        __(
-          'No companies found in this remote ERPNext site, please check your API key & secret',
-        ),
-      )
-    }
-  },
-  onError() {
-    toast.error(
-      __('Failed to get external companies, check your API key & secret'),
-    )
-  },
-})
-
-const isDirty = computed(() => {
-  const oldData = transformData(erpnextCrmSettingsResource.data)
-  const newData = erpnextCrmSettingsData.value
-  return JSON.stringify(oldData) !== JSON.stringify(newData)
 })
 
 const isDisabled = computed(() => {
+  const data = erpnextCRMSettingsResource.doc
+
+  const isSiteConfigValid =
+    !erpnextCRMSettingsResource.isERPNextInstalled.data &&
+    (!data.erpnext_site_url || !data.api_key || !data.api_secret)
+
+  return isSiteConfigValid || !data.erpnext_company
+})
+
+const isDisableButtonVisible = computed(() => {
+  const data = erpnextCRMSettingsResource.originalDoc
   return (
-    (erpnextCrmSettingsData.value.isErpnextInDifferentSite &&
-      (!erpnextCrmSettingsData.value.erpnextSiteUrl ||
-        !erpnextCrmSettingsData.value.apiKey ||
-        !erpnextCrmSettingsData.value.apiSecret)) ||
-    (erpnextCrmSettingsData.value.createCustomerOnStatusChange &&
-      !erpnextCrmSettingsData.value.dealStatus) ||
-    !erpnextCrmSettingsData.value.erpnextCompany
+    data.erpnext_site_url ||
+    data.api_key ||
+    data.api_secret ||
+    data.erpnext_company
   )
 })
 
-const saveSettings = () => {
-  if (
-    erpnextCrmSettingsData.value.createCustomerOnStatusChange &&
-    !erpnextCrmSettingsData.value.dealStatus
-  ) {
-    toast.error(__('Deal status is required'))
-    return
-  }
-  if (!erpnextCrmSettingsData.value.erpnextCompany) {
-    toast.error(__('Company name is required'))
-    return
-  }
-  if (erpnextCrmSettingsData.value.isErpnextInDifferentSite) {
-    if (!erpnextCrmSettingsData.value.erpnextSiteUrl) {
-      toast.error(__('Site URL is required'))
-      return
-    }
+const isUpdateButtonVisible = computed(() => {
+  const isERPNextInstalled = erpnextCRMSettingsResource.isERPNextInstalled.data
+  return (
+    (isDisableButtonVisible.value && !isERPNextInstalled) || isERPNextInstalled
+  )
+})
 
-    let url = erpnextCrmSettingsData.value.erpnextSiteUrl
+const areSiteSettingsChanged = computed(() => {
+  const oldData = erpnextCRMSettingsResource.originalDoc
+  const newData = erpnextCRMSettingsResource.doc
+  return (
+    oldData?.erpnext_site_url !== newData?.erpnext_site_url ||
+    oldData?.api_key !== newData?.api_key ||
+    oldData?.api_secret !== newData?.api_secret
+  )
+})
 
-    try {
-      new URL(url)
-    } catch (e) {
-      toast.error(__('Invalid Site URL'))
-      return
-    }
-    if (!erpnextCrmSettingsData.value.apiKey) {
-      toast.error(__('API key is required'))
-      return
-    }
-    if (!erpnextCrmSettingsData.value.apiSecret) {
-      toast.error(__('API secret is required'))
-      return
-    }
-  }
-  saveErpnextCrmSettings.submit()
+const saveSettings = async () => {
+  if (!validateData() || !validateSiteConnection()) return
+
+  updateFields(
+    {
+      enabled: erpnextCRMSettingsResource.doc.enabled,
+      is_erpnext_in_different_site:
+        !erpnextCRMSettingsResource.isERPNextInstalled.data,
+      create_customer_on_status_change:
+        erpnextCRMSettingsResource.doc.create_customer_on_status_change,
+      erpnext_company: erpnextCRMSettingsResource.doc.erpnext_company,
+      deal_status: erpnextCRMSettingsResource.doc.deal_status,
+      erpnext_site_url: erpnextCRMSettingsResource.doc.erpnext_site_url,
+      api_key: erpnextCRMSettingsResource.doc.api_key,
+      api_secret: erpnextCRMSettingsResource.doc.api_secret,
+    },
+    {
+      onSuccess: () => {
+        if (!erpnextCRMSettingsResource.isERPNextInstalled.data) {
+          erpnextCRMSettingsResource.getExternalCompanies.submit()
+        }
+        erpnextCRMSettingsResource.get.reload()
+      },
+    },
+  )
 }
 
 const toggleEnable = (value) => {
   if (value) {
     $dialog({
       title: __('Disable ERPNext Integration'),
-      message: __('Are you sure you want to disable ERPNext integration?'),
+      message: __(
+        'Create quotation button on deal page and auto customer creation on deal status change will be disabled. Are you sure?',
+      ),
       actions: [
         {
           label: __('Disable'),
           variant: 'solid',
           theme: 'red',
           onClick: (close) => {
-            erpnextCrmSettingsData.value.enabled = false
-            saveErpnextCrmSettings.submit()
+            updateFields('enabled', false)
             close()
           },
         },
       ],
     })
   } else {
-    erpnextCrmSettingsData.value.enabled = true
+    erpnextCRMSettingsResource.doc.enabled = true
   }
 }
+
+function verifyConnection() {
+  if (!validateSiteConnection()) return
+
+  updateFields(
+    {
+      enabled: erpnextCRMSettingsResource.doc.enabled,
+      is_erpnext_in_different_site:
+        !erpnextCRMSettingsResource.isERPNextInstalled.data,
+      erpnext_site_url: erpnextCRMSettingsResource.doc.erpnext_site_url,
+      api_key: erpnextCRMSettingsResource.doc.api_key,
+      api_secret: erpnextCRMSettingsResource.doc.api_secret,
+    },
+    {
+      onSuccess: () => {
+        toast.success(__('Site connection validated'))
+        if (!erpnextCRMSettingsResource.isERPNextInstalled.data) {
+          erpnextCRMSettingsResource.getExternalCompanies.submit()
+        }
+      },
+    },
+  )
+}
+
+const validateSiteConnection = () => {
+  let error = ''
+  let url = erpnextCRMSettingsResource.doc.erpnext_site_url
+
+  if (erpnextCRMSettingsResource.isERPNextInstalled.data) return true
+
+  if (!erpnextCRMSettingsResource.doc.erpnext_site_url) {
+    error = __('Site URL is required')
+  } else if (erpnextCRMSettingsResource.doc.erpnext_site_url) {
+    try {
+      new URL(url)
+    } catch (e) {
+      error = __('Invalid Site URL')
+    }
+  } else if (!erpnextCRMSettingsResource.doc.api_key) {
+    error = __('API key is required')
+  } else if (!erpnextCRMSettingsResource.doc.api_secret) {
+    error = __('API secret is required')
+  }
+
+  if (error) {
+    toast.error(error)
+    return false
+  }
+  return true
+}
+
+const validateData = () => {
+  let error = ''
+
+  if (!erpnextCRMSettingsResource.doc.erpnext_company) {
+    error = __('Company name is required')
+  } else if (
+    erpnextCRMSettingsResource.doc.create_customer_on_status_change &&
+    !erpnextCRMSettingsResource.doc.deal_status
+  ) {
+    error = __('Deal status is required')
+  }
+
+  if (error) {
+    toast.error(error)
+    return false
+  }
+  return true
+}
+
+function updateFields(fields, value, options) {
+  let obj = {}
+
+  if (typeof fields === 'object' && fields !== null) {
+    obj = fields
+    options = value
+  } else {
+    obj[fields] = value
+  }
+
+  erpnextCRMSettingsResource.setValue.submit(obj, options)
+}
+
+onMounted(async () => {
+  // Call APIs one after another to avoid race conditions
+  await erpnextCRMSettingsResource.get.submit()
+  await erpnextCRMSettingsResource.isERPNextInstalled.submit(null, {
+    onSuccess: (data) => {
+      if (
+        !data.message &&
+        erpnextCRMSettingsResource.doc.erpnext_site_url &&
+        erpnextCRMSettingsResource.doc.api_key &&
+        erpnextCRMSettingsResource.doc.api_secret
+      ) {
+        erpnextCRMSettingsResource.getExternalCompanies.submit()
+      }
+    },
+  })
+})
 </script>
