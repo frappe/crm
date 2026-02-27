@@ -48,8 +48,8 @@
           erpnextCRMSettingsResource.get.loading ||
           erpnextCRMSettingsResource.isERPNextInstalled.loading ||
           (erpnextCRMSettingsResource.getExternalCompanies.loading &&
-            !erpnextCRMSettingsResource.getExternalCompanies.data?.length) ||
-          !erpnextCRMSettingsResource.doc
+            !erpnextCRMSettingsResource.getExternalCompanies.fetched) ||
+          !erpnextCRMSettingsResource.get.fetched
         "
         class="flex items-center justify-center mt-[35%]"
       >
@@ -112,15 +112,15 @@
           </div>
           <div
             v-if="
-              erpnextCRMSettingsResource.getExternalCompanies.data?.length &&
-              !erpnextCRMSettingsResource.isERPNextInstalled.data
+              !erpnextCRMSettingsResource.isERPNextInstalled.data &&
+              isUpdateButtonVisible
             "
             class="h-px border-t my-4 border-outline-gray-modals"
           />
           <div
             v-if="
-              erpnextCRMSettingsResource.getExternalCompanies.data?.length ||
-              erpnextCRMSettingsResource.isERPNextInstalled.data
+              erpnextCRMSettingsResource.isERPNextInstalled.data ||
+              isUpdateButtonVisible
             "
             class="-mx-2"
           >
@@ -151,10 +151,6 @@
                   "
                   required
                   class="pb-0.5"
-                  :disabled="
-                    !erpnextCRMSettingsResource.getExternalCompanies.data
-                      ?.length
-                  "
                 >
                   <template #footer>
                     <Button
@@ -219,7 +215,7 @@
                   <div class="text-p-sm text-ink-gray-5">
                     {{
                       __(
-                        'Select the deal status to trigger the customer creation in ERPNext',
+                        'Select the deal status to trigger the auto customer creation in ERPNext',
                       )
                     }}
                   </div>
@@ -292,7 +288,14 @@ const erpnextCRMSettingsResource = createDocumentResource({
   name: 'ERPNext CRM Settings',
   whitelistedMethods: {
     isERPNextInstalled: 'is_erpnext_installed',
-    getExternalCompanies: 'get_external_companies',
+    getExternalCompanies: {
+      method: 'get_external_companies',
+      onSuccess(data) {
+        if (!data.length) {
+          toast.error(__('No companies found in the given site'))
+        }
+      },
+    },
   },
   setValue: {
     onSuccess() {
