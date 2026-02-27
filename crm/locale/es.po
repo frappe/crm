@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-02-24 07:27+0000\n"
-"PO-Revision-Date: 2026-02-25 19:59\n"
+"PO-Revision-Date: 2026-02-27 20:05\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Spanish\n"
 "MIME-Version: 1.0\n"
@@ -6013,7 +6013,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/Sla/EditResponseResolutionModal.vue:32
 msgid "Select Time"
-msgstr ""
+msgstr "Seleccionar hora"
 
 #: frontend/src/components/Calendar/EventNotifications.vue:31
 #: frontend/src/components/Calendar/EventNotifications.vue:99
@@ -6097,7 +6097,7 @@ msgstr "Acuerdo de nivel de servicio"
 #. Label of the service_provider (Select) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 msgid "Service Provider"
-msgstr ""
+msgstr "Proveedor de servicios"
 
 #: frontend/src/components/Filter.vue:559
 msgid "Set"
@@ -6318,7 +6318,7 @@ msgstr "Espaciador"
 
 #: crm/api/dashboard.py:790 crm/api/dashboard.py:848
 msgid "Stage"
-msgstr ""
+msgstr "Fase"
 
 #: crm/fcrm/doctype/crm_form_script/crm_form_script.js:15
 msgid "Standard Form Scripts can not be modified, duplicate the Form Script instead."
@@ -6556,7 +6556,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:79
 msgid "Template Name"
-msgstr ""
+msgstr "Nombre de Plantilla"
 
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:175
 msgid "Template created successfully"
