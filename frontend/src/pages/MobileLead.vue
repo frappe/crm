@@ -10,17 +10,9 @@
       </Breadcrumbs>
       <div class="absolute right-0">
         <Dropdown
-          v-if="doc"
-          :options="
-            statusOptions(
-              'lead',
-              document.statuses?.length
-                ? document.statuses
-                : document._statuses,
-              triggerStatusChange,
-            )
-          "
-        >
+        v-if="doc && document.statuses"
+        :options="statuses"
+      >
           <template #default="{ open }">
             <Button
               v-if="doc.status"
@@ -234,6 +226,13 @@ watch(
 )
 
 const reload = ref(false)
+
+const statuses = computed(() => {
+  let customStatuses = document.statuses?.length
+    ? document.statuses
+    : document._statuses || []
+  return statusOptions('lead', customStatuses, triggerStatusChange)
+})
 
 const breadcrumbs = computed(() => {
   let items = [{ label: __('Leads'), route: { name: 'Leads' } }]

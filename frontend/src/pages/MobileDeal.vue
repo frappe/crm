@@ -10,17 +10,9 @@
       </Breadcrumbs>
       <div class="absolute right-0">
         <Dropdown
-          v-if="doc"
-          :options="
-            statusOptions(
-              'deal',
-              document.statuses?.length
-                ? document.statuses
-                : document._statuses,
-              triggerStatusChange,
-            )
-          "
-        >
+        v-if="doc && document.statuses"
+        :options="statuses"
+      >
           <template #default="{ open }">
             <Button
               v-if="doc.status"
@@ -342,6 +334,14 @@ const { triggerOnChange, assignees, document, scripts, error } = useDocument(
 )
 
 const doc = computed(() => document.doc || {})
+
+const statuses = computed(() => {
+  let customStatuses = document.statuses?.length
+    ? document.statuses
+    : document._statuses || []
+  return statusOptions('deal', customStatuses, triggerStatusChange)
+})
+
 
 watch(error, (err) => {
   if (err) {
