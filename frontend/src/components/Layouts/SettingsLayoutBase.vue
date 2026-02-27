@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col h-full w-full text-ink-gray-8">
     <!-- Header -->
-    <div class="flex justify-between p-8 text-ink-gray-8">
+    <div class="flex justify-between items-start p-8 text-ink-gray-8">
       <div class="flex flex-col gap-1">
         <slot name="title">
           <h2 class="flex gap-2 text-xl font-semibold leading-none h-5">
