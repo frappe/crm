@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-02-24 07:27+0000\n"
-"PO-Revision-Date: 2026-02-24 20:01\n"
+"PO-Revision-Date: 2026-02-27 20:05\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Swedish\n"
 "MIME-Version: 1.0\n"
@@ -3180,11 +3180,11 @@ msgstr "För heldags händelser, <b>ange tid</b> för att skicka påminnelser in
 
 #: frontend/src/components/Dashboard/AddChartModal.vue:95
 msgid "Forecasted Revenue"
-msgstr "Prognostiserad Intäkt"
+msgstr "Förväntad Intäkt"
 
 #: crm/api/dashboard.py:718
 msgid "Forecasted revenue"
-msgstr "Prognostiserad intäkt"
+msgstr "Förväntad Intäkt"
 
 #: frontend/src/components/Settings/ForecastingSettings.vue:5
 #: frontend/src/components/Settings/Settings.vue:110
@@ -5398,14 +5398,14 @@ msgstr "Profil Uppdaterad"
 
 #: crm/api/dashboard.py:719
 msgid "Projected vs actual revenue based on deal probability"
-msgstr "Prognostiserade kontra faktiska intäkter baserat på affärssannolikhet"
+msgstr "Förväntade mot faktiska intäkter baserat på affärssannolikhet"
 
 #. Label of the public (Check) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:481
 #: frontend/src/components/Modals/EventModal.vue:146
 msgid "Public"
-msgstr "Allmän"
+msgstr "Publik"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:576
 msgid "Public View"
