@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-02-24 07:27+0000\n"
-"PO-Revision-Date: 2026-02-24 20:01\n"
+"PO-Revision-Date: 2026-02-28 20:13\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Russian\n"
 "MIME-Version: 1.0\n"
@@ -1848,7 +1848,7 @@ msgstr "Настройка"
 
 #: frontend/src/components/ViewControls.vue:223
 msgid "Customize Quick Filters"
-msgstr ""
+msgstr "Настройка быстрых фильтров"
 
 #. Option for the 'Default Calendar View' (Select) field in DocType 'FCRM
 #. Settings'
@@ -2782,7 +2782,7 @@ msgstr "ID необходимо"
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 #: frontend/src/components/Settings/CalendarSettings.vue:61
 msgid "Event Notifications"
-msgstr ""
+msgstr "Уведомления о событиях"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:284
 msgid "Event Title"
@@ -3404,7 +3404,7 @@ msgstr "Скрыть"
 
 #: frontend/src/components/FieldLayoutEditor.vue:354
 msgid "Hide Border"
-msgstr ""
+msgstr "Скрыть границу"
 
 #: frontend/src/components/FieldLayoutEditor.vue:349
 msgid "Hide Label"
@@ -3458,7 +3458,7 @@ msgstr "Действия на главной странице"
 #. Sync Source'
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
 msgid "Hourly"
-msgstr ""
+msgstr "Почасовая оплата"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:199
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:283
@@ -4312,7 +4312,7 @@ msgstr "1 мая 2025"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:538
 msgid "Maybe"
-msgstr ""
+msgstr "Может быть"
 
 #. Label of the medium (Data) field in DocType 'CRM Call Log'
 #. Option for the 'Priority' (Select) field in DocType 'CRM Task'
