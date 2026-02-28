@@ -44,11 +44,18 @@ repos:
       hooks:
           - id: eslint
             name: eslint
-            entry: bash -c 'cd frontend && npx eslint --fix "$@"' --
-            language: system
+            entry: bash -c 'cd frontend && eslint --fix src/**/*.{js,ts,vue}'
+            language: node
             files: ^frontend/.*\.(js|ts|vue)$
             pass_filenames: false
-            args: ["src/**/*.{js,ts,vue}"]
+            additional_dependencies:
+                - "eslint@^10.0.2"
+                - "@eslint/js@^10.0.1"
+                - "typescript-eslint@^8.56.1"
+                - "eslint-plugin-vue@^10.8.0"
+                - "eslint-config-prettier@^10.1.8"
+                - "globals@^17.3.0"
+                - "vue-eslint-parser@^10.4.0"
 
     - repo: https://github.com/astral-sh/ruff-pre-commit
       rev: v0.8.1
