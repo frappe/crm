@@ -7,15 +7,10 @@
     :name="icon"
     v-bind="$attrs"
   />
-  <component v-else :is="icon" v-bind="$attrs" />
+  <component :is="icon" v-else v-bind="$attrs" />
 </template>
 <script setup>
 import { isEmoji } from '@/utils'
 
-const props = defineProps({
-  icon: {
-    type: [String, Object],
-    required: true,
-  },
-})
+defineProps({ icon: { type: [String, Object], required: true } })
 </script>

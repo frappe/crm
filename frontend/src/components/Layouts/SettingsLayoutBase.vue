@@ -9,17 +9,17 @@
           </h2>
         </slot>
         <slot
-          name="description"
           v-if="Boolean($slots['description']) || Boolean(description)"
+          name="description"
         >
           <p class="text-p-base text-ink-gray-6">
             {{ description }}
           </p>
         </slot>
       </div>
-      <slot name="header-actions" v-if="Boolean($slots['header-actions'])" />
+      <slot v-if="Boolean($slots['header-actions'])" name="header-actions" />
     </div>
-    <div class="p-8 pt-0" v-if="Boolean($slots['header-bottom'])">
+    <div v-if="Boolean($slots['header-bottom'])" class="p-8 pt-0">
       <slot name="header-bottom" />
     </div>
     <div class="h-full overflow-y-auto p-8 pt-0">
@@ -29,12 +29,8 @@
 </template>
 
 <script setup>
-const props = defineProps({
-  title: {
-    type: String,
-  },
-  description: {
-    type: String,
-  },
+defineProps({
+  title: { type: String, default: '' },
+  description: { type: String, default: '' },
 })
 </script>

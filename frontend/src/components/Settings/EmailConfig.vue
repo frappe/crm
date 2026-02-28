@@ -13,15 +13,15 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
-import EmailAdd from "./EmailAdd.vue";
-import EmailAccountList from "./EmailAccountList.vue";
-import EmailEdit from "./EmailEdit.vue";
+import { ref } from 'vue'
+import EmailAdd from './EmailAdd.vue'
+import EmailAccountList from './EmailAccountList.vue'
+import EmailEdit from './EmailEdit.vue'
 
-const step = ref("email-list");
-const accountData = ref(null);
+const step = ref('email-list')
+const accountData = ref(null)
 function updateStep(newStep, data) {
-  step.value = newStep;
-  accountData.value = data;
+  step.value = newStep
+  accountData.value = data
 }
 </script>

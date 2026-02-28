@@ -105,14 +105,8 @@ import { toast } from 'frappe-ui'
 import { ref, computed } from 'vue'
 
 const props = defineProps({
-  doctype: {
-    type: String,
-    required: true,
-  },
-  docname: {
-    type: String,
-    required: true,
-  },
+  doctype: { type: String, required: true },
+  docname: { type: String, required: true },
   options: {
     type: Object,
     default: () => ({
@@ -123,7 +117,7 @@ const props = defineProps({
 
 const emit = defineEmits(['after'])
 
-const show = defineModel()
+const show = defineModel({ type: Boolean })
 
 const filesUploaderArea = ref(null)
 const files = ref([])

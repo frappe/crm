@@ -7,10 +7,9 @@
     <template #body-content>
       <div class="-mt-3 mb-4 text-p-base text-ink-gray-7">
         {{
-          __(
-            'Please provide a reason for marking this {0} as lost',
-            [doctype.toLowerCase().replace('crm ', '')]
-          )
+          __('Please provide a reason for marking this {0} as lost', [
+            doctype.toLowerCase().replace('crm ', ''),
+          ])
         }}
       </div>
       <div class="flex flex-col gap-3">
@@ -24,8 +23,8 @@
             class="form-control flex-1 truncate"
             :value="lostReason"
             doctype="CRM Lost Reason"
-            @change="(v) => (lostReason = v)"
             :onCreate="onCreate"
+            @change="(v) => (lostReason = v)"
           />
         </div>
         <div>
@@ -60,21 +59,16 @@ import { Dialog } from 'frappe-ui'
 import { ref } from 'vue'
 
 const props = defineProps({
-  doctype: {
-    type: String,
-    default: 'CRM Lead',
-  },
-  document: {
-    type: Object,
-    required: true,
-  },
+  doctype: { type: String, default: 'CRM Lead' },
+  document: { type: Object, required: true },
 })
 
-const show = defineModel()
+const show = defineModel({ type: Boolean })
 
 const linkRef = ref(null)
-const lostReason = ref(props.document.doc.lost_reason || '')
-const lostNotes = ref(props.document.doc.lost_notes || '')
+const doc = props.document.doc
+const lostReason = ref(doc.lost_reason || '')
+const lostNotes = ref(doc.lost_notes || '')
 const error = ref('')
 
 function cancel() {
@@ -82,7 +76,7 @@ function cancel() {
   error.value = ''
   lostReason.value = ''
   lostNotes.value = ''
-  props.document.doc.status = props.document.originalDoc.status
+  doc.status = props.document.originalDoc.status
 }
 
 function save() {
@@ -98,8 +92,8 @@ function save() {
   error.value = ''
   show.value = false
 
-  props.document.doc.lost_reason = lostReason.value
-  props.document.doc.lost_notes = lostNotes.value
+  doc.lost_reason = lostReason.value
+  doc.lost_notes = lostNotes.value
   props.document.save.submit()
 }
 

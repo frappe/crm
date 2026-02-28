@@ -35,9 +35,9 @@
               </div>
               <div class="flex items-center gap-2">
                 <TextInput
+                  v-model="field.columns"
                   variant="outline"
                   type="number"
-                  v-model="field.columns"
                   class="w-20"
                 />
                 <Button variant="ghost" icon="x" @click="removeField(field)" />
@@ -68,7 +68,7 @@
             </div>
           </template>
         </Autocomplete>
-        <ErrorMessage class="mt-3" v-if="error" :message="error" />
+        <ErrorMessage v-if="error" class="mt-3" :message="error" />
       </div>
     </template>
     <template #actions>
@@ -83,9 +83,9 @@
           class="w-full"
           :label="__('Save')"
           variant="solid"
-          @click="update"
           :loading="loading"
           :disabled="!dirty"
+          @click="update"
         />
       </div>
     </template>
@@ -100,15 +100,15 @@ import { Dialog, ErrorMessage } from 'frappe-ui'
 import { ref, computed } from 'vue'
 
 const props = defineProps({
-  doctype: String,
-  parentDoctype: String,
+  doctype: { type: String, default: '' },
+  parentDoctype: { type: String, default: '' },
 })
 
 const { getFields, getGridViewSettings, saveUserSettings } = getMeta(
   props.doctype,
 )
 
-const show = defineModel()
+const show = defineModel({ type: Boolean })
 
 const loading = ref(false)
 const error = ref(null)

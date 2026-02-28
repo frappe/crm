@@ -30,17 +30,85 @@
         class="my-2 min-w-40 rounded-lg bg-surface-modal shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
       >
         <div class="min-w-72 p-2 sm:min-w-[400px]">
-          <div
-            v-if="filters?.size"
-            v-for="(f, i) in filters"
-            :key="i"
-            id="filter-list"
-            class="mb-4 sm:mb-3"
-          >
-            <div v-if="isMobileView" class="flex flex-col gap-2">
-              <div class="-mb-2 flex w-full items-center justify-between">
-                <div class="text-base text-ink-gray-5">
-                  {{ i == 0 ? __('Where') : __('And') }}
+          <template v-if="filters?.size">
+            <div
+              v-for="(f, i) in filters"
+              id="filter-list"
+              :key="i"
+              class="mb-4 sm:mb-3"
+            >
+              <div v-if="isMobileView" class="flex flex-col gap-2">
+                <div class="-mb-2 flex w-full items-center justify-between">
+                  <div class="text-base text-ink-gray-5">
+                    {{ i == 0 ? __('Where') : __('And') }}
+                  </div>
+                  <Button
+                    class="flex"
+                    variant="ghost"
+                    icon="x"
+                    @click="removeFilter(i)"
+                  />
+                </div>
+                <div id="fieldname" class="w-full">
+                  <Autocomplete
+                    :value="f.field.fieldname"
+                    :options="filterableFields.data"
+                    :placeholder="__('First Name')"
+                    @change="(e) => updateFilter(e, i)"
+                  />
+                </div>
+                <div id="operator">
+                  <FormControl
+                    v-model="f.operator"
+                    type="select"
+                    :options="
+                      getOperators(f.field.fieldtype, f.field.fieldname)
+                    "
+                    :placeholder="__('Equals')"
+                    @update:modelValue="() => updateOperator(f)"
+                  />
+                </div>
+                <div id="value" class="w-full">
+                  <component
+                    :is="getValueControl(f)"
+                    v-model="f.value"
+                    :placeholder="placeholder(f)"
+                    @change="(v) => updateValue(v, f)"
+                  />
+                </div>
+              </div>
+              <div v-else class="flex items-center justify-between gap-2">
+                <div class="flex items-center gap-2">
+                  <div class="w-13 pl-2 text-end text-base text-ink-gray-5">
+                    {{ i == 0 ? __('Where') : __('And') }}
+                  </div>
+                  <div id="fieldname" class="!min-w-[140px]">
+                    <Autocomplete
+                      :value="f.field.fieldname"
+                      :options="filterableFields.data"
+                      :placeholder="__('First Name')"
+                      @change="(e) => updateFilter(e, i)"
+                    />
+                  </div>
+                  <div id="operator">
+                    <FormControl
+                      v-model="f.operator"
+                      type="select"
+                      :options="
+                        getOperators(f.field.fieldtype, f.field.fieldname)
+                      "
+                      :placeholder="__('Equals')"
+                      @update:modelValue="() => updateOperator(f)"
+                    />
+                  </div>
+                  <div id="value" class="!min-w-[140px]">
+                    <component
+                      :is="getValueControl(f)"
+                      v-model="f.value"
+                      :placeholder="placeholder(f)"
+                      @change="(v) => updateValue(v, f)"
+                    />
+                  </div>
                 </div>
                 <Button
                   class="flex"
@@ -49,73 +117,8 @@
                   @click="removeFilter(i)"
                 />
               </div>
-              <div id="fieldname" class="w-full">
-                <Autocomplete
-                  :value="f.field.fieldname"
-                  :options="filterableFields.data"
-                  @change="(e) => updateFilter(e, i)"
-                  :placeholder="__('First Name')"
-                />
-              </div>
-              <div id="operator">
-                <FormControl
-                  type="select"
-                  v-model="f.operator"
-                  @update:modelValue="() => updateOperator(f)"
-                  :options="getOperators(f.field.fieldtype, f.field.fieldname)"
-                  :placeholder="__('Equals')"
-                />
-              </div>
-              <div id="value" class="w-full">
-                <component
-                  :is="getValueControl(f)"
-                  v-model="f.value"
-                  @change="(v) => updateValue(v, f)"
-                  :placeholder="placeholder(f)"
-                />
-              </div>
             </div>
-            <div v-else class="flex items-center justify-between gap-2">
-              <div class="flex items-center gap-2">
-                <div class="w-13 pl-2 text-end text-base text-ink-gray-5">
-                  {{ i == 0 ? __('Where') : __('And') }}
-                </div>
-                <div id="fieldname" class="!min-w-[140px]">
-                  <Autocomplete
-                    :value="f.field.fieldname"
-                    :options="filterableFields.data"
-                    @change="(e) => updateFilter(e, i)"
-                    :placeholder="__('First Name')"
-                  />
-                </div>
-                <div id="operator">
-                  <FormControl
-                    type="select"
-                    v-model="f.operator"
-                    @update:modelValue="() => updateOperator(f)"
-                    :options="
-                      getOperators(f.field.fieldtype, f.field.fieldname)
-                    "
-                    :placeholder="__('Equals')"
-                  />
-                </div>
-                <div id="value" class="!min-w-[140px]">
-                  <component
-                    :is="getValueControl(f)"
-                    v-model="f.value"
-                    @change="(v) => updateValue(v, f)"
-                    :placeholder="placeholder(f)"
-                  />
-                </div>
-              </div>
-              <Button
-                class="flex"
-                variant="ghost"
-                icon="x"
-                @click="removeFilter(i)"
-              />
-            </div>
-          </div>
+          </template>
           <div
             v-else
             class="mb-3 flex h-7 items-center px-3 text-sm text-ink-gray-5"
@@ -126,8 +129,8 @@
             <Autocomplete
               value=""
               :options="availableFilters"
-              @change="(e) => setfilter(e)"
               :placeholder="__('First Name')"
+              @change="(e) => setfilter(e)"
             >
               <template #target="{ togglePopover }">
                 <Button
@@ -175,19 +178,13 @@ const typeString = ['Data', 'Long Text', 'Small Text', 'Text Editor', 'Text']
 const typeDate = ['Date', 'Datetime']
 
 const props = defineProps({
-  doctype: {
-    type: String,
-    required: true,
-  },
-  default_filters: {
-    type: Object,
-    default: {},
-  },
+  doctype: { type: String, required: true },
+  default_filters: { type: Object, default: () => {} },
 })
 
 const emit = defineEmits(['update'])
 
-const list = defineModel()
+const list = defineModel({ type: Object, default: () => ({}) })
 
 const filterableFields = createResource({
   url: 'crm.api.doc.get_filterable_fields',
@@ -227,7 +224,7 @@ const availableFilters = computed(() => {
 
 function removeCommonFilters(commonFilters, allFilters) {
   for (const key in commonFilters) {
-    if (commonFilters.hasOwnProperty(key) && allFilters.hasOwnProperty(key)) {
+    if (Object.hasOwn(commonFilters, key) && Object.hasOwn(allFilters, key)) {
       if (commonFilters[key] === allFilters[key]) {
         delete allFilters[key]
       }

@@ -55,7 +55,7 @@
             :data="deal.doc"
             doctype="CRM Deal"
           />
-          <ErrorMessage class="mt-4" v-if="error" :message="__(error)" />
+          <ErrorMessage v-if="error" class="mt-4" :message="__(error)" />
         </div>
       </div>
       <div class="px-4 pb-7 pt-4 sm:px-6">
@@ -86,13 +86,13 @@ import { computed, ref, onMounted, nextTick, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 const props = defineProps({
-  defaults: Object,
+  defaults: { type: Object, default: () => ({}) },
 })
 
 const { getUser, isManager } = usersStore()
 const { getDealStatus, statusOptions } = statusesStore()
 
-const show = defineModel()
+const show = defineModel({ type: Boolean })
 const router = useRouter()
 const error = ref(null)
 
@@ -165,13 +165,7 @@ const tabs = createResource({
   },
 })
 
-const dealStatuses = computed(() => {
-  let statuses = statusOptions('deal')
-  if (!deal.doc.status) {
-    deal.doc.status = statuses[0].value
-  }
-  return statuses
-})
+const dealStatuses = computed(() => statusOptions('deal'))
 
 async function createDeal() {
   if (deal.doc.website && !deal.doc.website.startsWith('http')) {

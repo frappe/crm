@@ -103,13 +103,10 @@ import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 
 const props = defineProps({
-  lead: {
-    type: Object,
-    required: true,
-  },
+  lead: { type: Object, required: true },
 })
 
-const show = defineModel()
+const show = defineModel({ type: Boolean })
 
 const router = useRouter()
 
@@ -190,13 +187,7 @@ async function convertToDeal() {
   }
 }
 
-const dealStatuses = computed(() => {
-  let statuses = statusOptions('deal')
-  if (!deal.doc?.status) {
-    deal.doc.status = statuses[0].value
-  }
-  return statuses
-})
+const dealStatuses = computed(() => statusOptions('deal'))
 
 const dealTabs = createResource({
   url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_fields_layout',
