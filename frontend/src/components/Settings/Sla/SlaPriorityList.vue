@@ -1,11 +1,11 @@
 <template>
   <div class="rounded-md border px-2 border-outline-gray-2 text-sm">
     <div
+      v-if="slaData.priorities?.length !== 0"
       class="grid p-3 px-4 items-center"
       :style="{
         gridTemplateColumns: getGridTemplateColumnsForTable(columns),
       }"
-      v-if="slaData.priorities?.length !== 0"
     >
       <div
         v-for="column in columns"
@@ -43,8 +43,8 @@
             <Popover>
               <template #target="{ togglePopover }">
                 <div
-                  @click="togglePopover()"
                   class="min-h-7 w-full cursor-pointer select-none leading-5 p-1 px-2 hover:bg-surface-gray-2 rounded"
+                  @click="togglePopover()"
                 >
                   {{ formatTimeHMS(row[column.key]) }}
                 </div>
@@ -58,8 +58,8 @@
           </div>
           <div v-else class="ml-2">
             <select
-              class="w-full h-7 text-base hover:bg-surface-gray-3 rounded-md p-0 pl-2 pr-5 bg-transparent -ml-2 border-0 text-ink-gray-8 focus-visible:!ring-0 bg-none truncate"
               v-model="row[column.key]"
+              class="w-full h-7 text-base hover:bg-surface-gray-3 rounded-md p-0 pl-2 pr-5 bg-transparent -ml-2 border-0 text-ink-gray-8 focus-visible:!ring-0 bg-none truncate"
             >
               <option
                 v-for="option in priorityOptions"
@@ -95,20 +95,20 @@
     </div>
   </div>
   <div
-    class="flex items-center justify-between mt-2.5"
     v-if="
       slaData.priorities.length !== priorityOptions.length ||
       slaDataErrors.default_priority ||
       slaDataErrors.priorities
     "
+    class="flex items-center justify-between mt-2.5"
   >
     <div>
       <Button
         v-if="slaData.priorities.length !== priorityOptions.length"
         variant="subtle"
         :label="__('Add Row')"
-        @click="addRow"
         icon-left="plus"
+        @click="addRow"
       />
     </div>
     <ErrorMessage
@@ -255,9 +255,7 @@ const onDefaultPriorityChange = (priority, defaultPriority) => {
 
 watchDebounced(
   () => [...slaData.value.priorities],
-  (d) => {
-    validateSlaData('priorities')
-  },
+  () => validateSlaData('priorities'),
   { deep: true, debounce: 300 },
 )
 </script>

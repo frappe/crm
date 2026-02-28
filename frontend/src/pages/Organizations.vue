@@ -25,8 +25,8 @@
     doctype="CRM Organization"
   />
   <OrganizationsListView
-    ref="organizationsListView"
     v-if="organizations.data && rows.length"
+    ref="organizationsListView"
     v-model="organizations.data.page_length_count"
     v-model:list="organizations"
     :rows="rows"
@@ -67,7 +67,6 @@ import OrganizationsListView from '@/components/ListViews/OrganizationsListView.
 import ViewControls from '@/components/ViewControls.vue'
 import { getMeta } from '@/stores/meta'
 import { formatDate, timeAgo, website } from '@/utils'
-import { call } from 'frappe-ui'
 import { ref, computed } from 'vue'
 import EmptyState from '../components/ListViews/EmptyState.vue'
 

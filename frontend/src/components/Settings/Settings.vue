@@ -2,8 +2,8 @@
   <Dialog
     v-model="showSettings"
     :options="{ size: '5xl' }"
-    @close="activeSettingsPage = ''"
     :disableOutsideClickToClose="disableSettingModalOutsideClick"
+    @close="activeSettingsPage = ''"
   >
     <template #body>
       <div class="flex h-[calc(100vh_-_8rem)]">
@@ -20,16 +20,17 @@
             </div>
             <nav class="space-y-[3px] px-1">
               <SidebarLink
-                v-for="i in tab.items"
-                :icon="i.icon"
-                :label="__(i.label)"
+                v-for="item in tab.items"
+                :key="item.label"
+                :icon="item.icon"
+                :label="__(item.label)"
                 class="w-full"
                 :class="
-                  activeTab?.label == i.label
+                  activeTab?.label == item.label
                     ? 'bg-surface-selected shadow-sm hover:bg-surface-selected'
                     : 'hover:bg-surface-gray-3'
                 "
-                @click="activeSettingsPage = i.label"
+                @click="activeSettingsPage = item.label"
               />
             </nav>
           </template>

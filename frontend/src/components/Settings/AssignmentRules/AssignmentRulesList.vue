@@ -11,7 +11,7 @@
     :description="__('Add one to get started.')"
     :icon="h(SettingsIcon2, { class: 'rotate-90' })"
   />
-  <div class="w-full" v-else>
+  <div v-else class="w-full">
     <div class="flex items-center py-2 px-4 text-sm text-ink-gray-5">
       <div class="w-7/12">{{ __('Assignment Rule') }}</div>
       <div class="w-3/12">{{ __('Priority') }}</div>

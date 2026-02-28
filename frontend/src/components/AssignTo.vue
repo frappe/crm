@@ -3,8 +3,8 @@
     <template #target="{ togglePopover }">
       <div class="flex items-center" @click="togglePopover">
         <component
-          v-if="assignees?.length"
           :is="assignees?.length == 1 ? 'Button' : 'div'"
+          v-if="assignees?.length"
         >
           <MultipleAvatar :avatars="assignees" />
         </component>
@@ -31,13 +31,13 @@ import { toast, Popover } from 'frappe-ui'
 import { computed } from 'vue'
 
 const props = defineProps({
-  doctype: String,
-  docname: String,
+  doctype: { type: String, default: '' },
+  docname: { type: String, default: '' },
 })
 
 const { document } = useDocument(props.doctype, props.docname)
 
-const assignees = defineModel()
+const assignees = defineModel({ type: Array, default: () => [] })
 
 const ownerField = computed(() => {
   if (props.doctype === 'CRM Lead') {
@@ -55,8 +55,8 @@ async function saveAssignees(
   addAssignees,
   removeAssignees,
 ) {
-  removedAssignees.length && (await removeAssignees.submit(removedAssignees))
-  addedAssignees.length && (await addAssignees.submit(addedAssignees))
+  if (removedAssignees.length) await removeAssignees.submit(removedAssignees)
+  if (addedAssignees.length) await addAssignees.submit(addedAssignees)
 
   const nextAssignee = assignees.value.find(
     (a) => a.name !== document.doc[ownerField.value],

@@ -38,19 +38,19 @@
   </LayoutHeader>
   <div v-if="doc.name" class="flex h-full overflow-hidden">
     <Tabs
-      as="div"
       v-model="tabIndex"
+      as="div"
       :tabs="tabs"
       class="flex flex-1 overflow-hidden flex-col [&_[role='tab']]:px-0 [&_[role='tablist']]:px-5 [&_[role='tablist']]:gap-7.5 [&_[role='tabpanel']:not([hidden])]:flex [&_[role='tabpanel']:not([hidden])]:grow"
     >
       <template #tab-panel>
         <Activities
           ref="activities"
+          v-model:reload="reload"
+          v-model:tabIndex="tabIndex"
           doctype="CRM Deal"
           :docname="dealId"
           :tabs="tabs"
-          v-model:reload="reload"
-          v-model:tabIndex="tabIndex"
           @beforeSave="beforeStatusChange"
           @afterSave="reloadAssignees"
         />
@@ -150,7 +150,6 @@
               <Link
                 value=""
                 doctype="Contact"
-                @change="(e) => addContact(e)"
                 :onCreate="
                   (value, close) => {
                     _contact = {
@@ -161,6 +160,7 @@
                     close()
                   }
                 "
+                @change="(e) => addContact(e)"
               >
                 <template #target="{ togglePopover }">
                   <Button
@@ -186,8 +186,8 @@
                 <span>{{ __('Loading...') }}</span>
               </div>
               <div
-                v-else-if="dealContacts?.data?.length"
                 v-for="(contact, i) in dealContacts.data"
+                v-else-if="dealContacts?.data?.length"
                 :key="contact.name"
               >
                 <div class="px-2 pb-2.5" :class="[i == 0 ? 'pt-5' : 'pt-2.5']">
@@ -411,10 +411,7 @@ const route = useRoute()
 const router = useRouter()
 
 const props = defineProps({
-  dealId: {
-    type: String,
-    required: true,
-  },
+  dealId: { type: String, required: true },
 })
 
 const errorTitle = ref('')
@@ -784,7 +781,7 @@ function setLostReason() {
 
 function beforeStatusChange(data) {
   if (
-    data?.hasOwnProperty('status') &&
+    Object.hasOwn(data ?? {}, 'status') &&
     getDealStatus(data.status).type == 'Lost'
   ) {
     setLostReason()
@@ -796,7 +793,7 @@ function beforeStatusChange(data) {
 }
 
 function reloadAssignees(data) {
-  if (data?.hasOwnProperty('deal_owner')) {
+  if (Object.hasOwn(data ?? {}, 'deal_owner')) {
     assignees.reload()
   }
 }

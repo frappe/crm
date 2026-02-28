@@ -32,17 +32,17 @@
         </div>
         <div v-if="tabs.data?.[0]?.sections" class="flex gap-4">
           <SidePanelLayoutEditor
+            v-model="tabs.data[0].sections"
             class="flex flex-1 flex-col pr-2"
-            :sections="tabs.data[0].sections"
             :doctype="_doctype"
           />
           <div v-if="preview" class="flex flex-1 flex-col border rounded">
             <SidePanelLayout
+              v-slot="{ section }"
               :sections="tabs.data[0].sections"
               :doctype="_doctype"
               docname=""
               :preview="true"
-              v-slot="{ section }"
             >
               <div
                 v-if="section.name == 'contacts_section'"
@@ -72,22 +72,18 @@ import { Dialog, Badge, call, createResource } from 'frappe-ui'
 import { ref, watch, onMounted, nextTick } from 'vue'
 
 const props = defineProps({
-  doctype: {
-    type: String,
-    default: 'CRM Lead',
-  },
+  doctype: { type: String, default: 'CRM Lead' },
 })
 
 const emit = defineEmits(['reload'])
 
 const { capture } = useTelemetry()
 
-const show = defineModel()
+const show = defineModel({ type: Boolean })
 const _doctype = ref(props.doctype)
 const loading = ref(false)
 const dirty = ref(false)
 const preview = ref(false)
-const data = ref({})
 
 function getParams() {
   return { doctype: _doctype.value, type: 'Side Panel' }

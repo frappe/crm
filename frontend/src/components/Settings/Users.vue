@@ -56,8 +56,8 @@
 
     <!-- Users List -->
     <div
-      class="flex flex-col overflow-hidden"
       v-if="!users.loading && users.data?.crmUsers?.length > 1"
+      class="flex flex-col overflow-hidden"
     >
       <div
         v-if="users.data?.crmUsers?.length > 10"
@@ -75,8 +75,8 @@
           </template>
         </TextInput>
         <FormControl
-          type="select"
           v-model="currentRole"
+          type="select"
           :options="[
             { label: __('All'), value: 'All' },
             { label: __('Admin'), value: 'System Manager' },
@@ -146,10 +146,10 @@
         >
           <Button
             class="mt-3.5 p-2"
-            @click="() => users.next()"
             :loading="users.loading"
             :label="__('Load More')"
             icon-left="refresh-cw"
+            @click="() => users.next()"
           />
         </div>
       </ul>

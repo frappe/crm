@@ -58,7 +58,6 @@ export function getMeta(doctype) {
 
     if (df && df.options) {
       if (df.options.indexOf(':') != -1) {
-        currency = currency
         // TODO: Handle this case
       } else if (doc && doc[df.options]) {
         currency = doc[df.options]
@@ -74,8 +73,7 @@ export function getMeta(doctype) {
     return doctypeMeta[doctype] || {}
   }
 
-  function getGridViewSettings(parentDoctype, dt = null) {
-    dt = dt || doctype
+  function getGridViewSettings(parentDoctype) {
     if (!userSettings[parentDoctype]?.['GridView']?.[doctype]) return {}
     return userSettings[parentDoctype]['GridView'][doctype]
   }

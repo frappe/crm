@@ -8,12 +8,12 @@
     <template #body-content>
       <div class="flex flex-col gap-4">
         <FormControl
+          v-model="priorityData.priority"
           type="select"
           size="sm"
           variant="subtle"
           :placeholder="__('Select Priority')"
           :label="__('Priority')"
-          v-model="priorityData.priority"
           :options="priorityOptions"
           required
           class="text-ink-gray-8"
@@ -21,10 +21,10 @@
         <div>
           <FormLabel :label="__('First Response Time')" required />
           <Popover class="mt-2">
-            <template #target="{ togglePopover }" class="w-max">
+            <template #target="{ togglePopover }">
               <div
-                @click="togglePopover()"
                 class="w-full bg-surface-gray-2 rounded p-1.5 px-2 text-base text-ink-gray-8 cursor-pointer hover:bg-surface-gray-3"
+                @click="togglePopover()"
               >
                 <div v-if="priorityData.first_response_time">
                   {{ formatTimeHMS(priorityData.first_response_time) }}
@@ -55,18 +55,18 @@
             variant="subtle"
             :theme="isConfirmingDelete ? 'red' : 'gray'"
             :label="isConfirmingDelete ? __('Confirm Delete') : __('Delete')"
-            @click="deleteItem"
             icon-left="trash-2"
+            @click="deleteItem"
           />
         </div>
         <div class="flex gap-2">
           <Button
             variant="subtle"
             theme="gray"
-            @click="dialog = false"
             :label="__('Cancel')"
+            @click="dialog = false"
           />
-          <Button variant="solid" @click="onSave" :label="__('Save')" />
+          <Button variant="solid" :label="__('Save')" @click="onSave" />
         </div>
       </div>
     </template>
@@ -88,14 +88,11 @@ import { slaData } from './utils'
 import { formatTimeHMS } from '../../../utils'
 import DurationPicker from '../../Controls/DurationPicker.vue'
 
-const dialog = defineModel()
+const dialog = defineModel({ type: Boolean })
 const isConfirmingDelete = ref(false)
 
 const props = defineProps({
-  priority: {
-    type: Object,
-    required: true,
-  },
+  priority: { type: Object, required: true },
 })
 
 const priorityOptions = inject('priorityOptions')

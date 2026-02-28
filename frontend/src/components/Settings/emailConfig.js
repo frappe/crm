@@ -28,9 +28,7 @@ export const incomingOutgoingFields = [
     label: __('Enable Incoming'),
     name: 'enable_incoming',
     type: 'checkbox',
-    description: __(
-      'If enabled, emails will be pulled from this account.',
-    ),
+    description: __('If enabled, emails will be pulled from this account.'),
   },
   {
     label: __('Enable Outgoing'),

@@ -61,11 +61,8 @@ import { confirmLoginToFrappeCloud } from '@/composables/frappecloud'
 import { Dropdown, useTheme } from 'frappe-ui'
 import { computed, h, markRaw } from 'vue'
 
-const props = defineProps({
-  isCollapsed: {
-    type: Boolean,
-    default: false,
-  },
+defineProps({
+  isCollapsed: { type: Boolean, default: false },
 })
 
 const { settings, brand } = getSettings()

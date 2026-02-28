@@ -17,9 +17,9 @@
               :alt="attachment.file_name"
             />
             <component
+              :is="fileIcon(attachment.file_type)"
               v-else
               class="size-4 text-ink-gray-7"
-              :is="fileIcon(attachment.file_type)"
             />
           </div>
           <div class="flex flex-col justify-center gap-1 truncate">
@@ -81,8 +81,8 @@ import { globalStore } from '@/stores/global'
 import { call, Tooltip } from 'frappe-ui'
 import { formatDate, timeAgo, convertSize, isImage } from '@/utils'
 
-const props = defineProps({
-  attachments: Array,
+defineProps({
+  attachments: { type: Array, default: () => [] },
 })
 
 const emit = defineEmits(['reload'])
