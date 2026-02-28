@@ -1,4 +1,4 @@
-import { dayjs } from "frappe-ui"
+import { dayjs } from 'frappe-ui'
 
 export function getLastXDays(range: number = 30): string | null {
   const today = new Date()
@@ -11,7 +11,7 @@ export function getLastXDays(range: number = 30): string | null {
 }
 
 export function formatter(range: string) {
-  let [from, to] = range.split(',')
+  const [from, to] = range.split(',')
   return `${formatRange(from)} to ${formatRange(to)}`
 }
 

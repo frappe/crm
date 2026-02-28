@@ -105,7 +105,7 @@ import {
 } from './emailConfig'
 import EmailProviderIcon from './EmailProviderIcon.vue'
 
-const emit = defineEmits()
+const emit = defineEmits(['update:step'])
 
 const state = reactive({
   service: '',

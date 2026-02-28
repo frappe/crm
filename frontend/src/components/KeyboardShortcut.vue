@@ -27,7 +27,7 @@ defineProps({
   ctrl: Boolean,
   shift: Boolean,
   alt: Boolean,
-  shortcut: String,
+  shortcut: { type: String, default: '' },
   bg: Boolean,
 })
 </script>

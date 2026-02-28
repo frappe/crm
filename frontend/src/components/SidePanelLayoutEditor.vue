@@ -148,9 +148,10 @@ import { Input, createResource } from 'frappe-ui'
 import { computed, watch } from 'vue'
 
 const props = defineProps({
-  sections: Object,
-  doctype: String,
+  doctype: { type: String, default: 'CRM Lead' },
 })
+
+const sections = defineModel({ type: Array, default: () => [] })
 
 const restrictedFieldTypes = [
   'Table',

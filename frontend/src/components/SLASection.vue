@@ -41,7 +41,7 @@ import { statusesStore } from '@/stores/statuses'
 import { useTelemetry } from 'frappe-ui/frappe'
 import { computed } from 'vue'
 
-const data = defineModel()
+const data = defineModel({ type: Object, default: () => ({}) })
 const emit = defineEmits(['updateField'])
 
 const { communicationStatuses } = statusesStore()

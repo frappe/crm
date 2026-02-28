@@ -12,8 +12,8 @@
   </LayoutHeader>
   <div v-if="contact.doc" class="flex flex-col h-full overflow-hidden">
     <FileUploader
-      @success="changeContactImage"
       :validateFile="validateIsImageFile"
+      @success="changeContactImage"
     >
       <template #default="{ openFileSelector, error }">
         <div class="flex flex-col items-start justify-start gap-4 p-4">
@@ -99,8 +99,8 @@
       </template>
     </FileUploader>
     <Tabs
-      as="div"
       v-model="tabIndex"
+      as="div"
       :tabs="tabs"
       class="flex flex-1 overflow-auto flex-col [&_[role='tablist']]:gap-3 [&_[role='tablist']]:px-4 [&_[role='tabpanel']:not([hidden])]:flex [&_[role='tabpanel']:not([hidden])]:grow"
     >
@@ -110,7 +110,7 @@
           class="group flex items-center gap-2 border-b border-transparent py-2.5 text-base text-ink-gray-5 duration-300 ease-in-out hover:text-ink-gray-9 !px-4"
           :class="{ 'text-ink-gray-9': selected }"
         >
-          <component v-if="tab.icon" :is="tab.icon" class="h-5" />
+          <component :is="tab.icon" v-if="tab.icon" class="h-5" />
           {{ __(tab.label) }}
           <Badge
             class="group-hover:bg-surface-gray-7"
@@ -201,10 +201,7 @@ const { getDealStatus } = statusesStore()
 const { doctypeMeta } = getMeta('Contact')
 
 const props = defineProps({
-  contactId: {
-    type: String,
-    required: true,
-  },
+  contactId: { type: String, required: true },
 })
 
 const route = useRoute()
@@ -355,7 +352,7 @@ function getParsedSections(_sections) {
                     contact.doc.email_ids = contact.doc.email_ids.filter(
                       (email) => email.name !== option.name,
                     )
-                    !isNew && (await deleteOption('Contact Email', option.name))
+                    if (!isNew) await deleteOption('Contact Email', option.name)
                   },
                 }
               }) || [],
@@ -398,7 +395,7 @@ function getParsedSections(_sections) {
                     contact.doc.phone_nos = contact.doc.phone_nos.filter(
                       (phone) => phone.name !== option.name,
                     )
-                    !isNew && (await deleteOption('Contact Phone', option.name))
+                    if (!isNew) await deleteOption('Contact Phone', option.name)
                   },
                 }
               }) || [],

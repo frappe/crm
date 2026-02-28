@@ -9,12 +9,12 @@
       />
       <div class="flex gap-2 items-center justify-between flex-1">
         <input
+          id="track"
           class="w-full slider !h-[0.5] bg-surface-gray-3 [&::-webkit-slider-thumb]:shadow [&::-webkit-slider-thumb:hover]:outline [&::-webkit-slider-thumb:hover]:outline-[0.5px]"
           :style="{
             background: `linear-gradient(to right, var(--surface-gray-7, #171717) ${progress}%, var(--surface-gray-3, #ededed) ${progress}%)`,
           }"
           type="range"
-          id="track"
           min="0"
           :max="duration"
           :value="currentTime"
@@ -28,12 +28,12 @@
       <div class="flex items-center gap-1">
         <div class="flex group gap-2 items-center">
           <input
+            id="volume"
             class="slider opacity-0 group-hover:opacity-100 w-0 group-hover:w-20 !h-[0.5] [&::-webkit-slider-thumb]:shadow [&::-webkit-slider-thumb:hover]:outline [&::-webkit-slider-thumb:hover]:outline-[0.5px]"
             :style="{
               background: `linear-gradient(to right, #171717 ${volumnProgress}%, #ededed ${volumnProgress}%)`,
             }"
             type="range"
-            id="volume"
             min="0"
             max="1"
             :value="currentVolumn"
@@ -93,7 +93,7 @@ import Dropdown from '@/components/frappe-ui/Dropdown.vue'
 import { computed, h, ref } from 'vue'
 
 const props = defineProps({
-  src: String,
+  src: { type: String, default: '' },
 })
 
 const audio = ref(null)

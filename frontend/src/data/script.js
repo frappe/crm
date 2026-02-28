@@ -127,7 +127,7 @@ export function getScript(doctype, view = 'Form') {
     instance._isChildDoctype = isChildDoctype
 
     for (const key in document) {
-      if (document.hasOwnProperty(key)) {
+      if (Object.hasOwn(document, key)) {
         instance[key] = document[key]
       }
     }
@@ -361,7 +361,7 @@ export function getScript(doctype, view = 'Form') {
           if (!currentDocData) return false
           return prop in currentDocData
         },
-        ownKeys(target) {
+        ownKeys() {
           const currentDocData = getCurrentData()
           if (!currentDocData) return []
           return Reflect.ownKeys(currentDocData)

@@ -21,8 +21,8 @@
             <Button
               variant="ghost"
               class="w-7"
-              @click="show = false"
               icon="x"
+              @click="show = false"
             />
           </div>
         </div>
@@ -38,9 +38,9 @@
       <div class="px-4 pt-4 pb-7 sm:px-6">
         <div class="flex justify-end gap-2">
           <Button
-            class="w-full"
             v-for="action in dialogOptions.actions"
             :key="action.label"
+            class="w-full"
             v-bind="action"
             :label="__(action.label)"
             :loading="loading"
@@ -64,26 +64,15 @@ import { createResource, ErrorMessage, Badge } from 'frappe-ui'
 import { ref, nextTick, computed, onMounted } from 'vue'
 
 const props = defineProps({
-  data: {
-    type: Object,
-    default: () => ({}),
-  },
-  referenceDoc: {
-    type: Object,
-    default: () => ({}),
-  },
-  options: {
-    type: Object,
-    default: {
-      afterInsert: () => {},
-    },
-  },
+  data: { type: Object, default: () => ({}) },
+  referenceDoc: { type: Object, default: () => ({}) },
+  options: { type: Object, default: () => ({ afterInsert: () => {} }) },
 })
 
 const { isManager } = usersStore()
 const { capture } = useTelemetry()
 
-const show = defineModel()
+const show = defineModel({ type: Boolean })
 
 const loading = ref(false)
 const error = ref(null)
@@ -170,7 +159,7 @@ const _createCallLog = createResource({
 
 function handleCallLogUpdate(doc) {
   show.value = false
-  props.options.afterInsert && props.options.afterInsert(doc)
+  props.options.afterInsert?.(doc)
 }
 
 onMounted(() => {

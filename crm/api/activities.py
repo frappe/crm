@@ -452,7 +452,7 @@ def get_linked_notes(name: str):
 	notes = frappe.db.get_all(
 		"FCRM Note",
 		filters={"reference_docname": name},
-		fields=["name", "title", "content", "owner", "modified"],
+		fields=["name", "title", "content", "owner", "modified", "creation"],
 	)
 	return notes or []
 
@@ -470,6 +470,7 @@ def get_linked_tasks(name: str):
 			"priority",
 			"status",
 			"modified",
+			"creation",
 		],
 	)
 	return tasks or []

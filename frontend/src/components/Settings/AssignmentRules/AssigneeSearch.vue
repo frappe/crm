@@ -5,8 +5,8 @@
         <Button
           variant="subtle"
           icon-left="plus"
-          @click="togglePopover()"
           :label="__('Add Assignee')"
+          @click="togglePopover()"
         />
       </template>
       <template #body="{ togglePopover }">
@@ -16,10 +16,10 @@
               ref="search"
               class="form-input w-full"
               type="text"
-              @change="(e) => debouncedQuery(e.target.value)"
               :value="query"
               autocomplete="off"
               :placeholder="__('Search')"
+              @change="(e) => debouncedQuery(e.target.value)"
             />
             <button
               class="absolute right-1.5 inline-flex h-7 w-7 items-center justify-center"
@@ -30,12 +30,12 @@
           </div>
           <ComboboxOptions class="my-2 max-h-64 overflow-y-auto px-1.5" static>
             <ComboboxOption
-              v-show="usersList.length > 0"
               v-for="user in usersList"
+              v-show="usersList.length > 0"
               :key="user.username"
+              v-slot="{ active }"
               :value="user"
               as="template"
-              v-slot="{ active }"
               @click="
                 (e) => {
                   e.stopPropagation()

@@ -50,11 +50,11 @@
       <template #tab-panel>
         <Activities
           ref="activities"
+          v-model:reload="reload"
+          v-model:tabIndex="tabIndex"
           doctype="CRM Lead"
           :docname="leadId"
           :tabs="tabs"
-          v-model:reload="reload"
-          v-model:tabIndex="tabIndex"
           @beforeSave="beforeStatusChange"
           @afterSave="reloadAssignees"
         />
@@ -68,10 +68,10 @@
         {{ __(leadId) }}
       </div>
       <FileUploader
-        @success="(file) => updateField('image', file.file_url)"
         :validateFile="validateIsImageFile"
+        @success="(file) => updateField('image', file.file_url)"
       >
-        <template #default="{ openFileSelector, error }">
+        <template #default="{ openFileSelector }">
           <div class="flex items-center justify-start gap-5 border-b p-5">
             <div class="group relative size-12">
               <Avatar
@@ -297,10 +297,7 @@ const route = useRoute()
 const router = useRouter()
 
 const props = defineProps({
-  leadId: {
-    type: String,
-    required: true,
-  },
+  leadId: { type: String, required: true },
 })
 
 const reload = ref(false)
@@ -513,7 +510,7 @@ function setLostReason() {
 
 function beforeStatusChange(data) {
   if (
-    data?.hasOwnProperty('status') &&
+    Object.hasOwn(data ?? {}, 'status') &&
     getLeadStatus(data.status).type == 'Lost'
   ) {
     setLostReason()
@@ -525,7 +522,7 @@ function beforeStatusChange(data) {
 }
 
 function reloadAssignees(data) {
-  if (data?.hasOwnProperty('lead_owner')) {
+  if (Object.hasOwn(data ?? {}, 'lead_owner')) {
     assignees.reload()
   }
 }
