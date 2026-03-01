@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Frappe CRM VERSION\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2026-02-24 07:27+0000\n"
-"PO-Revision-Date: 2026-02-24 07:27+0000\n"
+"POT-Creation-Date: 2026-03-01 09:43+0000\n"
+"PO-Revision-Date: 2026-03-01 09:43+0000\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: shariq@frappe.io\n"
 "MIME-Version: 1.0\n"
@@ -1275,7 +1275,7 @@ msgstr ""
 msgid "Cannot enable rule without adding users in it"
 msgstr ""
 
-#: crm/api/__init__.py:105
+#: crm/api/__init__.py:106
 msgid "Cannot invite for this role"
 msgstr ""
 
@@ -3668,7 +3668,7 @@ msgstr ""
 msgid "Invalid lead details supplied."
 msgstr ""
 
-#: crm/api/__init__.py:80 crm/api/__init__.py:84
+#: crm/api/__init__.py:81 crm/api/__init__.py:85
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.py:61
 msgid "Invalid or expired key"
 msgstr ""
@@ -5243,7 +5243,7 @@ msgstr ""
 msgid "Please select an existing organization"
 msgstr ""
 
-#: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.py:56
+#: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.py:55
 msgid "Please select weekly off day"
 msgstr ""
 
@@ -6612,7 +6612,7 @@ msgstr ""
 msgid "The Condition '{0}' is invalid: {1}"
 msgstr ""
 
-#: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.py:65
+#: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.py:64
 msgid "The holiday on {0} is not between From Date and To Date"
 msgstr ""
 
@@ -6656,7 +6656,7 @@ msgstr ""
 msgid "This field is required"
 msgstr ""
 
-#: crm/www/crm.py:32
+#: crm/www/crm.py:30
 msgid "This method is only meant for developer mode"
 msgstr ""
 
@@ -6730,7 +6730,7 @@ msgstr ""
 msgid "To Date"
 msgstr ""
 
-#: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.py:60
+#: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.py:59
 msgid "To Date cannot be before From Date"
 msgstr ""
 
@@ -7242,7 +7242,7 @@ msgstr ""
 msgid "You"
 msgstr ""
 
-#: crm/api/__init__.py:102
+#: crm/api/__init__.py:103
 msgid "You are not allowed to invite System Managers"
 msgstr ""
 
@@ -7294,7 +7294,7 @@ msgstr ""
 msgid "You do not have mobile number set in your Telephony Agent"
 msgstr ""
 
-#: crm/www/crm.py:19
+#: crm/www/crm.py:17
 msgid "You do not have permission to access Frappe CRM"
 msgstr ""
 
