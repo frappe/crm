@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-02-24 07:27+0000\n"
-"PO-Revision-Date: 2026-02-28 20:13\n"
+"PO-Revision-Date: 2026-03-01 20:15\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Russian\n"
 "MIME-Version: 1.0\n"
@@ -3868,7 +3868,7 @@ msgstr "Последние 30 дней"
 
 #: frontend/src/components/Filter.vue:631
 msgid "Last 6 Months"
-msgstr "Последние 6 месяцев"
+msgstr ""
 
 #: frontend/src/pages/Dashboard.vue:207
 msgid "Last 60 Days"
@@ -4328,7 +4328,7 @@ msgstr "Упоминание"
 
 #: frontend/src/components/Notifications.vue:116
 msgid "Mentions"
-msgstr ""
+msgstr "Упоминания"
 
 #. Label of the message (HTML Editor) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
@@ -5087,7 +5087,7 @@ msgstr "Страница"
 #. Label of the page_name (Data) field in DocType 'Facebook Page'
 #: crm/lead_syncing/doctype/facebook_page/facebook_page.json
 msgid "Page Name"
-msgstr ""
+msgstr "Название страницы"
 
 #. Label of the parent_crm_territory (Link) field in DocType 'CRM Territory'
 #: crm/fcrm/doctype/crm_territory/crm_territory.json
