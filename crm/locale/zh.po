@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2026-02-24 07:27+0000\n"
-"PO-Revision-Date: 2026-02-24 20:01\n"
+"POT-Creation-Date: 2026-03-01 09:43+0000\n"
+"PO-Revision-Date: 2026-03-02 20:39\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Chinese Simplified\n"
 "MIME-Version: 1.0\n"
@@ -1277,7 +1277,7 @@ msgstr "无法删除标准项{0}"
 msgid "Cannot enable rule without adding users in it"
 msgstr "未添加用户时无法启用规则。"
 
-#: crm/api/__init__.py:105
+#: crm/api/__init__.py:106
 msgid "Cannot invite for this role"
 msgstr ""
 
@@ -3670,7 +3670,7 @@ msgstr ""
 msgid "Invalid lead details supplied."
 msgstr ""
 
-#: crm/api/__init__.py:80 crm/api/__init__.py:84
+#: crm/api/__init__.py:81 crm/api/__init__.py:85
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.py:61
 msgid "Invalid or expired key"
 msgstr ""
@@ -4080,7 +4080,7 @@ msgstr "链接"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:403
 msgid "Linked With"
-msgstr "关联"
+msgstr "关联对象"
 
 #. Label of the links (Table) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
@@ -5245,7 +5245,7 @@ msgstr "请选择现有联系人"
 msgid "Please select an existing organization"
 msgstr "请选择现有组织"
 
-#: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.py:56
+#: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.py:55
 msgid "Please select weekly off day"
 msgstr "请选择每周休息日"
 
@@ -6614,7 +6614,7 @@ msgstr "谢谢"
 msgid "The Condition '{0}' is invalid: {1}"
 msgstr "条件'{0}'无效：{1}"
 
-#: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.py:65
+#: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.py:64
 msgid "The holiday on {0} is not between From Date and To Date"
 msgstr "在{0}这个节日之间不在开始日期和结束日期之间"
 
@@ -6658,7 +6658,7 @@ msgstr "本年"
 msgid "This field is required"
 msgstr ""
 
-#: crm/www/crm.py:32
+#: crm/www/crm.py:30
 msgid "This method is only meant for developer mode"
 msgstr "本方法仅适用于开发者模式"
 
@@ -6732,7 +6732,7 @@ msgstr "至"
 msgid "To Date"
 msgstr "截止日期"
 
-#: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.py:60
+#: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.py:59
 msgid "To Date cannot be before From Date"
 msgstr "到日期不能早于日期"
 
@@ -7244,7 +7244,7 @@ msgstr "昨天"
 msgid "You"
 msgstr "您"
 
-#: crm/api/__init__.py:102
+#: crm/api/__init__.py:103
 msgid "You are not allowed to invite System Managers"
 msgstr ""
 
@@ -7296,7 +7296,7 @@ msgstr ""
 msgid "You do not have mobile number set in your Telephony Agent"
 msgstr "您的电话客服未设置手机号码"
 
-#: crm/www/crm.py:19
+#: crm/www/crm.py:17
 msgid "You do not have permission to access Frappe CRM"
 msgstr ""
 
