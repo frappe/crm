@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2026-02-24 07:27+0000\n"
-"PO-Revision-Date: 2026-02-24 20:02\n"
+"POT-Creation-Date: 2026-03-01 09:43+0000\n"
+"PO-Revision-Date: 2026-03-02 20:39\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Esperanto\n"
 "MIME-Version: 1.0\n"
@@ -1277,7 +1277,7 @@ msgstr "crwdns152915:0{0}crwdne152915:0"
 msgid "Cannot enable rule without adding users in it"
 msgstr "crwdns158810:0crwdne158810:0"
 
-#: crm/api/__init__.py:105
+#: crm/api/__init__.py:106
 msgid "Cannot invite for this role"
 msgstr "crwdns196168:0crwdne196168:0"
 
@@ -3670,7 +3670,7 @@ msgstr "crwdns196480:0{0}crwdne196480:0"
 msgid "Invalid lead details supplied."
 msgstr "crwdns196482:0crwdne196482:0"
 
-#: crm/api/__init__.py:80 crm/api/__init__.py:84
+#: crm/api/__init__.py:81 crm/api/__init__.py:85
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.py:61
 msgid "Invalid or expired key"
 msgstr "crwdns196484:0crwdne196484:0"
@@ -5245,7 +5245,7 @@ msgstr "crwdns153721:0crwdne153721:0"
 msgid "Please select an existing organization"
 msgstr "crwdns153723:0crwdne153723:0"
 
-#: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.py:56
+#: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.py:55
 msgid "Please select weekly off day"
 msgstr "crwdns196670:0crwdne196670:0"
 
@@ -6614,7 +6614,7 @@ msgstr "crwdns158684:0crwdne158684:0"
 msgid "The Condition '{0}' is invalid: {1}"
 msgstr "crwdns153967:0{0}crwdnd153967:0{1}crwdne153967:0"
 
-#: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.py:65
+#: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.py:64
 msgid "The holiday on {0} is not between From Date and To Date"
 msgstr "crwdns196862:0{0}crwdne196862:0"
 
@@ -6658,7 +6658,7 @@ msgstr "crwdns153977:0crwdne153977:0"
 msgid "This field is required"
 msgstr "crwdns196864:0crwdne196864:0"
 
-#: crm/www/crm.py:32
+#: crm/www/crm.py:30
 msgid "This method is only meant for developer mode"
 msgstr "crwdns161450:0crwdne161450:0"
 
@@ -6732,7 +6732,7 @@ msgstr "crwdns153991:0crwdne153991:0"
 msgid "To Date"
 msgstr "crwdns153993:0crwdne153993:0"
 
-#: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.py:60
+#: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.py:59
 msgid "To Date cannot be before From Date"
 msgstr "crwdns196868:0crwdne196868:0"
 
@@ -7244,7 +7244,7 @@ msgstr "crwdns154093:0crwdne154093:0"
 msgid "You"
 msgstr "crwdns154095:0crwdne154095:0"
 
-#: crm/api/__init__.py:102
+#: crm/api/__init__.py:103
 msgid "You are not allowed to invite System Managers"
 msgstr "crwdns196928:0crwdne196928:0"
 
@@ -7296,7 +7296,7 @@ msgstr "crwdns160948:0crwdne160948:0"
 msgid "You do not have mobile number set in your Telephony Agent"
 msgstr "crwdns154101:0crwdne154101:0"
 
-#: crm/www/crm.py:19
+#: crm/www/crm.py:17
 msgid "You do not have permission to access Frappe CRM"
 msgstr "crwdns161452:0crwdne161452:0"
 
