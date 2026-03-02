@@ -4,8 +4,8 @@
       class="group flex flex-wrap gap-1 min-h-20 p-1.5 rounded text-base bg-surface-gray-2 hover:bg-surface-gray-3 focus:border-outline-gray-4 focus:ring-0 focus-visible:ring-2 focus-visible:ring-outline-gray-3 text-ink-gray-8 transition-colors w-full"
     >
       <Button
-        ref="valuesRef"
         v-for="value in parsedValues"
+        ref="valuesRef"
         :key="value"
         :label="value"
         theme="gray"
@@ -28,8 +28,8 @@
           :value="query"
           :filters="filters"
           :doctype="linkField.options"
-          @change="(v) => addValue(v)"
           :hideMe="true"
+          @change="(v) => addValue(v)"
         >
           <template #target="{ togglePopover }">
             <button
@@ -40,7 +40,7 @@
         </Link>
       </div>
     </div>
-    <ErrorMessage class="mt-2 pl-2" v-if="error" :message="error" />
+    <ErrorMessage v-if="error" class="mt-2 pl-2" :message="error" />
   </div>
 </template>
 
@@ -50,10 +50,7 @@ import { getMeta } from '@/stores/meta'
 import { ref, computed, nextTick } from 'vue'
 
 const props = defineProps({
-  doctype: {
-    type: String,
-    required: true,
-  },
+  doctype: { type: String, required: true },
   errorMessage: {
     type: Function,
     default: (value) => `${value} is an Invalid value`,
@@ -64,10 +61,7 @@ const emit = defineEmits(['change'])
 
 const { getFields } = getMeta(props.doctype)
 
-const values = defineModel({
-  type: Array,
-  default: () => [],
-})
+const values = defineModel({ type: Array, default: () => [] })
 
 const valuesRef = ref([])
 const error = ref(null)
@@ -77,13 +71,10 @@ const linkField = ref('')
 
 const filters = computed(() => {
   if (!linkField.value) return []
-  return {
-    name: ['not in', parsedValues.value],
-  }
+  return { name: ['not in', parsedValues.value] }
 })
 
 const parsedValues = computed(() => {
-  error.value = ''
   getLinkField()
   if (!linkField.value) return []
   return values.value.map((row) => row[linkField.value.fieldname])
@@ -115,7 +106,9 @@ const addValue = (value) => {
   if (value) {
     values.value.push({ [linkField.value.fieldname]: value })
     emit('change', values.value)
-    !error.value && (query.value = '')
+    if (!error.value) {
+      query.value = ''
+    }
   }
 }
 

@@ -3,11 +3,11 @@
     <template v-for="(event, i) in computedEvents" :key="event.type">
       <div v-if="event.count" class="p-3">
         <CollapsibleSection :opened="!event.collapsed">
-          <template #header="{ opened, toggle }">
+          <template #header="{ opened, toggle: toggleHeader }">
             <div class="flex items-center justify-between">
               <div
                 class="flex text-ink-gray-6 max-w-fit cursor-pointer items-center gap-2 text-base"
-                @click="toggle()"
+                @click="toggleHeader()"
               >
                 <FeatherIcon
                   name="chevron-right"

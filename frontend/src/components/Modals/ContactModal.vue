@@ -20,8 +20,8 @@
             <Button
               variant="ghost"
               class="w-7"
-              @click="show = false"
               icon="x"
+              @click="show = false"
             />
           </div>
         </div>
@@ -31,7 +31,7 @@
           :data="_contact.doc"
           doctype="Contact"
         />
-        <ErrorMessage class="mt-6" v-if="error" :message="__(error)" />
+        <ErrorMessage v-if="error" class="mt-6" :message="__(error)" />
       </div>
       <div class="px-4 pb-7 pt-4 sm:px-6">
         <div class="space-y-2">
@@ -67,16 +67,10 @@ import { ref, nextTick, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 const props = defineProps({
-  contact: {
-    type: Object,
-    default: {},
-  },
+  contact: { type: Object, default: () => {} },
   options: {
     type: Object,
-    default: {
-      redirect: true,
-      afterInsert: () => {},
-    },
+    default: () => ({ redirect: true, afterInsert: () => {} }),
   },
 })
 
@@ -84,7 +78,7 @@ const { isManager } = usersStore()
 const { capture } = useTelemetry()
 
 const router = useRouter()
-const show = defineModel()
+const show = defineModel({ type: Boolean })
 
 const error = ref(null)
 
@@ -183,7 +177,7 @@ function handleContactUpdate(doc) {
     })
   }
   show.value = false
-  props.options.afterInsert && props.options.afterInsert(doc)
+  props.options.afterInsert?.(doc)
 }
 
 const tabs = createResource({

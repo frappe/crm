@@ -25,10 +25,7 @@ import EmailProviderIcon from './EmailProviderIcon.vue'
 import { computed } from 'vue'
 
 const props = defineProps({
-  emailAccount: {
-    type: Object,
-    required: true,
-  },
+  emailAccount: { type: Object, required: true },
 })
 
 const badgeTitle = computed(() => {

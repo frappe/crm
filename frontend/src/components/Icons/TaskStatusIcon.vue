@@ -47,10 +47,7 @@
   </svg>
 </template>
 <script setup>
-const props = defineProps({
-  status: {
-    type: String,
-    required: true,
-  },
+defineProps({
+  status: { type: String, required: true },
 })
 </script>

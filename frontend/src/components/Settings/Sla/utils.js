@@ -189,7 +189,7 @@ export function validateSlaData(key, skipConditionCheck = false) {
           slaDataErrors.value.condition = ''
         }
         break
-      case 'working_hours':
+      case 'working_hours': {
         const validWorkdays = slaData.value.working_hours?.filter(
           (day) =>
             day.workday &&
@@ -248,7 +248,7 @@ export function validateSlaData(key, skipConditionCheck = false) {
                   `${day.workday} (${startTimeStr} - ${endTimeStr})`,
                 )
               }
-            } catch (error) {
+            } catch {
               // If time parsing fails, mark as invalid
               invalidTimeRanges.push(
                 __(`{0} (Invalid time format)`, [day.workday]),
@@ -266,6 +266,7 @@ export function validateSlaData(key, skipConditionCheck = false) {
           }
         }
         break
+      }
 
       default:
         break

@@ -68,7 +68,7 @@
         >
           {{ getRow(itemName, titleField).label }}
         </div>
-        <div class="text-ink-gray-4" v-else>{{ __('No Title') }}</div>
+        <div v-else class="text-ink-gray-4">{{ __('No Title') }}</div>
       </div>
     </template>
     <template #fields="{ fieldName, itemName }">
@@ -153,8 +153,8 @@
     </template>
   </KanbanView>
   <TasksListView
-    ref="tasksListView"
     v-else-if="tasks.data && rows.length"
+    ref="tasksListView"
     v-model="tasks.data.page_length_count"
     v-model:list="tasks"
     :rows="rows"

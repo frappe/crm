@@ -52,11 +52,11 @@
 import PrimaryDropdownItem from '@/components/PrimaryDropdownItem.vue'
 import { Popover } from 'frappe-ui'
 
-const props = defineProps({
+defineProps({
   value: { type: [String, Number], default: '' },
   placeholder: { type: String, default: '' },
-  options: { type: Array, default: [] },
-  create: { type: Function },
+  options: { type: Array, default: () => [] },
+  create: { type: Function, default: null },
   label: { type: String, default: '' },
 })
 </script>

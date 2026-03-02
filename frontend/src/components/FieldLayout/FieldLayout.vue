@@ -7,8 +7,8 @@
     }"
   >
     <Tabs
-      as="div"
       v-model="tabIndex"
+      as="div"
       :tabs="tabs"
       :class="[
         !hasTabs ? `[&_[role='tablist']]:hidden` : '',
@@ -32,20 +32,11 @@ import { Tabs } from 'frappe-ui'
 import { ref, computed, provide } from 'vue'
 
 const props = defineProps({
-  tabs: Array,
-  data: Object,
-  doctype: {
-    type: String,
-    default: 'CRM Lead',
-  },
-  isGridRow: {
-    type: Boolean,
-    default: false,
-  },
-  preview: {
-    type: Boolean,
-    default: false,
-  },
+  tabs: { type: Array, default: () => [] },
+  data: { type: Object, default: () => ({}) },
+  doctype: { type: String, default: 'CRM Lead' },
+  isGridRow: { type: Boolean, default: false },
+  preview: { type: Boolean, default: false },
 })
 
 const tabIndex = ref(0)

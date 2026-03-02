@@ -33,7 +33,7 @@
         <div v-if="tabs?.data">
           <FieldLayoutEditor
             v-if="!preview"
-            :tabs="tabs.data"
+            v-model="tabs.data"
             :doctype="_doctype"
             :onlyRequired="onlyRequired"
           />
@@ -52,19 +52,13 @@ import { Dialog, Badge, call, createResource } from 'frappe-ui'
 import { ref, watch, onMounted, nextTick } from 'vue'
 
 const props = defineProps({
-  doctype: {
-    type: String,
-    default: 'CRM Lead',
-  },
-  onlyRequired: {
-    type: Boolean,
-    default: false,
-  },
+  doctype: { type: String, default: 'CRM Lead' },
+  onlyRequired: { type: Boolean, default: false },
 })
 
 const { capture } = useTelemetry()
 
-const show = defineModel()
+const show = defineModel({ type: Boolean })
 const _doctype = ref(props.doctype)
 const loading = ref(false)
 const dirty = ref(false)

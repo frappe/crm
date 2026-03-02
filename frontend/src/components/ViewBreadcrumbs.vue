@@ -44,9 +44,9 @@
               aria-hidden="true"
             />
             <component
-              class="mr-2 h-4 w-4 flex-shrink-0 text-ink-gray-7"
-              v-else-if="item.icon"
               :is="item.icon"
+              v-else-if="item.icon"
+              class="mr-2 h-4 w-4 flex-shrink-0 text-ink-gray-7"
             />
             <span class="whitespace-nowrap">
               {{ item.label }}
@@ -85,14 +85,11 @@
 import Icon from '@/components/Icon.vue'
 import { Dropdown } from 'frappe-ui'
 
-const props = defineProps({
-  routeName: {
-    type: String,
-    required: true,
-  },
+defineProps({
+  routeName: { type: String, required: true },
 })
 
-const viewControls = defineModel()
+const viewControls = defineModel({ type: Object, default: () => ({}) })
 
 const isCurrentView = (item) => {
   return item.name === viewControls.value.currentView.name
