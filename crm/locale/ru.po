@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2026-02-24 07:27+0000\n"
-"PO-Revision-Date: 2026-03-01 20:15\n"
+"POT-Creation-Date: 2026-03-01 09:43+0000\n"
+"PO-Revision-Date: 2026-03-02 20:39\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Russian\n"
 "MIME-Version: 1.0\n"
@@ -1277,7 +1277,7 @@ msgstr "Невозможно удалить стандартные элемен�
 msgid "Cannot enable rule without adding users in it"
 msgstr "Невозможно включить правило без добавления в него пользователей"
 
-#: crm/api/__init__.py:105
+#: crm/api/__init__.py:106
 msgid "Cannot invite for this role"
 msgstr ""
 
@@ -3670,7 +3670,7 @@ msgstr ""
 msgid "Invalid lead details supplied."
 msgstr ""
 
-#: crm/api/__init__.py:80 crm/api/__init__.py:84
+#: crm/api/__init__.py:81 crm/api/__init__.py:85
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.py:61
 msgid "Invalid or expired key"
 msgstr ""
@@ -3868,7 +3868,7 @@ msgstr "Последние 30 дней"
 
 #: frontend/src/components/Filter.vue:631
 msgid "Last 6 Months"
-msgstr ""
+msgstr "Последние 6 месяцев"
 
 #: frontend/src/pages/Dashboard.vue:207
 msgid "Last 60 Days"
@@ -5245,7 +5245,7 @@ msgstr "Пожалуйста, выберите существующий конт
 msgid "Please select an existing organization"
 msgstr "Пожалуйста, выберите существующую организацию"
 
-#: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.py:56
+#: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.py:55
 msgid "Please select weekly off day"
 msgstr "Пожалуйста, выберите в неделю выходной"
 
@@ -6614,7 +6614,7 @@ msgstr "Спасибо"
 msgid "The Condition '{0}' is invalid: {1}"
 msgstr "Условие «{0}» недопустимо: {1}"
 
-#: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.py:65
+#: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.py:64
 msgid "The holiday on {0} is not between From Date and To Date"
 msgstr "Праздник на {0} не между From Date и To Date"
 
@@ -6658,7 +6658,7 @@ msgstr "В этом году"
 msgid "This field is required"
 msgstr ""
 
-#: crm/www/crm.py:32
+#: crm/www/crm.py:30
 msgid "This method is only meant for developer mode"
 msgstr "Этот метод предназначен только для режима разработчика"
 
@@ -6732,7 +6732,7 @@ msgstr "К"
 msgid "To Date"
 msgstr "До"
 
-#: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.py:60
+#: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.py:59
 msgid "To Date cannot be before From Date"
 msgstr "На сегодняшний день не может быть раньше от даты"
 
@@ -7107,7 +7107,7 @@ msgstr "Просмотры"
 
 #: frontend/src/components/Modals/EventModal.vue:134
 msgid "Visibility"
-msgstr ""
+msgstr "Видимость"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:569
 msgid "Web Form"
@@ -7244,7 +7244,7 @@ msgstr "Вчера"
 msgid "You"
 msgstr "Вы"
 
-#: crm/api/__init__.py:102
+#: crm/api/__init__.py:103
 msgid "You are not allowed to invite System Managers"
 msgstr ""
 
@@ -7296,7 +7296,7 @@ msgstr "У вас недостаточно прав для доступа к Fra
 msgid "You do not have mobile number set in your Telephony Agent"
 msgstr "У вас не установлен номер мобильного телефона в вашем Telephony Agent"
 
-#: crm/www/crm.py:19
+#: crm/www/crm.py:17
 msgid "You do not have permission to access Frappe CRM"
 msgstr "У вас нет разрешения на доступ к Frappe CRM"
 
