@@ -102,26 +102,43 @@ const hasOrganizationSections = ref(true)
 const hasContactSections = ref(true)
 
 const isDealCreating = ref(false)
-const chooseExistingContact = ref(false)
-const chooseExistingOrganization = ref(false)
+const chooseExistingContact = ref(true)
+const chooseExistingOrganization = ref(true)
 const { capture } = useTelemetry()
+
+function applySectionVisibility(
+  organization = chooseExistingOrganization.value,
+  contact = chooseExistingContact.value,
+) {
+  if (!tabs.data) return
+
+  tabs.data.forEach((tab) => {
+    tab.sections.forEach((section) => {
+      if (section.name === 'organization_section') {
+        section.hidden = !organization
+      } else if (section.name === 'organization_details_section') {
+        section.hidden = organization
+      } else if (section.name === 'contact_section') {
+        section.hidden = !contact
+      } else if (section.name === 'contact_details_section') {
+        section.hidden = contact
+      }
+    })
+  })
+}
 
 watch(
   [chooseExistingOrganization, chooseExistingContact],
   ([organization, contact]) => {
-    tabs.data.forEach((tab) => {
-      tab.sections.forEach((section) => {
-        if (section.name === 'organization_section') {
-          section.hidden = !organization
-        } else if (section.name === 'organization_details_section') {
-          section.hidden = organization
-        } else if (section.name === 'contact_section') {
-          section.hidden = !contact
-        } else if (section.name === 'contact_details_section') {
-          section.hidden = contact
-        }
-      })
-    })
+    applySectionVisibility(organization, contact)
+  },
+)
+
+watch(
+  () => show.value,
+  (value) => {
+    if (!value) return
+    applySectionVisibility()
   },
 )
 
@@ -164,6 +181,15 @@ const tabs = createResource({
     })
   },
 })
+
+watch(
+  () => tabs.data,
+  (value) => {
+    if (!value) return
+    nextTick(() => applySectionVisibility())
+  },
+  { immediate: true },
+)
 
 const dealStatuses = computed(() => {
   let statuses = statusOptions('deal')
