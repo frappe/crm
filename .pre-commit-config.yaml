@@ -28,16 +28,14 @@ repos:
       rev: v3.1.0
       hooks:
           - id: prettier
-            # Using 'files' to avoid the 'typescript' tag error you encountered
             files: ^frontend/.*\.(js|ts|vue|css|scss|html|json)$
             additional_dependencies:
                 - prettier@3.2.5
             exclude: |
                 (?x)^(
                     crm/public/dist/.*|
+                    crm/public/frontend/.*|
                     .*node_modules.*|
-                    .*boilerplate.*|
-                    crm/templates/includes/.*
                 )$
 
     - repo: local
