@@ -17,14 +17,9 @@
         <Button
           :label="__('Send Invites')"
           variant="solid"
-<<<<<<< HEAD
-          :disabled="!invitees.length"
-=======
           :disabled="
             !invitees.length || userExistMessage || inviteeExistMessage
           "
-          :loading="inviteByEmail.loading"
->>>>>>> ca27cb79 (fix: improve invitation error handling and add success/error notifications)
           @click="inviteByEmail.submit()"
           :loading="inviteByEmail.loading"
         />
