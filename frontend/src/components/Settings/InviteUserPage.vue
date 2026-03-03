@@ -17,7 +17,9 @@
         <Button
           :label="__('Send Invites')"
           variant="solid"
-          :disabled="!invitees.length"
+          :disabled="
+            !invitees.length || userExistMessage || inviteeExistMessage
+          "
           @click="inviteByEmail.submit()"
           :loading="inviteByEmail.loading"
         />
@@ -98,7 +100,12 @@
 import { validateEmail, convertArrayToString } from '@/utils'
 import { usersStore } from '@/stores/users'
 import { useOnboarding, useTelemetry } from 'frappe-ui/frappe'
-import { createListResource, createResource, FormControl } from 'frappe-ui'
+import {
+  toast,
+  createListResource,
+  createResource,
+  FormControl,
+} from 'frappe-ui'
 import { ref, computed } from 'vue'
 
 const { updateOnboardingStep } = useOnboarding('frappecrm')
@@ -174,23 +181,18 @@ const inviteByEmail = createResource({
       role: role.value,
     }
   },
-  onSuccess(data) {
-    if (data?.existing_invites?.length) {
-      error.value = __('User with email {0} already exists', [
-        data.existing_invites.join(', '),
-      ])
-    } else {
-      role.value = 'Sales User'
-      error.value = null
-    }
-
+  onSuccess() {
+    role.value = 'Sales User'
+    error.value = null
     invitees.value = []
     pendingInvitations.reload()
+    toast.success(__('Invitations sent successfully'))
     updateOnboardingStep('invite_your_team')
     capture('user_invited')
   },
   onError(err) {
     error.value = err?.messages?.[0]
+    toast.error(error.value)
   },
 })
 
