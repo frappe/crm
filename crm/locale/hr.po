@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2026-02-24 07:27+0000\n"
-"PO-Revision-Date: 2026-02-25 20:00\n"
+"POT-Creation-Date: 2026-03-01 09:43+0000\n"
+"PO-Revision-Date: 2026-03-02 20:39\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Croatian\n"
 "MIME-Version: 1.0\n"
@@ -1277,7 +1277,7 @@ msgstr "Nije moguće izbrisati standardne stavke {0}"
 msgid "Cannot enable rule without adding users in it"
 msgstr "Nije moguće omogućiti pravilo bez dodavanja korisnika"
 
-#: crm/api/__init__.py:105
+#: crm/api/__init__.py:106
 msgid "Cannot invite for this role"
 msgstr "Ne mogu pozvati za ovu ulogu"
 
@@ -3670,7 +3670,7 @@ msgstr "Nevažeća polja: {0}"
 msgid "Invalid lead details supplied."
 msgstr "Navedeni su nevažeći podaci o potencijalnom klijentu."
 
-#: crm/api/__init__.py:80 crm/api/__init__.py:84
+#: crm/api/__init__.py:81 crm/api/__init__.py:85
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.py:61
 msgid "Invalid or expired key"
 msgstr "Nevažeći ili istekli ključ"
@@ -4080,7 +4080,7 @@ msgstr "Veza"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:403
 msgid "Linked With"
-msgstr "Povezano Sa"
+msgstr "Povezano sa"
 
 #. Label of the links (Table) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
@@ -5245,7 +5245,7 @@ msgstr "Odaberi postojeći kontakt"
 msgid "Please select an existing organization"
 msgstr "Odaberi postojeću organizaciju"
 
-#: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.py:56
+#: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.py:55
 msgid "Please select weekly off day"
 msgstr "Odaberi sedmične neradne dane"
 
@@ -6614,7 +6614,7 @@ msgstr "Hvala"
 msgid "The Condition '{0}' is invalid: {1}"
 msgstr "Uvjet '{0}' je nevažeći: {1}"
 
-#: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.py:65
+#: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.py:64
 msgid "The holiday on {0} is not between From Date and To Date"
 msgstr "Praznik {0} nije između Od Datuma i Do Datuma"
 
@@ -6658,7 +6658,7 @@ msgstr "Ove Godine"
 msgid "This field is required"
 msgstr "Ovo polje je obavezno"
 
-#: crm/www/crm.py:32
+#: crm/www/crm.py:30
 msgid "This method is only meant for developer mode"
 msgstr "Ova je metoda namijenjena samo za razvojni način rada"
 
@@ -6732,7 +6732,7 @@ msgstr "Za"
 msgid "To Date"
 msgstr "Do Datuma"
 
-#: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.py:60
+#: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.py:59
 msgid "To Date cannot be before From Date"
 msgstr "Do datuma ne može biti prije Od datuma"
 
@@ -7244,7 +7244,7 @@ msgstr "Jučer"
 msgid "You"
 msgstr "Vi"
 
-#: crm/api/__init__.py:102
+#: crm/api/__init__.py:103
 msgid "You are not allowed to invite System Managers"
 msgstr "Nije vam dopušteno pozivati Upravitelje Sustava"
 
@@ -7296,7 +7296,7 @@ msgstr "Nemate dozvolu za pristup Podrški Prodaje. Obratite se administratoru a
 msgid "You do not have mobile number set in your Telephony Agent"
 msgstr "Nemate postavljen broj mobilnog telefona u svom Telefonskom Agentu"
 
-#: crm/www/crm.py:19
+#: crm/www/crm.py:17
 msgid "You do not have permission to access Frappe CRM"
 msgstr "Nemate dopuštenje za pristup Podršci Prodaje"
 
