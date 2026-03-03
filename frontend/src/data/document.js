@@ -70,7 +70,7 @@ export function useDocument(doctype, docname, resourceOverrides = {}) {
             console.error(err)
           },
         },
-        ...resourceOverrides
+        ...resourceOverrides,
       })
     } else {
       documentsCache[doctype][''] = reactive({

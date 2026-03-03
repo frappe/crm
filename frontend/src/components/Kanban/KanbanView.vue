@@ -4,9 +4,9 @@
       v-if="columns"
       :list="columns"
       item-key="column"
-      @end="updateColumn"
       :delay="isTouchScreenDevice() ? 200 : 0"
       class="flex sm:mx-2.5 mx-2 pb-3.5"
+      @end="updateColumn"
     >
       <template #item="{ element: column }">
         <div
@@ -32,9 +32,9 @@
                   >
                     <div class="flex gap-1">
                       <Button
-                        variant="ghost"
                         v-for="color in colors"
                         :key="color"
+                        variant="ghost"
                         @click="() => (column.column.color = color)"
                       >
                         <IndicatorIcon :class="parseColor(color)" />
@@ -75,9 +75,9 @@
               group="fields"
               item-key="name"
               class="flex flex-col gap-3.5 flex-1"
-              @end="updateColumn"
               :delay="isTouchScreenDevice() ? 200 : 0"
               :data-column="column.column.name"
+              @end="updateColumn"
             >
               <template #item="{ element: fields }">
                 <component
@@ -99,7 +99,7 @@
                       <div v-if="fields[titleField]">
                         {{ fields[titleField] }}
                       </div>
-                      <div class="text-ink-gray-4" v-else>
+                      <div v-else class="text-ink-gray-4">
                         {{ __('No Title') }}
                       </div>
                     </div>
@@ -171,7 +171,7 @@ import Draggable from 'vuedraggable'
 import { Dropdown, Popover } from 'frappe-ui'
 import { computed } from 'vue'
 
-const props = defineProps({
+defineProps({
   options: {
     type: Object,
     default: () => ({
@@ -184,7 +184,7 @@ const props = defineProps({
 
 const emit = defineEmits(['update', 'loadMore'])
 
-const kanban = defineModel()
+const kanban = defineModel({ type: Object })
 
 const titleField = computed(() => {
   return kanban.value?.data?.title_field

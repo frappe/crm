@@ -32,7 +32,7 @@ import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 const props = defineProps({
-  doctype: String,
+  doctype: { type: String, default: '' },
 })
 
 const activities = defineModel()

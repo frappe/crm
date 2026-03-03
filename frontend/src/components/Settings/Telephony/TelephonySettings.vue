@@ -42,6 +42,7 @@
         </div>
         <div class="flex items-center gap-1">
           <FormControl
+            v-model="defaultCallingMedium"
             type="select"
             class="w-40"
             :options="[
@@ -49,7 +50,6 @@
               { label: __('Twilio'), value: 'Twilio' },
               { label: __('Exotel'), value: 'Exotel' },
             ]"
-            v-model="defaultCallingMedium"
             :placeholder="__('Select Medium')"
           />
           <Button

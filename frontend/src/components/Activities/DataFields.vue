@@ -67,14 +67,8 @@ import { isMobileView } from '@/composables/settings'
 import { ref, watch, getCurrentInstance } from 'vue'
 
 const props = defineProps({
-  doctype: {
-    type: String,
-    required: true,
-  },
-  docname: {
-    type: String,
-    required: true,
-  },
+  doctype: { type: String, required: true },
+  docname: { type: String, required: true },
 })
 
 const emit = defineEmits(['beforeSave', 'afterSave'])

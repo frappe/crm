@@ -14,7 +14,7 @@
 <script setup>
 import Field from '@/components/FieldLayout/Field.vue'
 
-const props = defineProps({
-  column: Object,
+defineProps({
+  column: { type: Object, required: true },
 })
 </script>

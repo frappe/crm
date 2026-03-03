@@ -72,6 +72,13 @@ jobs:
                   python-version: "3.14"
                   cache: pip
 
+            - uses: actions/setup-node@v6
+              with:
+                  node-version: "24"
+
+            - name: Install frontend dependencies
+              run: cd frontend && yarn install
+
             - name: Run Pre-commit
               uses: pre-commit/action@v3.0.1
               with:

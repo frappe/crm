@@ -17,7 +17,7 @@
       </Button>
     </template>
   </Autocomplete>
-  <Popover placement="bottom-end" v-else>
+  <Popover v-else placement="bottom-end">
     <template #target="{ isOpen, togglePopover }">
       <Button
         v-if="sortValues.size > 1"
@@ -99,8 +99,8 @@
                   class="[&>_div]:w-full"
                   :value="sort.fieldname"
                   :options="sortOptions.data"
-                  @change="(e) => updateSort(e, i)"
                   :placeholder="__('First Name')"
+                  @change="(e) => updateSort(e, i)"
                 >
                   <template
                     #target="{
@@ -171,18 +171,12 @@ import { createResource, Popover } from 'frappe-ui'
 import { computed, nextTick, onMounted } from 'vue'
 
 const props = defineProps({
-  doctype: {
-    type: String,
-    required: true,
-  },
-  hideLabel: {
-    type: Boolean,
-    default: false,
-  },
+  doctype: { type: String, required: true },
+  hideLabel: { type: Boolean, default: false },
 })
 
 const emit = defineEmits(['update'])
-const list = defineModel()
+const list = defineModel({ type: Object, default: () => ({}) })
 
 const sortOptions = createResource({
   url: 'crm.api.doc.sort_options',

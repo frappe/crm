@@ -13,8 +13,8 @@
           :label="__('Notifications')"
           :icon="NotificationsIcon"
           :isCollapsed="isSidebarCollapsed"
-          @click="() => toggleNotificationPanel()"
           class="relative mx-2 my-[1.5px]"
+          @click="() => toggleNotificationPanel()"
         >
           <template #right>
             <Badge
@@ -58,6 +58,7 @@
           <nav class="flex flex-col">
             <SidebarLink
               v-for="link in view.views"
+              :key="link.label"
               :icon="link.icon"
               :label="__(link.label)"
               :to="link.to"
@@ -103,8 +104,8 @@
       <SidebarLink
         :label="isSidebarCollapsed ? __('Expand') : __('Collapse')"
         :isCollapsed="isSidebarCollapsed"
-        @click="isSidebarCollapsed = !isSidebarCollapsed"
         class=""
+        @click="isSidebarCollapsed = !isSidebarCollapsed"
       >
         <template #icon>
           <span class="grid h-4 w-4 flex-shrink-0 place-items-center">

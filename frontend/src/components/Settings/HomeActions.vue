@@ -49,7 +49,6 @@ const { document, triggerOnChange } = useDocument(
 
 provide('triggerOnChange', triggerOnChange)
 
-const emit = defineEmits(['updateStep'])
 const errorMessage = ref('')
 
 function updateSettings() {

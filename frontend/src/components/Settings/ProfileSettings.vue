@@ -6,8 +6,8 @@
     <template #content>
       <div class="flex items-center justify-between gap-2">
         <FileUploader
-          @success="(file) => updateImage(file.file_url)"
           :validateFile="validateIsImageFile"
+          @success="(file) => updateImage(file.file_url)"
         >
           <template #default="{ openFileSelector, error: _error, uploading }">
             <div class="flex items-center justify-center gap-2">
@@ -94,16 +94,16 @@
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mt-6">
           <FormControl
+            v-model="profile.first_name"
             class="w-full"
             :label="__('First Name')"
             maxlength="40"
-            v-model="profile.first_name"
           />
           <FormControl
+            v-model="profile.last_name"
             class="w-full"
             :label="__('Last Name')"
             maxlength="40"
-            v-model="profile.last_name"
           />
         </div>
         <div class="flex items-center justify-between mt-6">
@@ -132,9 +132,9 @@
           </div>
           <Link
             :model-value="language"
-            @update:modelValue="language = $event || user.language"
             doctype="Language"
             class="w-40"
+            @update:modelValue="language = $event || user.language"
           />
         </div>
       </div>

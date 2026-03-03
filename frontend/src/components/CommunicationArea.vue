@@ -29,6 +29,8 @@
     <EmailEditor
       ref="newEmailEditor"
       v-model:content="newEmail"
+      v-model="doc"
+      v-model:attachments="attachments"
       :submitButtonProps="{
         variant: 'solid',
         onClick: submitEmail,
@@ -48,8 +50,6 @@
         },
       }"
       :editable="showEmailBox"
-      v-model="doc"
-      v-model:attachments="attachments"
       :doctype="doctype"
       :subject="subject"
       :placeholder="
@@ -61,6 +61,8 @@
     <CommentBox
       ref="newCommentEditor"
       v-model:content="newComment"
+      v-model="doc"
+      v-model:attachments="attachments"
       :submitButtonProps="{
         variant: 'solid',
         onClick: submitComment,
@@ -74,8 +76,6 @@
         },
       }"
       :editable="showCommentBox"
-      v-model="doc"
-      v-model:attachments="attachments"
       :doctype="doctype"
       :placeholder="__('@John, can you please check this?')"
     />
@@ -94,14 +94,11 @@ import { call, createResource, toast } from 'frappe-ui'
 import { ref, watch, computed } from 'vue'
 
 const props = defineProps({
-  doctype: {
-    type: String,
-    default: 'CRM Lead',
-  },
+  doctype: { type: String, default: 'CRM Lead' },
 })
 
-const doc = defineModel()
-const reload = defineModel('reload')
+const doc = defineModel({ type: Object, default: () => ({}) })
+const reload = defineModel('reload', { type: Boolean })
 
 const emit = defineEmits(['scroll'])
 

@@ -65,7 +65,7 @@ import { useOnboarding } from 'frappe-ui/frappe'
 import { ref, watch } from 'vue'
 import { usersStore } from '@/stores/users'
 
-const show = defineModel()
+const show = defineModel({ type: Boolean })
 
 const { getUser } = usersStore()
 const { updateOnboardingStep } = useOnboarding('frappecrm')

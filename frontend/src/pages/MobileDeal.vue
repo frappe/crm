@@ -54,8 +54,8 @@
   </div>
   <div v-if="doc.name" class="flex h-full overflow-hidden">
     <Tabs
-      as="div"
       v-model="tabIndex"
+      as="div"
       :tabs="tabs"
       class="flex flex-1 overflow-auto flex-col [&_[role='tab']]:px-0 [&_[role='tablist']]:px-3 [&_[role='tablist']]:gap-7.5 [&_[role='tabpanel']:not([hidden])]:flex [&_[role='tabpanel']:not([hidden])]:grow"
     >
@@ -83,7 +83,6 @@
                   <Link
                     value=""
                     doctype="Contact"
-                    @change="(e) => addContact(e)"
                     :onCreate="
                       (value, close) => {
                         _contact = {
@@ -94,6 +93,7 @@
                         close()
                       }
                     "
+                    @change="(e) => addContact(e)"
                   >
                     <template #target="{ togglePopover }">
                       <Button
@@ -121,8 +121,8 @@
                     <span>{{ __('Loading...') }}</span>
                   </div>
                   <div
-                    v-else-if="section.contacts.length"
                     v-for="(contact, i) in section.contacts"
+                    v-else-if="section.contacts.length"
                     :key="contact.name"
                   >
                     <div
@@ -215,11 +215,11 @@
         </div>
         <Activities
           v-else
+          v-model:reload="reload"
+          v-model:tabIndex="tabIndex"
           doctype="CRM Deal"
           :docname="dealId"
           :tabs="tabs"
-          v-model:reload="reload"
-          v-model:tabIndex="tabIndex"
           @beforeSave="beforeStatusChange"
           @afterSave="reloadAssignees"
         />
@@ -326,10 +326,7 @@ const route = useRoute()
 const router = useRouter()
 
 const props = defineProps({
-  dealId: {
-    type: String,
-    required: true,
-  },
+  dealId: { type: String, required: true },
 })
 
 const errorTitle = ref('')
@@ -630,9 +627,9 @@ const showLostReasonModal = ref(false)
 
 function setLostReason() {
   if (
-    getDealStatus(doc.status).type !== 'Lost' ||
-    (doc.lost_reason && doc.lost_reason !== 'Other') ||
-    (doc.lost_reason === 'Other' && doc.lost_notes)
+    getDealStatus(doc.value.status).type !== 'Lost' ||
+    (doc.value.lost_reason && doc.value.lost_reason !== 'Other') ||
+    (doc.value.lost_reason === 'Other' && doc.value.lost_notes)
   ) {
     document.save.submit()
     return
@@ -643,7 +640,7 @@ function setLostReason() {
 
 function beforeStatusChange(data) {
   if (
-    data?.hasOwnProperty('status') &&
+    Object.hasOwn(data ?? {}, 'status') &&
     getDealStatus(data.status).type == 'Lost'
   ) {
     setLostReason()
@@ -655,7 +652,7 @@ function beforeStatusChange(data) {
 }
 
 function reloadAssignees(data) {
-  if (data?.hasOwnProperty('deal_owner')) {
+  if (Object.hasOwn(data ?? {}, 'deal_owner')) {
     assignees.reload()
   }
 }

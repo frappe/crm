@@ -25,10 +25,10 @@
     <div class="flex flex-1 flex-col p-2 gap-4 overflow-y-auto">
       <div class="flex w-full">
         <FormControl
+          v-model="settings.doc.brand_name"
           type="text"
           class="w-1/2"
           size="md"
-          v-model="settings.doc.brand_name"
           :label="__('Brand Name')"
           :placeholder="__('Enter Brand Name')"
         />

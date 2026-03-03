@@ -47,9 +47,9 @@
             class="form-control flex-1 truncate w-40"
             :value="settings.doc?.currency"
             doctype="Currency"
-            @change="(v) => setCurrency(v)"
             :placeholder="__('Select Currency')"
             placement="bottom-end"
+            @change="(v) => setCurrency(v)"
           />
         </div>
       </div>
@@ -65,9 +65,9 @@
         </div>
         <div class="flex items-center gap-2">
           <FormControl
+            v-model="settings.doc.service_provider"
             type="select"
             class="w-44"
-            v-model="settings.doc.service_provider"
             :options="[
               { label: 'Frankfurter', value: 'frankfurter.app' },
               { label: 'Exchangerate Host', value: 'exchangerate.host' },
@@ -109,9 +109,9 @@
         </div>
         <div class="flex items-center gap-2">
           <FormControl
+            v-model="settings.doc.access_key"
             type="text"
             class="w-44"
-            v-model="settings.doc.access_key"
             :placeholder="__('Enter Access Key')"
             :disabled="!settings.doc?.currency"
           />

@@ -118,7 +118,7 @@
         >
           {{ getRow(itemName, titleField).label }}
         </div>
-        <div class="text-ink-gray-4" v-else>{{ __('No Title') }}</div>
+        <div v-else class="text-ink-gray-4">{{ __('No Title') }}</div>
       </div>
     </template>
     <template #fields="{ fieldName, itemName }">
@@ -184,7 +184,10 @@
             :label="getRow(itemName, fieldName).value"
           />
         </div>
-        <div v-else-if="fieldName === '_assign'" class="flex items-center truncate">
+        <div
+          v-else-if="fieldName === '_assign'"
+          class="flex items-center truncate"
+        >
           <MultipleAvatar
             :avatars="getRow(itemName, fieldName).label"
             size="xs"
@@ -230,8 +233,8 @@
     </template>
   </KanbanView>
   <LeadsListView
-    ref="leadsListView"
     v-else-if="leads.data && rows.length"
+    ref="leadsListView"
     v-model="leads.data.page_length_count"
     v-model:list="leads"
     :rows="rows"
@@ -374,7 +377,7 @@ function getGroupedByRows(listRows, groupByField, columns) {
   let groupedRows = []
 
   groupByField.options?.forEach((option) => {
-    let filteredRows = []
+    let filteredRows
 
     if (!option) {
       filteredRows = listRows.filter((row) => !row[groupByField.fieldname])

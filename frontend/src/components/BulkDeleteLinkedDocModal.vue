@@ -39,9 +39,10 @@
           />
         </div>
       </div>
-    </template>
-    <template #body v-if="confirmDeleteInfo.show">
-      <div class="bg-surface-modal px-4 pb-6 pt-5 sm:px-6">
+      <div
+        v-if="confirmDeleteInfo.show"
+        class="bg-surface-modal px-4 pb-6 pt-5 sm:px-6"
+      >
         <div class="mb-6 flex items-center justify-between">
           <div>
             <h3 class="text-2xl leading-6 text-ink-gray-9 font-semibold">
@@ -66,7 +67,7 @@
           </div>
         </div>
       </div>
-      <div class="px-4 pb-7 pt-0 sm:px-6">
+      <div v-if="confirmDeleteInfo.show" class="px-4 pb-7 pt-0 sm:px-6">
         <div class="flex flex-row-reverse gap-2">
           <Button
             :label="
@@ -92,20 +93,11 @@
 import { call } from 'frappe-ui'
 import { ref } from 'vue'
 
-const show = defineModel()
+const show = defineModel({ type: Boolean })
 const props = defineProps({
-  doctype: {
-    type: String,
-    required: true,
-  },
-  items: {
-    type: Array,
-    required: true,
-  },
-  reload: {
-    type: Function,
-    required: true,
-  },
+  doctype: { type: String, required: true },
+  items: { type: Array, required: true },
+  reload: { type: Function, required: true },
 })
 
 const confirmDeleteInfo = ref({

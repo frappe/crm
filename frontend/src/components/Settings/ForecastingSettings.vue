@@ -29,8 +29,8 @@
         </div>
         <div>
           <Switch
-            size="sm"
             v-model="settings.doc.enable_forecasting"
+            size="sm"
             @click.stop="toggleForecasting"
           />
         </div>
@@ -51,8 +51,8 @@
         </div>
         <div>
           <Switch
-            size="sm"
             v-model="settings.doc.auto_update_expected_deal_value"
+            size="sm"
             @click.stop="autoUpdateExpectedDealValue"
           />
         </div>

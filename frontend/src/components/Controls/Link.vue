@@ -1,12 +1,12 @@
 <template>
   <div class="space-y-1.5 p-[2px] -m-[2px]">
-    <label class="block" :class="labelClasses" v-if="attrs.label">
+    <label v-if="attrs.label" class="block" :class="labelClasses">
       {{ __(attrs.label) }}
     </label>
     <Autocomplete
       ref="autocomplete"
-      :options="options.data"
       v-model="value"
+      :options="options.data"
       :size="attrs.size || 'sm'"
       :variant="attrs.variant"
       :placeholder="attrs.placeholder"
@@ -42,14 +42,14 @@
         </slot>
       </template>
 
-      <template #footer="{ value, close }">
+      <template #footer="{ value: v, close }">
         <div v-if="attrs.onCreate">
           <Button
             variant="ghost"
             class="w-full !justify-start"
             :label="__('Create New')"
             iconLeft="plus"
-            @click="() => attrs.onCreate(value, close)"
+            @click="() => attrs.onCreate(v, close)"
           />
         </div>
         <div>
@@ -73,22 +73,10 @@ import { createResource } from 'frappe-ui'
 import { useAttrs, computed, ref } from 'vue'
 
 const props = defineProps({
-  doctype: {
-    type: String,
-    required: true,
-  },
-  filters: {
-    type: [Array, Object, String],
-    default: [],
-  },
-  modelValue: {
-    type: String,
-    default: '',
-  },
-  hideMe: {
-    type: Boolean,
-    default: false,
-  },
+  doctype: { type: String, required: true },
+  filters: { type: [Array, Object, String], default: () => [] },
+  modelValue: { type: String, default: '' },
+  hideMe: { type: Boolean, default: false },
 })
 
 const emit = defineEmits(['update:modelValue', 'change'])

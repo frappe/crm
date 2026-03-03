@@ -9,8 +9,8 @@
             icon-left="chevron-left"
             :label="title || __(doctype)"
             size="md"
-            @click="back"
             class="cursor-pointer -ml-4 hover:bg-transparent focus:bg-transparent focus:outline-none focus:ring-0 focus:ring-offset-0 focus-visible:none active:bg-transparent active:outline-none active:ring-0 active:ring-offset-0 active:text-ink-gray-5 font-semibold text-xl hover:opacity-70 !pr-0 !max-w-96 !justify-start"
+            @click="back"
           />
           <h2
             v-else
@@ -63,22 +63,10 @@ import { getRandom } from '@/utils'
 import { computed } from 'vue'
 
 const props = defineProps({
-  doctype: {
-    type: String,
-    required: true,
-  },
-  title: {
-    type: String,
-    default: '',
-  },
-  successMessage: {
-    type: String,
-    default: 'Updated Successfully',
-  },
-  back: {
-    type: Function,
-    default: null,
-  },
+  doctype: { type: String, required: true },
+  title: { type: String, default: '' },
+  successMessage: { type: String, default: 'Updated Successfully' },
+  back: { type: Function, default: null },
 })
 
 const fields = createResource({

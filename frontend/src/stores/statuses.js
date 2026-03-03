@@ -5,7 +5,6 @@ import { useTelemetry } from 'frappe-ui/frappe'
 import { createListResource } from 'frappe-ui'
 import { reactive, h } from 'vue'
 
-
 export const statusesStore = defineStore('crm-statuses', () => {
   let leadStatusesByName = reactive({})
   let dealStatusesByName = reactive({})

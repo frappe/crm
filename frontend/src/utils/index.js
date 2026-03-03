@@ -260,7 +260,7 @@ export function getSafeWebsiteUrl(rawUrl) {
     }
 
     return parsedUrl.href
-  } catch (_error) {
+  } catch {
     return null
   }
 }
@@ -432,7 +432,7 @@ export function evaluateDependsOnValue(expression, doc) {
   if (!expression) return true
   if (!doc) return true
 
-  let out = null
+  let out
 
   if (typeof expression === 'boolean') {
     out = expression
@@ -441,7 +441,7 @@ export function evaluateDependsOnValue(expression, doc) {
   } else if (expression.substr(0, 5) == 'eval:') {
     try {
       out = _eval(expression.substr(5), { doc })
-    } catch (e) {
+    } catch {
       out = true
     }
   } else {
@@ -460,7 +460,7 @@ export function evaluateExpression(expression, doc, parent) {
   if (!expression) return false
   if (!doc) return false
 
-  let out = null
+  let out
   if (typeof expression === 'boolean') {
     out = expression
   } else if (typeof expression === 'function') {
@@ -471,7 +471,7 @@ export function evaluateExpression(expression, doc, parent) {
       if (parent && parent.istable && expression.includes('is_submittable')) {
         out = true
       }
-    } catch (e) {
+    } catch {
       out = true
     }
   } else {
@@ -572,7 +572,7 @@ export function deepClone(obj) {
   if (typeof obj === 'object') {
     const cloned = {}
     for (const key in obj) {
-      if (obj.hasOwnProperty(key)) {
+      if (Object.hasOwn(obj, key)) {
         cloned[key] = deepClone(obj[key])
       }
     }
@@ -670,7 +670,8 @@ export const convertToConditions = ({ conditions, fieldPrefix }) => {
         return `(${fieldAccess} >= "${start}" and ${fieldAccess} <= "${end}")`
       }
 
-      let valueStr = ''
+      let valueStr
+
       if (op === 'in' || op === 'not in') {
         let items
         if (Array.isArray(value)) {
