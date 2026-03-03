@@ -311,18 +311,22 @@ async function setupForm({ doc, call, $dialog, updateField, toast }) {
 	if (!["Lost", "Won"].includes(doc?.status) && is_erpnext_integration_enabled) {
 		actions.push({
 			label: __("Create Quotation"),
-			onClick: async () => {
-				let quotation_url = await call(
+			onClick: () => {
+				call(
 					"crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.get_quotation_url",
 					{
 						crm_deal: doc.name,
 						organization: doc.organization
 					}
-				);
-
-				if (quotation_url) {
-					window.open(quotation_url, '_blank');
-				}
+				).then((quotation_url) => {
+					if (quotation_url) {
+						window.open(quotation_url, '_blank');
+					} else {
+						toast.error("Error while creating quotation in ERPNext");
+					}
+				}).catch((e) => {
+					toast.error(e.messages[0] || "Error while creating quotation in ERPNext. Check error log in ERPNext for more details");
+				});
 			}
 		})
 	}
