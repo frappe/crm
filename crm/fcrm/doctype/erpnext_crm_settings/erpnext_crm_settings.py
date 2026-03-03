@@ -136,7 +136,7 @@ def get_customer_link(crm_deal: str):
 
 
 @frappe.whitelist()
-def get_quotation_url(crm_deal: str, organization: str):
+def get_quotation_url(crm_deal: str, organization: str | None = None):
 	erpnext_crm_settings = frappe.get_single("ERPNext CRM Settings")
 	if not erpnext_crm_settings.enabled:
 		frappe.throw(_("ERPNext is not integrated with the CRM"))
@@ -236,7 +236,9 @@ def get_contacts(doc):
 	return contacts
 
 
-def get_organization_address(organization):
+def get_organization_address(organization: str | None = None):
+	if not organization:
+		return None
 	address = frappe.db.get_value("CRM Organization", organization, "address")
 	address = frappe.get_cached_doc("Address", address) if address else None
 	if not address:
