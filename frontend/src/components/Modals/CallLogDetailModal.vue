@@ -5,7 +5,7 @@
         <div class="mb-5 flex items-center justify-between">
           <div>
             <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9">
-              {{ __('Call details') }}
+              {{ __('Call Details') }}
             </h3>
           </div>
           <div class="flex items-center gap-1">
@@ -16,12 +16,12 @@
                   hideLabel: true,
                   items: [
                     {
-                      label: note?.name ? __('Edit note') : __('Add note'),
+                      label: note?.name ? __('Edit Note') : __('Add Note'),
                       icon: NoteIcon,
                       onClick: addEditNote,
                     },
                     {
-                      label: task?.name ? __('Edit task') : __('Add task'),
+                      label: task?.name ? __('Edit Task') : __('Add Task'),
                       icon: TaskIcon,
                       onClick: addEditTask,
                     },
@@ -36,7 +36,7 @@
             <Button
               v-if="!isMobileView"
               variant="ghost"
-              :tooltip="__('Edit call log')"
+              :tooltip="__('Edit Call Log')"
               :icon="EditIcon"
               class="w-7"
               @click="openCallLogModal"
@@ -87,7 +87,7 @@
               <Tooltip v-else-if="field.tooltip" :text="field.tooltip">
                 {{ field.value }}
               </Tooltip>
-              <div class="w-full" v-else-if="field.name == 'recording_url'">
+              <div v-else-if="field.name == 'recording_url'" class="w-full">
                 <audio
                   class="audio-control w-full"
                   controls
@@ -95,8 +95,8 @@
                 ></audio>
               </div>
               <div
-                class="w-full cursor-pointer rounded border px-2 pt-1.5 text-base text-ink-gray-7"
                 v-else-if="field.name == 'note'"
+                class="w-full cursor-pointer rounded border px-2 pt-1.5 text-base text-ink-gray-7"
                 @click="() => (showNoteModal = true)"
               >
                 <FadedScrollableDiv class="max-h-24 min-h-16 overflow-y-auto">
@@ -112,8 +112,8 @@
                 </FadedScrollableDiv>
               </div>
               <div
-                class="w-full cursor-pointer rounded border px-2 pt-1.5 text-base text-ink-gray-7"
                 v-else-if="field.name == 'task'"
+                class="w-full cursor-pointer rounded border px-2 pt-1.5 text-base text-ink-gray-7"
                 @click="() => (showTaskModal = true)"
               >
                 <FadedScrollableDiv class="max-h-24 min-h-16 overflow-y-auto">
@@ -148,7 +148,7 @@
         <Button
           class="w-full"
           variant="solid"
-          :label="__('Create lead')"
+          :label="__('Create Lead')"
           @click="createLead"
         />
       </div>
@@ -175,17 +175,17 @@ import FadedScrollableDiv from '@/components/FadedScrollableDiv.vue'
 import { getCallLogDetail } from '@/utils/callLog'
 import { isMobileView } from '@/composables/settings'
 import { useDocument } from '@/data/document'
-import { FeatherIcon, Dropdown, Avatar, Tooltip, call } from 'frappe-ui'
+import { FeatherIcon, Dropdown, Avatar, Tooltip, call, toast } from 'frappe-ui'
 import { ref, computed, h, nextTick, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
-const show = defineModel()
+const show = defineModel({ type: Boolean })
 const showNoteModal = ref(false)
 const showTaskModal = ref(false)
 
-const callLog = defineModel('callLog')
+const callLog = defineModel('callLog', { type: Object })
 
 const note = ref({
   title: '',
@@ -209,10 +209,6 @@ const detailFields = computed(() => {
   for (const key in data) {
     data[key] = getCallLogDetail(key, data)
   }
-
-  note.value = data._notes?.[0] ?? null
-  task.value = data._tasks?.[0] ?? null
-
   let details = [
     {
       icon: h(FeatherIcon, {
@@ -304,14 +300,20 @@ async function createLead() {
   call('crm.fcrm.doctype.crm_call_log.crm_call_log.create_lead_from_call_log', {
     call_log: callLog.value?.data,
     lead_details: leadDetails.value,
-  }).then((d) => {
-    if (d) {
-      router.push({ name: 'Lead', params: { leadId: d } })
-    }
   })
+    .then((d) => {
+      if (d) {
+        router.push({ name: 'Lead', params: { leadId: d } })
+      }
+    })
+    .catch((err) => {
+      toast.error(
+        __('Error creating lead: {0}', [err.messages?.[0] || err.message]),
+      )
+    })
 }
 
-const showCallLogModal = defineModel('callLogModal')
+const showCallLogModal = defineModel('callLogModal', { type: Boolean })
 
 function openCallLogModal() {
   showCallLogModal.value = true
@@ -363,6 +365,17 @@ async function addTaskToCallLog(_task, insert_mode = false) {
     })
   }
 }
+
+watch(
+  () => callLog.value?.data,
+  (data) => {
+    if (!data) return
+    const parsed = JSON.parse(JSON.stringify(data))
+    note.value = parsed._notes?.[0] ?? null
+    task.value = parsed._tasks?.[0] ?? null
+  },
+  { immediate: true, deep: true },
+)
 
 watch(
   () => callLog.value?.data?.name,

@@ -33,8 +33,8 @@ import CollapsibleSection from '@/components/CollapsibleSection.vue'
 import Column from '@/components/FieldLayout/Column.vue'
 import { inject } from 'vue'
 
-const props = defineProps({
-  section: Object,
+defineProps({
+  section: { type: Object, required: true },
 })
 
 const hasTabs = inject('hasTabs')

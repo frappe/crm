@@ -1,5 +1,4 @@
 {
- "_liked_by": "[]",
  "actions": [],
  "allow_rename": 1,
  "creation": "2025-11-10 19:57:22.985858",
@@ -16,14 +15,14 @@
    "fieldname": "response_time",
    "fieldtype": "Duration",
    "in_list_view": 1,
-   "label": "Response time",
+   "label": "Response Time",
    "read_only": 1
   },
   {
    "fieldname": "responded_on",
    "fieldtype": "Datetime",
    "in_list_view": 1,
-   "label": "Responded on",
+   "label": "Responded On",
    "read_only": 1
   },
   {
@@ -39,8 +38,8 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-01-22 13:53:00.112017",
- "modified_by": "shariq@frappe.io",
+ "modified": "2026-02-23 12:10:20.656031",
+ "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Rolling Response Time",
  "owner": "Administrator",

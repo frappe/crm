@@ -37,7 +37,7 @@ class FCRMSettings(Document):
 	# end: auto-generated types
 
 	@frappe.whitelist()
-	def restore_defaults(self, force=False):
+	def restore_defaults(self, force: bool = False):
 		after_install(force)
 
 	def validate(self):

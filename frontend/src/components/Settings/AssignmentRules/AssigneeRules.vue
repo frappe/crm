@@ -2,7 +2,7 @@
   <div>
     <div class="flex flex-col gap-1">
       <span class="text-lg font-semibold text-ink-gray-8">{{
-        __('Assignee rules')
+        __('Assignee Rules')
       }}</span>
       <span class="text-p-sm text-ink-gray-6">
         {{

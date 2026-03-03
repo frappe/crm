@@ -22,8 +22,8 @@
     >
       <div class="border-b">
         <FileUploader
-          @success="changeOrganizationImage"
           :validateFile="validateIsImageFile"
+          @success="changeOrganizationImage"
         >
           <template #default="{ openFileSelector, error }">
             <div class="flex flex-col items-start justify-start gap-4 p-5">
@@ -44,13 +44,13 @@
                               {
                                 icon: 'upload',
                                 label: organization.doc.organization_logo
-                                  ? __('Change image')
-                                  : __('Upload image'),
+                                  ? __('Change Image')
+                                  : __('Upload Image'),
                                 onClick: openFileSelector,
                               },
                               {
                                 icon: 'trash-2',
-                                label: __('Remove image'),
+                                label: __('Remove Image'),
                                 onClick: () => changeOrganizationImage(''),
                               },
                             ],
@@ -94,7 +94,7 @@
                   @click="deleteOrganization()"
                 />
                 <Button
-                  :tooltip="__('Open website')"
+                  :tooltip="__('Open Website')"
                   icon="link"
                   @click="openWebsite"
                 />
@@ -117,8 +117,8 @@
       </div>
     </Resizer>
     <Tabs
-      as="div"
       v-model="tabIndex"
+      as="div"
       :tabs="tabs"
       class="flex flex-1 overflow-hidden flex-col [&_[role='tablist']]:gap-7.5 [&_[role='tablist']]:px-5 [&_[role='tabpanel']:not([hidden])]:flex [&_[role='tabpanel']:not([hidden])]:grow"
     >
@@ -127,7 +127,7 @@
           class="group flex items-center gap-2 border-b border-transparent py-2.5 text-base text-ink-gray-5 duration-300 ease-in-out hover:text-ink-gray-9"
           :class="{ 'text-ink-gray-9': selected }"
         >
-          <component v-if="tab.icon" :is="tab.icon" class="h-5" />
+          <component :is="tab.icon" v-if="tab.icon" class="h-5" />
           {{ __(tab.label) }}
           <Badge
             class="group-hover:bg-surface-gray-7"
@@ -142,28 +142,24 @@
       </template>
       <template #tab-panel="{ tab }">
         <DealsListView
-          class="mt-4"
           v-if="tab.label === 'Deals' && rows.length"
+          class="mt-4"
           :rows="rows"
           :columns="columns"
           :options="{ selectable: false, showTooltip: false }"
         />
         <ContactsListView
-          class="mt-4"
           v-if="tab.label === 'Contacts' && rows.length"
+          class="mt-4"
           :rows="rows"
           :columns="columns"
           :options="{ selectable: false, showTooltip: false }"
         />
-        <div
+        <EmptyState
           v-if="!rows.length"
-          class="grid flex-1 place-items-center text-xl font-medium text-ink-gray-4"
-        >
-          <div class="flex flex-col items-center justify-center space-y-3">
-            <component :is="tab.icon" class="!h-10 !w-10" />
-            <div>{{ __('No {0} Found', [__(tab.label)]) }}</div>
-          </div>
-        </div>
+          :icon="tab.icon"
+          :name="__(tab.label)"
+        />
       </template>
     </Tabs>
   </div>
@@ -222,14 +218,11 @@ import {
   toast,
   call,
 } from 'frappe-ui'
-import { h, computed, ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 const props = defineProps({
-  organizationId: {
-    type: String,
-    required: true,
-  },
+  organizationId: { type: String, required: true },
 })
 
 const { brand } = getSettings()
@@ -309,7 +302,7 @@ function changeOrganizationImage(file) {
 }
 
 function beforeFieldChange(data) {
-  if (data?.hasOwnProperty('organization_name')) {
+  if (Object.hasOwn(data ?? {}, 'organization_name')) {
     call('frappe.client.rename_doc', {
       doctype: 'CRM Organization',
       old_name: props.organizationId,
@@ -331,7 +324,7 @@ function website(url) {
 
 function openWebsite() {
   if (!organization.doc.website) {
-    toast.error(__('No website found'))
+    toast.error(__('No Website Found'))
     return
   }
 
@@ -373,12 +366,12 @@ const tabIndex = ref(0)
 const tabs = [
   {
     label: 'Deals',
-    icon: h(DealsIcon, { class: 'h-4 w-4' }),
+    icon: DealsIcon,
     count: computed(() => deals.data?.length),
   },
   {
     label: 'Contacts',
-    icon: h(ContactsIcon, { class: 'h-4 w-4' }),
+    icon: ContactsIcon,
     count: computed(() => contacts.data?.length),
   },
 ]
@@ -428,8 +421,7 @@ const contacts = createListResource({
 })
 
 const rows = computed(() => {
-  let list = []
-  list = !tabIndex.value ? deals : contacts
+  let list = !tabIndex.value ? deals : contacts
 
   if (!list.data) return []
 
@@ -513,17 +505,17 @@ const dealColumns = [
     width: '12rem',
   },
   {
-    label: __('Mobile no'),
+    label: __('Mobile No.'),
     key: 'mobile_no',
     width: '11rem',
   },
   {
-    label: __('Deal owner'),
+    label: __('Deal Owner'),
     key: 'deal_owner',
     width: '10rem',
   },
   {
-    label: __('Last modified'),
+    label: __('Last Modified'),
     key: 'modified',
     width: '8rem',
   },
@@ -551,7 +543,7 @@ const contactColumns = [
     width: '12rem',
   },
   {
-    label: __('Last modified'),
+    label: __('Last Modified'),
     key: 'modified',
     width: '8rem',
   },

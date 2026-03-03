@@ -4,7 +4,7 @@
       <div class="mb-6 flex items-center justify-between">
         <div>
           <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9">
-            {{ __('Convert to deal') }}
+            {{ __('Convert to Deal') }}
           </h3>
         </div>
         <div class="flex items-center gap-1">
@@ -26,7 +26,7 @@
       </div>
       <div class="ml-6 text-ink-gray-9">
         <div class="flex items-center justify-between text-base">
-          <div>{{ __('Choose existing') }}</div>
+          <div>{{ __('Choose Existing') }}</div>
           <Switch v-model="existingOrganizationChecked" />
         </div>
         <Link
@@ -52,7 +52,7 @@
       </div>
       <div class="ml-6 text-ink-gray-9">
         <div class="flex items-center justify-between text-base">
-          <div>{{ __('Choose existing') }}</div>
+          <div>{{ __('Choose Existing') }}</div>
           <Switch v-model="existingContactChecked" />
         </div>
         <Link
@@ -97,20 +97,16 @@ import { sessionStore } from '@/stores/session'
 import { statusesStore } from '@/stores/statuses'
 import { showQuickEntryModal, quickEntryProps } from '@/composables/modals'
 import { isMobileView } from '@/composables/settings'
-import { capture } from '@/telemetry'
 import { useOnboarding, useTelemetry } from 'frappe-ui/frappe'
 import { Switch, Dialog, createResource, call } from 'frappe-ui'
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 
 const props = defineProps({
-  lead: {
-    type: Object,
-    required: true,
-  },
+  lead: { type: Object, required: true },
 })
 
-const show = defineModel()
+const show = defineModel({ type: Boolean })
 
 const router = useRouter()
 
@@ -125,7 +121,7 @@ const existingOrganizationChecked = ref(false)
 const existingContact = ref('')
 const existingOrganization = ref('')
 const error = ref('')
-const $telemetry = useTelemetry()
+const { capture } = useTelemetry()
 
 const { triggerConvertToDeal } = useDocument('CRM Lead', props.lead.name)
 const { document: deal } = useDocument('CRM Deal')
@@ -187,18 +183,11 @@ async function convertToDeal() {
       localStorage.setItem('firstDeal' + user, _deal)
     })
     capture('convert_lead_to_deal')
-    $telemetry.capture('convert_lead_to_deal', true)
     router.push({ name: 'Deal', params: { dealId: _deal } })
   }
 }
 
-const dealStatuses = computed(() => {
-  let statuses = statusOptions('deal')
-  if (!deal.doc?.status) {
-    deal.doc.status = statuses[0].value
-  }
-  return statuses
-})
+const dealStatuses = computed(() => statusOptions('deal'))
 
 const dealTabs = createResource({
   url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_fields_layout',

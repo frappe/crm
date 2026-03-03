@@ -1,7 +1,7 @@
 <template>
   <Dialog
     v-model="show"
-    :options="{ title: __('Add chart') }"
+    :options="{ title: __('Add Chart') }"
     @close="show = false"
   >
     <template #body-content>
@@ -9,28 +9,28 @@
         <FormControl
           v-model="chartType"
           type="select"
-          :label="__('Chart type')"
+          :label="__('Chart Type')"
           :options="chartTypes"
         />
         <FormControl
           v-if="chartType === 'number_chart'"
           v-model="numberChart"
           type="select"
-          :label="__('Number chart')"
+          :label="__('Number Chart')"
           :options="numberCharts"
         />
         <FormControl
           v-if="chartType === 'axis_chart'"
           v-model="axisChart"
           type="select"
-          :label="__('Axis chart')"
+          :label="__('Axis Chart')"
           :options="axisCharts"
         />
         <FormControl
           v-if="chartType === 'donut_chart'"
           v-model="donutChart"
           type="select"
-          :label="__('Donut chart')"
+          :label="__('Donut Chart')"
           :options="donutCharts"
         />
       </div>
@@ -66,45 +66,45 @@ const filters = inject('filters', reactive({ period: '', user: '' }))
 const chartType = ref('spacer')
 const chartTypes = [
   { label: __('Spacer'), value: 'spacer' },
-  { label: __('Number chart'), value: 'number_chart' },
-  { label: __('Axis chart'), value: 'axis_chart' },
-  { label: __('Donut chart'), value: 'donut_chart' },
+  { label: __('Number Chart'), value: 'number_chart' },
+  { label: __('Axis Chart'), value: 'axis_chart' },
+  { label: __('Donut Chart'), value: 'donut_chart' },
 ]
 
 const numberChart = ref('')
 const numberCharts = [
-  { label: __('Total leads'), value: 'total_leads' },
-  { label: __('Ongoing deals'), value: 'ongoing_deals' },
-  { label: __('Avg ongoing deal value'), value: 'average_ongoing_deal_value' },
-  { label: __('Won deals'), value: 'won_deals' },
-  { label: __('Avg won deal value'), value: 'average_won_deal_value' },
-  { label: __('Avg deal value'), value: 'average_deal_value' },
+  { label: __('Total Leads'), value: 'total_leads' },
+  { label: __('Ongoing Deals'), value: 'ongoing_deals' },
+  { label: __('Avg Ongoing Deal Value'), value: 'average_ongoing_deal_value' },
+  { label: __('Won Deals'), value: 'won_deals' },
+  { label: __('Avg Won Deal Value'), value: 'average_won_deal_value' },
+  { label: __('Avg Deal Value'), value: 'average_deal_value' },
   {
-    label: __('Avg time to close a lead'),
+    label: __('Avg Time to Close a Lead'),
     value: 'average_time_to_close_a_lead',
   },
   {
-    label: __('Avg time to close a deal'),
+    label: __('Avg Time to Close a Deal'),
     value: 'average_time_to_close_a_deal',
   },
 ]
 
 const axisChart = ref('sales_trend')
 const axisCharts = [
-  { label: __('Sales trend'), value: 'sales_trend' },
-  { label: __('Forecasted revenue'), value: 'forecasted_revenue' },
-  { label: __('Funnel conversion'), value: 'funnel_conversion' },
-  { label: __('Deals by ongoing & won stage'), value: 'deals_by_stage_axis' },
-  { label: __('Lost deal reasons'), value: 'lost_deal_reasons' },
-  { label: __('Deals by territory'), value: 'deals_by_territory' },
-  { label: __('Deals by salesperson'), value: 'deals_by_salesperson' },
+  { label: __('Sales Trend'), value: 'sales_trend' },
+  { label: __('Forecasted Revenue'), value: 'forecasted_revenue' },
+  { label: __('Funnel Conversion'), value: 'funnel_conversion' },
+  { label: __('Deals by Ongoing & Won Stage'), value: 'deals_by_stage_axis' },
+  { label: __('Lost Deal Reasons'), value: 'lost_deal_reasons' },
+  { label: __('Deals by Territory'), value: 'deals_by_territory' },
+  { label: __('Deals by Salesperson'), value: 'deals_by_salesperson' },
 ]
 
 const donutChart = ref('deals_by_stage_donut')
 const donutCharts = [
-  { label: __('Deals by stage'), value: 'deals_by_stage_donut' },
-  { label: __('Leads by source'), value: 'leads_by_source' },
-  { label: __('Deals by source'), value: 'deals_by_source' },
+  { label: __('Deals by Stage'), value: 'deals_by_stage_donut' },
+  { label: __('Leads by Source'), value: 'leads_by_source' },
+  { label: __('Deals by Source'), value: 'deals_by_source' },
 ]
 
 async function addChart() {

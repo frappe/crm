@@ -2,9 +2,9 @@
   <TextInput
     ref="inputRef"
     :value="displayValue"
+    v-bind="$attrs"
     @focus="handleFocus"
     @blur="isFocused = false"
-    v-bind="$attrs"
   />
   <slot name="description">
     <p v-if="attrs.description" class="mt-1.5" :class="descriptionClasses">
@@ -17,14 +17,8 @@ import { TextInput } from 'frappe-ui'
 import { ref, computed, nextTick, useAttrs } from 'vue'
 
 const props = defineProps({
-  value: {
-    type: [String, Number],
-    default: '',
-  },
-  formattedValue: {
-    type: [String, Number],
-    default: '',
-  },
+  value: { type: [String, Number], default: '' },
+  formattedValue: { type: [String, Number], default: '' },
 })
 
 const attrs = useAttrs()

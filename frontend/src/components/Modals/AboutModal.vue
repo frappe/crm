@@ -18,8 +18,8 @@
             :href="link.url"
           >
             <component
-              v-if="link.icon"
               :is="link.icon"
+              v-if="link.icon"
               class="size-4 mr-2 text-ink-gray-7"
             />
             <span class="text-base text-ink-gray-8">
@@ -43,7 +43,7 @@ import LucideHeadset from '~icons/lucide/headset'
 import LucideBug from '~icons/lucide/bug'
 import LucideBookOpen from '~icons/lucide/book-open'
 
-let show = defineModel()
+let show = defineModel({ type: Boolean })
 
 let links = [
   {
@@ -52,7 +52,7 @@ let links = [
     icon: LucideGlobe,
   },
   {
-    label: __('GitHub repository'),
+    label: __('GitHub Repository'),
     url: 'https://github.com/frappe/crm',
     icon: LucideGitHub,
   },
@@ -62,12 +62,12 @@ let links = [
     icon: LucideBookOpen,
   },
   {
-    label: __('Report an issue'),
+    label: __('Report an Issue'),
     url: 'https://github.com/frappe/crm/issues',
     icon: LucideBug,
   },
   {
-    label: __('Contact support'),
+    label: __('Contact Support'),
     url: 'https://support.frappe.io',
     icon: LucideHeadset,
   },

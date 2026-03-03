@@ -4,12 +4,12 @@
     <div class="flex justify-between px-2 pt-2">
       <div class="flex flex-col gap-1 w-9/12">
         <h2 class="flex gap-2 text-xl font-semibold leading-none h-5">
-          {{ __('Assignment rules') }}
+          {{ __('Assignment Rules') }}
         </h2>
         <p class="text-p-base text-ink-gray-6">
           {{
             __(
-              'Assignment rules automatically assign lead/deal to the right sales user based on predefined conditions',
+              'Assignment Rules automatically assign lead/deal to the right sales user based on predefined conditions',
             )
           }}
         </p>

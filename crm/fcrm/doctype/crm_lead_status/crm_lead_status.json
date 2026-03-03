@@ -7,6 +7,8 @@
  "engine": "InnoDB",
  "field_order": [
   "lead_status",
+  "type",
+  "column_break_qwtp",
   "color",
   "position"
  ],
@@ -33,12 +35,24 @@
    "fieldtype": "Int",
    "in_list_view": 1,
    "label": "Position"
+  },
+  {
+   "default": "Open",
+   "fieldname": "type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Type",
+   "options": "Open\nOngoing\nOn Hold\nWon\nLost"
+  },
+  {
+   "fieldname": "column_break_qwtp",
+   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-01-02 22:13:43.038656",
- "modified_by": "Administrator",
+ "modified": "2026-02-05 17:16:11.897087",
+ "modified_by": "shariq@frappe.io",
  "module": "FCRM",
  "name": "CRM Lead Status",
  "naming_rule": "By fieldname",
@@ -52,7 +66,7 @@
    "print": 1,
    "read": 1,
    "report": 1,
-   "role": "Sales User",
+   "role": "System Manager",
    "share": 1,
    "write": 1
   },
@@ -69,15 +83,19 @@
    "write": 1
   },
   {
+   "create": 1,
+   "delete": 1,
    "email": 1,
    "export": 1,
    "print": 1,
    "read": 1,
    "report": 1,
-   "role": "All",
-   "share": 1
+   "role": "Sales User",
+   "share": 1,
+   "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []

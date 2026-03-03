@@ -1,30 +1,35 @@
 <template>
   <Dialog
     v-model="show"
-    :options="{ title: __('Lost reason') }"
+    :options="{ title: __('Lost Reason') }"
     @close="cancel"
   >
     <template #body-content>
       <div class="-mt-3 mb-4 text-p-base text-ink-gray-7">
-        {{ __('Please provide a reason for marking this deal as lost') }}
+        {{
+          __('Please provide a reason for marking this {0} as lost', [
+            doctype.toLowerCase().replace('crm ', ''),
+          ])
+        }}
       </div>
       <div class="flex flex-col gap-3">
         <div>
           <div class="mb-2 text-sm text-ink-gray-5">
-            {{ __('Lost reason') }}
+            {{ __('Lost Reason') }}
             <span class="text-ink-red-2">*</span>
           </div>
           <Link
+            ref="linkRef"
             class="form-control flex-1 truncate"
             :value="lostReason"
             doctype="CRM Lost Reason"
-            @change="(v) => (lostReason = v)"
             :onCreate="onCreate"
+            @change="(v) => (lostReason = v)"
           />
         </div>
         <div>
           <div class="mb-2 text-sm text-ink-gray-5">
-            {{ __('Lost notes') }}
+            {{ __('Lost Notes') }}
             <span v-if="lostReason == 'Other'" class="text-ink-red-2">*</span>
           </div>
           <FormControl
@@ -54,16 +59,16 @@ import { Dialog } from 'frappe-ui'
 import { ref } from 'vue'
 
 const props = defineProps({
-  deal: {
-    type: Object,
-    required: true,
-  },
+  doctype: { type: String, default: 'CRM Lead' },
+  document: { type: Object, required: true },
 })
 
-const show = defineModel()
+const show = defineModel({ type: Boolean })
 
-const lostReason = ref(props.deal.doc.lost_reason || '')
-const lostNotes = ref(props.deal.doc.lost_notes || '')
+const linkRef = ref(null)
+const doc = props.document.doc
+const lostReason = ref(doc.lost_reason || '')
+const lostNotes = ref(doc.lost_notes || '')
 const error = ref('')
 
 function cancel() {
@@ -71,28 +76,31 @@ function cancel() {
   error.value = ''
   lostReason.value = ''
   lostNotes.value = ''
-  props.deal.doc.status = props.deal.originalDoc.status
+  doc.status = props.document.originalDoc.status
 }
 
 function save() {
   if (!lostReason.value) {
-    error.value = __('Lost reason is required')
+    error.value = __('Lost Reason is required')
     return
   }
   if (lostReason.value === 'Other' && !lostNotes.value) {
-    error.value = __('Lost notes are required when lost reason is "Other"')
+    error.value = __('Lost Notes are required when Lost Reason is "Other"')
     return
   }
 
   error.value = ''
   show.value = false
 
-  props.deal.doc.lost_reason = lostReason.value
-  props.deal.doc.lost_notes = lostNotes.value
-  props.deal.save.submit()
+  doc.lost_reason = lostReason.value
+  doc.lost_notes = lostNotes.value
+  props.document.save.submit()
 }
 
 function onCreate(value, close) {
-  createDocument('CRM Lost Reason', value, close)
+  createDocument('CRM Lost Reason', value, close, (doc) => {
+    lostReason.value = doc.name
+    linkRef.value?.reload('', true)
+  })
 }
 </script>

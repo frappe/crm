@@ -4,12 +4,12 @@
     <div class="flex justify-between px-2 text-ink-gray-8">
       <div class="flex flex-col gap-1">
         <h2 class="flex gap-2 text-xl font-semibold leading-none h-5">
-          {{ __('Calendar settings') }}
+          {{ __('Calendar Settings') }}
         </h2>
         <p class="text-p-base text-ink-gray-6">
           {{
             __(
-              'Configure your calendar settings like default view and event notifications here',
+              'Configure your Calendar Settings like Default View and Event Notifications here',
             )
           }}
         </p>
@@ -30,7 +30,7 @@
       <div class="flex items-center justify-between gap-8 py-3 px-2">
         <div class="flex flex-col">
           <div class="text-p-base font-medium text-ink-gray-7 truncate">
-            {{ __('Default view') }}
+            {{ __('Default View') }}
           </div>
           <div class="text-p-sm text-ink-gray-5">
             {{
@@ -42,6 +42,7 @@
         </div>
         <div class="flex items-center gap-2">
           <FormControl
+            v-model="settings.doc.default_calendar_view"
             type="select"
             class="w-28"
             :options="[
@@ -49,8 +50,7 @@
               { label: __('Weekly'), value: 'Weekly' },
               { label: __('Monthly'), value: 'Monthly' },
             ]"
-            v-model="settings.doc.default_calendar_view"
-            :placeholder="__('Select view')"
+            :placeholder="__('Select View')"
           />
         </div>
       </div>
@@ -58,7 +58,7 @@
       <div class="flex flex-col gap-3 px-2 py-3">
         <div>
           <div class="text-p-base font-medium text-ink-gray-7 truncate">
-            {{ __('Event notifications') }}
+            {{ __('Event Notifications') }}
           </div>
           <div
             class="text-p-sm text-ink-gray-5"
@@ -76,6 +76,7 @@
           <div v-for="notification in notifications" :key="notification.name">
             <div class="flex items-center gap-2">
               <FormControl
+                v-model="notification.type"
                 class="w-36 shrink-0"
                 type="select"
                 :options="[
@@ -88,20 +89,20 @@
                     value: 'Email',
                   },
                 ]"
-                v-model="notification.type"
                 :placeholder="__('Notification')"
               />
               <FormControl
+                v-model.number="notification.before"
                 class="w-20 shrink-0"
                 type="number"
                 :min="min(notification)"
                 :max="max(notification)"
                 :step="notification.interval == 'minutes' ? 5 : 1"
-                @blur="handleIntervalChange(notification)"
-                v-model.number="notification.before"
                 :placeholder="__('10')"
+                @blur="handleIntervalChange(notification)"
               />
               <FormControl
+                v-model="notification.interval"
                 class="w-32 shrink-0"
                 type="select"
                 :options="[
@@ -123,9 +124,8 @@
                     value: 'weeks',
                   },
                 ]"
-                v-model="notification.interval"
-                @change="() => handleIntervalChange(notification)"
                 :placeholder="__('minutes')"
+                @update:modelValue="() => handleIntervalChange(notification)"
               />
               <Button
                 icon="x"
@@ -139,7 +139,7 @@
         </div>
         <Button
           class="w-fit"
-          :label="__('Add notification')"
+          :label="__('Add Notification')"
           iconLeft="plus"
           @click="
             notifications.push({
@@ -154,7 +154,7 @@
       <div class="flex flex-col gap-3 py-3 px-2">
         <div>
           <div class="text-p-base font-medium text-ink-gray-7 truncate">
-            {{ __('All day event notifications') }}
+            {{ __('All Day Event Notifications') }}
           </div>
           <div
             class="text-p-sm text-ink-gray-5"
@@ -175,6 +175,7 @@
           >
             <div class="flex items-center gap-2">
               <FormControl
+                v-model="notification.type"
                 class="w-36 shrink-0"
                 type="select"
                 :options="[
@@ -187,19 +188,19 @@
                     value: 'Email',
                   },
                 ]"
-                v-model="notification.type"
                 :placeholder="__('Notification')"
               />
               <FormControl
+                v-model.number="notification.before"
                 class="w-20 shrink-0"
                 type="number"
                 :min="min(notification)"
                 :max="max(notification)"
-                @blur="handleIntervalChange(notification)"
-                v-model.number="notification.before"
                 :placeholder="__('10')"
+                @blur="handleIntervalChange(notification)"
               />
               <FormControl
+                v-model="notification.interval"
                 class="w-32 shrink-0"
                 type="select"
                 :options="[
@@ -212,16 +213,15 @@
                     value: 'weeks',
                   },
                 ]"
-                v-model="notification.interval"
-                @change="() => handleIntervalChange(notification)"
                 :placeholder="__('minutes')"
+                @update:modelValue="() => handleIntervalChange(notification)"
               />
               <div class="text-p-sm text-ink-gray-5">
                 {{ __('before at') }}
               </div>
               <TimePicker
-                class="w-32 shrink-0"
                 v-model="notification.time"
+                class="w-32 shrink-0"
                 :placeholder="__('08:00 pm')"
               />
               <Button
@@ -239,7 +239,7 @@
         </div>
         <Button
           class="w-fit"
-          :label="__('Add notification')"
+          :label="__('Add Notification')"
           iconLeft="plus"
           @click="
             allDayNotifications.push({

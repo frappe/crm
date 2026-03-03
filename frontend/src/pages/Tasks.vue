@@ -68,7 +68,7 @@
         >
           {{ getRow(itemName, titleField).label }}
         </div>
-        <div class="text-ink-gray-4" v-else>{{ __('No title') }}</div>
+        <div v-else class="text-ink-gray-4">{{ __('No Title') }}</div>
       </div>
     </template>
     <template #fields="{ fieldName, itemName }">
@@ -153,8 +153,8 @@
     </template>
   </KanbanView>
   <TasksListView
-    ref="tasksListView"
     v-else-if="tasks.data && rows.length"
+    ref="tasksListView"
     v-model="tasks.data.page_length_count"
     v-model:list="tasks"
     :rows="rows"
@@ -178,7 +178,7 @@
   />
   <EmptyState
     v-else-if="tasks.data && !rows.length"
-    name="tasks"
+    name="Tasks"
     :icon="Email2Icon"
   />
   <TaskModal
@@ -341,7 +341,7 @@ function showTask(name) {
     name: t.name,
     title: t.title,
     description: t.description,
-    assigned_to: t.assigned_to?.email || '',
+    assigned_to: t.assigned_to?.name || '',
     due_date: t.due_date,
     status: t.status,
     priority: t.priority,

@@ -32,8 +32,8 @@
             v-if="route.params.viewType !== 'kanban'"
             v-model="list"
             :doctype="doctype"
-            @update="updateSort"
             :hideLabel="isMobileView"
+            @update="updateSort"
           />
           <KanbanSettings
             v-if="route.params.viewType === 'kanban'"
@@ -55,7 +55,7 @@
         class="flex flex-row-reverse items-center gap-2 border-r pr-2"
       >
         <Button :label="__('Cancel')" @click="cancelChanges" />
-        <Button :label="__('Save changes')" @click="saveView" />
+        <Button :label="__('Save Changes')" @click="saveView" />
       </div>
     </div>
   </div>
@@ -104,7 +104,7 @@
             <Button
               class="whitespace-nowrap mr-2"
               variant="ghost"
-              :label="__('Add filter')"
+              :label="__('Add Filter')"
               iconLeft="plus"
               @click="togglePopover()"
             />
@@ -152,7 +152,7 @@
         class="flex items-center gap-2 border-r pr-2"
       >
         <Button :label="__('Cancel')" @click="cancelChanges" />
-        <Button :label="__('Save changes')" @click="saveView" />
+        <Button :label="__('Save Changes')" @click="saveView" />
       </div>
       <div class="flex items-center gap-2">
         <Button
@@ -220,7 +220,7 @@
                     route.params.viewType !== 'kanban',
                 },
                 {
-                  label: __('Customize quick filters'),
+                  label: __('Customize Quick Filters'),
                   icon: () => h(QuickFilterIcon, { class: 'h-4 w-4' }),
                   onClick: () => showCustomizeQuickFilter(),
                   condition: () => isManager(),
@@ -230,7 +230,7 @@
           ]"
         >
           <template #default>
-            <Button :tooltip="__('More options')" icon="more-horizontal" />
+            <Button :tooltip="__('More Options')" icon="more-horizontal" />
           </template>
         </Dropdown>
       </div>
@@ -272,8 +272,9 @@
   >
     <template #body-content>
       <FormControl
+        v-model="export_type"
         variant="outline"
-        :label="__('Export type')"
+        :label="__('Export Type')"
         type="select"
         :options="[
           {
@@ -285,14 +286,13 @@
             value: 'CSV',
           },
         ]"
-        v-model="export_type"
         :placeholder="__('Excel')"
       />
       <div class="mt-3">
         <FormControl
+          v-model="export_all"
           type="checkbox"
           :label="__('Export all {0} record(s)', [list.data.total_count])"
-          v-model="export_all"
         />
       </div>
     </template>
@@ -343,21 +343,15 @@ import _ from 'lodash'
 import ImportIcon from '~icons/lucide/import'
 
 const props = defineProps({
-  doctype: {
-    type: String,
-    required: true,
-  },
-  filters: {
-    type: Object,
-    default: {},
-  },
+  doctype: { type: String, required: true },
+  filters: { type: Object, default: () => ({}) },
   options: {
     type: Object,
-    default: {
+    default: () => ({
       hideColumnsButton: false,
       defaultViewName: '',
       allowedViews: ['list'],
-    },
+    }),
   },
 })
 
@@ -366,10 +360,10 @@ const { $dialog } = globalStore()
 const { reload: reloadView, getDefaultView, getView } = viewsStore()
 const { isManager } = usersStore()
 
-const list = defineModel()
-const loadMore = defineModel('loadMore')
-const resizeColumn = defineModel('resizeColumn')
-const updatedPageCount = defineModel('updatedPageCount')
+const list = defineModel({ type: Object, default: () => ({}) })
+const loadMore = defineModel('loadMore', { type: Boolean })
+const resizeColumn = defineModel('resizeColumn', { type: Boolean })
+const updatedPageCount = defineModel('updatedPageCount', { type: Boolean })
 
 const route = useRoute()
 const router = useRouter()
@@ -389,7 +383,7 @@ function getViewType() {
     },
     group_by: {
       name: 'group_by',
-      label: __('Group by'),
+      label: __('Group By'),
       icon: markRaw(GroupByIcon),
     },
     kanban: {
@@ -603,7 +597,7 @@ if (allowedViews.includes('list')) {
     icon: markRaw(ListIcon),
     onClick() {
       viewUpdated.value = false
-      router.push({ name: route.name })
+      router.push({ name: route.name, params: { viewType: 'list' } })
     },
   })
 }
@@ -621,7 +615,7 @@ if (allowedViews.includes('kanban')) {
 if (allowedViews.includes('group_by')) {
   standardViews.push({
     name: 'group_by',
-    label: __(props.options?.defaultViewName) || __('Group by'),
+    label: __(props.options?.defaultViewName) || __('Group By'),
     icon: markRaw(GroupByIcon),
     onClick() {
       viewUpdated.value = false
@@ -644,7 +638,7 @@ function getIcon(icon, type) {
 const viewsDropdownOptions = computed(() => {
   let _views = [
     {
-      group: __('Standard views'),
+      group: __('Standard Views'),
       hideLabel: true,
       items: standardViews,
     },
@@ -652,7 +646,6 @@ const viewsDropdownOptions = computed(() => {
 
   if (list.value?.data?.views) {
     list.value.data.views.forEach((view) => {
-      view.name = view.name
       view.label = __(view.label)
       view.type = view.type || 'list'
       view.icon = getIcon(view.icon, view.type)
@@ -675,21 +668,24 @@ const viewsDropdownOptions = computed(() => {
     )
     let pinnedViews = list.value.data.views.filter((v) => v.pinned)
 
-    savedViews.length &&
+    if (savedViews.length) {
       _views.push({
-        group: __('Saved views'),
+        group: __('Saved Views'),
         items: savedViews,
       })
-    publicViews.length &&
+    }
+    if (publicViews.length) {
       _views.push({
-        group: __('Public views'),
+        group: __('Public Views'),
         items: publicViews,
       })
-    pinnedViews.length &&
+    }
+    if (pinnedViews.length) {
       _views.push({
-        group: __('Pinned views'),
+        group: __('Pinned Views'),
         items: pinnedViews,
       })
+    }
   }
 
   _views.push({
@@ -697,7 +693,7 @@ const viewsDropdownOptions = computed(() => {
     hideLabel: true,
     items: [
       {
-        label: __('Create view'),
+        label: __('Create View'),
         icon: 'plus',
         onClick: () => createView(),
       },
@@ -1086,9 +1082,9 @@ const viewActions = (view, close) => {
     },
   ]
 
-  if (!isDefaultView(_view, isStandard)) {
+  if (isStandard && !isDefaultView(_view)) {
     actions[0].items.unshift({
-      label: __('Set as default'),
+      label: __('Set As Default'),
       icon: () => h(CheckIcon, { class: 'h-4 w-4' }),
       onClick: () => setAsDefault(_view),
     })
@@ -1103,7 +1099,7 @@ const viewActions = (view, close) => {
 
     if (!_view.public) {
       actions[0].items.push({
-        label: _view.pinned ? __('Unpin view') : __('Pin view'),
+        label: _view.pinned ? __('Unpin View') : __('Pin View'),
         icon: () => h(_view.pinned ? UnpinIcon : PinIcon, { class: 'h-4 w-4' }),
         onClick: () => pinView(_view),
       })
@@ -1111,7 +1107,7 @@ const viewActions = (view, close) => {
 
     if (isManager()) {
       actions[0].items.push({
-        label: _view.public ? __('Make private') : __('Make public'),
+        label: _view.public ? __('Make Private') : __('Make Public'),
         icon: () =>
           h(FeatherIcon, {
             name: _view.public ? 'lock' : 'unlock',
@@ -1122,7 +1118,7 @@ const viewActions = (view, close) => {
     }
 
     actions.push({
-      group: __('Delete view'),
+      group: __('Delete View'),
       hideLabel: true,
       items: [
         {
@@ -1130,7 +1126,7 @@ const viewActions = (view, close) => {
           icon: 'trash-2',
           onClick: () =>
             $dialog({
-              title: __('Delete view'),
+              title: __('Delete View'),
               message: __('Are you sure you want to delete "{0}" view?', [
                 _view.label,
               ]),
@@ -1151,10 +1147,10 @@ const viewActions = (view, close) => {
   return actions
 }
 
-function isDefaultView(v, isStandard) {
+function isDefaultView(v) {
   let defaultView = getDefaultView()
 
-  if (!defaultView || (isStandard && !v.name)) return false
+  if (!defaultView || !v.name) return false
 
   return defaultView.name == v.name
 }
@@ -1222,7 +1218,7 @@ function deleteView(v, close) {
   call('crm.fcrm.doctype.crm_view_settings.crm_view_settings.delete', {
     name: v.name,
   }).then(() => {
-    router.push({ name: route.name })
+    router.push({ name: route.name, params: { viewType: 'list' } })
     reloadView()
     list.value.reload()
   })

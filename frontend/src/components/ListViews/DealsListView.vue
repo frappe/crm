@@ -38,13 +38,16 @@
       </ListHeaderItem>
     </ListHeader>
     <ListRows
-      :rows="rows"
       v-slot="{ idx, column, item, row }"
+      :rows="rows"
       doctype="CRM Deal"
     >
       <ListRowItem :item="item" :align="column.align">
         <template #prefix>
-          <div v-if="column.key === '_assign'" class="flex items-center">
+          <div
+            v-if="column.key === '_assign'"
+            class="flex items-center truncate"
+          >
             <MultipleAvatar
               :avatars="item"
               size="sm"
@@ -185,8 +188,8 @@
   </ListView>
   <ListFooter
     v-if="pageLengthCount"
-    class="border-t sm:px-5 px-3 py-2"
     v-model="pageLengthCount"
+    class="border-t sm:px-5 px-3 py-2"
     :options="{
       rowCount: options.rowCount,
       totalCount: options.totalCount,
@@ -218,15 +221,9 @@ import { sessionStore } from '@/stores/session'
 import { ref, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
-const props = defineProps({
-  rows: {
-    type: Array,
-    required: true,
-  },
-  columns: {
-    type: Array,
-    required: true,
-  },
+defineProps({
+  rows: { type: Array, required: true },
+  columns: { type: Array, required: true },
   options: {
     type: Object,
     default: () => ({
@@ -251,8 +248,8 @@ const emit = defineEmits([
 
 const route = useRoute()
 
-const pageLengthCount = defineModel()
-const list = defineModel('list')
+const pageLengthCount = defineModel({ type: Number })
+const list = defineModel('list', { type: Object })
 
 const isLikeFilterApplied = computed(() => {
   return list.value.params?.filters?._liked_by ? true : false

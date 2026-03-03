@@ -12,8 +12,8 @@
   </LayoutHeader>
   <div v-if="contact.doc" class="flex flex-col h-full overflow-hidden">
     <FileUploader
-      @success="changeContactImage"
       :validateFile="validateIsImageFile"
+      @success="changeContactImage"
     >
       <template #default="{ openFileSelector, error }">
         <div class="flex flex-col items-start justify-start gap-4 p-4">
@@ -34,13 +34,13 @@
                           {
                             icon: 'upload',
                             label: contact.doc.image
-                              ? __('Change image')
-                              : __('Upload image'),
+                              ? __('Change Image')
+                              : __('Upload Image'),
                             onClick: openFileSelector,
                           },
                           {
                             icon: 'trash-2',
-                            label: __('Remove image'),
+                            label: __('Remove Image'),
                             onClick: () => changeContactImage(''),
                           },
                         ],
@@ -70,7 +70,7 @@
               <div class="flex items-center gap-1.5">
                 <Button
                   v-if="callEnabled && contact.doc.mobile_no"
-                  :label="__('Make a call')"
+                  :label="__('Make a Call')"
                   size="sm"
                   :iconLeft="PhoneIcon"
                   @click="callEnabled && makeCall(contact.doc.mobile_no)"
@@ -99,8 +99,8 @@
       </template>
     </FileUploader>
     <Tabs
-      as="div"
       v-model="tabIndex"
+      as="div"
       :tabs="tabs"
       class="flex flex-1 overflow-auto flex-col [&_[role='tablist']]:gap-3 [&_[role='tablist']]:px-4 [&_[role='tabpanel']:not([hidden])]:flex [&_[role='tabpanel']:not([hidden])]:grow"
     >
@@ -110,7 +110,7 @@
           class="group flex items-center gap-2 border-b border-transparent py-2.5 text-base text-ink-gray-5 duration-300 ease-in-out hover:text-ink-gray-9 !px-4"
           :class="{ 'text-ink-gray-9': selected }"
         >
-          <component v-if="tab.icon" :is="tab.icon" class="h-5" />
+          <component :is="tab.icon" v-if="tab.icon" class="h-5" />
           {{ __(tab.label) }}
           <Badge
             class="group-hover:bg-surface-gray-7"
@@ -201,10 +201,7 @@ const { getDealStatus } = statusesStore()
 const { doctypeMeta } = getMeta('Contact')
 
 const props = defineProps({
-  contactId: {
-    type: String,
-    required: true,
-  },
+  contactId: { type: String, required: true },
 })
 
 const route = useRoute()
@@ -258,14 +255,14 @@ function changeContactImage(file) {
   contact.doc.image = file?.file_url || ''
   contact.save.submit(null, {
     onSuccess: () => {
-      toast.success(__('Contact image updated'))
+      toast.success(__('Contact Image Updated'))
     },
   })
 }
 
 async function deleteContact() {
   $dialog({
-    title: __('Delete contact'),
+    title: __('Delete Contact'),
     message: __('Are you sure you want to delete this contact?'),
     actions: [
       {
@@ -355,7 +352,7 @@ function getParsedSections(_sections) {
                     contact.doc.email_ids = contact.doc.email_ids.filter(
                       (email) => email.name !== option.name,
                     )
-                    !isNew && (await deleteOption('Contact Email', option.name))
+                    if (!isNew) await deleteOption('Contact Email', option.name)
                   },
                 }
               }) || [],
@@ -398,7 +395,7 @@ function getParsedSections(_sections) {
                     contact.doc.phone_nos = contact.doc.phone_nos.filter(
                       (phone) => phone.name !== option.name,
                     )
-                    !isNew && (await deleteOption('Contact Phone', option.name))
+                    if (!isNew) await deleteOption('Contact Phone', option.name)
                   },
                 }
               }) || [],
@@ -438,7 +435,7 @@ async function setAsPrimary(field, value) {
   })
   if (d) {
     contact.reload()
-    toast.success(___('Contact updated'))
+    toast.success(__('Contact Updated'))
   }
 }
 
@@ -451,7 +448,7 @@ async function createNew(field, value) {
   })
   if (d) {
     contact.reload()
-    toast.success(__('Contact updated'))
+    toast.success(__('Contact Updated'))
   }
 }
 
@@ -464,7 +461,7 @@ async function editOption(doctype, name, fieldname, value) {
   })
   if (d) {
     contact.reload()
-    toast.success(__('Contact updated'))
+    toast.success(__('Contact Updated'))
   }
 }
 
@@ -474,7 +471,7 @@ async function deleteOption(doctype, name) {
     name,
   })
   await contact.reload()
-  toast.success(__('Contact updated'))
+  toast.success(__('Contact Updated'))
 }
 
 const { getFormattedCurrency } = getMeta('CRM Deal')
@@ -529,17 +526,17 @@ const dealColumns = [
     width: '12rem',
   },
   {
-    label: __('Mobile no'),
+    label: __('Mobile No.'),
     key: 'mobile_no',
     width: '11rem',
   },
   {
-    label: __('Deal owner'),
+    label: __('Deal Owner'),
     key: 'deal_owner',
     width: '10rem',
   },
   {
-    label: __('Last modified'),
+    label: __('Last Modified'),
     key: 'modified',
     width: '8rem',
   },

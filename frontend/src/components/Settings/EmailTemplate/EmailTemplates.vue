@@ -4,7 +4,7 @@
     <div class="flex justify-between px-2 pt-2">
       <div class="flex flex-col gap-1 w-9/12">
         <h2 class="flex gap-2 text-xl font-semibold leading-none h-5">
-          {{ __('Email templates') }}
+          {{ __('Email Templates') }}
         </h2>
         <p class="text-p-base text-ink-gray-6">
           {{
@@ -40,15 +40,15 @@
     <!-- Empty State -->
     <EmptyState
       v-else-if="!templates.loading && !templates.data?.length"
-      name="email templates"
+      name="Email Templates"
       description="Add one to get started."
       :icon="EmailTemplateIcon"
     />
 
     <!-- Email template list -->
     <div
-      class="flex flex-col overflow-hidden"
       v-if="!templates.loading && templates.data?.length"
+      class="flex flex-col overflow-hidden"
     >
       <div
         v-if="templates.data?.length > 10"
@@ -57,7 +57,7 @@
         <TextInput
           ref="searchRef"
           v-model="search"
-          :placeholder="__('Search template')"
+          :placeholder="__('Search Template')"
           class="w-1/3"
           :debounce="300"
         >
@@ -66,8 +66,8 @@
           </template>
         </TextInput>
         <FormControl
-          type="select"
           v-model="currentDoctype"
+          type="select"
           :options="[
             { label: __('All'), value: 'All' },
             { label: __('Lead'), value: 'CRM Lead' },
@@ -76,7 +76,7 @@
         />
       </div>
       <div class="flex items-center py-2 px-4 text-sm text-ink-gray-5">
-        <div class="w-4/6">{{ __('Template name') }}</div>
+        <div class="w-4/6">{{ __('Template Name') }}</div>
         <div class="w-1/6">{{ __('For') }}</div>
         <div class="w-1/6">{{ __('Enabled') }}</div>
       </div>
@@ -100,8 +100,8 @@
             </div>
             <div class="flex items-center justify-between w-1/6">
               <Switch
-                size="sm"
                 v-model="template.enabled"
+                size="sm"
                 @update:model-value="toggleEmailTemplate(template)"
                 @click.stop
               />
@@ -133,10 +133,10 @@
         >
           <Button
             class="mt-3.5 p-2"
-            @click="() => templates.next()"
             :loading="templates.loading"
-            :label="__('Load more')"
+            :label="__('Load More')"
             icon-left="refresh-cw"
+            @click="() => templates.next()"
           />
         </div>
       </ul>
@@ -208,7 +208,7 @@ function deleteTemplate(template) {
   confirmDelete.value = false
   templates.delete.submit(template.name, {
     onSuccess: () => {
-      toast.success(__('Template deleted successfully'))
+      toast.success(__('Template Deleted Successfully'))
     },
     onError: (error) => {
       toast.error(error.messages[0] || __('Failed to delete template'))
@@ -234,7 +234,7 @@ function getDropdownOptions(template) {
       condition: () => !confirmDelete.value,
     },
     {
-      label: __('Confirm delete'),
+      label: __('Confirm Delete'),
       icon: 'trash-2',
       theme: 'red',
       onClick: () => deleteTemplate(template),

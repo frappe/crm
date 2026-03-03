@@ -1,10 +1,8 @@
 # Copyright (c) 2022, Frappe Technologies Pvt. Ltd. and Contributors
 # GNU GPLv3 License. See license.txt
-import os
-import subprocess
 
 import frappe
-from frappe import _, safe_decode
+from frappe import _
 from frappe.integrations.frappe_providers.frappecloud_billing import is_fc_site
 from frappe.utils import cint, get_system_timezone
 from frappe.utils.telemetry import capture
@@ -56,15 +54,3 @@ def get_boot():
 
 def get_default_route():
 	return "/crm"
-
-
-def run_git_command(command):
-	try:
-		with open(os.devnull, "wb") as null_stream:
-			result = subprocess.check_output(command, shell=True, stdin=null_stream, stderr=null_stream)
-		return safe_decode(result).strip()
-	except Exception:
-		frappe.log_error(
-			title="Git Command Error",
-		)
-		return ""

@@ -5,7 +5,7 @@
         <div class="mb-5 flex items-center justify-between">
           <div>
             <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9">
-              {{ __('Create deal') }}
+              {{ __('Create Deal') }}
             </h3>
           </div>
           <div class="flex items-center gap-1">
@@ -13,7 +13,7 @@
               v-if="isManager() && !isMobileView"
               variant="ghost"
               class="w-7"
-              :tooltip="__('Edit fields layout')"
+              :tooltip="__('Edit Fields Layout')"
               :icon="EditIcon"
               @click="openQuickEntryModal"
             />
@@ -34,14 +34,14 @@
               v-if="hasOrganizationSections"
               class="flex items-center gap-3 text-sm text-ink-gray-5"
             >
-              <div>{{ __('Choose existing organization') }}</div>
+              <div>{{ __('Choose Existing Organization') }}</div>
               <Switch v-model="chooseExistingOrganization" />
             </div>
             <div
               v-if="hasContactSections"
               class="flex items-center gap-3 text-sm text-ink-gray-5"
             >
-              <div>{{ __('Choose existing contact') }}</div>
+              <div>{{ __('Choose Existing Contact') }}</div>
               <Switch v-model="chooseExistingContact" />
             </div>
           </div>
@@ -50,13 +50,12 @@
             class="h-px w-full border-t my-5"
           />
           <FieldLayout
-            ref="fieldLayoutRef"
             v-if="tabs.data?.length"
             :tabs="tabs.data"
             :data="deal.doc"
             doctype="CRM Deal"
           />
-          <ErrorMessage class="mt-4" v-if="error" :message="__(error)" />
+          <ErrorMessage v-if="error" class="mt-4" :message="__(error)" />
         </div>
       </div>
       <div class="px-4 pb-7 pt-4 sm:px-6">
@@ -81,20 +80,19 @@ import { statusesStore } from '@/stores/statuses'
 import { isMobileView } from '@/composables/settings'
 import { showQuickEntryModal, quickEntryProps } from '@/composables/modals'
 import { useDocument } from '@/data/document'
-import { capture } from '@/telemetry'
+import { useTelemetry } from 'frappe-ui/frappe'
 import { Switch, createResource } from 'frappe-ui'
 import { computed, ref, onMounted, nextTick, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import { useTelemetry } from 'frappe-ui/frappe'
 
 const props = defineProps({
-  defaults: Object,
+  defaults: { type: Object, default: () => ({}) },
 })
 
 const { getUser, isManager } = usersStore()
 const { getDealStatus, statusOptions } = statusesStore()
 
-const show = defineModel()
+const show = defineModel({ type: Boolean })
 const router = useRouter()
 const error = ref(null)
 
@@ -106,8 +104,7 @@ const hasContactSections = ref(true)
 const isDealCreating = ref(false)
 const chooseExistingContact = ref(false)
 const chooseExistingOrganization = ref(false)
-const fieldLayoutRef = ref(null)
-const $telemetry = useTelemetry()
+const { capture } = useTelemetry()
 
 watch(
   [chooseExistingOrganization, chooseExistingContact],
@@ -168,13 +165,7 @@ const tabs = createResource({
   },
 })
 
-const dealStatuses = computed(() => {
-  let statuses = statusOptions('deal')
-  if (!deal.doc.status) {
-    deal.doc.status = statuses[0].value
-  }
-  return statuses
-})
+const dealStatuses = computed(() => statusOptions('deal'))
 
 async function createDeal() {
   if (deal.doc.website && !deal.doc.website.startsWith('http')) {
@@ -191,7 +182,7 @@ async function createDeal() {
 
   createResource({
     url: 'crm.fcrm.doctype.crm_deal.crm_deal.create_deal',
-    params: { args: deal.doc },
+    params: { doc: deal.doc },
     auto: true,
     validate() {
       error.value = null
@@ -199,7 +190,7 @@ async function createDeal() {
         if (typeof deal.doc.annual_revenue === 'string') {
           deal.doc.annual_revenue = deal.doc.annual_revenue.replace(/,/g, '')
         } else if (isNaN(deal.doc.annual_revenue)) {
-          error.value = __('Annual revenue should be a number')
+          error.value = __('Annual Revenue should be a number')
           return error.value
         }
       }
@@ -207,7 +198,7 @@ async function createDeal() {
         deal.doc.mobile_no &&
         isNaN(deal.doc.mobile_no.replace(/[-+() ]/g, ''))
       ) {
-        error.value = __('Mobile no should be a number')
+        error.value = __('Mobile No. should be a number')
         return error.value
       }
       if (deal.doc.email && !deal.doc.email.includes('@')) {
@@ -222,7 +213,6 @@ async function createDeal() {
     },
     onSuccess(name) {
       capture('deal_created')
-      $telemetry.capture('deal_created', true)
       isDealCreating.value = false
       show.value = false
       router.push({ name: 'Deal', params: { dealId: name } })

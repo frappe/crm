@@ -1,4 +1,3 @@
-import bleach
 import frappe
 import requests
 from frappe import _
@@ -68,7 +67,7 @@ def handle_request(**kwargs):
 
 # Outgoing Call
 @frappe.whitelist()
-def make_a_call(to_number, from_number=None, caller_id=None):
+def make_a_call(to_number: str, from_number: str | None = None, caller_id: str | None = None):
 	if not is_integration_enabled():
 		frappe.throw(_("Please setup Exotel intergration"), title=_("Integration Not Enabled"))
 
@@ -111,7 +110,7 @@ def make_a_call(to_number, from_number=None, caller_id=None):
 		response.raise_for_status()
 	except requests.exceptions.HTTPError:
 		if exc := response.json().get("RestException"):
-			frappe.throw(bleach.linkify(exc.get("Message")), title=_("Exotel Exception"))
+			frappe.throw(exc.get("Message"), title=_("Exotel Exception"))
 	else:
 		res = response.json()
 		call_payload = res.get("Call", {})

@@ -1,16 +1,11 @@
 <template>
   <FileUploader
     :file-types="image_type"
-    @success="
-      (file) => {
-        $emit('upload', file.file_url)
-      }
-    "
+    @success="(file) => emit('upload', file.file_url)"
   >
-    <template v-slot="{ progress, uploading, openFileSelector }">
+    <template #default="{ progress, uploading, openFileSelector }">
       <div class="flex items-end space-x-1">
         <Button
-          @click="openFileSelector"
           :iconLeft="uploading ? 'cloud-upload' : ImageUpIcon"
           :label="
             uploading
@@ -19,11 +14,12 @@
                 ? __('Change')
                 : __('Upload')
           "
+          @click="openFileSelector"
         />
         <Button
           v-if="image_url"
           :label="__('Remove')"
-          @click="$emit('remove')"
+          @click="emit('remove')"
         />
       </div>
     </template>
@@ -33,12 +29,9 @@
 import ImageUpIcon from '~icons/lucide/image-up'
 import { FileUploader, Button } from 'frappe-ui'
 
-const prop = defineProps({
-  image_url: String,
-  image_type: {
-    type: String,
-    default: 'image/*',
-  },
+defineProps({
+  image_url: { type: String, default: '' },
+  image_type: { type: String, default: 'image/*' },
 })
 const emit = defineEmits(['upload', 'remove'])
 </script>

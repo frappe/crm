@@ -13,7 +13,7 @@
               v-if="isManager() && !isMobileView"
               variant="ghost"
               class="w-7"
-              :tooltip="__('Edit fields layout')"
+              :tooltip="__('Edit Fields Layout')"
               :icon="EditIcon"
               @click="openQuickEntryModal"
             />
@@ -33,9 +33,9 @@
       <div class="px-4 pb-7 pt-4 sm:px-6">
         <div class="space-y-2">
           <Button
-            class="w-full"
             v-for="action in dialogOptions.actions"
             :key="action.label"
+            class="w-full"
             v-bind="action"
             :label="__(action.label)"
             :loading="loading"
@@ -53,25 +53,19 @@ import { usersStore } from '@/stores/users'
 import { useDocument } from '@/data/document'
 import { isMobileView } from '@/composables/settings'
 import { showQuickEntryModal, quickEntryProps } from '@/composables/modals'
-import { FeatherIcon, createResource, ErrorMessage, call } from 'frappe-ui'
+import { createResource, ErrorMessage, call } from 'frappe-ui'
 import { ref, nextTick, watch, computed } from 'vue'
 
 const props = defineProps({
-  doctype: {
-    type: String,
-    required: true,
-  },
-  data: {
-    type: Object,
-    default: () => ({}),
-  },
+  doctype: { type: String, required: true },
+  data: { type: Object, default: () => ({}) },
 })
 
 const emit = defineEmits(['callback'])
 
 const { isManager } = usersStore()
 
-const show = defineModel()
+const show = defineModel({ type: Boolean })
 
 const loading = ref(false)
 const error = ref(null)

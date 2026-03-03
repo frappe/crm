@@ -6,10 +6,10 @@
           <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9">
             {{
               mode === 'edit'
-                ? __('Edit an event')
+                ? __('Edit an Event')
                 : mode === 'duplicate'
-                  ? __('Duplicate an event')
-                  : __('Create an event')
+                  ? __('Duplicate an Event')
+                  : __('Create an Event')
             }}
           </h3>
         </div>
@@ -56,10 +56,10 @@
               </div>
             </Dropdown>
             <TextInput
-              class="w-full"
               ref="title"
-              size="sm"
               v-model="_event.title"
+              class="w-full"
+              size="sm"
               :placeholder="__('Call with John Doe')"
               variant="outline"
               required
@@ -68,7 +68,7 @@
         </div>
         <div class="flex items-center">
           <div class="text-base text-ink-gray-7 w-3/12">
-            {{ __('All day') }}
+            {{ __('All Day') }}
           </div>
           <Switch v-model="_event.isFullDay" />
         </div>
@@ -100,7 +100,7 @@
               class="max-w-[112px]"
               variant="outline"
               :modelValue="_event.fromTime"
-              :placeholder="__('Start time')"
+              :placeholder="__('Start Time')"
               @update:modelValue="(time) => updateTime(time, true)"
             />
             <TimePicker
@@ -109,7 +109,7 @@
               variant="outline"
               :modelValue="_event.toTime"
               :options="toOptions"
-              :placeholder="__('End time')"
+              :placeholder="__('End Time')"
               placement="bottom-end"
               @update:modelValue="(time) => updateTime(time)"
             />
@@ -135,6 +135,7 @@
           </div>
           <div class="w-9/12">
             <FormControl
+              v-model="_event.eventType"
               class="w-full"
               type="select"
               :options="[
@@ -147,7 +148,6 @@
                   value: 'Public',
                 },
               ]"
-              v-model="_event.eventType"
               variant="outline"
               :placeholder="__('Private or Public')"
             />
@@ -159,11 +159,11 @@
           </div>
           <div class="w-9/12">
             <TextInput
+              v-model="_event.location"
               class="w-full"
               size="sm"
               variant="outline"
-              v-model="_event.location"
-              :placeholder="__('Add location')"
+              :placeholder="__('Add Location')"
             />
           </div>
         </div>
@@ -176,8 +176,8 @@
               editor-class="!prose-sm overflow-auto min-h-[80px] max-h-80 py-1.5 px-2 rounded border border-outline-gray-2 placeholder-ink-gray-4 hover:border-outline-gray-3 hover:border-outline-gray-modals hover:shadow-sm focus:bg-surface-white focus:border-outline-gray-4 focus:shadow-sm focus:ring-0 focus-visible:ring-2 focus-visible:ring-outline-gray-3 text-ink-gray-8 transition-colors"
               :bubbleMenu="true"
               :content="_event.description"
+              :placeholder="__('Add Description.')"
               @change="(val) => (_event.description = val)"
-              :placeholder="__('Add description.')"
             />
           </div>
         </div>
@@ -253,23 +253,14 @@ import { CalendarColorMap as colorMap } from 'frappe-ui'
 import { onMounted, ref, computed, h } from 'vue'
 
 const props = defineProps({
-  event: {
-    type: Object,
-    default: () => ({}),
-  },
-  doctype: {
-    type: String,
-    default: '',
-  },
-  docname: {
-    type: String,
-    default: '',
-  },
+  event: { type: Object, default: () => ({}) },
+  doctype: { type: String, default: '' },
+  docname: { type: String, default: '' },
 })
 
 const { $dialog } = globalStore()
 
-const show = defineModel()
+const show = defineModel({ type: Boolean })
 
 const { eventsResource } = useEvent({
   doctype: props.doctype,

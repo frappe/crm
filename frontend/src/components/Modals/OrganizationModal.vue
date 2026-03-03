@@ -5,7 +5,7 @@
         <div class="flex items-center justify-between mb-5">
           <div>
             <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9">
-              {{ __('New organization') }}
+              {{ __('New Organization') }}
             </h3>
           </div>
           <div class="flex items-center gap-1">
@@ -13,15 +13,15 @@
               v-if="isManager() && !isMobileView"
               variant="ghost"
               class="w-7"
-              :tooltip="__('Edit fields layout')"
+              :tooltip="__('Edit Fields Layout')"
               :icon="EditIcon"
               @click="openQuickEntryModal"
             />
             <Button
               variant="ghost"
               class="w-7"
-              @click="show = false"
               icon="x"
+              @click="show = false"
             />
           </div>
         </div>
@@ -31,7 +31,7 @@
           :data="organization.doc"
           doctype="CRM Organization"
         />
-        <ErrorMessage class="mt-8" v-if="error" :message="__(error)" />
+        <ErrorMessage v-if="error" class="mt-8" :message="__(error)" />
       </div>
       <div class="px-4 pt-4 pb-7 sm:px-6">
         <div class="space-y-2">
@@ -60,29 +60,24 @@ import {
   addressProps,
 } from '@/composables/modals'
 import { useDocument } from '@/data/document'
-import { capture } from '@/telemetry'
+import { useTelemetry } from 'frappe-ui/frappe'
 import { call, createResource } from 'frappe-ui'
 import { ref, nextTick, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 const props = defineProps({
-  data: {
-    type: Object,
-    default: () => ({}),
-  },
+  data: { type: Object, default: () => ({}) },
   options: {
     type: Object,
-    default: {
-      redirect: true,
-      afterInsert: () => {},
-    },
+    default: () => ({ redirect: true, afterInsert: () => {} }),
   },
 })
 
 const { isManager } = usersStore()
+const { capture } = useTelemetry()
 
 const router = useRouter()
-const show = defineModel()
+const show = defineModel({ type: Boolean })
 
 const loading = ref(false)
 const error = ref(null)
@@ -126,7 +121,7 @@ function handleOrganizationUpdate(doc) {
     })
   }
   show.value = false
-  props.options.afterInsert && props.options.afterInsert(doc)
+  props.options.afterInsert?.(doc)
 }
 
 const tabs = createResource({

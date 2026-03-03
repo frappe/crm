@@ -17,10 +17,10 @@
         <div v-if="!edit">
           <Draggable
             :list="columns"
-            @end="apply"
             :delay="isTouchScreenDevice() ? 200 : 0"
             item-key="key"
             class="list-group"
+            @end="apply"
           >
             <template #item="{ element }">
               <div
@@ -65,7 +65,7 @@
                 <Button
                   class="w-full !justify-start !text-ink-gray-5"
                   variant="ghost"
-                  :label="__('Add column')"
+                  :label="__('Add Column')"
                   iconLeft="plus"
                   @click="togglePopover"
                 />
@@ -75,7 +75,7 @@
               v-if="columnsUpdated"
               class="w-full !justify-start !text-ink-gray-5"
               variant="ghost"
-              :label="__('Reset changes')"
+              :label="__('Reset Changes')"
               :iconLeft="ReloadIcon"
               @click="reset(close)"
             />
@@ -83,7 +83,7 @@
               v-if="!is_default"
               class="w-full !justify-start !text-ink-gray-5"
               variant="ghost"
-              :label="__('Reset to default')"
+              :label="__('Reset to Default')"
               :iconLeft="ReloadIcon"
               @click="resetToDefault(close)"
             />
@@ -95,19 +95,19 @@
           >
             <div class="flex flex-col items-center gap-3">
               <FormControl
+                v-model="column.label"
                 type="text"
                 size="md"
                 :label="__('Label')"
-                v-model="column.label"
                 class="sm:w-full w-52"
-                :placeholder="__('First name')"
+                :placeholder="__('First Name')"
               />
               <FormControl
+                v-model="column.width"
                 type="text"
                 size="md"
                 :label="__('Width')"
                 class="sm:w-full w-52"
-                v-model="column.width"
                 placeholder="10rem"
                 :description="
                   __(
@@ -150,15 +150,9 @@ import Draggable from 'vuedraggable'
 import { computed, ref } from 'vue'
 import { watchOnce } from '@vueuse/core'
 
-const props = defineProps({
-  doctype: {
-    type: String,
-    required: true,
-  },
-  hideLabel: {
-    type: Boolean,
-    default: false,
-  },
+defineProps({
+  doctype: { type: String, required: true },
+  hideLabel: { type: Boolean, default: false },
 })
 
 const emit = defineEmits(['update'])
@@ -170,7 +164,7 @@ const oldValues = ref({
   isDefault: false,
 })
 
-const list = defineModel()
+const list = defineModel({ type: Object, default: () => ({}) })
 const edit = ref(false)
 const column = ref({
   old: {},

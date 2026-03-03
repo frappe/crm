@@ -11,14 +11,8 @@
 </template>
 
 <script setup>
-const props = defineProps({
-  errorTitle: {
-    type: String,
-    required: true,
-  },
-  errorMessage: {
-    type: String,
-    required: true,
-  },
+defineProps({
+  errorTitle: { type: String, required: true },
+  errorMessage: { type: String, required: true },
 })
 </script>

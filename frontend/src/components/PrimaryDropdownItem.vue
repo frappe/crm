@@ -5,9 +5,9 @@
     <div class="flex flex-1 items-center justify-between gap-7">
       <div v-show="!editMode">{{ option.value }}</div>
       <TextInput
-        ref="inputRef"
         v-show="editMode"
-        v-model="option.value"
+        ref="inputRef"
+        v-model="localOption.value"
         class="w-full"
         :placeholder="option.placeholder"
         @blur.stop="saveOption"
@@ -24,7 +24,7 @@
         />
         <Button
           v-if="!isNew && !option.selected"
-          :tooltip="__('Set as primary')"
+          :tooltip="__('Set As Primary')"
           variant="ghost"
           :icon="SuccessIcon"
           class="opacity-0 hover:bg-surface-gray-4 group-hover:opacity-100"
@@ -57,14 +57,18 @@
 import SuccessIcon from '@/components/Icons/SuccessIcon.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import { TextInput } from 'frappe-ui'
-import { nextTick, ref, onMounted } from 'vue'
+import { nextTick, ref, onMounted, reactive, watch } from 'vue'
 
 const props = defineProps({
-  option: {
-    type: Object,
-    default: () => {},
-  },
+  option: { type: Object, default: () => {} },
 })
+
+const localOption = reactive({ ...props.option })
+watch(
+  () => props.option,
+  (val) => Object.assign(localOption, val),
+  { deep: true },
+)
 
 const editMode = ref(false)
 const isNew = ref(false)
@@ -80,13 +84,18 @@ onMounted(() => {
 
 const toggleEditMode = () => {
   editMode.value = !editMode.value
-  editMode.value && nextTick(() => inputRef.value.el.focus())
+  if (editMode.value) {
+    nextTick(() => inputRef.value.el.focus())
+  }
 }
 
 const saveOption = (e) => {
   if (!e.target.value) return
   toggleEditMode()
-  props.option.onSave(props.option, isNew.value)
+  props.option.onSave(
+    { ...props.option, value: localOption.value },
+    isNew.value,
+  )
   isNew.value = false
 }
 </script>

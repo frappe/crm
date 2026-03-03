@@ -2,7 +2,7 @@ import frappe
 
 
 @frappe.whitelist()
-def get_deal_contacts(name):
+def get_deal_contacts(name: str):
 	contacts = frappe.get_all(
 		"CRM Contacts",
 		filters={"parenttype": "CRM Deal", "parent": name},

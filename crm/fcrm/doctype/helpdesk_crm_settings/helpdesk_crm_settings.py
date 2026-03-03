@@ -49,7 +49,7 @@ class HelpdeskCRMSettings(Document):
 
 
 @frappe.whitelist()
-def create_customer_in_helpdesk(name, email):
+def create_customer_in_helpdesk(name: str, email: str):
 	helpdesk_crm_settings = frappe.get_single("Helpdesk CRM Settings")
 	if not helpdesk_crm_settings.enabled:
 		frappe.throw(_("Helpdesk is not integrated with the CRM"))

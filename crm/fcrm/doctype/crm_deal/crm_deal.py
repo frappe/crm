@@ -266,7 +266,7 @@ class CRMDeal(Document):
 				"width": "11rem",
 			},
 			{
-				"label": "Annual revenue",
+				"label": "Annual Revenue",
 				"type": "Currency",
 				"key": "annual_revenue",
 				"align": "right",
@@ -285,19 +285,19 @@ class CRMDeal(Document):
 				"width": "12rem",
 			},
 			{
-				"label": "Mobile no",
+				"label": "Mobile No.",
 				"type": "Data",
 				"key": "mobile_no",
 				"width": "11rem",
 			},
 			{
-				"label": "Assigned to",
+				"label": "Assigned To",
 				"type": "Text",
 				"key": "_assign",
 				"width": "10rem",
 			},
 			{
-				"label": "Last modified",
+				"label": "Last Modified",
 				"type": "Datetime",
 				"key": "modified",
 				"width": "8rem",
@@ -331,7 +331,7 @@ class CRMDeal(Document):
 
 
 @frappe.whitelist()
-def add_contact(deal, contact):
+def add_contact(deal: str, contact: str):
 	if not frappe.has_permission("CRM Deal", "write", deal):
 		frappe.throw(_("Not allowed to add contact to Deal"), frappe.PermissionError)
 
@@ -342,7 +342,7 @@ def add_contact(deal, contact):
 
 
 @frappe.whitelist()
-def remove_contact(deal, contact):
+def remove_contact(deal: str, contact: str):
 	if not frappe.has_permission("CRM Deal", "write", deal):
 		frappe.throw(_("Not allowed to remove contact from Deal"), frappe.PermissionError)
 
@@ -353,7 +353,7 @@ def remove_contact(deal, contact):
 
 
 @frappe.whitelist()
-def set_primary_contact(deal, contact):
+def set_primary_contact(deal: str, contact: str):
 	if not frappe.has_permission("CRM Deal", "write", deal):
 		frappe.throw(_("Not allowed to set primary contact for Deal"), frappe.PermissionError)
 
@@ -412,6 +412,7 @@ def create_contact(doc):
 			"last_name": doc.get("last_name"),
 			"salutation": doc.get("salutation"),
 			"company_name": doc.get("organization") or doc.get("organization_name"),
+			"gender": doc.get("gender"),
 		}
 	)
 
@@ -428,25 +429,25 @@ def create_contact(doc):
 
 
 @frappe.whitelist()
-def create_deal(args):
+def create_deal(doc: dict):
 	deal = frappe.new_doc("CRM Deal")
 
-	contact = args.get("contact")
+	contact = doc.get("contact")
 	if not contact and (
-		args.get("first_name") or args.get("last_name") or args.get("email") or args.get("mobile_no")
+		doc.get("first_name") or doc.get("last_name") or doc.get("email") or doc.get("mobile_no")
 	):
-		contact = create_contact(args)
+		contact = create_contact(doc)
 
 	deal.update(
 		{
-			"organization": args.get("organization") or create_organization(args),
+			"organization": doc.get("organization") or create_organization(doc),
 			"contacts": [{"contact": contact, "is_primary": 1}] if contact else [],
 		}
 	)
 
-	args.pop("organization", None)
+	doc.pop("organization", None)
 
-	deal.update(args)
+	deal.update(doc)
 
 	deal.insert(ignore_permissions=True)
 	return deal.name

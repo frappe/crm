@@ -2,7 +2,6 @@
   <div class="flex justify-between gap-3 border-t px-4 py-2.5 sm:px-10">
     <div class="flex gap-1.5">
       <Button
-        ref="sendEmailRef"
         variant="ghost"
         :class="[
           showEmailBox ? '!bg-surface-gray-4 hover:!bg-surface-gray-3' : '',
@@ -30,6 +29,8 @@
     <EmailEditor
       ref="newEmailEditor"
       v-model:content="newEmail"
+      v-model="doc"
+      v-model:attachments="attachments"
       :submitButtonProps="{
         variant: 'solid',
         onClick: submitEmail,
@@ -49,8 +50,6 @@
         },
       }"
       :editable="showEmailBox"
-      v-model="doc"
-      v-model:attachments="attachments"
       :doctype="doctype"
       :subject="subject"
       :placeholder="
@@ -62,6 +61,8 @@
     <CommentBox
       ref="newCommentEditor"
       v-model:content="newComment"
+      v-model="doc"
+      v-model:attachments="attachments"
       :submitButtonProps="{
         variant: 'solid',
         onClick: submitComment,
@@ -75,8 +76,6 @@
         },
       }"
       :editable="showCommentBox"
-      v-model="doc"
-      v-model:attachments="attachments"
       :doctype="doctype"
       :placeholder="__('@John, can you please check this?')"
     />
@@ -88,27 +87,24 @@ import EmailEditor from '@/components/EmailEditor.vue'
 import CommentBox from '@/components/CommentBox.vue'
 import CommentIcon from '@/components/Icons/CommentIcon.vue'
 import Email2Icon from '@/components/Icons/Email2Icon.vue'
-import { capture } from '@/telemetry'
 import { usersStore } from '@/stores/users'
 import { useStorage } from '@vueuse/core'
-import { call, createResource } from 'frappe-ui'
-import { useOnboarding } from 'frappe-ui/frappe'
+import { useOnboarding, useTelemetry } from 'frappe-ui/frappe'
+import { call, createResource, toast } from 'frappe-ui'
 import { ref, watch, computed } from 'vue'
 
 const props = defineProps({
-  doctype: {
-    type: String,
-    default: 'CRM Lead',
-  },
+  doctype: { type: String, default: 'CRM Lead' },
 })
 
-const doc = defineModel()
-const reload = defineModel('reload')
+const doc = defineModel({ type: Object, default: () => ({}) })
+const reload = defineModel('reload', { type: Boolean })
 
 const emit = defineEmits(['scroll'])
 
 const { getUser } = usersStore()
 const { updateOnboardingStep } = useOnboarding('frappecrm')
+const { capture } = useTelemetry()
 
 const showEmailBox = ref(false)
 const showCommentBox = ref(false)
@@ -122,17 +118,17 @@ const newComment = useStorage(
 )
 const newEmailEditor = ref(null)
 const newCommentEditor = ref(null)
-const sendEmailRef = ref(null)
+
 const attachments = useStorage(
   `attachments-${getUser().email}-${props.doctype}-${doc.value.name}`,
   [],
   localStorage,
   {
     serializer: {
-      read: (v) => v ? JSON.parse(v) : [],
-      write: (v) => JSON.stringify(v)
-    }
-  }
+      read: (v) => (v ? JSON.parse(v) : []),
+      write: (v) => JSON.stringify(v),
+    },
+  },
 )
 
 const subject = computed(() => {
@@ -219,19 +215,19 @@ async function sendMail() {
 }
 
 async function sendComment() {
-  let comment = await call('frappe.desk.form.utils.add_comment', {
+  let _attachments = attachments.value.length
+    ? attachments.value.map((x) => x.name)
+    : []
+
+  let comment = await call('crm.api.comment.add_comment', {
     reference_doctype: props.doctype,
     reference_name: doc.value.name,
     content: newComment.value,
-    comment_email: getUser().email,
-    comment_by: getUser()?.full_name || undefined,
+    attachments: _attachments,
   })
+
   if (comment && attachments.value.length) {
     capture('comment_attachments_added')
-    await call('crm.api.comment.add_attachments', {
-      name: comment.name,
-      attachments: attachments.value.map((x) => x.name),
-    })
   }
 }
 
@@ -257,7 +253,11 @@ async function deleteAttachedFiles() {
 async function submitEmail() {
   if (emailEmpty.value) return
   showEmailBox.value = false
-  await sendMail()
+  await toast.promise(sendMail(), {
+    loading: __('Sending email...'),
+    success: __('Email sent!'),
+    error: (e) => e?.messages?.[0] || __('Failed to send email!'),
+  })
   newEmail.value = ''
   attachments.value = []
   reload.value = true
@@ -269,7 +269,11 @@ async function submitEmail() {
 async function submitComment() {
   if (commentEmpty.value) return
   showCommentBox.value = false
-  await sendComment()
+  await toast.promise(sendComment(), {
+    loading: __('Sending comment...'),
+    success: __('Comment sent!'),
+    error: (e) => e?.messages?.[0] || __('Failed to send comment!'),
+  })
   newComment.value = ''
   attachments.value = []
   reload.value = true

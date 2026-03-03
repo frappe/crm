@@ -122,34 +122,34 @@
 
         <div class="flex">
           <Button
-            @click="toggleCallPopup"
             class="bg-surface-gray-7 text-ink-white hover:bg-surface-gray-6 shrink-0 cursor-pointer"
             :tooltip="__('Minimize')"
             :icon="MinimizeIcon"
             size="md"
+            @click="toggleCallPopup"
           />
           <Button
             v-if="callStatus == 'Call ended' || callStatus == 'No answer'"
-            @click="closeCallPopup"
             class="bg-surface-gray-7 text-ink-white hover:bg-surface-gray-6 shrink-0"
             icon="x"
             size="md"
+            @click="closeCallPopup"
           />
         </div>
       </div>
       <div class="body flex-1">
         <div v-if="showNote">
           <TextEditor
-            variant="ghost"
             ref="content"
+            variant="ghost"
             editor-class="prose-sm h-[290px] text-ink-white overflow-auto mt-1"
             :bubbleMenu="true"
             :content="note.content"
-            @change="(val) => (note.content = val)"
             :placeholder="__('Take a note...')"
+            @change="(val) => (note.content = val)"
           />
         </div>
-        <TaskPanel ref="taskRef" v-else-if="showTask" :task="task" />
+        <TaskPanel v-else-if="showTask" ref="taskRef" :task="task" />
         <div v-else class="flex items-center gap-3">
           <Avatar
             v-if="contact?.image"
@@ -180,7 +180,7 @@
         <div class="flex gap-2">
           <Button
             class="bg-surface-gray-6 text-ink-white hover:bg-surface-gray-5"
-            :tooltip="__('Add a note')"
+            :tooltip="__('Add a Note')"
             size="md"
             :icon="NoteIcon"
             @click="showNoteWindow"
@@ -188,7 +188,7 @@
           <Button
             class="bg-surface-gray-6 text-ink-white hover:bg-surface-gray-5"
             size="md"
-            :tooltip="__('Add a task')"
+            :tooltip="__('Add a Task')"
             :icon="TaskIcon"
             @click="showTaskWindow"
           />
@@ -204,11 +204,11 @@
 
         <Button
           v-if="(note.name || task.name) && dirty"
-          @click="update"
           class="bg-surface-white !text-ink-gray-9 hover:!bg-surface-gray-3"
           variant="solid"
           :label="__('Update')"
           size="md"
+          @click="update"
         />
         <Button
           v-else-if="
@@ -216,11 +216,11 @@
             !note.name &&
             !task.name
           "
-          @click="save"
           class="bg-surface-white !text-ink-gray-9 hover:!bg-surface-gray-3"
           variant="solid"
           :label="__('Save')"
           size="md"
+          @click="save"
         />
       </div>
     </div>
@@ -250,11 +250,7 @@ let showSmallCallPopup = ref(false)
 
 function toggleCallPopup() {
   showCallPopup.value = !showCallPopup.value
-  if (showSmallCallPopup.value == undefined) {
-    showSmallCallPopup = !showSmallCallPopup
-  } else {
-    showSmallCallPopup.value = !showSmallCallPopup.value
-  }
+  showSmallCallPopup.value = !showSmallCallPopup.value
 }
 
 const { width, height } = useWindowSize()
@@ -376,7 +372,7 @@ watch([note, task], () => (dirty.value = true), { deep: true })
 function updateWindowHeight(condition) {
   let callPopup = callPopupHeader.value.parentElement
   let top = parseInt(callPopup.style.top)
-  let updatedTop = 0
+  let updatedTop
 
   updatedTop = condition ? top - 224 : top + 224
 

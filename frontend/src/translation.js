@@ -35,7 +35,7 @@ function translate(message, replace, context = null) {
   return format(translatedMessage, replace)
 }
 
-function fetchTranslations(lang) {
+function fetchTranslations() {
   createResource({
     url: 'crm.api.get_translations',
     cache: 'translations',

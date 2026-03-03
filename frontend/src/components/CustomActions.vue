@@ -1,29 +1,29 @@
 <template>
-  <Button
-    v-if="normalActions.length && !isMobileView"
-    v-for="action in normalActions"
-    :label="action.label"
-    @click="action.onClick()"
-  >
-    <template v-if="action.icon" #prefix>
-      <FeatherIcon :name="action.icon" class="h-4 w-4" />
-    </template>
-  </Button>
+  <template v-if="normalActions.length && !isMobileView">
+    <Button
+      v-for="action in normalActions"
+      :key="action.label"
+      :label="action.label"
+      @click="action.onClick()"
+    >
+      <template v-if="action.icon" #prefix>
+        <FeatherIcon :name="action.icon" class="h-4 w-4" />
+      </template>
+    </Button>
+  </template>
   <Dropdown v-if="groupedActions.length" :options="groupedActions">
     <Button icon="more-horizontal" />
   </Dropdown>
-  <div
-    v-if="groupedWithLabelActions.length && !isMobileView"
-    v-for="g in groupedWithLabelActions"
-    :key="g.label"
-  >
-    <Dropdown :options="g.action" v-slot="{ open }">
-      <Button
-        :label="g.label"
-        :iconRight="open ? 'chevron-up' : 'chevron-down'"
-      />
-    </Dropdown>
-  </div>
+  <template v-if="groupedWithLabelActions.length && !isMobileView">
+    <div v-for="g in groupedWithLabelActions" :key="g.label">
+      <Dropdown v-slot="{ open }" :options="g.action">
+        <Button
+          :label="g.label"
+          :iconRight="open ? 'chevron-up' : 'chevron-down'"
+        />
+      </Dropdown>
+    </div>
+  </template>
 </template>
 
 <script setup>
@@ -32,10 +32,7 @@ import { Dropdown } from 'frappe-ui'
 import { isMobileView } from '@/composables/settings'
 
 const props = defineProps({
-  actions: {
-    type: [Object, Array, undefined],
-    default: () => [],
-  },
+  actions: { type: [Object, Array, undefined], default: () => [] },
 })
 
 const normalActions = computed(() => {

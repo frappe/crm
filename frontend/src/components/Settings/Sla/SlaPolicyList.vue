@@ -1,6 +1,6 @@
 <template>
   <SettingsLayoutBase
-    :title="__('SLA policies')"
+    :title="__('SLA Policies')"
     :description="__('Manage your service level agreement policies')"
   >
     <template #header-actions>
@@ -18,20 +18,20 @@
       <div class="relative">
         <Input
           :model-value="slaSearchQuery"
-          @input="slaSearchQuery = $event"
           :placeholder="__('Search')"
           type="text"
           class="bg-surface-gray-2 hover:bg-surface-gray-2 focus:ring-0 border-outline-gray-2 rounded"
           icon-left="search"
           debounce="300"
           inputClass="p-4 pr-12"
+          @input="slaSearchQuery = $event"
         />
         <Button
           v-if="slaSearchQuery"
           icon="x"
           variant="ghost"
-          @click="slaSearchQuery = ''"
           class="absolute right-1 top-1/2 -translate-y-1/2"
+          @click="slaSearchQuery = ''"
         />
       </div>
     </template>
@@ -50,7 +50,7 @@
             !slaPolicyListResource.list.loading &&
             !slaPolicyListResource.list.data?.length
           "
-          title="No SLA found"
+          title="No SLA Policies Found"
           description="Add one to get started."
           :icon="ShieldCheck"
         />
@@ -61,7 +61,7 @@
             <div class="col-span-5">
               {{ __('Policy Name') }}
             </div>
-            <div class="col-span-1">{{ __('Apply on') }}</div>
+            <div class="col-span-1">{{ __('Apply On') }}</div>
             <div class="col-span-1">{{ __('Enabled') }}</div>
           </div>
           <hr class="mt-2 mx-2 border-outline-gray-2" />
@@ -73,8 +73,8 @@
               class="grid grid-cols-7 items-center gap-4 cursor-pointer hover:bg-surface-menu-bar rounded"
             >
               <div
-                @click="updateStep('view', sla, true)"
                 class="w-full pl-2 col-span-5 flex items-center h-14 gap-2"
+                @click="updateStep('view', sla, true)"
               >
                 <div class="text-base text-ink-gray-7 font-medium truncate">
                   {{ sla.name }}
@@ -108,15 +108,15 @@
               class="mx-2 border-outline-gray-2"
             />
             <Dialog
-              :options="{ title: __('Duplicate SLA policy') }"
               v-model="duplicateDialog.show"
+              :options="{ title: __('Duplicate SLA Policy') }"
             >
               <template #body-content>
                 <div class="flex flex-col gap-4">
                   <FormControl
-                    :label="__('New SLA policy name')"
-                    type="text"
                     v-model="duplicateDialog.name"
+                    :label="__('New SLA Policy Name')"
+                    type="text"
                     maxlength="100"
                   />
                 </div>
@@ -215,7 +215,7 @@ const duplicate = (sla) => {
         auto: true,
         onSuccess(newSlaData) {
           slaPolicyListResource.reload()
-          toast.success(__('SLA policy duplicated'))
+          toast.success(__('SLA Policy Duplicated'))
           duplicateDialog.value = {
             show: false,
             name: '',
@@ -239,7 +239,7 @@ const deleteSla = (sla) => {
 
   slaPolicyListResource.delete.submit(sla.name, {
     onSuccess: () => {
-      toast.success(__('SLA policy deleted'))
+      toast.success(__('SLA Policy Deleted'))
     },
     onError: (err) => {
       const message =
@@ -261,7 +261,7 @@ const onToggle = (sla) => {
     },
     {
       onSuccess: () => {
-        toast.success(__('SLA policy status updated'))
+        toast.success(__('SLA Policy Status Updated'))
       },
     },
   )

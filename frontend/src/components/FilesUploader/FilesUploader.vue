@@ -20,7 +20,7 @@
           <Button
             v-if="files.length"
             variant="subtle"
-            :label="__('Remove all')"
+            :label="__('Remove All')"
             :disabled="fileUploadStarted"
             @click="removeAllFiles"
           />
@@ -28,7 +28,7 @@
             v-if="
               filesUploaderArea?.showWebLink || filesUploaderArea?.showCamera
             "
-            :label="isMobileView ? __('Back') : __('Back to file upload')"
+            :label="isMobileView ? __('Back') : __('Back to File Upload')"
             iconLeft="arrow-left"
             @click="
               () => {
@@ -43,7 +43,7 @@
             v-if="
               filesUploaderArea?.showCamera && !filesUploaderArea?.cameraImage
             "
-            :label="__('Switch camera')"
+            :label="__('Switch Camera')"
             @click="() => filesUploaderArea.switchCamera()"
           />
           <Button
@@ -105,14 +105,8 @@ import { toast } from 'frappe-ui'
 import { ref, computed } from 'vue'
 
 const props = defineProps({
-  doctype: {
-    type: String,
-    required: true,
-  },
-  docname: {
-    type: String,
-    required: true,
-  },
+  doctype: { type: String, required: true },
+  docname: { type: String, required: true },
   options: {
     type: Object,
     default: () => ({
@@ -123,7 +117,7 @@ const props = defineProps({
 
 const emit = defineEmits(['after'])
 
-const show = defineModel()
+const show = defineModel({ type: Boolean })
 
 const filesUploaderArea = ref(null)
 const files = ref([])

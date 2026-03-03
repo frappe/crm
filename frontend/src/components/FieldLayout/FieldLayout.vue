@@ -7,16 +7,16 @@
     }"
   >
     <Tabs
-      as="div"
       v-model="tabIndex"
+      as="div"
       :tabs="tabs"
-      :class="!hasTabs ? `[&_[role='tablist']]:hidden` : ''"
+      :class="[
+        !hasTabs ? `[&_[role='tablist']]:hidden` : '',
+        `[&_[role='tabpanel']]:overflow-visible !overflow-visible`,
+      ]"
     >
       <template #tab-panel="{ tab }">
-        <div
-          class="sections overflow-hidden"
-          :class="{ 'my-4 sm:my-5': hasTabs }"
-        >
+        <div class="sections" :class="{ 'my-4 sm:my-5': hasTabs }">
           <template v-for="section in tab.sections" :key="section.name">
             <Section :section="section" :data-name="section.name" />
           </template>
@@ -32,20 +32,11 @@ import { Tabs } from 'frappe-ui'
 import { ref, computed, provide } from 'vue'
 
 const props = defineProps({
-  tabs: Array,
-  data: Object,
-  doctype: {
-    type: String,
-    default: 'CRM Lead',
-  },
-  isGridRow: {
-    type: Boolean,
-    default: false,
-  },
-  preview: {
-    type: Boolean,
-    default: false,
-  },
+  tabs: { type: Array, default: () => [] },
+  data: { type: Object, default: () => ({}) },
+  doctype: { type: String, default: 'CRM Lead' },
+  isGridRow: { type: Boolean, default: false },
+  preview: { type: Boolean, default: false },
 })
 
 const tabIndex = ref(0)

@@ -1,6 +1,8 @@
 <template>
-  <div v-if="events.length" v-for="(event, i) in events" :key="event.name">
+  <div v-if="events.length">
     <div
+      v-for="(event, i) in events"
+      :key="event.name"
       class="activity grid grid-cols-[30px_minmax(auto,_1fr)] gap-4 px-3 sm:px-10"
     >
       <div
@@ -72,7 +74,7 @@
   </div>
   <EmptyState
     v-else
-    :title="__('No events scheduled')"
+    :title="__('No Events Scheduled')"
     :description="
       __('No events coming up. Create a new one to keep things on track.')
     "
@@ -89,14 +91,8 @@ import { formatDate, timeAgo } from '@/utils'
 import { Tooltip, Avatar } from 'frappe-ui'
 
 const props = defineProps({
-  doctype: {
-    type: String,
-    default: '',
-  },
-  docname: {
-    type: String,
-    default: '',
-  },
+  doctype: { type: String, default: '' },
+  docname: { type: String, default: '' },
 })
 
 function showEvent(e = {}) {

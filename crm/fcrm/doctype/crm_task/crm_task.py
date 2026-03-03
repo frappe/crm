@@ -1,13 +1,9 @@
 # Copyright (c) 2023, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 
-import frappe
-from frappe import _
 from frappe.desk.form.assign_to import add as assign
 from frappe.desk.form.assign_to import remove as unassign
 from frappe.model.document import Document
-
-from crm.fcrm.doctype.crm_notification.crm_notification import notify_user
 
 
 class CRMTask(Document):
@@ -42,8 +38,9 @@ class CRMTask(Document):
 			self.unassign_from_previous_user(self.get_doc_before_save().assigned_to)
 			self.assign_to()
 
-	def unassign_from_previous_user(self, user):
-		unassign(self.doctype, self.name, user)
+	def unassign_from_previous_user(self, user: str | None):
+		if user:
+			unassign(self.doctype, self.name, user)
 
 	def assign_to(self):
 		if self.assigned_to:
@@ -78,19 +75,19 @@ class CRMTask(Document):
 				"width": "8rem",
 			},
 			{
-				"label": "Due date",
+				"label": "Due Date",
 				"type": "Date",
 				"key": "due_date",
 				"width": "8rem",
 			},
 			{
-				"label": "Assigned to",
+				"label": "Assigned To",
 				"type": "Link",
 				"key": "assigned_to",
 				"width": "10rem",
 			},
 			{
-				"label": "Last modified",
+				"label": "Last Modified",
 				"type": "Datetime",
 				"key": "modified",
 				"width": "8rem",

@@ -21,21 +21,21 @@
   {
    "fieldname": "naming_series",
    "fieldtype": "Select",
-   "label": "Naming series",
+   "label": "Naming Series",
    "options": "CRM-PROD-.YYYY.-"
   },
   {
    "fieldname": "product_code",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Product code",
+   "label": "Product Code",
    "reqd": 1,
    "unique": 1
   },
   {
    "fieldname": "product_name",
    "fieldtype": "Data",
-   "label": "Product name"
+   "label": "Product Name"
   },
   {
    "fieldname": "column_break_bpdj",
@@ -64,7 +64,7 @@
   {
    "fieldname": "standard_rate",
    "fieldtype": "Currency",
-   "label": "Standard selling rate"
+   "label": "Standard Selling Rate"
   }
  ],
  "grid_page_length": 50,
@@ -72,8 +72,8 @@
  "index_web_pages_for_search": 1,
  "links": [],
  "make_attachments_public": 1,
- "modified": "2026-01-22 13:54:32.485116",
- "modified_by": "shariq@frappe.io",
+ "modified": "2026-02-23 12:25:52.420632",
+ "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Product",
  "naming_rule": "By fieldname",
@@ -88,6 +88,30 @@
    "read": 1,
    "report": 1,
    "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales User",
    "share": 1,
    "write": 1
   }

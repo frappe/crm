@@ -59,8 +59,8 @@
   </div>
   <div v-if="doc.name" class="flex h-full overflow-hidden">
     <Tabs
-      as="div"
       v-model="tabIndex"
+      as="div"
       :tabs="tabs"
       class="flex flex-1 overflow-auto flex-col [&_[role='tab']]:px-0 [&_[role='tablist']]:px-3 [&_[role='tablist']]:gap-7.5 [&_[role='tabpanel']:not([hidden])]:flex [&_[role='tabpanel']:not([hidden])]:grow"
     >
@@ -80,18 +80,19 @@
               doctype="CRM Lead"
               :docname="leadId"
               @reload="sections.reload"
+              @beforeFieldChange="beforeStatusChange"
               @afterFieldChange="reloadAssignees"
             />
           </div>
         </div>
         <Activities
           v-else
+          v-model:reload="reload"
+          v-model:tabIndex="tabIndex"
           doctype="CRM Lead"
           :docname="leadId"
           :tabs="tabs"
-          v-model:reload="reload"
-          v-model:tabIndex="tabIndex"
-          @beforeSave="saveChanges"
+          @beforeSave="beforeStatusChange"
           @afterSave="reloadAssignees"
         />
       </template>
@@ -102,78 +103,23 @@
     :errorTitle="errorTitle"
     :errorMessage="errorMessage"
   />
-  <Dialog
+  <ConvertToDealModal
+    v-if="showConvertToDealModal"
     v-model="showConvertToDealModal"
-    :options="{
-      title: __('Convert to deal'),
-      size: 'xl',
-      actions: [
-        {
-          label: __('Convert'),
-          variant: 'solid',
-          onClick: convertToDeal,
-        },
-      ],
-    }"
-  >
-    <template #body-content>
-      <div class="mb-4 flex items-center gap-2 text-ink-gray-5">
-        <OrganizationsIcon class="h-4 w-4" />
-        <label class="block text-base">{{ __('Organization') }}</label>
-      </div>
-      <div class="ml-6">
-        <div class="flex items-center justify-between text-base">
-          <div>{{ __('Choose existing') }}</div>
-          <Switch v-model="existingOrganizationChecked" />
-        </div>
-        <Link
-          v-if="existingOrganizationChecked"
-          class="form-control mt-2.5"
-          variant="outline"
-          size="md"
-          :value="existingOrganization"
-          doctype="CRM Organization"
-          @change="(data) => (existingOrganization = data)"
-        />
-        <div v-else class="mt-2.5 text-base">
-          {{
-            __(
-              'New organization will be created based on the data in details section',
-            )
-          }}
-        </div>
-      </div>
-
-      <div class="mb-4 mt-6 flex items-center gap-2 text-ink-gray-5">
-        <ContactsIcon class="h-4 w-4" />
-        <label class="block text-base">{{ __('Contact') }}</label>
-      </div>
-      <div class="ml-6">
-        <div class="flex items-center justify-between text-base">
-          <div>{{ __('Choose existing') }}</div>
-          <Switch v-model="existingContactChecked" />
-        </div>
-        <Link
-          v-if="existingContactChecked"
-          class="form-control mt-2.5"
-          variant="outline"
-          size="md"
-          :value="existingContact"
-          doctype="Contact"
-          @change="(data) => (existingContact = data)"
-        />
-        <div v-else class="mt-2.5 text-base">
-          {{ __("New contact will be created based on the person's details") }}
-        </div>
-      </div>
-    </template>
-  </Dialog>
+    :lead="doc"
+  />
   <DeleteLinkedDocModal
     v-if="showDeleteLinkedDocModal"
     v-model="showDeleteLinkedDocModal"
     :doctype="'CRM Lead'"
     :docname="leadId"
     name="Leads"
+  />
+  <LostReasonModal
+    v-if="showLostReasonModal"
+    v-model="showLostReasonModal"
+    doctype="CRM Lead"
+    :document="document"
   />
 </template>
 <script setup>
@@ -190,12 +136,10 @@ import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import AttachmentIcon from '@/components/Icons/AttachmentIcon.vue'
 import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
-import OrganizationsIcon from '@/components/Icons/OrganizationsIcon.vue'
-import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
+import LostReasonModal from '@/components/Modals/LostReasonModal.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import Activities from '@/components/Activities/Activities.vue'
 import AssignTo from '@/components/AssignTo.vue'
-import Link from '@/components/Controls/Link.vue'
 import SidePanelLayout from '@/components/SidePanelLayout.vue'
 import SLASection from '@/components/SLASection.vue'
 import CustomActions from '@/components/CustomActions.vue'
@@ -206,18 +150,12 @@ import { globalStore } from '@/stores/global'
 import { statusesStore } from '@/stores/statuses'
 import { getMeta } from '@/stores/meta'
 import { useDocument } from '@/data/document'
-import {
-  whatsappEnabled,
-  callEnabled,
-  isMobileView,
-} from '@/composables/settings'
-import { capture } from '@/telemetry'
+import { whatsappEnabled, isMobileView } from '@/composables/settings'
 import { useActiveTabManager } from '@/composables/useActiveTabManager'
 import {
   createResource,
   Dropdown,
   Tabs,
-  Switch,
   Breadcrumbs,
   call,
   usePageMeta,
@@ -225,21 +163,18 @@ import {
 } from 'frappe-ui'
 import { ref, computed, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { useTelemetry } from 'frappe-ui/frappe'
+import ConvertToDealModal from '@/components/Modals/ConvertToDealModal.vue'
 
 const { brand } = getSettings()
 const { $dialog, $socket } = globalStore()
 const { statusOptions, getLeadStatus } = statusesStore()
 const { doctypeMeta } = getMeta('CRM Lead')
+
 const route = useRoute()
 const router = useRouter()
-const $telemetry = useTelemetry()
 
 const props = defineProps({
-  leadId: {
-    type: String,
-    required: true,
-  },
+  leadId: { type: String, required: true },
 })
 
 const errorTitle = ref('')
@@ -257,10 +192,10 @@ watch(error, (err) => {
   if (err) {
     errorTitle.value = __(
       err.exc_type == 'DoesNotExistError'
-        ? 'Document not found'
-        : 'Error occurred',
+        ? __('Document Not Found')
+        : __('Error Occurred'),
     )
-    errorMessage.value = __(err.messages?.[0] || 'An error occurred')
+    errorMessage.value = __(err.messages?.[0] || 'An Error Occurred')
   } else {
     errorTitle.value = ''
     errorMessage.value = ''
@@ -424,62 +359,41 @@ function deleteLead() {
 
 // Convert to Deal
 const showConvertToDealModal = ref(false)
-const existingContactChecked = ref(false)
-const existingOrganizationChecked = ref(false)
-
-const existingContact = ref('')
-const existingOrganization = ref('')
-
-async function convertToDeal() {
-  if (existingContactChecked.value && !existingContact.value) {
-    toast.error(__('Please select an existing contact'))
-    return
-  }
-
-  if (existingOrganizationChecked.value && !existingOrganization.value) {
-    toast.error(__('Please select an existing organization'))
-    return
-  }
-
-  if (!existingContactChecked.value && existingContact.value) {
-    existingContact.value = ''
-  }
-
-  if (!existingOrganizationChecked.value && existingOrganization.value) {
-    existingOrganization.value = ''
-  }
-
-  let deal = await call('crm.fcrm.doctype.crm_lead.crm_lead.convert_to_deal', {
-    lead: props.leadId,
-    deal: {},
-    existing_contact: existingContact.value,
-    existing_organization: existingOrganization.value,
-  })
-  if (deal) {
-    showConvertToDealModal.value = false
-    existingContactChecked.value = false
-    existingOrganizationChecked.value = false
-    existingContact.value = ''
-    existingOrganization.value = ''
-    capture('convert_lead_to_deal')
-    $telemetry.capture('convert_lead_to_deal', true)
-    router.push({ name: 'Deal', params: { dealId: deal } })
-  }
-}
 
 async function triggerStatusChange(value) {
   await triggerOnChange('status', value)
-  document.save.submit()
+  setLostReason()
 }
 
-function saveChanges(data) {
-  document.save.submit(null, {
-    onSuccess: () => reloadAssignees(data),
-  })
+const showLostReasonModal = ref(false)
+
+function setLostReason() {
+  if (
+    getLeadStatus(doc.value.status).type !== 'Lost' ||
+    (doc.value.lost_reason && doc.value.lost_reason !== 'Other') ||
+    (doc.value.lost_reason === 'Other' && doc.value.lost_notes)
+  ) {
+    document.save.submit()
+    return
+  }
+
+  showLostReasonModal.value = true
 }
 
+function beforeStatusChange(data) {
+  if (
+    Object.hasOwn(data ?? {}, 'status') &&
+    getLeadStatus(data.status).type == 'Lost'
+  ) {
+    setLostReason()
+  } else {
+    document.save.submit(null, {
+      onSuccess: () => reloadAssignees(data),
+    })
+  }
+}
 function reloadAssignees(data) {
-  if (data?.hasOwnProperty('lead_owner')) {
+  if (Object.hasOwn(data ?? {}, 'lead_owner')) {
     assignees.reload()
   }
 }

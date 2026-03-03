@@ -25,7 +25,7 @@
         />
         <Button
           v-if="editing && isAdmin()"
-          :label="__('Reset to default')"
+          :label="__('Reset to Default')"
           :iconLeft="LucideUndo2"
           @click="resetToDefault"
         />
@@ -44,14 +44,14 @@
     <div class="p-5 pb-2 flex items-center gap-4">
       <Dropdown
         v-if="!showDatePicker"
+        v-model="preset"
         :options="options"
         class="form-control"
-        v-model="preset"
-        :placeholder="__('Select range')"
+        :placeholder="__('Select Range')"
         :button="{
           label: __(preset),
           class:
-            '!w-full justify-start [&>span]:mr-auto [&>svg]:text-ink-gray-5 ',
+            '!w-full justify-start [&>span]:mr-auto [&>svg]:text-ink-gray-5',
           variant: 'outline',
           iconRight: 'chevron-down',
           iconLeft: 'calendar',
@@ -59,11 +59,12 @@
       />
       <DateRangePicker
         v-else
-        class="!w-48"
         ref="datePickerRef"
+        class="!w-48"
         :value="filters.period"
         variant="outline"
         :placeholder="__('Period')"
+        :formatter="formatRange"
         @change="
           (v) =>
             updateFilter('period', v, () => {
@@ -76,7 +77,6 @@
               }
             })
         "
-        :formatter="formatRange"
       >
         <template #prefix>
           <LucideCalendar class="size-4 text-ink-gray-5 mr-2" />
@@ -89,9 +89,9 @@
         :value="filters.user && getUser(filters.user).full_name"
         doctype="User"
         :filters="{ name: ['in', users.data.crmUsers?.map((u) => u.name)] }"
-        @change="(v) => updateFilter('user', v)"
-        :placeholder="__('Sales user')"
+        :placeholder="__('Sales User')"
         :hideMe="true"
+        @change="(v) => updateFilter('user', v)"
       >
         <template #prefix>
           <UserAvatar
@@ -116,9 +116,9 @@
 
     <div class="w-full overflow-y-scroll">
       <DashboardGrid
-        class="pt-1"
         v-if="!dashboardItems.loading && dashboardItems.data"
         v-model="dashboardItems.data"
+        class="pt-1"
         :editing="editing"
       />
     </div>
@@ -176,7 +176,7 @@ const toDate = computed(() => {
   return filters.period.split(',')[1]
 })
 
-function updateFilter(key: string, value: any, callback?: () => void) {
+function updateFilter(key: string, value: unknown, callback?: () => void) {
   filters[key] = value
   callback?.()
   dashboardItems.reload()
@@ -188,7 +188,7 @@ const options = computed(() => [
     hideLabel: true,
     items: [
       {
-        label: 'Last 7 Days',
+        label: __('Last 7 Days'),
         onClick: () => {
           preset.value = 'Last 7 Days'
           filters.period = getLastXDays(7)
@@ -196,7 +196,7 @@ const options = computed(() => [
         },
       },
       {
-        label: 'Last 30 Days',
+        label: __('Last 30 Days'),
         onClick: () => {
           preset.value = 'Last 30 Days'
           filters.period = getLastXDays(30)
@@ -204,7 +204,7 @@ const options = computed(() => [
         },
       },
       {
-        label: 'Last 60 Days',
+        label: __('Last 60 Days'),
         onClick: () => {
           preset.value = 'Last 60 Days'
           filters.period = getLastXDays(60)
@@ -212,7 +212,7 @@ const options = computed(() => [
         },
       },
       {
-        label: 'Last 90 Days',
+        label: __('Last 90 Days'),
         onClick: () => {
           preset.value = 'Last 90 Days'
           filters.period = getLastXDays(90)
@@ -222,7 +222,7 @@ const options = computed(() => [
     ],
   },
   {
-    label: 'Custom Range',
+    label: __('Custom Range'),
     onClick: () => {
       showDatePicker.value = true
       setTimeout(() => datePickerRef.value?.open(), 0)
@@ -277,7 +277,7 @@ const saveDashboard = createResource({
 function save() {
   const dashboardItemsCopy = copy(dashboardItems.data)
 
-  dashboardItemsCopy.forEach((item: any) => {
+  dashboardItemsCopy.forEach((item: Record<string, unknown>) => {
     delete item.data
   })
 
@@ -301,6 +301,6 @@ function resetToDefault() {
 }
 
 usePageMeta(() => {
-  return { title: __('CRM dashboard') }
+  return { title: __('CRM Dashboard') }
 })
 </script>

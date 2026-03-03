@@ -3,22 +3,22 @@
     ref="textEditor"
     :editor-class="['prose-sm max-w-none', editable && 'min-h-[7rem]']"
     :content="content"
-    @change="editable ? (content = $event) : null"
     :starterkit-options="{ heading: { levels: [2, 3, 4, 5, 6] } }"
     :placeholder="placeholder"
     :editable="editable"
     :mentions="users"
+    @change="editable ? (content = $event) : null"
   >
-    <template v-slot:editor="{ editor }">
+    <template #editor="{ editor: _editor }">
       <EditorContent
         :class="[
           editable &&
             'sm:mx-10 mx-4 max-h-[50vh] overflow-y-auto border-t py-3',
         ]"
-        :editor="editor"
+        :editor="_editor"
       />
     </template>
-    <template v-slot:bottom>
+    <template #bottom>
       <div v-if="editable" class="flex flex-col gap-2">
         <div class="flex flex-wrap gap-2 sm:px-10 px-4">
           <AttachmentItem
@@ -41,12 +41,12 @@
           <div class="flex gap-1 items-center overflow-x-auto">
             <TextEditorBubbleMenu :buttons="textEditorMenuButtons" />
             <IconPicker
-              v-model="emoji"
               v-slot="{ togglePopover }"
+              v-model="emoji"
               @update:modelValue="() => appendEmoji()"
             >
               <Button
-                :tooltip="__('Insert emoji')"
+                :tooltip="__('Insert Emoji')"
                 :icon="SmileIcon"
                 variant="ghost"
                 @click="togglePopover()"
@@ -62,7 +62,7 @@
             >
               <template #default="{ openFileSelector }">
                 <Button
-                  :tooltip="__('Attach a file')"
+                  :tooltip="__('Attach a File')"
                   variant="ghost"
                   :icon="AttachmentIcon"
                   @click="openFileSelector()"
@@ -89,43 +89,29 @@ import SmileIcon from '@/components/Icons/SmileIcon.vue'
 import AttachmentIcon from '@/components/Icons/AttachmentIcon.vue'
 import AttachmentItem from '@/components/AttachmentItem.vue'
 import { usersStore } from '@/stores/users'
+import { useTelemetry } from 'frappe-ui/frappe'
 import { TextEditorBubbleMenu, TextEditor, FileUploader } from 'frappe-ui'
-import { capture } from '@/telemetry'
 import { EditorContent } from '@tiptap/vue-3'
 import { ref, computed } from 'vue'
 
-const props = defineProps({
-  placeholder: {
-    type: String,
-    default: null,
-  },
-  editable: {
-    type: Boolean,
-    default: true,
-  },
-  doctype: {
-    type: String,
-    default: 'CRM Lead',
-  },
-  editorProps: {
-    type: Object,
-    default: () => ({}),
-  },
-  submitButtonProps: {
-    type: Object,
-    default: () => ({}),
-  },
-  discardButtonProps: {
-    type: Object,
-    default: () => ({}),
-  },
+defineProps({
+  placeholder: { type: String, default: null },
+  editable: { type: Boolean, default: true },
+  doctype: { type: String, default: 'CRM Lead' },
+  editorProps: { type: Object, default: () => ({}) },
+  submitButtonProps: { type: Object, default: () => ({}) },
+  discardButtonProps: { type: Object, default: () => ({}) },
 })
 
-const modelValue = defineModel()
-const attachments = defineModel('attachments')
-const content = defineModel('content')
+const modelValue = defineModel({ type: Object })
+const attachments = defineModel('attachments', {
+  type: Array,
+  default: () => [],
+})
+const content = defineModel('content', { type: String, default: '' })
 
 const { users: usersList } = usersStore()
+const { capture } = useTelemetry()
 
 const textEditor = ref(null)
 const emoji = ref('')

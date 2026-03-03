@@ -38,7 +38,7 @@
             @click="reply(activity.data)"
           />
           <Button
-            :tooltip="__('Reply all')"
+            :tooltip="__('Reply All')"
             variant="ghost"
             :icon="ReplyAllIcon"
             class="text-ink-gray-7"
@@ -83,16 +83,18 @@ import AttachmentItem from '@/components/AttachmentItem.vue'
 import EmailContent from '@/components/Activities/EmailContent.vue'
 import { Badge, Tooltip } from 'frappe-ui'
 import { timeAgo, formatDate } from '@/utils'
-import { computed } from 'vue'
+import { reactive, computed } from 'vue'
 
 const props = defineProps({
-  activity: Object,
-  emailBox: Object,
+  activity: { type: Object, default: () => ({}) },
+  emailBox: { type: Object, default: () => ({}) },
 })
 
+const emailBox = reactive(props.emailBox)
+
 function reply(email, reply_all = false) {
-  props.emailBox.show = true
-  let editor = props.emailBox.editor
+  emailBox.show = true
+  let editor = emailBox.editor
   let message = email.content
   let recipients = email.recipients.split(',').map((r) => r.trim())
   editor.toEmails = [email.sender]
@@ -129,7 +131,6 @@ function reply(email, reply_all = false) {
   editor.editor
     .chain()
     .clearContent()
-    .insertContent('<p>.</p>')
     .updateAttributes('paragraph', { class: 'reply-to-content' })
     .insertContent(repliedMessage)
     .focus('all')

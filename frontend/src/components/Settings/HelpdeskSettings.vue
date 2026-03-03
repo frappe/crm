@@ -1,8 +1,8 @@
 <template>
   <SettingsPage
     doctype="Helpdesk CRM Settings"
-    :title="__('Helpdesk settings')"
-    :successMessage="__('Helpdesk settings updated')"
+    :title="__('Helpdesk Settings')"
+    :successMessage="__('Helpdesk Settings Updated')"
     class="p-8"
   />
 </template>

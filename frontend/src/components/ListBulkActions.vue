@@ -35,16 +35,13 @@ import EditValueModal from '@/components/Modals/EditValueModal.vue'
 import AssignmentModal from '@/components/Modals/AssignmentModal.vue'
 import { setupListCustomizations } from '@/utils'
 import { globalStore } from '@/stores/global'
-import { capture } from '@/telemetry'
+import { useTelemetry } from 'frappe-ui/frappe'
 import { call, toast } from 'frappe-ui'
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 const props = defineProps({
-  doctype: {
-    type: String,
-    default: '',
-  },
+  doctype: { type: String, default: '' },
   options: {
     type: Object,
     default: () => ({
@@ -55,11 +52,12 @@ const props = defineProps({
   },
 })
 
-const list = defineModel()
+const list = defineModel({ type: Object })
 
 const router = useRouter()
 
 const { $dialog, $socket } = globalStore()
+const { capture } = useTelemetry()
 
 const showEditModal = ref(false)
 const selectedValues = ref([])
@@ -77,7 +75,7 @@ function editValues(selections, unselectAll) {
 
 function convertToDeal(selections, unselectAll) {
   $dialog({
-    title: __('Convert to deal'),
+    title: __('Convert to Deal'),
     message: __('Are you sure you want to convert {0} lead(s) to deal(s)?', [
       selections.size,
     ]),
@@ -93,7 +91,7 @@ function convertToDeal(selections, unselectAll) {
             call('crm.fcrm.doctype.crm_lead.crm_lead.convert_to_deal', {
               lead: name,
             }).then(() => {
-              toast.success(__('Converted successfully'))
+              toast.success(__('Converted Successfully'))
               list.value.reload()
               unselectAll()
               close()
@@ -131,9 +129,9 @@ function assignValues(selections, unselectAll) {
   unselectAllAction.value = unselectAll
 }
 
-function clearAssignemnts(selections, unselectAll) {
+function clearAssignments(selections, unselectAll) {
   $dialog({
-    title: __('Clear assignment'),
+    title: __('Clear Assignment'),
     message: __('Are you sure you want to clear assignment for {0} item(s)?', [
       selections.size,
     ]),
@@ -141,7 +139,7 @@ function clearAssignemnts(selections, unselectAll) {
     theme: 'red',
     actions: [
       {
-        label: __('Clear assignment'),
+        label: __('Clear Assignment'),
         variant: 'solid',
         theme: 'red',
         onClick: (close) => {
@@ -151,7 +149,7 @@ function clearAssignemnts(selections, unselectAll) {
             names: JSON.stringify(Array.from(selections)),
             ignore_permissions: true,
           }).then(() => {
-            toast.success(__('Assignment cleared successfully'))
+            toast.success(__('Assignment Cleared Successfully'))
             reload(unselectAll)
             close()
           })
@@ -183,18 +181,18 @@ function bulkActions(selections, unselectAll) {
 
   if (!props.options.hideAssign) {
     actions.push({
-      label: __('Assign to'),
+      label: __('Assign To'),
       onClick: () => assignValues(selections, unselectAll),
     })
     actions.push({
-      label: __('Clear assignment'),
-      onClick: () => clearAssignemnts(selections, unselectAll),
+      label: __('Clear Assignment'),
+      onClick: () => clearAssignments(selections, unselectAll),
     })
   }
 
   if (props.doctype === 'CRM Lead') {
     actions.push({
-      label: __('Convert to deal'),
+      label: __('Convert to Deal'),
       onClick: () => convertToDeal(selections, unselectAll),
     })
   }

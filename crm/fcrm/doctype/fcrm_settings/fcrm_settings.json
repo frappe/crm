@@ -31,7 +31,7 @@
   {
    "fieldname": "restore_defaults",
    "fieldtype": "Button",
-   "label": "Restore defaults"
+   "label": "Restore Defaults"
   },
   {
    "fieldname": "dropdown_items",
@@ -72,10 +72,10 @@
   },
   {
    "default": "0",
-   "description": "It will make deal's \"Expected closure date\" & \"Expected deal value\" mandatory to get accurate forecasting insights",
+   "description": "It will make deal's \"Expected Closure Date\" & \"Expected Deal Value\" mandatory to get accurate forecasting insights",
    "fieldname": "enable_forecasting",
    "fieldtype": "Check",
-   "label": "Enable forecasting"
+   "label": "Enable Forecasting"
   },
   {
    "fieldname": "currency",
@@ -98,14 +98,14 @@
    "default": "frankfurter.app",
    "fieldname": "service_provider",
    "fieldtype": "Select",
-   "label": "Service provider",
+   "label": "Service Provider",
    "options": "frankfurter.app\nexchangerate.host"
   },
   {
    "depends_on": "eval:doc.service_provider == 'exchangerate.host';",
    "fieldname": "access_key",
    "fieldtype": "Data",
-   "label": "Access key",
+   "label": "Access Key",
    "mandatory_depends_on": "eval:doc.service_provider == 'exchangerate.host';"
   },
   {
@@ -114,10 +114,10 @@
   },
   {
    "default": "1",
-   "description": "Automatically update \"Expected deal value\" based on the total value of associated products in a deal",
+   "description": "Automatically update \"Expected Deal Value\" based on the total value of associated products in a deal",
    "fieldname": "auto_update_expected_deal_value",
    "fieldtype": "Check",
-   "label": "Auto update Expected deal value"
+   "label": "Auto update Expected Deal Value"
   },
   {
    "fieldname": "calendar_tab",
@@ -128,33 +128,33 @@
    "description": "Time before the event when a reminder notification will be sent by default. This will be applied to all events unless a custom notification is set for a specific event.",
    "fieldname": "default_reminder_section",
    "fieldtype": "Section Break",
-   "label": "Default event notifications"
+   "label": "Default Event Notifications"
   },
   {
    "fieldname": "event_notifications",
    "fieldtype": "Table",
-   "label": "Event notifications",
+   "label": "Event Notifications",
    "options": "Event Notifications"
   },
   {
    "fieldname": "all_day_event_notifications",
    "fieldtype": "Table",
-   "label": "All day event notifications",
+   "label": "All Day Event Notifications",
    "options": "Event Notifications"
   },
   {
    "default": "Weekly",
    "fieldname": "default_calendar_view",
    "fieldtype": "Select",
-   "label": "Default calendar view",
+   "label": "Default Calendar View",
    "options": "Daily\nWeekly\nMonthly"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2026-01-22 13:58:07.553441",
- "modified_by": "shariq@frappe.io",
+ "modified": "2026-02-23 12:33:43.914603",
+ "modified_by": "Administrator",
  "module": "FCRM",
  "name": "FCRM Settings",
  "owner": "Administrator",
@@ -183,7 +183,7 @@
    "email": 1,
    "print": 1,
    "read": 1,
-   "role": "All",
+   "role": "Sales User",
    "share": 1
   }
  ],
