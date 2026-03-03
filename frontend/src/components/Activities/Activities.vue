@@ -724,7 +724,7 @@ const emptyTextDescription = computed(() => {
     description =
       'No emails found in your inbox. New messages will appear here soon.'
   } else if (title.value == 'Comments') {
-    description = 'No comments yet. Be the first to add one.'
+    description = 'Be the first to add one.'
   } else if (title.value == 'Data') {
     description = 'No data fields have been added yet.'
   } else if (title.value == 'Calls') {
@@ -738,7 +738,7 @@ const emptyTextDescription = computed(() => {
     description =
       'No files have been attached yet. Upload files to see them here.'
   } else if (title.value == 'WhatsApp') {
-    description = 'No WhatsApp messages yet. Start a conversation now!'
+    description = 'Start a conversation now!'
   }
   return description
 })
