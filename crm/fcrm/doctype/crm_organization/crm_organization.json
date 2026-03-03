@@ -17,7 +17,8 @@
   "website",
   "territory",
   "industry",
-  "address"
+  "address",
+  "attachments"
  ],
  "fields": [
   {
@@ -81,12 +82,18 @@
    "fieldname": "exchange_rate",
    "fieldtype": "Float",
    "label": "Exchange Rate"
+  },
+  {
+   "fieldname": "attachments",
+   "fieldtype": "Table",
+   "label": "Attachments",
+   "options": "Attachments"
   }
  ],
  "image_field": "organization_logo",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-02-23 12:27:26.887189",
+ "modified": "2026-03-03 13:49:59.854816",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Organization",

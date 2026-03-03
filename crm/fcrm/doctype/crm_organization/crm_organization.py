@@ -14,10 +14,12 @@ class CRMOrganization(Document):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
+		from crm.fcrm.doctype.attachments.attachments import Attachments
 		from frappe.types import DF
 
 		address: DF.Link | None
 		annual_revenue: DF.Currency
+		attachments: DF.Table[Attachments]
 		currency: DF.Link | None
 		exchange_rate: DF.Float
 		industry: DF.Link | None

@@ -234,8 +234,6 @@ const slotName = computed(() => {
 
 const restrictedFieldTypes = [
   'Geolocation',
-  'Attach',
-  'Attach Image',
   'HTML',
   'Signature',
 ]
@@ -252,7 +250,12 @@ const params = computed(() => {
 const fields = createResource({
   url: 'crm.api.doc.get_fields_meta',
   params: params.value,
-  cache: ['fieldsMeta', props.doctype],
+  cache: [
+    'fieldsMeta',
+    'fieldLayout',
+    props.doctype,
+    props.onlyRequired ? 'required' : 'all',
+  ],
   auto: true,
   transform: (data) => {
     let restrictedFields = [

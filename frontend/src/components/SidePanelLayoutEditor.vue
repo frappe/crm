@@ -154,11 +154,8 @@ const props = defineProps({
 const sections = defineModel({ type: Array, default: () => [] })
 
 const restrictedFieldTypes = [
-  'Table',
   'Table MultiSelect',
   'Geolocation',
-  'Attach',
-  'Attach Image',
   'HTML',
   'Signature',
 ]
@@ -174,7 +171,7 @@ const params = computed(() => {
 const fields = createResource({
   url: 'crm.api.doc.get_fields_meta',
   params: params.value,
-  cache: ['fieldsMeta', props.doctype],
+  cache: ['fieldsMeta', 'sidepanel', props.doctype],
   auto: true,
 })
 

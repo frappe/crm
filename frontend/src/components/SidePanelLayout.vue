@@ -36,11 +36,21 @@
                 >
                   <div
                     v-if="field.visible"
-                    class="field flex items-center gap-2 px-3 leading-5 first:mt-3"
+                    class="field px-3 leading-5 first:mt-3"
+                    :class="
+                      field.fieldtype === 'Table'
+                        ? 'flex flex-col gap-1.5'
+                        : 'flex items-center gap-2'
+                    "
                   >
                     <Tooltip :text="__(field.label)" :hoverDelay="1">
                       <div
-                        class="w-[35%] min-w-20 shrink-0 flex items-center gap-0.5"
+                        class="flex items-center gap-0.5"
+                        :class="
+                          field.fieldtype === 'Table'
+                            ? 'w-full'
+                            : 'w-[35%] min-w-20 shrink-0'
+                        "
                       >
                         <div class="truncate text-sm text-ink-gray-5">
                           {{ __(field.label) }}
@@ -57,12 +67,28 @@
                         </div>
                       </div>
                     </Tooltip>
-                    <div class="flex items-center justify-between w-[65%]">
+                    <div
+                      class="flex items-center justify-between"
+                      :class="field.fieldtype === 'Table' ? 'w-full' : 'w-[65%]'"
+                    >
                       <div
-                        class="grid min-h-[28px] flex-1 items-center overflow-hidden text-base"
+                        class="flex-1 overflow-hidden text-base"
+                        :class="
+                          field.fieldtype === 'Table'
+                            ? 'min-h-[28px]'
+                            : 'grid min-h-[28px] items-center'
+                        "
                       >
+                        <Grid
+                          v-if="field.fieldtype === 'Table'"
+                          v-model="doc[field.fieldname]"
+                          v-model:parent="doc"
+                          :doctype="field.options"
+                          :parentDoctype="doctype"
+                          :parentFieldname="field.fieldname"
+                        />
                         <div
-                          v-if="
+                          v-else-if="
                             field.read_only &&
                             ![
                               'Int',
@@ -322,6 +348,7 @@ import FadedScrollableDiv from '@/components/FadedScrollableDiv.vue'
 import ArrowUpRightIcon from '@/components/Icons/ArrowUpRightIcon.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import Link from '@/components/Controls/Link.vue'
+import Grid from '@/components/Controls/Grid.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import SidePanelModal from '@/components/Modals/SidePanelModal.vue'
 import { getMeta } from '@/stores/meta'
@@ -331,7 +358,7 @@ import { getFormat, evaluateDependsOnValue } from '@/utils'
 import { flt } from '@/utils/numberFormat.js'
 import { Tooltip, DateTimePicker, DatePicker, TimePicker } from 'frappe-ui'
 import { useDocument } from '@/data/document'
-import { ref, computed, getCurrentInstance } from 'vue'
+import { ref, computed, getCurrentInstance, provide } from 'vue'
 
 const props = defineProps({
   sections: { type: Object, default: () => ({}) },
@@ -352,11 +379,15 @@ const showSidePanelModal = ref(false)
 
 let document = { doc: {} }
 let triggerOnChange
+let triggerOnRowAdd
+let triggerOnRowRemove
 
 if (props.docname) {
   let d = useDocument(props.doctype, props.docname)
   document = d.document
   triggerOnChange = d.triggerOnChange
+  triggerOnRowAdd = d.triggerOnRowAdd
+  triggerOnRowRemove = d.triggerOnRowRemove
 }
 
 const doc = computed(() => document.doc || {})
@@ -422,6 +453,64 @@ function parsedField(field) {
 
 const instance = getCurrentInstance()
 const attrs = instance?.vnode?.props ?? {}
+
+provide('triggerOnChange', async (fieldname, value, row) => {
+  if (props.preview) return
+
+  await triggerOnChange(fieldname, value, row)
+
+  const tableFieldname = row?.parentfield
+  if (attrs['onBeforeFieldChange'] !== undefined) {
+    emit('beforeFieldChange', {
+      [tableFieldname]: doc.value?.[tableFieldname],
+    })
+  } else {
+    document.save.submit(null, {
+      onSuccess: () =>
+        emit('afterFieldChange', {
+          [tableFieldname]: doc.value?.[tableFieldname],
+        }),
+    })
+  }
+})
+
+provide('triggerOnRowAdd', async (row) => {
+  if (props.preview) return
+
+  await triggerOnRowAdd(row)
+
+  if (attrs['onBeforeFieldChange'] !== undefined) {
+    emit('beforeFieldChange', {
+      [row.parentfield]: doc.value?.[row.parentfield],
+    })
+  } else {
+    document.save.submit(null, {
+      onSuccess: () =>
+        emit('afterFieldChange', {
+          [row.parentfield]: doc.value?.[row.parentfield],
+        }),
+    })
+  }
+})
+
+provide('triggerOnRowRemove', async (selectedRows, rows) => {
+  if (props.preview || !rows?.length) return
+
+  await triggerOnRowRemove(selectedRows, rows)
+
+  if (attrs['onBeforeFieldChange'] !== undefined) {
+    emit('beforeFieldChange', {
+      [rows[0].parentfield]: doc.value?.[rows[0].parentfield],
+    })
+  } else {
+    document.save.submit(null, {
+      onSuccess: () =>
+        emit('afterFieldChange', {
+          [rows[0].parentfield]: doc.value?.[rows[0].parentfield],
+        }),
+    })
+  }
+})
 
 async function fieldChange(value, df) {
   if (props.preview) return
