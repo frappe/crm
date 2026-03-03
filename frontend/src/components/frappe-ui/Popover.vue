@@ -29,7 +29,9 @@
               name="body"
               v-bind="{ togglePopover, updatePosition, open, close, isOpen }"
             >
-              <div class="rounded-lg border border-gray-100 bg-surface-white shadow-xl">
+              <div
+                class="rounded-lg border border-gray-100 bg-surface-white shadow-xl"
+              >
                 <slot
                   name="body-main"
                   v-bind="{
@@ -239,11 +241,14 @@ export default {
       }
       if (this.trigger === 'hover') {
         if (this.hoverDelay) {
-          this.hoverTimer = setTimeout(() => {
-            if (this.pointerOverTargetOrPopup) {
-              this.open()
-            }
-          }, Number(this.hoverDelay) * 1000)
+          this.hoverTimer = setTimeout(
+            () => {
+              if (this.pointerOverTargetOrPopup) {
+                this.open()
+              }
+            },
+            Number(this.hoverDelay) * 1000,
+          )
         } else {
           this.open()
         }
@@ -260,11 +265,14 @@ export default {
           clearTimeout(this.leaveTimer)
         }
         if (this.leaveDelay) {
-          this.leaveTimer = setTimeout(() => {
-            if (!this.pointerOverTargetOrPopup) {
-              this.close()
-            }
-          }, Number(this.leaveDelay) * 1000)
+          this.leaveTimer = setTimeout(
+            () => {
+              if (!this.pointerOverTargetOrPopup) {
+                this.close()
+              }
+            },
+            Number(this.leaveDelay) * 1000,
+          )
         } else {
           if (!this.pointerOverTargetOrPopup) {
             this.close()
