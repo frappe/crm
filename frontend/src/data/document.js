@@ -74,7 +74,7 @@ export function useDocument(doctype, docname, resourceOverrides = {}) {
       })
     } else {
       documentsCache[doctype][''] = reactive({
-        doc: {},
+        doc: { __newDocument: true, doctype },
       })
       setupFormScript()
     }

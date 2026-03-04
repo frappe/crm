@@ -235,7 +235,7 @@ function openQuickEntryModal() {
 }
 
 onMounted(() => {
-  deal.doc = { no_of_employees: '1-10' }
+  deal.doc.no_of_employees = '1-10'
   Object.assign(deal.doc, props.defaults)
 
   if (!deal.doc.deal_owner) {

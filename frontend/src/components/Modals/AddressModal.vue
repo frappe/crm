@@ -167,7 +167,7 @@ onMounted(() => {
   editMode.value = props.address ? true : false
 
   if (!props.address) {
-    _address.doc = { address_type: 'Billing' }
+    _address.doc.address_type = 'Billing'
   }
 })
 
