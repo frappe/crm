@@ -98,7 +98,8 @@ function save() {
 }
 
 function onCreate(value, close) {
-  createDocument('CRM Lost Reason', value, close, (doc) => {
+  let doc = { lost_reason: value }
+  createDocument('CRM Lost Reason', doc, close, (doc) => {
     lostReason.value = doc.name
     linkRef.value?.reload('', true)
   })
