@@ -20,6 +20,9 @@ def get_activities(name: str):
 
 
 def get_deal_activities(name: str):
+	if not frappe.has_permission("CRM Deal", "read", name):
+		frappe.throw(_("Not permitted"), frappe.PermissionError)
+
 	get_docinfo("", "CRM Deal", name)
 	docinfo = frappe.response["docinfo"]
 	deal_meta = frappe.get_meta("CRM Deal")
@@ -165,6 +168,9 @@ def get_deal_activities(name: str):
 
 
 def get_lead_activities(name: str):
+	if not frappe.has_permission("CRM Lead", "read", name):
+		frappe.throw(_("Not permitted"), frappe.PermissionError)
+
 	get_docinfo("", "CRM Lead", name)
 	docinfo = frappe.response["docinfo"]
 	lead_meta = frappe.get_meta("CRM Lead")
