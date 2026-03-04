@@ -5,6 +5,7 @@ import json
 
 import frappe
 from frappe import _
+from frappe.custom.doctype.custom_field.custom_field import create_custom_fields as _create_custom_fields
 from frappe.custom.doctype.property_setter.property_setter import make_property_setter
 from frappe.frappeclient import FrappeClient
 from frappe.model.document import Document
@@ -61,6 +62,21 @@ class ERPNextCRMSettings(Document):
 			create_custom_fields_for_frappe_crm()
 		else:
 			self.create_custom_fields_in_remote_site()
+
+		self.create_custom_fields_in_frappe_crm()
+
+	def create_custom_fields_in_frappe_crm(self):
+		custom_fields = {
+			"CRM Deal": [
+				{
+					"fieldname": "erpnext_customer",
+					"fieldtype": "Data",
+					"label": "Customer in ERPNext",
+					"insert_after": "lead_name",
+				}
+			]
+		}
+		_create_custom_fields(custom_fields, ignore_validate=True)
 
 	def create_custom_fields_in_remote_site(self):
 		client = get_erpnext_site_client(self)
