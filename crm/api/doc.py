@@ -858,6 +858,9 @@ def remove_linked_doc_reference(items: str | list, remove_contact: bool = False,
 		if not item.get("doctype") or not item.get("docname"):
 			continue
 
+		if not frappe.has_permission(item["doctype"], "write", item["docname"]):
+			continue
+
 		try:
 			if remove_contact:
 				remove_contact_link(item["doctype"], item["docname"])
