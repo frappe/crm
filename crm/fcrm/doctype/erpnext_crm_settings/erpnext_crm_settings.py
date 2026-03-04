@@ -304,19 +304,29 @@ def create_customer_in_remote_site(customer, erpnext_crm_settings):
 
 @frappe.whitelist()
 def get_crm_form_script():
-	return """
-async function setupForm({ doc, call, $dialog, updateField, toast }) {
-	let actions = [];
-	let is_erpnext_integration_enabled = await call("frappe.client.get_single_value", {doctype: "ERPNext CRM Settings", field: "enabled"});
-	if (!["Lost", "Won"].includes(doc?.status) && is_erpnext_integration_enabled) {
-		actions.push({
+	return """class CRMDeal {
+	onLoad() {
+		if (this.doc.__newDocument) return
+		call(
+			"frappe.client.get_single_value",
+			{
+				doctype: "ERPNext CRM Settings",
+				field: "enabled"
+			}
+		).then((enabled) => {
+			if (enabled) this.doc.trigger('setActions')
+		})
+	}
+	setActions() {
+		// Add Create Quotation Button
+		this.actions.push({
 			label: __("Create Quotation"),
 			onClick: () => {
 				call(
 					"crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.get_quotation_url",
 					{
-						crm_deal: doc.name,
-						organization: doc.organization
+						crm_deal: this.doc.name,
+						organization: this.doc.organization
 					}
 				).then((quotation_url) => {
 					if (quotation_url) {
@@ -329,20 +339,20 @@ async function setupForm({ doc, call, $dialog, updateField, toast }) {
 				});
 			}
 		})
-	}
-	if (is_erpnext_integration_enabled) {
-		let customer_url = await call("crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.get_customer_link", {
-			crm_deal: doc.name
+
+		// Add View Customer Button
+		call("crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.get_customer_link", {
+			crm_deal: this.doc.name
+		}).then((customer_url) => {
+			if (customer_url) {
+				this.actions.push({
+					label: __("View Customer"),
+					onClick: () => window.open(customer_url, '_blank')
+				});
+			}
+		}).catch((e) => {
+			toast.error(e.messages[0] || "Error while fetching customer link from ERPNext. Check error log in ERPNext for more details");
 		});
-		if (customer_url) {
-			actions.push({
-				label: __("View Customer"),
-				onClick: () => window.open(customer_url, '_blank')
-			});
-		}
 	}
-	return {
-		actions: actions,
-	};
 }
 """
