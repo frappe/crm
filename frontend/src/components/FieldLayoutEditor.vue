@@ -234,8 +234,6 @@ const slotName = computed(() => {
 
 const restrictedFieldTypes = [
   'Geolocation',
-  'Attach',
-  'Attach Image',
   'HTML',
   'Signature',
 ]

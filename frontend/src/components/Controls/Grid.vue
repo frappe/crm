@@ -281,6 +281,42 @@
                     :disabled="Boolean(field.read_only)"
                     @update:modelValue="(v) => fieldChange(v, field, row)"
                   />
+                  <div
+                    v-else-if="
+                      ['Attach', 'Attach Image'].includes(field.fieldtype)
+                    "
+                    class="flex h-full items-center gap-1 px-1"
+                  >
+                    <FileUploader
+                      :file-types="
+                        field.fieldtype === 'Attach Image' ? 'image/*' : '*'
+                      "
+                      @success="(file) => fieldChange(file.file_url, field, row)"
+                    >
+                      <template #default="{ uploading, openFileSelector }">
+                        <Button
+                          class="rounded border-0 !text-ink-gray-7 !bg-transparent hover:!bg-surface-gray-3"
+                          variant="outline"
+                          :label="
+                            uploading
+                              ? __('Uploading')
+                              : row[field.fieldname]
+                                ? __('Change')
+                                : __('Upload')
+                          "
+                          :disabled="Boolean(field.read_only)"
+                          @click="openFileSelector"
+                        />
+                      </template>
+                    </FileUploader>
+                    <Button
+                      v-if="row[field.fieldname]"
+                      variant="ghost"
+                      class="rounded border-0 !text-ink-gray-7 !bg-transparent hover:!bg-surface-gray-3"
+                      icon="x"
+                      @click="fieldChange('', field, row)"
+                    />
+                  </div>
                   <FormControl
                     v-else
                     v-model="row[field.fieldname]"
@@ -371,6 +407,7 @@ import {
   Tooltip,
   dayjs,
   Combobox,
+  FileUploader,
 } from 'frappe-ui'
 import Draggable from 'vuedraggable'
 import { ref, reactive, computed, inject, provide } from 'vue'
