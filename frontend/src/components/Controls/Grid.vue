@@ -296,19 +296,26 @@
                       <template #default="{ uploading, openFileSelector }">
                         <Button
                           class="rounded border-0 !text-ink-gray-7 !bg-transparent hover:!bg-surface-gray-3"
-                          variant="outline"
-                          :label="
-                            uploading
-                              ? __('Uploading')
-                              : row[field.fieldname]
-                                ? __('Change')
-                                : __('Upload')
+                          variant="ghost"
+                          :icon="uploading ? 'loader' : 'upload'"
+                          :tooltip="
+                            row[field.fieldname]
+                              ? __('Change Attachment')
+                              : __('Upload Attachment')
                           "
                           :disabled="Boolean(field.read_only)"
                           @click="openFileSelector"
                         />
                       </template>
                     </FileUploader>
+                    <Button
+                      v-if="row[field.fieldname]"
+                      variant="ghost"
+                      class="rounded border-0 !text-ink-gray-7 !bg-transparent hover:!bg-surface-gray-3"
+                      icon="external-link"
+                      :tooltip="__('View Attachment')"
+                      @click="openAttachment(row[field.fieldname])"
+                    />
                     <Button
                       v-if="row[field.fieldname]"
                       variant="ghost"
@@ -622,6 +629,11 @@ const getOptions = (options) => {
   } else {
     return []
   }
+}
+
+function openAttachment(url) {
+  if (!url) return
+  window.open(url, '_blank', 'noopener,noreferrer')
 }
 </script>
 

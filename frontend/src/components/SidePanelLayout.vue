@@ -128,18 +128,25 @@
                               #default="{ uploading, openFileSelector }"
                             >
                               <Button
-                                :label="
-                                  uploading
-                                    ? __('Uploading')
-                                    : doc[field.fieldname]
-                                      ? __('Change')
-                                      : __('Upload')
+                                variant="ghost"
+                                :icon="uploading ? 'loader' : 'upload'"
+                                :tooltip="
+                                  doc[field.fieldname]
+                                    ? __('Change Attachment')
+                                    : __('Upload Attachment')
                                 "
                                 :disabled="Boolean(field.read_only)"
                                 @click="openFileSelector"
                               />
                             </template>
                           </FileUploader>
+                          <Button
+                            v-if="doc[field.fieldname]"
+                            variant="ghost"
+                            icon="external-link"
+                            :tooltip="__('View Attachment')"
+                            @click="openAttachment(doc[field.fieldname])"
+                          />
                           <Button
                             v-if="doc[field.fieldname]"
                             variant="ghost"
@@ -407,7 +414,7 @@ import {
   FileUploader,
 } from 'frappe-ui'
 import { useDocument } from '@/data/document'
-import { ref, computed, getCurrentInstance } from 'vue'
+import { ref, computed, getCurrentInstance, provide } from 'vue'
 
 const props = defineProps({
   sections: { type: Object, default: () => ({}) },
@@ -427,12 +434,16 @@ const { users, isManager, getUser } = usersStore()
 const showSidePanelModal = ref(false)
 
 let document = { doc: {} }
-let triggerOnChange
+let triggerOnChange = async () => {}
+let triggerOnRowAdd = async () => {}
+let triggerOnRowRemove = async () => {}
 
 if (props.docname) {
   let d = useDocument(props.doctype, props.docname)
   document = d.document
   triggerOnChange = d.triggerOnChange
+  triggerOnRowAdd = d.triggerOnRowAdd
+  triggerOnRowRemove = d.triggerOnRowRemove
 }
 
 const doc = computed(() => document.doc || {})
@@ -499,21 +510,71 @@ function parsedField(field) {
 const instance = getCurrentInstance()
 const attrs = instance?.vnode?.props ?? {}
 
-async function fieldChange(value, df) {
-  if (props.preview) return
-
-  await triggerOnChange(df.fieldname, value)
-
-  const hasListener = attrs['onBeforeFieldChange'] !== undefined
-
-  if (hasListener) {
-    emit('beforeFieldChange', { [df.fieldname]: value })
-  } else {
-    document.save.submit(null, {
-      onSuccess: () => emit('afterFieldChange', { [df.fieldname]: value }),
-    })
-  }
+function isPreviewMode() {
+  return props.preview
 }
+
+function hasBeforeFieldChangeListener() {
+  return attrs['onBeforeFieldChange'] !== undefined
+}
+
+function emitBeforeChange(changes) {
+  emit('beforeFieldChange', changes)
+}
+
+function emitAfterChange(changes) {
+  if (changes) emit('afterFieldChange', changes)
+}
+
+function persistDoc(changes = null) {
+  document.save.submit(null, {
+    onSuccess: () => emitAfterChange(changes),
+  })
+}
+
+function commitChanges(changes = null) {
+  if (hasBeforeFieldChangeListener() && changes) return emitBeforeChange(changes)
+  persistDoc(changes)
+}
+
+function getFieldChanges(fieldname) {
+  return { [fieldname]: doc.value?.[fieldname] }
+}
+
+function getRowParentFieldname(row, fallbackFieldname = null) {
+  return row?.parentfield || fallbackFieldname
+}
+
+async function fieldChange(value, df) {
+  if (isPreviewMode()) return
+  await triggerOnChange(df.fieldname, value)
+  commitChanges({ [df.fieldname]: value })
+}
+
+async function gridFieldChange(fieldname, value, row) {
+  if (isPreviewMode()) return
+  await triggerOnChange(fieldname, value, row)
+  const parentFieldname = getRowParentFieldname(row, fieldname)
+  commitChanges(getFieldChanges(parentFieldname))
+}
+
+async function gridRowAdd(row) {
+  if (isPreviewMode()) return
+  await triggerOnRowAdd(row)
+  commitChanges(getFieldChanges(row.parentfield))
+}
+
+async function gridRowRemove(selectedRows, rows) {
+  if (isPreviewMode()) return
+  if (rows?.length) await triggerOnRowRemove(selectedRows, rows)
+  const parentFieldname = rows?.[0]?.parentfield
+  if (!parentFieldname) return commitChanges()
+  commitChanges(getFieldChanges(parentFieldname))
+}
+
+provide('triggerOnChange', gridFieldChange)
+provide('triggerOnRowAdd', gridRowAdd)
+provide('triggerOnRowRemove', gridRowRemove)
 
 function parsedSection(section, editButtonAdded) {
   let isContactSection = section.name == 'contacts_section'
@@ -550,6 +611,11 @@ function isFieldVisible(field) {
 
 function firstVisibleIndex() {
   return _sections.value.findIndex((section) => section.visible)
+}
+
+function openAttachment(url) {
+  if (!url) return
+  window.open(url, '_blank', 'noopener,noreferrer')
 }
 </script>
 
