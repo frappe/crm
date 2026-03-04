@@ -72,7 +72,7 @@ export function getScript(doctype, view = 'Form') {
           let parentInstance = null
           let doctypeName = doctype.replace(/\s+/g, '')
 
-          let { doctypeMeta } = getMeta(doctype)
+          let { doctypesMeta } = getMeta(doctype)
 
           // if className is not doctype name, then it is a child doctype
           let isChildDoctype = className !== doctypeName
@@ -94,7 +94,7 @@ export function getScript(doctype, view = 'Form') {
 
           const instance = setupFormController(
             FormClass,
-            doctypeMeta,
+            doctypesMeta,
             document,
             parentInstance,
             isChildDoctype,
