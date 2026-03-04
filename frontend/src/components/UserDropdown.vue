@@ -62,11 +62,8 @@ import { Dropdown } from 'frappe-ui'
 import { theme, toggleTheme } from '@/stores/theme'
 import { computed, h, markRaw } from 'vue'
 
-const props = defineProps({
-  isCollapsed: {
-    type: Boolean,
-    default: false,
-  },
+defineProps({
+  isCollapsed: { type: Boolean, default: false },
 })
 
 const { settings, brand } = getSettings()

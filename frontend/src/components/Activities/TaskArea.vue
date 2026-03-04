@@ -101,9 +101,9 @@ import { usersStore } from '@/stores/users'
 import { globalStore } from '@/stores/global'
 import { Tooltip, Dropdown } from 'frappe-ui'
 
-const props = defineProps({
-  tasks: Array,
-  modalRef: Object,
+defineProps({
+  tasks: { type: Array, default: () => [] },
+  modalRef: { type: Object, default: () => ({}) },
 })
 
 const { getUser } = usersStore()

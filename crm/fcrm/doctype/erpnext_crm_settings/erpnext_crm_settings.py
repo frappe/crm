@@ -121,7 +121,7 @@ def get_customer_link(crm_deal: str):
 	else:
 		client = get_erpnext_site_client(erpnext_crm_settings)
 		try:
-			customer = client.get_list("Customer", {"crm_deal": crm_deal})
+			customer = client.get_list("Customer", filters={"crm_deal": crm_deal})
 			customer = customer[0].get("name") if len(customer) else None
 			if customer:
 				return f"{erpnext_crm_settings.erpnext_site_url}/app/customer/{customer}"
@@ -136,7 +136,7 @@ def get_customer_link(crm_deal: str):
 
 
 @frappe.whitelist()
-def get_quotation_url(crm_deal: str, organization: str):
+def get_quotation_url(crm_deal: str, organization: str | None = None):
 	erpnext_crm_settings = frappe.get_single("ERPNext CRM Settings")
 	if not erpnext_crm_settings.enabled:
 		frappe.throw(_("ERPNext is not integrated with the CRM"))
@@ -236,7 +236,9 @@ def get_contacts(doc):
 	return contacts
 
 
-def get_organization_address(organization):
+def get_organization_address(organization: str | None = None):
+	if not organization:
+		return None
 	address = frappe.db.get_value("CRM Organization", organization, "address")
 	address = frappe.get_cached_doc("Address", address) if address else None
 	if not address:
@@ -309,18 +311,22 @@ async function setupForm({ doc, call, $dialog, updateField, toast }) {
 	if (!["Lost", "Won"].includes(doc?.status) && is_erpnext_integration_enabled) {
 		actions.push({
 			label: __("Create Quotation"),
-			onClick: async () => {
-				let quotation_url = await call(
+			onClick: () => {
+				call(
 					"crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.get_quotation_url",
 					{
 						crm_deal: doc.name,
 						organization: doc.organization
 					}
-				);
-
-				if (quotation_url) {
-					window.open(quotation_url, '_blank');
-				}
+				).then((quotation_url) => {
+					if (quotation_url) {
+						window.open(quotation_url, '_blank');
+					} else {
+						toast.error("Error while creating quotation in ERPNext");
+					}
+				}).catch((e) => {
+					toast.error(e.messages[0] || "Error while creating quotation in ERPNext. Check error log in ERPNext for more details");
+				});
 			}
 		})
 	}

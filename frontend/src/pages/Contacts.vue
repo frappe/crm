@@ -25,8 +25,8 @@
     doctype="Contact"
   />
   <ContactsListView
-    ref="contactsListView"
     v-if="contacts.data && rows.length"
+    ref="contactsListView"
     v-model="contacts.data.page_length_count"
     v-model:list="contacts"
     :rows="rows"

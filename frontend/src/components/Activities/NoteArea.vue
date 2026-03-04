@@ -14,8 +14,8 @@
             onClick: () => deleteNote(note.name),
           },
         ]"
-        @click.stop
         class="h-6 w-6"
+        @click.stop
       >
         <Button
           icon="more-horizontal"
@@ -56,11 +56,11 @@ import { timeAgo, formatDate } from '@/utils'
 import { Tooltip, Dropdown, TextEditor, call, toast } from 'frappe-ui'
 import { usersStore } from '@/stores/users'
 
-const props = defineProps({
-  note: Object,
+defineProps({
+  note: { type: Object, default: () => ({}) },
 })
 
-const notes = defineModel()
+const notes = defineModel({ type: Object })
 
 const { getUser } = usersStore()
 

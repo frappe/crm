@@ -20,8 +20,8 @@
             <Button
               variant="ghost"
               class="w-7"
-              @click="show = false"
               icon="x"
+              @click="show = false"
             />
           </div>
         </div>
@@ -31,7 +31,7 @@
           :data="organization.doc"
           doctype="CRM Organization"
         />
-        <ErrorMessage class="mt-8" v-if="error" :message="__(error)" />
+        <ErrorMessage v-if="error" class="mt-8" :message="__(error)" />
       </div>
       <div class="px-4 pt-4 pb-7 sm:px-6">
         <div class="space-y-2">
@@ -66,16 +66,10 @@ import { ref, nextTick, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 const props = defineProps({
-  data: {
-    type: Object,
-    default: () => ({}),
-  },
+  data: { type: Object, default: () => ({}) },
   options: {
     type: Object,
-    default: {
-      redirect: true,
-      afterInsert: () => {},
-    },
+    default: () => ({ redirect: true, afterInsert: () => {} }),
   },
 })
 
@@ -83,7 +77,7 @@ const { isManager } = usersStore()
 const { capture } = useTelemetry()
 
 const router = useRouter()
-const show = defineModel()
+const show = defineModel({ type: Boolean })
 
 const loading = ref(false)
 const error = ref(null)
@@ -127,7 +121,7 @@ function handleOrganizationUpdate(doc) {
     })
   }
   show.value = false
-  props.options.afterInsert && props.options.afterInsert(doc)
+  props.options.afterInsert?.(doc)
 }
 
 const tabs = createResource({

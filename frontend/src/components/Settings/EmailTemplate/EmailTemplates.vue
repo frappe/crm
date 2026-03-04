@@ -47,8 +47,8 @@
 
     <!-- Email template list -->
     <div
-      class="flex flex-col overflow-hidden"
       v-if="!templates.loading && templates.data?.length"
+      class="flex flex-col overflow-hidden"
     >
       <div
         v-if="templates.data?.length > 10"
@@ -66,8 +66,8 @@
           </template>
         </TextInput>
         <FormControl
-          type="select"
           v-model="currentDoctype"
+          type="select"
           :options="[
             { label: __('All'), value: 'All' },
             { label: __('Lead'), value: 'CRM Lead' },
@@ -100,8 +100,8 @@
             </div>
             <div class="flex items-center justify-between w-1/6">
               <Switch
-                size="sm"
                 v-model="template.enabled"
+                size="sm"
                 @update:model-value="toggleEmailTemplate(template)"
                 @click.stop
               />
@@ -133,10 +133,10 @@
         >
           <Button
             class="mt-3.5 p-2"
-            @click="() => templates.next()"
             :loading="templates.loading"
             :label="__('Load More')"
             icon-left="refresh-cw"
+            @click="() => templates.next()"
           />
         </div>
       </ul>

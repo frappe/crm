@@ -32,13 +32,13 @@
         >
           <div
             v-for="field in fields"
+            :key="field.fieldname"
             class="border-r border-outline-gray-2 p-2 truncate"
             :class="
               ['Int', 'Float', 'Currency', 'Percent'].includes(field.fieldtype)
                 ? 'text-right'
                 : ''
             "
-            :key="field.fieldname"
             :title="field.label"
           >
             {{ __(field.label) }}
@@ -65,8 +65,8 @@
       <!-- Rows -->
       <template v-if="rows?.length">
         <Draggable
-          class="w-full"
           v-model="rows"
+          class="w-full"
           :delay="isTouchScreenDevice() ? 200 : 0"
           group="rows"
           item-key="name"
@@ -102,9 +102,9 @@
                 :style="{ gridTemplateColumns: gridTemplateColumns }"
               >
                 <div
-                  class="border-r border-outline-gray-modals h-full"
                   v-for="field in fields"
                   :key="field.fieldname"
+                  class="border-r border-outline-gray-modals h-full"
                 >
                   <FormControl
                     v-if="
@@ -117,9 +117,9 @@
                         'Check',
                       ].includes(field.fieldtype)
                     "
+                    v-model="row[field.fieldname]"
                     type="text"
                     :placeholder="field.placeholder"
-                    v-model="row[field.fieldname]"
                     :disabled="true"
                   />
                   <Link
@@ -134,10 +134,10 @@
                         : row[field.options]
                     "
                     :filters="field.filters"
-                    @change="(v) => fieldChange(v, field, row)"
                     :onCreate="
                       (value, close) => field.create(v, field, row, close)
                     "
+                    @change="(v) => fieldChange(v, field, row)"
                   />
                   <Link
                     v-else-if="field.fieldtype === 'User'"
@@ -145,9 +145,9 @@
                     :value="getUser(row[field.fieldname]).full_name"
                     :doctype="field.options"
                     :filters="field.filters"
-                    @change="(v) => fieldChange(v, field, row)"
                     :placeholder="field.placeholder"
                     :hideMe="true"
+                    @change="(v) => fieldChange(v, field, row)"
                   >
                     <template #prefix>
                       <UserAvatar
@@ -172,8 +172,8 @@
                     class="flex h-full bg-surface-white justify-center items-center"
                   >
                     <Checkbox
-                      class="cursor-pointer duration-300"
                       v-model="row[field.fieldname]"
+                      class="cursor-pointer duration-300"
                       :disabled="!gridSettings.editable_grid"
                       @change="(e) => fieldChange(e.target.checked, field, row)"
                     />
@@ -210,10 +210,10 @@
                   />
                   <FormControl
                     v-else-if="field.fieldtype === 'Select'"
+                    v-model="row[field.fieldname]"
                     class="text-sm text-ink-gray-8"
                     type="select"
                     variant="outline"
-                    v-model="row[field.fieldname]"
                     :options="field.options"
                     @update:modelValue="(e) => fieldChange(e, field, row)"
                   />
@@ -267,20 +267,20 @@
                   />
                   <Combobox
                     v-else-if="field.fieldtype === 'Autocomplete'"
-                    class="combobox"
                     v-model="row[field.fieldname]"
+                    class="combobox"
                     variant="outline"
-                    @update:modelValue="(v) => fieldChange(v, field, row)"
                     :options="getOptions(field.options)"
                     :placeholder="field.placeholder"
                     :disabled="Boolean(field.read_only)"
+                    @update:modelValue="(v) => fieldChange(v, field, row)"
                   />
                   <FormControl
                     v-else
+                    v-model="row[field.fieldname]"
                     class="text-sm text-ink-gray-8"
                     type="text"
                     variant="outline"
-                    v-model="row[field.fieldname]"
                     :options="field.options"
                     @change="fieldChange($event.target.value, field, row)"
                   />
@@ -369,26 +369,11 @@ import Draggable from 'vuedraggable'
 import { ref, reactive, computed, inject, provide } from 'vue'
 
 const props = defineProps({
-  label: {
-    type: String,
-    default: '',
-  },
-  doctype: {
-    type: String,
-    required: true,
-  },
-  parentDoctype: {
-    type: String,
-    required: true,
-  },
-  parentFieldname: {
-    type: String,
-    required: true,
-  },
-  overrides: {
-    type: Object,
-    default: () => ({}),
-  },
+  label: { type: String, default: '' },
+  doctype: { type: String, required: true },
+  parentDoctype: { type: String, required: true },
+  parentFieldname: { type: String, required: true },
+  overrides: { type: Object, default: () => ({}) },
 })
 
 const triggerOnChange = inject('triggerOnChange', () => {})
@@ -406,8 +391,8 @@ const {
 getMeta(props.parentDoctype)
 const { users, getUser } = usersStore()
 
-const rows = defineModel()
-const parentDoc = defineModel('parent')
+const rows = defineModel({ type: Array, default: () => [] })
+const parentDoc = defineModel('parent', { type: Object, default: () => ({}) })
 
 provide('parentDoc', parentDoc)
 

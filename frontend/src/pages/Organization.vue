@@ -22,8 +22,8 @@
     >
       <div class="border-b">
         <FileUploader
-          @success="changeOrganizationImage"
           :validateFile="validateIsImageFile"
+          @success="changeOrganizationImage"
         >
           <template #default="{ openFileSelector, error }">
             <div class="flex flex-col items-start justify-start gap-4 p-5">
@@ -117,8 +117,8 @@
       </div>
     </Resizer>
     <Tabs
-      as="div"
       v-model="tabIndex"
+      as="div"
       :tabs="tabs"
       class="flex flex-1 overflow-hidden flex-col [&_[role='tablist']]:gap-7.5 [&_[role='tablist']]:px-5 [&_[role='tabpanel']:not([hidden])]:flex [&_[role='tabpanel']:not([hidden])]:grow"
     >
@@ -127,7 +127,7 @@
           class="group flex items-center gap-2 border-b border-transparent py-2.5 text-base text-ink-gray-5 duration-300 ease-in-out hover:text-ink-gray-9"
           :class="{ 'text-ink-gray-9': selected }"
         >
-          <component v-if="tab.icon" :is="tab.icon" class="h-5" />
+          <component :is="tab.icon" v-if="tab.icon" class="h-5" />
           {{ __(tab.label) }}
           <Badge
             class="group-hover:bg-surface-gray-7"
@@ -142,15 +142,15 @@
       </template>
       <template #tab-panel="{ tab }">
         <DealsListView
-          class="mt-4"
           v-if="tab.label === 'Deals' && rows.length"
+          class="mt-4"
           :rows="rows"
           :columns="columns"
           :options="{ selectable: false, showTooltip: false }"
         />
         <ContactsListView
-          class="mt-4"
           v-if="tab.label === 'Contacts' && rows.length"
+          class="mt-4"
           :rows="rows"
           :columns="columns"
           :options="{ selectable: false, showTooltip: false }"
@@ -218,14 +218,11 @@ import {
   toast,
   call,
 } from 'frappe-ui'
-import { h, computed, ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 const props = defineProps({
-  organizationId: {
-    type: String,
-    required: true,
-  },
+  organizationId: { type: String, required: true },
 })
 
 const { brand } = getSettings()
@@ -257,7 +254,7 @@ const breadcrumbs = computed(() => {
     let view = getView(
       route.query.view,
       route.query.viewType,
-      'CRM Organization'
+      'CRM Organization',
     )
     if (view) {
       items.push({
@@ -305,7 +302,7 @@ function changeOrganizationImage(file) {
 }
 
 function beforeFieldChange(data) {
-  if (data?.hasOwnProperty('organization_name')) {
+  if (Object.hasOwn(data ?? {}, 'organization_name')) {
     call('frappe.client.rename_doc', {
       doctype: 'CRM Organization',
       old_name: props.organizationId,
@@ -424,8 +421,7 @@ const contacts = createListResource({
 })
 
 const rows = computed(() => {
-  let list = []
-  list = !tabIndex.value ? deals : contacts
+  let list = !tabIndex.value ? deals : contacts
 
   if (!list.data) return []
 

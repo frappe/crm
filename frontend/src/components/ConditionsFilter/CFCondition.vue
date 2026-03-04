@@ -23,10 +23,10 @@
           <Button
             variant="subtle"
             class="w-max"
-            @click="toggleConjunction"
             icon-right="refresh-cw"
             :disabled="props.itemIndex > 2"
             :label="conjunction"
+            @click="toggleConjunction"
           />
         </div>
       </div>
@@ -34,14 +34,14 @@
         <div id="fieldname" class="w-full">
           <Autocomplete
             :options="filterableFields.data"
-            :modelValue="props.condition[0]"
+            :modelValue="condition[0]"
             :placeholder="__('Field')"
             @update:modelValue="updateField"
           />
         </div>
         <div id="operator">
           <FormControl
-            v-if="!props.condition[0]"
+            v-if="!condition[0]"
             disabled
             type="text"
             :placeholder="__('Operator')"
@@ -49,43 +49,43 @@
           />
           <FormControl
             v-else
-            :disabled="!props.condition[0]"
+            v-model="condition[1]"
+            :disabled="!condition[0]"
             type="select"
-            v-model="props.condition[1]"
-            @update:modelValue="updateOperator"
             :options="getOperators()"
-            class="w-max min-w-[100px]"
+            class="w-max min-w-[100px] text-ink-gray-8"
+            @update:modelValue="updateOperator"
           />
         </div>
         <div id="value" class="w-full">
           <FormControl
-            v-if="!props.condition[0]"
+            v-if="!condition[0]"
             disabled
             type="text"
             :placeholder="__('Condition')"
             class="w-full"
           />
           <component
-            v-else
             :is="getValueControl()"
-            v-model="props.condition[2]"
-            @change="updateValue"
+            v-else
+            v-model="condition[2]"
             :placeholder="__('Condition')"
+            @change="updateValue"
           />
         </div>
       </div>
       <CFConditions
         v-if="props.isGroup && !(props.level == 2 || props.level == 4)"
-        :conditions="props.condition"
+        :conditions="condition"
         :isChild="true"
         :level="props.level"
         :disableAddCondition="props.disableAddCondition"
       />
       <Button
-        variant="outline"
         v-if="props.isGroup && (props.level == 2 || props.level == 4)"
-        @click="show = true"
+        variant="outline"
         :label="__('Open Nested Conditions')"
+        @click="show = true"
       />
     </div>
     <div :class="'w-max'">
@@ -100,7 +100,7 @@
   >
     <template #body-content>
       <CFConditions
-        :conditions="props.condition"
+        :conditions="condition"
         :isChild="true"
         :level="props.level"
         :disableAddCondition="props.disableAddCondition"
@@ -110,6 +110,10 @@
 </template>
 
 <script setup>
+import GroupIcon from '~icons/lucide/group'
+import UnGroupIcon from '~icons/lucide/ungroup'
+import CFConditions from './CFConditions.vue'
+import Link from '@/components/Controls/Link.vue'
 import {
   Autocomplete,
   Button,
@@ -121,12 +125,8 @@ import {
   FormControl,
   Rating,
 } from 'frappe-ui'
-import { computed, defineEmits, h, ref } from 'vue'
-import GroupIcon from '~icons/lucide/group'
-import UnGroupIcon from '~icons/lucide/ungroup'
-import CFConditions from './CFConditions.vue'
 import { filterableFields } from './filterableFields'
-import Link from '@/components/Controls/Link.vue'
+import { reactive, computed, defineEmits, h, ref } from 'vue'
 
 const show = ref(false)
 const emit = defineEmits([
@@ -137,33 +137,16 @@ const emit = defineEmits([
 ])
 
 const props = defineProps({
-  condition: {
-    type: Array,
-    required: true,
-  },
-  isChild: {
-    type: Boolean,
-    default: false,
-  },
-  itemIndex: {
-    type: Number,
-  },
-  level: {
-    type: Number,
-    default: 0,
-  },
-  isGroup: {
-    type: Boolean,
-    default: false,
-  },
-  conjunction: {
-    type: String,
-  },
-  disableAddCondition: {
-    type: Boolean,
-    default: false,
-  },
+  condition: { type: Array, required: true },
+  isChild: { type: Boolean, default: false },
+  itemIndex: { type: Number, default: 0 },
+  level: { type: Number, default: 0 },
+  isGroup: { type: Boolean, default: false },
+  conjunction: { type: String, default: 'and' },
+  disableAddCondition: { type: Boolean, default: false },
 })
+
+const condition = reactive(props.condition)
 
 const dropdownOptions = computed(() => {
   const options = []
@@ -220,16 +203,16 @@ function toggleConjunction() {
 }
 
 const updateField = (field) => {
-  props.condition[0] = field?.fieldname
+  condition[0] = field?.fieldname
   resetConditionValue()
 }
 
 const resetConditionValue = () => {
-  props.condition[2] = ''
+  condition[2] = ''
 }
 
 function getValueControl() {
-  const [field, operator] = props.condition
+  const [field, operator] = condition
   if (!field) return null
   const fieldData = filterableFields.data?.find((f) => f.fieldname == field)
   if (!fieldData) return null
@@ -267,20 +250,20 @@ function getValueControl() {
     return h(Link, {
       class: 'form-control',
       doctype: options,
-      value: props.condition[2],
+      value: condition[2],
     })
   } else if (typeNumber.includes(fieldtype)) {
     return h(FormControl, { type: 'number' })
   } else if (typeDate.includes(fieldtype) && operator == 'between') {
-    return h(DateRangePicker, { value: props.condition[2], iconLeft: '' })
+    return h(DateRangePicker, { value: condition[2], iconLeft: '' })
   } else if (typeDate.includes(fieldtype)) {
     return h(fieldtype == 'Date' ? DatePicker : DateTimePicker, {
-      value: props.condition[2],
+      value: condition[2],
       iconLeft: '',
     })
   } else if (typeRating.includes(fieldtype)) {
     return h(Rating, {
-      modelValue: props.condition[2] || 0,
+      modelValue: condition[2] || 0,
       class: 'truncate',
       'update:modelValue': (v) => updateValue(v),
     })
@@ -291,10 +274,10 @@ function getValueControl() {
 
 function updateValue(value) {
   value = value.target ? value.target.value : value
-  if (props.condition[1] === 'between') {
-    props.condition[2] = [value.split(',')[0], value.split(',')[1]]
+  if (condition[1] === 'between') {
+    condition[2] = [value.split(',')[0], value.split(',')[1]]
   } else {
-    props.condition[2] = value + ''
+    condition[2] = value + ''
   }
 }
 
@@ -303,13 +286,13 @@ function getSelectOptions(options) {
 }
 
 function updateOperator() {
-  props.condition[2] = getDefaultValue(props.condition[0])
+  condition[2] = getDefaultValue(condition[0])
   resetConditionValue()
 }
 
 function getOperators() {
   let options = []
-  const field = props.condition[0]
+  const field = condition[0]
   if (!field) return options
   const fieldData = filterableFields.data?.find((f) => f.fieldname == field)
   if (!fieldData) return options
@@ -416,8 +399,8 @@ function getOperators() {
       ],
     )
   }
-  const op = options.find((o) => o.value == props.condition[1])
-  props.condition[1] = op?.value || options[0].value
+  const op = options.find((o) => o.value == condition[1])
+  condition[1] = op?.value || options[0].value
   return options
 }
 

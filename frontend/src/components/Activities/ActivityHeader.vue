@@ -46,7 +46,7 @@
       iconLeft="plus"
       @click="showFilesUploader = true"
     />
-    <div class="flex gap-2 shrink-0" v-else-if="title == 'WhatsApp'">
+    <div v-else-if="title == 'WhatsApp'" class="flex gap-2 shrink-0">
       <Button
         :label="__('Send Template')"
         @click="showWhatsappTemplates = true"
@@ -59,7 +59,7 @@
       />
     </div>
     <Dropdown v-else :options="defaultActions" @click.stop>
-      <template v-slot="{ open }">
+      <template #default="{ open }">
         <Button
           variant="solid"
           class="flex items-center gap-1"
@@ -86,31 +86,33 @@ import { Dropdown } from 'frappe-ui'
 import { computed, h } from 'vue'
 
 const props = defineProps({
-  tabs: Array,
-  title: String,
-  doc: Object,
-  modalRef: Object,
-  emailBox: Object,
-  whatsappBox: Object,
+  tabs: { type: Array, default: () => [] },
+  title: { type: String, default: '' },
+  doc: { type: Object, default: () => ({}) },
+  modalRef: { type: Object, default: () => ({}) },
+  whatsappBox: { type: Object, default: () => ({}) },
 })
 
 const { makeCall } = globalStore()
 
-const tabIndex = defineModel()
-const showWhatsappTemplates = defineModel('showWhatsappTemplates')
-const showFilesUploader = defineModel('showFilesUploader')
+const tabIndex = defineModel({ type: Number })
+const showWhatsappTemplates = defineModel('showWhatsappTemplates', {
+  type: Boolean,
+})
+const showFilesUploader = defineModel('showFilesUploader', { type: Boolean })
+const emailBox = defineModel('emailBox', { type: Object, default: () => ({}) })
 
 const defaultActions = computed(() => {
   let actions = [
     {
       icon: h(Email2Icon, { class: 'h-4 w-4' }),
       label: __('Email'),
-      onClick: () => (props.emailBox.show = true),
+      onClick: () => (emailBox.value.show = true),
     },
     {
       icon: h(CommentIcon, { class: 'h-4 w-4' }),
       label: __('Comment'),
-      onClick: () => (props.emailBox.showComment = true),
+      onClick: () => (emailBox.value.showComment = true),
     },
     {
       icon: h(PhoneIcon, { class: 'h-4 w-4' }),

@@ -6,9 +6,9 @@
     <template #body-content>
       <div class="flex items-center gap-2">
         <TextInput
-          class="w-full"
           ref="searchInput"
           v-model="search"
+          class="w-full"
           type="text"
           :placeholder="__('Payment Reminder')"
         >
@@ -88,13 +88,10 @@ import { TextEditor, createListResource } from 'frappe-ui'
 import { ref, computed, nextTick, watch, onMounted } from 'vue'
 
 const props = defineProps({
-  doctype: {
-    type: String,
-    default: '',
-  },
+  doctype: { type: String, default: '' },
 })
 
-const show = defineModel()
+const show = defineModel({ type: Boolean })
 const searchInput = ref('')
 
 const emit = defineEmits(['apply'])

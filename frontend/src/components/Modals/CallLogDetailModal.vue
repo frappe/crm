@@ -87,7 +87,7 @@
               <Tooltip v-else-if="field.tooltip" :text="field.tooltip">
                 {{ field.value }}
               </Tooltip>
-              <div class="w-full" v-else-if="field.name == 'recording_url'">
+              <div v-else-if="field.name == 'recording_url'" class="w-full">
                 <audio
                   class="audio-control w-full"
                   controls
@@ -95,8 +95,8 @@
                 ></audio>
               </div>
               <div
-                class="w-full cursor-pointer rounded border px-2 pt-1.5 text-base text-ink-gray-7"
                 v-else-if="field.name == 'note'"
+                class="w-full cursor-pointer rounded border px-2 pt-1.5 text-base text-ink-gray-7"
                 @click="() => (showNoteModal = true)"
               >
                 <FadedScrollableDiv class="max-h-24 min-h-16 overflow-y-auto">
@@ -112,8 +112,8 @@
                 </FadedScrollableDiv>
               </div>
               <div
-                class="w-full cursor-pointer rounded border px-2 pt-1.5 text-base text-ink-gray-7"
                 v-else-if="field.name == 'task'"
+                class="w-full cursor-pointer rounded border px-2 pt-1.5 text-base text-ink-gray-7"
                 @click="() => (showTaskModal = true)"
               >
                 <FadedScrollableDiv class="max-h-24 min-h-16 overflow-y-auto">
@@ -181,11 +181,11 @@ import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
-const show = defineModel()
+const show = defineModel({ type: Boolean })
 const showNoteModal = ref(false)
 const showTaskModal = ref(false)
 
-const callLog = defineModel('callLog')
+const callLog = defineModel('callLog', { type: Object })
 
 const note = ref({
   title: '',
@@ -209,10 +209,6 @@ const detailFields = computed(() => {
   for (const key in data) {
     data[key] = getCallLogDetail(key, data)
   }
-
-  note.value = data._notes?.[0] ?? null
-  task.value = data._tasks?.[0] ?? null
-
   let details = [
     {
       icon: h(FeatherIcon, {
@@ -317,7 +313,7 @@ async function createLead() {
     })
 }
 
-const showCallLogModal = defineModel('callLogModal')
+const showCallLogModal = defineModel('callLogModal', { type: Boolean })
 
 function openCallLogModal() {
   showCallLogModal.value = true
@@ -369,6 +365,17 @@ async function addTaskToCallLog(_task, insert_mode = false) {
     })
   }
 }
+
+watch(
+  () => callLog.value?.data,
+  (data) => {
+    if (!data) return
+    const parsed = JSON.parse(JSON.stringify(data))
+    note.value = parsed._notes?.[0] ?? null
+    task.value = parsed._tasks?.[0] ?? null
+  },
+  { immediate: true, deep: true },
+)
 
 watch(
   () => callLog.value?.data?.name,

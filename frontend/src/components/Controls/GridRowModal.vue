@@ -47,16 +47,18 @@ import { createResource } from 'frappe-ui'
 import { nextTick } from 'vue'
 
 const props = defineProps({
-  index: Number,
-  data: Object,
-  doctype: String,
-  parentDoctype: String,
+  index: { type: Number, default: 0 },
+  data: { type: Object, default: () => ({}) },
+  doctype: { type: String, default: '' },
+  parentDoctype: { type: String, default: '' },
 })
 
 const { isManager } = usersStore()
 
-const show = defineModel()
-const showGridRowFieldsModal = defineModel('showGridRowFieldsModal')
+const show = defineModel({ type: Boolean })
+const showGridRowFieldsModal = defineModel('showGridRowFieldsModal', {
+  type: Boolean,
+})
 
 const tabs = createResource({
   url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_fields_layout',
