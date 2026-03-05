@@ -107,7 +107,7 @@
                 })
             "
           >
-            {{ label }}
+            {{ getLabel(label, column) }}
           </div>
         </template>
       </ListRowItem>
@@ -144,6 +144,7 @@
 import HeartIcon from '@/components/Icons/HeartIcon.vue'
 import ListBulkActions from '@/components/ListBulkActions.vue'
 import ListRows from '@/components/ListViews/ListRows.vue'
+import { isTranslatable } from '@/utils'
 import {
   Avatar,
   ListView,
@@ -188,6 +189,11 @@ const route = useRoute()
 
 const pageLengthCount = defineModel({ type: Number })
 const list = defineModel('list', { type: Object })
+
+function getLabel(label, column) {
+  if (column.options && isTranslatable(column.options)) return __(label)
+  return label
+}
 
 const isLikeFilterApplied = computed(() => {
   return list.value.params?.filters?._liked_by ? true : false

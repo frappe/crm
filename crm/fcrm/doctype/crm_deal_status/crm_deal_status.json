@@ -58,8 +58,8 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-01-28 17:06:07.371048",
- "modified_by": "shariq@frappe.io",
+ "modified": "2026-03-05 12:42:47.973700",
+ "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Deal Status",
  "naming_rule": "By fieldname",
@@ -105,5 +105,6 @@
  "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "translated_doctype": 1
 }
