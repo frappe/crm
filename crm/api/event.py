@@ -387,7 +387,7 @@ def send_daily_task_reminders():
 	_process_task_reminders("days")
 
 
-def _process_task_reminders(interval:str):
+def _process_task_reminders(interval: str):
 	"""
 	Process task reminders for a given interval.
 
