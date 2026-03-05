@@ -50,6 +50,7 @@
 import FieldLayout from '@/components/FieldLayout/FieldLayout.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import { usersStore } from '@/stores/users'
+import { getMeta } from '@/stores/meta'
 import { useDocument } from '@/data/document'
 import { isMobileView } from '@/composables/settings'
 import { showQuickEntryModal, quickEntryProps } from '@/composables/modals'
@@ -71,6 +72,7 @@ const loading = ref(false)
 const error = ref(null)
 
 const { document: _data, triggerOnBeforeCreate } = useDocument(props.doctype)
+const { doctypeMeta } = getMeta(props.doctype)
 
 const dialogOptions = computed(() => {
   let doctype = props.doctype
@@ -129,14 +131,25 @@ async function create() {
 }
 
 watch(
-  () => show.value,
-  (value) => {
-    if (!value) return
+  doctypeMeta,
+  (meta) => {
+    if (!meta) return
 
-    nextTick(() => {
-      _data.doc = { ...props.data }
-    })
+    let doc = {}
+
+    if (typeof props.data === 'object') {
+      Object.assign(doc, props.data)
+    } else if (meta.autoname && meta.autoname.indexOf('field:') !== -1) {
+      doc[meta.autoname.substr(6)] = props.data
+    } else if (meta.autoname && meta.autoname === 'prompt') {
+      doc.__newname = props.data
+    } else if (meta.title_field) {
+      doc[meta.title_field] = props.data
+    }
+
+    nextTick(() => Object.assign(_data.doc, doc))
   },
+  { immediate: true, deep: true },
 )
 
 function openQuickEntryModal() {

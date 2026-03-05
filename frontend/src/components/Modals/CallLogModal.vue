@@ -166,7 +166,7 @@ onMounted(() => {
   editMode.value = props.data?.name ? true : false
 
   if (!props.data?.name) {
-    callLog.doc = { ...props.data }
+    Object.assign(callLog.doc, props.data)
   }
 })
 
