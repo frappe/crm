@@ -387,7 +387,7 @@ def send_daily_task_reminders():
 	_process_task_reminders("days")
 
 
-def _process_task_reminders(interval):
+def _process_task_reminders(interval:str):
 	"""
 	Process task reminders for a given interval.
 
@@ -431,7 +431,7 @@ def _process_task_reminders(interval):
 				frappe.log_error(f"Error processing {interval} reminder for task {task.name}: {e!s}")
 
 
-def _process_single_task_reminder(task, offset, interval, current_time):
+def _process_single_task_reminder(task: dict, offset: dict, interval: str, current_time: datetime):
 	due_date = task.due_date
 	if not isinstance(due_date, datetime):
 		due_date = frappe.utils.get_datetime(due_date)
@@ -471,7 +471,7 @@ def _process_single_task_reminder(task, offset, interval, current_time):
 	_send_task_email_notification(task, offset)
 
 
-def _send_task_inapp_notification(task, offset, reminder_key):
+def _send_task_inapp_notification(task: dict, offset: dict, reminder_key: str):
 	notification_text = f"""
 		<div class="mb-2 leading-5 text-ink-gray-5">
 			Task <span class="font-medium text-ink-gray-9">{task.title}</span>
@@ -502,7 +502,7 @@ def _send_task_inapp_notification(task, offset, reminder_key):
 	frappe.get_doc(values).insert(ignore_permissions=True)
 
 
-def _strip_root_p_tags(text):
+def _strip_root_p_tags(text: str):
 	if not text:
 		return text
 	text = str(text).strip()
@@ -512,14 +512,14 @@ def _strip_root_p_tags(text):
 	return text
 
 
-def _format_due_date_for_email(due_date):
+def _format_due_date_for_email(due_date: str):
 	dt = frappe.utils.get_datetime(due_date)
 	am_pm = "AM" if dt.hour < 12 else "PM"
 	hour = dt.hour % 12 or 12
 	return f"{dt.strftime('%b')} {dt.day}, {dt.year}, {hour}:{dt.strftime('%M')} {am_pm}"
 
 
-def _send_task_email_notification(task, offset):
+def _send_task_email_notification(task: dict, offset: dict):
 	recipient = task.assigned_to
 	if not recipient:
 		return
@@ -528,9 +528,7 @@ def _send_task_email_notification(task, offset):
 
 	assigned_to_name = frappe.db.get_value("User", recipient, "full_name") or recipient
 	task_doc = frappe.get_doc("CRM Task", task.name)
-	brand_logo = (
-		frappe.db.get_value("FCRM Settings", "FCRM Settings", "brand_logo") or "/assets/crm/images/logo.png"
-	)
+	brand_logo = frappe.db.get_single_value("FCRM Settings", "brand_logo") or "/assets/crm/images/logo.png"
 
 	site_url = frappe.utils.get_url()
 	task_url = f"{site_url}/crm/tasks/view/list?open={task.name}"
