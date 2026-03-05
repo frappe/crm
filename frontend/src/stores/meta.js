@@ -133,6 +133,12 @@ export function getMeta(doctype) {
     return callback?.()
   }
 
+  function isTranslatable(dt = null) {
+    dt = dt || doctype
+    let meta = doctypesMeta[dt]
+    return meta && meta.translated_doctype
+  }
+
   return {
     meta,
     doctypeMeta,
@@ -147,5 +153,6 @@ export function getMeta(doctype) {
     getFormattedFloat,
     getFormattedPercent,
     getFormattedCurrency,
+    isTranslatable,
   }
 }

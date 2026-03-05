@@ -274,7 +274,8 @@ class CRMDeal(Document):
 			},
 			{
 				"label": "Status",
-				"type": "Select",
+				"type": "Link",
+				"options": "CRM Deal Status",
 				"key": "status",
 				"width": "10rem",
 			},
