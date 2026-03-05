@@ -33,4 +33,5 @@ const Layout = computed(() => {
 
 setConfig('systemTimezone', window.timezone?.system || null)
 setConfig('localTimezone', window.timezone?.user || null)
+setConfig('translatedMessages', window.translated_messages || {})
 </script>

@@ -4,7 +4,7 @@
 import frappe
 from frappe import _
 from frappe.integrations.frappe_providers.frappecloud_billing import is_fc_site
-from frappe.translate import get_translated_doctypes
+from frappe.translate import get_messages_for_boot, get_translated_doctypes
 from frappe.utils import cint, get_system_timezone
 from frappe.utils.telemetry import capture
 
@@ -45,6 +45,8 @@ def get_boot():
 			"is_demo_site": frappe.conf.get("is_demo_site"),
 			"is_fc_site": is_fc_site(),
 			"translated_doctypes": get_translated_doctypes(),
+			"lang": frappe.lang,
+			"translated_messages": get_messages_for_boot(),
 			"timezone": {
 				"system": get_system_timezone(),
 				"user": frappe.db.get_value("User", frappe.session.user, "time_zone")
