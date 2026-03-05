@@ -24,7 +24,7 @@
           <template #default="{ open }">
             <Button
               v-if="doc.status"
-              :label="doc.status"
+              :label="statusLabel(doc.status)"
               :iconRight="open ? 'chevron-up' : 'chevron-down'"
             >
               <template #prefix>
@@ -143,7 +143,7 @@ import AssignTo from '@/components/AssignTo.vue'
 import SidePanelLayout from '@/components/SidePanelLayout.vue'
 import SLASection from '@/components/SLASection.vue'
 import CustomActions from '@/components/CustomActions.vue'
-import { setupCustomizations } from '@/utils'
+import { setupCustomizations, isTranslatable } from '@/utils'
 import { getView } from '@/utils/view'
 import { getSettings } from '@/stores/settings'
 import { globalStore } from '@/stores/global'
@@ -359,6 +359,11 @@ function deleteLead() {
 
 // Convert to Deal
 const showConvertToDealModal = ref(false)
+
+function statusLabel(status) {
+  if (isTranslatable('CRM Lead Status')) return __(status)
+  return status
+}
 
 async function triggerStatusChange(value) {
   await triggerOnChange('status', value)
