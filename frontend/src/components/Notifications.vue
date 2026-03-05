@@ -48,6 +48,14 @@
                 :class="[n.read ? 'bg-transparent' : 'bg-surface-gray-7']"
               />
               <WhatsAppIcon v-if="n.type == 'WhatsApp'" class="size-7" />
+              <div
+                v-else-if="
+                  n.type == 'Task' && n.notification_type_doctype == 'CRM Task'
+                "
+                class="flex size-7 items-center justify-center rounded-full bg-blue-100 text-blue-600"
+              >
+                <FeatherIcon name="clock" class="size-4" />
+              </div>
               <UserAvatar v-else :user="n.from_user.name" size="lg" />
             </div>
             <div>
@@ -148,6 +156,13 @@ onMounted(() => {
 })
 
 function getRoute(notification) {
+  if (notification.route_name === 'Task') {
+    return {
+      name: 'Tasks',
+      query: { open: notification.notification_type_doc },
+    }
+  }
+
   let params = {
     leadId: notification.reference_name,
   }

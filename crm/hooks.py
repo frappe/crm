@@ -174,8 +174,14 @@ doc_events = {
 
 scheduler_events = {
 	"all": ["crm.api.event.trigger_offset_event_notifications"],
-	"hourly": ["crm.api.event.trigger_hourly_event_notifications"],
-	"daily": ["crm.api.event.trigger_daily_event_notifications"],
+	"hourly": [
+		"crm.api.event.trigger_hourly_event_notifications",
+		"crm.api.event.send_hourly_task_reminders",
+	],
+	"daily": [
+		"crm.api.event.trigger_daily_event_notifications",
+		"crm.api.event.send_daily_task_reminders",
+	],
 	"weekly": ["crm.api.event.trigger_weekly_event_notifications"],
 	"daily_long": ["crm.lead_syncing.background_sync.sync_leads_from_sources_daily"],
 	"hourly_long": ["crm.lead_syncing.background_sync.sync_leads_from_sources_hourly"],

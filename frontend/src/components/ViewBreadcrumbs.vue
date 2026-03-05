@@ -23,11 +23,11 @@
         <Button
           variant="ghost"
           class="text-lg font-medium text-nowrap"
-          :label="__(viewControls.currentView.label)"
+          :label="__(viewControls.currentView?.label)"
           :iconRight="open ? 'chevron-up' : 'chevron-down'"
         >
           <template #prefix>
-            <Icon :icon="viewControls.currentView.icon" class="h-4" />
+            <Icon :icon="viewControls.currentView?.icon" class="h-4" />
           </template>
         </Button>
       </template>
