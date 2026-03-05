@@ -520,7 +520,7 @@ const breadcrumbs = computed(() => {
 })
 
 const title = computed(() => {
-  let t = doctypeMeta['CRM Deal']?.title_field || 'name'
+  let t = doctypeMeta.value?.title_field || 'name'
   return doc.value?.[t] || props.dealId
 })
 
