@@ -45,7 +45,6 @@ def get_boot():
 			"is_demo_site": frappe.conf.get("is_demo_site"),
 			"is_fc_site": is_fc_site(),
 			"translated_doctypes": get_translated_doctypes(),
-			"lang": frappe.lang,
 			"translated_messages": get_messages_for_boot(),
 			"timezone": {
 				"system": get_system_timezone(),
