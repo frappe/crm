@@ -1,6 +1,7 @@
 import json
 
 import frappe
+import requests
 from frappe import _
 from werkzeug.wrappers import Response
 
@@ -132,6 +133,26 @@ def update_call_log(call_sid, status=None):
 		frappe.db.commit()
 
 
+def get_twilio_settings():
+	return frappe.get_single("CRM Twilio Settings")
+
+
+@frappe.whitelist()
+def get_recording(recording_url: str):
+	settings = get_twilio_settings()
+
+	account_sid = settings.account_sid
+	auth_token = settings.get_password("auth_token")
+
+	r = requests.get(recording_url, auth=(account_sid, auth_token), stream=True)
+
+	response = Response()
+	response.data = r.content
+	response.mimetype = "audio/mpeg"
+
+	return response
+
+
 @frappe.whitelist(allow_guest=True)
 def update_recording_info(**kwargs):
 	args = frappe._dict(kwargs)
@@ -144,7 +165,10 @@ def update_recording_info(**kwargs):
 		frappe.throw(_("Call log not found"), frappe.DoesNotExistError)
 
 	try:
-		frappe.db.set_value("CRM Call Log", call_sid, "recording_url", recording_url)
+		recording_api_path = (
+			f"/api/method/crm.integrations.twilio.api.get_recording?recording_url={recording_url}"
+		)
+		frappe.db.set_value("CRM Call Log", call_sid, "recording_url", recording_api_path)
 		frappe.db.commit()
 	except Exception as exc:
 		frappe.log_error(title=_("Failed to capture Twilio recording"))
