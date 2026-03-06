@@ -90,7 +90,7 @@
   },
   {
    "fieldname": "recording_url",
-   "fieldtype": "Data",
+   "fieldtype": "Small Text",
    "label": "Recording URL"
   },
   {
@@ -157,7 +157,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-02-23 12:35:19.062696",
+ "modified": "2026-03-06 16:49:40.394621",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Call Log",

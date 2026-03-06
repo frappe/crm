@@ -27,7 +27,7 @@ class CRMCallLog(Document):
 		medium: DF.Data | None
 		note: DF.Link | None
 		receiver: DF.Link | None
-		recording_url: DF.Data | None
+		recording_url: DF.SmallText | None
 		reference_docname: DF.DynamicLink | None
 		reference_doctype: DF.Link | None
 		start_time: DF.Datetime | None
