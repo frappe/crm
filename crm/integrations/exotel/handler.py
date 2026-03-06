@@ -2,6 +2,7 @@ import frappe
 import requests
 from frappe import _
 from frappe.integrations.utils import create_request_log
+from werkzeug.wrappers import Response
 
 from crm.integrations.api import get_contact_by_phone_number
 
@@ -258,6 +259,22 @@ def get_call_log_status(call_payload, direction="inbound"):
 	return status
 
 
+@frappe.whitelist()
+def get_recording(recording_url: str):
+	settings = get_exotel_settings()
+
+	api_key = settings.get("api_key")
+	api_token = settings.get_password("api_token")
+
+	r = requests.get(recording_url, auth=(api_key, api_token), stream=True)
+
+	response = Response()
+	response.data = r.content
+	response.mimetype = "audio/mpeg"
+
+	return response
+
+
 def update_call_log(call_payload, status="Ringing", call_log=None):
 	direction = call_payload.get("Direction")
 	call_log = call_log or get_call_log(call_payload)
@@ -270,9 +287,14 @@ def update_call_log(call_payload, status="Ringing", call_log=None):
 			call_log.duration = (
 				call_payload.get("DialCallDuration") or call_payload.get("ConversationDuration") or 0
 			)
-			call_log.recording_url = (
-				call_payload.get("RecordingUrl") if call_payload.get("RecordingUrl") else ""
-			)
+
+			recording_url = call_payload.get("RecordingUrl") if call_payload.get("RecordingUrl") else ""
+			if recording_url:
+				recording_api_path = (
+					f"/api/method/crm.integrations.exotel.handler.get_recording?recording_url={recording_url}"
+				)
+				call_log.recording_url = recording_api_path
+
 			call_log.start_time = call_payload.get("StartTime")
 			call_log.end_time = call_payload.get("EndTime")
 
