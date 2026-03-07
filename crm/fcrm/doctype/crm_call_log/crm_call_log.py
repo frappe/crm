@@ -132,6 +132,14 @@ class CRMCallLog(Document):
 
 		self.append("links", {"link_doctype": reference_doctype, "link_name": reference_name})
 
+	def as_dict(self, *args, **kwargs):
+		d = super().as_dict(*args, **kwargs)
+		if d.get("recording_url"):
+			d["recording_url_path"] = (
+				f"/api/method/crm.integrations.api.get_recording_url?call_log_name={d.get('name')}"
+			)
+		return d
+
 
 def parse_call_log(call):
 	call["show_recording"] = False
@@ -188,6 +196,7 @@ def get_call_log(name: str):
 			"to",
 			"note",
 			"recording_url",
+			"recording_url_path",
 			"reference_doctype",
 			"reference_docname",
 			"creation",
