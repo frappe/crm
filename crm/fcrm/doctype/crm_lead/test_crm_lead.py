@@ -486,6 +486,27 @@ class TestCRMLead(FrappeTestCase):
 		self.assertEqual(deal.annual_revenue, 750000)
 		self.assertEqual(deal.job_title, "CEO")
 
+	def test_assignees_transferred_on_conversion(self):
+		"""Test that additional assignees are transferred from lead to deal on conversion"""
+		lead = create_lead(
+			first_name="Transfer",
+			lead_owner="Administrator",
+		)
+
+		lead.assign_agent("crm.user1@example.com")
+
+		lead_assignees = lead.get_assigned_users()
+
+		self.assertIn("Administrator", lead_assignees)
+		self.assertIn("crm.user1@example.com", lead_assignees)
+
+		deal_name = lead.convert_to_deal()
+		deal = frappe.get_doc("CRM Deal", deal_name)
+
+		deal_assignees = deal.get_assigned_users()
+		self.assertIn("Administrator", deal_assignees)
+		self.assertIn("crm.user1@example.com", deal_assignees)
+
 
 def create_lead(**kwargs):
 	"""Helper function to create a CRM Lead for testing"""
