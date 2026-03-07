@@ -1,8 +1,22 @@
 import frappe
+import requests
+from frappe import _
 from frappe.query_builder import Order
 from pypika.functions import Replace
+from werkzeug.wrappers import Response
 
 from crm.utils import are_same_phone_number, parse_phone_number
+
+
+def _get_recording_credentials(telephony_medium: str) -> tuple:
+	"""Return (api_key, secret) for the given telephony medium."""
+	if telephony_medium == "Twilio":
+		s = frappe.get_single("CRM Twilio Settings")
+		return s.api_key, s.get_password("api_secret")
+	elif telephony_medium == "Exotel":
+		s = frappe.get_single("CRM Exotel Settings")
+		return s.api_key, s.get_password("api_token")
+	frappe.throw(_("Unknown telephony medium: {0}").format(telephony_medium))
 
 
 @frappe.whitelist()
@@ -132,6 +146,26 @@ def get_contact_by_phone_number(phone_number: str):
 		return get_contact(number.get("national_number"), number.get("country"))
 	else:
 		return get_contact(phone_number, number.get("country"), exact_match=True)
+
+
+@frappe.whitelist()
+def get_recording_url(call_log_name: str):
+	"""Fetch and stream a call recording, authenticating with the provider's credentials."""
+	if not call_log_name or not frappe.db.exists("CRM Call Log", call_log_name):
+		frappe.throw(_("Call log not found"), frappe.DoesNotExistError)
+
+	log = frappe.get_doc("CRM Call Log", call_log_name)
+
+	if not log.recording_url:
+		frappe.throw(_("Recording URL not found"), frappe.DoesNotExistError)
+
+	auth = _get_recording_credentials(log.telephony_medium)
+	with requests.get(log.recording_url, auth=auth, stream=True, timeout=10) as r:
+		r.raise_for_status()
+		response = Response()
+		response.data = r.content
+		response.mimetype = "audio/mpeg"
+	return response
 
 
 def get_contact(phone_number, country="IN", exact_match=False):
