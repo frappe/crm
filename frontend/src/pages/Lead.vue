@@ -25,7 +25,7 @@
         <template #default="{ open }">
           <Button
             v-if="doc.status"
-            :label="doc.status"
+            :label="statusLabel(doc.status)"
             :iconRight="open ? 'chevron-up' : 'chevron-down'"
           >
             <template #prefix>
@@ -264,6 +264,7 @@ import {
   setupCustomizations,
   copyToClipboard,
   validateIsImageFile,
+  isTranslatable,
 } from '@/utils'
 import { getView } from '@/utils/view'
 import { getSettings } from '@/stores/settings'
@@ -377,7 +378,7 @@ const breadcrumbs = computed(() => {
 })
 
 const title = computed(() => {
-  let t = doctypeMeta['CRM Lead']?.title_field || 'name'
+  let t = doctypeMeta.value?.title_field || 'name'
   return doc.value?.[t] || props.leadId
 })
 
@@ -491,6 +492,11 @@ function openEmailBox() {
     activities.value.changeTabTo('emails')
   }
   nextTick(() => (activities.value.emailBox.show = true))
+}
+
+function statusLabel(status) {
+  if (isTranslatable('CRM Lead Status')) return __(status)
+  return status
 }
 
 const showLostReasonModal = ref(false)

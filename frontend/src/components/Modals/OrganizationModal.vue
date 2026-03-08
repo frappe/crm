@@ -152,7 +152,7 @@ const tabs = createResource({
 })
 
 onMounted(() => {
-  organization.doc = { no_of_employees: '1-10' }
+  organization.doc.no_of_employees = '1-10'
   Object.assign(organization.doc, props.data)
 })
 

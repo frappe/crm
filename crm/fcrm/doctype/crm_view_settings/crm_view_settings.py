@@ -99,6 +99,8 @@ def update(view: dict):
 	rows = remove_duplicates(rows)
 
 	doc = frappe.get_doc("CRM View Settings", view.name)
+	check_permission(doc)
+
 	doc.label = view.label
 	doc.type = view.type or "list"
 	doc.icon = view.icon
@@ -120,6 +122,8 @@ def update(view: dict):
 @frappe.whitelist()
 def delete(name: str | int):
 	if frappe.db.exists("CRM View Settings", name):
+		doc = frappe.get_doc("CRM View Settings", name)
+		check_permission(doc)
 		frappe.delete_doc("CRM View Settings", name)
 
 
@@ -139,8 +143,23 @@ def public(name: str | int, value: bool | int):
 @frappe.whitelist()
 def pin(name: str | int, value: bool | int):
 	doc = frappe.get_doc("CRM View Settings", name)
+	check_permission(doc)
 	doc.pinned = bool(value)
 	doc.save()
+
+
+def check_permission(doc):
+	"""Administrator and System Manager can edit any view.
+	If view is public, Sales Manager can edit.
+	If view is private, only the view owner can edit."""
+	if frappe.session.user == "Administrator" or "System Manager" in frappe.get_roles():
+		pass
+	elif doc.public and "Sales Manager" in frappe.get_roles():
+		pass
+	elif doc.user and doc.user == frappe.session.user:
+		pass
+	else:
+		frappe.throw(_("Not permitted"), frappe.PermissionError)
 
 
 def remove_duplicates(l):
