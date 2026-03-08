@@ -67,6 +67,10 @@ def notify_agent(doc):
                 <span class="font-medium text-ink-gray-9">{doc.reference_name}</span>
             </div>
         """
+		
+		if not doc.reference_doctype or not doc.reference_name:
+			return False
+		
 		assigned_users = get_assigned_users(doc.reference_doctype, doc.reference_name)
 		for user in assigned_users:
 			notify_user(
