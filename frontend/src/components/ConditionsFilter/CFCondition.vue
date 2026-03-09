@@ -280,7 +280,7 @@ function updateValue(value) {
   if (condition[1] === 'between') {
     condition[2] = [value.split(',')[0], value.split(',')[1]]
   } else {
-    condition[2] = value + ''
+    condition[2] = isNaN(value) ? value : Number(value)
   }
 }
 
