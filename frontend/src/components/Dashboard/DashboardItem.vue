@@ -6,9 +6,9 @@
     >
       <Tooltip :text="__(item.data.tooltip)">
         <NumberChart
-          class="!items-start"
           v-if="item.data"
           :key="index"
+          class="!items-start"
           :config="item.data"
         />
       </Tooltip>
@@ -37,18 +37,9 @@
 <script setup>
 import { AxisChart, DonutChart, NumberChart, Tooltip } from 'frappe-ui'
 
-const props = defineProps({
-  index: {
-    type: Number,
-    required: true,
-  },
-  item: {
-    type: Object,
-    required: true,
-  },
-  editing: {
-    type: Boolean,
-    default: false,
-  },
+defineProps({
+  index: { type: Number, required: true },
+  item: { type: Object, required: true },
+  editing: { type: Boolean, default: false },
 })
 </script>

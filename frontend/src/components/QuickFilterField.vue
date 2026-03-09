@@ -1,19 +1,19 @@
 <template>
   <FormControl
     v-if="filter.fieldtype == 'Check'"
+    v-model="filter.value"
     :label="filter.label"
     type="checkbox"
-    v-model="filter.value"
     @change.stop="updateFilter(filter, $event.target.checked)"
   />
   <FormControl
     v-else-if="filter.fieldtype === 'Select'"
+    v-model="filter.value"
     class="form-control cursor-pointer [&_select]:cursor-pointer"
     type="select"
-    v-model="filter.value"
     :options="filter.options"
     :placeholder="filter.label"
-    @change.stop="updateFilter(filter, $event.target.value)"
+    @update:modelValue="updateFilter(filter, $event)"
   />
   <Link
     v-else-if="filter.fieldtype === 'Link'"
@@ -23,12 +23,12 @@
     @change="(data) => updateFilter(filter, data)"
   />
   <component
+    :is="filter.fieldtype === 'Date' ? DatePicker : DateTimePicker"
     v-else-if="['Date', 'Datetime'].includes(filter.fieldtype)"
     class="border-none"
-    :is="filter.fieldtype === 'Date' ? DatePicker : DateTimePicker"
     :value="filter.value"
-    @change="(v) => updateFilter(filter, v)"
     :placeholder="filter.label"
+    @change="(v) => updateFilter(filter, v)"
   />
   <FormControl
     v-else
@@ -42,13 +42,13 @@
 import Link from '@/components/Controls/Link.vue'
 import { FormControl, DatePicker, DateTimePicker } from 'frappe-ui'
 import { useDebounceFn } from '@vueuse/core'
+import { reactive } from 'vue'
 
 const props = defineProps({
-  filter: {
-    type: Object,
-    required: true,
-  },
+  filter: { type: Object, required: true },
 })
+
+const filter = reactive(props.filter)
 
 const emit = defineEmits(['applyQuickFilter'])
 

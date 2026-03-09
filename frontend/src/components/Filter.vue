@@ -18,7 +18,7 @@
         </Button>
         <Button
           v-if="filters?.size"
-          :tooltip="__('Clear all Filter')"
+          :tooltip="__('Clear All Filters')"
           class="rounded-l-none border-l"
           icon="x"
           @click.stop="clearfilter(close)"
@@ -30,17 +30,85 @@
         class="my-2 min-w-40 rounded-lg bg-surface-modal shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
       >
         <div class="min-w-72 p-2 sm:min-w-[400px]">
-          <div
-            v-if="filters?.size"
-            v-for="(f, i) in filters"
-            :key="i"
-            id="filter-list"
-            class="mb-4 sm:mb-3"
-          >
-            <div v-if="isMobileView" class="flex flex-col gap-2">
-              <div class="-mb-2 flex w-full items-center justify-between">
-                <div class="text-base text-ink-gray-5">
-                  {{ i == 0 ? __('Where') : __('And') }}
+          <template v-if="filters?.size">
+            <div
+              v-for="(f, i) in filters"
+              id="filter-list"
+              :key="i"
+              class="mb-4 sm:mb-3"
+            >
+              <div v-if="isMobileView" class="flex flex-col gap-2">
+                <div class="-mb-2 flex w-full items-center justify-between">
+                  <div class="text-base text-ink-gray-5">
+                    {{ i == 0 ? __('Where') : __('And') }}
+                  </div>
+                  <Button
+                    class="flex"
+                    variant="ghost"
+                    icon="x"
+                    @click="removeFilter(i)"
+                  />
+                </div>
+                <div id="fieldname" class="w-full">
+                  <Autocomplete
+                    :value="f.field.fieldname"
+                    :options="filterableFields.data"
+                    :placeholder="__('First Name')"
+                    @change="(e) => updateFilter(e, i)"
+                  />
+                </div>
+                <div id="operator">
+                  <FormControl
+                    v-model="f.operator"
+                    type="select"
+                    :options="
+                      getOperators(f.field.fieldtype, f.field.fieldname)
+                    "
+                    :placeholder="__('Equals')"
+                    @update:modelValue="() => updateOperator(f)"
+                  />
+                </div>
+                <div id="value" class="w-full">
+                  <component
+                    :is="getValueControl(f)"
+                    v-model="f.value"
+                    :placeholder="placeholder(f)"
+                    @change="(v) => updateValue(v, f)"
+                  />
+                </div>
+              </div>
+              <div v-else class="flex items-center justify-between gap-2">
+                <div class="flex items-center gap-2">
+                  <div class="w-13 pl-2 text-end text-base text-ink-gray-5">
+                    {{ i == 0 ? __('Where') : __('And') }}
+                  </div>
+                  <div id="fieldname" class="!min-w-[140px]">
+                    <Autocomplete
+                      :value="f.field.fieldname"
+                      :options="filterableFields.data"
+                      :placeholder="__('First Name')"
+                      @change="(e) => updateFilter(e, i)"
+                    />
+                  </div>
+                  <div id="operator">
+                    <FormControl
+                      v-model="f.operator"
+                      type="select"
+                      :options="
+                        getOperators(f.field.fieldtype, f.field.fieldname)
+                      "
+                      :placeholder="__('Equals')"
+                      @update:modelValue="() => updateOperator(f)"
+                    />
+                  </div>
+                  <div id="value" class="!min-w-[140px]">
+                    <component
+                      :is="getValueControl(f)"
+                      v-model="f.value"
+                      :placeholder="placeholder(f)"
+                      @change="(v) => updateValue(v, f)"
+                    />
+                  </div>
                 </div>
                 <Button
                   class="flex"
@@ -49,73 +117,8 @@
                   @click="removeFilter(i)"
                 />
               </div>
-              <div id="fieldname" class="w-full">
-                <Autocomplete
-                  :value="f.field.fieldname"
-                  :options="filterableFields.data"
-                  @change="(e) => updateFilter(e, i)"
-                  :placeholder="__('First Name')"
-                />
-              </div>
-              <div id="operator">
-                <FormControl
-                  type="select"
-                  v-model="f.operator"
-                  @change="(e) => updateOperator(e, f)"
-                  :options="getOperators(f.field.fieldtype, f.field.fieldname)"
-                  :placeholder="__('Equals')"
-                />
-              </div>
-              <div id="value" class="w-full">
-                <component
-                  :is="getValueControl(f)"
-                  v-model="f.value"
-                  @change="(v) => updateValue(v, f)"
-                  :placeholder="__('John Doe')"
-                />
-              </div>
             </div>
-            <div v-else class="flex items-center justify-between gap-2">
-              <div class="flex items-center gap-2">
-                <div class="w-13 pl-2 text-end text-base text-ink-gray-5">
-                  {{ i == 0 ? __('Where') : __('And') }}
-                </div>
-                <div id="fieldname" class="!min-w-[140px]">
-                  <Autocomplete
-                    :value="f.field.fieldname"
-                    :options="filterableFields.data"
-                    @change="(e) => updateFilter(e, i)"
-                    :placeholder="__('First Name')"
-                  />
-                </div>
-                <div id="operator">
-                  <FormControl
-                    type="select"
-                    v-model="f.operator"
-                    @change="(e) => updateOperator(e, f)"
-                    :options="
-                      getOperators(f.field.fieldtype, f.field.fieldname)
-                    "
-                    :placeholder="__('Equals')"
-                  />
-                </div>
-                <div id="value" class="!min-w-[140px]">
-                  <component
-                    :is="getValueControl(f)"
-                    v-model="f.value"
-                    @change="(v) => updateValue(v, f)"
-                    :placeholder="__('John Doe')"
-                  />
-                </div>
-              </div>
-              <Button
-                class="flex"
-                variant="ghost"
-                icon="x"
-                @click="removeFilter(i)"
-              />
-            </div>
-          </div>
+          </template>
           <div
             v-else
             class="mb-3 flex h-7 items-center px-3 text-sm text-ink-gray-5"
@@ -126,8 +129,8 @@
             <Autocomplete
               value=""
               :options="availableFilters"
+              :placeholder="__('First Name')"
               @change="(e) => setfilter(e)"
-              :placeholder="__('First name')"
             >
               <template #target="{ togglePopover }">
                 <Button
@@ -143,7 +146,7 @@
               v-if="filters?.size"
               class="!text-ink-gray-5"
               variant="ghost"
-              :label="__('Clear all Filter')"
+              :label="__('Clear All Filters')"
               @click="clearfilter(close)"
             />
           </div>
@@ -175,19 +178,13 @@ const typeString = ['Data', 'Long Text', 'Small Text', 'Text Editor', 'Text']
 const typeDate = ['Date', 'Datetime']
 
 const props = defineProps({
-  doctype: {
-    type: String,
-    required: true,
-  },
-  default_filters: {
-    type: Object,
-    default: {},
-  },
+  doctype: { type: String, required: true },
+  default_filters: { type: Object, default: () => {} },
 })
 
 const emit = defineEmits(['update'])
 
-const list = defineModel()
+const list = defineModel({ type: Object, default: () => ({}) })
 
 const filterableFields = createResource({
   url: 'crm.api.doc.get_filterable_fields',
@@ -227,7 +224,7 @@ const availableFilters = computed(() => {
 
 function removeCommonFilters(commonFilters, allFilters) {
   for (const key in commonFilters) {
-    if (commonFilters.hasOwnProperty(key) && allFilters.hasOwnProperty(key)) {
+    if (Object.hasOwn(commonFilters, key) && Object.hasOwn(allFilters, key)) {
       if (commonFilters[key] === allFilters[key]) {
         delete allFilters[key]
       }
@@ -265,11 +262,11 @@ function getOperators(fieldtype, fieldname) {
     options.push(
       ...[
         { label: __('Equals'), value: 'equals' },
-        { label: __('Not Equals'), value: 'not equals' },
+        { label: __('Not equals'), value: 'not equals' },
         { label: __('Like'), value: 'like' },
-        { label: __('Not Like'), value: 'not like' },
+        { label: __('Not like'), value: 'not like' },
         { label: __('In'), value: 'in' },
-        { label: __('Not In'), value: 'not in' },
+        { label: __('Not in'), value: 'not in' },
         { label: __('Is'), value: 'is' },
       ],
     )
@@ -278,7 +275,7 @@ function getOperators(fieldtype, fieldname) {
     // TODO: make equals and not equals work
     options = [
       { label: __('Like'), value: 'like' },
-      { label: __('Not Like'), value: 'not like' },
+      { label: __('Not like'), value: 'not like' },
       { label: __('Is'), value: 'is' },
     ]
   }
@@ -286,11 +283,11 @@ function getOperators(fieldtype, fieldname) {
     options.push(
       ...[
         { label: __('Equals'), value: 'equals' },
-        { label: __('Not Equals'), value: 'not equals' },
+        { label: __('Not equals'), value: 'not equals' },
         { label: __('Like'), value: 'like' },
-        { label: __('Not Like'), value: 'not like' },
+        { label: __('Not like'), value: 'not like' },
         { label: __('In'), value: 'in' },
-        { label: __('Not In'), value: 'not in' },
+        { label: __('Not in'), value: 'not in' },
         { label: __('Is'), value: 'is' },
         { label: __('<'), value: '<' },
         { label: __('>'), value: '>' },
@@ -303,9 +300,9 @@ function getOperators(fieldtype, fieldname) {
     options.push(
       ...[
         { label: __('Equals'), value: 'equals' },
-        { label: __('Not Equals'), value: 'not equals' },
+        { label: __('Not equals'), value: 'not equals' },
         { label: __('In'), value: 'in' },
-        { label: __('Not In'), value: 'not in' },
+        { label: __('Not in'), value: 'not in' },
         { label: __('Is'), value: 'is' },
       ],
     )
@@ -314,11 +311,11 @@ function getOperators(fieldtype, fieldname) {
     options.push(
       ...[
         { label: __('Equals'), value: 'equals' },
-        { label: __('Not Equals'), value: 'not equals' },
+        { label: __('Not equals'), value: 'not equals' },
         { label: __('Like'), value: 'like' },
-        { label: __('Not Like'), value: 'not like' },
+        { label: __('Not like'), value: 'not like' },
         { label: __('In'), value: 'in' },
-        { label: __('Not In'), value: 'not in' },
+        { label: __('Not in'), value: 'not in' },
         { label: __('Is'), value: 'is' },
       ],
     )
@@ -330,9 +327,9 @@ function getOperators(fieldtype, fieldname) {
     options.push(
       ...[
         { label: __('Like'), value: 'like' },
-        { label: __('Not Like'), value: 'not like' },
+        { label: __('Not like'), value: 'not like' },
         { label: __('In'), value: 'in' },
-        { label: __('Not In'), value: 'not in' },
+        { label: __('Not in'), value: 'not in' },
         { label: __('Is'), value: 'is' },
       ],
     )
@@ -341,7 +338,7 @@ function getOperators(fieldtype, fieldname) {
     options.push(
       ...[
         { label: __('Equals'), value: 'equals' },
-        { label: __('Not Equals'), value: 'not equals' },
+        { label: __('Not equals'), value: 'not equals' },
         { label: __('Is'), value: 'is' },
         { label: __('>'), value: '>' },
         { label: __('<'), value: '<' },
@@ -371,11 +368,15 @@ function getValueControl(f) {
           value: 'not set',
         },
       ],
+      modelValue: f.value,
+      'onUpdate:modelValue': (v) => updateValue(v, f),
     })
   } else if (operator == 'timespan') {
     return h(FormControl, {
       type: 'select',
       options: timespanOptions,
+      modelValue: f.value,
+      'onUpdate:modelValue': (v) => updateValue(v, f),
     })
   } else if (['like', 'not like', 'in', 'not in'].includes(operator)) {
     return h(FormControl, { type: 'text' })
@@ -388,6 +389,8 @@ function getValueControl(f) {
         label: o,
         value: o,
       })),
+      modelValue: f.value,
+      'onUpdate:modelValue': (v) => updateValue(v, f),
     })
   } else if (typeLink.includes(fieldtype)) {
     if (fieldtype == 'Dynamic Link') {
@@ -493,36 +496,13 @@ function updateValue(value, filter) {
   apply()
 }
 
-function updateOperator(event, filter) {
-  let oldOperatorValue = event.target._value
-  let newOperatorValue = event.target.value
-  filter.operator = event.target.value
-  if (!isSameTypeOperator(oldOperatorValue, newOperatorValue)) {
-    filter.value = getDefaultValue(filter.field)
-  }
-  if (newOperatorValue === 'is' || newOperatorValue === 'is not') {
+function updateOperator(filter) {
+  filter.value = getDefaultValue(filter.field)
+
+  if (filter.operator === 'is' || filter.operator === 'is not') {
     filter.value = 'set'
   }
   apply()
-}
-
-function isSameTypeOperator(oldOperator, newOperator) {
-  let textOperators = [
-    'equals',
-    'not equals',
-    'in',
-    'not in',
-    '>',
-    '<',
-    '>=',
-    '<=',
-  ]
-  if (
-    textOperators.includes(oldOperator) &&
-    textOperators.includes(newOperator)
-  )
-    return true
-  return false
 }
 
 function apply() {
@@ -557,6 +537,39 @@ function transformIn(f) {
     f.value = `%${f.value}%`
   }
   return f
+}
+
+function placeholder(f) {
+  if (f.operator === 'between') {
+    return __('01/01/2022 to 01/31/2022')
+  } else if (f.operator === 'in' || f.operator === 'not in') {
+    if (typeNumber.includes(f.field.fieldtype)) {
+      return __('100, 200, 300')
+    }
+    return __('John, Jane, Doe')
+  } else if (f.operator === 'like' || f.operator === 'not like') {
+    if (typeNumber.includes(f.field.fieldtype)) {
+      return __('%100%')
+    }
+    return __('%John%')
+  } else if (f.operator === 'is' || f.operator === 'is not') {
+    return __('Set')
+  } else if (f.operator === 'timespan') {
+    return __('Last Week')
+  } else if (typeNumber.includes(f.field.fieldtype)) {
+    return __('1000')
+  } else if (typeDate.includes(f.field.fieldtype)) {
+    return __('01/01/2022')
+  } else if (typeCheck.includes(f.field.fieldtype)) {
+    return __('Yes')
+  } else if (typeLink.includes(f.field.fieldtype)) {
+    return __('Select a Value')
+  } else if (typeSelect.includes(f.field.fieldtype)) {
+    return __('Select an Option')
+  } else if (typeString.includes(f.field.fieldtype)) {
+    return __('John Doe')
+  }
+  return __('Enter Value')
 }
 
 const operatorMap = {

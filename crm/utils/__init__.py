@@ -2,7 +2,6 @@ import functools
 
 import frappe
 import phonenumbers
-import requests
 from frappe import _
 from frappe.model.docstatus import DocStatus
 from frappe.model.dynamic_links import get_dynamic_link_map
@@ -197,9 +196,10 @@ def get_dynamic_linked_docs(doc, method="Delete"):
 		else:
 			# dynamic link in table
 			df["table"] = ", `parent`, `parenttype`, `idx`" if meta.istable else ""
+			query = """select `name`, `docstatus` {table} from `tab{parent}` where
+			`{options}`=%s and `{fieldname}`=%s""".format(**df)
 			for refdoc in frappe.db.sql(
-				"""select `name`, `docstatus` {table} from `tab{parent}` where
-				`{options}`=%s and `{fieldname}`=%s""".format(**df),
+				query,
 				(doc.doctype, doc.name),
 				as_dict=True,
 			):
@@ -267,3 +267,17 @@ def sales_user_only(fn):
 		return fn(*args, **kwargs)
 
 	return wrapper
+
+
+def is_frappe_version(version: str, above: bool = False, below: bool = False):
+	from frappe.pulse.utils import get_frappe_version
+
+	current_version = get_frappe_version()
+	major_version = int(current_version.split(".")[0])
+	target_version = int(version.split(".")[0])
+
+	if above:
+		return major_version >= target_version
+	if below:
+		return major_version < target_version
+	return major_version == target_version

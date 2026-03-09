@@ -89,8 +89,8 @@ This app is compatible with the following versions of Frappe and ERPNext:
 
 | CRM branch            | Stability | Frappe branch        | ERPNext branch       |
 | :-------------------- | :-------- | :------------------- | :------------------- |
-| main - v1.x           | stable    | v15.x                | v15.x                |
-| develop - future/v2.x | unstable  | develop - future/v16 | develop - future/v16 |
+| main - v1.x           | stable    | v15.x & v16.x        | v15.x & v16.x        |
+| develop - future/v2.x | unstable  | develop - future/v17 | develop - future/v17 |
 
 ## Getting Started (Production)
 
@@ -188,7 +188,7 @@ You need Docker, docker-compose and git setup on your machine. Refer [Docker doc
 -   [Telegram Public Group](https://t.me/frappecrm)
 -   [Discuss Forum](https://discuss.frappe.io/c/frappe-crm)
 -   [Documentation](https://docs.frappe.io/crm)
--   [YouTube](https://www.youtube.com/channel/UCn3bV5kx77HsVwtnlCeEi_A)
+-   [YouTube](https://www.youtube.com/@frappetech)
 -   [X/Twitter](https://x.com/frappetech)
 
 <br>

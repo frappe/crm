@@ -11,9 +11,9 @@
         class="px-2 py-1 flex items-center justify-center gap-2 rounded-full bg-surface-modal shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
       >
         <div
-          class="size-5 cursor-pointer rounded-full bg-surface-transparent text-xl"
           v-for="r in reactionEmojis"
           :key="r"
+          class="size-5 cursor-pointer rounded-full bg-surface-transparent text-xl"
           @click="() => (emoji = r) && togglePopover()"
         >
           <button>
@@ -36,16 +36,16 @@
           <div class="flex gap-2 px-3 pb-1 pt-3">
             <div class="flex-1">
               <FormControl
+                v-model="search"
                 type="text"
                 placeholder="Search by keyword"
-                v-model="search"
                 :debounce="300"
               />
             </div>
             <Button @click="setRandom">Random</Button>
           </div>
           <div class="w-96"></div>
-          <div class="px-3" v-for="(emojis, group) in emojiGroups" :key="group">
+          <div v-for="(emojis, group) in emojiGroups" :key="group" class="px-3">
             <div
               class="sticky top-0 bg-surface-modal pb-2 pt-3 text-sm text-ink-gray-7"
             >
@@ -53,11 +53,11 @@
             </div>
             <div class="grid w-96 grid-cols-12 place-items-center">
               <button
-                class="h-8 w-8 rounded-md p-1 text-2xl hover:bg-surface-gray-2 focus:outline-none focus:ring focus:ring-blue-200"
                 v-for="_emoji in emojis"
                 :key="_emoji.description"
-                @click="() => (emoji = _emoji.emoji) && togglePopover()"
+                class="h-8 w-8 rounded-md p-1 text-2xl hover:bg-surface-gray-2 focus:outline-none focus:ring focus:ring-blue-200"
                 :title="_emoji.description"
+                @click="() => (emoji = _emoji.emoji) && togglePopover()"
               >
                 {{ _emoji.emoji }}
               </button>
@@ -74,8 +74,8 @@ import { gemoji } from 'gemoji'
 import { ref, computed } from 'vue'
 
 const search = ref('')
-const emoji = defineModel()
-const reaction = defineModel('reaction')
+const emoji = defineModel({ type: String, default: '' })
+const reaction = defineModel('reaction', { type: Boolean })
 
 const reactionEmojis = ref(['👍', '❤️', '😂', '😮', '😢', '🙏'])
 

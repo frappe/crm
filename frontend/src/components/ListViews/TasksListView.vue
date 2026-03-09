@@ -33,16 +33,16 @@
       </ListHeaderItem>
     </ListHeader>
     <ListRows
+      v-slot="{ idx, column, item }"
       class="mx-3 sm:mx-5"
       :rows="rows"
-      v-slot="{ idx, column, item }"
       doctype="CRM Task"
     >
-      <div v-if="column.key === 'due_date'">
+      <div v-if="column.key === 'due_date' && item">
         <Tooltip :text="item && formatDate(item, 'ddd, MMM D, YYYY | hh:mm a')">
           <div class="flex items-center gap-2 truncate text-base">
             <div><CalendarIcon /></div>
-            <div v-if="item" class="truncate">
+            <div class="truncate">
               {{ formatDate(item, 'D MMM, hh:mm a') }}
             </div>
           </div>
@@ -87,8 +87,8 @@
           </div>
           <div
             v-else-if="column.type === 'Text Editor'"
-            v-html="item"
             class="truncate text-base h-4 [&>p]:truncate"
+            v-html="item"
           />
           <div v-else-if="column.type === 'Check'">
             <FormControl
@@ -111,7 +111,7 @@
             </Button>
           </div>
           <div
-            v-else
+            v-else-if="label"
             class="truncate text-base"
             @click="
               (event) =>
@@ -124,7 +124,7 @@
                 })
             "
           >
-            {{ label }}
+            {{ getLabel(label, column) }}
           </div>
         </template>
       </ListRowItem>
@@ -140,8 +140,8 @@
     </ListSelectBanner>
   </ListView>
   <ListFooter
-    class="border-t px-3 py-2 sm:px-5"
     v-model="pageLengthCount"
+    class="border-t px-3 py-2 sm:px-5"
     :options="{
       rowCount: options.rowCount,
       totalCount: options.totalCount,
@@ -164,7 +164,7 @@ import TaskPriorityIcon from '@/components/Icons/TaskPriorityIcon.vue'
 import CalendarIcon from '@/components/Icons/CalendarIcon.vue'
 import ListBulkActions from '@/components/ListBulkActions.vue'
 import ListRows from '@/components/ListViews/ListRows.vue'
-import { formatDate } from '@/utils'
+import { formatDate, isTranslatable } from '@/utils'
 import {
   Avatar,
   ListView,
@@ -179,15 +179,9 @@ import {
 import { sessionStore } from '@/stores/session'
 import { ref, computed, watch } from 'vue'
 
-const props = defineProps({
-  rows: {
-    type: Array,
-    required: true,
-  },
-  columns: {
-    type: Array,
-    required: true,
-  },
+defineProps({
+  rows: { type: Array, required: true },
+  columns: { type: Array, required: true },
   options: {
     type: Object,
     default: () => ({
@@ -211,8 +205,13 @@ const emit = defineEmits([
   'selectionsChanged',
 ])
 
-const pageLengthCount = defineModel()
-const list = defineModel('list')
+const pageLengthCount = defineModel({ type: Number })
+const list = defineModel('list', { type: Object })
+
+function getLabel(label, column) {
+  if (column.options && isTranslatable(column.options)) return __(label)
+  return label
+}
 
 const isLikeFilterApplied = computed(() => {
   return list.value.params?.filters?._liked_by ? true : false

@@ -20,6 +20,12 @@
           <span>
             {{ __(label) || __('Untitled') }}
           </span>
+          <Badge
+            v-if="count"
+            :label="count"
+            :variant="countVariant"
+            :theme="countTheme"
+          />
           <FeatherIcon
             v-if="collapsible && collapseIconPosition === 'right'"
             name="chevron-right"
@@ -38,44 +44,27 @@
       enter-from-class="max-h-0 overflow-hidden"
       leave-to-class="max-h-0 overflow-hidden"
     >
-      <div class="columns" v-bind="$attrs" v-show="opened">
+      <div v-show="opened" class="columns" v-bind="$attrs">
         <slot v-bind="{ opened, open, close, toggle }" />
       </div>
     </transition>
   </div>
 </template>
 <script setup>
+import { Badge } from 'frappe-ui'
 import { ref } from 'vue'
 
 const props = defineProps({
-  label: {
-    type: String,
-    default: '',
-  },
-  hideLabel: {
-    type: Boolean,
-    default: false,
-  },
-  opened: {
-    type: Boolean,
-    default: true,
-  },
-  collapsible: {
-    type: Boolean,
-    default: true,
-  },
-  collapseIconPosition: {
-    type: String,
-    default: 'left',
-  },
-  labelClass: {
-    type: [String, Object, Array],
-    default: '',
-  },
-  headerClass: {
-    type: [String, Object, Array],
-    default: '',
-  },
+  label: { type: String, default: '' },
+  count: { type: [String, Number], default: '' },
+  countVariant: { type: String, default: 'subtle' },
+  countTheme: { type: String, default: 'gray' },
+  hideLabel: { type: Boolean, default: false },
+  opened: { type: Boolean, default: true },
+  collapsible: { type: Boolean, default: true },
+  collapseIconPosition: { type: String, default: 'left' },
+  labelClass: { type: [String, Object, Array], default: '' },
+  headerClass: { type: [String, Object, Array], default: '' },
 })
 
 const hide = ref(props.hideLabel)

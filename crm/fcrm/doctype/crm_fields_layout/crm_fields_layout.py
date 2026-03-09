@@ -4,12 +4,24 @@
 import json
 
 import frappe
-from frappe import _
 from frappe.model.document import Document
 from frappe.utils import random_string
 
 
 class CRMFieldsLayout(Document):
+	# begin: auto-generated types
+	# This code is auto-generated. Do not modify anything in this block.
+
+	from typing import TYPE_CHECKING
+
+	if TYPE_CHECKING:
+		from frappe.types import DF
+
+		dt: DF.Link | None
+		layout: DF.Code | None
+		type: DF.Literal["Quick Entry", "Side Panel", "Data Fields", "Grid Row", "Required Fields"]
+	# end: auto-generated types
+
 	pass
 
 
@@ -97,7 +109,7 @@ def get_fields_layout(doctype: str, type: str, parent_doctype: str | None = None
 
 
 @frappe.whitelist()
-def get_sidepanel_sections(doctype):
+def get_sidepanel_sections(doctype: str):
 	if not frappe.db.exists("CRM Fields Layout", {"dt": doctype, "type": "Side Panel"}):
 		return []
 	layout = frappe.get_doc("CRM Fields Layout", {"dt": doctype, "type": "Side Panel"}).layout

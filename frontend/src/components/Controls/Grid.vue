@@ -24,7 +24,7 @@
         <div
           class="inline-flex items-center justify-center border-r border-outline-gray-2 py-2 px-1 w-12"
         >
-          {{ __('No') }}
+          {{ __('No.') }}
         </div>
         <div
           class="grid w-full truncate"
@@ -32,13 +32,13 @@
         >
           <div
             v-for="field in fields"
+            :key="field.fieldname"
             class="border-r border-outline-gray-2 p-2 truncate"
             :class="
               ['Int', 'Float', 'Currency', 'Percent'].includes(field.fieldtype)
                 ? 'text-right'
                 : ''
             "
-            :key="field.fieldname"
             :title="field.label"
           >
             {{ __(field.label) }}
@@ -54,7 +54,7 @@
         </div>
         <div class="flex items-center justify-center w-12">
           <Button
-            :tooltip="__('Edit grid fields')"
+            :tooltip="__('Edit Grid Fields')"
             class="rounded !bg-surface-gray-2 border-0 !text-ink-gray-5"
             variant="outline"
             icon="settings"
@@ -65,8 +65,8 @@
       <!-- Rows -->
       <template v-if="rows?.length">
         <Draggable
-          class="w-full"
           v-model="rows"
+          class="w-full"
           :delay="isTouchScreenDevice() ? 200 : 0"
           group="rows"
           item-key="name"
@@ -102,9 +102,9 @@
                 :style="{ gridTemplateColumns: gridTemplateColumns }"
               >
                 <div
-                  class="border-r border-outline-gray-modals h-full"
                   v-for="field in fields"
                   :key="field.fieldname"
+                  class="border-r border-outline-gray-modals h-full"
                 >
                   <FormControl
                     v-if="
@@ -117,9 +117,9 @@
                         'Check',
                       ].includes(field.fieldtype)
                     "
+                    v-model="row[field.fieldname]"
                     type="text"
                     :placeholder="field.placeholder"
-                    v-model="row[field.fieldname]"
                     :disabled="true"
                   />
                   <Link
@@ -134,10 +134,10 @@
                         : row[field.options]
                     "
                     :filters="field.filters"
-                    @change="(v) => fieldChange(v, field, row)"
                     :onCreate="
                       (value, close) => field.create(v, field, row, close)
                     "
+                    @change="(v) => fieldChange(v, field, row)"
                   />
                   <Link
                     v-else-if="field.fieldtype === 'User'"
@@ -145,9 +145,9 @@
                     :value="getUser(row[field.fieldname]).full_name"
                     :doctype="field.options"
                     :filters="field.filters"
-                    @change="(v) => fieldChange(v, field, row)"
                     :placeholder="field.placeholder"
                     :hideMe="true"
+                    @change="(v) => fieldChange(v, field, row)"
                   >
                     <template #prefix>
                       <UserAvatar
@@ -172,8 +172,8 @@
                     class="flex h-full bg-surface-white justify-center items-center"
                   >
                     <Checkbox
-                      class="cursor-pointer duration-300"
                       v-model="row[field.fieldname]"
+                      class="cursor-pointer duration-300"
                       :disabled="!gridSettings.editable_grid"
                       @change="(e) => fieldChange(e.target.checked, field, row)"
                     />
@@ -216,12 +216,12 @@
                   />
                   <FormControl
                     v-else-if="field.fieldtype === 'Select'"
+                    v-model="row[field.fieldname]"
                     class="text-sm text-ink-gray-8"
                     type="select"
                     variant="outline"
-                    v-model="row[field.fieldname]"
                     :options="field.options"
-                    @change="(e) => fieldChange(e.target.value, field, row)"
+                    @update:modelValue="(e) => fieldChange(e, field, row)"
                   />
                   <Password
                     v-else-if="field.fieldtype === 'Password'"
@@ -271,22 +271,22 @@
                     :disabled="Boolean(field.read_only)"
                     @change="fieldChange(flt($event.target.value), field, row)"
                   />
-                  <Autocomplete
+                  <Combobox
                     v-else-if="field.fieldtype === 'Autocomplete'"
-                    class="text-sm text-ink-gray-8"
-                    :modelValue="row[field.fieldname]"
-                    @update:modelValue="(v) => row[field.fieldname] = typeof v == 'object' ? v.value : v"
-                    @change="(v) => fieldChange(typeof v == 'object' ? v.value : v, field, row)"
-                    :options="field.options"
+                    v-model="row[field.fieldname]"
+                    class="combobox"
+                    variant="outline"
+                    :options="getOptions(field.options)"
                     :placeholder="field.placeholder"
                     :disabled="Boolean(field.read_only)"
+                    @update:modelValue="(v) => fieldChange(v, field, row)"
                   />
                   <FormControl
                     v-else
+                    v-model="row[field.fieldname]"
                     class="text-sm text-ink-gray-8"
                     type="text"
                     variant="outline"
-                    v-model="row[field.fieldname]"
                     :options="field.options"
                     @change="fieldChange($event.target.value, field, row)"
                   />
@@ -294,7 +294,7 @@
               </div>
               <div class="edit-row flex items-center justify-center w-12">
                 <Button
-                  :tooltip="__('Edit row')"
+                  :tooltip="__('Edit Row')"
                   class="rounded border-0 !text-ink-gray-7"
                   variant="outline"
                   :icon="EditIcon"
@@ -370,32 +370,17 @@ import {
   DatePicker,
   Tooltip,
   dayjs,
-  Autocomplete
+  Combobox,
 } from 'frappe-ui'
 import Draggable from 'vuedraggable'
 import { ref, reactive, computed, inject, provide } from 'vue'
 
 const props = defineProps({
-  label: {
-    type: String,
-    default: '',
-  },
-  doctype: {
-    type: String,
-    required: true,
-  },
-  parentDoctype: {
-    type: String,
-    required: true,
-  },
-  parentFieldname: {
-    type: String,
-    required: true,
-  },
-  overrides: {
-    type: Object,
-    default: () => ({}),
-  }
+  label: { type: String, default: '' },
+  doctype: { type: String, required: true },
+  parentDoctype: { type: String, required: true },
+  parentFieldname: { type: String, required: true },
+  overrides: { type: Object, default: () => ({}) },
 })
 
 const triggerOnChange = inject('triggerOnChange', () => {})
@@ -413,8 +398,8 @@ const {
 getMeta(props.parentDoctype)
 const { users, getUser } = usersStore()
 
-const rows = defineModel()
-const parentDoc = defineModel('parent')
+const rows = defineModel({ type: Array, default: () => [] })
+const parentDoc = defineModel('parent', { type: Object, default: () => ({}) })
 
 provide('parentDoc', parentDoc)
 
@@ -464,17 +449,15 @@ function getFieldObj(field) {
     })
   }
 
-  const fieldObjWithFilters ={
+  const fieldObjWithFilters = {
     ...field,
     filters: field.link_filters && JSON.parse(field.link_filters),
     placeholder: field.placeholder || field.label,
   }
-  
+
   return {
     ...fieldObjWithFilters,
-    ...props.overrides.fields?.find(
-      (f) => f.fieldname === field.fieldname,
-    ),
+    ...props.overrides.fields?.find((f) => f.fieldname === field.fieldname),
   }
 }
 
@@ -551,8 +534,13 @@ const reorder = () => {
   })
 }
 
-
 function fieldChange(value, field, row) {
+  value = Array.isArray(value)
+    ? value
+    : typeof value === 'object' && value !== null && 'value' in value
+      ? value.value
+      : value
+
   triggerOnChange(field.fieldname, value, row)
 }
 
@@ -586,6 +574,18 @@ function getDefaultValue(defaultValue, fieldtype) {
 
   return defaultValue
 }
+
+const getOptions = (options) => {
+  if (Array.isArray(options)) {
+    return options
+  } else if (typeof options === 'string') {
+    return options.split('\n').map((option) => {
+      return { label: option, value: option }
+    })
+  } else {
+    return []
+  }
+}
 </script>
 
 <style scoped>
@@ -615,8 +615,9 @@ function getDefaultValue(defaultValue, fieldtype) {
   height: 38px;
 }
 
-/* For Autocomplete */
-:deep(.grid-row button) {
+/* For Autocomplete, Link */
+:deep(.grid-row button),
+:deep(.grid-row .combobox > div > div) {
   border: none;
   border-radius: 0;
   background-color: var(--surface-white);

@@ -18,11 +18,14 @@ class CRMDeal(Document):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
+		from frappe.types import DF
+
 		from crm.fcrm.doctype.crm_contacts.crm_contacts import CRMContacts
 		from crm.fcrm.doctype.crm_products.crm_products import CRMProducts
-		from crm.fcrm.doctype.crm_rolling_response_time.crm_rolling_response_time import CRMRollingResponseTime
+		from crm.fcrm.doctype.crm_rolling_response_time.crm_rolling_response_time import (
+			CRMRollingResponseTime,
+		)
 		from crm.fcrm.doctype.crm_status_change_log.crm_status_change_log import CRMStatusChangeLog
-		from frappe.types import DF
 
 		annual_revenue: DF.Currency
 		closed_date: DF.Date | None
@@ -229,9 +232,9 @@ class CRMDeal(Document):
 		self.update_expected_deal_value()
 		if frappe.db.get_single_value("FCRM Settings", "enable_forecasting"):
 			if not self.expected_deal_value or self.expected_deal_value == 0:
-				frappe.throw(_("Expected Deal Value is required."), frappe.MandatoryError)
+				frappe.throw(_("Expected deal value is required."), frappe.MandatoryError)
 			if not self.expected_closure_date:
-				frappe.throw(_("Expected Closure Date is required."), frappe.MandatoryError)
+				frappe.throw(_("Expected closure date is required."), frappe.MandatoryError)
 
 	def validate_lost_reason(self):
 		"""
@@ -271,7 +274,8 @@ class CRMDeal(Document):
 			},
 			{
 				"label": "Status",
-				"type": "Select",
+				"type": "Link",
+				"options": "CRM Deal Status",
 				"key": "status",
 				"width": "10rem",
 			},
@@ -282,7 +286,7 @@ class CRMDeal(Document):
 				"width": "12rem",
 			},
 			{
-				"label": "Mobile No",
+				"label": "Mobile No.",
 				"type": "Data",
 				"key": "mobile_no",
 				"width": "11rem",
@@ -328,7 +332,7 @@ class CRMDeal(Document):
 
 
 @frappe.whitelist()
-def add_contact(deal, contact):
+def add_contact(deal: str, contact: str):
 	if not frappe.has_permission("CRM Deal", "write", deal):
 		frappe.throw(_("Not allowed to add contact to Deal"), frappe.PermissionError)
 
@@ -339,7 +343,7 @@ def add_contact(deal, contact):
 
 
 @frappe.whitelist()
-def remove_contact(deal, contact):
+def remove_contact(deal: str, contact: str):
 	if not frappe.has_permission("CRM Deal", "write", deal):
 		frappe.throw(_("Not allowed to remove contact from Deal"), frappe.PermissionError)
 
@@ -350,7 +354,7 @@ def remove_contact(deal, contact):
 
 
 @frappe.whitelist()
-def set_primary_contact(deal, contact):
+def set_primary_contact(deal: str, contact: str):
 	if not frappe.has_permission("CRM Deal", "write", deal):
 		frappe.throw(_("Not allowed to set primary contact for Deal"), frappe.PermissionError)
 
@@ -409,6 +413,7 @@ def create_contact(doc):
 			"last_name": doc.get("last_name"),
 			"salutation": doc.get("salutation"),
 			"company_name": doc.get("organization") or doc.get("organization_name"),
+			"gender": doc.get("gender"),
 		}
 	)
 
@@ -425,25 +430,25 @@ def create_contact(doc):
 
 
 @frappe.whitelist()
-def create_deal(args):
+def create_deal(doc: dict):
 	deal = frappe.new_doc("CRM Deal")
 
-	contact = args.get("contact")
+	contact = doc.get("contact")
 	if not contact and (
-		args.get("first_name") or args.get("last_name") or args.get("email") or args.get("mobile_no")
+		doc.get("first_name") or doc.get("last_name") or doc.get("email") or doc.get("mobile_no")
 	):
-		contact = create_contact(args)
+		contact = create_contact(doc)
 
 	deal.update(
 		{
-			"organization": args.get("organization") or create_organization(args),
+			"organization": doc.get("organization") or create_organization(doc),
 			"contacts": [{"contact": contact, "is_primary": 1}] if contact else [],
 		}
 	)
 
-	args.pop("organization", None)
+	doc.pop("organization", None)
 
-	deal.update(args)
+	deal.update(doc)
 
 	deal.insert(ignore_permissions=True)
 	return deal.name

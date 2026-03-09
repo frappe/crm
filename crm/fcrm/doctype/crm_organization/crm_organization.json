@@ -86,7 +86,7 @@
  "image_field": "organization_logo",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-07-15 11:40:12.175598",
+ "modified": "2026-02-23 12:27:26.887189",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Organization",
@@ -101,7 +101,7 @@
    "print": 1,
    "read": 1,
    "report": 1,
-   "role": "Sales User",
+   "role": "System Manager",
    "share": 1,
    "write": 1
   },
@@ -114,6 +114,18 @@
    "read": 1,
    "report": 1,
    "role": "Sales Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales User",
    "share": 1,
    "write": 1
   }

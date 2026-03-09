@@ -6,8 +6,8 @@
         <Autocomplete
           :value="field.label"
           :options="fields.data"
-          @change="(e) => changeField(e)"
           :placeholder="__('Source')"
+          @change="(e) => changeField(e)"
         />
       </div>
       <div>
@@ -16,8 +16,8 @@
           :is="getValueComponent(field)"
           :value="newValue"
           size="md"
-          @change="(v) => updateValue(v)"
           :placeholder="__('Contact Us')"
+          @change="(v) => updateValue(v)"
         />
       </div>
     </template>
@@ -25,9 +25,9 @@
       <Button
         class="w-full"
         variant="solid"
-        @click="updateValues"
         :loading="loading"
         :label="__('Update {0} Records', [recordCount])"
+        @click="updateValues"
       />
     </template>
   </Dialog>
@@ -36,7 +36,7 @@
 <script setup>
 import Link from '@/components/Controls/Link.vue'
 import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
-import { capture } from '@/telemetry'
+import { useTelemetry } from 'frappe-ui/frappe'
 import {
   FormControl,
   call,
@@ -54,19 +54,15 @@ const typeEditor = ['Text Editor']
 const typeDate = ['Date', 'Datetime']
 
 const props = defineProps({
-  doctype: {
-    type: String,
-    required: true,
-  },
-  selectedValues: {
-    type: Set,
-    required: true,
-  },
+  doctype: { type: String, required: true },
+  selectedValues: { type: Set, required: true },
 })
 
-const show = defineModel()
+const show = defineModel({ type: Boolean })
 
 const emit = defineEmits(['reload'])
+
+const { capture } = useTelemetry()
 
 const fields = createResource({
   url: 'crm.api.doc.get_fields',

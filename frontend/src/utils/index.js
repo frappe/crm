@@ -260,7 +260,7 @@ export function getSafeWebsiteUrl(rawUrl) {
     }
 
     return parsedUrl.href
-  } catch (_error) {
+  } catch {
     return null
   }
 }
@@ -269,7 +269,7 @@ export function openWebsite(url) {
   const safeUrl = getSafeWebsiteUrl(url)
 
   if (!safeUrl) {
-    toast.error(__('Invalid website URL'))
+    toast.error(__('Invalid Website URL'))
     return false
   }
 
@@ -370,7 +370,7 @@ export function copyToClipboard(text) {
     document.body.removeChild(input)
   }
   function showSuccessAlert() {
-    toast.success(__('Copied to clipboard'))
+    toast.success(__('Copied to Clipboard'))
   }
 }
 
@@ -432,7 +432,7 @@ export function evaluateDependsOnValue(expression, doc) {
   if (!expression) return true
   if (!doc) return true
 
-  let out = null
+  let out
 
   if (typeof expression === 'boolean') {
     out = expression
@@ -441,7 +441,7 @@ export function evaluateDependsOnValue(expression, doc) {
   } else if (expression.substr(0, 5) == 'eval:') {
     try {
       out = _eval(expression.substr(5), { doc })
-    } catch (e) {
+    } catch {
       out = true
     }
   } else {
@@ -460,7 +460,7 @@ export function evaluateExpression(expression, doc, parent) {
   if (!expression) return false
   if (!doc) return false
 
-  let out = null
+  let out
   if (typeof expression === 'boolean') {
     out = expression
   } else if (typeof expression === 'function') {
@@ -471,7 +471,7 @@ export function evaluateExpression(expression, doc, parent) {
       if (parent && parent.istable && expression.includes('is_submittable')) {
         out = true
       }
-    } catch (e) {
+    } catch {
       out = true
     }
   } else {
@@ -527,12 +527,13 @@ export function runSequentially(functions) {
   }, Promise.resolve())
 }
 
-export function DropdownOption({ option, icon, selected }) {
+export function DropdownOption({ option, icon, selected, onClick }) {
   return h(
     'button',
     {
       class:
         'group flex w-full text-ink-gray-8 justify-between items-center rounded-md px-2 py-2 text-sm hover:bg-surface-gray-2',
+      onClick,
     },
     [
       h('div', { class: 'flex gap-2' }, [
@@ -553,6 +554,32 @@ export function DropdownOption({ option, icon, selected }) {
         : null,
     ],
   )
+}
+
+export function deepClone(obj) {
+  if (obj === null || typeof obj !== 'object') {
+    return obj
+  }
+
+  if (obj instanceof Date) {
+    return new Date(obj.getTime())
+  }
+
+  if (Array.isArray(obj)) {
+    return obj.map((item) => deepClone(item))
+  }
+
+  if (typeof obj === 'object') {
+    const cloned = {}
+    for (const key in obj) {
+      if (Object.hasOwn(obj, key)) {
+        cloned[key] = deepClone(obj[key])
+      }
+    }
+    return cloned
+  }
+
+  return obj
 }
 
 export function copy(obj) {
@@ -643,7 +670,8 @@ export const convertToConditions = ({ conditions, fieldPrefix }) => {
         return `(${fieldAccess} >= "${start}" and ${fieldAccess} <= "${end}")`
       }
 
-      let valueStr = ''
+      let valueStr
+
       if (op === 'in' || op === 'not in') {
         let items
         if (Array.isArray(value)) {
@@ -748,4 +776,136 @@ export function orderSensitiveEqual(a, b) {
   if (a.length !== b.length) return false
   for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return false
   return true
+}
+
+export function TemplateOption({ active, option, variant, icon, onClick }) {
+  return h(
+    'button',
+    {
+      class: [
+        active ? 'bg-surface-gray-2' : 'text-ink-gray-7',
+        'group flex w-full gap-2 items-center rounded-md px-2 py-2 text-base hover:bg-surface-gray-3',
+        variant == 'danger' ? 'text-ink-red-3 hover:bg-ink-red-1' : '',
+      ],
+      onClick: onClick,
+    },
+    [
+      icon
+        ? h(FeatherIcon, {
+            name: icon,
+            class: ['h-4 w-4 shrink-0'],
+            'aria-hidden': true,
+          })
+        : null,
+      h('span', { class: 'whitespace-nowrap' }, option),
+    ],
+  )
+}
+
+/**
+ * @param {Object} config - Configuration object
+ * @param {Ref<boolean>} config.isConfirmingDelete - Ref to track confirmation state
+ * @param {Function} config.onConfirmDelete - Callback when delete is confirmed
+ * @returns {Array} Array of option objects for use in dropdowns
+ */
+export function ConfirmDelete({ isConfirmingDelete, onConfirmDelete }) {
+  return [
+    {
+      label: __('Delete'),
+      component: (props) =>
+        TemplateOption({
+          option: __('Delete'),
+          icon: 'trash-2',
+          active: props.active,
+          variant: 'grey',
+          onClick: (event) => {
+            event.preventDefault()
+            event.stopImmediatePropagation()
+            isConfirmingDelete.value = true
+          },
+        }),
+      condition: () => !isConfirmingDelete.value,
+    },
+    {
+      label: __('Confirm Delete'),
+      component: (props) =>
+        TemplateOption({
+          option: __('Confirm Delete'),
+          icon: 'trash-2',
+          active: props.active,
+          variant: 'danger',
+          onClick: () => {
+            onConfirmDelete()
+            // Reset state after confirming
+            isConfirmingDelete.value = false
+          },
+        }),
+      condition: () => isConfirmingDelete.value,
+    },
+  ]
+}
+
+export function formatTimeHMS(seconds) {
+  const days = Math.floor(seconds / (3600 * 24))
+  const hours = Math.floor((seconds % (3600 * 24)) / 3600)
+  const minutes = Math.floor((seconds % 3600) / 60)
+  const remainingSeconds = Math.floor(seconds % 60)
+
+  let formattedTime = ''
+
+  if (days > 0) {
+    formattedTime += `${days} days `
+  }
+
+  if (hours > 0) {
+    formattedTime += `${hours} hours `
+  }
+
+  if (minutes > 0) {
+    formattedTime += `${minutes} minutes `
+  }
+
+  if (remainingSeconds > 0) {
+    formattedTime += `${remainingSeconds} seconds`
+  }
+
+  return formattedTime.trim() == '' ? '0 seconds' : formattedTime.trim()
+}
+
+export function getGridTemplateColumnsForTable(columns) {
+  let columnsWidth = columns
+    .map((col) => {
+      let width = col.width || 1
+      if (typeof width === 'number') {
+        return width + 'fr'
+      }
+      return width
+    })
+    .join(' ')
+  return columnsWidth + ' 22px'
+}
+
+export function clearCache() {
+  ;[
+    '_last_load',
+    '_version_number',
+    'metadata_version',
+    'page_info',
+    'last_visited',
+  ].forEach((key) => localStorage.removeItem(key))
+
+  for (let key in localStorage) {
+    if (
+      key.startsWith('_page:') ||
+      key.startsWith('_doctype:') ||
+      key.startsWith('preferred_breadcrumbs:')
+    ) {
+      localStorage.removeItem(key)
+    }
+  }
+}
+
+export function isTranslatable(doctype) {
+  let translatedDoctypes = window.translated_doctypes || []
+  return translatedDoctypes.includes(doctype)
 }

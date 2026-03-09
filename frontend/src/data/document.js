@@ -70,11 +70,11 @@ export function useDocument(doctype, docname, resourceOverrides = {}) {
             console.error(err)
           },
         },
-        ...resourceOverrides
+        ...resourceOverrides,
       })
     } else {
       documentsCache[doctype][''] = reactive({
-        doc: {},
+        doc: { __newDocument: true, doctype },
       })
       setupFormScript()
     }
@@ -184,7 +184,7 @@ export function useDocument(doctype, docname, resourceOverrides = {}) {
     let missingFields = []
 
     fields.forEach((df) => {
-      let parent = meta?.doctypeMeta?.[df.parent] || null
+      let parent = meta?.doctypesMeta?.[df.parent] || null
       if (evaluateExpression(df.mandatory_depends_on, doc, parent)) {
         const value = doc[df.fieldname]
         if (

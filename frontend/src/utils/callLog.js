@@ -61,15 +61,15 @@ export function getCallLogDetail(row, log, columns = []) {
 }
 
 export const statusLabelMap = {
-  Completed: 'Completed',
-  Initiated: 'Initiated',
-  Busy: 'Declined',
-  Failed: 'Failed',
-  Queued: 'Queued',
-  Canceled: 'Canceled',
-  Ringing: 'Ringing',
-  'No Answer': 'Missed Call',
-  'In Progress': 'In Progress',
+  Completed: __('Completed'),
+  Initiated: __('Initiated'),
+  Busy: __('Declined'),
+  Failed: __('Failed'),
+  Queued: __('Queued'),
+  Canceled: __('Canceled'),
+  Ringing: __('Ringing'),
+  'No Answer': __('Missed Call'),
+  'In Progress': __('In Progress'),
 }
 
 export const statusColorMap = {

@@ -7,14 +7,14 @@
       <Badge
         v-if="document.isDirty"
         class="ml-3"
-        :label="'Not Saved'"
+        :label="__('Not Saved')"
         theme="orange"
       />
     </div>
     <div class="flex gap-1">
       <Button
         v-if="isManager() && !isMobileView"
-        :tooltip="__('Edit fields layout')"
+        :tooltip="__('Edit Fields Layout')"
         :icon="EditIcon"
         @click="showDataFieldsModal = true"
       />
@@ -67,14 +67,8 @@ import { isMobileView } from '@/composables/settings'
 import { ref, watch, getCurrentInstance } from 'vue'
 
 const props = defineProps({
-  doctype: {
-    type: String,
-    required: true,
-  },
-  docname: {
-    type: String,
-    required: true,
-  },
+  doctype: { type: String, required: true },
+  docname: { type: String, required: true },
 })
 
 const emit = defineEmits(['beforeSave', 'afterSave'])

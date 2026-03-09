@@ -51,12 +51,9 @@
 <script setup>
 import { GridLayout } from 'frappe-ui'
 
-const props = defineProps({
-  editing: {
-    type: Boolean,
-    default: false,
-  },
+defineProps({
+  editing: { type: Boolean, default: false },
 })
 
-const items = defineModel()
+const items = defineModel({ type: Array, default: () => [] })
 </script>

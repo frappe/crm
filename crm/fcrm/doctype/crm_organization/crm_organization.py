@@ -8,6 +8,26 @@ from crm.fcrm.doctype.fcrm_settings.fcrm_settings import get_exchange_rate
 
 
 class CRMOrganization(Document):
+	# begin: auto-generated types
+	# This code is auto-generated. Do not modify anything in this block.
+
+	from typing import TYPE_CHECKING
+
+	if TYPE_CHECKING:
+		from frappe.types import DF
+
+		address: DF.Link | None
+		annual_revenue: DF.Currency
+		currency: DF.Link | None
+		exchange_rate: DF.Float
+		industry: DF.Link | None
+		no_of_employees: DF.Literal["1-10", "11-50", "51-200", "201-500", "501-1000", "1000+"]
+		organization_logo: DF.AttachImage | None
+		organization_name: DF.Data | None
+		territory: DF.Link | None
+		website: DF.Data | None
+	# end: auto-generated types
+
 	def validate(self):
 		self.update_exchange_rate()
 

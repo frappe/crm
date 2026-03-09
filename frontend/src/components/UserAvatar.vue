@@ -9,11 +9,8 @@
 import { usersStore } from '@/stores/users'
 import { Avatar } from 'frappe-ui'
 
-const props = defineProps({
-  user: {
-    type: String,
-    default: null,
-  },
+defineProps({
+  user: { type: String, default: null },
 })
 
 const { getUser } = usersStore()

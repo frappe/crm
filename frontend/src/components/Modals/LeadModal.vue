@@ -13,21 +13,21 @@
               v-if="isManager() && !isMobileView"
               variant="ghost"
               class="w-7"
-              :tooltip="__('Edit fields layout')"
+              :tooltip="__('Edit Fields Layout')"
               :icon="EditIcon"
               @click="openQuickEntryModal"
             />
             <Button
               variant="ghost"
               class="w-7"
-              @click="show = false"
               icon="x"
+              @click="show = false"
             />
           </div>
         </div>
         <div>
           <FieldLayout v-if="tabs.data" :tabs="tabs.data" :data="lead.doc" />
-          <ErrorMessage class="mt-4" v-if="error" :message="__(error)" />
+          <ErrorMessage v-if="error" class="mt-4" :message="__(error)" />
         </div>
       </div>
       <div class="px-4 pb-7 pt-4 sm:px-6">
@@ -52,15 +52,14 @@ import { statusesStore } from '@/stores/statuses'
 import { sessionStore } from '@/stores/session'
 import { isMobileView } from '@/composables/settings'
 import { showQuickEntryModal, quickEntryProps } from '@/composables/modals'
-import { capture } from '@/telemetry'
+import { useOnboarding, useTelemetry } from 'frappe-ui/frappe'
 import { createResource } from 'frappe-ui'
-import { useOnboarding } from 'frappe-ui/frappe'
 import { useDocument } from '@/data/document'
 import { computed, onMounted, ref, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 
 const props = defineProps({
-  defaults: Object,
+  defaults: { type: Object, default: () => ({}) },
 })
 
 const { user } = sessionStore()
@@ -68,20 +67,16 @@ const { getUser, isManager } = usersStore()
 const { getLeadStatus, statusOptions } = statusesStore()
 const { updateOnboardingStep } = useOnboarding('frappecrm')
 
-const show = defineModel()
+const show = defineModel({ type: Boolean })
 const router = useRouter()
 const error = ref(null)
 const isLeadCreating = ref(false)
 
 const { document: lead, triggerOnBeforeCreate } = useDocument('CRM Lead')
 
-const leadStatuses = computed(() => {
-  let statuses = statusOptions('lead')
-  if (!lead.doc.status) {
-    lead.doc.status = statuses?.[0]?.value
-  }
-  return statuses
-})
+const { capture } = useTelemetry()
+
+const leadStatuses = computed(() => statusOptions('lead'))
 
 const tabs = createResource({
   url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_fields_layout',
@@ -146,11 +141,11 @@ async function createNewLead() {
           lead.doc.mobile_no &&
           isNaN(lead.doc.mobile_no.replace(/[-+() ]/g, ''))
         ) {
-          error.value = __('Mobile No should be a number')
+          error.value = __('Mobile No. should be a number')
           return error.value
         }
         if (lead.doc.email && !lead.doc.email.includes('@')) {
-          error.value = __('Invalid Email')
+          error.value = __('Invalid email address')
           return error.value
         }
         if (!lead.doc.status) {
@@ -187,7 +182,7 @@ function openQuickEntryModal() {
 }
 
 onMounted(() => {
-  lead.doc = { no_of_employees: '1-10' }
+  lead.doc.no_of_employees = '1-10'
   Object.assign(lead.doc, props.defaults)
 
   if (!lead.doc?.lead_owner) {

@@ -34,6 +34,7 @@ class CRMServiceLevelAgreement(Document):
 
 		apply_on: DF.Link
 		condition: DF.Code | None
+		condition_json: DF.Code | None
 		default: DF.Check
 		enabled: DF.Check
 		end_date: DF.Date | None
@@ -98,8 +99,10 @@ class CRMServiceLevelAgreement(Document):
 		end_at = doc.first_responded_on
 		if not start_at or not end_at:
 			return
-		doc.first_response_time = self.calc_elapsed_time(start_at, end_at)
-		if not doc.last_response_time:
+		if not doc.first_response_time:
+			doc.first_response_time = self.calc_elapsed_time(start_at, end_at)
+
+		if not doc.last_response_time and doc.first_response_time:
 			doc.last_response_time = doc.first_response_time
 
 	def set_rolling_responses(self, doc: Document):
@@ -115,14 +118,16 @@ class CRMServiceLevelAgreement(Document):
 				},
 			)
 		elif doc.communication_status != self.get_default_priority():
-			doc.last_response_time = self.calc_elapsed_time(doc.last_responded_on, now_datetime())
-			doc.last_responded_on = now_datetime()
+			current_time = now_datetime()
+			doc.last_response_time = self.calc_elapsed_time(doc.last_responded_on, current_time)
+			doc.last_responded_on = current_time
+			is_failed = self.is_rolling_response_failed(doc)
 			doc.append(
 				"rolling_responses",
 				{
 					"response_time": doc.last_response_time,
 					"responded_on": doc.last_responded_on,
-					"status": "Failed" if self.is_rolling_response_failed(doc) else "Fulfilled",
+					"status": "Failed" if is_failed else "Fulfilled",
 				},
 			)
 
@@ -145,20 +150,25 @@ class CRMServiceLevelAgreement(Document):
 		if end_time:
 			doc.response_by = end_time
 
-	def set_rolling_response_by(self, doc: Document):
-		if not doc.response_by or not doc.last_responded_on:
+	def _update_rolling_response_by(self, doc: Document):
+		default_priority = self.get_default_priority()
+		if doc.communication_status != default_priority:
 			return
 
-		communication_status = doc.communication_status
 		priorities = self.get_priorities()
-		priority = priorities.get(communication_status)
+		priority = priorities.get(default_priority)
 		if not priority:
 			return
 
 		rolling_response_time = priority.get("first_response_time", 0)
-		end_time = self.calc_time(doc.last_responded_on, rolling_response_time)
+		end_time = self.calc_time(now_datetime(), rolling_response_time)
 		if end_time:
 			doc.response_by = end_time
+
+	def set_rolling_response_by(self, doc: Document):
+		if not doc.response_by or not doc.last_responded_on:
+			return
+		self._update_rolling_response_by(doc)
 
 	def handle_sla_status(self, doc: Document):
 		is_failed = self.is_first_response_failed(doc)
@@ -191,9 +201,25 @@ class CRMServiceLevelAgreement(Document):
 				doc.sla_status = status
 
 	def is_rolling_response_failed(self, doc: Document):
+		if not doc.response_by:
+			return False
+		# When waiting for agent's response (default priority), check if deadline has passed
+		if doc.communication_status == self.get_default_priority():
+			return get_datetime(doc.response_by) < now_datetime()
+		# When agent has responded, check if they responded before the deadline
 		if not doc.last_responded_on:
 			return get_datetime(doc.response_by) < now_datetime()
 		return get_datetime(doc.response_by) < get_datetime(doc.last_responded_on)
+
+	def _time_to_seconds(self, time_obj):
+		"""
+		Convert time or timedelta object to seconds
+		"""
+		if isinstance(time_obj, timedelta):
+			return time_obj.total_seconds()
+		else:
+			# datetime.time object
+			return time_obj.hour * 3600 + time_obj.minute * 60 + time_obj.second
 
 	def calc_time(
 		self,
@@ -216,9 +242,14 @@ class CRMServiceLevelAgreement(Document):
 				continue
 			today_workday = workdays[today_weekday]
 			now_in_seconds = time_diff_in_seconds(today, today_day)
-			start_time = max(today_workday.start_time.total_seconds(), now_in_seconds)
+
+			# Convert time objects to seconds
+			start_time_seconds = self._time_to_seconds(today_workday.start_time)
+			end_time_seconds = self._time_to_seconds(today_workday.end_time)
+
+			start_time = max(start_time_seconds, now_in_seconds)
 			till_start_time = max(start_time - now_in_seconds, 0)
-			end_time = max(today_workday.end_time.total_seconds(), now_in_seconds)
+			end_time = max(end_time_seconds, now_in_seconds)
 			time_left = max(end_time - start_time, 0)
 			if not time_left:
 				res = getdate(add_to_date(res, days=1, as_datetime=True))
@@ -239,7 +270,7 @@ class CRMServiceLevelAgreement(Document):
 		"""
 		start_time = get_datetime(start_time)
 		end_time = get_datetime(end_time)
-		holiday_list = []
+		holiday_list = self.get_holidays()
 		working_day_list = self.get_working_days()
 		working_hours = self.get_working_hours()
 
@@ -304,8 +335,19 @@ class CRMServiceLevelAgreement(Document):
 	def is_working_time(self, date_time, working_hours):
 		day_of_week = get_weekdays()[date_time.weekday()]
 		start_time, end_time = working_hours.get(day_of_week, (0, 0))
-		date_time = timedelta(hours=date_time.hour, minutes=date_time.minute, seconds=date_time.second)
-		return start_time <= date_time < end_time
+
+		if start_time == 0 and end_time == 0:
+			return False
+
+		date_time_seconds = timedelta(
+			hours=date_time.hour, minutes=date_time.minute, seconds=date_time.second
+		).total_seconds()
+
+		# Convert time objects to seconds
+		start_time_seconds = self._time_to_seconds(start_time)
+		end_time_seconds = self._time_to_seconds(end_time)
+
+		return start_time_seconds <= date_time_seconds < end_time_seconds
 
 	def get_holidays(self):
 		res = []

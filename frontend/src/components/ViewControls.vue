@@ -32,8 +32,8 @@
             v-if="route.params.viewType !== 'kanban'"
             v-model="list"
             :doctype="doctype"
-            @update="updateSort"
             :hideLabel="isMobileView"
+            @update="updateSort"
           />
           <KanbanSettings
             v-if="route.params.viewType === 'kanban'"
@@ -104,7 +104,7 @@
             <Button
               class="whitespace-nowrap mr-2"
               variant="ghost"
-              :label="__('Add filter')"
+              :label="__('Add Filter')"
               iconLeft="plus"
               @click="togglePopover()"
             />
@@ -131,7 +131,7 @@
   </div>
   <div v-else class="flex items-center justify-between gap-2 px-5 py-4">
     <FadedScrollableDiv
-      class="flex flex-1 items-center overflow-x-auto -ml-1"
+      class="flex flex-1 items-center overflow-x-auto -ml-1 h-9"
       orientation="horizontal"
     >
       <div
@@ -200,6 +200,18 @@
               hideLabel: true,
               items: [
                 {
+                  label: __('Import'),
+                  icon: () => h(ImportIcon, { class: 'h-4 w-4' }),
+                  onClick: () =>
+                    router.push({
+                      name: 'NewDataImport',
+                      params: { doctype: doctype },
+                    }),
+                  condition: () =>
+                    !options.hideColumnsButton &&
+                    route.params.viewType !== 'kanban',
+                },
+                {
                   label: __('Export'),
                   icon: () => h(ExportIcon, { class: 'h-4 w-4' }),
                   onClick: () => (showExportDialog = true),
@@ -208,7 +220,7 @@
                     route.params.viewType !== 'kanban',
                 },
                 {
-                  label: __('Customize quick filters'),
+                  label: __('Customize Quick Filters'),
                   icon: () => h(QuickFilterIcon, { class: 'h-4 w-4' }),
                   onClick: () => showCustomizeQuickFilter(),
                   condition: () => isManager(),
@@ -260,6 +272,7 @@
   >
     <template #body-content>
       <FormControl
+        v-model="export_type"
         variant="outline"
         :label="__('Export Type')"
         type="select"
@@ -273,14 +286,13 @@
             value: 'CSV',
           },
         ]"
-        v-model="export_type"
         :placeholder="__('Excel')"
       />
       <div class="mt-3">
         <FormControl
-          type="checkbox"
-          :label="__('Export All {0} Record(s)', [list.data.total_count])"
           v-model="export_all"
+          type="checkbox"
+          :label="__('Export all {0} record(s)', [list.data.total_count])"
         />
       </div>
     </template>
@@ -328,23 +340,18 @@ import { useDebounceFn } from '@vueuse/core'
 import { isMobileView } from '@/composables/settings'
 import Draggable from 'vuedraggable'
 import _ from 'lodash'
+import ImportIcon from '~icons/lucide/import'
 
 const props = defineProps({
-  doctype: {
-    type: String,
-    required: true,
-  },
-  filters: {
-    type: Object,
-    default: {},
-  },
+  doctype: { type: String, required: true },
+  filters: { type: Object, default: () => ({}) },
   options: {
     type: Object,
-    default: {
+    default: () => ({
       hideColumnsButton: false,
       defaultViewName: '',
       allowedViews: ['list'],
-    },
+    }),
   },
 })
 
@@ -353,10 +360,10 @@ const { $dialog } = globalStore()
 const { reload: reloadView, getDefaultView, getView } = viewsStore()
 const { isManager } = usersStore()
 
-const list = defineModel()
-const loadMore = defineModel('loadMore')
-const resizeColumn = defineModel('resizeColumn')
-const updatedPageCount = defineModel('updatedPageCount')
+const list = defineModel({ type: Object, default: () => ({}) })
+const loadMore = defineModel('loadMore', { type: Boolean })
+const resizeColumn = defineModel('resizeColumn', { type: Boolean })
+const updatedPageCount = defineModel('updatedPageCount', { type: Boolean })
 
 const route = useRoute()
 const router = useRouter()
@@ -590,7 +597,7 @@ if (allowedViews.includes('list')) {
     icon: markRaw(ListIcon),
     onClick() {
       viewUpdated.value = false
-      router.push({ name: route.name })
+      router.push({ name: route.name, params: { viewType: 'list' } })
     },
   })
 }
@@ -639,7 +646,6 @@ const viewsDropdownOptions = computed(() => {
 
   if (list.value?.data?.views) {
     list.value.data.views.forEach((view) => {
-      view.name = view.name
       view.label = __(view.label)
       view.type = view.type || 'list'
       view.icon = getIcon(view.icon, view.type)
@@ -662,21 +668,24 @@ const viewsDropdownOptions = computed(() => {
     )
     let pinnedViews = list.value.data.views.filter((v) => v.pinned)
 
-    savedViews.length &&
+    if (savedViews.length) {
       _views.push({
         group: __('Saved Views'),
         items: savedViews,
       })
-    publicViews.length &&
+    }
+    if (publicViews.length) {
       _views.push({
         group: __('Public Views'),
         items: publicViews,
       })
-    pinnedViews.length &&
+    }
+    if (pinnedViews.length) {
       _views.push({
         group: __('Pinned Views'),
         items: pinnedViews,
       })
+    }
   }
 
   _views.push({
@@ -728,7 +737,7 @@ const updateQuickFilters = createResource({
 
     quickFilters.update({ params: { doctype: props.doctype, cached: false } })
     quickFilters.reload()
-    toast.success(__('Quick Filters updated successfully'))
+    toast.success(__('Quick filters updated successfully'))
   },
 })
 
@@ -1073,9 +1082,9 @@ const viewActions = (view, close) => {
     },
   ]
 
-  if (!isDefaultView(_view, isStandard)) {
+  if (isStandard && !isDefaultView(_view)) {
     actions[0].items.unshift({
-      label: __('Set as default'),
+      label: __('Set As Default'),
       icon: () => h(CheckIcon, { class: 'h-4 w-4' }),
       onClick: () => setAsDefault(_view),
     })
@@ -1138,10 +1147,10 @@ const viewActions = (view, close) => {
   return actions
 }
 
-function isDefaultView(v, isStandard) {
+function isDefaultView(v) {
   let defaultView = getDefaultView()
 
-  if (!defaultView || (isStandard && !v.name)) return false
+  if (!defaultView || !v.name) return false
 
   return defaultView.name == v.name
 }
@@ -1209,7 +1218,7 @@ function deleteView(v, close) {
   call('crm.fcrm.doctype.crm_view_settings.crm_view_settings.delete', {
     name: v.name,
   }).then(() => {
-    router.push({ name: route.name })
+    router.push({ name: route.name, params: { viewType: 'list' } })
     reloadView()
     list.value.reload()
   })

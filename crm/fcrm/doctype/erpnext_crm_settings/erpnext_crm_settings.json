@@ -55,7 +55,7 @@
    "depends_on": "enabled",
    "fieldname": "erpnext_company",
    "fieldtype": "Data",
-   "label": "Company in ERPNext Site",
+   "label": "Company in ERPNext site",
    "mandatory_depends_on": "enabled"
   },
   {
@@ -102,7 +102,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-12-31 23:24:29.636820",
+ "modified": "2026-02-23 12:16:42.289630",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "ERPNext CRM Settings",
@@ -129,6 +129,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "creation",
  "sort_order": "DESC",
  "states": []

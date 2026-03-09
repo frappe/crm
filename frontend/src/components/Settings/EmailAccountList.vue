@@ -1,10 +1,10 @@
 <template>
-  <div>
+  <div class="flex flex-col h-full">
     <!-- header -->
     <div class="flex justify-between text-ink-gray-8">
       <div class="flex flex-col gap-1 w-9/12">
         <h2 class="flex gap-2 text-xl font-semibold leading-none h-5">
-          {{ __('Email accounts') }}
+          {{ __('Email Accounts') }}
         </h2>
         <p class="text-p-base text-ink-gray-6">
           {{
@@ -45,15 +45,20 @@
       </div>
     </div>
     <!-- fallback if no email accounts -->
-    <div v-else class="flex items-center justify-center h-64 text-ink-gray-4">
-      {{ __('Please add an email account to continue.') }}
-    </div>
+    <EmptyState
+      v-else
+      name="Email Accounts"
+      :description="__('Add one to get started.')"
+      :icon="Email2Icon"
+    />
   </div>
 </template>
 
 <script setup>
-import { createListResource } from 'frappe-ui'
+import Email2Icon from '@/components/Icons/Email2Icon.vue'
+import EmptyState from '../ListViews/EmptyState.vue'
 import EmailAccountCard from './EmailAccountCard.vue'
+import { createListResource } from 'frappe-ui'
 
 const emit = defineEmits(['update:step'])
 

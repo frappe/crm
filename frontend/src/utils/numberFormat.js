@@ -209,7 +209,7 @@ function getCurrencySymbol(currencyCode) {
     const parts = formatter.formatToParts(1)
     const symbol = parts.find((part) => part.type === 'currency')
     return symbol ? symbol.value : null
-  } catch (error) {
+  } catch {
     console.error(`Invalid currency code: ${currencyCode}`)
     return null
   }

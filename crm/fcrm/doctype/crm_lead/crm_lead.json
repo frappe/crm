@@ -66,7 +66,10 @@
   "syncing_tab",
   "facebook_lead_id",
   "column_break_ixmu",
-  "facebook_form_id"
+  "facebook_form_id",
+  "lost_details_tab",
+  "lost_reason",
+  "lost_notes"
  ],
  "fields": [
   {
@@ -129,7 +132,7 @@
   {
    "fieldname": "mobile_no",
    "fieldtype": "Data",
-   "label": "Mobile No",
+   "label": "Mobile No.",
    "options": "Phone"
   },
   {
@@ -391,13 +394,30 @@
    "fieldname": "column_break_ygds",
    "fieldtype": "Column Break",
    "read_only": 1
+  },
+  {
+   "fieldname": "lost_details_tab",
+   "fieldtype": "Tab Break",
+   "label": "Lost Details"
+  },
+  {
+   "fieldname": "lost_reason",
+   "fieldtype": "Link",
+   "label": "Lost Reason",
+   "options": "CRM Lost Reason"
+  },
+  {
+   "fieldname": "lost_notes",
+   "fieldtype": "Text",
+   "label": "Lost Notes",
+   "mandatory_depends_on": "eval: doc.lost_reason == \"Other\""
   }
  ],
  "grid_page_length": 50,
  "image_field": "image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-11-10 21:21:50.089284",
+ "modified": "2026-02-23 12:43:59.038277",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Lead",
@@ -412,7 +432,7 @@
    "print": 1,
    "read": 1,
    "report": 1,
-   "role": "Sales User",
+   "role": "System Manager",
    "share": 1,
    "write": 1
   },
@@ -429,13 +449,16 @@
    "write": 1
   },
   {
+   "create": 1,
+   "delete": 1,
    "email": 1,
    "export": 1,
    "print": 1,
    "read": 1,
    "report": 1,
-   "role": "All",
-   "share": 1
+   "role": "Sales User",
+   "share": 1,
+   "write": 1
   }
  ],
  "row_format": "Dynamic",

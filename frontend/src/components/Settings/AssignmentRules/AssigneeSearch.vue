@@ -5,8 +5,8 @@
         <Button
           variant="subtle"
           icon-left="plus"
-          @click="togglePopover()"
           :label="__('Add Assignee')"
+          @click="togglePopover()"
         />
       </template>
       <template #body="{ togglePopover }">
@@ -16,10 +16,10 @@
               ref="search"
               class="form-input w-full"
               type="text"
-              @change="(e) => debouncedQuery(e.target.value)"
               :value="query"
               autocomplete="off"
               :placeholder="__('Search')"
+              @change="(e) => debouncedQuery(e.target.value)"
             />
             <button
               class="absolute right-1.5 inline-flex h-7 w-7 items-center justify-center"
@@ -30,12 +30,12 @@
           </div>
           <ComboboxOptions class="my-2 max-h-64 overflow-y-auto px-1.5" static>
             <ComboboxOption
-              v-show="usersList.length > 0"
               v-for="user in usersList"
+              v-show="usersList.length > 0"
               :key="user.username"
+              v-slot="{ active }"
               :value="user"
               as="template"
-              v-slot="{ active }"
               @click="
                 (e) => {
                   e.stopPropagation()
@@ -67,7 +67,7 @@
               v-if="usersList.length == 0"
               class="mt-1.5 rounded-md p-1.5 text-base text-gray-600"
             >
-              {{ __('No results found') }}
+              {{ __('No Results Found') }}
             </li>
           </ComboboxOptions>
           <div class="border-t p-1.5 pb-0.5 *:w-full">
@@ -75,7 +75,7 @@
               variant="ghost"
               icon-left="plus"
               class="w-full"
-              :label="__('Invite agent')"
+              :label="__('Invite Agent')"
               @click="
                 () => {
                   inviteAgent()
@@ -146,14 +146,14 @@ const addAssignee = (user) => {
 
 const inviteAgent = () => {
   $dialog({
-    title: __('Invite agent'),
+    title: __('Invite Agent'),
     message: __(
       'You will be redirected to invite user page, unsaved changes will be lost.',
     ),
     variant: 'solid',
     actions: [
       {
-        label: __('Go to invite page'),
+        label: __('Go to Invite Page'),
         variant: 'solid',
         onClick: (close) => {
           activeSettingsPage.value = 'Invite User'

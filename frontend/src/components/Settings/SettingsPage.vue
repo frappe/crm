@@ -2,17 +2,29 @@
   <div class="flex h-full flex-col gap-6">
     <div class="flex justify-between">
       <div class="flex flex-col gap-1 w-9/12">
-        <h2
-          class="flex gap-2 text-xl font-semibold leading-none h-5 text-ink-gray-8"
-        >
-          {{ title || __(doctype) }}
+        <div class="flex gap-1 items-center">
+          <Button
+            v-if="back"
+            variant="ghost"
+            icon-left="chevron-left"
+            :label="title || __(doctype)"
+            size="md"
+            class="cursor-pointer -ml-4 hover:bg-transparent focus:bg-transparent focus:outline-none focus:ring-0 focus:ring-offset-0 focus-visible:none active:bg-transparent active:outline-none active:ring-0 active:ring-offset-0 active:text-ink-gray-5 font-semibold text-xl hover:opacity-70 !pr-0 !max-w-96 !justify-start"
+            @click="back"
+          />
+          <h2
+            v-else
+            class="flex gap-2 text-xl font-semibold leading-none h-5 text-ink-gray-8"
+          >
+            {{ title || __(doctype) }}
+          </h2>
           <Badge
             v-if="data.isDirty"
             :label="__('Not Saved')"
             variant="subtle"
             theme="orange"
           />
-        </h2>
+        </div>
       </div>
       <div class="flex item-center space-x-2 w-3/12 justify-end">
         <Button
@@ -32,7 +44,7 @@
       />
     </div>
     <div v-else class="flex flex-1 items-center justify-center">
-      <Spinner class="size-8" />
+      <LoadingIndicator class="size-8" />
     </div>
     <ErrorMessage :message="data.save.error" />
   </div>
@@ -42,7 +54,7 @@ import FieldLayout from '@/components/FieldLayout/FieldLayout.vue'
 import {
   createDocumentResource,
   createResource,
-  Spinner,
+  LoadingIndicator,
   Badge,
   toast,
   ErrorMessage,
@@ -51,18 +63,10 @@ import { getRandom } from '@/utils'
 import { computed } from 'vue'
 
 const props = defineProps({
-  doctype: {
-    type: String,
-    required: true,
-  },
-  title: {
-    type: String,
-    default: '',
-  },
-  successMessage: {
-    type: String,
-    default: 'Updated Successfully',
-  },
+  doctype: { type: String, required: true },
+  title: { type: String, default: '' },
+  successMessage: { type: String, default: 'Updated Successfully' },
+  back: { type: Function, default: null },
 })
 
 const fields = createResource({

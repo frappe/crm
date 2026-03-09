@@ -14,7 +14,7 @@
       <div>
         <div class="text-base font-medium text-ink-gray-8">
           {{
-            __('{0} Routing', [
+            __('{0} routing', [
               assignmentRuleData.documentType == 'CRM Lead'
                 ? __('Lead')
                 : __('Deal'),

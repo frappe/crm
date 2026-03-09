@@ -118,7 +118,7 @@
         >
           {{ getRow(itemName, titleField).label }}
         </div>
-        <div class="text-ink-gray-4" v-else>{{ __('No Title') }}</div>
+        <div v-else class="text-ink-gray-4">{{ __('No Title') }}</div>
       </div>
     </template>
     <template #fields="{ fieldName, itemName }">
@@ -184,7 +184,10 @@
             :label="getRow(itemName, fieldName).value"
           />
         </div>
-        <div v-else-if="fieldName === '_assign'" class="flex items-center">
+        <div
+          v-else-if="fieldName === '_assign'"
+          class="flex items-center truncate"
+        >
           <MultipleAvatar
             :avatars="getRow(itemName, fieldName).label"
             size="xs"
@@ -230,12 +233,12 @@
     </template>
   </KanbanView>
   <LeadsListView
-    ref="leadsListView"
     v-else-if="leads.data && rows.length"
+    ref="leadsListView"
     v-model="leads.data.page_length_count"
     v-model:list="leads"
     :rows="rows"
-    :columns="leads.data.columns"
+    :columns="columns"
     :options="{
       showTooltip: false,
       resizeColumn: true,
@@ -252,19 +255,11 @@
       (selections) => viewControls.updateSelections(selections)
     "
   />
-  <div v-else-if="leads.data" class="flex h-full items-center justify-center">
-    <div
-      class="flex flex-col items-center gap-3 text-xl font-medium text-ink-gray-4"
-    >
-      <LeadsIcon class="h-10 w-10" />
-      <span>{{ __('No {0} Found', [__('Leads')]) }}</span>
-      <Button
-        :label="__('Create')"
-        iconLeft="plus"
-        @click="showLeadModal = true"
-      />
-    </div>
-  </div>
+  <EmptyState
+    v-else-if="leads.data && !rows.length"
+    name="Leads"
+    :icon="LeadsIcon"
+  />
   <LeadModal
     v-if="showLeadModal"
     v-model="showLeadModal"
@@ -299,6 +294,7 @@ import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import LeadsListView from '@/components/ListViews/LeadsListView.vue'
+import EmptyState from '@/components/ListViews/EmptyState.vue'
 import KanbanView from '@/components/Kanban/KanbanView.vue'
 import LeadModal from '@/components/Modals/LeadModal.vue'
 import NoteModal from '@/components/Modals/NoteModal.vue'
@@ -361,11 +357,27 @@ const rows = computed(() => {
   }
 })
 
+const columns = computed(() => {
+  let _columns = leads.value?.data?.columns || []
+
+  // Set align right for last column
+  if (_columns.length) {
+    _columns = _columns.map((col, index) => {
+      if (index === _columns.length - 1) {
+        return { ...col, align: 'right' }
+      }
+      return col
+    })
+  }
+
+  return _columns
+})
+
 function getGroupedByRows(listRows, groupByField, columns) {
   let groupedRows = []
 
   groupByField.options?.forEach((option) => {
-    let filteredRows = []
+    let filteredRows
 
     if (!option) {
       filteredRows = listRows.filter((row) => !row[groupByField.fieldname])

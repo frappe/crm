@@ -23,8 +23,8 @@
         <div>
           <FormControl
             ref="title"
-            :label="__('Title')"
             v-model="_note.title"
+            :label="__('Title')"
             :placeholder="__('Call with John Doe')"
             required
           />
@@ -32,18 +32,18 @@
         <div>
           <div class="mb-1.5 text-xs text-ink-gray-5">{{ __('Content') }}</div>
           <TextEditor
-            variant="outline"
             ref="content"
+            variant="outline"
             editor-class="!prose-sm overflow-auto min-h-[180px] max-h-80 py-1.5 px-2 rounded border border-[--surface-gray-2] bg-surface-gray-2 placeholder-ink-gray-4 hover:border-outline-gray-modals hover:bg-surface-gray-3 hover:shadow-sm focus:bg-surface-white focus:border-outline-gray-4 focus:shadow-sm focus:ring-0 focus-visible:ring-2 focus-visible:ring-outline-gray-3 text-ink-gray-8 transition-colors"
             :bubbleMenu="true"
             :content="_note.content"
-            @change="(val) => (_note.content = val)"
             :placeholder="
               __('Took a call with John Doe and discussed the new project.')
             "
+            @change="(val) => (_note.content = val)"
           />
         </div>
-        <ErrorMessage class="mt-4" v-if="error" :message="__(error)" />
+        <ErrorMessage v-if="error" class="mt-4" :message="__(error)" />
       </div>
     </template>
     <template #actions>
@@ -60,35 +60,26 @@
 
 <script setup>
 import ArrowUpRightIcon from '@/components/Icons/ArrowUpRightIcon.vue'
-import { capture } from '@/telemetry'
 import { TextEditor, call } from 'frappe-ui'
-import { useOnboarding } from 'frappe-ui/frappe'
+import { useOnboarding, useTelemetry } from 'frappe-ui/frappe'
 import { ref, nextTick, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 const props = defineProps({
-  note: {
-    type: Object,
-    default: {},
-  },
-  doctype: {
-    type: String,
-    default: 'CRM Lead',
-  },
-  doc: {
-    type: String,
-    default: '',
-  },
+  note: { type: Object, default: () => {} },
+  doctype: { type: String, default: 'CRM Lead' },
+  doc: { type: String, default: '' },
 })
 
-const show = defineModel()
-const notes = defineModel('reloadNotes')
+const show = defineModel({ type: Boolean })
+const notes = defineModel('reloadNotes', { type: Object, default: () => ({}) })
 
 const emit = defineEmits(['after'])
 
 const router = useRouter()
 
 const { updateOnboardingStep } = useOnboarding('frappecrm')
+const { capture } = useTelemetry()
 
 const error = ref(null)
 const title = ref(null)

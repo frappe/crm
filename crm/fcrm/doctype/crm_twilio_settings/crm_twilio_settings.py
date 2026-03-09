@@ -8,6 +8,23 @@ from twilio.rest import Client
 
 
 class CRMTwilioSettings(Document):
+	# begin: auto-generated types
+	# This code is auto-generated. Do not modify anything in this block.
+
+	from typing import TYPE_CHECKING
+
+	if TYPE_CHECKING:
+		from frappe.types import DF
+
+		account_sid: DF.Data | None
+		api_key: DF.Data | None
+		api_secret: DF.Password | None
+		auth_token: DF.Password | None
+		enabled: DF.Check
+		record_calls: DF.Check
+		twiml_sid: DF.Data | None
+	# end: auto-generated types
+
 	friendly_resource_name = "Frappe CRM"  # System creates TwiML app & API keys with this name.
 
 	def validate(self):
@@ -39,8 +56,7 @@ class CRMTwilioSettings(Document):
 		new_key = self.create_api_key(twilio)
 		self.api_key = new_key.sid
 		self.api_secret = new_key.secret
-		frappe.db.set_value(
-			"CRM Twilio Settings",
+		frappe.db.set_single_value(
 			"CRM Twilio Settings",
 			{"api_key": self.api_key, "api_secret": self.api_secret},
 		)
@@ -49,7 +65,7 @@ class CRMTwilioSettings(Document):
 		"""Generate TwiML app credentials if not exist and update them."""
 		credentials = self.get_application(twilio) or self.create_application(twilio)
 		self.twiml_sid = credentials.sid
-		frappe.db.set_value("CRM Twilio Settings", "CRM Twilio Settings", "twiml_sid", self.twiml_sid)
+		frappe.db.set_single_value("CRM Twilio Settings", "twiml_sid", self.twiml_sid)
 
 	def create_api_key(self, twilio):
 		"""Create API keys in twilio account."""

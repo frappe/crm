@@ -18,8 +18,8 @@
             :href="link.url"
           >
             <component
-              v-if="link.icon"
               :is="link.icon"
+              v-if="link.icon"
               class="size-4 mr-2 text-ink-gray-7"
             />
             <span class="text-base text-ink-gray-8">
@@ -36,16 +36,14 @@
   </Dialog>
 </template>
 <script setup>
-import { Tooltip } from 'frappe-ui'
 import CRMLogo from '@/components/Icons/CRMLogo.vue'
 import LucideGlobe from '~icons/lucide/globe'
 import LucideGitHub from '~icons/lucide/github'
 import LucideHeadset from '~icons/lucide/headset'
 import LucideBug from '~icons/lucide/bug'
 import LucideBookOpen from '~icons/lucide/book-open'
-import TelegramIcon from '@/components/Icons/TelegramIcon.vue'
 
-let show = defineModel()
+let show = defineModel({ type: Boolean })
 
 let links = [
   {
@@ -62,11 +60,6 @@ let links = [
     label: __('Documentation'),
     url: 'https://docs.frappe.io/crm',
     icon: LucideBookOpen,
-  },
-  {
-    label: __('Telegram Channel'),
-    url: 'https://t.me/frappecrm',
-    icon: TelegramIcon,
   },
   {
     label: __('Report an Issue'),

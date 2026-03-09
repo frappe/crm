@@ -3,16 +3,48 @@
 import json
 
 import frappe
+from frappe import _
 from frappe.model.document import Document, get_controller
 from frappe.utils import parse_json
 
 
 class CRMViewSettings(Document):
+	# begin: auto-generated types
+	# This code is auto-generated. Do not modify anything in this block.
+
+	from typing import TYPE_CHECKING
+
+	if TYPE_CHECKING:
+		from frappe.types import DF
+
+		column_field: DF.Data | None
+		columns: DF.Code | None
+		dt: DF.Link | None
+		filters: DF.Code | None
+		group_by_field: DF.Data | None
+		icon: DF.Data | None
+		is_default: DF.Check
+		is_standard: DF.Check
+		kanban_columns: DF.Code | None
+		kanban_fields: DF.Code | None
+		label: DF.Data | None
+		load_default_columns: DF.Check
+		name: DF.Int | None
+		order_by: DF.Code | None
+		pinned: DF.Check
+		public: DF.Check
+		route_name: DF.Data | None
+		rows: DF.Code | None
+		title_field: DF.Data | None
+		type: DF.Literal["list", "group_by", "kanban"]
+		user: DF.Link | None
+	# end: auto-generated types
+
 	pass
 
 
 @frappe.whitelist()
-def create(view):
+def create(view: dict):
 	view = frappe._dict(view)
 
 	view.filters = parse_json(view.filters) or {}
@@ -53,7 +85,7 @@ def create(view):
 
 
 @frappe.whitelist()
-def update(view):
+def update(view: dict):
 	view = frappe._dict(view)
 
 	filters = parse_json(view.filters or {})
@@ -67,6 +99,8 @@ def update(view):
 	rows = remove_duplicates(rows)
 
 	doc = frappe.get_doc("CRM View Settings", view.name)
+	check_permission(doc)
+
 	doc.label = view.label
 	doc.type = view.type or "list"
 	doc.icon = view.icon
@@ -86,29 +120,46 @@ def update(view):
 
 
 @frappe.whitelist()
-def delete(name):
+def delete(name: str | int):
 	if frappe.db.exists("CRM View Settings", name):
+		doc = frappe.get_doc("CRM View Settings", name)
+		check_permission(doc)
 		frappe.delete_doc("CRM View Settings", name)
 
 
 @frappe.whitelist()
-def public(name, value):
+def public(name: str | int, value: bool | int):
 	if frappe.session.user != "Administrator" and "Sales Manager" not in frappe.get_roles():
-		frappe.throw("Not permitted", frappe.PermissionError)
+		frappe.throw(_("Not permitted"), frappe.PermissionError)
 
 	doc = frappe.get_doc("CRM View Settings", name)
 	if doc.pinned:
 		doc.pinned = False
-	doc.public = value
+	doc.public = bool(value)
 	doc.user = "" if value else frappe.session.user
 	doc.save()
 
 
 @frappe.whitelist()
-def pin(name, value):
+def pin(name: str | int, value: bool | int):
 	doc = frappe.get_doc("CRM View Settings", name)
-	doc.pinned = value
+	check_permission(doc)
+	doc.pinned = bool(value)
 	doc.save()
+
+
+def check_permission(doc):
+	"""Administrator and System Manager can edit any view.
+	If view is public, Sales Manager can edit.
+	If view is private, only the view owner can edit."""
+	if frappe.session.user == "Administrator" or "System Manager" in frappe.get_roles():
+		pass
+	elif doc.public and "Sales Manager" in frappe.get_roles():
+		pass
+	elif doc.user and doc.user == frappe.session.user:
+		pass
+	else:
+		frappe.throw(_("Not permitted"), frappe.PermissionError)
 
 
 def remove_duplicates(l):
@@ -146,7 +197,7 @@ def sync_default_columns(view):
 
 
 @frappe.whitelist()
-def set_as_default(name=None, type=None, doctype=None):
+def set_as_default(name: str | int | None = None, type: str | None = None, doctype: str | None = None):
 	if name:
 		frappe.db.set_value("CRM View Settings", name, "is_default", 1)
 	else:
@@ -163,7 +214,7 @@ def set_as_default(name=None, type=None, doctype=None):
 
 
 @frappe.whitelist()
-def create_or_update_standard_view(view):
+def create_or_update_standard_view(view: dict):
 	view = frappe._dict(view)
 
 	filters = parse_json(view.filters) or {}

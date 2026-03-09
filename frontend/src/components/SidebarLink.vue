@@ -8,19 +8,15 @@
   >
     <div
       class="flex w-full items-center justify-between duration-300 ease-in-out"
-      :class="isCollapsed ? 'ml-[3px] p-1' : 'px-2 py-1'"
+      :class="isCollapsed ? 'ml-[3px] p-1' : 'px-2 py-[7px]'"
     >
       <div class="flex items-center truncate">
         <Tooltip :text="label" placement="right" :disabled="!isCollapsed">
           <slot name="icon">
-            <span class="grid flex-shrink-0 place-items-center">
-              <FeatherIcon
-                v-if="typeof icon == 'string'"
-                :name="icon"
-                class="size-4 text-ink-gray-7"
-              />
-              <component v-else :is="icon" class="size-4 text-ink-gray-7" />
-            </span>
+            <Icon
+              :icon="icon"
+              class="flex items-center size-4 text-ink-gray-8"
+            />
           </slot>
         </Tooltip>
         <Tooltip
@@ -47,6 +43,7 @@
 </template>
 
 <script setup>
+import Icon from '@/components/Icon.vue'
 import { Tooltip } from 'frappe-ui'
 import { computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
@@ -56,21 +53,10 @@ const router = useRouter()
 const route = useRoute()
 
 const props = defineProps({
-  icon: {
-    type: [Object, String, Function],
-  },
-  label: {
-    type: String,
-    default: '',
-  },
-  to: {
-    type: [Object, String],
-    default: '',
-  },
-  isCollapsed: {
-    type: Boolean,
-    default: false,
-  },
+  icon: { type: [Object, String, Function], default: null },
+  label: { type: String, default: '' },
+  to: { type: [Object, String], default: null },
+  isCollapsed: { type: Boolean, default: false },
 })
 
 function handleClick() {

@@ -20,10 +20,13 @@ class CRMLead(Document):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
-		from crm.fcrm.doctype.crm_products.crm_products import CRMProducts
-		from crm.fcrm.doctype.crm_rolling_response_time.crm_rolling_response_time import CRMRollingResponseTime
-		from crm.fcrm.doctype.crm_status_change_log.crm_status_change_log import CRMStatusChangeLog
 		from frappe.types import DF
+
+		from crm.fcrm.doctype.crm_products.crm_products import CRMProducts
+		from crm.fcrm.doctype.crm_rolling_response_time.crm_rolling_response_time import (
+			CRMRollingResponseTime,
+		)
+		from crm.fcrm.doctype.crm_status_change_log.crm_status_change_log import CRMStatusChangeLog
 
 		annual_revenue: DF.Currency
 		communication_status: DF.Link | None
@@ -43,6 +46,8 @@ class CRMLead(Document):
 		last_response_time: DF.Duration | None
 		lead_name: DF.Data | None
 		lead_owner: DF.Link | None
+		lost_notes: DF.Text | None
+		lost_reason: DF.Link | None
 		middle_name: DF.Data | None
 		mobile_no: DF.Data | None
 		naming_series: DF.Literal["CRM-LEAD-.YYYY.-"]
@@ -89,15 +94,14 @@ class CRMLead(Document):
 	def set_full_name(self):
 		if self.first_name:
 			self.lead_name = " ".join(
-				filter(
-					None,
-					[
-						self.salutation,
-						self.first_name,
-						self.middle_name,
-						self.last_name,
-					],
-				)
+				name
+				for name in [
+					self.salutation,
+					self.first_name,
+					self.middle_name,
+					self.last_name,
+				]
+				if name
 			)
 
 	def set_lead_name(self):
@@ -394,7 +398,8 @@ class CRMLead(Document):
 			},
 			{
 				"label": "Status",
-				"type": "Select",
+				"type": "Link",
+				"options": "CRM Lead Status",
 				"key": "status",
 				"width": "8rem",
 			},
@@ -405,7 +410,7 @@ class CRMLead(Document):
 				"width": "12rem",
 			},
 			{
-				"label": "Mobile No",
+				"label": "Mobile No.",
 				"type": "Data",
 				"key": "mobile_no",
 				"width": "11rem",
@@ -452,7 +457,13 @@ class CRMLead(Document):
 
 
 @frappe.whitelist()
-def convert_to_deal(lead, doc=None, deal=None, existing_contact=None, existing_organization=None):
+def convert_to_deal(
+	lead: str,
+	doc: Document | None = None,
+	deal: str | dict | None = None,
+	existing_contact: str | None = None,
+	existing_organization: str | None = None,
+):
 	if not (doc and doc.flags.get("ignore_permissions")) and not frappe.has_permission(
 		"CRM Lead", "write", lead
 	):

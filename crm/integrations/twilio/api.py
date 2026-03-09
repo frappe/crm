@@ -9,6 +9,23 @@ from crm.integrations.api import get_contact_by_phone_number
 from .twilio_handler import IncomingCall, Twilio, TwilioCallDetails
 
 
+def validate_twilio_request(args, require_application_sid: bool = False):
+	twilio = Twilio.connect()
+	if not twilio:
+		frappe.throw(_("Twilio configuration is missing"), frappe.PermissionError)
+
+	account_sid = frappe.utils.cstr(args.get("AccountSid"))
+	if not account_sid or account_sid != frappe.utils.cstr(twilio.account_sid):
+		frappe.throw(_("Invalid Twilio account"), frappe.PermissionError)
+
+	if require_application_sid:
+		application_sid = frappe.utils.cstr(args.get("ApplicationSid"))
+		if not application_sid or application_sid != frappe.utils.cstr(twilio.application_sid):
+			frappe.throw(_("Invalid Twilio application"), frappe.PermissionError)
+
+	return twilio
+
+
 @frappe.whitelist()
 def is_enabled():
 	return frappe.db.get_single_value("CRM Twilio Settings", "enabled")
@@ -43,12 +60,7 @@ def voice(**kwargs):
 		return frappe.db.get_value("CRM Telephony Agent", user, "twilio_number")
 
 	args = frappe._dict(kwargs)
-	twilio = Twilio.connect()
-	if not twilio:
-		return
-
-	assert args.AccountSid == twilio.account_sid
-	assert args.ApplicationSid == twilio.application_sid
+	twilio = validate_twilio_request(args, require_application_sid=True)
 
 	# Generate TwiML instructions to make a call
 	from_number = _get_caller_number(args.Caller)
@@ -62,6 +74,8 @@ def voice(**kwargs):
 @frappe.whitelist(allow_guest=True)
 def twilio_incoming_call_handler(**kwargs):
 	args = frappe._dict(kwargs)
+	validate_twilio_request(args)
+
 	call_details = TwilioCallDetails(args)
 	create_call_log(call_details)
 
@@ -120,36 +134,48 @@ def update_call_log(call_sid, status=None):
 
 @frappe.whitelist(allow_guest=True)
 def update_recording_info(**kwargs):
+	args = frappe._dict(kwargs)
+	validate_twilio_request(args)
+
+	recording_url = args.RecordingUrl
+	call_sid = args.CallSid
+	call_log = update_call_log(call_sid)
+	if not call_log:
+		frappe.throw(_("Call log not found"), frappe.DoesNotExistError)
+
 	try:
-		args = frappe._dict(kwargs)
-		recording_url = args.RecordingUrl
-		call_sid = args.CallSid
-		update_call_log(call_sid)
 		frappe.db.set_value("CRM Call Log", call_sid, "recording_url", recording_url)
-	except Exception:
+		frappe.db.commit()
+	except Exception as exc:
 		frappe.log_error(title=_("Failed to capture Twilio recording"))
+		raise exc
 
 
 @frappe.whitelist(allow_guest=True)
 def update_call_status_info(**kwargs):
+	args = frappe._dict(kwargs)
+	validate_twilio_request(args)
+
+	parent_call_sid = args.ParentCallSid
+	call_log = update_call_log(parent_call_sid, status=args.CallStatus)
+	if not call_log:
+		frappe.throw(_("Call log not found"), frappe.DoesNotExistError)
+
+	call_info = {
+		"ParentCallSid": args.ParentCallSid,
+		"CallSid": args.CallSid,
+		"CallStatus": args.CallStatus,
+		"CallDuration": args.CallDuration,
+		"From": args.From,
+		"To": args.To,
+	}
+
 	try:
-		args = frappe._dict(kwargs)
-		parent_call_sid = args.ParentCallSid
-		update_call_log(parent_call_sid, status=args.CallStatus)
-
-		call_info = {
-			"ParentCallSid": args.ParentCallSid,
-			"CallSid": args.CallSid,
-			"CallStatus": args.CallStatus,
-			"CallDuration": args.CallDuration,
-			"From": args.From,
-			"To": args.To,
-		}
-
 		client = Twilio.get_twilio_client()
 		client.calls(args.ParentCallSid).user_defined_messages.create(content=json.dumps(call_info))
-	except Exception:
+	except Exception as exc:
 		frappe.log_error(title=_("Failed to update Twilio call status"))
+		raise exc
 
 
 def get_datetime_from_timestamp(timestamp):
