@@ -32,7 +32,9 @@ class FCRMSettings(Document):
 		enable_forecasting: DF.Check
 		event_notifications: DF.Table[EventNotifications]
 		favicon: DF.Attach | None
-		service_provider: DF.Literal["frankfurter.app", "exchangerate.host", "exchangerate-api"]
+		service_provider: DF.Literal[
+			"frankfurter.app", "fawazahmed-exchange-api", "exchangerate.host", "exchangerate-api"
+		]
 	# end: auto-generated types
 
 	@frappe.whitelist()

@@ -70,11 +70,16 @@
             class="w-44"
             :options="[
               { label: 'Frankfurter', value: 'frankfurter.app' },
+              {
+                label: 'Fawaz Ahmed Exchange API',
+                value: 'fawazahmed-exchange-api',
+              },
               { label: 'Exchangerate Host', value: 'exchangerate.host' },
               { label: 'Exchangerate API', value: 'exchangerate-api' },
             ]"
             :placeholder="__('Select Provider')"
             :disabled="!settings.doc?.currency"
+            @update:modelValue="() => (settings.doc.access_key = '')"
           />
         </div>
       </div>
