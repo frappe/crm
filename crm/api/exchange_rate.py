@@ -33,6 +33,10 @@ def _fetch_exchange_rate(from_currency: str, to_currency: str, date: str):
 	if rate is not None:
 		return rate, "frankfurter"
 
+	rate = _fetch_from_fawaz_api(from_currency, to_currency, date)
+	if rate is not None:
+		return rate, "fawaz-exchange-api"
+
 	settings = frappe.get_single("FCRM Settings")
 	provider = settings.service_provider
 
@@ -49,6 +53,24 @@ def _fetch_from_frankfurter(from_currency: str, to_currency: str, date: str):
 	res = requests.get(f"https://api.frankfurter.app/{date}?from={from_currency}&to={to_currency}", timeout=5)
 	if res.ok:
 		return res.json()["rates"][to_currency]
+	return None
+
+
+def _fetch_from_fawaz_api(from_currency: str, to_currency: str, date: str):
+	from_lower = from_currency.lower()
+	to_lower = to_currency.lower()
+	date_str = "latest" if date == "latest" else date
+	urls = [
+		f"https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@{date_str}/v1/currencies/{from_lower}.json",
+		f"https://{date_str}.currency-api.pages.dev/v1/currencies/{from_lower}.json",
+	]
+	for url in urls:
+		try:
+			res = requests.get(url, timeout=5)
+			if res.ok:
+				return res.json()[from_lower][to_lower]
+		except Exception:
+			continue
 	return None
 
 
