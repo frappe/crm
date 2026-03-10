@@ -79,6 +79,7 @@ import {
   toast,
 } from 'frappe-ui'
 import { inject, ref, reactive, watch } from 'vue'
+import { ConfirmDelete } from '../../../utils'
 
 const assignmentRulesList = inject('assignmentRulesList')
 const updateStep = inject('updateStep')
@@ -136,23 +137,10 @@ const dropdownOptions = [
     },
     icon: 'copy',
   },
-  {
-    label: __('Delete'),
-    icon: 'trash-2',
-    onClick: (e) => {
-      e.preventDefault()
-      e.stopImmediatePropagation()
-      isConfirmingDelete.value = true
-    },
-    condition: () => !isConfirmingDelete.value,
-  },
-  {
-    label: __('Confirm Delete'),
-    icon: 'trash-2',
-    theme: 'red',
-    onClick: () => deleteAssignmentRule(),
-    condition: () => isConfirmingDelete.value,
-  },
+  ...ConfirmDelete({
+    onConfirmDelete: () => deleteAssignmentRule(),
+    isConfirmingDelete,
+  }),
 ]
 
 const duplicate = () => {
