@@ -94,7 +94,7 @@
    "fieldname": "service_provider",
    "fieldtype": "Select",
    "label": "Service Provider",
-   "options": "frankfurter.app\nexchangerate.host"
+   "options": "frankfurter.app\nexchangerate.host\nexchangerate-api"
   },
   {
    "depends_on": "eval:doc.service_provider == 'exchangerate.host';",
@@ -118,7 +118,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2026-02-23 12:33:43.914603",
+ "modified": "2026-03-10 12:05:17.142135",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "FCRM Settings",
