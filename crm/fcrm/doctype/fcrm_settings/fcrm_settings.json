@@ -99,7 +99,7 @@
    "fieldname": "service_provider",
    "fieldtype": "Select",
    "label": "Service Provider",
-   "options": "frankfurter.app\nexchangerate.host\nexchangerate-api"
+   "options": "frankfurter.app\nfawazahmed-exchange-api\nexchangerate.host\nexchangerate-api"
   },
   {
    "depends_on": "eval:doc.service_provider == 'exchangerate.host';",
@@ -153,8 +153,8 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2026-03-10 12:05:17.142135",
- "modified_by": "Administrator",
+ "modified": "2026-03-10 13:48:53.621189",
+ "modified_by": "shariq@frappe.io",
  "module": "FCRM",
  "name": "FCRM Settings",
  "owner": "Administrator",
