@@ -29,16 +29,20 @@ def get_exchange_rate(from_currency: str, to_currency: str, date: str | None = N
 
 def _fetch_exchange_rate(from_currency: str, to_currency: str, date: str):
 	"""Try each configured provider in order and return (rate, provider_name)."""
-	rate = _fetch_from_frankfurter(from_currency, to_currency, date)
-	if rate is not None:
-		return rate, "frankfurter"
-
-	rate = _fetch_from_fawaz_api(from_currency, to_currency, date)
-	if rate is not None:
-		return rate, "fawaz-exchange-api"
-
 	settings = frappe.get_single("FCRM Settings")
 	provider = settings.service_provider
+
+	_provider = "frankfurter"
+	rate = _fetch_from_frankfurter(from_currency, to_currency, date)
+
+	if provider == "frankfurter.app" and rate is not None:
+		return rate, provider
+
+	_provider = "fawazahmed-exchange-api"
+	rate = _fetch_from_fawaz_api(from_currency, to_currency, date)
+
+	if provider == "fawazahmed-exchange-api" and rate is not None:
+		return rate, provider
 
 	if provider == "exchangerate.host":
 		return _fetch_from_exchangerate_host(settings, from_currency, to_currency, date), provider
@@ -46,7 +50,7 @@ def _fetch_exchange_rate(from_currency: str, to_currency: str, date: str):
 	if provider == "exchangerate-api":
 		return _fetch_from_exchangerate_api(settings, from_currency, to_currency), provider
 
-	return None, "frankfurter"
+	return rate, _provider
 
 
 def _fetch_from_frankfurter(from_currency: str, to_currency: str, date: str):
