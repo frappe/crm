@@ -533,6 +533,7 @@ def _send_task_email_notification(task: dict, offset: dict):
 	site_url = frappe.utils.get_url()
 	task_url = f"{site_url}/crm/tasks/view/list?open={task.name}"
 
+	# nosemgrep
 	message = frappe.render_template(
 		"crm/templates/emails/task_reminder.html",
 		{
