@@ -33,7 +33,7 @@ class FCRMSettings(Document):
 		enable_forecasting: DF.Check
 		event_notifications: DF.Table[EventNotifications]
 		favicon: DF.Attach | None
-		service_provider: DF.Literal["frankfurter.app", "exchangerate.host"]
+		service_provider: DF.Literal["frankfurter.app", "exchangerate.host", "exchangerate-api"]
 	# end: auto-generated types
 
 	@frappe.whitelist()
@@ -164,42 +164,83 @@ def get_exchange_rate(from_currency, to_currency, date=None):
 	if not date:
 		date = "latest"
 
-	api_used = "frankfurter"
+	# "latest" is keyed by today's date so tomorrow's call automatically misses the cache
+	cache_date = frappe.utils.today() if date == "latest" else date
+	cache_key = f"exchange_rate_{from_currency}_{to_currency}_{cache_date}"
 
-	api_endpoint = f"https://api.frankfurter.app/{date}?from={from_currency}&to={to_currency}"
-	res = requests.get(api_endpoint, timeout=5)
+	cached_rate = frappe.cache().get_value(cache_key)
+	if cached_rate is not None:
+		return cached_rate
+
+	rate, api_used = _fetch_exchange_rate(from_currency, to_currency, date)
+
+	if rate is not None:
+		frappe.cache().set_value(cache_key, rate)
+		return rate
+
+	_raise_exchange_rate_error(from_currency, to_currency, date, api_used)
+
+
+def _fetch_exchange_rate(from_currency, to_currency, date):
+	"""Try each configured provider in order and return (rate, provider_name)."""
+	rate = _fetch_from_frankfurter(from_currency, to_currency, date)
+	if rate is not None:
+		return rate, "frankfurter"
+
+	settings = FCRMSettings("FCRM Settings")
+	provider = settings.service_provider
+
+	if provider == "exchangerate.host":
+		return _fetch_from_exchangerate_host(settings, from_currency, to_currency, date), provider
+
+	if provider == "exchangerate-api":
+		return _fetch_from_exchangerate_api(settings, from_currency, to_currency), provider
+
+	return None, "frankfurter"
+
+
+def _fetch_from_frankfurter(from_currency, to_currency, date):
+	res = requests.get(f"https://api.frankfurter.app/{date}?from={from_currency}&to={to_currency}", timeout=5)
+	if res.ok:
+		return res.json()["rates"][to_currency]
+	return None
+
+
+def _fetch_from_exchangerate_host(settings, from_currency, to_currency, date):
+	if not settings.access_key:
+		frappe.throw(
+			_("Access Key is required for Service Provider: {0}").format(
+				frappe.bold(settings.service_provider)
+			)
+		)
+	params = {"access_key": settings.access_key, "from": from_currency, "to": to_currency, "amount": 1}
+	if date != "latest":
+		params["date"] = date
+	res = requests.get("https://api.exchangerate.host/convert", params=params, timeout=5)
+	if res.ok:
+		return res.json()["result"]
+	return None
+
+
+def _fetch_from_exchangerate_api(settings, from_currency, to_currency):
+	if not settings.access_key:
+		frappe.throw(
+			_("Access Key is required for Service Provider: {0}").format(
+				frappe.bold(settings.service_provider)
+			)
+		)
+	res = requests.get(
+		f"https://v6.exchangerate-api.com/v6/{settings.access_key}/pair/{from_currency}/{to_currency}",
+		timeout=5,
+	)
 	if res.ok:
 		data = res.json()
-		return data["rates"][to_currency]
+		if data["result"] == "success":
+			return data["conversion_rate"]
+	return None
 
-	# Fallback to exchangerate.host if Frankfurter API fails
-	settings = FCRMSettings("FCRM Settings")
-	if settings and settings.service_provider == "exchangerate.host":
-		api_used = "exchangerate.host"
-		if not settings.access_key:
-			frappe.throw(
-				_("Access Key is required for Service Provider: {0}").format(
-					frappe.bold(settings.service_provider)
-				)
-			)
 
-		params = {
-			"access_key": settings.access_key,
-			"from": from_currency,
-			"to": to_currency,
-			"amount": 1,
-		}
-
-		if date != "latest":
-			params["date"] = date
-
-		api_endpoint = "https://api.exchangerate.host/convert"
-
-		res = requests.get(api_endpoint, params=params, timeout=5)
-		if res.ok:
-			data = res.json()
-			return data["result"]
-
+def _raise_exchange_rate_error(from_currency, to_currency, date, api_used):
 	frappe.log_error(
 		title="Exchange Rate Fetch Error",
 		message=f"Failed to fetch exchange rate from {from_currency} to {to_currency} using {api_used} API.",
@@ -212,19 +253,17 @@ def get_exchange_rate(from_currency, to_currency, date=None):
 			or "Sales Manager" in frappe.get_roles(user)
 			or user == "Administrator"
 		)
-
 		if not is_manager:
 			frappe.throw(
 				_(
 					"Ask your manager to set up the Exchange Rate Provider, as default provider does not support currency conversion for {0} to {1}."
 				).format(from_currency, to_currency)
 			)
-		else:
-			frappe.throw(
-				_(
-					"Setup the Exchange Rate Provider as 'Exchangerate Host' in settings, as default provider does not support currency conversion for {0} to {1}."
-				).format(from_currency, to_currency)
-			)
+		frappe.throw(
+			_(
+				"Setup the Exchange Rate Provider other than 'Frankfurter' in settings, as default provider does not support currency conversion for {0} to {1}."
+			).format(from_currency, to_currency)
+		)
 
 	frappe.throw(
 		_(
