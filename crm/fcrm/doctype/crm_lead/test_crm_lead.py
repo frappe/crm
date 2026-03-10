@@ -123,6 +123,55 @@ class TestCRMLead(IntegrationTestCase):
 			)
 		self.assertIn("Lead Owner cannot be same as the Lead Email Address", str(context.exception))
 
+	def test_duplicate_mobile_no_blocks_new_lead(self):
+		"""Test that duplicate lead mobile numbers are blocked across formatting variants"""
+		create_lead(
+			first_name="Existing",
+			email="existing-phone@example.com",
+			mobile_no="+91 98455 52671",
+		)
+
+		with self.assertRaises(frappe.exceptions.ValidationError) as context:
+			create_lead(
+				first_name="Duplicate",
+				email="duplicate-phone@example.com",
+				mobile_no="9845552671",
+			)
+
+		self.assertIn("Lead already exists with Mobile No", str(context.exception))
+
+	def test_duplicate_mobile_no_allows_self_update(self):
+		"""Test that editing an existing lead does not flag its own mobile number as duplicate"""
+		lead = create_lead(
+			first_name="Self",
+			email="self-phone@example.com",
+			mobile_no="+91 98455 52671",
+		)
+
+		lead.last_name = "Updated"
+		lead.save()
+		lead.reload()
+
+		self.assertEqual(lead.last_name, "Updated")
+
+	def test_duplicate_mobile_no_ignores_converted_leads(self):
+		"""Test that converted leads do not block reuse of a mobile number"""
+		lead = create_lead(
+			first_name="Converted",
+			email="converted-phone@example.com",
+			mobile_no="+91 98455 52671",
+		)
+		lead.converted = 1
+		lead.save()
+
+		new_lead = create_lead(
+			first_name="Replacement",
+			email="replacement-phone@example.com",
+			mobile_no="9845552671",
+		)
+
+		self.assertTrue(new_lead.name)
+
 	def test_update_lead_owner(self):
 		"""Test that updating lead owner assigns and shares with the new owner"""
 		# Create a lead without owner

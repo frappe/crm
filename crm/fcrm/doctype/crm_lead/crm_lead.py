@@ -6,11 +6,13 @@ from frappe import _
 from frappe.desk.form.assign_to import add as assign
 from frappe.model.document import Document
 from frappe.utils import has_gravatar, validate_email_address
+from pypika.functions import Replace
 
 from crm.fcrm.doctype.crm_service_level_agreement.utils import get_sla
 from crm.fcrm.doctype.crm_status_change_log.crm_status_change_log import (
 	add_status_change_log,
 )
+from crm.utils import are_same_phone_number, parse_phone_number
 
 
 class CRMLead(Document):
@@ -78,6 +80,7 @@ class CRMLead(Document):
 		self.set_lead_name()
 		self.set_title()
 		self.validate_email()
+		self.validate_duplicate_mobile_no()
 		if not self.is_new() and self.has_value_changed("lead_owner") and self.lead_owner:
 			self.share_with_agent(self.lead_owner)
 			self.assign_agent(self.lead_owner)
@@ -129,6 +132,67 @@ class CRMLead(Document):
 
 			if self.is_new() or not self.image:
 				self.image = has_gravatar(self.email)
+
+	def validate_duplicate_mobile_no(self):
+		if self.flags.ignore_if_duplicate or (frappe.flags.in_test and (self.name or "").startswith("_T-")):
+			return
+
+		cleaned_mobile_no = self.get_cleaned_mobile_no(self.mobile_no)
+		if not cleaned_mobile_no:
+			return
+
+		existing_lead = self.get_existing_lead_with_mobile_no()
+		if not existing_lead:
+			return
+
+		frappe.throw(
+			_("Lead already exists with Mobile No: {0}").format(self.mobile_no),
+			title=_("Duplicate Mobile No"),
+		)
+
+	def get_existing_lead_with_mobile_no(self):
+		Lead = frappe.qb.DocType("CRM Lead")
+		cleaned_mobile_no = self.get_cleaned_mobile_no(self.mobile_no)
+		parsed_mobile_no = parse_phone_number(self.mobile_no)
+		default_region = parsed_mobile_no.get("country") or "IN"
+		search_mobile_no = parsed_mobile_no.get("national_number") or cleaned_mobile_no
+
+		normalized_phone = Replace(
+			Replace(Replace(Replace(Replace(Lead.mobile_no, " ", ""), "-", ""), "(", ""), ")", ""), "+", ""
+		)
+
+		query = (
+			frappe.qb.from_(Lead)
+			.select(Lead.name, Lead.mobile_no)
+			.where(Lead.converted == 0)
+			.where(Lead.name != self.name)
+			.where(Lead.mobile_no.isnotnull())
+			.where(Lead.mobile_no != "")
+			.where(normalized_phone.like(f"%{search_mobile_no}%"))
+		)
+		candidates = query.run(as_dict=True)
+
+		for candidate in candidates:
+			candidate_mobile_no = self.get_cleaned_mobile_no(candidate.mobile_no)
+			if candidate_mobile_no == cleaned_mobile_no:
+				return candidate
+
+			if are_same_phone_number(candidate.mobile_no, self.mobile_no, default_region=default_region):
+				return candidate
+
+		return None
+
+	@staticmethod
+	def get_cleaned_mobile_no(mobile_no):
+		return (
+			(mobile_no or "")
+			.strip()
+			.replace(" ", "")
+			.replace("-", "")
+			.replace("(", "")
+			.replace(")", "")
+			.replace("+", "")
+		)
 
 	def assign_agent(self, agent):
 		if not agent:
