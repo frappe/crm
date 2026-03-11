@@ -26,7 +26,7 @@
   {
    "fieldname": "from_user",
    "fieldtype": "Link",
-   "label": "From user",
+   "label": "From User",
    "options": "User"
   },
   {
@@ -45,7 +45,7 @@
    "fieldname": "to_user",
    "fieldtype": "Link",
    "in_list_view": 1,
-   "label": "To user",
+   "label": "To User",
    "options": "User",
    "reqd": 1
   },
@@ -75,13 +75,13 @@
   {
    "fieldname": "reference_name",
    "fieldtype": "Dynamic Link",
-   "label": "Reference doc",
+   "label": "Reference Doc",
    "options": "reference_doctype"
   },
   {
    "fieldname": "reference_doctype",
    "fieldtype": "Link",
-   "label": "Reference doctype",
+   "label": "Reference Doctype",
    "options": "DocType"
   },
   {
@@ -95,19 +95,19 @@
   {
    "fieldname": "notification_type_doctype",
    "fieldtype": "Link",
-   "label": "Notification type doctype",
+   "label": "Notification Type Doctype",
    "options": "DocType"
   },
   {
    "fieldname": "notification_type_doc",
    "fieldtype": "Dynamic Link",
-   "label": "Notification type doc",
+   "label": "Notification Type Doc",
    "options": "notification_type_doctype"
   },
   {
    "fieldname": "notification_text",
    "fieldtype": "Text",
-   "label": "Notification text"
+   "label": "Notification Text"
   },
   {
    "fieldname": "section_break_hace",
@@ -116,8 +116,8 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-01-22 14:00:28.133454",
- "modified_by": "shariq@frappe.io",
+ "modified": "2026-02-23 12:13:22.477210",
+ "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Notification",
  "owner": "Administrator",

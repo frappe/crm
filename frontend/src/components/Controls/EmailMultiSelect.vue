@@ -2,8 +2,8 @@
   <div>
     <div class="flex flex-wrap gap-1">
       <Button
-        ref="emails"
         v-for="value in values"
+        ref="emails"
         :key="value"
         :label="value"
         theme="gray"
@@ -26,9 +26,9 @@
         <ComboboxRoot
           :model-value="tempSelection"
           :open="showOptions"
+          :ignore-filter="true"
           @update:open="(o) => (showOptions = o)"
           @update:modelValue="onSelect"
-          :ignore-filter="true"
         >
           <ComboboxAnchor
             class="flex h-7 max-w-full w-auto items-center gap-2 rounded px-2 py-1 border border-transparent"
@@ -91,7 +91,7 @@
         </ComboboxRoot>
       </div>
     </div>
-    <ErrorMessage class="mt-2 pl-2" v-if="error" :message="error" />
+    <ErrorMessage v-if="error" class="mt-2 pl-2" :message="error" />
     <div
       v-if="info"
       class="whitespace-pre-line text-sm text-ink-blue-3 mt-2 pl-2"
@@ -128,7 +128,7 @@ const props = defineProps({
   validate: { type: Function, default: null },
   errorMessage: {
     type: Function,
-    default: (value) => __('{0} is an Invalid value', [value]),
+    default: (value) => __('{0} is an Invalid Value', [value]),
   },
   emptyPlaceholder: { type: String, default: __('No results found') },
   // UI
@@ -138,7 +138,7 @@ const props = defineProps({
 })
 
 // v-model values
-const values = defineModel()
+const values = defineModel({ type: Array, default: () => [] })
 
 // Determine effective mode (backwards compatibility with old components)
 const effectiveMode = computed(() => {
@@ -251,7 +251,7 @@ function addValue(input) {
     .filter(Boolean)
   for (const email of parts) {
     if (values.value?.includes(email)) {
-      info.value = __('email already exists')
+      info.value = __('Email already exists')
       continue
     }
     if (props.validate && !props.validate(email)) {

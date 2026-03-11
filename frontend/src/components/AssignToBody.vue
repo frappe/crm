@@ -2,17 +2,17 @@
   <div
     class="flex flex-col gap-2 my-2 w-[470px] rounded-lg bg-surface-modal shadow-2xl ring-1 ring-black p-3 ring-opacity-5 focus:outline-none"
   >
-    <div class="text-base text-ink-gray-5">{{ __('Assign to') }}</div>
+    <div class="text-base text-ink-gray-5">{{ __('Assign To') }}</div>
     <Link
       class="form-control"
       value=""
       doctype="User"
-      @change="(option) => addValue(option) && ($refs.input.value = '')"
       :placeholder="__('John Doe')"
       :filters="{
         name: ['in', users.data.crmUsers?.map((user) => user.name)],
       }"
       :hideMe="true"
+      @change="(option) => addValue(option) && ($refs.input.value = '')"
     >
       <template #target="{ togglePopover }">
         <div
@@ -20,9 +20,9 @@
           @click.stop="togglePopover"
         >
           <Tooltip
-            :text="assignee.name"
             v-for="assignee in assignees"
             :key="assignee.name"
+            :text="assignee.name"
             @click.stop
           >
             <div
@@ -60,7 +60,7 @@
         class="text-base text-ink-gray-5 cursor-pointer select-none"
         @click="assignToMe = !assignToMe"
       >
-        {{ __('Assign to me') }}
+        {{ __('Assign To Me') }}
       </div>
       <Switch v-model="assignToMe" @click.stop />
     </div>
@@ -76,28 +76,15 @@ import { useTelemetry } from 'frappe-ui/frappe'
 import { ref, watch } from 'vue'
 
 const props = defineProps({
-  doctype: {
-    type: String,
-    default: '',
-  },
-  docname: {
-    type: Object,
-    default: null,
-  },
-  open: {
-    type: Boolean,
-    default: false,
-  },
-  onUpdate: {
-    type: Function,
-    default: null,
-  },
+  doctype: { type: String, default: '' },
+  docname: { type: String, default: '' },
+  open: { type: Boolean, default: false },
+  onUpdate: { type: Function, default: null },
 })
 
-const emit = defineEmits(['reload'])
 const { capture } = useTelemetry()
 
-const assignees = defineModel()
+const assignees = defineModel({ type: Array, default: () => [] })
 const oldAssignees = ref([])
 const assignToMe = ref(false)
 

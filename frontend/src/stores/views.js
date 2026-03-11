@@ -3,6 +3,10 @@ import { createResource } from 'frappe-ui'
 import { reactive, ref } from 'vue'
 
 export const viewsStore = defineStore('crm-views', (doctype) => {
+  if (typeof doctype !== 'string') {
+    doctype = null
+  }
+
   let viewsByName = reactive({})
   let pinnedViews = ref([])
   let publicViews = ref([])

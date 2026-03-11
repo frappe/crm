@@ -22,7 +22,10 @@ add_to_apps_screen = [
 	}
 ]
 
+get_site_info = "crm.activation.get_site_info"
+
 export_python_type_annotations = True
+require_type_annotated_api_methods = True
 
 # Includes in <head>
 # ------------------
@@ -187,7 +190,7 @@ scheduler_events = {
 # Testing
 # -------
 
-# before_tests = "crm.install.before_tests"
+before_tests = "crm.tests.before_tests"
 
 # Overriding Methods
 # ------------------------------

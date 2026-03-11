@@ -53,21 +53,10 @@ const router = useRouter()
 const route = useRoute()
 
 const props = defineProps({
-  icon: {
-    type: [Object, String, Function],
-  },
-  label: {
-    type: String,
-    default: '',
-  },
-  to: {
-    type: [Object, String],
-    default: '',
-  },
-  isCollapsed: {
-    type: Boolean,
-    default: false,
-  },
+  icon: { type: [Object, String, Function], default: null },
+  label: { type: String, default: '' },
+  to: { type: [Object, String], default: null },
+  isCollapsed: { type: Boolean, default: false },
 })
 
 function handleClick() {

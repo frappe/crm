@@ -7,7 +7,7 @@ frappe.ui.form.on("FCRM Settings", {
   // },
   restore_defaults: function (frm) {
     let message = __(
-      "This will restore (if not exist) all the default statuses, custom fields and layouts. Delete & restore will delete default layouts and then restore them.",
+      "This will restore (if not exist) all the default statuses, custom fields and layouts. Delete & Restore will delete default layouts and then restore them.",
     );
     let d = new frappe.ui.Dialog({
       title: __("Restore Defaults"),
@@ -23,7 +23,7 @@ frappe.ui.form.on("FCRM Settings", {
         });
         d.hide();
       },
-      secondary_action_label: __("Delete & restore"),
+      secondary_action_label: __("Delete & Restore"),
       secondary_action: () => {
         frm.call("restore_defaults", { force: true }, () => {
           frappe.show_alert({

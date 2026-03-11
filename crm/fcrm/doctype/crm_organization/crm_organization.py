@@ -4,7 +4,7 @@
 import frappe
 from frappe.model.document import Document
 
-from crm.fcrm.doctype.fcrm_settings.fcrm_settings import get_exchange_rate
+from crm.api.exchange_rate import get_exchange_rate
 
 
 class CRMOrganization(Document):
@@ -63,13 +63,13 @@ class CRMOrganization(Document):
 				"width": "14rem",
 			},
 			{
-				"label": "Annual revenue",
+				"label": "Annual Revenue",
 				"type": "Currency",
 				"key": "annual_revenue",
 				"width": "14rem",
 			},
 			{
-				"label": "Last modified",
+				"label": "Last Modified",
 				"type": "Datetime",
 				"key": "modified",
 				"width": "8rem",

@@ -51,8 +51,8 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-02-05 17:16:11.897087",
- "modified_by": "shariq@frappe.io",
+ "modified": "2026-03-05 12:42:24.932212",
+ "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Lead Status",
  "naming_rule": "By fieldname",
@@ -98,5 +98,6 @@
  "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "translated_doctype": 1
 }

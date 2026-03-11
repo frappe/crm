@@ -4,7 +4,7 @@
   >
     <div class="text-center max-w-md">
       <h1 class="text-ink-gray-5 text-3xl font-semibold">
-        {{ __('Access denied') }}
+        {{ __('Access Denied') }}
       </h1>
       <div class="border-t w-full my-[15px]" />
       <p class="text-ink-gray-4 text-p-base">
@@ -18,7 +18,7 @@
       <Button
         class="mt-5 w-full"
         variant="solid"
-        :label="__('Login with different account')"
+        :label="__('Login with Different Account')"
         @click="logout.submit()"
       />
     </div>

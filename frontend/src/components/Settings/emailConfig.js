@@ -10,13 +10,13 @@ import LogoFrappeMail from '@/images/frappe-mail.svg'
 
 const fixedFields = [
   {
-    label: __('Account name'),
+    label: __('Account Name'),
     name: 'email_account_name',
     type: 'text',
     placeholder: __('Support / Sales'),
   },
   {
-    label: 'Email ID',
+    label: __('Email ID'),
     name: 'email_id',
     type: 'email',
     placeholder: 'johndoe@example.com',
@@ -25,15 +25,13 @@ const fixedFields = [
 
 export const incomingOutgoingFields = [
   {
-    label: __('Enable incoming'),
+    label: __('Enable Incoming'),
     name: 'enable_incoming',
     type: 'checkbox',
-    description: __(
-      'If enabled, emails will be pulled from this account.',
-    ),
+    description: __('If enabled, emails will be pulled from this account.'),
   },
   {
-    label: __('Enable outgoing'),
+    label: __('Enable Outgoing'),
     name: 'enable_outgoing',
     type: 'checkbox',
     description: __(
@@ -41,7 +39,7 @@ export const incomingOutgoingFields = [
     ),
   },
   {
-    label: __('Default incoming'),
+    label: __('Default Incoming'),
     name: 'default_incoming',
     type: 'checkbox',
     description: __(
@@ -49,7 +47,7 @@ export const incomingOutgoingFields = [
     ),
   },
   {
-    label: __('Default outgoing'),
+    label: __('Default Outgoing'),
     name: 'default_outgoing',
     type: 'checkbox',
     description: __(
@@ -71,19 +69,19 @@ export const popularProviderFields = [
 export const customProviderFields = [
   ...fixedFields,
   {
-    label: __('Frappe mail site'),
+    label: __('Frappe Mail Site'),
     name: 'frappe_mail_site',
     type: 'text',
     placeholder: 'https://frappemail.com',
   },
   {
-    label: __('API key'),
+    label: __('API Key'),
     name: 'api_key',
     type: 'text',
     placeholder: '********',
   },
   {
-    label: __('API secret'),
+    label: __('API Secret'),
     name: 'api_secret',
     type: 'password',
     placeholder: '********',

@@ -105,7 +105,7 @@ def is_whatsapp_installed():
 
 
 @frappe.whitelist()
-def get_whatsapp_messages(reference_doctype, reference_name):
+def get_whatsapp_messages(reference_doctype: str, reference_name: str):
 	reference_doc = validate_access(reference_doctype, reference_name)
 	# twilio integration app is not compatible with crm app
 	# crm has its own twilio integration in built
@@ -247,13 +247,13 @@ def get_whatsapp_messages(reference_doctype, reference_name):
 
 @frappe.whitelist()
 def create_whatsapp_message(
-	reference_doctype,
-	reference_name,
-	message,
-	to,
-	attach,
-	reply_to,
-	content_type="text",
+	reference_doctype: str,
+	reference_name: str,
+	message: str,
+	to: str,
+	attach: str,
+	reply_to: str,
+	content_type: str = "text",
 ):
 	validate_access(reference_doctype, reference_name)
 	doc = frappe.new_doc("WhatsApp Message")
@@ -287,7 +287,7 @@ def create_whatsapp_message(
 
 
 @frappe.whitelist()
-def send_whatsapp_template(reference_doctype, reference_name, template, to):
+def send_whatsapp_template(reference_doctype: str, reference_name: str, template: str, to: str):
 	validate_access(reference_doctype, reference_name)
 	doc = frappe.new_doc("WhatsApp Message")
 	doc.update(
@@ -307,7 +307,7 @@ def send_whatsapp_template(reference_doctype, reference_name, template, to):
 
 
 @frappe.whitelist()
-def react_on_whatsapp_message(emoji, reply_to_name):
+def react_on_whatsapp_message(emoji: str, reply_to_name: str):
 	validate_access()
 	reply_to_doc = frappe.get_doc("WhatsApp Message", reply_to_name)
 
@@ -352,7 +352,7 @@ def get_from_name(message):
 		else:
 			from_name = doc.get("lead_name")
 	else:
-		from_name = " ".join(filter(None, [doc.get("first_name"), doc.get("last_name")]))
+		from_name = " ".join(name for name in [doc.get("first_name"), doc.get("last_name")] if name)
 	return from_name
 
 

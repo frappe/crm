@@ -9,18 +9,18 @@
           variant="ghost"
           icon-left="chevron-left"
           :label="
-            assignmentRuleData.assignmentRuleName || __('New assignment rule')
+            assignmentRuleData.assignmentRuleName || __('New Assignment Rule')
           "
           size="md"
-          @click="goBack()"
           class="cursor-pointer -ml-4 hover:bg-transparent focus:bg-transparent focus:outline-none focus:ring-0 focus:ring-offset-0 focus-visible:none active:bg-transparent active:outline-none active:ring-0 active:ring-offset-0 active:text-ink-gray-5 font-semibold text-xl hover:opacity-70 !pr-0 !max-w-96 !justify-start"
+          @click="goBack()"
         />
         <Badge
+          v-if="isDirty"
           :variant="'subtle'"
           :theme="'orange'"
           size="sm"
-          :label="__('Unsaved')"
-          v-if="isDirty"
+          :label="__('Not Saved')"
         />
       </div>
       <div class="flex items-center gap-4">
@@ -36,8 +36,8 @@
           :label="__('Save')"
           theme="gray"
           variant="solid"
-          @click="saveAssignmentRule()"
           :loading="isLoading || getAssignmentRuleData.loading"
+          @click="saveAssignmentRule()"
         />
       </div>
     </div>
@@ -45,12 +45,12 @@
       <div class="grid grid-cols-2 gap-5">
         <div>
           <FormControl
+            v-model="assignmentRuleData.assignmentRuleName"
             :type="'text'"
             size="sm"
             variant="subtle"
             :placeholder="__('Name')"
             :label="__('Name')"
-            v-model="assignmentRuleData.assignmentRuleName"
             required
             maxlength="50"
             @change="validateAssignmentRule('assignmentRuleName')"
@@ -106,6 +106,7 @@
         </div>
         <div>
           <FormControl
+            v-model="assignmentRuleData.description"
             :type="'textarea'"
             size="sm"
             variant="subtle"
@@ -114,7 +115,6 @@
             required
             maxlength="250"
             @change="validateAssignmentRule('description')"
-            v-model="assignmentRuleData.description"
           />
           <ErrorMessage
             :message="assignmentRuleErrors.description"
@@ -122,8 +122,9 @@
           />
         </div>
         <div class="flex flex-col gap-1.5">
-          <FormLabel :label="__('Apply on')" />
+          <FormLabel :label="__('Apply On')" />
           <Select
+            v-model="assignmentRuleData.documentType"
             :options="[
               {
                 label: 'Lead',
@@ -134,7 +135,6 @@
                 value: 'CRM Deal',
               },
             ]"
-            v-model="assignmentRuleData.documentType"
           />
         </div>
       </div>
@@ -142,7 +142,7 @@
       <div>
         <div class="flex flex-col gap-1">
           <span class="text-lg font-semibold text-ink-gray-8">{{
-            __('Assignment condition')
+            __('Assignment Condition')
           }}</span>
           <div class="flex items-center justify-between gap-6">
             <span class="text-p-sm text-ink-gray-6">
@@ -164,7 +164,7 @@
                   <div
                     class="text-sm text-ink-gray-6 flex gap-1 cursor-default text-nowrap items-center"
                   >
-                    <span>{{ __('Old condition') }}</span>
+                    <span>{{ __('Old Condition') }}</span>
                     <FeatherIcon name="info" class="size-4" />
                   </div>
                 </template>
@@ -181,8 +181,8 @@
         </div>
         <div class="mt-5">
           <div
-            class="flex flex-col gap-3 items-center text-center text-ink-gray-7 text-sm mb-2 border border-outline-gray-2 rounded-md p-3 py-4"
             v-if="!useNewUI && assignmentRuleData.assignCondition"
+            class="flex flex-col gap-3 items-center text-center text-ink-gray-7 text-sm mb-2 border border-outline-gray-2 rounded-md p-3 py-4"
           >
             <span class="text-p-sm">
               {{ __('Conditions for this rule were created from') }}
@@ -196,18 +196,18 @@
               }}
             </span>
             <Button
-              :label="__('I understand, add conditions')"
+              :label="__('I understand, Add Conditions')"
               variant="subtle"
               theme="gray"
               @click="useNewUI = true"
             />
           </div>
           <AssignmentRulesSection
+            v-else
             :conditions="assignmentRuleData.assignConditionJson"
             name="assignCondition"
             :errors="assignmentRuleErrors.assignConditionError"
             :doctype="assignmentRuleData.documentType"
-            v-else
           />
           <div class="flex justify-end">
             <ErrorMessage
@@ -221,7 +221,7 @@
       <div>
         <div class="flex flex-col gap-1">
           <span class="text-lg font-semibold text-ink-gray-8">{{
-            __('Unassignment condition')
+            __('Unassignment Condition')
           }}</span>
           <div class="flex items-center justify-between gap-6">
             <span class="text-p-sm text-ink-gray-6">
@@ -248,7 +248,7 @@
                   <div
                     class="text-sm text-ink-gray-6 flex gap-1 cursor-default text-nowrap items-center"
                   >
-                    <span> {{ __('Old condition') }} </span>
+                    <span> {{ __('Old Condition') }} </span>
                     <FeatherIcon name="info" class="size-4" />
                   </div>
                 </template>
@@ -280,7 +280,7 @@
               }}
             </span>
             <Button
-              :label="__('I understand, add conditions')"
+              :label="__('I understand, Add Conditions')"
               variant="subtle"
               theme="gray"
               @click="useNewUI = true"
@@ -299,7 +299,7 @@
       <div>
         <div class="flex flex-col gap-1">
           <span class="text-lg font-semibold text-ink-gray-8">{{
-            __('Assignment schedule')
+            __('Assignment Schedule')
           }}</span>
           <span class="text-p-sm text-ink-gray-6">
             {{
@@ -432,11 +432,11 @@ const validateAssignmentRule = (key, skipConditionCheck = false) => {
         assignmentRuleErrors.value.assignCondition =
           assignmentRuleData.value.assignConditionJson?.length > 0
             ? ''
-            : __('Assign condition is required')
+            : __('Assign Condition is required')
 
         if (!validateConditions(assignmentRuleData.value.assignConditionJson)) {
           assignmentRuleErrors.value.assignConditionError = __(
-            'Assign conditions are invalid',
+            'Assign Conditions are invalid',
           )
         } else {
           assignmentRuleErrors.value.assignConditionError = ''
@@ -452,7 +452,7 @@ const validateAssignmentRule = (key, skipConditionCheck = false) => {
           !validateConditions(assignmentRuleData.value.unassignConditionJson)
         ) {
           assignmentRuleErrors.value.unassignConditionError = __(
-            'Unassign conditions are invalid',
+            'Unassign Conditions are invalid',
           )
         } else {
           assignmentRuleErrors.value.unassignConditionError = ''
@@ -468,7 +468,7 @@ const validateAssignmentRule = (key, skipConditionCheck = false) => {
         assignmentRuleErrors.value.assignmentDays =
           assignmentRuleData.value.assignmentDays?.length > 0
             ? ''
-            : __('Assignment days are required')
+            : __('Assignment Days are required')
         break
       default:
         break
@@ -572,14 +572,14 @@ if (!step.value.data) {
 const goBack = () => {
   if (isDirty.value && !showConfirmDialog.value.show) {
     $dialog({
-      title: __('Unsaved changes'),
+      title: __('Unsaved Changes'),
       message: __(
         'Are you sure you want to go back? Unsaved changes will be lost.',
       ),
       variant: 'solid',
       actions: [
         {
-          label: __('Go back'),
+          label: __('Go Back'),
           variant: 'solid',
           onClick: (close) => {
             updateStep('list', null)
@@ -637,7 +637,7 @@ const saveAssignmentRule = () => {
     if (isOldSla.value && useNewUI.value) {
       showConfirmDialog.value = {
         show: true,
-        title: __('Confirm overwrite'),
+        title: __('Confirm Overwrite'),
         message: __(
           'Your old condition will be overwritten. Are you sure you want to save?',
         ),
@@ -695,7 +695,7 @@ const createAssignmentRule = () => {
         })
         .then(() => {
           isLoading.value = false
-          toast.success(__('Assignment rule created'))
+          toast.success(__('Assignment Rule Created'))
         })
       updateStep('view', data)
     },
@@ -777,7 +777,7 @@ const updateAssignmentRule = async () => {
     getAssignmentRuleData.reload()
   }
   isLoading.value = false
-  toast.success(__('Assignment rule updated'))
+  toast.success(__('Assignment Rule Updated'))
 }
 
 watch(

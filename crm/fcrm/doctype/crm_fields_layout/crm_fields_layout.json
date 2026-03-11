@@ -18,7 +18,7 @@
    "fieldtype": "Link",
    "in_list_view": 1,
    "in_standard_filter": 1,
-   "label": "Document type",
+   "label": "Document Type",
    "options": "DocType"
   },
   {
@@ -46,8 +46,8 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-01-28 17:04:01.098156",
- "modified_by": "shariq@frappe.io",
+ "modified": "2026-02-23 12:31:51.415568",
+ "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Fields Layout",
  "naming_rule": "Expression (old style)",

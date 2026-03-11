@@ -25,7 +25,7 @@
         <template #default="{ open }">
           <Button
             v-if="doc.status"
-            :label="doc.status"
+            :label="statusLabel(doc.status)"
             :iconRight="open ? 'chevron-up' : 'chevron-down'"
           >
             <template #prefix>
@@ -35,7 +35,7 @@
         </template>
       </Dropdown>
       <Button
-        :label="__('Convert to deal')"
+        :label="__('Convert to Deal')"
         variant="solid"
         @click="showConvertToDealModal = true"
       />
@@ -50,11 +50,11 @@
       <template #tab-panel>
         <Activities
           ref="activities"
+          v-model:reload="reload"
+          v-model:tabIndex="tabIndex"
           doctype="CRM Lead"
           :docname="leadId"
           :tabs="tabs"
-          v-model:reload="reload"
-          v-model:tabIndex="tabIndex"
           @beforeSave="beforeStatusChange"
           @afterSave="reloadAssignees"
         />
@@ -68,10 +68,10 @@
         {{ __(leadId) }}
       </div>
       <FileUploader
-        @success="(file) => updateField('image', file.file_url)"
         :validateFile="validateIsImageFile"
+        @success="(file) => updateField('image', file.file_url)"
       >
-        <template #default="{ openFileSelector, error }">
+        <template #default="{ openFileSelector }">
           <div class="flex items-center justify-start gap-5 border-b p-5">
             <div class="group relative size-12">
               <Avatar
@@ -89,13 +89,13 @@
                           {
                             icon: 'upload',
                             label: doc.image
-                              ? __('Change image')
-                              : __('Upload image'),
+                              ? __('Change Image')
+                              : __('Upload Image'),
                             onClick: openFileSelector,
                           },
                           {
                             icon: 'trash-2',
-                            label: __('Remove image'),
+                            label: __('Remove Image'),
                             onClick: () => updateField('image', ''),
                           },
                         ],
@@ -116,7 +116,7 @@
               </component>
             </div>
             <div class="flex flex-col gap-2.5 truncate">
-              <Tooltip :text="doc.lead_name || __('Set first name')">
+              <Tooltip :text="doc.lead_name || __('Set First Name')">
                 <div class="truncate text-2xl font-medium text-ink-gray-9">
                   {{ title }}
                 </div>
@@ -124,35 +124,41 @@
               <div class="flex gap-1.5">
                 <Button
                   v-if="callEnabled"
-                  :tooltip="__('Make a call')"
+                  :tooltip="__('Make a Call')"
                   :icon="PhoneIcon"
                   @click="
                     () =>
                       doc.mobile_no
                         ? makeCall(doc.mobile_no)
-                        : toast.error(__('No phone number set'))
+                        : toast.error(
+                            __('Please set a mobile number to make calls'),
+                          )
                   "
                 />
 
                 <Button
-                  :tooltip="__('Send an email')"
+                  :tooltip="__('Send an Email')"
                   :icon="Email2Icon"
                   @click="
-                    doc.email ? openEmailBox() : toast.error(__('No email set'))
+                    doc.email
+                      ? openEmailBox()
+                      : toast.error(
+                          __('Please set an email address to send emails'),
+                        )
                   "
                 />
                 <Button
-                  :tooltip="__('Go to website')"
+                  :tooltip="__('Go to Website')"
                   :icon="LinkIcon"
                   @click="
                     doc.website
                       ? openWebsite(doc.website)
-                      : toast.error(__('No website set'))
+                      : toast.error(__('Please set a website to visit'))
                   "
                 />
 
                 <Button
-                  :tooltip="__('Attach a file')"
+                  :tooltip="__('Attach a File')"
                   :icon="AttachmentIcon"
                   @click="showFilesUploader = true"
                 />
@@ -259,6 +265,7 @@ import {
   setupCustomizations,
   copyToClipboard,
   validateIsImageFile,
+  isTranslatable,
 } from '@/utils'
 import { getView } from '@/utils/view'
 import { getSettings } from '@/stores/settings'
@@ -292,10 +299,7 @@ const route = useRoute()
 const router = useRouter()
 
 const props = defineProps({
-  leadId: {
-    type: String,
-    required: true,
-  },
+  leadId: { type: String, required: true },
 })
 
 const reload = ref(false)
@@ -375,7 +379,7 @@ const breadcrumbs = computed(() => {
 })
 
 const title = computed(() => {
-  let t = doctypeMeta['CRM Lead']?.title_field || 'name'
+  let t = doctypeMeta.value?.title_field || 'name'
   return doc.value?.[t] || props.leadId
 })
 
@@ -496,6 +500,11 @@ function openEmailBox() {
   nextTick(() => (activities.value.emailBox.show = true))
 }
 
+function statusLabel(status) {
+  if (isTranslatable('CRM Lead Status')) return __(status)
+  return status
+}
+
 const showLostReasonModal = ref(false)
 
 function setLostReason() {
@@ -513,7 +522,7 @@ function setLostReason() {
 
 function beforeStatusChange(data) {
   if (
-    data?.hasOwnProperty('status') &&
+    Object.hasOwn(data ?? {}, 'status') &&
     getLeadStatus(data.status).type == 'Lost'
   ) {
     setLostReason()
@@ -525,7 +534,7 @@ function beforeStatusChange(data) {
 }
 
 function reloadAssignees(data) {
-  if (data?.hasOwnProperty('lead_owner')) {
+  if (Object.hasOwn(data ?? {}, 'lead_owner')) {
     assignees.reload()
   }
 }

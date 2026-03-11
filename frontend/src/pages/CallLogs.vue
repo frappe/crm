@@ -25,8 +25,8 @@
     doctype="CRM Call Log"
   />
   <CallLogsListView
-    ref="callLogsListView"
     v-if="callLogs.data && rows.length"
+    ref="callLogsListView"
     v-model="callLogs.data.page_length_count"
     v-model:list="callLogs"
     :rows="rows"
@@ -50,7 +50,7 @@
   />
   <EmptyState
     v-else-if="callLogs.data && !rows.length"
-    name="call logs"
+    name="Call Logs"
     :icon="PhoneIcon"
   />
   <CallLogDetailModal

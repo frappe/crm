@@ -19,7 +19,7 @@
    "fieldname": "default_priority",
    "fieldtype": "Check",
    "in_list_view": 1,
-   "label": "Default priority"
+   "label": "Default Priority"
   },
   {
    "fieldname": "priority",
@@ -33,7 +33,7 @@
    "fieldname": "first_response_time",
    "fieldtype": "Duration",
    "in_list_view": 1,
-   "label": "First response tIme",
+   "label": "First Response TIme",
    "reqd": 1
   },
   {
@@ -52,8 +52,8 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-01-22 14:03:33.233835",
- "modified_by": "shariq@frappe.io",
+ "modified": "2026-02-23 12:17:26.631462",
+ "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Service Level Priority",
  "owner": "Administrator",

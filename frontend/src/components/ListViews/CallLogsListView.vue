@@ -34,9 +34,9 @@
       </ListHeaderItem>
     </ListHeader>
     <ListRows
+      v-slot="{ idx, column, item }"
       class="mx-3 sm:mx-5"
       :rows="rows"
-      v-slot="{ idx, column, item }"
       doctype="CRM Call Log"
     >
       <ListRowItem :item="item" :align="column.align">
@@ -125,7 +125,7 @@
                 })
             "
           >
-            {{ label }}
+            {{ getLabel(label, column) }}
           </div>
         </template>
       </ListRowItem>
@@ -141,8 +141,8 @@
     </ListSelectBanner>
   </ListView>
   <ListFooter
-    class="border-t sm:px-5 px-3 py-2"
     v-model="pageLengthCount"
+    class="border-t sm:px-5 px-3 py-2"
     :options="{
       rowCount: options.rowCount,
       totalCount: options.totalCount,
@@ -163,6 +163,7 @@
 import HeartIcon from '@/components/Icons/HeartIcon.vue'
 import ListBulkActions from '@/components/ListBulkActions.vue'
 import ListRows from '@/components/ListViews/ListRows.vue'
+import { isTranslatable } from '@/utils'
 import {
   Avatar,
   ListView,
@@ -177,15 +178,9 @@ import {
 import { sessionStore } from '@/stores/session'
 import { ref, computed, watch } from 'vue'
 
-const props = defineProps({
-  rows: {
-    type: Array,
-    required: true,
-  },
-  columns: {
-    type: Array,
-    required: true,
-  },
+defineProps({
+  rows: { type: Array, required: true },
+  columns: { type: Array, required: true },
   options: {
     type: Object,
     default: () => ({
@@ -209,8 +204,13 @@ const emit = defineEmits([
   'selectionsChanged',
 ])
 
-const pageLengthCount = defineModel()
-const list = defineModel('list')
+const pageLengthCount = defineModel({ type: Number })
+const list = defineModel('list', { type: Object })
+
+function getLabel(label, column) {
+  if (column.options && isTranslatable(column.options)) return __(label)
+  return label
+}
 
 const isLikeFilterApplied = computed(() => {
   return list.value.params?.filters?._liked_by ? true : false

@@ -196,9 +196,10 @@ def get_dynamic_linked_docs(doc, method="Delete"):
 		else:
 			# dynamic link in table
 			df["table"] = ", `parent`, `parenttype`, `idx`" if meta.istable else ""
+			query = """select `name`, `docstatus` {table} from `tab{parent}` where
+			`{options}`=%s and `{fieldname}`=%s""".format(**df)
 			for refdoc in frappe.db.sql(
-				"""select `name`, `docstatus` {table} from `tab{parent}` where
-				`{options}`=%s and `{fieldname}`=%s""".format(**df),
+				query,
 				(doc.doctype, doc.name),
 				as_dict=True,
 			):

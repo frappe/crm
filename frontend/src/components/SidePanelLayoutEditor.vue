@@ -94,7 +94,7 @@
                 <Button
                   class="w-full h-8 mt-1.5 !bg-surface-gray-1"
                   variant="outline"
-                  :label="__('Add field')"
+                  :label="__('Add Field')"
                   iconLeft="plus"
                   @click="togglePopover()"
                 />
@@ -124,11 +124,11 @@
       <Button
         class="w-full h-8"
         variant="subtle"
-        :label="__('Add section')"
+        :label="__('Add Section')"
         iconLeft="plus"
         @click="
           sections.push({
-            label: __('New section'),
+            label: __('New Section'),
             opened: true,
             name: 'section_' + getRandom(),
             columns: [{ name: 'column_' + getRandom(), fields: [] }],
@@ -148,9 +148,10 @@ import { Input, createResource } from 'frappe-ui'
 import { computed, watch } from 'vue'
 
 const props = defineProps({
-  sections: Object,
-  doctype: String,
+  doctype: { type: String, default: 'CRM Lead' },
 })
+
+const sections = defineModel({ type: Array, default: () => [] })
 
 const restrictedFieldTypes = [
   'Table',

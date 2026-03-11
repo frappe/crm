@@ -28,7 +28,7 @@
    "fieldname": "from_date",
    "fieldtype": "Datetime",
    "in_list_view": 1,
-   "label": "From date"
+   "label": "From Date"
   },
   {
    "fieldname": "duration",
@@ -50,12 +50,12 @@
    "fieldname": "to_date",
    "fieldtype": "Datetime",
    "in_list_view": 1,
-   "label": "To date"
+   "label": "To Date"
   },
   {
    "fieldname": "last_status_change_log",
    "fieldtype": "Link",
-   "label": "Last status change log",
+   "label": "Last Status Change Log",
    "options": "CRM Status Change Log"
   },
   {
@@ -68,20 +68,20 @@
    "fieldname": "from_type",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "From type"
+   "label": "From Type"
   },
   {
    "fieldname": "to_type",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "To type"
+   "label": "To Type"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-01-22 14:01:01.088899",
- "modified_by": "shariq@frappe.io",
+ "modified": "2026-02-23 12:15:29.602937",
+ "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Status Change Log",
  "owner": "Administrator",

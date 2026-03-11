@@ -6,16 +6,16 @@
         <h2
           class="flex gap-2 text-xl font-semibold leading-none h-5 text-ink-gray-8"
         >
-          {{ __('Telephony settings') }}
+          {{ __('Telephony Settings') }}
           <Badge
             v-if="mediumChanged"
-            :label="__('Not saved')"
+            :label="__('Not Saved')"
             variant="subtle"
             theme="orange"
           />
         </h2>
         <p class="text-p-base text-ink-gray-6">
-          {{ __('Configure telephony settings for your CRM') }}
+          {{ __('Configure Telephony Settings for your CRM') }}
         </p>
       </div>
       <div class="flex item-center space-x-2 w-3/12 justify-end">
@@ -34,14 +34,15 @@
       <div class="flex items-center justify-between gap-8 py-3 px-2">
         <div class="flex flex-col">
           <div class="text-p-base font-medium text-ink-gray-7 truncate">
-            {{ __('Default medium') }}
+            {{ __('Default Medium') }}
           </div>
           <div class="text-p-sm text-ink-gray-5">
-            {{ __('Default calling medium for logged in user') }}
+            {{ __('Default Calling Medium for Logged In User') }}
           </div>
         </div>
         <div class="flex items-center gap-1">
           <FormControl
+            v-model="defaultCallingMedium"
             type="select"
             class="w-40"
             :options="[
@@ -49,8 +50,7 @@
               { label: __('Twilio'), value: 'Twilio' },
               { label: __('Exotel'), value: 'Exotel' },
             ]"
-            v-model="defaultCallingMedium"
-            :placeholder="__('Select medium')"
+            :placeholder="__('Select Medium')"
           />
           <Button
             v-if="defaultCallingMedium"
@@ -77,7 +77,7 @@
           </div>
           <div class="text-p-sm text-ink-gray-5 truncate">
             {{
-              __('Configure your twilio telephony integration settings here')
+              __('Configure your Twilio Telephony Integration Settings here')
             }}
           </div>
         </div>
@@ -100,7 +100,7 @@
           </div>
           <div class="text-p-sm text-ink-gray-5 truncate">
             {{
-              __('Configure your exotel telephony integration settings here')
+              __('Configure your Exotel Telephony Integration Settings here')
             }}
           </div>
         </div>
@@ -152,7 +152,7 @@ const updateMediumResource = createResource({
   onSuccess: () => {
     mediumChanged.value = false
     error.value = ''
-    toast.success(__('Default calling medium updated successfully'))
+    toast.success(__('Default Calling Medium Updated Successfully'))
   },
   onError: (err) => {
     error.value = err.message

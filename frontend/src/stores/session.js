@@ -19,7 +19,7 @@ export const sessionStore = defineStore('crm-session', () => {
   const login = createResource({
     url: 'login',
     onError() {
-      throw new Error(__('Invalid email or password'))
+      throw new Error(__('Invalid Email or Password'))
     },
     onSuccess() {
       user.value = sessionUser()

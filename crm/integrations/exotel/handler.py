@@ -67,7 +67,7 @@ def handle_request(**kwargs):
 
 # Outgoing Call
 @frappe.whitelist()
-def make_a_call(to_number, from_number=None, caller_id=None):
+def make_a_call(to_number: str, from_number: str | None = None, caller_id: str | None = None):
 	if not is_integration_enabled():
 		frappe.throw(_("Please setup Exotel intergration"), title=_("Integration Not Enabled"))
 

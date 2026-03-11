@@ -13,9 +13,9 @@
   </div>
 </template>
 <script setup>
-const props = defineProps({
-  label: String,
-  active: Boolean,
-  onClick: Array,
+defineProps({
+  label: { type: String, default: '' },
+  active: { type: Boolean, default: false },
+  onClick: { type: Function, default: () => {} },
 })
 </script>

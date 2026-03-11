@@ -38,7 +38,7 @@
           <Button
             variant="ghost"
             class="w-full !justify-start"
-            :label="__('Create new')"
+            :label="__('Create New')"
             iconLeft="plus"
             @click="create && create()"
           />
@@ -52,11 +52,11 @@
 import PrimaryDropdownItem from '@/components/PrimaryDropdownItem.vue'
 import { Popover } from 'frappe-ui'
 
-const props = defineProps({
+defineProps({
   value: { type: [String, Number], default: '' },
   placeholder: { type: String, default: '' },
-  options: { type: Array, default: [] },
-  create: { type: Function },
+  options: { type: Array, default: () => [] },
+  create: { type: Function, default: null },
   label: { type: String, default: '' },
 })
 </script>

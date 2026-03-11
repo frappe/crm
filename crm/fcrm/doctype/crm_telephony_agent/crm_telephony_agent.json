@@ -41,7 +41,7 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "in_standard_filter": 1,
-   "label": "Mobile no.",
+   "label": "Mobile No.",
    "read_only": 1
   },
   {
@@ -50,13 +50,13 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "in_standard_filter": 1,
-   "label": "User name"
+   "label": "User Name"
   },
   {
    "depends_on": "exotel",
    "fieldname": "exotel_number",
    "fieldtype": "Data",
-   "label": "Exotel number",
+   "label": "Exotel Number",
    "mandatory_depends_on": "exotel"
   },
   {
@@ -75,7 +75,7 @@
    "depends_on": "twilio",
    "fieldname": "twilio_number",
    "fieldtype": "Data",
-   "label": "Twilio number",
+   "label": "Twilio Number",
    "mandatory_depends_on": "twilio"
   },
   {
@@ -99,7 +99,7 @@
   {
    "fieldname": "default_medium",
    "fieldtype": "Select",
-   "label": "Default medium",
+   "label": "Default Medium",
    "options": "\nTwilio\nExotel"
   },
   {
@@ -113,8 +113,8 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-01-28 17:02:38.227223",
- "modified_by": "shariq@frappe.io",
+ "modified": "2026-02-23 12:24:06.368703",
+ "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Telephony Agent",
  "naming_rule": "By fieldname",

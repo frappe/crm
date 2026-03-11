@@ -95,7 +95,7 @@ class CRMCallLog(Document):
 				"width": "9rem",
 			},
 			{
-				"label": "Created on",
+				"label": "Created On",
 				"type": "Datetime",
 				"key": "creation",
 				"width": "8rem",
@@ -173,7 +173,7 @@ def parse_call_log(call):
 
 
 @frappe.whitelist()
-def get_call_log(name):
+def get_call_log(name: str):
 	call = frappe.get_cached_doc(
 		"CRM Call Log",
 		name,
@@ -228,7 +228,7 @@ def get_call_log(name):
 
 
 @frappe.whitelist()
-def create_lead_from_call_log(call_log, lead_details=None):
+def create_lead_from_call_log(call_log: str | dict, lead_details: str | dict | None = None):
 	call_log_data = frappe.parse_json(call_log or {})
 
 	if isinstance(call_log_data, str):

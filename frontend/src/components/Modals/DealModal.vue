@@ -13,7 +13,7 @@
               v-if="isManager() && !isMobileView"
               variant="ghost"
               class="w-7"
-              :tooltip="__('Edit fields layout')"
+              :tooltip="__('Edit Fields Layout')"
               :icon="EditIcon"
               @click="openQuickEntryModal"
             />
@@ -34,14 +34,14 @@
               v-if="hasOrganizationSections"
               class="flex items-center gap-3 text-sm text-ink-gray-5"
             >
-              <div>{{ __('Choose existing organization') }}</div>
+              <div>{{ __('Choose Existing Organization') }}</div>
               <Switch v-model="chooseExistingOrganization" />
             </div>
             <div
               v-if="hasContactSections"
               class="flex items-center gap-3 text-sm text-ink-gray-5"
             >
-              <div>{{ __('Choose existing contact') }}</div>
+              <div>{{ __('Choose Existing Contact') }}</div>
               <Switch v-model="chooseExistingContact" />
             </div>
           </div>
@@ -55,7 +55,7 @@
             :data="deal.doc"
             doctype="CRM Deal"
           />
-          <ErrorMessage class="mt-4" v-if="error" :message="__(error)" />
+          <ErrorMessage v-if="error" class="mt-4" :message="__(error)" />
         </div>
       </div>
       <div class="px-4 pb-7 pt-4 sm:px-6">
@@ -86,13 +86,13 @@ import { computed, ref, onMounted, nextTick, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 const props = defineProps({
-  defaults: Object,
+  defaults: { type: Object, default: () => ({}) },
 })
 
 const { getUser, isManager } = usersStore()
 const { getDealStatus, statusOptions } = statusesStore()
 
-const show = defineModel()
+const show = defineModel({ type: Boolean })
 const router = useRouter()
 const error = ref(null)
 
@@ -165,13 +165,7 @@ const tabs = createResource({
   },
 })
 
-const dealStatuses = computed(() => {
-  let statuses = statusOptions('deal')
-  if (!deal.doc.status) {
-    deal.doc.status = statuses[0].value
-  }
-  return statuses
-})
+const dealStatuses = computed(() => statusOptions('deal'))
 
 async function createDeal() {
   if (deal.doc.website && !deal.doc.website.startsWith('http')) {
@@ -188,7 +182,7 @@ async function createDeal() {
 
   createResource({
     url: 'crm.fcrm.doctype.crm_deal.crm_deal.create_deal',
-    params: { args: deal.doc },
+    params: { doc: deal.doc },
     auto: true,
     validate() {
       error.value = null
@@ -196,7 +190,7 @@ async function createDeal() {
         if (typeof deal.doc.annual_revenue === 'string') {
           deal.doc.annual_revenue = deal.doc.annual_revenue.replace(/,/g, '')
         } else if (isNaN(deal.doc.annual_revenue)) {
-          error.value = __('Annual revenue should be a number')
+          error.value = __('Annual Revenue should be a number')
           return error.value
         }
       }
@@ -204,7 +198,7 @@ async function createDeal() {
         deal.doc.mobile_no &&
         isNaN(deal.doc.mobile_no.replace(/[-+() ]/g, ''))
       ) {
-        error.value = __('Mobile no should be a number')
+        error.value = __('Mobile No. should be a number')
         return error.value
       }
       if (deal.doc.email && !deal.doc.email.includes('@')) {
@@ -241,7 +235,7 @@ function openQuickEntryModal() {
 }
 
 onMounted(() => {
-  deal.doc = { no_of_employees: '1-10' }
+  deal.doc.no_of_employees = '1-10'
   Object.assign(deal.doc, props.defaults)
 
   if (!deal.doc.deal_owner) {

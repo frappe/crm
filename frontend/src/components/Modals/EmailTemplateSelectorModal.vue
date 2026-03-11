@@ -1,16 +1,16 @@
 <template>
   <Dialog
     v-model="show"
-    :options="{ title: __('Email templates'), size: '4xl' }"
+    :options="{ title: __('Email Templates'), size: '4xl' }"
   >
     <template #body-content>
       <div class="flex items-center gap-2">
         <TextInput
-          class="w-full"
           ref="searchInput"
           v-model="search"
+          class="w-full"
           type="text"
-          :placeholder="__('Payment reminder')"
+          :placeholder="__('Payment Reminder')"
         >
           <template #prefix>
             <FeatherIcon name="search" class="h-4 w-4 text-ink-gray-4" />
@@ -23,7 +23,7 @@
             () => {
               show = false
               showSettings = true
-              activeSettingsPage = 'Email Templates'
+              activeSettingsPage = 'Templates'
             }
           "
         />
@@ -63,16 +63,16 @@
       <div v-else class="mt-2">
         <div class="flex h-56 flex-col items-center justify-center">
           <div class="text-lg text-ink-gray-4">
-            {{ __('No templates found') }}
+            {{ __('No Templates Found') }}
           </div>
           <Button
-            :label="__('Create new')"
+            :label="__('Create New')"
             class="mt-4"
             @click="
               () => {
                 show = false
                 showSettings = true
-                activeSettingsPage = 'Email Templates'
+                activeSettingsPage = 'Templates'
               }
             "
           />
@@ -88,13 +88,10 @@ import { TextEditor, createListResource } from 'frappe-ui'
 import { ref, computed, nextTick, watch, onMounted } from 'vue'
 
 const props = defineProps({
-  doctype: {
-    type: String,
-    default: '',
-  },
+  doctype: { type: String, default: '' },
 })
 
-const show = defineModel()
+const show = defineModel({ type: Boolean })
 const searchInput = ref('')
 
 const emit = defineEmits(['apply'])

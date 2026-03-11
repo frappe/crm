@@ -1,15 +1,15 @@
 <template>
   <Button
     :label="__('Kanban settings')"
-    @click="showDialog = true"
     v-bind="$attrs"
     :iconLeft="KanbanIcon"
+    @click="showDialog = true"
   />
-  <Dialog v-model="showDialog" :options="{ title: __('Kanban settings') }">
+  <Dialog v-model="showDialog" :options="{ title: __('Kanban Settings') }">
     <template #body-content>
       <div>
         <div class="text-base text-ink-gray-8 mb-2">
-          {{ __('Column field') }}
+          {{ __('Column Field') }}
         </div>
         <Autocomplete
           v-if="columnFields"
@@ -26,7 +26,7 @@
           </template>
         </Autocomplete>
         <div class="text-base text-ink-gray-8 mb-2 mt-4">
-          {{ __('Title field') }}
+          {{ __('Title Field') }}
         </div>
         <Autocomplete
           v-if="fields.data"
@@ -37,22 +37,22 @@
           <template #target="{ togglePopover }">
             <Button
               class="w-full !justify-start"
-              @click="togglePopover()"
               :label="titleField.label"
+              @click="togglePopover()"
             />
           </template>
         </Autocomplete>
       </div>
       <div class="mt-4">
         <div class="text-base text-ink-gray-8 mb-2">
-          {{ __('Fields order') }}
+          {{ __('Fields Order') }}
         </div>
         <Draggable
           :list="allFields"
-          @end="reorder"
           group="fields"
           item-key="name"
           class="flex flex-col gap-1"
+          @end="reorder"
         >
           <template #item="{ element: field }">
             <div
@@ -77,7 +77,7 @@
           <template #target="{ togglePopover }">
             <Button
               class="w-full mt-2"
-              :label="__('Add field')"
+              :label="__('Add Field')"
               iconLeft="plus"
               @click="togglePopover()"
             />
@@ -97,8 +97,8 @@
       <Button
         class="w-full"
         variant="solid"
-        @click="apply"
         :label="__('Apply')"
+        @click="apply"
       />
     </template>
   </Dialog>
@@ -120,7 +120,7 @@ const props = defineProps({
 
 const emit = defineEmits(['update'])
 
-const list = defineModel()
+const list = defineModel({ type: Object })
 const showDialog = ref(false)
 
 const columnField = computed({

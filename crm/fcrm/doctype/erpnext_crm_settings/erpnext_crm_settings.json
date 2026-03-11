@@ -24,21 +24,21 @@
    "depends_on": "eval:doc.enabled && doc.is_erpnext_in_different_site",
    "fieldname": "api_key",
    "fieldtype": "Data",
-   "label": "API key",
+   "label": "API Key",
    "mandatory_depends_on": "is_erpnext_in_different_site"
   },
   {
    "depends_on": "eval:doc.enabled && doc.is_erpnext_in_different_site",
    "fieldname": "api_secret",
    "fieldtype": "Password",
-   "label": "API secret",
+   "label": "API Secret",
    "mandatory_depends_on": "is_erpnext_in_different_site"
   },
   {
    "depends_on": "enabled",
    "fieldname": "section_break_oubd",
    "fieldtype": "Section Break",
-   "label": "ERPNext site API's"
+   "label": "ERPNext Site API's"
   },
   {
    "fieldname": "column_break_fllx",
@@ -48,7 +48,7 @@
    "depends_on": "eval:doc.enabled && doc.is_erpnext_in_different_site",
    "fieldname": "erpnext_site_url",
    "fieldtype": "Data",
-   "label": "ERPNext site URL",
+   "label": "ERPNext Site URL",
    "mandatory_depends_on": "is_erpnext_in_different_site"
   },
   {
@@ -94,7 +94,7 @@
    "depends_on": "eval:doc.enabled && doc.create_customer_on_status_change",
    "fieldname": "deal_status",
    "fieldtype": "Link",
-   "label": "Deal status",
+   "label": "Deal Status",
    "mandatory_depends_on": "create_customer_on_status_change",
    "options": "CRM Deal Status"
   }
@@ -102,8 +102,8 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2026-01-22 13:59:29.507022",
- "modified_by": "shariq@frappe.io",
+ "modified": "2026-02-23 12:16:42.289630",
+ "modified_by": "Administrator",
  "module": "FCRM",
  "name": "ERPNext CRM Settings",
  "owner": "Administrator",

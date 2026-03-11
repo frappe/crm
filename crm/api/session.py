@@ -34,6 +34,7 @@ def get_users():
 			"last_name",
 			"full_name",
 			"user_type",
+			"language",
 		],
 		order_by="full_name asc",
 		distinct=True,
@@ -41,6 +42,7 @@ def get_users():
 	).run(as_dict=1)
 
 	crm_users = []
+	system_language = frappe.db.get_single_value("System Settings", "language")
 
 	for user in users:
 		if frappe.session.user == user.name:
@@ -63,6 +65,7 @@ def get_users():
 			user.session_user = True
 
 		user.is_telephony_agent = frappe.db.exists("CRM Telephony Agent", {"user": user.name})
+		user.language = user.language or system_language
 
 		if user.role in ("System Manager", "Sales Manager", "Sales User"):
 			crm_users.append(user)

@@ -41,11 +41,11 @@ import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 const props = defineProps({
-  doctype: String,
-  doc: Object,
+  doctype: { type: String, default: '' },
+  doc: { type: Object, default: () => ({}) },
 })
 
-const activities = defineModel()
+const activities = defineModel({ type: Object })
 
 // Event
 function showEvent(e) {
