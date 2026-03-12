@@ -1,5 +1,5 @@
 <template>
-  <SettingsLayoutBase :title="__('Twilio Settings')">
+  <SettingsLayoutBase>
     <template #title>
       <div class="flex gap-1 items-center">
         <Button
@@ -11,7 +11,7 @@
           @click="emit('updateStep', 'telephony-settings')"
         />
         <Badge
-          v-if="twilio.doc.enabled && isDirty"
+          v-if="twilio.doc?.enabled && isDirty"
           :label="__('Not Saved')"
           variant="subtle"
           theme="orange"
@@ -20,7 +20,7 @@
     </template>
     <template #header-actions>
       <div
-        v-if="twilio.doc && !twilio.get.loading && twilio.doc.enabled"
+        v-if="twilio.doc?.enabled && !twilio.get.loading"
         class="flex gap-2 items-center"
       >
         <Button
@@ -124,11 +124,7 @@
                   )
                 }}
               </span>
-              <Button
-                :label="__('Enable')"
-                variant="solid"
-                @click="toggleEnable()"
-              />
+              <Button :label="__('Enable')" variant="solid" @click="enable" />
             </div>
           </div>
         </div>
@@ -143,6 +139,7 @@
   </SettingsLayoutBase>
 </template>
 <script setup>
+import { twilioEnabled } from '@/composables/settings'
 import { useDocument } from '@/data/document'
 import { Autocomplete, Switch } from 'frappe-ui'
 import { computed } from 'vue'
@@ -174,8 +171,8 @@ const twilioApps = computed(() => {
   return apps
 })
 
-function toggleEnable() {
-  twilio.doc.enabled = !twilio.doc.enabled
+function enable() {
+  twilio.doc.enabled = true
 }
 
 function disable() {
@@ -187,6 +184,8 @@ function update() {
   twilio.save.submit(null, {
     onSuccess: () => twilio.reload(),
   })
+
+  twilioEnabled.value = twilio.doc.enabled
 }
 
 const isDirty = computed(() => {
