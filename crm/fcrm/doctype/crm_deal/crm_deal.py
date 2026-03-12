@@ -175,7 +175,12 @@ class CRMDeal(Document):
 					flags={"ignore_share_permission": True},
 				)
 			elif user != agent:
-				frappe.share.remove(self.doctype, self.name, user)
+				frappe.share.remove(
+					self.doctype,
+					self.name,
+					user,
+					flags={"ignore_share_permission": True, "ignore_permissions": True},
+				)
 
 	def set_sla(self):
 		"""
