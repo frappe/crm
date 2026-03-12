@@ -81,7 +81,7 @@ import AssignmentRulePage from './AssignmentRules/AssignmentRulePage.vue'
 import ShieldCheck from '~icons/lucide/shield-check'
 import SlaConfig from './Sla/SlaConfig.vue'
 
-const { isManager, isTelephonyAgent, getUser } = usersStore()
+const { isManager, getUser } = usersStore()
 
 const user = computed(() => getUser() || {})
 
@@ -176,6 +176,7 @@ const tabs = computed(() => {
           component: markRaw(SlaConfig),
         },
       ],
+      condition: () => isManager(),
     },
     {
       label: __('Customization'),
@@ -195,7 +196,6 @@ const tabs = computed(() => {
           label: __('Telephony'),
           icon: PhoneIcon,
           component: markRaw(TelephonyPage),
-          condition: () => isManager() || isTelephonyAgent(),
         },
         {
           label: __('WhatsApp'),
@@ -216,7 +216,6 @@ const tabs = computed(() => {
           condition: () => isManager(),
         },
       ],
-      condition: () => isManager() || isTelephonyAgent(),
     },
   ]
 
