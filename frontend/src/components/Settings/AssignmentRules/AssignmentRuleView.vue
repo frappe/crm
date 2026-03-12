@@ -3,7 +3,7 @@
     v-if="!getAssignmentRuleData.loading"
     class="flex flex-col h-full gap-6 px-6 py-8 text-ink-gray-8"
   >
-    <div class="flex items-center justify-between px-2 w-full">
+    <div class="flex justify-between px-2 w-full">
       <div class="flex items-center gap-2">
         <Button
           variant="ghost"
@@ -23,9 +23,9 @@
           :label="__('Not Saved')"
         />
       </div>
-      <div class="flex items-center gap-4">
+      <div class="flex gap-4">
         <div
-          class="flex items-center justify-between gap-2"
+          class="flex items-center justify-between gap-2 h-7"
           @click="assignmentRuleData.disabled = !assignmentRuleData.disabled"
         >
           <Switch size="sm" :model-value="!assignmentRuleData.disabled" />
