@@ -141,7 +141,7 @@ class CRMLead(Document):
 					# the agent is already set as an assignee
 					return
 
-		assign({"assign_to": [agent], "doctype": "CRM Lead", "name": self.name})
+		assign({"assign_to": [agent], "doctype": "CRM Lead", "name": self.name}, ignore_permissions=True)
 
 	def share_with_agent(self, agent):
 		if not agent:
@@ -168,7 +168,12 @@ class CRMLead(Document):
 					flags={"ignore_share_permission": True},
 				)
 			elif user != agent:
-				frappe.share.remove(self.doctype, self.name, user)
+				frappe.share.remove(
+					self.doctype,
+					self.name,
+					user,
+					flags={"ignore_share_permission": True, "ignore_permissions": True},
+				)
 
 	def create_contact(self, existing_contact=None, throw=True):
 		if not self.lead_name:
