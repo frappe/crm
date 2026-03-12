@@ -85,9 +85,9 @@
               </template>
             </Draggable>
             <Autocomplete
-              v-if="fields.data && section.editable !== false"
+              v-if="section.editable !== false"
               value=""
-              :options="fields.data"
+              :options="fields"
               @change="(e) => addField(section, e)"
             >
               <template #target="{ togglePopover }">
@@ -143,9 +143,10 @@ import EditIcon from '@/components/Icons/EditIcon.vue'
 import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import DragVerticalIcon from '@/components/Icons/DragVerticalIcon.vue'
 import { getRandom } from '@/utils'
+import { getMeta } from '@/stores/meta'
 import Draggable from 'vuedraggable'
-import { Input, createResource } from 'frappe-ui'
-import { computed, watch } from 'vue'
+import { Input } from 'frappe-ui'
+import { computed } from 'vue'
 
 const props = defineProps({
   doctype: { type: String, default: 'CRM Lead' },
@@ -154,6 +155,9 @@ const props = defineProps({
 const sections = defineModel({ type: Array, default: () => [] })
 
 const restrictedFieldTypes = [
+  'Tab Break',
+  'Section Break',
+  'Column Break',
   'Table',
   'Table MultiSelect',
   'Geolocation',
@@ -163,29 +167,26 @@ const restrictedFieldTypes = [
   'Signature',
 ]
 
-const params = computed(() => {
-  return {
-    doctype: props.doctype,
-    restricted_fieldtypes: restrictedFieldTypes,
-    as_array: true,
-  }
-})
+const { getFields } = getMeta(props.doctype)
 
-const fields = createResource({
-  url: 'crm.api.doc.get_fields_meta',
-  params: params.value,
-  cache: ['fieldsMeta', props.doctype],
-  auto: true,
+const fields = computed(() => {
+  let _fields = getFields() || []
+  if (!_fields.length) return []
+
+  return _fields
+    .filter((field) => !restrictedFieldTypes.includes(field.fieldtype))
+    .map((field) => {
+      return {
+        label: field.label,
+        value: field.fieldname,
+        fieldname: field.fieldname,
+        fieldtype: field.fieldtype,
+      }
+    })
 })
 
 function addField(section, field) {
   if (!field) return
   section.columns[0].fields.push(field)
 }
-
-watch(
-  () => props.doctype,
-  () => fields.fetch(params.value),
-  { immediate: true },
-)
 </script>
