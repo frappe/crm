@@ -19,10 +19,7 @@
       </div>
     </template>
     <template #header-actions>
-      <div
-        v-if="exotel.doc?.enabled && !exotel.get.loading"
-        class="flex gap-2 items-center"
-      >
+      <div v-if="exotel.doc?.enabled && !exotel.get.loading" class="flex gap-2">
         <Button
           v-if="isDirty"
           :label="__('Discard Changes')"

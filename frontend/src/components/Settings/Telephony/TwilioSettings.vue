@@ -19,10 +19,7 @@
       </div>
     </template>
     <template #header-actions>
-      <div
-        v-if="twilio.doc?.enabled && !twilio.get.loading"
-        class="flex gap-2 items-center"
-      >
+      <div v-if="twilio.doc?.enabled && !twilio.get.loading" class="flex gap-2">
         <Button
           v-if="isDirty"
           :label="__('Discard Changes')"
