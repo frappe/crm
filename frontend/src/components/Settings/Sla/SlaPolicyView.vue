@@ -20,9 +20,9 @@
       </div>
     </template>
     <template #header-actions>
-      <div class="flex gap-4 items-center">
+      <div class="flex gap-4">
         <div
-          class="flex items-center justify-between gap-2 cursor-pointer"
+          class="flex items-center justify-between gap-2 cursor-pointer h-7"
           @click="toggleEnabled"
         >
           <Switch size="sm" :model-value="slaData.enabled" />
