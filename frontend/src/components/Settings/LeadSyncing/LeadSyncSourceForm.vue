@@ -358,35 +358,18 @@ watch(
   },
 )
 
-const restrictedFields = [
-  'name',
-  'owner',
-  'creation',
-  'modified',
-  'modified_by',
-  'docstatus',
-  '_comments',
-  '_user_tags',
-  '_assign',
-  '_liked_by',
-]
-
 const { getFields: getCRMLeadFields } = getMeta('CRM Lead')
 
 const leadFields = computed(() => {
   const _fields = getCRMLeadFields() || []
   if (!_fields.length) return []
 
-  return _fields
-    .filter((field) => {
-      return !restrictedFields.includes(field.fieldname)
-    })
-    .map((field) => {
-      return {
-        label: field.label,
-        value: field.fieldname,
-      }
-    })
+  return _fields.map((field) => {
+    return {
+      label: field.label,
+      value: field.fieldname,
+    }
+  })
 })
 
 function getSourceDocResource(name) {

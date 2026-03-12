@@ -232,19 +232,6 @@ const slotName = computed(() => {
   return 'default'
 })
 
-const restrictedFields = [
-  'name',
-  'owner',
-  'creation',
-  'modified',
-  'modified_by',
-  'docstatus',
-  '_comments',
-  '_user_tags',
-  '_assign',
-  '_liked_by',
-]
-
 const restrictedFieldTypes = [
   'Tab Break',
   'Section Break',
@@ -276,7 +263,6 @@ const fields = computed(() => {
     .filter((field) => {
       return (
         !existingFields.find((f) => f.fieldname === field.fieldname) &&
-        !restrictedFields.includes(field.fieldname) &&
         !restrictedFieldTypes.includes(field.fieldtype) &&
         (props.onlyRequired ? field.reqd : true)
       )
