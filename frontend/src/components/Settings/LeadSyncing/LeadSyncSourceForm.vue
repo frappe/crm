@@ -144,7 +144,7 @@
                 fields: [
                   {
                     fieldname: 'mapped_to_crm_field',
-                    options: getCRMLeadFields,
+                    options: leadFields,
                     placeholder: __('Not Synced'),
                   },
                 ],
@@ -358,39 +358,35 @@ watch(
   },
 )
 
-const leadFields = createResource({
-  url: 'crm.api.doc.get_fields_meta',
-  params: {
-    doctype: 'CRM Lead',
-    as_array: true,
-  },
-  cache: ['fieldsMeta', 'CRM Lead'],
-  auto: true,
-  transform: (data) => {
-    let restrictedFields = [
-      'name',
-      'owner',
-      'creation',
-      'modified',
-      'modified_by',
-      'docstatus',
-      '_comments',
-      '_user_tags',
-      '_assign',
-      '_liked_by',
-    ]
-    return data.filter((field) => !restrictedFields.includes(field.fieldname))
-  },
-})
+const restrictedFields = [
+  'name',
+  'owner',
+  'creation',
+  'modified',
+  'modified_by',
+  'docstatus',
+  '_comments',
+  '_user_tags',
+  '_assign',
+  '_liked_by',
+]
 
-const getCRMLeadFields = computed(() => {
-  if (leadFields.data) {
-    return leadFields.data.map((field) => ({
-      label: field.label,
-      value: field.fieldname,
-    }))
-  }
-  return []
+const { getFields: getCRMLeadFields } = getMeta('CRM Lead')
+
+const leadFields = computed(() => {
+  const _fields = getCRMLeadFields() || []
+  if (!_fields.length) return []
+
+  return _fields
+    .filter((field) => {
+      return !restrictedFields.includes(field.fieldname)
+    })
+    .map((field) => {
+      return {
+        label: field.label,
+        value: field.fieldname,
+      }
+    })
 })
 
 function getSourceDocResource(name) {
