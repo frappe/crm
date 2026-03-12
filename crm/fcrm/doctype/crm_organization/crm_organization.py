@@ -4,7 +4,7 @@
 import frappe
 from frappe.model.document import Document
 
-from crm.fcrm.doctype.fcrm_settings.fcrm_settings import get_exchange_rate
+from crm.api.exchange_rate import get_exchange_rate
 
 
 class CRMOrganization(Document):
