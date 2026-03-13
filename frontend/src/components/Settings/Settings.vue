@@ -84,10 +84,10 @@ const user = computed(() => getUser() || {})
 const tabs = computed(() => {
   let _tabs = [
     {
-      label: __('My Settings'),
+      label: __('Account'),
       items: [
         {
-          label: __('Profile'),
+          label: user.value.full_name,
           icon: () =>
             h(Avatar, {
               size: 'xs',
