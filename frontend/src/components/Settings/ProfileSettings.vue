@@ -1,10 +1,10 @@
 <template>
   <SettingsLayoutBase
     :title="__('Profile')"
-    :description="__('Manage your profile information.')"
+    :description="__('Manage your profile & login information.')"
   >
     <template #content>
-      <div class="flex items-center justify-between gap-2">
+      <div class="flex items-center justify-between gap-2 p-3">
         <FileUploader
           :validateFile="validateIsImageFile"
           @success="(file) => updateImage(file.file_url)"
@@ -17,35 +17,28 @@
                   :image="profile.user_image"
                   :label="profile.full_name"
                 />
-                <component
-                  :is="profile.user_image ? Dropdown : 'div'"
-                  v-bind="
-                    profile.user_image
-                      ? {
-                          options: [
-                            {
-                              icon: 'upload',
-                              label: profile.user_image
-                                ? __('Change Image')
-                                : __('Upload Image'),
-                              onClick: openFileSelector,
-                            },
-                            {
-                              icon: 'trash-2',
-                              label: __('Remove Image'),
-                              onClick: () => updateImage(),
-                            },
-                          ],
-                        }
-                      : { onClick: openFileSelector }
-                  "
+                <Tooltip
+                  :hoverDelay="0"
+                  placement="bottom"
+                  :text="profileTooltipText"
                 >
                   <div
-                    class="z-1 absolute top-0 left-0 flex h-9 cursor-pointer items-center justify-center rounded-full bg-black bg-opacity-40 opacity-0 duration-300 ease-in-out group-hover:opacity-100 !size-14"
+                    class="z-1 absolute top-0 left-0 flex h-9 cursor-pointer items-center justify-center rounded-full !size-14"
+                    @click.stop="openFileSelector"
+                  />
+                  <div
+                    v-if="profile.user_image"
+                    class="z-1 absolute -top-1 -right-1 flex cursor-pointer items-center justify-center rounded-full bg-black bg-opacity-40 opacity-0 duration-300 ease-in-out group-hover:opacity-100"
+                    @click.stop="updateImage()"
+                    @mouseenter="isHoveringRemove = true"
+                    @mouseleave="isHoveringRemove = false"
                   >
-                    <CameraIcon class="size-4 cursor-pointer text-white" />
+                    <FeatherIcon
+                      name="x"
+                      class="size-4 cursor-pointer text-white"
+                    />
                   </div>
-                </component>
+                </Tooltip>
                 <div
                   v-if="uploading"
                   class="w-full h-full top-0 left-0 absolute bg-black bg-opacity-20 rounded-full flex items-center justify-center"
@@ -150,16 +143,16 @@
 import SettingsLayoutBase from '@/components/Layouts/SettingsLayoutBase.vue'
 import ChangePasswordModal from '@/components/Modals/ChangePasswordModal.vue'
 import Link from '@/components/Controls/Link.vue'
-import CameraIcon from '~icons/lucide/camera'
 import { usersStore } from '@/stores/users'
 import { validateIsImageFile } from '@/utils'
 import {
   Avatar,
   Badge,
   Button,
-  Dropdown,
+  FeatherIcon,
   FileUploader,
   LoadingIndicator,
+  Tooltip,
   createResource,
   toast,
 } from 'frappe-ui'
@@ -173,6 +166,13 @@ const user = computed(() => getUser() || {})
 const profile = ref({ ...user.value })
 const showChangePasswordModal = ref(false)
 const language = ref(user.value.language)
+
+const isHoveringRemove = ref(false)
+
+const profileTooltipText = computed(() => {
+  if (isHoveringRemove.value) return __('Remove Photo')
+  return profile.value.user_image ? __('Change Photo') : __('Upload Photo')
+})
 
 const dirty = computed(() => {
   return (
@@ -236,6 +236,7 @@ const onSave = () => {
 }
 
 function updateImage(fileUrl = '') {
+  isHoveringRemove.value = false
   profile.value.user_image = fileUrl
   setUser.submit()
 }
