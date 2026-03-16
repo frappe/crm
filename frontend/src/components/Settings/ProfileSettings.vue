@@ -1,10 +1,11 @@
 <template>
   <SettingsLayoutBase
+    v-if="user.doc"
     :title="__('Profile')"
     :description="__('Manage your profile & login information.')"
   >
     <template #content>
-      <div class="flex items-center justify-between gap-2 p-3">
+      <div class="flex items-center justify-between gap-2 pt-1.5 pb-4">
         <FileUploader
           :validateFile="validateIsImageFile"
           @success="(file) => updateImage(file.file_url)"
@@ -14,8 +15,8 @@
               <div class="group relative !size-14">
                 <Avatar
                   class="!size-14"
-                  :image="profile.user_image"
-                  :label="profile.full_name"
+                  :image="user.doc.user_image"
+                  :label="user.doc.full_name"
                 />
                 <Tooltip
                   :hoverDelay="0"
@@ -27,15 +28,15 @@
                     @click.stop="openFileSelector"
                   />
                   <div
-                    v-if="profile.user_image"
-                    class="z-1 absolute -top-1 -right-1 flex cursor-pointer items-center justify-center rounded-full bg-black bg-opacity-40 opacity-0 duration-300 ease-in-out group-hover:opacity-100"
+                    v-if="user.doc.user_image"
+                    class="z-1 size-4 absolute -top-1 -right-1 flex cursor-pointer items-center justify-center rounded-full bg-surface-white opacity-0 duration-300 ease-in-out group-hover:opacity-100 hover:bg-surface-gray-2 outline outline-black-overlay-50"
                     @click.stop="updateImage()"
                     @mouseenter="isHoveringRemove = true"
                     @mouseleave="isHoveringRemove = false"
                   >
                     <FeatherIcon
                       name="x"
-                      class="size-4 cursor-pointer text-white"
+                      class="size-3.5 cursor-pointer text-ink-gray-4"
                     />
                   </div>
                 </Tooltip>
@@ -51,10 +52,10 @@
                   <span
                     class="text-lg sm:text-xl !font-semibold text-ink-gray-8"
                   >
-                    {{ profile.full_name }}
+                    {{ user.doc.full_name }}
                   </span>
                   <span class="text-p-sm text-ink-gray-6">
-                    {{ profile.email }}
+                    {{ user.doc.email }}
                   </span>
                 </div>
                 <ErrorMessage :message="__(_error)" />
@@ -63,15 +64,14 @@
           </template>
         </FileUploader>
       </div>
-      <hr class="my-6" />
       <div>
         <div class="flex items-center justify-between">
-          <div class="flex gap-2 items-center">
+          <div class="flex gap-2 items-center h-7">
             <div class="text-base font-semibold text-ink-gray-9">
               {{ __('Account Info & Security') }}
             </div>
             <Badge
-              v-if="dirty || isLanguageChanged"
+              v-if="isDirty"
               :variant="'subtle'"
               :theme="'orange'"
               size="sm"
@@ -79,24 +79,35 @@
             />
           </div>
           <Button
+            v-if="isDirty"
             :label="__('Save')"
-            :loading="setUser.loading || saveLanguageResource.loading"
-            :disabled="!dirty && !isLanguageChanged"
-            @click="onSave"
+            :loading="user.save.loading"
+            @click="save()"
           />
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mt-6">
-          <FormControl
-            v-model="profile.first_name"
-            class="w-full"
-            :label="__('First Name')"
-            maxlength="40"
-          />
-          <FormControl
-            v-model="profile.last_name"
-            class="w-full"
-            :label="__('Last Name')"
-            maxlength="40"
+        <div class="flex items-center justify-between mt-6">
+          <div class="flex flex-col gap-1">
+            <span class="text-base font-medium text-ink-gray-8">
+              {{ __('Full Name') }}
+            </span>
+            <span class="text-p-sm text-ink-gray-6">
+              {{ __('Your full name as it appears in the system.') }}
+            </span>
+          </div>
+          <FormControl v-model="fullName" maxlength="80" />
+        </div>
+        <div class="flex items-center justify-between mt-6">
+          <div class="flex flex-col gap-1">
+            <span class="text-base font-medium text-ink-gray-8">
+              {{ __('Email') }}
+            </span>
+            <span class="text-p-sm text-ink-gray-6">
+              {{ __('Manage your account emails for communication.') }}
+            </span>
+          </div>
+          <Button
+            :label="__('Manage Emails')"
+            @click="showChangePasswordModal = true"
           />
         </div>
         <div class="flex items-center justify-between mt-6">
@@ -109,25 +120,8 @@
             </span>
           </div>
           <Button
-            icon-left="lock"
             :label="__('Change Password')"
             @click="showChangePasswordModal = true"
-          />
-        </div>
-        <div class="flex items-center justify-between mt-6">
-          <div class="flex flex-col gap-1">
-            <span class="text-base font-medium text-ink-gray-8">
-              {{ __('Language') }}
-            </span>
-            <span class="text-p-sm text-ink-gray-6">
-              {{ __('Change language of the application.') }}
-            </span>
-          </div>
-          <Link
-            :model-value="language"
-            doctype="Language"
-            class="w-40"
-            @update:modelValue="language = $event || user.language"
           />
         </div>
       </div>
@@ -142,102 +136,50 @@
 <script setup>
 import SettingsLayoutBase from '@/components/Layouts/SettingsLayoutBase.vue'
 import ChangePasswordModal from '@/components/Modals/ChangePasswordModal.vue'
-import Link from '@/components/Controls/Link.vue'
-import { usersStore } from '@/stores/users'
+import { sessionStore } from '@/stores/session'
+import { useDocument } from '@/data/document'
 import { validateIsImageFile } from '@/utils'
-import {
-  Avatar,
-  Badge,
-  Button,
-  FeatherIcon,
-  FileUploader,
-  LoadingIndicator,
-  Tooltip,
-  createResource,
-  toast,
-} from 'frappe-ui'
+import { Avatar, Badge, FileUploader, LoadingIndicator, toast } from 'frappe-ui'
 import { ref, computed } from 'vue'
-import { clearCache } from '../../utils'
 
-const { getUser, users } = usersStore()
-
-const user = computed(() => getUser() || {})
-
-const profile = ref({ ...user.value })
 const showChangePasswordModal = ref(false)
-const language = ref(user.value.language)
-
 const isHoveringRemove = ref(false)
+
+const { user: sessionUser } = sessionStore()
+const { document: user } = useDocument('User', sessionUser)
 
 const profileTooltipText = computed(() => {
   if (isHoveringRemove.value) return __('Remove Photo')
-  return profile.value.user_image ? __('Change Photo') : __('Upload Photo')
+  return user.doc.user_image ? __('Change Photo') : __('Upload Photo')
 })
 
-const dirty = computed(() => {
-  return (
-    profile.value.first_name !== user.value.first_name ||
-    profile.value.last_name !== user.value.last_name
-  )
-})
-
-const isLanguageChanged = computed(() => {
-  return language.value !== user.value.language
-})
-
-const setUser = createResource({
-  url: 'frappe.client.set_value',
-  makeParams() {
-    return {
-      doctype: 'User',
-      name: user.value.name,
-      fieldname: {
-        first_name: profile.value.first_name,
-        last_name: profile.value.last_name,
-        user_image: profile.value.user_image,
-      },
-    }
-  },
-  async onSuccess() {
-    await users.reload()
-    profile.value = { ...user.value }
-    toast.success(__('Profile Updated'))
-  },
-  onError: (err) => {
-    toast.error(err.messages?.[0] || __('Failed to update profile'))
+const fullName = computed({
+  get: () => user.doc.first_name + ' ' + user.doc.last_name,
+  set: (val) => {
+    const [firstName, ...lastName] = val.split(' ')
+    user.doc.first_name = firstName
+    user.doc.last_name = lastName.join(' ')
   },
 })
 
-const saveLanguageResource = createResource({
-  url: 'frappe.client.set_value',
-  makeParams() {
-    return {
-      doctype: 'User',
-      name: user.value.name,
-      fieldname: {
-        language: language.value,
-      },
-    }
-  },
-  onSuccess() {
-    toast.success(__('Language Updated'))
-    clearCache()
-    window.location.reload()
-  },
+const isDirty = computed(() => {
+  return JSON.stringify(user.doc) !== JSON.stringify(user.originalDoc)
 })
 
-const onSave = () => {
-  if (dirty.value) {
-    setUser.submit()
-  }
-  if (isLanguageChanged.value) {
-    saveLanguageResource.submit()
-  }
+function save() {
+  user.save.submit(null, {
+    onSuccess: () => {
+      toast.success(__('Profile Updated Successfully'))
+    },
+    onError: (err) => {
+      toast.error(err.message + ': ' + err.messages[0])
+    },
+  })
 }
 
 function updateImage(fileUrl = '') {
   isHoveringRemove.value = false
-  profile.value.user_image = fileUrl
-  setUser.submit()
+  user.doc.user_image = fileUrl
+  user.save.submit()
 }
 </script>
