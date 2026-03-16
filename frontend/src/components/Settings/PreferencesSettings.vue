@@ -87,6 +87,7 @@ import CRMLogo from '@/components/Icons/CRMLogo.vue'
 import ThemeSwitcher from '@/components/Settings/ThemeSwitcher.vue'
 import SettingsLayoutBase from '@/components/Layouts/SettingsLayoutBase.vue'
 import Link from '@/components/Controls/Link.vue'
+import { useKeyboardShortcuts } from '@/composables/useKeyboardShortcuts'
 import { sessionStore } from '@/stores/session'
 import { useDocument } from '@/data/document'
 import { getSettings } from '@/stores/settings'
@@ -130,4 +131,18 @@ const timeZones = createResource({
 function getTimezoneOptions() {
   return timeZones.data?.timezones.map((tz) => ({ label: tz, value: tz })) || []
 }
+
+useKeyboardShortcuts({
+  ignoreTyping: false,
+  shortcuts: [
+    {
+      match: (e) => (e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 's',
+      action: () => {
+        if (isDirty.value) {
+          save()
+        }
+      },
+    },
+  ],
+})
 </script>
