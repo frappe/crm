@@ -270,14 +270,6 @@ standard_dropdown_items = [
 		"is_standard": 1,
 	},
 	{
-		"name1": "toggle_theme",
-		"label": "Toggle theme",
-		"type": "Route",
-		"icon": "moon",
-		"route": "#",
-		"is_standard": 1,
-	},
-	{
 		"name1": "settings",
 		"label": "Settings",
 		"type": "Route",
