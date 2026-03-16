@@ -1245,7 +1245,7 @@ msgstr "Detalhes da chamada"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:563
 msgid "Call Log"
-msgstr "Registro de Chamadas"
+msgstr "Registro de chamadas"
 
 #. Label of the receiver (Link) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
@@ -1381,7 +1381,7 @@ msgstr "Alterar Status"
 #: frontend/src/components/Layouts/AppSidebar.vue:487
 #: frontend/src/components/Layouts/AppSidebar.vue:496
 msgid "Change deal status"
-msgstr "Alterar status da transação"
+msgstr "Alterar status do negócio"
 
 #: frontend/src/components/Settings/ProfileSettings.vue:130
 msgid "Change language of the application."
@@ -8151,3 +8151,103 @@ msgid ""
 msgstr ""
 "Você precisa ativar o JavaScript para que o aplicativo funcione.<br>Para "
 "ativá-lo, siga as instruções no link a seguir:"
+
+#. Manual UI strings for route names and onboarding/help components.
+msgid "All Views"
+msgstr "Todas as visualizações"
+
+msgid "All articles"
+msgstr "Todos os artigos"
+
+msgid "Call Logs"
+msgstr "Registros de chamadas"
+
+msgid "Continue"
+msgstr "Continuar"
+
+msgid "Dashboard"
+msgstr "Painel"
+
+msgid "Getting started"
+msgstr "Primeiros passos"
+
+msgid "Help center"
+msgstr "Central de ajuda"
+
+msgid "Help centre"
+msgstr "Central de ajuda"
+
+msgid "Invalid Page"
+msgstr "Página inválida"
+
+msgid "Manager Dashboard"
+msgstr "Painel do gestor"
+
+msgid "Not Permitted"
+msgstr "Sem permissão"
+
+msgid "Loved the demo?"
+msgstr "Gostou da demonstração?"
+
+msgid "Reset all"
+msgstr "Redefinir tudo"
+
+msgid "Reset onboarding steps"
+msgstr "Redefinir etapas de onboarding"
+
+msgid "Search articles..."
+msgstr "Pesquisar artigos..."
+
+msgid "Skip"
+msgstr "Pular"
+
+msgid "Skip all"
+msgstr "Pular tudo"
+
+msgid "Start now"
+msgstr "Começar agora"
+
+msgid "Sign up now"
+msgstr "Cadastre-se agora"
+
+msgid "Trial ends tomorrow"
+msgstr "A avaliação termina amanhã"
+
+msgid "Try {0} for free with a 14-day trial."
+msgstr "Experimente {0} grátis com uma avaliação de 14 dias."
+
+msgid "Upgrade plan"
+msgstr "Fazer upgrade do plano"
+
+msgid "Upgrade to a paid plan for uninterrupted services"
+msgstr "Faça upgrade para um plano pago para manter os serviços sem interrupção"
+
+msgid "Welcome"
+msgstr "Boas-vindas"
+
+msgid "Welcome to {0}"
+msgstr "Boas-vindas ao {0}"
+
+msgid "You are all set"
+msgstr "Tudo pronto"
+
+msgid "Your browser does not support the video tag."
+msgstr "Seu navegador não oferece suporte à tag de vídeo."
+
+msgid "All steps are completed successfully"
+msgstr "Todas as etapas foram concluídas com sucesso"
+
+msgid "You need to complete \"{0}\" first."
+msgstr "Você precisa concluir \"{0}\" primeiro."
+
+msgid "{0}% completed"
+msgstr "{0}% concluído"
+
+msgid "Trial ends in {0} days"
+msgstr "A avaliação termina em {0} dias"
+
+msgid "{0}/{1} steps"
+msgstr "{0}/{1} etapas"
+
+msgid "{0}/{1} steps completed"
+msgstr "{0}/{1} etapas concluídas"
