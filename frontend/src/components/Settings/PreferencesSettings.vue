@@ -89,16 +89,21 @@ import SettingsLayoutBase from '@/components/Layouts/SettingsLayoutBase.vue'
 import Link from '@/components/Controls/Link.vue'
 import { useKeyboardShortcuts } from '@/composables/useKeyboardShortcuts'
 import { sessionStore } from '@/stores/session'
-import { useDocument } from '@/data/document'
 import { getSettings } from '@/stores/settings'
-import { Combobox, Badge, toast, createResource } from 'frappe-ui'
+import {
+  Combobox,
+  Badge,
+  toast,
+  createResource,
+  createDocumentResource,
+} from 'frappe-ui'
 import { ref, computed } from 'vue'
 
 const refreshRequired = ref(false)
 
 const { brand } = getSettings()
 const { user: sessionUser } = sessionStore()
-const { document: user } = useDocument('User', sessionUser)
+const user = createDocumentResource({ doctype: 'User', name: sessionUser })
 
 function save() {
   refreshRequired.value =
