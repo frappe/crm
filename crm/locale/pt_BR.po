@@ -1319,11 +1319,11 @@ msgstr ""
 
 #: frontend/src/components/Settings/ProfileSettings.vue:130
 msgid "Change language of the application."
-msgstr ""
+msgstr "Altere o idioma do aplicativo."
 
 #: frontend/src/components/Settings/ProfileSettings.vue:115
 msgid "Change your account password for security."
-msgstr ""
+msgstr "Altere a senha da sua conta por segurança."
 
 #: frontend/src/pages/Dashboard.vue:22
 msgid "Chart"
@@ -2517,7 +2517,7 @@ msgstr ""
 #: frontend/src/pages/Organization.vue:503
 #: frontend/src/pages/Organization.vue:531
 msgid "Email"
-msgstr "E-Mail\n"
+msgstr "E-mail"
 
 #: frontend/src/components/Settings/EmailAdd.vue:143
 msgid "Email Account created successfully"
@@ -3809,11 +3809,11 @@ msgstr ""
 
 #: frontend/src/components/Settings/ProfileSettings.vue:127
 msgid "Language"
-msgstr ""
+msgstr "Idioma"
 
 #: frontend/src/components/Settings/ProfileSettings.vue:223
 msgid "Language Updated"
-msgstr ""
+msgstr "Idioma atualizado"
 
 #: frontend/src/components/Settings/AssignmentRules/AssigneeRules.vue:108
 msgid "Last"
@@ -5056,7 +5056,7 @@ msgstr ""
 #: frontend/src/components/Settings/ProfileSettings.vue:112
 #: frontend/src/components/Settings/emailConfig.js:62
 msgid "Password"
-msgstr ""
+msgstr "Senha"
 
 #: crm/api/demo.py:21 crm/api/demo.py:29
 msgid "Password cannot be reset by Demo User {}"
@@ -5064,11 +5064,11 @@ msgstr ""
 
 #: frontend/src/components/Settings/emailConfig.js:179
 msgid "Password is required"
-msgstr ""
+msgstr "A senha é obrigatória"
 
 #: frontend/src/components/Modals/ChangePasswordModal.vue:106
 msgid "Password must be at least 8 characters"
-msgstr ""
+msgstr "A senha deve ter pelo menos 8 caracteres"
 
 #: frontend/src/components/Modals/ChangePasswordModal.vue:109
 msgid "Password must contain lowercase, uppercase, number, and symbol"
@@ -6143,11 +6143,11 @@ msgstr ""
 
 #: frontend/src/components/Layouts/AppSidebar.vue:338
 msgid "Setup your password"
-msgstr ""
+msgstr "Defina sua senha"
 
 #: frontend/src/components/Activities/Activities.vue:246
 msgid "Show"
-msgstr ""
+msgstr "Mostrar"
 
 #: frontend/src/components/FieldLayoutEditor.vue:352
 msgid "Show Border"
@@ -7801,3 +7801,56 @@ msgstr ""
 msgid "⚠️ No row found for idx: {0} in parent field: {1}"
 msgstr ""
 
+msgid "Back to Login"
+msgstr "Voltar ao login"
+
+msgid "Create a Frappe Account"
+msgstr "Criar uma conta no Frappe"
+
+msgid "E-Mail"
+msgstr "E-mail"
+
+msgid "Email Address"
+msgstr "Endereço de e-mail"
+
+msgid "Forgot Password"
+msgstr "Esqueci a senha"
+
+msgid "Forgot Password?"
+msgstr "Esqueceu a senha?"
+
+msgid "Home"
+msgstr "Início"
+
+msgid "Javascript is disabled on your browser"
+msgstr "O JavaScript está desativado no seu navegador"
+
+msgid "Login"
+msgstr "Entrar"
+
+msgid "Login to Frappe"
+msgstr "Entrar no Frappe"
+
+msgid "Login with Email Link"
+msgstr "Entrar com link por e-mail"
+
+msgid "Reset Password"
+msgstr "Redefinir senha"
+
+msgid "Send login link"
+msgstr "Enviar link de login"
+
+msgid "Signup Disabled"
+msgstr "Cadastro desativado"
+
+msgid "Signups have been disabled for this website."
+msgstr "Os cadastros foram desativados para este site."
+
+msgid "To enable it follow the instructions in the following link:"
+msgstr "Para ativá-lo, siga as instruções no link a seguir:"
+
+msgid "You need to enable JavaScript for your app to work."
+msgstr "Você precisa ativar o JavaScript para que o aplicativo funcione."
+
+msgid "You need to enable JavaScript for your app to work.<br>To enable it follow the instructions in the following link:"
+msgstr "Você precisa ativar o JavaScript para que o aplicativo funcione.<br>Para ativá-lo, siga as instruções no link a seguir:"
