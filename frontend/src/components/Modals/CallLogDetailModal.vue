@@ -87,7 +87,10 @@
               <Tooltip v-else-if="field.tooltip" :text="field.tooltip">
                 {{ field.value }}
               </Tooltip>
-              <div v-else-if="field.name == 'recording_url'" class="w-full">
+              <div
+                v-else-if="field.name == 'recording_url_path'"
+                class="w-full"
+              >
                 <audio
                   class="audio-control w-full"
                   controls
@@ -267,8 +270,8 @@ const detailFields = computed(() => {
         name: 'play-circle',
         class: 'h-4 w-4 mt-2',
       }),
-      name: 'recording_url',
-      value: data.recording_url,
+      name: 'recording_url_path',
+      value: data.recording_url_path,
     },
     {
       icon: NoteIcon,
