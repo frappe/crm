@@ -45,14 +45,14 @@
           @change="(val) => (user.doc.email_signature = val)"
         />
       </div>
-      <div class="flex flex-col gap-4 mt-4">
+      <div class="flex flex-col gap-4 mt-6">
         <div class="flex flex-col gap-1">
           <span class="text-base font-medium text-ink-gray-8">
             {{ __('Emails') }}
           </span>
           <span class="text-p-sm text-ink-gray-6">
             {{
-              __('Switch between outgoing email accounts when sending emails.')
+              __('Switch between outgoing email accounts when sending emails')
             }}
           </span>
         </div>
@@ -96,7 +96,6 @@
             <template #target="{ togglePopover }">
               <Button
                 class="!bg-surface-modal"
-                size="md"
                 variant="outline"
                 :label="__('Add Email')"
                 iconLeft="plus"
@@ -145,6 +144,7 @@ const emails = createListResource({
 })
 
 const filteredEmails = computed(() => {
+  if (!emails.data) return []
   const linkedEmails = user.doc.user_emails?.map((e) => e.email_id) || []
   return emails.data
     .map((doc) => ({
@@ -169,9 +169,9 @@ function addEmail(email) {
   })
 }
 
-function removeEmail(entry) {
+function removeEmail(email) {
   user.doc.user_emails = user.doc.user_emails.filter(
-    (e) => e.name !== entry.name,
+    (e) => e.email_id !== email.email_id,
   )
 }
 
