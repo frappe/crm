@@ -137,25 +137,24 @@
 import SettingsLayoutBase from '@/components/Layouts/SettingsLayoutBase.vue'
 import ChangePasswordModal from '@/components/Modals/ChangePasswordModal.vue'
 import { useKeyboardShortcuts } from '@/composables/useKeyboardShortcuts'
-import { sessionStore } from '@/stores/session'
 import { validateIsImageFile } from '@/utils'
 import {
   Avatar,
   Badge,
-  createDocumentResource,
   FileUploader,
   LoadingIndicator,
   toast,
+  createDocumentResource,
 } from 'frappe-ui'
-import { ref, computed } from 'vue'
+import { ref, computed, inject } from 'vue'
 
 const emit = defineEmits(['updateStep'])
 
+const { user: sessionUser } = inject('session')
+const user = createDocumentResource({ doctype: 'User', name: sessionUser })
+
 const showChangePasswordModal = ref(false)
 const isHoveringRemove = ref(false)
-
-const { user: sessionUser } = sessionStore()
-const user = createDocumentResource({ doctype: 'User', name: sessionUser })
 
 const profileTooltipText = computed(() => {
   if (isHoveringRemove.value) return __('Remove Photo')

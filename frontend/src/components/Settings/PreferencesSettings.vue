@@ -88,7 +88,6 @@ import ThemeSwitcher from '@/components/Settings/ThemeSwitcher.vue'
 import SettingsLayoutBase from '@/components/Layouts/SettingsLayoutBase.vue'
 import Link from '@/components/Controls/Link.vue'
 import { useKeyboardShortcuts } from '@/composables/useKeyboardShortcuts'
-import { sessionStore } from '@/stores/session'
 import { getSettings } from '@/stores/settings'
 import {
   Combobox,
@@ -97,12 +96,13 @@ import {
   createResource,
   createDocumentResource,
 } from 'frappe-ui'
-import { ref, computed } from 'vue'
+import { ref, computed, inject } from 'vue'
 
 const refreshRequired = ref(false)
 
+const { user: sessionUser } = inject('session')
+
 const { brand } = getSettings()
-const { user: sessionUser } = sessionStore()
 const user = createDocumentResource({ doctype: 'User', name: sessionUser })
 
 function save() {
