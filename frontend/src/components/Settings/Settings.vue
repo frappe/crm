@@ -55,7 +55,7 @@ import EmailTemplateIcon from '@/components/Icons/EmailTemplateIcon.vue'
 import SettingsIcon2 from '@/components/Icons/SettingsIcon2.vue'
 import Users from '@/components/Settings/Users.vue'
 import InviteUserPage from '@/components/Settings/InviteUserPage.vue'
-import ProfileSettings from '@/components/Settings/ProfileSettings.vue'
+import ProfilePage from '@/components/Settings/Profile/ProfilePage.vue'
 import PreferencesSettings from '@/components/Settings/PreferencesSettings.vue'
 import WhatsAppSettings from '@/components/Settings/WhatsAppSettings.vue'
 import ERPNextSettings from '@/components/Settings/ERPNextSettings.vue'
@@ -96,7 +96,7 @@ const tabs = computed(() => {
               label: user.value.full_name,
               image: user.value.user_image,
             }),
-          component: markRaw(ProfileSettings),
+          component: markRaw(ProfilePage),
         },
         {
           label: __('Preferences'),

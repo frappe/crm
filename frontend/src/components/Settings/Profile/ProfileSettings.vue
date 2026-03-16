@@ -106,8 +106,8 @@
             </span>
           </div>
           <Button
-            :label="__('Manage Emails')"
-            @click="showChangePasswordModal = true"
+            :label="__('Manage Emails & Signature')"
+            @click="emit('updateStep', 'user-email-settings')"
           />
         </div>
         <div class="flex items-center justify-between mt-6">
@@ -148,6 +148,8 @@ import {
   toast,
 } from 'frappe-ui'
 import { ref, computed } from 'vue'
+
+const emit = defineEmits(['updateStep'])
 
 const showChangePasswordModal = ref(false)
 const isHoveringRemove = ref(false)
