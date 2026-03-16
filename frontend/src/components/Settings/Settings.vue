@@ -45,6 +45,7 @@
 <script setup>
 import CircleDollarSignIcon from '~icons/lucide/circle-dollar-sign'
 import TrendingUpDownIcon from '~icons/lucide/trending-up-down'
+import SlidersIcon from '@/components/Icons/SlidersIcon.vue'
 import SparkleIcon from '@/components/Icons/SparkleIcon.vue'
 import CalendarIcon from '@/components/Icons/CalendarIcon.vue'
 import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
@@ -56,6 +57,7 @@ import SettingsIcon2 from '@/components/Icons/SettingsIcon2.vue'
 import Users from '@/components/Settings/Users.vue'
 import InviteUserPage from '@/components/Settings/InviteUserPage.vue'
 import ProfileSettings from '@/components/Settings/ProfileSettings.vue'
+import PreferencesSettings from '@/components/Settings/PreferencesSettings.vue'
 import WhatsAppSettings from '@/components/Settings/WhatsAppSettings.vue'
 import ERPNextSettings from '@/components/Settings/ERPNextSettings.vue'
 import LeadSyncSourcePage from '@/components/Settings/LeadSyncing/LeadSyncSourcePage.vue'
@@ -99,6 +101,11 @@ const tabs = computed(() => {
               image: user.value.user_image,
             }),
           component: markRaw(ProfileSettings),
+        },
+        {
+          label: __('Preferences'),
+          icon: SlidersIcon,
+          component: markRaw(PreferencesSettings),
         },
       ],
     },
