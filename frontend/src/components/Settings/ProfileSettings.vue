@@ -16,7 +16,7 @@
                 <Avatar
                   class="!size-14"
                   :image="user.doc.user_image"
-                  :label="user.doc.full_name"
+                  :label="fullName"
                 />
                 <Tooltip
                   :hoverDelay="0"
@@ -52,7 +52,7 @@
                   <span
                     class="text-lg sm:text-xl !font-semibold text-ink-gray-8"
                   >
-                    {{ user.doc.full_name }}
+                    {{ fullName }}
                   </span>
                   <span class="text-p-sm text-ink-gray-6">
                     {{ user.doc.email }}
@@ -138,16 +138,22 @@ import SettingsLayoutBase from '@/components/Layouts/SettingsLayoutBase.vue'
 import ChangePasswordModal from '@/components/Modals/ChangePasswordModal.vue'
 import { useKeyboardShortcuts } from '@/composables/useKeyboardShortcuts'
 import { sessionStore } from '@/stores/session'
-import { useDocument } from '@/data/document'
 import { validateIsImageFile } from '@/utils'
-import { Avatar, Badge, FileUploader, LoadingIndicator, toast } from 'frappe-ui'
+import {
+  Avatar,
+  Badge,
+  createDocumentResource,
+  FileUploader,
+  LoadingIndicator,
+  toast,
+} from 'frappe-ui'
 import { ref, computed } from 'vue'
 
 const showChangePasswordModal = ref(false)
 const isHoveringRemove = ref(false)
 
 const { user: sessionUser } = sessionStore()
-const { document: user } = useDocument('User', sessionUser)
+const user = createDocumentResource({ doctype: 'User', name: sessionUser })
 
 const profileTooltipText = computed(() => {
   if (isHoveringRemove.value) return __('Remove Photo')
@@ -181,7 +187,7 @@ function save() {
 function updateImage(fileUrl = '') {
   isHoveringRemove.value = false
   user.doc.user_image = fileUrl
-  user.save.submit()
+  save()
 }
 
 useKeyboardShortcuts({
