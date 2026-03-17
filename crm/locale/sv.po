@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-03-08 09:43+0000\n"
-"PO-Revision-Date: 2026-03-10 00:36\n"
+"PO-Revision-Date: 2026-03-15 08:24\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Swedish\n"
 "MIME-Version: 1.0\n"
@@ -3657,15 +3657,15 @@ msgstr "Bjud in via e-post"
 
 #: frontend/src/components/Settings/Users.vue:25
 msgid "Invite New User"
-msgstr "Bjud in Ny Användare"
+msgstr "Skapa Användare"
 
 #: frontend/src/components/Settings/Settings.vue:141
 msgid "Invite User"
-msgstr "Bjud in Användare"
+msgstr "Skapa Användare"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:550
 msgid "Invite Users"
-msgstr "Bjud in användare"
+msgstr "Skapa Användare"
 
 #: frontend/src/components/Settings/InviteUserPage.vue:10
 msgid "Invite users to access CRM. Specify their roles to control access and permissions"
