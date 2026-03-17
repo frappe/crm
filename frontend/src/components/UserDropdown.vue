@@ -59,10 +59,6 @@ import { showSettings, isMobileView } from '@/composables/settings'
 import { showAboutModal } from '@/composables/modals'
 import { confirmLoginToFrappeCloud } from '@/composables/frappecloud'
 import { Dropdown } from 'frappe-ui'
-<<<<<<< HEAD
-import { theme, toggleTheme } from '@/stores/theme'
-=======
->>>>>>> 73b663d3 (fix: remove toggle theme option from user dropdown)
 import { computed, h, markRaw } from 'vue'
 
 defineProps({
@@ -132,15 +128,6 @@ function getStandardItem(item) {
       return {
         component: markRaw(Apps),
       }
-<<<<<<< HEAD
-    case 'toggle_theme':
-      return {
-        icon: theme.value === 'dark' ? 'sun' : item.icon,
-        label: __(item.label),
-        onClick: toggleTheme,
-      }
-=======
->>>>>>> 73b663d3 (fix: remove toggle theme option from user dropdown)
     case 'settings':
       return {
         icon: item.icon,

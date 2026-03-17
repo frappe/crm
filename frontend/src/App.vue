@@ -11,19 +11,12 @@
 <script setup>
 import NotPermitted from '@/pages/NotPermitted.vue'
 import { Dialogs } from '@/utils/dialogs'
-<<<<<<< HEAD
-import { sessionStore as session } from '@/stores/session'
-import { setTheme } from '@/stores/theme'
-import { FrappeUIProvider, setConfig } from 'frappe-ui'
-import { computed, defineAsyncComponent, onMounted } from 'vue'
-=======
 import { sessionStore } from '@/stores/session'
 import { FrappeUIProvider, setConfig } from 'frappe-ui'
 import { computed, defineAsyncComponent, provide } from 'vue'
 
 const session = sessionStore()
 provide('session', session)
->>>>>>> d2e42c76 (fix: correct session store usage in App.vue)
 
 const MobileLayout = defineAsyncComponent(
   () => import('./components/Layouts/MobileLayout.vue'),
@@ -38,8 +31,6 @@ const Layout = computed(() => {
     return DesktopLayout
   }
 })
-
-onMounted(() => setTheme())
 
 setConfig('systemTimezone', window.timezone?.system || null)
 setConfig('localTimezone', window.timezone?.user || null)

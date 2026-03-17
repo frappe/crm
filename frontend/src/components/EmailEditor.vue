@@ -18,11 +18,6 @@
   >
     <template #top>
       <div class="flex flex-col gap-3">
-<<<<<<< HEAD
-        <div class="sm:mx-10 mx-4 flex items-center gap-2 border-t pt-2.5">
-          <span class="text-xs text-ink-gray-4">{{ __('TO') }}:</span>
-          <MultiSelectEmailInput
-=======
         <div
           v-if="from.length"
           class="sm:mx-10 mx-4 flex items-center gap-2 border-t pt-2.5 h-10"
@@ -42,8 +37,7 @@
           :class="from.length ? '' : 'border-t pt-2.5'"
         >
           <span class="text-xs text-ink-gray-4 mr-2">{{ __('TO') }}:</span>
-          <EmailMultiSelect
->>>>>>> 777d1473 (feat: add 'from' email selection to EmailEditor and update sendMail function to use selected sender)
+          <MultiSelectEmailInput
             v-model="toEmails"
             class="flex-1"
             variant="ghost"
