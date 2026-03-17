@@ -37,7 +37,7 @@
           </span>
         </div>
         <TextEditor
-          editor-class="prose-sm min-h-28 max-w-full border rounded-b-lg border-t-0 p-2"
+          editor-class="prose-sm min-h-28 max-w-full border rounded-b-lg border-t-0 p-2 border-outline-gray-modals"
           :content="user.doc.email_signature"
           placeholder="Type something..."
           :bubbleMenu="true"
@@ -59,10 +59,10 @@
         <div>
           <div
             v-if="user.doc.user_emails?.length"
-            class="w-full border rounded-md mb-2"
+            class="w-full border rounded-md mb-2 border-outline-gray-modals"
           >
             <div
-              class="grid grid-cols-[4fr_4fr_0.3fr] gap-2 px-4 py-3 text-sm font-medium text-ink-gray-5 border-b"
+              class="grid grid-cols-[4fr_4fr_0.3fr] gap-2 px-4 py-3 text-sm font-medium text-ink-gray-5 border-b border-outline-gray-modals"
             >
               <span>{{ __('Email Account') }}</span>
               <span>{{ __('Email') }}</span>
@@ -71,7 +71,7 @@
             <div
               v-for="e in user.doc.user_emails"
               :key="e.name"
-              class="grid grid-cols-[4fr_4fr_0.3fr] gap-2 group items-center px-4 py-2.5 text-base border-b last:border-b-0"
+              class="grid grid-cols-[4fr_4fr_0.3fr] gap-2 group items-center px-4 py-2.5 text-base border-b border-outline-gray-modals last:border-b-0"
             >
               <span class="text-ink-gray-8 font-medium truncate">
                 {{ e.email_account }}
