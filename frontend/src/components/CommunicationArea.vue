@@ -191,6 +191,7 @@ const emailEmpty = computed(() => {
 })
 
 async function sendMail() {
+  let fromEmail = newEmailEditor.value.fromEmail || getUser().email
   let recipients = newEmailEditor.value.toEmails
   let subject = newEmailEditor.value.subject
   let cc = newEmailEditor.value.ccEmails || []
@@ -209,7 +210,7 @@ async function sendMail() {
     doctype: props.doctype,
     name: doc.value.name,
     send_email: 1,
-    sender: getUser().email,
+    sender: fromEmail,
     sender_full_name: getUser()?.full_name || undefined,
   })
 }
