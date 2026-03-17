@@ -6,9 +6,9 @@ from frappe import _
 from frappe.desk.form.assign_to import add as assign
 from frappe.model.document import Document
 
+from crm.api.exchange_rate import get_exchange_rate
 from crm.fcrm.doctype.crm_service_level_agreement.utils import get_sla
 from crm.fcrm.doctype.crm_status_change_log.crm_status_change_log import add_status_change_log
-from crm.fcrm.doctype.fcrm_settings.fcrm_settings import get_exchange_rate
 
 
 class CRMDeal(Document):
@@ -175,7 +175,12 @@ class CRMDeal(Document):
 					flags={"ignore_share_permission": True},
 				)
 			elif user != agent:
-				frappe.share.remove(self.doctype, self.name, user)
+				frappe.share.remove(
+					self.doctype,
+					self.name,
+					user,
+					flags={"ignore_share_permission": True, "ignore_permissions": True},
+				)
 
 	def set_sla(self):
 		"""
@@ -274,7 +279,8 @@ class CRMDeal(Document):
 			},
 			{
 				"label": "Status",
-				"type": "Select",
+				"type": "Link",
+				"options": "CRM Deal Status",
 				"key": "status",
 				"width": "10rem",
 			},

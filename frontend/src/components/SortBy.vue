@@ -232,6 +232,7 @@ function getSortLabel() {
 }
 
 function setSort(data) {
+  if (!data) return
   sortValues.value.add({ fieldname: data.fieldname, direction: 'asc' })
   restartSort()
   apply()

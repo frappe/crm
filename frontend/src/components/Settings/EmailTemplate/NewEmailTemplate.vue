@@ -15,7 +15,7 @@
         />
       </div>
       <div class="flex item-center space-x-4 w-3/12 justify-end">
-        <div class="flex items-center space-x-2">
+        <div class="flex items-center space-x-2 h-7">
           <Switch v-model="template.enabled" size="sm" />
           <span class="text-sm text-ink-gray-7">{{ __('Enabled') }}</span>
         </div>

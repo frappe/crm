@@ -81,11 +81,15 @@
         />
       </div>
       <div
-        v-if="call.show_recording && call.recording_url"
+        v-if="
+          call.show_recording &&
+          call.recording_url &&
+          callLog?.data?.recording_url_path
+        "
         class="flex flex-col items-center justify-between"
         @click.stop
       >
-        <AudioPlayer :src="call.recording_url" />
+        <AudioPlayer :src="callLog.data.recording_url_path" />
       </div>
     </div>
     <CallLogDetailModal

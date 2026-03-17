@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 from frappe import _
 from frappe.desk.form.load import get_docinfo
 from frappe.query_builder import JoinType
+from frappe.translate import get_translated_doctypes
 
 from crm.fcrm.doctype.crm_call_log.crm_call_log import parse_call_log
 
@@ -100,6 +101,12 @@ def get_deal_activities(name: str):
 					"field_label": field_label,
 					"value": change[1],
 				}
+
+			if data.get("value") and field_option and is_translatable(field_option):
+				data["value"] = _(data["value"])
+
+				if data.get("old_value"):
+					data["old_value"] = _(data["old_value"])
 
 		activity = {
 			"activity_type": activity_type,
@@ -235,6 +242,12 @@ def get_lead_activities(name: str):
 					"field_label": field_label,
 					"value": change[1],
 				}
+
+			if data.get("value") and field_option and is_translatable(field_option):
+				data["value"] = _(data["value"])
+
+				if data.get("old_value"):
+					data["old_value"] = _(data["old_value"])
 
 		activity = {
 			"activity_type": activity_type,
@@ -504,3 +517,7 @@ def parse_attachment_log(html: str, type: str):
 		"file_url": a_tag["href"],
 		"is_private": is_private,
 	}
+
+
+def is_translatable(doctype: str) -> bool:
+	return doctype in get_translated_doctypes()

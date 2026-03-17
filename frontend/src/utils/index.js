@@ -904,3 +904,8 @@ export function clearCache() {
     }
   }
 }
+
+export function isTranslatable(doctype) {
+  let translatedDoctypes = window.translated_doctypes || []
+  return translatedDoctypes.includes(doctype)
+}

@@ -159,9 +159,8 @@
                     </template>
                   </Draggable>
                   <Autocomplete
-                    v-if="fields.data"
                     value=""
-                    :options="fields.data"
+                    :options="fields"
                     @change="(e) => addField(column, e)"
                   >
                     <template #target="{ togglePopover }">
@@ -214,8 +213,9 @@ import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import DragVerticalIcon from '@/components/Icons/DragVerticalIcon.vue'
 import Draggable from 'vuedraggable'
 import { getRandom } from '@/utils'
-import { Dropdown, createResource } from 'frappe-ui'
-import { ref, computed, watch } from 'vue'
+import { getMeta } from '@/stores/meta'
+import { Dropdown } from 'frappe-ui'
+import { ref, computed } from 'vue'
 
 const props = defineProps({
   doctype: { type: String, default: 'CRM Lead' },
@@ -233,55 +233,46 @@ const slotName = computed(() => {
 })
 
 const restrictedFieldTypes = [
+  'Tab Break',
+  'Section Break',
+  'Column Break',
   'Geolocation',
   'HTML',
   'Signature',
 ]
 
-const params = computed(() => {
-  return {
-    doctype: props.doctype,
-    restricted_fieldtypes: restrictedFieldTypes,
-    as_array: true,
-    only_required: props.onlyRequired,
-  }
-})
+const { getFields } = getMeta(props.doctype)
 
-const fields = createResource({
-  url: 'crm.api.doc.get_fields_meta',
-  params: params.value,
-  cache: ['fieldsMeta', props.doctype],
-  auto: true,
-  transform: (data) => {
-    let restrictedFields = [
-      'name',
-      'owner',
-      'creation',
-      'modified',
-      'modified_by',
-      'docstatus',
-      '_comments',
-      '_user_tags',
-      '_assign',
-      '_liked_by',
-    ]
-    let existingFields = []
+const fields = computed(() => {
+  const _fields = getFields() || []
+  if (!_fields.length) return []
 
-    tabs.value?.forEach((tab) => {
-      tab.sections?.forEach((section) => {
-        section.columns?.forEach((column) => {
-          existingFields = existingFields.concat(column.fields)
-        })
+  let existingFields = []
+
+  tabs.value?.forEach((tab) => {
+    tab.sections?.forEach((section) => {
+      section.columns?.forEach((column) => {
+        existingFields = existingFields.concat(column.fields)
       })
     })
+  })
 
-    return data.filter((field) => {
+  return _fields
+    .filter((field) => {
       return (
         !existingFields.find((f) => f.fieldname === field.fieldname) &&
-        !restrictedFields.includes(field.fieldname)
+        !restrictedFieldTypes.includes(field.fieldtype) &&
+        (props.onlyRequired ? field.reqd : true)
       )
     })
-  },
+    .map((field) => {
+      return {
+        label: field.label,
+        value: field.fieldname,
+        fieldname: field.fieldname,
+        fieldtype: field.fieldtype,
+      }
+    })
 })
 
 function addTab() {
@@ -464,10 +455,4 @@ function getSectionOptions(i, section, tab) {
     },
   ]
 }
-
-watch(
-  () => props.doctype,
-  () => fields.fetch(params.value),
-  { immediate: true },
-)
 </script>

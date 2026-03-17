@@ -240,7 +240,7 @@ const breadcrumbs = computed(() => {
 })
 
 const title = computed(() => {
-  let t = doctypeMeta['Contact']?.title_field || 'name'
+  let t = doctypeMeta.value?.title_field || 'name'
   return contact.doc?.[t] || props.contactId
 })
 
