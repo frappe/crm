@@ -5,7 +5,7 @@
     :description="__('Manage your profile & login information.')"
   >
     <template #content>
-      <div class="flex items-center justify-between gap-2 pt-1.5 pb-4">
+      <div class="flex items-center justify-between gap-2 pt-1.5 pb-8">
         <FileUploader
           :validateFile="validateIsImageFile"
           @success="(file) => updateImage(file.file_url)"
@@ -49,11 +49,29 @@
               </div>
               <div class="flex flex-col gap-1">
                 <div class="flex flex-col gap-1">
-                  <span
-                    class="text-lg sm:text-xl !font-semibold text-ink-gray-8"
-                  >
-                    {{ fullName }}
-                  </span>
+                  <div v-if="!editName" class="flex items-center gap-1">
+                    <span
+                      class="text-lg sm:text-xl !font-semibold text-ink-gray-8"
+                    >
+                      {{ fullName }}
+                    </span>
+                    <Button
+                      class="!px-1 !h-5"
+                      variant="ghost"
+                      @click="editFullName"
+                    >
+                      <EditIcon class="size-3.5" />
+                    </Button>
+                  </div>
+                  <div v-else class="flex items-center gap-1">
+                    <TextInput
+                      ref="fullNameRef"
+                      v-model="fullName"
+                      @keydown.enter="save"
+                      @keydown.esc.stop="editName = false"
+                    />
+                    <Button variant="outline" icon="check" @click="save" />
+                  </div>
                   <span class="text-p-sm text-ink-gray-6">
                     {{ user.doc.email }}
                   </span>
@@ -65,48 +83,24 @@
         </FileUploader>
       </div>
       <div>
-        <div class="flex items-center justify-between">
-          <div class="flex gap-2 items-center h-7">
-            <div class="text-base font-semibold text-ink-gray-9">
-              {{ __('Account Info & Security') }}
-            </div>
-            <Badge
-              v-if="isDirty"
-              :variant="'subtle'"
-              :theme="'orange'"
-              size="sm"
-              :label="__('Not Saved')"
-            />
-          </div>
-          <Button
-            v-if="isDirty"
-            :label="__('Save')"
-            :loading="user.save.loading"
-            @click="save()"
-          />
+        <div class="text-base font-semibold text-ink-gray-9">
+          {{ __('Account Info & Security') }}
         </div>
         <div class="flex items-center justify-between mt-6">
           <div class="flex flex-col gap-1">
             <span class="text-base font-medium text-ink-gray-8">
-              {{ __('Full Name') }}
+              {{ __('Emails & Signature') }}
             </span>
             <span class="text-p-sm text-ink-gray-6">
-              {{ __('Your full name as it appears in the system.') }}
-            </span>
-          </div>
-          <FormControl v-model="fullName" maxlength="80" />
-        </div>
-        <div class="flex items-center justify-between mt-6">
-          <div class="flex flex-col gap-1">
-            <span class="text-base font-medium text-ink-gray-8">
-              {{ __('Email') }}
-            </span>
-            <span class="text-p-sm text-ink-gray-6">
-              {{ __('Manage your account emails for communication.') }}
+              {{
+                __(
+                  'Manage your account emails and email signature for communication.',
+                )
+              }}
             </span>
           </div>
           <Button
-            :label="__('Manage Emails & Signature')"
+            :label="__('Configure')"
             @click="emit('updateStep', 'user-email-settings')"
           />
         </div>
@@ -134,19 +128,21 @@
 </template>
 
 <script setup>
+import EditIcon from '@/components/Icons/EditIcon.vue'
 import SettingsLayoutBase from '@/components/Layouts/SettingsLayoutBase.vue'
 import ChangePasswordModal from '@/components/Modals/ChangePasswordModal.vue'
 import { useKeyboardShortcuts } from '@/composables/useKeyboardShortcuts'
 import { validateIsImageFile } from '@/utils'
 import {
   Avatar,
-  Badge,
+  TextInput,
   FileUploader,
   LoadingIndicator,
   toast,
+  Tooltip,
   createDocumentResource,
 } from 'frappe-ui'
-import { ref, computed, inject } from 'vue'
+import { ref, computed, inject, useTemplateRef, nextTick } from 'vue'
 
 const emit = defineEmits(['updateStep'])
 
@@ -155,12 +151,14 @@ const user = createDocumentResource({ doctype: 'User', name: sessionUser })
 
 const showChangePasswordModal = ref(false)
 const isHoveringRemove = ref(false)
+const editName = ref(false)
 
 const profileTooltipText = computed(() => {
   if (isHoveringRemove.value) return __('Remove Photo')
   return user.doc.user_image ? __('Change Photo') : __('Upload Photo')
 })
 
+const fullNameRef = useTemplateRef('fullNameRef')
 const fullName = computed({
   get: () => user.doc.first_name + ' ' + user.doc.last_name,
   set: (val) => {
@@ -170,13 +168,24 @@ const fullName = computed({
   },
 })
 
+function editFullName() {
+  editName.value = true
+  nextTick(() => fullNameRef.value?.el?.focus())
+}
+
 const isDirty = computed(() => {
   return JSON.stringify(user.doc) !== JSON.stringify(user.originalDoc)
 })
 
 function save() {
+  if (!isDirty.value) {
+    editName.value = false
+    return
+  }
+
   user.save.submit(null, {
     onSuccess: () => {
+      editName.value = false
       toast.success(__('Profile Updated Successfully'))
     },
     onError: (err) => {
