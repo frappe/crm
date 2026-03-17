@@ -15,7 +15,7 @@
         },
       ]"
     >
-      <div :class="'text-end text-base text-gray-600'">
+      <div :class="'text-end text-base text-ink-gray-5'">
         <div v-if="props.itemIndex == 0" class="min-w-[66px] text-start">
           {{ __('Where') }}
         </div>

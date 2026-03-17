@@ -85,7 +85,7 @@
                 <div
                   v-for="option in priorityOptions"
                   :key="option.value"
-                  class="p-2 cursor-pointer hover:bg-gray-50 text-base flex items-center justify-between rounded"
+                  class="p-2 cursor-pointer hover:bg-surface-gray-1 text-base flex items-center justify-between rounded"
                   @click="
                     () => {
                       assignmentRuleData.priority = option.value

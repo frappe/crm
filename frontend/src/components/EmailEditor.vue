@@ -18,8 +18,25 @@
   >
     <template #top>
       <div class="flex flex-col gap-3">
-        <div class="sm:mx-10 mx-4 flex items-center gap-2 border-t pt-2.5">
-          <span class="text-xs text-ink-gray-4">{{ __('TO') }}:</span>
+        <div
+          v-if="from.length"
+          class="sm:mx-10 mx-4 flex items-center gap-2 border-t pt-2.5 h-10"
+        >
+          <span class="text-xs text-ink-gray-4">{{ __('FROM') }}:</span>
+          <FormControl
+            v-model="fromEmail"
+            type="select"
+            variant="ghost"
+            class="w-full"
+            :placeholder="__('')"
+            :options="from"
+          />
+        </div>
+        <div
+          class="sm:mx-10 mx-4 flex items-center gap-2"
+          :class="from.length ? '' : 'border-t pt-2.5'"
+        >
+          <span class="text-xs text-ink-gray-4 mr-2">{{ __('TO') }}:</span>
           <MultiSelectEmailInput
             v-model="toEmails"
             class="flex-1"
@@ -183,12 +200,19 @@ import AttachmentIcon from '@/components/Icons/AttachmentIcon.vue'
 import AttachmentItem from '@/components/AttachmentItem.vue'
 import MultiSelectEmailInput from '@/components/Controls/MultiSelectEmailInput.vue'
 import EmailTemplateSelectorModal from '@/components/Modals/EmailTemplateSelectorModal.vue'
-import { TextEditorBubbleMenu, TextEditor, FileUploader, call } from 'frappe-ui'
+import {
+  TextEditorBubbleMenu,
+  TextEditor,
+  FileUploader,
+  call,
+  FormControl,
+} from 'frappe-ui'
 import { useTelemetry } from 'frappe-ui/frappe'
+import { useDocument } from '@/data/document'
 import { validateEmail } from '@/utils'
 import Paragraph from '@tiptap/extension-paragraph'
 import { EditorContent } from '@tiptap/vue-3'
-import { ref, computed, nextTick } from 'vue'
+import { ref, computed, nextTick, inject, watch } from 'vue'
 
 const props = defineProps({
   placeholder: { type: String, default: null },
@@ -226,6 +250,8 @@ const attachments = defineModel('attachments', {
 const content = defineModel('content', { type: String, default: '' })
 
 const { capture } = useTelemetry()
+const { user: sessionUser } = inject('session')
+const { document: user } = useDocument('User', sessionUser)
 
 const textEditor = ref(null)
 const cc = ref(false)
@@ -233,11 +259,36 @@ const bcc = ref(false)
 const emoji = ref('')
 
 const subject = ref(props.subject)
+const fromEmail = ref('')
 const toEmails = ref(modelValue.value.email ? [modelValue.value.email] : [])
 const ccEmails = ref([])
 const bccEmails = ref([])
 const ccInput = ref(null)
 const bccInput = ref(null)
+
+const from = computed(() => {
+  if (!user.doc || !user.doc.user_emails?.length) return []
+  let emails = user.doc.user_emails.map((e) => {
+    return {
+      label: e.email_account + ' <' + e.email_id + '>',
+      value: e.email_id,
+    }
+  })
+
+  if (emails.length == 1 && emails[0].email_id === sessionUser) return []
+
+  return emails
+})
+
+watch(
+  from,
+  (fromOptions) => {
+    if (!fromOptions.find((f) => f.value === fromEmail.value)) {
+      fromEmail.value = fromOptions.length ? fromOptions[0].value : ''
+    }
+  },
+  { immediate: true },
+)
 
 const editor = computed(() => {
   return textEditor.value.editor
@@ -292,6 +343,7 @@ defineExpose({
   subject,
   cc,
   bcc,
+  fromEmail,
   toEmails,
   ccEmails,
   bccEmails,
