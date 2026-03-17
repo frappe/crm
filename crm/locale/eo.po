@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2026-03-08 09:43+0000\n"
-"PO-Revision-Date: 2026-03-10 00:36\n"
+"POT-Creation-Date: 2026-03-15 09:45+0000\n"
+"PO-Revision-Date: 2026-03-17 12:53\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Esperanto\n"
 "MIME-Version: 1.0\n"
@@ -167,7 +167,7 @@ msgstr "crwdns160742:0crwdne160742:0"
 msgid "A new account has been created for you at {0}"
 msgstr "crwdns158622:0{0}crwdne158622:0"
 
-#: crm/fcrm/doctype/crm_call_log/crm_call_log.py:242
+#: crm/fcrm/doctype/crm_call_log/crm_call_log.py:251
 msgid "A valid call log is required."
 msgstr "crwdns196030:0crwdne196030:0"
 
@@ -177,6 +177,7 @@ msgstr "crwdns196030:0crwdne196030:0"
 #: crm/fcrm/doctype/crm_exotel_settings/crm_exotel_settings.json
 #: crm/fcrm/doctype/crm_twilio_settings/crm_twilio_settings.json
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.json
+#: frontend/src/components/Settings/Telephony/ExotelSettings.vue:45
 #: frontend/src/components/Settings/emailConfig.js:78
 msgid "API Key"
 msgstr "crwdns152695:0crwdne152695:0"
@@ -191,6 +192,7 @@ msgstr "crwdns152697:0crwdne152697:0"
 
 #. Label of the api_token (Password) field in DocType 'CRM Exotel Settings'
 #: crm/fcrm/doctype/crm_exotel_settings/crm_exotel_settings.json
+#: frontend/src/components/Settings/Telephony/ExotelSettings.vue:53
 msgid "API Token"
 msgstr "crwdns152699:0crwdne152699:0"
 
@@ -226,15 +228,11 @@ msgstr "crwdns160900:0crwdne160900:0"
 
 #. Label of the access_key (Data) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
-#: frontend/src/components/Settings/CurrencySettings.vue:90
+#: frontend/src/components/Settings/CurrencySettings.vue:96
 msgid "Access Key"
 msgstr "crwdns157240:0crwdne157240:0"
 
-#: frontend/src/components/Settings/CurrencySettings.vue:94
-msgid "Access Key for Exchangerate Host. Required for fetching exchange rates."
-msgstr "crwdns196036:0crwdne196036:0"
-
-#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.py:181
+#: crm/api/exchange_rate.py:84 crm/api/exchange_rate.py:100
 msgid "Access Key is required for Service Provider: {0}"
 msgstr "crwdns157242:0{0}crwdne157242:0"
 
@@ -268,6 +266,8 @@ msgstr "crwdns156098:0crwdne156098:0"
 #. Label of the account_sid (Data) field in DocType 'CRM Twilio Settings'
 #: crm/fcrm/doctype/crm_exotel_settings/crm_exotel_settings.json
 #: crm/fcrm/doctype/crm_twilio_settings/crm_twilio_settings.json
+#: frontend/src/components/Settings/Telephony/ExotelSettings.vue:59
+#: frontend/src/components/Settings/Telephony/TwilioSettings.vue:45
 msgid "Account SID"
 msgstr "crwdns152709:0crwdne152709:0"
 
@@ -312,7 +312,7 @@ msgid "Add Chart"
 msgstr "crwdns196044:0crwdne196044:0"
 
 #: frontend/src/components/ColumnSettings.vue:68
-#: frontend/src/components/FieldLayoutEditor.vue:418
+#: frontend/src/components/FieldLayoutEditor.vue:409
 #: frontend/src/components/Kanban/KanbanView.vue:157
 msgid "Add Column"
 msgstr "crwdns152715:0crwdne152715:0"
@@ -346,8 +346,8 @@ msgid "Add Existing User"
 msgstr "crwdns156106:0crwdne156106:0"
 
 #: frontend/src/components/Controls/GridFieldsEditorModal.vue:57
-#: frontend/src/components/FieldLayoutEditor.vue:172
-#: frontend/src/components/Kanban/KanbanSettings.vue:80
+#: frontend/src/components/FieldLayoutEditor.vue:171
+#: frontend/src/components/Kanban/KanbanSettings.vue:74
 #: frontend/src/components/SidePanelLayoutEditor.vue:97
 msgid "Add Field"
 msgstr "crwdns152717:0crwdne152717:0"
@@ -396,7 +396,7 @@ msgstr "crwdns152721:0crwdne152721:0"
 msgid "Add Sample Data"
 msgstr "crwdns196064:0crwdne196064:0"
 
-#: frontend/src/components/FieldLayoutEditor.vue:197
+#: frontend/src/components/FieldLayoutEditor.vue:196
 #: frontend/src/components/SidePanelLayoutEditor.vue:127
 msgid "Add Section"
 msgstr "crwdns152723:0crwdne152723:0"
@@ -579,15 +579,20 @@ msgstr "crwdns152761:0crwdne152761:0"
 msgid "Any failed lead syncs will show up here"
 msgstr "crwdns160902:0crwdne160902:0"
 
-#: frontend/src/components/Settings/BrandSettings.vue:55
+#. Label of the app_name (Data) field in DocType 'CRM Twilio Settings'
+#: crm/fcrm/doctype/crm_twilio_settings/crm_twilio_settings.json
+msgid "App Name"
+msgstr "crwdns199018:0crwdne199018:0"
+
+#: frontend/src/components/Settings/BrandSettings.vue:65
 msgid "Appears in the left sidebar. Recommended size is 32x32 px in PNG or SVG"
 msgstr "crwdns152763:0crwdne152763:0"
 
-#: frontend/src/components/Settings/BrandSettings.vue:90
+#: frontend/src/components/Settings/BrandSettings.vue:100
 msgid "Appears next to the title in your browser tab. Recommended size is 32x32 px in PNG or ICO"
 msgstr "crwdns152765:0crwdne152765:0"
 
-#: frontend/src/components/Kanban/KanbanSettings.vue:100
+#: frontend/src/components/Kanban/KanbanSettings.vue:94
 #: frontend/src/components/Kanban/KanbanView.vue:46
 msgid "Apply"
 msgstr "crwdns152767:0crwdne152767:0"
@@ -651,7 +656,7 @@ msgstr "crwdns152783:0crwdne152783:0"
 msgid "Are you sure you want to reset 'Create Quotation from CRM Deal' Form Script?"
 msgstr "crwdns152785:0crwdne152785:0"
 
-#: frontend/src/components/Settings/CurrencySettings.vue:165
+#: frontend/src/components/Settings/CurrencySettings.vue:189
 msgid "Are you sure you want to set the currency as {0}? This cannot be changed later."
 msgstr "crwdns156126:0{0}crwdne156126:0"
 
@@ -659,7 +664,7 @@ msgstr "crwdns156126:0{0}crwdne156126:0"
 msgid "Are you sure you want to unlink {0} linked item(s)?"
 msgstr "crwdns156128:0{0}crwdne156128:0"
 
-#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.py:218
+#: crm/api/exchange_rate.py:130
 msgid "Ask your manager to set up the Exchange Rate Provider, as default provider does not support currency conversion for {0} to {1}."
 msgstr "crwdns157250:0{0}crwdnd157250:0{1}crwdne157250:0"
 
@@ -729,11 +734,11 @@ msgstr "crwdns152795:0crwdne152795:0"
 msgid "Assignment Rule Created"
 msgstr "crwdns196100:0crwdne196100:0"
 
-#: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:122
+#: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:123
 msgid "Assignment Rule Deleted"
 msgstr "crwdns196102:0crwdne196102:0"
 
-#: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:167
+#: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:155
 msgid "Assignment Rule Duplicated"
 msgstr "crwdns196104:0crwdne196104:0"
 
@@ -741,7 +746,7 @@ msgstr "crwdns196104:0crwdne196104:0"
 msgid "Assignment Rule Updated"
 msgstr "crwdns196106:0crwdne196106:0"
 
-#: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:199
+#: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:187
 msgid "Assignment Rule {0} Updated"
 msgstr "crwdns196108:0{0}crwdne196108:0"
 
@@ -804,6 +809,7 @@ msgstr "crwdns196124:0crwdne196124:0"
 
 #. Label of the auth_token (Password) field in DocType 'CRM Twilio Settings'
 #: crm/fcrm/doctype/crm_twilio_settings/crm_twilio_settings.json
+#: frontend/src/components/Settings/Telephony/TwilioSettings.vue:53
 msgid "Auth Token"
 msgstr "crwdns152807:0crwdne152807:0"
 
@@ -952,11 +958,11 @@ msgstr "crwdns152817:0crwdne152817:0"
 msgid "Brand"
 msgstr "crwdns196152:0crwdne196152:0"
 
-#: frontend/src/components/Settings/BrandSettings.vue:52
+#: frontend/src/components/Settings/BrandSettings.vue:62
 msgid "Brand Logo"
 msgstr "crwdns196154:0crwdne196154:0"
 
-#: frontend/src/components/Settings/BrandSettings.vue:32
+#: frontend/src/components/Settings/BrandSettings.vue:30
 msgid "Brand Name"
 msgstr "crwdns196156:0crwdne196156:0"
 
@@ -1192,7 +1198,8 @@ msgstr "crwdns152893:0crwdne152893:0"
 msgid "Call duration in seconds"
 msgstr "crwdns152895:0crwdne152895:0"
 
-#: crm/integrations/twilio/api.py:144 crm/integrations/twilio/api.py:162
+#: crm/integrations/api.py:155 crm/integrations/twilio/api.py:148
+#: crm/integrations/twilio/api.py:166
 msgid "Call log not found"
 msgstr "crwdns196164:0crwdne196164:0"
 
@@ -1265,11 +1272,11 @@ msgstr "crwdns196166:0crwdne196166:0"
 msgid "Cannot change role of user with Admin access"
 msgstr "crwdns156180:0crwdne156180:0"
 
-#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.py:59
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.py:60
 msgid "Cannot delete standard items {0}"
 msgstr "crwdns152915:0{0}crwdne152915:0"
 
-#: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:182
+#: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:170
 msgid "Cannot enable rule without adding users in it"
 msgstr "crwdns158810:0crwdne158810:0"
 
@@ -1371,7 +1378,7 @@ msgid "Choose which {0} are affected by this un-assignment rule."
 msgstr "crwdns159294:0{0}crwdne159294:0"
 
 #: frontend/src/components/Controls/Link.vue:59
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:58
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:59
 msgid "Clear"
 msgstr "crwdns152929:0crwdne152929:0"
 
@@ -1416,7 +1423,7 @@ msgstr "crwdns156198:0crwdne156198:0"
 msgid "Collapse"
 msgstr "crwdns152943:0crwdne152943:0"
 
-#: frontend/src/components/FieldLayoutEditor.vue:342
+#: frontend/src/components/FieldLayoutEditor.vue:333
 msgid "Collapsible"
 msgstr "crwdns152945:0crwdne152945:0"
 
@@ -1427,7 +1434,7 @@ msgstr "crwdns152945:0crwdne152945:0"
 msgid "Color"
 msgstr "crwdns152947:0crwdne152947:0"
 
-#: frontend/src/components/FieldLayoutEditor.vue:415
+#: frontend/src/components/FieldLayoutEditor.vue:406
 msgid "Column"
 msgstr "crwdns152949:0crwdne152949:0"
 
@@ -1539,11 +1546,11 @@ msgstr "crwdns196200:0crwdne196200:0"
 msgid "Configure your Calendar Settings like Default View and Event Notifications here"
 msgstr "crwdns196202:0crwdne196202:0"
 
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:103
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:181
 msgid "Configure your Exotel Telephony Integration Settings here"
 msgstr "crwdns196204:0crwdne196204:0"
 
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:80
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:158
 msgid "Configure your Twilio Telephony Integration Settings here"
 msgstr "crwdns196206:0crwdne196206:0"
 
@@ -1551,7 +1558,6 @@ msgstr "crwdns196206:0crwdne196206:0"
 msgid "Confirm"
 msgstr "crwdns152971:0crwdne152971:0"
 
-#: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:150
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:237
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:202
 #: frontend/src/components/Settings/Sla/EditResponseResolutionModal.vue:57
@@ -1594,7 +1600,7 @@ msgstr "crwdns196212:0crwdne196212:0"
 msgid "Contact Already Added"
 msgstr "crwdns196214:0crwdne196214:0"
 
-#: crm/fcrm/doctype/crm_lead/crm_lead.py:267
+#: crm/fcrm/doctype/crm_lead/crm_lead.py:272
 msgid "Contact Already Exists"
 msgstr "crwdns152975:0crwdne152975:0"
 
@@ -1623,7 +1629,7 @@ msgstr "crwdns196220:0crwdne196220:0"
 msgid "Contact Us"
 msgstr "crwdns152977:0crwdne152977:0"
 
-#: crm/fcrm/doctype/crm_lead/crm_lead.py:266
+#: crm/fcrm/doctype/crm_lead/crm_lead.py:271
 msgid "Contact already exists with {0}"
 msgstr "crwdns152983:0{0}crwdne152983:0"
 
@@ -1731,7 +1737,7 @@ msgstr "crwdns153005:0crwdne153005:0"
 msgid "Create Event"
 msgstr "crwdns196226:0crwdne196226:0"
 
-#: frontend/src/components/Modals/CallLogDetailModal.vue:151
+#: frontend/src/components/Modals/CallLogDetailModal.vue:154
 #: frontend/src/components/Modals/LeadModal.vue:8
 msgid "Create Lead"
 msgstr "crwdns153009:0crwdne153009:0"
@@ -1801,7 +1807,7 @@ msgstr "crwdns159304:0crwdne159304:0"
 msgid "Currency & Exchange Rate Provider"
 msgstr "crwdns196232:0crwdne196232:0"
 
-#: frontend/src/components/Settings/CurrencySettings.vue:179
+#: frontend/src/components/Settings/CurrencySettings.vue:203
 msgid "Currency set as {0} successfully"
 msgstr "crwdns156236:0{0}crwdne156236:0"
 
@@ -1838,7 +1844,7 @@ msgid "Customer Created Successfully"
 msgstr "crwdns196246:0crwdne196246:0"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:594
-#: frontend/src/components/Settings/Settings.vue:181
+#: frontend/src/components/Settings/Settings.vue:182
 msgid "Customization"
 msgstr "crwdns156250:0crwdne156250:0"
 
@@ -2005,11 +2011,7 @@ msgstr "crwdns153051:0crwdne153051:0"
 msgid "Default Calendar View"
 msgstr "crwdns196268:0crwdne196268:0"
 
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:155
-msgid "Default Calling Medium Updated Successfully"
-msgstr "crwdns196270:0crwdne196270:0"
-
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:40
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:41
 msgid "Default Calling Medium for Logged In User"
 msgstr "crwdns196272:0crwdne196272:0"
 
@@ -2029,7 +2031,7 @@ msgstr "crwdns156274:0crwdne156274:0"
 
 #. Label of the default_medium (Select) field in DocType 'CRM Telephony Agent'
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:37
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:38
 msgid "Default Medium"
 msgstr "crwdns153053:0crwdne153053:0"
 
@@ -2085,7 +2087,6 @@ msgstr "crwdns153065:0crwdne153065:0"
 #: frontend/src/components/Modals/EventModal.vue:467
 #: frontend/src/components/Modals/EventModal.vue:471
 #: frontend/src/components/PrimaryDropdownItem.vue:42
-#: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:140
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:227
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:192
 #: frontend/src/components/Settings/Sla/EditResponseResolutionModal.vue:57
@@ -2211,6 +2212,8 @@ msgid "Device"
 msgstr "crwdns153091:0crwdne153091:0"
 
 #: crm/fcrm/doctype/crm_form_script/crm_form_script.js:30
+#: frontend/src/components/Settings/Telephony/ExotelSettings.vue:29
+#: frontend/src/components/Settings/Telephony/TwilioSettings.vue:29
 msgid "Disable"
 msgstr "crwdns153093:0crwdne153093:0"
 
@@ -2224,6 +2227,11 @@ msgstr "crwdns156296:0crwdne156296:0"
 #: frontend/src/components/EmailEditor.vue:161
 msgid "Discard"
 msgstr "crwdns153095:0crwdne153095:0"
+
+#: frontend/src/components/Settings/Telephony/ExotelSettings.vue:25
+#: frontend/src/components/Settings/Telephony/TwilioSettings.vue:25
+msgid "Discard Changes"
+msgstr "crwdns199020:0crwdne199020:0"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:910
 msgid "Discard Unsaved Changes?"
@@ -2248,7 +2256,7 @@ msgstr "crwdns156300:0crwdne156300:0"
 msgid "DocType"
 msgstr "crwdns153097:0crwdne153097:0"
 
-#: crm/api/doc.py:886
+#: crm/api/doc.py:829
 msgid "Doctype is required"
 msgstr "crwdns196300:0crwdne196300:0"
 
@@ -2260,6 +2268,10 @@ msgstr "crwdns196302:0crwdne196302:0"
 #: crm/fcrm/doctype/crm_fields_layout/crm_fields_layout.json
 msgid "Document Type"
 msgstr "crwdns153101:0crwdne153101:0"
+
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:233
+msgid "Document created successfully"
+msgstr "crwdns199022:0crwdne199022:0"
 
 #: frontend/src/data/document.js:31
 msgid "Document does not exist"
@@ -2315,7 +2327,7 @@ msgstr "crwdns153115:0crwdne153115:0"
 #: frontend/src/components/Modals/EventModal.vue:214
 #: frontend/src/components/Modals/ViewModal.vue:42
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:65
-#: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:130
+#: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:131
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:222
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:23
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:187
@@ -2401,8 +2413,8 @@ msgid "ERPNext is not integrated with the CRM"
 msgstr "crwdns153137:0crwdne153137:0"
 
 #: frontend/src/components/FieldLayout/Field.vue:91
-#: frontend/src/components/FieldLayoutEditor.vue:311
-#: frontend/src/components/FieldLayoutEditor.vue:337
+#: frontend/src/components/FieldLayoutEditor.vue:302
+#: frontend/src/components/FieldLayoutEditor.vue:328
 #: frontend/src/components/ListBulkActions.vue:170
 #: frontend/src/components/PrimaryDropdownItem.vue:35
 #: frontend/src/components/Settings/Sla/SlaHolidays.vue:202
@@ -2591,8 +2603,14 @@ msgid "Empty - Choose a field to sort by"
 msgstr "crwdns153181:0crwdne153181:0"
 
 #: crm/fcrm/doctype/crm_form_script/crm_form_script.js:30
+#: frontend/src/components/Settings/Telephony/ExotelSettings.vue:117
+#: frontend/src/components/Settings/Telephony/TwilioSettings.vue:124
 msgid "Enable"
 msgstr "crwdns153183:0crwdne153183:0"
+
+#: frontend/src/components/Settings/Telephony/ExotelSettings.vue:112
+msgid "Enable Exotel integration to make and receive calls directly from your CRM"
+msgstr "crwdns199024:0crwdne199024:0"
 
 #. Label of the enable_forecasting (Check) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
@@ -2607,6 +2625,15 @@ msgstr "crwdns156334:0crwdne156334:0"
 #: frontend/src/components/Settings/emailConfig.js:34
 msgid "Enable Outgoing"
 msgstr "crwdns156336:0crwdne156336:0"
+
+#: frontend/src/components/Settings/Telephony/TwilioSettings.vue:119
+msgid "Enable Twilio integration to make and receive calls directly from your CRM"
+msgstr "crwdns199026:0crwdne199026:0"
+
+#: frontend/src/components/Settings/Telephony/ExotelSettings.vue:90
+#: frontend/src/components/Settings/Telephony/TwilioSettings.vue:97
+msgid "Enable call recording for incoming and outgoing calls"
+msgstr "crwdns199028:0crwdne199028:0"
 
 #. Label of the enabled (Check) field in DocType 'CRM Exotel Settings'
 #. Label of the enabled (Check) field in DocType 'CRM Form Script'
@@ -2673,7 +2700,7 @@ msgstr "crwdns196364:0crwdne196364:0"
 msgid "End Time must be after Start Time for: {0}"
 msgstr "crwdns196366:0{0}crwdne196366:0"
 
-#: frontend/src/components/Settings/CurrencySettings.vue:115
+#: frontend/src/components/Settings/CurrencySettings.vue:121
 msgid "Enter Access Key"
 msgstr "crwdns196368:0crwdne196368:0"
 
@@ -2681,13 +2708,25 @@ msgstr "crwdns196368:0crwdne196368:0"
 msgid "Enter Access Token"
 msgstr "crwdns160762:0crwdne160762:0"
 
-#: frontend/src/components/Settings/BrandSettings.vue:33
+#: frontend/src/components/Settings/BrandSettings.vue:41
 msgid "Enter Brand Name"
 msgstr "crwdns196370:0crwdne196370:0"
+
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:109
+msgid "Enter Exotel Number"
+msgstr "crwdns199030:0crwdne199030:0"
+
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:134
+msgid "Enter Personal Mobile No."
+msgstr "crwdns199032:0crwdne199032:0"
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:74
 msgid "Enter Source Name"
 msgstr "crwdns160764:0crwdne160764:0"
+
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:84
+msgid "Enter Twilio Number"
+msgstr "crwdns199034:0crwdne199034:0"
 
 #: frontend/src/components/Filter.vue:572
 msgid "Enter Value"
@@ -2696,6 +2735,10 @@ msgstr "crwdns196372:0crwdne196372:0"
 #: frontend/src/components/Settings/LeadSyncing/leadSyncSourceConfig.js:31
 msgid "Enter your Facebook Access Token"
 msgstr "crwdns160766:0crwdne160766:0"
+
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:124
+msgid "Enter your personal mobile number used by Exotel to make calls"
+msgstr "crwdns199036:0crwdne199036:0"
 
 #: frontend/src/components/FieldLayout/Field.vue:367
 msgid "Enter {0}"
@@ -2727,7 +2770,7 @@ msgstr "crwdns156340:0{0}crwdne156340:0"
 msgid "Error creating Lead Sync Source"
 msgstr "crwdns160768:0crwdne160768:0"
 
-#: frontend/src/components/Modals/CallLogDetailModal.vue:311
+#: frontend/src/components/Modals/CallLogDetailModal.vue:314
 msgid "Error creating lead: {0}"
 msgstr "crwdns196378:0{0}crwdne196378:0"
 
@@ -2735,7 +2778,7 @@ msgstr "crwdns196378:0{0}crwdne196378:0"
 msgid "Error occurred"
 msgstr "crwdns196380:0crwdne196380:0"
 
-#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:406
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:385
 msgid "Error syncing leads"
 msgstr "crwdns160770:0crwdne160770:0"
 
@@ -2835,14 +2878,13 @@ msgid "Exchange Rate Provider"
 msgstr "crwdns157262:0crwdne157262:0"
 
 #. Option for the 'Telephony Medium' (Select) field in DocType 'CRM Call Log'
-#. Label of the exotel (Check) field in DocType 'CRM Telephony Agent'
 #. Option for the 'Default Medium' (Select) field in DocType 'CRM Telephony
 #. Agent'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
 #: frontend/src/components/Layouts/AppSidebar.vue:609
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:51
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:99
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:52
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:177
 msgid "Exotel"
 msgstr "crwdns153215:0crwdne153215:0"
 
@@ -2850,8 +2892,13 @@ msgstr "crwdns153215:0crwdne153215:0"
 msgid "Exotel Exception"
 msgstr "crwdns153217:0crwdne153217:0"
 
+#: frontend/src/components/Settings/Telephony/ExotelSettings.vue:108
+msgid "Exotel Integration Disabled"
+msgstr "crwdns199038:0crwdne199038:0"
+
 #. Label of the exotel_number (Data) field in DocType 'CRM Telephony Agent'
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:99
 msgid "Exotel Number"
 msgstr "crwdns153219:0crwdne153219:0"
 
@@ -2863,17 +2910,9 @@ msgstr "crwdns153221:0crwdne153221:0"
 msgid "Exotel Number {0} is not valid"
 msgstr "crwdns153223:0{0}crwdne153223:0"
 
-#: frontend/src/components/Settings/Telephony/ExotelSettings.vue:4
+#: frontend/src/components/Settings/Telephony/ExotelSettings.vue:8
 msgid "Exotel Settings"
 msgstr "crwdns196394:0crwdne196394:0"
-
-#: frontend/src/components/Settings/Telephony/ExotelSettings.vue:5
-msgid "Exotel Settings Updated"
-msgstr "crwdns196396:0crwdne196396:0"
-
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:172
-msgid "Exotel is not enabled"
-msgstr "crwdns153225:0crwdne153225:0"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:105
 msgid "Expand"
@@ -2889,11 +2928,11 @@ msgstr "crwdns156348:0crwdne156348:0"
 msgid "Expected Deal Value"
 msgstr "crwdns156350:0crwdne156350:0"
 
-#: crm/fcrm/doctype/crm_deal/crm_deal.py:237
+#: crm/fcrm/doctype/crm_deal/crm_deal.py:242
 msgid "Expected closure date is required."
 msgstr "crwdns196398:0crwdne196398:0"
 
-#: crm/fcrm/doctype/crm_deal/crm_deal.py:235
+#: crm/fcrm/doctype/crm_deal/crm_deal.py:240
 msgid "Expected deal value is required."
 msgstr "crwdns196400:0crwdne196400:0"
 
@@ -2987,7 +3026,7 @@ msgstr "crwdns196404:0crwdne196404:0"
 msgid "Failed to add reaction to the message"
 msgstr "crwdns196406:0crwdne196406:0"
 
-#: crm/integrations/twilio/api.py:150
+#: crm/integrations/twilio/api.py:154
 msgid "Failed to capture Twilio recording"
 msgstr "crwdns153245:0crwdne153245:0"
 
@@ -3011,7 +3050,7 @@ msgstr "crwdns196412:0crwdne196412:0"
 msgid "Failed to delete template"
 msgstr "crwdns156358:0crwdne156358:0"
 
-#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.py:230
+#: crm/api/exchange_rate.py:141
 msgid "Failed to fetch exchange rate from {0} to {1} on {2}. Please check your internet connection or try again later."
 msgstr "crwdns157266:0{0}crwdnd157266:0{1}crwdnd157266:0{2}crwdne157266:0"
 
@@ -3047,7 +3086,7 @@ msgstr "crwdns196422:0crwdne196422:0"
 msgid "Failed to update Email Account, Invalid credentials"
 msgstr "crwdns196424:0crwdne196424:0"
 
-#: crm/integrations/twilio/api.py:177
+#: crm/integrations/twilio/api.py:181
 msgid "Failed to update Twilio call status"
 msgstr "crwdns153247:0crwdne153247:0"
 
@@ -3079,7 +3118,7 @@ msgstr "crwdns160912:0crwdne160912:0"
 
 #. Label of the favicon (Attach) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
-#: frontend/src/components/Settings/BrandSettings.vue:87
+#: frontend/src/components/Settings/BrandSettings.vue:97
 msgid "Favicon"
 msgstr "crwdns153249:0crwdne153249:0"
 
@@ -3089,7 +3128,7 @@ msgid "Field"
 msgstr "crwdns153251:0crwdne153251:0"
 
 #: frontend/src/components/Controls/GridFieldsEditorModal.vue:19
-#: frontend/src/components/Kanban/KanbanSettings.vue:48
+#: frontend/src/components/Kanban/KanbanSettings.vue:47
 msgid "Fields Order"
 msgstr "crwdns153253:0crwdne153253:0"
 
@@ -3361,11 +3400,11 @@ msgstr "crwdns153311:0crwdne153311:0"
 msgid "Hide"
 msgstr "crwdns153313:0crwdne153313:0"
 
-#: frontend/src/components/FieldLayoutEditor.vue:352
+#: frontend/src/components/FieldLayoutEditor.vue:343
 msgid "Hide Border"
 msgstr "crwdns196450:0crwdne196450:0"
 
-#: frontend/src/components/FieldLayoutEditor.vue:347
+#: frontend/src/components/FieldLayoutEditor.vue:338
 msgid "Hide Label"
 msgstr "crwdns196452:0crwdne196452:0"
 
@@ -3409,7 +3448,7 @@ msgstr "crwdns153329:0crwdne153329:0"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:549
 #: frontend/src/components/Settings/HomeActions.vue:7
-#: frontend/src/components/Settings/Settings.vue:184
+#: frontend/src/components/Settings/Settings.vue:185
 msgid "Home Actions"
 msgstr "crwdns159312:0crwdne159312:0"
 
@@ -3550,7 +3589,11 @@ msgstr "crwdns156408:0crwdne156408:0"
 msgid "Integration Not Enabled"
 msgstr "crwdns153359:0crwdne153359:0"
 
-#: frontend/src/components/Settings/Settings.vue:192
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:144
+msgid "Integrations"
+msgstr "crwdns199040:0crwdne199040:0"
+
+#: frontend/src/components/Settings/Settings.vue:193
 msgctxt "FCRM"
 msgid "Integrations"
 msgstr "crwdns156410:0crwdne156410:0"
@@ -3560,7 +3603,7 @@ msgstr "crwdns156410:0crwdne156410:0"
 msgid "Introduction"
 msgstr "crwdns156412:0crwdne156412:0"
 
-#: crm/fcrm/doctype/crm_twilio_settings/crm_twilio_settings.py:50
+#: crm/fcrm/doctype/crm_twilio_settings/crm_twilio_settings.py:57
 msgid "Invalid Account SID or Auth Token."
 msgstr "crwdns153363:0crwdne153363:0"
 
@@ -3625,7 +3668,7 @@ msgstr "crwdns158874:0crwdne158874:0"
 msgid "Invalid fields: {0}"
 msgstr "crwdns196480:0{0}crwdne196480:0"
 
-#: crm/fcrm/doctype/crm_call_log/crm_call_log.py:254
+#: crm/fcrm/doctype/crm_call_log/crm_call_log.py:263
 msgid "Invalid lead details supplied."
 msgstr "crwdns196482:0crwdne196482:0"
 
@@ -3732,11 +3775,11 @@ msgstr "crwdns196494:0{0}crwdnd196494:0{0}crwdne196494:0"
 msgid "It will make deal's \"Expected Closure Date\" & \"Expected Deal Value\" mandatory to get accurate forecasting insights"
 msgstr "crwdns156428:0crwdne156428:0"
 
-#: crm/api/doc.py:889
+#: crm/api/doc.py:832
 msgid "Items are required"
 msgstr "crwdns196496:0crwdne196496:0"
 
-#: crm/api/doc.py:893
+#: crm/api/doc.py:836
 msgid "Items must be a list"
 msgstr "crwdns196498:0crwdne196498:0"
 
@@ -3974,7 +4017,7 @@ msgstr "crwdns160812:0crwdne160812:0"
 msgid "Lead Syncing"
 msgstr "crwdns160816:0crwdne160816:0"
 
-#: crm/fcrm/doctype/crm_call_log/crm_call_log.py:272
+#: crm/fcrm/doctype/crm_call_log/crm_call_log.py:281
 msgid "Lead from call {0}"
 msgstr "crwdns196518:0{0}crwdne196518:0"
 
@@ -4366,19 +4409,19 @@ msgstr "crwdns160824:0crwdne160824:0"
 msgid "More Options"
 msgstr "crwdns158676:0crwdne158676:0"
 
-#: frontend/src/components/FieldLayoutEditor.vue:446
+#: frontend/src/components/FieldLayoutEditor.vue:437
 msgid "Move to Next Section"
 msgstr "crwdns196554:0crwdne196554:0"
 
-#: frontend/src/components/FieldLayoutEditor.vue:399
+#: frontend/src/components/FieldLayoutEditor.vue:390
 msgid "Move to Next Tab"
 msgstr "crwdns196556:0crwdne196556:0"
 
-#: frontend/src/components/FieldLayoutEditor.vue:456
+#: frontend/src/components/FieldLayoutEditor.vue:447
 msgid "Move to Previous Section"
 msgstr "crwdns196558:0crwdne196558:0"
 
-#: frontend/src/components/FieldLayoutEditor.vue:385
+#: frontend/src/components/FieldLayoutEditor.vue:376
 msgid "Move to Previous Tab"
 msgstr "crwdns196560:0crwdne196560:0"
 
@@ -4506,13 +4549,13 @@ msgstr "crwdns196568:0crwdne196568:0"
 msgid "New SLA Policy Name"
 msgstr "crwdns196570:0crwdne196570:0"
 
-#: frontend/src/components/FieldLayoutEditor.vue:201
+#: frontend/src/components/FieldLayoutEditor.vue:200
 #: frontend/src/components/SidePanelLayoutEditor.vue:131
 msgid "New Section"
 msgstr "crwdns153557:0crwdne153557:0"
 
-#: frontend/src/components/FieldLayoutEditor.vue:291
-#: frontend/src/components/FieldLayoutEditor.vue:296
+#: frontend/src/components/FieldLayoutEditor.vue:282
+#: frontend/src/components/FieldLayoutEditor.vue:287
 msgid "New Tab"
 msgstr "crwdns153559:0crwdne153559:0"
 
@@ -4702,7 +4745,9 @@ msgstr "crwdns156494:0crwdne156494:0"
 #: frontend/src/components/Settings/ProfileSettings.vue:85
 #: frontend/src/components/Settings/SettingsPage.vue:23
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:18
+#: frontend/src/components/Settings/Telephony/ExotelSettings.vue:15
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:12
+#: frontend/src/components/Settings/Telephony/TwilioSettings.vue:15
 msgid "Not Saved"
 msgstr "crwdns153621:0crwdne153621:0"
 
@@ -4710,19 +4755,19 @@ msgstr "crwdns153621:0crwdne153621:0"
 msgid "Not Synced"
 msgstr "crwdns160832:0crwdne160832:0"
 
-#: crm/fcrm/doctype/crm_deal/crm_deal.py:337
+#: crm/fcrm/doctype/crm_deal/crm_deal.py:342
 msgid "Not allowed to add contact to Deal"
 msgstr "crwdns153623:0crwdne153623:0"
 
-#: crm/fcrm/doctype/crm_lead/crm_lead.py:470
+#: crm/fcrm/doctype/crm_lead/crm_lead.py:475
 msgid "Not allowed to convert Lead to Deal"
 msgstr "crwdns153625:0crwdne153625:0"
 
-#: crm/fcrm/doctype/crm_deal/crm_deal.py:348
+#: crm/fcrm/doctype/crm_deal/crm_deal.py:353
 msgid "Not allowed to remove contact from Deal"
 msgstr "crwdns153627:0crwdne153627:0"
 
-#: crm/fcrm/doctype/crm_deal/crm_deal.py:359
+#: crm/fcrm/doctype/crm_deal/crm_deal.py:364
 msgid "Not allowed to set primary contact for Deal"
 msgstr "crwdns153629:0crwdne153629:0"
 
@@ -4896,7 +4941,7 @@ msgid "Only image files are allowed"
 msgstr "crwdns156510:0crwdne156510:0"
 
 #: crm/fcrm/doctype/crm_deal/crm_deal.py:124
-#: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.py:45
+#: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.py:68
 msgid "Only one {0} can be set as primary."
 msgstr "crwdns153653:0{0}crwdne153653:0"
 
@@ -5121,6 +5166,10 @@ msgstr "crwdns156524:0crwdne156524:0"
 msgid "Person"
 msgstr "crwdns153703:0crwdne153703:0"
 
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:120
+msgid "Personal Mobile No."
+msgstr "crwdns199042:0crwdne199042:0"
+
 #. Label of the phone (Data) field in DocType 'CRM Contacts'
 #. Label of the phone (Data) field in DocType 'CRM Lead'
 #. Option for the 'Device' (Select) field in DocType 'CRM Telephony Agent'
@@ -5170,10 +5219,6 @@ msgstr "crwdns153717:0crwdne153717:0"
 msgid "Please enter a valid URL"
 msgstr "crwdns153719:0crwdne153719:0"
 
-#: frontend/src/components/Settings/CurrencySettings.vue:150
-msgid "Please enter the Exchangerate Host Access Key."
-msgstr "crwdns196662:0crwdne196662:0"
-
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:239
 msgid "Please fix the errors in the form"
 msgstr "crwdns196664:0crwdne196664:0"
@@ -5182,7 +5227,7 @@ msgstr "crwdns196664:0crwdne196664:0"
 msgid "Please select a Priority"
 msgstr "crwdns196668:0crwdne196668:0"
 
-#: frontend/src/components/Settings/CurrencySettings.vue:143
+#: frontend/src/components/Settings/CurrencySettings.vue:170
 msgid "Please select a currency before saving."
 msgstr "crwdns157272:0crwdne157272:0"
 
@@ -5218,11 +5263,11 @@ msgstr "crwdns196676:0crwdne196676:0"
 msgid "Please setup Exotel intergration"
 msgstr "crwdns153725:0crwdne153725:0"
 
-#: crm/fcrm/doctype/crm_deal/crm_deal.py:245
+#: crm/fcrm/doctype/crm_deal/crm_deal.py:250
 msgid "Please specify a reason for losing the deal."
 msgstr "crwdns156532:0crwdne156532:0"
 
-#: crm/fcrm/doctype/crm_deal/crm_deal.py:247
+#: crm/fcrm/doctype/crm_deal/crm_deal.py:252
 msgid "Please specify the reason for losing the deal."
 msgstr "crwdns156534:0crwdne156534:0"
 
@@ -5415,6 +5460,8 @@ msgstr "crwdns156560:0crwdne156560:0"
 
 #. Label of the record_calls (Check) field in DocType 'CRM Twilio Settings'
 #: crm/fcrm/doctype/crm_twilio_settings/crm_twilio_settings.json
+#: frontend/src/components/Settings/Telephony/ExotelSettings.vue:86
+#: frontend/src/components/Settings/Telephony/TwilioSettings.vue:93
 msgid "Record Calls"
 msgstr "crwdns153759:0crwdne153759:0"
 
@@ -5423,10 +5470,14 @@ msgstr "crwdns153759:0crwdne153759:0"
 msgid "Record Outgoing Calls"
 msgstr "crwdns153761:0crwdne153761:0"
 
-#. Label of the recording_url (Data) field in DocType 'CRM Call Log'
+#. Label of the recording_url (Small Text) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 msgid "Recording URL"
 msgstr "crwdns153763:0crwdne153763:0"
+
+#: crm/integrations/api.py:160
+msgid "Recording URL not found"
+msgstr "crwdns199044:0crwdne199044:0"
 
 #. Label of the reference_name (Dynamic Link) field in DocType 'CRM
 #. Notification'
@@ -5468,6 +5519,10 @@ msgstr "crwdns196704:0{0}crwdnd196704:0{1}crwdne196704:0"
 msgid "Refresh"
 msgstr "crwdns153773:0crwdne153773:0"
 
+#: frontend/src/components/Settings/Telephony/TwilioSettings.vue:78
+msgid "Refresh Apps"
+msgstr "crwdns199046:0crwdne199046:0"
+
 #: frontend/src/components/Telephony/TwilioCallUI.vue:97
 msgid "Reject"
 msgstr "crwdns153777:0crwdne153777:0"
@@ -5491,7 +5546,7 @@ msgstr "crwdns153779:0crwdne153779:0"
 msgid "Remove All"
 msgstr "crwdns196710:0crwdne196710:0"
 
-#: frontend/src/components/FieldLayoutEditor.vue:430
+#: frontend/src/components/FieldLayoutEditor.vue:421
 msgid "Remove Column"
 msgstr "crwdns196712:0crwdne196712:0"
 
@@ -5507,15 +5562,15 @@ msgstr "crwdns196714:0crwdne196714:0"
 msgid "Remove Image"
 msgstr "crwdns196716:0crwdne196716:0"
 
-#: frontend/src/components/FieldLayoutEditor.vue:357
+#: frontend/src/components/FieldLayoutEditor.vue:348
 msgid "Remove Section"
 msgstr "crwdns196718:0crwdne196718:0"
 
-#: frontend/src/components/FieldLayoutEditor.vue:316
+#: frontend/src/components/FieldLayoutEditor.vue:307
 msgid "Remove Tab"
 msgstr "crwdns196720:0crwdne196720:0"
 
-#: frontend/src/components/FieldLayoutEditor.vue:436
+#: frontend/src/components/FieldLayoutEditor.vue:427
 msgid "Remove and move fields to previous column"
 msgstr "crwdns153783:0crwdne153783:0"
 
@@ -5818,6 +5873,7 @@ msgstr "crwdns196742:0crwdne196742:0"
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
 #: crm/fcrm/doctype/crm_product/crm_product.json
 #: crm/fcrm/doctype/crm_task/crm_task.json
+#: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
 #: crm/fcrm/doctype/crm_territory/crm_territory.json
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
 #: crm/fcrm/doctype/fcrm_note/fcrm_note.json
@@ -5866,7 +5922,7 @@ msgstr "crwdns153851:0crwdne153851:0"
 #: frontend/src/components/Modals/SidePanelModal.vue:26
 #: frontend/src/components/PrimaryDropdownItem.vue:21
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:36
-#: frontend/src/components/Settings/CurrencySettings.vue:173
+#: frontend/src/components/Settings/CurrencySettings.vue:197
 #: frontend/src/components/Settings/ProfileSettings.vue:89
 #: frontend/src/components/Settings/Sla/EditResponseResolutionModal.vue:69
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:34
@@ -5919,7 +5975,7 @@ msgstr "crwdns196746:0crwdne196746:0"
 msgid "Search User"
 msgstr "crwdns196748:0crwdne196748:0"
 
-#: frontend/src/components/FieldLayoutEditor.vue:334
+#: frontend/src/components/FieldLayoutEditor.vue:325
 msgid "Section"
 msgstr "crwdns153863:0crwdne153863:0"
 
@@ -5939,7 +5995,7 @@ msgstr "crwdns196754:0crwdne196754:0"
 msgid "Select Holiday List"
 msgstr "crwdns196756:0crwdne196756:0"
 
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:53
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:54
 msgid "Select Medium"
 msgstr "crwdns196758:0crwdne196758:0"
 
@@ -5947,7 +6003,7 @@ msgstr "crwdns196758:0crwdne196758:0"
 msgid "Select Priority"
 msgstr "crwdns196760:0crwdne196760:0"
 
-#: frontend/src/components/Settings/CurrencySettings.vue:75
+#: frontend/src/components/Settings/CurrencySettings.vue:80
 msgid "Select Provider"
 msgstr "crwdns196762:0crwdne196762:0"
 
@@ -5975,6 +6031,10 @@ msgstr "crwdns196768:0crwdne196768:0"
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:15
 msgid "Select Workday"
 msgstr "crwdns196770:0crwdne196770:0"
+
+#: frontend/src/components/Settings/Telephony/TwilioSettings.vue:71
+msgid "Select a Twilio App for your CRM"
+msgstr "crwdns199048:0crwdne199048:0"
 
 #: frontend/src/components/Filter.vue:566
 msgid "Select a Value"
@@ -6059,7 +6119,7 @@ msgstr "crwdns196790:0crwdne196790:0"
 msgid "Set As Primary"
 msgstr "crwdns158682:0crwdne158682:0"
 
-#: frontend/src/components/Settings/CurrencySettings.vue:164
+#: frontend/src/components/Settings/CurrencySettings.vue:188
 msgid "Set Currency"
 msgstr "crwdns196792:0crwdne196792:0"
 
@@ -6090,6 +6150,18 @@ msgstr "crwdns153887:0crwdne153887:0"
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:113
 msgid "Set as default SLA"
 msgstr "crwdns196800:0crwdne196800:0"
+
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:102
+msgid "Set the Exotel number to be used for outgoing calls."
+msgstr "crwdns199050:0crwdne199050:0"
+
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:77
+msgid "Set the Twilio number to be used for outgoing calls."
+msgstr "crwdns199052:0crwdne199052:0"
+
+#: frontend/src/components/Settings/BrandSettings.vue:33
+msgid "Set the name of your brand. Appears in the left sidebar."
+msgstr "crwdns199054:0crwdne199054:0"
 
 #: frontend/src/components/Settings/Sla/SlaHolidays.vue:9
 msgid "Set working days, hours, and holidays by selecting a predefined schedule or creating a new one"
@@ -6137,9 +6209,9 @@ msgstr "crwdns153893:0crwdne153893:0"
 msgid "Setup Email"
 msgstr "crwdns156608:0crwdne156608:0"
 
-#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.py:224
-msgid "Setup the Exchange Rate Provider as 'Exchangerate Host' in settings, as default provider does not support currency conversion for {0} to {1}."
-msgstr "crwdns157278:0{0}crwdnd157278:0{1}crwdne157278:0"
+#: crm/api/exchange_rate.py:135
+msgid "Setup the Exchange Rate Provider other than 'Frankfurter' in settings, as default provider does not support currency conversion for {0} to {1}."
+msgstr "crwdns199056:0{0}crwdnd199056:0{1}crwdne199056:0"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:338
 msgid "Setup your password"
@@ -6149,11 +6221,11 @@ msgstr "crwdns156610:0crwdne156610:0"
 msgid "Show"
 msgstr "crwdns153895:0crwdne153895:0"
 
-#: frontend/src/components/FieldLayoutEditor.vue:352
+#: frontend/src/components/FieldLayoutEditor.vue:343
 msgid "Show Border"
 msgstr "crwdns196820:0crwdne196820:0"
 
-#: frontend/src/components/FieldLayoutEditor.vue:347
+#: frontend/src/components/FieldLayoutEditor.vue:338
 msgid "Show Label"
 msgstr "crwdns196822:0crwdne196822:0"
 
@@ -6356,6 +6428,7 @@ msgstr "crwdns153929:0crwdne153929:0"
 
 #. Label of the subdomain (Data) field in DocType 'CRM Exotel Settings'
 #: crm/fcrm/doctype/crm_exotel_settings/crm_exotel_settings.json
+#: frontend/src/components/Settings/Telephony/ExotelSettings.vue:75
 msgid "Subdomain"
 msgstr "crwdns153931:0crwdne153931:0"
 
@@ -6415,7 +6488,7 @@ msgstr "crwdns160946:0crwdne160946:0"
 msgid "Syncing"
 msgstr "crwdns160854:0crwdne160854:0"
 
-#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:402
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:381
 msgid "Syncing started in background"
 msgstr "crwdns160856:0crwdne160856:0"
 
@@ -6484,7 +6557,7 @@ msgstr "crwdns196852:0crwdne196852:0"
 msgid "Tasks"
 msgstr "crwdns153951:0crwdne153951:0"
 
-#: frontend/src/components/Settings/Settings.vue:195
+#: frontend/src/components/Settings/Settings.vue:196
 msgid "Telephony"
 msgstr "crwdns153953:0crwdne153953:0"
 
@@ -6781,42 +6854,47 @@ msgid "TwiML SID"
 msgstr "crwdns154013:0crwdne154013:0"
 
 #. Option for the 'Telephony Medium' (Select) field in DocType 'CRM Call Log'
-#. Label of the twilio (Check) field in DocType 'CRM Telephony Agent'
 #. Option for the 'Default Medium' (Select) field in DocType 'CRM Telephony
 #. Agent'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
 #: frontend/src/components/Layouts/AppSidebar.vue:608
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:50
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:76
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:51
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:154
 msgid "Twilio"
 msgstr "crwdns154015:0crwdne154015:0"
 
-#: crm/fcrm/doctype/crm_twilio_settings/crm_twilio_settings.py:75
-#: crm/fcrm/doctype/crm_twilio_settings/crm_twilio_settings.py:76
+#: crm/fcrm/doctype/crm_twilio_settings/crm_twilio_settings.py:85
+#: crm/fcrm/doctype/crm_twilio_settings/crm_twilio_settings.py:86
 msgid "Twilio API credential creation error."
 msgstr "crwdns154017:0crwdne154017:0"
 
+#: frontend/src/components/Settings/Telephony/TwilioSettings.vue:68
+msgid "Twilio App Name"
+msgstr "crwdns199058:0crwdne199058:0"
+
+#. Label of the twilio_apps (Data) field in DocType 'CRM Twilio Settings'
+#: crm/fcrm/doctype/crm_twilio_settings/crm_twilio_settings.json
+msgid "Twilio Apps"
+msgstr "crwdns199060:0crwdne199060:0"
+
+#: frontend/src/components/Settings/Telephony/TwilioSettings.vue:115
+msgid "Twilio Integration Disabled"
+msgstr "crwdns199062:0crwdne199062:0"
+
 #. Label of the twilio_number (Data) field in DocType 'CRM Telephony Agent'
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:74
 msgid "Twilio Number"
 msgstr "crwdns154019:0crwdne154019:0"
 
-#: frontend/src/components/Settings/Telephony/TwilioSettings.vue:4
+#: frontend/src/components/Settings/Telephony/TwilioSettings.vue:8
 msgid "Twilio Settings"
 msgstr "crwdns196876:0crwdne196876:0"
-
-#: frontend/src/components/Settings/Telephony/TwilioSettings.vue:5
-msgid "Twilio Settings Updated"
-msgstr "crwdns196878:0crwdne196878:0"
 
 #: crm/integrations/twilio/api.py:15
 msgid "Twilio configuration is missing"
 msgstr "crwdns196880:0crwdne196880:0"
-
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:168
-msgid "Twilio is not enabled"
-msgstr "crwdns154021:0crwdne154021:0"
 
 #. Label of the type (Select) field in DocType 'CRM Call Log'
 #. Label of the type (Select) field in DocType 'CRM Deal Status'
@@ -6852,6 +6930,10 @@ msgstr "crwdns158934:0crwdne158934:0"
 msgid "Type your message here..."
 msgstr "crwdns154027:0crwdne154027:0"
 
+#: crm/fcrm/doctype/crm_twilio_settings/crm_twilio_settings.py:117
+msgid "Unable to connect to Twilio account to fetch applications."
+msgstr "crwdns199064:0crwdne199064:0"
+
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:454
 msgid "Unassign Conditions are invalid"
 msgstr "crwdns196882:0crwdne196882:0"
@@ -6865,7 +6947,7 @@ msgstr "crwdns196884:0crwdne196884:0"
 msgid "Unauthorized request"
 msgstr "crwdns154029:0crwdne154029:0"
 
-#: frontend/src/components/FieldLayoutEditor.vue:342
+#: frontend/src/components/FieldLayoutEditor.vue:333
 msgid "Uncollapsible"
 msgstr "crwdns154031:0crwdne154031:0"
 
@@ -6877,6 +6959,10 @@ msgstr "crwdns196886:0crwdne196886:0"
 #: frontend/src/components/Telephony/TwilioCallUI.vue:123
 msgid "Unknown"
 msgstr "crwdns154033:0crwdne154033:0"
+
+#: crm/integrations/api.py:19
+msgid "Unknown telephony medium: {0}"
+msgstr "crwdns199066:0{0}crwdne199066:0"
 
 #: frontend/src/components/BulkDeleteLinkedDocModal.vue:124
 msgid "Unlink"
@@ -6933,7 +7019,9 @@ msgstr "crwdns154039:0crwdne154039:0"
 #: frontend/src/components/Settings/HomeActions.vue:15
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:30
 #: frontend/src/components/Settings/SettingsPage.vue:32
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:25
+#: frontend/src/components/Settings/Telephony/ExotelSettings.vue:32
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:27
+#: frontend/src/components/Settings/Telephony/TwilioSettings.vue:32
 #: frontend/src/components/Telephony/ExotelCallUI.vue:209
 msgid "Update"
 msgstr "crwdns154041:0crwdne154041:0"
@@ -7063,6 +7151,7 @@ msgstr "crwdns196914:0crwdne196914:0"
 #. Label of the webhook_verify_token (Data) field in DocType 'CRM Exotel
 #. Settings'
 #: crm/fcrm/doctype/crm_exotel_settings/crm_exotel_settings.json
+#: frontend/src/components/Settings/Telephony/ExotelSettings.vue:67
 msgid "Webhook Verify Token"
 msgstr "crwdns154067:0crwdne154067:0"
 
@@ -7199,11 +7288,11 @@ msgstr "crwdns196930:0crwdne196930:0"
 msgid "You are not permitted to access this resource."
 msgstr "crwdns156704:0crwdne156704:0"
 
-#: crm/fcrm/doctype/crm_call_log/crm_call_log.py:250
+#: crm/fcrm/doctype/crm_call_log/crm_call_log.py:259
 msgid "You are not permitted to create leads."
 msgstr "crwdns196932:0crwdne196932:0"
 
-#: crm/fcrm/doctype/crm_call_log/crm_call_log.py:247
+#: crm/fcrm/doctype/crm_call_log/crm_call_log.py:256
 msgid "You are not permitted to update this call log."
 msgstr "crwdns196934:0crwdne196934:0"
 
@@ -7215,7 +7304,7 @@ msgstr "crwdns158690:0crwdne158690:0"
 msgid "You can change the default calling medium from the settings"
 msgstr "crwdns154097:0crwdne154097:0"
 
-#: frontend/src/components/Settings/CurrencySettings.vue:100
+#: frontend/src/components/Settings/CurrencySettings.vue:106
 msgid "You can get your Access Key from "
 msgstr "crwdns196936:0crwdne196936:0"
 
@@ -7381,9 +7470,18 @@ msgstr "crwdns158954:0crwdne158954:0"
 
 #. Option for the 'Service Provider' (Select) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
-#: frontend/src/components/Settings/CurrencySettings.vue:106
+msgid "exchangerate-api"
+msgstr "crwdns199068:0crwdne199068:0"
+
+#. Option for the 'Service Provider' (Select) field in DocType 'FCRM Settings'
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 msgid "exchangerate.host"
 msgstr "crwdns157284:0crwdne157284:0"
+
+#. Option for the 'Service Provider' (Select) field in DocType 'FCRM Settings'
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
+msgid "fawazahmed-exchange-api"
+msgstr "crwdns199070:0crwdne199070:0"
 
 #. Option for the 'Service Provider' (Select) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
@@ -7554,7 +7652,7 @@ msgstr "crwdns196974:0crwdne196974:0"
 msgid "minutes before"
 msgstr "crwdns196976:0crwdne196976:0"
 
-#: frontend/src/components/FieldLayoutEditor.vue:366
+#: frontend/src/components/FieldLayoutEditor.vue:357
 msgid "next"
 msgstr "crwdns154141:0crwdne154141:0"
 
@@ -7580,7 +7678,7 @@ msgstr "crwdns154143:0crwdne154143:0"
 msgid "pink"
 msgstr "crwdns154145:0crwdne154145:0"
 
-#: frontend/src/components/FieldLayoutEditor.vue:366
+#: frontend/src/components/FieldLayoutEditor.vue:357
 msgid "previous"
 msgstr "crwdns154147:0crwdne154147:0"
 
