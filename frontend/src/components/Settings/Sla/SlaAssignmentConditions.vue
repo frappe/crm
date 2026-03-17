@@ -3,52 +3,50 @@
     v-if="conditions.length > 0"
     :conditions="conditions"
     :level="0"
-    :disableAddCondition="props.errors !== ''"
-    :doctype="props.doctype"
+    :disableAddCondition="slaDataErrors.condition != ''"
+    :doctype="doctype"
   />
   <div
     v-if="conditions.length == 0"
     class="flex p-4 items-center cursor-pointer justify-center gap-2 text-sm border border-outline-gray-2 text-ink-gray-5 rounded-md"
-    @click="
-      () => {
-        conditions.push(['', '', ''])
-        validateAssignmentRule(props.name)
-      }
-    "
+    @click="conditions.push(['', '', ''])"
   >
     <FeatherIcon name="plus" class="h-4" />
-    {{ __('Add a Condition') }}
+    {{ __('Add a Custom Condition') }}
   </div>
   <div class="flex items-center justify-between mt-2">
-    <div v-if="conditions.length > 0" class="">
-      <Dropdown v-slot="{ open }" :options="dropdownOptions">
-        <Button
-          :disabled="props.errors !== ''"
-          :icon-right="open ? 'chevron-up' : 'chevron-down'"
-          :label="__('Add Condition')"
-        />
-      </Dropdown>
-    </div>
-    <ErrorMessage v-if="conditions.length > 0" :message="props.errors" />
+    <Dropdown
+      v-if="conditions.length > 0"
+      v-slot="{ open }"
+      :options="dropdownOptions"
+    >
+      <Button
+        :disabled="slaDataErrors.condition != ''"
+        :icon-right="open ? 'chevron-up' : 'chevron-down'"
+        :label="__('Add Condition')"
+      />
+    </Dropdown>
+    <ErrorMessage :message="slaDataErrors.condition" />
   </div>
 </template>
 
 <script setup>
 import { Button, Dropdown, ErrorMessage, FeatherIcon } from 'frappe-ui'
-import { watchDebounced } from '@vueuse/core'
-import { validateConditions } from '@/utils'
 import CFConditions from '../../ConditionsFilter/CFConditions.vue'
-import { inject, reactive } from 'vue'
+import { slaData, slaDataErrors, validateSlaData } from './utils'
+import { watchDebounced } from '@vueuse/core'
+import { validateConditions } from '../../../utils'
+import { computed, reactive } from 'vue'
 
 const props = defineProps({
-  conditions: { type: Array, default: () => [] },
-  name: { type: String, default: '' },
-  errors: { type: String, default: '' },
-  doctype: { type: String, default: '' },
+  conditions: { type: Array, required: true },
 })
 
-const conditions = reactive(props.conditions || [])
-const validateAssignmentRule = inject('validateAssignmentRule')
+const conditions = reactive(props.conditions)
+
+const doctype = computed(() => {
+  return slaData.value.apply_on
+})
 
 const getConjunction = () => {
   let conjunction = 'and'
@@ -90,8 +88,8 @@ const addCondition = () => {
 watchDebounced(
   () => [...conditions],
   () => {
-    validateAssignmentRule(props.name)
+    validateSlaData('condition')
   },
-  { deep: true, debounce: 300 },
+  { deep: true, debounce: 100 },
 )
 </script>
