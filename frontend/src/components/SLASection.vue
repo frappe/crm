@@ -57,6 +57,10 @@ let slaSection = computed(() => {
       : data.value.sla_status == 'Fulfilled'
         ? 'green'
         : 'orange'
+  let respondedOn =
+    data.value.last_responded_on || data.value.first_responded_on
+  let responseTime =
+    data.value.last_response_time || data.value.first_response_time
 
   if (status == 'First Response Due' || status == 'Rolling Response Due') {
     status = timeAgo(data.value.response_by)
@@ -71,8 +75,8 @@ let slaSection = computed(() => {
       }
     }
   } else if (['Fulfilled', 'Failed'].includes(status)) {
-    status = __(status) + ' in ' + formatTime(data.value.last_response_time)
-    tooltipText = formatDate(data.value.last_responded_on)
+    status = __(status) + ' in ' + formatTime(responseTime)
+    tooltipText = formatDate(respondedOn)
   }
 
   let responseType = 'First Response'
