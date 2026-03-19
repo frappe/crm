@@ -103,6 +103,7 @@
               :placeholder="__('John Doe')"
               :filters="{
                 name: ['in', users.data.crmUsers?.map((user) => user.name)],
+                ignore_user_type: 1,
               }"
               :hideMe="true"
               @change="(option) => updateUser(option)"
