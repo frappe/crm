@@ -151,7 +151,11 @@ doc_events = {
 		"after_insert": ["crm.api.todo.after_insert"],
 		"on_update": ["crm.api.todo.on_update"],
 	},
+	"Communication": {
+		"after_insert": ["crm.utils.update_modified_timestamp"],
+	},
 	"Comment": {
+		"after_insert": ["crm.utils.update_modified_timestamp"],
 		"on_update": ["crm.api.comment.on_update"],
 	},
 	"WhatsApp Message": {

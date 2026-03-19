@@ -4,9 +4,11 @@ import frappe
 import phonenumbers
 import requests
 from frappe import _
+from frappe.core.doctype.comment.comment import Comment
+from frappe.core.doctype.communication.communication import Communication
 from frappe.model.docstatus import DocStatus
 from frappe.model.dynamic_links import get_dynamic_link_map
-from frappe.utils import floor
+from frappe.utils import floor, now
 from phonenumbers import NumberParseException
 from phonenumbers import PhoneNumberFormat as PNF
 
@@ -282,3 +284,22 @@ def is_frappe_version(version: str, above: bool = False, below: bool = False):
 	if below:
 		return major_version < target_version
 	return major_version == target_version
+
+
+def update_modified_timestamp(doc: Communication | Comment, method):
+	if not frappe.db.get_single_value("FCRM Settings", "update_timestamp_on_new_communication"):
+		return
+
+	if not (doc.reference_doctype and doc.reference_name):
+		return
+
+	elif doc.doctype not in ["Comment", "Communication"]:
+		return
+
+	frappe.db.set_value(
+		dt=doc.reference_doctype,
+		dn=doc.reference_name,
+		field="modified",
+		val=now(),
+		update_modified=False,
+	)
