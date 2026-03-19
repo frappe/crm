@@ -9,6 +9,7 @@
   "restore_defaults",
   "enable_forecasting",
   "auto_update_expected_deal_value",
+  "update_timestamp_on_new_communication",
   "currency_tab",
   "currency",
   "exchange_rate_provider_section",
@@ -148,12 +149,19 @@
    "fieldtype": "Select",
    "label": "Default Calendar View",
    "options": "Daily\nWeekly\nMonthly"
+  },
+  {
+   "default": "1",
+   "description": "Update the modified timestamp on new email communication & comment received in Lead & Deal",
+   "fieldname": "update_timestamp_on_new_communication",
+   "fieldtype": "Check",
+   "label": "Update timestamp on new communication"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2026-03-10 13:48:53.621189",
+ "modified": "2026-03-19 15:27:38.624838",
  "modified_by": "shariq@frappe.io",
  "module": "FCRM",
  "name": "FCRM Settings",

@@ -35,6 +35,7 @@ class FCRMSettings(Document):
 		service_provider: DF.Literal[
 			"frankfurter.app", "fawazahmed-exchange-api", "exchangerate.host", "exchangerate-api"
 		]
+		update_timestamp_on_new_communication: DF.Check
 	# end: auto-generated types
 
 	@frappe.whitelist()

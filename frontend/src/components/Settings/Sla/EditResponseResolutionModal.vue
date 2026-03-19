@@ -29,7 +29,9 @@
                 <div v-if="priorityData.first_response_time">
                   {{ formatTimeHMS(priorityData.first_response_time) }}
                 </div>
-                <div v-else class="text-gray-500">{{ __('Select Time') }}</div>
+                <div v-else class="text-ink-gray-4">
+                  {{ __('Select Time') }}
+                </div>
               </div>
             </template>
             <template #body>

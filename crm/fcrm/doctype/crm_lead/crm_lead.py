@@ -352,6 +352,11 @@ class CRMLead(Document):
 			new_deal.update(deal)
 
 		new_deal.insert(ignore_permissions=True)
+
+		for user in self.get_assigned_users():
+			if user and user != new_deal.deal_owner:
+				new_deal.assign_agent(user)
+
 		return new_deal.name
 
 	def set_sla(self):
