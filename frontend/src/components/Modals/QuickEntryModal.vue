@@ -4,10 +4,10 @@
       <h3
         class="flex items-center gap-2 text-2xl font-semibold leading-6 text-ink-gray-9"
       >
-        <div>{{ __('Edit quick entry layout') }}</div>
+        <div>{{ __('Edit Quick Entry Layout') }}</div>
         <Badge
           v-if="dirty"
-          :label="__('Not saved')"
+          :label="__('Not Saved')"
           variant="subtle"
           theme="orange"
         />
@@ -17,7 +17,7 @@
       <div class="flex flex-col gap-3">
         <div class="flex justify-between gap-2">
           <Button
-            :label="preview ? __('Hide preview') : __('Show preview')"
+            :label="preview ? __('Hide Preview') : __('Show Preview')"
             @click="preview = !preview"
           />
           <div class="flex flex-row-reverse gap-2">
@@ -33,7 +33,7 @@
         <div v-if="tabs?.data">
           <FieldLayoutEditor
             v-if="!preview"
-            :tabs="tabs.data"
+            v-model="tabs.data"
             :doctype="_doctype"
             :onlyRequired="onlyRequired"
           />
@@ -47,22 +47,18 @@
 import FieldLayout from '@/components/FieldLayout/FieldLayout.vue'
 import FieldLayoutEditor from '@/components/FieldLayoutEditor.vue'
 import { useDebounceFn } from '@vueuse/core'
-import { capture } from '@/telemetry'
-import { Dialog, Badge, Switch, call, createResource } from 'frappe-ui'
+import { useTelemetry } from 'frappe-ui/frappe'
+import { Dialog, Badge, call, createResource } from 'frappe-ui'
 import { ref, watch, onMounted, nextTick } from 'vue'
 
 const props = defineProps({
-  doctype: {
-    type: String,
-    default: 'CRM Lead',
-  },
-  onlyRequired: {
-    type: Boolean,
-    default: false,
-  },
+  doctype: { type: String, default: 'CRM Lead' },
+  onlyRequired: { type: Boolean, default: false },
 })
 
-const show = defineModel()
+const { capture } = useTelemetry()
+
+const show = defineModel({ type: Boolean })
 const _doctype = ref(props.doctype)
 const loading = ref(false)
 const dirty = ref(false)

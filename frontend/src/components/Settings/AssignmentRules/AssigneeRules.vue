@@ -2,7 +2,7 @@
   <div>
     <div class="flex flex-col gap-1">
       <span class="text-lg font-semibold text-ink-gray-8">{{
-        __('Assignee rules')
+        __('Assignee Rules')
       }}</span>
       <span class="text-p-sm text-ink-gray-6">
         {{
@@ -53,7 +53,7 @@
               <div
                 v-for="option in documentRoutingOptions"
                 :key="option.value"
-                class="p-2 cursor-pointer hover:bg-gray-50 text-sm flex items-center justify-between rounded"
+                class="p-2 cursor-pointer hover:bg-surface-gray-1 text-sm flex items-center justify-between rounded"
                 @click="
                   () => {
                     assignmentRuleData.rule = option.value

@@ -13,7 +13,7 @@
             <Button
               v-if="isManager() && !isMobileView"
               variant="ghost"
-              :tooltip="__('Edit fields layout')"
+              :tooltip="__('Edit Fields Layout')"
               :icon="EditIcon"
               class="w-7"
               @click="openQuickEntryModal"
@@ -21,8 +21,8 @@
             <Button
               variant="ghost"
               class="w-7"
-              @click="show = false"
               icon="x"
+              @click="show = false"
             />
           </div>
         </div>
@@ -38,9 +38,9 @@
       <div class="px-4 pt-4 pb-7 sm:px-6">
         <div class="flex justify-end gap-2">
           <Button
-            class="w-full"
             v-for="action in dialogOptions.actions"
             :key="action.label"
+            class="w-full"
             v-bind="action"
             :label="__(action.label)"
             :loading="loading"
@@ -58,31 +58,21 @@ import { usersStore } from '@/stores/users'
 import { isMobileView } from '@/composables/settings'
 import { showQuickEntryModal, quickEntryProps } from '@/composables/modals'
 import { getRandom } from '@/utils'
-import { capture } from '@/telemetry'
 import { useDocument } from '@/data/document'
+import { useTelemetry } from 'frappe-ui/frappe'
 import { createResource, ErrorMessage, Badge } from 'frappe-ui'
 import { ref, nextTick, computed, onMounted } from 'vue'
 
 const props = defineProps({
-  data: {
-    type: Object,
-    default: () => ({}),
-  },
-  referenceDoc: {
-    type: Object,
-    default: () => ({}),
-  },
-  options: {
-    type: Object,
-    default: {
-      afterInsert: () => {},
-    },
-  },
+  data: { type: Object, default: () => ({}) },
+  referenceDoc: { type: Object, default: () => ({}) },
+  options: { type: Object, default: () => ({ afterInsert: () => {} }) },
 })
 
 const { isManager } = usersStore()
+const { capture } = useTelemetry()
 
-const show = defineModel()
+const show = defineModel({ type: Boolean })
 
 const loading = ref(false)
 const error = ref(null)
@@ -94,7 +84,7 @@ const { document: callLog, triggerOnBeforeCreate } = useDocument(
 )
 
 const dialogOptions = computed(() => {
-  let title = !editMode.value ? __('Log a call') : __('Edit call log')
+  let title = !editMode.value ? __('Log a Call') : __('Edit Call Log')
   let size = 'xl'
   let actions = [
     {
@@ -169,14 +159,14 @@ const _createCallLog = createResource({
 
 function handleCallLogUpdate(doc) {
   show.value = false
-  props.options.afterInsert && props.options.afterInsert(doc)
+  props.options.afterInsert?.(doc)
 }
 
 onMounted(() => {
   editMode.value = props.data?.name ? true : false
 
   if (!props.data?.name) {
-    callLog.doc = { ...props.data }
+    Object.assign(callLog.doc, props.data)
   }
 })
 

@@ -5,13 +5,13 @@
         <div class="mb-5 flex items-center justify-between">
           <div>
             <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9">
-              {{ __('Editing row {0}', [index + 1]) }}
+              {{ __('Editing Row {0}', [index + 1]) }}
             </h3>
           </div>
           <div class="flex items-center gap-1">
             <Button
               v-if="isManager()"
-              :tooltip="__('Edit fields layout')"
+              :tooltip="__('Edit Fields Layout')"
               variant="ghost"
               class="w-7"
               :icon="EditIcon"
@@ -47,16 +47,18 @@ import { createResource } from 'frappe-ui'
 import { nextTick } from 'vue'
 
 const props = defineProps({
-  index: Number,
-  data: Object,
-  doctype: String,
-  parentDoctype: String,
+  index: { type: Number, default: 0 },
+  data: { type: Object, default: () => ({}) },
+  doctype: { type: String, default: '' },
+  parentDoctype: { type: String, default: '' },
 })
 
 const { isManager } = usersStore()
 
-const show = defineModel()
-const showGridRowFieldsModal = defineModel('showGridRowFieldsModal')
+const show = defineModel({ type: Boolean })
+const showGridRowFieldsModal = defineModel('showGridRowFieldsModal', {
+  type: Boolean,
+})
 
 const tabs = createResource({
   url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_fields_layout',

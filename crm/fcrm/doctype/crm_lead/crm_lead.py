@@ -46,6 +46,8 @@ class CRMLead(Document):
 		last_response_time: DF.Duration | None
 		lead_name: DF.Data | None
 		lead_owner: DF.Link | None
+		lost_notes: DF.Text | None
+		lost_reason: DF.Link | None
 		middle_name: DF.Data | None
 		mobile_no: DF.Data | None
 		naming_series: DF.Literal["CRM-LEAD-.YYYY.-"]
@@ -92,15 +94,14 @@ class CRMLead(Document):
 	def set_full_name(self):
 		if self.first_name:
 			self.lead_name = " ".join(
-				filter(
-					None,
-					[
-						self.salutation,
-						self.first_name,
-						self.middle_name,
-						self.last_name,
-					],
-				)
+				name
+				for name in [
+					self.salutation,
+					self.first_name,
+					self.middle_name,
+					self.last_name,
+				]
+				if name
 			)
 
 	def set_lead_name(self):
@@ -140,7 +141,7 @@ class CRMLead(Document):
 					# the agent is already set as an assignee
 					return
 
-		assign({"assign_to": [agent], "doctype": "CRM Lead", "name": self.name})
+		assign({"assign_to": [agent], "doctype": "CRM Lead", "name": self.name}, ignore_permissions=True)
 
 	def share_with_agent(self, agent):
 		if not agent:
@@ -167,7 +168,12 @@ class CRMLead(Document):
 					flags={"ignore_share_permission": True},
 				)
 			elif user != agent:
-				frappe.share.remove(self.doctype, self.name, user)
+				frappe.share.remove(
+					self.doctype,
+					self.name,
+					user,
+					flags={"ignore_share_permission": True, "ignore_permissions": True},
+				)
 
 	def create_contact(self, existing_contact=None, throw=True):
 		if not self.lead_name:
@@ -346,6 +352,11 @@ class CRMLead(Document):
 			new_deal.update(deal)
 
 		new_deal.insert(ignore_permissions=True)
+
+		for user in self.get_assigned_users():
+			if user and user != new_deal.deal_owner:
+				new_deal.assign_agent(user)
+
 		return new_deal.name
 
 	def set_sla(self):
@@ -397,7 +408,8 @@ class CRMLead(Document):
 			},
 			{
 				"label": "Status",
-				"type": "Select",
+				"type": "Link",
+				"options": "CRM Lead Status",
 				"key": "status",
 				"width": "8rem",
 			},
@@ -408,19 +420,19 @@ class CRMLead(Document):
 				"width": "12rem",
 			},
 			{
-				"label": "Mobile no",
+				"label": "Mobile No.",
 				"type": "Data",
 				"key": "mobile_no",
 				"width": "11rem",
 			},
 			{
-				"label": "Assigned to",
+				"label": "Assigned To",
 				"type": "Text",
 				"key": "_assign",
 				"width": "10rem",
 			},
 			{
-				"label": "Last modified",
+				"label": "Last Modified",
 				"type": "Datetime",
 				"key": "modified",
 				"width": "8rem",
@@ -455,7 +467,13 @@ class CRMLead(Document):
 
 
 @frappe.whitelist()
-def convert_to_deal(lead, doc=None, deal=None, existing_contact=None, existing_organization=None):
+def convert_to_deal(
+	lead: str,
+	doc: Document | None = None,
+	deal: str | dict | None = None,
+	existing_contact: str | None = None,
+	existing_organization: str | None = None,
+):
 	if not (doc and doc.flags.get("ignore_permissions")) and not frappe.has_permission(
 		"CRM Lead", "write", lead
 	):

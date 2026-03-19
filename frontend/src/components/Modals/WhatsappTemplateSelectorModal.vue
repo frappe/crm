@@ -1,14 +1,14 @@
 <template>
   <Dialog
     v-model="show"
-    :options="{ title: __('WhatsApp templates'), size: '4xl' }"
+    :options="{ title: __('WhatsApp Templates'), size: '4xl' }"
   >
     <template #body-content>
       <TextInput
         ref="searchInput"
         v-model="search"
         type="text"
-        :placeholder="__('Welcome message')"
+        :placeholder="__('Welcome Message')"
       >
         <template #prefix>
           <FeatherIcon name="search" class="h-4 w-4 text-ink-gray-4" />
@@ -39,10 +39,10 @@
       <div v-else class="mt-2">
         <div class="flex h-56 flex-col items-center justify-center">
           <div class="text-lg text-ink-gray-4">
-            {{ __('No templates found') }}
+            {{ __('No Templates Found') }}
           </div>
           <Button
-            :label="__('Create new')"
+            :label="__('Create New')"
             class="mt-4"
             @click="newWhatsappTemplate"
           />
@@ -57,10 +57,10 @@ import { TextEditor, createListResource } from 'frappe-ui'
 import { ref, computed, nextTick, watch, onMounted } from 'vue'
 
 const props = defineProps({
-  doctype: String,
+  doctype: { type: String, default: '' },
 })
 
-const show = defineModel()
+const show = defineModel({ type: Boolean })
 const searchInput = ref('')
 
 const emit = defineEmits(['send'])

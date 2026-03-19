@@ -1,0 +1,22 @@
+[
+	{
+		"doctype": "CRM Lead Source",
+		"source_name": "Website"
+	},
+	{
+		"doctype": "CRM Lead Source",
+		"source_name": "Referral"
+	},
+	{
+		"doctype": "CRM Lead Source",
+		"source_name": "Cold Call"
+	},
+	{
+		"doctype": "CRM Lead Source",
+		"source_name": "Email Campaign"
+	},
+	{
+		"doctype": "CRM Lead Source",
+		"source_name": "Social Media"
+	}
+]

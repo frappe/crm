@@ -1,0 +1,83 @@
+name: Server
+
+on:
+    pull_request:
+        paths-ignore:
+            - "**.css"
+            - "**.js"
+            - "**.md"
+            - "**.html"
+            - "**.csv"
+            - "**.po"
+            - "**.pot"
+    schedule:
+        # Run everday at midnight UTC / 5:30 IST
+        - cron: "0 0 * * *"
+env:
+    CRM_BRANCH: ${{ github.base_ref || github.ref_name }}
+
+concurrency:
+    group: develop-crm-${{ github.event.number }}
+    cancel-in-progress: true
+
+jobs:
+    test:
+        name: Tests
+        runs-on: ubuntu-latest
+        timeout-minutes: 60
+        strategy:
+            fail-fast: false
+
+        services:
+            mysql:
+                image: mariadb:10.6
+                env:
+                    MYSQL_ROOT_PASSWORD: root
+                ports:
+                    - 3306:3306
+                options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
+
+        steps:
+            - name: Clone
+              uses: actions/checkout@v6
+
+            - name: Setup environment
+              uses: ./.github/actions/setup-server-env
+              with:
+                  python-version: "3.14"
+                  node-version: "24"
+                  type: "server"
+
+            - name: Run server tests
+              uses: ./.github/actions/run-server-tests
+              with:
+                  bench-path: "/home/runner/frappe-bench"
+                  site: "test_site"
+                  app: "crm"
+                  enable-coverage: "true"
+                  type: "server"
+                  ci-build-id: ${{ github.run_id }}
+
+            - name: Persist coverage artifact
+              if: github.base_ref == 'develop' || github.ref_name == 'develop'
+              uses: ./.github/actions/upload-coverage
+              with:
+                  artifact-name: coverage-${{ matrix.container }}
+                  coverage-path: /home/runner/frappe-bench/sites/coverage.xml
+
+    coverage:
+        name: Coverage Wrap Up
+        needs: test
+        if: github.base_ref == 'develop' || github.ref_name == 'develop'
+        runs-on: ubuntu-latest
+        steps:
+            - name: Clone
+              uses: actions/checkout@v6
+
+            - name: Download artifacts
+              uses: actions/download-artifact@v4
+
+            - name: Publish coverage
+              uses: ./.github/actions/publish-codecov
+              with:
+                  token: ${{ secrets.CODECOV_TOKEN }}

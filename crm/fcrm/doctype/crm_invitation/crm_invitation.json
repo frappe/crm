@@ -39,7 +39,7 @@
    "fieldname": "invited_by",
    "fieldtype": "Link",
    "in_list_view": 1,
-   "label": "Invited by",
+   "label": "Invited By",
    "options": "User"
   },
   {
@@ -56,18 +56,18 @@
   {
    "fieldname": "email_sent_at",
    "fieldtype": "Datetime",
-   "label": "Email sent at"
+   "label": "Email Sent At"
   },
   {
    "fieldname": "accepted_at",
    "fieldtype": "Datetime",
-   "label": "Accepted at"
+   "label": "Accepted At"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-01-22 13:58:32.958774",
- "modified_by": "shariq@frappe.io",
+ "modified": "2026-02-23 12:15:54.279434",
+ "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Invitation",
  "owner": "Administrator",

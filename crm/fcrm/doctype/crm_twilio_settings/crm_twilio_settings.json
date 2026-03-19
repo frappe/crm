@@ -19,7 +19,10 @@
   "api_key",
   "twiml_sid",
   "column_break_idds",
-  "api_secret"
+  "api_secret",
+  "app_name",
+  "section_break_cghd",
+  "twilio_apps"
  ],
  "fields": [
   {
@@ -34,7 +37,7 @@
    "depends_on": "enabled",
    "fieldname": "api_key",
    "fieldtype": "Data",
-   "label": "API key",
+   "label": "API Key",
    "permlevel": 1,
    "read_only": 1
   },
@@ -42,7 +45,7 @@
    "depends_on": "enabled",
    "fieldname": "api_secret",
    "fieldtype": "Password",
-   "label": "API secret",
+   "label": "API Secret",
    "permlevel": 1,
    "read_only": 1
   },
@@ -55,7 +58,7 @@
    "fieldname": "auth_token",
    "fieldtype": "Password",
    "in_list_view": 1,
-   "label": "Auth token",
+   "label": "Auth Token",
    "mandatory_depends_on": "eval: doc.enabled"
   },
   {
@@ -74,7 +77,7 @@
    "depends_on": "enabled",
    "fieldname": "record_calls",
    "fieldtype": "Check",
-   "label": "Record calls"
+   "label": "Record Calls"
   },
   {
    "fieldname": "column_break_avmt",
@@ -99,13 +102,28 @@
   {
    "fieldname": "column_break_yqvr",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "app_name",
+   "fieldtype": "Data",
+   "label": "App Name"
+  },
+  {
+   "fieldname": "section_break_cghd",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "twilio_apps",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Twilio Apps"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2026-01-22 14:13:36.033569",
- "modified_by": "shariq@frappe.io",
+ "modified": "2026-03-06 15:56:05.387337",
+ "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Twilio Settings",
  "owner": "Administrator",

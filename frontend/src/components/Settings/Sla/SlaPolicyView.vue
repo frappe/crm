@@ -5,24 +5,24 @@
         <Button
           variant="ghost"
           icon-left="chevron-left"
-          :label="slaData.sla_name || __('New SLA policy')"
+          :label="slaData.sla_name || __('New SLA Policy')"
           size="md"
-          @click="goBack()"
           class="cursor-pointer -ml-4 hover:bg-transparent focus:bg-transparent focus:outline-none focus:ring-0 focus:ring-offset-0 focus-visible:none active:bg-transparent active:outline-none active:ring-0 active:ring-offset-0 active:text-ink-gray-5 font-semibold text-ink-gray-7 text-lg hover:opacity-70 !pr-0 !max-w-96 !justify-start"
+          @click="goBack()"
         />
         <Badge
+          v-if="isDirty"
           variant="subtle"
           theme="orange"
           size="sm"
-          :label="__('Unsaved')"
-          v-if="isDirty"
+          :label="__('Not Saved')"
         />
       </div>
     </template>
     <template #header-actions>
-      <div class="flex gap-4 items-center">
+      <div class="flex gap-4">
         <div
-          class="flex items-center justify-between gap-2 cursor-pointer"
+          class="flex items-center justify-between gap-2 cursor-pointer h-7"
           @click="toggleEnabled"
         >
           <Switch size="sm" :model-value="slaData.enabled" />
@@ -34,13 +34,13 @@
           :label="__('Save')"
           theme="gray"
           variant="solid"
-          @click="saveSla()"
           :disabled="Boolean(!isDirty && step.data)"
           :loading="
             slaPolicyListResource.setValue.loading ||
             renameSlaResource.loading ||
             getSlaResource.loading
           "
+          @click="saveSla()"
         />
       </div>
     </template>
@@ -55,21 +55,22 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
           <div>
             <FormControl
+              v-model="slaData.sla_name"
               :type="'text'"
               size="sm"
               variant="subtle"
               :placeholder="__('Name')"
               :label="__('Name')"
-              v-model="slaData.sla_name"
               required
-              @change="validateSlaData('sla_name')"
               maxlength="100"
+              @change="validateSlaData('sla_name')"
             />
             <ErrorMessage :message="slaDataErrors.sla_name" class="mt-2" />
           </div>
           <div class="space-y-1.5">
-            <FormLabel :label="__('Apply on')" required />
+            <FormLabel :label="__('Apply On')" required />
             <Select
+              v-model="slaData.apply_on"
               :options="[
                 {
                   label: 'Lead',
@@ -80,13 +81,12 @@
                   value: 'CRM Deal',
                 },
               ]"
-              v-model="slaData.apply_on"
             />
           </div>
           <div class="space-y-0.5">
             <Checkbox
-              :label="__('Rolling responses')"
               v-model="slaData.rolling_responses"
+              :label="__('Rolling Responses')"
             />
             <div class="text-p-sm text-ink-gray-5">
               {{
@@ -104,7 +104,7 @@
               __('Assignment conditions')
             }}</span>
             <span class="text-p-sm text-ink-gray-6">
-              {{ __('Choose which tickets are affected by this policy.') }}
+              {{ __('Choose which leads/deals are affected by this policy.') }}
             </span>
           </div>
           <div class="mt-3">
@@ -112,8 +112,8 @@
               <Checkbox
                 :label="__('Set as default SLA')"
                 :model-value="slaData.default"
-                @update:model-value="toggleDefaultSla"
                 class="text-ink-gray-6 text-base font-medium"
+                @update:model-value="toggleDefaultSla"
               />
               <div v-if="isOldSla && step.data && !slaData.default">
                 <Popover trigger="hover" :hoverDelay="0.25" placement="top-end">
@@ -137,8 +137,8 @@
             </div>
             <div class="mt-5">
               <div
-                class="flex flex-col gap-3 items-center text-center text-ink-gray-7 text-sm mb-2 border border-outline-gray-3 rounded-md p-3 py-4"
                 v-if="!useNewUI"
+                class="flex flex-col gap-3 items-center text-center text-ink-gray-7 text-sm mb-2 border border-outline-gray-3 rounded-md p-3 py-4"
               >
                 <span class="text-p-sm">
                   Conditions for this SLA were created from
@@ -148,15 +148,15 @@
                   conditions from this UI.
                 </span>
                 <Button
-                  :label="__('I understand, add conditions')"
+                  :label="__('I understand, Add Conditions')"
                   variant="subtle"
                   theme="gray"
                   @click="useNewUI = true"
                 />
               </div>
               <SlaAssignmentConditions
-                :conditions="slaData.condition_json"
                 v-if="useNewUI"
+                :conditions="slaData.condition_json"
               />
             </div>
           </div>
@@ -165,7 +165,7 @@
         <div>
           <div class="flex flex-col gap-1">
             <span class="text-lg font-semibold text-ink-gray-8">
-              {{ __('Valid from') }}
+              {{ __('Valid From') }}
             </span>
             <span class="text-p-sm text-ink-gray-6">
               {{ __('Choose how long this SLA policy will be active.') }}
@@ -173,15 +173,15 @@
           </div>
           <div class="mt-3.5 flex gap-5 flex-col md:flex-row">
             <div class="w-full space-y-1.5">
-              <FormLabel :label="__('Start date')" for="start_date" />
+              <FormLabel :label="__('Start Date')" for="start_date" />
               <DatePicker
+                id="start_date"
                 v-model="slaData.start_date"
                 variant="subtle"
                 placeholder="11/01/2025"
                 class="w-full"
-                id="start_date"
-                @change="validateSlaData('start_date')"
                 :formatter="(date) => getFormattedDate(date)"
+                @change="validateSlaData('start_date')"
               >
                 <template #prefix>
                   <LucideCalendar class="size-4" />
@@ -190,15 +190,15 @@
               <ErrorMessage :message="slaDataErrors.start_date" />
             </div>
             <div class="w-full space-y-1.5">
-              <FormLabel :label="__('End date')" for="end_date" />
+              <FormLabel :label="__('End Date')" for="end_date" />
               <DatePicker
+                id="end_date"
                 v-model="slaData.end_date"
                 variant="subtle"
                 placeholder="25/12/2025"
                 class="w-full"
-                id="end_date"
-                @change="validateSlaData('end_date')"
                 :formatter="(date) => getFormattedDate(date)"
+                @change="validateSlaData('end_date')"
               >
                 <template #prefix>
                   <LucideCalendar class="size-4" />
@@ -212,7 +212,7 @@
         <div>
           <div class="flex flex-col gap-1">
             <span class="text-lg font-semibold text-ink-gray-8">
-              {{ __('Response & Follow up') }}
+              {{ __('Response & Follow Up') }}
             </span>
             <span class="text-p-sm text-ink-gray-6">
               {{
@@ -301,7 +301,7 @@ const getSlaResource = createResource({
     let condition_json
     try {
       condition_json = JSON.parse(data.condition_json || '[]')
-    } catch (error) {
+    } catch {
       toast.error(
         __(
           'Assignment conditions are invalid or corrupt, recreate the conditions.',
@@ -343,7 +343,7 @@ if (step.value.data && step.value.fetchData) {
 const goBack = () => {
   const confirmDialogInfo = {
     show: true,
-    title: __('Unsaved changes'),
+    title: __('Unsaved Changes'),
     message: __(
       'Are you sure you want to go back? Unsaved changes will be lost.',
     ),
@@ -397,7 +397,7 @@ const saveSla = () => {
     if (isOldSla.value && useNewUI.value) {
       showConfirmDialog.value = {
         show: true,
-        title: __('Confirm overwrite'),
+        title: __('Confirm Overwrite'),
         message: __(
           'Your old conditions will be overwritten. Are you sure you want to save?',
         ),
@@ -426,7 +426,7 @@ const createSla = () => {
     },
     {
       onSuccess(data) {
-        toast.success(__('SLA policy created'))
+        toast.success(__('SLA Policy Created'))
         updateStep('view', data, true)
         getSlaResource.submit({
           doctype: 'CRM Service Level Agreement',
@@ -436,7 +436,7 @@ const createSla = () => {
       onError(err) {
         const message = err?.messages?.[0]
         toast.error(
-          message || __('Some error occurred while creating SLA policy'),
+          message || __('Some error occurred while creating SLA Policy'),
         )
       },
     },
@@ -486,7 +486,6 @@ const updateSla = async () => {
       toast.error(error)
       // Reset assignment rule to previous state
       await getSlaResource.reload()
-      isLoading.value = false
     })
 
     getSlaResource.submit({
@@ -497,7 +496,7 @@ const updateSla = async () => {
     await getSlaResource.reload()
   }
 
-  toast.success(__('SLA policy updated'))
+  toast.success(__('SLA Policy Updated'))
   slaPolicyListResource.reload()
 }
 

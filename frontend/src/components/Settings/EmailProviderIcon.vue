@@ -12,17 +12,8 @@
 
 <script setup>
 defineProps({
-  logo: {
-    type: String,
-    required: true,
-  },
-  label: {
-    type: String,
-    default: '',
-  },
-  selected: {
-    type: Boolean,
-    default: false,
-  },
+  logo: { type: String, required: true },
+  label: { type: String, default: '' },
+  selected: { type: Boolean, default: false },
 })
 </script>

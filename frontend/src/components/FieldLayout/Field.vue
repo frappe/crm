@@ -18,9 +18,9 @@
           field.fieldtype,
         )
       "
+      v-model="data[field.fieldname]"
       type="text"
       :placeholder="getPlaceholder(field)"
-      v-model="data[field.fieldname]"
       :disabled="true"
       :description="field.description"
     />
@@ -34,14 +34,14 @@
     />
     <FormControl
       v-else-if="field.fieldtype === 'Select'"
+      v-model="data[field.fieldname]"
       type="select"
       class="form-control"
       :class="field.prefix ? 'prefix' : ''"
       :options="field.options"
-      v-model="data[field.fieldname]"
-      @change="(e) => fieldChange(e.target.value, field)"
       :placeholder="getPlaceholder(field)"
       :description="field.description"
+      @update:modelValue="(e) => fieldChange(e, field)"
     >
       <template v-if="field.prefix" #prefix>
         <IndicatorIcon :class="field.prefix" />
@@ -49,12 +49,12 @@
     </FormControl>
     <div v-else-if="field.fieldtype == 'Check'" class="flex items-center gap-2">
       <FormControl
+        v-model="data[field.fieldname]"
         class="form-control"
         type="checkbox"
-        v-model="data[field.fieldname]"
-        @change="(e) => fieldChange(e.target.checked, field)"
         :disabled="Boolean(field.read_only)"
         :description="field.description"
+        @change="(e) => fieldChange(e.target.checked, field)"
       />
       <label
         class="text-sm text-ink-gray-5"
@@ -67,12 +67,12 @@
         "
       >
         {{ __(field.label) }}
-        <span class="text-ink-red-3" v-if="field.mandatory">*</span>
+        <span v-if="field.mandatory" class="text-ink-red-3">*</span>
       </label>
     </div>
     <div
-      class="flex gap-1"
       v-else-if="['Link', 'Dynamic Link'].includes(field.fieldtype)"
+      class="flex gap-1"
     >
       <Link
         class="form-control flex-1 truncate"
@@ -81,9 +81,9 @@
           field.fieldtype == 'Link' ? field.options : data[field.options]
         "
         :filters="field.filters"
-        @change="(v) => fieldChange(v, field)"
         :placeholder="getPlaceholder(field)"
         :onCreate="field.create"
+        @change="(v) => fieldChange(v, field)"
       />
       <Button
         v-if="data[field.fieldname] && field.edit"
@@ -107,9 +107,9 @@
       :value="data[field.fieldname] && getUser(data[field.fieldname]).full_name"
       :doctype="field.options"
       :filters="field.filters"
-      @change="(v) => fieldChange(v, field)"
       :placeholder="getPlaceholder(field)"
       :hideMe="true"
+      @change="(v) => fieldChange(v, field)"
     >
       <template #prefix>
         <UserAvatar
@@ -133,10 +133,10 @@
     <Combobox
       v-else-if="field.fieldtype === 'Autocomplete'"
       v-model="data[field.fieldname]"
-      @update:modelValue="(v) => fieldChange(v, field, data)"
       :options="getOptions(field.options)"
       :placeholder="getPlaceholder(field)"
       :disabled="Boolean(field.read_only)"
+      @update:modelValue="(v) => fieldChange(v, field, data)"
     />
     <TimePicker
       v-else-if="field.fieldtype === 'Time'"
@@ -251,7 +251,7 @@ import {
 import { computed, provide, inject } from 'vue'
 
 const props = defineProps({
-  field: Object,
+  field: { type: Object, required: true },
 })
 
 const data = inject('data')
@@ -300,6 +300,7 @@ const field = computed(() => {
     field.link_filters = JSON.stringify({
       ...(field.link_filters ? JSON.parse(field.link_filters) : {}),
       name: ['in', users.data.crmUsers?.map((user) => user.name)],
+      ignore_user_type: 1,
     })
   }
 
@@ -314,6 +315,11 @@ const field = computed(() => {
     }
   }
 
+  const read_only_via_depends_on = evaluateDependsOnValue(
+    field.read_only_depends_on,
+    data.value,
+  )
+
   let _field = {
     ...field,
     filters: field.link_filters && JSON.parse(field.link_filters),
@@ -326,6 +332,9 @@ const field = computed(() => {
       field.mandatory_depends_on,
       data.value,
     ),
+    read_only:
+      field.read_only ||
+      (field.read_only_depends_on && read_only_via_depends_on),
   }
 
   _field.visible = isFieldVisible(_field)
@@ -373,7 +382,12 @@ const getOptions = (options) => {
 }
 
 function fieldChange(value, df) {
-  value = typeof value === 'object' && value !== null ? value.value : value
+  value = Array.isArray(value)
+    ? value
+    : typeof value === 'object' && value !== null && 'value' in value
+      ? value.value
+      : value
+
   if (isGridRow) {
     triggerOnChange(df.fieldname, value, data.value)
   } else {

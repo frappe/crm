@@ -20,7 +20,7 @@
     doctype="FCRM Note"
     :options="{
       hideColumnsButton: true,
-      defaultViewName: __('Notes view'),
+      defaultViewName: __('Notes View'),
     }"
   />
   <div class="flex-1 overflow-y-auto">
@@ -30,6 +30,7 @@
     >
       <div
         v-for="note in notes.data.data"
+        :key="note.name"
         class="group flex h-56 cursor-pointer flex-col justify-between gap-2 rounded-lg border px-5 py-4 shadow-sm hover:bg-surface-menu-bar"
         @click="editNote(note)"
       >
@@ -79,15 +80,15 @@
   </div>
   <ListFooter
     v-if="notes.data?.data?.length"
-    class="border-t px-3 py-2 sm:px-5"
     v-model="notes.data.page_length_count"
+    class="border-t px-3 py-2 sm:px-5"
     :options="{
       rowCount: notes.data.row_count,
       totalCount: notes.data.total_count,
     }"
     @loadMore="() => loadMore++"
   />
-  <EmptyState v-else name="notes" :icon="NoteIcon" />
+  <EmptyState v-else name="Notes" :icon="NoteIcon" />
   <NoteModal
     v-model="showNoteModal"
     v-model:reloadNotes="notes"

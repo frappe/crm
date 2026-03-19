@@ -50,7 +50,7 @@
    "default": "0",
    "fieldname": "is_standard",
    "fieldtype": "Check",
-   "label": "Is standard",
+   "label": "Is Standard",
    "read_only": 1
   },
   {
@@ -82,8 +82,8 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-01-22 13:56:04.651490",
- "modified_by": "shariq@frappe.io",
+ "modified": "2026-02-23 12:22:42.798468",
+ "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Dropdown Item",
  "owner": "Administrator",

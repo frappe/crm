@@ -3,7 +3,7 @@
     <!-- title and desc -->
     <div role="heading" aria-level="1" class="flex justify-between gap-1">
       <h2 class="text-xl font-semibold text-ink-gray-8">
-        {{ __('Edit email') }}
+        {{ __('Edit Email') }}
       </h2>
     </div>
     <div class="w-fit">
@@ -71,10 +71,10 @@
         @click="emit('update:step', 'email-list')"
       />
       <Button
-        :label="__('Update account')"
+        :label="__('Update Account')"
         variant="solid"
-        @click="updateAccount"
         :loading="loading"
+        @click="updateAccount"
       />
     </div>
   </div>
@@ -95,10 +95,10 @@ import {
 import CircleAlert from '~icons/lucide/circle-alert'
 
 const props = defineProps({
-  accountData: null,
+  accountData: { type: Object, default: () => ({}) },
 })
 
-const emit = defineEmits()
+const emit = defineEmits(['update:step'])
 
 const state = reactive({
   email_account_name: props.accountData.email_account_name || '',
@@ -120,7 +120,7 @@ const info = {
 }
 
 const isCustomService = computed(() => {
-  return services.find((s) => s.name === props.accountData.service).custom
+  return services.find((s) => s.name === props.accountData.service)?.custom
 })
 
 const fields = computed(() => {
@@ -156,7 +156,7 @@ async function updateAccount() {
       loading.value = true
       await callRenameDoc()
       succesHandler()
-    } catch (err) {
+    } catch {
       errorHandler()
     }
   }
@@ -165,7 +165,7 @@ async function updateAccount() {
       loading.value = true
       await callSetValue(values)
       succesHandler()
-    } catch (err) {
+    } catch {
       errorHandler()
     }
   }
@@ -205,11 +205,11 @@ async function callSetValue(values) {
 
 function succesHandler() {
   emit('update:step', 'email-list')
-  toast.success(__('Email account updated successfully'))
+  toast.success(__('Email Account updated successfully'))
 }
 
 function errorHandler() {
   loading.value = false
-  error.value = __('Failed to update email account, Invalid credentials')
+  error.value = __('Failed to update Email Account, Invalid credentials')
 }
 </script>

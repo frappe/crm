@@ -13,37 +13,36 @@
           type="number"
           min="0"
           class="w-8 text-sm bg-transparent border-0 p-0 text-center focus:ring-0 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none text-ink-gray-8"
-          @blur="validateAndUpdateTime('hours')"
           @keyup.enter="handleEnter"
         />
         <div
           class="flex flex-col group-hover:opacity-100 opacity-0 absolute top-1/2 -translate-y-1/2 -right-3"
         >
           <button
+            class="hover:bg-surface-gray-1 text-ink-gray-8 rounded-sm select-none"
             @mousedown="startAction(() => increment('hours'))"
             @touchstart="startAction(() => increment('hours'))"
             @mouseup="clearActiveInterval"
             @mouseleave="clearActiveInterval"
             @touchend="clearActiveInterval"
             @touchcancel="clearActiveInterval"
-            class="hover:bg-surface-gray-1 text-ink-gray-8 rounded-sm select-none"
           >
             <FeatherIcon name="chevron-up" class="size-3.5" />
           </button>
           <button
+            class="hover:bg-surface-gray-1 text-ink-gray-8 rounded-sm select-none"
             @mousedown="startAction(() => decrement('hours'))"
             @touchstart="startAction(() => decrement('hours'))"
             @mouseup="clearActiveInterval"
             @mouseleave="clearActiveInterval"
             @touchend="clearActiveInterval"
             @touchcancel="clearActiveInterval"
-            class="hover:bg-surface-gray-1 text-ink-gray-8 rounded-sm select-none"
           >
             <FeatherIcon name="chevron-down" class="size-3.5" />
           </button>
         </div>
       </div>
-      <div class="text-xs text-gray-600 mt-1">Hrs</div>
+      <div class="text-xs text-ink-gray-5 mt-1">Hrs</div>
     </div>
     <div
       v-if="displayOptions.minutes"
@@ -57,37 +56,36 @@
           min="0"
           max="59"
           class="w-8 text-sm bg-transparent border-0 p-0 text-center focus:ring-0 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none text-ink-gray-8"
-          @blur="validateAndUpdateTime('minutes')"
           @keyup.enter="handleEnter"
         />
         <div
           class="flex flex-col group-hover:opacity-100 opacity-0 absolute top-1/2 -translate-y-1/2 -right-3"
         >
           <button
+            class="hover:bg-surface-gray-1 text-ink-gray-8 rounded-sm select-none"
             @mousedown="startAction(() => increment('minutes'))"
             @touchstart="startAction(() => increment('minutes'))"
             @mouseup="clearActiveInterval"
             @mouseleave="clearActiveInterval"
             @touchend="clearActiveInterval"
             @touchcancel="clearActiveInterval"
-            class="hover:bg-surface-gray-1 text-ink-gray-8 rounded-sm select-none"
           >
             <FeatherIcon name="chevron-up" class="size-3.5" />
           </button>
           <button
+            class="hover:bg-surface-gray-1 text-ink-gray-8 rounded-sm select-none"
             @mousedown="startAction(() => decrement('minutes'))"
             @touchstart="startAction(() => decrement('minutes'))"
             @mouseup="clearActiveInterval"
             @mouseleave="clearActiveInterval"
             @touchend="clearActiveInterval"
             @touchcancel="clearActiveInterval"
-            class="hover:bg-surface-gray-1 text-ink-gray-8 rounded-sm select-none"
           >
             <FeatherIcon name="chevron-down" class="size-3.5" />
           </button>
         </div>
       </div>
-      <div class="text-xs text-gray-600 mt-1">Min</div>
+      <div class="text-xs text-ink-gray-5 mt-1">Min</div>
     </div>
     <div
       v-if="displayOptions.seconds"
@@ -101,37 +99,36 @@
           min="0"
           max="59"
           class="w-8 text-sm bg-transparent border-0 p-0 text-center focus:ring-0 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-          @blur="validateAndUpdateTime('seconds')"
           @keyup.enter="handleEnter"
         />
         <div
           class="flex flex-col group-hover:opacity-100 opacity-0 absolute top-1/2 -translate-y-1/2 -right-3"
         >
           <button
+            class="hover:bg-surface-gray-1 text-ink-gray-8 rounded-sm select-none"
             @mousedown="startAction(() => increment('seconds'))"
             @touchstart="startAction(() => increment('seconds'))"
             @mouseup="clearActiveInterval"
             @mouseleave="clearActiveInterval"
             @touchend="clearActiveInterval"
             @touchcancel="clearActiveInterval"
-            class="hover:bg-surface-gray-1 text-ink-gray-8 rounded-sm select-none"
           >
             <FeatherIcon name="chevron-up" class="size-3.5" />
           </button>
           <button
+            class="hover:bg-surface-gray-1 text-ink-gray-8 rounded-sm select-none"
             @mousedown="startAction(() => decrement('seconds'))"
             @touchstart="startAction(() => decrement('seconds'))"
             @mouseup="clearActiveInterval"
             @mouseleave="clearActiveInterval"
             @touchend="clearActiveInterval"
             @touchcancel="clearActiveInterval"
-            class="hover:bg-surface-gray-1 text-ink-gray-8 rounded-sm select-none"
           >
             <FeatherIcon name="chevron-down" class="size-3.5" />
           </button>
         </div>
       </div>
-      <div class="text-xs text-gray-600 mt-1">Sec</div>
+      <div class="text-xs text-ink-gray-5 mt-1">Sec</div>
     </div>
   </div>
 </template>
@@ -145,7 +142,7 @@ const props = defineProps({
   options: { type: Object, default: () => ({}) },
 })
 
-const modelValue = defineModel({ default: 0 })
+const modelValue = defineModel({ type: Number, default: 0 })
 
 const normalizedOptions = computed(() => ({
   hours: props.options?.hours ?? true,
@@ -278,20 +275,6 @@ function updateTime(newTime, emitEvent = true) {
     if (emitEvent) {
       emit('change', modelValue.value)
     }
-  }
-}
-
-function validateAndUpdateTime(unit) {
-  switch (unit) {
-    case 'hours':
-      hoursValue.value = hoursValue.value
-      break
-    case 'minutes':
-      minutesValue.value = minutesValue.value
-      break
-    case 'seconds':
-      secondsValue.value = secondsValue.value
-      break
   }
 }
 

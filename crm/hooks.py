@@ -22,7 +22,10 @@ add_to_apps_screen = [
 	}
 ]
 
+get_site_info = "crm.activation.get_site_info"
+
 export_python_type_annotations = True
+require_type_annotated_api_methods = True
 
 # Includes in <head>
 # ------------------
@@ -151,7 +154,11 @@ doc_events = {
 		"after_insert": ["crm.api.todo.after_insert"],
 		"on_update": ["crm.api.todo.on_update"],
 	},
+	"Communication": {
+		"after_insert": ["crm.utils.update_modified_timestamp"],
+	},
 	"Comment": {
+		"after_insert": ["crm.utils.update_modified_timestamp"],
 		"on_update": ["crm.api.comment.on_update"],
 	},
 	"WhatsApp Message": {
@@ -190,7 +197,7 @@ scheduler_events = {
 # Testing
 # -------
 
-# before_tests = "crm.install.before_tests"
+before_tests = "crm.tests.before_tests"
 
 # Overriding Methods
 # ------------------------------
@@ -256,21 +263,16 @@ ignore_links_on_delete = ["Failed Lead Sync Log"]
 # "crm.auth.validate"
 # ]
 
-after_migrate = ["crm.fcrm.doctype.fcrm_settings.fcrm_settings.after_migrate"]
+after_migrate = [
+	"crm.fcrm.doctype.fcrm_settings.fcrm_settings.after_migrate",
+	"crm.api.whatsapp.add_roles",
+]
 
 standard_dropdown_items = [
 	{
 		"name1": "app_selector",
 		"label": "Apps",
 		"type": "Route",
-		"route": "#",
-		"is_standard": 1,
-	},
-	{
-		"name1": "toggle_theme",
-		"label": "Toggle theme",
-		"type": "Route",
-		"icon": "moon",
 		"route": "#",
 		"is_standard": 1,
 	},

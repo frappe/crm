@@ -33,13 +33,13 @@
    "default": "CRM Lead",
    "fieldname": "reference_doctype",
    "fieldtype": "Link",
-   "label": "Reference document type",
+   "label": "Reference Document Type",
    "options": "DocType"
   },
   {
    "fieldname": "reference_docname",
    "fieldtype": "Dynamic Link",
-   "label": "Reference doc",
+   "label": "Reference Doc",
    "options": "reference_doctype"
   }
  ],
@@ -50,8 +50,8 @@
    "link_fieldname": "note"
   }
  ],
- "modified": "2026-01-22 14:13:02.372344",
- "modified_by": "shariq@frappe.io",
+ "modified": "2026-02-23 12:22:56.394635",
+ "modified_by": "Administrator",
  "module": "FCRM",
  "name": "FCRM Note",
  "owner": "Administrator",
@@ -64,7 +64,7 @@
    "print": 1,
    "read": 1,
    "report": 1,
-   "role": "Sales User",
+   "role": "System Manager",
    "share": 1,
    "write": 1
   },
@@ -77,6 +77,18 @@
    "read": 1,
    "report": 1,
    "role": "Sales Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales User",
    "share": 1,
    "write": 1
   }

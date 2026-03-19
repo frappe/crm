@@ -4,10 +4,10 @@
       <h3
         class="flex items-center gap-2 text-2xl font-semibold leading-6 text-ink-gray-9"
       >
-        <div>{{ __('Edit field layout') }}</div>
+        <div>{{ __('Edit Field Layout') }}</div>
         <Badge
           v-if="dirty"
-          :label="__('Not saved')"
+          :label="__('Not Saved')"
           variant="subtle"
           theme="orange"
         />
@@ -17,7 +17,7 @@
       <div class="flex flex-col gap-5.5">
         <div class="flex justify-between gap-2">
           <Button
-            :label="preview ? __('Hide preview') : __('Show preview')"
+            :label="preview ? __('Hide Preview') : __('Show Preview')"
             @click="preview = !preview"
           />
           <div class="flex flex-row-reverse gap-2">
@@ -32,23 +32,23 @@
         </div>
         <div v-if="tabs.data?.[0]?.sections" class="flex gap-4">
           <SidePanelLayoutEditor
+            v-model="tabs.data[0].sections"
             class="flex flex-1 flex-col pr-2"
-            :sections="tabs.data[0].sections"
             :doctype="_doctype"
           />
           <div v-if="preview" class="flex flex-1 flex-col border rounded">
             <SidePanelLayout
+              v-slot="{ section }"
               :sections="tabs.data[0].sections"
               :doctype="_doctype"
               docname=""
               :preview="true"
-              v-slot="{ section }"
             >
               <div
                 v-if="section.name == 'contacts_section'"
                 class="flex h-16 items-center justify-center text-base text-ink-gray-5"
               >
-                {{ __('No contacts added') }}
+                {{ __('No Contacts Added') }}
               </div>
             </SidePanelLayout>
           </div>
@@ -56,7 +56,7 @@
             v-else
             class="flex flex-1 justify-center items-center text-ink-gray-5 bg-surface-gray-2 rounded"
           >
-            {{ __('Toggle on for preview') }}
+            {{ __('Toggle on for Preview') }}
           </div>
         </div>
       </div>
@@ -67,25 +67,23 @@
 import SidePanelLayout from '@/components/SidePanelLayout.vue'
 import SidePanelLayoutEditor from '@/components/SidePanelLayoutEditor.vue'
 import { useDebounceFn } from '@vueuse/core'
-import { capture } from '@/telemetry'
+import { useTelemetry } from 'frappe-ui/frappe'
 import { Dialog, Badge, call, createResource } from 'frappe-ui'
 import { ref, watch, onMounted, nextTick } from 'vue'
 
 const props = defineProps({
-  doctype: {
-    type: String,
-    default: 'CRM Lead',
-  },
+  doctype: { type: String, default: 'CRM Lead' },
 })
 
 const emit = defineEmits(['reload'])
 
-const show = defineModel()
+const { capture } = useTelemetry()
+
+const show = defineModel({ type: Boolean })
 const _doctype = ref(props.doctype)
 const loading = ref(false)
 const dirty = ref(false)
 const preview = ref(false)
-const data = ref({})
 
 function getParams() {
   return { doctype: _doctype.value, type: 'Side Panel' }

@@ -4,10 +4,10 @@
       <h3
         class="flex items-center gap-2 text-2xl font-semibold leading-6 text-ink-gray-9"
       >
-        <div>{{ __('Edit grid fields layout') }}</div>
+        <div>{{ __('Edit Grid Fields Layout') }}</div>
         <Badge
           v-if="dirty"
-          :label="__('Not saved')"
+          :label="__('Not Saved')"
           variant="subtle"
           theme="orange"
         />
@@ -16,7 +16,7 @@
     <template #body-content>
       <div class="mt-4">
         <div class="text-base text-ink-gray-8 mb-2">
-          {{ __('Fields order') }}
+          {{ __('Fields Order') }}
         </div>
         <Draggable
           v-if="oldFields?.length"
@@ -35,9 +35,9 @@
               </div>
               <div class="flex items-center gap-2">
                 <TextInput
+                  v-model="field.columns"
                   variant="outline"
                   type="number"
-                  v-model="field.columns"
                   class="w-20"
                 />
                 <Button variant="ghost" icon="x" @click="removeField(field)" />
@@ -54,7 +54,7 @@
           <template #target="{ togglePopover }">
             <Button
               class="w-full mt-2"
-              :label="__('Add field')"
+              :label="__('Add Field')"
               iconLeft="plus"
               @click="togglePopover()"
             />
@@ -68,7 +68,7 @@
             </div>
           </template>
         </Autocomplete>
-        <ErrorMessage class="mt-3" v-if="error" :message="error" />
+        <ErrorMessage v-if="error" class="mt-3" :message="error" />
       </div>
     </template>
     <template #actions>
@@ -83,9 +83,9 @@
           class="w-full"
           :label="__('Save')"
           variant="solid"
-          @click="update"
           :loading="loading"
           :disabled="!dirty"
+          @click="update"
         />
       </div>
     </template>
@@ -100,15 +100,15 @@ import { Dialog, ErrorMessage } from 'frappe-ui'
 import { ref, computed } from 'vue'
 
 const props = defineProps({
-  doctype: String,
-  parentDoctype: String,
+  doctype: { type: String, default: '' },
+  parentDoctype: { type: String, default: '' },
 })
 
 const { getFields, getGridViewSettings, saveUserSettings } = getMeta(
   props.doctype,
 )
 
-const show = defineModel()
+const show = defineModel({ type: Boolean })
 
 const loading = ref(false)
 const error = ref(null)

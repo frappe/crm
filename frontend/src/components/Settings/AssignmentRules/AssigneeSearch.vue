@@ -5,21 +5,23 @@
         <Button
           variant="subtle"
           icon-left="plus"
+          :label="__('Add Assignee')"
           @click="togglePopover()"
-          :label="__('Add assignee')"
         />
       </template>
       <template #body="{ togglePopover }">
-        <div class="mt-1 rounded-lg bg-white py-1 text-base shadow-2xl w-60">
+        <div
+          class="mt-1 rounded-lg bg-surface-white py-1 text-base shadow-2xl w-60"
+        >
           <div class="relative px-1.5 pt-0.5">
             <ComboboxInput
               ref="search"
               class="form-input w-full"
               type="text"
-              @change="(e) => debouncedQuery(e.target.value)"
               :value="query"
               autocomplete="off"
               :placeholder="__('Search')"
+              @change="(e) => debouncedQuery(e.target.value)"
             />
             <button
               class="absolute right-1.5 inline-flex h-7 w-7 items-center justify-center"
@@ -30,12 +32,12 @@
           </div>
           <ComboboxOptions class="my-2 max-h-64 overflow-y-auto px-1.5" static>
             <ComboboxOption
-              v-show="usersList.length > 0"
               v-for="user in usersList"
+              v-show="usersList.length > 0"
               :key="user.username"
+              v-slot="{ active }"
               :value="user"
               as="template"
-              v-slot="{ active }"
               @click="
                 (e) => {
                   e.stopPropagation()
@@ -45,7 +47,7 @@
             >
               <li
                 class="flex items-center rounded p-1.5 w-full text-base"
-                :class="{ 'bg-gray-100': active }"
+                :class="{ 'bg-surface-gray-1': active }"
               >
                 <div class="flex gap-2 items-center w-full select-none">
                   <Avatar
@@ -65,9 +67,9 @@
             </ComboboxOption>
             <li
               v-if="usersList.length == 0"
-              class="mt-1.5 rounded-md p-1.5 text-base text-gray-600"
+              class="mt-1.5 rounded-md p-1.5 text-base text-ink-gray-5"
             >
-              {{ __('No results found') }}
+              {{ __('No Results Found') }}
             </li>
           </ComboboxOptions>
           <div class="border-t p-1.5 pb-0.5 *:w-full">
@@ -75,7 +77,7 @@
               variant="ghost"
               icon-left="plus"
               class="w-full"
-              :label="__('Invite agent')"
+              :label="__('Invite Agent')"
               @click="
                 () => {
                   inviteAgent()
@@ -146,14 +148,14 @@ const addAssignee = (user) => {
 
 const inviteAgent = () => {
   $dialog({
-    title: __('Invite agent'),
+    title: __('Invite Agent'),
     message: __(
       'You will be redirected to invite user page, unsaved changes will be lost.',
     ),
     variant: 'solid',
     actions: [
       {
-        label: __('Go to invite page'),
+        label: __('Go to Invite Page'),
         variant: 'solid',
         onClick: (close) => {
           activeSettingsPage.value = 'Invite User'

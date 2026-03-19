@@ -11,7 +11,7 @@
           <div class="flex items-center gap-1">
             <Button
               v-if="isManager() && !isMobileView"
-              :tooltip="__('Edit fields layout')"
+              :tooltip="__('Edit Fields Layout')"
               variant="ghost"
               :icon="EditIcon"
               class="w-7"
@@ -37,9 +37,9 @@
       <div class="px-4 pb-7 pt-4 sm:px-6">
         <div class="space-y-2">
           <Button
-            class="w-full"
             v-for="action in dialogOptions.actions"
             :key="action.label"
+            class="w-full"
             v-bind="action"
             :label="__(action.label)"
             :loading="loading"
@@ -57,30 +57,22 @@ import { usersStore } from '@/stores/users'
 import { isMobileView } from '@/composables/settings'
 import { showQuickEntryModal, quickEntryProps } from '@/composables/modals'
 import { useDocument } from '@/data/document'
-import { capture } from '@/telemetry'
-import { FeatherIcon, createResource, ErrorMessage } from 'frappe-ui'
+import { useTelemetry } from 'frappe-ui/frappe'
+import { createResource, ErrorMessage } from 'frappe-ui'
 import { ref, nextTick, computed, onMounted } from 'vue'
 
 const props = defineProps({
-  address: {
-    type: String,
-    default: '',
-  },
-  options: {
-    type: Object,
-    default: {
-      afterInsert: () => {},
-    },
-  },
+  address: { type: String, default: '' },
+  options: { type: Object, default: () => ({ afterInsert: () => {} }) },
 })
 
 const { isManager } = usersStore()
+const { capture } = useTelemetry()
 
-const show = defineModel()
+const show = defineModel({ type: Boolean })
 
 const loading = ref(false)
 const error = ref(null)
-const title = ref(null)
 const editMode = ref(false)
 
 const { document: _address, triggerOnBeforeCreate } = useDocument(
@@ -90,7 +82,7 @@ const { document: _address, triggerOnBeforeCreate } = useDocument(
 
 const dialogOptions = computed(() => {
   let title = !editMode.value
-    ? __('New address')
+    ? __('New Address')
     : __(_address.doc?.address_title)
   let size = 'xl'
   let actions = [
@@ -168,14 +160,14 @@ const _createAddress = createResource({
 
 function handleAddressUpdate(doc) {
   show.value = false
-  props.options.afterInsert && props.options.afterInsert(doc)
+  props.options.afterInsert?.(doc)
 }
 
 onMounted(() => {
   editMode.value = props.address ? true : false
 
   if (!props.address) {
-    _address.doc = { address_type: 'Billing' }
+    _address.doc.address_type = 'Billing'
   }
 })
 

@@ -3,10 +3,10 @@
     <!-- title and desc -->
     <div role="heading" aria-level="1" class="flex flex-col gap-1">
       <h2 class="text-xl font-semibold text-ink-gray-8">
-        {{ __('Setup email') }}
+        {{ __('Setup Email') }}
       </h2>
       <p class="text-sm text-ink-gray-5">
-        {{ __('Choose the email service provider you want to configure.') }}
+        {{ __('Choose the Email Service Provider you want to configure.') }}
       </p>
     </div>
     <!-- email service provider selection -->
@@ -94,6 +94,7 @@
 <script setup>
 import { computed, reactive, ref } from 'vue'
 import { createResource, toast } from 'frappe-ui'
+import { useTelemetry } from 'frappe-ui/frappe'
 import CircleAlert from '~icons/lucide/circle-alert'
 import {
   customProviderFields,
@@ -103,9 +104,8 @@ import {
   incomingOutgoingFields,
 } from './emailConfig'
 import EmailProviderIcon from './EmailProviderIcon.vue'
-import { useTelemetry } from 'frappe-ui/frappe'
 
-const emit = defineEmits()
+const emit = defineEmits(['update:step'])
 
 const state = reactive({
   service: '',
@@ -120,7 +120,7 @@ const state = reactive({
   default_incoming: false,
   default_outgoing: false,
 })
-const $telemetry = useTelemetry()
+const { capture } = useTelemetry()
 
 const selectedService = ref(null)
 const fields = computed(() =>
@@ -140,11 +140,11 @@ const addEmailRes = createResource({
     }
   },
   onSuccess: () => {
-    toast.success(__('Email account created successfully'))
+    toast.success(__('Email Account created successfully'))
     emit('update:step', 'email-list')
   },
   onError: () => {
-    error.value = __('Failed to create email account, Invalid credentials')
+    error.value = __('Failed to create Email Account, Invalid credentials')
   },
 })
 
@@ -154,7 +154,7 @@ function createEmailAccount() {
   if (error.value) return
 
   addEmailRes.submit({ data: state })
-  $telemetry.capture('email_account_created', true)
+  capture('email_account_created')
 }
 </script>
 
