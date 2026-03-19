@@ -52,6 +52,7 @@ import ERPNextIcon from '@/components/Icons/ERPNextIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import Email2Icon from '@/components/Icons/Email2Icon.vue'
 import EmailTemplateIcon from '@/components/Icons/EmailTemplateIcon.vue'
+import SettingsIcon from '@/components/Icons/SettingsIcon.vue'
 import SettingsIcon2 from '@/components/Icons/SettingsIcon2.vue'
 import Users from '@/components/Settings/Users.vue'
 import InviteUserPage from '@/components/Settings/InviteUserPage.vue'
@@ -62,6 +63,7 @@ import ERPNextSettings from '@/components/Settings/ERPNextSettings.vue'
 import LeadSyncSourcePage from '@/components/Settings/LeadSyncing/LeadSyncSourcePage.vue'
 import BrandSettings from '@/components/Settings/BrandSettings.vue'
 import HomeActions from '@/components/Settings/HomeActions.vue'
+import GeneralSettings from '@/components/Settings/GeneralSettings.vue'
 import ForecastingSettings from '@/components/Settings/ForecastingSettings.vue'
 import CurrencySettings from '@/components/Settings/CurrencySettings.vue'
 import EmailTemplatePage from '@/components/Settings/EmailTemplate/EmailTemplatePage.vue'
@@ -108,6 +110,11 @@ const tabs = computed(() => {
     {
       label: __('System Configuration'),
       items: [
+        {
+          label: __('General'),
+          component: markRaw(GeneralSettings),
+          icon: SettingsIcon,
+        },
         {
           label: __('Forecasting'),
           component: markRaw(ForecastingSettings),
