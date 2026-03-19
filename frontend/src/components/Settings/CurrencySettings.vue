@@ -14,9 +14,9 @@
       </div>
       <div class="flex item-center space-x-2 w-3/12 justify-end">
         <Button
+          v-if="settings.isDirty"
           :label="__('Update')"
           variant="solid"
-          :disabled="!settings.isDirty"
           :loading="settings.loading"
           @click="updateSettings"
         />
