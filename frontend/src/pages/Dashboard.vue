@@ -88,7 +88,10 @@
         variant="outline"
         :value="filters.user && getUser(filters.user).full_name"
         doctype="User"
-        :filters="{ name: ['in', users.data.crmUsers?.map((u) => u.name)] }"
+        :filters="{
+          name: ['in', users.data.crmUsers?.map((u) => u.name)],
+          ignore_user_type: 1,
+        }"
         :placeholder="__('Sales User')"
         :hideMe="true"
         @change="(v) => updateFilter('user', v)"
