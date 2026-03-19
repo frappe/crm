@@ -20,10 +20,10 @@
       </div>
       <div class="flex item-center space-x-2 w-3/12 justify-end">
         <Button
+          v-if="isDirty"
           :loading="
             isNewDoc ? insertResource.loading : telephonyAgent.save?.loading
           "
-          :disabled="!isDirty"
           :label="__('Update')"
           variant="solid"
           @click="update"
