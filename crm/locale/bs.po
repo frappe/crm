@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-03-15 09:45+0000\n"
-"PO-Revision-Date: 2026-03-17 12:53\n"
+"PO-Revision-Date: 2026-03-18 12:48\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Bosnian\n"
 "MIME-Version: 1.0\n"
@@ -2231,7 +2231,7 @@ msgstr "Odbaci"
 #: frontend/src/components/Settings/Telephony/ExotelSettings.vue:25
 #: frontend/src/components/Settings/Telephony/TwilioSettings.vue:25
 msgid "Discard Changes"
-msgstr ""
+msgstr "Odbaci Promjene"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:910
 msgid "Discard Unsaved Changes?"
@@ -2271,7 +2271,7 @@ msgstr "Tip Dokumenta"
 
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:233
 msgid "Document created successfully"
-msgstr ""
+msgstr "Dokument je uspješno kreiran"
 
 #: frontend/src/data/document.js:31
 msgid "Document does not exist"
@@ -2610,7 +2610,7 @@ msgstr "Omogući"
 
 #: frontend/src/components/Settings/Telephony/ExotelSettings.vue:112
 msgid "Enable Exotel integration to make and receive calls directly from your CRM"
-msgstr ""
+msgstr "Omogućite Exotel integraciju za upućivanje i primanje poziva direktno iz Podrške Prodaje"
 
 #. Label of the enable_forecasting (Check) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
@@ -2628,12 +2628,12 @@ msgstr "Omogući Odlaznu"
 
 #: frontend/src/components/Settings/Telephony/TwilioSettings.vue:119
 msgid "Enable Twilio integration to make and receive calls directly from your CRM"
-msgstr ""
+msgstr "Omogućite Twilio integraciju za upućivanje i primanje poziva direktno iz Podrške Prodaje"
 
 #: frontend/src/components/Settings/Telephony/ExotelSettings.vue:90
 #: frontend/src/components/Settings/Telephony/TwilioSettings.vue:97
 msgid "Enable call recording for incoming and outgoing calls"
-msgstr ""
+msgstr "Omogućite snimanje poziva za dolazne i odlazne pozive"
 
 #. Label of the enabled (Check) field in DocType 'CRM Exotel Settings'
 #. Label of the enabled (Check) field in DocType 'CRM Form Script'
@@ -2714,11 +2714,11 @@ msgstr "Unesite naziv marke"
 
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:109
 msgid "Enter Exotel Number"
-msgstr ""
+msgstr "Unesi Exotel broj"
 
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:134
 msgid "Enter Personal Mobile No."
-msgstr ""
+msgstr "Unesi lični broj mobilnog telefona."
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:74
 msgid "Enter Source Name"
@@ -2726,7 +2726,7 @@ msgstr "Unesi Naziv Izvora"
 
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:84
 msgid "Enter Twilio Number"
-msgstr ""
+msgstr "Unesite Twilio broj"
 
 #: frontend/src/components/Filter.vue:572
 msgid "Enter Value"
@@ -2738,7 +2738,7 @@ msgstr "Unesi Facebook Pristupni Token"
 
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:124
 msgid "Enter your personal mobile number used by Exotel to make calls"
-msgstr ""
+msgstr "Unesi svoj lični broj mobilnog telefona koji Exotel koristi za upućivanje poziva"
 
 #: frontend/src/components/FieldLayout/Field.vue:367
 msgid "Enter {0}"
@@ -2894,7 +2894,7 @@ msgstr "Exotel Iznimka"
 
 #: frontend/src/components/Settings/Telephony/ExotelSettings.vue:108
 msgid "Exotel Integration Disabled"
-msgstr ""
+msgstr "Exotel Integracija onemogućena"
 
 #. Label of the exotel_number (Data) field in DocType 'CRM Telephony Agent'
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
@@ -5168,7 +5168,7 @@ msgstr "Osoba"
 
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:120
 msgid "Personal Mobile No."
-msgstr ""
+msgstr "Broj ličnog mobilnog telefona"
 
 #. Label of the phone (Data) field in DocType 'CRM Contacts'
 #. Label of the phone (Data) field in DocType 'CRM Lead'
@@ -5477,7 +5477,7 @@ msgstr "URL Snimanja"
 
 #: crm/integrations/api.py:160
 msgid "Recording URL not found"
-msgstr ""
+msgstr "URL snimka nije pronađen"
 
 #. Label of the reference_name (Dynamic Link) field in DocType 'CRM
 #. Notification'
@@ -6034,7 +6034,7 @@ msgstr "Odaberi radni dan"
 
 #: frontend/src/components/Settings/Telephony/TwilioSettings.vue:71
 msgid "Select a Twilio App for your CRM"
-msgstr ""
+msgstr "Odaberite Twilio aplikaciju za Podršku Prodaje"
 
 #: frontend/src/components/Filter.vue:566
 msgid "Select a Value"
@@ -6153,15 +6153,15 @@ msgstr "Postavi kao standard Ugovor o Nivou Usluge"
 
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:102
 msgid "Set the Exotel number to be used for outgoing calls."
-msgstr ""
+msgstr "Postavi Exotel broj koji će se koristiti za odlazne pozive."
 
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:77
 msgid "Set the Twilio number to be used for outgoing calls."
-msgstr ""
+msgstr "Postavi Twilio broj koji će se koristiti za odlazne pozive."
 
 #: frontend/src/components/Settings/BrandSettings.vue:33
 msgid "Set the name of your brand. Appears in the left sidebar."
-msgstr ""
+msgstr "Postavi naziv brenda. Pojavljuje se u lijevoj bočnoj traci."
 
 #: frontend/src/components/Settings/Sla/SlaHolidays.vue:9
 msgid "Set working days, hours, and holidays by selecting a predefined schedule or creating a new one"
@@ -6211,7 +6211,7 @@ msgstr "Postavljanje e-pošte"
 
 #: crm/api/exchange_rate.py:135
 msgid "Setup the Exchange Rate Provider other than 'Frankfurter' in settings, as default provider does not support currency conversion for {0} to {1}."
-msgstr ""
+msgstr "U postavkama postavite dobavljača kursa koji nije 'Frankfurter', jer zadani dobavljač ne podržava konverziju valuta za {0} u {1}."
 
 #: frontend/src/components/Layouts/AppSidebar.vue:338
 msgid "Setup your password"
@@ -6871,16 +6871,16 @@ msgstr "Greška pri kreiranju akreditiva za Twilio API."
 
 #: frontend/src/components/Settings/Telephony/TwilioSettings.vue:68
 msgid "Twilio App Name"
-msgstr ""
+msgstr "Naziv Twilio aplikacije"
 
 #. Label of the twilio_apps (Data) field in DocType 'CRM Twilio Settings'
 #: crm/fcrm/doctype/crm_twilio_settings/crm_twilio_settings.json
 msgid "Twilio Apps"
-msgstr ""
+msgstr "Twilio Aplikacije"
 
 #: frontend/src/components/Settings/Telephony/TwilioSettings.vue:115
 msgid "Twilio Integration Disabled"
-msgstr ""
+msgstr "Twilio integracija onemogućena"
 
 #. Label of the twilio_number (Data) field in DocType 'CRM Telephony Agent'
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
@@ -6932,7 +6932,7 @@ msgstr "Upiši svoju poruku ovdje..."
 
 #: crm/fcrm/doctype/crm_twilio_settings/crm_twilio_settings.py:117
 msgid "Unable to connect to Twilio account to fetch applications."
-msgstr ""
+msgstr "Nije moguće povezati se s Twilio računom radi preuzimanja aplikacija."
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:454
 msgid "Unassign Conditions are invalid"
@@ -6962,7 +6962,7 @@ msgstr "Nepoznato"
 
 #: crm/integrations/api.py:19
 msgid "Unknown telephony medium: {0}"
-msgstr ""
+msgstr "Nepoznati telefonski medij: {0}"
 
 #: frontend/src/components/BulkDeleteLinkedDocModal.vue:124
 msgid "Unlink"
@@ -7471,7 +7471,7 @@ msgstr "radni Prostor"
 #. Option for the 'Service Provider' (Select) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 msgid "exchangerate-api"
-msgstr ""
+msgstr "exchangerate-api"
 
 #. Option for the 'Service Provider' (Select) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
@@ -7481,7 +7481,7 @@ msgstr "exchangerate.host"
 #. Option for the 'Service Provider' (Select) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 msgid "fawazahmed-exchange-api"
-msgstr ""
+msgstr "fawazahmed-exchange-api"
 
 #. Option for the 'Service Provider' (Select) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
