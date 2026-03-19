@@ -114,38 +114,6 @@
    "fieldname": "auto_update_expected_deal_value",
    "fieldtype": "Check",
    "label": "Auto update Expected Deal Value"
-<<<<<<< HEAD
-=======
-  },
-  {
-   "fieldname": "calendar_tab",
-   "fieldtype": "Tab Break",
-   "label": "Calendar"
-  },
-  {
-   "description": "Time before the event when a reminder notification will be sent by default. This will be applied to all events unless a custom notification is set for a specific event.",
-   "fieldname": "default_reminder_section",
-   "fieldtype": "Section Break",
-   "label": "Default Event Notifications"
-  },
-  {
-   "fieldname": "event_notifications",
-   "fieldtype": "Table",
-   "label": "Event Notifications",
-   "options": "Event Notifications"
-  },
-  {
-   "fieldname": "all_day_event_notifications",
-   "fieldtype": "Table",
-   "label": "All Day Event Notifications",
-   "options": "Event Notifications"
-  },
-  {
-   "default": "Weekly",
-   "fieldname": "default_calendar_view",
-   "fieldtype": "Select",
-   "label": "Default Calendar View",
-   "options": "Daily\nWeekly\nMonthly"
   },
   {
    "default": "1",
@@ -153,7 +121,6 @@
    "fieldname": "update_timestamp_on_new_communication",
    "fieldtype": "Check",
    "label": "Update timestamp on new communication"
->>>>>>> 9e421217 (feat: add option to update timestamp on new communication/comment in FCRM Settings)
   }
  ],
  "index_web_pages_for_search": 1,
