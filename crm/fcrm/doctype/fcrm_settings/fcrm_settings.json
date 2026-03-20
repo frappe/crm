@@ -168,7 +168,7 @@
   },
   {
    "default": "0",
-   "description": "Automatically create a Lead when an incoming email is received from an unknown contact",
+   "description": "Automatically create a new lead from incoming email communication if no existing lead is found",
    "fieldname": "create_lead_from_incoming_email",
    "fieldtype": "Check",
    "label": "Create lead from incoming email"
