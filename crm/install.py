@@ -355,6 +355,7 @@ def add_default_industries():
 
 def add_default_lead_sources():
 	lead_sources = [
+		"Email",
 		"Existing Customer",
 		"Reference",
 		"Advertisement",

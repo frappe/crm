@@ -152,7 +152,11 @@ doc_events = {
 		"on_update": ["crm.api.todo.on_update"],
 	},
 	"Communication": {
-		"after_insert": ["crm.utils.update_modified_timestamp", "crm.utils.update_communication_status"],
+		"after_insert": [
+			"crm.utils.update_modified_timestamp",
+			"crm.utils.update_communication_status",
+			"crm.utils.create_lead_from_incoming_email",
+		],
 	},
 	"Comment": {
 		"after_insert": ["crm.utils.update_modified_timestamp"],
