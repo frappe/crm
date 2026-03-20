@@ -4,9 +4,11 @@ import frappe
 import phonenumbers
 import requests
 from frappe import _
+from frappe.core.doctype.comment.comment import Comment
+from frappe.core.doctype.communication.communication import Communication
 from frappe.model.docstatus import DocStatus
 from frappe.model.dynamic_links import get_dynamic_link_map
-from frappe.utils import floor
+from frappe.utils import floor, now
 from phonenumbers import NumberParseException
 from phonenumbers import PhoneNumberFormat as PNF
 
@@ -282,3 +284,83 @@ def is_frappe_version(version: str, above: bool = False, below: bool = False):
 	if below:
 		return major_version < target_version
 	return major_version == target_version
+
+
+def update_modified_timestamp(doc: Communication | Comment, method: str | None = None):
+	if not frappe.db.get_single_value("FCRM Settings", "update_timestamp_on_new_communication"):
+		return
+
+	if not (doc.reference_doctype and doc.reference_name):
+		return
+
+	elif doc.doctype not in ["Comment", "Communication"]:
+		return
+
+	frappe.db.set_value(
+		dt=doc.reference_doctype,
+		dn=doc.reference_name,
+		field="modified",
+		val=now(),
+		update_modified=False,
+	)
+
+
+def update_communication_status(doc: Communication, method: str | None = None):
+	if not frappe.db.get_single_value("FCRM Settings", "auto_update_communication_status"):
+		return
+
+	if not (doc.reference_doctype and doc.reference_name):
+		return
+
+	if doc.doctype != "Communication":
+		return
+
+	if doc.sent_or_received not in ("Sent", "Received"):
+		return
+
+	last_communication = frappe.get_last_doc(
+		"Communication",
+		{"reference_doctype": doc.reference_doctype, "reference_name": doc.reference_name},
+	)
+
+	if not last_communication or (last_communication.name != doc.name):
+		return
+
+	status = "Open" if doc.sent_or_received == "Received" else "Replied"
+
+	frappe.db.set_value(
+		doc.reference_doctype,
+		doc.reference_name,
+		"communication_status",
+		status,
+	)
+
+
+def create_lead_from_incoming_email(doc: Communication, method: str | None = None):
+	if not frappe.db.get_single_value("FCRM Settings", "create_lead_from_incoming_email"):
+		return
+
+	if doc.doctype != "Communication":
+		return
+
+	if doc.sent_or_received != "Received" and doc.communication_type != "Communication":
+		return
+
+	if doc.reference_doctype and doc.reference_name:
+		return
+
+	if frappe.db.exists("CRM Lead", {"email": doc.sender}):
+		return
+
+	lead = frappe.new_doc("CRM Lead")
+
+	lead.doctype = "CRM Lead"
+	lead.email = doc.sender
+	lead.first_name = doc.sender_full_name or doc.sender.split("@")[0]
+
+	if frappe.db.exists("CRM Lead Source", "Email"):
+		lead.lead_source = "Email"
+	if frappe.db.exists("CRM Lead Status", "New"):
+		lead.lead_status = "New"
+
+	lead.insert(ignore_permissions=True)

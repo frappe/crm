@@ -1,7 +1,7 @@
 <template>
   <FrappeUIProvider>
     <NotPermitted v-if="$route.name === 'Not Permitted'" />
-    <Layout v-else-if="session().isLoggedIn" class="isolate">
+    <Layout v-else-if="session.isLoggedIn" class="isolate">
       <router-view :key="$route.fullPath" />
     </Layout>
     <Dialogs />
@@ -11,10 +11,12 @@
 <script setup>
 import NotPermitted from '@/pages/NotPermitted.vue'
 import { Dialogs } from '@/utils/dialogs'
-import { sessionStore as session } from '@/stores/session'
-import { setTheme } from '@/stores/theme'
+import { sessionStore } from '@/stores/session'
 import { FrappeUIProvider, setConfig } from 'frappe-ui'
-import { computed, defineAsyncComponent, onMounted } from 'vue'
+import { computed, defineAsyncComponent, provide } from 'vue'
+
+const session = sessionStore()
+provide('session', session)
 
 const MobileLayout = defineAsyncComponent(
   () => import('./components/Layouts/MobileLayout.vue'),
@@ -29,8 +31,6 @@ const Layout = computed(() => {
     return DesktopLayout
   }
 })
-
-onMounted(() => setTheme())
 
 setConfig('systemTimezone', window.timezone?.system || null)
 setConfig('localTimezone', window.timezone?.user || null)

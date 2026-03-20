@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2026-03-08 09:43+0000\n"
-"PO-Revision-Date: 2026-03-10 00:36\n"
+"POT-Creation-Date: 2026-03-15 09:45+0000\n"
+"PO-Revision-Date: 2026-03-17 12:52\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Swedish\n"
 "MIME-Version: 1.0\n"
@@ -167,7 +167,7 @@ msgstr "Källa för Potentiell Kund Synkronisering är redan aktiverad för dett
 msgid "A new account has been created for you at {0}"
 msgstr "Ny konto har skapats för dig på {0}"
 
-#: crm/fcrm/doctype/crm_call_log/crm_call_log.py:242
+#: crm/fcrm/doctype/crm_call_log/crm_call_log.py:251
 msgid "A valid call log is required."
 msgstr "Giltig samtalslogg erfordras."
 
@@ -177,6 +177,7 @@ msgstr "Giltig samtalslogg erfordras."
 #: crm/fcrm/doctype/crm_exotel_settings/crm_exotel_settings.json
 #: crm/fcrm/doctype/crm_twilio_settings/crm_twilio_settings.json
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.json
+#: frontend/src/components/Settings/Telephony/ExotelSettings.vue:45
 #: frontend/src/components/Settings/emailConfig.js:78
 msgid "API Key"
 msgstr "API Nyckel"
@@ -191,6 +192,7 @@ msgstr "API Hemlighet"
 
 #. Label of the api_token (Password) field in DocType 'CRM Exotel Settings'
 #: crm/fcrm/doctype/crm_exotel_settings/crm_exotel_settings.json
+#: frontend/src/components/Settings/Telephony/ExotelSettings.vue:53
 msgid "API Token"
 msgstr "API Token"
 
@@ -226,15 +228,11 @@ msgstr "Åtkomst Nekad"
 
 #. Label of the access_key (Data) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
-#: frontend/src/components/Settings/CurrencySettings.vue:90
+#: frontend/src/components/Settings/CurrencySettings.vue:96
 msgid "Access Key"
 msgstr "Åtkomst Nyckel"
 
-#: frontend/src/components/Settings/CurrencySettings.vue:94
-msgid "Access Key for Exchangerate Host. Required for fetching exchange rates."
-msgstr "Åtkomstnyckel för växelkurs server. Erfordras för att hämta växelkurser."
-
-#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.py:181
+#: crm/api/exchange_rate.py:84 crm/api/exchange_rate.py:100
 msgid "Access Key is required for Service Provider: {0}"
 msgstr "Åtkomst Nyckel erfordras för Tjänsteleverantör: {0}"
 
@@ -268,6 +266,8 @@ msgstr "Konto Namn"
 #. Label of the account_sid (Data) field in DocType 'CRM Twilio Settings'
 #: crm/fcrm/doctype/crm_exotel_settings/crm_exotel_settings.json
 #: crm/fcrm/doctype/crm_twilio_settings/crm_twilio_settings.json
+#: frontend/src/components/Settings/Telephony/ExotelSettings.vue:59
+#: frontend/src/components/Settings/Telephony/TwilioSettings.vue:45
 msgid "Account SID"
 msgstr "Konto SID"
 
@@ -312,7 +312,7 @@ msgid "Add Chart"
 msgstr "Lägg till Diagram"
 
 #: frontend/src/components/ColumnSettings.vue:68
-#: frontend/src/components/FieldLayoutEditor.vue:418
+#: frontend/src/components/FieldLayoutEditor.vue:409
 #: frontend/src/components/Kanban/KanbanView.vue:157
 msgid "Add Column"
 msgstr "Lägg till Kolumn"
@@ -346,8 +346,8 @@ msgid "Add Existing User"
 msgstr "Lägg till Befintlig Användare"
 
 #: frontend/src/components/Controls/GridFieldsEditorModal.vue:57
-#: frontend/src/components/FieldLayoutEditor.vue:172
-#: frontend/src/components/Kanban/KanbanSettings.vue:80
+#: frontend/src/components/FieldLayoutEditor.vue:171
+#: frontend/src/components/Kanban/KanbanSettings.vue:74
 #: frontend/src/components/SidePanelLayoutEditor.vue:97
 msgid "Add Field"
 msgstr "Lägga Till Fält"
@@ -396,7 +396,7 @@ msgstr "Lägg till Rad "
 msgid "Add Sample Data"
 msgstr "Lägg till Exempel Data"
 
-#: frontend/src/components/FieldLayoutEditor.vue:197
+#: frontend/src/components/FieldLayoutEditor.vue:196
 #: frontend/src/components/SidePanelLayoutEditor.vue:127
 msgid "Add Section"
 msgstr "Lägg till Sektion"
@@ -579,15 +579,20 @@ msgstr "Årlig intäkt ska vara ett tal"
 msgid "Any failed lead syncs will show up here"
 msgstr "Eventuella misslyckade potentiella kunder synkroniseringar visas här"
 
-#: frontend/src/components/Settings/BrandSettings.vue:55
+#. Label of the app_name (Data) field in DocType 'CRM Twilio Settings'
+#: crm/fcrm/doctype/crm_twilio_settings/crm_twilio_settings.json
+msgid "App Name"
+msgstr "App Namn"
+
+#: frontend/src/components/Settings/BrandSettings.vue:65
 msgid "Appears in the left sidebar. Recommended size is 32x32 px in PNG or SVG"
 msgstr "Visas i vänster sidofält. Rekommenderad storlek är 32x32 px i PNG eller SVG"
 
-#: frontend/src/components/Settings/BrandSettings.vue:90
+#: frontend/src/components/Settings/BrandSettings.vue:100
 msgid "Appears next to the title in your browser tab. Recommended size is 32x32 px in PNG or ICO"
 msgstr "Visas bredvid titeln i din webbläsarflik. Rekommenderad storlek är 32x32 px i PNG eller ICO"
 
-#: frontend/src/components/Kanban/KanbanSettings.vue:100
+#: frontend/src/components/Kanban/KanbanSettings.vue:94
 #: frontend/src/components/Kanban/KanbanView.vue:46
 msgid "Apply"
 msgstr "Tillämpa"
@@ -651,7 +656,7 @@ msgstr "Är du säker på att du vill logga in på din Översikt Panel i Frappe 
 msgid "Are you sure you want to reset 'Create Quotation from CRM Deal' Form Script?"
 msgstr "Är du säker på att du vill återställa 'Skapa Offert från Säljstöd Affär' Formulär Skript?"
 
-#: frontend/src/components/Settings/CurrencySettings.vue:165
+#: frontend/src/components/Settings/CurrencySettings.vue:189
 msgid "Are you sure you want to set the currency as {0}? This cannot be changed later."
 msgstr "Är du säker på att du vill ange valuta som {0}? Detta kan inte ändras senare."
 
@@ -659,7 +664,7 @@ msgstr "Är du säker på att du vill ange valuta som {0}? Detta kan inte ändra
 msgid "Are you sure you want to unlink {0} linked item(s)?"
 msgstr "Är du säker på att du vill ta bort länk till {0} länkade artikel(ar)?"
 
-#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.py:218
+#: crm/api/exchange_rate.py:130
 msgid "Ask your manager to set up the Exchange Rate Provider, as default provider does not support currency conversion for {0} to {1}."
 msgstr "Be ansvarig att konfigurera Valuta Växling Leverantör, eftersom standard leverantör inte stöder valuta konvertering från {0} till {1}."
 
@@ -729,11 +734,11 @@ msgstr "Tilldelning Regel"
 msgid "Assignment Rule Created"
 msgstr "Tilldelning Regel Skapad"
 
-#: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:122
+#: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:123
 msgid "Assignment Rule Deleted"
 msgstr "Tilldelning Regel Borttagen"
 
-#: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:167
+#: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:155
 msgid "Assignment Rule Duplicated"
 msgstr "Tilldelning Regel Duplicerad"
 
@@ -741,7 +746,7 @@ msgstr "Tilldelning Regel Duplicerad"
 msgid "Assignment Rule Updated"
 msgstr "Tilldelning Regel Uppdaterad"
 
-#: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:199
+#: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:187
 msgid "Assignment Rule {0} Updated"
 msgstr "Tilldelning Regel {0} Uppdaterad"
 
@@ -804,6 +809,7 @@ msgstr "Närvaro status uppdaterad"
 
 #. Label of the auth_token (Password) field in DocType 'CRM Twilio Settings'
 #: crm/fcrm/doctype/crm_twilio_settings/crm_twilio_settings.json
+#: frontend/src/components/Settings/Telephony/TwilioSettings.vue:53
 msgid "Auth Token"
 msgstr "Auth Token"
 
@@ -952,11 +958,11 @@ msgstr "Mellan"
 msgid "Brand"
 msgstr "Märke"
 
-#: frontend/src/components/Settings/BrandSettings.vue:52
+#: frontend/src/components/Settings/BrandSettings.vue:62
 msgid "Brand Logo"
 msgstr "Märke Logo"
 
-#: frontend/src/components/Settings/BrandSettings.vue:32
+#: frontend/src/components/Settings/BrandSettings.vue:30
 msgid "Brand Name"
 msgstr "Märke"
 
@@ -1192,7 +1198,8 @@ msgstr "Samtal Mottagen Av"
 msgid "Call duration in seconds"
 msgstr "Samtalslängd i sekunder"
 
-#: crm/integrations/twilio/api.py:144 crm/integrations/twilio/api.py:162
+#: crm/integrations/api.py:155 crm/integrations/twilio/api.py:148
+#: crm/integrations/twilio/api.py:166
 msgid "Call log not found"
 msgstr "Samtalslogg hittades inte"
 
@@ -1265,11 +1272,11 @@ msgstr "Kan inte tilldela denna roll"
 msgid "Cannot change role of user with Admin access"
 msgstr "Kan inte ändra roll för användare med Administratör behörighet"
 
-#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.py:59
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.py:60
 msgid "Cannot delete standard items {0}"
 msgstr "Kan inte ta bort standard artikel {0}"
 
-#: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:182
+#: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:170
 msgid "Cannot enable rule without adding users in it"
 msgstr "Kan inte aktivera regel utan att lägga till användare i den"
 
@@ -1371,7 +1378,7 @@ msgid "Choose which {0} are affected by this un-assignment rule."
 msgstr "Välj vilka {0} som påverkas av denna regel för borttagning av tilldelning."
 
 #: frontend/src/components/Controls/Link.vue:59
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:58
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:59
 msgid "Clear"
 msgstr "Rensa"
 
@@ -1416,7 +1423,7 @@ msgstr "Avslutad Datum"
 msgid "Collapse"
 msgstr "Fäll In"
 
-#: frontend/src/components/FieldLayoutEditor.vue:342
+#: frontend/src/components/FieldLayoutEditor.vue:333
 msgid "Collapsible"
 msgstr "Infällbar"
 
@@ -1427,7 +1434,7 @@ msgstr "Infällbar"
 msgid "Color"
 msgstr "Färg"
 
-#: frontend/src/components/FieldLayoutEditor.vue:415
+#: frontend/src/components/FieldLayoutEditor.vue:406
 msgid "Column"
 msgstr "Kolumn"
 
@@ -1539,11 +1546,11 @@ msgstr "Konfigurera Varumärke, Logotyp och Favicon"
 msgid "Configure your Calendar Settings like Default View and Event Notifications here"
 msgstr "Konfigurera Kalender Inställningar som Standard Vy och Händelse Aviseringar här"
 
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:103
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:181
 msgid "Configure your Exotel Telephony Integration Settings here"
 msgstr "Konfigurera Exotel Telefoni Integration Inställningar här"
 
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:80
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:158
 msgid "Configure your Twilio Telephony Integration Settings here"
 msgstr "Konfigurera Twilio Telefoni Integration Inställningar här"
 
@@ -1551,7 +1558,6 @@ msgstr "Konfigurera Twilio Telefoni Integration Inställningar här"
 msgid "Confirm"
 msgstr "Bekräfta"
 
-#: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:150
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:237
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:202
 #: frontend/src/components/Settings/Sla/EditResponseResolutionModal.vue:57
@@ -1594,7 +1600,7 @@ msgstr "Kontakt Tillagd"
 msgid "Contact Already Added"
 msgstr "Kontakt Redan Tillagd"
 
-#: crm/fcrm/doctype/crm_lead/crm_lead.py:267
+#: crm/fcrm/doctype/crm_lead/crm_lead.py:272
 msgid "Contact Already Exists"
 msgstr "Kontakt Finns Redan"
 
@@ -1623,7 +1629,7 @@ msgstr "Kontakt Uppdaterad"
 msgid "Contact Us"
 msgstr "Kontakta Oss"
 
-#: crm/fcrm/doctype/crm_lead/crm_lead.py:266
+#: crm/fcrm/doctype/crm_lead/crm_lead.py:271
 msgid "Contact already exists with {0}"
 msgstr "Kontakt finns redan med {0}"
 
@@ -1731,7 +1737,7 @@ msgstr "Skapa Affär"
 msgid "Create Event"
 msgstr "Skapa Händelse"
 
-#: frontend/src/components/Modals/CallLogDetailModal.vue:151
+#: frontend/src/components/Modals/CallLogDetailModal.vue:154
 #: frontend/src/components/Modals/LeadModal.vue:8
 msgid "Create Lead"
 msgstr "Skapa Potentiell Kund"
@@ -1801,7 +1807,7 @@ msgstr "Valuta & Växelkurs"
 msgid "Currency & Exchange Rate Provider"
 msgstr "Valuta & Växelkurs Leverantör"
 
-#: frontend/src/components/Settings/CurrencySettings.vue:179
+#: frontend/src/components/Settings/CurrencySettings.vue:203
 msgid "Currency set as {0} successfully"
 msgstr "Valuta angiven som {0}"
 
@@ -1838,7 +1844,7 @@ msgid "Customer Created Successfully"
 msgstr "Kund Skapad"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:594
-#: frontend/src/components/Settings/Settings.vue:181
+#: frontend/src/components/Settings/Settings.vue:182
 msgid "Customization"
 msgstr "Anpassning"
 
@@ -2005,11 +2011,7 @@ msgstr "Standard"
 msgid "Default Calendar View"
 msgstr "Standard Kalendervy"
 
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:155
-msgid "Default Calling Medium Updated Successfully"
-msgstr "Standard Samtal Medium Uppdaterad"
-
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:40
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:41
 msgid "Default Calling Medium for Logged In User"
 msgstr "Standard Samtal Medium för Inloggad Användare"
 
@@ -2029,7 +2031,7 @@ msgstr "Standard Inkommande"
 
 #. Label of the default_medium (Select) field in DocType 'CRM Telephony Agent'
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:37
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:38
 msgid "Default Medium"
 msgstr "Standard Medium"
 
@@ -2085,7 +2087,6 @@ msgstr "Standard status, anpassade fält och upplägg återställdes."
 #: frontend/src/components/Modals/EventModal.vue:467
 #: frontend/src/components/Modals/EventModal.vue:471
 #: frontend/src/components/PrimaryDropdownItem.vue:42
-#: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:140
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:227
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:192
 #: frontend/src/components/Settings/Sla/EditResponseResolutionModal.vue:57
@@ -2211,6 +2212,8 @@ msgid "Device"
 msgstr "Enhet"
 
 #: crm/fcrm/doctype/crm_form_script/crm_form_script.js:30
+#: frontend/src/components/Settings/Telephony/ExotelSettings.vue:29
+#: frontend/src/components/Settings/Telephony/TwilioSettings.vue:29
 msgid "Disable"
 msgstr "Inaktivera"
 
@@ -2224,6 +2227,11 @@ msgstr "Inaktiverad"
 #: frontend/src/components/EmailEditor.vue:161
 msgid "Discard"
 msgstr "Ångra"
+
+#: frontend/src/components/Settings/Telephony/ExotelSettings.vue:25
+#: frontend/src/components/Settings/Telephony/TwilioSettings.vue:25
+msgid "Discard Changes"
+msgstr "Ignorera Ändringar"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:910
 msgid "Discard Unsaved Changes?"
@@ -2248,7 +2256,7 @@ msgstr "Rabatt Belopp"
 msgid "DocType"
 msgstr "DocType"
 
-#: crm/api/doc.py:886
+#: crm/api/doc.py:829
 msgid "Doctype is required"
 msgstr "DocType erfordras"
 
@@ -2260,6 +2268,10 @@ msgstr "Dokument hittades inte"
 #: crm/fcrm/doctype/crm_fields_layout/crm_fields_layout.json
 msgid "Document Type"
 msgstr "DocType"
+
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:233
+msgid "Document created successfully"
+msgstr "Dokument skapad"
 
 #: frontend/src/data/document.js:31
 msgid "Document does not exist"
@@ -2315,7 +2327,7 @@ msgstr "Förfallo Datum"
 #: frontend/src/components/Modals/EventModal.vue:214
 #: frontend/src/components/Modals/ViewModal.vue:42
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:65
-#: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:130
+#: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:131
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:222
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:23
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:187
@@ -2401,8 +2413,8 @@ msgid "ERPNext is not integrated with the CRM"
 msgstr "Affärssystem är inte integrerat med Säljstöd"
 
 #: frontend/src/components/FieldLayout/Field.vue:91
-#: frontend/src/components/FieldLayoutEditor.vue:311
-#: frontend/src/components/FieldLayoutEditor.vue:337
+#: frontend/src/components/FieldLayoutEditor.vue:302
+#: frontend/src/components/FieldLayoutEditor.vue:328
 #: frontend/src/components/ListBulkActions.vue:170
 #: frontend/src/components/PrimaryDropdownItem.vue:35
 #: frontend/src/components/Settings/Sla/SlaHolidays.vue:202
@@ -2591,8 +2603,14 @@ msgid "Empty - Choose a field to sort by"
 msgstr "Tom – Välj fält att sortera efter"
 
 #: crm/fcrm/doctype/crm_form_script/crm_form_script.js:30
+#: frontend/src/components/Settings/Telephony/ExotelSettings.vue:117
+#: frontend/src/components/Settings/Telephony/TwilioSettings.vue:124
 msgid "Enable"
 msgstr "Aktivera"
+
+#: frontend/src/components/Settings/Telephony/ExotelSettings.vue:112
+msgid "Enable Exotel integration to make and receive calls directly from your CRM"
+msgstr "Aktivera Exotel integration för att ringa och ta emot samtal direkt från Säljstöd"
 
 #. Label of the enable_forecasting (Check) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
@@ -2607,6 +2625,15 @@ msgstr "Aktivera Inkommande"
 #: frontend/src/components/Settings/emailConfig.js:34
 msgid "Enable Outgoing"
 msgstr "Aktivera Utgående"
+
+#: frontend/src/components/Settings/Telephony/TwilioSettings.vue:119
+msgid "Enable Twilio integration to make and receive calls directly from your CRM"
+msgstr "Aktivera Twilio integration för att ringa och ta emot samtal direkt från Säljstöd"
+
+#: frontend/src/components/Settings/Telephony/ExotelSettings.vue:90
+#: frontend/src/components/Settings/Telephony/TwilioSettings.vue:97
+msgid "Enable call recording for incoming and outgoing calls"
+msgstr "Aktivera samtalsinspelning för inkommande och utgående samtal"
 
 #. Label of the enabled (Check) field in DocType 'CRM Exotel Settings'
 #. Label of the enabled (Check) field in DocType 'CRM Form Script'
@@ -2673,7 +2700,7 @@ msgstr "Slut tid måste vara efter start tid"
 msgid "End Time must be after Start Time for: {0}"
 msgstr "Slut tid måste vara efter start tid för: {0}"
 
-#: frontend/src/components/Settings/CurrencySettings.vue:115
+#: frontend/src/components/Settings/CurrencySettings.vue:121
 msgid "Enter Access Key"
 msgstr "Ange Åtkomst Nyckel"
 
@@ -2681,13 +2708,25 @@ msgstr "Ange Åtkomst Nyckel"
 msgid "Enter Access Token"
 msgstr "Ange Åtkomst Token"
 
-#: frontend/src/components/Settings/BrandSettings.vue:33
+#: frontend/src/components/Settings/BrandSettings.vue:41
 msgid "Enter Brand Name"
 msgstr "Ange Varumärke Namn"
+
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:109
+msgid "Enter Exotel Number"
+msgstr "Ange Exotel Nummer"
+
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:134
+msgid "Enter Personal Mobile No."
+msgstr "Ange Personlig Mobilnummer."
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:74
 msgid "Enter Source Name"
 msgstr "Ange Källans Namn"
+
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:84
+msgid "Enter Twilio Number"
+msgstr "Ange Twilio Nummer"
 
 #: frontend/src/components/Filter.vue:572
 msgid "Enter Value"
@@ -2696,6 +2735,10 @@ msgstr "Ange Värde"
 #: frontend/src/components/Settings/LeadSyncing/leadSyncSourceConfig.js:31
 msgid "Enter your Facebook Access Token"
 msgstr "Ange Facebook Åtkomst Token"
+
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:124
+msgid "Enter your personal mobile number used by Exotel to make calls"
+msgstr "Ange ditt personliga mobilnummer som används av Exotel för att ringa samtal"
 
 #: frontend/src/components/FieldLayout/Field.vue:367
 msgid "Enter {0}"
@@ -2727,7 +2770,7 @@ msgstr "Fel vid konvertering till affär: {0}"
 msgid "Error creating Lead Sync Source"
 msgstr "Fel vid skapande av Potentiell Kund Synkronisering Källa"
 
-#: frontend/src/components/Modals/CallLogDetailModal.vue:311
+#: frontend/src/components/Modals/CallLogDetailModal.vue:314
 msgid "Error creating lead: {0}"
 msgstr "Fel vid skapande av potentiell kund: {0}"
 
@@ -2735,7 +2778,7 @@ msgstr "Fel vid skapande av potentiell kund: {0}"
 msgid "Error occurred"
 msgstr "Fel inträffade"
 
-#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:406
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:385
 msgid "Error syncing leads"
 msgstr "Fel vid synkronisering av Potentiella Kunder"
 
@@ -2835,14 +2878,13 @@ msgid "Exchange Rate Provider"
 msgstr "Växelkurs Leverantör"
 
 #. Option for the 'Telephony Medium' (Select) field in DocType 'CRM Call Log'
-#. Label of the exotel (Check) field in DocType 'CRM Telephony Agent'
 #. Option for the 'Default Medium' (Select) field in DocType 'CRM Telephony
 #. Agent'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
 #: frontend/src/components/Layouts/AppSidebar.vue:609
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:51
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:99
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:52
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:177
 msgid "Exotel"
 msgstr "Exotel"
 
@@ -2850,8 +2892,13 @@ msgstr "Exotel"
 msgid "Exotel Exception"
 msgstr "Exotel Undantag"
 
+#: frontend/src/components/Settings/Telephony/ExotelSettings.vue:108
+msgid "Exotel Integration Disabled"
+msgstr "Exotel Integration Inaktiverad"
+
 #. Label of the exotel_number (Data) field in DocType 'CRM Telephony Agent'
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:99
 msgid "Exotel Number"
 msgstr "Exotel Nummer"
 
@@ -2863,17 +2910,9 @@ msgstr "Exotel Nummer Saknas"
 msgid "Exotel Number {0} is not valid"
 msgstr "Exotel Nummer {0} är inte giltigt"
 
-#: frontend/src/components/Settings/Telephony/ExotelSettings.vue:4
+#: frontend/src/components/Settings/Telephony/ExotelSettings.vue:8
 msgid "Exotel Settings"
 msgstr "Exotel Inställningar"
-
-#: frontend/src/components/Settings/Telephony/ExotelSettings.vue:5
-msgid "Exotel Settings Updated"
-msgstr "Exotel Inställningar Uppdaterade"
-
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:172
-msgid "Exotel is not enabled"
-msgstr "Exotel är inte aktiverat"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:105
 msgid "Expand"
@@ -2889,11 +2928,11 @@ msgstr "Förväntad Avslutning Datum"
 msgid "Expected Deal Value"
 msgstr "Förväntad Affärsvärde"
 
-#: crm/fcrm/doctype/crm_deal/crm_deal.py:237
+#: crm/fcrm/doctype/crm_deal/crm_deal.py:242
 msgid "Expected closure date is required."
 msgstr "Förväntat stängningsdatum erfordras."
 
-#: crm/fcrm/doctype/crm_deal/crm_deal.py:235
+#: crm/fcrm/doctype/crm_deal/crm_deal.py:240
 msgid "Expected deal value is required."
 msgstr "Förväntat affärsvärde erfordras."
 
@@ -2987,7 +3026,7 @@ msgstr "Misslyckades med att Lägga till Användare"
 msgid "Failed to add reaction to the message"
 msgstr "Misslyckades med att lägga till reaktion på meddelandet"
 
-#: crm/integrations/twilio/api.py:150
+#: crm/integrations/twilio/api.py:154
 msgid "Failed to capture Twilio recording"
 msgstr "Misslyckades med att spara Twilio Inspelning"
 
@@ -3011,7 +3050,7 @@ msgstr "Misslyckades med att ta bort anteckning"
 msgid "Failed to delete template"
 msgstr "Misslyckades med att ta bort mall"
 
-#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.py:230
+#: crm/api/exchange_rate.py:141
 msgid "Failed to fetch exchange rate from {0} to {1} on {2}. Please check your internet connection or try again later."
 msgstr "Misslyckades med att hämta växelkurs från {0} till {1} {2}. Kontrollera internetanslutning eller försök igen senare."
 
@@ -3047,7 +3086,7 @@ msgstr "Misslyckades med att skicka e-post!"
 msgid "Failed to update Email Account, Invalid credentials"
 msgstr "Misslyckades med att uppdatera e-post konto, ogiltiga inloggningsuppgifter"
 
-#: crm/integrations/twilio/api.py:177
+#: crm/integrations/twilio/api.py:181
 msgid "Failed to update Twilio call status"
 msgstr "Misslyckades med att uppdatera Twilio Samtal Status"
 
@@ -3079,7 +3118,7 @@ msgstr "Felloggar"
 
 #. Label of the favicon (Attach) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
-#: frontend/src/components/Settings/BrandSettings.vue:87
+#: frontend/src/components/Settings/BrandSettings.vue:97
 msgid "Favicon"
 msgstr "Favicon"
 
@@ -3089,7 +3128,7 @@ msgid "Field"
 msgstr "Fält"
 
 #: frontend/src/components/Controls/GridFieldsEditorModal.vue:19
-#: frontend/src/components/Kanban/KanbanSettings.vue:48
+#: frontend/src/components/Kanban/KanbanSettings.vue:47
 msgid "Fields Order"
 msgstr "Fältordning"
 
@@ -3361,11 +3400,11 @@ msgstr "Dold "
 msgid "Hide"
 msgstr "Dölj"
 
-#: frontend/src/components/FieldLayoutEditor.vue:352
+#: frontend/src/components/FieldLayoutEditor.vue:343
 msgid "Hide Border"
 msgstr "Dölj Kant"
 
-#: frontend/src/components/FieldLayoutEditor.vue:347
+#: frontend/src/components/FieldLayoutEditor.vue:338
 msgid "Hide Label"
 msgstr "Dölj Etikett"
 
@@ -3409,7 +3448,7 @@ msgstr "Helger"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:549
 #: frontend/src/components/Settings/HomeActions.vue:7
-#: frontend/src/components/Settings/Settings.vue:184
+#: frontend/src/components/Settings/Settings.vue:185
 msgid "Home Actions"
 msgstr "Hem Åtgärder"
 
@@ -3550,7 +3589,11 @@ msgstr "Integration"
 msgid "Integration Not Enabled"
 msgstr "Integration inte aktiverad"
 
-#: frontend/src/components/Settings/Settings.vue:192
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:144
+msgid "Integrations"
+msgstr "Integrationer"
+
+#: frontend/src/components/Settings/Settings.vue:193
 msgctxt "FCRM"
 msgid "Integrations"
 msgstr "Integrationer"
@@ -3560,7 +3603,7 @@ msgstr "Integrationer"
 msgid "Introduction"
 msgstr "Introduktion"
 
-#: crm/fcrm/doctype/crm_twilio_settings/crm_twilio_settings.py:50
+#: crm/fcrm/doctype/crm_twilio_settings/crm_twilio_settings.py:57
 msgid "Invalid Account SID or Auth Token."
 msgstr "Ogiltigt Konto SID eller Auth Token."
 
@@ -3625,7 +3668,7 @@ msgstr "Ogiltiga fält, kontrollera att alla är ifyllda och att värdena är ko
 msgid "Invalid fields: {0}"
 msgstr "Ogiltiga fält: {0}"
 
-#: crm/fcrm/doctype/crm_call_log/crm_call_log.py:254
+#: crm/fcrm/doctype/crm_call_log/crm_call_log.py:263
 msgid "Invalid lead details supplied."
 msgstr "Ogiltiga potentiell kund detaljer angivna."
 
@@ -3657,15 +3700,15 @@ msgstr "Bjud in via e-post"
 
 #: frontend/src/components/Settings/Users.vue:25
 msgid "Invite New User"
-msgstr "Bjud in Ny Användare"
+msgstr "Skapa Användare"
 
 #: frontend/src/components/Settings/Settings.vue:141
 msgid "Invite User"
-msgstr "Bjud in Användare"
+msgstr "Skapa Användare"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:550
 msgid "Invite Users"
-msgstr "Bjud in användare"
+msgstr "Skapa Användare"
 
 #: frontend/src/components/Settings/InviteUserPage.vue:10
 msgid "Invite users to access CRM. Specify their roles to control access and permissions"
@@ -3732,11 +3775,11 @@ msgstr "Det verkar som att det för närvarande inte finns några {0} tillgängl
 msgid "It will make deal's \"Expected Closure Date\" & \"Expected Deal Value\" mandatory to get accurate forecasting insights"
 msgstr "Det kommer att göra affärens \"Förväntad Avslutning Datum\" och \"Förväntad Affärsvärde\" erfordrade för att få korrekta prognos insikter"
 
-#: crm/api/doc.py:889
+#: crm/api/doc.py:832
 msgid "Items are required"
 msgstr "Artiklar erfordras"
 
-#: crm/api/doc.py:893
+#: crm/api/doc.py:836
 msgid "Items must be a list"
 msgstr "Artiklar måste vara en lista"
 
@@ -3974,7 +4017,7 @@ msgstr "Potentiell Kund Synkronisering Källa skapad"
 msgid "Lead Syncing"
 msgstr "Potentiell Kund Synkronisering"
 
-#: crm/fcrm/doctype/crm_call_log/crm_call_log.py:272
+#: crm/fcrm/doctype/crm_call_log/crm_call_log.py:281
 msgid "Lead from call {0}"
 msgstr "Potentiell Kund från samtal {0}"
 
@@ -4366,19 +4409,19 @@ msgstr "Månadsvis"
 msgid "More Options"
 msgstr "Fler Alternativ"
 
-#: frontend/src/components/FieldLayoutEditor.vue:446
+#: frontend/src/components/FieldLayoutEditor.vue:437
 msgid "Move to Next Section"
 msgstr "Gå till Nästa Avsnitt"
 
-#: frontend/src/components/FieldLayoutEditor.vue:399
+#: frontend/src/components/FieldLayoutEditor.vue:390
 msgid "Move to Next Tab"
 msgstr "Gå till Nästa Flik"
 
-#: frontend/src/components/FieldLayoutEditor.vue:456
+#: frontend/src/components/FieldLayoutEditor.vue:447
 msgid "Move to Previous Section"
 msgstr "Gå till Föregående Avsnitt"
 
-#: frontend/src/components/FieldLayoutEditor.vue:385
+#: frontend/src/components/FieldLayoutEditor.vue:376
 msgid "Move to Previous Tab"
 msgstr "Gå till Föregående Flik"
 
@@ -4506,13 +4549,13 @@ msgstr "Ny Service Nivå Avtal Princip"
 msgid "New SLA Policy Name"
 msgstr "Ny Service Nivå Avtal Princip Benämning"
 
-#: frontend/src/components/FieldLayoutEditor.vue:201
+#: frontend/src/components/FieldLayoutEditor.vue:200
 #: frontend/src/components/SidePanelLayoutEditor.vue:131
 msgid "New Section"
 msgstr "Ny Sektion"
 
-#: frontend/src/components/FieldLayoutEditor.vue:291
-#: frontend/src/components/FieldLayoutEditor.vue:296
+#: frontend/src/components/FieldLayoutEditor.vue:282
+#: frontend/src/components/FieldLayoutEditor.vue:287
 msgid "New Tab"
 msgstr "Ny Flik"
 
@@ -4702,7 +4745,9 @@ msgstr "Ej Tillåtet"
 #: frontend/src/components/Settings/ProfileSettings.vue:85
 #: frontend/src/components/Settings/SettingsPage.vue:23
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:18
+#: frontend/src/components/Settings/Telephony/ExotelSettings.vue:15
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:12
+#: frontend/src/components/Settings/Telephony/TwilioSettings.vue:15
 msgid "Not Saved"
 msgstr "Ej Sparad"
 
@@ -4710,19 +4755,19 @@ msgstr "Ej Sparad"
 msgid "Not Synced"
 msgstr "Inte Synkroniserad"
 
-#: crm/fcrm/doctype/crm_deal/crm_deal.py:337
+#: crm/fcrm/doctype/crm_deal/crm_deal.py:342
 msgid "Not allowed to add contact to Deal"
 msgstr "Inte tillåtet att lägga till kontakt i Affär"
 
-#: crm/fcrm/doctype/crm_lead/crm_lead.py:470
+#: crm/fcrm/doctype/crm_lead/crm_lead.py:475
 msgid "Not allowed to convert Lead to Deal"
 msgstr "Inte tillåtet att konvertera Potentiell Kund till Affär"
 
-#: crm/fcrm/doctype/crm_deal/crm_deal.py:348
+#: crm/fcrm/doctype/crm_deal/crm_deal.py:353
 msgid "Not allowed to remove contact from Deal"
 msgstr "Inte tillåtet att ta bort kontakt från Affär"
 
-#: crm/fcrm/doctype/crm_deal/crm_deal.py:359
+#: crm/fcrm/doctype/crm_deal/crm_deal.py:364
 msgid "Not allowed to set primary contact for Deal"
 msgstr "Inte tillåtet att ange primär kontakt för Affär"
 
@@ -4896,7 +4941,7 @@ msgid "Only image files are allowed"
 msgstr "Endast bildfiler är tillåtna"
 
 #: crm/fcrm/doctype/crm_deal/crm_deal.py:124
-#: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.py:45
+#: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.py:68
 msgid "Only one {0} can be set as primary."
 msgstr "Endast en {0} kan anges som primär."
 
@@ -5121,6 +5166,10 @@ msgstr "Period"
 msgid "Person"
 msgstr "Person"
 
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:120
+msgid "Personal Mobile No."
+msgstr "Personlig Mobilnummer."
+
 #. Label of the phone (Data) field in DocType 'CRM Contacts'
 #. Label of the phone (Data) field in DocType 'CRM Lead'
 #. Option for the 'Device' (Select) field in DocType 'CRM Telephony Agent'
@@ -5170,10 +5219,6 @@ msgstr "Aktivera Twilio Inställningar innan du ringer ett samtal."
 msgid "Please enter a valid URL"
 msgstr "Ange giltig URL"
 
-#: frontend/src/components/Settings/CurrencySettings.vue:150
-msgid "Please enter the Exchangerate Host Access Key."
-msgstr "Ange åtkomst nyckel för Valuta Växling Leverantör."
-
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:239
 msgid "Please fix the errors in the form"
 msgstr "Åtgärda felen i formulär"
@@ -5182,7 +5227,7 @@ msgstr "Åtgärda felen i formulär"
 msgid "Please select a Priority"
 msgstr "Välj Prioritet"
 
-#: frontend/src/components/Settings/CurrencySettings.vue:143
+#: frontend/src/components/Settings/CurrencySettings.vue:170
 msgid "Please select a currency before saving."
 msgstr "Välj valuta innan du sparar."
 
@@ -5218,11 +5263,11 @@ msgstr "Ange e-post adress för att skicka e-post meddelanden"
 msgid "Please setup Exotel intergration"
 msgstr "Konfigurera Exotel Integration"
 
-#: crm/fcrm/doctype/crm_deal/crm_deal.py:245
+#: crm/fcrm/doctype/crm_deal/crm_deal.py:250
 msgid "Please specify a reason for losing the deal."
 msgstr "Ange anledning till att affären förlorades."
 
-#: crm/fcrm/doctype/crm_deal/crm_deal.py:247
+#: crm/fcrm/doctype/crm_deal/crm_deal.py:252
 msgid "Please specify the reason for losing the deal."
 msgstr "Ange anledning till att affären förlorades."
 
@@ -5415,6 +5460,8 @@ msgstr "Anledning"
 
 #. Label of the record_calls (Check) field in DocType 'CRM Twilio Settings'
 #: crm/fcrm/doctype/crm_twilio_settings/crm_twilio_settings.json
+#: frontend/src/components/Settings/Telephony/ExotelSettings.vue:86
+#: frontend/src/components/Settings/Telephony/TwilioSettings.vue:93
 msgid "Record Calls"
 msgstr "Spela in Samtal"
 
@@ -5423,10 +5470,14 @@ msgstr "Spela in Samtal"
 msgid "Record Outgoing Calls"
 msgstr "Spela in Utgående Samtal"
 
-#. Label of the recording_url (Data) field in DocType 'CRM Call Log'
+#. Label of the recording_url (Small Text) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 msgid "Recording URL"
 msgstr "Inspelning URL"
+
+#: crm/integrations/api.py:160
+msgid "Recording URL not found"
+msgstr "Inspelning URL hittades inte"
 
 #. Label of the reference_name (Dynamic Link) field in DocType 'CRM
 #. Notification'
@@ -5468,6 +5519,10 @@ msgstr "Referens dokument {0} {1} finns inte."
 msgid "Refresh"
 msgstr "Uppdatera"
 
+#: frontend/src/components/Settings/Telephony/TwilioSettings.vue:78
+msgid "Refresh Apps"
+msgstr "Uppdatera Appar"
+
 #: frontend/src/components/Telephony/TwilioCallUI.vue:97
 msgid "Reject"
 msgstr "Avvisa"
@@ -5491,7 +5546,7 @@ msgstr "Ta bort"
 msgid "Remove All"
 msgstr "Ta bort Alla"
 
-#: frontend/src/components/FieldLayoutEditor.vue:430
+#: frontend/src/components/FieldLayoutEditor.vue:421
 msgid "Remove Column"
 msgstr "Ta bort Kolumn"
 
@@ -5507,15 +5562,15 @@ msgstr "Ta bort Grupp"
 msgid "Remove Image"
 msgstr "Ta bort Bild"
 
-#: frontend/src/components/FieldLayoutEditor.vue:357
+#: frontend/src/components/FieldLayoutEditor.vue:348
 msgid "Remove Section"
 msgstr "Ta Bort Sektion"
 
-#: frontend/src/components/FieldLayoutEditor.vue:316
+#: frontend/src/components/FieldLayoutEditor.vue:307
 msgid "Remove Tab"
 msgstr "Ta bort Flik"
 
-#: frontend/src/components/FieldLayoutEditor.vue:436
+#: frontend/src/components/FieldLayoutEditor.vue:427
 msgid "Remove and move fields to previous column"
 msgstr "Ta bort och flytta fält till föregående kolumn"
 
@@ -5818,6 +5873,7 @@ msgstr "Försäljning Trend"
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
 #: crm/fcrm/doctype/crm_product/crm_product.json
 #: crm/fcrm/doctype/crm_task/crm_task.json
+#: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
 #: crm/fcrm/doctype/crm_territory/crm_territory.json
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
 #: crm/fcrm/doctype/fcrm_note/fcrm_note.json
@@ -5866,7 +5922,7 @@ msgstr "Lördag"
 #: frontend/src/components/Modals/SidePanelModal.vue:26
 #: frontend/src/components/PrimaryDropdownItem.vue:21
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:36
-#: frontend/src/components/Settings/CurrencySettings.vue:173
+#: frontend/src/components/Settings/CurrencySettings.vue:197
 #: frontend/src/components/Settings/ProfileSettings.vue:89
 #: frontend/src/components/Settings/Sla/EditResponseResolutionModal.vue:69
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:34
@@ -5919,7 +5975,7 @@ msgstr "Sök Mall"
 msgid "Search User"
 msgstr "Sök Användare"
 
-#: frontend/src/components/FieldLayoutEditor.vue:334
+#: frontend/src/components/FieldLayoutEditor.vue:325
 msgid "Section"
 msgstr "Sektion"
 
@@ -5939,7 +5995,7 @@ msgstr "Välj Valuta"
 msgid "Select Holiday List"
 msgstr "Välj Helg Lista"
 
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:53
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:54
 msgid "Select Medium"
 msgstr "Välj Medium"
 
@@ -5947,7 +6003,7 @@ msgstr "Välj Medium"
 msgid "Select Priority"
 msgstr "Välj Prioritet"
 
-#: frontend/src/components/Settings/CurrencySettings.vue:75
+#: frontend/src/components/Settings/CurrencySettings.vue:80
 msgid "Select Provider"
 msgstr "Välj Leverantör"
 
@@ -5975,6 +6031,10 @@ msgstr "Välj Vy"
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:15
 msgid "Select Workday"
 msgstr "Välj Arbetsdag"
+
+#: frontend/src/components/Settings/Telephony/TwilioSettings.vue:71
+msgid "Select a Twilio App for your CRM"
+msgstr "Välj Twilio app för Säljstöd"
 
 #: frontend/src/components/Filter.vue:566
 msgid "Select a Value"
@@ -6059,7 +6119,7 @@ msgstr "Ange som Standard"
 msgid "Set As Primary"
 msgstr "Ange som Primär"
 
-#: frontend/src/components/Settings/CurrencySettings.vue:164
+#: frontend/src/components/Settings/CurrencySettings.vue:188
 msgid "Set Currency"
 msgstr "Ange Valuta"
 
@@ -6090,6 +6150,18 @@ msgstr "Ange som Primär Kontakt"
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:113
 msgid "Set as default SLA"
 msgstr "Ange som standard Service Nivå Avtal"
+
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:102
+msgid "Set the Exotel number to be used for outgoing calls."
+msgstr "Ange Exotel nummer som ska användas för utgående samtal."
+
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:77
+msgid "Set the Twilio number to be used for outgoing calls."
+msgstr "Ange Twilio nummer som ska användas för utgående samtal."
+
+#: frontend/src/components/Settings/BrandSettings.vue:33
+msgid "Set the name of your brand. Appears in the left sidebar."
+msgstr "Ange namn på varumärke. Visas i det vänstra sidofältet."
 
 #: frontend/src/components/Settings/Sla/SlaHolidays.vue:9
 msgid "Set working days, hours, and holidays by selecting a predefined schedule or creating a new one"
@@ -6137,9 +6209,9 @@ msgstr "Inställningar"
 msgid "Setup Email"
 msgstr "Konfigurera e-post"
 
-#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.py:224
-msgid "Setup the Exchange Rate Provider as 'Exchangerate Host' in settings, as default provider does not support currency conversion for {0} to {1}."
-msgstr "Ange Växelkurs Leverantör som \"Valuta Växling Leverantör\" i inställningar, eftersom standard leverantör inte stöder valutakonvertering från {0} till {1}."
+#: crm/api/exchange_rate.py:135
+msgid "Setup the Exchange Rate Provider other than 'Frankfurter' in settings, as default provider does not support currency conversion for {0} to {1}."
+msgstr "Ange annan växelkursleverantör än 'Frankfurter' i inställningar, eftersom standardleverantör inte stöder valutakonvertering från {0} till {1}."
 
 #: frontend/src/components/Layouts/AppSidebar.vue:338
 msgid "Setup your password"
@@ -6149,11 +6221,11 @@ msgstr "Ange Lösenord"
 msgid "Show"
 msgstr "Visa"
 
-#: frontend/src/components/FieldLayoutEditor.vue:352
+#: frontend/src/components/FieldLayoutEditor.vue:343
 msgid "Show Border"
 msgstr "Visa Kantlinje"
 
-#: frontend/src/components/FieldLayoutEditor.vue:347
+#: frontend/src/components/FieldLayoutEditor.vue:338
 msgid "Show Label"
 msgstr "Visa Etikett"
 
@@ -6356,6 +6428,7 @@ msgstr "Status erfordras"
 
 #. Label of the subdomain (Data) field in DocType 'CRM Exotel Settings'
 #: crm/fcrm/doctype/crm_exotel_settings/crm_exotel_settings.json
+#: frontend/src/components/Settings/Telephony/ExotelSettings.vue:75
 msgid "Subdomain"
 msgstr "Underdomän"
 
@@ -6415,7 +6488,7 @@ msgstr "Synkroniserad"
 msgid "Syncing"
 msgstr "Synkroniserar"
 
-#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:402
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:381
 msgid "Syncing started in background"
 msgstr "Synkronisering startad i bakgrunden"
 
@@ -6484,7 +6557,7 @@ msgstr "Uppgift skapad"
 msgid "Tasks"
 msgstr "Uppgifter"
 
-#: frontend/src/components/Settings/Settings.vue:195
+#: frontend/src/components/Settings/Settings.vue:196
 msgid "Telephony"
 msgstr "Telefoni"
 
@@ -6781,42 +6854,47 @@ msgid "TwiML SID"
 msgstr "TwiML SID"
 
 #. Option for the 'Telephony Medium' (Select) field in DocType 'CRM Call Log'
-#. Label of the twilio (Check) field in DocType 'CRM Telephony Agent'
 #. Option for the 'Default Medium' (Select) field in DocType 'CRM Telephony
 #. Agent'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
 #: frontend/src/components/Layouts/AppSidebar.vue:608
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:50
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:76
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:51
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:154
 msgid "Twilio"
 msgstr "Twilio"
 
-#: crm/fcrm/doctype/crm_twilio_settings/crm_twilio_settings.py:75
-#: crm/fcrm/doctype/crm_twilio_settings/crm_twilio_settings.py:76
+#: crm/fcrm/doctype/crm_twilio_settings/crm_twilio_settings.py:85
+#: crm/fcrm/doctype/crm_twilio_settings/crm_twilio_settings.py:86
 msgid "Twilio API credential creation error."
 msgstr "Fel vid skapande av autentiseringsuppgifter för Twilio API."
 
+#: frontend/src/components/Settings/Telephony/TwilioSettings.vue:68
+msgid "Twilio App Name"
+msgstr "Twilio App Namn"
+
+#. Label of the twilio_apps (Data) field in DocType 'CRM Twilio Settings'
+#: crm/fcrm/doctype/crm_twilio_settings/crm_twilio_settings.json
+msgid "Twilio Apps"
+msgstr "Twilio Appar"
+
+#: frontend/src/components/Settings/Telephony/TwilioSettings.vue:115
+msgid "Twilio Integration Disabled"
+msgstr "Twilio Integration Inaktiverad"
+
 #. Label of the twilio_number (Data) field in DocType 'CRM Telephony Agent'
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:74
 msgid "Twilio Number"
 msgstr "Twilio Nummer"
 
-#: frontend/src/components/Settings/Telephony/TwilioSettings.vue:4
+#: frontend/src/components/Settings/Telephony/TwilioSettings.vue:8
 msgid "Twilio Settings"
 msgstr "Twilio Inställningar"
-
-#: frontend/src/components/Settings/Telephony/TwilioSettings.vue:5
-msgid "Twilio Settings Updated"
-msgstr "Twilio Inställningar Uppdaterade"
 
 #: crm/integrations/twilio/api.py:15
 msgid "Twilio configuration is missing"
 msgstr "Twilio konfiguration saknas"
-
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:168
-msgid "Twilio is not enabled"
-msgstr "Twilio är inte aktiverat"
 
 #. Label of the type (Select) field in DocType 'CRM Call Log'
 #. Label of the type (Select) field in DocType 'CRM Deal Status'
@@ -6852,6 +6930,10 @@ msgstr "Skriv in e-postadress för att lägga till deltagare"
 msgid "Type your message here..."
 msgstr "Skriv ditt meddelande här..."
 
+#: crm/fcrm/doctype/crm_twilio_settings/crm_twilio_settings.py:117
+msgid "Unable to connect to Twilio account to fetch applications."
+msgstr "Kunde inte ansluta till Twilio konto för att hämta applikationer."
+
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:454
 msgid "Unassign Conditions are invalid"
 msgstr "Villkoren för att ta bort tilldelning är ogiltiga"
@@ -6865,7 +6947,7 @@ msgstr "Otilldelning Villkor"
 msgid "Unauthorized request"
 msgstr "Obehörig begäran"
 
-#: frontend/src/components/FieldLayoutEditor.vue:342
+#: frontend/src/components/FieldLayoutEditor.vue:333
 msgid "Uncollapsible"
 msgstr "Ej Hopfällbar"
 
@@ -6877,6 +6959,10 @@ msgstr "Avgruppera Villkor"
 #: frontend/src/components/Telephony/TwilioCallUI.vue:123
 msgid "Unknown"
 msgstr "Okänd"
+
+#: crm/integrations/api.py:19
+msgid "Unknown telephony medium: {0}"
+msgstr "Okänt telefon medium: {0}"
 
 #: frontend/src/components/BulkDeleteLinkedDocModal.vue:124
 msgid "Unlink"
@@ -6933,7 +7019,9 @@ msgstr "Namnlös"
 #: frontend/src/components/Settings/HomeActions.vue:15
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:30
 #: frontend/src/components/Settings/SettingsPage.vue:32
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:25
+#: frontend/src/components/Settings/Telephony/ExotelSettings.vue:32
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:27
+#: frontend/src/components/Settings/Telephony/TwilioSettings.vue:32
 #: frontend/src/components/Telephony/ExotelCallUI.vue:209
 msgid "Update"
 msgstr "Uppdatera"
@@ -7063,6 +7151,7 @@ msgstr "Webbformulär"
 #. Label of the webhook_verify_token (Data) field in DocType 'CRM Exotel
 #. Settings'
 #: crm/fcrm/doctype/crm_exotel_settings/crm_exotel_settings.json
+#: frontend/src/components/Settings/Telephony/ExotelSettings.vue:67
 msgid "Webhook Verify Token"
 msgstr "Webhook Verifiering Token"
 
@@ -7199,11 +7288,11 @@ msgstr "Du har inte åtkomst till Säljstöd resurser."
 msgid "You are not permitted to access this resource."
 msgstr "Du har inte behörighet att komma åt denna resurs."
 
-#: crm/fcrm/doctype/crm_call_log/crm_call_log.py:250
+#: crm/fcrm/doctype/crm_call_log/crm_call_log.py:259
 msgid "You are not permitted to create leads."
 msgstr "Du har inte tillåtelse att skapa potentiella kunder."
 
-#: crm/fcrm/doctype/crm_call_log/crm_call_log.py:247
+#: crm/fcrm/doctype/crm_call_log/crm_call_log.py:256
 msgid "You are not permitted to update this call log."
 msgstr "Du har inte tillåtelse att uppdatera denna samtalslogg."
 
@@ -7215,7 +7304,7 @@ msgstr "Du kan också kopiera och klistra in följande länk i din webbläsare"
 msgid "You can change the default calling medium from the settings"
 msgstr "Du kan ändra standarduppringning medium från inställningarna"
 
-#: frontend/src/components/Settings/CurrencySettings.vue:100
+#: frontend/src/components/Settings/CurrencySettings.vue:106
 msgid "You can get your Access Key from "
 msgstr "Du kan få Åtkomst Nyckel från "
 
@@ -7381,9 +7470,18 @@ msgstr "skrivbord"
 
 #. Option for the 'Service Provider' (Select) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
-#: frontend/src/components/Settings/CurrencySettings.vue:106
+msgid "exchangerate-api"
+msgstr "växelkurs-Api"
+
+#. Option for the 'Service Provider' (Select) field in DocType 'FCRM Settings'
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 msgid "exchangerate.host"
 msgstr "exchangerate.host"
+
+#. Option for the 'Service Provider' (Select) field in DocType 'FCRM Settings'
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
+msgid "fawazahmed-exchange-api"
+msgstr "valutaväxelkurs-api"
 
 #. Option for the 'Service Provider' (Select) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
@@ -7554,7 +7652,7 @@ msgstr "minuter"
 msgid "minutes before"
 msgstr "minuter före"
 
-#: frontend/src/components/FieldLayoutEditor.vue:366
+#: frontend/src/components/FieldLayoutEditor.vue:357
 msgid "next"
 msgstr "nästa"
 
@@ -7580,7 +7678,7 @@ msgstr "orange"
 msgid "pink"
 msgstr "rosa"
 
-#: frontend/src/components/FieldLayoutEditor.vue:366
+#: frontend/src/components/FieldLayoutEditor.vue:357
 msgid "previous"
 msgstr "föregående"
 

@@ -151,7 +151,15 @@ doc_events = {
 		"after_insert": ["crm.api.todo.after_insert"],
 		"on_update": ["crm.api.todo.on_update"],
 	},
+	"Communication": {
+		"after_insert": [
+			"crm.utils.update_modified_timestamp",
+			"crm.utils.update_communication_status",
+			"crm.utils.create_lead_from_incoming_email",
+		],
+	},
 	"Comment": {
+		"after_insert": ["crm.utils.update_modified_timestamp"],
 		"on_update": ["crm.api.comment.on_update"],
 	},
 	"WhatsApp Message": {
@@ -262,14 +270,6 @@ standard_dropdown_items = [
 		"name1": "app_selector",
 		"label": "Apps",
 		"type": "Route",
-		"route": "#",
-		"is_standard": 1,
-	},
-	{
-		"name1": "toggle_theme",
-		"label": "Toggle theme",
-		"type": "Route",
-		"icon": "moon",
 		"route": "#",
 		"is_standard": 1,
 	},

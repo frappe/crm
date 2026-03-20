@@ -6,15 +6,15 @@
     @close="activeSettingsPage = ''"
   >
     <template #body>
-      <div class="flex h-[calc(100vh_-_8rem)]">
+      <div class="flex h-[calc(100vh_-_8rem)] bg-surface-menu-bar">
         <div
-          class="flex flex-col p-1 w-52 shrink-0 bg-surface-menu-bar overflow-y-auto"
+          class="flex flex-col m-1 rounded-l-lg w-56 shrink-0 bg-surface-menu-bar overflow-y-auto"
         >
           <template v-for="(tab, i) in tabs" :key="tab.label">
             <div v-if="!tab.hideLabel && i != 0" class="mx-1 mb-0.5 mt-[5px]" />
             <div
               v-if="!tab.hideLabel"
-              class="h-7.5 px-2 py-[7px] my-[3px] flex cursor-pointer gap-1.5 text-base text-ink-gray-5 transition-all duration-300 ease-in-out"
+              class="h-7.5 px-2 py-[7px] my-[3px] flex cursor-pointer gap-1.5 text-xs font-medium text-ink-gray-5 transition-all duration-300 ease-in-out sticky top-0 z-10 bg-surface-menu-bar"
             >
               <span>{{ __(tab.label) }}</span>
             </div>
@@ -45,21 +45,25 @@
 <script setup>
 import CircleDollarSignIcon from '~icons/lucide/circle-dollar-sign'
 import TrendingUpDownIcon from '~icons/lucide/trending-up-down'
+import SlidersIcon from '@/components/Icons/SlidersIcon.vue'
 import SparkleIcon from '@/components/Icons/SparkleIcon.vue'
 import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import ERPNextIcon from '@/components/Icons/ERPNextIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import Email2Icon from '@/components/Icons/Email2Icon.vue'
 import EmailTemplateIcon from '@/components/Icons/EmailTemplateIcon.vue'
+import SettingsIcon from '@/components/Icons/SettingsIcon.vue'
 import SettingsIcon2 from '@/components/Icons/SettingsIcon2.vue'
 import Users from '@/components/Settings/Users.vue'
 import InviteUserPage from '@/components/Settings/InviteUserPage.vue'
-import ProfileSettings from '@/components/Settings/ProfileSettings.vue'
+import ProfilePage from '@/components/Settings/Profile/ProfilePage.vue'
+import PreferencesSettings from '@/components/Settings/PreferencesSettings.vue'
 import WhatsAppSettings from '@/components/Settings/WhatsAppSettings.vue'
 import ERPNextSettings from '@/components/Settings/ERPNextSettings.vue'
 import LeadSyncSourcePage from '@/components/Settings/LeadSyncing/LeadSyncSourcePage.vue'
 import BrandSettings from '@/components/Settings/BrandSettings.vue'
 import HomeActions from '@/components/Settings/HomeActions.vue'
+import GeneralSettings from '@/components/Settings/GeneralSettings.vue'
 import ForecastingSettings from '@/components/Settings/ForecastingSettings.vue'
 import CurrencySettings from '@/components/Settings/CurrencySettings.vue'
 import EmailTemplatePage from '@/components/Settings/EmailTemplate/EmailTemplatePage.vue'
@@ -84,23 +88,33 @@ const user = computed(() => getUser() || {})
 const tabs = computed(() => {
   let _tabs = [
     {
-      label: __('My Settings'),
+      label: __('Account'),
       items: [
         {
-          label: __('Profile'),
+          label: user.value.full_name,
           icon: () =>
             h(Avatar, {
               size: 'xs',
               label: user.value.full_name,
               image: user.value.user_image,
             }),
-          component: markRaw(ProfileSettings),
+          component: markRaw(ProfilePage),
+        },
+        {
+          label: __('Preferences'),
+          icon: SlidersIcon,
+          component: markRaw(PreferencesSettings),
         },
       ],
     },
     {
       label: __('System Configuration'),
       items: [
+        {
+          label: __('General'),
+          component: markRaw(GeneralSettings),
+          icon: SettingsIcon,
+        },
         {
           label: __('Forecasting'),
           component: markRaw(ForecastingSettings),

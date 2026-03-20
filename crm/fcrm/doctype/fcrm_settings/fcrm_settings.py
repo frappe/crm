@@ -23,9 +23,11 @@ class FCRMSettings(Document):
 
 		access_key: DF.Data | None
 		all_day_event_notifications: DF.Table[EventNotifications]
+		auto_update_communication_status: DF.Check
 		auto_update_expected_deal_value: DF.Check
 		brand_logo: DF.Attach | None
 		brand_name: DF.Data | None
+		create_lead_from_incoming_email: DF.Check
 		currency: DF.Link | None
 		default_calendar_view: DF.Literal["Daily", "Weekly", "Monthly"]
 		dropdown_items: DF.Table[CRMDropdownItem]
@@ -35,6 +37,7 @@ class FCRMSettings(Document):
 		service_provider: DF.Literal[
 			"frankfurter.app", "fawazahmed-exchange-api", "exchangerate.host", "exchangerate-api"
 		]
+		update_timestamp_on_new_communication: DF.Check
 	# end: auto-generated types
 
 	@frappe.whitelist()

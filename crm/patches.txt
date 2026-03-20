@@ -21,3 +21,5 @@ crm.patches.v1_0.add_fb_lead_source
 crm.patches.v1_0.update_lead_status_type
 crm.patches.v1_0.reset_erpnext_form_script #04-03-2026
 crm.patches.v1_0.create_custom_fields_for_erpnext_in_crm
+execute:frappe.db.set_single_value("FCRM Settings", "update_timestamp_on_new_communication", 1)
+crm.patches.v1_0.add_email_in_default_lead_sources

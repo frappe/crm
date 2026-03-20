@@ -20,10 +20,10 @@
       </div>
       <div class="flex item-center space-x-2 w-3/12 justify-end">
         <Button
+          v-if="isDirty"
           :loading="
             isNewDoc ? insertResource.loading : telephonyAgent.save?.loading
           "
-          :disabled="!isDirty"
           :label="__('Update')"
           variant="solid"
           @click="update"
@@ -139,27 +139,29 @@
 
       <div
         v-if="isManager()"
-        class="flex items-center justify-between text-lg font-semibold mt-4 py-3 px-2"
+        class="flex items-center justify-between text-lg text-ink-gray-8 font-semibold mt-4 py-3 px-2"
       >
         {{ __('Integrations') }}
       </div>
 
       <div
         v-if="isManager()"
-        class="flex items-center justify-between py-3 px-2 cursor-pointer hover:bg-gray-50 rounded"
-        @click="emit('updateStep', 'twilio-settings')"
+        class="flex items-center justify-between py-3 px-2"
       >
-        <div class="flex flex-col">
-          <div class="text-p-base font-medium text-ink-gray-7 truncate">
+        <div class="flex flex-col gap-1">
+          <span class="text-base font-medium text-ink-gray-8">
             {{ __('Twilio') }}
-          </div>
-          <div class="text-p-sm text-ink-gray-5 truncate">
+          </span>
+          <span class="text-p-sm text-ink-gray-6">
             {{
               __('Configure your Twilio Telephony Integration Settings here')
             }}
-          </div>
+          </span>
         </div>
-        <FeatherIcon name="chevron-right" class="size-4 text-ink-gray-5" />
+        <Button
+          :label="__('Configure')"
+          @click="emit('updateStep', 'twilio-settings')"
+        />
       </div>
 
       <div
@@ -169,20 +171,22 @@
 
       <div
         v-if="isManager()"
-        class="flex items-center justify-between py-3 px-2 cursor-pointer hover:bg-gray-50 rounded"
-        @click="emit('updateStep', 'exotel-settings')"
+        class="flex items-center justify-between py-3 px-2"
       >
-        <div class="flex flex-col">
-          <div class="text-p-base font-medium text-ink-gray-7 truncate">
+        <div class="flex flex-col gap-1">
+          <span class="text-base font-medium text-ink-gray-8">
             {{ __('Exotel') }}
-          </div>
-          <div class="text-p-sm text-ink-gray-5 truncate">
+          </span>
+          <span class="text-p-sm text-ink-gray-6">
             {{
               __('Configure your Exotel Telephony Integration Settings here')
             }}
-          </div>
+          </span>
         </div>
-        <FeatherIcon name="chevron-right" class="size-4 text-ink-gray-5" />
+        <Button
+          :label="__('Configure')"
+          @click="emit('updateStep', 'exotel-settings')"
+        />
       </div>
     </div>
     <ErrorMessage
