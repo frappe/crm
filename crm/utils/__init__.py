@@ -286,7 +286,7 @@ def is_frappe_version(version: str, above: bool = False, below: bool = False):
 	return major_version == target_version
 
 
-def update_modified_timestamp(doc: Communication | Comment, method):
+def update_modified_timestamp(doc: Communication | Comment, method: str | None = None):
 	if not frappe.db.get_single_value("FCRM Settings", "update_timestamp_on_new_communication"):
 		return
 
@@ -302,4 +302,35 @@ def update_modified_timestamp(doc: Communication | Comment, method):
 		field="modified",
 		val=now(),
 		update_modified=False,
+	)
+
+
+def update_communication_status(doc: Communication, method: str | None = None):
+	if not frappe.db.get_single_value("FCRM Settings", "auto_update_communication_status"):
+		return
+
+	if not (doc.reference_doctype and doc.reference_name):
+		return
+
+	if doc.doctype != "Communication":
+		return
+
+	if doc.sent_or_received not in ("Sent", "Received"):
+		return
+
+	last_communication = frappe.get_last_doc(
+		"Communication",
+		{"reference_doctype": doc.reference_doctype, "reference_name": doc.reference_name},
+	)
+
+	if not last_communication or (last_communication.name != doc.name):
+		return
+
+	status = "Open" if doc.sent_or_received == "Received" else "Replied"
+
+	frappe.db.set_value(
+		doc.reference_doctype,
+		doc.reference_name,
+		"communication_status",
+		status,
 	)
