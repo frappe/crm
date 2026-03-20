@@ -311,10 +311,10 @@ def update_communication_status(doc: Communication, method: str | None = None):
 	if not (doc.reference_doctype and doc.reference_name):
 		return
 
-	if doc.sent_or_received not in ("Sent", "Received"):
+	if doc.doctype != "Communication":
 		return
 
-	elif doc.doctype != "Communication":
+	if doc.sent_or_received not in ("Sent", "Received"):
 		return
 
 	last_communication = frappe.get_last_doc(
