@@ -1,12 +1,8 @@
-<<<<<<< HEAD
-from frappe.tests.utils import FrappeTestCase
-=======
 import time
 from unittest.mock import patch
->>>>>>> 3836545c (test: enhance communication status and timestamp update tests)
 
 import frappe
-from frappe.tests import IntegrationTestCase, UnitTestCase
+from frappe.tests.utils import FrappeTestCase
 
 from crm.utils import (
 	are_same_phone_number,
@@ -128,7 +124,7 @@ class TestUtils(FrappeTestCase):
 		self.assertEqual(result["country"], "IN")
 
 
-class TestUpdateModifiedTimestamp(IntegrationTestCase):
+class TestUpdateModifiedTimestamp(FrappeTestCase):
 	@classmethod
 	def setUpClass(cls):
 		super().setUpClass()
@@ -269,7 +265,7 @@ class TestUpdateModifiedTimestamp(IntegrationTestCase):
 		self.assertGreaterEqual(after, before)
 
 
-class TestUpdateCommunicationStatus(IntegrationTestCase):
+class TestUpdateCommunicationStatus(FrappeTestCase):
 	@classmethod
 	def setUpClass(cls):
 		super().setUpClass()
