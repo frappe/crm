@@ -10,6 +10,7 @@
   "enable_forecasting",
   "auto_update_expected_deal_value",
   "update_timestamp_on_new_communication",
+  "auto_update_communication_status",
   "currency_tab",
   "currency",
   "exchange_rate_provider_section",
@@ -152,16 +153,23 @@
   },
   {
    "default": "1",
-   "description": "Update the modified timestamp on new email communication & comment received in Lead & Deal",
+   "description": "Update the modified timestamp on new email communication & comment for leads & deals",
    "fieldname": "update_timestamp_on_new_communication",
    "fieldtype": "Check",
    "label": "Update timestamp on new communication"
+  },
+  {
+   "default": "0",
+   "description": "Automatically update the Communication status for Leads & Deals when SLA is enabled. Set status to \u201cOpen\u201d on new communication and \u201cReplied\u201d when a response is received",
+   "fieldname": "auto_update_communication_status",
+   "fieldtype": "Check",
+   "label": "Auto update communication status"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2026-03-19 15:27:38.624838",
+ "modified": "2026-03-19 17:51:46.143663",
  "modified_by": "shariq@frappe.io",
  "module": "FCRM",
  "name": "FCRM Settings",
