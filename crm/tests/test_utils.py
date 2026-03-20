@@ -6,6 +6,7 @@ from frappe.tests import IntegrationTestCase, UnitTestCase
 
 from crm.utils import (
 	are_same_phone_number,
+	parse_phone_number,
 	seconds_to_duration,
 	update_communication_status,
 	update_modified_timestamp,
@@ -25,6 +26,26 @@ class TestUtils(UnitTestCase):
 
 		# 0 seconds = 0s
 		self.assertEqual(seconds_to_duration(0), "0s")
+
+	def test_seconds_to_duration_single_unit(self):
+		"""Each single-unit branch (hours / minutes / seconds only) should format correctly."""
+		self.assertEqual(seconds_to_duration(3600), "1h")  # hours only
+		self.assertEqual(seconds_to_duration(60), "1m")  # minutes only
+		self.assertEqual(seconds_to_duration(1), "1s")  # seconds only
+
+	def test_seconds_to_duration_minutes_and_seconds(self):
+		"""Minutes + seconds without hours should format correctly."""
+		self.assertEqual(seconds_to_duration(61), "1m 1s")
+		self.assertEqual(seconds_to_duration(90), "1m 30s")
+
+	def test_seconds_to_duration_falsy_values(self):
+		"""None and 0 are both falsy and should return '0s'."""
+		self.assertEqual(seconds_to_duration(None), "0s")
+		self.assertEqual(seconds_to_duration(0), "0s")
+
+	def test_seconds_to_duration_large_values(self):
+		"""Values larger than one hour should still compute correctly."""
+		self.assertEqual(seconds_to_duration(7322), "2h 2m 2s")  # 2*3600 + 2*60 + 2
 
 	def test_are_same_phone_number_normalized_input(self):
 		# Indian number with country code and different formats
@@ -49,6 +70,58 @@ class TestUtils(UnitTestCase):
 		)  # Wrong default region
 		self.assertFalse(are_same_phone_number("12345", "67890"))
 		self.assertFalse(are_same_phone_number("abc", "14155552671"))
+
+	def test_are_same_phone_number_different_numbers(self):
+		"""Two distinct valid numbers should not be considered same."""
+		self.assertFalse(are_same_phone_number("+91 9845552671", "+91 9845552672"))
+		self.assertFalse(are_same_phone_number("+1 415 555 2671", "+1 415 555 2672", default_region="US"))
+
+	def test_are_same_phone_number_validate_false(self):
+		"""With validate=False, structurally parseable but invalid numbers can still match."""
+		# These parse but fail is_valid_number; with validate=False they should still compare equal
+		self.assertTrue(
+			are_same_phone_number("+1 415 555 2671", "+1 415 555 2671", default_region="US", validate=False)
+		)
+
+	def test_parse_phone_number_valid_indian_number(self):
+		"""A valid Indian number should return success=True with correct metadata."""
+		result = parse_phone_number("+919845552671")
+
+		self.assertTrue(result["success"])
+		self.assertTrue(result["is_valid"])
+		self.assertEqual(result["country_code"], 91)
+		self.assertEqual(result["country"], "IN")
+		self.assertEqual(result["national_number"], "9845552671")
+		# All four formats must be present
+		self.assertIn("international", result["formats"])
+		self.assertIn("national", result["formats"])
+		self.assertIn("E164", result["formats"])
+		self.assertIn("RFC3966", result["formats"])
+		# E164 should start with +91
+		self.assertTrue(result["formats"]["E164"].startswith("+91"))
+
+	def test_parse_phone_number_valid_us_number(self):
+		"""A valid US number should return success=True with country_code 1."""
+		result = parse_phone_number("+14155552671")
+
+		self.assertTrue(result["success"])
+		self.assertTrue(result["is_valid"])
+		self.assertEqual(result["country_code"], 1)
+		self.assertEqual(result["country"], "US")
+
+	def test_parse_phone_number_invalid_string(self):
+		"""An unparseable string should return success=False with an error key."""
+		result = parse_phone_number("not-a-number")
+
+		self.assertFalse(result["success"])
+		self.assertIn("error", result)
+
+	def test_parse_phone_number_default_country_fallback(self):
+		"""A local number without a country prefix should be parsed using the default_country."""
+		result = parse_phone_number("9845552671", default_country="IN")
+
+		self.assertTrue(result["success"])
+		self.assertEqual(result["country"], "IN")
 
 
 class TestUpdateModifiedTimestamp(IntegrationTestCase):
