@@ -333,3 +333,33 @@ def update_communication_status(doc: Communication, method: str | None = None):
 		"communication_status",
 		status,
 	)
+
+
+def create_lead_from_incoming_email(doc: Communication, method: str | None = None):
+	if not frappe.db.get_single_value("FCRM Settings", "create_lead_from_incoming_email"):
+		return
+
+	if doc.doctype != "Communication":
+		return
+
+	if doc.sent_or_received != "Received" and doc.communication_type != "Communication":
+		return
+
+	if doc.reference_doctype and doc.reference_name:
+		return
+
+	if frappe.db.exists("CRM Lead", {"email": doc.sender}):
+		return
+
+	lead = frappe.new_doc("CRM Lead")
+
+	lead.doctype = "CRM Lead"
+	lead.email = doc.sender
+	lead.first_name = doc.sender_full_name or doc.sender.split("@")[0]
+
+	if frappe.db.exists("CRM Lead Source", "Email"):
+		lead.lead_source = "Email"
+	if frappe.db.exists("CRM Lead Status", "New"):
+		lead.lead_status = "New"
+
+	lead.insert(ignore_permissions=True)
