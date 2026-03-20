@@ -406,7 +406,7 @@ class TestUpdateCommunicationStatus(FrappeTestCase):
 		self.assertEqual(status, "Open")
 
 
-class TestCreateLeadFromIncomingEmail(IntegrationTestCase):
+class TestCreateLeadFromIncomingEmail(FrappeTestCase):
 	@classmethod
 	def setUpClass(cls):
 		super().setUpClass()
