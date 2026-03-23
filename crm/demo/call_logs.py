@@ -1,19 +1,19 @@
 import frappe
 
 from crm.demo.users import DEMO_USERS
+from crm.demo.utils import resolve_owners
 
 
 def create_demo_call_logs(lead_names, demo_users):
 	from datetime import datetime, timedelta
 
 	now = datetime.now()
-	owner_1 = demo_users[0] if len(demo_users) > 0 else frappe.session.user
-	owner_2 = demo_users[1] if len(demo_users) > 1 else frappe.session.user
+	session_user, owner_1, owner_2, _ = resolve_owners(demo_users)
 
 	# Build rep phone number map from DEMO_USERS mobile numbers
 	_user_mobile = {u["email"]: u["mobile_no"] for u in DEMO_USERS}
 	rep_numbers = {
-		frappe.session.user: "+1 555 100 0001",
+		session_user: _user_mobile.get(session_user, "+1 555 100 0001"),
 		owner_1: _user_mobile.get(owner_1, "+1 555 100 0002"),
 		owner_2: _user_mobile.get(owner_2, "+1 555 100 0003"),
 	}
@@ -24,9 +24,9 @@ def create_demo_call_logs(lead_names, demo_users):
 			"status": "Completed",
 			"telephony_medium": "Manual",
 			"duration": 720,
-			"from": rep_numbers[frappe.session.user],
+			"from": rep_numbers[session_user],
 			"to": "+1 555 000 1234",
-			"caller": frappe.session.user,
+			"caller": session_user,
 			"start_time": now - timedelta(days=5, hours=2),
 			"end_time": now - timedelta(days=5, hours=2) + timedelta(seconds=720),
 			"reference_doctype": "CRM Lead",
@@ -38,8 +38,8 @@ def create_demo_call_logs(lead_names, demo_users):
 			"telephony_medium": "Manual",
 			"duration": 300,
 			"from": "+1 555 000 1234",
-			"to": rep_numbers[frappe.session.user],
-			"receiver": frappe.session.user,
+			"to": rep_numbers[session_user],
+			"receiver": session_user,
 			"start_time": now - timedelta(days=2, hours=1),
 			"end_time": now - timedelta(days=2, hours=1) + timedelta(seconds=300),
 			"reference_doctype": "CRM Lead",
