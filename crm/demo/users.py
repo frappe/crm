@@ -10,6 +10,7 @@ DEMO_USERS = [
 		"last_name": "Connor",
 		"mobile_no": "+1 555 100 0002",
 		"roles": ["Sales Manager", "Sales User"],
+		"avatar": "/assets/crm/images/demo/sarah-connor.png",
 	},
 	{
 		"email": "john.demo@example.com",
@@ -17,6 +18,7 @@ DEMO_USERS = [
 		"last_name": "Parker",
 		"mobile_no": "+1 555 100 0003",
 		"roles": ["Sales User"],
+		"avatar": "/assets/crm/images/demo/john-parker.png",
 	},
 	{
 		"email": "emily.demo@example.com",
@@ -24,6 +26,7 @@ DEMO_USERS = [
 		"last_name": "Chen",
 		"mobile_no": "+1 555 100 0004",
 		"roles": ["Sales User"],
+		"avatar": "/assets/crm/images/demo/emily-chen.png",
 	},
 ]
 
@@ -42,18 +45,22 @@ def create_demo_users():
 					"send_welcome_email": 0,
 					"user_type": "System User",
 					"mobile_no": user_data["mobile_no"],
+					"user_image": user_data["avatar"],
 					"roles": [{"role": r} for r in user_data["roles"]],
 				}
 			).insert(ignore_permissions=True)
 
-	# Backdate auto-created contacts so they don't show "just now"
+	# Backdate auto-created contacts and set their image
 	_ts = datetime.now() - timedelta(days=70)
-	contact_names = frappe.get_all("Contact", filters={"user": ["in", DEMO_USER_EMAILS]}, pluck="name")
-	for name in contact_names:
+	_avatar_by_email = {u["email"]: u["avatar"] for u in DEMO_USERS}
+	contact_names = frappe.get_all(
+		"Contact", filters={"user": ["in", DEMO_USER_EMAILS]}, fields=["name", "user"]
+	)
+	for row in contact_names:
 		frappe.db.set_value(
 			"Contact",
-			name,
-			{"creation": _ts, "modified": _ts},
+			row.name,
+			{"image": _avatar_by_email.get(row.user, ""), "creation": _ts, "modified": _ts},
 			update_modified=False,
 		)
 

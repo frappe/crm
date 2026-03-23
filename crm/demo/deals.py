@@ -72,6 +72,16 @@ def create_demo_deals(lead_names, demo_users):
 	# Days ago each deal was created (always after its lead)
 	_deal_days = [50, 37, 18, 11, 24, 9, 5]
 	_deal_owners = [session_user, owner_1, owner_2, session_user, owner_1, owner_2, session_user]
+	# Organization logos keyed by org name (index order: alice, david, henry, iris, jack, karen, leo)
+	_org_logos = {
+		"Acme Corp": "/assets/crm/images/demo/acme-corp.png",
+		"TechStart Inc": "/assets/crm/images/demo/techstart-inc.png",
+		"PivotTech Solutions": "/assets/crm/images/demo/pivottech-solutions.png",
+		"ScaleUp Labs": "/assets/crm/images/demo/scaleup-labs.png",
+		"Meridian Systems": "/assets/crm/images/demo/meridian-systems.png",
+		"Vertex Analytics": "/assets/crm/images/demo/vertex-analytics.png",
+		"Forge Digital": "/assets/crm/images/demo/forge-digital.png",
+	}
 	now = datetime.now()
 
 	for d_name, days, d_owner, li in zip(
@@ -81,6 +91,9 @@ def create_demo_deals(lead_names, demo_users):
 		backdate("CRM Deal", d_name, d_owner, ts)
 		org = frappe.db.get_value("CRM Deal", d_name, "organization")
 		if org:
+			logo = _org_logos.get(org)
+			if logo:
+				frappe.db.set_value("CRM Organization", org, "organization_logo", logo, update_modified=False)
 			backdate("CRM Organization", org, d_owner, ts)
 		contacts = frappe.get_all(
 			"CRM Contacts", filters={"parent": d_name, "parenttype": "CRM Deal"}, pluck="contact"
