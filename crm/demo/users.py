@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 import frappe
 from frappe.query_builder import DocType
 
@@ -43,6 +45,17 @@ def create_demo_users():
 					"roles": [{"role": r} for r in user_data["roles"]],
 				}
 			).insert(ignore_permissions=True)
+
+	# Backdate auto-created contacts so they don't show "just now"
+	_ts = datetime.now() - timedelta(days=70)
+	contact_names = frappe.get_all("Contact", filters={"user": ["in", DEMO_USER_EMAILS]}, pluck="name")
+	for name in contact_names:
+		frappe.db.set_value(
+			"Contact",
+			name,
+			{"creation": _ts, "modified": _ts},
+			update_modified=False,
+		)
 
 	return DEMO_USER_EMAILS
 

@@ -101,9 +101,16 @@ def create_demo_call_logs(lead_names, demo_users):
 
 	created = []
 	for data in call_logs_data:
+		log_owner = data.get("caller") or data.get("receiver") or frappe.session.user
+		log_ts = data.get("start_time")
 		log = frappe.get_doc(
 			{"doctype": "CRM Call Log", "id": frappe.generate_hash(length=10), **data}
 		).insert(ignore_permissions=True)
+		patch = {"owner": log_owner, "modified_by": log_owner}
+		if log_ts:
+			patch["creation"] = log_ts
+			patch["modified"] = log_ts
+		frappe.db.set_value("CRM Call Log", log.name, patch, update_modified=False)
 		created.append(log.name)
 
 	return created
