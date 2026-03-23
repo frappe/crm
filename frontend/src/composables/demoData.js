@@ -8,6 +8,7 @@ const _clearDemoData = createResource({
   url: 'crm.demo.api.clear_demo_data',
   onSuccess() {
     isDemoDataCreated.value = false
+    window.location.reload()
   },
 })
 
