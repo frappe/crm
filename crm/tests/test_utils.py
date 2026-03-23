@@ -410,7 +410,6 @@ class TestCreateLeadFromIncomingEmail(FrappeTestCase):
 	@classmethod
 	def setUpClass(cls):
 		super().setUpClass()
-		frappe.db.set_single_value("FCRM Settings", "create_lead_from_incoming_email", 1)
 		frappe.db.set_single_value("FCRM Settings", "auto_update_communication_status", 0)
 		frappe.db.set_single_value("FCRM Settings", "update_timestamp_on_new_communication", 0)
 
@@ -421,9 +420,26 @@ class TestCreateLeadFromIncomingEmail(FrappeTestCase):
 
 	def tearDown(self):
 		frappe.db.rollback()
-		frappe.db.set_single_value("FCRM Settings", "create_lead_from_incoming_email", 1)
+		frappe.db.set_single_value("FCRM Settings", "auto_update_communication_status", 0)
+		frappe.db.set_single_value("FCRM Settings", "update_timestamp_on_new_communication", 0)
 
-	def _incoming_comm(self, sender, sender_full_name=None, **kwargs):
+	def _make_email_account(self, create_lead=1):
+		"""Create a minimal incoming Email Account with the CRM custom field set."""
+		email_account = frappe.get_doc(
+			{
+				"doctype": "Email Account",
+				"email_account_name": "Test CRM Incoming",
+				"email_id": "test-crm-incoming@example.com",
+				"enable_incoming": 1,
+				"create_lead_from_incoming_email": create_lead,
+			}
+		)
+		email_account.flags.ignore_mandatory = True
+		email_account.flags.ignore_validate = True
+		email_account.insert(ignore_permissions=True)
+		return email_account
+
+	def _incoming_comm(self, sender, email_account_name, sender_full_name=None, **kwargs):
 		doc = frappe.get_doc(
 			{
 				"doctype": "Communication",
@@ -432,6 +448,7 @@ class TestCreateLeadFromIncomingEmail(FrappeTestCase):
 				"sent_or_received": "Received",
 				"subject": "Test Incoming Email",
 				"sender": sender,
+				"email_account": email_account_name,
 				**kwargs,
 			}
 		)
@@ -441,22 +458,39 @@ class TestCreateLeadFromIncomingEmail(FrappeTestCase):
 
 	def test_lead_created_from_incoming_email(self):
 		"""An unreferenced incoming email should create a new CRM Lead."""
-		doc = self._incoming_comm("newlead@example.com", sender_full_name="New Lead")
+		email_account = self._make_email_account()
+		doc = self._incoming_comm("newlead@example.com", email_account.name, sender_full_name="New Lead")
 		doc.insert(ignore_permissions=True)
 
 		self.assertTrue(frappe.db.exists("CRM Lead", {"email": "newlead@example.com"}))
 
 	def test_lead_not_created_when_setting_disabled(self):
-		"""When create_lead_from_incoming_email setting is off, no lead should be created."""
-		frappe.db.set_single_value("FCRM Settings", "create_lead_from_incoming_email", 0)
-
-		doc = self._incoming_comm("disabled@example.com")
+		"""When create_lead_from_incoming_email is off on the Email Account, no lead is created."""
+		email_account = self._make_email_account(create_lead=0)
+		doc = self._incoming_comm("disabled@example.com", email_account.name)
 		doc.insert(ignore_permissions=True)
 
 		self.assertFalse(frappe.db.exists("CRM Lead", {"email": "disabled@example.com"}))
 
+	def test_lead_not_created_when_no_email_account(self):
+		"""A Communication without an email_account should not create a lead."""
+		doc = frappe.get_doc(
+			{
+				"doctype": "Communication",
+				"communication_type": "Communication",
+				"communication_medium": "Email",
+				"sent_or_received": "Received",
+				"subject": "No email account",
+				"sender": "noaccount@example.com",
+			}
+		)
+		with patch("frappe.new_doc") as mock_new_doc:
+			create_lead_from_incoming_email(doc)
+			mock_new_doc.assert_not_called()
+
 	def test_lead_not_created_when_communication_already_referenced(self):
 		"""A Communication with an existing reference should not create a new lead."""
+		email_account = self._make_email_account()
 		existing = frappe.get_doc(
 			{"doctype": "CRM Lead", "first_name": "RefLead", "email": "reflead@example.com"}
 		)
@@ -464,6 +498,7 @@ class TestCreateLeadFromIncomingEmail(FrappeTestCase):
 
 		doc = self._incoming_comm(
 			"referenced@example.com",
+			email_account.name,
 			reference_doctype="CRM Lead",
 			reference_name=existing.name,
 		)
@@ -473,12 +508,13 @@ class TestCreateLeadFromIncomingEmail(FrappeTestCase):
 
 	def test_lead_not_created_when_lead_already_exists_for_sender(self):
 		"""No duplicate lead should be created when a lead with the sender email already exists."""
+		email_account = self._make_email_account()
 		existing = frappe.get_doc(
 			{"doctype": "CRM Lead", "first_name": "Existing", "email": "dupe@example.com"}
 		)
 		existing.insert(ignore_permissions=True)
 
-		doc = self._incoming_comm("dupe@example.com")
+		doc = self._incoming_comm("dupe@example.com", email_account.name)
 		doc.insert(ignore_permissions=True)
 
 		self.assertEqual(frappe.db.count("CRM Lead", {"email": "dupe@example.com"}), 1)
@@ -500,16 +536,24 @@ class TestCreateLeadFromIncomingEmail(FrappeTestCase):
 
 	def test_lead_not_created_for_sent_communication_with_non_communication_type(self):
 		"""A sent message with a non-Communication type should not create a lead."""
-		doc = self._incoming_comm("sent@example.com")
-		doc.sent_or_received = "Sent"
-		doc.communication_type = "Notification"
-		create_lead_from_incoming_email(doc)
-
-		self.assertFalse(frappe.db.exists("CRM Lead", {"email": "sent@example.com"}))
+		doc = frappe.get_doc(
+			{
+				"doctype": "Communication",
+				"communication_type": "Notification",
+				"communication_medium": "Email",
+				"sent_or_received": "Sent",
+				"subject": "Sent notification",
+				"sender": "sent@example.com",
+			}
+		)
+		with patch("frappe.new_doc") as mock_new_doc:
+			create_lead_from_incoming_email(doc)
+			mock_new_doc.assert_not_called()
 
 	def test_lead_first_name_from_sender_full_name(self):
 		"""The lead's first_name should come from sender_full_name when present."""
-		doc = self._incoming_comm("fullname@example.com", sender_full_name="Jane Doe")
+		email_account = self._make_email_account()
+		doc = self._incoming_comm("fullname@example.com", email_account.name, sender_full_name="Jane Doe")
 		create_lead_from_incoming_email(doc)
 
 		lead = frappe.db.get_value("CRM Lead", {"email": "fullname@example.com"}, "first_name")
@@ -517,7 +561,8 @@ class TestCreateLeadFromIncomingEmail(FrappeTestCase):
 
 	def test_lead_first_name_falls_back_to_email_prefix(self):
 		"""When sender_full_name is absent, the email prefix should be used as first_name."""
-		doc = self._incoming_comm("prefix@example.com")
+		email_account = self._make_email_account()
+		doc = self._incoming_comm("prefix@example.com", email_account.name)
 		create_lead_from_incoming_email(doc)
 
 		lead = frappe.db.get_value("CRM Lead", {"email": "prefix@example.com"}, "first_name")
