@@ -1,4 +1,15 @@
+import { createResource } from 'frappe-ui'
+import { ref } from 'vue'
 import { globalStore } from '@/stores/global'
+
+const isDemoDataCreated = ref(window.demo_data_created || false)
+
+const _clearDemoData = createResource({
+  url: 'crm.demo.api.clear_demo_data',
+  onSuccess() {
+    isDemoDataCreated.value = false
+  },
+})
 
 export function useDemoData() {
   const { $dialog } = globalStore()
@@ -15,7 +26,7 @@ export function useDemoData() {
           theme: 'red',
           variant: 'solid',
           onClick: (close) => {
-            // TODO: Use API to clear demo data
+            _clearDemoData.submit()
             close()
           },
         },
@@ -24,6 +35,7 @@ export function useDemoData() {
   }
 
   return {
+    isDemoDataCreated,
     clearDemoData,
   }
 }
