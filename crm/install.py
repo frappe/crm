@@ -19,6 +19,7 @@ def after_install(force=False):
 	add_default_fields_layout(force)
 	add_property_setter()
 	add_email_template_custom_fields()
+	add_email_account_custom_field()
 	add_default_industries()
 	add_default_lead_sources()
 	add_default_lost_reasons()
@@ -287,6 +288,28 @@ def add_email_template_custom_fields():
 		)
 
 		frappe.clear_cache(doctype="Email Template")
+
+
+def add_email_account_custom_field():
+	if not frappe.get_meta("Email Account").has_field("create_lead_from_incoming_email"):
+		click.secho("* Installing Custom Fields in Email Account")
+
+		create_custom_fields(
+			{
+				"Email Account": [
+					{
+						"default": "0",
+						"fieldname": "create_lead_from_incoming_email",
+						"fieldtype": "Check",
+						"label": "Create Lead from Incoming Emails",
+						"description": "Automatically create a lead when an incoming email is received from an unknown contact",
+						"insert_after": "create_contact",
+					}
+				]
+			}
+		)
+
+		frappe.clear_cache(doctype="Email Account")
 
 
 def add_default_industries():
