@@ -292,6 +292,13 @@ standard_dropdown_items = [
 		"is_standard": 1,
 	},
 	{
+		"name1": "clear_demo_data",
+		"label": "Clear Demo Data",
+		"type": "Route",
+		"route": "#",
+		"is_standard": 1,
+	},
+	{
 		"name1": "login_to_fc",
 		"label": "Login to Frappe Cloud",
 		"type": "Route",
