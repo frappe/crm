@@ -1,0 +1,65 @@
+import frappe
+from frappe.query_builder import DocType
+
+DEMO_USERS = [
+	{
+		"email": "sarah.demo@example.com",
+		"first_name": "Sarah",
+		"last_name": "Connor",
+		"roles": ["Sales Manager", "Sales User"],
+	},
+	{
+		"email": "john.demo@example.com",
+		"first_name": "John",
+		"last_name": "Parker",
+		"roles": ["Sales User"],
+	},
+	{
+		"email": "emily.demo@example.com",
+		"first_name": "Emily",
+		"last_name": "Chen",
+		"roles": ["Sales User"],
+	},
+]
+
+DEMO_USER_EMAILS = [u["email"] for u in DEMO_USERS]
+
+
+def create_demo_users():
+	for user_data in DEMO_USERS:
+		if not frappe.db.exists("User", user_data["email"]):
+			frappe.get_doc(
+				{
+					"doctype": "User",
+					"email": user_data["email"],
+					"first_name": user_data["first_name"],
+					"last_name": user_data["last_name"],
+					"send_welcome_email": 0,
+					"user_type": "System User",
+					"roles": [{"role": r} for r in user_data["roles"]],
+				}
+			).insert(ignore_permissions=True)
+
+	return DEMO_USER_EMAILS
+
+
+def delete_demo_users(demo_user_emails):
+	# delete notifications first — they link to users and block deletion
+	Notification = DocType("CRM Notification")
+	frappe.qb.from_(Notification).delete().where(
+		(Notification.from_user.isin(demo_user_emails)) | (Notification.to_user.isin(demo_user_emails))
+	).run()
+
+	# collect contact names before deleting users — User.on_trash NULLs contact.user
+	contact_names = frappe.get_all("Contact", filters={"user": ["in", demo_user_emails]}, pluck="name")
+
+	for email in demo_user_emails:
+		if frappe.db.exists("User", email):
+			frappe.delete_doc("User", email, ignore_permissions=True, force=True)
+
+	if contact_names:
+		for child_doctype in ("Contact Email", "Contact Phone", "Dynamic Link"):
+			Child = DocType(child_doctype)
+			frappe.qb.from_(Child).delete().where(Child.parent.isin(contact_names)).run()
+		Contact = DocType("Contact")
+		frappe.qb.from_(Contact).delete().where(Contact.name.isin(contact_names)).run()
