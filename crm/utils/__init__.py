@@ -337,9 +337,6 @@ def update_communication_status(doc: Communication, method: str | None = None):
 
 
 def create_lead_from_incoming_email(doc: Communication, method: str | None = None):
-	if not frappe.db.get_single_value("FCRM Settings", "create_lead_from_incoming_email"):
-		return
-
 	if doc.doctype != "Communication":
 		return
 
@@ -347,6 +344,15 @@ def create_lead_from_incoming_email(doc: Communication, method: str | None = Non
 		return
 
 	if doc.reference_doctype and doc.reference_name:
+		return
+
+	if not doc.email_account:
+		return
+
+	create_lead_enabled = frappe.db.get_value(
+		"Email Account", doc.email_account, "create_lead_from_incoming_email"
+	)
+	if not create_lead_enabled:
 		return
 
 	if frappe.db.exists("CRM Lead", {"email": doc.sender}):
