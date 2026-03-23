@@ -70,7 +70,7 @@ defineProps({
 const { settings, brand } = getSettings()
 const { logout } = sessionStore()
 const { getUser, isManager } = usersStore()
-const { clearDemoData } = useDemoData()
+const { clearDemoData, isDemoDataCreated } = useDemoData()
 
 const user = computed(() => getUser() || {})
 
@@ -143,7 +143,7 @@ function getStandardItem(item) {
         icon: h(BrushCleaningIcon),
         label: __(item.label),
         onClick: () => clearDemoData(),
-        condition: () => isManager(),
+        condition: () => isManager() && isDemoDataCreated.value,
       }
     case 'login_to_fc':
       return {
