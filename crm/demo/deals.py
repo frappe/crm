@@ -2,6 +2,7 @@ import json
 from datetime import datetime, timedelta
 
 import frappe
+from frappe.query_builder import DocType
 
 
 def create_demo_deals(lead_names, demo_users):
@@ -311,9 +312,8 @@ def _create_deal_versions(deal_names, session_user, owner_1, owner_2, now):
 
 def delete_demo_deals(deal_data):
 	"""
-	Delete deals, their linked organizations, and deal-specific communications.
+	Delete deals, their linked contacts, organizations, and deal-specific communications.
 	Comments and Versions are cascade-deleted when the deal is deleted.
-	Contacts are shared with leads — deleted by delete_demo_users.
 	"""
 	communication_names = deal_data.get("communications", [])
 	deal_names = deal_data.get("deals", [])
@@ -325,8 +325,18 @@ def delete_demo_deals(deal_data):
 	for name in deal_names:
 		if not frappe.db.exists("CRM Deal", name):
 			continue
-		# Collect linked organization before deleting deal
+		# Collect linked contacts and organization before deleting deal
+		contact_names = frappe.get_all(
+			"CRM Contacts", filters={"parent": name, "parenttype": "CRM Deal"}, pluck="contact"
+		)
 		org = frappe.db.get_value("CRM Deal", name, "organization")
 		frappe.delete_doc("CRM Deal", name, ignore_permissions=True, force=True)
+		for contact in contact_names:
+			if contact and frappe.db.exists("Contact", contact):
+				for child_doctype in ("Contact Email", "Contact Phone", "Dynamic Link"):
+					Child = DocType(child_doctype)
+					frappe.qb.from_(Child).delete().where(Child.parent == contact).run()
+				Contact = DocType("Contact")
+				frappe.qb.from_(Contact).delete().where(Contact.name == contact).run()
 		if org and frappe.db.exists("CRM Organization", org):
 			frappe.delete_doc("CRM Organization", org, ignore_permissions=True, force=True)
