@@ -7,12 +7,14 @@ DEMO_LEADS_KEY = "crm_demo_leads"
 DEMO_NOTES_KEY = "crm_demo_notes"
 DEMO_TASKS_KEY = "crm_demo_tasks"
 DEMO_CALL_LOGS_KEY = "crm_demo_call_logs"
+DEMO_ACTIVITIES_KEY = "crm_demo_activities"
 
 
 def create_demo_data():
 	if frappe.db.get_default(DEMO_STATE_KEY):
 		return
 
+	from crm.demo.activities import create_demo_activities
 	from crm.demo.call_logs import create_demo_call_logs
 	from crm.demo.leads import create_demo_leads
 	from crm.demo.notes import create_demo_notes
@@ -24,10 +26,12 @@ def create_demo_data():
 	note_names = create_demo_notes(lead_names)
 	task_names = create_demo_tasks(lead_names, demo_users)
 	call_log_names = create_demo_call_logs(lead_names, demo_users)
+	activity_data = create_demo_activities(lead_names, demo_users)
 	frappe.db.set_default(DEMO_LEADS_KEY, json.dumps(lead_names))
 	frappe.db.set_default(DEMO_NOTES_KEY, json.dumps(note_names))
 	frappe.db.set_default(DEMO_TASKS_KEY, json.dumps(task_names))
 	frappe.db.set_default(DEMO_CALL_LOGS_KEY, json.dumps(call_log_names))
+	frappe.db.set_default(DEMO_ACTIVITIES_KEY, json.dumps(activity_data))
 	frappe.db.set_default(DEMO_STATE_KEY, "1")
 
 
@@ -36,6 +40,7 @@ def clear_demo_data():
 	if not frappe.db.get_default(DEMO_STATE_KEY):
 		return
 
+	from crm.demo.activities import delete_demo_activities
 	from crm.demo.call_logs import delete_demo_call_logs
 	from crm.demo.leads import delete_demo_leads
 	from crm.demo.notes import delete_demo_notes
@@ -46,6 +51,8 @@ def clear_demo_data():
 	note_names = json.loads(frappe.db.get_default(DEMO_NOTES_KEY) or "[]")
 	task_names = json.loads(frappe.db.get_default(DEMO_TASKS_KEY) or "[]")
 	call_log_names = json.loads(frappe.db.get_default(DEMO_CALL_LOGS_KEY) or "[]")
+	activity_data = json.loads(frappe.db.get_default(DEMO_ACTIVITIES_KEY) or "{}")
+	delete_demo_activities(activity_data)
 	delete_demo_notes(note_names)
 	delete_demo_tasks(task_names)
 	delete_demo_call_logs(call_log_names)
@@ -55,6 +62,7 @@ def clear_demo_data():
 	frappe.db.set_default(DEMO_NOTES_KEY, None)
 	frappe.db.set_default(DEMO_TASKS_KEY, None)
 	frappe.db.set_default(DEMO_CALL_LOGS_KEY, None)
+	frappe.db.set_default(DEMO_ACTIVITIES_KEY, None)
 	frappe.db.set_default(DEMO_STATE_KEY, None)
 
 
