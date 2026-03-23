@@ -102,6 +102,15 @@
         </template>
       </SidebarLink>
       <SidebarLink
+        :label="__('Feedback')"
+        :isCollapsed="isSidebarCollapsed"
+        @click="showFeedbackModal = true"
+      >
+        <template #icon>
+          <LucideMessageSquare class="h-4 w-4" />
+        </template>
+      </SidebarLink>
+      <SidebarLink
         :label="isSidebarCollapsed ? __('Expand') : __('Collapse')"
         :isCollapsed="isSidebarCollapsed"
         class=""
@@ -139,6 +148,7 @@
 
 <script setup>
 import LucideLayoutDashboard from '~icons/lucide/layout-dashboard'
+import LucideMessageSquare from '~icons/lucide/message-square'
 import CRMLogo from '@/components/Icons/CRMLogo.vue'
 import InviteIcon from '@/components/Icons/InviteIcon.vue'
 import ConvertIcon from '@/components/Icons/ConvertIcon.vue'
@@ -171,7 +181,7 @@ import {
 import { usersStore } from '@/stores/users'
 import { sessionStore } from '@/stores/session'
 import { showSettings, activeSettingsPage } from '@/composables/settings'
-import { showChangePasswordModal } from '@/composables/modals'
+import { showChangePasswordModal, showFeedbackModal } from '@/composables/modals'
 import { FeatherIcon, call } from 'frappe-ui'
 import {
   SignupBanner,
