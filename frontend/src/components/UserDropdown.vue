@@ -51,7 +51,9 @@
 <script setup>
 import BrandLogo from '@/components/BrandLogo.vue'
 import FrappeCloudIcon from '@/components/Icons/FrappeCloudIcon.vue'
+import BrushCleaningIcon from '~icons/lucide/brush-cleaning'
 import Apps from '@/components/Apps.vue'
+import { useDemoData } from '@/composables/demoData'
 import { sessionStore } from '@/stores/session'
 import { usersStore } from '@/stores/users'
 import { getSettings } from '@/stores/settings'
@@ -67,7 +69,8 @@ defineProps({
 
 const { settings, brand } = getSettings()
 const { logout } = sessionStore()
-const { getUser } = usersStore()
+const { getUser, isManager } = usersStore()
+const { clearDemoData } = useDemoData()
 
 const user = computed(() => getUser() || {})
 
@@ -134,6 +137,13 @@ function getStandardItem(item) {
         label: __(item.label),
         onClick: () => (showSettings.value = true),
         condition: () => !isMobileView.value,
+      }
+    case 'clear_demo_data':
+      return {
+        icon: h(BrushCleaningIcon),
+        label: __(item.label),
+        onClick: () => clearDemoData(),
+        condition: () => isManager(),
       }
     case 'login_to_fc':
       return {
