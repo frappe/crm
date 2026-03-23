@@ -1,21 +1,25 @@
-import json
 from datetime import datetime, timedelta
 
 import frappe
 from frappe.query_builder import DocType
 
+from crm.demo.utils import (
+	backdate,
+	build_full_names,
+	fix_auto_records,
+	insert_comment,
+	insert_communication,
+	insert_version,
+	resolve_owners,
+)
+
 
 def create_demo_deals(lead_names, demo_users):
-	"""Convert five leads into deals and add deal-specific activity."""
-	from crm.demo.users import DEMO_USERS
+	"""Convert seven leads into deals and add deal-specific activity."""
 	from crm.fcrm.doctype.crm_lead.crm_lead import convert_to_deal
 
-	session_user = frappe.session.user
-	owner_1 = demo_users[0] if len(demo_users) > 0 else session_user
-	owner_2 = demo_users[1] if len(demo_users) > 1 else session_user
-
-	_full_names = {u["email"]: f"{u['first_name']} {u['last_name']}" for u in DEMO_USERS}
-	_full_names[session_user] = frappe.utils.get_fullname(session_user)
+	session_user, owner_1, owner_2, _ = resolve_owners(demo_users)
+	_full_names = build_full_names(session_user)
 
 	# leads[0] Alice, [3] David, [7] Henry, [8] Iris, [9] Jack → 5 active/won deals
 	# leads[10] Karen, [11] Leo → 2 lost deals
@@ -63,13 +67,42 @@ def create_demo_deals(lead_names, demo_users):
 	)
 
 	deal_names_list = [d_alice, d_david, d_henry, d_iris, d_jack, d_karen, d_leo]
+	# Converted lead indices — must match deal_names_list order
+	_converted_lead_indices = [0, 3, 7, 8, 9, 10, 11]
+	# Days ago each deal was created (always after its lead)
+	_deal_days = [50, 37, 18, 11, 24, 9, 5]
+	_deal_owners = [session_user, owner_1, owner_2, session_user, owner_1, owner_2, session_user]
 	now = datetime.now()
+
+	for d_name, days, d_owner, li in zip(
+		deal_names_list, _deal_days, _deal_owners, _converted_lead_indices, strict=False
+	):
+		ts = now - timedelta(days=days)
+		backdate("CRM Deal", d_name, d_owner, ts)
+		org = frappe.db.get_value("CRM Deal", d_name, "organization")
+		if org:
+			backdate("CRM Organization", org, d_owner, ts)
+		contacts = frappe.get_all(
+			"CRM Contacts", filters={"parent": d_name, "parenttype": "CRM Deal"}, pluck="contact"
+		)
+		for contact in contacts:
+			if contact:
+				backdate("Contact", contact, d_owner, ts)
+		backdate("CRM Lead", lead_names[li], d_owner, ts, set_creation=False)
+		fix_auto_records("CRM Deal", d_name, d_owner, ts)
+		fix_auto_records("CRM Lead", lead_names[li], d_owner, ts)
 
 	comment_names = _create_deal_comments(deal_names_list, session_user, owner_1, owner_2, _full_names, now)
 	communication_names = _create_deal_communications(
 		deal_names_list, session_user, owner_1, _full_names, now
 	)
 	_create_deal_versions(deal_names_list, session_user, owner_1, owner_2, now)
+
+	# Re-backdate modified to last-activity date so active deals sort to the top of the list.
+	# Index order: alice, david, henry, iris, jack, karen, leo
+	_deal_last_touched_days = [2, 4, 7, 10, 6, 8, 12]
+	for d_name, days, d_owner in zip(deal_names_list, _deal_last_touched_days, _deal_owners, strict=False):
+		backdate("CRM Deal", d_name, d_owner, now - timedelta(days=days), set_creation=False)
 
 	return {
 		"deals": deal_names_list,
@@ -152,28 +185,17 @@ def _create_deal_comments(deal_names, session_user, owner_1, owner_2, full_names
 		},
 	]
 
-	created = []
-	for data in comments_data:
-		ts = now - timedelta(days=data["days_ago"])
-		comment = frappe.get_doc(
-			{
-				"doctype": "Comment",
-				"comment_type": "Comment",
-				"reference_doctype": "CRM Deal",
-				"reference_name": data["deal"],
-				"content": data["content"],
-				"comment_email": data["owner"],
-				"comment_by": full_names.get(data["owner"], data["owner"]),
-			}
+	return [
+		insert_comment(
+			"CRM Deal",
+			data["deal"],
+			data["owner"],
+			data["content"],
+			full_names,
+			now - timedelta(days=data["days_ago"]),
 		)
-		comment.owner = data["owner"]
-		comment.modified_by = data["owner"]
-		comment.creation = ts
-		comment.modified = ts
-		comment.insert(ignore_permissions=True)
-		created.append(comment.name)
-
-	return created
+		for data in comments_data
+	]
 
 
 def _create_deal_communications(deal_names, session_user, owner_1, full_names, now):
@@ -216,35 +238,12 @@ def _create_deal_communications(deal_names, session_user, owner_1, full_names, n
 		},
 	]
 
-	created = []
-	for data in comms_data:
-		ts = now - timedelta(days=data["days_ago"])
-		sender_full = full_names.get(data["sender"], data["sender"])
-		comm = frappe.get_doc(
-			{
-				"doctype": "Communication",
-				"communication_type": "Communication",
-				"communication_medium": "Email",
-				"status": "Linked",
-				"sent_or_received": data["sent_or_received"],
-				"reference_doctype": "CRM Deal",
-				"reference_name": data["deal"],
-				"subject": data["subject"],
-				"content": data["content"],
-				"sender": data["sender"],
-				"sender_full_name": sender_full,
-				"recipients": data["recipients"],
-				"communication_date": ts,
-			}
+	return [
+		insert_communication(
+			"CRM Deal", data["deal"], data, full_names, now - timedelta(days=data["days_ago"])
 		)
-		comm.owner = data["owner"]
-		comm.modified_by = data["owner"]
-		comm.creation = ts
-		comm.modified = ts
-		comm.insert(ignore_permissions=True)
-		created.append(comm.name)
-
-	return created
+		for data in comms_data
+	]
 
 
 def _create_deal_versions(deal_names, session_user, owner_1, owner_2, now):
@@ -294,20 +293,9 @@ def _create_deal_versions(deal_names, session_user, owner_1, owner_2, now):
 	]
 
 	for data in versions_data:
-		ts = now - timedelta(days=data["days_ago"])
-		version = frappe.get_doc(
-			{
-				"doctype": "Version",
-				"ref_doctype": "CRM Deal",
-				"docname": data["deal"],
-				"data": json.dumps({"changed": data["changed"]}),
-			}
+		insert_version(
+			"CRM Deal", data["deal"], data["owner"], data["changed"], now - timedelta(days=data["days_ago"])
 		)
-		version.owner = data["owner"]
-		version.modified_by = data["owner"]
-		version.creation = ts
-		version.modified = ts
-		version.insert(ignore_permissions=True)
 
 
 def delete_demo_deals(deal_data):

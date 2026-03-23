@@ -25,10 +25,15 @@ def create_demo_data():
 
 	demo_users = create_demo_users()
 	lead_names = create_demo_leads(demo_users)
-	note_names = create_demo_notes(lead_names)
+	note_names = create_demo_notes(lead_names, demo_users)
 	task_names = create_demo_tasks(lead_names, demo_users)
 	call_log_names = create_demo_call_logs(lead_names, demo_users)
 	activity_data = create_demo_activities(lead_names, demo_users)
+
+	from crm.demo.leads import rebackdate_demo_leads
+
+	rebackdate_demo_leads(lead_names, demo_users)
+
 	deal_data = create_demo_deals(lead_names, demo_users)
 	frappe.db.set_default(DEMO_LEADS_KEY, json.dumps(lead_names))
 	frappe.db.set_default(DEMO_NOTES_KEY, json.dumps(note_names))

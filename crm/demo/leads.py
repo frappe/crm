@@ -1,11 +1,20 @@
+from datetime import datetime, timedelta
+
 import frappe
+
+from crm.demo.utils import backdate, fix_auto_records, resolve_owners
+
+# Days ago each lead was created — index matches leads_data order
+_LEAD_DAYS = [58, 52, 47, 43, 38, 34, 28, 22, 17, 30, 13, 8]
+
+# Last-activity date per lead (used for modified so active leads sort to top).
+# Converted leads will be overwritten by create_demo_deals anyway.
+# Index: [0]alice [1]bob [2]carol [3]david [4]eve [5]frank [6]grace [7]henry [8]iris [9]jack [10]karen [11]leo
+_LEAD_LAST_TOUCHED_DAYS = [50, 8, 11, 37, 38, 34, 28, 18, 11, 24, 9, 5]
 
 
 def create_demo_leads(demo_users):
-	session_user = frappe.session.user
-	owner_1 = demo_users[0] if len(demo_users) > 0 else session_user
-	owner_2 = demo_users[1] if len(demo_users) > 1 else session_user
-	owner_3 = demo_users[2] if len(demo_users) > 2 else session_user
+	session_user, owner_1, owner_2, owner_3 = resolve_owners(demo_users)
 
 	leads_data = [
 		# [0] Alice — will be converted to a deal
@@ -178,12 +187,40 @@ def create_demo_leads(demo_users):
 		},
 	]
 
+	now = datetime.now()
 	created = []
-	for data in leads_data:
+	for data, days in zip(leads_data, _LEAD_DAYS, strict=False):
+		ts = now - timedelta(days=days)
+		owner = data["lead_owner"]
 		lead = frappe.get_doc({"doctype": "CRM Lead", **data}).insert(ignore_permissions=True)
+		backdate("CRM Lead", lead.name, owner, ts)
+		fix_auto_records("CRM Lead", lead.name, owner, ts)
 		created.append(lead.name)
 
 	return created
+
+
+def rebackdate_demo_leads(lead_names, demo_users):
+	"""Re-apply modified timestamps after activity creation resets them."""
+	session_user, owner_1, owner_2, owner_3 = resolve_owners(demo_users)
+	# Must match the lead_owner assignments in create_demo_leads (same index order)
+	_owners = [
+		session_user,
+		owner_1,
+		owner_2,
+		owner_1,
+		owner_1,
+		owner_2,
+		session_user,
+		owner_3,
+		session_user,
+		owner_1,
+		owner_2,
+		session_user,
+	]
+	now = datetime.now()
+	for name, days, owner in zip(lead_names, _LEAD_LAST_TOUCHED_DAYS, _owners, strict=False):
+		backdate("CRM Lead", name, owner, now - timedelta(days=days), set_creation=False)
 
 
 def delete_demo_leads(lead_names):
