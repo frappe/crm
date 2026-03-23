@@ -6,18 +6,21 @@ DEMO_USERS = [
 		"email": "sarah.demo@example.com",
 		"first_name": "Sarah",
 		"last_name": "Connor",
+		"mobile_no": "+1 555 100 0002",
 		"roles": ["Sales Manager", "Sales User"],
 	},
 	{
 		"email": "john.demo@example.com",
 		"first_name": "John",
 		"last_name": "Parker",
+		"mobile_no": "+1 555 100 0003",
 		"roles": ["Sales User"],
 	},
 	{
 		"email": "emily.demo@example.com",
 		"first_name": "Emily",
 		"last_name": "Chen",
+		"mobile_no": "+1 555 100 0004",
 		"roles": ["Sales User"],
 	},
 ]
@@ -36,6 +39,7 @@ def create_demo_users():
 					"last_name": user_data["last_name"],
 					"send_welcome_email": 0,
 					"user_type": "System User",
+					"mobile_no": user_data["mobile_no"],
 					"roles": [{"role": r} for r in user_data["roles"]],
 				}
 			).insert(ignore_permissions=True)
