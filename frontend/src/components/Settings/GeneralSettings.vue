@@ -53,28 +53,6 @@
           />
         </div>
       </div>
-      <div class="h-px border-t mx-2 border-outline-gray-modals" />
-      <div class="flex gap-4 items-center justify-between py-3 px-2">
-        <div class="flex flex-col">
-          <div class="text-p-base font-medium text-ink-gray-7 truncate">
-            {{ __('Create lead from incoming email') }}
-          </div>
-          <div class="text-p-sm text-ink-gray-5">
-            {{
-              __(
-                'Automatically create a new lead from incoming email communication if no existing lead is found',
-              )
-            }}
-          </div>
-        </div>
-        <div>
-          <Switch
-            v-model="settings.doc.create_lead_from_incoming_email"
-            size="sm"
-            @click.stop="toggle('create_lead_from_incoming_email')"
-          />
-        </div>
-      </div>
     </div>
   </div>
 </template>
