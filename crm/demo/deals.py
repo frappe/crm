@@ -16,7 +16,8 @@ def create_demo_deals(lead_names, demo_users):
 	_full_names = {u["email"]: f"{u['first_name']} {u['last_name']}" for u in DEMO_USERS}
 	_full_names[session_user] = frappe.utils.get_fullname(session_user)
 
-	# leads[0] Alice, [3] David, [7] Henry, [8] Iris, [9] Jack → 5 deals
+	# leads[0] Alice, [3] David, [7] Henry, [8] Iris, [9] Jack → 5 active/won deals
+	# leads[10] Karen, [11] Leo → 2 lost deals
 	d_alice = convert_to_deal(
 		lead=lead_names[0],
 		deal={"status": "Demo/Making", "deal_value": 120000, "probability": 50, "deal_owner": session_user},
@@ -35,10 +36,32 @@ def create_demo_deals(lead_names, demo_users):
 	)
 	d_jack = convert_to_deal(
 		lead=lead_names[9],
-		deal={"status": "Ready to Close", "deal_value": 175000, "probability": 85, "deal_owner": owner_1},
+		deal={"status": "Won", "deal_value": 175000, "probability": 100, "deal_owner": owner_1},
+	)
+	d_karen = convert_to_deal(
+		lead=lead_names[10],
+		deal={
+			"status": "Lost",
+			"deal_value": 95000,
+			"probability": 0,
+			"deal_owner": owner_2,
+			"lost_reason": "Competitor",
+			"lost_notes": "Prospect chose a competitor offering deeper BI integrations out of the box. Price was not the issue — feature parity was.",
+		},
+	)
+	d_leo = convert_to_deal(
+		lead=lead_names[11],
+		deal={
+			"status": "Lost",
+			"deal_value": 55000,
+			"probability": 0,
+			"deal_owner": session_user,
+			"lost_reason": "Budget constraints",
+			"lost_notes": "Q2 budget was cut. Leo said they would revisit in Q4 once headcount hiring is complete. Added to nurture sequence.",
+		},
 	)
 
-	deal_names_list = [d_alice, d_david, d_henry, d_iris, d_jack]
+	deal_names_list = [d_alice, d_david, d_henry, d_iris, d_jack, d_karen, d_leo]
 	now = datetime.now()
 
 	comment_names = _create_deal_comments(deal_names_list, session_user, owner_1, owner_2, _full_names, now)
@@ -100,11 +123,31 @@ def _create_deal_comments(deal_names, session_user, owner_1, owner_2, full_names
 			"deal": deal_names[4],  # Jack / Meridian Systems
 			"owner": owner_1,
 			"content": (
-				"<p>Jack confirmed they're ready to sign. Final contract sent across — their legal "
-				"team requested one minor amendment on the SLA clause. Revised version sent back "
-				"for approval. Expecting signature this week.</p>"
+				"<p>Deal closed — Jack signed the contract this morning. Final value $175k annual. "
+				"Onboarding is scheduled for next Monday. Handoff notes sent to the customer "
+				"success team. Great result for the quarter!</p>"
 			),
 			"days_ago": 2,
+		},
+		{
+			"deal": deal_names[5],  # Karen / Vertex Analytics
+			"owner": owner_2,
+			"content": (
+				"<p>Karen's team went with a competitor — they had deeper BI integrations that we "
+				"currently don't support. Not a pricing issue. Flagged to product team for roadmap "
+				"consideration. Karen asked us to follow up in 6 months.</p>"
+			),
+			"days_ago": 8,
+		},
+		{
+			"deal": deal_names[6],  # Leo / Forge Digital
+			"owner": session_user,
+			"content": (
+				"<p>Budget was cut for the rest of the year — Leo was very apologetic and said the "
+				"product was exactly what they needed. Re-added to nurture sequence for Q4. "
+				"Good candidate for a comeback deal.</p>"
+			),
+			"days_ago": 12,
 		},
 	]
 
@@ -232,8 +275,20 @@ def _create_deal_versions(deal_names, session_user, owner_1, owner_2, now):
 		{
 			"deal": deal_names[4],  # Jack
 			"owner": owner_1,
-			"changed": [["deal_value", "150000", "175000"]],
+			"changed": [["status", "Ready to Close", "Won"]],
 			"days_ago": 3,
+		},
+		{
+			"deal": deal_names[5],  # Karen
+			"owner": owner_2,
+			"changed": [["status", "Proposal/Quotation", "Lost"]],
+			"days_ago": 9,
+		},
+		{
+			"deal": deal_names[6],  # Leo
+			"owner": session_user,
+			"changed": [["status", "Demo/Making", "Lost"]],
+			"days_ago": 13,
 		},
 	]
 

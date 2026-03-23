@@ -148,6 +148,34 @@ def create_demo_leads(demo_users):
 			"annual_revenue": 25000000,
 			"lead_owner": owner_1,
 		},
+		# [10] Karen — will be converted to a Lost deal
+		{
+			"first_name": "Karen",
+			"last_name": "White",
+			"email": "karen.white@example.com",
+			"mobile_no": "+1 555 000 2222",
+			"organization": "Vertex Analytics",
+			"job_title": "Director of Strategy",
+			"status": "Qualified",
+			"source": "Advertisement",
+			"no_of_employees": "201-500",
+			"annual_revenue": 9000000,
+			"lead_owner": owner_2,
+		},
+		# [11] Leo — will be converted to a Lost deal
+		{
+			"first_name": "Leo",
+			"last_name": "Brown",
+			"email": "leo.brown@example.com",
+			"mobile_no": "+1 555 000 3333",
+			"organization": "Forge Digital",
+			"job_title": "Head of Product",
+			"status": "Qualified",
+			"source": "Cold Calling",
+			"no_of_employees": "51-200",
+			"annual_revenue": 4000000,
+			"lead_owner": session_user,
+		},
 	]
 
 	created = []
