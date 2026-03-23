@@ -7,7 +7,7 @@ from frappe import _
 
 @frappe.whitelist()
 def submit_feedback(subject, feedback_type, message, email=None):
-	"""Submit user feedback from the CRM frontend."""
+	"""Submit user feedback from the CRM frontend by emailing crm@frappe.io."""
 	if not subject:
 		frappe.throw(_("Subject is required"), frappe.MandatoryError)
 	if not feedback_type:
@@ -15,11 +15,23 @@ def submit_feedback(subject, feedback_type, message, email=None):
 	if not message:
 		frappe.throw(_("Message is required"), frappe.MandatoryError)
 
-	doc = frappe.new_doc("CRM Feedback")
-	doc.subject = subject
-	doc.feedback_type = feedback_type
-	doc.message = message
-	doc.email = email or ""
-	doc.insert(ignore_permissions=True)
+	sender = frappe.session.user
+	reply_to = email or sender
 
-	return {"success": True, "name": doc.name}
+	body = f"""
+<p><strong>Type:</strong> {feedback_type}</p>
+<p><strong>From:</strong> {sender}</p>
+<p><strong>Reply-To:</strong> {reply_to}</p>
+<hr>
+<p>{frappe.utils.escape_html(message)}</p>
+"""
+
+	frappe.sendmail(
+		recipients=["crm@frappe.io"],
+		subject=f"[CRM Feedback] {subject}",
+		message=body,
+		reply_to=reply_to,
+		now=True,
+	)
+
+	return {"success": True}
