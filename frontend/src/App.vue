@@ -14,11 +14,14 @@ import NotPermitted from '@/pages/NotPermitted.vue'
 import EventNotificationPopup from '@/components/EventNotificationPopup.vue'
 import { Dialogs } from '@/utils/dialogs'
 import { sessionStore } from '@/stores/session'
-import { FrappeUIProvider, setConfig } from 'frappe-ui'
+import { FrappeUIProvider, setConfig, useTheme } from 'frappe-ui'
 import { computed, defineAsyncComponent, provide } from 'vue'
 
 const session = sessionStore()
 provide('session', session)
+
+const { initializeTheme } = useTheme()
+initializeTheme()
 
 const MobileLayout = defineAsyncComponent(
   () => import('./components/Layouts/MobileLayout.vue'),
