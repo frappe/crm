@@ -43,6 +43,7 @@ def get_boot():
 			"setup_complete": cint(frappe.get_system_settings("setup_complete")),
 			"sysdefaults": frappe.defaults.get_defaults(),
 			"is_demo_site": frappe.conf.get("is_demo_site"),
+			"demo_data_created": frappe.db.get_default("crm_demo_data_created") == "1",
 			"is_fc_site": is_fc_site(),
 			"translated_doctypes": get_translated_doctypes(),
 			"translated_messages": get_messages_for_boot(),

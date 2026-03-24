@@ -803,18 +803,22 @@ export function TemplateOption({ active, option, variant, icon, onClick }) {
 }
 
 /**
- * @param {Object} config - Configuration object
- * @param {Ref<boolean>} config.isConfirmingDelete - Ref to track confirmation state
- * @param {Function} config.onConfirmDelete - Callback when delete is confirmed
+ * @param {Ref<boolean>} isConfirmingDelete - Ref to track confirmation state
+ * @param {Function} onConfirmDelete - Callback when delete is confirmed
+ * @param {string} label - Label for the delete option
  * @returns {Array} Array of option objects for use in dropdowns
  */
-export function ConfirmDelete({ isConfirmingDelete, onConfirmDelete }) {
+export function ConfirmDelete({
+  isConfirmingDelete,
+  onConfirmDelete,
+  label = __('Delete'),
+}) {
   return [
     {
-      label: __('Delete'),
+      label,
       component: (props) =>
         TemplateOption({
-          option: __('Delete'),
+          option: label,
           icon: 'trash-2',
           active: props.active,
           variant: 'grey',
@@ -827,10 +831,10 @@ export function ConfirmDelete({ isConfirmingDelete, onConfirmDelete }) {
       condition: () => !isConfirmingDelete.value,
     },
     {
-      label: __('Confirm Delete'),
+      label: __('Confirm {0}', [label]),
       component: (props) =>
         TemplateOption({
-          option: __('Confirm Delete'),
+          option: __('Confirm {0}', [label]),
           icon: 'trash-2',
           active: props.active,
           variant: 'danger',
