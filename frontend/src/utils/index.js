@@ -808,7 +808,11 @@ export function TemplateOption({ active, option, variant, icon, onClick }) {
  * @param {string} label - Label for the delete option
  * @returns {Array} Array of option objects for use in dropdowns
  */
-export function ConfirmDelete({ isConfirmingDelete, onConfirmDelete, label = __('Delete') }) {
+export function ConfirmDelete({
+  isConfirmingDelete,
+  onConfirmDelete,
+  label = __('Delete'),
+}) {
   return [
     {
       label,
