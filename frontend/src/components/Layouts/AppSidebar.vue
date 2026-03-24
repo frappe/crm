@@ -139,6 +139,9 @@
 
 <script setup>
 import LucideLayoutDashboard from '~icons/lucide/layout-dashboard'
+import SignupBanner from '@/components/Billing/SignupBanner.vue'
+import TrialBanner from '@/components/Billing/TrialBanner.vue'
+import HelpModal from '@/components/Help/HelpModal.vue'
 import CRMLogo from '@/components/Icons/CRMLogo.vue'
 import InviteIcon from '@/components/Icons/InviteIcon.vue'
 import ConvertIcon from '@/components/Icons/ConvertIcon.vue'
@@ -162,6 +165,8 @@ import NotificationsIcon from '@/components/Icons/NotificationsIcon.vue'
 import HelpIcon from '@/components/Icons/HelpIcon.vue'
 import SidebarLink from '@/components/SidebarLink.vue'
 import Notifications from '@/components/Notifications.vue'
+import GettingStartedBanner from '@/components/Onboarding/GettingStartedBanner.vue'
+import IntermediateStepModal from '@/components/Onboarding/IntermediateStepModal.vue'
 import Settings from '@/components/Settings/Settings.vue'
 import { viewsStore } from '@/stores/views'
 import {
@@ -174,14 +179,9 @@ import { showSettings, activeSettingsPage } from '@/composables/settings'
 import { showChangePasswordModal } from '@/composables/modals'
 import { FeatherIcon, call } from 'frappe-ui'
 import {
-  SignupBanner,
-  TrialBanner,
-  HelpModal,
-  GettingStartedBanner,
   useOnboarding,
   showHelpModal,
   minimize,
-  IntermediateStepModal,
   useTelemetry,
 } from 'frappe-ui/frappe'
 import router from '@/router'
