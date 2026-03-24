@@ -46,6 +46,8 @@ def create_demo_data():
 
 @frappe.whitelist()
 def clear_demo_data():
+	frappe.only_for(["Sales Manager", "System Manager"], True)
+
 	if not frappe.db.get_default(DEMO_STATE_KEY):
 		return
 
