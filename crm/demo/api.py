@@ -1,7 +1,7 @@
 import json
 
 import frappe
-from utils.telemetry import capture
+from frappe.utils.telemetry import capture
 
 DEMO_STATE_KEY = "crm_demo_data_created"
 DEMO_LEADS_KEY = "crm_demo_leads"
