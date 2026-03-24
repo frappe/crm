@@ -12,7 +12,7 @@ DEMO_ACTIVITIES_KEY = "crm_demo_activities"
 DEMO_DEALS_KEY = "crm_demo_deals"
 
 
-def create_demo_data():
+def create_demo_data(args: dict | None = None):
 	if frappe.db.get_default(DEMO_STATE_KEY):
 		return
 
