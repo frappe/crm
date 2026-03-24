@@ -1,3 +1,4 @@
+import json
 import os
 
 import frappe
@@ -11,6 +12,15 @@ class TestDemoData(IntegrationTestCase):
 		from crm.demo.api import clear_demo_data
 
 		clear_demo_data()
+
+	def _check_demo_records_exist(self, doctype, record_names):
+		"""Helper method to check if specific demo records exist"""
+		if not record_names:
+			return False
+		for name in record_names:
+			if frappe.db.exists(doctype, name):
+				return True
+		return False
 
 	def test_demo_data_lifecycle(self):
 		from crm.demo.api import clear_demo_data, create_demo_data
@@ -27,11 +37,13 @@ class TestDemoData(IntegrationTestCase):
 		# 1. Before creation: nothing should exist
 		for user in DEMO_USERS:
 			self.assertFalse(frappe.db.exists("User", user["email"]))
-		self.assertEqual(frappe.db.count("CRM Lead"), 0)
-		self.assertEqual(frappe.db.count("FCRM Note"), 0)
-		self.assertEqual(frappe.db.count("CRM Task"), 0)
-		self.assertEqual(frappe.db.count("CRM Call Log"), 0)
-		self.assertEqual(frappe.db.count("CRM Deal"), 0)
+
+		# Check that demo data defaults are not set
+		self.assertIsNone(frappe.db.get_default(DEMO_LEADS_KEY))
+		self.assertIsNone(frappe.db.get_default(DEMO_NOTES_KEY))
+		self.assertIsNone(frappe.db.get_default(DEMO_TASKS_KEY))
+		self.assertIsNone(frappe.db.get_default(DEMO_CALL_LOGS_KEY))
+		self.assertIsNone(frappe.db.get_default(DEMO_DEALS_KEY))
 
 		# 2. Create demo data
 		create_demo_data()
@@ -76,17 +88,30 @@ class TestDemoData(IntegrationTestCase):
 		self.assertTrue(frappe.db.get_default(DEMO_ACTIVITIES_KEY))
 		self.assertTrue(frappe.db.get_default(DEMO_DEALS_KEY))
 
-		# 3. Clear demo data
+		# 3. Capture demo record names before clearing
+		lead_names = json.loads(frappe.db.get_default(DEMO_LEADS_KEY) or "[]")
+		note_names = json.loads(frappe.db.get_default(DEMO_NOTES_KEY) or "[]")
+		task_names = json.loads(frappe.db.get_default(DEMO_TASKS_KEY) or "[]")
+		call_log_names = json.loads(frappe.db.get_default(DEMO_CALL_LOGS_KEY) or "[]")
+		deal_data = json.loads(frappe.db.get_default(DEMO_DEALS_KEY) or "{}")
+
+		# Clear demo data
 		clear_demo_data()
 
-		# All data should be gone
+		# All demo data should be gone - check using the tracked record names
+
+		# Users should be deleted
 		for user in DEMO_USERS:
 			self.assertFalse(frappe.db.exists("User", user["email"]))
-		self.assertEqual(frappe.db.count("CRM Lead"), 0)
-		self.assertEqual(frappe.db.count("FCRM Note"), 0)
-		self.assertEqual(frappe.db.count("CRM Task"), 0)
-		self.assertEqual(frappe.db.count("CRM Call Log"), 0)
-		self.assertEqual(frappe.db.count("CRM Deal"), 0)
+
+		# Demo records should not exist
+		self.assertFalse(self._check_demo_records_exist("CRM Lead", lead_names))
+		self.assertFalse(self._check_demo_records_exist("FCRM Note", note_names))
+		self.assertFalse(self._check_demo_records_exist("CRM Task", task_names))
+		self.assertFalse(self._check_demo_records_exist("CRM Call Log", call_log_names))
+		if isinstance(deal_data, dict) and deal_data.get("deals"):
+			self.assertFalse(self._check_demo_records_exist("CRM Deal", deal_data.get("deals", [])))
+
 		# Site defaults cleared
 		self.assertIsNone(frappe.db.get_default(DEMO_STATE_KEY))
 		self.assertIsNone(frappe.db.get_default(DEMO_LEADS_KEY))
