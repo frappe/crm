@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2026-03-15 09:45+0000\n"
-"PO-Revision-Date: 2026-03-17 12:52\n"
+"POT-Creation-Date: 2026-03-22 09:44+0000\n"
+"PO-Revision-Date: 2026-03-24 13:28\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Dutch\n"
 "MIME-Version: 1.0\n"
@@ -34,8 +34,8 @@ msgstr "(Geen Titel)"
 msgid "01/01/2022 to 01/31/2022"
 msgstr ""
 
-#: frontend/src/components/Modals/TaskModal.vue:85
-#: frontend/src/components/Telephony/TaskPanel.vue:70
+#: frontend/src/components/Modals/TaskModal.vue:86
+#: frontend/src/components/Telephony/TaskPanel.vue:71
 msgid "01/04/2024 11:30 PM"
 msgstr "01/04/2024 23:30"
 
@@ -249,12 +249,16 @@ msgstr "Toegangstoken"
 msgid "Access token is required"
 msgstr "Een toegangstoken is vereist"
 
+#: frontend/src/components/Settings/Settings.vue:95
+msgid "Account"
+msgstr "Rekening"
+
 #. Label of the account_id (Data) field in DocType 'Facebook Page'
 #: crm/lead_syncing/doctype/facebook_page/facebook_page.json
 msgid "Account ID"
 msgstr "Account ID"
 
-#: frontend/src/components/Settings/ProfileSettings.vue:78
+#: frontend/src/components/Settings/Profile/ProfileSettings.vue:87
 msgid "Account Info & Security"
 msgstr ""
 
@@ -275,7 +279,7 @@ msgstr "Account SID"
 msgid "Account name is required"
 msgstr "De accountnaam is verplicht"
 
-#: frontend/src/components/Settings/Settings.vue:153
+#: frontend/src/components/Settings/Settings.vue:167
 msgid "Accounts"
 msgstr "Rekeningen"
 
@@ -338,6 +342,10 @@ msgstr ""
 
 #: frontend/src/components/Modals/EventModal.vue:179
 msgid "Add Description."
+msgstr ""
+
+#: frontend/src/components/Settings/Profile/UserEmailSettings.vue:100
+msgid "Add Email"
 msgstr ""
 
 #: frontend/src/components/Modals/AddExistingUserModal.vue:4
@@ -584,6 +592,10 @@ msgstr "Elke mislukte lead synchronisatie verschijnt hier"
 msgid "App Name"
 msgstr "App Naam"
 
+#: frontend/src/components/Settings/PreferencesSettings.vue:16
+msgid "Appearance"
+msgstr ""
+
 #: frontend/src/components/Settings/BrandSettings.vue:65
 msgid "Appears in the left sidebar. Recommended size is 32x32 px in PNG or SVG"
 msgstr "Verschijnt in de linker zijbalk. Aanbevolen grootte is 32x32 px in PNG of SVG"
@@ -623,7 +635,7 @@ msgid "Are you sure you want to delete this contact?"
 msgstr "Weet u zeker dat u deze contactpersoon wilt verwijderen?"
 
 #: frontend/src/components/Modals/EventModal.vue:468
-#: frontend/src/pages/Calendar.vue:400
+#: frontend/src/pages/Calendar.vue:401
 msgid "Are you sure you want to delete this event?"
 msgstr "Weet u zeker dat u deze gebeurtenis wilt verwijderen?"
 
@@ -683,7 +695,7 @@ msgstr ""
 msgid "Assign To"
 msgstr "Toewijzen aan"
 
-#: frontend/src/components/AssignToBody.vue:63
+#: frontend/src/components/AssignToBody.vue:64
 msgid "Assign To Me"
 msgstr ""
 
@@ -751,13 +763,9 @@ msgid "Assignment Rule {0} Updated"
 msgstr ""
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRules.vue:7
-#: frontend/src/components/Settings/Settings.vue:169
+#: frontend/src/components/Settings/Settings.vue:183
 msgid "Assignment Rules"
 msgstr "Toewijzingsregels"
-
-#: frontend/src/components/Settings/AssignmentRules/AssignmentRules.vue:11
-msgid "Assignment Rules automatically assign lead/deal to the right sales user based on predefined conditions"
-msgstr ""
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:302
 msgid "Assignment Schedule"
@@ -789,7 +797,7 @@ msgid "Attach"
 msgstr "Toevoegen"
 
 #: frontend/src/components/CommentBox.vue:65
-#: frontend/src/components/EmailEditor.vue:146 frontend/src/pages/Deal.vue:114
+#: frontend/src/components/EmailEditor.vue:163 frontend/src/pages/Deal.vue:114
 #: frontend/src/pages/Lead.vue:161
 msgid "Attach a File"
 msgstr ""
@@ -831,6 +839,17 @@ msgstr ""
 msgid "Auto update Expected Deal Value"
 msgstr ""
 
+#. Label of the auto_update_communication_status (Check) field in DocType 'FCRM
+#. Settings'
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
+#: frontend/src/components/Settings/GeneralSettings.vue:38
+msgid "Auto update communication status"
+msgstr ""
+
+#: frontend/src/components/Settings/AssignmentRules/AssignmentRules.vue:11
+msgid "Auto-assign leads/deals to the right sales user based on predefined conditions"
+msgstr ""
+
 #. Description of the 'Condition' (Code) field in DocType 'CRM Service Level
 #. Agreement'
 #: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.json
@@ -842,6 +861,13 @@ msgstr ""
 msgid "Autocomplete"
 msgstr "Automatisch aanvullen"
 
+#. Description of the 'Create lead from incoming email' (Check) field in
+#. DocType 'FCRM Settings'
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
+#: frontend/src/components/Settings/GeneralSettings.vue:64
+msgid "Automatically create a new lead from incoming email communication if no existing lead is found"
+msgstr ""
+
 #. Description of the 'Auto update Expected Deal Value' (Check) field in
 #. DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
@@ -849,7 +875,14 @@ msgstr "Automatisch aanvullen"
 msgid "Automatically update \"Expected Deal Value\" based on the total value of associated products in a deal"
 msgstr "Automatically update \"Expected Deal Value\" based on the total value of associated products in a deal"
 
-#: frontend/src/components/Settings/Settings.vue:166
+#. Description of the 'Auto update communication status' (Check) field in
+#. DocType 'FCRM Settings'
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
+#: frontend/src/components/Settings/GeneralSettings.vue:42
+msgid "Automatically update the Communication status for Leads & Deals when SLA is enabled. Set status to “Open” on new communication and “Replied” when a response is received"
+msgstr ""
+
+#: frontend/src/components/Settings/Settings.vue:180
 msgid "Automation & Rules"
 msgstr "Automation & Rules"
 
@@ -919,8 +952,8 @@ msgid "Axis Chart"
 msgstr ""
 
 #: frontend/src/components/Activities/EmailArea.vue:62
-#: frontend/src/components/EmailEditor.vue:45
-#: frontend/src/components/EmailEditor.vue:71
+#: frontend/src/components/EmailEditor.vue:62
+#: frontend/src/components/EmailEditor.vue:88
 msgid "BCC"
 msgstr "BCC"
 
@@ -954,7 +987,7 @@ msgstr "Backlog"
 msgid "Between"
 msgstr "Tussen"
 
-#: frontend/src/components/Settings/Settings.vue:119
+#: frontend/src/components/Settings/Settings.vue:133
 msgid "Brand"
 msgstr "Merk"
 
@@ -985,8 +1018,8 @@ msgid "Busy"
 msgstr "Bezig"
 
 #: frontend/src/components/Activities/EmailArea.vue:57
-#: frontend/src/components/EmailEditor.vue:35
-#: frontend/src/components/EmailEditor.vue:57
+#: frontend/src/components/EmailEditor.vue:52
+#: frontend/src/components/EmailEditor.vue:74
 msgid "CC"
 msgstr "CC"
 
@@ -1007,7 +1040,7 @@ msgstr "CRM Contacten"
 
 #. Name of a DocType
 #: crm/fcrm/doctype/crm_dashboard/crm_dashboard.json
-#: frontend/src/pages/Dashboard.vue:304
+#: frontend/src/pages/Dashboard.vue:307
 msgid "CRM Dashboard"
 msgstr "CRM Dashboard"
 
@@ -1172,7 +1205,7 @@ msgstr "CSV"
 
 #. Label of the calendar_tab (Tab Break) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
-#: frontend/src/components/Settings/Settings.vue:124
+#: frontend/src/components/Settings/Settings.vue:138
 msgid "Calendar"
 msgstr "Kalender"
 
@@ -1245,10 +1278,10 @@ msgstr "Kan geen nieuwe poging doen om deze te synchroniseren zonder bron!"
 #: frontend/src/components/ColumnSettings.vue:123
 #: frontend/src/components/Dashboard/AddChartModal.vue:40
 #: frontend/src/components/DeleteLinkedDocModal.vue:119
-#: frontend/src/components/Modals/AssignmentModal.vue:69
+#: frontend/src/components/Modals/AssignmentModal.vue:70
 #: frontend/src/components/Modals/EventModal.vue:207
 #: frontend/src/components/Modals/LostReasonModal.vue:48
-#: frontend/src/components/Settings/Sla/EditResponseResolutionModal.vue:66
+#: frontend/src/components/Settings/Sla/EditResponseResolutionModal.vue:68
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:75
 #: frontend/src/components/Telephony/TwilioCallUI.vue:73
 #: frontend/src/components/ViewControls.vue:57
@@ -1272,7 +1305,7 @@ msgstr ""
 msgid "Cannot change role of user with Admin access"
 msgstr "Het is niet mogelijk om de rol van een gebruiker met beheerdersrechten te wijzigen"
 
-#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.py:60
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.py:63
 msgid "Cannot delete standard items {0}"
 msgstr "Kan standaard items {0} niet verwijderen"
 
@@ -1302,7 +1335,6 @@ msgstr "Categorie"
 msgid "Change"
 msgstr "Verandering"
 
-#: frontend/src/components/Settings/ProfileSettings.vue:29
 #: frontend/src/pages/Contact.vue:47 frontend/src/pages/Lead.vue:92
 #: frontend/src/pages/MobileContact.vue:37
 #: frontend/src/pages/MobileOrganization.vue:37
@@ -1311,9 +1343,13 @@ msgid "Change Image"
 msgstr "Afbeelding wijzigen"
 
 #: frontend/src/components/Modals/ChangePasswordModal.vue:2
-#: frontend/src/components/Settings/ProfileSettings.vue:120
+#: frontend/src/components/Settings/Profile/ProfileSettings.vue:117
 msgid "Change Password"
 msgstr "Wachtwoord wijzigen"
+
+#: frontend/src/components/Settings/Profile/ProfileSettings.vue:158
+msgid "Change Photo"
+msgstr ""
 
 #: frontend/src/components/Activities/TaskArea.vue:44
 msgid "Change Status"
@@ -1324,11 +1360,15 @@ msgstr ""
 msgid "Change deal status"
 msgstr "Deal-status wijzigen"
 
-#: frontend/src/components/Settings/ProfileSettings.vue:130
+#: frontend/src/components/Settings/PreferencesSettings.vue:60
 msgid "Change language of the application."
 msgstr ""
 
-#: frontend/src/components/Settings/ProfileSettings.vue:115
+#: frontend/src/components/Settings/PreferencesSettings.vue:71
+msgid "Change timezone of the application."
+msgstr ""
+
+#: frontend/src/components/Settings/Profile/ProfileSettings.vue:113
 msgid "Change your account password for security."
 msgstr ""
 
@@ -1355,6 +1395,10 @@ msgstr "Bestaande organisatie kiezen"
 
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:171
 msgid "Choose how long this SLA policy will be active."
+msgstr ""
+
+#: frontend/src/components/Settings/PreferencesSettings.vue:6
+msgid "Choose how you want to use the application by setting your preferences."
 msgstr ""
 
 #: frontend/src/components/Settings/AssignmentRules/AssigneeRules.vue:9
@@ -1459,7 +1503,7 @@ msgstr "Columns"
 msgid "Comment"
 msgstr "Commentaar"
 
-#: frontend/src/components/CommunicationArea.vue:274
+#: frontend/src/components/CommunicationArea.vue:275
 msgid "Comment sent!"
 msgstr ""
 
@@ -1518,6 +1562,12 @@ msgstr "Condition"
 msgid "Conditions for this rule were created from"
 msgstr "Voorwaarden voor deze regel zijn gemaakt vanuit"
 
+#: frontend/src/components/Settings/Profile/ProfileSettings.vue:103
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:162
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:187
+msgid "Configure"
+msgstr ""
+
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:18
 msgid "Configure Telephony Settings for your CRM"
 msgstr ""
@@ -1529,6 +1579,10 @@ msgstr "Configureer acties die worden weergegeven in de home dropdown"
 #: frontend/src/components/Settings/ForecastingSettings.vue:9
 msgid "Configure forecasting feature to help predict sales performance and growth"
 msgstr "Configureer voorspellingen functie om verkoopprestaties en groei te helpen voorspellen"
+
+#: frontend/src/components/Settings/GeneralSettings.vue:8
+msgid "Configure general settings for your application"
+msgstr ""
 
 #: frontend/src/components/Settings/CurrencySettings.vue:11
 msgid "Configure the Currency and Exchange Rate Provider for your CRM"
@@ -1546,11 +1600,11 @@ msgstr ""
 msgid "Configure your Calendar Settings like Default View and Event Notifications here"
 msgstr ""
 
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:181
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:182
 msgid "Configure your Exotel Telephony Integration Settings here"
 msgstr ""
 
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:158
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:157
 msgid "Configure your Twilio Telephony Integration Settings here"
 msgstr ""
 
@@ -1560,7 +1614,7 @@ msgstr "Bevestig"
 
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:237
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:202
-#: frontend/src/components/Settings/Sla/EditResponseResolutionModal.vue:57
+#: frontend/src/components/Settings/Sla/EditResponseResolutionModal.vue:59
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:66
 #: frontend/src/utils/index.js:830 frontend/src/utils/index.js:833
 msgid "Confirm Delete"
@@ -1716,7 +1770,7 @@ msgstr "Count"
 #: frontend/src/components/Modals/LeadModal.vue:37
 #: frontend/src/components/Modals/NoteModal.vue:52
 #: frontend/src/components/Modals/OrganizationModal.vue:41
-#: frontend/src/components/Modals/TaskModal.vue:103
+#: frontend/src/components/Modals/TaskModal.vue:104
 #: frontend/src/components/Modals/ViewModal.vue:43
 #: frontend/src/components/Settings/EmailAdd.vue:85
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:23
@@ -1776,6 +1830,13 @@ msgstr ""
 msgid "Create customer on status change"
 msgstr "Maak klant aan bij statuswijziging"
 
+#. Label of the create_lead_from_incoming_email (Check) field in DocType 'FCRM
+#. Settings'
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
+#: frontend/src/components/Settings/GeneralSettings.vue:60
+msgid "Create lead from incoming email"
+msgstr ""
+
 #: frontend/src/components/Layouts/AppSidebar.vue:349
 msgid "Create your first lead"
 msgstr "Maak uw eerste lead"
@@ -1799,7 +1860,7 @@ msgstr "Maak uw eerste taak aan"
 msgid "Currency"
 msgstr "Valuta"
 
-#: frontend/src/components/Settings/Settings.vue:114
+#: frontend/src/components/Settings/Settings.vue:128
 msgid "Currency & Exchange Rate"
 msgstr "Valuta & Wisselkoers"
 
@@ -1831,7 +1892,7 @@ msgstr ""
 msgid "Custom List Actions"
 msgstr ""
 
-#: frontend/src/pages/Dashboard.vue:225
+#: frontend/src/pages/Dashboard.vue:228
 msgid "Custom Range"
 msgstr ""
 
@@ -1844,7 +1905,7 @@ msgid "Customer Created Successfully"
 msgstr ""
 
 #: frontend/src/components/Layouts/AppSidebar.vue:594
-#: frontend/src/components/Settings/Settings.vue:182
+#: frontend/src/components/Settings/Settings.vue:196
 msgid "Customization"
 msgstr "Maatwerk"
 
@@ -1865,6 +1926,10 @@ msgstr "Dagelijks"
 #: crm/api/dashboard.py:639
 msgid "Daily performance of leads, deals, and wins"
 msgstr "Dagelijkse prestaties van leads, deals en overwinningen"
+
+#: frontend/src/components/Settings/ThemeSwitcher.vue:89
+msgid "Dark"
+msgstr "Donker"
 
 #: frontend/src/components/Settings/CurrencySettings.vue:35
 msgid "Dashboard number cards & charts will show currency in the selected format. Once set, cannot be edited."
@@ -2089,11 +2154,11 @@ msgstr "Standaardstatussen, aangepaste velden en lay-outs succesvol hersteld."
 #: frontend/src/components/PrimaryDropdownItem.vue:42
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:227
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:192
-#: frontend/src/components/Settings/Sla/EditResponseResolutionModal.vue:57
+#: frontend/src/components/Settings/Sla/EditResponseResolutionModal.vue:59
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:66
 #: frontend/src/components/ViewControls.vue:1125
 #: frontend/src/components/ViewControls.vue:1136
-#: frontend/src/pages/Calendar.vue:399 frontend/src/pages/Calendar.vue:403
+#: frontend/src/pages/Calendar.vue:400 frontend/src/pages/Calendar.vue:404
 #: frontend/src/pages/Contact.vue:99 frontend/src/pages/Deal.vue:121
 #: frontend/src/pages/Lead.vue:168 frontend/src/pages/MobileContact.vue:80
 #: frontend/src/pages/MobileContact.vue:269
@@ -2224,7 +2289,7 @@ msgstr "Uitgeschakeld"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:922
 #: frontend/src/components/CommentBox.vue:74
-#: frontend/src/components/EmailEditor.vue:161
+#: frontend/src/components/EmailEditor.vue:178
 msgid "Discard"
 msgstr "Negeren"
 
@@ -2269,7 +2334,7 @@ msgstr ""
 msgid "Document Type"
 msgstr "Soort document"
 
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:233
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:237
 msgid "Document created successfully"
 msgstr ""
 
@@ -2375,7 +2440,7 @@ msgid "Duration"
 msgstr "Looptijd"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:611
-#: frontend/src/components/Settings/Settings.vue:207
+#: frontend/src/components/Settings/Settings.vue:221
 msgid "ERPNext"
 msgstr "ERPNext"
 
@@ -2522,7 +2587,8 @@ msgstr "Rij bewerken {0}"
 #: frontend/src/components/Calendar/EventNotifications.vue:94
 #: frontend/src/components/Settings/CalendarSettings.vue:88
 #: frontend/src/components/Settings/CalendarSettings.vue:187
-#: frontend/src/components/Settings/Settings.vue:150
+#: frontend/src/components/Settings/Profile/UserEmailSettings.vue:68
+#: frontend/src/components/Settings/Settings.vue:164
 #: frontend/src/pages/Contact.vue:531 frontend/src/pages/MobileContact.vue:524
 #: frontend/src/pages/MobileOrganization.vue:473
 #: frontend/src/pages/MobileOrganization.vue:501
@@ -2530,6 +2596,10 @@ msgstr "Rij bewerken {0}"
 #: frontend/src/pages/Organization.vue:531
 msgid "Email"
 msgstr "E-mail"
+
+#: frontend/src/components/Settings/Profile/UserEmailSettings.vue:67
+msgid "Email Account"
+msgstr "E-mail account"
 
 #: frontend/src/components/Settings/EmailAdd.vue:143
 msgid "Email Account created successfully"
@@ -2551,7 +2621,7 @@ msgstr ""
 msgid "Email Communication"
 msgstr ""
 
-#: frontend/src/components/EmailEditor.vue:198
+#: frontend/src/components/EmailEditor.vue:222
 msgid "Email From Lead"
 msgstr ""
 
@@ -2568,6 +2638,10 @@ msgstr "E-mail-ID is vereist"
 msgid "Email Sent At"
 msgstr "E-mail verzonden op"
 
+#: frontend/src/components/Settings/Profile/UserEmailSettings.vue:8
+msgid "Email Settings"
+msgstr "E-mailinstellingen"
+
 #: frontend/src/components/Layouts/AppSidebar.vue:564
 msgid "Email Template"
 msgstr "Email sjabloon"
@@ -2581,14 +2655,23 @@ msgstr "E-Mail Sjablonen"
 msgid "Email already exists"
 msgstr ""
 
-#: frontend/src/components/CommunicationArea.vue:258
+#: frontend/src/components/CommunicationArea.vue:259
 msgid "Email sent!"
 msgstr ""
 
+#: frontend/src/components/Settings/Profile/UserEmailSettings.vue:181
+msgid "Email settings updated successfully"
+msgstr ""
+
+#: frontend/src/components/Settings/Profile/UserEmailSettings.vue:51
 #: frontend/src/pages/Deal.vue:555 frontend/src/pages/Lead.vue:406
 #: frontend/src/pages/MobileDeal.vue:435 frontend/src/pages/MobileLead.vue:281
 msgid "Emails"
 msgstr "E-mails"
+
+#: frontend/src/components/Settings/Profile/ProfileSettings.vue:92
+msgid "Emails & Signature"
+msgstr ""
 
 #: frontend/src/components/ListViews/ListRows.vue:12
 msgid "Empty"
@@ -2740,7 +2823,7 @@ msgstr "Voer uw Facebook Access Token in"
 msgid "Enter your personal mobile number used by Exotel to make calls"
 msgstr ""
 
-#: frontend/src/components/FieldLayout/Field.vue:367
+#: frontend/src/components/FieldLayout/Field.vue:368
 msgid "Enter {0}"
 msgstr "Voer {0}in"
 
@@ -2827,11 +2910,11 @@ msgstr "Gebeurtenismeldingen"
 msgid "Event Title"
 msgstr ""
 
-#: frontend/src/pages/Calendar.vue:330
+#: frontend/src/pages/Calendar.vue:331
 msgid "Event created successfully"
 msgstr ""
 
-#: frontend/src/pages/Calendar.vue:409
+#: frontend/src/pages/Calendar.vue:410
 msgid "Event deleted successfully"
 msgstr ""
 
@@ -2884,7 +2967,7 @@ msgstr "Wisselkoers aanbieder"
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
 #: frontend/src/components/Layouts/AppSidebar.vue:609
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:52
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:177
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:178
 msgid "Exotel"
 msgstr "Exotel"
 
@@ -2963,6 +3046,10 @@ msgstr "FCRM notitie"
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 msgid "FCRM Settings"
 msgstr "FCRM-instellingen"
+
+#: frontend/src/components/EmailEditor.vue:25
+msgid "FROM"
+msgstr ""
 
 #. Option for the 'Type' (Select) field in DocType 'Lead Sync Source'
 #. Label of the facebook_section (Section Break) field in DocType 'Lead Sync
@@ -3074,11 +3161,11 @@ msgstr ""
 msgid "Failed to send WhatsApp template"
 msgstr ""
 
-#: frontend/src/components/CommunicationArea.vue:275
+#: frontend/src/components/CommunicationArea.vue:276
 msgid "Failed to send comment!"
 msgstr ""
 
-#: frontend/src/components/CommunicationArea.vue:259
+#: frontend/src/components/CommunicationArea.vue:260
 msgid "Failed to send email!"
 msgstr "E-mail verzenden is mislukt!"
 
@@ -3093,10 +3180,6 @@ msgstr "Bijwerken Twilio oproepstatus mislukt"
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:873
 msgid "Failed to update attending status"
 msgstr ""
-
-#: frontend/src/components/Settings/ProfileSettings.vue:207
-msgid "Failed to update profile"
-msgstr "Profiel kon niet worden bijgewerkt"
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:164
 msgid "Failed to update source"
@@ -3158,9 +3241,8 @@ msgstr "Filters"
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: frontend/src/components/ColumnSettings.vue:103
 #: frontend/src/components/Filter.vue:56 frontend/src/components/Filter.vue:89
-#: frontend/src/components/Filter.vue:132
-#: frontend/src/components/Settings/ProfileSettings.vue:99
-#: frontend/src/components/SortBy.vue:6 frontend/src/components/SortBy.vue:102
+#: frontend/src/components/Filter.vue:132 frontend/src/components/SortBy.vue:6
+#: frontend/src/components/SortBy.vue:102
 #: frontend/src/components/SortBy.vue:136
 msgid "First Name"
 msgstr "Voornaam"
@@ -3222,7 +3304,7 @@ msgid "Forecasted revenue"
 msgstr "Verwachte omzet"
 
 #: frontend/src/components/Settings/ForecastingSettings.vue:5
-#: frontend/src/components/Settings/Settings.vue:109
+#: frontend/src/components/Settings/Settings.vue:123
 msgid "Forecasting"
 msgstr "Prognoses"
 
@@ -3330,6 +3412,14 @@ msgstr "GMT+5:30"
 msgid "Gender"
 msgstr "Geslacht"
 
+#: frontend/src/components/Settings/Settings.vue:118
+msgid "General"
+msgstr "Algemeen"
+
+#: frontend/src/components/Settings/GeneralSettings.vue:5
+msgid "General Settings"
+msgstr "Algemene instellingen"
+
 #: crm/api/dashboard.py:1068
 msgid "Geographic distribution of deals and revenue"
 msgstr "Geografische distributie van deals en inkomsten"
@@ -3342,7 +3432,7 @@ msgstr "GitHub repository"
 msgid "Go Back"
 msgstr "Ga terug"
 
-#: frontend/src/components/Settings/AssignmentRules/AssigneeSearch.vue:156
+#: frontend/src/components/Settings/AssignmentRules/AssigneeSearch.vue:158
 msgid "Go to Invite Page"
 msgstr ""
 
@@ -3448,7 +3538,7 @@ msgstr "Vakanties"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:549
 #: frontend/src/components/Settings/HomeActions.vue:7
-#: frontend/src/components/Settings/Settings.vue:185
+#: frontend/src/components/Settings/Settings.vue:199
 msgid "Home Actions"
 msgstr "Startpagina-acties"
 
@@ -3525,7 +3615,7 @@ msgstr "In"
 msgid "In Progress"
 msgstr "Bezig"
 
-#: frontend/src/components/SLASection.vue:69
+#: frontend/src/components/SLASection.vue:73
 msgid "In less than a minute"
 msgstr "Minder dan een minuut"
 
@@ -3572,12 +3662,12 @@ msgstr "Geïnitieerd"
 msgid "Initiating call..."
 msgstr "Inkomende oproep..."
 
-#: frontend/src/components/EmailEditor.vue:154
+#: frontend/src/components/EmailEditor.vue:171
 msgid "Insert Email Template"
 msgstr "E-mailsjabloon invoegen"
 
 #: frontend/src/components/CommentBox.vue:49
-#: frontend/src/components/EmailEditor.vue:130
+#: frontend/src/components/EmailEditor.vue:147
 msgid "Insert Emoji"
 msgstr "Insert Emoji"
 
@@ -3593,7 +3683,7 @@ msgstr "Integratie niet ingeschakeld"
 msgid "Integrations"
 msgstr "Integraties"
 
-#: frontend/src/components/Settings/Settings.vue:193
+#: frontend/src/components/Settings/Settings.vue:207
 msgctxt "FCRM"
 msgid "Integrations"
 msgstr "Integraties"
@@ -3685,8 +3775,8 @@ msgstr "Ongeldige pagina of niet toegestaan om te openen"
 msgid "Invitations sent successfully"
 msgstr ""
 
-#: frontend/src/components/Settings/AssignmentRules/AssigneeSearch.vue:78
-#: frontend/src/components/Settings/AssignmentRules/AssigneeSearch.vue:149
+#: frontend/src/components/Settings/AssignmentRules/AssigneeSearch.vue:80
+#: frontend/src/components/Settings/AssignmentRules/AssigneeSearch.vue:151
 msgid "Invite Agent"
 msgstr ""
 
@@ -3702,7 +3792,7 @@ msgstr ""
 msgid "Invite New User"
 msgstr "Nodig nieuwe gebruiker uit"
 
-#: frontend/src/components/Settings/Settings.vue:141
+#: frontend/src/components/Settings/Settings.vue:155
 msgid "Invite User"
 msgstr "Gebruiker uitnodigen"
 
@@ -3850,19 +3940,19 @@ msgstr "Sleutel"
 msgid "Label"
 msgstr "Label"
 
-#: frontend/src/components/Settings/ProfileSettings.vue:127
+#: frontend/src/components/Settings/PreferencesSettings.vue:57
 msgid "Language"
 msgstr "Taal"
 
-#: frontend/src/components/Settings/ProfileSettings.vue:223
-msgid "Language Updated"
+#: frontend/src/components/Settings/PreferencesSettings.vue:37
+msgid "Language & Time"
 msgstr ""
 
 #: frontend/src/components/Settings/AssignmentRules/AssigneeRules.vue:108
 msgid "Last"
 msgstr "Laatste"
 
-#: frontend/src/pages/Dashboard.vue:199
+#: frontend/src/pages/Dashboard.vue:202
 msgid "Last 30 Days"
 msgstr "Afgelopen 30 dagen"
 
@@ -3870,15 +3960,15 @@ msgstr "Afgelopen 30 dagen"
 msgid "Last 6 Months"
 msgstr "Laatste 6 maanden"
 
-#: frontend/src/pages/Dashboard.vue:207
+#: frontend/src/pages/Dashboard.vue:210
 msgid "Last 60 Days"
 msgstr ""
 
-#: frontend/src/pages/Dashboard.vue:191
+#: frontend/src/pages/Dashboard.vue:194
 msgid "Last 7 Days"
 msgstr "Afgelopen 7 dagen"
 
-#: frontend/src/pages/Dashboard.vue:215
+#: frontend/src/pages/Dashboard.vue:218
 msgid "Last 90 Days"
 msgstr "Afgelopen 90 dagen"
 
@@ -3896,7 +3986,6 @@ msgstr "Vorige maand"
 
 #. Label of the last_name (Data) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
-#: frontend/src/components/Settings/ProfileSettings.vue:105
 msgid "Last Name"
 msgstr "Achternaam"
 
@@ -4013,7 +4102,7 @@ msgstr "Lead Sync bron"
 msgid "Lead Sync Source created successfully"
 msgstr "Lead Sync bron succesvol aangemaakt"
 
-#: frontend/src/components/Settings/Settings.vue:213
+#: frontend/src/components/Settings/Settings.vue:227
 msgid "Lead Syncing"
 msgstr "Leadsynchronisatie"
 
@@ -4065,6 +4154,10 @@ msgstr "Links"
 #: frontend/src/components/FilesUploader/FilesUploaderArea.vue:43
 msgid "Library"
 msgstr "Bibliotheek"
+
+#: frontend/src/components/Settings/ThemeSwitcher.vue:41
+msgid "Light"
+msgstr "Licht"
 
 #: frontend/src/components/Filter.vue:266
 #: frontend/src/components/Filter.vue:277
@@ -4250,12 +4343,20 @@ msgstr "Maakt \"Verwachte sluitingsdatum\" en \"Verwachte transactiewaarde\" ver
 msgid "Manage CRM users by adding or inviting them, and assign roles to control their access and permissions"
 msgstr "Beheer CRM-gebruikers door ze toe te voegen of uit te nodigen, en wijs rollen toe om hun toegang en rechten te beheren"
 
+#: frontend/src/components/Settings/Profile/ProfileSettings.vue:96
+msgid "Manage your account emails and email signature for communication."
+msgstr ""
+
 #: frontend/src/components/Settings/EmailAccountList.vue:11
 msgid "Manage your email accounts to send and receive emails directly from CRM. You can add multiple accounts and set one as default for incoming and outgoing emails."
 msgstr "Beheer uw e-mailaccounts om direct e-mails te verzenden en ontvangen vanuit CRM. U kunt meerdere accounts toevoegen en één als standaard instellen voor inkomende en uitgaande e-mails."
 
-#: frontend/src/components/Settings/ProfileSettings.vue:4
-msgid "Manage your profile information."
+#: frontend/src/components/Settings/Profile/UserEmailSettings.vue:36
+msgid "Manage your email signature"
+msgstr ""
+
+#: frontend/src/components/Settings/Profile/ProfileSettings.vue:5
+msgid "Manage your profile & login information."
 msgstr ""
 
 #: frontend/src/components/Settings/Sla/SlaPolicyList.vue:4
@@ -4428,10 +4529,6 @@ msgstr ""
 #: frontend/src/components/Modals/ViewModal.vue:30
 msgid "My Open Deals"
 msgstr "Mijn open deals"
-
-#: frontend/src/components/Settings/Settings.vue:91
-msgid "My Settings"
-msgstr "Mijn instellingen"
 
 #. Label of the title (Data) field in DocType 'CRM Dashboard'
 #. Label of the name1 (Data) field in DocType 'CRM Dropdown Item'
@@ -4655,7 +4752,7 @@ msgstr ""
 msgid "No Priorities in the list"
 msgstr ""
 
-#: frontend/src/components/Settings/AssignmentRules/AssigneeSearch.vue:70
+#: frontend/src/components/Settings/AssignmentRules/AssigneeSearch.vue:72
 msgid "No Results Found"
 msgstr ""
 
@@ -4731,7 +4828,7 @@ msgstr "Aantal werknemers"
 msgid "Normal"
 msgstr "Normaal"
 
-#: crm/utils/__init__.py:263
+#: crm/utils/__init__.py:265
 msgid "Not Allowed"
 msgstr "Niet Toegestaan"
 
@@ -4742,7 +4839,8 @@ msgstr "Niet Toegestaan"
 #: frontend/src/components/Modals/QuickEntryModal.vue:10
 #: frontend/src/components/Modals/SidePanelModal.vue:10
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:23
-#: frontend/src/components/Settings/ProfileSettings.vue:85
+#: frontend/src/components/Settings/PreferencesSettings.vue:44
+#: frontend/src/components/Settings/Profile/UserEmailSettings.vue:15
 #: frontend/src/components/Settings/SettingsPage.vue:23
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:18
 #: frontend/src/components/Settings/Telephony/ExotelSettings.vue:15
@@ -4759,7 +4857,7 @@ msgstr "Niet gesynchroniseerd"
 msgid "Not allowed to add contact to Deal"
 msgstr "Niet toegestaan om contact toe te voegen aan deal"
 
-#: crm/fcrm/doctype/crm_lead/crm_lead.py:475
+#: crm/fcrm/doctype/crm_lead/crm_lead.py:480
 msgid "Not allowed to convert Lead to Deal"
 msgstr "Niet toegestaan om Lead om te zetten naar Deal"
 
@@ -5098,7 +5196,7 @@ msgstr "Paginanaam"
 msgid "Parent CRM Territory"
 msgstr "Ouder CRM-gebied"
 
-#: frontend/src/components/Settings/ProfileSettings.vue:112
+#: frontend/src/components/Settings/Profile/ProfileSettings.vue:110
 #: frontend/src/components/Settings/emailConfig.js:62
 msgid "Password"
 msgstr "Wachtwoord"
@@ -5223,7 +5321,7 @@ msgstr "Voer een geldige URL in"
 msgid "Please fix the errors in the form"
 msgstr ""
 
-#: frontend/src/components/Settings/Sla/EditResponseResolutionModal.vue:108
+#: frontend/src/components/Settings/Sla/EditResponseResolutionModal.vue:110
 msgid "Please select a Priority"
 msgstr ""
 
@@ -5281,6 +5379,15 @@ msgstr ""
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
 msgid "Position"
 msgstr "Positie"
+
+#: frontend/src/components/Settings/PreferencesSettings.vue:4
+#: frontend/src/components/Settings/Settings.vue:108
+msgid "Preferences"
+msgstr "Voorkeuren"
+
+#: frontend/src/components/Settings/PreferencesSettings.vue:115
+msgid "Preferences Updated Successfully"
+msgstr ""
 
 #: frontend/src/pages/Deal.vue:215 frontend/src/pages/MobileDeal.vue:153
 msgid "Primary"
@@ -5381,13 +5488,12 @@ msgid "Products"
 msgstr "producten"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:547
-#: frontend/src/components/Settings/ProfileSettings.vue:3
-#: frontend/src/components/Settings/Settings.vue:94
+#: frontend/src/components/Settings/Profile/ProfileSettings.vue:4
 msgid "Profile"
 msgstr "Profiel"
 
-#: frontend/src/components/Settings/ProfileSettings.vue:204
-msgid "Profile Updated"
+#: frontend/src/components/Settings/Profile/ProfileSettings.vue:189
+msgid "Profile Updated Successfully"
 msgstr ""
 
 #: crm/api/dashboard.py:719
@@ -5537,6 +5643,7 @@ msgstr ""
 
 #: frontend/src/components/ConditionsFilter/CFCondition.vue:178
 #: frontend/src/components/Controls/ImageUploader.vue:21
+#: frontend/src/components/Settings/Profile/UserEmailSettings.vue:84
 #: frontend/src/components/Settings/Users.vue:215
 #: frontend/src/pages/Deal.vue:640
 msgid "Remove"
@@ -5554,12 +5661,15 @@ msgstr ""
 msgid "Remove Group"
 msgstr ""
 
-#: frontend/src/components/Settings/ProfileSettings.vue:35
 #: frontend/src/pages/Contact.vue:53 frontend/src/pages/Lead.vue:98
 #: frontend/src/pages/MobileContact.vue:43
 #: frontend/src/pages/MobileOrganization.vue:43
 #: frontend/src/pages/Organization.vue:53
 msgid "Remove Image"
+msgstr ""
+
+#: frontend/src/components/Settings/Profile/ProfileSettings.vue:157
+msgid "Remove Photo"
 msgstr ""
 
 #: frontend/src/components/FieldLayoutEditor.vue:348
@@ -5648,7 +5758,7 @@ msgstr "Responsdetails"
 msgid "Response Time"
 msgstr "Reactietijd"
 
-#: frontend/src/components/Settings/Sla/EditResponseResolutionModal.vue:114
+#: frontend/src/components/Settings/Sla/EditResponseResolutionModal.vue:116
 msgid "Response Time is required"
 msgstr ""
 
@@ -5766,7 +5876,7 @@ msgstr "SLA Creatie"
 msgid "SLA Name"
 msgstr "SLA Naam"
 
-#: frontend/src/components/Settings/Settings.vue:174
+#: frontend/src/components/Settings/Settings.vue:188
 #: frontend/src/components/Settings/Sla/SlaPolicyList.vue:3
 msgid "SLA Policies"
 msgstr ""
@@ -5807,7 +5917,7 @@ msgstr "SLA-status"
 msgid "SLA set as default cannot be disabled"
 msgstr ""
 
-#: frontend/src/components/EmailEditor.vue:85
+#: frontend/src/components/EmailEditor.vue:102
 msgid "SUBJECT"
 msgstr "ONDERWERP"
 
@@ -5885,7 +5995,7 @@ msgstr ""
 #: frontend/src/components/Settings/Users.vue:191
 #: frontend/src/components/Settings/Users.vue:259
 #: frontend/src/components/Settings/Users.vue:262
-#: frontend/src/pages/Dashboard.vue:92
+#: frontend/src/pages/Dashboard.vue:95
 msgid "Sales User"
 msgstr "Sales Gebruiker"
 
@@ -5923,8 +6033,8 @@ msgstr "Zaterdag"
 #: frontend/src/components/PrimaryDropdownItem.vue:21
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:36
 #: frontend/src/components/Settings/CurrencySettings.vue:197
-#: frontend/src/components/Settings/ProfileSettings.vue:89
-#: frontend/src/components/Settings/Sla/EditResponseResolutionModal.vue:69
+#: frontend/src/components/Settings/PreferencesSettings.vue:49
+#: frontend/src/components/Settings/Sla/EditResponseResolutionModal.vue:71
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:34
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:78
 #: frontend/src/components/Telephony/ExotelCallUI.vue:221
@@ -5961,7 +6071,7 @@ msgstr "Plan een evenement"
 msgid "Script"
 msgstr "Script"
 
-#: frontend/src/components/Settings/AssignmentRules/AssigneeSearch.vue:21
+#: frontend/src/components/Settings/AssignmentRules/AssigneeSearch.vue:23
 #: frontend/src/components/Settings/Sla/SlaPolicyList.vue:21
 #: frontend/src/components/frappe-ui/Autocomplete.vue:58
 msgid "Search"
@@ -6015,7 +6125,7 @@ msgstr "Selecteer Bereik"
 msgid "Select Source Type"
 msgstr "Selecteer Bron Type"
 
-#: frontend/src/components/Settings/Sla/EditResponseResolutionModal.vue:32
+#: frontend/src/components/Settings/Sla/EditResponseResolutionModal.vue:33
 msgid "Select Time"
 msgstr "Selecteer tijd"
 
@@ -6052,11 +6162,11 @@ msgstr "Selecteer de contactpersonen voor {0}."
 msgid "Select the default view for your calendar. This will be the initial view when you open the calendar"
 msgstr ""
 
-#: frontend/src/components/FieldLayout/Field.vue:365
+#: frontend/src/components/FieldLayout/Field.vue:366
 msgid "Select {0}"
 msgstr "Selecteer {0}"
 
-#: frontend/src/components/EmailEditor.vue:165
+#: frontend/src/components/EmailEditor.vue:182
 msgid "Send"
 msgstr "Verstuur"
 
@@ -6080,11 +6190,11 @@ msgstr ""
 msgid "Send email"
 msgstr "Verstuur e-mail"
 
-#: frontend/src/components/CommunicationArea.vue:273
+#: frontend/src/components/CommunicationArea.vue:274
 msgid "Sending comment..."
 msgstr ""
 
-#: frontend/src/components/CommunicationArea.vue:257
+#: frontend/src/components/CommunicationArea.vue:258
 msgid "Sending email..."
 msgstr ""
 
@@ -6123,7 +6233,7 @@ msgstr "Instellen als primair"
 msgid "Set Currency"
 msgstr ""
 
-#: frontend/src/components/Settings/Sla/EditResponseResolutionModal.vue:47
+#: frontend/src/components/Settings/Sla/EditResponseResolutionModal.vue:49
 msgid "Set Default Priority"
 msgstr ""
 
@@ -6169,6 +6279,14 @@ msgstr ""
 
 #: frontend/src/components/Layouts/AppSidebar.vue:540
 msgid "Setting Up"
+msgstr ""
+
+#: frontend/src/components/Settings/GeneralSettings.vue:94
+msgid "Setting disabled successfully"
+msgstr ""
+
+#: frontend/src/components/Settings/GeneralSettings.vue:93
+msgid "Setting enabled successfully"
 msgstr ""
 
 #: frontend/src/components/Settings/emailConfig.js:149
@@ -6253,6 +6371,10 @@ msgstr "Zijpaneel"
 #: crm/fcrm/doctype/crm_global_settings/crm_global_settings.json
 msgid "Sidebar Items"
 msgstr "Zijbalk items"
+
+#: frontend/src/components/Settings/Profile/UserEmailSettings.vue:33
+msgid "Signature"
+msgstr "Handtekening"
 
 #. Description of the 'Condition' (Code) field in DocType 'CRM Service Level
 #. Agreement'
@@ -6461,6 +6583,14 @@ msgstr "Ondersteuning/Verkoop"
 msgid "Switch Camera"
 msgstr "Schakel de camera over"
 
+#: frontend/src/components/Settings/PreferencesSettings.vue:26
+msgid "Switch between light, dark, or system theme"
+msgstr ""
+
+#: frontend/src/components/Settings/Profile/UserEmailSettings.vue:55
+msgid "Switch between outgoing email accounts when sending emails"
+msgstr ""
+
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.js:6
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:23
 msgid "Sync Now"
@@ -6492,7 +6622,11 @@ msgstr "synchroniseren"
 msgid "Syncing started in background"
 msgstr "Synchronisatie gestart op achtergrond"
 
-#: frontend/src/components/Settings/Settings.vue:106
+#: frontend/src/components/Settings/ThemeSwitcher.vue:162
+msgid "System"
+msgstr "Systeem"
+
+#: frontend/src/components/Settings/Settings.vue:115
 msgid "System Configuration"
 msgstr "System Configuration"
 
@@ -6533,7 +6667,7 @@ msgstr "System Configuration"
 msgid "System Manager"
 msgstr "Systeembeheerder"
 
-#: frontend/src/components/EmailEditor.vue:22
+#: frontend/src/components/EmailEditor.vue:39
 msgid "TO"
 msgstr "NAAR"
 
@@ -6548,7 +6682,7 @@ msgstr "Notitie toevoegen..."
 msgid "Task"
 msgstr "Taak"
 
-#: frontend/src/components/Modals/TaskModal.vue:193
+#: frontend/src/components/Modals/TaskModal.vue:194
 msgid "Task created"
 msgstr ""
 
@@ -6557,7 +6691,7 @@ msgstr ""
 msgid "Tasks"
 msgstr "Taken"
 
-#: frontend/src/components/Settings/Settings.vue:196
+#: frontend/src/components/Settings/Settings.vue:210
 msgid "Telephony"
 msgstr "Telefonie"
 
@@ -6598,7 +6732,7 @@ msgstr "Sjabloon met succes hernoemd"
 msgid "Template updated successfully"
 msgstr "Template met succes bijgewerkt"
 
-#: frontend/src/components/Settings/Settings.vue:159
+#: frontend/src/components/Settings/Settings.vue:173
 msgid "Templates"
 msgstr "Sjablonen"
 
@@ -6648,6 +6782,10 @@ msgstr "De koers die gebruikt wordt om de valuta van de deal om te zetten naar d
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
 msgid "The rate used to convert the organization’s currency to your crm's base currency (set in CRM Settings). It is set once when the currency is first added and doesn't change automatically."
 msgstr "De koers die gebruikt wordt om de valuta van de deal om te zetten naar de basisvaluta van uw crm (ingesteld in CRM-instellingen). Deze wordt eenmalig ingesteld wanneer de valuta voor het eerst wordt toegevoegd en verandert niet automatisch."
+
+#: frontend/src/components/Settings/PreferencesSettings.vue:23
+msgid "Theme"
+msgstr "Thema"
 
 #: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.js:29
 msgid "There can only be one default priority in Priorities table"
@@ -6715,6 +6853,10 @@ msgstr ""
 msgid "Timespan"
 msgstr "Tijdspanne"
 
+#: frontend/src/components/Settings/PreferencesSettings.vue:68
+msgid "Timezone"
+msgstr "Tijdzone"
+
 #. Label of the title (Data) field in DocType 'CRM Task'
 #. Label of the title (Data) field in DocType 'FCRM Note'
 #: crm/fcrm/doctype/crm_task/crm_task.json
@@ -6733,7 +6875,7 @@ msgstr "Titelveld"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:822
 #: frontend/src/components/Modals/EventModal.vue:376
-#: frontend/src/components/Modals/TaskModal.vue:167
+#: frontend/src/components/Modals/TaskModal.vue:168
 msgid "Title is required"
 msgstr "Titel is verplicht"
 
@@ -6860,7 +7002,7 @@ msgstr "TwiML SID"
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
 #: frontend/src/components/Layouts/AppSidebar.vue:608
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:51
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:154
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:153
 msgid "Twilio"
 msgstr "Twilio"
 
@@ -7007,17 +7149,18 @@ msgid "Untitled"
 msgstr "Ongetiteld"
 
 #: frontend/src/components/ColumnSettings.vue:129
-#: frontend/src/components/Modals/AssignmentModal.vue:79
+#: frontend/src/components/Modals/AssignmentModal.vue:80
 #: frontend/src/components/Modals/ChangePasswordModal.vue:47
 #: frontend/src/components/Modals/EventModal.vue:212
 #: frontend/src/components/Modals/NoteModal.vue:52
-#: frontend/src/components/Modals/TaskModal.vue:103
-#: frontend/src/components/Settings/BrandSettings.vue:15
-#: frontend/src/components/Settings/CalendarSettings.vue:19
-#: frontend/src/components/Settings/CurrencySettings.vue:17
+#: frontend/src/components/Modals/TaskModal.vue:104
+#: frontend/src/components/Settings/BrandSettings.vue:16
+#: frontend/src/components/Settings/CalendarSettings.vue:20
+#: frontend/src/components/Settings/CurrencySettings.vue:18
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:21
-#: frontend/src/components/Settings/HomeActions.vue:15
+#: frontend/src/components/Settings/HomeActions.vue:16
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:30
+#: frontend/src/components/Settings/Profile/UserEmailSettings.vue:25
 #: frontend/src/components/Settings/SettingsPage.vue:32
 #: frontend/src/components/Settings/Telephony/ExotelSettings.vue:32
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:27
@@ -7029,6 +7172,23 @@ msgstr "Bijwerken"
 #: frontend/src/components/Settings/EmailEdit.vue:74
 msgid "Update Account"
 msgstr "Account updaten"
+
+#. Description of the 'Update timestamp on new communication' (Check) field in
+#. DocType 'FCRM Settings'
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
+msgid "Update the modified timestamp on new email communication & comment for leads & deals"
+msgstr ""
+
+#: frontend/src/components/Settings/GeneralSettings.vue:20
+msgid "Update the modified timestamp on new email communication & comments for leads & deals"
+msgstr ""
+
+#. Label of the update_timestamp_on_new_communication (Check) field in DocType
+#. 'FCRM Settings'
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
+#: frontend/src/components/Settings/GeneralSettings.vue:16
+msgid "Update timestamp on new communication"
+msgstr "Update de tijdstempel van nieuwe communicatie."
 
 #: frontend/src/components/Modals/EditValueModal.vue:29
 msgid "Update {0} Records"
@@ -7049,13 +7209,16 @@ msgid "Upload Document"
 msgstr "Document uploaden"
 
 #: frontend/src/components/Activities/WhatsAppBox.vue:155
-#: frontend/src/components/Settings/ProfileSettings.vue:30
 #: frontend/src/pages/Contact.vue:48 frontend/src/pages/Lead.vue:93
 #: frontend/src/pages/MobileContact.vue:38
 #: frontend/src/pages/MobileOrganization.vue:38
 #: frontend/src/pages/Organization.vue:48
 msgid "Upload Image"
 msgstr "Afbeelding uploaden"
+
+#: frontend/src/components/Settings/Profile/ProfileSettings.vue:158
+msgid "Upload Photo"
+msgstr ""
 
 #: frontend/src/components/Activities/WhatsAppBox.vue:163
 msgid "Upload Video"
@@ -7074,7 +7237,7 @@ msgstr "{0} uploaden"
 msgid "User"
 msgstr "Gebruiker"
 
-#: frontend/src/components/Settings/Settings.vue:132
+#: frontend/src/components/Settings/Settings.vue:146
 msgid "User Management"
 msgstr "Gebruikers Beheer"
 
@@ -7097,7 +7260,7 @@ msgstr ""
 
 #: frontend/src/components/Modals/AddExistingUserModal.vue:20
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:608
-#: frontend/src/components/Settings/Settings.vue:135
+#: frontend/src/components/Settings/Settings.vue:149
 #: frontend/src/components/Settings/Users.vue:7
 msgid "Users"
 msgstr "Gebruikers"
@@ -7201,7 +7364,7 @@ msgstr "Welkom {0}, laten we uw eerste lead toevoegen"
 #. Option for the 'Type' (Select) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
 #: frontend/src/components/Layouts/AppSidebar.vue:610
-#: frontend/src/components/Settings/Settings.vue:201
+#: frontend/src/components/Settings/Settings.vue:215
 #: frontend/src/pages/Deal.vue:595 frontend/src/pages/Lead.vue:446
 #: frontend/src/pages/MobileDeal.vue:471 frontend/src/pages/MobileLead.vue:316
 msgid "WhatsApp"
@@ -7284,7 +7447,7 @@ msgstr ""
 msgid "You are not permitted to access CRM resources."
 msgstr ""
 
-#: crm/utils/__init__.py:262
+#: crm/utils/__init__.py:264
 msgid "You are not permitted to access this resource."
 msgstr "U hebt geen toegang tot deze bron."
 
@@ -7340,7 +7503,7 @@ msgstr "U hebt niet de rechten om toegang te krijgen tot dit document"
 msgid "You need to be in developer mode to edit a Standard Form Script"
 msgstr "U moet ontwikkelaarsmodus inschakelen om een standaard webformulier te kunnen bewerken"
 
-#: frontend/src/components/Settings/AssignmentRules/AssigneeSearch.vue:150
+#: frontend/src/components/Settings/AssignmentRules/AssigneeSearch.vue:152
 msgid "You will be redirected to invite user page, unsaved changes will be lost."
 msgstr "U wordt doorgestuurd naar de pagina Gebruiker Uitnodigen, niet opgeslagen wijzigingen gaan verloren."
 
@@ -7822,9 +7985,9 @@ msgid "{0} is an Invalid value"
 msgstr ""
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:367
-#: frontend/src/components/EmailEditor.vue:30
-#: frontend/src/components/EmailEditor.vue:66
-#: frontend/src/components/EmailEditor.vue:80
+#: frontend/src/components/EmailEditor.vue:47
+#: frontend/src/components/EmailEditor.vue:83
+#: frontend/src/components/EmailEditor.vue:97
 #: frontend/src/components/Modals/AddExistingUserModal.vue:37
 #: frontend/src/components/Modals/EventModal.vue:127
 msgid "{0} is an invalid email address"
