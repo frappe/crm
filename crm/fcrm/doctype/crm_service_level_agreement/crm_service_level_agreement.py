@@ -88,10 +88,15 @@ class CRMServiceLevelAgreement(Document):
 		self.set_first_response_time(doc)
 		if self.rolling_responses:
 			self.set_rolling_responses(doc)
+		self.set_last_responded_on(doc)
+		self.set_last_response_time(doc)
 
 	def set_first_responded_on(self, doc: Document):
 		if doc.communication_status != self.get_default_priority():
 			doc.first_responded_on = doc.first_responded_on or now_datetime()
+
+	def set_last_responded_on(self, doc: Document):
+		if doc.communication_status != self.get_default_priority():
 			doc.last_responded_on = doc.last_responded_on or doc.first_responded_on
 
 	def set_first_response_time(self, doc: Document):
@@ -101,6 +106,12 @@ class CRMServiceLevelAgreement(Document):
 			return
 		if not doc.first_response_time:
 			doc.first_response_time = self.calc_elapsed_time(start_at, end_at)
+
+	def set_last_response_time(self, doc: Document):
+		start_at = doc.sla_creation
+		end_at = doc.first_responded_on
+		if not start_at or not end_at:
+			return
 
 		if not doc.last_response_time and doc.first_response_time:
 			doc.last_response_time = doc.first_response_time
