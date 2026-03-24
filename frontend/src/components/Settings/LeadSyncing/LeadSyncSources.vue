@@ -126,6 +126,7 @@
 import { Switch, Dropdown, toast, Badge } from 'frappe-ui'
 import { ref, computed, inject } from 'vue'
 import EmptyState from '../../ListViews/EmptyState.vue'
+import { ConfirmDelete } from '../../../utils'
 
 const emit = defineEmits(['updateStep'])
 
@@ -188,23 +189,10 @@ function getDropdownOptions(source) {
       icon: 'copy',
       onClick: () => emit('updateStep', 'new-source', { ...source }),
     },
-    {
-      label: __('Delete'),
-      icon: 'trash-2',
-      onClick: (e) => {
-        e.preventDefault()
-        e.stopPropagation()
-        confirmDelete.value = true
-      },
-      condition: () => !confirmDelete.value,
-    },
-    {
-      label: __('Confirm Delete'),
-      icon: 'trash-2',
-      theme: 'red',
-      onClick: () => deleteLeadSource(source),
-      condition: () => confirmDelete.value,
-    },
+    ...ConfirmDelete({
+      onConfirmDelete: () => deleteLeadSource(source),
+      isConfirmingDelete: confirmDelete,
+    }),
   ]
 
   return options
