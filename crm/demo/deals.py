@@ -50,7 +50,7 @@ def create_demo_deals(lead_names, demo_users):
 			"deal_value": 95000,
 			"probability": 0,
 			"deal_owner": owner_2,
-			"lost_reason": "Competitor",
+			"lost_reason": "Competition",
 			"lost_notes": "Prospect chose a competitor offering deeper BI integrations out of the box. Price was not the issue — feature parity was.",
 		},
 	)
