@@ -293,16 +293,13 @@ def update_modified_timestamp(doc: Communication | Comment, method: str | None =
 	if not (doc.reference_doctype and doc.reference_name):
 		return
 
+	if doc.reference_doctype not in ["CRM Lead", "CRM Deal"]:
+		return
+
 	elif doc.doctype not in ["Comment", "Communication"]:
 		return
 
-	frappe.db.set_value(
-		dt=doc.reference_doctype,
-		dn=doc.reference_name,
-		field="modified",
-		val=now(),
-		update_modified=False,
-	)
+	frappe.db.set_value(dt=doc.reference_doctype, dn=doc.reference_name, field="modified", val=now())
 
 
 def update_communication_status(doc: Communication, method: str | None = None):
