@@ -87,6 +87,16 @@
         />
       </div>
       <SidebarLink
+        v-if="isManager() && isDemoDataCreated"
+        :label="__('Clear Demo Data')"
+        :isCollapsed="isSidebarCollapsed"
+        @click="() => clearDemoData()"
+      >
+        <template #icon>
+          <BrushCleaningIcon class="h-4 w-4" />
+        </template>
+      </SidebarLink>
+      <SidebarLink
         v-if="isOnboardingStepsCompleted"
         :label="__('Help')"
         :isCollapsed="isSidebarCollapsed"
@@ -138,6 +148,7 @@
 </template>
 
 <script setup>
+import BrushCleaningIcon from '~icons/lucide/brush-cleaning'
 import LucideLayoutDashboard from '~icons/lucide/layout-dashboard'
 import CRMLogo from '@/components/Icons/CRMLogo.vue'
 import InviteIcon from '@/components/Icons/InviteIcon.vue'
@@ -186,11 +197,13 @@ import {
 } from 'frappe-ui/frappe'
 import router from '@/router'
 import { useStorage } from '@vueuse/core'
+import { useDemoData } from '@/composables/demoData'
 import { ref, reactive, computed, markRaw, onMounted } from 'vue'
 
 const { getPinnedViews, getPublicViews } = viewsStore()
 const { toggle: toggleNotificationPanel } = notificationsStore()
 const { capture } = useTelemetry()
+const { clearDemoData, isDemoDataCreated } = useDemoData()
 
 const isSidebarCollapsed = useStorage('isSidebarCollapsed', false)
 
