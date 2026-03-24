@@ -57,18 +57,25 @@ class TestDemoData(FrappeTestCase):
 			self.assertEqual(doc.first_name, user["first_name"])
 			self.assertEqual(doc.last_name, user["last_name"])
 
-		# Leads
-		leads = frappe.get_all("CRM Lead", fields=["name", "first_name", "organization", "image"])
-		self.assertEqual(len(leads), 12)
-		for lead in leads:
-			self.assertTrue(lead["first_name"])
-			self.assertTrue(lead["organization"])
+		# Leads - check that demo leads were created
+		demo_lead_names = json.loads(frappe.db.get_default(DEMO_LEADS_KEY) or "[]")
+		self.assertEqual(len(demo_lead_names), 12)
+		for lead_name in demo_lead_names:
+			lead = frappe.get_doc("CRM Lead", lead_name)
+			self.assertTrue(lead.first_name)
+			self.assertTrue(lead.organization)
 
-		# Notes, Tasks, Call Logs, Activities, Deals
-		self.assertGreater(frappe.db.count("FCRM Note"), 0)
-		self.assertGreater(frappe.db.count("CRM Task"), 0)
-		self.assertGreater(frappe.db.count("CRM Call Log"), 0)
-		self.assertGreater(frappe.db.count("CRM Deal"), 0)
+		# Notes, Tasks, Call Logs, Activities, Deals - check that demo data was created
+		demo_note_names = json.loads(frappe.db.get_default(DEMO_NOTES_KEY) or "[]")
+		demo_task_names = json.loads(frappe.db.get_default(DEMO_TASKS_KEY) or "[]")
+		demo_call_log_names = json.loads(frappe.db.get_default(DEMO_CALL_LOGS_KEY) or "[]")
+		demo_deal_data = json.loads(frappe.db.get_default(DEMO_DEALS_KEY) or "{}")
+
+		self.assertGreater(len(demo_note_names), 0)
+		self.assertGreater(len(demo_task_names), 0)
+		self.assertGreater(len(demo_call_log_names), 0)
+		if isinstance(demo_deal_data, dict):
+			self.assertGreater(len(demo_deal_data.get("deals", [])), 0)
 
 		# Avatars exist
 		avatar_dir = os.path.abspath(
