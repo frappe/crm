@@ -1,6 +1,7 @@
 import json
 
 import frappe
+from frappe.utils.telemetry import capture
 
 DEMO_STATE_KEY = "crm_demo_data_created"
 DEMO_LEADS_KEY = "crm_demo_leads"
@@ -43,6 +44,8 @@ def create_demo_data():
 	frappe.db.set_default(DEMO_DEALS_KEY, json.dumps(deal_data))
 	frappe.db.set_default(DEMO_STATE_KEY, "1")
 
+	capture("demo_data_created", "crm")
+
 
 @frappe.whitelist()
 def clear_demo_data():
@@ -79,6 +82,8 @@ def clear_demo_data():
 	frappe.db.set_default(DEMO_ACTIVITIES_KEY, None)
 	frappe.db.set_default(DEMO_DEALS_KEY, None)
 	frappe.db.set_default(DEMO_STATE_KEY, None)
+
+	capture("demo_data_cleared", "crm")
 
 
 @frappe.whitelist()
