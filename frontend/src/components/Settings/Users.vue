@@ -177,6 +177,7 @@ import {
   Tooltip,
 } from 'frappe-ui'
 import { ref, computed, onMounted } from 'vue'
+import { ConfirmDelete } from '../../utils'
 
 const { users, isAdmin, isManager } = usersStore()
 
@@ -211,23 +212,11 @@ const confirmRemove = ref(false)
 
 function getMoreOptions(user) {
   return [
-    {
+    ...ConfirmDelete({
+      onConfirmDelete: () => removeUser(user),
+      isConfirmingDelete: confirmRemove,
       label: __('Remove'),
-      icon: 'trash-2',
-      onClick: (e) => {
-        e.preventDefault()
-        e.stopPropagation()
-        confirmRemove.value = true
-      },
-      condition: () => !confirmRemove.value,
-    },
-    {
-      label: __('Confirm Remove'),
-      icon: 'trash-2',
-      theme: 'red',
-      onClick: () => removeUser(user, true),
-      condition: () => confirmRemove.value,
-    },
+    }),
   ]
 }
 
