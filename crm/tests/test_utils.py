@@ -268,12 +268,9 @@ class TestUpdateModifiedTimestamp(FrappeTestCase):
 		self.assertGreaterEqual(after, before)
 
 
-<<<<<<< HEAD
 class TestUpdateCommunicationStatus(FrappeTestCase):
-=======
-class TestUpdateCommunicationStatus(IntegrationTestCase):
 	"""
-	New lifecycle semantics (split from the old auto_update_communication_status flag):
+	Lifecycle semantics:
 
 	  auto_reopen_on_new_communication  — Sent (outgoing) communication → status "Open"
 	  auto_mark_replied_on_response     — Received (incoming) communication → status "Replied"
@@ -282,7 +279,6 @@ class TestUpdateCommunicationStatus(IntegrationTestCase):
 	verify a disabled path disable only the relevant flag and leave the other intact.
 	"""
 
->>>>>>> b7a1b143 (test: update communication status lifecycle tests)
 	@classmethod
 	def setUpClass(cls):
 		super().setUpClass()
