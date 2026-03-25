@@ -303,9 +303,6 @@ def update_modified_timestamp(doc: Communication | Comment, method: str | None =
 
 
 def update_communication_status(doc: Communication, method: str | None = None):
-	if not frappe.db.get_single_value("FCRM Settings", "auto_update_communication_status"):
-		return
-
 	if not (doc.reference_doctype and doc.reference_name):
 		return
 
@@ -315,6 +312,23 @@ def update_communication_status(doc: Communication, method: str | None = None):
 	if doc.sent_or_received not in ("Sent", "Received"):
 		return
 
+	auto_reopen_on_new_communication = frappe.db.get_single_value(
+		"FCRM Settings", "auto_reopen_on_new_communication"
+	)
+	auto_mark_replied_on_response = frappe.db.get_single_value(
+		"FCRM Settings", "auto_mark_replied_on_response"
+	)
+
+	status = None
+
+	if doc.sent_or_received == "Received" and auto_reopen_on_new_communication:
+		status = "Open"
+	elif doc.sent_or_received == "Sent" and auto_mark_replied_on_response:
+		status = "Replied"
+
+	if not status:
+		return
+
 	last_communication = frappe.get_last_doc(
 		"Communication",
 		{"reference_doctype": doc.reference_doctype, "reference_name": doc.reference_name},
@@ -322,8 +336,6 @@ def update_communication_status(doc: Communication, method: str | None = None):
 
 	if not last_communication or (last_communication.name != doc.name):
 		return
-
-	status = "Open" if doc.sent_or_received == "Received" else "Replied"
 
 	frappe.db.set_value(
 		doc.reference_doctype,
