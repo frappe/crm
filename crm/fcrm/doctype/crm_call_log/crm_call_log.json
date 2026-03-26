@@ -41,12 +41,14 @@
    "fieldname": "from",
    "fieldtype": "Data",
    "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "From",
    "reqd": 1
   },
   {
    "fieldname": "status",
    "fieldtype": "Select",
+   "in_standard_filter": 1,
    "label": "Status",
    "options": "Initiated\nRinging\nIn Progress\nCompleted\nFailed\nBusy\nNo Answer\nQueued\nCanceled",
    "reqd": 1
@@ -78,6 +80,7 @@
    "fieldname": "to",
    "fieldtype": "Data",
    "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "To",
    "reqd": 1
   },
@@ -157,8 +160,8 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-03-06 16:49:40.394621",
- "modified_by": "Administrator",
+ "modified": "2026-03-26 12:57:11.481722",
+ "modified_by": "shariq@frappe.io",
  "module": "FCRM",
  "name": "CRM Call Log",
  "naming_rule": "By fieldname",
