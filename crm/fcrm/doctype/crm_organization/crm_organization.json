@@ -23,6 +23,7 @@
   {
    "fieldname": "organization_name",
    "fieldtype": "Data",
+   "in_standard_filter": 1,
    "label": "Organization Name",
    "unique": 1
   },
@@ -39,6 +40,7 @@
   {
    "fieldname": "no_of_employees",
    "fieldtype": "Select",
+   "in_standard_filter": 1,
    "label": "No. of Employees",
    "options": "1-10\n11-50\n51-200\n201-500\n501-1000\n1000+"
   },
@@ -55,12 +57,14 @@
   {
    "fieldname": "industry",
    "fieldtype": "Link",
+   "in_standard_filter": 1,
    "label": "Industry",
    "options": "CRM Industry"
   },
   {
    "fieldname": "territory",
    "fieldtype": "Link",
+   "in_standard_filter": 1,
    "label": "Territory",
    "options": "CRM Territory"
   },
@@ -86,8 +90,8 @@
  "image_field": "organization_logo",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-02-23 12:27:26.887189",
- "modified_by": "Administrator",
+ "modified": "2026-03-26 12:51:34.002222",
+ "modified_by": "shariq@frappe.io",
  "module": "FCRM",
  "name": "CRM Organization",
  "naming_rule": "By fieldname",
