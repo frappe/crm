@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-03-22 09:44+0000\n"
-"PO-Revision-Date: 2026-03-24 13:29\n"
+"PO-Revision-Date: 2026-03-25 13:58\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Serbian (Latin)\n"
 "MIME-Version: 1.0\n"
@@ -346,7 +346,7 @@ msgstr "Dodaj opis."
 
 #: frontend/src/components/Settings/Profile/UserEmailSettings.vue:100
 msgid "Add Email"
-msgstr ""
+msgstr "Dodaj imejl"
 
 #: frontend/src/components/Modals/AddExistingUserModal.vue:4
 #: frontend/src/components/Settings/Users.vue:21
@@ -594,7 +594,7 @@ msgstr "Naziv aplikacije"
 
 #: frontend/src/components/Settings/PreferencesSettings.vue:16
 msgid "Appearance"
-msgstr ""
+msgstr "Izgled"
 
 #: frontend/src/components/Settings/BrandSettings.vue:65
 msgid "Appears in the left sidebar. Recommended size is 32x32 px in PNG or SVG"
@@ -844,11 +844,11 @@ msgstr "Automatski ažuriraj očekivanu vrednost poslovne prilike"
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 #: frontend/src/components/Settings/GeneralSettings.vue:38
 msgid "Auto update communication status"
-msgstr ""
+msgstr "Automatsko ažuriranje statusa komunikacije"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRules.vue:11
 msgid "Auto-assign leads/deals to the right sales user based on predefined conditions"
-msgstr ""
+msgstr "Automatski dodeli potencijalne klijente / poslovne prilike odgovarajućem korisniku prodaje na osnovu unapred definisanih uslova"
 
 #. Description of the 'Condition' (Code) field in DocType 'CRM Service Level
 #. Agreement'
@@ -866,7 +866,7 @@ msgstr "Automatsko izvršenje"
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 #: frontend/src/components/Settings/GeneralSettings.vue:64
 msgid "Automatically create a new lead from incoming email communication if no existing lead is found"
-msgstr ""
+msgstr "Automatski kreiraj novog potencijalnog klijenta iz dolazne imejl komunikacije ukoliko ne postoji već registrovani potencijalni klijent"
 
 #. Description of the 'Auto update Expected Deal Value' (Check) field in
 #. DocType 'FCRM Settings'
@@ -880,7 +880,7 @@ msgstr "Automatski ažuriraj \"Očekivana vrednost poslovne prilike\" na osnovu 
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 #: frontend/src/components/Settings/GeneralSettings.vue:42
 msgid "Automatically update the Communication status for Leads & Deals when SLA is enabled. Set status to “Open” on new communication and “Replied” when a response is received"
-msgstr ""
+msgstr "Automatski ažuriraj status komunikacije za potencijalne klijente i poslovne prilike kada je sporazum o nivou usluge omogućen. Postavi status na \"Otvoreno\" za novu komunikaciju i \"Odgovoreno\" kada se zaprimi odgovor"
 
 #: frontend/src/components/Settings/Settings.vue:180
 msgid "Automation & Rules"
@@ -1349,7 +1349,7 @@ msgstr "Promeni lozinku"
 
 #: frontend/src/components/Settings/Profile/ProfileSettings.vue:158
 msgid "Change Photo"
-msgstr ""
+msgstr "Promeni fotografiju"
 
 #: frontend/src/components/Activities/TaskArea.vue:44
 msgid "Change Status"
@@ -1399,7 +1399,7 @@ msgstr "Izaberite koliko će ova politika sporazuma o nivou usluge biti aktivna.
 
 #: frontend/src/components/Settings/PreferencesSettings.vue:6
 msgid "Choose how you want to use the application by setting your preferences."
-msgstr ""
+msgstr "Izaberite način korišćenja aplikacije podešavanjem Vaših preferencija."
 
 #: frontend/src/components/Settings/AssignmentRules/AssigneeRules.vue:9
 msgid "Choose how {0} are assigned among salespeople."
@@ -1566,7 +1566,7 @@ msgstr "Uslovi za ovo pravilo su kreirani iz"
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:162
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:187
 msgid "Configure"
-msgstr ""
+msgstr "Konfiguriši"
 
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:18
 msgid "Configure Telephony Settings for your CRM"
@@ -1582,7 +1582,7 @@ msgstr "Konfigurišite funkciju prognoziranja radi predviđanja prodajnih rezult
 
 #: frontend/src/components/Settings/GeneralSettings.vue:8
 msgid "Configure general settings for your application"
-msgstr ""
+msgstr "Konfigurišite opšta podešavanja za aplikaciju"
 
 #: frontend/src/components/Settings/CurrencySettings.vue:11
 msgid "Configure the Currency and Exchange Rate Provider for your CRM"
@@ -1835,7 +1835,7 @@ msgstr "Kreiraj klijenta pri promeni statusa"
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 #: frontend/src/components/Settings/GeneralSettings.vue:60
 msgid "Create lead from incoming email"
-msgstr ""
+msgstr "Kreirajte potencijalnog klijenta iz dolaznog imejla"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:349
 msgid "Create your first lead"
@@ -2661,7 +2661,7 @@ msgstr "Imejl je poslat!"
 
 #: frontend/src/components/Settings/Profile/UserEmailSettings.vue:181
 msgid "Email settings updated successfully"
-msgstr ""
+msgstr "Podešavanja imejla su uspešno ažurirana"
 
 #: frontend/src/components/Settings/Profile/UserEmailSettings.vue:51
 #: frontend/src/pages/Deal.vue:555 frontend/src/pages/Lead.vue:406
@@ -2671,7 +2671,7 @@ msgstr "Imejlovi"
 
 #: frontend/src/components/Settings/Profile/ProfileSettings.vue:92
 msgid "Emails & Signature"
-msgstr ""
+msgstr "Imejlovi i potpisi"
 
 #: frontend/src/components/ListViews/ListRows.vue:12
 msgid "Empty"
@@ -3049,7 +3049,7 @@ msgstr "FCRM podešavanja"
 
 #: frontend/src/components/EmailEditor.vue:25
 msgid "FROM"
-msgstr ""
+msgstr "OD"
 
 #. Option for the 'Type' (Select) field in DocType 'Lead Sync Source'
 #. Label of the facebook_section (Section Break) field in DocType 'Lead Sync
@@ -3946,7 +3946,7 @@ msgstr "Jezik"
 
 #: frontend/src/components/Settings/PreferencesSettings.vue:37
 msgid "Language & Time"
-msgstr ""
+msgstr "Jezik i vreme"
 
 #: frontend/src/components/Settings/AssignmentRules/AssigneeRules.vue:108
 msgid "Last"
@@ -4345,7 +4345,7 @@ msgstr "Upravljajte CRM korisnicima dodavanjem ili pozivanjem, i dodeljivanjem u
 
 #: frontend/src/components/Settings/Profile/ProfileSettings.vue:96
 msgid "Manage your account emails and email signature for communication."
-msgstr ""
+msgstr "Upravljajte imejlovima naloga i imejl potpisom za komunikaciju."
 
 #: frontend/src/components/Settings/EmailAccountList.vue:11
 msgid "Manage your email accounts to send and receive emails directly from CRM. You can add multiple accounts and set one as default for incoming and outgoing emails."
@@ -4353,11 +4353,11 @@ msgstr "Upravljajte svojim imejl nalozima za slanje i prijem poruka direktno iz 
 
 #: frontend/src/components/Settings/Profile/UserEmailSettings.vue:36
 msgid "Manage your email signature"
-msgstr ""
+msgstr "Upravljajte svojim imejl potpisom"
 
 #: frontend/src/components/Settings/Profile/ProfileSettings.vue:5
 msgid "Manage your profile & login information."
-msgstr ""
+msgstr "Upravljajte profilom i podacima za prijavu."
 
 #: frontend/src/components/Settings/Sla/SlaPolicyList.vue:4
 msgid "Manage your service level agreement policies"
@@ -5387,7 +5387,7 @@ msgstr "Preferencije"
 
 #: frontend/src/components/Settings/PreferencesSettings.vue:115
 msgid "Preferences Updated Successfully"
-msgstr ""
+msgstr "Preferencije su uspešno ažurirane"
 
 #: frontend/src/pages/Deal.vue:215 frontend/src/pages/MobileDeal.vue:153
 msgid "Primary"
@@ -5494,7 +5494,7 @@ msgstr "Profil"
 
 #: frontend/src/components/Settings/Profile/ProfileSettings.vue:189
 msgid "Profile Updated Successfully"
-msgstr ""
+msgstr "Profil je uspešno ažuriran"
 
 #: crm/api/dashboard.py:719
 msgid "Projected vs actual revenue based on deal probability"
@@ -5670,7 +5670,7 @@ msgstr "Ukloni sliku"
 
 #: frontend/src/components/Settings/Profile/ProfileSettings.vue:157
 msgid "Remove Photo"
-msgstr ""
+msgstr "Ukloni fotografiju"
 
 #: frontend/src/components/FieldLayoutEditor.vue:348
 msgid "Remove Section"
@@ -6283,11 +6283,11 @@ msgstr "Postavljanje"
 
 #: frontend/src/components/Settings/GeneralSettings.vue:94
 msgid "Setting disabled successfully"
-msgstr ""
+msgstr "Podešavanje je uspešno onemogućeno"
 
 #: frontend/src/components/Settings/GeneralSettings.vue:93
 msgid "Setting enabled successfully"
-msgstr ""
+msgstr "Podešavanje je uspešno omogućeno"
 
 #: frontend/src/components/Settings/emailConfig.js:149
 msgid "Setting up Frappe Mail requires you to have an API key and API Secret of your email account. Read more"
@@ -6585,11 +6585,11 @@ msgstr "Promeni kameru"
 
 #: frontend/src/components/Settings/PreferencesSettings.vue:26
 msgid "Switch between light, dark, or system theme"
-msgstr ""
+msgstr "Prebacivanje između svetlog, tamnog ili sistemskog režima"
 
 #: frontend/src/components/Settings/Profile/UserEmailSettings.vue:55
 msgid "Switch between outgoing email accounts when sending emails"
-msgstr ""
+msgstr "Prebacivanje između odlaznih imejl naloga prilikom slanja imejlova"
 
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.js:6
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:23
@@ -7177,11 +7177,11 @@ msgstr "Ažuriraj nalog"
 #. DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 msgid "Update the modified timestamp on new email communication & comment for leads & deals"
-msgstr ""
+msgstr "Ažuriranje vremenskog žiga pri novoj imejl komunikaciji i komentaru za potencijalne klijente i poslovne prilike"
 
 #: frontend/src/components/Settings/GeneralSettings.vue:20
 msgid "Update the modified timestamp on new email communication & comments for leads & deals"
-msgstr ""
+msgstr "Ažuriranje vremenskog žiga pri novoj imejl komunikaciji i komentarima za potencijalne klijente i poslovne prilike"
 
 #. Label of the update_timestamp_on_new_communication (Check) field in DocType
 #. 'FCRM Settings'
@@ -7218,7 +7218,7 @@ msgstr "Otpremi sliku"
 
 #: frontend/src/components/Settings/Profile/ProfileSettings.vue:158
 msgid "Upload Photo"
-msgstr ""
+msgstr "Otpremi fotografiju"
 
 #: frontend/src/components/Activities/WhatsAppBox.vue:163
 msgid "Upload Video"
