@@ -1,5 +1,7 @@
 # Copyright (c) 2022, Frappe Technologies Pvt. Ltd. and Contributors
 # MIT License. See license.txt
+import json
+
 import click
 import frappe
 from frappe.custom.doctype.custom_field.custom_field import create_custom_fields
@@ -23,6 +25,7 @@ def after_install(force=False):
 	add_default_industries()
 	add_default_lead_sources()
 	add_default_lost_reasons()
+	add_default_quick_filters()
 	add_standard_dropdown_items()
 	add_default_scripts()
 	create_default_manager_dashboard(force)
@@ -437,6 +440,26 @@ def add_default_lost_reasons():
 		doc = frappe.new_doc("CRM Lost Reason")
 		doc.lost_reason = reason["reason"]
 		doc.description = reason["description"]
+		doc.insert()
+
+
+def add_default_quick_filters():
+	quick_filters = {
+		"CRM Lead": ["lead_name", "email", "organization", "status", "source"],
+		"CRM Deal": ["organization", "status", "probability", "email"],
+		"Contact": ["status", "email_id", "phone"],
+		"CRM Organization": ["organization_name", "no_of_employees", "territory", "industry"],
+		"CRM Task": ["title", "priority", "assigned_to", "status", "due_date"],
+		"CRM Call Log": ["telephony_medium", "type", "status", "from", "to"],
+	}
+
+	for quick_filter in quick_filters:
+		if frappe.db.exists("CRM Global Settings", {"dt": quick_filter}):
+			continue
+
+		doc = frappe.new_doc("CRM Global Settings")
+		doc.dt = quick_filter
+		doc.json = json.dumps(quick_filters[quick_filter])
 		doc.insert()
 
 
