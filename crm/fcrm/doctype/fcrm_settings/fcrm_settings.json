@@ -10,7 +10,8 @@
   "enable_forecasting",
   "auto_update_expected_deal_value",
   "update_timestamp_on_new_communication",
-  "auto_update_communication_status",
+  "auto_mark_replied_on_response",
+  "auto_reopen_on_new_communication",
   "currency_tab",
   "currency",
   "exchange_rate_provider_section",
@@ -125,16 +126,23 @@
   },
   {
    "default": "0",
-   "description": "Automatically update the Communication status for Leads & Deals when SLA is enabled. Set status to \u201cOpen\u201d on new communication and \u201cReplied\u201d when a response is received",
-   "fieldname": "auto_update_communication_status",
+   "description": "Automatically sets Communication Status to \u201cReplied\u201d for the lead or deal when a response is received. Applies only when SLA is enabled",
+   "fieldname": "auto_mark_replied_on_response",
    "fieldtype": "Check",
-   "label": "Auto update communication status"
+   "label": "Mark lead/deal as replied on response"
+  },
+  {
+   "default": "0",
+   "description": "Automatically sets Communication Status to \u201cOpen\u201d for the lead or deal when a new communication is created. Applies only when SLA is enabled",
+   "fieldname": "auto_reopen_on_new_communication",
+   "fieldtype": "Check",
+   "label": "Reopen lead/deal on new communication"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2026-03-23 11:50:35.306242",
+ "modified": "2026-03-25 12:52:27.199315",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "FCRM Settings",

@@ -23,7 +23,8 @@ class FCRMSettings(Document):
 
 		access_key: DF.Data | None
 		all_day_event_notifications: DF.Table[EventNotifications]
-		auto_update_communication_status: DF.Check
+		auto_mark_replied_on_response: DF.Check
+		auto_reopen_on_new_communication: DF.Check
 		auto_update_expected_deal_value: DF.Check
 		brand_logo: DF.Attach | None
 		brand_name: DF.Data | None
