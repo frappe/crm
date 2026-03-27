@@ -380,6 +380,7 @@ import { statusesStore } from '@/stores/statuses'
 import { getMeta } from '@/stores/meta'
 import { useDocument } from '@/data/document'
 import { whatsappEnabled, callEnabled } from '@/composables/settings'
+import { useBroadcast } from '@/composables/useBroadcast'
 import {
   createResource,
   Dropdown,
@@ -404,6 +405,7 @@ import {
 import { useRoute, useRouter } from 'vue-router'
 import { useActiveTabManager } from '@/composables/useActiveTabManager'
 
+const { on } = useBroadcast()
 const { brand } = getSettings()
 const { $dialog, $socket, makeCall } = globalStore()
 const { statusOptions, getDealStatus } = statusesStore()
@@ -607,6 +609,8 @@ const sections = createResource({
   params: { doctype: 'CRM Deal' },
   transform: (data) => getParsedSections(data),
 })
+
+on('reload-deal-sections', () => sections.reload())
 
 if (!sections.data) sections.fetch()
 
