@@ -9,6 +9,7 @@ from frappe.model.document import Document
 from crm.api.exchange_rate import get_exchange_rate
 from crm.fcrm.doctype.crm_service_level_agreement.utils import get_sla
 from crm.fcrm.doctype.crm_status_change_log.crm_status_change_log import add_status_change_log
+from crm.fcrm.doctype.utils import add_or_remove_lost_reason_section_in_sidepanel
 
 
 class CRMDeal(Document):
@@ -250,6 +251,8 @@ class CRMDeal(Document):
 				frappe.throw(_("Please specify a reason for losing the deal."), frappe.ValidationError)
 			elif self.lost_reason == "Other" and not self.lost_notes:
 				frappe.throw(_("Please specify the reason for losing the deal."), frappe.ValidationError)
+		if self.has_value_changed("status"):
+			add_or_remove_lost_reason_section_in_sidepanel(self)
 
 	def update_exchange_rate(self):
 		if self.has_value_changed("currency") or not self.exchange_rate:
