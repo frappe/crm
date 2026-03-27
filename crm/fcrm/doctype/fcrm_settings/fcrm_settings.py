@@ -1,6 +1,8 @@
 # Copyright (c) 2024, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 
+import json
+
 import frappe
 from frappe import _
 from frappe.custom.doctype.property_setter.property_setter import delete_property_setter, make_property_setter
@@ -70,6 +72,7 @@ class FCRMSettings(Document):
 	def setup_forecasting(self):
 		if self.has_value_changed("enable_forecasting"):
 			if not self.enable_forecasting:
+				self.remove_forecasting_section_in_sidepanel()
 				delete_property_setter(
 					"CRM Deal",
 					"reqd",
@@ -81,6 +84,7 @@ class FCRMSettings(Document):
 					"expected_deal_value",
 				)
 			else:
+				self.add_forecasting_section_in_sidepanel()
 				make_property_setter(
 					"CRM Deal",
 					"expected_closure_date",
@@ -105,6 +109,44 @@ class FCRMSettings(Document):
 				1,
 				"Check",
 			)
+
+	def add_forecasting_section_in_sidepanel(self):
+		doc = frappe.get_doc("CRM Fields Layout", "CRM Deal-Side Panel")
+		layout = doc.layout
+		sections = json.loads(layout)
+		if any(section.get("name") == "forecasted_sales_section" for section in sections):
+			return
+		new_section = {
+			"name": "forecasted_sales_section",
+			"label": "Forecasted Sales",
+			"opened": True,
+			"columns": [
+				{
+					"name": "forecasted_sales_column",
+					"fields": ["expected_closure_date", "probability", "expected_deal_value"],
+				}
+			],
+		}
+		# Insert after contacts_section if it's the first section, else insert at the beginning
+		if sections and sections[0].get("name") == "contacts_section":
+			# Insert after the first section
+			sections = [*sections[:1], new_section, *sections[1:]]
+		else:
+			# Insert as the first section
+			sections = [new_section, *sections]
+		doc.layout = json.dumps(sections)
+		doc.save(ignore_permissions=True)
+
+	def remove_forecasting_section_in_sidepanel(self):
+		doc = frappe.get_doc("CRM Fields Layout", "CRM Deal-Side Panel")
+		doc.layout = json.dumps(
+			[
+				section
+				for section in json.loads(doc.layout)
+				if section.get("name") != "forecasted_sales_section"
+			]
+		)
+		doc.save(ignore_permissions=True)
 
 
 def get_standard_dropdown_items():
