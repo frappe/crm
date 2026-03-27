@@ -406,7 +406,6 @@
    "fieldname": "lost_reason",
    "fieldtype": "Link",
    "label": "Lost Reason",
-   "mandatory_depends_on": "eval: doc.status == \"Lost\"",
    "options": "CRM Lost Reason"
   },
   {
@@ -477,7 +476,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-03-26 12:49:32.624754",
+ "modified": "2026-03-27 23:24:13.206021",
  "modified_by": "shariq@frappe.io",
  "module": "FCRM",
  "name": "CRM Deal",
