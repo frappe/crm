@@ -52,7 +52,7 @@
           :docname="dealId"
           :tabs="tabs"
           @beforeSave="beforeStatusChange"
-          @afterSave="reloadAssignees"
+          @afterSave="reloadResources"
         />
       </template>
     </Tabs>
@@ -143,7 +143,7 @@
           :docname="dealId"
           @reload="sections.reload"
           @beforeFieldChange="beforeStatusChange"
-          @afterFieldChange="reloadAssignees"
+          @afterFieldChange="reloadResources"
         >
           <template #actions="{ section }">
             <div v-if="section.name == 'contacts_section'" class="pr-2">
@@ -780,7 +780,9 @@ function setLostReason() {
     (document.doc.lost_reason && document.doc.lost_reason !== 'Other') ||
     (document.doc.lost_reason === 'Other' && document.doc.lost_notes)
   ) {
-    document.save.submit()
+    document.save.submit(null, {
+      onSuccess: () => sections.reload(),
+    })
     return
   }
 
@@ -795,14 +797,20 @@ function beforeStatusChange(data) {
     setLostReason()
   } else {
     document.save.submit(null, {
-      onSuccess: () => reloadAssignees(data),
+      onSuccess: () => reloadResources(data),
     })
   }
 }
 
-function reloadAssignees(data) {
+function reloadResources(data) {
   if (Object.hasOwn(data ?? {}, 'deal_owner')) {
     assignees.reload()
+  }
+  if (
+    Object.hasOwn(data ?? {}, 'status') &&
+    getDealStatus(data.status).type != 'Lost'
+  ) {
+    sections.reload()
   }
 }
 </script>
