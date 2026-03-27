@@ -68,7 +68,7 @@ def clear_demo_data():
 	call_log_names = json.loads(frappe.db.get_default(DEMO_CALL_LOGS_KEY) or "[]")
 	activity_data = json.loads(frappe.db.get_default(DEMO_ACTIVITIES_KEY) or "{}")
 	deal_data = json.loads(frappe.db.get_default(DEMO_DEALS_KEY) or "{}")
-	delete_demo_deals(deal_data)
+	delete_demo_deals(deal_data, lead_names)
 	delete_demo_activities(activity_data)
 	delete_demo_notes(note_names)
 	delete_demo_tasks(task_names)
