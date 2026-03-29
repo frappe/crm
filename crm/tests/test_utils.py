@@ -207,7 +207,7 @@ class TestUpdateModifiedTimestamp(FrappeTestCase):
 		frappe.db.set_single_value("FCRM Settings", "update_timestamp_on_new_communication", 1)
 
 	def test_timestamp_updated_on_new_comment(self):
-		"""Inserting a Comment linked to a CRM Lead should bump its modified timestamp."""
+		"""Inserting a Comment linked to a CRM Lead should bump its modified timestamp (via hook)."""
 		lead = self._make_lead()
 		original_modified = frappe.db.get_value("CRM Lead", lead.name, "modified")
 
@@ -223,8 +223,10 @@ class TestUpdateModifiedTimestamp(FrappeTestCase):
 			}
 		)
 		comment.insert(ignore_permissions=True)
+		frappe.db.commit()
 
 		updated_modified = frappe.db.get_value("CRM Lead", lead.name, "modified")
+		frappe.db.delete("CRM Lead", lead.name)
 		self.assertGreater(updated_modified, original_modified)
 
 	def test_timestamp_not_updated_when_no_reference(self):
