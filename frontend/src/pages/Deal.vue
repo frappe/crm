@@ -52,7 +52,7 @@
           :docname="dealId"
           :tabs="tabs"
           @beforeSave="beforeStatusChange"
-          @afterSave="reloadAssignees"
+          @afterSave="reloadResources"
         />
       </template>
     </Tabs>
@@ -143,7 +143,7 @@
           :docname="dealId"
           @reload="sections.reload"
           @beforeFieldChange="beforeStatusChange"
-          @afterFieldChange="reloadAssignees"
+          @afterFieldChange="reloadResources"
         >
           <template #actions="{ section }">
             <div v-if="section.name == 'contacts_section'" class="pr-2">
@@ -380,6 +380,7 @@ import { statusesStore } from '@/stores/statuses'
 import { getMeta } from '@/stores/meta'
 import { useDocument } from '@/data/document'
 import { whatsappEnabled, callEnabled } from '@/composables/settings'
+import { useBroadcast } from '@/composables/useBroadcast'
 import {
   createResource,
   Dropdown,
@@ -404,6 +405,7 @@ import {
 import { useRoute, useRouter } from 'vue-router'
 import { useActiveTabManager } from '@/composables/useActiveTabManager'
 
+const { on } = useBroadcast()
 const { brand } = getSettings()
 const { $dialog, $socket, makeCall } = globalStore()
 const { statusOptions, getDealStatus } = statusesStore()
@@ -608,6 +610,8 @@ const sections = createResource({
   transform: (data) => getParsedSections(data),
 })
 
+on('reload-deal-sections', () => sections.reload())
+
 if (!sections.data) sections.fetch()
 
 function getParsedSections(_sections) {
@@ -782,7 +786,9 @@ function setLostReason() {
     (document.doc.lost_reason && document.doc.lost_reason !== 'Other') ||
     (document.doc.lost_reason === 'Other' && document.doc.lost_notes)
   ) {
-    document.save.submit()
+    document.save.submit(null, {
+      onSuccess: () => sections.reload(),
+    })
     return
   }
 
@@ -797,14 +803,20 @@ function beforeStatusChange(data) {
     setLostReason()
   } else {
     document.save.submit(null, {
-      onSuccess: () => reloadAssignees(data),
+      onSuccess: () => reloadResources(data),
     })
   }
 }
 
-function reloadAssignees(data) {
+function reloadResources(data) {
   if (Object.hasOwn(data ?? {}, 'deal_owner')) {
     assignees.reload()
+  }
+  if (
+    Object.hasOwn(data ?? {}, 'status') &&
+    getDealStatus(data.status).type != 'Lost'
+  ) {
+    sections.reload()
   }
 }
 </script>

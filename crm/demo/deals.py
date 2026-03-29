@@ -311,13 +311,18 @@ def _create_deal_versions(deal_names, session_user, owner_1, owner_2, now):
 		)
 
 
-def delete_demo_deals(deal_data):
+def delete_demo_deals(deal_data, lead_names):
 	"""
 	Delete deals, their linked contacts, organizations, and deal-specific communications.
 	Comments and Versions are cascade-deleted when the deal is deleted.
 	"""
 	communication_names = deal_data.get("communications", [])
-	deal_names = deal_data.get("deals", [])
+	deal_names = set(deal_data.get("deals", []))
+
+	# Find all deals converted from the provided demo leads
+	if lead_names:
+		demo_lead_deals = frappe.get_all("CRM Deal", filters={"lead": ["in", lead_names]}, pluck="name")
+		deal_names.update(demo_lead_deals)
 
 	for name in communication_names:
 		if frappe.db.exists("Communication", name):

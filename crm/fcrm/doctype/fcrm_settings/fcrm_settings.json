@@ -7,6 +7,7 @@
  "field_order": [
   "defaults_tab",
   "restore_defaults",
+  "restore_demo_data",
   "enable_forecasting",
   "auto_update_expected_deal_value",
   "update_timestamp_on_new_communication",
@@ -172,12 +173,17 @@
    "fieldname": "auto_reopen_on_new_communication",
    "fieldtype": "Check",
    "label": "Reopen lead/deal on new communication"
+  },
+  {
+   "fieldname": "restore_demo_data",
+   "fieldtype": "Button",
+   "label": "Restore Demo Data"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2026-03-25 12:52:27.199315",
+ "modified": "2026-03-27 18:02:14.802197",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "FCRM Settings",

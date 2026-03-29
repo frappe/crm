@@ -88,6 +88,7 @@
       </div>
       <SidebarLink
         v-if="isManager() && isDemoDataCreated"
+        class="text-ink-red-3 hover:bg-surface-red-2 focus:bg-surface-red-2"
         :label="__('Clear Demo Data')"
         :isCollapsed="isSidebarCollapsed"
         @click="() => clearDemoData()"
