@@ -536,6 +536,9 @@ function transformIn(f) {
   if (f.operator.includes('like') && !f.value.includes('%')) {
     f.value = `%${f.value}%`
   }
+  if (['in', 'not in'].includes(f.operator) && typeof f.value === 'string') {
+    f.value = f.value.split(',').map((v) => v.trim())
+  }
   return f
 }
 
