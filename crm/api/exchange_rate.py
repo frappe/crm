@@ -63,9 +63,14 @@ def _fetch_exchange_rate(from_currency: str, to_currency: str, date: str):
 
 
 def _fetch_from_frankfurter(from_currency: str, to_currency: str, date: str):
-	res = requests.get(f"https://api.frankfurter.app/{date}?from={from_currency}&to={to_currency}", timeout=5)
-	if res.ok:
-		return res.json()["rates"][to_currency]
+	try:
+		res = requests.get(
+			f"https://api.frankfurter.app/{date}?from={from_currency}&to={to_currency}", timeout=5
+		)
+		if res.ok:
+			return res.json().get("rates", {}).get(to_currency)
+	except Exception:
+		pass
 	return None
 
 
