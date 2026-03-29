@@ -123,12 +123,15 @@
   </div>
 </template>
 <script setup>
+import { useBroadcast } from '@/composables/useBroadcast'
 import { TextEditor, FormControl, Switch, toast } from 'frappe-ui'
 import { inject, onMounted, ref } from 'vue'
 
 const props = defineProps({
   templateData: { type: Object, default: () => ({}) },
 })
+
+const { send } = useBroadcast()
 
 const emit = defineEmits(['updateStep'])
 const errorMessage = ref('')
@@ -170,6 +173,7 @@ const createTemplate = () => {
       onSuccess: () => {
         emit('updateStep', 'template-list')
         toast.success(__('Template created successfully'))
+        send('refresh-email-templates')
       },
       onError: (error) => {
         errorMessage.value =
@@ -185,7 +189,7 @@ onMounted(() => {
     template.value.name = template.value.name + ' - Copy'
     template.value.enabled = false // Default to disabled for new templates
   } else {
-    template.value = { ...props.templateData }
+    Object.assign(template.value, props.templateData)
   }
 })
 </script>
