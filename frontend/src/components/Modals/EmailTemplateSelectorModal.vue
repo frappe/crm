@@ -77,7 +77,7 @@ const searchInput = ref('')
 
 const emit = defineEmits(['apply'])
 
-const { send } = useBroadcast()
+const { on, send } = useBroadcast()
 
 const search = ref('')
 
@@ -110,6 +110,8 @@ function create() {
     reference_doctype: props.doctype,
   })
 }
+
+on('refresh-email-templates', () => templates.reload())
 
 onMounted(() => {
   if (templates.data == null) {
