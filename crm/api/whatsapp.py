@@ -37,10 +37,13 @@ def validate_access(reference_doctype=None, reference_name=None, permtype="read"
 def validate(doc, method):
 	phone_number = doc.get("from") if doc.type == "Incoming" else doc.get("to")
 	if phone_number:
-		name, doctype = get_contact_lead_or_deal_from_number(phone_number)
-		if doctype and name is not None:
-			doc.reference_doctype = doctype
-			doc.reference_name = name
+		try:
+			name, doctype = get_contact_lead_or_deal_from_number(phone_number)
+			if doctype and name is not None:
+				doc.reference_doctype = doctype
+				doc.reference_name = name
+		except Exception:
+			frappe.log_error("CRM WhatsApp: failed to resolve contact from number")
 
 
 def on_update(doc, method):
@@ -57,6 +60,8 @@ def on_update(doc, method):
 
 def notify_agent(doc):
 	if doc.type == "Incoming":
+		if not doc.reference_doctype or not doc.reference_name:
+			return
 		doctype = doc.reference_doctype
 		if doctype and doctype.startswith("CRM "):
 			doctype = doctype[4:].lower()

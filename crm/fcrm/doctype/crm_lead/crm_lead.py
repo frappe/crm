@@ -1,6 +1,8 @@
 # Copyright (c) 2023, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 
+import json
+
 import frappe
 from frappe import _
 from frappe.desk.form.assign_to import add as assign
@@ -11,6 +13,7 @@ from crm.fcrm.doctype.crm_service_level_agreement.utils import get_sla
 from crm.fcrm.doctype.crm_status_change_log.crm_status_change_log import (
 	add_status_change_log,
 )
+from crm.fcrm.doctype.utils import add_or_remove_lost_reason_section_in_sidepanel
 
 
 class CRMLead(Document):
@@ -78,6 +81,7 @@ class CRMLead(Document):
 		self.set_lead_name()
 		self.set_title()
 		self.validate_email()
+		self.validate_lost_reason()
 		if not self.is_new() and self.has_value_changed("lead_owner") and self.lead_owner:
 			self.share_with_agent(self.lead_owner)
 			self.assign_agent(self.lead_owner)
@@ -129,6 +133,18 @@ class CRMLead(Document):
 
 			if self.is_new() or not self.image:
 				self.image = has_gravatar(self.email)
+
+	def validate_lost_reason(self):
+		"""
+		Validate the lost reason if the status is set to "Lost".
+		"""
+		if self.status and frappe.get_cached_value("CRM Lead Status", self.status, "type") == "Lost":
+			if not self.lost_reason:
+				frappe.throw(_("Please specify a reason for losing the lead."), frappe.ValidationError)
+			elif self.lost_reason == "Other" and not self.lost_notes:
+				frappe.throw(_("Please specify the reason for losing the lead."), frappe.ValidationError)
+		if self.has_value_changed("status"):
+			add_or_remove_lost_reason_section_in_sidepanel(self)
 
 	def assign_agent(self, agent):
 		if not agent:

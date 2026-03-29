@@ -146,6 +146,7 @@
 <script setup>
 import EmailTemplateIcon from '@/components/Icons/EmailTemplateIcon.vue'
 import EmptyState from '../../ListViews/EmptyState.vue'
+import { useBroadcast } from '@/composables/useBroadcast'
 import {
   TextInput,
   FormControl,
@@ -158,6 +159,8 @@ import { ref, computed, inject } from 'vue'
 import { ConfirmDelete } from '../../../utils'
 
 const emit = defineEmits(['updateStep'])
+
+const { send } = useBroadcast()
 
 const templates = inject('templates')
 
@@ -195,6 +198,7 @@ function toggleEmailTemplate(template) {
             ? __('Template enabled successfully')
             : __('Template disabled successfully'),
         )
+        send('refresh-email-templates')
       },
       onError: (error) => {
         toast.error(error.messages[0] || __('Failed to update template'))

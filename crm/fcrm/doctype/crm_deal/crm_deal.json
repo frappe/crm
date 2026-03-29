@@ -82,6 +82,7 @@
   {
    "fieldname": "organization",
    "fieldtype": "Link",
+   "in_standard_filter": 1,
    "label": "Organization",
    "options": "CRM Organization"
   },
@@ -135,6 +136,7 @@
   {
    "fieldname": "email",
    "fieldtype": "Data",
+   "in_standard_filter": 1,
    "label": "Primary email",
    "options": "Email"
   },
@@ -149,6 +151,7 @@
    "fieldname": "status",
    "fieldtype": "Link",
    "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Status",
    "options": "CRM Deal Status",
    "reqd": 1,
@@ -403,7 +406,6 @@
    "fieldname": "lost_reason",
    "fieldtype": "Link",
    "label": "Lost Reason",
-   "mandatory_depends_on": "eval: doc.status == \"Lost\"",
    "options": "CRM Lost Reason"
   },
   {
@@ -474,8 +476,8 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-02-23 12:40:47.943133",
- "modified_by": "Administrator",
+ "modified": "2026-03-27 23:24:13.206021",
+ "modified_by": "shariq@frappe.io",
  "module": "FCRM",
  "name": "CRM Deal",
  "naming_rule": "By \"Naming Series\" field",
