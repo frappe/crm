@@ -285,63 +285,41 @@ def is_frappe_version(version: str, above: bool = False, below: bool = False):
 	return major_version == target_version
 
 
-def update_modified_timestamp(doc: Communication | Comment, method: str | None = None):
+def _should_update_modified(doc: Communication | Comment) -> bool:
 	if not frappe.db.get_single_value("FCRM Settings", "update_timestamp_on_new_communication"):
-		return
+		return False
 
 	if not (doc.reference_doctype and doc.reference_name):
-		return
+		return False
 
 	if doc.reference_doctype not in ["CRM Lead", "CRM Deal"]:
-		return
+		return False
 
-	elif doc.doctype not in ["Comment", "Communication"]:
-		return
+	if doc.doctype not in ["Comment", "Communication"]:
+		return False
 
-	frappe.db.set_value(dt=doc.reference_doctype, dn=doc.reference_name, field="modified", val=now())
+	return True
 
 
-def update_communication_status(doc: Communication, method: str | None = None):
-	if not (doc.reference_doctype and doc.reference_name):
-		return
-
+def _get_communication_status(doc: Communication) -> str | None:
 	if doc.doctype != "Communication":
-		return
+		return None
+
+	if not (doc.reference_doctype and doc.reference_name):
+		return None
 
 	if doc.sent_or_received not in ("Sent", "Received"):
-		return
+		return None
 
-	auto_reopen_on_new_communication = frappe.db.get_single_value(
-		"FCRM Settings", "auto_reopen_on_new_communication"
-	)
-	auto_mark_replied_on_response = frappe.db.get_single_value(
-		"FCRM Settings", "auto_mark_replied_on_response"
-	)
+	auto_reopen = frappe.db.get_single_value("FCRM Settings", "auto_reopen_on_new_communication")
+	auto_replied = frappe.db.get_single_value("FCRM Settings", "auto_mark_replied_on_response")
 
-	status = None
+	if doc.sent_or_received == "Received" and auto_reopen:
+		return "Open"
+	elif doc.sent_or_received == "Sent" and auto_replied:
+		return "Replied"
 
-	if doc.sent_or_received == "Received" and auto_reopen_on_new_communication:
-		status = "Open"
-	elif doc.sent_or_received == "Sent" and auto_mark_replied_on_response:
-		status = "Replied"
-
-	if not status:
-		return
-
-	last_communication = frappe.get_last_doc(
-		"Communication",
-		{"reference_doctype": doc.reference_doctype, "reference_name": doc.reference_name},
-	)
-
-	if not last_communication or (last_communication.name != doc.name):
-		return
-
-	frappe.db.set_value(
-		doc.reference_doctype,
-		doc.reference_name,
-		"communication_status",
-		status,
-	)
+	return None
 
 
 def create_lead_from_incoming_email(doc: Communication, method: str | None = None):
@@ -367,8 +345,6 @@ def create_lead_from_incoming_email(doc: Communication, method: str | None = Non
 		return
 
 	lead = frappe.new_doc("CRM Lead")
-
-	lead.doctype = "CRM Lead"
 	lead.email = doc.sender
 	lead.first_name = doc.sender_full_name or doc.sender.split("@")[0]
 
@@ -378,3 +354,62 @@ def create_lead_from_incoming_email(doc: Communication, method: str | None = Non
 		lead.lead_status = "New"
 
 	lead.insert(ignore_permissions=True)
+
+
+def on_comment_insert(doc: Comment, method: str | None = None):
+	if not (doc.reference_doctype and doc.reference_name):
+		return
+
+	if doc.reference_doctype not in ["CRM Lead", "CRM Deal"]:
+		return
+
+	if not _should_update_modified(doc):
+		return
+
+	frappe.db.after_commit.add(
+		lambda: frappe.db.set_value(
+			doc.reference_doctype,
+			doc.reference_name,
+			"modified",
+			now(),
+			update_modified=False,
+		)
+	)
+
+
+def on_communication_insert(doc: Communication, method: str | None = None):
+	create_lead_from_incoming_email(doc)
+
+
+def on_communication_update(doc: Communication, method: str | None = None):
+	if not (doc.reference_doctype and doc.reference_name):
+		return
+
+	if doc.reference_doctype not in ["CRM Lead", "CRM Deal"]:
+		return
+
+	should_update_modified = _should_update_modified(doc)
+	status = _get_communication_status(doc)
+
+	values = {}
+
+	if should_update_modified:
+		values["modified"] = now()
+
+	if status:
+		last_communication = frappe.get_last_doc(
+			"Communication",
+			{"reference_doctype": doc.reference_doctype, "reference_name": doc.reference_name},
+		)
+		if last_communication and last_communication.name == doc.name:
+			values["communication_status"] = status
+
+	if not values:
+		return
+
+	frappe.db.set_value(
+		doc.reference_doctype,
+		doc.reference_name,
+		values,
+		update_modified=False,
+	)
