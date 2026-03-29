@@ -184,6 +184,8 @@ onMounted(() => {
     Object.assign(template.value, props.templateData)
     template.value.name = template.value.name + ' - Copy'
     template.value.enabled = false // Default to disabled for new templates
+  } else {
+    template.value = { ...props.templateData }
   }
 })
 </script>

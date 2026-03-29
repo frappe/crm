@@ -16,17 +16,7 @@
             <FeatherIcon name="search" class="h-4 w-4 text-ink-gray-4" />
           </template>
         </TextInput>
-        <Button
-          :label="__('Create')"
-          icon-left="plus"
-          @click="
-            () => {
-              show = false
-              showSettings = true
-              activeSettingsPage = 'Templates'
-            }
-          "
-        />
+        <Button :label="__('Create')" icon-left="plus" @click="create" />
       </div>
       <div
         v-if="filteredTemplates.length"
@@ -65,17 +55,7 @@
           <div class="text-lg text-ink-gray-4">
             {{ __('No Templates Found') }}
           </div>
-          <Button
-            :label="__('Create New')"
-            class="mt-4"
-            @click="
-              () => {
-                show = false
-                showSettings = true
-                activeSettingsPage = 'Templates'
-              }
-            "
-          />
+          <Button :label="__('Create New')" class="mt-4" @click="create" />
         </div>
       </div>
     </template>
@@ -84,6 +64,7 @@
 
 <script setup>
 import { showSettings, activeSettingsPage } from '@/composables/settings'
+import { useBroadcast } from '@/composables/useBroadcast'
 import { TextEditor, createListResource } from 'frappe-ui'
 import { ref, computed, nextTick, watch, onMounted } from 'vue'
 
@@ -95,6 +76,8 @@ const show = defineModel({ type: Boolean })
 const searchInput = ref('')
 
 const emit = defineEmits(['apply'])
+
+const { send } = useBroadcast()
 
 const search = ref('')
 
@@ -117,6 +100,16 @@ const templates = createListResource({
   orderBy: 'modified desc',
   pageLength: 99999,
 })
+
+function create() {
+  show.value = false
+  showSettings.value = true
+  activeSettingsPage.value = 'Templates'
+  send('email_template_page', {
+    page: 'new-template',
+    reference_doctype: props.doctype,
+  })
+}
 
 onMounted(() => {
   if (templates.data == null) {
