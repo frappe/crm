@@ -96,6 +96,8 @@ class CRMDeal(Document):
 
 	def after_insert(self):
 		if self.deal_owner:
+			if self.deal_owner != frappe.session.user:
+				self.share_with_agent(self.deal_owner)
 			self.assign_agent(self.deal_owner)
 
 	def before_save(self):

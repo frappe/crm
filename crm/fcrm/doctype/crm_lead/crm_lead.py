@@ -90,6 +90,8 @@ class CRMLead(Document):
 
 	def after_insert(self):
 		if self.lead_owner:
+			if self.lead_owner != frappe.session.user:
+				self.share_with_agent(self.lead_owner)
 			self.assign_agent(self.lead_owner)
 
 	def before_save(self):
