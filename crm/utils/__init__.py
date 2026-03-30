@@ -366,13 +366,12 @@ def on_comment_insert(doc: Comment, method: str | None = None):
 	if not _should_update_modified(doc):
 		return
 
-	frappe.db.set_value(
-		doc.reference_doctype,
-		doc.reference_name,
-		"modified",
-		now(),
-		update_modified=False,
-	)
+	if doc.reference_doctype and doc.reference_name:
+		frappe.enqueue(update_modified_background, doctype=doc.reference_doctype, docname=doc.reference_name)
+
+
+def update_modified_background(doctype, docname):
+	frappe.db.set_value(doctype, docname, "modified", now(), update_modified=False)
 
 
 def on_communication_insert(doc: Communication, method: str | None = None):
