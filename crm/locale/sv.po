@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-03-29 09:46+0000\n"
-"PO-Revision-Date: 2026-03-29 14:25\n"
+"PO-Revision-Date: 2026-03-30 14:22\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Swedish\n"
 "MIME-Version: 1.0\n"
@@ -628,7 +628,7 @@ msgstr "Appar"
 
 #: frontend/src/composables/demoData.js:21
 msgid "Are you sure you want to clear demo data? This action cannot be undone."
-msgstr ""
+msgstr "Är du säker på att du vill rensa demo data? Denna åtgärd kan inte ångras."
 
 #: frontend/src/components/Activities/AttachmentArea.vue:128
 msgid "Are you sure you want to delete this attachment?"
@@ -863,14 +863,14 @@ msgstr "Autokomplettera"
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 #: frontend/src/components/Settings/GeneralSettings.vue:64
 msgid "Automatically sets Communication Status to “Open” for the lead or deal when a new communication is created. Applies only when SLA is enabled"
-msgstr ""
+msgstr "Automatiskt anger Kommunikation Status till ”Öppen” för potentiell kund eller affär när ny kommunikation skapas. Gäller endast när Service Nivå Avtal är aktiverad"
 
 #. Description of the 'Mark lead/deal as replied on response' (Check) field in
 #. DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 #: frontend/src/components/Settings/GeneralSettings.vue:42
 msgid "Automatically sets Communication Status to “Replied” for the lead or deal when a response is received. Applies only when SLA is enabled"
-msgstr ""
+msgstr "Automatiskt anger Kommunikation Status till ”Besvarad” för potentiell kund eller affär när svar tas emot. Gäller endast när Service Nivå Avtal är aktiverad"
 
 #. Description of the 'Auto update Expected Deal Value' (Check) field in
 #. DocType 'FCRM Settings'
@@ -1798,7 +1798,7 @@ msgstr "Skapa Potentiell Kund"
 
 #: frontend/src/components/Settings/emailConfig.js:58
 msgid "Create Lead from Incoming Emails"
-msgstr ""
+msgstr "Skapa Potentiell Kund från inkommande E-post"
 
 #: frontend/src/components/Controls/Link.vue:50
 #: frontend/src/components/Modals/EmailTemplateSelectorModal.vue:58
@@ -2229,7 +2229,7 @@ msgstr "Tar bort anteckning..."
 
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.js:58
 msgid "Demo data restored successfully."
-msgstr ""
+msgstr "Demo data återställd."
 
 #. Label of the description (Text Editor) field in DocType 'CRM Holiday'
 #. Label of the description (Text Editor) field in DocType 'CRM Lost Reason'
@@ -3573,7 +3573,7 @@ msgstr "Ikon"
 
 #: frontend/src/components/Settings/emailConfig.js:61
 msgid "If enabled, a lead will be automatically created when an incoming email is received from an unknown contact."
-msgstr ""
+msgstr "Om aktiverad, skapas automatiskt potentiell kund när inkommande e-post tas emot från okänd kontakt."
 
 #: frontend/src/components/Settings/emailConfig.js:53
 msgid "If enabled, all outgoing emails will be sent from this account. Note: Only one account can be default outgoing."
@@ -4409,7 +4409,7 @@ msgstr "Markera alla som lästa"
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 #: frontend/src/components/Settings/GeneralSettings.vue:38
 msgid "Mark lead/deal as replied on response"
-msgstr ""
+msgstr "Ange potentiell kund/affär som besvarad vid svar"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:568
 msgid "Masters"
@@ -5376,7 +5376,7 @@ msgstr "Ange anledning till att affären förlorades."
 
 #: crm/fcrm/doctype/crm_lead/crm_lead.py:143
 msgid "Please specify a reason for losing the lead."
-msgstr ""
+msgstr "Ange orsak för förlorad potentiell kund."
 
 #: crm/fcrm/doctype/crm_deal/crm_deal.py:253
 msgid "Please specify the reason for losing the deal."
@@ -5384,7 +5384,7 @@ msgstr "Ange anledning till att affären förlorades."
 
 #: crm/fcrm/doctype/crm_lead/crm_lead.py:145
 msgid "Please specify the reason for losing the lead."
-msgstr ""
+msgstr "Ange orsak för förlorad potentiell kund."
 
 #: frontend/src/components/Settings/Sla/SlaPolicyList.vue:62
 msgid "Policy Name"
@@ -5706,7 +5706,7 @@ msgstr "Ta bort och flytta fält till föregående kolumn"
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 #: frontend/src/components/Settings/GeneralSettings.vue:60
 msgid "Reopen lead/deal on new communication"
-msgstr ""
+msgstr "Återuppta potentiell kund/affär vid ny kommunikation"
 
 #: frontend/src/components/Activities/EmailArea.vue:34
 #: frontend/src/components/CommunicationArea.vue:9
@@ -5808,7 +5808,7 @@ msgstr "Återställ Standardvärden"
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.js:53
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 msgid "Restore Demo Data"
-msgstr ""
+msgstr "Återställ Demo Data"
 
 #: frontend/src/components/FilesUploader/FilesUploader.vue:51
 msgid "Retake"
@@ -6869,7 +6869,7 @@ msgstr "Detta kommer att återställa (om det inte finns) alla standard status, 
 
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.js:67
 msgid "This will restore the demo data. Are you sure you want to continue?"
-msgstr ""
+msgstr "Detta kommer att återställa demo data. Är du säker på att du vill fortsätta?"
 
 #. Option for the 'Weekly Off' (Select) field in DocType 'CRM Holiday List'
 #. Option for the 'Workday' (Select) field in DocType 'CRM Service Day'
