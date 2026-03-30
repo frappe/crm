@@ -126,10 +126,7 @@ class TestUtils(FrappeTestCase):
 		self.assertEqual(result["country"], "IN")
 
 
-<<<<<<< HEAD
 class TestUpdateModifiedTimestamp(FrappeTestCase):
-=======
-class TestUpdateModifiedTimestamp(IntegrationTestCase):
 	def setUp(self):
 		super().setUp()
 		# Patch frappe.enqueue to run update_modified_background synchronously in tests
@@ -148,7 +145,6 @@ class TestUpdateModifiedTimestamp(IntegrationTestCase):
 		# fallback: do nothing
 		return None
 
->>>>>>> aa1f43c9 (fix: patch frappe.enqueue for synchronous execution of update_modified_background in tests)
 	@classmethod
 	def setUpClass(cls):
 		super().setUpClass()
@@ -294,21 +290,7 @@ class TestUpdateModifiedTimestamp(IntegrationTestCase):
 		self.assertGreaterEqual(after, before)
 
 
-<<<<<<< HEAD
 class TestUpdateCommunicationStatus(FrappeTestCase):
-	"""
-	Lifecycle semantics:
-
-	  auto_reopen_on_new_communication  — Sent (outgoing) communication → status "Open"
-	  auto_mark_replied_on_response     — Received (incoming) communication → status "Replied"
-
-	Both settings must be enabled together to exercise the full lifecycle; tests that
-	verify a disabled path disable only the relevant flag and leave the other intact.
-	"""
-
-=======
-class TestUpdateCommunicationStatus(IntegrationTestCase):
->>>>>>> 8462ea4e (test: update communication status handling and improve test descriptions)
 	@classmethod
 	def setUpClass(cls):
 		super().setUpClass()
