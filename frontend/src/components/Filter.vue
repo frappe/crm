@@ -201,7 +201,12 @@ const filters = computed(() => {
   if (!list.value?.data) return new Set()
   let allFilters =
     list.value?.params?.filters || list.value.data?.params?.filters
-  if (!allFilters || !filterableFields.data) return new Set()
+  if (
+    !allFilters ||
+    Object.keys(allFilters).length === 0 ||
+    !filterableFields.data
+  )
+    return new Set()
   // remove default filters
   if (props.default_filters) {
     allFilters = removeCommonFilters(props.default_filters, allFilters)
