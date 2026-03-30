@@ -223,10 +223,8 @@ class TestUpdateModifiedTimestamp(FrappeTestCase):
 			}
 		)
 		comment.insert(ignore_permissions=True)
-		frappe.db.commit()
 
 		updated_modified = frappe.db.get_value("CRM Lead", lead.name, "modified")
-		frappe.db.delete("CRM Lead", lead.name)
 		self.assertGreater(updated_modified, original_modified)
 
 	def test_timestamp_not_updated_when_no_reference(self):

@@ -367,14 +367,12 @@ def on_comment_insert(doc: Comment, method: str | None = None):
 	if not _should_update_modified(doc):
 		return
 
-	frappe.db.after_commit.add(
-		lambda: frappe.db.set_value(
-			doc.reference_doctype,
-			doc.reference_name,
-			"modified",
-			now(),
-			update_modified=False,
-		)
+	frappe.db.set_value(
+		doc.reference_doctype,
+		doc.reference_name,
+		"modified",
+		now(),
+		update_modified=False,
 	)
 
 
