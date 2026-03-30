@@ -127,6 +127,24 @@ class TestUtils(UnitTestCase):
 
 
 class TestUpdateModifiedTimestamp(IntegrationTestCase):
+	def setUp(self):
+		super().setUp()
+		# Patch frappe.enqueue to run update_modified_background synchronously in tests
+		self._enqueue_patch = patch("frappe.enqueue", self._immediate_enqueue)
+		self._enqueue_patch.start()
+
+	@staticmethod
+	def _immediate_enqueue(method, **kwargs):
+		# Only patch for update_modified_background
+		from crm.utils import update_modified_background
+
+		if method == update_modified_background or (
+			isinstance(method, str) and method.endswith("update_modified_background")
+		):
+			return update_modified_background(kwargs["doctype"], kwargs["docname"])
+		# fallback: do nothing
+		return None
+
 	@classmethod
 	def setUpClass(cls):
 		super().setUpClass()
@@ -143,6 +161,8 @@ class TestUpdateModifiedTimestamp(IntegrationTestCase):
 
 	def tearDown(self):
 		frappe.db.rollback()
+		self._enqueue_patch.stop()
+		super().tearDown()
 
 	def _make_lead(self):
 		lead = frappe.get_doc(
