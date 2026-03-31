@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-03-29 09:46+0000\n"
-"PO-Revision-Date: 2026-03-29 14:25\n"
+"PO-Revision-Date: 2026-03-30 14:22\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Serbian (Latin)\n"
 "MIME-Version: 1.0\n"
@@ -628,7 +628,7 @@ msgstr "Aplikacije"
 
 #: frontend/src/composables/demoData.js:21
 msgid "Are you sure you want to clear demo data? This action cannot be undone."
-msgstr ""
+msgstr "Da li ste sigurni da želite da obrišete demo podatke? Ova radnja se ne može poništiti."
 
 #: frontend/src/components/Activities/AttachmentArea.vue:128
 msgid "Are you sure you want to delete this attachment?"
@@ -863,14 +863,14 @@ msgstr "Automatsko izvršenje"
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 #: frontend/src/components/Settings/GeneralSettings.vue:64
 msgid "Automatically sets Communication Status to “Open” for the lead or deal when a new communication is created. Applies only when SLA is enabled"
-msgstr ""
+msgstr "Automatski postavlja status komunikacije na \"Otvoreno\" za potencijalnog klijenta ili poslovnu priliku kada se kreira nova komunikacija. Primenjuje se samo kada je sporazum o nivou usluge omogućen"
 
 #. Description of the 'Mark lead/deal as replied on response' (Check) field in
 #. DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 #: frontend/src/components/Settings/GeneralSettings.vue:42
 msgid "Automatically sets Communication Status to “Replied” for the lead or deal when a response is received. Applies only when SLA is enabled"
-msgstr ""
+msgstr "Automatski postavlja status komunikacije na \"Odgovoreno\" za potencijalnog klijenta ili poslovnu priliku kada se zaprimi odgovor. Primenjuje se samo kada je sporazum o nivou usluge omogućen"
 
 #. Description of the 'Auto update Expected Deal Value' (Check) field in
 #. DocType 'FCRM Settings'
@@ -1798,7 +1798,7 @@ msgstr "Kreiraj potencijalnog klijenta"
 
 #: frontend/src/components/Settings/emailConfig.js:58
 msgid "Create Lead from Incoming Emails"
-msgstr ""
+msgstr "Kreiraj potencijalnog klijenta iz dolaznih imejlova"
 
 #: frontend/src/components/Controls/Link.vue:50
 #: frontend/src/components/Modals/EmailTemplateSelectorModal.vue:58
@@ -2229,7 +2229,7 @@ msgstr "Brisanje beleške..."
 
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.js:58
 msgid "Demo data restored successfully."
-msgstr ""
+msgstr "Demo podaci su uspešno vraćeni."
 
 #. Label of the description (Text Editor) field in DocType 'CRM Holiday'
 #. Label of the description (Text Editor) field in DocType 'CRM Lost Reason'
@@ -3573,7 +3573,7 @@ msgstr "Ikonica"
 
 #: frontend/src/components/Settings/emailConfig.js:61
 msgid "If enabled, a lead will be automatically created when an incoming email is received from an unknown contact."
-msgstr ""
+msgstr "Ukoliko je omogućeno, potencijalni klijent će automatski biti kreiran kada se primi dolazni imejl od nepoznatog kontakta."
 
 #: frontend/src/components/Settings/emailConfig.js:53
 msgid "If enabled, all outgoing emails will be sent from this account. Note: Only one account can be default outgoing."
@@ -4409,7 +4409,7 @@ msgstr "Označi sve kao pročitano"
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 #: frontend/src/components/Settings/GeneralSettings.vue:38
 msgid "Mark lead/deal as replied on response"
-msgstr ""
+msgstr "Označi potencijalnog klijenta / poslovnu priliku kao odgovoreno nakon odgovora"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:568
 msgid "Masters"
@@ -5376,7 +5376,7 @@ msgstr "Molimo Vas da navedete razlog gubitka poslovne prilike."
 
 #: crm/fcrm/doctype/crm_lead/crm_lead.py:143
 msgid "Please specify a reason for losing the lead."
-msgstr ""
+msgstr "Molimo Vas da navedete razlog gubitka potencijalnog klijenta."
 
 #: crm/fcrm/doctype/crm_deal/crm_deal.py:253
 msgid "Please specify the reason for losing the deal."
@@ -5384,7 +5384,7 @@ msgstr "Molimo Vas da precizirate razlog gubitka poslovne prilike."
 
 #: crm/fcrm/doctype/crm_lead/crm_lead.py:145
 msgid "Please specify the reason for losing the lead."
-msgstr ""
+msgstr "Molimo Vas da navedete razlog gubitka potencijalnog klijenta."
 
 #: frontend/src/components/Settings/Sla/SlaPolicyList.vue:62
 msgid "Policy Name"
@@ -5706,7 +5706,7 @@ msgstr "Ukloni i premesti polja u prethodnu kolonu"
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 #: frontend/src/components/Settings/GeneralSettings.vue:60
 msgid "Reopen lead/deal on new communication"
-msgstr ""
+msgstr "Ponovo otvori potencijalnog klijenta / poslovnu priliku nakon ove komunikacije"
 
 #: frontend/src/components/Activities/EmailArea.vue:34
 #: frontend/src/components/CommunicationArea.vue:9
@@ -5808,7 +5808,7 @@ msgstr "Vrati podrazumevano"
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.js:53
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 msgid "Restore Demo Data"
-msgstr ""
+msgstr "Vrati demo podatke"
 
 #: frontend/src/components/FilesUploader/FilesUploader.vue:51
 msgid "Retake"
@@ -6869,7 +6869,7 @@ msgstr "Ova opcija će vratiti (ukoliko ne postoje) sve podrazumevane statuse, p
 
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.js:67
 msgid "This will restore the demo data. Are you sure you want to continue?"
-msgstr ""
+msgstr "Ova radnja će vratiti demo podatke. Da li ste sigurni da želite da nastavite?"
 
 #. Option for the 'Weekly Off' (Select) field in DocType 'CRM Holiday List'
 #. Option for the 'Workday' (Select) field in DocType 'CRM Service Day'
