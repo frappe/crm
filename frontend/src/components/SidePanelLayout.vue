@@ -327,7 +327,7 @@ import SidePanelModal from '@/components/Modals/SidePanelModal.vue'
 import { getMeta } from '@/stores/meta'
 import { usersStore } from '@/stores/users'
 import { isMobileView } from '@/composables/settings'
-import { getFormat, evaluateDependsOnValue } from '@/utils'
+import { getFormat, evaluateDependsOnValue, isNull } from '@/utils'
 import { flt } from '@/utils/numberFormat.js'
 import { Tooltip, DateTimePicker, DatePicker, TimePicker } from 'frappe-ui'
 import { useDocument } from '@/data/document'
@@ -459,15 +459,17 @@ function parsedSection(section, editButtonAdded) {
 function isFieldVisible(field) {
   if (props.preview) return true
 
-  const hideEmptyReadOnly = Number(
-    window.sysdefaults?.hide_empty_read_only_fields ?? 1,
-  )
+  let readOnlyField =
+    field.read_only || field.fieldtype === 'Read Only' ? true : false
 
-  const shouldShowReadOnly =
-    field.read_only && (doc.value?.[field.fieldname] || !hideEmptyReadOnly)
+  let hideEmptyReadOnlyField =
+    isNull(doc.value[field.fieldname]) &&
+    Number(window.sysdefaults?.hide_empty_read_only_fields ?? 1)
+
+  let showReadOnlyField = readOnlyField && !hideEmptyReadOnlyField
 
   return (
-    (field.fieldtype == 'Check' || shouldShowReadOnly || !field.read_only) &&
+    (field.fieldtype == 'Check' || showReadOnlyField || !readOnlyField) &&
     (!field.depends_on || field.display_via_depends_on) &&
     !field.hidden
   )

@@ -510,6 +510,19 @@ export function validateIsImageFile(file) {
   }
 }
 
+export function isNull(value) {
+  return (
+    value === undefined ||
+    value === null ||
+    value === '' ||
+    cstr(value).trim() === ''
+  )
+}
+
+export function cstr(s) {
+  return s === null ? '' : s.toString()
+}
+
 export function getRandom(len = 4) {
   let text = ''
   const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
