@@ -160,7 +160,8 @@ const profileTooltipText = computed(() => {
 
 const fullNameRef = useTemplateRef('fullNameRef')
 const fullName = computed({
-  get: () => user.doc.first_name + ' ' + user.doc.last_name,
+  get: () =>
+    [user.doc.first_name, user.doc.last_name].filter(Boolean).join(' '),
   set: (val) => {
     const [firstName, ...lastName] = val.split(' ')
     user.doc.first_name = firstName
