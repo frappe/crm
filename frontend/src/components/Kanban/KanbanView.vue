@@ -244,6 +244,8 @@ function actions(column) {
 function addColumn(e) {
   let column = columns.value.find((col) => col.column.name == e.value)
   column.column['delete'] = false
+  columns.value.splice(columns.value.indexOf(column), 1)
+  columns.value.push(column)
   updateColumn()
 }
 
