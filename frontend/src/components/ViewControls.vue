@@ -939,14 +939,15 @@ function updateColumns(obj) {
   }
 }
 
-async function updateKanbanSettings(data) {
+function updateKanbanSettings(data) {
   if (data.item && data.to) {
-    await call('frappe.client.set_value', {
+    call('frappe.client.set_value', {
       doctype: props.doctype,
       name: data.item,
       fieldname: view.value.column_field,
       value: data.to,
     })
+    return
   }
 
   if (data.fetchNewColumns) {
