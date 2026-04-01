@@ -8,6 +8,7 @@ from frappe.core.doctype.comment.comment import Comment
 from frappe.core.doctype.communication.communication import Communication
 from frappe.model.docstatus import DocStatus
 from frappe.model.dynamic_links import get_dynamic_link_map
+from frappe.query_builder import DocType
 from frappe.utils import floor, now
 from phonenumbers import NumberParseException
 from phonenumbers import PhoneNumberFormat as PNF
@@ -198,14 +199,16 @@ def get_dynamic_linked_docs(doc, method="Delete"):
 				docs.append({"doc": doc.name, "reference_doctype": df.parent, "reference_docname": df.parent})
 		else:
 			# dynamic link in table
-			df["table"] = ", `parent`, `parenttype`, `idx`" if meta.istable else ""
-			query = """select `name`, `docstatus` {table} from `tab{parent}` where
-			`{options}`=%s and `{fieldname}`=%s""".format(**df)
-			for refdoc in frappe.db.sql(
-				query,
-				(doc.doctype, doc.name),
-				as_dict=True,
-			):
+			RefDoc = DocType(df.parent)
+			qb_query = (
+				frappe.qb.from_(RefDoc)
+				.select(RefDoc.name, RefDoc.docstatus)
+				.where(RefDoc[df.options] == doc.doctype)
+				.where(RefDoc[df.fieldname] == doc.name)
+			)
+			if meta.istable:
+				qb_query = qb_query.select(RefDoc.parent, RefDoc.parenttype, RefDoc.idx)
+			for refdoc in qb_query.run(as_dict=True):
 				# linked to an non-cancelled doc when deleting
 				# or linked to a submitted doc when cancelling
 				if (method == "Delete" and not DocStatus(refdoc.docstatus).is_cancelled()) or (
