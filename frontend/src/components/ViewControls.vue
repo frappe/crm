@@ -939,14 +939,20 @@ function updateColumns(obj) {
   }
 }
 
-async function updateKanbanSettings(data) {
+function updateKanbanSettings(data) {
   if (data.item && data.to) {
-    await call('frappe.client.set_value', {
+    call('frappe.client.set_value', {
       doctype: props.doctype,
       name: data.item,
       fieldname: view.value.column_field,
       value: data.to,
     })
+    return
+  }
+
+  if (data.fetchNewColumns) {
+    fetchAndUpdateKanbanColumns(view.value)
+    return
   }
 
   viewUpdated.value = true
@@ -1225,6 +1231,19 @@ function deleteView(v, close) {
   close()
 }
 
+function fetchAndUpdateKanbanColumns(v) {
+  call(
+    'crm.fcrm.doctype.crm_view_settings.crm_view_settings.fetch_and_update_kanban_columns',
+    {
+      name: v.name,
+    },
+  ).then((columns) => {
+    list.value.params.kanban_columns = columns
+    view.value.kanban_columns = columns
+    list.value.reload()
+  })
+}
+
 function cancelChanges() {
   reload()
   viewUpdated.value = false
@@ -1309,6 +1328,7 @@ defineExpose({
   applyLikeFilter,
   likeDoc,
   updateKanbanSettings,
+  fetchAndUpdateKanbanColumns,
   loadMoreKanban,
   viewActions,
   viewsDropdownOptions,

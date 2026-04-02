@@ -13,7 +13,7 @@
     </div>
     <FormControl
       v-if="
-        field.read_only &&
+        (field.read_only || field.fieldtype === 'Read Only') &&
         !['Int', 'Float', 'Currency', 'Percent', 'Check'].includes(
           field.fieldtype,
         )
@@ -228,7 +228,7 @@ import TableMultiselectInput from '@/components/Controls/TableMultiselectInput.v
 import Link from '@/components/Controls/Link.vue'
 import Grid from '@/components/Controls/Grid.vue'
 import { createDocument } from '@/composables/document'
-import { getFormat, evaluateDependsOnValue } from '@/utils'
+import { getFormat, evaluateDependsOnValue, isNull } from '@/utils'
 import { flt } from '@/utils/numberFormat.js'
 import { getMeta } from '@/stores/meta'
 import { usersStore } from '@/stores/users'
@@ -330,15 +330,17 @@ const field = computed(() => {
 function isFieldVisible(field) {
   if (preview.value) return true
 
-  const hideEmptyReadOnly = Number(
-    window.sysdefaults?.hide_empty_read_only_fields ?? 1,
-  )
+  let readOnlyField =
+    field.read_only || field.fieldtype === 'Read Only' ? true : false
 
-  const shouldShowReadOnly =
-    field.read_only && (data.value[field.fieldname] || !hideEmptyReadOnly)
+  let hideEmptyReadOnlyField =
+    isNull(data.value[field.fieldname]) &&
+    Number(window.sysdefaults?.hide_empty_read_only_fields ?? 1)
+
+  let showReadOnlyField = readOnlyField && !hideEmptyReadOnlyField
 
   return (
-    (field.fieldtype == 'Check' || shouldShowReadOnly || !field.read_only) &&
+    (field.fieldtype == 'Check' || showReadOnlyField || !readOnlyField) &&
     (!field.depends_on || field.display_via_depends_on) &&
     !field.hidden
   )

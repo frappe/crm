@@ -2,6 +2,38 @@ import { createResource } from 'frappe-ui'
 import { formatCurrency, formatNumber } from '@/utils/numberFormat.js'
 import { computed, reactive } from 'vue'
 
+const standardFieldsMeta = [
+  {
+    fieldname: 'name',
+    label: 'Name',
+    fieldtype: 'Data',
+  },
+  {
+    fieldname: 'creation',
+    label: 'Created On',
+    fieldtype: 'Datetime',
+  },
+  {
+    fieldname: 'modified',
+    label: 'Last Modified',
+    fieldtype: 'Datetime',
+  },
+  {
+    fieldname: 'modified_by',
+    label: 'Modified By',
+    fieldtype: 'Link',
+    options: 'User',
+  },
+  { label: 'Assigned To', fieldtype: 'Text', fieldname: '_assign' },
+  {
+    label: 'Owner',
+    fieldtype: 'Link',
+    fieldname: 'owner',
+    options: 'User',
+  },
+  { label: 'Like', fieldtype: 'Data', fieldname: '_liked_by' },
+]
+
 const doctypesMeta = reactive({})
 const userSettings = reactive({})
 
@@ -80,29 +112,36 @@ export function getMeta(doctype) {
     return userSettings[parentDoctype]['GridView'][doctype]
   }
 
-  function getFields(dt = null) {
+  function getFields(dt = null, withStandardFields = false) {
     dt = dt || doctype
-    return doctypesMeta[dt]?.fields.map((f) => {
-      if (f.fieldtype === 'Select' && typeof f.options === 'string') {
-        f.options = f.options.split('\n').map((option) => {
-          return {
-            label: option,
-            value: option,
-          }
-        })
-
-        if (f.options[0]?.value !== '' && f.reqd !== 1) {
-          f.options.unshift({
-            label: '',
-            value: '',
+    let fieldsMeta =
+      doctypesMeta[dt]?.fields.map((f) => {
+        if (f.fieldtype === 'Select' && typeof f.options === 'string') {
+          f.options = f.options.split('\n').map((option) => {
+            return {
+              label: option,
+              value: option,
+            }
           })
+
+          if (f.options[0]?.value !== '' && f.reqd !== 1) {
+            f.options.unshift({
+              label: '',
+              value: '',
+            })
+          }
         }
-      }
-      if (f.fieldtype === 'Link' && f.options == 'User') {
-        f.fieldtype = 'User'
-      }
-      return f
-    })
+        if (f.fieldtype === 'Link' && f.options == 'User') {
+          f.fieldtype = 'User'
+        }
+        return f
+      }) || []
+
+    if (withStandardFields) {
+      fieldsMeta = fieldsMeta.concat(standardFieldsMeta)
+    }
+
+    return fieldsMeta || []
   }
 
   function saveUserSettings(parentDoctype, key, value, callback) {

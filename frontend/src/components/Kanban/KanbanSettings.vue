@@ -161,7 +161,7 @@ const columnFields = computed(() => {
 const { getFields } = getMeta(props.doctype)
 
 const fields = computed(() => {
-  const _fields = getFields() || []
+  const _fields = getFields(null, true) || []
   if (!_fields.length) return []
 
   let existingFields = []
