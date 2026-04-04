@@ -356,6 +356,8 @@ async function addNoteToCallLog(_note, insert_mode = false) {
       call_sid: callLog.value?.data?.id,
       note: _note,
     })
+  } else {
+    callLog.value?.reload?.()
   }
 }
 
@@ -366,6 +368,8 @@ async function addTaskToCallLog(_task, insert_mode = false) {
       call_sid: callLog.value?.data?.id,
       task: _task,
     })
+  } else {
+    callLog.value?.reload?.()
   }
 }
 
