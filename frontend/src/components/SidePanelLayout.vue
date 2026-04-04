@@ -72,6 +72,7 @@
                               'Check',
                               'Dropdown',
                               'Duration',
+                              'Rating',
                             ].includes(field.fieldtype)
                           "
                           class="flex h-7 cursor-pointer items-center px-2 py-1 text-ink-gray-5"
@@ -274,6 +275,14 @@
                           :disabled="Boolean(field.read_only)"
                           @change="(v) => fieldChange(v, field)"
                         />
+                        <RatingInput
+                          v-else-if="field.fieldtype === 'Rating'"
+                          class="pl-[10px]"
+                          :value="doc[field.fieldname]"
+                          :max="field.options || 5"
+                          :disabled="Boolean(field.read_only)"
+                          @change="(v) => fieldChange(v, field)"
+                        />
                         <FormControl
                           v-else
                           class="form-control"
@@ -326,6 +335,7 @@
 import Password from '@/components/Controls/Password.vue'
 import FormattedInput from '@/components/Controls/FormattedInput.vue'
 import DurationInput from '@/components/Controls/DurationInput.vue'
+import RatingInput from '@/components/Controls/RatingInput.vue'
 import CollapsibleSection from '@/components/CollapsibleSection.vue'
 import PrimaryDropdown from '@/components/PrimaryDropdown.vue'
 import FadedScrollableDiv from '@/components/FadedScrollableDiv.vue'
