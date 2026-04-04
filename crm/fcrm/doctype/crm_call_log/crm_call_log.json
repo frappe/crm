@@ -42,7 +42,7 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "in_standard_filter": 1,
-   "label": "From",
+   "label": "From Number",
    "reqd": 1
   },
   {
@@ -81,7 +81,7 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "in_standard_filter": 1,
-   "label": "To",
+   "label": "To Number",
    "reqd": 1
   },
   {
@@ -160,8 +160,13 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
+<<<<<<< HEAD
  "modified": "2026-03-26 12:57:11.481722",
  "modified_by": "shariq@frappe.io",
+=======
+ "modified": "2026-04-04 15:08:11.626910",
+ "modified_by": "Administrator",
+>>>>>>> 8e2bbf9e (fix: update labels for 'From' and 'To' fields in CRM Call Log)
  "module": "FCRM",
  "name": "CRM Call Log",
  "naming_rule": "By fieldname",
