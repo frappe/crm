@@ -14,7 +14,7 @@
     <FormControl
       v-if="
         (field.read_only || field.fieldtype === 'Read Only') &&
-        !['Int', 'Float', 'Currency', 'Percent', 'Check'].includes(
+        !['Int', 'Float', 'Currency', 'Percent', 'Check', 'Duration'].includes(
           field.fieldtype,
         )
       "
@@ -207,11 +207,19 @@
       :description="field.description"
       @change="fieldChange(flt($event.target.value), field)"
     />
+    <DurationInput
+      v-else-if="field.fieldtype === 'Duration'"
+      :value="data[field.fieldname]"
+      :placeholder="getPlaceholder(field)"
+      :disabled="Boolean(field.read_only)"
+      :description="field.description"
+      @change="(v) => fieldChange(v, field)"
+    />
     <FormControl
       v-else
       type="text"
       :placeholder="getPlaceholder(field)"
-      :value="getDataValue(data[field.fieldname], field)"
+      :value="data[field.fieldname]"
       :disabled="Boolean(field.read_only)"
       :description="field.description"
       @change="fieldChange($event.target.value, field)"
@@ -221,6 +229,7 @@
 <script setup>
 import Password from '@/components/Controls/Password.vue'
 import FormattedInput from '@/components/Controls/FormattedInput.vue'
+import DurationInput from '@/components/Controls/DurationInput.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
@@ -381,13 +390,6 @@ function fieldChange(value, df) {
   } else {
     triggerOnChange(df.fieldname, value)
   }
-}
-
-function getDataValue(value, field) {
-  if (field.fieldtype === 'Duration') {
-    return value || 0
-  }
-  return value
 }
 </script>
 <style scoped>
