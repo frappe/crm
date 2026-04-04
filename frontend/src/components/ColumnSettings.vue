@@ -145,12 +145,13 @@ import DragIcon from '@/components/Icons/DragIcon.vue'
 import ReloadIcon from '@/components/Icons/ReloadIcon.vue'
 import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import { isTouchScreenDevice } from '@/utils'
+import { getMeta } from '@/stores/meta'
 import { Popover } from 'frappe-ui'
 import Draggable from 'vuedraggable'
 import { computed, ref } from 'vue'
 import { watchOnce } from '@vueuse/core'
 
-defineProps({
+const props = defineProps({
   doctype: { type: String, required: true },
   hideLabel: { type: Boolean, default: false },
 })
@@ -194,12 +195,22 @@ const rows = computed({
   },
 })
 
-const fields = computed(() => {
-  let allFields = list.value?.data?.fields
-  if (!allFields) return []
+const { getFields } = getMeta(props.doctype)
 
-  return allFields.filter((field) => {
-    return !columns.value.find((column) => column.key === field.fieldname)
+const fields = computed(() => {
+  const _fields = getFields({ withStandardFields: true }) || []
+  if (!_fields.length) return []
+
+  let existingFields = []
+  if (columns.value.length) {
+    existingFields = columns.value.map((column) => column.key)
+  }
+
+  return _fields.filter((field) => {
+    return (
+      !columns.value.find((column) => column.key === field.fieldname) &&
+      !existingFields.includes(field.fieldname)
+    )
   })
 })
 
