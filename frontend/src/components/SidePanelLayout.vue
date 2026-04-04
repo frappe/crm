@@ -71,6 +71,11 @@
                               'Percent',
                               'Check',
                               'Dropdown',
+<<<<<<< HEAD
+=======
+                              'Duration',
+                              'Rating',
+>>>>>>> a1c73435 (fix: add support for RatingInput component in Field and SidePanel layouts)
                             ].includes(field.fieldtype)
                           "
                           class="flex h-7 cursor-pointer items-center px-2 py-1 text-ink-gray-5"
@@ -260,6 +265,24 @@
                             fieldChange(flt($event.target.value), field)
                           "
                         />
+<<<<<<< HEAD
+=======
+                        <DurationInput
+                          v-else-if="field.fieldtype === 'Duration'"
+                          class="form-control"
+                          :value="doc[field.fieldname]"
+                          :placeholder="field.placeholder"
+                          :disabled="Boolean(field.read_only)"
+                          @change="(v) => fieldChange(v, field)"
+                        />
+                        <RatingInput
+                          v-else-if="field.fieldtype === 'Rating'"
+                          :value="doc[field.fieldname]"
+                          :max="field.options || 5"
+                          :disabled="Boolean(field.read_only)"
+                          @change="(v) => fieldChange(v, field)"
+                        />
+>>>>>>> a1c73435 (fix: add support for RatingInput component in Field and SidePanel layouts)
                         <FormControl
                           v-else
                           class="form-control"
@@ -311,7 +334,13 @@
 <script setup>
 import Password from '@/components/Controls/Password.vue'
 import FormattedInput from '@/components/Controls/FormattedInput.vue'
+<<<<<<< HEAD
 import Section from '@/components/Section.vue'
+=======
+import DurationInput from '@/components/Controls/DurationInput.vue'
+import RatingInput from '@/components/Controls/RatingInput.vue'
+import CollapsibleSection from '@/components/CollapsibleSection.vue'
+>>>>>>> a1c73435 (fix: add support for RatingInput component in Field and SidePanel layouts)
 import PrimaryDropdown from '@/components/PrimaryDropdown.vue'
 import FadedScrollableDiv from '@/components/FadedScrollableDiv.vue'
 import ArrowUpRightIcon from '@/components/Icons/ArrowUpRightIcon.vue'
