@@ -81,6 +81,7 @@ class CRMDeal(Document):
 		self.set_sla()
 
 	def validate(self):
+		self.validate_status()
 		self.set_primary_contact()
 		self.set_primary_email_mobile_no()
 		if not self.is_new() and self.has_value_changed("deal_owner") and self.deal_owner:
@@ -102,6 +103,13 @@ class CRMDeal(Document):
 
 	def before_save(self):
 		self.apply_sla()
+
+	def validate_status(self):
+		if self.is_new() and not self.status:
+			if frappe.db.exists("CRM Deal Status", "Qualification"):
+				self.status = "Qualification"
+			else:
+				self.status = frappe.get_all("CRM Deal Status", {"type": "Open"}, pluck="name")[0]
 
 	def set_primary_contact(self, contact=None):
 		if not self.contacts:
