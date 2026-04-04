@@ -155,14 +155,8 @@ const props = defineProps({
 const sections = defineModel({ type: Array, default: () => [] })
 
 const restrictedFieldTypes = [
-  'Tab Break',
-  'Section Break',
-  'Column Break',
-  'Table',
-  'Table MultiSelect',
   'Geolocation',
-  'Attach',
-  'Attach Image',
+  'Table MultiSelect',
   'HTML',
   'Signature',
 ]

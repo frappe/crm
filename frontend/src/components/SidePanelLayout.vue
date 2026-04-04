@@ -36,28 +36,57 @@
                 >
                   <div
                     v-if="field.visible"
-                    class="field flex items-center gap-2 px-3 leading-5 first:mt-3"
+                    class="field px-3 leading-5 first:mt-3"
                   >
-                    <Tooltip :text="__(field.label)" :hoverDelay="1">
-                      <div
-                        class="w-[35%] min-w-20 shrink-0 flex items-center gap-0.5"
-                      >
-                        <div class="truncate text-sm text-ink-gray-5">
-                          {{ __(field.label) }}
+                    <template v-if="field.fieldtype === 'Table'">
+                      <Tooltip :text="__(field.label)" :hoverDelay="1">
+                        <div class="mb-2 flex items-center gap-0.5">
+                          <div class="truncate text-sm text-ink-gray-5">
+                            {{ __(field.label) }}
+                          </div>
+                          <div
+                            v-if="
+                              field.reqd ||
+                              (field.mandatory_depends_on &&
+                                field.mandatory_via_depends_on)
+                            "
+                            class="text-ink-red-2"
+                          >
+                            *
+                          </div>
                         </div>
-                        <div
-                          v-if="
-                            field.reqd ||
-                            (field.mandatory_depends_on &&
-                              field.mandatory_via_depends_on)
-                          "
-                          class="text-ink-red-2"
-                        >
-                          *
-                        </div>
+                      </Tooltip>
+                      <div class="w-full">
+                        <Grid
+                          v-model="doc[field.fieldname]"
+                          v-model:parent="doc"
+                          :doctype="field.options"
+                          :parentDoctype="doctype"
+                          :parentFieldname="field.fieldname"
+                        />
                       </div>
-                    </Tooltip>
-                    <div class="flex items-center justify-between w-[65%]">
+                    </template>
+                    <div v-else class="flex items-center gap-2">
+                      <Tooltip :text="__(field.label)" :hoverDelay="1">
+                        <div
+                          class="w-[35%] min-w-20 shrink-0 flex items-center gap-0.5"
+                        >
+                          <div class="truncate text-sm text-ink-gray-5">
+                            {{ __(field.label) }}
+                          </div>
+                          <div
+                            v-if="
+                              field.reqd ||
+                              (field.mandatory_depends_on &&
+                                field.mandatory_via_depends_on)
+                            "
+                            class="text-ink-red-2"
+                          >
+                            *
+                          </div>
+                        </div>
+                      </Tooltip>
+                      <div class="flex items-center justify-between w-[65%]">
                       <div
                         class="grid min-h-[28px] flex-1 items-center overflow-hidden text-base"
                       >
@@ -78,6 +107,52 @@
                           <Tooltip :text="__(field.tooltip)">
                             <div>{{ doc[field.fieldname] }}</div>
                           </Tooltip>
+                        </div>
+                        <div
+                          v-else-if="
+                            ['Attach', 'Attach Image'].includes(field.fieldtype)
+                          "
+                          class="flex items-center gap-1"
+                        >
+                          <FileUploader
+                            :file-types="
+                              field.fieldtype === 'Attach Image'
+                                ? 'image/*'
+                                : '*'
+                            "
+                            @success="
+                              (file) => fieldChange(file.file_url, field)
+                            "
+                          >
+                            <template
+                              #default="{ uploading, openFileSelector }"
+                            >
+                              <Button
+                                variant="ghost"
+                                :icon="uploading ? 'loader' : 'upload'"
+                                :tooltip="
+                                  doc[field.fieldname]
+                                    ? __('Change Attachment')
+                                    : __('Upload Attachment')
+                                "
+                                :disabled="Boolean(field.read_only)"
+                                @click="openFileSelector"
+                              />
+                            </template>
+                          </FileUploader>
+                          <Button
+                            v-if="doc[field.fieldname]"
+                            variant="ghost"
+                            icon="external-link"
+                            :tooltip="__('View Attachment')"
+                            @click="openAttachment(doc[field.fieldname])"
+                          />
+                          <Button
+                            v-if="doc[field.fieldname]"
+                            variant="ghost"
+                            icon="x"
+                            @click="fieldChange('', field)"
+                          />
                         </div>
                         <PrimaryDropdown
                           v-else-if="field.fieldtype === 'Dropdown'"
@@ -296,6 +371,7 @@
                         />
                       </div>
                     </div>
+                    </div>
                   </div>
                 </template>
               </FadedScrollableDiv>
@@ -316,6 +392,7 @@
 <script setup>
 import Password from '@/components/Controls/Password.vue'
 import FormattedInput from '@/components/Controls/FormattedInput.vue'
+import Grid from '@/components/Controls/Grid.vue'
 import CollapsibleSection from '@/components/CollapsibleSection.vue'
 import PrimaryDropdown from '@/components/PrimaryDropdown.vue'
 import FadedScrollableDiv from '@/components/FadedScrollableDiv.vue'
@@ -329,9 +406,15 @@ import { usersStore } from '@/stores/users'
 import { isMobileView } from '@/composables/settings'
 import { getFormat, evaluateDependsOnValue, isNull } from '@/utils'
 import { flt } from '@/utils/numberFormat.js'
-import { Tooltip, DateTimePicker, DatePicker, TimePicker } from 'frappe-ui'
+import {
+  Tooltip,
+  DateTimePicker,
+  DatePicker,
+  TimePicker,
+  FileUploader,
+} from 'frappe-ui'
 import { useDocument } from '@/data/document'
-import { ref, computed, getCurrentInstance } from 'vue'
+import { ref, computed, getCurrentInstance, provide } from 'vue'
 
 const props = defineProps({
   sections: { type: Object, default: () => ({}) },
@@ -351,12 +434,16 @@ const { users, isManager, getUser } = usersStore()
 const showSidePanelModal = ref(false)
 
 let document = { doc: {} }
-let triggerOnChange
+let triggerOnChange = async () => {}
+let triggerOnRowAdd = async () => {}
+let triggerOnRowRemove = async () => {}
 
 if (props.docname) {
   let d = useDocument(props.doctype, props.docname)
   document = d.document
   triggerOnChange = d.triggerOnChange
+  triggerOnRowAdd = d.triggerOnRowAdd
+  triggerOnRowRemove = d.triggerOnRowRemove
 }
 
 const doc = computed(() => document.doc || {})
@@ -424,21 +511,71 @@ function parsedField(field) {
 const instance = getCurrentInstance()
 const attrs = instance?.vnode?.props ?? {}
 
-async function fieldChange(value, df) {
-  if (props.preview) return
-
-  await triggerOnChange(df.fieldname, value)
-
-  const hasListener = attrs['onBeforeFieldChange'] !== undefined
-
-  if (hasListener) {
-    emit('beforeFieldChange', { [df.fieldname]: value })
-  } else {
-    document.save.submit(null, {
-      onSuccess: () => emit('afterFieldChange', { [df.fieldname]: value }),
-    })
-  }
+function isPreviewMode() {
+  return props.preview
 }
+
+function hasBeforeFieldChangeListener() {
+  return attrs['onBeforeFieldChange'] !== undefined
+}
+
+function emitBeforeChange(changes) {
+  emit('beforeFieldChange', changes)
+}
+
+function emitAfterChange(changes) {
+  if (changes) emit('afterFieldChange', changes)
+}
+
+function persistDoc(changes = null) {
+  document.save.submit(null, {
+    onSuccess: () => emitAfterChange(changes),
+  })
+}
+
+function commitChanges(changes = null) {
+  if (hasBeforeFieldChangeListener() && changes) return emitBeforeChange(changes)
+  persistDoc(changes)
+}
+
+function getFieldChanges(fieldname) {
+  return { [fieldname]: doc.value?.[fieldname] }
+}
+
+function getRowParentFieldname(row, fallbackFieldname = null) {
+  return row?.parentfield || fallbackFieldname
+}
+
+async function fieldChange(value, df) {
+  if (isPreviewMode()) return
+  await triggerOnChange(df.fieldname, value)
+  commitChanges({ [df.fieldname]: value })
+}
+
+async function gridFieldChange(fieldname, value, row) {
+  if (isPreviewMode()) return
+  await triggerOnChange(fieldname, value, row)
+  const parentFieldname = getRowParentFieldname(row, fieldname)
+  commitChanges(getFieldChanges(parentFieldname))
+}
+
+async function gridRowAdd(row) {
+  if (isPreviewMode()) return
+  await triggerOnRowAdd(row)
+  commitChanges(getFieldChanges(row.parentfield))
+}
+
+async function gridRowRemove(selectedRows, rows) {
+  if (isPreviewMode()) return
+  if (rows?.length) await triggerOnRowRemove(selectedRows, rows)
+  const parentFieldname = rows?.[0]?.parentfield
+  if (!parentFieldname) return commitChanges()
+  commitChanges(getFieldChanges(parentFieldname))
+}
+
+provide('triggerOnChange', gridFieldChange)
+provide('triggerOnRowAdd', gridRowAdd)
+provide('triggerOnRowRemove', gridRowRemove)
 
 function parsedSection(section, editButtonAdded) {
   let isContactSection = section.name == 'contacts_section'
@@ -477,6 +614,11 @@ function isFieldVisible(field) {
 
 function firstVisibleIndex() {
   return _sections.value.findIndex((section) => section.visible)
+}
+
+function openAttachment(url) {
+  if (!url) return
+  window.open(url, '_blank', 'noopener,noreferrer')
 }
 </script>
 

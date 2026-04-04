@@ -237,8 +237,6 @@ const restrictedFieldTypes = [
   'Section Break',
   'Column Break',
   'Geolocation',
-  'Attach',
-  'Attach Image',
   'HTML',
   'Signature',
 ]
