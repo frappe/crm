@@ -277,6 +277,7 @@
                         />
                         <RatingInput
                           v-else-if="field.fieldtype === 'Rating'"
+                          class="pl-[10px]"
                           :value="doc[field.fieldname]"
                           :max="field.options || 5"
                           :disabled="Boolean(field.read_only)"
