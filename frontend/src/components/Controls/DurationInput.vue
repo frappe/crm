@@ -3,6 +3,7 @@
     ref="inputRef"
     :value="displayValue"
     v-bind="attrs"
+    :placeholder="placeholder"
     @focus="handleFocus"
     @blur="handleBlur"
     @input="handleInput"
