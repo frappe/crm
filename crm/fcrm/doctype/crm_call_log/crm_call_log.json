@@ -85,7 +85,6 @@
    "reqd": 1
   },
   {
-   "description": "Call duration in seconds",
    "fieldname": "duration",
    "fieldtype": "Duration",
    "in_list_view": 1,
@@ -160,7 +159,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-03-26 12:57:11.481722",
+ "modified": "2026-04-04 12:57:11.481722",
  "modified_by": "shariq@frappe.io",
  "module": "FCRM",
  "name": "CRM Call Log",
