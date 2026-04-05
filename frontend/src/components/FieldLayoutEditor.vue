@@ -232,7 +232,14 @@ const slotName = computed(() => {
   return 'default'
 })
 
-const restrictedFieldTypes = ['Tab Break', 'Section Break', 'Column Break']
+const restrictedFieldTypes = [
+  'Tab Break',
+  'Section Break',
+  'Column Break',
+  'Geolocation',
+  'Attach Image',
+  'Signature',
+]
 
 const { getFields } = getMeta(props.doctype)
 
