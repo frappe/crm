@@ -10,7 +10,7 @@
         v-for="i in nStars"
         :key="i"
         type="button"
-        class="focus:outline-none leading-none"
+        class="focus:outline-none leading-none rating-star"
         :class="disabled ? 'cursor-default' : 'cursor-pointer'"
         @mousemove="!disabled && onMouseMove($event, i)"
         @click="!disabled && onStarClick($event, i)"

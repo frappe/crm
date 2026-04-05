@@ -115,6 +115,8 @@
                         'Currency',
                         'Percent',
                         'Check',
+                        'Duration',
+                        'Rating',
                       ].includes(field.fieldtype)
                     "
                     v-model="row[field.fieldname]"
@@ -265,6 +267,22 @@
                     :disabled="Boolean(field.read_only)"
                     @change="fieldChange(flt($event.target.value), field, row)"
                   />
+                  <DurationInput
+                    v-else-if="field.fieldtype === 'Duration'"
+                    :value="row[field.fieldname]"
+                    variant="outline"
+                    :disabled="Boolean(field.read_only)"
+                    @change="(v) => fieldChange(v, field, row)"
+                  />
+                  <RatingInput
+                    v-else-if="field.fieldtype === 'Rating'"
+                    class="px-2 flex-nowrap overflow-x-auto w-full"
+                    :value="row[field.fieldname]"
+                    variant="outline"
+                    :disabled="Boolean(field.read_only)"
+                    :max="field.options || 5"
+                    @change="(v) => fieldChange(v, field, row)"
+                  />
                   <Combobox
                     v-else-if="field.fieldtype === 'Autocomplete'"
                     v-model="row[field.fieldname]"
@@ -344,6 +362,8 @@
 
 <script setup>
 import Password from '@/components/Controls/Password.vue'
+import DurationInput from '@/components/Controls/DurationInput.vue'
+import RatingInput from '@/components/Controls/RatingInput.vue'
 import FormattedInput from '@/components/Controls/FormattedInput.vue'
 import GridFieldsEditorModal from '@/components/Controls/GridFieldsEditorModal.vue'
 import GridRowFieldsModal from '@/components/Controls/GridRowFieldsModal.vue'
@@ -631,7 +651,7 @@ const getOptions = (options) => {
   background-color: var(--surface-white);
 }
 
-:deep(.grid-row button:focus-within) {
+:deep(.grid-row button:focus-within:not(.rating-star)) {
   border: 1px solid var(--outline-gray-2);
 }
 </style>
