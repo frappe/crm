@@ -71,6 +71,7 @@
                               'Percent',
                               'Check',
                               'Dropdown',
+                              'Duration',
                             ].includes(field.fieldtype)
                           "
                           class="flex h-7 cursor-pointer items-center px-2 py-1 text-ink-gray-5"
@@ -260,6 +261,14 @@
                             fieldChange(flt($event.target.value), field)
                           "
                         />
+                        <DurationInput
+                          v-else-if="field.fieldtype === 'Duration'"
+                          class="form-control"
+                          :value="doc[field.fieldname]"
+                          :placeholder="field.placeholder"
+                          :disabled="Boolean(field.read_only)"
+                          @change="(v) => fieldChange(v, field)"
+                        />
                         <FormControl
                           v-else
                           class="form-control"
@@ -311,6 +320,7 @@
 <script setup>
 import Password from '@/components/Controls/Password.vue'
 import FormattedInput from '@/components/Controls/FormattedInput.vue'
+import DurationInput from '@/components/Controls/DurationInput.vue'
 import Section from '@/components/Section.vue'
 import PrimaryDropdown from '@/components/PrimaryDropdown.vue'
 import FadedScrollableDiv from '@/components/FadedScrollableDiv.vue'

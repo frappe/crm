@@ -147,7 +147,6 @@
    "options": "Phone"
   },
   {
-   "default": "Qualification",
    "fieldname": "status",
    "fieldtype": "Link",
    "in_list_view": 1,
@@ -476,8 +475,8 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-03-27 23:24:13.206021",
- "modified_by": "shariq@frappe.io",
+ "modified": "2026-04-04 12:34:10.808282",
+ "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Deal",
  "naming_rule": "By \"Naming Series\" field",

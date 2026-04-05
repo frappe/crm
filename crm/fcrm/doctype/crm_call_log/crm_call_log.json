@@ -85,7 +85,6 @@
    "reqd": 1
   },
   {
-   "description": "Call duration in seconds",
    "fieldname": "duration",
    "fieldtype": "Duration",
    "in_list_view": 1,
