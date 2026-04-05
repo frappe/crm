@@ -273,18 +273,7 @@ import { flt } from '@/utils/numberFormat.js'
 import { getMeta } from '@/stores/meta'
 import { usersStore } from '@/stores/users'
 import { useDocument } from '@/data/document'
-<<<<<<< HEAD
 import { Combobox, Tooltip, DatePicker, DateTimePicker } from 'frappe-ui'
-=======
-
-import {
-  Combobox,
-  Tooltip,
-  DatePicker,
-  DateTimePicker,
-  TimePicker,
-} from 'frappe-ui'
->>>>>>> 72a6507f (feat: add ButtonControl support and enhance document trigger functionality)
 import { computed, provide, inject } from 'vue'
 
 const props = defineProps({
