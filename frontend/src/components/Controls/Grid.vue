@@ -681,7 +681,7 @@ const getOptions = (options) => {
 }
 
 /* For Autocomplete, Link */
-:deep(.grid-row button:not(.button-control)),
+:deep(.grid-row button:not(.button-control):not(.rating-star)),
 :deep(.grid-row .combobox > div > div) {
   border: none;
   border-radius: 0;
