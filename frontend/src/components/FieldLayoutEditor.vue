@@ -232,12 +232,20 @@ const slotName = computed(() => {
   return 'default'
 })
 
-const restrictedFieldTypes = ['Geolocation', 'Attach Image', 'Signature']
+const restrictedFieldTypes = [
+  'Tab Break',
+  'Section Break',
+  'Column Break',
+  'Geolocation',
+  'Attach Image',
+  'Signature',
+]
 
 const { getFields } = getMeta(props.doctype)
 
 const fields = computed(() => {
-  const _fields = getFields({ restrictedFieldTypes }) || []
+  const _fields =
+    getFields({ restrictNoValueFields: false, restrictedFieldTypes }) || []
   if (!_fields.length) return []
 
   let existingFields = []

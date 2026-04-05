@@ -366,7 +366,7 @@ def on_comment_insert(doc: Comment, method: str | None = None):
 	if not (doc.reference_doctype and doc.reference_name):
 		return
 
-	if doc.reference_doctype not in ["CRM Lead", "CRM Deal"]:
+	if doc.reference_doctype not in ["CRM Lead", "CRM Deal"] or doc.comment_type != "Comment":
 		return
 
 	if not _should_update_modified(doc):
