@@ -159,6 +159,8 @@
 import FilterIcon from '@/components/Icons/FilterIcon.vue'
 import Link from '@/components/Controls/Link.vue'
 import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
+import DurationInput from '@/components/Controls/DurationInput.vue'
+import RatingInput from '@/components/Controls/RatingInput.vue'
 import {
   FormControl,
   createResource,
@@ -176,6 +178,8 @@ const typeNumber = ['Float', 'Int', 'Currency', 'Percent']
 const typeSelect = ['Select']
 const typeString = ['Data', 'Long Text', 'Small Text', 'Text Editor', 'Text']
 const typeDate = ['Date', 'Datetime']
+const typeDuration = ['Duration']
+const typeRating = ['Rating']
 
 const props = defineProps({
   doctype: { type: String, required: true },
@@ -406,6 +410,14 @@ function getValueControl(f) {
     return h(FormControl, { type: 'number' })
   } else if (typeDate.includes(fieldtype) && operator == 'between') {
     return h(DateRangePicker, { value: f.value, iconLeft: '' })
+  } else if (typeDuration.includes(fieldtype)) {
+    return h(DurationInput, { value: f.value })
+  } else if (typeRating.includes(fieldtype)) {
+    return h(RatingInput, {
+      value: f.value,
+      max: options || 5,
+      class: '!flex',
+    })
   } else if (typeDate.includes(fieldtype)) {
     return h(fieldtype == 'Date' ? DatePicker : DateTimePicker, {
       value: f.value,
