@@ -88,7 +88,7 @@ const description = computed(() => {
 const roleOptions = computed(() => {
   return [
     { value: 'Sales User', label: __('Sales User') },
-    ...(isManager() ? [{ value: 'Sales Manager', label: __('Manager') }] : []),
+    ...(isAdmin() ? [{ value: 'Sales Manager', label: __('Manager') }] : []),
     ...(isAdmin() ? [{ value: 'System Manager', label: __('Admin') }] : []),
   ]
 })
