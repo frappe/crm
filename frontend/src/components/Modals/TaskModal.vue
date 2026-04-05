@@ -189,7 +189,7 @@ const createTaskResource = createResource({
     if (d.name) {
       updateOnboardingStep('create_first_task')
       capture('task_created')
-      tasks.value?.reload()
+      tasks.value?.reload?.()
       emit('after', d, true)
       show.value = false
       toast.success(__('Task created'))
@@ -209,7 +209,7 @@ const updateTaskResource = createResource({
   validate: validateTask,
   onSuccess(d) {
     if (d.name) {
-      tasks.value?.reload()
+      tasks.value?.reload?.()
       emit('after', d)
       show.value = false
     }
