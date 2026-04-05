@@ -425,11 +425,11 @@ const getOptions = (options) => {
   }
 }
 
-function handleButtonClick(field) {
+async function handleButtonClick(field) {
   if (typeof field.click === 'function') {
-    field.click(data.value)
+    return await field.click(data.value)
   } else {
-    triggerButton(field.fieldname)
+    return await triggerButton(field.fieldname)
   }
 }
 
