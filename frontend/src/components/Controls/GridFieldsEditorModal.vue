@@ -104,6 +104,16 @@ const props = defineProps({
   parentDoctype: { type: String, default: '' },
 })
 
+const restrictedFieldTypes = [
+  'Section Break',
+  'Column Break',
+  'Tab Break',
+  'Table',
+  'Table MultiSelect',
+  'Image',
+  'Geolocation',
+]
+
 const { getFields, getGridViewSettings, saveUserSettings } = getMeta(
   props.doctype,
 )
@@ -118,7 +128,10 @@ const dirty = computed(() => {
 })
 
 const oldFields = computed(() => {
-  let _fields = getFields()
+  let _fields =
+    getFields({ restrictNoValueFields: false, restrictedFieldTypes }) || []
+  if (!_fields.length) return []
+
   let gridViewSettings = getGridViewSettings(props.parentDoctype)
 
   if (gridViewSettings.length) {
@@ -136,7 +149,11 @@ const oldFields = computed(() => {
 const fields = ref(JSON.parse(JSON.stringify(oldFields.value || [])))
 
 const dropdownFields = computed(() => {
-  return getFields()?.filter(
+  const _fields =
+    getFields({ restrictNoValueFields: false, restrictedFieldTypes }) || []
+  if (!_fields.length) return []
+
+  return _fields.filter(
     (field) => !fields.value.find((f) => f.fieldname === field.fieldname),
   )
 })
