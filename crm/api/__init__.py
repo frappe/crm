@@ -102,6 +102,9 @@ def invite_by_email(emails: str, role: str):
 	if role == "System Manager" and "System Manager" not in user_roles:
 		frappe.throw(_("You are not allowed to invite System Managers"), frappe.PermissionError)
 
+	if role == "Sales Manager" and "System Manager" not in user_roles:
+		frappe.throw(_("You are not allowed to invite Sales Managers"), frappe.PermissionError)
+
 	if role not in ["System Manager", "Sales Manager", "Sales User"]:
 		frappe.throw(_("Cannot invite for this role"), frappe.PermissionError)
 
