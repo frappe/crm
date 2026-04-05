@@ -6,7 +6,7 @@
     :icon-left="icon"
     :disabled="disabled"
     v-bind="$attrs"
-    @click="emit('click')"
+    @click.stop="emit('click', $event)"
   />
 </template>
 <script>
