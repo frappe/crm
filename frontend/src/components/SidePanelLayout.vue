@@ -38,7 +38,11 @@
                     v-if="field.visible"
                     class="field flex items-center gap-2 px-3 leading-5 first:mt-3"
                   >
-                    <Tooltip :text="__(field.label)" :hoverDelay="1">
+                    <Tooltip
+                      v-if="field.fieldtype !== 'Button'"
+                      :text="__(field.label)"
+                      :hoverDelay="1"
+                    >
                       <div
                         class="w-[35%] min-w-20 shrink-0 flex items-center gap-0.5"
                       >
@@ -57,7 +61,12 @@
                         </div>
                       </div>
                     </Tooltip>
-                    <div class="flex items-center justify-between w-[65%]">
+                    <div
+                      :class="[
+                        'flex items-center justify-between',
+                        field.fieldtype === 'Button' ? 'w-full' : 'w-[65%]',
+                      ]"
+                    >
                       <div
                         class="grid min-h-[28px] flex-1 items-center overflow-hidden text-base"
                       >
@@ -73,6 +82,7 @@
                               'Dropdown',
                               'Duration',
                               'Rating',
+                              'Button',
                             ].includes(field.fieldtype)
                           "
                           class="flex h-7 cursor-pointer items-center px-2 py-1 text-ink-gray-5"
@@ -283,6 +293,15 @@
                           :disabled="Boolean(field.read_only)"
                           @change="(v) => fieldChange(v, field)"
                         />
+                        <ButtonControl
+                          v-else-if="field.fieldtype === 'Button'"
+                          :label="field.label"
+                          :icon="field.icon"
+                          :theme="getButtonTheme(field.button_color)"
+                          :variant="getButtonVariant(field.button_color)"
+                          :disabled="Boolean(field.read_only)"
+                          @click="handleButtonClick(field)"
+                        />
                         <FormControl
                           v-else
                           class="form-control"
@@ -336,6 +355,10 @@ import Password from '@/components/Controls/Password.vue'
 import FormattedInput from '@/components/Controls/FormattedInput.vue'
 import DurationInput from '@/components/Controls/DurationInput.vue'
 import RatingInput from '@/components/Controls/RatingInput.vue'
+import ButtonControl, {
+  getButtonTheme,
+  getButtonVariant,
+} from '@/components/Controls/ButtonControl.vue'
 import CollapsibleSection from '@/components/CollapsibleSection.vue'
 import PrimaryDropdown from '@/components/PrimaryDropdown.vue'
 import FadedScrollableDiv from '@/components/FadedScrollableDiv.vue'
@@ -372,11 +395,13 @@ const showSidePanelModal = ref(false)
 
 let document = { doc: {} }
 let triggerOnChange
+let triggerButton = () => {}
 
 if (props.docname) {
   let d = useDocument(props.doctype, props.docname)
   document = d.document
   triggerOnChange = d.triggerOnChange
+  triggerButton = d.triggerButton
 }
 
 const doc = computed(() => document.doc || {})
@@ -489,10 +514,21 @@ function isFieldVisible(field) {
   let showReadOnlyField = readOnlyField && !hideEmptyReadOnlyField
 
   return (
-    (field.fieldtype == 'Check' || showReadOnlyField || !readOnlyField) &&
+    (field.fieldtype == 'Check' ||
+      field.fieldtype == 'Button' ||
+      showReadOnlyField ||
+      !readOnlyField) &&
     (!field.depends_on || field.display_via_depends_on) &&
     !field.hidden
   )
+}
+
+function handleButtonClick(field) {
+  if (typeof field.click === 'function') {
+    field.click(doc.value)
+  } else {
+    triggerButton(field.fieldname)
+  }
 }
 
 function firstVisibleIndex() {
