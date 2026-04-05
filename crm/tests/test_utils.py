@@ -591,8 +591,10 @@ class TestCreateLeadFromIncomingEmail(FrappeTestCase):
 		doc = self._incoming_comm("fullname@example.com", email_account.name, sender_full_name="Jane Doe")
 		create_lead_from_incoming_email(doc)
 
-		lead = frappe.db.get_value("CRM Lead", {"email": "fullname@example.com"}, "first_name")
-		self.assertEqual(lead, "Jane Doe")
+		lead = frappe.db.get_values(
+			"CRM Lead", {"email": "fullname@example.com"}, ["first_name", "last_name"], as_dict=True
+		)
+		self.assertEqual(lead, [{"first_name": "Jane", "last_name": "Doe"}])
 
 	def test_lead_first_name_falls_back_to_email_prefix(self):
 		"""When sender_full_name is absent, the email prefix should be used as first_name."""
