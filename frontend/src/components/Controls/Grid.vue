@@ -591,11 +591,11 @@ const reorder = () => {
   })
 }
 
-function handleButtonClick(field, row) {
+async function handleButtonClick(field, row) {
   if (typeof field.click === 'function') {
-    field.click(row)
+    await field.click(row)
   } else {
-    triggerButton(field.fieldname, row)
+    await triggerButton(field.fieldname, row)
   }
 }
 
