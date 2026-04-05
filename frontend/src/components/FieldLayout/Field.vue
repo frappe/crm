@@ -14,11 +14,6 @@
     <FormControl
       v-if="
         (field.read_only || field.fieldtype === 'Read Only') &&
-<<<<<<< HEAD
-        !['Int', 'Float', 'Currency', 'Percent', 'Check'].includes(
-          field.fieldtype,
-        )
-=======
         ![
           'Int',
           'Float',
@@ -28,7 +23,6 @@
           'Duration',
           'Rating',
         ].includes(field.fieldtype)
->>>>>>> a1c73435 (fix: add support for RatingInput component in Field and SidePanel layouts)
       "
       v-model="data[field.fieldname]"
       type="text"
@@ -219,8 +213,6 @@
       :description="field.description"
       @change="fieldChange(flt($event.target.value), field)"
     />
-<<<<<<< HEAD
-=======
     <DurationInput
       v-else-if="field.fieldtype === 'Duration'"
       :value="data[field.fieldname]"
@@ -236,12 +228,11 @@
       :disabled="Boolean(field.read_only)"
       @change="(v) => fieldChange(v, field)"
     />
->>>>>>> a1c73435 (fix: add support for RatingInput component in Field and SidePanel layouts)
     <FormControl
       v-else
       type="text"
       :placeholder="getPlaceholder(field)"
-      :value="getDataValue(data[field.fieldname], field)"
+      :value="data[field.fieldname]"
       :disabled="Boolean(field.read_only)"
       :description="field.description"
       @change="fieldChange($event.target.value, field)"
@@ -251,11 +242,8 @@
 <script setup>
 import Password from '@/components/Controls/Password.vue'
 import FormattedInput from '@/components/Controls/FormattedInput.vue'
-<<<<<<< HEAD
-=======
 import DurationInput from '@/components/Controls/DurationInput.vue'
 import RatingInput from '@/components/Controls/RatingInput.vue'
->>>>>>> a1c73435 (fix: add support for RatingInput component in Field and SidePanel layouts)
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
@@ -416,13 +404,6 @@ function fieldChange(value, df) {
   } else {
     triggerOnChange(df.fieldname, value)
   }
-}
-
-function getDataValue(value, field) {
-  if (field.fieldtype === 'Duration') {
-    return value || 0
-  }
-  return value
 }
 </script>
 <style scoped>
