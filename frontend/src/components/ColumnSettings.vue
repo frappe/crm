@@ -216,13 +216,17 @@ const fields = computed(() => {
 
 function addColumn(c) {
   if (!c) return
-  let align = ['Float', 'Int', 'Percent', 'Currency'].includes(c.type)
+  let align = ['Float', 'Int', 'Percent', 'Currency', 'Duration'].includes(
+    c.fieldtype,
+  )
     ? 'right'
     : 'left'
+
   let _column = {
     label: c.label,
     type: c.fieldtype,
     key: c.fieldname,
+    options: c.options,
     width: '10rem',
     align,
   }
