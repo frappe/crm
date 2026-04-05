@@ -350,15 +350,11 @@ import Password from '@/components/Controls/Password.vue'
 import FormattedInput from '@/components/Controls/FormattedInput.vue'
 import DurationInput from '@/components/Controls/DurationInput.vue'
 import RatingInput from '@/components/Controls/RatingInput.vue'
-<<<<<<< HEAD
-import Section from '@/components/Section.vue'
-=======
 import ButtonControl, {
   getButtonTheme,
   getButtonVariant,
 } from '@/components/Controls/ButtonControl.vue'
-import CollapsibleSection from '@/components/CollapsibleSection.vue'
->>>>>>> 6cfe690a (feat: integrate ButtonControl in Grid and SidePanelLayout components)
+import Section from '@/components/Section.vue'
 import PrimaryDropdown from '@/components/PrimaryDropdown.vue'
 import FadedScrollableDiv from '@/components/FadedScrollableDiv.vue'
 import ArrowUpRightIcon from '@/components/Icons/ArrowUpRightIcon.vue'
