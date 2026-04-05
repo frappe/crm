@@ -66,6 +66,7 @@ def get_filterable_fields(doctype: str):
 		"Text Editor",
 		"Text",
 		"Duration",
+		"Rating",
 		"Date",
 		"Datetime",
 	]

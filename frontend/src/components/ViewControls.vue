@@ -1261,7 +1261,7 @@ function saveView() {
 }
 
 function applyFilter({ event, idx, column, item, firstColumn }) {
-  let restrictedFieldtypes = ['Duration', 'Datetime', 'Time']
+  let restrictedFieldtypes = ['Datetime', 'Time']
   if (restrictedFieldtypes.includes(column.type) || idx === 0) return
   if (idx === 1 && firstColumn.key == '_liked_by') return
 
@@ -1270,9 +1270,9 @@ function applyFilter({ event, idx, column, item, firstColumn }) {
 
   let filters = { ...list.value.params.filters }
 
-  let value = item.name || item.label || item
+  let value = item.name ?? item.label ?? item
 
-  if (value) {
+  if (value !== null && value !== undefined && value !== '') {
     filters[column.key] = value
   } else {
     delete filters[column.key]
