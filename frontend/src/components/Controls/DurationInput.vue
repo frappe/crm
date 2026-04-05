@@ -25,7 +25,7 @@ import { ref, computed, nextTick, useAttrs } from 'vue'
 
 const props = defineProps({
   value: { type: Number, default: null },
-  placeholder: { type: String, default: 'e.g. 1h 30m 45s' },
+  placeholder: { type: String, default: '1h 30m 45s' },
   longForm: { type: Boolean, default: false },
 })
 

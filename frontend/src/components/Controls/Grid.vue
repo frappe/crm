@@ -104,7 +104,7 @@
                 <div
                   v-for="field in fields"
                   :key="field.fieldname"
-                  class="border-r border-outline-gray-modals h-full"
+                  class="border-r border-outline-gray-modals h-9.5"
                 >
                   <FormControl
                     v-if="
