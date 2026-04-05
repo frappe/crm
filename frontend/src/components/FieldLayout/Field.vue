@@ -1,6 +1,9 @@
 <template>
   <div v-if="field.visible" class="field">
-    <div v-if="field.fieldtype != 'Check'" class="mb-2 text-sm text-ink-gray-5">
+    <div
+      v-if="field.fieldtype != 'Check' && field.fieldtype != 'Button'"
+      class="mb-2 text-sm text-ink-gray-5"
+    >
       {{ __(field.label) }}
       <span
         v-if="
@@ -22,6 +25,7 @@
           'Check',
           'Duration',
           'Rating',
+          'Button',
         ].includes(field.fieldtype)
       "
       v-model="data[field.fieldname]"
@@ -228,6 +232,15 @@
       :disabled="Boolean(field.read_only)"
       @change="(v) => fieldChange(v, field)"
     />
+    <ButtonControl
+      v-else-if="field.fieldtype === 'Button'"
+      :label="field.label"
+      :icon="field.icon"
+      :theme="getButtonTheme(field.button_color)"
+      :variant="getButtonVariant(field.button_color)"
+      :disabled="Boolean(field.read_only)"
+      @click="handleButtonClick(field)"
+    />
     <FormControl
       v-else
       type="text"
@@ -244,6 +257,10 @@ import Password from '@/components/Controls/Password.vue'
 import FormattedInput from '@/components/Controls/FormattedInput.vue'
 import DurationInput from '@/components/Controls/DurationInput.vue'
 import RatingInput from '@/components/Controls/RatingInput.vue'
+import ButtonControl, {
+  getButtonTheme,
+  getButtonVariant,
+} from '@/components/Controls/ButtonControl.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
@@ -256,7 +273,18 @@ import { flt } from '@/utils/numberFormat.js'
 import { getMeta } from '@/stores/meta'
 import { usersStore } from '@/stores/users'
 import { useDocument } from '@/data/document'
+<<<<<<< HEAD
 import { Combobox, Tooltip, DatePicker, DateTimePicker } from 'frappe-ui'
+=======
+
+import {
+  Combobox,
+  Tooltip,
+  DatePicker,
+  DateTimePicker,
+  TimePicker,
+} from 'frappe-ui'
+>>>>>>> 72a6507f (feat: add ButtonControl support and enhance document trigger functionality)
 import { computed, provide, inject } from 'vue'
 
 const props = defineProps({
@@ -274,21 +302,26 @@ const { getFormattedPercent, getFormattedFloat, getFormattedCurrency } =
 const { users, getUser } = usersStore()
 
 let triggerOnChange
+let triggerButton
 let parentDoc
 
 if (!isGridRow) {
   const {
     triggerOnChange: trigger,
+    triggerButton: triggerBtn,
     triggerOnRowAdd,
     triggerOnRowRemove,
   } = useDocument(doctype, data.value.name)
   triggerOnChange = trigger
+  triggerButton = triggerBtn
 
   provide('triggerOnChange', triggerOnChange)
+  provide('triggerButton', triggerButton)
   provide('triggerOnRowAdd', triggerOnRowAdd)
   provide('triggerOnRowRemove', triggerOnRowRemove)
 } else {
   triggerOnChange = inject('triggerOnChange', () => {})
+  triggerButton = inject('triggerButton', () => {})
   parentDoc = inject('parentDoc')
 }
 
@@ -389,6 +422,14 @@ const getOptions = (options) => {
     })
   } else {
     return []
+  }
+}
+
+function handleButtonClick(field) {
+  if (typeof field.click === 'function') {
+    field.click(data.value)
+  } else {
+    triggerButton(field.fieldname)
   }
 }
 
