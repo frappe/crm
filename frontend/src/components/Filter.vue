@@ -332,7 +332,7 @@ function getOperators(fieldtype, fieldname) {
   if (typeCheck.includes(fieldtype)) {
     options.push(...[{ label: __('Equals'), value: 'equals' }])
   }
-  if (['Duration'].includes(fieldtype)) {
+  if (typeDuration.includes(fieldtype)) {
     options.push(
       ...[
         { label: __('Like'), value: 'like' },
@@ -355,6 +355,19 @@ function getOperators(fieldtype, fieldname) {
         { label: __('<='), value: '<=' },
         { label: __('Between'), value: 'between' },
         { label: __('Timespan'), value: 'timespan' },
+      ],
+    )
+  }
+  if (typeRating.includes(fieldtype)) {
+    options.push(
+      ...[
+        { label: __('Equals'), value: 'equals' },
+        { label: __('Not equals'), value: 'not equals' },
+        { label: __('Greater than'), value: '>' },
+        { label: __('Less than'), value: '<' },
+        { label: __('Greater than or equal to'), value: '>=' },
+        { label: __('Less than or equal to'), value: '<=' },
+        { label: __('Is'), value: 'is' },
       ],
     )
   }
