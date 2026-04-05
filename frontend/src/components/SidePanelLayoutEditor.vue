@@ -154,12 +154,21 @@ const props = defineProps({
 
 const sections = defineModel({ type: Array, default: () => [] })
 
-const restrictedFieldTypes = ['Geolocation', 'Attach Image', 'Signature']
+const restrictedFieldTypes = [
+  'Section Break',
+  'Column Break',
+  'Tab Break',
+  'Table',
+  'Table MultiSelect',
+  'Image',
+  'Geolocation',
+]
 
 const { getFields } = getMeta(props.doctype)
 
 const fields = computed(() => {
-  let _fields = getFields({ restrictedFieldTypes }) || []
+  let _fields =
+    getFields({ restrictNoValueFields: false, restrictedFieldTypes }) || []
   if (!_fields.length) return []
 
   return _fields.map((field) => {
