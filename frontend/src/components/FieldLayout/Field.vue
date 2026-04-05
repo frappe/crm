@@ -14,9 +14,15 @@
     <FormControl
       v-if="
         (field.read_only || field.fieldtype === 'Read Only') &&
-        !['Int', 'Float', 'Currency', 'Percent', 'Check', 'Duration'].includes(
-          field.fieldtype,
-        )
+        ![
+          'Int',
+          'Float',
+          'Currency',
+          'Percent',
+          'Check',
+          'Duration',
+          'Rating',
+        ].includes(field.fieldtype)
       "
       v-model="data[field.fieldname]"
       type="text"
@@ -215,6 +221,13 @@
       :description="field.description"
       @change="(v) => fieldChange(v, field)"
     />
+    <RatingInput
+      v-else-if="field.fieldtype === 'Rating'"
+      :value="data[field.fieldname]"
+      :max="field.options || 5"
+      :disabled="Boolean(field.read_only)"
+      @change="(v) => fieldChange(v, field)"
+    />
     <FormControl
       v-else
       type="text"
@@ -230,6 +243,7 @@
 import Password from '@/components/Controls/Password.vue'
 import FormattedInput from '@/components/Controls/FormattedInput.vue'
 import DurationInput from '@/components/Controls/DurationInput.vue'
+import RatingInput from '@/components/Controls/RatingInput.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
