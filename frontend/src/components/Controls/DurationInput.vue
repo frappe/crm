@@ -19,6 +19,7 @@
 </template>
 
 <script setup>
+import { formatDuration } from '@/utils'
 import { TextInput } from 'frappe-ui'
 import { ref, computed, nextTick, useAttrs } from 'vue'
 
@@ -43,12 +44,12 @@ const sizeClass = computed(() => {
 
 const displayValue = computed(() => {
   if (isFocused.value) return editValue.value
-  return formatDuration(props.value)
+  return formatDuration(props.value, props.longForm)
 })
 
 function handleFocus() {
   isFocused.value = true
-  editValue.value = formatDuration(props.value) || ''
+  editValue.value = formatDuration(props.value, props.longForm) || ''
   errorMessage.value = ''
   nextTick(() => {
     inputRef.value?.el?.select()
@@ -105,40 +106,6 @@ function commit() {
 function revert() {
   errorMessage.value = ''
   isFocused.value = false
-}
-
-// ---------------------------------------------------------------------------
-// Format: seconds (integer) → human-readable string e.g. "1h 30m 45s"
-// ---------------------------------------------------------------------------
-function formatDuration(totalSeconds) {
-  if (
-    totalSeconds === null ||
-    totalSeconds === undefined ||
-    totalSeconds === ''
-  ) {
-    return ''
-  }
-  const s = parseInt(totalSeconds, 10)
-  if (isNaN(s)) return ''
-  if (s === 0) return props.longForm ? '0 seconds' : '0s'
-
-  const h = Math.floor(s / 3600)
-  const m = Math.floor((s % 3600) / 60)
-  const sec = s % 60
-
-  if (props.longForm) {
-    const parts = []
-    if (h) parts.push(h === 1 ? '1 hour' : `${h} hours`)
-    if (m) parts.push(m === 1 ? '1 minute' : `${m} minutes`)
-    if (sec) parts.push(sec === 1 ? '1 second' : `${sec} seconds`)
-    return parts.join(' ')
-  }
-
-  const parts = []
-  if (h) parts.push(`${h}h`)
-  if (m) parts.push(`${m}m`)
-  if (sec) parts.push(`${sec}s`)
-  return parts.join(' ')
 }
 
 // ---------------------------------------------------------------------------
