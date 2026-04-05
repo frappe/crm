@@ -109,7 +109,6 @@
    "options": "Gender"
   },
   {
-   "default": "New",
    "fieldname": "status",
    "fieldtype": "Link",
    "in_list_view": 1,
@@ -426,8 +425,8 @@
  "image_field": "image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-03-25 16:09:41.482442",
- "modified_by": "shariq@frappe.io",
+ "modified": "2026-04-04 12:33:17.177897",
+ "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Lead",
  "naming_rule": "By \"Naming Series\" field",

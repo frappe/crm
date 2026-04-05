@@ -77,6 +77,7 @@ class CRMLead(Document):
 		self.set_sla()
 
 	def validate(self):
+		self.validate_status()
 		self.set_full_name()
 		self.set_lead_name()
 		self.set_title()
@@ -96,6 +97,13 @@ class CRMLead(Document):
 
 	def before_save(self):
 		self.apply_sla()
+
+	def validate_status(self):
+		if self.is_new() and not self.status:
+			if frappe.db.exists("CRM Lead Status", "New"):
+				self.status = "New"
+			else:
+				self.status = frappe.get_all("CRM Lead Status", {"type": "Open"}, pluck="name")[0]
 
 	def set_full_name(self):
 		if self.first_name:
