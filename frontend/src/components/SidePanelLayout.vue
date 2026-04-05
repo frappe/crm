@@ -522,11 +522,13 @@ function isFieldVisible(field) {
   )
 }
 
-function handleButtonClick(field) {
+async function handleButtonClick(field) {
+  if (props.preview) return
+
   if (typeof field.click === 'function') {
-    field.click(doc.value)
+    await field.click(doc.value)
   } else {
-    triggerButton(field.fieldname)
+    await triggerButton(field.fieldname)
   }
 }
 
