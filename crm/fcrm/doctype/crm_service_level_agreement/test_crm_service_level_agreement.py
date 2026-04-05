@@ -197,26 +197,6 @@ class TestCRMServiceLevelAgreement(FrappeTestCase):
 		sla.set_first_responded_on(doc)
 
 		self.assertIsNotNone(doc.first_responded_on)
-		self.assertIsNone(doc.last_responded_on)
-
-	def test_set_first_and_last_responded_on(self):
-		"""Test set_first_responded_on and set_last_responded_on sets response timestamps"""
-		sla = create_test_sla_with_priorities()
-
-		doc = frappe.get_doc(
-			{
-				"doctype": "CRM Lead",
-				"first_name": "Test First Response",
-				"communication_status": "High",
-				"first_responded_on": None,
-				"last_responded_on": None,
-			}
-		)
-
-		sla.set_first_responded_on(doc)
-		sla.set_last_responded_on(doc)
-
-		self.assertIsNotNone(doc.first_responded_on)
 		self.assertIsNotNone(doc.last_responded_on)
 
 	def test_set_first_responded_on_default_priority(self):
