@@ -11,4 +11,8 @@ crm/www/crm.html
 build
 
 .vscode
+<<<<<<< HEAD
 .github
+=======
+.github
+>>>>>>> c8815163 (fix: update tab class for improved layout handling in FieldLayout component)
