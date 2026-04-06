@@ -18,20 +18,20 @@
       <div class="relative">
         <Input
           :model-value="slaSearchQuery"
-          @input="slaSearchQuery = $event"
           :placeholder="__('Search')"
           type="text"
           class="bg-surface-gray-2 hover:bg-surface-gray-2 focus:ring-0 border-outline-gray-2 rounded"
           icon-left="search"
           debounce="300"
           inputClass="p-4 pr-12"
+          @input="slaSearchQuery = $event"
         />
         <Button
           v-if="slaSearchQuery"
           icon="x"
           variant="ghost"
-          @click="slaSearchQuery = ''"
           class="absolute right-1 top-1/2 -translate-y-1/2"
+          @click="slaSearchQuery = ''"
         />
       </div>
     </template>
@@ -56,7 +56,7 @@
         />
         <div v-else class="-ml-2">
           <div
-            class="grid grid-cols-7 items-center gap-3 text-sm text-gray-600 ml-2"
+            class="grid grid-cols-7 items-center gap-3 text-sm text-ink-gray-5 ml-2"
           >
             <div class="col-span-5">
               {{ __('Policy Name') }}
@@ -73,8 +73,8 @@
               class="grid grid-cols-7 items-center gap-4 cursor-pointer hover:bg-surface-menu-bar rounded"
             >
               <div
-                @click="updateStep('view', sla, true)"
                 class="w-full pl-2 col-span-5 flex items-center h-14 gap-2"
+                @click="updateStep('view', sla, true)"
               >
                 <div class="text-base text-ink-gray-7 font-medium truncate">
                   {{ sla.name }}
@@ -108,15 +108,15 @@
               class="mx-2 border-outline-gray-2"
             />
             <Dialog
-              :options="{ title: __('Duplicate SLA Policy') }"
               v-model="duplicateDialog.show"
+              :options="{ title: __('Duplicate SLA Policy') }"
             >
               <template #body-content>
                 <div class="flex flex-col gap-4">
                   <FormControl
+                    v-model="duplicateDialog.name"
                     :label="__('New SLA Policy Name')"
                     type="text"
-                    v-model="duplicateDialog.name"
                     maxlength="100"
                   />
                 </div>

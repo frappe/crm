@@ -111,8 +111,8 @@
           class="size-4"
         />
         <Link
-          class="[&_button]:bg-surface-white [&_button]:select-text [&_button]:text-ink-gray-7 [&_button]:cursor-text"
           v-model="_event.referenceDocname"
+          class="[&_button]:bg-surface-white [&_button]:select-text [&_button]:text-ink-gray-7 [&_button]:cursor-text"
           :doctype="_event.referenceDoctype"
           :disabled="true"
         />
@@ -276,10 +276,10 @@
         </Dropdown>
         <TextInput
           ref="eventTitle"
+          v-model="_event.title"
           class="w-full"
           variant="outline"
           size="md"
-          v-model="_event.title"
           :debounce="500"
           :placeholder="__('Event Title')"
           @change="sync"
@@ -351,17 +351,17 @@
       <div class="flex justify-between gap-3 px-4.5 py-[7px] text-ink-gray-7">
         <BellIcon class="size-4 mt-1.5" />
         <EventNotifications
-          class="w-full"
           v-model="notifications"
+          class="w-full"
           :isAllDay="_event.isFullDay"
         />
       </div>
       <div class="flex justify-between gap-3 px-4.5 py-[7px] text-ink-gray-7">
         <LeadsIcon class="h-4 mt-1.5" />
         <Attendee
+          v-model="peoples"
           class="w-full"
           size="sm"
-          v-model="peoples"
           :validate="validateEmail"
           :error-message="
             (value) => __('{0} is an invalid email address', [value])
@@ -371,8 +371,8 @@
       <div class="flex gap-3 justify-between items-center mx-4.5 my-2.5">
         <MapIcon class="size-4 text-ink-gray-7" />
         <TextInput
-          class="w-full"
           v-model="_event.location"
+          class="w-full"
           :placeholder="__('Add Location')"
           variant="outline"
           size="sm"
@@ -385,13 +385,13 @@
             editor-class="!prose-sm !leading-[1.13rem] overflow-auto px-2.5 rounded placeholder-ink-gray-4 focus:bg-surface-white focus:ring-0 text-ink-gray-8 transition-colors"
             :bubbleMenu="true"
             :content="_event.description"
+            :placeholder="__('Add Description')"
             @change="
               (val) => {
                 _event.description = val
                 sync()
               }
             "
-            :placeholder="__('Add Description')"
           />
         </div>
       </div>
@@ -408,6 +408,7 @@
           <FeatherIcon name="plus-circle" class="size-4" />
           <div class="flex items-center gap-x-1.5 w-full">
             <FormControl
+              v-model="_event.referenceDoctype"
               class="w-full"
               type="select"
               :options="[
@@ -424,7 +425,6 @@
                   value: 'CRM Deal',
                 },
               ]"
-              v-model="_event.referenceDoctype"
               variant="outline"
               :placeholder="__('Add Lead or Deal')"
               @update:modelValue="
@@ -446,8 +446,8 @@
           />
           <div class="flex items-center gap-x-1.5 w-full">
             <Link
-              class="w-full"
               v-model="_event.referenceDocname"
+              class="w-full"
               :doctype="_event.referenceDoctype"
               :filters="
                 _event.referenceDoctype === 'CRM Lead' ? { converted: 0 } : {}
@@ -470,6 +470,7 @@
           <ShieldIcon class="size-4" />
           <div class="flex items-center gap-x-1.5 w-full">
             <FormControl
+              v-model="_event.eventType"
               class="w-full"
               type="select"
               :options="[
@@ -482,7 +483,6 @@
                   value: 'Public',
                 },
               ]"
-              v-model="_event.eventType"
               variant="outline"
               :placeholder="__('Private or Public')"
               @update:modelValue="() => sync()"
@@ -523,8 +523,8 @@
         {{ __('Going?') }}
       </div>
       <TabButtons
-        class="w-full [&_button]:w-full [&_div]:w-full"
         v-model="attending"
+        class="w-full [&_button]:w-full [&_div]:w-full"
         :buttons="[
           {
             label: __('Yes'),
@@ -590,10 +590,7 @@ import { ref, computed, watch, h, inject } from 'vue'
 import { useRouter } from 'vue-router'
 
 const props = defineProps({
-  mode: {
-    type: String,
-    default: 'details',
-  },
+  mode: { type: String, default: 'details' },
 })
 
 const emit = defineEmits([
@@ -610,8 +607,8 @@ const router = useRouter()
 const { $dialog } = globalStore()
 const { user } = sessionStore()
 
-const show = defineModel()
-const event = defineModel('event')
+const show = defineModel({ type: Boolean })
+const event = defineModel('event', { type: Object, default: () => ({}) })
 
 const events = inject('events')
 
@@ -718,6 +715,7 @@ const displayedPeoples = computed(() => {
 
 watch(
   [() => props.mode, () => event.value],
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   ([mode, event], [oldMode, oldEvent]) => {
     error.value = null
     focusOnTitle()
@@ -992,11 +990,11 @@ function redirect() {
 }
 
 function getTooltip(m) {
-  if (!m) return email
+  if (!m) return ''
   const parts = []
   if (m.reference_doctype) parts.push(m.reference_doctype)
   if (m.reference_docname) parts.push(m.reference_docname)
-  return parts.length ? parts.join(': ') : email
+  return parts.length ? parts.join(': ') : ''
 }
 
 const toOptions = computed(() => buildEndTimeOptions(_event.value.fromTime))

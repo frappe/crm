@@ -1,13 +1,11 @@
 # Copyright (c) 2024, Frappe Technologies Pvt. Ltd. and Contributors
 # See license.txt
 
-import json
-import os
 
 import frappe
 from frappe.tests import IntegrationTestCase
 from frappe.tests.utils import make_test_records
-from frappe.utils import add_days, get_first_day, get_last_day, getdate, nowdate
+from frappe.utils import add_days, get_first_day, get_last_day, nowdate
 
 from crm.api.dashboard import (
 	get_average_deal_value,

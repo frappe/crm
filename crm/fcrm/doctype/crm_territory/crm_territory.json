@@ -84,7 +84,7 @@
  "index_web_pages_for_search": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2026-02-23 12:26:16.663241",
+ "modified": "2026-03-05 12:44:13.642717",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Territory",
@@ -132,5 +132,6 @@
  "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "translated_doctype": 1
 }

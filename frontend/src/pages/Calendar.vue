@@ -18,8 +18,8 @@
   </LayoutHeader>
   <div class="flex h-screen overflow-hidden">
     <Calendar
-      class="flex-1 overflow-hidden"
       ref="calendar"
+      class="flex-1 overflow-hidden"
       :config="{
         defaultMode: defaultMode,
         isEditMode: true,
@@ -29,13 +29,13 @@
         noBorder: true,
       }"
       :events="events.data"
+      :onClick="showDetails"
+      :onDblClick="editDetails"
+      :onCellClick="newEvent"
       @create="(event) => createEvent(event)"
       @update="(event) => updateEvent(event, true)"
       @delete="(eventID) => deleteEvent(eventID)"
       @rangeChange="handleRangeChange"
-      :onClick="showDetails"
-      :onDblClick="editDetails"
-      :onCellClick="newEvent"
     >
       <template
         #header="{
@@ -55,8 +55,8 @@
           <div class="flex items-center">
             <DatePicker
               :modelValue="selectedMonthDate"
-              @update:modelValue="(val) => onMonthYearChange(val)"
               :clearable="false"
+              @update:modelValue="(val) => onMonthYearChange(val)"
             >
               <template #target="{ togglePopover }">
                 <Button
@@ -74,38 +74,39 @@
           <div class="flex gap-x-1">
             <!-- Increment and Decrement Button -->
 
-            <Button @click="decrement" variant="ghost" icon="chevron-left" />
+            <Button variant="ghost" icon="chevron-left" @click="decrement" />
             <Button
               :label="__('Today')"
               variant="ghost"
               @click="setCalendarDate()"
             />
-            <Button @click="increment" variant="ghost" icon="chevron-right" />
+            <Button variant="ghost" icon="chevron-right" @click="increment" />
 
             <!-- View Buttons -->
             <FormControl
               type="select"
               class="mr-1 w-24"
               :modelValue="activeView"
-              @update:modelValue="updateActiveView($event)"
               :options="[
                 { label: __('Day'), value: 'Day' },
                 { label: __('Week'), value: 'Week' },
                 { label: __('Month'), value: 'Month' },
               ]"
               :placeholder="__('Operator')"
+              @update:modelValue="updateActiveView($event)"
             />
 
             <Link
               class="form-control"
               :value="getUser(currentUser).full_name"
               doctype="User"
-              @change="(option) => updateUser(option)"
               :placeholder="__('John Doe')"
               :filters="{
                 name: ['in', users.data.crmUsers?.map((user) => user.name)],
+                ignore_user_type: 1,
               }"
               :hideMe="true"
+              @change="(option) => updateUser(option)"
             >
               <template #prefix>
                 <UserAvatar class="mr-2 !h-4 !w-4" :user="currentUser" />
@@ -136,8 +137,8 @@
       "
     >
       <CalendarEventPanel
-        ref="eventPanel"
         v-if="showEventPanel"
+        ref="eventPanel"
         v-model="showEventPanel"
         v-model:event="event"
         :mode="mode"
@@ -379,7 +380,7 @@ async function updateEvent(_event, afterDrag = false) {
       {
         onSuccess: async (e) => {
           await events.reload()
-          showEventPanel.value && showDetails({ id: e.name }, true)
+          if (showEventPanel.value) showDetails({ id: e.name }, true)
         },
         onError: (err) => {
           toast.error(err.messages[0])

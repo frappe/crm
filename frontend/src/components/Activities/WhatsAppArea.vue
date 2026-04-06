@@ -21,13 +21,13 @@
         />
         <div
           v-if="whatsapp.is_reply"
-          @click="() => scrollToMessage(whatsapp.reply_to)"
           class="mb-1 cursor-pointer rounded border-0 border-l-4 bg-surface-gray-3 p-2 text-ink-gray-5"
           :class="
             whatsapp.reply_to_type == 'Incoming'
               ? 'border-green-500'
               : 'border-blue-400'
           "
+          @click="() => scrollToMessage(whatsapp.reply_to)"
         >
           <div
             class="mb-1 text-sm font-bold"
@@ -63,16 +63,16 @@
             </Dropdown>
           </div>
           <div
-            class="absolute -bottom-5 flex gap-1 rounded-full border bg-surface-white p-1 pb-[3px] shadow-sm"
             v-if="whatsapp.reaction"
+            class="absolute -bottom-5 flex gap-1 rounded-full border bg-surface-white p-1 pb-[3px] shadow-sm"
           >
             <div class="flex size-4 items-center justify-center">
               {{ whatsapp.reaction }}
             </div>
           </div>
           <div
-            class="flex flex-col gap-2"
             v-if="whatsapp.message_type == 'Template'"
+            class="flex flex-col gap-2"
           >
             <div v-if="whatsapp.header" class="text-base font-semibold">
               {{ whatsapp.header }}
@@ -158,14 +158,14 @@
         class="flex items-center justify-center opacity-0 transition-all ease-in group-hover:opacity-100"
       >
         <IconPicker
+          v-slot="{ togglePopover }"
           v-model="emoji"
           v-model:reaction="reaction"
-          v-slot="{ togglePopover }"
           @update:modelValue="() => reactOnMessage(whatsapp.name, emoji)"
         >
           <Button
-            @click="() => (reaction = true) && togglePopover()"
             class="rounded-full !size-6 mt-0.5"
+            @click="() => (reaction = true) && togglePopover()"
           >
             <template #icon>
               <ReactIcon class="text-ink-gray-3" />
@@ -188,11 +188,11 @@ import { useTelemetry } from 'frappe-ui/frappe'
 import { Tooltip, Dropdown, createResource, toast } from 'frappe-ui'
 import { ref } from 'vue'
 
-const props = defineProps({
-  messages: Array,
+defineProps({
+  messages: { type: Array, default: () => [] },
 })
 
-const list = defineModel()
+const list = defineModel({ type: Object })
 
 const { capture } = useTelemetry()
 
@@ -246,7 +246,7 @@ function reactOnMessage(name, emoji) {
   })
 }
 
-const reply = defineModel('reply')
+const reply = defineModel('reply', { type: Object, default: () => ({}) })
 const replyMode = ref(false)
 
 function messageOptions(message) {

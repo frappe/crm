@@ -10,6 +10,14 @@
  "email_append_to": 1,
  "engine": "InnoDB",
  "field_order": [
+  "person_tab",
+  "salutation",
+  "first_name",
+  "last_name",
+  "column_break_opsm",
+  "lead_name",
+  "email",
+  "mobile_no",
   "details",
   "organization",
   "website",
@@ -18,16 +26,9 @@
   "job_title",
   "source",
   "lead_owner",
-  "person_tab",
-  "salutation",
-  "first_name",
-  "last_name",
-  "email",
-  "mobile_no",
   "organization_tab",
   "section_break_uixv",
   "naming_series",
-  "lead_name",
   "middle_name",
   "gender",
   "phone",
@@ -108,10 +109,10 @@
    "options": "Gender"
   },
   {
-   "default": "New",
    "fieldname": "status",
    "fieldtype": "Link",
    "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Status",
    "options": "CRM Lead Status",
    "reqd": 1,
@@ -120,6 +121,7 @@
   {
    "fieldname": "email",
    "fieldtype": "Data",
+   "in_standard_filter": 1,
    "label": "Email",
    "options": "Email",
    "search_index": 1
@@ -188,6 +190,7 @@
   {
    "fieldname": "lead_name",
    "fieldtype": "Data",
+   "in_standard_filter": 1,
    "label": "Full Name",
    "search_index": 1
   },
@@ -205,6 +208,7 @@
   {
    "fieldname": "organization",
    "fieldtype": "Data",
+   "in_standard_filter": 1,
    "label": "Organization"
   },
   {
@@ -411,13 +415,17 @@
    "fieldtype": "Text",
    "label": "Lost Notes",
    "mandatory_depends_on": "eval: doc.lost_reason == \"Other\""
+  },
+  {
+   "fieldname": "column_break_opsm",
+   "fieldtype": "Column Break"
   }
  ],
  "grid_page_length": 50,
  "image_field": "image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-02-23 12:43:59.038277",
+ "modified": "2026-04-04 12:33:17.177897",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Lead",

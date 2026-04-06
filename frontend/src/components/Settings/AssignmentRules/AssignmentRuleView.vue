@@ -3,7 +3,7 @@
     v-if="!getAssignmentRuleData.loading"
     class="flex flex-col h-full gap-6 px-6 py-8 text-ink-gray-8"
   >
-    <div class="flex items-center justify-between px-2 w-full">
+    <div class="flex justify-between px-2 w-full">
       <div class="flex items-center gap-2">
         <Button
           variant="ghost"
@@ -12,20 +12,20 @@
             assignmentRuleData.assignmentRuleName || __('New Assignment Rule')
           "
           size="md"
-          @click="goBack()"
           class="cursor-pointer -ml-4 hover:bg-transparent focus:bg-transparent focus:outline-none focus:ring-0 focus:ring-offset-0 focus-visible:none active:bg-transparent active:outline-none active:ring-0 active:ring-offset-0 active:text-ink-gray-5 font-semibold text-xl hover:opacity-70 !pr-0 !max-w-96 !justify-start"
+          @click="goBack()"
         />
         <Badge
+          v-if="isDirty"
           :variant="'subtle'"
           :theme="'orange'"
           size="sm"
           :label="__('Not Saved')"
-          v-if="isDirty"
         />
       </div>
-      <div class="flex items-center gap-4">
+      <div class="flex gap-4">
         <div
-          class="flex items-center justify-between gap-2"
+          class="flex items-center justify-between gap-2 h-7"
           @click="assignmentRuleData.disabled = !assignmentRuleData.disabled"
         >
           <Switch size="sm" :model-value="!assignmentRuleData.disabled" />
@@ -36,8 +36,8 @@
           :label="__('Save')"
           theme="gray"
           variant="solid"
-          @click="saveAssignmentRule()"
           :loading="isLoading || getAssignmentRuleData.loading"
+          @click="saveAssignmentRule()"
         />
       </div>
     </div>
@@ -45,12 +45,12 @@
       <div class="grid grid-cols-2 gap-5">
         <div>
           <FormControl
+            v-model="assignmentRuleData.assignmentRuleName"
             :type="'text'"
             size="sm"
             variant="subtle"
             :placeholder="__('Name')"
             :label="__('Name')"
-            v-model="assignmentRuleData.assignmentRuleName"
             required
             maxlength="50"
             @change="validateAssignmentRule('assignmentRuleName')"
@@ -85,7 +85,7 @@
                 <div
                   v-for="option in priorityOptions"
                   :key="option.value"
-                  class="p-2 cursor-pointer hover:bg-gray-50 text-base flex items-center justify-between rounded"
+                  class="p-2 cursor-pointer hover:bg-surface-gray-1 text-base flex items-center justify-between rounded"
                   @click="
                     () => {
                       assignmentRuleData.priority = option.value
@@ -106,6 +106,7 @@
         </div>
         <div>
           <FormControl
+            v-model="assignmentRuleData.description"
             :type="'textarea'"
             size="sm"
             variant="subtle"
@@ -114,7 +115,6 @@
             required
             maxlength="250"
             @change="validateAssignmentRule('description')"
-            v-model="assignmentRuleData.description"
           />
           <ErrorMessage
             :message="assignmentRuleErrors.description"
@@ -124,6 +124,7 @@
         <div class="flex flex-col gap-1.5">
           <FormLabel :label="__('Apply On')" />
           <Select
+            v-model="assignmentRuleData.documentType"
             :options="[
               {
                 label: 'Lead',
@@ -134,7 +135,6 @@
                 value: 'CRM Deal',
               },
             ]"
-            v-model="assignmentRuleData.documentType"
           />
         </div>
       </div>
@@ -181,8 +181,8 @@
         </div>
         <div class="mt-5">
           <div
-            class="flex flex-col gap-3 items-center text-center text-ink-gray-7 text-sm mb-2 border border-outline-gray-2 rounded-md p-3 py-4"
             v-if="!useNewUI && assignmentRuleData.assignCondition"
+            class="flex flex-col gap-3 items-center text-center text-ink-gray-7 text-sm mb-2 border border-outline-gray-2 rounded-md p-3 py-4"
           >
             <span class="text-p-sm">
               {{ __('Conditions for this rule were created from') }}
@@ -203,11 +203,11 @@
             />
           </div>
           <AssignmentRulesSection
+            v-else
             :conditions="assignmentRuleData.assignConditionJson"
             name="assignCondition"
             :errors="assignmentRuleErrors.assignConditionError"
             :doctype="assignmentRuleData.documentType"
-            v-else
           />
           <div class="flex justify-end">
             <ErrorMessage

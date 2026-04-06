@@ -29,8 +29,8 @@
         </div>
         <div>
           <Switch
-            size="sm"
             v-model="settings.doc.enable_forecasting"
+            size="sm"
             @click.stop="toggleForecasting"
           />
         </div>
@@ -51,8 +51,8 @@
         </div>
         <div>
           <Switch
-            size="sm"
             v-model="settings.doc.auto_update_expected_deal_value"
+            size="sm"
             @click.stop="autoUpdateExpectedDealValue"
           />
         </div>
@@ -63,9 +63,14 @@
 
 <script setup>
 import { getSettings } from '@/stores/settings'
+import { useBroadcast } from '@/composables/useBroadcast'
 import { Switch, toast } from 'frappe-ui'
+import { useRoute } from 'vue-router'
+
+const route = useRoute()
 
 const { _settings: settings } = getSettings()
+const { send } = useBroadcast()
 
 function toggleForecasting() {
   settings.save.submit(null, {
@@ -75,6 +80,10 @@ function toggleForecasting() {
           ? __('Forecasting enabled successfully')
           : __('Forecasting disabled successfully'),
       )
+
+      if (route.name === 'Deal') {
+        send('reload-deal-sections')
+      }
     },
   })
 }

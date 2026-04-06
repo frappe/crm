@@ -1,6 +1,6 @@
 <template>
   <TransitionRoot :show="sidebarOpened">
-    <Dialog as="div" @close="sidebarOpened = false" class="fixed inset-0">
+    <Dialog as="div" class="fixed inset-0" @close="sidebarOpened = false">
       <TransitionChild
         as="template"
         enter="transition ease-in-out duration-200 transform"
@@ -57,6 +57,7 @@
                 <nav class="flex flex-col">
                   <SidebarLink
                     v-for="link in view.views"
+                    :key="link.label"
                     :icon="link.icon"
                     :label="__(link.label)"
                     :to="link.to"
@@ -77,7 +78,7 @@
         leave-from="opacity-100"
         leave-to="opacity-0"
       >
-        <DialogOverlay class="fixed inset-0 bg-gray-600 bg-opacity-50" />
+        <DialogOverlay class="fixed inset-0 bg-surface-gray-5 bg-opacity-50" />
       </TransitionChild>
     </Dialog>
   </TransitionRoot>
@@ -90,7 +91,6 @@ import {
   DialogOverlay,
 } from '@headlessui/vue'
 import CollapsibleSection from '@/components/CollapsibleSection.vue'
-import Email2Icon from '@/components/Icons/Email2Icon.vue'
 import PinIcon from '@/components/Icons/PinIcon.vue'
 import UserDropdown from '@/components/UserDropdown.vue'
 import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
@@ -104,9 +104,7 @@ import NotificationsIcon from '@/components/Icons/NotificationsIcon.vue'
 import SidebarLink from '@/components/SidebarLink.vue'
 import { viewsStore } from '@/stores/views'
 import { unreadNotificationsCount } from '@/stores/notifications'
-import { createResource } from 'frappe-ui'
-import { TrialBanner } from 'frappe-ui/frappe'
-import { computed, h, provide } from 'vue'
+import { computed, h } from 'vue'
 import { mobileSidebarOpened as sidebarOpened } from '@/composables/settings'
 
 const { getPinnedViews, getPublicViews } = viewsStore()

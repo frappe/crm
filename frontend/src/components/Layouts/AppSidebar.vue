@@ -13,8 +13,8 @@
           :label="__('Notifications')"
           :icon="NotificationsIcon"
           :isCollapsed="isSidebarCollapsed"
-          @click="() => toggleNotificationPanel()"
           class="relative mx-2 my-[1.5px]"
+          @click="() => toggleNotificationPanel()"
         >
           <template #right>
             <Badge
@@ -58,6 +58,7 @@
           <nav class="flex flex-col">
             <SidebarLink
               v-for="link in view.views"
+              :key="link.label"
               :icon="link.icon"
               :label="__(link.label)"
               :to="link.to"
@@ -86,6 +87,17 @@
         />
       </div>
       <SidebarLink
+        v-if="isManager() && isDemoDataCreated"
+        class="text-ink-red-3 hover:bg-surface-red-2 focus:bg-surface-red-2"
+        :label="__('Clear Demo Data')"
+        :isCollapsed="isSidebarCollapsed"
+        @click="() => clearDemoData()"
+      >
+        <template #icon>
+          <BrushCleaningIcon class="h-4 w-4" />
+        </template>
+      </SidebarLink>
+      <SidebarLink
         v-if="isOnboardingStepsCompleted"
         :label="__('Help')"
         :isCollapsed="isSidebarCollapsed"
@@ -103,8 +115,8 @@
       <SidebarLink
         :label="isSidebarCollapsed ? __('Expand') : __('Collapse')"
         :isCollapsed="isSidebarCollapsed"
-        @click="isSidebarCollapsed = !isSidebarCollapsed"
         class=""
+        @click="isSidebarCollapsed = !isSidebarCollapsed"
       >
         <template #icon>
           <span class="grid h-4 w-4 flex-shrink-0 place-items-center">
@@ -137,6 +149,7 @@
 </template>
 
 <script setup>
+import BrushCleaningIcon from '~icons/lucide/brush-cleaning'
 import LucideLayoutDashboard from '~icons/lucide/layout-dashboard'
 import CRMLogo from '@/components/Icons/CRMLogo.vue'
 import InviteIcon from '@/components/Icons/InviteIcon.vue'
@@ -185,11 +198,13 @@ import {
 } from 'frappe-ui/frappe'
 import router from '@/router'
 import { useStorage } from '@vueuse/core'
+import { useDemoData } from '@/composables/demoData'
 import { ref, reactive, computed, markRaw, onMounted } from 'vue'
 
 const { getPinnedViews, getPublicViews } = viewsStore()
 const { toggle: toggleNotificationPanel } = notificationsStore()
 const { capture } = useTelemetry()
+const { clearDemoData, isDemoDataCreated } = useDemoData()
 
 const isSidebarCollapsed = useStorage('isSidebarCollapsed', false)
 

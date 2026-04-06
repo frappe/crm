@@ -30,17 +30,85 @@
         class="my-2 min-w-40 rounded-lg bg-surface-modal shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
       >
         <div class="min-w-72 p-2 sm:min-w-[400px]">
-          <div
-            v-if="filters?.size"
-            v-for="(f, i) in filters"
-            :key="i"
-            id="filter-list"
-            class="mb-4 sm:mb-3"
-          >
-            <div v-if="isMobileView" class="flex flex-col gap-2">
-              <div class="-mb-2 flex w-full items-center justify-between">
-                <div class="text-base text-ink-gray-5">
-                  {{ i == 0 ? __('Where') : __('And') }}
+          <template v-if="filters?.size">
+            <div
+              v-for="(f, i) in filters"
+              id="filter-list"
+              :key="i"
+              class="mb-4 sm:mb-3"
+            >
+              <div v-if="isMobileView" class="flex flex-col gap-2">
+                <div class="-mb-2 flex w-full items-center justify-between">
+                  <div class="text-base text-ink-gray-5">
+                    {{ i == 0 ? __('Where') : __('And') }}
+                  </div>
+                  <Button
+                    class="flex"
+                    variant="ghost"
+                    icon="x"
+                    @click="removeFilter(i)"
+                  />
+                </div>
+                <div id="fieldname" class="w-full">
+                  <Autocomplete
+                    :value="f.field.fieldname"
+                    :options="filterableFields.data"
+                    :placeholder="__('First Name')"
+                    @change="(e) => updateFilter(e, i)"
+                  />
+                </div>
+                <div id="operator">
+                  <FormControl
+                    v-model="f.operator"
+                    type="select"
+                    :options="
+                      getOperators(f.field.fieldtype, f.field.fieldname)
+                    "
+                    :placeholder="__('Equals')"
+                    @update:modelValue="() => updateOperator(f)"
+                  />
+                </div>
+                <div id="value" class="w-full">
+                  <component
+                    :is="getValueControl(f)"
+                    v-model="f.value"
+                    :placeholder="placeholder(f)"
+                    @change="(v) => updateValue(v, f)"
+                  />
+                </div>
+              </div>
+              <div v-else class="flex items-center justify-between gap-2">
+                <div class="flex items-center gap-2">
+                  <div class="w-13 pl-2 text-end text-base text-ink-gray-5">
+                    {{ i == 0 ? __('Where') : __('And') }}
+                  </div>
+                  <div id="fieldname" class="!min-w-[140px]">
+                    <Autocomplete
+                      :value="f.field.fieldname"
+                      :options="filterableFields.data"
+                      :placeholder="__('First Name')"
+                      @change="(e) => updateFilter(e, i)"
+                    />
+                  </div>
+                  <div id="operator">
+                    <FormControl
+                      v-model="f.operator"
+                      type="select"
+                      :options="
+                        getOperators(f.field.fieldtype, f.field.fieldname)
+                      "
+                      :placeholder="__('Equals')"
+                      @update:modelValue="() => updateOperator(f)"
+                    />
+                  </div>
+                  <div id="value" class="!min-w-[140px]">
+                    <component
+                      :is="getValueControl(f)"
+                      v-model="f.value"
+                      :placeholder="placeholder(f)"
+                      @change="(v) => updateValue(v, f)"
+                    />
+                  </div>
                 </div>
                 <Button
                   class="flex"
@@ -49,73 +117,8 @@
                   @click="removeFilter(i)"
                 />
               </div>
-              <div id="fieldname" class="w-full">
-                <Autocomplete
-                  :value="f.field.fieldname"
-                  :options="filterableFields.data"
-                  @change="(e) => updateFilter(e, i)"
-                  :placeholder="__('First Name')"
-                />
-              </div>
-              <div id="operator">
-                <FormControl
-                  type="select"
-                  v-model="f.operator"
-                  @update:modelValue="() => updateOperator(f)"
-                  :options="getOperators(f.field.fieldtype, f.field.fieldname)"
-                  :placeholder="__('Equals')"
-                />
-              </div>
-              <div id="value" class="w-full">
-                <component
-                  :is="getValueControl(f)"
-                  v-model="f.value"
-                  @change="(v) => updateValue(v, f)"
-                  :placeholder="placeholder(f)"
-                />
-              </div>
             </div>
-            <div v-else class="flex items-center justify-between gap-2">
-              <div class="flex items-center gap-2">
-                <div class="w-13 pl-2 text-end text-base text-ink-gray-5">
-                  {{ i == 0 ? __('Where') : __('And') }}
-                </div>
-                <div id="fieldname" class="!min-w-[140px]">
-                  <Autocomplete
-                    :value="f.field.fieldname"
-                    :options="filterableFields.data"
-                    @change="(e) => updateFilter(e, i)"
-                    :placeholder="__('First Name')"
-                  />
-                </div>
-                <div id="operator">
-                  <FormControl
-                    type="select"
-                    v-model="f.operator"
-                    @update:modelValue="() => updateOperator(f)"
-                    :options="
-                      getOperators(f.field.fieldtype, f.field.fieldname)
-                    "
-                    :placeholder="__('Equals')"
-                  />
-                </div>
-                <div id="value" class="!min-w-[140px]">
-                  <component
-                    :is="getValueControl(f)"
-                    v-model="f.value"
-                    @change="(v) => updateValue(v, f)"
-                    :placeholder="placeholder(f)"
-                  />
-                </div>
-              </div>
-              <Button
-                class="flex"
-                variant="ghost"
-                icon="x"
-                @click="removeFilter(i)"
-              />
-            </div>
-          </div>
+          </template>
           <div
             v-else
             class="mb-3 flex h-7 items-center px-3 text-sm text-ink-gray-5"
@@ -126,8 +129,8 @@
             <Autocomplete
               value=""
               :options="availableFilters"
-              @change="(e) => setfilter(e)"
               :placeholder="__('First Name')"
+              @change="(e) => setfilter(e)"
             >
               <template #target="{ togglePopover }">
                 <Button
@@ -156,6 +159,8 @@
 import FilterIcon from '@/components/Icons/FilterIcon.vue'
 import Link from '@/components/Controls/Link.vue'
 import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
+import DurationInput from '@/components/Controls/DurationInput.vue'
+import RatingInput from '@/components/Controls/RatingInput.vue'
 import {
   FormControl,
   createResource,
@@ -173,21 +178,17 @@ const typeNumber = ['Float', 'Int', 'Currency', 'Percent']
 const typeSelect = ['Select']
 const typeString = ['Data', 'Long Text', 'Small Text', 'Text Editor', 'Text']
 const typeDate = ['Date', 'Datetime']
+const typeDuration = ['Duration']
+const typeRating = ['Rating']
 
 const props = defineProps({
-  doctype: {
-    type: String,
-    required: true,
-  },
-  default_filters: {
-    type: Object,
-    default: {},
-  },
+  doctype: { type: String, required: true },
+  default_filters: { type: Object, default: () => {} },
 })
 
 const emit = defineEmits(['update'])
 
-const list = defineModel()
+const list = defineModel({ type: Object, default: () => ({}) })
 
 const filterableFields = createResource({
   url: 'crm.api.doc.get_filterable_fields',
@@ -204,7 +205,12 @@ const filters = computed(() => {
   if (!list.value?.data) return new Set()
   let allFilters =
     list.value?.params?.filters || list.value.data?.params?.filters
-  if (!allFilters || !filterableFields.data) return new Set()
+  if (
+    !allFilters ||
+    Object.keys(allFilters).length === 0 ||
+    !filterableFields.data
+  )
+    return new Set()
   // remove default filters
   if (props.default_filters) {
     allFilters = removeCommonFilters(props.default_filters, allFilters)
@@ -227,7 +233,7 @@ const availableFilters = computed(() => {
 
 function removeCommonFilters(commonFilters, allFilters) {
   for (const key in commonFilters) {
-    if (commonFilters.hasOwnProperty(key) && allFilters.hasOwnProperty(key)) {
+    if (Object.hasOwn(commonFilters, key) && Object.hasOwn(allFilters, key)) {
       if (commonFilters[key] === allFilters[key]) {
         delete allFilters[key]
       }
@@ -326,7 +332,7 @@ function getOperators(fieldtype, fieldname) {
   if (typeCheck.includes(fieldtype)) {
     options.push(...[{ label: __('Equals'), value: 'equals' }])
   }
-  if (['Duration'].includes(fieldtype)) {
+  if (typeDuration.includes(fieldtype)) {
     options.push(
       ...[
         { label: __('Like'), value: 'like' },
@@ -349,6 +355,19 @@ function getOperators(fieldtype, fieldname) {
         { label: __('<='), value: '<=' },
         { label: __('Between'), value: 'between' },
         { label: __('Timespan'), value: 'timespan' },
+      ],
+    )
+  }
+  if (typeRating.includes(fieldtype)) {
+    options.push(
+      ...[
+        { label: __('Equals'), value: 'equals' },
+        { label: __('Not equals'), value: 'not equals' },
+        { label: __('Greater than'), value: '>' },
+        { label: __('Less than'), value: '<' },
+        { label: __('Greater than or equal to'), value: '>=' },
+        { label: __('Less than or equal to'), value: '<=' },
+        { label: __('Is'), value: 'is' },
       ],
     )
   }
@@ -404,6 +423,14 @@ function getValueControl(f) {
     return h(FormControl, { type: 'number' })
   } else if (typeDate.includes(fieldtype) && operator == 'between') {
     return h(DateRangePicker, { value: f.value, iconLeft: '' })
+  } else if (typeDuration.includes(fieldtype)) {
+    return h(DurationInput, { value: f.value })
+  } else if (typeRating.includes(fieldtype)) {
+    return h(RatingInput, {
+      value: f.value,
+      max: options || 5,
+      class: '!flex',
+    })
   } else if (typeDate.includes(fieldtype)) {
     return h(fieldtype == 'Date' ? DatePicker : DateTimePicker, {
       value: f.value,
@@ -538,6 +565,9 @@ function parseFilters(filters) {
 function transformIn(f) {
   if (f.operator.includes('like') && !f.value.includes('%')) {
     f.value = `%${f.value}%`
+  }
+  if (['in', 'not in'].includes(f.operator) && typeof f.value === 'string') {
+    f.value = f.value.split(',').map((v) => v.trim())
   }
   return f
 }

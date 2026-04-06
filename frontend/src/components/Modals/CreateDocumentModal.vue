@@ -33,9 +33,9 @@
       <div class="px-4 pb-7 pt-4 sm:px-6">
         <div class="space-y-2">
           <Button
-            class="w-full"
             v-for="action in dialogOptions.actions"
             :key="action.label"
+            class="w-full"
             v-bind="action"
             :label="__(action.label)"
             :loading="loading"
@@ -50,33 +50,29 @@
 import FieldLayout from '@/components/FieldLayout/FieldLayout.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import { usersStore } from '@/stores/users'
+import { getMeta } from '@/stores/meta'
 import { useDocument } from '@/data/document'
 import { isMobileView } from '@/composables/settings'
 import { showQuickEntryModal, quickEntryProps } from '@/composables/modals'
-import { FeatherIcon, createResource, ErrorMessage, call } from 'frappe-ui'
+import { createResource, ErrorMessage, call } from 'frappe-ui'
 import { ref, nextTick, watch, computed } from 'vue'
 
 const props = defineProps({
-  doctype: {
-    type: String,
-    required: true,
-  },
-  data: {
-    type: Object,
-    default: () => ({}),
-  },
+  doctype: { type: String, required: true },
+  data: { type: Object, default: () => ({}) },
 })
 
 const emit = defineEmits(['callback'])
 
 const { isManager } = usersStore()
 
-const show = defineModel()
+const show = defineModel({ type: Boolean })
 
 const loading = ref(false)
 const error = ref(null)
 
 const { document: _data, triggerOnBeforeCreate } = useDocument(props.doctype)
+const { doctypeMeta } = getMeta(props.doctype)
 
 const dialogOptions = computed(() => {
   let doctype = props.doctype
@@ -135,14 +131,25 @@ async function create() {
 }
 
 watch(
-  () => show.value,
-  (value) => {
-    if (!value) return
+  doctypeMeta,
+  (meta) => {
+    if (!meta) return
 
-    nextTick(() => {
-      _data.doc = { ...props.data }
-    })
+    let doc = {}
+
+    if (typeof props.data === 'object') {
+      Object.assign(doc, props.data)
+    } else if (meta.autoname && meta.autoname.indexOf('field:') !== -1) {
+      doc[meta.autoname.substr(6)] = props.data
+    } else if (meta.autoname && meta.autoname === 'prompt') {
+      doc.__newname = props.data
+    } else if (meta.title_field) {
+      doc[meta.title_field] = props.data
+    }
+
+    nextTick(() => Object.assign(_data.doc, doc))
   },
+  { immediate: true, deep: true },
 )
 
 function openQuickEntryModal() {

@@ -1,18 +1,18 @@
 <template>
   <div class="flex flex-col gap-5.5">
     <div
-      class="flex items-center gap-2 text-base bg-surface-gray-2 rounded py-2 px-2.5"
+      class="flex items-center justify-between gap-2 text-base bg-surface-gray-2 rounded py-2 px-2.5 overflow-x-auto max-w-full"
     >
       <Draggable
         v-if="tabs.length && tabs[tabIndex].label"
         :list="tabs"
         item-key="name"
-        class="flex items-center gap-2"
+        class="flex items-center gap-2 w-full overflow-auto"
         @end="(e) => (tabIndex = e.newIndex)"
       >
         <template #item="{ element: tab, index: i }">
           <div
-            class="flex items-center gap-2 cursor-pointer rounded"
+            class="flex items-center gap-2 cursor-pointer rounded shrink-0"
             :class="[
               tabIndex == i
                 ? 'text-ink-gray-9 bg-surface-white shadow-sm'
@@ -58,21 +58,21 @@
       <Button
         variant="ghost"
         class="!h-6.5 !text-ink-gray-5 hover:!text-ink-gray-9"
-        @click="addTab"
         :label="__('Add Tab')"
+        @click="addTab"
       >
-        <template v-slot:[slotName]>
+        <template #[slotName]>
           <FeatherIcon name="plus" class="h-4" />
         </template>
       </Button>
     </div>
-    <div v-show="tabIndex == i" v-for="(tab, i) in tabs" :key="tab.name">
+    <div v-for="(tab, i) in tabs" v-show="tabIndex == i" :key="tab.name">
       <Draggable
         :list="tab.sections"
         item-key="name"
         class="flex flex-col gap-5.5"
       >
-        <template #item="{ element: section, index: i }">
+        <template #item="{ element: section }">
           <div
             class="section flex flex-col gap-1.5 p-2.5 bg-surface-gray-2 rounded cursor-grab"
           >
@@ -159,9 +159,8 @@
                     </template>
                   </Draggable>
                   <Autocomplete
-                    v-if="fields.data"
                     value=""
-                    :options="fields.data"
+                    :options="fields"
                     @change="(e) => addField(column, e)"
                   >
                     <template #target="{ togglePopover }">
@@ -214,92 +213,80 @@ import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import DragVerticalIcon from '@/components/Icons/DragVerticalIcon.vue'
 import Draggable from 'vuedraggable'
 import { getRandom } from '@/utils'
-import { Dropdown, createResource } from 'frappe-ui'
-import { ref, computed, watch } from 'vue'
+import { getMeta } from '@/stores/meta'
+import { Dropdown } from 'frappe-ui'
+import { ref, computed } from 'vue'
 
 const props = defineProps({
-  tabs: Object,
-  doctype: String,
-  onlyRequired: {
-    type: Boolean,
-    default: false,
-  },
+  doctype: { type: String, default: 'CRM Lead' },
+  onlyRequired: { type: Boolean, default: false },
 })
+
+const tabs = defineModel({ type: Array, default: () => [] })
 
 const tabIndex = ref(0)
 const slotName = computed(() => {
-  if (props.tabs.length == 1 && !props.tabs[0].label) {
+  if (tabs.value.length == 1 && !tabs.value[0].label) {
     return 'prefix'
   }
   return 'default'
 })
 
 const restrictedFieldTypes = [
+  'Tab Break',
+  'Section Break',
+  'Column Break',
   'Geolocation',
-  'Attach',
   'Attach Image',
-  'HTML',
   'Signature',
 ]
 
-const params = computed(() => {
-  return {
-    doctype: props.doctype,
-    restricted_fieldtypes: restrictedFieldTypes,
-    as_array: true,
-    only_required: props.onlyRequired,
-  }
-})
+const { getFields } = getMeta(props.doctype)
 
-const fields = createResource({
-  url: 'crm.api.doc.get_fields_meta',
-  params: params.value,
-  cache: ['fieldsMeta', props.doctype],
-  auto: true,
-  transform: (data) => {
-    let restrictedFields = [
-      'name',
-      'owner',
-      'creation',
-      'modified',
-      'modified_by',
-      'docstatus',
-      '_comments',
-      '_user_tags',
-      '_assign',
-      '_liked_by',
-    ]
-    let existingFields = []
+const fields = computed(() => {
+  const _fields =
+    getFields({ restrictNoValueFields: false, restrictedFieldTypes }) || []
+  if (!_fields.length) return []
 
-    props.tabs?.forEach((tab) => {
-      tab.sections?.forEach((section) => {
-        section.columns?.forEach((column) => {
-          existingFields = existingFields.concat(column.fields)
-        })
+  let existingFields = []
+
+  tabs.value?.forEach((tab) => {
+    tab.sections?.forEach((section) => {
+      section.columns?.forEach((column) => {
+        existingFields = existingFields.concat(column.fields)
       })
     })
+  })
 
-    return data.filter((field) => {
+  return _fields
+    .filter((field) => {
       return (
         !existingFields.find((f) => f.fieldname === field.fieldname) &&
-        !restrictedFields.includes(field.fieldname)
+        (props.onlyRequired ? field.reqd : true)
       )
     })
-  },
+    .map((field) => {
+      return {
+        label: field.label,
+        value: field.fieldname,
+        fieldname: field.fieldname,
+        fieldtype: field.fieldtype,
+      }
+    })
 })
 
 function addTab() {
-  if (props.tabs.length == 1 && !props.tabs[0].label) {
-    props.tabs[0].label = __('New Tab')
+  if (tabs.value.length == 1 && !tabs.value[0].label) {
+    tabs.value[0].label = __('New Tab')
     return
   }
 
-  props.tabs.push({
+  tabs.value.push({
     label: __('New Tab'),
     name: 'tab_' + getRandom(),
     sections: [],
   })
-  tabIndex.value = props.tabs.length ? props.tabs.length - 1 : 0
+  tabIndex.value = tabs.value.length ? tabs.value.length - 1 : 0
 }
 
 function addField(column, field) {
@@ -318,11 +305,11 @@ function getTabOptions(tab) {
       label: __('Remove Tab'),
       icon: 'trash-2',
       onClick: () => {
-        if (props.tabs.length == 1) {
-          props.tabs[0].label = ''
+        if (tabs.value.length == 1) {
+          tabs.value[0].label = ''
           return
         }
-        props.tabs.splice(tabIndex.value, 1)
+        tabs.value.splice(tabIndex.value, 1)
         tabIndex.value = tabIndex.value ? tabIndex.value - 1 : 0
       },
     },
@@ -387,29 +374,29 @@ function getSectionOptions(i, section, tab) {
           label: __('Move to Previous Tab'),
           icon: 'corner-up-left',
           onClick: () => {
-            let previousTab = props.tabs[tabIndex.value - 1]
+            let previousTab = tabs.value[tabIndex.value - 1]
             previousTab.sections.push(section)
-            props.tabs[tabIndex.value].sections.splice(
-              props.tabs[tabIndex.value].sections.indexOf(section),
+            tabs.value[tabIndex.value].sections.splice(
+              tabs.value[tabIndex.value].sections.indexOf(section),
               1,
             )
             tabIndex.value -= 1
           },
-          condition: () => props.tabs[tabIndex.value - 1],
+          condition: () => tabs.value[tabIndex.value - 1],
         },
         {
           label: __('Move to Next Tab'),
           icon: 'corner-up-right',
           onClick: () => {
-            let nextTab = props.tabs[tabIndex.value + 1]
+            let nextTab = tabs.value[tabIndex.value + 1]
             nextTab.sections.push(section)
-            props.tabs[tabIndex.value].sections.splice(
-              props.tabs[tabIndex.value].sections.indexOf(section),
+            tabs.value[tabIndex.value].sections.splice(
+              tabs.value[tabIndex.value].sections.indexOf(section),
               1,
             )
             tabIndex.value += 1
           },
-          condition: () => props.tabs[tabIndex.value + 1],
+          condition: () => tabs.value[tabIndex.value + 1],
         },
       ],
     },
@@ -468,10 +455,4 @@ function getSectionOptions(i, section, tab) {
     },
   ]
 }
-
-watch(
-  () => props.doctype,
-  () => fields.fetch(params.value),
-  { immediate: true },
-)
 </script>

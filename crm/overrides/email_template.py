@@ -1,5 +1,4 @@
 # import frappe
-from frappe import _
 from frappe.email.doctype.email_template.email_template import EmailTemplate
 
 

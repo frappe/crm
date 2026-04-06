@@ -30,7 +30,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-02-23 12:31:29.037317",
+ "modified": "2026-03-05 13:05:26.007219",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Lead Source",
@@ -75,5 +75,6 @@
  "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "translated_doctype": 1
 }

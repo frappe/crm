@@ -1,5 +1,4 @@
 # import frappe
-from frappe import _
 from frappe.contacts.doctype.contact.contact import Contact
 
 

@@ -14,6 +14,7 @@
           <div class="flex flex-col flex-1 items-center gap-2">
             <div class="flex items-center gap-2 w-full">
               <FormControl
+                v-model="notification.type"
                 class="flex-1 shrink-0"
                 type="select"
                 :options="[
@@ -26,38 +27,37 @@
                     value: 'Email',
                   },
                 ]"
-                v-model="notification.type"
                 variant="outline"
                 :placeholder="__('Select Type')"
               />
               <div>{{ __('at') }}</div>
               <TimePicker
                 v-if="isAllDay"
-                class="flex-1 shrink-0"
                 v-model="notification.time"
+                class="flex-1 shrink-0"
                 variant="outline"
                 :placeholder="__('08:00 AM')"
               />
             </div>
             <div class="flex items-center gap-2 w-full">
               <FormControl
+                v-model.number="notification.before"
                 class="w-fit"
                 type="number"
                 :min="min(notification)"
                 :max="max(notification)"
-                @blur="handleIntervalChange(notification)"
-                v-model.number="notification.before"
                 variant="outline"
                 :placeholder="__('10')"
+                @blur="handleIntervalChange(notification)"
               />
               <FormControl
+                v-model="notification.interval"
                 class="flex-1 shrink-0"
                 type="select"
                 :options="intervalOptions(notification)"
-                v-model="notification.interval"
-                @update:modelValue="() => handleIntervalChange(notification)"
                 variant="outline"
                 :placeholder="__('minutes')"
+                @update:modelValue="() => handleIntervalChange(notification)"
               />
             </div>
             <Button
@@ -82,6 +82,7 @@
           <div class="flex flex-col flex-1 items-center gap-2">
             <div class="flex items-center gap-2 w-full">
               <FormControl
+                v-model="notification.type"
                 class="flex-1 shrink-0"
                 type="select"
                 :options="[
@@ -94,31 +95,30 @@
                     value: 'Email',
                   },
                 ]"
-                v-model="notification.type"
                 variant="outline"
                 :placeholder="__('Select Type')"
               />
             </div>
             <div class="flex items-center gap-2 w-full">
               <FormControl
+                v-model.number="notification.before"
                 class="w-fit"
                 type="number"
                 :min="min(notification)"
                 :max="max(notification)"
                 :step="notification.interval === 'minutes' ? 5 : 1"
-                @blur="handleIntervalChange(notification)"
-                v-model.number="notification.before"
                 variant="outline"
                 :placeholder="__('10')"
+                @blur="handleIntervalChange(notification)"
               />
               <FormControl
+                v-model="notification.interval"
                 class="flex-1 shrink-0"
                 type="select"
                 :options="intervalOptions(notification)"
-                v-model="notification.interval"
-                @update:modelValue="() => handleIntervalChange(notification)"
                 variant="outline"
                 :placeholder="__('minutes')"
+                @update:modelValue="() => handleIntervalChange(notification)"
               />
             </div>
             <Button
@@ -154,13 +154,10 @@ import { TimePicker } from 'frappe-ui'
 import { computed, ref } from 'vue'
 
 const props = defineProps({
-  isAllDay: {
-    type: Boolean,
-    default: false,
-  },
+  isAllDay: { type: Boolean, default: false },
 })
 
-const notifications = defineModel()
+const notifications = defineModel({ type: Array, default: () => [] })
 const show = ref(false)
 
 const intervalOptions = (n) => {

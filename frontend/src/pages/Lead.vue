@@ -25,7 +25,7 @@
         <template #default="{ open }">
           <Button
             v-if="doc.status"
-            :label="doc.status"
+            :label="statusLabel(doc.status)"
             :iconRight="open ? 'chevron-up' : 'chevron-down'"
           >
             <template #prefix>
@@ -45,18 +45,18 @@
     <Tabs
       v-model="tabIndex"
       :tabs="tabs"
-      class="flex flex-1 overflow-hidden flex-col [&_[role='tab']]:px-0 [&_[role='tablist']]:px-5 [&_[role='tablist']]:gap-7.5 [&_[role='tabpanel']:not([hidden])]:flex [&_[role='tabpanel']:not([hidden])]:grow"
+      class="flex flex-1 overflow-hidden flex-col [&_[role='tab']]:px-0 [&_[role='tab']]:shrink-0 [&_[role='tablist']]:px-5 [&_[role='tablist']]:min-h-[45px] [&_[role='tablist']]:gap-7.5 [&_[role='tabpanel']:not([hidden])]:flex [&_[role='tabpanel']:not([hidden])]:grow"
     >
       <template #tab-panel>
         <Activities
           ref="activities"
+          v-model:reload="reload"
+          v-model:tabIndex="tabIndex"
           doctype="CRM Lead"
           :docname="leadId"
           :tabs="tabs"
-          v-model:reload="reload"
-          v-model:tabIndex="tabIndex"
           @beforeSave="beforeStatusChange"
-          @afterSave="reloadAssignees"
+          @afterSave="reloadResources"
         />
       </template>
     </Tabs>
@@ -68,10 +68,10 @@
         {{ __(leadId) }}
       </div>
       <FileUploader
-        @success="(file) => updateField('image', file.file_url)"
         :validateFile="validateIsImageFile"
+        @success="(file) => updateField('image', file.file_url)"
       >
-        <template #default="{ openFileSelector, error }">
+        <template #default="{ openFileSelector }">
           <div class="flex items-center justify-start gap-5 border-b p-5">
             <div class="group relative size-12">
               <Avatar
@@ -192,7 +192,7 @@
           :docname="leadId"
           @reload="sections.reload"
           @beforeFieldChange="beforeStatusChange"
-          @afterFieldChange="reloadAssignees"
+          @afterFieldChange="reloadResources"
         />
       </div>
     </Resizer>
@@ -265,6 +265,7 @@ import {
   setupCustomizations,
   copyToClipboard,
   validateIsImageFile,
+  isTranslatable,
 } from '@/utils'
 import { getView } from '@/utils/view'
 import { getSettings } from '@/stores/settings'
@@ -298,10 +299,7 @@ const route = useRoute()
 const router = useRouter()
 
 const props = defineProps({
-  leadId: {
-    type: String,
-    required: true,
-  },
+  leadId: { type: String, required: true },
 })
 
 const reload = ref(false)
@@ -381,7 +379,7 @@ const breadcrumbs = computed(() => {
 })
 
 const title = computed(() => {
-  let t = doctypeMeta['CRM Lead']?.title_field || 'name'
+  let t = doctypeMeta.value?.title_field || 'name'
   return doc.value?.[t] || props.leadId
 })
 
@@ -502,6 +500,11 @@ function openEmailBox() {
   nextTick(() => (activities.value.emailBox.show = true))
 }
 
+function statusLabel(status) {
+  if (isTranslatable('CRM Lead Status')) return __(status)
+  return status
+}
+
 const showLostReasonModal = ref(false)
 
 function setLostReason() {
@@ -510,7 +513,9 @@ function setLostReason() {
     (document.doc.lost_reason && document.doc.lost_reason !== 'Other') ||
     (document.doc.lost_reason === 'Other' && document.doc.lost_notes)
   ) {
-    document.save.submit()
+    document.save.submit(null, {
+      onSuccess: () => sections.reload(),
+    })
     return
   }
 
@@ -519,20 +524,26 @@ function setLostReason() {
 
 function beforeStatusChange(data) {
   if (
-    data?.hasOwnProperty('status') &&
+    Object.hasOwn(data ?? {}, 'status') &&
     getLeadStatus(data.status).type == 'Lost'
   ) {
     setLostReason()
   } else {
     document.save.submit(null, {
-      onSuccess: () => reloadAssignees(data),
+      onSuccess: () => reloadResources(data),
     })
   }
 }
 
-function reloadAssignees(data) {
-  if (data?.hasOwnProperty('lead_owner')) {
+function reloadResources(data) {
+  if (Object.hasOwn(data ?? {}, 'lead_owner')) {
     assignees.reload()
+  }
+  if (
+    Object.hasOwn(data ?? {}, 'status') &&
+    getLeadStatus(data.status).type != 'Lost'
+  ) {
+    sections.reload()
   }
 }
 </script>

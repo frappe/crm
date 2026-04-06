@@ -45,8 +45,8 @@
               <div class="flex cursor-pointer items-center gap-1">
                 <Button
                   variant="ghost"
-                  @click.stop="editHolidayList(holiday)"
                   icon="edit"
+                  @click.stop="editHolidayList(holiday)"
                 />
               </div>
             </div>
@@ -64,8 +64,8 @@
               class="w-full !justify-start !text-ink-gray-5"
               variant="ghost"
               :label="__('Create New Holiday List')"
-              @click="createNewHolidayList()"
               icon-left="plus"
+              @click="createNewHolidayList()"
             />
           </div>
         </div>
@@ -75,16 +75,16 @@
   <div class="mt-5">
     <div class="rounded-md border px-2 border-outline-gray-2 text-sm">
       <div
+        v-if="slaData.working_hours?.length !== 0"
         class="grid p-3 px-4 items-center"
         :style="{
           gridTemplateColumns: getGridTemplateColumnsForTable(columns),
         }"
-        v-if="slaData.working_hours?.length !== 0"
       >
         <div
           v-for="column in columns"
           :key="column.key"
-          class="text-gray-600 overflow-hidden whitespace-nowrap text-ellipsis"
+          class="text-ink-gray-5 overflow-hidden whitespace-nowrap text-ellipsis"
           :class="{
             'ml-2': column.key === 'workday',
           }"
@@ -120,8 +120,8 @@
             </div>
             <div v-else class="ml-2">
               <select
-                class="w-full h-7 text-base hover:bg-surface-gray-3 rounded-md p-0 pl-2 pr-5 bg-transparent -ml-2 border-0 text-ink-gray-8 focus-visible:!ring-0 bg-none truncate"
                 v-model="row[column.key]"
+                class="w-full h-7 text-base hover:bg-surface-gray-3 rounded-md p-0 pl-2 pr-5 bg-transparent -ml-2 border-0 text-ink-gray-8 focus-visible:!ring-0 bg-none truncate"
               >
                 <option
                   v-for="option in workDayOptions"
@@ -151,7 +151,7 @@
       </div>
       <div
         v-if="slaData.working_hours?.length === 0"
-        class="text-center p-4 text-gray-600"
+        class="text-center p-4 text-ink-gray-5"
       >
         {{ __('No Workdays in the List') }}
       </div>
@@ -161,8 +161,8 @@
         v-if="slaData.working_hours?.length < 7"
         variant="subtle"
         :label="__('Add Row')"
-        @click="addWorkDay"
         icon-left="plus"
+        @click="addWorkDay"
       />
       <ErrorMessage :message="slaDataErrors.working_hours" />
     </div>

@@ -41,10 +41,7 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 const props = defineProps({
-  doctype: {
-    type: String,
-    default: '',
-  },
+  doctype: { type: String, default: '' },
   options: {
     type: Object,
     default: () => ({
@@ -55,7 +52,7 @@ const props = defineProps({
   },
 })
 
-const list = defineModel()
+const list = defineModel({ type: Object })
 
 const router = useRouter()
 

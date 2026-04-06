@@ -99,6 +99,8 @@ def update(view: dict):
 	rows = remove_duplicates(rows)
 
 	doc = frappe.get_doc("CRM View Settings", view.name)
+	check_permission(doc)
+
 	doc.label = view.label
 	doc.type = view.type or "list"
 	doc.icon = view.icon
@@ -120,6 +122,8 @@ def update(view: dict):
 @frappe.whitelist()
 def delete(name: str | int):
 	if frappe.db.exists("CRM View Settings", name):
+		doc = frappe.get_doc("CRM View Settings", name)
+		check_permission(doc)
 		frappe.delete_doc("CRM View Settings", name)
 
 
@@ -139,8 +143,23 @@ def public(name: str | int, value: bool | int):
 @frappe.whitelist()
 def pin(name: str | int, value: bool | int):
 	doc = frappe.get_doc("CRM View Settings", name)
+	check_permission(doc)
 	doc.pinned = bool(value)
 	doc.save()
+
+
+def check_permission(doc):
+	"""Administrator and System Manager can edit any view.
+	If view is public, Sales Manager can edit.
+	If view is private, only the view owner can edit."""
+	if frappe.session.user == "Administrator" or "System Manager" in frappe.get_roles():
+		pass
+	elif doc.public and "Sales Manager" in frappe.get_roles():
+		pass
+	elif doc.user and doc.user == frappe.session.user:
+		pass
+	else:
+		frappe.throw(_("Not permitted"), frappe.PermissionError)
 
 
 def remove_duplicates(l):
@@ -158,11 +177,12 @@ def sync_default_rows(doctype, type="list"):
 
 
 def sync_default_columns(view):
-	list = get_controller(view.doctype)
+	doctype = view.dt or view.doctype
+	list = get_controller(doctype)
 	columns = []
 
 	if view.type == "kanban" and view.column_field:
-		field_meta = frappe.get_meta(view.doctype).get_field(view.column_field)
+		field_meta = frappe.get_meta(doctype).get_field(view.column_field)
 		if field_meta.fieldtype == "Link":
 			columns = frappe.get_all(
 				field_meta.options,
@@ -265,6 +285,24 @@ def create_or_update_standard_view(view: dict):
 		doc.insert()
 
 	return doc
+
+
+@frappe.whitelist()
+def fetch_and_update_kanban_columns(name: str | int):
+	doc = frappe.get_doc("CRM View Settings", name)
+	if doc.type != "kanban":
+		return
+
+	new_columns = sync_default_columns(doc)
+	existing_columns = parse_json(doc.kanban_columns or "[]")
+	existing_column_names = [column.get("name") for column in existing_columns]
+	for column in new_columns:
+		if column.get("name") not in existing_column_names:
+			existing_columns.append({"name": column.get("name"), "delete": True})
+
+	doc.kanban_columns = json.dumps(existing_columns)
+	doc.save(ignore_permissions=True)
+	return doc.kanban_columns
 
 
 def get_route_name(doctype):

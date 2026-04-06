@@ -16,9 +16,9 @@
       </div>
       <div class="flex item-center space-x-2 w-3/12 justify-end">
         <Button
+          v-if="settings.isDirty"
           :label="__('Update')"
           variant="solid"
-          :disabled="!settings.isDirty"
           :loading="settings.loading"
           @click="updateSettings"
         />
@@ -42,6 +42,7 @@
         </div>
         <div class="flex items-center gap-2">
           <FormControl
+            v-model="settings.doc.default_calendar_view"
             type="select"
             class="w-28"
             :options="[
@@ -49,7 +50,6 @@
               { label: __('Weekly'), value: 'Weekly' },
               { label: __('Monthly'), value: 'Monthly' },
             ]"
-            v-model="settings.doc.default_calendar_view"
             :placeholder="__('Select View')"
           />
         </div>
@@ -76,6 +76,7 @@
           <div v-for="notification in notifications" :key="notification.name">
             <div class="flex items-center gap-2">
               <FormControl
+                v-model="notification.type"
                 class="w-36 shrink-0"
                 type="select"
                 :options="[
@@ -88,20 +89,20 @@
                     value: 'Email',
                   },
                 ]"
-                v-model="notification.type"
                 :placeholder="__('Notification')"
               />
               <FormControl
+                v-model.number="notification.before"
                 class="w-20 shrink-0"
                 type="number"
                 :min="min(notification)"
                 :max="max(notification)"
                 :step="notification.interval == 'minutes' ? 5 : 1"
-                @blur="handleIntervalChange(notification)"
-                v-model.number="notification.before"
                 :placeholder="__('10')"
+                @blur="handleIntervalChange(notification)"
               />
               <FormControl
+                v-model="notification.interval"
                 class="w-32 shrink-0"
                 type="select"
                 :options="[
@@ -123,9 +124,8 @@
                     value: 'weeks',
                   },
                 ]"
-                v-model="notification.interval"
-                @update:modelValue="() => handleIntervalChange(notification)"
                 :placeholder="__('minutes')"
+                @update:modelValue="() => handleIntervalChange(notification)"
               />
               <Button
                 icon="x"
@@ -175,6 +175,7 @@
           >
             <div class="flex items-center gap-2">
               <FormControl
+                v-model="notification.type"
                 class="w-36 shrink-0"
                 type="select"
                 :options="[
@@ -187,19 +188,19 @@
                     value: 'Email',
                   },
                 ]"
-                v-model="notification.type"
                 :placeholder="__('Notification')"
               />
               <FormControl
+                v-model.number="notification.before"
                 class="w-20 shrink-0"
                 type="number"
                 :min="min(notification)"
                 :max="max(notification)"
-                @blur="handleIntervalChange(notification)"
-                v-model.number="notification.before"
                 :placeholder="__('10')"
+                @blur="handleIntervalChange(notification)"
               />
               <FormControl
+                v-model="notification.interval"
                 class="w-32 shrink-0"
                 type="select"
                 :options="[
@@ -212,16 +213,15 @@
                     value: 'weeks',
                   },
                 ]"
-                v-model="notification.interval"
-                @update:modelValue="() => handleIntervalChange(notification)"
                 :placeholder="__('minutes')"
+                @update:modelValue="() => handleIntervalChange(notification)"
               />
               <div class="text-p-sm text-ink-gray-5">
                 {{ __('before at') }}
               </div>
               <TimePicker
-                class="w-32 shrink-0"
                 v-model="notification.time"
+                class="w-32 shrink-0"
                 :placeholder="__('08:00 pm')"
               />
               <Button

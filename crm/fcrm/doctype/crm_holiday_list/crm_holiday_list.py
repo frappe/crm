@@ -1,12 +1,11 @@
 # Copyright (c) 2023, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 
-import json
 
 import frappe
 from frappe import _, throw
 from frappe.model.document import Document
-from frappe.utils import cint, formatdate, getdate, today
+from frappe.utils import cint, formatdate, getdate
 
 
 class CRMHolidayList(Document):

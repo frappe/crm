@@ -12,9 +12,9 @@
       </div>
       <div class="flex item-center space-x-2 w-3/12 justify-end">
         <Button
+          v-if="document.isDirty"
           :label="__('Update')"
           variant="solid"
-          :disabled="!document.isDirty"
           :loading="document.loading"
           @click="updateSettings"
         />
@@ -49,7 +49,6 @@ const { document, triggerOnChange } = useDocument(
 
 provide('triggerOnChange', triggerOnChange)
 
-const emit = defineEmits(['updateStep'])
 const errorMessage = ref('')
 
 function updateSettings() {

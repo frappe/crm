@@ -1,9 +1,8 @@
-import { createResource } from 'frappe-ui'
+import { getConfig } from 'frappe-ui'
 
 export default function translationPlugin(app) {
   app.config.globalProperties.__ = translate
   window.__ = translate
-  if (!window.translatedMessages) fetchTranslations()
 }
 
 function format(message, replace) {
@@ -13,7 +12,7 @@ function format(message, replace) {
 }
 
 function translate(message, replace, context = null) {
-  let translatedMessages = window.translatedMessages || {}
+  let translatedMessages = getConfig('translatedMessages') || {}
   let translatedMessage = ''
 
   if (context) {
@@ -33,15 +32,4 @@ function translate(message, replace, context = null) {
   }
 
   return format(translatedMessage, replace)
-}
-
-function fetchTranslations(lang) {
-  createResource({
-    url: 'crm.api.get_translations',
-    cache: 'translations',
-    auto: true,
-    transform: (data) => {
-      window.translatedMessages = data
-    },
-  })
 }

@@ -23,10 +23,10 @@
       <div class="p-2 group bg-surface-gray-2 hover:bg-surface-gray-3 rounded">
         <EmailMultiSelect
           v-if="users?.data?.crmUsers?.length"
+          v-model="newUsers"
           class="flex-1"
           inputClass="!bg-surface-gray-2 hover:!bg-surface-gray-3 group-hover:!bg-surface-gray-3"
           :placeholder="__('john@doe.com')"
-          v-model="newUsers"
           :validate="validateEmail"
           :fetchUsers="true"
           :existingEmails="[
@@ -40,9 +40,9 @@
         />
       </div>
       <FormControl
+        v-model="role"
         type="select"
         class="mt-4"
-        v-model="role"
         :label="__('Role')"
         :options="roleOptions"
         :description="description"
@@ -54,8 +54,8 @@
           variant="solid"
           :label="__('Add')"
           :disabled="!newUsers.length"
-          @click="addNewUser.submit()"
           :loading="addNewUser.loading"
+          @click="addNewUser.submit()"
         />
       </div>
     </template>
@@ -71,7 +71,7 @@ import { ref, computed } from 'vue'
 
 const { users, isAdmin, isManager } = usersStore()
 
-const show = defineModel()
+const show = defineModel({ type: Boolean })
 
 const newUsers = ref([])
 const role = ref('Sales User')
@@ -90,7 +90,7 @@ const description = computed(() => {
 const roleOptions = computed(() => {
   return [
     { value: 'Sales User', label: __('Sales User') },
-    ...(isManager() ? [{ value: 'Sales Manager', label: __('Manager') }] : []),
+    ...(isAdmin() ? [{ value: 'Sales Manager', label: __('Manager') }] : []),
     ...(isAdmin() ? [{ value: 'System Manager', label: __('Admin') }] : []),
   ]
 })

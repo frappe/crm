@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 from frappe import _
 from frappe.desk.form.load import get_docinfo
 from frappe.query_builder import JoinType
+from frappe.translate import get_translated_doctypes
 
 from crm.fcrm.doctype.crm_call_log.crm_call_log import parse_call_log
 
@@ -20,6 +21,9 @@ def get_activities(name: str):
 
 
 def get_deal_activities(name: str):
+	if not frappe.has_permission("CRM Deal", "read", name):
+		frappe.throw(_("Not permitted"), frappe.PermissionError)
+
 	get_docinfo("", "CRM Deal", name)
 	docinfo = frappe.response["docinfo"]
 	deal_meta = frappe.get_meta("CRM Deal")
@@ -98,6 +102,12 @@ def get_deal_activities(name: str):
 					"value": change[1],
 				}
 
+			if data.get("value") and field_option and is_translatable(field_option):
+				data["value"] = _(data["value"])
+
+				if data.get("old_value"):
+					data["old_value"] = _(data["old_value"])
+
 		activity = {
 			"activity_type": activity_type,
 			"creation": version.creation,
@@ -165,6 +175,9 @@ def get_deal_activities(name: str):
 
 
 def get_lead_activities(name: str):
+	if not frappe.has_permission("CRM Lead", "read", name):
+		frappe.throw(_("Not permitted"), frappe.PermissionError)
+
 	get_docinfo("", "CRM Lead", name)
 	docinfo = frappe.response["docinfo"]
 	lead_meta = frappe.get_meta("CRM Lead")
@@ -229,6 +242,12 @@ def get_lead_activities(name: str):
 					"field_label": field_label,
 					"value": change[1],
 				}
+
+			if data.get("value") and field_option and is_translatable(field_option):
+				data["value"] = _(data["value"])
+
+				if data.get("old_value"):
+					data["old_value"] = _(data["old_value"])
 
 		activity = {
 			"activity_type": activity_type,
@@ -452,7 +471,7 @@ def get_linked_notes(name: str):
 	notes = frappe.db.get_all(
 		"FCRM Note",
 		filters={"reference_docname": name},
-		fields=["name", "title", "content", "owner", "modified"],
+		fields=["name", "title", "content", "owner", "modified", "creation"],
 	)
 	return notes or []
 
@@ -470,6 +489,7 @@ def get_linked_tasks(name: str):
 			"priority",
 			"status",
 			"modified",
+			"creation",
 		],
 	)
 	return tasks or []
@@ -497,3 +517,7 @@ def parse_attachment_log(html: str, type: str):
 		"file_url": a_tag["href"],
 		"is_private": is_private,
 	}
+
+
+def is_translatable(doctype: str) -> bool:
+	return doctype in get_translated_doctypes()

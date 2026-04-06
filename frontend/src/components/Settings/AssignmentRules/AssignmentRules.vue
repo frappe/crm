@@ -9,7 +9,7 @@
         <p class="text-p-base text-ink-gray-6">
           {{
             __(
-              'Assignment Rules automatically assign lead/deal to the right sales user based on predefined conditions',
+              'Auto-assign leads/deals to the right sales user based on predefined conditions',
             )
           }}
         </p>

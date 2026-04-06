@@ -38,13 +38,16 @@
       </ListHeaderItem>
     </ListHeader>
     <ListRows
-      :rows="rows"
       v-slot="{ idx, column, item, row }"
+      :rows="rows"
       doctype="CRM Lead"
     >
-      <ListRowItem :item="item" :align="column.align">
+      <ListRowItem :item="item" :align="column.align" class="overflow-hidden">
         <template #prefix>
-          <div v-if="column.key === '_assign'" class="flex items-center truncate">
+          <div
+            v-if="column.key === '_assign'"
+            class="flex items-center truncate"
+          >
             <MultipleAvatar
               :avatars="item"
               size="sm"
@@ -158,6 +161,23 @@
               class="text-ink-gray-9"
             />
           </div>
+          <RatingInput
+            v-else-if="column.type === 'Rating'"
+            :value="item"
+            class="!opacity-100 flex-nowrap overflow-auto"
+            :disabled="true"
+            :max="column.options || 5"
+            @click="
+              (event) =>
+                emit('applyFilter', {
+                  event,
+                  idx,
+                  column,
+                  item,
+                  firstColumn: columns[0],
+                })
+            "
+          />
           <div
             v-else-if="label"
             class="truncate text-base"
@@ -172,7 +192,7 @@
                 })
             "
           >
-            {{ label }}
+            {{ getLabel(label, column) }}
           </div>
         </template>
       </ListRowItem>
@@ -189,8 +209,8 @@
   </ListView>
   <ListFooter
     v-if="pageLengthCount"
-    class="border-t sm:px-5 px-3 py-2"
     v-model="pageLengthCount"
+    class="border-t sm:px-5 px-3 py-2"
     :options="{
       rowCount: options.rowCount,
       totalCount: options.totalCount,
@@ -204,9 +224,11 @@
 import HeartIcon from '@/components/Icons/HeartIcon.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
+import RatingInput from '@/components/Controls/RatingInput.vue'
 import MultipleAvatar from '@/components/MultipleAvatar.vue'
 import ListBulkActions from '@/components/ListBulkActions.vue'
 import ListRows from '@/components/ListViews/ListRows.vue'
+import { isTranslatable, formatDuration } from '@/utils'
 import {
   Avatar,
   ListView,
@@ -222,15 +244,9 @@ import { sessionStore } from '@/stores/session'
 import { ref, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
-const props = defineProps({
-  rows: {
-    type: Array,
-    required: true,
-  },
-  columns: {
-    type: Array,
-    required: true,
-  },
+defineProps({
+  rows: { type: Array, required: true },
+  columns: { type: Array, required: true },
   options: {
     type: Object,
     default: () => ({
@@ -254,8 +270,14 @@ const emit = defineEmits([
 
 const route = useRoute()
 
-const pageLengthCount = defineModel()
-const list = defineModel('list')
+const pageLengthCount = defineModel({ type: Number })
+const list = defineModel('list', { type: Object })
+
+function getLabel(label, column) {
+  if (column.type === 'Duration') return formatDuration(label)
+  if (column.options && isTranslatable(column.options)) return __(label)
+  return label
+}
 
 const isLikeFilterApplied = computed(() => {
   return list.value.params?.filters?._liked_by ? true : false

@@ -34,15 +34,15 @@
             {{ __('Description') }}
           </div>
           <TextEditor
-            variant="outline"
             ref="description"
+            variant="outline"
             editor-class="!prose-sm overflow-auto min-h-[180px] max-h-80 py-1.5 px-2 rounded border border-[--surface-gray-2] bg-surface-gray-2 placeholder-ink-gray-4 hover:border-outline-gray-modals hover:bg-surface-gray-3 hover:shadow-sm focus:bg-surface-white focus:border-outline-gray-4 focus:shadow-sm focus:ring-0 focus-visible:ring-2 focus-visible:ring-outline-gray-3 text-ink-gray-8 transition-colors"
             :bubbleMenu="true"
             :content="_task.description"
-            @change="(val) => (_task.description = val)"
             :placeholder="
               __('Took a call with John Doe and discussed the new project.')
             "
+            @change="(val) => (_task.description = val)"
           />
         </div>
         <div class="flex flex-wrap items-center gap-2">
@@ -57,12 +57,13 @@
             class="form-control"
             :value="getUser(_task.assigned_to).full_name"
             doctype="User"
-            @change="(option) => (_task.assigned_to = option)"
             :placeholder="__('John Doe')"
             :filters="{
               name: ['in', users.data.crmUsers?.map((user) => user.name)],
+              ignore_user_type: 1,
             }"
             :hideMe="true"
+            @change="(option) => (_task.assigned_to = option)"
           >
             <template #prefix>
               <UserAvatar class="mr-2 !h-4 !w-4" :user="_task.assigned_to" />
@@ -80,8 +81,8 @@
           </Link>
           <div class="w-36">
             <DateTimePicker
-              class="datepicker"
               v-model="_task.due_date"
+              class="datepicker"
               :placeholder="__('01/04/2024 11:30 PM')"
               :format="getFormat('', '', true, true, false)"
               input-class="border-none"
@@ -134,22 +135,13 @@ import { ref, watch, nextTick, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 const props = defineProps({
-  task: {
-    type: Object,
-    default: {},
-  },
-  doctype: {
-    type: String,
-    default: 'CRM Lead',
-  },
-  doc: {
-    type: String,
-    default: '',
-  },
+  task: { type: Object, default: () => ({}) },
+  doctype: { type: String, default: 'CRM Lead' },
+  doc: { type: String, default: '' },
 })
 
-const show = defineModel()
-const tasks = defineModel('reloadTasks')
+const show = defineModel({ type: Boolean })
+const tasks = defineModel('reloadTasks', { type: Object, default: () => ({}) })
 
 const emit = defineEmits(['updateTask', 'after'])
 
@@ -196,7 +188,7 @@ const createTaskResource = createResource({
     if (d.name) {
       updateOnboardingStep('create_first_task')
       capture('task_created')
-      tasks.value?.reload()
+      tasks.value?.reload?.()
       emit('after', d, true)
       show.value = false
       toast.success(__('Task created'))
@@ -216,7 +208,7 @@ const updateTaskResource = createResource({
   validate: validateTask,
   onSuccess(d) {
     if (d.name) {
-      tasks.value?.reload()
+      tasks.value?.reload?.()
       emit('after', d)
       show.value = false
     }

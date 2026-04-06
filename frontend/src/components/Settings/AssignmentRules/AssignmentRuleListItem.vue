@@ -13,8 +13,8 @@
     </div>
     <div class="w-3/12">
       <select
+        v-model="localData.priority"
         class="w-full h-7 text-base hover:bg-surface-gray-3 rounded-md p-0 pl-2 pr-5 bg-transparent -ml-2 border-0 text-ink-gray-8 focus-visible:!ring-0 bg-none truncate"
-        v-model="data.priority"
         @update:modelValue="onPriorityChange"
         @change="onPriorityChange"
       >
@@ -43,15 +43,15 @@
     </div>
   </div>
   <Dialog
-    :options="{ title: __('Duplicate Assignment Rule') }"
     v-model="duplicateDialog.show"
+    :options="{ title: __('Duplicate Assignment Rule') }"
   >
     <template #body-content>
       <div class="flex flex-col gap-4">
         <FormControl
+          v-model="duplicateDialog.name"
           :label="__('New Assignment Rule Name')"
           type="text"
-          v-model="duplicateDialog.name"
         />
       </div>
     </template>
@@ -78,17 +78,22 @@ import {
   Switch,
   toast,
 } from 'frappe-ui'
-import { inject, ref } from 'vue'
+import { inject, ref, reactive, watch } from 'vue'
+import { ConfirmDelete } from '../../../utils'
 
 const assignmentRulesList = inject('assignmentRulesList')
 const updateStep = inject('updateStep')
 
 const props = defineProps({
-  data: {
-    type: Object,
-    required: true,
-  },
+  data: { type: Object, required: true },
 })
+
+const localData = reactive({ ...props.data })
+watch(
+  () => props.data,
+  (val) => Object.assign(localData, val),
+  { deep: true },
+)
 
 const priorityOptions = [
   { label: 'Low', value: '0' },
@@ -132,23 +137,10 @@ const dropdownOptions = [
     },
     icon: 'copy',
   },
-  {
-    label: __('Delete'),
-    icon: 'trash-2',
-    onClick: (e) => {
-      e.preventDefault()
-      e.stopImmediatePropagation()
-      isConfirmingDelete.value = true
-    },
-    condition: () => !isConfirmingDelete.value,
-  },
-  {
-    label: __('Confirm Delete'),
-    icon: 'trash-2',
-    theme: 'red',
-    onClick: () => deleteAssignmentRule(),
-    condition: () => isConfirmingDelete.value,
-  },
+  ...ConfirmDelete({
+    onConfirmDelete: () => deleteAssignmentRule(),
+    isConfirmingDelete,
+  }),
 ]
 
 const duplicate = () => {
@@ -170,7 +162,7 @@ const duplicate = () => {
 }
 
 const onPriorityChange = () => {
-  setAssignmentRuleValue('priority', props.data.priority)
+  setAssignmentRuleValue('priority', localData.priority)
 }
 
 const onToggle = () => {

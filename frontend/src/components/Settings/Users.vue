@@ -56,8 +56,8 @@
 
     <!-- Users List -->
     <div
-      class="flex flex-col overflow-hidden"
       v-if="!users.loading && users.data?.crmUsers?.length > 1"
+      class="flex flex-col overflow-hidden"
     >
       <div
         v-if="users.data?.crmUsers?.length > 10"
@@ -75,8 +75,8 @@
           </template>
         </TextInput>
         <FormControl
-          type="select"
           v-model="currentRole"
+          type="select"
           :options="[
             { label: __('All'), value: 'All' },
             { label: __('Admin'), value: 'System Manager' },
@@ -146,10 +146,10 @@
         >
           <Button
             class="mt-3.5 p-2"
-            @click="() => users.next()"
             :loading="users.loading"
             :label="__('Load More')"
             icon-left="refresh-cw"
+            @click="() => users.next()"
           />
         </div>
       </ul>
@@ -177,6 +177,7 @@ import {
   Tooltip,
 } from 'frappe-ui'
 import { ref, computed, onMounted } from 'vue'
+import { ConfirmDelete } from '../../utils'
 
 const { users, isAdmin, isManager } = usersStore()
 
@@ -211,23 +212,11 @@ const confirmRemove = ref(false)
 
 function getMoreOptions(user) {
   return [
-    {
+    ...ConfirmDelete({
+      onConfirmDelete: () => removeUser(user),
+      isConfirmingDelete: confirmRemove,
       label: __('Remove'),
-      icon: 'trash-2',
-      onClick: (e) => {
-        e.preventDefault()
-        e.stopPropagation()
-        confirmRemove.value = true
-      },
-      condition: () => !confirmRemove.value,
-    },
-    {
-      label: __('Confirm Remove'),
-      icon: 'trash-2',
-      theme: 'red',
-      onClick: () => removeUser(user, true),
-      condition: () => confirmRemove.value,
-    },
+    }),
   ]
 }
 
@@ -253,7 +242,7 @@ function getDropdownOptions(user) {
           selected: user.role === 'Sales Manager',
         }),
       onClick: () => updateRole(user, 'Sales Manager'),
-      condition: () => isManager(),
+      condition: () => isAdmin(),
     },
     {
       label: __('Sales User'),

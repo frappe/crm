@@ -50,8 +50,8 @@
 
     <!-- Lead source list -->
     <div
-      class="flex flex-col overflow-hidden"
       v-if="!sources.loading && sources.data?.length"
+      class="flex flex-col overflow-hidden"
     >
       <div class="flex items-center py-2 px-4 text-sm text-ink-gray-5">
         <div class="w-4/6">{{ __('Name') }}</div>
@@ -79,8 +79,8 @@
 
             <div class="flex items-center justify-between w-1/6">
               <Switch
-                size="sm"
                 v-model="source.enabled"
+                size="sm"
                 @update:model-value="toggleLeadSyncSourceEnabled(source)"
                 @click.stop
               />
@@ -112,10 +112,10 @@
         >
           <Button
             class="mt-3.5 p-2"
-            @click="() => sources.next()"
             :loading="sources.loading"
             :label="__('Load More')"
             icon-left="refresh-cw"
+            @click="() => sources.next()"
           />
         </div>
       </ul>
@@ -126,6 +126,7 @@
 import { Switch, Dropdown, toast, Badge } from 'frappe-ui'
 import { ref, computed, inject } from 'vue'
 import EmptyState from '../../ListViews/EmptyState.vue'
+import { ConfirmDelete } from '../../../utils'
 
 const emit = defineEmits(['updateStep'])
 
@@ -188,23 +189,10 @@ function getDropdownOptions(source) {
       icon: 'copy',
       onClick: () => emit('updateStep', 'new-source', { ...source }),
     },
-    {
-      label: __('Delete'),
-      icon: 'trash-2',
-      onClick: (e) => {
-        e.preventDefault()
-        e.stopPropagation()
-        confirmDelete.value = true
-      },
-      condition: () => !confirmDelete.value,
-    },
-    {
-      label: __('Confirm Delete'),
-      icon: 'trash-2',
-      theme: 'red',
-      onClick: () => deleteLeadSource(source),
-      condition: () => confirmDelete.value,
-    },
+    ...ConfirmDelete({
+      onConfirmDelete: () => deleteLeadSource(source),
+      isConfirmingDelete: confirmDelete,
+    }),
   ]
 
   return options

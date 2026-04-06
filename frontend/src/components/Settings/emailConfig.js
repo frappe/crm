@@ -28,9 +28,7 @@ export const incomingOutgoingFields = [
     label: __('Enable Incoming'),
     name: 'enable_incoming',
     type: 'checkbox',
-    description: __(
-      'If enabled, emails will be pulled from this account.',
-    ),
+    description: __('If enabled, emails will be pulled from this account.'),
   },
   {
     label: __('Enable Outgoing'),
@@ -55,6 +53,15 @@ export const incomingOutgoingFields = [
     description: __(
       'If enabled, all outgoing emails will be sent from this account. Note: Only one account can be default outgoing.',
     ),
+  },
+  {
+    label: __('Create Lead from Incoming Emails'),
+    name: 'create_lead_from_incoming_email',
+    type: 'checkbox',
+    description: __(
+      'If enabled, a lead will be automatically created when an incoming email is received from an unknown contact.',
+    ),
+    condition: (state) => state.enable_incoming,
   },
 ]
 

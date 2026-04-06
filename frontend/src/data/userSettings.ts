@@ -2,7 +2,7 @@ import { call } from 'frappe-ui'
 import { ref, reactive, readonly, Ref } from 'vue'
 
 export interface UserSettings {
-  [key: string]: any
+  [key: string]: unknown
 }
 
 export interface UserSettingsCache {
@@ -13,17 +13,17 @@ export interface UseUserSettingsReturn {
   loading: Ref<boolean>
   error: Ref<Error | null>
   get: (doctype: string) => Promise<UserSettings>
-  save: (doctype: string, key: string, value: any) => Promise<UserSettings>
+  save: (doctype: string, key: string, value: unknown) => Promise<UserSettings>
   remove: (doctype: string, key: string) => Promise<UserSettings>
   update: (doctype: string, userSettings: UserSettings) => Promise<UserSettings>
-  getCached: (doctype: string, key?: string | null) => any
+  getCached: (doctype: string, key?: string | null) => unknown
   clearCache: (doctype?: string | null) => void
   userSettingsCache: Readonly<UserSettingsCache>
 }
 
 export interface FrappeCallResponse {
   message?: string
-  [key: string]: any
+  [key: string]: unknown
 }
 
 const userSettingsCache: UserSettingsCache = reactive({})
@@ -64,13 +64,16 @@ export function useUserSettings(): UseUserSettingsReturn {
   const save = async (
     doctype: string,
     key: string,
-    value: any,
+    value: unknown,
   ): Promise<UserSettings> => {
     if (!doctype || !key) {
       throw new Error('Doctype and key are required')
     }
 
-    if ((window as any)?.frappe?.session?.user === 'Guest') {
+    if (
+      (window as Window & { frappe?: { session?: { user?: string } } })?.frappe
+        ?.session?.user === 'Guest'
+    ) {
       return Promise.resolve({})
     }
 
@@ -89,7 +92,7 @@ export function useUserSettings(): UseUserSettingsReturn {
         !Array.isArray(value)
       ) {
         newUserSettings[key] = newUserSettings[key] || {}
-        Object.assign(newUserSettings[key], value)
+        Object.assign(newUserSettings[key] as object, value)
       } else {
         newUserSettings[key] = value
       }
@@ -105,6 +108,7 @@ export function useUserSettings(): UseUserSettingsReturn {
     } catch (err) {
       const errorObj = err instanceof Error ? err : new Error(String(err))
       error.value = errorObj
+
       console.error('Error saving user settings:', err)
       throw errorObj
     } finally {
@@ -132,6 +136,7 @@ export function useUserSettings(): UseUserSettingsReturn {
     } catch (err) {
       const errorObj = err instanceof Error ? err : new Error(String(err))
       error.value = errorObj
+
       console.error('Error removing user setting:', err)
       throw errorObj
     } finally {
@@ -164,6 +169,7 @@ export function useUserSettings(): UseUserSettingsReturn {
     } catch (err) {
       const errorObj = err instanceof Error ? err : new Error(String(err))
       error.value = errorObj
+
       console.error('Error updating user settings:', err)
       throw errorObj
     } finally {
@@ -171,7 +177,7 @@ export function useUserSettings(): UseUserSettingsReturn {
     }
   }
 
-  const getCached = (doctype: string, key: string | null = null): any => {
+  const getCached = (doctype: string, key: string | null = null): unknown => {
     const settings: UserSettings = userSettingsCache[doctype] || {}
     if (key) {
       return settings[key] || {}
@@ -205,7 +211,7 @@ export function useUserSettings(): UseUserSettingsReturn {
 export async function getUserSettings(
   doctype: string,
   key: string | null = null,
-): Promise<any> {
+): Promise<unknown> {
   let settings: UserSettings = userSettingsCache[doctype]
 
   if (!settings) {

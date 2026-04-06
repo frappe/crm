@@ -18,8 +18,8 @@
 </template>
 
 <script setup>
-import LeadSyncSources from "./LeadSyncSources.vue"
-import LeadSyncSourceForm from "./LeadSyncSourceForm.vue";
+import LeadSyncSources from './LeadSyncSources.vue'
+import LeadSyncSourceForm from './LeadSyncSourceForm.vue'
 
 import { createListResource } from 'frappe-ui'
 import { provide, ref } from 'vue'
@@ -31,13 +31,7 @@ const sources = createListResource({
   type: 'list',
   doctype: 'Lead Sync Source',
   cache: 'lead_sync_sources',
-  fields: [
-    'name',
-    'enabled',
-    'type',
-    'last_synced_at',
-    'facebook_lead_form'
-  ],
+  fields: ['name', 'enabled', 'type', 'last_synced_at', 'facebook_lead_form'],
   auto: true,
   orderBy: 'modified desc',
   pageLength: 20,

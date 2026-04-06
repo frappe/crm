@@ -37,9 +37,9 @@
       <div class="px-4 pb-7 pt-4 sm:px-6">
         <div class="space-y-2">
           <Button
-            class="w-full"
             v-for="action in dialogOptions.actions"
             :key="action.label"
+            class="w-full"
             v-bind="action"
             :label="__(action.label)"
             :loading="loading"
@@ -62,22 +62,14 @@ import { createResource, ErrorMessage } from 'frappe-ui'
 import { ref, nextTick, computed, onMounted } from 'vue'
 
 const props = defineProps({
-  address: {
-    type: String,
-    default: '',
-  },
-  options: {
-    type: Object,
-    default: {
-      afterInsert: () => {},
-    },
-  },
+  address: { type: String, default: '' },
+  options: { type: Object, default: () => ({ afterInsert: () => {} }) },
 })
 
 const { isManager } = usersStore()
 const { capture } = useTelemetry()
 
-const show = defineModel()
+const show = defineModel({ type: Boolean })
 
 const loading = ref(false)
 const error = ref(null)
@@ -168,14 +160,14 @@ const _createAddress = createResource({
 
 function handleAddressUpdate(doc) {
   show.value = false
-  props.options.afterInsert && props.options.afterInsert(doc)
+  props.options.afterInsert?.(doc)
 }
 
 onMounted(() => {
   editMode.value = props.address ? true : false
 
   if (!props.address) {
-    _address.doc = { address_type: 'Billing' }
+    _address.doc.address_type = 'Billing'
   }
 })
 

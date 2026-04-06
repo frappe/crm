@@ -8,13 +8,13 @@
           icon-left="chevron-left"
           :label="isLocal ? __('New Lead Sync Source') : syncSource.name"
           size="md"
-          @click="() => emit('updateStep', 'source-list')"
           class="cursor-pointer hover:bg-transparent focus:bg-transparent focus:outline-none focus:ring-0 focus:ring-offset-0 focus-visible:none active:bg-transparent active:outline-none active:ring-0 active:ring-offset-0 active:text-ink-gray-5 font-semibold text-xl hover:opacity-70 !pr-0 !max-w-96 !justify-start"
+          @click="() => emit('updateStep', 'source-list')"
         />
       </div>
       <div class="flex item-center space-x-4 w-3/12 justify-end">
         <div class="flex items-center space-x-2">
-          <Switch size="sm" v-model="syncSource.enabled" />
+          <Switch v-model="syncSource.enabled" size="sm" />
           <span class="text-sm text-ink-gray-7">{{ __('Enabled') }}</span>
         </div>
 
@@ -40,7 +40,7 @@
       </div>
     </div>
 
-    <Tabs as="div" v-model="tabIndex" :tabs="tabs" class="mt-2">
+    <Tabs v-model="tabIndex" as="div" :tabs="tabs" class="mt-2">
       <template #tab-panel="{ tab }">
         <div
           v-if="tab.label == 'Details'"
@@ -49,44 +49,44 @@
           <!-- Form -->
           <div class="grid grid-cols-2 gap-4">
             <FormControl
+              v-model="syncSource.type"
               type="autocomplete"
               required="true"
-              v-model="syncSource.type"
               :options="supportedSourceTypes"
               :label="__('Source Type')"
               :placeholder="__('Select Source Type')"
             >
               <template v-if="syncSource.type" #prefix>
-                <component class="mr-2 size-4" :is="syncSource.type.icon" />
+                <component :is="syncSource.type.icon" class="mr-2 size-4" />
               </template>
 
               <template #item-prefix="{ option }">
-                <component class="size-4" :is="option.icon" />
+                <component :is="option.icon" class="size-4" />
               </template>
             </FormControl>
 
             <FormControl
-              type="text"
               v-if="isLocal"
-              required="true"
               v-model="syncSource.name"
+              type="text"
+              required="true"
               :label="__('Source Name')"
               :placeholder="__('Enter Source Name')"
             />
 
             <FormControl
               v-if="fieldsMap.background_sync_frequency"
+              v-model="syncSource.background_sync_frequency"
               type="select"
               required="true"
               :options="fieldsMap.background_sync_frequency.options"
-              v-model="syncSource.background_sync_frequency"
               :label="__('Background Sync Frequency')"
             />
 
             <FormControl
+              v-model="syncSource.access_token"
               type="password"
               required="true"
-              v-model="syncSource.access_token"
               :label="__('Access Token')"
               :placeholder="__('Enter Access Token')"
             >
@@ -110,15 +110,15 @@
 
             <Link
               v-if="!isLocal"
-              label="Facebook Page"
               v-model="syncSource.facebook_page"
+              label="Facebook Page"
               doctype="Facebook Page"
             />
 
             <Link
               v-if="!isLocal && syncSource.facebook_page"
-              label="Lead Form"
               v-model="syncSource.facebook_lead_form"
+              label="Lead Form"
               doctype="Facebook Lead Form"
               :filters="{
                 page: syncSource.facebook_page,
@@ -144,7 +144,7 @@
                 fields: [
                   {
                     fieldname: 'mapped_to_crm_field',
-                    options: getCRMLeadFields,
+                    options: leadFields,
                     placeholder: __('Not Synced'),
                   },
                 ],
@@ -153,7 +153,7 @@
           </div>
         </div>
 
-        <div class="mt-4" v-if="tab.label == 'Failure Logs'">
+        <div v-if="tab.label == 'Failure Logs'" class="mt-4">
           <FailureLogs :source="syncSource.name" />
         </div>
       </template>
@@ -187,11 +187,9 @@ import RefreshIcon from '@/components/Icons/RefreshIcon.vue'
 import { formatDate } from '@/utils'
 
 const props = defineProps({
-  sourceData: {
-    type: Object,
-    default: () => ({}),
-  },
+  sourceData: { type: Object, default: () => ({}) },
 })
+
 const emit = defineEmits(['updateStep'])
 
 const tabs = computed(() => {
@@ -360,39 +358,18 @@ watch(
   },
 )
 
-const leadFields = createResource({
-  url: 'crm.api.doc.get_fields_meta',
-  params: {
-    doctype: 'CRM Lead',
-    as_array: true,
-  },
-  cache: ['fieldsMeta', 'CRM Lead'],
-  auto: true,
-  transform: (data) => {
-    let restrictedFields = [
-      'name',
-      'owner',
-      'creation',
-      'modified',
-      'modified_by',
-      'docstatus',
-      '_comments',
-      '_user_tags',
-      '_assign',
-      '_liked_by',
-    ]
-    return data.filter((field) => !restrictedFields.includes(field.fieldname))
-  },
-})
+const { getFields: getCRMLeadFields } = getMeta('CRM Lead')
 
-const getCRMLeadFields = computed(() => {
-  if (leadFields.data) {
-    return leadFields.data.map((field) => ({
+const leadFields = computed(() => {
+  const _fields = getCRMLeadFields() || []
+  if (!_fields.length) return []
+
+  return _fields.map((field) => {
+    return {
       label: field.label,
       value: field.fieldname,
-    }))
-  }
-  return []
+    }
+  })
 })
 
 function getSourceDocResource(name) {

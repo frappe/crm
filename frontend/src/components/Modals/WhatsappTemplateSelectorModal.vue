@@ -57,10 +57,10 @@ import { TextEditor, createListResource } from 'frappe-ui'
 import { ref, computed, nextTick, watch, onMounted } from 'vue'
 
 const props = defineProps({
-  doctype: String,
+  doctype: { type: String, default: '' },
 })
 
-const show = defineModel()
+const show = defineModel({ type: Boolean })
 const searchInput = ref('')
 
 const emit = defineEmits(['send'])

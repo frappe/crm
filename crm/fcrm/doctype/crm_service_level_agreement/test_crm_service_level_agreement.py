@@ -181,7 +181,7 @@ class TestCRMServiceLevelAgreement(IntegrationTestCase):
 		self.assertEqual(doc.sla_creation, existing_time)
 
 	def test_set_first_responded_on(self):
-		"""Test set_first_responded_on sets response timestamps"""
+		"""Test set_first_responded_on sets only first response timestamp"""
 		sla = create_test_sla_with_priorities()
 
 		doc = frappe.get_doc(
@@ -216,6 +216,107 @@ class TestCRMServiceLevelAgreement(IntegrationTestCase):
 		sla.set_first_responded_on(doc)
 
 		self.assertIsNone(doc.first_responded_on)
+
+	def test_set_first_response_time_zero_duration_preserved(self):
+		"""Test that first_response_time of 0 is preserved and not recalculated.
+
+		The fix distinguishes None (unset) from 0 (instant response). Without the
+		`is None` guard a falsy check would treat 0 as unset and overwrite it with
+		the recalculated elapsed time.
+		"""
+		sla = create_test_sla_with_priorities()
+
+		doc = frappe.get_doc(
+			{
+				"doctype": "CRM Lead",
+				"first_name": "Test Zero Duration Preserved",
+				"sla_creation": get_datetime("2024-01-01 10:00:00"),
+				"first_responded_on": get_datetime("2024-01-01 10:00:00"),  # same instant → 0s
+				"first_response_time": 0,  # already recorded as 0
+				"last_response_time": None,
+			}
+		)
+
+		sla.set_first_response_time(doc)
+
+		# 0 must not be overwritten; `is None` guard prevents recalculation
+		self.assertEqual(doc.first_response_time, 0)
+
+	def test_set_first_response_time_zero_propagates_to_last(self):
+		"""Test that last_response_time is set to 0 when first_response_time is 0.
+
+		When first_response_time is 0, last_response_time (if None) should be
+		propagated as 0, not skipped because of a falsy check.
+		"""
+		sla = create_test_sla_with_priorities()
+
+		doc = frappe.get_doc(
+			{
+				"doctype": "CRM Lead",
+				"first_name": "Test Zero Propagates To Last",
+				"sla_creation": get_datetime("2024-01-01 10:00:00"),
+				"first_responded_on": get_datetime("2024-01-01 10:00:00"),
+				"first_response_time": 0,
+				"last_response_time": None,
+			}
+		)
+
+		sla.set_first_response_time(doc)
+
+		# last_response_time should be set to 0, propagated from first_response_time
+		self.assertEqual(doc.last_response_time, 0)
+
+	def test_set_first_response_time_last_response_zero_not_overwritten(self):
+		"""Test that an existing last_response_time of 0 is never overwritten.
+
+		Once last_response_time is recorded as 0 it must stay 0. A falsy guard
+		would incorrectly treat 0 as absent and overwrite it.
+		"""
+		sla = create_test_sla_with_priorities()
+
+		doc = frappe.get_doc(
+			{
+				"doctype": "CRM Lead",
+				"first_name": "Test Last Response Zero Preserved",
+				"sla_creation": get_datetime("2024-01-01 10:00:00"),
+				"first_responded_on": get_datetime("2024-01-01 10:00:00"),
+				"first_response_time": 0,
+				"last_response_time": 0,  # already recorded
+			}
+		)
+
+		sla.set_first_response_time(doc)
+
+		self.assertEqual(doc.last_response_time, 0)
+
+	def test_set_rolling_responses_zero_last_response_time_creates_entry(self):
+		"""Test set_rolling_responses still creates an entry when last_response_time is 0.
+
+		A falsy guard (`if not doc.last_response_time`) would bail out on 0 and
+		silently skip creating the rolling-response entry. The `is None` guard
+		correctly treats 0 as a valid (instant) response.
+		"""
+		sla = create_test_sla_with_priorities(rolling_responses=True)
+
+		doc = frappe.get_doc(
+			{
+				"doctype": "CRM Lead",
+				"first_name": "Test Zero Rolling Response",
+			}
+		)
+
+		doc.rolling_responses = []
+		doc.last_response_time = 0  # zero, not None
+		doc.last_responded_on = get_datetime("2024-01-01 10:00:00")
+		doc.response_by = add_to_date(get_datetime("2024-01-01 10:00:00"), hours=1)
+		doc.first_responded_on = get_datetime("2024-01-01 10:00:00")
+
+		sla.set_rolling_responses(doc)
+
+		self.assertEqual(len(doc.rolling_responses), 1)
+		self.assertEqual(doc.rolling_responses[0].response_time, 0)
+		# The response was before the deadline → Fulfilled
+		self.assertEqual(doc.rolling_responses[0].status, "Fulfilled")
 
 	def test_set_response_by(self):
 		"""Test set_response_by calculates response deadline"""
