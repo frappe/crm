@@ -30,10 +30,10 @@
         :buttons="tabs"
         class="flex px-4 py-0.5 [&_button]:w-full [&_div]:w-full"
       />
-      <div v-if="activeTab == 'all'" class="flex h-full">
+      <div v-if="activeTab == 'all'" class="flex h-full w-full">
         <div
           v-if="notifications.data?.length"
-          class="divide-y divide-outline-gray-modals overflow-auto text-base"
+          class="divide-y divide-outline-gray-modals overflow-auto text-base w-full"
         >
           <RouterLink
             v-for="n in notifications.data"
@@ -52,7 +52,7 @@
                 v-else-if="
                   n.type == 'Task' && n.notification_type_doctype == 'CRM Task'
                 "
-                class="flex size-7 items-center justify-center rounded-full bg-blue-100 text-blue-600"
+                class="flex size-7 items-center justify-center rounded-full bg-surface-blue-1 text-ink-blue-2"
               >
                 <FeatherIcon name="clock" class="size-4" />
               </div>
