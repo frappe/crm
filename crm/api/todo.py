@@ -167,8 +167,8 @@ def _process_task_reminders(interval: str):
 		"CRM Task",
 		filters={
 			"status": ["not in", ["Done", "Canceled"]],
-			"due_date": ["is", "set"],
 			"assigned_to": ["is", "set"],
+			"due_date": [">=", current_time],
 		},
 		fields=[
 			"name",
