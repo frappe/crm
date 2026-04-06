@@ -182,7 +182,7 @@ import { ConfirmDelete, getGridTemplateColumnsForTable } from '../../../utils'
 import { slaData, slaDataErrors } from './utils'
 import { ref } from 'vue'
 import WorkDayModal from './WorkDayModal.vue'
-import { setSettingsActiveTab } from '../../../composables/settings'
+import { activeSettingsPage } from '../../../composables/settings'
 import {
   holidayListActiveStep,
   resetHolidayListData,
@@ -252,7 +252,7 @@ const createNewHolidayList = () => {
       data: slaData.value.name,
     },
   }
-  setSettingsActiveTab('Business Holidays')
+  activeSettingsPage.value = 'Business Holidays'
 }
 
 const deleteWorkDay = (workDay) => {
@@ -304,7 +304,7 @@ const editHolidayList = (holidayList) => {
       data: slaData.value.name,
     },
   }
-  setSettingsActiveTab('Business Holidays')
+  activeSettingsPage.value = 'Business Holidays'
 }
 
 const formatTime = (time) => {

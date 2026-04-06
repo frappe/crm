@@ -2,7 +2,7 @@
   <Dialog
     v-model="showSettings"
     :options="{ size: '5xl' }"
-    @close="setSettingsActiveTab('')"
+    @close="activeSettingsPage = ''"
     :disableOutsideClickToClose="disableSettingModalOutsideClick"
   >
     <template #body>
@@ -36,10 +36,7 @@
           </template>
         </div>
         <div class="flex flex-col flex-1 overflow-y-auto bg-surface-modal">
-          <component
-            :is="settingsActiveTab.component"
-            v-if="settingsActiveTab"
-          />
+          <component :is="activeTab.component" v-if="activeTab" />
         </div>
       </div>
     </template>
@@ -79,14 +76,15 @@ import SidebarLink from '@/components/SidebarLink.vue'
 import {
   showSettings,
   disableSettingModalOutsideClick,
-  setSettingsActiveTab,
-  settingsActiveTab,
+  activeSettingsPage,
 } from '@/composables/settings'
 import { Dialog, Avatar } from 'frappe-ui'
 import { ref, markRaw, computed, watch, h } from 'vue'
 import AssignmentRulePage from './AssignmentRules/AssignmentRulePage.vue'
 import ShieldCheck from '~icons/lucide/shield-check'
 import SlaConfig from './Sla/SlaConfig.vue'
+import { usersStore } from '@/stores/users'
+import { isWhatsappInstalled } from '../../composables/settings'
 
 const { isManager, getUser } = usersStore()
 
