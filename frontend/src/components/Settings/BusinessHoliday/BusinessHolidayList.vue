@@ -13,7 +13,7 @@
     </template>
     <template
       v-if="
-        holidayListResource?.data?.length > 9 || holidayListSearchQuery.length
+        holidayListResource?.data?.length > 9 || holidayListSearchQuery?.length
       "
       #header-bottom
     >
@@ -40,7 +40,7 @@
     <template #content>
       <div
         v-if="
-          holidayListResource.list.loading && !holidayListResource.list.data
+          holidayListResource?.list?.loading && !holidayListResource?.list?.data
         "
         class="flex items-center justify-center mt-12"
       >
@@ -49,7 +49,7 @@
       <div v-else class="h-full">
         <div
           v-if="
-            !holidayListResource.loading && !holidayListResource.data?.length
+            !holidayListResource?.loading && !holidayListResource?.data?.length
           "
           class="flex flex-col items-center justify-center gap-4 h-full"
         >
@@ -81,7 +81,7 @@
           </div>
           <hr class="mt-2 mx-2 border-outline-gray-2" />
           <div
-            v-for="(holidayList, index) in holidayListResource.data"
+            v-for="(holidayList, index) in holidayListResource?.data"
             :key="holidayList.name"
           >
             <div
@@ -109,7 +109,7 @@
               </div>
             </div>
             <hr
-              v-if="index !== holidayListResource.list.data.length - 1"
+              v-if="index !== holidayListResource?.list?.data.length - 1"
               class="mx-2 border-outline-gray-2"
             />
           </div>

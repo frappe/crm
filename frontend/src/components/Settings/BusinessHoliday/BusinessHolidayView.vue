@@ -250,8 +250,8 @@ import {
   holidayListActiveStep,
 } from './utils'
 import {
+  activeSettingsPage,
   disableSettingModalOutsideClick,
-  setSettingsActiveTab,
 } from '../../../composables/settings'
 import RecurringHolidaysList from './RecurringHolidaysList.vue'
 import HolidaysTableView from './HolidaysTableView.vue'
@@ -334,7 +334,7 @@ const goBack = () => {
       data: null,
       previousScreen: null,
     }
-    setSettingsActiveTab('SLA Policies')
+    activeSettingsPage.value = 'Business Holidays'
     return
   }
   setTimeout(() => {

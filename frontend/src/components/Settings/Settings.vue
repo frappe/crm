@@ -85,6 +85,8 @@ import ShieldCheck from '~icons/lucide/shield-check'
 import SlaConfig from './Sla/SlaConfig.vue'
 import { usersStore } from '@/stores/users'
 import { isWhatsappInstalled } from '../../composables/settings'
+import Briefcase from '~icons/lucide/briefcase'
+import BusinessHolidayConfig from './BusinessHoliday/BusinessHolidayConfig.vue'
 
 const { isManager, getUser } = usersStore()
 
@@ -189,6 +191,11 @@ const tabs = computed(() => {
           label: __('SLA Policies'),
           icon: markRaw(h(ShieldCheck)),
           component: markRaw(SlaConfig),
+        },
+        {
+          label: __('Business Holidays'),
+          icon: markRaw(h(Briefcase)),
+          component: markRaw(BusinessHolidayConfig),
         },
       ],
       condition: () => isManager(),
