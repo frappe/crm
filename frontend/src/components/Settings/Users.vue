@@ -242,7 +242,7 @@ function getDropdownOptions(user) {
           selected: user.role === 'Sales Manager',
         }),
       onClick: () => updateRole(user, 'Sales Manager'),
-      condition: () => isManager(),
+      condition: () => isAdmin(),
     },
     {
       label: __('Sales User'),

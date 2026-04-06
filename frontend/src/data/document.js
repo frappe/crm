@@ -276,6 +276,16 @@ export function useDocument(doctype, docname, resourceOverrides = {}) {
     }
   }
 
+  async function triggerButton(fieldname, row) {
+    const handler = async function () {
+      if (row) {
+        this.currentRowIdx = row.idx
+      }
+      await this[fieldname]?.()
+    }
+    await trigger(handler, row)
+  }
+
   async function triggerOnRowAdd(row) {
     const handler = async function () {
       this.currentRowIdx = row.idx
@@ -345,6 +355,7 @@ export function useDocument(doctype, docname, resourceOverrides = {}) {
     triggerOnError,
     triggerOnRefresh,
     triggerOnChange,
+    triggerButton,
     triggerOnRowAdd,
     triggerOnRowRemove,
     setupFormScript,

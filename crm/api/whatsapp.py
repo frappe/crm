@@ -43,7 +43,7 @@ def validate(doc, method):
 				doc.reference_doctype = doctype
 				doc.reference_name = name
 		except Exception:
-			frappe.log_error("CRM WhatsApp: failed to resolve contact from number")
+			frappe.log_error(frappe.get_traceback(), "CRM WhatsApp: failed to resolve contact from number")
 
 
 def on_update(doc, method):
@@ -65,11 +65,12 @@ def notify_agent(doc):
 		doctype = doc.reference_doctype
 		if doctype and doctype.startswith("CRM "):
 			doctype = doctype[4:].lower()
+		safe_reference_name = frappe.utils.escape_html(doc.reference_name)
 		notification_text = f"""
             <div class="mb-2 leading-5 text-ink-gray-5">
                 <span class="font-medium text-ink-gray-9">{_("You")}</span>
                 <span>{_("received a whatsapp message in {0}").format(doctype)}</span>
-                <span class="font-medium text-ink-gray-9">{doc.reference_name}</span>
+                <span class="font-medium text-ink-gray-9">{safe_reference_name}</span>
             </div>
         """
 		assigned_users = get_assigned_users(doc.reference_doctype, doc.reference_name)
@@ -188,9 +189,10 @@ def get_whatsapp_messages(reference_doctype: str, reference_name: str):
 	# Iterate through template messages
 	for template_message in template_messages:
 		# Find the template that this message is using
+		if not frappe.db.exists("WhatsApp Templates", template_message["template"]):
+			continue
 		template = frappe.get_doc("WhatsApp Templates", template_message["template"])
 
-		# If the template is found, add the template details to the template message
 		if template:
 			template_message["template_name"] = template.template_name
 			if template_message["template_parameters"]:
@@ -235,8 +237,8 @@ def get_whatsapp_messages(reference_doctype: str, reference_name: str):
 		)
 
 		# If the replied message is found, add the reply details to the reply message
-		from_name = get_from_name(reply_message) if replied_message["from"] else _("You")
 		if replied_message:
+			from_name = get_from_name(reply_message) if replied_message["from"] else _("You")
 			message = replied_message["message"]
 			if replied_message["message_type"] == "Template":
 				message = replied_message["template"]
@@ -264,6 +266,8 @@ def create_whatsapp_message(
 	doc = frappe.new_doc("WhatsApp Message")
 
 	if reply_to:
+		if not frappe.db.exists("WhatsApp Message", reply_to):
+			frappe.throw(_("Referenced WhatsApp message does not exist."), frappe.DoesNotExistError)
 		reply_doc = frappe.get_doc("WhatsApp Message", reply_to)
 		if not reply_doc.has_permission("read"):
 			frappe.throw(
@@ -314,6 +318,8 @@ def send_whatsapp_template(reference_doctype: str, reference_name: str, template
 @frappe.whitelist()
 def react_on_whatsapp_message(emoji: str, reply_to_name: str):
 	validate_access()
+	if not frappe.db.exists("WhatsApp Message", reply_to_name):
+		frappe.throw(_("Referenced WhatsApp message does not exist."), frappe.DoesNotExistError)
 	reply_to_doc = frappe.get_doc("WhatsApp Message", reply_to_name)
 
 	if not reply_to_doc.has_permission("read"):
