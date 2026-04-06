@@ -59,20 +59,20 @@ export function useKeyboardShortcuts(options) {
       if (matchShortcut(def, e)) {
         if (def.preventDefault !== false) e.preventDefault()
         if (def.stopPropagation) e.stopPropagation()
-        def.action && def.action(e)
+        def.action?.(e)
         break
       }
     }
   }
 
   onMounted(() => {
-    target && target.addEventListener('keydown', handler)
+    target?.addEventListener('keydown', handler)
   })
   onBeforeUnmount(() => {
-    target && target.removeEventListener('keydown', handler)
+    target?.removeEventListener('keydown', handler)
   })
 
   return {
-    stop: () => target && target.removeEventListener('keydown', handler),
+    stop: () => target?.removeEventListener('keydown', handler),
   }
 }

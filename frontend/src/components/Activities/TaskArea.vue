@@ -41,7 +41,7 @@
             :options="taskStatusOptions(modalRef.updateTaskStatus, task)"
           >
             <Button
-              :tooltip="__('Change status')"
+              :tooltip="__('Change Status')"
               variant="ghosted"
               class="hover:bg-surface-gray-4"
               @click.stop.prevent
@@ -101,9 +101,9 @@ import { usersStore } from '@/stores/users'
 import { globalStore } from '@/stores/global'
 import { Tooltip, Dropdown } from 'frappe-ui'
 
-const props = defineProps({
-  tasks: Array,
-  modalRef: Object,
+defineProps({
+  tasks: { type: Array, default: () => [] },
+  modalRef: { type: Object, default: () => ({}) },
 })
 
 const { getUser } = usersStore()

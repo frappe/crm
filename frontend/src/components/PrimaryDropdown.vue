@@ -30,7 +30,7 @@
           />
           <div v-if="!options?.length">
             <div class="p-1.5 pl-3 pr-4 text-base text-ink-gray-4">
-              {{ __('No {0} Available', [label]) }}
+              {{ __('No {0} available', [label]) }}
             </div>
           </div>
         </div>
@@ -52,11 +52,11 @@
 import PrimaryDropdownItem from '@/components/PrimaryDropdownItem.vue'
 import { Popover } from 'frappe-ui'
 
-const props = defineProps({
+defineProps({
   value: { type: [String, Number], default: '' },
   placeholder: { type: String, default: '' },
-  options: { type: Array, default: [] },
-  create: { type: Function },
+  options: { type: Array, default: () => [] },
+  create: { type: Function, default: null },
   label: { type: String, default: '' },
 })
 </script>

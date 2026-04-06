@@ -7,7 +7,6 @@
       '[&_p.reply-to-content]:hidden',
     ]"
     :content="content"
-    @change="editable ? (content = $event) : null"
     :starterkit-options="{
       heading: { levels: [2, 3, 4, 5, 6] },
       paragraph: false,
@@ -15,15 +14,33 @@
     :placeholder="placeholder"
     :editable="editable"
     :extensions="[CustomParagraph]"
+    @change="editable ? (content = $event) : null"
   >
     <template #top>
       <div class="flex flex-col gap-3">
-        <div class="sm:mx-10 mx-4 flex items-center gap-2 border-t pt-2.5">
-          <span class="text-xs text-ink-gray-4">{{ __('TO') }}:</span>
+        <div
+          v-if="from.length"
+          class="sm:mx-10 mx-4 flex items-center gap-2 border-t pt-2.5 h-10"
+        >
+          <span class="text-xs text-ink-gray-4">{{ __('FROM') }}:</span>
+          <FormControl
+            v-model="fromEmail"
+            type="select"
+            variant="ghost"
+            class="w-full"
+            :placeholder="__('')"
+            :options="from"
+          />
+        </div>
+        <div
+          class="sm:mx-10 mx-4 flex items-center gap-2"
+          :class="from.length ? '' : 'border-t pt-2.5'"
+        >
+          <span class="text-xs text-ink-gray-4 mr-2">{{ __('TO') }}:</span>
           <EmailMultiSelect
+            v-model="toEmails"
             class="flex-1"
             variant="ghost"
-            v-model="toEmails"
             :validate="validateEmail"
             :fetchContacts="true"
             :error-message="
@@ -34,22 +51,22 @@
             <Button
               :label="__('CC')"
               variant="ghost"
-              @click="toggleCC()"
               :class="[
                 cc
                   ? '!bg-surface-gray-4 hover:bg-surface-gray-3'
                   : '!text-ink-gray-4',
               ]"
+              @click="toggleCC()"
             />
             <Button
               :label="__('BCC')"
               variant="ghost"
-              @click="toggleBCC()"
               :class="[
                 bcc
                   ? '!bg-surface-gray-4 hover:bg-surface-gray-3'
                   : '!text-ink-gray-4',
               ]"
+              @click="toggleBCC()"
             />
           </div>
         </div>
@@ -57,9 +74,9 @@
           <span class="text-xs text-ink-gray-4">{{ __('CC') }}:</span>
           <EmailMultiSelect
             ref="ccInput"
+            v-model="ccEmails"
             class="flex-1"
             variant="ghost"
-            v-model="ccEmails"
             :fetchContacts="true"
             :validate="validateEmail"
             :error-message="
@@ -71,9 +88,9 @@
           <span class="text-xs text-ink-gray-4">{{ __('BCC') }}:</span>
           <EmailMultiSelect
             ref="bccInput"
+            v-model="bccEmails"
             class="flex-1"
             variant="ghost"
-            v-model="bccEmails"
             :fetchContacts="true"
             :validate="validateEmail"
             :error-message="
@@ -84,22 +101,22 @@
         <div class="sm:mx-10 mx-4 flex items-center gap-2 pb-2.5">
           <span class="text-xs text-ink-gray-4">{{ __('SUBJECT') }}:</span>
           <input
-            class="flex-1 border-none text-ink-gray-9 text-base bg-surface-white hover:bg-surface-white focus:border-none focus:!shadow-none focus-visible:!ring-0"
             v-model="subject"
+            class="flex-1 border-none text-ink-gray-9 text-base bg-surface-white hover:bg-surface-white focus:border-none focus:!shadow-none focus-visible:!ring-0"
           />
         </div>
       </div>
     </template>
-    <template v-slot:editor="{ editor }">
+    <template #editor="{ editor: _editor }">
       <EditorContent
         :class="[
           editable &&
             'sm:mx-10 mx-4 max-h-[35vh] overflow-y-auto border-t py-3',
         ]"
-        :editor="editor"
+        :editor="_editor"
       />
     </template>
-    <template v-slot:bottom>
+    <template #bottom>
       <div v-if="editable" class="flex flex-col gap-2">
         <div class="flex flex-wrap gap-2 sm:px-10 px-4">
           <AttachmentItem
@@ -122,8 +139,8 @@
           <div class="flex gap-1 items-center overflow-x-auto">
             <TextEditorBubbleMenu :buttons="textEditorMenuButtons" />
             <IconPicker
-              v-model="emoji"
               v-slot="{ togglePopover }"
+              v-model="emoji"
               @update:modelValue="() => appendEmoji()"
             >
               <Button
@@ -143,7 +160,7 @@
             >
               <template #default="{ openFileSelector }">
                 <Button
-                  :tooltip="__('Attach a file')"
+                  :tooltip="__('Attach a File')"
                   :icon="AttachmentIcon"
                   variant="ghost"
                   @click="openFileSelector()"
@@ -184,42 +201,28 @@ import AttachmentIcon from '@/components/Icons/AttachmentIcon.vue'
 import AttachmentItem from '@/components/AttachmentItem.vue'
 import EmailMultiSelect from '@/components/Controls/EmailMultiSelect.vue'
 import EmailTemplateSelectorModal from '@/components/Modals/EmailTemplateSelectorModal.vue'
-import { TextEditorBubbleMenu, TextEditor, FileUploader, call } from 'frappe-ui'
-import { capture } from '@/telemetry'
+import {
+  TextEditorBubbleMenu,
+  TextEditor,
+  FileUploader,
+  call,
+  FormControl,
+} from 'frappe-ui'
+import { useTelemetry } from 'frappe-ui/frappe'
+import { useDocument } from '@/data/document'
 import { validateEmail } from '@/utils'
 import Paragraph from '@tiptap/extension-paragraph'
 import { EditorContent } from '@tiptap/vue-3'
-import { ref, computed, nextTick } from 'vue'
+import { ref, computed, nextTick, inject, watch } from 'vue'
 
 const props = defineProps({
-  placeholder: {
-    type: String,
-    default: null,
-  },
-  editable: {
-    type: Boolean,
-    default: true,
-  },
-  doctype: {
-    type: String,
-    default: 'CRM Lead',
-  },
-  subject: {
-    type: String,
-    default: __('Email from Lead'),
-  },
-  editorProps: {
-    type: Object,
-    default: () => ({}),
-  },
-  submitButtonProps: {
-    type: Object,
-    default: () => ({}),
-  },
-  discardButtonProps: {
-    type: Object,
-    default: () => ({}),
-  },
+  placeholder: { type: String, default: null },
+  editable: { type: Boolean, default: true },
+  doctype: { type: String, default: 'CRM Lead' },
+  subject: { type: String, default: __('Email From Lead') },
+  editorProps: { type: Object, default: () => ({}) },
+  submitButtonProps: { type: Object, default: () => ({}) },
+  discardButtonProps: { type: Object, default: () => ({}) },
 })
 
 const CustomParagraph = Paragraph.extend({
@@ -240,9 +243,16 @@ const CustomParagraph = Paragraph.extend({
   },
 })
 
-const modelValue = defineModel()
-const attachments = defineModel('attachments')
-const content = defineModel('content')
+const modelValue = defineModel({ type: Object })
+const attachments = defineModel('attachments', {
+  type: Array,
+  default: () => [],
+})
+const content = defineModel('content', { type: String, default: '' })
+
+const { capture } = useTelemetry()
+const { user: sessionUser } = inject('session')
+const { document: user } = useDocument('User', sessionUser)
 
 const textEditor = ref(null)
 const cc = ref(false)
@@ -250,11 +260,36 @@ const bcc = ref(false)
 const emoji = ref('')
 
 const subject = ref(props.subject)
+const fromEmail = ref('')
 const toEmails = ref(modelValue.value.email ? [modelValue.value.email] : [])
 const ccEmails = ref([])
 const bccEmails = ref([])
 const ccInput = ref(null)
 const bccInput = ref(null)
+
+const from = computed(() => {
+  if (!user.doc || !user.doc.user_emails?.length) return []
+  let emails = user.doc.user_emails.map((e) => {
+    return {
+      label: e.email_account + ' <' + e.email_id + '>',
+      value: e.email_id,
+    }
+  })
+
+  if (emails.length == 1 && emails[0].email_id === sessionUser) return []
+
+  return emails
+})
+
+watch(
+  from,
+  (fromOptions) => {
+    if (!fromOptions.find((f) => f.value === fromEmail.value)) {
+      fromEmail.value = fromOptions.length ? fromOptions[0].value : ''
+    }
+  },
+  { immediate: true },
+)
 
 const editor = computed(() => {
   return textEditor.value.editor
@@ -296,12 +331,12 @@ function appendEmoji() {
 
 function toggleCC() {
   cc.value = !cc.value
-  cc.value && nextTick(() => ccInput.value.setFocus())
+  if (cc.value) nextTick(() => ccInput.value.setFocus())
 }
 
 function toggleBCC() {
   bcc.value = !bcc.value
-  bcc.value && nextTick(() => bccInput.value.setFocus())
+  if (bcc.value) nextTick(() => bccInput.value.setFocus())
 }
 
 defineExpose({
@@ -309,6 +344,7 @@ defineExpose({
   subject,
   cc,
   bcc,
+  fromEmail,
   toEmails,
   ccEmails,
   bccEmails,

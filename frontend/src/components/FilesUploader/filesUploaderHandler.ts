@@ -17,7 +17,7 @@ declare global {
 }
 
 class FilesUploadHandler {
-  listeners: { [event: string]: Function[] }
+  listeners: { [event: string]: ((...args: unknown[]) => void)[] }
   failed: boolean
 
   constructor() {
@@ -25,21 +25,21 @@ class FilesUploadHandler {
     this.failed = false
   }
 
-  on(event: EventListenerOption, handler: Function) {
+  on(event: EventListenerOption, handler: (...args: unknown[]) => void) {
     this.listeners[event] = this.listeners[event] || []
     this.listeners[event].push(handler)
   }
 
-  trigger(event: string, data?: any) {
-    let handlers = this.listeners[event] || []
+  trigger(event: string, data?: unknown) {
+    const handlers = this.listeners[event] || []
     handlers.forEach((handler) => {
       handler.call(this, data)
     })
   }
 
-  upload(file: File | null, options: UploadOptions): Promise<any> {
+  upload(file: File | null, options: UploadOptions): Promise<unknown> {
     return new Promise((resolve, reject) => {
-      let xhr = new XMLHttpRequest()
+      const xhr = new XMLHttpRequest()
       xhr.upload.addEventListener('loadstart', () => {
         this.trigger('start')
       })
@@ -60,15 +60,15 @@ class FilesUploadHandler {
       })
       xhr.onreadystatechange = () => {
         if (xhr.readyState == XMLHttpRequest.DONE) {
-          let error: any = null
+          let error: unknown
           if (xhr.status === 200) {
-            let r: any = null
+            let r: unknown
             try {
               r = JSON.parse(xhr.responseText)
-            } catch (e) {
+            } catch {
               r = xhr.responseText
             }
-            let out = r.message || r
+            const out = (r as { message?: unknown })?.message || r
             resolve(out)
           } else if (xhr.status === 403) {
             error = JSON.parse(xhr.responseText)
@@ -79,12 +79,12 @@ class FilesUploadHandler {
             this.failed = true
             try {
               error = JSON.parse(xhr.responseText)
-            } catch (e) {
+            } catch {
               // pass
             }
           }
-          if (error && error.exc) {
-            console.error(JSON.parse(error.exc)[0])
+          if (error && (error as { exc?: string }).exc) {
+            console.error(JSON.parse((error as { exc: string }).exc)[0])
           }
           reject(error)
         }
@@ -97,7 +97,7 @@ class FilesUploadHandler {
         xhr.setRequestHeader('X-Frappe-CSRF-Token', window.csrf_token)
       }
 
-      let formData = new FormData()
+      const formData = new FormData()
 
       if (options.fileObj && file?.name) {
         formData.append('file', options.fileObj, file.name)

@@ -3,7 +3,6 @@
 
 import frappe
 from frappe.model.document import Document
-
 from frappe.utils.data import comma_and
 
 
@@ -32,9 +31,7 @@ class FacebookLeadForm(Document):
 	def check_mandatory_crm_fields_mapped(self):
 		# right now only first name is mandatory
 		# later this can be elaborated to use doctype meta
-		mandatory_crm_lead_fields = [
-			{"label": "First Name", "fieldname": "first_name"}
-		]
+		mandatory_crm_lead_fields = [{"label": "First Name", "fieldname": "first_name"}]
 		mandatory_crm_lead_fieldnames = set(f["fieldname"] for f in mandatory_crm_lead_fields)
 
 		if self.is_new():
@@ -44,6 +41,8 @@ class FacebookLeadForm(Document):
 		not_mapped = list(mandatory_crm_lead_fieldnames.difference(mapped_fields))
 
 		if not_mapped:
-			not_mapped_labels = [f["label"] for f in mandatory_crm_lead_fields if f["fieldname"] in not_mapped]
+			not_mapped_labels = [
+				f["label"] for f in mandatory_crm_lead_fields if f["fieldname"] in not_mapped
+			]
 			formatted_fields_list = frappe.bold(comma_and(not_mapped_labels))
 			frappe.throw(frappe._("Mandatory field(s) {0} must be mapped").format(formatted_fields_list))

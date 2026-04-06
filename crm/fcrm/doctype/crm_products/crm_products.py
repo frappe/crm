@@ -15,6 +15,7 @@ class CRMProducts(Document):
 		from frappe.types import DF
 
 		amount: DF.Currency
+		autocomplete: DF.Autocomplete | None
 		discount_amount: DF.Currency
 		discount_percentage: DF.Percent
 		net_amount: DF.Currency

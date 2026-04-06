@@ -7,8 +7,12 @@
  "field_order": [
   "defaults_tab",
   "restore_defaults",
+  "restore_demo_data",
   "enable_forecasting",
   "auto_update_expected_deal_value",
+  "update_timestamp_on_new_communication",
+  "auto_mark_replied_on_response",
+  "auto_reopen_on_new_communication",
   "currency_tab",
   "currency",
   "exchange_rate_provider_section",
@@ -57,7 +61,7 @@
   {
    "fieldname": "dropdown_items_tab",
    "fieldtype": "Tab Break",
-   "label": "Dropdown Items"
+   "label": "Dropdown items"
   },
   {
    "fieldname": "brand_name",
@@ -99,7 +103,7 @@
    "fieldname": "service_provider",
    "fieldtype": "Select",
    "label": "Service Provider",
-   "options": "frankfurter.app\nexchangerate.host"
+   "options": "frankfurter.app\nfawazahmed-exchange-api\nexchangerate.host\nexchangerate-api"
   },
   {
    "depends_on": "eval:doc.service_provider == 'exchangerate.host';",
@@ -117,7 +121,7 @@
    "description": "Automatically update \"Expected Deal Value\" based on the total value of associated products in a deal",
    "fieldname": "auto_update_expected_deal_value",
    "fieldtype": "Check",
-   "label": "Auto Update Expected Deal Value"
+   "label": "Auto update Expected Deal Value"
   },
   {
    "fieldname": "calendar_tab",
@@ -128,32 +132,58 @@
    "description": "Time before the event when a reminder notification will be sent by default. This will be applied to all events unless a custom notification is set for a specific event.",
    "fieldname": "default_reminder_section",
    "fieldtype": "Section Break",
-   "label": "Default event notifications"
+   "label": "Default Event Notifications"
   },
   {
    "fieldname": "event_notifications",
    "fieldtype": "Table",
-   "label": "Event notifications",
+   "label": "Event Notifications",
    "options": "Event Notifications"
   },
   {
    "fieldname": "all_day_event_notifications",
    "fieldtype": "Table",
-   "label": "All day event notifications",
+   "label": "All Day Event Notifications",
    "options": "Event Notifications"
   },
   {
    "default": "Weekly",
    "fieldname": "default_calendar_view",
    "fieldtype": "Select",
-   "label": "Default calendar view",
+   "label": "Default Calendar View",
    "options": "Daily\nWeekly\nMonthly"
+  },
+  {
+   "default": "1",
+   "description": "Update the modified timestamp on new email communication & comment for leads & deals",
+   "fieldname": "update_timestamp_on_new_communication",
+   "fieldtype": "Check",
+   "label": "Update timestamp on new communication"
+  },
+  {
+   "default": "0",
+   "description": "Automatically sets Communication Status to \u201cReplied\u201d for the lead or deal when a response is received. Applies only when SLA is enabled",
+   "fieldname": "auto_mark_replied_on_response",
+   "fieldtype": "Check",
+   "label": "Mark lead/deal as replied on response"
+  },
+  {
+   "default": "0",
+   "description": "Automatically sets Communication Status to \u201cOpen\u201d for the lead or deal when a new communication is created. Applies only when SLA is enabled",
+   "fieldname": "auto_reopen_on_new_communication",
+   "fieldtype": "Check",
+   "label": "Reopen lead/deal on new communication"
+  },
+  {
+   "fieldname": "restore_demo_data",
+   "fieldtype": "Button",
+   "label": "Restore Demo Data"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-09-24 14:43:50.510563",
+ "modified": "2026-03-27 18:02:14.802197",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "FCRM Settings",
@@ -183,7 +213,7 @@
    "email": 1,
    "print": 1,
    "read": 1,
-   "role": "All",
+   "role": "Sales User",
    "share": 1
   }
  ],

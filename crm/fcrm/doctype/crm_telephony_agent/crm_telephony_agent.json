@@ -12,11 +12,9 @@
   "mobile_no",
   "default_medium",
   "section_break_ozjn",
-  "twilio",
   "twilio_number",
   "call_receiving_device",
   "column_break_aydj",
-  "exotel",
   "exotel_number",
   "section_break_phlq",
   "phone_nos"
@@ -53,11 +51,9 @@
    "label": "User Name"
   },
   {
-   "depends_on": "exotel",
    "fieldname": "exotel_number",
    "fieldtype": "Data",
-   "label": "Exotel Number",
-   "mandatory_depends_on": "exotel"
+   "label": "Exotel Number"
   },
   {
    "fieldname": "section_break_phlq",
@@ -72,29 +68,15 @@
    "fieldtype": "Column Break"
   },
   {
-   "depends_on": "twilio",
    "fieldname": "twilio_number",
    "fieldtype": "Data",
-   "label": "Twilio Number",
-   "mandatory_depends_on": "twilio"
+   "label": "Twilio Number"
   },
   {
    "fieldname": "phone_nos",
    "fieldtype": "Table",
    "label": "Phone Numbers",
    "options": "CRM Telephony Phone"
-  },
-  {
-   "default": "0",
-   "fieldname": "twilio",
-   "fieldtype": "Check",
-   "label": "Twilio"
-  },
-  {
-   "default": "0",
-   "fieldname": "exotel",
-   "fieldtype": "Check",
-   "label": "Exotel"
   },
   {
    "fieldname": "default_medium",
@@ -104,7 +86,6 @@
   },
   {
    "default": "Computer",
-   "depends_on": "twilio",
    "fieldname": "call_receiving_device",
    "fieldtype": "Select",
    "label": "Device",
@@ -113,7 +94,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-01-23 22:24:53.448716",
+ "modified": "2026-03-12 13:52:36.481382",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Telephony Agent",
@@ -131,8 +112,33 @@
    "role": "System Manager",
    "share": 1,
    "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales User",
+   "share": 1,
+   "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "creation",
  "sort_order": "DESC",
  "states": [],

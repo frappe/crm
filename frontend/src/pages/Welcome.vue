@@ -21,7 +21,7 @@
             {{ __('Start with sample 10 leads') }}
           </div>
         </div>
-        <Button variant="outline" :label="__('Add sample data')" />
+        <Button variant="outline" :label="__('Add Sample Data')" />
       </div>
       <div
         class="flex flex-col px-6 pt-13 pb-7 justify-between bg-surface-gray-1 rounded-2xl items-center space-y-2 size-56"
@@ -29,10 +29,10 @@
         <div class="flex flex-col items-center gap-2.5">
           <GoogleIcon class="" />
           <div class="text-p-base text-ink-gray-8 text-center">
-            {{ __('Sync your contacts,email and calenders') }}
+            {{ __('Sync your Contacts, Email and Calendars') }}
           </div>
         </div>
-        <Button variant="outline" :label="__('Connect your email')" />
+        <Button variant="outline" :label="__('Connect your Email')" />
       </div>
     </div>
     <Button

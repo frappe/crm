@@ -4,7 +4,7 @@
     <div class="flex justify-between text-ink-gray-8">
       <div class="flex flex-col gap-1">
         <h2 class="flex gap-2 text-xl font-semibold leading-none h-5">
-          {{ __('Home actions') }}
+          {{ __('Home Actions') }}
         </h2>
         <p class="text-p-base text-ink-gray-6">
           {{ __('Configure actions that appear on the home dropdown') }}
@@ -12,9 +12,9 @@
       </div>
       <div class="flex item-center space-x-2 w-3/12 justify-end">
         <Button
+          v-if="document.isDirty"
           :label="__('Update')"
           variant="solid"
-          :disabled="!document.isDirty"
           :loading="document.loading"
           @click="updateSettings"
         />
@@ -49,7 +49,6 @@ const { document, triggerOnChange } = useDocument(
 
 provide('triggerOnChange', triggerOnChange)
 
-const emit = defineEmits(['updateStep'])
 const errorMessage = ref('')
 
 function updateSettings() {

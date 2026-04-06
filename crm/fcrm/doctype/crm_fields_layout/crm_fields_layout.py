@@ -4,12 +4,24 @@
 import json
 
 import frappe
-from frappe import _
 from frappe.model.document import Document
 from frappe.utils import random_string
 
 
 class CRMFieldsLayout(Document):
+	# begin: auto-generated types
+	# This code is auto-generated. Do not modify anything in this block.
+
+	from typing import TYPE_CHECKING
+
+	if TYPE_CHECKING:
+		from frappe.types import DF
+
+		dt: DF.Link | None
+		layout: DF.Code | None
+		type: DF.Literal["Quick Entry", "Side Panel", "Data Fields", "Grid Row", "Required Fields"]
+	# end: auto-generated types
+
 	pass
 
 
@@ -97,7 +109,7 @@ def get_fields_layout(doctype: str, type: str, parent_doctype: str | None = None
 
 
 @frappe.whitelist()
-def get_sidepanel_sections(doctype):
+def get_sidepanel_sections(doctype: str):
 	if not frappe.db.exists("CRM Fields Layout", {"dt": doctype, "type": "Side Panel"}):
 		return []
 	layout = frappe.get_doc("CRM Fields Layout", {"dt": doctype, "type": "Side Panel"}).layout
@@ -116,8 +128,6 @@ def get_sidepanel_sections(doctype):
 	fields = frappe.get_meta(doctype).fields
 	fields = [field for field in fields if field.fieldtype not in not_allowed_fieldtypes]
 
-	add_forecasting_section(layout, doctype)
-
 	for section in layout:
 		section["name"] = section.get("name") or section.get("label")
 		for column in section.get("columns") if section.get("columns") else []:
@@ -133,38 +143,6 @@ def get_sidepanel_sections(doctype):
 		fields_meta[field.fieldname] = field
 
 	return layout
-
-
-def add_forecasting_section(layout, doctype):
-	if (
-		doctype == "CRM Deal"
-		and frappe.db.get_single_value("FCRM Settings", "enable_forecasting")
-		and not any(section.get("name") == "forecasted_sales_section" for section in layout)
-	):
-		contacts_section_index = next(
-			(
-				i
-				for i, section in enumerate(layout)
-				if section.get("name") == "contacts_section" or section.get("label") == "Contacts"
-			),
-			None,
-		)
-
-		if contacts_section_index is not None:
-			layout.insert(
-				contacts_section_index + 1,
-				{
-					"name": "forecasted_sales_section",
-					"label": "Forecasted Sales",
-					"opened": True,
-					"columns": [
-						{
-							"name": "column_" + str(random_string(4)),
-							"fields": ["expected_closure_date", "probability", "expected_deal_value"],
-						}
-					],
-				},
-			)
 
 
 def handle_perm_level_restrictions(field, doctype, parent_doctype=None):

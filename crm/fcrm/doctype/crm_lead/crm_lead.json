@@ -10,6 +10,14 @@
  "email_append_to": 1,
  "engine": "InnoDB",
  "field_order": [
+  "person_tab",
+  "salutation",
+  "first_name",
+  "last_name",
+  "column_break_opsm",
+  "lead_name",
+  "email",
+  "mobile_no",
   "details",
   "organization",
   "website",
@@ -18,16 +26,9 @@
   "job_title",
   "source",
   "lead_owner",
-  "person_tab",
-  "salutation",
-  "first_name",
-  "last_name",
-  "email",
-  "mobile_no",
   "organization_tab",
   "section_break_uixv",
   "naming_series",
-  "lead_name",
   "middle_name",
   "gender",
   "phone",
@@ -66,7 +67,10 @@
   "syncing_tab",
   "facebook_lead_id",
   "column_break_ixmu",
-  "facebook_form_id"
+  "facebook_form_id",
+  "lost_details_tab",
+  "lost_reason",
+  "lost_notes"
  ],
  "fields": [
   {
@@ -105,10 +109,10 @@
    "options": "Gender"
   },
   {
-   "default": "New",
    "fieldname": "status",
    "fieldtype": "Link",
    "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Status",
    "options": "CRM Lead Status",
    "reqd": 1,
@@ -117,6 +121,7 @@
   {
    "fieldname": "email",
    "fieldtype": "Data",
+   "in_standard_filter": 1,
    "label": "Email",
    "options": "Email",
    "search_index": 1
@@ -129,7 +134,7 @@
   {
    "fieldname": "mobile_no",
    "fieldtype": "Data",
-   "label": "Mobile No",
+   "label": "Mobile No.",
    "options": "Phone"
   },
   {
@@ -185,6 +190,7 @@
   {
    "fieldname": "lead_name",
    "fieldtype": "Data",
+   "in_standard_filter": 1,
    "label": "Full Name",
    "search_index": 1
   },
@@ -202,6 +208,7 @@
   {
    "fieldname": "organization",
    "fieldtype": "Data",
+   "in_standard_filter": 1,
    "label": "Organization"
   },
   {
@@ -391,13 +398,34 @@
    "fieldname": "column_break_ygds",
    "fieldtype": "Column Break",
    "read_only": 1
+  },
+  {
+   "fieldname": "lost_details_tab",
+   "fieldtype": "Tab Break",
+   "label": "Lost Details"
+  },
+  {
+   "fieldname": "lost_reason",
+   "fieldtype": "Link",
+   "label": "Lost Reason",
+   "options": "CRM Lost Reason"
+  },
+  {
+   "fieldname": "lost_notes",
+   "fieldtype": "Text",
+   "label": "Lost Notes",
+   "mandatory_depends_on": "eval: doc.lost_reason == \"Other\""
+  },
+  {
+   "fieldname": "column_break_opsm",
+   "fieldtype": "Column Break"
   }
  ],
  "grid_page_length": 50,
  "image_field": "image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-11-10 21:21:50.089284",
+ "modified": "2026-04-04 12:33:17.177897",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Lead",
@@ -412,7 +440,7 @@
    "print": 1,
    "read": 1,
    "report": 1,
-   "role": "Sales User",
+   "role": "System Manager",
    "share": 1,
    "write": 1
   },
@@ -429,13 +457,16 @@
    "write": 1
   },
   {
+   "create": 1,
+   "delete": 1,
    "email": 1,
    "export": 1,
    "print": 1,
    "read": 1,
    "report": 1,
-   "role": "All",
-   "share": 1
+   "role": "Sales User",
+   "share": 1,
+   "write": 1
   }
  ],
  "row_format": "Dynamic",

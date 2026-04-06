@@ -65,13 +65,25 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-05-19 17:57:24.610295",
+ "modified": "2026-02-23 12:31:42.629014",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Form Script",
  "naming_rule": "Set by user",
  "owner": "Administrator",
  "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
   {
    "create": 1,
    "delete": 1,
@@ -90,7 +102,7 @@
    "print": 1,
    "read": 1,
    "report": 1,
-   "role": "All",
+   "role": "Sales User",
    "share": 1
   }
  ],

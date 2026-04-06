@@ -1,19 +1,55 @@
 # Copyright (c) 2024, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 
+import json
+
 import frappe
-import requests
 from frappe import _
 from frappe.custom.doctype.property_setter.property_setter import delete_property_setter, make_property_setter
 from frappe.model.document import Document
 
+from crm.demo.api import create_demo_data
 from crm.install import after_install
 
 
 class FCRMSettings(Document):
+	# begin: auto-generated types
+	# This code is auto-generated. Do not modify anything in this block.
+
+	from typing import TYPE_CHECKING
+
+	if TYPE_CHECKING:
+		from frappe.desk.doctype.event_notifications.event_notifications import EventNotifications
+		from frappe.types import DF
+
+		from crm.fcrm.doctype.crm_dropdown_item.crm_dropdown_item import CRMDropdownItem
+
+		access_key: DF.Data | None
+		all_day_event_notifications: DF.Table[EventNotifications]
+		auto_mark_replied_on_response: DF.Check
+		auto_reopen_on_new_communication: DF.Check
+		auto_update_expected_deal_value: DF.Check
+		brand_logo: DF.Attach | None
+		brand_name: DF.Data | None
+		currency: DF.Link | None
+		default_calendar_view: DF.Literal["Daily", "Weekly", "Monthly"]
+		dropdown_items: DF.Table[CRMDropdownItem]
+		enable_forecasting: DF.Check
+		event_notifications: DF.Table[EventNotifications]
+		favicon: DF.Attach | None
+		service_provider: DF.Literal[
+			"frankfurter.app", "fawazahmed-exchange-api", "exchangerate.host", "exchangerate-api"
+		]
+		update_timestamp_on_new_communication: DF.Check
+	# end: auto-generated types
+
 	@frappe.whitelist()
-	def restore_defaults(self, force=False):
+	def restore_defaults(self, force: bool = False):
 		after_install(force)
+
+	@frappe.whitelist()
+	def restore_demo_data(self):
+		create_demo_data()
 
 	def validate(self):
 		self.do_not_allow_to_delete_if_standard()
@@ -36,6 +72,7 @@ class FCRMSettings(Document):
 	def setup_forecasting(self):
 		if self.has_value_changed("enable_forecasting"):
 			if not self.enable_forecasting:
+				self.remove_forecasting_section_in_sidepanel()
 				delete_property_setter(
 					"CRM Deal",
 					"reqd",
@@ -47,6 +84,7 @@ class FCRMSettings(Document):
 					"expected_deal_value",
 				)
 			else:
+				self.add_forecasting_section_in_sidepanel()
 				make_property_setter(
 					"CRM Deal",
 					"expected_closure_date",
@@ -71,6 +109,44 @@ class FCRMSettings(Document):
 				1,
 				"Check",
 			)
+
+	def add_forecasting_section_in_sidepanel(self):
+		doc = frappe.get_doc("CRM Fields Layout", "CRM Deal-Side Panel")
+		layout = doc.layout
+		sections = json.loads(layout)
+		if any(section.get("name") == "forecasted_sales_section" for section in sections):
+			return
+		new_section = {
+			"name": "forecasted_sales_section",
+			"label": "Forecasted Sales",
+			"opened": True,
+			"columns": [
+				{
+					"name": "forecasted_sales_column",
+					"fields": ["expected_closure_date", "probability", "expected_deal_value"],
+				}
+			],
+		}
+		# Insert after contacts_section if it's the first section, else insert at the beginning
+		if sections and sections[0].get("name") == "contacts_section":
+			# Insert after the first section
+			sections = [*sections[:1], new_section, *sections[1:]]
+		else:
+			# Insert as the first section
+			sections = [new_section, *sections]
+		doc.layout = json.dumps(sections)
+		doc.save(ignore_permissions=True)
+
+	def remove_forecasting_section_in_sidepanel(self):
+		doc = frappe.get_doc("CRM Fields Layout", "CRM Deal-Side Panel")
+		doc.layout = json.dumps(
+			[
+				section
+				for section in json.loads(doc.layout)
+				if section.get("name") != "forecasted_sales_section"
+			]
+		)
+		doc.save(ignore_permissions=True)
 
 
 def get_standard_dropdown_items():
@@ -133,76 +209,3 @@ def get_forecasting_script():
         this.doc.probability = status.probability
     }
 }"""
-
-
-def get_exchange_rate(from_currency, to_currency, date=None):
-	if not date:
-		date = "latest"
-
-	api_used = "frankfurter"
-
-	api_endpoint = f"https://api.frankfurter.app/{date}?from={from_currency}&to={to_currency}"
-	res = requests.get(api_endpoint, timeout=5)
-	if res.ok:
-		data = res.json()
-		return data["rates"][to_currency]
-
-	# Fallback to exchangerate.host if Frankfurter API fails
-	settings = FCRMSettings("FCRM Settings")
-	if settings and settings.service_provider == "exchangerate.host":
-		api_used = "exchangerate.host"
-		if not settings.access_key:
-			frappe.throw(
-				_("Access Key is required for Service Provider: {0}").format(
-					frappe.bold(settings.service_provider)
-				)
-			)
-
-		params = {
-			"access_key": settings.access_key,
-			"from": from_currency,
-			"to": to_currency,
-			"amount": 1,
-		}
-
-		if date != "latest":
-			params["date"] = date
-
-		api_endpoint = "https://api.exchangerate.host/convert"
-
-		res = requests.get(api_endpoint, params=params, timeout=5)
-		if res.ok:
-			data = res.json()
-			return data["result"]
-
-	frappe.log_error(
-		title="Exchange Rate Fetch Error",
-		message=f"Failed to fetch exchange rate from {from_currency} to {to_currency} using {api_used} API.",
-	)
-
-	if api_used == "frankfurter":
-		user = frappe.session.user
-		is_manager = (
-			"System Manager" in frappe.get_roles(user)
-			or "Sales Manager" in frappe.get_roles(user)
-			or user == "Administrator"
-		)
-
-		if not is_manager:
-			frappe.throw(
-				_(
-					"Ask your manager to set up the Exchange Rate Provider, as default provider does not support currency conversion for {0} to {1}."
-				).format(from_currency, to_currency)
-			)
-		else:
-			frappe.throw(
-				_(
-					"Setup the Exchange Rate Provider as 'Exchangerate Host' in settings, as default provider does not support currency conversion for {0} to {1}."
-				).format(from_currency, to_currency)
-			)
-
-	frappe.throw(
-		_(
-			"Failed to fetch exchange rate from {0} to {1} on {2}. Please check your internet connection or try again later."
-		).format(from_currency, to_currency, date)
-	)

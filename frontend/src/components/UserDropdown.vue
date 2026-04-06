@@ -58,20 +58,16 @@ import { getSettings } from '@/stores/settings'
 import { showSettings, isMobileView } from '@/composables/settings'
 import { showAboutModal } from '@/composables/modals'
 import { confirmLoginToFrappeCloud } from '@/composables/frappecloud'
-import { Dropdown, useTheme } from 'frappe-ui'
+import { Dropdown } from 'frappe-ui'
 import { computed, h, markRaw } from 'vue'
 
-const props = defineProps({
-  isCollapsed: {
-    type: Boolean,
-    default: false,
-  },
+defineProps({
+  isCollapsed: { type: Boolean, default: false },
 })
 
 const { settings, brand } = getSettings()
 const { logout } = sessionStore()
 const { getUser } = usersStore()
-const { currentTheme, toggleTheme } = useTheme()
 
 const user = computed(() => getUser() || {})
 
@@ -131,12 +127,6 @@ function getStandardItem(item) {
     case 'app_selector':
       return {
         component: markRaw(Apps),
-      }
-    case 'toggle_theme':
-      return {
-        icon: currentTheme.value === 'dark' ? 'sun' : item.icon,
-        label: __(item.label),
-        onClick: toggleTheme,
       }
     case 'settings':
       return {

@@ -10,10 +10,7 @@
 import { ref, watch } from 'vue'
 
 const props = defineProps({
-  content: {
-    type: String,
-    required: true,
-  },
+  content: { type: String, required: true },
 })
 
 const files = import.meta.globEager('/src/index.css', { query: '?inline' })

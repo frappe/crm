@@ -11,11 +11,14 @@ from pypika import Criterion
 
 from crm.api.views import get_views
 from crm.fcrm.doctype.crm_form_script.crm_form_script import get_form_script
-from crm.utils import get_dynamic_linked_docs, get_linked_docs, is_version_16
+from crm.utils import get_dynamic_linked_docs, get_linked_docs, is_frappe_version
 
 COUNT_NAME = (
-    {"COUNT": "name", "as": "total_count"} if is_version_16() else "count(name) as total_count"
+	{"COUNT": "name", "as": "total_count"}
+	if is_frappe_version("16", above=True)
+	else "count(name) as total_count"
 )
+
 
 @frappe.whitelist()
 def sort_options(doctype: str):
@@ -63,6 +66,7 @@ def get_filterable_fields(doctype: str):
 		"Text Editor",
 		"Text",
 		"Duration",
+		"Rating",
 		"Date",
 		"Datetime",
 	]
@@ -150,7 +154,7 @@ def get_group_by_fields(doctype: str):
 		{"label": "Last Modified", "fieldname": "modified"},
 		{"label": "Modified By", "fieldname": "modified_by"},
 		{"label": "Owner", "fieldname": "owner"},
-		{"label": "Liked By", "fieldname": "_liked_by"},
+		{"label": "Like", "fieldname": "_liked_by"},
 		{"label": "Assigned To", "fieldname": "_assign"},
 		{"label": "Comments", "fieldname": "_comments"},
 		{"label": "Created On", "fieldname": "creation"},
@@ -281,16 +285,16 @@ def get_data(
 	doctype: str,
 	filters: dict,
 	order_by: str,
-	page_length=20,
-	page_length_count=20,
-	column_field=None,
-	title_field=None,
-	columns=[],
-	rows=[],
-	kanban_columns=[],
-	kanban_fields=[],
-	view=None,
-	default_filters=None,
+	page_length: int = 20,
+	page_length_count: int = 20,
+	column_field: str | None = None,
+	title_field: str | None = None,
+	columns: str | list | None = None,
+	rows: str | list | None = None,
+	kanban_columns: str | list | None = None,
+	kanban_fields: str | list | None = None,
+	view: str | dict | None = None,
+	default_filters: dict | None = None,
 ):
 	custom_view = False
 	filters = frappe._dict(filters)
@@ -557,9 +561,7 @@ def get_data(
 		"page_length_count": page_length_count,
 		"is_default": is_default,
 		"views": get_views(doctype),
-		"total_count": frappe.get_list(doctype, filters=filters, fields=[COUNT_NAME])[
-			0
-		].total_count,
+		"total_count": frappe.get_list(doctype, filters=filters, fields=[COUNT_NAME])[0].total_count,
 		"row_count": len(data),
 		"form_script": get_form_script(doctype),
 		"list_script": get_form_script(doctype, "List"),
@@ -613,59 +615,7 @@ def get_records_based_on_order(doctype, rows, filters, page_length, order):
 
 
 @frappe.whitelist()
-def get_fields_meta(doctype, restricted_fieldtypes=None, as_array=False, only_required=False):
-	not_allowed_fieldtypes = [
-		"Tab Break",
-		"Section Break",
-		"Column Break",
-	]
-
-	if restricted_fieldtypes:
-		restricted_fieldtypes = frappe.parse_json(restricted_fieldtypes)
-		not_allowed_fieldtypes += restricted_fieldtypes
-
-	fields = frappe.get_meta(doctype).fields
-	fields = [field for field in fields if field.fieldtype not in not_allowed_fieldtypes]
-
-	standard_fields = [
-		{"fieldname": "name", "fieldtype": "Link", "label": "ID", "options": doctype},
-		{"fieldname": "owner", "fieldtype": "Link", "label": "Created By", "options": "User"},
-		{
-			"fieldname": "modified_by",
-			"fieldtype": "Link",
-			"label": "Last Updated By",
-			"options": "User",
-		},
-		{"fieldname": "_user_tags", "fieldtype": "Data", "label": "Tags"},
-		{"fieldname": "_liked_by", "fieldtype": "Data", "label": "Like"},
-		{"fieldname": "_comments", "fieldtype": "Text", "label": "Comments"},
-		{"fieldname": "_assign", "fieldtype": "Text", "label": "Assigned To"},
-		{"fieldname": "creation", "fieldtype": "Datetime", "label": "Created On"},
-		{"fieldname": "modified", "fieldtype": "Datetime", "label": "Last Updated On"},
-	]
-
-	for field in standard_fields:
-		if not restricted_fieldtypes or field.get("fieldtype") not in restricted_fieldtypes:
-			fields.append(field)
-
-	if only_required:
-		fields = [field for field in fields if field.get("reqd")]
-
-	if as_array:
-		return fields
-
-	fields_meta = {}
-	for field in fields:
-		fields_meta[field.get("fieldname")] = field
-		if field.get("fieldtype") == "Table":
-			_fields = frappe.get_meta(field.get("options")).fields
-			fields_meta[field.get("fieldname")] = {"df": field, "fields": _fields}
-
-	return fields_meta
-
-
-@frappe.whitelist()
-def remove_assignments(doctype, name, assignees, ignore_permissions=False):
+def remove_assignments(doctype: str, name: str, assignees: str | list, ignore_permissions: bool = False):
 	assignees = frappe.parse_json(assignees)
 
 	if not assignees:
@@ -683,7 +633,7 @@ def remove_assignments(doctype, name, assignees, ignore_permissions=False):
 
 
 @frappe.whitelist()
-def get_assigned_users(doctype, name, default_assigned_to=None):
+def get_assigned_users(doctype: str, name: str, default_assigned_to: str | None = None):
 	assigned_users = frappe.get_all(
 		"ToDo",
 		fields=["allocated_to"],
@@ -753,7 +703,7 @@ def getCounts(d, doctype):
 
 
 @frappe.whitelist()
-def get_linked_docs_of_document(doctype, docname):
+def get_linked_docs_of_document(doctype: str, docname: str):
 	try:
 		doc = frappe.get_doc(doctype, docname)
 	except frappe.DoesNotExistError:
@@ -846,12 +796,15 @@ def remove_contact_link(doctype, docname):
 
 
 @frappe.whitelist()
-def remove_linked_doc_reference(items, remove_contact=None, delete=False):
+def remove_linked_doc_reference(items: str | list, remove_contact: bool = False, delete: bool = False):
 	if isinstance(items, str):
 		items = frappe.parse_json(items)
 
 	for item in items:
 		if not item.get("doctype") or not item.get("docname"):
+			continue
+
+		if not frappe.has_permission(item["doctype"], "write", item["docname"]):
 			continue
 
 		try:
@@ -870,18 +823,18 @@ def remove_linked_doc_reference(items, remove_contact=None, delete=False):
 
 
 @frappe.whitelist()
-def delete_bulk_docs(doctype, items, delete_linked=False):
+def delete_bulk_docs(doctype: str, items: str | list, delete_linked: bool = False):
 	from frappe.desk.reportview import delete_bulk
 
 	if not doctype:
-		frappe.throw("Doctype is required")
+		frappe.throw(_("Doctype is required"))
 
 	if not items:
-		frappe.throw("Items are required")
+		frappe.throw(_("Items are required"))
 
 	items = frappe.parse_json(items)
 	if not isinstance(items, list):
-		frappe.throw("Items must be a list")
+		frappe.throw(_("Items must be a list"))
 
 	for doc in items:
 		try:
@@ -905,9 +858,7 @@ def delete_bulk_docs(doctype, items, delete_linked=False):
 					delete=delete_linked,
 				)
 		except Exception as e:
-			frappe.log_error(
-				f"Error processing linked docs for {doctype} {doc}: {str(e)}", "Bulk Delete Error"
-			)
+			frappe.log_error(f"Error processing linked docs for {doctype} {doc}: {e!s}", "Bulk Delete Error")
 
 	if len(items) > 10:
 		frappe.enqueue("frappe.desk.reportview.delete_bulk", doctype=doctype, items=items)

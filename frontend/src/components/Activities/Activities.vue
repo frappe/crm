@@ -3,10 +3,10 @@
     v-model="tabIndex"
     v-model:showWhatsappTemplates="showWhatsappTemplates"
     v-model:showFilesUploader="showFilesUploader"
+    v-model:emailBox="emailBox"
     :tabs="tabs"
     :title="title"
     :doc="doc"
-    :emailBox="emailBox"
     :whatsappBox="whatsappBox"
     :modalRef="modalRef"
   />
@@ -30,9 +30,9 @@
     >
       <div v-if="title == 'WhatsApp' && whatsappMessages.data?.length">
         <WhatsAppArea
-          class="px-3 sm:px-10"
           v-model="whatsappMessages"
           v-model:reply="replyMessage"
+          class="px-3 sm:px-10"
           :messages="whatsappMessages.data"
         />
       </div>
@@ -40,12 +40,16 @@
         v-else-if="title == 'Notes'"
         class="grid grid-cols-1 gap-4 px-3 pb-3 sm:px-10 sm:pb-5 lg:grid-cols-2 xl:grid-cols-3"
       >
-        <div v-for="note in activities" @click="modalRef.showNote(note)">
-          <NoteArea :note="note" v-model="all_activities" />
+        <div
+          v-for="note in activities"
+          :key="note.name"
+          @click="modalRef.showNote(note)"
+        >
+          <NoteArea v-model="all_activities" :note="note" />
         </div>
       </div>
       <div v-else-if="title == 'Comments'" class="pb-5">
-        <div v-for="(comment, i) in activities">
+        <div v-for="(comment, i) in activities" :key="comment.name">
           <div
             class="activity grid grid-cols-[30px_minmax(auto,_1fr)] gap-2 px-3 sm:gap-4 sm:px-10"
           >
@@ -69,7 +73,7 @@
         <TaskArea :modalRef="modalRef" :tasks="activities" :doctype="doctype" />
       </div>
       <div v-else-if="title == 'Calls'" class="activity">
-        <div v-for="(call, i) in activities">
+        <div v-for="(call, i) in activities" :key="call.name">
           <div
             class="activity grid grid-cols-[30px_minmax(auto,_1fr)] gap-4 px-3 sm:px-10"
           >
@@ -88,10 +92,10 @@
                 />
                 <DeclinedCallIcon v-else-if="call.status == 'Busy'" />
                 <component
-                  v-else
                   :is="
                     call.type == 'Incoming' ? InboundCallIcon : OutboundCallIcon
                   "
+                  v-else
                 />
               </div>
             </div>
@@ -108,230 +112,176 @@
           @reload="all_activities.reload() && scroll()"
         />
       </div>
-      <div
-        v-else
-        v-for="(activity, i) in activities"
-        class="activity px-3 sm:px-10"
-        :class="
-          ['Activity', 'Emails'].includes(title)
-            ? 'grid grid-cols-[30px_minmax(auto,_1fr)] gap-2 sm:gap-4'
-            : ''
-        "
-      >
+      <template v-else>
         <div
-          v-if="['Activity', 'Emails'].includes(title)"
-          class="z-0 relative flex justify-center before:absolute before:left-[50%] before:-z-[1] before:top-0 before:border-l before:border-outline-gray-modals"
-          :class="[i != activities.length - 1 ? 'before:h-full' : 'before:h-4']"
-        >
-          <div
-            class="flex h-7 w-7 items-center justify-center bg-surface-white"
-            :class="{
-              'mt-2.5': ['communication'].includes(activity.activity_type),
-              'bg-surface-white': ['added', 'removed', 'changed'].includes(
-                activity.activity_type,
-              ),
-              'h-8': [
-                'comment',
-                'communication',
-                'incoming_call',
-                'outgoing_call',
-              ].includes(activity.activity_type),
-            }"
-          >
-            <UserAvatar
-              v-if="activity.activity_type == 'communication'"
-              :user="activity.data.sender"
-              size="md"
-            />
-            <MissedCallIcon
-              v-else-if="
-                ['incoming_call', 'outgoing_call'].includes(
-                  activity.activity_type,
-                ) && activity.status == 'No Answer'
-              "
-              class="text-ink-red-4"
-            />
-            <DeclinedCallIcon
-              v-else-if="
-                ['incoming_call', 'outgoing_call'].includes(
-                  activity.activity_type,
-                ) && activity.status == 'Busy'
-              "
-            />
-            <component
-              v-else
-              :is="activity.icon"
-              :class="
-                ['added', 'removed', 'changed'].includes(activity.activity_type)
-                  ? 'text-ink-gray-4'
-                  : 'text-ink-gray-8'
-              "
-            />
-          </div>
-        </div>
-        <div
-          v-if="activity.activity_type == 'communication'"
-          class="pb-5 mt-px"
-        >
-          <EmailArea :activity="activity" :emailBox="emailBox" />
-        </div>
-        <div
-          class="mb-4"
-          :id="activity.name"
-          v-else-if="activity.activity_type == 'comment'"
-        >
-          <CommentArea :activity="activity" />
-        </div>
-        <div
-          class="mb-4 flex flex-col gap-2 py-1.5"
-          :id="activity.name"
-          v-else-if="activity.activity_type == 'attachment_log'"
-        >
-          <div class="flex items-center justify-stretch gap-2 text-base">
-            <div
-              class="inline-flex items-center flex-wrap gap-1.5 text-ink-gray-8 font-medium"
-            >
-              <span class="font-medium">{{ activity.owner_name }}</span>
-              <span class="text-ink-gray-5">{{ __(activity.data.type) }}</span>
-              <a
-                v-if="activity.data.file_url"
-                :href="activity.data.file_url"
-                target="_blank"
-              >
-                <span>{{ activity.data.file_name }}</span>
-              </a>
-              <span v-else>{{ activity.data.file_name }}</span>
-              <FeatherIcon
-                v-if="activity.data.is_private"
-                name="lock"
-                class="size-3"
-              />
-            </div>
-            <div class="ml-auto whitespace-nowrap">
-              <Tooltip :text="formatDate(activity.creation)">
-                <div class="text-sm text-ink-gray-5">
-                  {{ __(timeAgo(activity.creation)) }}
-                </div>
-              </Tooltip>
-            </div>
-          </div>
-        </div>
-        <div
-          v-else-if="
-            activity.activity_type == 'incoming_call' ||
-            activity.activity_type == 'outgoing_call'
+          v-for="(activity, i) in activities"
+          :key="activity.name"
+          class="activity px-3 sm:px-10"
+          :class="
+            ['Activity', 'Emails'].includes(title)
+              ? 'grid grid-cols-[30px_minmax(auto,_1fr)] gap-2 sm:gap-4'
+              : ''
           "
-          class="mb-4"
         >
-          <CallArea :activity="activity" />
-        </div>
-        <div v-else class="mb-4 flex flex-col gap-2 py-1.5">
-          <div class="flex items-center justify-stretch gap-2 text-base">
+          <div
+            v-if="['Activity', 'Emails'].includes(title)"
+            class="z-0 relative flex justify-center before:absolute before:left-[50%] before:-z-[1] before:top-0 before:border-l before:border-outline-gray-modals"
+            :class="[
+              i != activities.length - 1 ? 'before:h-full' : 'before:h-4',
+            ]"
+          >
             <div
-              v-if="activity.other_versions"
-              class="inline-flex flex-wrap gap-1.5 text-ink-gray-8 font-medium"
+              class="flex h-7 w-7 items-center justify-center bg-surface-white"
+              :class="{
+                'mt-2.5': ['communication'].includes(activity.activity_type),
+                'bg-surface-white': ['added', 'removed', 'changed'].includes(
+                  activity.activity_type,
+                ),
+                'h-8': [
+                  'comment',
+                  'communication',
+                  'incoming_call',
+                  'outgoing_call',
+                ].includes(activity.activity_type),
+              }"
             >
-              <span>{{ activity.show_others ? __('Hide') : __('Show') }}</span>
-              <span> +{{ activity.other_versions.length + 1 }} </span>
-              <span>{{ __('changes from') }}</span>
-              <span>{{ activity.owner_name }}</span>
-              <Button
-                class="!size-4"
-                variant="ghost"
-                :icon="SelectIcon"
-                @click="activity.show_others = !activity.show_others"
+              <UserAvatar
+                v-if="activity.activity_type == 'communication'"
+                :user="activity.data.sender"
+                size="md"
               />
-            </div>
-            <div
-              v-else
-              class="inline-flex items-center flex-wrap gap-1 text-ink-gray-5"
-            >
-              <span class="font-medium text-ink-gray-8">
-                {{ activity.owner_name }}
-              </span>
-              <span v-if="activity.type">{{ __(activity.type) }}</span>
-              <span
-                v-if="activity.data?.field_label"
-                class="max-w-xs truncate font-medium text-ink-gray-8"
-              >
-                {{ __(activity.data.field_label) }}
-              </span>
-              <span v-if="activity.value">{{ __(activity.value) }}</span>
-              <span
-                v-if="activity.data?.old_value"
-                class="max-w-xs font-medium text-ink-gray-8"
-              >
-                <div
-                  class="flex items-center gap-1"
-                  v-if="activity.options == 'User'"
-                >
-                  <UserAvatar :user="activity.data.old_value" size="xs" />
-                  {{ getUser(activity.data.old_value).full_name }}
-                </div>
-                <div class="truncate" v-else>
-                  {{ activity.data.old_value }}
-                </div>
-              </span>
-              <span v-if="activity.to">{{ __('to') }}</span>
-              <span
-                v-if="activity.data?.value"
-                class="max-w-xs font-medium text-ink-gray-8"
-              >
-                <div
-                  class="flex items-center gap-1"
-                  v-if="activity.options == 'User'"
-                >
-                  <UserAvatar :user="activity.data.value" size="xs" />
-                  {{ getUser(activity.data.value).full_name }}
-                </div>
-                <div class="truncate" v-else>
-                  {{ activity.data.value }}
-                </div>
-              </span>
-            </div>
-
-            <div class="ml-auto whitespace-nowrap">
-              <Tooltip :text="formatDate(activity.creation)">
-                <div class="text-sm text-ink-gray-5">
-                  {{ __(timeAgo(activity.creation)) }}
-                </div>
-              </Tooltip>
+              <MissedCallIcon
+                v-else-if="
+                  ['incoming_call', 'outgoing_call'].includes(
+                    activity.activity_type,
+                  ) && activity.status == 'No Answer'
+                "
+                class="text-ink-red-4"
+              />
+              <DeclinedCallIcon
+                v-else-if="
+                  ['incoming_call', 'outgoing_call'].includes(
+                    activity.activity_type,
+                  ) && activity.status == 'Busy'
+                "
+              />
+              <component
+                :is="activity.icon"
+                v-else
+                :class="
+                  ['added', 'removed', 'changed'].includes(
+                    activity.activity_type,
+                  )
+                    ? 'text-ink-gray-4'
+                    : 'text-ink-gray-8'
+                "
+              />
             </div>
           </div>
           <div
-            v-if="activity.other_versions && activity.show_others"
-            class="flex flex-col gap-0.5"
+            v-if="activity.activity_type == 'communication'"
+            class="pb-5 mt-px"
           >
-            <div
-              v-for="activity in [activity, ...activity.other_versions]"
-              class="flex items-start justify-stretch gap-2 py-1.5 text-base"
-            >
-              <div class="inline-flex flex-wrap gap-1 text-ink-gray-5">
+            <EmailArea :activity="activity" :emailBox="emailBox" />
+          </div>
+          <div
+            v-else-if="activity.activity_type == 'comment'"
+            :id="activity.name"
+            class="mb-4"
+          >
+            <CommentArea :activity="activity" />
+          </div>
+          <div
+            v-else-if="activity.activity_type == 'attachment_log'"
+            :id="activity.name"
+            class="mb-4 flex flex-col gap-2 py-1.5"
+          >
+            <div class="flex items-center justify-stretch gap-2 text-base">
+              <div
+                class="inline-flex items-center flex-wrap gap-1.5 text-ink-gray-8 font-medium"
+              >
+                <span class="font-medium">{{ activity.owner_name }}</span>
+                <span class="text-ink-gray-5">{{
+                  __(activity.data.type)
+                }}</span>
+                <a
+                  v-if="activity.data.file_url"
+                  :href="activity.data.file_url"
+                  target="_blank"
+                >
+                  <span>{{ activity.data.file_name }}</span>
+                </a>
+                <span v-else>{{ activity.data.file_name }}</span>
+                <FeatherIcon
+                  v-if="activity.data.is_private"
+                  name="lock"
+                  class="size-3"
+                />
+              </div>
+              <div class="ml-auto whitespace-nowrap">
+                <Tooltip :text="formatDate(activity.creation)">
+                  <div class="text-sm text-ink-gray-5">
+                    {{ __(timeAgo(activity.creation)) }}
+                  </div>
+                </Tooltip>
+              </div>
+            </div>
+          </div>
+          <div
+            v-else-if="
+              activity.activity_type == 'incoming_call' ||
+              activity.activity_type == 'outgoing_call'
+            "
+            class="mb-4"
+          >
+            <CallArea :activity="activity" />
+          </div>
+          <div v-else class="mb-4 flex flex-col gap-2 py-1.5">
+            <div class="flex items-center justify-stretch gap-2 text-base">
+              <div
+                v-if="activity.other_versions"
+                class="inline-flex flex-wrap gap-1.5 text-ink-gray-8 font-medium"
+              >
+                <span>{{
+                  activity.show_others ? __('Hide') : __('Show')
+                }}</span>
+                <span> +{{ activity.other_versions.length + 1 }} </span>
+                <span>{{ __('changes from') }}</span>
+                <span>{{ activity.owner_name }}</span>
+                <Button
+                  class="!size-4"
+                  variant="ghost"
+                  :icon="SelectIcon"
+                  @click="activity.show_others = !activity.show_others"
+                />
+              </div>
+              <div
+                v-else
+                class="inline-flex items-center flex-wrap gap-1 text-ink-gray-5"
+              >
+                <span class="font-medium text-ink-gray-8">
+                  {{ activity.owner_name }}
+                </span>
+                <span v-if="activity.type">{{ __(activity.type) }}</span>
                 <span
                   v-if="activity.data?.field_label"
-                  class="max-w-xs truncate text-ink-gray-5"
+                  class="max-w-xs truncate font-medium text-ink-gray-8"
                 >
                   {{ __(activity.data.field_label) }}
                 </span>
-                <FeatherIcon
-                  name="arrow-right"
-                  class="mx-1 h-4 w-4 text-ink-gray-5"
-                />
-                <span v-if="activity.type">
-                  {{ startCase(__(activity.type)) }}
-                </span>
+                <span v-if="activity.value">{{ __(activity.value) }}</span>
                 <span
                   v-if="activity.data?.old_value"
                   class="max-w-xs font-medium text-ink-gray-8"
                 >
                   <div
-                    class="flex items-center gap-1"
                     v-if="activity.options == 'User'"
+                    class="flex items-center gap-1"
                   >
                     <UserAvatar :user="activity.data.old_value" size="xs" />
                     {{ getUser(activity.data.old_value).full_name }}
                   </div>
-                  <div class="truncate" v-else>
+                  <div v-else class="truncate">
                     {{ activity.data.old_value }}
                   </div>
                 </span>
@@ -341,13 +291,13 @@
                   class="max-w-xs font-medium text-ink-gray-8"
                 >
                   <div
-                    class="flex items-center gap-1"
                     v-if="activity.options == 'User'"
+                    class="flex items-center gap-1"
                   >
                     <UserAvatar :user="activity.data.value" size="xs" />
                     {{ getUser(activity.data.value).full_name }}
                   </div>
-                  <div class="truncate" v-else>
+                  <div v-else class="truncate">
                     {{ activity.data.value }}
                   </div>
                 </span>
@@ -361,9 +311,77 @@
                 </Tooltip>
               </div>
             </div>
+            <div
+              v-if="activity.other_versions && activity.show_others"
+              class="flex flex-col gap-0.5"
+            >
+              <div
+                v-for="a in sortByCreation([
+                  activity,
+                  ...activity.other_versions,
+                ])"
+                :key="a.creation"
+                class="flex items-start justify-stretch gap-2 py-1.5 text-base"
+              >
+                <div class="inline-flex flex-wrap gap-1 text-ink-gray-5">
+                  <span
+                    v-if="a.data?.field_label"
+                    class="max-w-xs truncate text-ink-gray-5"
+                  >
+                    {{ __(a.data.field_label) }}
+                  </span>
+                  <FeatherIcon
+                    name="arrow-right"
+                    class="mx-1 h-4 w-4 text-ink-gray-5"
+                  />
+                  <span v-if="a.type">
+                    {{ startCase(__(a.type)) }}
+                  </span>
+                  <span
+                    v-if="a.data?.old_value"
+                    class="max-w-xs font-medium text-ink-gray-8"
+                  >
+                    <div
+                      v-if="a.options == 'User'"
+                      class="flex items-center gap-1"
+                    >
+                      <UserAvatar :user="a.data.old_value" size="xs" />
+                      {{ getUser(a.data.old_value).full_name }}
+                    </div>
+                    <div v-else class="truncate">
+                      {{ a.data.old_value }}
+                    </div>
+                  </span>
+                  <span v-if="a.to">{{ __('to') }}</span>
+                  <span
+                    v-if="a.data?.value"
+                    class="max-w-xs font-medium text-ink-gray-8"
+                  >
+                    <div
+                      v-if="a.options == 'User'"
+                      class="flex items-center gap-1"
+                    >
+                      <UserAvatar :user="a.data.value" size="xs" />
+                      {{ getUser(a.data.value).full_name }}
+                    </div>
+                    <div v-else class="truncate">
+                      {{ a.data.value }}
+                    </div>
+                  </span>
+                </div>
+
+                <div class="ml-auto whitespace-nowrap">
+                  <Tooltip :text="formatDate(a.creation)">
+                    <div class="text-sm text-ink-gray-5">
+                      {{ __(timeAgo(a.creation)) }}
+                    </div>
+                  </Tooltip>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+      </template>
     </div>
     <div v-else-if="title == 'Data'" class="h-full flex flex-col px-3 sm:px-10">
       <DataFields
@@ -373,52 +391,26 @@
         @afterSave="(data) => emit('afterSave', data)"
       />
     </div>
-    <div
+    <EmptyState
       v-else
-      class="flex flex-1 flex-col items-center justify-center gap-3 text-xl font-medium text-ink-gray-4"
-    >
-      <component :is="emptyTextIcon" class="h-10 w-10" />
-      <span>{{ __(emptyText) }}</span>
-      <MultiActionButton v-if="title == 'Calls'" :options="callActions" />
-      <Button
-        v-else-if="title == 'Notes'"
-        :label="__('Create Note')"
-        @click="modalRef.showNote()"
-      />
-      <Button
-        v-else-if="title == 'Emails'"
-        :label="__('New Email')"
-        @click="emailBox.show = true"
-      />
-      <Button
-        v-else-if="title == 'Comments'"
-        :label="__('New Comment')"
-        @click="emailBox.showComment = true"
-      />
-      <Button
-        v-else-if="title == 'Tasks'"
-        :label="__('Create Task')"
-        @click="modalRef.showTask()"
-      />
-      <Button
-        v-else-if="title == 'Attachments'"
-        :label="__('Upload Attachment')"
-        @click="showFilesUploader = true"
-      />
-    </div>
+      :title="emptyText"
+      :description="emptyTextDescription"
+      :icon="emptyTextIcon"
+      :top="top"
+    />
   </FadedScrollableDiv>
   <div>
     <CommunicationArea
-      ref="emailBox"
       v-if="['Emails', 'Comments', 'Activity'].includes(title)"
+      ref="emailBox"
       v-model="doc"
       v-model:reload="reload_email"
       :doctype="doctype"
       @scroll="scroll"
     />
     <WhatsAppBox
-      ref="whatsappBox"
       v-if="title == 'WhatsApp'"
+      ref="whatsappBox"
       v-model="doc"
       v-model:reply="replyMessage"
       v-model:whatsapp="whatsappMessages"
@@ -461,7 +453,7 @@ import AttachmentArea from '@/components/Activities/AttachmentArea.vue'
 import DataFields from '@/components/Activities/DataFields.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import ActivityIcon from '@/components/Icons/ActivityIcon.vue'
-import Email2Icon from '@/components/Icons/Email2Icon.vue'
+import EmailIcon from '@/components/Icons/EmailIcon.vue'
 import DetailsIcon from '@/components/Icons/DetailsIcon.vue'
 import CalendarIcon from '@/components/Icons/CalendarIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
@@ -473,7 +465,7 @@ import EventArea from '@/components/Activities/EventArea.vue'
 import WhatsAppArea from '@/components/Activities/WhatsAppArea.vue'
 import WhatsAppBox from '@/components/Activities/WhatsAppBox.vue'
 import LoadingIndicator from '@/components/Icons/LoadingIndicator.vue'
-import MultiActionButton from '@/components/MultiActionButton.vue'
+import EmptyState from '@/components/ListViews/EmptyState.vue'
 import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import DotIcon from '@/components/Icons/DotIcon.vue'
@@ -491,10 +483,10 @@ import FilesUploader from '@/components/FilesUploader/FilesUploader.vue'
 import { timeAgo, formatDate, startCase } from '@/utils'
 import { globalStore } from '@/stores/global'
 import { usersStore } from '@/stores/users'
-import { whatsappEnabled, callEnabled } from '@/composables/settings'
+import { whatsappEnabled } from '@/composables/settings'
 import { useDocument } from '@/data/document'
-import { capture } from '@/telemetry'
-import { Button, Tooltip, createResource } from 'frappe-ui'
+import { useTelemetry } from 'frappe-ui/frappe'
+import { Button, Tooltip, createResource, toast } from 'frappe-ui'
 import { useElementVisibility } from '@vueuse/core'
 import {
   ref,
@@ -508,30 +500,22 @@ import {
 } from 'vue'
 import { useRoute } from 'vue-router'
 
-const { makeCall, $socket } = globalStore()
+const { $socket } = globalStore()
 const { getUser } = usersStore()
+const { capture } = useTelemetry()
 
 const props = defineProps({
-  doctype: {
-    type: String,
-    default: 'CRM Lead',
-  },
-  docname: {
-    type: String,
-    default: '',
-  },
-  tabs: {
-    type: Array,
-    default: () => [],
-  },
+  doctype: { type: String, default: 'CRM Lead' },
+  docname: { type: String, default: '' },
+  tabs: { type: Array, default: () => [] },
 })
 
 const emit = defineEmits(['beforeSave', 'afterSave'])
 
 const route = useRoute()
 
-const reload = defineModel('reload')
-const tabIndex = defineModel('tabIndex')
+const reload = defineModel('reload', { type: Boolean, default: false })
+const tabIndex = defineModel('tabIndex', { type: Number, default: 0 })
 
 const { document: _document } = useDocument(props.doctype, props.docname)
 
@@ -610,6 +594,10 @@ function sendTemplate(template) {
       template,
     },
     auto: true,
+    onError: (error) => {
+      toast.error(error.messages?.[0] || __('Failed to send WhatsApp template'))
+    },
+    onSuccess: () => whatsappMessages.reload(),
   })
 }
 
@@ -700,32 +688,65 @@ function update_activities_details(activity) {
   }
 }
 
+const top = computed(() => {
+  if (['Activity', 'Emails', 'Comments'].includes(title.value)) {
+    return '32.3%'
+  }
+  return '30%'
+})
+
 const emptyText = computed(() => {
-  let text = 'No Activities'
+  let text = 'No Activities Found'
   if (title.value == 'Emails') {
-    text = 'No Email Communications'
+    text = 'No Emails Found'
   } else if (title.value == 'Comments') {
-    text = 'No Comments'
+    text = 'No Comments Found'
   } else if (title.value == 'Data') {
-    text = 'No Data'
+    text = 'No Data Fields Added Yet'
   } else if (title.value == 'Calls') {
-    text = 'No Call Logs'
+    text = 'No Call History'
   } else if (title.value == 'Notes') {
-    text = 'No Notes'
+    text = 'No Notes Found'
   } else if (title.value == 'Tasks') {
-    text = 'No Tasks'
+    text = 'No Tasks Found'
   } else if (title.value == 'Attachments') {
-    text = 'No Attachments'
+    text = 'No Attachments Found'
   } else if (title.value == 'WhatsApp') {
-    text = 'No WhatsApp Messages'
+    text = 'No WhatsApp Messages Found'
   }
   return text
+})
+
+const emptyTextDescription = computed(() => {
+  let description =
+    'There are no activities to display here. Go ahead and make some changes.'
+  if (title.value == 'Emails') {
+    description =
+      'No emails found in your inbox. New messages will appear here soon.'
+  } else if (title.value == 'Comments') {
+    description = 'Be the first to add one.'
+  } else if (title.value == 'Data') {
+    description = 'No data fields have been added yet.'
+  } else if (title.value == 'Calls') {
+    description = 'No recent calls to display. Log a call or call someone now!'
+  } else if (title.value == 'Notes') {
+    description = 'Nothing here for now. Add a note to keep track of things.'
+  } else if (title.value == 'Tasks') {
+    description =
+      'Nothing to do at the moment. Start organizing by adding one here.'
+  } else if (title.value == 'Attachments') {
+    description =
+      'No files have been attached yet. Upload files to see them here.'
+  } else if (title.value == 'WhatsApp') {
+    description = 'Start a conversation now!'
+  }
+  return description
 })
 
 const emptyTextIcon = computed(() => {
   let icon = ActivityIcon
   if (title.value == 'Emails') {
-    icon = Email2Icon
+    icon = EmailIcon
   } else if (title.value == 'Comments') {
     icon = CommentIcon
   } else if (title.value == 'Data') {
@@ -803,24 +824,6 @@ function scroll(hash) {
     }
   }, 500)
 }
-
-const callActions = computed(() => {
-  let actions = [
-    {
-      label: __('Log a Call'),
-      onClick: () => modalRef.value.createCallLog(),
-    },
-    {
-      label: __('Make a Call'),
-      onClick: () => makeCall(doc.value.mobile_no),
-      condition: () => callEnabled.value,
-    },
-  ]
-
-  return actions.filter((action) =>
-    action.condition ? action.condition() : true,
-  )
-})
 
 defineExpose({ emailBox, all_activities, changeTabTo })
 </script>

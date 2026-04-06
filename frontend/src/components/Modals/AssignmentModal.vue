@@ -9,12 +9,13 @@
         class="form-control"
         value=""
         doctype="User"
-        @change="(option) => addValue(option) && ($refs.input.value = '')"
         :placeholder="__('John Doe')"
         :filters="{
           name: ['in', users.data.crmUsers?.map((user) => user.name)],
+          ignore_user_type: 1,
         }"
         :hideMe="true"
+        @change="(option) => addValue(option) && ($refs.input.value = '')"
       >
         <template #target="{ togglePopover }">
           <div
@@ -22,9 +23,9 @@
             @click.stop="togglePopover"
           >
             <Tooltip
-              :text="assignee.name"
               v-for="assignee in assignees"
               :key="assignee.name"
+              :text="assignee.name"
               @click.stop
             >
               <div>
@@ -89,46 +90,32 @@
 import UserAvatar from '@/components/UserAvatar.vue'
 import Link from '@/components/Controls/Link.vue'
 import { usersStore } from '@/stores/users'
-import { capture } from '@/telemetry'
+import { useTelemetry } from 'frappe-ui/frappe'
 import { Tooltip, call } from 'frappe-ui'
-import { ref, computed, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 
 const props = defineProps({
-  doc: {
-    type: Object,
-    default: null,
-  },
-  docs: {
-    type: Set,
-    default: new Set(),
-  },
-  doctype: {
-    type: String,
-    default: '',
-  },
+  doc: { type: Object, default: null },
+  docs: { type: Set, default: () => new Set() },
+  doctype: { type: String, default: '' },
 })
 
 const emit = defineEmits(['reload'])
 
-const show = defineModel()
-const assignees = defineModel('assignees')
+const show = defineModel({ type: Boolean })
+const assignees = defineModel('assignees', { type: Array, default: () => [] })
 const oldAssignees = ref([])
 
 const error = ref('')
 
 const { users, getUser } = usersStore()
+const { capture } = useTelemetry()
 
 const removeValue = (value) => {
   assignees.value = assignees.value.filter(
     (assignee) => assignee.name !== value,
   )
 }
-
-const owner = computed(() => {
-  if (!props.doc) return ''
-  if (props.doctype == 'CRM Lead') return props.doc.lead_owner
-  return props.doc.deal_owner
-})
 
 const addValue = (value) => {
   error.value = ''

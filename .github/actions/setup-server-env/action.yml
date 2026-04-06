@@ -1,0 +1,85 @@
+name: Setup Server Environment
+description: Prepare Python, Node, caching, and bench prerequisites for CRM server tests.
+inputs:
+    python-version:
+        description: Python version to install
+        required: false
+        default: "3.14"
+    node-version:
+        description: Node version to install
+        required: false
+        default: "24"
+    type:
+        description: Bench install type passed to install script
+        required: false
+        default: "server"
+runs:
+    using: composite
+    steps:
+        - name: Setup Python
+          uses: actions/setup-python@v6
+          with:
+              python-version: ${{ inputs.python-version }}
+
+        - name: Check for valid Python & merge conflicts
+          shell: bash
+          run: |
+              python -m compileall -f "${GITHUB_WORKSPACE}"
+              if grep -lr --exclude-dir=node_modules "^<<<<<<< " "${GITHUB_WORKSPACE}"; then
+                  echo "Found merge conflicts"
+                  exit 1
+              fi
+
+        - name: Setup Node
+          uses: actions/setup-node@v6
+          with:
+              node-version: ${{ inputs.node-version }}
+              check-latest: true
+
+        - name: Install Yarn
+          shell: bash
+          run: npm install -g yarn
+
+        - name: Add to hosts file
+          shell: bash
+          run: echo "127.0.0.1 test_site" | sudo tee -a /etc/hosts
+
+        - name: Cache pip
+          uses: actions/cache@v4
+          with:
+              path: ~/.cache/pip
+              key: ${{ runner.os }}-pip-${{ hashFiles('**/*requirements.txt', '**/pyproject.toml') }}
+              restore-keys: |
+                  ${{ runner.os }}-pip-
+                  ${{ runner.os }}-
+
+        - name: Cache node modules
+          uses: actions/cache@v4
+          env:
+              cache-name: cache-node-modules
+          with:
+              path: ~/.npm
+              key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+              restore-keys: |
+                  ${{ runner.os }}-build-${{ env.cache-name }}-
+                  ${{ runner.os }}-build-
+                  ${{ runner.os }}-
+
+        - name: Get yarn cache directory path
+          id: yarn-cache-dir-path
+          shell: bash
+          run: echo "dir=$(yarn cache dir)" >> "${GITHUB_OUTPUT}"
+
+        - name: Cache yarn
+          uses: actions/cache@v4
+          with:
+              path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+              key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+              restore-keys: |
+                  ${{ runner.os }}-yarn-
+
+        - name: Install bench dependencies
+          shell: bash
+          env:
+              TYPE: ${{ inputs.type }}
+          run: bash ${GITHUB_WORKSPACE}/.github/helper/install.sh

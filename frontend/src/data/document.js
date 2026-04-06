@@ -70,11 +70,11 @@ export function useDocument(doctype, docname, resourceOverrides = {}) {
             console.error(err)
           },
         },
-        ...resourceOverrides
+        ...resourceOverrides,
       })
     } else {
       documentsCache[doctype][''] = reactive({
-        doc: {},
+        doc: { __newDocument: true, doctype },
       })
       setupFormScript()
     }
@@ -184,7 +184,7 @@ export function useDocument(doctype, docname, resourceOverrides = {}) {
     let missingFields = []
 
     fields.forEach((df) => {
-      let parent = meta?.doctypeMeta?.[df.parent] || null
+      let parent = meta?.doctypesMeta?.[df.parent] || null
       if (evaluateExpression(df.mandatory_depends_on, doc, parent)) {
         const value = doc[df.fieldname]
         if (
@@ -276,6 +276,16 @@ export function useDocument(doctype, docname, resourceOverrides = {}) {
     }
   }
 
+  async function triggerButton(fieldname, row) {
+    const handler = async function () {
+      if (row) {
+        this.currentRowIdx = row.idx
+      }
+      await this[fieldname]?.()
+    }
+    await trigger(handler, row)
+  }
+
   async function triggerOnRowAdd(row) {
     const handler = async function () {
       this.currentRowIdx = row.idx
@@ -345,6 +355,7 @@ export function useDocument(doctype, docname, resourceOverrides = {}) {
     triggerOnError,
     triggerOnRefresh,
     triggerOnChange,
+    triggerButton,
     triggerOnRowAdd,
     triggerOnRowRemove,
     setupFormScript,

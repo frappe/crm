@@ -1,6 +1,8 @@
 <template>
-  <div v-if="events.length" v-for="(event, i) in events" :key="event.name">
+  <div v-if="events.length">
     <div
+      v-for="(event, i) in events"
+      :key="event.name"
       class="activity grid grid-cols-[30px_minmax(auto,_1fr)] gap-4 px-3 sm:px-10"
     >
       <div
@@ -70,16 +72,18 @@
       </div>
     </div>
   </div>
-  <div
+  <EmptyState
     v-else
-    class="flex h-full flex-1 flex-col items-center justify-center gap-3 text-xl font-medium text-ink-gray-4"
-  >
-    <CalendarIcon class="h-10 w-10" />
-    <span>{{ __('No Events Scheduled') }}</span>
-    <Button :label="__('Schedule an Event')" @click="showEvent()" />
-  </div>
+    :title="__('No Events Scheduled')"
+    :description="
+      __('No events coming up. Create a new one to keep things on track.')
+    "
+    :icon="CalendarIcon"
+    top="30%"
+  />
 </template>
 <script setup>
+import EmptyState from '@/components/ListViews/EmptyState.vue'
 import CalendarIcon from '@/components/Icons/CalendarIcon.vue'
 import MultipleAvatar from '@/components/MultipleAvatar.vue'
 import { useEvent, showEventModal, activeEvent } from '@/composables/event'
@@ -87,14 +91,8 @@ import { formatDate, timeAgo } from '@/utils'
 import { Tooltip, Avatar } from 'frappe-ui'
 
 const props = defineProps({
-  doctype: {
-    type: String,
-    default: '',
-  },
-  docname: {
-    type: String,
-    default: '',
-  },
+  doctype: { type: String, default: '' },
+  docname: { type: String, default: '' },
 })
 
 function showEvent(e = {}) {

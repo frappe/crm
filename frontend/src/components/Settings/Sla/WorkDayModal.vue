@@ -1,19 +1,19 @@
 <template>
   <Dialog
     v-model="dialog.show"
+    :options="{ title: __('Edit Workday') }"
     @after-leave="resetForm"
-    :options="{ title: __('Edit workday') }"
   >
     <template #body-content>
       <div class="flex flex-col gap-4">
         <div>
           <FormControl
+            v-model="workDayData.workday"
             type="select"
             size="sm"
             variant="subtle"
             :placeholder="__('Select Workday')"
             :label="__('Workday')"
-            v-model="workDayData.workday"
             :options="workdayOptions"
             class="text-ink-gray-8"
             :class="{ 'border-red-500': errors.workday }"
@@ -24,12 +24,12 @@
 
         <div>
           <FormControl
+            v-model="workDayData.start_time"
             type="time"
             size="sm"
             variant="subtle"
             :placeholder="__('Start Time')"
             :label="__('Start Time')"
-            v-model="workDayData.start_time"
             :class="{ 'border-red-500': errors.start_time }"
             @blur="validateField('start_time')"
           />
@@ -38,12 +38,12 @@
 
         <div>
           <FormControl
+            v-model="workDayData.end_time"
             type="time"
             size="sm"
             variant="subtle"
             :placeholder="__('End Time')"
             :label="__('End Time')"
-            v-model="workDayData.end_time"
             :class="{ 'border-red-500': errors.end_time }"
             @blur="validateTimeRange"
           />
@@ -64,18 +64,18 @@
             variant="subtle"
             :theme="isConfirmingDelete ? 'red' : 'gray'"
             :label="isConfirmingDelete ? __('Confirm Delete') : __('Delete')"
-            @click="deleteWorkDay"
             icon-left="trash-2"
+            @click="deleteWorkDay"
           />
         </div>
         <div class="flex gap-2">
           <Button
             variant="subtle"
             theme="gray"
-            @click="dialog.show = false"
             :label="__('Cancel')"
+            @click="dialog.show = false"
           />
-          <Button variant="solid" @click="onSave" :label="__('Save')" />
+          <Button variant="solid" :label="__('Save')" @click="onSave" />
         </div>
       </div>
     </template>
@@ -97,15 +97,15 @@ const ALL_WORKDAY_OPTIONS = [
 ]
 
 const props = defineProps({
-  workDaysList: {
-    type: Array,
-    required: true,
-  },
+  workDaysList: { type: Array, required: true },
 })
+
+const workDaysList = reactive(props.workDaysList)
 
 const isConfirmingDelete = ref(false)
 
 const dialog = defineModel({
+  type: Object,
   required: true,
   default: () => ({
     show: false,
@@ -168,7 +168,7 @@ function resetForm() {
 }
 
 function findWorkdayIndex(workday) {
-  return props.workDaysList.findIndex((item) => item.workday === workday)
+  return workDaysList.findIndex((item) => item.workday === workday)
 }
 
 // Validation
@@ -183,10 +183,10 @@ function validateField(field) {
 
 function validateTimeRange() {
   if (!workDayData.start_time) {
-    errors.start_time = __('Start time is required')
+    errors.start_time = __('Start Time is required')
   }
   if (!workDayData.end_time) {
-    errors.end_time = __('End time is required')
+    errors.end_time = __('End Time is required')
   }
   if (!workDayData.start_time || !workDayData.end_time) {
     return false
@@ -201,7 +201,7 @@ function validateTimeRange() {
   const endTotalMinutes = endHours * 60 + endMinutes
 
   if (endTotalMinutes <= startTotalMinutes) {
-    errors.end_time = __('End time must be after start time')
+    errors.end_time = __('End Time must be after Start Time')
     return false
   }
 
@@ -228,7 +228,7 @@ function deleteWorkDay(event) {
 
   const itemIndex = findWorkdayIndex(originalWorkday.value)
   if (itemIndex !== -1) {
-    props.workDaysList.splice(itemIndex, 1)
+    workDaysList.splice(itemIndex, 1)
   }
 
   dialog.value.show = false
@@ -251,13 +251,13 @@ function onSave() {
       const itemIndex = findWorkdayIndex(originalWorkday.value)
       if (itemIndex !== -1) {
         const updatedItem = {
-          ...props.workDaysList[itemIndex],
+          ...workDaysList[itemIndex],
           ...formattedData,
         }
-        props.workDaysList.splice(itemIndex, 1, updatedItem)
+        workDaysList.splice(itemIndex, 1, updatedItem)
       }
     } else {
-      props.workDaysList.push(formattedData)
+      workDaysList.push(formattedData)
     }
 
     dialog.value.show = false

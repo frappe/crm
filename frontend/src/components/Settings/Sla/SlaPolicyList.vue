@@ -18,20 +18,20 @@
       <div class="relative">
         <Input
           :model-value="slaSearchQuery"
-          @input="slaSearchQuery = $event"
           :placeholder="__('Search')"
           type="text"
           class="bg-surface-gray-2 hover:bg-surface-gray-2 focus:ring-0 border-outline-gray-2 rounded"
           icon-left="search"
           debounce="300"
           inputClass="p-4 pr-12"
+          @input="slaSearchQuery = $event"
         />
         <Button
           v-if="slaSearchQuery"
           icon="x"
           variant="ghost"
-          @click="slaSearchQuery = ''"
           class="absolute right-1 top-1/2 -translate-y-1/2"
+          @click="slaSearchQuery = ''"
         />
       </div>
     </template>
@@ -45,41 +45,23 @@
         <LoadingIndicator class="w-4" />
       </div>
       <div v-else class="h-full">
-        <div
+        <EmptyState
           v-if="
             !slaPolicyListResource.list.loading &&
             !slaPolicyListResource.list.data?.length
           "
-          class="flex flex-col items-center justify-center gap-4 h-full"
-        >
-          <div
-            class="p-4 size-14.5 rounded-full bg-surface-gray-2 flex justify-center items-center"
-          >
-            <ShieldCheck class="size-6 text-ink-gray-6" />
-          </div>
-          <div class="flex flex-col items-center gap-1">
-            <div class="text-base font-medium text-ink-gray-6">
-              {{ __('No SLA found') }}
-            </div>
-            <div class="text-p-sm text-ink-gray-5 max-w-60 text-center">
-              {{ __('Add one to get started.') }}
-            </div>
-          </div>
-          <Button
-            :label="__('New')"
-            variant="outline"
-            icon-left="plus"
-            @click="createNewSlaPolicy()"
-          />
-        </div>
+          title="No SLA Policies Found"
+          description="Add one to get started."
+          :icon="ShieldCheck"
+        />
         <div v-else class="-ml-2">
           <div
-            class="grid grid-cols-7 items-center gap-3 text-sm text-gray-600 ml-2"
+            class="grid grid-cols-7 items-center gap-3 text-sm text-ink-gray-5 ml-2"
           >
             <div class="col-span-5">
               {{ __('Policy Name') }}
             </div>
-            <div class="col-span-1">{{ __('Apply on') }}</div>
+            <div class="col-span-1">{{ __('Apply On') }}</div>
             <div class="col-span-1">{{ __('Enabled') }}</div>
           </div>
           <hr class="mt-2 mx-2 border-outline-gray-2" />
@@ -91,8 +73,8 @@
               class="grid grid-cols-7 items-center gap-4 cursor-pointer hover:bg-surface-menu-bar rounded"
             >
               <div
-                @click="updateStep('view', sla, true)"
                 class="w-full pl-2 col-span-5 flex items-center h-14 gap-2"
+                @click="updateStep('view', sla, true)"
               >
                 <div class="text-base text-ink-gray-7 font-medium truncate">
                   {{ sla.name }}
@@ -162,6 +144,9 @@
 </template>
 
 <script setup>
+import SettingsLayoutBase from '@/components/Layouts/SettingsLayoutBase.vue'
+import EmptyState from '@/components/ListViews/EmptyState.vue'
+import ShieldCheck from '~icons/lucide/shield-check'
 import {
   Badge,
   Button,
@@ -173,11 +158,9 @@ import {
   Switch,
   toast,
 } from 'frappe-ui'
-import SettingsLayoutBase from '../../Layouts/SettingsLayoutBase.vue'
 import { inject, ref, watch } from 'vue'
-import ShieldCheck from '~icons/lucide/shield-check'
-import { ConfirmDelete } from '../../../utils'
 import { isSlaNew, resetSlaData, updateStep } from './utils'
+import { ConfirmDelete } from '@/utils'
 
 const slaPolicyListResource = inject('slaPolicyListResource')
 const slaSearchQuery = inject('slaSearchQuery')
@@ -234,7 +217,7 @@ const duplicate = () => {
         auto: true,
         onSuccess(newSlaData) {
           slaPolicyListResource.reload()
-          toast.success(__('SLA policy duplicated'))
+          toast.success(__('SLA Policy Duplicated'))
           duplicateDialog.value = {
             show: false,
             newName: '',
@@ -258,7 +241,7 @@ const deleteSla = (sla) => {
 
   slaPolicyListResource.delete.submit(sla.name, {
     onSuccess: () => {
-      toast.success(__('SLA policy deleted'))
+      toast.success(__('SLA Policy Deleted'))
     },
     onError: (err) => {
       const message =
@@ -280,7 +263,7 @@ const onToggle = (sla) => {
     },
     {
       onSuccess: () => {
-        toast.success(__('SLA policy status updated'))
+        toast.success(__('SLA Policy Status Updated'))
       },
     },
   )

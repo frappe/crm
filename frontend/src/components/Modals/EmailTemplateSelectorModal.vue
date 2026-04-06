@@ -6,9 +6,9 @@
     <template #body-content>
       <div class="flex items-center gap-2">
         <TextInput
-          class="w-full"
           ref="searchInput"
           v-model="search"
+          class="w-full"
           type="text"
           :placeholder="__('Payment Reminder')"
         >
@@ -16,17 +16,7 @@
             <FeatherIcon name="search" class="h-4 w-4 text-ink-gray-4" />
           </template>
         </TextInput>
-        <Button
-          :label="__('Create')"
-          icon-left="plus"
-          @click="
-            () => {
-              show = false
-              showSettings = true
-              activeSettingsPage = 'Email Templates'
-            }
-          "
-        />
+        <Button :label="__('Create')" icon-left="plus" @click="create" />
       </div>
       <div
         v-if="filteredTemplates.length"
@@ -63,19 +53,9 @@
       <div v-else class="mt-2">
         <div class="flex h-56 flex-col items-center justify-center">
           <div class="text-lg text-ink-gray-4">
-            {{ __('No templates found') }}
+            {{ __('No Templates Found') }}
           </div>
-          <Button
-            :label="__('Create New')"
-            class="mt-4"
-            @click="
-              () => {
-                show = false
-                showSettings = true
-                activeSettingsPage = 'Email Templates'
-              }
-            "
-          />
+          <Button :label="__('Create New')" class="mt-4" @click="create" />
         </div>
       </div>
     </template>
@@ -84,20 +64,20 @@
 
 <script setup>
 import { showSettings, activeSettingsPage } from '@/composables/settings'
+import { useBroadcast } from '@/composables/useBroadcast'
 import { TextEditor, createListResource } from 'frappe-ui'
 import { ref, computed, nextTick, watch, onMounted } from 'vue'
 
 const props = defineProps({
-  doctype: {
-    type: String,
-    default: '',
-  },
+  doctype: { type: String, default: '' },
 })
 
-const show = defineModel()
+const show = defineModel({ type: Boolean })
 const searchInput = ref('')
 
 const emit = defineEmits(['apply'])
+
+const { on, send } = useBroadcast()
 
 const search = ref('')
 
@@ -120,6 +100,18 @@ const templates = createListResource({
   orderBy: 'modified desc',
   pageLength: 99999,
 })
+
+function create() {
+  show.value = false
+  showSettings.value = true
+  activeSettingsPage.value = 'Templates'
+  send('email_template_page', {
+    page: 'new-template',
+    reference_doctype: props.doctype,
+  })
+}
+
+on('refresh-email-templates', () => templates.reload())
 
 onMounted(() => {
   if (templates.data == null) {

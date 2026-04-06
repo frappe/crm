@@ -1,5 +1,7 @@
 # Copyright (c) 2022, Frappe Technologies Pvt. Ltd. and Contributors
 # MIT License. See license.txt
+import json
+
 import click
 import frappe
 from frappe.custom.doctype.custom_field.custom_field import create_custom_fields
@@ -19,9 +21,11 @@ def after_install(force=False):
 	add_default_fields_layout(force)
 	add_property_setter()
 	add_email_template_custom_fields()
+	add_email_account_custom_field()
 	add_default_industries()
 	add_default_lead_sources()
 	add_default_lost_reasons()
+	add_default_quick_filters()
 	add_standard_dropdown_items()
 	add_default_scripts()
 	create_default_manager_dashboard(force)
@@ -34,27 +38,38 @@ def add_default_lead_statuses():
 	statuses = {
 		"New": {
 			"color": "gray",
+			"type": "Open",
 			"position": 1,
 		},
 		"Contacted": {
 			"color": "orange",
+			"type": "Ongoing",
 			"position": 2,
 		},
 		"Nurture": {
 			"color": "blue",
+			"type": "Ongoing",
 			"position": 3,
 		},
 		"Qualified": {
 			"color": "green",
+			"type": "Won",
 			"position": 4,
+		},
+		"Converted": {
+			"color": "teal",
+			"type": "Won",
+			"position": 5,
 		},
 		"Unqualified": {
 			"color": "red",
-			"position": 5,
+			"type": "Lost",
+			"position": 6,
 		},
 		"Junk": {
 			"color": "purple",
-			"position": 6,
+			"type": "Lost",
+			"position": 7,
 		},
 	}
 
@@ -65,6 +80,7 @@ def add_default_lead_statuses():
 		doc = frappe.new_doc("CRM Lead Status")
 		doc.lead_status = status
 		doc.color = statuses[status]["color"]
+		doc.type = statuses[status]["type"]
 		doc.position = statuses[status]["position"]
 		doc.insert()
 
@@ -277,6 +293,28 @@ def add_email_template_custom_fields():
 		frappe.clear_cache(doctype="Email Template")
 
 
+def add_email_account_custom_field():
+	if not frappe.get_meta("Email Account").has_field("create_lead_from_incoming_email"):
+		click.secho("* Installing Custom Fields in Email Account")
+
+		create_custom_fields(
+			{
+				"Email Account": [
+					{
+						"default": "0",
+						"fieldname": "create_lead_from_incoming_email",
+						"fieldtype": "Check",
+						"label": "Create Lead from Incoming Emails",
+						"description": "Automatically create a lead when an incoming email is received from an unknown contact",
+						"insert_after": "create_contact",
+					}
+				]
+			}
+		)
+
+		frappe.clear_cache(doctype="Email Account")
+
+
 def add_default_industries():
 	industries = [
 		"Accounting",
@@ -343,6 +381,7 @@ def add_default_industries():
 
 def add_default_lead_sources():
 	lead_sources = [
+		"Email",
 		"Existing Customer",
 		"Reference",
 		"Advertisement",
@@ -353,7 +392,8 @@ def add_default_lead_sources():
 		"Customer's Vendor",
 		"Campaign",
 		"Walk In",
-		"Facebook"
+		"Facebook",
+		"Website",
 	]
 
 	for source in lead_sources:
@@ -400,6 +440,26 @@ def add_default_lost_reasons():
 		doc = frappe.new_doc("CRM Lost Reason")
 		doc.lost_reason = reason["reason"]
 		doc.description = reason["description"]
+		doc.insert()
+
+
+def add_default_quick_filters():
+	quick_filters = {
+		"CRM Lead": ["lead_name", "email", "organization", "status", "source"],
+		"CRM Deal": ["organization", "status", "probability", "email"],
+		"Contact": ["status", "email_id", "phone"],
+		"CRM Organization": ["organization_name", "no_of_employees", "territory", "industry"],
+		"CRM Task": ["title", "priority", "assigned_to", "status", "due_date"],
+		"CRM Call Log": ["telephony_medium", "type", "status", "from", "to"],
+	}
+
+	for quick_filter in quick_filters:
+		if frappe.db.exists("CRM Global Settings", {"dt": quick_filter}):
+			continue
+
+		doc = frappe.new_doc("CRM Global Settings")
+		doc.dt = quick_filter
+		doc.json = json.dumps(quick_filters[quick_filter])
 		doc.insert()
 
 

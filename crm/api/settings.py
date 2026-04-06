@@ -2,7 +2,7 @@ import frappe
 
 
 @frappe.whitelist()
-def create_email_account(data):
+def create_email_account(data: dict):
 	service = data.get("service")
 	service_config = email_service_config.get(service)
 	if not service_config:

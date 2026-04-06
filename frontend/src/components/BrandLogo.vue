@@ -8,5 +8,5 @@
 <script setup>
 import CRMLogo from '@/components/Icons/CRMLogo.vue'
 
-const brand = defineModel()
+const brand = defineModel({ type: Object, default: () => ({}) })
 </script>

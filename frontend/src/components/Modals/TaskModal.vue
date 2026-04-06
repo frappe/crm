@@ -20,10 +20,8 @@
     </template>
     <template #body-content>
       <div class="flex flex-col gap-4">
-        <div>
-          <div class="mb-1.5 text-xs text-ink-gray-5">
-            {{ __('Title') }}
-          </div>
+        <div class="space-y-1.5">
+          <FormLabel :label="__('Title')" required />
           <TextInput
             ref="title"
             v-model="_task.title"
@@ -36,15 +34,15 @@
             {{ __('Description') }}
           </div>
           <TextEditor
-            variant="outline"
             ref="description"
+            variant="outline"
             editor-class="!prose-sm overflow-auto min-h-[180px] max-h-80 py-1.5 px-2 rounded border border-[--surface-gray-2] bg-surface-gray-2 placeholder-ink-gray-4 hover:border-outline-gray-modals hover:bg-surface-gray-3 hover:shadow-sm focus:bg-surface-white focus:border-outline-gray-4 focus:shadow-sm focus:ring-0 focus-visible:ring-2 focus-visible:ring-outline-gray-3 text-ink-gray-8 transition-colors"
             :bubbleMenu="true"
             :content="_task.description"
-            @change="(val) => (_task.description = val)"
             :placeholder="
               __('Took a call with John Doe and discussed the new project.')
             "
+            @change="(val) => (_task.description = val)"
           />
         </div>
         <div class="flex flex-wrap items-center gap-2">
@@ -59,12 +57,13 @@
             class="form-control"
             :value="getUser(_task.assigned_to).full_name"
             doctype="User"
-            @change="(option) => (_task.assigned_to = option)"
             :placeholder="__('John Doe')"
             :filters="{
               name: ['in', users.data.crmUsers?.map((user) => user.name)],
+              ignore_user_type: 1,
             }"
             :hideMe="true"
+            @change="(option) => (_task.assigned_to = option)"
           >
             <template #prefix>
               <UserAvatar class="mr-2 !h-4 !w-4" :user="_task.assigned_to" />
@@ -82,8 +81,8 @@
           </Link>
           <div class="w-36">
             <DateTimePicker
-              class="datepicker"
               v-model="_task.due_date"
+              class="datepicker"
               :placeholder="__('01/04/2024 11:30 PM')"
               :format="getFormat('', '', true, true, false)"
               input-class="border-none"
@@ -97,7 +96,6 @@
             </Button>
           </Dropdown>
         </div>
-        <ErrorMessage class="mt-4" v-if="error" :message="__(error)" />
       </div>
     </template>
     <template #actions>
@@ -105,6 +103,7 @@
         <Button
           :label="editMode ? __('Update') : __('Create')"
           variant="solid"
+          :loading="createTaskResource.loading || updateTaskResource.loading"
           @click="updateTask"
         />
       </div>
@@ -120,37 +119,37 @@ import UserAvatar from '@/components/UserAvatar.vue'
 import Link from '@/components/Controls/Link.vue'
 import { taskStatusOptions, taskPriorityOptions, getFormat } from '@/utils'
 import { usersStore } from '@/stores/users'
-import { capture } from '@/telemetry'
-import { TextEditor, Dropdown, Tooltip, call, DateTimePicker } from 'frappe-ui'
+import { useTelemetry } from 'frappe-ui/frappe'
+import {
+  TextEditor,
+  Dropdown,
+  Tooltip,
+  DateTimePicker,
+  createResource,
+  toast,
+  TextInput,
+  FormLabel,
+} from 'frappe-ui'
 import { useOnboarding } from 'frappe-ui/frappe'
 import { ref, watch, nextTick, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 const props = defineProps({
-  task: {
-    type: Object,
-    default: {},
-  },
-  doctype: {
-    type: String,
-    default: 'CRM Lead',
-  },
-  doc: {
-    type: String,
-    default: '',
-  },
+  task: { type: Object, default: () => ({}) },
+  doctype: { type: String, default: 'CRM Lead' },
+  doc: { type: String, default: '' },
 })
 
-const show = defineModel()
-const tasks = defineModel('reloadTasks')
+const show = defineModel({ type: Boolean })
+const tasks = defineModel('reloadTasks', { type: Object, default: () => ({}) })
 
 const emit = defineEmits(['updateTask', 'after'])
 
 const router = useRouter()
 const { users, getUser } = usersStore()
 const { updateOnboardingStep } = useOnboarding('frappecrm')
+const { capture } = useTelemetry()
 
-const error = ref(null)
 const title = ref(null)
 const editMode = ref(false)
 const _task = ref({
@@ -162,6 +161,58 @@ const _task = ref({
   priority: 'Low',
   reference_doctype: props.doctype,
   reference_docname: null,
+})
+
+const validateTask = () => {
+  if (!_task.value.title) {
+    toast.error(__('Title is required'))
+    return false
+  }
+  return true
+}
+
+const createTaskResource = createResource({
+  url: 'frappe.client.insert',
+  makeParams() {
+    return {
+      doc: {
+        doctype: 'CRM Task',
+        reference_doctype: props.doctype,
+        reference_docname: props.doc || null,
+        ..._task.value,
+      },
+    }
+  },
+  validate: validateTask,
+  onSuccess(d) {
+    if (d.name) {
+      updateOnboardingStep('create_first_task')
+      capture('task_created')
+      tasks.value?.reload?.()
+      emit('after', d, true)
+      show.value = false
+      toast.success(__('Task created'))
+    }
+  },
+})
+
+const updateTaskResource = createResource({
+  url: 'frappe.client.set_value',
+  makeParams() {
+    return {
+      doctype: 'CRM Task',
+      name: _task.value.name,
+      fieldname: _task.value,
+    }
+  },
+  validate: validateTask,
+  onSuccess(d) {
+    if (d.name) {
+      tasks.value?.reload?.()
+      emit('after', d)
+      show.value = false
+    }
+  },
 })
 
 function updateTaskStatus(status) {
@@ -187,42 +238,10 @@ async function updateTask() {
     _task.value.assigned_to = getUser().name
   }
   if (_task.value.name) {
-    let d = await call('frappe.client.set_value', {
-      doctype: 'CRM Task',
-      name: _task.value.name,
-      fieldname: _task.value,
-    })
-    if (d.name) {
-      tasks.value?.reload()
-      emit('after', d)
-    }
+    updateTaskResource.submit()
   } else {
-    let d = await call(
-      'frappe.client.insert',
-      {
-        doc: {
-          doctype: 'CRM Task',
-          reference_doctype: props.doctype,
-          reference_docname: props.doc || null,
-          ..._task.value,
-        },
-      },
-      {
-        onError: (err) => {
-          if (err.error.exc_type == 'MandatoryError') {
-            error.value = 'Title is mandatory'
-          }
-        },
-      },
-    )
-    if (d.name) {
-      updateOnboardingStep('create_first_task')
-      capture('task_created')
-      tasks.value?.reload()
-      emit('after', d, true)
-    }
+    createTaskResource.submit()
   }
-  show.value = false
 }
 
 function render() {

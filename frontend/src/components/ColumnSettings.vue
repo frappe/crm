@@ -17,10 +17,10 @@
         <div v-if="!edit">
           <Draggable
             :list="columns"
-            @end="apply"
             :delay="isTouchScreenDevice() ? 200 : 0"
             item-key="key"
             class="list-group"
+            @end="apply"
           >
             <template #item="{ element }">
               <div
@@ -95,19 +95,19 @@
           >
             <div class="flex flex-col items-center gap-3">
               <FormControl
+                v-model="column.label"
                 type="text"
                 size="md"
                 :label="__('Label')"
-                v-model="column.label"
                 class="sm:w-full w-52"
                 :placeholder="__('First Name')"
               />
               <FormControl
+                v-model="column.width"
                 type="text"
                 size="md"
                 :label="__('Width')"
                 class="sm:w-full w-52"
-                v-model="column.width"
                 placeholder="10rem"
                 :description="
                   __(
@@ -145,20 +145,15 @@ import DragIcon from '@/components/Icons/DragIcon.vue'
 import ReloadIcon from '@/components/Icons/ReloadIcon.vue'
 import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import { isTouchScreenDevice } from '@/utils'
+import { getMeta } from '@/stores/meta'
 import { Popover } from 'frappe-ui'
 import Draggable from 'vuedraggable'
 import { computed, ref } from 'vue'
 import { watchOnce } from '@vueuse/core'
 
 const props = defineProps({
-  doctype: {
-    type: String,
-    required: true,
-  },
-  hideLabel: {
-    type: Boolean,
-    default: false,
-  },
+  doctype: { type: String, required: true },
+  hideLabel: { type: Boolean, default: false },
 })
 
 const emit = defineEmits(['update'])
@@ -170,7 +165,7 @@ const oldValues = ref({
   isDefault: false,
 })
 
-const list = defineModel()
+const list = defineModel({ type: Object, default: () => ({}) })
 const edit = ref(false)
 const column = ref({
   old: {},
@@ -200,24 +195,38 @@ const rows = computed({
   },
 })
 
-const fields = computed(() => {
-  let allFields = list.value?.data?.fields
-  if (!allFields) return []
+const { getFields } = getMeta(props.doctype)
 
-  return allFields.filter((field) => {
-    return !columns.value.find((column) => column.key === field.fieldname)
+const fields = computed(() => {
+  const _fields = getFields({ withStandardFields: true }) || []
+  if (!_fields.length) return []
+
+  let existingFields = []
+  if (columns.value.length) {
+    existingFields = columns.value.map((column) => column.key)
+  }
+
+  return _fields.filter((field) => {
+    return (
+      !columns.value.find((column) => column.key === field.fieldname) &&
+      !existingFields.includes(field.fieldname)
+    )
   })
 })
 
 function addColumn(c) {
   if (!c) return
-  let align = ['Float', 'Int', 'Percent', 'Currency'].includes(c.type)
+  let align = ['Float', 'Int', 'Percent', 'Currency', 'Duration'].includes(
+    c.fieldtype,
+  )
     ? 'right'
     : 'left'
+
   let _column = {
     label: c.label,
     type: c.fieldtype,
     key: c.fieldname,
+    options: c.options,
     width: '10rem',
     align,
   }

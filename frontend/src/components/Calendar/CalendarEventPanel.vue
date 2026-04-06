@@ -15,14 +15,14 @@
       <div class="flex items-center gap-x-1">
         <ShortcutTooltip
           v-if="mode == 'details' && !readonly"
-          :label="__('Edit event')"
+          :label="__('Edit Event')"
           combo="Enter"
         >
           <Button :icon="EditIcon" variant="ghost" @click="editDetails" />
         </ShortcutTooltip>
         <ShortcutTooltip
           v-if="(mode === 'edit' || mode === 'details') && !readonly"
-          :label="__('Delete event')"
+          :label="__('Delete Event')"
           combo="Delete"
           :alt-combos="['Backspace']"
         >
@@ -30,12 +30,12 @@
         </ShortcutTooltip>
         <ShortcutTooltip
           v-if="mode === 'edit' || mode === 'details'"
-          :label="__('Duplicate event')"
+          :label="__('Duplicate Event')"
           combo="Mod+D"
         >
           <Button icon="copy" variant="ghost" @click="duplicateEvent" />
         </ShortcutTooltip>
-        <ShortcutTooltip :label="__('Close panel')" combo="Esc">
+        <ShortcutTooltip :label="__('Close Panel')" combo="Esc">
           <Button icon="x" variant="ghost" @click="close" />
         </ShortcutTooltip>
       </div>
@@ -62,7 +62,7 @@
                 : 'text-ink-gray-8 '
             "
           >
-            {{ _event.title || __('(No title)') }}
+            {{ _event.title || __('(No Title)') }}
           </div>
           <div class="text-ink-gray-6 text-p-base">{{ formattedDateTime }}</div>
         </div>
@@ -111,8 +111,8 @@
           class="size-4"
         />
         <Link
-          class="[&_button]:bg-surface-white [&_button]:select-text [&_button]:text-ink-gray-7 [&_button]:cursor-text"
           v-model="_event.referenceDocname"
+          class="[&_button]:bg-surface-white [&_button]:select-text [&_button]:text-ink-gray-7 [&_button]:cursor-text"
           :doctype="_event.referenceDoctype"
           :disabled="true"
         />
@@ -131,7 +131,7 @@
           <PeopleIcon class="size-4" />
           <div class="flex flex-col">
             <div class="text-ink-gray-7">
-              {{ __('{0} Attendees', [peoples.length + 1]) }}
+              {{ __('{0} attendees', [peoples.length + 1]) }}
             </div>
             <div class="text-p-base">{{ attendees }}</div>
           </div>
@@ -228,7 +228,7 @@
           <Button
             v-if="!showAllParticipants && peoples.length > 2"
             variant="ghost"
-            :label="__('See all participants')"
+            :label="__('See All Participants')"
             iconLeft="more-horizontal"
             class="!justify-start w-fit"
             @click="showAllParticipants = true"
@@ -236,7 +236,7 @@
           <Button
             v-else-if="showAllParticipants"
             variant="ghost"
-            :label="__('Show less')"
+            :label="__('Show Less')"
             iconLeft="chevron-up"
             class="!justify-start w-fit"
             @click="showAllParticipants = false"
@@ -276,12 +276,12 @@
         </Dropdown>
         <TextInput
           ref="eventTitle"
+          v-model="_event.title"
           class="w-full"
           variant="outline"
           size="md"
-          v-model="_event.title"
           :debounce="500"
-          :placeholder="__('Event title')"
+          :placeholder="__('Event Title')"
           @change="sync"
           @keyup.enter="saveEvent"
         />
@@ -290,7 +290,7 @@
         <div class="flex items-center">
           <Switch v-model="_event.isFullDay" @update:model-value="sync" />
           <div class="ml-2">
-            {{ __('All day') }}
+            {{ __('All Day') }}
           </div>
         </div>
         <!-- <div class="flex items-center gap-1.5 text-ink-gray-5">
@@ -351,17 +351,17 @@
       <div class="flex justify-between gap-3 px-4.5 py-[7px] text-ink-gray-7">
         <BellIcon class="size-4 mt-1.5" />
         <EventNotifications
-          class="w-full"
           v-model="notifications"
+          class="w-full"
           :isAllDay="_event.isFullDay"
         />
       </div>
       <div class="flex justify-between gap-3 px-4.5 py-[7px] text-ink-gray-7">
         <LeadsIcon class="h-4 mt-1.5" />
         <Attendee
+          v-model="peoples"
           class="w-full"
           size="sm"
-          v-model="peoples"
           :validate="validateEmail"
           :error-message="
             (value) => __('{0} is an invalid email address', [value])
@@ -371,9 +371,9 @@
       <div class="flex gap-3 justify-between items-center mx-4.5 my-2.5">
         <MapIcon class="size-4 text-ink-gray-7" />
         <TextInput
-          class="w-full"
           v-model="_event.location"
-          :placeholder="__('Add location')"
+          class="w-full"
+          :placeholder="__('Add Location')"
           variant="outline"
           size="sm"
         />
@@ -385,13 +385,13 @@
             editor-class="!prose-sm !leading-[1.13rem] overflow-auto px-2.5 rounded placeholder-ink-gray-4 focus:bg-surface-white focus:ring-0 text-ink-gray-8 transition-colors"
             :bubbleMenu="true"
             :content="_event.description"
+            :placeholder="__('Add Description')"
             @change="
               (val) => {
                 _event.description = val
                 sync()
               }
             "
-            :placeholder="__('Add description')"
           />
         </div>
       </div>
@@ -400,7 +400,7 @@
       <CollapsibleSection
         headerClass="mx-4.5 my-2.5"
         :opened="false"
-        :label="__('Linked with')"
+        :label="__('Linked With')"
       >
         <div
           class="flex items-center justify-between gap-3 px-4.5 py-[7px] text-ink-gray-7"
@@ -408,6 +408,7 @@
           <FeatherIcon name="plus-circle" class="size-4" />
           <div class="flex items-center gap-x-1.5 w-full">
             <FormControl
+              v-model="_event.referenceDoctype"
               class="w-full"
               type="select"
               :options="[
@@ -424,10 +425,9 @@
                   value: 'CRM Deal',
                 },
               ]"
-              v-model="_event.referenceDoctype"
               variant="outline"
               :placeholder="__('Add Lead or Deal')"
-              @change="
+              @update:modelValue="
                 () => {
                   _event.referenceDocname = ''
                   sync()
@@ -446,8 +446,8 @@
           />
           <div class="flex items-center gap-x-1.5 w-full">
             <Link
-              class="w-full"
               v-model="_event.referenceDocname"
+              class="w-full"
               :doctype="_event.referenceDoctype"
               :filters="
                 _event.referenceDoctype === 'CRM Lead' ? { converted: 0 } : {}
@@ -462,7 +462,7 @@
       <CollapsibleSection
         headerClass="mx-4.5 my-2.5"
         :opened="false"
-        :label="__('More options')"
+        :label="__('More Options')"
       >
         <div
           class="flex items-center justify-between gap-3 px-4.5 py-[7px] text-ink-gray-7"
@@ -470,6 +470,7 @@
           <ShieldIcon class="size-4" />
           <div class="flex items-center gap-x-1.5 w-full">
             <FormControl
+              v-model="_event.eventType"
               class="w-full"
               type="select"
               :options="[
@@ -482,10 +483,9 @@
                   value: 'Public',
                 },
               ]"
-              v-model="_event.eventType"
               variant="outline"
               :placeholder="__('Private or Public')"
-              @change="() => sync()"
+              @update:modelValue="() => sync()"
             />
           </div>
         </div>
@@ -509,8 +509,8 @@
             mode === 'edit'
               ? __('Save')
               : mode === 'duplicate'
-                ? __('Duplicate event')
-                : __('Create event')
+                ? __('Duplicate Event')
+                : __('Create Event')
           }}
         </Button>
       </div>
@@ -523,8 +523,8 @@
         {{ __('Going?') }}
       </div>
       <TabButtons
-        class="w-full [&_button]:w-full [&_div]:w-full"
         v-model="attending"
+        class="w-full [&_button]:w-full [&_div]:w-full"
         :buttons="[
           {
             label: __('Yes'),
@@ -590,10 +590,7 @@ import { ref, computed, watch, h, inject } from 'vue'
 import { useRouter } from 'vue-router'
 
 const props = defineProps({
-  mode: {
-    type: String,
-    default: 'details',
-  },
+  mode: { type: String, default: 'details' },
 })
 
 const emit = defineEmits([
@@ -610,8 +607,8 @@ const router = useRouter()
 const { $dialog } = globalStore()
 const { user } = sessionStore()
 
-const show = defineModel()
-const event = defineModel('event')
+const show = defineModel({ type: Boolean })
+const event = defineModel('event', { type: Object, default: () => ({}) })
 
 const events = inject('events')
 
@@ -671,10 +668,10 @@ const notifications = computed({
 })
 
 const title = computed(() => {
-  if (props.mode === 'details') return __('Event details')
-  if (props.mode === 'edit') return __('Editing event')
-  if (props.mode === 'new') return __('New event')
-  return __('Duplicate event')
+  if (props.mode === 'details') return __('Event Details')
+  if (props.mode === 'edit') return __('Editing Event')
+  if (props.mode === 'new') return __('New Event')
+  return __('Duplicate Event')
 })
 
 const currentAttendee = computed(() => {
@@ -718,6 +715,7 @@ const displayedPeoples = computed(() => {
 
 watch(
   [() => props.mode, () => event.value],
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   ([mode, event], [oldMode, oldEvent]) => {
     error.value = null
     focusOnTitle()
@@ -909,7 +907,7 @@ function reset() {
 
 function showDiscardChangesModal(action) {
   $dialog({
-    title: __('Discard unsaved changes?'),
+    title: __('Discard Unsaved Changes?'),
     message: __(
       'Are you sure you want to discard unsaved changes to this event?',
     ),
@@ -938,7 +936,7 @@ const formattedDateTime = computed(() => {
   const date = dayjs(_event.value.fromDate)
 
   if (_event.value.isFullDay) {
-    return `${__('All day')} - ${date.format('ddd, D MMM YYYY')}`
+    return `${__('All Day')} - ${date.format('ddd, D MMM YYYY')}`
   }
 
   let start = dayjs(_event.value.fromDate + ' ' + _event.value.fromTime)
@@ -992,11 +990,11 @@ function redirect() {
 }
 
 function getTooltip(m) {
-  if (!m) return email
+  if (!m) return ''
   const parts = []
   if (m.reference_doctype) parts.push(m.reference_doctype)
   if (m.reference_docname) parts.push(m.reference_docname)
-  return parts.length ? parts.join(': ') : email
+  return parts.length ? parts.join(': ') : ''
 }
 
 const toOptions = computed(() => buildEndTimeOptions(_event.value.fromTime))

@@ -1,35 +1,35 @@
 <template>
   <CFConditions
-    v-if="props.conditions.length > 0"
-    :conditions="props.conditions"
+    v-if="conditions.length > 0"
+    :conditions="conditions"
     :level="0"
     :disableAddCondition="props.errors !== ''"
     :doctype="props.doctype"
   />
   <div
-    v-if="props.conditions.length == 0"
-    class="flex p-4 items-center cursor-pointer justify-center gap-2 text-sm border border-outline-gray-2 text-gray-600 rounded-md"
+    v-if="conditions.length == 0"
+    class="flex p-4 items-center cursor-pointer justify-center gap-2 text-sm border border-outline-gray-2 text-ink-gray-5 rounded-md"
     @click="
       () => {
-        props.conditions.push(['', '', ''])
+        conditions.push(['', '', ''])
         validateAssignmentRule(props.name)
       }
     "
   >
     <FeatherIcon name="plus" class="h-4" />
-    {{ __('Add a condition') }}
+    {{ __('Add a Condition') }}
   </div>
   <div class="flex items-center justify-between mt-2">
-    <div class="" v-if="props.conditions.length > 0">
+    <div v-if="conditions.length > 0" class="">
       <Dropdown v-slot="{ open }" :options="dropdownOptions">
         <Button
           :disabled="props.errors !== ''"
           :icon-right="open ? 'chevron-up' : 'chevron-down'"
-          :label="__('Add condition')"
+          :label="__('Add Condition')"
         />
       </Dropdown>
     </div>
-    <ErrorMessage v-if="props.conditions.length > 0" :message="props.errors" />
+    <ErrorMessage v-if="conditions.length > 0" :message="props.errors" />
   </div>
 </template>
 
@@ -38,20 +38,21 @@ import { Button, Dropdown, ErrorMessage, FeatherIcon } from 'frappe-ui'
 import { watchDebounced } from '@vueuse/core'
 import { validateConditions } from '@/utils'
 import CFConditions from '../../ConditionsFilter/CFConditions.vue'
-import { inject } from 'vue'
+import { inject, reactive } from 'vue'
 
 const props = defineProps({
-  conditions: Array,
-  name: String,
-  errors: String,
-  doctype: String,
+  conditions: { type: Array, default: () => [] },
+  name: { type: String, default: '' },
+  errors: { type: String, default: '' },
+  doctype: { type: String, default: '' },
 })
 
+const conditions = reactive(props.conditions || [])
 const validateAssignmentRule = inject('validateAssignmentRule')
 
 const getConjunction = () => {
   let conjunction = 'and'
-  props.conditions.forEach((condition) => {
+  conditions.forEach((condition) => {
     if (typeof condition == 'string') {
       conjunction = condition
     }
@@ -61,33 +62,33 @@ const getConjunction = () => {
 
 const dropdownOptions = [
   {
-    label: __('Add condition'),
+    label: __('Add Condition'),
     onClick: () => {
       addCondition()
     },
   },
   {
-    label: __('Add condition group'),
+    label: __('Add Condition Group'),
     onClick: () => {
       const conjunction = getConjunction()
-      props.conditions.push(conjunction, [[]])
+      conditions.push(conjunction, [[]])
     },
   },
 ]
 
 const addCondition = () => {
-  const isValid = validateConditions(props.conditions)
+  const isValid = validateConditions(conditions)
 
   if (!isValid) {
     return
   }
   const conjunction = getConjunction()
 
-  props.conditions.push(conjunction, ['', '', ''])
+  conditions.push(conjunction, ['', '', ''])
 }
 
 watchDebounced(
-  () => [...props.conditions],
+  () => [...conditions],
   () => {
     validateAssignmentRule(props.name)
   },
