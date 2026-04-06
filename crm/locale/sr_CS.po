@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-04-05 09:48+0000\n"
-"PO-Revision-Date: 2026-04-05 15:59\n"
+"PO-Revision-Date: 2026-04-06 17:01\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Serbian (Latin)\n"
 "MIME-Version: 1.0\n"
@@ -3359,7 +3359,7 @@ msgstr "Datum početka"
 #. Label of the from (Data) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 msgid "From Number"
-msgstr ""
+msgstr "Od broja"
 
 #. Label of the from_type (Data) field in DocType 'CRM Status Change Log'
 #: crm/fcrm/doctype/crm_status_change_log/crm_status_change_log.json
@@ -3443,11 +3443,11 @@ msgstr "Da li odlazite?"
 
 #: frontend/src/components/Filter.vue:366
 msgid "Greater than"
-msgstr ""
+msgstr "Veće od"
 
 #: frontend/src/components/Filter.vue:368
 msgid "Greater than or equal to"
-msgstr ""
+msgstr "Veće ili jednako"
 
 #. Option for the 'Type' (Select) field in DocType 'CRM Fields Layout'
 #: crm/fcrm/doctype/crm_fields_layout/crm_fields_layout.json
@@ -3769,11 +3769,11 @@ msgstr "Nevažeća polja: {0}"
 
 #: frontend/src/components/Controls/DurationInput.vue:94
 msgid "Invalid format. Try: 1 hour 30 minutes, 2 hours, 45 seconds, 1:30:45, 90s"
-msgstr ""
+msgstr "Nevažeći format. Pokušajte: 1 sat 30 minuta, 2 sata, 45 sekundi, 1:30:45, 90s"
 
 #: frontend/src/components/Controls/DurationInput.vue:97
 msgid "Invalid format. Try: 1h 30m 45s, 1:30:45, 90s"
-msgstr ""
+msgstr "Nevažeći format: Pokušajte: 1h 30m 45s, 1:30:45, 90s"
 
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.py:263
 msgid "Invalid lead details supplied."
@@ -4171,11 +4171,11 @@ msgstr "Levo"
 
 #: frontend/src/components/Filter.vue:367
 msgid "Less than"
-msgstr ""
+msgstr "Manje od"
 
 #: frontend/src/components/Filter.vue:369
 msgid "Less than or equal to"
-msgstr ""
+msgstr "Manje ili jednako"
 
 #: frontend/src/components/FilesUploader/FilesUploaderArea.vue:43
 msgid "Library"
@@ -5663,7 +5663,7 @@ msgstr "Referentni dokument {0} {1} ne postoji."
 
 #: crm/api/whatsapp.py:270 crm/api/whatsapp.py:322
 msgid "Referenced WhatsApp message does not exist."
-msgstr ""
+msgstr "Referencirana WhatsApp poruka ne postoji."
 
 #: frontend/src/components/ViewControls.vue:26
 #: frontend/src/components/ViewControls.vue:159
@@ -5685,7 +5685,7 @@ msgstr "Odbij poziv"
 
 #: frontend/src/components/Kanban/KanbanView.vue:165
 msgid "Reload Columns"
-msgstr ""
+msgstr "Ponovo učitaj kolone"
 
 #: frontend/src/components/Settings/CalendarSettings.vue:66
 msgid "Reminders will be sent <b>before the event starts</b>, based on the configured time"
@@ -6963,7 +6963,7 @@ msgstr "Datum završetka ne može biti pre datum početka"
 #. Label of the to (Data) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 msgid "To Number"
-msgstr ""
+msgstr "Do broja"
 
 #. Label of the to_type (Data) field in DocType 'CRM Status Change Log'
 #: crm/fcrm/doctype/crm_status_change_log/crm_status_change_log.json
@@ -7508,7 +7508,7 @@ msgstr "Vi"
 
 #: crm/api/__init__.py:106
 msgid "You are not allowed to invite Sales Managers"
-msgstr ""
+msgstr "Nemate dozvolu da pozivate menadžera prodaje"
 
 #: crm/api/__init__.py:103
 msgid "You are not allowed to invite System Managers"
