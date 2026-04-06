@@ -7,7 +7,7 @@
         v-if="tabs.length && tabs[tabIndex].label"
         :list="tabs"
         item-key="name"
-        class="flex items-center gap-2 w-full overflow-auto"
+        class="flex items-center gap-2 w-full overflow-auto py-1 [&::-webkit-scrollbar]:h-0"
         @end="(e) => (tabIndex = e.newIndex)"
       >
         <template #item="{ element: tab, index: i }">
