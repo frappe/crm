@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-04-05 09:48+0000\n"
-"PO-Revision-Date: 2026-04-05 15:59\n"
+"PO-Revision-Date: 2026-04-07 17:49\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: German\n"
 "MIME-Version: 1.0\n"
@@ -6622,7 +6622,7 @@ msgstr "Betreff"
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:152
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:158
 msgid "Subject is required"
-msgstr ""
+msgstr "Betreff ist erforderlich"
 
 #: frontend/src/components/Modals/EmailTemplateSelectorModal.vue:35
 msgid "Subject: {0}"
@@ -6941,7 +6941,7 @@ msgstr "Titelfeld"
 #: frontend/src/components/Modals/EventModal.vue:376
 #: frontend/src/components/Modals/TaskModal.vue:168
 msgid "Title is required"
-msgstr ""
+msgstr "Titel ist erforderlich"
 
 #. Label of the to (Data) field in DocType 'CRM Status Change Log'
 #: crm/fcrm/doctype/crm_status_change_log/crm_status_change_log.json
@@ -7984,7 +7984,7 @@ msgstr ""
 #: frontend/src/components/Settings/CalendarSettings.vue:123
 #: frontend/src/components/Settings/CalendarSettings.vue:212
 msgid "weeks"
-msgstr ""
+msgstr "Wochen"
 
 #: frontend/src/components/Calendar/EventNotifications.vue:179
 #: frontend/src/components/Calendar/EventNotifications.vue:198
