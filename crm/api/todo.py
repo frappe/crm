@@ -198,6 +198,9 @@ def _process_single_task_reminder(task: dict, offset: dict, interval: str, curre
 	if interval == "days":
 		target_date = add_to_date(due_date, days=-offset["value"]).date()
 		if current_time.date() != target_date:
+			frappe.logger().debug(
+				f"[Task Reminder] Skipping task {task.name}: daily reminder target_date={target_date} != current_date={current_time.date()}"
+			)
 			return
 	else:
 		interval_kwargs = _get_interval_kwargs(interval, offset["value"])
@@ -206,6 +209,9 @@ def _process_single_task_reminder(task: dict, offset: dict, interval: str, curre
 		window = _get_trigger_window_duration(interval)
 		window_start = add_to_date(trigger_time, **{k: -v for k, v in window.items()})
 		window_end = add_to_date(trigger_time, **window)
+		frappe.logger().debug(
+			f"[Task Reminder] Skipping task {task.name}: current_time={current_time} not in window [{trigger_time}, {due_date}]"
+		)
 		if not (window_start <= current_time <= window_end):
 			return
 
@@ -221,7 +227,14 @@ def _process_single_task_reminder(task: dict, offset: dict, interval: str, curre
 		},
 	)
 	if existing:
+		frappe.logger().debug(
+			f"[Task Reminder] Skipping task {task.name}: reminder already sent (key={reminder_key})"
+		)
 		return
+
+	frappe.logger().info(
+		f"[Task Reminder] Sending {interval} reminder for task {task.name} to {task.assigned_to}"
+	)
 
 	# Send in-app notification
 	_send_task_inapp_notification(task, offset, reminder_key)
