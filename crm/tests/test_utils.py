@@ -604,3 +604,59 @@ class TestCreateLeadFromIncomingEmail(IntegrationTestCase):
 
 		lead = frappe.db.get_value("CRM Lead", {"email": "prefix@example.com"}, "first_name")
 		self.assertEqual(lead, "prefix")
+
+	def test_lead_last_name_empty_for_single_word_sender_full_name(self):
+		"""When sender_full_name is a single word, last_name should be empty."""
+		email_account = self._make_email_account()
+		doc = self._incoming_comm("singlename@example.com", email_account.name, sender_full_name="Mononym")
+		create_lead_from_incoming_email(doc)
+
+		lead = frappe.db.get_values(
+			"CRM Lead", {"email": "singlename@example.com"}, ["first_name", "last_name"], as_dict=True
+		)
+		self.assertEqual(lead, [{"first_name": "Mononym", "last_name": ""}])
+
+	def test_communication_linked_back_to_created_lead(self):
+		"""After lead creation, the communication's reference_doctype and reference_name should point to the new lead."""
+		email_account = self._make_email_account()
+		doc = self._incoming_comm("linked@example.com", email_account.name, sender_full_name="Link Test")
+		create_lead_from_incoming_email(doc)
+
+		self.assertEqual(doc.reference_doctype, "CRM Lead")
+		lead_name = frappe.db.get_value("CRM Lead", {"email": "linked@example.com"}, "name")
+		self.assertEqual(doc.reference_name, lead_name)
+
+	def test_lead_source_set_to_email_when_source_exists(self):
+		"""Lead source should be set to 'Email' when the CRM Lead Source 'Email' exists."""
+		if not frappe.db.exists("CRM Lead Source", "Email"):
+			frappe.get_doc({"doctype": "CRM Lead Source", "name": "Email"}).insert(ignore_permissions=True)
+
+		email_account = self._make_email_account()
+		doc = self._incoming_comm("leadsource@example.com", email_account.name)
+		create_lead_from_incoming_email(doc)
+
+		source = frappe.db.get_value("CRM Lead", {"email": "leadsource@example.com"}, "source")
+		self.assertEqual(source, "Email")
+
+	def test_lead_created_for_sent_communication_with_communication_type(self):
+		"""A sent communication with communication_type='Communication' should still create a lead.
+
+		The guard condition uses AND: both sent_or_received != 'Received' AND
+		communication_type != 'Communication' must be true to bail out. When the
+		type IS 'Communication', the second condition is false and the function proceeds.
+		"""
+		email_account = self._make_email_account()
+		doc = frappe.get_doc(
+			{
+				"doctype": "Communication",
+				"communication_type": "Communication",
+				"communication_medium": "Email",
+				"sent_or_received": "Sent",
+				"subject": "Sent communication type",
+				"sender": "sentcomm@example.com",
+				"email_account": email_account.name,
+			}
+		)
+		create_lead_from_incoming_email(doc)
+
+		self.assertTrue(frappe.db.exists("CRM Lead", {"email": "sentcomm@example.com"}))

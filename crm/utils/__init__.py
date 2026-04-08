@@ -356,9 +356,13 @@ def create_lead_from_incoming_email(doc: Communication, method: str | None = Non
 		lead.first_name = doc.sender.split("@")[0]
 
 	if frappe.db.exists("CRM Lead Source", "Email"):
-		lead.lead_source = "Email"
+		lead.source = "Email"
 
 	lead.insert(ignore_permissions=True)
+
+	doc.reference_doctype = "CRM Lead"
+	doc.reference_name = lead.name
+	doc.save(ignore_permissions=True)
 
 
 def on_comment_insert(doc: Comment, method: str | None = None):
