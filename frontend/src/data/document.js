@@ -1,6 +1,7 @@
 import { getScript } from '@/data/script'
 import { globalStore } from '@/stores/global'
 import { getMeta } from '@/stores/meta'
+import { useAttachments } from '@/composables/useAttachments'
 import { showSettings, activeSettingsPage } from '@/composables/settings'
 import { runSequentially, parseAssignees, evaluateExpression } from '@/utils'
 import { createDocumentResource, createResource, toast } from 'frappe-ui'
@@ -14,6 +15,10 @@ const permissionsCache = {}
 export function useDocument(doctype, docname, resourceOverrides = {}) {
   const { setupScript, scripts } = getScript(doctype)
   const meta = getMeta(doctype)
+  const { trackOldFile, processPendingDeletions } = useAttachments(
+    doctype,
+    docname,
+  )
 
   documentsCache[doctype] = documentsCache[doctype] || {}
 
@@ -44,6 +49,7 @@ export function useDocument(doctype, docname, resourceOverrides = {}) {
           onSuccess: () => {
             triggerOnSave()
             toast.success(__('Document updated successfully'))
+            processPendingDeletions()
           },
           onError: (err) => {
             triggerOnError(err)
@@ -252,6 +258,7 @@ export function useDocument(doctype, docname, resourceOverrides = {}) {
     } else {
       oldValue = documentsCache[doctype][docname || ''].doc[fieldname]
       documentsCache[doctype][docname || ''].doc[fieldname] = value
+      trackOldFile(oldValue, value)
     }
 
     const handler = async function () {
