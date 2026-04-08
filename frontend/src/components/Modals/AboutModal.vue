@@ -10,12 +10,13 @@
         </div>
         <hr class="border-t my-3 mx-2" />
         <div>
-          <a
+          <component
+            :is="link.onClick ? 'button' : 'a'"
             v-for="link in links"
             :key="link.label"
-            class="flex py-2 px-2 hover:bg-surface-gray-1 rounded cursor-pointer"
-            target="_blank"
-            :href="link.url"
+            class="flex w-full py-2 px-2 hover:bg-surface-gray-1 rounded cursor-pointer"
+            v-bind="link.onClick ? {} : { href: link.url, target: '_blank' }"
+            @click="link.onClick ? link.onClick() : undefined"
           >
             <component
               :is="link.icon"
@@ -25,7 +26,7 @@
             <span class="text-base text-ink-gray-8">
               {{ link.label }}
             </span>
-          </a>
+          </component>
         </div>
         <hr class="border-t my-3 mx-2" />
         <p class="text-sm text-ink-gray-6 px-2 mt-2">
@@ -37,11 +38,13 @@
 </template>
 <script setup>
 import CRMLogo from '@/components/Icons/CRMLogo.vue'
+import { showFeedbackModal } from '@/composables/modals'
 import LucideGlobe from '~icons/lucide/globe'
 import LucideGitHub from '~icons/lucide/github'
 import LucideHeadset from '~icons/lucide/headset'
 import LucideBug from '~icons/lucide/bug'
 import LucideBookOpen from '~icons/lucide/book-open'
+import LucideMessageSquare from '~icons/lucide/message-square'
 
 let show = defineModel({ type: Boolean })
 
@@ -70,6 +73,14 @@ let links = [
     label: __('Contact Support'),
     url: 'https://support.frappe.io',
     icon: LucideHeadset,
+  },
+  {
+    label: __('Send Feedback'),
+    icon: LucideMessageSquare,
+    onClick: () => {
+      show.value = false
+      showFeedbackModal.value = true
+    },
   },
 ]
 </script>
