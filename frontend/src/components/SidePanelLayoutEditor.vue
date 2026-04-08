@@ -160,7 +160,6 @@ const restrictedFieldTypes = [
   'Tab Break',
   'Table',
   'Table MultiSelect',
-  'Attach Image',
   'Signature',
   'Image',
   'Geolocation',
