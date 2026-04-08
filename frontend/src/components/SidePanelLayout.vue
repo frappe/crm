@@ -83,6 +83,8 @@
                               'Duration',
                               'Rating',
                               'Button',
+                              'Attach',
+                              'Attach Image',
                             ].includes(field.fieldtype)
                           "
                           class="flex h-7 cursor-pointer items-center px-2 py-1 text-ink-gray-5"
@@ -302,6 +304,19 @@
                           :disabled="Boolean(field.read_only)"
                           @click="handleButtonClick(field)"
                         />
+                        <AttachControl
+                          v-else-if="
+                            ['Attach', 'Attach Image'].includes(field.fieldtype)
+                          "
+                          class="attach-control"
+                          :value="doc[field.fieldname]"
+                          :doctype="doctype"
+                          :docname="doc.name"
+                          :fieldname="field.fieldname"
+                          :imageOnly="field.fieldtype === 'Attach Image'"
+                          :disabled="Boolean(field.read_only)"
+                          @change="(v) => fieldChange(v, field)"
+                        />
                         <FormControl
                           v-else
                           class="form-control"
@@ -355,6 +370,7 @@ import Password from '@/components/Controls/Password.vue'
 import FormattedInput from '@/components/Controls/FormattedInput.vue'
 import DurationInput from '@/components/Controls/DurationInput.vue'
 import RatingInput from '@/components/Controls/RatingInput.vue'
+import AttachControl from '@/components/Controls/AttachControl.vue'
 import ButtonControl, {
   getButtonTheme,
   getButtonVariant,
@@ -547,6 +563,7 @@ function firstVisibleIndex() {
 :deep(.form-control select),
 :deep(.form-control textarea),
 :deep(.form-control button),
+:deep(.attach-control),
 .dropdown-button {
   border-color: transparent;
   background: transparent;

@@ -26,6 +26,8 @@
           'Duration',
           'Rating',
           'Button',
+          'Attach',
+          'Attach Image',
         ].includes(field.fieldtype)
       "
       v-model="data[field.fieldname]"
@@ -249,6 +251,16 @@
       :disabled="Boolean(field.read_only)"
       @click="handleButtonClick(field)"
     />
+    <AttachControl
+      v-else-if="['Attach', 'Attach Image'].includes(field.fieldtype)"
+      :value="data[field.fieldname]"
+      :doctype="doctype"
+      :docname="data.name"
+      :fieldname="field.fieldname"
+      :imageOnly="field.fieldtype === 'Attach Image'"
+      :disabled="Boolean(field.read_only)"
+      @change="(v) => fieldChange(v, field)"
+    />
     <FormControl
       v-else
       type="text"
@@ -265,6 +277,7 @@ import Password from '@/components/Controls/Password.vue'
 import FormattedInput from '@/components/Controls/FormattedInput.vue'
 import DurationInput from '@/components/Controls/DurationInput.vue'
 import RatingInput from '@/components/Controls/RatingInput.vue'
+import AttachControl from '@/components/Controls/AttachControl.vue'
 import ButtonControl, {
   getButtonTheme,
   getButtonVariant,
@@ -437,7 +450,7 @@ async function handleButtonClick(field) {
   }
 }
 
-function fieldChange(value, df) {
+async function fieldChange(value, df) {
   value = Array.isArray(value)
     ? value
     : typeof value === 'object' && value !== null && 'value' in value
@@ -445,9 +458,9 @@ function fieldChange(value, df) {
       : value
 
   if (isGridRow) {
-    triggerOnChange(df.fieldname, value, data.value)
+    await triggerOnChange(df.fieldname, value, data.value)
   } else {
-    triggerOnChange(df.fieldname, value)
+    await triggerOnChange(df.fieldname, value)
   }
 }
 </script>
