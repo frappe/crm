@@ -31,6 +31,7 @@ def after_install(force=False):
 	create_default_manager_dashboard(force)
 	create_assignment_rule_custom_fields()
 	add_assignment_rule_property_setters()
+	set_default_currency()
 	frappe.db.commit()
 
 
@@ -561,3 +562,12 @@ def create_assignment_rule_custom_fields():
 		)
 
 		frappe.clear_cache(doctype="Assignment Rule")
+
+def set_default_currency(args=None):
+    default_currency = frappe.db.get_default("currency")
+    if not default_currency:
+        return
+    settings = frappe.get_single("FCRM Settings")
+    if not settings.currency:
+        settings.currency = default_currency
+        settings.save(ignore_permissions=True)
