@@ -23,7 +23,7 @@
   <div class="flex items-end gap-2 px-3 py-2.5 sm:px-10" v-bind="$attrs">
     <div class="flex h-8 items-center gap-2">
       <FileUploader @success="(file) => uploadFile(file)">
-        <template v-slot="{ openFileSelector }">
+        <template #default="{ openFileSelector }">
           <div class="flex items-center space-x-2">
             <Dropdown :options="uploadOptions(openFileSelector)">
               <FeatherIcon
@@ -35,8 +35,8 @@
         </template>
       </FileUploader>
       <IconPicker
-        v-model="emoji"
         v-slot="{ togglePopover }"
+        v-model="emoji"
         @update:modelValue="
           () => {
             content += emoji
@@ -46,17 +46,17 @@
         "
       >
         <SmileIcon
-          @click="togglePopover"
           class="flex size-4.5 cursor-pointer rounded-sm text-xl leading-none text-ink-gray-4"
+          @click="togglePopover"
         />
       </IconPicker>
     </div>
     <Textarea
       ref="textareaRef"
+      v-model="content"
       type="textarea"
       class="min-h-8 w-full"
       :rows="rows"
-      v-model="content"
       :placeholder="placeholder"
       @focus="rows = 6"
       @blur="rows = 1"
@@ -79,12 +79,12 @@ import {
 import { ref, nextTick, watch } from 'vue'
 
 const props = defineProps({
-  doctype: String,
+  doctype: { type: String, default: '' },
 })
 
-const doc = defineModel()
-const whatsapp = defineModel('whatsapp')
-const reply = defineModel('reply')
+const doc = defineModel({ type: Object, default: () => ({}) })
+const whatsapp = defineModel('whatsapp', { type: Object, default: () => ({}) })
+const reply = defineModel('reply', { type: Object, default: () => ({}) })
 
 const { capture } = useTelemetry()
 
@@ -144,7 +144,7 @@ async function sendWhatsAppMessage() {
 function uploadOptions(openFileSelector) {
   return [
     {
-      label: __('Upload document'),
+      label: __('Upload Document'),
       icon: 'file',
       onClick: () => {
         fileType.value = 'document'
@@ -152,7 +152,7 @@ function uploadOptions(openFileSelector) {
       },
     },
     {
-      label: __('Upload image'),
+      label: __('Upload Image'),
       icon: 'image',
       onClick: () => {
         fileType.value = 'image'
@@ -160,7 +160,7 @@ function uploadOptions(openFileSelector) {
       },
     },
     {
-      label: __('Upload video'),
+      label: __('Upload Video'),
       icon: 'video',
       onClick: () => {
         fileType.value = 'video'

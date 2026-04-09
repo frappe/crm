@@ -83,12 +83,12 @@
   {
    "fieldname": "order_by_tab",
    "fieldtype": "Tab Break",
-   "label": "Order by"
+   "label": "Order By"
   },
   {
    "fieldname": "order_by",
    "fieldtype": "Code",
-   "label": "Order by"
+   "label": "Order By"
   },
   {
    "default": "0",
@@ -99,13 +99,13 @@
   {
    "fieldname": "route_name",
    "fieldtype": "Data",
-   "label": "Route name"
+   "label": "Route Name"
   },
   {
    "default": "0",
    "fieldname": "load_default_columns",
    "fieldtype": "Check",
-   "label": "Load default columns"
+   "label": "Load Default Columns"
   },
   {
    "default": "0",
@@ -128,12 +128,12 @@
   {
    "fieldname": "group_by_tab",
    "fieldtype": "Tab Break",
-   "label": "Group by"
+   "label": "Group By"
   },
   {
    "fieldname": "group_by_field",
    "fieldtype": "Data",
-   "label": "Group by field"
+   "label": "Group By Field"
   },
   {
    "fieldname": "list_section",
@@ -146,7 +146,7 @@
   {
    "fieldname": "column_field",
    "fieldtype": "Data",
-   "label": "Column field"
+   "label": "Column Field"
   },
   {
    "fieldname": "list_tab",
@@ -161,35 +161,35 @@
   {
    "fieldname": "kanban_columns",
    "fieldtype": "Code",
-   "label": "Kanban columns"
+   "label": "Kanban Columns"
   },
   {
    "fieldname": "kanban_fields",
    "fieldtype": "Code",
-   "label": "Kanban fields"
+   "label": "Kanban Fields"
   },
   {
    "fieldname": "title_field",
    "fieldtype": "Data",
-   "label": "Title field"
+   "label": "Title Field"
   },
   {
    "default": "0",
    "fieldname": "is_standard",
    "fieldtype": "Check",
-   "label": "Is standard"
+   "label": "Is Standard"
   },
   {
    "default": "0",
    "fieldname": "is_default",
    "fieldtype": "Check",
-   "label": "Is default"
+   "label": "Is Default"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-01-28 17:06:30.280503",
- "modified_by": "shariq@frappe.io",
+ "modified": "2026-02-23 12:29:29.007129",
+ "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM View Settings",
  "naming_rule": "Autoincrement",

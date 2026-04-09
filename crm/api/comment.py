@@ -66,7 +66,7 @@ def extract_mentions(html):
 
 
 @frappe.whitelist()
-def add_comment(reference_doctype, reference_name, content, attachments=None):
+def add_comment(reference_doctype: str, reference_name: str, content: str, attachments: list | None = None):
 	"""Add a comment to the given document
 
 	:param reference_doctype: Reference Doctype

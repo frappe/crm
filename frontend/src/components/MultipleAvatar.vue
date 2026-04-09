@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="avatars?.length"
-    class="mr-1.5 flex cursor-pointer items-center "
+    class="mr-1.5 flex cursor-pointer items-center"
     :class="[
       avatars?.length > 1 ? 'flex-row-reverse' : 'truncate [&>div]:truncate',
     ]"
@@ -18,10 +18,10 @@
       </div>
     </Tooltip>
     <Tooltip
-      v-else
-      :text="avatar.name"
       v-for="avatar in reverseAvatars"
+      v-else
       :key="avatar.name"
+      :text="avatar.name"
     >
       <Avatar
         class="user-avatar -mr-1.5 transform ring-2 ring-outline-white transition hover:z-10 hover:scale-110"
@@ -39,14 +39,8 @@ import { Avatar, Tooltip } from 'frappe-ui'
 import { computed } from 'vue'
 
 const props = defineProps({
-  avatars: {
-    type: Array,
-    default: [],
-  },
-  size: {
-    type: String,
-    default: 'md',
-  },
+  avatars: { type: Array, default: () => [] },
+  size: { type: String, default: 'md' },
 })
 const reverseAvatars = computed(() => [...props.avatars].reverse())
 </script>

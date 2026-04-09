@@ -41,12 +41,14 @@
    "fieldname": "from",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "From",
+   "in_standard_filter": 1,
+   "label": "From Number",
    "reqd": 1
   },
   {
    "fieldname": "status",
    "fieldtype": "Select",
+   "in_standard_filter": 1,
    "label": "Status",
    "options": "Initiated\nRinging\nIn Progress\nCompleted\nFailed\nBusy\nNo Answer\nQueued\nCanceled",
    "reqd": 1
@@ -54,7 +56,7 @@
   {
    "fieldname": "start_time",
    "fieldtype": "Datetime",
-   "label": "Start time"
+   "label": "Start Time"
   },
   {
    "fieldname": "medium",
@@ -78,11 +80,11 @@
    "fieldname": "to",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "To",
+   "in_standard_filter": 1,
+   "label": "To Number",
    "reqd": 1
   },
   {
-   "description": "Call duration in seconds",
    "fieldname": "duration",
    "fieldtype": "Duration",
    "in_list_view": 1,
@@ -90,13 +92,13 @@
   },
   {
    "fieldname": "recording_url",
-   "fieldtype": "Data",
+   "fieldtype": "Small Text",
    "label": "Recording URL"
   },
   {
    "fieldname": "end_time",
    "fieldtype": "Datetime",
-   "label": "End time"
+   "label": "End Time"
   },
   {
    "fieldname": "note",
@@ -108,7 +110,7 @@
    "depends_on": "eval:doc.type == 'Incoming'",
    "fieldname": "receiver",
    "fieldtype": "Link",
-   "label": "Call received by",
+   "label": "Call Received By",
    "options": "User"
   },
   {
@@ -122,13 +124,13 @@
    "default": "CRM Lead",
    "fieldname": "reference_doctype",
    "fieldtype": "Link",
-   "label": "Reference document type",
+   "label": "Reference Document Type",
    "options": "DocType"
   },
   {
    "fieldname": "reference_docname",
    "fieldtype": "Dynamic Link",
-   "label": "Reference name",
+   "label": "Reference Name",
    "options": "reference_doctype"
   },
   {
@@ -157,8 +159,8 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-01-28 17:07:12.458641",
- "modified_by": "shariq@frappe.io",
+ "modified": "2026-04-04 15:08:11.626910",
+ "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Call Log",
  "naming_rule": "By fieldname",

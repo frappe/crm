@@ -46,15 +46,15 @@
    "fieldname": "mapped_to_crm_field",
    "fieldtype": "Autocomplete",
    "in_list_view": 1,
-   "label": "Mapped to CRM field"
+   "label": "Mapped to CRM Field"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-01-22 14:14:20.318246",
- "modified_by": "shariq@frappe.io",
+ "modified": "2026-02-23 12:44:57.712174",
+ "modified_by": "Administrator",
  "module": "Lead Syncing",
  "name": "Facebook Lead Form Question",
  "owner": "Administrator",

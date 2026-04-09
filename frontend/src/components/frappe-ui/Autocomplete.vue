@@ -1,6 +1,6 @@
 <template>
-  <Combobox v-model="selectedValue" nullable v-slot="{ open: isComboboxOpen }">
-    <Popover class="w-full" v-model:show="showOptions" :placement="placement">
+  <Combobox v-model="selectedValue" nullable>
+    <Popover v-model:show="showOptions" class="w-full" :placement="placement">
       <template #target="{ open: openPopover, togglePopover }">
         <slot
           name="target"
@@ -46,21 +46,21 @@
       <template #body="{ isOpen }">
         <div v-show="isOpen">
           <div
-            class="relative mt-1 rounded-lg bg-surface-modal text-base shadow-2xl"
+            class="relative mt-1 rounded-lg bg-surface-modal text-base shadow-2xl max-w-[350px]"
           >
             <div class="relative px-1.5 pt-1.5">
               <ComboboxInput
                 ref="search"
                 class="form-input w-full focus:bg-surface-gray-3 hover:bg-surface-gray-4 text-ink-gray-8"
                 type="text"
+                :value="query"
+                autocomplete="off"
+                :placeholder="__('Search')"
                 @change="
                   (e) => {
                     query = e.target.value
                   }
                 "
-                :value="query"
-                autocomplete="off"
-                :placeholder="__('Search')"
               />
               <button
                 class="absolute right-1.5 inline-flex h-7 w-7 items-center justify-center"
@@ -74,10 +74,10 @@
               static
             >
               <div
-                class="mt-1.5"
                 v-for="group in groups"
-                :key="group.key"
                 v-show="group.items.length > 0"
+                :key="group.key"
+                class="mt-1.5"
               >
                 <div
                   v-if="group.group && !group.hideLabel"
@@ -86,11 +86,11 @@
                   {{ group.group }}
                 </div>
                 <ComboboxOption
-                  as="template"
-                  v-for="option in group.items"
+                  v-for="option in group.items.slice(0, props.maxOptions)"
                   :key="option.value"
-                  :value="option"
                   v-slot="{ active, selected }"
+                  as="template"
+                  :value="option"
                 >
                   <li
                     :class="[
@@ -178,6 +178,10 @@ const props = defineProps({
   placement: {
     type: String,
     default: 'bottom-start',
+  },
+  maxOptions: {
+    type: Number,
+    default: 20,
   },
 })
 const emit = defineEmits(['update:modelValue', 'update:query', 'change'])

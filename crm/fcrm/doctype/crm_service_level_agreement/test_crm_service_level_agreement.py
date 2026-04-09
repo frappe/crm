@@ -181,7 +181,7 @@ class TestCRMServiceLevelAgreement(IntegrationTestCase):
 		self.assertEqual(doc.sla_creation, existing_time)
 
 	def test_set_first_responded_on(self):
-		"""Test set_first_responded_on sets response timestamps"""
+		"""Test set_first_responded_on sets only first response timestamp"""
 		sla = create_test_sla_with_priorities()
 
 		doc = frappe.get_doc(
@@ -216,6 +216,107 @@ class TestCRMServiceLevelAgreement(IntegrationTestCase):
 		sla.set_first_responded_on(doc)
 
 		self.assertIsNone(doc.first_responded_on)
+
+	def test_set_first_response_time_zero_duration_preserved(self):
+		"""Test that first_response_time of 0 is preserved and not recalculated.
+
+		The fix distinguishes None (unset) from 0 (instant response). Without the
+		`is None` guard a falsy check would treat 0 as unset and overwrite it with
+		the recalculated elapsed time.
+		"""
+		sla = create_test_sla_with_priorities()
+
+		doc = frappe.get_doc(
+			{
+				"doctype": "CRM Lead",
+				"first_name": "Test Zero Duration Preserved",
+				"sla_creation": get_datetime("2024-01-01 10:00:00"),
+				"first_responded_on": get_datetime("2024-01-01 10:00:00"),  # same instant → 0s
+				"first_response_time": 0,  # already recorded as 0
+				"last_response_time": None,
+			}
+		)
+
+		sla.set_first_response_time(doc)
+
+		# 0 must not be overwritten; `is None` guard prevents recalculation
+		self.assertEqual(doc.first_response_time, 0)
+
+	def test_set_first_response_time_zero_propagates_to_last(self):
+		"""Test that last_response_time is set to 0 when first_response_time is 0.
+
+		When first_response_time is 0, last_response_time (if None) should be
+		propagated as 0, not skipped because of a falsy check.
+		"""
+		sla = create_test_sla_with_priorities()
+
+		doc = frappe.get_doc(
+			{
+				"doctype": "CRM Lead",
+				"first_name": "Test Zero Propagates To Last",
+				"sla_creation": get_datetime("2024-01-01 10:00:00"),
+				"first_responded_on": get_datetime("2024-01-01 10:00:00"),
+				"first_response_time": 0,
+				"last_response_time": None,
+			}
+		)
+
+		sla.set_first_response_time(doc)
+
+		# last_response_time should be set to 0, propagated from first_response_time
+		self.assertEqual(doc.last_response_time, 0)
+
+	def test_set_first_response_time_last_response_zero_not_overwritten(self):
+		"""Test that an existing last_response_time of 0 is never overwritten.
+
+		Once last_response_time is recorded as 0 it must stay 0. A falsy guard
+		would incorrectly treat 0 as absent and overwrite it.
+		"""
+		sla = create_test_sla_with_priorities()
+
+		doc = frappe.get_doc(
+			{
+				"doctype": "CRM Lead",
+				"first_name": "Test Last Response Zero Preserved",
+				"sla_creation": get_datetime("2024-01-01 10:00:00"),
+				"first_responded_on": get_datetime("2024-01-01 10:00:00"),
+				"first_response_time": 0,
+				"last_response_time": 0,  # already recorded
+			}
+		)
+
+		sla.set_first_response_time(doc)
+
+		self.assertEqual(doc.last_response_time, 0)
+
+	def test_set_rolling_responses_zero_last_response_time_creates_entry(self):
+		"""Test set_rolling_responses still creates an entry when last_response_time is 0.
+
+		A falsy guard (`if not doc.last_response_time`) would bail out on 0 and
+		silently skip creating the rolling-response entry. The `is None` guard
+		correctly treats 0 as a valid (instant) response.
+		"""
+		sla = create_test_sla_with_priorities(rolling_responses=True)
+
+		doc = frappe.get_doc(
+			{
+				"doctype": "CRM Lead",
+				"first_name": "Test Zero Rolling Response",
+			}
+		)
+
+		doc.rolling_responses = []
+		doc.last_response_time = 0  # zero, not None
+		doc.last_responded_on = get_datetime("2024-01-01 10:00:00")
+		doc.response_by = add_to_date(get_datetime("2024-01-01 10:00:00"), hours=1)
+		doc.first_responded_on = get_datetime("2024-01-01 10:00:00")
+
+		sla.set_rolling_responses(doc)
+
+		self.assertEqual(len(doc.rolling_responses), 1)
+		self.assertEqual(doc.rolling_responses[0].response_time, 0)
+		# The response was before the deadline → Fulfilled
+		self.assertEqual(doc.rolling_responses[0].status, "Fulfilled")
 
 	def test_set_response_by(self):
 		"""Test set_response_by calculates response deadline"""
@@ -441,6 +542,249 @@ class TestCRMServiceLevelAgreement(IntegrationTestCase):
 		sla.handle_rolling_sla_status(doc)
 
 		self.assertIn(doc.sla_status, ["Fulfilled", "Rolling Response Due", "Failed"])
+
+	def test_set_rolling_responses_subsequent_entry(self):
+		"""Test set_rolling_responses creates subsequent entries with consistent timestamps"""
+		sla = create_test_sla_with_priorities(rolling_responses=True)
+
+		doc = frappe.get_doc(
+			{
+				"doctype": "CRM Lead",
+				"first_name": "Rolling Response Subsequent",
+				"email": "rolling_sub@example.com",
+			}
+		)
+
+		# Set up as if first response already happened
+		doc.rolling_responses = []
+		first_response_time = now_datetime()
+		doc.last_response_time = 100
+		doc.last_responded_on = add_to_date(first_response_time, hours=-1)
+		doc.response_by = add_to_date(first_response_time, hours=1)
+		doc.first_responded_on = add_to_date(first_response_time, hours=-1)
+		doc.communication_status = "High"  # Non-default = agent responding
+
+		# Add first entry
+		doc.append(
+			"rolling_responses",
+			{"status": "Fulfilled", "response_time": 100, "responded_on": doc.last_responded_on},
+		)
+
+		sla.set_rolling_responses(doc)
+
+		self.assertEqual(len(doc.rolling_responses), 2)
+		# responded_on and last_responded_on should be exactly the same (no race condition)
+		self.assertEqual(doc.rolling_responses[1].responded_on, doc.last_responded_on)
+
+	def test_calc_elapsed_time_excludes_holidays(self):
+		"""Test calc_elapsed_time excludes holidays from elapsed time"""
+		holiday_list = create_test_holiday_list()
+		sla = create_test_sla_with_working_hours(holiday_list=holiday_list.name)
+
+		# Start on Friday Jan 12, end on Tuesday Jan 16 (Jan 15 is a holiday)
+		start_time = get_datetime("2024-01-12 10:00:00")  # Friday 10 AM
+		end_time = get_datetime("2024-01-16 12:00:00")  # Tuesday 12 PM
+
+		elapsed = sla.calc_elapsed_time(start_time, end_time)
+
+		# Friday: 10 AM - 5 PM = 7 hours = 25200s
+		# Sat/Sun: not working days
+		# Monday Jan 15: holiday — should be excluded
+		# Tuesday: 9 AM - 12 PM = 3 hours = 10800s
+		# Total = 25200 + 10800 = 36000s
+		self.assertEqual(elapsed, 36000)
+
+	def test_handle_rolling_sla_status_failed_takes_priority(self):
+		"""Test that Failed status takes priority over Fulfilled in rolling SLA"""
+		sla = create_test_sla_with_priorities(rolling_responses=True)
+
+		doc = frappe.get_doc(
+			{
+				"doctype": "CRM Lead",
+				"first_name": "Test Rolling Failed Priority",
+				"response_by": add_to_date(now_datetime(), hours=-1),  # Deadline already passed
+				"last_responded_on": now_datetime(),  # Responded after deadline
+				"communication_status": "High",  # Non-default priority
+				"sla_status": None,
+			}
+		)
+		doc.append("rolling_responses", {"status": "Fulfilled"})
+
+		sla.handle_rolling_sla_status(doc)
+
+		# Even though communication_status != default, Failed should take priority
+		self.assertEqual(doc.sla_status, "Failed")
+
+	def test_handle_rolling_sla_status_fulfilled(self):
+		"""Test that Fulfilled is set when response is before deadline"""
+		sla = create_test_sla_with_priorities(rolling_responses=True)
+
+		doc = frappe.get_doc(
+			{
+				"doctype": "CRM Lead",
+				"first_name": "Test Rolling Fulfilled",
+				"response_by": add_to_date(now_datetime(), hours=1),  # Deadline in future
+				"last_responded_on": now_datetime(),
+				"communication_status": "High",  # Non-default
+				"sla_status": None,
+			}
+		)
+		doc.append("rolling_responses", {"status": "Fulfilled"})
+
+		sla.handle_rolling_sla_status(doc)
+
+		self.assertEqual(doc.sla_status, "Fulfilled")
+
+	def test_handle_rolling_sla_status_rolling_response_due(self):
+		"""Test that Rolling Response Due is set when status is default priority"""
+		sla = create_test_sla_with_priorities(rolling_responses=True)
+
+		doc = frappe.get_doc(
+			{
+				"doctype": "CRM Lead",
+				"first_name": "Test Rolling Due",
+				"response_by": add_to_date(now_datetime(), hours=1),  # Not expired
+				"last_responded_on": now_datetime(),
+				"communication_status": "Medium",  # Default priority
+				"sla_status": None,
+			}
+		)
+		doc.append("rolling_responses", {"status": "Fulfilled"})
+
+		sla.handle_rolling_sla_status(doc)
+
+		self.assertEqual(doc.sla_status, "Rolling Response Due")
+
+	def test_set_rolling_responses_does_not_update_response_by(self):
+		"""Test that set_rolling_responses does NOT update response_by when agent replies.
+		response_by should only be updated when a customer message arrives (via handle_targets)."""
+		sla = create_test_sla_with_priorities(rolling_responses=True)
+
+		doc = frappe.get_doc(
+			{
+				"doctype": "CRM Lead",
+				"first_name": "Test Response By No Update",
+			}
+		)
+
+		doc.rolling_responses = []
+		doc.last_response_time = 100
+		doc.last_responded_on = add_to_date(now_datetime(), hours=-1)
+		doc.response_by = add_to_date(now_datetime(), hours=1)  # Deadline in the future
+		doc.first_responded_on = add_to_date(now_datetime(), hours=-1)
+		doc.communication_status = "High"  # Non-default = agent responding
+
+		# Add first entry
+		doc.append(
+			"rolling_responses",
+			{"status": "Fulfilled", "response_time": 100, "responded_on": doc.last_responded_on},
+		)
+
+		old_response_by = doc.response_by
+		sla.set_rolling_responses(doc)
+
+		# response_by should NOT have been changed by set_rolling_responses
+		self.assertEqual(doc.response_by, old_response_by)
+
+	def test_rolling_response_correct_with_customer_reply_gap(self):
+		"""Test the exact scenario from the bug report:
+		Agent responds on time, customer replies days later, agent responds again.
+		The second response should be evaluated against a deadline set from when
+		the customer message arrived, NOT from the agent's first response."""
+		sla = create_test_sla_with_priorities(rolling_responses=True)
+
+		doc = frappe.get_doc(
+			{
+				"doctype": "CRM Lead",
+				"first_name": "Test Customer Reply Gap",
+			}
+		)
+
+		# Simulate: agent responded 1 hour ago, response_by set to future (via handle_targets)
+		doc.rolling_responses = []
+		doc.last_response_time = 100
+		doc.last_responded_on = add_to_date(now_datetime(), hours=-1)
+		doc.first_responded_on = doc.last_responded_on
+		doc.response_by = add_to_date(now_datetime(), hours=1)  # Valid future deadline
+		doc.communication_status = "High"  # Non-default = agent responding
+
+		# First rolling response entry (fulfilled)
+		doc.append(
+			"rolling_responses",
+			{"status": "Fulfilled", "response_time": 100, "responded_on": doc.last_responded_on},
+		)
+
+		# Agent replies again — response_by is in the future, so this should be Fulfilled
+		sla.set_rolling_responses(doc)
+
+		self.assertEqual(len(doc.rolling_responses), 2)
+		self.assertEqual(doc.rolling_responses[1].status, "Fulfilled")
+
+	def test_set_rolling_responses_stale_deadline_marks_failed(self):
+		"""Test that when response_by is a stale past deadline (from a previous cycle),
+		the agent's response is correctly marked as Failed."""
+		sla = create_test_sla_with_priorities(rolling_responses=True)
+
+		doc = frappe.get_doc(
+			{
+				"doctype": "CRM Lead",
+				"first_name": "Test Stale Deadline Failed",
+			}
+		)
+
+		doc.rolling_responses = []
+		doc.last_response_time = 100
+		doc.last_responded_on = add_to_date(now_datetime(), hours=-1)
+		doc.first_responded_on = doc.last_responded_on
+		# Stale response_by from a previous cycle (already expired)
+		doc.response_by = add_to_date(now_datetime(), hours=-2)
+		doc.communication_status = "High"  # Non-default = agent responding
+
+		# First entry from earlier cycle
+		doc.append(
+			"rolling_responses",
+			{"status": "Fulfilled", "response_time": 100, "responded_on": doc.last_responded_on},
+		)
+
+		sla.set_rolling_responses(doc)
+
+		self.assertEqual(len(doc.rolling_responses), 2)
+		# Agent replied AFTER the stale deadline -> should be Failed
+		self.assertEqual(doc.rolling_responses[1].status, "Failed")
+
+	def test_is_rolling_response_failed_waiting_for_agent(self):
+		"""Test is_rolling_response_failed when waiting for agent response (default priority).
+		Should check response_by against now_datetime(), not last_responded_on."""
+		sla = create_test_sla_with_priorities(rolling_responses=True)
+
+		# Deadline has passed but agent hasn't responded yet
+		doc = frappe.get_doc(
+			{
+				"doctype": "CRM Lead",
+				"first_name": "Test Waiting For Agent",
+				"response_by": add_to_date(now_datetime(), hours=-1),  # Expired
+				"last_responded_on": add_to_date(now_datetime(), hours=-3),  # Agent's previous reply
+				"communication_status": "Medium",  # Default priority = waiting for agent
+			}
+		)
+
+		self.assertTrue(sla.is_rolling_response_failed(doc))
+
+	def test_is_rolling_response_failed_waiting_for_agent_not_expired(self):
+		"""Test is_rolling_response_failed when waiting for agent and deadline hasn't passed."""
+		sla = create_test_sla_with_priorities(rolling_responses=True)
+
+		doc = frappe.get_doc(
+			{
+				"doctype": "CRM Lead",
+				"first_name": "Test Waiting Not Expired",
+				"response_by": add_to_date(now_datetime(), hours=1),  # Not expired
+				"last_responded_on": add_to_date(now_datetime(), hours=-3),
+				"communication_status": "Medium",  # Default priority
+			}
+		)
+
+		self.assertFalse(sla.is_rolling_response_failed(doc))
 
 	def test_apply_method_full_workflow(self):
 		"""Test apply method executes full SLA workflow"""

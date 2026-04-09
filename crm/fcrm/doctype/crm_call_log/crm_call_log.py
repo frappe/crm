@@ -27,7 +27,7 @@ class CRMCallLog(Document):
 		medium: DF.Data | None
 		note: DF.Link | None
 		receiver: DF.Link | None
-		recording_url: DF.Data | None
+		recording_url: DF.SmallText | None
 		reference_docname: DF.DynamicLink | None
 		reference_doctype: DF.Link | None
 		start_time: DF.Datetime | None
@@ -84,7 +84,7 @@ class CRMCallLog(Document):
 				"width": "9rem",
 			},
 			{
-				"label": "Created on",
+				"label": "Created On",
 				"type": "Datetime",
 				"key": "creation",
 				"width": "8rem",
@@ -120,6 +120,14 @@ class CRMCallLog(Document):
 			return
 
 		self.append("links", {"link_doctype": reference_doctype, "link_name": reference_name})
+
+	def as_dict(self, *args, **kwargs):
+		d = super().as_dict(*args, **kwargs)
+		if d.get("recording_url"):
+			d["recording_url_path"] = (
+				f"/api/method/crm.integrations.api.get_recording_url?call_log_name={d.get('name')}"
+			)
+		return d
 
 
 def parse_call_log(call):
@@ -162,7 +170,7 @@ def parse_call_log(call):
 
 
 @frappe.whitelist()
-def get_call_log(name):
+def get_call_log(name: str):
 	call = frappe.get_cached_doc(
 		"CRM Call Log",
 		name,
@@ -177,6 +185,7 @@ def get_call_log(name):
 			"to",
 			"note",
 			"recording_url",
+			"recording_url_path",
 			"reference_doctype",
 			"reference_docname",
 			"creation",
@@ -217,7 +226,7 @@ def get_call_log(name):
 
 
 @frappe.whitelist()
-def create_lead_from_call_log(call_log, lead_details=None):
+def create_lead_from_call_log(call_log: str | dict, lead_details: str | dict | None = None):
 	call_log_data = frappe.parse_json(call_log or {})
 
 	if isinstance(call_log_data, str):

@@ -70,3 +70,8 @@ typing-modules = ["frappe.types.DF"]
 quote-style = "double"
 indent-style = "tab"
 docstring-code-format = true
+
+[project.urls]
+Homepage = "https://frappe.io/crm"
+Repository = "https://github.com/frappe/crm.git"
+"Bug Reports" = "https://github.com/frappe/crm/issues"

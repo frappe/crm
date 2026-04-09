@@ -1,13 +1,11 @@
 # Copyright (c) 2024, Frappe Technologies Pvt. Ltd. and Contributors
 # See license.txt
 
-import json
-import os
 
 import frappe
 from frappe.tests import IntegrationTestCase
 from frappe.tests.utils import make_test_records
-from frappe.utils import add_days, get_first_day, get_last_day, getdate, nowdate
+from frappe.utils import add_days, get_first_day, get_last_day, nowdate
 
 from crm.api.dashboard import (
 	get_average_deal_value,
@@ -44,9 +42,6 @@ class TestDashboard(IntegrationTestCase):
 		# Mark timestamp before creating test data
 		cls.test_start_time = frappe.utils.now()
 
-		# Load CRM user test records from crm/tests/test_records.json
-		cls.load_crm_user_test_records()
-
 		cls.from_date = get_first_day(nowdate())
 		cls.to_date = get_last_day(nowdate())
 		cls.user = "crm.manager@example.com"  # CRM manager from test_records.json
@@ -66,20 +61,6 @@ class TestDashboard(IntegrationTestCase):
 		"""Clean up test records after all tests"""
 		frappe.db.rollback()
 		super().tearDownClass()
-
-	@classmethod
-	def load_crm_user_test_records(cls):
-		"""Load CRM user test records from crm/tests/test_records.json"""
-		test_records_path = os.path.join(os.path.dirname(__file__), "test_records.json")
-
-		if os.path.exists(test_records_path):
-			with open(test_records_path) as f:
-				test_records = json.load(f)
-
-			for record in test_records:
-				if not frappe.db.exists("User", record.get("email")):
-					doc = frappe.get_doc(record)
-					doc.insert(ignore_permissions=True, ignore_if_duplicate=True)
 
 	def test_get_total_leads(self):
 		"""Test get_total_leads returns correct lead count and delta calculation"""

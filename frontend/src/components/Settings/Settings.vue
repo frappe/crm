@@ -2,37 +2,35 @@
   <Dialog
     v-model="showSettings"
     :options="{ size: '5xl' }"
-    @close="activeSettingsPage = ''"
     :disableOutsideClickToClose="disableSettingModalOutsideClick"
+    @close="activeSettingsPage = ''"
   >
     <template #body>
-      <div class="flex h-[calc(100vh_-_8rem)]">
+      <div class="flex h-[calc(100vh_-_8rem)] bg-surface-menu-bar">
         <div
-          class="flex flex-col p-1 w-52 shrink-0 bg-surface-menu-bar overflow-y-auto"
+          class="flex flex-col m-1 rounded-l-lg w-56 shrink-0 bg-surface-menu-bar overflow-y-auto"
         >
           <template v-for="(tab, i) in tabs" :key="tab.label">
-            <div
-              v-if="!tab.hideLabel && i != 0"
-              class="border-t mx-1 mb-2 mt-[11px]"
-            />
+            <div v-if="!tab.hideLabel && i != 0" class="mx-1 mb-0.5 mt-[5px]" />
             <div
               v-if="!tab.hideLabel"
-              class="h-7.5 px-2 py-[7px] my-[3px] flex cursor-pointer gap-1.5 text-base text-ink-gray-5 transition-all duration-300 ease-in-out"
+              class="h-7.5 px-2 py-[7px] my-[3px] flex cursor-pointer gap-1.5 text-xs font-medium text-ink-gray-5 transition-all duration-300 ease-in-out sticky top-0 z-10 bg-surface-menu-bar"
             >
               <span>{{ __(tab.label) }}</span>
             </div>
             <nav class="space-y-[3px] px-1">
               <SidebarLink
-                v-for="i in tab.items"
-                :icon="i.icon"
-                :label="__(i.label)"
+                v-for="item in tab.items"
+                :key="item.label"
+                :icon="item.icon"
+                :label="__(item.label)"
                 class="w-full"
                 :class="
-                  activeTab?.label == i.label
+                  activeTab?.label == item.label
                     ? 'bg-surface-selected shadow-sm hover:bg-surface-selected'
                     : 'hover:bg-surface-gray-3'
                 "
-                @click="activeSettingsPage = i.label"
+                @click="activeSettingsPage = item.label"
               />
             </nav>
           </template>
@@ -47,25 +45,27 @@
 <script setup>
 import CircleDollarSignIcon from '~icons/lucide/circle-dollar-sign'
 import TrendingUpDownIcon from '~icons/lucide/trending-up-down'
+import SlidersIcon from '@/components/Icons/SlidersIcon.vue'
 import SparkleIcon from '@/components/Icons/SparkleIcon.vue'
 import CalendarIcon from '@/components/Icons/CalendarIcon.vue'
 import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import ERPNextIcon from '@/components/Icons/ERPNextIcon.vue'
-import HelpdeskIcon from '@/components/Icons/HelpdeskIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import Email2Icon from '@/components/Icons/Email2Icon.vue'
 import EmailTemplateIcon from '@/components/Icons/EmailTemplateIcon.vue'
+import SettingsIcon from '@/components/Icons/SettingsIcon.vue'
 import SettingsIcon2 from '@/components/Icons/SettingsIcon2.vue'
 import Users from '@/components/Settings/Users.vue'
 import InviteUserPage from '@/components/Settings/InviteUserPage.vue'
-import ProfileSettings from '@/components/Settings/ProfileSettings.vue'
+import ProfilePage from '@/components/Settings/Profile/ProfilePage.vue'
+import PreferencesSettings from '@/components/Settings/PreferencesSettings.vue'
 import WhatsAppSettings from '@/components/Settings/WhatsAppSettings.vue'
 import ERPNextSettings from '@/components/Settings/ERPNextSettings.vue'
-import HelpdeskSettings from '@/components/Settings/HelpdeskSettings.vue'
 import LeadSyncSourcePage from '@/components/Settings/LeadSyncing/LeadSyncSourcePage.vue'
 import BrandSettings from '@/components/Settings/BrandSettings.vue'
 import CalendarSettings from '@/components/Settings/CalendarSettings.vue'
 import HomeActions from '@/components/Settings/HomeActions.vue'
+import GeneralSettings from '@/components/Settings/GeneralSettings.vue'
 import ForecastingSettings from '@/components/Settings/ForecastingSettings.vue'
 import CurrencySettings from '@/components/Settings/CurrencySettings.vue'
 import EmailTemplatePage from '@/components/Settings/EmailTemplate/EmailTemplatePage.vue'
@@ -85,37 +85,47 @@ import AssignmentRulePage from './AssignmentRules/AssignmentRulePage.vue'
 import ShieldCheck from '~icons/lucide/shield-check'
 import SlaConfig from './Sla/SlaConfig.vue'
 
-const { isManager, isTelephonyAgent, getUser } = usersStore()
+const { isManager, getUser } = usersStore()
 
 const user = computed(() => getUser() || {})
 
 const tabs = computed(() => {
   let _tabs = [
     {
-      label: __('My settings'),
+      label: __('Account'),
       items: [
         {
-          label: __('Profile'),
+          label: user.value.full_name,
           icon: () =>
             h(Avatar, {
               size: 'xs',
               label: user.value.full_name,
               image: user.value.user_image,
             }),
-          component: markRaw(ProfileSettings),
+          component: markRaw(ProfilePage),
+        },
+        {
+          label: __('Preferences'),
+          icon: SlidersIcon,
+          component: markRaw(PreferencesSettings),
         },
       ],
     },
     {
-      label: __('System configuration'),
+      label: __('System Configuration'),
       items: [
+        {
+          label: __('General'),
+          component: markRaw(GeneralSettings),
+          icon: SettingsIcon,
+        },
         {
           label: __('Forecasting'),
           component: markRaw(ForecastingSettings),
           icon: TrendingUpDownIcon,
         },
         {
-          label: __('Currency & exchange rate'),
+          label: __('Currency & Exchange Rate'),
           icon: CircleDollarSignIcon,
           component: markRaw(CurrencySettings),
         },
@@ -133,7 +143,7 @@ const tabs = computed(() => {
       condition: () => isManager(),
     },
     {
-      label: __('User management'),
+      label: __('User Management'),
       items: [
         {
           label: __('Users'),
@@ -142,7 +152,7 @@ const tabs = computed(() => {
           condition: () => isManager(),
         },
         {
-          label: __('Invite user'),
+          label: __('Invite User'),
           icon: 'user-plus',
           component: markRaw(InviteUserPage),
           condition: () => isManager(),
@@ -167,25 +177,26 @@ const tabs = computed(() => {
       ],
     },
     {
-      label: __('Automation & rules'),
+      label: __('Automation & Rules'),
       items: [
         {
-          label: __('Assignment rules'),
+          label: __('Assignment Rules'),
           icon: markRaw(h(SettingsIcon2, { class: 'rotate-90' })),
           component: markRaw(AssignmentRulePage),
         },
         {
-          label: __('SLA policies'),
+          label: __('SLA Policies'),
           icon: markRaw(h(ShieldCheck)),
           component: markRaw(SlaConfig),
         },
       ],
+      condition: () => isManager(),
     },
     {
       label: __('Customization'),
       items: [
         {
-          label: __('Home actions'),
+          label: __('Home Actions'),
           component: markRaw(HomeActions),
           icon: 'home',
         },
@@ -199,7 +210,6 @@ const tabs = computed(() => {
           label: __('Telephony'),
           icon: PhoneIcon,
           component: markRaw(TelephonyPage),
-          condition: () => isManager() || isTelephonyAgent(),
         },
         {
           label: __('WhatsApp'),
@@ -214,19 +224,12 @@ const tabs = computed(() => {
           condition: () => isManager(),
         },
         {
-          label: __('Helpdesk'),
-          icon: HelpdeskIcon,
-          component: markRaw(HelpdeskSettings),
-          condition: () => isManager(),
-        },
-        {
-          label: __('Lead syncing'),
+          label: __('Lead Syncing'),
           icon: 'refresh-cw',
           component: markRaw(LeadSyncSourcePage),
           condition: () => isManager(),
         },
       ],
-      condition: () => isManager() || isTelephonyAgent(),
     },
   ]
 

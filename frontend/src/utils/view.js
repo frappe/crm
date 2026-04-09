@@ -13,7 +13,7 @@ function standardView(type) {
       icon: markRaw(ListIcon),
     },
     group_by: {
-      label: __('Group by'),
+      label: __('Group By'),
       icon: markRaw(GroupByIcon),
     },
     kanban: {

@@ -24,7 +24,7 @@
         <div
           class="inline-flex items-center justify-center border-r border-outline-gray-2 py-2 px-1 w-12"
         >
-          {{ __('No') }}
+          {{ __('No.') }}
         </div>
         <div
           class="grid w-full truncate"
@@ -32,13 +32,13 @@
         >
           <div
             v-for="field in fields"
+            :key="field.fieldname"
             class="border-r border-outline-gray-2 p-2 truncate"
             :class="
               ['Int', 'Float', 'Currency', 'Percent'].includes(field.fieldtype)
                 ? 'text-right'
                 : ''
             "
-            :key="field.fieldname"
             :title="field.label"
           >
             {{ __(field.label) }}
@@ -54,7 +54,7 @@
         </div>
         <div class="flex items-center justify-center w-12">
           <Button
-            :tooltip="__('Edit grid fields')"
+            :tooltip="__('Edit Grid Fields')"
             class="rounded !bg-surface-gray-2 border-0 !text-ink-gray-5"
             variant="outline"
             icon="settings"
@@ -65,8 +65,8 @@
       <!-- Rows -->
       <template v-if="rows?.length">
         <Draggable
-          class="w-full"
           v-model="rows"
+          class="w-full"
           :delay="isTouchScreenDevice() ? 200 : 0"
           group="rows"
           item-key="name"
@@ -102,9 +102,9 @@
                 :style="{ gridTemplateColumns: gridTemplateColumns }"
               >
                 <div
-                  class="border-r border-outline-gray-modals h-full"
                   v-for="field in fields"
                   :key="field.fieldname"
+                  class="border-r border-outline-gray-modals h-9.5"
                 >
                   <FormControl
                     v-if="
@@ -115,11 +115,14 @@
                         'Currency',
                         'Percent',
                         'Check',
+                        'Duration',
+                        'Rating',
+                        'Button',
                       ].includes(field.fieldtype)
                     "
+                    v-model="row[field.fieldname]"
                     type="text"
                     :placeholder="field.placeholder"
-                    v-model="row[field.fieldname]"
                     :disabled="true"
                   />
                   <Link
@@ -134,10 +137,10 @@
                         : row[field.options]
                     "
                     :filters="field.filters"
-                    @change="(v) => fieldChange(v, field, row)"
                     :onCreate="
                       (value, close) => field.create(v, field, row, close)
                     "
+                    @change="(v) => fieldChange(v, field, row)"
                   />
                   <Link
                     v-else-if="field.fieldtype === 'User'"
@@ -145,9 +148,9 @@
                     :value="getUser(row[field.fieldname]).full_name"
                     :doctype="field.options"
                     :filters="field.filters"
-                    @change="(v) => fieldChange(v, field, row)"
                     :placeholder="field.placeholder"
                     :hideMe="true"
+                    @change="(v) => fieldChange(v, field, row)"
                   >
                     <template #prefix>
                       <UserAvatar
@@ -172,8 +175,8 @@
                     class="flex h-full bg-surface-white justify-center items-center"
                   >
                     <Checkbox
-                      class="cursor-pointer duration-300"
                       v-model="row[field.fieldname]"
+                      class="cursor-pointer duration-300"
                       :disabled="!gridSettings.editable_grid"
                       @change="(e) => fieldChange(e.target.checked, field, row)"
                     />
@@ -216,12 +219,12 @@
                   />
                   <FormControl
                     v-else-if="field.fieldtype === 'Select'"
+                    v-model="row[field.fieldname]"
                     class="text-sm text-ink-gray-8"
                     type="select"
                     variant="outline"
-                    v-model="row[field.fieldname]"
                     :options="field.options"
-                    @change="(e) => fieldChange(e.target.value, field, row)"
+                    @update:modelValue="(e) => fieldChange(e, field, row)"
                   />
                   <Password
                     v-else-if="field.fieldtype === 'Password'"
@@ -271,22 +274,52 @@
                     :disabled="Boolean(field.read_only)"
                     @change="fieldChange(flt($event.target.value), field, row)"
                   />
+                  <DurationInput
+                    v-else-if="field.fieldtype === 'Duration'"
+                    :value="row[field.fieldname]"
+                    variant="outline"
+                    :disabled="Boolean(field.read_only)"
+                    @change="(v) => fieldChange(v, field, row)"
+                  />
+                  <RatingInput
+                    v-else-if="field.fieldtype === 'Rating'"
+                    class="px-2 flex-nowrap overflow-x-auto w-full"
+                    :value="row[field.fieldname]"
+                    variant="outline"
+                    :disabled="Boolean(field.read_only)"
+                    :max="field.options || 5"
+                    @change="(v) => fieldChange(v, field, row)"
+                  />
+                  <div
+                    v-else-if="field.fieldtype === 'Button'"
+                    class="flex items-center px-1 h-full"
+                  >
+                    <ButtonControl
+                      class="button-control"
+                      :label="field.label"
+                      :icon="field.icon"
+                      :theme="getButtonTheme(field.button_color)"
+                      :variant="getButtonVariant(field.button_color)"
+                      :disabled="Boolean(field.read_only)"
+                      @click="handleButtonClick(field, row)"
+                    />
+                  </div>
                   <Combobox
                     v-else-if="field.fieldtype === 'Autocomplete'"
-                    class="combobox"
                     v-model="row[field.fieldname]"
+                    class="combobox"
                     variant="outline"
-                    @update:modelValue="(v) => fieldChange(v, field, row)"
                     :options="getOptions(field.options)"
                     :placeholder="field.placeholder"
                     :disabled="Boolean(field.read_only)"
+                    @update:modelValue="(v) => fieldChange(v, field, row)"
                   />
                   <FormControl
                     v-else
+                    v-model="row[field.fieldname]"
                     class="text-sm text-ink-gray-8"
                     type="text"
                     variant="outline"
-                    v-model="row[field.fieldname]"
                     :options="field.options"
                     @change="fieldChange($event.target.value, field, row)"
                   />
@@ -294,7 +327,7 @@
               </div>
               <div class="edit-row flex items-center justify-center w-12">
                 <Button
-                  :tooltip="__('Edit row')"
+                  :tooltip="__('Edit Row')"
                   class="rounded border-0 !text-ink-gray-7"
                   variant="outline"
                   :icon="EditIcon"
@@ -319,7 +352,7 @@
         v-else
         class="flex flex-col items-center rounded p-5 text-sm text-ink-gray-5"
       >
-        {{ __('No data') }}
+        {{ __('No Data') }}
       </div>
     </div>
 
@@ -331,7 +364,7 @@
         theme="red"
         @click="deleteRows"
       />
-      <Button :label="__('Add row')" @click="addRow" />
+      <Button :label="__('Add Row')" @click="addRow" />
     </div>
     <GridRowFieldsModal
       v-if="showGridRowFieldsModal"
@@ -350,6 +383,12 @@
 
 <script setup>
 import Password from '@/components/Controls/Password.vue'
+import DurationInput from '@/components/Controls/DurationInput.vue'
+import RatingInput from '@/components/Controls/RatingInput.vue'
+import ButtonControl, {
+  getButtonTheme,
+  getButtonVariant,
+} from '@/components/Controls/ButtonControl.vue'
 import FormattedInput from '@/components/Controls/FormattedInput.vue'
 import GridFieldsEditorModal from '@/components/Controls/GridFieldsEditorModal.vue'
 import GridRowFieldsModal from '@/components/Controls/GridRowFieldsModal.vue'
@@ -376,29 +415,25 @@ import Draggable from 'vuedraggable'
 import { ref, reactive, computed, inject, provide } from 'vue'
 
 const props = defineProps({
-  label: {
-    type: String,
-    default: '',
-  },
-  doctype: {
-    type: String,
-    required: true,
-  },
-  parentDoctype: {
-    type: String,
-    required: true,
-  },
-  parentFieldname: {
-    type: String,
-    required: true,
-  },
-  overrides: {
-    type: Object,
-    default: () => ({}),
-  },
+  label: { type: String, default: '' },
+  doctype: { type: String, required: true },
+  parentDoctype: { type: String, required: true },
+  parentFieldname: { type: String, required: true },
+  overrides: { type: Object, default: () => ({}) },
 })
 
+const restrictedFieldTypes = [
+  'Section Break',
+  'Column Break',
+  'Tab Break',
+  'Table',
+  'Table MultiSelect',
+  'Image',
+  'Geolocation',
+]
+
 const triggerOnChange = inject('triggerOnChange', () => {})
+const triggerButton = inject('triggerButton', () => {})
 const triggerOnRowAdd = inject('triggerOnRowAdd', () => {})
 const triggerOnRowRemove = inject('triggerOnRowRemove', () => {})
 
@@ -413,8 +448,8 @@ const {
 getMeta(props.parentDoctype)
 const { users, getUser } = usersStore()
 
-const rows = defineModel()
-const parentDoc = defineModel('parent')
+const rows = defineModel({ type: Array, default: () => [] })
+const parentDoc = defineModel('parent', { type: Object, default: () => ({}) })
 
 provide('parentDoc', parentDoc)
 
@@ -428,7 +463,13 @@ const gridSettings = computed(() => getGridSettings())
 
 const fields = computed(() => {
   let gridViewSettings = getGridViewSettings(props.parentDoctype)
-  let gridFields = getFields()
+  let gridFields = getFields({
+    restrictNoValueFields: false,
+    restrictedFieldTypes,
+  })
+
+  if (!gridFields?.length) return []
+
   if (gridViewSettings.length) {
     let d = gridViewSettings.map((gs) =>
       getFieldObj(gridFields.find((f) => f.fieldname === gs.fieldname)),
@@ -461,6 +502,7 @@ function getFieldObj(field) {
     field.link_filters = JSON.stringify({
       ...(field.link_filters ? JSON.parse(field.link_filters) : {}),
       name: ['in', users.data.crmUsers?.map((user) => user.name)],
+      ignore_user_type: 1,
     })
   }
 
@@ -549,8 +591,21 @@ const reorder = () => {
   })
 }
 
+async function handleButtonClick(field, row) {
+  if (typeof field.click === 'function') {
+    await field.click(row)
+  } else {
+    await triggerButton(field.fieldname, row)
+  }
+}
+
 function fieldChange(value, field, row) {
-  value = typeof value === 'object' && value !== null ? value.value : value
+  value = Array.isArray(value)
+    ? value
+    : typeof value === 'object' && value !== null && 'value' in value
+      ? value.value
+      : value
+
   triggerOnChange(field.fieldname, value, row)
 }
 
@@ -626,7 +681,7 @@ const getOptions = (options) => {
 }
 
 /* For Autocomplete, Link */
-:deep(.grid-row button),
+:deep(.grid-row button:not(.button-control):not(.rating-star)),
 :deep(.grid-row .combobox > div > div) {
   border: none;
   border-radius: 0;
@@ -647,7 +702,7 @@ const getOptions = (options) => {
   background-color: var(--surface-white);
 }
 
-:deep(.grid-row button:focus-within) {
+:deep(.grid-row button:focus-within:not(.rating-star):not(.button-control)) {
   border: 1px solid var(--outline-gray-2);
 }
 </style>

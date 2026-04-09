@@ -3,10 +3,10 @@
     <!-- title and desc -->
     <div role="heading" aria-level="1" class="flex flex-col gap-1">
       <h2 class="text-xl font-semibold text-ink-gray-8">
-        {{ __('Setup email') }}
+        {{ __('Setup Email') }}
       </h2>
       <p class="text-sm text-ink-gray-5">
-        {{ __('Choose the email service provider you want to configure.') }}
+        {{ __('Choose the Email Service Provider you want to configure.') }}
       </p>
     </div>
     <!-- email service provider selection -->
@@ -56,19 +56,20 @@
           </div>
         </div>
         <div class="grid grid-cols-2 gap-4">
-          <div
-            v-for="field in incomingOutgoingFields"
-            :key="field.name"
-            class="flex flex-col gap-1"
-          >
-            <FormControl
-              v-model="state[field.name]"
-              :label="field.label"
-              :name="field.name"
-              :type="field.type"
-            />
-            <p class="text-ink-gray-4 text-p-sm">{{ field.description }}</p>
-          </div>
+          <template v-for="field in incomingOutgoingFields" :key="field.name">
+            <div
+              v-if="field.condition ? field.condition(state) : true"
+              class="flex flex-col gap-1"
+            >
+              <FormControl
+                v-model="state[field.name]"
+                :label="field.label"
+                :name="field.name"
+                :type="field.type"
+              />
+              <p class="text-ink-gray-4 text-p-sm">{{ field.description }}</p>
+            </div>
+          </template>
         </div>
         <ErrorMessage class="ml-1" :message="error" />
       </div>
@@ -105,7 +106,7 @@ import {
 } from './emailConfig'
 import EmailProviderIcon from './EmailProviderIcon.vue'
 
-const emit = defineEmits()
+const emit = defineEmits(['update:step'])
 
 const state = reactive({
   service: '',
@@ -119,6 +120,7 @@ const state = reactive({
   enable_outgoing: false,
   default_incoming: false,
   default_outgoing: false,
+  create_lead_from_incoming_email: false,
 })
 const { capture } = useTelemetry()
 
@@ -140,11 +142,11 @@ const addEmailRes = createResource({
     }
   },
   onSuccess: () => {
-    toast.success(__('Email account created successfully'))
+    toast.success(__('Email Account created successfully'))
     emit('update:step', 'email-list')
   },
   onError: () => {
-    error.value = __('Failed to create email account, Invalid credentials')
+    error.value = __('Failed to create Email Account, Invalid credentials')
   },
 })
 

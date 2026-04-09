@@ -43,14 +43,8 @@ import FileSpreadsheetIcon from '@/components/Icons/FileSpreadsheetIcon.vue'
 import FileIcon from '@/components/Icons/FileIcon.vue'
 
 const props = defineProps({
-  label: {
-    type: String,
-    default: null,
-  },
-  url: {
-    type: String,
-    default: null,
-  },
+  label: { type: String, default: null },
+  url: { type: String, default: null },
 })
 
 const showDialog = ref(false)

@@ -52,7 +52,7 @@
    "fieldname": "api_key",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "API key",
+   "label": "API Key",
    "mandatory_depends_on": "enabled"
   },
   {
@@ -64,7 +64,7 @@
    "fieldname": "api_token",
    "fieldtype": "Password",
    "in_list_view": 1,
-   "label": "API token",
+   "label": "API Token",
    "mandatory_depends_on": "enabled"
   },
   {
@@ -72,7 +72,7 @@
    "depends_on": "enabled",
    "fieldname": "record_call",
    "fieldtype": "Check",
-   "label": "Record outgoing calls"
+   "label": "Record Outgoing Calls"
   },
   {
    "fieldname": "column_break_qwfn",
@@ -82,7 +82,7 @@
    "depends_on": "enabled",
    "fieldname": "webhook_verify_token",
    "fieldtype": "Data",
-   "label": "Webhook verify token",
+   "label": "Webhook Verify Token",
    "mandatory_depends_on": "enabled"
   },
   {
@@ -96,8 +96,8 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2026-01-28 16:57:12.455890",
- "modified_by": "shariq@frappe.io",
+ "modified": "2026-02-23 12:31:01.281017",
+ "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Exotel Settings",
  "owner": "Administrator",

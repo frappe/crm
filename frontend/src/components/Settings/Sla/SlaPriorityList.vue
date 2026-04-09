@@ -1,16 +1,16 @@
 <template>
   <div class="rounded-md border px-2 border-outline-gray-2 text-sm">
     <div
+      v-if="slaData.priorities?.length !== 0"
       class="grid p-3 px-4 items-center"
       :style="{
         gridTemplateColumns: getGridTemplateColumnsForTable(columns),
       }"
-      v-if="slaData.priorities?.length !== 0"
     >
       <div
         v-for="column in columns"
         :key="column.key"
-        class="text-gray-600 overflow-hidden whitespace-nowrap text-ellipsis"
+        class="text-ink-gray-5 overflow-hidden whitespace-nowrap text-ellipsis"
         :class="{
           'ml-2':
             column.key === 'priority' || column.key === 'first_response_time',
@@ -40,26 +40,18 @@
             />
           </div>
           <div v-else-if="column.key === 'first_response_time'">
-            <Popover>
-              <template #target="{ togglePopover }">
-                <div
-                  @click="togglePopover()"
-                  class="min-h-7 w-full cursor-pointer select-none leading-5 p-1 px-2 hover:bg-surface-gray-2 rounded"
-                >
-                  {{ formatTimeHMS(row[column.key]) }}
-                </div>
-              </template>
-              <template #body>
-                <div class="absolute bg-surface-modal top-2 rounded">
-                  <DurationPicker v-model="row[column.key]" />
-                </div>
-              </template>
-            </Popover>
+            <DurationInput
+              :value="row[column.key]"
+              variant="ghost"
+              :long-form="true"
+              class="[&_input]:bg-transparent [&_input]:hover:bg-surface-gray-2"
+              @change="(v) => (row[column.key] = v)"
+            />
           </div>
           <div v-else class="ml-2">
             <select
-              class="w-full h-7 text-base hover:bg-surface-gray-3 rounded-md p-0 pl-2 pr-5 bg-transparent -ml-2 border-0 text-ink-gray-8 focus-visible:!ring-0 bg-none truncate"
               v-model="row[column.key]"
+              class="w-full h-7 text-base hover:bg-surface-gray-3 rounded-md p-0 pl-2 pr-5 bg-transparent -ml-2 border-0 text-ink-gray-8 focus-visible:!ring-0 bg-none truncate"
             >
               <option
                 v-for="option in priorityOptions"
@@ -89,26 +81,26 @@
     </div>
     <div
       v-if="slaData.priorities?.length === 0"
-      class="text-center p-4 text-gray-600"
+      class="text-center p-4 text-ink-gray-5"
     >
-      {{ __('No priorities in the list') }}
+      {{ __('No Priorities in the list') }}
     </div>
   </div>
   <div
-    class="flex items-center justify-between mt-2.5"
     v-if="
       slaData.priorities.length !== priorityOptions.length ||
       slaDataErrors.default_priority ||
       slaDataErrors.priorities
     "
+    class="flex items-center justify-between mt-2.5"
   >
     <div>
       <Button
         v-if="slaData.priorities.length !== priorityOptions.length"
         variant="subtle"
-        :label="__('Add row')"
-        @click="addRow"
+        :label="__('Add Row')"
         icon-left="plus"
+        @click="addRow"
       />
     </div>
     <ErrorMessage
@@ -125,18 +117,13 @@ import {
   createResource,
   Dropdown,
   ErrorMessage,
-  Popover,
   toast,
 } from 'frappe-ui'
 import { slaData, slaDataErrors, validateSlaData } from './utils'
-import {
-  ConfirmDelete,
-  formatTimeHMS,
-  getGridTemplateColumnsForTable,
-} from '../../../utils'
+import { ConfirmDelete, getGridTemplateColumnsForTable } from '../../../utils'
 import { computed, inject, provide, reactive, ref } from 'vue'
 import EditResponseResolutionModal from './EditResponseResolutionModal.vue'
-import DurationPicker from '../../Controls/DurationPicker.vue'
+import DurationInput from '../../Controls/DurationInput.vue'
 import { watchDebounced } from '@vueuse/core'
 
 const step = inject('step')
@@ -186,12 +173,12 @@ const columns = computed(() => [
     isRequired: true,
   },
   {
-    label: __('First response time'),
+    label: __('First Response Time'),
     key: 'first_response_time',
     isRequired: true,
   },
   {
-    label: __('Default priority'),
+    label: __('Default Priority'),
     key: 'default_priority',
   },
 ])
@@ -255,9 +242,7 @@ const onDefaultPriorityChange = (priority, defaultPriority) => {
 
 watchDebounced(
   () => [...slaData.value.priorities],
-  (d) => {
-    validateSlaData('priorities')
-  },
+  () => validateSlaData('priorities'),
   { deep: true, debounce: 300 },
 )
 </script>

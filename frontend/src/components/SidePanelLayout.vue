@@ -38,7 +38,11 @@
                     v-if="field.visible"
                     class="field flex items-center gap-2 px-3 leading-5 first:mt-3"
                   >
-                    <Tooltip :text="__(field.label)" :hoverDelay="1">
+                    <Tooltip
+                      v-if="field.fieldtype !== 'Button'"
+                      :text="__(field.label)"
+                      :hoverDelay="1"
+                    >
                       <div
                         class="w-[35%] min-w-20 shrink-0 flex items-center gap-0.5"
                       >
@@ -57,7 +61,12 @@
                         </div>
                       </div>
                     </Tooltip>
-                    <div class="flex items-center justify-between w-[65%]">
+                    <div
+                      :class="[
+                        'flex items-center justify-between',
+                        field.fieldtype === 'Button' ? 'w-full' : 'w-[65%]',
+                      ]"
+                    >
                       <div
                         class="grid min-h-[28px] flex-1 items-center overflow-hidden text-base"
                       >
@@ -71,6 +80,9 @@
                               'Percent',
                               'Check',
                               'Dropdown',
+                              'Duration',
+                              'Rating',
+                              'Button',
                             ].includes(field.fieldtype)
                           "
                           class="flex h-7 cursor-pointer items-center px-2 py-1 text-ink-gray-5"
@@ -89,13 +101,13 @@
                         />
                         <FormControl
                           v-else-if="field.fieldtype == 'Check'"
+                          v-model="doc[field.fieldname]"
                           class="form-control"
                           type="checkbox"
-                          v-model="doc[field.fieldname]"
+                          :disabled="Boolean(field.read_only)"
                           @change.stop="
                             fieldChange($event.target.checked, field)
                           "
-                          :disabled="Boolean(field.read_only)"
                         />
                         <FormControl
                           v-else-if="
@@ -115,12 +127,12 @@
                         />
                         <FormControl
                           v-else-if="field.fieldtype === 'Select'"
+                          v-model="doc[field.fieldname]"
                           class="form-control cursor-pointer [&_select]:cursor-pointer truncate [&>*]:!ring-0"
                           type="select"
-                          v-model="doc[field.fieldname]"
                           :options="field.options"
                           :placeholder="field.placeholder"
-                          @change.stop="fieldChange($event.target.value, field)"
+                          @update:modelValue="(v) => fieldChange(v, field)"
                         />
                         <Link
                           v-else-if="field.fieldtype === 'User'"
@@ -131,11 +143,11 @@
                           "
                           doctype="User"
                           :filters="field.filters"
-                          @change="(v) => fieldChange(v, field)"
                           :placeholder="
                             __('Select') + ' ' + field.label + '...'
                           "
                           :hideMe="true"
+                          @change="(v) => fieldChange(v, field)"
                         >
                           <template v-if="doc[field.fieldname]" #prefix>
                             <UserAvatar
@@ -172,8 +184,8 @@
                           "
                           :filters="field.filters"
                           :placeholder="field.placeholder"
-                          @change="(v) => fieldChange(v, field)"
                           :onCreate="field.create"
+                          @change="(v) => fieldChange(v, field)"
                         />
                         <div
                           v-else-if="field.fieldtype === 'Time'"
@@ -217,10 +229,10 @@
                           :value="getFormattedPercent(field.fieldname, doc)"
                           :placeholder="field.placeholder"
                           :debounce="500"
+                          :disabled="Boolean(field.read_only)"
                           @change.stop="
                             fieldChange(flt($event.target.value), field)
                           "
-                          :disabled="Boolean(field.read_only)"
                         />
                         <Password
                           v-else-if="field.fieldtype === 'Password'"
@@ -228,8 +240,8 @@
                           :value="doc[field.fieldname]"
                           :placeholder="field.placeholder"
                           :debounce="500"
-                          @change.stop="fieldChange($event.target.value, field)"
                           :disabled="Boolean(field.read_only)"
+                          @change.stop="fieldChange($event.target.value, field)"
                         />
                         <FormattedInput
                           v-else-if="field.fieldtype === 'Int'"
@@ -238,8 +250,8 @@
                           :value="doc[field.fieldname] || '0'"
                           :placeholder="field.placeholder"
                           :debounce="500"
-                          @change.stop="fieldChange($event.target.value, field)"
                           :disabled="Boolean(field.read_only)"
+                          @change.stop="fieldChange($event.target.value, field)"
                         />
                         <FormattedInput
                           v-else-if="field.fieldtype === 'Float'"
@@ -248,10 +260,10 @@
                           :value="getFormattedFloat(field.fieldname, doc)"
                           :placeholder="field.placeholder"
                           :debounce="500"
+                          :disabled="Boolean(field.read_only)"
                           @change.stop="
                             fieldChange(flt($event.target.value), field)
                           "
-                          :disabled="Boolean(field.read_only)"
                         />
                         <FormattedInput
                           v-else-if="field.fieldtype === 'Currency'"
@@ -260,10 +272,35 @@
                           :value="getFormattedCurrency(field.fieldname, doc)"
                           :placeholder="field.placeholder"
                           :debounce="500"
+                          :disabled="Boolean(field.read_only)"
                           @change.stop="
                             fieldChange(flt($event.target.value), field)
                           "
+                        />
+                        <DurationInput
+                          v-else-if="field.fieldtype === 'Duration'"
+                          class="form-control"
+                          :value="doc[field.fieldname]"
+                          :placeholder="field.placeholder"
                           :disabled="Boolean(field.read_only)"
+                          @change="(v) => fieldChange(v, field)"
+                        />
+                        <RatingInput
+                          v-else-if="field.fieldtype === 'Rating'"
+                          class="pl-[10px]"
+                          :value="doc[field.fieldname]"
+                          :max="field.options || 5"
+                          :disabled="Boolean(field.read_only)"
+                          @change="(v) => fieldChange(v, field)"
+                        />
+                        <ButtonControl
+                          v-else-if="field.fieldtype === 'Button'"
+                          :label="field.label"
+                          :icon="field.icon"
+                          :theme="getButtonTheme(field.button_color)"
+                          :variant="getButtonVariant(field.button_color)"
+                          :disabled="Boolean(field.read_only)"
+                          @click="handleButtonClick(field)"
                         />
                         <FormControl
                           v-else
@@ -316,6 +353,12 @@
 <script setup>
 import Password from '@/components/Controls/Password.vue'
 import FormattedInput from '@/components/Controls/FormattedInput.vue'
+import DurationInput from '@/components/Controls/DurationInput.vue'
+import RatingInput from '@/components/Controls/RatingInput.vue'
+import ButtonControl, {
+  getButtonTheme,
+  getButtonVariant,
+} from '@/components/Controls/ButtonControl.vue'
 import CollapsibleSection from '@/components/CollapsibleSection.vue'
 import PrimaryDropdown from '@/components/PrimaryDropdown.vue'
 import FadedScrollableDiv from '@/components/FadedScrollableDiv.vue'
@@ -327,32 +370,18 @@ import SidePanelModal from '@/components/Modals/SidePanelModal.vue'
 import { getMeta } from '@/stores/meta'
 import { usersStore } from '@/stores/users'
 import { isMobileView } from '@/composables/settings'
-import { getFormat, evaluateDependsOnValue } from '@/utils'
+import { getFormat, evaluateDependsOnValue, isNull } from '@/utils'
 import { flt } from '@/utils/numberFormat.js'
 import { Tooltip, DateTimePicker, DatePicker, TimePicker } from 'frappe-ui'
 import { useDocument } from '@/data/document'
 import { ref, computed, getCurrentInstance } from 'vue'
 
 const props = defineProps({
-  sections: {
-    type: Object,
-  },
-  doctype: {
-    type: String,
-    default: 'CRM Lead',
-    required: true,
-  },
-  docname: {
-    type: String,
-    required: true,
-  },
-  preview: {
-    type: Boolean,
-    default: false,
-  },
-  addContact: {
-    type: Function,
-  },
+  sections: { type: Object, default: () => ({}) },
+  doctype: { type: String, default: 'CRM Lead' },
+  docname: { type: String, required: true },
+  preview: { type: Boolean, default: false },
+  addContact: { type: Function, default: null },
 })
 
 const emit = defineEmits(['beforeFieldChange', 'afterFieldChange', 'reload'])
@@ -366,11 +395,13 @@ const showSidePanelModal = ref(false)
 
 let document = { doc: {} }
 let triggerOnChange
+let triggerButton = () => {}
 
 if (props.docname) {
   let d = useDocument(props.doctype, props.docname)
   document = d.document
   triggerOnChange = d.triggerOnChange
+  triggerButton = d.triggerButton
 }
 
 const doc = computed(() => document.doc || {})
@@ -408,6 +439,7 @@ function parsedField(field) {
     field.link_filters = JSON.stringify({
       ...(field.link_filters ? JSON.parse(field.link_filters) : {}),
       name: ['in', users.data?.crmUsers?.map((user) => user.name)],
+      ignore_user_type: 1,
     })
   }
 
@@ -472,18 +504,33 @@ function parsedSection(section, editButtonAdded) {
 function isFieldVisible(field) {
   if (props.preview) return true
 
-  const hideEmptyReadOnly = Number(
-    window.sysdefaults?.hide_empty_read_only_fields ?? 1,
-  )
+  let readOnlyField =
+    field.read_only || field.fieldtype === 'Read Only' ? true : false
 
-  const shouldShowReadOnly =
-    field.read_only && (doc.value?.[field.fieldname] || !hideEmptyReadOnly)
+  let hideEmptyReadOnlyField =
+    isNull(doc.value[field.fieldname]) &&
+    Number(window.sysdefaults?.hide_empty_read_only_fields ?? 1)
+
+  let showReadOnlyField = readOnlyField && !hideEmptyReadOnlyField
 
   return (
-    (field.fieldtype == 'Check' || shouldShowReadOnly || !field.read_only) &&
+    (field.fieldtype == 'Check' ||
+      field.fieldtype == 'Button' ||
+      showReadOnlyField ||
+      !readOnlyField) &&
     (!field.depends_on || field.display_via_depends_on) &&
     !field.hidden
   )
+}
+
+async function handleButtonClick(field) {
+  if (props.preview) return
+
+  if (typeof field.click === 'function') {
+    await field.click(doc.value)
+  } else {
+    await triggerButton(field.fieldname)
+  }
 }
 
 function firstVisibleIndex() {

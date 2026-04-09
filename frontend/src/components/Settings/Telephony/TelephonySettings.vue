@@ -6,22 +6,24 @@
         <h2
           class="flex gap-2 text-xl font-semibold leading-none h-5 text-ink-gray-8"
         >
-          {{ __('Telephony settings') }}
+          {{ __('Telephony Settings') }}
           <Badge
-            v-if="mediumChanged"
-            :label="__('Not saved')"
+            v-if="isDirty"
+            :label="__('Not Saved')"
             variant="subtle"
             theme="orange"
           />
         </h2>
         <p class="text-p-base text-ink-gray-6">
-          {{ __('Configure telephony settings for your CRM') }}
+          {{ __('Configure Telephony Settings for your CRM') }}
         </p>
       </div>
       <div class="flex item-center space-x-2 w-3/12 justify-end">
         <Button
-          :loading="updateMediumResource.isLoading"
-          :disabled="!mediumChanged"
+          v-if="isDirty"
+          :loading="
+            isNewDoc ? insertResource.loading : telephonyAgent.save?.loading
+          "
           :label="__('Update')"
           variant="solid"
           @click="update"
@@ -29,59 +31,137 @@
       </div>
     </div>
 
-    <div class="flex-1 flex flex-col overflow-y-auto">
-      <!-- General -->
-      <div class="flex items-center justify-between gap-8 py-3 px-2">
+    <div v-if="telephonyAgent.doc" class="flex-1 flex flex-col overflow-y-auto">
+      <div class="flex items-center justify-between gap-8 py-3 pl-2 pr-1">
         <div class="flex flex-col">
           <div class="text-p-base font-medium text-ink-gray-7 truncate">
-            {{ __('Default medium') }}
+            {{ __('Default Medium') }}
           </div>
           <div class="text-p-sm text-ink-gray-5">
-            {{ __('Default calling medium for logged in user') }}
+            {{ __('Default Calling Medium for Logged In User') }}
           </div>
         </div>
         <div class="flex items-center gap-1">
           <FormControl
+            v-model="telephonyAgent.doc.default_medium"
             type="select"
-            class="w-40"
+            class="w-44 p-1"
             :options="[
               { label: __(''), value: '' },
               { label: __('Twilio'), value: 'Twilio' },
               { label: __('Exotel'), value: 'Exotel' },
             ]"
-            v-model="defaultCallingMedium"
-            :placeholder="__('Select medium')"
+            :placeholder="__('Select Medium')"
           />
           <Button
-            v-if="defaultCallingMedium"
+            v-if="telephonyAgent.doc.default_medium"
             icon="x"
             :tooltip="__('Clear')"
-            @click="defaultCallingMedium = ''"
+            @click="telephonyAgent.doc.default_medium = ''"
+          />
+        </div>
+      </div>
+      <div
+        v-if="twilioEnabled"
+        class="h-px border-t mx-2 border-outline-gray-modals"
+      />
+      <div
+        v-if="twilioEnabled"
+        class="flex items-center justify-between gap-8 py-3 pl-2 pr-1"
+      >
+        <div class="flex flex-col">
+          <div class="text-p-base font-medium text-ink-gray-7 truncate">
+            {{ __('Twilio Number') }}
+          </div>
+          <div class="text-p-sm text-ink-gray-5">
+            {{ __('Set the Twilio number to be used for outgoing calls.') }}
+          </div>
+        </div>
+        <div>
+          <FormControl
+            v-model="telephonyAgent.doc.twilio_number"
+            class="flex-1 truncate w-44 p-1"
+            :placeholder="__('Enter Twilio Number')"
+            placement="bottom-end"
+          />
+        </div>
+      </div>
+      <div
+        v-if="exotelEnabled"
+        class="h-px border-t mx-2 border-outline-gray-modals"
+      />
+      <div
+        v-if="exotelEnabled"
+        class="flex items-center justify-between gap-8 py-3 pl-2 pr-1"
+      >
+        <div class="flex flex-col">
+          <div class="text-p-base font-medium text-ink-gray-7 truncate">
+            {{ __('Exotel Number') }}
+          </div>
+          <div class="text-p-sm text-ink-gray-5">
+            {{ __('Set the Exotel number to be used for outgoing calls.') }}
+          </div>
+        </div>
+        <div>
+          <FormControl
+            v-model="telephonyAgent.doc.exotel_number"
+            class="flex-1 truncate w-44 p-1"
+            :placeholder="__('Enter Exotel Number')"
+            placement="bottom-end"
+          />
+        </div>
+      </div>
+      <div
+        v-if="exotelEnabled"
+        class="flex items-center justify-between gap-8 py-3 pl-2 pr-1"
+      >
+        <div class="flex flex-col">
+          <div class="text-p-base font-medium text-ink-gray-7 truncate">
+            {{ __('Personal Mobile No.') }}
+          </div>
+          <div class="text-p-sm text-ink-gray-5">
+            {{
+              __(
+                'Enter your personal mobile number used by Exotel to make calls',
+              )
+            }}
+          </div>
+        </div>
+        <div>
+          <FormControl
+            v-model="telephonyAgent.doc.mobile_no"
+            class="flex-1 truncate w-44 p-1"
+            :placeholder="__('Enter Personal Mobile No.')"
+            placement="bottom-end"
           />
         </div>
       </div>
 
       <div
         v-if="isManager()"
-        class="h-px border-t mx-2 border-outline-gray-modals"
-      />
+        class="flex items-center justify-between text-lg text-ink-gray-8 font-semibold mt-4 py-3 px-2"
+      >
+        {{ __('Integrations') }}
+      </div>
 
       <div
         v-if="isManager()"
-        class="flex items-center justify-between py-3 px-2 cursor-pointer hover:bg-gray-50 rounded"
-        @click="emit('updateStep', 'twilio-settings')"
+        class="flex items-center justify-between py-3 px-2"
       >
-        <div class="flex flex-col">
-          <div class="text-p-base font-medium text-ink-gray-7 truncate">
+        <div class="flex flex-col gap-1">
+          <span class="text-base font-medium text-ink-gray-8">
             {{ __('Twilio') }}
-          </div>
-          <div class="text-p-sm text-ink-gray-5 truncate">
+          </span>
+          <span class="text-p-sm text-ink-gray-6">
             {{
-              __('Configure your twilio telephony integration settings here')
+              __('Configure your Twilio Telephony Integration Settings here')
             }}
-          </div>
+          </span>
         </div>
-        <FeatherIcon name="chevron-right" class="size-4 text-ink-gray-5" />
+        <Button
+          :label="__('Configure')"
+          @click="emit('updateStep', 'twilio-settings')"
+        />
       </div>
 
       <div
@@ -91,23 +171,27 @@
 
       <div
         v-if="isManager()"
-        class="flex items-center justify-between py-3 px-2 cursor-pointer hover:bg-gray-50 rounded"
-        @click="emit('updateStep', 'exotel-settings')"
+        class="flex items-center justify-between py-3 px-2"
       >
-        <div class="flex flex-col">
-          <div class="text-p-base font-medium text-ink-gray-7 truncate">
+        <div class="flex flex-col gap-1">
+          <span class="text-base font-medium text-ink-gray-8">
             {{ __('Exotel') }}
-          </div>
-          <div class="text-p-sm text-ink-gray-5 truncate">
+          </span>
+          <span class="text-p-sm text-ink-gray-6">
             {{
-              __('Configure your exotel telephony integration settings here')
+              __('Configure your Exotel Telephony Integration Settings here')
             }}
-          </div>
+          </span>
         </div>
-        <FeatherIcon name="chevron-right" class="size-4 text-ink-gray-5" />
+        <Button
+          :label="__('Configure')"
+          @click="emit('updateStep', 'exotel-settings')"
+        />
       </div>
     </div>
-    <ErrorMessage :message="error" />
+    <ErrorMessage
+      :message="isNewDoc ? insertResource.error : telephonyAgent.save?.error"
+    />
   </div>
 </template>
 <script setup>
@@ -117,61 +201,68 @@ import {
   ErrorMessage,
   FeatherIcon,
   createResource,
+  toast,
 } from 'frappe-ui'
-import {
-  defaultCallingMedium,
-  twilioEnabled,
-  exotelEnabled,
-} from '@/composables/settings'
+import { twilioEnabled, exotelEnabled } from '@/composables/settings'
+import { useDocument } from '@/data/document'
 import { usersStore } from '@/stores/users'
-import { toast } from 'frappe-ui'
-import { ref, watch } from 'vue'
+import { ref, computed } from 'vue'
 
 const emit = defineEmits(['updateStep'])
 
-const { isManager, isTelephonyAgent } = usersStore()
+const { getUser, isManager } = usersStore()
 
-const mediumChanged = ref(false)
+const isNewDoc = ref(false)
 
-watch(defaultCallingMedium, () => {
-  mediumChanged.value = true
+const { document: telephonyAgent } = useDocument(
+  'CRM Telephony Agent',
+  getUser().name,
+  {
+    onError: (err) => {
+      if (err.exc_type === 'DoesNotExistError') {
+        isNewDoc.value = true
+        telephonyAgent.doc = {}
+        telephonyAgent.originalDoc = {}
+      }
+    },
+  },
+)
+
+const insertResource = createResource({
+  url: 'frappe.client.insert',
+  onSuccess: (data) => {
+    isNewDoc.value = false
+    telephonyAgent.doc = data
+    telephonyAgent.originalDoc = JSON.parse(JSON.stringify(data))
+    toast.success(__('Document created successfully'))
+  },
+  onError: (err) => {
+    err.messages?.forEach((msg) => toast.error(msg))
+  },
 })
 
 function update() {
-  if (!validateIfDefaultMediumIsEnabled()) return
-  if (mediumChanged.value) {
-    updateMediumResource.submit()
+  if (!isDirty.value) return
+
+  if (isNewDoc.value) {
+    insertResource.submit({
+      doc: {
+        doctype: 'CRM Telephony Agent',
+        user: getUser().name,
+        ...telephonyAgent.doc,
+      },
+    })
+  } else {
+    telephonyAgent.save.submit()
   }
 }
 
-const updateMediumResource = createResource({
-  url: 'crm.integrations.api.set_default_calling_medium',
-  makeParams: () => ({
-    medium: defaultCallingMedium.value,
-  }),
-  onSuccess: () => {
-    mediumChanged.value = false
-    error.value = ''
-    toast.success(__('Default calling medium updated successfully'))
-  },
-  onError: (err) => {
-    error.value = err.message
-  },
+const isDirty = computed(() => {
+  return (
+    telephonyAgent.doc &&
+    telephonyAgent.originalDoc &&
+    JSON.stringify(telephonyAgent.doc) !==
+      JSON.stringify(telephonyAgent.originalDoc)
+  )
 })
-
-const error = ref('')
-
-function validateIfDefaultMediumIsEnabled() {
-  if (isTelephonyAgent() && !isManager()) return true
-
-  if (defaultCallingMedium.value === 'Twilio' && !twilioEnabled.value) {
-    error.value = __('Twilio is not enabled')
-    return false
-  }
-  if (defaultCallingMedium.value === 'Exotel' && !exotelEnabled.value) {
-    error.value = __('Exotel is not enabled')
-    return false
-  }
-  return true
-}
 </script>

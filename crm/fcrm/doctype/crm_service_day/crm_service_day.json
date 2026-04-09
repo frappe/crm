@@ -1,5 +1,4 @@
 {
- "_liked_by": "[]",
  "actions": [],
  "allow_rename": 1,
  "creation": "2023-12-04 16:07:20.400084",
@@ -30,7 +29,7 @@
    "fieldname": "start_time",
    "fieldtype": "Time",
    "in_list_view": 1,
-   "label": "Start time",
+   "label": "Start Time",
    "reqd": 1
   },
   {
@@ -41,15 +40,15 @@
    "fieldname": "end_time",
    "fieldtype": "Time",
    "in_list_view": 1,
-   "label": "End time",
+   "label": "End Time",
    "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-01-22 14:03:18.780319",
- "modified_by": "shariq@frappe.io",
+ "modified": "2026-02-23 12:14:06.741495",
+ "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Service Day",
  "owner": "Administrator",

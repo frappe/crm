@@ -36,12 +36,12 @@
   {
    "fieldname": "access_token",
    "fieldtype": "Small Text",
-   "label": "Access token"
+   "label": "Access Token"
   },
   {
    "fieldname": "page_name",
    "fieldtype": "Data",
-   "label": "Page name"
+   "label": "Page Name"
   }
  ],
  "grid_page_length": 50,
@@ -53,8 +53,8 @@
    "link_fieldname": "page"
   }
  ],
- "modified": "2026-01-28 17:11:34.619999",
- "modified_by": "shariq@frappe.io",
+ "modified": "2026-02-23 12:45:31.760295",
+ "modified_by": "Administrator",
  "module": "Lead Syncing",
  "name": "Facebook Page",
  "naming_rule": "By fieldname",

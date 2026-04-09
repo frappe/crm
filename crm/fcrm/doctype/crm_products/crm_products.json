@@ -1,5 +1,4 @@
 {
- "_liked_by": "[]",
  "actions": [],
  "allow_rename": 1,
  "creation": "2025-04-28 12:50:49.812915",
@@ -33,7 +32,7 @@
   {
    "fieldname": "product_name",
    "fieldtype": "Data",
-   "label": "Product name",
+   "label": "Product Name",
    "reqd": 1
   },
   {
@@ -53,7 +52,7 @@
   {
    "fieldname": "discount_amount",
    "fieldtype": "Currency",
-   "label": "Discount amount",
+   "label": "Discount Amount",
    "options": "currency",
    "read_only": 1
   },
@@ -88,7 +87,7 @@
    "description": "Amount after discount",
    "fieldname": "net_amount",
    "fieldtype": "Currency",
-   "label": "Net amount",
+   "label": "Net Amount",
    "options": "currency",
    "read_only": 1
   },
@@ -131,8 +130,8 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-01-22 13:54:02.525549",
- "modified_by": "shariq@frappe.io",
+ "modified": "2026-02-23 12:14:43.798967",
+ "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Products",
  "owner": "Administrator",

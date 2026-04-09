@@ -2,7 +2,7 @@
   <div class="flex items-center justify-between">
     <div class="flex flex-col gap-1">
       <div class="text-lg font-semibold text-ink-gray-8">
-        {{ __('Work schedule and holidays') }}
+        {{ __('Work Schedule & Holidays') }}
       </div>
       <div class="text-p-sm text-ink-gray-6 max-w-lg">
         {{
@@ -17,7 +17,7 @@
         <Button
           class="text-sm"
           :icon-right="open ? 'chevron-up' : 'chevron-down'"
-          :label="slaData.holiday_list || __('Select holiday list')"
+          :label="slaData.holiday_list || __('Select Holiday List')"
         />
       </template>
       <template #body>
@@ -45,8 +45,8 @@
               <div class="flex cursor-pointer items-center gap-1">
                 <Button
                   variant="ghost"
-                  @click.stop="editHolidayList(holiday)"
                   icon="edit"
+                  @click.stop="editHolidayList(holiday)"
                 />
               </div>
             </div>
@@ -63,9 +63,9 @@
             <Button
               class="w-full !justify-start !text-ink-gray-5"
               variant="ghost"
-              :label="__('Create new holiday list')"
-              @click="createNewHolidayList()"
+              :label="__('Create New Holiday List')"
               icon-left="plus"
+              @click="createNewHolidayList()"
             />
           </div>
         </div>
@@ -75,16 +75,16 @@
   <div class="mt-5">
     <div class="rounded-md border px-2 border-outline-gray-2 text-sm">
       <div
+        v-if="slaData.working_hours?.length !== 0"
         class="grid p-3 px-4 items-center"
         :style="{
           gridTemplateColumns: getGridTemplateColumnsForTable(columns),
         }"
-        v-if="slaData.working_hours?.length !== 0"
       >
         <div
           v-for="column in columns"
           :key="column.key"
-          class="text-gray-600 overflow-hidden whitespace-nowrap text-ellipsis"
+          class="text-ink-gray-5 overflow-hidden whitespace-nowrap text-ellipsis"
           :class="{
             'ml-2': column.key === 'workday',
           }"
@@ -120,8 +120,8 @@
             </div>
             <div v-else class="ml-2">
               <select
-                class="w-full h-7 text-base hover:bg-surface-gray-3 rounded-md p-0 pl-2 pr-5 bg-transparent -ml-2 border-0 text-ink-gray-8 focus-visible:!ring-0 bg-none truncate"
                 v-model="row[column.key]"
+                class="w-full h-7 text-base hover:bg-surface-gray-3 rounded-md p-0 pl-2 pr-5 bg-transparent -ml-2 border-0 text-ink-gray-8 focus-visible:!ring-0 bg-none truncate"
               >
                 <option
                   v-for="option in workDayOptions"
@@ -151,18 +151,18 @@
       </div>
       <div
         v-if="slaData.working_hours?.length === 0"
-        class="text-center p-4 text-gray-600"
+        class="text-center p-4 text-ink-gray-5"
       >
-        {{ __('No workdays in the list') }}
+        {{ __('No Workdays in the List') }}
       </div>
     </div>
     <div class="flex items-center justify-between mt-2.5">
       <Button
         v-if="slaData.working_hours?.length < 7"
         variant="subtle"
-        :label="__('Add row')"
-        @click="addWorkDay"
+        :label="__('Add Row')"
         icon-left="plus"
+        @click="addWorkDay"
       />
       <ErrorMessage :message="slaDataErrors.working_hours" />
     </div>
@@ -216,12 +216,12 @@ const columns = [
     isRequired: true,
   },
   {
-    label: __('Start time'),
+    label: __('Start Time'),
     key: 'start_time',
     isRequired: true,
   },
   {
-    label: __('End time'),
+    label: __('End Time'),
     key: 'end_time',
     isRequired: true,
   },

@@ -1,13 +1,13 @@
 <template>
-  <Dialog v-model="show" :options="{ title: __('Bulk edit') }">
+  <Dialog v-model="show" :options="{ title: __('Bulk Edit') }">
     <template #body-content>
       <div class="mb-4">
         <div class="mb-1.5 text-sm text-ink-gray-5">{{ __('Field') }}</div>
         <Autocomplete
           :value="field.label"
           :options="fields.data"
-          @change="(e) => changeField(e)"
           :placeholder="__('Source')"
+          @change="(e) => changeField(e)"
         />
       </div>
       <div>
@@ -16,8 +16,8 @@
           :is="getValueComponent(field)"
           :value="newValue"
           size="md"
+          :placeholder="__('Contact Us')"
           @change="(v) => updateValue(v)"
-          :placeholder="__('Contact us')"
         />
       </div>
     </template>
@@ -25,9 +25,9 @@
       <Button
         class="w-full"
         variant="solid"
-        @click="updateValues"
         :loading="loading"
-        :label="__('Update {0} records', [recordCount])"
+        :label="__('Update {0} Records', [recordCount])"
+        @click="updateValues"
       />
     </template>
   </Dialog>
@@ -54,17 +54,11 @@ const typeEditor = ['Text Editor']
 const typeDate = ['Date', 'Datetime']
 
 const props = defineProps({
-  doctype: {
-    type: String,
-    required: true,
-  },
-  selectedValues: {
-    type: Set,
-    required: true,
-  },
+  doctype: { type: String, required: true },
+  selectedValues: { type: Set, required: true },
 })
 
-const show = defineModel()
+const show = defineModel({ type: Boolean })
 
 const emit = defineEmits(['reload'])
 

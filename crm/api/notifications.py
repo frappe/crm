@@ -39,7 +39,7 @@ def get_notifications():
 
 
 @frappe.whitelist()
-def mark_as_read(user=None, doc=None):
+def mark_as_read(user: str | None = None, doc: str | None = None):
 	user = user or frappe.session.user
 	filters = {"to_user": user, "read": False}
 	or_filters = []

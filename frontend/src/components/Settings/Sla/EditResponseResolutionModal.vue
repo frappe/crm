@@ -2,49 +2,36 @@
   <Dialog
     v-model="dialog"
     :options="{
-      title: __('Edit response and resolution'),
+      title: __('Edit Response & Resolution'),
     }"
   >
     <template #body-content>
       <div class="flex flex-col gap-4">
         <FormControl
+          v-model="priorityData.priority"
           type="select"
           size="sm"
           variant="subtle"
-          :placeholder="__('Select priority')"
+          :placeholder="__('Select Priority')"
           :label="__('Priority')"
-          v-model="priorityData.priority"
           :options="priorityOptions"
           required
           class="text-ink-gray-8"
         />
         <div>
-          <FormLabel :label="__('First response time')" required />
-          <Popover class="mt-2">
-            <template #target="{ togglePopover }" class="w-max">
-              <div
-                @click="togglePopover()"
-                class="w-full bg-surface-gray-2 rounded p-1.5 px-2 text-base text-ink-gray-8 cursor-pointer hover:bg-surface-gray-3"
-              >
-                <div v-if="priorityData.first_response_time">
-                  {{ formatTimeHMS(priorityData.first_response_time) }}
-                </div>
-                <div v-else class="text-gray-500">{{ __('Select time') }}</div>
-              </div>
-            </template>
-            <template #body>
-              <div class="absolute bg-surface-white top-2 rounded">
-                <DurationPicker
-                  v-model="priorityData.first_response_time"
-                  :options="{ seconds: false }"
-                />
-              </div>
-            </template>
-          </Popover>
+          <FormLabel :label="__('First Response Time')" required />
+          <DurationInput
+            class="mt-2 w-full"
+            :value="priorityData.first_response_time"
+            :long-form="true"
+            size="sm"
+            variant="subtle"
+            @change="(v) => (priorityData.first_response_time = v)"
+          />
         </div>
         <Checkbox
           v-model="priorityData.default_priority"
-          :label="__('Set default priority')"
+          :label="__('Set Default Priority')"
         />
       </div>
     </template>
@@ -54,19 +41,19 @@
           <Button
             variant="subtle"
             :theme="isConfirmingDelete ? 'red' : 'gray'"
-            :label="isConfirmingDelete ? __('Confirm delete') : __('Delete')"
-            @click="deleteItem"
+            :label="isConfirmingDelete ? __('Confirm Delete') : __('Delete')"
             icon-left="trash-2"
+            @click="deleteItem"
           />
         </div>
         <div class="flex gap-2">
           <Button
             variant="subtle"
             theme="gray"
-            @click="dialog = false"
             :label="__('Cancel')"
+            @click="dialog = false"
           />
-          <Button variant="solid" @click="onSave" :label="__('Save')" />
+          <Button variant="solid" :label="__('Save')" @click="onSave" />
         </div>
       </div>
     </template>
@@ -80,22 +67,17 @@ import {
   Dialog,
   FormControl,
   FormLabel,
-  Popover,
   toast,
 } from 'frappe-ui'
 import { inject, ref, watch } from 'vue'
 import { slaData } from './utils'
-import { formatTimeHMS } from '../../../utils'
-import DurationPicker from '../../Controls/DurationPicker.vue'
+import DurationInput from '../../Controls/DurationInput.vue'
 
-const dialog = defineModel()
+const dialog = defineModel({ type: Boolean })
 const isConfirmingDelete = ref(false)
 
 const props = defineProps({
-  priority: {
-    type: Object,
-    required: true,
-  },
+  priority: { type: Object, required: true },
 })
 
 const priorityOptions = inject('priorityOptions')
@@ -108,13 +90,13 @@ const priorityData = ref({
 
 const validateForm = () => {
   if (!priorityData.value.priority) {
-    toast.error(__('Please select a priority'))
+    toast.error(__('Please select a Priority'))
     return false
   }
 
   const responseTime = parseInt(priorityData.value.first_response_time)
   if (isNaN(responseTime) || responseTime <= 0) {
-    toast.error(__('Response time is required'))
+    toast.error(__('Response Time is required'))
     return false
   }
 

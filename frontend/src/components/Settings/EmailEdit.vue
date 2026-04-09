@@ -3,7 +3,7 @@
     <!-- title and desc -->
     <div role="heading" aria-level="1" class="flex justify-between gap-1">
       <h2 class="text-xl font-semibold text-ink-gray-8">
-        {{ __('Edit email') }}
+        {{ __('Edit Email') }}
       </h2>
     </div>
     <div class="w-fit">
@@ -45,19 +45,20 @@
         </div>
       </div>
       <div class="grid grid-cols-2 gap-4">
-        <div
-          v-for="field in incomingOutgoingFields"
-          :key="field.name"
-          class="flex flex-col gap-1"
-        >
-          <FormControl
-            v-model="state[field.name]"
-            :label="field.label"
-            :name="field.name"
-            :type="field.type"
-          />
-          <p class="text-ink-gray-4 text-p-sm">{{ field.description }}</p>
-        </div>
+        <template v-for="field in incomingOutgoingFields" :key="field.name">
+          <div
+            v-if="field.condition ? field.condition(state) : true"
+            class="flex flex-col gap-1"
+          >
+            <FormControl
+              v-model="state[field.name]"
+              :label="field.label"
+              :name="field.name"
+              :type="field.type"
+            />
+            <p class="text-ink-gray-4 text-p-sm">{{ field.description }}</p>
+          </div>
+        </template>
       </div>
       <ErrorMessage v-if="error" class="ml-1" :message="error" />
     </div>
@@ -71,10 +72,10 @@
         @click="emit('update:step', 'email-list')"
       />
       <Button
-        :label="__('Update account')"
+        :label="__('Update Account')"
         variant="solid"
-        @click="updateAccount"
         :loading="loading"
+        @click="updateAccount"
       />
     </div>
   </div>
@@ -95,10 +96,10 @@ import {
 import CircleAlert from '~icons/lucide/circle-alert'
 
 const props = defineProps({
-  accountData: null,
+  accountData: { type: Object, default: () => ({}) },
 })
 
-const emit = defineEmits()
+const emit = defineEmits(['update:step'])
 
 const state = reactive({
   email_account_name: props.accountData.email_account_name || '',
@@ -112,6 +113,8 @@ const state = reactive({
   enable_outgoing: props.accountData.enable_outgoing || false,
   default_outgoing: props.accountData.default_outgoing || false,
   default_incoming: props.accountData.default_incoming || false,
+  create_lead_from_incoming_email:
+    props.accountData.create_lead_from_incoming_email || false,
 })
 
 const info = {
@@ -120,7 +123,7 @@ const info = {
 }
 
 const isCustomService = computed(() => {
-  return services.find((s) => s.name === props.accountData.service).custom
+  return services.find((s) => s.name === props.accountData.service)?.custom
 })
 
 const fields = computed(() => {
@@ -156,7 +159,7 @@ async function updateAccount() {
       loading.value = true
       await callRenameDoc()
       succesHandler()
-    } catch (err) {
+    } catch {
       errorHandler()
     }
   }
@@ -165,7 +168,7 @@ async function updateAccount() {
       loading.value = true
       await callSetValue(values)
       succesHandler()
-    } catch (err) {
+    } catch {
       errorHandler()
     }
   }
@@ -205,11 +208,11 @@ async function callSetValue(values) {
 
 function succesHandler() {
   emit('update:step', 'email-list')
-  toast.success(__('Email account updated successfully'))
+  toast.success(__('Email Account updated successfully'))
 }
 
 function errorHandler() {
   loading.value = false
-  error.value = __('Failed to update email account, Invalid credentials')
+  error.value = __('Failed to update Email Account, Invalid credentials')
 }
 </script>

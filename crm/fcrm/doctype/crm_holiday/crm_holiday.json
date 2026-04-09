@@ -1,5 +1,4 @@
 {
- "_liked_by": "[]",
  "actions": [],
  "allow_rename": 1,
  "creation": "2023-12-14 11:16:15.476366",
@@ -29,7 +28,7 @@
    "default": "0",
    "fieldname": "weekly_off",
    "fieldtype": "Check",
-   "label": "Weekly off"
+   "label": "Weekly Off"
   },
   {
    "fieldname": "section_break_zenz",
@@ -46,8 +45,8 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-01-22 14:01:52.246903",
- "modified_by": "shariq@frappe.io",
+ "modified": "2026-02-23 12:14:21.746011",
+ "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Holiday",
  "owner": "Administrator",

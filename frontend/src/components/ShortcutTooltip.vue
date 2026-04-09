@@ -8,13 +8,13 @@
           <span>{{ label }}</span>
           <!-- Primary combos (one or many) -->
           <template
-            v-for="(combo, idx) in primaryCombosDisplay"
-            :key="'prim-' + idx + combo"
+            v-for="(_combo, idx) in primaryCombosDisplay"
+            :key="'prim-' + idx + _combo"
           >
             <KeyboardShortcut
               bg
               class="!bg-surface-gray-5 !text-ink-gray-2 px-1"
-              :combo="combo"
+              :combo="_combo"
             />
           </template>
           <!-- Alternate combos / equivalents -->

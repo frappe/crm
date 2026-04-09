@@ -26,9 +26,9 @@
         </div>
       </div>
       <TabButtons
+        v-model="activeTab"
         :buttons="tabs"
         class="flex px-4 py-0.5 [&_button]:w-full [&_div]:w-full"
-        v-model="activeTab"
       />
       <div v-if="activeTab == 'all'" class="flex h-full">
         <div
@@ -69,15 +69,13 @@
             </div>
           </RouterLink>
         </div>
-        <div
+        <EmptyState
           v-else
-          class="flex flex-1 flex-col items-center justify-center gap-2"
-        >
-          <NotificationsIcon class="h-20 w-20 text-ink-gray-2" />
-          <div class="text-lg font-medium text-ink-gray-4">
-            {{ __('No new notifications') }}
-          </div>
-        </div>
+          title="No New Notifications"
+          description="You have no new notifications"
+          :icon="NotificationsIcon"
+          width="lg"
+        />
       </div>
       <div v-else-if="activeTab == 'events'" class="flex h-full">
         <EventNotificationsArea />
@@ -91,6 +89,7 @@ import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import MarkAsDoneIcon from '@/components/Icons/MarkAsDoneIcon.vue'
 import NotificationsIcon from '@/components/Icons/NotificationsIcon.vue'
 import EventNotificationsArea from '@/components/EventNotificationsArea.vue'
+import EmptyState from '@/components/ListViews/EmptyState.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import {
   visible,

@@ -11,21 +11,6 @@ class TestCRMLead(IntegrationTestCase):
 	@classmethod
 	def setUpClass(cls):
 		"""Set up test records once for all tests"""
-		# Create test user if it doesn't exist
-		if not frappe.db.exists("User", "crm.user1@example.com"):
-			frappe.get_doc(
-				{
-					"doctype": "User",
-					"email": "crm.user1@example.com",
-					"first_name": "CRM",
-					"last_name": "User1",
-					"send_welcome_email": 0,
-					"roles": [{"doctype": "Has Role", "parentfield": "roles", "role": "Sales User"}],
-					"user_type": "System User",
-				}
-			).insert(ignore_permissions=True)
-			frappe.db.commit()  # nosemgrep
-
 		if not frappe.db.exists("Salutation", "Mr"):
 			frappe.get_doc({"doctype": "Salutation", "salutation": "Mr"}).insert(ignore_permissions=True)
 			frappe.db.commit()  # nosemgrep
@@ -36,9 +21,6 @@ class TestCRMLead(IntegrationTestCase):
 	def tearDownClass(cls):
 		"""Clean up test records after all tests"""
 		frappe.db.rollback()
-		frappe.delete_doc_if_exists("User", "crm.user1@example.com")
-		frappe.delete_doc_if_exists("Contact", "CRM User1")
-		frappe.db.commit()  # nosemgrep
 		super().tearDownClass()
 
 	def tearDown(self):
@@ -503,6 +485,27 @@ class TestCRMLead(IntegrationTestCase):
 		self.assertEqual(deal.website, "https://copytest.com")
 		self.assertEqual(deal.annual_revenue, 750000)
 		self.assertEqual(deal.job_title, "CEO")
+
+	def test_assignees_transferred_on_conversion(self):
+		"""Test that additional assignees are transferred from lead to deal on conversion"""
+		lead = create_lead(
+			first_name="Transfer",
+			lead_owner="Administrator",
+		)
+
+		lead.assign_agent("crm.user1@example.com")
+
+		lead_assignees = lead.get_assigned_users()
+
+		self.assertIn("Administrator", lead_assignees)
+		self.assertIn("crm.user1@example.com", lead_assignees)
+
+		deal_name = lead.convert_to_deal()
+		deal = frappe.get_doc("CRM Deal", deal_name)
+
+		deal_assignees = deal.get_assigned_users()
+		self.assertIn("Administrator", deal_assignees)
+		self.assertIn("crm.user1@example.com", deal_assignees)
 
 
 def create_lead(**kwargs):

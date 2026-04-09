@@ -1,5 +1,5 @@
 <template>
-  <div class="mx-3 mt-2 h-full overflow-y-auto sm:mx-5" v-if="showGroupedRows">
+  <div v-if="showGroupedRows" class="mx-3 mt-2 h-full overflow-y-auto sm:mx-5">
     <div v-for="group in reactivieRows" :key="group.group">
       <ListGroupHeader :group="group">
         <div
@@ -7,7 +7,7 @@
         >
           <div>{{ __(group.label) }} -</div>
           <div class="flex items-center gap-1">
-            <component v-if="group.icon" :is="group.icon" />
+            <component :is="group.icon" v-if="group.icon" />
             <div v-if="group.group == ' '" class="text-ink-gray-4">
               {{ __('Empty') }}
             </div>
@@ -50,14 +50,8 @@ import { ListRows, ListRow, ListGroupHeader, ListGroupRows } from 'frappe-ui'
 import { ref, computed, watch, onBeforeUnmount, onMounted } from 'vue'
 
 const props = defineProps({
-  rows: {
-    type: Array,
-    required: true,
-  },
-  doctype: {
-    type: String,
-    default: 'CRM Lead',
-  },
+  rows: { type: Array, required: true },
+  doctype: { type: String, default: 'CRM Lead' },
 })
 
 const reactivieRows = ref(props.rows)

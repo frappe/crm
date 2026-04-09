@@ -102,7 +102,7 @@
         >
           {{ getRow(itemName, titleField).label }}
         </div>
-        <div class="text-ink-gray-4" v-else>{{ __('No title') }}</div>
+        <div v-else class="text-ink-gray-4">{{ __('No Title') }}</div>
       </div>
     </template>
 
@@ -157,7 +157,10 @@
             :label="getRow(itemName, fieldName).value"
           />
         </div>
-        <div v-else-if="fieldName === '_assign'" class="flex items-center">
+        <div
+          v-else-if="fieldName === '_assign'"
+          class="flex items-center truncate"
+        >
           <MultipleAvatar
             :avatars="getRow(itemName, fieldName).label"
             size="xs"
@@ -204,8 +207,8 @@
     </template>
   </KanbanView>
   <DealsListView
-    ref="dealsListView"
     v-else-if="deals.data && rows.length"
+    ref="dealsListView"
     v-model="deals.data.page_length_count"
     v-model:list="deals"
     :rows="rows"
@@ -228,7 +231,7 @@
   />
   <EmptyState
     v-else-if="deals.data && !rows.length"
-    name="deals"
+    name="Deals"
     :icon="DealsIcon"
   />
   <DealModal
@@ -349,7 +352,7 @@ function getGroupedByRows(listRows, groupByField, columns) {
   let groupedRows = []
 
   groupByField.options?.forEach((option) => {
-    let filteredRows = []
+    let filteredRows
 
     if (!option) {
       filteredRows = listRows.filter((row) => !row[groupByField.fieldname])
@@ -510,18 +513,18 @@ function actions(itemName) {
   let actions = [
     {
       icon: h(PhoneIcon, { class: 'h-4 w-4' }),
-      label: __('Make a call'),
+      label: __('Make a Call'),
       onClick: () => makeCall(mobile_no),
       condition: () => mobile_no && callEnabled.value,
     },
     {
       icon: h(NoteIcon, { class: 'h-4 w-4' }),
-      label: __('New note'),
+      label: __('New Note'),
       onClick: () => showNote(itemName),
     },
     {
       icon: h(TaskIcon, { class: 'h-4 w-4' }),
-      label: __('New task'),
+      label: __('New Task'),
       onClick: () => showTask(itemName),
     },
   ]

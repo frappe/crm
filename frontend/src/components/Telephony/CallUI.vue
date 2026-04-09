@@ -5,7 +5,7 @@
   <Dialog
     v-model="show"
     :options="{
-      title: __('Make call'),
+      title: __('Make Call'),
       actions: [
         {
           label: __('Call using {0}', [callMedium]),
@@ -18,20 +18,19 @@
     <template #body-content>
       <div class="flex flex-col gap-4">
         <FormControl
-          type="text"
           v-model="mobileNumber"
-          :label="__('Mobile number')"
+          type="text"
+          :label="__('Mobile Number')"
         />
         <FormControl
-          type="select"
           v-model="callMedium"
           :label="__('Calling Medium')"
           :options="['Twilio', 'Exotel', 'Yeastar']"
         />
         <div class="flex flex-col gap-1">
           <FormControl
-            type="checkbox"
             v-model="isDefaultMedium"
+            type="checkbox"
             :label="__('Make {0} as default calling medium', [callMedium])"
           />
 

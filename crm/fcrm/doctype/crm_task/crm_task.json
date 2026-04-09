@@ -25,19 +25,21 @@
    "fieldname": "title",
    "fieldtype": "Data",
    "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Title",
    "reqd": 1
   },
   {
    "fieldname": "priority",
    "fieldtype": "Select",
+   "in_standard_filter": 1,
    "label": "Priority",
    "options": "Low\nMedium\nHigh"
   },
   {
    "fieldname": "start_date",
    "fieldtype": "Date",
-   "label": "Start date"
+   "label": "Start Date"
   },
   {
    "fieldname": "column_break_cqua",
@@ -46,7 +48,8 @@
   {
    "fieldname": "assigned_to",
    "fieldtype": "Link",
-   "label": "Assigned to",
+   "in_standard_filter": 1,
+   "label": "Assigned To",
    "options": "User"
   },
   {
@@ -60,7 +63,8 @@
   {
    "fieldname": "due_date",
    "fieldtype": "Datetime",
-   "label": "Due date"
+   "in_standard_filter": 1,
+   "label": "Due Date"
   },
   {
    "fieldname": "section_break_bzhd",
@@ -72,22 +76,21 @@
    "label": "Description"
   },
   {
-   "default": "CRM Lead",
    "fieldname": "reference_doctype",
    "fieldtype": "Link",
-   "label": "Reference document type",
+   "label": "Reference Document Type",
    "options": "DocType"
   },
   {
    "fieldname": "reference_docname",
    "fieldtype": "Dynamic Link",
-   "label": "Reference doc",
+   "label": "Reference Doc",
    "options": "reference_doctype"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-01-28 17:07:01.751999",
+ "modified": "2026-03-26 12:55:16.304522",
  "modified_by": "shariq@frappe.io",
  "module": "FCRM",
  "name": "CRM Task",
