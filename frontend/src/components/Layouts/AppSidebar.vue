@@ -183,6 +183,7 @@ import { usersStore } from '@/stores/users'
 import { sessionStore } from '@/stores/session'
 import { showSettings, activeSettingsPage } from '@/composables/settings'
 import { showChangePasswordModal } from '@/composables/modals'
+import { useBroadcast } from '@/composables/useBroadcast.js'
 import { FeatherIcon, call } from 'frappe-ui'
 import {
   SignupBanner,
@@ -204,6 +205,7 @@ const { getPinnedViews, getPublicViews } = viewsStore()
 const { toggle: toggleNotificationPanel } = notificationsStore()
 const { capture } = useTelemetry()
 const { clearDemoData, isDemoDataCreated } = useDemoData()
+const { send } = useBroadcast()
 
 const isSidebarCollapsed = useStorage('isSidebarCollapsed', false)
 
@@ -360,6 +362,7 @@ const steps = reactive([
     onClick: () => {
       minimize.value = true
       router.push({ name: 'Leads' })
+      send('trigger_lead_create', true)
       capture('onboarding_step_clicked_create_first_lead')
     },
   },
