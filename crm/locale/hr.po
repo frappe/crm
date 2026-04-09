@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-04-05 09:48+0000\n"
-"PO-Revision-Date: 2026-04-05 15:59\n"
+"PO-Revision-Date: 2026-04-09 18:06\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Croatian\n"
 "MIME-Version: 1.0\n"
@@ -2440,11 +2440,11 @@ msgstr "Sistem"
 #. Name of a DocType
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.json
 msgid "ERPNext CRM Settings"
-msgstr "Postavke Sistema za Prodajnu Podršku"
+msgstr "Postavke Prodajne Podrške"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:4
 msgid "ERPNext Settings"
-msgstr "Postavke Sistema"
+msgstr "Postavke"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:5
 msgid "ERPNext Settings Updated"
@@ -2454,12 +2454,12 @@ msgstr "Postavke Poslovnog Sustava su Ažurirane "
 #. CRM Settings'
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.json
 msgid "ERPNext Site API's"
-msgstr "API-ji Web Stranice Sistema"
+msgstr "API-ji Web Stranice Sustava"
 
 #. Label of the erpnext_site_url (Data) field in DocType 'ERPNext CRM Settings'
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.json
 msgid "ERPNext Site URL"
-msgstr "URL Web Stranice Sistema"
+msgstr "URL Web Stranice Sustava"
 
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:44
 msgid "ERPNext is not installed in the current site"
@@ -5773,7 +5773,7 @@ msgstr "Poništi Promjene"
 
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.js:7
 msgid "Reset ERPNext Form Script"
-msgstr "Poništi Skriptu Obrasca Sistema"
+msgstr "Poništi Skriptu Obrasca Sustava"
 
 #: frontend/src/components/ColumnSettings.vue:86
 #: frontend/src/pages/Dashboard.vue:28
@@ -6725,7 +6725,7 @@ msgstr "Konfiguracija Sustava"
 #: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.json
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
 msgid "System Manager"
-msgstr "Upravitelj Sistema"
+msgstr "Upravitelj Sustava"
 
 #: frontend/src/components/EmailEditor.vue:39
 msgid "TO"
