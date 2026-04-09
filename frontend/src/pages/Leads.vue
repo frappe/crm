@@ -305,6 +305,7 @@ import { globalStore } from '@/stores/global'
 import { usersStore } from '@/stores/users'
 import { statusesStore } from '@/stores/statuses'
 import { callEnabled } from '@/composables/settings'
+import { useBroadcast } from '@/composables/useBroadcast'
 import { formatDate, timeAgo, website, formatTime } from '@/utils'
 import { Avatar, Tooltip, Dropdown } from 'frappe-ui'
 import { useRoute } from 'vue-router'
@@ -315,11 +316,16 @@ const { getFormattedPercent, getFormattedFloat, getFormattedCurrency } =
 const { makeCall } = globalStore()
 const { getUser } = usersStore()
 const { getLeadStatus } = statusesStore()
+const { on } = useBroadcast()
 
 const route = useRoute()
 
 const leadsListView = ref(null)
 const showLeadModal = ref(false)
+
+on('trigger_lead_create', (data) => {
+  showLeadModal.value = Boolean(data)
+})
 
 const defaults = reactive({})
 
