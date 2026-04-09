@@ -162,7 +162,6 @@ const restrictedFieldTypes = [
   'Table MultiSelect',
   'Signature',
   'Image',
-  'Geolocation',
 ]
 
 const { getFields } = getMeta(props.doctype)
