@@ -445,6 +445,14 @@ export function convertArrayToString(array) {
   return array.map((item) => item).join(',')
 }
 
+export function interpolateTemplate(template, doc) {
+  if (!template) return ''
+  return template.replace(/\{\{\s*(\w+)\s*\}\}/g, (_, key) => {
+    const val = doc?.[key]
+    return val !== undefined && val !== null ? val : ''
+  })
+}
+
 export function _eval(code, context = {}) {
   let variable_names = Object.keys(context)
   let variables = Object.values(context)
