@@ -88,6 +88,7 @@
                               'Attach',
                               'Attach Image',
                               'HTML',
+                              'Geolocation',
                             ].includes(field.fieldtype)
                           "
                           class="flex h-7 cursor-pointer items-center px-2 py-1 text-ink-gray-5"
@@ -324,6 +325,13 @@
                               : interpolateTemplate(field.options || '', doc)
                           "
                         />
+                        <GeolocationControl
+                          v-else-if="field.fieldtype === 'Geolocation'"
+                          class="geolocation-control"
+                          :value="doc[field.fieldname]"
+                          :disabled="Boolean(field.read_only)"
+                          @change="(v) => fieldChange(v, field)"
+                        />
                         <FormControl
                           v-else
                           class="form-control"
@@ -379,6 +387,7 @@ import DurationInput from '@/components/Controls/DurationInput.vue'
 import RatingInput from '@/components/Controls/RatingInput.vue'
 import AttachControl from '@/components/Controls/AttachControl.vue'
 import HtmlControl from '@/components/Controls/HtmlControl.vue'
+import GeolocationControl from '@/components/Controls/GeolocationControl.vue'
 import ButtonControl, {
   getButtonTheme,
   getButtonVariant,
@@ -577,6 +586,7 @@ function firstVisibleIndex() {
 :deep(.form-control textarea),
 :deep(.form-control button),
 :deep(.attach-control),
+:deep(.geolocation-control),
 .dropdown-button {
   border-color: transparent;
   background: transparent;

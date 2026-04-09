@@ -33,6 +33,7 @@
           'Attach',
           'Attach Image',
           'HTML',
+          'Geolocation',
         ].includes(field.fieldtype)
       "
       v-model="data[field.fieldname]"
@@ -259,6 +260,12 @@
       @change="(v) => fieldChange(v, field)"
     />
     <HtmlControl v-else-if="field.fieldtype === 'HTML'" :html="resolvedHtml" />
+    <GeolocationControl
+      v-else-if="field.fieldtype === 'Geolocation'"
+      :value="data[field.fieldname]"
+      :disabled="Boolean(field.read_only)"
+      @change="(v) => fieldChange(v, field)"
+    />
     <FormControl
       v-else
       type="text"
@@ -277,6 +284,7 @@ import DurationInput from '@/components/Controls/DurationInput.vue'
 import RatingInput from '@/components/Controls/RatingInput.vue'
 import AttachControl from '@/components/Controls/AttachControl.vue'
 import HtmlControl from '@/components/Controls/HtmlControl.vue'
+import GeolocationControl from '@/components/Controls/GeolocationControl.vue'
 import ButtonControl, {
   getButtonTheme,
   getButtonVariant,

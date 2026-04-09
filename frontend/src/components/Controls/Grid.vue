@@ -121,6 +121,7 @@
                         'Attach',
                         'Attach Image',
                         'HTML',
+                        'Geolocation',
                       ].includes(field.fieldtype)
                     "
                     v-model="row[field.fieldname]"
@@ -330,6 +331,18 @@
                       :html="interpolateTemplate(field.options || '', row)"
                     />
                   </div>
+                  <div
+                    v-else-if="field.fieldtype === 'Geolocation'"
+                    class="flex h-full w-full items-center"
+                  >
+                    <GeolocationControl
+                      variant="ghost"
+                      class="w-full"
+                      :value="row[field.fieldname]"
+                      :disabled="Boolean(field.read_only)"
+                      @change="(v) => fieldChange(v, field, row)"
+                    />
+                  </div>
                   <Combobox
                     v-else-if="field.fieldtype === 'Autocomplete'"
                     v-model="row[field.fieldname]"
@@ -413,6 +426,7 @@ import DurationInput from '@/components/Controls/DurationInput.vue'
 import RatingInput from '@/components/Controls/RatingInput.vue'
 import AttachControl from '@/components/Controls/AttachControl.vue'
 import HtmlControl from '@/components/Controls/HtmlControl.vue'
+import GeolocationControl from '@/components/Controls/GeolocationControl.vue'
 import ButtonControl, {
   getButtonTheme,
   getButtonVariant,
@@ -461,7 +475,6 @@ const restrictedFieldTypes = [
   'Table',
   'Table MultiSelect',
   'Image',
-  'Geolocation',
 ]
 
 const triggerOnChange = inject('triggerOnChange', () => {})
