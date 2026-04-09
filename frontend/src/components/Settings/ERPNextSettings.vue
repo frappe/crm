@@ -36,7 +36,7 @@
           variant="solid"
           @click="saveSettings"
           :loading="erpnextCRMSettingsResource.setValue.loading"
-          :disabled="!erpnextCRMSettingsResource.isDirty || isDisabled"
+          :disabled="!isDirty || isDisabled"
         >
           {{ __('Update') }}
         </Button>
@@ -306,7 +306,6 @@ const erpnextCRMSettingsResource = createDocumentResource({
       toast.error(message)
     },
   },
-  auto: true,
 })
 
 const isDisabled = computed(() => {
@@ -346,6 +345,25 @@ const areSiteSettingsChanged = computed(() => {
   )
 })
 
+const isDirty = computed(() => {
+  const oldData = erpnextCRMSettingsResource.originalDoc
+  const newData = erpnextCRMSettingsResource.doc
+
+  if (!oldData || !newData) return false
+
+  const fields = [
+    'enabled',
+    'erpnext_site_url',
+    'api_key',
+    'api_secret',
+    'erpnext_company',
+    'create_customer_on_status_change',
+    'deal_status',
+  ]
+
+  return fields.some((field) => oldData[field] !== newData[field])
+})
+
 const saveSettings = async () => {
   if (!validateData() || !validateSiteConnection()) return
 
@@ -363,11 +381,11 @@ const saveSettings = async () => {
       api_secret: erpnextCRMSettingsResource.doc.api_secret,
     },
     {
-      onSuccess: () => {
+      onSuccess: async () => {
         if (!erpnextCRMSettingsResource.isERPNextInstalled.data) {
-          erpnextCRMSettingsResource.getExternalCompanies.submit()
+          await erpnextCRMSettingsResource.getExternalCompanies.submit()
         }
-        erpnextCRMSettingsResource.get.reload()
+        await erpnextCRMSettingsResource.get.reload()
       },
     },
   )
