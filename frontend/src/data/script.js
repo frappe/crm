@@ -275,6 +275,21 @@ export function getScript(doctype, view = 'Form') {
         },
       })
     }
+
+    if (typeof FormClass.prototype.setFieldHtml !== 'function') {
+      FormClass.prototype.setFieldHtml = function (fieldname, html) {
+        if (!this._originalDocumentContext) {
+          console.warn(
+            'CRM Script: _originalDocumentContext not found on instance for setFieldHtml.',
+          )
+          return
+        }
+        if (!this._originalDocumentContext.fieldHtmlMap) {
+          this._originalDocumentContext.fieldHtmlMap = {}
+        }
+        this._originalDocumentContext.fieldHtmlMap[fieldname] = html
+      }
+    }
   }
 
   // utility function to setup a form controller

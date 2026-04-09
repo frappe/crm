@@ -78,6 +78,9 @@ export function useDocument(doctype, docname, resourceOverrides = {}) {
         },
         ...resourceOverrides,
       })
+      if (!documentsCache[doctype][docname].fieldHtmlMap) {
+        documentsCache[doctype][docname].fieldHtmlMap = {}
+      }
     } else {
       documentsCache[doctype][''] = reactive({
         doc: { __newDocument: true, doctype },
@@ -337,6 +340,12 @@ export function useDocument(doctype, docname, resourceOverrides = {}) {
     await trigger(handler)
   }
 
+  function setFieldHtml(fieldname, html) {
+    const cache = documentsCache[doctype][docname || '']
+    if (!cache.fieldHtmlMap) cache.fieldHtmlMap = {}
+    cache.fieldHtmlMap[fieldname] = html
+  }
+
   async function trigger(taskFn, row = null) {
     const controllers = getControllers(row)
     if (!controllers.length) return
@@ -368,5 +377,6 @@ export function useDocument(doctype, docname, resourceOverrides = {}) {
     setupFormScript,
     triggerOnCreateLead,
     triggerConvertToDeal,
+    setFieldHtml,
   }
 }
