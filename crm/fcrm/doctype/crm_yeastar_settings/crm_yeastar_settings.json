@@ -52,7 +52,7 @@
   {
    "description": "The password from the Client Secret on PBX web portal\n\n",
    "fieldname": "password",
-   "fieldtype": "Data",
+   "fieldtype": "Password",
    "label": "Password",
    "mandatory_depends_on": "eval:doc.enabled"
   },
@@ -102,7 +102,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2026-01-23 08:44:36.886137",
+ "modified": "2026-04-09 12:03:45.608303",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Yeastar Settings",
