@@ -120,6 +120,7 @@
                         'Button',
                         'Attach',
                         'Attach Image',
+                        'HTML',
                       ].includes(field.fieldtype)
                     "
                     v-model="row[field.fieldname]"
@@ -321,6 +322,14 @@
                       @change="(v) => fieldChange(v, field, row)"
                     />
                   </div>
+                  <div
+                    v-else-if="field.fieldtype === 'HTML'"
+                    class="px-2 py-1 overflow-hidden"
+                  >
+                    <HtmlControl
+                      :html="interpolateTemplate(field.options || '', row)"
+                    />
+                  </div>
                   <Combobox
                     v-else-if="field.fieldtype === 'Autocomplete'"
                     v-model="row[field.fieldname]"
@@ -403,6 +412,7 @@ import Password from '@/components/Controls/Password.vue'
 import DurationInput from '@/components/Controls/DurationInput.vue'
 import RatingInput from '@/components/Controls/RatingInput.vue'
 import AttachControl from '@/components/Controls/AttachControl.vue'
+import HtmlControl from '@/components/Controls/HtmlControl.vue'
 import ButtonControl, {
   getButtonTheme,
   getButtonVariant,
@@ -414,7 +424,12 @@ import GridRowModal from '@/components/Controls/GridRowModal.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import Link from '@/components/Controls/Link.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
-import { getRandom, getFormat, isTouchScreenDevice } from '@/utils'
+import {
+  getRandom,
+  getFormat,
+  isTouchScreenDevice,
+  interpolateTemplate,
+} from '@/utils'
 import { flt } from '@/utils/numberFormat.js'
 import { usersStore } from '@/stores/users'
 import { getMeta } from '@/stores/meta'
