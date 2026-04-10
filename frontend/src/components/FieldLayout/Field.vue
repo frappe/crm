@@ -1,7 +1,11 @@
 <template>
   <div v-if="field.visible" class="field">
     <div
-      v-if="field.fieldtype != 'Check' && field.fieldtype != 'Button'"
+      v-if="
+        field.fieldtype != 'Check' &&
+        field.fieldtype != 'Button' &&
+        field.fieldtype != 'HTML'
+      "
       class="mb-2 text-sm text-ink-gray-5"
     >
       {{ __(field.label) }}
@@ -26,6 +30,10 @@
           'Duration',
           'Rating',
           'Button',
+          'Attach',
+          'Attach Image',
+          'HTML',
+          'Geolocation',
         ].includes(field.fieldtype)
       "
       v-model="data[field.fieldname]"
@@ -249,6 +257,23 @@
       :disabled="Boolean(field.read_only)"
       @click="handleButtonClick(field)"
     />
+    <AttachControl
+      v-else-if="['Attach', 'Attach Image'].includes(field.fieldtype)"
+      :value="data[field.fieldname]"
+      :doctype="doctype"
+      :docname="data.name"
+      :fieldname="field.fieldname"
+      :imageOnly="field.fieldtype === 'Attach Image'"
+      :disabled="Boolean(field.read_only)"
+      @change="(v) => fieldChange(v, field)"
+    />
+    <HtmlControl v-else-if="field.fieldtype === 'HTML'" :html="resolvedHtml" />
+    <GeolocationControl
+      v-else-if="field.fieldtype === 'Geolocation'"
+      :value="data[field.fieldname]"
+      :disabled="Boolean(field.read_only)"
+      @change="(v) => fieldChange(v, field)"
+    />
     <FormControl
       v-else
       type="text"
@@ -265,6 +290,9 @@ import Password from '@/components/Controls/Password.vue'
 import FormattedInput from '@/components/Controls/FormattedInput.vue'
 import DurationInput from '@/components/Controls/DurationInput.vue'
 import RatingInput from '@/components/Controls/RatingInput.vue'
+import AttachControl from '@/components/Controls/AttachControl.vue'
+import HtmlControl from '@/components/Controls/HtmlControl.vue'
+import GeolocationControl from '@/components/Controls/GeolocationControl.vue'
 import ButtonControl, {
   getButtonTheme,
   getButtonVariant,
@@ -276,7 +304,12 @@ import TableMultiselectInput from '@/components/Controls/TableMultiselectInput.v
 import Link from '@/components/Controls/Link.vue'
 import Grid from '@/components/Controls/Grid.vue'
 import { createDocument } from '@/composables/document'
-import { getFormat, evaluateDependsOnValue, isNull } from '@/utils'
+import {
+  getFormat,
+  evaluateDependsOnValue,
+  isNull,
+  interpolateTemplate,
+} from '@/utils'
 import { flt } from '@/utils/numberFormat.js'
 import { getMeta } from '@/stores/meta'
 import { usersStore } from '@/stores/users'
@@ -289,7 +322,7 @@ import {
   DateTimePicker,
   TimePicker,
 } from 'frappe-ui'
-import { computed, provide, inject } from 'vue'
+import { computed, provide, inject, ref } from 'vue'
 
 const props = defineProps({
   field: { type: Object, required: true },
@@ -308,6 +341,7 @@ const { users, getUser } = usersStore()
 let triggerOnChange
 let triggerButton
 let parentDoc
+const formDocument = ref(null)
 
 if (!isGridRow) {
   const {
@@ -315,9 +349,11 @@ if (!isGridRow) {
     triggerButton: triggerBtn,
     triggerOnRowAdd,
     triggerOnRowRemove,
+    document: doc,
   } = useDocument(doctype, data.value.name)
   triggerOnChange = trigger
   triggerButton = triggerBtn
+  formDocument.value = doc
 
   provide('triggerOnChange', triggerOnChange)
   provide('triggerButton', triggerButton)
@@ -406,6 +442,13 @@ function isFieldVisible(field) {
   )
 }
 
+const resolvedHtml = computed(() => {
+  if (field.value.fieldtype !== 'HTML') return ''
+  const injected = formDocument.value?.fieldHtmlMap?.[field.value.fieldname]
+  if (injected !== undefined) return injected
+  return interpolateTemplate(field.value.options || '', data.value)
+})
+
 const getPlaceholder = (field) => {
   if (field.placeholder) {
     return __(field.placeholder)
@@ -437,7 +480,7 @@ async function handleButtonClick(field) {
   }
 }
 
-function fieldChange(value, df) {
+async function fieldChange(value, df) {
   value = Array.isArray(value)
     ? value
     : typeof value === 'object' && value !== null && 'value' in value
@@ -445,9 +488,9 @@ function fieldChange(value, df) {
       : value
 
   if (isGridRow) {
-    triggerOnChange(df.fieldname, value, data.value)
+    await triggerOnChange(df.fieldname, value, data.value)
   } else {
-    triggerOnChange(df.fieldname, value)
+    await triggerOnChange(df.fieldname, value)
   }
 }
 </script>

@@ -5,6 +5,7 @@ interface UploadOptions {
   folder?: string
   doctype?: string
   docname?: string
+  fieldname?: string
   type?: string
 }
 
@@ -115,6 +116,10 @@ class FilesUploadHandler {
 
       if (options.docname) {
         formData.append('docname', options.docname)
+      }
+
+      if (options.fieldname) {
+        formData.append('fieldname', options.fieldname)
       }
 
       if (options.type) {

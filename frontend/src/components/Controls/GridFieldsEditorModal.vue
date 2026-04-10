@@ -111,7 +111,6 @@ const restrictedFieldTypes = [
   'Table',
   'Table MultiSelect',
   'Image',
-  'Geolocation',
 ]
 
 const { getFields, getGridViewSettings, saveUserSettings } = getMeta(
