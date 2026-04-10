@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-04-05 09:48+0000\n"
-"PO-Revision-Date: 2026-04-05 15:59\n"
+"PO-Revision-Date: 2026-04-10 18:14\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Swedish\n"
 "MIME-Version: 1.0\n"
@@ -1995,7 +1995,7 @@ msgstr "Affärsvärde"
 
 #: crm/api/dashboard.py:1023
 msgid "Deal generation channel analysis"
-msgstr "Affär generering kanal analys"
+msgstr "Affär generering kanal statistik"
 
 #: crm/api/dashboard.py:1078 crm/api/dashboard.py:1141
 msgid "Deal value"
@@ -4130,7 +4130,7 @@ msgstr "Potentiell Kund från samtal {0}"
 
 #: crm/api/dashboard.py:985
 msgid "Lead generation channel analysis"
-msgstr "Potentiell Kund Generering Kanal Analys"
+msgstr "Potentiell Kund Generering Kanal Statistik"
 
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.js:8
 msgid "Lead sync initiated."
@@ -5807,7 +5807,7 @@ msgstr "Svar Efter"
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Response Details"
-msgstr "Svar Information"
+msgstr "Svarsdetaljer"
 
 #. Label of the response_time (Duration) field in DocType 'CRM Rolling Response
 #. Time'
@@ -6024,7 +6024,7 @@ msgstr "Försäljning Ansvarig"
 
 #: frontend/src/components/Dashboard/AddChartModal.vue:94
 msgid "Sales Trend"
-msgstr "Försäljning Trend"
+msgstr "Försäljning Statistik"
 
 #. Name of a role
 #. Option for the 'Role' (Select) field in DocType 'CRM Invitation'
@@ -6065,7 +6065,7 @@ msgstr "Försäljning Användare"
 
 #: crm/api/dashboard.py:638
 msgid "Sales trend"
-msgstr "Försäljningstrend"
+msgstr "Försäljning Statistik"
 
 #: crm/api/dashboard.py:1133
 msgid "Salesperson"
