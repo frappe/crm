@@ -4,6 +4,7 @@
 
 <script setup>
 import { computed } from 'vue'
+import DOMPurify from 'dompurify'
 
 const props = defineProps({
   html: { type: String, default: '' },
@@ -12,22 +13,6 @@ const props = defineProps({
 
 const sanitizedHtml = computed(() => {
   if (!props.html) return ''
-  const parser = new DOMParser()
-  const doc = parser.parseFromString(props.html, 'text/html')
-  doc.querySelectorAll('script').forEach((el) => el.remove())
-  doc.querySelectorAll('*').forEach((el) => {
-    Array.from(el.attributes).forEach((attr) => {
-      const name = attr.name.toLowerCase()
-      if (name.startsWith('on')) {
-        el.removeAttribute(attr.name)
-      } else if (
-        name === 'href' &&
-        attr.value.toLowerCase().trim().startsWith('javascript:')
-      ) {
-        el.removeAttribute(attr.name)
-      }
-    })
-  })
-  return doc.body.innerHTML
+  return DOMPurify.sanitize(props.html)
 })
 </script>
