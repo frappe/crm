@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-04-05 09:48+0000\n"
-"PO-Revision-Date: 2026-04-09 18:06\n"
+"PO-Revision-Date: 2026-04-10 18:14\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Croatian\n"
 "MIME-Version: 1.0\n"
@@ -3327,7 +3327,7 @@ msgstr "Skripta Obrasca je uspješno ažurirana"
 #. Name of a Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
 msgid "Frappe CRM"
-msgstr "Frappe CRM"
+msgstr "Podrška Prodaje"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:629
 msgid "Frappe CRM mobile"
