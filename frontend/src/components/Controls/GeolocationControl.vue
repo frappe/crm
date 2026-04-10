@@ -17,19 +17,15 @@
   </div>
 
   <!-- Has value -->
-  <div v-else :class="[containerClasses, '!pr-1']">
+  <div
+    v-else
+    :class="[containerClasses, '!pr-1', 'cursor-pointer']"
+    @click="openModal"
+  >
     <FeatherIcon name="map-pin" :class="[iconClasses, 'text-ink-gray-7']" />
     <span class="min-w-0 flex-1 truncate text-ink-gray-8 text-sm">
       {{ coordinateSummary }}
     </span>
-    <button
-      v-if="!disabled"
-      class="ml-auto flex h-5 w-5 shrink-0 items-center justify-center rounded text-ink-gray-4 hover:bg-surface-gray-2 hover:text-ink-gray-7 dark:hover:bg-surface-gray-4"
-      :title="__('Edit location')"
-      @click.prevent="openModal"
-    >
-      <FeatherIcon name="edit-2" class="h-3 w-3" />
-    </button>
     <button
       v-if="!disabled"
       class="flex h-5 w-5 shrink-0 items-center justify-center rounded text-ink-gray-4 hover:bg-surface-gray-2 hover:text-ink-gray-7 dark:hover:bg-surface-gray-4"
@@ -43,7 +39,10 @@
   <!-- Map Dialog -->
   <Dialog
     v-model="showModal"
-    :options="{ title: __('Set Location'), size: '4xl' }"
+    :options="{
+      title: disabled ? __('View Location') : __('Set Location'),
+      size: '4xl',
+    }"
   >
     <template #body-content>
       <div :id="mapId" class="h-[500px] w-full rounded" />
@@ -52,10 +51,15 @@
       <div class="flex items-center justify-end gap-2">
         <Button
           variant="outline"
-          :label="__('Cancel')"
+          :label="disabled ? __('Close') : __('Cancel')"
           @click="showModal = false"
         />
-        <Button variant="solid" :label="__('Save')" @click="saveLocation" />
+        <Button
+          v-if="!disabled"
+          variant="solid"
+          :label="__('Save')"
+          @click="saveLocation"
+        />
       </div>
     </template>
   </Dialog>
@@ -280,31 +284,33 @@ async function initMap() {
   editableLayers = new L.FeatureGroup()
   editableLayers.addTo(mapInstance)
 
-  // Draw controls — full GeoJSON suite
-  drawControl = new L.Control.Draw({
-    position: 'topleft',
-    draw: {
-      polyline: { shapeOptions: { color: '#4f46e5', weight: 4 } },
-      polygon: {
-        allowIntersection: false,
-        shapeOptions: { color: '#4f46e5' },
+  // Draw controls — only in edit mode
+  if (!props.disabled) {
+    drawControl = new L.Control.Draw({
+      position: 'topleft',
+      draw: {
+        polyline: { shapeOptions: { color: '#4f46e5', weight: 4 } },
+        polygon: {
+          allowIntersection: false,
+          shapeOptions: { color: '#4f46e5' },
+        },
+        circle: true,
+        rectangle: { shapeOptions: { clickable: false } },
+        circlemarker: true,
+        marker: true,
       },
-      circle: true,
-      rectangle: { shapeOptions: { clickable: false } },
-      circlemarker: true,
-      marker: true,
-    },
-    edit: { featureGroup: editableLayers, remove: true },
-  })
-  drawControl.addTo(mapInstance)
+      edit: { featureGroup: editableLayers, remove: true },
+    })
+    drawControl.addTo(mapInstance)
 
-  mapInstance.on('draw:created', (e) => {
-    editableLayers.addLayer(e.layer)
-  })
+    mapInstance.on('draw:created', (e) => {
+      editableLayers.addLayer(e.layer)
+    })
 
-  mapInstance.on('draw:deleted', (e) => {
-    e.layers.eachLayer((l) => editableLayers.removeLayer(l))
-  })
+    mapInstance.on('draw:deleted', (e) => {
+      e.layers.eachLayer((l) => editableLayers.removeLayer(l))
+    })
+  }
 
   reloadData()
 }
