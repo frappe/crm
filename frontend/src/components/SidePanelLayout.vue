@@ -39,7 +39,7 @@
                     class="field flex items-center gap-2 px-3 leading-5 first:mt-3"
                   >
                     <Tooltip
-                      v-if="field.fieldtype !== 'Button'"
+                      v-if="!['Button', 'HTML'].includes(field.fieldtype)"
                       :text="__(field.label)"
                       :hoverDelay="1"
                     >
@@ -64,7 +64,9 @@
                     <div
                       :class="[
                         'flex items-center justify-between',
-                        field.fieldtype === 'Button' ? 'w-full' : 'w-[65%]',
+                        ['Button', 'HTML'].includes(field.fieldtype)
+                          ? 'w-full'
+                          : 'w-[65%]',
                       ]"
                     >
                       <div
@@ -83,6 +85,10 @@
                               'Duration',
                               'Rating',
                               'Button',
+                              'Attach',
+                              'Attach Image',
+                              'HTML',
+                              'Geolocation',
                             ].includes(field.fieldtype)
                           "
                           class="flex h-7 cursor-pointer items-center px-2 py-1 text-ink-gray-5"
@@ -297,6 +303,35 @@
                           :disabled="Boolean(field.read_only)"
                           @click="handleButtonClick(field)"
                         />
+                        <AttachControl
+                          v-else-if="
+                            ['Attach', 'Attach Image'].includes(field.fieldtype)
+                          "
+                          class="attach-control"
+                          :value="doc[field.fieldname]"
+                          :doctype="doctype"
+                          :docname="doc.name"
+                          :fieldname="field.fieldname"
+                          :imageOnly="field.fieldtype === 'Attach Image'"
+                          :disabled="Boolean(field.read_only)"
+                          @change="(v) => fieldChange(v, field)"
+                        />
+                        <HtmlControl
+                          v-else-if="field.fieldtype === 'HTML'"
+                          :html="
+                            document.fieldHtmlMap?.[field.fieldname] !==
+                            undefined
+                              ? document.fieldHtmlMap[field.fieldname]
+                              : interpolateTemplate(field.options || '', doc)
+                          "
+                        />
+                        <GeolocationControl
+                          v-else-if="field.fieldtype === 'Geolocation'"
+                          class="geolocation-control"
+                          :value="doc[field.fieldname]"
+                          :disabled="Boolean(field.read_only)"
+                          @change="(v) => fieldChange(v, field)"
+                        />
                         <FormControl
                           v-else
                           class="form-control"
@@ -350,6 +385,9 @@ import Password from '@/components/Controls/Password.vue'
 import FormattedInput from '@/components/Controls/FormattedInput.vue'
 import DurationInput from '@/components/Controls/DurationInput.vue'
 import RatingInput from '@/components/Controls/RatingInput.vue'
+import AttachControl from '@/components/Controls/AttachControl.vue'
+import HtmlControl from '@/components/Controls/HtmlControl.vue'
+import GeolocationControl from '@/components/Controls/GeolocationControl.vue'
 import ButtonControl, {
   getButtonTheme,
   getButtonVariant,
@@ -365,7 +403,12 @@ import SidePanelModal from '@/components/Modals/SidePanelModal.vue'
 import { getMeta } from '@/stores/meta'
 import { usersStore } from '@/stores/users'
 import { isMobileView } from '@/composables/settings'
-import { getFormat, evaluateDependsOnValue, isNull } from '@/utils'
+import {
+  getFormat,
+  evaluateDependsOnValue,
+  isNull,
+  interpolateTemplate,
+} from '@/utils'
 import { flt } from '@/utils/numberFormat.js'
 import { Tooltip, DateTimePicker, DatePicker } from 'frappe-ui'
 import { useDocument } from '@/data/document'
@@ -542,6 +585,8 @@ function firstVisibleIndex() {
 :deep(.form-control select),
 :deep(.form-control textarea),
 :deep(.form-control button),
+:deep(.attach-control),
+:deep(.geolocation-control),
 .dropdown-button {
   border-color: transparent;
   background: transparent;
