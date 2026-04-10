@@ -40,7 +40,7 @@ class ERPNextCRMSettings(Document):
 
 	def validate_if_erpnext_installed(self):
 		if not self.is_erpnext_in_different_site:
-			if "erpnext" not in frappe.get_installed_apps():
+			if not self.is_erpnext_installed():
 				frappe.throw(_("ERPNext is not installed in the current site"))
 
 	def add_quotation_to_option(self):
@@ -115,6 +115,17 @@ class ERPNextCRMSettings(Document):
 		except Exception:
 			frappe.log_error(frappe.get_traceback(), "Error while resetting form script")
 			return False
+
+	@frappe.whitelist()
+	def get_external_companies(self):
+		if not self.erpnext_site_url or not self.api_key or not self.api_secret:
+			return []
+		client = get_erpnext_site_client(self)
+		return client.get_list("Company", fields=["company_name"])
+
+	@frappe.whitelist()
+	def is_erpnext_installed(self):
+		return "erpnext" in frappe.get_installed_apps()
 
 
 def get_erpnext_site_client(erpnext_crm_settings):
