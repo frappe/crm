@@ -189,7 +189,7 @@ import {
   Dropdown,
   toast,
 } from 'frappe-ui'
-import { ref, computed, h } from 'vue'
+import { ref, computed, h, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 const { brand } = getSettings()
@@ -207,12 +207,17 @@ const props = defineProps({
 const route = useRoute()
 const router = useRouter()
 
-const { document: contact, permissions } = useDocument(
-  'Contact',
-  props.contactId,
-)
+const {
+  document: contact,
+  permissions,
+  triggerOnRender,
+} = useDocument('Contact', props.contactId)
 
 const canDelete = computed(() => permissions.data?.permissions?.delete || false)
+
+onMounted(async () => {
+  if (contact.doc) await triggerOnRender()
+})
 
 const breadcrumbs = computed(() => {
   let items = [{ label: __('Contacts'), route: { name: 'Contacts' } }]

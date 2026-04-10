@@ -161,7 +161,7 @@ import {
   usePageMeta,
   toast,
 } from 'frappe-ui'
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import ConvertToDealModal from '@/components/Modals/ConvertToDealModal.vue'
 
@@ -181,12 +181,20 @@ const errorTitle = ref('')
 const errorMessage = ref('')
 const showDeleteLinkedDocModal = ref(false)
 
-const { triggerOnChange, assignees, document, scripts, error } = useDocument(
-  'CRM Lead',
-  props.leadId,
-)
+const {
+  triggerOnChange,
+  triggerOnRender,
+  assignees,
+  document,
+  scripts,
+  error,
+} = useDocument('CRM Lead', props.leadId)
 
 const doc = computed(() => document.doc || {})
+
+onMounted(async () => {
+  if (document.doc) await triggerOnRender()
+})
 
 watch(error, (err) => {
   if (err) {

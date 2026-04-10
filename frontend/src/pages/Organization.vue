@@ -218,7 +218,7 @@ import {
   toast,
   call,
 } from 'frappe-ui'
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 const props = defineProps({
@@ -243,9 +243,14 @@ const {
   document: organization,
   permissions,
   scripts,
+  triggerOnRender,
 } = useDocument('CRM Organization', props.organizationId)
 
 const canDelete = computed(() => permissions.data?.permissions?.delete || false)
+
+onMounted(async () => {
+  if (organization.doc) await triggerOnRender()
+})
 
 const breadcrumbs = computed(() => {
   let items = [{ label: __('Organizations'), route: { name: 'Organizations' } }]
