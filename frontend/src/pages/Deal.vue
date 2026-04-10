@@ -424,8 +424,15 @@ const errorTitle = ref('')
 const errorMessage = ref('')
 const showDeleteLinkedDocModal = ref(false)
 
-const { triggerOnChange, assignees, permissions, document, scripts, error } =
-  useDocument('CRM Deal', props.dealId)
+const {
+  triggerOnChange,
+  triggerOnRender,
+  assignees,
+  permissions,
+  document,
+  scripts,
+  error,
+} = useDocument('CRM Deal', props.dealId)
 
 const canDelete = computed(() => permissions.data?.permissions?.delete || false)
 
@@ -485,10 +492,11 @@ watch(
 
 const organization = computed(() => organizationDocument.value?.doc || {})
 
-onMounted(() => {
+onMounted(async () => {
   $socket.on('crm_customer_created', () => {
     toast.success(__('Customer Created Successfully'))
   })
+  if (document.doc) await triggerOnRender()
 })
 
 onBeforeUnmount(() => {
