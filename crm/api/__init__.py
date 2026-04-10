@@ -139,6 +139,9 @@ def invite_by_email(emails: str, role: str):
 
 @frappe.whitelist(methods=["DELETE", "POST"])
 def delete_attachment(doctype: str, docname: str, file_url: str):
+	if not frappe.has_permission(doctype, doc=docname, ptype="write"):
+		frappe.throw(_("You don't have permission to delete this attachment"), frappe.PermissionError)
+
 	file_name = frappe.db.get_value(
 		"File",
 		{"file_url": file_url, "attached_to_doctype": doctype, "attached_to_name": docname},
