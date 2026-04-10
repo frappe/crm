@@ -19,6 +19,7 @@ export function useAttachments(doctype, docname) {
     if (!pending.size) return
     pending.forEach((file_url) => deleteFileRecord(doctype, docname, file_url))
     pending.clear()
+    pendingDeletionsMap.delete(key)
   }
 
   return { trackOldFile, processPendingDeletions }
