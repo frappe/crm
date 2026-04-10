@@ -11,14 +11,6 @@ crm/www/crm.html
 build
 
 .vscode
-<<<<<<< HEAD
-<<<<<<< HEAD
-.github
-=======
-.github
->>>>>>> c8815163 (fix: update tab class for improved layout handling in FieldLayout component)
-=======
 .github/instructions
 .github/skills
 .github/copilot-instructions.md
->>>>>>> e0d11f7f (feat: enable Geolocation fieldtype in layout editors)
