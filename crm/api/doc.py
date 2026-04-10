@@ -110,8 +110,14 @@ def get_filterable_fields(doctype: str):
 			field["name"] = field.get("fieldname")
 			res.append(field)
 
+	meta = frappe.get_meta(doctype).fields
+	meta_fields = {f.fieldname: f for f in meta}
 	for field in res:
-		field["label"] = _(field.get("label"))
+		fieldname = field.get("fieldname")
+		if fieldname in meta_fields:
+			field["label"] = _(meta_fields[fieldname].label)
+		else:
+			field["label"] = _(field.get("label"))
 		field["value"] = field.get("fieldname")
 
 	return res
