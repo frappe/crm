@@ -306,20 +306,8 @@ import { flt } from '@/utils/numberFormat.js'
 import { getMeta } from '@/stores/meta'
 import { usersStore } from '@/stores/users'
 import { useDocument } from '@/data/document'
-<<<<<<< HEAD
 import { Combobox, Tooltip, DatePicker, DateTimePicker } from 'frappe-ui'
-import { computed, provide, inject } from 'vue'
-=======
-
-import {
-  Combobox,
-  Tooltip,
-  DatePicker,
-  DateTimePicker,
-  TimePicker,
-} from 'frappe-ui'
 import { computed, provide, inject, ref } from 'vue'
->>>>>>> e215c36a (feat: render HTML fields using HtmlControl with reactive template interpolation)
 
 const props = defineProps({
   field: { type: Object, required: true },
