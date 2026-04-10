@@ -101,6 +101,33 @@ const tabs = createResource({
   auto: true,
 })
 
+watch(
+  [tabs, doctypeMeta],
+  () => {
+    if (!tabs.data || !doctypeMeta.value) return
+
+    if (doctypeMeta.value?.autoname?.toLowerCase() === 'prompt') {
+      let hasNewNameField = tabs.data.some((tab) =>
+        tab.sections.some((section) =>
+          section.columns.some((column) =>
+            column.fields.some((field) => field.fieldname === '__newname'),
+          ),
+        ),
+      )
+
+      if (!hasNewNameField) {
+        tabs.data[0].sections[0].columns[0].fields.unshift({
+          fieldname: '__newname',
+          label: __('Name'),
+          fieldtype: 'Data',
+          reqd: 1,
+        })
+      }
+    }
+  },
+  { immediate: true, deep: true },
+)
+
 async function create() {
   loading.value = true
   error.value = null

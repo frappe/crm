@@ -186,7 +186,7 @@ import {
   createResource,
   toast,
 } from 'frappe-ui'
-import { h, computed, ref } from 'vue'
+import { h, computed, ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 const props = defineProps({
@@ -202,12 +202,17 @@ const { doctypeMeta } = getMeta('CRM Organization')
 const route = useRoute()
 const router = useRouter()
 
-const { document: organization, permissions } = useDocument(
-  'CRM Organization',
-  props.organizationId,
-)
+const {
+  document: organization,
+  permissions,
+  triggerOnRender,
+} = useDocument('CRM Organization', props.organizationId)
 
 const canDelete = computed(() => permissions.data?.permissions?.delete || false)
+
+onMounted(async () => {
+  if (organization.doc) await triggerOnRender()
+})
 
 const breadcrumbs = computed(() => {
   let items = [{ label: __('Organizations'), route: { name: 'Organizations' } }]

@@ -45,7 +45,6 @@ export function useDocument(doctype, docname, resourceOverrides = {}) {
           }
         },
         setValue: {
-          validate,
           onSuccess: () => {
             triggerOnSave()
             toast.success(__('Document updated successfully'))
@@ -80,6 +79,22 @@ export function useDocument(doctype, docname, resourceOverrides = {}) {
       })
       if (!documentsCache[doctype][docname].fieldHtmlMap) {
         documentsCache[doctype][docname].fieldHtmlMap = {}
+      }
+
+      // Override the submit function to trigger validation before submitting
+      // TODO: fix validate function to return error message instead of throwing error in frappe-ui and remove try-catch block here
+      const _save = documentsCache[doctype][docname].save
+      const _originalSubmit = _save.submit
+      _save.submit = async function (...args) {
+        try {
+          await triggerOnValidate()
+        } catch (err) {
+          console.error(err)
+          return
+        }
+        const mandatory = checkMandatory(documentsCache[doctype][docname].doc)
+        if (mandatory) return
+        return _originalSubmit.apply(_save, args)
       }
     } else {
       documentsCache[doctype][''] = reactive({
@@ -163,6 +178,7 @@ export function useDocument(doctype, docname, resourceOverrides = {}) {
     controllersCache[doctype][docname || ''] = organizedControllers
 
     triggerOnLoad()
+    triggerOnRender()
   }
 
   function getControllers(row = null) {
@@ -179,10 +195,6 @@ export function useDocument(doctype, docname, resourceOverrides = {}) {
       return docControllers[controllerKey] || []
     }
     return []
-  }
-
-  function validate(d) {
-    checkMandatory(d.doc || d.fieldname)
   }
 
   function checkMandatory(doc) {
@@ -211,9 +223,7 @@ export function useDocument(doctype, docname, resourceOverrides = {}) {
       toast.error(
         __('Mandatory fields required: {0}', [missingFields.join(', ')]),
       )
-      throw new Error(
-        __('Mandatory fields required: {0}', [missingFields.join(', ')]),
-      )
+      return __('Mandatory fields required: {0}', [missingFields.join(', ')])
     }
   }
 
@@ -224,10 +234,24 @@ export function useDocument(doctype, docname, resourceOverrides = {}) {
     await trigger(handler)
   }
 
+  async function triggerOnRender() {
+    const handler = async function () {
+      await (this.onRender?.() || this.on_render?.() || this.refresh?.())
+    }
+    await trigger(handler)
+  }
+
   async function triggerOnBeforeCreate() {
     const args = Array.from(arguments)
     const handler = async function () {
       await (this.onBeforeCreate?.(...args) || this.on_before_create?.(...args))
+    }
+    await trigger(handler)
+  }
+
+  async function triggerOnValidate() {
+    const handler = async function () {
+      await (this.onValidate?.() || this.on_validate?.() || this.validate?.())
     }
     await trigger(handler)
   }
@@ -242,13 +266,6 @@ export function useDocument(doctype, docname, resourceOverrides = {}) {
   async function triggerOnError() {
     const handler = async function () {
       await (this.onError?.() || this.on_error?.())
-    }
-    await trigger(handler)
-  }
-
-  async function triggerOnRefresh() {
-    const handler = async function () {
-      await this.refresh?.()
     }
     await trigger(handler)
   }
@@ -276,11 +293,6 @@ export function useDocument(doctype, docname, resourceOverrides = {}) {
     try {
       await trigger(handler, row)
     } catch (error) {
-      if (row) {
-        row[fieldname] = oldValue
-      } else {
-        documentsCache[doctype][docname || ''].doc[fieldname] = oldValue
-      }
       console.error(handler)
       throw error
     }
@@ -363,13 +375,13 @@ export function useDocument(doctype, docname, resourceOverrides = {}) {
     permissions: permissionsCache[doctype][docname || ''],
     scripts,
     error,
-    validate,
     getControllers,
     triggerOnLoad,
+    triggerOnRender,
     triggerOnBeforeCreate,
+    triggerOnValidate,
     triggerOnSave,
     triggerOnError,
-    triggerOnRefresh,
     triggerOnChange,
     triggerButton,
     triggerOnRowAdd,
