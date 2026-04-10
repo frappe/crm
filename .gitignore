@@ -11,3 +11,6 @@ crm/www/crm.html
 build
 
 .vscode
+.github/instructions
+.github/skills
+.github/copilot-instructions.md

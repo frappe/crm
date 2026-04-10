@@ -118,6 +118,10 @@
                         'Duration',
                         'Rating',
                         'Button',
+                        'Attach',
+                        'Attach Image',
+                        'HTML',
+                        'Geolocation',
                       ].includes(field.fieldtype)
                     "
                     v-model="row[field.fieldname]"
@@ -275,15 +279,18 @@
                     :disabled="Boolean(field.read_only)"
                     @change="(v) => fieldChange(v, field, row)"
                   />
-                  <RatingInput
+                  <div
                     v-else-if="field.fieldtype === 'Rating'"
-                    class="px-2 flex-nowrap overflow-x-auto w-full"
-                    :value="row[field.fieldname]"
-                    variant="outline"
-                    :disabled="Boolean(field.read_only)"
-                    :max="field.options || 5"
-                    @change="(v) => fieldChange(v, field, row)"
-                  />
+                    class="flex h-full w-full items-center overflow-hidden [&_::-webkit-scrollbar]:h-0"
+                  >
+                    <RatingInput
+                      class="flex-nowrap overflow-x-auto px-2"
+                      :value="row[field.fieldname]"
+                      :disabled="Boolean(field.read_only)"
+                      :max="field.options || 5"
+                      @change="(v) => fieldChange(v, field, row)"
+                    />
+                  </div>
                   <div
                     v-else-if="field.fieldtype === 'Button'"
                     class="flex items-center px-1 h-full"
@@ -296,6 +303,44 @@
                       :variant="getButtonVariant(field.button_color)"
                       :disabled="Boolean(field.read_only)"
                       @click="handleButtonClick(field, row)"
+                    />
+                  </div>
+                  <div
+                    v-else-if="
+                      ['Attach', 'Attach Image'].includes(field.fieldtype)
+                    "
+                    class="flex h-full w-full items-center"
+                  >
+                    <AttachControl
+                      variant="ghost"
+                      class="w-full"
+                      :value="row[field.fieldname]"
+                      :doctype="doctype"
+                      :docname="row.name"
+                      :fieldname="field.fieldname"
+                      :imageOnly="field.fieldtype === 'Attach Image'"
+                      :disabled="Boolean(field.read_only)"
+                      @change="(v) => fieldChange(v, field, row)"
+                    />
+                  </div>
+                  <div
+                    v-else-if="field.fieldtype === 'HTML'"
+                    class="px-2 py-1 overflow-hidden"
+                  >
+                    <HtmlControl
+                      :html="interpolateTemplate(field.options || '', row)"
+                    />
+                  </div>
+                  <div
+                    v-else-if="field.fieldtype === 'Geolocation'"
+                    class="flex h-full w-full items-center"
+                  >
+                    <GeolocationControl
+                      variant="ghost"
+                      class="w-full"
+                      :value="row[field.fieldname]"
+                      :disabled="Boolean(field.read_only)"
+                      @change="(v) => fieldChange(v, field, row)"
                     />
                   </div>
                   <Combobox
@@ -379,6 +424,9 @@
 import Password from '@/components/Controls/Password.vue'
 import DurationInput from '@/components/Controls/DurationInput.vue'
 import RatingInput from '@/components/Controls/RatingInput.vue'
+import AttachControl from '@/components/Controls/AttachControl.vue'
+import HtmlControl from '@/components/Controls/HtmlControl.vue'
+import GeolocationControl from '@/components/Controls/GeolocationControl.vue'
 import ButtonControl, {
   getButtonTheme,
   getButtonVariant,
@@ -390,7 +438,12 @@ import GridRowModal from '@/components/Controls/GridRowModal.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import Link from '@/components/Controls/Link.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
-import { getRandom, getFormat, isTouchScreenDevice } from '@/utils'
+import {
+  getRandom,
+  getFormat,
+  isTouchScreenDevice,
+  interpolateTemplate,
+} from '@/utils'
 import { flt } from '@/utils/numberFormat.js'
 import { usersStore } from '@/stores/users'
 import { getMeta } from '@/stores/meta'
@@ -422,7 +475,6 @@ const restrictedFieldTypes = [
   'Table',
   'Table MultiSelect',
   'Image',
-  'Geolocation',
 ]
 
 const triggerOnChange = inject('triggerOnChange', () => {})
