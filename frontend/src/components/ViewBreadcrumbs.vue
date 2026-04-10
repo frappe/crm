@@ -4,7 +4,7 @@
       :to="{ name: routeName }"
       class="px-0.5 py-1 text-lg font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-outline-gray-3"
       :class="[
-        viewControls
+        viewControls && viewControls.viewsDropdownOptions
           ? 'text-ink-gray-5 hover:text-ink-gray-7'
           : 'text-ink-gray-7',
       ]"
@@ -12,13 +12,16 @@
       {{ __(routeName) }}
     </router-link>
     <span
-      v-if="viewControls"
+      v-if="viewControls && viewControls.viewsDropdownOptions"
       class="mx-0.5 text-base text-ink-gray-4"
       aria-hidden="true"
     >
       /
     </span>
-    <Dropdown v-if="viewControls" :options="viewControls.viewsDropdownOptions">
+    <Dropdown
+      v-if="viewControls && viewControls.viewsDropdownOptions"
+      :options="viewControls.viewsDropdownOptions"
+    >
       <template #default="{ open }">
         <Button
           variant="ghost"

@@ -24,7 +24,7 @@
           <template #default="{ open }">
             <Button
               v-if="doc.status"
-              :label="doc.status"
+              :label="statusLabel(doc.status)"
               :iconRight="open ? 'chevron-up' : 'chevron-down'"
             >
               <template #prefix>
@@ -57,7 +57,7 @@
       v-model="tabIndex"
       as="div"
       :tabs="tabs"
-      class="flex flex-1 overflow-auto flex-col [&_[role='tab']]:px-0 [&_[role='tablist']]:px-3 [&_[role='tablist']]:gap-7.5 [&_[role='tabpanel']:not([hidden])]:flex [&_[role='tabpanel']:not([hidden])]:grow"
+      class="flex flex-1 overflow-auto flex-col [&_[role='tab']]:px-0 [&_[role='tab']]:shrink-0 [&_[role='tablist']]:px-3 [&_[role='tablist']]:min-h-[45px] [&_[role='tablist']]:gap-7.5 [&_[role='tabpanel']:not([hidden])]:flex [&_[role='tabpanel']:not([hidden])]:grow"
     >
       <template #tab-panel="{ tab }">
         <div v-if="tab.name == 'Details'">
@@ -292,7 +292,7 @@ import Link from '@/components/Controls/Link.vue'
 import SidePanelLayout from '@/components/SidePanelLayout.vue'
 import SLASection from '@/components/SLASection.vue'
 import CustomActions from '@/components/CustomActions.vue'
-import { setupCustomizations } from '@/utils'
+import { setupCustomizations, isTranslatable } from '@/utils'
 import { getView } from '@/utils/view'
 import { getSettings } from '@/stores/settings'
 import { globalStore } from '@/stores/global'
@@ -616,6 +616,11 @@ function updateField(name, value) {
 
 function deleteDeal() {
   showDeleteLinkedDocModal.value = true
+}
+
+function statusLabel(status) {
+  if (isTranslatable('CRM Deal Status')) return __(status)
+  return status
 }
 
 async function triggerStatusChange(value) {

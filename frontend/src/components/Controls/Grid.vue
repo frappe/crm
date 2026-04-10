@@ -104,7 +104,7 @@
                 <div
                   v-for="field in fields"
                   :key="field.fieldname"
-                  class="border-r border-outline-gray-modals h-full"
+                  class="border-r border-outline-gray-modals h-9.5"
                 >
                   <FormControl
                     v-if="
@@ -115,6 +115,13 @@
                         'Currency',
                         'Percent',
                         'Check',
+                        'Duration',
+                        'Rating',
+                        'Button',
+                        'Attach',
+                        'Attach Image',
+                        'HTML',
+                        'Geolocation',
                       ].includes(field.fieldtype)
                     "
                     v-model="row[field.fieldname]"
@@ -271,6 +278,77 @@
                     :disabled="Boolean(field.read_only)"
                     @change="fieldChange(flt($event.target.value), field, row)"
                   />
+                  <DurationInput
+                    v-else-if="field.fieldtype === 'Duration'"
+                    :value="row[field.fieldname]"
+                    variant="outline"
+                    :disabled="Boolean(field.read_only)"
+                    @change="(v) => fieldChange(v, field, row)"
+                  />
+                  <div
+                    v-else-if="field.fieldtype === 'Rating'"
+                    class="flex h-full w-full items-center overflow-hidden [&_::-webkit-scrollbar]:h-0"
+                  >
+                    <RatingInput
+                      class="flex-nowrap overflow-x-auto px-2"
+                      :value="row[field.fieldname]"
+                      :disabled="Boolean(field.read_only)"
+                      :max="field.options || 5"
+                      @change="(v) => fieldChange(v, field, row)"
+                    />
+                  </div>
+                  <div
+                    v-else-if="field.fieldtype === 'Button'"
+                    class="flex items-center px-1 h-full"
+                  >
+                    <ButtonControl
+                      class="button-control"
+                      :label="field.label"
+                      :icon="field.icon"
+                      :theme="getButtonTheme(field.button_color)"
+                      :variant="getButtonVariant(field.button_color)"
+                      :disabled="Boolean(field.read_only)"
+                      @click="handleButtonClick(field, row)"
+                    />
+                  </div>
+                  <div
+                    v-else-if="
+                      ['Attach', 'Attach Image'].includes(field.fieldtype)
+                    "
+                    class="flex h-full w-full items-center"
+                  >
+                    <AttachControl
+                      variant="ghost"
+                      class="w-full"
+                      :value="row[field.fieldname]"
+                      :doctype="doctype"
+                      :docname="row.name"
+                      :fieldname="field.fieldname"
+                      :imageOnly="field.fieldtype === 'Attach Image'"
+                      :disabled="Boolean(field.read_only)"
+                      @change="(v) => fieldChange(v, field, row)"
+                    />
+                  </div>
+                  <div
+                    v-else-if="field.fieldtype === 'HTML'"
+                    class="px-2 py-1 overflow-hidden"
+                  >
+                    <HtmlControl
+                      :html="interpolateTemplate(field.options || '', row)"
+                    />
+                  </div>
+                  <div
+                    v-else-if="field.fieldtype === 'Geolocation'"
+                    class="flex h-full w-full items-center"
+                  >
+                    <GeolocationControl
+                      variant="ghost"
+                      class="w-full"
+                      :value="row[field.fieldname]"
+                      :disabled="Boolean(field.read_only)"
+                      @change="(v) => fieldChange(v, field, row)"
+                    />
+                  </div>
                   <Combobox
                     v-else-if="field.fieldtype === 'Autocomplete'"
                     v-model="row[field.fieldname]"
@@ -350,6 +428,15 @@
 
 <script setup>
 import Password from '@/components/Controls/Password.vue'
+import DurationInput from '@/components/Controls/DurationInput.vue'
+import RatingInput from '@/components/Controls/RatingInput.vue'
+import AttachControl from '@/components/Controls/AttachControl.vue'
+import HtmlControl from '@/components/Controls/HtmlControl.vue'
+import GeolocationControl from '@/components/Controls/GeolocationControl.vue'
+import ButtonControl, {
+  getButtonTheme,
+  getButtonVariant,
+} from '@/components/Controls/ButtonControl.vue'
 import FormattedInput from '@/components/Controls/FormattedInput.vue'
 import GridFieldsEditorModal from '@/components/Controls/GridFieldsEditorModal.vue'
 import GridRowFieldsModal from '@/components/Controls/GridRowFieldsModal.vue'
@@ -357,7 +444,12 @@ import GridRowModal from '@/components/Controls/GridRowModal.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import Link from '@/components/Controls/Link.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
-import { getRandom, getFormat, isTouchScreenDevice } from '@/utils'
+import {
+  getRandom,
+  getFormat,
+  isTouchScreenDevice,
+  interpolateTemplate,
+} from '@/utils'
 import { flt } from '@/utils/numberFormat.js'
 import { usersStore } from '@/stores/users'
 import { getMeta } from '@/stores/meta'
@@ -383,7 +475,17 @@ const props = defineProps({
   overrides: { type: Object, default: () => ({}) },
 })
 
+const restrictedFieldTypes = [
+  'Section Break',
+  'Column Break',
+  'Tab Break',
+  'Table',
+  'Table MultiSelect',
+  'Image',
+]
+
 const triggerOnChange = inject('triggerOnChange', () => {})
+const triggerButton = inject('triggerButton', () => {})
 const triggerOnRowAdd = inject('triggerOnRowAdd', () => {})
 const triggerOnRowRemove = inject('triggerOnRowRemove', () => {})
 
@@ -413,7 +515,13 @@ const gridSettings = computed(() => getGridSettings())
 
 const fields = computed(() => {
   let gridViewSettings = getGridViewSettings(props.parentDoctype)
-  let gridFields = getFields()
+  let gridFields = getFields({
+    restrictNoValueFields: false,
+    restrictedFieldTypes,
+  })
+
+  if (!gridFields?.length) return []
+
   if (gridViewSettings.length) {
     let d = gridViewSettings.map((gs) =>
       getFieldObj(gridFields.find((f) => f.fieldname === gs.fieldname)),
@@ -446,6 +554,7 @@ function getFieldObj(field) {
     field.link_filters = JSON.stringify({
       ...(field.link_filters ? JSON.parse(field.link_filters) : {}),
       name: ['in', users.data.crmUsers?.map((user) => user.name)],
+      ignore_user_type: 1,
     })
   }
 
@@ -534,6 +643,14 @@ const reorder = () => {
   })
 }
 
+async function handleButtonClick(field, row) {
+  if (typeof field.click === 'function') {
+    await field.click(row)
+  } else {
+    await triggerButton(field.fieldname, row)
+  }
+}
+
 function fieldChange(value, field, row) {
   value = Array.isArray(value)
     ? value
@@ -616,7 +733,7 @@ const getOptions = (options) => {
 }
 
 /* For Autocomplete, Link */
-:deep(.grid-row button),
+:deep(.grid-row button:not(.button-control):not(.rating-star)),
 :deep(.grid-row .combobox > div > div) {
   border: none;
   border-radius: 0;
@@ -637,7 +754,7 @@ const getOptions = (options) => {
   background-color: var(--surface-white);
 }
 
-:deep(.grid-row button:focus-within) {
+:deep(.grid-row button:focus-within:not(.rating-star):not(.button-control)) {
   border: 1px solid var(--outline-gray-2);
 }
 </style>

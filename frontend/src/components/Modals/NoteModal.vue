@@ -94,7 +94,7 @@ async function updateNote() {
       fieldname: _note.value,
     })
     if (d.name) {
-      notes.value?.reload()
+      notes.value?.reload?.()
       emit('after', d)
     }
   } else {
@@ -120,7 +120,7 @@ async function updateNote() {
     if (d.name) {
       updateOnboardingStep('create_first_note')
       capture('note_created')
-      notes.value?.reload()
+      notes.value?.reload?.()
       emit('after', d, true)
     }
   }

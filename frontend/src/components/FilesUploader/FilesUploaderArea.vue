@@ -167,12 +167,14 @@ onMounted(() => {
     cache: ['file_uploader_defaults', props.doctype],
     auto: true,
     transform: (data) => {
+      const propRestrictions = props.options.restrictions || {}
       restrictions.value = {
         allowedFileTypes: data.allowed_file_types
           ? data.allowed_file_types.split('\n').map((ext) => `.${ext}`)
           : [],
         maxFileSize: data.max_file_size,
         maxNumberOfFiles: data.max_number_of_files,
+        ...propRestrictions,
       }
       makeAttachmentsPublic.value = Boolean(data.make_attachments_public)
     },

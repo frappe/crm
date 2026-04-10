@@ -6,9 +6,10 @@ from frappe import _
 from frappe.desk.form.assign_to import add as assign
 from frappe.model.document import Document
 
+from crm.api.exchange_rate import get_exchange_rate
 from crm.fcrm.doctype.crm_service_level_agreement.utils import get_sla
 from crm.fcrm.doctype.crm_status_change_log.crm_status_change_log import add_status_change_log
-from crm.fcrm.doctype.fcrm_settings.fcrm_settings import get_exchange_rate
+from crm.fcrm.doctype.utils import add_or_remove_lost_reason_section_in_sidepanel
 
 
 class CRMDeal(Document):
@@ -80,6 +81,7 @@ class CRMDeal(Document):
 		self.set_sla()
 
 	def validate(self):
+		self.validate_status()
 		self.set_primary_contact()
 		self.set_primary_email_mobile_no()
 		if not self.is_new() and self.has_value_changed("deal_owner") and self.deal_owner:
@@ -95,10 +97,19 @@ class CRMDeal(Document):
 
 	def after_insert(self):
 		if self.deal_owner:
+			if self.deal_owner != frappe.session.user:
+				self.share_with_agent(self.deal_owner)
 			self.assign_agent(self.deal_owner)
 
 	def before_save(self):
 		self.apply_sla()
+
+	def validate_status(self):
+		if self.is_new() and not self.status:
+			if frappe.db.exists("CRM Deal Status", "Qualification"):
+				self.status = "Qualification"
+			else:
+				self.status = frappe.get_all("CRM Deal Status", {"type": "Open"}, pluck="name")[0]
 
 	def set_primary_contact(self, contact=None):
 		if not self.contacts:
@@ -175,7 +186,12 @@ class CRMDeal(Document):
 					flags={"ignore_share_permission": True},
 				)
 			elif user != agent:
-				frappe.share.remove(self.doctype, self.name, user)
+				frappe.share.remove(
+					self.doctype,
+					self.name,
+					user,
+					flags={"ignore_share_permission": True, "ignore_permissions": True},
+				)
 
 	def set_sla(self):
 		"""
@@ -245,6 +261,8 @@ class CRMDeal(Document):
 				frappe.throw(_("Please specify a reason for losing the deal."), frappe.ValidationError)
 			elif self.lost_reason == "Other" and not self.lost_notes:
 				frappe.throw(_("Please specify the reason for losing the deal."), frappe.ValidationError)
+		if self.has_value_changed("status"):
+			add_or_remove_lost_reason_section_in_sidepanel(self)
 
 	def update_exchange_rate(self):
 		if self.has_value_changed("currency") or not self.exchange_rate:
@@ -274,7 +292,8 @@ class CRMDeal(Document):
 			},
 			{
 				"label": "Status",
-				"type": "Select",
+				"type": "Link",
+				"options": "CRM Deal Status",
 				"key": "status",
 				"width": "10rem",
 			},

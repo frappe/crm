@@ -102,6 +102,9 @@ def invite_by_email(emails: str, role: str):
 	if role == "System Manager" and "System Manager" not in user_roles:
 		frappe.throw(_("You are not allowed to invite System Managers"), frappe.PermissionError)
 
+	if role == "Sales Manager" and "System Manager" not in user_roles:
+		frappe.throw(_("You are not allowed to invite Sales Managers"), frappe.PermissionError)
+
 	if role not in ["System Manager", "Sales Manager", "Sales User"]:
 		frappe.throw(_("Cannot invite for this role"), frappe.PermissionError)
 
@@ -132,6 +135,20 @@ def invite_by_email(emails: str, role: str):
 		"existing_invites": existing_invites,
 		"to_invite": to_invite,
 	}
+
+
+@frappe.whitelist(methods=["DELETE", "POST"])
+def delete_attachment(doctype: str, docname: str, file_url: str):
+	if not frappe.has_permission(doctype, doc=docname, ptype="write"):
+		frappe.throw(_("You don't have permission to delete this attachment"), frappe.PermissionError)
+
+	file_name = frappe.db.get_value(
+		"File",
+		{"file_url": file_url, "attached_to_doctype": doctype, "attached_to_name": docname},
+		"name",
+	)
+	if file_name:
+		frappe.delete_doc("File", file_name)
 
 
 @frappe.whitelist()

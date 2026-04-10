@@ -25,7 +25,7 @@
         <template #default="{ open }">
           <Button
             v-if="doc.status"
-            :label="doc.status"
+            :label="statusLabel(doc.status)"
             :iconRight="open ? 'chevron-up' : 'chevron-down'"
           >
             <template #prefix>
@@ -41,7 +41,7 @@
       v-model="tabIndex"
       as="div"
       :tabs="tabs"
-      class="flex flex-1 overflow-hidden flex-col [&_[role='tab']]:px-0 [&_[role='tablist']]:px-5 [&_[role='tablist']]:gap-7.5 [&_[role='tabpanel']:not([hidden])]:flex [&_[role='tabpanel']:not([hidden])]:grow"
+      class="flex flex-1 overflow-hidden flex-col [&_[role='tab']]:px-0 [&_[role='tab']]:shrink-0 [&_[role='tablist']]:px-5 [&_[role='tablist']::-webkit-scrollbar]:h-0 [&_[role='tablist']]:min-h-[45px] [&_[role='tablist']]:gap-7.5 [&_[role='tabpanel']:not([hidden])]:flex [&_[role='tabpanel']:not([hidden])]:grow"
     >
       <template #tab-panel>
         <Activities
@@ -52,7 +52,7 @@
           :docname="dealId"
           :tabs="tabs"
           @beforeSave="beforeStatusChange"
-          @afterSave="reloadAssignees"
+          @afterSave="reloadResources"
         />
       </template>
     </Tabs>
@@ -143,7 +143,7 @@
           :docname="dealId"
           @reload="sections.reload"
           @beforeFieldChange="beforeStatusChange"
-          @afterFieldChange="reloadAssignees"
+          @afterFieldChange="reloadResources"
         >
           <template #actions="{ section }">
             <div v-if="section.name == 'contacts_section'" class="pr-2">
@@ -367,7 +367,12 @@ import CollapsibleSection from '@/components/CollapsibleSection.vue'
 import SidePanelLayout from '@/components/SidePanelLayout.vue'
 import SLASection from '@/components/SLASection.vue'
 import CustomActions from '@/components/CustomActions.vue'
-import { openWebsite, setupCustomizations, copyToClipboard } from '@/utils'
+import {
+  openWebsite,
+  setupCustomizations,
+  copyToClipboard,
+  isTranslatable,
+} from '@/utils'
 import { getView } from '@/utils/view'
 import { getSettings } from '@/stores/settings'
 import { globalStore } from '@/stores/global'
@@ -375,6 +380,7 @@ import { statusesStore } from '@/stores/statuses'
 import { getMeta } from '@/stores/meta'
 import { useDocument } from '@/data/document'
 import { whatsappEnabled, callEnabled } from '@/composables/settings'
+import { useBroadcast } from '@/composables/useBroadcast'
 import {
   createResource,
   Dropdown,
@@ -399,6 +405,7 @@ import {
 import { useRoute, useRouter } from 'vue-router'
 import { useActiveTabManager } from '@/composables/useActiveTabManager'
 
+const { on } = useBroadcast()
 const { brand } = getSettings()
 const { $dialog, $socket, makeCall } = globalStore()
 const { statusOptions, getDealStatus } = statusesStore()
@@ -603,6 +610,8 @@ const sections = createResource({
   transform: (data) => getParsedSections(data),
 })
 
+on('reload-deal-sections', () => sections.reload())
+
 if (!sections.data) sections.fetch()
 
 function getParsedSections(_sections) {
@@ -764,6 +773,11 @@ function openEmailBox() {
   nextTick(() => (activities.value.emailBox.show = true))
 }
 
+function statusLabel(status) {
+  if (isTranslatable('CRM Deal Status')) return __(status)
+  return status
+}
+
 const showLostReasonModal = ref(false)
 
 function setLostReason() {
@@ -772,7 +786,9 @@ function setLostReason() {
     (document.doc.lost_reason && document.doc.lost_reason !== 'Other') ||
     (document.doc.lost_reason === 'Other' && document.doc.lost_notes)
   ) {
-    document.save.submit()
+    document.save.submit(null, {
+      onSuccess: () => sections.reload(),
+    })
     return
   }
 
@@ -787,14 +803,20 @@ function beforeStatusChange(data) {
     setLostReason()
   } else {
     document.save.submit(null, {
-      onSuccess: () => reloadAssignees(data),
+      onSuccess: () => reloadResources(data),
     })
   }
 }
 
-function reloadAssignees(data) {
+function reloadResources(data) {
   if (Object.hasOwn(data ?? {}, 'deal_owner')) {
     assignees.reload()
+  }
+  if (
+    Object.hasOwn(data ?? {}, 'status') &&
+    getDealStatus(data.status).type != 'Lost'
+  ) {
+    sections.reload()
   }
 }
 </script>

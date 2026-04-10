@@ -38,6 +38,37 @@ export function formatDate(date, format, onlyDate = false, onlyTime = false) {
   return dayjsLocal(date).format(format)
 }
 
+export function formatDuration(totalSeconds, longForm = false) {
+  if (
+    totalSeconds === null ||
+    totalSeconds === undefined ||
+    totalSeconds === ''
+  ) {
+    return ''
+  }
+  const s = parseInt(totalSeconds, 10)
+  if (isNaN(s)) return ''
+  if (s === 0) return longForm ? '0 seconds' : '0s'
+
+  const h = Math.floor(s / 3600)
+  const m = Math.floor((s % 3600) / 60)
+  const sec = s % 60
+
+  if (longForm) {
+    const parts = []
+    if (h) parts.push(h === 1 ? '1 hour' : `${h} hours`)
+    if (m) parts.push(m === 1 ? '1 minute' : `${m} minutes`)
+    if (sec) parts.push(sec === 1 ? '1 second' : `${sec} seconds`)
+    return parts.join(' ')
+  }
+
+  const parts = []
+  if (h) parts.push(`${h}h`)
+  if (m) parts.push(`${m}m`)
+  if (sec) parts.push(`${sec}s`)
+  return parts.join(' ')
+}
+
 export function getFormat(
   date,
   format,
@@ -414,6 +445,14 @@ export function convertArrayToString(array) {
   return array.map((item) => item).join(',')
 }
 
+export function interpolateTemplate(template, doc) {
+  if (!template) return ''
+  return template.replace(/\{\{\s*(\w+)\s*\}\}/g, (_, key) => {
+    const val = doc?.[key]
+    return val !== undefined && val !== null ? val : ''
+  })
+}
+
 export function _eval(code, context = {}) {
   let variable_names = Object.keys(context)
   let variables = Object.values(context)
@@ -508,6 +547,19 @@ export function validateIsImageFile(file) {
   if (!isImage(extn)) {
     return __('Only image files are allowed')
   }
+}
+
+export function isNull(value) {
+  return (
+    value === undefined ||
+    value === null ||
+    value === '' ||
+    cstr(value).trim() === ''
+  )
+}
+
+export function cstr(s) {
+  return s === null ? '' : s.toString()
 }
 
 export function getRandom(len = 4) {
@@ -803,18 +855,22 @@ export function TemplateOption({ active, option, variant, icon, onClick }) {
 }
 
 /**
- * @param {Object} config - Configuration object
- * @param {Ref<boolean>} config.isConfirmingDelete - Ref to track confirmation state
- * @param {Function} config.onConfirmDelete - Callback when delete is confirmed
+ * @param {Ref<boolean>} isConfirmingDelete - Ref to track confirmation state
+ * @param {Function} onConfirmDelete - Callback when delete is confirmed
+ * @param {string} label - Label for the delete option
  * @returns {Array} Array of option objects for use in dropdowns
  */
-export function ConfirmDelete({ isConfirmingDelete, onConfirmDelete }) {
+export function ConfirmDelete({
+  isConfirmingDelete,
+  onConfirmDelete,
+  label = __('Delete'),
+}) {
   return [
     {
-      label: __('Delete'),
+      label,
       component: (props) =>
         TemplateOption({
-          option: __('Delete'),
+          option: label,
           icon: 'trash-2',
           active: props.active,
           variant: 'grey',
@@ -827,10 +883,10 @@ export function ConfirmDelete({ isConfirmingDelete, onConfirmDelete }) {
       condition: () => !isConfirmingDelete.value,
     },
     {
-      label: __('Confirm Delete'),
+      label: __('Confirm {0}', [label]),
       component: (props) =>
         TemplateOption({
-          option: __('Confirm Delete'),
+          option: __('Confirm {0}', [label]),
           icon: 'trash-2',
           active: props.active,
           variant: 'danger',
@@ -843,33 +899,6 @@ export function ConfirmDelete({ isConfirmingDelete, onConfirmDelete }) {
       condition: () => isConfirmingDelete.value,
     },
   ]
-}
-
-export function formatTimeHMS(seconds) {
-  const days = Math.floor(seconds / (3600 * 24))
-  const hours = Math.floor((seconds % (3600 * 24)) / 3600)
-  const minutes = Math.floor((seconds % 3600) / 60)
-  const remainingSeconds = Math.floor(seconds % 60)
-
-  let formattedTime = ''
-
-  if (days > 0) {
-    formattedTime += `${days} days `
-  }
-
-  if (hours > 0) {
-    formattedTime += `${hours} hours `
-  }
-
-  if (minutes > 0) {
-    formattedTime += `${minutes} minutes `
-  }
-
-  if (remainingSeconds > 0) {
-    formattedTime += `${remainingSeconds} seconds`
-  }
-
-  return formattedTime.trim() == '' ? '0 seconds' : formattedTime.trim()
 }
 
 export function getGridTemplateColumnsForTable(columns) {
@@ -903,4 +932,9 @@ export function clearCache() {
       localStorage.removeItem(key)
     }
   }
+}
+
+export function isTranslatable(doctype) {
+  let translatedDoctypes = window.translated_doctypes || []
+  return translatedDoctypes.includes(doctype)
 }

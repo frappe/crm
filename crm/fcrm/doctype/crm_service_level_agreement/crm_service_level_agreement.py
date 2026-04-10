@@ -99,14 +99,14 @@ class CRMServiceLevelAgreement(Document):
 		end_at = doc.first_responded_on
 		if not start_at or not end_at:
 			return
-		if not doc.first_response_time:
+		if doc.first_response_time is None:
 			doc.first_response_time = self.calc_elapsed_time(start_at, end_at)
 
-		if not doc.last_response_time and doc.first_response_time:
+		if doc.last_response_time is None and doc.first_response_time is not None:
 			doc.last_response_time = doc.first_response_time
 
 	def set_rolling_responses(self, doc: Document):
-		if not doc.last_response_time or not doc.last_responded_on:
+		if doc.last_response_time is None or not doc.last_responded_on:
 			return
 		if len(doc.rolling_responses) == 0:
 			doc.append(

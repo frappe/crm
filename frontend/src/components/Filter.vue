@@ -159,6 +159,8 @@
 import FilterIcon from '@/components/Icons/FilterIcon.vue'
 import Link from '@/components/Controls/Link.vue'
 import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
+import DurationInput from '@/components/Controls/DurationInput.vue'
+import RatingInput from '@/components/Controls/RatingInput.vue'
 import {
   FormControl,
   createResource,
@@ -176,6 +178,8 @@ const typeNumber = ['Float', 'Int', 'Currency', 'Percent']
 const typeSelect = ['Select']
 const typeString = ['Data', 'Long Text', 'Small Text', 'Text Editor', 'Text']
 const typeDate = ['Date', 'Datetime']
+const typeDuration = ['Duration']
+const typeRating = ['Rating']
 
 const props = defineProps({
   doctype: { type: String, required: true },
@@ -201,7 +205,12 @@ const filters = computed(() => {
   if (!list.value?.data) return new Set()
   let allFilters =
     list.value?.params?.filters || list.value.data?.params?.filters
-  if (!allFilters || !filterableFields.data) return new Set()
+  if (
+    !allFilters ||
+    Object.keys(allFilters).length === 0 ||
+    !filterableFields.data
+  )
+    return new Set()
   // remove default filters
   if (props.default_filters) {
     allFilters = removeCommonFilters(props.default_filters, allFilters)
@@ -323,7 +332,7 @@ function getOperators(fieldtype, fieldname) {
   if (typeCheck.includes(fieldtype)) {
     options.push(...[{ label: __('Equals'), value: 'equals' }])
   }
-  if (['Duration'].includes(fieldtype)) {
+  if (typeDuration.includes(fieldtype)) {
     options.push(
       ...[
         { label: __('Like'), value: 'like' },
@@ -346,6 +355,19 @@ function getOperators(fieldtype, fieldname) {
         { label: __('<='), value: '<=' },
         { label: __('Between'), value: 'between' },
         { label: __('Timespan'), value: 'timespan' },
+      ],
+    )
+  }
+  if (typeRating.includes(fieldtype)) {
+    options.push(
+      ...[
+        { label: __('Equals'), value: 'equals' },
+        { label: __('Not equals'), value: 'not equals' },
+        { label: __('Greater than'), value: '>' },
+        { label: __('Less than'), value: '<' },
+        { label: __('Greater than or equal to'), value: '>=' },
+        { label: __('Less than or equal to'), value: '<=' },
+        { label: __('Is'), value: 'is' },
       ],
     )
   }
@@ -401,6 +423,14 @@ function getValueControl(f) {
     return h(FormControl, { type: 'number' })
   } else if (typeDate.includes(fieldtype) && operator == 'between') {
     return h(DateRangePicker, { value: f.value, iconLeft: '' })
+  } else if (typeDuration.includes(fieldtype)) {
+    return h(DurationInput, { value: f.value })
+  } else if (typeRating.includes(fieldtype)) {
+    return h(RatingInput, {
+      value: f.value,
+      max: options || 5,
+      class: '!flex',
+    })
   } else if (typeDate.includes(fieldtype)) {
     return h(fieldtype == 'Date' ? DatePicker : DateTimePicker, {
       value: f.value,
@@ -535,6 +565,9 @@ function parseFilters(filters) {
 function transformIn(f) {
   if (f.operator.includes('like') && !f.value.includes('%')) {
     f.value = `%${f.value}%`
+  }
+  if (['in', 'not in'].includes(f.operator) && typeof f.value === 'string') {
+    f.value = f.value.split(',').map((v) => v.trim())
   }
   return f
 }

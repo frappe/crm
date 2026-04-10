@@ -132,6 +132,10 @@ def update_call_log(call_sid, status=None):
 		frappe.db.commit()
 
 
+def get_twilio_settings():
+	return frappe.get_single("CRM Twilio Settings")
+
+
 @frappe.whitelist(allow_guest=True)
 def update_recording_info(**kwargs):
 	args = frappe._dict(kwargs)

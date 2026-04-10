@@ -87,6 +87,17 @@
         />
       </div>
       <SidebarLink
+        v-if="isManager() && isDemoDataCreated"
+        class="text-ink-red-3 hover:bg-surface-red-2 focus:bg-surface-red-2"
+        :label="__('Clear Demo Data')"
+        :isCollapsed="isSidebarCollapsed"
+        @click="() => clearDemoData()"
+      >
+        <template #icon>
+          <BrushCleaningIcon class="h-4 w-4" />
+        </template>
+      </SidebarLink>
+      <SidebarLink
         v-if="isOnboardingStepsCompleted"
         :label="__('Help')"
         :isCollapsed="isSidebarCollapsed"
@@ -138,6 +149,7 @@
 </template>
 
 <script setup>
+import BrushCleaningIcon from '~icons/lucide/brush-cleaning'
 import LucideLayoutDashboard from '~icons/lucide/layout-dashboard'
 import CRMLogo from '@/components/Icons/CRMLogo.vue'
 import InviteIcon from '@/components/Icons/InviteIcon.vue'
@@ -172,6 +184,7 @@ import { usersStore } from '@/stores/users'
 import { sessionStore } from '@/stores/session'
 import { showSettings, activeSettingsPage } from '@/composables/settings'
 import { showChangePasswordModal } from '@/composables/modals'
+import { useBroadcast } from '@/composables/useBroadcast.js'
 import { FeatherIcon, call } from 'frappe-ui'
 import {
   SignupBanner,
@@ -186,11 +199,14 @@ import {
 } from 'frappe-ui/frappe'
 import router from '@/router'
 import { useStorage } from '@vueuse/core'
+import { useDemoData } from '@/composables/demoData'
 import { ref, reactive, computed, markRaw, onMounted } from 'vue'
 
 const { getPinnedViews, getPublicViews } = viewsStore()
 const { toggle: toggleNotificationPanel } = notificationsStore()
 const { capture } = useTelemetry()
+const { clearDemoData, isDemoDataCreated } = useDemoData()
+const { send } = useBroadcast()
 
 const isSidebarCollapsed = useStorage('isSidebarCollapsed', false)
 
@@ -352,6 +368,7 @@ const steps = reactive([
     onClick: () => {
       minimize.value = true
       router.push({ name: 'Leads' })
+      send('trigger_lead_create', true)
       capture('onboarding_step_clicked_create_first_lead')
     },
   },

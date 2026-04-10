@@ -146,6 +146,7 @@
 <script setup>
 import EmailTemplateIcon from '@/components/Icons/EmailTemplateIcon.vue'
 import EmptyState from '../../ListViews/EmptyState.vue'
+import { useBroadcast } from '@/composables/useBroadcast'
 import {
   TextInput,
   FormControl,
@@ -155,8 +156,11 @@ import {
   toast,
 } from 'frappe-ui'
 import { ref, computed, inject } from 'vue'
+import { ConfirmDelete } from '../../../utils'
 
 const emit = defineEmits(['updateStep'])
+
+const { send } = useBroadcast()
 
 const templates = inject('templates')
 
@@ -194,6 +198,7 @@ function toggleEmailTemplate(template) {
             ? __('Template enabled successfully')
             : __('Template disabled successfully'),
         )
+        send('refresh-email-templates')
       },
       onError: (error) => {
         toast.error(error.messages[0] || __('Failed to update template'))
@@ -223,23 +228,10 @@ function getDropdownOptions(template) {
       icon: 'copy',
       onClick: () => emit('updateStep', 'new-template', { ...template }),
     },
-    {
-      label: __('Delete'),
-      icon: 'trash-2',
-      onClick: (e) => {
-        e.preventDefault()
-        e.stopPropagation()
-        confirmDelete.value = true
-      },
-      condition: () => !confirmDelete.value,
-    },
-    {
-      label: __('Confirm Delete'),
-      icon: 'trash-2',
-      theme: 'red',
-      onClick: () => deleteTemplate(template),
-      condition: () => confirmDelete.value,
-    },
+    ...ConfirmDelete({
+      onConfirmDelete: () => deleteTemplate(template),
+      isConfirmingDelete: confirmDelete,
+    }),
   ]
 
   return options

@@ -1,3 +1,6 @@
+# Copyright (c) 2024, Frappe Technologies and contributors
+# This file is used to handle live demo site (https://frappecrm-demo.frappe.cloud) related API calls and hooks
+
 import frappe
 from frappe import _
 from frappe.auth import LoginManager

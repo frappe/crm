@@ -86,7 +86,7 @@
                   {{ group.group }}
                 </div>
                 <ComboboxOption
-                  v-for="option in group.items"
+                  v-for="option in group.items.slice(0, props.maxOptions)"
                   :key="option.value"
                   v-slot="{ active, selected }"
                   as="template"
@@ -178,6 +178,10 @@ const props = defineProps({
   placement: {
     type: String,
     default: 'bottom-start',
+  },
+  maxOptions: {
+    type: Number,
+    default: 20,
   },
 })
 const emit = defineEmits(['update:modelValue', 'update:query', 'change'])

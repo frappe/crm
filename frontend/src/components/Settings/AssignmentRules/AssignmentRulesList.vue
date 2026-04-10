@@ -12,13 +12,13 @@
     :icon="h(SettingsIcon2, { class: 'rotate-90' })"
   />
   <div v-else class="w-full">
-    <div class="flex items-center py-2 px-4 text-sm text-ink-gray-5">
+    <div class="flex items-center p-2 text-sm text-ink-gray-5">
       <div class="w-7/12">{{ __('Assignment Rule') }}</div>
       <div class="w-3/12">{{ __('Priority') }}</div>
       <div class="w-2/12">{{ __('Enabled') }}</div>
     </div>
-    <div class="h-px border-t mx-4 border-outline-gray-modals" />
-    <div class="overflow-y-auto px-2">
+    <div class="h-px border-t mx-2 border-outline-gray-modals" />
+    <div class="overflow-y-auto">
       <template
         v-for="(assignmentRule, i) in assignmentRulesList.data"
         :key="assignmentRule.name"

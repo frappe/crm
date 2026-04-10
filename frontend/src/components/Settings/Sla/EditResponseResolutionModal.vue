@@ -20,27 +20,14 @@
         />
         <div>
           <FormLabel :label="__('First Response Time')" required />
-          <Popover class="mt-2">
-            <template #target="{ togglePopover }">
-              <div
-                class="w-full bg-surface-gray-2 rounded p-1.5 px-2 text-base text-ink-gray-8 cursor-pointer hover:bg-surface-gray-3"
-                @click="togglePopover()"
-              >
-                <div v-if="priorityData.first_response_time">
-                  {{ formatTimeHMS(priorityData.first_response_time) }}
-                </div>
-                <div v-else class="text-gray-500">{{ __('Select Time') }}</div>
-              </div>
-            </template>
-            <template #body>
-              <div class="absolute bg-surface-white top-2 rounded">
-                <DurationPicker
-                  v-model="priorityData.first_response_time"
-                  :options="{ seconds: false }"
-                />
-              </div>
-            </template>
-          </Popover>
+          <DurationInput
+            class="mt-2 w-full"
+            :value="priorityData.first_response_time"
+            :long-form="true"
+            size="sm"
+            variant="subtle"
+            @change="(v) => (priorityData.first_response_time = v)"
+          />
         </div>
         <Checkbox
           v-model="priorityData.default_priority"
@@ -80,13 +67,11 @@ import {
   Dialog,
   FormControl,
   FormLabel,
-  Popover,
   toast,
 } from 'frappe-ui'
 import { inject, ref, watch } from 'vue'
 import { slaData } from './utils'
-import { formatTimeHMS } from '../../../utils'
-import DurationPicker from '../../Controls/DurationPicker.vue'
+import DurationInput from '../../Controls/DurationInput.vue'
 
 const dialog = defineModel({ type: Boolean })
 const isConfirmingDelete = ref(false)

@@ -84,6 +84,12 @@ website_route_rules = [
 # "filters": "crm.utils.jinja_filters"
 # }
 
+# Setup wizard
+# setup_wizard_requires = "assets/crm/js/setup_wizard.js"
+# setup_wizard_stages = "crm.setup.setup_wizard.setup_wizard.get_setup_stages"
+setup_wizard_complete = "crm.demo.api.create_demo_data"
+# setup_wizard_test = "crm.setup.setup_wizard.test_setup_wizard.run_setup_wizard_test"
+
 # Installation
 # ------------
 
@@ -151,7 +157,12 @@ doc_events = {
 		"after_insert": ["crm.api.todo.after_insert"],
 		"on_update": ["crm.api.todo.on_update"],
 	},
+	"Communication": {
+		"after_insert": ["crm.utils.on_communication_insert"],
+		"on_update": ["crm.utils.on_communication_update"],
+	},
 	"Comment": {
+		"after_insert": ["crm.utils.on_comment_insert"],
 		"on_update": ["crm.api.comment.on_update"],
 	},
 	"WhatsApp Message": {
@@ -164,8 +175,8 @@ doc_events = {
 		],
 	},
 	"User": {
-		"before_validate": ["crm.api.demo.validate_user"],
-		"validate_reset_password": ["crm.api.demo.validate_reset_password"],
+		"before_validate": ["crm.api.live_demo.validate_user"],
+		"validate_reset_password": ["crm.api.live_demo.validate_reset_password"],
 	},
 }
 
@@ -272,14 +283,6 @@ standard_dropdown_items = [
 		"name1": "app_selector",
 		"label": "Apps",
 		"type": "Route",
-		"route": "#",
-		"is_standard": 1,
-	},
-	{
-		"name1": "toggle_theme",
-		"label": "Toggle theme",
-		"type": "Route",
-		"icon": "moon",
 		"route": "#",
 		"is_standard": 1,
 	},

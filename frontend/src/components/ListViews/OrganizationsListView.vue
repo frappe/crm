@@ -42,7 +42,7 @@
       :rows="rows"
       doctype="CRM Organization"
     >
-      <ListRowItem :item="item" :align="column.align">
+      <ListRowItem :item="item" :align="column.align" class="overflow-hidden">
         <template #prefix>
           <div v-if="column.key === 'organization_name'">
             <Avatar
@@ -93,6 +93,23 @@
               <HeartIcon class="h-4 w-4" />
             </Button>
           </div>
+          <RatingInput
+            v-else-if="column.type === 'Rating'"
+            :value="item"
+            class="!opacity-100 flex-nowrap overflow-auto"
+            :disabled="true"
+            :max="column.options || 5"
+            @click="
+              (event) =>
+                emit('applyFilter', {
+                  event,
+                  idx,
+                  column,
+                  item,
+                  firstColumn: columns[0],
+                })
+            "
+          />
           <div
             v-else-if="label"
             class="truncate text-base"
@@ -107,7 +124,7 @@
                 })
             "
           >
-            {{ label }}
+            {{ getLabel(label, column) }}
           </div>
         </template>
       </ListRowItem>
@@ -142,8 +159,10 @@
 </template>
 <script setup>
 import HeartIcon from '@/components/Icons/HeartIcon.vue'
+import RatingInput from '@/components/Controls/RatingInput.vue'
 import ListBulkActions from '@/components/ListBulkActions.vue'
 import ListRows from '@/components/ListViews/ListRows.vue'
+import { isTranslatable, formatDuration } from '@/utils'
 import {
   Avatar,
   ListView,
@@ -188,6 +207,12 @@ const route = useRoute()
 
 const pageLengthCount = defineModel({ type: Number })
 const list = defineModel('list', { type: Object })
+
+function getLabel(label, column) {
+  if (column.type === 'Duration') return formatDuration(label)
+  if (column.options && isTranslatable(column.options)) return __(label)
+  return label
+}
 
 const isLikeFilterApplied = computed(() => {
   return list.value.params?.filters?._liked_by ? true : false

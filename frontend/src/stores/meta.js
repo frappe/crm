@@ -1,4 +1,5 @@
 import { createResource } from 'frappe-ui'
+import { noValueFieldTypes, standardFieldsMeta } from '@/utils/model.js'
 import { formatCurrency, formatNumber } from '@/utils/numberFormat.js'
 import { computed, reactive } from 'vue'
 
@@ -80,29 +81,51 @@ export function getMeta(doctype) {
     return userSettings[parentDoctype]['GridView'][doctype]
   }
 
-  function getFields(dt = null) {
-    dt = dt || doctype
-    return doctypesMeta[dt]?.fields.map((f) => {
-      if (f.fieldtype === 'Select' && typeof f.options === 'string') {
-        f.options = f.options.split('\n').map((option) => {
-          return {
-            label: option,
-            value: option,
-          }
-        })
+  function getFields(options = {}) {
+    let {
+      dt = doctype,
+      withStandardFields = false,
+      restrictNoValueFields = true,
+      restrictedFieldTypes = [],
+    } = options
 
-        if (f.options[0]?.value !== '' && f.reqd !== 1) {
-          f.options.unshift({
-            label: '',
-            value: '',
-          })
-        }
-      }
-      if (f.fieldtype === 'Link' && f.options == 'User') {
-        f.fieldtype = 'User'
-      }
-      return f
-    })
+    let fieldsMeta =
+      doctypesMeta[dt]?.fields
+        .filter(
+          (f) =>
+            !f.hidden &&
+            (!restrictNoValueFields ||
+              !noValueFieldTypes.includes(f.fieldtype)) &&
+            (!restrictedFieldTypes.length ||
+              !restrictedFieldTypes.includes(f.fieldtype)),
+        )
+        .map((f) => {
+          if (f.fieldtype === 'Select' && typeof f.options === 'string') {
+            f.options = f.options.split('\n').map((option) => {
+              return {
+                label: option,
+                value: option,
+              }
+            })
+
+            if (f.options[0]?.value !== '' && f.reqd !== 1) {
+              f.options.unshift({
+                label: '',
+                value: '',
+              })
+            }
+          }
+          if (f.fieldtype === 'Link' && f.options == 'User') {
+            f.fieldtype = 'User'
+          }
+          return f
+        }) || []
+
+    if (withStandardFields) {
+      fieldsMeta = fieldsMeta.concat(standardFieldsMeta)
+    }
+
+    return fieldsMeta || []
   }
 
   function saveUserSettings(parentDoctype, key, value, callback) {
@@ -133,6 +156,12 @@ export function getMeta(doctype) {
     return callback?.()
   }
 
+  function isTranslatable(dt = null) {
+    dt = dt || doctype
+    let meta = doctypesMeta[dt]
+    return meta && meta.translated_doctype
+  }
+
   return {
     meta,
     doctypeMeta,
@@ -147,5 +176,6 @@ export function getMeta(doctype) {
     getFormattedFloat,
     getFormattedPercent,
     getFormattedCurrency,
+    isTranslatable,
   }
 }

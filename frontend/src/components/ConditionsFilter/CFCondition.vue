@@ -15,7 +15,7 @@
         },
       ]"
     >
-      <div :class="'text-end text-base text-gray-600'">
+      <div :class="'text-end text-base text-ink-gray-5'">
         <div v-if="props.itemIndex == 0" class="min-w-[66px] text-start">
           {{ __('Where') }}
         </div>
@@ -280,7 +280,7 @@ function updateValue(value) {
   if (condition[1] === 'between') {
     condition[2] = [value.split(',')[0], value.split(',')[1]]
   } else {
-    condition[2] = value + ''
+    condition[2] = isNaN(value) ? value : Number(value)
   }
 }
 
