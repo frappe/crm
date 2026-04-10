@@ -207,7 +207,7 @@ import {
   Dropdown,
   toast,
 } from 'frappe-ui'
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import EmptyState from '@/components/ListViews/EmptyState.vue'
 
@@ -233,9 +233,14 @@ const {
   document: contact,
   permissions,
   scripts,
+  triggerOnRender,
 } = useDocument('Contact', props.contactId)
 
 const canDelete = computed(() => permissions.data?.permissions?.delete || false)
+
+onMounted(async () => {
+  if (contact.doc) await triggerOnRender()
+})
 
 const breadcrumbs = computed(() => {
   let items = [{ label: __('Contacts'), route: { name: 'Contacts' } }]
