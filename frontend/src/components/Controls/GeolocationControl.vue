@@ -19,9 +19,9 @@
   <!-- Has value -->
   <div v-else :class="[containerClasses, '!pr-1']">
     <FeatherIcon name="map-pin" :class="[iconClasses, 'text-ink-gray-7']" />
-    <span class="min-w-0 flex-1 truncate text-ink-gray-8 text-sm">{{
-      coordinateSummary
-    }}</span>
+    <span class="min-w-0 flex-1 truncate text-ink-gray-8 text-sm">
+      {{ coordinateSummary }}
+    </span>
     <button
       v-if="!disabled"
       class="ml-auto flex h-5 w-5 shrink-0 items-center justify-center rounded text-ink-gray-4 hover:bg-surface-gray-2 hover:text-ink-gray-7 dark:hover:bg-surface-gray-4"
@@ -62,12 +62,13 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, nextTick, useAttrs, onBeforeUnmount } from 'vue'
-import { FeatherIcon, Dialog, Button } from 'frappe-ui'
 // Static ?url imports so Vite bundles the images and resolves paths correctly
 import leafletIconUrl from 'leaflet/dist/images/marker-icon.png?url'
 import leafletIconRetinaUrl from 'leaflet/dist/images/marker-icon-2x.png?url'
 import leafletShadowUrl from 'leaflet/dist/images/marker-shadow.png?url'
+import { useGeolocation } from '@vueuse/core'
+import { FeatherIcon, Dialog, Button } from 'frappe-ui'
+import { ref, computed, watch, nextTick, useAttrs, onBeforeUnmount } from 'vue'
 
 defineOptions({ inheritAttrs: false })
 
@@ -78,6 +79,8 @@ const props = defineProps({
 
 const emit = defineEmits(['change'])
 const attrs = useAttrs()
+
+const { coords: geoCoords } = useGeolocation()
 
 const showModal = ref(false)
 const mapId = `geo-map-${Math.random().toString(36).slice(2)}`
@@ -178,16 +181,12 @@ function openModal() {
   showModal.value = true
 }
 
-watch(showModal, async (visible) => {
+watch(showModal, (visible) => {
   if (!visible) {
     destroyMap()
     return
   }
-  await nextTick()
-  // Wait for the Dialog's enter transition to finish so the container
-  // has real dimensions when Leaflet measures it
-  await new Promise((resolve) => setTimeout(resolve, 100))
-  await initMap()
+  nextTick(() => initMap())
 })
 
 async function initMap() {
@@ -314,13 +313,17 @@ function reloadData() {
   if (!L || !editableLayers || !mapInstance) return
 
   // Clear existing layers
-  editableLayers.eachLayer((l) => editableLayers.removeLayer(l))
+  editableLayers.clearLayers()
 
-  if (!props.value) {
-    // Same default as Frappe's map_defaults: Mumbai, zoom 13
-    mapInstance.setView([19.08, 72.8961], 13)
-    return
-  }
+  // Use device location if available, otherwise fall back to Mumbai
+  const { latitude, longitude } = geoCoords.value
+  const defaultCenter =
+    isFinite(latitude) && isFinite(longitude)
+      ? [latitude, longitude]
+      : [19.08, 72.8961]
+  mapInstance.setView(defaultCenter, 13)
+
+  if (!props.value) return
 
   try {
     const geoData = JSON.parse(props.value)
@@ -401,7 +404,5 @@ function destroyMap() {
   }
 }
 
-onBeforeUnmount(() => {
-  destroyMap()
-})
+onBeforeUnmount(() => destroyMap())
 </script>
