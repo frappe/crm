@@ -39,6 +39,7 @@
         class="block min-w-0 truncate text-ink-gray-8 hover:underline"
         :href="value"
         target="_blank"
+        rel="noopener noreferrer"
       >
         {{ filename }}
       </a>
@@ -152,17 +153,25 @@ const iconClasses = computed(
 )
 
 const uploaderOptions = computed(() => {
-  const opts = { folder: 'Home/Attachments', max_number_of_files: 1 }
-  if (props.imageOnly) {
-    opts.restrictions = { allowedFileTypes: ['image/*'] }
+  return {
+    folder: 'Home/Attachments',
+    allowMultiple: false,
+    restrictions: {
+      maxNumberOfFiles: 1,
+      ...(props.imageOnly ? { allowedFileTypes: ['image/*'] } : {}),
+    },
   }
-  return opts
 })
 
 const filename = computed(() => {
   if (!props.value) return ''
   const clean = props.value.split('?')[0].split('#')[0]
-  return decodeURIComponent(clean.split('/').pop() || props.value)
+  const raw = clean.split('/').pop() || props.value
+  try {
+    return decodeURIComponent(raw)
+  } catch {
+    return raw
+  }
 })
 
 const isImage = computed(() => IMAGE_EXTENSIONS.test(props.value || ''))
