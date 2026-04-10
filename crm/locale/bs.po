@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-04-05 09:48+0000\n"
-"PO-Revision-Date: 2026-04-05 15:59\n"
+"PO-Revision-Date: 2026-04-09 18:06\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Bosnian\n"
 "MIME-Version: 1.0\n"
@@ -2440,15 +2440,15 @@ msgstr "Sistem"
 #. Name of a DocType
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.json
 msgid "ERPNext CRM Settings"
-msgstr "Postavke Sistema za Prodajnu Podršku"
+msgstr "Postavke Prodajne Podrške"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:4
 msgid "ERPNext Settings"
-msgstr "Postavke Sistema"
+msgstr "Postavke"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:5
 msgid "ERPNext Settings Updated"
-msgstr "Postavke Poslovnog Sistema ažurirane"
+msgstr "Postavke Ažurirane"
 
 #. Label of the section_break_oubd (Section Break) field in DocType 'ERPNext
 #. CRM Settings'
