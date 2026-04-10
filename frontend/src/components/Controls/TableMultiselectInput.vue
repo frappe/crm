@@ -28,6 +28,7 @@
           :value="query"
           :filters="filters"
           :doctype="linkField.options"
+          :onCreate="create"
           :hideMe="true"
           @change="(v) => addValue(v)"
         >
@@ -46,6 +47,7 @@
 
 <script setup>
 import Link from '@/components/Controls/Link.vue'
+import { createDocument } from '@/composables/document'
 import { getMeta } from '@/stores/meta'
 import { ref, computed, nextTick } from 'vue'
 
@@ -135,5 +137,12 @@ const removeLastValue = () => {
   } else {
     valueRef?.focus()
   }
+}
+
+function create(value, close) {
+  const callback = (d) => {
+    if (d) addValue(d.name)
+  }
+  createDocument(linkField.value.options, value, close, callback)
 }
 </script>
