@@ -150,6 +150,7 @@ const _createCallLog = createResource({
     if (doc.name) {
       capture('call_log_created')
       handleCallLogUpdate(doc)
+      callLog.doc = {}
     }
   },
   onError(err) {
