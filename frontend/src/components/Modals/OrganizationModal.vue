@@ -110,6 +110,7 @@ async function createOrganization() {
   if (doc.name) {
     capture('organization_created')
     handleOrganizationUpdate(doc)
+    organization.doc = {}
   }
 }
 

@@ -155,6 +155,7 @@ async function create() {
   loading.value = false
   show.value = false
   emit('callback', doc)
+  _data.doc = {}
 }
 
 watch(
