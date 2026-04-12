@@ -129,6 +129,7 @@ const insertContact = createResource({
   onSuccess: (doc) => {
     capture('contact_created')
     handleContactUpdate(doc)
+    _contact.doc = {}
   },
   onError: (err) => {
     error.value = err.error?.messages?.[0]
