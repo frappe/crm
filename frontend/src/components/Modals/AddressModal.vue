@@ -150,6 +150,7 @@ const _createAddress = createResource({
     if (doc.name) {
       capture('address_created')
       handleAddressUpdate(doc)
+      _address.doc = {}
     }
   },
   onError(err) {
