@@ -439,22 +439,26 @@ function verifyConnection() {
 }
 
 const validateSiteConnection = () => {
-  let error = ''
-  let url = erpnextCRMSettingsResource.doc.erpnext_site_url
-
   if (erpnextCRMSettingsResource.isERPNextInstalled.data) return true
 
-  if (!erpnextCRMSettingsResource.doc.erpnext_site_url) {
+  const { erpnext_site_url, api_key, api_secret } =
+    erpnextCRMSettingsResource.doc
+  let error = ''
+
+  if (!erpnext_site_url) {
     error = __('Site URL is required')
-  } else if (erpnextCRMSettingsResource.doc.erpnext_site_url) {
+  } else {
     try {
-      new URL(url)
+      new URL(erpnext_site_url)
     } catch {
       error = __('Invalid Site URL')
     }
-  } else if (!erpnextCRMSettingsResource.doc.api_key) {
+  }
+
+  if (!error && !api_key) {
     error = __('API key is required')
-  } else if (!erpnextCRMSettingsResource.doc.api_secret) {
+  }
+  if (!error && !api_secret) {
     error = __('API secret is required')
   }
 
@@ -504,6 +508,7 @@ onMounted(async () => {
     onSuccess: (data) => {
       if (
         !data.message &&
+        erpnextCRMSettingsResource.doc.enabled &&
         erpnextCRMSettingsResource.doc.erpnext_site_url &&
         erpnextCRMSettingsResource.doc.api_key &&
         erpnextCRMSettingsResource.doc.api_secret
