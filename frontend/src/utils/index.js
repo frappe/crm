@@ -2,8 +2,9 @@ import LucideCheck from '~icons/lucide/check'
 import TaskStatusIcon from '@/components/Icons/TaskStatusIcon.vue'
 import TaskPriorityIcon from '@/components/Icons/TaskPriorityIcon.vue'
 import { usersStore } from '@/stores/users'
-import { gemoji } from 'gemoji'
 import { getMeta } from '@/stores/meta'
+import { gemoji } from 'gemoji'
+import DOMPurify from 'dompurify'
 import { toast, dayjsLocal, dayjs, getConfig, FeatherIcon } from 'frappe-ui'
 import { h } from 'vue'
 
@@ -937,4 +938,9 @@ export function clearCache() {
 export function isTranslatable(doctype) {
   let translatedDoctypes = window.translated_doctypes || []
   return translatedDoctypes.includes(doctype)
+}
+
+export function sanitizeHTML(html = '', options = {}) {
+  if (typeof html !== 'string') return ''
+  return DOMPurify.sanitize(html, options)
 }
