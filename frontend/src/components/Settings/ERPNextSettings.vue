@@ -34,9 +34,9 @@
         <Button
           v-if="isUpdateButtonVisible"
           variant="solid"
-          @click="saveSettings"
           :loading="erpnextCRMSettingsResource.setValue.loading"
           :disabled="!isDirty || isDisabled"
+          @click="saveSettings"
         >
           {{ __('Update') }}
         </Button>
@@ -98,7 +98,6 @@
                 areSiteSettingsChanged
               "
               variant="subtle"
-              @click="verifyConnection"
               :disabled="
                 erpnextCRMSettingsResource.getExternalCompanies.loading ||
                 !erpnextCRMSettingsResource.doc.erpnext_site_url ||
@@ -106,6 +105,7 @@
                 !erpnextCRMSettingsResource.doc.api_secret
               "
               :loading="erpnextCRMSettingsResource.setValue.loading"
+              @click="verifyConnection"
             >
               {{ __('Verify Connection') }}
             </Button>
@@ -137,10 +137,6 @@
                 <Autocomplete
                   v-if="!erpnextCRMSettingsResource.isERPNextInstalled.data"
                   :model-value="erpnextCRMSettingsResource.doc.erpnext_company"
-                  @update:modelValue="
-                    erpnextCRMSettingsResource.doc.erpnext_company =
-                      $event?.value
-                  "
                   :options="
                     erpnextCRMSettingsResource.getExternalCompanies.data?.map(
                       (company) => ({
@@ -151,6 +147,10 @@
                   "
                   required
                   class="pb-0.5"
+                  @update:modelValue="
+                    erpnextCRMSettingsResource.doc.erpnext_company =
+                      $event?.value
+                  "
                 >
                   <template #footer>
                     <Button
@@ -159,21 +159,21 @@
                       variant="ghost"
                       class="w-full"
                       icon-left="refresh-cw"
-                      @click="
-                        erpnextCRMSettingsResource.getExternalCompanies.submit()
-                      "
                       :loading="
                         erpnextCRMSettingsResource.getExternalCompanies.loading
+                      "
+                      @click="
+                        erpnextCRMSettingsResource.getExternalCompanies.submit()
                       "
                     />
                   </template>
                 </Autocomplete>
                 <Link
                   v-else
+                  v-model="erpnextCRMSettingsResource.doc.erpnext_company"
                   :doc="'Company'"
                   :doctype="'Company'"
                   :placeholder="__('Select Company')"
-                  v-model="erpnextCRMSettingsResource.doc.erpnext_company"
                   class="w-48 flex-shrink-0"
                 />
               </div>
@@ -194,11 +194,11 @@
               </div>
               <div>
                 <Switch
-                  size="sm"
                   v-model="
                     erpnextCRMSettingsResource.doc
                       .create_customer_on_status_change
                   "
+                  size="sm"
                 />
               </div>
             </div>
@@ -439,22 +439,26 @@ function verifyConnection() {
 }
 
 const validateSiteConnection = () => {
-  let error = ''
-  let url = erpnextCRMSettingsResource.doc.erpnext_site_url
-
   if (erpnextCRMSettingsResource.isERPNextInstalled.data) return true
 
-  if (!erpnextCRMSettingsResource.doc.erpnext_site_url) {
+  const { erpnext_site_url, api_key, api_secret } =
+    erpnextCRMSettingsResource.doc
+  let error = ''
+
+  if (!erpnext_site_url) {
     error = __('Site URL is required')
-  } else if (erpnextCRMSettingsResource.doc.erpnext_site_url) {
+  } else {
     try {
-      new URL(url)
-    } catch (e) {
+      new URL(erpnext_site_url)
+    } catch {
       error = __('Invalid Site URL')
     }
-  } else if (!erpnextCRMSettingsResource.doc.api_key) {
+  }
+
+  if (!error && !api_key) {
     error = __('API key is required')
-  } else if (!erpnextCRMSettingsResource.doc.api_secret) {
+  }
+  if (!error && !api_secret) {
     error = __('API secret is required')
   }
 
@@ -504,6 +508,7 @@ onMounted(async () => {
     onSuccess: (data) => {
       if (
         !data.message &&
+        erpnextCRMSettingsResource.doc.enabled &&
         erpnextCRMSettingsResource.doc.erpnext_site_url &&
         erpnextCRMSettingsResource.doc.api_key &&
         erpnextCRMSettingsResource.doc.api_secret
