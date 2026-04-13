@@ -18,8 +18,10 @@ import { computed, defineAsyncComponent, provide } from 'vue'
 const session = sessionStore()
 provide('session', session)
 
-const { initializeTheme } = useTheme()
-initializeTheme()
+const { setTheme } = useTheme()
+if (!localStorage.getItem('theme')) {
+  setTheme('light')
+}
 
 const MobileLayout = defineAsyncComponent(
   () => import('./components/Layouts/MobileLayout.vue'),
