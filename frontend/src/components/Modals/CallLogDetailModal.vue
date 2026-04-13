@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/no-v-html -->
 <template>
   <Dialog v-model="show">
     <template #body>
@@ -106,11 +107,11 @@
                   <div
                     v-if="field.value?.title"
                     :class="[field.value?.content ? 'mb-1 font-bold' : '']"
-                    v-html="field.value?.title"
+                    v-html="sanitizeHTML(field.value?.title)"
                   />
                   <div
                     v-if="field.value?.content"
-                    v-html="field.value?.content"
+                    v-html="sanitizeHTML(field.value?.content)"
                   />
                 </FadedScrollableDiv>
               </div>
@@ -123,11 +124,11 @@
                   <div
                     v-if="field.value?.title"
                     :class="[field.value?.description ? 'mb-1 font-bold' : '']"
-                    v-html="field.value?.title"
+                    v-html="sanitizeHTML(field.value?.title)"
                   />
                   <div
                     v-if="field.value?.description"
-                    v-html="field.value?.description"
+                    v-html="sanitizeHTML(field.value?.description)"
                   />
                 </FadedScrollableDiv>
               </div>
@@ -176,6 +177,7 @@ import NoteModal from '@/components/Modals/NoteModal.vue'
 import TaskModal from '@/components/Modals/TaskModal.vue'
 import FadedScrollableDiv from '@/components/FadedScrollableDiv.vue'
 import { getCallLogDetail } from '@/utils/callLog'
+import { sanitizeHTML } from '@/utils'
 import { isMobileView } from '@/composables/settings'
 import { useDocument } from '@/data/document'
 import { FeatherIcon, Dropdown, Avatar, Tooltip, call, toast } from 'frappe-ui'
