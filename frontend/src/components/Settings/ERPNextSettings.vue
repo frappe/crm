@@ -449,11 +449,7 @@ const validateSiteConnection = () => {
     error = __('Site URL is required')
   } else {
     try {
-<<<<<<< HEAD
-      new URL(url)
-=======
       new URL(erpnext_site_url)
->>>>>>> 7292450a (fix: enhance ERPNext integration with error handling and validation improvements)
     } catch {
       error = __('Invalid Site URL')
     }
