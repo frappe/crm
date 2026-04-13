@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/no-v-html -->
 <template>
   <div>
     <div
@@ -183,7 +184,7 @@ import CheckIcon from '@/components/Icons/CheckIcon.vue'
 import DoubleCheckIcon from '@/components/Icons/DoubleCheckIcon.vue'
 import DocumentIcon from '@/components/Icons/DocumentIcon.vue'
 import ReactIcon from '@/components/Icons/ReactIcon.vue'
-import { formatDate } from '@/utils'
+import { formatDate, sanitizeHTML } from '@/utils'
 import { useTelemetry } from 'frappe-ui/frappe'
 import { Tooltip, Dropdown, createResource, toast } from 'frappe-ui'
 import { ref } from 'vue'
@@ -220,7 +221,7 @@ function formatWhatsAppMessage(message) {
   message = message.replace(/- (.*?)(?=\s*-|$)/g, '<li>$1</li>')
   message = message.replace(/(\d+)\. (.*?)(?=\s*(\d+)\.|$)/g, '<li>$2</li>')
 
-  return message
+  return sanitizeHTML(message)
 }
 
 const emoji = ref('')
