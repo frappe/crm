@@ -51,7 +51,10 @@
             <UserAvatar v-else :user="n.from_user.name" size="lg" />
           </div>
           <div>
-            <div v-if="n.notification_text" v-html="n.notification_text" />
+            <div
+              v-if="n.notification_text"
+              v-html="sanitizeHTML(n.notification_text)"
+            />
             <div v-else class="mb-2 space-x-1 leading-5 text-ink-gray-5">
               <span class="font-medium text-ink-gray-9">
                 {{ n.from_user.full_name }}
@@ -63,30 +66,8 @@
                 {{ n.reference_name }}
               </span>
             </div>
-<<<<<<< HEAD
             <div class="text-sm text-ink-gray-5">
               {{ __(timeAgo(n.creation)) }}
-=======
-            <div>
-              <div
-                v-if="n.notification_text"
-                v-html="sanitizeHTML(n.notification_text)"
-              />
-              <div v-else class="mb-2 space-x-1 leading-5 text-ink-gray-5">
-                <span class="font-medium text-ink-gray-9">
-                  {{ n.from_user.full_name }}
-                </span>
-                <span>
-                  {{ __('mentioned you in {0}', [n.reference_doctype]) }}
-                </span>
-                <span class="font-medium text-ink-gray-9">
-                  {{ n.reference_name }}
-                </span>
-              </div>
-              <div class="text-sm text-ink-gray-5">
-                {{ __(timeAgo(n.creation)) }}
-              </div>
->>>>>>> 7e774165 (fix: implement HTML sanitization across multiple components)
             </div>
           </div>
         </RouterLink>
