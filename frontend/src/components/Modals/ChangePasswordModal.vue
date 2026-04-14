@@ -112,13 +112,24 @@ function isStrongPassword(password) {
   return regex.test(password)
 }
 
-watch([newPassword, confirmPassword], () => {
+watch([currentPassword, newPassword, confirmPassword], () => {
   confirmPasswordMessage.value = ''
 
-  if (newPassword.value.length < 8) {
+  if (
+    currentPassword.value &&
+    newPassword.value &&
+    currentPassword.value === newPassword.value
+  ) {
+    confirmPasswordMessage.value = __(
+      'New password cannot be the same as current password',
+    )
+    return
+  }
+
+  if (newPassword.value && newPassword.value.length < 8) {
     confirmPasswordMessage.value = __('Password must be at least 8 characters')
     return
-  } else if (!isStrongPassword(newPassword.value)) {
+  } else if (newPassword.value && !isStrongPassword(newPassword.value)) {
     confirmPasswordMessage.value = __(
       'Password must contain lowercase, uppercase, number, and symbol',
     )
