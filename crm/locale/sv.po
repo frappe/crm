@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-04-12 09:47+0000\n"
-"PO-Revision-Date: 2026-04-12 23:23\n"
+"PO-Revision-Date: 2026-04-13 23:50\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Swedish\n"
 "MIME-Version: 1.0\n"
@@ -205,7 +205,7 @@ msgstr "API nyckel erfordras"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:458
 msgid "API secret is required"
-msgstr ""
+msgstr "API hemlighet erfordras"
 
 #: frontend/src/components/Telephony/TwilioCallUI.vue:88
 msgid "Accept"
@@ -677,7 +677,7 @@ msgstr "Är du säker på att du vill logga in på din Översikt Panel i Frappe 
 
 #: frontend/src/components/FieldLayoutEditor.vue:428
 msgid "Are you sure you want to remove this tab and all its content?"
-msgstr ""
+msgstr "Är du säker på att du vill ta bort denna flik och allt dess innehåll?"
 
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.js:9
 msgid "Are you sure you want to reset 'Create Quotation from CRM Deal' Form Script?"
@@ -819,7 +819,7 @@ msgstr "Bifoga fil"
 
 #: frontend/src/components/Controls/AttachControl.vue:10
 msgid "Attach file…"
-msgstr ""
+msgstr "Bifoga fil…"
 
 #: frontend/src/pages/Deal.vue:600 frontend/src/pages/Lead.vue:452
 #: frontend/src/pages/MobileDeal.vue:474 frontend/src/pages/MobileLead.vue:319
@@ -842,7 +842,7 @@ msgstr "Auth Token"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:185
 msgid "Auto Create Customer"
-msgstr ""
+msgstr "Skapa Kund Automatiskt"
 
 #: frontend/src/components/Settings/ForecastingSettings.vue:42
 msgid "Auto Update Expected Deal Value"
@@ -1559,7 +1559,7 @@ msgstr "Webbplats Bolag"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:472
 msgid "Company name is required"
-msgstr ""
+msgstr "Bolagsnamn erfordras"
 
 #: crm/templates/emails/helpdesk_invitation.html:10
 msgid "Complete Registration"
@@ -1661,7 +1661,7 @@ msgstr "Bekräfta {0}"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:246
 msgid "Connect ERPNext to Frappe CRM"
-msgstr ""
+msgstr "Koppla Affärssystem till Säljstöd"
 
 #: frontend/src/pages/Welcome.vue:35
 msgid "Connect your Email"
@@ -1860,7 +1860,7 @@ msgstr "Skapa Händelse"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:189
 msgid "Create customer in ERPNext when the deal status is changed"
-msgstr ""
+msgstr "Skapa kund i Affärssystem när affärsstatus ändras"
 
 #. Label of the create_customer_on_status_change (Check) field in DocType
 #. 'ERPNext CRM Settings'
@@ -1870,7 +1870,7 @@ msgstr "Skapa kund vid statusändring"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:398
 msgid "Create quotation button on deal page and auto customer creation on deal status change will be disabled. Are you sure?"
-msgstr ""
+msgstr "Knapp skapa offert på affärssida och Skapa Kund Automatiskt vid affärsstatus kommer att inaktiveras. Är du säker?"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:365
 msgid "Create your first lead"
@@ -2043,7 +2043,7 @@ msgstr "Affär generering kanal statistik"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:477
 msgid "Deal status is required"
-msgstr ""
+msgstr "Affärsstatus erfordras"
 
 #: crm/api/dashboard.py:1078 crm/api/dashboard.py:1141
 msgid "Deal value"
@@ -2327,7 +2327,7 @@ msgstr "Inaktivera"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:397
 msgid "Disable ERPNext Integration"
-msgstr ""
+msgstr "Inaktivera Affärssystem Integration"
 
 #. Label of the disabled (Check) field in DocType 'CRM Product'
 #: crm/fcrm/doctype/crm_product/crm_product.json
@@ -2422,7 +2422,7 @@ msgstr "Dra och släpp filer här eller ladda upp från"
 
 #: frontend/src/components/FieldLayoutEditor.vue:250
 msgid "Drag a section or a field here to get started"
-msgstr ""
+msgstr "Dra sektion eller fält här för att komma igång"
 
 #: frontend/src/components/FilesUploader/FilesUploaderArea.vue:56
 msgid "Drop files here"
@@ -2522,7 +2522,7 @@ msgstr "Afförsystem är inte installerat på aktuell webbplats"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:71
 msgid "ERPNext is not installed on this site either install it or enter the URL of your ERPNext site to connect"
-msgstr ""
+msgstr "Affärssystem är inte installerat på denna webbplats, installera det eller ange webbadress till din Affärssystem webbplats för att ansluta"
 
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:143
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:175
@@ -2773,7 +2773,7 @@ msgstr "Aktivera samtalsinspelning för inkommande och utgående samtal"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:250
 msgid "Enable the integration to create quotations and auto create customers in ERPNext."
-msgstr ""
+msgstr "Aktivera integration för att skapa offerter och automatiskt skapa kunder i Affärssystem."
 
 #. Label of the enabled (Check) field in DocType 'CRM Exotel Settings'
 #. Label of the enabled (Check) field in DocType 'CRM Form Script'
@@ -3209,7 +3209,7 @@ msgstr "Misslyckades med att ändra namn på mall"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:305
 msgid "Failed to save settings"
-msgstr ""
+msgstr "Kunde inte spara inställningar"
 
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:265
 msgid "Failed to save workday: {0}"
@@ -3788,11 +3788,11 @@ msgstr "Ogiltigt Exotel Nummer"
 
 #: frontend/src/components/Controls/GeolocationControl.vue:116
 msgid "Invalid GeoJSON"
-msgstr ""
+msgstr "Ogiltig GeoJSON"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:453
 msgid "Invalid Site URL"
-msgstr ""
+msgstr "Ogiltig Webbplats Adress"
 
 #: frontend/src/composables/event.js:253
 msgid "Invalid Start Or End Time"
@@ -4447,7 +4447,7 @@ msgstr "Hantera Säljstöd användare genom att lägga till eller bjuda in dem o
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:4
 msgid "Manage ERPNext integration settings"
-msgstr ""
+msgstr "Hantera Affärssystem Integration Inställningar"
 
 #: frontend/src/components/Settings/Profile/ProfileSettings.vue:96
 msgid "Manage your account emails and email signature for communication."
@@ -4625,19 +4625,19 @@ msgstr "Fler Alternativ"
 
 #: frontend/src/components/FieldLayoutEditor.vue:614
 msgid "Move Last Column to Next Section"
-msgstr ""
+msgstr "Flytta sista kolumn till nästa sektion"
 
 #: frontend/src/components/FieldLayoutEditor.vue:654
 msgid "Move Last Column to Next Tab"
-msgstr ""
+msgstr "Flytta Sista Kolumn till Nästa Flik"
 
 #: frontend/src/components/FieldLayoutEditor.vue:624
 msgid "Move Last Column to Previous Section"
-msgstr ""
+msgstr "Flytta Sista Kolumn till Föregående Sektion"
 
 #: frontend/src/components/FieldLayoutEditor.vue:634
 msgid "Move Last Column to Previous Tab"
-msgstr ""
+msgstr "Flytta Sista Kolumn till Föregående Flik"
 
 #: frontend/src/components/FieldLayoutEditor.vue:543
 msgid "Move to Next Tab"
@@ -4907,7 +4907,7 @@ msgstr "Inga ändringar gjorda"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:295
 msgid "No companies found in the given site"
-msgstr ""
+msgstr "Inga bolag hittades på angiven webbplat"
 
 #: frontend/src/components/Activities/EventArea.vue:79
 msgid "No events coming up. Create a new one to keep things on track."
@@ -5769,7 +5769,7 @@ msgstr "Uppdatera Appar"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:157
 msgid "Refresh Companies"
-msgstr ""
+msgstr "Uppdatera Bolag"
 
 #: frontend/src/components/Telephony/TwilioCallUI.vue:97
 msgid "Reject"
@@ -5816,11 +5816,11 @@ msgstr "Ta bort Bild"
 #: frontend/src/components/FieldLayoutEditor.vue:574
 #: frontend/src/components/FieldLayoutEditor.vue:580
 msgid "Remove Last Column"
-msgstr ""
+msgstr "Ta bort Sista Kolumn"
 
 #: frontend/src/components/FieldLayoutEditor.vue:604
 msgid "Remove Last Column (move fields to previous)"
-msgstr ""
+msgstr "Ta bort Sista Kolumn (flytta fält till föregående)"
 
 #: frontend/src/components/Settings/Profile/ProfileSettings.vue:157
 msgid "Remove Photo"
@@ -6327,7 +6327,7 @@ msgstr "Välj de tilldelade för {0}."
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:217
 msgid "Select the deal status to trigger the auto customer creation in ERPNext"
-msgstr ""
+msgstr "Välj affärsstatus för att utlösa automatisk kundskapande i Affärssystem"
 
 #: frontend/src/components/Settings/CalendarSettings.vue:37
 msgid "Select the default view for your calendar. This will be the initial view when you open the calendar"
@@ -6335,7 +6335,7 @@ msgstr "Välj standard vy för kalender. Detta kommer att vara första vyn vid �
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:133
 msgid "Select your ERPNext company to connect with"
-msgstr ""
+msgstr "Välj Affärssystem bolag att ansluta till"
 
 #: frontend/src/components/FieldLayout/Field.vue:457
 msgid "Select {0}"
@@ -6418,7 +6418,7 @@ msgstr "Ange Förnamn"
 
 #: frontend/src/components/Controls/GeolocationControl.vue:43
 msgid "Set Location"
-msgstr ""
+msgstr "Ange Plats"
 
 #: frontend/src/components/FilesUploader/FilesUploader.vue:66
 msgid "Set all as private"
@@ -6442,7 +6442,7 @@ msgstr "Ange som standard Service Nivå Avtal"
 
 #: frontend/src/components/Controls/GeolocationControl.vue:10
 msgid "Set location…"
-msgstr ""
+msgstr "Ange Plats…"
 
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:102
 msgid "Set the Exotel number to be used for outgoing calls."
@@ -6508,7 +6508,7 @@ msgstr "Inställningar"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:302
 msgid "Settings saved"
-msgstr ""
+msgstr "Inställningar sparade"
 
 #: frontend/src/components/Settings/EmailAdd.vue:6
 msgid "Setup Email"
@@ -6579,15 +6579,15 @@ msgstr "Sedan du tog bort {0} från tilldelad har {0} ändrats till näst tillg�
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:66
 msgid "Site URL"
-msgstr ""
+msgstr "Webbplats URL"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:448
 msgid "Site URL is required"
-msgstr ""
+msgstr "Webbplats URL erfordras"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:432
 msgid "Site connection validated"
-msgstr ""
+msgstr "Webbplats anslutning validerad"
 
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:439
 msgid "Some error occurred while creating SLA Policy"
@@ -7013,7 +7013,7 @@ msgstr "I År"
 
 #: frontend/src/components/FieldLayoutEditor.vue:581
 msgid "This column contains fields. Are you sure you want to remove it?"
-msgstr ""
+msgstr "Denna kolumn innehåller fält. Är du säker på att du vill ta bort den?"
 
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:177
 msgid "This field is required"
@@ -7025,7 +7025,7 @@ msgstr "Denna metod är endast avsedd för utvecklarläge"
 
 #: frontend/src/components/FieldLayoutEditor.vue:486
 msgid "This section contains fields. Are you sure you want to remove it?"
-msgstr ""
+msgstr "Denna sektion innehåller fält. Är du säker på att du vill ta bort den?"
 
 #: frontend/src/components/SidePanelLayoutEditor.vue:116
 msgid "This section is not editable"
@@ -7508,7 +7508,7 @@ msgstr "Värde"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:110
 msgid "Verify Connection"
-msgstr ""
+msgstr "Verifiera Anslutning"
 
 #: frontend/src/pages/Deal.vue:229
 msgid "View Contact"
@@ -7516,7 +7516,7 @@ msgstr "Visa Kontakt"
 
 #: frontend/src/components/Controls/GeolocationControl.vue:43
 msgid "View Location"
-msgstr ""
+msgstr "Visa Plats"
 
 #: frontend/src/components/Modals/ViewModal.vue:14
 msgid "View Name"
@@ -7729,7 +7729,7 @@ msgstr "Du har inte behörighet att komma åt detta dokument"
 
 #: crm/api/__init__.py:143
 msgid "You don't have permission to delete this attachment"
-msgstr ""
+msgstr "Du har inte behörighet att ta bort denna bilaga"
 
 #: crm/fcrm/doctype/crm_form_script/crm_form_script.py:39
 msgid "You need to be in developer mode to edit a Standard Form Script"
