@@ -126,7 +126,7 @@ import {
   Rating,
 } from 'frappe-ui'
 import { filterableFields } from './filterableFields'
-import { reactive, computed, defineEmits, h, ref } from 'vue'
+import { reactive, computed, h, ref } from 'vue'
 
 const show = ref(false)
 const emit = defineEmits([

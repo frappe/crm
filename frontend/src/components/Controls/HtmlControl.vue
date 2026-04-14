@@ -1,10 +1,11 @@
 <template>
+  <!-- eslint-disable-next-line vue/no-v-html -->
   <div class="html-control text-sm text-ink-gray-8" v-html="sanitizedHtml" />
 </template>
 
 <script setup>
+import { sanitizeHTML } from '@/utils'
 import { computed } from 'vue'
-import DOMPurify from 'dompurify'
 
 const props = defineProps({
   html: { type: String, default: '' },
@@ -13,6 +14,6 @@ const props = defineProps({
 
 const sanitizedHtml = computed(() => {
   if (!props.html) return ''
-  return DOMPurify.sanitize(props.html)
+  return sanitizeHTML(props.html)
 })
 </script>
