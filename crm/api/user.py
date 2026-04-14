@@ -2,8 +2,7 @@ import frappe
 from frappe import _
 from frappe.auth import LoginAttemptTracker
 from frappe.rate_limiter import rate_limit
-from frappe.utils.password import check_password
-from frappe.utils.password import update_password as _update_password
+from frappe.utils.password import check_password, update_password
 
 
 @frappe.whitelist()
@@ -20,6 +19,11 @@ def change_password(old_password: str, new_password: str):
 	tracker = LoginAttemptTracker(user)
 	if not tracker.is_user_allowed():
 		frappe.throw(_("Too many failed attempts. Please try again after some time."))
+
+	if old_password == new_password:
+		frappe.throw(
+			_("New password cannot be the same as current password. Please choose a different password.")
+		)
 
 	try:
 		check_password(user, old_password)
@@ -38,7 +42,7 @@ def change_password(old_password: str, new_password: str):
 		suggestions = feedback.get("suggestions", [])
 		frappe.throw(_("Password is too weak. {0}").format(" ".join(suggestions) if suggestions else ""))
 
-	_update_password(user=user, pwd=new_password, logout_all_sessions=False)
+	update_password(user=user, pwd=new_password, logout_all_sessions=False)
 	return _("Password Updated Successfully")
 
 
