@@ -43,6 +43,7 @@
   </Dialog>
 </template>
 <script setup>
+import LucideLayoutDashboard from '~icons/lucide/layout-dashboard'
 import CircleDollarSignIcon from '~icons/lucide/circle-dollar-sign'
 import TrendingUpDownIcon from '~icons/lucide/trending-up-down'
 import SlidersIcon from '@/components/Icons/SlidersIcon.vue'
@@ -64,8 +65,7 @@ import LeadSyncSourcePage from '@/components/Settings/LeadSyncing/LeadSyncSource
 import BrandSettings from '@/components/Settings/BrandSettings.vue'
 import HomeActions from '@/components/Settings/HomeActions.vue'
 import GeneralSettings from '@/components/Settings/GeneralSettings.vue'
-import ForecastingSettings from '@/components/Settings/ForecastingSettings.vue'
-import CurrencySettings from '@/components/Settings/CurrencySettings.vue'
+import DashboardSettings from '@/components/Settings/DashboardSettings.vue'
 import EmailTemplatePage from '@/components/Settings/EmailTemplate/EmailTemplatePage.vue'
 import TelephonyPage from '@/components/Settings/Telephony/TelephonyPage.vue'
 import EmailConfig from '@/components/Settings/EmailConfig.vue'
@@ -116,14 +116,9 @@ const tabs = computed(() => {
           icon: SettingsIcon,
         },
         {
-          label: __('Forecasting'),
-          component: markRaw(ForecastingSettings),
-          icon: TrendingUpDownIcon,
-        },
-        {
-          label: __('Currency & Exchange Rate'),
-          icon: CircleDollarSignIcon,
-          component: markRaw(CurrencySettings),
+          label: __('Dashboard'),
+          component: markRaw(DashboardSettings),
+          icon: LucideLayoutDashboard,
         },
         {
           label: __('Brand'),
