@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-04-12 09:47+0000\n"
-"PO-Revision-Date: 2026-04-12 23:23\n"
+"PO-Revision-Date: 2026-04-15 00:41\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Burmese\n"
 "MIME-Version: 1.0\n"
@@ -53,7 +53,7 @@ msgstr "လွန်ခဲ့သော 1 နာရီက"
 
 #: frontend/src/composables/event.js:213
 msgid "1 hr"
-msgstr ""
+msgstr "၁ နာရီ"
 
 #: frontend/src/utils/index.js:199
 msgid "1 minute ago"
@@ -79,7 +79,7 @@ msgstr "လွန်ခဲ့သော 1 နှစ်"
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
 msgid "1-10"
-msgstr ""
+msgstr "၁-၁၀"
 
 #. Option for the 'No. of Employees' (Select) field in DocType 'CRM Deal'
 #. Option for the 'No. of Employees' (Select) field in DocType 'CRM Lead'
@@ -89,7 +89,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
 msgid "1000+"
-msgstr ""
+msgstr "၁၀၀၀+"
 
 #. Option for the 'No. of Employees' (Select) field in DocType 'CRM Deal'
 #. Option for the 'No. of Employees' (Select) field in DocType 'CRM Lead'
@@ -99,7 +99,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
 msgid "11-50"
-msgstr ""
+msgstr "၁၁-၅၀"
 
 #. Option for the 'No. of Employees' (Select) field in DocType 'CRM Deal'
 #. Option for the 'No. of Employees' (Select) field in DocType 'CRM Lead'
@@ -109,7 +109,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
 msgid "201-500"
-msgstr ""
+msgstr "၂၀၁-၅၀၀"
 
 #. Option for the 'No. of Employees' (Select) field in DocType 'CRM Deal'
 #. Option for the 'No. of Employees' (Select) field in DocType 'CRM Lead'
@@ -165,7 +165,7 @@ msgstr ""
 
 #: crm/templates/emails/helpdesk_invitation.html:5
 msgid "A new account has been created for you at {0}"
-msgstr ""
+msgstr "{0}တွင် သင့်အတွက် အကောင့်အသစ်တစ်ခု ဖန်တီးထားပါသည်။"
 
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.py:251
 msgid "A valid call log is required."
@@ -209,7 +209,7 @@ msgstr ""
 
 #: frontend/src/components/Telephony/TwilioCallUI.vue:88
 msgid "Accept"
-msgstr ""
+msgstr "လက်ခံပါသည်။"
 
 #: frontend/src/components/Telephony/TwilioCallUI.vue:155
 msgid "Accept Call"
@@ -217,17 +217,17 @@ msgstr ""
 
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.js:7
 msgid "Accept Invitation"
-msgstr ""
+msgstr "ဖိတ်ကြားချက်ကို လက်ခံပါ။"
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Invitation'
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.json
 msgid "Accepted"
-msgstr ""
+msgstr "လက်ခံပါသည်။"
 
 #. Label of the accepted_at (Datetime) field in DocType 'CRM Invitation'
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.json
 msgid "Accepted At"
-msgstr ""
+msgstr "တွင် လက်ခံခဲ့သည်။"
 
 #: frontend/src/pages/NotPermitted.vue:7
 msgid "Access Denied"
@@ -288,7 +288,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/Settings.vue:167
 msgid "Accounts"
-msgstr ""
+msgstr "စာရင်းများ"
 
 #: frontend/src/components/CustomActions.vue:66
 #: frontend/src/components/ViewControls.vue:692
@@ -304,11 +304,11 @@ msgstr ""
 #: frontend/src/components/Dashboard/AddChartModal.vue:41
 #: frontend/src/components/Modals/AddExistingUserModal.vue:55
 msgid "Add"
-msgstr ""
+msgstr "ထည့်မည်"
 
 #: frontend/src/components/Settings/EmailAccountList.vue:19
 msgid "Add Account"
-msgstr ""
+msgstr "အကောင့် အသစ်ထည့်မည်"
 
 #: frontend/src/components/Settings/AssignmentRules/AssigneeSearch.vue:8
 msgid "Add Assignee"
@@ -457,7 +457,7 @@ msgstr ""
 
 #: frontend/src/components/Telephony/TaskPanel.vue:16
 msgid "Add description..."
-msgstr ""
+msgstr "အကြောင်းအရာထည့်သွင်းပါ။"
 
 #: frontend/src/components/Modals/AddExistingUserModal.vue:12
 msgid "Add existing system users to this CRM. Assign them a role to grant access with their current credentials."
@@ -481,11 +481,11 @@ msgstr ""
 #. Label of the add_to_holidays (Button) field in DocType 'CRM Holiday List'
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
 msgid "Add to Holidays"
-msgstr ""
+msgstr "ပိတ်ရက် ထည့်သွင်းမည်"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:460
 msgid "Add your first comment"
-msgstr ""
+msgstr "သင်၏ ပထမဆုံး မှတ်ချက်ထည့်သွင်းမည်"
 
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:11
 msgid "Add, edit, and manage email templates for various CRM communications"
@@ -498,7 +498,7 @@ msgstr ""
 #. Label of the address (Link) field in DocType 'CRM Organization'
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
 msgid "Address"
-msgstr ""
+msgstr "လိပ်စာ"
 
 #: frontend/src/components/Modals/AddExistingUserModal.vue:94
 #: frontend/src/components/Settings/InviteUserPage.vue:166
@@ -519,7 +519,7 @@ msgstr ""
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:72
 #: frontend/src/components/Settings/Users.vue:81
 msgid "All"
-msgstr ""
+msgstr "အားလုံး"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:293
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:939
@@ -547,12 +547,12 @@ msgstr ""
 #: frontend/src/pages/MobileOrganization.vue:467
 #: frontend/src/pages/Organization.vue:497
 msgid "Amount"
-msgstr ""
+msgstr "ပမာဏ"
 
 #. Description of the 'Net Amount' (Currency) field in DocType 'CRM Products'
 #: crm/fcrm/doctype/crm_products/crm_products.json
 msgid "Amount after discount"
-msgstr ""
+msgstr "လျော့ပြီး ပမာဏ"
 
 #: frontend/src/data/script.js:50 frontend/src/data/script.js:51
 msgid "An error occurred"
@@ -574,7 +574,7 @@ msgstr ""
 
 #: frontend/src/components/Filter.vue:43 frontend/src/components/Filter.vue:83
 msgid "And"
-msgstr ""
+msgstr "နှင့်"
 
 #. Label of the annual_revenue (Currency) field in DocType 'CRM Deal'
 #. Label of the annual_revenue (Currency) field in DocType 'CRM Lead'
@@ -583,7 +583,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
 msgid "Annual Revenue"
-msgstr ""
+msgstr "နှစ်စဉ်ဝင်ငွေ"
 
 #: frontend/src/components/Modals/DealModal.vue:193
 #: frontend/src/components/Modals/LeadModal.vue:136
@@ -639,7 +639,7 @@ msgstr ""
 
 #: frontend/src/components/Activities/AttachmentArea.vue:128
 msgid "Are you sure you want to delete this attachment?"
-msgstr ""
+msgstr "ဤပူးတွဲပါဖိုင်ကို ဖျက်လိုသည်မှာ သေချာပါသလား။"
 
 #: frontend/src/pages/MobileContact.vue:271
 msgid "Are you sure you want to delete this contact?"
@@ -648,32 +648,32 @@ msgstr ""
 #: frontend/src/components/Modals/EventModal.vue:468
 #: frontend/src/pages/Calendar.vue:401
 msgid "Are you sure you want to delete this event?"
-msgstr ""
+msgstr "ဤအစီအစဉ်ကို ဖျက်လိုသည်မှာ သေချာပါသလား။"
 
 #: frontend/src/pages/MobileOrganization.vue:274
 msgid "Are you sure you want to delete this organization?"
-msgstr ""
+msgstr "ဤအဖွဲ့အစည်းကို ဖျက်လိုသည်မှာ သေချာပါသလား။"
 
 #: frontend/src/components/Activities/TaskArea.vue:60
 msgid "Are you sure you want to delete this task?"
-msgstr ""
+msgstr "ဤလုပ်ဆောင်စရာကို ဖျက်လိုသည်မှာ သေချာပါသလား။"
 
 #: frontend/src/components/DeleteLinkedDocModal.vue:224
 msgid "Are you sure you want to delete {0} linked item(s)?"
-msgstr ""
+msgstr "{0} လင့်ခ်ချိတ်ထားသော အရာ(များ)ကို ဖျက်လိုသည်မှာ သေချာပါသလား။"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:911
 msgid "Are you sure you want to discard unsaved changes to this event?"
-msgstr ""
+msgstr "ဤအစီအစဉ်အတွက် မသိမ်းဆည်းရသေးသော အပြောင်းအလဲများကို မသိမ်းဆည်းလိုသည်မှာ သေချာပါသလား။"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:576
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:347
 msgid "Are you sure you want to go back? Unsaved changes will be lost."
-msgstr ""
+msgstr "မူလအခြေအနေသို့ပြန်သွားလိုပါသလား။ လက်ရှိမသိမ်းဆည်းရသေးသော အပြောင်းအလဲများ ပျောက်ဆုံးသွားမည်ဖြစ်ပါသည်။"
 
 #: frontend/src/composables/frappecloud.js:24
 msgid "Are you sure you want to login to your Frappe Cloud dashboard?"
-msgstr ""
+msgstr "သင်၏ Frappe Cloud ဒက်ရှ်ဘုတ်သို့ သင်ဝင်ရောက်လိုသည်မှာ သေချာပါသလား။"
 
 #: frontend/src/components/FieldLayoutEditor.vue:428
 msgid "Are you sure you want to remove this tab and all its content?"
@@ -685,7 +685,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/CurrencySettings.vue:189
 msgid "Are you sure you want to set the currency as {0}? This cannot be changed later."
-msgstr ""
+msgstr "ငွေကြေးကို {0}အဖြစ် သတ်မှတ်လိုသည်မှာ သေချာပါသလား။ ၎င်းကို နောက်ပိုင်းတွင် ပြောင်းလဲ၍မရပါ။"
 
 #: frontend/src/components/DeleteLinkedDocModal.vue:237
 msgid "Are you sure you want to unlink {0} linked item(s)?"
@@ -717,20 +717,20 @@ msgstr ""
 #. Label of the assigned_to (Link) field in DocType 'CRM Task'
 #: crm/fcrm/doctype/crm_task/crm_task.json
 msgid "Assigned To"
-msgstr ""
+msgstr "တာဝန်ပေးရန်"
 
 #: frontend/src/components/Settings/AssignmentRules/AssigneeRules.vue:5
 msgid "Assignee Rules"
-msgstr ""
+msgstr "တာဝန်ပေးမည့် သတ်မှတ်ချက်များ"
 
 #: frontend/src/components/Settings/AssignmentRules/AssigneeRules.vue:81
 msgid "Assignees"
-msgstr ""
+msgstr "တာဝန်ပေးသူများ"
 
 #. Option for the 'Type' (Select) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
 msgid "Assignment"
-msgstr ""
+msgstr "တာဝန်"
 
 #: frontend/src/components/ListBulkActions.vue:152
 msgid "Assignment Cleared Successfully"
@@ -784,7 +784,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:302
 msgid "Assignment Schedule"
-msgstr ""
+msgstr "တာဝန်ချိန်ဇယား"
 
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:104
 msgid "Assignment conditions"
@@ -824,11 +824,11 @@ msgstr ""
 #: frontend/src/pages/Deal.vue:600 frontend/src/pages/Lead.vue:452
 #: frontend/src/pages/MobileDeal.vue:474 frontend/src/pages/MobileLead.vue:319
 msgid "Attachments"
-msgstr ""
+msgstr "ပူးတွဲဖိုင်များ"
 
 #: frontend/src/components/Modals/EventModal.vue:120
 msgid "Attendees"
-msgstr ""
+msgstr "တက်ရောက်သူများ"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:868
 msgid "Attending status updated"
@@ -977,7 +977,7 @@ msgstr ""
 #: frontend/src/components/Settings/EmailAdd.vue:80
 #: frontend/src/components/Settings/EmailEdit.vue:68
 msgid "Back"
-msgstr ""
+msgstr "နောက်သို့"
 
 #: frontend/src/components/Settings/LeadSyncing/FailureLogs.vue:9
 msgid "Back to All Logs"
@@ -1017,21 +1017,21 @@ msgstr ""
 
 #: frontend/src/components/Settings/BrandSettings.vue:7
 msgid "Brand Settings"
-msgstr ""
+msgstr "အမှတ်တံဆိပ် ဆက်တင်များ"
 
 #. Label of the branding_tab (Tab Break) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 msgid "Branding"
-msgstr ""
+msgstr "အမှတ်တံဆိပ်တည်ဆောက်ခြင်း"
 
 #: frontend/src/components/Modals/EditValueModal.vue:2
 msgid "Bulk Edit"
-msgstr ""
+msgstr "အုပ်စုလိုက်ပြင်ဆင်ခြင်း"
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 msgid "Busy"
-msgstr ""
+msgstr "အလုပ်များနေသည်"
 
 #: frontend/src/components/Activities/EmailArea.vue:57
 #: frontend/src/components/EmailEditor.vue:52
@@ -1307,7 +1307,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 #: crm/fcrm/doctype/crm_task/crm_task.json frontend/src/utils/callLog.js:69
 msgid "Canceled"
-msgstr ""
+msgstr "ပယ်ဖျက်ခဲ့သည်"
 
 #: crm/api/user.py:38
 msgid "Cannot assign this role"
@@ -1315,11 +1315,11 @@ msgstr ""
 
 #: frontend/src/components/Settings/Users.vue:120
 msgid "Cannot change role of user with Admin access"
-msgstr ""
+msgstr "စီမံခန့်ခွဲသူဝင်ရောက်ခွင့်ဖြင့် အသုံးပြုသူ၏အခန်းကဏ္ဍကို ပြောင်းလဲ၍မရပါ။"
 
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.py:70
 msgid "Cannot delete standard items {0}"
-msgstr ""
+msgstr "စံသတ်မှတ်ချက်များကို  {0}ဖျက်၍မရပါ။"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:170
 msgid "Cannot enable rule without adding users in it"
@@ -1512,7 +1512,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
 #: frontend/src/components/ColumnSettings.vue:4
 msgid "Columns"
-msgstr ""
+msgstr "ကော်လံများ"
 
 #. Label of the comment (Link) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
@@ -1530,7 +1530,7 @@ msgstr ""
 #: frontend/src/pages/Deal.vue:570 frontend/src/pages/Lead.vue:422
 #: frontend/src/pages/MobileDeal.vue:448 frontend/src/pages/MobileLead.vue:294
 msgid "Comments"
-msgstr ""
+msgstr "မှတ်ချက်များ"
 
 #: crm/api/dashboard.py:938
 msgid "Common reasons for losing deals"
@@ -1569,12 +1569,12 @@ msgstr ""
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 #: frontend/src/utils/callLog.js:64
 msgid "Completed"
-msgstr ""
+msgstr "ပြီးစီးပါပြီ။"
 
 #. Option for the 'Device' (Select) field in DocType 'CRM Telephony Agent'
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
 msgid "Computer"
-msgstr ""
+msgstr "ကွန်ပျူတာ"
 
 #. Label of the condition (Code) field in DocType 'CRM Service Level Agreement'
 #. Label of the condition_json (Code) field in DocType 'CRM Service Level
@@ -1583,7 +1583,7 @@ msgstr ""
 #: frontend/src/components/ConditionsFilter/CFCondition.vue:65
 #: frontend/src/components/ConditionsFilter/CFCondition.vue:72
 msgid "Condition"
-msgstr ""
+msgstr "အခြေအနေ"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:188
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:272
@@ -1975,7 +1975,7 @@ msgstr ""
 #: frontend/src/pages/Deal.vue:575 frontend/src/pages/Lead.vue:427
 #: frontend/src/pages/MobileDeal.vue:453 frontend/src/pages/MobileLead.vue:299
 msgid "Data"
-msgstr ""
+msgstr "အချက်အလက်"
 
 #. Option for the 'Type' (Select) field in DocType 'CRM Fields Layout'
 #: crm/fcrm/doctype/crm_fields_layout/crm_fields_layout.json
@@ -2206,7 +2206,7 @@ msgstr ""
 #: frontend/src/pages/Notes.vue:44 frontend/src/pages/Organization.vue:90
 #: frontend/src/pages/Tasks.vue:380 frontend/src/utils/index.js:866
 msgid "Delete"
-msgstr ""
+msgstr "ဖျက်မည်"
 
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.js:34
 msgid "Delete & Restore"
@@ -2357,7 +2357,7 @@ msgstr ""
 #. Label of the discount_amount (Currency) field in DocType 'CRM Products'
 #: crm/fcrm/doctype/crm_products/crm_products.json
 msgid "Discount Amount"
-msgstr ""
+msgstr "လျှော့ပေးသည့်ပမာဏ"
 
 #. Label of the dt (Link) field in DocType 'CRM Form Script'
 #. Label of the dt (Link) field in DocType 'CRM Global Settings'
@@ -3009,7 +3009,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
 msgid "Exchange Rate"
-msgstr ""
+msgstr "ငွေလဲနှုန်း"
 
 #. Label of the exchange_rate_provider_section (Section Break) field in DocType
 #. 'FCRM Settings'
@@ -3600,7 +3600,7 @@ msgstr ""
 #. Label of the holiday_list_name (Data) field in DocType 'CRM Holiday List'
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
 msgid "Holiday List Name"
-msgstr ""
+msgstr "ပိတ်ရက်အမည်များ"
 
 #. Label of the holidays_section (Section Break) field in DocType 'CRM Holiday
 #. List'
@@ -5178,7 +5178,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
 msgid "Open"
-msgstr ""
+msgstr "ဖွင့်မည်။"
 
 #: frontend/src/components/Modals/NoteModal.vue:13
 #: frontend/src/components/Modals/TaskModal.vue:13
@@ -5263,7 +5263,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
 msgid "Organization Name"
-msgstr ""
+msgstr "အဖွဲ့အစည်းအမည်"
 
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:303
 msgid "Organization is required to create a customer"
@@ -6947,7 +6947,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
 msgid "Territory"
-msgstr ""
+msgstr "နယ်မြေ"
 
 #. Label of the territory_manager (Link) field in DocType 'CRM Territory'
 #: crm/fcrm/doctype/crm_territory/crm_territory.json
