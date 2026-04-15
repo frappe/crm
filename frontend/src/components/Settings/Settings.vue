@@ -44,8 +44,7 @@
 </template>
 <script setup>
 import LucideLayoutDashboard from '~icons/lucide/layout-dashboard'
-import CircleDollarSignIcon from '~icons/lucide/circle-dollar-sign'
-import TrendingUpDownIcon from '~icons/lucide/trending-up-down'
+import MonitorCogIcon from '~icons/lucide/monitor-cog'
 import SlidersIcon from '@/components/Icons/SlidersIcon.vue'
 import SparkleIcon from '@/components/Icons/SparkleIcon.vue'
 import CalendarIcon from '@/components/Icons/CalendarIcon.vue'
@@ -63,6 +62,7 @@ import PreferencesSettings from '@/components/Settings/PreferencesSettings.vue'
 import WhatsAppSettings from '@/components/Settings/WhatsAppSettings.vue'
 import ERPNextSettings from '@/components/Settings/ERPNextSettings.vue'
 import LeadSyncSourcePage from '@/components/Settings/LeadSyncing/LeadSyncSourcePage.vue'
+import DefaultsSettings from '@/components/Settings/DefaultsSettings.vue'
 import BrandSettings from '@/components/Settings/BrandSettings.vue'
 import CalendarSettings from '@/components/Settings/CalendarSettings.vue'
 import HomeActions from '@/components/Settings/HomeActions.vue'
@@ -92,10 +92,10 @@ const user = computed(() => getUser() || {})
 const tabs = computed(() => {
   let _tabs = [
     {
-      label: __('Account'),
+      label: __('User Configuration'),
       items: [
         {
-          label: user.value.full_name,
+          label: __('Profile'),
           icon: () =>
             h(Avatar, {
               size: 'xs',
@@ -123,6 +123,11 @@ const tabs = computed(() => {
           label: __('Dashboard'),
           component: markRaw(DashboardSettings),
           icon: LucideLayoutDashboard,
+        },
+        {
+          label: __('Defaults'),
+          component: markRaw(DefaultsSettings),
+          icon: MonitorCogIcon,
         },
         {
           label: __('Brand'),
