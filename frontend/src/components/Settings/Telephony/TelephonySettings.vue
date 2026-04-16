@@ -50,6 +50,7 @@
               { label: __(''), value: '' },
               { label: __('Twilio'), value: 'Twilio' },
               { label: __('Exotel'), value: 'Exotel' },
+              { label: __('FreePBX'), value: 'FreePBX' },
             ]"
             :placeholder="__('Select Medium')"
           />
@@ -138,6 +139,32 @@
       </div>
 
       <div
+        v-if="freepbxEnabled"
+        class="h-px border-t mx-2 border-outline-gray-modals"
+      />
+      <div
+        v-if="freepbxEnabled"
+        class="flex items-center justify-between gap-8 py-3 pl-2 pr-1"
+      >
+        <div class="flex flex-col">
+          <div class="text-p-base font-medium text-ink-gray-7 truncate">
+            {{ __('FreePBX Extension') }}
+          </div>
+          <div class="text-p-sm text-ink-gray-5">
+            {{ __('Set your SIP extension used by FreePBX to make calls.') }}
+          </div>
+        </div>
+        <div>
+          <FormControl
+            v-model="telephonyAgent.doc.freepbx_extension"
+            class="flex-1 truncate w-44 p-1"
+            :placeholder="__('Enter FreePBX Extension')"
+            placement="bottom-end"
+          />
+        </div>
+      </div>
+
+      <div
         v-if="isManager()"
         class="flex items-center justify-between text-lg text-ink-gray-8 font-semibold mt-4 py-3 px-2"
       >
@@ -190,6 +217,31 @@
             isEnabled('exotel') ? __('Update Configuration') : __('Configure')
           "
           @click="emit('updateStep', 'exotel-settings')"
+        />
+      </div>
+
+      <div
+        v-if="isManager()"
+        class="h-px border-t mx-2 border-outline-gray-modals"
+      />
+
+      <div
+        v-if="isManager()"
+        class="flex items-center justify-between py-3 px-2"
+      >
+        <div class="flex flex-col gap-1">
+          <span class="text-base font-medium text-ink-gray-8">
+            {{ __('FreePBX') }}
+          </span>
+          <span class="text-p-sm text-ink-gray-6">
+            {{
+              __('Configure your FreePBX Telephony Integration Settings here')
+            }}
+          </span>
+        </div>
+        <Button
+          :label="freepbxEnabled ? __('Update Configuration') : __('Configure')"
+          @click="emit('updateStep', 'freepbx-settings')"
         />
       </div>
     </div>

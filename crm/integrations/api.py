@@ -16,15 +16,20 @@ def _get_recording_credentials(telephony_medium: str) -> tuple:
 	elif telephony_medium == "Exotel":
 		s = frappe.get_single("CRM Exotel Settings")
 		return s.api_key, s.get_password("api_token")
+	elif telephony_medium == "FreePBX":
+		# FreePBX recordings are served directly (no auth required) or via AMI
+		return None, None
 	frappe.throw(_("Unknown telephony medium: {0}").format(telephony_medium))
 
 
 @frappe.whitelist()
 def is_call_integration_enabled():
+
 	return {
 		"integrations": {
 			"twilio": bool(frappe.db.get_single_value("CRM Twilio Settings", "enabled")),
 			"exotel": bool(frappe.db.get_single_value("CRM Exotel Settings", "enabled")),
+			"freepbx": bool(frappe.db.get_single_value("CRM FreePBX Settings", "enabled"))
 		},
 		"default_calling_medium": get_user_default_calling_medium(),
 	}
@@ -159,7 +164,7 @@ def get_recording_url(call_log_name: str):
 		frappe.throw(_("Recording URL not found"), frappe.DoesNotExistError)
 
 	auth = _get_recording_credentials(log.telephony_medium)
-	with requests.get(log.recording_url, auth=auth, stream=True, timeout=10) as r:
+	with requests.get(log.recording_url, auth=auth or None, stream=True, timeout=10) as r:
 		r.raise_for_status()
 		response = Response()
 		response.data = r.content
