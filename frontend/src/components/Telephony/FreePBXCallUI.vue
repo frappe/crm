@@ -273,9 +273,7 @@ import { useDraggable, useWindowSize } from '@vueuse/core'
 import { TextEditor, Avatar, Button, createResource, toast } from 'frappe-ui'
 import { ref, onBeforeUnmount, watch, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
-
-// JsSIP loaded from CDN in index.html — see Step 5
-// window.JsSIP must be available
+import * as JsSIP from 'jssip'
 
 const MicIcon = 'mic'
 const MicOffIcon = 'mic-off'
@@ -405,11 +403,6 @@ function setup() {
 }
 
 function _initJsSIP(creds) {
-  if (!window.JsSIP) {
-    toast.error(__('JsSIP library not loaded. Add it to index.html (see setup docs).'))
-    return
-  }
-
   if (ua) {
     ua.stop()
     ua = null
@@ -418,9 +411,9 @@ function _initJsSIP(creds) {
   // Store host globally so makeOutgoingCall can build the SIP target URI
   window.__freepbx_host__ = creds.host
 
-  const socket = new window.JsSIP.WebSocketInterface(creds.ws_uri)
+  const socket = new JsSIP.WebSocketInterface(creds.ws_uri)
 
-  ua = new window.JsSIP.UA({
+  ua = new JsSIP.UA({
     sockets: [socket],
     uri: creds.sip_uri,
     password: creds.password,
