@@ -470,7 +470,7 @@ function acceptIncoming() {
   if (!currentSession) return
   currentSession.answer({
     mediaConstraints: { audio: true, video: false },
-    pcConfig: { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] },
+    pcConfig: { iceServers: [] },
   })
   _attachRemoteAudio(currentSession)
 }
@@ -512,7 +512,7 @@ function makeOutgoingCall(number) {
   try {
     session = ua.call(`sip:${number}@${_getSipDomain()}`, {
       mediaConstraints: { audio: true, video: false },
-      pcConfig: { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] },
+      pcConfig: { iceServers: [] },
     })
     console.log('[FreePBX] Session created:', session)
   } catch (e) {
