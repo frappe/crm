@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-04-12 09:47+0000\n"
-"PO-Revision-Date: 2026-04-12 23:23\n"
+"PO-Revision-Date: 2026-04-16 01:07\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Vietnamese\n"
 "MIME-Version: 1.0\n"
@@ -565,7 +565,7 @@ msgstr ""
 #. Description of the 'Favicon' (Attach) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 msgid "An icon file with .ico extension. Should be 16 x 16 px. Generated using a favicon generator. [favicon-generator.org]"
-msgstr ""
+msgstr "Một tệp biểu tượng có phần mở rộng .ico. Kích thước nên là 16 x 16 px. Được tạo bằng trình tạo favicon. [favicon-generator.org]"
 
 #. Description of the 'Logo' (Attach) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
@@ -1009,7 +1009,7 @@ msgstr "Thương hiệu"
 
 #: frontend/src/components/Settings/BrandSettings.vue:62
 msgid "Brand Logo"
-msgstr ""
+msgstr "Logo thương hiệu"
 
 #: frontend/src/components/Settings/BrandSettings.vue:30
 msgid "Brand Name"
@@ -1466,7 +1466,7 @@ msgstr ""
 
 #: crm/templates/emails/helpdesk_invitation.html:7
 msgid "Click on the link below to complete your registration and set a new password"
-msgstr ""
+msgstr "Nhấp vào liên kết bên dưới để hoàn tất đăng ký và đặt mật khẩu mới"
 
 #: frontend/src/components/Controls/GeolocationControl.vue:54
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:62
@@ -2651,7 +2651,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/Profile/UserEmailSettings.vue:67
 msgid "Email Account"
-msgstr ""
+msgstr "Tài khoản email"
 
 #: frontend/src/components/Settings/EmailAdd.vue:145
 msgid "Email Account created successfully"
@@ -2692,7 +2692,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/Profile/UserEmailSettings.vue:8
 msgid "Email Settings"
-msgstr ""
+msgstr "Cài đặt email"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:581
 msgid "Email Template"
@@ -2719,7 +2719,7 @@ msgstr ""
 #: frontend/src/pages/Deal.vue:565 frontend/src/pages/Lead.vue:417
 #: frontend/src/pages/MobileDeal.vue:443 frontend/src/pages/MobileLead.vue:289
 msgid "Emails"
-msgstr ""
+msgstr "Email"
 
 #: frontend/src/components/Settings/Profile/ProfileSettings.vue:92
 msgid "Emails & Signature"
@@ -3403,7 +3403,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/emailConfig.js:81
 msgid "Frappe Mail Site"
-msgstr ""
+msgstr "Trang Frappe Mail"
 
 #. Option for the 'Weekly Off' (Select) field in DocType 'CRM Holiday List'
 #. Option for the 'Workday' (Select) field in DocType 'CRM Service Day'
@@ -3920,7 +3920,7 @@ msgstr "Là"
 #. Label of the is_default (Check) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
 msgid "Is Default"
-msgstr ""
+msgstr "Là mặc định"
 
 #. Label of the is_erpnext_in_different_site (Check) field in DocType 'ERPNext
 #. CRM Settings'
@@ -3938,7 +3938,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_contacts/crm_contacts.json
 #: crm/fcrm/doctype/crm_telephony_phone/crm_telephony_phone.json
 msgid "Is Primary"
-msgstr ""
+msgstr "Là chính"
 
 #. Label of the is_standard (Check) field in DocType 'CRM Dropdown Item'
 #. Label of the is_standard (Check) field in DocType 'CRM Form Script'
@@ -3947,7 +3947,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_form_script/crm_form_script.json
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
 msgid "Is Standard"
-msgstr ""
+msgstr "Là Tiêu chuẩn"
 
 #: frontend/src/components/ListViews/EmptyState.vue:43
 msgid "It appears that there are currently no {0} available. You can create more {0} by using the Create button."
@@ -4506,7 +4506,7 @@ msgstr ""
 #: frontend/src/pages/MobileNotification.vue:12
 #: frontend/src/pages/MobileNotification.vue:13
 msgid "Mark all as read"
-msgstr ""
+msgstr "Đánh dấu tất cả đã đọc"
 
 #. Label of the auto_mark_replied_on_response (Check) field in DocType 'FCRM
 #. Settings'
