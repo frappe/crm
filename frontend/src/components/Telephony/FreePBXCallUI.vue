@@ -508,17 +508,39 @@ function makeOutgoingCall(number) {
   })
 
   // Place the WebRTC call via JsSIP
-  const session = ua.call(`sip:${number}@${_getSipDomain()}`, {
-    mediaConstraints: { audio: true, video: false },
-    pcConfig: { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] },
-  })
+  let session
+  try {
+    session = ua.call(`sip:${number}@${_getSipDomain()}`, {
+      mediaConstraints: { audio: true, video: false },
+      pcConfig: { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] },
+    })
+    console.log('[FreePBX] Session created:', session)
+  } catch (e) {
+    console.error('[FreePBX] ua.call() failed:', e)
+    toast.error(__('Failed to start call: {0}', [e.message]))
+    callStatus.value = ''
+    showCallPopup.value = false
+    return
+  }
 
   currentSession = session
 
-  session.on('progress', () => { callStatus.value = 'Ringing...' })
-  session.on('confirmed', _onCallConfirmed)
-  session.on('ended', _onCallEnded)
-  session.on('failed', _onCallFailed)
+  session.on('progress', (e) => {
+    console.log('[FreePBX] progress', e)
+    callStatus.value = 'Ringing...'
+  })
+  session.on('confirmed', (e) => {
+    console.log('[FreePBX] confirmed', e)
+    _onCallConfirmed()
+  })
+  session.on('ended', (e) => {
+    console.log('[FreePBX] ended', e)
+    _onCallEnded()
+  })
+  session.on('failed', (e) => {
+    console.log('[FreePBX] failed', e.cause, e)
+    _onCallFailed(e)
+  })
 
   _attachRemoteAudio(session)
 }
