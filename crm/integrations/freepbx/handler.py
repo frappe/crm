@@ -106,10 +106,9 @@ def get_webrtc_credentials():
 
 @frappe.whitelist()
 def make_a_call(to_number: str, from_number: str | None = None, caller_id: str | None = None):
+	"""WebRTC mode — JsSIP handles the actual call in browser. This only creates the call log."""
 	if not is_integration_enabled():
 		frappe.throw(_("Please setup FreePBX integration"), title=_("Integration Not Enabled"))
-
-	settings = get_freepbx_settings()
 
 	if not from_number:
 		from_number = frappe.get_value(
@@ -124,23 +123,11 @@ def make_a_call(to_number: str, from_number: str | None = None, caller_id: str |
 
 	call_id = frappe.generate_hash(length=20)
 
-	try:
-		_ami_originate(
-			settings=settings,
-			channel=from_number,
-			extension=to_number,
-			context=settings.context or "from-internal",
-			caller_id=caller_id or settings.caller_id or from_number,
-			call_id=call_id,
-		)
-	except Exception as e:
-		frappe.throw(str(e), title=_("FreePBX Error"))
-
 	create_call_log(
 		call_id=call_id,
 		from_number=from_number,
 		to_number=to_number,
-		medium=caller_id or settings.caller_id or from_number,
+		medium=from_number,
 		call_type="Outgoing",
 		agent=frappe.session.user,
 	)

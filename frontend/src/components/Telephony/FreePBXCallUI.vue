@@ -449,7 +449,11 @@ function _initJsSIP(creds) {
 
 function _handleIncomingSession(session, request) {
   currentSession = session
-  phoneNumber.value = request.from.uri.user || request.from.display_name || ''
+  // Show the caller's number (who is calling us), not our own extension
+  phoneNumber.value = request.from.uri.user
+    || request.from.display_name
+    || request.from.uri.toString()
+    || ''
   callStatus.value = 'Incoming call'
   showCallPopup.value = true
   showSmallCallPopup.value = false
@@ -474,15 +478,13 @@ function makeOutgoingCall(number) {
     return
   }
 
+  // Show the customer number (the number we are calling), not our extension
   phoneNumber.value = number
   callStatus.value = 'Calling...'
   showCallPopup.value = true
   showSmallCallPopup.value = false
 
-  const callId = _generateId()
-  callData.value = { CallSid: callId }
-
-  // Create call log via backend (non-WebRTC path for logging)
+  // Create call log in CRM (backend only logs — no AMI in WebRTC mode)
   createResource({
     url: 'crm.integrations.freepbx.handler.make_a_call',
     params: { to_number: number },
@@ -495,7 +497,7 @@ function makeOutgoingCall(number) {
     },
   })
 
-  // Place the actual WebRTC call
+  // Place the WebRTC call via JsSIP
   const session = ua.call(`sip:${number}@${_getSipDomain()}`, {
     mediaConstraints: { audio: true, video: false },
     pcConfig: { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] },
