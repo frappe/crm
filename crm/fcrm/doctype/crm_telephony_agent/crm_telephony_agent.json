@@ -17,6 +17,8 @@
   "column_break_aydj",
   "exotel_number",
   "freepbx_extension",
+  "freepbx_sip_username",
+  "freepbx_sip_password",
   "section_break_phlq",
   "phone_nos"
  ],
@@ -60,6 +62,16 @@
    "fieldname": "freepbx_extension",
    "fieldtype": "Data",
    "label": "FreePBX Extension"
+  },
+  {
+   "fieldname": "freepbx_sip_username",
+   "fieldtype": "Data",
+   "label": "FreePBX SIP Username"
+  },
+  {
+   "fieldname": "freepbx_sip_password",
+   "fieldtype": "Password",
+   "label": "FreePBX SIP Password"
   },
   {
    "fieldname": "section_break_phlq",

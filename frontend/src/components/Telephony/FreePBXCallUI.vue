@@ -1,5 +1,8 @@
 <template>
   <div>
+    <!-- Hidden audio element for WebRTC audio output -->
+    <audio ref="remoteAudio" autoplay></audio>
+
     <div
       v-show="showSmallCallPopup"
       class="ml-2 flex cursor-pointer select-none items-center justify-between gap-1 rounded-full bg-surface-gray-7 px-2 py-[7px] text-base text-ink-gray-2"
@@ -37,6 +40,7 @@
       </div>
       <div v-else>{{ __(callStatus) }}</div>
     </div>
+
     <div
       v-show="showCallPopup"
       class="fixed z-20 w-[280px] min-h-44 flex gap-2 flex-col rounded-lg bg-surface-gray-7 p-4 pt-2.5 text-ink-gray-2 shadow-2xl"
@@ -137,6 +141,7 @@
           />
         </div>
       </div>
+
       <div class="body flex-1">
         <div v-if="showNote">
           <TextEditor
@@ -176,8 +181,36 @@
           </div>
         </div>
       </div>
+
       <div class="footer flex justify-between gap-2">
         <div class="flex gap-2">
+          <!-- Mute toggle -->
+          <Button
+            v-if="callStatus == 'In progress'"
+            class="bg-surface-gray-6 text-ink-white hover:bg-surface-gray-5"
+            :tooltip="isMuted ? __('Unmute') : __('Mute')"
+            size="md"
+            :icon="isMuted ? MicOffIcon : MicIcon"
+            @click="toggleMute"
+          />
+          <!-- Hang up -->
+          <Button
+            v-if="callStatus != 'Call ended' && callStatus != 'No answer' && callStatus != ''"
+            class="bg-red-600 text-ink-white hover:bg-red-700"
+            :tooltip="__('Hang Up')"
+            size="md"
+            icon="phone-off"
+            @click="hangUp"
+          />
+          <!-- Accept incoming -->
+          <Button
+            v-if="callStatus == 'Incoming call'"
+            class="bg-green-600 text-ink-white hover:bg-green-700"
+            :tooltip="__('Accept')"
+            size="md"
+            icon="phone"
+            @click="acceptIncoming"
+          />
           <Button
             class="bg-surface-gray-6 text-ink-white hover:bg-surface-gray-5"
             :tooltip="__('Add a Note')"
@@ -227,6 +260,7 @@
     <CountUpTimer ref="counterUp" />
   </div>
 </template>
+
 <script setup>
 import ArrowUpRightIcon from '@/components/Icons/ArrowUpRightIcon.vue'
 import AvatarIcon from '@/components/Icons/AvatarIcon.vue'
@@ -235,18 +269,21 @@ import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import TaskPanel from '@/components/Telephony/TaskPanel.vue'
 import CountUpTimer from '@/components/CountUpTimer.vue'
-import { globalStore } from '@/stores/global'
-import { sessionStore } from '@/stores/session'
 import { useDraggable, useWindowSize } from '@vueuse/core'
 import { TextEditor, Avatar, Button, createResource, toast } from 'frappe-ui'
 import { ref, onBeforeUnmount, watch, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 
-const { $socket } = globalStore()
+// JsSIP loaded from CDN in index.html — see Step 5
+// window.JsSIP must be available
 
+const MicIcon = 'mic'
+const MicOffIcon = 'mic-off'
+
+const remoteAudio = ref(null)
 const callPopupHeader = ref(null)
 const showCallPopup = ref(false)
-let showSmallCallPopup = ref(false)
+const showSmallCallPopup = ref(false)
 
 function toggleCallPopup() {
   showCallPopup.value = !showCallPopup.value
@@ -254,115 +291,80 @@ function toggleCallPopup() {
 }
 
 const { width, height } = useWindowSize()
-
-let { style } = useDraggable(callPopupHeader, {
+const { style } = useDraggable(callPopupHeader, {
   initialValue: { x: width.value - 350, y: height.value - 250 },
   preventDefault: true,
 })
 
+// ── State ────────────────────────────────────────────────────────────────────
+
 const callStatus = ref('')
 const phoneNumber = ref('')
 const callData = ref(null)
+const callDuration = ref('00:00')
+const isMuted = ref(false)
 const counterUp = ref(null)
 
-const contact = ref({
-  full_name: '',
-  image: '',
-  mobile_no: '',
-})
+let ua = null          // JsSIP UserAgent
+let currentSession = null  // active RTCSession
+
+const contact = ref({ full_name: '', image: '', mobile_no: '' })
 
 const getContact = createResource({
   url: 'crm.integrations.api.get_contact_by_phone_number',
   makeParams() {
-    return {
-      phone_number: phoneNumber.value,
-    }
+    return { phone_number: phoneNumber.value }
   },
   onSuccess(data) {
     contact.value = data
   },
 })
 
-watch(
-  phoneNumber,
-  (value) => {
-    if (!value) return
-    getContact.fetch()
-  },
-  { immediate: true },
-)
+watch(phoneNumber, (value) => {
+  if (!value) return
+  getContact.fetch()
+}, { immediate: true })
+
+// ── Note / Task ──────────────────────────────────────────────────────────────
 
 const dirty = ref(false)
-
-const note = ref({
-  name: '',
-  content: '',
-})
-
+const note = ref({ name: '', content: '' })
 const showNote = ref(false)
+const task = ref({ name: '', title: '', description: '', assigned_to: '', due_date: '', status: 'Backlog', priority: 'Low' })
+const showTask = ref(false)
 
 function showNoteWindow() {
   showNote.value = !showNote.value
-  if (!showTask.value) {
-    updateWindowHeight(showNote.value)
-  }
-  if (showNote.value) {
-    showTask.value = false
-  }
+  if (!showTask.value) updateWindowHeight(showNote.value)
+  if (showNote.value) showTask.value = false
+}
+
+function showTaskWindow() {
+  showTask.value = !showTask.value
+  if (!showNote.value) updateWindowHeight(showTask.value)
+  if (showTask.value) showNote.value = false
 }
 
 function createUpdateNote() {
   createResource({
     url: 'crm.integrations.api.add_note_to_call_log',
-    params: {
-      call_sid: callData.value.CallSid,
-      note: note.value,
-    },
+    params: { call_sid: callData.value?.CallSid, note: note.value },
     auto: true,
     onSuccess(_note) {
-      note.value['name'] = _note.name
-      nextTick(() => {
-        dirty.value = false
-      })
+      note.value.name = _note.name
+      nextTick(() => { dirty.value = false })
     },
   })
-}
-
-const task = ref({
-  name: '',
-  title: '',
-  description: '',
-  assigned_to: '',
-  due_date: '',
-  status: 'Backlog',
-  priority: 'Low',
-})
-
-const showTask = ref(false)
-
-function showTaskWindow() {
-  showTask.value = !showTask.value
-  if (!showNote.value) {
-    updateWindowHeight(showTask.value)
-  }
-  if (showTask.value) {
-    showNote.value = false
-  }
 }
 
 function createUpdateTask() {
   createResource({
     url: 'crm.integrations.api.add_task_to_call_log',
-    params: {
-      call_sid: callData.value.CallSid,
-      task: task.value,
-    },
+    params: { call_sid: callData.value?.CallSid, task: task.value },
     auto: true,
     onSuccess(_task) {
-      task.value['name'] = _task.name
-      nextTick(() => {
-        dirty.value = false
-      })
+      task.value.name = _task.name
+      nextTick(() => { dirty.value = false })
     },
   })
 }
@@ -370,95 +372,11 @@ function createUpdateTask() {
 watch([note, task], () => (dirty.value = true), { deep: true })
 
 function updateWindowHeight(condition) {
-  let callPopup = callPopupHeader.value.parentElement
+  const callPopup = callPopupHeader.value.parentElement
   let top = parseInt(callPopup.style.top)
-  let updatedTop
-
-  updatedTop = condition ? top - 224 : top + 224
-
-  if (updatedTop < 0) {
-    updatedTop = 10
-  }
-
+  let updatedTop = condition ? top - 224 : top + 224
+  if (updatedTop < 0) updatedTop = 10
   callPopup.style.top = updatedTop + 'px'
-}
-
-function makeOutgoingCall(number) {
-  phoneNumber.value = number
-
-  createResource({
-    url: 'crm.integrations.freepbx.handler.make_a_call',
-    params: { to_number: phoneNumber.value },
-    auto: true,
-    onSuccess(callDetails) {
-      callData.value = callDetails
-
-      callStatus.value = 'Calling...'
-      showCallPopup.value = true
-      showSmallCallPopup.value = false
-    },
-    onError(err) {
-      toast.error(err.messages[0])
-    },
-  })
-}
-
-function setup() {
-  $socket.on('freepbx_call', (data) => {
-    callData.value = data
-
-    callStatus.value = updateStatus(data)
-    const { user } = sessionStore()
-
-    if (!showCallPopup.value && !showSmallCallPopup.value) {
-      if (data.AgentEmail && data.AgentEmail == (user || user.value)) {
-        // Incoming call
-        phoneNumber.value = data.CallFrom || data.From || data.CallerIDNum
-        showCallPopup.value = true
-      } else {
-        // Outgoing call
-        phoneNumber.value = data.To || data.DialedNumber
-      }
-    }
-  })
-}
-
-onBeforeUnmount(() => {
-  $socket.off('freepbx_call')
-})
-
-const router = useRouter()
-
-function openDealOrLead() {
-  if (contact.value.deal) {
-    router.push({
-      name: 'Deal',
-      params: { dealId: contact.value.deal },
-    })
-  } else if (contact.value.lead) {
-    router.push({
-      name: 'Lead',
-      params: { leadId: contact.value.lead },
-    })
-  }
-}
-
-function closeCallPopup() {
-  showCallPopup.value = false
-  showSmallCallPopup.value = false
-  note.value = {
-    name: '',
-    content: '',
-  }
-  task.value = {
-    name: '',
-    title: '',
-    description: '',
-    assigned_to: '',
-    due_date: '',
-    status: 'Backlog',
-    priority: 'Low',
-  }
 }
 
 function save() {
@@ -471,63 +389,229 @@ function update() {
   if (task.value.title) createUpdateTask()
 }
 
-const callDuration = ref('00:00')
+// ── JsSIP / WebRTC ───────────────────────────────────────────────────────────
 
-function updateStatus(data) {
-  // FreePBX/Asterisk webhook fields: Status, Direction, DialStatus, BillSec, Duration
-  const status = (data.Status || data.DialStatus || '').toLowerCase()
-  const direction = (data.Direction || '').toLowerCase()
-
-  if (direction === 'incoming' && status === 'ringing') {
-    phoneNumber.value = data.From || data.CallerIDNum
-    return 'Incoming call'
-  }
-
-  if (status === 'in-progress' || status === 'answered') {
-    counterUp.value.start()
-    return 'In progress'
-  }
-
-  if (status === 'no-answer' || status === 'noanswer' || status === 'busy') {
-    counterUp.value.stop()
-    return 'No answer'
-  }
-
-  if (status === 'completed' || status === 'answered') {
-    counterUp.value.stop()
-    callDuration.value = counterUp.value.getTime(
-      parseInt(data.BillSec) || parseInt(data.Duration) || 0,
-    )
-    return 'Call ended'
-  }
-
-  if (status === 'failed' || status === 'congestion') {
-    counterUp.value.stop()
-    return 'Call ended'
-  }
-
-  return 'Calling...'
+function setup() {
+  createResource({
+    url: 'crm.integrations.freepbx.handler.get_webrtc_credentials',
+    auto: true,
+    onSuccess(creds) {
+      _initJsSIP(creds)
+    },
+    onError(err) {
+      toast.error(err.messages?.[0] || __('Failed to load FreePBX credentials'))
+    },
+  })
 }
+
+function _initJsSIP(creds) {
+  if (!window.JsSIP) {
+    toast.error(__('JsSIP library not loaded. Add it to index.html (see setup docs).'))
+    return
+  }
+
+  if (ua) {
+    ua.stop()
+    ua = null
+  }
+
+  // Store host globally so makeOutgoingCall can build the SIP target URI
+  window.__freepbx_host__ = creds.host
+
+  const socket = new window.JsSIP.WebSocketInterface(creds.ws_uri)
+
+  ua = new window.JsSIP.UA({
+    sockets: [socket],
+    uri: creds.sip_uri,
+    password: creds.password,
+    register: true,
+  })
+
+  ua.on('registered', () => {
+    console.log('[FreePBX] SIP registered')
+  })
+
+  ua.on('registrationFailed', (e) => {
+    toast.error(__('FreePBX SIP registration failed: {0}', [e.cause]))
+  })
+
+  // Handle incoming calls
+  ua.on('newRTCSession', (data) => {
+    if (data.originator === 'remote') {
+      _handleIncomingSession(data.session, data.request)
+    }
+  })
+
+  ua.start()
+}
+
+function _handleIncomingSession(session, request) {
+  currentSession = session
+  phoneNumber.value = request.from.uri.user || request.from.display_name || ''
+  callStatus.value = 'Incoming call'
+  showCallPopup.value = true
+  showSmallCallPopup.value = false
+
+  session.on('ended', _onCallEnded)
+  session.on('failed', _onCallFailed)
+  session.on('confirmed', _onCallConfirmed)
+}
+
+function acceptIncoming() {
+  if (!currentSession) return
+  currentSession.answer({
+    mediaConstraints: { audio: true, video: false },
+    pcConfig: { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] },
+  })
+  _attachRemoteAudio(currentSession)
+}
+
+function makeOutgoingCall(number) {
+  if (!ua || !ua.isRegistered()) {
+    toast.error(__('FreePBX SIP not registered yet. Please wait a moment.'))
+    return
+  }
+
+  phoneNumber.value = number
+  callStatus.value = 'Calling...'
+  showCallPopup.value = true
+  showSmallCallPopup.value = false
+
+  const callId = _generateId()
+  callData.value = { CallSid: callId }
+
+  // Create call log via backend (non-WebRTC path for logging)
+  createResource({
+    url: 'crm.integrations.freepbx.handler.make_a_call',
+    params: { to_number: number },
+    auto: true,
+    onSuccess(details) {
+      callData.value = details
+    },
+    onError(err) {
+      toast.error(err.messages?.[0] || __('Failed to create call log'))
+    },
+  })
+
+  // Place the actual WebRTC call
+  const session = ua.call(`sip:${number}@${_getSipDomain()}`, {
+    mediaConstraints: { audio: true, video: false },
+    pcConfig: { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] },
+  })
+
+  currentSession = session
+
+  session.on('progress', () => { callStatus.value = 'Ringing...' })
+  session.on('confirmed', _onCallConfirmed)
+  session.on('ended', _onCallEnded)
+  session.on('failed', _onCallFailed)
+
+  _attachRemoteAudio(session)
+}
+
+function _onCallConfirmed() {
+  counterUp.value.start()
+  callStatus.value = 'In progress'
+}
+
+function _onCallEnded() {
+  counterUp.value.stop()
+  callDuration.value = counterUp.value.getTime(0)
+  callStatus.value = 'Call ended'
+  currentSession = null
+}
+
+function _onCallFailed(e) {
+  counterUp.value.stop()
+  callStatus.value = e.cause === 'Rejected' || e.cause === 'Busy' ? 'No answer' : 'Call ended'
+  currentSession = null
+}
+
+function _attachRemoteAudio(session) {
+  session.connection?.addEventListener('addstream', (e) => {
+    if (remoteAudio.value) {
+      remoteAudio.value.srcObject = e.stream
+    }
+  })
+  // Modern WebRTC: ontrack
+  session.connection?.addEventListener('track', (e) => {
+    if (remoteAudio.value && e.streams?.[0]) {
+      remoteAudio.value.srcObject = e.streams[0]
+    }
+  })
+}
+
+function hangUp() {
+  if (currentSession) {
+    try {
+      currentSession.terminate()
+    } catch (_) {
+      // already ended
+    }
+    currentSession = null
+  }
+  callStatus.value = 'Call ended'
+  counterUp.value.stop()
+  callDuration.value = counterUp.value.getTime(0)
+}
+
+function toggleMute() {
+  if (!currentSession) return
+  if (isMuted.value) {
+    currentSession.unmute({ audio: true })
+  } else {
+    currentSession.mute({ audio: true })
+  }
+  isMuted.value = !isMuted.value
+}
+
+function _getSipDomain() {
+  // Extracted from the ws_uri stored during setup; fallback to hostname
+  return window.__freepbx_host__ || window.location.hostname
+}
+
+function _generateId() {
+  return Math.random().toString(36).substring(2, 18)
+}
+
+// ── Navigation / cleanup ─────────────────────────────────────────────────────
+
+const router = useRouter()
+
+function openDealOrLead() {
+  if (contact.value.deal) {
+    router.push({ name: 'Deal', params: { dealId: contact.value.deal } })
+  } else if (contact.value.lead) {
+    router.push({ name: 'Lead', params: { leadId: contact.value.lead } })
+  }
+}
+
+function closeCallPopup() {
+  showCallPopup.value = false
+  showSmallCallPopup.value = false
+  note.value = { name: '', content: '' }
+  task.value = { name: '', title: '', description: '', assigned_to: '', due_date: '', status: 'Backlog', priority: 'Low' }
+}
+
+onBeforeUnmount(() => {
+  if (ua) {
+    ua.stop()
+    ua = null
+  }
+})
 
 defineExpose({ makeOutgoingCall, setup })
 </script>
+
 <style scoped>
 @keyframes blink {
-  0% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
+  0%   { opacity: 1; }
+  50%  { opacity: 0; }
+  100% { opacity: 1; }
 }
-
 .blink {
   animation: blink 1s ease-in-out 6;
 }
-
 :deep(.ProseMirror) {
   caret-color: var(--ink-white);
 }
