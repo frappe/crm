@@ -105,34 +105,43 @@ def get_webrtc_credentials():
 
 
 @frappe.whitelist()
-def make_a_call(to_number: str, from_number: str | None = None, caller_id: str | None = None):
+def make_a_call(to_number: str, from_number: str | None = None, caller_id: str | None = None, call_type: str = "Outgoing"):
 	"""WebRTC mode — JsSIP handles the actual call in browser. This only creates the call log."""
 	if not is_integration_enabled():
 		frappe.throw(_("Please setup FreePBX integration"), title=_("Integration Not Enabled"))
 
-	if not from_number:
-		from_number = frappe.get_value(
-			"CRM Telephony Agent", {"user": frappe.session.user}, "freepbx_extension"
-		)
+	extension = frappe.get_value(
+		"CRM Telephony Agent", {"user": frappe.session.user}, "freepbx_extension"
+	)
 
-	if not from_number:
-		frappe.throw(
-			_("You do not have a FreePBX Extension set in your Telephony Agent"),
-			title=_("Extension Missing"),
-		)
+	# For outgoing: from = agent extension, to = customer number
+	# For incoming: from = customer number (passed), to = agent extension
+	if call_type == "Incoming":
+		if not from_number:
+			frappe.throw(_("Caller number is required for incoming call log"))
+		log_from = from_number
+		log_to = extension or to_number
+	else:
+		log_from = extension or from_number
+		if not log_from:
+			frappe.throw(
+				_("You do not have a FreePBX Extension set in your Telephony Agent"),
+				title=_("Extension Missing"),
+			)
+		log_to = to_number
 
 	call_id = frappe.generate_hash(length=20)
 
 	create_call_log(
 		call_id=call_id,
-		from_number=from_number,
-		to_number=to_number,
-		medium=from_number,
-		call_type="Outgoing",
+		from_number=log_from,
+		to_number=log_to,
+		medium=extension or log_from,
+		call_type=call_type,
 		agent=frappe.session.user,
 	)
 
-	return {"CallSid": call_id, "From": from_number, "To": to_number}
+	return {"CallSid": call_id, "From": log_from, "To": log_to}
 
 
 @frappe.whitelist()

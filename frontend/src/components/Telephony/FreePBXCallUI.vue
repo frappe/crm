@@ -461,18 +461,56 @@ function _handleIncomingSession(session, request) {
   showCallPopup.value = true
   showSmallCallPopup.value = false
 
-  session.on('ended', _onCallEnded)
-  session.on('failed', _onCallFailed)
-  session.on('confirmed', _onCallConfirmed)
+  // Create a call log for the incoming call
+  createResource({
+    url: 'crm.integrations.freepbx.handler.make_a_call',
+    params: {
+      to_number: request.to.uri.user || '',
+      from_number: phoneNumber.value,
+      call_type: 'Incoming',
+    },
+    auto: true,
+    onSuccess(details) {
+      callData.value = details
+    },
+  })
+
+  session.on('ended', (e) => {
+    console.log('[FreePBX] incoming ended', e)
+    const elapsed = _getElapsedSeconds()
+    _onCallEnded()
+    _updateCallLogStatus('completed', elapsed)
+  })
+  session.on('failed', (e) => {
+    console.log('[FreePBX] incoming failed', e.cause)
+    _onCallFailed(e)
+    _updateCallLogStatus('canceled')
+  })
+  session.on('confirmed', (e) => {
+    console.log('[FreePBX] incoming confirmed', e)
+    _onCallConfirmed()
+    _updateCallLogStatus('in-progress')
+  })
 }
 
 function acceptIncoming() {
   if (!currentSession) return
-  currentSession.answer({
-    mediaConstraints: { audio: true, video: false },
-    pcConfig: { iceServers: [] },
-  })
-  _attachRemoteAudio(currentSession)
+
+  // Request microphone permission first, then answer
+  navigator.mediaDevices.getUserMedia({ audio: true, video: false })
+    .then((stream) => {
+      stream.getTracks().forEach(t => t.stop()) // release — JsSIP will re-acquire
+      currentSession.answer({
+        mediaConstraints: { audio: true, video: false },
+        pcConfig: { iceServers: [] },
+      })
+      _attachRemoteAudio(currentSession)
+      callStatus.value = 'Connecting...'
+    })
+    .catch((err) => {
+      console.error('[FreePBX] Microphone access denied:', err)
+      toast.error(__('Microphone access denied. Please allow microphone and try again.'))
+    })
 }
 
 function makeOutgoingCall(number) {
