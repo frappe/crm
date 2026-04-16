@@ -135,6 +135,38 @@ def make_a_call(to_number: str, from_number: str | None = None, caller_id: str |
 	return {"CallSid": call_id, "From": from_number, "To": to_number}
 
 
+@frappe.whitelist()
+def update_call_status(call_sid: str, status: str, duration: int = 0):
+	"""Called directly from the browser when JsSIP fires status events."""
+	if not frappe.db.exists("CRM Call Log", call_sid):
+		return
+
+	call_log = frappe.get_doc("CRM Call Log", call_sid)
+
+	status_map = {
+		"ringing": "Ringing",
+		"in-progress": "In Progress",
+		"completed": "Completed",
+		"no-answer": "No Answer",
+		"busy": "Busy",
+		"failed": "Failed",
+		"canceled": "Canceled",
+	}
+
+	call_log.status = status_map.get(status.lower(), status)
+
+	if duration:
+		call_log.duration = duration
+
+	if status.lower() == "completed":
+		from frappe.utils import now_datetime
+		call_log.end_time = now_datetime()
+
+	call_log.save(ignore_permissions=True)
+	frappe.db.commit()
+	return call_log.status
+
+
 def _ami_originate(settings, channel, extension, context, caller_id, call_id):
 	"""Connect to Asterisk AMI and originate a call."""
 	host = settings.host

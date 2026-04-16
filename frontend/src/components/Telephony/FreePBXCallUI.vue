@@ -528,18 +528,25 @@ function makeOutgoingCall(number) {
   session.on('progress', (e) => {
     console.log('[FreePBX] progress', e)
     callStatus.value = 'Ringing...'
+    _updateCallLogStatus('ringing')
   })
   session.on('confirmed', (e) => {
     console.log('[FreePBX] confirmed', e)
     _onCallConfirmed()
+    _updateCallLogStatus('in-progress')
   })
   session.on('ended', (e) => {
     console.log('[FreePBX] ended', e)
+    // Capture duration before stop() resets the timer
+    const elapsed = _getElapsedSeconds()
     _onCallEnded()
+    _updateCallLogStatus('completed', elapsed)
   })
   session.on('failed', (e) => {
     console.log('[FreePBX] failed', e.cause, e)
     _onCallFailed(e)
+    const failStatus = e.cause === 'Rejected' || e.cause === 'Busy' ? 'busy' : 'no-answer'
+    _updateCallLogStatus(failStatus)
   })
 
   _attachRemoteAudio(session)
@@ -578,6 +585,7 @@ function _attachRemoteAudio(session) {
 }
 
 function hangUp() {
+  const elapsed = _getElapsedSeconds()
   if (currentSession) {
     try {
       currentSession.terminate()
@@ -589,6 +597,7 @@ function hangUp() {
   callStatus.value = 'Call ended'
   counterUp.value.stop()
   callDuration.value = counterUp.value.getTime(0)
+  _updateCallLogStatus('completed', elapsed)
 }
 
 function toggleMute() {
@@ -599,6 +608,28 @@ function toggleMute() {
     currentSession.mute({ audio: true })
   }
   isMuted.value = !isMuted.value
+}
+
+function _getElapsedSeconds() {
+  // Parse the displayed time string e.g. "1:23" or "1:02:45"
+  if (!counterUp.value?.updatedTime) return 0
+  const parts = counterUp.value.updatedTime.split(':').map(Number)
+  if (parts.length === 2) return parts[0] * 60 + parts[1]
+  if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2]
+  return 0
+}
+
+function _updateCallLogStatus(status, duration = 0) {
+  if (!callData.value?.CallSid) return
+  createResource({
+    url: 'crm.integrations.freepbx.handler.update_call_status',
+    params: {
+      call_sid: callData.value.CallSid,
+      status,
+      duration,
+    },
+    auto: true,
+  })
 }
 
 function _getSipDomain() {
