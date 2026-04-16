@@ -303,8 +303,9 @@ const callDuration = ref('00:00')
 const isMuted = ref(false)
 const counterUp = ref(null)
 
-let ua = null          // JsSIP UserAgent
+let ua = null            // JsSIP UserAgent
 let currentSession = null  // active RTCSession
+let sipDomain = null     // FreePBX host IP, set when credentials are loaded
 
 const contact = ref({ full_name: '', image: '', mobile_no: '' })
 
@@ -390,6 +391,9 @@ function update() {
 // ── JsSIP / WebRTC ───────────────────────────────────────────────────────────
 
 function setup() {
+  // Prevent multiple registrations if setup() is called more than once
+  if (ua) return
+
   createResource({
     url: 'crm.integrations.freepbx.handler.get_webrtc_credentials',
     auto: true,
@@ -403,13 +407,12 @@ function setup() {
 }
 
 function _initJsSIP(creds) {
-  if (ua) {
-    ua.stop()
-    ua = null
-  }
+  // Already initialized, skip
+  if (ua) return
 
-  // Store host globally so makeOutgoingCall can build the SIP target URI
-  window.__freepbx_host__ = creds.host
+  // Store FreePBX host so makeOutgoingCall can build the correct SIP target URI
+  sipDomain = creds.host
+  console.log('[FreePBX] SIP domain set to:', sipDomain)
 
   console.log('[FreePBX] Connecting to:', creds.ws_uri)
   console.log('[FreePBX] SIP URI:', creds.sip_uri)
@@ -477,6 +480,13 @@ function makeOutgoingCall(number) {
     toast.error(__('FreePBX SIP not registered yet. Please wait a moment.'))
     return
   }
+
+  if (!sipDomain) {
+    toast.error(__('FreePBX SIP domain not ready. Please refresh the page.'))
+    return
+  }
+
+  console.log('[FreePBX] Calling:', `sip:${number}@${sipDomain}`)
 
   // Show the customer number (the number we are calling), not our extension
   phoneNumber.value = number
@@ -570,8 +580,10 @@ function toggleMute() {
 }
 
 function _getSipDomain() {
-  // Extracted from the ws_uri stored during setup; fallback to hostname
-  return window.__freepbx_host__ || window.location.hostname
+  if (!sipDomain) {
+    console.error('[FreePBX] SIP domain not set — credentials not loaded yet')
+  }
+  return sipDomain
 }
 
 function _generateId() {
