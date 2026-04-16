@@ -11,6 +11,8 @@
   "section_break_1",
   "host",
   "ami_port",
+  "ws_port",
+  "wss_port",
   "column_break_2",
   "context",
   "caller_id",
@@ -57,6 +59,20 @@
    "fieldname": "ami_port",
    "fieldtype": "Int",
    "label": "AMI Port"
+  },
+  {
+   "default": "8088",
+   "depends_on": "enabled",
+   "fieldname": "ws_port",
+   "fieldtype": "Int",
+   "label": "WebSocket Port (WS, for HTTP)"
+  },
+  {
+   "default": "8089",
+   "depends_on": "enabled",
+   "fieldname": "wss_port",
+   "fieldtype": "Int",
+   "label": "WebSocket Port (WSS, for HTTPS)"
   },
   {
    "fieldname": "column_break_2",

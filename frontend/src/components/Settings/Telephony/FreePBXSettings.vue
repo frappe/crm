@@ -56,6 +56,20 @@
               autocomplete="off"
             />
             <FormControl
+              v-model="freepbx.doc.ws_port"
+              :label="__('WS Port (HTTP / plain)')"
+              type="number"
+              placeholder="8088"
+              autocomplete="off"
+            />
+            <FormControl
+              v-model="freepbx.doc.wss_port"
+              :label="__('WSS Port (HTTPS / SSL)')"
+              type="number"
+              placeholder="8089"
+              autocomplete="off"
+            />
+            <FormControl
               v-model="freepbx.doc.ami_username"
               :label="__('AMI Username')"
               type="text"

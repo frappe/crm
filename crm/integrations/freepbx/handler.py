@@ -60,6 +60,52 @@ def handle_request(**kwargs):
 
 
 @frappe.whitelist()
+def get_webrtc_credentials():
+	"""Return SIP/WebRTC credentials for the logged-in agent to register in the browser."""
+	if not is_integration_enabled():
+		frappe.throw(_("FreePBX integration is not enabled"), title=_("Integration Not Enabled"))
+
+	settings = get_freepbx_settings()
+	agent = frappe.get_value(
+		"CRM Telephony Agent",
+		{"user": frappe.session.user},
+		["freepbx_extension", "freepbx_sip_username", "freepbx_sip_password"],
+		as_dict=True,
+	)
+
+	if not agent or not agent.get("freepbx_sip_username"):
+		frappe.throw(
+			_("No FreePBX SIP credentials set in your Telephony Agent"),
+			title=_("Credentials Missing"),
+		)
+
+	# Detect whether the request came over HTTPS or HTTP and pick the right WS scheme
+	is_https = frappe.request.environ.get("wsgi.url_scheme") == "https" or \
+		frappe.request.headers.get("X-Forwarded-Proto") == "https"
+
+	if is_https:
+		ws_scheme = "wss"
+		ws_port = settings.wss_port or 8089
+	else:
+		ws_scheme = "ws"
+		ws_port = settings.ws_port or 8088
+
+	return {
+		"sip_uri": f"sip:{agent.freepbx_sip_username}@{settings.host}",
+		"username": agent.freepbx_sip_username,
+		"password": frappe.get_value(
+			"CRM Telephony Agent",
+			{"user": frappe.session.user},
+			"freepbx_sip_password",
+		),
+		"extension": agent.freepbx_extension,
+		"ws_uri": f"{ws_scheme}://{settings.host}:{ws_port}/ws",
+		"realm": settings.host,
+		"host": settings.host,
+	}
+
+
+@frappe.whitelist()
 def make_a_call(to_number: str, from_number: str | None = None, caller_id: str | None = None):
 	if not is_integration_enabled():
 		frappe.throw(_("Please setup FreePBX integration"), title=_("Integration Not Enabled"))

@@ -151,14 +151,57 @@
             {{ __('FreePBX Extension') }}
           </div>
           <div class="text-p-sm text-ink-gray-5">
-            {{ __('Set your SIP extension used by FreePBX to make calls.') }}
+            {{ __('Your SIP extension number (e.g. 1001)') }}
           </div>
         </div>
         <div>
           <FormControl
             v-model="telephonyAgent.doc.freepbx_extension"
             class="flex-1 truncate w-44 p-1"
-            :placeholder="__('Enter FreePBX Extension')"
+            :placeholder="__('e.g. 1001')"
+            placement="bottom-end"
+          />
+        </div>
+      </div>
+      <div
+        v-if="freepbxEnabled"
+        class="flex items-center justify-between gap-8 py-3 pl-2 pr-1"
+      >
+        <div class="flex flex-col">
+          <div class="text-p-base font-medium text-ink-gray-7 truncate">
+            {{ __('FreePBX SIP Username') }}
+          </div>
+          <div class="text-p-sm text-ink-gray-5">
+            {{ __('WebRTC SIP username from pjsip.conf (e.g. webrtc_1001)') }}
+          </div>
+        </div>
+        <div>
+          <FormControl
+            v-model="telephonyAgent.doc.freepbx_sip_username"
+            class="flex-1 truncate w-44 p-1"
+            :placeholder="__('e.g. webrtc_1001')"
+            placement="bottom-end"
+          />
+        </div>
+      </div>
+      <div
+        v-if="freepbxEnabled"
+        class="flex items-center justify-between gap-8 py-3 pl-2 pr-1"
+      >
+        <div class="flex flex-col">
+          <div class="text-p-base font-medium text-ink-gray-7 truncate">
+            {{ __('FreePBX SIP Password') }}
+          </div>
+          <div class="text-p-sm text-ink-gray-5">
+            {{ __('WebRTC SIP password for this extension') }}
+          </div>
+        </div>
+        <div>
+          <FormControl
+            v-model="telephonyAgent.doc.freepbx_sip_password"
+            type="password"
+            class="flex-1 truncate w-44 p-1"
+            :placeholder="__('SIP password')"
             placement="bottom-end"
           />
         </div>
