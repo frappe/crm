@@ -1,6 +1,7 @@
 <template>
   <TwilioCallUI ref="twilio" />
   <ExotelCallUI ref="exotel" />
+  <FreePBXCallUI ref="freepbx" />
   <Dialog
     v-model="show"
     :options="{
@@ -25,7 +26,7 @@
           v-model="callMedium"
           type="select"
           :label="__('Calling Medium')"
-          :options="['Twilio', 'Exotel']"
+          :options="availableMediums"
         />
         <div class="flex flex-col gap-1">
           <FormControl
@@ -47,19 +48,22 @@
 <script setup>
 import TwilioCallUI from '@/components/Telephony/TwilioCallUI.vue'
 import ExotelCallUI from '@/components/Telephony/ExotelCallUI.vue'
+import FreePBXCallUI from '@/components/Telephony/FreePBXCallUI.vue'
 import {
   twilioEnabled,
   exotelEnabled,
+  freepbxEnabled,
   defaultCallingMedium,
 } from '@/composables/settings'
 import { globalStore } from '@/stores/global'
 import { FormControl, call, toast } from 'frappe-ui'
-import { nextTick, ref, watch } from 'vue'
+import { computed, nextTick, ref, watch } from 'vue'
 
 const { setMakeCall } = globalStore()
 
 const twilio = ref(null)
 const exotel = ref(null)
+const freepbx = ref(null)
 
 const callMedium = ref('Twilio')
 const isDefaultMedium = ref(false)
@@ -67,20 +71,30 @@ const isDefaultMedium = ref(false)
 const show = ref(false)
 const mobileNumber = ref('')
 
+const availableMediums = computed(() => {
+  const mediums = []
+  if (twilioEnabled.value) mediums.push('Twilio')
+  if (exotelEnabled.value) mediums.push('Exotel')
+  if (freepbxEnabled.value) mediums.push('FreePBX')
+  return mediums
+})
+
 function makeCall(number) {
-  if (
-    twilioEnabled.value &&
-    exotelEnabled.value &&
-    !defaultCallingMedium.value
-  ) {
+  const enabledCount = [twilioEnabled.value, exotelEnabled.value, freepbxEnabled.value].filter(Boolean).length
+  if (enabledCount > 1 && !defaultCallingMedium.value) {
     mobileNumber.value = number
     show.value = true
     return
   }
 
-  callMedium.value = twilioEnabled.value ? 'Twilio' : 'Exotel'
   if (defaultCallingMedium.value) {
     callMedium.value = defaultCallingMedium.value
+  } else if (twilioEnabled.value) {
+    callMedium.value = 'Twilio'
+  } else if (exotelEnabled.value) {
+    callMedium.value = 'Exotel'
+  } else if (freepbxEnabled.value) {
+    callMedium.value = 'FreePBX'
   }
 
   mobileNumber.value = number
@@ -94,10 +108,10 @@ function makeCallUsing() {
 
   if (callMedium.value === 'Twilio') {
     twilio.value.makeOutgoingCall(mobileNumber.value)
-  }
-
-  if (callMedium.value === 'Exotel') {
+  } else if (callMedium.value === 'Exotel') {
     exotel.value.makeOutgoingCall(mobileNumber.value)
+  } else if (callMedium.value === 'FreePBX') {
+    freepbx.value.makeOutgoingCall(mobileNumber.value)
   }
   show.value = false
 }
@@ -114,8 +128,8 @@ async function setDefaultCallingMedium() {
 }
 
 watch(
-  [twilioEnabled, exotelEnabled],
-  ([twilioValue, exotelValue]) =>
+  [twilioEnabled, exotelEnabled, freepbxEnabled],
+  ([twilioValue, exotelValue, freepbxValue]) =>
     nextTick(() => {
       if (twilioValue) {
         twilio.value.setup()
@@ -127,8 +141,12 @@ watch(
         callMedium.value = 'Exotel'
       }
 
-      if (twilioValue || exotelValue) {
-        callMedium.value = 'Twilio'
+      if (freepbxValue) {
+        freepbx.value.setup()
+        callMedium.value = 'FreePBX'
+      }
+
+      if (twilioValue || exotelValue || freepbxValue) {
         setMakeCall(makeCall)
       }
     }),
