@@ -196,10 +196,10 @@
           <!-- Hang up -->
           <Button
             v-if="callStatus != 'Call ended' && callStatus != 'No answer' && callStatus != ''"
-            class="bg-red-600 text-ink-white hover:bg-red-700"
             :tooltip="__('Hang Up')"
             size="md"
             icon="phone-off"
+            style="background-color: #dc2626; color: white;"
             @click="hangUp"
           />
           <!-- Accept incoming -->
