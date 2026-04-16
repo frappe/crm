@@ -205,10 +205,10 @@
           <!-- Accept incoming -->
           <Button
             v-if="callStatus == 'Incoming call'"
-            class="bg-green-600 text-ink-white hover:bg-green-700"
             :tooltip="__('Accept')"
             size="md"
             icon="phone"
+            style="background-color: #16a34a; color: white;"
             @click="acceptIncoming"
           />
           <Button
