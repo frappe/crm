@@ -411,13 +411,22 @@ function _initJsSIP(creds) {
   // Store host globally so makeOutgoingCall can build the SIP target URI
   window.__freepbx_host__ = creds.host
 
+  console.log('[FreePBX] Connecting to:', creds.ws_uri)
+  console.log('[FreePBX] SIP URI:', creds.sip_uri)
+  console.log('[FreePBX] Username:', creds.username)
+  console.log('[FreePBX] Realm:', creds.realm)
+
   const socket = new JsSIP.WebSocketInterface(creds.ws_uri)
 
   ua = new JsSIP.UA({
     sockets: [socket],
     uri: creds.sip_uri,
     password: creds.password,
+    authorization_user: creds.username,
+    realm: creds.realm,
     register: true,
+    connection_recovery_min_interval: 2,
+    connection_recovery_max_interval: 30,
   })
 
   ua.on('registered', () => {

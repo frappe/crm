@@ -90,14 +90,13 @@ def get_webrtc_credentials():
 		ws_scheme = "ws"
 		ws_port = settings.ws_port or 8088
 
+	# Must use get_doc + get_password() to decrypt the Password fieldtype
+	agent_doc = frappe.get_doc("CRM Telephony Agent", {"user": frappe.session.user})
+
 	return {
 		"sip_uri": f"sip:{agent.freepbx_sip_username}@{settings.host}",
 		"username": agent.freepbx_sip_username,
-		"password": frappe.get_value(
-			"CRM Telephony Agent",
-			{"user": frappe.session.user},
-			"freepbx_sip_password",
-		),
+		"password": agent_doc.get_password("freepbx_sip_password"),
 		"extension": agent.freepbx_extension,
 		"ws_uri": f"{ws_scheme}://{settings.host}:{ws_port}/ws",
 		"realm": settings.host,
