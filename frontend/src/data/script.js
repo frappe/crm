@@ -1,5 +1,6 @@
 import { globalStore } from '@/stores/global'
 import { getMeta } from '@/stores/meta'
+import { getClassNames, createDocProxy } from '@/utils/scriptHelpers'
 import { call, createListResource, toast } from 'frappe-ui'
 import { reactive } from 'vue'
 import router from '@/router'
@@ -290,21 +291,76 @@ export function getScript(doctype, view = 'Form') {
         this._originalDocumentContext.fieldHtmlMap[fieldname] = html
       }
     }
+
+    if (typeof FormClass.prototype.setFieldProperty !== 'function') {
+      FormClass.prototype.setFieldProperty = function (
+        target,
+        property,
+        value,
+        rowName,
+      ) {
+        const ctx = this._originalDocumentContext
+        if (!ctx) {
+          console.warn(
+            'CRM Script: _originalDocumentContext not found on instance for setFieldProperty.',
+          )
+          return
+        }
+        if (!ctx.fieldPropertyOverrides) ctx.fieldPropertyOverrides = {}
+        const key = rowName ? `${target}:${rowName}` : target
+        if (!ctx.fieldPropertyOverrides[key])
+          ctx.fieldPropertyOverrides[key] = {}
+        ctx.fieldPropertyOverrides[key][property] = value
+      }
+    }
+
+    if (typeof FormClass.prototype.setFieldProperties !== 'function') {
+      FormClass.prototype.setFieldProperties = function (
+        target,
+        properties,
+        rowName,
+      ) {
+        if (!properties || typeof properties !== 'object') return
+        for (const [key, value] of Object.entries(properties)) {
+          this.setFieldProperty(target, key, value, rowName)
+        }
+      }
+    }
+
+    if (typeof FormClass.prototype.removeFieldProperty !== 'function') {
+      FormClass.prototype.removeFieldProperty = function (
+        target,
+        property,
+        rowName,
+      ) {
+        const ctx = this._originalDocumentContext
+        const key = rowName ? `${target}:${rowName}` : target
+        if (!ctx?.fieldPropertyOverrides?.[key]) return
+        delete ctx.fieldPropertyOverrides[key][property]
+        if (Object.keys(ctx.fieldPropertyOverrides[key]).length === 0) {
+          delete ctx.fieldPropertyOverrides[key]
+        }
+      }
+    }
+
+    if (typeof FormClass.prototype.getField !== 'function') {
+      FormClass.prototype.getField = function (fieldname) {
+        const ctx = this._originalDocumentContext
+        const dt = ctx?.doc?.doctype || ''
+        if (!dt) return null
+
+        const { doctypesMeta: allMeta } = getMeta(dt)
+        const raw = allMeta[dt]?.fields?.find((f) => f.fieldname === fieldname)
+        if (!raw) return null
+
+        // Return a clone merged with any overrides
+        const overrides = ctx?.fieldPropertyOverrides?.[fieldname] || {}
+        return { ...raw, ...overrides }
+      }
+    }
   }
 
-  // utility function to setup a form controller
-  function getClassNames(script) {
-    const withoutComments = script
-      .replace(/\/\/.*$/gm, '') // Remove single-line comments
-      .replace(/\/\*[\s\S]*?\*\//g, '') // Remove multi-line comments
-
-    // Match class declarations
-    return (
-      [...withoutComments.matchAll(/class\s+([A-Za-z0-9_]+)/g)].map(
-        (match) => match[1],
-      ) || []
-    )
-  }
+  // getClassNames and createDocProxy are imported from '@/utils/scriptHelpers'
 
   function evaluateFormClass(script, className, helpers = {}) {
     const helperKeys = Object.keys(helpers)
@@ -322,72 +378,6 @@ export function getScript(doctype, view = 'Form') {
     setupHelperMethods(FormClass)
 
     return FormClass
-  }
-
-  function createDocProxy(source, instance, childInstance = null) {
-    const isFunction = typeof source === 'function'
-    const getCurrentData = () => (isFunction ? source() : source)
-
-    return new Proxy(
-      {},
-      {
-        get(target, prop) {
-          const currentDocData = getCurrentData()
-          if (!currentDocData) return undefined
-
-          if (prop === 'trigger') {
-            if (currentDocData && 'trigger' in currentDocData) {
-              console.warn(
-                __(
-                  '⚠️ Avoid using "trigger" as a field name — it conflicts with the built-in trigger() method.',
-                ),
-              )
-            }
-
-            return (methodName, ...args) => {
-              const method = instance[methodName]
-              if (typeof method === 'function') {
-                return method.apply(instance, args)
-              } else {
-                console.warn(
-                  __('⚠️ Method "{0}" not found in class.', [methodName]),
-                )
-              }
-            }
-          }
-
-          if (prop === 'getRow') {
-            return instance.getRow.bind(
-              childInstance || instance._childInstances || instance,
-            )
-          }
-
-          return currentDocData[prop]
-        },
-        set(target, prop, value) {
-          const currentDocData = getCurrentData()
-          if (!currentDocData) return false
-
-          currentDocData[prop] = value
-          return true
-        },
-        has(target, prop) {
-          const currentDocData = getCurrentData()
-          if (!currentDocData) return false
-          return prop in currentDocData
-        },
-        ownKeys() {
-          const currentDocData = getCurrentData()
-          if (!currentDocData) return []
-          return Reflect.ownKeys(currentDocData)
-        },
-        getOwnPropertyDescriptor(target, prop) {
-          const currentDocData = getCurrentData()
-          if (!currentDocData) return undefined
-          return Reflect.getOwnPropertyDescriptor(currentDocData, prop)
-        },
-      },
-    )
   }
 
   return {
