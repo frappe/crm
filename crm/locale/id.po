@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-04-12 09:47+0000\n"
-"PO-Revision-Date: 2026-04-16 01:07\n"
+"PO-Revision-Date: 2026-04-17 01:06\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Indonesian\n"
 "MIME-Version: 1.0\n"
@@ -4542,7 +4542,7 @@ msgstr "Sebutan"
 
 #: frontend/src/components/Notifications.vue:116
 msgid "Mentions"
-msgstr ""
+msgstr "Sebutan"
 
 #. Label of the message (HTML Editor) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
@@ -4855,7 +4855,7 @@ msgstr ""
 
 #: frontend/src/components/FieldLayoutEditor.vue:123
 msgid "No Label"
-msgstr ""
+msgstr "Tidak Ada Label"
 
 #: frontend/src/pages/Deal.vue:731
 msgid "No Mobile Number Set"
@@ -4934,7 +4934,7 @@ msgstr ""
 
 #: frontend/src/pages/MobileContact.vue:153
 msgid "No {0} found"
-msgstr ""
+msgstr "Tidak ada {0} yang ditemukan"
 
 #: frontend/src/components/Controls/Grid.vue:27
 msgid "No."
@@ -5315,7 +5315,7 @@ msgstr "Halaman"
 #. Label of the page_name (Data) field in DocType 'Facebook Page'
 #: crm/lead_syncing/doctype/facebook_page/facebook_page.json
 msgid "Page Name"
-msgstr ""
+msgstr "Nama Halaman"
 
 #. Label of the parent_crm_territory (Link) field in DocType 'CRM Territory'
 #: crm/fcrm/doctype/crm_territory/crm_territory.json
@@ -5349,7 +5349,7 @@ msgstr "Kata sandi berhasil diperbarui"
 
 #: frontend/src/components/Modals/ChangePasswordModal.vue:119
 msgid "Passwords do not match"
-msgstr ""
+msgstr "Kata sandi tidak cocok"
 
 #: frontend/src/components/Modals/ChangePasswordModal.vue:36
 #: frontend/src/components/Modals/ChangePasswordModal.vue:125
@@ -5403,7 +5403,7 @@ msgstr ""
 #: frontend/src/pages/MobileOrganization.vue:511
 #: frontend/src/pages/Organization.vue:541
 msgid "Phone"
-msgstr ""
+msgstr "Telepon"
 
 #. Label of the phone_nos (Table) field in DocType 'CRM Telephony Agent'
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
