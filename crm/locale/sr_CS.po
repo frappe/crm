@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-04-12 09:47+0000\n"
-"PO-Revision-Date: 2026-04-12 23:23\n"
+"PO-Revision-Date: 2026-04-16 01:07\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Serbian (Latin)\n"
 "MIME-Version: 1.0\n"
@@ -205,7 +205,7 @@ msgstr "API ključ je neophodan"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:458
 msgid "API secret is required"
-msgstr ""
+msgstr "API tajna je obavezna"
 
 #: frontend/src/components/Telephony/TwilioCallUI.vue:88
 msgid "Accept"
@@ -677,7 +677,7 @@ msgstr "Da li ste sigurni da želite da se prijavite na svoju Frappe Cloud kontr
 
 #: frontend/src/components/FieldLayoutEditor.vue:428
 msgid "Are you sure you want to remove this tab and all its content?"
-msgstr ""
+msgstr "Da li ste sigurni da želite da uklonite ovu karticu i sav njen sadržaj?"
 
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.js:9
 msgid "Are you sure you want to reset 'Create Quotation from CRM Deal' Form Script?"
@@ -819,7 +819,7 @@ msgstr "Priloži fajl"
 
 #: frontend/src/components/Controls/AttachControl.vue:10
 msgid "Attach file…"
-msgstr ""
+msgstr "Priloži fajl…"
 
 #: frontend/src/pages/Deal.vue:600 frontend/src/pages/Lead.vue:452
 #: frontend/src/pages/MobileDeal.vue:474 frontend/src/pages/MobileLead.vue:319
@@ -842,7 +842,7 @@ msgstr "Autentifikacioni token"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:185
 msgid "Auto Create Customer"
-msgstr ""
+msgstr "Automatsko kreiranje klijenta"
 
 #: frontend/src/components/Settings/ForecastingSettings.vue:42
 msgid "Auto Update Expected Deal Value"
@@ -1559,7 +1559,7 @@ msgstr "Kompanija na ERPNext sajtu"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:472
 msgid "Company name is required"
-msgstr ""
+msgstr "Naziv kompanije je obavezan"
 
 #: crm/templates/emails/helpdesk_invitation.html:10
 msgid "Complete Registration"
@@ -1661,7 +1661,7 @@ msgstr "Potvrdi {0}"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:246
 msgid "Connect ERPNext to Frappe CRM"
-msgstr ""
+msgstr "Povežite ERPNext sa Frappe CRM"
 
 #: frontend/src/pages/Welcome.vue:35
 msgid "Connect your Email"
@@ -1860,7 +1860,7 @@ msgstr "Kreiraj događaj"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:189
 msgid "Create customer in ERPNext when the deal status is changed"
-msgstr ""
+msgstr "Kreiraj klijenta u ERPNext kada se status poslovne prilike promeni"
 
 #. Label of the create_customer_on_status_change (Check) field in DocType
 #. 'ERPNext CRM Settings'
@@ -1870,7 +1870,7 @@ msgstr "Kreiraj klijenta pri promeni statusa"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:398
 msgid "Create quotation button on deal page and auto customer creation on deal status change will be disabled. Are you sure?"
-msgstr ""
+msgstr "Dugme za kreiranje ponude na stranici poslovne prilike i automatsko kreiranje klijenta pri promeni statusa biće onemogućeni. Da li ste sigurni?"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:365
 msgid "Create your first lead"
@@ -2043,7 +2043,7 @@ msgstr "Analiza kanala za generisanje poslovnih prilika"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:477
 msgid "Deal status is required"
-msgstr ""
+msgstr "Status poslovne prilike je obavezan"
 
 #: crm/api/dashboard.py:1078 crm/api/dashboard.py:1141
 msgid "Deal value"
@@ -2327,7 +2327,7 @@ msgstr "Onemogući"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:397
 msgid "Disable ERPNext Integration"
-msgstr ""
+msgstr "Onemogući ERPNext integraciju"
 
 #. Label of the disabled (Check) field in DocType 'CRM Product'
 #: crm/fcrm/doctype/crm_product/crm_product.json
@@ -2422,7 +2422,7 @@ msgstr "Prevucite i otpustite fajlove ovde ili ih otpremite sa"
 
 #: frontend/src/components/FieldLayoutEditor.vue:250
 msgid "Drag a section or a field here to get started"
-msgstr ""
+msgstr "Prevucite odeljak ili polje ovde da biste započeli"
 
 #: frontend/src/components/FilesUploader/FilesUploaderArea.vue:56
 msgid "Drop files here"
@@ -2522,7 +2522,7 @@ msgstr "ERPNext nije instaliran na trenutnom sajtu"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:71
 msgid "ERPNext is not installed on this site either install it or enter the URL of your ERPNext site to connect"
-msgstr ""
+msgstr "ERPNext nije instaliran na ovom sajtu, instalirajte ga ili unesite URL Vašeg ERPNext sajta za povezivanje"
 
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:143
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:175
@@ -2773,7 +2773,7 @@ msgstr "Omogućite snimanje dolaznih i odlaznih poziva"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:250
 msgid "Enable the integration to create quotations and auto create customers in ERPNext."
-msgstr ""
+msgstr "Omogućite integraciju za kreiranje ponuda i automatsko kreiranje klijenata u ERPNext-u."
 
 #. Label of the enabled (Check) field in DocType 'CRM Exotel Settings'
 #. Label of the enabled (Check) field in DocType 'CRM Form Script'
@@ -3209,7 +3209,7 @@ msgstr "Neuspešno preimenovanje šablona"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:305
 msgid "Failed to save settings"
-msgstr ""
+msgstr "Čuvanje podešavanja nije uspelo"
 
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:265
 msgid "Failed to save workday: {0}"
@@ -3788,11 +3788,11 @@ msgstr "Nevažeći Exotel broj"
 
 #: frontend/src/components/Controls/GeolocationControl.vue:116
 msgid "Invalid GeoJSON"
-msgstr ""
+msgstr "Nevažeći GeoJSON"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:453
 msgid "Invalid Site URL"
-msgstr ""
+msgstr "Nevažeći URL sajta"
 
 #: frontend/src/composables/event.js:253
 msgid "Invalid Start Or End Time"
@@ -4447,7 +4447,7 @@ msgstr "Upravljajte CRM korisnicima dodavanjem ili pozivanjem, i dodeljivanjem u
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:4
 msgid "Manage ERPNext integration settings"
-msgstr ""
+msgstr "Upravljanje podešavanjima ERPNext integracije"
 
 #: frontend/src/components/Settings/Profile/ProfileSettings.vue:96
 msgid "Manage your account emails and email signature for communication."
@@ -4625,19 +4625,19 @@ msgstr "Više opcija"
 
 #: frontend/src/components/FieldLayoutEditor.vue:614
 msgid "Move Last Column to Next Section"
-msgstr ""
+msgstr "Premesti poslednju kolonu u sledeći odeljak"
 
 #: frontend/src/components/FieldLayoutEditor.vue:654
 msgid "Move Last Column to Next Tab"
-msgstr ""
+msgstr "Premesti poslednju kolonu na sledeću karticu"
 
 #: frontend/src/components/FieldLayoutEditor.vue:624
 msgid "Move Last Column to Previous Section"
-msgstr ""
+msgstr "Premesti poslednju kolonu u prethodni odeljak"
 
 #: frontend/src/components/FieldLayoutEditor.vue:634
 msgid "Move Last Column to Previous Tab"
-msgstr ""
+msgstr "Premesti poslednju kolonu na prethodnu karticu"
 
 #: frontend/src/components/FieldLayoutEditor.vue:543
 msgid "Move to Next Tab"
@@ -4907,7 +4907,7 @@ msgstr "Nije izvršena nijedna promena"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:295
 msgid "No companies found in the given site"
-msgstr ""
+msgstr "Nisu pronađene kompanije na datom sajtu"
 
 #: frontend/src/components/Activities/EventArea.vue:79
 msgid "No events coming up. Create a new one to keep things on track."
@@ -5769,7 +5769,7 @@ msgstr "Osveži aplikacije"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:157
 msgid "Refresh Companies"
-msgstr ""
+msgstr "Osveži kompanije"
 
 #: frontend/src/components/Telephony/TwilioCallUI.vue:97
 msgid "Reject"
@@ -5816,11 +5816,11 @@ msgstr "Ukloni sliku"
 #: frontend/src/components/FieldLayoutEditor.vue:574
 #: frontend/src/components/FieldLayoutEditor.vue:580
 msgid "Remove Last Column"
-msgstr ""
+msgstr "Ukloni poslednju kolonu"
 
 #: frontend/src/components/FieldLayoutEditor.vue:604
 msgid "Remove Last Column (move fields to previous)"
-msgstr ""
+msgstr "Ukloni poslednju kolonu (premesti polja u prethodni deo)"
 
 #: frontend/src/components/Settings/Profile/ProfileSettings.vue:157
 msgid "Remove Photo"
@@ -6327,7 +6327,7 @@ msgstr "Izaberite izvršioce za {0}."
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:217
 msgid "Select the deal status to trigger the auto customer creation in ERPNext"
-msgstr ""
+msgstr "Izaberite status poslovne prilike koji pokreće automatsko kreiranje klijenta u ERPNext-u"
 
 #: frontend/src/components/Settings/CalendarSettings.vue:37
 msgid "Select the default view for your calendar. This will be the initial view when you open the calendar"
@@ -6335,7 +6335,7 @@ msgstr "Izaberite podrazumevani prikaz kalendara. Ovo će biti početni prikaz p
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:133
 msgid "Select your ERPNext company to connect with"
-msgstr ""
+msgstr "Izaberite ERPNext kompaniju za povezivanje"
 
 #: frontend/src/components/FieldLayout/Field.vue:457
 msgid "Select {0}"
@@ -6418,7 +6418,7 @@ msgstr "Postavite ime"
 
 #: frontend/src/components/Controls/GeolocationControl.vue:43
 msgid "Set Location"
-msgstr ""
+msgstr "Postavite lokaciju"
 
 #: frontend/src/components/FilesUploader/FilesUploader.vue:66
 msgid "Set all as private"
@@ -6442,7 +6442,7 @@ msgstr "Postavi kao podrazumevani sporazum o nivou usluge"
 
 #: frontend/src/components/Controls/GeolocationControl.vue:10
 msgid "Set location…"
-msgstr ""
+msgstr "Postavite lokaciju…"
 
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:102
 msgid "Set the Exotel number to be used for outgoing calls."
@@ -6508,7 +6508,7 @@ msgstr "Podešavanja"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:302
 msgid "Settings saved"
-msgstr ""
+msgstr "Podešavanja su sačuvana"
 
 #: frontend/src/components/Settings/EmailAdd.vue:6
 msgid "Setup Email"
@@ -6579,15 +6579,15 @@ msgstr "S obzirom da ste uklonili {0} sa liste izvršilaca, {0} je zamenjen sled
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:66
 msgid "Site URL"
-msgstr ""
+msgstr "URL sajta"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:448
 msgid "Site URL is required"
-msgstr ""
+msgstr "URL sajta je obavezan"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:432
 msgid "Site connection validated"
-msgstr ""
+msgstr "Veza sa sajtom je potvrđena"
 
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:439
 msgid "Some error occurred while creating SLA Policy"
@@ -7013,7 +7013,7 @@ msgstr "Ove godine"
 
 #: frontend/src/components/FieldLayoutEditor.vue:581
 msgid "This column contains fields. Are you sure you want to remove it?"
-msgstr ""
+msgstr "Ova kolona sadrži polja. Da li ste sigurni da želite da je uklonite?"
 
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:177
 msgid "This field is required"
@@ -7025,7 +7025,7 @@ msgstr "Ova metoda je namenjena samo za razvojni režim"
 
 #: frontend/src/components/FieldLayoutEditor.vue:486
 msgid "This section contains fields. Are you sure you want to remove it?"
-msgstr ""
+msgstr "Ovaj odeljak sadrži polja. Da li ste sigurni da želite da ga uklonite?"
 
 #: frontend/src/components/SidePanelLayoutEditor.vue:116
 msgid "This section is not editable"
@@ -7508,7 +7508,7 @@ msgstr "Vrednost"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:110
 msgid "Verify Connection"
-msgstr ""
+msgstr "Proveri vezu"
 
 #: frontend/src/pages/Deal.vue:229
 msgid "View Contact"
@@ -7516,7 +7516,7 @@ msgstr "Prikaži kontakt"
 
 #: frontend/src/components/Controls/GeolocationControl.vue:43
 msgid "View Location"
-msgstr ""
+msgstr "Prikaži lokaciju"
 
 #: frontend/src/components/Modals/ViewModal.vue:14
 msgid "View Name"
@@ -7729,7 +7729,7 @@ msgstr "Nemate dozvolu za pristup ovom dokumentu"
 
 #: crm/api/__init__.py:143
 msgid "You don't have permission to delete this attachment"
-msgstr ""
+msgstr "Nemate dozvolu da obrišete ovaj prilog"
 
 #: crm/fcrm/doctype/crm_form_script/crm_form_script.py:39
 msgid "You need to be in developer mode to edit a Standard Form Script"
