@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-04-12 09:47+0000\n"
-"PO-Revision-Date: 2026-04-16 01:07\n"
+"PO-Revision-Date: 2026-04-17 01:06\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Portuguese\n"
 "MIME-Version: 1.0\n"
@@ -3675,7 +3675,7 @@ msgstr "Imagem"
 
 #: frontend/src/components/ViewControls.vue:203
 msgid "Import"
-msgstr ""
+msgstr "Importar"
 
 #: frontend/src/components/Filter.vue:277
 #: frontend/src/components/Filter.vue:298
@@ -4400,7 +4400,7 @@ msgstr ""
 #. Option for the 'Priority' (Select) field in DocType 'CRM Task'
 #: crm/fcrm/doctype/crm_task/crm_task.json
 msgid "Low"
-msgstr ""
+msgstr "Baixa"
 
 #: frontend/src/components/Telephony/CallUI.vue:7
 #: frontend/src/pages/Contact.vue:92
@@ -4542,7 +4542,7 @@ msgstr "Menção"
 
 #: frontend/src/components/Notifications.vue:116
 msgid "Mentions"
-msgstr ""
+msgstr "Menções"
 
 #. Label of the message (HTML Editor) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
@@ -4606,7 +4606,7 @@ msgstr "Segunda-feira"
 
 #: crm/api/dashboard.py:721 frontend/src/pages/Calendar.vue:93
 msgid "Month"
-msgstr ""
+msgstr "Mês"
 
 #. Option for the 'Default Calendar View' (Select) field in DocType 'FCRM
 #. Settings'
@@ -4616,7 +4616,7 @@ msgstr ""
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
 #: frontend/src/components/Settings/CalendarSettings.vue:51
 msgid "Monthly"
-msgstr ""
+msgstr "Mensal"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:465
 #: frontend/src/components/ViewControls.vue:233
@@ -4671,7 +4671,7 @@ msgstr ""
 #: frontend/src/pages/MobileOrganization.vue:501
 #: frontend/src/pages/Organization.vue:531
 msgid "Name"
-msgstr ""
+msgstr "Nome"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:417
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:148
@@ -4709,11 +4709,11 @@ msgstr ""
 #: frontend/src/components/Settings/Sla/SlaPolicyList.vue:8
 #: frontend/src/components/Settings/Users.vue:30
 msgid "New"
-msgstr ""
+msgstr "Novo"
 
 #: frontend/src/components/Modals/AddressModal.vue:85
 msgid "New Address"
-msgstr ""
+msgstr "Novo endereço"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:12
 msgid "New Assignment Rule"
@@ -4737,7 +4737,7 @@ msgstr "Novo e-mail"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:673
 msgid "New Event"
-msgstr ""
+msgstr "Novo evento"
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:9
 msgid "New Lead Sync Source"
@@ -4758,7 +4758,7 @@ msgstr "Nova organização"
 
 #: frontend/src/components/Modals/ChangePasswordModal.vue:8
 msgid "New Password"
-msgstr ""
+msgstr "Nova Senha"
 
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:8
 msgid "New SLA Policy"
@@ -4796,7 +4796,7 @@ msgstr ""
 
 #: frontend/src/components/Modals/CreateDocumentModal.vue:84
 msgid "New {0}"
-msgstr ""
+msgstr "Novo {0}"
 
 #: frontend/src/components/Filter.vue:709
 msgid "Next 6 Months"
@@ -4825,7 +4825,7 @@ msgstr "Próximo ano"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:534
 msgid "No"
-msgstr ""
+msgstr "Não"
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
@@ -4855,7 +4855,7 @@ msgstr ""
 
 #: frontend/src/components/FieldLayoutEditor.vue:123
 msgid "No Label"
-msgstr ""
+msgstr "Sem rótulo"
 
 #: frontend/src/pages/Deal.vue:731
 msgid "No Mobile Number Set"
@@ -4934,7 +4934,7 @@ msgstr ""
 
 #: frontend/src/pages/MobileContact.vue:153
 msgid "No {0} found"
-msgstr ""
+msgstr "Nenhum {0} encontrado"
 
 #: frontend/src/components/Controls/Grid.vue:27
 msgid "No."
@@ -4955,7 +4955,7 @@ msgstr "Normal"
 
 #: crm/utils/__init__.py:265
 msgid "Not Allowed"
-msgstr ""
+msgstr "Não Permitido"
 
 #: frontend/src/components/Activities/DataFields.vue:10
 #: frontend/src/components/Controls/GridFieldsEditorModal.vue:10
@@ -5131,7 +5131,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
 msgid "On Hold"
-msgstr ""
+msgstr "Em espera"
 
 #. Option for the 'Type' (Select) field in DocType 'CRM Deal Status'
 #. Option for the 'Type' (Select) field in DocType 'CRM Lead Status'
@@ -5178,7 +5178,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
 msgid "Open"
-msgstr ""
+msgstr "Abrir"
 
 #: frontend/src/components/Modals/NoteModal.vue:13
 #: frontend/src/components/Modals/TaskModal.vue:13
@@ -5310,12 +5310,12 @@ msgstr ""
 #. Label of the page (Link) field in DocType 'Facebook Lead Form'
 #: crm/lead_syncing/doctype/facebook_lead_form/facebook_lead_form.json
 msgid "Page"
-msgstr ""
+msgstr "Página"
 
 #. Label of the page_name (Data) field in DocType 'Facebook Page'
 #: crm/lead_syncing/doctype/facebook_page/facebook_page.json
 msgid "Page Name"
-msgstr ""
+msgstr "Nome da Página"
 
 #. Label of the parent_crm_territory (Link) field in DocType 'CRM Territory'
 #: crm/fcrm/doctype/crm_territory/crm_territory.json
@@ -5325,7 +5325,7 @@ msgstr ""
 #: frontend/src/components/Settings/Profile/ProfileSettings.vue:110
 #: frontend/src/components/Settings/emailConfig.js:71
 msgid "Password"
-msgstr ""
+msgstr "Senha"
 
 #: crm/api/live_demo.py:24 crm/api/live_demo.py:32
 msgid "Password cannot be reset by Demo User {}"
@@ -5349,7 +5349,7 @@ msgstr ""
 
 #: frontend/src/components/Modals/ChangePasswordModal.vue:119
 msgid "Passwords do not match"
-msgstr ""
+msgstr "As senhas não coincidem"
 
 #: frontend/src/components/Modals/ChangePasswordModal.vue:36
 #: frontend/src/components/Modals/ChangePasswordModal.vue:125
@@ -5381,7 +5381,7 @@ msgstr ""
 
 #: frontend/src/pages/Dashboard.vue:66
 msgid "Period"
-msgstr ""
+msgstr "Período"
 
 #. Label of the person_section (Section Break) field in DocType 'CRM Deal'
 #. Label of the person_tab (Tab Break) field in DocType 'CRM Lead'
