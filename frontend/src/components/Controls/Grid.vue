@@ -817,7 +817,9 @@ const gridTemplateColumns = computed(() => {
   let gridViewSettings = getGridViewSettings(props.parentDoctype)
   return fields.value
     .map((f) => {
-      const gs = gridViewSettings.find((g) => g.fieldname === f.fieldname)
+      const gs = gridViewSettings.length
+        ? gridViewSettings.find((g) => g.fieldname === f.fieldname)
+        : f
       return `minmax(0, ${gs?.columns || 2}fr)`
     })
     .join(' ')
