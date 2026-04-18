@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-04-12 09:47+0000\n"
-"PO-Revision-Date: 2026-04-17 01:06\n"
+"PO-Revision-Date: 2026-04-18 02:02\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Turkish\n"
 "MIME-Version: 1.0\n"
@@ -5408,7 +5408,7 @@ msgstr "Telefon"
 #. Label of the phone_nos (Table) field in DocType 'CRM Telephony Agent'
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
 msgid "Phone Numbers"
-msgstr ""
+msgstr "Telefon Numaraları"
 
 #: frontend/src/components/ViewControls.vue:1096
 msgid "Pin View"
@@ -6376,7 +6376,7 @@ msgstr ""
 #. Option for the 'Type' (Select) field in DocType 'CRM Dropdown Item'
 #: crm/fcrm/doctype/crm_dropdown_item/crm_dropdown_item.json
 msgid "Separator"
-msgstr ""
+msgstr "Ayırıcı"
 
 #. Label of the naming_series (Select) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
@@ -6557,11 +6557,11 @@ msgstr ""
 #. Option for the 'Type' (Select) field in DocType 'CRM Global Settings'
 #: crm/fcrm/doctype/crm_global_settings/crm_global_settings.json
 msgid "Sidebar Items"
-msgstr ""
+msgstr "Kenar Çubuğu Öğeleri"
 
 #: frontend/src/components/Settings/Profile/UserEmailSettings.vue:33
 msgid "Signature"
-msgstr ""
+msgstr "İmza"
 
 #. Description of the 'Condition' (Code) field in DocType 'CRM Service Level
 #. Agreement'
@@ -6701,7 +6701,7 @@ msgstr ""
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:31
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:32
 msgid "Start Time"
-msgstr ""
+msgstr "Başlangıç Zamanı"
 
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:186
 msgid "Start Time is required"
@@ -7082,7 +7082,7 @@ msgstr "Başlık"
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
 #: frontend/src/components/Kanban/KanbanSettings.vue:29
 msgid "Title Field"
-msgstr ""
+msgstr "Başlık Alanı"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:822
 #: frontend/src/components/Modals/EventModal.vue:376
