@@ -194,18 +194,25 @@
                           @change="(v) => fieldChange(v, field)"
                         />
                         <div
+                          v-else-if="field.fieldtype === 'Time'"
+                          class="form-control"
+                        >
+                          <TimePicker
+                            :value="doc[field.fieldname]"
+                            :format="getFormat('', '', false, true, false)"
+                            :placeholder="field.placeholder"
+                            @change="(v) => fieldChange(v, field)"
+                          />
+                        </div>
+                        <div
                           v-else-if="field.fieldtype === 'Datetime'"
                           class="form-control"
                         >
                           <DateTimePicker
-                            icon-left=""
                             :value="doc[field.fieldname]"
-                            :formatter="
-                              (date) => getFormat(date, '', true, true)
-                            "
+                            :format="getFormat('', '', true, true, false)"
                             :placeholder="field.placeholder"
                             placement="left-start"
-                            :hideIcon="true"
                             @change="(v) => fieldChange(v, field)"
                           />
                         </div>
@@ -214,12 +221,10 @@
                           class="form-control"
                         >
                           <DatePicker
-                            icon-left=""
                             :value="doc[field.fieldname]"
-                            :formatter="(date) => getFormat(date, '', true)"
+                            :format="getFormat('', '', true, false, false)"
                             :placeholder="field.placeholder"
                             placement="left-start"
-                            :hideIcon="true"
                             @change="(v) => fieldChange(v, field)"
                           />
                         </div>
@@ -411,7 +416,7 @@ import {
   interpolateTemplate,
 } from '@/utils'
 import { flt } from '@/utils/numberFormat.js'
-import { Tooltip, DateTimePicker, DatePicker } from 'frappe-ui'
+import { Tooltip, DateTimePicker, DatePicker, TimePicker } from 'frappe-ui'
 import { useDocument } from '@/data/document'
 import { ref, computed, getCurrentInstance } from 'vue'
 
