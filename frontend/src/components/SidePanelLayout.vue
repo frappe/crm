@@ -194,18 +194,25 @@
                           @change="(v) => fieldChange(v, field)"
                         />
                         <div
+                          v-else-if="field.fieldtype === 'Time'"
+                          class="form-control"
+                        >
+                          <TimePicker
+                            :value="doc[field.fieldname]"
+                            :format="getFormat('', '', false, true, false)"
+                            :placeholder="field.placeholder"
+                            @change="(v) => fieldChange(v, field)"
+                          />
+                        </div>
+                        <div
                           v-else-if="field.fieldtype === 'Datetime'"
                           class="form-control"
                         >
                           <DateTimePicker
-                            icon-left=""
                             :value="doc[field.fieldname]"
-                            :formatter="
-                              (date) => getFormat(date, '', true, true)
-                            "
+                            :format="getFormat('', '', true, true, false)"
                             :placeholder="field.placeholder"
                             placement="left-start"
-                            :hideIcon="true"
                             @change="(v) => fieldChange(v, field)"
                           />
                         </div>
@@ -214,12 +221,10 @@
                           class="form-control"
                         >
                           <DatePicker
-                            icon-left=""
                             :value="doc[field.fieldname]"
-                            :formatter="(date) => getFormat(date, '', true)"
+                            :format="getFormat('', '', true, false, false)"
                             :placeholder="field.placeholder"
                             placement="left-start"
-                            :hideIcon="true"
                             @change="(v) => fieldChange(v, field)"
                           />
                         </div>
@@ -401,6 +406,7 @@ import Link from '@/components/Controls/Link.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import SidePanelModal from '@/components/Modals/SidePanelModal.vue'
 import { getMeta } from '@/stores/meta'
+import { parseLinkFilters } from '@/utils/fieldTransforms'
 import { usersStore } from '@/stores/users'
 import { isMobileView } from '@/composables/settings'
 import {
@@ -410,7 +416,7 @@ import {
   interpolateTemplate,
 } from '@/utils'
 import { flt } from '@/utils/numberFormat.js'
-import { Tooltip, DateTimePicker, DatePicker } from 'frappe-ui'
+import { Tooltip, DateTimePicker, DatePicker, TimePicker } from 'frappe-ui'
 import { useDocument } from '@/data/document'
 import { ref, computed, getCurrentInstance } from 'vue'
 
@@ -462,12 +468,21 @@ const _sections = computed(() => {
 })
 
 function parsedField(field) {
+  // Clone to avoid mutating the cached layout data
+  field = { ...field }
+
+  // Merge script property overrides
+  const overrides = document.fieldPropertyOverrides?.[field.fieldname]
+  if (overrides) {
+    Object.assign(field, overrides)
+  }
+
   if (field.fieldtype == 'Select' && typeof field.options === 'string') {
     field.options = field.options.split('\n').map((option) => {
       return { label: option, value: option }
     })
 
-    if (field.options[0].value !== '') {
+    if (field.options[0].value !== '' && !field.reqd) {
       field.options.unshift({ label: '', value: '' })
     }
   }
@@ -475,9 +490,9 @@ function parsedField(field) {
   if (field.fieldtype === 'Link' && field.options === 'User') {
     field.fieldtype = 'User'
     field.link_filters = JSON.stringify({
-      ...(field.link_filters ? JSON.parse(field.link_filters) : {}),
       name: ['in', users.data?.crmUsers?.map((user) => user.name)],
       ignore_user_type: 1,
+      ...(parseLinkFilters(field.link_filters) || {}),
     })
   }
 
@@ -486,21 +501,27 @@ function parsedField(field) {
     doc.value,
   )
 
+  // Script overrides for read_only take priority over depends_on
+  const scriptReadOnly = overrides?.read_only
+  const effectiveReadOnly =
+    scriptReadOnly !== undefined
+      ? scriptReadOnly
+      : field.read_only ||
+        (field.read_only_depends_on && read_only_via_depends_on)
+
   let _field = {
     ...field,
-    filters: field.link_filters && JSON.parse(field.link_filters),
+    filters: parseLinkFilters(field.link_filters),
     placeholder: field.placeholder || field.label,
     display_via_depends_on: evaluateDependsOnValue(field.depends_on, doc.value),
     mandatory_via_depends_on: evaluateDependsOnValue(
       field.mandatory_depends_on,
       doc.value,
     ),
-    read_only:
-      field.read_only ||
-      (field.read_only_depends_on && read_only_via_depends_on),
+    read_only: effectiveReadOnly,
   }
 
-  _field.visible = isFieldVisible(_field)
+  _field.visible = isFieldVisible(_field, overrides?.hidden)
   return _field
 }
 
@@ -524,6 +545,12 @@ async function fieldChange(value, df) {
 }
 
 function parsedSection(section, editButtonAdded) {
+  // Merge script property overrides for section
+  const overrides = document.fieldPropertyOverrides?.[section.name]
+  if (overrides) {
+    section = { ...section, ...overrides }
+  }
+
   let isContactSection = section.name == 'contacts_section'
   section.showEditButton = !(
     isMobileView.value ||
@@ -532,15 +559,23 @@ function parsedSection(section, editButtonAdded) {
     editButtonAdded
   )
 
-  section.visible =
-    isContactSection ||
-    section.columns?.[0].fields.filter((f) => f.visible).length
+  // Script hidden override for sections
+  if (overrides?.hidden !== undefined) {
+    section.visible = !overrides.hidden
+  } else {
+    section.visible =
+      isContactSection ||
+      section.columns?.[0].fields.filter((f) => f.visible).length
+  }
 
   return section
 }
 
-function isFieldVisible(field) {
+function isFieldVisible(field, scriptHidden) {
   if (props.preview) return true
+
+  // Script override for hidden wins over everything
+  if (scriptHidden !== undefined) return !scriptHidden
 
   let readOnlyField =
     field.read_only || field.fieldtype === 'Read Only' ? true : false

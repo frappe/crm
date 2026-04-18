@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-04-12 09:47+0000\n"
-"PO-Revision-Date: 2026-04-12 23:23\n"
+"PO-Revision-Date: 2026-04-18 02:02\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Czech\n"
 "MIME-Version: 1.0\n"
@@ -49,7 +49,7 @@ msgstr ""
 
 #: frontend/src/utils/index.js:203
 msgid "1 hour ago"
-msgstr ""
+msgstr "před 1 hodinou"
 
 #: frontend/src/composables/event.js:213
 msgid "1 hr"
@@ -57,19 +57,19 @@ msgstr ""
 
 #: frontend/src/utils/index.js:199
 msgid "1 minute ago"
-msgstr ""
+msgstr "před 1 minutou"
 
 #: frontend/src/utils/index.js:218
 msgid "1 month ago"
-msgstr ""
+msgstr "před 1 měsícem"
 
 #: frontend/src/utils/index.js:214
 msgid "1 week ago"
-msgstr ""
+msgstr "před 1 týdnem"
 
 #: frontend/src/utils/index.js:222
 msgid "1 year ago"
-msgstr ""
+msgstr "před 1 rokem"
 
 #. Option for the 'No. of Employees' (Select) field in DocType 'CRM Deal'
 #. Option for the 'No. of Employees' (Select) field in DocType 'CRM Lead'
@@ -165,7 +165,7 @@ msgstr ""
 
 #: crm/templates/emails/helpdesk_invitation.html:5
 msgid "A new account has been created for you at {0}"
-msgstr ""
+msgstr "Na {0} vám byl vytvořen nový účet"
 
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.py:251
 msgid "A valid call log is required."
@@ -181,7 +181,7 @@ msgstr ""
 #: frontend/src/components/Settings/Telephony/ExotelSettings.vue:45
 #: frontend/src/components/Settings/emailConfig.js:87
 msgid "API Key"
-msgstr ""
+msgstr "API klíč"
 
 #. Label of the api_secret (Password) field in DocType 'CRM Twilio Settings'
 #. Label of the api_secret (Password) field in DocType 'ERPNext CRM Settings'
@@ -190,7 +190,7 @@ msgstr ""
 #: frontend/src/components/Settings/ERPNextSettings.vue:88
 #: frontend/src/components/Settings/emailConfig.js:93
 msgid "API Secret"
-msgstr ""
+msgstr "API tajný klíč"
 
 #. Label of the api_token (Password) field in DocType 'CRM Exotel Settings'
 #: crm/fcrm/doctype/crm_exotel_settings/crm_exotel_settings.json
@@ -250,7 +250,7 @@ msgstr ""
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:90
 #: frontend/src/components/Settings/LeadSyncing/leadSyncSourceConfig.js:29
 msgid "Access Token"
-msgstr ""
+msgstr "Přístupový token"
 
 #: crm/lead_syncing/doctype/lead_sync_source/facebook.py:145
 msgid "Access token is required"
@@ -258,7 +258,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/Settings.vue:95
 msgid "Account"
-msgstr ""
+msgstr "Účet"
 
 #. Label of the account_id (Data) field in DocType 'Facebook Page'
 #: crm/lead_syncing/doctype/facebook_page/facebook_page.json
@@ -294,12 +294,12 @@ msgstr ""
 #: frontend/src/components/ViewControls.vue:692
 #: frontend/src/components/ViewControls.vue:1067
 msgid "Actions"
-msgstr ""
+msgstr "Akce"
 
 #: frontend/src/pages/Deal.vue:560 frontend/src/pages/Lead.vue:412
 #: frontend/src/pages/MobileDeal.vue:438 frontend/src/pages/MobileLead.vue:284
 msgid "Activity"
-msgstr ""
+msgstr "Aktivita"
 
 #: frontend/src/components/Dashboard/AddChartModal.vue:41
 #: frontend/src/components/Modals/AddExistingUserModal.vue:55
@@ -326,7 +326,7 @@ msgstr ""
 #: frontend/src/components/FieldLayoutEditor.vue:562
 #: frontend/src/components/Kanban/KanbanView.vue:157
 msgid "Add Column"
-msgstr ""
+msgstr "Přidat sloupec"
 
 #: frontend/src/components/ConditionsFilter/CFConditions.vue:26
 #: frontend/src/components/ConditionsFilter/CFConditions.vue:72
@@ -498,7 +498,7 @@ msgstr ""
 #. Label of the address (Link) field in DocType 'CRM Organization'
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
 msgid "Address"
-msgstr ""
+msgstr "Adresa"
 
 #: frontend/src/components/Modals/AddExistingUserModal.vue:94
 #: frontend/src/components/Settings/InviteUserPage.vue:166
@@ -519,7 +519,7 @@ msgstr ""
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:72
 #: frontend/src/components/Settings/Users.vue:81
 msgid "All"
-msgstr ""
+msgstr "Vše"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:293
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:939
@@ -528,7 +528,7 @@ msgstr ""
 #: frontend/src/components/Modals/EventModal.vue:71
 #: frontend/src/composables/event.js:172
 msgid "All Day"
-msgstr ""
+msgstr "Celý den"
 
 #. Label of the all_day_event_notifications (Table) field in DocType 'FCRM
 #. Settings'
@@ -565,7 +565,7 @@ msgstr ""
 #. Description of the 'Favicon' (Attach) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 msgid "An icon file with .ico extension. Should be 16 x 16 px. Generated using a favicon generator. [favicon-generator.org]"
-msgstr ""
+msgstr "Soubor ikony s příponou .ico. Měl by být 16 x 16 px. Vygenerováno pomocí generátoru favicon. [favicon-generator.org]"
 
 #. Description of the 'Logo' (Attach) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
@@ -597,7 +597,7 @@ msgstr ""
 #. Label of the app_name (Data) field in DocType 'CRM Twilio Settings'
 #: crm/fcrm/doctype/crm_twilio_settings/crm_twilio_settings.json
 msgid "App Name"
-msgstr ""
+msgstr "Název aplikace"
 
 #: frontend/src/components/Settings/PreferencesSettings.vue:16
 msgid "Appearance"
@@ -614,7 +614,7 @@ msgstr ""
 #: frontend/src/components/Kanban/KanbanSettings.vue:94
 #: frontend/src/components/Kanban/KanbanView.vue:46
 msgid "Apply"
-msgstr ""
+msgstr "Použít"
 
 #. Label of the apply_on (Link) field in DocType 'CRM Service Level Agreement'
 #: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.json
@@ -627,11 +627,11 @@ msgstr ""
 #. Label of the view (Select) field in DocType 'CRM Form Script'
 #: crm/fcrm/doctype/crm_form_script/crm_form_script.json
 msgid "Apply To"
-msgstr ""
+msgstr "Použít na"
 
 #: frontend/src/components/Apps.vue:19
 msgid "Apps"
-msgstr ""
+msgstr "Aplikace"
 
 #: frontend/src/composables/demoData.js:21
 msgid "Are you sure you want to clear demo data? This action cannot be undone."
@@ -708,7 +708,7 @@ msgstr ""
 #: frontend/src/components/ListBulkActions.vue:184
 #: frontend/src/components/Modals/AssignmentModal.vue:4
 msgid "Assign To"
-msgstr ""
+msgstr "Přiřadit komu"
 
 #: frontend/src/components/AssignToBody.vue:64
 msgid "Assign To Me"
@@ -717,7 +717,7 @@ msgstr ""
 #. Label of the assigned_to (Link) field in DocType 'CRM Task'
 #: crm/fcrm/doctype/crm_task/crm_task.json
 msgid "Assigned To"
-msgstr ""
+msgstr "Přiřazeno komu"
 
 #: frontend/src/components/Settings/AssignmentRules/AssigneeRules.vue:5
 msgid "Assignee Rules"
@@ -730,7 +730,7 @@ msgstr ""
 #. Option for the 'Type' (Select) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
 msgid "Assignment"
-msgstr ""
+msgstr "Úkol"
 
 #: frontend/src/components/ListBulkActions.vue:152
 msgid "Assignment Cleared Successfully"
@@ -744,7 +744,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:609
 msgid "Assignment Days"
-msgstr ""
+msgstr "Dny přiřazení"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:471
 msgid "Assignment Days are required"
@@ -755,7 +755,7 @@ msgstr ""
 #: frontend/src/components/Layouts/AppSidebar.vue:606
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRulesList.vue:16
 msgid "Assignment Rule"
-msgstr ""
+msgstr "Pravidlo přiřazení"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:698
 msgid "Assignment Rule Created"
@@ -780,7 +780,7 @@ msgstr ""
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRules.vue:7
 #: frontend/src/components/Settings/Settings.vue:183
 msgid "Assignment Rules"
-msgstr ""
+msgstr "Pravidla přiřazení"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:302
 msgid "Assignment Schedule"
@@ -809,7 +809,7 @@ msgstr ""
 #: frontend/src/components/FilesUploader/FilesUploader.vue:5
 #: frontend/src/components/FilesUploader/FilesUploader.vue:73
 msgid "Attach"
-msgstr ""
+msgstr "Připojit"
 
 #: frontend/src/components/CommentBox.vue:65
 #: frontend/src/components/EmailEditor.vue:163 frontend/src/pages/Deal.vue:114
@@ -824,7 +824,7 @@ msgstr ""
 #: frontend/src/pages/Deal.vue:600 frontend/src/pages/Lead.vue:452
 #: frontend/src/pages/MobileDeal.vue:474 frontend/src/pages/MobileLead.vue:319
 msgid "Attachments"
-msgstr ""
+msgstr "Přílohy"
 
 #: frontend/src/components/Modals/EventModal.vue:120
 msgid "Attendees"
@@ -875,7 +875,7 @@ msgstr ""
 #. Label of the autocomplete (Autocomplete) field in DocType 'CRM Products'
 #: crm/fcrm/doctype/crm_products/crm_products.json
 msgid "Autocomplete"
-msgstr ""
+msgstr "Automatické dokončování"
 
 #. Description of the 'Reopen lead/deal on new communication' (Check) field in
 #. DocType 'FCRM Settings'
@@ -977,7 +977,7 @@ msgstr ""
 #: frontend/src/components/Settings/EmailAdd.vue:80
 #: frontend/src/components/Settings/EmailEdit.vue:68
 msgid "Back"
-msgstr ""
+msgstr "Zpět"
 
 #: frontend/src/components/Settings/LeadSyncing/FailureLogs.vue:9
 msgid "Back to All Logs"
@@ -1001,15 +1001,15 @@ msgstr ""
 
 #: frontend/src/components/Filter.vue:356
 msgid "Between"
-msgstr ""
+msgstr "Mezi"
 
 #: frontend/src/components/Settings/Settings.vue:133
 msgid "Brand"
-msgstr ""
+msgstr "Značka"
 
 #: frontend/src/components/Settings/BrandSettings.vue:62
 msgid "Brand Logo"
-msgstr ""
+msgstr "Logo značky"
 
 #: frontend/src/components/Settings/BrandSettings.vue:30
 msgid "Brand Name"
@@ -1026,7 +1026,7 @@ msgstr ""
 
 #: frontend/src/components/Modals/EditValueModal.vue:2
 msgid "Bulk Edit"
-msgstr ""
+msgstr "Hromadná úprava"
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
@@ -1223,7 +1223,7 @@ msgstr ""
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 #: frontend/src/components/Settings/Settings.vue:138
 msgid "Calendar"
-msgstr ""
+msgstr "Kalendář"
 
 #: frontend/src/components/Settings/CalendarSettings.vue:7
 msgid "Calendar Settings"
@@ -1278,7 +1278,7 @@ msgstr ""
 
 #: frontend/src/components/FilesUploader/FilesUploaderArea.vue:51
 msgid "Camera"
-msgstr ""
+msgstr "Fotoaparát"
 
 #: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.py:28
 msgid "Can't retry sync for this without source!"
@@ -1300,7 +1300,7 @@ msgstr ""
 #: frontend/src/components/ViewControls.vue:154
 #: frontend/src/pages/Dashboard.vue:32
 msgid "Cancel"
-msgstr ""
+msgstr "Zrušit"
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Call Log'
 #. Option for the 'Status' (Select) field in DocType 'CRM Task'
@@ -1331,7 +1331,7 @@ msgstr ""
 
 #: frontend/src/components/FilesUploader/FilesUploader.vue:91
 msgid "Capture"
-msgstr ""
+msgstr "Zachytit"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:585
 msgid "Capturing Leads"
@@ -1352,12 +1352,12 @@ msgstr "Změnit"
 #: frontend/src/pages/MobileOrganization.vue:37
 #: frontend/src/pages/Organization.vue:47
 msgid "Change Image"
-msgstr ""
+msgstr "Změnit obrázek"
 
 #: frontend/src/components/Modals/ChangePasswordModal.vue:2
 #: frontend/src/components/Settings/Profile/ProfileSettings.vue:117
 msgid "Change Password"
-msgstr ""
+msgstr "Změnit Heslo"
 
 #: frontend/src/components/Settings/Profile/ProfileSettings.vue:158
 msgid "Change Photo"
@@ -1386,11 +1386,11 @@ msgstr ""
 
 #: frontend/src/pages/Dashboard.vue:22
 msgid "Chart"
-msgstr ""
+msgstr "Graf"
 
 #: frontend/src/components/Dashboard/AddChartModal.vue:12
 msgid "Chart Type"
-msgstr ""
+msgstr "Typ grafu"
 
 #: frontend/src/components/Modals/ConvertToDealModal.vue:29
 #: frontend/src/components/Modals/ConvertToDealModal.vue:55
@@ -1438,7 +1438,7 @@ msgstr ""
 #: frontend/src/components/Controls/Link.vue:59
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:59
 msgid "Clear"
-msgstr ""
+msgstr "Vymazat"
 
 #: frontend/src/components/Filter.vue:21 frontend/src/components/Filter.vue:149
 msgid "Clear All Filters"
@@ -1466,13 +1466,13 @@ msgstr ""
 
 #: crm/templates/emails/helpdesk_invitation.html:7
 msgid "Click on the link below to complete your registration and set a new password"
-msgstr ""
+msgstr "Klikněte na odkaz níže pro dokončení registrace a nastavení nového hesla"
 
 #: frontend/src/components/Controls/GeolocationControl.vue:54
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:62
 #: frontend/src/components/Settings/Sla/SlaPolicyList.vue:128
 msgid "Close"
-msgstr ""
+msgstr "Zavřít"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:38
 msgid "Close Panel"
@@ -1485,22 +1485,22 @@ msgstr ""
 
 #: frontend/src/components/Layouts/AppSidebar.vue:116
 msgid "Collapse"
-msgstr ""
+msgstr "Sbalit"
 
 #: frontend/src/components/FieldLayoutEditor.vue:462
 msgid "Collapsible"
-msgstr ""
+msgstr "Sbalitelné"
 
 #. Label of the color (Select) field in DocType 'CRM Deal Status'
 #. Label of the color (Select) field in DocType 'CRM Lead Status'
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
 msgid "Color"
-msgstr ""
+msgstr "Barva"
 
 #: frontend/src/components/FieldLayoutEditor.vue:559
 msgid "Column"
-msgstr ""
+msgstr "Sloupec"
 
 #. Label of the column_field (Data) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
@@ -1512,7 +1512,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
 #: frontend/src/components/ColumnSettings.vue:4
 msgid "Columns"
-msgstr ""
+msgstr "Sloupce"
 
 #. Label of the comment (Link) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
@@ -1521,7 +1521,7 @@ msgstr ""
 #: frontend/src/components/CommunicationArea.vue:15
 #: frontend/src/components/Layouts/AppSidebar.vue:603
 msgid "Comment"
-msgstr ""
+msgstr "Komentář"
 
 #: frontend/src/components/CommunicationArea.vue:275
 msgid "Comment sent!"
@@ -1530,7 +1530,7 @@ msgstr ""
 #: frontend/src/pages/Deal.vue:570 frontend/src/pages/Lead.vue:422
 #: frontend/src/pages/MobileDeal.vue:448 frontend/src/pages/MobileLead.vue:294
 msgid "Comments"
-msgstr ""
+msgstr "Komentáře"
 
 #: crm/api/dashboard.py:938
 msgid "Common reasons for losing deals"
@@ -1550,7 +1550,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:130
 msgid "Company Name"
-msgstr ""
+msgstr "Název společnosti"
 
 #. Label of the erpnext_company (Data) field in DocType 'ERPNext CRM Settings'
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.json
@@ -1563,13 +1563,13 @@ msgstr ""
 
 #: crm/templates/emails/helpdesk_invitation.html:10
 msgid "Complete Registration"
-msgstr ""
+msgstr "Dokončit registraci"
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 #: frontend/src/utils/callLog.js:64
 msgid "Completed"
-msgstr ""
+msgstr "Dokončeno"
 
 #. Option for the 'Device' (Select) field in DocType 'CRM Telephony Agent'
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
@@ -1583,7 +1583,7 @@ msgstr ""
 #: frontend/src/components/ConditionsFilter/CFCondition.vue:65
 #: frontend/src/components/ConditionsFilter/CFCondition.vue:72
 msgid "Condition"
-msgstr ""
+msgstr "Podmínka"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:188
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:272
@@ -1639,7 +1639,7 @@ msgstr ""
 #: frontend/src/composables/demoData.js:26
 #: frontend/src/composables/frappecloud.js:29
 msgid "Confirm"
-msgstr ""
+msgstr "Potvrdit"
 
 #: frontend/src/components/Settings/Sla/EditResponseResolutionModal.vue:44
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:66
@@ -1653,7 +1653,7 @@ msgstr ""
 
 #: frontend/src/components/Modals/ChangePasswordModal.vue:19
 msgid "Confirm Password"
-msgstr ""
+msgstr "Potvrdit heslo"
 
 #: frontend/src/utils/index.js:886 frontend/src/utils/index.js:889
 msgid "Confirm {0}"
@@ -1674,7 +1674,7 @@ msgstr ""
 #: frontend/src/components/Layouts/AppSidebar.vue:576
 #: frontend/src/components/Modals/ConvertToDealModal.vue:51
 msgid "Contact"
-msgstr ""
+msgstr "Kontakt"
 
 #: frontend/src/pages/Deal.vue:681 frontend/src/pages/MobileDeal.vue:552
 msgid "Contact Added"
@@ -1788,7 +1788,7 @@ msgstr ""
 #: crm/api/dashboard.py:647 crm/api/dashboard.py:795 crm/api/dashboard.py:852
 #: crm/api/dashboard.py:945
 msgid "Count"
-msgstr ""
+msgstr "Počet"
 
 #: frontend/src/components/Modals/AddressModal.vue:90
 #: frontend/src/components/Modals/CallLogModal.vue:91
@@ -1810,7 +1810,7 @@ msgstr ""
 #: frontend/src/pages/Leads.vue:13 frontend/src/pages/Notes.vue:9
 #: frontend/src/pages/Organizations.vue:13 frontend/src/pages/Tasks.vue:13
 msgid "Create"
-msgstr ""
+msgstr "Vytvořit"
 
 #: frontend/src/components/Modals/DealModal.vue:8
 msgid "Create Deal"
@@ -1835,7 +1835,7 @@ msgstr ""
 #: frontend/src/components/Modals/WhatsappTemplateSelectorModal.vue:45
 #: frontend/src/components/PrimaryDropdown.vue:41
 msgid "Create New"
-msgstr ""
+msgstr "Vytvořit nový"
 
 #: frontend/src/components/Settings/Sla/SlaHolidays.vue:66
 msgid "Create New Holiday List"
@@ -1893,7 +1893,7 @@ msgstr ""
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 #: frontend/src/components/Settings/CurrencySettings.vue:31
 msgid "Currency"
-msgstr ""
+msgstr "Měna"
 
 #: frontend/src/components/Settings/Settings.vue:128
 msgid "Currency & Exchange Rate"
@@ -1942,7 +1942,7 @@ msgstr ""
 #: frontend/src/components/Layouts/AppSidebar.vue:611
 #: frontend/src/components/Settings/Settings.vue:196
 msgid "Customization"
-msgstr ""
+msgstr "Přizpůsobení"
 
 #: frontend/src/components/ViewControls.vue:223
 msgid "Customize Quick Filters"
@@ -1956,7 +1956,7 @@ msgstr ""
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
 #: frontend/src/components/Settings/CalendarSettings.vue:49
 msgid "Daily"
-msgstr ""
+msgstr "Denně"
 
 #: crm/api/dashboard.py:639
 msgid "Daily performance of leads, deals, and wins"
@@ -1964,7 +1964,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/ThemeSwitcher.vue:89
 msgid "Dark"
-msgstr ""
+msgstr "Tmavý"
 
 #: frontend/src/components/Settings/CurrencySettings.vue:35
 msgid "Dashboard number cards & charts will show currency in the selected format. Once set, cannot be edited."
@@ -1984,7 +1984,7 @@ msgstr ""
 
 #: frontend/src/pages/DataImport.vue:49
 msgid "Data Import"
-msgstr ""
+msgstr "Import dat"
 
 #. Label of the date (Date) field in DocType 'CRM Holiday'
 #: crm/api/dashboard.py:641 crm/fcrm/doctype/crm_holiday/crm_holiday.json
@@ -2109,7 +2109,7 @@ msgstr ""
 #. Label of the default (Check) field in DocType 'CRM Service Level Agreement'
 #: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.json
 msgid "Default"
-msgstr ""
+msgstr "Výchozí"
 
 #. Label of the default_calendar_view (Select) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
@@ -2128,11 +2128,11 @@ msgstr ""
 
 #: frontend/src/components/Settings/EmailAccountCard.vue:38
 msgid "Default Inbox"
-msgstr ""
+msgstr "Výchozí doručená pošta"
 
 #: frontend/src/components/Settings/emailConfig.js:42
 msgid "Default Incoming"
-msgstr ""
+msgstr "Výchozí příchozí"
 
 #. Label of the default_medium (Select) field in DocType 'CRM Telephony Agent'
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
@@ -2142,7 +2142,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/emailConfig.js:50
 msgid "Default Outgoing"
-msgstr ""
+msgstr "Výchozí odchozí"
 
 #. Label of the default_priority (Check) field in DocType 'CRM Service Level
 #. Priority'
@@ -2153,7 +2153,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/EmailAccountCard.vue:40
 msgid "Default Sending"
-msgstr ""
+msgstr "Výchozí odesílání"
 
 #: frontend/src/components/Settings/EmailAccountCard.vue:36
 msgid "Default Sending & Inbox"
@@ -2165,7 +2165,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/CalendarSettings.vue:33
 msgid "Default View"
-msgstr ""
+msgstr "Výchozí zobrazení"
 
 #: frontend/src/components/Telephony/CallUI.vue:112
 msgid "Default calling medium set successfully to {0}"
@@ -2206,7 +2206,7 @@ msgstr ""
 #: frontend/src/pages/Notes.vue:44 frontend/src/pages/Organization.vue:90
 #: frontend/src/pages/Tasks.vue:380 frontend/src/utils/index.js:866
 msgid "Delete"
-msgstr ""
+msgstr "Smazat"
 
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.js:34
 msgid "Delete & Restore"
@@ -2289,7 +2289,7 @@ msgstr ""
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:114
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:604
 msgid "Description"
-msgstr ""
+msgstr "Popis"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:426
 msgid "Description is required"
@@ -2308,7 +2308,7 @@ msgstr ""
 #: frontend/src/pages/MobileDeal.vue:432 frontend/src/pages/MobileLead.vue:278
 #: frontend/src/pages/MobileOrganization.vue:337
 msgid "Details"
-msgstr ""
+msgstr "Podrobnosti"
 
 #. Label of the call_receiving_device (Select) field in DocType 'CRM Telephony
 #. Agent'
@@ -2338,7 +2338,7 @@ msgstr "Zakázáno"
 #: frontend/src/components/CommentBox.vue:74
 #: frontend/src/components/EmailEditor.vue:178
 msgid "Discard"
-msgstr ""
+msgstr "Zahodit"
 
 #: frontend/src/components/Settings/Telephony/ExotelSettings.vue:25
 #: frontend/src/components/Settings/Telephony/TwilioSettings.vue:25
@@ -2379,7 +2379,7 @@ msgstr ""
 #. Label of the dt (Link) field in DocType 'CRM Fields Layout'
 #: crm/fcrm/doctype/crm_fields_layout/crm_fields_layout.json
 msgid "Document Type"
-msgstr ""
+msgstr "Typ dokumentu"
 
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:237
 msgid "Document created successfully"
@@ -2404,7 +2404,7 @@ msgstr ""
 #. Option for the 'Status' (Select) field in DocType 'CRM Task'
 #: crm/fcrm/doctype/crm_task/crm_task.json
 msgid "Done"
-msgstr ""
+msgstr "Hotovo"
 
 #: frontend/src/components/Dashboard/AddChartModal.vue:33
 #: frontend/src/components/Dashboard/AddChartModal.vue:71
@@ -2414,7 +2414,7 @@ msgstr ""
 #: frontend/src/components/Activities/AudioPlayer.vue:166
 #: frontend/src/components/ViewControls.vue:266
 msgid "Download"
-msgstr ""
+msgstr "Stáhnout"
 
 #: frontend/src/components/FilesUploader/FilesUploaderArea.vue:24
 msgid "Drag & Drop files here or upload from"
@@ -2426,7 +2426,7 @@ msgstr ""
 
 #: frontend/src/components/FilesUploader/FilesUploaderArea.vue:56
 msgid "Drop files here"
-msgstr ""
+msgstr "Přetáhněte soubory sem"
 
 #. Label of the dropdown_items_tab (Tab Break) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
@@ -2436,7 +2436,7 @@ msgstr ""
 #. Label of the due_date (Datetime) field in DocType 'CRM Task'
 #: crm/fcrm/doctype/crm_task/crm_task.json
 msgid "Due Date"
-msgstr ""
+msgstr "Datum splatnosti"
 
 #. Option for the 'Type' (Select) field in DocType 'Failed Lead Sync Log'
 #: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.json
@@ -2451,7 +2451,7 @@ msgstr ""
 #: frontend/src/components/Settings/Sla/SlaPolicyList.vue:183
 #: frontend/src/components/ViewControls.vue:1071
 msgid "Duplicate"
-msgstr ""
+msgstr "Duplikovat"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:47
 msgid "Duplicate Assignment Rule"
@@ -2488,7 +2488,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 #: crm/fcrm/doctype/crm_status_change_log/crm_status_change_log.json
 msgid "Duration"
-msgstr ""
+msgstr "Doba trvání"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:628
 #: frontend/src/components/Settings/Settings.vue:221
@@ -2539,7 +2539,7 @@ msgstr ""
 #: frontend/src/components/ViewControls.vue:1089
 #: frontend/src/pages/Dashboard.vue:16
 msgid "Edit"
-msgstr ""
+msgstr "Upravit"
 
 #: frontend/src/components/Modals/CallLogDetailModal.vue:39
 #: frontend/src/components/Modals/CallLogModal.vue:87
@@ -2647,11 +2647,11 @@ msgstr ""
 #: frontend/src/pages/Organization.vue:508
 #: frontend/src/pages/Organization.vue:536
 msgid "Email"
-msgstr ""
+msgstr "E-mail"
 
 #: frontend/src/components/Settings/Profile/UserEmailSettings.vue:67
 msgid "Email Account"
-msgstr ""
+msgstr "E-mailový účet"
 
 #: frontend/src/components/Settings/EmailAdd.vue:145
 msgid "Email Account created successfully"
@@ -2679,7 +2679,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/emailConfig.js:19
 msgid "Email ID"
-msgstr ""
+msgstr "E-mailová adresa"
 
 #: frontend/src/components/Settings/emailConfig.js:181
 msgid "Email ID is required"
@@ -2692,11 +2692,11 @@ msgstr ""
 
 #: frontend/src/components/Settings/Profile/UserEmailSettings.vue:8
 msgid "Email Settings"
-msgstr ""
+msgstr "Nastavení e-mailu"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:581
 msgid "Email Template"
-msgstr ""
+msgstr "Šablona e-mailu"
 
 #: frontend/src/components/Modals/EmailTemplateSelectorModal.vue:4
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:7
@@ -2719,7 +2719,7 @@ msgstr ""
 #: frontend/src/pages/Deal.vue:565 frontend/src/pages/Lead.vue:417
 #: frontend/src/pages/MobileDeal.vue:443 frontend/src/pages/MobileLead.vue:289
 msgid "Emails"
-msgstr ""
+msgstr "E-maily"
 
 #: frontend/src/components/Settings/Profile/ProfileSettings.vue:92
 msgid "Emails & Signature"
@@ -2742,7 +2742,7 @@ msgstr ""
 #: frontend/src/components/Settings/Telephony/ExotelSettings.vue:117
 #: frontend/src/components/Settings/Telephony/TwilioSettings.vue:124
 msgid "Enable"
-msgstr ""
+msgstr "Povolit"
 
 #: frontend/src/components/Settings/Telephony/ExotelSettings.vue:112
 msgid "Enable Exotel integration to make and receive calls directly from your CRM"
@@ -2756,11 +2756,11 @@ msgstr ""
 
 #: frontend/src/components/Settings/emailConfig.js:28
 msgid "Enable Incoming"
-msgstr ""
+msgstr "Povolit příchozí"
 
 #: frontend/src/components/Settings/emailConfig.js:34
 msgid "Enable Outgoing"
-msgstr ""
+msgstr "Povolit odchozí"
 
 #: frontend/src/components/Settings/Telephony/TwilioSettings.vue:119
 msgid "Enable Twilio integration to make and receive calls directly from your CRM"
@@ -2806,7 +2806,7 @@ msgstr "Povoleno?"
 #: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.json
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:193
 msgid "End Date"
-msgstr ""
+msgstr "Datum ukončení"
 
 #: frontend/src/components/Settings/Sla/utils.js:172
 msgid "End Date cannot be before start date"
@@ -2893,7 +2893,7 @@ msgstr ""
 #: frontend/src/components/Filter.vue:349
 #: frontend/src/components/Filter.vue:364
 msgid "Equals"
-msgstr ""
+msgstr "Rovná se"
 
 #: frontend/src/pages/MobileLead.vue:204
 msgid "Error Occurred"
@@ -2979,7 +2979,7 @@ msgstr ""
 #: frontend/src/components/Notifications.vue:115
 #: frontend/src/pages/Deal.vue:580 frontend/src/pages/Lead.vue:432
 msgid "Events"
-msgstr ""
+msgstr "Události"
 
 #. Option for the 'Background Sync Frequency' (Select) field in DocType 'Lead
 #. Sync Source'
@@ -3057,7 +3057,7 @@ msgstr ""
 
 #: frontend/src/components/Layouts/AppSidebar.vue:116
 msgid "Expand"
-msgstr ""
+msgstr "Rozbalit"
 
 #. Label of the expected_closure_date (Date) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
@@ -3080,7 +3080,7 @@ msgstr ""
 #. Option for the 'Status' (Select) field in DocType 'CRM Invitation'
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.json
 msgid "Expired"
-msgstr ""
+msgstr "Vypršelo"
 
 #: frontend/src/components/ViewControls.vue:215
 #: frontend/src/components/ViewControls.vue:263
@@ -3089,7 +3089,7 @@ msgstr ""
 
 #: frontend/src/components/ViewControls.vue:277
 msgid "Export Type"
-msgstr ""
+msgstr "Typ exportu"
 
 #: frontend/src/components/ViewControls.vue:295
 msgid "Export all {0} record(s)"
@@ -3156,7 +3156,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_rolling_response_time/crm_rolling_response_time.json
 #: frontend/src/utils/callLog.js:67
 msgid "Failed"
-msgstr ""
+msgstr "Selhalo"
 
 #. Name of a DocType
 #: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.json
@@ -3255,7 +3255,7 @@ msgstr ""
 #. Option for the 'Type' (Select) field in DocType 'Failed Lead Sync Log'
 #: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.json
 msgid "Failure"
-msgstr ""
+msgstr "Selhání"
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:205
 msgid "Failure Logs"
@@ -3270,7 +3270,7 @@ msgstr ""
 #: frontend/src/components/ConditionsFilter/CFCondition.vue:38
 #: frontend/src/components/Modals/EditValueModal.vue:5
 msgid "Field"
-msgstr ""
+msgstr "Pole"
 
 #: frontend/src/components/Controls/GridFieldsEditorModal.vue:19
 #: frontend/src/components/Kanban/KanbanSettings.vue:47
@@ -3279,7 +3279,7 @@ msgstr ""
 
 #: frontend/src/components/FilesUploader/FilesUploaderArea.vue:329
 msgid "File \"{0}\" was skipped because of invalid file type"
-msgstr ""
+msgstr "Soubor \"{0}\" byl přeskočen kvůli neplatnému typu souboru"
 
 #: frontend/src/components/FilesUploader/FilesUploaderArea.vue:350
 msgid "File \"{0}\" was skipped because only {1} uploads are allowed"
@@ -3291,13 +3291,13 @@ msgstr ""
 
 #: frontend/src/components/Filter.vue:6
 msgid "Filter"
-msgstr ""
+msgstr "Filtr"
 
 #. Label of the filters (Code) field in DocType 'CRM View Settings'
 #. Label of the filters_tab (Tab Break) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
 msgid "Filters"
-msgstr ""
+msgstr "Filtry"
 
 #. Label of the first_name (Data) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
@@ -3307,7 +3307,7 @@ msgstr ""
 #: frontend/src/components/SortBy.vue:102
 #: frontend/src/components/SortBy.vue:136
 msgid "First Name"
-msgstr ""
+msgstr "Jméno"
 
 #: frontend/src/components/Modals/LeadModal.vue:129
 msgid "First Name is mandatory"
@@ -3381,7 +3381,7 @@ msgstr ""
 #. Option for the 'Apply To' (Select) field in DocType 'CRM Form Script'
 #: crm/fcrm/doctype/crm_form_script/crm_form_script.json
 msgid "Form"
-msgstr ""
+msgstr "Formulář"
 
 #. Label of the form_name (Data) field in DocType 'Facebook Lead Form'
 #: crm/lead_syncing/doctype/facebook_lead_form/facebook_lead_form.json
@@ -3403,26 +3403,26 @@ msgstr ""
 
 #: frontend/src/components/Settings/emailConfig.js:81
 msgid "Frappe Mail Site"
-msgstr ""
+msgstr "Stránka Frappe Mail"
 
 #. Option for the 'Weekly Off' (Select) field in DocType 'CRM Holiday List'
 #. Option for the 'Workday' (Select) field in DocType 'CRM Service Day'
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
 #: crm/fcrm/doctype/crm_service_day/crm_service_day.json
 msgid "Friday"
-msgstr ""
+msgstr "Pátek"
 
 #. Label of the from (Data) field in DocType 'CRM Status Change Log'
 #: crm/fcrm/doctype/crm_status_change_log/crm_status_change_log.json
 msgid "From"
-msgstr ""
+msgstr "Od"
 
 #. Label of the from_date (Date) field in DocType 'CRM Holiday List'
 #. Label of the from_date (Datetime) field in DocType 'CRM Status Change Log'
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
 #: crm/fcrm/doctype/crm_status_change_log/crm_status_change_log.json
 msgid "From Date"
-msgstr ""
+msgstr "Od data"
 
 #. Label of the from (Data) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
@@ -3437,7 +3437,7 @@ msgstr ""
 #. Label of the from_user (Link) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
 msgid "From User"
-msgstr ""
+msgstr "Od uživatele"
 
 #. Option for the 'SLA Status' (Select) field in DocType 'CRM Deal'
 #. Option for the 'SLA Status' (Select) field in DocType 'CRM Lead'
@@ -3454,7 +3454,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_contacts/crm_contacts.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Full Name"
-msgstr ""
+msgstr "Celé jméno"
 
 #: frontend/src/components/Dashboard/AddChartModal.vue:96
 msgid "Funnel Conversion"
@@ -3495,7 +3495,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:582
 msgid "Go Back"
-msgstr ""
+msgstr "Jít zpět"
 
 #: frontend/src/components/Settings/AssignmentRules/AssigneeSearch.vue:158
 msgid "Go to Invite Page"
@@ -3527,7 +3527,7 @@ msgstr ""
 #: frontend/src/components/ViewControls.vue:386
 #: frontend/src/components/ViewControls.vue:618 frontend/src/utils/view.js:16
 msgid "Group By"
-msgstr ""
+msgstr "Seskupit podle"
 
 #. Label of the group_by_field (Data) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
@@ -3557,19 +3557,19 @@ msgstr ""
 #. Label of the hidden (Check) field in DocType 'CRM Dropdown Item'
 #: crm/fcrm/doctype/crm_dropdown_item/crm_dropdown_item.json
 msgid "Hidden"
-msgstr ""
+msgstr "Skryté"
 
 #: frontend/src/components/Activities/Activities.vue:246
 msgid "Hide"
-msgstr ""
+msgstr "Skrýt"
 
 #: frontend/src/components/FieldLayoutEditor.vue:472
 msgid "Hide Border"
-msgstr ""
+msgstr "Skrýt ohraničení"
 
 #: frontend/src/components/FieldLayoutEditor.vue:467
 msgid "Hide Label"
-msgstr ""
+msgstr "Skrýt popisek"
 
 #: frontend/src/components/Controls/Password.vue:19
 msgid "Hide Password"
@@ -3580,7 +3580,7 @@ msgstr ""
 #: frontend/src/components/Modals/QuickEntryModal.vue:20
 #: frontend/src/components/Modals/SidePanelModal.vue:20
 msgid "Hide Preview"
-msgstr ""
+msgstr "Skrýt náhled"
 
 #: frontend/src/components/Activities/CallArea.vue:70
 msgid "Hide Recording"
@@ -3589,7 +3589,7 @@ msgstr ""
 #. Option for the 'Priority' (Select) field in DocType 'CRM Task'
 #: crm/fcrm/doctype/crm_task/crm_task.json
 msgid "High"
-msgstr ""
+msgstr "Vysoká"
 
 #. Label of the holiday_list (Link) field in DocType 'CRM Service Level
 #. Agreement'
@@ -3644,7 +3644,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_dropdown_item/crm_dropdown_item.json
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
 msgid "Icon"
-msgstr ""
+msgstr "Ikona"
 
 #: frontend/src/components/Settings/emailConfig.js:61
 msgid "If enabled, a lead will be automatically created when an incoming email is received from an unknown contact."
@@ -3671,7 +3671,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: crm/fcrm/doctype/crm_product/crm_product.json
 msgid "Image"
-msgstr ""
+msgstr "Obrázek"
 
 #: frontend/src/components/ViewControls.vue:203
 msgid "Import"
@@ -3683,14 +3683,14 @@ msgstr ""
 #: frontend/src/components/Filter.vue:326
 #: frontend/src/components/Filter.vue:340
 msgid "In"
-msgstr ""
+msgstr "V"
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Call Log'
 #. Option for the 'Status' (Select) field in DocType 'CRM Task'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 #: crm/fcrm/doctype/crm_task/crm_task.json frontend/src/utils/callLog.js:72
 msgid "In Progress"
-msgstr ""
+msgstr "Probíhá"
 
 #: frontend/src/components/SLASection.vue:73
 msgid "In less than a minute"
@@ -3702,12 +3702,12 @@ msgstr ""
 
 #: frontend/src/components/Settings/EmailAccountCard.vue:42
 msgid "Inbox"
-msgstr ""
+msgstr "Doručená pošta"
 
 #. Option for the 'Type' (Select) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 msgid "Incoming"
-msgstr ""
+msgstr "Příchozí"
 
 #: frontend/src/components/Telephony/TwilioCallUI.vue:41
 msgid "Incoming call..."
@@ -3758,7 +3758,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:144
 msgid "Integrations"
-msgstr ""
+msgstr "Integrace"
 
 #: frontend/src/components/Settings/Settings.vue:207
 msgctxt "FCRM"
@@ -3915,12 +3915,12 @@ msgstr ""
 #: frontend/src/components/Filter.vue:351
 #: frontend/src/components/Filter.vue:370
 msgid "Is"
-msgstr ""
+msgstr "Je"
 
 #. Label of the is_default (Check) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
 msgid "Is Default"
-msgstr ""
+msgstr "Je výchozí"
 
 #. Label of the is_erpnext_in_different_site (Check) field in DocType 'ERPNext
 #. CRM Settings'
@@ -3938,7 +3938,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_contacts/crm_contacts.json
 #: crm/fcrm/doctype/crm_telephony_phone/crm_telephony_phone.json
 msgid "Is Primary"
-msgstr ""
+msgstr "Je primární"
 
 #. Label of the is_standard (Check) field in DocType 'CRM Dropdown Item'
 #. Label of the is_standard (Check) field in DocType 'CRM Form Script'
@@ -3947,7 +3947,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_form_script/crm_form_script.json
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
 msgid "Is Standard"
-msgstr ""
+msgstr "Je standardní"
 
 #: frontend/src/components/ListViews/EmptyState.vue:43
 msgid "It appears that there are currently no {0} available. You can create more {0} by using the Create button."
@@ -4022,7 +4022,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.json
 #: crm/lead_syncing/doctype/facebook_lead_form_question/facebook_lead_form_question.json
 msgid "Key"
-msgstr ""
+msgstr "Klíč"
 
 #. Label of the label (Data) field in DocType 'CRM Dropdown Item'
 #. Label of the label (Data) field in DocType 'CRM View Settings'
@@ -4032,11 +4032,11 @@ msgstr ""
 #: crm/lead_syncing/doctype/facebook_lead_form_question/facebook_lead_form_question.json
 #: frontend/src/components/ColumnSettings.vue:101
 msgid "Label"
-msgstr ""
+msgstr "Popisek"
 
 #: frontend/src/components/Settings/PreferencesSettings.vue:57
 msgid "Language"
-msgstr ""
+msgstr "Jazyk"
 
 #: frontend/src/components/Settings/PreferencesSettings.vue:37
 msgid "Language & Time"
@@ -4048,7 +4048,7 @@ msgstr ""
 
 #: frontend/src/pages/Dashboard.vue:202
 msgid "Last 30 Days"
-msgstr ""
+msgstr "Posledních 30 dní"
 
 #: frontend/src/components/Filter.vue:661
 msgid "Last 6 Months"
@@ -4060,11 +4060,11 @@ msgstr ""
 
 #: frontend/src/pages/Dashboard.vue:194
 msgid "Last 7 Days"
-msgstr ""
+msgstr "Posledních 7 dní"
 
 #: frontend/src/pages/Dashboard.vue:218
 msgid "Last 90 Days"
-msgstr ""
+msgstr "Posledních 90 dní"
 
 #: frontend/src/pages/Contact.vue:551 frontend/src/pages/MobileContact.vue:544
 #: frontend/src/pages/MobileOrganization.vue:493
@@ -4076,16 +4076,16 @@ msgstr ""
 
 #: frontend/src/components/Filter.vue:653
 msgid "Last Month"
-msgstr ""
+msgstr "Minulý měsíc"
 
 #. Label of the last_name (Data) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Last Name"
-msgstr ""
+msgstr "Příjmení"
 
 #: frontend/src/components/Filter.vue:657
 msgid "Last Quarter"
-msgstr ""
+msgstr "Minulé čtvrtletí"
 
 #. Label of the last_responded_on (Datetime) field in DocType 'CRM Deal'
 #. Label of the last_responded_on (Datetime) field in DocType 'CRM Lead'
@@ -4116,11 +4116,11 @@ msgstr ""
 #: frontend/src/components/Filter.vue:591
 #: frontend/src/components/Filter.vue:649
 msgid "Last Week"
-msgstr ""
+msgstr "Minulý týden"
 
 #: frontend/src/components/Filter.vue:665
 msgid "Last Year"
-msgstr ""
+msgstr "Minulý rok"
 
 #. Label of the last_name (Data) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
@@ -4255,11 +4255,11 @@ msgstr ""
 
 #: frontend/src/components/FilesUploader/FilesUploaderArea.vue:43
 msgid "Library"
-msgstr ""
+msgstr "Knihovna"
 
 #: frontend/src/components/Settings/ThemeSwitcher.vue:41
 msgid "Light"
-msgstr ""
+msgstr "Světlý"
 
 #: frontend/src/components/Filter.vue:275
 #: frontend/src/components/Filter.vue:286
@@ -4267,11 +4267,11 @@ msgstr ""
 #: frontend/src/components/Filter.vue:324
 #: frontend/src/components/Filter.vue:338
 msgid "Like"
-msgstr ""
+msgstr "Obsahuje"
 
 #: frontend/src/components/FilesUploader/FilesUploaderArea.vue:47
 msgid "Link"
-msgstr ""
+msgstr "Odkaz"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:403
 msgid "Linked With"
@@ -4280,7 +4280,7 @@ msgstr ""
 #. Label of the links (Table) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 msgid "Links"
-msgstr ""
+msgstr "Odkazy"
 
 #. Option for the 'Apply To' (Select) field in DocType 'CRM Form Script'
 #. Label of the list_tab (Tab Break) field in DocType 'CRM View Settings'
@@ -4289,7 +4289,7 @@ msgstr ""
 #: frontend/src/components/ViewControls.vue:381
 #: frontend/src/components/ViewControls.vue:596 frontend/src/utils/view.js:12
 msgid "List"
-msgstr ""
+msgstr "Seznam"
 
 #: frontend/src/components/Activities/CallArea.vue:70
 msgid "Listen"
@@ -4306,24 +4306,24 @@ msgstr ""
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:116
 #: frontend/src/components/Settings/Users.vue:150
 msgid "Load More"
-msgstr ""
+msgstr "Načíst více"
 
 #: frontend/src/components/Activities/Activities.vue:19
 #: frontend/src/components/Activities/DataFields.vue:35
 #: frontend/src/pages/Deal.vue:186 frontend/src/pages/MobileDeal.vue:121
 msgid "Loading..."
-msgstr ""
+msgstr "Načítání..."
 
 #: frontend/src/components/Modals/EventModal.vue:158
 msgid "Location"
-msgstr ""
+msgstr "Umístění"
 
 #. Label of the log_tab (Tab Break) field in DocType 'CRM Deal'
 #. Label of the log_tab (Tab Break) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Log"
-msgstr ""
+msgstr "Protokol"
 
 #: frontend/src/components/Settings/LeadSyncing/FailureLogs.vue:23
 msgid "Log ID"
@@ -4400,7 +4400,7 @@ msgstr ""
 #. Option for the 'Priority' (Select) field in DocType 'CRM Task'
 #: crm/fcrm/doctype/crm_task/crm_task.json
 msgid "Low"
-msgstr ""
+msgstr "Nízká"
 
 #: frontend/src/components/Telephony/CallUI.vue:7
 #: frontend/src/pages/Contact.vue:92
@@ -4431,7 +4431,7 @@ msgstr ""
 
 #: frontend/src/components/Activities/AttachmentArea.vue:107
 msgid "Make {0}"
-msgstr ""
+msgstr "Vytvořit {0}"
 
 #: frontend/src/components/Telephony/CallUI.vue:34
 msgid "Make {0} as default calling medium"
@@ -4506,7 +4506,7 @@ msgstr ""
 #: frontend/src/pages/MobileNotification.vue:12
 #: frontend/src/pages/MobileNotification.vue:13
 msgid "Mark all as read"
-msgstr ""
+msgstr "Označit vše jako přečtené"
 
 #. Label of the auto_mark_replied_on_response (Check) field in DocType 'FCRM
 #. Settings'
@@ -4538,21 +4538,21 @@ msgstr ""
 #. Option for the 'Type' (Select) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
 msgid "Mention"
-msgstr ""
+msgstr "Zmínka"
 
 #: frontend/src/components/Notifications.vue:116
 msgid "Mentions"
-msgstr ""
+msgstr "Zmínky"
 
 #. Label of the message (HTML Editor) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
 msgid "Message"
-msgstr ""
+msgstr "Zpráva"
 
 #. Label of the middle_name (Data) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Middle Name"
-msgstr ""
+msgstr "Druhé jméno"
 
 #: frontend/src/components/Telephony/ExotelCallUI.vue:126
 msgid "Minimize"
@@ -4602,11 +4602,11 @@ msgstr ""
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
 #: crm/fcrm/doctype/crm_service_day/crm_service_day.json
 msgid "Monday"
-msgstr ""
+msgstr "Pondělí"
 
 #: crm/api/dashboard.py:721 frontend/src/pages/Calendar.vue:93
 msgid "Month"
-msgstr ""
+msgstr "Měsíc"
 
 #. Option for the 'Default Calendar View' (Select) field in DocType 'FCRM
 #. Settings'
@@ -4616,7 +4616,7 @@ msgstr ""
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
 #: frontend/src/components/Settings/CalendarSettings.vue:51
 msgid "Monthly"
-msgstr ""
+msgstr "Měsíčně"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:465
 #: frontend/src/components/ViewControls.vue:233
@@ -4671,7 +4671,7 @@ msgstr ""
 #: frontend/src/pages/MobileOrganization.vue:501
 #: frontend/src/pages/Organization.vue:531
 msgid "Name"
-msgstr ""
+msgstr "Název"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:417
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:148
@@ -4709,11 +4709,11 @@ msgstr ""
 #: frontend/src/components/Settings/Sla/SlaPolicyList.vue:8
 #: frontend/src/components/Settings/Users.vue:30
 msgid "New"
-msgstr ""
+msgstr "Nový"
 
 #: frontend/src/components/Modals/AddressModal.vue:85
 msgid "New Address"
-msgstr ""
+msgstr "Nová adresa"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:12
 msgid "New Assignment Rule"
@@ -4729,15 +4729,15 @@ msgstr ""
 
 #: frontend/src/components/Modals/ContactModal.vue:8
 msgid "New Contact"
-msgstr ""
+msgstr "Nový kontakt"
 
 #: frontend/src/components/Activities/ActivityHeader.vue:12
 msgid "New Email"
-msgstr ""
+msgstr "Nový e-mail"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:673
 msgid "New Event"
-msgstr ""
+msgstr "Nová událost"
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:9
 msgid "New Lead Sync Source"
@@ -4758,7 +4758,7 @@ msgstr ""
 
 #: frontend/src/components/Modals/ChangePasswordModal.vue:8
 msgid "New Password"
-msgstr ""
+msgstr "Nové heslo"
 
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:8
 msgid "New SLA Policy"
@@ -4825,7 +4825,7 @@ msgstr ""
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:534
 msgid "No"
-msgstr ""
+msgstr "Ne"
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
@@ -4839,7 +4839,7 @@ msgstr ""
 
 #: frontend/src/components/Controls/Grid.vue:400
 msgid "No Data"
-msgstr ""
+msgstr "Žádná data"
 
 #: frontend/src/pages/Deal.vue:267
 msgid "No Details Added"
@@ -4855,7 +4855,7 @@ msgstr ""
 
 #: frontend/src/components/FieldLayoutEditor.vue:123
 msgid "No Label"
-msgstr ""
+msgstr "Bez popisku"
 
 #: frontend/src/pages/Deal.vue:731
 msgid "No Mobile Number Set"
@@ -4934,7 +4934,7 @@ msgstr ""
 
 #: frontend/src/pages/MobileContact.vue:153
 msgid "No {0} found"
-msgstr ""
+msgstr "Nebyly nalezeny žádné {0}"
 
 #: frontend/src/components/Controls/Grid.vue:27
 msgid "No."
@@ -4972,7 +4972,7 @@ msgstr "Nepovoleno"
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:12
 #: frontend/src/components/Settings/Telephony/TwilioSettings.vue:15
 msgid "Not Saved"
-msgstr ""
+msgstr "Neuloženo"
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:148
 msgid "Not Synced"
@@ -5067,7 +5067,7 @@ msgstr ""
 #: frontend/src/components/Settings/CalendarSettings.vue:183
 #: frontend/src/components/Settings/CalendarSettings.vue:191
 msgid "Notification"
-msgstr ""
+msgstr "Oznámení"
 
 #. Label of the notification_text (Text) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
@@ -5092,12 +5092,12 @@ msgstr ""
 #: frontend/src/components/Notifications.vue:16
 #: frontend/src/pages/MobileNotification.vue:6
 msgid "Notifications"
-msgstr ""
+msgstr "Oznámení"
 
 #. Label of the number (Data) field in DocType 'CRM Telephony Phone'
 #: crm/fcrm/doctype/crm_telephony_phone/crm_telephony_phone.json
 msgid "Number"
-msgstr ""
+msgstr "Číslo"
 
 #: frontend/src/components/Dashboard/AddChartModal.vue:19
 #: frontend/src/components/Dashboard/AddChartModal.vue:69
@@ -5131,7 +5131,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
 msgid "On Hold"
-msgstr ""
+msgstr "Pozastaveno"
 
 #. Option for the 'Type' (Select) field in DocType 'CRM Deal Status'
 #. Option for the 'Type' (Select) field in DocType 'CRM Lead Status'
@@ -5167,7 +5167,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal/crm_deal.py:135
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.py:68
 msgid "Only one {0} can be set as primary."
-msgstr ""
+msgstr "Pouze jeden {0} může být nastaven jako primární."
 
 #: crm/api/whatsapp.py:16
 msgid "Only sales users can access WhatsApp features."
@@ -5217,7 +5217,7 @@ msgstr ""
 #: frontend/src/components/Modals/CallLogDetailModal.vue:15
 #: frontend/src/components/ViewControls.vue:199
 msgid "Options"
-msgstr ""
+msgstr "Volby"
 
 #: frontend/src/pages/Welcome.vue:40
 msgid "Or create leads manually"
@@ -5296,7 +5296,7 @@ msgstr ""
 #. Option for the 'Type' (Select) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 msgid "Outgoing"
-msgstr ""
+msgstr "Odchozí"
 
 #. Label of the log_owner (Link) field in DocType 'CRM Status Change Log'
 #: crm/fcrm/doctype/crm_status_change_log/crm_status_change_log.json
@@ -5310,12 +5310,12 @@ msgstr ""
 #. Label of the page (Link) field in DocType 'Facebook Lead Form'
 #: crm/lead_syncing/doctype/facebook_lead_form/facebook_lead_form.json
 msgid "Page"
-msgstr ""
+msgstr "Stránka"
 
 #. Label of the page_name (Data) field in DocType 'Facebook Page'
 #: crm/lead_syncing/doctype/facebook_page/facebook_page.json
 msgid "Page Name"
-msgstr ""
+msgstr "Název stránky"
 
 #. Label of the parent_crm_territory (Link) field in DocType 'CRM Territory'
 #: crm/fcrm/doctype/crm_territory/crm_territory.json
@@ -5349,7 +5349,7 @@ msgstr ""
 
 #: frontend/src/components/Modals/ChangePasswordModal.vue:119
 msgid "Passwords do not match"
-msgstr ""
+msgstr "Hesla se neshodují"
 
 #: frontend/src/components/Modals/ChangePasswordModal.vue:36
 #: frontend/src/components/Modals/ChangePasswordModal.vue:125
@@ -5373,7 +5373,7 @@ msgstr ""
 #. Option for the 'Status' (Select) field in DocType 'CRM Invitation'
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.json
 msgid "Pending"
-msgstr ""
+msgstr "Čeká na vyřízení"
 
 #: frontend/src/components/Settings/InviteUserPage.vue:63
 msgid "Pending Invites"
@@ -5381,7 +5381,7 @@ msgstr ""
 
 #: frontend/src/pages/Dashboard.vue:66
 msgid "Period"
-msgstr ""
+msgstr "Období"
 
 #. Label of the person_section (Section Break) field in DocType 'CRM Deal'
 #. Label of the person_tab (Tab Break) field in DocType 'CRM Lead'
@@ -5403,12 +5403,12 @@ msgstr ""
 #: frontend/src/pages/MobileOrganization.vue:511
 #: frontend/src/pages/Organization.vue:541
 msgid "Phone"
-msgstr ""
+msgstr "Telefon"
 
 #. Label of the phone_nos (Table) field in DocType 'CRM Telephony Agent'
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
 msgid "Phone Numbers"
-msgstr ""
+msgstr "Telefonní čísla"
 
 #: frontend/src/components/ViewControls.vue:1096
 msgid "Pin View"
@@ -5512,7 +5512,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
 msgid "Position"
-msgstr ""
+msgstr "Pozice"
 
 #: frontend/src/components/Settings/PreferencesSettings.vue:4
 #: frontend/src/components/Settings/Settings.vue:108
@@ -5525,7 +5525,7 @@ msgstr ""
 
 #: frontend/src/pages/Deal.vue:215 frontend/src/pages/MobileDeal.vue:153
 msgid "Primary"
-msgstr ""
+msgstr "primární"
 
 #: frontend/src/pages/Deal.vue:703 frontend/src/pages/MobileDeal.vue:574
 msgid "Primary Contact Set"
@@ -5796,7 +5796,7 @@ msgstr ""
 #: frontend/src/components/Settings/Users.vue:218
 #: frontend/src/pages/Deal.vue:652
 msgid "Remove"
-msgstr ""
+msgstr "Odstranit"
 
 #: frontend/src/components/FilesUploader/FilesUploader.vue:23
 msgid "Remove All"
@@ -5850,7 +5850,7 @@ msgstr ""
 
 #: frontend/src/components/Activities/EmailArea.vue:41
 msgid "Reply All"
-msgstr ""
+msgstr "Odpovědět všem"
 
 #: frontend/src/components/Modals/AboutModal.vue:65
 msgid "Report an Issue"
@@ -5871,7 +5871,7 @@ msgstr ""
 
 #: frontend/src/components/ColumnSettings.vue:78
 msgid "Reset Changes"
-msgstr ""
+msgstr "Resetovat změny"
 
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.js:7
 msgid "Reset ERPNext Form Script"
@@ -5961,7 +5961,7 @@ msgstr ""
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:81
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:81
 msgid "Rich Text"
-msgstr ""
+msgstr "Formátovaný text"
 
 #. Label of the rgt (Int) field in DocType 'CRM Territory'
 #: crm/fcrm/doctype/crm_territory/crm_territory.json
@@ -5972,7 +5972,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 #: frontend/src/utils/callLog.js:70
 msgid "Ringing"
-msgstr ""
+msgstr "Vyzvánění"
 
 #: frontend/src/components/Telephony/TwilioCallUI.vue:38
 #: frontend/src/components/Telephony/TwilioCallUI.vue:140
@@ -6270,7 +6270,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/CurrencySettings.vue:50
 msgid "Select Currency"
-msgstr ""
+msgstr "Vyberte měnu"
 
 #: frontend/src/components/Settings/Sla/SlaHolidays.vue:20
 msgid "Select Holiday List"
@@ -6524,7 +6524,7 @@ msgstr ""
 
 #: frontend/src/components/Activities/Activities.vue:246
 msgid "Show"
-msgstr ""
+msgstr "Zobrazit"
 
 #: frontend/src/components/FieldLayoutEditor.vue:472
 msgid "Show Border"
@@ -6557,7 +6557,7 @@ msgstr ""
 #. Option for the 'Type' (Select) field in DocType 'CRM Global Settings'
 #: crm/fcrm/doctype/crm_global_settings/crm_global_settings.json
 msgid "Sidebar Items"
-msgstr ""
+msgstr "Položky postranního panelu"
 
 #: frontend/src/components/Settings/Profile/UserEmailSettings.vue:33
 msgid "Signature"
@@ -6612,7 +6612,7 @@ msgstr ""
 #: frontend/src/components/Settings/Users.vue:279
 #: frontend/src/components/Settings/Users.vue:292
 msgid "Something went wrong"
-msgstr ""
+msgstr "Něco se pokazilo"
 
 #: frontend/src/components/Settings/Sla/SlaPolicyList.vue:246
 msgid "Something went wrong, try again later"
@@ -6701,7 +6701,7 @@ msgstr ""
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:31
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:32
 msgid "Start Time"
-msgstr ""
+msgstr "Čas zahájení"
 
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:186
 msgid "Start Time is required"
@@ -6815,7 +6815,7 @@ msgstr ""
 #. Label of the syncing_tab (Tab Break) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Syncing"
-msgstr ""
+msgstr "Synchronizace"
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:381
 msgid "Syncing started in background"
@@ -7062,7 +7062,7 @@ msgstr ""
 
 #: frontend/src/components/Filter.vue:357
 msgid "Timespan"
-msgstr ""
+msgstr "Časové období"
 
 #: frontend/src/components/Settings/PreferencesSettings.vue:68
 msgid "Timezone"
@@ -7082,7 +7082,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
 #: frontend/src/components/Kanban/KanbanSettings.vue:29
 msgid "Title Field"
-msgstr ""
+msgstr "Pole nadpisu"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:822
 #: frontend/src/components/Modals/EventModal.vue:376
@@ -7528,7 +7528,7 @@ msgstr ""
 
 #: frontend/src/components/Modals/EventModal.vue:134
 msgid "Visibility"
-msgstr ""
+msgstr "Viditelnost"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:587
 msgid "Web Form"
@@ -7753,7 +7753,7 @@ msgstr ""
 
 #: crm/templates/emails/helpdesk_invitation.html:6
 msgid "Your login id is"
-msgstr ""
+msgstr "Vaše přihlašovací ID je"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:641
 msgid "Your old condition will be overwritten. Are you sure you want to save?"
@@ -8016,7 +8016,7 @@ msgstr ""
 
 #: crm/api/doc.py:46 crm/api/doc.py:156 crm/api/doc.py:482
 msgid "label"
-msgstr ""
+msgstr "popisek"
 
 #: frontend/src/components/Settings/AssignmentRules/AssigneeRules.vue:130
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:379

@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-04-12 09:47+0000\n"
-"PO-Revision-Date: 2026-04-12 23:23\n"
+"PO-Revision-Date: 2026-04-18 02:02\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Indonesian\n"
 "MIME-Version: 1.0\n"
@@ -250,7 +250,7 @@ msgstr "Kunci Akses diperlukan untuk Penyedia Layanan: {0}"
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:90
 #: frontend/src/components/Settings/LeadSyncing/leadSyncSourceConfig.js:29
 msgid "Access Token"
-msgstr ""
+msgstr "Token Akses"
 
 #: crm/lead_syncing/doctype/lead_sync_source/facebook.py:145
 msgid "Access token is required"
@@ -258,7 +258,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/Settings.vue:95
 msgid "Account"
-msgstr ""
+msgstr "Akun"
 
 #. Label of the account_id (Data) field in DocType 'Facebook Page'
 #: crm/lead_syncing/doctype/facebook_page/facebook_page.json
@@ -744,7 +744,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:609
 msgid "Assignment Days"
-msgstr ""
+msgstr "Hari Penugasan"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:471
 msgid "Assignment Days are required"
@@ -780,7 +780,7 @@ msgstr ""
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRules.vue:7
 #: frontend/src/components/Settings/Settings.vue:183
 msgid "Assignment Rules"
-msgstr ""
+msgstr "Aturan Penugasan"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:302
 msgid "Assignment Schedule"
@@ -875,7 +875,7 @@ msgstr ""
 #. Label of the autocomplete (Autocomplete) field in DocType 'CRM Products'
 #: crm/fcrm/doctype/crm_products/crm_products.json
 msgid "Autocomplete"
-msgstr ""
+msgstr "Pelengkapan Otomatis"
 
 #. Description of the 'Reopen lead/deal on new communication' (Check) field in
 #. DocType 'FCRM Settings'
@@ -1005,11 +1005,11 @@ msgstr "Antara"
 
 #: frontend/src/components/Settings/Settings.vue:133
 msgid "Brand"
-msgstr ""
+msgstr "Merek"
 
 #: frontend/src/components/Settings/BrandSettings.vue:62
 msgid "Brand Logo"
-msgstr ""
+msgstr "Logo Merek"
 
 #: frontend/src/components/Settings/BrandSettings.vue:30
 msgid "Brand Name"
@@ -1223,7 +1223,7 @@ msgstr "CSV"
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 #: frontend/src/components/Settings/Settings.vue:138
 msgid "Calendar"
-msgstr ""
+msgstr "Kalender"
 
 #: frontend/src/components/Settings/CalendarSettings.vue:7
 msgid "Calendar Settings"
@@ -1352,7 +1352,7 @@ msgstr "Ubah"
 #: frontend/src/pages/MobileOrganization.vue:37
 #: frontend/src/pages/Organization.vue:47
 msgid "Change Image"
-msgstr ""
+msgstr "Ubah Gambar"
 
 #: frontend/src/components/Modals/ChangePasswordModal.vue:2
 #: frontend/src/components/Settings/Profile/ProfileSettings.vue:117
@@ -1550,7 +1550,7 @@ msgstr "Status Komunikasi"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:130
 msgid "Company Name"
-msgstr ""
+msgstr "Nama Perusahaan"
 
 #. Label of the erpnext_company (Data) field in DocType 'ERPNext CRM Settings'
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.json
@@ -1964,7 +1964,7 @@ msgstr "Kinerja harian prospek, kesepakatan, dan Ketercapaian Target"
 
 #: frontend/src/components/Settings/ThemeSwitcher.vue:89
 msgid "Dark"
-msgstr ""
+msgstr "Gelap"
 
 #: frontend/src/components/Settings/CurrencySettings.vue:35
 msgid "Dashboard number cards & charts will show currency in the selected format. Once set, cannot be edited."
@@ -2165,7 +2165,7 @@ msgstr "Perjanjian Tingkat Layanan Default sudah ada untuk {0}"
 
 #: frontend/src/components/Settings/CalendarSettings.vue:33
 msgid "Default View"
-msgstr ""
+msgstr "Tampilan Bawaan"
 
 #: frontend/src/components/Telephony/CallUI.vue:112
 msgid "Default calling medium set successfully to {0}"
@@ -2436,7 +2436,7 @@ msgstr ""
 #. Label of the due_date (Datetime) field in DocType 'CRM Task'
 #: crm/fcrm/doctype/crm_task/crm_task.json
 msgid "Due Date"
-msgstr ""
+msgstr "Tanggal Jatuh Tempo"
 
 #. Option for the 'Type' (Select) field in DocType 'Failed Lead Sync Log'
 #: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.json
@@ -2679,7 +2679,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/emailConfig.js:19
 msgid "Email ID"
-msgstr ""
+msgstr "ID Surel"
 
 #: frontend/src/components/Settings/emailConfig.js:181
 msgid "Email ID is required"
@@ -2692,7 +2692,7 @@ msgstr "Email Terkirim Pada"
 
 #: frontend/src/components/Settings/Profile/UserEmailSettings.vue:8
 msgid "Email Settings"
-msgstr ""
+msgstr "Pengaturan Surel"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:581
 msgid "Email Template"
@@ -2979,7 +2979,7 @@ msgstr ""
 #: frontend/src/components/Notifications.vue:115
 #: frontend/src/pages/Deal.vue:580 frontend/src/pages/Lead.vue:432
 msgid "Events"
-msgstr ""
+msgstr "Acara"
 
 #. Option for the 'Background Sync Frequency' (Select) field in DocType 'Lead
 #. Sync Source'
@@ -3156,7 +3156,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_rolling_response_time/crm_rolling_response_time.json
 #: frontend/src/utils/callLog.js:67
 msgid "Failed"
-msgstr ""
+msgstr "Gagal"
 
 #. Name of a DocType
 #: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.json
@@ -3403,7 +3403,7 @@ msgstr "Frappe CRM mobile"
 
 #: frontend/src/components/Settings/emailConfig.js:81
 msgid "Frappe Mail Site"
-msgstr ""
+msgstr "Situs Frappe Mail"
 
 #. Option for the 'Weekly Off' (Select) field in DocType 'CRM Holiday List'
 #. Option for the 'Workday' (Select) field in DocType 'CRM Service Day'
@@ -3544,7 +3544,7 @@ msgstr ""
 
 #: crm/templates/emails/helpdesk_invitation.html:2
 msgid "Hello"
-msgstr ""
+msgstr "Halo"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:102
 msgid "Help"
@@ -3565,11 +3565,11 @@ msgstr "Sembunyikan"
 
 #: frontend/src/components/FieldLayoutEditor.vue:472
 msgid "Hide Border"
-msgstr ""
+msgstr "Sembunyikan Batas"
 
 #: frontend/src/components/FieldLayoutEditor.vue:467
 msgid "Hide Label"
-msgstr ""
+msgstr "Sembunyikan Label"
 
 #: frontend/src/components/Controls/Password.vue:19
 msgid "Hide Password"
@@ -3580,7 +3580,7 @@ msgstr "Sembunyikan Kata Sandi"
 #: frontend/src/components/Modals/QuickEntryModal.vue:20
 #: frontend/src/components/Modals/SidePanelModal.vue:20
 msgid "Hide Preview"
-msgstr ""
+msgstr "Sembunyikan Pratinjau"
 
 #: frontend/src/components/Activities/CallArea.vue:70
 msgid "Hide Recording"
@@ -4048,7 +4048,7 @@ msgstr ""
 
 #: frontend/src/pages/Dashboard.vue:202
 msgid "Last 30 Days"
-msgstr ""
+msgstr "30 Hari Terakhir"
 
 #: frontend/src/components/Filter.vue:661
 msgid "Last 6 Months"
@@ -4060,11 +4060,11 @@ msgstr "60 Hari Terakhir"
 
 #: frontend/src/pages/Dashboard.vue:194
 msgid "Last 7 Days"
-msgstr ""
+msgstr "7 Hari Terakhir"
 
 #: frontend/src/pages/Dashboard.vue:218
 msgid "Last 90 Days"
-msgstr ""
+msgstr "90 Hari Terakhir"
 
 #: frontend/src/pages/Contact.vue:551 frontend/src/pages/MobileContact.vue:544
 #: frontend/src/pages/MobileOrganization.vue:493
@@ -4259,7 +4259,7 @@ msgstr "Pustaka"
 
 #: frontend/src/components/Settings/ThemeSwitcher.vue:41
 msgid "Light"
-msgstr ""
+msgstr "Terang"
 
 #: frontend/src/components/Filter.vue:275
 #: frontend/src/components/Filter.vue:286
@@ -4316,7 +4316,7 @@ msgstr "Memuat..."
 
 #: frontend/src/components/Modals/EventModal.vue:158
 msgid "Location"
-msgstr ""
+msgstr "Lokasi"
 
 #. Label of the log_tab (Tab Break) field in DocType 'CRM Deal'
 #. Label of the log_tab (Tab Break) field in DocType 'CRM Lead'
@@ -4542,7 +4542,7 @@ msgstr "Sebutan"
 
 #: frontend/src/components/Notifications.vue:116
 msgid "Mentions"
-msgstr ""
+msgstr "Sebutan"
 
 #. Label of the message (HTML Editor) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
@@ -4855,7 +4855,7 @@ msgstr ""
 
 #: frontend/src/components/FieldLayoutEditor.vue:123
 msgid "No Label"
-msgstr ""
+msgstr "Tidak Ada Label"
 
 #: frontend/src/pages/Deal.vue:731
 msgid "No Mobile Number Set"
@@ -4934,7 +4934,7 @@ msgstr ""
 
 #: frontend/src/pages/MobileContact.vue:153
 msgid "No {0} found"
-msgstr ""
+msgstr "Tidak ada {0} yang ditemukan"
 
 #: frontend/src/components/Controls/Grid.vue:27
 msgid "No."
@@ -5315,7 +5315,7 @@ msgstr "Halaman"
 #. Label of the page_name (Data) field in DocType 'Facebook Page'
 #: crm/lead_syncing/doctype/facebook_page/facebook_page.json
 msgid "Page Name"
-msgstr ""
+msgstr "Nama Halaman"
 
 #. Label of the parent_crm_territory (Link) field in DocType 'CRM Territory'
 #: crm/fcrm/doctype/crm_territory/crm_territory.json
@@ -5349,7 +5349,7 @@ msgstr "Kata sandi berhasil diperbarui"
 
 #: frontend/src/components/Modals/ChangePasswordModal.vue:119
 msgid "Passwords do not match"
-msgstr ""
+msgstr "Kata sandi tidak cocok"
 
 #: frontend/src/components/Modals/ChangePasswordModal.vue:36
 #: frontend/src/components/Modals/ChangePasswordModal.vue:125
@@ -5403,7 +5403,7 @@ msgstr ""
 #: frontend/src/pages/MobileOrganization.vue:511
 #: frontend/src/pages/Organization.vue:541
 msgid "Phone"
-msgstr ""
+msgstr "Telepon"
 
 #. Label of the phone_nos (Table) field in DocType 'CRM Telephony Agent'
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
@@ -6270,7 +6270,7 @@ msgstr "Pilih Perusahaan"
 
 #: frontend/src/components/Settings/CurrencySettings.vue:50
 msgid "Select Currency"
-msgstr ""
+msgstr "Pilih Mata Uang"
 
 #: frontend/src/components/Settings/Sla/SlaHolidays.vue:20
 msgid "Select Holiday List"
@@ -6961,7 +6961,7 @@ msgstr "Nama Wilayah"
 
 #: crm/templates/emails/helpdesk_invitation.html:16
 msgid "Thanks"
-msgstr ""
+msgstr "Terima kasih"
 
 #: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.py:72
 msgid "The Condition '{0}' is invalid: {1}"
@@ -7528,7 +7528,7 @@ msgstr ""
 
 #: frontend/src/components/Modals/EventModal.vue:134
 msgid "Visibility"
-msgstr ""
+msgstr "Visibilitas"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:587
 msgid "Web Form"
@@ -7689,7 +7689,7 @@ msgstr ""
 
 #: crm/templates/emails/helpdesk_invitation.html:22
 msgid "You can also copy-paste following link in your browser"
-msgstr ""
+msgstr "Anda juga dapat menyalin dan menempel tautan berikut di peramban Anda"
 
 #: frontend/src/components/Telephony/CallUI.vue:39
 msgid "You can change the default calling medium from the settings"

@@ -156,10 +156,18 @@
       :disabled="Boolean(field.read_only)"
       @update:modelValue="(v) => fieldChange(v, field, data)"
     />
+    <TimePicker
+      v-else-if="field.fieldtype === 'Time'"
+      :value="data[field.fieldname]"
+      :format="getFormat('', '', false, true, false)"
+      :placeholder="getPlaceholder(field)"
+      input-class="border-none"
+      @change="(v) => fieldChange(v, field)"
+    />
     <DateTimePicker
       v-else-if="field.fieldtype === 'Datetime'"
       :value="data[field.fieldname]"
-      :formatter="(date) => getFormat(date, '', true, true)"
+      :format="getFormat('', '', true, true, false)"
       :placeholder="getPlaceholder(field)"
       input-class="border-none"
       @change="(v) => fieldChange(v, field)"
@@ -167,7 +175,7 @@
     <DatePicker
       v-else-if="field.fieldtype === 'Date'"
       :value="data[field.fieldname]"
-      :formatter="(date) => getFormat(date, '', true)"
+      :format="getFormat('', '', true, false, false)"
       :placeholder="getPlaceholder(field)"
       input-class="border-none"
       @change="(v) => fieldChange(v, field)"
@@ -304,9 +312,16 @@ import {
 } from '@/utils'
 import { flt } from '@/utils/numberFormat.js'
 import { getMeta } from '@/stores/meta'
+import { parseLinkFilters } from '@/utils/fieldTransforms'
 import { usersStore } from '@/stores/users'
 import { useDocument } from '@/data/document'
-import { Combobox, Tooltip, DatePicker, DateTimePicker } from 'frappe-ui'
+import {
+  Combobox,
+  Tooltip,
+  DatePicker,
+  DateTimePicker,
+  TimePicker,
+} from 'frappe-ui'
 import { computed, provide, inject, ref } from 'vue'
 
 const props = defineProps({
@@ -344,20 +359,63 @@ if (!isGridRow) {
   provide('triggerButton', triggerButton)
   provide('triggerOnRowAdd', triggerOnRowAdd)
   provide('triggerOnRowRemove', triggerOnRowRemove)
+  provide(
+    'fieldPropertyOverrides',
+    computed(() => formDocument.value?.fieldPropertyOverrides || {}),
+  )
 } else {
   triggerOnChange = inject('triggerOnChange', () => {})
   triggerButton = inject('triggerButton', () => {})
   parentDoc = inject('parentDoc')
 }
 
+// For grid rows: inject overrides provided by Grid.vue
+const injectedOverrides = inject(
+  'fieldPropertyOverrides',
+  computed(() => ({})),
+)
+const injectedParentFieldname = inject('parentFieldname', '')
+
+/**
+ * Resolve field property overrides.
+ * For grid row fields, uses dot notation (parentfield.childfield)
+ * with per-row support (parentfield.childfield:rowName).
+ * For normal fields, reads directly from formDocument.
+ */
+function getFieldOverrides(fieldname) {
+  if (isGridRow) {
+    const ov = injectedOverrides.value || {}
+    const pf = injectedParentFieldname
+    if (!pf) return undefined
+
+    const colKey = `${pf}.${fieldname}`
+    const rowName = data.value?.name
+    const rowKey = rowName ? `${colKey}:${rowName}` : null
+
+    const colOv = ov[colKey]
+    const rowOv = rowKey ? ov[rowKey] : null
+
+    if (!colOv && !rowOv) return undefined
+    return { ...(colOv || {}), ...(rowOv || {}) }
+  }
+  return formDocument.value?.fieldPropertyOverrides?.[fieldname]
+}
+
 const field = computed(() => {
-  let field = props.field
+  let field = { ...props.field }
+
+  // ── Script property overrides ──
+  const overrides = getFieldOverrides(field.fieldname)
+  if (overrides) {
+    Object.assign(field, overrides)
+  }
+
   if (field.fieldtype == 'Select' && typeof field.options === 'string') {
     field.options = field.options.split('\n').map((option) => {
       return { label: option, value: option }
     })
 
-    if (field.options[0].value !== '') {
+    if (field.options[0].value !== '' && !field.reqd) {
       field.options.unshift({ label: '', value: '' })
     }
   }
@@ -365,9 +423,9 @@ const field = computed(() => {
   if (field.fieldtype === 'Link' && field.options === 'User') {
     field.fieldtype = 'User'
     field.link_filters = JSON.stringify({
-      ...(field.link_filters ? JSON.parse(field.link_filters) : {}),
       name: ['in', users.data.crmUsers?.map((user) => user.name)],
       ignore_user_type: 1,
+      ...(parseLinkFilters(field.link_filters) || {}),
     })
   }
 
@@ -387,29 +445,42 @@ const field = computed(() => {
     data.value,
   )
 
+  // Script overrides for read_only take priority over depends_on
+  const scriptReadOnly = overrides?.read_only
+  const effectiveReadOnly =
+    scriptReadOnly !== undefined
+      ? scriptReadOnly
+      : field.read_only ||
+        (field.read_only_depends_on && read_only_via_depends_on)
+
+  // Script overrides for depends_on visibility
+  const scriptHidden = overrides?.hidden
+  const displayViaDependsOn = evaluateDependsOnValue(
+    field.depends_on,
+    data.value,
+  )
+
   let _field = {
     ...field,
-    filters: field.link_filters && JSON.parse(field.link_filters),
+    filters: parseLinkFilters(field.link_filters),
     placeholder: field.placeholder || field.label,
-    display_via_depends_on: evaluateDependsOnValue(
-      field.depends_on,
-      data.value,
-    ),
+    display_via_depends_on: displayViaDependsOn,
     mandatory_via_depends_on: evaluateDependsOnValue(
       field.mandatory_depends_on,
       data.value,
     ),
-    read_only:
-      field.read_only ||
-      (field.read_only_depends_on && read_only_via_depends_on),
+    read_only: effectiveReadOnly,
   }
 
-  _field.visible = isFieldVisible(_field)
+  _field.visible = isFieldVisible(_field, scriptHidden)
   return _field
 })
 
-function isFieldVisible(field) {
+function isFieldVisible(field, scriptHidden) {
   if (preview.value) return true
+
+  // Script override for hidden wins over everything
+  if (scriptHidden !== undefined) return !scriptHidden
 
   let readOnlyField =
     field.read_only || field.fieldtype === 'Read Only' ? true : false
