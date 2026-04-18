@@ -156,10 +156,18 @@
       :disabled="Boolean(field.read_only)"
       @update:modelValue="(v) => fieldChange(v, field, data)"
     />
+    <TimePicker
+      v-else-if="field.fieldtype === 'Time'"
+      :value="data[field.fieldname]"
+      :format="getFormat('', '', false, true, false)"
+      :placeholder="getPlaceholder(field)"
+      input-class="border-none"
+      @change="(v) => fieldChange(v, field)"
+    />
     <DateTimePicker
       v-else-if="field.fieldtype === 'Datetime'"
       :value="data[field.fieldname]"
-      :formatter="(date) => getFormat(date, '', true, true)"
+      :format="getFormat('', '', true, true, false)"
       :placeholder="getPlaceholder(field)"
       input-class="border-none"
       @change="(v) => fieldChange(v, field)"
@@ -167,7 +175,7 @@
     <DatePicker
       v-else-if="field.fieldtype === 'Date'"
       :value="data[field.fieldname]"
-      :formatter="(date) => getFormat(date, '', true)"
+      :format="getFormat('', '', true, false, false)"
       :placeholder="getPlaceholder(field)"
       input-class="border-none"
       @change="(v) => fieldChange(v, field)"
@@ -306,7 +314,13 @@ import { flt } from '@/utils/numberFormat.js'
 import { getMeta } from '@/stores/meta'
 import { usersStore } from '@/stores/users'
 import { useDocument } from '@/data/document'
-import { Combobox, Tooltip, DatePicker, DateTimePicker } from 'frappe-ui'
+import {
+  Combobox,
+  Tooltip,
+  DatePicker,
+  DateTimePicker,
+  TimePicker,
+} from 'frappe-ui'
 import { computed, provide, inject, ref } from 'vue'
 
 const props = defineProps({
