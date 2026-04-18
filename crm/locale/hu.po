@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-04-12 09:47+0000\n"
-"PO-Revision-Date: 2026-04-12 23:22\n"
+"PO-Revision-Date: 2026-04-18 02:02\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Hungarian\n"
 "MIME-Version: 1.0\n"
@@ -5408,7 +5408,7 @@ msgstr "Telefon"
 #. Label of the phone_nos (Table) field in DocType 'CRM Telephony Agent'
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
 msgid "Phone Numbers"
-msgstr ""
+msgstr "Telefonszámok"
 
 #: frontend/src/components/ViewControls.vue:1096
 msgid "Pin View"
@@ -5972,7 +5972,7 @@ msgstr "Jobb"
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 #: frontend/src/utils/callLog.js:70
 msgid "Ringing"
-msgstr ""
+msgstr "gyűrűzés"
 
 #: frontend/src/components/Telephony/TwilioCallUI.vue:38
 #: frontend/src/components/Telephony/TwilioCallUI.vue:140
