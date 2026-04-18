@@ -370,8 +370,10 @@ class CRMDeal {
 
 | Phase | Scope |
 |---|---|
-| **Next** | Scripting DX rethink — explore builder/chainable syntax |
-| **Later** | `addField()`, `moveField()`, `addSection()` — programmatic layout manipulation |
-| **Later** | List view scripting — column visibility, custom cell renderers |
-| **Later** | `usePermLevel` composable — client-side perm level handling |
-| **Later** | Inter-script event system |
+| **Next** | [FieldLayout Dialog from Script](./future-phases.md#phase-2--fieldlayout-dialog-from-script) — `this.createFieldLayoutDialog()` |
+| **Next** | [Decouple FieldLayout and Grid](./future-phases.md#phase-3--decouple-fieldlayout-and-grid) — `useFieldLayout` composable |
+| **Later** | [getMeta single source of truth](./future-phases.md#phase-4--getmeta-single-source-of-truth) |
+| **Later** | [Scripting DX rethink](./future-phases.md#phase-5--scripting-dx-rethink) — builder/chainable syntax |
+| **Later** | [More capabilities](./future-phases.md#phase-6--more-capabilities) — layout manipulation, list scripting, perm level composable |
+
+Full details: [future-phases.md](./future-phases.md)
