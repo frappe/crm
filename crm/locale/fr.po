@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-04-12 09:47+0000\n"
-"PO-Revision-Date: 2026-04-17 01:05\n"
+"PO-Revision-Date: 2026-04-18 02:01\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: French\n"
 "MIME-Version: 1.0\n"
@@ -1711,7 +1711,7 @@ msgstr ""
 
 #: frontend/src/components/Modals/EditValueModal.vue:19
 msgid "Contact Us"
-msgstr ""
+msgstr "Contactez-nous"
 
 #: crm/fcrm/doctype/crm_lead/crm_lead.py:297
 msgid "Contact already exists with {0}"
@@ -5408,7 +5408,7 @@ msgstr "Téléphone"
 #. Label of the phone_nos (Table) field in DocType 'CRM Telephony Agent'
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
 msgid "Phone Numbers"
-msgstr ""
+msgstr "Numéros de téléphone"
 
 #: frontend/src/components/ViewControls.vue:1096
 msgid "Pin View"
@@ -5871,7 +5871,7 @@ msgstr ""
 
 #: frontend/src/components/ColumnSettings.vue:78
 msgid "Reset Changes"
-msgstr ""
+msgstr "Réinitialiser les modifications"
 
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.js:7
 msgid "Reset ERPNext Form Script"
@@ -5961,7 +5961,7 @@ msgstr ""
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:81
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:81
 msgid "Rich Text"
-msgstr ""
+msgstr "Texte enrichi"
 
 #. Label of the rgt (Int) field in DocType 'CRM Territory'
 #: crm/fcrm/doctype/crm_territory/crm_territory.json
@@ -6270,7 +6270,7 @@ msgstr "Sélectionnez une entreprise"
 
 #: frontend/src/components/Settings/CurrencySettings.vue:50
 msgid "Select Currency"
-msgstr ""
+msgstr "Sélectionner la devise"
 
 #: frontend/src/components/Settings/Sla/SlaHolidays.vue:20
 msgid "Select Holiday List"
@@ -6557,7 +6557,7 @@ msgstr ""
 #. Option for the 'Type' (Select) field in DocType 'CRM Global Settings'
 #: crm/fcrm/doctype/crm_global_settings/crm_global_settings.json
 msgid "Sidebar Items"
-msgstr ""
+msgstr "Éléments de la barre latérale"
 
 #: frontend/src/components/Settings/Profile/UserEmailSettings.vue:33
 msgid "Signature"
@@ -6701,7 +6701,7 @@ msgstr ""
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:31
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:32
 msgid "Start Time"
-msgstr ""
+msgstr "Heure de début"
 
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:186
 msgid "Start Time is required"
@@ -6961,7 +6961,7 @@ msgstr "Nom de la Région"
 
 #: crm/templates/emails/helpdesk_invitation.html:16
 msgid "Thanks"
-msgstr ""
+msgstr "Merci"
 
 #: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.py:72
 msgid "The Condition '{0}' is invalid: {1}"
@@ -7082,7 +7082,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
 #: frontend/src/components/Kanban/KanbanSettings.vue:29
 msgid "Title Field"
-msgstr ""
+msgstr "Champ de titre"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:822
 #: frontend/src/components/Modals/EventModal.vue:376
@@ -7528,7 +7528,7 @@ msgstr ""
 
 #: frontend/src/components/Modals/EventModal.vue:134
 msgid "Visibility"
-msgstr ""
+msgstr "Visibilité"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:587
 msgid "Web Form"
@@ -7689,7 +7689,7 @@ msgstr ""
 
 #: crm/templates/emails/helpdesk_invitation.html:22
 msgid "You can also copy-paste following link in your browser"
-msgstr ""
+msgstr "Vous pouvez également copier-coller le lien suivant dans votre navigateur"
 
 #: frontend/src/components/Telephony/CallUI.vue:39
 msgid "You can change the default calling medium from the settings"
@@ -8016,7 +8016,7 @@ msgstr "kanban"
 
 #: crm/api/doc.py:46 crm/api/doc.py:156 crm/api/doc.py:482
 msgid "label"
-msgstr ""
+msgstr "libellé"
 
 #: frontend/src/components/Settings/AssignmentRules/AssigneeRules.vue:130
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:379
