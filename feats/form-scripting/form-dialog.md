@@ -2,7 +2,8 @@
 
 > **Status:** Implemented  
 > **Available since:** Phase 2 of custom scripting  
-> **Related:** [form-scripting.md](./form-scripting.md) (full scripting docs)
+> **Full scripting guide**: [guide.md](./guide.md)  
+> **API contracts**: [SPEC.md](../../SPEC.md)
 
 ---
 
