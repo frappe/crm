@@ -12,11 +12,11 @@ they run as evaluated strings in the browser.
 
 | Task | Read first |
 |---|---|
-| What are we building next | [PLAN.md](./PLAN.md) |
-| Stable API contracts (setFieldProperty, formDialog, helpers) | [SPEC.md](./SPEC.md) |
-| Why code is the way it is (decisions, bugs fixed, history) | [ARCHIVE.md](./ARCHIVE.md) |
-| Form scripting user guide | [feats/form-scripting/guide.md](./feats/form-scripting/guide.md) |
-| formDialog() API reference | [feats/form-scripting/form-dialog.md](./feats/form-scripting/form-dialog.md) |
+| What are we building next | [PLAN.md](./.pi/PLAN.md) |
+| Stable API contracts (setFieldProperty, formDialog, helpers) | [SPEC.md](./.pi/SPEC.md) |
+| Why code is the way it is (decisions, bugs fixed, history) | [ARCHIVE.md](./.pi/ARCHIVE.md) |
+| Form scripting user guide | [feats/form-scripting/guide.md](./.pi/feats/form-scripting/guide.md) |
+| formDialog() API reference | [feats/form-scripting/form-dialog.md](./.pi/feats/form-scripting/form-dialog.md) |
 
 ---
 
