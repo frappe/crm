@@ -56,6 +56,7 @@ const props = withDefaults(defineProps<Props>(), {
 const isMac = computed(() => {
   if (typeof navigator === 'undefined') return false
   const platform =
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (navigator as any).userAgentData?.platform || navigator.platform || ''
   if (/Mac|iPod|iPhone|iPad/i.test(platform)) return true
   return /Mac OS X|Macintosh|iPhone|iPad|iPod/i.test(navigator.userAgent || '')

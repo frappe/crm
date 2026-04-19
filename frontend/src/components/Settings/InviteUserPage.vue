@@ -109,7 +109,7 @@ import {
 import { ref, computed } from 'vue'
 
 const { updateOnboardingStep } = useOnboarding('frappecrm')
-const { users, isAdmin, isManager } = usersStore()
+const { users, isAdmin } = usersStore()
 const { capture } = useTelemetry()
 
 const invitees = ref([])
