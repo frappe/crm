@@ -1276,7 +1276,7 @@ setFieldHtml(fieldname, html) {
 
 ## Further Reading
 
-- [`document.js` source](../../frontend/src/data/document.js) — `documentsCache`, `useDocument`, `save.submit` patch
-- [`script.js` source](../../frontend/src/data/script.js) — `setupScript`, `evaluateFormClass`, `createDocProxy`, `setupHelperMethods`
+- [`document.js` source](../../../frontend/src/data/document.js) — `documentsCache`, `useDocument`, `save.submit` patch
+- [`script.js` source](../../../frontend/src/data/script.js) — `setupScript`, `evaluateFormClass`, `createDocProxy`, `setupHelperMethods`
 - [SPEC.md](../../SPEC.md) — stable API contracts
 - [ARCHIVE.md](../../ARCHIVE.md) — implementation history and rendering flow
