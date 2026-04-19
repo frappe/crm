@@ -53,10 +53,6 @@ const getConjunction = () => {
   return conjunction
 }
 
-const turnIntoGroup = (condition) => {
-  conditions.splice(conditions.indexOf(condition), 1, [condition])
-}
-
 const isGroupCondition = (condition) => {
   return Array.isArray(condition)
 }
@@ -82,38 +78,6 @@ const dropdownOptions = computed(() => {
   }
   return options
 })
-
-function removeCondition(condition) {
-  const conditionIndex = conditions.indexOf(condition)
-  if (conditionIndex == 0) {
-    conditions.splice(conditionIndex, 2)
-  } else {
-    conditions.splice(conditionIndex - 1, 2)
-  }
-}
-
-function unGroupConditions(condition) {
-  const conjunction = getConjunction()
-  const newConditions = condition.map((c) => {
-    if (typeof c == 'string') {
-      return conjunction
-    }
-    return c
-  })
-
-  const index = conditions.indexOf(condition)
-  if (index !== -1) {
-    conditions.splice(index, 1, ...newConditions)
-  }
-}
-
-function toggleConjunction(conjunction) {
-  for (let i = 0; i < conditions.length; i++) {
-    if (typeof conditions[i] == 'string') {
-      conditions[i] = conjunction == 'and' ? 'or' : 'and'
-    }
-  }
-}
 
 watch(
   () => props.doctype,

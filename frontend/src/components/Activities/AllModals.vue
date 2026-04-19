@@ -35,8 +35,8 @@ const props = defineProps({
   doctype: { type: String, default: '' },
 })
 
-const activities = defineModel()
-const doc = defineModel('doc')
+const activities = defineModel({ type: Object })
+const doc = defineModel('doc', { type: Object })
 
 // Tasks
 const showTaskModal = ref(false)

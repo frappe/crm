@@ -2,8 +2,8 @@
   <div>
     <div class="flex flex-wrap gap-1">
       <Button
-        ref="emails"
         v-for="value in values"
+        ref="emails"
         :key="value"
         :label="value"
         theme="gray"
@@ -24,7 +24,7 @@
       </Button>
       <div class="flex-1">
         <Combobox v-model="selectedValue" nullable>
-          <Popover class="w-full" v-model:show="showOptions">
+          <Popover v-model:show="showOptions" class="w-full">
             <template #target="{ togglePopover }">
               <ComboboxInput
                 ref="search"
@@ -38,13 +38,13 @@
                 :placeholder="placeholder"
                 type="text"
                 :value="query"
+                autocomplete="off"
                 @change="
                   (e) => {
                     query = e.target.value
                     showOptions = true
                   }
                 "
-                autocomplete="off"
                 @focus="() => togglePopover()"
                 @keydown.delete.capture.stop="removeLastValue"
               />
@@ -75,9 +75,9 @@
                     </div>
                     <ComboboxOption
                       v-for="option in options"
+                      v-slot="{ active }"
                       :key="option.value"
                       :value="option"
-                      v-slot="{ active }"
                     >
                       <li
                         :class="[
@@ -108,7 +108,7 @@
         </Combobox>
       </div>
     </div>
-    <ErrorMessage class="mt-2 pl-2" v-if="error" :message="error" />
+    <ErrorMessage v-if="error" class="mt-2 pl-2" :message="error" />
     <div
       v-if="info"
       class="whitespace-pre-line text-sm text-ink-blue-3 mt-2 pl-2"
@@ -161,7 +161,7 @@ const props = defineProps({
   },
 })
 
-const values = defineModel()
+const values = defineModel({ type: Array })
 
 const { users } = usersStore()
 
@@ -179,7 +179,7 @@ const selectedValue = computed({
     if (val) {
       showOptions.value = false
     }
-    val?.value && addValue(val.value)
+    if (val?.value) addValue(val.value)
   },
 })
 
@@ -237,13 +237,12 @@ const addValue = (value) => {
           } else {
             values.value.push(value)
           }
-          value = value.replace(value, '')
         } else {
           info.value = __('email already exists')
         }
       }
     })
-    !error.value && (value = '')
+    if (!error.value) query.value = ''
   }
 }
 
