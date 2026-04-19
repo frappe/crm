@@ -1,0 +1,89 @@
+name: Frontend
+
+on:
+    pull_request:
+        paths-ignore:
+            - "**.md"
+            - "**.py"
+            - "**.txt"
+            - "**.csv"
+            - "**.po"
+            - "**.pot"
+            - ".github/workflows/server-tests.yml"
+            - ".github/workflows/builds.yml"
+    schedule:
+        # Run every day at midnight UTC / 5:30 IST
+        - cron: "0 0 * * *"
+    workflow_dispatch:
+
+concurrency:
+    group: frontend-${{ github.event.number || github.ref }}
+    cancel-in-progress: true
+
+jobs:
+    lint:
+        name: Lint
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v4
+
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: "24"
+                  cache: yarn
+                  cache-dependency-path: frontend/yarn.lock
+
+            - name: Install dependencies
+              run: cd frontend && yarn install --frozen-lockfile
+
+            - name: ESLint
+              run: cd frontend && npx eslint src --ext .js,.ts,.vue
+
+            - name: Oxlint
+              run: cd frontend && npx oxlint src
+
+    test:
+        name: Unit Tests & Coverage
+        runs-on: ubuntu-latest
+        needs: lint
+
+        steps:
+            - uses: actions/checkout@v4
+
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: "24"
+                  cache: yarn
+                  cache-dependency-path: frontend/yarn.lock
+
+            - name: Run frontend tests
+              uses: ./.github/actions/frontend-tests
+              with:
+                  node-version: "24"
+                  enable-coverage: "true"
+
+            - name: Upload coverage artifact
+              if: github.base_ref == 'develop' || github.ref_name == 'develop'
+              uses: ./.github/actions/upload-coverage
+              with:
+                  artifact-name: coverage-frontend
+                  coverage-path: frontend/coverage/lcov.info
+
+    coverage:
+        name: Coverage Wrap Up
+        needs: test
+        if: github.base_ref == 'develop' || github.ref_name == 'develop'
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Download artifacts
+              uses: actions/download-artifact@v4
+
+            - name: Publish coverage to Codecov
+              uses: ./.github/actions/publish-codecov
+              with:
+                  name: Frontend
+                  token: ${{ secrets.CODECOV_TOKEN }}

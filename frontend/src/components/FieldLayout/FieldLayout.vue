@@ -38,13 +38,17 @@ const props = defineProps({
   doctype: { type: String, default: 'CRM Lead' },
   isGridRow: { type: Boolean, default: false },
   preview: { type: Boolean, default: false },
+  context: { type: Object, default: null },
 })
 
 const tabIndex = ref(0)
 
 // Get fieldPropertyOverrides for tab/section overrides
 let overrides = {}
-if (!props.isGridRow) {
+if (props.context) {
+  // Standalone mode: use externally managed context, skip useDocument
+  overrides = computed(() => props.context?.fieldPropertyOverrides || {})
+} else if (!props.isGridRow) {
   const { document: doc } = useDocument(props.doctype, props.data?.name)
   overrides = computed(() => doc?.fieldPropertyOverrides || {})
 } else {
@@ -85,6 +89,7 @@ provide('hasTabs', hasTabs)
 provide('doctype', props.doctype)
 provide('preview', props.preview)
 provide('isGridRow', props.isGridRow)
+provide('fieldLayoutContext', props.context)
 </script>
 <style scoped>
 .section:not(:has(.field)) {
