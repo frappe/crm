@@ -59,6 +59,7 @@ export default {
   inheritAttrs: false,
   props: {
     show: {
+      type: Boolean,
       default: undefined,
     },
     trigger: {
@@ -77,11 +78,13 @@ export default {
       type: String,
       default: 'bottom-start',
     },
-    popoverClass: [String, Object, Array],
+    popoverClass: { type: [String, Object, Array], default: '' },
     transition: {
+      type: [String, Object],
       default: null,
     },
     hideOnBlur: {
+      type: Boolean,
       default: true,
     },
   },
@@ -94,6 +97,48 @@ export default {
       targetWidth: null,
       pointerOverTargetOrPopup: false,
     }
+  },
+  computed: {
+    showPropPassed() {
+      return this.show != null
+    },
+    isOpen: {
+      get() {
+        if (this.showPropPassed) {
+          return this.show
+        }
+        return this.showPopup
+      },
+      set(val) {
+        val = Boolean(val)
+        if (this.showPropPassed) {
+          this.$emit('update:show', val)
+        } else {
+          this.showPopup = val
+        }
+        if (val === false) {
+          this.$emit('close')
+        } else if (val === true) {
+          this.$emit('open')
+        }
+      },
+    },
+    popupTransition() {
+      let templates = {
+        default: {
+          enterActiveClass: 'transition duration-150 ease-out',
+          enterFromClass: 'translate-y-1 opacity-0',
+          enterToClass: 'translate-y-0 opacity-100',
+          leaveActiveClass: 'transition duration-150 ease-in',
+          leaveFromClass: 'translate-y-0 opacity-100',
+          leaveToClass: 'translate-y-1 opacity-0',
+        },
+      }
+      if (typeof this.transition === 'string') {
+        return templates[this.transition]
+      }
+      return this.transition
+    },
   },
   watch: {
     show(val) {
@@ -152,52 +197,10 @@ export default {
       this.targetWidth = this.$refs['target'].clientWidth
     })
   },
-  beforeDestroy() {
-    this.popper && this.popper.destroy()
+  beforeUnmount() {
+    if (this.popper) this.popper.destroy()
     document.removeEventListener('click', this.listener)
     document.removeEventListener('mousedown', this.listener)
-  },
-  computed: {
-    showPropPassed() {
-      return this.show != null
-    },
-    isOpen: {
-      get() {
-        if (this.showPropPassed) {
-          return this.show
-        }
-        return this.showPopup
-      },
-      set(val) {
-        val = Boolean(val)
-        if (this.showPropPassed) {
-          this.$emit('update:show', val)
-        } else {
-          this.showPopup = val
-        }
-        if (val === false) {
-          this.$emit('close')
-        } else if (val === true) {
-          this.$emit('open')
-        }
-      },
-    },
-    popupTransition() {
-      let templates = {
-        default: {
-          enterActiveClass: 'transition duration-150 ease-out',
-          enterFromClass: 'translate-y-1 opacity-0',
-          enterToClass: 'translate-y-0 opacity-100',
-          leaveActiveClass: 'transition duration-150 ease-in',
-          leaveFromClass: 'translate-y-0 opacity-100',
-          leaveToClass: 'translate-y-1 opacity-0',
-        },
-      }
-      if (typeof this.transition === 'string') {
-        return templates[this.transition]
-      }
-      return this.transition
-    },
   },
   methods: {
     setupPopper() {
@@ -210,7 +213,7 @@ export default {
       }
     },
     updatePosition() {
-      this.popper && this.popper.update()
+      if (this.popper) this.popper.update()
     },
     togglePopover(flag) {
       if (flag instanceof Event) {
@@ -254,7 +257,7 @@ export default {
         }
       }
     },
-    onMouseleave(e) {
+    onMouseleave() {
       this.pointerOverTargetOrPopup = false
       if (this.hoverTimer) {
         clearTimeout(this.hoverTimer)

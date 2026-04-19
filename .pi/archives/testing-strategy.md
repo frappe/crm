@@ -1,3 +1,7 @@
+> **Archived.** This file is superseded. See [SPEC.md](../SPEC.md), [PLAN.md](../PLAN.md), [ARCHIVE.md](../ARCHIVE.md), or [feats/form-scripting/](../feats/form-scripting/).
+
+---
+
 # Frontend Testing
 
 > **Status:** Infrastructure set up; unit tests implemented  

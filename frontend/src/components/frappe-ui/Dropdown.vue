@@ -1,5 +1,5 @@
 <template>
-  <Menu as="div" class="relative inline-block text-left" v-slot="{ open }">
+  <Menu v-slot="{ open }" as="div" class="relative inline-block text-left">
     <Popover
       :transition="dropdownTransition"
       :show="open"
@@ -45,8 +45,8 @@
               >
                 <slot name="item" v-bind="{ item, active }">
                   <component
-                    v-if="item.component"
                     :is="item.component"
+                    v-if="item.component"
                     :active="active"
                   />
                   <button
@@ -64,9 +64,9 @@
                       aria-hidden="true"
                     />
                     <component
-                      class="mr-2 h-4 w-4 flex-shrink-0 text-ink-gray-7"
-                      v-else-if="item.icon"
                       :is="item.icon"
+                      v-else-if="item.icon"
+                      class="mr-2 h-4 w-4 flex-shrink-0 text-ink-gray-7"
                     />
                     <span class="whitespace-nowrap text-ink-gray-7">
                       {{ item.label }}
