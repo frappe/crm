@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2026-04-12 09:47+0000\n"
-"PO-Revision-Date: 2026-04-12 23:23\n"
+"POT-Creation-Date: 2026-04-19 09:47+0000\n"
+"PO-Revision-Date: 2026-04-20 02:13\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Esperanto\n"
 "MIME-Version: 1.0\n"
@@ -47,7 +47,7 @@ msgstr "crwdns196026:0crwdne196026:0"
 msgid "08:00 pm"
 msgstr "crwdns196028:0crwdne196028:0"
 
-#: frontend/src/utils/index.js:203
+#: frontend/src/utils/index.js:204
 msgid "1 hour ago"
 msgstr "crwdns156086:0crwdne156086:0"
 
@@ -55,19 +55,19 @@ msgstr "crwdns156086:0crwdne156086:0"
 msgid "1 hr"
 msgstr "crwdns158754:0crwdne158754:0"
 
-#: frontend/src/utils/index.js:199
+#: frontend/src/utils/index.js:200
 msgid "1 minute ago"
 msgstr "crwdns156088:0crwdne156088:0"
 
-#: frontend/src/utils/index.js:218
+#: frontend/src/utils/index.js:219
 msgid "1 month ago"
 msgstr "crwdns156090:0crwdne156090:0"
 
-#: frontend/src/utils/index.js:214
+#: frontend/src/utils/index.js:215
 msgid "1 week ago"
 msgstr "crwdns156092:0crwdne156092:0"
 
-#: frontend/src/utils/index.js:222
+#: frontend/src/utils/index.js:223
 msgid "1 year ago"
 msgstr "crwdns156094:0crwdne156094:0"
 
@@ -198,12 +198,12 @@ msgstr "crwdns152697:0crwdne152697:0"
 msgid "API Token"
 msgstr "crwdns152699:0crwdne152699:0"
 
-#: frontend/src/components/Settings/ERPNextSettings.vue:456
+#: frontend/src/components/Settings/ERPNextSettings.vue:459
 #: frontend/src/components/Settings/emailConfig.js:192
 msgid "API key is required"
 msgstr "crwdns196032:0crwdne196032:0"
 
-#: frontend/src/components/Settings/ERPNextSettings.vue:458
+#: frontend/src/components/Settings/ERPNextSettings.vue:462
 msgid "API secret is required"
 msgstr "crwdns200058:0crwdne200058:0"
 
@@ -235,7 +235,7 @@ msgstr "crwdns160900:0crwdne160900:0"
 
 #. Label of the access_key (Data) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
-#: frontend/src/components/Settings/CurrencySettings.vue:96
+#: frontend/src/components/Settings/DashboardSettings.vue:135
 msgid "Access Key"
 msgstr "crwdns157240:0crwdne157240:0"
 
@@ -255,10 +255,6 @@ msgstr "crwdns160744:0crwdne160744:0"
 #: crm/lead_syncing/doctype/lead_sync_source/facebook.py:145
 msgid "Access token is required"
 msgstr "crwdns160746:0crwdne160746:0"
-
-#: frontend/src/components/Settings/Settings.vue:95
-msgid "Account"
-msgstr "crwdns199284:0crwdne199284:0"
 
 #. Label of the account_id (Data) field in DocType 'Facebook Page'
 #: crm/lead_syncing/doctype/facebook_page/facebook_page.json
@@ -385,7 +381,7 @@ msgstr "crwdns196054:0crwdne196054:0"
 msgid "Add Mobile Number..."
 msgstr "crwdns196056:0crwdne196056:0"
 
-#: frontend/src/components/Modals/CallLogDetailModal.vue:19
+#: frontend/src/components/Modals/CallLogDetailModal.vue:20
 msgid "Add Note"
 msgstr "crwdns196058:0crwdne196058:0"
 
@@ -401,7 +397,7 @@ msgstr "crwdns196060:0crwdne196060:0"
 msgid "Add Organization..."
 msgstr "crwdns196062:0crwdne196062:0"
 
-#: frontend/src/components/Controls/Grid.vue:412
+#: frontend/src/components/Controls/Grid.vue:435
 #: frontend/src/components/Settings/Sla/SlaHolidays.vue:163
 #: frontend/src/components/Settings/Sla/SlaPriorityList.vue:101
 msgid "Add Row"
@@ -424,7 +420,7 @@ msgstr "crwdns152725:0crwdne152725:0"
 msgid "Add Tab"
 msgstr "crwdns152727:0crwdne152727:0"
 
-#: frontend/src/components/Modals/CallLogDetailModal.vue:24
+#: frontend/src/components/Modals/CallLogDetailModal.vue:25
 msgid "Add Task"
 msgstr "crwdns196066:0crwdne196066:0"
 
@@ -515,7 +511,7 @@ msgstr "crwdns156118:0crwdne156118:0"
 msgid "Agent is unavailable to take the call, please call after some time."
 msgstr "crwdns152747:0crwdne152747:0"
 
-#: frontend/src/components/Notifications.vue:114
+#: frontend/src/components/Notifications.vue:118
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:72
 #: frontend/src/components/Settings/Users.vue:81
 msgid "All"
@@ -554,11 +550,11 @@ msgstr "crwdns152751:0crwdne152751:0"
 msgid "Amount after discount"
 msgstr "crwdns156120:0crwdne156120:0"
 
-#: frontend/src/data/script.js:50 frontend/src/data/script.js:51
+#: frontend/src/data/script.js:51 frontend/src/data/script.js:52
 msgid "An error occurred"
 msgstr "crwdns156122:0crwdne156122:0"
 
-#: frontend/src/data/document.js:72
+#: frontend/src/data/document.js:73
 msgid "An error occurred while updating the document"
 msgstr "crwdns157248:0crwdne157248:0"
 
@@ -683,7 +679,7 @@ msgstr "crwdns200060:0crwdne200060:0"
 msgid "Are you sure you want to reset 'Create Quotation from CRM Deal' Form Script?"
 msgstr "crwdns152785:0crwdne152785:0"
 
-#: frontend/src/components/Settings/CurrencySettings.vue:189
+#: frontend/src/components/Settings/DashboardSettings.vue:236
 msgid "Are you sure you want to set the currency as {0}? This cannot be changed later."
 msgstr "crwdns156126:0{0}crwdne156126:0"
 
@@ -844,17 +840,9 @@ msgstr "crwdns152807:0crwdne152807:0"
 msgid "Auto Create Customer"
 msgstr "crwdns200064:0crwdne200064:0"
 
-#: frontend/src/components/Settings/ForecastingSettings.vue:42
+#: frontend/src/components/Settings/DashboardSettings.vue:49
 msgid "Auto Update Expected Deal Value"
 msgstr "crwdns159276:0crwdne159276:0"
-
-#: frontend/src/components/Settings/ForecastingSettings.vue:97
-msgid "Auto Update of Expected Deal Value disabled"
-msgstr "crwdns196126:0crwdne196126:0"
-
-#: frontend/src/components/Settings/ForecastingSettings.vue:96
-msgid "Auto Update of Expected Deal Value enabled"
-msgstr "crwdns196128:0crwdne196128:0"
 
 #. Label of the auto_update_expected_deal_value (Check) field in DocType 'FCRM
 #. Settings'
@@ -894,7 +882,7 @@ msgstr "crwdns199512:0crwdne199512:0"
 #. Description of the 'Auto update Expected Deal Value' (Check) field in
 #. DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
-#: frontend/src/components/Settings/ForecastingSettings.vue:46
+#: frontend/src/components/Settings/DashboardSettings.vue:53
 msgid "Automatically update \"Expected Deal Value\" based on the total value of associated products in a deal"
 msgstr "crwdns159284:0crwdne159284:0"
 
@@ -1229,7 +1217,7 @@ msgstr "crwdns196158:0crwdne196158:0"
 msgid "Calendar Settings"
 msgstr "crwdns196160:0crwdne196160:0"
 
-#: frontend/src/components/Modals/CallLogDetailModal.vue:8
+#: frontend/src/components/Modals/CallLogDetailModal.vue:9
 msgid "Call Details"
 msgstr "crwdns152891:0crwdne152891:0"
 
@@ -1309,7 +1297,7 @@ msgstr "crwdns152911:0crwdne152911:0"
 msgid "Canceled"
 msgstr "crwdns152913:0crwdne152913:0"
 
-#: crm/api/user.py:38
+#: crm/api/user.py:82
 msgid "Cannot assign this role"
 msgstr "crwdns196166:0crwdne196166:0"
 
@@ -1524,8 +1512,8 @@ msgid "Comment"
 msgstr "crwdns152955:0crwdne152955:0"
 
 #: frontend/src/components/CommunicationArea.vue:275
-msgid "Comment sent!"
-msgstr "crwdns196190:0crwdne196190:0"
+msgid "Comment sent"
+msgstr "crwdns200230:0crwdne200230:0"
 
 #: frontend/src/pages/Deal.vue:570 frontend/src/pages/Lead.vue:422
 #: frontend/src/pages/MobileDeal.vue:448 frontend/src/pages/MobileLead.vue:294
@@ -1557,7 +1545,7 @@ msgstr "crwdns200066:0crwdne200066:0"
 msgid "Company in ERPNext site"
 msgstr "crwdns196192:0crwdne196192:0"
 
-#: frontend/src/components/Settings/ERPNextSettings.vue:472
+#: frontend/src/components/Settings/ERPNextSettings.vue:476
 msgid "Company name is required"
 msgstr "crwdns200068:0crwdne200068:0"
 
@@ -1604,19 +1592,19 @@ msgstr "crwdns196194:0crwdne196194:0"
 msgid "Configure actions that appear on the home dropdown"
 msgstr "crwdns159296:0crwdne159296:0"
 
-#: frontend/src/components/Settings/ForecastingSettings.vue:9
-msgid "Configure forecasting feature to help predict sales performance and growth"
-msgstr "crwdns159298:0crwdne159298:0"
+#: frontend/src/components/Settings/DefaultsSettings.vue:10
+msgid "Configure default settings for your CRM system, including default currency, date formats, and other system-wide preferences to ensure consistency across your system."
+msgstr "crwdns200232:0crwdne200232:0"
 
 #: frontend/src/components/Settings/GeneralSettings.vue:8
 msgid "Configure general settings for your application"
 msgstr "crwdns199306:0crwdne199306:0"
 
-#: frontend/src/components/Settings/CurrencySettings.vue:11
-msgid "Configure the Currency and Exchange Rate Provider for your CRM"
-msgstr "crwdns196196:0crwdne196196:0"
+#: frontend/src/components/Settings/DashboardSettings.vue:10
+msgid "Configure how your dashboard calculates, formats, and displays key metrics, including forecasting, deal values, and currency settings"
+msgstr "crwdns200234:0crwdne200234:0"
 
-#: frontend/src/components/Settings/CurrencySettings.vue:63
+#: frontend/src/components/Settings/DashboardSettings.vue:102
 msgid "Configure the Exchange Rate Provider for your CRM"
 msgstr "crwdns196198:0crwdne196198:0"
 
@@ -1651,11 +1639,11 @@ msgstr "crwdns156206:0crwdne156206:0"
 msgid "Confirm Overwrite"
 msgstr "crwdns196208:0crwdne196208:0"
 
-#: frontend/src/components/Modals/ChangePasswordModal.vue:19
+#: frontend/src/components/Modals/ChangePasswordModal.vue:30
 msgid "Confirm Password"
 msgstr "crwdns156208:0crwdne156208:0"
 
-#: frontend/src/utils/index.js:886 frontend/src/utils/index.js:889
+#: frontend/src/utils/index.js:822 frontend/src/utils/index.js:825
 msgid "Confirm {0}"
 msgstr "crwdns199516:0{0}crwdne199516:0"
 
@@ -1753,6 +1741,10 @@ msgstr "crwdns152993:0crwdne152993:0"
 msgid "Content is required"
 msgstr "crwdns156220:0crwdne156220:0"
 
+#: frontend/src/components/Settings/DefaultsSettings.vue:75
+msgid "Controls how numbers are displayed (e.g., commas, decimal separators)"
+msgstr "crwdns200236:0crwdne200236:0"
+
 #: frontend/src/components/Layouts/AppSidebar.vue:399
 #: frontend/src/components/ListBulkActions.vue:86
 #: frontend/src/components/Modals/ConvertToDealModal.vue:83
@@ -1781,7 +1773,7 @@ msgstr "crwdns152999:0crwdne152999:0"
 msgid "Converted Successfully"
 msgstr "crwdns196222:0crwdne196222:0"
 
-#: frontend/src/utils/index.js:404
+#: frontend/src/utils/index.js:405
 msgid "Copied to Clipboard"
 msgstr "crwdns196224:0crwdne196224:0"
 
@@ -1821,7 +1813,7 @@ msgstr "crwdns153005:0crwdne153005:0"
 msgid "Create Event"
 msgstr "crwdns196226:0crwdne196226:0"
 
-#: frontend/src/components/Modals/CallLogDetailModal.vue:154
+#: frontend/src/components/Modals/CallLogDetailModal.vue:155
 #: frontend/src/components/Modals/LeadModal.vue:8
 msgid "Create Lead"
 msgstr "crwdns153009:0crwdne153009:0"
@@ -1891,21 +1883,21 @@ msgstr "crwdns156234:0crwdne156234:0"
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
-#: frontend/src/components/Settings/CurrencySettings.vue:31
+#: frontend/src/components/Settings/DefaultsSettings.vue:31
 msgid "Currency"
 msgstr "crwdns153023:0crwdne153023:0"
 
-#: frontend/src/components/Settings/Settings.vue:128
-msgid "Currency & Exchange Rate"
-msgstr "crwdns159304:0crwdne159304:0"
+#: frontend/src/components/Settings/DefaultsSettings.vue:52
+msgid "Currency Precision"
+msgstr "crwdns200238:0crwdne200238:0"
 
-#: frontend/src/components/Settings/CurrencySettings.vue:7
-msgid "Currency & Exchange Rate Provider"
-msgstr "crwdns196232:0crwdne196232:0"
-
-#: frontend/src/components/Settings/CurrencySettings.vue:203
+#: frontend/src/components/Settings/DashboardSettings.vue:250
 msgid "Currency set as {0} successfully"
 msgstr "crwdns156236:0{0}crwdne156236:0"
+
+#: frontend/src/components/Modals/ChangePasswordModal.vue:8
+msgid "Current Password"
+msgstr "crwdns200240:0crwdne200240:0"
 
 #: crm/api/dashboard.py:896
 msgid "Current pipeline distribution"
@@ -1966,9 +1958,22 @@ msgstr "crwdns156252:0crwdne156252:0"
 msgid "Dark"
 msgstr "crwdns199310:0crwdne199310:0"
 
-#: frontend/src/components/Settings/CurrencySettings.vue:35
+#: frontend/src/components/Settings/DashboardSettings.vue:6
+#: frontend/src/components/Settings/Settings.vue:123
+msgid "Dashboard"
+msgstr "crwdns200242:0crwdne200242:0"
+
+#: frontend/src/components/Settings/DashboardSettings.vue:70
+msgid "Dashboard Currency"
+msgstr "crwdns200244:0crwdne200244:0"
+
+#: frontend/src/components/Settings/DashboardSettings.vue:74
 msgid "Dashboard number cards & charts will show currency in the selected format. Once set, cannot be edited."
 msgstr "crwdns196250:0crwdne196250:0"
+
+#: frontend/src/components/Settings/DashboardSettings.vue:224
+msgid "Dashboard settings updated successfully"
+msgstr "crwdns200246:0crwdne200246:0"
 
 #: frontend/src/components/Activities/DataFields.vue:6
 #: frontend/src/components/Layouts/AppSidebar.vue:604
@@ -1994,6 +1999,10 @@ msgstr "crwdns153033:0crwdne153033:0"
 #: frontend/src/components/Modals/EventModal.vue:78
 msgid "Date & Time"
 msgstr "crwdns158834:0crwdne158834:0"
+
+#: frontend/src/components/Settings/DefaultsSettings.vue:111
+msgid "Date Format"
+msgstr "crwdns200248:0crwdne200248:0"
 
 #: frontend/src/components/Settings/Sla/SlaHolidays.vue:214
 #: frontend/src/pages/Calendar.vue:91
@@ -2041,7 +2050,7 @@ msgstr "crwdns156254:0crwdne156254:0"
 msgid "Deal generation channel analysis"
 msgstr "crwdns156258:0crwdne156258:0"
 
-#: frontend/src/components/Settings/ERPNextSettings.vue:477
+#: frontend/src/components/Settings/ERPNextSettings.vue:481
 msgid "Deal status is required"
 msgstr "crwdns200076:0crwdne200076:0"
 
@@ -2176,6 +2185,14 @@ msgstr "crwdns156282:0{0}crwdne156282:0"
 msgid "Default statuses, custom fields and layouts restored successfully."
 msgstr "crwdns153065:0crwdne153065:0"
 
+#: frontend/src/components/Settings/Settings.vue:128
+msgid "Defaults"
+msgstr "crwdns200250:0crwdne200250:0"
+
+#: frontend/src/components/Settings/DefaultsSettings.vue:35
+msgid "Defines the default currency for all records, can be overridden at the field level"
+msgstr "crwdns200252:0crwdne200252:0"
+
 #: frontend/src/components/Activities/AttachmentArea.vue:131
 #: frontend/src/components/Activities/NoteArea.vue:12
 #: frontend/src/components/Activities/TaskArea.vue:55
@@ -2184,7 +2201,7 @@ msgstr "crwdns153065:0crwdne153065:0"
 #: frontend/src/components/BulkDeleteLinkedDocModal.vue:49
 #: frontend/src/components/BulkDeleteLinkedDocModal.vue:74
 #: frontend/src/components/BulkDeleteLinkedDocModal.vue:113
-#: frontend/src/components/Controls/Grid.vue:407
+#: frontend/src/components/Controls/Grid.vue:430
 #: frontend/src/components/DeleteLinkedDocModal.vue:13
 #: frontend/src/components/DeleteLinkedDocModal.vue:93
 #: frontend/src/components/Kanban/KanbanView.vue:232
@@ -2204,7 +2221,7 @@ msgstr "crwdns153065:0crwdne153065:0"
 #: frontend/src/pages/MobileOrganization.vue:73
 #: frontend/src/pages/MobileOrganization.vue:277
 #: frontend/src/pages/Notes.vue:44 frontend/src/pages/Organization.vue:90
-#: frontend/src/pages/Tasks.vue:380 frontend/src/utils/index.js:866
+#: frontend/src/pages/Tasks.vue:380 frontend/src/utils/index.js:802
 msgid "Delete"
 msgstr "crwdns153069:0crwdne153069:0"
 
@@ -2359,6 +2376,10 @@ msgstr "crwdns156298:0crwdne156298:0"
 msgid "Discount Amount"
 msgstr "crwdns156300:0crwdne156300:0"
 
+#: frontend/src/components/Settings/DefaultsSettings.vue:114
+msgid "Display format for dates across the system"
+msgstr "crwdns200254:0crwdne200254:0"
+
 #. Label of the dt (Link) field in DocType 'CRM Form Script'
 #. Label of the dt (Link) field in DocType 'CRM Global Settings'
 #. Label of the dt (Link) field in DocType 'CRM View Settings'
@@ -2381,11 +2402,11 @@ msgstr "crwdns196302:0crwdne196302:0"
 msgid "Document Type"
 msgstr "crwdns153101:0crwdne153101:0"
 
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:237
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:236
 msgid "Document created successfully"
 msgstr "crwdns199022:0crwdne199022:0"
 
-#: frontend/src/data/document.js:36
+#: frontend/src/data/document.js:37
 msgid "Document does not exist"
 msgstr "crwdns157256:0crwdne157256:0"
 
@@ -2393,7 +2414,7 @@ msgstr "crwdns157256:0crwdne157256:0"
 msgid "Document not found"
 msgstr "crwdns153103:0crwdne153103:0"
 
-#: frontend/src/data/document.js:50
+#: frontend/src/data/document.js:51
 msgid "Document updated successfully"
 msgstr "crwdns156302:0crwdne156302:0"
 
@@ -2516,7 +2537,9 @@ msgstr "crwdns153131:0crwdne153131:0"
 msgid "ERPNext Site URL"
 msgstr "crwdns153133:0crwdne153133:0"
 
-#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:44
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:60
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:81
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:331
 msgid "ERPNext is not installed in the current site"
 msgstr "crwdns153135:0crwdne153135:0"
 
@@ -2524,8 +2547,7 @@ msgstr "crwdns153135:0crwdne153135:0"
 msgid "ERPNext is not installed on this site either install it or enter the URL of your ERPNext site to connect"
 msgstr "crwdns200082:0crwdne200082:0"
 
-#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:143
-#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:175
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:27
 msgid "ERPNext is not integrated with the CRM"
 msgstr "crwdns153137:0crwdne153137:0"
 
@@ -2541,7 +2563,7 @@ msgstr "crwdns153137:0crwdne153137:0"
 msgid "Edit"
 msgstr "crwdns153139:0crwdne153139:0"
 
-#: frontend/src/components/Modals/CallLogDetailModal.vue:39
+#: frontend/src/components/Modals/CallLogDetailModal.vue:40
 #: frontend/src/components/Modals/CallLogModal.vue:87
 msgid "Edit Call Log"
 msgstr "crwdns153141:0crwdne153141:0"
@@ -2586,7 +2608,7 @@ msgstr "crwdns153147:0crwdne153147:0"
 msgid "Edit Grid Row Fields Layout"
 msgstr "crwdns153149:0crwdne153149:0"
 
-#: frontend/src/components/Modals/CallLogDetailModal.vue:19
+#: frontend/src/components/Modals/CallLogDetailModal.vue:20
 #: frontend/src/components/Modals/NoteModal.vue:6
 msgid "Edit Note"
 msgstr "crwdns153151:0crwdne153151:0"
@@ -2599,11 +2621,11 @@ msgstr "crwdns153153:0crwdne153153:0"
 msgid "Edit Response & Resolution"
 msgstr "crwdns196330:0crwdne196330:0"
 
-#: frontend/src/components/Controls/Grid.vue:375
+#: frontend/src/components/Controls/Grid.vue:397
 msgid "Edit Row"
 msgstr "crwdns196332:0crwdne196332:0"
 
-#: frontend/src/components/Modals/CallLogDetailModal.vue:24
+#: frontend/src/components/Modals/CallLogDetailModal.vue:25
 #: frontend/src/components/Modals/TaskModal.vue:6
 msgid "Edit Task"
 msgstr "crwdns153155:0crwdne153155:0"
@@ -2708,8 +2730,8 @@ msgid "Email already exists"
 msgstr "crwdns196354:0crwdne196354:0"
 
 #: frontend/src/components/CommunicationArea.vue:259
-msgid "Email sent!"
-msgstr "crwdns196356:0crwdne196356:0"
+msgid "Email sent"
+msgstr "crwdns200256:0crwdne200256:0"
 
 #: frontend/src/components/Settings/Profile/UserEmailSettings.vue:181
 msgid "Email settings updated successfully"
@@ -2750,7 +2772,7 @@ msgstr "crwdns199024:0crwdne199024:0"
 
 #. Label of the enable_forecasting (Check) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
-#: frontend/src/components/Settings/ForecastingSettings.vue:20
+#: frontend/src/components/Settings/DashboardSettings.vue:31
 msgid "Enable Forecasting"
 msgstr "crwdns156332:0crwdne156332:0"
 
@@ -2840,7 +2862,7 @@ msgstr "crwdns196364:0crwdne196364:0"
 msgid "End Time must be after Start Time for: {0}"
 msgstr "crwdns196366:0{0}crwdne196366:0"
 
-#: frontend/src/components/Settings/CurrencySettings.vue:121
+#: frontend/src/components/Settings/DashboardSettings.vue:160
 msgid "Enter Access Key"
 msgstr "crwdns196368:0crwdne196368:0"
 
@@ -2880,7 +2902,7 @@ msgstr "crwdns160766:0crwdne160766:0"
 msgid "Enter your personal mobile number used by Exotel to make calls"
 msgstr "crwdns199036:0crwdne199036:0"
 
-#: frontend/src/components/FieldLayout/Field.vue:459
+#: frontend/src/components/FieldLayout/Field.vue:516
 msgid "Enter {0}"
 msgstr "crwdns153191:0{0}crwdne153191:0"
 
@@ -2911,7 +2933,7 @@ msgstr "crwdns156340:0{0}crwdne156340:0"
 msgid "Error creating Lead Sync Source"
 msgstr "crwdns160768:0crwdne160768:0"
 
-#: frontend/src/components/Modals/CallLogDetailModal.vue:314
+#: frontend/src/components/Modals/CallLogDetailModal.vue:316
 msgid "Error creating lead: {0}"
 msgstr "crwdns196378:0{0}crwdne196378:0"
 
@@ -2931,24 +2953,6 @@ msgstr "crwdns160772:0crwdne160772:0"
 #: frontend/src/pages/MobileDeal.vue:620 frontend/src/pages/MobileLead.vue:359
 msgid "Error updating field"
 msgstr "crwdns157260:0crwdne157260:0"
-
-#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:90
-msgid "Error while creating custom field in ERPNext, check error log for more details"
-msgstr "crwdns196382:0crwdne196382:0"
-
-#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:334
-#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:337
-#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:350
-msgid "Error while creating customer in ERPNext, check error log for more details"
-msgstr "crwdns153207:0crwdne153207:0"
-
-#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:242
-msgid "Error while creating prospect in ERPNext, check error log for more details"
-msgstr "crwdns153209:0crwdne153209:0"
-
-#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:168
-msgid "Error while fetching customer in ERPNext, check error log for more details"
-msgstr "crwdns153211:0crwdne153211:0"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:671
 msgid "Event Details"
@@ -2976,7 +2980,7 @@ msgstr "crwdns196390:0crwdne196390:0"
 msgid "Event deleted successfully"
 msgstr "crwdns196392:0crwdne196392:0"
 
-#: frontend/src/components/Notifications.vue:115
+#: frontend/src/components/Notifications.vue:119
 #: frontend/src/pages/Deal.vue:580 frontend/src/pages/Lead.vue:432
 msgid "Events"
 msgstr "crwdns158864:0crwdne158864:0"
@@ -3014,7 +3018,7 @@ msgstr "crwdns156346:0crwdne156346:0"
 #. Label of the exchange_rate_provider_section (Section Break) field in DocType
 #. 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
-#: frontend/src/components/Settings/CurrencySettings.vue:60
+#: frontend/src/components/Settings/DashboardSettings.vue:99
 msgid "Exchange Rate Provider"
 msgstr "crwdns157262:0crwdne157262:0"
 
@@ -3167,7 +3171,7 @@ msgstr "crwdns160792:0crwdne160792:0"
 msgid "Failed to Add Users"
 msgstr "crwdns196404:0crwdne196404:0"
 
-#: frontend/src/components/Activities/WhatsAppArea.vue:243
+#: frontend/src/components/Activities/WhatsAppArea.vue:244
 msgid "Failed to add reaction to the message"
 msgstr "crwdns196406:0crwdne196406:0"
 
@@ -3199,7 +3203,7 @@ msgstr "crwdns156358:0crwdne156358:0"
 msgid "Failed to fetch exchange rate from {0} to {1} on {2}. Please check your internet connection or try again later."
 msgstr "crwdns157266:0{0}crwdnd157266:0{1}crwdnd157266:0{2}crwdne157266:0"
 
-#: frontend/src/data/script.js:106
+#: frontend/src/data/script.js:107
 msgid "Failed to load form controller: {0}"
 msgstr "crwdns156362:0{0}crwdne156362:0"
 
@@ -3207,6 +3211,7 @@ msgstr "crwdns156362:0{0}crwdne156362:0"
 msgid "Failed to rename template"
 msgstr "crwdns156364:0crwdne156364:0"
 
+#: frontend/src/components/Settings/DefaultsSettings.vue:169
 #: frontend/src/components/Settings/ERPNextSettings.vue:305
 msgid "Failed to save settings"
 msgstr "crwdns200086:0crwdne200086:0"
@@ -3215,7 +3220,7 @@ msgstr "crwdns200086:0crwdne200086:0"
 msgid "Failed to save workday: {0}"
 msgstr "crwdns196414:0{0}crwdne196414:0"
 
-#: frontend/src/components/Activities/WhatsAppBox.vue:139
+#: frontend/src/components/Activities/WhatsAppBox.vue:144
 msgid "Failed to send WhatsApp message"
 msgstr "crwdns196416:0crwdne196416:0"
 
@@ -3242,6 +3247,10 @@ msgstr "crwdns153247:0crwdne153247:0"
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:873
 msgid "Failed to update attending status"
 msgstr "crwdns196426:0crwdne196426:0"
+
+#: frontend/src/components/Modals/ChangePasswordModal.vue:106
+msgid "Failed to update password"
+msgstr "crwdns200258:0crwdne200258:0"
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:165
 msgid "Failed to update source"
@@ -3277,15 +3286,15 @@ msgstr "crwdns153251:0crwdne153251:0"
 msgid "Fields Order"
 msgstr "crwdns153253:0crwdne153253:0"
 
-#: frontend/src/components/FilesUploader/FilesUploaderArea.vue:329
+#: frontend/src/components/FilesUploader/FilesUploaderArea.vue:330
 msgid "File \"{0}\" was skipped because of invalid file type"
 msgstr "crwdns156374:0{0}crwdne156374:0"
 
-#: frontend/src/components/FilesUploader/FilesUploaderArea.vue:350
+#: frontend/src/components/FilesUploader/FilesUploaderArea.vue:351
 msgid "File \"{0}\" was skipped because only {1} uploads are allowed"
 msgstr "crwdns153255:0{0}crwdnd153255:0{1}crwdne153255:0"
 
-#: frontend/src/components/FilesUploader/FilesUploaderArea.vue:355
+#: frontend/src/components/FilesUploader/FilesUploaderArea.vue:356
 msgid "File \"{0}\" was skipped because only {1} uploads are allowed for DocType \"{2}\""
 msgstr "crwdns153257:0{0}crwdnd153257:0{1}crwdnd153257:0{2}crwdne153257:0"
 
@@ -3347,6 +3356,10 @@ msgstr "crwdns153273:0crwdne153273:0"
 msgid "First name"
 msgstr "crwdns153275:0crwdne153275:0"
 
+#: frontend/src/components/Settings/DefaultsSettings.vue:92
+msgid "Float Precision"
+msgstr "crwdns200260:0crwdne200260:0"
+
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:48
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:80
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:48
@@ -3364,19 +3377,6 @@ msgstr "crwdns196430:0crwdne196430:0"
 #: crm/api/dashboard.py:718
 msgid "Forecasted revenue"
 msgstr "crwdns156378:0crwdne156378:0"
-
-#: frontend/src/components/Settings/ForecastingSettings.vue:5
-#: frontend/src/components/Settings/Settings.vue:123
-msgid "Forecasting"
-msgstr "crwdns159310:0crwdne159310:0"
-
-#: frontend/src/components/Settings/ForecastingSettings.vue:81
-msgid "Forecasting disabled successfully"
-msgstr "crwdns156380:0crwdne156380:0"
-
-#: frontend/src/components/Settings/ForecastingSettings.vue:80
-msgid "Forecasting enabled successfully"
-msgstr "crwdns156382:0crwdne156382:0"
 
 #. Option for the 'Apply To' (Select) field in DocType 'CRM Form Script'
 #: crm/fcrm/doctype/crm_form_script/crm_form_script.json
@@ -3713,6 +3713,10 @@ msgstr "crwdns153347:0crwdne153347:0"
 msgid "Incoming call..."
 msgstr "crwdns153349:0crwdne153349:0"
 
+#: crm/api/user.py:32
+msgid "Incorrect current password. Please try again."
+msgstr "crwdns200262:0crwdne200262:0"
+
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
 msgid "Industries"
@@ -3790,7 +3794,7 @@ msgstr "crwdns153367:0crwdne153367:0"
 msgid "Invalid GeoJSON"
 msgstr "crwdns200088:0crwdne200088:0"
 
-#: frontend/src/components/Settings/ERPNextSettings.vue:453
+#: frontend/src/components/Settings/ERPNextSettings.vue:454
 msgid "Invalid Site URL"
 msgstr "crwdns200090:0crwdne200090:0"
 
@@ -3806,7 +3810,7 @@ msgstr "crwdns196470:0crwdne196470:0"
 msgid "Invalid Twilio application"
 msgstr "crwdns196472:0crwdne196472:0"
 
-#: frontend/src/utils/index.js:303
+#: frontend/src/utils/index.js:304
 msgid "Invalid Website URL"
 msgstr "crwdns196474:0crwdne196474:0"
 
@@ -4437,7 +4441,7 @@ msgstr "crwdns153493:0{0}crwdne153493:0"
 msgid "Make {0} as default calling medium"
 msgstr "crwdns153495:0{0}crwdne153495:0"
 
-#: frontend/src/components/Settings/ForecastingSettings.vue:24
+#: frontend/src/components/Settings/DashboardSettings.vue:35
 msgid "Makes \"Expected Closure Date\" and \"Expected Deal Value\" mandatory for deal value forecasting"
 msgstr "crwdns157268:0crwdne157268:0"
 
@@ -4479,7 +4483,7 @@ msgstr "crwdns196540:0crwdne196540:0"
 msgid "Manager"
 msgstr "crwdns156462:0crwdne156462:0"
 
-#: frontend/src/data/document.js:63
+#: frontend/src/data/document.js:64
 msgid "Mandatory field error: {0}"
 msgstr "crwdns156464:0{0}crwdne156464:0"
 
@@ -4487,7 +4491,7 @@ msgstr "crwdns156464:0{0}crwdne156464:0"
 msgid "Mandatory field(s) {0} must be mapped"
 msgstr "crwdns160924:0{0}crwdne160924:0"
 
-#: frontend/src/data/document.js:224 frontend/src/data/document.js:226
+#: frontend/src/data/document.js:220 frontend/src/data/document.js:222
 msgid "Mandatory fields required: {0}"
 msgstr "crwdns160008:0{0}crwdne160008:0"
 
@@ -4502,7 +4506,7 @@ msgstr "crwdns153499:0crwdne153499:0"
 msgid "Mapped to CRM Field"
 msgstr "crwdns160822:0crwdne160822:0"
 
-#: frontend/src/components/Notifications.vue:21
+#: frontend/src/components/Notifications.vue:22
 #: frontend/src/pages/MobileNotification.vue:12
 #: frontend/src/pages/MobileNotification.vue:13
 msgid "Mark all as read"
@@ -4540,7 +4544,7 @@ msgstr "crwdns153503:0crwdne153503:0"
 msgid "Mention"
 msgstr "crwdns153505:0crwdne153505:0"
 
-#: frontend/src/components/Notifications.vue:116
+#: frontend/src/components/Notifications.vue:120
 msgid "Mentions"
 msgstr "crwdns196544:0crwdne196544:0"
 
@@ -4756,7 +4760,7 @@ msgstr "crwdns153553:0crwdne153553:0"
 msgid "New Organization"
 msgstr "crwdns153555:0crwdne153555:0"
 
-#: frontend/src/components/Modals/ChangePasswordModal.vue:8
+#: frontend/src/components/Modals/ChangePasswordModal.vue:19
 msgid "New Password"
 msgstr "crwdns156478:0crwdne156478:0"
 
@@ -4793,6 +4797,14 @@ msgstr "crwdns153565:0crwdne153565:0"
 #: frontend/src/components/Modals/ConvertToDealModal.vue:42
 msgid "New organization will be created based on the data in details section"
 msgstr "crwdns153567:0crwdne153567:0"
+
+#: frontend/src/components/Modals/ChangePasswordModal.vue:123
+msgid "New password cannot be the same as current password"
+msgstr "crwdns200264:0crwdne200264:0"
+
+#: crm/api/user.py:25
+msgid "New password cannot be the same as current password. Please choose a different password."
+msgstr "crwdns200266:0crwdne200266:0"
 
 #: frontend/src/components/Modals/CreateDocumentModal.vue:84
 msgid "New {0}"
@@ -4837,7 +4849,7 @@ msgstr "crwdns153583:0crwdne153583:0"
 msgid "No Contacts Added"
 msgstr "crwdns196574:0crwdne196574:0"
 
-#: frontend/src/components/Controls/Grid.vue:400
+#: frontend/src/components/Controls/Grid.vue:423
 msgid "No Data"
 msgstr "crwdns153585:0crwdne153585:0"
 
@@ -5038,6 +5050,10 @@ msgstr "crwdns196618:0{0}crwdnd196618:0{1}crwdne196618:0"
 msgid "Not permitted to access the referenced WhatsApp message."
 msgstr "crwdns196620:0crwdne196620:0"
 
+#: crm/fcrm/doctype/crm_fields_layout/crm_fields_layout.py:197
+msgid "Not permitted to modify fields layout"
+msgstr "crwdns200268:0crwdne200268:0"
+
 #. Label of the note (Link) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 #: frontend/src/components/Activities/ActivityHeader.vue:146
@@ -5089,7 +5105,7 @@ msgstr "crwdns153643:0crwdne153643:0"
 #: frontend/src/components/Layouts/AppSidebar.vue:13
 #: frontend/src/components/Mobile/MobileSidebar.vue:23
 #: frontend/src/components/Modals/EventModal.vue:187
-#: frontend/src/components/Notifications.vue:16
+#: frontend/src/components/Notifications.vue:17
 #: frontend/src/pages/MobileNotification.vue:6
 msgid "Notifications"
 msgstr "crwdns153645:0crwdne153645:0"
@@ -5104,6 +5120,10 @@ msgstr "crwdns153647:0crwdne153647:0"
 msgid "Number Chart"
 msgstr "crwdns196624:0crwdne196624:0"
 
+#: frontend/src/components/Settings/DefaultsSettings.vue:71
+msgid "Number Format"
+msgstr "crwdns200270:0crwdne200270:0"
+
 #: crm/api/dashboard.py:1075 crm/api/dashboard.py:1138
 msgid "Number of deals"
 msgstr "crwdns156500:0crwdne156500:0"
@@ -5111,6 +5131,14 @@ msgstr "crwdns156500:0crwdne156500:0"
 #: crm/api/dashboard.py:1131
 msgid "Number of deals and total value per salesperson"
 msgstr "crwdns156502:0crwdne156502:0"
+
+#: frontend/src/components/Settings/DefaultsSettings.vue:95
+msgid "Number of decimal places for non-currency numeric fields"
+msgstr "crwdns200272:0crwdne200272:0"
+
+#: frontend/src/components/Settings/DefaultsSettings.vue:55
+msgid "Number of decimal places used for all currency values"
+msgstr "crwdns200274:0crwdne200274:0"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:167
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:251
@@ -5148,19 +5176,19 @@ msgstr "crwdns196628:0crwdne196628:0"
 msgid "Ongoing deals"
 msgstr "crwdns156508:0crwdne156508:0"
 
-#: crm/api/user.py:18 crm/api/user.py:51
+#: crm/api/user.py:62 crm/api/user.py:95
 msgid "Only System Managers can assign the Sales Manager role"
 msgstr "crwdns196630:0crwdne196630:0"
 
-#: crm/api/user.py:15 crm/api/user.py:45
+#: crm/api/user.py:59 crm/api/user.py:89
 msgid "Only System Managers can assign the System Manager role"
 msgstr "crwdns196632:0crwdne196632:0"
 
-#: crm/api/user.py:48 crm/api/user.py:84
+#: crm/api/user.py:92 crm/api/user.py:128
 msgid "Only System Managers can modify other System Managers"
 msgstr "crwdns196634:0crwdne196634:0"
 
-#: frontend/src/utils/index.js:548
+#: frontend/src/utils/index.js:484
 msgid "Only image files are allowed"
 msgstr "crwdns156510:0crwdne156510:0"
 
@@ -5214,7 +5242,7 @@ msgid "Operator"
 msgstr "crwdns196642:0crwdne196642:0"
 
 #: frontend/src/components/Kanban/KanbanView.vue:228
-#: frontend/src/components/Modals/CallLogDetailModal.vue:15
+#: frontend/src/components/Modals/CallLogDetailModal.vue:16
 #: frontend/src/components/ViewControls.vue:199
 msgid "Options"
 msgstr "crwdns153665:0crwdne153665:0"
@@ -5265,7 +5293,7 @@ msgstr "crwdns153673:0crwdne153673:0"
 msgid "Organization Name"
 msgstr "crwdns153675:0crwdne153675:0"
 
-#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:303
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:309
 msgid "Organization is required to create a customer"
 msgstr "crwdns196644:0crwdne196644:0"
 
@@ -5327,6 +5355,10 @@ msgstr "crwdns153691:0crwdne153691:0"
 msgid "Password"
 msgstr "crwdns156518:0crwdne156518:0"
 
+#: crm/api/user.py:46
+msgid "Password Updated Successfully"
+msgstr "crwdns200276:0crwdne200276:0"
+
 #: crm/api/live_demo.py:24 crm/api/live_demo.py:32
 msgid "Password cannot be reset by Demo User {}"
 msgstr "crwdns153693:0crwdne153693:0"
@@ -5335,24 +5367,28 @@ msgstr "crwdns153693:0crwdne153693:0"
 msgid "Password is required"
 msgstr "crwdns156520:0crwdne156520:0"
 
-#: frontend/src/components/Modals/ChangePasswordModal.vue:106
+#: crm/api/user.py:43
+msgid "Password is too weak. {0}"
+msgstr "crwdns200278:0{0}crwdne200278:0"
+
+#: frontend/src/components/Modals/ChangePasswordModal.vue:130
 msgid "Password must be at least 8 characters"
 msgstr "crwdns196648:0crwdne196648:0"
 
-#: frontend/src/components/Modals/ChangePasswordModal.vue:109
+#: frontend/src/components/Modals/ChangePasswordModal.vue:133
 msgid "Password must contain lowercase, uppercase, number, and symbol"
 msgstr "crwdns196650:0crwdne196650:0"
 
-#: frontend/src/components/Modals/ChangePasswordModal.vue:89
+#: frontend/src/components/Modals/ChangePasswordModal.vue:98
 msgid "Password updated successfully"
 msgstr "crwdns156522:0crwdne156522:0"
 
-#: frontend/src/components/Modals/ChangePasswordModal.vue:119
+#: frontend/src/components/Modals/ChangePasswordModal.vue:143
 msgid "Passwords do not match"
 msgstr "crwdns196652:0crwdne196652:0"
 
-#: frontend/src/components/Modals/ChangePasswordModal.vue:36
-#: frontend/src/components/Modals/ChangePasswordModal.vue:125
+#: frontend/src/components/Modals/ChangePasswordModal.vue:47
+#: frontend/src/components/Modals/ChangePasswordModal.vue:149
 msgid "Passwords match"
 msgstr "crwdns196654:0crwdne196654:0"
 
@@ -5451,7 +5487,7 @@ msgstr "crwdns196664:0crwdne196664:0"
 msgid "Please select a Priority"
 msgstr "crwdns196668:0crwdne196668:0"
 
-#: frontend/src/components/Settings/CurrencySettings.vue:170
+#: frontend/src/components/Settings/DashboardSettings.vue:213
 msgid "Please select a currency before saving."
 msgstr "crwdns157272:0crwdne157272:0"
 
@@ -5623,6 +5659,7 @@ msgstr "crwdns156548:0crwdne156548:0"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:564
 #: frontend/src/components/Settings/Profile/ProfileSettings.vue:4
+#: frontend/src/components/Settings/Settings.vue:98
 msgid "Profile"
 msgstr "crwdns153741:0crwdne153741:0"
 
@@ -6152,6 +6189,7 @@ msgstr "crwdns196742:0crwdne196742:0"
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
 #: crm/fcrm/doctype/crm_territory/crm_territory.json
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.json
 #: crm/fcrm/doctype/fcrm_note/fcrm_note.json
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 #: frontend/src/components/Modals/AddExistingUserModal.vue:92
@@ -6199,7 +6237,7 @@ msgstr "crwdns153851:0crwdne153851:0"
 #: frontend/src/components/Modals/SidePanelModal.vue:26
 #: frontend/src/components/PrimaryDropdownItem.vue:21
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:36
-#: frontend/src/components/Settings/CurrencySettings.vue:197
+#: frontend/src/components/Settings/DashboardSettings.vue:244
 #: frontend/src/components/Settings/PreferencesSettings.vue:49
 #: frontend/src/components/Settings/Sla/EditResponseResolutionModal.vue:56
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:34
@@ -6264,11 +6302,11 @@ msgstr "crwdns196750:0crwdne196750:0"
 msgid "Select"
 msgstr "crwdns196752:0crwdne196752:0"
 
-#: frontend/src/components/Settings/ERPNextSettings.vue:175
+#: frontend/src/components/Settings/ERPNextSettings.vue:176
 msgid "Select Company"
 msgstr "crwdns200110:0crwdne200110:0"
 
-#: frontend/src/components/Settings/CurrencySettings.vue:50
+#: frontend/src/components/Settings/DashboardSettings.vue:89
 msgid "Select Currency"
 msgstr "crwdns196754:0crwdne196754:0"
 
@@ -6284,7 +6322,7 @@ msgstr "crwdns196758:0crwdne196758:0"
 msgid "Select Priority"
 msgstr "crwdns196760:0crwdne196760:0"
 
-#: frontend/src/components/Settings/CurrencySettings.vue:80
+#: frontend/src/components/Settings/DashboardSettings.vue:119
 msgid "Select Provider"
 msgstr "crwdns196762:0crwdne196762:0"
 
@@ -6333,11 +6371,15 @@ msgstr "crwdns200112:0crwdne200112:0"
 msgid "Select the default view for your calendar. This will be the initial view when you open the calendar"
 msgstr "crwdns196776:0crwdne196776:0"
 
+#: frontend/src/components/Settings/DefaultsSettings.vue:131
+msgid "Select whether to display time with or without seconds"
+msgstr "crwdns200280:0crwdne200280:0"
+
 #: frontend/src/components/Settings/ERPNextSettings.vue:133
 msgid "Select your ERPNext company to connect with"
 msgstr "crwdns200114:0crwdne200114:0"
 
-#: frontend/src/components/FieldLayout/Field.vue:457
+#: frontend/src/components/FieldLayout/Field.vue:514
 msgid "Select {0}"
 msgstr "crwdns153865:0{0}crwdne153865:0"
 
@@ -6404,7 +6446,7 @@ msgstr "crwdns196790:0crwdne196790:0"
 msgid "Set As Primary"
 msgstr "crwdns158682:0crwdne158682:0"
 
-#: frontend/src/components/Settings/CurrencySettings.vue:188
+#: frontend/src/components/Settings/DashboardSettings.vue:235
 msgid "Set Currency"
 msgstr "crwdns196792:0crwdne196792:0"
 
@@ -6510,6 +6552,10 @@ msgstr "crwdns153893:0crwdne153893:0"
 msgid "Settings saved"
 msgstr "crwdns200120:0crwdne200120:0"
 
+#: frontend/src/components/Settings/DefaultsSettings.vue:166
+msgid "Settings updated successfully"
+msgstr "crwdns200282:0crwdne200282:0"
+
 #: frontend/src/components/Settings/EmailAdd.vue:6
 msgid "Setup Email"
 msgstr "crwdns156608:0crwdne156608:0"
@@ -6581,7 +6627,7 @@ msgstr "crwdns158366:0{0}crwdnd158366:0{0}crwdnd158366:0{1}crwdne158366:0"
 msgid "Site URL"
 msgstr "crwdns200122:0crwdne200122:0"
 
-#: frontend/src/components/Settings/ERPNextSettings.vue:448
+#: frontend/src/components/Settings/ERPNextSettings.vue:449
 msgid "Site URL is required"
 msgstr "crwdns200124:0crwdne200124:0"
 
@@ -6829,6 +6875,10 @@ msgstr "crwdns199354:0crwdne199354:0"
 msgid "System Configuration"
 msgstr "crwdns159318:0crwdne159318:0"
 
+#: frontend/src/components/Settings/DefaultsSettings.vue:6
+msgid "System Defaults"
+msgstr "crwdns200284:0crwdne200284:0"
+
 #. Name of a role
 #. Option for the 'Role' (Select) field in DocType 'CRM Invitation'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
@@ -7054,6 +7104,10 @@ msgstr "crwdns199534:0crwdne199534:0"
 msgid "Thursday"
 msgstr "crwdns153983:0crwdne153983:0"
 
+#: frontend/src/components/Settings/DefaultsSettings.vue:128
+msgid "Time Format"
+msgstr "crwdns200286:0crwdne200286:0"
+
 #. Description of the 'Default Event Notifications' (Section Break) field in
 #. DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
@@ -7142,6 +7196,10 @@ msgstr "crwdns196870:0crwdne196870:0"
 #: frontend/src/components/Filter.vue:677
 msgid "Tomorrow"
 msgstr "crwdns154003:0crwdne154003:0"
+
+#: crm/api/user.py:21
+msgid "Too many failed attempts. Please try again after some time."
+msgstr "crwdns200288:0crwdne200288:0"
 
 #: frontend/src/components/Modals/NoteModal.vue:41
 #: frontend/src/components/Modals/TaskModal.vue:43
@@ -7282,7 +7340,7 @@ msgstr "crwdns154025:0crwdne154025:0"
 msgid "Type an email address to add attendee"
 msgstr "crwdns158934:0crwdne158934:0"
 
-#: frontend/src/components/Activities/WhatsAppBox.vue:96
+#: frontend/src/components/Activities/WhatsAppBox.vue:101
 msgid "Type your message here..."
 msgstr "crwdns154027:0crwdne154027:0"
 
@@ -7364,13 +7422,14 @@ msgstr "crwdns154039:0crwdne154039:0"
 
 #: frontend/src/components/ColumnSettings.vue:129
 #: frontend/src/components/Modals/AssignmentModal.vue:80
-#: frontend/src/components/Modals/ChangePasswordModal.vue:47
+#: frontend/src/components/Modals/ChangePasswordModal.vue:58
 #: frontend/src/components/Modals/EventModal.vue:212
 #: frontend/src/components/Modals/NoteModal.vue:52
 #: frontend/src/components/Modals/TaskModal.vue:104
 #: frontend/src/components/Settings/BrandSettings.vue:16
 #: frontend/src/components/Settings/CalendarSettings.vue:20
-#: frontend/src/components/Settings/CurrencySettings.vue:18
+#: frontend/src/components/Settings/DashboardSettings.vue:19
+#: frontend/src/components/Settings/DefaultsSettings.vue:19
 #: frontend/src/components/Settings/ERPNextSettings.vue:41
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:21
 #: frontend/src/components/Settings/HomeActions.vue:16
@@ -7387,6 +7446,11 @@ msgstr "crwdns154041:0crwdne154041:0"
 #: frontend/src/components/Settings/EmailEdit.vue:75
 msgid "Update Account"
 msgstr "crwdns156686:0crwdne156686:0"
+
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:162
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:187
+msgid "Update Configuration"
+msgstr "crwdns200290:0crwdne200290:0"
 
 #. Description of the 'Update timestamp on new communication' (Check) field in
 #. DocType 'FCRM Settings'
@@ -7419,11 +7483,11 @@ msgstr "crwdns154045:0crwdne154045:0"
 msgid "Upload Attachment"
 msgstr "crwdns154047:0crwdne154047:0"
 
-#: frontend/src/components/Activities/WhatsAppBox.vue:147
+#: frontend/src/components/Activities/WhatsAppBox.vue:152
 msgid "Upload Document"
 msgstr "crwdns154049:0crwdne154049:0"
 
-#: frontend/src/components/Activities/WhatsAppBox.vue:155
+#: frontend/src/components/Activities/WhatsAppBox.vue:160
 #: frontend/src/pages/Contact.vue:48 frontend/src/pages/Lead.vue:93
 #: frontend/src/pages/MobileContact.vue:38
 #: frontend/src/pages/MobileOrganization.vue:38
@@ -7435,7 +7499,7 @@ msgstr "crwdns154051:0crwdne154051:0"
 msgid "Upload Photo"
 msgstr "crwdns199366:0crwdne199366:0"
 
-#: frontend/src/components/Activities/WhatsAppBox.vue:163
+#: frontend/src/components/Activities/WhatsAppBox.vue:168
 msgid "Upload Video"
 msgstr "crwdns154053:0crwdne154053:0"
 
@@ -7452,6 +7516,10 @@ msgstr "crwdns159320:0{0}crwdne159320:0"
 msgid "User"
 msgstr "crwdns154057:0crwdne154057:0"
 
+#: frontend/src/components/Settings/Settings.vue:95
+msgid "User Configuration"
+msgstr "crwdns200292:0crwdne200292:0"
+
 #: frontend/src/components/Settings/Settings.vue:146
 msgid "User Management"
 msgstr "crwdns159322:0crwdne159322:0"
@@ -7461,7 +7529,7 @@ msgstr "crwdns159322:0crwdne159322:0"
 msgid "User Name"
 msgstr "crwdns154059:0crwdne154059:0"
 
-#: crm/api/user.py:88
+#: crm/api/user.py:132
 msgid "User {0} cannot be removed as it has a Role Profile assigned to it."
 msgstr "crwdns196900:0{0}crwdne196900:0"
 
@@ -7469,7 +7537,7 @@ msgstr "crwdns196900:0{0}crwdne196900:0"
 msgid "User {0} has been removed"
 msgstr "crwdns156688:0{0}crwdne156688:0"
 
-#: crm/api/user.py:97
+#: crm/api/user.py:141
 msgid "User {0} has been removed from CRM roles."
 msgstr "crwdns196902:0{0}crwdne196902:0"
 
@@ -7658,8 +7726,8 @@ msgid "Yesterday"
 msgstr "crwdns154093:0crwdne154093:0"
 
 #: crm/api/whatsapp.py:71 crm/api/whatsapp.py:226 crm/api/whatsapp.py:241
-#: frontend/src/components/Activities/WhatsAppArea.vue:40
-#: frontend/src/components/Activities/WhatsAppBox.vue:16
+#: frontend/src/components/Activities/WhatsAppArea.vue:41
+#: frontend/src/components/Activities/WhatsAppBox.vue:17
 msgid "You"
 msgstr "crwdns154095:0crwdne154095:0"
 
@@ -7695,7 +7763,7 @@ msgstr "crwdns158690:0crwdne158690:0"
 msgid "You can change the default calling medium from the settings"
 msgstr "crwdns154097:0crwdne154097:0"
 
-#: frontend/src/components/Settings/CurrencySettings.vue:106
+#: frontend/src/components/Settings/DashboardSettings.vue:145
 msgid "You can get your Access Key from "
 msgstr "crwdns196936:0crwdne196936:0"
 
@@ -7703,7 +7771,7 @@ msgstr "crwdns196936:0crwdne196936:0"
 msgid "You can invite multiple users by comma separating their email addresses"
 msgstr "crwdns159324:0crwdne159324:0"
 
-#: crm/api/user.py:76
+#: crm/api/user.py:120
 msgid "You cannot remove yourself."
 msgstr "crwdns196938:0crwdne196938:0"
 
@@ -7723,13 +7791,17 @@ msgstr "crwdns154101:0crwdne154101:0"
 msgid "You do not have permission to access Frappe CRM"
 msgstr "crwdns161452:0crwdne161452:0"
 
-#: frontend/src/data/document.js:40
+#: frontend/src/data/document.js:41
 msgid "You do not have permission to access this document"
 msgstr "crwdns157282:0crwdne157282:0"
 
 #: crm/api/__init__.py:143
 msgid "You don't have permission to delete this attachment"
 msgstr "crwdns200136:0crwdne200136:0"
+
+#: crm/api/user.py:17
+msgid "You must be logged in to change your password"
+msgstr "crwdns200294:0crwdne200294:0"
 
 #: crm/fcrm/doctype/crm_form_script/crm_form_script.py:39
 msgid "You need to be in developer mode to edit a Standard Form Script"
@@ -7941,63 +8013,63 @@ msgstr "crwdns196966:0crwdne196966:0"
 msgid "hours before"
 msgstr "crwdns196968:0crwdne196968:0"
 
-#: frontend/src/utils/index.js:177
+#: frontend/src/utils/index.js:178
 msgid "in 1 hour"
 msgstr "crwdns156710:0crwdne156710:0"
 
-#: frontend/src/utils/index.js:173
+#: frontend/src/utils/index.js:174
 msgid "in 1 minute"
 msgstr "crwdns156712:0crwdne156712:0"
 
-#: frontend/src/utils/index.js:191
+#: frontend/src/utils/index.js:192
 msgid "in 1 year"
 msgstr "crwdns156714:0crwdne156714:0"
 
-#: frontend/src/utils/index.js:142
+#: frontend/src/utils/index.js:143
 msgid "in {0} M"
 msgstr "crwdns156716:0{0}crwdne156716:0"
 
-#: frontend/src/utils/index.js:138
+#: frontend/src/utils/index.js:139
 msgid "in {0} d"
 msgstr "crwdns156718:0{0}crwdne156718:0"
 
-#: frontend/src/utils/index.js:185
+#: frontend/src/utils/index.js:186
 msgid "in {0} days"
 msgstr "crwdns156720:0{0}crwdne156720:0"
 
-#: frontend/src/utils/index.js:132
+#: frontend/src/utils/index.js:133
 msgid "in {0} h"
 msgstr "crwdns156722:0{0}crwdne156722:0"
 
-#: frontend/src/utils/index.js:179
+#: frontend/src/utils/index.js:180
 msgid "in {0} hours"
 msgstr "crwdns156724:0{0}crwdne156724:0"
 
-#: frontend/src/utils/index.js:130
+#: frontend/src/utils/index.js:131
 msgid "in {0} m"
 msgstr "crwdns156726:0{0}crwdne156726:0"
 
-#: frontend/src/utils/index.js:175
+#: frontend/src/utils/index.js:176
 msgid "in {0} minutes"
 msgstr "crwdns156728:0{0}crwdne156728:0"
 
-#: frontend/src/utils/index.js:189
+#: frontend/src/utils/index.js:190
 msgid "in {0} months"
 msgstr "crwdns156730:0{0}crwdne156730:0"
 
-#: frontend/src/utils/index.js:140
+#: frontend/src/utils/index.js:141
 msgid "in {0} w"
 msgstr "crwdns156732:0{0}crwdne156732:0"
 
-#: frontend/src/utils/index.js:187
+#: frontend/src/utils/index.js:188
 msgid "in {0} weeks"
 msgstr "crwdns156734:0{0}crwdne156734:0"
 
-#: frontend/src/utils/index.js:144
+#: frontend/src/utils/index.js:145
 msgid "in {0} y"
 msgstr "crwdns156736:0{0}crwdne156736:0"
 
-#: frontend/src/utils/index.js:193
+#: frontend/src/utils/index.js:194
 msgid "in {0} years"
 msgstr "crwdns156738:0{0}crwdne156738:0"
 
@@ -8005,7 +8077,7 @@ msgstr "crwdns156738:0{0}crwdne156738:0"
 msgid "john@doe.com"
 msgstr "crwdns156740:0crwdne156740:0"
 
-#: frontend/src/utils/index.js:171 frontend/src/utils/index.js:197
+#: frontend/src/utils/index.js:172 frontend/src/utils/index.js:198
 msgid "just now"
 msgstr "crwdns156742:0crwdne156742:0"
 
@@ -8028,7 +8100,7 @@ msgstr "crwdns159328:0crwdne159328:0"
 msgid "list"
 msgstr "crwdns154137:0crwdne154137:0"
 
-#: crm/api/comment.py:39 frontend/src/components/Notifications.vue:60
+#: crm/api/comment.py:39 frontend/src/components/Notifications.vue:64
 #: frontend/src/pages/MobileNotification.vue:46
 msgid "mentioned you in {0}"
 msgstr "crwdns154139:0{0}crwdne154139:0"
@@ -8059,7 +8131,7 @@ msgstr "crwdns196976:0crwdne196976:0"
 msgid "next"
 msgstr "crwdns154141:0crwdne154141:0"
 
-#: frontend/src/utils/index.js:128 frontend/src/utils/index.js:148
+#: frontend/src/utils/index.js:129 frontend/src/utils/index.js:149
 msgid "now"
 msgstr "crwdns156744:0crwdne156744:0"
 
@@ -8123,7 +8195,7 @@ msgstr "crwdns154157:0crwdne154157:0"
 msgid "to"
 msgstr "crwdns154159:0crwdne154159:0"
 
-#: frontend/src/utils/index.js:136 frontend/src/utils/index.js:183
+#: frontend/src/utils/index.js:137 frontend/src/utils/index.js:184
 msgid "tomorrow"
 msgstr "crwdns156746:0crwdne156746:0"
 
@@ -8172,7 +8244,7 @@ msgstr "crwdns158958:0crwdne158958:0"
 msgid "yellow"
 msgstr "crwdns154163:0crwdne154163:0"
 
-#: frontend/src/utils/index.js:210
+#: frontend/src/utils/index.js:211
 msgid "yesterday"
 msgstr "crwdns156748:0crwdne156748:0"
 
@@ -8180,7 +8252,7 @@ msgstr "crwdns156748:0crwdne156748:0"
 msgid "{0} (Invalid time format)"
 msgstr "crwdns196986:0{0}crwdne196986:0"
 
-#: frontend/src/utils/index.js:161
+#: frontend/src/utils/index.js:162
 msgid "{0} M"
 msgstr "crwdns156750:0{0}crwdne156750:0"
 
@@ -8196,19 +8268,19 @@ msgstr "crwdns196988:0{0}crwdne196988:0"
 msgid "{0} awaiting"
 msgstr "crwdns196990:0{0}crwdne196990:0"
 
-#: frontend/src/utils/index.js:157
+#: frontend/src/utils/index.js:158
 msgid "{0} d"
 msgstr "crwdns156752:0{0}crwdne156752:0"
 
-#: frontend/src/utils/index.js:212
+#: frontend/src/utils/index.js:213
 msgid "{0} days ago"
 msgstr "crwdns156754:0{0}crwdne156754:0"
 
-#: frontend/src/utils/index.js:152
+#: frontend/src/utils/index.js:153
 msgid "{0} h"
 msgstr "crwdns156756:0{0}crwdne156756:0"
 
-#: frontend/src/utils/index.js:205
+#: frontend/src/utils/index.js:206
 msgid "{0} hours ago"
 msgstr "crwdns156760:0{0}crwdne156760:0"
 
@@ -8238,7 +8310,7 @@ msgstr "crwdns154169:0{0}crwdne154169:0"
 msgid "{0} is required"
 msgstr "crwdns156762:0{0}crwdne156762:0"
 
-#: frontend/src/utils/index.js:150
+#: frontend/src/utils/index.js:151
 msgid "{0} m"
 msgstr "crwdns156764:0{0}crwdne156764:0"
 
@@ -8250,11 +8322,11 @@ msgstr "crwdns196996:0{0}crwdne196996:0"
 msgid "{0} mins"
 msgstr "crwdns158964:0{0}crwdne158964:0"
 
-#: frontend/src/utils/index.js:201
+#: frontend/src/utils/index.js:202
 msgid "{0} minutes ago"
 msgstr "crwdns156766:0{0}crwdne156766:0"
 
-#: frontend/src/utils/index.js:220
+#: frontend/src/utils/index.js:221
 msgid "{0} months ago"
 msgstr "crwdns156768:0{0}crwdne156768:0"
 
@@ -8262,19 +8334,19 @@ msgstr "crwdns156768:0{0}crwdne156768:0"
 msgid "{0} no"
 msgstr "crwdns196998:0{0}crwdne196998:0"
 
-#: frontend/src/utils/index.js:159
+#: frontend/src/utils/index.js:160
 msgid "{0} w"
 msgstr "crwdns156770:0{0}crwdne156770:0"
 
-#: frontend/src/utils/index.js:216
+#: frontend/src/utils/index.js:217
 msgid "{0} weeks ago"
 msgstr "crwdns156772:0{0}crwdne156772:0"
 
-#: frontend/src/utils/index.js:163
+#: frontend/src/utils/index.js:164
 msgid "{0} y"
 msgstr "crwdns156774:0{0}crwdne156774:0"
 
-#: frontend/src/utils/index.js:224
+#: frontend/src/utils/index.js:225
 msgid "{0} years ago"
 msgstr "crwdns156776:0{0}crwdne156776:0"
 
@@ -8282,23 +8354,23 @@ msgstr "crwdns156776:0{0}crwdne156776:0"
 msgid "{0} yes"
 msgstr "crwdns197000:0{0}crwdne197000:0"
 
-#: frontend/src/data/script.js:341
+#: frontend/src/utils/scriptHelpers.js:43
 msgid "⚠️ Avoid using \"trigger\" as a field name — it conflicts with the built-in trigger() method."
 msgstr "crwdns156778:0crwdne156778:0"
 
-#: frontend/src/data/script.js:353
+#: frontend/src/utils/scriptHelpers.js:55
 msgid "⚠️ Method \"{0}\" not found in class."
 msgstr "crwdns156780:0{0}crwdne156780:0"
 
-#: frontend/src/data/script.js:83
+#: frontend/src/data/script.js:84
 msgid "⚠️ No class found for doctype: {0}, it is mandatory to have a class for the parent doctype. it can be empty, but it should be present."
 msgstr "crwdns156782:0{0}crwdne156782:0"
 
-#: frontend/src/data/script.js:180
+#: frontend/src/data/script.js:181
 msgid "⚠️ No data found for parent field: {0}"
 msgstr "crwdns156784:0{0}crwdne156784:0"
 
-#: frontend/src/data/script.js:188
+#: frontend/src/data/script.js:189
 msgid "⚠️ No row found for idx: {0} in parent field: {1}"
 msgstr "crwdns156786:0{0}crwdnd156786:0{1}crwdne156786:0"
 
