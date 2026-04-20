@@ -310,7 +310,7 @@ import {
   isNull,
   interpolateTemplate,
 } from '@/utils'
-import { flt } from '@/utils/numberFormat.js'
+import { flt, formatNumber, formatCurrency } from '@/utils/numberFormat.js'
 import { getMeta } from '@/stores/meta'
 import { parseLinkFilters } from '@/utils/fieldTransforms'
 import { usersStore } from '@/stores/users'
@@ -333,8 +333,17 @@ const doctype = inject('doctype')
 const preview = inject('preview')
 const isGridRow = inject('isGridRow')
 
-const { getFormattedPercent, getFormattedFloat, getFormattedCurrency } =
-  getMeta(doctype)
+// Guard getMeta — skip when doctype is empty (inline/standalone mode)
+let getFormattedPercent, getFormattedFloat, getFormattedCurrency
+if (doctype) {
+  ;({ getFormattedPercent, getFormattedFloat, getFormattedCurrency } =
+    getMeta(doctype))
+} else {
+  getFormattedPercent = (fn, doc) => formatNumber(doc[fn], '', null) + '%'
+  getFormattedFloat = (fn, doc) => formatNumber(doc[fn], '', null)
+  getFormattedCurrency = (fn, doc) =>
+    formatCurrency(doc[fn], '', window.sysdefaults?.currency || 'USD', null)
+}
 
 const { users, getUser } = usersStore()
 
@@ -343,7 +352,32 @@ let triggerButton
 let parentDoc
 const formDocument = ref(null)
 
-if (!isGridRow) {
+// Standalone mode: context injected from FieldLayout when context prop is set
+const standaloneContext = inject('fieldLayoutContext', null)
+
+if (standaloneContext) {
+  // Standalone mode — no useDocument, no scripting triggers
+  // Field changes update data directly
+  triggerOnChange = async (fieldname, value, row) => {
+    if (row) {
+      row[fieldname] = value
+    } else {
+      data.value[fieldname] = value
+    }
+  }
+  triggerButton = async () => {}
+  formDocument.value = standaloneContext
+
+  // Provide no-op triggers for child Grid components
+  provide('triggerOnChange', triggerOnChange)
+  provide('triggerButton', triggerButton)
+  provide('triggerOnRowAdd', async () => {})
+  provide('triggerOnRowRemove', async () => {})
+  provide(
+    'fieldPropertyOverrides',
+    computed(() => standaloneContext?.fieldPropertyOverrides || {}),
+  )
+} else if (!isGridRow) {
   const {
     triggerOnChange: trigger,
     triggerButton: triggerBtn,

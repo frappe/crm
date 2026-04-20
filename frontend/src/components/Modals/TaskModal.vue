@@ -24,8 +24,8 @@
           <FormLabel :label="__('Title')" required />
           <TextInput
             ref="title"
-            :label="__('Title')"
             v-model="_task.title"
+            :label="__('Title')"
             :placeholder="__('Call with John Doe')"
             required
           />

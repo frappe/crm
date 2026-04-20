@@ -2,8 +2,12 @@
 
 > **Who is this for?**
 >
-> - **[Part 1](#part-1-using-form-scripts)** — CRM customizers and admins who want to add behaviour to their CRM deployment without modifying source code. No build step required.
-> - **[Part 2](#part-2-how-the-engine-works-internal)** — Core contributors who need to understand the script evaluation pipeline, `createDocProxy`, the `save.submit` patch, and `triggerOnChange` internals.
+> - **[Part 1](#part-1-using-form-scripts)** — CRM customizers and admins. No build step required.
+> - **[Part 2](#part-2-how-the-engine-works-internal)** — Core contributors who need to understand the script evaluation pipeline.
+>
+> **Quick API reference**: [SPEC.md](../../SPEC.md)  
+> **formDialog full reference**: [form-dialog.md](./form-dialog.md)  
+> **Roadmap**: [PLAN.md](../../PLAN.md)
 
 ---
 
@@ -664,26 +668,29 @@ class CRMLead {
 
 ## Showing Dialogs
 
-Use the injected `createDialog` helper to open a frappe-ui dialog:
+Two helpers are available for dialogs:
+
+### `createDialog` — Simple message/confirm dialogs
+
+Fire-and-forget. Good for confirmations and messages:
 
 ```js
 class CRMLead {
-	// Button field with fieldname 'mark_as_lost'
-	mark_as_lost() {
+	confirm_delete() {
 		createDialog({
-			title: "Mark Lead as Lost",
-			message: "Please confirm — this will notify the lead owner.",
+			title: "Delete Lead?",
+			message: "This action cannot be undone.",
 			actions: [
 				{
-					label: "Confirm",
+					label: "Delete",
 					theme: "red",
 					onClick: async ({ close }) => {
-						this.doc.status = "Lost";
-						await call("crm.api.lead.notify_owner_lost", {
-							lead: this.doc.name
+						await call("frappe.client.delete", {
+							doctype: "CRM Lead",
+							name: this.doc.name
 						});
 						close();
-						toast.success("Marked as lost");
+						router.push("/leads");
 					}
 				},
 				{
@@ -695,6 +702,137 @@ class CRMLead {
 	}
 }
 ```
+
+### `formDialog` — Form dialogs with fields
+
+Opens a dialog with a full FieldLayout. Supports three patterns: Promise (`await`), `onSubmit` callback, and custom `actions`. See **[form-dialog.md](./form-dialog.md)** for full documentation.
+
+```js
+// Promise style — blocks until dialog closes
+class CRMLead {
+	async convert() {
+		const result = await formDialog({
+			title: "Convert",
+			fields: [
+				{ fieldname: "deal_name", fieldtype: "Data", label: "Deal Name", reqd: 1 }
+			]
+		});
+		if (!result) return;
+		await call("crm.api.convert", { name: this.doc.name, deal: result.deal_name });
+	}
+}
+
+// Callback style — fire-and-forget, code after runs immediately
+class CRMLead {
+	mark_as_lost() {
+		formDialog({
+			title: "Mark as Lost",
+			fields: [
+				{ fieldname: "lost_reason", fieldtype: "Link", label: "Lost Reason", options: "CRM Lost Reason", reqd: 1 },
+				{ fieldname: "lost_notes", fieldtype: "Small Text", label: "Notes" }
+			],
+			onSubmit: (data) => {
+				this.doc.lost_reason = data.lost_reason;
+				this.doc.status = "Lost";
+				toast.success("Marked as lost");
+			}
+		});
+	}
+}
+```
+
+---
+
+## Field Property Overrides
+
+Dynamically change field visibility, editability, options, and more at runtime. Changes take effect immediately — no page reload needed.
+
+### `this.setFieldProperty(target, property, value [, rowName])`
+
+```js
+class CRMLead {
+	onLoad() {
+		// Hide a field
+		this.setFieldProperty('lost_reason', 'hidden', true)
+
+		// Make a field read-only
+		this.setFieldProperty('annual_revenue', 'read_only', true)
+
+		// Make a field mandatory
+		this.setFieldProperty('email', 'reqd', true)
+
+		// Change Select options
+		this.setFieldProperty('status', 'options', 'New\nQualified\nLost')
+
+		// Change label
+		this.setFieldProperty('annual_revenue', 'label', 'Revenue (USD)')
+
+		// Set Link filters
+		this.setFieldProperty('lead_owner', 'link_filters', { enabled: 1 })
+
+		// Hide a section or tab
+		this.setFieldProperty('financial_section', 'hidden', true)
+		this.setFieldProperty('advanced_tab', 'hidden', true)
+
+		// Child table column (dot notation)
+		this.setFieldProperty('products.discount', 'hidden', true)
+
+		// Specific row in child table
+		this.setFieldProperty('products.rate', 'read_only', true, row.name)
+	}
+}
+```
+
+### `this.setFieldProperties(target, properties [, rowName])`
+
+Batch set multiple properties:
+
+```js
+this.setFieldProperties('annual_revenue', {
+	read_only: true,
+	label: 'Revenue (USD)',
+	description: 'Auto-calculated',
+})
+```
+
+### `this.removeFieldProperty(target, property [, rowName])`
+
+Revert to original server value:
+
+```js
+this.removeFieldProperty('annual_revenue', 'hidden')
+```
+
+### `this.getField(fieldname)`
+
+Get effective field definition (raw meta merged with overrides):
+
+```js
+const field = this.getField('status')
+console.log(field.options, field.read_only, field.hidden)
+```
+
+### Reactive example — show/hide based on field value
+
+```js
+class CRMLead {
+	onLoad() {
+		this._syncVisibility()
+	}
+
+	status() {
+		this._syncVisibility()
+	}
+
+	_syncVisibility() {
+		const isLost = this.doc.status === 'Lost'
+		this.setFieldProperty('lost_reason', 'hidden', !isLost)
+		this.setFieldProperty('lost_reason', 'reqd', isLost)
+	}
+}
+```
+
+> Full reference: see [SPEC.md — setFieldProperty API](../../SPEC.md#setfieldproperty-api) for all supported properties, override priority, child table dot notation, per-row overrides, and section/tab overrides.
 
 ---
 
@@ -760,7 +898,8 @@ All helpers are available as bare names everywhere in your script — no imports
 | `toast.error(msg)`          | Red toast notification                                                       |
 | `toast.info(msg)`           | Info toast notification                                                      |
 | `call(method, params)`      | Frappe backend RPC — returns a `Promise`                                     |
-| `createDialog(options)`     | Open a frappe-ui dialog modal                                                |
+| `createDialog(options)`     | Open a frappe-ui dialog modal (simple message/confirm)                       |
+| `formDialog(options)`       | Open a form dialog with FieldLayout. Supports Promise, `onSubmit` callback, and custom `actions`. See [form-dialog.md](./form-dialog.md) |
 | `socket`                    | Socket.io instance for realtime events                                       |
 | `throwError(message)`       | `toast.error` + `throw` in one call — stops execution                        |
 | `crm.makePhoneCall(number)` | Initiate a phone call via the CRM call integration                           |
@@ -1137,6 +1276,7 @@ setFieldHtml(fieldname, html) {
 
 ## Further Reading
 
-- [`document.js` source](../frontend/src/data/document.js) — `documentsCache`, `useDocument`, `save.submit` patch
-- [`script.js` source](../frontend/src/data/script.js) — `setupScript`, `evaluateFormClass`, `createDocProxy`, `setupHelperMethods`
-- [architecture.md skill reference](../.github/skills/crm-dev/references/architecture.md) — authoritative internal reference for core contributors
+- [`document.js` source](../../../frontend/src/data/document.js) — `documentsCache`, `useDocument`, `save.submit` patch
+- [`script.js` source](../../../frontend/src/data/script.js) — `setupScript`, `evaluateFormClass`, `createDocProxy`, `setupHelperMethods`
+- [SPEC.md](../../SPEC.md) — stable API contracts
+- [ARCHIVE.md](../../ARCHIVE.md) — implementation history and rendering flow

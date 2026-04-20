@@ -9,6 +9,7 @@ node_modules
 crm/public/frontend
 crm/www/crm.html
 build
+frontend/coverage
 
 .vscode
 .github/instructions

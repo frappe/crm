@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/no-v-html -->
 <template>
   <LayoutHeader>
     <template #left-header>
@@ -37,7 +38,10 @@
           <UserAvatar v-else :user="n.from_user.name" size="lg" />
         </div>
         <div>
-          <div v-if="n.notification_text" v-html="n.notification_text" />
+          <div
+            v-if="n.notification_text"
+            v-html="sanitizeHTML(n.notification_text)"
+          />
           <div v-else class="mb-2 space-x-1 leading-5 text-ink-gray-5">
             <span class="font-medium text-ink-gray-9">
               {{ n.from_user.full_name }}
@@ -71,7 +75,7 @@ import NotificationsIcon from '@/components/Icons/NotificationsIcon.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import { notifications, notificationsStore } from '@/stores/notifications'
 import { globalStore } from '@/stores/global'
-import { timeAgo } from '@/utils'
+import { timeAgo, sanitizeHTML } from '@/utils'
 import { Breadcrumbs } from 'frappe-ui'
 import { onMounted, onBeforeUnmount } from 'vue'
 
@@ -100,7 +104,7 @@ function getRoute(notification) {
   return {
     name: notification.route_name,
     params: params,
-    hash: '#' + notification.comment || notification.notification_type_doc,
+    hash: '#' + (notification.comment || notification.notification_type_doc),
   }
 }
 </script>

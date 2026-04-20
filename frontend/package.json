@@ -9,7 +9,8 @@
     "copy-html-entry": "cp ../crm/public/frontend/index.html ../crm/www/crm.html",
     "serve": "vite preview",
     "test": "vitest",
-    "test:run": "vitest run"
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@tiptap/extension-paragraph": "^2.12.0",
@@ -41,6 +42,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@vitest/coverage-v8": "^4.1.4",
     "autoprefixer": "^10.4.14",
     "eslint": "^10.0.2",
     "eslint-config-prettier": "^10.1.8",
