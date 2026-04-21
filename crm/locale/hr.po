@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2026-04-12 09:47+0000\n"
-"PO-Revision-Date: 2026-04-13 23:50\n"
+"POT-Creation-Date: 2026-04-19 09:47+0000\n"
+"PO-Revision-Date: 2026-04-20 02:13\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Croatian\n"
 "MIME-Version: 1.0\n"
@@ -47,7 +47,7 @@ msgstr "08:00"
 msgid "08:00 pm"
 msgstr "20:00"
 
-#: frontend/src/utils/index.js:203
+#: frontend/src/utils/index.js:204
 msgid "1 hour ago"
 msgstr "prije 1 sat"
 
@@ -55,19 +55,19 @@ msgstr "prije 1 sat"
 msgid "1 hr"
 msgstr "1 sat"
 
-#: frontend/src/utils/index.js:199
+#: frontend/src/utils/index.js:200
 msgid "1 minute ago"
 msgstr "prije 1 minutu"
 
-#: frontend/src/utils/index.js:218
+#: frontend/src/utils/index.js:219
 msgid "1 month ago"
 msgstr "prije 1 mjesec"
 
-#: frontend/src/utils/index.js:214
+#: frontend/src/utils/index.js:215
 msgid "1 week ago"
 msgstr "prije 1 tjedan"
 
-#: frontend/src/utils/index.js:222
+#: frontend/src/utils/index.js:223
 msgid "1 year ago"
 msgstr "prije 1 godinu"
 
@@ -198,12 +198,12 @@ msgstr "API Tajna"
 msgid "API Token"
 msgstr "API Token"
 
-#: frontend/src/components/Settings/ERPNextSettings.vue:456
+#: frontend/src/components/Settings/ERPNextSettings.vue:459
 #: frontend/src/components/Settings/emailConfig.js:192
 msgid "API key is required"
 msgstr "Potreban je API ključ"
 
-#: frontend/src/components/Settings/ERPNextSettings.vue:458
+#: frontend/src/components/Settings/ERPNextSettings.vue:462
 msgid "API secret is required"
 msgstr "API tajna je obavezna"
 
@@ -235,7 +235,7 @@ msgstr "Pristup Odbijen"
 
 #. Label of the access_key (Data) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
-#: frontend/src/components/Settings/CurrencySettings.vue:96
+#: frontend/src/components/Settings/DashboardSettings.vue:135
 msgid "Access Key"
 msgstr "Pristupni Ključ"
 
@@ -255,10 +255,6 @@ msgstr "Pristupni Token"
 #: crm/lead_syncing/doctype/lead_sync_source/facebook.py:145
 msgid "Access token is required"
 msgstr "Potreban je pristupni token"
-
-#: frontend/src/components/Settings/Settings.vue:95
-msgid "Account"
-msgstr "Račun"
 
 #. Label of the account_id (Data) field in DocType 'Facebook Page'
 #: crm/lead_syncing/doctype/facebook_page/facebook_page.json
@@ -385,7 +381,7 @@ msgstr "Dodaj Lokaciju"
 msgid "Add Mobile Number..."
 msgstr "Dodaj Mobilni Broj..."
 
-#: frontend/src/components/Modals/CallLogDetailModal.vue:19
+#: frontend/src/components/Modals/CallLogDetailModal.vue:20
 msgid "Add Note"
 msgstr "Dodaj Napomenu"
 
@@ -401,7 +397,7 @@ msgstr "Dodaj Obavijest"
 msgid "Add Organization..."
 msgstr "Dodaj Organizaciju..."
 
-#: frontend/src/components/Controls/Grid.vue:412
+#: frontend/src/components/Controls/Grid.vue:435
 #: frontend/src/components/Settings/Sla/SlaHolidays.vue:163
 #: frontend/src/components/Settings/Sla/SlaPriorityList.vue:101
 msgid "Add Row"
@@ -424,7 +420,7 @@ msgstr "Dodaj Sortiranje"
 msgid "Add Tab"
 msgstr "Dodaj Karticu"
 
-#: frontend/src/components/Modals/CallLogDetailModal.vue:24
+#: frontend/src/components/Modals/CallLogDetailModal.vue:25
 msgid "Add Task"
 msgstr "Dodaj Zadatak"
 
@@ -515,7 +511,7 @@ msgstr "Administrator"
 msgid "Agent is unavailable to take the call, please call after some time."
 msgstr "Agent nije dostupan da odgovori na poziv, nazovite nakon nekog vremena."
 
-#: frontend/src/components/Notifications.vue:114
+#: frontend/src/components/Notifications.vue:118
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:72
 #: frontend/src/components/Settings/Users.vue:81
 msgid "All"
@@ -554,11 +550,11 @@ msgstr "Iznos"
 msgid "Amount after discount"
 msgstr "Iznos nakon popusta"
 
-#: frontend/src/data/script.js:50 frontend/src/data/script.js:51
+#: frontend/src/data/script.js:51 frontend/src/data/script.js:52
 msgid "An error occurred"
 msgstr "Došlo je do pogreške"
 
-#: frontend/src/data/document.js:72
+#: frontend/src/data/document.js:73
 msgid "An error occurred while updating the document"
 msgstr "Došlo je do pogreške prilikom ažuriranja dokumenta"
 
@@ -683,7 +679,7 @@ msgstr "Jeste li sigurni da želite ukloniti ovu karticu i sav njen sadržaj?"
 msgid "Are you sure you want to reset 'Create Quotation from CRM Deal' Form Script?"
 msgstr "Jeste li sigurni da želite poništiti Skriptu Obrasca \"Stvori ponudu iz Posla\"?"
 
-#: frontend/src/components/Settings/CurrencySettings.vue:189
+#: frontend/src/components/Settings/DashboardSettings.vue:236
 msgid "Are you sure you want to set the currency as {0}? This cannot be changed later."
 msgstr "Jeste li sigurni da želite postaviti valutu kao {0}? To se kasnije ne može promijeniti."
 
@@ -844,17 +840,9 @@ msgstr "Auth Token"
 msgid "Auto Create Customer"
 msgstr "Automatski Stvori Klijenta"
 
-#: frontend/src/components/Settings/ForecastingSettings.vue:42
+#: frontend/src/components/Settings/DashboardSettings.vue:49
 msgid "Auto Update Expected Deal Value"
 msgstr "Automatsko ažuriranje očekivane vrijednosti ponude"
-
-#: frontend/src/components/Settings/ForecastingSettings.vue:97
-msgid "Auto Update of Expected Deal Value disabled"
-msgstr "Automatsko ažuriranje očekivane vrijednosti posla onemogućeno"
-
-#: frontend/src/components/Settings/ForecastingSettings.vue:96
-msgid "Auto Update of Expected Deal Value enabled"
-msgstr "Automatsko ažuriranje očekivane vrijednosti posla onemogućeno"
 
 #. Label of the auto_update_expected_deal_value (Check) field in DocType 'FCRM
 #. Settings'
@@ -894,7 +882,7 @@ msgstr "Automatski postavlja status komunikacije na \"Odgovoreno\" za potencijal
 #. Description of the 'Auto update Expected Deal Value' (Check) field in
 #. DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
-#: frontend/src/components/Settings/ForecastingSettings.vue:46
+#: frontend/src/components/Settings/DashboardSettings.vue:53
 msgid "Automatically update \"Expected Deal Value\" based on the total value of associated products in a deal"
 msgstr "Automatski ažuriraj \"Očekivanu vrijednost ponude\" na temelju ukupne vrijednosti povezanih proizvoda u ponudi"
 
@@ -1229,7 +1217,7 @@ msgstr "Kalendar"
 msgid "Calendar Settings"
 msgstr "Postavke Kalendara"
 
-#: frontend/src/components/Modals/CallLogDetailModal.vue:8
+#: frontend/src/components/Modals/CallLogDetailModal.vue:9
 msgid "Call Details"
 msgstr "Detalji Poziva"
 
@@ -1309,7 +1297,7 @@ msgstr "Otkaži"
 msgid "Canceled"
 msgstr "Otkazano"
 
-#: crm/api/user.py:38
+#: crm/api/user.py:82
 msgid "Cannot assign this role"
 msgstr "Ne može se dodijeliti ova uloga"
 
@@ -1524,8 +1512,8 @@ msgid "Comment"
 msgstr "Komentar"
 
 #: frontend/src/components/CommunicationArea.vue:275
-msgid "Comment sent!"
-msgstr "Komentar poslan!"
+msgid "Comment sent"
+msgstr "Komentar poslan"
 
 #: frontend/src/pages/Deal.vue:570 frontend/src/pages/Lead.vue:422
 #: frontend/src/pages/MobileDeal.vue:448 frontend/src/pages/MobileLead.vue:294
@@ -1557,7 +1545,7 @@ msgstr "Naziv Tvrtke"
 msgid "Company in ERPNext site"
 msgstr "Webstranica Tvrtke"
 
-#: frontend/src/components/Settings/ERPNextSettings.vue:472
+#: frontend/src/components/Settings/ERPNextSettings.vue:476
 msgid "Company name is required"
 msgstr "Naziv tvrtke je obavezan"
 
@@ -1604,19 +1592,19 @@ msgstr "Konfigurirajte postavke telefonije za Podršku Prodaje"
 msgid "Configure actions that appear on the home dropdown"
 msgstr "Konfigurirajte radnje koje se prikazuju na početnom padajućem izborniku"
 
-#: frontend/src/components/Settings/ForecastingSettings.vue:9
-msgid "Configure forecasting feature to help predict sales performance and growth"
-msgstr "Konfigurirajte značajku predviđanja kako biste predvidjeli uspješnost i rast prodaje"
+#: frontend/src/components/Settings/DefaultsSettings.vue:10
+msgid "Configure default settings for your CRM system, including default currency, date formats, and other system-wide preferences to ensure consistency across your system."
+msgstr "Konfiguriraj zadane postavke za Podršku Prodaje, uključujući zadanu valutu, formate datuma i ostale postavke na razini cijelog sustava kako biste osigurali dosljednost u cijelom sustavu."
 
 #: frontend/src/components/Settings/GeneralSettings.vue:8
 msgid "Configure general settings for your application"
 msgstr "Konfigurirajte opće postavke za aplikaciju"
 
-#: frontend/src/components/Settings/CurrencySettings.vue:11
-msgid "Configure the Currency and Exchange Rate Provider for your CRM"
-msgstr "Konfiguriši pružatelja usluga valuta i tečajeva za Podršku Prodaje"
+#: frontend/src/components/Settings/DashboardSettings.vue:10
+msgid "Configure how your dashboard calculates, formats, and displays key metrics, including forecasting, deal values, and currency settings"
+msgstr "Konfiguriraj način na koji vaša nadzorna ploča izračunava, formatira i prikazuje ključne metrike, uključujući predviđanja, vrijednosti poslova i postavke valute"
 
-#: frontend/src/components/Settings/CurrencySettings.vue:63
+#: frontend/src/components/Settings/DashboardSettings.vue:102
 msgid "Configure the Exchange Rate Provider for your CRM"
 msgstr "Konfigurirajte pružatelja tečaja za Podršku Prosaje"
 
@@ -1651,11 +1639,11 @@ msgstr "Potvrdi Brisanje"
 msgid "Confirm Overwrite"
 msgstr "Potvrdi prepisivanje"
 
-#: frontend/src/components/Modals/ChangePasswordModal.vue:19
+#: frontend/src/components/Modals/ChangePasswordModal.vue:30
 msgid "Confirm Password"
 msgstr "Potvrdi Lozinku"
 
-#: frontend/src/utils/index.js:886 frontend/src/utils/index.js:889
+#: frontend/src/utils/index.js:822 frontend/src/utils/index.js:825
 msgid "Confirm {0}"
 msgstr "Potvrdi {0}"
 
@@ -1753,6 +1741,10 @@ msgstr "Tip Sadržaja"
 msgid "Content is required"
 msgstr "Sadržaj je obavezan"
 
+#: frontend/src/components/Settings/DefaultsSettings.vue:75
+msgid "Controls how numbers are displayed (e.g., commas, decimal separators)"
+msgstr "Kontrolira način prikaza brojeva (npr. zarezi, decimalni razdjelnici)"
+
 #: frontend/src/components/Layouts/AppSidebar.vue:399
 #: frontend/src/components/ListBulkActions.vue:86
 #: frontend/src/components/Modals/ConvertToDealModal.vue:83
@@ -1781,7 +1773,7 @@ msgstr "Pretvoreno"
 msgid "Converted Successfully"
 msgstr "Pretvoreno"
 
-#: frontend/src/utils/index.js:404
+#: frontend/src/utils/index.js:405
 msgid "Copied to Clipboard"
 msgstr "Kopirano u međuspremnik"
 
@@ -1821,7 +1813,7 @@ msgstr "Kreiraj Posao"
 msgid "Create Event"
 msgstr "Izradi Događaj"
 
-#: frontend/src/components/Modals/CallLogDetailModal.vue:154
+#: frontend/src/components/Modals/CallLogDetailModal.vue:155
 #: frontend/src/components/Modals/LeadModal.vue:8
 msgid "Create Lead"
 msgstr "Kreiraj Potencijalnog Klijenta"
@@ -1891,21 +1883,21 @@ msgstr "Napravi zadatak"
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
-#: frontend/src/components/Settings/CurrencySettings.vue:31
+#: frontend/src/components/Settings/DefaultsSettings.vue:31
 msgid "Currency"
 msgstr "Valuta"
 
-#: frontend/src/components/Settings/Settings.vue:128
-msgid "Currency & Exchange Rate"
-msgstr "Valuta & Tečaj"
+#: frontend/src/components/Settings/DefaultsSettings.vue:52
+msgid "Currency Precision"
+msgstr "Preciznost Valute"
 
-#: frontend/src/components/Settings/CurrencySettings.vue:7
-msgid "Currency & Exchange Rate Provider"
-msgstr "Pružatelj usluga Valuta % Tečajeva"
-
-#: frontend/src/components/Settings/CurrencySettings.vue:203
+#: frontend/src/components/Settings/DashboardSettings.vue:250
 msgid "Currency set as {0} successfully"
 msgstr "Valuta je uspješno postavljena na {0}"
+
+#: frontend/src/components/Modals/ChangePasswordModal.vue:8
+msgid "Current Password"
+msgstr "Trenutna lozinka"
 
 #: crm/api/dashboard.py:896
 msgid "Current pipeline distribution"
@@ -1966,9 +1958,22 @@ msgstr "Dnevna učinkovitost potencijalnih klijenata, poslova i dobivenih poslov
 msgid "Dark"
 msgstr "Tamno"
 
-#: frontend/src/components/Settings/CurrencySettings.vue:35
+#: frontend/src/components/Settings/DashboardSettings.vue:6
+#: frontend/src/components/Settings/Settings.vue:123
+msgid "Dashboard"
+msgstr "Nadzorna Tabla"
+
+#: frontend/src/components/Settings/DashboardSettings.vue:70
+msgid "Dashboard Currency"
+msgstr "Valuta Nadzorne Ploče"
+
+#: frontend/src/components/Settings/DashboardSettings.vue:74
 msgid "Dashboard number cards & charts will show currency in the selected format. Once set, cannot be edited."
 msgstr "Brojčane kartice i grafikoni nadzorne ploče prikazivat će valutu u odabranom formatu. Nakon postavljanja, ne može se uređivati."
+
+#: frontend/src/components/Settings/DashboardSettings.vue:224
+msgid "Dashboard settings updated successfully"
+msgstr "Postavke nadzorne ploče uspješno su ažurirane"
 
 #: frontend/src/components/Activities/DataFields.vue:6
 #: frontend/src/components/Layouts/AppSidebar.vue:604
@@ -1994,6 +1999,10 @@ msgstr "Datum"
 #: frontend/src/components/Modals/EventModal.vue:78
 msgid "Date & Time"
 msgstr "Datum & Vrijeme"
+
+#: frontend/src/components/Settings/DefaultsSettings.vue:111
+msgid "Date Format"
+msgstr "Format Datuma"
 
 #: frontend/src/components/Settings/Sla/SlaHolidays.vue:214
 #: frontend/src/pages/Calendar.vue:91
@@ -2041,7 +2050,7 @@ msgstr "Vrijednost posla"
 msgid "Deal generation channel analysis"
 msgstr "Analiza kanala generisanja poslova"
 
-#: frontend/src/components/Settings/ERPNextSettings.vue:477
+#: frontend/src/components/Settings/ERPNextSettings.vue:481
 msgid "Deal status is required"
 msgstr "Status posla je obavezan"
 
@@ -2176,6 +2185,14 @@ msgstr "Zadani medij za pozivanje uspješno je postavljen na {0}"
 msgid "Default statuses, custom fields and layouts restored successfully."
 msgstr "Standard statusi, prilagođena polja i izgledi uspješno su vraćeni."
 
+#: frontend/src/components/Settings/Settings.vue:128
+msgid "Defaults"
+msgstr "Standard Postavke"
+
+#: frontend/src/components/Settings/DefaultsSettings.vue:35
+msgid "Defines the default currency for all records, can be overridden at the field level"
+msgstr "Definira zadanu valutu za sve zapise, može se poništiti na razini polja"
+
 #: frontend/src/components/Activities/AttachmentArea.vue:131
 #: frontend/src/components/Activities/NoteArea.vue:12
 #: frontend/src/components/Activities/TaskArea.vue:55
@@ -2184,7 +2201,7 @@ msgstr "Standard statusi, prilagođena polja i izgledi uspješno su vraćeni."
 #: frontend/src/components/BulkDeleteLinkedDocModal.vue:49
 #: frontend/src/components/BulkDeleteLinkedDocModal.vue:74
 #: frontend/src/components/BulkDeleteLinkedDocModal.vue:113
-#: frontend/src/components/Controls/Grid.vue:407
+#: frontend/src/components/Controls/Grid.vue:430
 #: frontend/src/components/DeleteLinkedDocModal.vue:13
 #: frontend/src/components/DeleteLinkedDocModal.vue:93
 #: frontend/src/components/Kanban/KanbanView.vue:232
@@ -2204,7 +2221,7 @@ msgstr "Standard statusi, prilagođena polja i izgledi uspješno su vraćeni."
 #: frontend/src/pages/MobileOrganization.vue:73
 #: frontend/src/pages/MobileOrganization.vue:277
 #: frontend/src/pages/Notes.vue:44 frontend/src/pages/Organization.vue:90
-#: frontend/src/pages/Tasks.vue:380 frontend/src/utils/index.js:866
+#: frontend/src/pages/Tasks.vue:380 frontend/src/utils/index.js:802
 msgid "Delete"
 msgstr "Izbriši"
 
@@ -2359,6 +2376,10 @@ msgstr "Popust %"
 msgid "Discount Amount"
 msgstr "Iznos Popusta"
 
+#: frontend/src/components/Settings/DefaultsSettings.vue:114
+msgid "Display format for dates across the system"
+msgstr "Format prikaza datuma u cijelom sustavu"
+
 #. Label of the dt (Link) field in DocType 'CRM Form Script'
 #. Label of the dt (Link) field in DocType 'CRM Global Settings'
 #. Label of the dt (Link) field in DocType 'CRM View Settings'
@@ -2381,11 +2402,11 @@ msgstr "Dokument nije pronađen"
 msgid "Document Type"
 msgstr "Tip Dokumenta"
 
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:237
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:236
 msgid "Document created successfully"
 msgstr "Dokument je uspješno kreiran"
 
-#: frontend/src/data/document.js:36
+#: frontend/src/data/document.js:37
 msgid "Document does not exist"
 msgstr "Dokument ne postoji"
 
@@ -2393,7 +2414,7 @@ msgstr "Dokument ne postoji"
 msgid "Document not found"
 msgstr "Dokument nije pronađen"
 
-#: frontend/src/data/document.js:50
+#: frontend/src/data/document.js:51
 msgid "Document updated successfully"
 msgstr "Dokument je uspješno ažuriran"
 
@@ -2516,7 +2537,9 @@ msgstr "API-ji Web Stranice Sustava"
 msgid "ERPNext Site URL"
 msgstr "URL Web Stranice Sustava"
 
-#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:44
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:60
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:81
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:331
 msgid "ERPNext is not installed in the current site"
 msgstr "Sistem nije instaliran na trenutnoj Web Stranici"
 
@@ -2524,8 +2547,7 @@ msgstr "Sistem nije instaliran na trenutnoj Web Stranici"
 msgid "ERPNext is not installed on this site either install it or enter the URL of your ERPNext site to connect"
 msgstr "Sustav nije instaliran na ovoj stranici, instalirajte ga ili unesite URL stranice Sustava za povezivanje"
 
-#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:143
-#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:175
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:27
 msgid "ERPNext is not integrated with the CRM"
 msgstr "Sistem nije integrisan sa Prodajnom Podrškom"
 
@@ -2541,7 +2563,7 @@ msgstr "Sistem nije integrisan sa Prodajnom Podrškom"
 msgid "Edit"
 msgstr "Uredi"
 
-#: frontend/src/components/Modals/CallLogDetailModal.vue:39
+#: frontend/src/components/Modals/CallLogDetailModal.vue:40
 #: frontend/src/components/Modals/CallLogModal.vue:87
 msgid "Edit Call Log"
 msgstr "Uredi Zapisnik Poziva"
@@ -2586,7 +2608,7 @@ msgstr "Uredi Raspored Polja Mreže"
 msgid "Edit Grid Row Fields Layout"
 msgstr "Uredi Raspored Polja Reda Mreže"
 
-#: frontend/src/components/Modals/CallLogDetailModal.vue:19
+#: frontend/src/components/Modals/CallLogDetailModal.vue:20
 #: frontend/src/components/Modals/NoteModal.vue:6
 msgid "Edit Note"
 msgstr "Uredi Bilješku"
@@ -2599,11 +2621,11 @@ msgstr "Uredi Izgled Brzog Unosa"
 msgid "Edit Response & Resolution"
 msgstr "Uredi Odgovor & Rješenje"
 
-#: frontend/src/components/Controls/Grid.vue:375
+#: frontend/src/components/Controls/Grid.vue:397
 msgid "Edit Row"
 msgstr "Uredi Red"
 
-#: frontend/src/components/Modals/CallLogDetailModal.vue:24
+#: frontend/src/components/Modals/CallLogDetailModal.vue:25
 #: frontend/src/components/Modals/TaskModal.vue:6
 msgid "Edit Task"
 msgstr "Uredi Zadatak"
@@ -2708,8 +2730,8 @@ msgid "Email already exists"
 msgstr "E-pošta već postoji"
 
 #: frontend/src/components/CommunicationArea.vue:259
-msgid "Email sent!"
-msgstr "E-pošta poslana!"
+msgid "Email sent"
+msgstr "E-pošta poslana"
 
 #: frontend/src/components/Settings/Profile/UserEmailSettings.vue:181
 msgid "Email settings updated successfully"
@@ -2750,7 +2772,7 @@ msgstr "Omogući Exotel integraciju za upućivanje i primanje poziva direktno iz
 
 #. Label of the enable_forecasting (Check) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
-#: frontend/src/components/Settings/ForecastingSettings.vue:20
+#: frontend/src/components/Settings/DashboardSettings.vue:31
 msgid "Enable Forecasting"
 msgstr "Omogući Predviđanje"
 
@@ -2840,7 +2862,7 @@ msgstr "Vrijeme završetka mora biti nakon vremena početka"
 msgid "End Time must be after Start Time for: {0}"
 msgstr "Vrijeme završetka mora biti nakon vremena početka za: {0}"
 
-#: frontend/src/components/Settings/CurrencySettings.vue:121
+#: frontend/src/components/Settings/DashboardSettings.vue:160
 msgid "Enter Access Key"
 msgstr "Unesi pristupni ključ"
 
@@ -2880,7 +2902,7 @@ msgstr "Unesite Facebook Pristupni Token"
 msgid "Enter your personal mobile number used by Exotel to make calls"
 msgstr "Unesi osobni broj mobitela koji Exotel koristi za upućivanje poziva"
 
-#: frontend/src/components/FieldLayout/Field.vue:459
+#: frontend/src/components/FieldLayout/Field.vue:516
 msgid "Enter {0}"
 msgstr "Unesi {0}"
 
@@ -2911,7 +2933,7 @@ msgstr "Greška pri pretvaranju u posao: {0}"
 msgid "Error creating Lead Sync Source"
 msgstr "Pogreška pri stvaranju izvora sinkronizacije potencijalnih klijenata"
 
-#: frontend/src/components/Modals/CallLogDetailModal.vue:314
+#: frontend/src/components/Modals/CallLogDetailModal.vue:316
 msgid "Error creating lead: {0}"
 msgstr "Pogreška pri stvaranju potencijalnog klijenta: {0}"
 
@@ -2931,24 +2953,6 @@ msgstr "Pogreška pri ažuriranju izvora sinkronizacije potencijalnih klijenata"
 #: frontend/src/pages/MobileDeal.vue:620 frontend/src/pages/MobileLead.vue:359
 msgid "Error updating field"
 msgstr "Pogreška pri ažuriranju polja"
-
-#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:90
-msgid "Error while creating custom field in ERPNext, check error log for more details"
-msgstr "Pogreška prilikom stvaranja prilagođenog polja u Poslovnom Sustavu, provjerite zapisnik pogrešaka za više detalja"
-
-#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:334
-#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:337
-#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:350
-msgid "Error while creating customer in ERPNext, check error log for more details"
-msgstr "Pogreška prilikom kreiranja klijenta u Sistemu, provjerite zapisnik grešaka za više detalja"
-
-#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:242
-msgid "Error while creating prospect in ERPNext, check error log for more details"
-msgstr "Pogreška prilikom kreiranja potencijalnog klijenta u Sistemu, provjeri zapisnik grešaka za više detalja"
-
-#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:168
-msgid "Error while fetching customer in ERPNext, check error log for more details"
-msgstr "Pogreška prilikom preuzimanja klijenta u Sistem, provjeri zapisnik grešaka za više detalja"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:671
 msgid "Event Details"
@@ -2976,7 +2980,7 @@ msgstr "Događaj je uspješno kreiran"
 msgid "Event deleted successfully"
 msgstr "Događaj je uspješno izbrisan"
 
-#: frontend/src/components/Notifications.vue:115
+#: frontend/src/components/Notifications.vue:119
 #: frontend/src/pages/Deal.vue:580 frontend/src/pages/Lead.vue:432
 msgid "Events"
 msgstr "Događaji"
@@ -3014,7 +3018,7 @@ msgstr "Devizni Kurs"
 #. Label of the exchange_rate_provider_section (Section Break) field in DocType
 #. 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
-#: frontend/src/components/Settings/CurrencySettings.vue:60
+#: frontend/src/components/Settings/DashboardSettings.vue:99
 msgid "Exchange Rate Provider"
 msgstr "Pružatelj Usluga Tečaja"
 
@@ -3167,7 +3171,7 @@ msgstr "Zapisnik neuspješne sinkronizacije potencijalnih klijenata"
 msgid "Failed to Add Users"
 msgstr "Dodavanje korisnika nije uspjelo"
 
-#: frontend/src/components/Activities/WhatsAppArea.vue:243
+#: frontend/src/components/Activities/WhatsAppArea.vue:244
 msgid "Failed to add reaction to the message"
 msgstr "Dodavanje reakcije poruci nije uspjelo"
 
@@ -3199,7 +3203,7 @@ msgstr "Brisanje predloška nije uspjelo"
 msgid "Failed to fetch exchange rate from {0} to {1} on {2}. Please check your internet connection or try again later."
 msgstr "Nije uspjelo preuzimanje tečaja iz {0} u {1} {2}. Provjerite internetsku vezu ili pokušajte ponovno kasnije."
 
-#: frontend/src/data/script.js:106
+#: frontend/src/data/script.js:107
 msgid "Failed to load form controller: {0}"
 msgstr "Nije uspjelo učitavanje kontrolera obrasca: {0}"
 
@@ -3207,6 +3211,7 @@ msgstr "Nije uspjelo učitavanje kontrolera obrasca: {0}"
 msgid "Failed to rename template"
 msgstr "Preimenovanje predloška nije uspjelo"
 
+#: frontend/src/components/Settings/DefaultsSettings.vue:169
 #: frontend/src/components/Settings/ERPNextSettings.vue:305
 msgid "Failed to save settings"
 msgstr "Spremanje postavki nije uspjelo"
@@ -3215,7 +3220,7 @@ msgstr "Spremanje postavki nije uspjelo"
 msgid "Failed to save workday: {0}"
 msgstr "Spremanje radnog dana nije uspjelo: {0}"
 
-#: frontend/src/components/Activities/WhatsAppBox.vue:139
+#: frontend/src/components/Activities/WhatsAppBox.vue:144
 msgid "Failed to send WhatsApp message"
 msgstr "Slanje WhatsApp poruke nije uspjelo"
 
@@ -3242,6 +3247,10 @@ msgstr "Ažuriranje statusa Twilio poziva nije uspjelo"
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:873
 msgid "Failed to update attending status"
 msgstr "Ažuriranje statusa prisustva nije uspjelo"
+
+#: frontend/src/components/Modals/ChangePasswordModal.vue:106
+msgid "Failed to update password"
+msgstr "Nije uspjelo ažuriranje lozinke"
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:165
 msgid "Failed to update source"
@@ -3277,15 +3286,15 @@ msgstr "Polje"
 msgid "Fields Order"
 msgstr "Redoslijed Polja"
 
-#: frontend/src/components/FilesUploader/FilesUploaderArea.vue:329
+#: frontend/src/components/FilesUploader/FilesUploaderArea.vue:330
 msgid "File \"{0}\" was skipped because of invalid file type"
 msgstr "Datoteka \"{0}\" je preskočena zbog nevažećeg tipa datoteke"
 
-#: frontend/src/components/FilesUploader/FilesUploaderArea.vue:350
+#: frontend/src/components/FilesUploader/FilesUploaderArea.vue:351
 msgid "File \"{0}\" was skipped because only {1} uploads are allowed"
 msgstr "Datoteka \"{0}\" je preskočena jer su dopušteni prijenosi samo {1}"
 
-#: frontend/src/components/FilesUploader/FilesUploaderArea.vue:355
+#: frontend/src/components/FilesUploader/FilesUploaderArea.vue:356
 msgid "File \"{0}\" was skipped because only {1} uploads are allowed for DocType \"{2}\""
 msgstr "Datoteka \"{0}\" je preskočena jer su samo {1} prijenosi dopušteni za DocType \"{2}\""
 
@@ -3347,6 +3356,10 @@ msgstr "Vrijeme Prvog Odgovora"
 msgid "First name"
 msgstr "Ime"
 
+#: frontend/src/components/Settings/DefaultsSettings.vue:92
+msgid "Float Precision"
+msgstr "Decimalna Preciznost"
+
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:48
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:80
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:48
@@ -3364,19 +3377,6 @@ msgstr "Predviđeni prihod"
 #: crm/api/dashboard.py:718
 msgid "Forecasted revenue"
 msgstr "Predviđeni prihod"
-
-#: frontend/src/components/Settings/ForecastingSettings.vue:5
-#: frontend/src/components/Settings/Settings.vue:123
-msgid "Forecasting"
-msgstr "Prognoza"
-
-#: frontend/src/components/Settings/ForecastingSettings.vue:81
-msgid "Forecasting disabled successfully"
-msgstr "Predviđanje je uspješno onemogućeno"
-
-#: frontend/src/components/Settings/ForecastingSettings.vue:80
-msgid "Forecasting enabled successfully"
-msgstr "Predviđanje je uspješno omogućeno"
 
 #. Option for the 'Apply To' (Select) field in DocType 'CRM Form Script'
 #: crm/fcrm/doctype/crm_form_script/crm_form_script.json
@@ -3713,6 +3713,10 @@ msgstr "Dolazna"
 msgid "Incoming call..."
 msgstr "Dolazni poziv..."
 
+#: crm/api/user.py:32
+msgid "Incorrect current password. Please try again."
+msgstr "Trenutna lozinka nije točna. Pokušajte ponovno."
+
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
 msgid "Industries"
@@ -3790,7 +3794,7 @@ msgstr "Nevažeći Exotel Broj"
 msgid "Invalid GeoJSON"
 msgstr "Nevažeći GeoJSON"
 
-#: frontend/src/components/Settings/ERPNextSettings.vue:453
+#: frontend/src/components/Settings/ERPNextSettings.vue:454
 msgid "Invalid Site URL"
 msgstr "Nevažeći URL Stranice"
 
@@ -3806,7 +3810,7 @@ msgstr "Nevažeći Twilio račun"
 msgid "Invalid Twilio application"
 msgstr "Nevažeća Twilio aplikacija"
 
-#: frontend/src/utils/index.js:303
+#: frontend/src/utils/index.js:304
 msgid "Invalid Website URL"
 msgstr "Nevažeći URL web stranice"
 
@@ -4437,7 +4441,7 @@ msgstr "Napravi {0}"
 msgid "Make {0} as default calling medium"
 msgstr "Postavi {0} kao zadani medij za pozivanje"
 
-#: frontend/src/components/Settings/ForecastingSettings.vue:24
+#: frontend/src/components/Settings/DashboardSettings.vue:35
 msgid "Makes \"Expected Closure Date\" and \"Expected Deal Value\" mandatory for deal value forecasting"
 msgstr "\"Očekivani datum zaključenja\" i \"Očekivana vrijednost posla\" postaju obavezni za predviđanje vrijednosti posla"
 
@@ -4479,7 +4483,7 @@ msgstr "Upravljajte pravilima ugovora o razini usluge"
 msgid "Manager"
 msgstr "Upravitelj"
 
-#: frontend/src/data/document.js:63
+#: frontend/src/data/document.js:64
 msgid "Mandatory field error: {0}"
 msgstr "Pogreška obaveznog polja: {0}"
 
@@ -4487,7 +4491,7 @@ msgstr "Pogreška obaveznog polja: {0}"
 msgid "Mandatory field(s) {0} must be mapped"
 msgstr "Obavezna polja {0} moraju biti mapirana"
 
-#: frontend/src/data/document.js:224 frontend/src/data/document.js:226
+#: frontend/src/data/document.js:220 frontend/src/data/document.js:222
 msgid "Mandatory fields required: {0}"
 msgstr "Obavezna polja nedostaju: {0}"
 
@@ -4502,7 +4506,7 @@ msgstr "Ručno"
 msgid "Mapped to CRM Field"
 msgstr "Mapirano u polje Prodajne Podrške"
 
-#: frontend/src/components/Notifications.vue:21
+#: frontend/src/components/Notifications.vue:22
 #: frontend/src/pages/MobileNotification.vue:12
 #: frontend/src/pages/MobileNotification.vue:13
 msgid "Mark all as read"
@@ -4540,7 +4544,7 @@ msgstr "Srednje"
 msgid "Mention"
 msgstr "Spominjanje"
 
-#: frontend/src/components/Notifications.vue:116
+#: frontend/src/components/Notifications.vue:120
 msgid "Mentions"
 msgstr "Spominjanja"
 
@@ -4756,7 +4760,7 @@ msgstr "Nova Napomena"
 msgid "New Organization"
 msgstr "Nova Organizacija"
 
-#: frontend/src/components/Modals/ChangePasswordModal.vue:8
+#: frontend/src/components/Modals/ChangePasswordModal.vue:19
 msgid "New Password"
 msgstr "Nova Lozinka"
 
@@ -4793,6 +4797,14 @@ msgstr "Novi kontakt će se stvoriti na temelju podataka o osobi"
 #: frontend/src/components/Modals/ConvertToDealModal.vue:42
 msgid "New organization will be created based on the data in details section"
 msgstr "Nova organizacija će se stvoriti na temelju podataka u odjeljku s detaljima"
+
+#: frontend/src/components/Modals/ChangePasswordModal.vue:123
+msgid "New password cannot be the same as current password"
+msgstr "Nova lozinka ne može biti ista kao trenutna lozinka"
+
+#: crm/api/user.py:25
+msgid "New password cannot be the same as current password. Please choose a different password."
+msgstr "Nova lozinka ne može biti ista kao trenutna lozinka. Molimo odaberite drugu lozinku."
 
 #: frontend/src/components/Modals/CreateDocumentModal.vue:84
 msgid "New {0}"
@@ -4837,7 +4849,7 @@ msgstr "Bez Odgovora"
 msgid "No Contacts Added"
 msgstr "Nema dodanih kontakata"
 
-#: frontend/src/components/Controls/Grid.vue:400
+#: frontend/src/components/Controls/Grid.vue:423
 msgid "No Data"
 msgstr "Nema Podataka"
 
@@ -5038,6 +5050,10 @@ msgstr "Nije dopušten pristup referentnom dokumentu {0} {1}."
 msgid "Not permitted to access the referenced WhatsApp message."
 msgstr "Nije dopušten pristup navedenoj WhatsApp poruci."
 
+#: crm/fcrm/doctype/crm_fields_layout/crm_fields_layout.py:197
+msgid "Not permitted to modify fields layout"
+msgstr "Nije dopušteno mijenjati raspored polja"
+
 #. Label of the note (Link) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 #: frontend/src/components/Activities/ActivityHeader.vue:146
@@ -5089,7 +5105,7 @@ msgstr "Tip Obavijesti Dokument"
 #: frontend/src/components/Layouts/AppSidebar.vue:13
 #: frontend/src/components/Mobile/MobileSidebar.vue:23
 #: frontend/src/components/Modals/EventModal.vue:187
-#: frontend/src/components/Notifications.vue:16
+#: frontend/src/components/Notifications.vue:17
 #: frontend/src/pages/MobileNotification.vue:6
 msgid "Notifications"
 msgstr "Obavještenja"
@@ -5104,6 +5120,10 @@ msgstr "Broj"
 msgid "Number Chart"
 msgstr "Tablica Brojeva"
 
+#: frontend/src/components/Settings/DefaultsSettings.vue:71
+msgid "Number Format"
+msgstr "Format Broja"
+
 #: crm/api/dashboard.py:1075 crm/api/dashboard.py:1138
 msgid "Number of deals"
 msgstr "Broj Poslova"
@@ -5111,6 +5131,14 @@ msgstr "Broj Poslova"
 #: crm/api/dashboard.py:1131
 msgid "Number of deals and total value per salesperson"
 msgstr "Broj poslova i ukupna vrijednost po prodavaču"
+
+#: frontend/src/components/Settings/DefaultsSettings.vue:95
+msgid "Number of decimal places for non-currency numeric fields"
+msgstr "Broj decimalnih mjesta za numerička polja koja nisu valute"
+
+#: frontend/src/components/Settings/DefaultsSettings.vue:55
+msgid "Number of decimal places used for all currency values"
+msgstr "Broj decimalnih mjesta korištenih za sve vrijednosti valuta"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:167
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:251
@@ -5148,19 +5176,19 @@ msgstr "Tekući Poslovi"
 msgid "Ongoing deals"
 msgstr "Tekući poslovi"
 
-#: crm/api/user.py:18 crm/api/user.py:51
+#: crm/api/user.py:62 crm/api/user.py:95
 msgid "Only System Managers can assign the Sales Manager role"
 msgstr "Samo Upravitelji Sustava mogu dodijeliti ulogu Voditelja Prodaje"
 
-#: crm/api/user.py:15 crm/api/user.py:45
+#: crm/api/user.py:59 crm/api/user.py:89
 msgid "Only System Managers can assign the System Manager role"
 msgstr "Samo upravitelji sustava mogu dodijeliti ulogu upravitelja sustava"
 
-#: crm/api/user.py:48 crm/api/user.py:84
+#: crm/api/user.py:92 crm/api/user.py:128
 msgid "Only System Managers can modify other System Managers"
 msgstr "Samo upravitelji sustava mogu uređivatii druge upravitelje sustava"
 
-#: frontend/src/utils/index.js:548
+#: frontend/src/utils/index.js:484
 msgid "Only image files are allowed"
 msgstr "Dopuštene su samo slikovne datoteke"
 
@@ -5214,7 +5242,7 @@ msgid "Operator"
 msgstr "Operater"
 
 #: frontend/src/components/Kanban/KanbanView.vue:228
-#: frontend/src/components/Modals/CallLogDetailModal.vue:15
+#: frontend/src/components/Modals/CallLogDetailModal.vue:16
 #: frontend/src/components/ViewControls.vue:199
 msgid "Options"
 msgstr "Opcije"
@@ -5265,7 +5293,7 @@ msgstr "Logo Organizacije"
 msgid "Organization Name"
 msgstr "Naziv Tvrtke"
 
-#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:303
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:309
 msgid "Organization is required to create a customer"
 msgstr "Organizacija je potrebna za stvaranje klijenta"
 
@@ -5327,6 +5355,10 @@ msgstr "Nadređeni Distrikt"
 msgid "Password"
 msgstr "Lozinka"
 
+#: crm/api/user.py:46
+msgid "Password Updated Successfully"
+msgstr "Lozinka uspješno ažurirana"
+
 #: crm/api/live_demo.py:24 crm/api/live_demo.py:32
 msgid "Password cannot be reset by Demo User {}"
 msgstr "Demo Korisnik {} ne može poništiti lozinku"
@@ -5335,24 +5367,28 @@ msgstr "Demo Korisnik {} ne može poništiti lozinku"
 msgid "Password is required"
 msgstr "Lozinka je obavezna"
 
-#: frontend/src/components/Modals/ChangePasswordModal.vue:106
+#: crm/api/user.py:43
+msgid "Password is too weak. {0}"
+msgstr "Lozinka je preslaba. {0}"
+
+#: frontend/src/components/Modals/ChangePasswordModal.vue:130
 msgid "Password must be at least 8 characters"
 msgstr "Lozinka mora imati najmanje 8 znakova"
 
-#: frontend/src/components/Modals/ChangePasswordModal.vue:109
+#: frontend/src/components/Modals/ChangePasswordModal.vue:133
 msgid "Password must contain lowercase, uppercase, number, and symbol"
 msgstr "Lozinka mora sadržavati mala slova, velika slova, broj i simbol"
 
-#: frontend/src/components/Modals/ChangePasswordModal.vue:89
+#: frontend/src/components/Modals/ChangePasswordModal.vue:98
 msgid "Password updated successfully"
 msgstr "Lozinka je uspješno ažurirana"
 
-#: frontend/src/components/Modals/ChangePasswordModal.vue:119
+#: frontend/src/components/Modals/ChangePasswordModal.vue:143
 msgid "Passwords do not match"
 msgstr "Lozinke se ne podudaraju"
 
-#: frontend/src/components/Modals/ChangePasswordModal.vue:36
-#: frontend/src/components/Modals/ChangePasswordModal.vue:125
+#: frontend/src/components/Modals/ChangePasswordModal.vue:47
+#: frontend/src/components/Modals/ChangePasswordModal.vue:149
 msgid "Passwords match"
 msgstr "Lozinke se podudaraju"
 
@@ -5451,7 +5487,7 @@ msgstr "Molimo ispravite greške u obrascu"
 msgid "Please select a Priority"
 msgstr "Molimo odaberite prioritet"
 
-#: frontend/src/components/Settings/CurrencySettings.vue:170
+#: frontend/src/components/Settings/DashboardSettings.vue:213
 msgid "Please select a currency before saving."
 msgstr "Odaberi valutu prije spremanja."
 
@@ -5623,6 +5659,7 @@ msgstr "Proizvodi"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:564
 #: frontend/src/components/Settings/Profile/ProfileSettings.vue:4
+#: frontend/src/components/Settings/Settings.vue:98
 msgid "Profile"
 msgstr "Profil"
 
@@ -6152,6 +6189,7 @@ msgstr "Trend Prodaje"
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
 #: crm/fcrm/doctype/crm_territory/crm_territory.json
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.json
 #: crm/fcrm/doctype/fcrm_note/fcrm_note.json
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 #: frontend/src/components/Modals/AddExistingUserModal.vue:92
@@ -6199,7 +6237,7 @@ msgstr "Subota"
 #: frontend/src/components/Modals/SidePanelModal.vue:26
 #: frontend/src/components/PrimaryDropdownItem.vue:21
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:36
-#: frontend/src/components/Settings/CurrencySettings.vue:197
+#: frontend/src/components/Settings/DashboardSettings.vue:244
 #: frontend/src/components/Settings/PreferencesSettings.vue:49
 #: frontend/src/components/Settings/Sla/EditResponseResolutionModal.vue:56
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:34
@@ -6264,11 +6302,11 @@ msgstr "Vidi sve Sudionike"
 msgid "Select"
 msgstr "Odaberi"
 
-#: frontend/src/components/Settings/ERPNextSettings.vue:175
+#: frontend/src/components/Settings/ERPNextSettings.vue:176
 msgid "Select Company"
 msgstr "Odaberi Tvrtku"
 
-#: frontend/src/components/Settings/CurrencySettings.vue:50
+#: frontend/src/components/Settings/DashboardSettings.vue:89
 msgid "Select Currency"
 msgstr "Odaberi Valutu"
 
@@ -6284,7 +6322,7 @@ msgstr "Odaberi medij"
 msgid "Select Priority"
 msgstr "Odaberi Prioritet"
 
-#: frontend/src/components/Settings/CurrencySettings.vue:80
+#: frontend/src/components/Settings/DashboardSettings.vue:119
 msgid "Select Provider"
 msgstr "Odaberite pružatelja usluga"
 
@@ -6333,11 +6371,15 @@ msgstr "Odaberi status posla kako biste pokrenuli automatsko stvaranje klijenta 
 msgid "Select the default view for your calendar. This will be the initial view when you open the calendar"
 msgstr "Odaberi standard prikaz za kalendar. Ovo će biti početni prikaz kada otvorite kalendar"
 
+#: frontend/src/components/Settings/DefaultsSettings.vue:131
+msgid "Select whether to display time with or without seconds"
+msgstr "Odaberite želite li prikaz vremena sa ili bez sekundi"
+
 #: frontend/src/components/Settings/ERPNextSettings.vue:133
 msgid "Select your ERPNext company to connect with"
 msgstr "Odaberi tvrtku Sustava za povezivanje"
 
-#: frontend/src/components/FieldLayout/Field.vue:457
+#: frontend/src/components/FieldLayout/Field.vue:514
 msgid "Select {0}"
 msgstr "Odaberi {0}"
 
@@ -6404,7 +6446,7 @@ msgstr "Postavi kao zadano"
 msgid "Set As Primary"
 msgstr "Postavi kao primarno"
 
-#: frontend/src/components/Settings/CurrencySettings.vue:188
+#: frontend/src/components/Settings/DashboardSettings.vue:235
 msgid "Set Currency"
 msgstr "Postavi valutu"
 
@@ -6510,6 +6552,10 @@ msgstr "Postavke"
 msgid "Settings saved"
 msgstr "Postavke spremljene"
 
+#: frontend/src/components/Settings/DefaultsSettings.vue:166
+msgid "Settings updated successfully"
+msgstr "Postavke su uspješno ažurirane"
+
 #: frontend/src/components/Settings/EmailAdd.vue:6
 msgid "Setup Email"
 msgstr "Postavljanje e-pošte"
@@ -6581,7 +6627,7 @@ msgstr "Pošto ste uklonili {0} od dodijeljenog, {0} je promijenjeno na sljedeć
 msgid "Site URL"
 msgstr "URL Stranice"
 
-#: frontend/src/components/Settings/ERPNextSettings.vue:448
+#: frontend/src/components/Settings/ERPNextSettings.vue:449
 msgid "Site URL is required"
 msgstr "URL stranice je obavezan"
 
@@ -6829,6 +6875,10 @@ msgstr "Sistem"
 msgid "System Configuration"
 msgstr "Konfiguracija Sustava"
 
+#: frontend/src/components/Settings/DefaultsSettings.vue:6
+msgid "System Defaults"
+msgstr "Postavke Sustava"
+
 #. Name of a role
 #. Option for the 'Role' (Select) field in DocType 'CRM Invitation'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
@@ -7054,6 +7104,10 @@ msgstr "Ovim će se vratiti demo podaci. Jeste li sigurni da želite nastaviti?"
 msgid "Thursday"
 msgstr "Četvrtak"
 
+#: frontend/src/components/Settings/DefaultsSettings.vue:128
+msgid "Time Format"
+msgstr "Format Vremena"
+
 #. Description of the 'Default Event Notifications' (Section Break) field in
 #. DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
@@ -7142,6 +7196,10 @@ msgstr "Uključi za Pregled"
 #: frontend/src/components/Filter.vue:677
 msgid "Tomorrow"
 msgstr "Sutra"
+
+#: crm/api/user.py:21
+msgid "Too many failed attempts. Please try again after some time."
+msgstr "Previše neuspjelih pokušaja. Pokušajte ponovno nakon nekog vremena."
 
 #: frontend/src/components/Modals/NoteModal.vue:41
 #: frontend/src/components/Modals/TaskModal.vue:43
@@ -7282,7 +7340,7 @@ msgstr "Tip"
 msgid "Type an email address to add attendee"
 msgstr "Upišite adresu e-pošte za dodavanje sudionika"
 
-#: frontend/src/components/Activities/WhatsAppBox.vue:96
+#: frontend/src/components/Activities/WhatsAppBox.vue:101
 msgid "Type your message here..."
 msgstr "Ovdje upiši svoju poruku..."
 
@@ -7364,13 +7422,14 @@ msgstr "Neimenovano"
 
 #: frontend/src/components/ColumnSettings.vue:129
 #: frontend/src/components/Modals/AssignmentModal.vue:80
-#: frontend/src/components/Modals/ChangePasswordModal.vue:47
+#: frontend/src/components/Modals/ChangePasswordModal.vue:58
 #: frontend/src/components/Modals/EventModal.vue:212
 #: frontend/src/components/Modals/NoteModal.vue:52
 #: frontend/src/components/Modals/TaskModal.vue:104
 #: frontend/src/components/Settings/BrandSettings.vue:16
 #: frontend/src/components/Settings/CalendarSettings.vue:20
-#: frontend/src/components/Settings/CurrencySettings.vue:18
+#: frontend/src/components/Settings/DashboardSettings.vue:19
+#: frontend/src/components/Settings/DefaultsSettings.vue:19
 #: frontend/src/components/Settings/ERPNextSettings.vue:41
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:21
 #: frontend/src/components/Settings/HomeActions.vue:16
@@ -7387,6 +7446,11 @@ msgstr "Ažuriraj"
 #: frontend/src/components/Settings/EmailEdit.vue:75
 msgid "Update Account"
 msgstr "Ažuriraj račun"
+
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:162
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:187
+msgid "Update Configuration"
+msgstr "Ažuriraj Postavke"
 
 #. Description of the 'Update timestamp on new communication' (Check) field in
 #. DocType 'FCRM Settings'
@@ -7419,11 +7483,11 @@ msgstr "Učitaj"
 msgid "Upload Attachment"
 msgstr "Učitaj Prilog"
 
-#: frontend/src/components/Activities/WhatsAppBox.vue:147
+#: frontend/src/components/Activities/WhatsAppBox.vue:152
 msgid "Upload Document"
 msgstr "Učitaj Dokument"
 
-#: frontend/src/components/Activities/WhatsAppBox.vue:155
+#: frontend/src/components/Activities/WhatsAppBox.vue:160
 #: frontend/src/pages/Contact.vue:48 frontend/src/pages/Lead.vue:93
 #: frontend/src/pages/MobileContact.vue:38
 #: frontend/src/pages/MobileOrganization.vue:38
@@ -7435,7 +7499,7 @@ msgstr "Učitaj Sliku"
 msgid "Upload Photo"
 msgstr "Prenesi Sliku"
 
-#: frontend/src/components/Activities/WhatsAppBox.vue:163
+#: frontend/src/components/Activities/WhatsAppBox.vue:168
 msgid "Upload Video"
 msgstr "Učitaj Video"
 
@@ -7452,6 +7516,10 @@ msgstr "Prijenos {0}%"
 msgid "User"
 msgstr "Korisnik"
 
+#: frontend/src/components/Settings/Settings.vue:95
+msgid "User Configuration"
+msgstr "Postavke Korisnika"
+
 #: frontend/src/components/Settings/Settings.vue:146
 msgid "User Management"
 msgstr "Upravljanje Korisnicima"
@@ -7461,7 +7529,7 @@ msgstr "Upravljanje Korisnicima"
 msgid "User Name"
 msgstr "Korisničko Ime"
 
-#: crm/api/user.py:88
+#: crm/api/user.py:132
 msgid "User {0} cannot be removed as it has a Role Profile assigned to it."
 msgstr "Korisnik {0} ne može se ukloniti jer mu je dodijeljen profil uloge."
 
@@ -7469,7 +7537,7 @@ msgstr "Korisnik {0} ne može se ukloniti jer mu je dodijeljen profil uloge."
 msgid "User {0} has been removed"
 msgstr "Korisnik {0} je uklonjen"
 
-#: crm/api/user.py:97
+#: crm/api/user.py:141
 msgid "User {0} has been removed from CRM roles."
 msgstr "Korisnik {0} je uklonjen iz uloga Podrške Prodaje."
 
@@ -7658,8 +7726,8 @@ msgid "Yesterday"
 msgstr "Jučer"
 
 #: crm/api/whatsapp.py:71 crm/api/whatsapp.py:226 crm/api/whatsapp.py:241
-#: frontend/src/components/Activities/WhatsAppArea.vue:40
-#: frontend/src/components/Activities/WhatsAppBox.vue:16
+#: frontend/src/components/Activities/WhatsAppArea.vue:41
+#: frontend/src/components/Activities/WhatsAppBox.vue:17
 msgid "You"
 msgstr "Vi"
 
@@ -7695,7 +7763,7 @@ msgstr "Takođ možete kopirati i zalijepiti sljedeću vezu u svoj preglednik"
 msgid "You can change the default calling medium from the settings"
 msgstr "Zadani medij za pozivanje možete promijeniti u postavkama"
 
-#: frontend/src/components/Settings/CurrencySettings.vue:106
+#: frontend/src/components/Settings/DashboardSettings.vue:145
 msgid "You can get your Access Key from "
 msgstr "Pristupni ključ možete dobiti od "
 
@@ -7703,7 +7771,7 @@ msgstr "Pristupni ključ možete dobiti od "
 msgid "You can invite multiple users by comma separating their email addresses"
 msgstr "Možete pozvati više korisnika odvajanjem njihovih adresa e-pošte zarezom"
 
-#: crm/api/user.py:76
+#: crm/api/user.py:120
 msgid "You cannot remove yourself."
 msgstr "Ne možete se sami ukloniti."
 
@@ -7723,13 +7791,17 @@ msgstr "Nemate postavljen broj mobilnog telefona u svom Telefonskom Agentu"
 msgid "You do not have permission to access Frappe CRM"
 msgstr "Nemate dopuštenje za pristup Podršci Prodaje"
 
-#: frontend/src/data/document.js:40
+#: frontend/src/data/document.js:41
 msgid "You do not have permission to access this document"
 msgstr "Nemate dopuštenje za pristup ovom dokumentu"
 
 #: crm/api/__init__.py:143
 msgid "You don't have permission to delete this attachment"
 msgstr "Nemate dopuštenje za brisanje ovog privitka"
+
+#: crm/api/user.py:17
+msgid "You must be logged in to change your password"
+msgstr "Morate biti prijavljeni da biste promijenili lozinku."
 
 #: crm/fcrm/doctype/crm_form_script/crm_form_script.py:39
 msgid "You need to be in developer mode to edit a Standard Form Script"
@@ -7941,63 +8013,63 @@ msgstr "sati"
 msgid "hours before"
 msgstr "sati prije"
 
-#: frontend/src/utils/index.js:177
+#: frontend/src/utils/index.js:178
 msgid "in 1 hour"
 msgstr "za 1 sat"
 
-#: frontend/src/utils/index.js:173
+#: frontend/src/utils/index.js:174
 msgid "in 1 minute"
 msgstr "za 1 minutu"
 
-#: frontend/src/utils/index.js:191
+#: frontend/src/utils/index.js:192
 msgid "in 1 year"
 msgstr "za 1 godinu"
 
-#: frontend/src/utils/index.js:142
+#: frontend/src/utils/index.js:143
 msgid "in {0} M"
 msgstr "za {0} M"
 
-#: frontend/src/utils/index.js:138
+#: frontend/src/utils/index.js:139
 msgid "in {0} d"
 msgstr "za {0} d"
 
-#: frontend/src/utils/index.js:185
+#: frontend/src/utils/index.js:186
 msgid "in {0} days"
 msgstr "za {0} dana"
 
-#: frontend/src/utils/index.js:132
+#: frontend/src/utils/index.js:133
 msgid "in {0} h"
 msgstr "za {0} s"
 
-#: frontend/src/utils/index.js:179
+#: frontend/src/utils/index.js:180
 msgid "in {0} hours"
 msgstr "za {0} sati"
 
-#: frontend/src/utils/index.js:130
+#: frontend/src/utils/index.js:131
 msgid "in {0} m"
 msgstr "za {0} m"
 
-#: frontend/src/utils/index.js:175
+#: frontend/src/utils/index.js:176
 msgid "in {0} minutes"
 msgstr "za {0} minuta"
 
-#: frontend/src/utils/index.js:189
+#: frontend/src/utils/index.js:190
 msgid "in {0} months"
 msgstr "za {0} mjeseci"
 
-#: frontend/src/utils/index.js:140
+#: frontend/src/utils/index.js:141
 msgid "in {0} w"
 msgstr "za {0} t"
 
-#: frontend/src/utils/index.js:187
+#: frontend/src/utils/index.js:188
 msgid "in {0} weeks"
 msgstr "za {0} tjedana"
 
-#: frontend/src/utils/index.js:144
+#: frontend/src/utils/index.js:145
 msgid "in {0} y"
 msgstr "za {0} g"
 
-#: frontend/src/utils/index.js:193
+#: frontend/src/utils/index.js:194
 msgid "in {0} years"
 msgstr "za {0} godina"
 
@@ -8005,7 +8077,7 @@ msgstr "za {0} godina"
 msgid "john@doe.com"
 msgstr "john@doe.com"
 
-#: frontend/src/utils/index.js:171 frontend/src/utils/index.js:197
+#: frontend/src/utils/index.js:172 frontend/src/utils/index.js:198
 msgid "just now"
 msgstr "upravo sada"
 
@@ -8028,7 +8100,7 @@ msgstr "potencijalni Klijenti"
 msgid "list"
 msgstr "lista"
 
-#: crm/api/comment.py:39 frontend/src/components/Notifications.vue:60
+#: crm/api/comment.py:39 frontend/src/components/Notifications.vue:64
 #: frontend/src/pages/MobileNotification.vue:46
 msgid "mentioned you in {0}"
 msgstr "spomenuo vas je u {0}"
@@ -8059,7 +8131,7 @@ msgstr "minuta prije"
 msgid "next"
 msgstr "sljedeći"
 
-#: frontend/src/utils/index.js:128 frontend/src/utils/index.js:148
+#: frontend/src/utils/index.js:129 frontend/src/utils/index.js:149
 msgid "now"
 msgstr "sad"
 
@@ -8123,7 +8195,7 @@ msgstr "plavozelena"
 msgid "to"
 msgstr "do"
 
-#: frontend/src/utils/index.js:136 frontend/src/utils/index.js:183
+#: frontend/src/utils/index.js:137 frontend/src/utils/index.js:184
 msgid "tomorrow"
 msgstr "sutra"
 
@@ -8172,7 +8244,7 @@ msgstr "koji nisu kompatibilni s ovim korisničkim sučeljem, morat ćete ponovn
 msgid "yellow"
 msgstr "žuta"
 
-#: frontend/src/utils/index.js:210
+#: frontend/src/utils/index.js:211
 msgid "yesterday"
 msgstr "juče"
 
@@ -8180,7 +8252,7 @@ msgstr "juče"
 msgid "{0} (Invalid time format)"
 msgstr "{0} (Nevažeći format vremena)"
 
-#: frontend/src/utils/index.js:161
+#: frontend/src/utils/index.js:162
 msgid "{0} M"
 msgstr "{0} M"
 
@@ -8196,19 +8268,19 @@ msgstr "{0} sudionici"
 msgid "{0} awaiting"
 msgstr "{0} čeka"
 
-#: frontend/src/utils/index.js:157
+#: frontend/src/utils/index.js:158
 msgid "{0} d"
 msgstr "{0} d"
 
-#: frontend/src/utils/index.js:212
+#: frontend/src/utils/index.js:213
 msgid "{0} days ago"
 msgstr "{0} dana prije"
 
-#: frontend/src/utils/index.js:152
+#: frontend/src/utils/index.js:153
 msgid "{0} h"
 msgstr "{0} h"
 
-#: frontend/src/utils/index.js:205
+#: frontend/src/utils/index.js:206
 msgid "{0} hours ago"
 msgstr "{0} sati prije"
 
@@ -8238,7 +8310,7 @@ msgstr "{0} je nevažeća adresa e-pošte"
 msgid "{0} is required"
 msgstr "{0} je obavezan"
 
-#: frontend/src/utils/index.js:150
+#: frontend/src/utils/index.js:151
 msgid "{0} m"
 msgstr "{0} m"
 
@@ -8250,11 +8322,11 @@ msgstr "{0} možda"
 msgid "{0} mins"
 msgstr "{0} minuta"
 
-#: frontend/src/utils/index.js:201
+#: frontend/src/utils/index.js:202
 msgid "{0} minutes ago"
 msgstr "prije {0} minuta"
 
-#: frontend/src/utils/index.js:220
+#: frontend/src/utils/index.js:221
 msgid "{0} months ago"
 msgstr "{0} mjeseci prije"
 
@@ -8262,19 +8334,19 @@ msgstr "{0} mjeseci prije"
 msgid "{0} no"
 msgstr "{0} ne"
 
-#: frontend/src/utils/index.js:159
+#: frontend/src/utils/index.js:160
 msgid "{0} w"
 msgstr "{0} w"
 
-#: frontend/src/utils/index.js:216
+#: frontend/src/utils/index.js:217
 msgid "{0} weeks ago"
 msgstr "prije {0} tjedana"
 
-#: frontend/src/utils/index.js:163
+#: frontend/src/utils/index.js:164
 msgid "{0} y"
 msgstr "{0} g"
 
-#: frontend/src/utils/index.js:224
+#: frontend/src/utils/index.js:225
 msgid "{0} years ago"
 msgstr "{0} godina prije"
 
@@ -8282,23 +8354,23 @@ msgstr "{0} godina prije"
 msgid "{0} yes"
 msgstr "{0} da"
 
-#: frontend/src/data/script.js:341
+#: frontend/src/utils/scriptHelpers.js:43
 msgid "⚠️ Avoid using \"trigger\" as a field name — it conflicts with the built-in trigger() method."
 msgstr "⚠️ Izbjegavaj korištenje \"trigger\" kao naziva polja — to je u sukobu s ugrađenom metodom trigger()."
 
-#: frontend/src/data/script.js:353
+#: frontend/src/utils/scriptHelpers.js:55
 msgid "⚠️ Method \"{0}\" not found in class."
 msgstr "⚠️ Metoda \"{0}\" nije pronađena u klasi."
 
-#: frontend/src/data/script.js:83
+#: frontend/src/data/script.js:84
 msgid "⚠️ No class found for doctype: {0}, it is mandatory to have a class for the parent doctype. it can be empty, but it should be present."
 msgstr "⚠️ Nije pronađena klasa za doctype: {0}, obavezno je imati klasu za nadređeni doctype. Može biti prazna, ali treba biti prisutna."
 
-#: frontend/src/data/script.js:180
+#: frontend/src/data/script.js:181
 msgid "⚠️ No data found for parent field: {0}"
 msgstr "⚠️ Nisu pronađeni podaci za nadređeno polje: {0}"
 
-#: frontend/src/data/script.js:188
+#: frontend/src/data/script.js:189
 msgid "⚠️ No row found for idx: {0} in parent field: {1}"
 msgstr "⚠️ Nije pronađen redak za idx: {0} u nadređenom polju: {1}"
 
