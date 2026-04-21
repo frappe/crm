@@ -354,25 +354,16 @@ def get_data(
 		if group_by_field and group_by_field not in rows:
 			rows.append(group_by_field)
 
-		# After frappe.get_list returns data, sort by priority
-		priority_map = {"High": 0, "Medium": 1, "Low": 2}
-
-		is_priority_sort = order_by and "priority" in order_by
-		reverse = "desc" in order_by if is_priority_sort else False
-
 		data = (
 			frappe.get_list(
 				doctype,
 				fields=rows,
 				filters=filters,
-				order_by=order_by if not is_priority_sort else "modified desc",
+				order_by=order_by,
 				page_length=page_length,
 			)
 			or []
 		)
-
-		if is_priority_sort:
-			data.sort(key=lambda x: priority_map.get(x.get("priority"), 99), reverse=reverse)
 		data = parse_list_data(data, doctype)
 
 	if view_type == "kanban":
