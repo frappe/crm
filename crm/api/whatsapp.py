@@ -346,7 +346,7 @@ def react_on_whatsapp_message(emoji: str, reply_to_name: str):
 def parse_template_parameters(string, parameters):
 	for i, parameter in enumerate(parameters, start=1):
 		placeholder = "{{" + str(i) + "}}"
-		string = string.replace(placeholder, parameter)
+		string = string.replace(placeholder, str(parameter))
 
 	return string
 
