@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-04-19 09:47+0000\n"
-"PO-Revision-Date: 2026-04-20 02:13\n"
+"PO-Revision-Date: 2026-04-22 02:25\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Serbian (Latin)\n"
 "MIME-Version: 1.0\n"
@@ -1594,7 +1594,7 @@ msgstr "Konfigurišite radnje koje se pojavljuju u padajućem meniju na početno
 
 #: frontend/src/components/Settings/DefaultsSettings.vue:10
 msgid "Configure default settings for your CRM system, including default currency, date formats, and other system-wide preferences to ensure consistency across your system."
-msgstr ""
+msgstr "Konfiguriši podrazumevana podešavanja za svoj CRM sistem, uključujući podrazumevanu valutu, formate datuma i ostale sistemske postavke kako bi se obezbedila konzistentnost u celom sistemu."
 
 #: frontend/src/components/Settings/GeneralSettings.vue:8
 msgid "Configure general settings for your application"
@@ -1602,7 +1602,7 @@ msgstr "Konfigurišite opšta podešavanja za aplikaciju"
 
 #: frontend/src/components/Settings/DashboardSettings.vue:10
 msgid "Configure how your dashboard calculates, formats, and displays key metrics, including forecasting, deal values, and currency settings"
-msgstr ""
+msgstr "Konfiguriši način na koji kontrolna tabla izračunava, formatira i prikazuje ključne metrike, uključujući prognoziranje, vrednosti poslovnih prilika i podešavanja valuta"
 
 #: frontend/src/components/Settings/DashboardSettings.vue:102
 msgid "Configure the Exchange Rate Provider for your CRM"
@@ -1743,7 +1743,7 @@ msgstr "Sadržaj je obavezan"
 
 #: frontend/src/components/Settings/DefaultsSettings.vue:75
 msgid "Controls how numbers are displayed (e.g., commas, decimal separators)"
-msgstr ""
+msgstr "Kontroliše način prikaza brojeva (npr. zarezi, decimalni separatori)"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:399
 #: frontend/src/components/ListBulkActions.vue:86
@@ -1897,7 +1897,7 @@ msgstr "Valuta je uspešno postavljena kao {0}"
 
 #: frontend/src/components/Modals/ChangePasswordModal.vue:8
 msgid "Current Password"
-msgstr ""
+msgstr "Trenutna lozinka"
 
 #: crm/api/dashboard.py:896
 msgid "Current pipeline distribution"
@@ -1965,7 +1965,7 @@ msgstr "Kontrolna tabla"
 
 #: frontend/src/components/Settings/DashboardSettings.vue:70
 msgid "Dashboard Currency"
-msgstr ""
+msgstr "Valuta kontrolne table"
 
 #: frontend/src/components/Settings/DashboardSettings.vue:74
 msgid "Dashboard number cards & charts will show currency in the selected format. Once set, cannot be edited."
@@ -1973,7 +1973,7 @@ msgstr "Numeričke kartice i dijagrami na kontrolnoj tabli prikazivaće valutu u
 
 #: frontend/src/components/Settings/DashboardSettings.vue:224
 msgid "Dashboard settings updated successfully"
-msgstr ""
+msgstr "Podešavanja kontrolne table su uspešno ažurirana"
 
 #: frontend/src/components/Activities/DataFields.vue:6
 #: frontend/src/components/Layouts/AppSidebar.vue:604
@@ -2191,7 +2191,7 @@ msgstr "Podrazumevane vrednosti"
 
 #: frontend/src/components/Settings/DefaultsSettings.vue:35
 msgid "Defines the default currency for all records, can be overridden at the field level"
-msgstr ""
+msgstr "Definiše podrazumevanu valutu za sve zapise, može se promeniti na nivou pojedinačnog polja"
 
 #: frontend/src/components/Activities/AttachmentArea.vue:131
 #: frontend/src/components/Activities/NoteArea.vue:12
@@ -2378,7 +2378,7 @@ msgstr "Iznos popusta"
 
 #: frontend/src/components/Settings/DefaultsSettings.vue:114
 msgid "Display format for dates across the system"
-msgstr ""
+msgstr "Format prikaza datuma u celom sistemu"
 
 #. Label of the dt (Link) field in DocType 'CRM Form Script'
 #. Label of the dt (Link) field in DocType 'CRM Global Settings'
@@ -3715,7 +3715,7 @@ msgstr "Dolazni poziv..."
 
 #: crm/api/user.py:32
 msgid "Incorrect current password. Please try again."
-msgstr ""
+msgstr "Trenutna lozinka je netačna. Molimo Vas pokušajte ponovo."
 
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
@@ -4800,11 +4800,11 @@ msgstr "Nova organizacija će biti kreirana na osnovu podataka u odeljku detalji
 
 #: frontend/src/components/Modals/ChangePasswordModal.vue:123
 msgid "New password cannot be the same as current password"
-msgstr ""
+msgstr "Nova lozinka ne može biti ista kao trenutna"
 
 #: crm/api/user.py:25
 msgid "New password cannot be the same as current password. Please choose a different password."
-msgstr ""
+msgstr "Nova lozinka ne može biti ista kao trenutna. Molimo Vas da izaberete drugačiju lozinku."
 
 #: frontend/src/components/Modals/CreateDocumentModal.vue:84
 msgid "New {0}"
@@ -5052,7 +5052,7 @@ msgstr "Nije dozvoljen pristup referentnoj WhatsApp poruci."
 
 #: crm/fcrm/doctype/crm_fields_layout/crm_fields_layout.py:197
 msgid "Not permitted to modify fields layout"
-msgstr ""
+msgstr "Nije dozvoljeno menjati raspored polja"
 
 #. Label of the note (Link) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
@@ -5134,11 +5134,11 @@ msgstr "Broj poslovnih prilika i ukupna vrednost po prodavcu"
 
 #: frontend/src/components/Settings/DefaultsSettings.vue:95
 msgid "Number of decimal places for non-currency numeric fields"
-msgstr ""
+msgstr "Broj decimalnih mesta za numerička polja koja nisu valuta"
 
 #: frontend/src/components/Settings/DefaultsSettings.vue:55
 msgid "Number of decimal places used for all currency values"
-msgstr ""
+msgstr "Broj decimalnih mesta za sve vrednosti valuta"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:167
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:251
@@ -5357,7 +5357,7 @@ msgstr "Lozinka"
 
 #: crm/api/user.py:46
 msgid "Password Updated Successfully"
-msgstr ""
+msgstr "Lozinka je uspešno ažurirana"
 
 #: crm/api/live_demo.py:24 crm/api/live_demo.py:32
 msgid "Password cannot be reset by Demo User {}"
@@ -5369,7 +5369,7 @@ msgstr "Lozinka je obavezna"
 
 #: crm/api/user.py:43
 msgid "Password is too weak. {0}"
-msgstr ""
+msgstr "Lozinka je previše slaba. {0}"
 
 #: frontend/src/components/Modals/ChangePasswordModal.vue:130
 msgid "Password must be at least 8 characters"
@@ -6373,7 +6373,7 @@ msgstr "Izaberite podrazumevani prikaz kalendara. Ovo će biti početni prikaz p
 
 #: frontend/src/components/Settings/DefaultsSettings.vue:131
 msgid "Select whether to display time with or without seconds"
-msgstr ""
+msgstr "Izaberite da li želite prikaz vremena sa ili bez sekundi"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:133
 msgid "Select your ERPNext company to connect with"
@@ -6877,7 +6877,7 @@ msgstr "Sistemska podešavanja"
 
 #: frontend/src/components/Settings/DefaultsSettings.vue:6
 msgid "System Defaults"
-msgstr ""
+msgstr "Podrazumevana sistemska podešavanja"
 
 #. Name of a role
 #. Option for the 'Role' (Select) field in DocType 'CRM Invitation'
@@ -7199,7 +7199,7 @@ msgstr "Sutra"
 
 #: crm/api/user.py:21
 msgid "Too many failed attempts. Please try again after some time."
-msgstr ""
+msgstr "Previše neuspelih pokušaja. Molimo Vas da pokušate ponovo kasnije."
 
 #: frontend/src/components/Modals/NoteModal.vue:41
 #: frontend/src/components/Modals/TaskModal.vue:43
@@ -7450,7 +7450,7 @@ msgstr "Ažuriraj nalog"
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:162
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:187
 msgid "Update Configuration"
-msgstr ""
+msgstr "Ažuriraj podešavanja"
 
 #. Description of the 'Update timestamp on new communication' (Check) field in
 #. DocType 'FCRM Settings'
@@ -7518,7 +7518,7 @@ msgstr "Korisnik"
 
 #: frontend/src/components/Settings/Settings.vue:95
 msgid "User Configuration"
-msgstr ""
+msgstr "Korisnička podešavanja"
 
 #: frontend/src/components/Settings/Settings.vue:146
 msgid "User Management"
@@ -7801,7 +7801,7 @@ msgstr "Nemate dozvolu da obrišete ovaj prilog"
 
 #: crm/api/user.py:17
 msgid "You must be logged in to change your password"
-msgstr ""
+msgstr "Morate biti prijavljeni da biste promenili lozinku"
 
 #: crm/fcrm/doctype/crm_form_script/crm_form_script.py:39
 msgid "You need to be in developer mode to edit a Standard Form Script"
