@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-04-19 09:47+0000\n"
-"PO-Revision-Date: 2026-04-20 02:13\n"
+"PO-Revision-Date: 2026-04-22 02:25\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Persian\n"
 "MIME-Version: 1.0\n"
@@ -1938,7 +1938,7 @@ msgstr "سفارشی‌سازی"
 
 #: frontend/src/components/ViewControls.vue:223
 msgid "Customize Quick Filters"
-msgstr ""
+msgstr "سفارشی‌سازی فیلترهای سریع"
 
 #. Option for the 'Default Calendar View' (Select) field in DocType 'FCRM
 #. Settings'
@@ -3619,7 +3619,7 @@ msgstr ""
 #. Sync Source'
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
 msgid "Hourly"
-msgstr ""
+msgstr "ساعتی"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:199
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:283
@@ -6044,7 +6044,7 @@ msgstr ""
 #. Label of the route (Data) field in DocType 'CRM Dropdown Item'
 #: crm/fcrm/doctype/crm_dropdown_item/crm_dropdown_item.json
 msgid "Route"
-msgstr ""
+msgstr "مسیر"
 
 #. Label of the route_name (Data) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
@@ -6274,7 +6274,7 @@ msgstr "زمان‌بندی یک رویداد"
 #. Label of the script (Code) field in DocType 'CRM Form Script'
 #: crm/fcrm/doctype/crm_form_script/crm_form_script.json
 msgid "Script"
-msgstr ""
+msgstr "اسکریپت"
 
 #: frontend/src/components/Settings/AssignmentRules/AssigneeSearch.vue:23
 #: frontend/src/components/Settings/Sla/SlaPolicyList.vue:21
@@ -6292,7 +6292,7 @@ msgstr ""
 
 #: frontend/src/components/FieldLayoutEditor.vue:454
 msgid "Section"
-msgstr ""
+msgstr "بخش"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:231
 msgid "See All Participants"
@@ -6418,7 +6418,7 @@ msgstr ""
 #. Option for the 'Type' (Select) field in DocType 'CRM Dropdown Item'
 #: crm/fcrm/doctype/crm_dropdown_item/crm_dropdown_item.json
 msgid "Separator"
-msgstr ""
+msgstr "جداکننده"
 
 #. Label of the naming_series (Select) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
@@ -6607,7 +6607,7 @@ msgstr "آیتم‌های نوار کناری"
 
 #: frontend/src/components/Settings/Profile/UserEmailSettings.vue:33
 msgid "Signature"
-msgstr ""
+msgstr "امضا"
 
 #. Description of the 'Condition' (Code) field in DocType 'CRM Service Level
 #. Agreement'
@@ -6747,7 +6747,7 @@ msgstr ""
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:31
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:32
 msgid "Start Time"
-msgstr ""
+msgstr "زمان شروع"
 
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:186
 msgid "Start Time is required"
@@ -6797,7 +6797,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_exotel_settings/crm_exotel_settings.json
 #: frontend/src/components/Settings/Telephony/ExotelSettings.vue:75
 msgid "Subdomain"
-msgstr ""
+msgstr "زیردامنه"
 
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:68
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:68
@@ -6869,7 +6869,7 @@ msgstr "همگام‌سازی در پس‌زمینه آغاز شد"
 
 #: frontend/src/components/Settings/ThemeSwitcher.vue:162
 msgid "System"
-msgstr ""
+msgstr "سیستم"
 
 #: frontend/src/components/Settings/Settings.vue:115
 msgid "System Configuration"
@@ -7249,7 +7249,7 @@ msgstr ""
 #: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.json
 #: frontend/src/components/Settings/LeadSyncing/FailureLogs.vue:50
 msgid "Traceback"
-msgstr ""
+msgstr "ردیابی"
 
 #. Option for the 'Weekly Off' (Select) field in DocType 'CRM Holiday List'
 #. Option for the 'Workday' (Select) field in DocType 'CRM Service Day'
@@ -7527,7 +7527,7 @@ msgstr "مدیریت کاربر"
 #. Label of the user_name (Data) field in DocType 'CRM Telephony Agent'
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
 msgid "User Name"
-msgstr ""
+msgstr "نام کاربر"
 
 #: crm/api/user.py:132
 msgid "User {0} cannot be removed as it has a Role Profile assigned to it."
@@ -7568,7 +7568,7 @@ msgstr ""
 #. Service Level Agreement'
 #: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.json
 msgid "Validity"
-msgstr ""
+msgstr "اعتبار"
 
 #: frontend/src/components/Modals/EditValueModal.vue:14
 msgid "Value"
