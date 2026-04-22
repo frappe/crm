@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-04-19 09:47+0000\n"
-"PO-Revision-Date: 2026-04-20 02:13\n"
+"PO-Revision-Date: 2026-04-22 02:25\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Burmese\n"
 "MIME-Version: 1.0\n"
@@ -1436,7 +1436,7 @@ msgstr ""
 #: frontend/src/components/ListBulkActions.vue:142
 #: frontend/src/components/ListBulkActions.vue:188
 msgid "Clear Assignment"
-msgstr ""
+msgstr "တာဝန်ပေးမှု ရှင်းလင်းမည်"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:92
 #: frontend/src/composables/demoData.js:20
@@ -1732,7 +1732,7 @@ msgstr "အကြောင်းအရာ"
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:78
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:78
 msgid "Content Type"
-msgstr ""
+msgstr "အကြောင်းအရာ အမျိုးအစား"
 
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:156
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:160
@@ -1938,7 +1938,7 @@ msgstr "စိတ်ကြိုက်ပြင်ဆင်ခြင်း"
 
 #: frontend/src/components/ViewControls.vue:223
 msgid "Customize Quick Filters"
-msgstr ""
+msgstr "အမြန်စစ်ထုတ်မှုများကို စိတ်ကြိုက်ပြင်ဆင်ရန်"
 
 #. Option for the 'Default Calendar View' (Select) field in DocType 'FCRM
 #. Settings'
@@ -1994,7 +1994,7 @@ msgstr "ဒေတာ တင်သွင်းမှု"
 #. Label of the date (Date) field in DocType 'CRM Holiday'
 #: crm/api/dashboard.py:641 crm/fcrm/doctype/crm_holiday/crm_holiday.json
 msgid "Date"
-msgstr ""
+msgstr "ရက်စွဲ"
 
 #: frontend/src/components/Modals/EventModal.vue:78
 msgid "Date & Time"
@@ -2817,7 +2817,7 @@ msgstr ""
 #: frontend/src/components/Settings/Sla/SlaPolicyList.vue:65
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:30
 msgid "Enabled"
-msgstr ""
+msgstr "ဖွင့်ထား"
 
 #. Label of the enabled (Check) field in DocType 'Lead Sync Source'
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
@@ -3475,11 +3475,11 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Gender"
-msgstr ""
+msgstr "လိင်"
 
 #: frontend/src/components/Settings/Settings.vue:118
 msgid "General"
-msgstr ""
+msgstr "အထွေထွေ"
 
 #: frontend/src/components/Settings/GeneralSettings.vue:5
 msgid "General Settings"
@@ -4015,7 +4015,7 @@ msgstr ""
 
 #: frontend/src/components/Kanban/KanbanSettings.vue:8
 msgid "Kanban Settings"
-msgstr ""
+msgstr "ကန်ဘန် ဆက်တင်များ"
 
 #: frontend/src/components/Kanban/KanbanSettings.vue:3
 msgid "Kanban settings"
@@ -4247,7 +4247,7 @@ msgstr ""
 #. Label of the lft (Int) field in DocType 'CRM Territory'
 #: crm/fcrm/doctype/crm_territory/crm_territory.json
 msgid "Left"
-msgstr ""
+msgstr "ဘယ်"
 
 #: frontend/src/components/Filter.vue:367
 msgid "Less than"
@@ -4537,7 +4537,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 #: crm/fcrm/doctype/crm_task/crm_task.json
 msgid "Medium"
-msgstr ""
+msgstr "အလယ်အလတ်"
 
 #. Option for the 'Type' (Select) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
@@ -4915,7 +4915,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/EmailEdit.vue:153
 msgid "No changes made"
-msgstr ""
+msgstr "ပြောင်းလဲမှုများ မပြုလုပ်ပါ"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:295
 msgid "No companies found in the given site"
@@ -5040,7 +5040,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.py:133
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.py:162
 msgid "Not permitted"
-msgstr ""
+msgstr "ခွင့်မပြုပါ"
 
 #: crm/api/whatsapp.py:27
 msgid "Not permitted to access reference document {0} {1}."
@@ -5059,7 +5059,7 @@ msgstr ""
 #: frontend/src/components/Activities/ActivityHeader.vue:146
 #: frontend/src/components/Layouts/AppSidebar.vue:578
 msgid "Note"
-msgstr ""
+msgstr "မှတ်ချက်"
 
 #: frontend/src/components/Activities/NoteArea.vue:75
 msgid "Note deleted"
@@ -5601,7 +5601,7 @@ msgstr ""
 #: frontend/src/components/Settings/Sla/EditResponseResolutionModal.vue:16
 #: frontend/src/components/Settings/Sla/SlaPriorityList.vue:171
 msgid "Priority"
-msgstr ""
+msgstr "ဦးစားပေး"
 
 #: frontend/src/components/Settings/Sla/utils.js:125
 msgid "Priority {0}: Priority Name is required"
@@ -5617,7 +5617,7 @@ msgstr ""
 #: frontend/src/components/FilesUploader/FilesUploaderArea.vue:89
 #: frontend/src/components/Modals/EventModal.vue:143
 msgid "Private"
-msgstr ""
+msgstr "ကိုယ်ပိုင်"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:487
 #: frontend/src/components/Modals/EventModal.vue:152
@@ -5661,7 +5661,7 @@ msgstr ""
 #: frontend/src/components/Settings/Profile/ProfileSettings.vue:4
 #: frontend/src/components/Settings/Settings.vue:98
 msgid "Profile"
-msgstr ""
+msgstr "ပရိုဖိုင်"
 
 #: frontend/src/components/Settings/Profile/ProfileSettings.vue:190
 msgid "Profile Updated Successfully"
@@ -5676,7 +5676,7 @@ msgstr ""
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:482
 #: frontend/src/components/Modals/EventModal.vue:147
 msgid "Public"
-msgstr ""
+msgstr "အများသူငှာ"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:594
 msgid "Public View"
@@ -5700,12 +5700,12 @@ msgstr ""
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 #: frontend/src/utils/callLog.js:68
 msgid "Queued"
-msgstr ""
+msgstr "တန်းစီနေသည်"
 
 #. Option for the 'Type' (Select) field in DocType 'CRM Fields Layout'
 #: crm/fcrm/doctype/crm_fields_layout/crm_fields_layout.json
 msgid "Quick Entry"
-msgstr ""
+msgstr "အမြန်ထည့်သွင်းမှု"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:618
 msgid "Quick Entry Layout"
@@ -5728,12 +5728,12 @@ msgstr ""
 #. Label of the read (Check) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
 msgid "Read"
-msgstr ""
+msgstr "ဖတ်ရှု"
 
 #: crm/api/dashboard.py:940
 #: frontend/src/components/Settings/LeadSyncing/FailureLogs.vue:30
 msgid "Reason"
-msgstr ""
+msgstr "အကြောင်းပြချက်"
 
 #. Label of the record_calls (Check) field in DocType 'CRM Twilio Settings'
 #: crm/fcrm/doctype/crm_twilio_settings/crm_twilio_settings.json
@@ -5769,7 +5769,7 @@ msgstr ""
 #. Label of the reference_doctype (Link) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
 msgid "Reference Doctype"
-msgstr ""
+msgstr "ရည်ညွှန်း DocType"
 
 #. Label of the reference_doctype (Link) field in DocType 'CRM Call Log'
 #. Label of the reference_doctype (Link) field in DocType 'CRM Task'
@@ -5778,13 +5778,13 @@ msgstr ""
 #: crm/fcrm/doctype/crm_task/crm_task.json
 #: crm/fcrm/doctype/fcrm_note/fcrm_note.json
 msgid "Reference Document Type"
-msgstr ""
+msgstr "ရည်ညွှန်းစာရွက်စာတမ်းအမျိုးအစား"
 
 #. Label of the reference_docname (Dynamic Link) field in DocType 'CRM Call
 #. Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 msgid "Reference Name"
-msgstr ""
+msgstr "ရည်ညွှန်းအမည်"
 
 #: crm/api/whatsapp.py:21
 msgid "Reference document {0} {1} does not exist."
@@ -5798,7 +5798,7 @@ msgstr ""
 #: frontend/src/components/ViewControls.vue:159
 #: frontend/src/pages/Dashboard.vue:10
 msgid "Refresh"
-msgstr ""
+msgstr "ပြန်လည်ဖွင့်"
 
 #: frontend/src/components/Settings/Telephony/TwilioSettings.vue:78
 msgid "Refresh Apps"
@@ -5866,7 +5866,7 @@ msgstr ""
 #: frontend/src/components/FieldLayoutEditor.vue:477
 #: frontend/src/components/FieldLayoutEditor.vue:485
 msgid "Remove Section"
-msgstr ""
+msgstr "အပိုင်းဖယ်ရှား"
 
 #: frontend/src/components/FieldLayoutEditor.vue:419
 #: frontend/src/components/FieldLayoutEditor.vue:427
@@ -5883,7 +5883,7 @@ msgstr ""
 #: frontend/src/components/Activities/EmailArea.vue:34
 #: frontend/src/components/CommunicationArea.vue:9
 msgid "Reply"
-msgstr ""
+msgstr "ပြန်ကြားချက်"
 
 #: frontend/src/components/Activities/EmailArea.vue:41
 msgid "Reply All"
@@ -5904,7 +5904,7 @@ msgstr ""
 #: frontend/src/components/Modals/QuickEntryModal.vue:30
 #: frontend/src/components/Modals/SidePanelModal.vue:30
 msgid "Reset"
-msgstr ""
+msgstr "ပြန်လည်သတ်မှတ်"
 
 #: frontend/src/components/ColumnSettings.vue:78
 msgid "Reset Changes"
@@ -5968,7 +5968,7 @@ msgstr ""
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.js:22
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.js:54
 msgid "Restore"
-msgstr ""
+msgstr "ပြန်လည်ရယူ"
 
 #. Label of the restore_defaults (Button) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.js:21
@@ -6003,7 +6003,7 @@ msgstr "ကြွယ်ဝစာသား"
 #. Label of the rgt (Int) field in DocType 'CRM Territory'
 #: crm/fcrm/doctype/crm_territory/crm_territory.json
 msgid "Right"
-msgstr ""
+msgstr "ညာ"
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
@@ -6020,7 +6020,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.json
 #: frontend/src/components/Modals/AddExistingUserModal.vue:46
 msgid "Role"
-msgstr ""
+msgstr "အခန်းကဏ္ဍ"
 
 #. Option for the 'SLA Status' (Select) field in DocType 'CRM Deal'
 #. Option for the 'SLA Status' (Select) field in DocType 'CRM Lead'
@@ -6044,7 +6044,7 @@ msgstr ""
 #. Label of the route (Data) field in DocType 'CRM Dropdown Item'
 #: crm/fcrm/doctype/crm_dropdown_item/crm_dropdown_item.json
 msgid "Route"
-msgstr ""
+msgstr "လမ်းကြောင်း"
 
 #. Label of the route_name (Data) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
@@ -6159,7 +6159,7 @@ msgstr ""
 #: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.json
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
 msgid "Sales Manager"
-msgstr ""
+msgstr "အရောင်းမန်နေဂျာ"
 
 #: frontend/src/components/Dashboard/AddChartModal.vue:94
 msgid "Sales Trend"
@@ -6201,7 +6201,7 @@ msgstr ""
 #: frontend/src/components/Settings/Users.vue:251
 #: frontend/src/pages/Dashboard.vue:95
 msgid "Sales User"
-msgstr ""
+msgstr "အရောင်းအသုံးပြုသူ"
 
 #: crm/api/dashboard.py:638
 msgid "Sales trend"
@@ -6216,14 +6216,14 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Salutation"
-msgstr ""
+msgstr "နှုတ်ခွန်းဆက်"
 
 #. Option for the 'Weekly Off' (Select) field in DocType 'CRM Holiday List'
 #. Option for the 'Workday' (Select) field in DocType 'CRM Service Day'
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
 #: crm/fcrm/doctype/crm_service_day/crm_service_day.json
 msgid "Saturday"
-msgstr ""
+msgstr "စနေနေ့"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:510
 #: frontend/src/components/Controls/GeolocationControl.vue:60
@@ -6280,7 +6280,7 @@ msgstr "စကရစ်"
 #: frontend/src/components/Settings/Sla/SlaPolicyList.vue:21
 #: frontend/src/components/frappe-ui/Autocomplete.vue:58
 msgid "Search"
-msgstr ""
+msgstr "ရှာဖွေမှု"
 
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:60
 msgid "Search Template"
@@ -6292,7 +6292,7 @@ msgstr ""
 
 #: frontend/src/components/FieldLayoutEditor.vue:454
 msgid "Section"
-msgstr ""
+msgstr "အပိုင်း"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:231
 msgid "See All Participants"
@@ -6300,7 +6300,7 @@ msgstr ""
 
 #: frontend/src/components/SidePanelLayout.vue:153
 msgid "Select"
-msgstr ""
+msgstr "ရွေးချယ်ပါ"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:176
 msgid "Select Company"
@@ -6381,11 +6381,11 @@ msgstr ""
 
 #: frontend/src/components/FieldLayout/Field.vue:514
 msgid "Select {0}"
-msgstr ""
+msgstr "{0} ရွေးချယ်ပါ"
 
 #: frontend/src/components/EmailEditor.vue:182
 msgid "Send"
-msgstr ""
+msgstr "ပို့ပါ"
 
 #: frontend/src/components/Settings/InviteUserPage.vue:18
 msgid "Send Invites"
@@ -6436,7 +6436,7 @@ msgstr ""
 
 #: frontend/src/components/Filter.vue:589
 msgid "Set"
-msgstr ""
+msgstr "သတ်မှတ်ထားသည်"
 
 #: frontend/src/components/ViewControls.vue:1081
 msgid "Set As Default"
@@ -6546,7 +6546,7 @@ msgstr ""
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 #: frontend/src/components/Layouts/AppSidebar.vue:561
 msgid "Settings"
-msgstr ""
+msgstr "ဆက်တင်များ"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:302
 msgid "Settings saved"
@@ -6593,7 +6593,7 @@ msgstr ""
 #: frontend/src/components/Modals/QuickEntryModal.vue:20
 #: frontend/src/components/Modals/SidePanelModal.vue:20
 msgid "Show Preview"
-msgstr ""
+msgstr "အကြိုကြည့်ရှုခြင်း ပြသရန်"
 
 #. Option for the 'Type' (Select) field in DocType 'CRM Fields Layout'
 #: crm/fcrm/doctype/crm_fields_layout/crm_fields_layout.json
@@ -6607,7 +6607,7 @@ msgstr "ဘေးဘားတန်းအရာများ"
 
 #: frontend/src/components/Settings/Profile/UserEmailSettings.vue:33
 msgid "Signature"
-msgstr ""
+msgstr "လက်မှတ်"
 
 #. Description of the 'Condition' (Code) field in DocType 'CRM Service Level
 #. Agreement'
@@ -6678,13 +6678,13 @@ msgstr ""
 #: frontend/src/components/Modals/EditValueModal.vue:9
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:58
 msgid "Source"
-msgstr ""
+msgstr "ရင်းမြစ်"
 
 #. Label of the source_name (Data) field in DocType 'CRM Lead Source'
 #: crm/fcrm/doctype/crm_lead_source/crm_lead_source.json
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:73
 msgid "Source Name"
-msgstr ""
+msgstr "ရင်းမြစ်အမည်"
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:56
 msgid "Source Type"
@@ -6701,7 +6701,7 @@ msgstr ""
 #: frontend/src/components/Dashboard/AddChartModal.vue:68
 #: frontend/src/components/Dashboard/DashboardItem.vue:21
 msgid "Spacer"
-msgstr ""
+msgstr "အကွာအဝေး"
 
 #: crm/api/dashboard.py:790 crm/api/dashboard.py:848
 msgid "Stage"
@@ -6731,7 +6731,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_task/crm_task.json
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:176
 msgid "Start Date"
-msgstr ""
+msgstr "စတင်ရက်"
 
 #: frontend/src/components/Settings/Sla/utils.js:160
 msgid "Start Date cannot be after end date"
@@ -6779,7 +6779,7 @@ msgstr ""
 #: frontend/src/pages/MobileOrganization.vue:473
 #: frontend/src/pages/Organization.vue:503
 msgid "Status"
-msgstr ""
+msgstr "အခြေအနေ"
 
 #. Label of the status_change_log (Table) field in DocType 'CRM Deal'
 #. Label of the status_change_log (Table) field in DocType 'CRM Lead'
@@ -6797,12 +6797,12 @@ msgstr ""
 #: crm/fcrm/doctype/crm_exotel_settings/crm_exotel_settings.json
 #: frontend/src/components/Settings/Telephony/ExotelSettings.vue:75
 msgid "Subdomain"
-msgstr ""
+msgstr "လက်အောက်ခံဒိုမိန်း"
 
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:68
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:68
 msgid "Subject"
-msgstr ""
+msgstr "အကြောင်းအရာ"
 
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:152
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:158
@@ -6818,7 +6818,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
 #: crm/fcrm/doctype/crm_service_day/crm_service_day.json
 msgid "Sunday"
-msgstr ""
+msgstr "တနင်္ဂနွေ"
 
 #: frontend/src/components/Settings/emailConfig.js:16
 msgid "Support / Sales"
@@ -6826,7 +6826,7 @@ msgstr ""
 
 #: frontend/src/components/FilesUploader/FilesUploader.vue:46
 msgid "Switch Camera"
-msgstr ""
+msgstr "ကင်မရာ ပြောင်းရန်"
 
 #: frontend/src/components/Settings/PreferencesSettings.vue:26
 msgid "Switch between light, dark, or system theme"
@@ -6869,7 +6869,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/ThemeSwitcher.vue:162
 msgid "System"
-msgstr ""
+msgstr "စနစ်"
 
 #: frontend/src/components/Settings/Settings.vue:115
 msgid "System Configuration"
@@ -6914,7 +6914,7 @@ msgstr ""
 #: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.json
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
 msgid "System Manager"
-msgstr ""
+msgstr "စနစ်စီမံခန့်ခွဲသူ"
 
 #: frontend/src/components/EmailEditor.vue:39
 msgid "TO"
@@ -6929,7 +6929,7 @@ msgstr ""
 #: frontend/src/components/Activities/ActivityHeader.vue:151
 #: frontend/src/components/Layouts/AppSidebar.vue:579
 msgid "Task"
-msgstr ""
+msgstr "တာဝန်"
 
 #: frontend/src/components/Modals/TaskModal.vue:194
 msgid "Task created"
@@ -7034,7 +7034,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/PreferencesSettings.vue:23
 msgid "Theme"
-msgstr ""
+msgstr "အပြင်အဆင်"
 
 #: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.js:29
 msgid "There can only be one default priority in Priorities table"
@@ -7102,11 +7102,11 @@ msgstr ""
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
 #: crm/fcrm/doctype/crm_service_day/crm_service_day.json
 msgid "Thursday"
-msgstr ""
+msgstr "ကြာသပတေး"
 
 #: frontend/src/components/Settings/DefaultsSettings.vue:128
 msgid "Time Format"
-msgstr ""
+msgstr "အချိန်ပုံစံ"
 
 #. Description of the 'Default Event Notifications' (Section Break) field in
 #. DocType 'FCRM Settings'
@@ -7130,7 +7130,7 @@ msgstr ""
 #: frontend/src/components/Modals/NoteModal.vue:27
 #: frontend/src/components/Modals/TaskModal.vue:24
 msgid "Title"
-msgstr ""
+msgstr "ခေါင်းစဉ်"
 
 #. Label of the title_field (Data) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
@@ -7148,14 +7148,14 @@ msgstr ""
 #: crm/fcrm/doctype/crm_status_change_log/crm_status_change_log.json
 #: frontend/src/components/Activities/EmailArea.vue:53
 msgid "To"
-msgstr ""
+msgstr "သို့"
 
 #. Label of the to_date (Date) field in DocType 'CRM Holiday List'
 #. Label of the to_date (Datetime) field in DocType 'CRM Status Change Log'
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
 #: crm/fcrm/doctype/crm_status_change_log/crm_status_change_log.json
 msgid "To Date"
-msgstr ""
+msgstr "ရက်စွဲအထိ"
 
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.py:59
 msgid "To Date cannot be before From Date"
@@ -7182,7 +7182,7 @@ msgstr ""
 
 #: frontend/src/components/Filter.vue:673 frontend/src/pages/Calendar.vue:79
 msgid "Today"
-msgstr ""
+msgstr "ယနေ့"
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Task'
 #: crm/fcrm/doctype/crm_task/crm_task.json
@@ -7211,7 +7211,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Total"
-msgstr ""
+msgstr "စုစုပေါင်း"
 
 #. Label of the total_holidays (Int) field in DocType 'CRM Holiday List'
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
@@ -7249,14 +7249,14 @@ msgstr ""
 #: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.json
 #: frontend/src/components/Settings/LeadSyncing/FailureLogs.vue:50
 msgid "Traceback"
-msgstr ""
+msgstr "ခြေရာခံမှတ်တမ်း"
 
 #. Option for the 'Weekly Off' (Select) field in DocType 'CRM Holiday List'
 #. Option for the 'Workday' (Select) field in DocType 'CRM Service Day'
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
 #: crm/fcrm/doctype/crm_service_day/crm_service_day.json
 msgid "Tuesday"
-msgstr ""
+msgstr "အင်္ဂါ"
 
 #: frontend/src/components/ConditionsFilter/CFCondition.vue:159
 msgid "Turn into a Group"
@@ -7334,7 +7334,7 @@ msgstr ""
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
 #: frontend/src/components/Settings/LeadSyncing/FailureLogs.vue:116
 msgid "Type"
-msgstr ""
+msgstr "အမျိုးအစား"
 
 #: frontend/src/components/Calendar/Attendee.vue:212
 msgid "Type an email address to add attendee"
@@ -7372,7 +7372,7 @@ msgstr ""
 #: frontend/src/components/Telephony/TwilioCallUI.vue:24
 #: frontend/src/components/Telephony/TwilioCallUI.vue:123
 msgid "Unknown"
-msgstr ""
+msgstr "မသိ"
 
 #: crm/integrations/api.py:19
 msgid "Unknown telephony medium: {0}"
@@ -7441,7 +7441,7 @@ msgstr ""
 #: frontend/src/components/Settings/Telephony/TwilioSettings.vue:32
 #: frontend/src/components/Telephony/ExotelCallUI.vue:209
 msgid "Update"
-msgstr ""
+msgstr "အပ်ဒိတ်"
 
 #: frontend/src/components/Settings/EmailEdit.vue:75
 msgid "Update Account"
@@ -7476,7 +7476,7 @@ msgstr ""
 #: frontend/src/components/Controls/ImageUploader.vue:15
 #: frontend/src/components/FilesUploader/FilesUploader.vue:83
 msgid "Upload"
-msgstr ""
+msgstr "အပ်လုဒ်တင်"
 
 #: frontend/src/components/Activities/ActivityHeader.vue:55
 #: frontend/src/components/Activities/ActivityHeader.vue:156
@@ -7493,7 +7493,7 @@ msgstr ""
 #: frontend/src/pages/MobileOrganization.vue:38
 #: frontend/src/pages/Organization.vue:48
 msgid "Upload Image"
-msgstr ""
+msgstr "ပုံ အပ်လုဒ်တင်ရန်"
 
 #: frontend/src/components/Settings/Profile/ProfileSettings.vue:158
 msgid "Upload Photo"
@@ -7514,7 +7514,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
 msgid "User"
-msgstr ""
+msgstr "အသုံးပြုသူ"
 
 #: frontend/src/components/Settings/Settings.vue:95
 msgid "User Configuration"
@@ -7527,7 +7527,7 @@ msgstr ""
 #. Label of the user_name (Data) field in DocType 'CRM Telephony Agent'
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
 msgid "User Name"
-msgstr ""
+msgstr "အသုံးပြုသူ အမည်"
 
 #: crm/api/user.py:132
 msgid "User {0} cannot be removed as it has a Role Profile assigned to it."
@@ -7546,7 +7546,7 @@ msgstr ""
 #: frontend/src/components/Settings/Settings.vue:149
 #: frontend/src/components/Settings/Users.vue:7
 msgid "Users"
-msgstr ""
+msgstr "အသုံးပြုသူများ"
 
 #: frontend/src/components/Modals/AddExistingUserModal.vue:105
 msgid "Users Added Successfully"
@@ -7568,11 +7568,11 @@ msgstr ""
 #. Service Level Agreement'
 #: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.json
 msgid "Validity"
-msgstr ""
+msgstr "တရားဝင်မှု"
 
 #: frontend/src/components/Modals/EditValueModal.vue:14
 msgid "Value"
-msgstr ""
+msgstr "တန်ဖိုး"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:110
 msgid "Verify Connection"
@@ -7592,7 +7592,7 @@ msgstr ""
 
 #: frontend/src/components/Layouts/AppSidebar.vue:590
 msgid "Views"
-msgstr ""
+msgstr "မြင်ကွင်းများ"
 
 #: frontend/src/components/Modals/EventModal.vue:134
 msgid "Visibility"
@@ -7600,7 +7600,7 @@ msgstr "မြင်နိုင်မှု"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:587
 msgid "Web Form"
-msgstr ""
+msgstr "ဝဘ်ပုံစံ"
 
 #. Label of the webhook_verify_token (Data) field in DocType 'CRM Exotel
 #. Settings'
@@ -7617,14 +7617,14 @@ msgstr ""
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
 #: frontend/src/components/Modals/AboutModal.vue:50
 msgid "Website"
-msgstr ""
+msgstr "ဝဘ်ဆိုက်"
 
 #. Option for the 'Weekly Off' (Select) field in DocType 'CRM Holiday List'
 #. Option for the 'Workday' (Select) field in DocType 'CRM Service Day'
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
 #: crm/fcrm/doctype/crm_service_day/crm_service_day.json
 msgid "Wednesday"
-msgstr ""
+msgstr "ဗုဒ္ဓဟူး"
 
 #: frontend/src/pages/Calendar.vue:92
 msgid "Week"
@@ -7635,7 +7635,7 @@ msgstr "အပတ်"
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 #: frontend/src/components/Settings/CalendarSettings.vue:50
 msgid "Weekly"
-msgstr ""
+msgstr "အပတ်စဉ်"
 
 #. Label of the weekly_off (Check) field in DocType 'CRM Holiday'
 #. Label of the weekly_off (Select) field in DocType 'CRM Holiday List'
@@ -7676,7 +7676,7 @@ msgstr ""
 
 #: frontend/src/components/ColumnSettings.vue:109
 msgid "Width"
-msgstr ""
+msgstr "အကျယ်"
 
 #: frontend/src/components/ColumnSettings.vue:113
 msgid "Width can be in number, pixel or rem (eg. 3, 30px, 10rem)"
@@ -7719,7 +7719,7 @@ msgstr ""
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:530
 #: frontend/src/components/Filter.vue:597
 msgid "Yes"
-msgstr ""
+msgstr "ဟုတ်ကဲ့"
 
 #: frontend/src/components/Filter.vue:669
 msgid "Yesterday"
@@ -7821,7 +7821,7 @@ msgstr ""
 
 #: crm/api/todo.py:37 crm/api/todo.py:78
 msgid "Your assignment on {0} {1} has been removed by {2}"
-msgstr ""
+msgstr "{0} {1} အပေါ်ရှိ သင်၏တာဝန်ပေးမှုကို {2} က ဖယ်ရှားလိုက်ပါပြီ"
 
 #: crm/templates/emails/helpdesk_invitation.html:6
 msgid "Your login id is"
@@ -7874,7 +7874,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
 msgid "blue"
-msgstr ""
+msgstr "အပြာ"
 
 #: frontend/src/components/Activities/Activities.vue:249
 msgid "changes from"
@@ -7901,7 +7901,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
 msgid "cyan"
-msgstr ""
+msgstr "စိမ်းပြာရောင်"
 
 #: frontend/src/components/Calendar/EventNotifications.vue:244
 #: frontend/src/components/Settings/CalendarSettings.vue:119
@@ -7968,7 +7968,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
 msgid "gray"
-msgstr ""
+msgstr "မီးခိုးရောင်"
 
 #. Option for the 'Color' (Select) field in DocType 'CRM Deal Status'
 #. Option for the 'Color' (Select) field in DocType 'CRM Lead Status'
@@ -8079,7 +8079,7 @@ msgstr ""
 
 #: frontend/src/utils/index.js:172 frontend/src/utils/index.js:198
 msgid "just now"
-msgstr ""
+msgstr "ယခုလေးတင်"
 
 #. Option for the 'Type' (Select) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
@@ -8133,7 +8133,7 @@ msgstr ""
 
 #: frontend/src/utils/index.js:129 frontend/src/utils/index.js:149
 msgid "now"
-msgstr ""
+msgstr "ယခု"
 
 #: crm/api/activities.py:109 crm/api/activities.py:250
 msgid "old_value"
@@ -8151,7 +8151,7 @@ msgstr "လိမ္မော်ရောင်"
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
 msgid "pink"
-msgstr ""
+msgstr "ပန်းရောင်"
 
 #: frontend/src/components/FieldLayoutEditor.vue:510
 msgid "previous"
@@ -8170,7 +8170,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
 msgid "purple"
-msgstr ""
+msgstr "ခရမ်းရောင်"
 
 #: crm/api/whatsapp.py:72
 msgid "received a whatsapp message in {0}"
@@ -8181,7 +8181,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
 msgid "red"
-msgstr ""
+msgstr "အနီရောင်"
 
 #. Option for the 'Color' (Select) field in DocType 'CRM Deal Status'
 #. Option for the 'Color' (Select) field in DocType 'CRM Lead Status'
@@ -8242,11 +8242,11 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
 msgid "yellow"
-msgstr ""
+msgstr "အဝါ"
 
 #: frontend/src/utils/index.js:211
 msgid "yesterday"
-msgstr ""
+msgstr "မနေ့က"
 
 #: frontend/src/components/Settings/Sla/utils.js:254
 msgid "{0} (Invalid time format)"
@@ -8254,7 +8254,7 @@ msgstr ""
 
 #: frontend/src/utils/index.js:162
 msgid "{0} M"
-msgstr ""
+msgstr "{0} လ"
 
 #: crm/api/todo.py:41
 msgid "{0} assigned a {1} {2} to you"
@@ -8270,7 +8270,7 @@ msgstr ""
 
 #: frontend/src/utils/index.js:158
 msgid "{0} d"
-msgstr ""
+msgstr "{0} ရက်"
 
 #: frontend/src/utils/index.js:213
 msgid "{0} days ago"
@@ -8278,7 +8278,7 @@ msgstr "လွန်ခဲ့တဲ့ {0} ရက်ပတ်လုံး"
 
 #: frontend/src/utils/index.js:153
 msgid "{0} h"
-msgstr ""
+msgstr "{0} နာရီ"
 
 #: frontend/src/utils/index.js:206
 msgid "{0} hours ago"
@@ -8308,11 +8308,11 @@ msgstr ""
 #: frontend/src/components/Modals/ContactModal.vue:110
 #: frontend/src/components/Modals/ConvertToDealModal.vue:169
 msgid "{0} is required"
-msgstr ""
+msgstr "{0} လိုအပ်ပါသည်"
 
 #: frontend/src/utils/index.js:151
 msgid "{0} m"
-msgstr ""
+msgstr "{0} မိနစ်"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:650
 msgid "{0} maybe"
@@ -8336,7 +8336,7 @@ msgstr ""
 
 #: frontend/src/utils/index.js:160
 msgid "{0} w"
-msgstr ""
+msgstr "{0} ပတ်"
 
 #: frontend/src/utils/index.js:217
 msgid "{0} weeks ago"
@@ -8344,7 +8344,7 @@ msgstr "{0} ရက်သတ္တပတ်များ အကြာက"
 
 #: frontend/src/utils/index.js:164
 msgid "{0} y"
-msgstr ""
+msgstr "{0} နှစ်"
 
 #: frontend/src/utils/index.js:225
 msgid "{0} years ago"
