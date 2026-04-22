@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-04-19 09:47+0000\n"
-"PO-Revision-Date: 2026-04-20 02:12\n"
+"PO-Revision-Date: 2026-04-22 02:25\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: French\n"
 "MIME-Version: 1.0\n"
@@ -1436,7 +1436,7 @@ msgstr ""
 #: frontend/src/components/ListBulkActions.vue:142
 #: frontend/src/components/ListBulkActions.vue:188
 msgid "Clear Assignment"
-msgstr ""
+msgstr "Effacer l'assignation"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:92
 #: frontend/src/composables/demoData.js:20
@@ -1732,7 +1732,7 @@ msgstr "Contenu"
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:78
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:78
 msgid "Content Type"
-msgstr ""
+msgstr "Type de contenu"
 
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:156
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:160
@@ -1938,7 +1938,7 @@ msgstr "Personnalisation"
 
 #: frontend/src/components/ViewControls.vue:223
 msgid "Customize Quick Filters"
-msgstr ""
+msgstr "Personnaliser les filtres rapides"
 
 #. Option for the 'Default Calendar View' (Select) field in DocType 'FCRM
 #. Settings'
@@ -3619,7 +3619,7 @@ msgstr ""
 #. Sync Source'
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
 msgid "Hourly"
-msgstr ""
+msgstr "Toutes les heures"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:199
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:283
@@ -4015,7 +4015,7 @@ msgstr ""
 
 #: frontend/src/components/Kanban/KanbanSettings.vue:8
 msgid "Kanban Settings"
-msgstr ""
+msgstr "Paramètres Kanban"
 
 #: frontend/src/components/Kanban/KanbanSettings.vue:3
 msgid "Kanban settings"
@@ -4537,7 +4537,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 #: crm/fcrm/doctype/crm_task/crm_task.json
 msgid "Medium"
-msgstr ""
+msgstr "Moyen"
 
 #. Option for the 'Type' (Select) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
@@ -4915,7 +4915,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/EmailEdit.vue:153
 msgid "No changes made"
-msgstr ""
+msgstr "Aucune modification effectuée"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:295
 msgid "No companies found in the given site"
@@ -5040,7 +5040,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.py:133
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.py:162
 msgid "Not permitted"
-msgstr ""
+msgstr "Non autorisé"
 
 #: crm/api/whatsapp.py:27
 msgid "Not permitted to access reference document {0} {1}."
@@ -5561,7 +5561,7 @@ msgstr ""
 
 #: frontend/src/pages/Deal.vue:215 frontend/src/pages/MobileDeal.vue:153
 msgid "Primary"
-msgstr ""
+msgstr "Primaire"
 
 #: frontend/src/pages/Deal.vue:703 frontend/src/pages/MobileDeal.vue:574
 msgid "Primary Contact Set"
@@ -5601,7 +5601,7 @@ msgstr ""
 #: frontend/src/components/Settings/Sla/EditResponseResolutionModal.vue:16
 #: frontend/src/components/Settings/Sla/SlaPriorityList.vue:171
 msgid "Priority"
-msgstr ""
+msgstr "Priorité"
 
 #: frontend/src/components/Settings/Sla/utils.js:125
 msgid "Priority {0}: Priority Name is required"
@@ -5661,7 +5661,7 @@ msgstr "Produits"
 #: frontend/src/components/Settings/Profile/ProfileSettings.vue:4
 #: frontend/src/components/Settings/Settings.vue:98
 msgid "Profile"
-msgstr ""
+msgstr "Profil"
 
 #: frontend/src/components/Settings/Profile/ProfileSettings.vue:190
 msgid "Profile Updated Successfully"
@@ -5705,7 +5705,7 @@ msgstr "Dans la file d'attente"
 #. Option for the 'Type' (Select) field in DocType 'CRM Fields Layout'
 #: crm/fcrm/doctype/crm_fields_layout/crm_fields_layout.json
 msgid "Quick Entry"
-msgstr ""
+msgstr "Saisie rapide"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:618
 msgid "Quick Entry Layout"
@@ -5733,7 +5733,7 @@ msgstr "Lire"
 #: crm/api/dashboard.py:940
 #: frontend/src/components/Settings/LeadSyncing/FailureLogs.vue:30
 msgid "Reason"
-msgstr ""
+msgstr "Raison"
 
 #. Label of the record_calls (Check) field in DocType 'CRM Twilio Settings'
 #: crm/fcrm/doctype/crm_twilio_settings/crm_twilio_settings.json
@@ -5778,13 +5778,13 @@ msgstr "DocType de la Référence"
 #: crm/fcrm/doctype/crm_task/crm_task.json
 #: crm/fcrm/doctype/fcrm_note/fcrm_note.json
 msgid "Reference Document Type"
-msgstr ""
+msgstr "Type de document de référence"
 
 #. Label of the reference_docname (Dynamic Link) field in DocType 'CRM Call
 #. Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 msgid "Reference Name"
-msgstr ""
+msgstr "Nom de référence"
 
 #: crm/api/whatsapp.py:21
 msgid "Reference document {0} {1} does not exist."
@@ -5798,7 +5798,7 @@ msgstr ""
 #: frontend/src/components/ViewControls.vue:159
 #: frontend/src/pages/Dashboard.vue:10
 msgid "Refresh"
-msgstr ""
+msgstr "Actualiser"
 
 #: frontend/src/components/Settings/Telephony/TwilioSettings.vue:78
 msgid "Refresh Apps"
@@ -5833,7 +5833,7 @@ msgstr ""
 #: frontend/src/components/Settings/Users.vue:218
 #: frontend/src/pages/Deal.vue:652
 msgid "Remove"
-msgstr ""
+msgstr "Supprimer"
 
 #: frontend/src/components/FilesUploader/FilesUploader.vue:23
 msgid "Remove All"
@@ -5904,7 +5904,7 @@ msgstr ""
 #: frontend/src/components/Modals/QuickEntryModal.vue:30
 #: frontend/src/components/Modals/SidePanelModal.vue:30
 msgid "Reset"
-msgstr ""
+msgstr "Réinitialiser"
 
 #: frontend/src/components/ColumnSettings.vue:78
 msgid "Reset Changes"
@@ -6159,7 +6159,7 @@ msgstr ""
 #: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.json
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
 msgid "Sales Manager"
-msgstr ""
+msgstr "Responsable des Ventes"
 
 #: frontend/src/components/Dashboard/AddChartModal.vue:94
 msgid "Sales Trend"
@@ -6201,7 +6201,7 @@ msgstr ""
 #: frontend/src/components/Settings/Users.vue:251
 #: frontend/src/pages/Dashboard.vue:95
 msgid "Sales User"
-msgstr ""
+msgstr "Utilisateur des ventes"
 
 #: crm/api/dashboard.py:638
 msgid "Sales trend"
@@ -6223,7 +6223,7 @@ msgstr "Civilité"
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
 #: crm/fcrm/doctype/crm_service_day/crm_service_day.json
 msgid "Saturday"
-msgstr ""
+msgstr "Samedi"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:510
 #: frontend/src/components/Controls/GeolocationControl.vue:60
@@ -6246,7 +6246,7 @@ msgstr ""
 #: frontend/src/components/ViewControls.vue:125
 #: frontend/src/pages/Dashboard.vue:36
 msgid "Save"
-msgstr ""
+msgstr "Enregistrer"
 
 #: frontend/src/components/Modals/ViewModal.vue:40
 #: frontend/src/components/ViewControls.vue:58
@@ -6280,7 +6280,7 @@ msgstr ""
 #: frontend/src/components/Settings/Sla/SlaPolicyList.vue:21
 #: frontend/src/components/frappe-ui/Autocomplete.vue:58
 msgid "Search"
-msgstr ""
+msgstr "Recherche"
 
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:60
 msgid "Search Template"
@@ -6300,7 +6300,7 @@ msgstr ""
 
 #: frontend/src/components/SidePanelLayout.vue:153
 msgid "Select"
-msgstr ""
+msgstr "Sélectionner"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:176
 msgid "Select Company"
@@ -6385,7 +6385,7 @@ msgstr "Sélectionner {0}"
 
 #: frontend/src/components/EmailEditor.vue:182
 msgid "Send"
-msgstr ""
+msgstr "Envoyer"
 
 #: frontend/src/components/Settings/InviteUserPage.vue:18
 msgid "Send Invites"
@@ -6418,7 +6418,7 @@ msgstr ""
 #. Option for the 'Type' (Select) field in DocType 'CRM Dropdown Item'
 #: crm/fcrm/doctype/crm_dropdown_item/crm_dropdown_item.json
 msgid "Separator"
-msgstr ""
+msgstr "Séparateur"
 
 #. Label of the naming_series (Select) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
@@ -6546,7 +6546,7 @@ msgstr ""
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 #: frontend/src/components/Layouts/AppSidebar.vue:561
 msgid "Settings"
-msgstr ""
+msgstr "Paramètres"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:302
 msgid "Settings saved"
@@ -6593,7 +6593,7 @@ msgstr ""
 #: frontend/src/components/Modals/QuickEntryModal.vue:20
 #: frontend/src/components/Modals/SidePanelModal.vue:20
 msgid "Show Preview"
-msgstr ""
+msgstr "Afficher l'aperçu"
 
 #. Option for the 'Type' (Select) field in DocType 'CRM Fields Layout'
 #: crm/fcrm/doctype/crm_fields_layout/crm_fields_layout.json
@@ -6684,7 +6684,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_lead_source/crm_lead_source.json
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:73
 msgid "Source Name"
-msgstr ""
+msgstr "Nom de la source"
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:56
 msgid "Source Type"
@@ -6701,7 +6701,7 @@ msgstr ""
 #: frontend/src/components/Dashboard/AddChartModal.vue:68
 #: frontend/src/components/Dashboard/DashboardItem.vue:21
 msgid "Spacer"
-msgstr ""
+msgstr "Séparateur"
 
 #: crm/api/dashboard.py:790 crm/api/dashboard.py:848
 msgid "Stage"
@@ -6731,7 +6731,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_task/crm_task.json
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:176
 msgid "Start Date"
-msgstr ""
+msgstr "Date de début"
 
 #: frontend/src/components/Settings/Sla/utils.js:160
 msgid "Start Date cannot be after end date"
@@ -6779,7 +6779,7 @@ msgstr ""
 #: frontend/src/pages/MobileOrganization.vue:473
 #: frontend/src/pages/Organization.vue:503
 msgid "Status"
-msgstr ""
+msgstr "Statut"
 
 #. Label of the status_change_log (Table) field in DocType 'CRM Deal'
 #. Label of the status_change_log (Table) field in DocType 'CRM Lead'
@@ -6797,12 +6797,12 @@ msgstr ""
 #: crm/fcrm/doctype/crm_exotel_settings/crm_exotel_settings.json
 #: frontend/src/components/Settings/Telephony/ExotelSettings.vue:75
 msgid "Subdomain"
-msgstr ""
+msgstr "Sous-domaine"
 
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:68
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:68
 msgid "Subject"
-msgstr ""
+msgstr "Objet"
 
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:152
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:158
@@ -6818,7 +6818,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
 #: crm/fcrm/doctype/crm_service_day/crm_service_day.json
 msgid "Sunday"
-msgstr ""
+msgstr "Dimanche"
 
 #: frontend/src/components/Settings/emailConfig.js:16
 msgid "Support / Sales"
@@ -6826,7 +6826,7 @@ msgstr ""
 
 #: frontend/src/components/FilesUploader/FilesUploader.vue:46
 msgid "Switch Camera"
-msgstr ""
+msgstr "Changer de caméra"
 
 #: frontend/src/components/Settings/PreferencesSettings.vue:26
 msgid "Switch between light, dark, or system theme"
@@ -6869,7 +6869,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/ThemeSwitcher.vue:162
 msgid "System"
-msgstr ""
+msgstr "Système"
 
 #: frontend/src/components/Settings/Settings.vue:115
 msgid "System Configuration"
@@ -6914,7 +6914,7 @@ msgstr ""
 #: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.json
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
 msgid "System Manager"
-msgstr ""
+msgstr "Gestionnaire système"
 
 #: frontend/src/components/EmailEditor.vue:39
 msgid "TO"
@@ -6929,7 +6929,7 @@ msgstr ""
 #: frontend/src/components/Activities/ActivityHeader.vue:151
 #: frontend/src/components/Layouts/AppSidebar.vue:579
 msgid "Task"
-msgstr ""
+msgstr "Tâche"
 
 #: frontend/src/components/Modals/TaskModal.vue:194
 msgid "Task created"
@@ -6983,7 +6983,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/Settings.vue:173
 msgid "Templates"
-msgstr ""
+msgstr "Modèles"
 
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
@@ -7034,7 +7034,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/PreferencesSettings.vue:23
 msgid "Theme"
-msgstr ""
+msgstr "Thème"
 
 #: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.js:29
 msgid "There can only be one default priority in Priorities table"
@@ -7102,7 +7102,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
 #: crm/fcrm/doctype/crm_service_day/crm_service_day.json
 msgid "Thursday"
-msgstr ""
+msgstr "Jeudi"
 
 #: frontend/src/components/Settings/DefaultsSettings.vue:128
 msgid "Time Format"
@@ -7130,7 +7130,7 @@ msgstr ""
 #: frontend/src/components/Modals/NoteModal.vue:27
 #: frontend/src/components/Modals/TaskModal.vue:24
 msgid "Title"
-msgstr ""
+msgstr "Titre"
 
 #. Label of the title_field (Data) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
@@ -7148,14 +7148,14 @@ msgstr ""
 #: crm/fcrm/doctype/crm_status_change_log/crm_status_change_log.json
 #: frontend/src/components/Activities/EmailArea.vue:53
 msgid "To"
-msgstr ""
+msgstr "À"
 
 #. Label of the to_date (Date) field in DocType 'CRM Holiday List'
 #. Label of the to_date (Datetime) field in DocType 'CRM Status Change Log'
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
 #: crm/fcrm/doctype/crm_status_change_log/crm_status_change_log.json
 msgid "To Date"
-msgstr ""
+msgstr "Date de fin"
 
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.py:59
 msgid "To Date cannot be before From Date"
@@ -7249,14 +7249,14 @@ msgstr ""
 #: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.json
 #: frontend/src/components/Settings/LeadSyncing/FailureLogs.vue:50
 msgid "Traceback"
-msgstr ""
+msgstr "Retraçage"
 
 #. Option for the 'Weekly Off' (Select) field in DocType 'CRM Holiday List'
 #. Option for the 'Workday' (Select) field in DocType 'CRM Service Day'
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
 #: crm/fcrm/doctype/crm_service_day/crm_service_day.json
 msgid "Tuesday"
-msgstr ""
+msgstr "Mardi"
 
 #: frontend/src/components/ConditionsFilter/CFCondition.vue:159
 msgid "Turn into a Group"
@@ -7372,7 +7372,7 @@ msgstr ""
 #: frontend/src/components/Telephony/TwilioCallUI.vue:24
 #: frontend/src/components/Telephony/TwilioCallUI.vue:123
 msgid "Unknown"
-msgstr ""
+msgstr "Inconnu"
 
 #: crm/integrations/api.py:19
 msgid "Unknown telephony medium: {0}"
@@ -7441,7 +7441,7 @@ msgstr ""
 #: frontend/src/components/Settings/Telephony/TwilioSettings.vue:32
 #: frontend/src/components/Telephony/ExotelCallUI.vue:209
 msgid "Update"
-msgstr ""
+msgstr "Mettre à jour"
 
 #: frontend/src/components/Settings/EmailEdit.vue:75
 msgid "Update Account"
@@ -7493,7 +7493,7 @@ msgstr ""
 #: frontend/src/pages/MobileOrganization.vue:38
 #: frontend/src/pages/Organization.vue:48
 msgid "Upload Image"
-msgstr ""
+msgstr "Télécharger une image"
 
 #: frontend/src/components/Settings/Profile/ProfileSettings.vue:158
 msgid "Upload Photo"
@@ -7514,7 +7514,7 @@ msgstr "Envoi de {0}%"
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
 msgid "User"
-msgstr ""
+msgstr "Utilisateur"
 
 #: frontend/src/components/Settings/Settings.vue:95
 msgid "User Configuration"
@@ -7527,7 +7527,7 @@ msgstr ""
 #. Label of the user_name (Data) field in DocType 'CRM Telephony Agent'
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
 msgid "User Name"
-msgstr ""
+msgstr "Nom d'utilisateur"
 
 #: crm/api/user.py:132
 msgid "User {0} cannot be removed as it has a Role Profile assigned to it."
@@ -7568,11 +7568,11 @@ msgstr ""
 #. Service Level Agreement'
 #: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.json
 msgid "Validity"
-msgstr ""
+msgstr "Validité"
 
 #: frontend/src/components/Modals/EditValueModal.vue:14
 msgid "Value"
-msgstr ""
+msgstr "Valeur"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:110
 msgid "Verify Connection"
@@ -7592,7 +7592,7 @@ msgstr ""
 
 #: frontend/src/components/Layouts/AppSidebar.vue:590
 msgid "Views"
-msgstr ""
+msgstr "Vues"
 
 #: frontend/src/components/Modals/EventModal.vue:134
 msgid "Visibility"
@@ -7617,14 +7617,14 @@ msgstr ""
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
 #: frontend/src/components/Modals/AboutModal.vue:50
 msgid "Website"
-msgstr ""
+msgstr "Site Web"
 
 #. Option for the 'Weekly Off' (Select) field in DocType 'CRM Holiday List'
 #. Option for the 'Workday' (Select) field in DocType 'CRM Service Day'
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
 #: crm/fcrm/doctype/crm_service_day/crm_service_day.json
 msgid "Wednesday"
-msgstr ""
+msgstr "Mercredi"
 
 #: frontend/src/pages/Calendar.vue:92
 msgid "Week"
@@ -7635,7 +7635,7 @@ msgstr "Semaine"
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 #: frontend/src/components/Settings/CalendarSettings.vue:50
 msgid "Weekly"
-msgstr ""
+msgstr "Hebdomadaire"
 
 #. Label of the weekly_off (Check) field in DocType 'CRM Holiday'
 #. Label of the weekly_off (Select) field in DocType 'CRM Holiday List'
@@ -7874,7 +7874,7 @@ msgstr "noir"
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
 msgid "blue"
-msgstr ""
+msgstr "Bleu"
 
 #: frontend/src/components/Activities/Activities.vue:249
 msgid "changes from"
@@ -7968,14 +7968,14 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
 msgid "gray"
-msgstr ""
+msgstr "gris"
 
 #. Option for the 'Color' (Select) field in DocType 'CRM Deal Status'
 #. Option for the 'Color' (Select) field in DocType 'CRM Lead Status'
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
 msgid "green"
-msgstr ""
+msgstr "vert"
 
 #. Option for the 'Type' (Select) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
@@ -8170,7 +8170,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
 msgid "purple"
-msgstr ""
+msgstr "violet"
 
 #: crm/api/whatsapp.py:72
 msgid "received a whatsapp message in {0}"
@@ -8181,7 +8181,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
 msgid "red"
-msgstr ""
+msgstr "rouge"
 
 #. Option for the 'Color' (Select) field in DocType 'CRM Deal Status'
 #. Option for the 'Color' (Select) field in DocType 'CRM Lead Status'
@@ -8242,7 +8242,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
 msgid "yellow"
-msgstr ""
+msgstr "jaune"
 
 #: frontend/src/utils/index.js:211
 msgid "yesterday"
@@ -8308,7 +8308,7 @@ msgstr ""
 #: frontend/src/components/Modals/ContactModal.vue:110
 #: frontend/src/components/Modals/ConvertToDealModal.vue:169
 msgid "{0} is required"
-msgstr ""
+msgstr "{0} est requis"
 
 #: frontend/src/utils/index.js:151
 msgid "{0} m"
@@ -8336,7 +8336,7 @@ msgstr ""
 
 #: frontend/src/utils/index.js:160
 msgid "{0} w"
-msgstr ""
+msgstr "{0} sem."
 
 #: frontend/src/utils/index.js:217
 msgid "{0} weeks ago"
@@ -8344,7 +8344,7 @@ msgstr "Il y a {0} semaines"
 
 #: frontend/src/utils/index.js:164
 msgid "{0} y"
-msgstr ""
+msgstr "{0} a"
 
 #: frontend/src/utils/index.js:225
 msgid "{0} years ago"
