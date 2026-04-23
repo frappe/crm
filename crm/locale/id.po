@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-04-19 09:47+0000\n"
-"PO-Revision-Date: 2026-04-20 02:13\n"
+"PO-Revision-Date: 2026-04-22 02:25\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Indonesian\n"
 "MIME-Version: 1.0\n"
@@ -1938,7 +1938,7 @@ msgstr "Kustomisasi"
 
 #: frontend/src/components/ViewControls.vue:223
 msgid "Customize Quick Filters"
-msgstr ""
+msgstr "Sesuaikan Filter Cepat"
 
 #. Option for the 'Default Calendar View' (Select) field in DocType 'FCRM
 #. Settings'
@@ -3479,7 +3479,7 @@ msgstr "Jenis Kelamin"
 
 #: frontend/src/components/Settings/Settings.vue:118
 msgid "General"
-msgstr ""
+msgstr "Umum"
 
 #: frontend/src/components/Settings/GeneralSettings.vue:5
 msgid "General Settings"
@@ -3619,7 +3619,7 @@ msgstr ""
 #. Sync Source'
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
 msgid "Hourly"
-msgstr ""
+msgstr "Setiap Jam"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:199
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:283
@@ -5705,7 +5705,7 @@ msgstr "Dalam Antrian"
 #. Option for the 'Type' (Select) field in DocType 'CRM Fields Layout'
 #: crm/fcrm/doctype/crm_fields_layout/crm_fields_layout.json
 msgid "Quick Entry"
-msgstr ""
+msgstr "Entri Cepat"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:618
 msgid "Quick Entry Layout"
@@ -5778,7 +5778,7 @@ msgstr "Doctype Referensi"
 #: crm/fcrm/doctype/crm_task/crm_task.json
 #: crm/fcrm/doctype/fcrm_note/fcrm_note.json
 msgid "Reference Document Type"
-msgstr ""
+msgstr "Tipe dokumen referensi"
 
 #. Label of the reference_docname (Dynamic Link) field in DocType 'CRM Call
 #. Log'
@@ -6593,7 +6593,7 @@ msgstr "Tampilkan Kata Sandi"
 #: frontend/src/components/Modals/QuickEntryModal.vue:20
 #: frontend/src/components/Modals/SidePanelModal.vue:20
 msgid "Show Preview"
-msgstr ""
+msgstr "Tampilkan Pratayang"
 
 #. Option for the 'Type' (Select) field in DocType 'CRM Fields Layout'
 #: crm/fcrm/doctype/crm_fields_layout/crm_fields_layout.json
@@ -6607,7 +6607,7 @@ msgstr "Item Bilah Sisi"
 
 #: frontend/src/components/Settings/Profile/UserEmailSettings.vue:33
 msgid "Signature"
-msgstr ""
+msgstr "Tanda Tangan"
 
 #. Description of the 'Condition' (Code) field in DocType 'CRM Service Level
 #. Agreement'
@@ -6826,7 +6826,7 @@ msgstr "Dukungan / Penjualan"
 
 #: frontend/src/components/FilesUploader/FilesUploader.vue:46
 msgid "Switch Camera"
-msgstr ""
+msgstr "Ganti kamera"
 
 #: frontend/src/components/Settings/PreferencesSettings.vue:26
 msgid "Switch between light, dark, or system theme"
@@ -6869,7 +6869,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/ThemeSwitcher.vue:162
 msgid "System"
-msgstr ""
+msgstr "Sistem"
 
 #: frontend/src/components/Settings/Settings.vue:115
 msgid "System Configuration"
@@ -6983,7 +6983,7 @@ msgstr "Tempalt berhasil diperbarui"
 
 #: frontend/src/components/Settings/Settings.vue:173
 msgid "Templates"
-msgstr ""
+msgstr "Templat"
 
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
@@ -7034,7 +7034,7 @@ msgstr "Kurs yang digunakan untuk mengonversi mata uang organisasi ke mata uang 
 
 #: frontend/src/components/Settings/PreferencesSettings.vue:23
 msgid "Theme"
-msgstr ""
+msgstr "Tema"
 
 #: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.js:29
 msgid "There can only be one default priority in Priorities table"
@@ -7249,7 +7249,7 @@ msgstr "Jumlah total kesepakatan yang berhasil berdasarkan tanggal penutupannya"
 #: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.json
 #: frontend/src/components/Settings/LeadSyncing/FailureLogs.vue:50
 msgid "Traceback"
-msgstr ""
+msgstr "Jejak Balik"
 
 #. Option for the 'Weekly Off' (Select) field in DocType 'CRM Holiday List'
 #. Option for the 'Workday' (Select) field in DocType 'CRM Service Day'
@@ -7592,7 +7592,7 @@ msgstr "Nama Tampilan"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:590
 msgid "Views"
-msgstr ""
+msgstr "Tampilan"
 
 #: frontend/src/components/Modals/EventModal.vue:134
 msgid "Visibility"
