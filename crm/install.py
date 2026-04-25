@@ -186,6 +186,10 @@ def add_default_fields_layout(force=False):
 			"doctype": "FCRM Note",
 			"layout": '[{"name":"details_section","columns":[{"name":"column_o2s9","fields":["title", "content"]}]}]',
 		},
+		"CRM Task-Quick Entry": {
+			"doctype": "CRM Task",
+			"layout": '[{"name":"first_tab","sections":[{"name":"details_section","columns":[{"name":"column_X9sG","fields":["title","description"]}]},{"name":"assignment_section","columns":[{"name":"column_9XjK","fields":["priority","due_date"]},{"name":"column_7s8n","fields":["assigned_to","status"]}],"hideBorder":true}]}]',
+		},
 	}
 
 	sidebar_fields_layouts = {
