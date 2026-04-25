@@ -130,6 +130,7 @@
                             'Attach Image',
                             'HTML',
                             'Geolocation',
+                            'Text Editor',
                           ].includes(field.fieldtype)
                         "
                         v-model="row[field.fieldname]"
@@ -369,6 +370,22 @@
                           @change="(v) => fieldChange(v, field, row)"
                         />
                       </div>
+                      <div
+                        v-else-if="field.fieldtype === 'Text Editor'"
+                        class="flex h-full w-full items-center"
+                      >
+                        <TextEditorControl
+                          variant="ghost"
+                          size="sm"
+                          :fixed-menu="false"
+                          :bubble-menu="true"
+                          editorClass="w-full !min-h-[38px] !h-[38px]"
+                          :value="row[field.fieldname]"
+                          :placeholder="field.placeholder"
+                          :disabled="Boolean(field.read_only)"
+                          @change="(v) => fieldChange(v, field, row)"
+                        />
+                      </div>
                       <Combobox
                         v-else-if="field.fieldtype === 'Autocomplete'"
                         v-model="row[field.fieldname]"
@@ -456,6 +473,7 @@ import RatingInput from '@/components/Controls/RatingInput.vue'
 import AttachControl from '@/components/Controls/AttachControl.vue'
 import HtmlControl from '@/components/Controls/HtmlControl.vue'
 import GeolocationControl from '@/components/Controls/GeolocationControl.vue'
+import TextEditorControl from '@/components/Controls/TextEditorControl.vue'
 import ButtonControl, {
   getButtonTheme,
   getButtonVariant,
