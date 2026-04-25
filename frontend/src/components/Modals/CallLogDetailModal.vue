@@ -158,7 +158,12 @@
       </div>
     </template>
   </Dialog>
-  <NoteModal v-model="showNoteModal" :note="note" @after="addNoteToCallLog" />
+  <NoteModal
+    v-if="showNoteModal"
+    v-model="showNoteModal"
+    :note="note"
+    @after="addNoteToCallLog"
+  />
   <TaskModal v-model="showTaskModal" :task="task" @after="addTaskToCallLog" />
 </template>
 

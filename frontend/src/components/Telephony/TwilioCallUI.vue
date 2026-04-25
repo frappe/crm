@@ -167,6 +167,7 @@
     </div>
   </div>
   <NoteModal
+    v-if="showNoteModal"
     v-model="showNoteModal"
     :note="note"
     doctype="CRM Call Log"

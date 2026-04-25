@@ -270,7 +270,7 @@
     v-model="showNoteModal"
     :note="note"
     doctype="CRM Lead"
-    :doc="docname"
+    :docname="docname"
   />
   <TaskModal
     v-if="showTaskModal"

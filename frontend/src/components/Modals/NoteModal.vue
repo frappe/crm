@@ -1,74 +1,84 @@
 <template>
   <Dialog v-model="show" :options="{ size: 'xl' }">
-    <template #body-title>
-      <div class="flex items-center gap-3">
-        <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9">
-          {{ editMode ? __('Edit Note') : __('Create Note') }}
-        </h3>
-        <Button
-          v-if="_note?.reference_docname"
-          size="sm"
-          :label="
-            _note.reference_doctype == 'CRM Deal'
-              ? __('Open Deal')
-              : __('Open Lead')
-          "
-          :iconRight="ArrowUpRightIcon"
-          @click="redirect()"
-        />
-      </div>
-    </template>
-    <template #body-content>
-      <div class="flex flex-col gap-4">
-        <div>
-          <FormControl
-            ref="title"
-            v-model="_note.title"
-            :label="__('Title')"
-            :placeholder="__('Call with John Doe')"
-            required
-          />
+    <template #body>
+      <div class="bg-surface-modal px-4 pb-6 pt-5 sm:px-6">
+        <div class="mb-5 flex items-center justify-between">
+          <div class="flex gap-2 items-center">
+            <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9">
+              {{ editMode ? __('Edit Note') : __('Create Note') }}
+            </h3>
+            <Button
+              v-if="doc?.reference_docname"
+              size="sm"
+              :label="
+                doc?.reference_doctype == 'CRM Deal'
+                  ? __('Open Deal')
+                  : __('Open Lead')
+              "
+              :iconRight="ArrowUpRightIcon"
+              @click="redirect()"
+            />
+          </div>
+          <div class="flex items-center gap-1">
+            <Button
+              v-if="isManager() && !isMobileView"
+              variant="ghost"
+              class="w-7"
+              :tooltip="__('Edit Fields Layout')"
+              :icon="EditIcon"
+              @click="openQuickEntryModal"
+            />
+            <Button
+              variant="ghost"
+              class="w-7"
+              icon="x"
+              @click="show = false"
+            />
+          </div>
         </div>
         <div>
-          <div class="mb-1.5 text-xs text-ink-gray-5">{{ __('Content') }}</div>
-          <TextEditor
-            ref="content"
-            variant="outline"
-            editor-class="!prose-sm overflow-auto min-h-[180px] max-h-80 py-1.5 px-2 rounded border border-[--surface-gray-2] bg-surface-gray-2 placeholder-ink-gray-4 hover:border-outline-gray-modals hover:bg-surface-gray-3 hover:shadow-sm focus:bg-surface-white focus:border-outline-gray-4 focus:shadow-sm focus:ring-0 focus-visible:ring-2 focus-visible:ring-outline-gray-3 text-ink-gray-8 transition-colors"
-            :bubbleMenu="true"
-            :content="_note.content"
-            :placeholder="
-              __('Took a call with John Doe and discussed the new project.')
-            "
-            @change="(val) => (_note.content = val)"
+          <FieldLayout
+            v-if="tabs.data"
+            :tabs="tabs.data"
+            :data="doc"
+            doctype="FCRM Note"
+          />
+          <ErrorMessage v-if="error" class="mt-4" :message="__(error)" />
+        </div>
+      </div>
+      <div class="px-4 pb-7 pt-4 sm:px-6">
+        <div class="flex flex-row-reverse gap-2">
+          <Button
+            variant="solid"
+            :label="editMode ? __('Update') : __('Create')"
+            :loading="editMode ? document.save.loading : createNote.loading"
+            @click="updateNote"
           />
         </div>
-        <ErrorMessage v-if="error" class="mt-4" :message="__(error)" />
-      </div>
-    </template>
-    <template #actions>
-      <div class="flex justify-end">
-        <Button
-          :label="editMode ? __('Update') : __('Create')"
-          variant="solid"
-          @click="updateNote"
-        />
       </div>
     </template>
   </Dialog>
 </template>
 
 <script setup>
+import EditIcon from '@/components/Icons/EditIcon.vue'
 import ArrowUpRightIcon from '@/components/Icons/ArrowUpRightIcon.vue'
-import { TextEditor, call } from 'frappe-ui'
+import FieldLayout from '@/components/FieldLayout/FieldLayout.vue'
+import { useDocument } from '@/data/document'
+import { globalStore } from '@/stores/global'
+import { usersStore } from '@/stores/users'
+import { showQuickEntryModal, quickEntryProps } from '@/composables/modals'
+import { isMobileView } from '@/composables/settings'
+import { setupCustomizations } from '@/utils'
+import { call, createResource, toast } from 'frappe-ui'
 import { useOnboarding, useTelemetry } from 'frappe-ui/frappe'
-import { ref, nextTick, watch } from 'vue'
+import { ref, computed, watch, nextTick, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 const props = defineProps({
   note: { type: Object, default: () => {} },
   doctype: { type: String, default: 'CRM Lead' },
-  doc: { type: String, default: '' },
+  docname: { type: String, default: '' },
 })
 
 const show = defineModel({ type: Boolean })
@@ -78,53 +88,67 @@ const emit = defineEmits(['after'])
 
 const router = useRouter()
 
+const { isManager } = usersStore()
 const { updateOnboardingStep } = useOnboarding('frappecrm')
 const { capture } = useTelemetry()
+const { $dialog, $socket } = globalStore()
+
+const { document, scripts, triggerOnRender } = useDocument(
+  'FCRM Note',
+  props.note?.name || null,
+)
+
+const doc = computed(() => document.doc || {})
+
+const tabs = createResource({
+  url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_fields_layout',
+  cache: ['Quick Entry', 'FCRM Note'],
+  params: { doctype: 'FCRM Note', type: 'Quick Entry' },
+  auto: true,
+})
 
 const error = ref(null)
-const title = ref(null)
-const editMode = ref(false)
-let _note = ref({})
+const editMode = computed(() => Boolean(document.doc?.name))
 
-async function updateNote() {
-  if (_note.value.name) {
-    let d = await call('frappe.client.set_value', {
-      doctype: 'FCRM Note',
-      name: _note.value.name,
-      fieldname: _note.value,
+const createNote = createResource({
+  url: 'frappe.client.insert',
+})
+
+function updateNote() {
+  if (document.doc.name) {
+    document.save.submit(null, {
+      onSuccess: (d) => {
+        notes.value?.reload?.()
+        emit('after', d)
+        show.value = false
+      },
+      onError: (err) => {
+        error.value = err.message || 'Something went wrong'
+      },
     })
-    if (d.name) {
-      notes.value?.reload?.()
-      emit('after', d)
-    }
   } else {
-    let d = await call(
-      'frappe.client.insert',
+    createNote.submit(
       {
         doc: {
           doctype: 'FCRM Note',
-          title: _note.value.title,
-          content: _note.value.content,
-          reference_doctype: props.doctype,
-          reference_docname: props.doc || '',
+          ...document.doc,
         },
       },
       {
+        onSuccess: (d) => {
+          updateOnboardingStep('create_first_note')
+          capture('note_created')
+          document.doc = {}
+          notes.value?.reload?.()
+          emit('after', d, true)
+          show.value = false
+        },
         onError: (err) => {
-          if (err.error.exc_type == 'MandatoryError') {
-            error.value = 'Title is mandatory'
-          }
+          error.value = err.message || 'Something went wrong'
         },
       },
     )
-    if (d.name) {
-      updateOnboardingStep('create_first_note')
-      capture('note_created')
-      notes.value?.reload?.()
-      emit('after', d, true)
-    }
   }
-  show.value = false
 }
 
 function redirect() {
@@ -138,17 +162,58 @@ function redirect() {
 }
 
 watch(
-  () => show.value,
-  (value) => {
-    if (!value) return
-    editMode.value = false
-    nextTick(() => {
-      title.value?.el?.focus()
-      _note.value = { ...props.note }
-      if (_note.value.title || _note.value.content) {
-        editMode.value = true
-      }
-    })
+  () => document.doc,
+  async (_doc) => {
+    if (scripts.data?.length) {
+      setupCustomizations(scripts.data, {
+        doc: _doc,
+        $dialog,
+        $socket,
+        router,
+        toast,
+        updateField,
+        createToast: toast.create,
+        call,
+      })
+    }
   },
+  { once: true },
 )
+
+function updateField(name, value) {
+  value = Array.isArray(name) ? '' : value
+  let oldValues = Array.isArray(name) ? {} : doc.value[name]
+
+  if (Array.isArray(name)) {
+    name.forEach((field) => (doc.value[field] = value))
+  } else {
+    doc.value[name] = value
+  }
+
+  document.save.submit(null, {
+    onError: (err) => {
+      if (Array.isArray(name)) {
+        name.forEach((field) => (doc.value[field] = oldValues[field]))
+      } else {
+        doc.value[name] = oldValues
+      }
+      toast.error(err.messages?.[0] || __('Error updating field'))
+    },
+  })
+}
+
+function openQuickEntryModal() {
+  showQuickEntryModal.value = true
+  quickEntryProps.value = { doctype: 'FCRM Note' }
+  nextTick(() => (show.value = false))
+}
+
+onMounted(async () => {
+  document.doc = {
+    ...document.doc,
+    reference_doctype: props.doctype,
+    reference_docname: props.docname,
+  }
+  await triggerOnRender()
+})
 </script>

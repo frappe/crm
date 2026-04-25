@@ -8,11 +8,12 @@
     @after="redirect('tasks')"
   />
   <NoteModal
+    v-if="showNoteModal"
     v-model="showNoteModal"
     v-model:reloadNotes="activities"
     :note="note"
     :doctype="doctype"
-    :doc="doc?.name"
+    :docname="doc?.name"
     @after="redirect('notes')"
   />
   <CallLogModal
