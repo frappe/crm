@@ -15,3 +15,8 @@ frontend/coverage
 .github/instructions
 .github/skills
 .github/copilot-instructions.md
+
+CLAUDE.md
+AGENTS.md
+.claude
+.pi

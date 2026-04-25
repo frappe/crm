@@ -90,6 +90,7 @@
   />
   <EmptyState v-else name="Notes" :icon="NoteIcon" />
   <NoteModal
+    v-if="showNoteModal"
     v-model="showNoteModal"
     v-model:reloadNotes="notes"
     :note="currentNote"
