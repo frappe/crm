@@ -182,6 +182,10 @@ def add_default_fields_layout(force=False):
 			"doctype": "CRM Call Log",
 			"layout": '[{"name":"details_section","columns":[{"name":"column_uMSG","fields":["type","from","duration"]},{"name":"column_wiZT","fields":["to","status","caller","receiver"]}]}]',
 		},
+		"FCRM Note-Quick Entry": {
+			"doctype": "FCRM Note",
+			"layout": '[{"name":"details_section","columns":[{"name":"column_o2s9","fields":["title", "content"]}]}]',
+		},
 	}
 
 	sidebar_fields_layouts = {
