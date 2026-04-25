@@ -164,7 +164,12 @@
     :note="note"
     @after="addNoteToCallLog"
   />
-  <TaskModal v-model="showTaskModal" :task="task" @after="addTaskToCallLog" />
+  <TaskModal
+    v-if="showTaskModal"
+    v-model="showTaskModal"
+    :task="task"
+    @after="addTaskToCallLog"
+  />
 </template>
 
 <script setup>
