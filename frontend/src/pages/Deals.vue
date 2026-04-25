@@ -251,7 +251,7 @@
     v-model="showTaskModal"
     :task="task"
     doctype="CRM Deal"
-    :doc="docname"
+    :docname="docname"
   />
 </template>
 
