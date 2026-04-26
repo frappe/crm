@@ -89,15 +89,6 @@
     @loadMore="() => loadMore++"
   />
   <EmptyState v-else name="Notes" :icon="NoteIcon" />
-  <DoctypeModal
-    v-if="showNoteModal"
-    v-model="showNoteModal"
-    :doctype="'FCRM Note'"
-    :docname="currentNote"
-    :doctypeTitle="__('Note')"
-    @afterInsert="afterInsert"
-    @afterUpdate="notes.reload()"
-  />
 </template>
 
 <script setup>
@@ -105,8 +96,8 @@ import ViewBreadcrumbs from '@/components/ViewBreadcrumbs.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
-import DoctypeModal from '@/components/Modals/DoctypeModal.vue'
 import ViewControls from '@/components/ViewControls.vue'
+import { useDoctypeModal } from '@/composables/doctypeModal'
 import EmptyState from '@/components/ListViews/EmptyState.vue'
 import { usersStore } from '@/stores/users'
 import { timeAgo, formatDate } from '@/utils'
@@ -118,8 +109,7 @@ const { getUser } = usersStore()
 const { updateOnboardingStep } = useOnboarding('frappecrm')
 const { capture } = useTelemetry()
 
-const showNoteModal = ref(false)
-const currentNote = ref(null)
+const { showModal } = useDoctypeModal()
 
 const notes = ref({})
 const loadMore = ref(1)
@@ -135,14 +125,21 @@ watch(
   },
 )
 
+const noteCallbacks = {
+  afterInsert: () => {
+    notes.value.reload()
+    updateOnboardingStep('create_first_note')
+    capture('note_created')
+  },
+  afterUpdate: () => notes.value.reload(),
+}
+
 function createNote() {
-  currentNote.value = null
-  showNoteModal.value = true
+  showModal(null, 'FCRM Note', 'Note', {}, noteCallbacks)
 }
 
 function editNote(noteName) {
-  currentNote.value = noteName
-  showNoteModal.value = true
+  showModal(noteName, 'FCRM Note', 'Note', {}, noteCallbacks)
 }
 
 async function deleteNote(name) {
@@ -151,12 +148,6 @@ async function deleteNote(name) {
     name,
   })
   notes.value.reload()
-}
-
-function afterInsert() {
-  notes.value.reload()
-  updateOnboardingStep('create_first_note')
-  capture('note_created')
 }
 
 const openNoteFromURL = () => {
