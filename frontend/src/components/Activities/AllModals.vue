@@ -24,6 +24,7 @@
     :doctype="doctype"
     :docname="doc?.name"
   />
+<<<<<<< HEAD
   <DoctypeModal
     v-if="showDoctypeModal"
     v-model="showDoctypeModal"
@@ -35,6 +36,8 @@
     @afterUpdate="after"
   />
 >>>>>>> 4917cb73 (feat: replace NoteModal with DoctypeModal for improved document handling in AllModals, Deals, and Leads pages)
+=======
+>>>>>>> 239cf06e (refactor: use global doctypeModal composable in AllModals)
 </template>
 <script setup>
 import TaskModal from '@/components/Modals/TaskModal.vue'
@@ -42,9 +45,13 @@ import CallLogModal from '@/components/Modals/CallLogModal.vue'
 <<<<<<< HEAD
 =======
 import EventModal from '@/components/Modals/EventModal.vue'
-import DoctypeModal from '@/components/Modals/DoctypeModal.vue'
 import { showEventModal, activeEvent } from '@/composables/event'
+<<<<<<< HEAD
 >>>>>>> 4917cb73 (feat: replace NoteModal with DoctypeModal for improved document handling in AllModals, Deals, and Leads pages)
+=======
+import { useDoctypeModal } from '@/composables/doctypeModal'
+import { useOnboarding, useTelemetry } from 'frappe-ui/frappe'
+>>>>>>> 239cf06e (refactor: use global doctypeModal composable in AllModals)
 import { call } from 'frappe-ui'
 import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -54,7 +61,19 @@ const props = defineProps({
 })
 
 const activities = defineModel({ type: Object })
+<<<<<<< HEAD
 const doc = defineModel('doc', { type: Object })
+=======
+
+const { updateOnboardingStep } = useOnboarding('frappecrm')
+const { capture } = useTelemetry()
+
+// Event
+function showEvent(e) {
+  showEventModal.value = true
+  activeEvent.value = e
+}
+>>>>>>> 239cf06e (refactor: use global doctypeModal composable in AllModals)
 
 // Tasks
 const showTaskModal = ref(false)
@@ -92,30 +111,28 @@ function updateTaskStatus(status, task) {
 }
 
 // Notes
+const { showModal } = useDoctypeModal()
+
 function showNote(note) {
-  showDoctype(note?.name, 'FCRM Note', 'Note', {
-    reference_doctype: props.doctype,
-    reference_docname: props.doc?.name,
-  })
+  showModal(
+    note?.name,
+    'FCRM Note',
+    'Note',
+    {
+      reference_doctype: props.doctype,
+      reference_docname: props.doc?.name,
+    },
+    {
+      afterInsert: afterDoctype,
+      afterUpdate: afterDoctype,
+    },
+  )
 }
 
-// Doctype Modal (Notes, Emails, etc)
-const showDoctypeModal = ref(false)
-const modalDoctypeTitle = ref('')
-const modalDoctype = ref('')
-const modalDocname = ref('')
-const modalDefaults = ref({})
-
-function showDoctype(name, doctype, doctypeTitle, defaults = {}) {
-  modalDoctypeTitle.value = doctypeTitle
-  modalDoctype.value = doctype
-  modalDocname.value = name || null
-  modalDefaults.value = defaults
-  showDoctypeModal.value = true
-}
-
-function after(d) {
+function afterDoctype(d) {
   activities.value.reload()
+  updateOnboardingStep('create_first_note')
+  capture('note_created')
 
   let redirectHash = ''
 
