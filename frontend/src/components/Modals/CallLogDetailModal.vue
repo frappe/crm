@@ -17,9 +17,9 @@
                   hideLabel: true,
                   items: [
                     {
-                      label: note?.name ? __('Edit Note') : __('Add Note'),
+                      label: note ? __('Edit Note') : __('Add Note'),
                       icon: NoteIcon,
-                      onClick: addEditNote,
+                      onClick: () => showNote(note),
                     },
                     {
                       label: task?.name ? __('Edit Task') : __('Add Task'),
@@ -101,7 +101,7 @@
               <div
                 v-else-if="field.name == 'note'"
                 class="w-full cursor-pointer rounded border px-2 pt-1.5 text-base text-ink-gray-7"
-                @click="() => (showNoteModal = true)"
+                @click="() => showNote(field.value?.name)"
               >
                 <FadedScrollableDiv class="max-h-24 min-h-16 overflow-y-auto">
                   <div
@@ -158,12 +158,6 @@
       </div>
     </template>
   </Dialog>
-  <NoteModal
-    v-if="showNoteModal"
-    v-model="showNoteModal"
-    :note="note"
-    @after="addNoteToCallLog"
-  />
   <TaskModal
     v-if="showTaskModal"
     v-model="showTaskModal"
@@ -183,13 +177,14 @@ import CalendarIcon from '@/components/Icons/CalendarIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import CheckCircleIcon from '@/components/Icons/CheckCircleIcon.vue'
-import NoteModal from '@/components/Modals/NoteModal.vue'
 import TaskModal from '@/components/Modals/TaskModal.vue'
 import FadedScrollableDiv from '@/components/FadedScrollableDiv.vue'
 import { getCallLogDetail } from '@/utils/callLog'
 import { sanitizeHTML } from '@/utils'
 import { isMobileView } from '@/composables/settings'
+import { useDoctypeModal } from '@/composables/doctypeModal'
 import { useDocument } from '@/data/document'
+import { useOnboarding, useTelemetry } from 'frappe-ui/frappe'
 import { FeatherIcon, Dropdown, Avatar, Tooltip, call, toast } from 'frappe-ui'
 import { ref, computed, h, nextTick, watch } from 'vue'
 import { useRouter } from 'vue-router'
@@ -197,15 +192,28 @@ import { useRouter } from 'vue-router'
 const router = useRouter()
 
 const show = defineModel({ type: Boolean })
-const showNoteModal = ref(false)
 const showTaskModal = ref(false)
 
 const callLog = defineModel('callLog', { type: Object })
 
-const note = ref({
-  title: '',
-  content: '',
-})
+const { updateOnboardingStep } = useOnboarding('frappecrm')
+const { capture } = useTelemetry()
+const { showModal } = useDoctypeModal()
+
+const note = ref('')
+
+function showNote(name) {
+  showModal(
+    name,
+    'FCRM Note',
+    'Note',
+    {},
+    {
+      afterInsert: (d) => addNoteToCallLog(d, true),
+      afterUpdate: (d) => addNoteToCallLog(d, false),
+    },
+  )
+}
 
 const task = ref({
   title: '',
@@ -337,16 +345,6 @@ function openCallLogModal() {
   })
 }
 
-function addEditNote() {
-  if (!note.value?.name) {
-    note.value = {
-      title: '',
-      content: '',
-    }
-  }
-  showNoteModal.value = true
-}
-
 function addEditTask() {
   if (!task.value?.name) {
     task.value = {
@@ -361,21 +359,21 @@ function addEditTask() {
   showTaskModal.value = true
 }
 
-async function addNoteToCallLog(_note, insert_mode = false) {
-  note.value = _note
-  if (insert_mode && _note.name) {
+async function addNoteToCallLog(_note, isInsert = false) {
+  if (isInsert && _note.name) {
     await call('crm.integrations.api.add_note_to_call_log', {
       call_sid: callLog.value?.data?.id,
       note: _note,
     })
-  } else {
-    callLog.value?.reload?.()
   }
+  callLog.value?.reload?.()
+  updateOnboardingStep('create_first_note')
+  capture('note_created')
 }
 
-async function addTaskToCallLog(_task, insert_mode = false) {
+async function addTaskToCallLog(_task, isInsert = false) {
   task.value = _task
-  if (insert_mode && _task.name) {
+  if (isInsert && _task.name) {
     await call('crm.integrations.api.add_task_to_call_log', {
       call_sid: callLog.value?.data?.id,
       task: _task,
@@ -390,7 +388,7 @@ watch(
   (data) => {
     if (!data) return
     const parsed = JSON.parse(JSON.stringify(data))
-    note.value = parsed._notes?.[0] ?? null
+    note.value = parsed._notes?.[0]?.name ?? null
     task.value = parsed._tasks?.[0] ?? null
   },
   { immediate: true, deep: true },
