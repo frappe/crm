@@ -32,7 +32,7 @@
         v-for="note in notes.data.data"
         :key="note.name"
         class="group flex h-56 cursor-pointer flex-col justify-between gap-2 rounded-lg border px-5 py-4 shadow-sm hover:bg-surface-menu-bar"
-        @click="editNote(note)"
+        @click="editNote(note.name)"
       >
         <div class="flex items-center justify-between">
           <div class="truncate text-lg font-medium text-ink-gray-9">
@@ -89,11 +89,14 @@
     @loadMore="() => loadMore++"
   />
   <EmptyState v-else name="Notes" :icon="NoteIcon" />
-  <NoteModal
+  <DoctypeModal
     v-if="showNoteModal"
     v-model="showNoteModal"
-    v-model:reloadNotes="notes"
-    :note="currentNote"
+    :doctype="'FCRM Note'"
+    :docname="currentNote"
+    :doctypeTitle="__('Note')"
+    @afterInsert="afterInsert"
+    @afterUpdate="notes.reload()"
   />
 </template>
 
@@ -102,15 +105,18 @@ import ViewBreadcrumbs from '@/components/ViewBreadcrumbs.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
-import NoteModal from '@/components/Modals/NoteModal.vue'
+import DoctypeModal from '@/components/Modals/DoctypeModal.vue'
 import ViewControls from '@/components/ViewControls.vue'
 import EmptyState from '@/components/ListViews/EmptyState.vue'
 import { usersStore } from '@/stores/users'
 import { timeAgo, formatDate } from '@/utils'
+import { useOnboarding, useTelemetry } from 'frappe-ui/frappe'
 import { TextEditor, call, Dropdown, Tooltip, ListFooter } from 'frappe-ui'
 import { ref, watch } from 'vue'
 
 const { getUser } = usersStore()
+const { updateOnboardingStep } = useOnboarding('frappecrm')
+const { capture } = useTelemetry()
 
 const showNoteModal = ref(false)
 const currentNote = ref(null)
@@ -130,15 +136,12 @@ watch(
 )
 
 function createNote() {
-  currentNote.value = {
-    title: '',
-    content: '',
-  }
+  currentNote.value = null
   showNoteModal.value = true
 }
 
-function editNote(note) {
-  currentNote.value = note
+function editNote(noteName) {
+  currentNote.value = noteName
   showNoteModal.value = true
 }
 
@@ -150,6 +153,12 @@ async function deleteNote(name) {
   notes.value.reload()
 }
 
+function afterInsert() {
+  notes.value.reload()
+  updateOnboardingStep('create_first_note')
+  capture('note_created')
+}
+
 const openNoteFromURL = () => {
   const searchParams = new URLSearchParams(window.location.search)
   const noteName = searchParams.get('open')
@@ -159,7 +168,7 @@ const openNoteFromURL = () => {
       (note) => note.name === noteName,
     )
     if (foundNote) {
-      editNote(foundNote)
+      editNote(foundNote.name)
     }
     searchParams.delete('open')
     window.history.replaceState(null, '', window.location.pathname)
