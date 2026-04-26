@@ -56,7 +56,7 @@
             class="cursor-pointer rounded-full"
             :tooltip="__('Add a Note')"
             :icon="NoteIcon"
-            @click="showNoteModal = true"
+            @click="openNoteModal"
           />
           <Button
             class="rounded-full bg-surface-red-5 hover:bg-surface-red-6 rotate-[135deg] text-ink-white"
@@ -166,13 +166,6 @@
       />
     </div>
   </div>
-  <NoteModal
-    v-if="showNoteModal"
-    v-model="showNoteModal"
-    :note="note"
-    doctype="CRM Call Log"
-    @after="updateNote"
-  />
 </template>
 
 <script setup>
@@ -180,14 +173,15 @@ import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import MinimizeIcon from '@/components/Icons/MinimizeIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import CountUpTimer from '@/components/CountUpTimer.vue'
-import NoteModal from '@/components/Modals/NoteModal.vue'
+import { useDoctypeModal } from '@/composables/doctypeModal'
 import { Device } from '@twilio/voice-sdk'
 import { useDraggable, useWindowSize } from '@vueuse/core'
-import { useTelemetry } from 'frappe-ui/frappe'
+import { useTelemetry, useOnboarding } from 'frappe-ui/frappe'
 import { Avatar, call, createResource } from 'frappe-ui'
 import { ref, watch } from 'vue'
 
 const { capture } = useTelemetry()
+const { updateOnboardingStep } = useOnboarding('frappecrm')
 
 let device = ''
 let log = ref('Connecting...')
@@ -228,21 +222,36 @@ const getContact = createResource({
   },
 })
 
-const showNoteModal = ref(false)
+const { showModal } = useDoctypeModal()
 const note = ref({
   name: '',
   title: '',
   content: '',
 })
 
-async function updateNote(_note, insert_mode = false) {
+function openNoteModal() {
+  showModal(
+    note.value.name || null,
+    'CRM Call Log',
+    null,
+    {},
+    {
+      afterInsert: (n) => updateNote(n, true),
+      afterUpdate: updateNote,
+    },
+  )
+}
+
+async function updateNote(_note, isInsert = false) {
   note.value = _note
-  if (insert_mode && _note.name) {
+  if (isInsert && _note.name) {
     await call('crm.integrations.api.add_note_to_call_log', {
       call_sid: _call.parameters.CallSid,
       note: _note,
     })
   }
+  updateOnboardingStep('create_first_note')
+  capture('note_created')
 }
 
 const { width, height } = useWindowSize()
