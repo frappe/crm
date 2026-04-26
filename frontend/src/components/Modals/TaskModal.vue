@@ -1,94 +1,5 @@
 <template>
   <Dialog v-model="show" :options="{ size: 'xl' }">
-<<<<<<< HEAD
-    <template #body-title>
-      <div class="flex items-center gap-3">
-        <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9">
-          {{ editMode ? __('Edit Task') : __('Create Task') }}
-        </h3>
-        <Button
-          v-if="task?.reference_docname"
-          size="sm"
-          :label="
-            task.reference_doctype == 'CRM Deal'
-              ? __('Open Deal')
-              : __('Open Lead')
-          "
-          :iconRight="ArrowUpRightIcon"
-          @click="redirect()"
-        />
-      </div>
-    </template>
-    <template #body-content>
-      <div class="flex flex-col gap-4">
-        <div class="space-y-1.5">
-          <FormLabel :label="__('Title')" required />
-          <TextInput
-            ref="title"
-            v-model="_task.title"
-            :label="__('Title')"
-            :placeholder="__('Call with John Doe')"
-            required
-          />
-        </div>
-        <div>
-          <div class="mb-1.5 text-xs text-ink-gray-5">
-            {{ __('Description') }}
-          </div>
-          <TextEditor
-            ref="description"
-            variant="outline"
-            editor-class="!prose-sm overflow-auto min-h-[180px] max-h-80 py-1.5 px-2 rounded border border-[--surface-gray-2] bg-surface-gray-2 placeholder-ink-gray-4 hover:border-outline-gray-modals hover:bg-surface-gray-3 hover:shadow-sm focus:bg-surface-white focus:border-outline-gray-4 focus:shadow-sm focus:ring-0 focus-visible:ring-2 focus-visible:ring-outline-gray-3 text-ink-gray-8 transition-colors"
-            :bubbleMenu="true"
-            :content="_task.description"
-            :placeholder="
-              __('Took a call with John Doe and discussed the new project.')
-            "
-            @change="(val) => (_task.description = val)"
-          />
-        </div>
-        <div class="flex flex-wrap items-center gap-2">
-          <Dropdown :options="taskStatusOptions(updateTaskStatus)">
-            <Button :label="_task.status">
-              <template #prefix>
-                <TaskStatusIcon :status="_task.status" />
-              </template>
-            </Button>
-          </Dropdown>
-          <Link
-            class="form-control"
-            :value="getUser(_task.assigned_to).full_name"
-            doctype="User"
-            :placeholder="__('John Doe')"
-            :filters="{
-              name: ['in', users.data.crmUsers?.map((user) => user.name)],
-              ignore_user_type: 1,
-            }"
-            :hideMe="true"
-            @change="(option) => (_task.assigned_to = option)"
-          >
-            <template #prefix>
-              <UserAvatar class="mr-2 !h-4 !w-4" :user="_task.assigned_to" />
-            </template>
-            <template #item-prefix="{ option }">
-              <UserAvatar class="mr-2" :user="option.value" size="sm" />
-            </template>
-            <template #item-label="{ option }">
-              <Tooltip :text="option.value">
-                <div class="cursor-pointer text-ink-gray-9">
-                  {{ getUser(option.value).full_name }}
-                </div>
-              </Tooltip>
-            </template>
-          </Link>
-          <div class="w-36">
-            <DateTimePicker
-              v-model="_task.due_date"
-              class="datepicker"
-              :placeholder="__('01/04/2024 11:30 PM')"
-              :format="getFormat('', '', true, true, false)"
-              input-class="border-none"
-=======
     <template #body>
       <div class="bg-surface-modal px-4 pb-6 pt-5 sm:px-6">
         <div class="mb-5 flex items-center justify-between">
@@ -106,7 +17,6 @@
               "
               :iconRight="ArrowUpRightIcon"
               @click="redirect()"
->>>>>>> 959fbbd7 (refactor(crm): update CRM Task modal props and behavior)
             />
           </div>
           <div class="flex items-center gap-1">
@@ -261,26 +171,6 @@ function redirect() {
   router.push({ name: name, params: params })
 }
 
-<<<<<<< HEAD
-async function updateTask() {
-  if (!_task.value.assigned_to) {
-    _task.value.assigned_to = getUser().name
-  }
-  if (_task.value.name) {
-    updateTaskResource.submit()
-  } else {
-    createTaskResource.submit()
-  }
-}
-
-function render() {
-  editMode.value = false
-  nextTick(() => {
-    title.value?.el?.focus?.()
-    _task.value = { ...props.task }
-    if (_task.value.title) {
-      editMode.value = true
-=======
 watch(
   () => document.doc,
   async (_doc) => {
@@ -295,7 +185,6 @@ watch(
         createToast: toast.create,
         call,
       })
->>>>>>> 959fbbd7 (refactor(crm): update CRM Task modal props and behavior)
     }
   },
   { once: true },
