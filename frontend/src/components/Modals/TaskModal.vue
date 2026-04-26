@@ -213,7 +213,7 @@ function updateTask() {
         show.value = false
       },
       onError: (err) => {
-        error.value = err.message || 'Something went wrong'
+        error.value = err.messages?.[0] || 'Something went wrong'
       },
     })
   } else {
@@ -234,7 +234,17 @@ function updateTask() {
           show.value = false
         },
         onError: (err) => {
-          error.value = err.message || 'Something went wrong'
+          if (err.exc_type == 'MandatoryError') {
+            const fieldName = err.messages
+              .map((msg) => {
+                let arr = msg.split(': ')
+                return arr[arr.length - 1].trim()
+              })
+              .join(', ')
+            error.value = __('Mandatory field error: {0}', [fieldName])
+            return
+          }
+          error.value = err.messages?.[0] || 'Something went wrong'
         },
       },
     )
