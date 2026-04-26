@@ -277,7 +277,7 @@
     v-model="showTaskModal"
     :task="task"
     doctype="CRM Lead"
-    :doc="docname"
+    :docname="docname"
   />
 </template>
 
