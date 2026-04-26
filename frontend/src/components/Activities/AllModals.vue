@@ -15,31 +15,25 @@
     :referenceDoc="referenceDoc"
     :options="{ afterInsert: () => activities.reload() }"
   />
-  <DoctypeModal
-    v-if="showDoctypeModal"
-    v-model="showDoctypeModal"
-    :doctypeTitle="modalDoctypeTitle"
-    :doctype="modalDoctype"
-    :docname="modalDocname"
-    :defaults="modalDefaults"
-    @afterInsert="after"
-    @afterUpdate="after"
-  />
 </template>
 <script setup>
 import TaskModal from '@/components/Modals/TaskModal.vue'
 import CallLogModal from '@/components/Modals/CallLogModal.vue'
-import DoctypeModal from '@/components/Modals/DoctypeModal.vue'
+import { useDoctypeModal } from '@/composables/doctypeModal'
+import { useOnboarding, useTelemetry } from 'frappe-ui/frappe'
 import { call } from 'frappe-ui'
 import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 const props = defineProps({
   doctype: { type: String, default: '' },
+  doc: { type: Object, default: () => ({}) },
 })
 
 const activities = defineModel({ type: Object })
-const doc = defineModel('doc', { type: Object })
+
+const { updateOnboardingStep } = useOnboarding('frappecrm')
+const { capture } = useTelemetry()
 
 // Tasks
 const showTaskModal = ref(false)
@@ -77,30 +71,28 @@ function updateTaskStatus(status, task) {
 }
 
 // Notes
+const { showModal } = useDoctypeModal()
+
 function showNote(note) {
-  showDoctype(note?.name, 'FCRM Note', 'Note', {
-    reference_doctype: props.doctype,
-    reference_docname: props.doc?.name,
-  })
+  showModal(
+    note?.name,
+    'FCRM Note',
+    'Note',
+    {
+      reference_doctype: props.doctype,
+      reference_docname: props.doc?.name,
+    },
+    {
+      afterInsert: afterDoctype,
+      afterUpdate: afterDoctype,
+    },
+  )
 }
 
-// Doctype Modal (Notes, Emails, etc)
-const showDoctypeModal = ref(false)
-const modalDoctypeTitle = ref('')
-const modalDoctype = ref('')
-const modalDocname = ref('')
-const modalDefaults = ref({})
-
-function showDoctype(name, doctype, doctypeTitle, defaults = {}) {
-  modalDoctypeTitle.value = doctypeTitle
-  modalDoctype.value = doctype
-  modalDocname.value = name || null
-  modalDefaults.value = defaults
-  showDoctypeModal.value = true
-}
-
-function after(d) {
+function afterDoctype(d) {
   activities.value.reload()
+  updateOnboardingStep('create_first_note')
+  capture('note_created')
 
   let redirectHash = ''
 
