@@ -8,15 +8,6 @@
     :docname="doc?.name"
     @after="redirect('tasks')"
   />
-  <NoteModal
-    v-if="showNoteModal"
-    v-model="showNoteModal"
-    v-model:reloadNotes="activities"
-    :note="note"
-    :doctype="doctype"
-    :docname="doc?.name"
-    @after="redirect('notes')"
-  />
   <CallLogModal
     v-if="showCallLogModal"
     v-model="showCallLogModal"
@@ -24,11 +15,36 @@
     :referenceDoc="referenceDoc"
     :options="{ afterInsert: () => activities.reload() }"
   />
+<<<<<<< HEAD
+=======
+  <EventModal
+    v-if="showEventModal"
+    v-model="showEventModal"
+    :event="activeEvent"
+    :doctype="doctype"
+    :docname="doc?.name"
+  />
+  <DoctypeModal
+    v-if="showDoctypeModal"
+    v-model="showDoctypeModal"
+    :doctypeTitle="modalDoctypeTitle"
+    :doctype="modalDoctype"
+    :docname="modalDocname"
+    :defaults="modalDefaults"
+    @afterInsert="after"
+    @afterUpdate="after"
+  />
+>>>>>>> 4917cb73 (feat: replace NoteModal with DoctypeModal for improved document handling in AllModals, Deals, and Leads pages)
 </template>
 <script setup>
 import TaskModal from '@/components/Modals/TaskModal.vue'
-import NoteModal from '@/components/Modals/NoteModal.vue'
 import CallLogModal from '@/components/Modals/CallLogModal.vue'
+<<<<<<< HEAD
+=======
+import EventModal from '@/components/Modals/EventModal.vue'
+import DoctypeModal from '@/components/Modals/DoctypeModal.vue'
+import { showEventModal, activeEvent } from '@/composables/event'
+>>>>>>> 4917cb73 (feat: replace NoteModal with DoctypeModal for improved document handling in AllModals, Deals, and Leads pages)
 import { call } from 'frappe-ui'
 import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -76,15 +92,38 @@ function updateTaskStatus(status, task) {
 }
 
 // Notes
-const showNoteModal = ref(false)
-const note = ref({})
+function showNote(note) {
+  showDoctype(note?.name, 'FCRM Note', 'Note', {
+    reference_doctype: props.doctype,
+    reference_docname: props.doc?.name,
+  })
+}
 
-function showNote(n) {
-  note.value = n || {
-    title: '',
-    content: '',
+// Doctype Modal (Notes, Emails, etc)
+const showDoctypeModal = ref(false)
+const modalDoctypeTitle = ref('')
+const modalDoctype = ref('')
+const modalDocname = ref('')
+const modalDefaults = ref({})
+
+function showDoctype(name, doctype, doctypeTitle, defaults = {}) {
+  modalDoctypeTitle.value = doctypeTitle
+  modalDoctype.value = doctype
+  modalDocname.value = name || null
+  modalDefaults.value = defaults
+  showDoctypeModal.value = true
+}
+
+function after(d) {
+  activities.value.reload()
+
+  let redirectHash = ''
+
+  if (d.doctype == 'FCRM Note') {
+    redirectHash = 'notes'
   }
-  showNoteModal.value = true
+
+  redirect(redirectHash)
 }
 
 // Call Logs
