@@ -265,12 +265,13 @@
     v-model="showLeadModal"
     :defaults="defaults"
   />
-  <NoteModal
-    v-if="showNoteModal"
-    v-model="showNoteModal"
-    :note="note"
-    doctype="CRM Lead"
-    :docname="docname"
+  <DoctypeModal
+    v-if="showDoctypeModal"
+    v-model="showDoctypeModal"
+    :doctypeTitle="modalDoctypeTitle"
+    :doctype="modalDoctype"
+    :docname="modalDocname"
+    :defaults="modalDefaults"
   />
   <TaskModal
     v-if="showTaskModal"
@@ -297,7 +298,7 @@ import LeadsListView from '@/components/ListViews/LeadsListView.vue'
 import EmptyState from '@/components/ListViews/EmptyState.vue'
 import KanbanView from '@/components/Kanban/KanbanView.vue'
 import LeadModal from '@/components/Modals/LeadModal.vue'
-import NoteModal from '@/components/Modals/NoteModal.vue'
+import DoctypeModal from '@/components/Modals/DoctypeModal.vue'
 import TaskModal from '@/components/Modals/TaskModal.vue'
 import ViewControls from '@/components/ViewControls.vue'
 import { getMeta } from '@/stores/meta'
@@ -568,15 +569,26 @@ function actions(itemName) {
 }
 
 const docname = ref('')
-const showNoteModal = ref(false)
-const note = ref({
-  title: '',
-  content: '',
-})
 
 function showNote(name) {
-  docname.value = name
-  showNoteModal.value = true
+  showDoctype(null, 'FCRM Note', 'Note', {
+    reference_doctype: 'CRM Lead',
+    reference_docname: name,
+  })
+}
+
+const showDoctypeModal = ref(false)
+const modalDoctypeTitle = ref('')
+const modalDoctype = ref('')
+const modalDocname = ref('')
+const modalDefaults = ref({})
+
+function showDoctype(name, doctype, doctypeTitle, defaults = {}) {
+  modalDoctypeTitle.value = doctypeTitle
+  modalDoctype.value = doctype
+  modalDocname.value = name || null
+  modalDefaults.value = defaults
+  showDoctypeModal.value = true
 }
 
 const showTaskModal = ref(false)
