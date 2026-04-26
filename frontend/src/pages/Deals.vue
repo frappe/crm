@@ -239,14 +239,6 @@
     v-model="showDealModal"
     :defaults="defaults"
   />
-  <DoctypeModal
-    v-if="showDoctypeModal"
-    v-model="showDoctypeModal"
-    :doctypeTitle="modalDoctypeTitle"
-    :doctype="modalDoctype"
-    :docname="modalDocname"
-    :defaults="modalDefaults"
-  />
   <TaskModal
     v-if="showTaskModal"
     v-model="showTaskModal"
@@ -272,9 +264,9 @@ import DealsListView from '@/components/ListViews/DealsListView.vue'
 import EmptyState from '@/components/ListViews/EmptyState.vue'
 import KanbanView from '@/components/Kanban/KanbanView.vue'
 import DealModal from '@/components/Modals/DealModal.vue'
-import DoctypeModal from '@/components/Modals/DoctypeModal.vue'
 import TaskModal from '@/components/Modals/TaskModal.vue'
 import ViewControls from '@/components/ViewControls.vue'
+import { useDoctypeModal } from '@/composables/doctypeModal'
 import { getMeta } from '@/stores/meta'
 import { globalStore } from '@/stores/global'
 import { usersStore } from '@/stores/users'
@@ -282,6 +274,7 @@ import { organizationsStore } from '@/stores/organizations'
 import { statusesStore } from '@/stores/statuses'
 import { callEnabled } from '@/composables/settings'
 import { formatDate, timeAgo, website, formatTime } from '@/utils'
+import { useOnboarding, useTelemetry } from 'frappe-ui/frappe'
 import { Tooltip, Avatar, Dropdown } from 'frappe-ui'
 import { useRoute } from 'vue-router'
 import { ref, reactive, computed, h } from 'vue'
@@ -292,6 +285,9 @@ const { makeCall } = globalStore()
 const { getUser } = usersStore()
 const { getOrganization } = organizationsStore()
 const { getDealStatus } = statusesStore()
+const { updateOnboardingStep } = useOnboarding('frappecrm')
+const { capture } = useTelemetry()
+const { showModal } = useDoctypeModal()
 
 const route = useRoute()
 
@@ -537,24 +533,24 @@ function actions(itemName) {
 const docname = ref('')
 
 function showNote(name) {
-  showDoctype(null, 'FCRM Note', 'Note', {
-    reference_doctype: 'CRM Deal',
-    reference_docname: name,
-  })
+  showModal(
+    null,
+    'FCRM Note',
+    'Note',
+    {
+      reference_doctype: 'CRM Deal',
+      reference_docname: name,
+    },
+    {
+      afterInsert: after,
+      afterUpdate: after,
+    },
+  )
 }
 
-const showDoctypeModal = ref(false)
-const modalDoctypeTitle = ref('')
-const modalDoctype = ref('')
-const modalDocname = ref('')
-const modalDefaults = ref({})
-
-function showDoctype(name, doctype, doctypeTitle, defaults = {}) {
-  modalDoctypeTitle.value = doctypeTitle
-  modalDoctype.value = doctype
-  modalDocname.value = name || null
-  modalDefaults.value = defaults
-  showDoctypeModal.value = true
+function after() {
+  updateOnboardingStep('create_first_note')
+  capture('note_created')
 }
 
 const showTaskModal = ref(false)
