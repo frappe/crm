@@ -3,8 +3,8 @@ export class FCRMNote {
     if (this.doc.reference_doctype && this.doc.reference_docname) {
       let label = this.doc.reference_doctype.replace('CRM ', '')
 
-      if (!this.actions.some((action) => action.name === 'Redirect Action')) {
-        this.actions.push({
+      this.actions = [
+        {
           name: 'Redirect Action',
           label: __('Open {0}', [label]),
           onClick: (close) => {
@@ -18,8 +18,8 @@ export class FCRMNote {
             this.router.push({ name: name, params: params })
             close?.()
           },
-        })
-      }
+        },
+      ]
     }
   }
 }
