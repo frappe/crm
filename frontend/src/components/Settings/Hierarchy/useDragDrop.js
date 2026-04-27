@@ -38,7 +38,7 @@ export function useDragDrop({ onReparent }) {
     const ok = canDrop(dragState.source, node)
     dragState.hover = node.name
     dragState.blocked = !ok
-    e.dataTransfer.dropEffect = ok ? 'move' : 'none'
+    e.dataTransfer.dropEffect = 'move'
   }
 
   function onDragLeave(node) {
@@ -52,14 +52,18 @@ export function useDragDrop({ onReparent }) {
     const src = dragState.source
     onDragEnd()
     if (!src || !target || src.name === target.name) return
+    if (src.reports_to === target.name) {
+      toast.info(__('No changes made'))
+      return
+    }
     if (!canDrop(src, target)) {
       toast.error(
         src.role_rank < target.role_rank
-          ? __('A {0} cannot report to a {1}.', [
+          ? __('A {0} cannot report to a {1}', [
               src.role_label,
               target.role_label,
             ])
-          : __('Cannot move a manager under one of their own reports.'),
+          : __('Cannot move a manager under one of their own reports'),
       )
       return
     }
@@ -70,8 +74,8 @@ export function useDragDrop({ onReparent }) {
     if (dragState.source?.name === node.name) return 'opacity-40'
     if (dragState.hover === node.name) {
       return dragState.blocked
-        ? 'bg-surface-red-1 outline outline-1  outline-red-400'
-        : 'bg-surface-blue-1 outline outline-1  outline-blue-600'
+        ? 'bg-surface-red-1 outline outline-1  outline-red-400 rounded-sm'
+        : 'bg-surface-blue-1 outline outline-1  outline-blue-600 rounded-sm'
     }
     return ''
   }

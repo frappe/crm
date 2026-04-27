@@ -66,7 +66,7 @@
 
     <div
       v-else
-      class="flex-1 overflow-y-auto rounded-l bg-surface-white p-3 mx-2 min-h-72"
+      class="flex-1 min-h-0 overflow-y-auto rounded-l bg-surface-white mx-2 px-0.5"
     >
       <div v-if="nodes.loading" class="flex items-center justify-center py-12">
         <LoadingIndicator class="size-6" />
@@ -86,6 +86,20 @@
         "
         icon="users"
       />
+      <div class="flex w-full justify-end mb-0.5">
+        <Button
+          v-if="isExpandable"
+          :label="collapsed ? __('Expand') : __('Collapse')"
+          @click="toggleCollapseAll"
+        >
+          <template #suffix>
+            <component
+              :is="collapsed ? ChevronsUpDown : ChevronsDownUp"
+              class="size-4 stroke-2"
+            />
+          </template>
+        </Button>
+      </div>
       <Tree
         v-for="root in visibleRoots"
         :key="`${root.name}-${treeKey}`"
@@ -151,6 +165,8 @@
 import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import EmptyState from '@/components/ListViews/EmptyState.vue'
 import HierarchyRow from './HierarchyRow.vue'
+import ChevronsUpDown from '~icons/lucide/chevrons-up-down'
+import ChevronsDownUp from '~icons/lucide/chevrons-down-up'
 import { useRemoveNode } from './useRemoveNode'
 import { useDragDrop } from './useDragDrop'
 import { globalStore } from '@/stores/global'
@@ -188,7 +204,7 @@ const fcrmSettings = createDocumentResource({
   auto: true,
   setValue: {
     onError(error) {
-      toast.error(error?.messages?.[0] || __('Failed to update setting.'))
+      toast.error(error?.messages?.[0] || __('Failed to update setting'))
     },
   },
 })
@@ -221,7 +237,7 @@ function toggleEnable(currentlyEnabled) {
             fcrmSettings.setValue.submit(
               { enable_sales_hierarchy: 0 },
               {
-                onSuccess: () => toast.success(__('Sales Hierarchy disabled.')),
+                onSuccess: () => toast.success(__('Sales Hierarchy disabled')),
               },
             )
             close()
@@ -232,7 +248,7 @@ function toggleEnable(currentlyEnabled) {
   } else {
     fcrmSettings.setValue.submit(
       { enable_sales_hierarchy: 1 },
-      { onSuccess: () => toast.success(__('Sales Hierarchy enabled.')) },
+      { onSuccess: () => toast.success(__('Sales Hierarchy enabled')) },
     )
   }
 }
@@ -240,6 +256,7 @@ function toggleEnable(currentlyEnabled) {
 const search = ref('')
 const roleFilter = ref('All')
 const treeKey = ref(0)
+const collapsed = ref(false)
 const showAddDialog = ref(false)
 const addParent = ref(null)
 const selectedUser = ref(null)
@@ -248,8 +265,13 @@ const saving = ref(false)
 const treeOptions = computed(() => ({
   rowHeight: '32px',
   indentWidth: '18px',
-  showIndentationGuides: true,
+  defaultCollapsed: collapsed.value,
 }))
+
+function toggleCollapseAll() {
+  collapsed.value = !collapsed.value
+  treeKey.value++
+}
 
 function enrich(node) {
   const user =
@@ -308,6 +330,10 @@ const visibleRoots = computed(() =>
   tree.value.map(clearTree).filter((n) => n !== null),
 )
 
+const isExpandable = computed(() =>
+  visibleRoots.value.some((n) => n.children?.length),
+)
+
 const placedUserIds = computed(
   () => new Set(enrichedNodes.value.map((n) => n.user)),
 )
@@ -356,10 +382,10 @@ async function reparent(name, newParent) {
       fieldname: 'reports_to',
       value: newParent || '',
     })
-    toast.success(__('Updated reports-to.'))
+    toast.success(__('Updated reports to'))
     nodes.reload()
   } catch (e) {
-    toast.error(e?.messages?.[0] || __('Could not update.'))
+    toast.error(e?.messages?.[0] || __('Could not update report to'))
   }
 }
 
@@ -381,11 +407,11 @@ async function confirmAdd() {
         is_group: 0,
       },
     })
-    toast.success(__('Added to hierarchy.'))
+    toast.success(__('User added to hierarchy'))
     showAddDialog.value = false
     nodes.reload()
   } catch (e) {
-    toast.error(e?.messages?.[0] || __('Could not add user.'))
+    toast.error(e?.messages?.[0] || __('Could not add user'))
   } finally {
     saving.value = false
   }

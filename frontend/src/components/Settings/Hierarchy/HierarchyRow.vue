@@ -1,6 +1,6 @@
 <template>
   <div
-    class="cursor-grab group flex items-center gap-2 mt-2 px-1.5 rounded-md text-base hover:bg-surface-gray-2 select-none"
+    class="cursor-grab group flex items-center gap-2 p-1 text-base hover:bg-surface-gray-2 hover:rounded-sm select-none border-b"
     :class="rowClass"
     :draggable="true"
     @dragstart="handlers.onDragStart($event, node)"
@@ -13,17 +13,15 @@
     <FeatherIcon
       v-if="hasChildren"
       :name="isCollapsed ? 'chevron-right' : 'chevron-down'"
-      class="size-4 text-ink-gray-5 shrink-0"
+      class="size-4 text-ink-gray-5 shrink-0 cursor-pointer"
     />
     <span v-else class="size-4 shrink-0" />
 
     <Avatar :image="node.user_image" :label="node.full_name" size="sm" />
-    <span class="text-ink-gray-8 font-medium truncate">
+    <span class="text-ink-gray-8 truncate">
       {{ node.full_name }}
     </span>
-    <Tooltip :text="node.role_label">
-      <FeatherIcon :name="roleIcon" class="size-4 cursor-default" />
-    </Tooltip>
+    <span class="text-ink-gray-4">{{ node.role_label }}</span>
     <Badge
       v-if="!node.enabled"
       :label="__('disabled')"
@@ -71,12 +69,6 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['toggle', 'add', 'remove', 'move-to-root'])
-
-const roleIcon = computed(() => {
-  if (props.node.role === 'System Manager') return 'shield'
-  if (props.node.role === 'Sales Manager') return 'briefcase'
-  return 'user-check'
-})
 
 const moreOptions = computed(() =>
   [
