@@ -16,6 +16,7 @@
             <CustomActions
               v-if="document.actions?.length"
               :actions="document.actions"
+              :close="(show = false)"
             />
             <Button
               v-if="isManager() && !isMobileView"
