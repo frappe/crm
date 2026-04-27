@@ -22,9 +22,9 @@
                       onClick: () => showNote(note),
                     },
                     {
-                      label: task?.name ? __('Edit Task') : __('Add Task'),
+                      label: task ? __('Edit Task') : __('Add Task'),
                       icon: TaskIcon,
-                      onClick: addEditTask,
+                      onClick: () => showTask(task),
                     },
                   ],
                 },
@@ -118,7 +118,7 @@
               <div
                 v-else-if="field.name == 'task'"
                 class="w-full cursor-pointer rounded border px-2 pt-1.5 text-base text-ink-gray-7"
-                @click="() => (showTaskModal = true)"
+                @click="() => showTask(field.value?.name)"
               >
                 <FadedScrollableDiv class="max-h-24 min-h-16 overflow-y-auto">
                   <div
@@ -158,12 +158,6 @@
       </div>
     </template>
   </Dialog>
-  <TaskModal
-    v-if="showTaskModal"
-    v-model="showTaskModal"
-    :task="task"
-    @after="addTaskToCallLog"
-  />
 </template>
 
 <script setup>
@@ -177,7 +171,6 @@ import CalendarIcon from '@/components/Icons/CalendarIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import CheckCircleIcon from '@/components/Icons/CheckCircleIcon.vue'
-import TaskModal from '@/components/Modals/TaskModal.vue'
 import FadedScrollableDiv from '@/components/FadedScrollableDiv.vue'
 import { getCallLogDetail } from '@/utils/callLog'
 import { sanitizeHTML } from '@/utils'
@@ -192,7 +185,6 @@ import { useRouter } from 'vue-router'
 const router = useRouter()
 
 const show = defineModel({ type: Boolean })
-const showTaskModal = ref(false)
 
 const callLog = defineModel('callLog', { type: Object })
 
@@ -201,6 +193,7 @@ const { capture } = useTelemetry()
 const { showModal } = useDoctypeModal()
 
 const note = ref('')
+const task = ref('')
 
 function showNote(name) {
   showModal(
@@ -215,14 +208,42 @@ function showNote(name) {
   )
 }
 
-const task = ref({
-  title: '',
-  description: '',
-  assigned_to: '',
-  due_date: '',
-  status: 'Backlog',
-  priority: 'Low',
-})
+function showTask(name) {
+  showModal(
+    name,
+    'CRM Task',
+    'Task',
+    { status: 'Backlog', priority: 'Low' },
+    {
+      afterInsert: (d) => addTaskToCallLog(d, true),
+      afterUpdate: (d) => addTaskToCallLog(d, false),
+    },
+  )
+}
+
+async function addNoteToCallLog(_note, isInsert = false) {
+  if (isInsert && _note.name) {
+    await call('crm.integrations.api.add_note_to_call_log', {
+      call_sid: callLog.value?.data?.id,
+      note: _note,
+    })
+  }
+  callLog.value?.reload?.()
+  updateOnboardingStep('create_first_note')
+  capture('note_created')
+}
+
+async function addTaskToCallLog(_task, isInsert = false) {
+  if (isInsert && _task.name) {
+    await call('crm.integrations.api.add_task_to_call_log', {
+      call_sid: callLog.value?.data?.id,
+      task: _task,
+    })
+  }
+  callLog.value?.reload?.()
+  updateOnboardingStep('create_first_task')
+  capture('task_created')
+}
 
 const detailFields = computed(() => {
   if (!callLog.value?.data) return []
@@ -345,51 +366,13 @@ function openCallLogModal() {
   })
 }
 
-function addEditTask() {
-  if (!task.value?.name) {
-    task.value = {
-      title: '',
-      description: '',
-      assigned_to: '',
-      due_date: '',
-      status: 'Backlog',
-      priority: 'Low',
-    }
-  }
-  showTaskModal.value = true
-}
-
-async function addNoteToCallLog(_note, isInsert = false) {
-  if (isInsert && _note.name) {
-    await call('crm.integrations.api.add_note_to_call_log', {
-      call_sid: callLog.value?.data?.id,
-      note: _note,
-    })
-  }
-  callLog.value?.reload?.()
-  updateOnboardingStep('create_first_note')
-  capture('note_created')
-}
-
-async function addTaskToCallLog(_task, isInsert = false) {
-  task.value = _task
-  if (isInsert && _task.name) {
-    await call('crm.integrations.api.add_task_to_call_log', {
-      call_sid: callLog.value?.data?.id,
-      task: _task,
-    })
-  } else {
-    callLog.value?.reload?.()
-  }
-}
-
 watch(
   () => callLog.value?.data,
   (data) => {
     if (!data) return
     const parsed = JSON.parse(JSON.stringify(data))
     note.value = parsed._notes?.[0]?.name ?? null
-    task.value = parsed._tasks?.[0] ?? null
+    task.value = parsed._tasks?.[0]?.name ?? null
   },
   { immediate: true, deep: true },
 )

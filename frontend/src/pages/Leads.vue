@@ -265,13 +265,6 @@
     v-model="showLeadModal"
     :defaults="defaults"
   />
-  <TaskModal
-    v-if="showTaskModal"
-    v-model="showTaskModal"
-    :task="task"
-    doctype="CRM Lead"
-    :docname="docname"
-  />
 </template>
 
 <script setup>
@@ -290,7 +283,6 @@ import LeadsListView from '@/components/ListViews/LeadsListView.vue'
 import EmptyState from '@/components/ListViews/EmptyState.vue'
 import KanbanView from '@/components/Kanban/KanbanView.vue'
 import LeadModal from '@/components/Modals/LeadModal.vue'
-import TaskModal from '@/components/Modals/TaskModal.vue'
 import ViewControls from '@/components/ViewControls.vue'
 import { useDoctypeModal } from '@/composables/doctypeModal'
 import { getMeta } from '@/stores/meta'
@@ -564,8 +556,6 @@ function actions(itemName) {
   )
 }
 
-const docname = ref('')
-
 function showNote(name) {
   showModal(
     null,
@@ -582,23 +572,25 @@ function showNote(name) {
   )
 }
 
-function after() {
-  updateOnboardingStep('create_first_note')
-  capture('note_created')
+function showTask(name) {
+  showModal(
+    null,
+    'CRM Task',
+    'Task',
+    {
+      reference_doctype: 'CRM Lead',
+      reference_docname: name,
+    },
+    {
+      afterInsert: after,
+      afterUpdate: after,
+    },
+  )
 }
 
-const showTaskModal = ref(false)
-const task = ref({
-  title: '',
-  description: '',
-  assigned_to: '',
-  due_date: '',
-  priority: 'Low',
-  status: 'Backlog',
-})
-
-function showTask(name) {
-  docname.value = name
-  showTaskModal.value = true
+function after(d) {
+  let a = d.doctype == 'FCRM Note' ? 'note' : 'task'
+  updateOnboardingStep('create_first_' + a)
+  capture(a + '_created')
 }
 </script>
