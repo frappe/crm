@@ -2,7 +2,7 @@
   <div
     class="cursor-grab group flex items-center gap-2 mt-2 px-1.5 rounded-md text-base hover:bg-surface-gray-2 select-none"
     :class="rowClass"
-    :draggable="!!node.reports_to"
+    :draggable="true"
     @dragstart="handlers.onDragStart($event, node)"
     @dragend="handlers.onDragEnd(node)"
     @dragover.prevent="handlers.onDragOver($event, node)"

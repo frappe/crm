@@ -22,10 +22,6 @@ export function useDragDrop({ onReparent }) {
   }
 
   function onDragStart(e, node) {
-    if (!node.reports_to) {
-      e.preventDefault()
-      return
-    }
     e.dataTransfer.effectAllowed = 'move'
     e.dataTransfer.setData('text/plain', node.name)
     dragState.source = node

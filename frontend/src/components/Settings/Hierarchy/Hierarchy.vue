@@ -149,6 +149,7 @@
 
 <script setup>
 import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
+import EmptyState from '@/components/ListViews/EmptyState.vue'
 import HierarchyRow from './HierarchyRow.vue'
 import { useRemoveNode } from './useRemoveNode'
 import { useDragDrop } from './useDragDrop'
@@ -315,13 +316,15 @@ const ALLOWED_ROLES = new Set(['Sales Manager', 'Sales User'])
 
 const candidateUsers = computed(() => {
   const all = usersResource.data?.crmUsers || []
+  const parentRank = addParent.value?.role_rank ?? -1
   return all
-    .filter(
-      (u) =>
-        !placedUserIds.value.has(u.name) &&
-        u.name !== 'Administrator' &&
-        ALLOWED_ROLES.has(getUserRole(u.name)),
-    )
+    .filter((u) => {
+      if (placedUserIds.value.has(u.name)) return false
+      if (u.name === 'Administrator') return false
+      const role = getUserRole(u.name)
+      if (!ALLOWED_ROLES.has(role)) return false
+      return (ROLE_RANK[role] ?? 99) >= parentRank
+    })
     .map((u) => ({
       label: `${u.full_name} · ${u.email || u.name}`,
       value: u.name,
