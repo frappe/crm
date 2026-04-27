@@ -181,12 +181,6 @@
     name="Tasks"
     :icon="Email2Icon"
   />
-  <TaskModal
-    v-if="showTaskModal"
-    v-model="showTaskModal"
-    v-model:reloadTasks="tasks"
-    :task="task"
-  />
 </template>
 
 <script setup>
@@ -201,10 +195,11 @@ import ViewControls from '@/components/ViewControls.vue'
 import TasksListView from '@/components/ListViews/TasksListView.vue'
 import EmptyState from '@/components/ListViews/EmptyState.vue'
 import KanbanView from '@/components/Kanban/KanbanView.vue'
-import TaskModal from '@/components/Modals/TaskModal.vue'
+import { useDoctypeModal } from '@/composables/doctypeModal'
 import { getMeta } from '@/stores/meta'
 import { usersStore } from '@/stores/users'
 import { formatDate, timeAgo } from '@/utils'
+import { useOnboarding, useTelemetry } from 'frappe-ui/frappe'
 import { Tooltip, Avatar, TextEditor, Dropdown, call } from 'frappe-ui'
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
@@ -212,6 +207,8 @@ import { useRouter } from 'vue-router'
 const { getFormattedPercent, getFormattedFloat, getFormattedCurrency } =
   getMeta('CRM Task')
 const { getUser } = usersStore()
+const { updateOnboardingStep } = useOnboarding('frappecrm')
+const { capture } = useTelemetry()
 
 const router = useRouter()
 
@@ -321,57 +318,32 @@ function parseRows(rows, columns = []) {
   })
 }
 
-const showTaskModal = ref(false)
+const { showModal } = useDoctypeModal()
 
-const task = ref({
-  name: '',
-  title: '',
-  description: '',
-  assigned_to: '',
-  due_date: '',
-  status: 'Backlog',
-  priority: 'Low',
-  reference_doctype: 'CRM Lead',
-  reference_docname: '',
-})
+const taskCallbacks = {
+  afterInsert: () => {
+    tasks.value.reload()
+    updateOnboardingStep('create_first_note')
+    capture('note_created')
+  },
+  afterUpdate: () => tasks.value.reload(),
+}
 
 function showTask(name) {
-  let t = rows.value?.find((row) => row.name === name)
-  task.value = {
-    name: t.name,
-    title: t.title,
-    description: t.description,
-    assigned_to: t.assigned_to?.name || '',
-    due_date: t.due_date,
-    status: t.status,
-    priority: t.priority,
-    reference_doctype: t.reference_doctype,
-    reference_docname: t.reference_docname,
-  }
-  showTaskModal.value = true
+  showModal(name, 'CRM Task', 'Task', {}, taskCallbacks)
 }
 
 function createTask(column) {
-  task.value = {
-    name: '',
-    title: '',
-    description: '',
-    assigned_to: '',
-    due_date: '',
-    status: 'Backlog',
-    priority: 'Low',
-    reference_doctype: 'CRM Lead',
-    reference_docname: '',
-  }
+  const defaults = { status: 'Backlog', priority: 'Low' }
 
-  if (column.column?.name) {
+  if (column?.column?.name) {
     let column_field = tasks.value.params.column_field
     if (column_field) {
-      task.value[column_field] = column.column.name
+      defaults[column_field] = column.column.name
     }
   }
 
-  showTaskModal.value = true
+  showModal(null, 'CRM Task', 'Task', defaults, taskCallbacks)
 }
 
 function actions(name) {
@@ -380,14 +352,14 @@ function actions(name) {
       label: __('Delete'),
       icon: 'trash-2',
       onClick: () => {
-        deletetask(name)
+        deleteTask(name)
         tasks.value.reload()
       },
     },
   ]
 }
 
-async function deletetask(name) {
+async function deleteTask(name) {
   await call('frappe.client.delete', {
     doctype: 'CRM Task',
     name,

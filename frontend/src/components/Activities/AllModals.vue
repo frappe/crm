@@ -1,13 +1,4 @@
 <template>
-  <TaskModal
-    v-if="showTaskModal"
-    v-model="showTaskModal"
-    v-model:reloadTasks="activities"
-    :task="task"
-    :doctype="doctype"
-    :docname="doc?.name"
-    @after="redirect('tasks')"
-  />
   <CallLogModal
     v-if="showCallLogModal"
     v-model="showCallLogModal"
@@ -17,7 +8,6 @@
   />
 </template>
 <script setup>
-import TaskModal from '@/components/Modals/TaskModal.vue'
 import CallLogModal from '@/components/Modals/CallLogModal.vue'
 import { useDoctypeModal } from '@/composables/doctypeModal'
 import { useOnboarding, useTelemetry } from 'frappe-ui/frappe'
@@ -32,23 +22,25 @@ const props = defineProps({
 
 const activities = defineModel({ type: Object })
 
+const { showModal } = useDoctypeModal()
 const { updateOnboardingStep } = useOnboarding('frappecrm')
 const { capture } = useTelemetry()
 
 // Tasks
-const showTaskModal = ref(false)
-const task = ref({})
-
-function showTask(t) {
-  task.value = t || {
-    title: '',
-    description: '',
-    assigned_to: '',
-    due_date: '',
-    priority: 'Low',
-    status: 'Backlog',
-  }
-  showTaskModal.value = true
+function showTask(task) {
+  showModal(
+    task?.name,
+    'CRM Task',
+    'Task',
+    {
+      reference_doctype: props.doctype,
+      reference_docname: props.doc?.name,
+    },
+    {
+      afterInsert: afterDoctype,
+      afterUpdate: afterDoctype,
+    },
+  )
 }
 
 async function deleteTask(name) {
@@ -71,8 +63,6 @@ function updateTaskStatus(status, task) {
 }
 
 // Notes
-const { showModal } = useDoctypeModal()
-
 function showNote(note) {
   showModal(
     note?.name,
@@ -91,14 +81,12 @@ function showNote(note) {
 
 function afterDoctype(d) {
   activities.value.reload()
-  updateOnboardingStep('create_first_note')
-  capture('note_created')
 
-  let redirectHash = ''
+  let name = d.doctype == 'FCRM Note' ? 'note' : 'task'
+  let redirectHash = name + 's'
 
-  if (d.doctype == 'FCRM Note') {
-    redirectHash = 'notes'
-  }
+  updateOnboardingStep('create_first_' + name)
+  capture(name + '_created')
 
   redirect(redirectHash)
 }
