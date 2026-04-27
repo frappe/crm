@@ -71,19 +71,21 @@
       <div v-if="nodes.loading" class="flex items-center justify-center py-12">
         <LoadingIndicator class="size-6" />
       </div>
-      <div
+      <EmptyState
         v-else-if="!visibleRoots.length"
-        class="flex flex-col items-center justify-center py-12 text-ink-gray-5"
-      >
-        <FeatherIcon name="users" class="size-8 mb-2" />
-        <p class="text-p-base">
-          {{
-            search || roleFilter !== 'All'
-              ? __('No users match the current filter.')
-              : __('No users in the hierarchy yet. Add one to get started.')
-          }}
-        </p>
-      </div>
+        name="Users in Hierarchy"
+        :title="
+          search || roleFilter !== 'All'
+            ? __('No matching users')
+            : __('No users in hierarchy')
+        "
+        :description="
+          search || roleFilter !== 'All'
+            ? __('No users match the current filter.')
+            : __('Add one to get started.')
+        "
+        icon="users"
+      />
       <Tree
         v-for="root in visibleRoots"
         :key="`${root.name}-${treeKey}`"
