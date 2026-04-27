@@ -113,7 +113,7 @@
         title: dialogTitle,
         actions: [
           {
-            label: __('Add to tree'),
+            label: __('Add User'),
             variant: 'solid',
             disabled: !selectedUser || !!rankWarning,
             loading: saving,
@@ -123,7 +123,7 @@
       }"
     >
       <template #body-content>
-        <div v-if="addParent" class="mb-3 text-p-sm text-ink-gray-6">
+        <div v-if="addParent" class="mb-2 text-p-sm text-ink-gray-6">
           {{ __('Will report to') }}
           <span class="font-medium text-ink-gray-8">{{
             addParent.full_name
