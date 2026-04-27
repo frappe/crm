@@ -6,6 +6,7 @@
     </Layout>
     <Dialogs />
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     <EventNotificationPopup />
     <DoctypeModal
@@ -19,6 +20,10 @@
       @afterUpdate="(d) => doctypeModal.triggerCallback('afterUpdate', d)"
     />
 >>>>>>> 0d5ca557 (feat: make doctypeModal composable a singleton with callback support)
+=======
+    <DoctypeModals />
+    <EventNotificationPopup />
+>>>>>>> 3d3d0a67 (refactor: replace DoctypeModal with DoctypeModals component for better modularity)
   </FrappeUIProvider>
 </template>
 
@@ -27,15 +32,16 @@ import NotPermitted from '@/pages/NotPermitted.vue'
 <<<<<<< HEAD
 =======
 import EventNotificationPopup from '@/components/EventNotificationPopup.vue'
+<<<<<<< HEAD
 import DoctypeModal from '@/components/Modals/DoctypeModal.vue'
 >>>>>>> 0d5ca557 (feat: make doctypeModal composable a singleton with callback support)
+=======
+import DoctypeModals from '@/components/Modals/DoctypeModals.vue'
+>>>>>>> 3d3d0a67 (refactor: replace DoctypeModal with DoctypeModals component for better modularity)
 import { Dialogs } from '@/utils/dialogs'
-import { useDoctypeModal } from '@/composables/doctypeModal'
 import { sessionStore } from '@/stores/session'
 import { FrappeUIProvider, setConfig, useTheme } from 'frappe-ui'
 import { computed, defineAsyncComponent, provide } from 'vue'
-
-const doctypeModal = useDoctypeModal()
 
 const session = sessionStore()
 provide('session', session)
