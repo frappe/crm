@@ -53,14 +53,10 @@ import FieldLayout from '@/components/FieldLayout/FieldLayout.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import { usersStore } from '@/stores/users'
 import { isMobileView } from '@/composables/settings'
-import {
-  showQuickEntryModal,
-  quickEntryProps,
-  showAddressModal,
-  addressProps,
-} from '@/composables/modals'
+import { showQuickEntryModal, quickEntryProps } from '@/composables/modals'
 import { useDocument } from '@/data/document'
 import { evaluateDependsOnValue } from '@/utils'
+import { useDoctypeModal } from '@/composables/doctypeModal'
 import { useTelemetry } from 'frappe-ui/frappe'
 import { createResource } from 'frappe-ui'
 import { ref, nextTick, onMounted } from 'vue'
@@ -198,10 +194,10 @@ const tabs = createResource({
             } else if (field.fieldname == 'address') {
               field.create = (value, close) => {
                 _contact.doc.address = value
-                openAddressModal()
+                showAddressModal()
                 close()
               }
-              field.edit = (address) => openAddressModal(address)
+              field.edit = (address) => showAddressModal(address)
             } else if (field.fieldtype === 'Table') {
               _contact.doc[field.fieldname] = []
             }
@@ -226,13 +222,21 @@ function openQuickEntryModal() {
   nextTick(() => (show.value = false))
 }
 
-function openAddressModal(_address) {
-  showAddressModal.value = true
-  addressProps.value = {
-    doctype: 'Address',
-    address: _address,
-  }
-  nextTick(() => (show.value = false))
+const { showModal } = useDoctypeModal()
+
+function showAddressModal(_address) {
+  showModal(
+    _address || null,
+    'Address',
+    '',
+    {},
+    {
+      afterInsert: (d) => {
+        capture('address_created')
+        _contact.doc.address = d.name
+      },
+    },
+  )
 }
 </script>
 

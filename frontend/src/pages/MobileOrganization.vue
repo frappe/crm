@@ -160,7 +160,6 @@ import DetailsIcon from '@/components/Icons/DetailsIcon.vue'
 import CameraIcon from '@/components/Icons/CameraIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
-import { showAddressModal, addressProps } from '@/composables/modals'
 import { useDocument } from '@/data/document'
 import { getSettings } from '@/stores/settings'
 import { getMeta } from '@/stores/meta'
@@ -186,6 +185,8 @@ import {
   createResource,
   toast,
 } from 'frappe-ui'
+import { useDoctypeModal } from '@/composables/doctypeModal'
+import { useTelemetry } from 'frappe-ui/frappe'
 import { h, computed, ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
@@ -198,6 +199,7 @@ const { getUser } = usersStore()
 const { $dialog } = globalStore()
 const { getDealStatus } = statusesStore()
 const { doctypeMeta } = getMeta('CRM Organization')
+const { capture } = useTelemetry()
 
 const route = useRoute()
 const router = useRouter()
@@ -315,10 +317,10 @@ function getParsedSections(_sections) {
           return {
             ...field,
             create: (value, close) => {
-              openAddressModal()
+              showAddressModal()
               close()
             },
-            edit: (address) => openAddressModal(address),
+            edit: (address) => showAddressModal(address),
           }
         } else {
           return field
@@ -524,11 +526,21 @@ const contactColumns = [
   },
 ]
 
-function openAddressModal(_address) {
-  showAddressModal.value = true
-  addressProps.value = {
-    doctype: 'Address',
-    address: _address,
-  }
+const { showModal } = useDoctypeModal()
+
+function showAddressModal(_address) {
+  showModal(
+    _address || null,
+    'Address',
+    '',
+    {},
+    {
+      afterInsert: (d) => {
+        capture('address_created')
+        organization.doc.address = d.name
+        organization.save.submit()
+      },
+    },
+  )
 }
 </script>
