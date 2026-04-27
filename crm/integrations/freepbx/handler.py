@@ -1,17 +1,9 @@
 import socket
 import frappe
-import requests
 from frappe import _
 from frappe.integrations.utils import create_request_log
 
 from crm.integrations.api import get_contact_by_phone_number
-
-# Webhook URL (called from FreePBX dialplan via CURL):
-# <site>/api/method/crm.integrations.freepbx.handler.handle_request?key=<webhook_secret>
-#
-# FreePBX dialplan CURL example (AGI or Dialplan Application):
-#   exten => _X.,1,AGI(agi://127.0.0.1/crm_status.agi)
-#   same  => n,System(curl -s "<webhook_url>&Status=ringing&CallerIDNum=${CALLERID(num)}&DialedNumber=${EXTEN}&UniqueID=${UNIQUEID}&Direction=incoming")
 
 
 @frappe.whitelist(allow_guest=True)
@@ -174,50 +166,6 @@ def update_call_status(call_sid: str, status: str, duration: int = 0):
 	call_log.save(ignore_permissions=True)
 	frappe.db.commit()
 	return call_log.status
-
-
-def _ami_originate(settings, channel, extension, context, caller_id, call_id):
-	"""Connect to Asterisk AMI and originate a call."""
-	host = settings.host
-	port = int(settings.ami_port or 5038)
-	username = settings.ami_username
-	password = settings.get_password("ami_password")
-	webhook_url = get_status_updater_url()
-	record_call = frappe.db.get_single_value("CRM FreePBX Settings", "record_call")
-
-	with socket.create_connection((host, port), timeout=10) as s:
-		s.recv(1024)  # Read AMI banner
-
-		def send(action_str):
-			s.sendall((action_str + "\r\n\r\n").encode())
-			return s.recv(4096).decode(errors="ignore")
-
-		response = send(
-			f"Action: Login\r\nUsername: {username}\r\nSecret: {password}"
-		)
-		if "Authentication accepted" not in response:
-			raise Exception(f"AMI Login failed: {response}")
-
-		variables = (
-			f"CALLUUID={call_id},"
-			f"WEBHOOK_URL={webhook_url},"
-			f"DESTINATION={extension},"
-			f"RECORD={'yes' if record_call else 'no'}"
-		)
-
-		send(
-			f"Action: Originate\r\n"
-			f"ActionID: {call_id}\r\n"
-			f"Channel: PJSIP/{channel}\r\n"
-			f"Exten: {extension}\r\n"
-			f"Context: {context}\r\n"
-			f"Priority: 1\r\n"
-			f"CallerID: {caller_id}\r\n"
-			f"Variable: {variables}\r\n"
-			f"Async: true"
-		)
-
-		send("Action: Logoff")
 
 
 def get_status_updater_url():

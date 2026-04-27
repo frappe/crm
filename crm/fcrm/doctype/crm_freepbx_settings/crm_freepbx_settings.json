@@ -1,7 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
- "creation": "2026-04-16 00:00:00.000000",
+ "creation": "2026-04-16 00:00:00",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
@@ -10,18 +10,8 @@
   "record_call",
   "section_break_1",
   "host",
-  "ami_port",
   "ws_port",
-  "wss_port",
-  "column_break_2",
-  "context",
-  "caller_id",
-  "section_break_2",
-  "ami_username",
-  "column_break_3",
-  "ami_password",
-  "section_break_3",
-  "webhook_secret"
+  "wss_port"
  ],
  "fields": [
   {
@@ -54,13 +44,6 @@
    "mandatory_depends_on": "enabled"
   },
   {
-   "default": "5038",
-   "depends_on": "enabled",
-   "fieldname": "ami_port",
-   "fieldtype": "Int",
-   "label": "AMI Port"
-  },
-  {
    "default": "8088",
    "depends_on": "enabled",
    "fieldname": "ws_port",
@@ -73,64 +56,12 @@
    "fieldname": "wss_port",
    "fieldtype": "Int",
    "label": "WebSocket Port (WSS, for HTTPS)"
-  },
-  {
-   "fieldname": "column_break_2",
-   "fieldtype": "Column Break"
-  },
-  {
-   "default": "from-internal",
-   "depends_on": "enabled",
-   "fieldname": "context",
-   "fieldtype": "Data",
-   "label": "Dialplan Context"
-  },
-  {
-   "depends_on": "enabled",
-   "fieldname": "caller_id",
-   "fieldtype": "Data",
-   "label": "Default Caller ID"
-  },
-  {
-   "fieldname": "section_break_2",
-   "fieldtype": "Section Break",
-   "hide_border": 1
-  },
-  {
-   "depends_on": "enabled",
-   "fieldname": "ami_username",
-   "fieldtype": "Data",
-   "label": "AMI Username",
-   "mandatory_depends_on": "enabled"
-  },
-  {
-   "fieldname": "column_break_3",
-   "fieldtype": "Column Break"
-  },
-  {
-   "depends_on": "enabled",
-   "fieldname": "ami_password",
-   "fieldtype": "Password",
-   "label": "AMI Password",
-   "mandatory_depends_on": "enabled"
-  },
-  {
-   "fieldname": "section_break_3",
-   "fieldtype": "Section Break",
-   "hide_border": 1
-  },
-  {
-   "depends_on": "enabled",
-   "fieldname": "webhook_secret",
-   "fieldtype": "Data",
-   "label": "Webhook Secret Token",
-   "mandatory_depends_on": "enabled"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2026-04-16 00:00:00.000000",
+ "modified": "2026-04-27 18:07:27.832644",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM FreePBX Settings",

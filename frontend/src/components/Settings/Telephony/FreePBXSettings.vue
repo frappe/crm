@@ -49,13 +49,6 @@
               autocomplete="off"
             />
             <FormControl
-              v-model="freepbx.doc.ami_port"
-              :label="__('AMI Port')"
-              type="number"
-              placeholder="5038"
-              autocomplete="off"
-            />
-            <FormControl
               v-model="freepbx.doc.ws_port"
               :label="__('WS Port (HTTP / plain)')"
               type="number"
@@ -67,42 +60,6 @@
               :label="__('WSS Port (HTTPS / SSL)')"
               type="number"
               placeholder="8089"
-              autocomplete="off"
-            />
-            <FormControl
-              v-model="freepbx.doc.ami_username"
-              :label="__('AMI Username')"
-              type="text"
-              placeholder="crmuser"
-              required
-              autocomplete="off"
-            />
-            <Password
-              v-model="freepbx.doc.ami_password"
-              :label="__('AMI Password')"
-              placeholder="************"
-              required
-            />
-            <FormControl
-              v-model="freepbx.doc.context"
-              :label="__('Dialplan Context')"
-              type="text"
-              placeholder="from-internal"
-              autocomplete="off"
-            />
-            <FormControl
-              v-model="freepbx.doc.caller_id"
-              :label="__('Default Caller ID')"
-              type="text"
-              placeholder="+1234567890"
-              autocomplete="off"
-            />
-            <FormControl
-              v-model="freepbx.doc.webhook_secret"
-              :label="__('Webhook Secret Token')"
-              type="text"
-              placeholder="my_secure_token_123"
-              required
               autocomplete="off"
             />
           </div>
@@ -121,14 +78,6 @@
             </div>
           </div>
           <div class="h-px border-t border-outline-gray-modals" />
-          <div class="space-y-2">
-            <div class="text-p-sm font-medium text-ink-gray-7">
-              {{ __('Webhook URL (configure in FreePBX dialplan):') }}
-            </div>
-            <div class="rounded bg-surface-gray-2 px-3 py-2 font-mono text-p-sm text-ink-gray-6 break-all">
-              {{ webhookUrl }}
-            </div>
-          </div>
         </div>
         <!-- Disabled state -->
         <div v-else class="relative flex h-full w-full justify-center">
@@ -174,11 +123,6 @@ const { document: freepbx } = useDocument(
   'CRM FreePBX Settings',
   'CRM FreePBX Settings',
 )
-
-const webhookUrl = computed(() => {
-  const secret = freepbx.doc?.webhook_secret || '<your-secret-token>'
-  return `${window.location.origin}/api/method/crm.integrations.freepbx.handler.handle_request?key=${secret}`
-})
 
 function enable() {
   freepbx.doc.enabled = true
