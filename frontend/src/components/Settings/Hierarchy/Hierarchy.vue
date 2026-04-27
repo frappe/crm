@@ -92,7 +92,7 @@
         :options="treeOptions"
       >
         <template #node="{ node, hasChildren, isCollapsed, toggleCollapsed }">
-          <HierarchyNodeRow
+          <HierarchyRow
             :node="node"
             :has-children="hasChildren"
             :is-collapsed="isCollapsed"
@@ -147,7 +147,7 @@
 
 <script setup>
 import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
-import HierarchyNodeRow from './HierarchyNodeRow.vue'
+import HierarchyRow from './HierarchyRow.vue'
 import { useRemoveNode } from './useRemoveNode'
 import { useDragDrop } from './useDragDrop'
 import { globalStore } from '@/stores/global'
