@@ -44,6 +44,7 @@
 </template>
 <script setup>
 import LucideLayoutDashboard from '~icons/lucide/layout-dashboard'
+import LucideNetwork from '~icons/lucide/network'
 import MonitorCogIcon from '~icons/lucide/monitor-cog'
 import SlidersIcon from '@/components/Icons/SlidersIcon.vue'
 import SparkleIcon from '@/components/Icons/SparkleIcon.vue'
@@ -159,8 +160,8 @@ const tabs = computed(() => {
           condition: () => isManager(),
         },
         {
-          label: __('Hierarchy'),
-          icon: 'git-branch',
+          label: __('User Hierarchy'),
+          icon: LucideNetwork,
           component: markRaw(Hierarchy),
           condition: () => isManager(),
         },
