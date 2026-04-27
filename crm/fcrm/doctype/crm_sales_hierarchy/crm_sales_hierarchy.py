@@ -31,7 +31,7 @@ class CRMSalesHierarchy(NestedSet):
 		frappe.cache.delete_value("crm_sales_hierarchy_subtree")
 
 	def validate(self):
-		if self.user and not self.is_group:
+		if self.user:
 			# Ensure the same user is not mapped to two different nodes
 			existing = frappe.db.get_value(
 				"CRM Sales Hierarchy",
@@ -44,6 +44,14 @@ class CRMSalesHierarchy(NestedSet):
 						"User {0} is already mapped to hierarchy node {1}."
 					).format(self.user, existing)
 				)
+
+		# A node with reports_to becomes a child so its parent must be a group
+		if self.reports_to and not frappe.db.get_value(
+			"CRM Sales Hierarchy", self.reports_to, "is_group"
+		):
+			frappe.db.set_value(
+				"CRM Sales Hierarchy", self.reports_to, "is_group", 1
+			)
 
 	def on_trash(self):
 		frappe.cache.delete_value("crm_sales_hierarchy_subtree")
