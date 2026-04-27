@@ -38,10 +38,10 @@
       class="relative flex flex-1 w-full justify-center"
     >
       <div
-        class="absolute left-1/2 flex w-72 -translate-x-1/2 flex-col items-center gap-3"
-        :style="{ top: '25%' }"
+        class="absolute left-1/2 flex w-64 -translate-x-1/2 flex-col items-center gap-3"
+        :style="{ top: '35%' }"
       >
-        <FeatherIcon name="git-branch" class="size-7.5 text-ink-gray-5" />
+        <lucide-network class="size-7.5 text-ink-gray-5" />
         <div class="flex flex-col items-center gap-1.5 text-center">
           <span class="text-lg font-medium text-ink-gray-8">
             {{ __('Enable Sales Hierarchy') }}
@@ -171,10 +171,10 @@ import { useRemoveNode } from './useRemoveNode'
 import { useDragDrop } from './useDragDrop'
 import { globalStore } from '@/stores/global'
 import { usersStore } from '@/stores/users'
+import LucideNetwork from '~icons/lucide/network'
 import {
   Button,
   Dialog,
-  FeatherIcon,
   LoadingIndicator,
   Tree,
   call,
