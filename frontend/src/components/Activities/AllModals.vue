@@ -34,19 +34,19 @@ function showEvent(e) {
 
 // Tasks
 function showTask(task) {
-  showModal(
-    task?.name,
-    'CRM Task',
-    'Task',
-    {
+  showModal({
+    name: task?.name,
+    doctype: 'CRM Task',
+    title: 'Task',
+    defaults: {
       reference_doctype: props.doctype,
       reference_docname: props.doc?.name,
     },
-    {
+    callbacks: {
       afterInsert: (d) => afterDoctype(d, true),
       afterUpdate: afterDoctype,
     },
-  )
+  })
 }
 
 async function deleteTask(name) {
@@ -70,19 +70,19 @@ function updateTaskStatus(status, task) {
 
 // Notes
 function showNote(note) {
-  showModal(
-    note?.name,
-    'FCRM Note',
-    'Note',
-    {
+  showModal({
+    name: note?.name,
+    doctype: 'FCRM Note',
+    title: 'Note',
+    defaults: {
       reference_doctype: props.doctype,
       reference_docname: props.doc?.name,
     },
-    {
+    callbacks: {
       afterInsert: (d) => afterDoctype(d, true),
       afterUpdate: afterDoctype,
     },
-  )
+  })
 }
 
 function afterDoctype(d, isInsert = false) {
@@ -112,20 +112,19 @@ function afterDoctype(d, isInsert = false) {
 
 // Call Logs
 function createCallLog() {
-  showModal(
-    null,
-    'CRM Call Log',
-    'Call Log',
-    {
+  showModal({
+    doctype: 'CRM Call Log',
+    title: 'Call Log',
+    defaults: {
       reference_doctype: props.doctype,
       reference_docname: props.doc?.name,
       reference_doc: { ...props.doc },
     },
-    {
+    callbacks: {
       afterInsert: (d) => afterDoctype(d, true),
       afterUpdate: afterDoctype,
     },
-  )
+  })
 }
 
 // common

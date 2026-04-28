@@ -323,14 +323,22 @@ const { showModal } = useDoctypeModal()
 const taskCallbacks = {
   afterInsert: () => {
     tasks.value.reload()
-    updateOnboardingStep('create_first_note')
-    capture('note_created')
+    updateOnboardingStep('create_first_task')
+    capture('task_created')
   },
-  afterUpdate: () => tasks.value.reload(),
+  afterUpdate: () => {
+    tasks.value.reload()
+    capture('task_updated')
+  },
 }
 
 function showTask(name) {
-  showModal(name, 'CRM Task', 'Task', {}, taskCallbacks)
+  showModal({
+    name,
+    doctype: 'CRM Task',
+    title: 'Task',
+    callbacks: taskCallbacks,
+  })
 }
 
 function createTask(column) {
@@ -343,7 +351,12 @@ function createTask(column) {
     }
   }
 
-  showModal(null, 'CRM Task', 'Task', defaults, taskCallbacks)
+  showModal({
+    doctype: 'CRM Task',
+    title: 'Task',
+    defaults: defaults,
+    callbacks: taskCallbacks,
+  })
 }
 
 function actions(name) {
