@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-04-26 09:49+0000\n"
-"PO-Revision-Date: 2026-04-27 02:48\n"
+"PO-Revision-Date: 2026-04-28 02:45\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Swedish\n"
 "MIME-Version: 1.0\n"
@@ -3205,7 +3205,7 @@ msgstr "Misslyckades med att hämta växelkurs från {0} till {1} {2}. Kontrolle
 
 #: frontend/src/components/Modals/FieldLayoutDialog.vue:172
 msgid "Failed to load fields layout"
-msgstr ""
+msgstr "Misslyckades med att ladda fältlayout"
 
 #: frontend/src/data/script.js:109
 msgid "Failed to load form controller: {0}"
