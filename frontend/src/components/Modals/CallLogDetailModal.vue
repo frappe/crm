@@ -196,29 +196,28 @@ const note = ref('')
 const task = ref('')
 
 function showNote(name) {
-  showModal(
+  showModal({
     name,
-    'FCRM Note',
-    'Note',
-    {},
-    {
+    doctype: 'FCRM Note',
+    title: 'Note',
+    callbacks: {
       afterInsert: (d) => addNoteToCallLog(d, true),
       afterUpdate: (d) => addNoteToCallLog(d, false),
     },
-  )
+  })
 }
 
 function showTask(name) {
-  showModal(
+  showModal({
     name,
-    'CRM Task',
-    'Task',
-    { status: 'Backlog', priority: 'Low' },
-    {
+    doctype: 'CRM Task',
+    title: 'Task',
+    defaults: { status: 'Backlog', priority: 'Low' },
+    callbacks: {
       afterInsert: (d) => addTaskToCallLog(d, true),
       afterUpdate: (d) => addTaskToCallLog(d, false),
     },
-  )
+  })
 }
 
 async function addNoteToCallLog(_note, isInsert = false) {
@@ -227,10 +226,12 @@ async function addNoteToCallLog(_note, isInsert = false) {
       call_sid: callLog.value?.data?.id,
       note: _note,
     })
+    updateOnboardingStep('create_first_note')
+    capture('note_created')
+  } else {
+    capture('note_updated')
   }
   callLog.value?.reload?.()
-  updateOnboardingStep('create_first_note')
-  capture('note_created')
 }
 
 async function addTaskToCallLog(_task, isInsert = false) {
@@ -239,10 +240,12 @@ async function addTaskToCallLog(_task, isInsert = false) {
       call_sid: callLog.value?.data?.id,
       task: _task,
     })
+    updateOnboardingStep('create_first_task')
+    capture('task_created')
+  } else {
+    capture('task_updated')
   }
   callLog.value?.reload?.()
-  updateOnboardingStep('create_first_task')
-  capture('task_created')
 }
 
 const detailFields = computed(() => {
@@ -358,18 +361,17 @@ async function createLead() {
 }
 
 function openCallLogModal() {
-  showModal(
-    callLog.value?.data?.name,
-    'CRM Call Log',
-    'Call Log',
-    {},
-    {
+  showModal({
+    name: callLog.value?.data?.name,
+    doctype: 'CRM Call Log',
+    title: 'Call Log',
+    callbacks: {
       afterUpdate: () => {
         callLog.value.reload()
         capture('call_log_updated')
       },
     },
-  )
+  })
 }
 
 watch(

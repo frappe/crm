@@ -131,18 +131,16 @@ const { showModal } = useDoctypeModal()
 const { capture } = useTelemetry()
 
 function createCallLog() {
-  showModal(
-    null,
-    'CRM Call Log',
-    'Call Log',
-    {},
-    {
+  showModal({
+    doctype: 'CRM Call Log',
+    title: 'Call Log',
+    callbacks: {
       afterInsert: () => {
         capture('call_log_created')
         callLogs.value.reload()
       },
     },
-  )
+  })
 }
 
 const openCallLogFromURL = () => {

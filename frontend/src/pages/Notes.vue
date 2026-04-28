@@ -131,15 +131,27 @@ const noteCallbacks = {
     updateOnboardingStep('create_first_note')
     capture('note_created')
   },
-  afterUpdate: () => notes.value.reload(),
+  afterUpdate: () => {
+    notes.value.reload()
+    capture('note_updated')
+  },
 }
 
 function createNote() {
-  showModal(null, 'FCRM Note', 'Note', {}, noteCallbacks)
+  showModal({
+    doctype: 'FCRM Note',
+    title: 'Note',
+    callbacks: noteCallbacks,
+  })
 }
 
 function editNote(noteName) {
-  showModal(noteName, 'FCRM Note', 'Note', {}, noteCallbacks)
+  showModal({
+    name: noteName,
+    doctype: 'FCRM Note',
+    title: 'Note',
+    callbacks: noteCallbacks,
+  })
 }
 
 async function deleteNote(name) {

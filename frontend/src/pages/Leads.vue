@@ -557,40 +557,42 @@ function actions(itemName) {
 }
 
 function showNote(name) {
-  showModal(
-    null,
-    'FCRM Note',
-    'Note',
-    {
+  showModal({
+    doctype: 'FCRM Note',
+    title: 'Note',
+    defaults: {
       reference_doctype: 'CRM Lead',
       reference_docname: name,
     },
-    {
-      afterInsert: after,
+    callbacks: {
+      afterInsert: (d) => after(d, true),
       afterUpdate: after,
     },
-  )
+  })
 }
 
 function showTask(name) {
-  showModal(
-    null,
-    'CRM Task',
-    'Task',
-    {
+  showModal({
+    doctype: 'CRM Task',
+    title: 'Task',
+    defaults: {
       reference_doctype: 'CRM Lead',
       reference_docname: name,
     },
-    {
-      afterInsert: after,
+    callbacks: {
+      afterInsert: (d) => after(d, true),
       afterUpdate: after,
     },
-  )
+  })
 }
 
-function after(d) {
+function after(d, isNew = false) {
   let a = d.doctype == 'FCRM Note' ? 'note' : 'task'
-  updateOnboardingStep('create_first_' + a)
-  capture(a + '_created')
+  if (isNew) {
+    updateOnboardingStep('create_first_' + a)
+    capture(a + '_created')
+  } else {
+    capture(a + '_updated')
+  }
 }
 </script>
