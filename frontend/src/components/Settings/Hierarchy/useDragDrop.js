@@ -1,8 +1,14 @@
-import { reactive } from 'vue'
+import { computed, reactive } from 'vue'
 import { toast } from 'frappe-ui'
 
 export function useDragDrop({ onReparent }) {
-  const dragState = reactive({ source: null, hover: null, blocked: false })
+  const dragState = reactive({
+    source: null,
+    hover: null,
+    hoverNode: null,
+    x: 0,
+    y: 0,
+  })
 
   function isDescendant(srcNode, name) {
     const stack = [...(srcNode.children || [])]
@@ -30,21 +36,22 @@ export function useDragDrop({ onReparent }) {
   function onDragEnd() {
     dragState.source = null
     dragState.hover = null
-    dragState.blocked = false
+    dragState.hoverNode = null
   }
 
   function onDragOver(e, node) {
     if (!dragState.source) return
-    const ok = canDrop(dragState.source, node)
     dragState.hover = node.name
-    dragState.blocked = !ok
+    dragState.hoverNode = node
+    dragState.x = e.clientX
+    dragState.y = e.clientY
     e.dataTransfer.dropEffect = 'move'
   }
 
   function onDragLeave(node) {
     if (dragState.hover === node.name) {
       dragState.hover = null
-      dragState.blocked = false
+      dragState.hoverNode = null
     }
   }
 
@@ -71,16 +78,29 @@ export function useDragDrop({ onReparent }) {
   }
 
   function rowClasses(node) {
-    if (dragState.source?.name === node.name) return 'opacity-40'
+    const src = dragState.source
+    if (!src) return ''
+    if (src.name === node.name) return 'opacity-40'
+    if (!canDrop(src, node)) {
+      return 'opacity-50 [&_span]:line-through'
+    }
     if (dragState.hover === node.name) {
-      return dragState.blocked
-        ? 'bg-surface-red-1 outline outline-1  outline-red-400 rounded-sm'
-        : 'bg-surface-blue-1 outline outline-1  outline-blue-600 rounded-sm'
+      return 'border-b !border-blue-500'
     }
     return ''
   }
 
+  const dragLabel = computed(() => {
+    const src = dragState.source
+    const tgt = dragState.hoverNode
+    if (!src || !tgt) return null
+    if (src.name === tgt.name) return null
+    if (src.reports_to === tgt.name) return null
+    if (!canDrop(src, tgt)) return null
+    return __('Move under {0}', [tgt.full_name])
+  })
+
   const handlers = { onDragStart, onDragEnd, onDragOver, onDragLeave, onDrop }
 
-  return { handlers, rowClasses }
+  return { handlers, rowClasses, dragState, dragLabel }
 }

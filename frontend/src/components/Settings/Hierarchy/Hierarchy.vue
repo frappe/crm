@@ -49,7 +49,7 @@
           <span class="text-center text-p-base text-ink-gray-6">
             {{
               __(
-                'Restrict lead and deal visibility based on a reporting tree. Managers will see all records owned by or assigned to their reports.',
+                'Restrict visibility using a reporting tree. Managers can see records owned by their team.',
               )
             }}
           </span>
@@ -86,18 +86,14 @@
         "
         icon="users"
       />
-      <div class="flex w-full justify-end mb-0.5">
+      <div
+        class="sticky top-0 z-10 bg-surface-white flex w-full justify-start mb-1 pt-5 pb-2"
+      >
         <Button
           v-if="isExpandable"
           :label="collapsed ? __('Expand') : __('Collapse')"
           @click="toggleCollapseAll"
         >
-          <template #suffix>
-            <component
-              :is="collapsed ? ChevronsUpDown : ChevronsDownUp"
-              class="size-4 stroke-2"
-            />
-          </template>
         </Button>
       </div>
       <Tree
@@ -123,6 +119,18 @@
       </Tree>
     </div>
 
+    <Teleport to="body">
+      <div
+        v-if="dragLabel"
+        class="fixed pointer-events-none px-2 py-1 rounded-md bg-gray-900 text-white text-xs shadow-lg"
+        :style="{
+          top: `${dragState.y + 25}px`,
+          left: `${dragState.x - 25}px`,
+        }"
+      >
+        {{ dragLabel }}
+      </div>
+    </Teleport>
     <Dialog
       v-model="showAddDialog"
       :options="{
@@ -165,8 +173,6 @@
 import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import EmptyState from '@/components/ListViews/EmptyState.vue'
 import HierarchyRow from './HierarchyRow.vue'
-import ChevronsUpDown from '~icons/lucide/chevrons-up-down'
-import ChevronsDownUp from '~icons/lucide/chevrons-down-up'
 import { useRemoveNode } from './useRemoveNode'
 import { useDragDrop } from './useDragDrop'
 import { globalStore } from '@/stores/global'
@@ -423,7 +429,12 @@ const { removeNode } = useRemoveNode({
   enrichedNodes,
 })
 
-const { handlers: dragHandlers, rowClasses } = useDragDrop({
+const {
+  handlers: dragHandlers,
+  rowClasses,
+  dragState,
+  dragLabel,
+} = useDragDrop({
   onReparent: reparent,
 })
 </script>
