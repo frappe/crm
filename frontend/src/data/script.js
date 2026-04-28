@@ -7,6 +7,31 @@ import { reactive } from 'vue'
 import router from '@/router'
 
 const doctypeScripts = reactive({})
+const fileScriptModules = import.meta.glob('../doctypes/*/*.js')
+const fileScriptCache = {}
+
+async function loadFileScript(doctype, view) {
+  const key = `${doctype}:${view}`
+  if (key in fileScriptCache) return fileScriptCache[key]
+
+  const slug = doctype.toLowerCase().replaceAll(' ', '_')
+  const viewSlug = view.toLowerCase()
+  const path = `../doctypes/${slug}/${viewSlug}.js`
+
+  const loader = fileScriptModules[path]
+  if (!loader) {
+    fileScriptCache[key] = null
+    return null
+  }
+
+  try {
+    fileScriptCache[key] = await loader()
+  } catch {
+    fileScriptCache[key] = null
+  }
+
+  return fileScriptCache[key]
+}
 
 export function getScript(doctype, view = 'Form') {
   const scripts = createListResource({
@@ -35,10 +60,10 @@ export function getScript(doctype, view = 'Form') {
   }
 
   async function setupScript(document, helpers = {}) {
-    await scripts.list.promise
-
-    let scriptDefs = doctypeScripts[doctype]
-    if (!scriptDefs || Object.keys(scriptDefs).length === 0) return null
+    const [fileModule] = await Promise.all([
+      loadFileScript(doctype, view),
+      scripts.list.promise,
+    ])
 
     const { $dialog, $socket } = globalStore()
 
@@ -54,12 +79,77 @@ export function getScript(doctype, view = 'Form') {
       throw new Error(message || __('An error occurred'))
     }
 
-    return setupMultipleFormControllers(scriptDefs, document, helpers)
+    let scriptDefs = doctypeScripts[doctype]
+    const hasFileScript = fileModule != null
+    const hasDbScripts = scriptDefs && Object.keys(scriptDefs).length > 0
+
+    if (!hasFileScript && !hasDbScripts) return null
+
+    return setupMultipleFormControllers(
+      fileModule,
+      scriptDefs,
+      document,
+      helpers,
+    )
   }
 
-  function setupMultipleFormControllers(scriptStrings, document, helpers) {
+  function setupMultipleFormControllers(
+    fileModule,
+    scriptStrings,
+    document,
+    helpers,
+  ) {
     const controllers = []
     let parentInstanceIdx = null
+    const doctypeName = doctype.replace(/\s+/g, '')
+    const { doctypesMeta } = getMeta(doctype)
+
+    function addController(FormClass, className) {
+      setupHelperMethods(FormClass)
+
+      let parentInstance = null
+      let isChildDoctype = className !== doctypeName
+
+      if (isChildDoctype) {
+        if (!controllers.length) {
+          console.error(
+            __(
+              '⚠️ No class found for doctype: {0}, it is mandatory to have a class for the parent doctype. it can be empty, but it should be present.',
+              [doctype],
+            ),
+          )
+          return
+        }
+        parentInstance = controllers[parentInstanceIdx]
+      } else {
+        parentInstanceIdx = controllers.length || 0
+      }
+
+      const instance = setupFormController(
+        FormClass,
+        doctypesMeta,
+        document,
+        helpers,
+        parentInstance,
+        isChildDoctype,
+      )
+
+      controllers.push(instance)
+    }
+
+    if (fileModule) {
+      try {
+        for (const [name, exported] of Object.entries(fileModule)) {
+          if (typeof exported === 'function') {
+            addController(exported, name)
+          }
+        }
+      } catch (err) {
+        console.error(
+          __('Failed to load file-based form controller: {0}', [err]),
+        )
+      }
+    }
 
     for (let scriptName in scriptStrings) {
       let script = scriptStrings[scriptName]?.script
@@ -71,39 +161,7 @@ export function getScript(doctype, view = 'Form') {
         classNames.forEach((className) => {
           const FormClass = evaluateFormClass(script, className, helpers)
           if (!FormClass) return
-
-          let parentInstance = null
-          let doctypeName = doctype.replace(/\s+/g, '')
-
-          let { doctypesMeta } = getMeta(doctype)
-
-          // if className is not doctype name, then it is a child doctype
-          let isChildDoctype = className !== doctypeName
-
-          if (isChildDoctype) {
-            if (!controllers.length) {
-              console.error(
-                __(
-                  '⚠️ No class found for doctype: {0}, it is mandatory to have a class for the parent doctype. it can be empty, but it should be present.',
-                  [doctype],
-                ),
-              )
-              return
-            }
-            parentInstance = controllers[parentInstanceIdx]
-          } else {
-            parentInstanceIdx = controllers.length || 0
-          }
-
-          const instance = setupFormController(
-            FormClass,
-            doctypesMeta,
-            document,
-            parentInstance,
-            isChildDoctype,
-          )
-
-          controllers.push(instance)
+          addController(FormClass, className)
         })
       } catch (err) {
         console.error(__('Failed to load form controller: {0}', [err]))
@@ -117,6 +175,7 @@ export function getScript(doctype, view = 'Form') {
     FormClass,
     meta,
     document,
+    helpers,
     parentInstance = null,
     isChildDoctype = false,
   ) {
@@ -128,6 +187,10 @@ export function getScript(doctype, view = 'Form') {
     // Store the original document context to be used by properties like 'actions'
     instance._originalDocumentContext = document
     instance._isChildDoctype = isChildDoctype
+
+    for (const key in helpers) {
+      instance[key] = helpers[key]
+    }
 
     for (const key in document) {
       if (Object.hasOwn(document, key)) {
@@ -376,8 +439,6 @@ export function getScript(doctype, view = 'Form') {
     const FormClass = new Function(...helperKeys, wrappedScript)(
       ...helperValues,
     )
-
-    setupHelperMethods(FormClass)
 
     return FormClass
   }
