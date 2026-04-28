@@ -7,9 +7,15 @@ const title = ref('')
 const defaults = ref({})
 const callbacks = ref({})
 
-function showModal(_name, _doctype, _title, _defaults = {}, _callbacks = {}) {
-  doctype.value = _doctype
+function showModal({
+  name: _name = null,
+  doctype: _doctype,
+  title: _title = '',
+  defaults: _defaults = {},
+  callbacks: _callbacks = {},
+}) {
   name.value = _name
+  doctype.value = _doctype
   title.value = _title
   defaults.value = _defaults
   callbacks.value = _callbacks

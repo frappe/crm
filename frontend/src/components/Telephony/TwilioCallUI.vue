@@ -230,16 +230,15 @@ const note = ref({
 })
 
 function openNoteModal() {
-  showModal(
-    note.value.name || null,
-    'CRM Call Log',
-    null,
-    {},
-    {
+  showModal({
+    name: note.value.name || null,
+    doctype: 'CRM Call Log',
+    title: 'Call Log',
+    callbacks: {
       afterInsert: (n) => updateNote(n, true),
       afterUpdate: updateNote,
     },
-  )
+  })
 }
 
 async function updateNote(_note, isInsert = false) {
@@ -249,9 +248,11 @@ async function updateNote(_note, isInsert = false) {
       call_sid: _call.parameters.CallSid,
       note: _note,
     })
+    updateOnboardingStep('create_first_note')
+    capture('note_created')
+  } else {
+    capture('note_updated')
   }
-  updateOnboardingStep('create_first_note')
-  capture('note_created')
 }
 
 const { width, height } = useWindowSize()

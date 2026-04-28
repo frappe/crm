@@ -225,18 +225,16 @@ function openQuickEntryModal() {
 const { showModal } = useDoctypeModal()
 
 function showAddressModal(_address) {
-  showModal(
-    _address || null,
-    'Address',
-    '',
-    {},
-    {
+  showModal({
+    name: _address || null,
+    doctype: 'Address',
+    callbacks: {
       afterInsert: (d) => {
         capture('address_created')
         _contact.doc.address = d.name
       },
     },
-  )
+  })
 }
 </script>
 
