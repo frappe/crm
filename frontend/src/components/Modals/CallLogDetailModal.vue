@@ -179,7 +179,7 @@ import { useDoctypeModal } from '@/composables/doctypeModal'
 import { useDocument } from '@/data/document'
 import { useOnboarding, useTelemetry } from 'frappe-ui/frappe'
 import { FeatherIcon, Dropdown, Avatar, Tooltip, call, toast } from 'frappe-ui'
-import { ref, computed, h, nextTick, watch } from 'vue'
+import { ref, computed, h, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
@@ -357,13 +357,19 @@ async function createLead() {
     })
 }
 
-const showCallLogModal = defineModel('callLogModal', { type: Boolean })
-
 function openCallLogModal() {
-  showCallLogModal.value = true
-  nextTick(() => {
-    show.value = false
-  })
+  showModal(
+    callLog.value?.data?.name,
+    'CRM Call Log',
+    'Call Log',
+    {},
+    {
+      afterUpdate: () => {
+        callLog.value.reload()
+        capture('call_log_updated')
+      },
+    },
+  )
 }
 
 watch(

@@ -1,18 +1,10 @@
 <template>
-  <CallLogModal
-    v-if="showCallLogModal"
-    v-model="showCallLogModal"
-    :data="callLog"
-    :referenceDoc="referenceDoc"
-    :options="{ afterInsert: () => activities.reload() }"
-  />
+  <div></div>
 </template>
 <script setup>
-import CallLogModal from '@/components/Modals/CallLogModal.vue'
 import { useDoctypeModal } from '@/composables/doctypeModal'
 import { useOnboarding, useTelemetry } from 'frappe-ui/frappe'
 import { call } from 'frappe-ui'
-import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 const props = defineProps({
@@ -37,7 +29,7 @@ function showTask(task) {
       reference_docname: props.doc?.name,
     },
     {
-      afterInsert: afterDoctype,
+      afterInsert: (d) => afterDoctype(d, true),
       afterUpdate: afterDoctype,
     },
   )
@@ -73,38 +65,53 @@ function showNote(note) {
       reference_docname: props.doc?.name,
     },
     {
-      afterInsert: afterDoctype,
+      afterInsert: (d) => afterDoctype(d, true),
       afterUpdate: afterDoctype,
     },
   )
 }
 
-function afterDoctype(d) {
+function afterDoctype(d, isInsert = false) {
   activities.value.reload()
 
-  let name = d.doctype == 'FCRM Note' ? 'note' : 'task'
-  let redirectHash = name + 's'
+  let name =
+    d.doctype == 'FCRM Note'
+      ? 'note'
+      : d.doctype == 'CRM Task'
+        ? 'task'
+        : 'call_log'
 
-  updateOnboardingStep('create_first_' + name)
-  capture(name + '_created')
+  let redirectHash = name + 's'
+  if (d.doctype == 'CRM Call Log') {
+    redirectHash = 'calls'
+  }
+
+  if (isInsert) {
+    updateOnboardingStep('create_first_' + name)
+    capture(name + '_created')
+  } else {
+    capture(name + '_updated')
+  }
 
   redirect(redirectHash)
 }
 
 // Call Logs
-const showCallLogModal = ref(false)
-const callLog = ref({})
-const referenceDoc = ref({})
-
 function createCallLog() {
-  let doctype = props.doctype
-  let docname = props.doc?.name
-  referenceDoc.value = { ...props.doc }
-  callLog.value = {
-    reference_doctype: doctype,
-    reference_docname: docname,
-  }
-  showCallLogModal.value = true
+  showModal(
+    null,
+    'CRM Call Log',
+    'Call Log',
+    {
+      reference_doctype: props.doctype,
+      reference_docname: props.doc?.name,
+      reference_doc: { ...props.doc },
+    },
+    {
+      afterInsert: (d) => afterDoctype(d, true),
+      afterUpdate: afterDoctype,
+    },
+  )
 }
 
 // common
