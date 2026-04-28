@@ -2,7 +2,7 @@
 # For license information, please see license.txt
 
 import frappe
-from frappe import _
+from frappe import _, generate_hash
 from frappe.model.document import Document
 
 from crm.integrations.api import get_contact_by_phone_number
@@ -46,6 +46,12 @@ class CRMCallLog(Document):
 		to: DF.Data
 		type: DF.Literal["Incoming", "Outgoing"]
 	# end: auto-generated types
+
+	def before_insert(self):
+		if not self.id:
+			self.id = generate_hash(length=12)
+		if not self.telephony_medium:
+			self.telephony_medium = "Manual"
 
 	@staticmethod
 	def default_list_data():
