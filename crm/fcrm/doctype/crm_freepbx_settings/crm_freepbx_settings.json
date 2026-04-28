@@ -11,7 +11,10 @@
   "section_break_1",
   "host",
   "ws_port",
-  "wss_port"
+  "wss_port",
+  "flask_application_details_section",
+  "flask_application_url",
+  "flask_application_auth_token"
  ],
  "fields": [
   {
@@ -56,12 +59,27 @@
    "fieldname": "wss_port",
    "fieldtype": "Int",
    "label": "WebSocket Port (WSS, for HTTPS)"
+  },
+  {
+   "fieldname": "flask_application_details_section",
+   "fieldtype": "Section Break",
+   "label": "Flask Application Details"
+  },
+  {
+   "fieldname": "flask_application_url",
+   "fieldtype": "Data",
+   "label": "Flask Application URL"
+  },
+  {
+   "fieldname": "flask_application_auth_token",
+   "fieldtype": "Data",
+   "label": "Flask Application Auth Token"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2026-04-27 18:07:27.832644",
+ "modified": "2026-04-28 18:17:14.355018",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM FreePBX Settings",

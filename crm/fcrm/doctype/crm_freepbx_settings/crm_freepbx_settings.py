@@ -12,6 +12,8 @@ class CRMFreePBXSettings(Document):
 		from frappe.types import DF
 
 		enabled: DF.Check
+		flask_application_auth_token: DF.Data | None
+		flask_application_url: DF.Data | None
 		host: DF.Data | None
 		record_call: DF.Check
 		ws_port: DF.Int
