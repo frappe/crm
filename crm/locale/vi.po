@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2026-04-19 09:47+0000\n"
-"PO-Revision-Date: 2026-04-20 02:13\n"
+"POT-Creation-Date: 2026-04-26 09:49+0000\n"
+"PO-Revision-Date: 2026-04-27 02:48\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Vietnamese\n"
 "MIME-Version: 1.0\n"
@@ -26,7 +26,7 @@ msgstr " (Mới)"
 msgid "%John%"
 msgstr "%John%"
 
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:65
+#: frontend/src/components/Calendar/CalendarEventPanel.vue:66
 msgid "(No Title)"
 msgstr "(Không Có Tiêu Đề)"
 
@@ -34,7 +34,6 @@ msgstr "(Không Có Tiêu Đề)"
 msgid "01/01/2022 to 01/31/2022"
 msgstr "01/01/2022 đến 01/31/2022"
 
-#: frontend/src/components/Modals/TaskModal.vue:86
 #: frontend/src/components/Telephony/TaskPanel.vue:71
 msgid "01/04/2024 11:30 PM"
 msgstr "01/04/2024 11:30 CH"
@@ -43,7 +42,7 @@ msgstr "01/04/2024 11:30 CH"
 msgid "08:00 AM"
 msgstr "08:00 SA"
 
-#: frontend/src/components/Settings/CalendarSettings.vue:225
+#: frontend/src/components/Settings/CalendarSettings.vue:226
 msgid "08:00 pm"
 msgstr "08:00 CH"
 
@@ -339,7 +338,7 @@ msgstr "Thêm Điều Kiện"
 msgid "Add Condition Group"
 msgstr "Thêm Nhóm Điều Kiện"
 
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:388
+#: frontend/src/components/Calendar/CalendarEventPanel.vue:389
 msgid "Add Description"
 msgstr "Thêm Mô Tả"
 
@@ -368,11 +367,11 @@ msgstr "Thêm Trường"
 msgid "Add Filter"
 msgstr "Thêm bộ lọc"
 
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:429
+#: frontend/src/components/Calendar/CalendarEventPanel.vue:430
 msgid "Add Lead or Deal"
 msgstr "Thêm Lead Hoặc Deal"
 
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:376
+#: frontend/src/components/Calendar/CalendarEventPanel.vue:377
 #: frontend/src/components/Modals/EventModal.vue:166
 msgid "Add Location"
 msgstr "Thêm Địa Điểm"
@@ -388,8 +387,8 @@ msgstr "Thêm Ghi Chú"
 #: frontend/src/components/Calendar/EventNotifications.vue:67
 #: frontend/src/components/Calendar/EventNotifications.vue:128
 #: frontend/src/components/Calendar/EventNotifications.vue:232
-#: frontend/src/components/Settings/CalendarSettings.vue:142
-#: frontend/src/components/Settings/CalendarSettings.vue:242
+#: frontend/src/components/Settings/CalendarSettings.vue:143
+#: frontend/src/components/Settings/CalendarSettings.vue:243
 msgid "Add Notification"
 msgstr "Thêm Thông Báo"
 
@@ -397,7 +396,7 @@ msgstr "Thêm Thông Báo"
 msgid "Add Organization..."
 msgstr "Thêm Tổ Chức..."
 
-#: frontend/src/components/Controls/Grid.vue:435
+#: frontend/src/components/Controls/Grid.vue:452
 #: frontend/src/components/Settings/Sla/SlaHolidays.vue:163
 #: frontend/src/components/Settings/Sla/SlaPriorityList.vue:101
 msgid "Add Row"
@@ -517,8 +516,8 @@ msgstr "Điện thoại viên không khả dụng để nhận cuộc gọi, vui
 msgid "All"
 msgstr "Tất Cả"
 
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:293
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:939
+#: frontend/src/components/Calendar/CalendarEventPanel.vue:294
+#: frontend/src/components/Calendar/CalendarEventPanel.vue:940
 #: frontend/src/components/EventNotificationPopup.vue:90
 #: frontend/src/components/EventNotificationsArea.vue:188
 #: frontend/src/components/Modals/EventModal.vue:71
@@ -529,7 +528,7 @@ msgstr "Cả Ngày"
 #. Label of the all_day_event_notifications (Table) field in DocType 'FCRM
 #. Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
-#: frontend/src/components/Settings/CalendarSettings.vue:157
+#: frontend/src/components/Settings/CalendarSettings.vue:158
 msgid "All Day Event Notifications"
 msgstr "Thông Báo Sự Kiện Cả Ngày"
 
@@ -550,7 +549,8 @@ msgstr "Số tiền"
 msgid "Amount after discount"
 msgstr "Số tiền sau chiết khấu"
 
-#: frontend/src/data/script.js:51 frontend/src/data/script.js:52
+#: frontend/src/components/Modals/FieldLayoutDialog.vue:277
+#: frontend/src/data/script.js:53 frontend/src/data/script.js:54
 msgid "An error occurred"
 msgstr "Đã xảy ra lỗi"
 
@@ -658,7 +658,7 @@ msgstr "Bạn có chắc chắn muốn xóa công việc này?"
 msgid "Are you sure you want to delete {0} linked item(s)?"
 msgstr "Bạn có chắc chắn muốn xóa {0} mục được liên kết?"
 
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:911
+#: frontend/src/components/Calendar/CalendarEventPanel.vue:912
 msgid "Are you sure you want to discard unsaved changes to this event?"
 msgstr "Bạn có chắc chắn muốn hủy các thay đổi chưa lưu cho sự kiện này?"
 
@@ -826,7 +826,7 @@ msgstr "Tập tin đính kèm"
 msgid "Attendees"
 msgstr "Người tham dự"
 
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:868
+#: frontend/src/components/Calendar/CalendarEventPanel.vue:869
 msgid "Attending status updated"
 msgstr "Trạng thái tham dự đã được cập nhật"
 
@@ -1213,7 +1213,7 @@ msgstr "CSV"
 msgid "Calendar"
 msgstr "Lịch"
 
-#: frontend/src/components/Settings/CalendarSettings.vue:7
+#: frontend/src/components/Settings/CalendarSettings.vue:8
 msgid "Calendar Settings"
 msgstr "Cài Đặt Lịch"
 
@@ -1240,8 +1240,6 @@ msgid "Call using {0}"
 msgstr "Gọi bằng {0}"
 
 #: frontend/src/components/Modals/EventModal.vue:63
-#: frontend/src/components/Modals/NoteModal.vue:28
-#: frontend/src/components/Modals/TaskModal.vue:28
 msgid "Call with John Doe"
 msgstr "Gọi với Nguyễn Văn A"
 
@@ -1273,7 +1271,7 @@ msgid "Can't retry sync for this without source!"
 msgstr "Không thể thử đồng bộ lại cho việc này nếu không có nguồn!"
 
 #: frontend/src/components/BulkDeleteLinkedDocModal.vue:82
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:916
+#: frontend/src/components/Calendar/CalendarEventPanel.vue:917
 #: frontend/src/components/ColumnSettings.vue:123
 #: frontend/src/components/Controls/GeolocationControl.vue:54
 #: frontend/src/components/Dashboard/AddChartModal.vue:40
@@ -1462,7 +1460,7 @@ msgstr "Nhấp vào liên kết bên dưới để hoàn tất đăng ký và đ
 msgid "Close"
 msgstr "Đóng"
 
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:38
+#: frontend/src/components/Calendar/CalendarEventPanel.vue:39
 msgid "Close Panel"
 msgstr "Đóng Panel"
 
@@ -1612,7 +1610,7 @@ msgstr "Cấu hình Nhà cung cấp Tỷ giá cho CRM của bạn"
 msgid "Configure your Brand Name, Logo, and Favicon"
 msgstr "Cấu hình Tên Thương hiệu, Logo và Favicon của bạn"
 
-#: frontend/src/components/Settings/CalendarSettings.vue:11
+#: frontend/src/components/Settings/CalendarSettings.vue:12
 msgid "Configure your Calendar Settings like Default View and Event Notifications here"
 msgstr "Cấu hình Cài đặt Lịch của bạn như Chế độ xem Mặc định và Thông báo Sự kiện tại đây"
 
@@ -1721,7 +1719,6 @@ msgstr "Liên hệ"
 
 #. Label of the content (Text Editor) field in DocType 'FCRM Note'
 #: crm/fcrm/doctype/fcrm_note/fcrm_note.json
-#: frontend/src/components/Modals/NoteModal.vue:33
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:91
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:102
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:91
@@ -1790,9 +1787,9 @@ msgstr "Đếm"
 #: frontend/src/components/Modals/EmailTemplateSelectorModal.vue:19
 #: frontend/src/components/Modals/EventModal.vue:215
 #: frontend/src/components/Modals/LeadModal.vue:37
-#: frontend/src/components/Modals/NoteModal.vue:52
+#: frontend/src/components/Modals/NoteModal.vue:53
 #: frontend/src/components/Modals/OrganizationModal.vue:41
-#: frontend/src/components/Modals/TaskModal.vue:104
+#: frontend/src/components/Modals/TaskModal.vue:53
 #: frontend/src/components/Modals/ViewModal.vue:43
 #: frontend/src/components/Settings/EmailAdd.vue:86
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:23
@@ -1808,7 +1805,7 @@ msgstr "Tạo"
 msgid "Create Deal"
 msgstr "Tạo Deal"
 
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:513
+#: frontend/src/components/Calendar/CalendarEventPanel.vue:514
 #: frontend/src/pages/Calendar.vue:7
 msgid "Create Event"
 msgstr "Tạo Sự kiện"
@@ -1833,11 +1830,11 @@ msgstr "Tạo mới"
 msgid "Create New Holiday List"
 msgstr "Tạo Danh sách Ngày lễ mới"
 
-#: frontend/src/components/Modals/NoteModal.vue:6
+#: frontend/src/components/Modals/NoteModal.vue:8
 msgid "Create Note"
 msgstr "Tạo Ghi chú"
 
-#: frontend/src/components/Modals/TaskModal.vue:6
+#: frontend/src/components/Modals/TaskModal.vue:8
 msgid "Create Task"
 msgstr "Tạo Công việc"
 
@@ -1946,7 +1943,7 @@ msgstr "Tùy chỉnh bộ lọc nhanh"
 #. Sync Source'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
-#: frontend/src/components/Settings/CalendarSettings.vue:49
+#: frontend/src/components/Settings/CalendarSettings.vue:50
 msgid "Daily"
 msgstr "Hàng ngày"
 
@@ -2009,7 +2006,7 @@ msgstr "Định dạng ngày"
 msgid "Day"
 msgstr "Ngày"
 
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:424
+#: frontend/src/components/Calendar/CalendarEventPanel.vue:425
 #: frontend/src/components/Layouts/AppSidebar.vue:575
 #: frontend/src/components/Settings/AssignmentRules/AssigneeRules.vue:20
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:51
@@ -2172,7 +2169,7 @@ msgstr "Gửi & Hộp thư đến mặc định"
 msgid "Default Service Level Agreement already exists for {0}"
 msgstr "Thỏa thuận Mức Dịch vụ Mặc định đã tồn tại cho {0}"
 
-#: frontend/src/components/Settings/CalendarSettings.vue:33
+#: frontend/src/components/Settings/CalendarSettings.vue:34
 msgid "Default View"
 msgstr "Chế độ xem mặc định"
 
@@ -2201,7 +2198,7 @@ msgstr ""
 #: frontend/src/components/BulkDeleteLinkedDocModal.vue:49
 #: frontend/src/components/BulkDeleteLinkedDocModal.vue:74
 #: frontend/src/components/BulkDeleteLinkedDocModal.vue:113
-#: frontend/src/components/Controls/Grid.vue:430
+#: frontend/src/components/Controls/Grid.vue:447
 #: frontend/src/components/DeleteLinkedDocModal.vue:13
 #: frontend/src/components/DeleteLinkedDocModal.vue:93
 #: frontend/src/components/Kanban/KanbanView.vue:232
@@ -2242,7 +2239,7 @@ msgstr "Xóa tệp đính kèm"
 msgid "Delete Contact"
 msgstr "Xóa Liên hệ"
 
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:25
+#: frontend/src/components/Calendar/CalendarEventPanel.vue:26
 msgid "Delete Event"
 msgstr "Xóa Sự kiện"
 
@@ -2299,9 +2296,8 @@ msgstr "Dữ liệu demo đã được khôi phục thành công."
 #: crm/fcrm/doctype/crm_lost_reason/crm_lost_reason.json
 #: crm/fcrm/doctype/crm_product/crm_product.json
 #: crm/fcrm/doctype/crm_task/crm_task.json
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:253
+#: frontend/src/components/Calendar/CalendarEventPanel.vue:254
 #: frontend/src/components/Modals/EventModal.vue:172
-#: frontend/src/components/Modals/TaskModal.vue:34
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:113
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:114
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:604
@@ -2320,7 +2316,7 @@ msgstr ""
 #. Label of the details (Text Editor) field in DocType 'CRM Lead Source'
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: crm/fcrm/doctype/crm_lead_source/crm_lead_source.json
-#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:198
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:197
 #: frontend/src/pages/MobileContact.vue:294
 #: frontend/src/pages/MobileDeal.vue:432 frontend/src/pages/MobileLead.vue:278
 #: frontend/src/pages/MobileOrganization.vue:337
@@ -2351,7 +2347,7 @@ msgstr ""
 msgid "Disabled"
 msgstr "Đã tắt"
 
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:922
+#: frontend/src/components/Calendar/CalendarEventPanel.vue:923
 #: frontend/src/components/CommentBox.vue:74
 #: frontend/src/components/EmailEditor.vue:178
 msgid "Discard"
@@ -2362,7 +2358,7 @@ msgstr "Loại bỏ"
 msgid "Discard Changes"
 msgstr "Hủy thay đổi"
 
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:910
+#: frontend/src/components/Calendar/CalendarEventPanel.vue:911
 msgid "Discard Unsaved Changes?"
 msgstr "Hủy bỏ thay đổi chưa lưu?"
 
@@ -2389,7 +2385,7 @@ msgstr ""
 msgid "DocType"
 msgstr "Loại tài liệu"
 
-#: crm/api/doc.py:802
+#: crm/api/doc.py:803
 msgid "Doctype is required"
 msgstr "Loại tài liệu là bắt buộc"
 
@@ -2465,7 +2461,7 @@ msgstr "Ngày đến hạn"
 #: frontend/src/components/Modals/ViewModal.vue:42
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:65
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:131
-#: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:227
+#: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:229
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:23
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:188
 #: frontend/src/components/Settings/Sla/SlaPolicyList.vue:133
@@ -2478,9 +2474,9 @@ msgstr "Trùng lặp"
 msgid "Duplicate Assignment Rule"
 msgstr ""
 
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:33
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:512
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:674
+#: frontend/src/components/Calendar/CalendarEventPanel.vue:34
+#: frontend/src/components/Calendar/CalendarEventPanel.vue:513
+#: frontend/src/components/Calendar/CalendarEventPanel.vue:675
 msgid "Duplicate Event"
 msgstr "Sao chép Sự kiện"
 
@@ -2551,7 +2547,7 @@ msgstr ""
 msgid "ERPNext is not integrated with the CRM"
 msgstr "ERPNext không được tích hợp với CRM"
 
-#: frontend/src/components/FieldLayout/Field.vue:109
+#: frontend/src/components/FieldLayout/Field.vue:110
 #: frontend/src/components/FieldLayoutEditor.vue:414
 #: frontend/src/components/FieldLayoutEditor.vue:457
 #: frontend/src/components/ListBulkActions.vue:170
@@ -2576,7 +2572,7 @@ msgstr "Chỉnh sửa Bố cục Trường dữ liệu"
 msgid "Edit Email"
 msgstr "Chỉnh sửa email"
 
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:18
+#: frontend/src/components/Calendar/CalendarEventPanel.vue:19
 msgid "Edit Event"
 msgstr "Chỉnh sửa Sự kiện"
 
@@ -2592,7 +2588,9 @@ msgstr "Chỉnh sửa Bố cục Trường"
 #: frontend/src/components/Modals/CreateDocumentModal.vue:16
 #: frontend/src/components/Modals/DealModal.vue:16
 #: frontend/src/components/Modals/LeadModal.vue:16
+#: frontend/src/components/Modals/NoteModal.vue:27
 #: frontend/src/components/Modals/OrganizationModal.vue:16
+#: frontend/src/components/Modals/TaskModal.vue:27
 msgid "Edit Fields Layout"
 msgstr "Chỉnh sửa Bố cục Trường"
 
@@ -2609,7 +2607,7 @@ msgid "Edit Grid Row Fields Layout"
 msgstr "Chỉnh sửa Bố cục Trường Hàng Lưới"
 
 #: frontend/src/components/Modals/CallLogDetailModal.vue:20
-#: frontend/src/components/Modals/NoteModal.vue:6
+#: frontend/src/components/Modals/NoteModal.vue:8
 msgid "Edit Note"
 msgstr "Sửa Ghi chú"
 
@@ -2621,12 +2619,12 @@ msgstr "Chỉnh sửa Bố cục Nhập nhanh"
 msgid "Edit Response & Resolution"
 msgstr "Chỉnh sửa Phản hồi & Giải quyết"
 
-#: frontend/src/components/Controls/Grid.vue:397
+#: frontend/src/components/Controls/Grid.vue:414
 msgid "Edit Row"
 msgstr "Chỉnh sửa Hàng"
 
 #: frontend/src/components/Modals/CallLogDetailModal.vue:25
-#: frontend/src/components/Modals/TaskModal.vue:6
+#: frontend/src/components/Modals/TaskModal.vue:8
 msgid "Edit Task"
 msgstr "Chỉnh sửa Công việc"
 
@@ -2642,7 +2640,7 @@ msgstr "Chỉnh sửa Ngày làm việc"
 msgid "Edit an Event"
 msgstr "Chỉnh sửa một Sự kiện"
 
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:672
+#: frontend/src/components/Calendar/CalendarEventPanel.vue:673
 msgid "Editing Event"
 msgstr "Đang chỉnh sửa Sự kiện"
 
@@ -2659,8 +2657,8 @@ msgstr "Đang chỉnh sửa Hàng {0}"
 #: frontend/src/components/Activities/ActivityHeader.vue:120
 #: frontend/src/components/Calendar/EventNotifications.vue:26
 #: frontend/src/components/Calendar/EventNotifications.vue:94
-#: frontend/src/components/Settings/CalendarSettings.vue:88
-#: frontend/src/components/Settings/CalendarSettings.vue:187
+#: frontend/src/components/Settings/CalendarSettings.vue:89
+#: frontend/src/components/Settings/CalendarSettings.vue:188
 #: frontend/src/components/Settings/Profile/UserEmailSettings.vue:68
 #: frontend/src/components/Settings/Settings.vue:164
 #: frontend/src/pages/Contact.vue:536 frontend/src/pages/MobileContact.vue:529
@@ -2838,7 +2836,7 @@ msgstr "Ngày kết thúc không thể trước ngày bắt đầu"
 #. Label of the end_time (Time) field in DocType 'CRM Service Day'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 #: crm/fcrm/doctype/crm_service_day/crm_service_day.json
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:345
+#: frontend/src/components/Calendar/CalendarEventPanel.vue:346
 #: frontend/src/components/Modals/EventModal.vue:112
 #: frontend/src/components/Settings/Sla/SlaHolidays.vue:224
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:45
@@ -2902,7 +2900,7 @@ msgstr "Nhập Facebook Access Token của bạn"
 msgid "Enter your personal mobile number used by Exotel to make calls"
 msgstr "Nhập số điện thoại di động cá nhân của bạn được Exotel sử dụng để thực hiện cuộc gọi"
 
-#: frontend/src/components/FieldLayout/Field.vue:516
+#: frontend/src/components/FieldLayout/Field.vue:559
 msgid "Enter {0}"
 msgstr "Nhập {0}"
 
@@ -2929,11 +2927,11 @@ msgstr "Lỗi đồng bộ Lead"
 msgid "Error converting to deal: {0}"
 msgstr "Lỗi chuyển đổi thành deal: {0}"
 
-#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:291
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:290
 msgid "Error creating Lead Sync Source"
 msgstr "Lỗi tạo Nguồn đồng bộ Lead"
 
-#: frontend/src/components/Modals/CallLogDetailModal.vue:316
+#: frontend/src/components/Modals/CallLogDetailModal.vue:326
 msgid "Error creating lead: {0}"
 msgstr "Lỗi tạo lead: {0}"
 
@@ -2941,20 +2939,22 @@ msgstr "Lỗi tạo lead: {0}"
 msgid "Error occurred"
 msgstr "Đã xảy ra lỗi"
 
-#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:385
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:384
 msgid "Error syncing leads"
 msgstr "Lỗi đồng bộ leads"
 
-#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:272
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:271
 msgid "Error updating Lead Sync Source"
 msgstr "Lỗi cập nhật Nguồn đồng bộ Lead"
 
+#: frontend/src/components/Modals/NoteModal.vue:210
+#: frontend/src/components/Modals/TaskModal.vue:210
 #: frontend/src/pages/Deal.vue:765 frontend/src/pages/Lead.vue:497
 #: frontend/src/pages/MobileDeal.vue:620 frontend/src/pages/MobileLead.vue:359
 msgid "Error updating field"
 msgstr "Lỗi cập nhật trường"
 
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:671
+#: frontend/src/components/Calendar/CalendarEventPanel.vue:672
 msgid "Event Details"
 msgstr "Chi tiết sự kiện"
 
@@ -2964,11 +2964,11 @@ msgstr "ID Sự kiện là bắt buộc"
 
 #. Label of the event_notifications (Table) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
-#: frontend/src/components/Settings/CalendarSettings.vue:61
+#: frontend/src/components/Settings/CalendarSettings.vue:62
 msgid "Event Notifications"
 msgstr "Thông báo sự kiện"
 
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:284
+#: frontend/src/components/Calendar/CalendarEventPanel.vue:285
 msgid "Event Title"
 msgstr "Tiêu đề Sự kiện"
 
@@ -3195,7 +3195,7 @@ msgstr "Không thể xóa nguồn đồng bộ lead"
 msgid "Failed to delete note"
 msgstr "Không thể xóa ghi chú"
 
-#: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:219
+#: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:221
 msgid "Failed to delete template"
 msgstr "Không thể xóa mẫu"
 
@@ -3203,7 +3203,11 @@ msgstr "Không thể xóa mẫu"
 msgid "Failed to fetch exchange rate from {0} to {1} on {2}. Please check your internet connection or try again later."
 msgstr "Không thể lấy tỷ giá từ {0} sang {1} vào {2}. Vui lòng kiểm tra kết nối internet hoặc thử lại sau."
 
-#: frontend/src/data/script.js:107
+#: frontend/src/components/Modals/FieldLayoutDialog.vue:172
+msgid "Failed to load fields layout"
+msgstr ""
+
+#: frontend/src/data/script.js:109
 msgid "Failed to load form controller: {0}"
 msgstr "Không thể tải bộ điều khiển biểu mẫu: {0}"
 
@@ -3244,7 +3248,7 @@ msgstr "Không thể cập nhật Tài khoản Email, Thông tin xác thực kh�
 msgid "Failed to update Twilio call status"
 msgstr "Không thể cập nhật trạng thái cuộc gọi Twilio"
 
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:873
+#: frontend/src/components/Calendar/CalendarEventPanel.vue:874
 msgid "Failed to update attending status"
 msgstr "Không thể cập nhật trạng thái tham dự"
 
@@ -3257,7 +3261,7 @@ msgid "Failed to update source"
 msgstr "Không thể cập nhật nguồn"
 
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:205
-#: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:204
+#: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:206
 msgid "Failed to update template"
 msgstr "Không thể cập nhật mẫu"
 
@@ -3266,7 +3270,7 @@ msgstr "Không thể cập nhật mẫu"
 msgid "Failure"
 msgstr "Thất bại"
 
-#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:205
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:204
 msgid "Failure Logs"
 msgstr "Nhật ký lỗi"
 
@@ -3366,7 +3370,7 @@ msgstr "Phao chính xác"
 msgid "For"
 msgstr "Đối với"
 
-#: frontend/src/components/Settings/CalendarSettings.vue:162
+#: frontend/src/components/Settings/CalendarSettings.vue:163
 msgid "For all-day events, <b>set a time</b> to send reminders before the event starts"
 msgstr "Đối với sự kiện cả ngày, <b>đặt thời gian</b> để gửi lời nhắc trước khi sự kiện bắt đầu"
 
@@ -3464,7 +3468,7 @@ msgstr "Chuyển đổi phễu"
 msgid "Funnel conversion"
 msgstr "Chuyển đổi phễu"
 
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:298
+#: frontend/src/components/Calendar/CalendarEventPanel.vue:299
 msgid "GMT+5:30"
 msgstr "GMT+5:30"
 
@@ -3505,7 +3509,7 @@ msgstr "Đi đến Trang mời"
 msgid "Go to Website"
 msgstr "Đi đến Website"
 
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:523
+#: frontend/src/components/Calendar/CalendarEventPanel.vue:524
 msgid "Going?"
 msgstr "Tham dự?"
 
@@ -3963,11 +3967,11 @@ msgstr "Có vẻ như hiện tại không có {0} nào. Bạn có thể tạo th
 msgid "It will make deal's \"Expected Closure Date\" & \"Expected Deal Value\" mandatory to get accurate forecasting insights"
 msgstr "Điều này sẽ khiến \"Ngày đóng dự kiến\" & \"Giá trị Deal dự kiến\" của deal trở thành bắt buộc để có được thông tin chi tiết dự báo chính xác"
 
-#: crm/api/doc.py:805
+#: crm/api/doc.py:806
 msgid "Items are required"
 msgstr "Các mục là bắt buộc"
 
-#: crm/api/doc.py:809
+#: crm/api/doc.py:810
 msgid "Items must be a list"
 msgstr "Các mục phải là một danh sách"
 
@@ -3986,7 +3990,6 @@ msgstr "Chức danh"
 #: frontend/src/components/AssignToBody.vue:10
 #: frontend/src/components/Filter.vue:603
 #: frontend/src/components/Modals/AssignmentModal.vue:12
-#: frontend/src/components/Modals/TaskModal.vue:60
 #: frontend/src/components/Telephony/TaskPanel.vue:46
 #: frontend/src/pages/Calendar.vue:103
 msgid "John Doe"
@@ -4144,7 +4147,7 @@ msgstr "Bố cục"
 
 #. Label of the lead (Link) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:420
+#: frontend/src/components/Calendar/CalendarEventPanel.vue:421
 #: frontend/src/components/Layouts/AppSidebar.vue:574
 #: frontend/src/components/Settings/AssignmentRules/AssigneeRules.vue:19
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:55
@@ -4196,7 +4199,7 @@ msgstr "Trạng thái Lead"
 msgid "Lead Sync Source"
 msgstr "Nguồn đồng bộ Lead"
 
-#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:286
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:285
 msgid "Lead Sync Source created successfully"
 msgstr "Nguồn đồng bộ Lead đã được tạo thành công"
 
@@ -4277,7 +4280,7 @@ msgstr "Thích"
 msgid "Link"
 msgstr "Liên kết"
 
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:403
+#: frontend/src/components/Calendar/CalendarEventPanel.vue:404
 msgid "Linked With"
 msgstr "Được liên kết với"
 
@@ -4306,7 +4309,7 @@ msgid "Load Default Columns"
 msgstr "Tải cột mặc định"
 
 #: frontend/src/components/Kanban/KanbanView.vue:140
-#: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:137
+#: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:139
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:116
 #: frontend/src/components/Settings/Users.vue:150
 msgid "Load More"
@@ -4314,6 +4317,7 @@ msgstr "Tải thêm"
 
 #: frontend/src/components/Activities/Activities.vue:19
 #: frontend/src/components/Activities/DataFields.vue:35
+#: frontend/src/components/Modals/FieldLayoutDialog.vue:30
 #: frontend/src/pages/Deal.vue:186 frontend/src/pages/MobileDeal.vue:121
 msgid "Loading..."
 msgstr "Đang tải..."
@@ -4483,6 +4487,8 @@ msgstr "Quản lý các chính sách thỏa thuận mức dịch vụ của bạ
 msgid "Manager"
 msgstr "Quản lý"
 
+#: frontend/src/components/Modals/NoteModal.vue:154
+#: frontend/src/components/Modals/TaskModal.vue:154
 #: frontend/src/data/document.js:64
 msgid "Mandatory field error: {0}"
 msgstr "Lỗi trường bắt buộc: {0}"
@@ -4491,6 +4497,7 @@ msgstr "Lỗi trường bắt buộc: {0}"
 msgid "Mandatory field(s) {0} must be mapped"
 msgstr "Trường bắt buộc {0} phải được ánh xạ"
 
+#: frontend/src/components/Modals/FieldLayoutDialog.vue:207
 #: frontend/src/data/document.js:220 frontend/src/data/document.js:222
 msgid "Mandatory fields required: {0}"
 msgstr "Các trường bắt buộc: {0}"
@@ -4507,8 +4514,8 @@ msgid "Mapped to CRM Field"
 msgstr "Ánh xạ đến Trường CRM"
 
 #: frontend/src/components/Notifications.vue:22
-#: frontend/src/pages/MobileNotification.vue:12
 #: frontend/src/pages/MobileNotification.vue:13
+#: frontend/src/pages/MobileNotification.vue:14
 msgid "Mark all as read"
 msgstr "Đánh dấu tất cả đã đọc"
 
@@ -4523,12 +4530,12 @@ msgstr "Đánh dấu lead/deal đã phản hồi khi có phản hồi"
 msgid "Masters"
 msgstr "Danh mục"
 
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:312
+#: frontend/src/components/Calendar/CalendarEventPanel.vue:313
 #: frontend/src/components/Modals/EventModal.vue:86
 msgid "May 1, 2025"
 msgstr "1 tháng 5, 2025"
 
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:538
+#: frontend/src/components/Calendar/CalendarEventPanel.vue:539
 msgid "Maybe"
 msgstr "Có lẽ"
 
@@ -4618,11 +4625,11 @@ msgstr "Tháng"
 #. Sync Source'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
-#: frontend/src/components/Settings/CalendarSettings.vue:51
+#: frontend/src/components/Settings/CalendarSettings.vue:52
 msgid "Monthly"
 msgstr "Hàng tháng"
 
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:465
+#: frontend/src/components/Calendar/CalendarEventPanel.vue:466
 #: frontend/src/components/ViewControls.vue:233
 msgid "More Options"
 msgstr "Thêm tùy chọn"
@@ -4739,7 +4746,7 @@ msgstr "Liên hệ mới"
 msgid "New Email"
 msgstr "Email mới"
 
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:673
+#: frontend/src/components/Calendar/CalendarEventPanel.vue:674
 msgid "New Event"
 msgstr "Sự kiện mới"
 
@@ -4835,7 +4842,7 @@ msgstr "Tuần tới"
 msgid "Next Year"
 msgstr "Năm tới"
 
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:534
+#: frontend/src/components/Calendar/CalendarEventPanel.vue:535
 msgid "No"
 msgstr "Không"
 
@@ -4849,7 +4856,7 @@ msgstr "Không trả lời"
 msgid "No Contacts Added"
 msgstr "Chưa có Liên hệ nào"
 
-#: frontend/src/components/Controls/Grid.vue:423
+#: frontend/src/components/Controls/Grid.vue:440
 msgid "No Data"
 msgstr "Không có dữ liệu"
 
@@ -4873,7 +4880,7 @@ msgstr "Không có Nhãn"
 msgid "No Mobile Number Set"
 msgstr "Chưa đặt số di động"
 
-#: frontend/src/pages/MobileNotification.vue:61
+#: frontend/src/pages/MobileNotification.vue:65
 msgid "No New Notifications"
 msgstr "Không có thông báo mới nào"
 
@@ -4965,7 +4972,7 @@ msgstr "Số nhân viên"
 msgid "Normal"
 msgstr "Bình thường"
 
-#: crm/utils/__init__.py:265
+#: crm/utils/__init__.py:134
 msgid "Not Allowed"
 msgstr "Không được phép"
 
@@ -5078,10 +5085,10 @@ msgstr "Chế độ xem Ghi chú"
 #: frontend/src/components/Calendar/EventNotifications.vue:22
 #: frontend/src/components/Calendar/EventNotifications.vue:90
 #: frontend/src/components/Layouts/AppSidebar.vue:607
-#: frontend/src/components/Settings/CalendarSettings.vue:84
-#: frontend/src/components/Settings/CalendarSettings.vue:92
-#: frontend/src/components/Settings/CalendarSettings.vue:183
-#: frontend/src/components/Settings/CalendarSettings.vue:191
+#: frontend/src/components/Settings/CalendarSettings.vue:85
+#: frontend/src/components/Settings/CalendarSettings.vue:93
+#: frontend/src/components/Settings/CalendarSettings.vue:184
+#: frontend/src/components/Settings/CalendarSettings.vue:192
 msgid "Notification"
 msgstr "Thông báo"
 
@@ -5106,7 +5113,7 @@ msgstr "Loại Doctype Thông báo"
 #: frontend/src/components/Mobile/MobileSidebar.vue:23
 #: frontend/src/components/Modals/EventModal.vue:187
 #: frontend/src/components/Notifications.vue:17
-#: frontend/src/pages/MobileNotification.vue:6
+#: frontend/src/pages/MobileNotification.vue:7
 msgid "Notifications"
 msgstr "Thông báo"
 
@@ -5208,13 +5215,13 @@ msgstr "Chỉ người dùng bán hàng mới có thể truy cập tính năng W
 msgid "Open"
 msgstr "Mở"
 
-#: frontend/src/components/Modals/NoteModal.vue:13
-#: frontend/src/components/Modals/TaskModal.vue:13
+#: frontend/src/components/Modals/NoteModal.vue:15
+#: frontend/src/components/Modals/TaskModal.vue:15
 msgid "Open Deal"
 msgstr "Mở Deal"
 
-#: frontend/src/components/Modals/NoteModal.vue:14
-#: frontend/src/components/Modals/TaskModal.vue:14
+#: frontend/src/components/Modals/NoteModal.vue:16
+#: frontend/src/components/Modals/TaskModal.vue:16
 msgid "Open Lead"
 msgstr "Mở Lead"
 
@@ -5304,7 +5311,7 @@ msgstr "Tổ chức là bắt buộc để tạo khách hàng"
 msgid "Organizations"
 msgstr "Các Tổ chức"
 
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:150
+#: frontend/src/components/Calendar/CalendarEventPanel.vue:151
 msgid "Organizer"
 msgstr "Người tổ chức"
 
@@ -5331,7 +5338,7 @@ msgstr "Đi"
 msgid "Owner"
 msgstr "Chủ sở hữu"
 
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:145
+#: frontend/src/components/Calendar/CalendarEventPanel.vue:146
 msgid "Owner: {0}"
 msgstr "Chủ sở hữu: {0}"
 
@@ -5613,13 +5620,13 @@ msgstr "Mức ưu tiên {0}: Thời gian phản hồi là bắt buộc"
 
 #. Label of the private (Check) field in DocType 'CRM Dashboard'
 #: crm/fcrm/doctype/crm_dashboard/crm_dashboard.json
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:478
+#: frontend/src/components/Calendar/CalendarEventPanel.vue:479
 #: frontend/src/components/FilesUploader/FilesUploaderArea.vue:89
 #: frontend/src/components/Modals/EventModal.vue:143
 msgid "Private"
 msgstr "Riêng tư"
 
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:487
+#: frontend/src/components/Calendar/CalendarEventPanel.vue:488
 #: frontend/src/components/Modals/EventModal.vue:152
 msgid "Private or Public"
 msgstr "Riêng tư hoặc Công khai"
@@ -5673,7 +5680,7 @@ msgstr "Doanh thu dự kiến so với thực tế dựa trên xác suất deal"
 
 #. Label of the public (Check) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:482
+#: frontend/src/components/Calendar/CalendarEventPanel.vue:483
 #: frontend/src/components/Modals/EventModal.vue:147
 msgid "Public"
 msgstr "Công khai"
@@ -5820,7 +5827,7 @@ msgstr "Từ chối Cuộc gọi"
 msgid "Reload Columns"
 msgstr "Tải lại Cột"
 
-#: frontend/src/components/Settings/CalendarSettings.vue:66
+#: frontend/src/components/Settings/CalendarSettings.vue:67
 msgid "Reminders will be sent <b>before the event starts</b>, based on the configured time"
 msgstr "Lời nhắc sẽ được gửi <b>trước khi sự kiện bắt đầu</b>, dựa trên thời gian đã định cấu hình"
 
@@ -6225,7 +6232,7 @@ msgstr "Lời chào"
 msgid "Saturday"
 msgstr "Thứ Bảy"
 
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:510
+#: frontend/src/components/Calendar/CalendarEventPanel.vue:511
 #: frontend/src/components/Controls/GeolocationControl.vue:60
 #: frontend/src/components/Controls/GridFieldsEditorModal.vue:84
 #: frontend/src/components/Controls/GridRowFieldsModal.vue:26
@@ -6294,11 +6301,11 @@ msgstr "Tìm kiếm Người dùng"
 msgid "Section"
 msgstr "Phần"
 
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:231
+#: frontend/src/components/Calendar/CalendarEventPanel.vue:232
 msgid "See All Participants"
 msgstr "Xem Tất cả Người tham dự"
 
-#: frontend/src/components/SidePanelLayout.vue:153
+#: frontend/src/components/SidePanelLayout.vue:154
 msgid "Select"
 msgstr "Chọn"
 
@@ -6339,7 +6346,7 @@ msgstr "Chọn Loại Nguồn"
 msgid "Select Type"
 msgstr "Chọn Loại"
 
-#: frontend/src/components/Settings/CalendarSettings.vue:53
+#: frontend/src/components/Settings/CalendarSettings.vue:54
 msgid "Select View"
 msgstr "Chọn Xem"
 
@@ -6367,7 +6374,7 @@ msgstr "Chọn những người được phân công cho {0}."
 msgid "Select the deal status to trigger the auto customer creation in ERPNext"
 msgstr ""
 
-#: frontend/src/components/Settings/CalendarSettings.vue:37
+#: frontend/src/components/Settings/CalendarSettings.vue:38
 msgid "Select the default view for your calendar. This will be the initial view when you open the calendar"
 msgstr "Chọn chế độ xem mặc định cho lịch của bạn. Đây sẽ là chế độ xem ban đầu khi bạn mở lịch"
 
@@ -6379,7 +6386,7 @@ msgstr ""
 msgid "Select your ERPNext company to connect with"
 msgstr ""
 
-#: frontend/src/components/FieldLayout/Field.vue:514
+#: frontend/src/components/FieldLayout/Field.vue:557
 msgid "Select {0}"
 msgstr "Chọn {0}"
 
@@ -6580,7 +6587,7 @@ msgstr "Hiển thị Đường viền"
 msgid "Show Label"
 msgstr "Hiển thị Nhãn"
 
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:239
+#: frontend/src/components/Calendar/CalendarEventPanel.vue:240
 msgid "Show Less"
 msgstr "Hiển thị Ít hơn"
 
@@ -6741,7 +6748,7 @@ msgstr "Ngày bắt đầu không thể sau ngày kết thúc"
 #. Label of the start_time (Time) field in DocType 'CRM Service Day'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 #: crm/fcrm/doctype/crm_service_day/crm_service_day.json
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:337
+#: frontend/src/components/Calendar/CalendarEventPanel.vue:338
 #: frontend/src/components/Modals/EventModal.vue:103
 #: frontend/src/components/Settings/Sla/SlaHolidays.vue:219
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:31
@@ -6863,7 +6870,7 @@ msgstr "Đã đồng bộ hóa"
 msgid "Syncing"
 msgstr "Đang đồng bộ hóa"
 
-#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:381
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:380
 msgid "Syncing started in background"
 msgstr "Đồng bộ đã bắt đầu ở nền"
 
@@ -6931,10 +6938,6 @@ msgstr "Ghi chú..."
 msgid "Task"
 msgstr "Nhiệm vụ"
 
-#: frontend/src/components/Modals/TaskModal.vue:194
-msgid "Task created"
-msgstr "Công việc đã được tạo"
-
 #: frontend/src/pages/Deal.vue:590 frontend/src/pages/Lead.vue:442
 #: frontend/src/pages/MobileDeal.vue:464 frontend/src/pages/MobileLead.vue:309
 msgid "Tasks"
@@ -6953,7 +6956,7 @@ msgstr "Phương tiện Điện thoại"
 msgid "Telephony Settings"
 msgstr "Cài đặt Điện thoại"
 
-#: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:216
+#: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:218
 msgid "Template Deleted Successfully"
 msgstr "Mẫu đã được Xóa Thành công"
 
@@ -6965,11 +6968,11 @@ msgstr "Tên mẫu"
 msgid "Template created successfully"
 msgstr "Mẫu đã được Tạo thành công"
 
-#: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:199
+#: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:201
 msgid "Template disabled successfully"
 msgstr "Mẫu đã được Vô hiệu hóa thành công"
 
-#: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:198
+#: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:200
 msgid "Template enabled successfully"
 msgstr "Mẫu đã được Kích hoạt thành công"
 
@@ -7127,8 +7130,6 @@ msgstr ""
 #: crm/fcrm/doctype/crm_task/crm_task.json
 #: crm/fcrm/doctype/fcrm_note/fcrm_note.json
 #: frontend/src/components/Modals/EventModal.vue:43
-#: frontend/src/components/Modals/NoteModal.vue:27
-#: frontend/src/components/Modals/TaskModal.vue:24
 msgid "Title"
 msgstr "Tiêu đề"
 
@@ -7138,9 +7139,8 @@ msgstr "Tiêu đề"
 msgid "Title Field"
 msgstr "Trường tiêu đề"
 
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:822
+#: frontend/src/components/Calendar/CalendarEventPanel.vue:823
 #: frontend/src/components/Modals/EventModal.vue:376
-#: frontend/src/components/Modals/TaskModal.vue:168
 msgid "Title is required"
 msgstr ""
 
@@ -7200,11 +7200,6 @@ msgstr "Ngày mai"
 #: crm/api/user.py:21
 msgid "Too many failed attempts. Please try again after some time."
 msgstr ""
-
-#: frontend/src/components/Modals/NoteModal.vue:41
-#: frontend/src/components/Modals/TaskModal.vue:43
-msgid "Took a call with John Doe and discussed the new project."
-msgstr "Đã gọi điện với Nguyễn Văn A và thảo luận về dự án mới."
 
 #. Label of the total (Currency) field in DocType 'CRM Deal'
 #. Label of the total (Currency) field in DocType 'CRM Lead'
@@ -7424,10 +7419,10 @@ msgstr "Không có tiêu đề"
 #: frontend/src/components/Modals/AssignmentModal.vue:80
 #: frontend/src/components/Modals/ChangePasswordModal.vue:58
 #: frontend/src/components/Modals/EventModal.vue:212
-#: frontend/src/components/Modals/NoteModal.vue:52
-#: frontend/src/components/Modals/TaskModal.vue:104
+#: frontend/src/components/Modals/NoteModal.vue:53
+#: frontend/src/components/Modals/TaskModal.vue:53
 #: frontend/src/components/Settings/BrandSettings.vue:16
-#: frontend/src/components/Settings/CalendarSettings.vue:20
+#: frontend/src/components/Settings/CalendarSettings.vue:21
 #: frontend/src/components/Settings/DashboardSettings.vue:19
 #: frontend/src/components/Settings/DefaultsSettings.vue:19
 #: frontend/src/components/Settings/ERPNextSettings.vue:41
@@ -7633,7 +7628,7 @@ msgstr "Tuần"
 #. Option for the 'Default Calendar View' (Select) field in DocType 'FCRM
 #. Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
-#: frontend/src/components/Settings/CalendarSettings.vue:50
+#: frontend/src/components/Settings/CalendarSettings.vue:51
 msgid "Weekly"
 msgstr "Hàng tuần"
 
@@ -7716,7 +7711,7 @@ msgstr "Ngày làm việc"
 msgid "Working Hours"
 msgstr "Giờ làm việc"
 
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:530
+#: frontend/src/components/Calendar/CalendarEventPanel.vue:531
 #: frontend/src/components/Filter.vue:597
 msgid "Yes"
 msgstr "Có"
@@ -7743,7 +7738,7 @@ msgstr "Bạn không được phép mời Người quản lý hệ thống"
 msgid "You are not permitted to access CRM resources."
 msgstr "Bạn không được phép truy cập tài nguyên CRM."
 
-#: crm/utils/__init__.py:264
+#: crm/utils/__init__.py:133
 msgid "You are not permitted to access this resource."
 msgstr "Bạn không được phép truy cập tài nguyên này."
 
@@ -7858,7 +7853,7 @@ msgstr "đã giao {0} {1} cho bạn"
 msgid "at"
 msgstr "tại"
 
-#: frontend/src/components/Settings/CalendarSettings.vue:220
+#: frontend/src/components/Settings/CalendarSettings.vue:221
 msgid "before at"
 msgstr "trước lúc"
 
@@ -7904,8 +7899,8 @@ msgid "cyan"
 msgstr "lục lam"
 
 #: frontend/src/components/Calendar/EventNotifications.vue:244
-#: frontend/src/components/Settings/CalendarSettings.vue:119
-#: frontend/src/components/Settings/CalendarSettings.vue:208
+#: frontend/src/components/Settings/CalendarSettings.vue:120
+#: frontend/src/components/Settings/CalendarSettings.vue:209
 msgid "day"
 msgstr "ngày"
 
@@ -7915,8 +7910,8 @@ msgid "day before"
 msgstr "ngày trước"
 
 #: frontend/src/components/Calendar/EventNotifications.vue:244
-#: frontend/src/components/Settings/CalendarSettings.vue:119
-#: frontend/src/components/Settings/CalendarSettings.vue:208
+#: frontend/src/components/Settings/CalendarSettings.vue:120
+#: frontend/src/components/Settings/CalendarSettings.vue:209
 msgid "days"
 msgstr "ngày"
 
@@ -7996,7 +7991,7 @@ msgid "here"
 msgstr "tại đây"
 
 #: frontend/src/components/Calendar/EventNotifications.vue:241
-#: frontend/src/components/Settings/CalendarSettings.vue:115
+#: frontend/src/components/Settings/CalendarSettings.vue:116
 msgid "hour"
 msgstr "giờ"
 
@@ -8005,7 +8000,7 @@ msgid "hour before"
 msgstr "giờ trước"
 
 #: frontend/src/components/Calendar/EventNotifications.vue:241
-#: frontend/src/components/Settings/CalendarSettings.vue:115
+#: frontend/src/components/Settings/CalendarSettings.vue:116
 msgid "hours"
 msgstr "giờ"
 
@@ -8086,7 +8081,7 @@ msgstr "vừa rồi"
 msgid "kanban"
 msgstr "kanban"
 
-#: crm/api/doc.py:46 crm/api/doc.py:156 crm/api/doc.py:482
+#: crm/api/doc.py:47 crm/api/doc.py:157 crm/api/doc.py:483
 msgid "label"
 msgstr "nhãn"
 
@@ -8101,12 +8096,12 @@ msgid "list"
 msgstr "danh sách"
 
 #: crm/api/comment.py:39 frontend/src/components/Notifications.vue:64
-#: frontend/src/pages/MobileNotification.vue:46
+#: frontend/src/pages/MobileNotification.vue:50
 msgid "mentioned you in {0}"
 msgstr "đã nhắc đến bạn trong {0}"
 
 #: frontend/src/components/Calendar/EventNotifications.vue:238
-#: frontend/src/components/Settings/CalendarSettings.vue:111
+#: frontend/src/components/Settings/CalendarSettings.vue:112
 msgid "minute"
 msgstr "phút"
 
@@ -8117,9 +8112,9 @@ msgstr "phút trước"
 #: frontend/src/components/Calendar/EventNotifications.vue:59
 #: frontend/src/components/Calendar/EventNotifications.vue:120
 #: frontend/src/components/Calendar/EventNotifications.vue:238
-#: frontend/src/components/Settings/CalendarSettings.vue:111
-#: frontend/src/components/Settings/CalendarSettings.vue:127
-#: frontend/src/components/Settings/CalendarSettings.vue:216
+#: frontend/src/components/Settings/CalendarSettings.vue:112
+#: frontend/src/components/Settings/CalendarSettings.vue:128
+#: frontend/src/components/Settings/CalendarSettings.vue:217
 msgid "minutes"
 msgstr ""
 
@@ -8211,8 +8206,8 @@ msgid "violet"
 msgstr "màu tím"
 
 #: frontend/src/components/Calendar/EventNotifications.vue:247
-#: frontend/src/components/Settings/CalendarSettings.vue:123
-#: frontend/src/components/Settings/CalendarSettings.vue:212
+#: frontend/src/components/Settings/CalendarSettings.vue:124
+#: frontend/src/components/Settings/CalendarSettings.vue:213
 msgid "week"
 msgstr "tuần"
 
@@ -8222,8 +8217,8 @@ msgid "week before"
 msgstr "tuần trước"
 
 #: frontend/src/components/Calendar/EventNotifications.vue:247
-#: frontend/src/components/Settings/CalendarSettings.vue:123
-#: frontend/src/components/Settings/CalendarSettings.vue:212
+#: frontend/src/components/Settings/CalendarSettings.vue:124
+#: frontend/src/components/Settings/CalendarSettings.vue:213
 msgid "weeks"
 msgstr ""
 
@@ -8260,11 +8255,11 @@ msgstr "{0} Phút"
 msgid "{0} assigned a {1} {2} to you"
 msgstr "{0} đã giao {1} {2} cho bạn"
 
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:134
+#: frontend/src/components/Calendar/CalendarEventPanel.vue:135
 msgid "{0} attendees"
 msgstr "{0} người tham dự"
 
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:654
+#: frontend/src/components/Calendar/CalendarEventPanel.vue:655
 msgid "{0} awaiting"
 msgstr "{0} đang chờ"
 
@@ -8296,7 +8291,7 @@ msgstr "{0} là Giá trị Không hợp lệ"
 msgid "{0} is an Invalid value"
 msgstr "{0} là giá trị không hợp lệ"
 
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:367
+#: frontend/src/components/Calendar/CalendarEventPanel.vue:368
 #: frontend/src/components/EmailEditor.vue:47
 #: frontend/src/components/EmailEditor.vue:83
 #: frontend/src/components/EmailEditor.vue:97
@@ -8314,7 +8309,7 @@ msgstr "{0} là bắt buộc"
 msgid "{0} m"
 msgstr "{0} phút"
 
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:650
+#: frontend/src/components/Calendar/CalendarEventPanel.vue:651
 msgid "{0} maybe"
 msgstr "{0} có thể"
 
@@ -8330,7 +8325,7 @@ msgstr "{0} phút trước"
 msgid "{0} months ago"
 msgstr "{0} tháng trước"
 
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:646
+#: frontend/src/components/Calendar/CalendarEventPanel.vue:647
 msgid "{0} no"
 msgstr "{0} không"
 
@@ -8350,7 +8345,7 @@ msgstr "{0} năm"
 msgid "{0} years ago"
 msgstr "{0} năm trước"
 
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:644
+#: frontend/src/components/Calendar/CalendarEventPanel.vue:645
 msgid "{0} yes"
 msgstr "{0} có"
 
@@ -8362,15 +8357,15 @@ msgstr "⚠️ Tránh sử dụng \"trigger\" làm tên trường — nó xung �
 msgid "⚠️ Method \"{0}\" not found in class."
 msgstr "⚠️ Phương thức \"{0}\" không tìm thấy trong class."
 
-#: frontend/src/data/script.js:84
+#: frontend/src/data/script.js:86
 msgid "⚠️ No class found for doctype: {0}, it is mandatory to have a class for the parent doctype. it can be empty, but it should be present."
 msgstr "⚠️ Không tìm thấy class cho doctype: {0}, bắt buộc phải có một class cho doctype cha. Nó có thể trống, nhưng nó phải tồn tại."
 
-#: frontend/src/data/script.js:181
+#: frontend/src/data/script.js:183
 msgid "⚠️ No data found for parent field: {0}"
 msgstr "⚠️ Không tìm thấy dữ liệu cho trường cha: {0}"
 
-#: frontend/src/data/script.js:189
+#: frontend/src/data/script.js:191
 msgid "⚠️ No row found for idx: {0} in parent field: {1}"
 msgstr "⚠️ Không tìm thấy hàng cho idx: {0} trong trường cha: {1}"
 
