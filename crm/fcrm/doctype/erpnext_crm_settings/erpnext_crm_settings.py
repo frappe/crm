@@ -312,7 +312,7 @@ def create_customer_in_erpnext(doc, method):
 	address = get_organization_address(doc.organization)
 	customer_data = {
 		"customer_name": doc.organization,
-		"customer_group": "All Customer Groups",
+		"customer_group": "Individual",
 		"customer_type": "Company",
 		"territory": doc.territory,
 		"default_currency": doc.currency,
