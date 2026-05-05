@@ -5,6 +5,8 @@
 <script setup>
 import { computed, defineAsyncComponent } from 'vue'
 
+defineOptions({ inheritAttrs: false })
+
 const props = defineProps({
   name: {
     type: String,
@@ -130,8 +132,15 @@ const iconMap = {
   'whats-app': () => import('./WhatsAppIcon.vue'),
 }
 
-const iconComponent = computed(() => {
-  const loader = iconMap[props.name]
-  return loader ? defineAsyncComponent(loader) : null
-})
+const asyncComponentCache = {}
+
+function getAsyncIcon(name) {
+  if (!asyncComponentCache[name]) {
+    const loader = iconMap[name]
+    asyncComponentCache[name] = loader ? defineAsyncComponent(loader) : null
+  }
+  return asyncComponentCache[name]
+}
+
+const iconComponent = computed(() => getAsyncIcon(props.name))
 </script>
