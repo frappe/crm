@@ -1,3 +1,5 @@
+.env
+.env.*
 .DS_Store
 *.pyc
 *.egg-info
