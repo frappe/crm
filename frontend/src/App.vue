@@ -2,7 +2,7 @@
   <FrappeUIProvider>
     <NotPermitted v-if="$route.name === 'Not Permitted'" />
     <Layout v-else-if="session.isLoggedIn" class="isolate">
-      <router-view :key="$route.fullPath" />
+      <router-view :key="$route.path" />
     </Layout>
     <Dialogs />
     <DoctypeModals />
