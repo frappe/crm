@@ -24,6 +24,9 @@ def _permission_query_conditions(user: str | None, doctype: str):
 	if not hierarchy_enabled():
 		return ""
 
+	if "Sales Manager" in frappe.get_roles(user):
+		return ""
+
 	owner_field = _OWNER_FIELD[doctype]
 	DT = frappe.qb.DocType(doctype)
 	Todo = frappe.qb.DocType("ToDo").as_("_todo")
@@ -63,6 +66,9 @@ def _has_permission(doc, ptype, user, doctype: str) -> bool | None:
 		return True
 
 	if not hierarchy_enabled():
+		return True
+
+	if "Sales Manager" in frappe.get_roles(user):
 		return True
 
 	conditions = _permission_query_conditions(user, doctype)
