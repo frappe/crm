@@ -5,18 +5,18 @@ import json
 
 import frappe
 from frappe import _
-from frappe.desk.form.assign_to import add as assign
 from frappe.model.document import Document
 from frappe.utils import has_gravatar, validate_email_address
 
-from crm.fcrm.doctype.crm_service_level_agreement.utils import get_sla
+from crm.fcrm.doctype.crm_pipeline_entity import CRMPipelineEntity
 from crm.fcrm.doctype.crm_status_change_log.crm_status_change_log import (
 	add_status_change_log,
 )
-from crm.fcrm.doctype.utils import add_or_remove_lost_reason_section_in_sidepanel
 
 
-class CRMLead(Document):
+class CRMLead(CRMPipelineEntity, Document):
+	_status_doctype = "CRM Lead Status"
+	_entity_label = "lead"
 	# begin: auto-generated types
 	# This code is auto-generated. Do not modify anything in this block.
 
@@ -143,63 +143,6 @@ class CRMLead(Document):
 
 			if self.is_new() or not self.image:
 				self.image = has_gravatar(self.email)
-
-	def validate_lost_reason(self):
-		"""
-		Validate the lost reason if the status is set to "Lost".
-		"""
-		if self.status and frappe.get_cached_value("CRM Lead Status", self.status, "type") == "Lost":
-			if not self.lost_reason:
-				frappe.throw(_("Please specify a reason for losing the lead."), frappe.ValidationError)
-			elif self.lost_reason == "Other" and not self.lost_notes:
-				frappe.throw(_("Please specify the reason for losing the lead."), frappe.ValidationError)
-		if self.has_value_changed("status"):
-			add_or_remove_lost_reason_section_in_sidepanel(self)
-
-	def assign_agent(self, agent):
-		if not agent:
-			return
-
-		assignees = self.get_assigned_users()
-		if assignees:
-			for assignee in assignees:
-				if agent == assignee:
-					# the agent is already set as an assignee
-					return
-
-		assign({"assign_to": [agent], "doctype": "CRM Lead", "name": self.name}, ignore_permissions=True)
-
-	def share_with_agent(self, agent):
-		if not agent:
-			return
-
-		docshares = frappe.get_all(
-			"DocShare",
-			filters={"share_name": self.name, "share_doctype": self.doctype},
-			fields=["name", "user"],
-		)
-
-		shared_with = [d.user for d in docshares] + [agent]
-
-		for user in shared_with:
-			if user == agent and not frappe.db.exists(
-				"DocShare",
-				{"user": agent, "share_name": self.name, "share_doctype": self.doctype},
-			):
-				frappe.share.add_docshare(
-					self.doctype,
-					self.name,
-					agent,
-					write=1,
-					flags={"ignore_share_permission": True},
-				)
-			elif user != agent:
-				frappe.share.remove(
-					self.doctype,
-					self.name,
-					user,
-					flags={"ignore_share_permission": True, "ignore_permissions": True},
-				)
 
 	def create_contact(self, existing_contact=None, throw=True):
 		if not self.lead_name:
@@ -384,30 +327,6 @@ class CRMLead(Document):
 				new_deal.assign_agent(user)
 
 		return new_deal.name
-
-	def set_sla(self):
-		"""
-		Find an SLA to apply to the lead.
-		"""
-		if self.sla:
-			return
-
-		sla = get_sla(self)
-		if not sla:
-			self.first_responded_on = None
-			self.first_response_time = None
-			return
-		self.sla = sla.name
-
-	def apply_sla(self):
-		"""
-		Apply SLA if set.
-		"""
-		if not self.sla:
-			return
-		sla = frappe.get_last_doc("CRM Service Level Agreement", {"name": self.sla})
-		if sla:
-			sla.apply(self)
 
 	def convert_to_deal(self, deal=None):
 		return convert_to_deal(lead=self.name, doc=self, deal=deal)

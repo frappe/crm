@@ -3,16 +3,16 @@
 
 import frappe
 from frappe import _
-from frappe.desk.form.assign_to import add as assign
 from frappe.model.document import Document
 
 from crm.api.exchange_rate import get_exchange_rate
-from crm.fcrm.doctype.crm_service_level_agreement.utils import get_sla
+from crm.fcrm.doctype.crm_pipeline_entity import CRMPipelineEntity
 from crm.fcrm.doctype.crm_status_change_log.crm_status_change_log import add_status_change_log
-from crm.fcrm.doctype.utils import add_or_remove_lost_reason_section_in_sidepanel
 
 
-class CRMDeal(Document):
+class CRMDeal(CRMPipelineEntity, Document):
+	_status_doctype = "CRM Deal Status"
+	_entity_label = "deal"
 	# begin: auto-generated types
 	# This code is auto-generated. Do not modify anything in this block.
 
@@ -148,75 +148,6 @@ class CRMDeal(Document):
 			self.mobile_no = ""
 			self.phone = ""
 
-	def assign_agent(self, agent):
-		if not agent:
-			return
-
-		assignees = self.get_assigned_users()
-		if assignees:
-			for assignee in assignees:
-				if agent == assignee:
-					# the agent is already set as an assignee
-					return
-
-		assign({"assign_to": [agent], "doctype": "CRM Deal", "name": self.name}, ignore_permissions=True)
-
-	def share_with_agent(self, agent):
-		if not agent:
-			return
-
-		docshares = frappe.get_all(
-			"DocShare",
-			filters={"share_name": self.name, "share_doctype": self.doctype},
-			fields=["name", "user"],
-		)
-
-		shared_with = [d.user for d in docshares] + [agent]
-
-		for user in shared_with:
-			if user == agent and not frappe.db.exists(
-				"DocShare",
-				{"user": agent, "share_name": self.name, "share_doctype": self.doctype},
-			):
-				frappe.share.add_docshare(
-					self.doctype,
-					self.name,
-					agent,
-					write=1,
-					flags={"ignore_share_permission": True},
-				)
-			elif user != agent:
-				frappe.share.remove(
-					self.doctype,
-					self.name,
-					user,
-					flags={"ignore_share_permission": True, "ignore_permissions": True},
-				)
-
-	def set_sla(self):
-		"""
-		Find an SLA to apply to the deal.
-		"""
-		if self.sla:
-			return
-
-		sla = get_sla(self)
-		if not sla:
-			self.first_responded_on = None
-			self.first_response_time = None
-			return
-		self.sla = sla.name
-
-	def apply_sla(self):
-		"""
-		Apply SLA if set.
-		"""
-		if not self.sla:
-			return
-		sla = frappe.get_last_doc("CRM Service Level Agreement", {"name": self.sla})
-		if sla:
-			sla.apply(self)
-
 	def update_closed_date(self):
 		"""
 		Update the closed date based on the "Won" status.
@@ -251,18 +182,6 @@ class CRMDeal(Document):
 				frappe.throw(_("Expected deal value is required."), frappe.MandatoryError)
 			if not self.expected_closure_date:
 				frappe.throw(_("Expected closure date is required."), frappe.MandatoryError)
-
-	def validate_lost_reason(self):
-		"""
-		Validate the lost reason if the status is set to "Lost".
-		"""
-		if self.status and frappe.get_cached_value("CRM Deal Status", self.status, "type") == "Lost":
-			if not self.lost_reason:
-				frappe.throw(_("Please specify a reason for losing the deal."), frappe.ValidationError)
-			elif self.lost_reason == "Other" and not self.lost_notes:
-				frappe.throw(_("Please specify the reason for losing the deal."), frappe.ValidationError)
-		if self.has_value_changed("status"):
-			add_or_remove_lost_reason_section_in_sidepanel(self)
 
 	def update_exchange_rate(self):
 		if self.has_value_changed("currency") or not self.exchange_rate:
