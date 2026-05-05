@@ -29,10 +29,10 @@ function validateExpression(code) {
 export function _eval(code, context = {}) {
   let variable_names = Object.keys(context)
   let variables = Object.values(context)
-  code = `'use strict'; let out = ${code}; return out`
   if (!validateExpression(code)) {
-    return undefined
+    return true
   }
+  code = `'use strict'; let out = ${code}; return out`
   try {
     let expression_function = new Function(...variable_names, code)
     return expression_function(...variables)

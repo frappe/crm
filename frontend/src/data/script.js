@@ -432,7 +432,6 @@ export function getScript(doctype, view = 'Form') {
     const helperValues = Object.values(helpers)
 
     const wrappedScript = `
-		'use strict';
 		${script}
 		return ${className};
 	`
