@@ -4,10 +4,35 @@
  * without pulling in UI dependencies (icons, components, etc.).
  */
 
+const BLOCKED_PATTERNS = [
+  /\bimport\s*\(/,
+  /\brequire\s*\(/,
+  /\bfetch\s*\(/,
+  /\bXMLHttpRequest\b/,
+  /\bdocument\s*\.\s*cookie\b/,
+  /\blocalStorage\b/,
+  /\bsessionStorage\b/,
+  /\beval\s*\(/,
+  /\bFunction\s*\(/,
+]
+
+function validateExpression(code) {
+  for (const pattern of BLOCKED_PATTERNS) {
+    if (pattern.test(code)) {
+      console.warn('Blocked potentially unsafe expression:', code)
+      return false
+    }
+  }
+  return true
+}
+
 export function _eval(code, context = {}) {
   let variable_names = Object.keys(context)
   let variables = Object.values(context)
-  code = `let out = ${code}; return out`
+  code = `'use strict'; let out = ${code}; return out`
+  if (!validateExpression(code)) {
+    return undefined
+  }
   try {
     let expression_function = new Function(...variable_names, code)
     return expression_function(...variables)

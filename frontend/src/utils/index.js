@@ -340,7 +340,7 @@ export function parseAssignees(assignees) {
 
 async function getFormScript(script, obj) {
   if (!script.includes('setupForm(')) return {}
-  let scriptFn = new Function(script + '\nreturn setupForm')()
+  let scriptFn = new Function("'use strict';\n" + script + '\nreturn setupForm')()
   let formScript = await scriptFn(obj)
   return formScript || {}
 }
@@ -361,7 +361,7 @@ export async function setupCustomizations(scripts, obj) {
 }
 
 async function getListScript(script, obj) {
-  let scriptFn = new Function(script + '\nreturn setupList')()
+  let scriptFn = new Function("'use strict';\n" + script + '\nreturn setupList')()
   let listScript = await scriptFn(obj)
   return listScript || {}
 }
