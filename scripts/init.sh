@@ -1,8 +1,8 @@
-#!bin/bash
+#!/bin/bash
 
 set -e
 
-if [[ -f "/workspaces/frappe_codespace/frappe-bench/apps/frappe" ]]
+if [[ -d "/workspaces/frappe_codespace/frappe-bench/apps/frappe" ]]
 then
     echo "Bench already exists, skipping init"
     exit 0

@@ -40,7 +40,7 @@ jobs:
         run: |
           export APPS_JSON='[{"url": "https://github.com/frappe/crm","branch": "main"}]'
           echo "APPS_JSON_BASE64=$(echo $APPS_JSON | base64 -w 0)" >> $GITHUB_ENV
-          echo "FRAPPE_BRANCH=version-15" >> $GITHUB_ENV
+          echo "FRAPPE_BRANCH=version-16" >> $GITHUB_ENV
 
       - name: Set Image Tag
         run: |
