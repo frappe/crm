@@ -163,9 +163,10 @@ def get_deal_activities(name: str):
 		}
 		activities.append(activity)
 
-	calls = calls + get_linked_calls(name).get("calls", [])
-	notes = notes + get_linked_notes(name) + get_linked_calls(name).get("notes", [])
-	tasks = tasks + get_linked_tasks(name) + get_linked_calls(name).get("tasks", [])
+	linked_calls = get_linked_calls(name)
+	calls = calls + linked_calls.get("calls", [])
+	notes = notes + get_linked_notes(name) + linked_calls.get("notes", [])
+	tasks = tasks + get_linked_tasks(name) + linked_calls.get("tasks", [])
 	attachments = attachments + get_attachments("CRM Deal", name)
 
 	activities.sort(key=lambda x: x["creation"], reverse=True)
@@ -304,9 +305,10 @@ def get_lead_activities(name: str):
 		}
 		activities.append(activity)
 
-	calls = get_linked_calls(name).get("calls", [])
-	notes = get_linked_notes(name) + get_linked_calls(name).get("notes", [])
-	tasks = get_linked_tasks(name) + get_linked_calls(name).get("tasks", [])
+	linked_calls = get_linked_calls(name)
+	calls = linked_calls.get("calls", [])
+	notes = get_linked_notes(name) + linked_calls.get("notes", [])
+	tasks = get_linked_tasks(name) + linked_calls.get("tasks", [])
 	attachments = get_attachments("CRM Lead", name)
 
 	activities.sort(key=lambda x: x["creation"], reverse=True)

@@ -1,6 +1,14 @@
 import { createResource } from 'frappe-ui'
 import { computed, ref } from 'vue'
 
+const windowWidth = ref(window.innerWidth)
+
+function handleResize() {
+  windowWidth.value = window.innerWidth
+}
+
+window.addEventListener('resize', handleResize)
+
 export const whatsappEnabled = ref(false)
 export const isWhatsappInstalled = ref(false)
 createResource({
@@ -38,7 +46,7 @@ createResource({
 
 export const mobileSidebarOpened = ref(false)
 
-export const isMobileView = computed(() => window.innerWidth < 768)
+export const isMobileView = computed(() => windowWidth.value < 768)
 
 export const showSettings = ref(false)
 

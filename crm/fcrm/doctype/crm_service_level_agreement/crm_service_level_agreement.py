@@ -270,25 +270,67 @@ class CRMServiceLevelAgreement(Document):
 		"""
 		start_time = get_datetime(start_time)
 		end_time = get_datetime(end_time)
-		holiday_list = self.get_holidays()
+
+		if start_time >= end_time:
+			return 0
+
+		holiday_set = set(self.get_holidays())
 		working_day_list = self.get_working_days()
 		working_hours = self.get_working_hours()
+		weekdays = get_weekdays()
+
+		def working_seconds_on_day(date, from_seconds, to_seconds):
+			"""
+			Return the number of working seconds on *date* between from_seconds
+			and to_seconds (both expressed as seconds-since-midnight, inclusive
+			of from_seconds, exclusive of to_seconds).
+			"""
+			if date in holiday_set:
+				return 0
+			day_name = weekdays[date.weekday()]
+			if day_name not in working_day_list:
+				return 0
+			wh = working_hours.get(day_name)
+			if not wh:
+				return 0
+			ws = self._time_to_seconds(wh[0])  # window start
+			we = self._time_to_seconds(wh[1])  # window end
+			# Intersect [from_seconds, to_seconds) with [ws, we)
+			overlap_start = max(from_seconds, ws)
+			overlap_end = min(to_seconds, we)
+			return max(0, overlap_end - overlap_start)
 
 		total_seconds = 0
-		current_time = start_time
+		current_date = start_time.date()
+		end_date = end_time.date()
 
-		while current_time < end_time:
-			in_holiday_list = current_time.date() in holiday_list
-			not_in_working_day_list = get_weekdays()[current_time.weekday()] not in working_day_list
-			if (
-				in_holiday_list
-				or not_in_working_day_list
-				or not self.is_working_time(current_time, working_hours)
-			):
-				current_time += timedelta(seconds=1)
-				continue
-			total_seconds += 1
-			current_time += timedelta(seconds=1)
+		if current_date == end_date:
+			# Both endpoints on the same calendar day
+			from_sec = (
+				start_time.hour * 3600 + start_time.minute * 60 + start_time.second
+			)
+			to_sec = (
+				end_time.hour * 3600 + end_time.minute * 60 + end_time.second
+			)
+			total_seconds = working_seconds_on_day(current_date, from_sec, to_sec)
+		else:
+			# First (partial) day: from start_time to midnight
+			from_sec = (
+				start_time.hour * 3600 + start_time.minute * 60 + start_time.second
+			)
+			total_seconds += working_seconds_on_day(current_date, from_sec, 86400)
+
+			# Whole days in between
+			current_date = current_date + timedelta(days=1)
+			while current_date < end_date:
+				total_seconds += working_seconds_on_day(current_date, 0, 86400)
+				current_date = current_date + timedelta(days=1)
+
+			# Last (partial) day: from midnight to end_time
+			to_sec = (
+				end_time.hour * 3600 + end_time.minute * 60 + end_time.second
+			)
+			total_seconds += working_seconds_on_day(end_date, 0, to_sec)
 
 		return total_seconds
 
