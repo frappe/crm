@@ -72,6 +72,7 @@
         class="flex items-center gap-2 pt-2 pb-3 sticky top-0 z-10 bg-surface-white"
       >
         <TextInput
+         v-if="visibleRoots.length"
           v-model="search"
           :placeholder="__('Search users')"
           :debounce="200"
