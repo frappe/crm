@@ -21,7 +21,7 @@
           :label="__('Add User')"
           icon-left="plus"
           variant="solid"
-          @click="openAddDialog(null)"
+          @click="openAddDialog()"
         />
       </div>
     </div>
@@ -66,57 +66,72 @@
 
     <div
       v-else
-      class="flex-1 min-h-0 overflow-y-auto rounded-l bg-surface-white mx-2 px-0.5"
+      class="flex-1 min-h-0 flex flex-col rounded-l bg-surface-white mx-2 px-0.5"
     >
-      <div v-if="nodes.loading" class="flex items-center justify-center py-12">
-        <LoadingIndicator class="size-6" />
-      </div>
-      <EmptyState
-        v-else-if="!visibleRoots.length"
-        name="Users in Hierarchy"
-        :title="
-          search || roleFilter !== 'All'
-            ? __('No matching users')
-            : __('No users in hierarchy')
-        "
-        :description="
-          search || roleFilter !== 'All'
-            ? __('No users match the current filter.')
-            : __('Add one to get started.')
-        "
-        icon="users"
-      />
       <div
-        class="sticky top-0 z-10 bg-surface-white flex w-full justify-start mb-1 pt-5 pb-2"
+        class="flex items-center gap-2 pt-2 pb-3 sticky top-0 z-10 bg-surface-white"
       >
+        <TextInput
+          v-model="search"
+          :placeholder="__('Search users')"
+          :debounce="200"
+          class="flex-1"
+        >
+          <template #prefix>
+            <FeatherIcon name="search" class="size-4 text-ink-gray-5" />
+          </template>
+        </TextInput>
         <Button
           v-if="isExpandable"
           :label="collapsed ? __('Expand') : __('Collapse')"
           @click="toggleCollapseAll"
-        >
-        </Button>
+        />
       </div>
-      <Tree
-        v-for="root in visibleRoots"
-        :key="`${root.name}-${treeKey}`"
-        :node="root"
-        node-key="name"
-        :options="treeOptions"
-      >
-        <template #node="{ node, hasChildren, isCollapsed, toggleCollapsed }">
-          <HierarchyRow
-            :node="node"
-            :has-children="hasChildren"
-            :is-collapsed="isCollapsed"
-            :row-class="rowClasses(node)"
-            :handlers="dragHandlers"
-            @toggle="toggleCollapsed"
-            @add="openAddDialog"
-            @remove="removeNode"
-            @move-to-root="(n) => reparent(n.name, null)"
-          />
-        </template>
-      </Tree>
+      <div class="flex-1 min-h-0 overflow-y-auto">
+        <div
+          v-if="nodes.loading"
+          class="flex items-center justify-center py-12"
+        >
+          <LoadingIndicator class="size-6" />
+        </div>
+        <EmptyState
+          v-else-if="!visibleRoots.length"
+          name="Users in Hierarchy"
+          :title="
+            search || roleFilter !== 'All'
+              ? __('No matching users')
+              : __('No users in hierarchy')
+          "
+          :description="
+            search || roleFilter !== 'All'
+              ? __('No users match the current filter.')
+              : __('Add one to get started.')
+          "
+          icon="users"
+        />
+        <Tree
+          v-for="root in visibleRoots"
+          :key="`${root.name}-${treeKey}`"
+          :node="root"
+          node-key="name"
+          :options="treeOptions"
+        >
+          <template #node="{ node, hasChildren, isCollapsed, toggleCollapsed }">
+            <HierarchyRow
+              :node="node"
+              :has-children="hasChildren"
+              :is-collapsed="isCollapsed"
+              :row-class="rowClasses(node)"
+              :handlers="dragHandlers"
+              :get-candidates="getCandidates"
+              @toggle="toggleCollapsed"
+              @bulk-add="({ parent, userIds }) => bulkAdd(parent, userIds)"
+              @remove="removeNode"
+              @move-to-root="(n) => reparent(n.name, null)"
+            />
+          </template>
+        </Tree>
+      </div>
     </div>
 
     <Teleport to="body">
@@ -134,45 +149,32 @@
     <Dialog
       v-model="showAddDialog"
       :options="{
-        title: dialogTitle,
+        title: __('Add Users'),
         actions: [
           {
-            label: __('Add User'),
+            label: __('Add ({0})', [dialogSelected.length]),
             variant: 'solid',
-            disabled: !selectedUser || !!rankWarning,
+            disabled: !dialogSelected.length,
             loading: saving,
-            onClick: confirmAdd,
+            onClick: confirmBulkAdd,
           },
         ],
       }"
     >
       <template #body-content>
-        <div v-if="addParent" class="mb-2 text-p-sm text-ink-gray-6">
-          {{ __('Will report to') }}
-          <span class="font-medium text-ink-gray-8">{{
-            addParent.full_name
-          }}</span>
-        </div>
-        <Autocomplete
-          v-model="selectedUser"
-          :options="candidateUsers"
-          :placeholder="__('Pick a user…')"
+        <UserMultiSelect
+          v-model="dialogSelected"
+          :candidates="getCandidates(null)"
         />
-        <div
-          v-if="selectedUser && rankWarning"
-          class="mt-3 p-2 rounded-md bg-surface-red-1 text-p-sm text-ink-red-4"
-        >
-          {{ rankWarning }}
-        </div>
       </template>
     </Dialog>
   </div>
 </template>
 
 <script setup>
-import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import EmptyState from '@/components/ListViews/EmptyState.vue'
 import HierarchyRow from './HierarchyRow.vue'
+import UserMultiSelect from './UserMultiSelect.vue'
 import { useRemoveNode } from './useRemoveNode'
 import { useDragDrop } from './useDragDrop'
 import { globalStore } from '@/stores/global'
@@ -181,7 +183,9 @@ import LucideNetwork from '~icons/lucide/network'
 import {
   Button,
   Dialog,
+  FeatherIcon,
   LoadingIndicator,
+  TextInput,
   Tree,
   call,
   createDocumentResource,
@@ -264,8 +268,7 @@ const roleFilter = ref('All')
 const treeKey = ref(0)
 const collapsed = ref(false)
 const showAddDialog = ref(false)
-const addParent = ref(null)
-const selectedUser = ref(null)
+const dialogSelected = ref([])
 const saving = ref(false)
 
 const treeOptions = computed(() => ({
@@ -281,8 +284,11 @@ function toggleCollapseAll() {
 
 function enrich(node) {
   const user =
-    usersResource.data?.allUsers?.find((x) => x.name === node.user) || {}
+    usersResource.data?.crmUsers?.find((x) => x.name === node.user) || {}
   const role = getUserRole(node.user) || 'Sales User'
+  const role_rank = ROLE_RANK[role]
+  if (role_rank == undefined) return
+
   return {
     ...node,
     full_name: user.full_name || node.full_name || node.user,
@@ -291,11 +297,13 @@ function enrich(node) {
     enabled: user.enabled !== 0,
     role,
     role_label: ROLE_LABEL[role] || role,
-    role_rank: ROLE_RANK[role] ?? 4,
+    role_rank,
   }
 }
 
-const enrichedNodes = computed(() => (nodes.data || []).map(enrich))
+const enrichedNodes = computed(() =>
+  (nodes.data || []).map(enrich).filter(Boolean),
+)
 
 const tree = computed(() => {
   const byName = new Map(
@@ -323,10 +331,13 @@ function matchesFilters(node) {
 }
 
 function clearTree(node) {
+  if (matchesFilters(node)) {
+    return { ...node, children: node.children || [] }
+  }
   const children = (node.children || [])
     .map(clearTree)
     .filter((c) => c !== null)
-  if (matchesFilters(node) || children.length) {
+  if (children.length) {
     return { ...node, children }
   }
   return null
@@ -346,9 +357,9 @@ const placedUserIds = computed(
 
 const ALLOWED_ROLES = new Set(['Sales Manager', 'Sales User'])
 
-const candidateUsers = computed(() => {
+function getCandidates(parent) {
   const all = usersResource.data?.crmUsers || []
-  const parentRank = addParent.value?.role_rank ?? -1
+  const parentRank = parent?.role_rank ?? -1
   return all
     .filter((u) => {
       if (placedUserIds.value.has(u.name)) return false
@@ -358,27 +369,12 @@ const candidateUsers = computed(() => {
       return (ROLE_RANK[role] ?? 99) >= parentRank
     })
     .map((u) => ({
-      label: `${u.full_name} · ${u.email || u.name}`,
       value: u.name,
+      full_name: u.full_name || u.name,
+      email: u.email || u.name,
+      user_image: u.user_image,
     }))
-})
-
-const rankWarning = computed(() => {
-  if (!selectedUser.value || !addParent.value) return null
-  const role = getUserRole(selectedUser.value.value) || 'Sales User'
-  const childRank = ROLE_RANK[role] ?? 99
-  if (childRank < addParent.value.role_rank) {
-    return __('A {0} cannot report to a {1}.', [
-      ROLE_LABEL[role],
-      addParent.value.role_label,
-    ])
-  }
-  return null
-})
-
-const dialogTitle = computed(() =>
-  addParent.value ? __('Add direct report') : __('Add User'),
-)
+}
 
 async function reparent(name, newParent) {
   try {
@@ -395,31 +391,56 @@ async function reparent(name, newParent) {
   }
 }
 
-function openAddDialog(parent) {
-  addParent.value = parent
-  selectedUser.value = null
+function openAddDialog() {
+  dialogSelected.value = []
   showAddDialog.value = true
 }
 
-async function confirmAdd() {
-  if (!selectedUser.value || rankWarning.value) return
+async function bulkAdd(parent, userIds) {
+  if (!userIds?.length) return false
   saving.value = true
+  let added = 0
+  let lastError = null
   try {
-    await call('frappe.client.insert', {
-      doc: {
-        doctype: DOCTYPE,
-        user: selectedUser.value.value,
-        reports_to: addParent.value ? addParent.value.name : null,
-        is_group: 0,
-      },
-    })
-    toast.success(__('User added to hierarchy'))
-    showAddDialog.value = false
-    nodes.reload()
-  } catch (e) {
-    toast.error(e?.messages?.[0] || __('Could not add user'))
+    for (const user of userIds) {
+      try {
+        await call('frappe.client.insert', {
+          doc: {
+            doctype: DOCTYPE,
+            user,
+            reports_to: parent ? parent.name : null,
+            is_group: 0,
+          },
+        })
+        added++
+      } catch (e) {
+        lastError = e
+      }
+    }
+    if (added) {
+      toast.success(
+        added === 1
+          ? __('User added to hierarchy')
+          : __('{0} users added to hierarchy', [added]),
+      )
+    }
+    if (lastError) {
+      toast.error(
+        lastError?.messages?.[0] || __('Some users could not be added'),
+      )
+    }
+    await nodes.reload()
+    return added > 0 && !lastError
   } finally {
     saving.value = false
+  }
+}
+
+async function confirmBulkAdd() {
+  const ok = await bulkAdd(null, dialogSelected.value)
+  if (ok) {
+    showAddDialog.value = false
+    dialogSelected.value = []
   }
 }
 
