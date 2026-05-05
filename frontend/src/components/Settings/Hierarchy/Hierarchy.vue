@@ -14,7 +14,7 @@
         </p>
       </div>
       <div
-        v-if="hierarchyEnabled"
+        v-if="hierarchyEnabled && canEdit"
         class="flex item-center space-x-2 w-3/12 justify-end"
       >
         <Button
@@ -124,6 +124,7 @@
               :row-class="rowClasses(node)"
               :handlers="dragHandlers"
               :get-candidates="getCandidates"
+              :can-edit="canEdit"
               @toggle="toggleCollapsed"
               @bulk-add="({ parent, userIds }) => bulkAdd(parent, userIds)"
               @remove="removeNode"
@@ -205,7 +206,8 @@ const ROLE_LABEL = {
   'Sales User': __('Sales User'),
 }
 
-const { users: usersResource, getUserRole } = usersStore()
+const { users: usersResource, getUserRole, isAdmin } = usersStore()
+const canEdit = computed(() => isAdmin())
 const { $dialog } = globalStore()
 
 const fcrmSettings = createDocumentResource({

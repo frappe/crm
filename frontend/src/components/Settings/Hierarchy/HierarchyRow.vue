@@ -1,13 +1,13 @@
 <template>
   <div
-    class="cursor-grab group flex items-center gap-2 p-1.5 text-base hover:bg-surface-gray-2 select-none border-b"
-    :class="rowClass"
-    :draggable="true"
-    @dragstart="handlers.onDragStart($event, node)"
-    @dragend="handlers.onDragEnd(node)"
-    @dragover.prevent="handlers.onDragOver($event, node)"
-    @dragleave="handlers.onDragLeave(node)"
-    @drop.prevent="handlers.onDrop(node)"
+    class="group flex items-center gap-2 p-1.5 text-base hover:bg-surface-gray-2 select-none border-b"
+    :class="[rowClass, canEdit ? 'cursor-grab' : 'cursor-pointer']"
+    :draggable="canEdit"
+    @dragstart="canEdit && handlers.onDragStart($event, node)"
+    @dragend="canEdit && handlers.onDragEnd(node)"
+    @dragover.prevent="canEdit && handlers.onDragOver($event, node)"
+    @dragleave="canEdit && handlers.onDragLeave(node)"
+    @drop.prevent="canEdit && handlers.onDrop(node)"
     @click="hasChildren && emit('toggle', $event)"
   >
     <FeatherIcon
@@ -32,6 +32,7 @@
     />
 
     <div
+      v-if="canEdit"
       class="ml-auto flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
       @click.stop
     >
@@ -91,6 +92,7 @@ const props = defineProps({
   rowClass: { type: String, default: '' },
   handlers: { type: Object, required: true },
   getCandidates: { type: Function, required: true },
+  canEdit: { type: Boolean, default: false },
 })
 
 const emit = defineEmits(['toggle', 'bulk-add', 'remove', 'move-to-root'])
