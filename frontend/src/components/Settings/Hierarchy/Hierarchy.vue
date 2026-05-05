@@ -127,7 +127,7 @@
               :can-edit="canEdit"
               @toggle="toggleCollapsed"
               @bulk-add="({ parent, userIds }) => bulkAdd(parent, userIds)"
-              @remove="removeNode"
+              @remove="({ node: n, mode }) => removeNode(n, mode)"
               @move-to-root="(n) => reparent(n.name, null)"
             />
           </template>

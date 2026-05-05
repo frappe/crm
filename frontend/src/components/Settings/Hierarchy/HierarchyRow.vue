@@ -67,7 +67,12 @@
         </template>
       </Popover>
       <Dropdown :options="moreOptions" placement="right">
-        <Button variant="ghost" size="sm" icon="more-horizontal" />
+        <Button
+          variant="ghost"
+          size="sm"
+          icon="more-horizontal"
+          @blur="resetConfirms"
+        />
       </Dropdown>
     </div>
   </div>
@@ -75,6 +80,7 @@
 
 <script setup>
 import UserMultiSelect from './UserMultiSelect.vue'
+import { ConfirmDelete } from '@/utils'
 import {
   Badge,
   Button,
@@ -98,6 +104,9 @@ const props = defineProps({
 const emit = defineEmits(['toggle', 'bulk-add', 'remove', 'move-to-root'])
 
 const selected = ref([])
+const confirmRemove = ref(false)
+const confirmReassign = ref(false)
+const confirmCascade = ref(false)
 
 function commit(togglePopover) {
   if (!selected.value.length) return
@@ -110,19 +119,46 @@ function resetSelection() {
   selected.value = []
 }
 
-const moreOptions = computed(() =>
-  [
-    {
+function resetConfirms() {
+  confirmRemove.value = false
+  confirmReassign.value = false
+  confirmCascade.value = false
+}
+
+const moreOptions = computed(() => {
+  const opts = []
+  if (props.node.reports_to) {
+    opts.push({
       label: __('Move to top level'),
       icon: 'corner-up-left',
       onClick: () => emit('move-to-root', props.node),
-      condition: () => !!props.node.reports_to,
-    },
-    {
-      label: __('Remove from hierarchy'),
-      icon: 'trash-2',
-      onClick: () => emit('remove', props.node),
-    },
-  ].filter((o) => (o.condition ? o.condition() : true)),
-)
+    })
+  }
+  if (props.hasChildren) {
+    opts.push(
+      ...ConfirmDelete({
+        onConfirmDelete: () =>
+          emit('remove', { node: props.node, mode: 'reassign' }),
+        isConfirmingDelete: confirmReassign,
+        label: __('Reassign & remove'),
+      }),
+      ...ConfirmDelete({
+        onConfirmDelete: () =>
+          emit('remove', { node: props.node, mode: 'cascade' }),
+        isConfirmingDelete: confirmCascade,
+        label: __('Remove with reports'),
+      }),
+    )
+  } else {
+    opts.push(
+      ...ConfirmDelete({
+        onConfirmDelete: () =>
+          emit('remove', { node: props.node, mode: 'simple' }),
+        isConfirmingDelete: confirmRemove,
+        label: __('Remove'),
+      }),
+    )
+  }
+  return opts
+})
 </script>
