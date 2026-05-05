@@ -1,5 +1,6 @@
 .env
 .env.*
+!.env.example
 .DS_Store
 *.pyc
 *.egg-info
