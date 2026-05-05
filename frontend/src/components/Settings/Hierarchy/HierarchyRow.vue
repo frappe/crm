@@ -35,14 +35,36 @@
       class="ml-auto flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
       @click.stop
     >
-      <Tooltip class="pointer-events-none" :text="__('Add direct report')">
-        <Button
-          variant="ghost"
-          size="sm"
-          icon="plus"
-          @click="emit('add', node)"
-        />
-      </Tooltip>
+      <Popover placement="bottom-end" @close="resetSelection">
+        <template #target="{ togglePopover }">
+          <Tooltip :text="__('Add direct reports')">
+            <Button
+              variant="ghost"
+              size="sm"
+              icon="plus"
+              @click="togglePopover()"
+            />
+          </Tooltip>
+        </template>
+        <template #body="{ togglePopover }">
+          <div
+            class="mt-1 rounded-lg bg-surface-white shadow-2xl w-72 border border-outline-gray-2"
+          >
+            <UserMultiSelect
+              v-model="selected"
+              :candidates="getCandidates(node)"
+            />
+            <div class="border-t p-1.5 flex justify-end">
+              <Button
+                variant="solid"
+                :disabled="!selected.length"
+                :label="__('Add ({0})', [selected.length])"
+                @click="commit(togglePopover)"
+              />
+            </div>
+          </div>
+        </template>
+      </Popover>
       <Dropdown :options="moreOptions" placement="right">
         <Button variant="ghost" size="sm" icon="more-horizontal" />
       </Dropdown>
@@ -51,8 +73,16 @@
 </template>
 
 <script setup>
-import { Badge, Button, Dropdown, FeatherIcon, Tooltip } from 'frappe-ui'
-import { computed } from 'vue'
+import UserMultiSelect from './UserMultiSelect.vue'
+import {
+  Badge,
+  Button,
+  Dropdown,
+  FeatherIcon,
+  Popover,
+  Tooltip,
+} from 'frappe-ui'
+import { computed, ref } from 'vue'
 
 const props = defineProps({
   node: { type: Object, required: true },
@@ -60,9 +90,23 @@ const props = defineProps({
   isCollapsed: { type: Boolean, default: false },
   rowClass: { type: String, default: '' },
   handlers: { type: Object, required: true },
+  getCandidates: { type: Function, required: true },
 })
 
-const emit = defineEmits(['toggle', 'add', 'remove', 'move-to-root'])
+const emit = defineEmits(['toggle', 'bulk-add', 'remove', 'move-to-root'])
+
+const selected = ref([])
+
+function commit(togglePopover) {
+  if (!selected.value.length) return
+  emit('bulk-add', { parent: props.node, userIds: selected.value })
+  selected.value = []
+  togglePopover()
+}
+
+function resetSelection() {
+  selected.value = []
+}
 
 const moreOptions = computed(() =>
   [
