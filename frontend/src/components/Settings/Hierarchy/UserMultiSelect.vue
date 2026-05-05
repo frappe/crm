@@ -25,7 +25,6 @@
           <div class="text-ink-gray-8 truncate text-p-sm">
             {{ user.full_name }}
           </div>
-          <div class="text-ink-gray-5 text-xs truncate">{{ user.email }}</div>
         </div>
       </li>
       <li
@@ -65,7 +64,7 @@ function isSelected(val) {
 
 function toggle(val) {
   if (isSelected(val)) {
-    selected.value = selected.value.filter((id) => id !== val)
+    selected.value = selected.value.filter((id) => id !== val.value)
   } else {
     selected.value = [...selected.value, val.value]
   }
