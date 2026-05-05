@@ -101,6 +101,10 @@ def update_user_role(user: str, new_role: str):
 		user_doc.append_roles("Sales Manager", "Sales User")
 		remove_roles(user_doc, "System Manager")
 	if new_role == "Sales User":
+		if frappe.db.exists("CRM Sales Hierarchy", {"user": user}):
+			frappe.throw(
+				_("Remove this user from the user hierarchy before changing their role to Sales User")
+			)
 		user_doc.append_roles("Sales User")
 		remove_roles(user_doc, "Sales Manager", "System Manager")
 		update_module_in_user(user_doc, "FCRM")
