@@ -1,5 +1,6 @@
 import { Dialog, ErrorMessage } from 'frappe-ui'
 import { reactive, ref } from 'vue'
+import { sanitizeHTML } from '@/utils'
 
 let dialogs = ref([])
 
@@ -22,7 +23,7 @@ export let Dialogs = {
               dialog.message && (
                 <p class="text-p-base text-ink-gray-7">{dialog.message}</p>
               ),
-              dialog.html && <div v-html={dialog.html} />,
+              dialog.html && <div v-html={sanitizeHTML(dialog.html)} />,
               <ErrorMessage class="mt-2" message={dialog.error} />,
             ]
           },
