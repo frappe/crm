@@ -39,9 +39,8 @@ def get_notifications():
 
 
 @frappe.whitelist()
-def mark_as_read(user: str | None = None, doc: str | None = None):
-	user = user or frappe.session.user
-	filters = {"to_user": user, "read": False}
+def mark_as_read(doc: str | None = None):
+	filters = {"to_user": frappe.session.user, "read": False}
 	or_filters = []
 	if doc:
 		or_filters = [
@@ -49,9 +48,7 @@ def mark_as_read(user: str | None = None, doc: str | None = None):
 			{"notification_type_doc": doc},
 		]
 	for n in frappe.get_all("CRM Notification", filters=filters, or_filters=or_filters):
-		d = frappe.get_doc("CRM Notification", n.name)
-		d.read = True
-		d.save()
+		frappe.db.set_value("CRM Notification", n.name, "read", True)
 
 
 def get_hash(notification):
