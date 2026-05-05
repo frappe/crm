@@ -151,27 +151,29 @@
 <script setup>
 import BrushCleaningIcon from '~icons/lucide/brush-cleaning'
 import LucideLayoutDashboard from '~icons/lucide/layout-dashboard'
-import CRMLogo from '@/components/Icons/CRMLogo.vue'
-import InviteIcon from '@/components/Icons/InviteIcon.vue'
-import ConvertIcon from '@/components/Icons/ConvertIcon.vue'
-import CommentIcon from '@/components/Icons/CommentIcon.vue'
-import EmailIcon from '@/components/Icons/EmailIcon.vue'
-import StepsIcon from '@/components/Icons/StepsIcon.vue'
+import {
+  CRMLogo,
+  InviteIcon,
+  ConvertIcon,
+  CommentIcon,
+  EmailIcon,
+  StepsIcon,
+  PinIcon,
+  SquareAsterisk,
+  LeadsIcon,
+  DealsIcon,
+  ContactsIcon,
+  OrganizationsIcon,
+  NoteIcon,
+  TaskIcon,
+  CalendarIcon,
+  PhoneIcon,
+  CollapseSidebar,
+  NotificationsIcon,
+  HelpIcon,
+} from '@/components/Icons'
 import CollapsibleSection from '@/components/CollapsibleSection.vue'
-import PinIcon from '@/components/Icons/PinIcon.vue'
 import UserDropdown from '@/components/UserDropdown.vue'
-import SquareAsterisk from '@/components/Icons/SquareAsterisk.vue'
-import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
-import DealsIcon from '@/components/Icons/DealsIcon.vue'
-import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
-import OrganizationsIcon from '@/components/Icons/OrganizationsIcon.vue'
-import NoteIcon from '@/components/Icons/NoteIcon.vue'
-import TaskIcon from '@/components/Icons/TaskIcon.vue'
-import CalendarIcon from '@/components/Icons/CalendarIcon.vue'
-import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
-import CollapseSidebar from '@/components/Icons/CollapseSidebar.vue'
-import NotificationsIcon from '@/components/Icons/NotificationsIcon.vue'
-import HelpIcon from '@/components/Icons/HelpIcon.vue'
 import SidebarLink from '@/components/SidebarLink.vue'
 import Notifications from '@/components/Notifications.vue'
 import Settings from '@/components/Settings/Settings.vue'
