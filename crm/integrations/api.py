@@ -62,6 +62,9 @@ def set_default_calling_medium(medium: str):
 @frappe.whitelist()
 def add_note_to_call_log(call_sid: str, note: dict):
 	"""Add/Update note to call log based on call sid."""
+	if not frappe.has_permission("CRM Call Log", "read", doc=call_sid):
+		frappe.throw(_("Not permitted"), frappe.PermissionError)
+
 	_note = None
 	if not note.get("name"):
 		_note = frappe.get_doc(
@@ -84,6 +87,9 @@ def add_note_to_call_log(call_sid: str, note: dict):
 @frappe.whitelist()
 def add_task_to_call_log(call_sid: str, task: dict):
 	"""Add/Update task to call log based on call sid."""
+	if not frappe.has_permission("CRM Call Log", "read", doc=call_sid):
+		frappe.throw(_("Not permitted"), frappe.PermissionError)
+
 	_task = None
 	if not task.get("name"):
 		_task = frappe.get_doc(
@@ -118,9 +124,7 @@ def add_task_to_call_log(call_sid: str, task: dict):
 	return _task
 
 
-frappe.whitelist()
-
-
+@frappe.whitelist()
 def get_contact_lead_or_deal_from_number(number):
 	"""Get contact, lead or deal from the given number."""
 	contact = get_contact_by_phone_number(number)
