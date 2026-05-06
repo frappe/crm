@@ -3,7 +3,7 @@ import requests
 from frappe import _
 from frappe.integrations.utils import create_request_log
 
-from crm.integrations.api import get_contact_by_phone_number
+from crm.integrations.telephony.call_linking import link_call_log_to_record
 
 # Endpoints for webhook
 
@@ -200,25 +200,11 @@ def create_call_log(
 
 	# link call log with lead/deal
 	contact_number = from_number if call_type == "Incoming" else to_number
-	link(contact_number, call_log)
+	link_call_log_to_record(call_log, contact_number)
 
 	call_log.save(ignore_permissions=True)
 	frappe.db.commit()
 	return call_log
-
-
-def link(contact_number, call_log):
-	contact = get_contact_by_phone_number(contact_number)
-	if contact.get("name"):
-		doctype = "Contact"
-		docname = contact.get("name")
-		if contact.get("lead"):
-			doctype = "CRM Lead"
-			docname = contact.get("lead")
-		elif contact.get("deal"):
-			doctype = "CRM Deal"
-			docname = contact.get("deal")
-		call_log.link_with_reference_doc(doctype, docname)
 
 
 def get_call_log(call_payload):
@@ -287,3 +273,89 @@ def update_call_log(call_payload, status="Ringing", call_log=None):
 	except Exception:
 		frappe.log_error(title="Error while updating call record")
 		frappe.db.commit()
+
+
+from crm.integrations.telephony.base import OutboundCallResult, TelephonyProvider
+from crm.integrations.telephony.call_linking import CallEvent
+
+
+class ExotelProvider(TelephonyProvider):
+	provider_name = "Exotel"
+
+	def validate_webhook(self, request_data, require_application_id=False):
+		webhook_verify_token = frappe.db.get_single_value("CRM Exotel Settings", "webhook_verify_token")
+		key = frappe.request.args.get("key") if frappe.request else request_data.get("key")
+		if not key or key != webhook_verify_token:
+			frappe.throw(_("Unauthorized request"), exc=frappe.PermissionError)
+		return True
+
+	def parse_webhook_to_event(self, request_data):
+		direction_raw = request_data.get("Direction", "incoming")
+
+		if direction_raw.startswith("outbound"):
+			direction = "Outgoing"
+		else:
+			direction = "Incoming"
+
+		status = get_call_log_status(request_data, direction_raw)
+
+		# Normalize field names: Exotel uses different keys for incoming
+		# webhooks (CallSid, CallFrom, DialWhomNumber) vs outbound API
+		# responses (Sid, From, To, PhoneNumberSid).
+		call_sid = request_data.get("CallSid") or request_data.get("Sid")
+		from_number = request_data.get("CallFrom") or request_data.get("From", "")
+		to_number = request_data.get("DialWhomNumber") or request_data.get("To", "")
+		medium = request_data.get("To") or request_data.get("PhoneNumberSid", "")
+
+		raw_duration = (
+			request_data.get("DialCallDuration")
+			or request_data.get("ConversationDuration")
+		)
+		duration = int(raw_duration) if raw_duration else None
+
+		return CallEvent(
+			call_sid=call_sid,
+			direction=direction,
+			status=status or "Ringing",
+			from_number=from_number,
+			to_number=to_number,
+			caller="" if direction == "Incoming" else request_data.get("AgentEmail", ""),
+			receiver=request_data.get("AgentEmail", "") if direction == "Incoming" else "",
+			telephony_medium="Exotel",
+			medium=medium,
+			recording_url=request_data.get("RecordingUrl", ""),
+			start_time=request_data.get("StartTime"),
+			end_time=request_data.get("EndTime"),
+			duration=duration,
+		)
+
+	def make_outbound_call(self, from_number, to_number, caller_user):
+		result = make_a_call(to_number=to_number, from_number=from_number)
+		call_sid = result.get("CallSid") or result.get("Sid") if isinstance(result, dict) else None
+		return OutboundCallResult(call_sid=call_sid, provider_response=result if isinstance(result, dict) else {})
+
+	def get_recording_credentials(self):
+		return (self.settings["api_key"], self.settings["api_token"])
+
+	def get_call_status(self, raw_status):
+		return get_call_log_status({"Status": raw_status, "DialCallStatus": raw_status}, "outbound-api")
+
+	def is_enabled(self):
+		return bool(self.enabled)
+
+	@classmethod
+	def from_settings(cls):
+		settings = get_exotel_settings()
+		if not settings or not settings.enabled:
+			return None
+		return cls(
+			enabled=True,
+			settings={
+				"account_sid": settings.account_sid,
+				"api_key": settings.api_key,
+				"api_token": settings.get_password("api_token"),
+				"subdomain": settings.subdomain,
+				"webhook_verify_token": settings.webhook_verify_token,
+				"record_call": settings.record_call,
+			},
+		)
