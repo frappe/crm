@@ -5,18 +5,14 @@ from frappe.query_builder import Order
 from pypika.functions import Replace
 from werkzeug.wrappers import Response
 
+from crm.integrations.telephony.registry import TelephonyRegistry
 from crm.utils import are_same_phone_number, parse_phone_number
 
 
 def _get_recording_credentials(telephony_medium: str) -> tuple:
 	"""Return (api_key, secret) for the given telephony medium."""
-	if telephony_medium == "Twilio":
-		s = frappe.get_single("CRM Twilio Settings")
-		return s.api_key, s.get_password("api_secret")
-	elif telephony_medium == "Exotel":
-		s = frappe.get_single("CRM Exotel Settings")
-		return s.api_key, s.get_password("api_token")
-	frappe.throw(_("Unknown telephony medium: {0}").format(telephony_medium))
+	TelephonyRegistry.discover()
+	return TelephonyRegistry.get_recording_credentials(telephony_medium)
 
 
 @frappe.whitelist()
