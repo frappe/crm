@@ -2,4 +2,4 @@ from crm.integrations.telephony.base import OutboundCallResult, TelephonyProvide
 from crm.integrations.telephony.call_linking import CallEvent, link_call_log_to_record
 from crm.integrations.telephony.registry import TelephonyRegistry
 
-__all__ = ["OutboundCallResult", "TelephonyProvider", "CallEvent", "link_call_log_to_record", "TelephonyRegistry"]
+__all__ = ["CallEvent", "OutboundCallResult", "TelephonyProvider", "TelephonyRegistry", "link_call_log_to_record"]

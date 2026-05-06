@@ -1,7 +1,8 @@
 # crm/tests/test_telephony_twilio.py
+from unittest.mock import MagicMock, patch
+
 import frappe
 from frappe.tests import IntegrationTestCase
-from unittest.mock import patch, MagicMock
 
 from crm.integrations.telephony.base import TelephonyProvider
 from crm.integrations.telephony.call_linking import CallEvent

@@ -1,7 +1,8 @@
 # crm/tests/test_telephony_registry.py
+from unittest.mock import patch
+
 import frappe
 from frappe.tests import IntegrationTestCase
-from unittest.mock import patch
 
 from crm.integrations.telephony.base import TelephonyProvider
 from crm.integrations.telephony.call_linking import CallEvent
@@ -109,7 +110,6 @@ class TestTelephonyRegistry(IntegrationTestCase):
 	def test_discover_logs_error_on_provider_failure(self):
 		"""Discovery failures are logged, not silently swallowed"""
 		from crm.integrations.telephony.registry import TelephonyRegistry
-		from unittest.mock import patch
 
 		error_log_count_before = frappe.db.count("Error Log", {"method": ["like", "%Telephony provider%"]})
 

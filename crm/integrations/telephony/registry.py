@@ -1,4 +1,8 @@
 # crm/integrations/telephony/registry.py
+from __future__ import annotations
+
+from typing import ClassVar
+
 import frappe
 from frappe import _
 
@@ -6,7 +10,7 @@ from crm.integrations.telephony.base import TelephonyProvider
 
 
 class TelephonyRegistry:
-	_providers: dict[str, TelephonyProvider] = {}
+	_providers: ClassVar[dict[str, TelephonyProvider]] = {}
 
 	@classmethod
 	def register(cls, provider: TelephonyProvider):
