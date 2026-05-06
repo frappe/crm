@@ -24,7 +24,7 @@ def _permission_query_conditions(user: str | None, doctype: str):
 	if not hierarchy_enabled():
 		return ""
 
-	if "Sales Manager" in frappe.get_roles(user):
+	if "Sales Manager" in frappe.get_roles(user) and not _in_hierarchy(user):
 		return ""
 
 	owner_field = _OWNER_FIELD[doctype]
@@ -68,7 +68,7 @@ def _has_permission(doc, ptype, user, doctype: str) -> bool | None:
 	if not hierarchy_enabled():
 		return True
 
-	if "Sales Manager" in frappe.get_roles(user):
+	if "Sales Manager" in frappe.get_roles(user) and not _in_hierarchy(user):
 		return True
 
 	conditions = _permission_query_conditions(user, doctype)
@@ -84,6 +84,10 @@ def has_lead_permission(doc, ptype, user):
 
 def has_deal_permission(doc, ptype, user):
 	return _has_permission(doc, ptype, user, "CRM Deal")
+
+
+def _in_hierarchy(user: str) -> bool:
+	return bool(frappe.db.exists("CRM Sales Hierarchy", {"user": user}))
 
 
 def _team_mem_query(user: str):
