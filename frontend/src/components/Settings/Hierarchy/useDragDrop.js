@@ -85,7 +85,7 @@ export function useDragDrop({ onReparent }) {
       return 'opacity-50 [&_span]:line-through'
     }
     if (dragState.hover === node.name) {
-      return 'border-b !border-blue-500'
+      return 'border-b !border-blue-500 rounded-none'
     }
     return ''
   }

@@ -64,29 +64,33 @@
       </div>
     </div>
 
-    <div
-      v-else
-      class="flex-1 min-h-0 flex flex-col rounded-l bg-surface-white mx-2 px-0.5"
-    >
-      <div
-        class="flex items-center gap-2 pt-2 pb-3 sticky top-0 z-10 bg-surface-white"
-      >
+    <div v-else class="flex-1 min-h-0 flex flex-col px-2">
+      <div class="flex items-center gap-2 pt-0.5 pb-4">
         <TextInput
-         v-if="visibleRoots.length"
+          v-if="enrichedNodes.length"
           v-model="search"
           :placeholder="__('Search users')"
           :debounce="200"
-          class="flex-1"
+          class="w-1/2"
         >
           <template #prefix>
-            <FeatherIcon name="search" class="size-4 text-ink-gray-5" />
+            <FeatherIcon name="search" class="size-4 text-ink-gray-6" />
           </template>
         </TextInput>
         <Button
           v-if="isExpandable"
-          :label="collapsed ? __('Expand') : __('Collapse')"
+          variant="ghost"
+          class="w-28 ml-auto"
           @click="toggleCollapseAll"
-        />
+        >
+          <template #prefix>
+            <component
+              :is="collapsed ? LucideChevronsUpDown : LucideChevronsDownUp"
+              class="size-4"
+            />
+          </template>
+          {{ collapsed ? __('Expand') : __('Collapse') }}
+        </Button>
       </div>
       <div class="flex-1 min-h-0 overflow-y-auto">
         <div
@@ -125,6 +129,7 @@
               :row-class="rowClasses(node)"
               :handlers="dragHandlers"
               :get-candidates="getCandidates"
+              :candidates-loading="candidatesLoading"
               :can-edit="canEdit"
               @toggle="toggleCollapsed"
               @bulk-add="({ parent, userIds }) => bulkAdd(parent, userIds)"
@@ -167,6 +172,7 @@
         <UserMultiSelect
           v-model="dialogSelected"
           :candidates="getCandidates(null)"
+          :loading="candidatesLoading"
         />
       </template>
     </Dialog>
@@ -182,6 +188,8 @@ import { useDragDrop } from './useDragDrop'
 import { globalStore } from '@/stores/global'
 import { usersStore } from '@/stores/users'
 import LucideNetwork from '~icons/lucide/network'
+import LucideChevronsUpDown from '~icons/lucide/chevrons-up-down'
+import LucideChevronsDownUp from '~icons/lucide/chevrons-down-up'
 import {
   Button,
   Dialog,
@@ -371,13 +379,21 @@ function getCandidates(parent) {
       if (!ALLOWED_ROLES.has(role)) return false
       return (ROLE_RANK[role] ?? 99) >= parentRank
     })
-    .map((u) => ({
-      value: u.name,
-      full_name: u.full_name || u.name,
-      email: u.email || u.name,
-      user_image: u.user_image,
-    }))
+    .map((u) => {
+      const role = getUserRole(u.name)
+      return {
+        value: u.name,
+        full_name: u.full_name || u.name,
+        email: u.email || u.name,
+        user_image: u.user_image,
+        role_label: ROLE_LABEL[role] || role,
+      }
+    })
 }
+
+const candidatesLoading = computed(
+  () => !!(usersResource.loading || nodes.loading),
+)
 
 async function reparent(name, newParent) {
   try {

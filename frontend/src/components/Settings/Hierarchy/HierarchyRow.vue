@@ -1,6 +1,6 @@
 <template>
   <div
-    class="group flex items-center gap-2 p-1.5 text-base hover:bg-surface-gray-2 select-none border-b"
+    class="group relative flex items-center gap-2 px-2 py-1.5 mx-1 text-base rounded-md hover:bg-surface-gray-2 select-none after:content-[''] after:absolute after:bottom-0 after:left-3 after:right-3 after:border-b after:border-outline-gray-modals hover:after:hidden"
     :class="[rowClass, canEdit ? 'cursor-grab' : 'cursor-pointer']"
     :draggable="canEdit"
     @dragstart="canEdit && handlers.onDragStart($event, node)"
@@ -54,6 +54,7 @@
             <UserMultiSelect
               v-model="selected"
               :candidates="getCandidates(node)"
+              :loading="candidatesLoading"
             />
             <div class="border-t p-1.5 flex justify-end">
               <Button
@@ -98,6 +99,7 @@ const props = defineProps({
   rowClass: { type: String, default: '' },
   handlers: { type: Object, required: true },
   getCandidates: { type: Function, required: true },
+  candidatesLoading: { type: Boolean, default: false },
   canEdit: { type: Boolean, default: false },
 })
 
