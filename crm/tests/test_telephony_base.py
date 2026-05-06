@@ -104,3 +104,56 @@ class TestLinkCallLogToRecord(IntegrationTestCase):
 
         call_log.reload()
         self.assertEqual(len(call_log.links), 0)
+
+
+from crm.integrations.telephony.base import OutboundCallResult, TelephonyProvider
+
+
+class TestTelephonyProviderContract(IntegrationTestCase):
+    def test_cannot_instantiate_abstract(self):
+        with self.assertRaises(TypeError):
+            TelephonyProvider(enabled=True, settings={})
+
+    def test_concrete_must_implement_all_methods(self):
+        class IncompleteProvider(TelephonyProvider):
+            provider_name = "Incomplete"
+        with self.assertRaises(TypeError):
+            IncompleteProvider(enabled=True, settings={})
+
+    def test_concrete_with_all_methods_works(self):
+        class FakeProvider(TelephonyProvider):
+            provider_name = "Fake"
+
+            def validate_webhook(self, request_data, require_application_id=False):
+                return True
+
+            def parse_webhook_to_event(self, request_data):
+                return CallEvent(
+                    call_sid="FAKE1",
+                    direction="Incoming",
+                    status="Ringing",
+                    from_number="+1111",
+                    to_number="+2222",
+                    caller="",
+                    receiver="test@test.com",
+                    telephony_medium="Fake",
+                )
+
+            def make_outbound_call(self, from_number, to_number, caller_user):
+                return OutboundCallResult(call_sid="FAKE_OUT", provider_response={})
+
+            def get_recording_credentials(self):
+                return ("key", "secret")
+
+            def get_call_status(self, raw_status):
+                return "Completed"
+
+            def is_enabled(self):
+                return self.enabled
+
+        provider = FakeProvider(enabled=True, settings={"api_key": "test"})
+        self.assertTrue(provider.is_enabled())
+        self.assertEqual(provider.provider_name, "Fake")
+        result = provider.make_outbound_call("+1111", "+2222", "test@test.com")
+        self.assertEqual(result.call_sid, "FAKE_OUT")
+        self.assertIsInstance(result, OutboundCallResult)
