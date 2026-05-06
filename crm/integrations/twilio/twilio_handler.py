@@ -265,3 +265,79 @@ class TwilioCallDetails:
 			"receiver": receiver,
 			"caller": caller,
 		}
+
+
+from crm.integrations.telephony.base import OutboundCallResult, TelephonyProvider
+from crm.integrations.telephony.call_linking import CallEvent
+
+
+class TwilioProvider(TelephonyProvider):
+	provider_name = "Twilio"
+
+	def validate_webhook(self, request_data, require_application_id=False):
+		account_sid = request_data.get("AccountSid", "")
+		expected_sid = self.settings.get("account_sid", "")
+		if not account_sid or account_sid != expected_sid:
+			frappe.throw(_("Invalid Twilio account"), frappe.PermissionError)
+
+		if require_application_id:
+			application_sid = request_data.get("ApplicationSid", "")
+			expected_app_sid = self.settings.get("application_sid", "")
+			if not application_sid or application_sid != expected_app_sid:
+				frappe.throw(_("Invalid Twilio application"), frappe.PermissionError)
+
+		return True
+
+	def parse_webhook_to_event(self, request_data, call_from=None):
+		details = TwilioCallDetails(frappe._dict(request_data), call_from=call_from)
+		d = details.to_dict()
+
+		caller = d.get("caller", "")
+		receiver = d.get("receiver", "")
+
+		return CallEvent(
+			call_sid=d["id"],
+			direction=d["type"],
+			status=d["status"],
+			from_number=d["from"],
+			to_number=d["to"],
+			caller=caller,
+			receiver=receiver,
+			telephony_medium="Twilio",
+		)
+
+	def make_outbound_call(self, from_number, to_number, caller_user):
+		twilio = Twilio.connect()
+		if not twilio:
+			frappe.throw(_("Twilio is not configured"), frappe.ValidationError)
+		resp = twilio.generate_twilio_dial_response(from_number, to_number)
+		return OutboundCallResult(
+			call_sid=None,
+			provider_response={"twiml": resp.to_xml()},
+		)
+
+	def get_recording_credentials(self):
+		return (self.settings["api_key"], self.settings["api_secret"])
+
+	def get_call_status(self, raw_status):
+		return TwilioCallDetails.get_call_status(raw_status)
+
+	def is_enabled(self):
+		return bool(self.enabled)
+
+	@classmethod
+	def from_settings(cls):
+		settings = frappe.get_doc("CRM Twilio Settings")
+		if not settings or not settings.enabled:
+			return None
+		return cls(
+			enabled=True,
+			settings={
+				"account_sid": settings.account_sid,
+				"application_sid": settings.twiml_sid,
+				"api_key": settings.api_key,
+				"api_secret": settings.get_password("api_secret"),
+				"auth_token": settings.get_password("auth_token"),
+				"record_calls": settings.record_calls,
+			},
+		)

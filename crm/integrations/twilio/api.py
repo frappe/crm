@@ -4,7 +4,7 @@ import frappe
 from frappe import _
 from werkzeug.wrappers import Response
 
-from crm.integrations.api import get_contact_by_phone_number
+from crm.integrations.telephony.call_linking import link_call_log_to_record
 
 from .twilio_handler import IncomingCall, Twilio, TwilioCallDetails
 
@@ -90,25 +90,11 @@ def create_call_log(call_details: TwilioCallDetails):
 
 	# link call log with lead/deal
 	contact_number = details.get("from") if details.get("type") == "Incoming" else details.get("to")
-	link(contact_number, call_log)
+	link_call_log_to_record(call_log, contact_number)
 
 	call_log.save(ignore_permissions=True)
 	frappe.db.commit()
 	return call_log
-
-
-def link(contact_number, call_log):
-	contact = get_contact_by_phone_number(contact_number)
-	if contact.get("name"):
-		doctype = "Contact"
-		docname = contact.get("name")
-		if contact.get("lead"):
-			doctype = "CRM Lead"
-			docname = contact.get("lead")
-		elif contact.get("deal"):
-			doctype = "CRM Deal"
-			docname = contact.get("deal")
-		call_log.link_with_reference_doc(doctype, docname)
 
 
 def update_call_log(call_sid, status=None):
