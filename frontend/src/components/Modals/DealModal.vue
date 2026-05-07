@@ -106,6 +106,37 @@ const chooseExistingContact = ref(false)
 const chooseExistingOrganization = ref(false)
 const { capture } = useTelemetry()
 
+function getContactLinkFilters() {
+  const organization =
+    chooseExistingOrganization.value && deal.doc.organization
+      ? deal.doc.organization
+      : null
+
+  return organization ? JSON.stringify({ company_name: organization }) : null
+}
+
+function applyContactOrganizationFilter(field) {
+  if (
+    field.fieldname === 'contact' &&
+    field.fieldtype === 'Link' &&
+    field.options === 'Contact'
+  ) {
+    field.link_filters = getContactLinkFilters()
+  }
+}
+
+function refreshContactOrganizationFilter() {
+  if (!tabs.data) return
+
+  tabs.data.forEach((tab) => {
+    tab.sections.forEach((section) => {
+      section.columns.forEach((column) => {
+        column.fields.forEach((field) => applyContactOrganizationFilter(field))
+      })
+    })
+  })
+}
+
 watch(
   [chooseExistingOrganization, chooseExistingContact],
   ([organization, contact]) => {
@@ -123,6 +154,11 @@ watch(
       })
     })
   },
+)
+
+watch(
+  [chooseExistingOrganization, chooseExistingContact, () => deal.doc.organization],
+  () => nextTick(() => refreshContactOrganizationFilter()),
 )
 
 const tabs = createResource({
@@ -154,6 +190,8 @@ const tabs = createResource({
               field.options = dealStatuses.value
               field.prefix = getDealStatus(deal.doc.status).color
             }
+
+            applyContactOrganizationFilter(field)
 
             if (field.fieldtype === 'Table') {
               deal.doc[field.fieldname] = []
