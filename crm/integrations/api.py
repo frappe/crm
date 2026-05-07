@@ -23,10 +23,12 @@ def _get_recording_credentials(telephony_medium: str) -> tuple:
 def is_call_integration_enabled():
 	twilio_enabled = frappe.db.get_single_value("CRM Twilio Settings", "enabled")
 	exotel_enabled = frappe.db.get_single_value("CRM Exotel Settings", "enabled")
+	yeastar_enabled = frappe.db.get_single_value("CRM Yeastar Settings", "enabled")
 
 	return {
 		"twilio_enabled": twilio_enabled,
 		"exotel_enabled": exotel_enabled,
+		"yeastar_enabled": yeastar_enabled,
 		"default_calling_medium": get_user_default_calling_medium(),
 	}
 
@@ -117,10 +119,7 @@ def add_task_to_call_log(call_sid: str, task: dict):
 
 	return _task
 
-
-frappe.whitelist()
-
-
+@frappe.whitelist()
 def get_contact_lead_or_deal_from_number(number):
 	"""Get contact, lead or deal from the given number."""
 	contact = get_contact_by_phone_number(number)
@@ -234,3 +233,5 @@ def get_contact(phone_number, country="IN", exact_match=False):
 		return contacts[0]
 
 	return {"mobile_no": phone_number}
+
+
