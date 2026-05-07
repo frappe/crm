@@ -107,40 +107,40 @@
               v-if="index !== slaPolicyListResource.list.data.length - 1"
               class="mx-2 border-outline-gray-2"
             />
-            <Dialog
-              v-model="duplicateDialog.show"
-              :options="{ title: __('Duplicate SLA Policy') }"
-            >
-              <template #body-content>
-                <div class="flex flex-col gap-4">
-                  <FormControl
-                    v-model="duplicateDialog.name"
-                    :label="__('New SLA Policy Name')"
-                    type="text"
-                    maxlength="100"
-                  />
-                </div>
-              </template>
-              <template #actions>
-                <div class="flex gap-2 justify-end">
-                  <Button
-                    variant="subtle"
-                    :label="__('Close')"
-                    @click="duplicateDialog.show = false"
-                  />
-                  <Button
-                    variant="solid"
-                    :label="__('Duplicate')"
-                    @click="() => duplicate(sla)"
-                  />
-                </div>
-              </template>
-            </Dialog>
           </div>
         </div>
       </div>
     </template>
   </SettingsLayoutBase>
+  <Dialog
+    :options="{ title: __('Duplicate SLA Policy') }"
+    v-model="duplicateDialog.show"
+  >
+    <template #body-content>
+      <div class="flex flex-col gap-4">
+        <FormControl
+          :label="__('New SLA Policy Name')"
+          type="text"
+          v-model="duplicateDialog.newName"
+          maxlength="100"
+        />
+      </div>
+    </template>
+    <template #actions>
+      <div class="flex gap-2 justify-end">
+        <Button
+          variant="subtle"
+          :label="__('Close')"
+          @click="duplicateDialog.show = false"
+        />
+        <Button
+          variant="solid"
+          :label="__('Duplicate')"
+          @click="() => duplicate()"
+        />
+      </div>
+    </template>
+  </Dialog>
 </template>
 
 <script setup>
@@ -158,21 +158,22 @@ import {
   Switch,
   toast,
 } from 'frappe-ui'
-import { ConfirmDelete } from '@/utils'
-import { resetSlaData } from './utils'
 import { inject, ref, watch } from 'vue'
+import { isSlaNew, resetSlaData, updateStep } from './utils'
+import { ConfirmDelete } from '@/utils'
 
 const slaPolicyListResource = inject('slaPolicyListResource')
-const updateStep = inject('updateStep')
 const slaSearchQuery = inject('slaSearchQuery')
 
 function createNewSlaPolicy() {
   resetSlaData()
   updateStep('view', null)
+  isSlaNew.value = true
 }
 
 const duplicateDialog = ref({
   show: false,
+  newName: '',
   name: '',
 })
 
@@ -184,7 +185,8 @@ const dropdownOptions = (sla) => [
     onClick: () => {
       duplicateDialog.value = {
         show: true,
-        name: sla.name + ' (Copy)',
+        newName: sla.name + ' (Copy)',
+        name: sla.name,
       }
     },
     icon: 'copy',
@@ -195,12 +197,12 @@ const dropdownOptions = (sla) => [
   }),
 ]
 
-const duplicate = (sla) => {
+const duplicate = () => {
   createResource({
     url: 'frappe.client.get',
     params: {
       doctype: 'CRM Service Level Agreement',
-      name: sla.name,
+      name: duplicateDialog.value.name,
     },
     onSuccess: (data) => {
       createResource({
@@ -209,7 +211,7 @@ const duplicate = (sla) => {
           doc: {
             ...data,
             default: false,
-            sla_name: duplicateDialog.value.name,
+            sla_name: duplicateDialog.value.newName,
           },
         },
         auto: true,
@@ -218,7 +220,7 @@ const duplicate = (sla) => {
           toast.success(__('SLA Policy Duplicated'))
           duplicateDialog.value = {
             show: false,
-            name: '',
+            newName: '',
           }
           resetSlaData()
           setTimeout(() => {

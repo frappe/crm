@@ -2,8 +2,8 @@
   <Dialog
     v-model="showSettings"
     :options="{ size: '5xl' }"
-    :disableOutsideClickToClose="disableSettingModalOutsideClick"
     @close="activeSettingsPage = ''"
+    :disableOutsideClickToClose="disableSettingModalOutsideClick"
   >
     <template #body>
       <div class="flex h-[calc(100vh_-_8rem)] bg-surface-menu-bar">
@@ -42,6 +42,7 @@
     </template>
   </Dialog>
 </template>
+
 <script setup>
 import LucideLayoutDashboard from '~icons/lucide/layout-dashboard'
 import MonitorCogIcon from '~icons/lucide/monitor-cog'
@@ -72,18 +73,20 @@ import EmailTemplatePage from '@/components/Settings/EmailTemplate/EmailTemplate
 import TelephonyPage from '@/components/Settings/Telephony/TelephonyPage.vue'
 import EmailConfig from '@/components/Settings/EmailConfig.vue'
 import SidebarLink from '@/components/SidebarLink.vue'
-import { usersStore } from '@/stores/users'
 import {
-  isWhatsappInstalled,
   showSettings,
-  activeSettingsPage,
   disableSettingModalOutsideClick,
+  activeSettingsPage,
 } from '@/composables/settings'
 import { Dialog, Avatar } from 'frappe-ui'
 import { ref, markRaw, computed, watch, h } from 'vue'
 import AssignmentRulePage from './AssignmentRules/AssignmentRulePage.vue'
 import ShieldCheck from '~icons/lucide/shield-check'
 import SlaConfig from './Sla/SlaConfig.vue'
+import { usersStore } from '@/stores/users'
+import { isWhatsappInstalled } from '../../composables/settings'
+import Briefcase from '~icons/lucide/briefcase'
+import BusinessHolidayConfig from './BusinessHoliday/BusinessHolidayConfig.vue'
 
 const { isManager, getUser } = usersStore()
 
@@ -188,6 +191,11 @@ const tabs = computed(() => {
           label: __('SLA Policies'),
           icon: markRaw(h(ShieldCheck)),
           component: markRaw(SlaConfig),
+        },
+        {
+          label: __('Business Holidays'),
+          icon: markRaw(h(Briefcase)),
+          component: markRaw(BusinessHolidayConfig),
         },
       ],
       condition: () => isManager(),
