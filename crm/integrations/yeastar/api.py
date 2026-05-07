@@ -3,6 +3,7 @@ from typing import Literal
 
 import frappe
 import requests
+from frappe import _
 from frappe.model.document import Document
 from frappe.utils import get_datetime
 
@@ -18,7 +19,7 @@ from .utils import (
 )
 
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist()
 def make_call(callee: str, auto_answer: str = "yes") -> dict[str, str]:
 	is_yeaster_enabled()
 
@@ -70,7 +71,7 @@ def handle_incoming_call() -> None:
 			"No data received in the incoming call webhook.",
 			"Yeastar Incoming Call Webhook Error",
 		)
-		frappe.throw("No data received from the incoming call webhook.")
+		frappe.throw(_("No data received from the incoming call webhook."))
 
 	call_id = data.get("call_id")
 	members: list[dict] = data.get("members")
@@ -85,7 +86,7 @@ def handle_incoming_call() -> None:
 	create_socket_connection(details)
 
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist()
 def respond_to_call(channel_id: str, action: Literal["accept", "refuse"]) -> dict:
 	validate_token()
 
@@ -99,7 +100,7 @@ def respond_to_call(channel_id: str, action: Literal["accept", "refuse"]) -> dic
 	)
 
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist()
 def hangup_call(channel_id: str) -> dict:
 	validate_token()
 
