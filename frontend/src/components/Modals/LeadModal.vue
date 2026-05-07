@@ -158,6 +158,7 @@ async function createNewLead() {
         capture('lead_created')
         isLeadCreating.value = false
         show.value = false
+        lead.doc = {}
         router.push({ name: 'Lead', params: { leadId: data.name } })
         updateOnboardingStep('create_first_lead', true, false, () => {
           localStorage.setItem('firstLead' + user, data.name)

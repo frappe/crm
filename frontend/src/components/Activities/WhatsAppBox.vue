@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/no-v-html -->
 <template>
   <div
     v-if="reply?.message"
@@ -15,7 +16,10 @@
       >
         {{ reply.from_name || __('You') }}
       </div>
-      <div class="max-h-12 overflow-hidden" v-html="reply.message" />
+      <div
+        class="max-h-12 overflow-hidden"
+        v-html="sanitizeHTML(reply.message)"
+      />
     </div>
 
     <Button variant="ghost" icon="x" @click="reply = {}" />
@@ -68,6 +72,7 @@
 <script setup>
 import IconPicker from '@/components/IconPicker.vue'
 import SmileIcon from '@/components/Icons/SmileIcon.vue'
+import { sanitizeHTML } from '@/utils'
 import { useTelemetry } from 'frappe-ui/frappe'
 import {
   createResource,

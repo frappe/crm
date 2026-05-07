@@ -22,7 +22,8 @@
     <div
       class="cursor-pointer rounded bg-surface-gray-1 px-3 py-[7.5px] text-base leading-6 transition-all duration-300 ease-in-out"
     >
-      <div class="prose-f" v-html="activity.content" />
+      <!-- eslint-disable-next-line vue/no-v-html -->
+      <div class="prose-f" v-html="sanitizeHTML(activity.content)" />
       <div v-if="activity.attachments.length" class="mt-2 flex flex-wrap gap-2">
         <AttachmentItem
           v-for="a in activity.attachments"
@@ -38,7 +39,7 @@
 import UserAvatar from '@/components/UserAvatar.vue'
 import AttachmentItem from '@/components/AttachmentItem.vue'
 import { Tooltip } from 'frappe-ui'
-import { timeAgo, formatDate } from '@/utils'
+import { timeAgo, formatDate, sanitizeHTML } from '@/utils'
 
 defineProps({
   activity: { type: Object, default: () => ({}) },

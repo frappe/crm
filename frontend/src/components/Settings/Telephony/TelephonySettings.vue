@@ -159,7 +159,7 @@
           </span>
         </div>
         <Button
-          :label="__('Configure')"
+          :label="twilioEnabled ? __('Update Configuration') : __('Configure')"
           @click="emit('updateStep', 'twilio-settings')"
         />
       </div>
@@ -184,7 +184,7 @@
           </span>
         </div>
         <Button
-          :label="__('Configure')"
+          :label="exotelEnabled ? __('Update Configuration') : __('Configure')"
           @click="emit('updateStep', 'exotel-settings')"
         />
       </div>
@@ -199,7 +199,6 @@ import {
   FormControl,
   Badge,
   ErrorMessage,
-  FeatherIcon,
   createResource,
   toast,
 } from 'frappe-ui'

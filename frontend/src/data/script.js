@@ -1,10 +1,37 @@
 import { globalStore } from '@/stores/global'
 import { getMeta } from '@/stores/meta'
+import { getClassNames, createDocProxy } from '@/utils/scriptHelpers'
+import { renderFieldLayoutDialog } from '@/utils/renderFieldLayoutDialog'
 import { call, createListResource, toast } from 'frappe-ui'
 import { reactive } from 'vue'
 import router from '@/router'
 
 const doctypeScripts = reactive({})
+const fileScriptModules = import.meta.glob('../doctypes/*/*.js')
+const fileScriptCache = {}
+
+async function loadFileScript(doctype, view) {
+  const key = `${doctype}:${view}`
+  if (key in fileScriptCache) return fileScriptCache[key]
+
+  const slug = doctype.toLowerCase().replaceAll(' ', '_')
+  const viewSlug = view.toLowerCase()
+  const path = `../doctypes/${slug}/${viewSlug}.js`
+
+  const loader = fileScriptModules[path]
+  if (!loader) {
+    fileScriptCache[key] = null
+    return null
+  }
+
+  try {
+    fileScriptCache[key] = await loader()
+  } catch {
+    fileScriptCache[key] = null
+  }
+
+  return fileScriptCache[key]
+}
 
 export function getScript(doctype, view = 'Form') {
   const scripts = createListResource({
@@ -33,10 +60,10 @@ export function getScript(doctype, view = 'Form') {
   }
 
   async function setupScript(document, helpers = {}) {
-    await scripts.list.promise
-
-    let scriptDefs = doctypeScripts[doctype]
-    if (!scriptDefs || Object.keys(scriptDefs).length === 0) return null
+    const [fileModule] = await Promise.all([
+      loadFileScript(doctype, view),
+      scripts.list.promise,
+    ])
 
     const { $dialog, $socket } = globalStore()
 
@@ -45,18 +72,84 @@ export function getScript(doctype, view = 'Form') {
     helpers.socket = $socket
     helpers.router = router
     helpers.call = call
+    helpers.formDialog = renderFieldLayoutDialog
 
     helpers.throwError = (message) => {
       toast.error(message || __('An error occurred'))
       throw new Error(message || __('An error occurred'))
     }
 
-    return setupMultipleFormControllers(scriptDefs, document, helpers)
+    let scriptDefs = doctypeScripts[doctype]
+    const hasFileScript = fileModule != null
+    const hasDbScripts = scriptDefs && Object.keys(scriptDefs).length > 0
+
+    if (!hasFileScript && !hasDbScripts) return null
+
+    return setupMultipleFormControllers(
+      fileModule,
+      scriptDefs,
+      document,
+      helpers,
+    )
   }
 
-  function setupMultipleFormControllers(scriptStrings, document, helpers) {
+  function setupMultipleFormControllers(
+    fileModule,
+    scriptStrings,
+    document,
+    helpers,
+  ) {
     const controllers = []
     let parentInstanceIdx = null
+    const doctypeName = doctype.replace(/\s+/g, '')
+    const { doctypesMeta } = getMeta(doctype)
+
+    function addController(FormClass, className) {
+      setupHelperMethods(FormClass)
+
+      let parentInstance = null
+      let isChildDoctype = className !== doctypeName
+
+      if (isChildDoctype) {
+        if (!controllers.length) {
+          console.error(
+            __(
+              '⚠️ No class found for doctype: {0}, it is mandatory to have a class for the parent doctype. it can be empty, but it should be present.',
+              [doctype],
+            ),
+          )
+          return
+        }
+        parentInstance = controllers[parentInstanceIdx]
+      } else {
+        parentInstanceIdx = controllers.length || 0
+      }
+
+      const instance = setupFormController(
+        FormClass,
+        doctypesMeta,
+        document,
+        helpers,
+        parentInstance,
+        isChildDoctype,
+      )
+
+      controllers.push(instance)
+    }
+
+    if (fileModule) {
+      try {
+        for (const [name, exported] of Object.entries(fileModule)) {
+          if (typeof exported === 'function') {
+            addController(exported, name)
+          }
+        }
+      } catch (err) {
+        console.error(
+          __('Failed to load file-based form controller: {0}', [err]),
+        )
+      }
+    }
 
     for (let scriptName in scriptStrings) {
       let script = scriptStrings[scriptName]?.script
@@ -68,39 +161,7 @@ export function getScript(doctype, view = 'Form') {
         classNames.forEach((className) => {
           const FormClass = evaluateFormClass(script, className, helpers)
           if (!FormClass) return
-
-          let parentInstance = null
-          let doctypeName = doctype.replace(/\s+/g, '')
-
-          let { doctypesMeta } = getMeta(doctype)
-
-          // if className is not doctype name, then it is a child doctype
-          let isChildDoctype = className !== doctypeName
-
-          if (isChildDoctype) {
-            if (!controllers.length) {
-              console.error(
-                __(
-                  '⚠️ No class found for doctype: {0}, it is mandatory to have a class for the parent doctype. it can be empty, but it should be present.',
-                  [doctype],
-                ),
-              )
-              return
-            }
-            parentInstance = controllers[parentInstanceIdx]
-          } else {
-            parentInstanceIdx = controllers.length || 0
-          }
-
-          const instance = setupFormController(
-            FormClass,
-            doctypesMeta,
-            document,
-            parentInstance,
-            isChildDoctype,
-          )
-
-          controllers.push(instance)
+          addController(FormClass, className)
         })
       } catch (err) {
         console.error(__('Failed to load form controller: {0}', [err]))
@@ -114,6 +175,7 @@ export function getScript(doctype, view = 'Form') {
     FormClass,
     meta,
     document,
+    helpers,
     parentInstance = null,
     isChildDoctype = false,
   ) {
@@ -125,6 +187,10 @@ export function getScript(doctype, view = 'Form') {
     // Store the original document context to be used by properties like 'actions'
     instance._originalDocumentContext = document
     instance._isChildDoctype = isChildDoctype
+
+    for (const key in helpers) {
+      instance[key] = helpers[key]
+    }
 
     for (const key in document) {
       if (Object.hasOwn(document, key)) {
@@ -275,21 +341,91 @@ export function getScript(doctype, view = 'Form') {
         },
       })
     }
+
+    if (typeof FormClass.prototype.setFieldHtml !== 'function') {
+      FormClass.prototype.setFieldHtml = function (fieldname, html) {
+        if (!this._originalDocumentContext) {
+          console.warn(
+            'CRM Script: _originalDocumentContext not found on instance for setFieldHtml.',
+          )
+          return
+        }
+        if (!this._originalDocumentContext.fieldHtmlMap) {
+          this._originalDocumentContext.fieldHtmlMap = {}
+        }
+        this._originalDocumentContext.fieldHtmlMap[fieldname] = html
+      }
+    }
+
+    if (typeof FormClass.prototype.setFieldProperty !== 'function') {
+      FormClass.prototype.setFieldProperty = function (
+        target,
+        property,
+        value,
+        rowName,
+      ) {
+        const ctx = this._originalDocumentContext
+        if (!ctx) {
+          console.warn(
+            'CRM Script: _originalDocumentContext not found on instance for setFieldProperty.',
+          )
+          return
+        }
+        if (!ctx.fieldPropertyOverrides) ctx.fieldPropertyOverrides = {}
+        const key = rowName ? `${target}:${rowName}` : target
+        if (!ctx.fieldPropertyOverrides[key])
+          ctx.fieldPropertyOverrides[key] = {}
+        ctx.fieldPropertyOverrides[key][property] = value
+      }
+    }
+
+    if (typeof FormClass.prototype.setFieldProperties !== 'function') {
+      FormClass.prototype.setFieldProperties = function (
+        target,
+        properties,
+        rowName,
+      ) {
+        if (!properties || typeof properties !== 'object') return
+        for (const [key, value] of Object.entries(properties)) {
+          this.setFieldProperty(target, key, value, rowName)
+        }
+      }
+    }
+
+    if (typeof FormClass.prototype.removeFieldProperty !== 'function') {
+      FormClass.prototype.removeFieldProperty = function (
+        target,
+        property,
+        rowName,
+      ) {
+        const ctx = this._originalDocumentContext
+        const key = rowName ? `${target}:${rowName}` : target
+        if (!ctx?.fieldPropertyOverrides?.[key]) return
+        delete ctx.fieldPropertyOverrides[key][property]
+        if (Object.keys(ctx.fieldPropertyOverrides[key]).length === 0) {
+          delete ctx.fieldPropertyOverrides[key]
+        }
+      }
+    }
+
+    if (typeof FormClass.prototype.getField !== 'function') {
+      FormClass.prototype.getField = function (fieldname) {
+        const ctx = this._originalDocumentContext
+        const dt = ctx?.doc?.doctype || ''
+        if (!dt) return null
+
+        const { doctypesMeta: allMeta } = getMeta(dt)
+        const raw = allMeta[dt]?.fields?.find((f) => f.fieldname === fieldname)
+        if (!raw) return null
+
+        // Return a clone merged with any overrides
+        const overrides = ctx?.fieldPropertyOverrides?.[fieldname] || {}
+        return { ...raw, ...overrides }
+      }
+    }
   }
 
-  // utility function to setup a form controller
-  function getClassNames(script) {
-    const withoutComments = script
-      .replace(/\/\/.*$/gm, '') // Remove single-line comments
-      .replace(/\/\*[\s\S]*?\*\//g, '') // Remove multi-line comments
-
-    // Match class declarations
-    return (
-      [...withoutComments.matchAll(/class\s+([A-Za-z0-9_]+)/g)].map(
-        (match) => match[1],
-      ) || []
-    )
-  }
+  // getClassNames and createDocProxy are imported from '@/utils/scriptHelpers'
 
   function evaluateFormClass(script, className, helpers = {}) {
     const helperKeys = Object.keys(helpers)
@@ -304,75 +440,7 @@ export function getScript(doctype, view = 'Form') {
       ...helperValues,
     )
 
-    setupHelperMethods(FormClass)
-
     return FormClass
-  }
-
-  function createDocProxy(source, instance, childInstance = null) {
-    const isFunction = typeof source === 'function'
-    const getCurrentData = () => (isFunction ? source() : source)
-
-    return new Proxy(
-      {},
-      {
-        get(target, prop) {
-          const currentDocData = getCurrentData()
-          if (!currentDocData) return undefined
-
-          if (prop === 'trigger') {
-            if (currentDocData && 'trigger' in currentDocData) {
-              console.warn(
-                __(
-                  '⚠️ Avoid using "trigger" as a field name — it conflicts with the built-in trigger() method.',
-                ),
-              )
-            }
-
-            return (methodName, ...args) => {
-              const method = instance[methodName]
-              if (typeof method === 'function') {
-                return method.apply(instance, args)
-              } else {
-                console.warn(
-                  __('⚠️ Method "{0}" not found in class.', [methodName]),
-                )
-              }
-            }
-          }
-
-          if (prop === 'getRow') {
-            return instance.getRow.bind(
-              childInstance || instance._childInstances || instance,
-            )
-          }
-
-          return currentDocData[prop]
-        },
-        set(target, prop, value) {
-          const currentDocData = getCurrentData()
-          if (!currentDocData) return false
-
-          currentDocData[prop] = value
-          return true
-        },
-        has(target, prop) {
-          const currentDocData = getCurrentData()
-          if (!currentDocData) return false
-          return prop in currentDocData
-        },
-        ownKeys() {
-          const currentDocData = getCurrentData()
-          if (!currentDocData) return []
-          return Reflect.ownKeys(currentDocData)
-        },
-        getOwnPropertyDescriptor(target, prop) {
-          const currentDocData = getCurrentData()
-          if (!currentDocData) return undefined
-          return Reflect.getOwnPropertyDescriptor(currentDocData, prop)
-        },
-      },
-    )
   }
 
   return {

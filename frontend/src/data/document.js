@@ -1,8 +1,10 @@
 import { getScript } from '@/data/script'
 import { globalStore } from '@/stores/global'
 import { getMeta } from '@/stores/meta'
+import { useAttachments } from '@/composables/useAttachments'
 import { showSettings, activeSettingsPage } from '@/composables/settings'
-import { runSequentially, parseAssignees, evaluateExpression } from '@/utils'
+import { runSequentially, parseAssignees } from '@/utils'
+import { findMissingMandatory } from '@/utils/fieldTransforms'
 import { createDocumentResource, createResource, toast } from 'frappe-ui'
 import { ref, reactive } from 'vue'
 
@@ -14,6 +16,10 @@ const permissionsCache = {}
 export function useDocument(doctype, docname, resourceOverrides = {}) {
   const { setupScript, scripts } = getScript(doctype)
   const meta = getMeta(doctype)
+  const { trackOldFile, processPendingDeletions } = useAttachments(
+    doctype,
+    docname,
+  )
 
   documentsCache[doctype] = documentsCache[doctype] || {}
 
@@ -40,10 +46,10 @@ export function useDocument(doctype, docname, resourceOverrides = {}) {
           }
         },
         setValue: {
-          validate,
           onSuccess: () => {
             triggerOnSave()
             toast.success(__('Document updated successfully'))
+            processPendingDeletions()
           },
           onError: (err) => {
             triggerOnError(err)
@@ -72,9 +78,32 @@ export function useDocument(doctype, docname, resourceOverrides = {}) {
         },
         ...resourceOverrides,
       })
+      if (!documentsCache[doctype][docname].fieldHtmlMap) {
+        documentsCache[doctype][docname].fieldHtmlMap = {}
+      }
+      if (!documentsCache[doctype][docname].fieldPropertyOverrides) {
+        documentsCache[doctype][docname].fieldPropertyOverrides = {}
+      }
+
+      // Override the submit function to trigger validation before submitting
+      // TODO: fix validate function to return error message instead of throwing error in frappe-ui and remove try-catch block here
+      const _save = documentsCache[doctype][docname].save
+      const _originalSubmit = _save.submit
+      _save.submit = async function (...args) {
+        try {
+          await triggerOnValidate()
+        } catch (err) {
+          console.error(err)
+          return
+        }
+        const mandatory = checkMandatory(documentsCache[doctype][docname].doc)
+        if (mandatory) return
+        return _originalSubmit.apply(_save, args)
+      }
     } else {
       documentsCache[doctype][''] = reactive({
         doc: { __newDocument: true, doctype },
+        fieldPropertyOverrides: {},
       })
       setupFormScript()
     }
@@ -154,6 +183,7 @@ export function useDocument(doctype, docname, resourceOverrides = {}) {
     controllersCache[doctype][docname || ''] = organizedControllers
 
     triggerOnLoad()
+    triggerOnRender()
   }
 
   function getControllers(row = null) {
@@ -172,39 +202,24 @@ export function useDocument(doctype, docname, resourceOverrides = {}) {
     return []
   }
 
-  function validate(d) {
-    checkMandatory(d.doc || d.fieldname)
-  }
-
   function checkMandatory(doc) {
-    let fields = meta?.getFields() || []
+    let fields = meta?.doctypesMeta?.[doctype]?.fields || []
 
     if (!fields || fields.length === 0) return
 
-    let missingFields = []
+    const overrides =
+      documentsCache[doctype][docname || '']?.fieldPropertyOverrides || {}
 
-    fields.forEach((df) => {
-      let parent = meta?.doctypesMeta?.[df.parent] || null
-      if (evaluateExpression(df.mandatory_depends_on, doc, parent)) {
-        const value = doc[df.fieldname]
-        if (
-          value === undefined ||
-          value === null ||
-          (typeof value === 'string' && value.trim() === '') ||
-          (Array.isArray(value) && value.length === 0)
-        ) {
-          missingFields.push(df.label || df.fieldname)
-        }
-      }
+    const missingFields = findMissingMandatory(fields, doc, {
+      propertyOverrides: overrides,
+      doctypesMeta: meta?.doctypesMeta || {},
     })
 
     if (missingFields.length > 0) {
       toast.error(
         __('Mandatory fields required: {0}', [missingFields.join(', ')]),
       )
-      throw new Error(
-        __('Mandatory fields required: {0}', [missingFields.join(', ')]),
-      )
+      return __('Mandatory fields required: {0}', [missingFields.join(', ')])
     }
   }
 
@@ -215,10 +230,24 @@ export function useDocument(doctype, docname, resourceOverrides = {}) {
     await trigger(handler)
   }
 
+  async function triggerOnRender() {
+    const handler = async function () {
+      await (this.onRender?.() || this.on_render?.() || this.refresh?.())
+    }
+    await trigger(handler)
+  }
+
   async function triggerOnBeforeCreate() {
     const args = Array.from(arguments)
     const handler = async function () {
       await (this.onBeforeCreate?.(...args) || this.on_before_create?.(...args))
+    }
+    await trigger(handler)
+  }
+
+  async function triggerOnValidate() {
+    const handler = async function () {
+      await (this.onValidate?.() || this.on_validate?.() || this.validate?.())
     }
     await trigger(handler)
   }
@@ -237,13 +266,6 @@ export function useDocument(doctype, docname, resourceOverrides = {}) {
     await trigger(handler)
   }
 
-  async function triggerOnRefresh() {
-    const handler = async function () {
-      await this.refresh?.()
-    }
-    await trigger(handler)
-  }
-
   async function triggerOnChange(fieldname, value, row) {
     let oldValue = null
     if (row) {
@@ -252,6 +274,7 @@ export function useDocument(doctype, docname, resourceOverrides = {}) {
     } else {
       oldValue = documentsCache[doctype][docname || ''].doc[fieldname]
       documentsCache[doctype][docname || ''].doc[fieldname] = value
+      trackOldFile(oldValue, value)
     }
 
     const handler = async function () {
@@ -266,11 +289,6 @@ export function useDocument(doctype, docname, resourceOverrides = {}) {
     try {
       await trigger(handler, row)
     } catch (error) {
-      if (row) {
-        row[fieldname] = oldValue
-      } else {
-        documentsCache[doctype][docname || ''].doc[fieldname] = oldValue
-      }
       console.error(handler)
       throw error
     }
@@ -330,6 +348,12 @@ export function useDocument(doctype, docname, resourceOverrides = {}) {
     await trigger(handler)
   }
 
+  function setFieldHtml(fieldname, html) {
+    const cache = documentsCache[doctype][docname || '']
+    if (!cache.fieldHtmlMap) cache.fieldHtmlMap = {}
+    cache.fieldHtmlMap[fieldname] = html
+  }
+
   async function trigger(taskFn, row = null) {
     const controllers = getControllers(row)
     if (!controllers.length) return
@@ -347,13 +371,13 @@ export function useDocument(doctype, docname, resourceOverrides = {}) {
     permissions: permissionsCache[doctype][docname || ''],
     scripts,
     error,
-    validate,
     getControllers,
     triggerOnLoad,
+    triggerOnRender,
     triggerOnBeforeCreate,
+    triggerOnValidate,
     triggerOnSave,
     triggerOnError,
-    triggerOnRefresh,
     triggerOnChange,
     triggerButton,
     triggerOnRowAdd,
@@ -361,5 +385,6 @@ export function useDocument(doctype, docname, resourceOverrides = {}) {
     setupFormScript,
     triggerOnCreateLead,
     triggerConvertToDeal,
+    setFieldHtml,
   }
 }

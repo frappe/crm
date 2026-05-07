@@ -39,7 +39,7 @@
                     class="field flex items-center gap-2 px-3 leading-5 first:mt-3"
                   >
                     <Tooltip
-                      v-if="field.fieldtype !== 'Button'"
+                      v-if="!['Button', 'HTML'].includes(field.fieldtype)"
                       :text="__(field.label)"
                       :hoverDelay="1"
                     >
@@ -64,7 +64,9 @@
                     <div
                       :class="[
                         'flex items-center justify-between',
-                        field.fieldtype === 'Button' ? 'w-full' : 'w-[65%]',
+                        ['Button', 'HTML'].includes(field.fieldtype)
+                          ? 'w-full'
+                          : 'w-[65%]',
                       ]"
                     >
                       <div
@@ -83,6 +85,11 @@
                               'Duration',
                               'Rating',
                               'Button',
+                              'Attach',
+                              'Attach Image',
+                              'HTML',
+                              'Geolocation',
+                              'Text Editor',
                             ].includes(field.fieldtype)
                           "
                           class="flex h-7 cursor-pointer items-center px-2 py-1 text-ink-gray-5"
@@ -302,6 +309,46 @@
                           :disabled="Boolean(field.read_only)"
                           @click="handleButtonClick(field)"
                         />
+                        <AttachControl
+                          v-else-if="
+                            ['Attach', 'Attach Image'].includes(field.fieldtype)
+                          "
+                          class="attach-control"
+                          :value="doc[field.fieldname]"
+                          :doctype="doctype"
+                          :docname="doc.name"
+                          :fieldname="field.fieldname"
+                          :imageOnly="field.fieldtype === 'Attach Image'"
+                          :disabled="Boolean(field.read_only)"
+                          @change="(v) => fieldChange(v, field)"
+                        />
+                        <HtmlControl
+                          v-else-if="field.fieldtype === 'HTML'"
+                          :html="
+                            document.fieldHtmlMap?.[field.fieldname] !==
+                            undefined
+                              ? document.fieldHtmlMap[field.fieldname]
+                              : interpolateTemplate(field.options || '', doc)
+                          "
+                        />
+                        <GeolocationControl
+                          v-else-if="field.fieldtype === 'Geolocation'"
+                          class="geolocation-control"
+                          :value="doc[field.fieldname]"
+                          :disabled="Boolean(field.read_only)"
+                          @change="(v) => fieldChange(v, field)"
+                        />
+                        <TextEditorControl
+                          v-else-if="field.fieldtype === 'Text Editor'"
+                          variant="ghost"
+                          :fixed-menu="false"
+                          :bubble-menu="true"
+                          editorClass="w-full !min-h-[38px] !h-[38px] ml-1"
+                          :value="doc[field.fieldname]"
+                          :placeholder="field.placeholder"
+                          :disabled="Boolean(field.read_only)"
+                          @change="(v) => fieldChange(v, field)"
+                        />
                         <FormControl
                           v-else
                           class="form-control"
@@ -355,6 +402,10 @@ import Password from '@/components/Controls/Password.vue'
 import FormattedInput from '@/components/Controls/FormattedInput.vue'
 import DurationInput from '@/components/Controls/DurationInput.vue'
 import RatingInput from '@/components/Controls/RatingInput.vue'
+import AttachControl from '@/components/Controls/AttachControl.vue'
+import HtmlControl from '@/components/Controls/HtmlControl.vue'
+import GeolocationControl from '@/components/Controls/GeolocationControl.vue'
+import TextEditorControl from '@/components/Controls/TextEditorControl.vue'
 import ButtonControl, {
   getButtonTheme,
   getButtonVariant,
@@ -368,9 +419,15 @@ import Link from '@/components/Controls/Link.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import SidePanelModal from '@/components/Modals/SidePanelModal.vue'
 import { getMeta } from '@/stores/meta'
+import { parseLinkFilters } from '@/utils/fieldTransforms'
 import { usersStore } from '@/stores/users'
 import { isMobileView } from '@/composables/settings'
-import { getFormat, evaluateDependsOnValue, isNull } from '@/utils'
+import {
+  getFormat,
+  evaluateDependsOnValue,
+  isNull,
+  interpolateTemplate,
+} from '@/utils'
 import { flt } from '@/utils/numberFormat.js'
 import { Tooltip, DateTimePicker, DatePicker, TimePicker } from 'frappe-ui'
 import { useDocument } from '@/data/document'
@@ -424,12 +481,21 @@ const _sections = computed(() => {
 })
 
 function parsedField(field) {
+  // Clone to avoid mutating the cached layout data
+  field = { ...field }
+
+  // Merge script property overrides
+  const overrides = document.fieldPropertyOverrides?.[field.fieldname]
+  if (overrides) {
+    Object.assign(field, overrides)
+  }
+
   if (field.fieldtype == 'Select' && typeof field.options === 'string') {
     field.options = field.options.split('\n').map((option) => {
       return { label: option, value: option }
     })
 
-    if (field.options[0].value !== '') {
+    if (field.options[0].value !== '' && !field.reqd) {
       field.options.unshift({ label: '', value: '' })
     }
   }
@@ -437,9 +503,9 @@ function parsedField(field) {
   if (field.fieldtype === 'Link' && field.options === 'User') {
     field.fieldtype = 'User'
     field.link_filters = JSON.stringify({
-      ...(field.link_filters ? JSON.parse(field.link_filters) : {}),
       name: ['in', users.data?.crmUsers?.map((user) => user.name)],
       ignore_user_type: 1,
+      ...(parseLinkFilters(field.link_filters) || {}),
     })
   }
 
@@ -448,21 +514,27 @@ function parsedField(field) {
     doc.value,
   )
 
+  // Script overrides for read_only take priority over depends_on
+  const scriptReadOnly = overrides?.read_only
+  const effectiveReadOnly =
+    scriptReadOnly !== undefined
+      ? scriptReadOnly
+      : field.read_only ||
+        (field.read_only_depends_on && read_only_via_depends_on)
+
   let _field = {
     ...field,
-    filters: field.link_filters && JSON.parse(field.link_filters),
+    filters: parseLinkFilters(field.link_filters),
     placeholder: field.placeholder || field.label,
     display_via_depends_on: evaluateDependsOnValue(field.depends_on, doc.value),
     mandatory_via_depends_on: evaluateDependsOnValue(
       field.mandatory_depends_on,
       doc.value,
     ),
-    read_only:
-      field.read_only ||
-      (field.read_only_depends_on && read_only_via_depends_on),
+    read_only: effectiveReadOnly,
   }
 
-  _field.visible = isFieldVisible(_field)
+  _field.visible = isFieldVisible(_field, overrides?.hidden)
   return _field
 }
 
@@ -486,6 +558,12 @@ async function fieldChange(value, df) {
 }
 
 function parsedSection(section, editButtonAdded) {
+  // Merge script property overrides for section
+  const overrides = document.fieldPropertyOverrides?.[section.name]
+  if (overrides) {
+    section = { ...section, ...overrides }
+  }
+
   let isContactSection = section.name == 'contacts_section'
   section.showEditButton = !(
     isMobileView.value ||
@@ -494,15 +572,23 @@ function parsedSection(section, editButtonAdded) {
     editButtonAdded
   )
 
-  section.visible =
-    isContactSection ||
-    section.columns?.[0].fields.filter((f) => f.visible).length
+  // Script hidden override for sections
+  if (overrides?.hidden !== undefined) {
+    section.visible = !overrides.hidden
+  } else {
+    section.visible =
+      isContactSection ||
+      section.columns?.[0].fields.filter((f) => f.visible).length
+  }
 
   return section
 }
 
-function isFieldVisible(field) {
+function isFieldVisible(field, scriptHidden) {
   if (props.preview) return true
+
+  // Script override for hidden wins over everything
+  if (scriptHidden !== undefined) return !scriptHidden
 
   let readOnlyField =
     field.read_only || field.fieldtype === 'Read Only' ? true : false
@@ -547,6 +633,8 @@ function firstVisibleIndex() {
 :deep(.form-control select),
 :deep(.form-control textarea),
 :deep(.form-control button),
+:deep(.attach-control),
+:deep(.geolocation-control),
 .dropdown-button {
   border-color: transparent;
   background: transparent;

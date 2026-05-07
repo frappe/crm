@@ -43,8 +43,8 @@
   </Dialog>
 </template>
 <script setup>
-import CircleDollarSignIcon from '~icons/lucide/circle-dollar-sign'
-import TrendingUpDownIcon from '~icons/lucide/trending-up-down'
+import LucideLayoutDashboard from '~icons/lucide/layout-dashboard'
+import MonitorCogIcon from '~icons/lucide/monitor-cog'
 import SlidersIcon from '@/components/Icons/SlidersIcon.vue'
 import SparkleIcon from '@/components/Icons/SparkleIcon.vue'
 import CalendarIcon from '@/components/Icons/CalendarIcon.vue'
@@ -62,12 +62,12 @@ import PreferencesSettings from '@/components/Settings/PreferencesSettings.vue'
 import WhatsAppSettings from '@/components/Settings/WhatsAppSettings.vue'
 import ERPNextSettings from '@/components/Settings/ERPNextSettings.vue'
 import LeadSyncSourcePage from '@/components/Settings/LeadSyncing/LeadSyncSourcePage.vue'
+import DefaultsSettings from '@/components/Settings/DefaultsSettings.vue'
 import BrandSettings from '@/components/Settings/BrandSettings.vue'
 import CalendarSettings from '@/components/Settings/CalendarSettings.vue'
 import HomeActions from '@/components/Settings/HomeActions.vue'
 import GeneralSettings from '@/components/Settings/GeneralSettings.vue'
-import ForecastingSettings from '@/components/Settings/ForecastingSettings.vue'
-import CurrencySettings from '@/components/Settings/CurrencySettings.vue'
+import DashboardSettings from '@/components/Settings/DashboardSettings.vue'
 import EmailTemplatePage from '@/components/Settings/EmailTemplate/EmailTemplatePage.vue'
 import TelephonyPage from '@/components/Settings/Telephony/TelephonyPage.vue'
 import EmailConfig from '@/components/Settings/EmailConfig.vue'
@@ -92,10 +92,10 @@ const user = computed(() => getUser() || {})
 const tabs = computed(() => {
   let _tabs = [
     {
-      label: __('Account'),
+      label: __('User Configuration'),
       items: [
         {
-          label: user.value.full_name,
+          label: __('Profile'),
           icon: () =>
             h(Avatar, {
               size: 'xs',
@@ -120,14 +120,14 @@ const tabs = computed(() => {
           icon: SettingsIcon,
         },
         {
-          label: __('Forecasting'),
-          component: markRaw(ForecastingSettings),
-          icon: TrendingUpDownIcon,
+          label: __('Dashboard'),
+          component: markRaw(DashboardSettings),
+          icon: LucideLayoutDashboard,
         },
         {
-          label: __('Currency & Exchange Rate'),
-          icon: CircleDollarSignIcon,
-          component: markRaw(CurrencySettings),
+          label: __('Defaults'),
+          component: markRaw(DefaultsSettings),
+          icon: MonitorCogIcon,
         },
         {
           label: __('Brand'),

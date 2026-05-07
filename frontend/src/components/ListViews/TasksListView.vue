@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/no-v-html -->
 <template>
   <ListView
     :columns="columns"
@@ -93,7 +94,7 @@
           <div
             v-else-if="column.type === 'Text Editor'"
             class="truncate text-base h-4 [&>p]:truncate"
-            v-html="item"
+            v-html="sanitizeHTML(item)"
           />
           <div v-else-if="column.type === 'Check'">
             <FormControl
@@ -187,7 +188,12 @@ import CalendarIcon from '@/components/Icons/CalendarIcon.vue'
 import RatingInput from '@/components/Controls/RatingInput.vue'
 import ListBulkActions from '@/components/ListBulkActions.vue'
 import ListRows from '@/components/ListViews/ListRows.vue'
-import { formatDate, isTranslatable, formatDuration } from '@/utils'
+import {
+  formatDate,
+  isTranslatable,
+  formatDuration,
+  sanitizeHTML,
+} from '@/utils'
 import {
   Avatar,
   ListView,

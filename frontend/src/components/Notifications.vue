@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/no-v-html -->
 <template>
   <div
     v-if="visible"
@@ -51,7 +52,10 @@
               <UserAvatar v-else :user="n.from_user.name" size="lg" />
             </div>
             <div>
-              <div v-if="n.notification_text" v-html="n.notification_text" />
+              <div
+                v-if="n.notification_text"
+                v-html="sanitizeHTML(n.notification_text)"
+              />
               <div v-else class="mb-2 space-x-1 leading-5 text-ink-gray-5">
                 <span class="font-medium text-ink-gray-9">
                   {{ n.from_user.full_name }}
@@ -98,7 +102,7 @@ import {
 } from '@/stores/notifications'
 import { useEventNotificationAlert } from '@/data/notifications'
 import { globalStore } from '@/stores/global'
-import { timeAgo } from '@/utils'
+import { timeAgo, sanitizeHTML } from '@/utils'
 import { onClickOutside } from '@vueuse/core'
 import { useTelemetry } from 'frappe-ui/frappe'
 import { TabButtons } from 'frappe-ui'

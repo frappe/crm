@@ -1,14 +1,15 @@
 <template>
-  <div class="flex h-full flex-col gap-6 px-6 py-8 text-ink-gray-8">
-    <!-- Header -->
+  <div class="flex h-full flex-col gap-6 py-8 px-6 text-ink-gray-8">
     <div class="flex justify-between px-2 text-ink-gray-8">
       <div class="flex flex-col gap-1">
         <h2 class="flex gap-2 text-xl font-semibold leading-none h-5">
-          {{ __('Currency & Exchange Rate Provider') }}
+          {{ __('Dashboard') }}
         </h2>
         <p class="text-p-base text-ink-gray-6">
           {{
-            __('Configure the Currency and Exchange Rate Provider for your CRM')
+            __(
+              'Configure how your dashboard calculates, formats, and displays key metrics, including forecasting, deal values, and currency settings',
+            )
           }}
         </p>
       </div>
@@ -23,12 +24,50 @@
       </div>
     </div>
 
-    <!-- Fields -->
-    <div class="flex flex-1 flex-col overflow-y-auto">
+    <div class="flex-1 flex flex-col overflow-y-auto">
+      <div class="flex items-center justify-between py-3 px-2">
+        <div class="flex flex-col">
+          <div class="text-p-base font-medium text-ink-gray-7 truncate">
+            {{ __('Enable Forecasting') }}
+          </div>
+          <div class="text-p-sm text-ink-gray-5 truncate">
+            {{
+              __(
+                'Makes "Expected Closure Date" and "Expected Deal Value" mandatory for deal value forecasting',
+              )
+            }}
+          </div>
+        </div>
+        <div>
+          <Switch v-model="settings.doc.enable_forecasting" size="sm" />
+        </div>
+      </div>
+      <div class="h-px border-t mx-2 border-outline-gray-modals" />
+      <div class="flex items-center justify-between py-3 px-2">
+        <div class="flex flex-col">
+          <div class="text-p-base font-medium text-ink-gray-7 truncate">
+            {{ __('Auto Update Expected Deal Value') }}
+          </div>
+          <div class="text-p-sm text-ink-gray-5 truncate">
+            {{
+              __(
+                'Automatically update "Expected Deal Value" based on the total value of associated products in a deal',
+              )
+            }}
+          </div>
+        </div>
+        <div>
+          <Switch
+            v-model="settings.doc.auto_update_expected_deal_value"
+            size="sm"
+          />
+        </div>
+      </div>
+      <div class="h-px border-t mx-2 border-outline-gray-modals" />
       <div class="flex items-center justify-between gap-8 py-3 px-2">
         <div class="flex flex-col">
           <div class="text-p-base font-medium text-ink-gray-7 truncate">
-            {{ __('Currency') }}
+            {{ __('Dashboard Currency') }}
           </div>
           <div class="text-p-sm text-ink-gray-5">
             {{
@@ -130,14 +169,18 @@
   </div>
 </template>
 <script setup>
-import { ErrorMessage, FormControl, toast } from 'frappe-ui'
 import { getSettings } from '@/stores/settings'
 import { globalStore } from '@/stores/global'
-import { showSettings } from '@/composables/settings'
+import { useBroadcast } from '@/composables/useBroadcast'
+import { ErrorMessage, FormControl, Switch, toast } from 'frappe-ui'
+import { useRoute } from 'vue-router'
 import { ref, computed } from 'vue'
+
+const route = useRoute()
 
 const { _settings: settings } = getSettings()
 const { $dialog } = globalStore()
+const { send } = useBroadcast()
 
 const errorMessage = ref('')
 
@@ -178,7 +221,11 @@ function updateSettings() {
       }
     },
     onSuccess: () => {
-      showSettings.value = false
+      toast.success(__('Dashboard settings updated successfully'))
+
+      if (route.name === 'Deal') {
+        send('reload-deal-sections')
+      }
     },
   })
 }
