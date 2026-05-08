@@ -3,7 +3,7 @@
     <div class="flex justify-between px-2 pt-2">
       <div class="flex flex-col gap-1 w-9/12">
         <h2 class="flex gap-2 text-xl font-semibold leading-none h-5">
-          {{ __('User Hierarchy') }}
+          {{ __('Sales Hierarchy') }}
         </h2>
         <p class="text-p-base text-ink-gray-6">
           {{
@@ -17,6 +17,11 @@
         v-if="hierarchyEnabled && canEdit"
         class="flex item-center space-x-2 w-3/12 justify-end"
       >
+        <Button
+          :label="__('Disable')"
+          :loading="fcrmSettings.setValue.loading"
+          @click="toggleEnable(true)"
+        />
         <Button
           :label="__('Add User')"
           icon-left="plus"
