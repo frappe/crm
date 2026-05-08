@@ -160,7 +160,7 @@ const tabs = computed(() => {
           condition: () => isManager(),
         },
         {
-          label: __('User Hierarchy'),
+          label: __('Sales Hierarchy'),
           icon: LucideNetwork,
           component: markRaw(Hierarchy),
           condition: () => isManager(),

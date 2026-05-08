@@ -109,7 +109,7 @@ def update_user_role(user: str, new_role: str):
 			if has_reports or not node.reports_to:
 				frappe.throw(
 					_(
-						"Remove this user from the user hierarchy before changing their role to Sales User"
+						"Remove this user from the sales hierarchy before changing their role to Sales User"
 					)
 				)
 		user_doc.append_roles("Sales User")
