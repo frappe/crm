@@ -379,7 +379,8 @@ import { globalStore } from '@/stores/global'
 import { statusesStore } from '@/stores/statuses'
 import { getMeta } from '@/stores/meta'
 import { useDocument } from '@/data/document'
-import { whatsappEnabled, callEnabled } from '@/composables/settings'
+import { whatsappEnabled } from '@/composables/settings'
+import { callEnabled } from '@/composables/telephony'
 import { useBroadcast } from '@/composables/useBroadcast'
 import {
   createResource,
