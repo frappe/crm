@@ -2,9 +2,19 @@
   <div class="flex h-full flex-col gap-4 p-6 text-ink-gray-8">
     <div class="flex justify-between px-2 pt-2">
       <div class="flex flex-col gap-1 w-9/12">
-        <h2 class="flex gap-2 text-xl font-semibold leading-none h-5">
-          {{ __('Sales Hierarchy') }}
-        </h2>
+        <div class="flex gap-2 items-center">
+          <h2 class="flex text-xl font-semibold leading-none h-5">
+            {{ __('Sales Hierarchy') }}
+          </h2>
+          <Tooltip :text="__('View documentation')">
+            <a
+              href="https://docs.frappe.io/crm/settings/sales-hierarchy"
+              target="_blank"
+            >
+              <LucideCircleQuestionMark class="h-4 w-4 text-ink-gray-6" />
+            </a>
+          </Tooltip>
+        </div>
         <p class="text-p-base text-ink-gray-6">
           {{
             __(
@@ -195,12 +205,14 @@ import { usersStore } from '@/stores/users'
 import LucideNetwork from '~icons/lucide/network'
 import LucideChevronsUpDown from '~icons/lucide/chevrons-up-down'
 import LucideChevronsDownUp from '~icons/lucide/chevrons-down-up'
+import LucideCircleQuestionMark from '~icons/lucide/circle-question-mark'
 import {
   Button,
   Dialog,
   FeatherIcon,
   LoadingIndicator,
   TextInput,
+  Tooltip,
   Tree,
   call,
   createDocumentResource,
