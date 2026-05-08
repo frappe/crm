@@ -11,10 +11,7 @@
         </template>
       </TextInput>
     </div>
-    <div
-      v-if="loading"
-      class="my-2 flex items-center justify-center min-h-32"
-    >
+    <div v-if="loading" class="my-2 flex items-center justify-center min-h-32">
       <LoadingIndicator class="size-4 text-ink-gray-5" />
     </div>
     <ul
@@ -76,7 +73,7 @@ const filtered = computed(() => {
   return props.candidates.filter(
     (user) =>
       user.full_name?.toLowerCase().includes(qry) ||
-      user.email?.toLowerCase().includes(qry)
+      user.email?.toLowerCase().includes(qry),
   )
 })
 

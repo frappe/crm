@@ -108,9 +108,7 @@ def update_user_role(user: str, new_role: str):
 			has_reports = frappe.db.exists("CRM Sales Hierarchy", {"reports_to": node.name})
 			if has_reports or not node.reports_to:
 				frappe.throw(
-					_(
-						"Remove this user from the sales hierarchy before changing their role to Sales User"
-					)
+					_("Remove this user from the sales hierarchy before changing their role to Sales User")
 				)
 		user_doc.append_roles("Sales User")
 		remove_roles(user_doc, "Sales Manager", "System Manager")
