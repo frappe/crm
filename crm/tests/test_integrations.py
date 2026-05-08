@@ -27,8 +27,8 @@ class TestIntegrations(FrappeTestCase):
 
 		result = is_call_integration_enabled()
 
-		self.assertFalse(result["twilio_enabled"])
-		self.assertFalse(result["exotel_enabled"])
+		self.assertFalse(result["integrations"]["twilio"])
+		self.assertFalse(result["integrations"]["exotel"])
 
 	def test_is_call_integration_enabled_twilio_only(self):
 		"""Test is_call_integration_enabled with only Twilio enabled"""
@@ -38,8 +38,8 @@ class TestIntegrations(FrappeTestCase):
 
 		result = is_call_integration_enabled()
 
-		self.assertTrue(result["twilio_enabled"])
-		self.assertFalse(result["exotel_enabled"])
+		self.assertTrue(result["integrations"]["twilio"])
+		self.assertFalse(result["integrations"]["exotel"])
 
 	def test_is_call_integration_enabled_exotel_only(self):
 		"""Test is_call_integration_enabled with only Exotel enabled"""
@@ -49,8 +49,8 @@ class TestIntegrations(FrappeTestCase):
 
 		result = is_call_integration_enabled()
 
-		self.assertFalse(result["twilio_enabled"])
-		self.assertTrue(result["exotel_enabled"])
+		self.assertFalse(result["integrations"]["twilio"])
+		self.assertTrue(result["integrations"]["exotel"])
 
 	def test_get_user_default_calling_medium_no_agent(self):
 		"""Test get_user_default_calling_medium when user has no telephony agent record"""
