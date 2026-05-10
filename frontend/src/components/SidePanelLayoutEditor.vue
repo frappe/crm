@@ -19,7 +19,7 @@
                 {{ __(section.label) || __('Untitled') }}
               </div>
               <div v-else class="flex gap-2 items-center">
-                <Input
+                <TextInput
                   v-model="section.label"
                   @keydown.enter="section.editingLabel = false"
                   @blur="section.editingLabel = false"
@@ -145,7 +145,7 @@ import DragVerticalIcon from '@/components/Icons/DragVerticalIcon.vue'
 import { getRandom } from '@/utils'
 import { getMeta } from '@/stores/meta'
 import Draggable from 'vuedraggable'
-import { Input } from 'frappe-ui'
+import { TextInput } from 'frappe-ui'
 import { computed } from 'vue'
 
 const props = defineProps({
