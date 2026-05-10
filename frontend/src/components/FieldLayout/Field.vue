@@ -18,7 +18,7 @@
         >*</span
       >
     </div>
-    <FormControl
+    <TextInput
       v-if="
         (field.read_only || field.fieldtype === 'Read Only') &&
         ![
@@ -38,7 +38,6 @@
         ].includes(field.fieldtype)
       "
       v-model="data[field.fieldname]"
-      type="text"
       :placeholder="getPlaceholder(field)"
       :disabled="true"
       :description="field.description"
@@ -51,11 +50,10 @@
       :parentDoctype="doctype"
       :parentFieldname="field.fieldname"
     />
-    <FormControl
+    <Select
       v-else-if="field.fieldtype === 'Select'"
       v-model="data[field.fieldname]"
-      type="select"
-      class="form-control"
+      class="form-control w-full"
       :class="field.prefix ? 'prefix' : ''"
       :options="field.options"
       :placeholder="getPlaceholder(field)"
@@ -65,30 +63,19 @@
       <template v-if="field.prefix" #prefix>
         <IndicatorIcon :class="field.prefix" />
       </template>
-    </FormControl>
-    <div v-else-if="field.fieldtype == 'Check'" class="flex items-center gap-2">
-      <FormControl
-        v-model="data[field.fieldname]"
-        class="form-control"
-        type="checkbox"
-        :disabled="Boolean(field.read_only)"
-        :description="field.description"
-        @change="(e) => fieldChange(e.target.checked, field)"
-      />
-      <label
-        class="text-sm text-ink-gray-5"
-        @click="
-          () => {
-            if (!Boolean(field.read_only)) {
-              data[field.fieldname] = !data[field.fieldname]
-            }
-          }
-        "
-      >
-        {{ __(field.label) }}
-        <span v-if="field.mandatory" class="text-ink-red-3">*</span>
-      </label>
-    </div>
+    </Select>
+
+    <Checkbox
+      v-else-if="field.fieldtype == 'Check'"
+      v-model="data[field.fieldname]"
+      :label="field.label"
+      class="form-control"
+      :disabled="Boolean(field.read_only)"
+      :description="field.description"
+      :required="field.mandatory"
+      @change="(e) => fieldChange(e.target.checked, field)"
+    />
+
     <div
       v-else-if="['Link', 'Dynamic Link'].includes(field.fieldtype)"
       class="flex gap-1"
@@ -181,11 +168,10 @@
       input-class="border-none"
       @change="(v) => fieldChange(v, field)"
     />
-    <FormControl
+    <Textarea
       v-else-if="
         ['Small Text', 'Text', 'Long Text', 'Code'].includes(field.fieldtype)
       "
-      type="textarea"
       :value="data[field.fieldname]"
       :placeholder="getPlaceholder(field)"
       :description="field.description"
@@ -282,7 +268,7 @@
       :disabled="Boolean(field.read_only)"
       @change="(v) => fieldChange(v, field)"
     />
-    <FormControl
+    <TextInput
       v-else
       type="text"
       :placeholder="getPlaceholder(field)"
@@ -326,11 +312,15 @@ import { usersStore } from '@/stores/users'
 import { useDocument } from '@/data/document'
 
 import {
+  Checkbox,
   Combobox,
+  Select,
   Tooltip,
   DatePicker,
   DateTimePicker,
   TimePicker,
+  TextInput,
+  Textarea,
 } from 'frappe-ui'
 import { computed, provide, inject, ref } from 'vue'
 
