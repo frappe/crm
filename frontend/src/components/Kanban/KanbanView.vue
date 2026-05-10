@@ -146,17 +146,15 @@
       </template>
     </Draggable>
     <div class="shrink-0 min-w-64">
-      <Autocomplete
-        value=""
+      <Combobox
         :options="deletedColumns"
-        @change="(e) => addColumn(e)"
+        @update:selectedOption="(e) => addColumn(e)"
       >
-        <template #target="{ togglePopover }">
+        <template #trigger>
           <Button
             class="w-full mt-2.5 mb-1 mr-5"
             :label="__('Add Column')"
             iconLeft="plus"
-            @click="togglePopover()"
           />
         </template>
         <template #footer>
@@ -167,17 +165,16 @@
             @click="updateColumn(null, true)"
           />
         </template>
-      </Autocomplete>
+      </Combobox>
     </div>
   </div>
 </template>
 <script setup>
 import RefreshIcon from '@/components/Icons/RefreshIcon.vue'
-import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import { isTouchScreenDevice, colors, parseColor } from '@/utils'
 import Draggable from 'vuedraggable'
-import { Dropdown, Popover } from 'frappe-ui'
+import { Combobox, Dropdown, Popover } from 'frappe-ui'
 import { computed } from 'vue'
 
 defineProps({

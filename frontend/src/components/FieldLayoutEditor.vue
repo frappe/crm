@@ -212,31 +212,29 @@
                       </div>
                     </template>
                   </Draggable>
-                  <Autocomplete
-                    value=""
+                  <Combobox
                     :options="fields"
-                    @change="(e) => addField(column, e)"
+                    @update:selectedOption="(e) => addField(column, e)"
                   >
-                    <template #target="{ togglePopover }">
+                    <template #trigger>
                       <div class="gap-2 w-full">
                         <Button
                           class="w-full !h-8 !bg-surface-modal"
                           variant="outline"
                           :label="__('Add Field')"
                           iconLeft="plus"
-                          @click="togglePopover()"
                         />
                       </div>
                     </template>
-                    <template #item-label="{ option }">
+                    <template #item-label="{ item }">
                       <div class="flex flex-col gap-1 text-ink-gray-9">
-                        <div>{{ option.label }}</div>
+                        <div>{{ item.label }}</div>
                         <div class="text-ink-gray-4 text-sm">
-                          {{ `${option.fieldname} - ${option.fieldtype}` }}
+                          {{ `${item.fieldname} - ${item.fieldtype}` }}
                         </div>
                       </div>
                     </template>
-                  </Autocomplete>
+                  </Combobox>
                 </div>
               </template>
             </Draggable>
@@ -271,13 +269,12 @@
   </div>
 </template>
 <script setup>
-import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import DragVerticalIcon from '@/components/Icons/DragVerticalIcon.vue'
 import Draggable from 'vuedraggable'
 import { getRandom } from '@/utils'
 import { getMeta } from '@/stores/meta'
 import { globalStore } from '@/stores/global'
-import { Dropdown } from 'frappe-ui'
+import { Combobox, Dropdown } from 'frappe-ui'
 import { ref, computed, watch, nextTick } from 'vue'
 
 const props = defineProps({

@@ -1,6 +1,6 @@
 <template>
-  <Autocomplete :options="options" value="" @change="(e) => setGroupBy(e)">
-    <template #target="{ togglePopover, isOpen }">
+  <Combobox :options="options" @update:selectedOption="(e) => setGroupBy(e)">
+    <template #trigger="{ open }">
       <Button
         :label="
           hideLabel
@@ -8,16 +8,14 @@
             : __('Group By: ') + groupByValue?.label
         "
         :iconLeft="DetailsIcon"
-        :iconRight="isOpen ? 'chevron-up' : 'chevron-down'"
-        @click="togglePopover()"
+        :iconRight="open ? 'chevron-up' : 'chevron-down'"
       />
     </template>
-  </Autocomplete>
+  </Combobox>
 </template>
 <script setup>
-import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import DetailsIcon from '@/components/Icons/DetailsIcon.vue'
-import { createResource } from 'frappe-ui'
+import { Combobox, createResource } from 'frappe-ui'
 import { ref, computed, onMounted, nextTick, watch } from 'vue'
 
 const props = defineProps({

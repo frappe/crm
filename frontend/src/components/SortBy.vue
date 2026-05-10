@@ -1,13 +1,12 @@
 <template>
-  <Autocomplete
+  <Combobox
     v-if="!sortValues?.size"
     :options="options"
-    value=""
     :placeholder="__('First Name')"
-    @change="(e) => setSort(e)"
+    @update:selectedOption="(e) => setSort(e)"
   >
-    <template #target="{ togglePopover }">
-      <Button :label="__('Sort')" @click="togglePopover()">
+    <template #trigger>
+      <Button :label="__('Sort')">
         <template v-if="hideLabel">
           <SortIcon class="h-4" />
         </template>
@@ -16,7 +15,7 @@
         </template>
       </Button>
     </template>
-  </Autocomplete>
+  </Combobox>
   <Popover v-else placement="bottom-end">
     <template #target="{ isOpen, togglePopover }">
       <Button
@@ -95,30 +94,22 @@
                     }
                   "
                 />
-                <Autocomplete
+                <Combobox
                   class="[&>_div]:w-full"
-                  :value="sort.fieldname"
+                  :model-value="sort.fieldname"
                   :options="sortOptions.data"
                   :placeholder="__('First Name')"
-                  @change="(e) => updateSort(e, i)"
+                  @update:selectedOption="(e) => updateSort(e, i)"
                 >
-                  <template
-                    #target="{
-                      open,
-                      togglePopover,
-                      selectedValue,
-                      displayValue,
-                    }"
-                  >
+                  <template #trigger="{ open, displayValue }">
                     <Button
                       class="flex w-full items-center justify-between rounded-l-none !text-ink-gray-5"
                       size="md"
-                      :label="displayValue(selectedValue)"
+                      :label="displayValue"
                       :iconRight="open ? 'chevron-down' : 'chevron-up'"
-                      @click="togglePopover()"
                     />
                   </template>
-                </Autocomplete>
+                </Combobox>
               </div>
               <Button variant="ghost" icon="x" @click="removeSort(i)" />
             </div>
@@ -130,22 +121,20 @@
             {{ __('Empty - Choose a field to sort by') }}
           </div>
           <div class="flex items-center justify-between gap-2">
-            <Autocomplete
+            <Combobox
               :options="options"
-              value=""
               :placeholder="__('First Name')"
-              @change="(e) => setSort(e)"
+              @update:selectedOption="(e) => setSort(e)"
             >
-              <template #target="{ togglePopover }">
+              <template #trigger>
                 <Button
                   class="!text-ink-gray-5"
                   :label="__('Add Sort')"
                   variant="ghost"
                   iconLeft="plus"
-                  @click="togglePopover()"
                 />
               </template>
-            </Autocomplete>
+            </Combobox>
             <Button
               v-if="sortValues?.size"
               class="!text-ink-gray-5"
@@ -165,9 +154,8 @@ import AscendingIcon from '@/components/Icons/AscendingIcon.vue'
 import DesendingIcon from '@/components/Icons/DesendingIcon.vue'
 import SortIcon from '@/components/Icons/SortIcon.vue'
 import DragIcon from '@/components/Icons/DragIcon.vue'
-import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import { useSortable } from '@vueuse/integrations/useSortable'
-import { createResource, Popover } from 'frappe-ui'
+import { Combobox, createResource, Popover } from 'frappe-ui'
 import { computed, nextTick, onMounted } from 'vue'
 
 const props = defineProps({

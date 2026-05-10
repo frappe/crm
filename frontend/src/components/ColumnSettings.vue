@@ -56,21 +56,19 @@
           <div
             class="mt-1.5 flex flex-col gap-1 border-t border-outline-gray-modals pt-1.5"
           >
-            <Autocomplete
-              value=""
+            <Combobox
               :options="fields"
-              @change="(e) => addColumn(e)"
+              @update:selectedOption="(e) => addColumn(e)"
             >
-              <template #target="{ togglePopover }">
+              <template #trigger>
                 <Button
                   class="w-full !justify-start !text-ink-gray-5"
                   variant="ghost"
                   :label="__('Add Column')"
                   iconLeft="plus"
-                  @click="togglePopover"
                 />
               </template>
-            </Autocomplete>
+            </Combobox>
             <Button
               v-if="columnsUpdated"
               class="w-full !justify-start !text-ink-gray-5"
@@ -143,10 +141,9 @@ import ColumnsIcon from '@/components/Icons/ColumnsIcon.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import DragIcon from '@/components/Icons/DragIcon.vue'
 import ReloadIcon from '@/components/Icons/ReloadIcon.vue'
-import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import { isTouchScreenDevice } from '@/utils'
 import { getMeta } from '@/stores/meta'
-import { Popover } from 'frappe-ui'
+import { Combobox, Popover } from 'frappe-ui'
 import Draggable from 'vuedraggable'
 import { computed, ref } from 'vue'
 import { watchOnce } from '@vueuse/core'

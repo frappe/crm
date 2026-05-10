@@ -50,11 +50,11 @@
                   />
                 </div>
                 <div id="fieldname" class="w-full">
-                  <Autocomplete
-                    :value="f.field.fieldname"
+                  <Combobox
+                    :model-value="f.field.fieldname"
                     :options="filterableFields.data"
                     :placeholder="__('First Name')"
-                    @change="(e) => updateFilter(e, i)"
+                    @update:selectedOption="(e) => updateFilter(e, i)"
                   />
                 </div>
                 <div id="operator">
@@ -83,11 +83,11 @@
                     {{ i == 0 ? __('Where') : __('And') }}
                   </div>
                   <div id="fieldname" class="!min-w-[140px]">
-                    <Autocomplete
-                      :value="f.field.fieldname"
+                    <Combobox
+                      :model-value="f.field.fieldname"
                       :options="filterableFields.data"
                       :placeholder="__('First Name')"
-                      @change="(e) => updateFilter(e, i)"
+                      @update:selectedOption="(e) => updateFilter(e, i)"
                     />
                   </div>
                   <div id="operator">
@@ -126,22 +126,20 @@
             {{ __('Empty - Choose a field to filter by') }}
           </div>
           <div class="flex items-center justify-between gap-2">
-            <Autocomplete
-              value=""
+            <Combobox
               :options="availableFilters"
               :placeholder="__('First Name')"
-              @change="(e) => setfilter(e)"
+              @update:selectedOption="(e) => setfilter(e)"
             >
-              <template #target="{ togglePopover }">
+              <template #trigger>
                 <Button
                   class="!text-ink-gray-5"
                   variant="ghost"
                   :label="__('Add Filter')"
                   iconLeft="plus"
-                  @click="togglePopover()"
                 />
               </template>
-            </Autocomplete>
+            </Combobox>
             <Button
               v-if="filters?.size"
               class="!text-ink-gray-5"
@@ -158,10 +156,10 @@
 <script setup>
 import FilterIcon from '@/components/Icons/FilterIcon.vue'
 import Link from '@/components/Controls/Link.vue'
-import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import DurationInput from '@/components/Controls/DurationInput.vue'
 import RatingInput from '@/components/Controls/RatingInput.vue'
 import {
+  Combobox,
   FormControl,
   createResource,
   Popover,
