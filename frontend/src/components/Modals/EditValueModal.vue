@@ -1,12 +1,14 @@
 <template>
   <Dialog v-model="show" :options="{ title: __('Bulk Edit') }">
     <template #body-content>
-      <div class="mb-4">
+      <div v-if="fields.length" class="mb-4">
         <div class="mb-1.5 text-sm text-ink-gray-5">{{ __('Field') }}</div>
         <Combobox
           :model-value="field.fieldname"
-          :options="fields.data"
+          :options="fields"
+          class="w-full"
           :placeholder="__('Source')"
+          :openOnFocus="true"
           @update:selectedOption="(e) => changeField(e)"
         />
       </div>
@@ -15,11 +17,11 @@
         <component
           :is="getValueComponent(field)"
           :value="newValue"
-          size="md"
           :placeholder="__('Contact Us')"
           @change="(v) => updateValue(v)"
         />
       </div>
+      <ErrorMessage class="mt-2" :message="error" />
     </template>
     <template #actions>
       <Button
@@ -35,19 +37,20 @@
 
 <script setup>
 import Link from '@/components/Controls/Link.vue'
+import { getMeta } from '@/stores/meta'
 import { useTelemetry } from 'frappe-ui/frappe'
 import {
   Combobox,
   FormControl,
   call,
-  createResource,
   TextEditor,
   DatePicker,
+  ErrorMessage,
 } from 'frappe-ui'
-import { ref, computed, onMounted, h } from 'vue'
+import { ref, computed, h } from 'vue'
 
 const typeCheck = ['Check']
-const typeLink = ['Link', 'Dynamic Link']
+const typeLink = ['Link', 'Dynamic Link', 'User']
 const typeNumber = ['Float', 'Int', 'Currency', 'Percent']
 const typeSelect = ['Select']
 const typeEditor = ['Text Editor']
@@ -64,20 +67,14 @@ const emit = defineEmits(['reload'])
 
 const { capture } = useTelemetry()
 
-const fields = createResource({
-  url: 'crm.api.doc.get_fields',
-  cache: ['fields', props.doctype],
-  params: {
-    doctype: props.doctype,
-  },
-  transform: (data) => {
-    return data.filter((f) => f.hidden == 0 && f.read_only == 0)
-  },
-})
+const { getFields } = getMeta(props.doctype)
 
-onMounted(() => {
-  if (fields.data?.length) return
-  fields.fetch()
+const fields = computed(() => {
+  const _fields =
+    getFields({ restrictedFieldTypes: ['Read Only'] })?.filter(
+      (f) => !f.read_only,
+    ) || []
+  return _fields.map((f) => ({ ...f, value: f.fieldname }))
 })
 
 const recordCount = computed(() => props.selectedValues?.size || 0)
@@ -91,8 +88,16 @@ const field = ref({
 
 const newValue = ref('')
 const loading = ref(false)
+const error = ref('')
 
 function updateValues() {
+  error.value = ''
+
+  if (!field.value.fieldname) {
+    error.value = __('Please select a field to update')
+    return
+  }
+
   let fieldVal = newValue.value
   if (field.value.fieldtype == 'Check') {
     fieldVal = fieldVal == 'Yes' ? 1 : 0
@@ -117,6 +122,7 @@ function updateValues() {
     }
     newValue.value = ''
     loading.value = false
+    error.value = ''
     show.value = false
     capture('bulk_update', { doctype: props.doctype })
     emit('reload')
@@ -134,28 +140,29 @@ function updateValue(v) {
   newValue.value = value
 }
 
-function getSelectOptions(options) {
-  return options.split('\n')
-}
-
 function getValueComponent(f) {
   const { fieldtype, options } = f
   if (typeSelect.includes(fieldtype) || typeCheck.includes(fieldtype)) {
     const _options =
-      fieldtype == 'Check' ? ['Yes', 'No'] : getSelectOptions(options)
+      fieldtype == 'Check'
+        ? [
+            { label: 'Yes', value: 'Yes' },
+            { label: 'No', value: 'No' },
+          ]
+        : options
     return h(FormControl, {
       type: 'select',
-      options: _options.map((o) => ({
-        label: o,
-        value: o,
-      })),
+      options: _options,
       modelValue: newValue.value,
     })
   } else if (typeLink.includes(fieldtype)) {
     if (fieldtype == 'Dynamic Link') {
       return h(FormControl, { type: 'text' })
     }
-    return h(Link, { class: 'form-control', doctype: options })
+    return h(Link, {
+      class: 'form-control',
+      doctype: fieldtype == 'User' ? 'User' : options,
+    })
   } else if (typeNumber.includes(fieldtype)) {
     return h(FormControl, { type: 'number' })
   } else if (typeDate.includes(fieldtype)) {

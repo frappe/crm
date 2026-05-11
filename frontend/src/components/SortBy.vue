@@ -69,7 +69,7 @@
         <div class="min-w-60 p-2">
           <div
             v-if="sortValues?.size"
-            id="sort-list"
+            ref="sortListRef"
             class="mb-3 flex flex-col gap-2"
           >
             <div
@@ -95,7 +95,6 @@
                   "
                 />
                 <Combobox
-                  class="[&>_div]:w-full"
                   :model-value="sort.fieldname"
                   :options="sortOptions.data"
                   :placeholder="__('First Name')"
@@ -103,7 +102,7 @@
                 >
                   <template #trigger="{ open, displayValue }">
                     <Button
-                      class="flex w-full items-center justify-between rounded-l-none !text-ink-gray-5"
+                      class="flex flex-1 items-center justify-between rounded-l-none !text-ink-gray-5"
                       size="md"
                       :label="displayValue"
                       :iconRight="open ? 'chevron-down' : 'chevron-up'"
@@ -156,7 +155,7 @@ import SortIcon from '@/components/Icons/SortIcon.vue'
 import DragIcon from '@/components/Icons/DragIcon.vue'
 import { useSortable } from '@vueuse/integrations/useSortable'
 import { Combobox, createResource, Popover } from 'frappe-ui'
-import { computed, nextTick, onMounted } from 'vue'
+import { computed, nextTick, onMounted, ref } from 'vue'
 
 const props = defineProps({
   doctype: { type: String, required: true },
@@ -204,7 +203,8 @@ const options = computed(() => {
   })
 })
 
-const sortSortable = useSortable('#sort-list', sortValues, {
+const sortListRef = ref(null)
+const sortSortable = useSortable(sortListRef, sortValues, {
   handle: '.handle',
   animation: 200,
   onEnd: () => apply(),

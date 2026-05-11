@@ -203,12 +203,19 @@ const fields = computed(() => {
     existingFields = columns.value.map((column) => column.key)
   }
 
-  return _fields.filter((field) => {
-    return (
-      !columns.value.find((column) => column.key === field.fieldname) &&
-      !existingFields.includes(field.fieldname)
-    )
-  })
+  return _fields
+    .filter((field) => {
+      return (
+        !columns.value.find((column) => column.key === field.fieldname) &&
+        !existingFields.includes(field.fieldname)
+      )
+    })
+    .map((field) => {
+      return {
+        ...field,
+        value: field.fieldname,
+      }
+    })
 })
 
 function addColumn(c) {

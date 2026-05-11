@@ -149,9 +149,13 @@ const dropdownFields = computed(() => {
     getFields({ restrictNoValueFields: false, restrictedFieldTypes }) || []
   if (!_fields.length) return []
 
-  return _fields.filter(
-    (field) => !fields.value.find((f) => f.fieldname === field.fieldname),
-  )
+  return _fields
+    .filter(
+      (field) => !fields.value.find((f) => f.fieldname === field.fieldname),
+    )
+    .map((f) => {
+      return { ...f, value: f.fieldname }
+    })
 })
 
 function reset() {

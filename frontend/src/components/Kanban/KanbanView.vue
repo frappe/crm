@@ -158,9 +158,13 @@
           />
         </template>
         <template #footer>
+          <div
+            class="border-t border-outline-gray-modals w-[107%] my-1 -ml-1"
+          />
           <Button
             class="w-full"
             :label="__('Reload Columns')"
+            variant="ghost"
             :iconLeft="RefreshIcon"
             @click="updateColumn(null, true)"
           />

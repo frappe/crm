@@ -13,30 +13,20 @@
         </div>
         <Combobox
           v-if="columnFields"
+          v-model="columnField"
+          class="w-full"
           :options="columnFields"
-          @update:selectedOption="(f) => (columnField = f)"
-        >
-          <template #trigger>
-            <Button
-              class="w-full !justify-start"
-              :label="columnField.label"
-            />
-          </template>
-        </Combobox>
+          :openOnFocus="true"
+        />
         <div class="text-base text-ink-gray-8 mb-2 mt-4">
           {{ __('Title Field') }}
         </div>
         <Combobox
+          v-model="titleField"
+          class="w-full"
           :options="fields"
-          @update:selectedOption="(f) => (titleField = f)"
-        >
-          <template #trigger>
-            <Button
-              class="w-full !justify-start"
-              :label="titleField.label"
-            />
-          </template>
-        </Combobox>
+          :openOnFocus="true"
+        />
       </div>
       <div class="mt-4">
         <div class="text-base text-ink-gray-8 mb-2">
@@ -113,26 +103,16 @@ const list = defineModel({ type: Object })
 const showDialog = ref(false)
 
 const columnField = computed({
-  get: () => {
-    let fieldname = list.value?.data?.column_field
-    if (!fieldname) return ''
-
-    return columnFields.value?.find((field) => field.fieldname === fieldname)
-  },
+  get: () => list.value?.data?.column_field || '',
   set: (val) => {
-    list.value.data.column_field = val.fieldname
+    list.value.data.column_field = val
   },
 })
 
 const titleField = computed({
-  get: () => {
-    let fieldname = list.value?.data?.title_field
-    if (!fieldname) return ''
-
-    return fields.value?.find((field) => field.fieldname === fieldname)
-  },
+  get: () => list.value?.data?.title_field || '',
   set: (val) => {
-    list.value.data.title_field = val.fieldname
+    list.value.data.title_field = val
   },
 })
 
@@ -213,8 +193,8 @@ function apply() {
   nextTick(() => {
     showDialog.value = false
     emit('update', {
-      column_field: columnField.value.fieldname,
-      title_field: titleField.value.fieldname,
+      column_field: columnField.value,
+      title_field: titleField.value,
       kanban_fields: allFields.value.map((row) => row.fieldname),
     })
   })

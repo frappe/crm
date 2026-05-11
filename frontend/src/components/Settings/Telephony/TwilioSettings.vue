@@ -72,12 +72,19 @@
               </div>
             </div>
             <div class="flex items-center gap-2">
-              <Combobox v-model="twilio.doc.app_name" :options="twilioApps">
+              <Combobox
+                v-model="twilio.doc.app_name"
+                :options="twilioApps"
+                :openOnFocus="true"
+              >
                 <template #footer>
+                  <div
+                    class="border-t border-outline-gray-modals w-[107%] my-1 -ml-1"
+                  />
                   <Button
                     :label="__('Refresh Apps')"
                     theme="gray"
-                    variant="subtle"
+                    variant="ghost"
                     class="w-full"
                     icon-left="refresh-cw"
                     :loading="twilio.fetchTwilioApps.loading"

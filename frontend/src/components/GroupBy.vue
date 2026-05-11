@@ -30,6 +30,7 @@ const list = defineModel({ type: Object, default: () => ({}) })
 const groupByValue = ref({
   label: '',
   fieldname: '',
+  value: '',
 })
 
 const groupByOptions = createResource({

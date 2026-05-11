@@ -135,6 +135,7 @@ def get_group_by_fields(doctype: str):
 		{
 			"label": _(field.label),
 			"fieldname": field.fieldname,
+			"value": field.fieldname,
 		}
 		for field in fields
 		if field.label and field.fieldname
@@ -142,8 +143,6 @@ def get_group_by_fields(doctype: str):
 
 	standard_fields = [
 		{"label": "Name", "fieldname": "name"},
-		{"label": "Created On", "fieldname": "creation"},
-		{"label": "Last Modified", "fieldname": "modified"},
 		{"label": "Modified By", "fieldname": "modified_by"},
 		{"label": "Owner", "fieldname": "owner"},
 		{"label": "Like", "fieldname": "_liked_by"},
@@ -155,6 +154,7 @@ def get_group_by_fields(doctype: str):
 
 	for field in standard_fields:
 		field["label"] = _(field["label"])
+		field["value"] = field["fieldname"]
 		fields.append(field)
 
 	return fields
