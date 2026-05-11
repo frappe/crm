@@ -102,7 +102,9 @@
               <Switch
                 v-model="template.enabled"
                 size="sm"
-                @update:model-value="toggleEmailTemplate(template)"
+                @update:model-value="
+                  (val) => toggleEmailTemplate(template, val)
+                "
                 @click.stop
               />
               <Dropdown
@@ -185,16 +187,16 @@ const templatesList = computed(() => {
   return list
 })
 
-function toggleEmailTemplate(template) {
+function toggleEmailTemplate(template, enabledVal) {
   templates.setValue.submit(
     {
       name: template.name,
-      enabled: template.enabled ? 1 : 0,
+      enabled: enabledVal ? 1 : 0,
     },
     {
       onSuccess: () => {
         toast.success(
-          template.enabled
+          enabledVal
             ? __('Template enabled successfully')
             : __('Template disabled successfully'),
         )
@@ -203,7 +205,7 @@ function toggleEmailTemplate(template) {
       onError: (error) => {
         toast.error(error.messages[0] || __('Failed to update template'))
         // Revert the change if there was an error
-        template.enabled = !template.enabled
+        template.enabled = !enabledVal
       },
     },
   )

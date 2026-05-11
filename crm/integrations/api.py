@@ -24,14 +24,13 @@ def _get_recording_credentials(telephony_medium: str) -> tuple:
 
 @frappe.whitelist()
 def is_call_integration_enabled():
-	twilio_enabled = frappe.db.get_single_value("CRM Twilio Settings", "enabled")
-	exotel_enabled = frappe.db.get_single_value("CRM Exotel Settings", "enabled")
-	freepbx_enabled = frappe.db.get_single_value("CRM FreePBX Settings", "enabled")
 
 	return {
-		"twilio_enabled": twilio_enabled,
-		"exotel_enabled": exotel_enabled,
-		"freepbx_enabled": freepbx_enabled,
+		"integrations": {
+			"twilio": bool(frappe.db.get_single_value("CRM Twilio Settings", "enabled")),
+			"exotel": bool(frappe.db.get_single_value("CRM Exotel Settings", "enabled")),
+			"freepbx": bool(frappe.db.get_single_value("CRM FreePBX Settings", "enabled")),
+		},
 		"default_calling_medium": get_user_default_calling_medium(),
 	}
 

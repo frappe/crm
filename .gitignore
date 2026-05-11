@@ -9,8 +9,14 @@ node_modules
 crm/public/frontend
 crm/www/crm.html
 build
+frontend/coverage
 
 .vscode
 .github/instructions
 .github/skills
 .github/copilot-instructions.md
+
+CLAUDE.md
+AGENTS.md
+.claude
+.pi

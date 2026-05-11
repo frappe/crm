@@ -17,14 +17,14 @@
                   hideLabel: true,
                   items: [
                     {
-                      label: note?.name ? __('Edit Note') : __('Add Note'),
+                      label: note ? __('Edit Note') : __('Add Note'),
                       icon: NoteIcon,
-                      onClick: addEditNote,
+                      onClick: () => showNote(note),
                     },
                     {
-                      label: task?.name ? __('Edit Task') : __('Add Task'),
+                      label: task ? __('Edit Task') : __('Add Task'),
                       icon: TaskIcon,
-                      onClick: addEditTask,
+                      onClick: () => showTask(task),
                     },
                   ],
                 },
@@ -101,7 +101,7 @@
               <div
                 v-else-if="field.name == 'note'"
                 class="w-full cursor-pointer rounded border px-2 pt-1.5 text-base text-ink-gray-7"
-                @click="() => (showNoteModal = true)"
+                @click="() => showNote(field.value?.name)"
               >
                 <FadedScrollableDiv class="max-h-24 min-h-16 overflow-y-auto">
                   <div
@@ -118,7 +118,7 @@
               <div
                 v-else-if="field.name == 'task'"
                 class="w-full cursor-pointer rounded border px-2 pt-1.5 text-base text-ink-gray-7"
-                @click="() => (showTaskModal = true)"
+                @click="() => showTask(field.value?.name)"
               >
                 <FadedScrollableDiv class="max-h-24 min-h-16 overflow-y-auto">
                   <div
@@ -158,8 +158,6 @@
       </div>
     </template>
   </Dialog>
-  <NoteModal v-model="showNoteModal" :note="note" @after="addNoteToCallLog" />
-  <TaskModal v-model="showTaskModal" :task="task" @after="addTaskToCallLog" />
 </template>
 
 <script setup>
@@ -173,38 +171,82 @@ import CalendarIcon from '@/components/Icons/CalendarIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import CheckCircleIcon from '@/components/Icons/CheckCircleIcon.vue'
-import NoteModal from '@/components/Modals/NoteModal.vue'
-import TaskModal from '@/components/Modals/TaskModal.vue'
 import FadedScrollableDiv from '@/components/FadedScrollableDiv.vue'
 import { getCallLogDetail } from '@/utils/callLog'
 import { sanitizeHTML } from '@/utils'
 import { isMobileView } from '@/composables/settings'
+import { useDoctypeModal } from '@/composables/doctypeModal'
 import { useDocument } from '@/data/document'
+import { useOnboarding, useTelemetry } from 'frappe-ui/frappe'
 import { FeatherIcon, Dropdown, Avatar, Tooltip, call, toast } from 'frappe-ui'
-import { ref, computed, h, nextTick, watch } from 'vue'
+import { ref, computed, h, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
 const show = defineModel({ type: Boolean })
-const showNoteModal = ref(false)
-const showTaskModal = ref(false)
 
 const callLog = defineModel('callLog', { type: Object })
 
-const note = ref({
-  title: '',
-  content: '',
-})
+const { updateOnboardingStep } = useOnboarding('frappecrm')
+const { capture } = useTelemetry()
+const { showModal } = useDoctypeModal()
 
-const task = ref({
-  title: '',
-  description: '',
-  assigned_to: '',
-  due_date: '',
-  status: 'Backlog',
-  priority: 'Low',
-})
+const note = ref('')
+const task = ref('')
+
+function showNote(name) {
+  showModal({
+    name,
+    doctype: 'FCRM Note',
+    title: 'Note',
+    callbacks: {
+      afterInsert: (d) => addNoteToCallLog(d, true),
+      afterUpdate: (d) => addNoteToCallLog(d, false),
+    },
+  })
+}
+
+function showTask(name) {
+  showModal({
+    name,
+    doctype: 'CRM Task',
+    title: 'Task',
+    defaults: { status: 'Backlog', priority: 'Low' },
+    callbacks: {
+      afterInsert: (d) => addTaskToCallLog(d, true),
+      afterUpdate: (d) => addTaskToCallLog(d, false),
+    },
+  })
+}
+
+async function addNoteToCallLog(_note, isInsert = false) {
+  if (isInsert && _note.name) {
+    await call('crm.integrations.api.add_note_to_call_log', {
+      call_sid: callLog.value?.data?.id,
+      note: _note,
+    })
+    updateOnboardingStep('create_first_note')
+    capture('note_created')
+  } else {
+    capture('note_updated')
+  }
+  callLog.value?.reload?.()
+}
+
+async function addTaskToCallLog(_task, isInsert = false) {
+  if (isInsert && _task.name) {
+    await call('crm.integrations.api.add_task_to_call_log', {
+      call_sid: callLog.value?.data?.id,
+      task: _task,
+    })
+    updateOnboardingStep('create_first_task')
+    capture('task_created')
+  } else {
+    capture('task_updated')
+  }
+  callLog.value?.reload?.()
+}
 
 const detailFields = computed(() => {
   if (!callLog.value?.data) return []
@@ -318,61 +360,18 @@ async function createLead() {
     })
 }
 
-const showCallLogModal = defineModel('callLogModal', { type: Boolean })
-
 function openCallLogModal() {
-  showCallLogModal.value = true
-  nextTick(() => {
-    show.value = false
+  showModal({
+    name: callLog.value?.data?.name,
+    doctype: 'CRM Call Log',
+    title: 'Call Log',
+    callbacks: {
+      afterUpdate: () => {
+        callLog.value.reload()
+        capture('call_log_updated')
+      },
+    },
   })
-}
-
-function addEditNote() {
-  if (!note.value?.name) {
-    note.value = {
-      title: '',
-      content: '',
-    }
-  }
-  showNoteModal.value = true
-}
-
-function addEditTask() {
-  if (!task.value?.name) {
-    task.value = {
-      title: '',
-      description: '',
-      assigned_to: '',
-      due_date: '',
-      status: 'Backlog',
-      priority: 'Low',
-    }
-  }
-  showTaskModal.value = true
-}
-
-async function addNoteToCallLog(_note, insert_mode = false) {
-  note.value = _note
-  if (insert_mode && _note.name) {
-    await call('crm.integrations.api.add_note_to_call_log', {
-      call_sid: callLog.value?.data?.id,
-      note: _note,
-    })
-  } else {
-    callLog.value?.reload?.()
-  }
-}
-
-async function addTaskToCallLog(_task, insert_mode = false) {
-  task.value = _task
-  if (insert_mode && _task.name) {
-    await call('crm.integrations.api.add_task_to_call_log', {
-      call_sid: callLog.value?.data?.id,
-      task: _task,
-    })
-  } else {
-    callLog.value?.reload?.()
-  }
 }
 
 watch(
@@ -380,8 +379,8 @@ watch(
   (data) => {
     if (!data) return
     const parsed = JSON.parse(JSON.stringify(data))
-    note.value = parsed._notes?.[0] ?? null
-    task.value = parsed._tasks?.[0] ?? null
+    note.value = parsed._notes?.[0]?.name ?? null
+    task.value = parsed._tasks?.[0]?.name ?? null
   },
   { immediate: true, deep: true },
 )
