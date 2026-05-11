@@ -196,7 +196,7 @@
             {
               group: __('Options'),
               hideLabel: true,
-              items: [
+              options: [
                 {
                   label: __('Import'),
                   icon: () => h(ImportIcon, { class: 'h-4 w-4' }),
@@ -593,7 +593,7 @@ if (allowedViews.includes('list')) {
     name: 'list',
     label: __(props.options?.defaultViewName) || __('List'),
     icon: markRaw(ListIcon),
-    onClick() {
+    onClick: () => {
       viewUpdated.value = false
       router.push({ name: route.name, params: { viewType: 'list' } })
     },
@@ -604,7 +604,7 @@ if (allowedViews.includes('kanban')) {
     name: 'kanban',
     label: __(props.options?.defaultViewName) || __('Kanban'),
     icon: markRaw(KanbanIcon),
-    onClick() {
+    onClick: () => {
       viewUpdated.value = false
       router.push({ name: route.name, params: { viewType: 'kanban' } })
     },
@@ -615,7 +615,7 @@ if (allowedViews.includes('group_by')) {
     name: 'group_by',
     label: __(props.options?.defaultViewName) || __('Group By'),
     icon: markRaw(GroupByIcon),
-    onClick() {
+    onClick: () => {
       viewUpdated.value = false
       router.push({ name: route.name, params: { viewType: 'group_by' } })
     },
@@ -638,7 +638,7 @@ const viewsDropdownOptions = computed(() => {
     {
       group: __('Standard Views'),
       hideLabel: true,
-      items: standardViews,
+      options: standardViews,
     },
   ]
 
@@ -669,19 +669,19 @@ const viewsDropdownOptions = computed(() => {
     if (savedViews.length) {
       _views.push({
         group: __('Saved Views'),
-        items: savedViews,
+        options: savedViews,
       })
     }
     if (publicViews.length) {
       _views.push({
         group: __('Public Views'),
-        items: publicViews,
+        options: publicViews,
       })
     }
     if (pinnedViews.length) {
       _views.push({
         group: __('Pinned Views'),
-        items: pinnedViews,
+        options: pinnedViews,
       })
     }
   }
@@ -689,7 +689,7 @@ const viewsDropdownOptions = computed(() => {
   _views.push({
     group: __('Actions'),
     hideLabel: true,
-    items: [
+    options: [
       {
         label: __('Create View'),
         icon: 'plus',
@@ -1064,7 +1064,7 @@ const viewActions = (view, close) => {
     {
       group: __('Actions'),
       hideLabel: true,
-      items: [
+      options: [
         {
           label: __('Duplicate'),
           icon: () => h(DuplicateIcon, { class: 'h-4 w-4' }),
@@ -1075,7 +1075,7 @@ const viewActions = (view, close) => {
   ]
 
   if (isStandard && !isDefaultView(_view)) {
-    actions[0].items.unshift({
+    actions[0].options.unshift({
       label: __('Set As Default'),
       icon: () => h(CheckIcon, { class: 'h-4 w-4' }),
       onClick: () => setAsDefault(_view),
@@ -1083,14 +1083,14 @@ const viewActions = (view, close) => {
   }
 
   if (!isStandard && (!_view.public || isManager())) {
-    actions[0].items.push({
+    actions[0].options.push({
       label: __('Edit'),
       icon: () => h(EditIcon, { class: 'h-4 w-4' }),
       onClick: () => editView(_view, close),
     })
 
     if (!_view.public) {
-      actions[0].items.push({
+      actions[0].options.push({
         label: _view.pinned ? __('Unpin View') : __('Pin View'),
         icon: () => h(_view.pinned ? UnpinIcon : PinIcon, { class: 'h-4 w-4' }),
         onClick: () => pinView(_view),
@@ -1098,7 +1098,7 @@ const viewActions = (view, close) => {
     }
 
     if (isManager()) {
-      actions[0].items.push({
+      actions[0].options.push({
         label: _view.public ? __('Make Private') : __('Make Public'),
         icon: () =>
           h(FeatherIcon, {
@@ -1112,7 +1112,7 @@ const viewActions = (view, close) => {
     actions.push({
       group: __('Delete View'),
       hideLabel: true,
-      items: [
+      options: [
         {
           label: __('Delete'),
           icon: 'trash-2',
