@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 
 import frappe
 import requests
+from frappe import _
 from frappe.model.document import Document
 from frappe.utils import getdate
 
@@ -34,7 +35,7 @@ class CRMYeastarSettings(Document):
 	def validate(self):
 		if self.enabled:
 			if self.generate_access_token():
-				frappe.msgprint("Access token generated successfully.")
+				frappe.msgprint(_("Access token generated successfully."))
 
 	def generate_access_token(self) -> bool:
 		request_url: str = self.request_url + "/get_token"
@@ -69,7 +70,9 @@ class CRMYeastarSettings(Document):
 
 			if response_data.get("errcode") != 0:
 				frappe.throw(
-					f"{response_data.get('errmsg', 'Unknown error')}. ERROR CODE: {response_data.get('errcode')}"
+					_(
+						f"{response_data.get('errmsg', 'Unknown error')}. ERROR CODE: {response_data.get('errcode')}"
+					)
 				)
 
 			return response_data
@@ -79,7 +82,7 @@ class CRMYeastarSettings(Document):
 				title=f"Error while making request of type {request_type} to Yeastar API: {e!s}",
 				message=frappe.get_traceback(),
 			)
-			frappe.throw("There was an error connecting to the Yeastar API.")
+			frappe.throw(_("There was an error connecting to the Yeastar API."))
 
 	def refresh_access_token(self):
 		request_url: str = self.request_url + "/refresh_token"

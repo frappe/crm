@@ -1,6 +1,7 @@
 from datetime import datetime
 
 import frappe
+from frappe import _
 from frappe.utils import get_datetime
 
 CTA = "CRM Telephony Agent"
@@ -12,7 +13,7 @@ def yeaster_settings():
 
 def is_yeaster_enabled() -> None:
 	if not (yeaster_settings()):
-		frappe.throw("Yeastar integration is not enabled. Please configure the settings first.")
+		frappe.throw(_("Yeastar integration is not enabled. Please configure the settings first."))
 
 
 def url_builder(path: str) -> str:
@@ -32,7 +33,7 @@ def validate_token() -> None:
 
 def get_yeaster_number() -> str:
 	if not frappe.db.exists(CTA, {"user": frappe.session.user, "yeastar": 1}):
-		frappe.throw("No Yeaster Telephony Agent found. Please configure one first.")
+		frappe.throw(_("No Yeaster Telephony Agent found. Please configure one first."))
 
 	caller = frappe.db.get_value(CTA, {"user": frappe.session.user, "yeastar": 1}, "yeastar_number")
 
@@ -117,5 +118,5 @@ def parse_call_state(payload: dict) -> list[dict] | None:
 			title="Error parsing call state from Yeastar webhook",
 			message=frappe.get_traceback(),
 		)
-		frappe.throw("Failed to parse call state data.")
+		frappe.throw(_("Failed to parse call state data."))
 		return None

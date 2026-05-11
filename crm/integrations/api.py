@@ -119,6 +119,7 @@ def add_task_to_call_log(call_sid: str, task: dict):
 
 	return _task
 
+
 @frappe.whitelist()
 def get_contact_lead_or_deal_from_number(number):
 	"""Get contact, lead or deal from the given number."""
@@ -233,5 +234,3 @@ def get_contact(phone_number, country="IN", exact_match=False):
 		return contacts[0]
 
 	return {"mobile_no": phone_number}
-
-
