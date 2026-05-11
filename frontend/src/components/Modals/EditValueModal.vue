@@ -8,7 +8,7 @@
           :options="fields"
           class="w-full"
           :placeholder="__('Source')"
-          :openOnFocus="true"
+          :openOnClick="true"
           @update:selectedOption="(e) => changeField(e)"
         />
       </div>

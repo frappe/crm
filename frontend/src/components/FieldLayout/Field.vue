@@ -139,9 +139,11 @@
     <Combobox
       v-else-if="field.fieldtype === 'Autocomplete'"
       v-model="data[field.fieldname]"
+      class="w-full"
       :options="getOptions(field.options)"
       :placeholder="getPlaceholder(field)"
       :disabled="Boolean(field.read_only)"
+      :openOnClick="true"
       @update:modelValue="(v) => fieldChange(v, field, data)"
     />
     <TimePicker

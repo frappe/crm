@@ -75,7 +75,7 @@
               <Combobox
                 v-model="twilio.doc.app_name"
                 :options="twilioApps"
-                :openOnFocus="true"
+                :openOnClick="true"
               >
                 <template #footer>
                   <div

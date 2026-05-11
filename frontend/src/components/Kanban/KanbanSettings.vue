@@ -16,7 +16,7 @@
           v-model="columnField"
           class="w-full"
           :options="columnFields"
-          :openOnFocus="true"
+          :openOnClick="true"
         />
         <div class="text-base text-ink-gray-8 mb-2 mt-4">
           {{ __('Title Field') }}
@@ -25,7 +25,7 @@
           v-model="titleField"
           class="w-full"
           :options="fields"
-          :openOnFocus="true"
+          :openOnClick="true"
         />
       </div>
       <div class="mt-4">

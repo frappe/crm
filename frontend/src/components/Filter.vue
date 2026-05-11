@@ -54,6 +54,7 @@
                     :model-value="f.field.fieldname"
                     :options="filterableFields.data"
                     :placeholder="__('First Name')"
+                    :openOnClick="true"
                     @update:selectedOption="(e) => updateFilter(e, i)"
                   />
                 </div>
@@ -87,6 +88,7 @@
                       :model-value="f.field.fieldname"
                       :options="filterableFields.data"
                       :placeholder="__('First Name')"
+                      :openOnClick="true"
                       @update:selectedOption="(e) => updateFilter(e, i)"
                     />
                   </div>

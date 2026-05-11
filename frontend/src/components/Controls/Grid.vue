@@ -389,11 +389,12 @@
                       <Combobox
                         v-else-if="field.fieldtype === 'Autocomplete'"
                         v-model="row[field.fieldname]"
-                        class="combobox"
+                        class="combobox w-full"
                         variant="outline"
                         :options="getOptions(field.options)"
                         :placeholder="field.placeholder"
                         :disabled="Boolean(field.read_only)"
+                        :openOnClick="true"
                         @update:modelValue="(v) => fieldChange(v, field, row)"
                       />
                       <FormControl
@@ -815,7 +816,7 @@ const getOptions = (options) => {
 
 /* For Autocomplete, Link */
 :deep(.grid-row button:not(.button-control):not(.rating-star)),
-:deep(.grid-row .combobox > div > div) {
+:deep(.grid-row .combobox) {
   border: none;
   border-radius: 0;
   background-color: var(--surface-white);

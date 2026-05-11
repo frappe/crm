@@ -96,19 +96,12 @@
                 />
                 <Combobox
                   :model-value="sort.fieldname"
+                  class="flex flex-1 rounded-l-none"
                   :options="sortOptions.data"
                   :placeholder="__('First Name')"
+                  :openOnClick="true"
                   @update:selectedOption="(e) => updateSort(e, i)"
-                >
-                  <template #trigger="{ open, displayValue }">
-                    <Button
-                      class="flex flex-1 items-center justify-between rounded-l-none !text-ink-gray-5"
-                      size="md"
-                      :label="displayValue"
-                      :iconRight="open ? 'chevron-down' : 'chevron-up'"
-                    />
-                  </template>
-                </Combobox>
+                />
               </div>
               <Button variant="ghost" icon="x" @click="removeSort(i)" />
             </div>
