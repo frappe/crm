@@ -74,11 +74,11 @@ import EmailConfig from '@/components/Settings/EmailConfig.vue'
 import SidebarLink from '@/components/SidebarLink.vue'
 import { usersStore } from '@/stores/users'
 import {
-  isWhatsappInstalled,
   showSettings,
   activeSettingsPage,
   disableSettingModalOutsideClick,
 } from '@/composables/settings'
+import { isWhatsappInstalled } from '@/composables/whatsapp'
 import { Dialog, Avatar } from 'frappe-ui'
 import { ref, markRaw, computed, watch, h } from 'vue'
 import AssignmentRulePage from './AssignmentRules/AssignmentRulePage.vue'
