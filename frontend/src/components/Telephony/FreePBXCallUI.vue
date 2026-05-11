@@ -302,6 +302,9 @@ const callData = ref(null)
 const callDuration = ref('00:00')
 const isMuted = ref(false)
 const counterUp = ref(null)
+// Holds the latest status update if it arrives before the call log is created.
+// Flushed in make_a_call's onSuccess so we never silently drop a terminal status.
+const pendingStatus = ref(null)
 
 let ua = null            // JsSIP UserAgent
 let currentSession = null  // active RTCSession
@@ -472,6 +475,7 @@ function _handleIncomingSession(session, request) {
     auto: true,
     onSuccess(details) {
       callData.value = details
+      _flushPendingStatus()
     },
   })
 
@@ -539,6 +543,7 @@ function makeOutgoingCall(number) {
     auto: true,
     onSuccess(details) {
       callData.value = details
+      _flushPendingStatus()
     },
     onError(err) {
       toast.error(err.messages?.[0] || __('Failed to create call log'))
@@ -609,17 +614,53 @@ function _onCallFailed(e) {
 }
 
 function _attachRemoteAudio(session) {
-  session.connection?.addEventListener('addstream', (e) => {
-    if (remoteAudio.value) {
-      remoteAudio.value.srcObject = e.stream
-    }
-  })
-  // Modern WebRTC: ontrack
-  session.connection?.addEventListener('track', (e) => {
-    if (remoteAudio.value && e.streams?.[0]) {
-      remoteAudio.value.srcObject = e.streams[0]
-    }
-  })
+  const wirePeerConnection = (pc) => {
+    if (!pc) return
+
+    pc.addEventListener('addstream', (e) => {
+      if (remoteAudio.value) remoteAudio.value.srcObject = e.stream
+    })
+    pc.addEventListener('track', (e) => {
+      if (remoteAudio.value && e.streams?.[0]) remoteAudio.value.srcObject = e.streams[0]
+    })
+
+    // Fallback: if ICE drops and stays dropped for >5s, force the call to end
+    // even when no SIP BYE arrives (flaky WSS, NAT timeouts, etc.).
+    let iceFailTimer = null
+    pc.addEventListener('iceconnectionstatechange', () => {
+      const state = pc.iceConnectionState
+      const isDown = state === 'disconnected' || state === 'failed' || state === 'closed'
+      const callActive =
+        callStatus.value &&
+        callStatus.value !== 'Call ended' &&
+        callStatus.value !== 'No answer'
+
+      if (isDown && callActive && !iceFailTimer) {
+        iceFailTimer = setTimeout(() => {
+          iceFailTimer = null
+          if (callStatus.value === 'Call ended' || callStatus.value === 'No answer') return
+          console.warn('[FreePBX] ICE stuck on', state, '— forcing call end')
+          const elapsed = _getElapsedSeconds()
+          if (currentSession) {
+            try { currentSession.terminate() } catch (_) {}
+            currentSession = null
+          }
+          _onCallEnded()
+          _updateCallLogStatus('completed', elapsed)
+        }, 5000)
+      } else if (!isDown && iceFailTimer) {
+        clearTimeout(iceFailTimer)
+        iceFailTimer = null
+      }
+    })
+  }
+
+  if (session.connection) {
+    wirePeerConnection(session.connection)
+  } else {
+    // RTCPeerConnection isn't created until JsSIP fires `peerconnection`
+    session.on('peerconnection', (e) => wirePeerConnection(e.peerconnection))
+  }
 }
 
 function hangUp() {
@@ -658,7 +699,12 @@ function _getElapsedSeconds() {
 }
 
 function _updateCallLogStatus(status, duration = 0) {
-  if (!callData.value?.CallSid) return
+  if (!callData.value?.CallSid) {
+    // Call log creation is still in flight — remember the latest update and
+    // let onSuccess flush it once CallSid is available.
+    pendingStatus.value = { status, duration }
+    return
+  }
   createResource({
     url: 'crm.integrations.freepbx.handler.update_call_status',
     params: {
@@ -669,6 +715,31 @@ function _updateCallLogStatus(status, duration = 0) {
     auto: true,
   })
 }
+
+function _flushPendingStatus() {
+  if (!pendingStatus.value || !callData.value?.CallSid) return
+  const { status, duration } = pendingStatus.value
+  pendingStatus.value = null
+  _updateCallLogStatus(status, duration)
+}
+
+function _sendHangupBeacon() {
+  if (!callData.value?.CallSid) return
+  if (callStatus.value === 'Call ended' || callStatus.value === 'No answer') return
+  if (!navigator.sendBeacon) return
+  const elapsed = _getElapsedSeconds()
+  const data = new FormData()
+  data.append('call_sid', callData.value.CallSid)
+  data.append('status', 'completed')
+  data.append('duration', String(elapsed))
+  navigator.sendBeacon(
+    '/api/method/crm.integrations.freepbx.handler.update_call_status',
+    data,
+  )
+}
+
+const _beforeUnloadHandler = () => _sendHangupBeacon()
+window.addEventListener('beforeunload', _beforeUnloadHandler)
 
 function _getSipDomain() {
   if (!sipDomain) {
@@ -701,6 +772,8 @@ function closeCallPopup() {
 }
 
 onBeforeUnmount(() => {
+  window.removeEventListener('beforeunload', _beforeUnloadHandler)
+  _sendHangupBeacon()
   if (ua) {
     ua.stop()
     ua = null
