@@ -1,9 +1,78 @@
+import time
 import socket
 import frappe
 from frappe import _
+from frappe.exceptions import QueryDeadlockError
 from frappe.integrations.utils import create_request_log
 
 from crm.integrations.api import get_contact_by_phone_number
+
+
+_MAX_RETRIES = 3
+_RETRY_DELAY = 0.25  # seconds, doubles each attempt
+
+
+# ── Retry helper ─────────────────────────────────────────────────────────────
+
+
+def _save_with_retry(call_log, apply_fn, *args, **kwargs):
+	"""
+	Re-fetch the document, apply field changes, and save.
+	Retries up to _MAX_RETRIES times on QueryDeadlockError (MySQL 1020).
+
+	apply_fn(call_log, *args, **kwargs) must set all fields on the doc.
+	"""
+	for attempt in range(1, _MAX_RETRIES + 1):
+		try:
+			call_log.reload()  # always work from the latest DB state
+			apply_fn(call_log, *args, **kwargs)
+			call_log.save(ignore_permissions=True)
+			frappe.db.commit()
+			return call_log
+		except QueryDeadlockError:
+			frappe.db.rollback()
+			if attempt == _MAX_RETRIES:
+				frappe.log_error(
+					title="CRM Call Log deadlock – max retries exceeded",
+					message=frappe.get_traceback(),
+				)
+				raise
+			time.sleep(_RETRY_DELAY * attempt)  # 0.25s → 0.5s → 0.75s
+
+
+# ── Field-setter helpers (pure, no DB calls) ─────────────────────────────────
+
+
+def _apply_status_update(call_log, status, duration):
+	status_map = {
+		"ringing": "Ringing",
+		"in-progress": "In Progress",
+		"completed": "Completed",
+		"no-answer": "No Answer",
+		"busy": "Busy",
+		"failed": "Failed",
+		"canceled": "Canceled",
+	}
+	call_log.status = status_map.get(status.lower(), status)
+	if duration:
+		call_log.duration = duration
+	if status.lower() == "completed":
+		from frappe.utils import now_datetime
+		call_log.end_time = now_datetime()
+
+
+def _apply_payload_update(call_log, call_payload):
+	call_log.status = get_call_log_status(call_payload)
+	call_log.to = call_payload.get("To") or call_payload.get("DialedNumber") or call_log.to
+	call_log.duration = call_payload.get("Duration") or call_payload.get("BillSec") or 0
+	call_log.recording_url = call_payload.get("RecordingUrl") or ""
+	call_log.start_time = call_payload.get("StartTime")
+	call_log.end_time = call_payload.get("EndTime")
+	if call_payload.get("AgentEmail"):
+		call_log.receiver = call_payload.get("AgentEmail")
+
+
+# ── Webhook entry point ───────────────────────────────────────────────────────
 
 
 @frappe.whitelist(allow_guest=True)
@@ -50,6 +119,9 @@ def handle_request(**kwargs):
 		frappe.db.commit()
 
 
+# ── WebRTC / browser endpoints ────────────────────────────────────────────────
+
+
 @frappe.whitelist()
 def get_webrtc_credentials():
 	"""Return SIP/WebRTC credentials for the logged-in agent to register in the browser."""
@@ -71,8 +143,10 @@ def get_webrtc_credentials():
 		)
 
 	# Detect whether the request came over HTTPS or HTTP and pick the right WS scheme
-	is_https = frappe.request.environ.get("wsgi.url_scheme") == "https" or \
-		frappe.request.headers.get("X-Forwarded-Proto") == "https"
+	is_https = (
+		frappe.request.environ.get("wsgi.url_scheme") == "https"
+		or frappe.request.headers.get("X-Forwarded-Proto") == "https"
+	)
 
 	if is_https:
 		ws_scheme = "wss"
@@ -96,7 +170,12 @@ def get_webrtc_credentials():
 
 
 @frappe.whitelist()
-def make_a_call(to_number: str, from_number: str | None = None, caller_id: str | None = None, call_type: str = "Outgoing"):
+def make_a_call(
+	to_number: str,
+	from_number: str | None = None,
+	caller_id: str | None = None,
+	call_type: str = "Outgoing",
+):
 	"""WebRTC mode — JsSIP handles the actual call in browser. This only creates the call log."""
 	if not is_integration_enabled():
 		frappe.throw(_("Please setup FreePBX integration"), title=_("Integration Not Enabled"))
@@ -142,34 +221,15 @@ def update_call_status(call_sid: str, status: str, duration: int = 0):
 		return
 
 	call_log = frappe.get_doc("CRM Call Log", call_sid)
+	result = _save_with_retry(call_log, _apply_status_update, status, duration)
+	return result.status if result else None
 
-	status_map = {
-		"ringing": "Ringing",
-		"in-progress": "In Progress",
-		"completed": "Completed",
-		"no-answer": "No Answer",
-		"busy": "Busy",
-		"failed": "Failed",
-		"canceled": "Canceled",
-	}
 
-	call_log.status = status_map.get(status.lower(), status)
-
-	if duration:
-		call_log.duration = duration
-
-	if status.lower() == "completed":
-		from frappe.utils import now_datetime
-		call_log.end_time = now_datetime()
-
-	call_log.save(ignore_permissions=True)
-	frappe.db.commit()
-	return call_log.status
+# ── Settings ──────────────────────────────────────────────────────────────────
 
 
 def get_freepbx_settings():
 	return frappe.get_single("CRM FreePBX Settings")
-
 
 
 @frappe.whitelist()
@@ -177,11 +237,12 @@ def is_integration_enabled():
 	return frappe.db.get_single_value("CRM FreePBX Settings", "enabled", True)
 
 
-# ── Call Log helpers ────────────────────────────────────────────────────────
+# ── Call Log helpers ──────────────────────────────────────────────────────────
 
 
-def create_call_log(call_id, from_number, to_number, medium, agent,
-					status="Ringing", call_type="Incoming"):
+def create_call_log(
+	call_id, from_number, to_number, medium, agent, status="Ringing", call_type="Incoming"
+):
 	call_log = frappe.new_doc("CRM Call Log")
 	call_log.id = call_id
 	call_log.to = to_number
@@ -247,19 +308,7 @@ def update_call_log(call_payload, call_log=None):
 		return
 
 	try:
-		call_log.status = get_call_log_status(call_payload)
-		call_log.to = call_payload.get("To") or call_payload.get("DialedNumber") or call_log.to
-		call_log.duration = call_payload.get("Duration") or call_payload.get("BillSec") or 0
-		call_log.recording_url = call_payload.get("RecordingUrl") or ""
-		call_log.start_time = call_payload.get("StartTime")
-		call_log.end_time = call_payload.get("EndTime")
-
-		if call_payload.get("AgentEmail"):
-			call_log.receiver = call_payload.get("AgentEmail")
-
-		call_log.save(ignore_permissions=True)
-		frappe.db.commit()
-		return call_log
+		return _save_with_retry(call_log, _apply_payload_update, call_payload)
 	except Exception:
 		frappe.log_error(title="Error while updating FreePBX call record")
 		frappe.db.commit()
