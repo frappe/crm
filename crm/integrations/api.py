@@ -21,14 +21,12 @@ def _get_recording_credentials(telephony_medium: str) -> tuple:
 
 @frappe.whitelist()
 def is_call_integration_enabled():
-	twilio_enabled = frappe.db.get_single_value("CRM Twilio Settings", "enabled")
-	exotel_enabled = frappe.db.get_single_value("CRM Exotel Settings", "enabled")
-	yeastar_enabled = frappe.db.get_single_value("CRM Yeastar Settings", "enabled")
-
 	return {
-		"twilio_enabled": twilio_enabled,
-		"exotel_enabled": exotel_enabled,
-		"yeastar_enabled": yeastar_enabled,
+		"integrations": {
+			"twilio": bool(frappe.db.get_single_value("CRM Twilio Settings", "enabled")),
+			"exotel": bool(frappe.db.get_single_value("CRM Exotel Settings", "enabled")),
+			"yeastar": bool(frappe.db.get_single_value("CRM Yeastar Settings", "enabled")),
+		},
 		"default_calling_medium": get_user_default_calling_medium(),
 	}
 
@@ -184,7 +182,13 @@ def get_contact(phone_number, country="IN", exact_match=False):
 	# Check if the number is associated with a contact
 	Contact = frappe.qb.DocType("Contact")
 	normalized_phone = Replace(
-		Replace(Replace(Replace(Replace(Contact.mobile_no, " ", ""), "-", ""), "(", ""), ")", ""), "+", ""
+		Replace(
+			Replace(Replace(Replace(Contact.mobile_no, " ", ""), "-", ""), "(", ""),
+			")",
+			"",
+		),
+		"+",
+		"",
 	)
 
 	query = (
@@ -209,7 +213,13 @@ def get_contact(phone_number, country="IN", exact_match=False):
 	# Else, Check if the number is associated with a lead
 	Lead = frappe.qb.DocType("CRM Lead")
 	normalized_phone = Replace(
-		Replace(Replace(Replace(Replace(Lead.mobile_no, " ", ""), "-", ""), "(", ""), ")", ""), "+", ""
+		Replace(
+			Replace(Replace(Replace(Lead.mobile_no, " ", ""), "-", ""), "(", ""),
+			")",
+			"",
+		),
+		"+",
+		"",
 	)
 
 	query = (
