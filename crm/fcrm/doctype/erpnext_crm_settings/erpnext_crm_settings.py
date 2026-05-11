@@ -312,7 +312,6 @@ def create_customer_in_erpnext(doc, method):
 	address = get_organization_address(doc.organization)
 	customer_data = {
 		"customer_name": doc.organization,
-		"customer_group": "All Customer Groups",
 		"customer_type": "Company",
 		"territory": doc.territory,
 		"default_currency": doc.currency,
@@ -330,9 +329,22 @@ def create_customer_in_erpnext(doc, method):
 			except ImportError:
 				frappe.throw(_("ERPNext is not installed in the current site"))
 
+			if doc.territory and not frappe.db.exists("Territory", doc.territory):
+				customer_data.territory = ""
+
+			if doc.industry and not frappe.db.exists("Industry Type", doc.industry):
+				customer_data.industry = ""
+
 			customer_name = create_customer(customer_data)
 		else:
 			client = get_erpnext_site_client(erpnext_crm_settings)
+
+			if doc.territory and not client.get_list("Territory", filters={"name": doc.territory}):
+				customer_data["territory"] = ""
+
+			if doc.industry and not client.get_list("Industry Type", filters={"name": doc.industry}):
+				customer_data["industry"] = ""
+
 			customer_name = client.post_api("erpnext.crm.frappe_crm_api.create_customer", customer_data)
 
 		if not customer_name:
