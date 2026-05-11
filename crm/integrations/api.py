@@ -165,7 +165,7 @@ def get_recording_url(call_log_name: str):
 	return response
 
 
-def get_contact(phone_number, country="IN", exact_match=False):
+def get_contact(phone_number: str, country: str = "IN", exact_match: bool = False):
 	if not phone_number:
 		return {"mobile_no": phone_number}
 
