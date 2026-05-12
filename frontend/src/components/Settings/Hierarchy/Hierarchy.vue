@@ -90,13 +90,13 @@
         </TextInput>
         <Button
           v-if="isExpandable"
-          variant="ghost"
-          class="w-28 ml-auto"
+          variant="subtle"
+          class="ml-auto pl-1.5"
           @click="toggleCollapseAll"
         >
           <template #prefix>
             <component
-              :is="collapsed ? LucideChevronsUpDown : LucideChevronsDownUp"
+              :is="collapsed ? LucideChevronsDown : LucideChevronsUp"
               class="size-4"
             />
           </template>
