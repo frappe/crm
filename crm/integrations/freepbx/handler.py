@@ -163,7 +163,7 @@ def get_webrtc_credentials():
 		"username": agent.freepbx_sip_username,
 		"password": agent_doc.get_password("freepbx_sip_password"),
 		"extension": agent.freepbx_extension,
-		"ws_uri": f"{ws_scheme}://{settings.host}:{ws_port}/ws",
+		"ws_uri": f"{ws_scheme}://{settings.host}/ws",
 		"realm": settings.host,
 		"host": settings.host,
 	}
