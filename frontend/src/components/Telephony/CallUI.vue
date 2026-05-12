@@ -70,7 +70,7 @@ const enabledIntegrations = computed(() =>
   [
     { key: 'twilio', label: 'Twilio', ref: twilio },
     { key: 'exotel', label: 'Exotel', ref: exotel },
-    { key: 'freepbx', label: 'Exotel', ref: freepbx },
+    { key: 'freepbx', label: 'FreePBX', ref: freepbx },
   ].filter(({ key }) => isEnabled(key)),
 )
 
