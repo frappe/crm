@@ -4,7 +4,7 @@
       v-for="action in normalActions"
       :key="action.label"
       :label="action.label"
-      @click="action.onClick()"
+      @click="action.onClick(close)"
     >
       <template v-if="action.icon" #prefix>
         <FeatherIcon :name="action.icon" class="h-4 w-4" />
@@ -33,6 +33,7 @@ import { isMobileView } from '@/composables/settings'
 
 const props = defineProps({
   actions: { type: [Object, Array, undefined], default: () => [] },
+  close: { type: Function, default: () => {} },
 })
 
 const normalActions = computed(() => {
@@ -46,6 +47,14 @@ const groupedWithLabelActions = computed(() => {
     .filter((action) => action.buttonLabel && action.group)
     .forEach((action) => {
       let groupIndex = _actions.findIndex((a) => a.label === action.buttonLabel)
+
+      action.items = action.items.map((item) => {
+        return {
+          ...item,
+          onClick: () => item.onClick(props.close),
+        }
+      })
+
       if (groupIndex > -1) {
         _actions[groupIndex].action.push(action)
       } else {
@@ -61,13 +70,14 @@ const groupedWithLabelActions = computed(() => {
 const groupedActions = computed(() => {
   let _actions = []
   let _normalActions = normalActions.value
+
   if (isMobileView.value && _normalActions.length) {
     _actions.push({
       group: __('Actions'),
       hideLabel: true,
       items: _normalActions.map((action) => ({
         label: action.label,
-        onClick: action.onClick,
+        onClick: () => action.onClick(props.close),
         icon: action.icon,
       })),
     })
@@ -77,9 +87,19 @@ const groupedActions = computed(() => {
       group.action.forEach((action) => _actions.push(action))
     })
   }
-  _actions = _actions.concat(
-    props.actions.filter((action) => action.group && !action.buttonLabel),
-  )
+
+  props.actions
+    .filter((action) => action.group && !action.buttonLabel)
+    .forEach((action) => {
+      action.items = action.items.map((item) => {
+        return {
+          ...item,
+          onClick: () => item.onClick(props.close),
+        }
+      })
+      _actions.push(action)
+    })
+
   return _actions
 })
 </script>

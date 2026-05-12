@@ -94,13 +94,7 @@
     </div>
     <CallLogDetailModal
       v-model="showCallLogDetailModal"
-      v-model:callLogModal="showCallLogModal"
       v-model:callLog="callLog"
-    />
-    <CallLogModal
-      v-if="showCallLogModal"
-      v-model="showCallLogModal"
-      :data="callLog.data"
     />
   </div>
 </template>
@@ -111,7 +105,6 @@ import DurationIcon from '@/components/Icons/DurationIcon.vue'
 import MultipleAvatar from '@/components/MultipleAvatar.vue'
 import AudioPlayer from '@/components/Activities/AudioPlayer.vue'
 import CallLogDetailModal from '@/components/Modals/CallLogDetailModal.vue'
-import CallLogModal from '@/components/Modals/CallLogModal.vue'
 import { statusLabelMap, statusColorMap } from '@/utils/callLog.js'
 import { formatDate, timeAgo } from '@/utils'
 import { Avatar, Badge, Tooltip, createResource } from 'frappe-ui'
@@ -130,5 +123,4 @@ const callLog = createResource({
   auto: true,
 })
 const showCallLogDetailModal = ref(false)
-const showCallLogModal = ref(false)
 </script>

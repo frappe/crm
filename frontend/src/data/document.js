@@ -3,7 +3,8 @@ import { globalStore } from '@/stores/global'
 import { getMeta } from '@/stores/meta'
 import { useAttachments } from '@/composables/useAttachments'
 import { showSettings, activeSettingsPage } from '@/composables/settings'
-import { runSequentially, parseAssignees, evaluateExpression } from '@/utils'
+import { runSequentially, parseAssignees } from '@/utils'
+import { findMissingMandatory } from '@/utils/fieldTransforms'
 import { createDocumentResource, createResource, toast } from 'frappe-ui'
 import { ref, reactive } from 'vue'
 
@@ -80,6 +81,9 @@ export function useDocument(doctype, docname, resourceOverrides = {}) {
       if (!documentsCache[doctype][docname].fieldHtmlMap) {
         documentsCache[doctype][docname].fieldHtmlMap = {}
       }
+      if (!documentsCache[doctype][docname].fieldPropertyOverrides) {
+        documentsCache[doctype][docname].fieldPropertyOverrides = {}
+      }
 
       // Override the submit function to trigger validation before submitting
       // TODO: fix validate function to return error message instead of throwing error in frappe-ui and remove try-catch block here
@@ -99,6 +103,7 @@ export function useDocument(doctype, docname, resourceOverrides = {}) {
     } else {
       documentsCache[doctype][''] = reactive({
         doc: { __newDocument: true, doctype },
+        fieldPropertyOverrides: {},
       })
       setupFormScript()
     }
@@ -198,25 +203,16 @@ export function useDocument(doctype, docname, resourceOverrides = {}) {
   }
 
   function checkMandatory(doc) {
-    let fields = meta?.getFields() || []
+    let fields = meta?.doctypesMeta?.[doctype]?.fields || []
 
     if (!fields || fields.length === 0) return
 
-    let missingFields = []
+    const overrides =
+      documentsCache[doctype][docname || '']?.fieldPropertyOverrides || {}
 
-    fields.forEach((df) => {
-      let parent = meta?.doctypesMeta?.[df.parent] || null
-      if (evaluateExpression(df.mandatory_depends_on, doc, parent)) {
-        const value = doc[df.fieldname]
-        if (
-          value === undefined ||
-          value === null ||
-          (typeof value === 'string' && value.trim() === '') ||
-          (Array.isArray(value) && value.length === 0)
-        ) {
-          missingFields.push(df.label || df.fieldname)
-        }
-      }
+    const missingFields = findMissingMandatory(fields, doc, {
+      propertyOverrides: overrides,
+      doctypesMeta: meta?.doctypesMeta || {},
     })
 
     if (missingFields.length > 0) {

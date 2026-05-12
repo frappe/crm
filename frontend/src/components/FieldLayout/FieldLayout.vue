@@ -9,7 +9,7 @@
     <Tabs
       v-model="tabIndex"
       as="div"
-      :tabs="tabs"
+      :tabs="processedTabs"
       :class="[
         !hasTabs ? `[&_[role='tablist']]:hidden` : '',
         `[&_[role='tablist']::-webkit-scrollbar]:h-0 [&_[role='tab']]:shrink-0 [&_[role='tabpanel']]:overflow-visible !overflow-visible`,
@@ -28,6 +28,7 @@
 
 <script setup>
 import Section from '@/components/FieldLayout/Section.vue'
+import { useDocument } from '@/data/document'
 import { Tabs } from 'frappe-ui'
 import { ref, computed, provide } from 'vue'
 
@@ -37,13 +38,46 @@ const props = defineProps({
   doctype: { type: String, default: 'CRM Lead' },
   isGridRow: { type: Boolean, default: false },
   preview: { type: Boolean, default: false },
+  context: { type: Object, default: null },
 })
 
 const tabIndex = ref(0)
 
+// Get fieldPropertyOverrides for tab/section overrides
+let overrides = {}
+if (props.context) {
+  // Standalone mode: use externally managed context, skip useDocument
+  overrides = computed(() => props.context?.fieldPropertyOverrides || {})
+} else if (!props.isGridRow) {
+  const { document: doc } = useDocument(props.doctype, props.data?.name)
+  overrides = computed(() => doc?.fieldPropertyOverrides || {})
+} else {
+  overrides = computed(() => ({}))
+}
+
+const processedTabs = computed(() => {
+  const ov = overrides.value
+  return props.tabs
+    .map((tab) => {
+      const tabOverrides = ov[tab.name]
+      const processedTab = tabOverrides ? { ...tab, ...tabOverrides } : tab
+      return {
+        ...processedTab,
+        sections: processedTab.sections.map((section) => {
+          const sectionOverrides = ov[section.name]
+          return sectionOverrides
+            ? { ...section, ...sectionOverrides }
+            : section
+        }),
+      }
+    })
+    .filter((tab) => !tab.hidden)
+})
+
 const hasTabs = computed(() => {
   return (
-    props.tabs.length > 1 || (props.tabs.length == 1 && props.tabs[0].label)
+    processedTabs.value.length > 1 ||
+    (processedTabs.value.length == 1 && processedTabs.value[0].label)
   )
 })
 
@@ -55,6 +89,7 @@ provide('hasTabs', hasTabs)
 provide('doctype', props.doctype)
 provide('preview', props.preview)
 provide('isGridRow', props.isGridRow)
+provide('fieldLayoutContext', props.context)
 </script>
 <style scoped>
 .section:not(:has(.field)) {

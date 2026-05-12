@@ -69,3 +69,12 @@ function updateMaskStyle() {
 
 onMounted(() => setTimeout(() => updateMaskStyle(), 300))
 </script>
+<style scoped>
+div {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+div::-webkit-scrollbar {
+  display: none;
+}
+</style>

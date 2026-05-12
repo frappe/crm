@@ -63,11 +63,11 @@
         </div>
       </div>
       <div
-        v-if="twilioEnabled"
+        v-if="isEnabled('twilio')"
         class="h-px border-t mx-2 border-outline-gray-modals"
       />
       <div
-        v-if="twilioEnabled"
+        v-if="isEnabled('twilio')"
         class="flex items-center justify-between gap-8 py-3 pl-2 pr-1"
       >
         <div class="flex flex-col">
@@ -88,11 +88,11 @@
         </div>
       </div>
       <div
-        v-if="exotelEnabled"
+        v-if="isEnabled('exotel')"
         class="h-px border-t mx-2 border-outline-gray-modals"
       />
       <div
-        v-if="exotelEnabled"
+        v-if="isEnabled('exotel')"
         class="flex items-center justify-between gap-8 py-3 pl-2 pr-1"
       >
         <div class="flex flex-col">
@@ -113,7 +113,7 @@
         </div>
       </div>
       <div
-        v-if="exotelEnabled"
+        v-if="isEnabled('exotel')"
         class="flex items-center justify-between gap-8 py-3 pl-2 pr-1"
       >
         <div class="flex flex-col">
@@ -229,7 +229,9 @@
           </span>
         </div>
         <Button
-          :label="twilioEnabled ? __('Update Configuration') : __('Configure')"
+          :label="
+            isEnabled('twilio') ? __('Update Configuration') : __('Configure')
+          "
           @click="emit('updateStep', 'twilio-settings')"
         />
       </div>
@@ -254,7 +256,9 @@
           </span>
         </div>
         <Button
-          :label="exotelEnabled ? __('Update Configuration') : __('Configure')"
+          :label="
+            isEnabled('exotel') ? __('Update Configuration') : __('Configure')
+          "
           @click="emit('updateStep', 'exotel-settings')"
         />
       </div>
@@ -297,10 +301,12 @@ import {
   createResource,
   toast,
 } from 'frappe-ui'
-import { twilioEnabled, exotelEnabled, freepbxEnabled } from '@/composables/settings'
+import { useTelephony } from '@/composables/telephony'
 import { useDocument } from '@/data/document'
 import { usersStore } from '@/stores/users'
 import { ref, computed } from 'vue'
+
+const { isEnabled } = useTelephony()
 
 const emit = defineEmits(['updateStep'])
 

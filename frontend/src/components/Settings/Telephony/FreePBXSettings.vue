@@ -112,7 +112,7 @@
   </SettingsLayoutBase>
 </template>
 <script setup>
-import { freepbxEnabled } from '@/composables/settings'
+import { setEnabled } from '@/composables/telephony'
 import { useDocument } from '@/data/document'
 import { Switch } from 'frappe-ui'
 import { computed } from 'vue'

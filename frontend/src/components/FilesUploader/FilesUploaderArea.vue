@@ -198,6 +198,7 @@ function browseFiles() {
 
 function onFileInput() {
   addFiles(fileInput.value.files)
+  fileInput.value.value = ''
 }
 
 const video = ref(null)
