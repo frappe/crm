@@ -137,6 +137,7 @@
               :node="node"
               :has-children="hasChildren"
               :is-collapsed="isCollapsed"
+              :is-last="node.name === lastNodeName"
               :row-class="rowClasses(node)"
               :handlers="dragHandlers"
               :get-candidates="getCandidates"
@@ -144,7 +145,7 @@
               :can-edit="canEdit"
               @toggle="toggleCollapsed"
               @bulk-add="({ parent, userIds }) => bulkAdd(parent, userIds)"
-              @remove="({ node: n, mode }) => removeNode(n, mode)"
+              @remove="(n) => openRemoveDialog(n)"
               @move-to-root="(n) => reparent(n.name, null)"
             />
           </template>
@@ -187,6 +188,69 @@
         />
       </template>
     </Dialog>
+    <Dialog v-model="showRemoveDialog" :options="{ size: 'md' }">
+      <template #body>
+        <div class="bg-surface-modal px-4 pb-6 pt-5 sm:px-6">
+          <div class="mb-4 flex items-center justify-between">
+            <h3 class="text-2xl leading-6 text-ink-gray-9 font-semibold">
+              {{ __('Delete') }}
+            </h3>
+            <Button
+              variant="ghost"
+              icon="x"
+              @click="showRemoveDialog = false"
+            />
+          </div>
+          <div class="text-ink-gray-5 text-base">
+            <template v-if="checkTargetChild">
+              {{
+                __(
+                  'Remove {0} from the hierarchy. What should happen to their direct reports?',
+                  [removeTarget?.full_name],
+                )
+              }}
+            </template>
+            <template v-else>
+              {{
+                __('Are you sure you want to remove {0} from the hierarchy?', [
+                  removeTarget?.full_name,
+                ])
+              }}
+            </template>
+          </div>
+        </div>
+        <div class="bg-surface-modal px-4 pb-6 pt-0 sm:px-6">
+          <div class="flex w-full justify-end gap-2">
+            <template v-if="checkTargetChild">
+              <Button
+                :label="__('Unlink & Delete {0} Users', [unlinkCount])"
+                icon-left="trash-2"
+                variant="solid"
+                theme="red"
+                :loading="removing === 'cascade'"
+                @click="confirmRemove('cascade')"
+              />
+              <Button
+                :label="__('Delete Only User')"
+                icon-left="unlock"
+                variant="subtle"
+                :loading="removing === 'reassign'"
+                @click="confirmRemove('reassign')"
+              />
+            </template>
+            <Button
+              v-else
+              :label="__('Delete')"
+              icon-left="trash-2"
+              variant="solid"
+              theme="red"
+              :loading="removing === 'simple'"
+              @click="confirmRemove('simple')"
+            />
+          </div>
+        </div>
+      </template>
+    </Dialog>
   </div>
 </template>
 
@@ -199,8 +263,8 @@ import { useDragDrop } from './useDragDrop'
 import { globalStore } from '@/stores/global'
 import { usersStore } from '@/stores/users'
 import LucideNetwork from '~icons/lucide/network'
-import LucideChevronsUpDown from '~icons/lucide/chevrons-up-down'
-import LucideChevronsDownUp from '~icons/lucide/chevrons-down-up'
+import LucideChevronsUp from '~icons/lucide/chevrons-up'
+import LucideChevronsDown from '~icons/lucide/chevrons-down'
 import LucideCircleQuestionMark from '~icons/lucide/circle-question-mark'
 import {
   Button,
@@ -375,6 +439,15 @@ const isExpandable = computed(() =>
   visibleRoots.value.some((n) => n.children?.length),
 )
 
+function getLastNode(list) {
+  if (!list?.length) return null
+  const last = list[list.length - 1]
+  if (last.children?.length) return getLastNode(last.children)
+  return last
+}
+
+const lastNodeName = computed(() => getLastNode(visibleRoots.value)?.name)
+
 const placedUserIds = computed(
   () => new Set(enrichedNodes.value.map((n) => n.user)),
 )
@@ -481,6 +554,45 @@ const { removeNode } = useRemoveNode({
   nodes,
   enrichedNodes,
 })
+
+const showRemoveDialog = ref(false)
+const removeTarget = ref(null)
+const removing = ref(null)
+
+const checkTargetChild = computed(() =>
+  enrichedNodes.value.some((n) => n.reports_to === removeTarget.value?.name),
+)
+
+const unlinkCount = computed(() => {
+  if (!removeTarget.value) return 0
+  const queue = [removeTarget.value.name]
+  let count = 0
+  while (queue.length) {
+    const name = queue.shift()
+    count++
+    enrichedNodes.value.forEach((n) => {
+      if (n.reports_to === name) queue.push(n.name)
+    })
+  }
+  return count
+})
+
+function openRemoveDialog(node) {
+  removeTarget.value = node
+  showRemoveDialog.value = true
+}
+
+async function confirmRemove(mode) {
+  if (!removeTarget.value) return
+  removing.value = mode
+  try {
+    await removeNode(removeTarget.value, mode)
+    showRemoveDialog.value = false
+    removeTarget.value = null
+  } finally {
+    removing.value = null
+  }
+}
 
 const {
   handlers: dragHandlers,
