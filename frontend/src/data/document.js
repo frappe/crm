@@ -3,7 +3,7 @@ import { globalStore } from '@/stores/global'
 import { getMeta } from '@/stores/meta'
 import { useAttachments } from '@/composables/useAttachments'
 import { showSettings, activeSettingsPage } from '@/composables/settings'
-import { runSequentially, parseAssignees } from '@/utils'
+import { runSequentially, parseAssignees, sanitizeText } from '@/utils'
 import { findMissingMandatory } from '@/utils/fieldTransforms'
 import { createDocumentResource, createResource, toast } from 'frappe-ui'
 import { ref, reactive } from 'vue'
@@ -266,7 +266,8 @@ export function useDocument(doctype, docname, resourceOverrides = {}) {
     await trigger(handler)
   }
 
-  async function triggerOnChange(fieldname, value, row) {
+  async function triggerOnChange(fieldname, _value, row) {
+    const value = sanitizeText(_value)
     let oldValue = null
     if (row) {
       oldValue = row[fieldname]
