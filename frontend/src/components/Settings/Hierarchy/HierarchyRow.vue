@@ -1,7 +1,12 @@
 <template>
   <div
-    class="group relative flex items-center gap-2 px-2 py-1.5 mx-1 text-base rounded-md hover:bg-surface-gray-2 select-none after:content-[''] after:absolute after:bottom-0 after:left-3 after:right-3 after:border-b after:border-outline-gray-modals hover:after:hidden"
-    :class="[rowClass, canEdit ? 'cursor-grab' : 'cursor-pointer']"
+    class="group relative flex items-center gap-2 px-2 py-1.5 mx-1 text-base rounded-md select-none after:content-[''] after:absolute after:bottom-0 after:left-3 after:right-3 after:border-outline-gray-modals"
+    :class="[
+      rowClass,
+      canEdit ? 'cursor-grab' : 'cursor-pointer',
+      isHighlighted ? 'bg-surface-gray-1' : 'hover:bg-surface-gray-1',
+      isLast ? 'after:hidden' : '',
+    ]"
     :draggable="canEdit"
     @dragstart="canEdit && handlers.onDragStart($event, node)"
     @dragend="canEdit && handlers.onDragEnd(node)"
@@ -16,8 +21,14 @@
       class="size-4 text-ink-gray-5 shrink-0 cursor-pointer"
     />
     <span v-else class="size-4 shrink-0 flex items-center justify-center">
-      <span class="size-1.5 rounded-full bg-gray-500" />
     </span>
+
+    <Avatar
+      :image="node.user_image"
+      :label="node.full_name"
+      size="sm"
+      class="shrink-0"
+    />
 
     <span class="text-ink-gray-8 truncate">
       {{ node.full_name }}
@@ -33,10 +44,13 @@
 
     <div
       v-if="canEdit"
-      class="ml-auto flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
+      class="ml-auto flex gap-1 transition-opacity"
+      :class="
+        isHighlighted ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+      "
       @click.stop
     >
-      <Popover placement="bottom-end" @close="resetSelection">
+      <Popover placement="bottom-end" @update:show="popoverOpen = $event">
         <template #target="{ togglePopover }">
           <Tooltip :text="__('Add direct reports')">
             <Button
@@ -68,12 +82,14 @@
         </template>
       </Popover>
       <Dropdown :options="moreOptions" placement="right">
-        <Button
-          variant="ghost"
-          size="sm"
-          icon="more-horizontal"
-          @blur="resetConfirms"
-        />
+        <template #default="{ open }">
+          <Button
+            variant="ghost"
+            size="sm"
+            icon="more-horizontal"
+            :class="syncDropdown(open)"
+          />
+        </template>
       </Dropdown>
     </div>
   </div>
@@ -81,8 +97,8 @@
 
 <script setup>
 import UserMultiSelect from './UserMultiSelect.vue'
-import { ConfirmDelete } from '@/utils'
 import {
+  Avatar,
   Badge,
   Button,
   Dropdown,
@@ -90,12 +106,13 @@ import {
   Popover,
   Tooltip,
 } from 'frappe-ui'
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 
 const props = defineProps({
   node: { type: Object, required: true },
   hasChildren: { type: Boolean, default: false },
   isCollapsed: { type: Boolean, default: false },
+  isLast: { type: Boolean, default: false },
   rowClass: { type: String, default: '' },
   handlers: { type: Object, required: true },
   getCandidates: { type: Function, required: true },
@@ -106,25 +123,25 @@ const props = defineProps({
 const emit = defineEmits(['toggle', 'bulk-add', 'remove', 'move-to-root'])
 
 const selected = ref([])
-const confirmRemove = ref(false)
-const confirmReassign = ref(false)
-const confirmCascade = ref(false)
+const popoverOpen = ref(false)
+const dropdownOpen = ref(false)
+
+const isHighlighted = computed(() => popoverOpen.value || dropdownOpen.value)
+
+function syncDropdown(open) {
+  if (dropdownOpen.value !== open) dropdownOpen.value = open
+  return ''
+}
+
+watch(popoverOpen, (open) => {
+  if (!open) selected.value = []
+})
 
 function commit(togglePopover) {
   if (!selected.value.length) return
   emit('bulk-add', { parent: props.node, userIds: selected.value })
   selected.value = []
   togglePopover()
-}
-
-function resetSelection() {
-  selected.value = []
-}
-
-function resetConfirms() {
-  confirmRemove.value = false
-  confirmReassign.value = false
-  confirmCascade.value = false
 }
 
 const moreOptions = computed(() => {
@@ -136,31 +153,11 @@ const moreOptions = computed(() => {
       onClick: () => emit('move-to-root', props.node),
     })
   }
-  if (props.hasChildren) {
-    opts.push(
-      ...ConfirmDelete({
-        onConfirmDelete: () =>
-          emit('remove', { node: props.node, mode: 'reassign' }),
-        isConfirmingDelete: confirmReassign,
-        label: __('Reassign & remove'),
-      }),
-      ...ConfirmDelete({
-        onConfirmDelete: () =>
-          emit('remove', { node: props.node, mode: 'cascade' }),
-        isConfirmingDelete: confirmCascade,
-        label: __('Remove with reports'),
-      }),
-    )
-  } else {
-    opts.push(
-      ...ConfirmDelete({
-        onConfirmDelete: () =>
-          emit('remove', { node: props.node, mode: 'simple' }),
-        isConfirmingDelete: confirmRemove,
-        label: __('Remove'),
-      }),
-    )
-  }
+  opts.push({
+    label: __('Delete'),
+    icon: 'trash-2',
+    onClick: () => emit('remove', props.node),
+  })
   return opts
 })
 </script>
