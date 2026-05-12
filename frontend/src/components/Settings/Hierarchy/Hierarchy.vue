@@ -16,11 +16,7 @@
           </Tooltip>
         </div>
         <p class="text-p-base text-ink-gray-6">
-          {{
-            __(
-              'Arrange users into a reporting tree. Drag a user onto another to make them a direct report.',
-            )
-          }}
+          {{ __('Arrange users into a reporting tree') }}
         </p>
       </div>
       <div
