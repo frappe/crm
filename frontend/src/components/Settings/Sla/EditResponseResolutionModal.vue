@@ -23,7 +23,7 @@
         <div class="space-y-1.5">
           <FormLabel :label="__('First Response Time')" required />
           <DurationInput
-            class=" w-full"
+            class="w-full"
             :value="priorityData.first_response_time"
             :long-form="true"
             size="sm"
