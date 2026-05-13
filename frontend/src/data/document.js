@@ -14,6 +14,7 @@ const assigneesCache = {}
 const permissionsCache = {}
 
 export function useDocument(doctype, docname, resourceOverrides = {}) {
+  if (typeof docname === 'number') docname = String(docname)
   const { setupScript, scripts } = getScript(doctype)
   const meta = getMeta(doctype)
   const { trackOldFile, processPendingDeletions } = useAttachments(
