@@ -1,14 +1,7 @@
 <template>
   <div
-    class="relative flex items-center gap-1 mb-1"
-    :class="[
-      node.reports_to
-        ? [
-            'before:content-[\'\'] before:absolute before:-left-[18px] before:-top-3 before:h-8 before:border-l before:border-b before:border-outline-gray-modals before:rounded-bl-md',
-            hasChildren ? 'before:w-[16px]' : 'before:w-[42px]',
-          ]
-        : '',
-    ]"
+    class="hierarchy-tree-row flex items-center gap-1 mb-1"
+    :data-has-children="hasChildren"
   >
     <div
       v-if="hasChildren"
@@ -177,3 +170,47 @@ const moreOptions = computed(() => {
   return opts
 })
 </script>
+
+<style>
+li:has(> .hierarchy-tree-row) {
+  position: relative;
+}
+
+li:has(> .hierarchy-tree-row)::before {
+  content: '';
+  position: absolute;
+  left: -18px;
+  top: -8px;
+  bottom: -4px;
+  border-left: 1px solid var(--outline-gray-modals);
+}
+
+li:has(> .hierarchy-tree-row)::after {
+  content: '';
+  position: absolute;
+  left: -18px;
+  top: 20px;
+  width: 42px;
+  border-bottom: 1px solid var(--outline-gray-modals);
+}
+
+li:has(> [data-has-children='true'])::after {
+  width: 16px;
+}
+
+li:has(> .hierarchy-tree-row):last-child::before {
+  bottom: auto;
+  height: 30px;
+  width: 16px;
+  border-bottom: 1px solid var(--outline-gray-modals);
+  border-bottom-left-radius: 6px;
+}
+
+li:has(> [data-has-children='false']):last-child::before {
+  width: 42px;
+}
+
+li:has(> .hierarchy-tree-row):last-child::after {
+  display: none;
+}
+</style>
