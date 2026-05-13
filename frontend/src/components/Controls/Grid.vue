@@ -114,7 +114,7 @@
                       v-for="field in [getRowFieldObj(baseField, row)]"
                       :key="field.fieldname + '-inner'"
                     >
-                      <FormControl
+                      <TextInput
                         v-if="
                           field.read_only &&
                           ![
@@ -134,7 +134,6 @@
                           ].includes(field.fieldtype)
                         "
                         v-model="row[field.fieldname]"
-                        type="text"
                         :placeholder="field.placeholder"
                         :disabled="true"
                       />
@@ -224,31 +223,30 @@
                         input-class="border-none text-sm text-ink-gray-8"
                         @change="(v) => fieldChange(v, field, row)"
                       />
-                      <FormControl
+                      <Textarea
                         v-else-if="
                           ['Small Text', 'Text', 'Long Text', 'Code'].includes(
                             field.fieldtype,
                           )
                         "
-                        rows="1"
-                        type="textarea"
+                        v-model="row[field.fieldname]"
+                        class="resize-none"
+                        :rows="1"
                         variant="outline"
-                        :value="row[field.fieldname]"
                         @change="fieldChange($event.target.value, field, row)"
                       />
-                      <FormControl
+                      <Select
                         v-else-if="field.fieldtype === 'Select'"
                         v-model="row[field.fieldname]"
-                        class="text-sm text-ink-gray-8"
-                        type="select"
+                        class="w-full text-sm text-ink-gray-8"
                         variant="outline"
                         :options="field.options"
                         @update:modelValue="(e) => fieldChange(e, field, row)"
                       />
                       <Password
                         v-else-if="field.fieldtype === 'Password'"
+                        v-model="row[field.fieldname]"
                         variant="outline"
-                        :value="row[field.fieldname]"
                         :disabled="Boolean(field.read_only)"
                         @change="fieldChange($event.target.value, field, row)"
                       />
@@ -397,11 +395,10 @@
                         :openOnClick="true"
                         @update:modelValue="(v) => fieldChange(v, field, row)"
                       />
-                      <FormControl
+                      <TextInput
                         v-else
                         v-model="row[field.fieldname]"
                         class="text-sm text-ink-gray-8"
-                        type="text"
                         variant="outline"
                         :options="field.options"
                         @change="fieldChange($event.target.value, field, row)"
@@ -468,7 +465,6 @@
 </template>
 
 <script setup>
-import Password from '@/components/Controls/Password.vue'
 import DurationInput from '@/components/Controls/DurationInput.vue'
 import RatingInput from '@/components/Controls/RatingInput.vue'
 import AttachControl from '@/components/Controls/AttachControl.vue'
@@ -498,7 +494,6 @@ import { getMeta } from '@/stores/meta'
 import { parseLinkFilters } from '@/utils/fieldTransforms'
 import { createDocument } from '@/composables/document'
 import {
-  FormControl,
   Checkbox,
   TimePicker,
   DateTimePicker,
@@ -506,6 +501,10 @@ import {
   Tooltip,
   dayjs,
   Combobox,
+  Password,
+  Textarea,
+  TextInput,
+  Select,
 } from 'frappe-ui'
 import Draggable from 'vuedraggable'
 import { ref, reactive, computed, inject, provide } from 'vue'
@@ -601,7 +600,7 @@ const fields = computed(() => {
   }
 
   // Filter out hidden columns (from script overrides)
-  return processed.filter((f) => !f.hidden)
+  return processed.filter((f) => !f.hidden && f.name)
 })
 
 const allFields = computed(() => {

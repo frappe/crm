@@ -131,13 +131,15 @@ const oldFields = computed(() => {
   let gridViewSettings = getGridViewSettings(props.parentDoctype)
 
   if (gridViewSettings.length) {
-    return gridViewSettings.map((field) => {
-      let f = _fields.find((f) => f.fieldname === field.fieldname)
-      if (f) {
-        f.columns = field.columns
-        return fieldObj(f)
-      }
-    })
+    return gridViewSettings
+      .map((field) => {
+        let f = _fields.find((f) => f.fieldname === field.fieldname)
+        if (f) {
+          f.columns = field.columns
+          return fieldObj(f)
+        }
+      })
+      .filter(Boolean)
   }
   return _fields?.filter((field) => field.in_list_view).map((f) => fieldObj(f))
 })

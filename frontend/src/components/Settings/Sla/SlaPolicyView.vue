@@ -53,24 +53,24 @@
       </div>
       <div v-if="!getSlaResource.loading">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-          <div>
-            <FormControl
+          <div class="space-y-1.5">
+            <FormLabel :label="__('Name')" required />
+            <TextInput
               v-model="slaData.sla_name"
-              :type="'text'"
               size="sm"
               variant="subtle"
               :placeholder="__('Name')"
-              :label="__('Name')"
               required
               maxlength="100"
               @change="validateSlaData('sla_name')"
             />
-            <ErrorMessage :message="slaDataErrors.sla_name" class="mt-2" />
+            <ErrorMessage :message="slaDataErrors.sla_name" />
           </div>
           <div class="space-y-1.5">
             <FormLabel :label="__('Apply On')" required />
             <Select
               v-model="slaData.apply_on"
+              class="w-full"
               :options="[
                 {
                   label: 'Lead',
@@ -252,7 +252,7 @@ import {
   DatePicker,
   ErrorMessage,
   FeatherIcon,
-  FormControl,
+  TextInput,
   FormLabel,
   LoadingIndicator,
   Popover,

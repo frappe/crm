@@ -13,10 +13,9 @@
         <div v-if="isAllDay" class="flex gap-1">
           <div class="flex flex-col flex-1 items-center gap-2">
             <div class="flex items-center gap-2 w-full">
-              <FormControl
+              <Select
                 v-model="notification.type"
                 class="flex-1 shrink-0"
-                type="select"
                 :options="[
                   {
                     label: __('Notification'),
@@ -40,7 +39,7 @@
               />
             </div>
             <div class="flex items-center gap-2 w-full">
-              <FormControl
+              <TextInput
                 v-model.number="notification.before"
                 class="w-fit"
                 type="number"
@@ -50,10 +49,9 @@
                 :placeholder="__('10')"
                 @blur="handleIntervalChange(notification)"
               />
-              <FormControl
+              <Select
                 v-model="notification.interval"
                 class="flex-1 shrink-0"
-                type="select"
                 :options="intervalOptions(notification)"
                 variant="outline"
                 :placeholder="__('minutes')"
@@ -81,10 +79,9 @@
         <div v-else class="flex gap-1">
           <div class="flex flex-col flex-1 items-center gap-2">
             <div class="flex items-center gap-2 w-full">
-              <FormControl
+              <Select
                 v-model="notification.type"
                 class="flex-1 shrink-0"
-                type="select"
                 :options="[
                   {
                     label: __('Notification'),
@@ -100,7 +97,7 @@
               />
             </div>
             <div class="flex items-center gap-2 w-full">
-              <FormControl
+              <TextInput
                 v-model.number="notification.before"
                 class="w-fit"
                 type="number"
@@ -111,10 +108,9 @@
                 :placeholder="__('10')"
                 @blur="handleIntervalChange(notification)"
               />
-              <FormControl
+              <Select
                 v-model="notification.interval"
                 class="flex-1 shrink-0"
-                type="select"
                 :options="intervalOptions(notification)"
                 variant="outline"
                 :placeholder="__('minutes')"
@@ -150,7 +146,7 @@
 <script setup>
 import BellIcon from '@/components/Icons/BellIcon.vue'
 import { min, max, handleIntervalChange } from '@/components/Calendar/utils'
-import { TimePicker } from 'frappe-ui'
+import { TextInput, Select, TimePicker } from 'frappe-ui'
 import { computed, ref } from 'vue'
 
 const props = defineProps({

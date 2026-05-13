@@ -150,8 +150,7 @@
             />
           </div>
           <div v-else-if="column.type === 'Check'">
-            <FormControl
-              type="checkbox"
+            <Checkbox
               :modelValue="item"
               :disabled="true"
               class="text-ink-gray-9"
@@ -235,6 +234,7 @@ import {
   ListFooter,
   Dropdown,
   Tooltip,
+  Checkbox,
 } from 'frappe-ui'
 import { sessionStore } from '@/stores/session'
 import { ref, computed, watch } from 'vue'

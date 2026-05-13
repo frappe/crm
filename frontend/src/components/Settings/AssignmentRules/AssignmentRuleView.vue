@@ -43,22 +43,18 @@
     </div>
     <div class="overflow-y-auto px-2">
       <div class="grid grid-cols-2 gap-5">
-        <div>
-          <FormControl
+        <div class="space-y-1.5">
+          <FormLabel :label="__('Name')" />
+          <TextInput
             v-model="assignmentRuleData.assignmentRuleName"
-            :type="'text'"
             size="sm"
             variant="subtle"
             :placeholder="__('Name')"
-            :label="__('Name')"
             required
             maxlength="50"
             @change="validateAssignmentRule('assignmentRuleName')"
           />
-          <ErrorMessage
-            :message="assignmentRuleErrors.assignmentRuleName"
-            class="mt-2"
-          />
+          <ErrorMessage :message="assignmentRuleErrors.assignmentRuleName" />
         </div>
         <div class="flex flex-col gap-1.5">
           <FormLabel :label="__('Priority')" />
@@ -104,22 +100,18 @@
             </template>
           </Popover>
         </div>
-        <div>
-          <FormControl
+        <div class="space-y-1.5">
+          <FormLabel :label="__('Description')" />
+          <Textarea
             v-model="assignmentRuleData.description"
-            :type="'textarea'"
             size="sm"
             variant="subtle"
             :placeholder="__('Description')"
-            :label="__('Description')"
             required
             maxlength="250"
             @change="validateAssignmentRule('description')"
           />
-          <ErrorMessage
-            :message="assignmentRuleErrors.description"
-            class="mt-2"
-          />
+          <ErrorMessage :message="assignmentRuleErrors.description" />
         </div>
         <div class="flex flex-col gap-1.5">
           <FormLabel :label="__('Apply On')" />
@@ -334,7 +326,6 @@ import {
   call,
   createResource,
   ErrorMessage,
-  FormControl,
   FormLabel,
   LoadingIndicator,
   Popover,
@@ -342,6 +333,7 @@ import {
   Switch,
   toast,
   ConfirmDialog,
+  Textarea,
 } from 'frappe-ui'
 import {
   onMounted,

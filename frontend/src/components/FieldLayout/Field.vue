@@ -174,30 +174,28 @@
       v-else-if="
         ['Small Text', 'Text', 'Long Text', 'Code'].includes(field.fieldtype)
       "
-      :value="data[field.fieldname]"
+      v-model="data[field.fieldname]"
       :placeholder="getPlaceholder(field)"
       :description="field.description"
       @change="fieldChange($event.target.value, field)"
     />
     <Password
       v-else-if="field.fieldtype === 'Password'"
-      :value="data[field.fieldname]"
+      v-model="data[field.fieldname]"
       :placeholder="getPlaceholder(field)"
       :description="field.description"
       @change="fieldChange($event.target.value, field)"
     />
     <FormattedInput
       v-else-if="field.fieldtype === 'Int'"
-      type="text"
-      :placeholder="getPlaceholder(field)"
       :value="data[field.fieldname] || '0'"
+      :placeholder="getPlaceholder(field)"
       :disabled="Boolean(field.read_only)"
       :description="field.description"
       @change="fieldChange($event.target.value, field)"
     />
     <FormattedInput
       v-else-if="field.fieldtype === 'Percent'"
-      type="text"
       :value="getFormattedPercent(field.fieldname, data)"
       :placeholder="getPlaceholder(field)"
       :disabled="Boolean(field.read_only)"
@@ -206,7 +204,6 @@
     />
     <FormattedInput
       v-else-if="field.fieldtype === 'Float'"
-      type="text"
       :value="getFormattedFloat(field.fieldname, data)"
       :placeholder="getPlaceholder(field)"
       :disabled="Boolean(field.read_only)"
@@ -215,7 +212,6 @@
     />
     <FormattedInput
       v-else-if="field.fieldtype === 'Currency'"
-      type="text"
       :value="getFormattedCurrency(field.fieldname, data, parentDoc)"
       :placeholder="getPlaceholder(field)"
       :disabled="Boolean(field.read_only)"
@@ -272,7 +268,6 @@
     />
     <TextInput
       v-else
-      type="text"
       :placeholder="getPlaceholder(field)"
       :value="data[field.fieldname]"
       :disabled="Boolean(field.read_only)"
@@ -282,7 +277,6 @@
   </div>
 </template>
 <script setup>
-import Password from '@/components/Controls/Password.vue'
 import FormattedInput from '@/components/Controls/FormattedInput.vue'
 import DurationInput from '@/components/Controls/DurationInput.vue'
 import RatingInput from '@/components/Controls/RatingInput.vue'
@@ -323,6 +317,7 @@ import {
   TimePicker,
   TextInput,
   Textarea,
+  Password,
 } from 'frappe-ui'
 import { computed, provide, inject, ref } from 'vue'
 
@@ -450,10 +445,6 @@ const field = computed(() => {
     field.options = field.options.split('\n').map((option) => {
       return { label: option, value: option }
     })
-
-    if (field.options[0].value !== '' && !field.reqd) {
-      field.options.unshift({ label: '', value: '' })
-    }
   }
 
   if (field.fieldtype === 'Link' && field.options === 'User') {

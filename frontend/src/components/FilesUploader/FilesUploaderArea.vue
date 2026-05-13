@@ -82,10 +82,9 @@
             <div class="mb-1">
               {{ convertSize(file.fileObj.size) }}
             </div>
-            <FormControl
+            <Checkbox
               v-model="file.private"
-              type="checkbox"
-              class="[&>label]:text-sm [&>label]:text-ink-gray-5"
+              class="[&_label]:text-sm"
               :label="__('Private')"
             />
             <ErrorMessage
@@ -127,12 +126,7 @@ import FileTextIcon from '@/components/Icons/FileTextIcon.vue'
 import FileAudioIcon from '@/components/Icons/FileAudioIcon.vue'
 import FileVideoIcon from '@/components/Icons/FileVideoIcon.vue'
 import { formatDate, convertSize } from '@/utils'
-import {
-  FormControl,
-  CircularProgressBar,
-  createResource,
-  toast,
-} from 'frappe-ui'
+import { CircularProgressBar, createResource, toast, Checkbox } from 'frappe-ui'
 import { ref, onMounted, watch, onUnmounted } from 'vue'
 
 const props = defineProps({

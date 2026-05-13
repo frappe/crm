@@ -23,9 +23,8 @@
           class="sm:mx-10 mx-4 flex items-center gap-2 border-t pt-2.5 h-10"
         >
           <span class="text-xs text-ink-gray-4">{{ __('FROM') }}:</span>
-          <FormControl
+          <Select
             v-model="fromEmail"
-            type="select"
             variant="ghost"
             class="w-full"
             :placeholder="__('')"
@@ -206,7 +205,7 @@ import {
   TextEditor,
   FileUploader,
   call,
-  FormControl,
+  Select,
 } from 'frappe-ui'
 import { useTelemetry } from 'frappe-ui/frappe'
 import { useDocument } from '@/data/document'

@@ -36,7 +36,14 @@
                 >
                   <div
                     v-if="field.visible"
-                    class="field flex items-center gap-2 px-3 leading-5 first:mt-3"
+                    class="field flex gap-2 px-3 leading-5 first:mt-3"
+                    :class="
+                      ['Small Text', 'Text', 'Long Text', 'Code'].includes(
+                        field.fieldtype,
+                      )
+                        ? 'items-baseline'
+                        : 'items-center'
+                    "
                   >
                     <Tooltip
                       v-if="!['Button', 'HTML'].includes(field.fieldtype)"
@@ -70,7 +77,7 @@
                       ]"
                     >
                       <div
-                        class="grid min-h-[28px] flex-1 items-center overflow-hidden text-base"
+                        class="flex min-h-[28px] flex-1 items-center overflow-hidden text-base p-0.5"
                       >
                         <div
                           v-if="
@@ -106,17 +113,16 @@
                           :create="field.create"
                           :label="field.label"
                         />
-                        <FormControl
+                        <Checkbox
                           v-else-if="field.fieldtype == 'Check'"
                           v-model="doc[field.fieldname]"
                           class="form-control"
-                          type="checkbox"
                           :disabled="Boolean(field.read_only)"
                           @change.stop="
                             fieldChange($event.target.checked, field)
                           "
                         />
-                        <FormControl
+                        <Textarea
                           v-else-if="
                             [
                               'Small Text',
@@ -125,25 +131,24 @@
                               'Code',
                             ].includes(field.fieldtype)
                           "
+                          v-model="doc[field.fieldname]"
                           class="form-control"
-                          type="textarea"
-                          :value="doc[field.fieldname]"
+                          :rows="1"
                           :placeholder="field.placeholder"
                           :debounce="500"
                           @change.stop="fieldChange($event.target.value, field)"
                         />
-                        <FormControl
+                        <Select
                           v-else-if="field.fieldtype === 'Select'"
                           v-model="doc[field.fieldname]"
-                          class="form-control cursor-pointer [&_select]:cursor-pointer truncate [&>*]:!ring-0"
-                          type="select"
+                          class="form-control truncate w-full"
                           :options="field.options"
                           :placeholder="field.placeholder"
                           @update:modelValue="(v) => fieldChange(v, field)"
                         />
                         <Link
                           v-else-if="field.fieldtype === 'User'"
-                          class="form-control"
+                          class="form-control w-full"
                           :value="
                             doc[field.fieldname] &&
                             getUser(doc[field.fieldname]).full_name
@@ -182,7 +187,7 @@
                           v-else-if="
                             ['Link', 'Dynamic Link'].includes(field.fieldtype)
                           "
-                          class="form-control select-text"
+                          class="form-control select-text w-full"
                           :value="doc[field.fieldname]"
                           :doctype="
                             field.fieldtype == 'Link'
@@ -196,7 +201,7 @@
                         />
                         <div
                           v-else-if="field.fieldtype === 'Time'"
-                          class="form-control"
+                          class="form-control w-full"
                         >
                           <TimePicker
                             :value="doc[field.fieldname]"
@@ -207,7 +212,7 @@
                         </div>
                         <div
                           v-else-if="field.fieldtype === 'Datetime'"
-                          class="form-control"
+                          class="form-control w-full"
                         >
                           <DateTimePicker
                             :value="doc[field.fieldname]"
@@ -219,7 +224,7 @@
                         </div>
                         <div
                           v-else-if="field.fieldtype === 'Date'"
-                          class="form-control"
+                          class="form-control w-full"
                         >
                           <DatePicker
                             :value="doc[field.fieldname]"
@@ -229,10 +234,18 @@
                             @change="(v) => fieldChange(v, field)"
                           />
                         </div>
+                        <Password
+                          v-else-if="field.fieldtype === 'Password'"
+                          v-model="doc[field.fieldname]"
+                          class="form-control w-full"
+                          :placeholder="field.placeholder"
+                          :debounce="500"
+                          :disabled="Boolean(field.read_only)"
+                          @change.stop="fieldChange($event.target.value, field)"
+                        />
                         <FormattedInput
                           v-else-if="field.fieldtype === 'Percent'"
-                          class="form-control"
-                          type="text"
+                          class="form-control w-full"
                           :value="getFormattedPercent(field.fieldname, doc)"
                           :placeholder="field.placeholder"
                           :debounce="500"
@@ -241,19 +254,9 @@
                             fieldChange(flt($event.target.value), field)
                           "
                         />
-                        <Password
-                          v-else-if="field.fieldtype === 'Password'"
-                          class="form-control"
-                          :value="doc[field.fieldname]"
-                          :placeholder="field.placeholder"
-                          :debounce="500"
-                          :disabled="Boolean(field.read_only)"
-                          @change.stop="fieldChange($event.target.value, field)"
-                        />
                         <FormattedInput
                           v-else-if="field.fieldtype === 'Int'"
-                          class="form-control"
-                          type="text"
+                          class="form-control w-full"
                           :value="doc[field.fieldname] || '0'"
                           :placeholder="field.placeholder"
                           :debounce="500"
@@ -262,8 +265,7 @@
                         />
                         <FormattedInput
                           v-else-if="field.fieldtype === 'Float'"
-                          class="form-control"
-                          type="text"
+                          class="form-control w-full"
                           :value="getFormattedFloat(field.fieldname, doc)"
                           :placeholder="field.placeholder"
                           :debounce="500"
@@ -274,8 +276,7 @@
                         />
                         <FormattedInput
                           v-else-if="field.fieldtype === 'Currency'"
-                          class="form-control"
-                          type="text"
+                          class="form-control w-full"
                           :value="getFormattedCurrency(field.fieldname, doc)"
                           :placeholder="field.placeholder"
                           :debounce="500"
@@ -349,24 +350,23 @@
                           :disabled="Boolean(field.read_only)"
                           @change="(v) => fieldChange(v, field)"
                         />
-                        <FormControl
+                        <TextInput
                           v-else
-                          class="form-control"
-                          type="text"
-                          :value="doc[field.fieldname]"
+                          v-model="doc[field.fieldname]"
+                          class="form-control w-full"
                           :placeholder="field.placeholder"
                           :debounce="500"
                           @change.stop="fieldChange($event.target.value, field)"
                         />
                       </div>
-                      <div class="ml-1">
+                      <div>
                         <ArrowUpRightIcon
                           v-if="
                             field.fieldtype === 'Link' &&
                             field.link &&
                             doc[field.fieldname]
                           "
-                          class="h-4 w-4 shrink-0 cursor-pointer text-ink-gray-5 hover:text-ink-gray-8"
+                          class="h-4 w-4 shrink-0 cursor-pointer text-ink-gray-5 hover:text-ink-gray-8 ml-1"
                           @click.stop="field.link(doc[field.fieldname])"
                         />
                         <EditIcon
@@ -375,7 +375,7 @@
                             field.edit &&
                             doc[field.fieldname]
                           "
-                          class="size-3.5 shrink-0 cursor-pointer text-ink-gray-5 hover:text-ink-gray-8"
+                          class="size-3.5 shrink-0 cursor-pointer text-ink-gray-5 hover:text-ink-gray-8 ml-1"
                           @click.stop="field.edit(doc[field.fieldname])"
                         />
                       </div>
@@ -398,7 +398,6 @@
 </template>
 
 <script setup>
-import Password from '@/components/Controls/Password.vue'
 import FormattedInput from '@/components/Controls/FormattedInput.vue'
 import DurationInput from '@/components/Controls/DurationInput.vue'
 import RatingInput from '@/components/Controls/RatingInput.vue'
@@ -429,7 +428,17 @@ import {
   interpolateTemplate,
 } from '@/utils'
 import { flt } from '@/utils/numberFormat.js'
-import { Tooltip, DateTimePicker, DatePicker, TimePicker } from 'frappe-ui'
+import {
+  TextInput,
+  Select,
+  Tooltip,
+  DateTimePicker,
+  DatePicker,
+  TimePicker,
+  Textarea,
+  Checkbox,
+  Password,
+} from 'frappe-ui'
 import { useDocument } from '@/data/document'
 import { ref, computed, getCurrentInstance } from 'vue'
 
@@ -494,10 +503,6 @@ function parsedField(field) {
     field.options = field.options.split('\n').map((option) => {
       return { label: option, value: option }
     })
-
-    if (field.options[0].value !== '' && !field.reqd) {
-      field.options.unshift({ label: '', value: '' })
-    }
   }
 
   if (field.fieldtype === 'Link' && field.options === 'User') {
@@ -625,14 +630,11 @@ function firstVisibleIndex() {
 </script>
 
 <style scoped>
-.form-control {
-  margin: 2px;
-}
-
 :deep(.form-control input:not([type='checkbox'])),
 :deep(.form-control select),
-:deep(.form-control textarea),
+:deep(textarea.form-control),
 :deep(.form-control button),
+:deep(button.form-control),
 :deep(.attach-control),
 :deep(.geolocation-control),
 .dropdown-button {

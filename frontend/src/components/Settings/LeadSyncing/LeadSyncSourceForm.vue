@@ -47,50 +47,59 @@
           class="overflow-hidden flex h-full flex-col gap-6 mt-4"
         >
           <!-- Form -->
-          <div class="grid grid-cols-2 gap-4">
-            <FormControl
-              v-model="syncSource.type"
-              type="autocomplete"
-              required="true"
-              :options="supportedSourceTypes"
-              :label="__('Source Type')"
-              :placeholder="__('Select Source Type')"
-            >
-              <template v-if="syncSource.type" #prefix>
+          <div class="grid grid-cols-2 gap-4 px-0.5">
+            <div class="space-y-1.5">
+              <label class="block text-p-sm font-medium text-ink-gray-7">
+                {{ __('Select Source Type') }}
+                <span class="text-ink-red-3">*</span>
+              </label>
+              <Combobox
+                v-model="syncSource.type"
+                class="w-full mt-1.5"
+                :required="true"
+                :options="supportedSourceTypes"
+                :label="__('Source Type')"
+                :openOnClick="true"
+                :placeholder="__('Select Source Type')"
+              >
+                <!-- <template v-if="syncSource.type" #prefix>
                 <component :is="syncSource.type.icon" class="mr-2 size-4" />
-              </template>
+              </template> -->
 
-              <template #item-prefix="{ option }">
-                <component :is="option.icon" class="size-4" />
-              </template>
-            </FormControl>
+                <template #item-prefix="{ item }">
+                  <component :is="item.icon" class="size-4" />
+                </template>
+              </Combobox>
+            </div>
 
-            <FormControl
+            <TextInput
               v-if="isLocal"
               v-model="syncSource.name"
-              type="text"
-              required="true"
+              :required="true"
               :label="__('Source Name')"
               :placeholder="__('Enter Source Name')"
             />
 
-            <FormControl
-              v-if="fieldsMap.background_sync_frequency"
-              v-model="syncSource.background_sync_frequency"
-              type="select"
-              required="true"
-              :options="fieldsMap.background_sync_frequency.options"
-              :label="__('Background Sync Frequency')"
-            />
+            <div v-if="fieldsMap.background_sync_frequency" class="space-y-1.5">
+              <label class="block text-p-sm font-medium text-ink-gray-7">
+                {{ __('Background Sync Frequency') }}
+                <span class="text-ink-red-3">*</span>
+              </label>
+              <Select
+                v-model="syncSource.background_sync_frequency"
+                class="w-full"
+                :options="fieldsMap.background_sync_frequency.options"
+                :label="__('Background Sync Frequency')"
+              />
+            </div>
 
-            <FormControl
+            <Password
               v-model="syncSource.access_token"
-              type="password"
-              required="true"
+              :required="true"
               :label="__('Access Token')"
               :placeholder="__('Enter Access Token')"
             >
-              <template #suffix>
+              <template #prefix>
                 <a
                   target="_blank"
                   href="https://developers.facebook.com/docs/facebook-login/guides/access-tokens/"
@@ -98,9 +107,9 @@
                   <LucideCircleQuestionMark class="w-4" />
                 </a>
               </template>
-            </FormControl>
+            </Password>
 
-            <FormControl
+            <TextInput
               v-if="!isLocal && sourceDoc && sourceDoc.last_synced_at"
               :modelValue="formatDate(sourceDoc.last_synced_at)"
               disabled
@@ -169,11 +178,14 @@ import { onMounted, inject, ref, computed, watch } from 'vue'
 import { supportedSourceTypes } from './leadSyncSourceConfig'
 import {
   Button,
-  FormControl,
   Switch,
   toast,
   ErrorMessage,
   Tabs,
+  TextInput,
+  Select,
+  Password,
+  Combobox,
 } from 'frappe-ui'
 
 import { getMeta } from '@/stores/meta'

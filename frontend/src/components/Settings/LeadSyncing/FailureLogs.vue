@@ -18,19 +18,8 @@
     </div>
 
     <div class="grid grid-cols-2 gap-2 mt-4">
-      <FormControl
-        type="text"
-        :label="__('Log ID')"
-        :value="selectedLog.name"
-        disabled
-      />
-
-      <FormControl
-        type="text"
-        :label="__('Reason')"
-        :value="selectedLog.type"
-        disabled
-      />
+      <TextInput :label="__('Log ID')" :value="selectedLog.name" disabled />
+      <TextInput :label="__('Reason')" :value="selectedLog.type" disabled />
     </div>
 
     <div class="mt-4 flex flex-col gap-8">
@@ -88,8 +77,8 @@ import {
   createListResource,
   Textarea,
   ListView,
-  FormControl,
   toast,
+  TextInput,
 } from 'frappe-ui'
 
 const props = defineProps({

@@ -74,9 +74,8 @@
             <FeatherIcon name="search" class="h-4 w-4 text-ink-gray-6" />
           </template>
         </TextInput>
-        <FormControl
+        <Select
           v-model="currentRole"
-          type="select"
           :options="[
             { label: __('All'), value: 'All' },
             { label: __('Admin'), value: 'System Manager' },
@@ -175,6 +174,7 @@ import {
   call,
   FeatherIcon,
   Tooltip,
+  Select,
 } from 'frappe-ui'
 import { ref, computed, onMounted } from 'vue'
 import { ConfirmDelete } from '../../utils'

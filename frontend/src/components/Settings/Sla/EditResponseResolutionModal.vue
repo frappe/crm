@@ -7,21 +7,23 @@
   >
     <template #body-content>
       <div class="flex flex-col gap-4">
-        <FormControl
-          v-model="priorityData.priority"
-          type="select"
-          size="sm"
-          variant="subtle"
-          :placeholder="__('Select Priority')"
-          :label="__('Priority')"
-          :options="priorityOptions"
-          required
-          class="text-ink-gray-8"
-        />
-        <div>
+        <div class="space-y-1.5">
+          <FormLabel :label="__('Priority')" required />
+          <Select
+            v-model="priorityData.priority"
+            size="sm"
+            variant="subtle"
+            :placeholder="__('Select Priority')"
+            :label="__('Priority')"
+            :options="priorityOptions"
+            required
+            class="text-ink-gray-8 w-full"
+          />
+        </div>
+        <div class="space-y-1.5">
           <FormLabel :label="__('First Response Time')" required />
           <DurationInput
-            class="mt-2 w-full"
+            class=" w-full"
             :value="priorityData.first_response_time"
             :long-form="true"
             size="sm"
@@ -61,14 +63,7 @@
 </template>
 
 <script setup>
-import {
-  Button,
-  Checkbox,
-  Dialog,
-  FormControl,
-  FormLabel,
-  toast,
-} from 'frappe-ui'
+import { Button, Checkbox, Dialog, Select, FormLabel, toast } from 'frappe-ui'
 import { inject, ref, watch } from 'vue'
 import { slaData } from './utils'
 import DurationInput from '../../Controls/DurationInput.vue'

@@ -65,9 +65,8 @@
             <FeatherIcon name="search" class="h-4 w-4 text-ink-gray-6" />
           </template>
         </TextInput>
-        <FormControl
+        <Select
           v-model="currentDoctype"
-          type="select"
           :options="[
             { label: __('All'), value: 'All' },
             { label: __('Lead'), value: 'CRM Lead' },
@@ -151,11 +150,11 @@ import EmptyState from '../../ListViews/EmptyState.vue'
 import { useBroadcast } from '@/composables/useBroadcast'
 import {
   TextInput,
-  FormControl,
   Switch,
   Dropdown,
   FeatherIcon,
   toast,
+  Select,
 } from 'frappe-ui'
 import { ref, computed, inject } from 'vue'
 import { ConfirmDelete } from '../../../utils'

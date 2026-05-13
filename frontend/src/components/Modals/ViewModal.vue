@@ -22,11 +22,10 @@
             @click="togglePopover"
           />
         </IconPicker>
-        <FormControl
+        <TextInput
           v-model="view.label"
           class="flex-1"
           size="md"
-          type="text"
           :placeholder="__('My Open Deals')"
         />
       </div>
@@ -51,7 +50,7 @@
 
 <script setup>
 import IconPicker from '@/components/IconPicker.vue'
-import { call } from 'frappe-ui'
+import { call, TextInput } from 'frappe-ui'
 import { ref, watch, nextTick } from 'vue'
 
 const props = defineProps({

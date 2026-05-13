@@ -40,10 +40,9 @@
       <div v-if="exotel.doc" class="h-full">
         <div v-if="exotel.doc.enabled" class="space-y-4">
           <div class="grid grid-cols-2 gap-4">
-            <FormControl
+            <TextInput
               v-model="exotel.doc.api_key"
               :label="__('API Key')"
-              type="text"
               placeholder="ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
               required
               autocomplete="off"
@@ -54,26 +53,23 @@
               placeholder="************"
               required
             />
-            <FormControl
+            <TextInput
               v-model="exotel.doc.account_sid"
               :label="__('Account SID')"
-              type="text"
               placeholder="ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
               required
               autocomplete="off"
             />
-            <FormControl
+            <TextInput
               v-model="exotel.doc.webhook_verify_token"
               :label="__('Webhook Verify Token')"
-              type="text"
               placeholder="my_secure_token_123"
               required
               autocomplete="off"
             />
-            <FormControl
+            <TextInput
               v-model="exotel.doc.subdomain"
               :label="__('Subdomain')"
-              type="text"
               placeholder="api.exotel.com"
               required
               autocomplete="off"
@@ -131,7 +127,7 @@
 <script setup>
 import { exotelEnabled } from '@/composables/settings'
 import { useDocument } from '@/data/document'
-import { Switch } from 'frappe-ui'
+import { Switch, Password, TextInput } from 'frappe-ui'
 import { computed } from 'vue'
 
 const emit = defineEmits(['updateStep'])

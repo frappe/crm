@@ -16,21 +16,23 @@
   >
     <template #body-content>
       <div class="flex flex-col gap-4">
-        <FormControl
-          v-model="mobileNumber"
-          type="text"
-          :label="__('Mobile Number')"
-        />
-        <FormControl
-          v-model="callMedium"
-          type="select"
-          :label="__('Calling Medium')"
-          :options="['Twilio', 'Exotel']"
-        />
+        <TextInput v-model="mobileNumber" :label="__('Mobile Number')" />
+        <div class="space-y-1.5">
+          <label class="block text-p-sm font-medium text-ink-gray-7">
+            {{ __('Calling Medium') }}
+          </label>
+          <Select
+            v-model="callMedium"
+            :label="__('Calling Medium')"
+            :options="[
+              { label: __('Twilio'), value: 'Twilio' },
+              { label: __('Exotel'), value: 'Exotel' },
+            ]"
+          />
+        </div>
         <div class="flex flex-col gap-1">
-          <FormControl
+          <Checkbox
             v-model="isDefaultMedium"
-            type="checkbox"
             :label="__('Make {0} as default calling medium', [callMedium])"
           />
 
@@ -53,7 +55,7 @@ import {
   defaultCallingMedium,
 } from '@/composables/settings'
 import { globalStore } from '@/stores/global'
-import { FormControl, call, toast } from 'frappe-ui'
+import { TextInput, Select, Checkbox, call, toast } from 'frappe-ui'
 import { nextTick, ref, watch } from 'vue'
 
 const { setMakeCall } = globalStore()

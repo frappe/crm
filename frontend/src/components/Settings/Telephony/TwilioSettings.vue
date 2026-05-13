@@ -40,10 +40,9 @@
       <div v-if="twilio.doc" class="h-full">
         <div v-if="twilio.doc.enabled" class="space-y-4">
           <div class="grid grid-cols-2 gap-4">
-            <FormControl
+            <TextInput
               v-model="twilio.doc.account_sid"
               :label="__('Account SID')"
-              type="text"
               placeholder="ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
               required
               autocomplete="off"
@@ -145,7 +144,7 @@
 <script setup>
 import { twilioEnabled } from '@/composables/settings'
 import { useDocument } from '@/data/document'
-import { Combobox, Switch } from 'frappe-ui'
+import { Combobox, Switch, Password, TextInput } from 'frappe-ui'
 import { computed } from 'vue'
 
 const emit = defineEmits(['updateStep'])

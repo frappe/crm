@@ -1,16 +1,14 @@
 <template>
-  <FormControl
+  <Checkbox
     v-if="filter.fieldtype == 'Check'"
     v-model="filter.value"
     :label="filter.label"
-    type="checkbox"
     @change.stop="updateFilter(filter, $event.target.checked)"
   />
-  <FormControl
+  <Select
     v-else-if="filter.fieldtype === 'Select'"
     v-model="filter.value"
-    class="form-control cursor-pointer [&_select]:cursor-pointer"
-    type="select"
+    class="w-full"
     :options="filter.options"
     :placeholder="filter.label"
     @update:modelValue="updateFilter(filter, $event)"
@@ -30,17 +28,22 @@
     :placeholder="filter.label"
     @change="(v) => updateFilter(filter, v)"
   />
-  <FormControl
+  <TextInput
     v-else
     v-model="filter.value"
-    type="text"
     :placeholder="filter.label"
     @input.stop="debouncedFn(filter, $event.target.value)"
   />
 </template>
 <script setup>
 import Link from '@/components/Controls/Link.vue'
-import { FormControl, DatePicker, DateTimePicker } from 'frappe-ui'
+import {
+  TextInput,
+  Select,
+  Checkbox,
+  DatePicker,
+  DateTimePicker,
+} from 'frappe-ui'
 import { useDebounceFn } from '@vueuse/core'
 import { reactive, watch } from 'vue'
 

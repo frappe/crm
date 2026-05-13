@@ -7,15 +7,17 @@
     <template #body-content>
       <div class="flex flex-col gap-4">
         <div>
-          <FormControl
+          <label class="block text-p-sm font-medium text-ink-gray-7 mb-1.5">
+            {{ __('Workday') }}
+          </label>
+          <Select
             v-model="workDayData.workday"
-            type="select"
             size="sm"
             variant="subtle"
             :placeholder="__('Select Workday')"
             :label="__('Workday')"
             :options="workdayOptions"
-            class="text-ink-gray-8"
+            class="w-full text-ink-gray-8"
             :class="{ 'border-red-500': errors.workday }"
             @blur="validateField('workday')"
           />
@@ -23,7 +25,7 @@
         </div>
 
         <div>
-          <FormControl
+          <TextInput
             v-model="workDayData.start_time"
             type="time"
             size="sm"
@@ -37,7 +39,7 @@
         </div>
 
         <div>
-          <FormControl
+          <TextInput
             v-model="workDayData.end_time"
             type="time"
             size="sm"
@@ -84,7 +86,7 @@
 
 <script setup>
 import { ref, reactive, watch, computed } from 'vue'
-import { Dialog, FormControl, Button, toast } from 'frappe-ui'
+import { Dialog, Select, Button, toast, TextInput } from 'frappe-ui'
 
 const ALL_WORKDAY_OPTIONS = [
   { label: 'Monday', value: 'Monday' },

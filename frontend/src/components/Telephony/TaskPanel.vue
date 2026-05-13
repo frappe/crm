@@ -1,8 +1,7 @@
 <template>
   <div class="h-[294px] text-base">
-    <FormControl
+    <TextInput
       v-model="task.title"
-      type="text"
       variant="ghost"
       class="mb-2 title"
       :placeholder="__('Schedule a task...')"
@@ -82,7 +81,13 @@ import UserAvatar from '@/components/UserAvatar.vue'
 import Link from '@/components/Controls/Link.vue'
 import { usersStore } from '@/stores/users'
 import { taskStatusOptions, taskPriorityOptions, getFormat } from '@/utils'
-import { TextEditor, Dropdown, Tooltip, DateTimePicker } from 'frappe-ui'
+import {
+  TextInput,
+  TextEditor,
+  Dropdown,
+  Tooltip,
+  DateTimePicker,
+} from 'frappe-ui'
 import { reactive } from 'vue'
 
 const props = defineProps({

@@ -92,18 +92,14 @@
             class="flex flex-col items-center justify-between gap-2 rounded px-2 py-1.5 text-base text-ink-gray-8"
           >
             <div class="flex flex-col items-center gap-3">
-              <FormControl
+              <TextInput
                 v-model="column.label"
-                type="text"
-                size="md"
                 :label="__('Label')"
                 class="sm:w-full w-52"
                 :placeholder="__('First Name')"
               />
-              <FormControl
+              <TextInput
                 v-model="column.width"
-                type="text"
-                size="md"
                 :label="__('Width')"
                 class="sm:w-full w-52"
                 placeholder="10rem"

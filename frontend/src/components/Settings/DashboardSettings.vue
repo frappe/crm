@@ -103,9 +103,8 @@
           </div>
         </div>
         <div class="flex items-center gap-2">
-          <FormControl
+          <Select
             v-model="settings.doc.service_provider"
-            type="select"
             class="w-44"
             :options="[
               { label: 'Frankfurter', value: 'frankfurter.app' },
@@ -153,9 +152,8 @@
           </div>
         </div>
         <div class="flex items-center gap-2">
-          <FormControl
+          <TextInput
             v-model="settings.doc.access_key"
-            type="text"
             class="w-44"
             :placeholder="__('Enter Access Key')"
             :disabled="!settings.doc?.currency"
@@ -172,7 +170,7 @@
 import { getSettings } from '@/stores/settings'
 import { globalStore } from '@/stores/global'
 import { useBroadcast } from '@/composables/useBroadcast'
-import { ErrorMessage, FormControl, Switch, toast } from 'frappe-ui'
+import { ErrorMessage, Select, Switch, TextInput, toast } from 'frappe-ui'
 import { useRoute } from 'vue-router'
 import { ref, computed } from 'vue'
 

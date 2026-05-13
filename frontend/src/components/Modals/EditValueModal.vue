@@ -41,11 +41,12 @@ import { getMeta } from '@/stores/meta'
 import { useTelemetry } from 'frappe-ui/frappe'
 import {
   Combobox,
-  FormControl,
+  Select,
   call,
   TextEditor,
   DatePicker,
   ErrorMessage,
+  TextInput,
 } from 'frappe-ui'
 import { ref, computed, h } from 'vue'
 
@@ -150,21 +151,21 @@ function getValueComponent(f) {
             { label: 'No', value: 'No' },
           ]
         : options
-    return h(FormControl, {
-      type: 'select',
+    return h(Select, {
+      class: 'w-full',
       options: _options,
       modelValue: newValue.value,
     })
   } else if (typeLink.includes(fieldtype)) {
     if (fieldtype == 'Dynamic Link') {
-      return h(FormControl, { type: 'text' })
+      return h(TextInput)
     }
     return h(Link, {
       class: 'form-control',
       doctype: fieldtype == 'User' ? 'User' : options,
     })
   } else if (typeNumber.includes(fieldtype)) {
-    return h(FormControl, { type: 'number' })
+    return h(TextInput, { type: 'number' })
   } else if (typeDate.includes(fieldtype)) {
     return h(DatePicker)
   } else if (typeEditor.includes(fieldtype)) {
@@ -176,7 +177,7 @@ function getValueComponent(f) {
       content: newValue.value,
     })
   } else {
-    return h(FormControl, { type: 'text' })
+    return h(TextInput)
   }
 }
 </script>

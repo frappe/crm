@@ -61,35 +61,37 @@
   </div>
   <div
     v-else-if="customizeQuickFilter"
-    class="flex items-center justify-between gap-2 p-5"
+    class="flex items-center justify-between gap-2 px-5 py-2"
   >
-    <div class="flex flex-1 items-center overflow-hidden pl-1 gap-2">
+    <div class="flex flex-1 items-center overflow-hidden pl-1">
       <FadedScrollableDiv
         class="flex overflow-x-auto -ml-1"
         orientation="horizontal"
       >
         <Draggable
-          class="flex w-full gap-2 items-center"
+          class="flex w-full gap-2 items-center py-3 pr-2"
           :list="newQuickFilters"
           group="filters"
           item-key="fieldname"
         >
           <template #item="{ element: filter }">
-            <div class="group whitespace-nowrap cursor-grab">
+            <div class="relative group whitespace-nowrap">
               <Button class="cursor-grab">
                 <template #default>
                   <Tooltip :text="filter.fieldname">
                     <span>{{ filter.label }}</span>
                   </Tooltip>
                 </template>
-                <template #suffix>
-                  <FeatherIcon
-                    class="h-3.5 cursor-pointer group-hover:flex hidden"
-                    name="x"
-                    @click.stop="removeQuickFilter(filter)"
-                  />
-                </template>
               </Button>
+              <div
+                class="size-4 absolute -top-1.5 -right-1.5 flex cursor-pointer items-center justify-center rounded-full bg-surface-white opacity-0 duration-300 ease-in-out group-hover:opacity-100 hover:bg-surface-gray-2 outline outline-black-overlay-50"
+                @click.stop="removeQuickFilter(filter)"
+              >
+                <FeatherIcon
+                  name="x"
+                  class="size-3.5 cursor-pointer text-ink-gray-4"
+                />
+              </div>
             </div>
           </template>
         </Draggable>
@@ -117,7 +119,7 @@
         </Combobox>
       </div>
     </div>
-    <div class="-ml-2 h-[70%] border-l" />
+    <div class="-ml-2 h-[50%] border-l" />
     <div class="flex gap-1">
       <Button
         :label="__('Save')"
@@ -269,11 +271,11 @@
     }"
   >
     <template #body-content>
-      <FormControl
+      <Select
         v-model="export_type"
+        class="w-full"
         variant="outline"
         :label="__('Export Type')"
-        type="select"
         :options="[
           {
             label: __('Excel'),
@@ -287,9 +289,8 @@
         :placeholder="__('Excel')"
       />
       <div class="mt-3">
-        <FormControl
+        <Checkbox
           v-model="export_all"
-          type="checkbox"
           :label="__('Export all {0} record(s)', [list.data.total_count])"
         />
       </div>
@@ -331,6 +332,8 @@ import {
   call,
   FeatherIcon,
   usePageMeta,
+  Select,
+  Checkbox,
 } from 'frappe-ui'
 import { computed, ref, onMounted, watch, h, markRaw } from 'vue'
 import { useRouter, useRoute } from 'vue-router'

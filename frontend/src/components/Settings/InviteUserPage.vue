@@ -27,8 +27,7 @@
     </div>
     <div class="flex-1 flex flex-col px-2 gap-8 overflow-y-auto">
       <div>
-        <FormControl
-          type="textarea"
+        <Textarea
           :label="__('Invite By Email')"
           placeholder="user1@example.com, user2@example.com, ..."
           :debounce="100"
@@ -46,14 +45,19 @@
         >
           {{ userExistMessage || inviteeExistMessage }}
         </div>
-        <FormControl
-          v-model="role"
-          type="select"
-          class="mt-4"
-          :label="__('Invite As')"
-          :options="roleOptions"
-          :description="description"
-        />
+        <div class="space-y-1.5 mt-4">
+          <label class="block text-p-sm font-medium text-ink-gray-7">
+            {{ __('Invite As') }}
+          </label>
+          <Select
+            v-model="role"
+            class="w-full"
+            :label="__('Invite As')"
+            :options="roleOptions"
+            :description="description"
+          />
+          <p class="text-p-sm text-ink-gray-6">{{ __(description) }}</p>
+        </div>
       </div>
       <template v-if="pendingInvitations.data?.length && !invitees.length">
         <div class="flex flex-col gap-4">
@@ -104,7 +108,8 @@ import {
   toast,
   createListResource,
   createResource,
-  FormControl,
+  Textarea,
+  Select,
 } from 'frappe-ui'
 import { ref, computed } from 'vue'
 

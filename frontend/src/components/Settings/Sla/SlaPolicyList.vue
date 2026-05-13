@@ -113,10 +113,9 @@
             >
               <template #body-content>
                 <div class="flex flex-col gap-4">
-                  <FormControl
+                  <TextInput
                     v-model="duplicateDialog.name"
                     :label="__('New SLA Policy Name')"
-                    type="text"
                     maxlength="100"
                   />
                 </div>
@@ -153,9 +152,9 @@ import {
   createResource,
   Dialog,
   Dropdown,
-  FormControl,
   LoadingIndicator,
   Switch,
+  TextInput,
   toast,
 } from 'frappe-ui'
 import { ConfirmDelete } from '@/utils'

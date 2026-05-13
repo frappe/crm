@@ -83,8 +83,7 @@
             <Button variant="ghost" icon="chevron-right" @click="increment" />
 
             <!-- View Buttons -->
-            <FormControl
-              type="select"
+            <Select
               class="mr-1 w-24"
               :modelValue="activeView"
               :options="[
@@ -166,6 +165,7 @@ import { globalStore } from '@/stores/global'
 import { getSettings } from '@/stores/settings'
 import { useKeyboardShortcuts } from '@/composables/useKeyboardShortcuts'
 import {
+  Select,
   Calendar,
   createListResource,
   dayjs,

@@ -6,30 +6,26 @@
   >
     <template #body-content>
       <div class="flex flex-col gap-4">
-        <FormControl
+        <Select
           v-model="chartType"
-          type="select"
           :label="__('Chart Type')"
           :options="chartTypes"
         />
-        <FormControl
+        <Select
           v-if="chartType === 'number_chart'"
           v-model="numberChart"
-          type="select"
           :label="__('Number Chart')"
           :options="numberCharts"
         />
-        <FormControl
+        <Select
           v-if="chartType === 'axis_chart'"
           v-model="axisChart"
-          type="select"
           :label="__('Axis Chart')"
           :options="axisCharts"
         />
-        <FormControl
+        <Select
           v-if="chartType === 'donut_chart'"
           v-model="donutChart"
-          type="select"
           :label="__('Donut Chart')"
           :options="donutCharts"
         />
@@ -46,7 +42,7 @@
 
 <script setup lang="ts">
 import { getRandom } from '@/utils'
-import { createResource, Dialog, FormControl } from 'frappe-ui'
+import { createResource, Dialog, Select } from 'frappe-ui'
 import { ref, reactive, inject } from 'vue'
 
 const show = defineModel({

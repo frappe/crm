@@ -59,9 +59,8 @@
                   />
                 </div>
                 <div id="operator">
-                  <FormControl
+                  <Select
                     v-model="f.operator"
-                    type="select"
                     :options="
                       getOperators(f.field.fieldtype, f.field.fieldname)
                     "
@@ -93,9 +92,8 @@
                     />
                   </div>
                   <div id="operator">
-                    <FormControl
+                    <Select
                       v-model="f.operator"
-                      type="select"
                       :options="
                         getOperators(f.field.fieldtype, f.field.fieldname)
                       "
@@ -162,7 +160,8 @@ import DurationInput from '@/components/Controls/DurationInput.vue'
 import RatingInput from '@/components/Controls/RatingInput.vue'
 import {
   Combobox,
-  FormControl,
+  TextInput,
+  Select,
   createResource,
   Popover,
   DatePicker,
@@ -378,8 +377,8 @@ function getValueControl(f) {
   const { field, operator } = f
   const { fieldtype, options } = field
   if (operator == 'is') {
-    return h(FormControl, {
-      type: 'select',
+    return h(Select, {
+      class: 'w-full',
       options: [
         {
           label: 'Set',
@@ -394,19 +393,19 @@ function getValueControl(f) {
       'onUpdate:modelValue': (v) => updateValue(v, f),
     })
   } else if (operator == 'timespan') {
-    return h(FormControl, {
-      type: 'select',
+    return h(Select, {
+      class: 'w-full',
       options: timespanOptions,
       modelValue: f.value,
       'onUpdate:modelValue': (v) => updateValue(v, f),
     })
   } else if (['like', 'not like', 'in', 'not in'].includes(operator)) {
-    return h(FormControl, { type: 'text' })
+    return h(TextInput)
   } else if (typeSelect.includes(fieldtype) || typeCheck.includes(fieldtype)) {
     const _options =
       fieldtype == 'Check' ? ['Yes', 'No'] : getSelectOptions(options)
-    return h(FormControl, {
-      type: 'select',
+    return h(Select, {
+      class: 'w-full',
       options: _options.map((o) => ({
         label: o,
         value: o,
@@ -416,11 +415,11 @@ function getValueControl(f) {
     })
   } else if (typeLink.includes(fieldtype)) {
     if (fieldtype == 'Dynamic Link') {
-      return h(FormControl, { type: 'text' })
+      return h(TextInput)
     }
     return h(Link, { class: 'form-control', doctype: options, value: f.value })
   } else if (typeNumber.includes(fieldtype)) {
-    return h(FormControl, { type: 'number' })
+    return h(TextInput, { type: 'number' })
   } else if (typeDate.includes(fieldtype) && operator == 'between') {
     return h(DateRangePicker, { value: f.value, iconLeft: '' })
   } else if (typeDuration.includes(fieldtype)) {
@@ -437,7 +436,7 @@ function getValueControl(f) {
       iconLeft: '',
     })
   } else {
-    return h(FormControl, { type: 'text' })
+    return h(TextInput)
   }
 }
 

@@ -1,7 +1,7 @@
 <template>
   <TextInput
     ref="inputRef"
-    :value="displayValue"
+    v-model="displayValue"
     v-bind="$attrs"
     @focus="handleFocus"
     @blur="isFocused = false"

@@ -16,7 +16,7 @@
         </p>
       </div>
 
-      <label class="block text-xs text-ink-gray-5 mb-1.5">
+      <label class="block text-sm text-ink-gray-5 mb-1.5">
         {{ __('Users') }}
       </label>
 
@@ -39,14 +39,18 @@
           :emptyPlaceholder="__('No Users Found')"
         />
       </div>
-      <FormControl
-        v-model="role"
-        type="select"
-        class="mt-4"
-        :label="__('Role')"
-        :options="roleOptions"
-        :description="description"
-      />
+
+      <div class="space-y-1.5 mt-4">
+        <label class="block text-sm text-ink-gray-5">{{ __('Role') }}</label>
+        <Select
+          v-model="role"
+          class="w-full"
+          :label="__('Role')"
+          :options="roleOptions"
+          :description="description"
+        />
+        <p class="text-p-sm text-ink-gray-6">{{ __(description) }}</p>
+      </div>
     </template>
     <template #actions>
       <div class="flex justify-end gap-2">
@@ -66,7 +70,7 @@
 import EmailMultiSelect from '@/components/Controls/EmailMultiSelect.vue'
 import { validateEmail } from '@/utils'
 import { usersStore } from '@/stores/users'
-import { createResource, toast } from 'frappe-ui'
+import { createResource, toast, Select } from 'frappe-ui'
 import { ref, computed } from 'vue'
 
 const { users, isAdmin } = usersStore()

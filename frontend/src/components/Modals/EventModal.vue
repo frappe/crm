@@ -134,10 +134,9 @@
             {{ __('Visibility') }}
           </div>
           <div class="w-9/12">
-            <FormControl
+            <Select
               v-model="_event.eventType"
               class="w-full"
-              type="select"
               :options="[
                 {
                   label: __('Private'),
@@ -239,6 +238,7 @@ import {
   TimePicker,
   dayjs,
   Dropdown,
+  Select,
 } from 'frappe-ui'
 import { globalStore } from '@/stores/global'
 import { validateEmail } from '@/utils'

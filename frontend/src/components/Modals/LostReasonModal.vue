@@ -32,9 +32,8 @@
             {{ __('Lost Notes') }}
             <span v-if="lostReason == 'Other'" class="text-ink-red-2">*</span>
           </div>
-          <FormControl
+          <Textarea
             class="form-control flex-1 truncate"
-            type="textarea"
             :value="lostNotes"
             @change="(e) => (lostNotes = e.target.value)"
           />
@@ -55,7 +54,7 @@
 <script setup>
 import Link from '@/components/Controls/Link.vue'
 import { createDocument } from '@/composables/document'
-import { Dialog } from 'frappe-ui'
+import { Dialog, Textarea } from 'frappe-ui'
 import { ref } from 'vue'
 
 const props = defineProps({

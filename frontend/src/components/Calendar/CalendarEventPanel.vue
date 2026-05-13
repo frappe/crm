@@ -408,10 +408,9 @@
         >
           <FeatherIcon name="plus-circle" class="size-4" />
           <div class="flex items-center gap-x-1.5 w-full">
-            <FormControl
+            <Select
               v-model="_event.referenceDoctype"
               class="w-full"
-              type="select"
               :options="[
                 {
                   label: '',
@@ -470,10 +469,9 @@
         >
           <ShieldIcon class="size-4" />
           <div class="flex items-center gap-x-1.5 w-full">
-            <FormControl
+            <Select
               v-model="_event.eventType"
               class="w-full"
-              type="select"
               :options="[
                 {
                   label: __('Private'),
@@ -573,6 +571,7 @@ import {
 import { useKeyboardShortcuts } from '@/composables/useKeyboardShortcuts'
 import {
   TextInput,
+  Select,
   Switch,
   DatePicker,
   TimePicker,
