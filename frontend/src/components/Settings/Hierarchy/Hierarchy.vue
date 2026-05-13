@@ -88,20 +88,6 @@
             <FeatherIcon name="search" class="size-4 text-ink-gray-6" />
           </template>
         </TextInput>
-        <Button
-          v-if="isExpandable"
-          variant="subtle"
-          class="ml-auto pl-1.5"
-          @click="toggleCollapseAll"
-        >
-          <template #prefix>
-            <component
-              :is="collapsed ? LucideChevronsDown : LucideChevronsUp"
-              class="size-4"
-            />
-          </template>
-          {{ collapsed ? __('Expand') : __('Collapse') }}
-        </Button>
       </div>
       <div class="flex-1 min-h-0 overflow-y-auto">
         <div
@@ -127,7 +113,7 @@
         />
         <Tree
           v-for="root in visibleRoots"
-          :key="`${root.name}-${treeKey}`"
+          :key="root.name"
           :node="root"
           node-key="name"
           :options="treeOptions"
@@ -263,8 +249,6 @@ import { useDragDrop } from './useDragDrop'
 import { globalStore } from '@/stores/global'
 import { usersStore } from '@/stores/users'
 import LucideNetwork from '~icons/lucide/network'
-import LucideChevronsUp from '~icons/lucide/chevrons-up'
-import LucideChevronsDown from '~icons/lucide/chevrons-down'
 import LucideCircleQuestionMark from '~icons/lucide/circle-question-mark'
 import {
   Button,
@@ -353,21 +337,14 @@ function toggleEnable(currentlyEnabled) {
 
 const search = ref('')
 const roleFilter = ref('All')
-const treeKey = ref(0)
-const collapsed = ref(false)
 const showAddDialog = ref(false)
 const dialogSelected = ref([])
 const saving = ref(false)
 
-const treeOptions = computed(() => ({
+const treeOptions = {
   rowHeight: '32px',
-  indentWidth: '18px',
-  defaultCollapsed: collapsed.value,
-}))
-
-function toggleCollapseAll() {
-  collapsed.value = !collapsed.value
-  treeKey.value++
+  indentWidth: '28px',
+  defaultCollapsed: false,
 }
 
 function enrich(node) {
@@ -433,10 +410,6 @@ function clearTree(node) {
 
 const visibleRoots = computed(() =>
   tree.value.map(clearTree).filter((n) => n !== null),
-)
-
-const isExpandable = computed(() =>
-  visibleRoots.value.some((n) => n.children?.length),
 )
 
 function getLastNode(list) {
