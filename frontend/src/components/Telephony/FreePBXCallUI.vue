@@ -506,7 +506,13 @@ function acceptIncoming() {
       stream.getTracks().forEach(t => t.stop()) // release — JsSIP will re-acquire
       currentSession.answer({
         mediaConstraints: { audio: true, video: false },
-        pcConfig: { iceServers: [] },
+        pcConfig: { 
+          iceServers: [
+            {
+              urls: "stun:stun.l.google.com:19302"
+            }
+          ]
+        },
       })
       _attachRemoteAudio(currentSession)
       callStatus.value = 'Connecting...'
@@ -555,7 +561,13 @@ function makeOutgoingCall(number) {
   try {
     session = ua.call(`sip:${number}@${_getSipDomain()}`, {
       mediaConstraints: { audio: true, video: false },
-      pcConfig: { iceServers: [] },
+      pcConfig: { 
+        iceServers: [
+            {
+              urls: "stun:stun.l.google.com:19302"
+            }
+          ] 
+      },
     })
     console.log('[FreePBX] Session created:', session)
   } catch (e) {
