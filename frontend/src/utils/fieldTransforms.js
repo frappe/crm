@@ -57,10 +57,6 @@ export function processField(rawField, options = {}) {
       label: option,
       value: option,
     }))
-
-    if (field.options[0]?.value !== '' && field.reqd !== 1) {
-      field.options.unshift({ label: '', value: '' })
-    }
   }
 
   // 5. Link with options='User' → fieldtype='User'

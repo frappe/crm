@@ -44,22 +44,21 @@ describe('processField', () => {
     }
     const result = processField(raw)
     expect(result.options).toEqual([
-      { label: '', value: '' },
       { label: 'New', value: 'New' },
       { label: 'Open', value: 'Open' },
       { label: 'Closed', value: 'Closed' },
     ])
   })
 
-  it('prepends blank option for non-required Select', () => {
+  it('converts non-required Select to options array without blank prepend', () => {
     const raw = {
       fieldname: 'priority',
       fieldtype: 'Select',
       options: 'Low\nHigh',
     }
     const result = processField(raw)
-    expect(result.options[0]).toEqual({ label: '', value: '' })
-    expect(result.options).toHaveLength(3)
+    expect(result.options[0]).toEqual({ label: 'Low', value: 'Low' })
+    expect(result.options).toHaveLength(2)
   })
 
   it('skips blank option for required Select', () => {
@@ -85,16 +84,12 @@ describe('processField', () => {
   it('handles single option Select', () => {
     const raw = { fieldname: 'x', fieldtype: 'Select', options: 'Only' }
     const result = processField(raw)
-    expect(result.options).toEqual([
-      { label: '', value: '' },
-      { label: 'Only', value: 'Only' },
-    ])
+    expect(result.options).toEqual([{ label: 'Only', value: 'Only' }])
   })
 
   it('handles empty options string', () => {
     const raw = { fieldname: 'x', fieldtype: 'Select', options: '' }
     const result = processField(raw)
-    // '' split by \n gives [''] — first value is '' so no blank prepended
     expect(result.options).toEqual([{ label: '', value: '' }])
   })
 
@@ -201,7 +196,6 @@ describe('processField', () => {
       propertyOverrides: { status: { options: 'X\nY\nZ' } },
     })
     expect(result.options).toEqual([
-      { label: '', value: '' },
       { label: 'X', value: 'X' },
       { label: 'Y', value: 'Y' },
       { label: 'Z', value: 'Z' },
@@ -230,8 +224,8 @@ describe('processField', () => {
     const result = processField(raw, {
       propertyOverrides: { s: { options: 'New1\nNew2\nNew3' } },
     })
-    expect(result.options).toHaveLength(4) // blank + 3
-    expect(result.options[1].value).toBe('New1')
+    expect(result.options).toHaveLength(3)
+    expect(result.options[0].value).toBe('New1')
   })
 
   it('preserves non-overridden properties', () => {
