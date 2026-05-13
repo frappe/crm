@@ -82,7 +82,7 @@
           v-model="search"
           :placeholder="__('Search users')"
           :debounce="200"
-          class="w-1/2"
+          class="w-1/3"
         >
           <template #prefix>
             <FeatherIcon name="search" class="size-4 text-ink-gray-6" />
@@ -169,6 +169,7 @@
       <template #body-content>
         <UserMultiSelect
           v-model="dialogSelected"
+          :show-mail="true"
           :candidates="getCandidates(null)"
           :loading="candidatesLoading"
         />

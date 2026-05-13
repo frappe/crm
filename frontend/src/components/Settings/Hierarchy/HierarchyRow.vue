@@ -23,7 +23,7 @@
     <span v-else class="size-5 shrink-0"></span>
 
     <div
-      class="group relative flex-1 flex items-center gap-2 pl-2 pr-2 py-1.5 text-base rounded-md select-none after:content-[''] after:absolute after:bottom-0 after:left-1 after:right-3 after:border-outline-gray-modals"
+      class="group relative flex-1 flex items-center gap-2 px-2 py-1.5 text-base rounded-md select-none after:content-[''] after:absolute after:bottom-0 after:left-1 after:right-3 after:border-outline-gray-modals"
       :class="[
         rowClass,
         canEdit ? 'cursor-grab' : 'cursor-pointer',
@@ -41,7 +41,7 @@
       <Avatar
         :image="node.user_image"
         :label="node.full_name"
-        size="sm"
+        size="lg"
         class="shrink-0"
       />
 

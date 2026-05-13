@@ -21,23 +21,37 @@
       <li
         v-for="user in filtered"
         :key="user.value"
-        class="flex items-center gap-2 rounded p-1.5 cursor-pointer hover:bg-surface-gray-1"
-        :class="{ 'bg-surface-gray-2': isSelected(user) }"
+        class="flex items-center gap-2 rounded p-1.5 mb-1 px-2 cursor-pointer hover:bg-surface-gray-1"
+        :class="{ 'bg-surface-gray-3': isSelected(user) }"
         @click="toggle(user)"
       >
-        <Checkbox :model-value="isSelected(user)" @click.stop="toggle(user)" />
-        <Avatar :image="user.user_image" :label="user.full_name" size="sm" />
-        <div class="flex items-center gap-2 min-w-0 flex-1">
-          <span class="text-ink-gray-8 truncate text-p-sm">
+        <Avatar :image="user.user_image" :label="user.full_name" size="lg" />
+        <div class="flex flex-col items-start min-w-0 flex-1">
+          <span class="text-ink-gray-8 truncate text-sm font-medium">
             {{ user.full_name }}
           </span>
+          <div v-if="showMail" class="flex flex-row items-center gap-2 min-w-0">
+            <span class="text-ink-gray-7 truncate text-p-sm">
+              {{ user.email }}
+            </span>
+            <span
+              v-if="user.role_label"
+              class="text-ink-gray-5 truncate text-p-sm shrink-0"
+            >
+              {{ user.role_label }}
+            </span>
+          </div>
           <span
-            v-if="user.role_label"
-            class="text-ink-gray-5 truncate text-p-sm shrink-0"
+            v-if="!showMail && user.role_label"
+            class="text-ink-gray-5 truncate text-p-sm"
           >
             {{ user.role_label }}
           </span>
         </div>
+        <CheckIcon
+          class="size-4 shrink-0 ml-auto"
+          :class="isSelected(user) ? 'opacity-100' : 'opacity-0'"
+        />
       </li>
     </ul>
     <div
@@ -50,20 +64,16 @@
 </template>
 
 <script setup>
-import {
-  Avatar,
-  Checkbox,
-  FeatherIcon,
-  LoadingIndicator,
-  TextInput,
-} from 'frappe-ui'
+import { Avatar, FeatherIcon, LoadingIndicator, TextInput } from 'frappe-ui'
 import { computed, ref } from 'vue'
-
+import CheckIcon from '@/components/Icons/CheckIcon.vue'
 const props = defineProps({
+  showMail: { type: Boolean, default: false },
   candidates: { type: Array, default: () => [] },
   loading: { type: Boolean, default: false },
 })
 
+console.log(props.showMail)
 const selected = defineModel({ type: Array, default: () => [] })
 const query = ref('')
 
