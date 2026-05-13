@@ -14,6 +14,7 @@ const assigneesCache = {}
 const permissionsCache = {}
 
 export function useDocument(doctype, docname, resourceOverrides = {}) {
+  if (typeof docname === 'number') docname = String(docname)
   const { setupScript, scripts } = getScript(doctype)
   const meta = getMeta(doctype)
   const { trackOldFile, processPendingDeletions } = useAttachments(
@@ -174,7 +175,7 @@ export function useDocument(doctype, docname, resourceOverrides = {}) {
 
     const organizedControllers = {}
     for (const controller of controllersArray) {
-      const controllerKey = controller.constructor.name // e.g., "CRMLead", "CRMProducts"
+      const controllerKey = controller._className || controller.constructor.name
       if (!organizedControllers[controllerKey]) {
         organizedControllers[controllerKey] = []
       }
