@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Frappe CRM VERSION\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2026-05-03 09:55+0000\n"
-"PO-Revision-Date: 2026-05-03 09:55+0000\n"
+"POT-Creation-Date: 2026-05-10 10:00+0000\n"
+"PO-Revision-Date: 2026-05-10 10:00+0000\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: shariq@frappe.io\n"
 "MIME-Version: 1.0\n"
@@ -289,8 +289,8 @@ msgstr ""
 msgid "Actions"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:560 frontend/src/pages/Lead.vue:412
-#: frontend/src/pages/MobileDeal.vue:438 frontend/src/pages/MobileLead.vue:284
+#: frontend/src/pages/Deal.vue:561 frontend/src/pages/Lead.vue:413
+#: frontend/src/pages/MobileDeal.vue:435 frontend/src/pages/MobileLead.vue:284
 msgid "Activity"
 msgstr ""
 
@@ -815,8 +815,8 @@ msgstr ""
 msgid "Attach file…"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:600 frontend/src/pages/Lead.vue:452
-#: frontend/src/pages/MobileDeal.vue:474 frontend/src/pages/MobileLead.vue:319
+#: frontend/src/pages/Deal.vue:601 frontend/src/pages/Lead.vue:453
+#: frontend/src/pages/MobileDeal.vue:471 frontend/src/pages/MobileLead.vue:319
 msgid "Attachments"
 msgstr ""
 
@@ -1228,7 +1228,7 @@ msgstr ""
 msgid "Call Received By"
 msgstr ""
 
-#: crm/integrations/api.py:155 crm/integrations/twilio/api.py:148
+#: crm/integrations/api.py:154 crm/integrations/twilio/api.py:148
 #: crm/integrations/twilio/api.py:166
 msgid "Call log not found"
 msgstr ""
@@ -1255,8 +1255,8 @@ msgstr ""
 msgid "Calling..."
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:585 frontend/src/pages/Lead.vue:437
-#: frontend/src/pages/MobileDeal.vue:458 frontend/src/pages/MobileLead.vue:304
+#: frontend/src/pages/Deal.vue:586 frontend/src/pages/Lead.vue:438
+#: frontend/src/pages/MobileDeal.vue:455 frontend/src/pages/MobileLead.vue:304
 msgid "Calls"
 msgstr ""
 
@@ -1500,7 +1500,7 @@ msgstr ""
 
 #. Label of the comment (Link) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
-#: frontend/src/components/Activities/ActivityHeader.vue:125
+#: frontend/src/components/Activities/ActivityHeader.vue:126
 #: frontend/src/components/CommentBox.vue:78
 #: frontend/src/components/CommunicationArea.vue:15
 #: frontend/src/components/Layouts/AppSidebar.vue:603
@@ -1511,8 +1511,8 @@ msgstr ""
 msgid "Comment sent"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:570 frontend/src/pages/Lead.vue:422
-#: frontend/src/pages/MobileDeal.vue:448 frontend/src/pages/MobileLead.vue:294
+#: frontend/src/pages/Deal.vue:571 frontend/src/pages/Lead.vue:423
+#: frontend/src/pages/MobileDeal.vue:445 frontend/src/pages/MobileLead.vue:294
 msgid "Comments"
 msgstr ""
 
@@ -1575,8 +1575,8 @@ msgid "Conditions for this rule were created from"
 msgstr ""
 
 #: frontend/src/components/Settings/Profile/ProfileSettings.vue:103
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:162
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:187
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:163
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:190
 msgid "Configure"
 msgstr ""
 
@@ -1612,7 +1612,7 @@ msgstr ""
 msgid "Configure your Calendar Settings like Default View and Event Notifications here"
 msgstr ""
 
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:182
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:184
 msgid "Configure your Exotel Telephony Integration Settings here"
 msgstr ""
 
@@ -1660,11 +1660,11 @@ msgstr ""
 msgid "Contact"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:681 frontend/src/pages/MobileDeal.vue:552
+#: frontend/src/pages/Deal.vue:682 frontend/src/pages/MobileDeal.vue:549
 msgid "Contact Added"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:671 frontend/src/pages/MobileDeal.vue:542
+#: frontend/src/pages/Deal.vue:672 frontend/src/pages/MobileDeal.vue:539
 msgid "Contact Already Added"
 msgstr ""
 
@@ -1676,7 +1676,7 @@ msgstr ""
 msgid "Contact Image Updated"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:692 frontend/src/pages/MobileDeal.vue:563
+#: frontend/src/pages/Deal.vue:693 frontend/src/pages/MobileDeal.vue:560
 msgid "Contact Removed"
 msgstr ""
 
@@ -1911,7 +1911,7 @@ msgstr ""
 msgid "Custom Statuses"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:498
+#: frontend/src/pages/Deal.vue:499
 msgid "Customer Created Successfully"
 msgstr ""
 
@@ -1961,8 +1961,8 @@ msgstr ""
 
 #: frontend/src/components/Activities/DataFields.vue:6
 #: frontend/src/components/Layouts/AppSidebar.vue:604
-#: frontend/src/pages/Deal.vue:575 frontend/src/pages/Lead.vue:427
-#: frontend/src/pages/MobileDeal.vue:453 frontend/src/pages/MobileLead.vue:299
+#: frontend/src/pages/Deal.vue:576 frontend/src/pages/Lead.vue:428
+#: frontend/src/pages/MobileDeal.vue:450 frontend/src/pages/MobileLead.vue:299
 msgid "Data"
 msgstr ""
 
@@ -2044,8 +2044,8 @@ msgstr ""
 
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
-#: frontend/src/pages/Deal.vue:513 frontend/src/pages/MobileContact.vue:301
-#: frontend/src/pages/MobileDeal.vue:392
+#: frontend/src/pages/Deal.vue:514 frontend/src/pages/MobileContact.vue:301
+#: frontend/src/pages/MobileDeal.vue:389
 #: frontend/src/pages/MobileOrganization.vue:344
 msgid "Deals"
 msgstr ""
@@ -2201,7 +2201,7 @@ msgstr ""
 #: frontend/src/pages/Contact.vue:99 frontend/src/pages/Deal.vue:121
 #: frontend/src/pages/Lead.vue:168 frontend/src/pages/MobileContact.vue:80
 #: frontend/src/pages/MobileContact.vue:276
-#: frontend/src/pages/MobileDeal.vue:523
+#: frontend/src/pages/MobileDeal.vue:520
 #: frontend/src/pages/MobileOrganization.vue:73
 #: frontend/src/pages/MobileOrganization.vue:279
 #: frontend/src/pages/Notes.vue:44 frontend/src/pages/Organization.vue:90
@@ -2305,7 +2305,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_lead_source/crm_lead_source.json
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:197
 #: frontend/src/pages/MobileContact.vue:296
-#: frontend/src/pages/MobileDeal.vue:432 frontend/src/pages/MobileLead.vue:278
+#: frontend/src/pages/MobileDeal.vue:429 frontend/src/pages/MobileLead.vue:278
 #: frontend/src/pages/MobileOrganization.vue:339
 msgid "Details"
 msgstr ""
@@ -2385,7 +2385,7 @@ msgstr ""
 msgid "Document Type"
 msgstr ""
 
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:236
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:242
 msgid "Document created successfully"
 msgstr ""
 
@@ -2393,7 +2393,7 @@ msgstr ""
 msgid "Document does not exist"
 msgstr ""
 
-#: crm/api/activities.py:20 frontend/src/pages/MobileDeal.vue:355
+#: crm/api/activities.py:20 frontend/src/pages/MobileDeal.vue:352
 msgid "Document not found"
 msgstr ""
 
@@ -2635,7 +2635,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_contacts/crm_contacts.json
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
-#: frontend/src/components/Activities/ActivityHeader.vue:120
+#: frontend/src/components/Activities/ActivityHeader.vue:121
 #: frontend/src/components/Calendar/EventNotifications.vue:26
 #: frontend/src/components/Calendar/EventNotifications.vue:94
 #: frontend/src/components/Settings/CalendarSettings.vue:89
@@ -2717,8 +2717,8 @@ msgid "Email settings updated successfully"
 msgstr ""
 
 #: frontend/src/components/Settings/Profile/UserEmailSettings.vue:51
-#: frontend/src/pages/Deal.vue:565 frontend/src/pages/Lead.vue:417
-#: frontend/src/pages/MobileDeal.vue:443 frontend/src/pages/MobileLead.vue:289
+#: frontend/src/pages/Deal.vue:566 frontend/src/pages/Lead.vue:418
+#: frontend/src/pages/MobileDeal.vue:440 frontend/src/pages/MobileLead.vue:289
 msgid "Emails"
 msgstr ""
 
@@ -2916,7 +2916,7 @@ msgstr ""
 msgid "Error creating lead: {0}"
 msgstr ""
 
-#: frontend/src/pages/MobileDeal.vue:356
+#: frontend/src/pages/MobileDeal.vue:353
 msgid "Error occurred"
 msgstr ""
 
@@ -2928,8 +2928,8 @@ msgstr ""
 msgid "Error updating Lead Sync Source"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:765 frontend/src/pages/Lead.vue:497
-#: frontend/src/pages/MobileDeal.vue:620 frontend/src/pages/MobileLead.vue:359
+#: frontend/src/pages/Deal.vue:766 frontend/src/pages/Lead.vue:498
+#: frontend/src/pages/MobileDeal.vue:617 frontend/src/pages/MobileLead.vue:359
 msgid "Error updating field"
 msgstr ""
 
@@ -2960,7 +2960,7 @@ msgid "Event deleted successfully"
 msgstr ""
 
 #: frontend/src/components/Notifications.vue:119
-#: frontend/src/pages/Deal.vue:580 frontend/src/pages/Lead.vue:432
+#: frontend/src/pages/Deal.vue:581 frontend/src/pages/Lead.vue:433
 msgid "Events"
 msgstr ""
 
@@ -3008,7 +3008,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
 #: frontend/src/components/Layouts/AppSidebar.vue:626
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:52
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:178
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:180
 msgid "Exotel"
 msgstr ""
 
@@ -4212,7 +4212,7 @@ msgstr ""
 
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
-#: frontend/src/pages/InvalidPage.vue:9 frontend/src/pages/Lead.vue:368
+#: frontend/src/pages/InvalidPage.vue:9 frontend/src/pages/Lead.vue:369
 #: frontend/src/pages/MobileLead.vue:238
 msgid "Leads"
 msgstr ""
@@ -4320,8 +4320,8 @@ msgstr ""
 msgid "Log ID"
 msgstr ""
 
-#: frontend/src/components/Activities/ActivityHeader.vue:135
-#: frontend/src/components/Activities/ActivityHeader.vue:178
+#: frontend/src/components/Activities/ActivityHeader.vue:136
+#: frontend/src/components/Activities/ActivityHeader.vue:179
 msgid "Log a Call"
 msgstr ""
 
@@ -4407,8 +4407,8 @@ msgstr ""
 msgid "Make Public"
 msgstr ""
 
-#: frontend/src/components/Activities/ActivityHeader.vue:140
-#: frontend/src/components/Activities/ActivityHeader.vue:183
+#: frontend/src/components/Activities/ActivityHeader.vue:141
+#: frontend/src/components/Activities/ActivityHeader.vue:184
 #: frontend/src/pages/Deal.vue:86 frontend/src/pages/Deals.vue:505
 #: frontend/src/pages/Lead.vue:127 frontend/src/pages/Leads.vue:539
 #: frontend/src/pages/MobileContact.vue:73
@@ -4853,7 +4853,7 @@ msgstr ""
 msgid "No Label"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:731
+#: frontend/src/pages/Deal.vue:732
 msgid "No Mobile Number Set"
 msgstr ""
 
@@ -4861,7 +4861,7 @@ msgstr ""
 msgid "No New Notifications"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:726
+#: frontend/src/pages/Deal.vue:727
 msgid "No Primary Contact Set"
 msgstr ""
 
@@ -5040,7 +5040,7 @@ msgstr ""
 
 #. Label of the note (Link) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
-#: frontend/src/components/Activities/ActivityHeader.vue:146
+#: frontend/src/components/Activities/ActivityHeader.vue:147
 #: frontend/src/components/Layouts/AppSidebar.vue:578
 msgid "Note"
 msgstr ""
@@ -5049,8 +5049,8 @@ msgstr ""
 msgid "Note deleted"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:595 frontend/src/pages/Lead.vue:447
-#: frontend/src/pages/MobileDeal.vue:469 frontend/src/pages/MobileLead.vue:314
+#: frontend/src/pages/Deal.vue:596 frontend/src/pages/Lead.vue:448
+#: frontend/src/pages/MobileDeal.vue:466 frontend/src/pages/MobileLead.vue:314
 msgid "Notes"
 msgstr ""
 
@@ -5542,7 +5542,7 @@ msgstr ""
 msgid "Primary"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:703 frontend/src/pages/MobileDeal.vue:574
+#: frontend/src/pages/Deal.vue:704 frontend/src/pages/MobileDeal.vue:571
 msgid "Primary Contact Set"
 msgstr ""
 
@@ -5731,7 +5731,7 @@ msgstr ""
 msgid "Recording URL"
 msgstr ""
 
-#: crm/integrations/api.py:160
+#: crm/integrations/api.py:159
 msgid "Recording URL not found"
 msgstr ""
 
@@ -5810,7 +5810,7 @@ msgstr ""
 #: frontend/src/components/FieldLayoutEditor.vue:587
 #: frontend/src/components/Settings/Profile/UserEmailSettings.vue:84
 #: frontend/src/components/Settings/Users.vue:218
-#: frontend/src/pages/Deal.vue:652
+#: frontend/src/pages/Deal.vue:653
 msgid "Remove"
 msgstr ""
 
@@ -6244,7 +6244,7 @@ msgid "Schedule a task..."
 msgstr ""
 
 #: frontend/src/components/Activities/ActivityHeader.vue:36
-#: frontend/src/components/Activities/ActivityHeader.vue:130
+#: frontend/src/components/Activities/ActivityHeader.vue:131
 msgid "Schedule an Event"
 msgstr ""
 
@@ -6451,7 +6451,7 @@ msgstr ""
 msgid "Set an Organization"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:660 frontend/src/pages/MobileDeal.vue:531
+#: frontend/src/pages/Deal.vue:661 frontend/src/pages/MobileDeal.vue:528
 msgid "Set as Primary Contact"
 msgstr ""
 
@@ -6903,13 +6903,13 @@ msgstr ""
 
 #. Option for the 'Type' (Select) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
-#: frontend/src/components/Activities/ActivityHeader.vue:151
+#: frontend/src/components/Activities/ActivityHeader.vue:152
 #: frontend/src/components/Layouts/AppSidebar.vue:579
 msgid "Task"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:590 frontend/src/pages/Lead.vue:442
-#: frontend/src/pages/MobileDeal.vue:464 frontend/src/pages/MobileLead.vue:309
+#: frontend/src/pages/Deal.vue:591 frontend/src/pages/Lead.vue:443
+#: frontend/src/pages/MobileDeal.vue:461 frontend/src/pages/MobileLead.vue:309
 msgid "Tasks"
 msgstr ""
 
@@ -7404,8 +7404,8 @@ msgstr ""
 msgid "Update Account"
 msgstr ""
 
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:162
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:187
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:163
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:190
 msgid "Update Configuration"
 msgstr ""
 
@@ -7436,7 +7436,7 @@ msgid "Upload"
 msgstr ""
 
 #: frontend/src/components/Activities/ActivityHeader.vue:55
-#: frontend/src/components/Activities/ActivityHeader.vue:156
+#: frontend/src/components/Activities/ActivityHeader.vue:157
 msgid "Upload Attachment"
 msgstr ""
 
@@ -7613,12 +7613,12 @@ msgstr ""
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
 #: frontend/src/components/Layouts/AppSidebar.vue:627
 #: frontend/src/components/Settings/Settings.vue:215
-#: frontend/src/pages/Deal.vue:605 frontend/src/pages/Lead.vue:457
-#: frontend/src/pages/MobileDeal.vue:479 frontend/src/pages/MobileLead.vue:324
+#: frontend/src/pages/Deal.vue:606 frontend/src/pages/Lead.vue:458
+#: frontend/src/pages/MobileDeal.vue:476 frontend/src/pages/MobileLead.vue:324
 msgid "WhatsApp"
 msgstr ""
 
-#: frontend/src/components/Activities/ActivityHeader.vue:161
+#: frontend/src/components/Activities/ActivityHeader.vue:162
 msgid "WhatsApp Message"
 msgstr ""
 

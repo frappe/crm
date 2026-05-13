@@ -142,7 +142,7 @@
   </SettingsLayoutBase>
 </template>
 <script setup>
-import { twilioEnabled } from '@/composables/settings'
+import { setEnabled } from '@/composables/telephony'
 import { useDocument } from '@/data/document'
 import { Combobox, Switch, Password, TextInput } from 'frappe-ui'
 import { computed } from 'vue'
@@ -188,7 +188,7 @@ function update() {
     onSuccess: () => twilio.reload(),
   })
 
-  twilioEnabled.value = twilio.doc.enabled
+  setEnabled('twilio', twilio.doc.enabled)
 }
 
 const isDirty = computed(() => {

@@ -125,7 +125,7 @@
   </SettingsLayoutBase>
 </template>
 <script setup>
-import { exotelEnabled } from '@/composables/settings'
+import { setEnabled } from '@/composables/telephony'
 import { useDocument } from '@/data/document'
 import { Switch, Password, TextInput } from 'frappe-ui'
 import { computed } from 'vue'
@@ -151,7 +151,7 @@ function update() {
     onSuccess: () => exotel.reload(),
   })
 
-  exotelEnabled.value = exotel.doc.enabled
+  setEnabled('exotel', exotel.doc.enabled)
 }
 
 const isDirty = computed(() => {
