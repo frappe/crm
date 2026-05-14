@@ -2,7 +2,7 @@
   <Dialog
     v-model="showSettings"
     :options="{ size: '5xl' }"
-    :disableOutsideClickToClose="disableSettingModalOutsideClick"
+    :dismissable="!disableSettingModalOutsideClick"
     @close="activeSettingsPage = ''"
   >
     <template #body>
