@@ -48,9 +48,12 @@
               "
             >
               <template #icon>
-                <FeatherIcon
-                  :name="attachment.is_private ? 'lock' : 'unlock'"
-                  class="size-3 text-ink-gray-7"
+                <span
+                  :class="[
+                    attachment.is_private ? 'lucide-lock' : 'lucide-unlock',
+                    'size-3 text-ink-gray-7',
+                  ]"
+                  aria-hidden="true"
                 />
               </template>
             </Button>
@@ -60,7 +63,7 @@
               @click.stop="() => deleteAttachment(attachment.name)"
             >
               <template #icon>
-                <FeatherIcon name="trash-2" class="size-3 text-ink-gray-7" />
+                <span class="lucide-trash-2 size-3 text-ink-gray-7" aria-hidden="true" />
               </template>
             </Button>
           </div>

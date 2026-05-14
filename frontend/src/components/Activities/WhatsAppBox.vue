@@ -22,7 +22,7 @@
       />
     </div>
 
-    <Button variant="ghost" icon="x" @click="reply = {}" />
+    <Button variant="ghost" icon="lucide-x" @click="reply = {}" />
   </div>
   <div class="flex items-end gap-2 px-3 py-2.5 sm:px-10" v-bind="$attrs">
     <div class="flex h-8 items-center gap-2">
@@ -30,10 +30,7 @@
         <template #default="{ openFileSelector }">
           <div class="flex items-center space-x-2">
             <Dropdown :options="uploadOptions(openFileSelector)">
-              <FeatherIcon
-                name="plus"
-                class="size-4.5 cursor-pointer text-ink-gray-5"
-              />
+              <span class="lucide-plus size-4.5 cursor-pointer text-ink-gray-5" aria-hidden="true" />
             </Dropdown>
           </div>
         </template>
@@ -150,7 +147,7 @@ function uploadOptions(openFileSelector) {
   return [
     {
       label: __('Upload Document'),
-      icon: 'file',
+      icon: 'lucide-file',
       onClick: () => {
         fileType.value = 'document'
         openFileSelector()
@@ -158,7 +155,7 @@ function uploadOptions(openFileSelector) {
     },
     {
       label: __('Upload Image'),
-      icon: 'image',
+      icon: 'lucide-image',
       onClick: () => {
         fileType.value = 'image'
         openFileSelector('image/*')
@@ -166,7 +163,7 @@ function uploadOptions(openFileSelector) {
     },
     {
       label: __('Upload Video'),
-      icon: 'video',
+      icon: 'lucide-video',
       onClick: () => {
         fileType.value = 'video'
         openFileSelector('video/*')
