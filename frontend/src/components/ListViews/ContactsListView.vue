@@ -16,15 +16,12 @@
     row-key="name"
     @update:selections="(selections) => emit('selectionsChanged', selections)"
   >
-    <ListHeader
-      class="mx-3 sm:mx-5"
-      @columnWidthUpdated="emit('columnWidthUpdated')"
-    >
+    <ListHeader class="mx-3 sm:mx-5" @columnWidthUpdated="onColumnWidthUpdated">
       <ListHeaderItem
         v-for="column in columns"
         :key="column.key"
         :item="column"
-        @columnWidthUpdated="emit('columnWidthUpdated', column)"
+        @columnWidthUpdated="onColumnWidthUpdated"
       >
         <Button
           v-if="column.key == '_liked_by'"
@@ -227,6 +224,14 @@ function getLabel(label, column) {
   if (column.type === 'Duration') return formatDuration(label)
   if (column.options && isTranslatable(column.options)) return __(label)
   return label
+}
+
+function onColumnWidthUpdated(payload) {
+  if (!payload) return
+  const cols = list.value?.data?.columns
+  const col = cols?.find((c) => c.key === payload.key)
+  if (col) col.width = payload.width
+  if (payload.save) emit('columnWidthUpdated', col)
 }
 
 const isLikeFilterApplied = computed(() => {
