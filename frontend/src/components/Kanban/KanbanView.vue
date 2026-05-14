@@ -57,13 +57,13 @@
                 <template #default>
                   <Button
                     class="opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-opacity"
-                    icon="more-horizontal"
+                    icon="lucide-more-horizontal"
                     variant="ghost"
                   />
                 </template>
               </Dropdown>
               <Button
-                icon="plus"
+                icon="lucide-plus"
                 variant="ghost"
                 @click="options.onNewClick(column)"
               />
@@ -126,7 +126,7 @@
                   <slot name="actions" v-bind="{ itemName: fields.name }">
                     <div class="flex gap-2 items-center justify-between">
                       <div></div>
-                      <Button icon="plus" variant="ghost" @click.stop.prevent />
+                      <Button icon="lucide-plus" variant="ghost" @click.stop.prevent />
                     </div>
                   </slot>
                 </component>
@@ -154,7 +154,7 @@
           <Button
             class="w-full mt-2.5 mb-1 mr-5"
             :label="__('Add Column')"
-            iconLeft="plus"
+            iconLeft="lucide-plus"
           />
         </template>
         <template #footer>
@@ -231,7 +231,7 @@ function actions(column) {
       items: [
         {
           label: __('Delete'),
-          icon: 'trash-2',
+          icon: 'lucide-trash-2',
           onClick: () => {
             column.column['delete'] = true
             updateColumn()

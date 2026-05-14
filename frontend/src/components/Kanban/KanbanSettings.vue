@@ -48,7 +48,7 @@
                 <div>{{ field.label }}</div>
               </div>
               <div>
-                <Button variant="ghost" icon="x" @click="removeField(field)" />
+                <Button variant="ghost" icon="lucide-x" @click="removeField(field)" />
               </div>
             </div>
           </template>
@@ -58,7 +58,7 @@
             <Button
               class="w-full mt-2"
               :label="__('Add Field')"
-              iconLeft="plus"
+              iconLeft="lucide-plus"
             />
           </template>
           <template #item-label="{ item }">

@@ -43,7 +43,7 @@
         </div>
         <div v-if="onCall" class="flex gap-2">
           <Button
-            :icon="muted ? 'mic-off' : 'mic'"
+            :icon="muted ? 'lucide-mic-off' : 'lucide-mic'"
             class="rounded-full"
             @click="toggleMute"
           />

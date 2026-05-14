@@ -91,7 +91,7 @@
     </div>
     <div :class="'w-max'">
       <Dropdown placement="right" :options="dropdownOptions">
-        <Button variant="ghost" icon="more-horizontal" />
+        <Button variant="ghost" icon="lucide-more-horizontal" />
       </Dropdown>
     </div>
   </div>
@@ -177,7 +177,7 @@ const dropdownOptions = computed(() => {
 
   options.push({
     label: __('Remove'),
-    icon: 'trash-2',
+    icon: 'lucide-trash-2',
     variant: 'red',
     onClick: () => emit('remove'),
     condition: () => !props.isGroup,
@@ -185,7 +185,7 @@ const dropdownOptions = computed(() => {
 
   options.push({
     label: __('Remove Group'),
-    icon: 'trash-2',
+    icon: 'lucide-trash-2',
     variant: 'red',
     onClick: () => emit('remove'),
     condition: () => props.isGroup,
