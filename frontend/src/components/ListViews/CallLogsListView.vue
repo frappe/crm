@@ -48,7 +48,7 @@
             />
           </div>
           <div v-else-if="['type', 'duration'].includes(column.key)">
-            <FeatherIcon :name="item.icon" class="h-3 w-3" />
+            <span :class="['lucide-' + item.icon, 'size-3']" aria-hidden="true" />
           </div>
         </template>
         <template #default="{ label }">
@@ -148,7 +148,7 @@
         <Dropdown
           :options="listBulkActionsRef.bulkActions(selections, unselectAll)"
         >
-          <Button icon="more-horizontal" variant="ghost" />
+          <Button icon="lucide-more-horizontal" variant="ghost" />
         </Dropdown>
       </template>
     </ListSelectBanner>
