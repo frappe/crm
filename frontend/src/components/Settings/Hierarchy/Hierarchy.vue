@@ -16,7 +16,11 @@
           </Tooltip>
         </div>
         <p class="text-p-base text-ink-gray-6">
-          {{ __('Arrange users into a reporting tree') }}
+          {{
+            __(
+              'Restrict visibility of Leads and Deals based on a reporting tree.',
+            )
+          }}
         </p>
       </div>
       <div
