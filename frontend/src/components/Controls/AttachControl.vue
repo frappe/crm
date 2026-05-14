@@ -6,7 +6,8 @@
     @click="showUploader = true"
   >
     <span
-      class="lucide-paperclip" :class="[iconClasses, 'text-ink-gray-5']"
+      class="lucide-paperclip"
+      :class="[iconClasses, 'text-ink-gray-5']"
       aria-hidden="true"
     />
     <span class="whitespace-nowrap text-ink-gray-4">{{
@@ -22,7 +23,8 @@
   <!-- Has value -->
   <div v-else :class="[containerClasses, '!pr-1']">
     <span
-      class="lucide-paperclip" :class="[iconClasses, 'text-ink-gray-7']"
+      class="lucide-paperclip"
+      :class="[iconClasses, 'text-ink-gray-7']"
       aria-hidden="true"
     />
     <Tooltip class="min-w-0 flex-1">

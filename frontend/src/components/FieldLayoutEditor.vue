@@ -54,7 +54,10 @@
             >
               <template #default>
                 <Button variant="ghost" class="!p-1 !h-4">
-                  <span class="lucide-more-horizontal size-4" aria-hidden="true" />
+                  <span
+                    class="lucide-more-horizontal size-4"
+                    aria-hidden="true"
+                  />
                 </Button>
               </template>
             </Dropdown>
@@ -161,7 +164,10 @@
                 <Dropdown :options="getSectionOptions(i, section, tab)">
                   <template #default>
                     <Button variant="ghost">
-                      <span class="lucide-more-horizontal size-4" aria-hidden="true" />
+                      <span
+                        class="lucide-more-horizontal size-4"
+                        aria-hidden="true"
+                      />
                     </Button>
                   </template>
                 </Dropdown>

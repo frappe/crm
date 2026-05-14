@@ -72,7 +72,10 @@
                 <div class="ml-1 flex flex-col gap-1">
                   {{ field.value.caller.label }}
                 </div>
-                <span class="lucide-arrow-right size-4 mx-1 text-ink-gray-5" aria-hidden="true" />
+                <span
+                  class="lucide-arrow-right size-4 mx-1 text-ink-gray-5"
+                  aria-hidden="true"
+                />
                 <Avatar
                   :image="field.value.receiver.image"
                   :label="field.value.receiver.label"

@@ -108,7 +108,11 @@
             {{ __('Last') }}
           </div>
         </Tooltip>
-        <Button variant="ghost" icon="lucide-x" @click="removeAssignedUser(user)" />
+        <Button
+          variant="ghost"
+          icon="lucide-x"
+          @click="removeAssignedUser(user)"
+        />
       </div>
     </div>
     <ErrorMessage :message="assignmentRuleErrors.users" />

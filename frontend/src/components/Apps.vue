@@ -19,7 +19,10 @@
             {{ __('Apps') }}
           </span>
         </div>
-        <span class="lucide-chevron-right size-4 text-ink-gray-5" aria-hidden="true" />
+        <span
+          class="lucide-chevron-right size-4 text-ink-gray-5"
+          aria-hidden="true"
+        />
       </button>
     </template>
     <template #body>

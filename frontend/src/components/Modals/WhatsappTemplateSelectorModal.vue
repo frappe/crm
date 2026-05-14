@@ -11,7 +11,10 @@
         :placeholder="__('Welcome Message')"
       >
         <template #prefix>
-          <span class="lucide-search size-4 text-ink-gray-4" aria-hidden="true" />
+          <span
+            class="lucide-search size-4 text-ink-gray-4"
+            aria-hidden="true"
+          />
         </template>
       </TextInput>
       <div

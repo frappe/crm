@@ -63,7 +63,10 @@
               @click.stop="() => deleteAttachment(attachment.name)"
             >
               <template #icon>
-                <span class="lucide-trash-2 size-3 text-ink-gray-7" aria-hidden="true" />
+                <span
+                  class="lucide-trash-2 size-3 text-ink-gray-7"
+                  aria-hidden="true"
+                />
               </template>
             </Button>
           </div>

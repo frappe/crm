@@ -71,7 +71,10 @@
           :debounce="300"
         >
           <template #prefix>
-            <span class="lucide-search size-4 text-ink-gray-6" aria-hidden="true" />
+            <span
+              class="lucide-search size-4 text-ink-gray-6"
+              aria-hidden="true"
+            />
           </template>
         </TextInput>
         <Select

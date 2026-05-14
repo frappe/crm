@@ -6,7 +6,8 @@
     @click="openModal"
   >
     <span
-      class="lucide-map-pin" :class="[iconClasses, 'text-ink-gray-5']"
+      class="lucide-map-pin"
+      :class="[iconClasses, 'text-ink-gray-5']"
       aria-hidden="true"
     />
     <span class="whitespace-nowrap text-ink-gray-4">{{
@@ -26,7 +27,8 @@
     @click="openModal"
   >
     <span
-      class="lucide-map-pin" :class="[iconClasses, 'text-ink-gray-7']"
+      class="lucide-map-pin"
+      :class="[iconClasses, 'text-ink-gray-7']"
       aria-hidden="true"
     />
     <span class="min-w-0 flex-1 truncate text-ink-gray-8 text-sm">

@@ -40,7 +40,11 @@
                   type="number"
                   class="w-20"
                 />
-                <Button variant="ghost" icon="lucide-x" @click="removeField(field)" />
+                <Button
+                  variant="ghost"
+                  icon="lucide-x"
+                  @click="removeField(field)"
+                />
               </div>
             </div>
           </template>

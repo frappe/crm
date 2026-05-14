@@ -41,7 +41,10 @@
                     @click.stop="removeValue(assignee.name)"
                   >
                     <template #icon>
-                      <span class="lucide-x size-3 text-ink-gray-6" aria-hidden="true" />
+                      <span
+                        class="lucide-x size-3 text-ink-gray-6"
+                        aria-hidden="true"
+                      />
                     </template>
                   </Button>
                 </div>

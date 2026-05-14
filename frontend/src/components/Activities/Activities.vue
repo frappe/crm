@@ -330,7 +330,10 @@
                   >
                     {{ __(a.data.field_label) }}
                   </span>
-                  <span class="lucide-arrow-right size-4 mx-1 text-ink-gray-5" aria-hidden="true" />
+                  <span
+                    class="lucide-arrow-right size-4 mx-1 text-ink-gray-5"
+                    aria-hidden="true"
+                  />
                   <span v-if="a.type">
                     {{ startCase(__(a.type)) }}
                   </span>

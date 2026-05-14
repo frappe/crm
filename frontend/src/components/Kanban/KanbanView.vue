@@ -126,7 +126,11 @@
                   <slot name="actions" v-bind="{ itemName: fields.name }">
                     <div class="flex gap-2 items-center justify-between">
                       <div></div>
-                      <Button icon="lucide-plus" variant="ghost" @click.stop.prevent />
+                      <Button
+                        icon="lucide-plus"
+                        variant="ghost"
+                        @click.stop.prevent
+                      />
                     </div>
                   </slot>
                 </component>

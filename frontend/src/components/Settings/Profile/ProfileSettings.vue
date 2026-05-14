@@ -34,7 +34,10 @@
                     @mouseenter="isHoveringRemove = true"
                     @mouseleave="isHoveringRemove = false"
                   >
-                    <span class="lucide-x size-3.5 cursor-pointer text-ink-gray-4" aria-hidden="true" />
+                    <span
+                      class="lucide-x size-3.5 cursor-pointer text-ink-gray-4"
+                      aria-hidden="true"
+                    />
                   </div>
                 </Tooltip>
                 <div
@@ -67,7 +70,11 @@
                       @keydown.enter="save"
                       @keydown.esc.stop="editName = false"
                     />
-                    <Button variant="outline" icon="lucide-check" @click="save" />
+                    <Button
+                      variant="outline"
+                      icon="lucide-check"
+                      @click="save"
+                    />
                   </div>
                   <span class="text-p-sm text-ink-gray-6">
                     {{ user.doc.email }}

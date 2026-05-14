@@ -87,7 +87,10 @@
                 class="size-4 absolute -top-1.5 -right-1.5 flex cursor-pointer items-center justify-center rounded-full bg-surface-white opacity-0 duration-300 ease-in-out group-hover:opacity-100 hover:bg-surface-gray-2 outline outline-black-overlay-50"
                 @click.stop="removeQuickFilter(filter)"
               >
-                <span class="lucide-x size-3.5 cursor-pointer text-ink-gray-4" aria-hidden="true" />
+                <span
+                  class="lucide-x size-3.5 cursor-pointer text-ink-gray-4"
+                  aria-hidden="true"
+                />
               </div>
             </div>
           </template>
@@ -227,7 +230,10 @@
           ]"
         >
           <template #default>
-            <Button :tooltip="__('More Options')" icon="lucide-more-horizontal" />
+            <Button
+              :tooltip="__('More Options')"
+              icon="lucide-more-horizontal"
+            />
           </template>
         </Dropdown>
       </div>

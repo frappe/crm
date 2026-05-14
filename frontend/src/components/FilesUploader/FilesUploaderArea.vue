@@ -39,7 +39,11 @@
             <div class="mt-1">{{ __('Device') }}</div>
           </div>
           <div v-if="!disableFileBrowser">
-            <Button icon="lucide-folder" size="md" @click="showFileBrowser = true" />
+            <Button
+              icon="lucide-folder"
+              size="md"
+              @click="showFileBrowser = true"
+            />
             <div class="mt-1">{{ __('Library') }}</div>
           </div>
           <div v-if="allowWebLink">

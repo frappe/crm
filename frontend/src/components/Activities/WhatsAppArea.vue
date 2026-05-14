@@ -60,7 +60,10 @@
             }"
           >
             <Dropdown :options="messageOptions(whatsapp)">
-              <span class="lucide-chevron-down size-4 text-ink-gray-5" aria-hidden="true" />
+              <span
+                class="lucide-chevron-down size-4 text-ink-gray-5"
+                aria-hidden="true"
+              />
             </Dropdown>
           </div>
           <div

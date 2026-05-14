@@ -62,7 +62,10 @@
           :debounce="300"
         >
           <template #prefix>
-            <span class="lucide-search size-4 text-ink-gray-6" aria-hidden="true" />
+            <span
+              class="lucide-search size-4 text-ink-gray-6"
+              aria-hidden="true"
+            />
           </template>
         </TextInput>
         <Select
@@ -148,13 +151,7 @@
 import EmailTemplateIcon from '@/components/Icons/EmailTemplateIcon.vue'
 import EmptyState from '../../ListViews/EmptyState.vue'
 import { useBroadcast } from '@/composables/useBroadcast'
-import {
-  TextInput,
-  Switch,
-  Dropdown,
-  toast,
-  Select,
-} from 'frappe-ui'
+import { TextInput, Switch, Dropdown, toast, Select } from 'frappe-ui'
 import { ref, computed, inject } from 'vue'
 import { ConfirmDelete } from '../../../utils'
 
