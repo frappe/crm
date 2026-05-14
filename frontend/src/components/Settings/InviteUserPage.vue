@@ -83,7 +83,7 @@
               <div>
                 <Button
                   :tooltip="__('Delete Invitation')"
-                  icon="x"
+                  icon="lucide-x"
                   variant="ghost"
                   :loading="
                     pendingInvitations.delete.loading &&

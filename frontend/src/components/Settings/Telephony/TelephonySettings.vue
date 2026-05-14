@@ -54,7 +54,7 @@
           />
           <Button
             v-if="telephonyAgent.doc.default_medium"
-            icon="x"
+            icon="lucide-x"
             :tooltip="__('Clear')"
             @click="telephonyAgent.doc.default_medium = ''"
           />

@@ -126,7 +126,7 @@
                 @update:modelValue="() => handleIntervalChange(notification)"
               />
               <Button
-                icon="x"
+                icon="lucide-x"
                 variant="ghost"
                 @click="
                   notifications.splice(notifications.indexOf(notification), 1)
@@ -138,7 +138,7 @@
         <Button
           class="w-fit"
           :label="__('Add Notification')"
-          iconLeft="plus"
+          iconLeft="lucide-plus"
           @click="
             notifications.push({
               type: 'Notification',
@@ -222,7 +222,7 @@
                 :placeholder="__('08:00 pm')"
               />
               <Button
-                icon="x"
+                icon="lucide-x"
                 variant="ghost"
                 @click="
                   allDayNotifications.splice(
@@ -237,7 +237,7 @@
         <Button
           class="w-fit"
           :label="__('Add Notification')"
-          iconLeft="plus"
+          iconLeft="lucide-plus"
           @click="
             allDayNotifications.push({
               type: 'Notification',

@@ -62,7 +62,7 @@
           :debounce="300"
         >
           <template #prefix>
-            <FeatherIcon name="search" class="h-4 w-4 text-ink-gray-6" />
+            <span class="lucide-search size-4 text-ink-gray-6" aria-hidden="true" />
           </template>
         </TextInput>
         <Select
@@ -111,7 +111,7 @@
                 :options="getDropdownOptions(template)"
                 placement="right"
                 :button="{
-                  icon: 'more-horizontal',
+                  icon: 'lucide-more-horizontal',
                   variant: 'ghost',
                   onblur: (e) => {
                     e.stopPropagation()
@@ -152,7 +152,6 @@ import {
   TextInput,
   Switch,
   Dropdown,
-  FeatherIcon,
   toast,
   Select,
 } from 'frappe-ui'
@@ -226,7 +225,7 @@ function getDropdownOptions(template) {
   let options = [
     {
       label: __('Duplicate'),
-      icon: 'copy',
+      icon: 'lucide-copy',
       onClick: () => emit('updateStep', 'new-template', { ...template }),
     },
     ...ConfirmDelete({

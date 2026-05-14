@@ -45,7 +45,7 @@
       v-if="!sources.loading && !sources.data?.length"
       name="Lead Sources"
       description="Manage your lead sources here. Add new sources to start syncing leads automatically."
-      icon="refresh-cw"
+      icon="lucide-refresh-cw"
     />
 
     <!-- Lead source list -->
@@ -89,7 +89,7 @@
                 :options="getDropdownOptions(source)"
                 placement="right"
                 :button="{
-                  icon: 'more-horizontal',
+                  icon: 'lucide-more-horizontal',
                   variant: 'ghost',
                   onblur: (e) => {
                     e.stopPropagation()
@@ -186,7 +186,7 @@ function getDropdownOptions(source) {
   let options = [
     {
       label: __('Duplicate'),
-      icon: 'copy',
+      icon: 'lucide-copy',
       onClick: () => emit('updateStep', 'new-source', { ...source }),
     },
     ...ConfirmDelete({

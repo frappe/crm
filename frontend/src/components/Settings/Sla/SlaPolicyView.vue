@@ -122,7 +122,7 @@
                       class="text-sm text-ink-gray-6 flex gap-1 cursor-default"
                     >
                       {{ __('Old Conditions') }}
-                      <FeatherIcon name="info" class="size-4" />
+                      <span class="lucide-info size-4" aria-hidden="true" />
                     </div>
                   </template>
                   <template #body-main>
@@ -251,7 +251,6 @@ import {
   createResource,
   DatePicker,
   ErrorMessage,
-  FeatherIcon,
   TextInput,
   FormLabel,
   LoadingIndicator,
