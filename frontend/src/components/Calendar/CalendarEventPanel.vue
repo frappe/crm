@@ -319,8 +319,8 @@
             <template #suffix="{ togglePopover }">
               <span
                 class="lucide-chevron-down size-4 cursor-pointer"
-                @click="togglePopover"
                 aria-hidden="true"
+                @click="togglePopover"
               />
             </template>
           </DatePicker>

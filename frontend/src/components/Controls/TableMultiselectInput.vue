@@ -16,8 +16,8 @@
         <template #suffix>
           <span
             class="lucide-x size-3.5"
-            @click.stop="removeValue(value)"
             aria-hidden="true"
+            @click.stop="removeValue(value)"
           />
         </template>
       </Button>

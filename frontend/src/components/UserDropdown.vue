@@ -40,7 +40,6 @@
           <span
             class="lucide-chevron-down size-4 text-ink-gray-5"
             aria-hidden="true"
-            aria-hidden="true"
           />
         </div>
       </button>

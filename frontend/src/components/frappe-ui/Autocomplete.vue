@@ -37,7 +37,6 @@
                 v-if="!disabled"
                 class="lucide-chevron-down size-4 absolute text-ink-gray-5 right-2"
                 aria-hidden="true"
-                aria-hidden="true"
               />
             </button>
           </div>
@@ -66,7 +65,10 @@
                 class="absolute right-1.5 inline-flex h-7 w-7 items-center justify-center"
                 @click="selectedValue = null"
               >
-                <span class="lucide-x size-4 text-ink-gray-8" aria-hidden="true" />
+                <span
+                  class="lucide-x size-4 text-ink-gray-8"
+                  aria-hidden="true"
+                />
               </button>
             </div>
             <ComboboxOptions

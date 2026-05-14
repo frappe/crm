@@ -26,8 +26,8 @@
           />
           <span
             class="lucide-chevron-down size-4 text-ink-gray-5 cursor-pointer"
-            @click.stop="showOptions = !showOptions"
             aria-hidden="true"
+            @click.stop="showOptions = !showOptions"
           />
         </ComboboxAnchor>
         <ComboboxPortal>
@@ -42,7 +42,9 @@
               <ComboboxEmpty
                 class="flex gap-2 rounded px-2 py-1 text-base text-ink-gray-5"
               >
-                <span v-if="fetchContacts" class="lucide-search size-4"
+                <span
+                  v-if="fetchContacts"
+                  class="lucide-search size-4"
                   aria-hidden="true"
                 />
                 {{ emptyStateText }}
@@ -87,8 +89,8 @@
         <template #suffix>
           <span
             class="lucide-x size-3.5"
-            @click.stop="removeValue(att.email)"
             aria-hidden="true"
+            @click.stop="removeValue(att.email)"
           />
         </template>
       </Button>

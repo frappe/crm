@@ -29,8 +29,8 @@
             <template #suffix>
               <span
                 class="lucide-x size-3.5"
-                @click.stop="removeAttachment(a)"
                 aria-hidden="true"
+                @click.stop="removeAttachment(a)"
               />
             </template>
           </AttachmentItem>

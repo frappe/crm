@@ -37,8 +37,8 @@
               </span>
               <span
                 class="lucide-external-link size-4 cursor-pointer"
-                @click.stop="viewLinkedDoc(row)"
                 aria-hidden="true"
+                @click.stop="viewLinkedDoc(row)"
               />
             </div>
             <span
