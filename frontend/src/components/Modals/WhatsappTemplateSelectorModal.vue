@@ -1,8 +1,5 @@
 <template>
-  <Dialog
-    v-model="show"
-    :options="{ title: __('WhatsApp Templates'), size: '4xl' }"
-  >
+  <Dialog v-model="show" :title="__('WhatsApp Templates')" size="4xl">
     <template #body-content>
       <TextInput
         ref="searchInput"

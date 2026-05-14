@@ -1,7 +1,7 @@
 <template>
   <Dialog
     v-model="show"
-    :options="{ title: __('Add Existing User') }"
+    :title="__('Add Existing User')"
     @close="show = false"
   >
     <template #body-content>

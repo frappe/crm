@@ -1,5 +1,5 @@
 <template>
-  <Dialog v-model="show" :options="{ size: size }">
+  <Dialog v-model="show" :size="size">
     <template #body>
       <div class="bg-surface-modal px-4 pb-6 pt-5 sm:px-6">
         <div class="mb-5 flex items-center justify-between">

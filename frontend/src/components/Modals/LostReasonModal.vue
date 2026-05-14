@@ -1,9 +1,5 @@
 <template>
-  <Dialog
-    v-model="show"
-    :options="{ title: __('Lost Reason') }"
-    @close="cancel"
-  >
+  <Dialog v-model="show" :title="__('Lost Reason')" @close="cancel">
     <template #body-content>
       <div class="-mt-3 mb-4 text-p-base text-ink-gray-7">
         {{

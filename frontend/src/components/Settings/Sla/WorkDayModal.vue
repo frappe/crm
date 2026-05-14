@@ -1,7 +1,7 @@
 <template>
   <Dialog
     v-model="dialog.show"
-    :options="{ title: __('Edit Workday') }"
+    :title="__('Edit Workday')"
     @after-leave="resetForm"
   >
     <template #body-content>

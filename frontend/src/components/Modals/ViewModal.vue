@@ -1,13 +1,13 @@
 <template>
   <Dialog
     v-model="show"
-    :options="{
-      title: editMode
+    :title="
+      editMode
         ? __('Edit View')
         : duplicateMode
           ? __('Duplicate View')
-          : __('Create View'),
-    }"
+          : __('Create View')
+    "
   >
     <template #body-content>
       <div class="mb-1.5 block text-base text-ink-gray-5">

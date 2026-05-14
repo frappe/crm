@@ -1,5 +1,5 @@
 <template>
-  <Dialog v-model="show" :options="{ size: 'sm' }">
+  <Dialog v-model="show" size="sm">
     <template #body>
       <div class="p-4 pt-5">
         <div class="flex justify-center">

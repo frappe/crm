@@ -1,5 +1,5 @@
 <template>
-  <Dialog v-model="show" :options="{ size: 'xl' }">
+  <Dialog v-model="show" size="xl">
     <template #body>
       <div
         v-if="!confirmDeleteInfo.show"

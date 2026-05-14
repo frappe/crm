@@ -1,10 +1,5 @@
 <template>
-  <Dialog
-    v-model="dialog"
-    :options="{
-      title: __('Edit Response & Resolution'),
-    }"
-  >
+  <Dialog v-model="dialog" :title="__('Edit Response & Resolution')">
     <template #body-content>
       <div class="flex flex-col gap-4">
         <div class="space-y-1.5">

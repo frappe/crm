@@ -1,5 +1,5 @@
 <template>
-  <Dialog v-model="show" :options="{ size: 'xl' }">
+  <Dialog v-model="show" size="xl">
     <template #body-header>
       <div class="mb-6 flex items-center justify-between">
         <div>

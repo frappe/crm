@@ -1,7 +1,7 @@
 <template>
   <Dialog
     v-model="show"
-    :options="{ title: __('Add Chart') }"
+    :title="__('Add Chart')"
     @close="show = false"
   >
     <template #body-content>
