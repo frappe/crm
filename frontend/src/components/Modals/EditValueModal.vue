@@ -1,5 +1,5 @@
 <template>
-  <Dialog v-model="show" :title="__('Bulk Edit')">
+  <Dialog v-model:open="show" :title="__('Bulk Edit')">
     <div v-if="fields.length" class="mb-4">
       <div class="mb-1.5 text-sm text-ink-gray-5">{{ __('Field') }}</div>
       <Combobox

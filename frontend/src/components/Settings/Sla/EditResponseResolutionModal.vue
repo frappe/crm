@@ -1,5 +1,5 @@
 <template>
-  <Dialog v-model="dialog" :title="__('Edit Response & Resolution')">
+  <Dialog v-model:open="dialog" :title="__('Edit Response & Resolution')">
     <div class="flex flex-col gap-4">
       <div class="space-y-1.5">
         <FormLabel :label="__('Priority')" required />

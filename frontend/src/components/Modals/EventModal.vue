@@ -1,5 +1,5 @@
 <template>
-  <Dialog v-model="show" size="xl">
+  <Dialog v-model:open="show" size="xl">
     <template #title>
       <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9">
         {{

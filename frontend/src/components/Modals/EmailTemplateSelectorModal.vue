@@ -1,5 +1,5 @@
 <template>
-  <Dialog v-model="show" :title="__('Email Templates')" size="4xl">
+  <Dialog v-model:open="show" :title="__('Email Templates')" size="4xl">
     <div class="flex items-center gap-2">
       <TextInput
         ref="searchInput"

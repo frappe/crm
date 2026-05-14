@@ -1,6 +1,6 @@
 <template>
   <Dialog
-    v-model="dialog.show"
+    v-model:open="dialog.show"
     :title="__('Edit Workday')"
     @after-leave="resetForm"
   >

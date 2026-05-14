@@ -1,5 +1,5 @@
 <template>
-  <Dialog v-model="show" :title="__('Add Chart')" @close="show = false">
+  <Dialog v-model:open="show" :title="__('Add Chart')" @close="show = false">
     <div class="flex flex-col gap-4">
       <Select
         v-model="chartType"

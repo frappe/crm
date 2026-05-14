@@ -1,5 +1,5 @@
 <template>
-  <Dialog v-model="show" :title="__('Change Password')">
+  <Dialog v-model:open="show" :title="__('Change Password')">
     <div class="flex flex-col gap-4">
       <div>
         <Password

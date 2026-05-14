@@ -1,6 +1,6 @@
 <template>
   <Dialog
-    v-model="show"
+    v-model:open="show"
     :title="__('Assign To')"
     size="xl"
     @close="() => (assignees = [...oldAssignees])"

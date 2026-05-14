@@ -1,5 +1,5 @@
 <template>
-  <Dialog v-model="show" :title="__('Add Existing User')" @close="show = false">
+  <Dialog v-model:open="show" :title="__('Add Existing User')" @close="show = false">
     <div class="flex gap-1 border rounded mb-4 p-2 text-ink-gray-5">
       <span class="lucide-info size-3.5 mt-0.5" aria-hidden="true" />
       <p class="text-p-sm">

@@ -1,5 +1,5 @@
 <template>
-  <Dialog v-model="show" size="xl" bare>
+  <Dialog v-model:open="show" size="xl" bare>
     <div class="px-4 pt-5 pb-6 bg-surface-modal sm:px-6">
       <div class="flex items-center justify-between mb-5">
         <div>

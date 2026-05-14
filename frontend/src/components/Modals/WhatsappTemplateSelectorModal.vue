@@ -1,5 +1,5 @@
 <template>
-  <Dialog v-model="show" :title="__('WhatsApp Templates')" size="4xl">
+  <Dialog v-model:open="show" :title="__('WhatsApp Templates')" size="4xl">
     <TextInput
       ref="searchInput"
       v-model="search"

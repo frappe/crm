@@ -1,6 +1,6 @@
 <template>
   <Dialog
-    v-model="show"
+    v-model:open="show"
     :title="
       editMode
         ? __('Edit View')
