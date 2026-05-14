@@ -12,6 +12,12 @@
         v-if="contact._actions?.length"
         :actions="contact._actions"
       />
+      <Button
+        variant="solid"
+        :label="__('Create Deal')"
+        iconLeft="plus"
+        @click="showDealModal = true"
+      />
     </template>
   </LayoutHeader>
   <div v-if="contact.doc" ref="parentRef" class="flex h-full">
@@ -167,6 +173,11 @@
     :docname="contact.doc.name"
     name="Contacts"
   />
+  <DealModal
+    v-if="showDealModal"
+    v-model="showDealModal"
+    :defaults="{ contact: props.contactId }"
+  />
 </template>
 
 <script setup>
@@ -180,6 +191,7 @@ import CameraIcon from '@/components/Icons/CameraIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import DealsListView from '@/components/ListViews/DealsListView.vue'
 import CustomActions from '@/components/CustomActions.vue'
+import DealModal from '@/components/Modals/DealModal.vue'
 import {
   formatDate,
   timeAgo,
@@ -281,6 +293,7 @@ usePageMeta(() => {
   }
 })
 const showDeleteLinkedDocModal = ref(false)
+const showDealModal = ref(false)
 
 async function deleteContact() {
   showDeleteLinkedDocModal.value = true

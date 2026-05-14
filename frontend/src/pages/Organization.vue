@@ -12,6 +12,20 @@
         v-if="organization._actions?.length"
         :actions="organization._actions"
       />
+      <Button
+        v-if="tabIndex === 0"
+        variant="solid"
+        :label="__('Create Deal')"
+        iconLeft="plus"
+        @click="showDealModal = true"
+      />
+      <Button
+        v-if="tabIndex === 1"
+        variant="solid"
+        :label="__('Create Contact')"
+        iconLeft="plus"
+        @click="showContactModal = true"
+      />
     </template>
   </LayoutHeader>
   <div v-if="organization.doc" ref="parentRef" class="flex h-full">
@@ -175,6 +189,17 @@
     :docname="props.organizationId"
     name="Organizations"
   />
+  <ContactModal
+    v-if="showContactModal"
+    v-model="showContactModal"
+    :contact="{ company_name: props.organizationId }"
+    :options="{ redirect: false, afterInsert: () => contacts.reload() }"
+  />
+  <DealModal
+    v-if="showDealModal"
+    v-model="showDealModal"
+    :defaults="{ organization: props.organizationId }"
+  />
 </template>
 
 <script setup>
@@ -191,6 +216,8 @@ import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
 import DeleteLinkedDocModal from '@/components/DeleteLinkedDocModal.vue'
 import CustomActions from '@/components/CustomActions.vue'
+import ContactModal from '@/components/Modals/ContactModal.vue'
+import DealModal from '@/components/Modals/DealModal.vue'
 import { useDocument } from '@/data/document'
 import { getSettings } from '@/stores/settings'
 import { globalStore } from '@/stores/global'
@@ -240,6 +267,8 @@ const errorTitle = ref('')
 const errorMessage = ref('')
 
 const showDeleteLinkedDocModal = ref(false)
+const showContactModal = ref(false)
+const showDealModal = ref(false)
 
 const {
   document: organization,
