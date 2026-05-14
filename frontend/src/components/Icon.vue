@@ -17,6 +17,7 @@
 </template>
 <script setup>
 import { isEmoji } from '@/utils'
+import { FeatherIcon } from 'frappe-ui'
 
 defineProps({ icon: { type: [String, Object], required: true } })
 </script>

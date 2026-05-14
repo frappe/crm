@@ -256,7 +256,7 @@ const detailFields = computed(() => {
   let details = [
     {
       icon: h('span', {
-        class: ['lucide-' + data.type.icon, 'size-3.5'],
+        class: [data.type.icon, 'size-3.5'],
         'aria-hidden': true,
       }),
       name: 'type',

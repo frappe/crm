@@ -48,7 +48,7 @@
             />
           </div>
           <div v-else-if="['type', 'duration'].includes(column.key)">
-            <span :class="['lucide-' + item.icon, 'size-3']" aria-hidden="true" />
+            <span :class="[item.icon, 'size-3']" aria-hidden="true" />
           </div>
         </template>
         <template #default="{ label }">

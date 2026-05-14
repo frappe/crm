@@ -19,7 +19,6 @@ import {
   Badge,
   setConfig,
   frappeRequest,
-  FeatherIcon,
 } from 'frappe-ui'
 
 import { telemetryPlugin } from 'frappe-ui/frappe'
@@ -32,7 +31,6 @@ let globalComponents = {
   Dialog,
   Alert,
   Badge,
-  FeatherIcon,
 }
 
 // create a pinia instance
