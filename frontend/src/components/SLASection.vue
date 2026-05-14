@@ -26,7 +26,7 @@
             <Button
               class="form-control bg-surface-white hover:bg-surface-white"
               :label="s.value"
-              :iconRight="open ? 'chevron-up' : 'chevron-down'"
+              :iconRight="open ? 'lucide-chevron-up' : 'lucide-chevron-down'"
             />
           </template>
         </Dropdown>

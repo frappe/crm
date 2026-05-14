@@ -103,7 +103,7 @@
                   @update:selectedOption="(e) => updateSort(e, i)"
                 />
               </div>
-              <Button variant="ghost" icon="x" @click="removeSort(i)" />
+              <Button variant="ghost" icon="lucide-x" @click="removeSort(i)" />
             </div>
           </div>
           <div
@@ -123,7 +123,7 @@
                   class="!text-ink-gray-5"
                   :label="__('Add Sort')"
                   variant="ghost"
-                  iconLeft="plus"
+                  iconLeft="lucide-plus"
                 />
               </template>
             </Combobox>

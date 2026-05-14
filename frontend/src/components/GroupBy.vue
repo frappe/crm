@@ -8,7 +8,7 @@
             : __('Group By: ') + groupByValue?.label
         "
         :iconLeft="DetailsIcon"
-        :iconRight="open ? 'chevron-up' : 'chevron-down'"
+        :iconRight="open ? 'lucide-chevron-up' : 'lucide-chevron-down'"
       />
     </template>
   </Combobox>

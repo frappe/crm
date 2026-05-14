@@ -87,10 +87,7 @@
                 class="size-4 absolute -top-1.5 -right-1.5 flex cursor-pointer items-center justify-center rounded-full bg-surface-white opacity-0 duration-300 ease-in-out group-hover:opacity-100 hover:bg-surface-gray-2 outline outline-black-overlay-50"
                 @click.stop="removeQuickFilter(filter)"
               >
-                <FeatherIcon
-                  name="x"
-                  class="size-3.5 cursor-pointer text-ink-gray-4"
-                />
+                <span class="lucide-x size-3.5 cursor-pointer text-ink-gray-4" aria-hidden="true" />
               </div>
             </div>
           </template>
@@ -106,7 +103,7 @@
               class="whitespace-nowrap mr-2"
               variant="ghost"
               :label="__('Add Filter')"
-              iconLeft="plus"
+              iconLeft="lucide-plus"
             />
           </template>
           <template #item-label="{ item }">
@@ -126,7 +123,7 @@
         :loading="updateQuickFilters.loading"
         @click="saveQuickFilters"
       />
-      <Button icon="x" @click="customizeQuickFilter = false" />
+      <Button icon="lucide-x" @click="customizeQuickFilter = false" />
     </div>
   </div>
   <div v-else class="flex items-center justify-between gap-2 px-5 py-4">
@@ -230,7 +227,7 @@
           ]"
         >
           <template #default>
-            <Button :tooltip="__('More Options')" icon="more-horizontal" />
+            <Button :tooltip="__('More Options')" icon="lucide-more-horizontal" />
           </template>
         </Dropdown>
       </div>
@@ -330,7 +327,6 @@ import {
   Dropdown,
   toast,
   call,
-  FeatherIcon,
   usePageMeta,
   Select,
   Checkbox,
@@ -695,7 +691,7 @@ const viewsDropdownOptions = computed(() => {
     options: [
       {
         label: __('Create View'),
-        icon: 'plus',
+        icon: 'lucide-plus',
         onClick: () => createView(),
       },
     ],
@@ -1104,9 +1100,9 @@ const viewActions = (view, close) => {
       actions[0].options.push({
         label: _view.public ? __('Make Private') : __('Make Public'),
         icon: () =>
-          h(FeatherIcon, {
-            name: _view.public ? 'lock' : 'unlock',
-            class: 'h-4 w-4',
+          h('span', {
+            class: [_view.public ? 'lucide-lock' : 'lucide-unlock', 'size-4'],
+            'aria-hidden': true,
           }),
         onClick: () => publicView(_view),
       })
@@ -1118,7 +1114,7 @@ const viewActions = (view, close) => {
       options: [
         {
           label: __('Delete'),
-          icon: 'trash-2',
+          icon: 'lucide-trash-2',
           onClick: () =>
             $dialog({
               title: __('Delete View'),

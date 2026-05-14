@@ -10,10 +10,10 @@
               class="flex max-w-fit cursor-pointer items-center gap-2 text-base leading-4 text-ink-gray-9"
               @click="section.opened = !section.opened"
             >
-              <FeatherIcon
-                name="chevron-right"
-                class="h-4 transition-all duration-300 ease-in-out"
+              <span
+                class="lucide-chevron-right size-4 transition-all duration-300 ease-in-out"
                 :class="{ 'rotate-90': section.opened }"
+                aria-hidden="true"
               />
               <div v-if="!section.editingLabel">
                 {{ __(section.label) || __('Untitled') }}
@@ -27,7 +27,7 @@
                 />
                 <Button
                   v-if="section.editingLabel"
-                  icon="check"
+                  icon="lucide-check"
                   class="!size-4 rounded-sm"
                   variant="ghost"
                   @click.stop="section.editingLabel = false"
@@ -48,7 +48,7 @@
               <Button
                 v-if="section.editable !== false"
                 class="!size-4 rounded-sm"
-                icon="x"
+                icon="lucide-x"
                 variant="ghost"
                 @click="sections.splice(sections.indexOf(section), 1)"
               />
@@ -72,7 +72,7 @@
                   </div>
                   <Button
                     variant="ghost"
-                    icon="x"
+                    icon="lucide-x"
                     class="!size-4 rounded-sm"
                     @click="
                       section.columns[0].fields.splice(
@@ -94,7 +94,7 @@
                   class="w-full h-8 mt-1.5 !bg-surface-gray-1"
                   variant="outline"
                   :label="__('Add Field')"
-                  iconLeft="plus"
+                  iconLeft="lucide-plus"
                 />
               </template>
               <template #item-label="{ item }">
@@ -123,7 +123,7 @@
         class="w-full h-8"
         variant="subtle"
         :label="__('Add Section')"
-        iconLeft="plus"
+        iconLeft="lucide-plus"
         @click="
           sections.push({
             label: __('New Section'),

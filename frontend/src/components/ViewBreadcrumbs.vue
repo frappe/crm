@@ -27,7 +27,7 @@
           variant="ghost"
           class="text-lg font-medium text-nowrap"
           :label="__(viewControls.currentView?.label)"
-          :iconRight="open ? 'chevron-up' : 'chevron-down'"
+          :iconRight="open ? 'lucide-chevron-up' : 'lucide-chevron-down'"
         >
           <template #prefix>
             <Icon :icon="viewControls.currentView?.icon" class="h-4" />
@@ -48,15 +48,15 @@
               <Button
                 variant="ghost"
                 class="[[role=menuitem]:hover_&]:!w-auto !h-4 !w-0 opacity-0 [[role=menuitem]:hover_&]:opacity-100 pointer-events-none [[role=menuitem]:hover_&]:pointer-events-auto"
-                icon="more-horizontal"
+                icon="lucide-more-horizontal"
                 @click.stop
               />
             </template>
           </Dropdown>
-          <FeatherIcon
+          <span
             v-if="isCurrentView(item)"
-            name="check"
-            class="size-4 text-ink-gray-7"
+            class="lucide-check size-4 text-ink-gray-7"
+            aria-hidden="true"
           />
         </div>
       </template>

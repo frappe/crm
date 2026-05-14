@@ -46,7 +46,7 @@
                     @click="removeColumn(element)"
                   >
                     <template #icon>
-                      <FeatherIcon name="x" class="h-3.5" />
+                      <span class="lucide-x size-3.5" aria-hidden="true" />
                     </template>
                   </Button>
                 </div>
@@ -65,7 +65,7 @@
                   class="w-full !justify-start !text-ink-gray-5"
                   variant="ghost"
                   :label="__('Add Column')"
-                  iconLeft="plus"
+                  iconLeft="lucide-plus"
                 />
               </template>
             </Combobox>

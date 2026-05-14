@@ -22,7 +22,7 @@
         </div>
         <Button
           class="rounded-full"
-          icon="plus"
+          icon="lucide-plus"
           @click.stop="() => (reaction = false)"
         />
       </div>

@@ -7,19 +7,19 @@
       @click="action.onClick(close)"
     >
       <template v-if="action.icon" #prefix>
-        <FeatherIcon :name="action.icon" class="h-4 w-4" />
+        <Icon :icon="action.icon" class="size-4" />
       </template>
     </Button>
   </template>
   <Dropdown v-if="groupedActions.length" :options="groupedActions">
-    <Button icon="more-horizontal" />
+    <Button icon="lucide-more-horizontal" />
   </Dropdown>
   <template v-if="groupedWithLabelActions.length && !isMobileView">
     <div v-for="g in groupedWithLabelActions" :key="g.label">
       <Dropdown v-slot="{ open }" :options="g.action">
         <Button
           :label="g.label"
-          :iconRight="open ? 'chevron-up' : 'chevron-down'"
+          :iconRight="open ? 'lucide-chevron-up' : 'lucide-chevron-down'"
         />
       </Dropdown>
     </div>
@@ -29,6 +29,7 @@
 <script setup>
 import { computed } from 'vue'
 import { Dropdown } from 'frappe-ui'
+import Icon from '@/components/Icon.vue'
 import { isMobileView } from '@/composables/settings'
 
 const props = defineProps({
