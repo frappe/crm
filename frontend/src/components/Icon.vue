@@ -3,21 +3,15 @@
     {{ icon }}
   </div>
   <span
-    v-else-if="typeof icon == 'string' && icon.startsWith('lucide-')"
-    :class="icon"
-    aria-hidden="true"
-    v-bind="$attrs"
-  />
-  <FeatherIcon
     v-else-if="typeof icon == 'string'"
-    :name="icon"
+    :class="icon.startsWith('lucide-') ? icon : `lucide-${icon}`"
+    aria-hidden="true"
     v-bind="$attrs"
   />
   <component :is="icon" v-else v-bind="$attrs" />
 </template>
 <script setup>
 import { isEmoji } from '@/utils'
-import { FeatherIcon } from 'frappe-ui'
 
 defineProps({ icon: { type: [String, Object], required: true } })
 </script>
