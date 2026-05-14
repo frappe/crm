@@ -99,7 +99,7 @@
                       <Button
                         class="h-7 px-3"
                         variant="ghost"
-                        icon="plus"
+                        icon="lucide-plus"
                         @click="togglePopover()"
                       />
                     </template>
@@ -157,7 +157,7 @@
                             <div class="flex items-center">
                               <Dropdown :options="contactOptions(contact.name)">
                                 <Button
-                                  icon="more-horizontal"
+                                  icon="lucide-more-horizontal"
                                   class="text-ink-gray-5"
                                   variant="ghost"
                                 />
@@ -174,10 +174,10 @@
                                 <ArrowUpRightIcon class="h-4 w-4" />
                               </Button>
                               <Button variant="ghost" @click="toggle()">
-                                <FeatherIcon
-                                  name="chevron-right"
-                                  class="h-4 w-4 text-ink-gray-9 transition-all duration-300 ease-in-out"
+                                <span
+                                  class="lucide-chevron-right size-4 text-ink-gray-9 transition-all duration-300 ease-in-out"
                                   :class="{ 'rotate-90': opened }"
+                                  aria-hidden="true"
                                 />
                               </Button>
                             </div>
@@ -520,7 +520,7 @@ function contactOptions(contact) {
   let options = [
     {
       label: __('Delete'),
-      icon: 'trash-2',
+      icon: 'lucide-trash-2',
       onClick: () => removeContact(contact),
     },
   ]

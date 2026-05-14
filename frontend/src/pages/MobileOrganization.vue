@@ -32,14 +32,14 @@
                     ? {
                         options: [
                           {
-                            icon: 'upload',
+                            icon: 'lucide-upload',
                             label: organization.doc.organization_logo
                               ? __('Change Image')
                               : __('Upload Image'),
                             onClick: openFileSelector,
                           },
                           {
-                            icon: 'trash-2',
+                            icon: 'lucide-trash-2',
                             label: __('Remove Image'),
                             onClick: () => changeOrganizationImage(''),
                           },
@@ -66,14 +66,14 @@
               </div>
               <div class="flex items-center gap-1.5">
                 <Button @click="openWebsite">
-                  <FeatherIcon name="link" class="h-4 w-4" />
+                  <span class="lucide-link size-4" aria-hidden="true" />
                 </Button>
                 <Button
                   v-if="canDelete"
                   :label="__('Delete')"
                   theme="red"
                   size="sm"
-                  iconLeft="trash-2"
+                  iconLeft="lucide-trash-2"
                   @click="deleteOrganization"
                 />
               </div>

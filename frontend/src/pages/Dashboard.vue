@@ -20,7 +20,7 @@
         <Button
           v-if="editing"
           :label="__('Chart')"
-          iconLeft="plus"
+          iconLeft="lucide-plus"
           @click="showAddChartModal = true"
         />
         <Button

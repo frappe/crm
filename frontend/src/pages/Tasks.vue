@@ -11,7 +11,7 @@
       <Button
         variant="solid"
         :label="__('Create')"
-        iconLeft="plus"
+        iconLeft="lucide-plus"
         @click="createTask"
       />
     </template>
@@ -147,7 +147,7 @@
           variant="ghost"
           @click.stop.prevent
         >
-          <Button icon="more-horizontal" variant="ghost" />
+          <Button icon="lucide-more-horizontal" variant="ghost" />
         </Dropdown>
       </div>
     </template>
@@ -366,7 +366,7 @@ function actions(name) {
   return [
     {
       label: __('Delete'),
-      icon: 'trash-2',
+      icon: 'lucide-trash-2',
       onClick: () => {
         deleteTask(name)
         tasks.value.reload()

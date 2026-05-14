@@ -11,7 +11,7 @@
       <Button
         variant="solid"
         :label="__('Create')"
-        iconLeft="plus"
+        iconLeft="lucide-plus"
         @click="showOrganizationModal = true"
       />
     </template>
