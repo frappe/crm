@@ -35,12 +35,12 @@
                 {
                   label: 'Document',
                   key: 'title',
-                  width: '19rem',
+                  width: '20rem',
                 },
                 {
                   label: 'Master',
                   key: 'reference_doctype',
-                  width: '12rem',
+                  width: '8rem',
                 },
               ]"
               :linkedDocsResource="linkedDocsResource"

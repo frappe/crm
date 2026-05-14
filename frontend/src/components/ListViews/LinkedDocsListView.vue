@@ -7,17 +7,16 @@
     :options="{
       selectable: true,
       showTooltip: true,
-      resizeColumn: true,
+      resizeColumn: false,
     }"
     row-key="reference_docname"
     @update:selections="(selections) => emit('selectionsChanged', selections)"
   >
-    <ListHeader @columnWidthUpdated="emit('columnWidthUpdated')">
+    <ListHeader>
       <ListHeaderItem
         v-for="column in columns"
         :key="column.key"
         :item="column"
-        @columnWidthUpdated="emit('columnWidthUpdated', column)"
       >
       </ListHeaderItem>
     </ListHeader>
