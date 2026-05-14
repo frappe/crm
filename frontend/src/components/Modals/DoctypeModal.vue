@@ -128,6 +128,18 @@ const _create = createResource({
 async function create() {
   await triggerOnBeforeCreate?.()
 
+  const loc = await getLocation()
+
+  if (loc) {
+    document.doc.custom_latitude = loc.lat
+    document.doc.custom_longitude = loc.lng
+
+    const address = await getAddress(loc.lat, loc.lng)
+    if (address) {
+      document.doc.custom_address = address
+    }
+  }
+
   _create.submit({
     doc: {
       doctype: props.doctype,
@@ -136,7 +148,19 @@ async function create() {
   })
 }
 
-function update() {
+async function update() {
+  const loc = await getLocation()
+
+  if (loc) {
+    document.doc.custom_latitude = loc.lat
+    document.doc.custom_longitude = loc.lng
+
+    const address = await getAddress(loc.lat, loc.lng)
+    if (address) {
+      document.doc.custom_address = address
+    }
+  }
+
   document.save.submit(null, {
     onSuccess: (d) => {
       emit('afterUpdate', d)
@@ -178,4 +202,34 @@ onMounted(async () => {
   }
   await triggerOnRender()
 })
+async function getLocation() {
+  return new Promise((resolve) => {
+    if (!navigator.geolocation) return resolve(null)
+
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        resolve({
+          lat: pos.coords.latitude,
+          lng: pos.coords.longitude,
+        })
+      },
+      (err) => {
+        console.warn('Location error:', err)
+        resolve(null)
+      }
+    )
+  })
+}
+async function getAddress(lat, lng) {
+  try {
+    const res = await fetch(
+      `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`
+    )
+    const data = await res.json()
+    return data.display_name
+  } catch (err) {
+    console.error('Address fetch error:', err)
+    return null
+  }
+}
 </script>
