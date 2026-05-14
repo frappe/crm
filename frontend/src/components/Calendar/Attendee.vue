@@ -24,10 +24,10 @@
             @keydown.enter.prevent="handleEnter"
             @keydown.escape.stop="showOptions = false"
           />
-          <FeatherIcon
-            name="chevron-down"
-            class="h-4 text-ink-gray-5 cursor-pointer"
+          <span
+            class="lucide-chevron-down size-4 text-ink-gray-5 cursor-pointer"
             @click.stop="showOptions = !showOptions"
+            aria-hidden="true"
           />
         </ComboboxAnchor>
         <ComboboxPortal>
@@ -42,7 +42,9 @@
               <ComboboxEmpty
                 class="flex gap-2 rounded px-2 py-1 text-base text-ink-gray-5"
               >
-                <FeatherIcon v-if="fetchContacts" name="search" class="h-4" />
+                <span v-if="fetchContacts" class="lucide-search size-4"
+                  aria-hidden="true"
+                />
                 {{ emptyStateText }}
               </ComboboxEmpty>
               <ComboboxItem
@@ -83,10 +85,10 @@
           <UserAvatar :user="att.email" class="-ml-1 !size-5.5" />
         </template>
         <template #suffix>
-          <FeatherIcon
-            class="h-3.5"
-            name="x"
+          <span
+            class="lucide-x size-3.5"
             @click.stop="removeValue(att.email)"
+            aria-hidden="true"
           />
         </template>
       </Button>

@@ -27,17 +27,17 @@
           combo="Delete"
           :alt-combos="['Backspace']"
         >
-          <Button icon="trash-2" variant="ghost" @click="deleteEvent" />
+          <Button icon="lucide-trash-2" variant="ghost" @click="deleteEvent" />
         </ShortcutTooltip>
         <ShortcutTooltip
           v-if="mode === 'edit' || mode === 'details'"
           :label="__('Duplicate Event')"
           combo="Mod+D"
         >
-          <Button icon="copy" variant="ghost" @click="duplicateEvent" />
+          <Button icon="lucide-copy" variant="ghost" @click="duplicateEvent" />
         </ShortcutTooltip>
         <ShortcutTooltip :label="__('Close Panel')" combo="Esc">
-          <Button icon="x" variant="ghost" @click="close" />
+          <Button icon="lucide-x" variant="ghost" @click="close" />
         </ShortcutTooltip>
       </div>
     </div>
@@ -169,16 +169,17 @@
                   >
                     ?
                   </div>
-                  <FeatherIcon
+                  <span
                     v-else
-                    :name="
+                    :class="[
                       _event.attending === 'Yes'
-                        ? 'check'
+                        ? 'lucide-check'
                         : _event.attending === 'No'
-                          ? 'x'
-                          : ''
-                    "
-                    class="size-[7px] stroke-[4px] text-ink-white"
+                          ? 'lucide-x'
+                          : '',
+                      'size-[7px] stroke-[4px] text-ink-white',
+                    ]"
+                    aria-hidden="true"
                   />
                 </div>
               </div>
@@ -211,16 +212,17 @@
                   >
                     ?
                   </div>
-                  <FeatherIcon
+                  <span
                     v-else
-                    :name="
+                    :class="[
                       att.attending === 'Yes'
-                        ? 'check'
+                        ? 'lucide-check'
                         : att.attending === 'No'
-                          ? 'x'
-                          : ''
-                    "
-                    class="size-[7px] stroke-[4px] text-ink-white"
+                          ? 'lucide-x'
+                          : '',
+                      'size-[7px] stroke-[4px] text-ink-white',
+                    ]"
+                    aria-hidden="true"
                   />
                 </div>
               </div>
@@ -230,7 +232,7 @@
             v-if="!showAllParticipants && peoples.length > 2"
             variant="ghost"
             :label="__('See All Participants')"
-            iconLeft="more-horizontal"
+            iconLeft="lucide-more-horizontal"
             class="!justify-start w-fit"
             @click="showAllParticipants = true"
           />
@@ -238,7 +240,7 @@
             v-else-if="showAllParticipants"
             variant="ghost"
             :label="__('Show Less')"
-            iconLeft="chevron-up"
+            iconLeft="lucide-chevron-up"
             class="!justify-start w-fit"
             @click="showAllParticipants = false"
           />
@@ -315,10 +317,10 @@
             @update:modelValue="(date) => updateDate(date, true)"
           >
             <template #suffix="{ togglePopover }">
-              <FeatherIcon
-                name="chevron-down"
-                class="h-4 w-4 cursor-pointer"
+              <span
+                class="lucide-chevron-down size-4 cursor-pointer"
                 @click="togglePopover"
+                aria-hidden="true"
               />
             </template>
           </DatePicker>
@@ -328,7 +330,7 @@
         v-if="!_event.isFullDay"
         class="flex items-center justify-between gap-3 px-4.5 py-[7px] text-ink-gray-7"
       >
-        <FeatherIcon name="clock" class="size-4" />
+        <span class="lucide-clock size-4" aria-hidden="true" />
         <div class="flex w-full items-center gap-x-1.5">
           <TimePicker
             v-if="!_event.isFullDay"
@@ -406,7 +408,7 @@
         <div
           class="flex items-center justify-between gap-3 px-4.5 py-[7px] text-ink-gray-7"
         >
-          <FeatherIcon name="plus-circle" class="size-4" />
+          <span class="lucide-plus-circle size-4" aria-hidden="true" />
           <div class="flex items-center gap-x-1.5 w-full">
             <Select
               v-model="_event.referenceDoctype"

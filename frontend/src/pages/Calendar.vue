@@ -11,7 +11,7 @@
           :disabled="isCreateDisabled"
           @click="newEvent"
         >
-          <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
+          <template #prefix><span class="lucide-plus size-4" aria-hidden="true" /></template>
         </Button>
       </ShortcutTooltip>
     </template>
@@ -63,7 +63,7 @@
                   variant="ghost"
                   class="text-lg font-medium text-ink-gray-7"
                   :label="currentMonthYear"
-                  iconRight="chevron-down"
+                  iconRight="lucide-chevron-down"
                   @click="togglePopover"
                 />
               </template>
@@ -74,13 +74,13 @@
           <div class="flex gap-x-1">
             <!-- Increment and Decrement Button -->
 
-            <Button variant="ghost" icon="chevron-left" @click="decrement" />
+            <Button variant="ghost" icon="lucide-chevron-left" @click="decrement" />
             <Button
               :label="__('Today')"
               variant="ghost"
               @click="setCalendarDate()"
             />
-            <Button variant="ghost" icon="chevron-right" @click="increment" />
+            <Button variant="ghost" icon="lucide-chevron-right" @click="increment" />
 
             <!-- View Buttons -->
             <Select
