@@ -1,57 +1,51 @@
 <template>
-  <Dialog
-    v-model="show"
-    :title="__('Add Existing User')"
-    @close="show = false"
-  >
-    <template #body-content>
-      <div class="flex gap-1 border rounded mb-4 p-2 text-ink-gray-5">
-        <span class="lucide-info size-3.5 mt-0.5" aria-hidden="true" />
-        <p class="text-p-sm">
-          {{
-            __(
-              'Add existing system users to this CRM. Assign them a role to grant access with their current credentials.',
-            )
-          }}
-        </p>
-      </div>
+  <Dialog v-model="show" :title="__('Add Existing User')" @close="show = false">
+    <div class="flex gap-1 border rounded mb-4 p-2 text-ink-gray-5">
+      <span class="lucide-info size-3.5 mt-0.5" aria-hidden="true" />
+      <p class="text-p-sm">
+        {{
+          __(
+            'Add existing system users to this CRM. Assign them a role to grant access with their current credentials.',
+          )
+        }}
+      </p>
+    </div>
 
-      <label class="block text-sm text-ink-gray-5 mb-1.5">
-        {{ __('Users') }}
-      </label>
+    <label class="block text-sm text-ink-gray-5 mb-1.5">
+      {{ __('Users') }}
+    </label>
 
-      <div class="p-2 group bg-surface-gray-2 hover:bg-surface-gray-3 rounded">
-        <EmailMultiSelect
-          v-if="users?.data?.crmUsers?.length"
-          v-model="newUsers"
-          class="flex-1"
-          inputClass="!bg-surface-gray-2 hover:!bg-surface-gray-3 group-hover:!bg-surface-gray-3"
-          :placeholder="__('john@doe.com')"
-          :validate="validateEmail"
-          :fetchUsers="true"
-          :existingEmails="[
-            ...users.data.crmUsers.map((user) => user.name),
-            'admin@example.com',
-          ]"
-          :error-message="
-            (value) => __('{0} is an invalid email address', [value])
-          "
-          :emptyPlaceholder="__('No Users Found')"
-        />
-      </div>
+    <div class="p-2 group bg-surface-gray-2 hover:bg-surface-gray-3 rounded">
+      <EmailMultiSelect
+        v-if="users?.data?.crmUsers?.length"
+        v-model="newUsers"
+        class="flex-1"
+        inputClass="!bg-surface-gray-2 hover:!bg-surface-gray-3 group-hover:!bg-surface-gray-3"
+        :placeholder="__('john@doe.com')"
+        :validate="validateEmail"
+        :fetchUsers="true"
+        :existingEmails="[
+          ...users.data.crmUsers.map((user) => user.name),
+          'admin@example.com',
+        ]"
+        :error-message="
+          (value) => __('{0} is an invalid email address', [value])
+        "
+        :emptyPlaceholder="__('No Users Found')"
+      />
+    </div>
 
-      <div class="space-y-1.5 mt-4">
-        <label class="block text-sm text-ink-gray-5">{{ __('Role') }}</label>
-        <Select
-          v-model="role"
-          class="w-full"
-          :label="__('Role')"
-          :options="roleOptions"
-          :description="description"
-        />
-        <p class="text-p-sm text-ink-gray-6">{{ __(description) }}</p>
-      </div>
-    </template>
+    <div class="space-y-1.5 mt-4">
+      <label class="block text-sm text-ink-gray-5">{{ __('Role') }}</label>
+      <Select
+        v-model="role"
+        class="w-full"
+        :label="__('Role')"
+        :options="roleOptions"
+        :description="description"
+      />
+      <p class="text-p-sm text-ink-gray-6">{{ __(description) }}</p>
+    </div>
     <template #actions>
       <div class="flex justify-end gap-2">
         <Button

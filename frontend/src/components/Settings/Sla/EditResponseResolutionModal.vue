@@ -1,37 +1,35 @@
 <template>
   <Dialog v-model="dialog" :title="__('Edit Response & Resolution')">
-    <template #body-content>
-      <div class="flex flex-col gap-4">
-        <div class="space-y-1.5">
-          <FormLabel :label="__('Priority')" required />
-          <Select
-            v-model="priorityData.priority"
-            size="sm"
-            variant="subtle"
-            :placeholder="__('Select Priority')"
-            :label="__('Priority')"
-            :options="priorityOptions"
-            required
-            class="text-ink-gray-8 w-full"
-          />
-        </div>
-        <div class="space-y-1.5">
-          <FormLabel :label="__('First Response Time')" required />
-          <DurationInput
-            class="w-full"
-            :value="priorityData.first_response_time"
-            :long-form="true"
-            size="sm"
-            variant="subtle"
-            @change="(v) => (priorityData.first_response_time = v)"
-          />
-        </div>
-        <Checkbox
-          v-model="priorityData.default_priority"
-          :label="__('Set Default Priority')"
+    <div class="flex flex-col gap-4">
+      <div class="space-y-1.5">
+        <FormLabel :label="__('Priority')" required />
+        <Select
+          v-model="priorityData.priority"
+          size="sm"
+          variant="subtle"
+          :placeholder="__('Select Priority')"
+          :label="__('Priority')"
+          :options="priorityOptions"
+          required
+          class="text-ink-gray-8 w-full"
         />
       </div>
-    </template>
+      <div class="space-y-1.5">
+        <FormLabel :label="__('First Response Time')" required />
+        <DurationInput
+          class="w-full"
+          :value="priorityData.first_response_time"
+          :long-form="true"
+          size="sm"
+          variant="subtle"
+          @change="(v) => (priorityData.first_response_time = v)"
+        />
+      </div>
+      <Checkbox
+        v-model="priorityData.default_priority"
+        :label="__('Set Default Priority')"
+      />
+    </div>
     <template #actions>
       <div class="flex justify-between">
         <div>

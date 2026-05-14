@@ -9,27 +9,25 @@
           : __('Create View')
     "
   >
-    <template #body-content>
-      <div class="mb-1.5 block text-base text-ink-gray-5">
-        {{ __('View Name') }}
-      </div>
-      <div class="flex gap-2">
-        <IconPicker v-slot="{ togglePopover }" v-model="view.icon">
-          <Button
-            size="md"
-            class="flex size-8 text-2xl leading-none"
-            :label="view.icon"
-            @click="togglePopover"
-          />
-        </IconPicker>
-        <TextInput
-          v-model="view.label"
-          class="flex-1"
+    <div class="mb-1.5 block text-base text-ink-gray-5">
+      {{ __('View Name') }}
+    </div>
+    <div class="flex gap-2">
+      <IconPicker v-slot="{ togglePopover }" v-model="view.icon">
+        <Button
           size="md"
-          :placeholder="__('My Open Deals')"
+          class="flex size-8 text-2xl leading-none"
+          :label="view.icon"
+          @click="togglePopover"
         />
-      </div>
-    </template>
+      </IconPicker>
+      <TextInput
+        v-model="view.label"
+        class="flex-1"
+        size="md"
+        :placeholder="__('My Open Deals')"
+      />
+    </div>
     <template #actions>
       <div class="flex justify-end">
         <Button

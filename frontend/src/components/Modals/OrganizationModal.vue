@@ -1,50 +1,48 @@
 <template>
-  <Dialog v-model="show" size="xl">
-    <template #body>
-      <div class="px-4 pt-5 pb-6 bg-surface-modal sm:px-6">
-        <div class="flex items-center justify-between mb-5">
-          <div>
-            <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9">
-              {{ __('New Organization') }}
-            </h3>
-          </div>
-          <div class="flex items-center gap-1">
-            <Button
-              v-if="isManager() && !isMobileView"
-              variant="ghost"
-              class="w-7"
-              :tooltip="__('Edit Fields Layout')"
-              :icon="EditIcon"
-              @click="openQuickEntryModal"
-            />
-            <Button
-              variant="ghost"
-              class="w-7"
-              icon="lucide-x"
-              @click="show = false"
-            />
-          </div>
+  <Dialog v-model="show" size="xl" bare>
+    <div class="px-4 pt-5 pb-6 bg-surface-modal sm:px-6">
+      <div class="flex items-center justify-between mb-5">
+        <div>
+          <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9">
+            {{ __('New Organization') }}
+          </h3>
         </div>
-        <FieldLayout
-          v-if="tabs.data?.length"
-          :tabs="tabs.data"
-          :data="organization.doc"
-          doctype="CRM Organization"
-        />
-        <ErrorMessage v-if="error" class="mt-8" :message="__(error)" />
-      </div>
-      <div class="px-4 pt-4 pb-7 sm:px-6">
-        <div class="space-y-2">
+        <div class="flex items-center gap-1">
           <Button
-            class="w-full"
-            variant="solid"
-            :label="__('Create')"
-            :loading="loading"
-            @click="createOrganization"
+            v-if="isManager() && !isMobileView"
+            variant="ghost"
+            class="w-7"
+            :tooltip="__('Edit Fields Layout')"
+            :icon="EditIcon"
+            @click="openQuickEntryModal"
+          />
+          <Button
+            variant="ghost"
+            class="w-7"
+            icon="lucide-x"
+            @click="show = false"
           />
         </div>
       </div>
-    </template>
+      <FieldLayout
+        v-if="tabs.data?.length"
+        :tabs="tabs.data"
+        :data="organization.doc"
+        doctype="CRM Organization"
+      />
+      <ErrorMessage v-if="error" class="mt-8" :message="__(error)" />
+    </div>
+    <div class="px-4 pt-4 pb-7 sm:px-6">
+      <div class="space-y-2">
+        <Button
+          class="w-full"
+          variant="solid"
+          :label="__('Create')"
+          :loading="loading"
+          @click="createOrganization"
+        />
+      </div>
+    </div>
   </Dialog>
 </template>
 

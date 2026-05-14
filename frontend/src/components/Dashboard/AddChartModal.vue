@@ -1,36 +1,30 @@
 <template>
-  <Dialog
-    v-model="show"
-    :title="__('Add Chart')"
-    @close="show = false"
-  >
-    <template #body-content>
-      <div class="flex flex-col gap-4">
-        <Select
-          v-model="chartType"
-          :label="__('Chart Type')"
-          :options="chartTypes"
-        />
-        <Select
-          v-if="chartType === 'number_chart'"
-          v-model="numberChart"
-          :label="__('Number Chart')"
-          :options="numberCharts"
-        />
-        <Select
-          v-if="chartType === 'axis_chart'"
-          v-model="axisChart"
-          :label="__('Axis Chart')"
-          :options="axisCharts"
-        />
-        <Select
-          v-if="chartType === 'donut_chart'"
-          v-model="donutChart"
-          :label="__('Donut Chart')"
-          :options="donutCharts"
-        />
-      </div>
-    </template>
+  <Dialog v-model="show" :title="__('Add Chart')" @close="show = false">
+    <div class="flex flex-col gap-4">
+      <Select
+        v-model="chartType"
+        :label="__('Chart Type')"
+        :options="chartTypes"
+      />
+      <Select
+        v-if="chartType === 'number_chart'"
+        v-model="numberChart"
+        :label="__('Number Chart')"
+        :options="numberCharts"
+      />
+      <Select
+        v-if="chartType === 'axis_chart'"
+        v-model="axisChart"
+        :label="__('Axis Chart')"
+        :options="axisCharts"
+      />
+      <Select
+        v-if="chartType === 'donut_chart'"
+        v-model="donutChart"
+        :label="__('Donut Chart')"
+        :options="donutCharts"
+      />
+    </div>
     <template #actions>
       <div class="flex items-center justify-end gap-2">
         <Button variant="outline" :label="__('Cancel')" @click="show = false" />

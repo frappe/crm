@@ -1,42 +1,40 @@
 <template>
   <Dialog v-model="show" :title="__('Change Password')">
-    <template #body-content>
-      <div class="flex flex-col gap-4">
-        <div>
-          <Password
-            v-model="currentPassword"
-            :placeholder="__('Current Password')"
-            maxLength="50"
-          >
-            <template #prefix>
-              <LockKeyhole class="size-4 text-ink-gray-4" />
-            </template>
-          </Password>
-        </div>
-        <div>
-          <Password
-            v-model="newPassword"
-            :placeholder="__('New Password')"
-            maxLength="50"
-          >
-            <template #prefix>
-              <LockKeyhole class="size-4 text-ink-gray-4" />
-            </template>
-          </Password>
-        </div>
-        <div>
-          <Password
-            v-model="confirmPassword"
-            :placeholder="__('Confirm Password')"
-            maxLength="50"
-          >
-            <template #prefix>
-              <LockKeyhole class="size-4 text-ink-gray-4" />
-            </template>
-          </Password>
-        </div>
+    <div class="flex flex-col gap-4">
+      <div>
+        <Password
+          v-model="currentPassword"
+          :placeholder="__('Current Password')"
+          maxLength="50"
+        >
+          <template #prefix>
+            <LockKeyhole class="size-4 text-ink-gray-4" />
+          </template>
+        </Password>
       </div>
-    </template>
+      <div>
+        <Password
+          v-model="newPassword"
+          :placeholder="__('New Password')"
+          maxLength="50"
+        >
+          <template #prefix>
+            <LockKeyhole class="size-4 text-ink-gray-4" />
+          </template>
+        </Password>
+      </div>
+      <div>
+        <Password
+          v-model="confirmPassword"
+          :placeholder="__('Confirm Password')"
+          maxLength="50"
+        >
+          <template #prefix>
+            <LockKeyhole class="size-4 text-ink-gray-4" />
+          </template>
+        </Password>
+      </div>
+    </div>
     <template #actions>
       <div class="flex justify-between items-center">
         <div>

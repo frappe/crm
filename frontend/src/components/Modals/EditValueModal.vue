@@ -1,28 +1,26 @@
 <template>
   <Dialog v-model="show" :title="__('Bulk Edit')">
-    <template #body-content>
-      <div v-if="fields.length" class="mb-4">
-        <div class="mb-1.5 text-sm text-ink-gray-5">{{ __('Field') }}</div>
-        <Combobox
-          :model-value="field.fieldname"
-          :options="fields"
-          class="w-full"
-          :placeholder="__('Source')"
-          :openOnClick="true"
-          @update:selectedOption="(e) => changeField(e)"
-        />
-      </div>
-      <div>
-        <div class="mb-1.5 text-sm text-ink-gray-5">{{ __('Value') }}</div>
-        <component
-          :is="getValueComponent(field)"
-          :value="newValue"
-          :placeholder="__('Contact Us')"
-          @change="(v) => updateValue(v)"
-        />
-      </div>
-      <ErrorMessage class="mt-2" :message="error" />
-    </template>
+    <div v-if="fields.length" class="mb-4">
+      <div class="mb-1.5 text-sm text-ink-gray-5">{{ __('Field') }}</div>
+      <Combobox
+        :model-value="field.fieldname"
+        :options="fields"
+        class="w-full"
+        :placeholder="__('Source')"
+        :openOnClick="true"
+        @update:selectedOption="(e) => changeField(e)"
+      />
+    </div>
+    <div>
+      <div class="mb-1.5 text-sm text-ink-gray-5">{{ __('Value') }}</div>
+      <component
+        :is="getValueComponent(field)"
+        :value="newValue"
+        :placeholder="__('Contact Us')"
+        @change="(v) => updateValue(v)"
+      />
+    </div>
+    <ErrorMessage class="mt-2" :message="error" />
     <template #actions>
       <Button
         class="w-full"

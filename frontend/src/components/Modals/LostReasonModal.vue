@@ -1,41 +1,39 @@
 <template>
   <Dialog v-model="show" :title="__('Lost Reason')" @close="cancel">
-    <template #body-content>
-      <div class="-mt-3 mb-4 text-p-base text-ink-gray-7">
-        {{
-          __('Please provide a reason for marking this {0} as lost', [
-            doctype.toLowerCase().replace('crm ', ''),
-          ])
-        }}
-      </div>
-      <div class="flex flex-col gap-3">
-        <div>
-          <div class="mb-2 text-sm text-ink-gray-5">
-            {{ __('Lost Reason') }}
-            <span class="text-ink-red-2">*</span>
-          </div>
-          <Link
-            ref="linkRef"
-            class="form-control flex-1 truncate"
-            :value="lostReason"
-            doctype="CRM Lost Reason"
-            :onCreate="onCreate"
-            @change="(v) => (lostReason = v)"
-          />
+    <div class="-mt-3 mb-4 text-p-base text-ink-gray-7">
+      {{
+        __('Please provide a reason for marking this {0} as lost', [
+          doctype.toLowerCase().replace('crm ', ''),
+        ])
+      }}
+    </div>
+    <div class="flex flex-col gap-3">
+      <div>
+        <div class="mb-2 text-sm text-ink-gray-5">
+          {{ __('Lost Reason') }}
+          <span class="text-ink-red-2">*</span>
         </div>
-        <div>
-          <div class="mb-2 text-sm text-ink-gray-5">
-            {{ __('Lost Notes') }}
-            <span v-if="lostReason == 'Other'" class="text-ink-red-2">*</span>
-          </div>
-          <Textarea
-            class="form-control flex-1 truncate"
-            :value="lostNotes"
-            @change="(e) => (lostNotes = e.target.value)"
-          />
-        </div>
+        <Link
+          ref="linkRef"
+          class="form-control flex-1 truncate"
+          :value="lostReason"
+          doctype="CRM Lost Reason"
+          :onCreate="onCreate"
+          @change="(v) => (lostReason = v)"
+        />
       </div>
-    </template>
+      <div>
+        <div class="mb-2 text-sm text-ink-gray-5">
+          {{ __('Lost Notes') }}
+          <span v-if="lostReason == 'Other'" class="text-ink-red-2">*</span>
+        </div>
+        <Textarea
+          class="form-control flex-1 truncate"
+          :value="lostNotes"
+          @change="(e) => (lostNotes = e.target.value)"
+        />
+      </div>
+    </div>
     <template #actions>
       <div class="flex justify-between items-center gap-2">
         <div><ErrorMessage :message="error" /></div>

@@ -1,54 +1,49 @@
 <template>
   <Dialog v-model="show" :title="__('WhatsApp Templates')" size="4xl">
-    <template #body-content>
-      <TextInput
-        ref="searchInput"
-        v-model="search"
-        type="text"
-        :placeholder="__('Welcome Message')"
-      >
-        <template #prefix>
-          <span
-            class="lucide-search size-4 text-ink-gray-4"
-            aria-hidden="true"
-          />
-        </template>
-      </TextInput>
+    <TextInput
+      ref="searchInput"
+      v-model="search"
+      type="text"
+      :placeholder="__('Welcome Message')"
+    >
+      <template #prefix>
+        <span class="lucide-search size-4 text-ink-gray-4" aria-hidden="true" />
+      </template>
+    </TextInput>
+    <div
+      v-if="filteredTemplates.length"
+      class="mt-2 grid max-h-[560px] grid-cols-1 gap-2 overflow-y-auto sm:grid-cols-3"
+    >
       <div
-        v-if="filteredTemplates.length"
-        class="mt-2 grid max-h-[560px] grid-cols-1 gap-2 overflow-y-auto sm:grid-cols-3"
+        v-for="template in filteredTemplates"
+        :key="template.name"
+        class="flex h-56 cursor-pointer flex-col gap-2 rounded-lg border p-3 hover:bg-surface-gray-2"
+        @click="emit('send', template.name)"
       >
-        <div
-          v-for="template in filteredTemplates"
-          :key="template.name"
-          class="flex h-56 cursor-pointer flex-col gap-2 rounded-lg border p-3 hover:bg-surface-gray-2"
-          @click="emit('send', template.name)"
-        >
-          <div class="border-b pb-2 text-base font-semibold">
-            {{ template.name }}
-          </div>
-          <TextEditor
-            v-if="template.template"
-            :content="template.template"
-            :editable="false"
-            editor-class="!prose-sm max-w-none !text-sm text-ink-gray-5 focus:outline-none"
-            class="flex-1 overflow-hidden"
-          />
+        <div class="border-b pb-2 text-base font-semibold">
+          {{ template.name }}
         </div>
+        <TextEditor
+          v-if="template.template"
+          :content="template.template"
+          :editable="false"
+          editor-class="!prose-sm max-w-none !text-sm text-ink-gray-5 focus:outline-none"
+          class="flex-1 overflow-hidden"
+        />
       </div>
-      <div v-else class="mt-2">
-        <div class="flex h-56 flex-col items-center justify-center">
-          <div class="text-lg text-ink-gray-4">
-            {{ __('No Templates Found') }}
-          </div>
-          <Button
-            :label="__('Create New')"
-            class="mt-4"
-            @click="newWhatsappTemplate"
-          />
+    </div>
+    <div v-else class="mt-2">
+      <div class="flex h-56 flex-col items-center justify-center">
+        <div class="text-lg text-ink-gray-4">
+          {{ __('No Templates Found') }}
         </div>
+        <Button
+          :label="__('Create New')"
+          class="mt-4"
+          @click="newWhatsappTemplate"
+        />
       </div>
-    </template>
+    </div>
   </Dialog>
 </template>
 

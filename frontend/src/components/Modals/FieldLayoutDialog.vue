@@ -1,51 +1,49 @@
 <template>
-  <Dialog v-model="show" :size="size">
-    <template #body>
-      <div class="bg-surface-modal px-4 pb-6 pt-5 sm:px-6">
-        <div class="mb-5 flex items-center justify-between">
-          <div>
-            <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9">
-              {{ __(title) }}
-            </h3>
-          </div>
-          <div class="flex items-center gap-1">
-            <Button
-              variant="ghost"
-              class="w-7"
-              icon="lucide-x"
-              @click="handleCancel"
-            />
-          </div>
+  <Dialog v-model="show" :size="size" bare>
+    <div class="bg-surface-modal px-4 pb-6 pt-5 sm:px-6">
+      <div class="mb-5 flex items-center justify-between">
+        <div>
+          <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9">
+            {{ __(title) }}
+          </h3>
         </div>
-        <div v-if="resolvedTabs">
-          <FieldLayout
-            :tabs="resolvedTabs"
-            :data="localDoc"
-            :doctype="doctype || ''"
-            :context="fieldLayoutContext"
-          />
-          <ErrorMessage class="mt-2" :message="error" />
-        </div>
-        <div v-else-if="loading" class="py-8 text-center text-ink-gray-5">
-          {{ __('Loading...') }}
-        </div>
-      </div>
-      <div class="px-4 pb-7 pt-4 sm:px-6">
-        <div class="space-y-2">
+        <div class="flex items-center gap-1">
           <Button
-            v-for="(action, idx) in resolvedActions"
-            :key="action.label + idx"
-            class="w-full"
-            :label="__(action.label)"
-            :variant="action.variant"
-            :theme="action.theme"
-            :icon="action.icon"
-            :loading="action.loading"
-            @click="action.onClick"
+            variant="ghost"
+            class="w-7"
+            icon="lucide-x"
+            @click="handleCancel"
           />
         </div>
       </div>
-    </template>
+      <div v-if="resolvedTabs">
+        <FieldLayout
+          :tabs="resolvedTabs"
+          :data="localDoc"
+          :doctype="doctype || ''"
+          :context="fieldLayoutContext"
+        />
+        <ErrorMessage class="mt-2" :message="error" />
+      </div>
+      <div v-else-if="loading" class="py-8 text-center text-ink-gray-5">
+        {{ __('Loading...') }}
+      </div>
+    </div>
+    <div class="px-4 pb-7 pt-4 sm:px-6">
+      <div class="space-y-2">
+        <Button
+          v-for="(action, idx) in resolvedActions"
+          :key="action.label + idx"
+          class="w-full"
+          :label="__(action.label)"
+          :variant="action.variant"
+          :theme="action.theme"
+          :icon="action.icon"
+          :loading="action.loading"
+          @click="action.onClick"
+        />
+      </div>
+    </div>
   </Dialog>
 </template>
 

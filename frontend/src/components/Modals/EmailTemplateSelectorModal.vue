@@ -1,64 +1,62 @@
 <template>
   <Dialog v-model="show" :title="__('Email Templates')" size="4xl">
-    <template #body-content>
-      <div class="flex items-center gap-2">
-        <TextInput
-          ref="searchInput"
-          v-model="search"
-          class="w-full"
-          type="text"
-          :placeholder="__('Payment Reminder')"
-        >
-          <template #prefix>
-            <span
-              class="lucide-search size-4 text-ink-gray-4"
-              aria-hidden="true"
-            />
-          </template>
-        </TextInput>
-        <Button :label="__('Create')" icon-left="plus" @click="create" />
-      </div>
-      <div
-        v-if="filteredTemplates.length"
-        class="mt-4 grid max-h-[560px] sm:grid-cols-3 gris-cols-1 gap-2 overflow-y-auto"
+    <div class="flex items-center gap-2">
+      <TextInput
+        ref="searchInput"
+        v-model="search"
+        class="w-full"
+        type="text"
+        :placeholder="__('Payment Reminder')"
       >
-        <div
-          v-for="template in filteredTemplates"
-          :key="template.name"
-          class="flex h-56 cursor-pointer flex-col gap-2 rounded-lg border p-3 hover:bg-surface-gray-2"
-          @click="emit('apply', template)"
-        >
-          <div class="border-b pb-2 text-base font-semibold">
-            {{ template.name }}
-          </div>
-          <div v-if="template.subject" class="text-sm text-ink-gray-5">
-            {{ __('Subject: {0}', [template.subject]) }}
-          </div>
-          <TextEditor
-            v-if="template.use_html && template.response_html"
-            :content="template.response_html"
-            :editable="false"
-            editor-class="!prose-sm max-w-none !text-sm text-ink-gray-5 focus:outline-none"
-            class="flex-1 overflow-hidden"
+        <template #prefix>
+          <span
+            class="lucide-search size-4 text-ink-gray-4"
+            aria-hidden="true"
           />
-          <TextEditor
-            v-else-if="template.response"
-            :content="template.response"
-            :editable="false"
-            editor-class="!prose-sm max-w-none !text-sm text-ink-gray-5 focus:outline-none"
-            class="flex-1 overflow-hidden"
-          />
+        </template>
+      </TextInput>
+      <Button :label="__('Create')" icon-left="plus" @click="create" />
+    </div>
+    <div
+      v-if="filteredTemplates.length"
+      class="mt-4 grid max-h-[560px] sm:grid-cols-3 gris-cols-1 gap-2 overflow-y-auto"
+    >
+      <div
+        v-for="template in filteredTemplates"
+        :key="template.name"
+        class="flex h-56 cursor-pointer flex-col gap-2 rounded-lg border p-3 hover:bg-surface-gray-2"
+        @click="emit('apply', template)"
+      >
+        <div class="border-b pb-2 text-base font-semibold">
+          {{ template.name }}
         </div>
-      </div>
-      <div v-else class="mt-2">
-        <div class="flex h-56 flex-col items-center justify-center">
-          <div class="text-lg text-ink-gray-4">
-            {{ __('No Templates Found') }}
-          </div>
-          <Button :label="__('Create New')" class="mt-4" @click="create" />
+        <div v-if="template.subject" class="text-sm text-ink-gray-5">
+          {{ __('Subject: {0}', [template.subject]) }}
         </div>
+        <TextEditor
+          v-if="template.use_html && template.response_html"
+          :content="template.response_html"
+          :editable="false"
+          editor-class="!prose-sm max-w-none !text-sm text-ink-gray-5 focus:outline-none"
+          class="flex-1 overflow-hidden"
+        />
+        <TextEditor
+          v-else-if="template.response"
+          :content="template.response"
+          :editable="false"
+          editor-class="!prose-sm max-w-none !text-sm text-ink-gray-5 focus:outline-none"
+          class="flex-1 overflow-hidden"
+        />
       </div>
-    </template>
+    </div>
+    <div v-else class="mt-2">
+      <div class="flex h-56 flex-col items-center justify-center">
+        <div class="text-lg text-ink-gray-4">
+          {{ __('No Templates Found') }}
+        </div>
+        <Button :label="__('Create New')" class="mt-4" @click="create" />
+      </div>
+    </div>
   </Dialog>
 </template>
 

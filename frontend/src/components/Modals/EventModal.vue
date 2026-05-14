@@ -1,199 +1,182 @@
 <template>
   <Dialog v-model="show" size="xl">
-    <template #body-header>
-      <div class="mb-6 flex items-center justify-between">
-        <div class="flex items-center space-x-2">
-          <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9">
-            {{
-              mode === 'edit'
-                ? __('Edit an Event')
-                : mode === 'duplicate'
-                  ? __('Duplicate an Event')
-                  : __('Create an Event')
-            }}
-          </h3>
-        </div>
-        <div class="flex gap-1">
-          <Button v-if="mode === 'edit'" variant="ghost" @click="deleteEvent">
-            <template #icon>
-              <LucideTrash2 class="h-4 w-4 text-ink-gray-9" />
-            </template>
-          </Button>
-          <Button
-            v-if="mode === 'edit'"
-            variant="ghost"
-            @click="duplicateEvent"
-          >
-            <template #icon>
-              <LucideCopy class="h-4 w-4 text-ink-gray-9" />
-            </template>
-          </Button>
-          <Button variant="ghost" @click="show = false">
-            <template #icon>
-              <LucideX class="h-4 w-4 text-ink-gray-9" />
-            </template>
-          </Button>
-        </div>
-      </div>
+    <template #title>
+      <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9">
+        {{
+          mode === 'edit'
+            ? __('Edit an Event')
+            : mode === 'duplicate'
+              ? __('Duplicate an Event')
+              : __('Create an Event')
+        }}
+      </h3>
+      <Button v-if="mode === 'edit'" variant="ghost" @click="deleteEvent">
+        <template #icon>
+          <LucideTrash2 class="h-4 w-4 text-ink-gray-9" />
+        </template>
+      </Button>
+      <Button v-if="mode === 'edit'" variant="ghost" @click="duplicateEvent">
+        <template #icon>
+          <LucideCopy class="h-4 w-4 text-ink-gray-9" />
+        </template>
+      </Button>
     </template>
-    <template #body-content>
-      <div class="flex flex-col gap-4">
-        <div class="flex items-center">
-          <div class="text-base text-ink-gray-7 w-3/12">
-            {{ __('Title') }}
-          </div>
-          <div class="flex gap-1 w-9/12">
-            <Dropdown class="" :options="colors">
-              <div
-                class="flex items-center justify-center size-7 shrink-0 border border-outline-gray-2 bg-surface-white hover:border-outline-gray-3 hover:shadow-sm rounded cursor-pointer"
-              >
-                <div
-                  class="size-2.5 rounded-full cursor-pointer"
-                  :style="{
-                    backgroundColor: _event.color || '#30A66D',
-                  }"
-                />
-              </div>
-            </Dropdown>
-            <TextInput
-              ref="title"
-              v-model="_event.title"
-              class="w-full"
-              size="sm"
-              :placeholder="__('Call with John Doe')"
-              variant="outline"
-              required
-            />
-          </div>
+    <div class="flex flex-col gap-4">
+      <div class="flex items-center">
+        <div class="text-base text-ink-gray-7 w-3/12">
+          {{ __('Title') }}
         </div>
-        <div class="flex items-center">
-          <div class="text-base text-ink-gray-7 w-3/12">
-            {{ __('All Day') }}
-          </div>
-          <Switch v-model="_event.isFullDay" />
-        </div>
-        <div class="border-t border-outline-gray-1" />
-        <div class="flex items-center">
-          <div class="text-base text-ink-gray-7 w-3/12">
-            {{ __('Date & Time') }}
-          </div>
-          <div class="flex gap-2 w-9/12">
-            <DatePicker
-              :class="[_event.isFullDay ? 'w-full' : 'w-[158px]']"
-              variant="outline"
-              :value="_event.fromDate"
-              :format="'MMM D, YYYY'"
-              :placeholder="__('May 1, 2025')"
-              :clearable="false"
-              @update:modelValue="(date) => updateDate(date, true)"
+        <div class="flex gap-1 w-9/12">
+          <Dropdown class="" :options="colors">
+            <div
+              class="flex items-center justify-center size-7 shrink-0 border border-outline-gray-2 bg-surface-white hover:border-outline-gray-3 hover:shadow-sm rounded cursor-pointer"
             >
-              <template #suffix="{ togglePopover }">
-                <span
-                  class="lucide-chevron-down size-4 cursor-pointer"
-                  aria-hidden="true"
-                  @click="togglePopover"
-                />
-              </template>
-            </DatePicker>
-            <TimePicker
-              v-if="!_event.isFullDay"
-              class="max-w-[112px]"
-              variant="outline"
-              :modelValue="_event.fromTime"
-              :placeholder="__('Start Time')"
-              @update:modelValue="(time) => updateTime(time, true)"
-            />
-            <TimePicker
-              v-if="!_event.isFullDay"
-              class="max-w-[112px]"
-              variant="outline"
-              :modelValue="_event.toTime"
-              :options="toOptions"
-              :placeholder="__('End Time')"
-              placement="bottom-end"
-              @update:modelValue="(time) => updateTime(time)"
-            />
-          </div>
-        </div>
-        <div class="flex items-start">
-          <div class="text-base text-ink-gray-7 mt-1.5 w-3/12">
-            {{ __('Attendees') }}
-          </div>
-          <div class="w-9/12">
-            <Attendee
-              v-model="peoples"
-              :validate="validateEmail"
-              :error-message="
-                (value) => __('{0} is an invalid email address', [value])
-              "
-            />
-          </div>
-        </div>
-        <div class="flex items-start">
-          <div class="text-base text-ink-gray-7 mt-1.5 w-3/12">
-            {{ __('Visibility') }}
-          </div>
-          <div class="w-9/12">
-            <Select
-              v-model="_event.eventType"
-              class="w-full"
-              :options="[
-                {
-                  label: __('Private'),
-                  value: 'Private',
-                },
-                {
-                  label: __('Public'),
-                  value: 'Public',
-                },
-              ]"
-              variant="outline"
-              :placeholder="__('Private or Public')"
-            />
-          </div>
-        </div>
-        <div class="flex items-start">
-          <div class="text-base text-ink-gray-7 mt-1.5 w-3/12">
-            {{ __('Location') }}
-          </div>
-          <div class="w-9/12">
-            <TextInput
-              v-model="_event.location"
-              class="w-full"
-              size="sm"
-              variant="outline"
-              :placeholder="__('Add Location')"
-            />
-          </div>
-        </div>
-        <div class="flex">
-          <div class="mt-2 text-base text-ink-gray-7 w-3/12">
-            {{ __('Description') }}
-          </div>
-          <div class="w-9/12">
-            <TextEditor
-              editor-class="!prose-sm overflow-auto min-h-[80px] max-h-80 py-1.5 px-2 rounded border border-outline-gray-2 placeholder-ink-gray-4 hover:border-outline-gray-3 hover:border-outline-gray-modals hover:shadow-sm focus:bg-surface-white focus:border-outline-gray-4 focus:shadow-sm focus:ring-0 focus-visible:ring-2 focus-visible:ring-outline-gray-3 text-ink-gray-8 transition-colors"
-              :bubbleMenu="true"
-              :content="_event.description"
-              :placeholder="__('Add Description.')"
-              @change="(val) => (_event.description = val)"
-            />
-          </div>
-        </div>
-        <div class="border-t border-outline-gray-1" />
-        <div class="flex">
-          <div class="mt-1.5 text-base text-ink-gray-7 w-3/12">
-            {{ __('Notifications') }}
-          </div>
-          <div class="w-9/12">
-            <EventNotifications
-              v-model="_event.notifications"
-              :isAllDay="_event.isFullDay"
-            />
-          </div>
+              <div
+                class="size-2.5 rounded-full cursor-pointer"
+                :style="{
+                  backgroundColor: _event.color || '#30A66D',
+                }"
+              />
+            </div>
+          </Dropdown>
+          <TextInput
+            ref="title"
+            v-model="_event.title"
+            class="w-full"
+            size="sm"
+            :placeholder="__('Call with John Doe')"
+            variant="outline"
+            required
+          />
         </div>
       </div>
-    </template>
+      <div class="flex items-center">
+        <div class="text-base text-ink-gray-7 w-3/12">
+          {{ __('All Day') }}
+        </div>
+        <Switch v-model="_event.isFullDay" />
+      </div>
+      <div class="border-t border-outline-gray-1" />
+      <div class="flex items-center">
+        <div class="text-base text-ink-gray-7 w-3/12">
+          {{ __('Date & Time') }}
+        </div>
+        <div class="flex gap-2 w-9/12">
+          <DatePicker
+            :class="[_event.isFullDay ? 'w-full' : 'w-[158px]']"
+            variant="outline"
+            :value="_event.fromDate"
+            :format="'MMM D, YYYY'"
+            :placeholder="__('May 1, 2025')"
+            :clearable="false"
+            @update:modelValue="(date) => updateDate(date, true)"
+          >
+            <template #suffix="{ togglePopover }">
+              <span
+                class="lucide-chevron-down size-4 cursor-pointer"
+                aria-hidden="true"
+                @click="togglePopover"
+              />
+            </template>
+          </DatePicker>
+          <TimePicker
+            v-if="!_event.isFullDay"
+            class="max-w-[112px]"
+            variant="outline"
+            :modelValue="_event.fromTime"
+            :placeholder="__('Start Time')"
+            @update:modelValue="(time) => updateTime(time, true)"
+          />
+          <TimePicker
+            v-if="!_event.isFullDay"
+            class="max-w-[112px]"
+            variant="outline"
+            :modelValue="_event.toTime"
+            :options="toOptions"
+            :placeholder="__('End Time')"
+            placement="bottom-end"
+            @update:modelValue="(time) => updateTime(time)"
+          />
+        </div>
+      </div>
+      <div class="flex items-start">
+        <div class="text-base text-ink-gray-7 mt-1.5 w-3/12">
+          {{ __('Attendees') }}
+        </div>
+        <div class="w-9/12">
+          <Attendee
+            v-model="peoples"
+            :validate="validateEmail"
+            :error-message="
+              (value) => __('{0} is an invalid email address', [value])
+            "
+          />
+        </div>
+      </div>
+      <div class="flex items-start">
+        <div class="text-base text-ink-gray-7 mt-1.5 w-3/12">
+          {{ __('Visibility') }}
+        </div>
+        <div class="w-9/12">
+          <Select
+            v-model="_event.eventType"
+            class="w-full"
+            :options="[
+              {
+                label: __('Private'),
+                value: 'Private',
+              },
+              {
+                label: __('Public'),
+                value: 'Public',
+              },
+            ]"
+            variant="outline"
+            :placeholder="__('Private or Public')"
+          />
+        </div>
+      </div>
+      <div class="flex items-start">
+        <div class="text-base text-ink-gray-7 mt-1.5 w-3/12">
+          {{ __('Location') }}
+        </div>
+        <div class="w-9/12">
+          <TextInput
+            v-model="_event.location"
+            class="w-full"
+            size="sm"
+            variant="outline"
+            :placeholder="__('Add Location')"
+          />
+        </div>
+      </div>
+      <div class="flex">
+        <div class="mt-2 text-base text-ink-gray-7 w-3/12">
+          {{ __('Description') }}
+        </div>
+        <div class="w-9/12">
+          <TextEditor
+            editor-class="!prose-sm overflow-auto min-h-[80px] max-h-80 py-1.5 px-2 rounded border border-outline-gray-2 placeholder-ink-gray-4 hover:border-outline-gray-3 hover:border-outline-gray-modals hover:shadow-sm focus:bg-surface-white focus:border-outline-gray-4 focus:shadow-sm focus:ring-0 focus-visible:ring-2 focus-visible:ring-outline-gray-3 text-ink-gray-8 transition-colors"
+            :bubbleMenu="true"
+            :content="_event.description"
+            :placeholder="__('Add Description.')"
+            @change="(val) => (_event.description = val)"
+          />
+        </div>
+      </div>
+      <div class="border-t border-outline-gray-1" />
+      <div class="flex">
+        <div class="mt-1.5 text-base text-ink-gray-7 w-3/12">
+          {{ __('Notifications') }}
+        </div>
+        <div class="w-9/12">
+          <EventNotifications
+            v-model="_event.notifications"
+            :isAllDay="_event.isFullDay"
+          />
+        </div>
+      </div>
+    </div>
     <template #actions>
       <div
         v-if="eventsResource"

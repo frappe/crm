@@ -5,66 +5,64 @@
     size="xl"
     @close="() => (assignees = [...oldAssignees])"
   >
-    <template #body-content>
-      <Link
-        class="form-control"
-        value=""
-        doctype="User"
-        :placeholder="__('John Doe')"
-        :filters="{
-          name: ['in', users.data.crmUsers?.map((user) => user.name)],
-          ignore_user_type: 1,
-        }"
-        :hideMe="true"
-        @change="(option) => addValue(option) && ($refs.input.value = '')"
-      >
-        <template #target="{ togglePopover }">
-          <div
-            class="w-full min-h-12 flex flex-wrap items-center gap-1.5 p-1.5 pb-5 rounded-lg bg-surface-gray-2 cursor-text"
-            @click.stop="togglePopover"
+    <Link
+      class="form-control"
+      value=""
+      doctype="User"
+      :placeholder="__('John Doe')"
+      :filters="{
+        name: ['in', users.data.crmUsers?.map((user) => user.name)],
+        ignore_user_type: 1,
+      }"
+      :hideMe="true"
+      @change="(option) => addValue(option) && ($refs.input.value = '')"
+    >
+      <template #target="{ togglePopover }">
+        <div
+          class="w-full min-h-12 flex flex-wrap items-center gap-1.5 p-1.5 pb-5 rounded-lg bg-surface-gray-2 cursor-text"
+          @click.stop="togglePopover"
+        >
+          <Tooltip
+            v-for="assignee in assignees"
+            :key="assignee.name"
+            :text="assignee.name"
+            @click.stop
           >
-            <Tooltip
-              v-for="assignee in assignees"
-              :key="assignee.name"
-              :text="assignee.name"
-              @click.stop
-            >
-              <div>
-                <div
-                  class="flex items-center text-sm text-ink-gray-6 border border-outline-gray-1 bg-surface-white rounded-full hover:bg-surface-white !p-0.5"
-                  @click.stop
+            <div>
+              <div
+                class="flex items-center text-sm text-ink-gray-6 border border-outline-gray-1 bg-surface-white rounded-full hover:bg-surface-white !p-0.5"
+                @click.stop
+              >
+                <UserAvatar :user="assignee.name" size="sm" />
+                <div class="ml-1">{{ getUser(assignee.name).full_name }}</div>
+                <Button
+                  variant="ghost"
+                  class="rounded-full !size-4 m-1"
+                  @click.stop="removeValue(assignee.name)"
                 >
-                  <UserAvatar :user="assignee.name" size="sm" />
-                  <div class="ml-1">{{ getUser(assignee.name).full_name }}</div>
-                  <Button
-                    variant="ghost"
-                    class="rounded-full !size-4 m-1"
-                    @click.stop="removeValue(assignee.name)"
-                  >
-                    <template #icon>
-                      <span
-                        class="lucide-x size-3 text-ink-gray-6"
-                        aria-hidden="true"
-                      />
-                    </template>
-                  </Button>
-                </div>
+                  <template #icon>
+                    <span
+                      class="lucide-x size-3 text-ink-gray-6"
+                      aria-hidden="true"
+                    />
+                  </template>
+                </Button>
               </div>
-            </Tooltip>
-          </div>
-        </template>
-        <template #item-prefix="{ option }">
-          <UserAvatar class="mr-2" :user="option.value" size="sm" />
-        </template>
-        <template #item-label="{ option }">
-          <Tooltip :text="option.value">
-            <div class="cursor-pointer text-ink-gray-9">
-              {{ getUser(option.value).full_name }}
             </div>
           </Tooltip>
-        </template>
-      </Link>
-    </template>
+        </div>
+      </template>
+      <template #item-prefix="{ option }">
+        <UserAvatar class="mr-2" :user="option.value" size="sm" />
+      </template>
+      <template #item-label="{ option }">
+        <Tooltip :text="option.value">
+          <div class="cursor-pointer text-ink-gray-9">
+            {{ getUser(option.value).full_name }}
+          </div>
+        </Tooltip>
+      </template>
+    </Link>
     <template #actions>
       <div class="flex justify-between items-center gap-2">
         <div><ErrorMessage :message="__(error)" /></div>

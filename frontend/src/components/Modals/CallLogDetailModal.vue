@@ -1,162 +1,157 @@
 <!-- eslint-disable vue/no-v-html -->
 <template>
-  <Dialog v-model="show">
-    <template #body>
-      <div class="bg-surface-modal px-4 pb-6 pt-5 sm:px-6">
-        <div class="mb-5 flex items-center justify-between">
-          <div>
-            <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9">
-              {{ __('Call Details') }}
-            </h3>
-          </div>
-          <div class="flex items-center gap-1">
-            <Dropdown
-              :options="[
-                {
-                  group: __('Options'),
-                  hideLabel: true,
-                  items: [
-                    {
-                      label: note ? __('Edit Note') : __('Add Note'),
-                      icon: NoteIcon,
-                      onClick: () => showNote(note),
-                    },
-                    {
-                      label: task ? __('Edit Task') : __('Add Task'),
-                      icon: TaskIcon,
-                      onClick: () => showTask(task),
-                    },
-                  ],
-                },
-              ]"
-            >
-              <template #default>
-                <Button variant="ghost" icon="lucide-more-horizontal" />
-              </template>
-            </Dropdown>
-            <Button
-              v-if="!isMobileView"
-              variant="ghost"
-              :tooltip="__('Edit Call Log')"
-              :icon="EditIcon"
-              class="w-7"
-              @click="openCallLogModal"
-            />
-            <Button
-              icon="lucide-x"
-              variant="ghost"
-              class="w-7"
-              @click="show = false"
-            />
-          </div>
+  <Dialog v-model="show" bare>
+    <div class="bg-surface-modal px-4 pb-6 pt-5 sm:px-6">
+      <div class="mb-5 flex items-center justify-between">
+        <div>
+          <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9">
+            {{ __('Call Details') }}
+          </h3>
         </div>
-        <div class="flex flex-col gap-3.5">
-          <div
-            v-for="field in detailFields"
-            :key="field.name"
-            class="flex gap-2 text-base text-ink-gray-8"
+        <div class="flex items-center gap-1">
+          <Dropdown
+            :options="[
+              {
+                group: __('Options'),
+                hideLabel: true,
+                items: [
+                  {
+                    label: note ? __('Edit Note') : __('Add Note'),
+                    icon: NoteIcon,
+                    onClick: () => showNote(note),
+                  },
+                  {
+                    label: task ? __('Edit Task') : __('Add Task'),
+                    icon: TaskIcon,
+                    onClick: () => showTask(task),
+                  },
+                ],
+              },
+            ]"
           >
-            <div class="grid size-7 place-content-center">
-              <component :is="field.icon" />
+            <template #default>
+              <Button variant="ghost" icon="lucide-more-horizontal" />
+            </template>
+          </Dropdown>
+          <Button
+            v-if="!isMobileView"
+            variant="ghost"
+            :tooltip="__('Edit Call Log')"
+            :icon="EditIcon"
+            class="w-7"
+            @click="openCallLogModal"
+          />
+          <Button
+            icon="lucide-x"
+            variant="ghost"
+            class="w-7"
+            @click="show = false"
+          />
+        </div>
+      </div>
+      <div class="flex flex-col gap-3.5">
+        <div
+          v-for="field in detailFields"
+          :key="field.name"
+          class="flex gap-2 text-base text-ink-gray-8"
+        >
+          <div class="grid size-7 place-content-center">
+            <component :is="field.icon" />
+          </div>
+          <div class="flex min-h-7 w-full items-center gap-2">
+            <div
+              v-if="field.name == 'receiver'"
+              class="flex items-center gap-1"
+            >
+              <Avatar
+                :image="field.value.caller.image"
+                :label="field.value.caller.label"
+                size="sm"
+              />
+              <div class="ml-1 flex flex-col gap-1">
+                {{ field.value.caller.label }}
+              </div>
+              <span
+                class="lucide-arrow-right size-4 mx-1 text-ink-gray-5"
+                aria-hidden="true"
+              />
+              <Avatar
+                :image="field.value.receiver.image"
+                :label="field.value.receiver.label"
+                size="sm"
+              />
+              <div class="ml-1 flex flex-col gap-1">
+                {{ field.value.receiver.label }}
+              </div>
             </div>
-            <div class="flex min-h-7 w-full items-center gap-2">
-              <div
-                v-if="field.name == 'receiver'"
-                class="flex items-center gap-1"
-              >
-                <Avatar
-                  :image="field.value.caller.image"
-                  :label="field.value.caller.label"
-                  size="sm"
+            <Tooltip v-else-if="field.tooltip" :text="field.tooltip">
+              {{ field.value }}
+            </Tooltip>
+            <div v-else-if="field.name == 'recording_url_path'" class="w-full">
+              <audio
+                class="audio-control w-full"
+                controls
+                :src="field.value"
+              ></audio>
+            </div>
+            <div
+              v-else-if="field.name == 'note'"
+              class="w-full cursor-pointer rounded border px-2 pt-1.5 text-base text-ink-gray-7"
+              @click="() => showNote(field.value?.name)"
+            >
+              <FadedScrollableDiv class="max-h-24 min-h-16 overflow-y-auto">
+                <div
+                  v-if="field.value?.title"
+                  :class="[field.value?.content ? 'mb-1 font-bold' : '']"
+                  v-html="sanitizeHTML(field.value?.title)"
                 />
-                <div class="ml-1 flex flex-col gap-1">
-                  {{ field.value.caller.label }}
-                </div>
-                <span
-                  class="lucide-arrow-right size-4 mx-1 text-ink-gray-5"
-                  aria-hidden="true"
+                <div
+                  v-if="field.value?.content"
+                  v-html="sanitizeHTML(field.value?.content)"
                 />
-                <Avatar
-                  :image="field.value.receiver.image"
-                  :label="field.value.receiver.label"
-                  size="sm"
+              </FadedScrollableDiv>
+            </div>
+            <div
+              v-else-if="field.name == 'task'"
+              class="w-full cursor-pointer rounded border px-2 pt-1.5 text-base text-ink-gray-7"
+              @click="() => showTask(field.value?.name)"
+            >
+              <FadedScrollableDiv class="max-h-24 min-h-16 overflow-y-auto">
+                <div
+                  v-if="field.value?.title"
+                  :class="[field.value?.description ? 'mb-1 font-bold' : '']"
+                  v-html="sanitizeHTML(field.value?.title)"
                 />
-                <div class="ml-1 flex flex-col gap-1">
-                  {{ field.value.receiver.label }}
-                </div>
-              </div>
-              <Tooltip v-else-if="field.tooltip" :text="field.tooltip">
-                {{ field.value }}
-              </Tooltip>
-              <div
-                v-else-if="field.name == 'recording_url_path'"
-                class="w-full"
-              >
-                <audio
-                  class="audio-control w-full"
-                  controls
-                  :src="field.value"
-                ></audio>
-              </div>
-              <div
-                v-else-if="field.name == 'note'"
-                class="w-full cursor-pointer rounded border px-2 pt-1.5 text-base text-ink-gray-7"
-                @click="() => showNote(field.value?.name)"
-              >
-                <FadedScrollableDiv class="max-h-24 min-h-16 overflow-y-auto">
-                  <div
-                    v-if="field.value?.title"
-                    :class="[field.value?.content ? 'mb-1 font-bold' : '']"
-                    v-html="sanitizeHTML(field.value?.title)"
-                  />
-                  <div
-                    v-if="field.value?.content"
-                    v-html="sanitizeHTML(field.value?.content)"
-                  />
-                </FadedScrollableDiv>
-              </div>
-              <div
-                v-else-if="field.name == 'task'"
-                class="w-full cursor-pointer rounded border px-2 pt-1.5 text-base text-ink-gray-7"
-                @click="() => showTask(field.value?.name)"
-              >
-                <FadedScrollableDiv class="max-h-24 min-h-16 overflow-y-auto">
-                  <div
-                    v-if="field.value?.title"
-                    :class="[field.value?.description ? 'mb-1 font-bold' : '']"
-                    v-html="sanitizeHTML(field.value?.title)"
-                  />
-                  <div
-                    v-if="field.value?.description"
-                    v-html="sanitizeHTML(field.value?.description)"
-                  />
-                </FadedScrollableDiv>
-              </div>
-              <div v-else :class="field.color ? `text-${field.color}-600` : ''">
-                {{ field.value }}
-              </div>
-              <div v-if="field.link">
-                <ArrowUpRightIcon
-                  class="h-4 w-4 shrink-0 cursor-pointer text-ink-gray-5 hover:text-ink-gray-8"
-                  @click="() => field.link()"
+                <div
+                  v-if="field.value?.description"
+                  v-html="sanitizeHTML(field.value?.description)"
                 />
-              </div>
+              </FadedScrollableDiv>
+            </div>
+            <div v-else :class="field.color ? `text-${field.color}-600` : ''">
+              {{ field.value }}
+            </div>
+            <div v-if="field.link">
+              <ArrowUpRightIcon
+                class="h-4 w-4 shrink-0 cursor-pointer text-ink-gray-5 hover:text-ink-gray-8"
+                @click="() => field.link()"
+              />
             </div>
           </div>
         </div>
       </div>
-      <div
-        v-if="!callLog?.data?._lead && !callLog?.data?._deal"
-        class="px-4 pb-7 pt-4 sm:px-6"
-      >
-        <Button
-          class="w-full"
-          variant="solid"
-          :label="__('Create Lead')"
-          @click="createLead"
-        />
-      </div>
-    </template>
+    </div>
+    <div
+      v-if="!callLog?.data?._lead && !callLog?.data?._deal"
+      class="px-4 pb-7 pt-4 sm:px-6"
+    >
+      <Button
+        class="w-full"
+        variant="solid"
+        :label="__('Create Lead')"
+        @click="createLead"
+      />
+    </div>
   </Dialog>
 </template>
 

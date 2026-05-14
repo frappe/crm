@@ -4,55 +4,53 @@
     :title="__('Edit Workday')"
     @after-leave="resetForm"
   >
-    <template #body-content>
-      <div class="flex flex-col gap-4">
-        <div>
-          <label class="block text-p-sm font-medium text-ink-gray-7 mb-1.5">
-            {{ __('Workday') }}
-          </label>
-          <Select
-            v-model="workDayData.workday"
-            size="sm"
-            variant="subtle"
-            :placeholder="__('Select Workday')"
-            :label="__('Workday')"
-            :options="workdayOptions"
-            class="w-full text-ink-gray-8"
-            :class="{ 'border-red-500': errors.workday }"
-            @blur="validateField('workday')"
-          />
-          <ErrorMessage :message="errors.workday" class="mt-2" />
-        </div>
-
-        <div>
-          <TextInput
-            v-model="workDayData.start_time"
-            type="time"
-            size="sm"
-            variant="subtle"
-            :placeholder="__('Start Time')"
-            :label="__('Start Time')"
-            :class="{ 'border-red-500': errors.start_time }"
-            @blur="validateField('start_time')"
-          />
-          <ErrorMessage :message="errors.start_time" class="mt-2" />
-        </div>
-
-        <div>
-          <TextInput
-            v-model="workDayData.end_time"
-            type="time"
-            size="sm"
-            variant="subtle"
-            :placeholder="__('End Time')"
-            :label="__('End Time')"
-            :class="{ 'border-red-500': errors.end_time }"
-            @blur="validateTimeRange"
-          />
-          <ErrorMessage :message="errors.end_time" class="mt-2" />
-        </div>
+    <div class="flex flex-col gap-4">
+      <div>
+        <label class="block text-p-sm font-medium text-ink-gray-7 mb-1.5">
+          {{ __('Workday') }}
+        </label>
+        <Select
+          v-model="workDayData.workday"
+          size="sm"
+          variant="subtle"
+          :placeholder="__('Select Workday')"
+          :label="__('Workday')"
+          :options="workdayOptions"
+          class="w-full text-ink-gray-8"
+          :class="{ 'border-red-500': errors.workday }"
+          @blur="validateField('workday')"
+        />
+        <ErrorMessage :message="errors.workday" class="mt-2" />
       </div>
-    </template>
+
+      <div>
+        <TextInput
+          v-model="workDayData.start_time"
+          type="time"
+          size="sm"
+          variant="subtle"
+          :placeholder="__('Start Time')"
+          :label="__('Start Time')"
+          :class="{ 'border-red-500': errors.start_time }"
+          @blur="validateField('start_time')"
+        />
+        <ErrorMessage :message="errors.start_time" class="mt-2" />
+      </div>
+
+      <div>
+        <TextInput
+          v-model="workDayData.end_time"
+          type="time"
+          size="sm"
+          variant="subtle"
+          :placeholder="__('End Time')"
+          :label="__('End Time')"
+          :class="{ 'border-red-500': errors.end_time }"
+          @blur="validateTimeRange"
+        />
+        <ErrorMessage :message="errors.end_time" class="mt-2" />
+      </div>
+    </div>
     <template #actions>
       <div
         class="flex"

@@ -1,132 +1,130 @@
 <template>
-  <Dialog v-model="show" size="xl">
-    <template #body>
-      <div
-        v-if="!confirmDeleteInfo.show"
-        class="bg-surface-modal px-4 pb-6 pt-5 sm:px-6"
-      >
-        <div class="mb-6 flex items-center justify-between">
-          <div>
-            <h3 class="text-2xl leading-6 text-ink-gray-9 font-semibold">
-              {{
-                linkedDocs?.length == 0
-                  ? __('Delete')
-                  : __('Delete or unlink linked documents')
-              }}
-            </h3>
-          </div>
-          <div class="flex items-center gap-1">
-            <Button variant="ghost" icon="lucide-x" @click="show = false" />
-          </div>
-        </div>
+  <Dialog v-model="show" size="xl" bare>
+    <div
+      v-if="!confirmDeleteInfo.show"
+      class="bg-surface-modal px-4 pb-6 pt-5 sm:px-6"
+    >
+      <div class="mb-6 flex items-center justify-between">
         <div>
-          <div v-if="linkedDocs?.length > 0">
-            <span class="text-ink-gray-5 text-base">
-              {{
-                __(
-                  'Delete or unlink these linked documents before deleting this document',
-                )
-              }}
-            </span>
-            <LinkedDocsListView
-              class="mt-4"
-              :rows="linkedDocs"
-              :columns="[
-                {
-                  label: 'Document',
-                  key: 'title',
-                  width: '20rem',
-                },
-                {
-                  label: 'Master',
-                  key: 'reference_doctype',
-                  width: '8rem',
-                },
-              ]"
-              :linkedDocsResource="linkedDocsResource"
-              :unlinkLinkedDoc="unlinkLinkedDoc"
-              @selectionsChanged="
-                (selections) => viewControls.updateSelections(selections)
-              "
-            />
-          </div>
-          <div v-if="linkedDocs?.length == 0" class="text-ink-gray-5 text-base">
+          <h3 class="text-2xl leading-6 text-ink-gray-9 font-semibold">
             {{
-              __('Are you sure you want to delete {0} - {1}?', [
-                props.doctype,
-                props.docname,
-              ])
+              linkedDocs?.length == 0
+                ? __('Delete')
+                : __('Delete or unlink linked documents')
             }}
-          </div>
+          </h3>
+        </div>
+        <div class="flex items-center gap-1">
+          <Button variant="ghost" icon="lucide-x" @click="show = false" />
         </div>
       </div>
-      <div v-if="!confirmDeleteInfo.show" class="px-4 pb-7 pt-0 sm:px-6">
-        <div class="flex flex-row-reverse gap-2">
-          <Button
-            v-if="linkedDocs?.length > 0"
-            :label="
-              viewControls?.selections?.length == 0
-                ? __('Delete All')
-                : __('Delete {0} Item(s)', [viewControls?.selections?.length])
+      <div>
+        <div v-if="linkedDocs?.length > 0">
+          <span class="text-ink-gray-5 text-base">
+            {{
+              __(
+                'Delete or unlink these linked documents before deleting this document',
+              )
+            }}
+          </span>
+          <LinkedDocsListView
+            class="mt-4"
+            :rows="linkedDocs"
+            :columns="[
+              {
+                label: 'Document',
+                key: 'title',
+                width: '20rem',
+              },
+              {
+                label: 'Master',
+                key: 'reference_doctype',
+                width: '8rem',
+              },
+            ]"
+            :linkedDocsResource="linkedDocsResource"
+            :unlinkLinkedDoc="unlinkLinkedDoc"
+            @selectionsChanged="
+              (selections) => viewControls.updateSelections(selections)
             "
-            theme="red"
-            variant="solid"
-            icon-left="trash-2"
-            @click="confirmDelete()"
           />
-          <Button
-            v-if="linkedDocs?.length > 0"
-            :label="
-              viewControls?.selections?.length == 0
-                ? __('Unlink All')
-                : __('Unlink {0} Item(s)', [viewControls?.selections?.length])
-            "
-            variant="subtle"
-            theme="gray"
-            icon-left="unlock"
-            @click="confirmUnlink()"
-          />
-          <Button
-            v-if="linkedDocs?.length == 0"
-            variant="solid"
-            icon-left="trash-2"
-            :label="__('Delete')"
-            :loading="isDealCreating"
-            theme="red"
-            @click="deleteDoc()"
-          />
+        </div>
+        <div v-if="linkedDocs?.length == 0" class="text-ink-gray-5 text-base">
+          {{
+            __('Are you sure you want to delete {0} - {1}?', [
+              props.doctype,
+              props.docname,
+            ])
+          }}
         </div>
       </div>
-      <div
-        v-if="confirmDeleteInfo.show"
-        class="bg-surface-modal px-4 pb-6 pt-5 sm:px-6"
-      >
-        <div class="mb-6 flex items-center justify-between">
-          <div>
-            <h3 class="text-2xl leading-6 text-ink-gray-9 font-semibold">
-              {{ confirmDeleteInfo.title }}
-            </h3>
-          </div>
-          <div class="flex items-center gap-1">
-            <Button variant="ghost" icon="lucide-x" @click="show = false" />
-          </div>
+    </div>
+    <div v-if="!confirmDeleteInfo.show" class="px-4 pb-7 pt-0 sm:px-6">
+      <div class="flex flex-row-reverse gap-2">
+        <Button
+          v-if="linkedDocs?.length > 0"
+          :label="
+            viewControls?.selections?.length == 0
+              ? __('Delete All')
+              : __('Delete {0} Item(s)', [viewControls?.selections?.length])
+          "
+          theme="red"
+          variant="solid"
+          icon-left="trash-2"
+          @click="confirmDelete()"
+        />
+        <Button
+          v-if="linkedDocs?.length > 0"
+          :label="
+            viewControls?.selections?.length == 0
+              ? __('Unlink All')
+              : __('Unlink {0} Item(s)', [viewControls?.selections?.length])
+          "
+          variant="subtle"
+          theme="gray"
+          icon-left="unlock"
+          @click="confirmUnlink()"
+        />
+        <Button
+          v-if="linkedDocs?.length == 0"
+          variant="solid"
+          icon-left="trash-2"
+          :label="__('Delete')"
+          :loading="isDealCreating"
+          theme="red"
+          @click="deleteDoc()"
+        />
+      </div>
+    </div>
+    <div
+      v-if="confirmDeleteInfo.show"
+      class="bg-surface-modal px-4 pb-6 pt-5 sm:px-6"
+    >
+      <div class="mb-6 flex items-center justify-between">
+        <div>
+          <h3 class="text-2xl leading-6 text-ink-gray-9 font-semibold">
+            {{ confirmDeleteInfo.title }}
+          </h3>
         </div>
-        <div class="text-ink-gray-5 text-base">
-          {{ confirmDeleteInfo.message }}
-        </div>
-        <div class="flex justify-end gap-2 mt-6">
-          <Button variant="ghost" @click="cancel()">
-            {{ __('Cancel') }}
-          </Button>
-          <Button
-            variant="solid"
-            :label="confirmDeleteInfo.title"
-            theme="red"
-            @click="removeDocLinks()"
-          />
+        <div class="flex items-center gap-1">
+          <Button variant="ghost" icon="lucide-x" @click="show = false" />
         </div>
       </div>
-    </template>
+      <div class="text-ink-gray-5 text-base">
+        {{ confirmDeleteInfo.message }}
+      </div>
+      <div class="flex justify-end gap-2 mt-6">
+        <Button variant="ghost" @click="cancel()">
+          {{ __('Cancel') }}
+        </Button>
+        <Button
+          variant="solid"
+          :label="confirmDeleteInfo.title"
+          theme="red"
+          @click="removeDocLinks()"
+        />
+      </div>
+    </div>
   </Dialog>
 </template>
 

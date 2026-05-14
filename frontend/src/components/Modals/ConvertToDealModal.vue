@@ -1,83 +1,74 @@
 <template>
   <Dialog v-model="show" size="xl">
-    <template #body-header>
-      <div class="mb-6 flex items-center justify-between">
-        <div>
-          <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9">
-            {{ __('Convert to Deal') }}
-          </h3>
-        </div>
-        <div class="flex items-center gap-1">
-          <Button
-            v-if="isManager() && !isMobileView"
-            variant="ghost"
-            :tooltip="__('Edit deal\'s mandatory fields layout')"
-            :icon="EditIcon"
-            @click="openQuickEntryModal"
-          />
-          <Button icon="lucide-x" variant="ghost" @click="show = false" />
-        </div>
-      </div>
-    </template>
-    <template #body-content>
-      <div class="mb-4 flex items-center gap-2 text-ink-gray-5">
-        <OrganizationsIcon class="h-4 w-4" />
-        <label class="block text-base">{{ __('Organization') }}</label>
-      </div>
-      <div class="ml-6 text-ink-gray-9">
-        <div class="flex items-center justify-between text-base">
-          <div>{{ __('Choose Existing') }}</div>
-          <Switch v-model="existingOrganizationChecked" />
-        </div>
-        <Link
-          v-if="existingOrganizationChecked"
-          class="form-control mt-2.5"
-          size="md"
-          :value="existingOrganization"
-          doctype="CRM Organization"
-          @change="(data) => (existingOrganization = data)"
-        />
-        <div v-else class="mt-2.5 text-base">
-          {{
-            __(
-              'New organization will be created based on the data in details section',
-            )
-          }}
-        </div>
-      </div>
-
-      <div class="mb-4 mt-6 flex items-center gap-2 text-ink-gray-5">
-        <ContactsIcon class="h-4 w-4" />
-        <label class="block text-base">{{ __('Contact') }}</label>
-      </div>
-      <div class="ml-6 text-ink-gray-9">
-        <div class="flex items-center justify-between text-base">
-          <div>{{ __('Choose Existing') }}</div>
-          <Switch v-model="existingContactChecked" />
-        </div>
-        <Link
-          v-if="existingContactChecked"
-          class="form-control mt-2.5"
-          size="md"
-          :value="existingContact"
-          doctype="Contact"
-          @change="(data) => (existingContact = data)"
-        />
-        <div v-else class="mt-2.5 text-base">
-          {{ __("New contact will be created based on the person's details") }}
-        </div>
-      </div>
-
-      <div v-if="dealTabs.data?.length" class="h-px w-full border-t my-6" />
-
-      <FieldLayout
-        v-if="dealTabs.data?.length"
-        :tabs="dealTabs.data"
-        :data="deal.doc"
-        doctype="CRM Deal"
+    <template #title>
+      <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9">
+        {{ __('Convert to Deal') }}
+      </h3>
+      <Button
+        v-if="isManager() && !isMobileView"
+        variant="ghost"
+        :tooltip="__('Edit deal\'s mandatory fields layout')"
+        :icon="EditIcon"
+        @click="openQuickEntryModal"
       />
-      <ErrorMessage class="mt-4" :message="error" />
     </template>
+    <div class="mb-4 flex items-center gap-2 text-ink-gray-5">
+      <OrganizationsIcon class="h-4 w-4" />
+      <label class="block text-base">{{ __('Organization') }}</label>
+    </div>
+    <div class="ml-6 text-ink-gray-9">
+      <div class="flex items-center justify-between text-base">
+        <div>{{ __('Choose Existing') }}</div>
+        <Switch v-model="existingOrganizationChecked" />
+      </div>
+      <Link
+        v-if="existingOrganizationChecked"
+        class="form-control mt-2.5"
+        size="md"
+        :value="existingOrganization"
+        doctype="CRM Organization"
+        @change="(data) => (existingOrganization = data)"
+      />
+      <div v-else class="mt-2.5 text-base">
+        {{
+          __(
+            'New organization will be created based on the data in details section',
+          )
+        }}
+      </div>
+    </div>
+
+    <div class="mb-4 mt-6 flex items-center gap-2 text-ink-gray-5">
+      <ContactsIcon class="h-4 w-4" />
+      <label class="block text-base">{{ __('Contact') }}</label>
+    </div>
+    <div class="ml-6 text-ink-gray-9">
+      <div class="flex items-center justify-between text-base">
+        <div>{{ __('Choose Existing') }}</div>
+        <Switch v-model="existingContactChecked" />
+      </div>
+      <Link
+        v-if="existingContactChecked"
+        class="form-control mt-2.5"
+        size="md"
+        :value="existingContact"
+        doctype="Contact"
+        @change="(data) => (existingContact = data)"
+      />
+      <div v-else class="mt-2.5 text-base">
+        {{ __("New contact will be created based on the person's details") }}
+      </div>
+    </div>
+
+    <div v-if="dealTabs.data?.length" class="h-px w-full border-t my-6" />
+
+    <FieldLayout
+      v-if="dealTabs.data?.length"
+      :tabs="dealTabs.data"
+      :data="deal.doc"
+      doctype="CRM Deal"
+    />
+    <ErrorMessage class="mt-4" :message="error" />
     <template #actions>
       <div class="flex justify-end">
         <Button :label="__('Convert')" variant="solid" @click="convertToDeal" />

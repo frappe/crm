@@ -1,91 +1,89 @@
 <template>
-  <Dialog v-model="show" size="xl">
-    <template #body>
-      <div class="bg-surface-modal px-4 pb-6 pt-5 sm:px-6">
-        <div class="mb-6 flex items-center justify-between">
-          <div>
-            <h3 class="text-2xl leading-6 text-ink-gray-9 font-semibold">
-              {{ __('Delete') }}
-            </h3>
-          </div>
-          <div class="flex items-center gap-1">
-            <Button variant="ghost" icon="lucide-x" @click="show = false" />
-          </div>
-        </div>
+  <Dialog v-model="show" size="xl" bare>
+    <div class="bg-surface-modal px-4 pb-6 pt-5 sm:px-6">
+      <div class="mb-6 flex items-center justify-between">
         <div>
-          <div class="text-ink-gray-5 text-base">
-            {{
-              __('Are you sure you want to delete {0} items?', [
-                props.items?.length,
-              ])
-            }}
-          </div>
+          <h3 class="text-2xl leading-6 text-ink-gray-9 font-semibold">
+            {{ __('Delete') }}
+          </h3>
+        </div>
+        <div class="flex items-center gap-1">
+          <Button variant="ghost" icon="lucide-x" @click="show = false" />
         </div>
       </div>
-      <div class="px-4 pb-7 pt-0 sm:px-6">
-        <div class="flex flex-row-reverse gap-2">
-          <Button
-            :label="__('Delete {0} items', [props.items.length])"
-            icon-left="trash-2"
-            variant="solid"
-            theme="red"
-            @click="confirmDelete()"
-          />
-          <Button
-            :label="__('Unlink & Delete {0} items', [props.items.length])"
-            icon-left="unlock"
-            variant="solid"
-            @click="confirmUnlink()"
-          />
+      <div>
+        <div class="text-ink-gray-5 text-base">
+          {{
+            __('Are you sure you want to delete {0} items?', [
+              props.items?.length,
+            ])
+          }}
         </div>
       </div>
-      <div
-        v-if="confirmDeleteInfo.show"
-        class="bg-surface-modal px-4 pb-6 pt-5 sm:px-6"
-      >
-        <div class="mb-6 flex items-center justify-between">
-          <div>
-            <h3 class="text-2xl leading-6 text-ink-gray-9 font-semibold">
-              {{ __('Delete') }}
-            </h3>
-          </div>
-          <div class="flex items-center gap-1">
-            <Button variant="ghost" icon="lucide-x" @click="show = false" />
-          </div>
-        </div>
+    </div>
+    <div class="px-4 pb-7 pt-0 sm:px-6">
+      <div class="flex flex-row-reverse gap-2">
+        <Button
+          :label="__('Delete {0} items', [props.items.length])"
+          icon-left="trash-2"
+          variant="solid"
+          theme="red"
+          @click="confirmDelete()"
+        />
+        <Button
+          :label="__('Unlink & Delete {0} items', [props.items.length])"
+          icon-left="unlock"
+          variant="solid"
+          @click="confirmUnlink()"
+        />
+      </div>
+    </div>
+    <div
+      v-if="confirmDeleteInfo.show"
+      class="bg-surface-modal px-4 pb-6 pt-5 sm:px-6"
+    >
+      <div class="mb-6 flex items-center justify-between">
         <div>
-          <div class="text-ink-gray-5 text-base">
-            {{
-              confirmDeleteInfo.delete
-                ? __(
-                    'This will delete selected items and items linked to it, are you sure?',
-                  )
-                : __(
-                    'This will delete selected items and unlink linked items to it, are you sure?',
-                  )
-            }}
-          </div>
+          <h3 class="text-2xl leading-6 text-ink-gray-9 font-semibold">
+            {{ __('Delete') }}
+          </h3>
+        </div>
+        <div class="flex items-center gap-1">
+          <Button variant="ghost" icon="lucide-x" @click="show = false" />
         </div>
       </div>
-      <div v-if="confirmDeleteInfo.show" class="px-4 pb-7 pt-0 sm:px-6">
-        <div class="flex flex-row-reverse gap-2">
-          <Button
-            :label="
-              confirmDeleteInfo.delete ? __('Delete') : __('Unlink & Delete')
-            "
-            :icon-left="confirmDeleteInfo.delete ? 'trash-2' : 'unlock'"
-            variant="solid"
-            theme="red"
-            @click="deleteDocs()"
-          />
-          <Button
-            :label="__('Cancel')"
-            variant="subtle"
-            @click="confirmDeleteInfo.show = false"
-          />
+      <div>
+        <div class="text-ink-gray-5 text-base">
+          {{
+            confirmDeleteInfo.delete
+              ? __(
+                  'This will delete selected items and items linked to it, are you sure?',
+                )
+              : __(
+                  'This will delete selected items and unlink linked items to it, are you sure?',
+                )
+          }}
         </div>
       </div>
-    </template>
+    </div>
+    <div v-if="confirmDeleteInfo.show" class="px-4 pb-7 pt-0 sm:px-6">
+      <div class="flex flex-row-reverse gap-2">
+        <Button
+          :label="
+            confirmDeleteInfo.delete ? __('Delete') : __('Unlink & Delete')
+          "
+          :icon-left="confirmDeleteInfo.delete ? 'trash-2' : 'unlock'"
+          variant="solid"
+          theme="red"
+          @click="deleteDocs()"
+        />
+        <Button
+          :label="__('Cancel')"
+          variant="subtle"
+          @click="confirmDeleteInfo.show = false"
+        />
+      </div>
+    </div>
   </Dialog>
 </template>
 

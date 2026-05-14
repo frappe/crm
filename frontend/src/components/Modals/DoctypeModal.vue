@@ -1,60 +1,58 @@
 <template>
-  <Dialog v-model="show" size="xl">
-    <template #body>
-      <div class="bg-surface-modal px-4 pb-6 pt-5 sm:px-6">
-        <div class="mb-5 flex items-center justify-between">
-          <div class="flex gap-2 items-center">
-            <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9">
-              {{
-                editMode
-                  ? __('Edit ' + (doctypeTitle || doctype))
-                  : __('Create ' + (doctypeTitle || doctype))
-              }}
-            </h3>
-          </div>
-          <div class="flex items-center gap-1">
-            <CustomActions
-              v-if="document.actions?.length"
-              :actions="document.actions"
-              :close="() => (show = false)"
-            />
-            <Button
-              v-if="isManager() && !isMobileView"
-              variant="ghost"
-              class="w-7"
-              :tooltip="__('Edit Fields Layout')"
-              :icon="EditIcon"
-              @click="openQuickEntryModal"
-            />
-            <Button
-              variant="ghost"
-              class="w-7"
-              icon="lucide-x"
-              @click="show = false"
-            />
-          </div>
+  <Dialog v-model="show" size="xl" bare>
+    <div class="bg-surface-modal px-4 pb-6 pt-5 sm:px-6">
+      <div class="mb-5 flex items-center justify-between">
+        <div class="flex gap-2 items-center">
+          <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9">
+            {{
+              editMode
+                ? __('Edit ' + (doctypeTitle || doctype))
+                : __('Create ' + (doctypeTitle || doctype))
+            }}
+          </h3>
         </div>
-        <div>
-          <FieldLayout
-            v-if="layout.data"
-            :tabs="layout.data"
-            :data="doc"
-            :doctype="doctype"
+        <div class="flex items-center gap-1">
+          <CustomActions
+            v-if="document.actions?.length"
+            :actions="document.actions"
+            :close="() => (show = false)"
           />
-          <ErrorMessage v-if="error" class="mt-4" :message="__(error)" />
-        </div>
-      </div>
-      <div class="px-4 pb-7 pt-4 sm:px-6">
-        <div class="flex flex-row-reverse gap-2">
           <Button
-            variant="solid"
-            :label="editMode ? __('Update') : __('Create')"
-            :loading="editMode ? document.save.loading : create.loading"
-            @click="editMode ? update() : create()"
+            v-if="isManager() && !isMobileView"
+            variant="ghost"
+            class="w-7"
+            :tooltip="__('Edit Fields Layout')"
+            :icon="EditIcon"
+            @click="openQuickEntryModal"
+          />
+          <Button
+            variant="ghost"
+            class="w-7"
+            icon="lucide-x"
+            @click="show = false"
           />
         </div>
       </div>
-    </template>
+      <div>
+        <FieldLayout
+          v-if="layout.data"
+          :tabs="layout.data"
+          :data="doc"
+          :doctype="doctype"
+        />
+        <ErrorMessage v-if="error" class="mt-4" :message="__(error)" />
+      </div>
+    </div>
+    <div class="px-4 pb-7 pt-4 sm:px-6">
+      <div class="flex flex-row-reverse gap-2">
+        <Button
+          variant="solid"
+          :label="editMode ? __('Update') : __('Create')"
+          :loading="editMode ? document.save.loading : create.loading"
+          @click="editMode ? update() : create()"
+        />
+      </div>
+    </div>
   </Dialog>
 </template>
 
