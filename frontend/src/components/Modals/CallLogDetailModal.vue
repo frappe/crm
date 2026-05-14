@@ -31,7 +31,7 @@
               ]"
             >
               <template #default>
-                <Button variant="ghost" icon="more-horizontal" />
+                <Button variant="ghost" icon="lucide-more-horizontal" />
               </template>
             </Dropdown>
             <Button
@@ -43,7 +43,7 @@
               @click="openCallLogModal"
             />
             <Button
-              icon="x"
+              icon="lucide-x"
               variant="ghost"
               class="w-7"
               @click="show = false"
@@ -72,10 +72,7 @@
                 <div class="ml-1 flex flex-col gap-1">
                   {{ field.value.caller.label }}
                 </div>
-                <FeatherIcon
-                  name="arrow-right"
-                  class="mx-1 h-4 w-4 text-ink-gray-5"
-                />
+                <span class="lucide-arrow-right size-4 mx-1 text-ink-gray-5" aria-hidden="true" />
                 <Avatar
                   :image="field.value.receiver.image"
                   :label="field.value.receiver.label"
@@ -178,7 +175,7 @@ import { isMobileView } from '@/composables/settings'
 import { useDoctypeModal } from '@/composables/doctypeModal'
 import { useDocument } from '@/data/document'
 import { useOnboarding, useTelemetry } from 'frappe-ui/frappe'
-import { FeatherIcon, Dropdown, Avatar, Tooltip, call, toast } from 'frappe-ui'
+import { Dropdown, Avatar, Tooltip, call, toast } from 'frappe-ui'
 import { ref, computed, h, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -258,9 +255,9 @@ const detailFields = computed(() => {
   }
   let details = [
     {
-      icon: h(FeatherIcon, {
-        name: data.type.icon,
-        class: 'h-3.5 w-3.5',
+      icon: h('span', {
+        class: ['lucide-' + data.type.icon, 'size-3.5'],
+        'aria-hidden': true,
       }),
       name: 'type',
       value: data.type.label + ' Call',
@@ -310,9 +307,9 @@ const detailFields = computed(() => {
       color: data.status.color,
     },
     {
-      icon: h(FeatherIcon, {
-        name: 'play-circle',
-        class: 'h-4 w-4 mt-2',
+      icon: h('span', {
+        class: ['lucide-play-circle', 'size-4 mt-2'],
+        'aria-hidden': true,
       }),
       name: 'recording_url_path',
       value: data.recording_url_path,

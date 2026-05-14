@@ -11,7 +11,7 @@
         :placeholder="__('Welcome Message')"
       >
         <template #prefix>
-          <FeatherIcon name="search" class="h-4 w-4 text-ink-gray-4" />
+          <span class="lucide-search size-4 text-ink-gray-4" aria-hidden="true" />
         </template>
       </TextInput>
       <div

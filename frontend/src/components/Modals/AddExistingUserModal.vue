@@ -6,7 +6,7 @@
   >
     <template #body-content>
       <div class="flex gap-1 border rounded mb-4 p-2 text-ink-gray-5">
-        <FeatherIcon name="info" class="size-3.5 mt-0.5" />
+        <span class="lucide-info size-3.5 mt-0.5" aria-hidden="true" />
         <p class="text-p-sm">
           {{
             __(

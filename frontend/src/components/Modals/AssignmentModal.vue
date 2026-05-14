@@ -41,7 +41,7 @@
                     @click.stop="removeValue(assignee.name)"
                   >
                     <template #icon>
-                      <FeatherIcon name="x" class="h-3 w-3 text-ink-gray-6" />
+                      <span class="lucide-x size-3 text-ink-gray-6" aria-hidden="true" />
                     </template>
                   </Button>
                 </div>
