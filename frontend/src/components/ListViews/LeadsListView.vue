@@ -16,10 +16,7 @@
     row-key="name"
     @update:selections="(selections) => emit('selectionsChanged', selections)"
   >
-    <ListHeader
-      class="sm:mx-5 mx-3"
-      @columnWidthUpdated="onColumnWidthUpdated"
-    >
+    <ListHeader class="sm:mx-5 mx-3" @columnWidthUpdated="onColumnWidthUpdated">
       <ListHeaderItem
         v-for="column in columns"
         :key="column.key"
