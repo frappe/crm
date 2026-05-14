@@ -18,7 +18,7 @@
               @click="openGridRowFieldsModal"
             />
             <Button
-              icon="x"
+              icon="lucide-x"
               variant="ghost"
               class="w-7"
               @click="show = false"

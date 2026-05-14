@@ -14,10 +14,10 @@
         @keydown.delete.capture.stop="removeLastValue"
       >
         <template #suffix>
-          <FeatherIcon
-            class="h-3.5"
-            name="x"
+          <span
+            class="lucide-x size-3.5"
             @click.stop="removeValue(value)"
+            aria-hidden="true"
           />
         </template>
       </Button>
