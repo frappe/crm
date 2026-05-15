@@ -43,26 +43,24 @@ def get_users():
 	if not users:
 		return [], []
 
-	user_names = [u.name for u in users]
 	system_language = frappe.db.get_single_value("System Settings", "language")
 	session_user = frappe.session.user
 
+	# Read every Has Role row for User parents in one indexed scan.
+	# An IN clause with one entry per user inflates the SQL string to MBs on
+	# large sites; the parenttype filter is selective enough on its own.
 	role_rows = frappe.get_all(
 		"Has Role",
-		filters={"parent": ["in", user_names], "parenttype": "User"},
+		filters={"parenttype": "User"},
 		fields=["parent", "role"],
 	)
 	roles_by_user = {}
 	for row in role_rows:
 		roles_by_user.setdefault(row.parent, []).append(row.role)
 
-	telephony_agents = set(
-		frappe.get_all(
-			"CRM Telephony Agent",
-			filters={"user": ["in", user_names]},
-			pluck="user",
-		)
-	)
+	# Telephony agent table is tiny on any real site; a full pluck is cheaper
+	# than serializing a huge IN list and gives identical results.
+	telephony_agents = set(frappe.get_all("CRM Telephony Agent", pluck="user"))
 
 	role_priority = ("System Manager", "Sales Manager", "Sales User", "Guest")
 	crm_users = []
@@ -71,14 +69,20 @@ def get_users():
 		if session_user == user.name:
 			user.session_user = True
 
-		# Mirror frappe.get_roles() which appends implicit "All" and "Guest"
-		user.roles = roles_by_user.get(user.name, []) + ["All", "Guest"]
-
-		user.role = ""
-		for role in role_priority:
-			if role in user.roles:
-				user.role = role
-				break
+		# Administrator has every role implicitly via frappe.get_roles() but
+		# its Has Role child table is not guaranteed to contain System Manager
+		# on every install — special-case it to avoid locking the admin out.
+		if user.name == "Administrator":
+			user.roles = ["System Manager", "All"]
+			user.role = "System Manager"
+		else:
+			# Mirror frappe.get_roles() which appends implicit "All" and "Guest"
+			user.roles = roles_by_user.get(user.name, []) + ["All", "Guest"]
+			user.role = ""
+			for role in role_priority:
+				if role in user.roles:
+					user.role = role
+					break
 
 		user.is_telephony_agent = user.name in telephony_agents
 		user.language = user.language or system_language
