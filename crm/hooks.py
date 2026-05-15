@@ -174,6 +174,10 @@ doc_events = {
 			"crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.create_customer_in_erpnext"
 		],
 	},
+	"Item": {
+		"after_insert": "crm.fcrm.doctype.crm_product.crm_product.sync_item_to_crm_product",
+		"on_update": "crm.fcrm.doctype.crm_product.crm_product.sync_item_to_crm_product",
+	},
 	"User": {
 		"before_validate": ["crm.api.live_demo.validate_user"],
 		"validate_reset_password": ["crm.api.live_demo.validate_reset_password"],
