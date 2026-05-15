@@ -22,13 +22,14 @@
     </div>
     <ErrorMessage class="mt-2" :message="error" />
     <template #actions>
-      <Button
-        class="w-full"
-        variant="solid"
-        :loading="loading"
-        :label="__('Update {0} Records', [recordCount])"
-        @click="updateValues"
-      />
+      <div class="flex justify-end">
+        <Button
+          variant="solid"
+          :loading="loading"
+          :label="__('Update {0} Records', [recordCount])"
+          @click="updateValues"
+        />
+      </div>
     </template>
   </Dialog>
 </template>
