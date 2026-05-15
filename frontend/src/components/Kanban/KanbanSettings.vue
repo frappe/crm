@@ -7,73 +7,72 @@
   />
   <Dialog v-model="showDialog" :options="{ title: __('Kanban Settings') }">
     <template #body-content>
-      <div>
-        <div class="text-base text-ink-gray-8 mb-2">
-          {{ __('Column Field') }}
-        </div>
+      <div class="space-y-4">
         <Combobox
           v-if="columnFields"
           v-model="columnField"
+          :label="__('Column Field')"
           class="w-full"
           :options="columnFields"
           :openOnClick="true"
         />
-        <div class="text-base text-ink-gray-8 mb-2 mt-4">
-          {{ __('Title Field') }}
-        </div>
         <Combobox
           v-model="titleField"
+          :label="__('Title Field')"
           class="w-full"
           :options="fields"
           :openOnClick="true"
         />
-      </div>
-      <div class="mt-4">
-        <div class="text-base text-ink-gray-8 mb-2">
-          {{ __('Fields Order') }}
+        <div>
+          <div class="block text-p-sm font-medium text-ink-gray-7 mb-1.5">
+            {{ __('Fields Order') }}
+          </div>
+          <Draggable
+            :list="allFields"
+            group="fields"
+            item-key="name"
+            class="flex flex-col gap-1"
+            @end="reorder"
+          >
+            <template #item="{ element: field }">
+              <div
+                class="px-1 py-0.5 border border-outline-gray-modals rounded text-base text-ink-gray-8 flex items-center justify-between gap-2"
+              >
+                <div class="flex items-center gap-2">
+                  <DragVerticalIcon class="h-3.5 cursor-grab" />
+                  <div>{{ field.label }}</div>
+                </div>
+                <div>
+                  <Button
+                    variant="ghost"
+                    icon="lucide-x"
+                    @click="removeField(field)"
+                  />
+                </div>
+              </div>
+            </template>
+          </Draggable>
+          <Combobox
+            :options="fields"
+            @update:selectedOption="(e) => addField(e)"
+          >
+            <template #trigger>
+              <Button
+                class="w-full mt-2"
+                :label="__('Add Field')"
+                iconLeft="lucide-plus"
+              />
+            </template>
+            <template #item-label="{ item }">
+              <div class="flex flex-col gap-1 text-ink-gray-9">
+                <div>{{ item.label }}</div>
+                <div class="text-ink-gray-4 text-sm">
+                  {{ `${item.fieldname} - ${item.fieldtype}` }}
+                </div>
+              </div>
+            </template>
+          </Combobox>
         </div>
-        <Draggable
-          :list="allFields"
-          group="fields"
-          item-key="name"
-          class="flex flex-col gap-1"
-          @end="reorder"
-        >
-          <template #item="{ element: field }">
-            <div
-              class="px-1 py-0.5 border border-outline-gray-modals rounded text-base text-ink-gray-8 flex items-center justify-between gap-2"
-            >
-              <div class="flex items-center gap-2">
-                <DragVerticalIcon class="h-3.5 cursor-grab" />
-                <div>{{ field.label }}</div>
-              </div>
-              <div>
-                <Button
-                  variant="ghost"
-                  icon="lucide-x"
-                  @click="removeField(field)"
-                />
-              </div>
-            </div>
-          </template>
-        </Draggable>
-        <Combobox :options="fields" @update:selectedOption="(e) => addField(e)">
-          <template #trigger>
-            <Button
-              class="w-full mt-2"
-              :label="__('Add Field')"
-              iconLeft="lucide-plus"
-            />
-          </template>
-          <template #item-label="{ item }">
-            <div class="flex flex-col gap-1 text-ink-gray-9">
-              <div>{{ item.label }}</div>
-              <div class="text-ink-gray-4 text-sm">
-                {{ `${item.fieldname} - ${item.fieldtype}` }}
-              </div>
-            </div>
-          </template>
-        </Combobox>
       </div>
     </template>
     <template #actions>

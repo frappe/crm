@@ -15,7 +15,7 @@
       </p>
     </div>
 
-    <label class="block text-sm text-ink-gray-5 mb-1.5">
+    <label class="block text-p-sm font-medium text-ink-gray-7 mb-1.5">
       {{ __('Users') }}
     </label>
 
@@ -39,17 +39,14 @@
       />
     </div>
 
-    <div class="space-y-1.5 mt-4">
-      <label class="block text-sm text-ink-gray-5">{{ __('Role') }}</label>
-      <Select
-        v-model="role"
-        class="w-full"
-        :label="__('Role')"
-        :options="roleOptions"
-        :description="description"
-      />
-      <p class="text-p-sm text-ink-gray-6">{{ __(description) }}</p>
-    </div>
+    <Select
+      v-model="role"
+      class="w-full mt-4"
+      :label="__('Role')"
+      :options="roleOptions"
+      :description="description"
+    />
+
     <template #actions>
       <div class="flex justify-end gap-2">
         <Button

@@ -37,27 +37,17 @@
               'You can invite multiple users by comma separating their email addresses',
             )
           "
+          :error="userExistMessage || inviteeExistMessage"
           @input="updateInvitees($event.target.value)"
         />
-        <div
-          v-if="userExistMessage || inviteeExistMessage"
-          class="text-xs text-ink-red-3 mt-1.5"
-        >
-          {{ userExistMessage || inviteeExistMessage }}
-        </div>
-        <div class="space-y-1.5 mt-4">
-          <label class="block text-p-sm font-medium text-ink-gray-7">
-            {{ __('Invite As') }}
-          </label>
-          <Select
-            v-model="role"
-            class="w-full"
-            :label="__('Invite As')"
-            :options="roleOptions"
-            :description="description"
-          />
-          <p class="text-p-sm text-ink-gray-6">{{ __(description) }}</p>
-        </div>
+
+        <Select
+          v-model="role"
+          class="w-full mt-4"
+          :label="__('Invite As')"
+          :options="roleOptions"
+          :description="description"
+        />
       </div>
       <template v-if="pendingInvitations.data?.length && !invitees.length">
         <div class="flex flex-col gap-4">

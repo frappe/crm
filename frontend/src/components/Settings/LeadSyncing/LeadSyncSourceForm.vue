@@ -48,29 +48,19 @@
         >
           <!-- Form -->
           <div class="grid grid-cols-2 gap-4 px-0.5">
-            <div class="space-y-1.5">
-              <label class="block text-p-sm font-medium text-ink-gray-7">
-                {{ __('Select Source Type') }}
-                <span class="text-ink-red-3">*</span>
-              </label>
-              <Combobox
-                v-model="syncSource.type"
-                class="w-full mt-1.5"
-                :required="true"
-                :options="supportedSourceTypes"
-                :label="__('Source Type')"
-                :openOnClick="true"
-                :placeholder="__('Select Source Type')"
-              >
-                <!-- <template v-if="syncSource.type" #prefix>
-                <component :is="syncSource.type.icon" class="mr-2 size-4" />
-              </template> -->
-
-                <template #item-prefix="{ item }">
-                  <component :is="item.icon" class="size-4" />
-                </template>
-              </Combobox>
-            </div>
+            <Combobox
+              v-model="syncSource.type"
+              class="w-full"
+              :required="true"
+              :options="supportedSourceTypes"
+              :label="__('Source Type')"
+              :openOnClick="true"
+              :placeholder="__('Select Source Type')"
+            >
+              <template #item-prefix="{ item }">
+                <component :is="item.icon" class="size-4" />
+              </template>
+            </Combobox>
 
             <TextInput
               v-if="isLocal"
@@ -80,18 +70,13 @@
               :placeholder="__('Enter Source Name')"
             />
 
-            <div v-if="fieldsMap.background_sync_frequency" class="space-y-1.5">
-              <label class="block text-p-sm font-medium text-ink-gray-7">
-                {{ __('Background Sync Frequency') }}
-                <span class="text-ink-red-3">*</span>
-              </label>
-              <Select
-                v-model="syncSource.background_sync_frequency"
-                class="w-full"
-                :options="fieldsMap.background_sync_frequency.options"
-                :label="__('Background Sync Frequency')"
-              />
-            </div>
+            <Select
+              v-if="fieldsMap.background_sync_frequency"
+              v-model="syncSource.background_sync_frequency"
+              class="w-full"
+              :options="fieldsMap.background_sync_frequency.options"
+              :label="__('Background Sync Frequency')"
+            />
 
             <Password
               v-model="syncSource.access_token"

@@ -43,92 +43,48 @@
     </div>
     <div class="overflow-y-auto px-2">
       <div class="grid grid-cols-2 gap-5">
-        <div class="space-y-1.5">
-          <FormLabel :label="__('Name')" />
-          <TextInput
-            v-model="assignmentRuleData.assignmentRuleName"
-            size="sm"
-            variant="subtle"
-            :placeholder="__('Name')"
-            required
-            maxlength="50"
-            @change="validateAssignmentRule('assignmentRuleName')"
-          />
-          <ErrorMessage :message="assignmentRuleErrors.assignmentRuleName" />
-        </div>
-        <div class="flex flex-col gap-1.5">
-          <FormLabel :label="__('Priority')" />
-          <Popover>
-            <template #target="{ togglePopover }">
-              <div
-                class="flex items-center justify-between text-base rounded h-7 py-1.5 pl-2 pr-2 border border-outline-gray-2 bg-surface-gray-2 placeholder-ink-gray-4 hover:border-outline-gray-modals hover:bg-surface-gray-3 focus:bg-surface-white focus:border-outline-gray-4 focus:shadow-sm focus:ring-0 focus-visible:ring-2 focus-visible:ring-outline-gray-3 text-ink-gray-8 transition-colors w-full dark:[color-scheme:dark] cursor-default"
-                @click="togglePopover()"
-              >
-                <div>
-                  {{
-                    priorityOptions.find(
-                      (option) => option.value == assignmentRuleData.priority,
-                    )?.label
-                  }}
-                </div>
-                <span class="lucide-chevron-down size-4" aria-hidden="true" />
-              </div>
-            </template>
-            <template #body="{ togglePopover }">
-              <div
-                class="p-1 text-ink-gray-6 top-1 absolute bg-white shadow-2xl rounded w-[--reka-popper-anchor-width]"
-              >
-                <div
-                  v-for="option in priorityOptions"
-                  :key="option.value"
-                  class="p-2 cursor-pointer hover:bg-surface-gray-1 text-base flex items-center justify-between rounded"
-                  @click="
-                    () => {
-                      assignmentRuleData.priority = option.value
-                      togglePopover()
-                    }
-                  "
-                >
-                  {{ option.label }}
-                  <span
-                    v-if="assignmentRuleData.priority == option.value"
-                    class="lucide-check size-4"
-                    aria-hidden="true"
-                  />
-                </div>
-              </div>
-            </template>
-          </Popover>
-        </div>
-        <div class="space-y-1.5">
-          <FormLabel :label="__('Description')" />
-          <Textarea
-            v-model="assignmentRuleData.description"
-            size="sm"
-            variant="subtle"
-            :placeholder="__('Description')"
-            required
-            maxlength="250"
-            @change="validateAssignmentRule('description')"
-          />
-          <ErrorMessage :message="assignmentRuleErrors.description" />
-        </div>
-        <div class="flex flex-col gap-1.5">
-          <FormLabel :label="__('Apply On')" />
-          <Select
-            v-model="assignmentRuleData.documentType"
-            :options="[
-              {
-                label: 'Lead',
-                value: 'CRM Lead',
-              },
-              {
-                label: 'Deal',
-                value: 'CRM Deal',
-              },
-            ]"
-          />
-        </div>
+        <TextInput
+          v-model="assignmentRuleData.assignmentRuleName"
+          :label="__('Name')"
+          size="sm"
+          variant="subtle"
+          :placeholder="__('Name')"
+          required
+          :error="assignmentRuleErrors.assignmentRuleName"
+          maxlength="50"
+          @change="validateAssignmentRule('assignmentRuleName')"
+        />
+        <Select
+          v-model="assignmentRuleData.priority"
+          :label="__('Priority')"
+          :options="priorityOptions"
+        />
+        <Textarea
+          v-model="assignmentRuleData.description"
+          :label="__('Description')"
+          size="sm"
+          variant="subtle"
+          :placeholder="__('Description')"
+          required
+          :error="assignmentRuleErrors.description"
+          maxlength="250"
+          @change="validateAssignmentRule('description')"
+        />
+
+        <Select
+          v-model="assignmentRuleData.documentType"
+          :label="__('Apply On')"
+          :options="[
+            {
+              label: 'Lead',
+              value: 'CRM Lead',
+            },
+            {
+              label: 'Deal',
+              value: 'CRM Deal',
+            },
+          ]"
+        />
       </div>
       <hr class="my-8" />
       <div>
@@ -326,7 +282,6 @@ import {
   call,
   createResource,
   ErrorMessage,
-  FormLabel,
   LoadingIndicator,
   Popover,
   Select,

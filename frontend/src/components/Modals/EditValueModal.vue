@@ -1,9 +1,9 @@
 <template>
   <Dialog v-model:open="show" :title="__('Bulk Edit')">
     <div v-if="fields.length" class="mb-4">
-      <div class="mb-1.5 text-sm text-ink-gray-5">{{ __('Field') }}</div>
       <Combobox
         :model-value="field.fieldname"
+        :label="__('Field')"
         :options="fields"
         class="w-full"
         :placeholder="__('Source')"
@@ -12,7 +12,9 @@
       />
     </div>
     <div>
-      <div class="mb-1.5 text-sm text-ink-gray-5">{{ __('Value') }}</div>
+      <div class="mb-1.5 text-p-sm font-medium text-ink-gray-7">
+        {{ __('Value') }}
+      </div>
       <component
         :is="getValueComponent(field)"
         :value="newValue"

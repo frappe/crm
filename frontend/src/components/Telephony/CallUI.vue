@@ -17,31 +17,25 @@
     <template #body-content>
       <div class="flex flex-col gap-4">
         <TextInput v-model="mobileNumber" :label="__('Mobile Number')" />
-        <div class="space-y-1.5">
-          <label class="block text-p-sm font-medium text-ink-gray-7">
-            {{ __('Calling Medium') }}
-          </label>
-          <Select
-            v-model="callMedium"
-            :label="__('Calling Medium')"
-            :options="[
-              { label: __('Twilio'), value: 'Twilio' },
-              { label: __('Exotel'), value: 'Exotel' },
-            ]"
-          />
-        </div>
-        <div class="flex flex-col gap-1">
-          <Checkbox
-            v-model="isDefaultMedium"
-            :label="__('Make {0} as default calling medium', [callMedium])"
-          />
-
-          <div v-if="isDefaultMedium" class="text-sm text-ink-gray-4">
-            {{
-              __('You can change the default calling medium from the settings')
-            }}
-          </div>
-        </div>
+        <Select
+          v-model="callMedium"
+          :label="__('Calling Medium')"
+          :options="[
+            { label: __('Twilio'), value: 'Twilio' },
+            { label: __('Exotel'), value: 'Exotel' },
+          ]"
+        />
+        <Checkbox
+          v-model="isDefaultMedium"
+          :label="__('Make {0} as default calling medium', [callMedium])"
+          :description="
+            isDefaultMedium
+              ? __(
+                  'You can change the default calling medium from the settings',
+                )
+              : ''
+          "
+        />
       </div>
     </template>
   </Dialog>

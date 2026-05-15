@@ -1,21 +1,22 @@
 <template>
   <Dialog v-model:open="dialog" :title="__('Edit Response & Resolution')">
     <div class="flex flex-col gap-4">
+      <Select
+        v-model="priorityData.priority"
+        size="sm"
+        variant="subtle"
+        :placeholder="__('Select Priority')"
+        :label="__('Priority')"
+        :options="priorityOptions"
+        required
+        class="text-ink-gray-8 w-full"
+      />
       <div class="space-y-1.5">
-        <FormLabel :label="__('Priority')" required />
-        <Select
-          v-model="priorityData.priority"
-          size="sm"
-          variant="subtle"
-          :placeholder="__('Select Priority')"
-          :label="__('Priority')"
-          :options="priorityOptions"
+        <FormLabel
+          class="!text-p-sm font-medium text-ink-gray-7"
+          :label="__('First Response Time')"
           required
-          class="text-ink-gray-8 w-full"
         />
-      </div>
-      <div class="space-y-1.5">
-        <FormLabel :label="__('First Response Time')" required />
         <DurationInput
           class="w-full"
           :value="priorityData.first_response_time"
