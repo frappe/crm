@@ -53,6 +53,7 @@ class ERPNextCRMSettings(Document):
 			self.add_quotation_to_option()
 			self.create_custom_fields()
 			self.create_crm_form_script()
+			self.setup_quotation_prefill_script()
 
 	def validate_if_erpnext_installed(self):
 		if not self.is_erpnext_in_different_site:
@@ -93,7 +94,16 @@ class ERPNextCRMSettings(Document):
 					"label": "Customer in ERPNext",
 					"insert_after": "lead_name",
 				}
-			]
+			],
+			"CRM Product": [
+				{
+					"fieldname": "erpnext_item_code",
+					"fieldtype": "Data",
+					"label": "Item Code in ERPNext",
+					"read_only": 1,
+					"insert_after": "product_code",
+				}
+			],
 		}
 		_create_custom_fields(custom_fields, ignore_validate=True)
 
@@ -106,6 +116,15 @@ class ERPNextCRMSettings(Document):
 				"Error while creating custom field in ERPNext, check error log for more details",
 				f"Error while creating custom field in the remote erpnext site: {self.erpnext_site_url}",
 			)
+
+	def setup_quotation_prefill_script(self):
+		if self.is_erpnext_in_different_site:
+			return
+		try:
+			from erpnext.crm.frappe_crm_api import setup_quotation_prefill_script
+		except ImportError:
+			return
+		setup_quotation_prefill_script()
 
 	def create_crm_form_script(self):
 		if not frappe.db.exists("CRM Form Script", "Create Quotation from CRM Deal"):
