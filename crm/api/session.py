@@ -37,37 +37,53 @@ def get_users():
 			"language",
 		],
 		order_by="full_name asc",
-		distinct=True,
 		filters={"enabled": 1},
 	).run(as_dict=1)
 
-	crm_users = []
+	if not users:
+		return [], []
+
+	user_names = [u.name for u in users]
 	system_language = frappe.db.get_single_value("System Settings", "language")
+	session_user = frappe.session.user
+
+	role_rows = frappe.get_all(
+		"Has Role",
+		filters={"parent": ["in", user_names], "parenttype": "User"},
+		fields=["parent", "role"],
+	)
+	roles_by_user = {}
+	for row in role_rows:
+		roles_by_user.setdefault(row.parent, []).append(row.role)
+
+	telephony_agents = set(
+		frappe.get_all(
+			"CRM Telephony Agent",
+			filters={"user": ["in", user_names]},
+			pluck="user",
+		)
+	)
+
+	role_priority = ("System Manager", "Sales Manager", "Sales User", "Guest")
+	crm_users = []
 
 	for user in users:
-		if frappe.session.user == user.name:
+		if session_user == user.name:
 			user.session_user = True
 
-		user.roles = frappe.get_roles(user.name)
+		# Mirror frappe.get_roles() which appends implicit "All" and "Guest"
+		user.roles = roles_by_user.get(user.name, []) + ["All", "Guest"]
 
 		user.role = ""
+		for role in role_priority:
+			if role in user.roles:
+				user.role = role
+				break
 
-		if "System Manager" in user.roles:
-			user.role = "System Manager"
-		elif "Sales Manager" in user.roles:
-			user.role = "Sales Manager"
-		elif "Sales User" in user.roles:
-			user.role = "Sales User"
-		elif "Guest" in user.roles:
-			user.role = "Guest"
-
-		if frappe.session.user == user.name:
-			user.session_user = True
-
-		user.is_telephony_agent = frappe.db.exists("CRM Telephony Agent", {"user": user.name})
+		user.is_telephony_agent = user.name in telephony_agents
 		user.language = user.language or system_language
 
-		if user.role in ("System Manager", "Sales Manager", "Sales User"):
+		if user.role in CRM_ALLOWED_ROLES:
 			crm_users.append(user)
 
 	if not session_roles["is_system_manager"]:
