@@ -66,7 +66,7 @@ export const usersStore = defineStore('crm-users', () => {
   }
 
   function isTelephonyAgent(email) {
-    return getUser(email).is_telphony_agent
+    return getUser(email).is_telephony_agent
   }
 
   function getUserRole(email) {
