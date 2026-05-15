@@ -2,9 +2,29 @@
 # See license.txt
 
 import frappe
+from frappe.custom.doctype.custom_field.custom_field import create_custom_fields
 from frappe.tests import IntegrationTestCase
 
 from crm.fcrm.doctype.crm_product.crm_product import sync_item_to_crm_product
+
+
+def _ensure_erpnext_item_code_field():
+	if frappe.db.has_column("CRM Product", "erpnext_item_code"):
+		return
+	create_custom_fields(
+		{
+			"CRM Product": [
+				{
+					"fieldname": "erpnext_item_code",
+					"fieldtype": "Data",
+					"label": "Item Code in ERPNext",
+					"read_only": 1,
+					"insert_after": "product_code",
+				}
+			]
+		},
+		ignore_validate=True,
+	)
 
 
 def _make_item_doc(item_code, **fields):
@@ -23,6 +43,11 @@ def _make_item_doc(item_code, **fields):
 
 
 class IntegrationTestCRMProduct(IntegrationTestCase):
+	@classmethod
+	def setUpClass(cls):
+		super().setUpClass()
+		_ensure_erpnext_item_code_field()
+
 	def setUp(self):
 		frappe.db.set_single_value("ERPNext CRM Settings", "enabled", 1)
 
@@ -112,7 +137,7 @@ class IntegrationTestCRMProduct(IntegrationTestCase):
 			product.set(field, value)
 		product.flags.ignore_erpnext_sync = True
 		product.insert(ignore_permissions=True)
-		return product
+		return frappe.get_doc("CRM Product", product.name)
 
 	def _patch_push(self):
 		import crm.fcrm.doctype.crm_product.crm_product as module
