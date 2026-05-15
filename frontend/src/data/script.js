@@ -133,6 +133,7 @@ export function getScript(doctype, view = 'Form') {
         parentInstance,
         isChildDoctype,
       )
+      instance._className = className
 
       controllers.push(instance)
     }
@@ -237,7 +238,9 @@ export function getScript(doctype, view = 'Form') {
           dt = field?.options?.replace(/\s+/g, '')
 
           if (!idx && dt) {
-            idx = this.find((r) => r.constructor.name === dt)?.currentRowIdx
+            idx = this.find(
+              (r) => (r._className || r.constructor.name) === dt,
+            )?.currentRowIdx
           }
         }
 
@@ -264,7 +267,7 @@ export function getScript(doctype, view = 'Form') {
         if (this instanceof Array && dt) {
           return createDocProxy(
             row,
-            this.find((r) => r.constructor.name === dt),
+            this.find((r) => (r._className || r.constructor.name) === dt),
           )
         }
 

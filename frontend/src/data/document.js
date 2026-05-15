@@ -3,7 +3,7 @@ import { globalStore } from '@/stores/global'
 import { getMeta } from '@/stores/meta'
 import { useAttachments } from '@/composables/useAttachments'
 import { showSettings, activeSettingsPage } from '@/composables/settings'
-import { runSequentially, parseAssignees } from '@/utils'
+import { runSequentially, parseAssignees, sanitizeText } from '@/utils'
 import { findMissingMandatory } from '@/utils/fieldTransforms'
 import { createDocumentResource, createResource, toast } from 'frappe-ui'
 import { ref, reactive } from 'vue'
@@ -14,6 +14,7 @@ const assigneesCache = {}
 const permissionsCache = {}
 
 export function useDocument(doctype, docname, resourceOverrides = {}) {
+  if (typeof docname === 'number') docname = String(docname)
   const { setupScript, scripts } = getScript(doctype)
   const meta = getMeta(doctype)
   const { trackOldFile, processPendingDeletions } = useAttachments(
@@ -174,7 +175,7 @@ export function useDocument(doctype, docname, resourceOverrides = {}) {
 
     const organizedControllers = {}
     for (const controller of controllersArray) {
-      const controllerKey = controller.constructor.name // e.g., "CRMLead", "CRMProducts"
+      const controllerKey = controller._className || controller.constructor.name
       if (!organizedControllers[controllerKey]) {
         organizedControllers[controllerKey] = []
       }
@@ -266,7 +267,8 @@ export function useDocument(doctype, docname, resourceOverrides = {}) {
     await trigger(handler)
   }
 
-  async function triggerOnChange(fieldname, value, row) {
+  async function triggerOnChange(fieldname, _value, row) {
+    const value = sanitizeText(_value)
     let oldValue = null
     if (row) {
       oldValue = row[fieldname]
