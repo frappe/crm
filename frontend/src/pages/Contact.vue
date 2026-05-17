@@ -108,6 +108,20 @@
                   iconLeft="trash-2"
                   @click="deleteContact()"
                 />
+                <Button
+                  v-if="linkedLead"
+                  :label="__('Go to Lead')"
+                  size="sm"
+                  iconLeft="arrow-right"
+                  @click="router.push({ name: 'Lead', params: { leadId: linkedLead } })"
+                />
+                <Button
+                  v-else
+                  :label="__('Create Lead')"
+                  size="sm"
+                  iconLeft="plus"
+                  @click="createLead()"
+                />
               </div>
             </div>
           </template>
@@ -253,7 +267,10 @@ const {
 const canDelete = computed(() => permissions.data?.permissions?.delete || false)
 
 onMounted(async () => {
-  if (contact.doc) await triggerOnRender()
+  if (contact.doc) {
+    await triggerOnRender()
+    await fetchLinkedLead()
+  }
 })
 
 const breadcrumbs = computed(() => {
@@ -294,6 +311,34 @@ usePageMeta(() => {
 })
 const showDeleteLinkedDocModal = ref(false)
 const showDealModal = ref(false)
+const linkedLead = ref(null)
+
+async function fetchLinkedLead() {
+  if (!contact.doc) return
+  try {
+    const result = await call('crm.api.contact.get_linked_lead', {
+      contact: props.contactId,
+    })
+    linkedLead.value = result || null
+  } catch {
+    linkedLead.value = null
+  }
+}
+
+async function createLead() {
+  try {
+    const leadName = await call('crm.api.contact.create_lead_from_contact', {
+      contact: props.contactId,
+    })
+    if (leadName) {
+      linkedLead.value = leadName
+      toast.success(__('Lead created successfully'))
+      router.push({ name: 'Lead', params: { leadId: leadName } })
+    }
+  } catch (e) {
+    toast.error(e.messages?.[0] || __('Failed to create lead'))
+  }
+}
 
 async function deleteContact() {
   showDeleteLinkedDocModal.value = true
@@ -584,6 +629,15 @@ function showAddressModal(_address) {
     },
   })
 }
+
+// Fetch linked lead when doc is available
+watch(
+  () => contact.doc,
+  async (doc) => {
+    if (doc) await fetchLinkedLead()
+  },
+  { once: true },
+)
 
 // Setup custom actions from Form Scripts
 watch(

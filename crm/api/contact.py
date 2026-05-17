@@ -113,6 +113,56 @@ def set_as_primary(contact: str, field: str, value: str):
 
 
 @frappe.whitelist()
+def get_linked_lead(contact: str):
+    """Get a lead linked to a contact by matching email or mobile number"""
+    if not frappe.has_permission("Contact", "read", contact):
+        frappe.throw(_("Not permitted"), frappe.PermissionError)
+
+    contact_doc = frappe.get_cached_doc("Contact", contact)
+    email = contact_doc.email_id
+    mobile_no = contact_doc.mobile_no
+    if not email and not mobile_no:
+        return None
+
+    lead = frappe.get_all(
+		"CRM Lead",
+		or_filters=[
+            ["email", "=", email],
+            ["mobile_no", "=", mobile_no],
+        ],
+		fields=["name"],
+		pluck='name',
+		limit=1,
+	)
+    return lead[0] if lead else None
+
+
+@frappe.whitelist()
+def create_lead_from_contact(contact: str):
+    """Create a new CRM Lead from contact data"""
+    if not frappe.has_permission("Contact", "read", contact):
+        frappe.throw(_("Not permitted"), frappe.PermissionError)
+    if not frappe.has_permission("CRM Lead", "create"):
+        frappe.throw(_("Not permitted to create Lead"), frappe.PermissionError)
+
+    contact_doc = frappe.get_cached_doc("Contact", contact)
+    if not contact_doc.email_id and not contact_doc.mobile_no:
+        frappe.throw(_("Contact must have either an email or mobile number to create a Lead"))
+
+    lead = frappe.new_doc("CRM Lead")
+    lead.first_name = contact_doc.first_name or contact_doc.full_name
+    lead.last_name = contact_doc.last_name
+    lead.salutation = contact_doc.salutation
+    lead.email = contact_doc.email_id
+    lead.mobile_no = contact_doc.mobile_no
+    lead.image = contact_doc.image
+    lead.organization = contact_doc.company_name
+    lead.insert()
+
+    return lead.name
+
+
+@frappe.whitelist()
 def search_emails(txt: str):
 	doctype = "Contact"
 	meta = frappe.get_meta(doctype)
