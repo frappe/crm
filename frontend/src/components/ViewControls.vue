@@ -1175,8 +1175,7 @@ function setAsDefault(v) {
 }
 
 function duplicateView(v, close) {
-  v.label = v.label + __(' (New)')
-  viewModalObj.value = v
+  viewModalObj.value.label = v.label + __(' (New)')
   viewModalObj.value.mode = 'duplicate'
   showViewModal.value = true
   close()

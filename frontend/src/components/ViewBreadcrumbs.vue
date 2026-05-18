@@ -34,7 +34,7 @@
           </template>
         </Button>
       </template>
-      <template #item-suffix="{ item }">
+      <template #item-suffix="{ item, close }">
         <div
           v-if="item.name"
           class="flex flex-row-reverse gap-2 items-center min-w-11"
