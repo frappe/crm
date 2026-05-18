@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Frappe CRM VERSION\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2026-05-10 10:00+0000\n"
-"PO-Revision-Date: 2026-05-10 10:00+0000\n"
+"POT-Creation-Date: 2026-05-17 10:04+0000\n"
+"PO-Revision-Date: 2026-05-17 10:04+0000\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: shariq@frappe.io\n"
 "MIME-Version: 1.0\n"
@@ -290,7 +290,7 @@ msgid "Actions"
 msgstr ""
 
 #: frontend/src/pages/Deal.vue:561 frontend/src/pages/Lead.vue:413
-#: frontend/src/pages/MobileDeal.vue:435 frontend/src/pages/MobileLead.vue:284
+#: frontend/src/pages/MobileDeal.vue:437 frontend/src/pages/MobileLead.vue:285
 msgid "Activity"
 msgstr ""
 
@@ -552,7 +552,7 @@ msgstr ""
 msgid "An error occurred"
 msgstr ""
 
-#: frontend/src/data/document.js:73
+#: frontend/src/data/document.js:74
 msgid "An error occurred while updating the document"
 msgstr ""
 
@@ -816,7 +816,7 @@ msgid "Attach file…"
 msgstr ""
 
 #: frontend/src/pages/Deal.vue:601 frontend/src/pages/Lead.vue:453
-#: frontend/src/pages/MobileDeal.vue:471 frontend/src/pages/MobileLead.vue:319
+#: frontend/src/pages/MobileDeal.vue:473 frontend/src/pages/MobileLead.vue:320
 msgid "Attachments"
 msgstr ""
 
@@ -1228,7 +1228,7 @@ msgstr ""
 msgid "Call Received By"
 msgstr ""
 
-#: crm/integrations/api.py:154 crm/integrations/twilio/api.py:148
+#: crm/integrations/api.py:152 crm/integrations/twilio/api.py:148
 #: crm/integrations/twilio/api.py:166
 msgid "Call log not found"
 msgstr ""
@@ -1256,7 +1256,7 @@ msgid "Calling..."
 msgstr ""
 
 #: frontend/src/pages/Deal.vue:586 frontend/src/pages/Lead.vue:438
-#: frontend/src/pages/MobileDeal.vue:455 frontend/src/pages/MobileLead.vue:304
+#: frontend/src/pages/MobileDeal.vue:457 frontend/src/pages/MobileLead.vue:305
 msgid "Calls"
 msgstr ""
 
@@ -1512,7 +1512,7 @@ msgid "Comment sent"
 msgstr ""
 
 #: frontend/src/pages/Deal.vue:571 frontend/src/pages/Lead.vue:423
-#: frontend/src/pages/MobileDeal.vue:445 frontend/src/pages/MobileLead.vue:294
+#: frontend/src/pages/MobileDeal.vue:447 frontend/src/pages/MobileLead.vue:295
 msgid "Comments"
 msgstr ""
 
@@ -1660,11 +1660,11 @@ msgstr ""
 msgid "Contact"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:682 frontend/src/pages/MobileDeal.vue:549
+#: frontend/src/pages/Deal.vue:682 frontend/src/pages/MobileDeal.vue:551
 msgid "Contact Added"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:672 frontend/src/pages/MobileDeal.vue:539
+#: frontend/src/pages/Deal.vue:672 frontend/src/pages/MobileDeal.vue:541
 msgid "Contact Already Added"
 msgstr ""
 
@@ -1676,7 +1676,7 @@ msgstr ""
 msgid "Contact Image Updated"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:693 frontend/src/pages/MobileDeal.vue:560
+#: frontend/src/pages/Deal.vue:693 frontend/src/pages/MobileDeal.vue:562
 msgid "Contact Removed"
 msgstr ""
 
@@ -1962,7 +1962,7 @@ msgstr ""
 #: frontend/src/components/Activities/DataFields.vue:6
 #: frontend/src/components/Layouts/AppSidebar.vue:604
 #: frontend/src/pages/Deal.vue:576 frontend/src/pages/Lead.vue:428
-#: frontend/src/pages/MobileDeal.vue:450 frontend/src/pages/MobileLead.vue:299
+#: frontend/src/pages/MobileDeal.vue:452 frontend/src/pages/MobileLead.vue:300
 msgid "Data"
 msgstr ""
 
@@ -2045,7 +2045,7 @@ msgstr ""
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
 #: frontend/src/pages/Deal.vue:514 frontend/src/pages/MobileContact.vue:301
-#: frontend/src/pages/MobileDeal.vue:389
+#: frontend/src/pages/MobileDeal.vue:391
 #: frontend/src/pages/MobileOrganization.vue:344
 msgid "Deals"
 msgstr ""
@@ -2201,7 +2201,7 @@ msgstr ""
 #: frontend/src/pages/Contact.vue:99 frontend/src/pages/Deal.vue:121
 #: frontend/src/pages/Lead.vue:168 frontend/src/pages/MobileContact.vue:80
 #: frontend/src/pages/MobileContact.vue:276
-#: frontend/src/pages/MobileDeal.vue:520
+#: frontend/src/pages/MobileDeal.vue:522
 #: frontend/src/pages/MobileOrganization.vue:73
 #: frontend/src/pages/MobileOrganization.vue:279
 #: frontend/src/pages/Notes.vue:44 frontend/src/pages/Organization.vue:90
@@ -2305,7 +2305,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_lead_source/crm_lead_source.json
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:197
 #: frontend/src/pages/MobileContact.vue:296
-#: frontend/src/pages/MobileDeal.vue:429 frontend/src/pages/MobileLead.vue:278
+#: frontend/src/pages/MobileDeal.vue:431 frontend/src/pages/MobileLead.vue:279
 #: frontend/src/pages/MobileOrganization.vue:339
 msgid "Details"
 msgstr ""
@@ -2376,7 +2376,7 @@ msgstr ""
 msgid "Doctype is required"
 msgstr ""
 
-#: frontend/src/pages/MobileLead.vue:203
+#: frontend/src/pages/MobileLead.vue:204
 msgid "Document Not Found"
 msgstr ""
 
@@ -2389,15 +2389,15 @@ msgstr ""
 msgid "Document created successfully"
 msgstr ""
 
-#: frontend/src/data/document.js:37
+#: frontend/src/data/document.js:38
 msgid "Document does not exist"
 msgstr ""
 
-#: crm/api/activities.py:20 frontend/src/pages/MobileDeal.vue:352
+#: crm/api/activities.py:20 frontend/src/pages/MobileDeal.vue:354
 msgid "Document not found"
 msgstr ""
 
-#: frontend/src/data/document.js:51
+#: frontend/src/data/document.js:52
 msgid "Document updated successfully"
 msgstr ""
 
@@ -2522,7 +2522,7 @@ msgstr ""
 
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:60
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:81
-#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:331
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:330
 msgid "ERPNext is not installed in the current site"
 msgstr ""
 
@@ -2718,7 +2718,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/Profile/UserEmailSettings.vue:51
 #: frontend/src/pages/Deal.vue:566 frontend/src/pages/Lead.vue:418
-#: frontend/src/pages/MobileDeal.vue:440 frontend/src/pages/MobileLead.vue:289
+#: frontend/src/pages/MobileDeal.vue:442 frontend/src/pages/MobileLead.vue:290
 msgid "Emails"
 msgstr ""
 
@@ -2896,7 +2896,7 @@ msgstr ""
 msgid "Equals"
 msgstr ""
 
-#: frontend/src/pages/MobileLead.vue:204
+#: frontend/src/pages/MobileLead.vue:205
 msgid "Error Occurred"
 msgstr ""
 
@@ -2916,7 +2916,7 @@ msgstr ""
 msgid "Error creating lead: {0}"
 msgstr ""
 
-#: frontend/src/pages/MobileDeal.vue:353
+#: frontend/src/pages/MobileDeal.vue:355
 msgid "Error occurred"
 msgstr ""
 
@@ -2929,7 +2929,7 @@ msgid "Error updating Lead Sync Source"
 msgstr ""
 
 #: frontend/src/pages/Deal.vue:766 frontend/src/pages/Lead.vue:498
-#: frontend/src/pages/MobileDeal.vue:617 frontend/src/pages/MobileLead.vue:359
+#: frontend/src/pages/MobileDeal.vue:619 frontend/src/pages/MobileLead.vue:360
 msgid "Error updating field"
 msgstr ""
 
@@ -3186,11 +3186,11 @@ msgstr ""
 msgid "Failed to load fields layout"
 msgstr ""
 
-#: frontend/src/data/script.js:149
+#: frontend/src/data/script.js:150
 msgid "Failed to load file-based form controller: {0}"
 msgstr ""
 
-#: frontend/src/data/script.js:167
+#: frontend/src/data/script.js:168
 msgid "Failed to load form controller: {0}"
 msgstr ""
 
@@ -3211,7 +3211,7 @@ msgstr ""
 msgid "Failed to send WhatsApp message"
 msgstr ""
 
-#: frontend/src/components/Activities/Activities.vue:598
+#: frontend/src/components/Activities/Activities.vue:606
 msgid "Failed to send WhatsApp template"
 msgstr ""
 
@@ -4213,7 +4213,7 @@ msgstr ""
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
 #: frontend/src/pages/InvalidPage.vue:9 frontend/src/pages/Lead.vue:369
-#: frontend/src/pages/MobileLead.vue:238
+#: frontend/src/pages/MobileLead.vue:239
 msgid "Leads"
 msgstr ""
 
@@ -4470,7 +4470,7 @@ msgid "Manager"
 msgstr ""
 
 #: frontend/src/components/Modals/DoctypeModal.vue:121
-#: frontend/src/data/document.js:64
+#: frontend/src/data/document.js:65
 msgid "Mandatory field error: {0}"
 msgstr ""
 
@@ -4479,7 +4479,7 @@ msgid "Mandatory field(s) {0} must be mapped"
 msgstr ""
 
 #: frontend/src/components/Modals/FieldLayoutDialog.vue:207
-#: frontend/src/data/document.js:220 frontend/src/data/document.js:222
+#: frontend/src/data/document.js:221 frontend/src/data/document.js:223
 msgid "Mandatory fields required: {0}"
 msgstr ""
 
@@ -5050,7 +5050,7 @@ msgid "Note deleted"
 msgstr ""
 
 #: frontend/src/pages/Deal.vue:596 frontend/src/pages/Lead.vue:448
-#: frontend/src/pages/MobileDeal.vue:466 frontend/src/pages/MobileLead.vue:314
+#: frontend/src/pages/MobileDeal.vue:468 frontend/src/pages/MobileLead.vue:315
 msgid "Notes"
 msgstr ""
 
@@ -5542,7 +5542,7 @@ msgstr ""
 msgid "Primary"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:704 frontend/src/pages/MobileDeal.vue:571
+#: frontend/src/pages/Deal.vue:704 frontend/src/pages/MobileDeal.vue:573
 msgid "Primary Contact Set"
 msgstr ""
 
@@ -5731,7 +5731,7 @@ msgstr ""
 msgid "Recording URL"
 msgstr ""
 
-#: crm/integrations/api.py:159
+#: crm/integrations/api.py:157
 msgid "Recording URL not found"
 msgstr ""
 
@@ -6451,7 +6451,7 @@ msgstr ""
 msgid "Set an Organization"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:661 frontend/src/pages/MobileDeal.vue:528
+#: frontend/src/pages/Deal.vue:661 frontend/src/pages/MobileDeal.vue:530
 msgid "Set as Primary Contact"
 msgstr ""
 
@@ -6909,7 +6909,7 @@ msgid "Task"
 msgstr ""
 
 #: frontend/src/pages/Deal.vue:591 frontend/src/pages/Lead.vue:443
-#: frontend/src/pages/MobileDeal.vue:461 frontend/src/pages/MobileLead.vue:309
+#: frontend/src/pages/MobileDeal.vue:463 frontend/src/pages/MobileLead.vue:310
 msgid "Tasks"
 msgstr ""
 
@@ -7614,7 +7614,7 @@ msgstr ""
 #: frontend/src/components/Layouts/AppSidebar.vue:627
 #: frontend/src/components/Settings/Settings.vue:215
 #: frontend/src/pages/Deal.vue:606 frontend/src/pages/Lead.vue:458
-#: frontend/src/pages/MobileDeal.vue:476 frontend/src/pages/MobileLead.vue:324
+#: frontend/src/pages/MobileDeal.vue:478 frontend/src/pages/MobileLead.vue:325
 msgid "WhatsApp"
 msgstr ""
 
@@ -7748,7 +7748,7 @@ msgstr ""
 msgid "You do not have permission to access Frappe CRM"
 msgstr ""
 
-#: frontend/src/data/document.js:41
+#: frontend/src/data/document.js:42
 msgid "You do not have permission to access this document"
 msgstr ""
 
@@ -8323,11 +8323,11 @@ msgstr ""
 msgid "⚠️ No class found for doctype: {0}, it is mandatory to have a class for the parent doctype. it can be empty, but it should be present."
 msgstr ""
 
-#: frontend/src/data/script.js:246
+#: frontend/src/data/script.js:249
 msgid "⚠️ No data found for parent field: {0}"
 msgstr ""
 
-#: frontend/src/data/script.js:254
+#: frontend/src/data/script.js:257
 msgid "⚠️ No row found for idx: {0} in parent field: {1}"
 msgstr ""
 
