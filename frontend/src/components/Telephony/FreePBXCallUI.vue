@@ -213,9 +213,11 @@
             :icon="isMuted ? MicOffIcon : MicIcon"
             @click="toggleMute"
           />
-          <!-- Speakerphone toggle (mobile) -->
+          <!-- Speakerphone toggle (only shown when the browser actually
+               supports HTMLMediaElement.setSinkId — i.e. desktop/Android Chrome.
+               iOS Safari decides audio routing automatically and gives no API). -->
           <Button
-            v-if="callStatus == 'In progress'"
+            v-if="callStatus == 'In progress' && canSwitchAudioOutput"
             class="bg-surface-gray-6 text-ink-white hover:bg-surface-gray-5"
             :tooltip="speakerOn ? __('Earpiece') : __('Speaker')"
             :size="isMobile ? 'xl' : 'md'"
@@ -342,6 +344,11 @@ const callData = ref(null)
 const callDuration = ref('00:00')
 const isMuted = ref(false)
 const speakerOn = ref(false)
+const canSwitchAudioOutput = ref(
+  typeof window !== 'undefined' &&
+  typeof HTMLMediaElement !== 'undefined' &&
+  typeof HTMLMediaElement.prototype.setSinkId === 'function'
+)
 const counterUp = ref(null)
 // Holds the latest status update if it arrives before the call log is created.
 // Flushed in make_a_call's onSuccess so we never silently drop a terminal status.
@@ -637,7 +644,8 @@ function makeOutgoingCall(number) {
   session.on('progress', (e) => {
     console.log('[FreePBX] progress', e)
     callStatus.value = 'Ringing...'
-    ringtone.startRinging()
+    // No local ringback — FreePBX sends ringback through the RTP stream as
+    // early media (183 Session Progress). Playing a local tone overlaps it.
     _updateCallLogStatus('ringing')
   })
   session.on('confirmed', (e) => {
@@ -761,26 +769,55 @@ function toggleMute() {
   isMuted.value = !isMuted.value
 }
 
+// Cache enumerated audio output devices so we don't re-query on every toggle.
+let _audioOutputs = null
+async function _getAudioOutputs() {
+  if (_audioOutputs) return _audioOutputs
+  if (!navigator.mediaDevices?.enumerateDevices) return []
+  try {
+    const devices = await navigator.mediaDevices.enumerateDevices()
+    _audioOutputs = devices.filter((d) => d.kind === 'audiooutput')
+    return _audioOutputs
+  } catch (err) {
+    console.warn('[FreePBX] enumerateDevices failed', err)
+    return []
+  }
+}
+
 async function toggleSpeaker() {
-  // Mobile audio routing:
-  //   - "Earpiece" (default): playsinline + voice-comm constraints route through the earpiece
-  //     on iOS Safari and recent Android Chrome.
-  //   - "Speaker": try setSinkId('') / 'default' to force the media speaker. On iOS Safari
-  //     setSinkId isn't supported — we bump volume as a fallback so the user can still hear
-  //     it from arm's length.
   const audio = remoteAudio.value
   if (!audio) return
   const next = !speakerOn.value
+
+  // iOS Safari: setSinkId doesn't exist. There is no public web API to switch
+  // between earpiece and speaker — the OS decides. Tell the user.
+  if (typeof audio.setSinkId !== 'function') {
+    toast.warning(__('Audio output switching is not supported in this browser. Use device speaker controls.'))
+    return
+  }
+
+  const outputs = await _getAudioOutputs()
+  if (outputs.length === 0) {
+    toast.warning(__('No audio output devices found. Microphone permission may be required.'))
+    return
+  }
+
+  // Heuristic: speaker devices usually contain "speaker" in their label,
+  // earpiece devices contain "earpiece" / "communications". Fall back to the
+  // first/default device.
+  const findLabel = (re) => outputs.find((d) => re.test(d.label || ''))
+  const speakerDev = findLabel(/speaker|loudspeaker/i) || outputs[0]
+  const earpieceDev = findLabel(/earpiece|communications|receiver/i) || outputs.find((d) => d.deviceId === 'default') || outputs[0]
+  const target = next ? speakerDev : earpieceDev
+
   try {
-    if (typeof audio.setSinkId === 'function') {
-      await audio.setSinkId(next ? 'default' : '')
-    }
-    audio.volume = next ? 1.0 : 0.85
+    await audio.setSinkId(target.deviceId)
+    audio.volume = 1.0
     speakerOn.value = next
+    console.log('[FreePBX] Audio output switched to', target.label || target.deviceId)
   } catch (err) {
-    console.warn('[FreePBX] setSinkId not available — using volume fallback', err)
-    audio.volume = next ? 1.0 : 0.7
-    speakerOn.value = next
+    console.warn('[FreePBX] setSinkId failed', err)
+    toast.error(__('Could not switch audio output: {0}', [err.message || err.name]))
   }
 }
 
