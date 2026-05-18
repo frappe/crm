@@ -119,3 +119,15 @@ export function findMissingMandatory(fields, doc, options = {}) {
 
   return missingFields
 }
+
+export function getPlaceholder(f) {
+  if (f.placeholder) return f.placeholder
+
+  let label = f.label.toLowerCase()
+
+  if (f.fieldtype == 'Select') {
+    return __('Select {0}', [label])
+  }
+
+  return __('Set {0}', [label])
+}

@@ -149,6 +149,7 @@
                             : row[field.options]
                         "
                         :filters="field.filters"
+                        :placeholder="field.placeholder"
                         :onCreate="
                           (value, close) => field.create(v, field, row, close)
                         "
@@ -204,7 +205,7 @@
                         :value="row[field.fieldname]"
                         variant="outline"
                         :format="getFormat('', '', false, true, false)"
-                        input-class="border-none text-sm text-ink-gray-8"
+                        :placeholder="field.placeholder"
                         @change="(v) => fieldChange(v, field, row)"
                       />
                       <DatePicker
@@ -212,7 +213,7 @@
                         :value="row[field.fieldname]"
                         variant="outline"
                         :format="getFormat('', '', true, false, false)"
-                        input-class="border-none text-sm text-ink-gray-8"
+                        :placeholder="field.placeholder"
                         @change="(v) => fieldChange(v, field, row)"
                       />
                       <DateTimePicker
@@ -220,7 +221,7 @@
                         :value="row[field.fieldname]"
                         variant="outline"
                         :format="getFormat('', '', true, true, false)"
-                        input-class="border-none text-sm text-ink-gray-8"
+                        :placeholder="field.placeholder"
                         @change="(v) => fieldChange(v, field, row)"
                       />
                       <Textarea
@@ -233,6 +234,7 @@
                         class="resize-none"
                         :rows="1"
                         variant="outline"
+                        :placeholder="field.placeholder"
                         @change="fieldChange($event.target.value, field, row)"
                       />
                       <Select
@@ -241,6 +243,7 @@
                         class="w-full text-sm text-ink-gray-8"
                         variant="outline"
                         :options="field.options"
+                        :placeholder="field.placeholder"
                         @update:modelValue="(e) => fieldChange(e, field, row)"
                       />
                       <Password
@@ -248,6 +251,7 @@
                         v-model="row[field.fieldname]"
                         variant="outline"
                         :disabled="Boolean(field.read_only)"
+                        :placeholder="field.placeholder"
                         @change="fieldChange($event.target.value, field, row)"
                       />
                       <FormattedInput
@@ -257,6 +261,7 @@
                         variant="outline"
                         :value="row[field.fieldname] || '0'"
                         :disabled="Boolean(field.read_only)"
+                        :placeholder="field.placeholder"
                         @change="fieldChange($event.target.value, field, row)"
                       />
                       <FormattedInput
@@ -267,6 +272,7 @@
                         :value="getFloatWithPrecision(field.fieldname, row)"
                         :formattedValue="(row[field.fieldname] || '0') + '%'"
                         :disabled="Boolean(field.read_only)"
+                        :placeholder="field.placeholder"
                         @change="
                           fieldChange(flt($event.target.value), field, row)
                         "
@@ -279,6 +285,7 @@
                         :value="getFloatWithPrecision(field.fieldname, row)"
                         :formattedValue="row[field.fieldname]"
                         :disabled="Boolean(field.read_only)"
+                        :placeholder="field.placeholder"
                         @change="
                           fieldChange(flt($event.target.value), field, row)
                         "
@@ -293,6 +300,7 @@
                           getFormattedCurrency(field.fieldname, row, parentDoc)
                         "
                         :disabled="Boolean(field.read_only)"
+                        :placeholder="field.placeholder"
                         @change="
                           fieldChange(flt($event.target.value), field, row)
                         "
@@ -302,6 +310,7 @@
                         :value="row[field.fieldname]"
                         variant="outline"
                         :disabled="Boolean(field.read_only)"
+                        :placeholder="field.placeholder"
                         @change="(v) => fieldChange(v, field, row)"
                       />
                       <div
@@ -401,6 +410,7 @@
                         class="text-sm text-ink-gray-8"
                         variant="outline"
                         :options="field.options"
+                        :placeholder="field.placeholder"
                         @change="fieldChange($event.target.value, field, row)"
                       />
                     </template>
@@ -491,7 +501,7 @@ import {
 import { flt } from '@/utils/numberFormat.js'
 import { usersStore } from '@/stores/users'
 import { getMeta } from '@/stores/meta'
-import { parseLinkFilters } from '@/utils/fieldTransforms'
+import { parseLinkFilters, getPlaceholder } from '@/utils/fieldTransforms'
 import { createDocument } from '@/composables/document'
 import {
   Checkbox,
@@ -641,7 +651,7 @@ function getFieldObj(field) {
   const fieldObjWithFilters = {
     ...field,
     filters: parseLinkFilters(field.link_filters),
-    placeholder: field.placeholder || field.label,
+    placeholder: getPlaceholder(field),
   }
 
   return {

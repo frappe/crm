@@ -38,7 +38,7 @@
         ].includes(field.fieldtype)
       "
       v-model="data[field.fieldname]"
-      :placeholder="getPlaceholder(field)"
+      :placeholder="field.placeholder"
       :disabled="true"
       :description="field.description"
     />
@@ -56,7 +56,7 @@
       class="form-control w-full"
       :class="field.prefix ? 'prefix' : ''"
       :options="field.options"
-      :placeholder="getPlaceholder(field)"
+      :placeholder="field.placeholder"
       :description="field.description"
       @update:modelValue="(e) => fieldChange(e, field)"
     >
@@ -87,7 +87,7 @@
           field.fieldtype == 'Link' ? field.options : data[field.options]
         "
         :filters="field.filters"
-        :placeholder="getPlaceholder(field)"
+        :placeholder="field.placeholder"
         :onCreate="field.create"
         @change="(v) => fieldChange(v, field)"
       />
@@ -113,7 +113,7 @@
       :value="data[field.fieldname] && getUser(data[field.fieldname]).full_name"
       :doctype="field.options"
       :filters="field.filters"
-      :placeholder="getPlaceholder(field)"
+      :placeholder="field.placeholder"
       :hideMe="true"
       @change="(v) => fieldChange(v, field)"
     >
@@ -141,7 +141,7 @@
       v-model="data[field.fieldname]"
       class="w-full"
       :options="getOptions(field.options)"
-      :placeholder="getPlaceholder(field)"
+      :placeholder="field.placeholder"
       :disabled="Boolean(field.read_only)"
       :openOnClick="true"
       @update:modelValue="(v) => fieldChange(v, field, data)"
@@ -150,24 +150,21 @@
       v-else-if="field.fieldtype === 'Time'"
       :value="data[field.fieldname]"
       :format="getFormat('', '', false, true, false)"
-      :placeholder="getPlaceholder(field)"
-      input-class="border-none"
+      :placeholder="field.placeholder"
       @change="(v) => fieldChange(v, field)"
     />
     <DateTimePicker
       v-else-if="field.fieldtype === 'Datetime'"
       :value="data[field.fieldname]"
       :format="getFormat('', '', true, true, false)"
-      :placeholder="getPlaceholder(field)"
-      input-class="border-none"
+      :placeholder="field.placeholder"
       @change="(v) => fieldChange(v, field)"
     />
     <DatePicker
       v-else-if="field.fieldtype === 'Date'"
       :value="data[field.fieldname]"
       :format="getFormat('', '', true, false, false)"
-      :placeholder="getPlaceholder(field)"
-      input-class="border-none"
+      :placeholder="field.placeholder"
       @change="(v) => fieldChange(v, field)"
     />
     <Textarea
@@ -175,21 +172,21 @@
         ['Small Text', 'Text', 'Long Text', 'Code'].includes(field.fieldtype)
       "
       v-model="data[field.fieldname]"
-      :placeholder="getPlaceholder(field)"
+      :placeholder="field.placeholder"
       :description="field.description"
       @change="fieldChange($event.target.value, field)"
     />
     <Password
       v-else-if="field.fieldtype === 'Password'"
       v-model="data[field.fieldname]"
-      :placeholder="getPlaceholder(field)"
+      :placeholder="field.placeholder"
       :description="field.description"
       @change="fieldChange($event.target.value, field)"
     />
     <FormattedInput
       v-else-if="field.fieldtype === 'Int'"
       :value="data[field.fieldname] || '0'"
-      :placeholder="getPlaceholder(field)"
+      :placeholder="field.placeholder"
       :disabled="Boolean(field.read_only)"
       :description="field.description"
       @change="fieldChange($event.target.value, field)"
@@ -197,7 +194,7 @@
     <FormattedInput
       v-else-if="field.fieldtype === 'Percent'"
       :value="getFormattedPercent(field.fieldname, data)"
-      :placeholder="getPlaceholder(field)"
+      :placeholder="field.placeholder"
       :disabled="Boolean(field.read_only)"
       :description="field.description"
       @change="fieldChange(flt($event.target.value), field)"
@@ -205,7 +202,7 @@
     <FormattedInput
       v-else-if="field.fieldtype === 'Float'"
       :value="getFormattedFloat(field.fieldname, data)"
-      :placeholder="getPlaceholder(field)"
+      :placeholder="field.placeholder"
       :disabled="Boolean(field.read_only)"
       :description="field.description"
       @change="fieldChange(flt($event.target.value), field)"
@@ -213,7 +210,7 @@
     <FormattedInput
       v-else-if="field.fieldtype === 'Currency'"
       :value="getFormattedCurrency(field.fieldname, data, parentDoc)"
-      :placeholder="getPlaceholder(field)"
+      :placeholder="field.placeholder"
       :disabled="Boolean(field.read_only)"
       :description="field.description"
       @change="fieldChange(flt($event.target.value), field)"
@@ -221,7 +218,7 @@
     <DurationInput
       v-else-if="field.fieldtype === 'Duration'"
       :value="data[field.fieldname]"
-      :placeholder="getPlaceholder(field)"
+      :placeholder="field.placeholder"
       :disabled="Boolean(field.read_only)"
       :description="field.description"
       @change="(v) => fieldChange(v, field)"
@@ -256,7 +253,7 @@
     <TextEditorControl
       v-else-if="field.fieldtype === 'Text Editor'"
       :value="data[field.fieldname]"
-      :placeholder="getPlaceholder(field)"
+      :placeholder="field.placeholder"
       :disabled="Boolean(field.read_only)"
       @change="(v) => fieldChange(v, field)"
     />
@@ -270,6 +267,7 @@
       v-else
       :placeholder="getPlaceholder(field)"
       :value="data[field.fieldname]"
+      :placeholder="field.placeholder"
       :disabled="Boolean(field.read_only)"
       :description="field.description"
       @change="fieldChange($event.target.value, field)"
@@ -303,7 +301,7 @@ import {
 } from '@/utils'
 import { flt, formatNumber, formatCurrency } from '@/utils/numberFormat.js'
 import { getMeta } from '@/stores/meta'
-import { parseLinkFilters } from '@/utils/fieldTransforms'
+import { parseLinkFilters, getPlaceholder } from '@/utils/fieldTransforms'
 import { usersStore } from '@/stores/users'
 import { useDocument } from '@/data/document'
 
@@ -490,7 +488,7 @@ const field = computed(() => {
   let _field = {
     ...field,
     filters: parseLinkFilters(field.link_filters),
-    placeholder: field.placeholder || field.label,
+    placeholder: getPlaceholder(field),
     display_via_depends_on: displayViaDependsOn,
     mandatory_via_depends_on: evaluateDependsOnValue(
       field.mandatory_depends_on,
@@ -531,17 +529,6 @@ const resolvedHtml = computed(() => {
   if (injected !== undefined) return injected
   return interpolateTemplate(field.value.options || '', data.value)
 })
-
-const getPlaceholder = (field) => {
-  if (field.placeholder) {
-    return __(field.placeholder)
-  }
-  if (['Select', 'Link'].includes(field.fieldtype)) {
-    return __('Select {0}', [__(field.label)])
-  } else {
-    return __('Enter {0}', [__(field.label)])
-  }
-}
 
 const getOptions = (options) => {
   if (Array.isArray(options)) {

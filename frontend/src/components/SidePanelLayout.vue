@@ -155,9 +155,7 @@
                           "
                           doctype="User"
                           :filters="field.filters"
-                          :placeholder="
-                            __('Select') + ' ' + field.label + '...'
-                          "
+                          :placeholder="field.placeholder"
                           :hideMe="true"
                           @change="(v) => fieldChange(v, field)"
                         >
@@ -418,7 +416,7 @@ import Link from '@/components/Controls/Link.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import SidePanelModal from '@/components/Modals/SidePanelModal.vue'
 import { getMeta } from '@/stores/meta'
-import { parseLinkFilters } from '@/utils/fieldTransforms'
+import { parseLinkFilters, getPlaceholder } from '@/utils/fieldTransforms'
 import { usersStore } from '@/stores/users'
 import { isMobileView } from '@/composables/settings'
 import {
@@ -530,7 +528,7 @@ function parsedField(field) {
   let _field = {
     ...field,
     filters: parseLinkFilters(field.link_filters),
-    placeholder: field.placeholder || field.label,
+    placeholder: getPlaceholder(field),
     display_via_depends_on: evaluateDependsOnValue(field.depends_on, doc.value),
     mandatory_via_depends_on: evaluateDependsOnValue(
       field.mandatory_depends_on,
