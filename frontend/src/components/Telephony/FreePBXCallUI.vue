@@ -1,7 +1,9 @@
 <template>
   <div>
-    <!-- Hidden audio element for WebRTC audio output -->
-    <audio ref="remoteAudio" autoplay></audio>
+    <!-- Hidden audio element for WebRTC audio output.
+         `playsinline` is the critical bit on iOS: without it, Safari refuses to
+         start the audio element in-page and routes audio to the loudspeaker. -->
+    <audio ref="remoteAudio" autoplay playsinline></audio>
 
     <div
       v-show="showSmallCallPopup"
@@ -193,6 +195,15 @@
             :icon="isMuted ? MicOffIcon : MicIcon"
             @click="toggleMute"
           />
+          <!-- Speakerphone toggle (mobile) -->
+          <Button
+            v-if="callStatus == 'In progress'"
+            class="bg-surface-gray-6 text-ink-white hover:bg-surface-gray-5"
+            :tooltip="speakerOn ? __('Earpiece') : __('Speaker')"
+            size="md"
+            :icon="speakerOn ? 'volume-2' : 'volume-1'"
+            @click="toggleSpeaker"
+          />
           <!-- Hang up -->
           <Button
             v-if="callStatus != 'Call ended' && callStatus != 'No answer' && callStatus != ''"
@@ -274,6 +285,7 @@ import { TextEditor, Avatar, Button, createResource, toast } from 'frappe-ui'
 import { ref, onBeforeUnmount, watch, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import * as JsSIP from 'jssip'
+import * as ringtone from '@/components/Telephony/ringtone'
 
 const MicIcon = 'mic'
 const MicOffIcon = 'mic-off'
@@ -301,6 +313,7 @@ const phoneNumber = ref('')
 const callData = ref(null)
 const callDuration = ref('00:00')
 const isMuted = ref(false)
+const speakerOn = ref(false)
 const counterUp = ref(null)
 // Holds the latest status update if it arrives before the call log is created.
 // Flushed in make_a_call's onSuccess so we never silently drop a terminal status.
@@ -466,6 +479,7 @@ function _handleIncomingSession(session, request) {
   callStatus.value = 'Incoming call'
   showCallPopup.value = true
   showSmallCallPopup.value = false
+  ringtone.startRinging()
 
   // Create a call log for the incoming call
   createResource({
@@ -484,17 +498,20 @@ function _handleIncomingSession(session, request) {
 
   session.on('ended', (e) => {
     console.log('[FreePBX] incoming ended', e)
+    ringtone.stop()
     const elapsed = _getElapsedSeconds()
     _onCallEnded()
     _updateCallLogStatus('completed', elapsed)
   })
   session.on('failed', (e) => {
     console.log('[FreePBX] incoming failed', e.cause)
+    ringtone.stop()
     _onCallFailed(e)
     _updateCallLogStatus('canceled')
   })
   session.on('confirmed', (e) => {
     console.log('[FreePBX] incoming confirmed', e)
+    ringtone.stop()
     _onCallConfirmed()
     _updateCallLogStatus('in-progress')
   })
@@ -509,12 +526,21 @@ function getIceServers() {
 function acceptIncoming() {
   if (!currentSession) return
 
-  // Request microphone permission first, then answer
-  navigator.mediaDevices.getUserMedia({ audio: true, video: false })
+  // Request microphone permission first, then answer.
+  // Voice-comm flags (echoCancellation, noiseSuppression, autoGainControl) tell the
+  // OS this is a phone call — iOS/Android use that signal to route audio through
+  // the earpiece instead of the loudspeaker.
+  const audioConstraints = {
+    echoCancellation: true,
+    noiseSuppression: true,
+    autoGainControl: true,
+  }
+  navigator.mediaDevices.getUserMedia({ audio: audioConstraints, video: false })
     .then((stream) => {
       stream.getTracks().forEach(t => t.stop()) // release — JsSIP will re-acquire
+      ringtone.stop()
       currentSession.answer({
-        mediaConstraints: { audio: true, video: false },
+        mediaConstraints: { audio: audioConstraints, video: false },
         pcConfig: { iceServers: getIceServers() },
       })
       _attachRemoteAudio(currentSession)
@@ -563,7 +589,10 @@ function makeOutgoingCall(number) {
   let session
   try {
     session = ua.call(`sip:${number}@${_getSipDomain()}`, {
-      mediaConstraints: { audio: true, video: false },
+      mediaConstraints: {
+        audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
+        video: false,
+      },
       pcConfig: { iceServers: getIceServers() },
     })
     console.log('[FreePBX] Session created:', session)
@@ -580,15 +609,18 @@ function makeOutgoingCall(number) {
   session.on('progress', (e) => {
     console.log('[FreePBX] progress', e)
     callStatus.value = 'Ringing...'
+    ringtone.startRinging()
     _updateCallLogStatus('ringing')
   })
   session.on('confirmed', (e) => {
     console.log('[FreePBX] confirmed', e)
+    ringtone.stop()
     _onCallConfirmed()
     _updateCallLogStatus('in-progress')
   })
   session.on('ended', (e) => {
     console.log('[FreePBX] ended', e)
+    ringtone.stop()
     // Capture duration before stop() resets the timer
     const elapsed = _getElapsedSeconds()
     _onCallEnded()
@@ -596,6 +628,7 @@ function makeOutgoingCall(number) {
   })
   session.on('failed', (e) => {
     console.log('[FreePBX] failed', e.cause, e)
+    ringtone.stop()
     _onCallFailed(e)
     const failStatus = e.cause === 'Rejected' || e.cause === 'Busy' ? 'busy' : 'no-answer'
     _updateCallLogStatus(failStatus)
@@ -614,6 +647,7 @@ function _onCallEnded() {
   callDuration.value = counterUp.value.getTime(0)
   callStatus.value = 'Call ended'
   currentSession = null
+  speakerOn.value = false
 }
 
 function _onCallFailed(e) {
@@ -673,6 +707,7 @@ function _attachRemoteAudio(session) {
 }
 
 function hangUp() {
+  ringtone.stop()
   const elapsed = _getElapsedSeconds()
   if (currentSession) {
     try {
@@ -696,6 +731,29 @@ function toggleMute() {
     currentSession.mute({ audio: true })
   }
   isMuted.value = !isMuted.value
+}
+
+async function toggleSpeaker() {
+  // Mobile audio routing:
+  //   - "Earpiece" (default): playsinline + voice-comm constraints route through the earpiece
+  //     on iOS Safari and recent Android Chrome.
+  //   - "Speaker": try setSinkId('') / 'default' to force the media speaker. On iOS Safari
+  //     setSinkId isn't supported — we bump volume as a fallback so the user can still hear
+  //     it from arm's length.
+  const audio = remoteAudio.value
+  if (!audio) return
+  const next = !speakerOn.value
+  try {
+    if (typeof audio.setSinkId === 'function') {
+      await audio.setSinkId(next ? 'default' : '')
+    }
+    audio.volume = next ? 1.0 : 0.85
+    speakerOn.value = next
+  } catch (err) {
+    console.warn('[FreePBX] setSinkId not available — using volume fallback', err)
+    audio.volume = next ? 1.0 : 0.7
+    speakerOn.value = next
+  }
 }
 
 function _getElapsedSeconds() {
