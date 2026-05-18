@@ -45,13 +45,21 @@
 
     <div
       v-show="showCallPopup"
-      class="fixed z-20 w-[280px] min-h-44 flex gap-2 flex-col rounded-lg bg-surface-gray-7 p-4 pt-2.5 text-ink-gray-2 shadow-2xl"
-      :style="style"
+      :class="[
+        'z-20 flex flex-col gap-3 bg-surface-gray-7 text-ink-gray-2 shadow-2xl',
+        isMobile
+          ? 'fixed inset-x-0 bottom-0 w-full rounded-t-2xl p-5 pt-3 min-h-[60vh]'
+          : 'fixed w-[280px] min-h-44 rounded-lg p-4 pt-2.5'
+      ]"
+      :style="popupStyle"
       @click.stop
     >
       <div
         ref="callPopupHeader"
-        class="header flex items-center justify-between gap-1 text-base cursor-move select-none"
+        :class="[
+          'header flex items-center justify-between gap-1 text-base select-none',
+          isMobile ? '' : 'cursor-move'
+        ]"
       >
         <div class="flex gap-2 items-center truncate">
           <div
@@ -184,14 +192,24 @@
         </div>
       </div>
 
-      <div class="footer flex justify-between gap-2">
-        <div class="flex gap-2">
+      <div
+        :class="[
+          'footer flex gap-2',
+          isMobile ? 'flex-col items-stretch mt-auto pb-4' : 'justify-between'
+        ]"
+      >
+        <div
+          :class="[
+            'flex gap-2',
+            isMobile ? 'justify-center flex-wrap' : ''
+          ]"
+        >
           <!-- Mute toggle -->
           <Button
             v-if="callStatus == 'In progress'"
             class="bg-surface-gray-6 text-ink-white hover:bg-surface-gray-5"
             :tooltip="isMuted ? __('Unmute') : __('Mute')"
-            size="md"
+            :size="isMobile ? 'xl' : 'md'"
             :icon="isMuted ? MicOffIcon : MicIcon"
             @click="toggleMute"
           />
@@ -200,7 +218,7 @@
             v-if="callStatus == 'In progress'"
             class="bg-surface-gray-6 text-ink-white hover:bg-surface-gray-5"
             :tooltip="speakerOn ? __('Earpiece') : __('Speaker')"
-            size="md"
+            :size="isMobile ? 'xl' : 'md'"
             :icon="speakerOn ? 'volume-2' : 'volume-1'"
             @click="toggleSpeaker"
           />
@@ -208,7 +226,7 @@
           <Button
             v-if="callStatus != 'Call ended' && callStatus != 'No answer' && callStatus != ''"
             :tooltip="__('Hang Up')"
-            size="md"
+            :size="isMobile ? 'xl' : 'md'"
             icon="phone-off"
             style="background-color: #dc2626; color: white;"
             @click="hangUp"
@@ -217,7 +235,7 @@
           <Button
             v-if="callStatus == 'Incoming call'"
             :tooltip="__('Accept')"
-            size="md"
+            :size="isMobile ? 'xl' : 'md'"
             icon="phone"
             style="background-color: #16a34a; color: white;"
             @click="acceptIncoming"
@@ -282,7 +300,7 @@ import TaskPanel from '@/components/Telephony/TaskPanel.vue'
 import CountUpTimer from '@/components/CountUpTimer.vue'
 import { useDraggable, useWindowSize } from '@vueuse/core'
 import { TextEditor, Avatar, Button, createResource, toast } from 'frappe-ui'
-import { ref, onBeforeUnmount, watch, nextTick } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount, watch, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import * as JsSIP from 'jssip'
 import * as ringtone from '@/components/Telephony/ringtone'
@@ -301,9 +319,19 @@ function toggleCallPopup() {
 }
 
 const { width, height } = useWindowSize()
-const { style } = useDraggable(callPopupHeader, {
+const isMobile = computed(() => width.value < 640)
+const { style: dragStyle } = useDraggable(callPopupHeader, {
   initialValue: { x: width.value - 350, y: height.value - 250 },
   preventDefault: true,
+})
+// On mobile, ignore the draggable position and let CSS handle full-width
+// bottom-sheet layout. On desktop, use the draggable's inline style.
+const popupStyle = computed(() => (isMobile.value ? {} : dragStyle.value))
+
+onMounted(() => {
+  // Pre-arm the audio context so the ringtone can play when an incoming call
+  // arrives later (mobile browsers block audio without a prior user gesture).
+  ringtone.prime()
 })
 
 // ── State ────────────────────────────────────────────────────────────────────
