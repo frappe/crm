@@ -309,6 +309,7 @@ const pendingStatus = ref(null)
 let ua = null            // JsSIP UserAgent
 let currentSession = null  // active RTCSession
 let sipDomain = null     // FreePBX host IP, set when credentials are loaded
+let iceServers = []      // ICE config from CRM FreePBX Settings, set when credentials are loaded
 
 const contact = ref({ full_name: '', image: '', mobile_no: '' })
 
@@ -415,7 +416,9 @@ function _initJsSIP(creds) {
 
   // Store FreePBX host so makeOutgoingCall can build the correct SIP target URI
   sipDomain = creds.host
+  iceServers = Array.isArray(creds.ice_servers) ? creds.ice_servers : []
   console.log('[FreePBX] SIP domain set to:', sipDomain)
+  console.log('[FreePBX] ICE servers:', iceServers.map(s => s.urls))
 
   console.log('[FreePBX] Connecting to:', creds.ws_uri)
   console.log('[FreePBX] SIP URI:', creds.sip_uri)
@@ -497,6 +500,12 @@ function _handleIncomingSession(session, request) {
   })
 }
 
+function getIceServers() {
+  // Configured in CRM FreePBX Settings; loaded into `iceServers` by _initJsSIP.
+  // Fall back to a public STUN server so calls still work LAN-to-LAN if admin hasn't filled it in.
+  return iceServers.length ? iceServers : [{ urls: 'stun:stun.l.google.com:19302' }]
+}
+
 function acceptIncoming() {
   if (!currentSession) return
 
@@ -506,13 +515,7 @@ function acceptIncoming() {
       stream.getTracks().forEach(t => t.stop()) // release — JsSIP will re-acquire
       currentSession.answer({
         mediaConstraints: { audio: true, video: false },
-        pcConfig: { 
-          iceServers: [
-            {
-              urls: "stun:stun.l.google.com:19302"
-            }
-          ]
-        },
+        pcConfig: { iceServers: getIceServers() },
       })
       _attachRemoteAudio(currentSession)
       callStatus.value = 'Connecting...'
@@ -561,13 +564,7 @@ function makeOutgoingCall(number) {
   try {
     session = ua.call(`sip:${number}@${_getSipDomain()}`, {
       mediaConstraints: { audio: true, video: false },
-      pcConfig: { 
-        iceServers: [
-            {
-              urls: "stun:stun.l.google.com:19302"
-            }
-          ] 
-      },
+      pcConfig: { iceServers: getIceServers() },
     })
     console.log('[FreePBX] Session created:', session)
   } catch (e) {

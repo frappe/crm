@@ -12,6 +12,12 @@
   "host",
   "ws_port",
   "wss_port",
+  "webrtc_ice_section",
+  "stun_server_url",
+  "turn_server_url",
+  "column_break_ice",
+  "turn_username",
+  "turn_password",
   "flask_application_details_section",
   "flask_application_url",
   "flask_application_auth_token"
@@ -61,6 +67,42 @@
    "label": "WebSocket Port (WSS, for HTTPS)"
   },
   {
+   "depends_on": "enabled",
+   "fieldname": "webrtc_ice_section",
+   "fieldtype": "Section Break",
+   "label": "WebRTC ICE Servers (STUN/TURN)"
+  },
+  {
+   "depends_on": "enabled",
+   "description": "e.g. stun:freepbx.example.com:3478",
+   "fieldname": "stun_server_url",
+   "fieldtype": "Data",
+   "label": "STUN Server URL"
+  },
+  {
+   "depends_on": "enabled",
+   "description": "e.g. turn:freepbx.example.com:3478 — required for mobile clients behind symmetric NAT",
+   "fieldname": "turn_server_url",
+   "fieldtype": "Data",
+   "label": "TURN Server URL"
+  },
+  {
+   "fieldname": "column_break_ice",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:doc.enabled && doc.turn_server_url",
+   "fieldname": "turn_username",
+   "fieldtype": "Data",
+   "label": "TURN Username"
+  },
+  {
+   "depends_on": "eval:doc.enabled && doc.turn_server_url",
+   "fieldname": "turn_password",
+   "fieldtype": "Password",
+   "label": "TURN Password"
+  },
+  {
    "fieldname": "flask_application_details_section",
    "fieldtype": "Section Break",
    "label": "Flask Application Details"
@@ -79,7 +121,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2026-04-28 18:17:14.355018",
+ "modified": "2026-05-18 12:00:00.000000",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM FreePBX Settings",
