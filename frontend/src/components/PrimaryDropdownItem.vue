@@ -4,15 +4,16 @@
   >
     <div class="flex flex-1 items-center justify-between gap-7">
       <div v-show="!editMode">{{ option.value }}</div>
-      <TextInput
-        v-show="editMode"
-        ref="inputRef"
-        v-model="localOption.value"
-        class="w-full"
-        :placeholder="option.placeholder"
-        @blur.stop="saveOption"
-        @keydown.enter.stop="(e) => e.target.blur()"
-      />
+      <div v-show="editMode">
+        <TextInput
+          ref="inputRef"
+          v-model="localOption.value"
+          class="w-full"
+          :placeholder="option.placeholder"
+          @blur.stop="saveOption"
+          @keydown.enter.stop="(e) => e.target.blur()"
+        />
+      </div>
 
       <div class="actions flex items-center justify-center">
         <Button
