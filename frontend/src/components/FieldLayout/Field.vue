@@ -148,21 +148,21 @@
     />
     <TimePicker
       v-else-if="field.fieldtype === 'Time'"
-      :value="data[field.fieldname]"
+      v-model="data[field.fieldname]"
       :format="getFormat('', '', false, true, false)"
       :placeholder="field.placeholder"
       @change="(v) => fieldChange(v, field)"
     />
     <DateTimePicker
       v-else-if="field.fieldtype === 'Datetime'"
-      :value="data[field.fieldname]"
+      v-model="data[field.fieldname]"
       :format="getFormat('', '', true, true, false)"
       :placeholder="field.placeholder"
       @change="(v) => fieldChange(v, field)"
     />
     <DatePicker
       v-else-if="field.fieldtype === 'Date'"
-      :value="data[field.fieldname]"
+      v-model="data[field.fieldname]"
       :format="getFormat('', '', true, false, false)"
       :placeholder="field.placeholder"
       @change="(v) => fieldChange(v, field)"
@@ -265,8 +265,7 @@
     />
     <TextInput
       v-else
-      :placeholder="getPlaceholder(field)"
-      :value="data[field.fieldname]"
+      v-model="data[field.fieldname]"
       :placeholder="field.placeholder"
       :disabled="Boolean(field.read_only)"
       :description="field.description"
