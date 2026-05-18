@@ -24,7 +24,9 @@ class CRMHolidayList(Document):
 		holidays: DF.Table[CRMHoliday]
 		to_date: DF.Date
 		total_holidays: DF.Int
-		weekly_off: DF.Literal["", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+		weekly_off: DF.Literal[
+			"", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
+		]
 	# end: auto-generated types
 
 	def validate(self):
