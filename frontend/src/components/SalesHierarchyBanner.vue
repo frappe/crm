@@ -25,6 +25,9 @@
       </template>
     </Button>
   </div>
+  <Button v-else-if="isSidebarCollapsed && showBanner" @click="openBlog">
+    <FeatherIcon class="h-4 my-0.5 shrink-0" name="info" />
+  </Button>
 </template>
 
 <script setup>
