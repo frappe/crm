@@ -338,10 +338,10 @@ def create_customer_in_erpnext(doc, method):
 				frappe.throw(_("ERPNext is not installed in the current site"))
 
 			if doc.territory and not frappe.db.exists("Territory", doc.territory):
-				customer_data.territory = ""
+				customer_data["territory"] = ""
 
 			if doc.industry and not frappe.db.exists("Industry Type", doc.industry):
-				customer_data.industry = ""
+				customer_data["industry"] = ""
 
 			customer_name = create_customer(customer_data)
 		else:
