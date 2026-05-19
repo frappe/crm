@@ -171,11 +171,7 @@
                 "
               >
                 <template #trigger>
-                  <Button
-                    class="h-7 px-3"
-                    variant="ghost"
-                    icon="lucide-plus"
-                  />
+                  <Button class="h-7 px-3" variant="ghost" icon="lucide-plus" />
                 </template>
               </Link>
             </div>
