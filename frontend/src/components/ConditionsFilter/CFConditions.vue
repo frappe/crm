@@ -12,6 +12,11 @@
         :isGroup="isGroupCondition(condition[0])"
         :conjunction="getConjunction()"
         :disableAddCondition="props.disableAddCondition"
+        :doctype="props.doctype"
+        @remove="removeCondition(condition)"
+        @unGroupConditions="unGroupConditions(condition)"
+        @toggleConjunction="toggleConjunction"
+        @turnIntoGroup="turnIntoGroup(condition)"
       />
     </template>
     <div v-if="props.isChild" class="flex">

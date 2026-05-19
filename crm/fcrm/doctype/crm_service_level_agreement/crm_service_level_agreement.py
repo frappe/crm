@@ -34,6 +34,7 @@ class CRMServiceLevelAgreement(Document):
 
 		apply_on: DF.Link
 		condition: DF.Code | None
+		condition_json: DF.Code | None
 		default: DF.Check
 		enabled: DF.Check
 		end_date: DF.Date | None
