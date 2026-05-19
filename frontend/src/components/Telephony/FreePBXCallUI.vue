@@ -647,6 +647,29 @@ function _attachRemoteAudio(session) {
   const wirePeerConnection = (pc) => {
     if (!pc) return
 
+    // Cap ICE gathering at 2s. Virtual adapters (WSL, VPN, Hyper-V, virtual
+    // switches) can take up to 40s to time out on STUN/TURN, blocking the
+    // INVITE that long. The real-NIC candidates we need (host/srflx/relay)
+    // are ready in ~1s, so 2s is a generous safety margin. We synthesise a
+    // null-candidate event that JsSIP's internal `_createLocalDescription`
+    // listens for to know gathering is "done".
+    const gatheringDeadline = setTimeout(() => {
+      if (pc.iceGatheringState !== 'complete') {
+        console.warn('[FreePBX] ICE gathering exceeded 2s — forcing end-of-candidates')
+        try {
+          pc.dispatchEvent(
+            new RTCPeerConnectionIceEvent('icecandidate', { candidate: null }),
+          )
+        } catch (_) {
+          // Older browsers without the constructor — fall back to a plain Event.
+          pc.dispatchEvent(new Event('icecandidate'))
+        }
+      }
+    }, 2000)
+    pc.addEventListener('icegatheringstatechange', () => {
+      if (pc.iceGatheringState === 'complete') clearTimeout(gatheringDeadline)
+    })
+
     pc.addEventListener('addstream', (e) => {
       if (remoteAudio.value) remoteAudio.value.srcObject = e.stream
     })
