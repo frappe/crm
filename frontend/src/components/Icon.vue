@@ -3,8 +3,8 @@
     {{ icon }}
   </div>
   <span
-    v-else-if="typeof icon == 'string'"
-    :class="icon.startsWith('lucide-') ? icon : `lucide-${icon}`"
+    v-else-if="typeof icon == 'string' && icon.startsWith('lucide-')"
+    :class="icon"
     aria-hidden="true"
     v-bind="$attrs"
   />

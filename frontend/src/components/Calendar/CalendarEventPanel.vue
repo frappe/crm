@@ -113,7 +113,8 @@
         />
         <Link
           v-model="_event.referenceDocname"
-          class="[&_button]:bg-surface-white [&_button]:select-text [&_button]:text-ink-gray-7 [&_button]:cursor-text"
+          class="[&_button]:hidden"
+          variant="ghost"
           :doctype="_event.referenceDoctype"
           :disabled="true"
         />
@@ -302,11 +303,9 @@
         </div> -->
       </div>
       <div class="mx-4.5 my-2.5 border-t border-outline-gray-1" />
-      <div
-        class="flex items-center justify-between gap-3 px-4.5 py-[7px] text-ink-gray-7"
-      >
+      <div class="flex items-center gap-3 px-4.5 py-[7px] text-ink-gray-7">
         <CalendarIcon class="size-4" />
-        <div class="flex w-full items-center gap-x-1.5">
+        <div class="flex-1">
           <DatePicker
             class="w-full"
             variant="outline"
@@ -525,7 +524,7 @@
       </div>
       <TabButtons
         v-model="attending"
-        class="w-full [&_button]:w-full [&_div]:w-full"
+        class="[&_button]:flex-1 [&>div]:w-full"
         :buttons="[
           {
             label: __('Yes'),

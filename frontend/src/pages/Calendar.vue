@@ -107,7 +107,7 @@
 
             <Link
               v-model="currentUser"
-              class="form-control"
+              class="form-control w-44"
               doctype="User"
               :placeholder="__('John Doe')"
               :filters="{
