@@ -274,6 +274,7 @@ import { TextEditor, Avatar, Button, createResource, toast } from 'frappe-ui'
 import { ref, onBeforeUnmount, watch, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import * as JsSIP from 'jssip'
+import * as ringtone from '@/components/Telephony/ringtone'
 
 const MicIcon = 'mic'
 const MicOffIcon = 'mic-off'
@@ -309,6 +310,7 @@ const pendingStatus = ref(null)
 let ua = null            // JsSIP UserAgent
 let currentSession = null  // active RTCSession
 let sipDomain = null     // FreePBX host IP, set when credentials are loaded
+let iceServers = []      // ICE config from CRM FreePBX Settings, set when credentials are loaded
 
 const contact = ref({ full_name: '', image: '', mobile_no: '' })
 
@@ -415,7 +417,9 @@ function _initJsSIP(creds) {
 
   // Store FreePBX host so makeOutgoingCall can build the correct SIP target URI
   sipDomain = creds.host
+  iceServers = Array.isArray(creds.ice_servers) ? creds.ice_servers : []
   console.log('[FreePBX] SIP domain set to:', sipDomain)
+  console.log('[FreePBX] ICE servers:', iceServers.map(s => s.urls))
 
   console.log('[FreePBX] Connecting to:', creds.ws_uri)
   console.log('[FreePBX] SIP URI:', creds.sip_uri)
@@ -463,6 +467,7 @@ function _handleIncomingSession(session, request) {
   callStatus.value = 'Incoming call'
   showCallPopup.value = true
   showSmallCallPopup.value = false
+  ringtone.startRinging()
 
   // Create a call log for the incoming call
   createResource({
@@ -481,20 +486,29 @@ function _handleIncomingSession(session, request) {
 
   session.on('ended', (e) => {
     console.log('[FreePBX] incoming ended', e)
+    ringtone.stop()
     const elapsed = _getElapsedSeconds()
     _onCallEnded()
     _updateCallLogStatus('completed', elapsed)
   })
   session.on('failed', (e) => {
     console.log('[FreePBX] incoming failed', e.cause)
+    ringtone.stop()
     _onCallFailed(e)
     _updateCallLogStatus('canceled')
   })
   session.on('confirmed', (e) => {
     console.log('[FreePBX] incoming confirmed', e)
+    ringtone.stop()
     _onCallConfirmed()
     _updateCallLogStatus('in-progress')
   })
+}
+
+function getIceServers() {
+  // Configured in CRM FreePBX Settings; loaded into `iceServers` by _initJsSIP.
+  // Fall back to a public STUN server so calls still work LAN-to-LAN if admin hasn't filled it in.
+  return iceServers.length ? iceServers : [{ urls: 'stun:stun.l.google.com:19302' }]
 }
 
 function acceptIncoming() {
@@ -506,13 +520,7 @@ function acceptIncoming() {
       stream.getTracks().forEach(t => t.stop()) // release — JsSIP will re-acquire
       currentSession.answer({
         mediaConstraints: { audio: true, video: false },
-        pcConfig: { 
-          iceServers: [
-            {
-              urls: "stun:stun.l.google.com:19302"
-            }
-          ]
-        },
+        pcConfig: { iceServers: getIceServers() },
       })
       _attachRemoteAudio(currentSession)
       callStatus.value = 'Connecting...'
@@ -561,13 +569,7 @@ function makeOutgoingCall(number) {
   try {
     session = ua.call(`sip:${number}@${_getSipDomain()}`, {
       mediaConstraints: { audio: true, video: false },
-      pcConfig: { 
-        iceServers: [
-            {
-              urls: "stun:stun.l.google.com:19302"
-            }
-          ] 
-      },
+      pcConfig: { iceServers: getIceServers() },
     })
     console.log('[FreePBX] Session created:', session)
   } catch (e) {
@@ -676,6 +678,7 @@ function _attachRemoteAudio(session) {
 }
 
 function hangUp() {
+  ringtone.stop()
   const elapsed = _getElapsedSeconds()
   if (currentSession) {
     try {

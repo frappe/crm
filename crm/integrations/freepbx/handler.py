@@ -166,7 +166,24 @@ def get_webrtc_credentials():
 		"ws_uri": f"{ws_scheme}://{settings.host}/ws",
 		"realm": settings.host,
 		"host": settings.host,
+		"ice_servers": _build_ice_servers(settings),
 	}
+
+
+def _build_ice_servers(settings):
+	servers = []
+	if settings.stun_server_url:
+		servers.append({"urls": settings.stun_server_url})
+	if settings.turn_server_url and settings.turn_username:
+		settings_doc = frappe.get_doc("CRM FreePBX Settings")
+		turn_password = settings_doc.get_password("turn_password", raise_exception=False)
+		if turn_password:
+			servers.append({
+				"urls": settings.turn_server_url,
+				"username": settings.turn_username,
+				"credential": turn_password,
+			})
+	return servers
 
 
 @frappe.whitelist()

@@ -259,12 +259,7 @@ const links = [
     label: 'Call Logs',
     icon: PhoneIcon,
     to: 'Call Logs',
-  },
-  {
-    label: 'Brochures',
-    icon: BrochureIcon,
-    to: 'Brochures',
-  },
+  }
 ]
 
 const allViews = computed(() => {
