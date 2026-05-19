@@ -81,9 +81,10 @@
               <template #actions="{ section }">
                 <div v-if="section.name == 'contacts_section'" class="pr-2">
                   <Link
-                    value=""
+                    v-model="contactToAdd"
                     doctype="Contact"
-                    :onCreate="
+                    :allowCreate="true"
+                    @create="
                       (value, close) => {
                         _contact = {
                           first_name: value,
@@ -93,14 +94,20 @@
                         close()
                       }
                     "
-                    @change="(e) => addContact(e)"
+                    @update:modelValue="
+                      (e) => {
+                        if (e) {
+                          addContact(e)
+                          contactToAdd = null
+                        }
+                      }
+                    "
                   >
-                    <template #target="{ togglePopover }">
+                    <template #trigger>
                       <Button
                         class="h-7 px-3"
                         variant="ghost"
                         icon="lucide-plus"
-                        @click="togglePopover()"
                       />
                     </template>
                   </Link>
@@ -288,7 +295,7 @@ import LostReasonModal from '@/components/Modals/LostReasonModal.vue'
 import AssignTo from '@/components/AssignTo.vue'
 import ContactModal from '@/components/Modals/ContactModal.vue'
 import CollapsibleSection from '@/components/CollapsibleSection.vue'
-import Link from '@/components/Controls/Link.vue'
+import { Link } from 'frappe-ui/frappe'
 import SidePanelLayout from '@/components/SidePanelLayout.vue'
 import SLASection from '@/components/SLASection.vue'
 import CustomActions from '@/components/CustomActions.vue'
@@ -497,11 +504,6 @@ function getParsedFields(sections) {
     if (section.name == 'contacts_section') return
     section.columns[0].fields.forEach((field) => {
       if (field.name == 'organization') {
-        field.create = (value, close) => {
-          _organization.value.organization_name = value
-          showOrganizationModal.value = true
-          close()
-        }
         field.link = (org) =>
           router.push({
             name: 'Organization',
@@ -515,6 +517,7 @@ function getParsedFields(sections) {
 
 const showContactModal = ref(false)
 const _contact = ref({})
+const contactToAdd = ref(null)
 
 function contactOptions(contact) {
   let options = [

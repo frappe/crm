@@ -155,7 +155,6 @@
 </template>
 <script setup>
 import FilterIcon from '@/components/Icons/FilterIcon.vue'
-import Link from '@/components/Controls/Link.vue'
 import DurationInput from '@/components/Controls/DurationInput.vue'
 import RatingInput from '@/components/Controls/RatingInput.vue'
 import {
@@ -168,6 +167,7 @@ import {
   DateTimePicker,
   DateRangePicker,
 } from 'frappe-ui'
+import { Link } from 'frappe-ui/frappe'
 import { h, computed, onMounted } from 'vue'
 import { isMobileView } from '@/composables/settings'
 
@@ -417,7 +417,11 @@ function getValueControl(f) {
     if (fieldtype == 'Dynamic Link') {
       return h(TextInput)
     }
-    return h(Link, { class: 'form-control', doctype: options, value: f.value })
+    return h(Link, {
+      class: 'form-control min-w-44 max-w-44',
+      doctype: options,
+      'onUpdate:modelValue': (v) => updateValue(v, f),
+    })
   } else if (typeNumber.includes(fieldtype)) {
     return h(TextInput, { type: 'number' })
   } else if (typeDate.includes(fieldtype) && operator == 'between') {
@@ -595,9 +599,9 @@ function placeholder(f) {
   } else if (typeCheck.includes(f.field.fieldtype)) {
     return __('Yes')
   } else if (typeLink.includes(f.field.fieldtype)) {
-    return __('Select a Value')
+    return __('Select {0}', [f.field.label.toLowerCase()])
   } else if (typeSelect.includes(f.field.fieldtype)) {
-    return __('Select an Option')
+    return __('Select {0}', [f.field.label.toLowerCase()])
   } else if (typeString.includes(f.field.fieldtype)) {
     return __('John Doe')
   }

@@ -6,21 +6,26 @@
     @close="() => (assignees = [...oldAssignees])"
   >
     <Link
+      v-model="selectedUser"
       class="form-control"
-      value=""
       doctype="User"
       :placeholder="__('John Doe')"
       :filters="{
         name: ['in', users.data.crmUsers?.map((user) => user.name)],
         ignore_user_type: 1,
       }"
-      :hideMe="true"
-      @change="(option) => addValue(option) && ($refs.input.value = '')"
+      @update:modelValue="
+        (v) => {
+          if (v) {
+            addValue(v)
+            selectedUser = null
+          }
+        }
+      "
     >
-      <template #target="{ togglePopover }">
+      <template #trigger>
         <div
           class="w-full min-h-12 flex flex-wrap items-center gap-1.5 p-1.5 pb-5 rounded-lg bg-surface-gray-2 cursor-text"
-          @click.stop="togglePopover"
         >
           <Tooltip
             v-for="assignee in assignees"
@@ -52,15 +57,8 @@
           </Tooltip>
         </div>
       </template>
-      <template #item-prefix="{ option }">
-        <UserAvatar class="mr-2" :user="option.value" size="sm" />
-      </template>
-      <template #item-label="{ option }">
-        <Tooltip :text="option.value">
-          <div class="cursor-pointer text-ink-gray-9">
-            {{ getUser(option.value).full_name }}
-          </div>
-        </Tooltip>
+      <template #item-prefix="{ item }">
+        <UserAvatar class="mr-1" :user="item.value" size="sm" />
       </template>
     </Link>
     <template #actions>
@@ -90,9 +88,8 @@
 
 <script setup>
 import UserAvatar from '@/components/UserAvatar.vue'
-import Link from '@/components/Controls/Link.vue'
 import { usersStore } from '@/stores/users'
-import { useTelemetry } from 'frappe-ui/frappe'
+import { useTelemetry, Link } from 'frappe-ui/frappe'
 import { Tooltip, call } from 'frappe-ui'
 import { ref, onMounted } from 'vue'
 
@@ -107,6 +104,7 @@ const emit = defineEmits(['reload'])
 const show = defineModel({ type: Boolean })
 const assignees = defineModel('assignees', { type: Array, default: () => [] })
 const oldAssignees = ref([])
+const selectedUser = ref(null)
 
 const error = ref('')
 
@@ -170,6 +168,8 @@ async function updateAssignees() {
         doctype: props.doctype,
         name: props.doc.name,
         assign_to: addedAssignees,
+      }).then(() => {
+        emit('reload')
       })
     }
   }

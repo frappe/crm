@@ -15,16 +15,24 @@
   />
   <Link
     v-else-if="filter.fieldtype === 'Link'"
-    :value="filter.value"
+    v-model="filter.value"
+    class="w-full"
     :doctype="filter.options"
     :placeholder="filter.label"
-    @change="(data) => updateFilter(filter, data)"
+    :allowCreate="true"
+    @update:modelValue="(data) => updateFilter(filter, data)"
   />
   <component
     :is="filter.fieldtype === 'Date' ? DatePicker : DateTimePicker"
     v-else-if="['Date', 'Datetime'].includes(filter.fieldtype)"
+    v-model="filter.value"
     class="border-none"
-    :value="filter.value"
+    :placeholder="filter.label"
+    @change="(v) => updateFilter(filter, v)"
+  />
+  <TimePicker
+    v-else-if="filter.fieldtype === 'Time'"
+    v-model="filter.value"
     :placeholder="filter.label"
     @change="(v) => updateFilter(filter, v)"
   />
@@ -36,13 +44,14 @@
   />
 </template>
 <script setup>
-import Link from '@/components/Controls/Link.vue'
+import { Link } from 'frappe-ui/frappe'
 import {
   TextInput,
   Select,
   Checkbox,
   DatePicker,
   DateTimePicker,
+  TimePicker,
 } from 'frappe-ui'
 import { useDebounceFn } from '@vueuse/core'
 import { reactive, watch } from 'vue'

@@ -39,29 +39,17 @@
         </Dropdown>
       </div>
       <Link
+        v-model="task.assigned_to"
         class="user"
-        :value="getUser(task.assigned_to).full_name"
         doctype="User"
         :placeholder="__('John Doe')"
         :filters="{
           name: ['in', users.data?.crmUsers?.map((user) => user.name)],
           ignore_user_type: 1,
         }"
-        :hideMe="true"
-        @change="(option) => (task.assigned_to = option)"
       >
-        <template #prefix>
-          <UserAvatar class="mr-2 !h-4 !w-4" :user="task.assigned_to" />
-        </template>
-        <template #item-prefix="{ option }">
-          <UserAvatar class="mr-2" :user="option.value" size="sm" />
-        </template>
-        <template #item-label="{ option }">
-          <Tooltip :text="option.value">
-            <div class="cursor-pointer text-ink-gray-9">
-              {{ getUser(option.value).full_name }}
-            </div>
-          </Tooltip>
+        <template #item-prefix="{ item }">
+          <UserAvatar class="mr-1" :user="item.value" size="sm" />
         </template>
       </Link>
       <DateTimePicker
@@ -78,16 +66,10 @@
 import TaskStatusIcon from '@/components/Icons/TaskStatusIcon.vue'
 import TaskPriorityIcon from '@/components/Icons/TaskPriorityIcon.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
-import Link from '@/components/Controls/Link.vue'
+import { Link } from 'frappe-ui/frappe'
 import { usersStore } from '@/stores/users'
 import { taskStatusOptions, taskPriorityOptions, getFormat } from '@/utils'
-import {
-  TextInput,
-  TextEditor,
-  Dropdown,
-  Tooltip,
-  DateTimePicker,
-} from 'frappe-ui'
+import { TextInput, TextEditor, Dropdown, DateTimePicker } from 'frappe-ui'
 import { reactive } from 'vue'
 
 const props = defineProps({

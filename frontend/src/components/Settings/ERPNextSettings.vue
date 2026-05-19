@@ -278,7 +278,7 @@ import {
 } from 'frappe-ui'
 import SettingsLayoutBase from '@/components/Layouts/SettingsLayoutBase.vue'
 import { computed, onMounted } from 'vue'
-import Link from '../Controls/Link.vue'
+import { Link } from 'frappe-ui/frappe'
 import { globalStore } from '@/stores/global'
 
 const { $dialog } = globalStore()

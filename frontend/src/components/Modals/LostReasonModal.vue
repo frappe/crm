@@ -15,11 +15,12 @@
         </div>
         <Link
           ref="linkRef"
-          class="form-control flex-1 truncate"
-          :value="lostReason"
+          v-model="lostReason"
+          class="w-full"
           doctype="CRM Lost Reason"
-          :onCreate="onCreate"
-          @change="(v) => (lostReason = v)"
+          :placeholder="__('Select lost reason')"
+          :allowCreate="true"
+          @create="onCreate"
         />
       </div>
       <div>
@@ -46,7 +47,7 @@
   </Dialog>
 </template>
 <script setup>
-import Link from '@/components/Controls/Link.vue'
+import { Link } from 'frappe-ui/frappe'
 import { createDocument } from '@/composables/document'
 import { Dialog, Textarea } from 'frappe-ui'
 import { ref } from 'vue'
@@ -90,11 +91,11 @@ function save() {
   props.document.save.submit()
 }
 
-function onCreate(value, close) {
+function onCreate(value) {
   let doc = { lost_reason: value }
-  createDocument('CRM Lost Reason', doc, close, (doc) => {
+  createDocument('CRM Lost Reason', doc, (doc) => {
     lostReason.value = doc.name
-    linkRef.value?.reload('', true)
+    linkRef.value?.reload('')
   })
 }
 </script>

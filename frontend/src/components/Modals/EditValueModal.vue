@@ -37,9 +37,8 @@
 </template>
 
 <script setup>
-import Link from '@/components/Controls/Link.vue'
 import { getMeta } from '@/stores/meta'
-import { useTelemetry } from 'frappe-ui/frappe'
+import { useTelemetry, Link } from 'frappe-ui/frappe'
 import {
   Combobox,
   Select,
@@ -162,8 +161,10 @@ function getValueComponent(f) {
       return h(TextInput)
     }
     return h(Link, {
-      class: 'form-control',
+      class: 'form-control w-full',
       doctype: fieldtype == 'User' ? 'User' : options,
+      modelValue: newValue.value,
+      'onUpdate:modelValue': (v) => updateValue(v),
     })
   } else if (typeNumber.includes(fieldtype)) {
     return h(TextInput, { type: 'number' })

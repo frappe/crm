@@ -81,15 +81,18 @@
       class="flex gap-1"
     >
       <Link
+        v-model="data[field.fieldname]"
         class="form-control flex-1 truncate"
-        :value="data[field.fieldname]"
         :doctype="
           field.fieldtype == 'Link' ? field.options : data[field.options]
         "
         :filters="field.filters"
         :placeholder="field.placeholder"
-        :onCreate="field.create"
-        @change="(v) => fieldChange(v, field)"
+        :allowCreate="true"
+        :allowRedirect="true"
+        @redirect="field.redirect"
+        @create="field.create"
+        @update:modelValue="(v) => fieldChange(v, field)"
       />
       <Button
         v-if="data[field.fieldname] && field.edit"
@@ -109,31 +112,16 @@
 
     <Link
       v-else-if="field.fieldtype === 'User'"
-      class="form-control"
-      :value="data[field.fieldname] && getUser(data[field.fieldname]).full_name"
+      v-model="data[field.fieldname]"
+      class="form-control w-full"
       :doctype="field.options"
       :filters="field.filters"
       :placeholder="field.placeholder"
       :hideMe="true"
-      @change="(v) => fieldChange(v, field)"
+      @update:modelValue="(v) => fieldChange(v, field)"
     >
-      <template #prefix>
-        <UserAvatar
-          v-if="data[field.fieldname]"
-          class="mr-2"
-          :user="data[field.fieldname]"
-          size="sm"
-        />
-      </template>
-      <template #item-prefix="{ option }">
-        <UserAvatar class="mr-2" :user="option.value" size="sm" />
-      </template>
-      <template #item-label="{ option }">
-        <Tooltip :text="option.value">
-          <div class="cursor-pointer">
-            {{ getUser(option.value).full_name }}
-          </div>
-        </Tooltip>
+      <template #item-prefix="{ item }">
+        <UserAvatar class="mr-1" :user="item.value" size="sm" />
       </template>
     </Link>
     <Combobox
@@ -289,9 +277,9 @@ import EditIcon from '@/components/Icons/EditIcon.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import TableMultiselectInput from '@/components/Controls/TableMultiselectInput.vue'
-import Link from '@/components/Controls/Link.vue'
 import Grid from '@/components/Controls/Grid.vue'
 import { createDocument } from '@/composables/document'
+import { useDoctypeModal } from '@/composables/doctypeModal'
 import {
   getFormat,
   evaluateDependsOnValue,
@@ -308,7 +296,6 @@ import {
   Checkbox,
   Combobox,
   Select,
-  Tooltip,
   DatePicker,
   DateTimePicker,
   TimePicker,
@@ -316,6 +303,7 @@ import {
   Textarea,
   Password,
 } from 'frappe-ui'
+import { Link } from 'frappe-ui/frappe'
 import { computed, provide, inject, ref } from 'vue'
 
 const props = defineProps({
@@ -339,7 +327,8 @@ if (doctype) {
     formatCurrency(doc[fn], '', window.sysdefaults?.currency || 'USD', null)
 }
 
-const { users, getUser } = usersStore()
+const { users } = usersStore()
+const { showModal } = useDoctypeModal()
 
 let triggerOnChange
 let triggerButton
@@ -455,11 +444,19 @@ const field = computed(() => {
 
   if (field.fieldtype === 'Link' && field.options !== 'User') {
     if (!field.create) {
-      field.create = (value, close) => {
+      field.create = (value) => {
         const callback = (d) => {
           if (d) fieldChange(d.name, field)
         }
-        createDocument(field.options, value, close, callback)
+        createDocument(field.options, value, callback)
+      }
+    }
+    if (!field.redirect) {
+      field.redirect = (value) => {
+        showModal({
+          name: value,
+          doctype: field.options,
+        })
       }
     }
   }

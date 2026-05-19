@@ -141,8 +141,8 @@
                         v-else-if="
                           ['Link', 'Dynamic Link'].includes(field.fieldtype)
                         "
-                        class="text-sm text-ink-gray-8"
-                        :value="row[field.fieldname]"
+                        v-model="row[field.fieldname]"
+                        class="combobox w-full"
                         :doctype="
                           field.fieldtype == 'Link'
                             ? field.options
@@ -150,41 +150,27 @@
                         "
                         :filters="field.filters"
                         :placeholder="field.placeholder"
-                        :onCreate="
-                          (value, close) => field.create(v, field, row, close)
-                        "
-                        @change="(v) => fieldChange(v, field, row)"
+                        :allowCreate="true"
+                        :allowRedirect="true"
+                        @create="(v) => field.create(v, field, row)"
+                        @redirect="field.redirect"
+                        @update:modelValue="(v) => fieldChange(v, field, row)"
                       />
                       <Link
                         v-else-if="field.fieldtype === 'User'"
-                        class="form-control"
-                        :value="getUser(row[field.fieldname]).full_name"
+                        v-model="row[field.fieldname]"
+                        class="combobox w-full"
                         :doctype="field.options"
                         :filters="field.filters"
                         :placeholder="field.placeholder"
-                        :hideMe="true"
-                        @change="(v) => fieldChange(v, field, row)"
+                        @update:modelValue="(v) => fieldChange(v, field, row)"
                       >
-                        <template #prefix>
+                        <template #item-prefix="{ item }">
                           <UserAvatar
-                            class="mr-2"
-                            :user="row[field.fieldname]"
+                            class="mr-1"
+                            :user="item.value"
                             size="sm"
                           />
-                        </template>
-                        <template #item-prefix="{ option }">
-                          <UserAvatar
-                            class="mr-2"
-                            :user="option.value"
-                            size="sm"
-                          />
-                        </template>
-                        <template #item-label="{ option }">
-                          <Tooltip :text="option.value">
-                            <div class="cursor-pointer">
-                              {{ getUser(option.value).full_name }}
-                            </div>
-                          </Tooltip>
                         </template>
                       </Link>
                       <div
@@ -490,7 +476,6 @@ import GridFieldsEditorModal from '@/components/Controls/GridFieldsEditorModal.v
 import GridRowFieldsModal from '@/components/Controls/GridRowFieldsModal.vue'
 import GridRowModal from '@/components/Controls/GridRowModal.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
-import Link from '@/components/Controls/Link.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import {
   getRandom,
@@ -503,12 +488,12 @@ import { usersStore } from '@/stores/users'
 import { getMeta } from '@/stores/meta'
 import { parseLinkFilters, getPlaceholder } from '@/utils/fieldTransforms'
 import { createDocument } from '@/composables/document'
+import { useDoctypeModal } from '@/composables/doctypeModal'
 import {
   Checkbox,
   TimePicker,
   DateTimePicker,
   DatePicker,
-  Tooltip,
   dayjs,
   Combobox,
   Password,
@@ -516,6 +501,7 @@ import {
   TextInput,
   Select,
 } from 'frappe-ui'
+import { Link } from 'frappe-ui/frappe'
 import Draggable from 'vuedraggable'
 import { ref, reactive, computed, inject, provide } from 'vue'
 
@@ -588,6 +574,8 @@ const selectedRows = reactive(new Set())
 const showGridFieldsEditorModal = ref(false)
 const showGridRowFieldsModal = ref(false)
 
+const { showModal } = useDoctypeModal()
+
 const gridSettings = computed(() => getGridSettings())
 
 const fields = computed(() => {
@@ -630,11 +618,19 @@ function getFieldObj(field) {
 
   if (field.fieldtype === 'Link' && field.options !== 'User') {
     if (!field.create) {
-      field.create = (value, field, row, close) => {
+      field.create = (value, field, row) => {
         const callback = (d) => {
           if (d) fieldChange(d.name, field, row)
         }
-        createDocument(field.options, value, close, callback)
+        createDocument(field.options, value, callback)
+      }
+    }
+    if (!field.redirect) {
+      field.redirect = (value) => {
+        showModal({
+          name: value,
+          doctype: field.options,
+        })
       }
     }
   }

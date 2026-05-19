@@ -174,7 +174,7 @@ import {
 } from 'frappe-ui'
 
 import { getMeta } from '@/stores/meta'
-import Link from '@/components/Controls/Link.vue'
+import { Link } from 'frappe-ui/frappe'
 import Grid from '@/components/Controls/Grid.vue'
 import LucideCircleQuestionMark from '~icons/lucide/circle-question-mark'
 import FailureLogs from './FailureLogs.vue'

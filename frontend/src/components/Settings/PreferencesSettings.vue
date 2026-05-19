@@ -87,7 +87,6 @@
 import CRMLogo from '@/components/Icons/CRMLogo.vue'
 import ThemeSwitcher from '@/components/Settings/ThemeSwitcher.vue'
 import SettingsLayoutBase from '@/components/Layouts/SettingsLayoutBase.vue'
-import Link from '@/components/Controls/Link.vue'
 import { useKeyboardShortcuts } from '@/composables/useKeyboardShortcuts'
 import { getSettings } from '@/stores/settings'
 import {
@@ -97,6 +96,7 @@ import {
   createResource,
   createDocumentResource,
 } from 'frappe-ui'
+import { Link } from 'frappe-ui/frappe'
 import { ref, computed, inject } from 'vue'
 
 const refreshRequired = ref(false)

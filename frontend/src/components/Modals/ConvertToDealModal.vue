@@ -34,11 +34,10 @@
         </div>
         <Link
           v-if="existingOrganizationChecked"
-          class="form-control mt-2.5"
+          v-model="existingOrganization"
+          class="form-control mt-2.5 w-full"
           size="md"
-          :value="existingOrganization"
           doctype="CRM Organization"
-          @change="(data) => (existingOrganization = data)"
         />
         <div v-else class="mt-2.5 text-base">
           {{
@@ -60,11 +59,10 @@
         </div>
         <Link
           v-if="existingContactChecked"
-          class="form-control mt-2.5"
+          v-model="existingContact"
+          class="form-control mt-2.5 w-full"
           size="md"
-          :value="existingContact"
           doctype="Contact"
-          @change="(data) => (existingContact = data)"
         />
         <div v-else class="mt-2.5 text-base">
           {{ __("New contact will be created based on the person's details") }}
@@ -94,14 +92,13 @@ import OrganizationsIcon from '@/components/Icons/OrganizationsIcon.vue'
 import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import FieldLayout from '@/components/FieldLayout/FieldLayout.vue'
-import Link from '@/components/Controls/Link.vue'
 import { useDocument } from '@/data/document'
 import { usersStore } from '@/stores/users'
 import { sessionStore } from '@/stores/session'
 import { statusesStore } from '@/stores/statuses'
 import { showQuickEntryModal, quickEntryProps } from '@/composables/modals'
 import { isMobileView } from '@/composables/settings'
-import { useOnboarding, useTelemetry } from 'frappe-ui/frappe'
+import { useOnboarding, useTelemetry, Link } from 'frappe-ui/frappe'
 import { Switch, Dialog, createResource, call } from 'frappe-ui'
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'

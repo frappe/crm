@@ -115,7 +115,7 @@
 import GroupIcon from '~icons/lucide/group'
 import UnGroupIcon from '~icons/lucide/ungroup'
 import CFConditions from './CFConditions.vue'
-import Link from '@/components/Controls/Link.vue'
+import { Link } from 'frappe-ui/frappe'
 import {
   Combobox,
   Button,
@@ -252,9 +252,8 @@ function getValueControl() {
       return h(TextInput)
     }
     return h(Link, {
-      class: 'form-control',
+      class: 'form-control w-full',
       doctype: options,
-      value: condition[2],
     })
   } else if (typeNumber.includes(fieldtype)) {
     return h(TextInput, { type: 'number' })

@@ -84,35 +84,19 @@
       </DateRangePicker>
       <Link
         v-if="isAdmin() || isManager()"
+        v-model="filters.user"
         class="form-control w-48"
         variant="outline"
-        :value="filters.user && getUser(filters.user).full_name"
         doctype="User"
         :filters="{
           name: ['in', users.data.crmUsers?.map((u) => u.name)],
           ignore_user_type: 1,
         }"
         :placeholder="__('Sales User')"
-        :hideMe="true"
-        @change="(v) => updateFilter('user', v)"
+        @update:modelValue="() => dashboardItems.reload()"
       >
-        <template #prefix>
-          <UserAvatar
-            v-if="filters.user"
-            class="mr-2"
-            :user="filters.user"
-            size="sm"
-          />
-        </template>
-        <template #item-prefix="{ option }">
-          <UserAvatar class="mr-2" :user="option.value" size="sm" />
-        </template>
-        <template #item-label="{ option }">
-          <Tooltip :text="option.value">
-            <div class="cursor-pointer">
-              {{ getUser(option.value).full_name }}
-            </div>
-          </Tooltip>
+        <template #item-prefix="{ item }">
+          <UserAvatar class="mr-1" :user="item.value" size="sm" />
         </template>
       </Link>
     </div>
@@ -142,7 +126,7 @@ import DashboardGrid from '@/components/Dashboard/DashboardGrid.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import ViewBreadcrumbs from '@/components/ViewBreadcrumbs.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
-import Link from '@/components/Controls/Link.vue'
+import { Link } from 'frappe-ui/frappe'
 import { usersStore } from '@/stores/users'
 import { copy } from '@/utils'
 import { getLastXDays, formatter, formatRange } from '@/utils/dashboard'
@@ -151,7 +135,6 @@ import {
   createResource,
   DateRangePicker,
   Dropdown,
-  Tooltip,
 } from 'frappe-ui'
 import { ref, reactive, computed, provide } from 'vue'
 
