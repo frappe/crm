@@ -1,11 +1,20 @@
 <template>
   <div
-    v-if="!isSidebarCollapsed"
+    v-if="!isSidebarCollapsed && !dismissed"
     class="flex flex-col gap-3 shadow-sm rounded-lg py-2.5 px-3 bg-surface-modal text-base"
   >
-    <div class="inline-flex text-ink-gray-9 gap-2 items-center font-medium">
-      <FeatherIcon class="h-4" name="info" />
-      {{ __('Sales Hierarchy') }}
+    <div class="flex items-start justify-between gap-2">
+      <div class="inline-flex text-ink-gray-9 gap-2 items-center font-medium">
+        <FeatherIcon class="h-4" name="info" />
+        {{ __('Sales Hierarchy') }}
+      </div>
+      <button
+        class="text-ink-gray-5 hover:text-ink-gray-7"
+        :aria-label="__('Dismiss')"
+        @click="dismiss"
+      >
+        <FeatherIcon class="h-3.5" name="x" />
+      </button>
     </div>
     <div class="text-ink-gray-7 text-p-sm">
       {{ __('TODO: Write a short message') }}
@@ -20,6 +29,7 @@
 
 <script setup>
 import { Button, FeatherIcon } from 'frappe-ui'
+import { useStorage } from '@vueuse/core'
 
 defineProps({
   isSidebarCollapsed: {
@@ -29,6 +39,12 @@ defineProps({
 })
 
 const BLOG_URL = ''
+
+const dismissed = useStorage('salesHierarchyBannerDismissed', false)
+
+function dismiss() {
+  dismissed.value = true
+}
 
 function openBlog() {
   if (!BLOG_URL) return
