@@ -435,6 +435,10 @@ function _initJsSIP(creds) {
     authorization_user: creds.username,
     realm: creds.realm,
     register: true,
+    // Short re-REGISTER acts as a NAT/WSS keep-alive so the tunnel doesn't
+    // silently die between calls and stall the next INVITE/BYE.
+    register_expires: 60,
+    session_timers: false,
     connection_recovery_min_interval: 2,
     connection_recovery_max_interval: 30,
   })
@@ -514,21 +518,17 @@ function getIceServers() {
 function acceptIncoming() {
   if (!currentSession) return
 
-  // Request microphone permission first, then answer
-  navigator.mediaDevices.getUserMedia({ audio: true, video: false })
-    .then((stream) => {
-      stream.getTracks().forEach(t => t.stop()) // release — JsSIP will re-acquire
-      currentSession.answer({
-        mediaConstraints: { audio: true, video: false },
-        pcConfig: { iceServers: getIceServers() },
-      })
-      _attachRemoteAudio(currentSession)
-      callStatus.value = 'Connecting...'
+  try {
+    currentSession.answer({
+      mediaConstraints: { audio: true, video: false },
+      pcConfig: { iceServers: getIceServers() },
     })
-    .catch((err) => {
-      console.error('[FreePBX] Microphone access denied:', err)
-      toast.error(__('Microphone access denied. Please allow microphone and try again.'))
-    })
+    _attachRemoteAudio(currentSession)
+    callStatus.value = 'Connecting...'
+  } catch (err) {
+    console.error('[FreePBX] answer() failed:', err)
+    toast.error(__('Failed to answer call: {0}', [err.message || err]))
+  }
 }
 
 function makeOutgoingCall(number) {
@@ -615,6 +615,15 @@ function _onCallConfirmed() {
 }
 
 function _onCallEnded() {
+  // Release the remote MediaStream so the mic device isn't held between calls —
+  // otherwise the next getUserMedia waits for the OS to release the device.
+  if (remoteAudio.value) {
+    const s = remoteAudio.value.srcObject
+    if (s && typeof s.getTracks === 'function') {
+      s.getTracks().forEach((t) => t.stop())
+    }
+    remoteAudio.value.srcObject = null
+  }
   counterUp.value.stop()
   callDuration.value = counterUp.value.getTime(0)
   callStatus.value = 'Call ended'
@@ -622,6 +631,13 @@ function _onCallEnded() {
 }
 
 function _onCallFailed(e) {
+  if (remoteAudio.value) {
+    const s = remoteAudio.value.srcObject
+    if (s && typeof s.getTracks === 'function') {
+      s.getTracks().forEach((t) => t.stop())
+    }
+    remoteAudio.value.srcObject = null
+  }
   counterUp.value.stop()
   callStatus.value = e.cause === 'Rejected' || e.cause === 'Busy' ? 'No answer' : 'Call ended'
   currentSession = null
@@ -630,6 +646,29 @@ function _onCallFailed(e) {
 function _attachRemoteAudio(session) {
   const wirePeerConnection = (pc) => {
     if (!pc) return
+
+    // Cap ICE gathering at 2s. Virtual adapters (WSL, VPN, Hyper-V, virtual
+    // switches) can take up to 40s to time out on STUN/TURN, blocking the
+    // INVITE that long. The real-NIC candidates we need (host/srflx/relay)
+    // are ready in ~1s, so 2s is a generous safety margin. We synthesise a
+    // null-candidate event that JsSIP's internal `_createLocalDescription`
+    // listens for to know gathering is "done".
+    const gatheringDeadline = setTimeout(() => {
+      if (pc.iceGatheringState !== 'complete') {
+        console.warn('[FreePBX] ICE gathering exceeded 2s — forcing end-of-candidates')
+        try {
+          pc.dispatchEvent(
+            new RTCPeerConnectionIceEvent('icecandidate', { candidate: null }),
+          )
+        } catch (_) {
+          // Older browsers without the constructor — fall back to a plain Event.
+          pc.dispatchEvent(new Event('icecandidate'))
+        }
+      }
+    }, 2000)
+    pc.addEventListener('icegatheringstatechange', () => {
+      if (pc.iceGatheringState === 'complete') clearTimeout(gatheringDeadline)
+    })
 
     pc.addEventListener('addstream', (e) => {
       if (remoteAudio.value) remoteAudio.value.srcObject = e.stream
