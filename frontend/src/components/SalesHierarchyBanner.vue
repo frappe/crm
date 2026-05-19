@@ -7,11 +7,19 @@
       <FeatherIcon class="h-4" name="info" />
       {{ __('Sales Hierarchy') }}
     </div>
+    <div class="text-ink-gray-7 text-p-sm">
+      {{ __('TODO: Write a short message') }}
+    </div>
+    <Button :label="__('Learn more')" @click="openBlog">
+      <template #suffix>
+        <FeatherIcon class="h-3.5" name="external-link" />
+      </template>
+    </Button>
   </div>
 </template>
 
 <script setup>
-import { FeatherIcon } from 'frappe-ui'
+import { Button, FeatherIcon } from 'frappe-ui'
 
 defineProps({
   isSidebarCollapsed: {
@@ -19,4 +27,11 @@ defineProps({
     default: false,
   },
 })
+
+const BLOG_URL = ''
+
+function openBlog() {
+  if (!BLOG_URL) return
+  window.open(BLOG_URL, '_blank', 'noopener')
+}
 </script>
