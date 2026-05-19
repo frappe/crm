@@ -2,7 +2,7 @@
   <Popover transition="default">
     <template #target="{ togglePopover, isOpen }">
       <slot v-bind="{ isOpen, togglePopover }">
-        <span class="text-base"> {{ modelValue || '' }} </span>
+        <span class="text-base"> {{ emoji || '' }} </span>
       </slot>
     </template>
     <template #body="{ togglePopover }">

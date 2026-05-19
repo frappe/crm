@@ -137,7 +137,8 @@
       <div
         v-for="filter in quickFilterList"
         :key="filter.fieldname"
-        class="m-1 min-w-40 max-w-40"
+        class="m-1"
+        :class="filter.fieldtype == 'Check' ? '' : 'min-w-40 max-w-40'"
       >
         <QuickFilterField
           :filter="filter"
@@ -277,7 +278,6 @@
       <Select
         v-model="export_type"
         class="w-full"
-        variant="outline"
         :label="__('Export Type')"
         :options="[
           {
@@ -1175,6 +1175,7 @@ function setAsDefault(v) {
 }
 
 function duplicateView(v, close) {
+  viewModalObj.value = { ...v }
   viewModalObj.value.label = v.label + __(' (New)')
   viewModalObj.value.mode = 'duplicate'
   showViewModal.value = true
@@ -1182,7 +1183,7 @@ function duplicateView(v, close) {
 }
 
 function editView(v, close) {
-  viewModalObj.value = v
+  viewModalObj.value = { ...v }
   viewModalObj.value.mode = 'edit'
   showViewModal.value = true
   close()

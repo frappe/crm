@@ -196,10 +196,9 @@
                 :placeholder="__('10')"
                 @blur="handleIntervalChange(notification)"
               />
-              <TextInput
+              <Select
                 v-model="notification.interval"
                 class="w-32 shrink-0"
-                type="select"
                 :options="[
                   {
                     label: notification.before == 1 ? __('day') : __('days'),

@@ -47,7 +47,7 @@
           class="overflow-hidden flex h-full flex-col gap-6 mt-4"
         >
           <!-- Form -->
-          <div class="grid grid-cols-2 gap-4 px-0.5">
+          <div class="grid grid-cols-2 gap-4 p-0.5">
             <Combobox
               v-model="syncSource.type"
               class="w-full"

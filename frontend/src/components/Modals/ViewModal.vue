@@ -16,7 +16,7 @@
       <IconPicker v-slot="{ togglePopover }" v-model="view.icon">
         <Button
           size="md"
-          class="flex size-8 text-2xl leading-none"
+          class="flex size-8 text-2xl !px-1 leading-none"
           :label="view.icon"
           @click="togglePopover"
         />

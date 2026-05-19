@@ -29,7 +29,7 @@
     </div>
 
     <!-- Fields -->
-    <div class="flex flex-1 flex-col gap-4 overflow-y-auto px-0.5 -mx-0.5">
+    <div class="flex flex-1 flex-col gap-4 overflow-y-auto p-0.5 -mx-0.5">
       <div class="flex sm:flex-row flex-col gap-4">
         <TextInput
           v-model="template.name"

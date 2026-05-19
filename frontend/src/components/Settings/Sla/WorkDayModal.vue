@@ -17,9 +17,8 @@
         @blur="validateField('workday')"
       />
 
-      <TextInput
+      <TimePicker
         v-model="workDayData.start_time"
-        type="time"
         size="sm"
         variant="subtle"
         :placeholder="__('Start Time')"
@@ -28,9 +27,8 @@
         @blur="validateField('start_time')"
       />
 
-      <TextInput
+      <TimePicker
         v-model="workDayData.end_time"
-        type="time"
         size="sm"
         variant="subtle"
         :placeholder="__('End Time')"
@@ -72,7 +70,7 @@
 
 <script setup>
 import { ref, reactive, watch, computed } from 'vue'
-import { Dialog, Select, Button, toast, TextInput } from 'frappe-ui'
+import { Dialog, Select, Button, toast, TimePicker } from 'frappe-ui'
 
 const ALL_WORKDAY_OPTIONS = [
   { label: 'Monday', value: 'Monday' },

@@ -15,7 +15,7 @@
               {{ getUser(task.assigned_to).full_name }}
             </div>
             <div v-if="task.due_date" class="flex items-center justify-center">
-              <DotIcon class="h-2.5 w-2.5 text-ink-gray-5" :radius="2" />
+              <DotIcon class="size-2.5 text-ink-gray-5" :radius="2" />
             </div>
             <div v-if="task.due_date">
               <Tooltip
@@ -28,10 +28,10 @@
               </Tooltip>
             </div>
             <div class="flex items-center justify-center">
-              <DotIcon class="h-2.5 w-2.5 text-ink-gray-5" :radius="2" />
+              <DotIcon class="size-2.5 text-ink-gray-5" :radius="2" />
             </div>
             <div class="flex gap-2">
-              <TaskPriorityIcon class="!h-2 !w-2" :priority="task.priority" />
+              <TaskPriorityIcon class="!size-2" :priority="task.priority" />
               {{ task.priority }}
             </div>
           </div>

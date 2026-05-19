@@ -101,10 +101,14 @@ def get_filterable_fields(doctype: str):
 
 	for field in standard_fields + meta.get("fields", []):
 		if field.get("fieldname") not in restricted_fields and field.get("fieldtype") in allowed_fieldtypes:
-			field["name"] = field.get("fieldname")
-			field["label"] = _(field.get("label"))
-			field["value"] = field.get("fieldname")
-			fields.append(field)
+			_field = {
+				"label": _(field.get("label")),
+				"fieldname": field.get("fieldname"),
+				"fieldtype": field.get("fieldtype"),
+				"options": field.get("options"),
+				"value": field.get("fieldname"),
+			}
+			fields.append(_field)
 
 	return fields
 

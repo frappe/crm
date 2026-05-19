@@ -208,7 +208,7 @@ const fields = computed(() => {
     })
     .map((field) => {
       return {
-        ...field,
+        label: field.label,
         value: field.fieldname,
       }
     })
