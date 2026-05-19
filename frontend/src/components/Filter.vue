@@ -101,7 +101,7 @@
                       @update:modelValue="() => updateOperator(f)"
                     />
                   </div>
-                  <div id="value" class="!min-w-[140px]">
+                  <div id="value" class="flex !min-w-[140px]">
                     <component
                       :is="getValueControl(f)"
                       v-model="f.value"
@@ -389,19 +389,17 @@ function getValueControl(f) {
           value: 'not set',
         },
       ],
-      modelValue: f.value,
       'onUpdate:modelValue': (v) => updateValue(v, f),
     })
   } else if (operator == 'timespan') {
     return h(Select, {
       class: 'w-full',
       options: timespanOptions,
-      modelValue: f.value,
       'onUpdate:modelValue': (v) => updateValue(v, f),
     })
   } else if (['like', 'not like', 'in', 'not in'].includes(operator)) {
     return h(TextInput)
-  } else if (typeSelect.includes(fieldtype) || typeCheck.includes(fieldtype)) {
+  } else if (['Select', 'Check'].includes(fieldtype)) {
     const _options =
       fieldtype == 'Check' ? ['Yes', 'No'] : getSelectOptions(options)
     return h(Select, {
@@ -410,13 +408,10 @@ function getValueControl(f) {
         label: o,
         value: o,
       })),
-      modelValue: f.value,
       'onUpdate:modelValue': (v) => updateValue(v, f),
     })
   } else if (typeLink.includes(fieldtype)) {
-    if (fieldtype == 'Dynamic Link') {
-      return h(TextInput)
-    }
+    if (fieldtype == 'Dynamic Link') h(TextInput)
     return h(Link, {
       class: 'form-control min-w-44 max-w-44',
       doctype: options,
@@ -425,20 +420,16 @@ function getValueControl(f) {
   } else if (typeNumber.includes(fieldtype)) {
     return h(TextInput, { type: 'number' })
   } else if (typeDate.includes(fieldtype) && operator == 'between') {
-    return h(DateRangePicker, { value: f.value, iconLeft: '' })
+    return h(DateRangePicker)
   } else if (typeDuration.includes(fieldtype)) {
     return h(DurationInput, { value: f.value })
   } else if (typeRating.includes(fieldtype)) {
     return h(RatingInput, {
-      value: f.value,
       max: options || 5,
-      class: '!flex',
+      'onUpdate:modelValue': (v) => updateValue(v, f),
     })
   } else if (typeDate.includes(fieldtype)) {
-    return h(fieldtype == 'Date' ? DatePicker : DateTimePicker, {
-      value: f.value,
-      iconLeft: '',
-    })
+    return h(fieldtype == 'Date' ? DatePicker : DateTimePicker)
   } else {
     return h(TextInput)
   }
@@ -458,10 +449,7 @@ function getDefaultValue(field) {
 }
 
 function getDefaultOperator(fieldtype) {
-  if (typeSelect.includes(fieldtype)) {
-    return 'equals'
-  }
-  if (typeCheck.includes(fieldtype) || typeNumber.includes(fieldtype)) {
+  if (['Select', 'Check', 'Rating', ...typeNumber].includes(fieldtype)) {
     return 'equals'
   }
   if (typeDate.includes(fieldtype)) {
