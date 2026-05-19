@@ -80,6 +80,7 @@
         :isChild="true"
         :level="props.level"
         :disableAddCondition="props.disableAddCondition"
+        :doctype="props.doctype"
       />
       <Button
         v-if="props.isGroup && (props.level == 2 || props.level == 4)"
@@ -104,6 +105,7 @@
         :isChild="true"
         :level="props.level"
         :disableAddCondition="props.disableAddCondition"
+        :doctype="props.doctype"
       />
     </template>
   </Dialog>
@@ -126,7 +128,7 @@ import {
   Rating,
 } from 'frappe-ui'
 import { filterableFields } from './filterableFields'
-import { reactive, computed, defineEmits, h, ref } from 'vue'
+import { reactive, computed, h, ref } from 'vue'
 
 const show = ref(false)
 const emit = defineEmits([
@@ -144,6 +146,7 @@ const props = defineProps({
   isGroup: { type: Boolean, default: false },
   conjunction: { type: String, default: 'and' },
   disableAddCondition: { type: Boolean, default: false },
+  doctype: { type: String, default: '' },
 })
 
 const condition = reactive(props.condition)
