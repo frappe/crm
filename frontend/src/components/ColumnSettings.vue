@@ -209,6 +209,9 @@ const fields = computed(() => {
     .map((field) => {
       return {
         label: field.label,
+        fieldname: field.fieldname,
+        fieldtype: field.fieldtype,
+        options: field.options,
         value: field.fieldname,
       }
     })
