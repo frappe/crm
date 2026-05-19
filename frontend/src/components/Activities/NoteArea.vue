@@ -32,6 +32,22 @@
       editor-class="prose-sm text-p-sm max-w-none text-ink-gray-5 focus:outline-none"
       class="flex-1 overflow-hidden"
     />
+
+    <!-- Google Maps location link -->
+    <a
+      v-if="note.custom_latitude"
+      :href="`https://www.google.com/maps?q=${note.custom_latitude},${note.custom_longitude}`"
+      target="_blank"
+      rel="noopener"
+      class="flex items-center gap-1 text-xs text-ink-gray-5 hover:text-ink-blue-3 hover:underline"
+      @click.stop
+    >
+      <FeatherIcon name="map-pin" class="h-3 w-3 shrink-0" />
+      <span class="truncate">
+        {{ note.custom_address || `${note.custom_latitude}, ${note.custom_longitude}` }}
+      </span>
+    </a>
+
     <div class="mt-1 flex items-center justify-between gap-2">
       <div class="flex items-center gap-2 truncate">
         <UserAvatar :user="note.owner" size="xs" />
@@ -50,10 +66,11 @@
     </div>
   </div>
 </template>
+
 <script setup>
 import UserAvatar from '@/components/UserAvatar.vue'
 import { timeAgo, formatDate } from '@/utils'
-import { Tooltip, Dropdown, TextEditor, call, toast } from 'frappe-ui'
+import { Tooltip, Dropdown, TextEditor, FeatherIcon, call, toast } from 'frappe-ui'
 import { usersStore } from '@/stores/users'
 
 defineProps({

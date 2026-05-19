@@ -41,6 +41,20 @@
             :data="doc"
             :doctype="doctype"
           />
+		  <div
+            v-if="doctype === 'FCRM Note' && document.doc?.custom_latitude"
+            class="mt-2"
+          >
+            <a
+              :href="`https://www.google.com/maps?q=${document.doc.custom_latitude},${document.doc.custom_longitude}`"
+              target="_blank"
+              rel="noopener"
+              class="flex items-center gap-1.5 text-sm text-ink-blue-3 hover:underline"
+            >
+              <FeatherIcon name="map-pin" class="h-3.5 w-3.5" />
+              {{ document.doc.custom_address || `${document.doc.custom_latitude}, ${document.doc.custom_longitude}` }}
+            </a>
+          </div>
           <ErrorMessage v-if="error" class="mt-4" :message="__(error)" />
         </div>
       </div>
@@ -49,7 +63,7 @@
           <Button
             variant="solid"
             :label="editMode ? __('Update') : __('Create')"
-            :loading="editMode ? document.save.loading : create.loading"
+            :loading="editMode ? document.save.loading : _create.loading"
             @click="editMode ? update() : create()"
           />
         </div>
@@ -106,6 +120,10 @@ const editMode = computed(() => Boolean(document.doc?.name))
 const _create = createResource({
   url: 'frappe.client.insert',
   onSuccess: (d) => {
+    // Link the uploaded file to the note silently in background
+    if (props.doctype === 'FCRM Note' && document.doc?.custom_file) {
+      linkFileToDoc(document.doc.custom_file, d.name).catch(() => {})
+    }
     document.doc = {}
     emit('afterInsert', d)
     show.value = false
@@ -124,6 +142,26 @@ const _create = createResource({
     error.value = err.messages?.[0] || 'Could not create document'
   },
 })
+
+async function linkFileToDoc(fileUrl, docname) {
+  const files = await call('frappe.client.get_list', {
+    doctype: 'File',
+    filters: { file_url: fileUrl },
+    fields: ['name'],
+    limit: 1,
+  })
+  if (files?.length) {
+    await call('frappe.client.set_value', {
+      doctype: 'File',
+      name: files[0].name,
+      fieldname: {
+        attached_to_doctype: 'FCRM Note',
+        attached_to_name: docname,
+        fieldname: 'custom_file',
+      },
+    })
+  }
+}
 
 async function create() {
   await triggerOnBeforeCreate?.()
@@ -178,4 +216,66 @@ onMounted(async () => {
   }
   await triggerOnRender()
 })
+
+// ─── GEO TAGGING ──────────────────────────────────────────
+// When custom_file is set via the native attach field,
+// silently fetch GPS and store in the geo fields.
+
+let watchId         = null
+let locationTimeout = null
+
+watch(
+  () => document.doc?.custom_file,
+  (newVal, oldVal) => {
+    if (newVal && newVal !== oldVal) {
+      fetchGeoLocation()
+    }
+  },
+)
+
+function fetchGeoLocation() {
+  if (!navigator.geolocation) return
+
+  navigator.geolocation.getCurrentPosition(
+    (pos) => applyPosition(pos),
+    () => {
+      let bestPos = null
+
+      watchId = navigator.geolocation.watchPosition(
+        (pos) => {
+          if (!bestPos || pos.coords.accuracy < bestPos.coords.accuracy) bestPos = pos
+          if (pos.coords.accuracy <= 100) {
+            navigator.geolocation.clearWatch(watchId)
+            watchId = null
+            clearTimeout(locationTimeout)
+            applyPosition(pos)
+          }
+        },
+        () => { if (bestPos) applyPosition(bestPos) },
+        { enableHighAccuracy: true, timeout: 20000, maximumAge: 0 },
+      )
+
+      locationTimeout = setTimeout(() => {
+        if (watchId != null) { navigator.geolocation.clearWatch(watchId); watchId = null }
+        if (bestPos) applyPosition(bestPos)
+      }, 15000)
+    },
+    { enableHighAccuracy: true, timeout: 3000, maximumAge: 30000 },
+  )
+}
+
+function applyPosition(pos) {
+  if (!document.doc) return
+  document.doc.custom_latitude  = pos.coords.latitude
+  document.doc.custom_longitude = pos.coords.longitude
+  document.doc.custom_accuracy  = pos.coords.accuracy
+
+  fetch(
+    `https://nominatim.openstreetmap.org/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&format=json`,
+    { headers: { 'Accept-Language': 'en' } },
+  )
+    .then((r) => r.json())
+    .then((data) => { document.doc.custom_address = data.display_name || null })
+    .catch(() => {})
+}
 </script>
