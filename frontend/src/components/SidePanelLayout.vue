@@ -265,14 +265,17 @@
                         :disabled="Boolean(field.read_only)"
                         @change="(v) => fieldChange(v, field)"
                       />
-                      <RatingInput
+                      <div
                         v-else-if="field.fieldtype === 'Rating'"
-                        class="pl-[10px]"
-                        :value="doc[field.fieldname]"
-                        :max="field.options || 5"
-                        :disabled="Boolean(field.read_only)"
-                        @change="(v) => fieldChange(v, field)"
-                      />
+                        class="ml-2 overflow-auto [&::-webkit-scrollbar]:h-0"
+                      >
+                        <RatingInput
+                          v-model="doc[field.fieldname]"
+                          :max="field.options || 5"
+                          :disabled="Boolean(field.read_only)"
+                          @update:modelValue="(v) => fieldChange(v, field)"
+                        />
+                      </div>
                       <ButtonControl
                         v-else-if="field.fieldtype === 'Button'"
                         :label="field.label"

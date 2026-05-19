@@ -157,12 +157,9 @@
               class="text-ink-gray-9"
             />
           </div>
-          <RatingInput
+          <div
             v-else-if="column.type === 'Rating'"
-            :value="item"
-            class="!opacity-100 flex-nowrap overflow-auto"
-            :disabled="true"
-            :max="column.options || 5"
+            class="overflow-auto [&::-webkit-scrollbar]:h-0"
             @click="
               (event) =>
                 emit('applyFilter', {
@@ -173,7 +170,15 @@
                   firstColumn: columns[0],
                 })
             "
-          />
+          >
+            <RatingInput
+              :model-value="item"
+              class="[&_button]:cursor-pointer"
+              :disabled="true"
+              :max="column.options || 5"
+              placement="left"
+            />
+          </div>
           <div
             v-else-if="label"
             class="truncate text-base"

@@ -301,14 +301,14 @@
                       />
                       <div
                         v-else-if="field.fieldtype === 'Rating'"
-                        class="flex h-full w-full items-center overflow-hidden [&_::-webkit-scrollbar]:h-0"
+                        class="flex h-full w-full items-center overflow-auto [&::-webkit-scrollbar]:h-0"
                       >
                         <RatingInput
-                          class="flex-nowrap overflow-x-auto px-2"
-                          :value="row[field.fieldname]"
+                          v-model="row[field.fieldname]"
+                          class="px-2"
                           :disabled="Boolean(field.read_only)"
                           :max="field.options || 5"
-                          @change="(v) => fieldChange(v, field, row)"
+                          @update:modelValue="(v) => fieldChange(v, field, row)"
                         />
                       </div>
                       <div

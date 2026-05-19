@@ -211,13 +211,17 @@
       :description="field.description"
       @change="(v) => fieldChange(v, field)"
     />
-    <RatingInput
+    <div
       v-else-if="field.fieldtype === 'Rating'"
-      :value="data[field.fieldname]"
-      :max="field.options || 5"
-      :disabled="Boolean(field.read_only)"
-      @change="(v) => fieldChange(v, field)"
-    />
+      class="overflow-auto [&::-webkit-scrollbar]:h-0"
+    >
+      <RatingInput
+        v-model="data[field.fieldname]"
+        :max="field.options || 5"
+        :disabled="Boolean(field.read_only)"
+        @update:modelValue="(v) => fieldChange(v, field)"
+      />
+    </div>
     <ButtonControl
       v-else-if="field.fieldtype === 'Button'"
       :label="field.label"
