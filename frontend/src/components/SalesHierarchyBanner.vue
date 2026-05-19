@@ -1,6 +1,6 @@
 <template>
   <div
-    v-if="!isSidebarCollapsed && !dismissed"
+    v-if="!isSidebarCollapsed && showBanner"
     class="flex flex-col gap-3 shadow-sm rounded-lg py-2.5 px-3 bg-surface-modal text-base"
   >
     <div class="flex items-start justify-between gap-2">
@@ -30,6 +30,8 @@
 <script setup>
 import { Button, FeatherIcon } from 'frappe-ui'
 import { useStorage } from '@vueuse/core'
+import { computed } from 'vue'
+import { usersStore } from '@/stores/users'
 
 defineProps({
   isSidebarCollapsed: {
@@ -40,7 +42,10 @@ defineProps({
 
 const BLOG_URL = ''
 
+const { isManager } = usersStore()
 const dismissed = useStorage('salesHierarchyBannerDismissed', false)
+
+const showBanner = computed(() => !dismissed.value && isManager())
 
 function dismiss() {
   dismissed.value = true
