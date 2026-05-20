@@ -9,7 +9,7 @@
         {{ __('Sales Hierarchy') }}
       </div>
       <button
-        class="text-ink-gray-5 hover:text-ink-gray-7"
+        class="text-ink-gray-7 hover:text-ink-gray-8"
         :aria-label="__('Dismiss')"
         @click="dismiss"
       >
