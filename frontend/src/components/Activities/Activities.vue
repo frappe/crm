@@ -65,7 +65,11 @@
                 <CommentIcon class="text-ink-gray-8" />
               </div>
             </div>
-            <CommentArea class="mb-4" :activity="comment" />
+            <CommentArea
+              class="mb-4"
+              :activity="comment"
+              @reload="all_activities.reload()"
+            />
           </div>
         </div>
       </div>
@@ -189,7 +193,10 @@
             :id="activity.name"
             class="mb-4"
           >
-            <CommentArea :activity="activity" />
+            <CommentArea
+              :activity="activity"
+              @reload="all_activities.reload()"
+            />
           </div>
           <div
             v-else-if="activity.activity_type == 'attachment_log'"
