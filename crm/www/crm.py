@@ -52,6 +52,7 @@ def get_boot():
 				"user": frappe.db.get_value("User", frappe.session.user, "time_zone")
 				or get_system_timezone(),
 			},
+			"socketio_port": frappe.conf.socketio_port or 9000,
 		}
 	)
 
