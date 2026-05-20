@@ -31,7 +31,7 @@ export function useDocument(doctype, docname, resourceOverrides = {}) {
     if (docname) {
       documentsCache[doctype][docname] = createDocumentResource(
         {
-          realtime: vm?.$socket,
+          realtime: Boolean(vm?.$socket),
           doctype: doctype,
           name: docname,
           onSuccess: async () => await setupFormScript(),
