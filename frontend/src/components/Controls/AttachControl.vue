@@ -54,10 +54,16 @@
     </button>
   </div>
 
+  <!--
+    docname ? doctype : ''
+    In create mode (no docname), pass empty doctype so Frappe v16
+    skips attached_to_name validation. File uploads to Home/Attachments
+    and is properly linked to the document after save.
+  -->
   <FilesUploader
     v-if="showUploader"
     v-model="showUploader"
-    :doctype="doctype"
+    :doctype="docname ? doctype : ''"
     :docname="docname"
     :fieldname="fieldname"
     :options="uploaderOptions"
@@ -89,7 +95,6 @@ const attrs = useAttrs()
 
 const showUploader = ref(false)
 
-// Mirror frappe-ui TextInput size classes
 const sizeClasses = computed(
   () =>
     ({
@@ -100,7 +105,6 @@ const sizeClasses = computed(
     })[attrs.size || 'sm'],
 )
 
-// Mirror frappe-ui TextInput padding by size
 const paddingClasses = computed(
   () =>
     ({
@@ -111,7 +115,6 @@ const paddingClasses = computed(
     })[attrs.size || 'sm'],
 )
 
-// Mirror frappe-ui TextInput variant + disabled classes
 const variantClasses = computed(() => {
   if (props.disabled) {
     return [
@@ -156,6 +159,7 @@ const uploaderOptions = computed(() => {
   return {
     folder: 'Home/Attachments',
     allowMultiple: false,
+	allowTakePhoto: true,
     restrictions: {
       maxNumberOfFiles: 1,
       ...(props.imageOnly ? { allowedFileTypes: ['image/*'] } : {}),
