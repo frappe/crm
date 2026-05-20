@@ -42,9 +42,8 @@
           </div>
         </div>
         <div class="flex items-center gap-2">
-          <FormControl
+          <Select
             v-model="settings.doc.default_calendar_view"
-            type="select"
             class="w-28"
             :options="[
               { label: __('Daily'), value: 'Daily' },
@@ -76,10 +75,9 @@
         >
           <div v-for="notification in notifications" :key="notification.name">
             <div class="flex items-center gap-2">
-              <FormControl
+              <Select
                 v-model="notification.type"
                 class="w-36 shrink-0"
-                type="select"
                 :options="[
                   {
                     label: __('Notification'),
@@ -92,7 +90,7 @@
                 ]"
                 :placeholder="__('Notification')"
               />
-              <FormControl
+              <TextInput
                 v-model.number="notification.before"
                 class="w-20 shrink-0"
                 type="number"
@@ -102,10 +100,9 @@
                 :placeholder="__('10')"
                 @blur="handleIntervalChange(notification)"
               />
-              <FormControl
+              <Select
                 v-model="notification.interval"
                 class="w-32 shrink-0"
-                type="select"
                 :options="[
                   {
                     label:
@@ -129,7 +126,7 @@
                 @update:modelValue="() => handleIntervalChange(notification)"
               />
               <Button
-                icon="x"
+                icon="lucide-x"
                 variant="ghost"
                 @click="
                   notifications.splice(notifications.indexOf(notification), 1)
@@ -141,7 +138,7 @@
         <Button
           class="w-fit"
           :label="__('Add Notification')"
-          iconLeft="plus"
+          iconLeft="lucide-plus"
           @click="
             notifications.push({
               type: 'Notification',
@@ -175,10 +172,9 @@
             :key="notification.name"
           >
             <div class="flex items-center gap-2">
-              <FormControl
+              <Select
                 v-model="notification.type"
                 class="w-36 shrink-0"
-                type="select"
                 :options="[
                   {
                     label: __('Notification'),
@@ -191,7 +187,7 @@
                 ]"
                 :placeholder="__('Notification')"
               />
-              <FormControl
+              <TextInput
                 v-model.number="notification.before"
                 class="w-20 shrink-0"
                 type="number"
@@ -200,10 +196,9 @@
                 :placeholder="__('10')"
                 @blur="handleIntervalChange(notification)"
               />
-              <FormControl
+              <Select
                 v-model="notification.interval"
                 class="w-32 shrink-0"
-                type="select"
                 :options="[
                   {
                     label: notification.before == 1 ? __('day') : __('days'),
@@ -226,7 +221,7 @@
                 :placeholder="__('08:00 pm')"
               />
               <Button
-                icon="x"
+                icon="lucide-x"
                 variant="ghost"
                 @click="
                   allDayNotifications.splice(
@@ -241,7 +236,7 @@
         <Button
           class="w-fit"
           :label="__('Add Notification')"
-          iconLeft="plus"
+          iconLeft="lucide-plus"
           @click="
             allDayNotifications.push({
               type: 'Notification',
@@ -259,7 +254,7 @@
 import { getSettings } from '@/stores/settings'
 import { showSettings } from '@/composables/settings'
 import { min, max, handleIntervalChange } from '@/components/Calendar/utils'
-import { FormControl, TimePicker } from 'frappe-ui'
+import { Select, TextInput, TimePicker } from 'frappe-ui'
 import { computed } from 'vue'
 
 const { _settings: settings } = getSettings()

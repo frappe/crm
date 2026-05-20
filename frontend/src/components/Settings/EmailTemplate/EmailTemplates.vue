@@ -62,12 +62,14 @@
           :debounce="300"
         >
           <template #prefix>
-            <FeatherIcon name="search" class="h-4 w-4 text-ink-gray-6" />
+            <span
+              class="lucide-search size-4 text-ink-gray-6"
+              aria-hidden="true"
+            />
           </template>
         </TextInput>
-        <FormControl
+        <Select
           v-model="currentDoctype"
-          type="select"
           :options="[
             { label: __('All'), value: 'All' },
             { label: __('Lead'), value: 'CRM Lead' },
@@ -112,7 +114,7 @@
                 :options="getDropdownOptions(template)"
                 placement="right"
                 :button="{
-                  icon: 'more-horizontal',
+                  icon: 'lucide-more-horizontal',
                   variant: 'ghost',
                   onblur: (e) => {
                     e.stopPropagation()
@@ -149,14 +151,7 @@
 import EmailTemplateIcon from '@/components/Icons/EmailTemplateIcon.vue'
 import EmptyState from '../../ListViews/EmptyState.vue'
 import { useBroadcast } from '@/composables/useBroadcast'
-import {
-  TextInput,
-  FormControl,
-  Switch,
-  Dropdown,
-  FeatherIcon,
-  toast,
-} from 'frappe-ui'
+import { TextInput, Switch, Dropdown, toast, Select } from 'frappe-ui'
 import { ref, computed, inject } from 'vue'
 import { ConfirmDelete } from '../../../utils'
 
@@ -227,7 +222,7 @@ function getDropdownOptions(template) {
   let options = [
     {
       label: __('Duplicate'),
-      icon: 'copy',
+      icon: 'lucide-copy',
       onClick: () => emit('updateStep', 'new-template', { ...template }),
     },
     ...ConfirmDelete({

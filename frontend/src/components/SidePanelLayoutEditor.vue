@@ -10,16 +10,16 @@
               class="flex max-w-fit cursor-pointer items-center gap-2 text-base leading-4 text-ink-gray-9"
               @click="section.opened = !section.opened"
             >
-              <FeatherIcon
-                name="chevron-right"
-                class="h-4 transition-all duration-300 ease-in-out"
+              <span
+                class="lucide-chevron-right size-4 transition-all duration-300 ease-in-out"
                 :class="{ 'rotate-90': section.opened }"
+                aria-hidden="true"
               />
               <div v-if="!section.editingLabel">
                 {{ __(section.label) || __('Untitled') }}
               </div>
               <div v-else class="flex gap-2 items-center">
-                <Input
+                <TextInput
                   v-model="section.label"
                   @keydown.enter="section.editingLabel = false"
                   @blur="section.editingLabel = false"
@@ -27,7 +27,7 @@
                 />
                 <Button
                   v-if="section.editingLabel"
-                  icon="check"
+                  icon="lucide-check"
                   class="!size-4 rounded-sm"
                   variant="ghost"
                   @click.stop="section.editingLabel = false"
@@ -48,7 +48,7 @@
               <Button
                 v-if="section.editable !== false"
                 class="!size-4 rounded-sm"
-                icon="x"
+                icon="lucide-x"
                 variant="ghost"
                 @click="sections.splice(sections.indexOf(section), 1)"
               />
@@ -72,7 +72,7 @@
                   </div>
                   <Button
                     variant="ghost"
-                    icon="x"
+                    icon="lucide-x"
                     class="!size-4 rounded-sm"
                     @click="
                       section.columns[0].fields.splice(
@@ -84,30 +84,28 @@
                 </div>
               </template>
             </Draggable>
-            <Autocomplete
+            <Combobox
               v-if="section.editable !== false"
-              value=""
               :options="fields"
-              @change="(e) => addField(section, e)"
+              @update:selectedOption="(e) => addField(section, e)"
             >
-              <template #target="{ togglePopover }">
+              <template #trigger>
                 <Button
                   class="w-full h-8 mt-1.5 !bg-surface-gray-1"
                   variant="outline"
                   :label="__('Add Field')"
-                  iconLeft="plus"
-                  @click="togglePopover()"
+                  iconLeft="lucide-plus"
                 />
               </template>
-              <template #item-label="{ option }">
+              <template #item-label="{ item }">
                 <div class="flex flex-col gap-1 text-ink-gray-9">
-                  <div>{{ option.label }}</div>
+                  <div>{{ item.label }}</div>
                   <div class="text-ink-gray-4 text-sm">
-                    {{ `${option.fieldname} - ${option.fieldtype}` }}
+                    {{ `${item.fieldname} - ${item.fieldtype}` }}
                   </div>
                 </div>
               </template>
-            </Autocomplete>
+            </Combobox>
             <div
               v-else
               class="flex justify-center items-center border rounded border-dashed border-outline-gray-modals p-3"
@@ -125,7 +123,7 @@
         class="w-full h-8"
         variant="subtle"
         :label="__('Add Section')"
-        iconLeft="plus"
+        iconLeft="lucide-plus"
         @click="
           sections.push({
             label: __('New Section'),
@@ -140,12 +138,11 @@
 </template>
 <script setup>
 import EditIcon from '@/components/Icons/EditIcon.vue'
-import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import DragVerticalIcon from '@/components/Icons/DragVerticalIcon.vue'
 import { getRandom } from '@/utils'
 import { getMeta } from '@/stores/meta'
 import Draggable from 'vuedraggable'
-import { Input } from 'frappe-ui'
+import { Combobox, TextInput } from 'frappe-ui'
 import { computed } from 'vue'
 
 const props = defineProps({

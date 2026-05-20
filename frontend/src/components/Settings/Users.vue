@@ -51,7 +51,7 @@
       v-if="!users.loading && users.data?.crmUsers?.length == 1"
       name="Users"
       :description="__('Add one to get started.')"
-      icon="user"
+      icon="lucide-user"
     />
 
     <!-- Users List -->
@@ -71,12 +71,14 @@
           :debounce="300"
         >
           <template #prefix>
-            <FeatherIcon name="search" class="h-4 w-4 text-ink-gray-6" />
+            <span
+              class="lucide-search size-4 text-ink-gray-6"
+              aria-hidden="true"
+            />
           </template>
         </TextInput>
-        <FormControl
+        <Select
           v-model="currentRole"
-          type="select"
           :options="[
             { label: __('All'), value: 'All' },
             { label: __('Admin'), value: 'System Manager' },
@@ -107,7 +109,7 @@
               <Dropdown
                 :options="getMoreOptions(user)"
                 :button="{
-                  icon: 'more-horizontal',
+                  icon: 'lucide-more-horizontal',
                   onblur: (e) => {
                     e.stopPropagation()
                     confirmRemove = false
@@ -173,8 +175,8 @@ import {
   TextInput,
   toast,
   call,
-  FeatherIcon,
   Tooltip,
+  Select,
 } from 'frappe-ui'
 import { ref, computed, onMounted } from 'vue'
 import { ConfirmDelete } from '../../utils'
@@ -227,7 +229,7 @@ function getDropdownOptions(user) {
       component: () =>
         DropdownOption({
           option: __('Admin'),
-          icon: 'shield',
+          icon: 'lucide-shield',
           selected: user.role === 'System Manager',
         }),
       onClick: () => updateRole(user, 'System Manager'),
@@ -238,7 +240,7 @@ function getDropdownOptions(user) {
       component: () =>
         DropdownOption({
           option: __('Manager'),
-          icon: 'briefcase',
+          icon: 'lucide-briefcase',
           selected: user.role === 'Sales Manager',
         }),
       onClick: () => updateRole(user, 'Sales Manager'),
@@ -249,7 +251,7 @@ function getDropdownOptions(user) {
       component: () =>
         DropdownOption({
           option: __('Sales User'),
-          icon: 'user-check',
+          icon: 'lucide-user-check',
           selected: user.role === 'Sales User',
         }),
       onClick: () => updateRole(user, 'Sales User'),

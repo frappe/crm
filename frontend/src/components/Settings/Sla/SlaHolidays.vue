@@ -45,7 +45,7 @@
               <div class="flex cursor-pointer items-center gap-1">
                 <Button
                   variant="ghost"
-                  icon="edit"
+                  icon="lucide-edit"
                   @click.stop="editHolidayList(holiday)"
                 />
               </div>
@@ -137,7 +137,7 @@
           <div class="flex justify-end">
             <Dropdown placement="right" :options="dropdownOptions(row)">
               <Button
-                icon="more-horizontal"
+                icon="lucide-more-horizontal"
                 variant="ghost"
                 @click="isConfirmingDelete = false"
               />
@@ -201,7 +201,7 @@ const dropdownOptions = (workDay) => [
   {
     label: __('Edit'),
     onClick: () => editWorkDay(workDay),
-    icon: 'edit',
+    icon: 'lucide-edit',
   },
   ...ConfirmDelete({
     onConfirmDelete: () => deleteWorkDay(workDay),

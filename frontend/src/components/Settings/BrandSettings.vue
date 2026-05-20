@@ -34,9 +34,8 @@
           </div>
         </div>
         <div class="flex items-center gap-2">
-          <FormControl
+          <TextInput
             v-model="settings.doc.brand_name"
-            type="text"
             size="md"
             :placeholder="__('Enter Brand Name')"
           />
@@ -119,7 +118,7 @@
 <script setup>
 import ImageIcon from '~icons/lucide/image'
 import ImageUploader from '@/components/Controls/ImageUploader.vue'
-import { FormControl } from 'frappe-ui'
+import { TextInput } from 'frappe-ui'
 import { getSettings } from '@/stores/settings'
 import { showSettings } from '@/composables/settings'
 

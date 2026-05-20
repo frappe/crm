@@ -40,7 +40,10 @@
               class="rounded p-1 hover:bg-surface-gray-5"
               @click="items.splice(index, 1)"
             >
-              <FeatherIcon name="trash-2" class="size-3 text-ink-white" />
+              <span
+                class="lucide-trash-2 size-3 text-ink-white"
+                aria-hidden="true"
+              />
             </div>
           </div>
         </div>

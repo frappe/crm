@@ -27,9 +27,9 @@
             :label="a.file_name"
           >
             <template #suffix>
-              <FeatherIcon
-                class="h-3.5"
-                name="x"
+              <span
+                class="lucide-x size-3.5"
+                aria-hidden="true"
                 @click.stop="removeAttachment(a)"
               />
             </template>

@@ -46,10 +46,10 @@
                     class="ml-2 mt-4 flex h-7 w-auto cursor-pointer gap-1.5 px-1 text-base font-medium text-ink-gray-5 opacity-100 transition-all duration-300 ease-in-out"
                     @click="toggle()"
                   >
-                    <FeatherIcon
-                      name="chevron-right"
-                      class="h-4 text-ink-gray-9 transition-all duration-300 ease-in-out"
+                    <span
+                      class="lucide-chevron-right size-4 text-ink-gray-9 transition-all duration-300 ease-in-out"
                       :class="{ 'rotate-90': opened }"
+                      aria-hidden="true"
                     />
                     <span>{{ __(view.name) }}</span>
                   </div>

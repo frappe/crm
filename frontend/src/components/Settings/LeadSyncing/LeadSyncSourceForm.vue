@@ -47,50 +47,44 @@
           class="overflow-hidden flex h-full flex-col gap-6 mt-4"
         >
           <!-- Form -->
-          <div class="grid grid-cols-2 gap-4">
-            <FormControl
+          <div class="grid grid-cols-2 gap-4 p-0.5">
+            <Combobox
               v-model="syncSource.type"
-              type="autocomplete"
-              required="true"
+              class="w-full"
+              :required="true"
               :options="supportedSourceTypes"
               :label="__('Source Type')"
+              :openOnClick="true"
               :placeholder="__('Select Source Type')"
             >
-              <template v-if="syncSource.type" #prefix>
-                <component :is="syncSource.type.icon" class="mr-2 size-4" />
+              <template #item-prefix="{ item }">
+                <component :is="item.icon" class="size-4" />
               </template>
+            </Combobox>
 
-              <template #item-prefix="{ option }">
-                <component :is="option.icon" class="size-4" />
-              </template>
-            </FormControl>
-
-            <FormControl
+            <TextInput
               v-if="isLocal"
               v-model="syncSource.name"
-              type="text"
-              required="true"
+              :required="true"
               :label="__('Source Name')"
               :placeholder="__('Enter Source Name')"
             />
 
-            <FormControl
+            <Select
               v-if="fieldsMap.background_sync_frequency"
               v-model="syncSource.background_sync_frequency"
-              type="select"
-              required="true"
+              class="w-full"
               :options="fieldsMap.background_sync_frequency.options"
               :label="__('Background Sync Frequency')"
             />
 
-            <FormControl
+            <Password
               v-model="syncSource.access_token"
-              type="password"
-              required="true"
+              :required="true"
               :label="__('Access Token')"
               :placeholder="__('Enter Access Token')"
             >
-              <template #suffix>
+              <template #prefix>
                 <a
                   target="_blank"
                   href="https://developers.facebook.com/docs/facebook-login/guides/access-tokens/"
@@ -98,9 +92,9 @@
                   <LucideCircleQuestionMark class="w-4" />
                 </a>
               </template>
-            </FormControl>
+            </Password>
 
-            <FormControl
+            <TextInput
               v-if="!isLocal && sourceDoc && sourceDoc.last_synced_at"
               :modelValue="formatDate(sourceDoc.last_synced_at)"
               disabled
@@ -169,15 +163,18 @@ import { onMounted, inject, ref, computed, watch } from 'vue'
 import { supportedSourceTypes } from './leadSyncSourceConfig'
 import {
   Button,
-  FormControl,
   Switch,
   toast,
   ErrorMessage,
   Tabs,
+  TextInput,
+  Select,
+  Password,
+  Combobox,
 } from 'frappe-ui'
 
 import { getMeta } from '@/stores/meta'
-import Link from '@/components/Controls/Link.vue'
+import { Link } from 'frappe-ui/frappe'
 import Grid from '@/components/Controls/Grid.vue'
 import LucideCircleQuestionMark from '~icons/lucide/circle-question-mark'
 import FailureLogs from './FailureLogs.vue'

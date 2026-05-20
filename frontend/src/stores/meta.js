@@ -107,13 +107,6 @@ export function getMeta(doctype) {
                 value: option,
               }
             })
-
-            if (f.options[0]?.value !== '' && f.reqd !== 1) {
-              f.options.unshift({
-                label: '',
-                value: '',
-              })
-            }
           }
           if (f.fieldtype === 'Link' && f.options == 'User') {
             f.fieldtype = 'User'

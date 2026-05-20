@@ -2,7 +2,7 @@
   <Popover transition="default">
     <template #target="{ togglePopover, isOpen }">
       <slot v-bind="{ isOpen, togglePopover }">
-        <span class="text-base"> {{ modelValue || '' }} </span>
+        <span class="text-base"> {{ emoji || '' }} </span>
       </slot>
     </template>
     <template #body="{ togglePopover }">
@@ -22,7 +22,7 @@
         </div>
         <Button
           class="rounded-full"
-          icon="plus"
+          icon="lucide-plus"
           @click.stop="() => (reaction = false)"
         />
       </div>
@@ -35,10 +35,9 @@
         >
           <div class="flex gap-2 px-3 pb-1 pt-3">
             <div class="flex-1">
-              <FormControl
+              <TextInput
                 v-model="search"
-                type="text"
-                placeholder="Search by keyword"
+                :placeholder="__('Search by keyword')"
                 :debounce="300"
               />
             </div>
@@ -69,7 +68,7 @@
   </Popover>
 </template>
 <script setup>
-import { Popover } from 'frappe-ui'
+import { Popover, TextInput } from 'frappe-ui'
 import { gemoji } from 'gemoji'
 import { ref, computed } from 'vue'
 

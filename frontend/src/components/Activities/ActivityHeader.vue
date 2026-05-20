@@ -10,14 +10,14 @@
       v-if="title == 'Emails'"
       variant="solid"
       :label="__('New Email')"
-      iconLeft="plus"
+      iconLeft="lucide-plus"
       @click="emailBox.show = true"
     />
     <Button
       v-else-if="title == 'Comments'"
       variant="solid"
       :label="__('New Comment')"
-      iconLeft="plus"
+      iconLeft="lucide-plus"
       @click="emailBox.showComment = true"
     />
     <MultiActionButton
@@ -39,21 +39,21 @@
       v-else-if="title == 'Notes'"
       variant="solid"
       :label="__('New Note')"
-      iconLeft="plus"
+      iconLeft="lucide-plus"
       @click="modalRef.showNote()"
     />
     <Button
       v-else-if="title == 'Tasks'"
       variant="solid"
       :label="__('New Task')"
-      iconLeft="plus"
+      iconLeft="lucide-plus"
       @click="modalRef.showTask()"
     />
     <Button
       v-else-if="title == 'Attachments'"
       variant="solid"
       :label="__('Upload Attachment')"
-      iconLeft="plus"
+      iconLeft="lucide-plus"
       @click="showFilesUploader = true"
     />
     <div v-else-if="title == 'WhatsApp'" class="flex gap-2 shrink-0">
@@ -64,7 +64,7 @@
       <Button
         variant="solid"
         :label="__('New Message')"
-        iconLeft="plus"
+        iconLeft="lucide-plus"
         @click="whatsappBox.show()"
       />
     </div>
@@ -74,7 +74,7 @@
           variant="solid"
           class="flex items-center gap-1"
           :label="__('New')"
-          iconLeft="plus"
+          iconLeft="lucide-plus"
           :iconRight="open ? 'chevron-up' : 'chevron-down'"
         />
       </template>
@@ -177,7 +177,7 @@ const callActions = computed(() => {
   let actions = [
     {
       label: __('Log a Call'),
-      icon: 'plus',
+      icon: 'lucide-plus',
       onClick: () => props.modalRef.createCallLog(),
     },
     {

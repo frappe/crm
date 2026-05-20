@@ -1,56 +1,42 @@
 <template>
   <Dialog
-    v-model="dialog.show"
-    :options="{ title: __('Edit Workday') }"
+    v-model:open="dialog.show"
+    :title="__('Edit Workday')"
     @after-leave="resetForm"
   >
-    <template #body-content>
-      <div class="flex flex-col gap-4">
-        <div>
-          <FormControl
-            v-model="workDayData.workday"
-            type="select"
-            size="sm"
-            variant="subtle"
-            :placeholder="__('Select Workday')"
-            :label="__('Workday')"
-            :options="workdayOptions"
-            class="text-ink-gray-8"
-            :class="{ 'border-red-500': errors.workday }"
-            @blur="validateField('workday')"
-          />
-          <ErrorMessage :message="errors.workday" class="mt-2" />
-        </div>
+    <div class="flex flex-col gap-4">
+      <Select
+        v-model="workDayData.workday"
+        size="sm"
+        variant="subtle"
+        :placeholder="__('Select Workday')"
+        :label="__('Workday')"
+        :options="workdayOptions"
+        class="w-full text-ink-gray-8"
+        :error="errors.workday"
+        @blur="validateField('workday')"
+      />
 
-        <div>
-          <FormControl
-            v-model="workDayData.start_time"
-            type="time"
-            size="sm"
-            variant="subtle"
-            :placeholder="__('Start Time')"
-            :label="__('Start Time')"
-            :class="{ 'border-red-500': errors.start_time }"
-            @blur="validateField('start_time')"
-          />
-          <ErrorMessage :message="errors.start_time" class="mt-2" />
-        </div>
+      <TimePicker
+        v-model="workDayData.start_time"
+        size="sm"
+        variant="subtle"
+        :placeholder="__('Start Time')"
+        :label="__('Start Time')"
+        :error="errors.start_time"
+        @blur="validateField('start_time')"
+      />
 
-        <div>
-          <FormControl
-            v-model="workDayData.end_time"
-            type="time"
-            size="sm"
-            variant="subtle"
-            :placeholder="__('End Time')"
-            :label="__('End Time')"
-            :class="{ 'border-red-500': errors.end_time }"
-            @blur="validateTimeRange"
-          />
-          <ErrorMessage :message="errors.end_time" class="mt-2" />
-        </div>
-      </div>
-    </template>
+      <TimePicker
+        v-model="workDayData.end_time"
+        size="sm"
+        variant="subtle"
+        :placeholder="__('End Time')"
+        :label="__('End Time')"
+        :error="errors.end_time"
+        @blur="validateTimeRange"
+      />
+    </div>
     <template #actions>
       <div
         class="flex"
@@ -84,7 +70,7 @@
 
 <script setup>
 import { ref, reactive, watch, computed } from 'vue'
-import { Dialog, FormControl, Button, toast } from 'frappe-ui'
+import { Dialog, Select, Button, toast, TimePicker } from 'frappe-ui'
 
 const ALL_WORKDAY_OPTIONS = [
   { label: 'Monday', value: 'Monday' },

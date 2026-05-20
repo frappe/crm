@@ -1,46 +1,40 @@
 <template>
-  <Dialog
-    v-model="show"
-    :options="{ title: __('Lost Reason') }"
-    @close="cancel"
-  >
-    <template #body-content>
-      <div class="-mt-3 mb-4 text-p-base text-ink-gray-7">
-        {{
-          __('Please provide a reason for marking this {0} as lost', [
-            doctype.toLowerCase().replace('crm ', ''),
-          ])
-        }}
-      </div>
-      <div class="flex flex-col gap-3">
-        <div>
-          <div class="mb-2 text-sm text-ink-gray-5">
-            {{ __('Lost Reason') }}
-            <span class="text-ink-red-2">*</span>
-          </div>
-          <Link
-            ref="linkRef"
-            class="form-control flex-1 truncate"
-            :value="lostReason"
-            doctype="CRM Lost Reason"
-            :onCreate="onCreate"
-            @change="(v) => (lostReason = v)"
-          />
+  <Dialog v-model:open="show" :title="__('Lost Reason')" @close="cancel">
+    <div class="-mt-3 mb-4 text-p-base text-ink-gray-7">
+      {{
+        __('Please provide a reason for marking this {0} as lost', [
+          doctype.toLowerCase().replace('crm ', ''),
+        ])
+      }}
+    </div>
+    <div class="flex flex-col gap-3">
+      <div>
+        <div class="mb-2 text-sm text-ink-gray-5">
+          {{ __('Lost Reason') }}
+          <span class="text-ink-red-2">*</span>
         </div>
-        <div>
-          <div class="mb-2 text-sm text-ink-gray-5">
-            {{ __('Lost Notes') }}
-            <span v-if="lostReason == 'Other'" class="text-ink-red-2">*</span>
-          </div>
-          <FormControl
-            class="form-control flex-1 truncate"
-            type="textarea"
-            :value="lostNotes"
-            @change="(e) => (lostNotes = e.target.value)"
-          />
-        </div>
+        <Link
+          ref="linkRef"
+          v-model="lostReason"
+          class="w-full"
+          doctype="CRM Lost Reason"
+          :placeholder="__('Select lost reason')"
+          :allowCreate="true"
+          @create="onCreate"
+        />
       </div>
-    </template>
+      <div>
+        <div class="mb-2 text-sm text-ink-gray-5">
+          {{ __('Lost Notes') }}
+          <span v-if="lostReason == 'Other'" class="text-ink-red-2">*</span>
+        </div>
+        <Textarea
+          class="form-control flex-1 truncate"
+          :value="lostNotes"
+          @change="(e) => (lostNotes = e.target.value)"
+        />
+      </div>
+    </div>
     <template #actions>
       <div class="flex justify-between items-center gap-2">
         <div><ErrorMessage :message="error" /></div>
@@ -53,9 +47,9 @@
   </Dialog>
 </template>
 <script setup>
-import Link from '@/components/Controls/Link.vue'
+import { Link } from 'frappe-ui/frappe'
 import { createDocument } from '@/composables/document'
-import { Dialog } from 'frappe-ui'
+import { Dialog, Textarea } from 'frappe-ui'
 import { ref } from 'vue'
 
 const props = defineProps({
@@ -97,11 +91,11 @@ function save() {
   props.document.save.submit()
 }
 
-function onCreate(value, close) {
+function onCreate(value) {
   let doc = { lost_reason: value }
-  createDocument('CRM Lost Reason', doc, close, (doc) => {
+  createDocument('CRM Lost Reason', doc, (doc) => {
     lostReason.value = doc.name
-    linkRef.value?.reload('', true)
+    linkRef.value?.reload('')
   })
 }
 </script>

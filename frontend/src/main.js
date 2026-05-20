@@ -13,14 +13,12 @@ import {
   Button,
   Input,
   TextInput,
-  FormControl,
   ErrorMessage,
   Dialog,
   Alert,
   Badge,
   setConfig,
   frappeRequest,
-  FeatherIcon,
 } from 'frappe-ui'
 
 import { telemetryPlugin } from 'frappe-ui/frappe'
@@ -29,12 +27,10 @@ let globalComponents = {
   Button,
   TextInput,
   Input,
-  FormControl,
   ErrorMessage,
   Dialog,
   Alert,
   Badge,
-  FeatherIcon,
 }
 
 // create a pinia instance

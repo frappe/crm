@@ -1,46 +1,44 @@
 <template>
-  <Dialog v-model="show" :options="{ size: '3xl' }">
-    <template #body>
-      <div class="bg-surface-modal px-4 pb-6 pt-5 sm:px-6">
-        <div class="mb-5 flex items-center justify-between">
-          <div>
-            <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9">
-              {{ __('Create Lead') }}
-            </h3>
-          </div>
-          <div class="flex items-center gap-1">
-            <Button
-              v-if="isManager() && !isMobileView"
-              variant="ghost"
-              class="w-7"
-              :tooltip="__('Edit Fields Layout')"
-              :icon="EditIcon"
-              @click="openQuickEntryModal"
-            />
-            <Button
-              variant="ghost"
-              class="w-7"
-              icon="x"
-              @click="show = false"
-            />
-          </div>
-        </div>
+  <Dialog v-model:open="show" size="3xl" bare>
+    <div class="bg-surface-modal px-4 pb-6 pt-5 sm:px-6">
+      <div class="mb-5 flex items-center justify-between">
         <div>
-          <FieldLayout v-if="tabs.data" :tabs="tabs.data" :data="lead.doc" />
-          <ErrorMessage v-if="error" class="mt-4" :message="__(error)" />
+          <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9">
+            {{ __('Create Lead') }}
+          </h3>
         </div>
-      </div>
-      <div class="px-4 pb-7 pt-4 sm:px-6">
-        <div class="flex flex-row-reverse gap-2">
+        <div class="flex items-center gap-1">
           <Button
-            variant="solid"
-            :label="__('Create')"
-            :loading="isLeadCreating"
-            @click="createNewLead"
+            v-if="isManager() && !isMobileView"
+            variant="ghost"
+            class="w-7"
+            :tooltip="__('Edit Fields Layout')"
+            :icon="EditIcon"
+            @click="openQuickEntryModal"
+          />
+          <Button
+            variant="ghost"
+            class="w-7"
+            icon="lucide-x"
+            @click="show = false"
           />
         </div>
       </div>
-    </template>
+      <div>
+        <FieldLayout v-if="tabs.data" :tabs="tabs.data" :data="lead.doc" />
+        <ErrorMessage v-if="error" class="mt-4" :message="__(error)" />
+      </div>
+    </div>
+    <div class="px-4 pb-7 pt-4 sm:px-6">
+      <div class="flex flex-row-reverse gap-2">
+        <Button
+          variant="solid"
+          :label="__('Create')"
+          :loading="isLeadCreating"
+          @click="createNewLead"
+        />
+      </div>
+    </div>
   </Dialog>
 </template>
 

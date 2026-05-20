@@ -16,15 +16,12 @@
     row-key="name"
     @update:selections="(selections) => emit('selectionsChanged', selections)"
   >
-    <ListHeader
-      class="sm:mx-5 mx-3"
-      @columnWidthUpdated="emit('columnWidthUpdated')"
-    >
+    <ListHeader class="sm:mx-5 mx-3" @columnWidthUpdated="onColumnWidthUpdated">
       <ListHeaderItem
         v-for="column in columns"
         :key="column.key"
         :item="column"
-        @columnWidthUpdated="emit('columnWidthUpdated', column)"
+        @columnWidthUpdated="onColumnWidthUpdated"
       >
         <Button
           v-if="column.key == '_liked_by'"
@@ -154,19 +151,15 @@
             />
           </div>
           <div v-else-if="column.type === 'Check'">
-            <FormControl
-              type="checkbox"
+            <Checkbox
               :modelValue="item"
               :disabled="true"
               class="text-ink-gray-9"
             />
           </div>
-          <RatingInput
+          <div
             v-else-if="column.type === 'Rating'"
-            :value="item"
-            class="!opacity-100 flex-nowrap overflow-auto"
-            :disabled="true"
-            :max="column.options || 5"
+            class="overflow-auto [&::-webkit-scrollbar]:h-0"
             @click="
               (event) =>
                 emit('applyFilter', {
@@ -177,7 +170,15 @@
                   firstColumn: columns[0],
                 })
             "
-          />
+          >
+            <RatingInput
+              :model-value="item"
+              class="[&_button]:cursor-pointer"
+              :disabled="true"
+              :max="column.options || 5"
+              placement="left"
+            />
+          </div>
           <div
             v-else-if="label"
             class="truncate text-base"
@@ -202,7 +203,7 @@
         <Dropdown
           :options="listBulkActionsRef.bulkActions(selections, unselectAll)"
         >
-          <Button icon="more-horizontal" variant="ghost" />
+          <Button icon="lucide-more-horizontal" variant="ghost" />
         </Dropdown>
       </template>
     </ListSelectBanner>
@@ -239,6 +240,7 @@ import {
   ListFooter,
   Dropdown,
   Tooltip,
+  Checkbox,
 } from 'frappe-ui'
 import { sessionStore } from '@/stores/session'
 import { ref, computed, watch } from 'vue'
@@ -277,6 +279,14 @@ function getLabel(label, column) {
   if (column.type === 'Duration') return formatDuration(label)
   if (column.options && isTranslatable(column.options)) return __(label)
   return label
+}
+
+function onColumnWidthUpdated(payload) {
+  if (!payload) return
+  const cols = list.value?.data?.columns
+  const col = cols?.find((c) => c.key === payload.key)
+  if (col) col.width = payload.width
+  if (payload.save) emit('columnWidthUpdated', col)
 }
 
 const isLikeFilterApplied = computed(() => {

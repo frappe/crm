@@ -1,46 +1,58 @@
 <template>
-  <FormControl
+  <Checkbox
     v-if="filter.fieldtype == 'Check'"
     v-model="filter.value"
     :label="filter.label"
-    type="checkbox"
     @change.stop="updateFilter(filter, $event.target.checked)"
   />
-  <FormControl
+  <Select
     v-else-if="filter.fieldtype === 'Select'"
     v-model="filter.value"
-    class="form-control cursor-pointer [&_select]:cursor-pointer"
-    type="select"
+    class="w-full"
     :options="filter.options"
     :placeholder="filter.label"
     @update:modelValue="updateFilter(filter, $event)"
   />
   <Link
     v-else-if="filter.fieldtype === 'Link'"
-    :value="filter.value"
+    v-model="filter.value"
+    class="w-full"
     :doctype="filter.options"
     :placeholder="filter.label"
-    @change="(data) => updateFilter(filter, data)"
+    :allowCreate="true"
+    @update:modelValue="(data) => updateFilter(filter, data)"
   />
   <component
     :is="filter.fieldtype === 'Date' ? DatePicker : DateTimePicker"
     v-else-if="['Date', 'Datetime'].includes(filter.fieldtype)"
+    v-model="filter.value"
     class="border-none"
-    :value="filter.value"
     :placeholder="filter.label"
     @change="(v) => updateFilter(filter, v)"
   />
-  <FormControl
+  <TimePicker
+    v-else-if="filter.fieldtype === 'Time'"
+    v-model="filter.value"
+    :placeholder="filter.label"
+    @change="(v) => updateFilter(filter, v)"
+  />
+  <TextInput
     v-else
     v-model="filter.value"
-    type="text"
     :placeholder="filter.label"
     @input.stop="debouncedFn(filter, $event.target.value)"
   />
 </template>
 <script setup>
-import Link from '@/components/Controls/Link.vue'
-import { FormControl, DatePicker, DateTimePicker } from 'frappe-ui'
+import { Link } from 'frappe-ui/frappe'
+import {
+  TextInput,
+  Select,
+  Checkbox,
+  DatePicker,
+  DateTimePicker,
+  TimePicker,
+} from 'frappe-ui'
 import { useDebounceFn } from '@vueuse/core'
 import { reactive, watch } from 'vue'
 

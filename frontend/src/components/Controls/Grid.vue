@@ -57,7 +57,7 @@
             :tooltip="__('Edit Grid Fields')"
             class="rounded !bg-surface-gray-2 border-0 !text-ink-gray-5"
             variant="outline"
-            icon="settings"
+            icon="lucide-settings"
             @click="showGridFieldsEditorModal = true"
           />
         </div>
@@ -114,7 +114,7 @@
                       v-for="field in [getRowFieldObj(baseField, row)]"
                       :key="field.fieldname + '-inner'"
                     >
-                      <FormControl
+                      <TextInput
                         v-if="
                           field.read_only &&
                           ![
@@ -134,7 +134,6 @@
                           ].includes(field.fieldtype)
                         "
                         v-model="row[field.fieldname]"
-                        type="text"
                         :placeholder="field.placeholder"
                         :disabled="true"
                       />
@@ -142,49 +141,36 @@
                         v-else-if="
                           ['Link', 'Dynamic Link'].includes(field.fieldtype)
                         "
-                        class="text-sm text-ink-gray-8"
-                        :value="row[field.fieldname]"
+                        v-model="row[field.fieldname]"
+                        class="combobox w-full"
                         :doctype="
                           field.fieldtype == 'Link'
                             ? field.options
                             : row[field.options]
                         "
                         :filters="field.filters"
-                        :onCreate="
-                          (value, close) => field.create(v, field, row, close)
-                        "
-                        @change="(v) => fieldChange(v, field, row)"
+                        :placeholder="field.placeholder"
+                        :allowCreate="true"
+                        :allowRedirect="true"
+                        @create="(v) => field.create(v, field, row)"
+                        @redirect="field.redirect"
+                        @update:modelValue="(v) => fieldChange(v, field, row)"
                       />
                       <Link
                         v-else-if="field.fieldtype === 'User'"
-                        class="form-control"
-                        :value="getUser(row[field.fieldname]).full_name"
+                        v-model="row[field.fieldname]"
+                        class="combobox w-full"
                         :doctype="field.options"
                         :filters="field.filters"
                         :placeholder="field.placeholder"
-                        :hideMe="true"
-                        @change="(v) => fieldChange(v, field, row)"
+                        @update:modelValue="(v) => fieldChange(v, field, row)"
                       >
-                        <template #prefix>
+                        <template #item-prefix="{ item }">
                           <UserAvatar
-                            class="mr-2"
-                            :user="row[field.fieldname]"
+                            class="mr-1"
+                            :user="item.value"
                             size="sm"
                           />
-                        </template>
-                        <template #item-prefix="{ option }">
-                          <UserAvatar
-                            class="mr-2"
-                            :user="option.value"
-                            size="sm"
-                          />
-                        </template>
-                        <template #item-label="{ option }">
-                          <Tooltip :text="option.value">
-                            <div class="cursor-pointer">
-                              {{ getUser(option.value).full_name }}
-                            </div>
-                          </Tooltip>
                         </template>
                       </Link>
                       <div
@@ -202,54 +188,56 @@
                       </div>
                       <TimePicker
                         v-else-if="field.fieldtype === 'Time'"
-                        :value="row[field.fieldname]"
+                        v-model="row[field.fieldname]"
                         variant="outline"
                         :format="getFormat('', '', false, true, false)"
-                        input-class="border-none text-sm text-ink-gray-8"
+                        :placeholder="field.placeholder"
                         @change="(v) => fieldChange(v, field, row)"
                       />
                       <DatePicker
                         v-else-if="field.fieldtype === 'Date'"
-                        :value="row[field.fieldname]"
+                        v-model="row[field.fieldname]"
                         variant="outline"
                         :format="getFormat('', '', true, false, false)"
-                        input-class="border-none text-sm text-ink-gray-8"
+                        :placeholder="field.placeholder"
                         @change="(v) => fieldChange(v, field, row)"
                       />
                       <DateTimePicker
                         v-else-if="field.fieldtype === 'Datetime'"
-                        :value="row[field.fieldname]"
+                        v-model="row[field.fieldname]"
                         variant="outline"
                         :format="getFormat('', '', true, true, false)"
-                        input-class="border-none text-sm text-ink-gray-8"
+                        :placeholder="field.placeholder"
                         @change="(v) => fieldChange(v, field, row)"
                       />
-                      <FormControl
+                      <Textarea
                         v-else-if="
                           ['Small Text', 'Text', 'Long Text', 'Code'].includes(
                             field.fieldtype,
                           )
                         "
-                        rows="1"
-                        type="textarea"
+                        v-model="row[field.fieldname]"
+                        class="resize-none"
+                        :rows="1"
                         variant="outline"
-                        :value="row[field.fieldname]"
+                        :placeholder="field.placeholder"
                         @change="fieldChange($event.target.value, field, row)"
                       />
-                      <FormControl
+                      <Select
                         v-else-if="field.fieldtype === 'Select'"
                         v-model="row[field.fieldname]"
-                        class="text-sm text-ink-gray-8"
-                        type="select"
+                        class="w-full text-sm text-ink-gray-8"
                         variant="outline"
                         :options="field.options"
+                        :placeholder="field.placeholder"
                         @update:modelValue="(e) => fieldChange(e, field, row)"
                       />
                       <Password
                         v-else-if="field.fieldtype === 'Password'"
+                        v-model="row[field.fieldname]"
                         variant="outline"
-                        :value="row[field.fieldname]"
                         :disabled="Boolean(field.read_only)"
+                        :placeholder="field.placeholder"
                         @change="fieldChange($event.target.value, field, row)"
                       />
                       <FormattedInput
@@ -259,6 +247,7 @@
                         variant="outline"
                         :value="row[field.fieldname] || '0'"
                         :disabled="Boolean(field.read_only)"
+                        :placeholder="field.placeholder"
                         @change="fieldChange($event.target.value, field, row)"
                       />
                       <FormattedInput
@@ -269,6 +258,7 @@
                         :value="getFloatWithPrecision(field.fieldname, row)"
                         :formattedValue="(row[field.fieldname] || '0') + '%'"
                         :disabled="Boolean(field.read_only)"
+                        :placeholder="field.placeholder"
                         @change="
                           fieldChange(flt($event.target.value), field, row)
                         "
@@ -281,6 +271,7 @@
                         :value="getFloatWithPrecision(field.fieldname, row)"
                         :formattedValue="row[field.fieldname]"
                         :disabled="Boolean(field.read_only)"
+                        :placeholder="field.placeholder"
                         @change="
                           fieldChange(flt($event.target.value), field, row)
                         "
@@ -295,6 +286,7 @@
                           getFormattedCurrency(field.fieldname, row, parentDoc)
                         "
                         :disabled="Boolean(field.read_only)"
+                        :placeholder="field.placeholder"
                         @change="
                           fieldChange(flt($event.target.value), field, row)
                         "
@@ -304,18 +296,19 @@
                         :value="row[field.fieldname]"
                         variant="outline"
                         :disabled="Boolean(field.read_only)"
+                        :placeholder="field.placeholder"
                         @change="(v) => fieldChange(v, field, row)"
                       />
                       <div
                         v-else-if="field.fieldtype === 'Rating'"
-                        class="flex h-full w-full items-center overflow-hidden [&_::-webkit-scrollbar]:h-0"
+                        class="flex h-full w-full items-center overflow-auto [&::-webkit-scrollbar]:h-0"
                       >
                         <RatingInput
-                          class="flex-nowrap overflow-x-auto px-2"
-                          :value="row[field.fieldname]"
+                          v-model="row[field.fieldname]"
+                          class="px-2"
                           :disabled="Boolean(field.read_only)"
                           :max="field.options || 5"
-                          @change="(v) => fieldChange(v, field, row)"
+                          @update:modelValue="(v) => fieldChange(v, field, row)"
                         />
                       </div>
                       <div
@@ -389,20 +382,21 @@
                       <Combobox
                         v-else-if="field.fieldtype === 'Autocomplete'"
                         v-model="row[field.fieldname]"
-                        class="combobox"
+                        class="combobox w-full"
                         variant="outline"
                         :options="getOptions(field.options)"
                         :placeholder="field.placeholder"
                         :disabled="Boolean(field.read_only)"
+                        :openOnClick="true"
                         @update:modelValue="(v) => fieldChange(v, field, row)"
                       />
-                      <FormControl
+                      <TextInput
                         v-else
                         v-model="row[field.fieldname]"
                         class="text-sm text-ink-gray-8"
-                        type="text"
                         variant="outline"
                         :options="field.options"
+                        :placeholder="field.placeholder"
                         @change="fieldChange($event.target.value, field, row)"
                       />
                     </template>
@@ -467,7 +461,6 @@
 </template>
 
 <script setup>
-import Password from '@/components/Controls/Password.vue'
 import DurationInput from '@/components/Controls/DurationInput.vue'
 import RatingInput from '@/components/Controls/RatingInput.vue'
 import AttachControl from '@/components/Controls/AttachControl.vue'
@@ -483,7 +476,6 @@ import GridFieldsEditorModal from '@/components/Controls/GridFieldsEditorModal.v
 import GridRowFieldsModal from '@/components/Controls/GridRowFieldsModal.vue'
 import GridRowModal from '@/components/Controls/GridRowModal.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
-import Link from '@/components/Controls/Link.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import {
   getRandom,
@@ -494,18 +486,22 @@ import {
 import { flt } from '@/utils/numberFormat.js'
 import { usersStore } from '@/stores/users'
 import { getMeta } from '@/stores/meta'
-import { parseLinkFilters } from '@/utils/fieldTransforms'
+import { parseLinkFilters, getPlaceholder } from '@/utils/fieldTransforms'
 import { createDocument } from '@/composables/document'
+import { useDoctypeModal } from '@/composables/doctypeModal'
 import {
-  FormControl,
   Checkbox,
   TimePicker,
   DateTimePicker,
   DatePicker,
-  Tooltip,
   dayjs,
   Combobox,
+  Password,
+  Textarea,
+  TextInput,
+  Select,
 } from 'frappe-ui'
+import { Link } from 'frappe-ui/frappe'
 import Draggable from 'vuedraggable'
 import { ref, reactive, computed, inject, provide } from 'vue'
 
@@ -578,6 +574,8 @@ const selectedRows = reactive(new Set())
 const showGridFieldsEditorModal = ref(false)
 const showGridRowFieldsModal = ref(false)
 
+const { showModal } = useDoctypeModal()
+
 const gridSettings = computed(() => getGridSettings())
 
 const fields = computed(() => {
@@ -600,7 +598,7 @@ const fields = computed(() => {
   }
 
   // Filter out hidden columns (from script overrides)
-  return processed.filter((f) => !f.hidden)
+  return processed.filter((f) => !f.hidden && f.name)
 })
 
 const allFields = computed(() => {
@@ -620,11 +618,19 @@ function getFieldObj(field) {
 
   if (field.fieldtype === 'Link' && field.options !== 'User') {
     if (!field.create) {
-      field.create = (value, field, row, close) => {
+      field.create = (value, field, row) => {
         const callback = (d) => {
           if (d) fieldChange(d.name, field, row)
         }
-        createDocument(field.options, value, close, callback)
+        createDocument(field.options, value, callback)
+      }
+    }
+    if (!field.redirect) {
+      field.redirect = (value) => {
+        showModal({
+          name: value,
+          doctype: field.options,
+        })
       }
     }
   }
@@ -641,7 +647,7 @@ function getFieldObj(field) {
   const fieldObjWithFilters = {
     ...field,
     filters: parseLinkFilters(field.link_filters),
-    placeholder: field.placeholder || field.label,
+    placeholder: getPlaceholder(field),
   }
 
   return {
@@ -815,7 +821,7 @@ const getOptions = (options) => {
 
 /* For Autocomplete, Link */
 :deep(.grid-row button:not(.button-control):not(.rating-star)),
-:deep(.grid-row .combobox > div > div) {
+:deep(.grid-row .combobox) {
   border: none;
   border-radius: 0;
   background-color: var(--surface-white);

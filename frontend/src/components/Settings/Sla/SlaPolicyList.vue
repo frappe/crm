@@ -28,7 +28,7 @@
         />
         <Button
           v-if="slaSearchQuery"
-          icon="x"
+          icon="lucide-x"
           variant="ghost"
           class="absolute right-1 top-1/2 -translate-y-1/2"
           @click="slaSearchQuery = ''"
@@ -95,7 +95,7 @@
                 <div>
                   <Dropdown placement="right" :options="dropdownOptions(sla)">
                     <Button
-                      icon="more-horizontal"
+                      icon="lucide-more-horizontal"
                       variant="ghost"
                       @click="isConfirmingDelete = false"
                     />
@@ -113,10 +113,9 @@
             >
               <template #body-content>
                 <div class="flex flex-col gap-4">
-                  <FormControl
+                  <TextInput
                     v-model="duplicateDialog.name"
                     :label="__('New SLA Policy Name')"
-                    type="text"
                     maxlength="100"
                   />
                 </div>
@@ -153,9 +152,9 @@ import {
   createResource,
   Dialog,
   Dropdown,
-  FormControl,
   LoadingIndicator,
   Switch,
+  TextInput,
   toast,
 } from 'frappe-ui'
 import { ConfirmDelete } from '@/utils'
@@ -187,7 +186,7 @@ const dropdownOptions = (sla) => [
         name: sla.name + ' (Copy)',
       }
     },
-    icon: 'copy',
+    icon: 'lucide-copy',
   },
   ...ConfirmDelete({
     onConfirmDelete: () => deleteSla(sla),

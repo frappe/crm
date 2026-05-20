@@ -10,7 +10,7 @@
         :options="[
           {
             label: __('Delete'),
-            icon: 'trash-2',
+            icon: 'lucide-trash-2',
             onClick: () => deleteNote(note.name),
           },
         ]"
@@ -18,7 +18,7 @@
         @click.stop
       >
         <Button
-          icon="more-horizontal"
+          icon="lucide-more-horizontal"
           variant="ghosted"
           class="!h-6 !w-6 hover:bg-surface-gray-2"
           @click.stop.prevent

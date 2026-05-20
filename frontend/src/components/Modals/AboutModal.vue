@@ -1,38 +1,36 @@
 <template>
-  <Dialog v-model="show" :options="{ size: 'sm' }">
-    <template #body>
-      <div class="p-4 pt-5">
-        <div class="flex justify-center">
-          <div class="flex flex-col items-center">
-            <CRMLogo class="mb-3 size-12" />
-            <h3 class="font-semibold text-xl text-ink-gray-9">Frappe CRM</h3>
-          </div>
+  <Dialog v-model:open="show" size="sm" bare>
+    <div class="p-4 pt-5">
+      <div class="flex justify-center">
+        <div class="flex flex-col items-center">
+          <CRMLogo class="mb-3 size-12" />
+          <h3 class="font-semibold text-xl text-ink-gray-9">Frappe CRM</h3>
         </div>
-        <hr class="border-t my-3 mx-2" />
-        <div>
-          <a
-            v-for="link in links"
-            :key="link.label"
-            class="flex py-2 px-2 hover:bg-surface-gray-1 rounded cursor-pointer"
-            target="_blank"
-            :href="link.url"
-          >
-            <component
-              :is="link.icon"
-              v-if="link.icon"
-              class="size-4 mr-2 text-ink-gray-7"
-            />
-            <span class="text-base text-ink-gray-8">
-              {{ link.label }}
-            </span>
-          </a>
-        </div>
-        <hr class="border-t my-3 mx-2" />
-        <p class="text-sm text-ink-gray-6 px-2 mt-2">
-          © Frappe Technologies Pvt. Ltd. and contributors
-        </p>
       </div>
-    </template>
+      <hr class="border-t my-3 mx-2" />
+      <div>
+        <a
+          v-for="link in links"
+          :key="link.label"
+          class="flex py-2 px-2 hover:bg-surface-gray-1 rounded cursor-pointer"
+          target="_blank"
+          :href="link.url"
+        >
+          <component
+            :is="link.icon"
+            v-if="link.icon"
+            class="size-4 mr-2 text-ink-gray-7"
+          />
+          <span class="text-base text-ink-gray-8">
+            {{ link.label }}
+          </span>
+        </a>
+      </div>
+      <hr class="border-t my-3 mx-2" />
+      <p class="text-sm text-ink-gray-6 px-2 mt-2">
+        © Frappe Technologies Pvt. Ltd. and contributors
+      </p>
+    </div>
   </Dialog>
 </template>
 <script setup>

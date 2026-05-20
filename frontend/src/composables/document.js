@@ -5,9 +5,8 @@ export const createDocumentDoctype = ref('')
 export const createDocumentData = ref({})
 export const createDocumentCallback = ref(null)
 
-export function createDocument(doctype, obj, close, callback) {
+export function createDocument(doctype, obj, callback) {
   if (doctype) {
-    close?.()
     createDocumentDoctype.value = doctype
     createDocumentData.value = obj || {}
     createDocumentCallback.value = callback || null
