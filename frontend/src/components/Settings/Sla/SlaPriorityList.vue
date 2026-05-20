@@ -119,14 +119,13 @@ import {
   ErrorMessage,
   toast,
 } from 'frappe-ui'
-import { slaData, slaDataErrors, validateSlaData } from './utils'
+import { slaActiveStep, slaData, slaDataErrors, validateSlaData } from './utils'
 import { ConfirmDelete, getGridTemplateColumnsForTable } from '../../../utils'
-import { computed, inject, provide, reactive, ref } from 'vue'
+import { computed, provide, reactive, ref } from 'vue'
 import EditResponseResolutionModal from './EditResponseResolutionModal.vue'
 import DurationInput from '../../Controls/DurationInput.vue'
 import { watchDebounced } from '@vueuse/core'
 
-const step = inject('step')
 const isConfirmingDelete = ref(false)
 const dialog = ref(false)
 const priorityData = ref({
@@ -154,7 +153,7 @@ createResource({
         }
       }),
     )
-    if (!step.value.data) {
+    if (!slaActiveStep.value.data) {
       slaData.value.priorities = priorityOptions.map((p, index) => {
         return {
           priority: p.value,

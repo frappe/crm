@@ -16,7 +16,8 @@
   "add_to_holidays",
   "holidays_section",
   "holidays",
-  "clear_table"
+  "clear_table",
+  "recurring_holidays"
  ],
  "fields": [
   {
@@ -83,6 +84,12 @@
    "fieldtype": "Table",
    "label": "Holidays",
    "options": "CRM Holiday"
+  },
+  {
+   "fieldname": "recurring_holidays",
+   "fieldtype": "JSON",
+   "hidden": 1,
+   "label": "Recurring holidays"
   }
  ],
  "index_web_pages_for_search": 1,
