@@ -33,7 +33,7 @@ USER_FIELDS = [
 
 
 @frappe.whitelist()
-def get_users(include_all=False):
+def get_users(include_all: bool = False):
 	"""Return (users, crm_users) for the CRM frontend.
 
 	By default (`include_all=False`) the User query is filtered at SQL level
@@ -135,7 +135,7 @@ def get_users(include_all=False):
 
 
 @frappe.whitelist()
-def get_user_info(users):
+def get_user_info(users: str | list):
 	"""Resolve display info for a batch of User names.
 
 	Used by the frontend to fill in name/avatar info for non-CRM users
