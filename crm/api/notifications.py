@@ -15,6 +15,9 @@ def get_notifications():
 
 	_notifications = []
 	for notification in notifications:
+		reference_doctype, route_name = _get_reference_route(
+			notification.reference_doctype, notification.type
+		)
 		_notifications.append(
 			{
 				"creation": notification.creation,
@@ -29,13 +32,25 @@ def get_notifications():
 				"notification_text": notification.notification_text,
 				"notification_type_doctype": notification.notification_type_doctype,
 				"notification_type_doc": notification.notification_type_doc,
-				"reference_doctype": ("deal" if notification.reference_doctype == "CRM Deal" else "lead"),
+				"reference_doctype": reference_doctype,
 				"reference_name": notification.reference_name,
-				"route_name": ("Deal" if notification.reference_doctype == "CRM Deal" else "Lead"),
+				"route_name": route_name,
 			}
 		)
 
 	return _notifications
+
+
+def _get_reference_route(reference_doctype, notification_type):
+	"""Map a reference doctype to its frontend route identifier."""
+	if notification_type == "Task":
+		return ("task", "Task")
+	route_map = {
+		"CRM Deal": ("deal", "Deal"),
+		"CRM Lead": ("lead", "Lead"),
+		"CRM Task": ("task", "Task"),
+	}
+	return route_map.get(reference_doctype, ("lead", "Lead"))
 
 
 @frappe.whitelist()
@@ -62,8 +77,12 @@ def get_hash(notification):
 	if notification.type == "WhatsApp":
 		_hash = "#whatsapp"
 
-	if notification.type == "Assignment" and notification.notification_type_doctype == "CRM Task":
-		_hash = "#tasks"
-		if "has been removed by" in notification.message:
+	if notification.notification_type_doctype == "CRM Task":
+		if notification.type == "Assignment":
+			_hash = "#tasks"
+			if "has been removed by" in notification.message:
+				_hash = ""
+		elif notification.type == "Task":
 			_hash = ""
+
 	return _hash
