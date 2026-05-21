@@ -21,30 +21,42 @@ def _permission_query_conditions(user: str | None, doctype: str):
 	if user == "Administrator":
 		return ""
 
-	if not hierarchy_enabled():
+	roles = frappe.get_roles(user)
+	if "System Manager" in roles:
 		return ""
 
-	if "Sales Manager" in frappe.get_roles(user) and not _in_hierarchy(user):
+	in_tree = hierarchy_enabled() and _in_hierarchy(user)
+
+	# Sales Manager outside the tree retains the default ie sees everything
+	if "Sales Manager" in roles and not in_tree:
 		return ""
 
 	owner_field = _OWNER_FIELD[doctype]
 	DT = frappe.qb.DocType(doctype)
 	Todo = frappe.qb.DocType("ToDo").as_("_todo")
 
-	# Q1: owner is the user themselves or any member of their subtree
-	q1 = (DT[owner_field] == user) | DT[owner_field].isin(_team_mem_query(user))
+	if in_tree:
+		# Owner is the user themselves or any member of their subtree
+		q1 = (DT[owner_field] == user) | DT[owner_field].isin(_team_mem_query(user))
+		# Assigned to the user or any member of their subtree by ToDo
+		q2 = DT.name.isin(
+			frappe.qb.from_(Todo)
+			.select(Todo.reference_name)
+			.where(
+				(Todo.reference_type == doctype)
+				& (Todo.status != "Cancelled")
+				& ((Todo.allocated_to == user) | (Todo.allocated_to.isin(_team_mem_query(user))))
+			)
+		)
+		return q1 | q2
 
-	# Q2: doc is assigned to the user or any member of their subtree (via ToDo)
+	# Sales User default: own records and records directly assigned to them
+	q1 = DT[owner_field] == user
 	q2 = DT.name.isin(
 		frappe.qb.from_(Todo)
 		.select(Todo.reference_name)
-		.where(
-			(Todo.reference_type == doctype)
-			& (Todo.status != "Cancelled")
-			& ((Todo.allocated_to == user) | (Todo.allocated_to.isin(_team_mem_query(user))))
-		)
+		.where((Todo.reference_type == doctype) & (Todo.status != "Cancelled") & (Todo.allocated_to == user))
 	)
-
 	return q1 | q2
 
 
@@ -65,10 +77,12 @@ def _has_permission(doc, ptype, user, doctype: str) -> bool | None:
 	if user == "Administrator":
 		return True
 
-	if not hierarchy_enabled():
+	roles = frappe.get_roles(user)
+	if "System Manager" in roles:
 		return True
 
-	if "Sales Manager" in frappe.get_roles(user) and not _in_hierarchy(user):
+	in_tree = hierarchy_enabled() and _in_hierarchy(user)
+	if "Sales Manager" in roles and not in_tree:
 		return True
 
 	conditions = _permission_query_conditions(user, doctype)
