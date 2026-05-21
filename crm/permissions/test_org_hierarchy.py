@@ -131,23 +131,29 @@ class TestOrgHierarchy(IntegrationTestCase):
 	# Hierarchy disabled
 	# ------------------------------------------------------------------
 
-	def test_hierarchy_disabled_allows_outsider_to_read_any_lead(self):
+	def test_hierarchy_disabled_sales_user_still_restricted_to_own(self):
 		settings = frappe.get_single("FCRM Settings")
 		settings.enable_sales_hierarchy = 0
 		settings.save(ignore_permissions=True)
 		try:
 			lead = make_lead("rep1@hier.test")
-			self.assertTrue(has_lead_permission(lead, "read", "outsider@hier.test"))
+			# Sales User default: cannot read another user's lead even when feature is off
+			self.assertFalse(has_lead_permission(lead, "read", "outsider@hier.test"))
+			# Sales Manager default: sees everything when feature is off
+			self.assertTrue(has_lead_permission(lead, "read", "manager@hier.test"))
 		finally:
 			settings.enable_sales_hierarchy = 1
 			settings.save(ignore_permissions=True)
 
-	def test_query_conditions_empty_when_hierarchy_disabled(self):
+	def test_query_conditions_when_hierarchy_disabled(self):
 		settings = frappe.get_single("FCRM Settings")
 		settings.enable_sales_hierarchy = 0
 		settings.save(ignore_permissions=True)
 		try:
-			self.assertFalse(get_lead_permission_query_conditions("rep1@hier.test"))
+			# Sales User still gets a filter (own + assigned)
+			self.assertTrue(get_lead_permission_query_conditions("rep1@hier.test"))
+			# Sales Manager has no filter (sees everything)
+			self.assertFalse(get_lead_permission_query_conditions("manager@hier.test"))
 		finally:
 			settings.enable_sales_hierarchy = 1
 			settings.save(ignore_permissions=True)
