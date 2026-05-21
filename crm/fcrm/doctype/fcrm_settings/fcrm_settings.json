@@ -29,7 +29,8 @@
   "event_notifications",
   "all_day_event_notifications",
   "dropdown_items_tab",
-  "dropdown_items"
+  "dropdown_items",
+  "show_sales_hierarchy_banner"
  ],
  "fields": [
   {
@@ -178,6 +179,14 @@
    "fieldname": "restore_demo_data",
    "fieldtype": "Button",
    "label": "Restore Demo Data"
+  },
+  {
+   "default": "0",
+   "fieldname": "show_sales_hierarchy_banner",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "Show Sales Hierarchy Banner",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
