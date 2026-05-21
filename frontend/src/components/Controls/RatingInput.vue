@@ -4,9 +4,6 @@
     :max="starCount"
     :step="0.5"
     :readonly="disabled"
-    allow-clear
-    show-value-tooltip
-    :placement="placement"
     v-bind="$attrs"
     @update:modelValue="emit('update:modelValue', $event / starCount)"
   />
@@ -20,7 +17,6 @@ const props = defineProps({
   modelValue: { type: Number, default: 0 },
   max: { type: [Number, String], default: 5 },
   disabled: { type: Boolean, default: false },
-  placement: { type: String, default: 'right' },
 })
 
 const emit = defineEmits(['update:modelValue'])
