@@ -1,0 +1,155 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-04-16 00:00:00",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "enabled",
+  "column_break_1",
+  "record_call",
+  "section_break_1",
+  "host",
+  "ws_port",
+  "wss_port",
+  "webrtc_ice_section",
+  "stun_server_url",
+  "turn_server_url",
+  "column_break_ice",
+  "turn_username",
+  "turn_password",
+  "flask_application_details_section",
+  "flask_application_url",
+  "flask_application_auth_token"
+ ],
+ "fields": [
+  {
+   "default": "0",
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "label": "Enabled"
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "depends_on": "enabled",
+   "fieldname": "record_call",
+   "fieldtype": "Check",
+   "label": "Record Outgoing Calls"
+  },
+  {
+   "fieldname": "section_break_1",
+   "fieldtype": "Section Break",
+   "hide_border": 1
+  },
+  {
+   "depends_on": "enabled",
+   "fieldname": "host",
+   "fieldtype": "Data",
+   "label": "FreePBX Host / IP",
+   "mandatory_depends_on": "enabled"
+  },
+  {
+   "default": "8088",
+   "depends_on": "enabled",
+   "fieldname": "ws_port",
+   "fieldtype": "Int",
+   "label": "WebSocket Port (WS, for HTTP)"
+  },
+  {
+   "default": "8089",
+   "depends_on": "enabled",
+   "fieldname": "wss_port",
+   "fieldtype": "Int",
+   "label": "WebSocket Port (WSS, for HTTPS)"
+  },
+  {
+   "depends_on": "enabled",
+   "fieldname": "webrtc_ice_section",
+   "fieldtype": "Section Break",
+   "label": "WebRTC ICE Servers (STUN/TURN)"
+  },
+  {
+   "depends_on": "enabled",
+   "description": "e.g. stun:freepbx.example.com:3478",
+   "fieldname": "stun_server_url",
+   "fieldtype": "Data",
+   "label": "STUN Server URL"
+  },
+  {
+   "depends_on": "enabled",
+   "description": "e.g. turn:freepbx.example.com:3478 — required for mobile clients behind symmetric NAT",
+   "fieldname": "turn_server_url",
+   "fieldtype": "Data",
+   "label": "TURN Server URL"
+  },
+  {
+   "fieldname": "column_break_ice",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:doc.enabled && doc.turn_server_url",
+   "fieldname": "turn_username",
+   "fieldtype": "Data",
+   "label": "TURN Username"
+  },
+  {
+   "depends_on": "eval:doc.enabled && doc.turn_server_url",
+   "fieldname": "turn_password",
+   "fieldtype": "Password",
+   "label": "TURN Password"
+  },
+  {
+   "fieldname": "flask_application_details_section",
+   "fieldtype": "Section Break",
+   "label": "Flask Application Details"
+  },
+  {
+   "fieldname": "flask_application_url",
+   "fieldtype": "Data",
+   "label": "Flask Application URL"
+  },
+  {
+   "fieldname": "flask_application_auth_token",
+   "fieldtype": "Data",
+   "label": "Flask Application Auth Token"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2026-05-18 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "FCRM",
+ "name": "CRM FreePBX Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "Sales Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

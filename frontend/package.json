@@ -21,6 +21,7 @@
     "dompurify": "^3.3.3",
     "frappe-ui": "0.1.261",
     "gemoji": "^8.1.0",
+    "jssip": "^3.13.6",
     "leaflet": "^1.9.4",
     "leaflet-draw": "^1.0.4",
     "leaflet.locatecontrol": "^0.89.0",

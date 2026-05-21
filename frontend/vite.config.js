@@ -65,6 +65,7 @@ export default defineConfig(async ({ mode }) => {
         'prosemirror-view',
         'lowlight',
         'interactjs',
+        'jssip',
       ],
     },
     server: {

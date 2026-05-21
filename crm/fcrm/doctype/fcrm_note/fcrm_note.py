@@ -30,5 +30,10 @@ class FCRMNote(Document):
 			"reference_docname",
 			"owner",
 			"modified",
+            "custom_file",
+            "custom_address",   
+            "custom_latitude",   
+            "custom_longitude",
+            "custom_accuracy"
 		]
 		return {"columns": [], "rows": rows}

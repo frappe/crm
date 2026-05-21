@@ -1,6 +1,7 @@
 <template>
   <TwilioCallUI ref="twilio" />
   <ExotelCallUI ref="exotel" />
+  <FreePBXCallUI ref="freepbx" />
   <Dialog
     v-model="show"
     :options="{
@@ -25,7 +26,7 @@
           v-model="callMedium"
           type="select"
           :label="__('Calling Medium')"
-          :options="['Twilio', 'Exotel']"
+          :options="availableMediums"
         />
         <div class="flex flex-col gap-1">
           <FormControl
@@ -57,6 +58,7 @@ const { isEnabled, isAnyEnabled } = useTelephony()
 
 const twilio = ref(null)
 const exotel = ref(null)
+const freepbx = ref(null)
 
 const callMedium = ref('Twilio')
 const isDefaultMedium = ref(false)
@@ -68,6 +70,7 @@ const enabledIntegrations = computed(() =>
   [
     { key: 'twilio', label: 'Twilio', ref: twilio },
     { key: 'exotel', label: 'Exotel', ref: exotel },
+    { key: 'freepbx', label: 'FreePBX', ref: freepbx },
   ].filter(({ key }) => isEnabled(key)),
 )
 
@@ -94,10 +97,10 @@ function makeCallUsing() {
 
   if (callMedium.value === 'Twilio') {
     twilio.value.makeOutgoingCall(mobileNumber.value)
-  }
-
-  if (callMedium.value === 'Exotel') {
+  } else if (callMedium.value === 'Exotel') {
     exotel.value.makeOutgoingCall(mobileNumber.value)
+  } else if (callMedium.value === 'FreePBX') {
+    freepbx.value.makeOutgoingCall(mobileNumber.value)
   }
   show.value = false
 }
