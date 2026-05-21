@@ -101,7 +101,7 @@
             class="group-hover:grid group-focus:grid group-focus-within:grid hidden size-4 place-items-center rounded-sm text-ink-gray-5 hover:bg-surface-gray-3 hover:text-ink-gray-7 focus:outline-none focus-visible:ring-2 focus-visible:ring-outline-gray-3"
             @click.stop="
               () => {
-                doc[field.fieldname] = null
+                data[field.fieldname] = null
                 fieldChange(null, field)
               }
             "
