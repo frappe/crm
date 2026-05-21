@@ -147,6 +147,11 @@ def remove_crm_roles_from_user(user: str):
 		remove_roles(user_doc, "Sales Manager")
 
 	user_doc.save(ignore_permissions=True)
+
+	node_name = frappe.db.get_value("CRM Sales Hierarchy", {"user": user}, "name")
+	if node_name:
+		frappe.delete_doc("CRM Sales Hierarchy", node_name, ignore_permissions=True)
+
 	frappe.msgprint(_("User {0} has been removed from CRM roles.").format(user))
 
 
