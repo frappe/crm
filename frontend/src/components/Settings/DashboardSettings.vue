@@ -87,7 +87,8 @@
             :value="settings.doc?.currency"
             doctype="Currency"
             :placeholder="__('Select Currency')"
-            placement="bottom-end"
+            side="bottom"
+            align="end"
             @change="(v) => setCurrency(v)"
           />
         </div>
