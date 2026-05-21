@@ -140,7 +140,6 @@ def remove_crm_roles_from_user(user: str):
 		remove_roles(user_doc, "System Manager")
 		update_module_in_user(user_doc, "FCRM")
 
-
 	user_doc.save(ignore_permissions=True)
 	frappe.msgprint(_("User {0} has been removed from CRM roles.").format(user))
 
