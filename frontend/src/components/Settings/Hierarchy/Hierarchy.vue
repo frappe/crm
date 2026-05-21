@@ -62,11 +62,7 @@
             {{ __('Enable Sales Hierarchy') }}
           </span>
           <span class="text-center text-p-base text-ink-gray-6">
-            {{
-              __(
-                'Restrict visibility using a reporting tree. Managers can see records owned by their team.',
-              )
-            }}
+            {{ __('Restrict visibility using a reporting tree') }}
           </span>
           <Button
             variant="solid"
