@@ -83,7 +83,8 @@
                   <Link
                     v-model="contactToAdd"
                     doctype="Contact"
-                    :allowCreate="true"
+                    align="end"
+                    creatable
                     @create="
                       (value, close) => {
                         _contact = {

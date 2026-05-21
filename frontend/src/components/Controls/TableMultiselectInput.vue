@@ -28,7 +28,7 @@
           class="form-control flex-1 truncate cursor-text"
           :filters="filters"
           :doctype="linkField.options"
-          :allowCreate="true"
+          creatable
           @update:modelValue="(v) => addValue(v)"
           @update:query="(v) => (query = v)"
           @create="create"

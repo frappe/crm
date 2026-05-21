@@ -140,6 +140,7 @@
                         doctype="User"
                         :filters="field.filters"
                         :placeholder="field.placeholder"
+                        align="end"
                         @update:modelValue="(v) => fieldChange(v, field)"
                       >
                         <template #item-prefix="{ item }">
@@ -161,14 +162,42 @@
                             ? field.options
                             : doc[field.options]
                         "
+                        align="end"
                         :filters="field.filters"
                         :placeholder="field.placeholder"
-                        :allowCreate="true"
-                        :allowRedirect="true"
+                        creatable
                         @create="field.create"
-                        @redirect="field.redirect"
                         @update:modelValue="(v) => fieldChange(v, field)"
-                      />
+                      >
+                        <template #suffix="{ selectedOption }">
+                          <button
+                            v-if="selectedOption"
+                            type="button"
+                            aria-label="Clear"
+                            data-slot="clear"
+                            class="group-hover:grid group-focus:grid group-focus-within:grid hidden size-4 place-items-center rounded-sm text-ink-gray-5 hover:bg-surface-gray-3 hover:text-ink-gray-7 focus:outline-none focus-visible:ring-2 focus-visible:ring-outline-gray-3"
+                            @click.stop="
+                              () => {
+                                doc[field.fieldname] = null
+                                fieldChange(null, field)
+                              }
+                            "
+                            @pointerdown.stop
+                          >
+                            <span class="lucide-x size-3.5" />
+                          </button>
+                          <button
+                            v-if="selectedOption"
+                            type="button"
+                            aria-label="Open record"
+                            class="group-hover:grid group-focus:grid group-focus-within:grid hidden size-4 place-items-center rounded-sm text-ink-gray-5 hover:bg-surface-gray-3 hover:text-ink-gray-7 focus:outline-none focus-visible:ring-2 focus-visible:ring-outline-gray-3"
+                            @pointerdown.stop
+                            @click.stop="field.redirect(selectedOption.value)"
+                          >
+                            <span class="lucide-arrow-up-right size-3.5" />
+                          </button>
+                        </template>
+                      </Link>
                       <div
                         v-else-if="field.fieldtype === 'Time'"
                         class="form-control w-full"

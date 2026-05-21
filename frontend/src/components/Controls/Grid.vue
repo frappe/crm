@@ -150,12 +150,39 @@
                         "
                         :filters="field.filters"
                         :placeholder="field.placeholder"
-                        :allowCreate="true"
-                        :allowRedirect="true"
+                        creatable
                         @create="(v) => field.create(v, field, row)"
-                        @redirect="field.redirect"
                         @update:modelValue="(v) => fieldChange(v, field, row)"
-                      />
+                      >
+                        <template #suffix="{ selectedOption }">
+                          <button
+                            v-if="selectedOption"
+                            type="button"
+                            aria-label="Clear"
+                            data-slot="clear"
+                            class="group-hover:grid group-focus:grid group-focus-within:grid hidden size-4 place-items-center rounded-sm text-ink-gray-5 hover:bg-surface-gray-3 hover:text-ink-gray-7 focus:outline-none focus-visible:ring-2 focus-visible:ring-outline-gray-3"
+                            @click.stop="
+                              () => {
+                                row[field.fieldname] = null
+                                fieldChange(null, field, row)
+                              }
+                            "
+                            @pointerdown.stop
+                          >
+                            <span class="lucide-x size-3.5" />
+                          </button>
+                          <button
+                            v-if="selectedOption"
+                            type="button"
+                            aria-label="Open record"
+                            class="group-hover:grid group-focus:grid group-focus-within:grid hidden size-4 place-items-center rounded-sm text-ink-gray-5 hover:bg-surface-gray-3 hover:text-ink-gray-7 focus:outline-none focus-visible:ring-2 focus-visible:ring-outline-gray-3"
+                            @pointerdown.stop
+                            @click.stop="field.redirect(selectedOption.value)"
+                          >
+                            <span class="lucide-arrow-up-right size-3.5" />
+                          </button>
+                        </template>
+                      </Link>
                       <Link
                         v-else-if="field.fieldtype === 'User'"
                         v-model="row[field.fieldname]"

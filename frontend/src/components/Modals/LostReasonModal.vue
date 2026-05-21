@@ -19,7 +19,7 @@
           class="w-full"
           doctype="CRM Lost Reason"
           :placeholder="__('Select lost reason')"
-          :allowCreate="true"
+          creatable
           @create="onCreate"
         />
       </div>

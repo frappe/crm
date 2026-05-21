@@ -19,7 +19,7 @@
     class="w-full"
     :doctype="filter.options"
     :placeholder="filter.label"
-    :allowCreate="true"
+    creatable
     @update:modelValue="(data) => updateFilter(filter, data)"
   />
   <component
