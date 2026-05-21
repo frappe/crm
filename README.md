@@ -4,7 +4,7 @@
     <img src=".github/logo.svg" height="80" alt="Frappe CRM Logo">
 </a>
 
-<h1>Frappe CRM</h1>
+<h1>**Frappe CRM**</h1>
 
 **Simplify Sales, Amplify Relationships**
 
