@@ -45,9 +45,7 @@ def get_boot():
 			"is_demo_site": frappe.conf.get("is_demo_site"),
 			"demo_data_created": frappe.db.get_default("crm_demo_data_created") == "1",
 			"is_fc_site": is_fc_site(),
-			"show_sales_hierarchy_banner": cint(
-				frappe.db.get_single_value("FCRM Settings", "show_sales_hierarchy_banner")
-			),
+			"show_sales_hierarchy_banner": frappe.db.count("CRM Lead") > 0,
 			"translated_doctypes": get_translated_doctypes(),
 			"translated_messages": get_messages_for_boot(),
 			"timezone": {
