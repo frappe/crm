@@ -6,7 +6,7 @@
     <div class="flex items-start justify-between gap-2">
       <div class="inline-flex text-ink-gray-9 gap-2 items-center font-medium">
         <FeatherIcon class="h-4" name="info" />
-        {{ __('Sales Hierarchy') }}
+        {{ __('Permissions update') }}
       </div>
       <button
         class="text-ink-gray-7 hover:text-ink-gray-8"
@@ -17,7 +17,7 @@
       </button>
     </div>
     <div class="text-ink-gray-7 text-p-sm">
-      {{ __('TODO: Write a short message') }}
+      {{ __('We are changing how permissions work in Frappe CRM') }}
     </div>
     <Button :label="__('Learn more')" @click="openBlog">
       <template #suffix>
@@ -43,7 +43,8 @@ defineProps({
   },
 })
 
-const BLOG_URL = ''
+const BLOG_URL =
+  'https://frappe.io/blog/frappe-crm/understanding-permissions-in-frappe-crm'
 
 const { isManager } = usersStore()
 const dismissed = useStorage('salesHierarchyBannerDismissed', false)
