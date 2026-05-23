@@ -9,7 +9,7 @@ export function getCallLogDetail(row, log, columns = []) {
 
   if (row === 'duration') {
     return {
-      label: log.duration,
+      label: log._duration,
       icon: 'clock',
     }
   } else if (row === 'caller') {
