@@ -6,12 +6,12 @@
   >
     <div
       class="mb-1 ml-13 flex-1 cursor-pointer rounded border-0 border-l-4 border-green-500 bg-surface-gray-2 p-2 text-base text-ink-gray-5"
-      :class="reply.type == 'Incoming' ? 'border-green-500' : 'border-blue-400'"
+      :class="reply.direction == 'Incoming' ? 'border-green-500' : 'border-blue-400'"
     >
       <div
         class="mb-1 text-sm font-bold"
         :class="
-          reply.type == 'Incoming' ? 'text-ink-green-2' : 'text-ink-blue-link'
+          reply.direction == 'Incoming' ? 'text-ink-green-2' : 'text-ink-blue-link'
         "
       >
         {{ reply.from_name || __('You') }}

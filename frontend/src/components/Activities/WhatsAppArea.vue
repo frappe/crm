@@ -6,7 +6,7 @@
       :key="whatsapp.name"
       class="activity group flex gap-2"
       :class="[
-        whatsapp.type == 'Outgoing' ? 'flex-row-reverse' : '',
+        whatsapp.direction == 'Outgoing' ? 'flex-row-reverse' : '',
         whatsapp.reaction ? 'mb-7' : 'mb-3',
       ]"
     >
@@ -24,18 +24,18 @@
           v-if="whatsapp.is_reply"
           class="mb-1 cursor-pointer rounded border-0 border-l-4 bg-surface-gray-3 p-2 text-ink-gray-5"
           :class="
-            whatsapp.reply_to_type == 'Incoming'
-              ? 'border-green-500'
-              : 'border-blue-400'
-          "
-          @click="() => scrollToMessage(whatsapp.reply_to)"
-        >
-          <div
-            class="mb-1 text-sm font-bold"
-            :class="
-              whatsapp.reply_to_type == 'Incoming'
-                ? 'text-ink-green-2'
-                : 'text-ink-blue-link'
+        whatsapp.reply_to_direction == 'Incoming'
+          ? 'border-green-500'
+          : 'border-blue-400'
+        "
+        @click="() => scrollToMessage(whatsapp.reply_to)"
+      >
+        <div
+          class="mb-1 text-sm font-bold"
+          :class="
+            whatsapp.reply_to_direction == 'Incoming'
+              ? 'text-ink-green-2'
+              : 'text-ink-blue-link'
             "
           >
             {{ whatsapp.reply_to_from || __('You') }}
@@ -84,11 +84,7 @@
             </div>
           </div>
           <div
-            v-else-if="whatsapp.content_type == 'text'"
-            v-html="formatWhatsAppMessage(whatsapp.message)"
-          />
-          <div
-            v-else-if="whatsapp.content_type == 'button'"
+            v-else-if="whatsapp.content_type == 'text' || whatsapp.content_type == 'button'"
             v-html="formatWhatsAppMessage(whatsapp.message)"
           />
           <div v-else-if="whatsapp.content_type == 'image'">
@@ -140,7 +136,7 @@
                 {{ formatDate(whatsapp.creation, 'hh:mm a') }}
               </div>
             </Tooltip>
-            <div v-if="whatsapp.type == 'Outgoing'">
+            <div v-if="whatsapp.direction == 'Outgoing'">
               <CheckIcon
                 v-if="['sent', 'Success'].includes(whatsapp.status)"
                 class="size-4"

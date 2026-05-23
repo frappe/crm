@@ -18,7 +18,7 @@ class TestWhatsAppHooks(FrappeTestCase):
 	def test_validate_sets_reference_when_contact_found(self):
 		"""validate() links the doc when a matching Contact/Lead is found"""
 		doc = MagicMock()
-		doc.type = "Incoming"
+		doc.direction = "Incoming"
 		doc.get.return_value = "+15551234567"
 
 		with patch(
@@ -28,15 +28,15 @@ class TestWhatsAppHooks(FrappeTestCase):
 			validate(doc, None)
 
 		self.assertEqual(doc.reference_doctype, "CRM Lead")
-		self.assertEqual(doc.reference_name, "LEAD-0001")
+		self.assertEqual(doc.reference_docname, "LEAD-0001")
 
 	def test_validate_skips_reference_when_no_contact_found(self):
 		"""validate() leaves reference fields untouched when number is unknown"""
 		doc = MagicMock()
-		doc.type = "Incoming"
+		doc.direction = "Incoming"
 		doc.get.return_value = "+15559999999"
 		doc.reference_doctype = None
-		doc.reference_name = None
+		doc.reference_docname = None
 
 		with patch(
 			"crm.api.whatsapp.get_contact_lead_or_deal_from_number",
@@ -45,12 +45,12 @@ class TestWhatsAppHooks(FrappeTestCase):
 			validate(doc, None)
 
 		self.assertIsNone(doc.reference_doctype)
-		self.assertIsNone(doc.reference_name)
+		self.assertIsNone(doc.reference_docname)
 
 	def test_validate_logs_error_on_exception(self):
 		"""validate() catches lookup exceptions and logs them instead of raising"""
 		doc = MagicMock()
-		doc.type = "Incoming"
+		doc.direction = "Incoming"
 		doc.get.return_value = "invalid-number"
 
 		with (
@@ -67,11 +67,11 @@ class TestWhatsAppHooks(FrappeTestCase):
 	# --- notify_agent() ---
 
 	def test_notify_agent_returns_early_when_no_reference(self):
-		"""notify_agent() skips notification when reference_doctype and reference_name are absent"""
+		"""notify_agent() skips notification when reference_doctype and reference_docname are absent"""
 		doc = MagicMock()
-		doc.type = "Incoming"
+		doc.direction = "Incoming"
 		doc.reference_doctype = None
-		doc.reference_name = None
+		doc.reference_docname = None
 
 		with patch("crm.api.whatsapp.get_assigned_users") as mock_users:
 			notify_agent(doc)  # must not raise
@@ -81,9 +81,9 @@ class TestWhatsAppHooks(FrappeTestCase):
 	def test_notify_agent_returns_early_when_reference_doctype_missing(self):
 		"""notify_agent() skips notification when only reference_doctype is absent"""
 		doc = MagicMock()
-		doc.type = "Incoming"
+		doc.direction = "Incoming"
 		doc.reference_doctype = ""
-		doc.reference_name = "LEAD-0001"
+		doc.reference_docname = "LEAD-0001"
 
 		with patch("crm.api.whatsapp.get_assigned_users") as mock_users:
 			notify_agent(doc)

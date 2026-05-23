@@ -28,8 +28,8 @@
             {{ template.name }}
           </div>
           <TextEditor
-            v-if="template.template"
-            :content="template.template"
+            v-if="template.message"
+            :content="template.message"
             :editable="false"
             editor-class="!prose-sm max-w-none !text-sm text-ink-gray-5 focus:outline-none"
             class="flex-1 overflow-hidden"
@@ -69,10 +69,10 @@ const search = ref('')
 
 const templates = createListResource({
   type: 'list',
-  doctype: 'WhatsApp Templates',
+  doctype: 'Whatsapp Template',
   cache: ['whatsappTemplates'],
-  fields: ['name', 'template', 'footer'],
-  filters: { status: 'APPROVED', for_doctype: ['in', [props.doctype, '']] },
+  fields: ['name', 'message', 'footer'],
+  filters: { status: 'APPROVED', reference_doctype: ['in', [props.doctype, '']] },
   orderBy: 'modified desc',
   pageLength: 99999,
 })
@@ -93,7 +93,7 @@ const filteredTemplates = computed(() => {
 
 function newWhatsappTemplate() {
   show.value = false
-  window.open('/app/whatsapp-templates/new')
+  window.open('/app/whatsapp-template/new')
 }
 
 watch(show, (value) => value && nextTick(() => searchInput.value?.el?.focus()))

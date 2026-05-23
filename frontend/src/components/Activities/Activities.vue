@@ -575,7 +575,7 @@ onMounted(() => {
   $socket.on('whatsapp_message', (data) => {
     if (
       data.reference_doctype === props.doctype &&
-      data.reference_name === props.docname
+      data.reference_docname === props.docname
     ) {
       whatsappMessages.reload()
     }
