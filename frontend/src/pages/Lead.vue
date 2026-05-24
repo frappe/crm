@@ -251,6 +251,7 @@ import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import CameraIcon from '@/components/Icons/CameraIcon.vue'
 import LinkIcon from '@/components/Icons/LinkIcon.vue'
 import AttachmentIcon from '@/components/Icons/AttachmentIcon.vue'
+import CheckCircleIcon from '@/components/Icons/CheckCircleIcon.vue'
 import LostReasonModal from '@/components/Modals/LostReasonModal.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import Activities from '@/components/Activities/Activities.vue'
@@ -454,6 +455,11 @@ const tabs = computed(() => {
       icon: AttachmentIcon,
     },
     {
+      name: 'Evaluation',
+      label: __('Evaluation'),
+      icon: CheckCircleIcon,
+    },
+    {
       name: 'WhatsApp',
       label: __('WhatsApp'),
       icon: WhatsAppIcon,
@@ -555,6 +561,10 @@ function reloadResources(data) {
     Object.hasOwn(data ?? {}, 'status') &&
     getLeadStatus(data.status).type != 'Lost'
   ) {
+    sections.reload()
+  }
+  if (Object.hasOwn(data ?? {}, 'custom_submission')) {
+    doc.value.custom_submission = data.custom_submission
     sections.reload()
   }
 }

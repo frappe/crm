@@ -1,5 +1,6 @@
 <template>
   <ActivityHeader
+    v-if="title !== 'Evaluation'"
     v-model="tabIndex"
     v-model:showWhatsappTemplates="showWhatsappTemplates"
     v-model:showFilesUploader="showFilesUploader"
@@ -391,6 +392,13 @@
         @afterSave="(data) => emit('afterSave', data)"
       />
     </div>
+    <div v-else-if="title == 'Evaluation'" class="h-full overflow-y-auto">
+      <EvaluationTab
+        :docname="docname"
+        :doc="doc"
+        @updateField="(field, value) => emit('afterSave', { [field]: value })"
+      />
+    </div>
     <EmptyState
       v-else
       :title="emptyText"
@@ -480,6 +488,7 @@ import CommunicationArea from '@/components/CommunicationArea.vue'
 import WhatsappTemplateSelectorModal from '@/components/Modals/WhatsappTemplateSelectorModal.vue'
 import AllModals from '@/components/Activities/AllModals.vue'
 import FilesUploader from '@/components/FilesUploader/FilesUploader.vue'
+import EvaluationTab from '@/components/Activities/EvaluationTab.vue'
 import { timeAgo, formatDate, startCase } from '@/utils'
 import { globalStore } from '@/stores/global'
 import { usersStore } from '@/stores/users'
@@ -721,6 +730,8 @@ const emptyText = computed(() => {
     text = 'No Attachments Found'
   } else if (title.value == 'WhatsApp') {
     text = 'No WhatsApp Messages Found'
+  } else if (title.value == 'Evaluation') {
+    text = 'No Evaluation'
   }
   return text
 })
@@ -747,6 +758,8 @@ const emptyTextDescription = computed(() => {
       'No files have been attached yet. Upload files to see them here.'
   } else if (title.value == 'WhatsApp') {
     description = 'Start a conversation now!'
+  } else if (title.value == 'Evaluation') {
+    description = 'No evaluation template is assigned to this lead.'
   }
   return description
 })
@@ -769,6 +782,8 @@ const emptyTextIcon = computed(() => {
     icon = AttachmentIcon
   } else if (title.value == 'WhatsApp') {
     icon = WhatsAppIcon
+  } else if (title.value == 'Evaluation') {
+    icon = DetailsIcon
   }
   return h(icon, { class: 'text-ink-gray-4' })
 })
