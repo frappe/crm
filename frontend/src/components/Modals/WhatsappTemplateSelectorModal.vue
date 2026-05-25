@@ -1,15 +1,27 @@
 <template>
   <Dialog v-model:open="show" :title="__('WhatsApp Templates')" size="4xl">
-    <TextInput
-      ref="searchInput"
-      v-model="search"
-      type="text"
-      :placeholder="__('Welcome Message')"
-    >
-      <template #prefix>
-        <span class="lucide-search size-4 text-ink-gray-4" aria-hidden="true" />
-      </template>
-    </TextInput>
+    <div class="w-full flex items-center gap-2">
+      <TextInput
+        ref="searchInput"
+        v-model="search"
+        class="w-full"
+        type="text"
+        :placeholder="__('Welcome Message')"
+      >
+        <template #prefix>
+          <span
+            class="lucide-search size-4 text-ink-gray-4"
+            aria-hidden="true"
+          />
+        </template>
+      </TextInput>
+      <Button
+        v-if="filteredTemplates.length"
+        :label="__('Create New')"
+        icon-left="plus"
+        @click="newWhatsappTemplate"
+      />
+    </div>
     <div
       v-if="filteredTemplates.length"
       class="mt-2 grid max-h-[560px] grid-cols-1 gap-2 overflow-y-auto sm:grid-cols-3"
@@ -20,7 +32,10 @@
         class="flex h-56 cursor-pointer flex-col gap-2 rounded-lg border p-3 hover:bg-surface-gray-2"
         @click="emit('send', template.name)"
       >
-        <div class="border-b pb-2 text-base font-semibold">
+        <div
+          class="border-b pb-2 text-base font-semibold truncate"
+          :title="template.name"
+        >
           {{ template.name }}
         </div>
         <TextEditor
@@ -39,6 +54,7 @@
         </div>
         <Button
           :label="__('Create New')"
+          icon-left="plus"
           class="mt-4"
           @click="newWhatsappTemplate"
         />

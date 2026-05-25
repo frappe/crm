@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Frappe CRM VERSION\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2026-05-10 10:00+0000\n"
-"PO-Revision-Date: 2026-05-10 10:00+0000\n"
+"POT-Creation-Date: 2026-05-24 10:10+0000\n"
+"PO-Revision-Date: 2026-05-24 10:10+0000\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: shariq@frappe.io\n"
 "MIME-Version: 1.0\n"
@@ -48,7 +48,7 @@ msgstr ""
 msgid "1 hour ago"
 msgstr ""
 
-#: frontend/src/composables/event.js:213
+#: frontend/src/composables/event.js:207
 msgid "1 hr"
 msgstr ""
 
@@ -168,6 +168,10 @@ msgstr ""
 msgid "A valid call log is required."
 msgstr ""
 
+#: frontend/src/components/Settings/Hierarchy/useDragDrop.js:69
+msgid "A {0} cannot report to a {1}"
+msgstr ""
+
 #. Label of the api_key (Data) field in DocType 'CRM Exotel Settings'
 #. Label of the api_key (Data) field in DocType 'CRM Twilio Settings'
 #. Label of the api_key (Data) field in DocType 'ERPNext CRM Settings'
@@ -279,7 +283,7 @@ msgstr ""
 msgid "Account name is required"
 msgstr ""
 
-#: frontend/src/components/Settings/Settings.vue:167
+#: frontend/src/components/Settings/Settings.vue:175
 msgid "Accounts"
 msgstr ""
 
@@ -290,13 +294,18 @@ msgid "Actions"
 msgstr ""
 
 #: frontend/src/pages/Deal.vue:561 frontend/src/pages/Lead.vue:413
-#: frontend/src/pages/MobileDeal.vue:435 frontend/src/pages/MobileLead.vue:284
+#: frontend/src/pages/MobileDeal.vue:437 frontend/src/pages/MobileLead.vue:285
 msgid "Activity"
 msgstr ""
 
 #: frontend/src/components/Dashboard/AddChartModal.vue:41
 #: frontend/src/components/Modals/AddExistingUserModal.vue:55
 msgid "Add"
+msgstr ""
+
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:160
+#: frontend/src/components/Settings/Hierarchy/HierarchyRow.vue:85
+msgid "Add ({0})"
 msgstr ""
 
 #: frontend/src/components/Settings/EmailAccountList.vue:19
@@ -421,6 +430,14 @@ msgstr ""
 msgid "Add Task"
 msgstr ""
 
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:36
+msgid "Add User"
+msgstr ""
+
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:157
+msgid "Add Users"
+msgstr ""
+
 #. Label of the add_weekly_holidays_section (Section Break) field in DocType
 #. 'CRM Holiday List'
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
@@ -452,12 +469,17 @@ msgstr ""
 msgid "Add description..."
 msgstr ""
 
+#: frontend/src/components/Settings/Hierarchy/HierarchyRow.vue:63
+msgid "Add direct reports"
+msgstr ""
+
 #: frontend/src/components/Modals/AddExistingUserModal.vue:12
 msgid "Add existing system users to this CRM. Assign them a role to grant access with their current credentials."
 msgstr ""
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRulesList.vue:11
 #: frontend/src/components/Settings/EmailAccountList.vue:51
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:110
 #: frontend/src/components/Settings/Users.vue:53
 msgid "Add one to get started."
 msgstr ""
@@ -476,7 +498,7 @@ msgstr ""
 msgid "Add to Holidays"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:460
+#: frontend/src/components/Layouts/AppSidebar.vue:466
 msgid "Add your first comment"
 msgstr ""
 
@@ -519,7 +541,7 @@ msgstr ""
 #: frontend/src/components/EventNotificationPopup.vue:90
 #: frontend/src/components/EventNotificationsArea.vue:188
 #: frontend/src/components/Modals/EventModal.vue:71
-#: frontend/src/composables/event.js:172
+#: frontend/src/composables/event.js:166
 msgid "All Day"
 msgstr ""
 
@@ -552,7 +574,7 @@ msgstr ""
 msgid "An error occurred"
 msgstr ""
 
-#: frontend/src/data/document.js:73
+#: frontend/src/data/document.js:77
 msgid "An error occurred while updating the document"
 msgstr ""
 
@@ -746,7 +768,7 @@ msgstr ""
 
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
-#: frontend/src/components/Layouts/AppSidebar.vue:606
+#: frontend/src/components/Layouts/AppSidebar.vue:612
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRulesList.vue:16
 msgid "Assignment Rule"
 msgstr ""
@@ -772,7 +794,7 @@ msgid "Assignment Rule {0} Updated"
 msgstr ""
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRules.vue:7
-#: frontend/src/components/Settings/Settings.vue:183
+#: frontend/src/components/Settings/Settings.vue:191
 msgid "Assignment Rules"
 msgstr ""
 
@@ -816,7 +838,7 @@ msgid "Attach file…"
 msgstr ""
 
 #: frontend/src/pages/Deal.vue:601 frontend/src/pages/Lead.vue:453
-#: frontend/src/pages/MobileDeal.vue:471 frontend/src/pages/MobileLead.vue:319
+#: frontend/src/pages/MobileDeal.vue:473 frontend/src/pages/MobileLead.vue:320
 msgid "Attachments"
 msgstr ""
 
@@ -884,7 +906,7 @@ msgstr ""
 msgid "Automatically update \"Expected Deal Value\" based on the total value of associated products in a deal"
 msgstr ""
 
-#: frontend/src/components/Settings/Settings.vue:180
+#: frontend/src/components/Settings/Settings.vue:188
 msgid "Automation & Rules"
 msgstr ""
 
@@ -989,7 +1011,7 @@ msgstr ""
 msgid "Between"
 msgstr ""
 
-#: frontend/src/components/Settings/Settings.vue:133
+#: frontend/src/components/Settings/Settings.vue:135
 msgid "Brand"
 msgstr ""
 
@@ -1152,6 +1174,11 @@ msgid "CRM Rolling Response Time"
 msgstr ""
 
 #. Name of a DocType
+#: crm/fcrm/doctype/crm_sales_hierarchy/crm_sales_hierarchy.json
+msgid "CRM Sales Hierarchy"
+msgstr ""
+
+#. Name of a DocType
 #: crm/fcrm/doctype/crm_service_day/crm_service_day.json
 msgid "CRM Service Day"
 msgstr ""
@@ -1207,7 +1234,7 @@ msgstr ""
 
 #. Label of the calendar_tab (Tab Break) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
-#: frontend/src/components/Settings/Settings.vue:138
+#: frontend/src/components/Settings/Settings.vue:140
 msgid "Calendar"
 msgstr ""
 
@@ -1219,7 +1246,7 @@ msgstr ""
 msgid "Call Details"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:580
+#: frontend/src/components/Layouts/AppSidebar.vue:586
 msgid "Call Log"
 msgstr ""
 
@@ -1228,7 +1255,7 @@ msgstr ""
 msgid "Call Received By"
 msgstr ""
 
-#: crm/integrations/api.py:154 crm/integrations/twilio/api.py:148
+#: crm/integrations/api.py:152 crm/integrations/twilio/api.py:148
 #: crm/integrations/twilio/api.py:166
 msgid "Call log not found"
 msgstr ""
@@ -1256,7 +1283,7 @@ msgid "Calling..."
 msgstr ""
 
 #: frontend/src/pages/Deal.vue:586 frontend/src/pages/Lead.vue:438
-#: frontend/src/pages/MobileDeal.vue:455 frontend/src/pages/MobileLead.vue:304
+#: frontend/src/pages/MobileDeal.vue:457 frontend/src/pages/MobileLead.vue:305
 msgid "Calls"
 msgstr ""
 
@@ -1313,11 +1340,15 @@ msgstr ""
 msgid "Cannot invite for this role"
 msgstr ""
 
+#: frontend/src/components/Settings/Hierarchy/useDragDrop.js:73
+msgid "Cannot move a manager under one of their own reports"
+msgstr ""
+
 #: frontend/src/components/FilesUploader/FilesUploader.vue:91
 msgid "Capture"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:585
+#: frontend/src/components/Layouts/AppSidebar.vue:591
 msgid "Capturing Leads"
 msgstr ""
 
@@ -1327,7 +1358,7 @@ msgid "Category"
 msgstr ""
 
 #: frontend/src/components/Controls/ImageUploader.vue:14
-#: frontend/src/components/Layouts/AppSidebar.vue:514
+#: frontend/src/components/Layouts/AppSidebar.vue:520
 msgid "Change"
 msgstr ""
 
@@ -1351,8 +1382,8 @@ msgstr ""
 msgid "Change Status"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:504
-#: frontend/src/components/Layouts/AppSidebar.vue:513
+#: frontend/src/components/Layouts/AppSidebar.vue:510
+#: frontend/src/components/Layouts/AppSidebar.vue:519
 msgid "Change deal status"
 msgstr ""
 
@@ -1434,7 +1465,7 @@ msgstr ""
 msgid "Clear Assignment"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:92
+#: frontend/src/components/Layouts/AppSidebar.vue:96
 #: frontend/src/composables/demoData.js:20
 msgid "Clear Demo Data"
 msgstr ""
@@ -1467,7 +1498,7 @@ msgstr ""
 msgid "Closed Date"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:116
+#: frontend/src/components/Layouts/AppSidebar.vue:120
 msgid "Collapse"
 msgstr ""
 
@@ -1503,7 +1534,7 @@ msgstr ""
 #: frontend/src/components/Activities/ActivityHeader.vue:126
 #: frontend/src/components/CommentBox.vue:78
 #: frontend/src/components/CommunicationArea.vue:15
-#: frontend/src/components/Layouts/AppSidebar.vue:603
+#: frontend/src/components/Layouts/AppSidebar.vue:609
 msgid "Comment"
 msgstr ""
 
@@ -1512,7 +1543,7 @@ msgid "Comment sent"
 msgstr ""
 
 #: frontend/src/pages/Deal.vue:571 frontend/src/pages/Lead.vue:423
-#: frontend/src/pages/MobileDeal.vue:445 frontend/src/pages/MobileLead.vue:294
+#: frontend/src/pages/MobileDeal.vue:447 frontend/src/pages/MobileLead.vue:295
 msgid "Comments"
 msgstr ""
 
@@ -1655,16 +1686,16 @@ msgstr ""
 #. Label of the contact (Link) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_contacts/crm_contacts.json
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
-#: frontend/src/components/Layouts/AppSidebar.vue:576
+#: frontend/src/components/Layouts/AppSidebar.vue:582
 #: frontend/src/components/Modals/ConvertToDealModal.vue:51
 msgid "Contact"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:682 frontend/src/pages/MobileDeal.vue:549
+#: frontend/src/pages/Deal.vue:682 frontend/src/pages/MobileDeal.vue:551
 msgid "Contact Added"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:672 frontend/src/pages/MobileDeal.vue:539
+#: frontend/src/pages/Deal.vue:672 frontend/src/pages/MobileDeal.vue:541
 msgid "Contact Already Added"
 msgstr ""
 
@@ -1676,7 +1707,7 @@ msgstr ""
 msgid "Contact Image Updated"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:693 frontend/src/pages/MobileDeal.vue:560
+#: frontend/src/pages/Deal.vue:693 frontend/src/pages/MobileDeal.vue:562
 msgid "Contact Removed"
 msgstr ""
 
@@ -1740,15 +1771,15 @@ msgstr ""
 msgid "Controls how numbers are displayed (e.g., commas, decimal separators)"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:399
+#: frontend/src/components/Layouts/AppSidebar.vue:405
 #: frontend/src/components/ListBulkActions.vue:86
 #: frontend/src/components/Modals/ConvertToDealModal.vue:83
 #: frontend/src/pages/MobileLead.vue:54
 msgid "Convert"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:390
-#: frontend/src/components/Layouts/AppSidebar.vue:398
+#: frontend/src/components/Layouts/AppSidebar.vue:396
+#: frontend/src/components/Layouts/AppSidebar.vue:404
 msgid "Convert lead to deal"
 msgstr ""
 
@@ -1770,6 +1801,14 @@ msgstr ""
 
 #: frontend/src/utils/index.js:405
 msgid "Copied to Clipboard"
+msgstr ""
+
+#: frontend/src/components/Settings/Hierarchy/useRemoveNode.js:16
+msgid "Could not remove."
+msgstr ""
+
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:469
+msgid "Could not update report to"
 msgstr ""
 
 #: crm/api/dashboard.py:647 crm/api/dashboard.py:795 crm/api/dashboard.py:852
@@ -1816,13 +1855,17 @@ msgstr ""
 
 #: frontend/src/components/Controls/Link.vue:50
 #: frontend/src/components/Modals/EmailTemplateSelectorModal.vue:58
-#: frontend/src/components/Modals/WhatsappTemplateSelectorModal.vue:45
+#: frontend/src/components/Modals/WhatsappTemplateSelectorModal.vue:63
 #: frontend/src/components/PrimaryDropdown.vue:41
 msgid "Create New"
 msgstr ""
 
 #: frontend/src/components/Settings/Sla/SlaHolidays.vue:66
 msgid "Create New Holiday List"
+msgstr ""
+
+#: frontend/src/components/Modals/WhatsappTemplateSelectorModal.vue:23
+msgid "Create New Template"
 msgstr ""
 
 #: frontend/src/components/Modals/ViewModal.vue:9
@@ -1848,15 +1891,15 @@ msgstr ""
 msgid "Create quotation button on deal page and auto customer creation on deal status change will be disabled. Are you sure?"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:365
+#: frontend/src/components/Layouts/AppSidebar.vue:371
 msgid "Create your first lead"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:439
+#: frontend/src/components/Layouts/AppSidebar.vue:445
 msgid "Create your first note"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:418
+#: frontend/src/components/Layouts/AppSidebar.vue:424
 msgid "Create your first task"
 msgstr ""
 
@@ -1887,19 +1930,19 @@ msgstr ""
 msgid "Current pipeline distribution"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:615
+#: frontend/src/components/Layouts/AppSidebar.vue:621
 msgid "Custom Actions"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:565
+#: frontend/src/components/Layouts/AppSidebar.vue:571
 msgid "Custom Branding"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:614
+#: frontend/src/components/Layouts/AppSidebar.vue:620
 msgid "Custom Fields"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:617
+#: frontend/src/components/Layouts/AppSidebar.vue:623
 msgid "Custom List Actions"
 msgstr ""
 
@@ -1907,7 +1950,7 @@ msgstr ""
 msgid "Custom Range"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:616
+#: frontend/src/components/Layouts/AppSidebar.vue:622
 msgid "Custom Statuses"
 msgstr ""
 
@@ -1915,8 +1958,8 @@ msgstr ""
 msgid "Customer Created Successfully"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:611
-#: frontend/src/components/Settings/Settings.vue:196
+#: frontend/src/components/Layouts/AppSidebar.vue:617
+#: frontend/src/components/Settings/Settings.vue:204
 msgid "Customization"
 msgstr ""
 
@@ -1943,7 +1986,7 @@ msgid "Dark"
 msgstr ""
 
 #: frontend/src/components/Settings/DashboardSettings.vue:6
-#: frontend/src/components/Settings/Settings.vue:123
+#: frontend/src/components/Settings/Settings.vue:125
 msgid "Dashboard"
 msgstr ""
 
@@ -1960,9 +2003,9 @@ msgid "Dashboard settings updated successfully"
 msgstr ""
 
 #: frontend/src/components/Activities/DataFields.vue:6
-#: frontend/src/components/Layouts/AppSidebar.vue:604
+#: frontend/src/components/Layouts/AppSidebar.vue:610
 #: frontend/src/pages/Deal.vue:576 frontend/src/pages/Lead.vue:428
-#: frontend/src/pages/MobileDeal.vue:450 frontend/src/pages/MobileLead.vue:299
+#: frontend/src/pages/MobileDeal.vue:452 frontend/src/pages/MobileLead.vue:300
 msgid "Data"
 msgstr ""
 
@@ -1994,7 +2037,7 @@ msgid "Day"
 msgstr ""
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:425
-#: frontend/src/components/Layouts/AppSidebar.vue:575
+#: frontend/src/components/Layouts/AppSidebar.vue:581
 #: frontend/src/components/Settings/AssignmentRules/AssigneeRules.vue:20
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:51
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:59
@@ -2045,7 +2088,7 @@ msgstr ""
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
 #: frontend/src/pages/Deal.vue:514 frontend/src/pages/MobileContact.vue:301
-#: frontend/src/pages/MobileDeal.vue:389
+#: frontend/src/pages/MobileDeal.vue:391
 #: frontend/src/pages/MobileOrganization.vue:344
 msgid "Deals"
 msgstr ""
@@ -2169,7 +2212,7 @@ msgstr ""
 msgid "Default statuses, custom fields and layouts restored successfully."
 msgstr ""
 
-#: frontend/src/components/Settings/Settings.vue:128
+#: frontend/src/components/Settings/Settings.vue:130
 msgid "Defaults"
 msgstr ""
 
@@ -2193,6 +2236,9 @@ msgstr ""
 #: frontend/src/components/Modals/EventModal.vue:467
 #: frontend/src/components/Modals/EventModal.vue:471
 #: frontend/src/components/PrimaryDropdownItem.vue:42
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:183
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:230
+#: frontend/src/components/Settings/Hierarchy/HierarchyRow.vue:166
 #: frontend/src/components/Settings/Sla/EditResponseResolutionModal.vue:44
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:66
 #: frontend/src/components/ViewControls.vue:1119
@@ -2201,7 +2247,7 @@ msgstr ""
 #: frontend/src/pages/Contact.vue:99 frontend/src/pages/Deal.vue:121
 #: frontend/src/pages/Lead.vue:168 frontend/src/pages/MobileContact.vue:80
 #: frontend/src/pages/MobileContact.vue:276
-#: frontend/src/pages/MobileDeal.vue:520
+#: frontend/src/pages/MobileDeal.vue:522
 #: frontend/src/pages/MobileOrganization.vue:73
 #: frontend/src/pages/MobileOrganization.vue:279
 #: frontend/src/pages/Notes.vue:44 frontend/src/pages/Organization.vue:90
@@ -2236,6 +2282,10 @@ msgstr ""
 
 #: frontend/src/components/DeleteLinkedDocModal.vue:223
 msgid "Delete Linked Item"
+msgstr ""
+
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:221
+msgid "Delete Only User"
 msgstr ""
 
 #: frontend/src/pages/MobileOrganization.vue:275
@@ -2305,7 +2355,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_lead_source/crm_lead_source.json
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:197
 #: frontend/src/pages/MobileContact.vue:296
-#: frontend/src/pages/MobileDeal.vue:429 frontend/src/pages/MobileLead.vue:278
+#: frontend/src/pages/MobileDeal.vue:431 frontend/src/pages/MobileLead.vue:279
 #: frontend/src/pages/MobileOrganization.vue:339
 msgid "Details"
 msgstr ""
@@ -2320,6 +2370,8 @@ msgstr ""
 #: crm/fcrm/doctype/crm_form_script/crm_form_script.js:30
 #: frontend/src/components/Settings/ERPNextSettings.vue:32
 #: frontend/src/components/Settings/ERPNextSettings.vue:403
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:31
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:316
 #: frontend/src/components/Settings/Telephony/ExotelSettings.vue:29
 #: frontend/src/components/Settings/Telephony/TwilioSettings.vue:29
 msgid "Disable"
@@ -2327,6 +2379,10 @@ msgstr ""
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:397
 msgid "Disable ERPNext Integration"
+msgstr ""
+
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:310
+msgid "Disable Sales Hierarchy"
 msgstr ""
 
 #. Label of the disabled (Check) field in DocType 'CRM Product'
@@ -2359,6 +2415,10 @@ msgstr ""
 msgid "Discount Amount"
 msgstr ""
 
+#: frontend/src/components/SalesHierarchyBanner.vue:13
+msgid "Dismiss"
+msgstr ""
+
 #: frontend/src/components/Settings/DefaultsSettings.vue:114
 msgid "Display format for dates across the system"
 msgstr ""
@@ -2376,7 +2436,7 @@ msgstr ""
 msgid "Doctype is required"
 msgstr ""
 
-#: frontend/src/pages/MobileLead.vue:203
+#: frontend/src/pages/MobileLead.vue:204
 msgid "Document Not Found"
 msgstr ""
 
@@ -2389,15 +2449,15 @@ msgstr ""
 msgid "Document created successfully"
 msgstr ""
 
-#: frontend/src/data/document.js:37
+#: frontend/src/data/document.js:41
 msgid "Document does not exist"
 msgstr ""
 
-#: crm/api/activities.py:20 frontend/src/pages/MobileDeal.vue:352
+#: crm/api/activities.py:20 frontend/src/pages/MobileDeal.vue:354
 msgid "Document not found"
 msgstr ""
 
-#: frontend/src/data/document.js:51
+#: frontend/src/data/document.js:55
 msgid "Document updated successfully"
 msgstr ""
 
@@ -2494,8 +2554,8 @@ msgstr ""
 msgid "Duration"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:628
-#: frontend/src/components/Settings/Settings.vue:221
+#: frontend/src/components/Layouts/AppSidebar.vue:634
+#: frontend/src/components/Settings/Settings.vue:229
 msgid "ERPNext"
 msgstr ""
 
@@ -2522,7 +2582,7 @@ msgstr ""
 
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:60
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:81
-#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:331
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:338
 msgid "ERPNext is not installed in the current site"
 msgstr ""
 
@@ -2641,7 +2701,7 @@ msgstr ""
 #: frontend/src/components/Settings/CalendarSettings.vue:89
 #: frontend/src/components/Settings/CalendarSettings.vue:188
 #: frontend/src/components/Settings/Profile/UserEmailSettings.vue:68
-#: frontend/src/components/Settings/Settings.vue:164
+#: frontend/src/components/Settings/Settings.vue:172
 #: frontend/src/pages/Contact.vue:538 frontend/src/pages/MobileContact.vue:531
 #: frontend/src/pages/MobileOrganization.vue:480
 #: frontend/src/pages/MobileOrganization.vue:508
@@ -2670,7 +2730,7 @@ msgstr ""
 msgid "Email Already Exists"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:602
+#: frontend/src/components/Layouts/AppSidebar.vue:608
 msgid "Email Communication"
 msgstr ""
 
@@ -2695,7 +2755,7 @@ msgstr ""
 msgid "Email Settings"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:581
+#: frontend/src/components/Layouts/AppSidebar.vue:587
 msgid "Email Template"
 msgstr ""
 
@@ -2718,7 +2778,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/Profile/UserEmailSettings.vue:51
 #: frontend/src/pages/Deal.vue:566 frontend/src/pages/Lead.vue:418
-#: frontend/src/pages/MobileDeal.vue:440 frontend/src/pages/MobileLead.vue:289
+#: frontend/src/pages/MobileDeal.vue:442 frontend/src/pages/MobileLead.vue:290
 msgid "Emails"
 msgstr ""
 
@@ -2740,6 +2800,7 @@ msgstr ""
 
 #: crm/fcrm/doctype/crm_form_script/crm_form_script.js:30
 #: frontend/src/components/Settings/ERPNextSettings.vue:259
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:72
 #: frontend/src/components/Settings/Telephony/ExotelSettings.vue:117
 #: frontend/src/components/Settings/Telephony/TwilioSettings.vue:124
 msgid "Enable"
@@ -2761,6 +2822,15 @@ msgstr ""
 
 #: frontend/src/components/Settings/emailConfig.js:34
 msgid "Enable Outgoing"
+msgstr ""
+
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:62
+msgid "Enable Sales Hierarchy"
+msgstr ""
+
+#. Label of the enable_sales_hierarchy (Check) field in DocType 'FCRM Settings'
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
+msgid "Enable Sales Hierarchy Permissions"
 msgstr ""
 
 #: frontend/src/components/Settings/Telephony/TwilioSettings.vue:119
@@ -2825,7 +2895,7 @@ msgstr ""
 msgid "End Time"
 msgstr ""
 
-#: frontend/src/composables/event.js:256
+#: frontend/src/composables/event.js:250
 msgid "End Time Should Be After Start Time"
 msgstr ""
 
@@ -2896,7 +2966,7 @@ msgstr ""
 msgid "Equals"
 msgstr ""
 
-#: frontend/src/pages/MobileLead.vue:204
+#: frontend/src/pages/MobileLead.vue:205
 msgid "Error Occurred"
 msgstr ""
 
@@ -2916,7 +2986,7 @@ msgstr ""
 msgid "Error creating lead: {0}"
 msgstr ""
 
-#: frontend/src/pages/MobileDeal.vue:353
+#: frontend/src/pages/MobileDeal.vue:355
 msgid "Error occurred"
 msgstr ""
 
@@ -2929,7 +2999,7 @@ msgid "Error updating Lead Sync Source"
 msgstr ""
 
 #: frontend/src/pages/Deal.vue:766 frontend/src/pages/Lead.vue:498
-#: frontend/src/pages/MobileDeal.vue:617 frontend/src/pages/MobileLead.vue:359
+#: frontend/src/pages/MobileDeal.vue:619 frontend/src/pages/MobileLead.vue:360
 msgid "Error updating field"
 msgstr ""
 
@@ -3006,7 +3076,7 @@ msgstr ""
 #. Agent'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
-#: frontend/src/components/Layouts/AppSidebar.vue:626
+#: frontend/src/components/Layouts/AppSidebar.vue:632
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:52
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:180
 msgid "Exotel"
@@ -3038,7 +3108,7 @@ msgstr ""
 msgid "Exotel Settings"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:116
+#: frontend/src/components/Layouts/AppSidebar.vue:120
 msgid "Expand"
 msgstr ""
 
@@ -3186,11 +3256,11 @@ msgstr ""
 msgid "Failed to load fields layout"
 msgstr ""
 
-#: frontend/src/data/script.js:149
+#: frontend/src/data/script.js:150
 msgid "Failed to load file-based form controller: {0}"
 msgstr ""
 
-#: frontend/src/data/script.js:167
+#: frontend/src/data/script.js:168
 msgid "Failed to load form controller: {0}"
 msgstr ""
 
@@ -3211,7 +3281,7 @@ msgstr ""
 msgid "Failed to send WhatsApp message"
 msgstr ""
 
-#: frontend/src/components/Activities/Activities.vue:598
+#: frontend/src/components/Activities/Activities.vue:606
 msgid "Failed to send WhatsApp template"
 msgstr ""
 
@@ -3237,6 +3307,10 @@ msgstr ""
 
 #: frontend/src/components/Modals/ChangePasswordModal.vue:106
 msgid "Failed to update password"
+msgstr ""
+
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:290
+msgid "Failed to update setting"
 msgstr ""
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:165
@@ -3384,7 +3458,7 @@ msgstr ""
 msgid "Frappe CRM"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:632
+#: frontend/src/components/Layouts/AppSidebar.vue:638
 msgid "Frappe CRM mobile"
 msgstr ""
 
@@ -3438,8 +3512,10 @@ msgstr ""
 
 #. Label of the full_name (Data) field in DocType 'CRM Contacts'
 #. Label of the lead_name (Data) field in DocType 'CRM Lead'
+#. Label of the full_name (Data) field in DocType 'CRM Sales Hierarchy'
 #: crm/fcrm/doctype/crm_contacts/crm_contacts.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
+#: crm/fcrm/doctype/crm_sales_hierarchy/crm_sales_hierarchy.json
 msgid "Full Name"
 msgstr ""
 
@@ -3464,7 +3540,7 @@ msgstr ""
 msgid "Gender"
 msgstr ""
 
-#: frontend/src/components/Settings/Settings.vue:118
+#: frontend/src/components/Settings/Settings.vue:120
 msgid "General"
 msgstr ""
 
@@ -3533,7 +3609,7 @@ msgstr ""
 msgid "Hello"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:102
+#: frontend/src/components/Layouts/AppSidebar.vue:106
 msgid "Help"
 msgstr ""
 
@@ -3596,9 +3672,9 @@ msgstr ""
 msgid "Holidays"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:566
+#: frontend/src/components/Layouts/AppSidebar.vue:572
 #: frontend/src/components/Settings/HomeActions.vue:7
-#: frontend/src/components/Settings/Settings.vue:199
+#: frontend/src/components/Settings/Settings.vue:207
 msgid "Home Actions"
 msgstr ""
 
@@ -3739,7 +3815,7 @@ msgstr ""
 msgid "Insert Emoji"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:622
+#: frontend/src/components/Layouts/AppSidebar.vue:628
 msgid "Integration"
 msgstr ""
 
@@ -3751,13 +3827,13 @@ msgstr ""
 msgid "Integrations"
 msgstr ""
 
-#: frontend/src/components/Settings/Settings.vue:207
+#: frontend/src/components/Settings/Settings.vue:215
 msgctxt "FCRM"
 msgid "Integrations"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:553
-#: frontend/src/components/Layouts/AppSidebar.vue:556
+#: frontend/src/components/Layouts/AppSidebar.vue:559
+#: frontend/src/components/Layouts/AppSidebar.vue:562
 msgid "Introduction"
 msgstr ""
 
@@ -3785,7 +3861,7 @@ msgstr ""
 msgid "Invalid Site URL"
 msgstr ""
 
-#: frontend/src/composables/event.js:253
+#: frontend/src/composables/event.js:247
 msgid "Invalid Start Or End Time"
 msgstr ""
 
@@ -3876,11 +3952,11 @@ msgstr ""
 msgid "Invite New User"
 msgstr ""
 
-#: frontend/src/components/Settings/Settings.vue:155
+#: frontend/src/components/Settings/Settings.vue:157
 msgid "Invite User"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:567
+#: frontend/src/components/Layouts/AppSidebar.vue:573
 msgid "Invite Users"
 msgstr ""
 
@@ -3888,7 +3964,7 @@ msgstr ""
 msgid "Invite users to access CRM. Specify their roles to control access and permissions"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:377
+#: frontend/src/components/Layouts/AppSidebar.vue:383
 msgid "Invite your team"
 msgstr ""
 
@@ -3919,7 +3995,9 @@ msgstr ""
 msgid "Is ERPNext installed on a different site?"
 msgstr ""
 
+#. Label of the is_group (Check) field in DocType 'CRM Sales Hierarchy'
 #. Label of the is_group (Check) field in DocType 'CRM Territory'
+#: crm/fcrm/doctype/crm_sales_hierarchy/crm_sales_hierarchy.json
 #: crm/fcrm/doctype/crm_territory/crm_territory.json
 msgid "Is Group"
 msgstr ""
@@ -4131,7 +4209,7 @@ msgstr ""
 #. Label of the lead (Link) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:421
-#: frontend/src/components/Layouts/AppSidebar.vue:574
+#: frontend/src/components/Layouts/AppSidebar.vue:580
 #: frontend/src/components/Settings/AssignmentRules/AssigneeRules.vue:19
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:55
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:73
@@ -4186,8 +4264,12 @@ msgstr ""
 msgid "Lead Sync Source created successfully"
 msgstr ""
 
-#: frontend/src/components/Settings/Settings.vue:227
+#: frontend/src/components/Settings/Settings.vue:235
 msgid "Lead Syncing"
+msgstr ""
+
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:311
+msgid "Lead and deal visibility will no longer be restricted by the reporting tree. Are you sure?"
 msgstr ""
 
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.py:287
@@ -4213,7 +4295,7 @@ msgstr ""
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
 #: frontend/src/pages/InvalidPage.vue:9 frontend/src/pages/Lead.vue:369
-#: frontend/src/pages/MobileLead.vue:238
+#: frontend/src/pages/MobileLead.vue:239
 msgid "Leads"
 msgstr ""
 
@@ -4230,7 +4312,13 @@ msgstr ""
 msgid "Learn about conditions"
 msgstr ""
 
+#: frontend/src/components/SalesHierarchyBanner.vue:22
+msgid "Learn more"
+msgstr ""
+
+#. Label of the lft (Int) field in DocType 'CRM Sales Hierarchy'
 #. Label of the lft (Int) field in DocType 'CRM Territory'
+#: crm/fcrm/doctype/crm_sales_hierarchy/crm_sales_hierarchy.json
 #: crm/fcrm/doctype/crm_territory/crm_territory.json
 msgid "Left"
 msgstr ""
@@ -4470,7 +4558,7 @@ msgid "Manager"
 msgstr ""
 
 #: frontend/src/components/Modals/DoctypeModal.vue:121
-#: frontend/src/data/document.js:64
+#: frontend/src/data/document.js:68
 msgid "Mandatory field error: {0}"
 msgstr ""
 
@@ -4479,7 +4567,7 @@ msgid "Mandatory field(s) {0} must be mapped"
 msgstr ""
 
 #: frontend/src/components/Modals/FieldLayoutDialog.vue:207
-#: frontend/src/data/document.js:220 frontend/src/data/document.js:222
+#: frontend/src/data/document.js:226 frontend/src/data/document.js:228
 msgid "Mandatory fields required: {0}"
 msgstr ""
 
@@ -4507,7 +4595,7 @@ msgstr ""
 msgid "Mark lead/deal as replied on response"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:571
+#: frontend/src/components/Layouts/AppSidebar.vue:577
 msgid "Masters"
 msgstr ""
 
@@ -4558,7 +4646,7 @@ msgstr ""
 msgid "Missing mandatory fields: {0}"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:635
+#: frontend/src/components/Layouts/AppSidebar.vue:641
 msgid "Mobile App Installation"
 msgstr ""
 
@@ -4637,6 +4725,14 @@ msgstr ""
 
 #: frontend/src/components/FieldLayoutEditor.vue:529
 msgid "Move to Previous Tab"
+msgstr ""
+
+#: frontend/src/components/Settings/Hierarchy/HierarchyRow.vue:160
+msgid "Move to top level"
+msgstr ""
+
+#: frontend/src/components/Settings/Hierarchy/useDragDrop.js:100
+msgid "Move under {0}"
 msgstr ""
 
 #: frontend/src/components/Modals/ViewModal.vue:30
@@ -4874,7 +4970,7 @@ msgid "No Results Found"
 msgstr ""
 
 #: frontend/src/components/Modals/EmailTemplateSelectorModal.vue:56
-#: frontend/src/components/Modals/WhatsappTemplateSelectorModal.vue:42
+#: frontend/src/components/Modals/WhatsappTemplateSelectorModal.vue:60
 msgid "No Templates Found"
 msgstr ""
 
@@ -4898,6 +4994,7 @@ msgid "No Workdays in the List"
 msgstr ""
 
 #: frontend/src/components/Settings/EmailEdit.vue:153
+#: frontend/src/components/Settings/Hierarchy/useDragDrop.js:63
 msgid "No changes made"
 msgstr ""
 
@@ -4913,10 +5010,26 @@ msgstr ""
 msgid "No holiday list found"
 msgstr ""
 
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:104
+msgid "No matching users"
+msgstr ""
+
 #: frontend/src/components/Calendar/Attendee.vue:211
 #: frontend/src/components/Controls/EmailMultiSelect.vue:133
 #: frontend/src/components/frappe-ui/Autocomplete.vue:120
 msgid "No results found"
+msgstr ""
+
+#: frontend/src/components/Settings/Hierarchy/UserMultiSelect.vue:61
+msgid "No users found"
+msgstr ""
+
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:105
+msgid "No users in hierarchy"
+msgstr ""
+
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:109
+msgid "No users match the current filter."
 msgstr ""
 
 #: frontend/src/components/ListViews/EmptyState.vue:37
@@ -5041,7 +5154,7 @@ msgstr ""
 #. Label of the note (Link) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 #: frontend/src/components/Activities/ActivityHeader.vue:147
-#: frontend/src/components/Layouts/AppSidebar.vue:578
+#: frontend/src/components/Layouts/AppSidebar.vue:584
 msgid "Note"
 msgstr ""
 
@@ -5050,7 +5163,7 @@ msgid "Note deleted"
 msgstr ""
 
 #: frontend/src/pages/Deal.vue:596 frontend/src/pages/Lead.vue:448
-#: frontend/src/pages/MobileDeal.vue:466 frontend/src/pages/MobileLead.vue:314
+#: frontend/src/pages/MobileDeal.vue:468 frontend/src/pages/MobileLead.vue:315
 msgid "Notes"
 msgstr ""
 
@@ -5061,7 +5174,7 @@ msgstr ""
 #: frontend/src/components/Activities/EmailArea.vue:15
 #: frontend/src/components/Calendar/EventNotifications.vue:22
 #: frontend/src/components/Calendar/EventNotifications.vue:90
-#: frontend/src/components/Layouts/AppSidebar.vue:607
+#: frontend/src/components/Layouts/AppSidebar.vue:613
 #: frontend/src/components/Settings/CalendarSettings.vue:85
 #: frontend/src/components/Settings/CalendarSettings.vue:93
 #: frontend/src/components/Settings/CalendarSettings.vue:184
@@ -5133,7 +5246,9 @@ msgstr ""
 msgid "Old Conditions"
 msgstr ""
 
+#. Label of the old_parent (Link) field in DocType 'CRM Sales Hierarchy'
 #. Label of the old_parent (Link) field in DocType 'CRM Territory'
+#: crm/fcrm/doctype/crm_sales_hierarchy/crm_sales_hierarchy.json
 #: crm/fcrm/doctype/crm_territory/crm_territory.json
 msgid "Old Parent"
 msgstr ""
@@ -5168,7 +5283,7 @@ msgstr ""
 msgid "Only System Managers can assign the System Manager role"
 msgstr ""
 
-#: crm/api/user.py:92 crm/api/user.py:128
+#: crm/api/user.py:92 crm/api/user.py:137
 msgid "Only System Managers can modify other System Managers"
 msgstr ""
 
@@ -5241,7 +5356,7 @@ msgstr ""
 #. Label of the organization (Data) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
-#: frontend/src/components/Layouts/AppSidebar.vue:577
+#: frontend/src/components/Layouts/AppSidebar.vue:583
 #: frontend/src/components/Modals/ConvertToDealModal.vue:25
 #: frontend/src/pages/Contact.vue:436 frontend/src/pages/Contact.vue:522
 #: frontend/src/pages/MobileContact.vue:515
@@ -5272,8 +5387,8 @@ msgstr ""
 msgid "Organization Name"
 msgstr ""
 
-#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:309
-msgid "Organization is required to create a customer"
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:318
+msgid "Organization or a primary Contact is required to create a customer"
 msgstr ""
 
 #. Label of a shortcut in the Frappe CRM Workspace
@@ -5287,7 +5402,7 @@ msgstr ""
 msgid "Organizer"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:599
+#: frontend/src/components/Layouts/AppSidebar.vue:605
 msgid "Other Features"
 msgstr ""
 
@@ -5398,6 +5513,10 @@ msgstr ""
 msgid "Period"
 msgstr ""
 
+#: frontend/src/components/SalesHierarchyBanner.vue:9
+msgid "Permissions update"
+msgstr ""
+
 #. Label of the person_section (Section Break) field in DocType 'CRM Deal'
 #. Label of the person_tab (Tab Break) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
@@ -5434,7 +5553,7 @@ msgstr ""
 msgid "Pinned"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:595
+#: frontend/src/components/Layouts/AppSidebar.vue:601
 msgid "Pinned View"
 msgstr ""
 
@@ -5530,7 +5649,7 @@ msgid "Position"
 msgstr ""
 
 #: frontend/src/components/Settings/PreferencesSettings.vue:4
-#: frontend/src/components/Settings/Settings.vue:108
+#: frontend/src/components/Settings/Settings.vue:110
 msgid "Preferences"
 msgstr ""
 
@@ -5542,7 +5661,7 @@ msgstr ""
 msgid "Primary"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:704 frontend/src/pages/MobileDeal.vue:571
+#: frontend/src/pages/Deal.vue:704 frontend/src/pages/MobileDeal.vue:573
 msgid "Primary Contact Set"
 msgstr ""
 
@@ -5636,9 +5755,9 @@ msgstr ""
 msgid "Products"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:564
+#: frontend/src/components/Layouts/AppSidebar.vue:570
 #: frontend/src/components/Settings/Profile/ProfileSettings.vue:4
-#: frontend/src/components/Settings/Settings.vue:98
+#: frontend/src/components/Settings/Settings.vue:100
 msgid "Profile"
 msgstr ""
 
@@ -5657,7 +5776,7 @@ msgstr ""
 msgid "Public"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:594
+#: frontend/src/components/Layouts/AppSidebar.vue:600
 msgid "Public View"
 msgstr ""
 
@@ -5686,7 +5805,7 @@ msgstr ""
 msgid "Quick Entry"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:618
+#: frontend/src/components/Layouts/AppSidebar.vue:624
 msgid "Quick Entry Layout"
 msgstr ""
 
@@ -5731,7 +5850,7 @@ msgstr ""
 msgid "Recording URL"
 msgstr ""
 
-#: crm/integrations/api.py:159
+#: crm/integrations/api.py:157
 msgid "Recording URL not found"
 msgstr ""
 
@@ -5852,6 +5971,18 @@ msgstr ""
 msgid "Remove Tab"
 msgstr ""
 
+#: crm/api/user.py:111
+msgid "Remove this user from the sales hierarchy before changing their role to Sales User"
+msgstr ""
+
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:194
+msgid "Remove {0} from the hierarchy. What should happen to their direct reports?"
+msgstr ""
+
+#: frontend/src/components/Settings/Hierarchy/useRemoveNode.js:13
+msgid "Removed from hierarchy."
+msgstr ""
+
 #. Label of the auto_reopen_on_new_communication (Check) field in DocType 'FCRM
 #. Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
@@ -5870,6 +6001,11 @@ msgstr ""
 
 #: frontend/src/components/Modals/AboutModal.vue:65
 msgid "Report an Issue"
+msgstr ""
+
+#. Label of the reports_to (Link) field in DocType 'CRM Sales Hierarchy'
+#: crm/fcrm/doctype/crm_sales_hierarchy/crm_sales_hierarchy.json
+msgid "Reports To"
 msgstr ""
 
 #. Option for the 'Type' (Select) field in DocType 'CRM Fields Layout'
@@ -5961,6 +6097,20 @@ msgstr ""
 msgid "Restore Demo Data"
 msgstr ""
 
+#. Description of the 'Enable Sales Hierarchy Permissions' (Check) field in
+#. DocType 'FCRM Settings'
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
+msgid "Restrict Lead and Deal visibility based on the Sales Hierarchy tree. Managers can see all records owned by or assigned to their reports."
+msgstr ""
+
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:20
+msgid "Restrict visibility of Leads and Deals based on a reporting tree."
+msgstr ""
+
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:65
+msgid "Restrict visibility using a reporting tree"
+msgstr ""
+
 #: frontend/src/components/FilesUploader/FilesUploader.vue:51
 msgid "Retake"
 msgstr ""
@@ -5979,7 +6129,9 @@ msgstr ""
 msgid "Rich Text"
 msgstr ""
 
+#. Label of the rgt (Int) field in DocType 'CRM Sales Hierarchy'
 #. Label of the rgt (Int) field in DocType 'CRM Territory'
+#: crm/fcrm/doctype/crm_sales_hierarchy/crm_sales_hierarchy.json
 #: crm/fcrm/doctype/crm_territory/crm_territory.json
 msgid "Right"
 msgstr ""
@@ -6058,7 +6210,7 @@ msgstr ""
 msgid "SLA Name"
 msgstr ""
 
-#: frontend/src/components/Settings/Settings.vue:188
+#: frontend/src/components/Settings/Settings.vue:196
 #: frontend/src/components/Settings/Sla/SlaPolicyList.vue:3
 msgid "SLA Policies"
 msgstr ""
@@ -6103,6 +6255,19 @@ msgstr ""
 msgid "SUBJECT"
 msgstr ""
 
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:7
+#: frontend/src/components/Settings/Settings.vue:163
+msgid "Sales Hierarchy"
+msgstr ""
+
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:323
+msgid "Sales Hierarchy disabled"
+msgstr ""
+
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:334
+msgid "Sales Hierarchy enabled"
+msgstr ""
+
 #. Name of a role
 #. Option for the 'Role' (Select) field in DocType 'CRM Invitation'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
@@ -6124,6 +6289,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
 #: crm/fcrm/doctype/crm_product/crm_product.json
+#: crm/fcrm/doctype/crm_sales_hierarchy/crm_sales_hierarchy.json
 #: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.json
 #: crm/fcrm/doctype/crm_task/crm_task.json
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
@@ -6137,6 +6303,7 @@ msgstr ""
 #: crm/lead_syncing/doctype/facebook_page/facebook_page.json
 #: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.json
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:276
 msgid "Sales Manager"
 msgstr ""
 
@@ -6164,6 +6331,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
 #: crm/fcrm/doctype/crm_product/crm_product.json
+#: crm/fcrm/doctype/crm_sales_hierarchy/crm_sales_hierarchy.json
 #: crm/fcrm/doctype/crm_task/crm_task.json
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
 #: crm/fcrm/doctype/crm_territory/crm_territory.json
@@ -6172,6 +6340,7 @@ msgstr ""
 #: crm/fcrm/doctype/fcrm_note/fcrm_note.json
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 #: frontend/src/components/Modals/AddExistingUserModal.vue:92
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:277
 #: frontend/src/components/Settings/InviteUserPage.vue:164
 #: frontend/src/components/Settings/InviteUserPage.vue:171
 #: frontend/src/components/Settings/Users.vue:84
@@ -6231,7 +6400,7 @@ msgstr ""
 msgid "Save Changes"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:593
+#: frontend/src/components/Layouts/AppSidebar.vue:599
 msgid "Saved View"
 msgstr ""
 
@@ -6265,6 +6434,11 @@ msgstr ""
 
 #: frontend/src/components/Settings/Users.vue:69
 msgid "Search User"
+msgstr ""
+
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:83
+#: frontend/src/components/Settings/Hierarchy/UserMultiSelect.vue:6
+msgid "Search users"
 msgstr ""
 
 #: frontend/src/components/FieldLayoutEditor.vue:454
@@ -6380,7 +6554,7 @@ msgstr ""
 msgid "Send an Email"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:482
+#: frontend/src/components/Layouts/AppSidebar.vue:488
 msgid "Send email"
 msgstr ""
 
@@ -6402,7 +6576,7 @@ msgstr ""
 msgid "Series"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:605
+#: frontend/src/components/Layouts/AppSidebar.vue:611
 msgid "Service Level Agreement"
 msgstr ""
 
@@ -6451,7 +6625,7 @@ msgstr ""
 msgid "Set an Organization"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:661 frontend/src/pages/MobileDeal.vue:528
+#: frontend/src/pages/Deal.vue:661 frontend/src/pages/MobileDeal.vue:530
 msgid "Set as Primary Contact"
 msgstr ""
 
@@ -6479,7 +6653,7 @@ msgstr ""
 msgid "Set working days, hours, and holidays by selecting a predefined schedule or creating a new one"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:557
+#: frontend/src/components/Layouts/AppSidebar.vue:563
 msgid "Setting Up"
 msgstr ""
 
@@ -6521,7 +6695,7 @@ msgstr ""
 
 #. Label of the defaults_tab (Tab Break) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
-#: frontend/src/components/Layouts/AppSidebar.vue:561
+#: frontend/src/components/Layouts/AppSidebar.vue:567
 msgid "Settings"
 msgstr ""
 
@@ -6541,7 +6715,7 @@ msgstr ""
 msgid "Setup the Exchange Rate Provider other than 'Frankfurter' in settings, as default provider does not support currency conversion for {0} to {1}."
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:354
+#: frontend/src/components/Layouts/AppSidebar.vue:360
 msgid "Setup your password"
 msgstr ""
 
@@ -6632,6 +6806,10 @@ msgstr ""
 msgid "Some error occurred while updating assignment rule"
 msgstr ""
 
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:508
+msgid "Some users could not be added"
+msgstr ""
+
 #: frontend/src/components/Settings/Users.vue:279
 #: frontend/src/components/Settings/Users.vue:292
 msgid "Something went wrong"
@@ -6697,7 +6875,7 @@ msgstr ""
 msgid "Standard Views"
 msgstr ""
 
-#: frontend/src/composables/event.js:248
+#: frontend/src/composables/event.js:242
 msgid "Start & End Time Are Required"
 msgstr ""
 
@@ -6848,7 +7026,7 @@ msgstr ""
 msgid "System"
 msgstr ""
 
-#: frontend/src/components/Settings/Settings.vue:115
+#: frontend/src/components/Settings/Settings.vue:117
 msgid "System Configuration"
 msgstr ""
 
@@ -6877,6 +7055,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
 #: crm/fcrm/doctype/crm_product/crm_product.json
+#: crm/fcrm/doctype/crm_sales_hierarchy/crm_sales_hierarchy.json
 #: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.json
 #: crm/fcrm/doctype/crm_task/crm_task.json
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
@@ -6904,16 +7083,16 @@ msgstr ""
 #. Option for the 'Type' (Select) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
 #: frontend/src/components/Activities/ActivityHeader.vue:152
-#: frontend/src/components/Layouts/AppSidebar.vue:579
+#: frontend/src/components/Layouts/AppSidebar.vue:585
 msgid "Task"
 msgstr ""
 
 #: frontend/src/pages/Deal.vue:591 frontend/src/pages/Lead.vue:443
-#: frontend/src/pages/MobileDeal.vue:461 frontend/src/pages/MobileLead.vue:309
+#: frontend/src/pages/MobileDeal.vue:463 frontend/src/pages/MobileLead.vue:310
 msgid "Tasks"
 msgstr ""
 
-#: frontend/src/components/Settings/Settings.vue:210
+#: frontend/src/components/Settings/Settings.vue:218
 msgid "Telephony"
 msgstr ""
 
@@ -6954,7 +7133,7 @@ msgstr ""
 msgid "Template updated successfully"
 msgstr ""
 
-#: frontend/src/components/Settings/Settings.vue:173
+#: frontend/src/components/Settings/Settings.vue:181
 msgid "Templates"
 msgstr ""
 
@@ -7232,7 +7411,7 @@ msgstr ""
 #. Agent'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
-#: frontend/src/components/Layouts/AppSidebar.vue:625
+#: frontend/src/components/Layouts/AppSidebar.vue:631
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:51
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:153
 msgid "Twilio"
@@ -7346,6 +7525,10 @@ msgstr ""
 msgid "Unlink & Delete"
 msgstr ""
 
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:213
+msgid "Unlink & Delete {0} Users"
+msgstr ""
+
 #: frontend/src/components/BulkDeleteLinkedDocModal.vue:35
 msgid "Unlink & Delete {0} items"
 msgstr ""
@@ -7430,6 +7613,10 @@ msgstr ""
 msgid "Update {0} Records"
 msgstr ""
 
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:466
+msgid "Updated reports to"
+msgstr ""
+
 #: frontend/src/components/Controls/ImageUploader.vue:15
 #: frontend/src/components/FilesUploader/FilesUploader.vue:83
 msgid "Upload"
@@ -7465,19 +7652,21 @@ msgid "Uploading {0}%"
 msgstr ""
 
 #. Label of the user (Link) field in DocType 'CRM Dashboard'
+#. Label of the user (Link) field in DocType 'CRM Sales Hierarchy'
 #. Label of the user (Link) field in DocType 'CRM Telephony Agent'
 #. Label of the user (Link) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_dashboard/crm_dashboard.json
+#: crm/fcrm/doctype/crm_sales_hierarchy/crm_sales_hierarchy.json
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
 msgid "User"
 msgstr ""
 
-#: frontend/src/components/Settings/Settings.vue:95
+#: frontend/src/components/Settings/Settings.vue:97
 msgid "User Configuration"
 msgstr ""
 
-#: frontend/src/components/Settings/Settings.vue:146
+#: frontend/src/components/Settings/Settings.vue:148
 msgid "User Management"
 msgstr ""
 
@@ -7486,7 +7675,11 @@ msgstr ""
 msgid "User Name"
 msgstr ""
 
-#: crm/api/user.py:132
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:502
+msgid "User added to hierarchy"
+msgstr ""
+
+#: crm/api/user.py:141
 msgid "User {0} cannot be removed as it has a Role Profile assigned to it."
 msgstr ""
 
@@ -7494,13 +7687,17 @@ msgstr ""
 msgid "User {0} has been removed"
 msgstr ""
 
-#: crm/api/user.py:141
+#: crm/api/user.py:158
 msgid "User {0} has been removed from CRM roles."
+msgstr ""
+
+#: crm/fcrm/doctype/crm_sales_hierarchy/crm_sales_hierarchy.py:43
+msgid "User {0} is already mapped to hierarchy node {1}."
 msgstr ""
 
 #: frontend/src/components/Modals/AddExistingUserModal.vue:20
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:608
-#: frontend/src/components/Settings/Settings.vue:149
+#: frontend/src/components/Settings/Settings.vue:151
 #: frontend/src/components/Settings/Users.vue:7
 msgid "Users"
 msgstr ""
@@ -7547,7 +7744,11 @@ msgstr ""
 msgid "View Name"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:590
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:9
+msgid "View documentation"
+msgstr ""
+
+#: frontend/src/components/Layouts/AppSidebar.vue:596
 msgid "Views"
 msgstr ""
 
@@ -7555,7 +7756,11 @@ msgstr ""
 msgid "Visibility"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:587
+#: frontend/src/components/SalesHierarchyBanner.vue:20
+msgid "We are changing how permissions work in Frappe CRM"
+msgstr ""
+
+#: frontend/src/components/Layouts/AppSidebar.vue:593
 msgid "Web Form"
 msgstr ""
 
@@ -7601,7 +7806,7 @@ msgstr ""
 msgid "Weekly Off"
 msgstr ""
 
-#: frontend/src/components/Modals/WhatsappTemplateSelectorModal.vue:11
+#: frontend/src/components/Modals/WhatsappTemplateSelectorModal.vue:16
 msgid "Welcome Message"
 msgstr ""
 
@@ -7611,10 +7816,10 @@ msgstr ""
 
 #. Option for the 'Type' (Select) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
-#: frontend/src/components/Layouts/AppSidebar.vue:627
-#: frontend/src/components/Settings/Settings.vue:215
+#: frontend/src/components/Layouts/AppSidebar.vue:633
+#: frontend/src/components/Settings/Settings.vue:223
 #: frontend/src/pages/Deal.vue:606 frontend/src/pages/Lead.vue:458
-#: frontend/src/pages/MobileDeal.vue:476 frontend/src/pages/MobileLead.vue:324
+#: frontend/src/pages/MobileDeal.vue:478 frontend/src/pages/MobileLead.vue:325
 msgid "WhatsApp"
 msgstr ""
 
@@ -7622,7 +7827,7 @@ msgstr ""
 msgid "WhatsApp Message"
 msgstr ""
 
-#: frontend/src/components/Modals/WhatsappTemplateSelectorModal.vue:4
+#: frontend/src/components/Modals/WhatsappTemplateSelectorModal.vue:5
 msgid "WhatsApp Templates"
 msgstr ""
 
@@ -7728,7 +7933,7 @@ msgstr ""
 msgid "You can invite multiple users by comma separating their email addresses"
 msgstr ""
 
-#: crm/api/user.py:120
+#: crm/api/user.py:129
 msgid "You cannot remove yourself."
 msgstr ""
 
@@ -7748,7 +7953,7 @@ msgstr ""
 msgid "You do not have permission to access Frappe CRM"
 msgstr ""
 
-#: frontend/src/data/document.js:41
+#: frontend/src/data/document.js:45
 msgid "You do not have permission to access this document"
 msgstr ""
 
@@ -7890,6 +8095,10 @@ msgstr ""
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:190
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:274
 msgid "desk"
+msgstr ""
+
+#: frontend/src/components/Settings/Hierarchy/HierarchyRow.vue:47
+msgid "disabled"
 msgstr ""
 
 #. Option for the 'Service Provider' (Select) field in DocType 'FCRM Settings'
@@ -8241,7 +8450,7 @@ msgstr ""
 msgid "{0} hours ago"
 msgstr ""
 
-#: frontend/src/composables/event.js:213
+#: frontend/src/composables/event.js:207
 msgid "{0} hrs"
 msgstr ""
 
@@ -8275,7 +8484,7 @@ msgstr ""
 msgid "{0} maybe"
 msgstr ""
 
-#: frontend/src/composables/event.js:207
+#: frontend/src/composables/event.js:201
 msgid "{0} mins"
 msgstr ""
 
@@ -8289,6 +8498,10 @@ msgstr ""
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:647
 msgid "{0} no"
+msgstr ""
+
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:503
+msgid "{0} users added to hierarchy"
 msgstr ""
 
 #: frontend/src/utils/index.js:160
@@ -8323,11 +8536,11 @@ msgstr ""
 msgid "⚠️ No class found for doctype: {0}, it is mandatory to have a class for the parent doctype. it can be empty, but it should be present."
 msgstr ""
 
-#: frontend/src/data/script.js:246
+#: frontend/src/data/script.js:249
 msgid "⚠️ No data found for parent field: {0}"
 msgstr ""
 
-#: frontend/src/data/script.js:254
+#: frontend/src/data/script.js:257
 msgid "⚠️ No row found for idx: {0} in parent field: {1}"
 msgstr ""
 

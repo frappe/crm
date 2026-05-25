@@ -101,6 +101,15 @@ def update_user_role(user: str, new_role: str):
 		user_doc.append_roles("Sales Manager", "Sales User")
 		remove_roles(user_doc, "System Manager")
 	if new_role == "Sales User":
+		node = frappe.db.get_value(
+			"CRM Sales Hierarchy", {"user": user}, ["name", "reports_to"], as_dict=True
+		)
+		if node:
+			has_reports = frappe.db.exists("CRM Sales Hierarchy", {"reports_to": node.name})
+			if has_reports or not node.reports_to:
+				frappe.throw(
+					_("Remove this user from the sales hierarchy before changing their role to Sales User")
+				)
 		user_doc.append_roles("Sales User")
 		remove_roles(user_doc, "Sales Manager", "System Manager")
 		update_module_in_user(user_doc, "FCRM")
@@ -136,8 +145,16 @@ def remove_crm_roles_from_user(user: str):
 		remove_roles(user_doc, "Sales User")
 	if "Sales Manager" in roles:
 		remove_roles(user_doc, "Sales Manager")
+	if "System Manager" in roles and current_user_is_system_manager:
+		remove_roles(user_doc, "System Manager")
+		update_module_in_user(user_doc, "FCRM")
 
 	user_doc.save(ignore_permissions=True)
+
+	node_name = frappe.db.get_value("CRM Sales Hierarchy", {"user": user}, "name")
+	if node_name:
+		frappe.delete_doc("CRM Sales Hierarchy", node_name, ignore_permissions=True)
+
 	frappe.msgprint(_("User {0} has been removed from CRM roles.").format(user))
 
 
