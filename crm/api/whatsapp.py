@@ -6,7 +6,7 @@ from frappe.permissions import add_permission, update_permission_property
 
 from crm.api.doc import get_assigned_users
 from crm.fcrm.doctype.crm_notification.crm_notification import notify_user
-from crm.integrations.api import get_contact_lead_or_deal_from_number
+from crm.integrations.api import get_all_matches_by_phone_number, get_contact_lead_or_deal_from_number
 
 ALLOWED_WHATSAPP_ROLES = ["System Manager", "Sales Manager", "Sales User"]
 
@@ -15,6 +15,64 @@ MIME_CONTENT_TYPE_MAP = {
 	"audio/": "audio",
 	"video/": "video",
 }
+
+
+def _get_default_whatsapp_account() -> str | None:
+	"""Get the default WhatsApp account from settings."""
+	if not frappe.db.exists("DocType", "Whatsapp Setting"):
+		return None
+	return frappe.db.get_single_value("Whatsapp Setting", "default_account")
+
+
+def _resolve_to_profile(to_value: str, create_if_missing: bool = False) -> str | None:
+	"""Resolve a value (phone number or profile name) to a Whatsapp Profile name.
+
+	Accepts either:
+	- A Whatsapp Profile name (returns as-is if exists)
+	- A phone number (looks up by phone + default account, optionally creates)
+
+	Returns the Profile name, or None if not found/created.
+	"""
+	if not to_value:
+		return None
+
+	if not frappe.db.exists("DocType", "Whatsapp Profile"):
+		return None
+
+	if frappe.db.exists("Whatsapp Profile", to_value):
+		return to_value
+
+	default_account = _get_default_whatsapp_account()
+	if not default_account:
+		return None
+
+	profile_name = frappe.db.get_value(
+		"Whatsapp Profile",
+		{"phone_number": to_value, "whatsapp_account": default_account},
+		"name",
+	)
+	if profile_name:
+		return profile_name
+
+	if not create_if_missing:
+		return None
+
+	try:
+		from whatsapp.whatsapp.doctype.whatsapp_profile.whatsapp_profile import (
+			get_or_create_profile,
+		)
+
+		return get_or_create_profile(
+			phone_number=to_value,
+			account_name=default_account,
+			profile_name=to_value,
+			wa_id=to_value,
+		)
+	except ImportError:
+		return None
+	except Exception:
+		frappe.log_error(frappe.get_traceback(), "CRM WhatsApp: failed to resolve/create profile")
+		return None
 
 
 def validate_access(reference_doctype=None, reference_name=None, permtype="read"):
@@ -41,15 +99,92 @@ def validate_access(reference_doctype=None, reference_name=None, permtype="read"
 
 
 def validate(doc, method):
-	phone_number = doc.get("from") if doc.direction == "Incoming" else doc.get("to")
-	if phone_number:
-		try:
-			name, doctype = get_contact_lead_or_deal_from_number(phone_number)
-			if doctype and name is not None:
-				doc.reference_doctype = doctype
-				doc.reference_docname = name
-		except Exception:
-			frappe.log_error(frappe.get_traceback(), "CRM WhatsApp: failed to resolve contact from number")
+	# preserve the user's chosen reference for outgoing messages
+	if doc.direction == "Outgoing" and doc.reference_doctype and doc.reference_docname:
+		pass
+	else:
+		phone_number = _get_phone_number_from_profile(doc)
+		if phone_number:
+			try:
+				name, doctype = get_contact_lead_or_deal_from_number(phone_number)
+				if doctype and name is not None:
+					doc.reference_doctype = doctype
+					doc.reference_docname = name
+			except Exception:
+				frappe.log_error(
+					frappe.get_traceback(), "CRM WhatsApp: failed to resolve contact from number"
+				)
+
+	_link_profile_to_crm_entities(doc)
+
+
+def _get_phone_number_from_profile(doc) -> str | None:
+	"""Get phone number from the Whatsapp Profile linked via doc.to (Link field)."""
+	profile_name = doc.get("to")
+	if not profile_name:
+		return None
+
+	try:
+		if not frappe.db.exists("Whatsapp Profile", profile_name):
+			return None
+		return frappe.db.get_value("Whatsapp Profile", profile_name, "phone_number")
+	except Exception:
+		return None
+
+
+def _link_profile_to_crm_entities(doc) -> None:
+	"""Link Whatsapp Profile to ALL matching CRM entities (Deal, Lead, Contact).
+
+	Uses Dynamic Link table (Whatsapp Profile.links) to link to matching CRM entities.
+	Idempotent: skips if already linked.
+	"""
+	profile_name = doc.get("to")
+	if not profile_name:
+		return
+
+	try:
+		if not frappe.db.exists("Whatsapp Profile", profile_name):
+			return
+
+		phone_number = frappe.db.get_value("Whatsapp Profile", profile_name, "phone_number")
+		if not phone_number:
+			return
+
+		matches = get_all_matches_by_phone_number(phone_number)
+		if not matches:
+			return
+
+		profile = frappe.get_doc("Whatsapp Profile", profile_name)
+
+		existing_links = {
+			(link.link_doctype, link.link_name) for link in (profile.links or [])
+		}
+
+		needs_save = False
+		for match in matches:
+			doctype = match["doctype"]
+			docname = match["docname"]
+			key = (doctype, docname)
+
+			if key not in existing_links:
+				profile.append(
+					"links",
+					{
+						"link_doctype": doctype,
+						"link_name": docname,
+						"link_title": docname,
+					},
+				)
+				needs_save = True
+
+		if needs_save:
+			profile.flags.ignore_permissions = True
+			profile.save(ignore_permissions=True)
+
+	except Exception:
+		frappe.log_error(
+			frappe.get_traceback(), "CRM WhatsApp: failed to link profile to CRM entities"
+		)
 
 
 def on_update(doc, method):
@@ -258,6 +393,15 @@ def create_whatsapp_message(
 	content_type: str = "text",
 ):
 	validate_access(reference_doctype, reference_name)
+
+	profile_name = _resolve_to_profile(to, create_if_missing=True)
+	if not profile_name:
+		frappe.throw(
+			_("Could not resolve recipient '{0}' to a WhatsApp Profile. Please ensure a default WhatsApp account is configured.").format(
+				to
+			)
+		)
+
 	doc = frappe.new_doc("Whatsapp Message")
 
 	if reply_to:
@@ -280,7 +424,7 @@ def create_whatsapp_message(
 			"reference_doctype": reference_doctype,
 			"reference_docname": reference_name,
 			"message": message or attach,
-			"to": to,
+			"to": profile_name,
 		}
 	)
 	doc.insert(ignore_permissions=True)
@@ -298,13 +442,25 @@ def create_whatsapp_message(
 		)
 		doc.reload()
 
-	doc.submit()
+	try:
+		doc.submit()
+	except Exception:
+		pass
 	return doc.name
 
 
 @frappe.whitelist()
 def send_whatsapp_template(reference_doctype: str, reference_name: str, template: str, to: str):
 	validate_access(reference_doctype, reference_name)
+
+	profile_name = _resolve_to_profile(to, create_if_missing=True)
+	if not profile_name:
+		frappe.throw(
+			_("Could not resolve recipient '{0}' to a WhatsApp Profile. Please ensure a default WhatsApp account is configured.").format(
+				to
+			)
+		)
+
 	doc = frappe.new_doc("Whatsapp Message")
 	doc.update(
 		{
@@ -313,11 +469,14 @@ def send_whatsapp_template(reference_doctype: str, reference_name: str, template
 			"is_template": True,
 			"message": "Template message",
 			"whatsapp_template": template,
-			"to": to,
+			"to": profile_name,
 		}
 	)
 	doc.insert(ignore_permissions=True)
-	doc.submit()
+	try:
+		doc.submit()
+	except Exception:
+		pass
 	return doc.name
 
 
@@ -333,7 +492,7 @@ def react_on_whatsapp_message(emoji: str, reply_to_name: str):
 
 	validate_access(reply_to_doc.reference_doctype, reply_to_doc.reference_docname)
 
-	to = (reply_to_doc.direction == "Incoming" and reply_to_doc.get("from")) or reply_to_doc.to
+	to = reply_to_doc.to
 	doc = frappe.new_doc("Whatsapp Message")
 	doc.update(
 		{
@@ -345,7 +504,10 @@ def react_on_whatsapp_message(emoji: str, reply_to_name: str):
 		}
 	)
 	doc.insert(ignore_permissions=True)
-	doc.submit()
+	try:
+		doc.submit()
+	except Exception:
+		pass
 	return doc.name
 
 
@@ -373,12 +535,64 @@ def get_from_name(message):
 	return from_name
 
 
+@frappe.whitelist()
+def get_linked_whatsapp_profiles(reference_doctype: str, reference_docname: str) -> list[dict]:
+	"""Get all Whatsapp Profiles linked to the given CRM document.
+
+	Searches Dynamic Link table where:
+	- parenttype = "Whatsapp Profile"
+	- link_doctype = reference_doctype
+	- link_name = reference_docname
+
+	Returns list of profile details: name, profile_name, phone_number, status, wa_id,
+	last_message_at, message_count.
+	"""
+	validate_access(reference_doctype, reference_docname)
+
+	if not frappe.db.exists("DocType", "Whatsapp Profile"):
+		return []
+
+	links = frappe.get_all(
+		"Dynamic Link",
+		filters={
+			"parenttype": "Whatsapp Profile",
+			"link_doctype": reference_doctype,
+			"link_name": reference_docname,
+		},
+		fields=["parent as profile_name"],
+	)
+
+	if not links:
+		return []
+
+	profiles = frappe.get_all(
+		"Whatsapp Profile",
+		filters={"name": ["in", [l.profile_name for l in links]]},
+		fields=[
+			"name",
+			"profile_name",
+			"phone_number",
+			"status",
+			"wa_id",
+			"last_message_at",
+			"message_count",
+		],
+	)
+
+	return profiles
+
+
 def add_roles():
 	if "whatsapp" not in frappe.get_installed_apps():
 		return
 
 	role_list = ["Sales Manager", "Sales User"]
-	doctypes = ["Whatsapp Message", "Whatsapp Template", "Whatsapp Setting"]
+	doctypes = [
+		"Whatsapp Message",
+		"Whatsapp Template",
+		"Whatsapp Setting",
+		"Whatsapp Profile",
+	]
 	for doctype in doctypes:
 		for role in role_list:
 			if frappe.db.exists("Custom DocPerm", {"parent": doctype, "role": role}):

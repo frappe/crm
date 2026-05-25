@@ -135,6 +135,97 @@ def get_contact_lead_or_deal_from_number(number: str):
 
 
 @frappe.whitelist()
+def get_all_matches_by_phone_number(phone_number: str) -> list[dict]:
+	"""Get ALL matching CRM entities (Contact, Deal, Lead) for a phone number.
+
+	Unlike get_contact_lead_or_deal_from_number() which returns only the
+	highest-priority match, this returns ALL matching entities.
+
+	Returns list of dicts with:
+	- doctype: "CRM Deal", "CRM Lead", or "Contact"
+	- docname: name of the document
+	- matching_phone: the phone number that matched
+	"""
+	number = parse_phone_number(phone_number)
+
+	if number.get("is_valid"):
+		return _get_all_matches(number.get("national_number"), number.get("country"))
+	else:
+		return _get_all_matches(phone_number, number.get("country"), exact_match=True)
+
+
+def _get_all_matches(
+	phone_number: str, country: str = "IN", exact_match: bool = False
+) -> list[dict]:
+	"""Internal: find ALL matching entities by phone number."""
+	if not phone_number:
+		return []
+
+	cleaned_number = (
+		phone_number.strip()
+		.replace(" ", "")
+		.replace("-", "")
+		.replace("(", "")
+		.replace(")", "")
+		.replace("+", "")
+	)
+
+	results = []
+	seen = set()
+
+	def _add_match(doctype: str, docname: str, matching_phone: str):
+		key = (doctype, docname)
+		if key not in seen:
+			seen.add(key)
+			results.append(
+				{"doctype": doctype, "docname": docname, "matching_phone": matching_phone}
+			)
+
+	Contact = frappe.qb.DocType("Contact")
+	normalized_phone = Replace(
+		Replace(Replace(Replace(Replace(Contact.mobile_no, " ", ""), "-", ""), "(", ""), ")", ""), "+", ""
+	)
+
+	query = (
+		frappe.qb.from_(Contact)
+		.select(Contact.name, Contact.full_name, Contact.mobile_no, Contact.phone)
+		.where(normalized_phone.like(f"%{cleaned_number}%"))
+		.orderby("modified", order=Order.desc)
+	)
+	contacts = query.run(as_dict=True)
+
+	for contact in contacts:
+		if are_same_phone_number(contact.mobile_no, phone_number, country, validate=not exact_match):
+			_add_match("Contact", contact.name, contact.mobile_no)
+
+			deal = frappe.db.get_value(
+				"CRM Contacts", {"contact": contact.name, "is_primary": 1}, "parent"
+			)
+			if deal:
+				_add_match("CRM Deal", deal, contact.mobile_no)
+
+	Lead = frappe.qb.DocType("CRM Lead")
+	normalized_phone = Replace(
+		Replace(Replace(Replace(Replace(Lead.mobile_no, " ", ""), "-", ""), "(", ""), ")", ""), "+", ""
+	)
+
+	query = (
+		frappe.qb.from_(Lead)
+		.select(Lead.name, Lead.lead_name, Lead.mobile_no, Lead.phone)
+		.where(Lead.converted == 0)
+		.where(normalized_phone.like(f"%{cleaned_number}%"))
+		.orderby("modified", order=Order.desc)
+	)
+	leads = query.run(as_dict=True)
+
+	for lead in leads:
+		if are_same_phone_number(lead.mobile_no, phone_number, country, validate=not exact_match):
+			_add_match("CRM Lead", lead.name, lead.mobile_no)
+
+	return results
+
+
+@frappe.whitelist()
 def get_contact_by_phone_number(phone_number: str):
 	"""Get contact by phone number."""
 	number = parse_phone_number(phone_number)
