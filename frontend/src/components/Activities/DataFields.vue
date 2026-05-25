@@ -3,7 +3,7 @@
     class="my-3 flex items-center justify-between text-lg font-medium sm:mb-4 sm:mt-8"
   >
     <div class="flex h-8 items-center text-xl font-semibold text-ink-gray-8">
-      {{ __('Data') }}
+      {{ __(sectionLabel) }}
       <Badge
         v-if="document.isDirty"
         class="ml-3"
@@ -64,7 +64,7 @@ import LoadingIndicator from '@/components/Icons/LoadingIndicator.vue'
 import { usersStore } from '@/stores/users'
 import { useDocument } from '@/data/document'
 import { isMobileView } from '@/composables/settings'
-import { ref, watch, getCurrentInstance } from 'vue'
+import { ref, computed, watch, getCurrentInstance } from 'vue'
 
 const props = defineProps({
   doctype: { type: String, required: true },
@@ -79,6 +79,12 @@ const instance = getCurrentInstance()
 const attrs = instance?.vnode?.props ?? {}
 
 const showDataFieldsModal = ref(false)
+
+const sectionLabel = computed(() => {
+  if (props.doctype === 'CRM Lead') return 'Lead Details'
+  if (props.doctype === 'CRM Deal') return 'Questionnaires'
+  return 'Data'
+})
 
 const { document } = useDocument(props.doctype, props.docname)
 

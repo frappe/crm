@@ -425,7 +425,7 @@ const tabs = computed(() => {
     },
     {
       name: 'Data',
-      label: __('Data'),
+      label: __('Lead Details'),
       icon: DetailsIcon,
     },
     {
