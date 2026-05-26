@@ -24,17 +24,6 @@ class CRMProduct(Document):
 		standard_rate: DF.Currency
 	# end: auto-generated types
 
-	def before_insert(self):
-		if self.flags.get("ignore_erpnext_sync"):
-			return
-		if frappe.db.get_single_value("ERPNext CRM Settings", "enabled"):
-			frappe.throw(
-				_(
-					"ERPNext integration is active. Create an Item in ERPNext and it will appear here automatically."
-				),
-				title=_("Use ERPNext to Create Products"),
-			)
-
 	def validate(self):
 		self.set_product_name()
 
