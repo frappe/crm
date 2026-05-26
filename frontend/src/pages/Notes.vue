@@ -31,11 +31,12 @@
       <div
         v-for="note in notes.data.data"
         :key="note.name"
-        class="group flex h-56 cursor-pointer flex-col justify-between gap-2 rounded-lg border px-5 py-4 shadow-sm hover:bg-surface-menu-bar"
+        class="group flex cursor-pointer flex-col overflow-hidden rounded-2xl border border-outline-gray-2 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
         @click="editNote(note.name)"
       >
-        <div class="flex items-center justify-between">
-          <div class="truncate text-lg font-medium text-ink-gray-9">
+        <!-- Header -->
+        <div class="flex items-center justify-between px-5 pt-5">
+          <div class="truncate text-[16px] font-semibold tracking-tight text-ink-gray-9">
             {{ note.title }}
           </div>
           <Dropdown
@@ -55,22 +56,47 @@
             />
           </Dropdown>
         </div>
-        <TextEditor
-          v-if="note.content"
-          :content="note.content"
-          :editable="false"
-          editor-class="prose-sm text-p-sm max-w-none text-ink-gray-5 focus:outline-none"
-          class="flex-1 overflow-hidden"
-        />
-        <div class="mt-2 flex items-center justify-between gap-2">
-          <div class="flex items-center gap-2">
-            <UserAvatar :user="note.owner" size="xs" />
-            <div class="text-sm text-ink-gray-8">
+
+        <!-- Image -->
+        <div class="px-5 pt-4">
+          <div class="h-44 overflow-hidden rounded-xl bg-surface-gray-2">
+            <img
+              v-if="fileUrl(note.custom_file) || extractImage(note.content)"
+              :src="fileUrl(note.custom_file) || extractImage(note.content)"
+              class="h-full w-full object-cover"
+            />
+            <div v-else class="flex h-full items-center justify-center text-ink-gray-4">
+              <NoteIcon class="h-12 w-12" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Content -->
+        <div class="flex flex-1 flex-col px-5 pt-3">
+          <div class="line-clamp-2 text-[13px] leading-6 text-ink-gray-6">
+            {{ stripContent(note.content) }}
+          </div>
+
+          <!-- Location -->
+          <div
+            v-if="note.custom_address"
+            class="mt-3 flex items-center gap-2 border-t border-outline-gray-1 pt-3 text-xs text-ink-gray-6"
+          >
+            <LucideMapPin class="h-3 w-3 shrink-0" />
+            <span class="truncate">{{ shortAddress(note.custom_address) }}</span>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="mt-4 flex items-center justify-between px-5 pb-5 pt-1">
+          <div class="flex items-center gap-2 overflow-hidden">
+            <UserAvatar :user="note.owner" size="sm" />
+            <div class="truncate text-sm font-medium text-ink-gray-8">
               {{ getUser(note.owner).full_name }}
             </div>
           </div>
           <Tooltip :text="formatDate(note.modified)">
-            <div class="text-sm text-ink-gray-7">
+            <div class="text-sm text-ink-gray-6">
               {{ __(timeAgo(note.modified)) }}
             </div>
           </Tooltip>
@@ -115,6 +141,44 @@ const notes = ref({})
 const loadMore = ref(1)
 const updatedPageCount = ref(20)
 const viewControls = ref(null)
+
+// Convert private/public file path to accessible URL
+function fileUrl(path) {
+  if (!path) return null
+  if (path.startsWith('http')) return path
+  if (path.startsWith('/files/')) return path
+  if (path.startsWith('/private/files/')) return path // Frappe serves private files with session cookie
+  return path
+}
+
+// Extract first image src from HTML content
+function extractImage(content) {
+  if (!content) return null
+  const match = content.match(/<img[^>]+src=["']([^"']+)["']/)
+  return match ? fileUrl(match[1]) : null
+}
+
+// Strip images, SVGs, encoded SVGs, and all HTML tags — plain text only
+function stripContent(content) {
+  if (!content) return ''
+  return content
+    .replace(/<img[^>]*>/gi, '')
+    .replace(/<svg[\s\S]*?<\/svg>/gi, '')
+    .replace(/&lt;svg[\s\S]*?&lt;\/svg&gt;/gi, '')  // encoded SVG
+    .replace(/&lt;[^&]*&gt;/g, '')                   // other encoded tags
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
+// Show: "Coimbatore, Tamil Nadu" — skip pincode and country
+function shortAddress(address) {
+  if (!address) return ''
+  const parts = address.split(',').map(p => p.trim())
+  // Skip first 3 parts (Ward, Zone, Area) and last 1 part (India)
+  // Keep: Coimbatore, Tamil Nadu, 641016
+  return parts.slice(3, -1).join(', ')
+}
 
 watch(
   () => notes.value?.data?.page_length_count,
