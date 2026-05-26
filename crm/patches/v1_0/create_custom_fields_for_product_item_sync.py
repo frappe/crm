@@ -17,15 +17,16 @@ def execute():
 			}
 		]
 	}
-	custom_fields["Item"] = [
-		{
-			"fieldname": "crm_product_code",
-			"fieldtype": "Data",
-			"label": "CRM Product",
-			"read_only": 1,
-			"no_copy": 1,
-			"insert_after": "item_code",
-		}
+	if frappe.db.exists("DocType", "Item"):
+		custom_fields["Item"] = [
+			{
+				"fieldname": "crm_product_code",
+				"fieldtype": "Data",
+				"label": "CRM Product",
+				"read_only": 1,
+				"no_copy": 1,
+				"insert_after": "item_code",
+			}
 		]
 	create_custom_fields(custom_fields, ignore_validate=True)
 
