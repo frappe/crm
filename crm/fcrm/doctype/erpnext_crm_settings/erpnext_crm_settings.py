@@ -58,7 +58,6 @@ class ERPNextCRMSettings(Document):
 			self.add_quotation_to_option()
 			self.create_custom_fields()
 			self.create_crm_form_script()
-			self.setup_quotation_prefill_script()
 			if not was_active and not self.is_erpnext_in_different_site:
 				from crm.fcrm.doctype.crm_product.reconcile_job import enqueue_reconciliation
 
@@ -136,15 +135,6 @@ class ERPNextCRMSettings(Document):
 				"Error while creating custom field in ERPNext, check error log for more details",
 				f"Error while creating custom field in the remote erpnext site: {self.erpnext_site_url}",
 			)
-
-	def setup_quotation_prefill_script(self):
-		if self.is_erpnext_in_different_site:
-			return
-		try:
-			from erpnext.crm.frappe_crm_api import setup_quotation_prefill_script
-		except ImportError:
-			return
-		setup_quotation_prefill_script()
 
 	def create_crm_form_script(self):
 		if not frappe.db.exists("CRM Form Script", "Create Quotation from CRM Deal"):
@@ -328,6 +318,20 @@ def create_prospect_in_remote_site(crm_deal, erpnext_crm_settings):
 			"Error while creating prospect in ERPNext, check error log for more details",
 			f"Error while creating prospect in remote site: {erpnext_crm_settings.erpnext_site_url}",
 		)
+
+
+@frappe.whitelist()
+def prefill_quotation_items(crm_deal: str):
+	if not frappe.db.exists("CRM Deal", crm_deal):
+		return []
+	deal = frappe.get_doc("CRM Deal", crm_deal)
+	items = []
+	for row in deal.products:
+		item_code = frappe.db.get_value("CRM Product", row.product_code, "erpnext_item_code")
+		if not item_code:
+			continue
+		items.append({"item_code": item_code, "qty": row.qty or 1, "rate": row.rate or 0})
+	return items
 
 
 def get_primary_contact(crm_deal):
