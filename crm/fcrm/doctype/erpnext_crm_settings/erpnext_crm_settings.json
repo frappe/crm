@@ -6,6 +6,7 @@
  "engine": "InnoDB",
  "field_order": [
   "enabled",
+  "sync_issues",
   "erpnext_company",
   "column_break_vfru",
   "is_erpnext_in_different_site",
@@ -67,6 +68,13 @@
    "fieldname": "enabled",
    "fieldtype": "Check",
    "label": "Enabled"
+  },
+  {
+   "fieldname": "sync_issues",
+   "fieldtype": "Table",
+   "label": "Product Sync Issues",
+   "options": "CRM Product Sync Issue",
+   "read_only": 1
   },
   {
    "default": "0",
