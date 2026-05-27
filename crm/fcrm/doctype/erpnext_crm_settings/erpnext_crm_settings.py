@@ -58,6 +58,7 @@ class ERPNextCRMSettings(Document):
 			self.add_quotation_to_option()
 			self.create_custom_fields()
 			self.create_crm_form_script()
+			self.grant_item_access_to_sales_roles()
 			if not was_active and not self.is_erpnext_in_different_site:
 				from crm.fcrm.doctype.crm_product.reconcile_job import enqueue_reconciliation
 
@@ -135,6 +136,20 @@ class ERPNextCRMSettings(Document):
 				"Error while creating custom field in ERPNext, check error log for more details",
 				f"Error while creating custom field in the remote erpnext site: {self.erpnext_site_url}",
 			)
+
+	def grant_item_access_to_sales_roles(self):
+		if self.is_erpnext_in_different_site:
+			return
+		if not frappe.db.exists("DocType", "Item"):
+			return
+		from frappe.permissions import add_permission, update_permission_property
+
+		for role in ("Sales User", "Sales Manager"):
+			if frappe.db.exists("Custom DocPerm", {"parent": "Item", "role": role, "permlevel": 0}):
+				continue
+			add_permission("Item", role, 0, "write")
+			for prop in ("create", "delete", "share", "print", "report", "export"):
+				update_permission_property("Item", role, 0, prop, 1)
 
 	def create_crm_form_script(self):
 		if not frappe.db.exists("CRM Form Script", "Create Quotation from CRM Deal"):
