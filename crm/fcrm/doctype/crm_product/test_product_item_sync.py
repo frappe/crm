@@ -82,9 +82,9 @@ class TestItemHooks(FrappeTestCase):
 	def setUp(self):
 		if not frappe.db.exists("DocType", "Item"):
 			self.skipTest("ERPNext not installed")
-		from crm.fcrm.doctype.crm_product.sync_utils import same_site_sync_active
+		from crm.integrations.erpnext.utils import should_sync
 
-		if not same_site_sync_active():
+		if not should_sync():
 			self.skipTest("Integration not enabled or cross-site")
 		frappe.db.delete("CRM Product", {"product_code": ["like", "HOOK-%"]})
 		frappe.db.delete("Item", {"item_code": ["like", "HOOK-%"]})
