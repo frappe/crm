@@ -96,7 +96,8 @@ async function performMerge() {
     })
     router.push({ name: 'Leads' })
   } catch (err) {
-    error.value = err.messages?.[0] || err.message || __('Failed to merge leads')
+    error.value =
+      err.messages?.[0] || err.message || __('Failed to merge leads')
   } finally {
     isMerging.value = false
   }
