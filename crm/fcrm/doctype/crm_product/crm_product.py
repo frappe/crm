@@ -57,16 +57,43 @@ class CRMProduct(Document):
 			return
 		if not same_site_sync_active():
 			return
-		push_product_to_erpnext_item(self)
+		if frappe.db.sql(
+			"SELECT 1 FROM `tabQuotation Item` WHERE item_code=%s LIMIT 1",
+			self.erpnext_item_code,
+		):
+			frappe.throw(
+				_(
+					"Cannot delete: linked ERPNext Item {0} is referenced by a Quotation. "
+					"Remove the reference or delete the Item in ERPNext first."
+				).format(self.erpnext_item_code)
+			)
 
 
-def push_product_to_erpnext_item(doc):
-	try:
-		from erpnext.crm.frappe_crm_api import update_item_from_crm_product
-	except ImportError:
+def _create_item_from_product(doc):
+	if frappe.db.exists("Item", doc.product_code):
 		return
+	item = frappe.get_doc(
+		{
+			"doctype": "Item",
+			"item_code": doc.product_code,
+			"item_name": doc.product_name or doc.product_code,
+			"standard_rate": doc.standard_rate,
+			"image": doc.image,
+			"disabled": doc.disabled,
+			"description": doc.description,
+			"crm_product_code": doc.name,
+			"item_group": frappe.db.get_single_value("Stock Settings", "item_group") or "All Item Groups",
+			"stock_uom": frappe.db.get_single_value("Stock Settings", "stock_uom") or "Nos",
+			"is_stock_item": 0,
+		}
+	)
+	item.flags.ignore_crm_sync = True
+	item.insert()
+	frappe.db.set_value("CRM Product", doc.name, "erpnext_item_code", item.name)
 
-	item_code = doc.get("erpnext_item_code")
+
+def _push_to_item(doc):
+	item_code = doc.erpnext_item_code
 	if not frappe.db.exists("Item", item_code):
 		frappe.db.set_value("CRM Product", doc.name, "erpnext_item_code", None)
 		return
