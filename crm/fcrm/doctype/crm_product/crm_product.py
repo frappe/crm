@@ -5,6 +5,10 @@ import frappe
 from frappe import _
 from frappe.model.document import Document
 
+from crm.fcrm.doctype.crm_product.sync_utils import payload_differs, same_site_sync_active
+
+CATALOGUE_FIELDS = ("standard_rate", "image", "disabled", "description")
+
 
 class CRMProduct(Document):
 	# begin: auto-generated types
