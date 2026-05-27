@@ -37,6 +37,8 @@ class ERPNextCRMSettings(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
+		from crm.fcrm.doctype.crm_product_sync_issue.crm_product_sync_issue import CRMProductSyncIssue
+
 		api_key: DF.Data | None
 		api_secret: DF.Password | None
 		create_customer_on_status_change: DF.Check
@@ -45,15 +47,22 @@ class ERPNextCRMSettings(Document):
 		erpnext_company: DF.Data | None
 		erpnext_site_url: DF.Data | None
 		is_erpnext_in_different_site: DF.Check
+		sync_issues: DF.Table[CRMProductSyncIssue]
 	# end: auto-generated types
 
 	def validate(self):
+		old = self.get_doc_before_save()
+		was_active = bool(old and old.enabled and not old.is_erpnext_in_different_site)
 		if self.enabled:
 			self.validate_if_erpnext_installed()
 			self.add_quotation_to_option()
 			self.create_custom_fields()
 			self.create_crm_form_script()
 			self.setup_quotation_prefill_script()
+			if not was_active and not self.is_erpnext_in_different_site:
+				from crm.fcrm.doctype.crm_product.reconcile_job import enqueue_reconciliation
+
+				enqueue_reconciliation()
 
 	def validate_if_erpnext_installed(self):
 		if not self.is_erpnext_in_different_site:
