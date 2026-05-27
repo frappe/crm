@@ -23,9 +23,7 @@ def set_links(item_code: str, crm_product_name: str) -> None:
 	frappe.db.set_value(
 		"CRM Product", crm_product_name, "erpnext_item_code", item_code, update_modified=False
 	)
-	frappe.db.set_value(
-		"Item", item_code, "crm_product_code", crm_product_name, update_modified=False
-	)
+	frappe.db.set_value("Item", item_code, "crm_product_code", crm_product_name, update_modified=False)
 
 
 def _other_side(self_doctype: str) -> tuple[str, str]:
@@ -103,8 +101,6 @@ def _resync_links(self_doctype, self_name, other_name):
 	else:
 		prod, item = other_name, self_name
 	if frappe.db.exists("CRM Product", prod):
-		frappe.db.set_value(
-			"CRM Product", prod, "erpnext_item_code", item, update_modified=False
-		)
+		frappe.db.set_value("CRM Product", prod, "erpnext_item_code", item, update_modified=False)
 	if frappe.db.exists("Item", item):
 		frappe.db.set_value("Item", item, "crm_product_code", prod, update_modified=False)
