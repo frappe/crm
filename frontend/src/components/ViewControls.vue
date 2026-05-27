@@ -358,7 +358,7 @@ const props = defineProps({
 const { brand } = getSettings()
 const { $dialog } = globalStore()
 const { reload: reloadView, getDefaultView, getView } = viewsStore()
-const { isManager } = usersStore()
+const { isManager, getUser } = usersStore()
 
 const list = defineModel({ type: Object, default: () => ({}) })
 const loadMore = defineModel('loadMore', { type: Boolean })
@@ -561,11 +561,27 @@ function updateSelections(selections) {
 
 async function exportRows() {
   let fields = JSON.stringify(list.value.data.columns.map((f) => f.key))
-
-  let filters = JSON.stringify({
+  const userId = getUser()?.name
+  let filters = {
     ...props.filters,
     ...list.value.params.filters,
+  }
+
+  Object.keys(filters).forEach((key) => {
+    const value = filters[key]
+
+    // Handle direct filter format: { owner: "@me" }
+    if (value === '@me') {
+      filters[key] = userId
+    }
+
+    // Handle operator-based filter format: { owner: ["=", "@me"] }
+    if (Array.isArray(value) && value[1] === '@me') {
+      filters[key][1] = userId
+    }
   })
+
+  filters = JSON.stringify(filters)
 
   let order_by = list.value.params.order_by
   let page_length = list.value.params.page_length
