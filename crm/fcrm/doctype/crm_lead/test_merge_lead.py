@@ -216,7 +216,7 @@ class TestMergeLead(IntegrationTestCase):
 		lead_a = self._create_lead(first_name="A", email="a@test.com")
 		lead_b = self._create_lead(first_name="B", email="b@test.com")
 
-		from crm.api.lead import merge_leads, get_merge_history
+		from crm.api.lead import get_merge_history, merge_leads
 
 		merge_leads(lead_a.name, lead_b.name)
 		history = get_merge_history(lead_a.name)

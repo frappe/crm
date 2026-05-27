@@ -144,9 +144,7 @@ def split_lead(merge_log_name: str):
 	source_doc = frappe.get_doc("CRM Lead", source)
 
 	if source_doc.merged_into != target:
-		frappe.throw(
-			_("Source lead {0} is not merged into {1}").format(source, target)
-		)
+		frappe.throw(_("Source lead {0} is not merged into {1}").format(source, target))
 
 	_restore_fields(target_doc, field_snapshot)
 
@@ -198,9 +196,7 @@ def get_merge_history(lead_name: str):
 	for log in logs:
 		for l, key in [(log, "target_document_name"), (log, "source_document_name")]:
 			if l[key] not in target_title_map:
-				doc = frappe.db.get_value(
-					"CRM Lead", l[key], "lead_name", cache_modified=False
-				)
+				doc = frappe.db.get_value("CRM Lead", l[key], "lead_name", cache_modified=False)
 				target_title_map[l[key]] = doc
 
 	result = []
@@ -245,7 +241,7 @@ def _snapshot_doc(doc: frappe.model.document.Document) -> dict:
 
 
 def _serializable(obj):
-	if isinstance(obj, (datetime.date, datetime.datetime)):
+	if isinstance(obj, datetime.date | datetime.datetime):
 		return obj.isoformat()
 	if isinstance(obj, datetime.time):
 		return obj.isoformat()
@@ -266,7 +262,13 @@ def _snapshot_child_tables(
 			"source_table": source_doc.name,
 			"target_table": target_doc.name,
 			"source_rows": [
-				{r.name: {f.fieldname: _serializable(r.get(f.fieldname)) for f in r.meta.fields if f.fieldname != "name"}}
+				{
+					r.name: {
+						f.fieldname: _serializable(r.get(f.fieldname))
+						for f in r.meta.fields
+						if f.fieldname != "name"
+					}
+				}
 				for r in source_rows
 			],
 			"target_rows_count": len(target_rows),
@@ -381,9 +383,7 @@ def _get_dynamic_link_references(doctype: str, docname: str) -> list:
 def _update_references(old_name: str, new_name: str):
 	for ref in _get_link_references("CRM Lead", old_name):
 		try:
-			frappe.db.set_value(
-				ref["doctype"], ref["docname"], ref["fieldname"], new_name
-			)
+			frappe.db.set_value(ref["doctype"], ref["docname"], ref["fieldname"], new_name)
 		except Exception:
 			continue
 
@@ -397,16 +397,12 @@ def _update_references(old_name: str, new_name: str):
 					new_name,
 				)
 			else:
-				frappe.db.set_value(
-					ref["doctype"], ref["docname"], ref["fieldname"], new_name
-				)
+				frappe.db.set_value(ref["doctype"], ref["docname"], ref["fieldname"], new_name)
 		except Exception:
 			continue
 
 
-def _restore_references(
-	target_name: str, source_name: str, ref_data: list
-):
+def _restore_references(target_name: str, source_name: str, ref_data: list):
 	for ref in ref_data:
 		if ref.get("old_value") != target_name:
 			continue
@@ -419,9 +415,7 @@ def _restore_references(
 					source_name,
 				)
 			else:
-				frappe.db.set_value(
-					ref["doctype"], ref["docname"], ref["fieldname"], source_name
-				)
+				frappe.db.set_value(ref["doctype"], ref["docname"], ref["fieldname"], source_name)
 		except Exception:
 			continue
 
@@ -494,7 +488,9 @@ def _restore_fields(
 		target_doc.set(fieldname, value)
 
 
-def _update_timeline(source: str, target: str, action: str, source_title: str | None = None, target_title: str | None = None):
+def _update_timeline(
+	source: str, target: str, action: str, source_title: str | None = None, target_title: str | None = None
+):
 	src = source_title or source
 	tgt = target_title or target
 
