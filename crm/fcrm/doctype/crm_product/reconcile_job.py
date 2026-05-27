@@ -109,9 +109,18 @@ def run_reconciliation() -> dict:
 		summary["created_in_erpnext"] += 1
 
 	_record_issues(settings, issues)
+	_sync_framework_mirrors()
 	frappe.publish_realtime("crm_product_sync_complete", user=frappe.session.user)
 	frappe.log_error(message=frappe.as_json(summary), title="CRM Product Reconciliation")
 	return summary
+
+
+def _sync_framework_mirrors():
+	from crm.integrations.erpnext.doc_share import sync_shared_docs
+	from crm.integrations.erpnext.user_permission import sync_user_permissions
+
+	sync_user_permissions()
+	sync_shared_docs()
 
 
 def _create_crm_product_from_item(item):
