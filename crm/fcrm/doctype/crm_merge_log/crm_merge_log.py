@@ -2,6 +2,7 @@
 # For license information, please see license.txt
 
 import frappe
+from frappe import _
 from frappe.model.document import Document
 
 
@@ -32,10 +33,10 @@ class CRMMergeLog(Document):
 
 	def validate(self):
 		if not self.reference_doctype:
-			frappe.throw("Reference DocType is required")
+			frappe.throw(_("Reference DocType is required"))
 		if not self.target_document_name:
-			frappe.throw("Target Document Name is required")
+			frappe.throw(_("Target Document Name is required"))
 		if not self.source_document_name:
-			frappe.throw("Source Document Name is required")
+			frappe.throw(_("Source Document Name is required"))
 		if self.target_document_name == self.source_document_name:
-			frappe.throw("Target and Source documents cannot be the same")
+			frappe.throw(_("Target and Source documents cannot be the same"))
