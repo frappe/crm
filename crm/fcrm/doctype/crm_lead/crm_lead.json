@@ -37,8 +37,10 @@
   "no_of_employees",
   "annual_revenue",
   "image",
-  "converted",
-  "products_tab",
+   "converted",
+   "is_duplicate",
+   "merged_into",
+   "products_tab",
   "products",
   "section_break_ggwh",
   "total",
@@ -211,19 +213,33 @@
    "in_standard_filter": 1,
    "label": "Organization"
   },
-  {
-   "default": "0",
-   "fieldname": "converted",
-   "fieldtype": "Check",
-   "in_list_view": 1,
-   "in_standard_filter": 1,
-   "label": "Converted"
-  },
-  {
-   "fieldname": "person_tab",
-   "fieldtype": "Tab Break",
-   "label": "Person"
-  },
+   {
+    "default": "0",
+    "fieldname": "converted",
+    "fieldtype": "Check",
+    "in_list_view": 1,
+    "in_standard_filter": 1,
+    "label": "Converted"
+   },
+   {
+    "default": "0",
+    "fieldname": "is_duplicate",
+    "fieldtype": "Check",
+    "label": "Is Duplicate",
+    "read_only": 1
+   },
+   {
+    "fieldname": "merged_into",
+    "fieldtype": "Link",
+    "label": "Merged Into",
+    "options": "CRM Lead",
+    "read_only": 1
+   },
+   {
+    "fieldname": "person_tab",
+    "fieldtype": "Tab Break",
+    "label": "Person"
+   },
   {
    "fieldname": "details",
    "fieldtype": "Tab Break",
@@ -424,8 +440,14 @@
  "grid_page_length": 50,
  "image_field": "image",
  "index_web_pages_for_search": 1,
- "links": [],
- "modified": "2026-04-04 12:33:17.177897",
+  "links": [
+   {
+    "group": "Merged Leads",
+    "link_doctype": "CRM Lead",
+    "link_fieldname": "merged_into"
+   }
+  ],
+  "modified": "2026-04-04 12:33:17.177897",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Lead",
