@@ -1,0 +1,169 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:MRG-{#####}",
+ "creation": "2026-05-27 00:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "reference_doctype",
+  "target_document_name",
+  "source_document_name",
+  "column_break_1",
+  "merged_by",
+  "merged_at",
+  "section_snapshots",
+  "field_snapshot",
+  "column_break_snapshots",
+  "child_table_snapshot",
+  "reference_snapshot",
+  "section_split",
+  "split_at",
+  "column_break_split",
+  "split_by"
+ ],
+ "fields": [
+  {
+   "fieldname": "reference_doctype",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Reference DocType",
+   "options": "DocType",
+   "reqd": 1
+  },
+  {
+   "fieldname": "target_document_name",
+   "fieldtype": "Dynamic Link",
+   "in_list_view": 1,
+   "label": "Target Document",
+   "options": "reference_doctype",
+   "reqd": 1
+  },
+  {
+   "fieldname": "source_document_name",
+   "fieldtype": "Dynamic Link",
+   "in_list_view": 1,
+   "label": "Source Document",
+   "options": "reference_doctype",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "merged_by",
+   "fieldtype": "Link",
+   "label": "Merged By",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "merged_at",
+   "fieldtype": "Datetime",
+   "label": "Merged At",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_snapshots",
+   "fieldtype": "Section Break",
+   "label": "Snapshots"
+  },
+  {
+   "fieldname": "field_snapshot",
+   "fieldtype": "Code",
+   "label": "Field Snapshot",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_snapshots",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "child_table_snapshot",
+   "fieldtype": "Code",
+   "label": "Child Table Snapshot",
+   "read_only": 1
+  },
+  {
+   "fieldname": "reference_snapshot",
+   "fieldtype": "Code",
+   "label": "Reference Snapshot",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_split",
+   "fieldtype": "Section Break",
+   "label": "Split Details"
+  },
+  {
+   "fieldname": "split_at",
+   "fieldtype": "Datetime",
+   "label": "Split At",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_split",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "split_by",
+   "fieldtype": "Link",
+   "label": "Split By",
+   "options": "User",
+   "read_only": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-05-27 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "FCRM",
+ "name": "CRM Merge Log",
+ "naming_rule": "By \"Naming Series\" field",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales User",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}
