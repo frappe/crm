@@ -367,7 +367,7 @@ const props = defineProps({
 const { brand } = getSettings()
 const { $dialog, $socket } = globalStore()
 const { reload: reloadView, getDefaultView, getView } = viewsStore()
-const { isManager } = usersStore()
+const { isManager, getUser } = usersStore()
 const { organizations } = organizationsStore()
 
 const list = defineModel({ type: Object, default: () => ({}) })
@@ -592,11 +592,32 @@ function updateSelections(selections) {
 
 async function exportRows() {
   let fields = JSON.stringify(list.value.data.columns.map((f) => f.key))
-
-  let filters = JSON.stringify({
+  const userId = getUser()?.name
+  let filters = {
     ...props.filters,
     ...list.value.params.filters,
-  })
+  }
+
+  // Only resolve @me placeholders when we know the current user; otherwise
+  // leave filters untouched rather than emitting undefined / "%undefined%".
+  if (userId) {
+    Object.keys(filters).forEach((key) => {
+      const value = filters[key]
+
+      // Handle direct filter format: { owner: "@me" }
+      if (value === '@me') {
+        filters[key] = userId
+        return
+      }
+      if (!Array.isArray(value)) return
+      // Handle all operator-based filter format: { owner: ["=", "@me"], _assign: ["LIKE", "%@me%"] }
+      filters[key] = value.map((entry) =>
+        entry === '@me' ? userId : entry === '%@me%' ? `%${userId}%` : entry,
+      )
+    })
+  }
+
+  filters = JSON.stringify(filters)
 
   let order_by = list.value.params.order_by
   let page_length = list.value.params.page_length
