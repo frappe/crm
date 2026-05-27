@@ -97,47 +97,11 @@ def _push_to_item(doc):
 	if not frappe.db.exists("Item", item_code):
 		frappe.db.set_value("CRM Product", doc.name, "erpnext_item_code", None)
 		return
-
-	data = {
-		"item_name": doc.product_name,
-		"standard_rate": doc.standard_rate,
-		"image": doc.image,
-		"disabled": doc.disabled,
-		"description": doc.description,
-	}
-
-	try:
-		update_item_from_crm_product(item_code, data)
-	except Exception:
-		frappe.log_error(
-			frappe.get_traceback(),
-			f"Error pushing CRM Product {doc.name} to ERPNext Item",
-		)
-
-
-def sync_item_to_crm_product(item_doc, method=None):
-	"""Called from Item doc_events."""
-	if item_doc.flags.get("ignore_crm_sync"):
+	data = {"item_name": doc.product_name, **{f: doc.get(f) for f in CATALOGUE_FIELDS}}
+	current = frappe.db.get_value("Item", item_code, list(data.keys()), as_dict=True) or {}
+	if not payload_differs(data, current):
 		return
-	if not frappe.db.get_single_value("ERPNext CRM Settings", "enabled"):
-		return
-
-	data = {
-		"product_name": item_doc.item_name,
-		"standard_rate": item_doc.standard_rate,
-		"image": item_doc.image,
-		"disabled": item_doc.disabled,
-		"description": item_doc.description,
-	}
-
-	existing = frappe.db.get_value("CRM Product", {"erpnext_item_code": item_doc.item_code})
-	if existing:
-		frappe.db.set_value("CRM Product", existing, data)
-		return
-
-	product = frappe.new_doc("CRM Product")
-	product.product_code = item_doc.item_code
-	product.erpnext_item_code = item_doc.item_code
-	product.update(data)
-	product.flags.ignore_erpnext_sync = True
-	product.insert(ignore_permissions=True)
+	item = frappe.get_doc("Item", item_code)
+	item.update(data)
+	item.flags.ignore_crm_sync = True
+	item.save()
