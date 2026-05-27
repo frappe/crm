@@ -44,34 +44,18 @@ class TestMergeLead(IntegrationTestCase):
 		dups = find_duplicate_leads(lead.name)
 		self.assertEqual(len(dups), 0)
 
-	def test_get_merge_preview(self):
-		lead_a = self._create_lead(first_name="Alice", email="alice@test.com", mobile_no="+111", status="New")
-		lead_b = self._create_lead(
-			first_name="Alice", last_name="Smith", email="alice@test.com", mobile_no="+222", status="Contacted"
-		)
-
-		from crm.api.lead import get_merge_preview
-
-		preview = get_merge_preview(lead_a.name, lead_b.name)
-		self.assertEqual(preview["target_name"], lead_a.name)
-		self.assertEqual(preview["source_name"], lead_b.name)
-		fieldnames = {f["fieldname"] for f in preview["fields"]}
-		self.assertIn("mobile_no", fieldnames)
-		self.assertIn("status", fieldnames)
-		self.assertNotIn("email", fieldnames)
-
 	def test_merge_leads_basic(self):
+		# lead_a: has mobile_no but no phone; lead_b: has phone but no mobile_no
 		lead_a = self._create_lead(
 			first_name="Target", email="target@test.com", mobile_no="+111", status="New"
 		)
 		lead_b = self._create_lead(
-			first_name="Source", email="source@test.com", mobile_no="+222", status="Contacted"
+			first_name="Source", mobile_no="", phone="+333", status="Contacted"
 		)
 
 		from crm.api.lead import merge_leads
 
-		field_map = {"first_name": "target", "last_name": "target", "mobile_no": "target", "status": "source"}
-		result = merge_leads(lead_a.name, lead_b.name, json.dumps(field_map))
+		result = merge_leads(lead_a.name, lead_b.name)
 
 		self.assertEqual(result["target"], lead_a.name)
 		self.assertEqual(result["source"], lead_b.name)
@@ -79,8 +63,13 @@ class TestMergeLead(IntegrationTestCase):
 		lead_a.reload()
 		lead_b.reload()
 
-		self.assertEqual(lead_a.first_name, "Target")
+		# source non-empty values overwrite target
+		self.assertEqual(lead_a.first_name, "Source")
 		self.assertEqual(lead_a.status, "Contacted")
+		self.assertEqual(lead_a.phone, "+333")
+		# source empty mobile_no does NOT overwrite target's value
+		self.assertEqual(lead_a.mobile_no, "+111")
+
 		self.assertEqual(lead_b.merged_into, lead_a.name)
 		self.assertEqual(lead_b.is_duplicate, 1)
 
@@ -90,7 +79,7 @@ class TestMergeLead(IntegrationTestCase):
 
 		from crm.api.lead import merge_leads
 
-		merge_leads(lead_a.name, lead_b.name, json.dumps({}))
+		merge_leads(lead_a.name, lead_b.name)
 
 		log = frappe.get_last_doc("CRM Merge Log", {"reference_doctype": "CRM Lead"})
 		self.assertEqual(log.target_document_name, lead_a.name)
@@ -102,12 +91,13 @@ class TestMergeLead(IntegrationTestCase):
 		lead_a = self._create_lead(first_name="A", email="a@test.com")
 		lead_b = self._create_lead(first_name="B", email="b@test.com")
 
-		lead_b.append("products", {"product_code": "TEST-001", "product_name": "Test Product", "rate": 100})
-		lead_b.save()
+		lead_b.append("products", {"product_name": "Test Product", "rate": 100})
+		lead_b.flags.ignore_links = True
+		lead_b.save(ignore_permissions=True)
 
 		from crm.api.lead import merge_leads
 
-		merge_leads(lead_a.name, lead_b.name, json.dumps({}))
+		merge_leads(lead_a.name, lead_b.name)
 
 		lead_a.reload()
 		self.assertEqual(len(lead_a.products), 1)
@@ -118,12 +108,14 @@ class TestMergeLead(IntegrationTestCase):
 		lead_b = self._create_lead(first_name="B", email="b@test.com")
 
 		deal = frappe.get_doc(
-			{"doctype": "CRM Deal", "organization": "Test Org", "lead": lead_b.name}
-		).insert(ignore_permissions=True)
+			{"doctype": "CRM Deal", "lead": lead_b.name}
+		)
+		deal.flags.ignore_links = True
+		deal.insert(ignore_permissions=True)
 
 		from crm.api.lead import merge_leads
 
-		merge_leads(lead_a.name, lead_b.name, json.dumps({}))
+		merge_leads(lead_a.name, lead_b.name)
 
 		deal.reload()
 		self.assertEqual(deal.lead, lead_a.name)
@@ -155,7 +147,7 @@ class TestMergeLead(IntegrationTestCase):
 
 		from crm.api.lead import merge_leads
 
-		merge_leads(lead_a.name, lead_b.name, json.dumps({}))
+		merge_leads(lead_a.name, lead_b.name)
 
 		comm.reload()
 		todo.reload()
@@ -169,11 +161,11 @@ class TestMergeLead(IntegrationTestCase):
 
 		from crm.api.lead import merge_leads
 
-		merge_leads(lead_a.name, lead_b.name, json.dumps({}))
+		merge_leads(lead_a.name, lead_b.name)
 
 		lead_c = self._create_lead(first_name="C", email="c@test.com")
 		with self.assertRaises(frappe.ValidationError):
-			merge_leads(lead_c.name, lead_b.name, json.dumps({}))
+			merge_leads(lead_c.name, lead_b.name)
 
 	def test_split_lead(self):
 		lead_a = self._create_lead(
@@ -185,26 +177,26 @@ class TestMergeLead(IntegrationTestCase):
 		lead_b = self._create_lead(
 			first_name="Source",
 			email="source@test.com",
-			mobile_no="+222",
+			mobile_no="",
 			status="Contacted",
 		)
 
-		lead_b.append("products", {"product_code": "T1", "product_name": "Widget", "rate": 50})
-		lead_b.save()
-
 		from crm.api.lead import merge_leads, split_lead
 
-		field_map = {"mobile_no": "target", "status": "source"}
-		result = merge_leads(lead_a.name, lead_b.name, json.dumps(field_map))
+		result = merge_leads(lead_a.name, lead_b.name)
 
-		merge_log_name = result["merge_log"]
-		split_lead(merge_log_name)
+		lead_a.reload()
+		# source "Contacted" overwrote target "New"
+		self.assertEqual(lead_a.status, "Contacted")
+
+		split_lead(result["merge_log"])
 
 		lead_a.reload()
 		lead_b.reload()
 
-		self.assertEqual(lead_a.mobile_no, "+111")
+		# target fields restored to pre-merge snapshot
 		self.assertEqual(lead_a.status, "New")
+		self.assertEqual(lead_a.mobile_no, "+111")
 		self.assertIsNone(lead_b.merged_into)
 		self.assertEqual(lead_b.is_duplicate, 0)
 
@@ -214,7 +206,7 @@ class TestMergeLead(IntegrationTestCase):
 
 		from crm.api.lead import merge_leads, split_lead
 
-		result = merge_leads(lead_a.name, lead_b.name, json.dumps({}))
+		result = merge_leads(lead_a.name, lead_b.name)
 		split_lead(result["merge_log"])
 
 		with self.assertRaises(frappe.ValidationError):
@@ -226,7 +218,7 @@ class TestMergeLead(IntegrationTestCase):
 
 		from crm.api.lead import merge_leads, get_merge_history
 
-		merge_leads(lead_a.name, lead_b.name, json.dumps({}))
+		merge_leads(lead_a.name, lead_b.name)
 		history = get_merge_history(lead_a.name)
 		self.assertEqual(len(history), 1)
 		self.assertEqual(history[0]["source_document_name"], lead_b.name)
