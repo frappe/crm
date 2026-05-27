@@ -32,10 +32,16 @@ class CRMProduct(Document):
 		self.set_product_name()
 
 	def set_product_name(self):
-		if not self.product_name:
-			self.product_name = self.product_code
-		else:
-			self.product_name = self.product_name.strip()
+		self.product_name = (self.product_name or self.product_code or "").strip()
+
+	def after_insert(self):
+		if self.flags.get("ignore_erpnext_sync"):
+			return
+		if not same_site_sync_active():
+			return
+		if self.get("erpnext_item_code"):
+			return
+		_create_item_from_product(self)
 
 	def on_update(self):
 		if self.flags.get("ignore_erpnext_sync"):
