@@ -5,7 +5,13 @@ import frappe
 from frappe import _
 from frappe.model.document import Document
 
-from crm.fcrm.doctype.crm_product.sync_utils import payload_differs, same_site_sync_active
+from crm.fcrm.doctype.crm_product.sync_utils import payload_differs
+from crm.integrations.erpnext.utils import (
+	cascade_rename,
+	in_cascade,
+	should_sync,
+	validate_rename_conflict,
+)
 
 CATALOGUE_FIELDS = ("standard_rate", "image", "disabled", "description")
 
@@ -37,7 +43,7 @@ class CRMProduct(Document):
 	def after_insert(self):
 		if self.flags.get("ignore_erpnext_sync"):
 			return
-		if not same_site_sync_active():
+		if not should_sync():
 			return
 		if self.get("erpnext_item_code"):
 			return
@@ -48,14 +54,22 @@ class CRMProduct(Document):
 			return
 		if not self.get("erpnext_item_code"):
 			return
-		if not same_site_sync_active():
+		if not should_sync():
 			return
 		_push_to_item(self)
 
+	def before_rename(self, olddn, newdn, merge=False):
+		validate_rename_conflict("CRM Product", olddn, newdn, merge)
+
+	def after_rename(self, olddn, newdn, merge=False):
+		cascade_rename("CRM Product", olddn, newdn, merge)
+
 	def on_trash(self):
+		if in_cascade():
+			return
 		if not self.get("erpnext_item_code"):
 			return
-		if not same_site_sync_active():
+		if not should_sync():
 			return
 		if frappe.db.sql(
 			"SELECT 1 FROM `tabQuotation Item` WHERE item_code=%s LIMIT 1",
