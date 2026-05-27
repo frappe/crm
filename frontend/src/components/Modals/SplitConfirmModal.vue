@@ -11,13 +11,26 @@
       </div>
     </template>
     <template #body-content>
-      <div class="rounded-lg border border-yellow-200 bg-yellow-50 px-4 py-3 text-sm">
-        <div class="mb-1 font-medium text-yellow-800">{{ __('Are you sure?') }}</div>
+      <div
+        class="rounded-lg border border-yellow-200 bg-yellow-50 px-4 py-3 text-sm"
+      >
+        <div class="mb-1 font-medium text-yellow-800">
+          {{ __('Are you sure?') }}
+        </div>
         <p class="text-ink-gray-7">
-          {{ __('This will undo the merge of {0} from {1}.', [mergeLog?.source_title || mergeLog?.source_document_name, mergeLog?.target_title || mergeLog?.target_document_name]) }}
+          {{
+            __('This will undo the merge of {0} from {1}.', [
+              mergeLog?.source_title || mergeLog?.source_document_name,
+              mergeLog?.target_title || mergeLog?.target_document_name,
+            ])
+          }}
         </p>
         <p class="mt-2 text-ink-gray-7">
-          {{ __('Any changes made to the target lead since the merge will be lost for the affected fields. Child records will be moved back to the source lead.') }}
+          {{
+            __(
+              'Any changes made to the target lead since the merge will be lost for the affected fields. Child records will be moved back to the source lead.',
+            )
+          }}
         </p>
       </div>
       <ErrorMessage v-if="error" class="mt-4" :message="error" />
@@ -64,7 +77,8 @@ async function performSplit() {
     emit('split', result.target)
     router.push({ name: 'Lead', params: { leadId: result.target } })
   } catch (err) {
-    error.value = err.messages?.[0] || err.message || __('Failed to split leads')
+    error.value =
+      err.messages?.[0] || err.message || __('Failed to split leads')
   } finally {
     isSplitting.value = false
   }
