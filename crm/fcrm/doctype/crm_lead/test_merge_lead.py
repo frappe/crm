@@ -49,9 +49,7 @@ class TestMergeLead(IntegrationTestCase):
 		lead_a = self._create_lead(
 			first_name="Target", email="target@test.com", mobile_no="+111", status="New"
 		)
-		lead_b = self._create_lead(
-			first_name="Source", mobile_no="", phone="+333", status="Contacted"
-		)
+		lead_b = self._create_lead(first_name="Source", mobile_no="", phone="+333", status="Contacted")
 
 		from crm.api.lead import merge_leads
 
@@ -107,9 +105,7 @@ class TestMergeLead(IntegrationTestCase):
 		lead_a = self._create_lead(first_name="A", email="a@test.com")
 		lead_b = self._create_lead(first_name="B", email="b@test.com")
 
-		deal = frappe.get_doc(
-			{"doctype": "CRM Deal", "lead": lead_b.name}
-		)
+		deal = frappe.get_doc({"doctype": "CRM Deal", "lead": lead_b.name})
 		deal.flags.ignore_links = True
 		deal.insert(ignore_permissions=True)
 
@@ -228,9 +224,7 @@ class TestMergeLead(IntegrationTestCase):
 
 		existing = self._create_lead(first_name="Existing", email="dupe@test.com")
 
-		result = create_lead(
-			json.dumps({"first_name": "New", "email": "dupe@test.com"})
-		)
+		result = create_lead(json.dumps({"first_name": "New", "email": "dupe@test.com"}))
 		self.assertEqual(result["duplicate_warning"], True)
 		self.assertEqual(len(result["possible_duplicates"]), 1)
 		self.assertEqual(result["possible_duplicates"][0]["name"], existing.name)
