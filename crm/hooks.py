@@ -146,6 +146,8 @@ override_doctype_class = {
 	"Contact": "crm.overrides.contact.CustomContact",
 	"Email Template": "crm.overrides.email_template.CustomEmailTemplate",
 	"Item": "crm.integrations.erpnext.item.CustomItem",
+	"User Permission": "crm.integrations.erpnext.user_permission.CustomUserPermission",
+	"DocShare": "crm.integrations.erpnext.doc_share.CustomDocShare",
 }
 
 # Document Events
