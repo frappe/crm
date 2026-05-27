@@ -218,6 +218,125 @@ class TestCRMToERPNextCreate(FrappeTestCase):
 		self.assertEqual(frappe.db.get_value("Item", "PUSH-2", "standard_rate"), 99)
 
 
+class TestUserPermissionMirror(FrappeTestCase):
+	def setUp(self):
+		if not frappe.db.exists("DocType", "Item"):
+			self.skipTest("ERPNext not installed")
+		from crm.integrations.erpnext.utils import should_sync
+
+		if not should_sync():
+			self.skipTest("Integration not enabled")
+		frappe.db.delete("User Permission", {"for_value": ["like", "PERM-%"]})
+		frappe.db.delete("CRM Product", {"product_code": ["like", "PERM-%"]})
+		frappe.db.delete("Item", {"item_code": ["like", "PERM-%"]})
+		frappe.get_doc({"doctype": "Item", "item_code": "PERM-1", "item_name": "P"}).insert(
+			ignore_permissions=True
+		)
+
+	def test_user_permission_on_item_mirrors_to_crm_product(self):
+		frappe.get_doc(
+			{
+				"doctype": "User Permission",
+				"user": "Administrator",
+				"allow": "Item",
+				"for_value": "PERM-1",
+				"apply_to_all_doctypes": 1,
+			}
+		).insert(ignore_permissions=True)
+		self.assertTrue(
+			frappe.db.exists(
+				"User Permission",
+				{"user": "Administrator", "allow": "CRM Product", "for_value": "PERM-1"},
+			)
+		)
+
+	def test_user_permission_on_crm_product_mirrors_to_item(self):
+		frappe.get_doc(
+			{
+				"doctype": "User Permission",
+				"user": "Administrator",
+				"allow": "CRM Product",
+				"for_value": "PERM-1",
+				"apply_to_all_doctypes": 1,
+			}
+		).insert(ignore_permissions=True)
+		self.assertTrue(
+			frappe.db.exists(
+				"User Permission",
+				{"user": "Administrator", "allow": "Item", "for_value": "PERM-1"},
+			)
+		)
+
+	def test_delete_user_permission_deletes_mirror(self):
+		p = frappe.get_doc(
+			{
+				"doctype": "User Permission",
+				"user": "Administrator",
+				"allow": "Item",
+				"for_value": "PERM-1",
+				"apply_to_all_doctypes": 1,
+			}
+		).insert(ignore_permissions=True)
+		p.delete(ignore_permissions=True)
+		self.assertFalse(
+			frappe.db.exists(
+				"User Permission",
+				{"user": "Administrator", "allow": "CRM Product", "for_value": "PERM-1"},
+			)
+		)
+
+
+class TestDocShareMirror(FrappeTestCase):
+	def setUp(self):
+		if not frappe.db.exists("DocType", "Item"):
+			self.skipTest("ERPNext not installed")
+		from crm.integrations.erpnext.utils import should_sync
+
+		if not should_sync():
+			self.skipTest("Integration not enabled")
+		frappe.db.delete("DocShare", {"share_name": ["like", "SHARE-%"]})
+		frappe.db.delete("CRM Product", {"product_code": ["like", "SHARE-%"]})
+		frappe.db.delete("Item", {"item_code": ["like", "SHARE-%"]})
+		frappe.get_doc({"doctype": "Item", "item_code": "SHARE-1", "item_name": "S"}).insert(
+			ignore_permissions=True
+		)
+
+	def test_share_on_item_mirrors_to_crm_product(self):
+		frappe.get_doc(
+			{
+				"doctype": "DocShare",
+				"user": "Administrator",
+				"share_doctype": "Item",
+				"share_name": "SHARE-1",
+				"read": 1,
+			}
+		).insert(ignore_permissions=True)
+		self.assertTrue(
+			frappe.db.exists(
+				"DocShare",
+				{"user": "Administrator", "share_doctype": "CRM Product", "share_name": "SHARE-1"},
+			)
+		)
+
+	def test_delete_share_deletes_mirror(self):
+		s = frappe.get_doc(
+			{
+				"doctype": "DocShare",
+				"user": "Administrator",
+				"share_doctype": "Item",
+				"share_name": "SHARE-1",
+				"read": 1,
+			}
+		).insert(ignore_permissions=True)
+		s.delete(ignore_permissions=True)
+		self.assertFalse(
+			frappe.db.exists(
+				"DocShare",
+				{"user": "Administrator", "share_doctype": "CRM Product", "share_name": "SHARE-1"},
+			)
+		)
+
+
 class TestDeleteGuard(FrappeTestCase):
 	def test_cannot_delete_crm_product_with_referenced_item(self):
 		if not frappe.db.exists("DocType", "Quotation"):
