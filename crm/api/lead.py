@@ -196,7 +196,7 @@ def get_merge_history(lead_name: str):
 	for log in logs:
 		for l, key in [(log, "target_document_name"), (log, "source_document_name")]:
 			if l[key] not in target_title_map:
-				doc = frappe.db.get_value("CRM Lead", l[key], "lead_name", cache_modified=False)
+				doc = frappe.db.get_value("CRM Lead", l[key], "lead_name")
 				target_title_map[l[key]] = doc
 
 	result = []
@@ -433,12 +433,9 @@ def _move_child_tables(
 			row.parenttype = target_doc.doctype
 			row.db_update()
 
-		target_rows = target_doc.get(ct) or []
+		target_rows = list(target_doc.get(ct) or [])
 		target_rows.extend(source_rows)
-
-	target_doc.get("products", [])
-	target_doc.get("status_change_log", [])
-	target_doc.get("rolling_responses", [])
+		target_doc.set(ct, target_rows)
 
 
 def _move_child_tables_back(
