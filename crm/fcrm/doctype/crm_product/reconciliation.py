@@ -13,9 +13,8 @@ class PairAction:
 
 
 def classify_pair(item: dict, product: dict) -> PairAction:
-	if (
-		item.get("crm_product_code") == product.get("name")
-		and product.get("erpnext_item_code") == item.get("item_code")
+	if item.get("crm_product_code") == product.get("name") and product.get("erpnext_item_code") == item.get(
+		"item_code"
 	):
 		return PairAction(rule="already_linked")
 
