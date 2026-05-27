@@ -48,7 +48,14 @@ class CRMProduct(Document):
 			return
 		if not self.get("erpnext_item_code"):
 			return
-		if not frappe.db.get_single_value("ERPNext CRM Settings", "enabled"):
+		if not same_site_sync_active():
+			return
+		_push_to_item(self)
+
+	def on_trash(self):
+		if not self.get("erpnext_item_code"):
+			return
+		if not same_site_sync_active():
 			return
 		push_product_to_erpnext_item(self)
 
