@@ -109,6 +109,15 @@ def _validate_template_for_reference(template_name: str, reference_doctype: str)
 			)
 		)
 
+	unmapped = [var.variable_name for var in template.get("template_variables") if not var.variable_field]
+	if unmapped:
+		frappe.throw(
+			_(
+				"Template '{0}' has variables without a mapped field: {1}. "
+				"Set Variable Field on each Template Variable row before sending."
+			).format(template_name, ", ".join(unmapped))
+		)
+
 
 def validate_access(reference_doctype=None, reference_name=None, permtype="read"):
 	if not any(role in ALLOWED_WHATSAPP_ROLES for role in frappe.get_roles()):

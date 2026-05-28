@@ -219,6 +219,39 @@ class TestValidateTemplateForReference(FrappeTestCase):
 		with exists, get_doc:
 			_validate_template_for_reference("lead_template", "CRM Lead")  # must not raise
 
+	def test_raises_when_variable_field_is_unmapped(self):
+		"""A Template Variable row without a variable_field cannot resolve at send time."""
+		unmapped_var = MagicMock()
+		unmapped_var.variable_name = "first_name"
+		unmapped_var.variable_field = ""
+		exists, get_doc = self._patch_template(
+			template_variables=[unmapped_var], reference_doctype="CRM Lead"
+		)
+		with exists, get_doc:
+			with self.assertRaises(frappe.ValidationError) as ctx:
+				_validate_template_for_reference("lead_template", "CRM Lead")
+			self.assertIn("first_name", str(ctx.exception))
+			self.assertIn("Variable Field", str(ctx.exception))
+
+	def test_lists_all_unmapped_variables(self):
+		v1 = MagicMock()
+		v1.variable_name = "first_name"
+		v1.variable_field = ""
+		v2 = MagicMock()
+		v2.variable_name = "amount"
+		v2.variable_field = "amount"  # mapped
+		v3 = MagicMock()
+		v3.variable_name = "last_name"
+		v3.variable_field = ""
+		exists, get_doc = self._patch_template(template_variables=[v1, v2, v3], reference_doctype="CRM Lead")
+		with exists, get_doc:
+			with self.assertRaises(frappe.ValidationError) as ctx:
+				_validate_template_for_reference("lead_template", "CRM Lead")
+			msg = str(ctx.exception)
+			self.assertIn("first_name", msg)
+			self.assertIn("last_name", msg)
+			self.assertNotIn("amount", msg)
+
 
 class TestGetSendableTemplates(FrappeTestCase):
 	def _frappe_dict(self, **kw):
