@@ -68,6 +68,49 @@ def find_duplicate_leads(lead_name: str):
 
 
 @frappe.whitelist()
+def search_mergeable_leads(txt: str = "", current_lead: str = "", limit: int = 20):
+	user = frappe.session.user
+
+	filters = [["is_duplicate", "=", 0]]
+	if current_lead:
+		filters.append(["name", "!=", current_lead])
+
+	or_filters = [
+		["_assign", "like", f"%{user}%"],
+		["_assign", "is", "not set"],
+	]
+
+	candidates = frappe.get_list(
+		"CRM Lead",
+		filters=filters,
+		or_filters=or_filters,
+		fields=["name", "lead_name", "email", "organization"],
+		order_by="modified desc",
+		limit_page_length=max(int(limit) * 5, 50),
+	)
+
+	if txt:
+		needle = txt.lower()
+		candidates = [
+			r
+			for r in candidates
+			if any(
+				(r.get(f) or "").lower().find(needle) != -1
+				for f in ("name", "lead_name", "email", "organization")
+			)
+		]
+
+	return [
+		{
+			"value": r["name"],
+			"label": r.get("lead_name") or r["name"],
+			"description": r.get("email") or r.get("organization") or "",
+		}
+		for r in candidates[: int(limit)]
+	]
+
+
+@frappe.whitelist()
 def merge_leads(target: str, source: str):
 	target_doc = frappe.get_doc("CRM Lead", target)
 	source_doc = frappe.get_doc("CRM Lead", source)
