@@ -12,7 +12,7 @@
     >
       <div
         :id="whatsapp.name"
-        class="group/message relative max-w-[90%] rounded-md bg-surface-gray-1 text-ink-gray-9 p-1.5 pl-2 text-base shadow-sm"
+        class="group/message relative max-w-[75%] rounded-md bg-surface-gray-1 text-ink-gray-9 p-1.5 pl-2 pb-5 text-base shadow-sm"
       >
         <Badge
           v-if="whatsapp.status == 'failed'"
@@ -24,18 +24,18 @@
           v-if="whatsapp.is_reply"
           class="mb-1 cursor-pointer rounded border-0 border-l-4 bg-surface-gray-3 p-2 text-ink-gray-5"
           :class="
-        whatsapp.reply_to_direction == 'Incoming'
-          ? 'border-green-500'
-          : 'border-blue-400'
-        "
-        @click="() => scrollToMessage(whatsapp.reply_to)"
-      >
-        <div
-          class="mb-1 text-sm font-bold"
-          :class="
             whatsapp.reply_to_direction == 'Incoming'
-              ? 'text-ink-green-2'
-              : 'text-ink-blue-link'
+              ? 'border-green-500'
+              : 'border-blue-400'
+          "
+          @click="() => scrollToMessage(whatsapp.reply_to)"
+        >
+          <div
+            class="mb-1 text-sm font-bold"
+            :class="
+              whatsapp.reply_to_direction == 'Incoming'
+                ? 'text-ink-green-2'
+                : 'text-ink-blue-link'
             "
           >
             {{ whatsapp.reply_to_from || __('You') }}
@@ -50,103 +50,122 @@
             </div>
           </div>
         </div>
-        <div class="flex gap-2 justify-between">
-          <div
-            v-if="whatsapp.status != 'failed'"
-            class="absolute -right-0.5 -top-0.5 flex cursor-pointer gap-1 rounded-full bg-surface-white pb-2 pl-2 pr-1.5 pt-1.5 opacity-0 group-hover/message:opacity-100"
-            :style="{
-              background:
-                'radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 1) 35%, rgba(238, 130, 238, 0) 100%)',
-            }"
-          >
-            <Dropdown :options="messageOptions(whatsapp)">
-              <FeatherIcon name="chevron-down" class="size-4 text-ink-gray-5" />
-            </Dropdown>
+        <div
+          v-if="whatsapp.status != 'failed'"
+          class="absolute -right-0.5 -top-0.5 flex cursor-pointer gap-1 rounded-full bg-surface-white pb-2 pl-2 pr-1.5 pt-1.5 opacity-0 group-hover/message:opacity-100"
+          :style="{
+            background:
+              'radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 1) 35%, rgba(238, 130, 238, 0) 100%)',
+          }"
+        >
+          <Dropdown :options="messageOptions(whatsapp)">
+            <FeatherIcon name="chevron-down" class="size-4 text-ink-gray-5" />
+          </Dropdown>
+        </div>
+        <div
+          v-if="whatsapp.reaction"
+          class="absolute -bottom-5 flex gap-1 rounded-full border bg-surface-white p-1 pb-[3px] shadow-sm"
+        >
+          <div class="flex size-4 items-center justify-center">
+            {{ whatsapp.reaction }}
+          </div>
+        </div>
+        <div
+          v-if="whatsapp.message_type == 'Template'"
+          class="flex flex-col gap-2"
+        >
+          <div v-if="whatsapp.header" class="text-base font-semibold">
+            {{ whatsapp.header }}
+          </div>
+          <div v-html="formatWhatsAppMessage(whatsapp.template)" />
+          <div v-if="whatsapp.footer" class="text-xs text-ink-gray-5">
+            {{ whatsapp.footer }}
           </div>
           <div
-            v-if="whatsapp.reaction"
-            class="absolute -bottom-5 flex gap-1 rounded-full border bg-surface-white p-1 pb-[3px] shadow-sm"
+            v-if="whatsapp.buttons?.length"
+            class="-mx-2 -mb-1.5 mt-1 flex flex-col"
           >
-            <div class="flex size-4 items-center justify-center">
-              {{ whatsapp.reaction }}
+            <div
+              v-for="(btn, i) in whatsapp.buttons"
+              :key="i"
+              class="flex items-center justify-center gap-1.5 border-t border-outline-gray-2 py-2 text-sm text-ink-blue-link"
+            >
+              <FeatherIcon
+                v-if="iconForButtonType(btn.button_type)"
+                :name="iconForButtonType(btn.button_type)"
+                class="size-3.5"
+              />
+              {{ btn.button_text }}
             </div>
           </div>
+        </div>
+        <div
+          v-else-if="
+            whatsapp.content_type == 'text' || whatsapp.content_type == 'button'
+          "
+          v-html="formatWhatsAppMessage(whatsapp.message)"
+        />
+        <div v-else-if="whatsapp.content_type == 'image'">
+          <img
+            :src="whatsapp.attach"
+            class="h-40 cursor-pointer rounded-md"
+            @click="() => openFileInAnotherTab(whatsapp.attach)"
+          />
           <div
-            v-if="whatsapp.message_type == 'Template'"
-            class="flex flex-col gap-2"
-          >
-            <div v-if="whatsapp.header" class="text-base font-semibold">
-              {{ whatsapp.header }}
-            </div>
-            <div v-html="formatWhatsAppMessage(whatsapp.template)" />
-            <div v-if="whatsapp.footer" class="text-xs text-ink-gray-5">
-              {{ whatsapp.footer }}
-            </div>
-          </div>
-          <div
-            v-else-if="whatsapp.content_type == 'text' || whatsapp.content_type == 'button'"
+            v-if="!whatsapp.message.startsWith('/files/')"
+            class="mt-1.5"
             v-html="formatWhatsAppMessage(whatsapp.message)"
           />
-          <div v-else-if="whatsapp.content_type == 'image'">
-            <img
-              :src="whatsapp.attach"
-              class="h-40 cursor-pointer rounded-md"
-              @click="() => openFileInAnotherTab(whatsapp.attach)"
-            />
-            <div
-              v-if="!whatsapp.message.startsWith('/files/')"
-              class="mt-1.5"
-              v-html="formatWhatsAppMessage(whatsapp.message)"
-            />
-          </div>
+        </div>
+        <div
+          v-else-if="whatsapp.content_type == 'document'"
+          class="flex items-center gap-2"
+        >
+          <DocumentIcon
+            class="size-10 cursor-pointer rounded-md text-ink-gray-4"
+            @click="() => openFileInAnotherTab(whatsapp.attach)"
+          />
+          <div class="text-ink-gray-5">Document</div>
+        </div>
+        <div
+          v-else-if="whatsapp.content_type == 'audio'"
+          class="flex items-center gap-2"
+        >
+          <audio :src="whatsapp.attach" controls class="cursor-pointer" />
+        </div>
+        <div
+          v-else-if="whatsapp.content_type == 'video'"
+          class="flex-col items-center gap-2"
+        >
+          <video
+            :src="whatsapp.attach"
+            controls
+            class="h-40 cursor-pointer rounded-md"
+          />
           <div
-            v-else-if="whatsapp.content_type == 'document'"
-            class="flex items-center gap-2"
-          >
-            <DocumentIcon
-              class="size-10 cursor-pointer rounded-md text-ink-gray-4"
-              @click="() => openFileInAnotherTab(whatsapp.attach)"
-            />
-            <div class="text-ink-gray-5">Document</div>
-          </div>
-          <div
-            v-else-if="whatsapp.content_type == 'audio'"
-            class="flex items-center gap-2"
-          >
-            <audio :src="whatsapp.attach" controls class="cursor-pointer" />
-          </div>
-          <div
-            v-else-if="whatsapp.content_type == 'video'"
-            class="flex-col items-center gap-2"
-          >
-            <video
-              :src="whatsapp.attach"
-              controls
-              class="h-40 cursor-pointer rounded-md"
-            />
-            <div
-              v-if="!whatsapp.message.startsWith('/files/')"
-              class="mt-1.5"
-              v-html="formatWhatsAppMessage(whatsapp.message)"
-            />
-          </div>
-          <div class="-mb-1 flex shrink-0 items-end gap-1 text-ink-gray-5">
-            <Tooltip :text="formatDate(whatsapp.creation, 'ddd, MMM D, YYYY')">
-              <div class="text-2xs">
-                {{ formatDate(whatsapp.creation, 'hh:mm a') }}
-              </div>
-            </Tooltip>
-            <div v-if="whatsapp.direction == 'Outgoing'">
-              <CheckIcon
-                v-if="['sent', 'Success'].includes(whatsapp.status)"
-                class="size-4"
-              />
-              <DoubleCheckIcon
-                v-else-if="['read', 'delivered'].includes(whatsapp.status)"
-                class="size-4"
-                :class="{ 'text-ink-blue-2': whatsapp.status == 'read' }"
-              />
+            v-if="!whatsapp.message.startsWith('/files/')"
+            class="mt-1.5"
+            v-html="formatWhatsAppMessage(whatsapp.message)"
+          />
+        </div>
+        <div
+          class="absolute bottom-1 right-2 flex items-end gap-1 text-ink-gray-5"
+        >
+          <Tooltip :text="formatDate(whatsapp.creation, 'ddd, MMM D, YYYY')">
+            <div class="text-2xs">
+              {{ formatDate(whatsapp.creation, 'hh:mm a') }}
             </div>
+          </Tooltip>
+          <div v-if="whatsapp.direction == 'Outgoing'">
+            <CheckIcon
+              v-if="['sent', 'Success'].includes(whatsapp.status)"
+              class="size-4"
+            />
+            <DoubleCheckIcon
+              v-else-if="['read', 'delivered'].includes(whatsapp.status)"
+              class="size-4"
+              :class="{ 'text-ink-blue-2': whatsapp.status == 'read' }"
+            />
           </div>
         </div>
       </div>
@@ -195,6 +214,22 @@ const { capture } = useTelemetry()
 
 function openFileInAnotherTab(url) {
   window.open(url, '_blank')
+}
+
+function iconForButtonType(type) {
+  switch (type) {
+    case 'URL':
+      return 'external-link'
+    case 'PHONE_NUMBER':
+    case 'VOICE_CALL':
+      return 'phone'
+    case 'COPY_CODE':
+      return 'copy'
+    case 'QUICK_REPLY':
+      return 'corner-up-left'
+    default:
+      return null
+  }
 }
 
 function formatWhatsAppMessage(message) {
