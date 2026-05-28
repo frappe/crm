@@ -377,6 +377,9 @@ def get_whatsapp_messages(reference_doctype: str, reference_name: str):
 		message["reference_name"] = message.pop("reference_docname")
 		message["template_parameters"] = message.pop("template_body_parameters")
 		message["template_header_parameters"] = message.pop("template_header_parameters")
+		# Frontend matches lowercase status values ('sent', 'delivered', 'read', 'failed');
+		# upstream stores Title Case. Normalize at the API boundary.
+		message["status"] = (message.get("status") or "").lower()
 
 	template_messages = [message for message in messages if message["message_type"] == "Template"]
 	for template_message in template_messages:

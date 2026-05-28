@@ -9,6 +9,7 @@ from frappe.tests.utils import FrappeTestCase
 from crm.api.whatsapp import (
 	_validate_template_for_reference,
 	get_sendable_templates,
+	get_whatsapp_messages,
 	notify_agent,
 	parse_template_parameters,
 	validate,
@@ -336,3 +337,54 @@ class TestGetSendableTemplates(FrappeTestCase):
 			get_sendable_templates("CRM Lead")
 
 		self.assertNotIn("Template Variable", calls)
+
+
+class TestGetWhatsappMessagesStatusNormalization(FrappeTestCase):
+	"""The frontend matches lowercase status values; upstream stores Title Case."""
+
+	def _fake_message(self, status):
+		# from=None routes through the "You" branch so get_from_name (which would
+		# call frappe.get_doc on the CRM record) is skipped.
+		return frappe._dict(
+			name="msg1",
+			direction="Outgoing",
+			to="profile1",
+			**{"from": None},
+			mime_type=None,
+			is_template=0,
+			media_url=None,
+			whatsapp_template=None,
+			message_id="m1",
+			context_message_id=None,
+			creation=None,
+			message="hi",
+			status=status,
+			reference_doctype="CRM Lead",
+			reference_docname="LEAD-0001",
+			template_body_parameters=None,
+			template_header_parameters=None,
+		)
+
+	def _run(self, status):
+		reference_doc = MagicMock()
+		reference_doc.get.return_value = None
+		with (
+			patch("crm.api.whatsapp.validate_access", return_value=reference_doc),
+			patch("frappe.get_installed_apps", return_value=[]),
+			patch("frappe.db.exists", return_value=True),
+			patch("frappe.get_all", return_value=[self._fake_message(status)]),
+		):
+			return get_whatsapp_messages("CRM Lead", "LEAD-0001")
+
+	def test_failed_status_lowercased(self):
+		result = self._run("Failed")
+		self.assertEqual(result[0]["status"], "failed")
+
+	def test_delivered_status_lowercased(self):
+		self.assertEqual(self._run("Delivered")[0]["status"], "delivered")
+
+	def test_already_lowercase_status_unchanged(self):
+		self.assertEqual(self._run("sent")[0]["status"], "sent")
+
+	def test_empty_status_becomes_empty_string(self):
+		self.assertEqual(self._run(None)[0]["status"], "")
