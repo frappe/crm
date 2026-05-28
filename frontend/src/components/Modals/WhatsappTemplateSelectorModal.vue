@@ -53,7 +53,7 @@
 </template>
 
 <script setup>
-import { TextEditor, createListResource } from 'frappe-ui'
+import { TextEditor, createResource } from 'frappe-ui'
 import { ref, computed, nextTick, watch, onMounted } from 'vue'
 
 const props = defineProps({
@@ -67,14 +67,10 @@ const emit = defineEmits(['send'])
 
 const search = ref('')
 
-const templates = createListResource({
-  type: 'list',
-  doctype: 'Whatsapp Template',
-  cache: ['whatsappTemplates'],
-  fields: ['name', 'message', 'footer'],
-  filters: { status: 'APPROVED', reference_doctype: ['in', [props.doctype, '']] },
-  orderBy: 'modified desc',
-  pageLength: 99999,
+const templates = createResource({
+  url: 'crm.api.whatsapp.get_sendable_templates',
+  cache: ['whatsappTemplates', props.doctype],
+  params: { reference_doctype: props.doctype },
 })
 
 onMounted(() => {

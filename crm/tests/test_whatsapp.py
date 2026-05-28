@@ -8,6 +8,7 @@ from frappe.tests.utils import FrappeTestCase
 
 from crm.api.whatsapp import (
 	_validate_template_for_reference,
+	get_sendable_templates,
 	notify_agent,
 	parse_template_parameters,
 	validate,
@@ -217,3 +218,88 @@ class TestValidateTemplateForReference(FrappeTestCase):
 		exists, get_doc = self._patch_template(template_variables=[MagicMock()], reference_doctype="CRM Lead")
 		with exists, get_doc:
 			_validate_template_for_reference("lead_template", "CRM Lead")  # must not raise
+
+
+class TestGetSendableTemplates(FrappeTestCase):
+	def _frappe_dict(self, **kw):
+		return frappe._dict(kw)
+
+	def test_returns_empty_when_doctype_missing(self):
+		with patch("crm.api.whatsapp.validate_access"), patch("frappe.db.exists", return_value=False):
+			self.assertEqual(get_sendable_templates("CRM Lead"), [])
+
+	def test_excludes_unbound_templates_with_variables(self):
+		"""Unbound + has vars → cannot resolve, must be hidden."""
+		templates = [
+			self._frappe_dict(
+				name="t_bound",
+				reference_doctype="CRM Lead",
+				message="m",
+				footer="",
+				header_text="",
+				header_type="TEXT",
+			),
+			self._frappe_dict(
+				name="t_unbound_clean",
+				reference_doctype="",
+				message="m",
+				footer="",
+				header_text="",
+				header_type="TEXT",
+			),
+			self._frappe_dict(
+				name="t_unbound_vars",
+				reference_doctype="",
+				message="Hi {{x}}",
+				footer="",
+				header_text="",
+				header_type="TEXT",
+			),
+		]
+
+		def _get_all(doctype, **kwargs):
+			if doctype == "Whatsapp Template":
+				return templates
+			if doctype == "Template Variable":
+				return [self._frappe_dict(parent="t_unbound_vars")]
+			return []
+
+		with (
+			patch("crm.api.whatsapp.validate_access"),
+			patch("frappe.db.exists", return_value=True),
+			patch("frappe.get_all", side_effect=_get_all),
+		):
+			result = get_sendable_templates("CRM Lead")
+
+		names = [t.name for t in result]
+		self.assertIn("t_bound", names)
+		self.assertIn("t_unbound_clean", names)
+		self.assertNotIn("t_unbound_vars", names)
+
+	def test_skips_variable_query_when_no_unbound_templates(self):
+		templates = [
+			self._frappe_dict(
+				name="t_bound",
+				reference_doctype="CRM Lead",
+				message="m",
+				footer="",
+				header_text="",
+				header_type="TEXT",
+			),
+		]
+		calls = []
+
+		def _get_all(doctype, **kwargs):
+			calls.append(doctype)
+			if doctype == "Whatsapp Template":
+				return templates
+			return []
+
+		with (
+			patch("crm.api.whatsapp.validate_access"),
+			patch("frappe.db.exists", return_value=True),
+			patch("frappe.get_all", side_effect=_get_all),
+		):
+			get_sendable_templates("CRM Lead")
+
+		self.assertNotIn("Template Variable", calls)

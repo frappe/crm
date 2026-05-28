@@ -597,6 +597,50 @@ def get_from_name(message):
 
 
 @frappe.whitelist()
+def get_sendable_templates(reference_doctype: str) -> list[dict]:
+	"""Return APPROVED templates that can be sent from the given CRM doctype.
+
+	A template is sendable from `reference_doctype` when either:
+	- it is bound to that doctype (variables resolve from the open document), or
+	- it is unbound AND has no variables (nothing to resolve).
+
+	Unbound templates with variables are excluded because their variables
+	cannot be auto-filled (see Whatsapp app DESIGN_DECISIONS.md).
+	"""
+	validate_access()
+
+	if not frappe.db.exists("DocType", "Whatsapp Template"):
+		return []
+
+	templates = frappe.get_all(
+		"Whatsapp Template",
+		filters={
+			"status": "APPROVED",
+			"reference_doctype": ["in", [reference_doctype, ""]],
+		},
+		fields=["name", "message", "footer", "header_text", "header_type", "reference_doctype"],
+		order_by="modified desc",
+	)
+
+	if not templates:
+		return []
+
+	unbound_names = [t.name for t in templates if not t.reference_doctype]
+	unbound_with_vars: set[str] = set()
+	if unbound_names:
+		unbound_with_vars = {
+			row.parent
+			for row in frappe.get_all(
+				"Template Variable",
+				filters={"parent": ["in", unbound_names], "parenttype": "Whatsapp Template"},
+				fields=["parent"],
+			)
+		}
+
+	return [t for t in templates if t.name not in unbound_with_vars]
+
+
+@frappe.whitelist()
 def get_linked_whatsapp_profiles(reference_doctype: str, reference_docname: str) -> list[dict]:
 	"""Get all Whatsapp Profiles linked to the given CRM document.
 
