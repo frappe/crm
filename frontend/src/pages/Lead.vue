@@ -185,51 +185,6 @@
         v-model="doc"
         @updateField="updateField"
       />
-      <div v-if="mergeHistory.length" class="border-b px-5 py-3">
-        <div
-          class="mb-2 flex items-center gap-2 text-sm font-medium text-ink-gray-7"
-        >
-          <Icon icon="git-merge" class="h-4 w-4" />
-          {{ __('Merge History') }}
-        </div>
-        <div class="space-y-2">
-          <div
-            v-for="log in mergeHistory"
-            :key="log.name"
-            class="flex items-center justify-between rounded-md border px-3 py-2 text-sm"
-          >
-            <div class="min-w-0 flex-1">
-              <div class="text-ink-gray-9">
-                {{
-                  log.merged_at
-                    ? __('Merged {0} into {1}', [
-                        log.source_title || log.source_document_name,
-                        log.target_title || log.target_document_name,
-                      ])
-                    : ''
-                }}
-              </div>
-              <div class="text-xs text-ink-gray-5">
-                {{ log.merged_by }} ·
-                {{ log.merged_at ? __(log.merged_at) : '' }}
-              </div>
-            </div>
-            <Button
-              v-if="
-                !log.is_split &&
-                (log.source_document_name === leadId ||
-                  log.target_document_name === leadId)
-              "
-              :label="__('Split')"
-              icon="undo"
-              variant="subtle"
-              theme="red"
-              size="sm"
-              @click="openSplit(log)"
-            />
-          </div>
-        </div>
-      </div>
       <div
         v-if="sections.data"
         class="flex flex-1 flex-col justify-between overflow-hidden"
@@ -279,17 +234,10 @@
     doctype="CRM Lead"
     :document="document"
   />
-  <SplitConfirmModal
-    v-if="showSplitModal && selectedMergeLog"
-    v-model="showSplitModal"
-    :mergeLog="selectedMergeLog"
-    @split="onSplit"
-  />
   <MergeLeadModal
     v-if="showMergeModal"
     v-model="showMergeModal"
     :leadId="leadId"
-    @merged="onMerged"
   />
 </template>
 <script setup>
@@ -320,7 +268,6 @@ import SidePanelLayout from '@/components/SidePanelLayout.vue'
 import SLASection from '@/components/SLASection.vue'
 import CustomActions from '@/components/CustomActions.vue'
 import ConvertToDealModal from '@/components/Modals/ConvertToDealModal.vue'
-import SplitConfirmModal from '@/components/Modals/SplitConfirmModal.vue'
 import MergeLeadModal from '@/components/Modals/MergeLeadModal.vue'
 import {
   openWebsite,
@@ -373,9 +320,6 @@ const errorMessage = ref('')
 const showDeleteLinkedDocModal = ref(false)
 const showConvertToDealModal = ref(false)
 const showFilesUploader = ref(false)
-const mergeHistory = ref([])
-const showSplitModal = ref(false)
-const selectedMergeLog = ref(null)
 const showMergeModal = ref(false)
 
 const {
@@ -627,16 +571,6 @@ function reloadResources(data) {
 }
 
 watch(
-  () => props.leadId,
-  async (id) => {
-    if (id) {
-      await refreshMergeHistory()
-    }
-  },
-  { immediate: true },
-)
-
-watch(
   () => document.doc,
   (doc) => {
     if (doc?.merged_into && doc.merged_into !== props.leadId) {
@@ -644,31 +578,6 @@ watch(
     }
   },
 )
-
-async function refreshMergeHistory() {
-  try {
-    mergeHistory.value = await call('crm.api.lead.get_merge_history', {
-      lead_name: props.leadId,
-    })
-  } catch {
-    mergeHistory.value = []
-  }
-}
-
-function openSplit(log) {
-  selectedMergeLog.value = log
-  showSplitModal.value = true
-}
-
-function onSplit() {
-  showSplitModal.value = false
-  selectedMergeLog.value = null
-  refreshMergeHistory()
-}
-
-function onMerged() {
-  refreshMergeHistory()
-}
 
 const moreActions = computed(() => [
   {
