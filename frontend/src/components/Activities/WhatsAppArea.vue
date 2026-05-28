@@ -243,14 +243,12 @@ function formatWhatsAppMessage(message) {
   message = message.replace(/```(.*?)```/g, '<code>$1</code>')
   // if message contains `text`, make it inline code
   message = message.replace(/`(.*?)`/g, '<code>$1</code>')
-  // if message contains > text, make it a blockquote
+  // Block-level patterns anchor to line starts so digits/punctuation mid-sentence
+  // aren't mistaken for numbered-list items. Run before \n → <br> so ^ still works.
   message = message.replace(/^> (.*)$/gm, '<blockquote>$1</blockquote>')
-  // if contain /n, make it a new line
+  message = message.replace(/^[*-] (.+)$/gm, '<li>$1</li>')
+  message = message.replace(/^\d+\. (.+)$/gm, '<li>$1</li>')
   message = message.replace(/\n/g, '<br>')
-  // if contains *<space>text, make it a bullet point
-  message = message.replace(/\* (.*?)(?=\s*\*|$)/g, '<li>$1</li>')
-  message = message.replace(/- (.*?)(?=\s*-|$)/g, '<li>$1</li>')
-  message = message.replace(/(\d+)\. (.*?)(?=\s*(\d+)\.|$)/g, '<li>$2</li>')
 
   return sanitizeHTML(message)
 }
