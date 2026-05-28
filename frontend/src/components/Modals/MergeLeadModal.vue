@@ -11,9 +11,42 @@
         <p class="text-base text-ink-gray-7">
           {{
             __(
-              'All activities of the selected lead will be moved to this lead.',
+              'Select a lead to merge into this one. Its activities will be transferred here, and any empty fields on this lead will be populated from the',
             )
           }}
+          <span class="inline-flex items-center gap-1">
+            {{ __('selected lead.') }}
+            <Popover trigger="hover" :hoverDelay="0.25" placement="right">
+              <template #target>
+                <FeatherIcon name="info" class="size-4 cursor-pointer" />
+              </template>
+              <template #body-main>
+                <div
+                  class="max-w-[26rem] whitespace-pre-wrap rounded-md bg-surface-white p-3 text-sm leading-5 text-ink-gray-6"
+                >
+                  <span class="font-medium text-ink-gray-7">
+                    {{ __("Here's what will happen") }}
+                  </span>
+                  <ul class="mt-1.5 list-disc space-y-1 pl-4">
+                    <li>
+                      {{
+                        __(
+                          'All activities, notes, tasks, emails and calls from the selected lead will move to this lead.',
+                        )
+                      }}
+                    </li>
+                    <li>
+                      {{
+                        __(
+                          'Empty fields on this lead will be filled in from the selected lead. Existing values are kept as-is.',
+                        )
+                      }}
+                    </li>
+                  </ul>
+                </div>
+              </template>
+            </Popover>
+          </span>
         </p>
 
         <div class="flex flex-col gap-1.5">
@@ -24,15 +57,6 @@
             :filters="mergeLeadFilters"
             :placeholder="__('Select Lead')"
           />
-        </div>
-
-        <div
-          class="flex items-center gap-2.5 rounded-lg border border-outline-gray-2 px-3.5 py-3"
-        >
-          <LucideAlertTriangle class="h-4 w-4 shrink-0 text-yellow-600" />
-          <span class="text-sm text-ink-gray-7">
-            {{ __('This merge can be undone later from the merge history.') }}
-          </span>
         </div>
 
         <ErrorMessage v-if="error" :message="error" />
@@ -56,9 +80,16 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { Dialog, Button, ErrorMessage, call, toast } from 'frappe-ui'
+import {
+  Dialog,
+  Button,
+  ErrorMessage,
+  FeatherIcon,
+  Popover,
+  call,
+  toast,
+} from 'frappe-ui'
 import Link from '@/components/Controls/Link.vue'
-import LucideAlertTriangle from '~icons/lucide/alert-triangle'
 
 const props = defineProps({
   leadId: { type: String, required: true },
