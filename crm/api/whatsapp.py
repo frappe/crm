@@ -1,4 +1,5 @@
 import json
+import re
 
 import frappe
 from frappe import _
@@ -156,9 +157,7 @@ def _link_profile_to_crm_entities(doc) -> None:
 
 		profile = frappe.get_doc("Whatsapp Profile", profile_name)
 
-		existing_links = {
-			(link.link_doctype, link.link_name) for link in (profile.links or [])
-		}
+		existing_links = {(link.link_doctype, link.link_name) for link in (profile.links or [])}
 
 		needs_save = False
 		for match in matches:
@@ -182,9 +181,7 @@ def _link_profile_to_crm_entities(doc) -> None:
 			profile.save(ignore_permissions=True)
 
 	except Exception:
-		frappe.log_error(
-			frappe.get_traceback(), "CRM WhatsApp: failed to link profile to CRM entities"
-		)
+		frappe.log_error(frappe.get_traceback(), "CRM WhatsApp: failed to link profile to CRM entities")
 
 
 def on_update(doc, method):
@@ -235,9 +232,7 @@ def notify_agent(doc):
 def is_whatsapp_enabled():
 	if not frappe.db.exists("DocType", "Whatsapp Setting"):
 		return False
-	default_account = frappe.get_cached_value(
-		"Whatsapp Setting", "Whatsapp Setting", "default_account"
-	)
+	default_account = frappe.get_cached_value("Whatsapp Setting", "Whatsapp Setting", "default_account")
 	if not default_account:
 		return False
 	status = frappe.get_cached_value("Whatsapp Account", default_account, "status")
@@ -397,9 +392,9 @@ def create_whatsapp_message(
 	profile_name = _resolve_to_profile(to, create_if_missing=True)
 	if not profile_name:
 		frappe.throw(
-			_("Could not resolve recipient '{0}' to a WhatsApp Profile. Please ensure a default WhatsApp account is configured.").format(
-				to
-			)
+			_(
+				"Could not resolve recipient '{0}' to a WhatsApp Profile. Please ensure a default WhatsApp account is configured."
+			).format(to)
 		)
 
 	doc = frappe.new_doc("Whatsapp Message")
@@ -456,9 +451,9 @@ def send_whatsapp_template(reference_doctype: str, reference_name: str, template
 	profile_name = _resolve_to_profile(to, create_if_missing=True)
 	if not profile_name:
 		frappe.throw(
-			_("Could not resolve recipient '{0}' to a WhatsApp Profile. Please ensure a default WhatsApp account is configured.").format(
-				to
-			)
+			_(
+				"Could not resolve recipient '{0}' to a WhatsApp Profile. Please ensure a default WhatsApp account is configured."
+			).format(to)
 		)
 
 	doc = frappe.new_doc("Whatsapp Message")
@@ -511,12 +506,42 @@ def react_on_whatsapp_message(emoji: str, reply_to_name: str):
 	return doc.name
 
 
-def parse_template_parameters(string, parameters):
-	for i, parameter in enumerate(parameters, start=1):
-		placeholder = "{{" + str(i) + "}}"
-		string = string.replace(placeholder, str(parameter))
+_PLACEHOLDER_RE = re.compile(r"\{\{\s*([^}]+?)\s*\}\}")
 
-	return string
+
+def parse_template_parameters(string, parameters):
+	"""Substitute `{{var}}` placeholders in `string` using `parameters`.
+
+	The upstream Whatsapp app stores parameters in three shapes:
+	- dict: named templates (the authoring default) and synced positional
+	  templates with numeric-string keys → substitute `{{<key>}}` per entry
+	- list: legacy positional shape → substitute `{{1}}`, `{{2}}`, … by index
+	- scalar (str/int/float): header storage, which keeps only the single
+	  value (Meta's header section takes one variable) → substitute the
+	  first placeholder in `string`
+	"""
+	if not string or parameters is None:
+		return string
+
+	if isinstance(parameters, dict):
+		return _PLACEHOLDER_RE.sub(
+			lambda m: str(parameters[m.group(1)]) if m.group(1) in parameters else m.group(0),
+			string,
+		)
+
+	if isinstance(parameters, list):
+
+		def _replace_positional(match):
+			key = match.group(1)
+			if key.isdigit():
+				index = int(key) - 1
+				if 0 <= index < len(parameters):
+					return str(parameters[index])
+			return match.group(0)
+
+		return _PLACEHOLDER_RE.sub(_replace_positional, string)
+
+	return _PLACEHOLDER_RE.sub(lambda _m: str(parameters), string, count=1)
 
 
 def get_from_name(message):
