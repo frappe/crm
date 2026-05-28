@@ -78,6 +78,8 @@ const props = defineProps({
   filters: { type: [Array, Object, String], default: () => [] },
   modelValue: { type: String, default: '' },
   hideMe: { type: Boolean, default: false },
+  searchUrl: { type: String, default: '' },
+  searchParams: { type: Object, default: () => ({}) },
 })
 
 const emit = defineEmits(['update:modelValue', 'change'])
@@ -130,14 +132,22 @@ watchDebounced(
 )
 
 const options = createResource({
-  url: 'frappe.desk.search.search_link',
-  cache: [props.doctype, text.value, props.hideMe, props.filters],
+  url: props.searchUrl || 'frappe.desk.search.search_link',
+  cache: [
+    props.searchUrl || props.doctype,
+    text.value,
+    props.hideMe,
+    props.filters,
+    props.searchParams,
+  ],
   method: 'POST',
-  params: {
-    txt: text.value,
-    doctype: props.doctype,
-    filters: props.filters,
-  },
+  params: props.searchUrl
+    ? { txt: text.value, ...props.searchParams }
+    : {
+        txt: text.value,
+        doctype: props.doctype,
+        filters: props.filters,
+      },
   transform: (data) => {
     let allData = data.map((option) => {
       return {
@@ -167,11 +177,13 @@ function reload(val, force = false) {
     return
 
   options.update({
-    params: {
-      txt: val,
-      doctype: props.doctype,
-      filters: props.filters,
-    },
+    params: props.searchUrl
+      ? { txt: val, ...props.searchParams }
+      : {
+          txt: val,
+          doctype: props.doctype,
+          filters: props.filters,
+        },
   })
   options.reload()
 }

@@ -54,7 +54,8 @@
           <Link
             v-model="selectedLead"
             doctype="CRM Lead"
-            :filters="mergeLeadFilters"
+            :searchUrl="'crm.api.lead.search_mergeable_leads'"
+            :searchParams="{ current_lead: leadId }"
             :placeholder="__('Select Lead')"
           />
         </div>
@@ -78,7 +79,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import {
   Dialog,
@@ -90,6 +91,7 @@ import {
   toast,
 } from 'frappe-ui'
 import Link from '@/components/Controls/Link.vue'
+import { reloadDocument } from '@/data/document'
 
 const props = defineProps({
   leadId: { type: String, required: true },
@@ -103,11 +105,6 @@ const selectedLead = ref('')
 const isMerging = ref(false)
 const error = ref(null)
 
-const mergeLeadFilters = computed(() => [
-  ['is_duplicate', '=', 0],
-  ['name', '!=', props.leadId],
-])
-
 async function performMerge() {
   isMerging.value = true
   error.value = null
@@ -116,6 +113,8 @@ async function performMerge() {
       target: props.leadId,
       source: selectedLead.value,
     })
+    reloadDocument('CRM Lead', result.target)
+    reloadDocument('CRM Lead', result.source)
     show.value = false
     emit('merged', result.target)
     toast.success(__('Lead merged successfully'), {
