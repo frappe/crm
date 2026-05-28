@@ -76,6 +76,40 @@ def _resolve_to_profile(to_value: str, create_if_missing: bool = False) -> str |
 		return None
 
 
+def _validate_template_for_reference(template_name: str, reference_doctype: str) -> None:
+	"""Enforce the Whatsapp Template "reference DocType drives all parameters" invariant.
+
+	Per the Whatsapp app's design, a template with variables resolves them from a
+	single document of the template's bound reference_doctype. Sending such a
+	template from a different doctype (or from no doctype) cannot resolve values.
+	"""
+	if not frappe.db.exists("Whatsapp Template", template_name):
+		frappe.throw(
+			_("WhatsApp Template '{0}' does not exist.").format(template_name),
+			frappe.DoesNotExistError,
+		)
+
+	template = frappe.get_cached_doc("Whatsapp Template", template_name)
+	if not template.get("template_variables"):
+		return
+
+	template_ref = template.get("reference_doctype")
+	if not template_ref:
+		frappe.throw(
+			_(
+				"Template '{0}' has unfilled variables but is not bound to a reference DocType, "
+				"so variable values cannot be auto-filled."
+			).format(template_name)
+		)
+
+	if template_ref != reference_doctype:
+		frappe.throw(
+			_("Template '{0}' resolves variables from {1}; cannot send from {2}.").format(
+				template_name, template_ref, reference_doctype
+			)
+		)
+
+
 def validate_access(reference_doctype=None, reference_name=None, permtype="read"):
 	if not any(role in ALLOWED_WHATSAPP_ROLES for role in frappe.get_roles()):
 		frappe.throw(_("Only sales users can access WhatsApp features."), frappe.PermissionError)
@@ -447,6 +481,8 @@ def create_whatsapp_message(
 @frappe.whitelist()
 def send_whatsapp_template(reference_doctype: str, reference_name: str, template: str, to: str):
 	validate_access(reference_doctype, reference_name)
+
+	_validate_template_for_reference(template, reference_doctype)
 
 	profile_name = _resolve_to_profile(to, create_if_missing=True)
 	if not profile_name:

@@ -6,7 +6,12 @@ from unittest.mock import MagicMock, patch
 import frappe
 from frappe.tests.utils import FrappeTestCase
 
-from crm.api.whatsapp import notify_agent, parse_template_parameters, validate
+from crm.api.whatsapp import (
+	_validate_template_for_reference,
+	notify_agent,
+	parse_template_parameters,
+	validate,
+)
 
 
 class TestWhatsAppHooks(FrappeTestCase):
@@ -172,3 +177,43 @@ class TestParseTemplateParameters(FrappeTestCase):
 
 	def test_no_placeholders_returns_string_unchanged(self):
 		self.assertEqual(parse_template_parameters("No vars here", {"x": "y"}), "No vars here")
+
+
+class TestValidateTemplateForReference(FrappeTestCase):
+	def _patch_template(self, **fields):
+		"""Stub frappe.db.exists + frappe.get_cached_doc for a Whatsapp Template."""
+		template = MagicMock()
+		template.get.side_effect = lambda key, default=None: fields.get(key, default)
+		return patch("frappe.db.exists", return_value=True), patch(
+			"frappe.get_cached_doc", return_value=template
+		)
+
+	def test_raises_when_template_does_not_exist(self):
+		with patch("frappe.db.exists", return_value=False):
+			with self.assertRaises(frappe.DoesNotExistError):
+				_validate_template_for_reference("missing_template", "CRM Lead")
+
+	def test_passes_when_template_has_no_variables(self):
+		exists, get_doc = self._patch_template(template_variables=[], reference_doctype="")
+		with exists, get_doc:
+			_validate_template_for_reference("plain_template", "CRM Deal")  # must not raise
+
+	def test_raises_when_template_has_vars_but_no_reference_doctype(self):
+		exists, get_doc = self._patch_template(template_variables=[MagicMock()], reference_doctype="")
+		with exists, get_doc:
+			with self.assertRaises(frappe.ValidationError) as ctx:
+				_validate_template_for_reference("orphan_template", "CRM Lead")
+			self.assertIn("not bound to a reference DocType", str(ctx.exception))
+
+	def test_raises_when_template_doctype_mismatches(self):
+		exists, get_doc = self._patch_template(template_variables=[MagicMock()], reference_doctype="CRM Lead")
+		with exists, get_doc:
+			with self.assertRaises(frappe.ValidationError) as ctx:
+				_validate_template_for_reference("lead_template", "CRM Deal")
+			self.assertIn("CRM Lead", str(ctx.exception))
+			self.assertIn("CRM Deal", str(ctx.exception))
+
+	def test_passes_when_template_doctype_matches(self):
+		exists, get_doc = self._patch_template(template_variables=[MagicMock()], reference_doctype="CRM Lead")
+		with exists, get_doc:
+			_validate_template_for_reference("lead_template", "CRM Lead")  # must not raise
