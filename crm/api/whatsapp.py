@@ -414,6 +414,15 @@ def get_whatsapp_messages(reference_doctype: str, reference_name: str):
 				template.header_text = parse_template_parameters(template.header_text, header_parameters)
 			template_message["header"] = template.header_text
 			template_message["footer"] = template.footer
+			template_message["buttons"] = [
+				{
+					"button_type": btn.button_type,
+					"button_text": btn.button_text,
+					"url": btn.url,
+					"phone_number": btn.phone_number,
+				}
+				for btn in (template.buttons or [])
+			]
 
 	for message in messages:
 		from_name = get_from_name(message) if message["from"] else _("You")
