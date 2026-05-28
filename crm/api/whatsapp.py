@@ -335,6 +335,7 @@ def get_whatsapp_messages(reference_doctype: str, reference_name: str):
 					"reference_docname",
 					"template_body_parameters",
 					"template_header_parameters",
+					"reaction",
 				],
 			)
 
@@ -362,6 +363,7 @@ def get_whatsapp_messages(reference_doctype: str, reference_name: str):
 			"reference_docname",
 			"template_body_parameters",
 			"template_header_parameters",
+			"reaction",
 		],
 	)
 
@@ -380,6 +382,21 @@ def get_whatsapp_messages(reference_doctype: str, reference_name: str):
 		# Frontend matches lowercase status values ('sent', 'delivered', 'read', 'failed');
 		# upstream stores Title Case. Normalize at the API boundary.
 		message["status"] = (message.get("status") or "").lower()
+
+	# Fold reaction messages onto their target: WhatsApp reactions arrive as separate
+	# message docs carrying `reaction` + `context_message_id`. For display, attach the
+	# latest reaction emoji to the original message and drop the reaction row itself.
+	reactions_by_target_id: dict[str, str] = {}
+	non_reaction_messages = []
+	for message in sorted(messages, key=lambda m: m.get("creation") or ""):
+		if message.get("reaction") and message.get("reply_to_message_id"):
+			reactions_by_target_id[message["reply_to_message_id"]] = message["reaction"]
+		else:
+			non_reaction_messages.append(message)
+	for message in non_reaction_messages:
+		if message.get("message_id") in reactions_by_target_id:
+			message["reaction"] = reactions_by_target_id[message["message_id"]]
+	messages = non_reaction_messages
 
 	template_messages = [message for message in messages if message["message_type"] == "Template"]
 	for template_message in template_messages:
@@ -542,6 +559,7 @@ def react_on_whatsapp_message(emoji: str, reply_to_name: str):
 			"reference_doctype": reply_to_doc.reference_doctype,
 			"reference_docname": reply_to_doc.reference_docname,
 			"message": emoji,
+			"reaction": emoji,
 			"to": to,
 			"context_message_id": reply_to_doc.message_id,
 		}
