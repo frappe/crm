@@ -155,6 +155,8 @@
 <script setup>
 import BrushCleaningIcon from '~icons/lucide/brush-cleaning'
 import LucideLayoutDashboard from '~icons/lucide/layout-dashboard'
+import LucideBuilding2 from '~icons/lucide/building-2'
+import LucideHouse from '~icons/lucide/house'
 import CRMLogo from '@/components/Icons/CRMLogo.vue'
 import InviteIcon from '@/components/Icons/InviteIcon.vue'
 import ConvertIcon from '@/components/Icons/ConvertIcon.vue'
@@ -246,6 +248,16 @@ const links = [
     to: 'Organizations',
   },
   {
+    label: 'Real Estate Units',
+    icon: LucideHouse,
+    to: 'Real Estate Units',
+  },
+  {
+    label: 'Real Estate Projects',
+    icon: LucideBuilding2,
+    to: 'Real Estate Projects',
+  },
+  {
     label: 'Notes',
     icon: NoteIcon,
     to: 'Notes',
@@ -325,6 +337,10 @@ function getIcon(routeName, icon) {
       return ContactsIcon
     case 'Organizations':
       return OrganizationsIcon
+    case 'Real Estate Units':
+      return LucideHouse
+    case 'Real Estate Projects':
+      return LucideBuilding2
     case 'Notes':
       return NoteIcon
     case 'Call Logs':

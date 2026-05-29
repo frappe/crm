@@ -85,6 +85,48 @@ const routes = [
     component: () => import('@/pages/CallLogs.vue'),
   },
   {
+    alias: '/real-estate-units',
+    path: '/real-estate-units/view/:viewType?',
+    name: 'Real Estate Units',
+    component: () => import('@/pages/RealEstateList.vue'),
+    meta: {
+      realEstate: {
+        doctype: 'Real Estate Unit',
+        routeName: 'Real Estate Units',
+        defaultViewName: 'Real Estate Units View',
+        primaryField: 'unit_number',
+        secondaryFields: ['project', 'unit_type', 'status', 'price', 'owner_lead'],
+        fieldLabels: {
+          project: 'Project',
+          unit_type: 'Unit Type',
+          status: 'Status',
+          price: 'Price',
+          owner_lead: 'Owner Lead',
+        },
+      },
+    },
+  },
+  {
+    alias: '/real-estate-projects',
+    path: '/real-estate-projects/view/:viewType?',
+    name: 'Real Estate Projects',
+    component: () => import('@/pages/RealEstateList.vue'),
+    meta: {
+      realEstate: {
+        doctype: 'Real Estate Project',
+        routeName: 'Real Estate Projects',
+        defaultViewName: 'Real Estate Projects View',
+        primaryField: 'project_name',
+        secondaryFields: ['location', 'developer', 'status'],
+        fieldLabels: {
+          location: 'Location',
+          developer: 'Developer',
+          status: 'Status',
+        },
+      },
+    },
+  },
+  {
     path: '/calendar',
     name: 'Calendar',
     component: () => import('@/pages/Calendar.vue'),
@@ -188,6 +230,8 @@ router.beforeEach(async (to, from, next) => {
       'Notes',
       'Tasks',
       'Call Logs',
+      'Real Estate Units',
+      'Real Estate Projects',
     ].includes(to.name) &&
     !to.query?.view
   ) {
@@ -206,6 +250,8 @@ router.beforeEach(async (to, from, next) => {
         Notes: 'FCRM Note',
         Tasks: 'CRM Task',
         'Call Logs': 'CRM Call Log',
+        'Real Estate Units': 'Real Estate Unit',
+        'Real Estate Projects': 'Real Estate Project',
       }
 
       const doctype = doctypeMap[to.name]
