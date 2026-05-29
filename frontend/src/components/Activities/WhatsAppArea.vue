@@ -6,13 +6,13 @@
       :key="whatsapp.name"
       class="activity group flex gap-2"
       :class="[
-        whatsapp.direction == 'Outgoing' ? 'flex-row-reverse' : '',
+        whatsapp.type == 'Outgoing' ? 'flex-row-reverse' : '',
         whatsapp.reaction ? 'mb-7' : 'mb-3',
       ]"
     >
       <div
         :id="whatsapp.name"
-        class="group/message relative max-w-[75%] rounded-md bg-surface-gray-1 text-ink-gray-9 p-1.5 pl-2 pb-5 text-base shadow-sm"
+        class="group/message relative min-w-[90px] max-w-[75%] rounded-md bg-surface-gray-1 text-ink-gray-9 p-1.5 pl-2 pb-5 text-base shadow-sm"
       >
         <Badge
           v-if="whatsapp.status == 'failed'"
@@ -149,14 +149,14 @@
           />
         </div>
         <div
-          class="absolute bottom-1 right-2 flex items-end gap-1 text-ink-gray-5"
+          class="absolute bottom-1 right-2 flex items-end gap-1 whitespace-nowrap text-ink-gray-5"
         >
           <Tooltip :text="formatDate(whatsapp.creation, 'ddd, MMM D, YYYY')">
             <div class="text-2xs">
               {{ formatDate(whatsapp.creation, 'hh:mm a') }}
             </div>
           </Tooltip>
-          <div v-if="whatsapp.direction == 'Outgoing'">
+          <div v-if="whatsapp.type == 'Outgoing'">
             <CheckIcon
               v-if="['sent', 'Success'].includes(whatsapp.status)"
               class="size-4"
