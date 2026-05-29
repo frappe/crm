@@ -384,18 +384,26 @@ def get_whatsapp_messages(reference_doctype: str, reference_name: str):
 		message["status"] = (message.get("status") or "").lower()
 
 	# Fold reaction messages onto their target: WhatsApp reactions arrive as separate
-	# message docs carrying `reaction` + `context_message_id`. For display, attach the
-	# latest reaction emoji to the original message and drop the reaction row itself.
-	reactions_by_target_id: dict[str, str] = {}
+	# message docs carrying `reaction` + `context_message_id`. Each participant (the
+	# contact and the agent) may keep one reaction per message — reacting again
+	# replaces their own. Track the latest reaction per (target, direction) so both
+	# sides' reactions can be shown together, and drop the reaction rows themselves.
+	reactions_by_target_id: dict[str, dict[str, dict]] = {}
 	non_reaction_messages = []
 	for message in sorted(messages, key=lambda m: m.get("creation") or ""):
 		if message.get("reaction") and message.get("reply_to_message_id"):
-			reactions_by_target_id[message["reply_to_message_id"]] = message["reaction"]
+			target = reactions_by_target_id.setdefault(message["reply_to_message_id"], {})
+			# Outgoing reactions are the agent's ("You"); incoming ones are the contact's.
+			reactor = _("You") if message["type"] == "Outgoing" else (get_from_name(message) or _("Contact"))
+			target[message["type"]] = {"emoji": message["reaction"], "from_name": reactor}
 		else:
 			non_reaction_messages.append(message)
 	for message in non_reaction_messages:
-		if message.get("message_id") in reactions_by_target_id:
-			message["reaction"] = reactions_by_target_id[message["message_id"]]
+		target = reactions_by_target_id.get(message.get("message_id"), {})
+		message["reactions"] = [
+			{"emoji": r["emoji"], "direction": direction, "from_name": r["from_name"]}
+			for direction, r in target.items()
+		]
 	messages = non_reaction_messages
 
 	template_messages = [message for message in messages if message["message_type"] == "Template"]

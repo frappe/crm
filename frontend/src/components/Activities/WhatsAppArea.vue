@@ -7,7 +7,7 @@
       class="activity group flex gap-2"
       :class="[
         whatsapp.type == 'Outgoing' ? 'flex-row-reverse' : '',
-        whatsapp.reaction ? 'mb-7' : 'mb-3',
+        whatsapp.reactions?.length ? 'mb-7' : 'mb-3',
       ]"
     >
       <div
@@ -63,12 +63,18 @@
           </Dropdown>
         </div>
         <div
-          v-if="whatsapp.reaction"
-          class="absolute -bottom-5 flex gap-1 rounded-full border bg-surface-white p-1 pb-[3px] shadow-sm"
+          v-if="whatsapp.reactions?.length"
+          class="absolute -bottom-5 flex gap-0.5 rounded-full border bg-surface-white p-1 pb-[3px] shadow-sm"
         >
-          <div class="flex size-4 items-center justify-center">
-            {{ whatsapp.reaction }}
-          </div>
+          <Tooltip
+            v-for="(r, i) in whatsapp.reactions"
+            :key="i"
+            :text="`${__('Reacted by')} ${r.from_name}`"
+          >
+            <div class="flex size-4 items-center justify-center">
+              {{ r.emoji }}
+            </div>
+          </Tooltip>
         </div>
         <div
           v-if="whatsapp.message_type == 'Template'"
