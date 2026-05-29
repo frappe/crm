@@ -388,3 +388,85 @@ class TestGetWhatsappMessagesStatusNormalization(FrappeTestCase):
 
 	def test_empty_status_becomes_empty_string(self):
 		self.assertEqual(self._run(None)[0]["status"], "")
+
+
+class TestCreateWhatsAppMediaMessage(FrappeTestCase):
+	"""Attachments must travel through the Whatsapp app's media-upload path.
+
+	Regression: CRM used to store the file URL in `media_url`/`message` only, so the
+	app's send path (which keys off the `attach` File reference) skipped the Meta media
+	upload and fell back to sending the file path as a plain text message.
+	"""
+
+	def tearDown(self):
+		frappe.db.rollback()
+
+	def _make_account(self):
+		return (
+			frappe.get_doc(
+				doctype="Whatsapp Account",
+				account_name=f"_Test Acc {frappe.generate_hash(length=6)}",
+				status="Active",
+				phone_id="1234567890",
+				business_id="biz",
+				app_id="app",
+				access_token="tok",
+			)
+			.insert(ignore_permissions=True)
+			.name
+		)
+
+	def test_attachment_sends_as_media_not_text(self):
+		from crm.api.whatsapp import create_whatsapp_message
+
+		account = self._make_account()
+		setting = frappe.get_single("Whatsapp Setting")
+		setting.default_account = account
+		setting.save(ignore_permissions=True)
+
+		lead = frappe.get_doc(
+			doctype="CRM Lead",
+			first_name="Mediatest",
+			mobile_no="+15551234567",
+		).insert(ignore_permissions=True)
+
+		file_doc = frappe.get_doc(
+			doctype="File",
+			file_name="pic.png",
+			is_private=0,
+			content=b"png_bytes",
+		).insert(ignore_permissions=True)
+
+		with (
+			patch("crm.api.whatsapp.validate_access"),
+			patch(
+				"whatsapp.whatsapp.api.whatsapp.Whatsapp.upload_media",
+				return_value={"id": "media_999"},
+			) as mock_upload,
+			patch(
+				"whatsapp.whatsapp.api.whatsapp.Whatsapp.send_message",
+				return_value={"messages": [{"id": "wamid.1"}]},
+			) as mock_send,
+		):
+			name = create_whatsapp_message(
+				reference_doctype="CRM Lead",
+				reference_name=lead.name,
+				message="",
+				to=lead.mobile_no,
+				attach=file_doc.file_url,
+				reply_to="",
+				content_type="image",
+			)
+
+		msg = frappe.get_doc("Whatsapp Message", name)
+		# `attach` must hold the File docname so the upload path runs.
+		self.assertEqual(msg.attach, file_doc.name)
+		# The file URL must not leak into the text body.
+		self.assertNotIn("/files/", msg.message or "")
+		# `media_url` is retained for the CRM activity-feed display.
+		self.assertEqual(msg.media_url, file_doc.file_url)
+
+		mock_upload.assert_called_once()
+		payload = mock_send.call_args[0][0]
+		self.assertEqual(payload["type"], "image")
+		self.assertEqual(payload["image"]["id"], "media_999")

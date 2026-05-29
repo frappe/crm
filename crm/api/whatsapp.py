@@ -494,14 +494,25 @@ def create_whatsapp_message(
 			}
 		)
 
+	# The Whatsapp app sends media by uploading the file to Meta and referencing the
+	# returned media_id. Its upload path (WhatsappMessage._send) keys off the `attach`
+	# field, which it resolves as a File *docname* (frappe.get_doc("File", attach)).
+	# The frontend hands us a file URL, so resolve it to the File docname here.
+	file_name = frappe.db.get_value("File", {"file_url": attach}, "name") if attach else None
+
 	doc.update(
 		{
 			"reference_doctype": reference_doctype,
 			"reference_docname": reference_name,
-			"message": message or attach,
+			# For media the `message` becomes the WhatsApp caption; keep it empty when
+			# there is no caption (never fall back to the file URL, which would be sent
+			# verbatim as a text message).
+			"message": message or "",
 			"to": profile_name,
 		}
 	)
+	if file_name:
+		doc.attach = file_name
 	doc.insert(ignore_permissions=True)
 
 	if attach:
@@ -511,6 +522,9 @@ def create_whatsapp_message(
 			"audio": "audio/mp4",
 			"video": "video/mp4",
 		}
+		# media_url is the read-only field the CRM activity feed renders the bubble from.
+		# mime_type is set here as a pre-send display fallback; the Whatsapp app overwrites
+		# it with the File's real content type during _send.
 		frappe.db.set_value("Whatsapp Message", doc.name, "media_url", attach, update_modified=False)
 		frappe.db.set_value(
 			"Whatsapp Message", doc.name, "mime_type", mime_map.get(content_type, ""), update_modified=False
