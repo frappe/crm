@@ -3,6 +3,7 @@ export class CRMLead {
     const existingActions = Array.isArray(this.actions) ? this.actions : []
     const realEstateActionNames = new Set([
       'real_estate_list_resale_unit',
+      'real_estate_assign_property_unit',
       'real_estate_link_interested_property',
     ])
 
@@ -12,11 +13,11 @@ export class CRMLead {
 
     if (this.doc.party_type === 'Seller') {
       actions.push({
-        name: 'real_estate_list_resale_unit',
-        label: __('List Resale Unit'),
+        name: 'real_estate_assign_property_unit',
+        label: __('Assign Property Unit'),
         group: __('Actions'),
         onClick: async (close) => {
-          await this.openResaleUnitDialog()
+          await this.assignPropertyUnitDialog()
           close?.()
         },
       })
@@ -35,6 +36,38 @@ export class CRMLead {
     }
 
     this.actions = actions
+  }
+
+  async assignPropertyUnitDialog() {
+    if (!this.doc?.name) {
+      this.toast.error(__('Please save the lead before assigning a property unit.'))
+      return
+    }
+
+    const data = await this.formDialog({
+      title: __('Assign Property Unit'),
+      size: 'md',
+      submitLabel: __('Assign'),
+      fields: [
+        {
+          fieldname: 'unit',
+          label: __('Available Unit'),
+          fieldtype: 'Link',
+          options: 'Real Estate Unit',
+          reqd: 1,
+          link_filters: JSON.stringify({ status: 'Available' }),
+        },
+      ],
+    })
+
+    if (!data?.unit) return
+
+    await this.call('real_estate_crm_customs.api.assign_property_unit_to_seller', {
+      lead: this.doc.name,
+      unit: data.unit,
+    })
+
+    this.toast.success(__('Property unit assigned to this seller lead.'))
   }
 
   async openResaleUnitDialog() {

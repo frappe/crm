@@ -48,7 +48,74 @@
       class="flex flex-1 overflow-hidden flex-col [&_[role='tab']]:px-0 [&_[role='tab']]:shrink-0 [&_[role='tablist']]:px-5 [&_[role='tablist']::-webkit-scrollbar]:h-0 [&_[role='tablist']]:min-h-[45px] [&_[role='tablist']]:gap-7.5 [&_[role='tabpanel']:not([hidden])]:flex [&_[role='tabpanel']:not([hidden])]:grow"
     >
       <template #tab-panel>
+        <div
+          v-if="activeTabName === 'Properties'"
+          class="flex flex-1 flex-col overflow-hidden"
+        >
+          <div class="flex items-center justify-between border-b px-5 py-3">
+            <div>
+              <div class="text-base font-medium text-ink-gray-9">
+                {{ __('Linked Properties') }}
+              </div>
+              <div class="text-sm text-ink-gray-6">
+                {{ __('Units connected to this lead as buyer interest or seller inventory.') }}
+              </div>
+            </div>
+            <Button
+              v-if="doc.party_type === 'Seller'"
+              :label="__('Assign Property Unit')"
+              variant="solid"
+              @click="assignPropertyUnitToSeller"
+            />
+          </div>
+          <div class="flex-1 overflow-auto p-5">
+            <div
+              v-if="linkedProperties.loading"
+              class="rounded border border-outline-gray-1 p-5 text-sm text-ink-gray-6"
+            >
+              {{ __('Loading linked properties...') }}
+            </div>
+            <div
+              v-else-if="!linkedPropertyRows.length"
+              class="rounded border border-outline-gray-1 p-5 text-sm text-ink-gray-6"
+            >
+              {{ __('No linked properties found for this lead yet.') }}
+            </div>
+            <div
+              v-else
+              class="overflow-hidden rounded border border-outline-gray-1"
+            >
+              <table class="w-full text-left text-sm">
+                <thead class="border-b bg-surface-gray-1 text-ink-gray-6">
+                  <tr>
+                    <th class="px-4 py-3 font-medium">{{ __('Relationship') }}</th>
+                    <th class="px-4 py-3 font-medium">{{ __('Unit') }}</th>
+                    <th class="px-4 py-3 font-medium">{{ __('Project') }}</th>
+                    <th class="px-4 py-3 font-medium">{{ __('Type') }}</th>
+                    <th class="px-4 py-3 font-medium">{{ __('Status') }}</th>
+                    <th class="px-4 py-3 font-medium">{{ __('Price') }}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    v-for="row in linkedPropertyRows"
+                    :key="row.name"
+                    class="border-b last:border-b-0"
+                  >
+                    <td class="px-4 py-3 text-ink-gray-8">{{ row.relationship || __('Property') }}</td>
+                    <td class="px-4 py-3 text-ink-gray-9">{{ row.sku || row.name }}</td>
+                    <td class="px-4 py-3 text-ink-gray-8">{{ row.project || __('—') }}</td>
+                    <td class="px-4 py-3 text-ink-gray-8">{{ row.unit_type || __('—') }}</td>
+                    <td class="px-4 py-3 text-ink-gray-8">{{ row.status || __('—') }}</td>
+                    <td class="px-4 py-3 text-ink-gray-8">{{ formatPrice(row.price) }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
         <Activities
+          v-else
           ref="activities"
           v-model:reload="reload"
           v-model:tabIndex="tabIndex"
@@ -268,6 +335,7 @@ import {
   isTranslatable,
 } from '@/utils'
 import { getView } from '@/utils/view'
+import { renderFieldLayoutDialog } from '@/utils/renderFieldLayoutDialog'
 import { getSettings } from '@/stores/settings'
 import { globalStore } from '@/stores/global'
 import { statusesStore } from '@/stores/statuses'
@@ -424,6 +492,11 @@ const tabs = computed(() => {
       icon: CommentIcon,
     },
     {
+      name: 'Properties',
+      label: __('Properties'),
+      icon: LinkIcon,
+    },
+    {
       name: 'Data',
       label: __('Data'),
       icon: DetailsIcon,
@@ -465,12 +538,60 @@ const tabs = computed(() => {
 
 const { tabIndex, changeTabTo } = useActiveTabManager(tabs, 'lastLeadTab')
 
+const activeTabName = computed(() => tabs.value[tabIndex.value]?.name)
+
+const linkedProperties = createResource({
+  url: 'real_estate_crm_customs.api.get_lead_linked_units',
+  cache: ['leadLinkedProperties', props.leadId],
+  params: { lead: props.leadId },
+  auto: true,
+})
+
+const linkedPropertyRows = computed(() => linkedProperties.data || [])
+
 const sections = createResource({
   url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_sidepanel_sections',
   cache: ['sidePanelSections', 'CRM Lead'],
   params: { doctype: 'CRM Lead' },
   auto: true,
 })
+
+function formatPrice(value) {
+  if (value === null || value === undefined || value === '') return __('—')
+  return value
+}
+
+async function assignPropertyUnitToSeller() {
+  if (doc.value.party_type !== 'Seller') {
+    toast.error(__('Only seller leads can be assigned property units'))
+    return
+  }
+
+  let values = await renderFieldLayoutDialog({
+    title: __('Assign Property Unit'),
+    fields: [
+      {
+        fieldname: 'unit',
+        fieldtype: 'Link',
+        label: __('Available Unit'),
+        options: 'Real Estate Unit',
+        reqd: 1,
+        get_query: () => ({ filters: { status: 'Available' } }),
+      },
+    ],
+  })
+
+  if (!values?.unit) return
+
+  await call('real_estate_crm_customs.api.assign_property_unit_to_seller', {
+    lead: props.leadId,
+    unit: values.unit,
+  })
+  linkedProperties.reload()
+  sections.reload()
+  document.reload?.()
+  toast.success(__('Property unit assigned to this seller lead'))
+}
 
 async function triggerStatusChange(value) {
   await triggerOnChange('status', value)
