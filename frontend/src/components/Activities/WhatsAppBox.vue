@@ -121,12 +121,16 @@ function sendTextMessage(event) {
 }
 
 async function sendWhatsAppMessage() {
+  const attach = whatsapp.value.attach || ''
+  // Don't send empty messages (no text and no attachment).
+  if (!content.value?.trim() && !attach) return
+
   let args = {
     reference_doctype: props.doctype,
     reference_name: doc.value.name,
     message: content.value,
     to: doc.value.mobile_no,
-    attach: whatsapp.value.attach || '',
+    attach,
     reply_to: reply.value?.name || '',
     content_type: whatsapp.value.content_type,
   }

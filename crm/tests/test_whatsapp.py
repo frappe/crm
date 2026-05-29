@@ -7,6 +7,7 @@ import frappe
 from frappe.tests.utils import FrappeTestCase
 
 from crm.api.whatsapp import (
+	_humanize_error_message,
 	_validate_template_for_reference,
 	get_sendable_templates,
 	get_whatsapp_messages,
@@ -470,3 +471,93 @@ class TestCreateWhatsAppMediaMessage(FrappeTestCase):
 		payload = mock_send.call_args[0][0]
 		self.assertEqual(payload["type"], "image")
 		self.assertEqual(payload["image"]["id"], "media_999")
+
+	def test_failed_send_exposes_error_message(self):
+		from requests import HTTPError
+
+		from crm.api.whatsapp import create_whatsapp_message, get_whatsapp_messages
+
+		account = self._make_account()
+		setting = frappe.get_single("Whatsapp Setting")
+		setting.default_account = account
+		setting.save(ignore_permissions=True)
+
+		lead = frappe.get_doc(
+			doctype="CRM Lead",
+			first_name="Failtest",
+			mobile_no="+15557654321",
+		).insert(ignore_permissions=True)
+
+		with (
+			patch("crm.api.whatsapp.validate_access", return_value=lead),
+			patch(
+				"whatsapp.whatsapp.api.whatsapp.Whatsapp.send_message",
+				side_effect=HTTPError("Meta rejected: number not on WhatsApp"),
+			),
+		):
+			name = create_whatsapp_message(
+				reference_doctype="CRM Lead",
+				reference_name=lead.name,
+				message="hello",
+				to=lead.mobile_no,
+				attach="",
+				reply_to="",
+			)
+
+			msg = frappe.get_doc("Whatsapp Message", name)
+			self.assertEqual(msg.status, "Failed")
+			self.assertIn("Meta rejected", msg.error_message or "")
+
+			messages = get_whatsapp_messages("CRM Lead", lead.name)
+
+		failed = next(m for m in messages if m["name"] == name)
+		self.assertEqual(failed["status"], "failed")
+		self.assertIn("Meta rejected", failed.get("error_message") or "")
+
+
+class TestHumanizeErrorMessage(FrappeTestCase):
+	def test_extracts_message_from_meta_send_response(self):
+		raw = (
+			'{"error":{"message":"(#131030) Recipient phone number not in allowed list",'
+			'"code":131030,"type":"OAuthException","error_data":{"messaging_product":"whatsapp",'
+			'"details":"Recipient phone number not in allowed list: Add recipient phone number '
+			'to recipient list and try again."},"fbtrace_id":"AeALCYwKZ1csanln8U18Q9i"}}'
+		)
+		self.assertEqual(
+			_humanize_error_message(raw),
+			"(#131030) Recipient phone number not in allowed list",
+		)
+
+	def test_extracts_message_from_webhook_errors_array(self):
+		raw = '[{"code":131030,"title":"Undeliverable","message":"(#131030) Not allowed"}]'
+		self.assertEqual(_humanize_error_message(raw), "(#131030) Not allowed")
+
+	def test_falls_back_to_error_user_msg(self):
+		raw = '{"error":{"code":131030,"error_user_msg":"Add the number to your allowed list"}}'
+		self.assertEqual(_humanize_error_message(raw), "Add the number to your allowed list")
+
+	def test_plain_string_returned_unchanged(self):
+		self.assertEqual(_humanize_error_message("Code 131030: boom"), "Code 131030: boom")
+
+	def test_none_returned_unchanged(self):
+		self.assertIsNone(_humanize_error_message(None))
+
+	def test_unparseable_json_returned_unchanged(self):
+		self.assertEqual(_humanize_error_message("{not json"), "{not json")
+
+
+class TestCreateWhatsAppMessageValidation(FrappeTestCase):
+	def test_empty_message_without_attachment_is_rejected(self):
+		"""Whitespace-only text and no attachment must not create/send a message."""
+		from crm.api.whatsapp import create_whatsapp_message
+
+		with patch("crm.api.whatsapp.validate_access"):
+			with self.assertRaises(frappe.ValidationError):
+				create_whatsapp_message(
+					reference_doctype="CRM Lead",
+					reference_name="LEAD-0001",
+					message="   ",
+					to="+15551234567",
+					attach="",
+					reply_to="",
+				)

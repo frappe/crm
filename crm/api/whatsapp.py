@@ -298,6 +298,37 @@ def _infer_content_type(mime_type):
 	return "document"
 
 
+def _humanize_error_message(raw):
+	"""Reduce a stored WhatsApp error to its human-readable message.
+
+	`error_message` can be stored in several shapes depending on where the failure
+	was captured:
+	- the raw Meta send response: ``{"error": {"message": ..., "code": ...}}``
+	- the webhook status payload's errors array: ``[{"message": ..., "title": ...}]``
+	- an already-plain string (e.g. "Code 131030: ...")
+
+	Return just the human message (e.g. "(#131030) Recipient phone number not in
+	allowed list"), falling back to the original value when it can't be parsed.
+	"""
+	if not raw:
+		return raw
+
+	try:
+		data = json.loads(raw)
+	except (ValueError, TypeError):
+		return raw
+
+	if isinstance(data, list):
+		data = data[0] if data else {}
+
+	if isinstance(data, dict):
+		error = data.get("error", data)
+		if isinstance(error, dict):
+			return error.get("message") or error.get("error_user_msg") or error.get("title") or raw
+
+	return raw
+
+
 @frappe.whitelist()
 def get_whatsapp_messages(reference_doctype: str, reference_name: str):
 	reference_doc = validate_access(reference_doctype, reference_name)
@@ -336,6 +367,7 @@ def get_whatsapp_messages(reference_doctype: str, reference_name: str):
 					"template_body_parameters",
 					"template_header_parameters",
 					"reaction",
+					"error_message",
 				],
 			)
 
@@ -364,6 +396,7 @@ def get_whatsapp_messages(reference_doctype: str, reference_name: str):
 			"template_body_parameters",
 			"template_header_parameters",
 			"reaction",
+			"error_message",
 		],
 	)
 
@@ -382,6 +415,7 @@ def get_whatsapp_messages(reference_doctype: str, reference_name: str):
 		# Frontend matches lowercase status values ('sent', 'delivered', 'read', 'failed');
 		# upstream stores Title Case. Normalize at the API boundary.
 		message["status"] = (message.get("status") or "").lower()
+		message["error_message"] = _humanize_error_message(message.get("error_message"))
 
 	# Fold reaction messages onto their target: WhatsApp reactions arrive as separate
 	# message docs carrying `reaction` + `context_message_id`. Each participant (the
@@ -468,6 +502,9 @@ def create_whatsapp_message(
 	content_type: str = "text",
 ):
 	validate_access(reference_doctype, reference_name)
+
+	if not (message or "").strip() and not attach:
+		frappe.throw(_("Cannot send an empty message."))
 
 	profile_name = _resolve_to_profile(to, create_if_missing=True)
 	if not profile_name:
