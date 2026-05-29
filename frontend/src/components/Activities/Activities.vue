@@ -1,7 +1,7 @@
 <template>
   <ActivityHeader
     v-model="tabIndex"
-    v-model:showWhatsappTemplates="showWhatsappTemplates"
+    v-model:showWhatsAppTemplates="showWhatsAppTemplates"
     v-model:showFilesUploader="showFilesUploader"
     v-model:emailBox="emailBox"
     :tabs="tabs"
@@ -418,9 +418,9 @@
       @scroll="scroll"
     />
   </div>
-  <WhatsappTemplateSelectorModal
+  <WhatsAppTemplateSelectorModal
     v-if="whatsappEnabled"
-    v-model="showWhatsappTemplates"
+    v-model="showWhatsAppTemplates"
     :doctype="doctype"
     @send="(t) => sendTemplate(t)"
   />
@@ -477,7 +477,7 @@ import InboundCallIcon from '@/components/Icons/InboundCallIcon.vue'
 import OutboundCallIcon from '@/components/Icons/OutboundCallIcon.vue'
 import FadedScrollableDiv from '@/components/FadedScrollableDiv.vue'
 import CommunicationArea from '@/components/CommunicationArea.vue'
-import WhatsappTemplateSelectorModal from '@/components/Modals/WhatsappTemplateSelectorModal.vue'
+import WhatsAppTemplateSelectorModal from '@/components/Modals/WhatsAppTemplateSelectorModal.vue'
 import AllModals from '@/components/Activities/AllModals.vue'
 import FilesUploader from '@/components/FilesUploader/FilesUploader.vue'
 import { timeAgo, formatDate, startCase } from '@/utils'
@@ -545,7 +545,7 @@ const all_activities = createResource({
   onSuccess: () => nextTick(() => scroll()),
 })
 
-const showWhatsappTemplates = ref(false)
+const showWhatsAppTemplates = ref(false)
 
 const whatsappMessages = createResource({
   url: 'crm.api.whatsapp.get_whatsapp_messages',
@@ -591,7 +591,7 @@ onMounted(() => {
 })
 
 function sendTemplate(template) {
-  showWhatsappTemplates.value = false
+  showWhatsAppTemplates.value = false
   capture('send_whatsapp_template', { doctype: props.doctype })
   createResource({
     url: 'crm.api.whatsapp.send_whatsapp_template',

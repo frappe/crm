@@ -59,7 +59,7 @@
     <div v-else-if="title == 'WhatsApp'" class="flex gap-2 shrink-0">
       <Button
         :label="__('Send Template')"
-        @click="showWhatsappTemplates = true"
+        @click="showWhatsAppTemplates = true"
       />
       <Button
         variant="solid"
@@ -108,7 +108,7 @@ const props = defineProps({
 const { makeCall } = globalStore()
 
 const tabIndex = defineModel({ type: Number })
-const showWhatsappTemplates = defineModel('showWhatsappTemplates', {
+const showWhatsAppTemplates = defineModel('showWhatsAppTemplates', {
   type: Boolean,
 })
 const showFilesUploader = defineModel('showFilesUploader', { type: Boolean })

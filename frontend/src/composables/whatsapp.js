@@ -2,11 +2,11 @@ import { createResource } from 'frappe-ui'
 import { ref } from 'vue'
 
 export const whatsappEnabled = ref(false)
-export const isWhatsappInstalled = ref(false)
+export const isWhatsAppInstalled = ref(false)
 
 createResource({
   url: 'crm.api.whatsapp.is_whatsapp_enabled',
-  cache: 'Is Whatsapp Enabled',
+  cache: 'Is WhatsApp Enabled',
   auto: true,
   onSuccess: (data) => {
     whatsappEnabled.value = Boolean(data)
@@ -15,9 +15,9 @@ createResource({
 
 createResource({
   url: 'crm.api.whatsapp.is_whatsapp_installed',
-  cache: 'Is Whatsapp Installed',
+  cache: 'Is WhatsApp Installed',
   auto: true,
   onSuccess: (data) => {
-    isWhatsappInstalled.value = Boolean(data)
+    isWhatsAppInstalled.value = Boolean(data)
   },
 })

@@ -44,7 +44,7 @@
           <Button
             :label="__('Create New')"
             class="mt-4"
-            @click="newWhatsappTemplate"
+            @click="newWhatsAppTemplate"
           />
         </div>
       </div>
@@ -87,7 +87,7 @@ const filteredTemplates = computed(() => {
   )
 })
 
-function newWhatsappTemplate() {
+function newWhatsAppTemplate() {
   show.value = false
   window.open('/app/whatsapp-template/new')
 }

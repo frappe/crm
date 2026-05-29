@@ -3,9 +3,11 @@
 
 import frappe
 
+from crm.integrations.api import get_all_matches_by_phone_number
+
 
 def execute():
-	"""Link existing Whatsapp Profile records to matching CRM entities.
+	"""Link existing WhatsApp Profile records to matching CRM entities.
 
 	This is a one-time migration for profiles created before the auto-linking
 	feature was added. It uses the same logic as _link_profile_to_crm_entities()
@@ -13,13 +15,11 @@ def execute():
 
 	Idempotent: safe to run multiple times.
 	"""
-	if not frappe.db.exists("DocType", "Whatsapp Profile"):
+	if not frappe.db.exists("DocType", "WhatsApp Profile"):
 		return
 
-	from crm.integrations.api import get_all_matches_by_phone_number
-
 	profiles = frappe.get_all(
-		"Whatsapp Profile",
+		"WhatsApp Profile",
 		filters={"phone_number": ["!=", ""]},
 		fields=["name", "phone_number"],
 	)
@@ -33,12 +33,12 @@ def execute():
 		except Exception:
 			frappe.log_error(
 				frappe.get_traceback(),
-				f"Migration: failed to link Whatsapp Profile {profile_row.name}",
+				f"Migration: failed to link WhatsApp Profile {profile_row.name}",
 			)
 
 
 def _link_single_profile(profile_name: str, phone_number: str):
-	"""Link a single Whatsapp Profile to matching CRM entities."""
+	"""Link a single WhatsApp Profile to matching CRM entities."""
 	if not phone_number:
 		return
 
@@ -46,7 +46,7 @@ def _link_single_profile(profile_name: str, phone_number: str):
 	if not matches:
 		return
 
-	profile = frappe.get_doc("Whatsapp Profile", profile_name)
+	profile = frappe.get_doc("WhatsApp Profile", profile_name)
 
 	existing_links = {(link.link_doctype, link.link_name) for link in (profile.links or [])}
 

@@ -165,7 +165,7 @@ doc_events = {
 		"after_insert": ["crm.utils.on_comment_insert"],
 		"on_update": ["crm.api.comment.on_update"],
 	},
-	"Whatsapp Message": {
+	"WhatsApp Message": {
 		"validate": ["crm.api.whatsapp.validate"],
 		"on_update": ["crm.api.whatsapp.on_update"],
 	},

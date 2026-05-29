@@ -184,7 +184,7 @@ class TestParseTemplateParameters(FrappeTestCase):
 
 class TestValidateTemplateForReference(FrappeTestCase):
 	def _patch_template(self, **fields):
-		"""Stub frappe.db.exists + frappe.get_cached_doc for a Whatsapp Template."""
+		"""Stub frappe.db.exists + frappe.get_cached_doc for a WhatsApp Template."""
 		template = MagicMock()
 		template.get.side_effect = lambda key, default=None: fields.get(key, default)
 		return patch("frappe.db.exists", return_value=True), patch(
@@ -293,7 +293,7 @@ class TestGetSendableTemplates(FrappeTestCase):
 		]
 
 		def _get_all(doctype, **kwargs):
-			if doctype == "Whatsapp Template":
+			if doctype == "WhatsApp Template":
 				return templates
 			if doctype == "Template Variable":
 				return [self._frappe_dict(parent="t_unbound_vars")]
@@ -326,7 +326,7 @@ class TestGetSendableTemplates(FrappeTestCase):
 
 		def _get_all(doctype, **kwargs):
 			calls.append(doctype)
-			if doctype == "Whatsapp Template":
+			if doctype == "WhatsApp Template":
 				return templates
 			return []
 
@@ -340,7 +340,7 @@ class TestGetSendableTemplates(FrappeTestCase):
 		self.assertNotIn("Template Variable", calls)
 
 
-class TestGetWhatsappMessagesStatusNormalization(FrappeTestCase):
+class TestGetWhatsAppMessagesStatusNormalization(FrappeTestCase):
 	"""The frontend matches lowercase status values; upstream stores Title Case."""
 
 	def _fake_message(self, status):
@@ -392,7 +392,7 @@ class TestGetWhatsappMessagesStatusNormalization(FrappeTestCase):
 
 
 class TestCreateWhatsAppMediaMessage(FrappeTestCase):
-	"""Attachments must travel through the Whatsapp app's media-upload path.
+	"""Attachments must travel through the WhatsApp app's media-upload path.
 
 	Regression: CRM used to store the file URL in `media_url`/`message` only, so the
 	app's send path (which keys off the `attach` File reference) skipped the Meta media
@@ -405,7 +405,7 @@ class TestCreateWhatsAppMediaMessage(FrappeTestCase):
 	def _make_account(self):
 		return (
 			frappe.get_doc(
-				doctype="Whatsapp Account",
+				doctype="WhatsApp Account",
 				account_name=f"_Test Acc {frappe.generate_hash(length=6)}",
 				status="Active",
 				phone_id="1234567890",
@@ -421,7 +421,7 @@ class TestCreateWhatsAppMediaMessage(FrappeTestCase):
 		from crm.api.whatsapp import create_whatsapp_message
 
 		account = self._make_account()
-		setting = frappe.get_single("Whatsapp Setting")
+		setting = frappe.get_single("WhatsApp Settings")
 		setting.default_account = account
 		setting.save(ignore_permissions=True)
 
@@ -441,11 +441,11 @@ class TestCreateWhatsAppMediaMessage(FrappeTestCase):
 		with (
 			patch("crm.api.whatsapp.validate_access"),
 			patch(
-				"whatsapp.whatsapp.api.whatsapp.Whatsapp.upload_media",
+				"whatsapp.whatsapp.api.whatsapp.WhatsApp.upload_media",
 				return_value={"id": "media_999"},
 			) as mock_upload,
 			patch(
-				"whatsapp.whatsapp.api.whatsapp.Whatsapp.send_message",
+				"whatsapp.whatsapp.api.whatsapp.WhatsApp.send_message",
 				return_value={"messages": [{"id": "wamid.1"}]},
 			) as mock_send,
 		):
@@ -459,7 +459,7 @@ class TestCreateWhatsAppMediaMessage(FrappeTestCase):
 				content_type="image",
 			)
 
-		msg = frappe.get_doc("Whatsapp Message", name)
+		msg = frappe.get_doc("WhatsApp Message", name)
 		# `attach` must hold the File docname so the upload path runs.
 		self.assertEqual(msg.attach, file_doc.name)
 		# The file URL must not leak into the text body.
@@ -478,7 +478,7 @@ class TestCreateWhatsAppMediaMessage(FrappeTestCase):
 		from crm.api.whatsapp import create_whatsapp_message, get_whatsapp_messages
 
 		account = self._make_account()
-		setting = frappe.get_single("Whatsapp Setting")
+		setting = frappe.get_single("WhatsApp Settings")
 		setting.default_account = account
 		setting.save(ignore_permissions=True)
 
@@ -491,7 +491,7 @@ class TestCreateWhatsAppMediaMessage(FrappeTestCase):
 		with (
 			patch("crm.api.whatsapp.validate_access", return_value=lead),
 			patch(
-				"whatsapp.whatsapp.api.whatsapp.Whatsapp.send_message",
+				"whatsapp.whatsapp.api.whatsapp.WhatsApp.send_message",
 				side_effect=HTTPError("Meta rejected: number not on WhatsApp"),
 			),
 		):
@@ -504,7 +504,7 @@ class TestCreateWhatsAppMediaMessage(FrappeTestCase):
 				reply_to="",
 			)
 
-			msg = frappe.get_doc("Whatsapp Message", name)
+			msg = frappe.get_doc("WhatsApp Message", name)
 			self.assertEqual(msg.status, "Failed")
 			self.assertIn("Meta rejected", msg.error_message or "")
 
