@@ -1,20 +1,13 @@
 # Copyright (c) 2024, Frappe Technologies Pvt. Ltd. and Contributors
 # See license.txt
 
-<<<<<<< HEAD
-# import frappe
-=======
 from unittest.mock import patch
 
 import frappe
->>>>>>> d912975a (fix: set key to null after it's accepted (#2234))
 from frappe.tests.utils import FrappeTestCase
 
 
 class TestCRMInvitation(FrappeTestCase):
-<<<<<<< HEAD
-	pass
-=======
 	def make_invitation(self, email="invitee@example.com", role="Sales User"):
 		"""Create a Pending invitation without actually sending an email."""
 		with patch.object(frappe, "sendmail"):
@@ -74,4 +67,3 @@ class TestCRMInvitation(FrappeTestCase):
 		user_roles = {r.role for r in user.roles}
 		self.assertIn("Sales Manager", user_roles)
 		self.assertIn("Sales User", user_roles)
->>>>>>> d912975a (fix: set key to null after it's accepted (#2234))
