@@ -186,6 +186,16 @@ doc_events = {
 # ---------------
 
 scheduler_events = {
+<<<<<<< HEAD
+=======
+	"all": ["crm.api.event.trigger_offset_event_notifications"],
+	"hourly": ["crm.api.event.trigger_hourly_event_notifications"],
+	"daily": [
+		"crm.api.event.trigger_daily_event_notifications",
+		"crm.fcrm.doctype.crm_view_settings.crm_view_settings.clear_old_versions",
+	],
+	"weekly": ["crm.api.event.trigger_weekly_event_notifications"],
+>>>>>>> 859f7b9f (fix: clear version logs for CRM View Settings (#2235))
 	"daily_long": ["crm.lead_syncing.background_sync.sync_leads_from_sources_daily"],
 	"hourly_long": ["crm.lead_syncing.background_sync.sync_leads_from_sources_hourly"],
 	"monthly_long": ["crm.lead_syncing.background_sync.sync_leads_from_sources_monthly"],
