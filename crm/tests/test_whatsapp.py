@@ -9,6 +9,7 @@ from frappe.tests.utils import FrappeTestCase
 from crm.api.whatsapp import (
 	_humanize_error_message,
 	_validate_template_for_reference,
+	get_linked_whatsapp_profiles,
 	get_sendable_templates,
 	get_whatsapp_messages,
 	notify_agent,
@@ -338,6 +339,69 @@ class TestGetSendableTemplates(FrappeTestCase):
 			get_sendable_templates("CRM Lead")
 
 		self.assertNotIn("Template Variable", calls)
+
+	def test_filters_templates_by_approved_status(self):
+		"""The Template query must filter on the capitalized "Approved" status."""
+		captured = {}
+
+		def _get_all(doctype, **kwargs):
+			if doctype == "WhatsApp Template":
+				captured["filters"] = kwargs.get("filters")
+			return []
+
+		with (
+			patch("crm.api.whatsapp.validate_access"),
+			patch("frappe.db.exists", return_value=True),
+			patch("frappe.get_all", side_effect=_get_all),
+		):
+			get_sendable_templates("CRM Lead")
+
+		self.assertEqual(captured["filters"]["status"], "Approved")
+
+
+class TestGetLinkedWhatsAppProfiles(FrappeTestCase):
+	def _frappe_dict(self, **kw):
+		return frappe._dict(kw)
+
+	def test_populates_virtual_fields_from_doc(self):
+		"""last_message_at/message_count are virtual: read from the doc, not get_all."""
+		links = [self._frappe_dict(profile_name="prof_1")]
+		profiles = [
+			self._frappe_dict(
+				name="prof_1",
+				profile_name="Alice",
+				phone_number="+1555000111",
+				status="Active",
+				wa_id="wa_1",
+			)
+		]
+		profile_doc = self._frappe_dict(
+			last_message_at="2026-05-30 15:30:00",
+			message_count=7,
+		)
+
+		def _get_all(doctype, **kwargs):
+			if doctype == "Dynamic Link":
+				return links
+			if doctype == "WhatsApp Profile":
+				# Virtual fields must not be requested from the DB.
+				fields = kwargs.get("fields") or []
+				self.assertNotIn("last_message_at", fields)
+				self.assertNotIn("message_count", fields)
+				return profiles
+			return []
+
+		with (
+			patch("crm.api.whatsapp.validate_access"),
+			patch("frappe.db.exists", return_value=True),
+			patch("frappe.get_all", side_effect=_get_all),
+			patch("frappe.get_doc", return_value=profile_doc),
+		):
+			result = get_linked_whatsapp_profiles("CRM Lead", "LEAD-001")
+
+		self.assertEqual(len(result), 1)
+		self.assertEqual(result[0].last_message_at, "2026-05-30 15:30:00")
+		self.assertEqual(result[0].message_count, 7)
 
 
 class TestGetWhatsAppMessagesStatusNormalization(FrappeTestCase):

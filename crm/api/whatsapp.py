@@ -713,7 +713,7 @@ def get_from_name(message):
 
 @frappe.whitelist()
 def get_sendable_templates(reference_doctype: str) -> list[dict]:
-	"""Return APPROVED templates that can be sent from the given CRM doctype.
+	"""Return Approved templates that can be sent from the given CRM doctype.
 
 	A template is sendable from `reference_doctype` when either:
 	- it is bound to that doctype (variables resolve from the open document), or
@@ -730,7 +730,7 @@ def get_sendable_templates(reference_doctype: str) -> list[dict]:
 	templates = frappe.get_all(
 		"WhatsApp Template",
 		filters={
-			"status": "APPROVED",
+			"status": "Approved",
 			"reference_doctype": ["in", [reference_doctype, ""]],
 		},
 		fields=["name", "message", "footer", "header_text", "header_type", "reference_doctype"],
@@ -794,10 +794,16 @@ def get_linked_whatsapp_profiles(reference_doctype: str, reference_docname: str)
 			"phone_number",
 			"status",
 			"wa_id",
-			"last_message_at",
-			"message_count",
 		],
 	)
+
+	# last_message_at and message_count are virtual fields on WhatsApp Profile
+	# (computed properties with no DB column), so they can't be selected via
+	# get_all. Read them from the controller to reuse the app's source of truth.
+	for p in profiles:
+		doc = frappe.get_doc("WhatsApp Profile", p.name)
+		p.last_message_at = doc.last_message_at
+		p.message_count = doc.message_count
 
 	return profiles
 
