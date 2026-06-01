@@ -46,7 +46,7 @@ class TestOrgHierarchy(FrappeTestCase):
 		# Persist the fixtures as a baseline. Inserting CRM Lead/Deal commits
 		# (after_insert assigns/shares the record), so per-test isolation relies
 		# on explicit cleanup rather than a rollback.
-		frappe.db.commit()
+		frappe.db.commit()  # nosemgrep: fixtures must persist across the committing after_insert hooks
 
 	@classmethod
 	def tearDownClass(cls):
@@ -54,12 +54,12 @@ class TestOrgHierarchy(FrappeTestCase):
 		for email in TEST_USERS:
 			frappe.db.delete("CRM Sales Hierarchy", {"user": email})
 			frappe.delete_doc("User", email, force=True, ignore_permissions=True)
-		frappe.db.commit()
+		frappe.db.commit()  # nosemgrep: persist teardown cleanup of committed fixtures
 		super().tearDownClass()
 
 	def tearDown(self):
 		delete_test_documents()
-		frappe.db.commit()
+		frappe.db.commit()  # nosemgrep: persist per-test cleanup of committed fixtures
 
 	# ------------------------------------------------------------------
 	# hierarchy_enabled
