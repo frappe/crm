@@ -14,10 +14,12 @@
         :id="whatsapp.name"
         class="group/message relative min-w-[90px] max-w-[75%] rounded-md bg-surface-gray-1 text-ink-gray-9 p-1.5 pl-2 pb-5 text-base shadow-sm"
       >
-        <Tooltip
-          v-if="whatsapp.status == 'failed'"
-          :text="whatsapp.error_message || __('Failed to send message')"
-        >
+        <Tooltip v-if="whatsapp.status == 'failed'">
+          <template #content>
+            <div class="max-w-xs whitespace-normal break-words text-left">
+              {{ whatsapp.error_message || __('Failed to send message') }}
+            </div>
+          </template>
           <Badge
             theme="red"
             :label="whatsapp.status"
