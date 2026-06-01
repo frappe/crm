@@ -2,7 +2,7 @@
 # For license information, please see license.txt
 
 import frappe
-from frappe.tests import IntegrationTestCase
+from frappe.tests.utils import FrappeTestCase
 from frappe.utils.nestedset import rebuild_tree
 
 from crm.permissions.org_hierarchy import (
@@ -13,7 +13,7 @@ from crm.permissions.org_hierarchy import (
 )
 
 
-class TestOrgHierarchy(IntegrationTestCase):
+class TestOrgHierarchy(FrappeTestCase):
 	"""
 	Hierarchy structure used in tests:
 	  manager@hier.test  (root)

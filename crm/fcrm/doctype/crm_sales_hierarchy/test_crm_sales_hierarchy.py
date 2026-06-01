@@ -2,8 +2,8 @@
 # For license information, please see license.txt
 
 import frappe
-from frappe.tests import IntegrationTestCase
+from frappe.tests.utils import FrappeTestCase
 
 
-class TestCRMSalesHierarchy(IntegrationTestCase):
+class TestCRMSalesHierarchy(FrappeTestCase):
 	pass
