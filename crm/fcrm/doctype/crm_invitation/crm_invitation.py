@@ -72,6 +72,7 @@ class CRMInvitation(Document):
 
 		self.status = "Accepted"
 		self.accepted_at = frappe.utils.now()
+		self.key = None
 		self.save(ignore_permissions=True)
 
 	def update_module_in_user(self, user, module):
