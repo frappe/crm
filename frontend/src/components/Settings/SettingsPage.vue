@@ -1,5 +1,5 @@
 <template>
-  <div class="flex h-full flex-col gap-6">
+  <div class="flex flex-col gap-6" :class="embedded ? '' : 'h-full'">
     <div class="flex justify-between">
       <div class="flex flex-col gap-1 w-9/12">
         <div class="flex gap-1 items-center">
@@ -35,7 +35,10 @@
         />
       </div>
     </div>
-    <div v-if="!data.get.loading" class="flex-1 overflow-y-auto">
+    <div
+      v-if="!data.get.loading"
+      :class="embedded ? '' : 'flex-1 overflow-y-auto'"
+    >
       <FieldLayout
         v-if="data?.doc && tabs"
         :tabs="tabs"
@@ -64,9 +67,16 @@ import { computed } from 'vue'
 
 const props = defineProps({
   doctype: { type: String, required: true },
+  // Record to load. Defaults to the doctype name so Single DocTypes (the
+  // original use) keep working; pass an explicit name to edit one record of
+  // a multi-record DocType (e.g. a specific WhatsApp Account).
+  name: { type: String, default: '' },
   title: { type: String, default: '' },
   successMessage: { type: String, default: 'Updated Successfully' },
   back: { type: Function, default: null },
+  // When true, drop the full-height/own-scroll layout so the page sizes to its
+  // content and can be stacked inside a parent that owns the scroll.
+  embedded: { type: Boolean, default: false },
 })
 
 const fields = createResource({
@@ -81,7 +91,7 @@ const fields = createResource({
 
 const data = createDocumentResource({
   doctype: props.doctype,
-  name: props.doctype,
+  name: props.name || props.doctype,
   fields: ['*'],
   auto: true,
   setValue: {

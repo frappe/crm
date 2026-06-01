@@ -67,11 +67,18 @@
       @keydown.enter.stop="(e) => sendTextMessage(e)"
     />
   </div>
+  <WhatsAppMediaPreviewDialog
+    v-model="showMediaPreview"
+    :file="pendingMedia"
+    :type="fileType"
+    @send="onMediaSend"
+  />
 </template>
 
 <script setup>
 import IconPicker from '@/components/IconPicker.vue'
 import SmileIcon from '@/components/Icons/SmileIcon.vue'
+import WhatsAppMediaPreviewDialog from '@/components/Activities/WhatsAppMediaPreviewDialog.vue'
 import { sanitizeHTML } from '@/utils'
 import { useTelemetry } from 'frappe-ui/frappe'
 import {
@@ -100,15 +107,27 @@ const emoji = ref('')
 const content = ref('')
 const placeholder = ref(__('Type your message here...'))
 const fileType = ref('')
+const showMediaPreview = ref(false)
+const pendingMedia = ref(null)
 
 function show() {
   nextTick(() => textareaRef.value.el.focus())
 }
 
+// Open the caption/preview dialog instead of sending the media immediately,
+// so the user can attach a caption (Telegram-style).
 function uploadFile(file) {
-  whatsapp.value.attach = file.file_url
-  whatsapp.value.content_type = fileType.value
-  sendWhatsAppMessage()
+  pendingMedia.value = file
+  showMediaPreview.value = true
+}
+
+function onMediaSend(caption) {
+  sendWhatsAppMessage({
+    message: caption,
+    attach: pendingMedia.value?.file_url,
+    contentType: fileType.value,
+  })
+  pendingMedia.value = null
   capture('whatsapp_upload_file')
 }
 
@@ -120,19 +139,22 @@ function sendTextMessage(event) {
   capture('whatsapp_send_message')
 }
 
-async function sendWhatsAppMessage() {
-  const attach = whatsapp.value.attach || ''
+async function sendWhatsAppMessage({ message, attach, contentType } = {}) {
+  // Media sends pass message/attach/contentType explicitly (from the preview
+  // dialog); the text composer falls back to its own state.
+  const _attach = attach ?? whatsapp.value.attach ?? ''
+  const _message = message ?? content.value
   // Don't send empty messages (no text and no attachment).
-  if (!content.value?.trim() && !attach) return
+  if (!_message?.trim() && !_attach) return
 
   let args = {
     reference_doctype: props.doctype,
     reference_name: doc.value.name,
-    message: content.value,
+    message: _message,
     to: doc.value.mobile_no,
-    attach,
+    attach: _attach,
     reply_to: reply.value?.name || '',
-    content_type: whatsapp.value.content_type,
+    content_type: contentType ?? whatsapp.value.content_type,
   }
   content.value = ''
   fileType.value = ''

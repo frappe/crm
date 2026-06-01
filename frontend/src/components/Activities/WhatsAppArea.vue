@@ -118,24 +118,46 @@
         <div v-else-if="whatsapp.content_type == 'image'">
           <img
             :src="whatsapp.attach"
-            class="h-40 cursor-pointer rounded-md"
+            class="max-h-72 max-w-full cursor-pointer rounded-md object-cover"
             @click="() => openFileInAnotherTab(whatsapp.attach)"
           />
           <div
-            v-if="!whatsapp.message.startsWith('/files/')"
+            v-if="hasCaption(whatsapp)"
             class="mt-1.5"
             v-html="formatWhatsAppMessage(whatsapp.message)"
           />
         </div>
         <div
           v-else-if="whatsapp.content_type == 'document'"
-          class="flex items-center gap-2"
+          class="flex flex-col gap-1.5"
         >
-          <DocumentIcon
-            class="size-10 cursor-pointer rounded-md text-ink-gray-4"
+          <div
+            class="flex min-w-0 cursor-pointer items-center gap-2 rounded-md"
+            :class="hasCaption(whatsapp) ? 'bg-surface-gray-3 p-2' : ''"
             @click="() => openFileInAnotherTab(whatsapp.attach)"
+          >
+            <DocumentIcon
+              class="size-10 flex-shrink-0 rounded-md text-ink-gray-4"
+            />
+            <div class="flex min-w-0 flex-1 flex-col">
+              <div
+                :title="documentName(whatsapp)"
+                class="max-w-[28ch] truncate text-ink-gray-8"
+              >
+                {{ documentName(whatsapp) }}
+              </div>
+              <div
+                v-if="documentMeta(whatsapp)"
+                class="text-sm text-ink-gray-5"
+              >
+                {{ documentMeta(whatsapp) }}
+              </div>
+            </div>
+          </div>
+          <div
+            v-if="hasCaption(whatsapp)"
+            v-html="formatWhatsAppMessage(whatsapp.message)"
           />
-          <div class="text-ink-gray-5">Document</div>
         </div>
         <div
           v-else-if="whatsapp.content_type == 'audio'"
@@ -153,7 +175,7 @@
             class="h-40 cursor-pointer rounded-md"
           />
           <div
-            v-if="!whatsapp.message.startsWith('/files/')"
+            v-if="hasCaption(whatsapp)"
             class="mt-1.5"
             v-html="formatWhatsAppMessage(whatsapp.message)"
           />
@@ -209,7 +231,7 @@ import CheckIcon from '@/components/Icons/CheckIcon.vue'
 import DoubleCheckIcon from '@/components/Icons/DoubleCheckIcon.vue'
 import DocumentIcon from '@/components/Icons/DocumentIcon.vue'
 import ReactIcon from '@/components/Icons/ReactIcon.vue'
-import { formatDate, sanitizeHTML } from '@/utils'
+import { convertSize, formatDate, sanitizeHTML } from '@/utils'
 import { useTelemetry } from 'frappe-ui/frappe'
 import { Tooltip, Dropdown, createResource, toast } from 'frappe-ui'
 import { ref } from 'vue'
@@ -224,6 +246,26 @@ const { capture } = useTelemetry()
 
 function openFileInAnotherTab(url) {
   window.open(url, '_blank')
+}
+
+function hasCaption(whatsapp) {
+  // Media `message` is the caption; it's empty (or a legacy /files URL) when
+  // there's no caption, in which case nothing should render below the media.
+  return Boolean(whatsapp.message) && !whatsapp.message.startsWith('/files/')
+}
+
+function documentName(whatsapp) {
+  if (whatsapp.file_name) return whatsapp.file_name
+  // Fall back to the URL basename for media not backed by a local File record.
+  const basename = (whatsapp.attach || '').split('/').pop()?.split('?')[0]
+  return basename || __('Document')
+}
+
+function documentMeta(whatsapp) {
+  const name = documentName(whatsapp)
+  const ext = name.includes('.') ? name.split('.').pop().toUpperCase() : ''
+  const size = whatsapp.file_size ? convertSize(whatsapp.file_size) : ''
+  return [ext, size].filter(Boolean).join(' · ')
 }
 
 function iconForButtonType(type) {

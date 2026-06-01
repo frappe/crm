@@ -488,6 +488,23 @@ def get_whatsapp_messages(reference_doctype: str, reference_name: str):
 			reply_message["reply_to_direction"] = replied_message["type"]
 			reply_message["reply_to_from"] = from_name
 
+	# Enrich media messages with the source File's name + size so the activity
+	# feed can show a proper document preview instead of a bare "Document" label.
+	# Single batched query keyed by file_url (the value stored in `attach`).
+	media_urls = list({m["attach"] for m in messages if m.get("attach")})
+	if media_urls:
+		files = frappe.get_all(
+			"File",
+			filters={"file_url": ["in", media_urls]},
+			fields=["file_url", "file_name", "file_size"],
+		)
+		file_map = {f.file_url: f for f in files}
+		for message in messages:
+			file_info = file_map.get(message.get("attach"))
+			if file_info:
+				message["file_name"] = file_info.file_name
+				message["file_size"] = file_info.file_size
+
 	return messages
 
 
