@@ -188,12 +188,148 @@
       >
         <SidePanelLayout
           :sections="sections.data"
+          :addContact="addContact"
           doctype="CRM Lead"
           :docname="leadId"
           @reload="sections.reload"
           @beforeFieldChange="beforeStatusChange"
           @afterFieldChange="reloadResources"
-        />
+        >
+          <template #actions="{ section }">
+            <div v-if="section.name == 'contacts_section'" class="pr-2">
+              <Link
+                value=""
+                doctype="Contact"
+                :onCreate="
+                  (value, close) => {
+                    _contact = { first_name: value }
+                    showContactModal = true
+                    close()
+                  }
+                "
+                @change="(e) => addContact(e)"
+              >
+                <template #target="{ togglePopover }">
+                  <Button
+                    class="h-7 px-3"
+                    variant="ghost"
+                    icon="plus"
+                    @click="togglePopover()"
+                  />
+                </template>
+              </Link>
+            </div>
+          </template>
+          <template #default="{ section }">
+            <div
+              v-if="section.name == 'contacts_section'"
+              class="contacts-area"
+            >
+              <div
+                v-if="leadContacts?.loading && leadContacts?.data?.length == 0"
+                class="flex min-h-20 flex-1 items-center justify-center gap-3 text-base text-ink-gray-4"
+              >
+                <LoadingIndicator class="h-4 w-4" />
+                <span>{{ __('Loading...') }}</span>
+              </div>
+              <div
+                v-for="(contact, i) in leadContacts.data"
+                v-else-if="leadContacts?.data?.length"
+                :key="contact.name"
+              >
+                <div class="px-2 pb-2.5" :class="[i == 0 ? 'pt-5' : 'pt-2.5']">
+                  <CollapsibleSection :opened="contact.opened">
+                    <template #header="{ opened, toggle }">
+                      <div
+                        class="flex cursor-pointer items-center justify-between gap-2 pr-1 text-base leading-5 text-ink-gray-7"
+                      >
+                        <div
+                          class="flex h-7 items-center gap-2 truncate"
+                          @click="toggle()"
+                        >
+                          <Avatar
+                            :label="contact.full_name"
+                            :image="contact.image"
+                            size="md"
+                          />
+                          <div class="truncate">
+                            {{ contact.full_name }}
+                          </div>
+                          <Badge
+                            v-if="contact.is_primary"
+                            class="ml-2"
+                            variant="outline"
+                            :label="__('Primary')"
+                            theme="green"
+                          />
+                        </div>
+                        <div class="flex items-center">
+                          <Dropdown :options="contactOptions(contact)">
+                            <Button
+                              icon="more-horizontal"
+                              class="text-ink-gray-5"
+                              variant="ghost"
+                            />
+                          </Dropdown>
+                          <Button
+                            variant="ghost"
+                            :tooltip="__('View Contact')"
+                            :icon="ArrowUpRightIcon"
+                            @click="
+                              router.push({
+                                name: 'Contact',
+                                params: { contactId: contact.name },
+                              })
+                            "
+                          />
+                          <Button
+                            variant="ghost"
+                            class="transition-all duration-300 ease-in-out"
+                            :class="{ 'rotate-90': opened }"
+                            icon="chevron-right"
+                            @click="toggle()"
+                          />
+                        </div>
+                      </div>
+                    </template>
+                    <div class="flex flex-col gap-1.5 text-base">
+                      <div
+                        v-if="contact.email"
+                        class="flex items-center gap-3 pb-1.5 pl-1 pt-4 text-ink-gray-8"
+                      >
+                        <Email2Icon class="h-4 w-4" />
+                        {{ contact.email }}
+                      </div>
+                      <div
+                        v-if="contact.mobile_no"
+                        class="flex items-center gap-3 p-1 py-1.5 text-ink-gray-8"
+                      >
+                        <PhoneIcon class="h-4 w-4" />
+                        {{ contact.mobile_no }}
+                      </div>
+                      <div
+                        v-if="!contact.email && !contact.mobile_no"
+                        class="flex items-center justify-center py-4 text-sm text-ink-gray-4"
+                      >
+                        {{ __('No Details Added') }}
+                      </div>
+                    </div>
+                  </CollapsibleSection>
+                </div>
+                <div
+                  v-if="i != leadContacts.data.length - 1"
+                  class="mx-2 h-px border-t border-outline-gray-modals"
+                />
+              </div>
+              <div
+                v-else
+                class="flex h-20 items-center justify-center text-base text-ink-gray-5"
+              >
+                {{ __('No Contacts Added') }}
+              </div>
+            </div>
+          </template>
+        </SidePanelLayout>
       </div>
     </Resizer>
   </div>
@@ -201,6 +337,15 @@
     v-else-if="errorTitle"
     :errorTitle="errorTitle"
     :errorMessage="errorMessage"
+  />
+  <ContactModal
+    v-if="showContactModal"
+    v-model="showContactModal"
+    :contact="_contact"
+    :options="{
+      redirect: false,
+      afterInsert: (_doc) => addContact(_doc.name),
+    }"
   />
   <ConvertToDealModal
     v-if="showConvertToDealModal"
@@ -252,7 +397,13 @@ import CameraIcon from '@/components/Icons/CameraIcon.vue'
 import LinkIcon from '@/components/Icons/LinkIcon.vue'
 import AttachmentIcon from '@/components/Icons/AttachmentIcon.vue'
 import CheckCircleIcon from '@/components/Icons/CheckCircleIcon.vue'
+import LoadingIndicator from '@/components/Icons/LoadingIndicator.vue'
+import ArrowUpRightIcon from '@/components/Icons/ArrowUpRightIcon.vue'
+import SuccessIcon from '@/components/Icons/SuccessIcon.vue'
 import LostReasonModal from '@/components/Modals/LostReasonModal.vue'
+import ContactModal from '@/components/Modals/ContactModal.vue'
+import Link from '@/components/Controls/Link.vue'
+import CollapsibleSection from '@/components/CollapsibleSection.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import Activities from '@/components/Activities/Activities.vue'
 import AssignTo from '@/components/AssignTo.vue'
@@ -282,13 +433,14 @@ import {
   Dropdown,
   Tooltip,
   Avatar,
+  Badge,
   Tabs,
   Breadcrumbs,
   call,
   usePageMeta,
   toast,
 } from 'frappe-ui'
-import { ref, computed, watch, nextTick, onMounted } from 'vue'
+import { ref, computed, h, watch, nextTick, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useActiveTabManager } from '@/composables/useActiveTabManager'
 
@@ -478,6 +630,80 @@ const sections = createResource({
   params: { doctype: 'CRM Lead' },
   auto: true,
 })
+const showContactModal = ref(false)
+const _contact = ref({})
+
+function contactOptions(contact) {
+  let options = [
+    {
+      label: __('Remove'),
+      icon: 'trash-2',
+      onClick: () => removeContact(contact.name),
+    },
+  ]
+
+  if (!contact.is_primary) {
+    options.push({
+      label: __('Set as Primary Contact'),
+      icon: h(SuccessIcon, { class: 'h-4 w-4' }),
+      onClick: () => setPrimaryContact(contact.name),
+    })
+  }
+
+  return options
+}
+
+async function addContact(contact) {
+  if (leadContacts.data?.find((c) => c.name === contact)) {
+    toast.error(__('Contact Already Added'))
+    return
+  }
+
+  let d = await call(
+    'ouredu_fcrm_customizations.ouredu_fcrm_customizations.overrides.crm_lead.add_contact',
+    { lead: props.leadId, contact },
+  )
+  if (d) {
+    leadContacts.reload()
+    toast.success(__('Contact Added'))
+  }
+}
+
+async function removeContact(contact) {
+  let d = await call(
+    'ouredu_fcrm_customizations.ouredu_fcrm_customizations.overrides.crm_lead.remove_contact',
+    { lead: props.leadId, contact },
+  )
+  if (d) {
+    leadContacts.reload()
+    toast.success(__('Contact Removed'))
+  }
+}
+
+async function setPrimaryContact(contact) {
+  let d = await call(
+    'ouredu_fcrm_customizations.ouredu_fcrm_customizations.overrides.crm_lead.set_primary_contact_api',
+    { lead: props.leadId, contact },
+  )
+  if (d) {
+    leadContacts.reload()
+    toast.success(__('Primary Contact Set'))
+  }
+}
+
+const leadContacts = createResource({
+  url: 'ouredu_fcrm_customizations.ouredu_fcrm_customizations.overrides.crm_lead.get_lead_contacts',
+  params: { name: props.leadId },
+  cache: ['lead_contacts', props.leadId],
+  transform: (data) => {
+    data.forEach((contact) => {
+      contact.opened = false
+    })
+    return data
+  },
+})
+
+if (!leadContacts.data) leadContacts.fetch()
 
 async function triggerStatusChange(value) {
   await triggerOnChange('status', value)
