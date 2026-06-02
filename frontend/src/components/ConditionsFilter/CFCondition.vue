@@ -32,36 +32,36 @@
       </div>
       <div v-if="!props.isGroup" class="flex items-center gap-2 w-full">
         <div id="fieldname" class="w-full">
-          <Autocomplete
+          <Combobox
+            v-if="filterableFields.data"
+            v-model="condition[0]"
+            class="w-full"
             :options="filterableFields.data"
-            :modelValue="condition[0]"
             :placeholder="__('Field')"
-            @update:modelValue="updateField"
+            :openOnClick="true"
+            @update:selectedOption="(e) => updateField(e)"
           />
         </div>
         <div id="operator">
-          <FormControl
+          <TextInput
             v-if="!condition[0]"
             disabled
-            type="text"
             :placeholder="__('Operator')"
             class="w-[100px]"
           />
-          <FormControl
+          <Select
             v-else
             v-model="condition[1]"
             :disabled="!condition[0]"
-            type="select"
             :options="getOperators()"
             class="w-max min-w-[100px] text-ink-gray-8"
             @update:modelValue="updateOperator"
           />
         </div>
         <div id="value" class="w-full">
-          <FormControl
+          <TextInput
             v-if="!condition[0]"
             disabled
-            type="text"
             :placeholder="__('Condition')"
             class="w-full"
           />
@@ -91,7 +91,7 @@
     </div>
     <div :class="'w-max'">
       <Dropdown placement="right" :options="dropdownOptions">
-        <Button variant="ghost" icon="more-horizontal" />
+        <Button variant="ghost" icon="lucide-more-horizontal" />
       </Dropdown>
     </div>
   </div>
@@ -115,17 +115,18 @@
 import GroupIcon from '~icons/lucide/group'
 import UnGroupIcon from '~icons/lucide/ungroup'
 import CFConditions from './CFConditions.vue'
-import Link from '@/components/Controls/Link.vue'
+import { Link } from 'frappe-ui/frappe'
 import {
-  Autocomplete,
+  Combobox,
   Button,
   DatePicker,
   DateRangePicker,
   DateTimePicker,
   Dialog,
   Dropdown,
-  FormControl,
+  TextInput,
   Rating,
+  Select,
 } from 'frappe-ui'
 import { filterableFields } from './filterableFields'
 import { reactive, computed, h, ref } from 'vue'
@@ -176,7 +177,7 @@ const dropdownOptions = computed(() => {
 
   options.push({
     label: __('Remove'),
-    icon: 'trash-2',
+    icon: 'lucide-trash-2',
     variant: 'red',
     onClick: () => emit('remove'),
     condition: () => !props.isGroup,
@@ -184,7 +185,7 @@ const dropdownOptions = computed(() => {
 
   options.push({
     label: __('Remove Group'),
-    icon: 'trash-2',
+    icon: 'lucide-trash-2',
     variant: 'red',
     onClick: () => emit('remove'),
     condition: () => props.isGroup,
@@ -221,8 +222,8 @@ function getValueControl() {
   if (!fieldData) return null
   const { fieldtype, options } = fieldData
   if (operator == 'is') {
-    return h(FormControl, {
-      type: 'select',
+    return h(Select, {
+      class: 'w-full',
       options: [
         {
           label: 'Set',
@@ -235,12 +236,12 @@ function getValueControl() {
       ],
     })
   } else if (['like', 'not like', 'in', 'not in'].includes(operator)) {
-    return h(FormControl, { type: 'text' })
+    return h(TextInput)
   } else if (typeSelect.includes(fieldtype) || typeCheck.includes(fieldtype)) {
     const _options =
       fieldtype == 'Check' ? ['Yes', 'No'] : getSelectOptions(options)
-    return h(FormControl, {
-      type: 'select',
+    return h(Select, {
+      class: 'w-full',
       options: _options.map((o) => ({
         label: o,
         value: o,
@@ -248,15 +249,14 @@ function getValueControl() {
     })
   } else if (typeLink.includes(fieldtype)) {
     if (fieldtype == 'Dynamic Link') {
-      return h(FormControl, { type: 'text' })
+      return h(TextInput)
     }
     return h(Link, {
-      class: 'form-control',
+      class: 'form-control w-full',
       doctype: options,
-      value: condition[2],
     })
   } else if (typeNumber.includes(fieldtype)) {
-    return h(FormControl, { type: 'number' })
+    return h(TextInput, { type: 'number' })
   } else if (typeDate.includes(fieldtype) && operator == 'between') {
     return h(DateRangePicker, { value: condition[2], iconLeft: '' })
   } else if (typeDate.includes(fieldtype)) {
@@ -271,7 +271,7 @@ function getValueControl() {
       'update:modelValue': (v) => updateValue(v),
     })
   } else {
-    return h(FormControl, { type: 'text' })
+    return h(TextInput)
   }
 }
 

@@ -1,36 +1,33 @@
 <template>
   <Dialog
-    v-model="show"
-    :options="{
-      title: editMode
+    v-model:open="show"
+    :title="
+      editMode
         ? __('Edit View')
         : duplicateMode
           ? __('Duplicate View')
-          : __('Create View'),
-    }"
+          : __('Create View')
+    "
   >
-    <template #body-content>
-      <div class="mb-1.5 block text-base text-ink-gray-5">
-        {{ __('View Name') }}
-      </div>
-      <div class="flex gap-2">
-        <IconPicker v-slot="{ togglePopover }" v-model="view.icon">
-          <Button
-            size="md"
-            class="flex size-8 text-2xl leading-none"
-            :label="view.icon"
-            @click="togglePopover"
-          />
-        </IconPicker>
-        <FormControl
-          v-model="view.label"
-          class="flex-1"
+    <div class="mb-1.5 block text-base text-ink-gray-5">
+      {{ __('View Name') }}
+    </div>
+    <div class="flex gap-2">
+      <IconPicker v-slot="{ togglePopover }" v-model="view.icon">
+        <Button
           size="md"
-          type="text"
-          :placeholder="__('My Open Deals')"
+          class="flex size-8 text-2xl !px-1 leading-none"
+          :label="view.icon"
+          @click="togglePopover"
         />
-      </div>
-    </template>
+      </IconPicker>
+      <TextInput
+        v-model="view.label"
+        class="flex-1"
+        size="md"
+        :placeholder="__('My Open Deals')"
+      />
+    </div>
     <template #actions>
       <div class="flex justify-end">
         <Button
@@ -51,7 +48,7 @@
 
 <script setup>
 import IconPicker from '@/components/IconPicker.vue'
-import { call } from 'frappe-ui'
+import { call, TextInput } from 'frappe-ui'
 import { ref, watch, nextTick } from 'vue'
 
 const props = defineProps({

@@ -35,7 +35,7 @@
       />
       <Dropdown placement="right" :options="dropdownOptions">
         <Button
-          icon="more-horizontal"
+          icon="lucide-more-horizontal"
           variant="ghost"
           @click="isConfirmingDelete = false"
         />
@@ -48,10 +48,9 @@
   >
     <template #body-content>
       <div class="flex flex-col gap-4">
-        <FormControl
+        <TextInput
           v-model="duplicateDialog.name"
           :label="__('New Assignment Rule Name')"
-          type="text"
         />
       </div>
     </template>
@@ -74,8 +73,8 @@ import {
   createResource,
   Dialog,
   Dropdown,
-  FormControl,
   Switch,
+  TextInput,
   toast,
 } from 'frappe-ui'
 import { inject, ref, reactive, watch } from 'vue'
@@ -135,7 +134,7 @@ const dropdownOptions = [
         name: props.data.name + ' (Copy)',
       }
     },
-    icon: 'copy',
+    icon: 'lucide-copy',
   },
   ...ConfirmDelete({
     onConfirmDelete: () => deleteAssignmentRule(),

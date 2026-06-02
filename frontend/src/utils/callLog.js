@@ -10,7 +10,7 @@ export function getCallLogDetail(row, log, columns = []) {
   if (row === 'duration') {
     return {
       label: log._duration,
-      icon: 'clock',
+      icon: 'lucide-clock',
     }
   } else if (row === 'caller') {
     return {
@@ -25,7 +25,7 @@ export function getCallLogDetail(row, log, columns = []) {
   } else if (row === 'type') {
     return {
       label: log.type,
-      icon: incoming ? 'phone-incoming' : 'phone-outgoing',
+      icon: incoming ? 'lucide-phone-incoming' : 'lucide-phone-outgoing',
     }
   } else if (row === 'status') {
     return {

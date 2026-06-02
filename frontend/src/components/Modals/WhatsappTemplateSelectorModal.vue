@@ -1,77 +1,70 @@
 <template>
-  <Dialog
-    v-model="show"
-    :options="{
-      title: __('WhatsApp Templates'),
-      size: '4xl',
-    }"
-  >
-    <template #body-content>
-      <div class="w-full flex items-center gap-2">
-        <TextInput
-          ref="searchInput"
-          v-model="search"
-          class="w-full"
-          type="text"
-          :placeholder="__('Welcome Message')"
-        >
-          <template #prefix>
-            <FeatherIcon name="search" class="h-4 w-4 text-ink-gray-4" />
-          </template>
-        </TextInput>
-        <Button
-          :label="__('Create New Template')"
-          variant="solid"
-          @click="newWhatsappTemplate"
-        >
-          <template #prefix>
-            <FeatherIcon name="plus" class="h-4 w-4" />
-          </template>
-        </Button>
-      </div>
-      <div
+  <Dialog v-model:open="show" :title="__('WhatsApp Templates')" size="4xl">
+    <div class="w-full flex items-center gap-2">
+      <TextInput
+        ref="searchInput"
+        v-model="search"
+        class="w-full"
+        type="text"
+        :placeholder="__('Welcome Message')"
+      >
+        <template #prefix>
+          <span
+            class="lucide-search size-4 text-ink-gray-4"
+            aria-hidden="true"
+          />
+        </template>
+      </TextInput>
+      <Button
         v-if="filteredTemplates.length"
-        class="mt-2 grid max-h-[560px] grid-cols-1 gap-2 overflow-y-auto sm:grid-cols-3"
+        :label="__('Create New')"
+        icon-left="plus"
+        @click="newWhatsappTemplate"
+      />
+    </div>
+    <div
+      v-if="filteredTemplates.length"
+      class="mt-2 grid max-h-[560px] grid-cols-1 gap-2 overflow-y-auto sm:grid-cols-3"
+    >
+      <div
+        v-for="template in filteredTemplates"
+        :key="template.name"
+        class="flex h-56 cursor-pointer flex-col gap-2 rounded-lg border p-3 hover:bg-surface-gray-2"
+        @click="emit('send', template.name)"
       >
         <div
-          v-for="template in filteredTemplates"
-          :key="template.name"
-          class="flex h-56 cursor-pointer flex-col gap-2 rounded-lg border p-3 hover:bg-surface-gray-2"
-          @click="emit('send', template.name)"
+          class="border-b pb-2 text-base font-semibold truncate"
+          :title="template.name"
         >
-          <div
-            class="border-b pb-2 text-base font-semibold truncate"
-            :title="template.name"
-          >
-            {{ template.name }}
-          </div>
-          <TextEditor
-            v-if="template.template"
-            :content="template.template"
-            :editable="false"
-            editor-class="!prose-sm max-w-none !text-sm text-ink-gray-5 focus:outline-none"
-            class="flex-1 overflow-hidden"
-          />
+          {{ template.name }}
         </div>
+        <TextEditor
+          v-if="template.template"
+          :content="template.template"
+          :editable="false"
+          editor-class="!prose-sm max-w-none !text-sm text-ink-gray-5 focus:outline-none"
+          class="flex-1 overflow-hidden"
+        />
       </div>
-      <div v-else class="mt-2">
-        <div class="flex h-56 flex-col items-center justify-center">
-          <div class="text-lg text-ink-gray-4">
-            {{ __('No Templates Found') }}
-          </div>
-          <Button
-            :label="__('Create New')"
-            class="mt-4"
-            @click="newWhatsappTemplate"
-          />
+    </div>
+    <div v-else class="mt-2">
+      <div class="flex h-56 flex-col items-center justify-center">
+        <div class="text-lg text-ink-gray-4">
+          {{ __('No Templates Found') }}
         </div>
+        <Button
+          :label="__('Create New')"
+          icon-left="plus"
+          class="mt-4"
+          @click="newWhatsappTemplate"
+        />
       </div>
-    </template>
+    </div>
   </Dialog>
 </template>
 
 <script setup>
-import { FeatherIcon, TextEditor, createListResource } from 'frappe-ui'
+import { TextEditor, createListResource } from 'frappe-ui'
 import { ref, computed, nextTick, watch, onMounted } from 'vue'
 
 const props = defineProps({

@@ -7,7 +7,6 @@
     @reload="reload"
   />
   <AssignmentModal
-    v-if="showAssignmentModal"
     v-model="showAssignmentModal"
     v-model:assignees="bulkAssignees"
     :docs="selectedValues"

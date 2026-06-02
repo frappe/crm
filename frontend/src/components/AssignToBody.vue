@@ -4,21 +4,26 @@
   >
     <div class="text-base text-ink-gray-5">{{ __('Assign To') }}</div>
     <Link
+      v-model="selectedUser"
       class="form-control"
-      value=""
       doctype="User"
       :placeholder="__('John Doe')"
       :filters="{
         name: ['in', users.data.crmUsers?.map((user) => user.name)],
         ignore_user_type: 1,
       }"
-      :hideMe="true"
-      @change="(option) => addValue(option) && ($refs.input.value = '')"
+      @update:modelValue="
+        (v) => {
+          if (v) {
+            addValue(v)
+            selectedUser = null
+          }
+        }
+      "
     >
-      <template #target="{ togglePopover }">
+      <template #trigger>
         <div
           class="w-full min-h-12 flex flex-wrap items-center gap-1.5 p-1.5 pb-5 rounded-lg bg-surface-gray-2 cursor-text"
-          @click.stop="togglePopover"
         >
           <Tooltip
             v-for="assignee in assignees"
@@ -38,22 +43,18 @@
                 @click.stop="removeValue(assignee.name)"
               >
                 <template #icon>
-                  <FeatherIcon name="x" class="h-3 w-3 text-ink-gray-6" />
+                  <span
+                    class="lucide-x size-3 text-ink-gray-6"
+                    aria-hidden="true"
+                  />
                 </template>
               </Button>
             </div>
           </Tooltip>
         </div>
       </template>
-      <template #item-prefix="{ option }">
-        <UserAvatar class="mr-2" :user="option.value" size="sm" />
-      </template>
-      <template #item-label="{ option }">
-        <Tooltip :text="option.value">
-          <div class="cursor-pointer text-ink-gray-9">
-            {{ getUser(option.value).full_name }}
-          </div>
-        </Tooltip>
+      <template #item-prefix="{ item }">
+        <UserAvatar class="mr-1" :user="item.value" size="sm" />
       </template>
     </Link>
     <div class="flex items-center justify-between gap-2">
@@ -70,10 +71,9 @@
 
 <script setup>
 import UserAvatar from '@/components/UserAvatar.vue'
-import Link from '@/components/Controls/Link.vue'
 import { usersStore } from '@/stores/users'
 import { Tooltip, Switch, createResource } from 'frappe-ui'
-import { useTelemetry } from 'frappe-ui/frappe'
+import { useTelemetry, Link } from 'frappe-ui/frappe'
 import { ref, watch } from 'vue'
 
 const props = defineProps({
@@ -88,6 +88,7 @@ const { capture } = useTelemetry()
 const assignees = defineModel({ type: Array, default: () => [] })
 const oldAssignees = ref([])
 const assignToMe = ref(false)
+const selectedUser = ref(null)
 
 const error = ref('')
 

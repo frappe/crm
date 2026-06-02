@@ -1,6 +1,6 @@
 <template>
-  <Dialog v-model="show" :options="{ size: '4xl' }">
-    <template #body-title>
+  <Dialog v-model:open="show" size="4xl">
+    <template #title>
       <h3
         class="flex items-center gap-2 text-2xl font-semibold leading-6 text-ink-gray-9"
       >
@@ -13,34 +13,32 @@
         />
       </h3>
     </template>
-    <template #body-content>
-      <div class="flex flex-col gap-3">
-        <div class="flex justify-between gap-2">
+    <div class="flex flex-col gap-3">
+      <div class="flex justify-between gap-2">
+        <Button
+          :label="preview ? __('Hide Preview') : __('Show Preview')"
+          @click="preview = !preview"
+        />
+        <div class="flex flex-row-reverse gap-2">
           <Button
-            :label="preview ? __('Hide Preview') : __('Show Preview')"
-            @click="preview = !preview"
+            :loading="loading"
+            :label="__('Save')"
+            variant="solid"
+            @click="saveChanges"
           />
-          <div class="flex flex-row-reverse gap-2">
-            <Button
-              :loading="loading"
-              :label="__('Save')"
-              variant="solid"
-              @click="saveChanges"
-            />
-            <Button :label="__('Reset')" @click="reload" />
-          </div>
-        </div>
-        <div v-if="tabs?.data">
-          <FieldLayoutEditor
-            v-if="!preview"
-            v-model="tabs.data"
-            :doctype="_doctype"
-            :onlyRequired="onlyRequired"
-          />
-          <FieldLayout v-else :tabs="tabs.data" :data="{}" :preview="true" />
+          <Button :label="__('Reset')" @click="reload" />
         </div>
       </div>
-    </template>
+      <div v-if="tabs?.data">
+        <FieldLayoutEditor
+          v-if="!preview"
+          v-model="tabs.data"
+          :doctype="_doctype"
+          :onlyRequired="onlyRequired"
+        />
+        <FieldLayout v-else :tabs="tabs.data" :data="{}" :preview="true" />
+      </div>
+    </div>
   </Dialog>
 </template>
 <script setup>

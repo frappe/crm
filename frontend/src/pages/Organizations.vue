@@ -11,7 +11,7 @@
       <Button
         variant="solid"
         :label="__('Create')"
-        iconLeft="plus"
+        iconLeft="lucide-plus"
         @click="showOrganizationModal = true"
       />
     </template>
@@ -144,13 +144,16 @@ const rows = computed(() => {
 const columns = computed(() => {
   let _columns = organizations.value?.data?.columns || []
 
-  // Set align right for last column
+  // Set align
   if (_columns.length) {
     _columns = _columns.map((col, index) => {
-      if (index === _columns.length - 1) {
-        return { ...col, align: 'right' }
+      let align = col.align || 'left'
+      if (col.type == 'Check') {
+        align = 'center'
+      } else if (index === _columns.length - 1) {
+        align = 'right'
       }
-      return col
+      return { ...col, align }
     })
   }
 

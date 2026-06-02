@@ -1,40 +1,36 @@
 <template>
-  <Dialog
-    v-model="dialog"
-    :options="{
-      title: __('Edit Response & Resolution'),
-    }"
-  >
-    <template #body-content>
-      <div class="flex flex-col gap-4">
-        <FormControl
-          v-model="priorityData.priority"
-          type="select"
+  <Dialog v-model:open="dialog" :title="__('Edit Response & Resolution')">
+    <div class="flex flex-col gap-4">
+      <Select
+        v-model="priorityData.priority"
+        size="sm"
+        variant="subtle"
+        :placeholder="__('Select Priority')"
+        :label="__('Priority')"
+        :options="priorityOptions"
+        required
+        class="text-ink-gray-8 w-full"
+      />
+      <div class="space-y-1.5">
+        <FormLabel
+          class="!text-p-sm font-medium text-ink-gray-7"
+          :label="__('First Response Time')"
+          required
+        />
+        <DurationInput
+          class="w-full"
+          :value="priorityData.first_response_time"
+          :long-form="true"
           size="sm"
           variant="subtle"
-          :placeholder="__('Select Priority')"
-          :label="__('Priority')"
-          :options="priorityOptions"
-          required
-          class="text-ink-gray-8"
-        />
-        <div>
-          <FormLabel :label="__('First Response Time')" required />
-          <DurationInput
-            class="mt-2 w-full"
-            :value="priorityData.first_response_time"
-            :long-form="true"
-            size="sm"
-            variant="subtle"
-            @change="(v) => (priorityData.first_response_time = v)"
-          />
-        </div>
-        <Checkbox
-          v-model="priorityData.default_priority"
-          :label="__('Set Default Priority')"
+          @change="(v) => (priorityData.first_response_time = v)"
         />
       </div>
-    </template>
+      <Checkbox
+        v-model="priorityData.default_priority"
+        :label="__('Set Default Priority')"
+      />
+    </div>
     <template #actions>
       <div class="flex justify-between">
         <div>
@@ -61,14 +57,7 @@
 </template>
 
 <script setup>
-import {
-  Button,
-  Checkbox,
-  Dialog,
-  FormControl,
-  FormLabel,
-  toast,
-} from 'frappe-ui'
+import { Button, Checkbox, Dialog, Select, FormLabel, toast } from 'frappe-ui'
 import { inject, ref, watch } from 'vue'
 import { slaData } from './utils'
 import DurationInput from '../../Controls/DurationInput.vue'

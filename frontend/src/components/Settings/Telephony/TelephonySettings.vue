@@ -42,9 +42,8 @@
           </div>
         </div>
         <div class="flex items-center gap-1">
-          <FormControl
+          <Select
             v-model="telephonyAgent.doc.default_medium"
-            type="select"
             class="w-44 p-1"
             :options="[
               { label: __(''), value: '' },
@@ -55,7 +54,7 @@
           />
           <Button
             v-if="telephonyAgent.doc.default_medium"
-            icon="x"
+            icon="lucide-x"
             :tooltip="__('Clear')"
             @click="telephonyAgent.doc.default_medium = ''"
           />
@@ -78,7 +77,7 @@
           </div>
         </div>
         <div>
-          <FormControl
+          <TextInput
             v-model="telephonyAgent.doc.twilio_number"
             class="flex-1 truncate w-44 p-1"
             :placeholder="__('Enter Twilio Number')"
@@ -103,7 +102,7 @@
           </div>
         </div>
         <div>
-          <FormControl
+          <TextInput
             v-model="telephonyAgent.doc.exotel_number"
             class="flex-1 truncate w-44 p-1"
             :placeholder="__('Enter Exotel Number')"
@@ -128,7 +127,7 @@
           </div>
         </div>
         <div>
-          <FormControl
+          <TextInput
             v-model="telephonyAgent.doc.mobile_no"
             class="flex-1 truncate w-44 p-1"
             :placeholder="__('Enter Personal Mobile No.')"
@@ -200,9 +199,10 @@
 </template>
 <script setup>
 import {
-  FormControl,
   Badge,
   ErrorMessage,
+  Select,
+  TextInput,
   createResource,
   toast,
 } from 'frappe-ui'

@@ -27,17 +27,17 @@
           combo="Delete"
           :alt-combos="['Backspace']"
         >
-          <Button icon="trash-2" variant="ghost" @click="deleteEvent" />
+          <Button icon="lucide-trash-2" variant="ghost" @click="deleteEvent" />
         </ShortcutTooltip>
         <ShortcutTooltip
           v-if="mode === 'edit' || mode === 'details'"
           :label="__('Duplicate Event')"
           combo="Mod+D"
         >
-          <Button icon="copy" variant="ghost" @click="duplicateEvent" />
+          <Button icon="lucide-copy" variant="ghost" @click="duplicateEvent" />
         </ShortcutTooltip>
         <ShortcutTooltip :label="__('Close Panel')" combo="Esc">
-          <Button icon="x" variant="ghost" @click="close" />
+          <Button icon="lucide-x" variant="ghost" @click="close" />
         </ShortcutTooltip>
       </div>
     </div>
@@ -113,7 +113,8 @@
         />
         <Link
           v-model="_event.referenceDocname"
-          class="[&_button]:bg-surface-white [&_button]:select-text [&_button]:text-ink-gray-7 [&_button]:cursor-text"
+          class="[&_button]:hidden"
+          variant="ghost"
           :doctype="_event.referenceDoctype"
           :disabled="true"
         />
@@ -169,16 +170,17 @@
                   >
                     ?
                   </div>
-                  <FeatherIcon
+                  <span
                     v-else
-                    :name="
+                    :class="[
                       _event.attending === 'Yes'
-                        ? 'check'
+                        ? 'lucide-check'
                         : _event.attending === 'No'
-                          ? 'x'
-                          : ''
-                    "
-                    class="size-[7px] stroke-[4px] text-ink-white"
+                          ? 'lucide-x'
+                          : '',
+                      'size-[7px] stroke-[4px] text-ink-white',
+                    ]"
+                    aria-hidden="true"
                   />
                 </div>
               </div>
@@ -211,16 +213,17 @@
                   >
                     ?
                   </div>
-                  <FeatherIcon
+                  <span
                     v-else
-                    :name="
+                    :class="[
                       att.attending === 'Yes'
-                        ? 'check'
+                        ? 'lucide-check'
                         : att.attending === 'No'
-                          ? 'x'
-                          : ''
-                    "
-                    class="size-[7px] stroke-[4px] text-ink-white"
+                          ? 'lucide-x'
+                          : '',
+                      'size-[7px] stroke-[4px] text-ink-white',
+                    ]"
+                    aria-hidden="true"
                   />
                 </div>
               </div>
@@ -230,7 +233,7 @@
             v-if="!showAllParticipants && peoples.length > 2"
             variant="ghost"
             :label="__('See All Participants')"
-            iconLeft="more-horizontal"
+            iconLeft="lucide-more-horizontal"
             class="!justify-start w-fit"
             @click="showAllParticipants = true"
           />
@@ -238,7 +241,7 @@
             v-else-if="showAllParticipants"
             variant="ghost"
             :label="__('Show Less')"
-            iconLeft="chevron-up"
+            iconLeft="lucide-chevron-up"
             class="!justify-start w-fit"
             @click="showAllParticipants = false"
           />
@@ -300,11 +303,9 @@
         </div> -->
       </div>
       <div class="mx-4.5 my-2.5 border-t border-outline-gray-1" />
-      <div
-        class="flex items-center justify-between gap-3 px-4.5 py-[7px] text-ink-gray-7"
-      >
+      <div class="flex items-center gap-3 px-4.5 py-[7px] text-ink-gray-7">
         <CalendarIcon class="size-4" />
-        <div class="flex w-full items-center gap-x-1.5">
+        <div class="flex-1">
           <DatePicker
             class="w-full"
             variant="outline"
@@ -315,9 +316,9 @@
             @update:modelValue="(date) => updateDate(date, true)"
           >
             <template #suffix="{ togglePopover }">
-              <FeatherIcon
-                name="chevron-down"
-                class="h-4 w-4 cursor-pointer"
+              <span
+                class="lucide-chevron-down size-4 cursor-pointer"
+                aria-hidden="true"
                 @click="togglePopover"
               />
             </template>
@@ -328,7 +329,7 @@
         v-if="!_event.isFullDay"
         class="flex items-center justify-between gap-3 px-4.5 py-[7px] text-ink-gray-7"
       >
-        <FeatherIcon name="clock" class="size-4" />
+        <span class="lucide-clock size-4" aria-hidden="true" />
         <div class="flex w-full items-center gap-x-1.5">
           <TimePicker
             v-if="!_event.isFullDay"
@@ -406,12 +407,11 @@
         <div
           class="flex items-center justify-between gap-3 px-4.5 py-[7px] text-ink-gray-7"
         >
-          <FeatherIcon name="plus-circle" class="size-4" />
+          <span class="lucide-plus-circle size-4" aria-hidden="true" />
           <div class="flex items-center gap-x-1.5 w-full">
-            <FormControl
+            <Select
               v-model="_event.referenceDoctype"
               class="w-full"
-              type="select"
               :options="[
                 {
                   label: '',
@@ -470,10 +470,9 @@
         >
           <ShieldIcon class="size-4" />
           <div class="flex items-center gap-x-1.5 w-full">
-            <FormControl
+            <Select
               v-model="_event.eventType"
               class="w-full"
-              type="select"
               :options="[
                 {
                   label: __('Private'),
@@ -525,7 +524,7 @@
       </div>
       <TabButtons
         v-model="attending"
-        class="w-full [&_button]:w-full [&_div]:w-full"
+        class="[&_button]:flex-1 [&>div]:w-full"
         :buttons="[
           {
             label: __('Yes'),
@@ -554,7 +553,7 @@ import PeopleIcon from '@/components/Icons/PeopleIcon.vue'
 import ArrowUpRightIcon from '@/components/Icons/ArrowUpRightIcon.vue'
 import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
-import Link from '@/components/Controls/Link.vue'
+import { Link } from 'frappe-ui/frappe'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import DescriptionIcon from '@/components/Icons/DescriptionIcon.vue'
 import Attendee from '@/components/Calendar/Attendee.vue'
@@ -573,6 +572,7 @@ import {
 import { useKeyboardShortcuts } from '@/composables/useKeyboardShortcuts'
 import {
   TextInput,
+  Select,
   Switch,
   DatePicker,
   TimePicker,

@@ -47,10 +47,10 @@
               "
               @click="toggle()"
             >
-              <FeatherIcon
-                name="chevron-right"
-                class="h-4 text-ink-gray-9 transition-all duration-300 ease-in-out"
+              <span
+                class="lucide-chevron-right size-4 text-ink-gray-9 transition-all duration-300 ease-in-out"
                 :class="{ 'rotate-90': opened }"
+                aria-hidden="true"
               />
               <span>{{ __(view.name) }}</span>
             </div>
@@ -190,7 +190,7 @@ import { sessionStore } from '@/stores/session'
 import { showSettings, activeSettingsPage } from '@/composables/settings'
 import { showChangePasswordModal } from '@/composables/modals'
 import { useBroadcast } from '@/composables/useBroadcast.js'
-import { FeatherIcon, call } from 'frappe-ui'
+import { call } from 'frappe-ui'
 import {
   SignupBanner,
   TrialBanner,

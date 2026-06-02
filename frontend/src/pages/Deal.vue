@@ -120,7 +120,7 @@
               v-if="canDelete"
               :tooltip="__('Delete')"
               variant="subtle"
-              icon="trash-2"
+              icon="lucide-trash-2"
               theme="red"
               @click="deleteDeal"
             />
@@ -148,9 +148,11 @@
           <template #actions="{ section }">
             <div v-if="section.name == 'contacts_section'" class="pr-2">
               <Link
-                value=""
+                v-model="contactToAdd"
                 doctype="Contact"
-                :onCreate="
+                align="end"
+                creatable
+                @create="
                   (value, close) => {
                     _contact = {
                       first_name: value,
@@ -160,15 +162,17 @@
                     close()
                   }
                 "
-                @change="(e) => addContact(e)"
+                @update:modelValue="
+                  (e) => {
+                    if (e) {
+                      addContact(e)
+                      contactToAdd = null
+                    }
+                  }
+                "
               >
-                <template #target="{ togglePopover }">
-                  <Button
-                    class="h-7 px-3"
-                    variant="ghost"
-                    icon="plus"
-                    @click="togglePopover()"
-                  />
+                <template #trigger>
+                  <Button class="h-7 px-3" variant="ghost" icon="lucide-plus" />
                 </template>
               </Link>
             </div>
@@ -219,7 +223,7 @@
                         <div class="flex items-center">
                           <Dropdown :options="contactOptions(contact)">
                             <Button
-                              icon="more-horizontal"
+                              icon="lucide-more-horizontal"
                               class="text-ink-gray-5"
                               variant="ghost"
                             />
@@ -239,7 +243,7 @@
                             variant="ghost"
                             class="transition-all duration-300 ease-in-out"
                             :class="{ 'rotate-90': opened }"
-                            icon="chevron-right"
+                            icon="lucide-chevron-right"
                             @click="toggle()"
                           />
                         </div>
@@ -362,7 +366,7 @@ import LostReasonModal from '@/components/Modals/LostReasonModal.vue'
 import AssignTo from '@/components/AssignTo.vue'
 import FilesUploader from '@/components/FilesUploader/FilesUploader.vue'
 import ContactModal from '@/components/Modals/ContactModal.vue'
-import Link from '@/components/Controls/Link.vue'
+import { Link } from 'frappe-ui/frappe'
 import CollapsibleSection from '@/components/CollapsibleSection.vue'
 import SidePanelLayout from '@/components/SidePanelLayout.vue'
 import SLASection from '@/components/SLASection.vue'
@@ -628,11 +632,6 @@ function getParsedSections(_sections) {
     if (section.name == 'contacts_section') return
     section.columns[0].fields.forEach((field) => {
       if (field.fieldname == 'organization') {
-        field.create = (value, close) => {
-          _organization.value.organization_name = value
-          showOrganizationModal.value = true
-          close()
-        }
         field.link = (org) =>
           router.push({
             name: 'Organization',
@@ -646,12 +645,13 @@ function getParsedSections(_sections) {
 
 const showContactModal = ref(false)
 const _contact = ref({})
+const contactToAdd = ref(null)
 
 function contactOptions(contact) {
   let options = [
     {
       label: __('Remove'),
-      icon: 'trash-2',
+      icon: 'lucide-trash-2',
       onClick: () => removeContact(contact.name),
     },
   ]

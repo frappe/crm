@@ -46,7 +46,7 @@
                     @click="removeColumn(element)"
                   >
                     <template #icon>
-                      <FeatherIcon name="x" class="h-3.5" />
+                      <span class="lucide-x size-3.5" aria-hidden="true" />
                     </template>
                   </Button>
                 </div>
@@ -56,21 +56,19 @@
           <div
             class="mt-1.5 flex flex-col gap-1 border-t border-outline-gray-modals pt-1.5"
           >
-            <Autocomplete
-              value=""
+            <Combobox
               :options="fields"
-              @change="(e) => addColumn(e)"
+              @update:selectedOption="(e) => addColumn(e)"
             >
-              <template #target="{ togglePopover }">
+              <template #trigger>
                 <Button
                   class="w-full !justify-start !text-ink-gray-5"
                   variant="ghost"
                   :label="__('Add Column')"
-                  iconLeft="plus"
-                  @click="togglePopover"
+                  iconLeft="lucide-plus"
                 />
               </template>
-            </Autocomplete>
+            </Combobox>
             <Button
               v-if="columnsUpdated"
               class="w-full !justify-start !text-ink-gray-5"
@@ -94,18 +92,14 @@
             class="flex flex-col items-center justify-between gap-2 rounded px-2 py-1.5 text-base text-ink-gray-8"
           >
             <div class="flex flex-col items-center gap-3">
-              <FormControl
+              <TextInput
                 v-model="column.label"
-                type="text"
-                size="md"
                 :label="__('Label')"
                 class="sm:w-full w-52"
                 :placeholder="__('First Name')"
               />
-              <FormControl
+              <TextInput
                 v-model="column.width"
-                type="text"
-                size="md"
                 :label="__('Width')"
                 class="sm:w-full w-52"
                 placeholder="10rem"
@@ -143,10 +137,9 @@ import ColumnsIcon from '@/components/Icons/ColumnsIcon.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import DragIcon from '@/components/Icons/DragIcon.vue'
 import ReloadIcon from '@/components/Icons/ReloadIcon.vue'
-import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import { isTouchScreenDevice } from '@/utils'
 import { getMeta } from '@/stores/meta'
-import { Popover } from 'frappe-ui'
+import { Combobox, Popover } from 'frappe-ui'
 import Draggable from 'vuedraggable'
 import { computed, ref } from 'vue'
 import { watchOnce } from '@vueuse/core'
@@ -206,12 +199,22 @@ const fields = computed(() => {
     existingFields = columns.value.map((column) => column.key)
   }
 
-  return _fields.filter((field) => {
-    return (
-      !columns.value.find((column) => column.key === field.fieldname) &&
-      !existingFields.includes(field.fieldname)
-    )
-  })
+  return _fields
+    .filter((field) => {
+      return (
+        !columns.value.find((column) => column.key === field.fieldname) &&
+        !existingFields.includes(field.fieldname)
+      )
+    })
+    .map((field) => {
+      return {
+        label: field.label,
+        fieldname: field.fieldname,
+        fieldtype: field.fieldtype,
+        options: field.options,
+        value: field.fieldname,
+      }
+    })
 })
 
 function addColumn(c) {

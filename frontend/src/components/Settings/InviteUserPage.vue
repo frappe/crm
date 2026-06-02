@@ -27,8 +27,7 @@
     </div>
     <div class="flex-1 flex flex-col px-2 gap-8 overflow-y-auto">
       <div>
-        <FormControl
-          type="textarea"
+        <Textarea
           :label="__('Invite By Email')"
           placeholder="user1@example.com, user2@example.com, ..."
           :debounce="100"
@@ -38,18 +37,13 @@
               'You can invite multiple users by comma separating their email addresses',
             )
           "
+          :error="userExistMessage || inviteeExistMessage"
           @input="updateInvitees($event.target.value)"
         />
-        <div
-          v-if="userExistMessage || inviteeExistMessage"
-          class="text-xs text-ink-red-3 mt-1.5"
-        >
-          {{ userExistMessage || inviteeExistMessage }}
-        </div>
-        <FormControl
+
+        <Select
           v-model="role"
-          type="select"
-          class="mt-4"
+          class="w-full mt-4"
           :label="__('Invite As')"
           :options="roleOptions"
           :description="description"
@@ -79,7 +73,7 @@
               <div>
                 <Button
                   :tooltip="__('Delete Invitation')"
-                  icon="x"
+                  icon="lucide-x"
                   variant="ghost"
                   :loading="
                     pendingInvitations.delete.loading &&
@@ -104,7 +98,8 @@ import {
   toast,
   createListResource,
   createResource,
-  FormControl,
+  Textarea,
+  Select,
 } from 'frappe-ui'
 import { ref, computed } from 'vue'
 

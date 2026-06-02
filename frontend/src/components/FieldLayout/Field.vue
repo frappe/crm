@@ -18,7 +18,7 @@
         >*</span
       >
     </div>
-    <FormControl
+    <TextInput
       v-if="
         (field.read_only || field.fieldtype === 'Read Only') &&
         ![
@@ -38,8 +38,7 @@
         ].includes(field.fieldtype)
       "
       v-model="data[field.fieldname]"
-      type="text"
-      :placeholder="getPlaceholder(field)"
+      :placeholder="field.placeholder"
       :disabled="true"
       :description="field.description"
     />
@@ -51,59 +50,77 @@
       :parentDoctype="doctype"
       :parentFieldname="field.fieldname"
     />
-    <FormControl
+    <Select
       v-else-if="field.fieldtype === 'Select'"
       v-model="data[field.fieldname]"
-      type="select"
-      class="form-control"
+      class="form-control w-full"
       :class="field.prefix ? 'prefix' : ''"
       :options="field.options"
-      :placeholder="getPlaceholder(field)"
+      :placeholder="field.placeholder"
       :description="field.description"
       @update:modelValue="(e) => fieldChange(e, field)"
     >
       <template v-if="field.prefix" #prefix>
         <IndicatorIcon :class="field.prefix" />
       </template>
-    </FormControl>
-    <div v-else-if="field.fieldtype == 'Check'" class="flex items-center gap-2">
-      <FormControl
-        v-model="data[field.fieldname]"
-        class="form-control"
-        type="checkbox"
-        :disabled="Boolean(field.read_only)"
-        :description="field.description"
-        @change="(e) => fieldChange(e.target.checked, field)"
-      />
-      <label
-        class="text-sm text-ink-gray-5"
-        @click="
-          () => {
-            if (!Boolean(field.read_only)) {
-              data[field.fieldname] = !data[field.fieldname]
-            }
-          }
-        "
-      >
-        {{ __(field.label) }}
-        <span v-if="field.mandatory" class="text-ink-red-3">*</span>
-      </label>
-    </div>
+    </Select>
+
+    <Checkbox
+      v-else-if="field.fieldtype == 'Check'"
+      v-model="data[field.fieldname]"
+      :label="field.label"
+      class="form-control"
+      :disabled="Boolean(field.read_only)"
+      :description="field.description"
+      :required="field.mandatory"
+      @change="(e) => fieldChange(e.target.checked, field)"
+    />
+
     <div
       v-else-if="['Link', 'Dynamic Link'].includes(field.fieldtype)"
       class="flex gap-1"
     >
       <Link
+        v-model="data[field.fieldname]"
         class="form-control flex-1 truncate"
-        :value="data[field.fieldname]"
         :doctype="
           field.fieldtype == 'Link' ? field.options : data[field.options]
         "
         :filters="field.filters"
-        :placeholder="getPlaceholder(field)"
-        :onCreate="field.create"
-        @change="(v) => fieldChange(v, field)"
-      />
+        :placeholder="field.placeholder"
+        creatable
+        @create="field.create"
+        @update:modelValue="(v) => fieldChange(v, field)"
+      >
+        <template #suffix="{ selectedOption }">
+          <button
+            v-if="selectedOption"
+            type="button"
+            aria-label="Clear"
+            data-slot="clear"
+            class="group-hover:grid group-focus:grid group-focus-within:grid hidden size-4 place-items-center rounded-sm text-ink-gray-5 hover:bg-surface-gray-3 hover:text-ink-gray-7 focus:outline-none focus-visible:ring-2 focus-visible:ring-outline-gray-3"
+            @click.stop="
+              () => {
+                data[field.fieldname] = null
+                fieldChange(null, field)
+              }
+            "
+            @pointerdown.stop
+          >
+            <span class="lucide-x size-3.5" />
+          </button>
+          <button
+            v-if="selectedOption"
+            type="button"
+            aria-label="Open record"
+            class="group-hover:grid group-focus:grid group-focus-within:grid hidden size-4 place-items-center rounded-sm text-ink-gray-5 hover:bg-surface-gray-3 hover:text-ink-gray-7 focus:outline-none focus-visible:ring-2 focus-visible:ring-outline-gray-3"
+            @pointerdown.stop
+            @click.stop="field.redirect(selectedOption.value)"
+          >
+            <span class="lucide-arrow-up-right size-3.5" />
+          </button>
+        </template>
+      </Link>
       <Button
         v-if="data[field.fieldname] && field.edit"
         class="shrink-0"
@@ -122,114 +139,93 @@
 
     <Link
       v-else-if="field.fieldtype === 'User'"
-      class="form-control"
-      :value="data[field.fieldname] && getUser(data[field.fieldname]).full_name"
+      v-model="data[field.fieldname]"
+      class="form-control w-full"
       :doctype="field.options"
       :filters="field.filters"
-      :placeholder="getPlaceholder(field)"
+      :placeholder="field.placeholder"
       :hideMe="true"
-      @change="(v) => fieldChange(v, field)"
+      @update:modelValue="(v) => fieldChange(v, field)"
     >
-      <template #prefix>
-        <UserAvatar
-          v-if="data[field.fieldname]"
-          class="mr-2"
-          :user="data[field.fieldname]"
-          size="sm"
-        />
-      </template>
-      <template #item-prefix="{ option }">
-        <UserAvatar class="mr-2" :user="option.value" size="sm" />
-      </template>
-      <template #item-label="{ option }">
-        <Tooltip :text="option.value">
-          <div class="cursor-pointer">
-            {{ getUser(option.value).full_name }}
-          </div>
-        </Tooltip>
+      <template #item-prefix="{ item }">
+        <UserAvatar class="mr-1" :user="item.value" size="sm" />
       </template>
     </Link>
     <Combobox
       v-else-if="field.fieldtype === 'Autocomplete'"
       v-model="data[field.fieldname]"
+      class="w-full"
       :options="getOptions(field.options)"
-      :placeholder="getPlaceholder(field)"
+      :placeholder="field.placeholder"
       :disabled="Boolean(field.read_only)"
+      :openOnClick="true"
       @update:modelValue="(v) => fieldChange(v, field, data)"
     />
     <TimePicker
       v-else-if="field.fieldtype === 'Time'"
-      :value="data[field.fieldname]"
+      v-model="data[field.fieldname]"
       :format="getFormat('', '', false, true, false)"
-      :placeholder="getPlaceholder(field)"
-      input-class="border-none"
+      :placeholder="field.placeholder"
       @change="(v) => fieldChange(v, field)"
     />
     <DateTimePicker
       v-else-if="field.fieldtype === 'Datetime'"
-      :value="data[field.fieldname]"
+      v-model="data[field.fieldname]"
       :format="getFormat('', '', true, true, false)"
-      :placeholder="getPlaceholder(field)"
-      input-class="border-none"
+      :placeholder="field.placeholder"
       @change="(v) => fieldChange(v, field)"
     />
     <DatePicker
       v-else-if="field.fieldtype === 'Date'"
-      :value="data[field.fieldname]"
+      v-model="data[field.fieldname]"
       :format="getFormat('', '', true, false, false)"
-      :placeholder="getPlaceholder(field)"
-      input-class="border-none"
+      :placeholder="field.placeholder"
       @change="(v) => fieldChange(v, field)"
     />
-    <FormControl
+    <Textarea
       v-else-if="
         ['Small Text', 'Text', 'Long Text', 'Code'].includes(field.fieldtype)
       "
-      type="textarea"
-      :value="data[field.fieldname]"
-      :placeholder="getPlaceholder(field)"
+      v-model="data[field.fieldname]"
+      :placeholder="field.placeholder"
       :description="field.description"
       @change="fieldChange($event.target.value, field)"
     />
     <Password
       v-else-if="field.fieldtype === 'Password'"
-      :value="data[field.fieldname]"
-      :placeholder="getPlaceholder(field)"
+      v-model="data[field.fieldname]"
+      :placeholder="field.placeholder"
       :description="field.description"
       @change="fieldChange($event.target.value, field)"
     />
     <FormattedInput
       v-else-if="field.fieldtype === 'Int'"
-      type="text"
-      :placeholder="getPlaceholder(field)"
       :value="data[field.fieldname] || '0'"
+      :placeholder="field.placeholder"
       :disabled="Boolean(field.read_only)"
       :description="field.description"
       @change="fieldChange($event.target.value, field)"
     />
     <FormattedInput
       v-else-if="field.fieldtype === 'Percent'"
-      type="text"
       :value="getFormattedPercent(field.fieldname, data)"
-      :placeholder="getPlaceholder(field)"
+      :placeholder="field.placeholder"
       :disabled="Boolean(field.read_only)"
       :description="field.description"
       @change="fieldChange(flt($event.target.value), field)"
     />
     <FormattedInput
       v-else-if="field.fieldtype === 'Float'"
-      type="text"
       :value="getFormattedFloat(field.fieldname, data)"
-      :placeholder="getPlaceholder(field)"
+      :placeholder="field.placeholder"
       :disabled="Boolean(field.read_only)"
       :description="field.description"
       @change="fieldChange(flt($event.target.value), field)"
     />
     <FormattedInput
       v-else-if="field.fieldtype === 'Currency'"
-      type="text"
       :value="getFormattedCurrency(field.fieldname, data, parentDoc)"
-      :placeholder="getPlaceholder(field)"
+      :placeholder="field.placeholder"
       :disabled="Boolean(field.read_only)"
       :description="field.description"
       @change="fieldChange(flt($event.target.value), field)"
@@ -237,18 +233,22 @@
     <DurationInput
       v-else-if="field.fieldtype === 'Duration'"
       :value="data[field.fieldname]"
-      :placeholder="getPlaceholder(field)"
+      :placeholder="field.placeholder"
       :disabled="Boolean(field.read_only)"
       :description="field.description"
       @change="(v) => fieldChange(v, field)"
     />
-    <RatingInput
+    <div
       v-else-if="field.fieldtype === 'Rating'"
-      :value="data[field.fieldname]"
-      :max="field.options || 5"
-      :disabled="Boolean(field.read_only)"
-      @change="(v) => fieldChange(v, field)"
-    />
+      class="overflow-auto [&::-webkit-scrollbar]:h-0"
+    >
+      <RatingInput
+        v-model="data[field.fieldname]"
+        :max="field.options || 5"
+        :disabled="Boolean(field.read_only)"
+        @update:modelValue="(v) => fieldChange(v, field)"
+      />
+    </div>
     <ButtonControl
       v-else-if="field.fieldtype === 'Button'"
       :label="field.label"
@@ -272,7 +272,7 @@
     <TextEditorControl
       v-else-if="field.fieldtype === 'Text Editor'"
       :value="data[field.fieldname]"
-      :placeholder="getPlaceholder(field)"
+      :placeholder="field.placeholder"
       :disabled="Boolean(field.read_only)"
       @change="(v) => fieldChange(v, field)"
     />
@@ -282,11 +282,10 @@
       :disabled="Boolean(field.read_only)"
       @change="(v) => fieldChange(v, field)"
     />
-    <FormControl
+    <TextInput
       v-else
-      type="text"
-      :placeholder="getPlaceholder(field)"
-      :value="data[field.fieldname]"
+      v-model="data[field.fieldname]"
+      :placeholder="field.placeholder"
       :disabled="Boolean(field.read_only)"
       :description="field.description"
       @change="fieldChange($event.target.value, field)"
@@ -294,7 +293,6 @@
   </div>
 </template>
 <script setup>
-import Password from '@/components/Controls/Password.vue'
 import FormattedInput from '@/components/Controls/FormattedInput.vue'
 import DurationInput from '@/components/Controls/DurationInput.vue'
 import RatingInput from '@/components/Controls/RatingInput.vue'
@@ -310,9 +308,9 @@ import EditIcon from '@/components/Icons/EditIcon.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import TableMultiselectInput from '@/components/Controls/TableMultiselectInput.vue'
-import Link from '@/components/Controls/Link.vue'
 import Grid from '@/components/Controls/Grid.vue'
 import { createDocument } from '@/composables/document'
+import { useDoctypeModal } from '@/composables/doctypeModal'
 import {
   getFormat,
   evaluateDependsOnValue,
@@ -321,17 +319,22 @@ import {
 } from '@/utils'
 import { flt, formatNumber, formatCurrency } from '@/utils/numberFormat.js'
 import { getMeta } from '@/stores/meta'
-import { parseLinkFilters } from '@/utils/fieldTransforms'
+import { parseLinkFilters, getPlaceholder } from '@/utils/fieldTransforms'
 import { usersStore } from '@/stores/users'
 import { useDocument } from '@/data/document'
 
 import {
+  Checkbox,
   Combobox,
-  Tooltip,
+  Select,
   DatePicker,
   DateTimePicker,
   TimePicker,
+  TextInput,
+  Textarea,
+  Password,
 } from 'frappe-ui'
+import { Link } from 'frappe-ui/frappe'
 import { computed, provide, inject, ref } from 'vue'
 
 const props = defineProps({
@@ -355,7 +358,8 @@ if (doctype) {
     formatCurrency(doc[fn], '', window.sysdefaults?.currency || 'USD', null)
 }
 
-const { users, getUser } = usersStore()
+const { users } = usersStore()
+const { showModal } = useDoctypeModal()
 
 let triggerOnChange
 let triggerButton
@@ -458,10 +462,6 @@ const field = computed(() => {
     field.options = field.options.split('\n').map((option) => {
       return { label: option, value: option }
     })
-
-    if (field.options[0].value !== '' && !field.reqd) {
-      field.options.unshift({ label: '', value: '' })
-    }
   }
 
   if (field.fieldtype === 'Link' && field.options === 'User') {
@@ -475,11 +475,19 @@ const field = computed(() => {
 
   if (field.fieldtype === 'Link' && field.options !== 'User') {
     if (!field.create) {
-      field.create = (value, close) => {
+      field.create = (value) => {
         const callback = (d) => {
           if (d) fieldChange(d.name, field)
         }
-        createDocument(field.options, value, close, callback)
+        createDocument(field.options, value, callback)
+      }
+    }
+    if (!field.redirect) {
+      field.redirect = (value) => {
+        showModal({
+          name: value,
+          doctype: field.options,
+        })
       }
     }
   }
@@ -507,7 +515,7 @@ const field = computed(() => {
   let _field = {
     ...field,
     filters: parseLinkFilters(field.link_filters),
-    placeholder: field.placeholder || field.label,
+    placeholder: getPlaceholder(field),
     display_via_depends_on: displayViaDependsOn,
     mandatory_via_depends_on: evaluateDependsOnValue(
       field.mandatory_depends_on,
@@ -548,17 +556,6 @@ const resolvedHtml = computed(() => {
   if (injected !== undefined) return injected
   return interpolateTemplate(field.value.options || '', data.value)
 })
-
-const getPlaceholder = (field) => {
-  if (field.placeholder) {
-    return __(field.placeholder)
-  }
-  if (['Select', 'Link'].includes(field.fieldtype)) {
-    return __('Select {0}', [__(field.label)])
-  } else {
-    return __('Enter {0}', [__(field.label)])
-  }
-}
 
 const getOptions = (options) => {
   if (Array.isArray(options)) {

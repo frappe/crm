@@ -19,7 +19,7 @@ class CustomContact(Contact):
 				"width": "12rem",
 			},
 			{
-				"label": "Phone",
+				"label": "Mobile No",
 				"type": "Data",
 				"key": "mobile_no",
 				"width": "12rem",

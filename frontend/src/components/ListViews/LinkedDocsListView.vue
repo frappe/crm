@@ -7,17 +7,16 @@
     :options="{
       selectable: true,
       showTooltip: true,
-      resizeColumn: true,
+      resizeColumn: false,
     }"
     row-key="reference_docname"
     @update:selections="(selections) => emit('selectionsChanged', selections)"
   >
-    <ListHeader @columnWidthUpdated="emit('columnWidthUpdated')">
+    <ListHeader>
       <ListHeaderItem
         v-for="column in columns"
         :key="column.key"
         :item="column"
-        @columnWidthUpdated="emit('columnWidthUpdated', column)"
       >
       </ListHeaderItem>
     </ListHeader>
@@ -36,9 +35,9 @@
               <span class="max-w-[90%] truncate">
                 {{ label }}
               </span>
-              <FeatherIcon
-                name="external-link"
-                class="h-4 w-4 cursor-pointer"
+              <span
+                class="lucide-external-link size-4 cursor-pointer"
+                aria-hidden="true"
                 @click.stop="viewLinkedDoc(row)"
               />
             </div>

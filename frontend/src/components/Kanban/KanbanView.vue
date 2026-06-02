@@ -57,13 +57,13 @@
                 <template #default>
                   <Button
                     class="opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-opacity"
-                    icon="more-horizontal"
+                    icon="lucide-more-horizontal"
                     variant="ghost"
                   />
                 </template>
               </Dropdown>
               <Button
-                icon="plus"
+                icon="lucide-plus"
                 variant="ghost"
                 @click="options.onNewClick(column)"
               />
@@ -126,7 +126,11 @@
                   <slot name="actions" v-bind="{ itemName: fields.name }">
                     <div class="flex gap-2 items-center justify-between">
                       <div></div>
-                      <Button icon="plus" variant="ghost" @click.stop.prevent />
+                      <Button
+                        icon="lucide-plus"
+                        variant="ghost"
+                        @click.stop.prevent
+                      />
                     </div>
                   </slot>
                 </component>
@@ -146,38 +150,39 @@
       </template>
     </Draggable>
     <div class="shrink-0 min-w-64">
-      <Autocomplete
-        value=""
+      <Combobox
         :options="deletedColumns"
-        @change="(e) => addColumn(e)"
+        @update:selectedOption="(e) => addColumn(e)"
       >
-        <template #target="{ togglePopover }">
+        <template #trigger>
           <Button
             class="w-full mt-2.5 mb-1 mr-5"
             :label="__('Add Column')"
-            iconLeft="plus"
-            @click="togglePopover()"
+            iconLeft="lucide-plus"
           />
         </template>
         <template #footer>
+          <div
+            class="border-t border-outline-gray-modals w-[107%] my-1 -ml-1"
+          />
           <Button
             class="w-full"
             :label="__('Reload Columns')"
+            variant="ghost"
             :iconLeft="RefreshIcon"
             @click="updateColumn(null, true)"
           />
         </template>
-      </Autocomplete>
+      </Combobox>
     </div>
   </div>
 </template>
 <script setup>
 import RefreshIcon from '@/components/Icons/RefreshIcon.vue'
-import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import { isTouchScreenDevice, colors, parseColor } from '@/utils'
 import Draggable from 'vuedraggable'
-import { Dropdown, Popover } from 'frappe-ui'
+import { Combobox, Dropdown, Popover } from 'frappe-ui'
 import { computed } from 'vue'
 
 defineProps({
@@ -230,7 +235,7 @@ function actions(column) {
       items: [
         {
           label: __('Delete'),
-          icon: 'trash-2',
+          icon: 'lucide-trash-2',
           onClick: () => {
             column.column['delete'] = true
             updateColumn()

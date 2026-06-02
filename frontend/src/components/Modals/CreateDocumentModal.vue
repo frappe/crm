@@ -1,48 +1,46 @@
 <template>
-  <Dialog v-model="show" :options="dialogOptions">
-    <template #body>
-      <div class="bg-surface-modal px-4 pb-6 pt-5 sm:px-6">
-        <div class="mb-5 flex items-center justify-between">
-          <div>
-            <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9">
-              {{ __(dialogOptions.title) || __('Untitled') }}
-            </h3>
-          </div>
-          <div class="flex items-center gap-1">
-            <Button
-              v-if="isManager() && !isMobileView"
-              variant="ghost"
-              class="w-7"
-              :tooltip="__('Edit Fields Layout')"
-              :icon="EditIcon"
-              @click="openQuickEntryModal"
-            />
-            <Button
-              variant="ghost"
-              class="w-7"
-              icon="x"
-              @click="show = false"
-            />
-          </div>
+  <Dialog v-model:open="show" v-bind="dialogOptions" bare>
+    <div class="bg-surface-modal px-4 pb-6 pt-5 sm:px-6">
+      <div class="mb-5 flex items-center justify-between">
+        <div>
+          <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9">
+            {{ __(dialogOptions.title) || __('Untitled') }}
+          </h3>
         </div>
-        <div v-if="tabs.data">
-          <FieldLayout :tabs="tabs.data" :data="_data.doc" :doctype="doctype" />
-          <ErrorMessage class="mt-2" :message="error" />
-        </div>
-      </div>
-      <div class="px-4 pb-7 pt-4 sm:px-6">
-        <div class="space-y-2">
+        <div class="flex items-center gap-1">
           <Button
-            v-for="action in dialogOptions.actions"
-            :key="action.label"
-            class="w-full"
-            v-bind="action"
-            :label="__(action.label)"
-            :loading="loading"
+            v-if="isManager() && !isMobileView"
+            variant="ghost"
+            class="w-7"
+            :tooltip="__('Edit Fields Layout')"
+            :icon="EditIcon"
+            @click="openQuickEntryModal"
+          />
+          <Button
+            variant="ghost"
+            class="w-7"
+            icon="lucide-x"
+            @click="show = false"
           />
         </div>
       </div>
-    </template>
+      <div v-if="tabs.data">
+        <FieldLayout :tabs="tabs.data" :data="_data.doc" :doctype="doctype" />
+        <ErrorMessage class="mt-2" :message="error" />
+      </div>
+    </div>
+    <div class="px-4 pb-7 pt-4 sm:px-6">
+      <div class="space-y-2">
+        <Button
+          v-for="action in dialogOptions.actions"
+          :key="action.label"
+          class="w-full"
+          v-bind="action"
+          :label="__(action.label)"
+          :loading="loading"
+        />
+      </div>
+    </div>
   </Dialog>
 </template>
 

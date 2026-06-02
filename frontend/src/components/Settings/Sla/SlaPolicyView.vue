@@ -52,25 +52,25 @@
         <LoadingIndicator class="w-4" />
       </div>
       <div v-if="!getSlaResource.loading">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-          <div>
-            <FormControl
+        <div class="flex flex-col gap-5">
+          <div class="flex gap-5">
+            <TextInput
               v-model="slaData.sla_name"
-              :type="'text'"
+              :label="__('Name')"
+              class="flex-1"
               size="sm"
               variant="subtle"
               :placeholder="__('Name')"
-              :label="__('Name')"
               required
+              :error="slaDataErrors.sla_name"
               maxlength="100"
               @change="validateSlaData('sla_name')"
             />
-            <ErrorMessage :message="slaDataErrors.sla_name" class="mt-2" />
-          </div>
-          <div class="space-y-1.5">
-            <FormLabel :label="__('Apply On')" required />
             <Select
               v-model="slaData.apply_on"
+              :label="__('Apply On')"
+              required
+              class="flex-1"
               :options="[
                 {
                   label: 'Lead',
@@ -83,19 +83,15 @@
               ]"
             />
           </div>
-          <div class="space-y-0.5">
-            <Checkbox
-              v-model="slaData.rolling_responses"
-              :label="__('Rolling Responses')"
-            />
-            <div class="text-p-sm text-ink-gray-5">
-              {{
-                __(
-                  'Restart the SLA each time the customer replies (status changes to Open) and fulfill it when marked as Replied',
-                )
-              }}
-            </div>
-          </div>
+          <Checkbox
+            v-model="slaData.rolling_responses"
+            :label="__('Rolling Responses')"
+            :description="
+              __(
+                'Restart the SLA each time the customer replies (status changes to Open) and fulfill it when marked as Replied',
+              )
+            "
+          />
         </div>
         <hr class="my-8 border-outline-gray-2" />
         <div>
@@ -122,7 +118,7 @@
                       class="text-sm text-ink-gray-6 flex gap-1 cursor-default"
                     >
                       {{ __('Old Conditions') }}
-                      <FeatherIcon name="info" class="size-4" />
+                      <span class="lucide-info size-4" aria-hidden="true" />
                     </div>
                   </template>
                   <template #body-main>
@@ -173,7 +169,11 @@
           </div>
           <div class="mt-3.5 flex gap-5 flex-col md:flex-row">
             <div class="w-full space-y-1.5">
-              <FormLabel :label="__('Start Date')" for="start_date" />
+              <FormLabel
+                class="!text-p-sm font-medium text-ink-gray-7"
+                :label="__('Start Date')"
+                for="start_date"
+              />
               <DatePicker
                 id="start_date"
                 v-model="slaData.start_date"
@@ -190,7 +190,11 @@
               <ErrorMessage :message="slaDataErrors.start_date" />
             </div>
             <div class="w-full space-y-1.5">
-              <FormLabel :label="__('End Date')" for="end_date" />
+              <FormLabel
+                class="!text-p-sm font-medium text-ink-gray-7"
+                :label="__('End Date')"
+                for="end_date"
+              />
               <DatePicker
                 id="end_date"
                 v-model="slaData.end_date"
@@ -251,8 +255,7 @@ import {
   createResource,
   DatePicker,
   ErrorMessage,
-  FeatherIcon,
-  FormControl,
+  TextInput,
   FormLabel,
   LoadingIndicator,
   Popover,

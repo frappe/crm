@@ -1,40 +1,30 @@
 <template>
-  <Dialog
-    v-model="show"
-    :options="{ title: __('Add Chart') }"
-    @close="show = false"
-  >
-    <template #body-content>
-      <div class="flex flex-col gap-4">
-        <FormControl
-          v-model="chartType"
-          type="select"
-          :label="__('Chart Type')"
-          :options="chartTypes"
-        />
-        <FormControl
-          v-if="chartType === 'number_chart'"
-          v-model="numberChart"
-          type="select"
-          :label="__('Number Chart')"
-          :options="numberCharts"
-        />
-        <FormControl
-          v-if="chartType === 'axis_chart'"
-          v-model="axisChart"
-          type="select"
-          :label="__('Axis Chart')"
-          :options="axisCharts"
-        />
-        <FormControl
-          v-if="chartType === 'donut_chart'"
-          v-model="donutChart"
-          type="select"
-          :label="__('Donut Chart')"
-          :options="donutCharts"
-        />
-      </div>
-    </template>
+  <Dialog v-model:open="show" :title="__('Add Chart')" @close="show = false">
+    <div class="flex flex-col gap-4">
+      <Select
+        v-model="chartType"
+        :label="__('Chart Type')"
+        :options="chartTypes"
+      />
+      <Select
+        v-if="chartType === 'number_chart'"
+        v-model="numberChart"
+        :label="__('Number Chart')"
+        :options="numberCharts"
+      />
+      <Select
+        v-if="chartType === 'axis_chart'"
+        v-model="axisChart"
+        :label="__('Axis Chart')"
+        :options="axisCharts"
+      />
+      <Select
+        v-if="chartType === 'donut_chart'"
+        v-model="donutChart"
+        :label="__('Donut Chart')"
+        :options="donutCharts"
+      />
+    </div>
     <template #actions>
       <div class="flex items-center justify-end gap-2">
         <Button variant="outline" :label="__('Cancel')" @click="show = false" />
@@ -46,7 +36,7 @@
 
 <script setup lang="ts">
 import { getRandom } from '@/utils'
-import { createResource, Dialog, FormControl } from 'frappe-ui'
+import { createResource, Dialog, Select } from 'frappe-ui'
 import { ref, reactive, inject } from 'vue'
 
 const show = defineModel({

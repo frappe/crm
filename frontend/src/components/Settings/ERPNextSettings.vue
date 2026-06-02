@@ -61,10 +61,9 @@
             v-if="!erpnextCRMSettingsResource.isERPNextInstalled.data"
             class="space-y-4"
           >
-            <FormControl
+            <TextInput
               v-model="erpnextCRMSettingsResource.doc.erpnext_site_url"
               :label="__('Site URL')"
-              type="text"
               placeholder="https://erpnext.example.com"
               required
               :description="
@@ -75,19 +74,17 @@
               autocomplete="off"
             />
             <div class="grid grid-cols-2 gap-4">
-              <FormControl
+              <TextInput
                 v-model="erpnextCRMSettingsResource.doc.api_key"
                 :label="__('API Key')"
-                type="text"
                 placeholder="9g3f7693gho2ih23hiuhsad"
                 required
                 autocomplete="off"
               />
-              <FormControl
+              <Password
                 v-model="erpnextCRMSettingsResource.doc.api_secret"
                 :label="__('API Secret')"
-                type="text"
-                placeholder="o2ih23hiuhsado2ih23hiuhsad"
+                placeholder="********************"
                 required
                 autocomplete="off"
               />
@@ -134,9 +131,9 @@
                 </div>
               </div>
               <div class="w-48">
-                <Autocomplete
+                <Combobox
                   v-if="!erpnextCRMSettingsResource.isERPNextInstalled.data"
-                  :model-value="erpnextCRMSettingsResource.doc.erpnext_company"
+                  v-model="erpnextCRMSettingsResource.doc.erpnext_company"
                   :options="
                     erpnextCRMSettingsResource.getExternalCompanies.data?.map(
                       (company) => ({
@@ -147,9 +144,10 @@
                   "
                   required
                   class="pb-0.5"
-                  @update:modelValue="
-                    erpnextCRMSettingsResource.doc.erpnext_company =
-                      $event?.value
+                  @update:selectedOption="
+                    (e) =>
+                      (erpnextCRMSettingsResource.doc.erpnext_company =
+                        e?.value)
                   "
                 >
                   <template #footer>
@@ -167,7 +165,7 @@
                       "
                     />
                   </template>
-                </Autocomplete>
+                </Combobox>
                 <Link
                   v-else
                   v-model="erpnextCRMSettingsResource.doc.erpnext_company"
@@ -270,15 +268,17 @@
 import {
   Button,
   createDocumentResource,
-  FormControl,
   LoadingIndicator,
   Switch,
   toast,
   Tooltip,
+  Combobox,
+  TextInput,
+  Password,
 } from 'frappe-ui'
 import SettingsLayoutBase from '@/components/Layouts/SettingsLayoutBase.vue'
 import { computed, onMounted } from 'vue'
-import Link from '../Controls/Link.vue'
+import { Link } from 'frappe-ui/frappe'
 import { globalStore } from '@/stores/global'
 
 const { $dialog } = globalStore()

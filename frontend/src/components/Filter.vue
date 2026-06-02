@@ -20,7 +20,7 @@
           v-if="filters?.size"
           :tooltip="__('Clear All Filters')"
           class="rounded-l-none border-l"
-          icon="x"
+          icon="lucide-x"
           @click.stop="clearfilter(close)"
         />
       </div>
@@ -45,22 +45,22 @@
                   <Button
                     class="flex"
                     variant="ghost"
-                    icon="x"
+                    icon="lucide-x"
                     @click="removeFilter(i)"
                   />
                 </div>
                 <div id="fieldname" class="w-full">
-                  <Autocomplete
-                    :value="f.field.fieldname"
+                  <Combobox
+                    :model-value="f.field.fieldname"
                     :options="filterableFields.data"
                     :placeholder="__('First Name')"
-                    @change="(e) => updateFilter(e, i)"
+                    :openOnClick="true"
+                    @update:selectedOption="(e) => updateFilter(e, i)"
                   />
                 </div>
                 <div id="operator">
-                  <FormControl
+                  <Select
                     v-model="f.operator"
-                    type="select"
                     :options="
                       getOperators(f.field.fieldtype, f.field.fieldname)
                     "
@@ -83,17 +83,17 @@
                     {{ i == 0 ? __('Where') : __('And') }}
                   </div>
                   <div id="fieldname" class="!min-w-[140px]">
-                    <Autocomplete
-                      :value="f.field.fieldname"
+                    <Combobox
+                      :model-value="f.field.fieldname"
                       :options="filterableFields.data"
                       :placeholder="__('First Name')"
-                      @change="(e) => updateFilter(e, i)"
+                      :openOnClick="true"
+                      @update:selectedOption="(e) => updateFilter(e, i)"
                     />
                   </div>
                   <div id="operator">
-                    <FormControl
+                    <Select
                       v-model="f.operator"
-                      type="select"
                       :options="
                         getOperators(f.field.fieldtype, f.field.fieldname)
                       "
@@ -101,7 +101,7 @@
                       @update:modelValue="() => updateOperator(f)"
                     />
                   </div>
-                  <div id="value" class="!min-w-[140px]">
+                  <div id="value" class="flex !min-w-[140px]">
                     <component
                       :is="getValueControl(f)"
                       v-model="f.value"
@@ -113,7 +113,7 @@
                 <Button
                   class="flex"
                   variant="ghost"
-                  icon="x"
+                  icon="lucide-x"
                   @click="removeFilter(i)"
                 />
               </div>
@@ -126,22 +126,20 @@
             {{ __('Empty - Choose a field to filter by') }}
           </div>
           <div class="flex items-center justify-between gap-2">
-            <Autocomplete
-              value=""
+            <Combobox
               :options="availableFilters"
               :placeholder="__('First Name')"
-              @change="(e) => setfilter(e)"
+              @update:selectedOption="(e) => setfilter(e)"
             >
-              <template #target="{ togglePopover }">
+              <template #trigger>
                 <Button
                   class="!text-ink-gray-5"
                   variant="ghost"
                   :label="__('Add Filter')"
-                  iconLeft="plus"
-                  @click="togglePopover()"
+                  iconLeft="lucide-plus"
                 />
               </template>
-            </Autocomplete>
+            </Combobox>
             <Button
               v-if="filters?.size"
               class="!text-ink-gray-5"
@@ -157,18 +155,19 @@
 </template>
 <script setup>
 import FilterIcon from '@/components/Icons/FilterIcon.vue'
-import Link from '@/components/Controls/Link.vue'
-import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import DurationInput from '@/components/Controls/DurationInput.vue'
 import RatingInput from '@/components/Controls/RatingInput.vue'
 import {
-  FormControl,
+  Combobox,
+  TextInput,
+  Select,
   createResource,
   Popover,
   DatePicker,
   DateTimePicker,
   DateRangePicker,
 } from 'frappe-ui'
+import { Link } from 'frappe-ui/frappe'
 import { h, computed, onMounted } from 'vue'
 import { isMobileView } from '@/composables/settings'
 
@@ -378,8 +377,8 @@ function getValueControl(f) {
   const { field, operator } = f
   const { fieldtype, options } = field
   if (operator == 'is') {
-    return h(FormControl, {
-      type: 'select',
+    return h(Select, {
+      class: 'w-full',
       options: [
         {
           label: 'Set',
@@ -390,54 +389,49 @@ function getValueControl(f) {
           value: 'not set',
         },
       ],
-      modelValue: f.value,
       'onUpdate:modelValue': (v) => updateValue(v, f),
     })
   } else if (operator == 'timespan') {
-    return h(FormControl, {
-      type: 'select',
+    return h(Select, {
+      class: 'w-full',
       options: timespanOptions,
-      modelValue: f.value,
       'onUpdate:modelValue': (v) => updateValue(v, f),
     })
   } else if (['like', 'not like', 'in', 'not in'].includes(operator)) {
-    return h(FormControl, { type: 'text' })
-  } else if (typeSelect.includes(fieldtype) || typeCheck.includes(fieldtype)) {
+    return h(TextInput)
+  } else if (['Select', 'Check'].includes(fieldtype)) {
     const _options =
       fieldtype == 'Check' ? ['Yes', 'No'] : getSelectOptions(options)
-    return h(FormControl, {
-      type: 'select',
+    return h(Select, {
+      class: 'w-full',
       options: _options.map((o) => ({
         label: o,
         value: o,
       })),
-      modelValue: f.value,
       'onUpdate:modelValue': (v) => updateValue(v, f),
     })
   } else if (typeLink.includes(fieldtype)) {
-    if (fieldtype == 'Dynamic Link') {
-      return h(FormControl, { type: 'text' })
-    }
-    return h(Link, { class: 'form-control', doctype: options, value: f.value })
+    if (fieldtype == 'Dynamic Link') h(TextInput)
+    return h(Link, {
+      class: 'form-control min-w-44 max-w-44',
+      doctype: options,
+      'onUpdate:modelValue': (v) => updateValue(v, f),
+    })
   } else if (typeNumber.includes(fieldtype)) {
-    return h(FormControl, { type: 'number' })
+    return h(TextInput, { type: 'number' })
   } else if (typeDate.includes(fieldtype) && operator == 'between') {
-    return h(DateRangePicker, { value: f.value, iconLeft: '' })
+    return h(DateRangePicker)
   } else if (typeDuration.includes(fieldtype)) {
     return h(DurationInput, { value: f.value })
   } else if (typeRating.includes(fieldtype)) {
     return h(RatingInput, {
-      value: f.value,
       max: options || 5,
-      class: '!flex',
+      'onUpdate:modelValue': (v) => updateValue(v, f),
     })
   } else if (typeDate.includes(fieldtype)) {
-    return h(fieldtype == 'Date' ? DatePicker : DateTimePicker, {
-      value: f.value,
-      iconLeft: '',
-    })
+    return h(fieldtype == 'Date' ? DatePicker : DateTimePicker)
   } else {
-    return h(FormControl, { type: 'text' })
+    return h(TextInput)
   }
 }
 
@@ -455,10 +449,7 @@ function getDefaultValue(field) {
 }
 
 function getDefaultOperator(fieldtype) {
-  if (typeSelect.includes(fieldtype)) {
-    return 'equals'
-  }
-  if (typeCheck.includes(fieldtype) || typeNumber.includes(fieldtype)) {
+  if (['Select', 'Check', 'Rating', ...typeNumber].includes(fieldtype)) {
     return 'equals'
   }
   if (typeDate.includes(fieldtype)) {
@@ -596,9 +587,9 @@ function placeholder(f) {
   } else if (typeCheck.includes(f.field.fieldtype)) {
     return __('Yes')
   } else if (typeLink.includes(f.field.fieldtype)) {
-    return __('Select a Value')
+    return __('Select {0}', [f.field.label.toLowerCase()])
   } else if (typeSelect.includes(f.field.fieldtype)) {
-    return __('Select an Option')
+    return __('Select {0}', [f.field.label.toLowerCase()])
   } else if (typeString.includes(f.field.fieldtype)) {
     return __('John Doe')
   }

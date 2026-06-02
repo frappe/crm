@@ -1,6 +1,6 @@
 <template>
-  <Dialog v-model="show" :options="{ size: '3xl' }">
-    <template #body-title>
+  <Dialog v-model:open="show" size="3xl">
+    <template #title>
       <h3
         class="flex items-center gap-2 text-2xl font-semibold leading-6 text-ink-gray-9"
       >
@@ -13,54 +13,52 @@
         />
       </h3>
     </template>
-    <template #body-content>
-      <div class="flex flex-col gap-5.5">
-        <div class="flex justify-between gap-2">
+    <div class="flex flex-col gap-5.5">
+      <div class="flex justify-between gap-2">
+        <Button
+          :label="preview ? __('Hide Preview') : __('Show Preview')"
+          @click="preview = !preview"
+        />
+        <div class="flex flex-row-reverse gap-2">
           <Button
-            :label="preview ? __('Hide Preview') : __('Show Preview')"
-            @click="preview = !preview"
+            :loading="loading"
+            :label="__('Save')"
+            variant="solid"
+            @click="saveChanges"
           />
-          <div class="flex flex-row-reverse gap-2">
-            <Button
-              :loading="loading"
-              :label="__('Save')"
-              variant="solid"
-              @click="saveChanges"
-            />
-            <Button :label="__('Reset')" @click="reload" />
-          </div>
-        </div>
-        <div v-if="tabs.data?.[0]?.sections" class="flex gap-4">
-          <SidePanelLayoutEditor
-            v-model="tabs.data[0].sections"
-            class="flex flex-1 flex-col pr-2"
-            :doctype="_doctype"
-          />
-          <div v-if="preview" class="flex flex-1 flex-col border rounded">
-            <SidePanelLayout
-              v-slot="{ section }"
-              :sections="tabs.data[0].sections"
-              :doctype="_doctype"
-              docname=""
-              :preview="true"
-            >
-              <div
-                v-if="section.name == 'contacts_section'"
-                class="flex h-16 items-center justify-center text-base text-ink-gray-5"
-              >
-                {{ __('No Contacts Added') }}
-              </div>
-            </SidePanelLayout>
-          </div>
-          <div
-            v-else
-            class="flex flex-1 justify-center items-center text-ink-gray-5 bg-surface-gray-2 rounded"
-          >
-            {{ __('Toggle on for Preview') }}
-          </div>
+          <Button :label="__('Reset')" @click="reload" />
         </div>
       </div>
-    </template>
+      <div v-if="tabs.data?.[0]?.sections" class="flex gap-4">
+        <SidePanelLayoutEditor
+          v-model="tabs.data[0].sections"
+          class="flex flex-1 flex-col pr-2"
+          :doctype="_doctype"
+        />
+        <div v-if="preview" class="flex flex-1 flex-col border rounded">
+          <SidePanelLayout
+            v-slot="{ section }"
+            :sections="tabs.data[0].sections"
+            :doctype="_doctype"
+            docname=""
+            :preview="true"
+          >
+            <div
+              v-if="section.name == 'contacts_section'"
+              class="flex h-16 items-center justify-center text-base text-ink-gray-5"
+            >
+              {{ __('No Contacts Added') }}
+            </div>
+          </SidePanelLayout>
+        </div>
+        <div
+          v-else
+          class="flex flex-1 justify-center items-center text-ink-gray-5 bg-surface-gray-2 rounded"
+        >
+          {{ __('Toggle on for Preview') }}
+        </div>
+      </div>
+    </div>
   </Dialog>
 </template>
 <script setup>

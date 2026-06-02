@@ -5,7 +5,11 @@
     :class="[containerClasses, 'cursor-pointer']"
     @click="openModal"
   >
-    <FeatherIcon name="map-pin" :class="[iconClasses, 'text-ink-gray-5']" />
+    <span
+      class="lucide-map-pin"
+      :class="[iconClasses, 'text-ink-gray-5']"
+      aria-hidden="true"
+    />
     <span class="whitespace-nowrap text-ink-gray-4">{{
       __('Set location…')
     }}</span>
@@ -22,7 +26,11 @@
     :class="[containerClasses, '!pr-1', 'cursor-pointer']"
     @click="openModal"
   >
-    <FeatherIcon name="map-pin" :class="[iconClasses, 'text-ink-gray-7']" />
+    <span
+      class="lucide-map-pin"
+      :class="[iconClasses, 'text-ink-gray-7']"
+      aria-hidden="true"
+    />
     <span class="min-w-0 flex-1 truncate text-ink-gray-8 text-sm">
       {{ coordinateSummary }}
     </span>
@@ -32,7 +40,7 @@
       :title="__('Clear')"
       @click.prevent="clearLocation"
     >
-      <FeatherIcon name="x" class="h-3 w-3" />
+      <span class="lucide-x size-3" aria-hidden="true" />
     </button>
   </div>
 
@@ -71,7 +79,7 @@ import leafletIconUrl from 'leaflet/dist/images/marker-icon.png?url'
 import leafletIconRetinaUrl from 'leaflet/dist/images/marker-icon-2x.png?url'
 import leafletShadowUrl from 'leaflet/dist/images/marker-shadow.png?url'
 import { useGeolocation } from '@vueuse/core'
-import { FeatherIcon, Dialog, Button } from 'frappe-ui'
+import { Dialog, Button } from 'frappe-ui'
 import { ref, computed, watch, nextTick, useAttrs, onBeforeUnmount } from 'vue'
 
 defineOptions({ inheritAttrs: false })

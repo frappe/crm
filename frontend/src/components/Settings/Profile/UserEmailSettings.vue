@@ -82,46 +82,44 @@
                   class="w-10"
                   variant="ghost"
                   :tooltip="__('Remove')"
-                  icon="x"
+                  icon="lucide-x"
                   @click.prevent="removeEmail(e)"
                 />
               </div>
             </div>
           </div>
-          <Autocomplete
-            value=""
+          <Combobox
             :options="filteredEmails"
-            @change="(e) => addEmail(e)"
+            @update:selectedOption="(e) => addEmail(e)"
           >
-            <template #target="{ togglePopover }">
+            <template #trigger>
               <Button
                 class="!bg-surface-modal"
                 variant="outline"
                 :label="__('Add Email')"
-                iconLeft="plus"
-                @click="togglePopover()"
+                iconLeft="lucide-plus"
               />
             </template>
-            <template #item-label="{ option }">
+            <template #item-label="{ item }">
               <div class="flex flex-col gap-1 text-ink-gray-9">
-                <div>{{ option.label }}</div>
+                <div>{{ item.label }}</div>
                 <div class="text-ink-gray-4 text-sm">
-                  {{ option.email }}
+                  {{ item.email }}
                 </div>
               </div>
             </template>
-          </Autocomplete>
+          </Combobox>
         </div>
       </div>
     </template>
   </SettingsLayoutBase>
 </template>
 <script setup>
-import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import { useKeyboardShortcuts } from '@/composables/useKeyboardShortcuts'
 import {
   Badge,
   Button,
+  Combobox,
   createDocumentResource,
   createListResource,
   TextEditor,

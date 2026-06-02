@@ -101,10 +101,14 @@ def get_filterable_fields(doctype: str):
 
 	for field in standard_fields + meta.get("fields", []):
 		if field.get("fieldname") not in restricted_fields and field.get("fieldtype") in allowed_fieldtypes:
-			field["name"] = field.get("fieldname")
-			field["label"] = _(field.get("label"))
-			field["value"] = field.get("fieldname")
-			fields.append(field)
+			_field = {
+				"label": _(field.get("label")),
+				"fieldname": field.get("fieldname"),
+				"fieldtype": field.get("fieldtype"),
+				"options": field.get("options"),
+				"value": field.get("fieldname"),
+			}
+			fields.append(_field)
 
 	return fields
 
@@ -135,6 +139,7 @@ def get_group_by_fields(doctype: str):
 		{
 			"label": _(field.label),
 			"fieldname": field.fieldname,
+			"value": field.fieldname,
 		}
 		for field in fields
 		if field.label and field.fieldname
@@ -142,8 +147,6 @@ def get_group_by_fields(doctype: str):
 
 	standard_fields = [
 		{"label": "Name", "fieldname": "name"},
-		{"label": "Created On", "fieldname": "creation"},
-		{"label": "Last Modified", "fieldname": "modified"},
 		{"label": "Modified By", "fieldname": "modified_by"},
 		{"label": "Owner", "fieldname": "owner"},
 		{"label": "Like", "fieldname": "_liked_by"},
@@ -155,6 +158,7 @@ def get_group_by_fields(doctype: str):
 
 	for field in standard_fields:
 		field["label"] = _(field["label"])
+		field["value"] = field["fieldname"]
 		fields.append(field)
 
 	return fields
@@ -187,8 +191,6 @@ def get_quick_filters(doctype: str, cached: bool = True):
 		if field.get("fieldtype") == "Select" and options and isinstance(options, str):
 			options = options.split("\n")
 			options = [{"label": option, "value": option} for option in options]
-			if not any([not option.get("value") for option in options]):
-				options.insert(0, {"label": "", "value": ""})
 		quick_filters.append(
 			{
 				"label": _(field.get("label")),

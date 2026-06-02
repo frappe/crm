@@ -40,10 +40,9 @@
       <div v-if="twilio.doc" class="h-full">
         <div v-if="twilio.doc.enabled" class="space-y-4">
           <div class="grid grid-cols-2 gap-4">
-            <FormControl
+            <TextInput
               v-model="twilio.doc.account_sid"
               :label="__('Account SID')"
-              type="text"
               placeholder="ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
               required
               autocomplete="off"
@@ -72,19 +71,26 @@
               </div>
             </div>
             <div class="flex items-center gap-2">
-              <Autocomplete v-model="twilio.doc.app_name" :options="twilioApps">
+              <Combobox
+                v-model="twilio.doc.app_name"
+                :options="twilioApps"
+                :openOnClick="true"
+              >
                 <template #footer>
+                  <div
+                    class="border-t border-outline-gray-modals w-[107%] my-1 -ml-1"
+                  />
                   <Button
                     :label="__('Refresh Apps')"
                     theme="gray"
-                    variant="subtle"
+                    variant="ghost"
                     class="w-full"
                     icon-left="refresh-cw"
                     :loading="twilio.fetchTwilioApps.loading"
                     @click="twilio.fetchTwilioApps.fetch"
                   />
                 </template>
-              </Autocomplete>
+              </Combobox>
             </div>
           </div>
           <div class="flex items-center justify-between">
@@ -138,7 +144,7 @@
 <script setup>
 import { setEnabled } from '@/composables/telephony'
 import { useDocument } from '@/data/document'
-import { Autocomplete, Switch } from 'frappe-ui'
+import { Combobox, Switch, Password, TextInput } from 'frappe-ui'
 import { computed } from 'vue'
 
 const emit = defineEmits(['updateStep'])

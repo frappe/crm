@@ -37,9 +37,8 @@
               : 'ml-2 w-auto opacity-100'
           "
         >
-          <FeatherIcon
-            name="chevron-down"
-            class="size-4 text-ink-gray-5"
+          <span
+            class="lucide-chevron-down size-4 text-ink-gray-5"
             aria-hidden="true"
           />
         </div>

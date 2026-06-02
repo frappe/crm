@@ -81,9 +81,11 @@
               <template #actions="{ section }">
                 <div v-if="section.name == 'contacts_section'" class="pr-2">
                   <Link
-                    value=""
+                    v-model="contactToAdd"
                     doctype="Contact"
-                    :onCreate="
+                    align="end"
+                    creatable
+                    @create="
                       (value, close) => {
                         _contact = {
                           first_name: value,
@@ -93,14 +95,20 @@
                         close()
                       }
                     "
-                    @change="(e) => addContact(e)"
+                    @update:modelValue="
+                      (e) => {
+                        if (e) {
+                          addContact(e)
+                          contactToAdd = null
+                        }
+                      }
+                    "
                   >
-                    <template #target="{ togglePopover }">
+                    <template #trigger>
                       <Button
                         class="h-7 px-3"
                         variant="ghost"
-                        icon="plus"
-                        @click="togglePopover()"
+                        icon="lucide-plus"
                       />
                     </template>
                   </Link>
@@ -157,7 +165,7 @@
                             <div class="flex items-center">
                               <Dropdown :options="contactOptions(contact.name)">
                                 <Button
-                                  icon="more-horizontal"
+                                  icon="lucide-more-horizontal"
                                   class="text-ink-gray-5"
                                   variant="ghost"
                                 />
@@ -174,10 +182,10 @@
                                 <ArrowUpRightIcon class="h-4 w-4" />
                               </Button>
                               <Button variant="ghost" @click="toggle()">
-                                <FeatherIcon
-                                  name="chevron-right"
-                                  class="h-4 w-4 text-ink-gray-9 transition-all duration-300 ease-in-out"
+                                <span
+                                  class="lucide-chevron-right size-4 text-ink-gray-9 transition-all duration-300 ease-in-out"
                                   :class="{ 'rotate-90': opened }"
+                                  aria-hidden="true"
                                 />
                               </Button>
                             </div>
@@ -288,7 +296,7 @@ import LostReasonModal from '@/components/Modals/LostReasonModal.vue'
 import AssignTo from '@/components/AssignTo.vue'
 import ContactModal from '@/components/Modals/ContactModal.vue'
 import CollapsibleSection from '@/components/CollapsibleSection.vue'
-import Link from '@/components/Controls/Link.vue'
+import { Link } from 'frappe-ui/frappe'
 import SidePanelLayout from '@/components/SidePanelLayout.vue'
 import SLASection from '@/components/SLASection.vue'
 import CustomActions from '@/components/CustomActions.vue'
@@ -497,11 +505,6 @@ function getParsedFields(sections) {
     if (section.name == 'contacts_section') return
     section.columns[0].fields.forEach((field) => {
       if (field.name == 'organization') {
-        field.create = (value, close) => {
-          _organization.value.organization_name = value
-          showOrganizationModal.value = true
-          close()
-        }
         field.link = (org) =>
           router.push({
             name: 'Organization',
@@ -515,12 +518,13 @@ function getParsedFields(sections) {
 
 const showContactModal = ref(false)
 const _contact = ref({})
+const contactToAdd = ref(null)
 
 function contactOptions(contact) {
   let options = [
     {
       label: __('Delete'),
-      icon: 'trash-2',
+      icon: 'lucide-trash-2',
       onClick: () => removeContact(contact),
     },
   ]

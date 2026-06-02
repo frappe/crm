@@ -62,7 +62,7 @@
         </div>
         <Dropdown :options="options">
           <Button
-            icon="more-horizontal"
+            icon="lucide-more-horizontal"
             variant="ghost"
             @click="showPlaybackSpeed = false"
           />
@@ -162,7 +162,7 @@ const options = computed(() => {
   })
   let _options = [
     {
-      icon: 'download',
+      icon: 'lucide-download',
       label: __('Download'),
       onClick: () => {
         const a = document.createElement('a')

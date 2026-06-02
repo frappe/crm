@@ -144,9 +144,9 @@
 </template>
 
 <script setup>
-import Link from '@/components/Controls/Link.vue'
 import { getMeta } from '@/stores/meta'
 import { Select, Button, toast, createDocumentResource } from 'frappe-ui'
+import { Link } from 'frappe-ui/frappe'
 import { computed } from 'vue'
 
 const { getFields } = getMeta('System Settings')

@@ -11,7 +11,7 @@
       <Button
         variant="solid"
         :label="__('Create')"
-        iconLeft="plus"
+        iconLeft="lucide-plus"
         @click="showLeadModal = true"
       />
     </template>
@@ -227,7 +227,7 @@
           variant="ghost"
           @click.stop.prevent
         >
-          <Button icon="plus" variant="ghost" />
+          <Button icon="lucide-plus" variant="ghost" />
         </Dropdown>
       </div>
     </template>
@@ -355,13 +355,16 @@ const rows = computed(() => {
 const columns = computed(() => {
   let _columns = leads.value?.data?.columns || []
 
-  // Set align right for last column
+  // Set align
   if (_columns.length) {
     _columns = _columns.map((col, index) => {
-      if (index === _columns.length - 1) {
-        return { ...col, align: 'right' }
+      let align = col.align || 'left'
+      if (col.type == 'Check') {
+        align = 'center'
+      } else if (index === _columns.length - 1) {
+        align = 'right'
       }
-      return col
+      return { ...col, align }
     })
   }
 

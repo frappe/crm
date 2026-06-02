@@ -4,15 +4,16 @@
   >
     <div class="flex flex-1 items-center justify-between gap-7">
       <div v-show="!editMode">{{ option.value }}</div>
-      <TextInput
-        v-show="editMode"
-        ref="inputRef"
-        v-model="localOption.value"
-        class="w-full"
-        :placeholder="option.placeholder"
-        @blur.stop="saveOption"
-        @keydown.enter.stop="(e) => e.target.blur()"
-      />
+      <div v-show="editMode">
+        <TextInput
+          ref="inputRef"
+          v-model="localOption.value"
+          class="w-full"
+          :placeholder="option.placeholder"
+          @blur.stop="saveOption"
+          @keydown.enter.stop="(e) => e.target.blur()"
+        />
+      </div>
 
       <div class="actions flex items-center justify-center">
         <Button
@@ -41,14 +42,14 @@
         <Button
           :tooltip="__('Delete')"
           variant="ghost"
-          icon="x"
+          icon="lucide-x"
           class="opacity-0 hover:bg-surface-gray-4 group-hover:opacity-100"
           @click="() => option.onDelete(option, isNew)"
         />
       </div>
     </div>
     <div v-if="option.selected">
-      <FeatherIcon name="check" class="text-ink-gray-5 h-4 w-6" />
+      <span class="lucide-check text-ink-gray-5 h-4 w-6" aria-hidden="true" />
     </div>
   </div>
 </template>

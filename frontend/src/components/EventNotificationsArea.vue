@@ -9,10 +9,10 @@
                 class="flex text-ink-gray-6 max-w-fit cursor-pointer items-center gap-2 text-base"
                 @click="toggleHeader()"
               >
-                <FeatherIcon
-                  name="chevron-right"
-                  class="h-4 transition-all duration-300 ease-in-out"
+                <span
+                  class="lucide-chevron-right size-4 transition-all duration-300 ease-in-out"
                   :class="{ 'rotate-90': opened }"
+                  aria-hidden="true"
                 />
                 <span>
                   {{ __(event.type) }}

@@ -67,7 +67,7 @@
         <div class="flex justify-end">
           <Dropdown placement="right" :options="dropdownOptions(row)">
             <Button
-              icon="more-horizontal"
+              icon="lucide-more-horizontal"
               variant="ghost"
               @click="isConfirmingDelete = false"
             />
@@ -187,7 +187,7 @@ const dropdownOptions = (priority) => [
   {
     label: __('Edit'),
     onClick: () => editItem(priority),
-    icon: 'edit',
+    icon: 'lucide-edit',
   },
   ...ConfirmDelete({
     onConfirmDelete: () => deleteItem(priority),

@@ -1,7 +1,7 @@
 <template>
-  <Dialog v-model="show" :options="{ size: 'xl' }">
-    <template #body-header>
-      <div class="mb-6 flex items-center justify-between">
+  <Dialog v-model:open="show" size="xl" bare>
+    <div class="bg-surface-modal px-4 pb-6 pt-5 sm:px-6">
+      <div class="mb-5 flex items-center justify-between">
         <div>
           <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9">
             {{ __('Convert to Deal') }}
@@ -15,11 +15,14 @@
             :icon="EditIcon"
             @click="openQuickEntryModal"
           />
-          <Button icon="x" variant="ghost" @click="show = false" />
+          <Button
+            variant="ghost"
+            class="w-7"
+            icon="lucide-x"
+            @click="show = false"
+          />
         </div>
       </div>
-    </template>
-    <template #body-content>
       <div class="mb-4 flex items-center gap-2 text-ink-gray-5">
         <OrganizationsIcon class="h-4 w-4" />
         <label class="block text-base">{{ __('Organization') }}</label>
@@ -31,11 +34,10 @@
         </div>
         <Link
           v-if="existingOrganizationChecked"
-          class="form-control mt-2.5"
+          v-model="existingOrganization"
+          class="form-control mt-2.5 w-full"
           size="md"
-          :value="existingOrganization"
           doctype="CRM Organization"
-          @change="(data) => (existingOrganization = data)"
         />
         <div v-else class="mt-2.5 text-base">
           {{
@@ -57,11 +59,10 @@
         </div>
         <Link
           v-if="existingContactChecked"
-          class="form-control mt-2.5"
+          v-model="existingContact"
+          class="form-control mt-2.5 w-full"
           size="md"
-          :value="existingContact"
           doctype="Contact"
-          @change="(data) => (existingContact = data)"
         />
         <div v-else class="mt-2.5 text-base">
           {{ __("New contact will be created based on the person's details") }}
@@ -77,12 +78,13 @@
         doctype="CRM Deal"
       />
       <ErrorMessage class="mt-4" :message="error" />
-    </template>
-    <template #actions>
-      <div class="flex justify-end">
+    </div>
+
+    <div class="px-4 pb-7 pt-4 sm:px-6">
+      <div class="flex justify-end space-y-2">
         <Button :label="__('Convert')" variant="solid" @click="convertToDeal" />
       </div>
-    </template>
+    </div>
   </Dialog>
 </template>
 <script setup>
@@ -90,14 +92,13 @@ import OrganizationsIcon from '@/components/Icons/OrganizationsIcon.vue'
 import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import FieldLayout from '@/components/FieldLayout/FieldLayout.vue'
-import Link from '@/components/Controls/Link.vue'
 import { useDocument } from '@/data/document'
 import { usersStore } from '@/stores/users'
 import { sessionStore } from '@/stores/session'
 import { statusesStore } from '@/stores/statuses'
 import { showQuickEntryModal, quickEntryProps } from '@/composables/modals'
 import { isMobileView } from '@/composables/settings'
-import { useOnboarding, useTelemetry } from 'frappe-ui/frappe'
+import { useOnboarding, useTelemetry, Link } from 'frappe-ui/frappe'
 import { Switch, Dialog, createResource, call } from 'frappe-ui'
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'

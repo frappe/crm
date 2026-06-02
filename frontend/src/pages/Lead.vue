@@ -87,14 +87,14 @@
                     ? {
                         options: [
                           {
-                            icon: 'upload',
+                            icon: 'lucide-upload',
                             label: doc.image
                               ? __('Change Image')
                               : __('Upload Image'),
                             onClick: openFileSelector,
                           },
                           {
-                            icon: 'trash-2',
+                            icon: 'lucide-trash-2',
                             label: __('Remove Image'),
                             onClick: () => updateField('image', ''),
                           },
@@ -168,7 +168,7 @@
                   :tooltip="__('Delete')"
                   variant="subtle"
                   theme="red"
-                  icon="trash-2"
+                  icon="lucide-trash-2"
                   @click="deleteLead"
                 />
               </div>

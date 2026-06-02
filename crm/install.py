@@ -456,7 +456,7 @@ def add_default_quick_filters():
 	quick_filters = {
 		"CRM Lead": ["lead_name", "email", "organization", "status", "source"],
 		"CRM Deal": ["organization", "status", "probability", "email"],
-		"Contact": ["status", "email_id", "phone"],
+		"Contact": ["status", "email_id", "mobile_no"],
 		"CRM Organization": ["organization_name", "no_of_employees", "territory", "industry"],
 		"CRM Task": ["title", "priority", "assigned_to", "status", "due_date"],
 		"CRM Call Log": ["telephony_medium", "type", "status", "from", "to"],

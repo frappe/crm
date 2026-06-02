@@ -14,9 +14,9 @@
         @keydown.delete.capture.stop="removeLastValue"
       >
         <template #suffix>
-          <FeatherIcon
-            class="h-3.5"
-            name="x"
+          <span
+            class="lucide-x size-3.5"
+            aria-hidden="true"
             @click.stop="removeValue(value)"
           />
         </template>
@@ -24,19 +24,17 @@
       <div class="w-full">
         <Link
           v-if="linkField"
+          v-model="selectedValue"
           class="form-control flex-1 truncate cursor-text"
-          :value="query"
           :filters="filters"
           :doctype="linkField.options"
-          :onCreate="create"
-          :hideMe="true"
-          @change="(v) => addValue(v)"
+          creatable
+          @update:modelValue="(v) => addValue(v)"
+          @update:query="(v) => (query = v)"
+          @create="create"
         >
-          <template #target="{ togglePopover }">
-            <button
-              class="w-full h-7 cursor-text"
-              @click.stop="togglePopover"
-            />
+          <template #trigger>
+            <button class="w-full h-7 cursor-text" />
           </template>
         </Link>
       </div>
@@ -46,7 +44,7 @@
 </template>
 
 <script setup>
-import Link from '@/components/Controls/Link.vue'
+import { Link } from 'frappe-ui/frappe'
 import { createDocument } from '@/composables/document'
 import { getMeta } from '@/stores/meta'
 import { ref, computed, nextTick } from 'vue'
@@ -68,6 +66,7 @@ const values = defineModel({ type: Array, default: () => [] })
 const valuesRef = ref([])
 const error = ref(null)
 const query = ref('')
+const selectedValue = ref(null)
 
 const linkField = ref('')
 
@@ -100,18 +99,18 @@ const getLinkField = () => {
 const addValue = (value) => {
   error.value = null
 
+  if (!value) return
+
   if (values.value.some((row) => row[linkField.value.fieldname] === value)) {
     error.value = 'Value already exists'
+    selectedValue.value = null
     return
   }
 
-  if (value) {
-    values.value.push({ [linkField.value.fieldname]: value })
-    emit('change', values.value)
-    if (!error.value) {
-      query.value = ''
-    }
-  }
+  values.value.push({ [linkField.value.fieldname]: value })
+  emit('change', values.value)
+  selectedValue.value = null
+  query.value = ''
 }
 
 const removeValue = (value) => {
@@ -139,10 +138,10 @@ const removeLastValue = () => {
   }
 }
 
-function create(value, close) {
+function create(value) {
   const callback = (d) => {
     if (d) addValue(d.name)
   }
-  createDocument(linkField.value.options, value, close, callback)
+  createDocument(linkField.value.options, value, callback)
 }
 </script>

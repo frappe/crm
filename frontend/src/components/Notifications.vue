@@ -29,7 +29,7 @@
       <TabButtons
         v-model="activeTab"
         :buttons="tabs"
-        class="flex px-4 py-0.5 [&_button]:w-full [&_div]:w-full"
+        class="flex px-4 py-0.5 [&_button]:flex-1 [&>div]:w-full"
       />
       <div v-if="activeTab == 'all'" class="flex h-full">
         <div

@@ -29,92 +29,78 @@
     </div>
 
     <!-- Fields -->
-    <div class="flex flex-1 flex-col gap-4 overflow-y-auto">
+    <div class="flex flex-1 flex-col gap-4 overflow-y-auto p-0.5 -mx-0.5">
       <div class="flex sm:flex-row flex-col gap-4">
-        <div class="flex-1">
-          <FormControl
-            v-model="template.name"
-            size="md"
-            :placeholder="__('Payment Reminder')"
-            :label="__('Name')"
-            :required="true"
-          />
-        </div>
-        <div class="flex-1">
-          <FormControl
-            v-model="template.reference_doctype"
-            type="select"
-            size="md"
-            :label="__('For')"
-            :options="[
-              {
-                label: __('Deal'),
-                value: 'CRM Deal',
-              },
-              {
-                label: __('Lead'),
-                value: 'CRM Lead',
-              },
-            ]"
-            :placeholder="__('Deal')"
-          />
-        </div>
-      </div>
-      <div>
-        <FormControl
-          ref="subjectRef"
-          v-model="template.subject"
-          size="md"
-          :label="__('Subject')"
-          :placeholder="__('Payment Reminder from Frappé - (#{{ name }})')"
+        <TextInput
+          v-model="template.name"
+          class="flex-1"
+          :placeholder="__('Payment Reminder')"
+          :label="__('Name')"
           :required="true"
         />
-      </div>
-      <div class="border-t pt-4">
-        <FormControl
-          v-model="template.content_type"
-          type="select"
-          size="md"
-          :label="__('Content Type')"
-          default="Rich Text"
-          :options="['Rich Text', 'HTML']"
-          :placeholder="__('Rich Text')"
+        <Select
+          v-model="template.reference_doctype"
+          class="flex-1"
+          :label="__('For')"
+          :options="[
+            {
+              label: __('Deal'),
+              value: 'CRM Deal',
+            },
+            {
+              label: __('Lead'),
+              value: 'CRM Lead',
+            },
+          ]"
+          :placeholder="__('Deal')"
         />
       </div>
-      <div>
-        <FormControl
-          v-if="template.content_type === 'HTML'"
+      <TextInput
+        ref="subjectRef"
+        v-model="template.subject"
+        :label="__('Subject')"
+        :placeholder="__('Payment Reminder from Frappé - (#{{ name }})')"
+        :required="true"
+      />
+      <Select
+        v-model="template.content_type"
+        class="w-full border-t pt-4"
+        size="md"
+        :label="__('Content Type')"
+        default="Rich Text"
+        :options="['Rich Text', 'HTML']"
+        :placeholder="__('Rich Text')"
+      />
+      <Textarea
+        v-if="template.content_type === 'HTML'"
+        ref="content"
+        v-model="template.response_html"
+        :label="__('Content')"
+        :required="true"
+        :rows="10"
+        :placeholder="
+          __(
+            '<p>Dear {{ lead_name }},</p>\n\n<p>This is a reminder for the payment of {{ grand_total }}.</p>\n\n<p>Thanks,</p>\n<p>Frappé</p>',
+          )
+        "
+      />
+      <div v-else class="space-y-1.5">
+        <label class="block text-p-sm font-medium text-ink-gray-7">
+          {{ __('Content') }}
+          <span class="text-ink-red-3">*</span>
+        </label>
+        <TextEditor
           ref="content"
-          v-model="template.response_html"
-          size="md"
-          type="textarea"
-          :label="__('Content')"
-          :required="true"
-          :rows="10"
+          editor-class="!prose-sm max-w-full overflow-auto min-h-[180px] max-h-80 py-1.5 px-2 rounded border border-[--surface-gray-2] bg-surface-gray-2 placeholder-ink-gray-4 hover:border-outline-gray-modals hover:bg-surface-gray-3 hover:shadow-sm focus:bg-surface-white focus:border-outline-gray-4 focus:shadow-sm focus:ring-0 focus-visible:ring-2 focus-visible:ring-outline-gray-3 text-ink-gray-8 transition-colors"
+          :bubbleMenu="true"
+          :content="template.response"
           :placeholder="
             __(
-              '<p>Dear {{ lead_name }},</p>\n\n<p>This is a reminder for the payment of {{ grand_total }}.</p>\n\n<p>Thanks,</p>\n<p>Frappé</p>',
+              'Dear {{ lead_name }}, \n\nThis is a reminder for the payment of {{ grand_total }}. \n\nThanks, \nFrappé',
             )
           "
+          @change="(val) => (template.response = val)"
         />
-        <div v-else>
-          <div class="mb-1.5 text-base text-ink-gray-5">
-            {{ __('Content') }}
-            <span class="text-ink-red-3">*</span>
-          </div>
-          <TextEditor
-            ref="content"
-            editor-class="!prose-sm max-w-full overflow-auto min-h-[180px] max-h-80 py-1.5 px-2 rounded border border-[--surface-gray-2] bg-surface-gray-2 placeholder-ink-gray-4 hover:border-outline-gray-modals hover:bg-surface-gray-3 hover:shadow-sm focus:bg-surface-white focus:border-outline-gray-4 focus:shadow-sm focus:ring-0 focus-visible:ring-2 focus-visible:ring-outline-gray-3 text-ink-gray-8 transition-colors"
-            :bubbleMenu="true"
-            :content="template.response"
-            :placeholder="
-              __(
-                'Dear {{ lead_name }}, \n\nThis is a reminder for the payment of {{ grand_total }}. \n\nThanks, \nFrappé',
-              )
-            "
-            @change="(val) => (template.response = val)"
-          />
-        </div>
       </div>
     </div>
     <div v-if="errorMessage">
@@ -124,7 +110,14 @@
 </template>
 <script setup>
 import { useBroadcast } from '@/composables/useBroadcast'
-import { TextEditor, FormControl, Switch, toast } from 'frappe-ui'
+import {
+  TextEditor,
+  Select,
+  Switch,
+  toast,
+  Textarea,
+  TextInput,
+} from 'frappe-ui'
 import { inject, onMounted, ref } from 'vue'
 
 const props = defineProps({

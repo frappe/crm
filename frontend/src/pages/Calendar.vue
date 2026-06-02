@@ -11,7 +11,9 @@
           :disabled="isCreateDisabled"
           @click="newEvent"
         >
-          <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
+          <template #prefix>
+            <span class="lucide-plus size-4" aria-hidden="true" />
+          </template>
         </Button>
       </ShortcutTooltip>
     </template>
@@ -63,7 +65,7 @@
                   variant="ghost"
                   class="text-lg font-medium text-ink-gray-7"
                   :label="currentMonthYear"
-                  iconRight="chevron-down"
+                  iconRight="lucide-chevron-down"
                   @click="togglePopover"
                 />
               </template>
@@ -74,17 +76,24 @@
           <div class="flex gap-x-1">
             <!-- Increment and Decrement Button -->
 
-            <Button variant="ghost" icon="chevron-left" @click="decrement" />
+            <Button
+              variant="ghost"
+              icon="lucide-chevron-left"
+              @click="decrement"
+            />
             <Button
               :label="__('Today')"
               variant="ghost"
               @click="setCalendarDate()"
             />
-            <Button variant="ghost" icon="chevron-right" @click="increment" />
+            <Button
+              variant="ghost"
+              icon="lucide-chevron-right"
+              @click="increment"
+            />
 
             <!-- View Buttons -->
-            <FormControl
-              type="select"
+            <Select
               class="mr-1 w-24"
               :modelValue="activeView"
               :options="[
@@ -97,29 +106,18 @@
             />
 
             <Link
-              class="form-control"
-              :value="getUser(currentUser).full_name"
+              v-model="currentUser"
+              class="form-control w-44"
               doctype="User"
               :placeholder="__('John Doe')"
               :filters="{
                 name: ['in', users.data.crmUsers?.map((user) => user.name)],
                 ignore_user_type: 1,
               }"
-              :hideMe="true"
-              @change="(option) => updateUser(option)"
+              @update:modelValue="updateUser"
             >
-              <template #prefix>
-                <UserAvatar class="mr-2 !h-4 !w-4" :user="currentUser" />
-              </template>
-              <template #item-prefix="{ option }">
-                <UserAvatar class="mr-2" :user="option.value" size="sm" />
-              </template>
-              <template #item-label="{ option }">
-                <Tooltip :text="option.value">
-                  <div class="cursor-pointer text-ink-gray-9">
-                    {{ getUser(option.value).full_name }}
-                  </div>
-                </Tooltip>
+              <template #item-prefix="{ item }">
+                <UserAvatar class="mr-1" :user="item.value" size="sm" />
               </template>
             </Link>
           </div>
@@ -159,18 +157,18 @@ import CalendarEventPanel from '@/components/Calendar/CalendarEventPanel.vue'
 import ViewBreadcrumbs from '@/components/ViewBreadcrumbs.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import ShortcutTooltip from '@/components/ShortcutTooltip.vue'
-import Link from '@/components/Controls/Link.vue'
+import { Link } from 'frappe-ui/frappe'
 import { sessionStore } from '@/stores/session'
 import { usersStore } from '@/stores/users'
 import { globalStore } from '@/stores/global'
 import { getSettings } from '@/stores/settings'
 import { useKeyboardShortcuts } from '@/composables/useKeyboardShortcuts'
 import {
+  Select,
   Calendar,
   createListResource,
   dayjs,
   DatePicker,
-  Tooltip,
   CalendarActiveEvent as activeEvent,
   call,
   toast,
@@ -198,8 +196,7 @@ const calendar = ref(null)
 const activeRangeKey = ref('')
 const currentUser = ref(user)
 
-async function updateUser(u) {
-  currentUser.value = u
+async function updateUser() {
   events.update({
     orFilters: buildEventOrFilters(),
   })
