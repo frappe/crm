@@ -37,7 +37,7 @@
             v-if="existingSubmission && evaluationData.data.submission_score"
             class="flex items-center gap-1.5 rounded-md bg-surface-gray-2 px-3 py-1.5 text-sm"
           >
-            <span class="text-ink-gray-5">{{ __('Score:') }}</span>
+            <span class="text-ink-gray-5">{{ __('Result:') }}</span>
             <span class="font-semibold text-ink-gray-9">
               {{ evaluationData.data.submission_score.score }}
               /
@@ -89,7 +89,7 @@
             v-if="question.marks"
             class="shrink-0 text-xs font-semibold text-ink-gray-5 bg-surface-gray-2 rounded px-2 py-0.5"
           >
-            {{ question.marks }} {{ question.marks == 1 ? __('mark') : __('marks') }}
+            {{ question.marks }} {{ question.marks == 1 ? __('point') : __('points') }}
           </span>
         </div>
 
