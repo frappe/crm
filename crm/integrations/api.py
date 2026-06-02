@@ -240,7 +240,7 @@ def get_contact(phone_number: str, country: str = "IN", exact_match: bool = Fals
 				return lead
 
 	if len(contacts) and are_same_phone_number(
-		contacts[0].mobile_no, phone_number, country, validate=not exact_match
+		contacts[0].matched_phone, phone_number, country, validate=not exact_match
 	):
 		return contacts[0]
 
