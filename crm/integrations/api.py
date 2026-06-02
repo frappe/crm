@@ -188,10 +188,19 @@ def get_contact(phone_number: str, country: str = "IN", exact_match: bool = Fals
 	)
 
 	query = (
-		frappe.qb.from_(Contact)
-		.select(Contact.name, Contact.full_name, Contact.image, Contact.mobile_no)
+		frappe.qb.from_(ContactPhone)
+		.join(Contact)
+		.on(ContactPhone.parent == Contact.name)
+		.select(
+			Contact.name,
+			Contact.full_name,
+			Contact.image,
+			Contact.mobile_no,
+			ContactPhone.phone.as_("matched_phone"),
+		)
+		.where(ContactPhone.parenttype == "Contact")
 		.where(normalized_phone.like(f"%{cleaned_number}%"))
-		.orderby("modified", order=Order.desc)
+		.orderby(Contact.modified, order=Order.desc)
 	)
 	contacts = query.run(as_dict=True)
 
