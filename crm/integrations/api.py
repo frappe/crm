@@ -178,10 +178,13 @@ def get_contact(phone_number: str, country: str = "IN", exact_match: bool = Fals
 		.replace("+", "")
 	)
 
-	# Check if the number is associated with a contact
+	# Check if the number is associated with a contact.
+	# Search all of a contact's numbers (phone_nos child table) and not just the
+	# primary mobile_no, so calls from a secondary number still resolve.
 	Contact = frappe.qb.DocType("Contact")
+	ContactPhone = frappe.qb.DocType("Contact Phone")
 	normalized_phone = Replace(
-		Replace(Replace(Replace(Replace(Contact.mobile_no, " ", ""), "-", ""), "(", ""), ")", ""), "+", ""
+		Replace(Replace(Replace(Replace(ContactPhone.phone, " ", ""), "-", ""), "(", ""), ")", ""), "+", ""
 	)
 
 	query = (
