@@ -211,7 +211,9 @@ def get_contact(phone_number: str, country: str = "IN", exact_match: bool = Fals
 				deal = frappe.db.get_value(
 					"CRM Contacts", {"contact": contact.name, "is_primary": 1}, "parent"
 				)
-				if are_same_phone_number(contact.mobile_no, phone_number, country, validate=not exact_match):
+				if are_same_phone_number(
+					contact.matched_phone, phone_number, country, validate=not exact_match
+				):
 					contact["deal"] = deal
 					return contact
 
