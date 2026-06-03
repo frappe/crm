@@ -246,6 +246,13 @@ def get_erpnext_site_client(erpnext_crm_settings):
 	return FrappeClient(site_url, api_key=api_key, api_secret=api_secret)
 
 
+def get_local_customer(crm_deal: str):
+	customer = frappe.db.exists("Customer", {"crm_deal": crm_deal})
+	if not customer:
+		customer = frappe.db.get_value("CRM Deal", crm_deal, "erpnext_customer")
+	return customer
+
+
 @frappe.whitelist()
 def get_customer_link(crm_deal: str):
 	erpnext_crm_settings = _get_enabled_settings()
