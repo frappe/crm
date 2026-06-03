@@ -361,7 +361,14 @@ def prefill_quotation_items(crm_deal: str):
 		item_code = frappe.db.get_value("CRM Product", row.product_code, "erpnext_item_code")
 		if not item_code:
 			continue
-		items.append({"item_code": item_code, "qty": row.qty or 1, "rate": row.rate or 0})
+		items.append(
+			{
+				"item_code": item_code,
+				"qty": row.qty or 1,
+				"price_list_rate": row.rate or 0,
+				"discount_percentage": row.discount_percentage or 0,
+			}
+		)
 	return items
 
 
