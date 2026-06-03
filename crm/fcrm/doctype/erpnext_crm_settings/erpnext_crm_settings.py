@@ -125,6 +125,16 @@ class ERPNextCRMSettings(Document):
 					"insert_after": "item_code",
 				}
 			]
+		if frappe.db.exists("DocType", "Quotation"):
+			custom_fields["Quotation"] = [
+				{
+					"fieldname": "crm_deal",
+					"fieldtype": "Data",
+					"label": "Frappe CRM Deal",
+					"read_only": 1,
+					"insert_after": "party_name",
+				}
+			]
 		_create_custom_fields(custom_fields, ignore_validate=True)
 
 	def create_custom_fields_in_remote_site(self):
