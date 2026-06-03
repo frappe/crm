@@ -1,4 +1,13 @@
 frappe.ui.form.on('Quotation', {
+	refresh(frm) {
+		const field = frm.get_field('crm_deal')
+		if (!field) return
+		field.df.formatter = (value) =>
+			value
+				? `<a href="/crm/deals/${encodeURIComponent(value)}" target="_blank" rel="noopener">${frappe.utils.escape_html(value)}</a>`
+				: value
+		field.refresh()
+	},
 	onload(frm) {
 		const crm_deal = frm.doc.crm_deal || frappe.route_options?.crm_deal
 		if (!crm_deal) return
@@ -9,6 +18,9 @@ frappe.ui.form.on('Quotation', {
 			args: { crm_deal },
 			callback: async (r) => {
 				if (!r.message || !r.message.length) return
+				if (!frm.doc.price_list_currency && frm.doc.currency) {
+					await frm.set_value('price_list_currency', frm.doc.currency)
+				}
 				frm.clear_table('items')
 				for (const item of r.message) {
 					const row = frm.add_child('items')
