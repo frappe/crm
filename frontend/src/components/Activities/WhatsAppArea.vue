@@ -83,14 +83,26 @@
               {{ whatsapp.footer }}
             </div>
           </div>
+          <div v-else-if="whatsapp.content_type == 'text'">
+            <div v-html="formatWhatsAppMessage(whatsapp.message)" />
+          </div>
           <div
-            v-else-if="whatsapp.content_type == 'text'"
-            v-html="formatWhatsAppMessage(whatsapp.message)"
-          />
-          <div
-            v-else-if="whatsapp.content_type == 'button'"
-            v-html="formatWhatsAppMessage(whatsapp.message)"
-          />
+            v-else-if="['button', 'interactive'].includes(whatsapp.content_type)"
+          >
+            <div v-html="formatWhatsAppMessage(whatsapp.message)" />
+            <div
+              v-if="parseButtons(whatsapp.buttons).length"
+              class="mt-2 flex flex-col gap-1 border-t border-gray-200 pt-1.5"
+            >
+              <div
+                v-for="button in parseButtons(whatsapp.buttons)"
+                :key="button.id"
+                class="rounded py-1 text-center text-sm font-medium text-ink-blue-link"
+              >
+                {{ button.title }}
+              </div>
+            </div>
+          </div>
           <div v-else-if="whatsapp.content_type == 'image'">
             <img
               :src="whatsapp.attach"
@@ -199,6 +211,16 @@ const { capture } = useTelemetry()
 
 function openFileInAnotherTab(url) {
   window.open(url, '_blank')
+}
+
+function parseButtons(buttons) {
+  if (!buttons) return []
+  if (Array.isArray(buttons)) return buttons
+  try {
+    return JSON.parse(buttons)
+  } catch (e) {
+    return []
+  }
 }
 
 function formatWhatsAppMessage(message) {
