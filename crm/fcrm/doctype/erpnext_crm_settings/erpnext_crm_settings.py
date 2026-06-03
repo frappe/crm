@@ -258,9 +258,7 @@ def get_customer_link(crm_deal: str):
 	erpnext_crm_settings = _get_enabled_settings()
 
 	if not erpnext_crm_settings.is_erpnext_in_different_site:
-		customer = frappe.db.exists("Customer", {"crm_deal": crm_deal})
-		if not customer:
-			customer = frappe.db.get_value("CRM Deal", crm_deal, "erpnext_customer")
+		customer = get_local_customer(crm_deal)
 		return get_url_to_form("Customer", customer) if customer else ""
 
 	client = get_erpnext_site_client(erpnext_crm_settings)
