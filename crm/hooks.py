@@ -49,7 +49,10 @@ require_type_annotated_api_methods = True
 # page_js = {"page" : "public/js/file.js"}
 
 # include js in doctype views
-doctype_js = {"Quotation": "public/js/erpnext_quotation_prefill.js"}
+doctype_js = {
+	"Quotation": "public/js/erpnext_quotation_prefill.js",
+	"Sales Order": "public/js/erpnext_sales_order_customer.js",
+}
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
@@ -177,6 +180,11 @@ doc_events = {
 	"CRM Deal": {
 		"on_update": [
 			"crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.create_customer_in_erpnext"
+		],
+	},
+	"Sales Order": {
+		"before_validate": [
+			"crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.create_customer_on_sales_order"
 		],
 	},
 	"User": {
