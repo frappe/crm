@@ -26,7 +26,10 @@ frappe.ui.form.on('Quotation', {
 					const row = frm.add_child('items')
 					await frappe.model.set_value(row.doctype, row.name, 'item_code', item.item_code)
 					await frappe.model.set_value(row.doctype, row.name, 'qty', item.qty)
-					await frappe.model.set_value(row.doctype, row.name, 'rate', item.rate)
+					// price_list_rate must be set before discount_percentage: ERPNext
+					// resets the discount to 0 when price_list_rate is falsy.
+					await frappe.model.set_value(row.doctype, row.name, 'price_list_rate', item.price_list_rate)
+					await frappe.model.set_value(row.doctype, row.name, 'discount_percentage', item.discount_percentage)
 				}
 				frm.refresh_field('items')
 			},
