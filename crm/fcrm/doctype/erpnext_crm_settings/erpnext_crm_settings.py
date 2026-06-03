@@ -288,11 +288,12 @@ def get_quotation_url(crm_deal: str, organization: str | None = None):
 	address_name = address.get("name") if address else None
 
 	if not erpnext_crm_settings.is_erpnext_in_different_site:
+		customer = get_local_customer(crm_deal)
 		base_url = f"{get_url_to_list('Quotation')}/new"
 		params = {
-			"quotation_to": "CRM Deal",
+			"quotation_to": "Customer" if customer else "CRM Deal",
 			"crm_deal": crm_deal,
-			"party_name": crm_deal,
+			"party_name": customer or crm_deal,
 			"company": erpnext_crm_settings.erpnext_company,
 			"contact_person": contact,
 			"customer_address": address_name,
