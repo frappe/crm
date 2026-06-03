@@ -424,6 +424,57 @@ def create_customer_in_erpnext(doc, method):
 	):
 		return
 
+	create_customer_from_deal(doc, erpnext_crm_settings)
+
+
+def create_customer_on_sales_order(doc, method):
+	if doc.customer:
+		return
+
+	crm_deal = get_deal_from_sales_order(doc)
+	customer = check_customer_for_deal(crm_deal) if crm_deal else None
+	if customer:
+		doc.customer = customer
+
+
+def check_customer_for_deal(crm_deal: str):
+	"""Return the ERPNext Customer for the deal and create it if it doesn't exist"""
+	erpnext_crm_settings = frappe.get_single("ERPNext CRM Settings")
+	if not erpnext_crm_settings.enabled or erpnext_crm_settings.is_erpnext_in_different_site:
+		return None
+	if not crm_deal or not frappe.db.exists("CRM Deal", crm_deal):
+		return None
+
+	customer = get_local_customer(crm_deal)
+	if not customer:
+		customer = create_customer_from_deal(
+			frappe.get_cached_doc("CRM Deal", crm_deal), erpnext_crm_settings
+		)
+	return customer
+
+
+@frappe.whitelist()
+def check_customer_for_quotation(quotation: str):
+	"""Create/fetch the Customer for the CRM Deal behind a quotation. Called when a
+	Sales Order form is opened from a CRM Deal quotation that has no customer yet.
+	"""
+	crm_deal = frappe.db.get_value("Quotation", quotation, "crm_deal")
+	if not crm_deal:
+		return None
+	return check_customer_for_deal(crm_deal)
+
+
+def get_deal_from_sales_order(doc):
+	for item in doc.items:
+		quotation = item.get("prevdoc_docname")
+		if quotation:
+			crm_deal = frappe.db.get_value("Quotation", quotation, "crm_deal")
+			if crm_deal:
+				return crm_deal
+	return None
+
+
+def create_customer_from_deal(doc, erpnext_crm_settings):
 	contacts = get_contacts(doc)
 	address = get_organization_address(doc.organization)
 
@@ -487,6 +538,8 @@ def create_customer_in_erpnext(doc, method):
 	if customer_name:
 		frappe.db.set_value("CRM Deal", doc.name, "erpnext_customer", customer_name)
 		frappe.publish_realtime("crm_customer_created")
+
+	return customer_name
 
 
 @frappe.whitelist()
