@@ -1,53 +1,54 @@
 import frappe
-from frappe.core.doctype.user_permission.user_permission import UserPermission
 from frappe.utils import cstr
 
-from crm.integrations.erpnext.mirror_sync import MIRROR_FLAG, MirrorSyncMixin
+from crm.integrations.erpnext.mirror_sync import MIRROR_FLAG, MirrorSync
 from crm.integrations.erpnext.utils import should_sync
 
 
-class CustomUserPermission(MirrorSyncMixin, UserPermission):
-	"""Mirror User Permissions between Item and CRM Product."""
+def _dedup_extra(doc) -> dict:
+	return {
+		"applicable_for": cstr(doc.applicable_for),
+		"apply_to_all_doctypes": doc.apply_to_all_doctypes,
+	}
 
-	DOCTYPE_FIELD = "allow"
-	VALUE_FIELD = "for_value"
 
-	def before_validate(self):
-		old = self.get_doc_before_save()
-		if old and self.has_data_updated(old) and self.sync_active():
-			self.delete_mirror_for(old)
+def _sync(doc) -> MirrorSync:
+	return MirrorSync(doc, "allow", "for_value", extra_dedup=_dedup_extra)
 
-	def after_insert(self):
-		if self.should_mirror():
-			self.create_mirror()
 
-	def on_update(self):
-		super().on_update()
-		if not self.should_mirror():
-			return
-		old = self.get_doc_before_save()
-		if old and self.has_data_updated(old):
-			self.create_mirror()
-		else:
-			self.sync_state_to_mirror()
+def before_validate(doc, method=None):
+	sync = _sync(doc)
+	old = doc.get_doc_before_save()
+	if old and sync.has_data_updated(old) and sync.sync_active():
+		sync.delete_mirror_for(old)
 
-	def on_trash(self):
-		super().on_trash()
-		if not self.should_mirror():
-			return
-		mirror = self.find_mirror()
-		if not mirror:
-			return
-		self.set_mirror_flags(mirror)
-		mirror.delete(ignore_permissions=True)
 
-	def dedup_filter(self, target_doctype: str, target_value: str) -> dict:
-		# Match Frappe's 5-key dup check in validate_user_permission()
-		return {
-			**super().dedup_filter(target_doctype, target_value),
-			"applicable_for": cstr(self.applicable_for),
-			"apply_to_all_doctypes": self.apply_to_all_doctypes,
-		}
+def after_insert(doc, method=None):
+	sync = _sync(doc)
+	if sync.should_mirror():
+		sync.create_mirror()
+
+
+def on_update(doc, method=None):
+	sync = _sync(doc)
+	if not sync.should_mirror():
+		return
+	old = doc.get_doc_before_save()
+	if old and sync.has_data_updated(old):
+		sync.create_mirror()
+	else:
+		sync.sync_state_to_mirror()
+
+
+def on_trash(doc, method=None):
+	sync = _sync(doc)
+	if not sync.should_mirror():
+		return
+	mirror = sync.find_mirror()
+	if not mirror:
+		return
+	sync.set_mirror_flags(mirror)
+	mirror.delete(ignore_permissions=True)
 
 
 def sync_user_permissions():
