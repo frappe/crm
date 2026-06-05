@@ -68,7 +68,7 @@ class MirrorSync:
 			return None
 		target_doctype, target_value = target
 		filters = self.dedup_filter(target_doctype, target_value)
-		name = frappe.db.get_value(self.doc.doctype, filters, "name") 
+		name = frappe.db.get_value(self.doc.doctype, filters, "name")
 		return frappe.get_doc(self.doc.doctype, name) if name else None
 
 	def set_mirror_flags(self, mirror):
