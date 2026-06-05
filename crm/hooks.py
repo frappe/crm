@@ -184,6 +184,25 @@ doc_events = {
 			"crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.create_customer_on_sales_order"
 		],
 	},
+	"Item": {
+		"after_insert": ["crm.integrations.erpnext.item.after_insert"],
+		"on_update": ["crm.integrations.erpnext.item.on_update"],
+		"before_rename": ["crm.integrations.erpnext.item.before_rename"],
+		"after_rename": ["crm.integrations.erpnext.item.after_rename"],
+		"on_trash": ["crm.integrations.erpnext.item.on_trash"],
+	},
+	"User Permission": {
+		"before_validate": ["crm.integrations.erpnext.user_permission.before_validate"],
+		"after_insert": ["crm.integrations.erpnext.user_permission.after_insert"],
+		"on_update": ["crm.integrations.erpnext.user_permission.on_update"],
+		"on_trash": ["crm.integrations.erpnext.user_permission.on_trash"],
+	},
+	"DocShare": {
+		"before_validate": ["crm.integrations.erpnext.doc_share.before_validate"],
+		"after_insert": ["crm.integrations.erpnext.doc_share.after_insert"],
+		"on_update": ["crm.integrations.erpnext.doc_share.on_update"],
+		"on_trash": ["crm.integrations.erpnext.doc_share.on_trash"],
+	},
 	"User": {
 		"before_validate": ["crm.api.live_demo.validate_user"],
 		"validate_reset_password": ["crm.api.live_demo.validate_reset_password"],
