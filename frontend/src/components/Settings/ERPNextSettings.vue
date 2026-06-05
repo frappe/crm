@@ -178,6 +178,34 @@
                 />
               </div>
             </div>
+            <div
+              v-if="erpnextCRMSettingsResource.isERPNextInstalled.data"
+              class="h-px border-t border-outline-gray-modals"
+            />
+            <div
+              v-if="erpnextCRMSettingsResource.isERPNextInstalled.data"
+              class="flex items-center justify-between py-3 px-2"
+            >
+              <div class="flex flex-col">
+                <div class="text-p-base font-medium text-ink-gray-7 truncate">
+                  {{ __('Sync Products with ERPNext') }}
+                </div>
+                <div class="text-p-sm text-ink-gray-5 truncate">
+                  {{
+                    __(
+                      'Bidirectional sync of existing CRM Products and ERPNext Items. Runs in the background.',
+                    )
+                  }}
+                </div>
+              </div>
+              <Button
+                variant="subtle"
+                :loading="erpnextCRMSettingsResource.runProductSync.loading"
+                @click="runProductSync"
+              >
+                {{ __('Sync Now') }}
+              </Button>
+            </div>
             <div class="h-px border-t border-outline-gray-modals" />
             <div class="flex items-center justify-between py-3 px-2">
               <div class="flex flex-col">
@@ -294,6 +322,15 @@ const erpnextCRMSettingsResource = createDocumentResource({
         if (!data.length) {
           toast.error(__('No companies found in the given site'))
         }
+      },
+    },
+    runProductSync: {
+      method: 'run_product_sync',
+      onSuccess() {
+        toast.success(__('Product sync started. Items will appear shortly.'))
+      },
+      onError(error) {
+        toast.error(error?.messages?.[0] || __('Failed to start sync'))
       },
     },
   },
@@ -413,6 +450,10 @@ const toggleEnable = (value) => {
   } else {
     erpnextCRMSettingsResource.doc.enabled = true
   }
+}
+
+function runProductSync() {
+  erpnextCRMSettingsResource.runProductSync.submit()
 }
 
 function verifyConnection() {
