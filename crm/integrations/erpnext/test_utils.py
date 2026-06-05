@@ -1,6 +1,27 @@
 import frappe
 from frappe.tests.utils import FrappeTestCase
 
+# Doctypes whose sync behaviour moved from override_doctype_class to doc_events
+SYNC_DOCTYPES = ("Item", "User Permission", "DocShare")
+
+
+class TestSyncHookWiring(FrappeTestCase):
+	def test_sync_doctypes_not_class_overridden(self):
+		from crm.hooks import override_doctype_class
+
+		for doctype in SYNC_DOCTYPES:
+			self.assertNotIn(doctype, override_doctype_class)
+
+	def test_doc_event_handlers_are_importable(self):
+		from frappe.utils import get_attr
+
+		from crm.hooks import doc_events
+
+		for doctype in SYNC_DOCTYPES:
+			for handlers in doc_events[doctype].values():
+				for path in handlers:
+					self.assertTrue(callable(get_attr(path)), path)
+
 
 class TestFindTargetFor(FrappeTestCase):
 	def test_returns_none_for_unknown_doctype(self):
