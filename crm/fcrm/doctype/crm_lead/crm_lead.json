@@ -2,7 +2,7 @@
  "actions": [],
  "allow_import": 1,
  "allow_rename": 1,
- "autoname": "naming_series:",
+ "autoname": "",
  "creation": "2023-07-24 12:19:39.616298",
  "default_view": "List",
  "doctype": "DocType",
@@ -70,7 +70,24 @@
   "facebook_form_id",
   "lost_details_tab",
   "lost_reason",
-  "lost_notes"
+  "lost_notes",
+  "section_company_legal",
+  "nib",
+  "npwp",
+  "type_industry",
+  "target_goals",
+  "section_address",
+  "address",
+  "village",
+  "sub_district",
+  "regency",
+  "city",
+  "postal_code",
+  "void_section",
+  "is_void",
+  "void_reason",
+  "void_at",
+  "void_by"
  ],
  "fields": [
   {
@@ -419,6 +436,98 @@
   {
    "fieldname": "column_break_opsm",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_company_legal",
+   "fieldtype": "Section Break",
+   "label": "Company / Legal"
+  },
+  {
+   "fieldname": "nib",
+   "fieldtype": "Data",
+   "label": "NIB"
+  },
+  {
+   "fieldname": "npwp",
+   "fieldtype": "Data",
+   "label": "NPWP"
+  },
+  {
+   "fieldname": "type_industry",
+   "fieldtype": "Data",
+   "label": "Type Industry"
+  },
+  {
+   "fieldname": "target_goals",
+   "fieldtype": "Small Text",
+   "label": "Target Goals"
+  },
+  {
+   "fieldname": "section_address",
+   "fieldtype": "Section Break",
+   "label": "Address"
+  },
+  {
+   "fieldname": "address",
+   "fieldtype": "Small Text",
+   "label": "Address"
+  },
+  {
+   "fieldname": "village",
+   "fieldtype": "Data",
+   "label": "Village"
+  },
+  {
+   "fieldname": "sub_district",
+   "fieldtype": "Data",
+   "label": "Sub-District"
+  },
+  {
+   "fieldname": "regency",
+   "fieldtype": "Data",
+   "label": "Regency"
+  },
+  {
+   "fieldname": "city",
+   "fieldtype": "Data",
+   "label": "City"
+  },
+  {
+   "fieldname": "postal_code",
+   "fieldtype": "Data",
+   "label": "Postal Code"
+  },
+  {
+   "fieldname": "void_section",
+   "fieldtype": "Section Break",
+   "label": "Void"
+  },
+  {
+   "fieldname": "is_void",
+   "fieldtype": "Check",
+   "label": "Void",
+   "default": "0",
+   "read_only": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "void_reason",
+   "fieldtype": "Small Text",
+   "label": "Void Reason",
+   "read_only": 1
+  },
+  {
+   "fieldname": "void_at",
+   "fieldtype": "Datetime",
+   "label": "Voided At",
+   "read_only": 1
+  },
+  {
+   "fieldname": "void_by",
+   "fieldtype": "Link",
+   "label": "Voided By",
+   "options": "User",
+   "read_only": 1
   }
  ],
  "grid_page_length": 50,
@@ -429,7 +538,7 @@
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Lead",
- "naming_rule": "By \"Naming Series\" field",
+ "naming_rule": "",
  "owner": "Administrator",
  "permissions": [
   {

@@ -128,7 +128,7 @@ const validateAssignmentRule = inject('validateAssignmentRule')
 const documentType = computed(() =>
   assignmentRuleData.value.documentType == 'CRM Lead'
     ? __('leads')
-    : __('deals'),
+    : __('inquiries'),
 )
 
 const documentRoutingOptions = [

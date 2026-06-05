@@ -17,6 +17,11 @@
         :actions="document.actions"
       />
       <AssignTo v-model="assignees.data" doctype="CRM Lead" :docname="leadId" />
+      <Button
+        :label="doc.is_void ? __('Unvoid') : __('Void')"
+        :theme="doc.is_void ? 'gray' : 'orange'"
+        @click="toggleVoid"
+      />
       <Dropdown
         v-if="doc && document.statuses"
         :options="statuses"
@@ -35,6 +40,7 @@
         </template>
       </Dropdown>
       <Button
+        v-if="!doc.converted"
         :label="__('Convert to Deal')"
         variant="solid"
         @click="showConvertToDealModal = true"
@@ -158,6 +164,7 @@
                 />
 
                 <Button
+                  v-if="!doc.converted"
                   :tooltip="__('Attach a File')"
                   :icon="AttachmentIcon"
                   @click="showFilesUploader = true"
@@ -293,7 +300,7 @@ import { useActiveTabManager } from '@/composables/useActiveTabManager'
 const { brand } = getSettings()
 const { $dialog, $socket, makeCall } = globalStore()
 const { statusOptions, getLeadStatus } = statusesStore()
-const { doctypeMeta } = getMeta('CRM Lead')
+const { doctypeMeta, getFields } = getMeta('CRM Lead')
 
 const route = useRoute()
 const router = useRouter()
@@ -323,6 +330,47 @@ const {
 const canDelete = computed(() => permissions.data?.permissions?.delete || false)
 
 const doc = computed(() => document.doc || {})
+
+// Lead yang sudah converted → semua field jadi read-only (kunci edit).
+watch(
+  () => doc.value.converted,
+  (converted) => {
+    if (!converted) return
+    const fields = (getFields && getFields()) || []
+    if (!document.fieldPropertyOverrides) document.fieldPropertyOverrides = {}
+    fields.forEach((f) => {
+      if (!f.fieldname) return
+      document.fieldPropertyOverrides[f.fieldname] = {
+        ...(document.fieldPropertyOverrides[f.fieldname] || {}),
+        read_only: 1,
+      }
+    })
+  },
+  { immediate: true },
+)
+
+async function toggleVoid() {
+  const isVoid = doc.value?.is_void
+  let reason = null
+  if (isVoid) {
+    if (!confirm(__('Unvoid this lead?'))) return
+  } else {
+    reason = prompt(__('Reason for voiding this lead?'))
+    if (reason === null) return
+  }
+  try {
+    await call('crm.api.void.void_document', {
+      doctype: 'CRM Lead',
+      name: props.leadId,
+      void: isVoid ? 0 : 1,
+      reason,
+    })
+    document.reload()
+    toast.success(isVoid ? __('Unvoided') : __('Voided'))
+  } catch (e) {
+    toast.error(e.message || __('Failed'))
+  }
+}
 
 onMounted(async () => {
   if (document.doc) await triggerOnRender()

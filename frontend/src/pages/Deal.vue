@@ -17,6 +17,11 @@
         :actions="document.actions"
       />
       <AssignTo v-model="assignees.data" doctype="CRM Deal" :docname="dealId" />
+      <Button
+        :label="doc.is_void ? __('Unvoid') : __('Void')"
+        :theme="doc.is_void ? 'gray' : 'orange'"
+        @click="toggleVoid"
+      />
       <Dropdown
         v-if="doc && document.statuses"
         :options="statuses"
@@ -438,6 +443,29 @@ const {
 const canDelete = computed(() => permissions.data?.permissions?.delete || false)
 
 const doc = computed(() => document.doc || {})
+
+async function toggleVoid() {
+  const isVoid = doc.value?.is_void
+  let reason = null
+  if (isVoid) {
+    if (!confirm(__('Unvoid this inquiry?'))) return
+  } else {
+    reason = prompt(__('Reason for voiding this inquiry?'))
+    if (reason === null) return
+  }
+  try {
+    await call('crm.api.void.void_document', {
+      doctype: 'CRM Deal',
+      name: props.dealId,
+      void: isVoid ? 0 : 1,
+      reason,
+    })
+    document.reload()
+    toast.success(isVoid ? __('Unvoided') : __('Voided'))
+  } catch (e) {
+    toast.error(e.message || __('Failed'))
+  }
+}
 
 watch(error, (err) => {
   if (err) {

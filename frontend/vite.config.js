@@ -14,7 +14,7 @@ export default defineConfig(async ({ mode }) => {
       VitePWA({
         registerType: 'autoUpdate',
         devOptions: {
-          enabled: true,
+          enabled: false,
         },
         manifest: {
           display: 'standalone',
@@ -68,8 +68,20 @@ export default defineConfig(async ({ mode }) => {
       ],
     },
     server: {
+      host: '0.0.0.0',
+      port: parseInt(process.env.VITE_PORT || '8090'),
+      strictPort: true,
+      allowedHosts: [
+        'localhost',
+        '.localhost',
+        'erp.localhost',
+      ],
       fs: {
         allow: [path.resolve(__dirname, '..')],
+      },
+      watch: {
+        usePolling: true,
+        interval: 1000,
       },
     },
   }

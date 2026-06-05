@@ -1,0 +1,154 @@
+[
+ {
+  "details": null,
+  "docstatus": 0,
+  "doctype": "CRM Lead Source",
+  "modified": "2026-06-04 15:43:10.714734",
+  "name": "Referensi Eksternal",
+  "source_name": "Referensi Eksternal"
+ },
+ {
+  "details": null,
+  "docstatus": 0,
+  "doctype": "CRM Lead Source",
+  "modified": "2026-06-04 15:43:10.723376",
+  "name": "Facebook",
+  "source_name": "Facebook"
+ },
+ {
+  "details": null,
+  "docstatus": 0,
+  "doctype": "CRM Lead Source",
+  "modified": "2026-06-04 15:43:10.725784",
+  "name": "Database Marketing",
+  "source_name": "Database Marketing"
+ },
+ {
+  "details": null,
+  "docstatus": 0,
+  "doctype": "CRM Lead Source",
+  "modified": "2026-06-04 15:43:10.727384",
+  "name": "Linkedin",
+  "source_name": "Linkedin"
+ },
+ {
+  "details": null,
+  "docstatus": 0,
+  "doctype": "CRM Lead Source",
+  "modified": "2026-06-04 15:43:10.728654",
+  "name": "Obrolan",
+  "source_name": "Obrolan"
+ },
+ {
+  "details": null,
+  "docstatus": 0,
+  "doctype": "CRM Lead Source",
+  "modified": "2026-06-04 15:43:10.729740",
+  "name": "Rujukan Karyawan",
+  "source_name": "Rujukan Karyawan"
+ },
+ {
+  "details": null,
+  "docstatus": 0,
+  "doctype": "CRM Lead Source",
+  "modified": "2026-06-04 15:43:10.730746",
+  "name": "Iklan",
+  "source_name": "Iklan"
+ },
+ {
+  "details": null,
+  "docstatus": 0,
+  "doctype": "CRM Lead Source",
+  "modified": "2026-06-04 15:43:10.731748",
+  "name": "Google+",
+  "source_name": "Google+"
+ },
+ {
+  "details": null,
+  "docstatus": 0,
+  "doctype": "CRM Lead Source",
+  "modified": "2026-06-04 15:43:10.732863",
+  "name": "Pameran Dagang",
+  "source_name": "Pameran Dagang"
+ },
+ {
+  "details": null,
+  "docstatus": 0,
+  "doctype": "CRM Lead Source",
+  "modified": "2026-06-04 15:43:10.733802",
+  "name": "Referensi Internal",
+  "source_name": "Referensi Internal"
+ },
+ {
+  "details": null,
+  "docstatus": 0,
+  "doctype": "CRM Lead Source",
+  "modified": "2026-06-04 15:43:10.734736",
+  "name": "Riset Web",
+  "source_name": "Riset Web"
+ },
+ {
+  "details": null,
+  "docstatus": 0,
+  "doctype": "CRM Lead Source",
+  "modified": "2026-06-04 15:43:10.735722",
+  "name": "Twitter",
+  "source_name": "Twitter"
+ },
+ {
+  "details": null,
+  "docstatus": 0,
+  "doctype": "CRM Lead Source",
+  "modified": "2026-06-04 15:43:10.736803",
+  "name": "Mitra Seminar",
+  "source_name": "Mitra Seminar"
+ },
+ {
+  "details": null,
+  "docstatus": 0,
+  "doctype": "CRM Lead Source",
+  "modified": "2026-06-04 15:43:10.737947",
+  "name": "Mitra",
+  "source_name": "Mitra"
+ },
+ {
+  "details": null,
+  "docstatus": 0,
+  "doctype": "CRM Lead Source",
+  "modified": "2026-06-04 15:43:10.739009",
+  "name": "Panggilan Dingin",
+  "source_name": "Panggilan Dingin"
+ },
+ {
+  "details": null,
+  "docstatus": 0,
+  "doctype": "CRM Lead Source",
+  "modified": "2026-06-04 15:43:10.740084",
+  "name": "Hubungan Masyarakat",
+  "source_name": "Hubungan Masyarakat"
+ },
+ {
+  "details": null,
+  "docstatus": 0,
+  "doctype": "CRM Lead Source",
+  "modified": "2026-06-04 15:43:10.741123",
+  "name": "Unduh Web",
+  "source_name": "Unduh Web"
+ },
+ {
+  "details": null,
+  "docstatus": 0,
+  "doctype": "CRM Lead Source",
+  "modified": "2026-06-04 15:43:10.742094",
+  "name": "Alias Email Penjualan",
+  "source_name": "Alias Email Penjualan"
+ },
+ {
+  "details": null,
+  "docstatus": 0,
+  "doctype": "CRM Lead Source",
+  "modified": "2026-06-04 15:43:10.743069",
+  "name": "Seminar Internal",
+  "source_name": "Seminar Internal"
+ }
+]

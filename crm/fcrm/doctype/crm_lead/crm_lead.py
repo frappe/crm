@@ -73,6 +73,15 @@ class CRMLead(Document):
 		website: DF.Data | None
 	# end: auto-generated types
 
+	def autoname(self):
+		from frappe.model.naming import make_autoname
+
+		# Format: LD/0001/CMI/26 — counter di-key per tahun ("LD-YY-")
+		# sehingga otomatis reset tiap pergantian tahun.
+		yy = frappe.utils.now_datetime().strftime("%y")
+		counter = make_autoname(f"LD-{yy}-.####.").split("-")[-1]
+		self.name = f"LD/{counter}/CMI/{yy}"
+
 	def before_validate(self):
 		self.set_sla()
 
@@ -506,7 +515,11 @@ def convert_to_deal(
 		frappe.throw(_("Not allowed to convert Lead to Deal"), frappe.PermissionError)
 
 	lead = frappe.get_cached_doc("CRM Lead", lead)
-	if frappe.db.exists("CRM Lead Status", "Qualified"):
+	if lead.converted:
+		frappe.throw(_("Lead {0} is already converted").format(lead.name))
+	if frappe.db.exists("CRM Lead Status", "Converted"):
+		lead.db_set("status", "Converted")
+	elif frappe.db.exists("CRM Lead Status", "Qualified"):
 		lead.db_set("status", "Qualified")
 	lead.db_set("converted", 1)
 	if lead.sla and frappe.db.exists("CRM Communication Status", "Replied"):

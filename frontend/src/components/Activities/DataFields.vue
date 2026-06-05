@@ -59,7 +59,7 @@
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import DataFieldsModal from '@/components/Modals/DataFieldsModal.vue'
 import FieldLayout from '@/components/FieldLayout/FieldLayout.vue'
-import { Badge, createResource } from 'frappe-ui'
+import { Badge, createResource, toast } from 'frappe-ui'
 import LoadingIndicator from '@/components/Icons/LoadingIndicator.vue'
 import { usersStore } from '@/stores/users'
 import { useDocument } from '@/data/document'
@@ -109,6 +109,16 @@ function saveChanges() {
   } else {
     document.save.submit(null, {
       onSuccess: () => emit('afterSave', changes),
+      onError: (err) => {
+        const msgs = err?.messages || []
+        if (msgs.length) {
+          msgs.forEach((m) => toast.error(m))
+        } else {
+          toast.error(err?.message || __('Failed to save'))
+        }
+        document.save.loading = false
+        console.error(err)
+      },
     })
   }
 }

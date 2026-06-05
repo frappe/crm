@@ -12,7 +12,7 @@
         variant="solid"
         :label="__('Create')"
         iconLeft="plus"
-        @click="showDealModal = true"
+        @click="router.push({ name: 'NewDeal' })"
       />
     </template>
   </LayoutHeader>
@@ -268,7 +268,7 @@ import { callEnabled } from '@/composables/telephony'
 import { formatDate, timeAgo, website, formatTime } from '@/utils'
 import { useOnboarding, useTelemetry } from 'frappe-ui/frappe'
 import { Tooltip, Avatar, Dropdown } from 'frappe-ui'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { ref, reactive, computed, h } from 'vue'
 
 const { getFormattedPercent, getFormattedFloat, getFormattedCurrency } =
@@ -282,6 +282,7 @@ const { capture } = useTelemetry()
 const { showModal } = useDoctypeModal()
 
 const route = useRoute()
+const router = useRouter()
 
 const dealsListView = ref(null)
 const showDealModal = ref(false)
@@ -490,11 +491,13 @@ function parseRows(rows, columns = []) {
 function onNewClick(column) {
   let column_field = deals.value.params.column_field
 
+  let query = {}
   if (column_field) {
     defaults[column_field] = column.column.name
+    query[column_field] = column.column.name
   }
 
-  showDealModal.value = true
+  router.push({ name: 'NewDeal', query })
 }
 
 function actions(itemName) {

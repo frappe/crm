@@ -2,6 +2,7 @@
 # GNU GPLv3 License. See license.txt
 
 import frappe
+import frappe.sessions
 from frappe import _
 from frappe.integrations.frappe_providers.frappecloud_billing import is_fc_site
 from frappe.translate import get_messages_for_boot, get_translated_doctypes
@@ -39,7 +40,8 @@ def get_boot():
 			"default_route": get_default_route(),
 			"site_name": frappe.local.site,
 			"read_only_mode": frappe.flags.read_only,
-			"csrf_token": frappe.sessions.get_csrf_token(),
+			# "csrf_token": frappe.sessions.get_csrf_token(),
+   			"csrf_token": frappe.generate_hash(),
 			"setup_complete": cint(frappe.get_system_settings("setup_complete")),
 			"sysdefaults": frappe.defaults.get_defaults(),
 			"is_demo_site": frappe.conf.get("is_demo_site"),

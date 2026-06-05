@@ -1,0 +1,65 @@
+[
+ {
+  "docstatus": 0,
+  "doctype": "CRM Fields Layout",
+  "dt": "CRM Lead",
+  "layout": "[{\"name\": \"first_tab\", \"sections\": [{\"name\": \"person_section\", \"columns\": [{\"name\": \"column_5jrk\", \"fields\": [\"salutation\", \"email\"]}, {\"name\": \"column_5CPV\", \"fields\": [\"first_name\", \"mobile_no\"]}, {\"name\": \"column_gXOy\", \"fields\": [\"last_name\", \"gender\"]}]}, {\"name\": \"organization_section\", \"columns\": [{\"name\": \"column_GHfX\", \"fields\": [\"organization\", \"territory\"]}, {\"name\": \"column_hXjS\", \"fields\": [\"website\", \"annual_revenue\"]}, {\"name\": \"column_RDNA\", \"fields\": [\"no_of_employees\", \"industry\"]}]}, {\"name\": \"lead_section\", \"columns\": [{\"name\": \"column_EO1H\", \"fields\": [\"status\"]}, {\"name\": \"column_RWBe\", \"fields\": [\"source\"]}, {\"label\": \"\", \"name\": \"column_itzQ\", \"fields\": [\"lead_owner\"]}]}]}]",
+  "modified": "2026-06-04 16:10:08.336327",
+  "name": "CRM Lead-Quick Entry",
+  "type": "Quick Entry"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "CRM Fields Layout",
+  "dt": "CRM Lead",
+  "layout": "[{\"label\": \"Details\", \"name\": \"details_section\", \"opened\": true, \"columns\": [{\"name\": \"column_kl92\", \"fields\": [\"organization\", \"website\", \"territory\", \"industry\", \"job_title\", \"source\", \"lead_owner\"]}]}, {\"label\": \"Person\", \"name\": \"person_section\", \"opened\": true, \"columns\": [{\"name\": \"column_XmW2\", \"fields\": [\"salutation\", \"first_name\", \"last_name\", \"email\", \"mobile_no\"]}]}, {\"label\": \"Company / Legal\", \"name\": \"lead_company_legal\", \"opened\": true, \"columns\": [{\"name\": \"col_cl\", \"fields\": [\"nib\", \"npwp\", \"type_industry\", \"target_goals\"]}]}, {\"label\": \"Address\", \"name\": \"lead_address\", \"opened\": true, \"columns\": [{\"name\": \"col_addr\", \"fields\": [\"address\", \"village\", \"sub_district\", \"regency\", \"city\", \"postal_code\"]}]}]",
+  "modified": "2026-06-04 16:10:07.990659",
+  "name": "CRM Lead-Side Panel",
+  "type": "Side Panel"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "CRM Fields Layout",
+  "dt": "CRM Lead",
+  "layout": "[{\"label\": \"Details\", \"name\": \"details_section\", \"opened\": true, \"columns\": [{\"name\": \"column_ZgLG\", \"fields\": [\"organization\", \"industry\", \"lead_owner\"]}, {\"name\": \"column_TbYq\", \"fields\": [\"website\", \"job_title\"]}, {\"name\": \"column_OKSX\", \"fields\": [\"territory\", \"source\"]}]}, {\"label\": \"Person\", \"name\": \"person_section\", \"opened\": true, \"columns\": [{\"name\": \"column_6c5g\", \"fields\": [\"salutation\", \"email\"]}, {\"name\": \"column_1n7Q\", \"fields\": [\"first_name\", \"mobile_no\"]}, {\"name\": \"column_cT6C\", \"fields\": [\"last_name\"]}]}]",
+  "modified": "2026-05-28 10:18:15.010050",
+  "name": "CRM Lead-Data Fields",
+  "type": "Data Fields"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "CRM Fields Layout",
+  "dt": "CRM Quotation",
+  "layout": "[{\"label\": \"Inquiry\", \"name\": \"inquiry_section\", \"opened\": true, \"columns\": [{\"name\": \"col_inquiry\", \"fields\": [\"inquiry\", \"number\", \"date\"]}]}, {\"label\": \"Inquiry Details\", \"name\": \"inquiry_details_section\", \"opened\": true, \"columns\": [{\"name\": \"col_inq_detail\", \"fields\": [\"inquiry_details\"]}]}, {\"label\": \"Contacts\", \"name\": \"quotation_contacts\", \"opened\": true, \"columns\": [{\"name\": \"col_contacts\", \"fields\": [\"contact_name\"]}]}, {\"label\": \"Organization\", \"name\": \"organization_section\", \"opened\": true, \"columns\": [{\"name\": \"col_org\", \"fields\": [\"account\"]}]}]",
+  "modified": "2026-06-03 16:38:31.249846",
+  "name": "CRM Quotation-Side Panel",
+  "type": "Side Panel"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "CRM Fields Layout",
+  "dt": "CRM Quotation",
+  "layout": "[{\"name\": \"tab_main\", \"label\": \"\", \"sections\": [{\"label\": \"Inquiry\", \"name\": \"section_yGjM\", \"opened\": true, \"columns\": [{\"name\": \"column_zSjl\", \"fields\": [\"inquiry\", \"subject\"]}, {\"label\": \"\", \"name\": \"column_uxtx\", \"fields\": [\"account\"]}], \"editingLabel\": false}, {\"name\": \"quote_info_section\", \"label\": \"Quote Information\", \"opened\": true, \"columns\": [{\"name\": \"col_left\", \"fields\": [\"attention\", \"cargo\", \"packaging\", \"loading\", \"unloading\"]}, {\"name\": \"col_right\", \"fields\": [\"date\", \"cost_center\", \"currency\", \"rate\"]}]}, {\"label\": \"Product\", \"name\": \"section_JXvg\", \"opened\": true, \"columns\": [{\"name\": \"column_SBWe\", \"fields\": [\"products\", \"net_total\"]}], \"editingLabel\": false}, {\"name\": \"additionals_section\", \"label\": \"Additionals\", \"opened\": true, \"columns\": [{\"name\": \"col_include\", \"fields\": [\"additional1_title\", \"additional1_item\", \"additional1_amount\"]}, {\"name\": \"col_exclude\", \"fields\": [\"additional2_title\", \"additional2_item\", \"additional2_amount\"]}]}, {\"name\": \"terms_section\", \"label\": \"Terms & Conditions\", \"opened\": true, \"columns\": [{\"name\": \"col_terms\", \"fields\": [\"TaC\", \"TaC_detail\"]}, {\"name\": \"col_payment\", \"fields\": [\"validity\", \"payterm\"]}], \"collapsible\": true, \"hideLabel\": false}, {\"name\": \"rate_info_section\", \"label\": \"Rate Info\", \"opened\": true, \"columns\": [{\"name\": \"col_rate1\", \"fields\": [\"rate_include\", \"rate_exclude\"]}, {\"label\": \"\", \"name\": \"column_ymHR\", \"fields\": []}], \"collapsible\": true}, {\"label\": \"Remark\", \"name\": \"section_xSqo\", \"opened\": true, \"columns\": [{\"name\": \"column_RyRa\", \"fields\": [\"remark\"]}], \"editingLabel\": false}, {\"label\": \"Print\", \"name\": \"print_section\", \"opened\": true, \"columns\": [{\"name\": \"col_print\", \"fields\": [\"printed_by\"]}]}]}]",
+  "modified": "2026-06-04 18:10:43.818296",
+  "name": "CRM Quotation-Data Fields",
+  "type": "Data Fields"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "CRM Fields Layout",
+  "dt": "CRM Estimation",
+  "layout": "[{\"name\":\"tab_data\",\"label\":\"\",\"sections\":[{\"label\":\"Estimation\",\"name\":\"sec_info\",\"opened\":true,\"columns\":[{\"name\":\"col_a\",\"fields\":[\"estimation_type\"]},{\"name\":\"col_b\",\"fields\":[\"expired_date\"]},{\"label\":\"\",\"name\":\"column_SElB\",\"fields\":[\"customer_id\",\"purpose\"]}]},{\"label\":\"Revenue\",\"name\":\"sec_revenue\",\"opened\":true,\"columns\":[{\"name\":\"col_rev\",\"fields\":[\"revenue_items\"]}]},{\"label\":\"Expense\",\"name\":\"sec_expense\",\"opened\":true,\"columns\":[{\"name\":\"col_exp\",\"fields\":[\"expense_items\"]}]},{\"label\":\"Remarks\",\"name\":\"sec_remarks\",\"opened\":true,\"columns\":[{\"name\":\"col_rem\",\"fields\":[\"remarks\"]}]}]}]",
+  "modified": "2026-06-04 09:15:34.646499",
+  "name": "CRM Estimation-Data Fields",
+  "type": "Data Fields"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "CRM Fields Layout",
+  "dt": "CRM Estimation",
+  "layout": "[{\"label\": \"Estimation\", \"name\": \"sp_info\", \"opened\": true, \"columns\": [{\"name\": \"spc1\", \"fields\": [\"estimation_no\", \"customer_id\", \"estimation_type\", \"purpose\", \"expired_date\"]}]}, {\"label\": \"Profit\", \"name\": \"sp_profit\", \"opened\": true, \"columns\": [{\"name\": \"spc2\", \"fields\": [\"rev_inc_tax\", \"est_profit\"]}]}]",
+  "modified": "2026-06-04 09:07:21.282575",
+  "name": "CRM Estimation-Side Panel",
+  "type": "Side Panel"
+ }
+]

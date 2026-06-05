@@ -1,529 +1,716 @@
 {
- "actions": [],
- "allow_import": 1,
- "allow_rename": 1,
- "autoname": "naming_series:",
- "creation": "2023-11-06 17:56:25.210449",
- "doctype": "DocType",
- "engine": "InnoDB",
- "field_order": [
-  "organization_tab",
-  "naming_series",
-  "organization",
-  "next_step",
-  "column_break_ijan",
-  "status",
-  "deal_owner",
-  "section_break_jgpm",
-  "probability",
-  "expected_deal_value",
-  "deal_value",
-  "column_break_kpxa",
-  "expected_closure_date",
-  "closed_date",
-  "contacts_tab",
-  "contacts",
-  "contact",
-  "lead_details_tab",
-  "lead",
-  "source",
-  "column_break_wsde",
-  "lead_name",
-  "organization_details_section",
-  "organization_name",
-  "website",
-  "no_of_employees",
-  "job_title",
-  "column_break_xbyf",
-  "territory",
-  "currency",
-  "exchange_rate",
-  "annual_revenue",
-  "industry",
-  "person_section",
-  "salutation",
-  "first_name",
-  "last_name",
-  "column_break_xjmy",
-  "email",
-  "mobile_no",
-  "phone",
-  "gender",
-  "products_tab",
-  "products",
-  "section_break_ccbj",
-  "total",
-  "column_break_udbq",
-  "net_total",
-  "sla_tab",
-  "sla",
-  "sla_creation",
-  "column_break_pfvq",
-  "sla_status",
-  "communication_status",
-  "response_details_section",
-  "response_by",
-  "column_break_hpvj",
-  "first_response_time",
-  "first_responded_on",
-  "section_break_mwvg",
-  "rolling_responses",
-  "section_break_jgdr",
-  "last_response_time",
-  "column_break_evzj",
-  "last_responded_on",
-  "log_tab",
-  "status_change_log",
-  "lost_details_tab",
-  "lost_reason",
-  "lost_notes"
- ],
- "fields": [
-  {
-   "fieldname": "organization",
-   "fieldtype": "Link",
-   "in_standard_filter": 1,
-   "label": "Organization",
-   "options": "CRM Organization"
-  },
-  {
-   "fieldname": "probability",
-   "fieldtype": "Percent",
-   "label": "Probability"
-  },
-  {
-   "fetch_from": ".annual_revenue",
-   "fieldname": "annual_revenue",
-   "fieldtype": "Currency",
-   "label": "Annual Revenue",
-   "options": "currency"
-  },
-  {
-   "fetch_from": ".website",
-   "fieldname": "website",
-   "fieldtype": "Data",
-   "label": "Website"
-  },
-  {
-   "fieldname": "next_step",
-   "fieldtype": "Data",
-   "label": "Next Step"
-  },
-  {
-   "fieldname": "lead",
-   "fieldtype": "Link",
-   "label": "Lead",
-   "options": "CRM Lead"
-  },
-  {
-   "fieldname": "deal_owner",
-   "fieldtype": "Link",
-   "label": "Deal Owner",
-   "options": "User"
-  },
-  {
-   "default": "CRM-DEAL-.YYYY.-",
-   "fieldname": "naming_series",
-   "fieldtype": "Select",
-   "label": "Naming Series",
-   "options": "CRM-DEAL-.YYYY.-"
-  },
-  {
-   "fieldname": "contacts_tab",
-   "fieldtype": "Tab Break",
-   "label": "Contacts"
-  },
-  {
-   "fieldname": "email",
-   "fieldtype": "Data",
-   "in_standard_filter": 1,
-   "label": "Primary email",
-   "options": "Email"
-  },
-  {
-   "fieldname": "mobile_no",
-   "fieldtype": "Data",
-   "label": "Primary mobile no",
-   "options": "Phone"
-  },
-  {
-   "fieldname": "status",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "in_standard_filter": 1,
-   "label": "Status",
-   "options": "CRM Deal Status",
-   "reqd": 1,
-   "search_index": 1
-  },
-  {
-   "fieldname": "contacts",
-   "fieldtype": "Table",
-   "label": "Contacts",
-   "options": "CRM Contacts"
-  },
-  {
-   "fieldname": "organization_tab",
-   "fieldtype": "Tab Break",
-   "label": "Organization"
-  },
-  {
-   "fieldname": "sla_tab",
-   "fieldtype": "Tab Break",
-   "label": "SLA",
-   "read_only": 1
-  },
-  {
-   "fieldname": "sla",
-   "fieldtype": "Link",
-   "label": "SLA",
-   "options": "CRM Service Level Agreement"
-  },
-  {
-   "fieldname": "response_by",
-   "fieldtype": "Datetime",
-   "label": "Response By",
-   "read_only": 1
-  },
-  {
-   "fieldname": "column_break_pfvq",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "sla_status",
-   "fieldtype": "Select",
-   "label": "SLA Status",
-   "options": "\nFirst Response Due\nRolling Response Due\nFailed\nFulfilled",
-   "read_only": 1
-  },
-  {
-   "fieldname": "sla_creation",
-   "fieldtype": "Datetime",
-   "label": "SLA Creation",
-   "read_only": 1
-  },
-  {
-   "fieldname": "response_details_section",
-   "fieldtype": "Section Break",
-   "label": "Response Details"
-  },
-  {
-   "fieldname": "column_break_hpvj",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "first_response_time",
-   "fieldtype": "Duration",
-   "label": "First Response Time",
-   "read_only": 1
-  },
-  {
-   "fieldname": "first_responded_on",
-   "fieldtype": "Datetime",
-   "label": "First Responded On",
-   "read_only": 1
-  },
-  {
-   "default": "Open",
-   "fieldname": "communication_status",
-   "fieldtype": "Link",
-   "label": "Communication Status",
-   "options": "CRM Communication Status"
-  },
-  {
-   "fetch_from": ".territory",
-   "fieldname": "territory",
-   "fieldtype": "Link",
-   "label": "Territory",
-   "options": "CRM Territory"
-  },
-  {
-   "fieldname": "source",
-   "fieldtype": "Link",
-   "label": "Source",
-   "options": "CRM Lead Source"
-  },
-  {
-   "fieldname": "no_of_employees",
-   "fieldtype": "Select",
-   "label": "No. of Employees",
-   "options": "1-10\n11-50\n51-200\n201-500\n501-1000\n1000+"
-  },
-  {
-   "fieldname": "job_title",
-   "fieldtype": "Data",
-   "label": "Job Title"
-  },
-  {
-   "fieldname": "phone",
-   "fieldtype": "Data",
-   "label": "Primary phone",
-   "options": "Phone"
-  },
-  {
-   "fieldname": "log_tab",
-   "fieldtype": "Tab Break",
-   "label": "Log",
-   "read_only": 1
-  },
-  {
-   "fieldname": "status_change_log",
-   "fieldtype": "Table",
-   "label": "Status Change Log",
-   "options": "CRM Status Change Log"
-  },
-  {
-   "fieldname": "lead_name",
-   "fieldtype": "Data",
-   "label": "Lead Name"
-  },
-  {
-   "fieldname": "column_break_ijan",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "lead_details_tab",
-   "fieldtype": "Tab Break",
-   "label": "Lead Details"
-  },
-  {
-   "fieldname": "column_break_wsde",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "organization_details_section",
-   "fieldtype": "Section Break",
-   "label": "Organization Details"
-  },
-  {
-   "fieldname": "organization_name",
-   "fieldtype": "Data",
-   "label": "Organization Name"
-  },
-  {
-   "fieldname": "column_break_xbyf",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "industry",
-   "fieldtype": "Link",
-   "label": "Industry",
-   "options": "CRM Industry"
-  },
-  {
-   "fieldname": "person_section",
-   "fieldtype": "Section Break",
-   "label": "Person"
-  },
-  {
-   "fieldname": "salutation",
-   "fieldtype": "Link",
-   "label": "Salutation",
-   "options": "Salutation"
-  },
-  {
-   "fieldname": "first_name",
-   "fieldtype": "Data",
-   "label": "First name"
-  },
-  {
-   "fieldname": "last_name",
-   "fieldtype": "Data",
-   "label": "Last name"
-  },
-  {
-   "fieldname": "column_break_xjmy",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "gender",
-   "fieldtype": "Link",
-   "label": "Gender",
-   "options": "Gender"
-  },
-  {
-   "fieldname": "contact",
-   "fieldtype": "Link",
-   "label": "Contact",
-   "options": "Contact"
-  },
-  {
-   "fieldname": "currency",
-   "fieldtype": "Link",
-   "label": "Currency",
-   "options": "Currency"
-  },
-  {
-   "fieldname": "products_tab",
-   "fieldtype": "Tab Break",
-   "label": "Products"
-  },
-  {
-   "fieldname": "products",
-   "fieldtype": "Table",
-   "label": "Products",
-   "options": "CRM Products"
-  },
-  {
-   "fieldname": "section_break_ccbj",
-   "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "column_break_udbq",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "total",
-   "fieldtype": "Currency",
-   "label": "Total",
-   "options": "currency",
-   "read_only": 1
-  },
-  {
-   "description": "Total after discount",
-   "fieldname": "net_total",
-   "fieldtype": "Currency",
-   "label": "Net Total",
-   "options": "currency",
-   "read_only": 1
-  },
-  {
-   "fieldname": "section_break_jgpm",
-   "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "deal_value",
-   "fieldtype": "Currency",
-   "label": "Deal Value",
-   "options": "currency"
-  },
-  {
-   "fieldname": "column_break_kpxa",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "lost_reason",
-   "fieldtype": "Link",
-   "label": "Lost Reason",
-   "options": "CRM Lost Reason"
-  },
-  {
-   "fieldname": "lost_notes",
-   "fieldtype": "Text",
-   "label": "Lost Notes",
-   "mandatory_depends_on": "eval: doc.lost_reason == \"Other\""
-  },
-  {
-   "default": "1",
-   "description": "The rate used to convert the deal\u2019s currency to your crm's base currency (set in CRM Settings). It is set once when the currency is first added and doesn't change automatically.",
-   "fieldname": "exchange_rate",
-   "fieldtype": "Float",
-   "label": "Exchange Rate"
-  },
-  {
-   "fieldname": "expected_deal_value",
-   "fieldtype": "Currency",
-   "label": "Expected Deal Value",
-   "options": "currency"
-  },
-  {
-   "fieldname": "expected_closure_date",
-   "fieldtype": "Date",
-   "label": "Expected Closure Date"
-  },
-  {
-   "fieldname": "closed_date",
-   "fieldtype": "Date",
-   "label": "Closed Date"
-  },
-  {
-   "fieldname": "section_break_mwvg",
-   "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "rolling_responses",
-   "fieldtype": "Table",
-   "label": "Rolling Responses",
-   "options": "CRM Rolling Response Time"
-  },
-  {
-   "fieldname": "section_break_jgdr",
-   "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "last_response_time",
-   "fieldtype": "Duration",
-   "label": "Last Response Time",
-   "read_only": 1
-  },
-  {
-   "fieldname": "column_break_evzj",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "last_responded_on",
-   "fieldtype": "Datetime",
-   "label": "Last Responded On",
-   "read_only": 1
-  },
-  {
-   "fieldname": "lost_details_tab",
-   "fieldtype": "Tab Break",
-   "label": "Lost Details"
-  }
- ],
- "grid_page_length": 50,
- "index_web_pages_for_search": 1,
- "links": [],
- "modified": "2026-04-04 12:34:10.808282",
- "modified_by": "Administrator",
- "module": "FCRM",
- "name": "CRM Deal",
- "naming_rule": "By \"Naming Series\" field",
- "owner": "Administrator",
- "permissions": [
-  {
-   "create": 1,
-   "delete": 1,
-   "email": 1,
-   "export": 1,
-   "print": 1,
-   "read": 1,
-   "report": 1,
-   "role": "System Manager",
-   "share": 1,
-   "write": 1
-  },
-  {
-   "create": 1,
-   "delete": 1,
-   "email": 1,
-   "export": 1,
-   "print": 1,
-   "read": 1,
-   "report": 1,
-   "role": "Sales Manager",
-   "share": 1,
-   "write": 1
-  },
-  {
-   "create": 1,
-   "delete": 1,
-   "email": 1,
-   "export": 1,
-   "print": 1,
-   "read": 1,
-   "report": 1,
-   "role": "Sales User",
-   "share": 1,
-   "write": 1
-  }
- ],
- "row_format": "Dynamic",
- "show_title_field_in_link": 1,
- "sort_field": "modified",
- "sort_order": "DESC",
- "states": [],
- "title_field": "organization",
- "track_changes": 1
+    "actions": [],
+    "allow_import": 1,
+    "allow_rename": 1,
+    "autoname": "",
+    "creation": "2023-11-06 17:56:25.210449",
+    "doctype": "DocType",
+    "engine": "InnoDB",
+    "hide_name_column": 1,
+    "field_order": [
+        "organization_tab",
+        "naming_series",
+        "organization",
+        "next_step",
+        "column_break_ijan",
+        "status",
+        "deal_owner",
+        "section_break_jgpm",
+        "probability",
+        "expected_deal_value",
+        "deal_value",
+        "column_break_kpxa",
+        "expected_closure_date",
+        "closed_date",
+        "contacts_tab",
+        "contacts",
+        "contact",
+        "lead_details_tab",
+        "lead",
+        "source",
+        "column_break_wsde",
+        "lead_name",
+        "organization_details_section",
+        "organization_name",
+        "website",
+        "no_of_employees",
+        "job_title",
+        "column_break_xbyf",
+        "territory",
+        "currency",
+        "exchange_rate",
+        "annual_revenue",
+        "industry",
+        "person_section",
+        "salutation",
+        "first_name",
+        "last_name",
+        "column_break_xjmy",
+        "email",
+        "mobile_no",
+        "phone",
+        "gender",
+        "products_tab",
+        "products",
+        "section_break_ccbj",
+        "total",
+        "column_break_udbq",
+        "net_total",
+        "sla_tab",
+        "sla",
+        "sla_creation",
+        "column_break_pfvq",
+        "sla_status",
+        "communication_status",
+        "response_details_section",
+        "response_by",
+        "column_break_hpvj",
+        "first_response_time",
+        "first_responded_on",
+        "section_break_mwvg",
+        "rolling_responses",
+        "section_break_jgdr",
+        "last_response_time",
+        "column_break_evzj",
+        "last_responded_on",
+        "log_tab",
+        "status_change_log",
+        "lost_details_tab",
+        "lost_reason",
+        "lost_notes",
+        "column_break_klqj",
+        "type_inquiry",
+        "shipper_consignee",
+        "transportation_mode",
+        "incoterms",
+        "date_shipment",
+        "column_break_qlqj",
+        "qty_volume",
+        "port_pol_destination_detail_address",
+        "cargo_commodity",
+        "cargo_weight",
+        "status_cargo",
+        "column_break_rlqj",
+        "job_service",
+        "service_type",
+        "business_unit",
+        "remarks",
+        "deal_date",
+        "cargo_packaging",
+        "origin",
+        "destination",
+        "qty",
+        "rate",
+        "estimasi_tarif",
+        "costing_procurement",
+        "subject",
+        "void_section",
+        "is_void",
+        "void_reason",
+        "void_at",
+        "void_by"
+    ],
+    "fields": [
+        {
+            "fieldname": "organization",
+            "fieldtype": "Link",
+            "in_standard_filter": 1,
+            "label": "Organization",
+            "options": "CRM Organization"
+        },
+        {
+            "fieldname": "probability",
+            "fieldtype": "Percent",
+            "label": "Probability"
+        },
+        {
+            "fetch_from": ".annual_revenue",
+            "fieldname": "annual_revenue",
+            "fieldtype": "Currency",
+            "label": "Annual Revenue",
+            "options": "currency"
+        },
+        {
+            "fetch_from": ".website",
+            "fieldname": "website",
+            "fieldtype": "Data",
+            "label": "Website"
+        },
+        {
+            "fieldname": "next_step",
+            "fieldtype": "Data",
+            "label": "Next Step"
+        },
+        {
+            "fieldname": "lead",
+            "fieldtype": "Link",
+            "label": "Lead",
+            "options": "CRM Lead"
+        },
+        {
+            "fieldname": "deal_owner",
+            "fieldtype": "Link",
+            "label": "Deal Owner",
+            "options": "User"
+        },
+        {
+            "default": "INQ/.####./CMI/.YY.",
+            "fieldname": "naming_series",
+            "fieldtype": "Select",
+            "label": "Naming Series"
+        },
+        {
+            "fieldname": "contacts_tab",
+            "fieldtype": "Tab Break",
+            "label": "Contacts"
+        },
+        {
+            "fieldname": "email",
+            "fieldtype": "Data",
+            "in_standard_filter": 1,
+            "label": "Primary email",
+            "options": "Email"
+        },
+        {
+            "fieldname": "mobile_no",
+            "fieldtype": "Data",
+            "label": "Primary mobile no",
+            "options": "Phone"
+        },
+        {
+            "fieldname": "status",
+            "fieldtype": "Link",
+            "in_list_view": 1,
+            "in_standard_filter": 1,
+            "label": "Status",
+            "options": "CRM Deal Status",
+            "reqd": 1,
+            "search_index": 1
+        },
+        {
+            "fieldname": "contacts",
+            "fieldtype": "Table",
+            "label": "Contacts",
+            "options": "CRM Contacts"
+        },
+        {
+            "fieldname": "organization_tab",
+            "fieldtype": "Tab Break",
+            "label": "Organization"
+        },
+        {
+            "fieldname": "sla_tab",
+            "fieldtype": "Tab Break",
+            "label": "SLA",
+            "read_only": 1
+        },
+        {
+            "fieldname": "sla",
+            "fieldtype": "Link",
+            "label": "SLA",
+            "options": "CRM Service Level Agreement"
+        },
+        {
+            "fieldname": "response_by",
+            "fieldtype": "Datetime",
+            "label": "Response By",
+            "read_only": 1
+        },
+        {
+            "fieldname": "column_break_pfvq",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "sla_status",
+            "fieldtype": "Select",
+            "label": "SLA Status",
+            "options": "\nFirst Response Due\nRolling Response Due\nFailed\nFulfilled",
+            "read_only": 1
+        },
+        {
+            "fieldname": "sla_creation",
+            "fieldtype": "Datetime",
+            "label": "SLA Creation",
+            "read_only": 1
+        },
+        {
+            "fieldname": "response_details_section",
+            "fieldtype": "Section Break",
+            "label": "Response Details"
+        },
+        {
+            "fieldname": "column_break_hpvj",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "first_response_time",
+            "fieldtype": "Duration",
+            "label": "First Response Time",
+            "read_only": 1
+        },
+        {
+            "fieldname": "first_responded_on",
+            "fieldtype": "Datetime",
+            "label": "First Responded On",
+            "read_only": 1
+        },
+        {
+            "default": "Open",
+            "fieldname": "communication_status",
+            "fieldtype": "Link",
+            "label": "Communication Status",
+            "options": "CRM Communication Status"
+        },
+        {
+            "fetch_from": ".territory",
+            "fieldname": "territory",
+            "fieldtype": "Link",
+            "label": "Territory",
+            "options": "CRM Territory"
+        },
+        {
+            "fieldname": "source",
+            "fieldtype": "Link",
+            "label": "Source",
+            "options": "CRM Lead Source"
+        },
+        {
+            "fieldname": "no_of_employees",
+            "fieldtype": "Select",
+            "label": "No. of Employees",
+            "options": "1-10\n11-50\n51-200\n201-500\n501-1000\n1000+"
+        },
+        {
+            "fieldname": "job_title",
+            "fieldtype": "Data",
+            "label": "Job Title"
+        },
+        {
+            "fieldname": "phone",
+            "fieldtype": "Data",
+            "label": "Primary phone",
+            "options": "Phone"
+        },
+        {
+            "fieldname": "log_tab",
+            "fieldtype": "Tab Break",
+            "label": "Log",
+            "read_only": 1
+        },
+        {
+            "fieldname": "status_change_log",
+            "fieldtype": "Table",
+            "label": "Status Change Log",
+            "options": "CRM Status Change Log"
+        },
+        {
+            "fieldname": "lead_name",
+            "fieldtype": "Data",
+            "label": "Lead Name"
+        },
+        {
+            "fieldname": "column_break_ijan",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "lead_details_tab",
+            "fieldtype": "Tab Break",
+            "label": "Lead Details"
+        },
+        {
+            "fieldname": "column_break_wsde",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "organization_details_section",
+            "fieldtype": "Section Break",
+            "label": "Organization Details"
+        },
+        {
+            "fieldname": "organization_name",
+            "fieldtype": "Data",
+            "label": "Organization Name"
+        },
+        {
+            "fieldname": "column_break_xbyf",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "industry",
+            "fieldtype": "Link",
+            "label": "Industry",
+            "options": "CRM Industry"
+        },
+        {
+            "fieldname": "person_section",
+            "fieldtype": "Section Break",
+            "label": "Person"
+        },
+        {
+            "fieldname": "salutation",
+            "fieldtype": "Link",
+            "label": "Salutation",
+            "options": "Salutation"
+        },
+        {
+            "fieldname": "first_name",
+            "fieldtype": "Data",
+            "label": "First name"
+        },
+        {
+            "fieldname": "last_name",
+            "fieldtype": "Data",
+            "label": "Last name"
+        },
+        {
+            "fieldname": "column_break_xjmy",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "gender",
+            "fieldtype": "Link",
+            "label": "Gender",
+            "options": "Gender"
+        },
+        {
+            "fieldname": "contact",
+            "fieldtype": "Link",
+            "label": "Contact",
+            "options": "Contact"
+        },
+        {
+            "fieldname": "currency",
+            "fieldtype": "Link",
+            "label": "Currency",
+            "options": "Currency"
+        },
+        {
+            "fieldname": "products_tab",
+            "fieldtype": "Tab Break",
+            "label": "Products"
+        },
+        {
+            "fieldname": "products",
+            "fieldtype": "Table",
+            "label": "Products",
+            "options": "CRM Products"
+        },
+        {
+            "fieldname": "section_break_ccbj",
+            "fieldtype": "Section Break"
+        },
+        {
+            "fieldname": "column_break_udbq",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "total",
+            "fieldtype": "Currency",
+            "label": "Total",
+            "options": "currency",
+            "read_only": 1
+        },
+        {
+            "description": "Total after discount",
+            "fieldname": "net_total",
+            "fieldtype": "Currency",
+            "label": "Net Total",
+            "options": "currency",
+            "read_only": 1
+        },
+        {
+            "fieldname": "section_break_jgpm",
+            "fieldtype": "Section Break"
+        },
+        {
+            "fieldname": "deal_value",
+            "fieldtype": "Currency",
+            "label": "Deal Value",
+            "options": "currency"
+        },
+        {
+            "fieldname": "column_break_kpxa",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "lost_reason",
+            "fieldtype": "Link",
+            "label": "Lost Reason",
+            "options": "CRM Lost Reason"
+        },
+        {
+            "fieldname": "lost_notes",
+            "fieldtype": "Text",
+            "label": "Lost Notes",
+            "mandatory_depends_on": "eval: doc.lost_reason == \"Other\""
+        },
+        {
+            "default": "1",
+            "description": "The rate used to convert the deal\u2019s currency to your crm's base currency (set in CRM Settings). It is set once when the currency is first added and doesn't change automatically.",
+            "fieldname": "exchange_rate",
+            "fieldtype": "Float",
+            "label": "Exchange Rate"
+        },
+        {
+            "fieldname": "expected_deal_value",
+            "fieldtype": "Currency",
+            "label": "Expected Deal Value",
+            "options": "currency"
+        },
+        {
+            "fieldname": "expected_closure_date",
+            "fieldtype": "Date",
+            "label": "Expected Closure Date"
+        },
+        {
+            "fieldname": "closed_date",
+            "fieldtype": "Date",
+            "label": "Closed Date"
+        },
+        {
+            "fieldname": "section_break_mwvg",
+            "fieldtype": "Section Break"
+        },
+        {
+            "fieldname": "rolling_responses",
+            "fieldtype": "Table",
+            "label": "Rolling Responses",
+            "options": "CRM Rolling Response Time"
+        },
+        {
+            "fieldname": "section_break_jgdr",
+            "fieldtype": "Section Break"
+        },
+        {
+            "fieldname": "last_response_time",
+            "fieldtype": "Duration",
+            "label": "Last Response Time",
+            "read_only": 1
+        },
+        {
+            "fieldname": "column_break_evzj",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "last_responded_on",
+            "fieldtype": "Datetime",
+            "label": "Last Responded On",
+            "read_only": 1
+        },
+        {
+            "fieldname": "lost_details_tab",
+            "fieldtype": "Tab Break",
+            "label": "Lost Details"
+        },
+        {
+            "fieldname": "type_inquiry",
+            "fieldtype": "Select",
+            "label": "Type of Inquiry",
+            "options": "\nContainer 20\nContainer 40\nContainer 45\nDomestic\nExport\nFR ( Flat Rack)\nFull Container Load\nFull Isotank Load\nHC (Hight Cube)\nHD (Heavy Duty)\nImport\nIsotank T11\nIsotank T14\nIsotank T50\nIsotank T75\nLess Container Load\nOT (Open Top)\nProduct\nService Contract Logistic\nSTD (Standart)\nTrucking\nTrucking Wingbox"
+        },
+        {
+            "fieldname": "shipper_consignee",
+            "fieldtype": "Data",
+            "label": "Shipper/Consignee"
+        },
+        {
+            "fieldname": "transportation_mode",
+            "fieldtype": "Table MultiSelect",
+            "label": "Transportation Mode",
+            "options": "CRM Deal Transportation Mode"
+        },
+        {
+            "fieldname": "incoterms",
+            "fieldtype": "Select",
+            "label": "Incoterms",
+            "options": "\nEXW (EX WOKRS)\nFCA (FREE CARRIER)\nFAS (FREE ALONGSIDE SHIP)\nFOB (FREE ON BOARD)\nCFR (COST & FREIGHT)\nCIF (COST, INSURANCE & FREIGHT)\nCPT (COST PAID TO)\nCIP (CARRIER, INSURANCE PAID TO)\nDPU (DELIVERED AT PLACE UNLOADED)\nDAP (DELIVERED AT PLACE)\nDDP (DELIVERED DUTY PAID)"
+        },
+        {
+            "fieldname": "date_shipment",
+            "fieldtype": "Date",
+            "label": "Date of Shipment"
+        },
+        {
+            "fieldname": "qty_volume",
+            "fieldtype": "Data",
+            "label": "Quantity/Volume"
+        },
+        {
+            "fieldname": "port_pol_destination_detail_address",
+            "fieldtype": "Data",
+            "label": "Port/POL/Destination Detail Address"
+        },
+        {
+            "fieldname": "cargo_commodity",
+            "fieldtype": "Data",
+            "label": "Cargo Commodity / Type / HS Code"
+        },
+        {
+            "fieldname": "cargo_weight",
+            "fieldtype": "Data",
+            "label": "Cargo Weight (KG) / Volume / Packaging"
+        },
+        {
+            "fieldname": "status_cargo",
+            "fieldtype": "Data",
+            "label": "Status of Cargo"
+        },
+        {
+            "fieldname": "job_service",
+            "fieldtype": "Select",
+            "label": "Job Service",
+            "options": "\nTrukcing Container 40ft\nTrucking Isotank 25kl\nDoor To Port Flexitank 18kl\nTrucking Container 20ft\nExport Service Container 20 Dry\nExport Service Container 40 Dry\nExport Service Container 20 Reefer\nExport Service Container 40 Reefer\nDoor To Door Isotank\nDoor To Door Container 20 Dry\nDoor To Door Container 40 Dry\nDoor To Door Container 20 Reefer\nDoot To Door Container 40 Reefer\nFreight LCL\nFreight\nContainer Storage\nIsotank\nContainer - Container 20 Dry\nContainer - Container 40 Dry\nContainer - Container 20 & 40 Dry\nContainer - Container 20 & 40 Reefer\nContainer - Container 20 Reefer\nContainer - Container 40 Reefer\nEMKL & Trucking - Container 20 Dry\nEMKL & Trucking - Container 40 Dry\nEMKL & Trucking - Container 20 & 40 Dry\nEMKL & Trucking\nEMKL & Trucking - Container 20 Reefer\nEMKL & Trucking - Container 40 Reefer\nImport Door To Door\nEMKL & Trucking - Isotank\nDoor To Port Isotank\nLocal Service\nEMKL & Trucking - Isotank T75\nImpor Trucking Container\nExport Service Isotank\nImpor Service Isotank\nImpor Service Container\nDoor to Door Flexitank\nPort To Port\nPort To Door Isotank\nOther Product\nProduct Packaging\nProduct Oleochemical\nRepair Container\nToeslagh\nExport Service Flexitank\nTrucking + Rental Isotank\nDoor To Port\nCleaning Isotank\nExport Isotank & Flexibag"
+        },
+        {
+            "fieldname": "service_type",
+            "fieldtype": "Select",
+            "label": "Service Type",
+            "options": "\nNew Customer\nNew Job Service\nNew Product\nExisting Job Service\nExisting Product"
+        },
+        {
+            "fieldname": "business_unit",
+            "fieldtype": "Select",
+            "label": "Business Unit",
+            "options": "\nEMKL (TRUCKING DOMESTIK NON ISOTANK)\nFF (EXPORT/IMPORT CONTAINER DRY)\nISO (LOCAL/ DOMESTIK ISOTANK)\nLOG (CONTRACT LOGISTICS)\nPCP (EXPORT ISOTANK)\nPKGOLEO (PRODUCT)"
+        },
+        {
+            "fieldname": "remarks",
+            "fieldtype": "Text",
+            "label": "Remarks"
+        },
+        {
+            "fieldname": "deal_date",
+            "fieldtype": "Date",
+            "label": "Deal Date"
+        },
+        {
+            "fieldname": "cargo_packaging",
+            "fieldtype": "Data",
+            "label": "Cargo Packaging"
+        },
+        {
+            "fieldname": "origin",
+            "fieldtype": "Data",
+            "label": "Origin"
+        },
+        {
+            "fieldname": "destination",
+            "fieldtype": "Data",
+            "label": "Destination"
+        },
+        {
+            "fieldname": "qty",
+            "fieldtype": "Float",
+            "label": "Quantity"
+        },
+        {
+            "fieldname": "rate",
+            "fieldtype": "Currency",
+            "label": "Rate",
+            "options": "currency"
+        },
+        {
+            "fieldname": "estimasi_tarif",
+            "fieldtype": "Currency",
+            "label": "Estimasi Tarif",
+            "options": "currency"
+        },
+        {
+            "fieldname": "costing_procurement",
+            "fieldtype": "Currency",
+            "label": "Costing Procurement",
+            "options": "currency"
+        },
+        {
+            "fieldname": "subject",
+            "fieldtype": "Data",
+            "label": "Subject"
+        },
+        {
+            "fieldname": "void_section",
+            "fieldtype": "Section Break",
+            "label": "Void"
+        },
+        {
+            "fieldname": "is_void",
+            "fieldtype": "Check",
+            "label": "Void",
+            "default": "0",
+            "read_only": 1,
+            "in_standard_filter": 1
+        },
+        {
+            "fieldname": "void_reason",
+            "fieldtype": "Small Text",
+            "label": "Void Reason",
+            "read_only": 1
+        },
+        {
+            "fieldname": "void_at",
+            "fieldtype": "Datetime",
+            "label": "Voided At",
+            "read_only": 1
+        },
+        {
+            "fieldname": "void_by",
+            "fieldtype": "Link",
+            "label": "Voided By",
+            "options": "User",
+            "read_only": 1
+        }
+    ],
+    "grid_page_length": 50,
+    "index_web_pages_for_search": 1,
+    "links": [],
+    "modified": "2026-04-04 12:34:10.808282",
+    "modified_by": "Administrator",
+    "module": "FCRM",
+    "name": "CRM Deal",
+    "naming_rule": "",
+    "owner": "Administrator",
+    "permissions": [
+        {
+            "create": 1,
+            "delete": 1,
+            "email": 1,
+            "export": 1,
+            "print": 1,
+            "read": 1,
+            "report": 1,
+            "role": "System Manager",
+            "share": 1,
+            "write": 1
+        },
+        {
+            "create": 1,
+            "delete": 1,
+            "email": 1,
+            "export": 1,
+            "print": 1,
+            "read": 1,
+            "report": 1,
+            "role": "Sales Manager",
+            "share": 1,
+            "write": 1
+        },
+        {
+            "create": 1,
+            "delete": 1,
+            "email": 1,
+            "export": 1,
+            "print": 1,
+            "read": 1,
+            "report": 1,
+            "role": "Sales User",
+            "share": 1,
+            "write": 1
+        }
+    ],
+    "row_format": "Dynamic",
+    "show_title_field_in_link": 1,
+    "sort_field": "modified",
+    "sort_order": "DESC",
+    "states": [],
+    "title_field": "name",
+    "track_changes": 1
 }

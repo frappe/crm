@@ -8,6 +8,22 @@ app_icon_url = "/assets/crm/images/logo.svg"
 app_icon_title = "CRM"
 app_icon_route = "/crm"
 
+# Fixtures
+# ------------------
+# Export layout (Tab Data & Side Panel) CRM Quotation ke git supaya portable
+# antar environment / bisa dikerjakan developer lain.
+fixtures = [
+    {"doctype": "CRM Fields Layout", "filters": [["dt", "in", ["CRM Quotation", "CRM Lead", "CRM Estimation"]]]},
+    # Relabel Deal -> Inquiry di UI (lewat translation, tanpa ubah doctype/route).
+    {"doctype": "Translation", "filters": [["translated_text", "like", "%Inquir%"]]},
+    # Master Lead Source (pilihan sumber lead).
+    {"doctype": "CRM Lead Source"},
+    # Master Transportation Mode (multi-select di Inquiry).
+    {"doctype": "CRM Transportation Mode"},
+    # Custom field kategori Item (global: Revenue/Expense/Stock/Asset/Sparepart).
+    {"doctype": "Custom Field", "filters": [["name", "=", "Item-item_category"]]},
+]
+
 # Apps
 # ------------------
 
@@ -135,6 +151,18 @@ before_uninstall = "crm.uninstall.before_uninstall"
 # has_permission = {
 # "Event": "frappe.desk.doctype.event.event.has_permission",
 # }
+
+# Akses transaksi berbasis assignment: Sales User hanya lihat yang di-assign/dibuat
+# olehnya; System Manager / Sales Manager / Administrator lihat semua.
+permission_query_conditions = {
+	"CRM Quotation": "crm.api.permissions.quotation_query_conditions",
+	"CRM Estimation": "crm.api.permissions.estimation_query_conditions",
+}
+
+has_permission = {
+	"CRM Quotation": "crm.api.permissions.quotation_has_permission",
+	"CRM Estimation": "crm.api.permissions.estimation_has_permission",
+}
 
 # DocType Class
 # ---------------

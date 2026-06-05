@@ -4,3 +4,5 @@ dist
 dist-ssr
 *.local
 components.d.ts
+vite.config.js.timestamp-*
+*.timestamp-*.mjs

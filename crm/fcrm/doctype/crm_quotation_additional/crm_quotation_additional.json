@@ -1,0 +1,29 @@
+{
+ "actions": [],
+ "creation": "2026-05-29 00:00:00",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "type",
+  "title",
+  "item_name",
+  "price"
+ ],
+ "fields": [
+  {"fieldname": "type", "fieldtype": "Select", "label": "Type", "options": "additional1\nadditional2", "in_list_view": 1, "reqd": 1, "columns": 2},
+  {"fieldname": "title", "fieldtype": "Data", "label": "Title", "in_list_view": 1, "columns": 3},
+  {"fieldname": "item_name", "fieldtype": "Data", "label": "Item Name", "in_list_view": 1, "reqd": 1, "columns": 4},
+  {"fieldname": "price", "fieldtype": "Currency", "label": "Price", "in_list_view": 1, "columns": 2}
+ ],
+ "istable": 1,
+ "modified": "2026-05-29 00:00:00",
+ "modified_by": "Administrator",
+ "module": "FCRM",
+ "name": "CRM Quotation Additional",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

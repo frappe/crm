@@ -179,6 +179,8 @@ import SidebarLink from '@/components/SidebarLink.vue'
 import Notifications from '@/components/Notifications.vue'
 import Settings from '@/components/Settings/Settings.vue'
 import SalesHierarchyBanner from '@/components/SalesHierarchyBanner.vue'
+import QuotationIcon from '@/components/Icons/QuotationIcon.vue'
+import EstimationIcon from '@/components/Icons/EstimationIcon.vue'
 import { viewsStore } from '@/stores/views'
 import {
   unreadNotificationsCount,
@@ -225,24 +227,34 @@ const links = [
     to: 'Dashboard',
   },
   {
-    label: 'Leads',
-    icon: LeadsIcon,
-    to: 'Leads',
+    label: 'Accounts',
+    icon: OrganizationsIcon,
+    to: 'Organizations',
   },
-  {
-    label: 'Deals',
-    icon: DealsIcon,
-    to: 'Deals',
-  },
-  {
+   {
     label: 'Contacts',
     icon: ContactsIcon,
     to: 'Contacts',
   },
   {
-    label: 'Organizations',
-    icon: OrganizationsIcon,
-    to: 'Organizations',
+    label: 'Leads',
+    icon: LeadsIcon,
+    to: 'Leads',
+  },
+  {
+    label: 'Inquiries',
+    icon: DealsIcon,
+    to: 'Deals',
+  },
+  {
+    label: 'Quotations',
+    icon: QuotationIcon,
+    to: 'Quotations',
+  },
+  {
+    label: 'Estimations',
+    icon: EstimationIcon,
+    to: 'Estimations',
   },
   {
     label: 'Notes',

@@ -377,7 +377,7 @@ const isOldSla = ref(false)
 const documentType = computed(() =>
   assignmentRuleData.value.documentType == 'CRM Lead'
     ? __('leads')
-    : __('deals'),
+    : __('inquiries'),
 )
 const deskUrl = `${window.location.origin}/app/assignment-rule/${step.value.data?.name}`
 

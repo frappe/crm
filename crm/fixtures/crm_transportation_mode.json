@@ -1,0 +1,58 @@
+[
+ {
+  "docstatus": 0,
+  "doctype": "CRM Transportation Mode",
+  "mode_name": "Ocean SOC",
+  "modified": "2026-06-04 16:37:43.992551",
+  "name": "Ocean SOC"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "CRM Transportation Mode",
+  "mode_name": "Ocean COC",
+  "modified": "2026-06-04 16:37:44.467111",
+  "name": "Ocean COC"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "CRM Transportation Mode",
+  "mode_name": "Inland Truck SOC",
+  "modified": "2026-06-04 16:37:44.469501",
+  "name": "Inland Truck SOC"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "CRM Transportation Mode",
+  "mode_name": "Inland Truck COC",
+  "modified": "2026-06-04 16:37:44.472574",
+  "name": "Inland Truck COC"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "CRM Transportation Mode",
+  "mode_name": "Railway SOC",
+  "modified": "2026-06-04 16:37:44.474401",
+  "name": "Railway SOC"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "CRM Transportation Mode",
+  "mode_name": "Railway COC",
+  "modified": "2026-06-04 16:37:44.476092",
+  "name": "Railway COC"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "CRM Transportation Mode",
+  "mode_name": "Air Freight SOC",
+  "modified": "2026-06-04 16:37:44.477611",
+  "name": "Air Freight SOC"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "CRM Transportation Mode",
+  "mode_name": "Air Freight COC",
+  "modified": "2026-06-04 16:37:44.479059",
+  "name": "Air Freight COC"
+ }
+]

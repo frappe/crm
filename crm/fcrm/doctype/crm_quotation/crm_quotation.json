@@ -1,0 +1,421 @@
+{
+    "actions": [],
+    "allow_import": 1,
+    "allow_rename": 0,
+    "autoname": "format:QT/{####}/CMI/{YYYY}",
+    "creation": "2026-05-29 00:00:00",
+    "doctype": "DocType",
+    "engine": "InnoDB",
+    "field_order": [
+        "main_tab",
+        "number",
+        "subject",
+        "column_break_1",
+        "state",
+        "date",
+        "disabled",
+        "section_break_customer",
+        "account",
+        "account_name",
+        "contact_name",
+        "column_break_customer",
+        "attention",
+        "inquiry",
+        "inquiry_details",
+        "section_break_company",
+        "cost_center",
+        "column_break_company",
+        "currency",
+        "rate",
+        "cargo_tab",
+        "cargo",
+        "packaging",
+        "loading",
+        "unloading",
+        "products_tab",
+        "products",
+        "section_break_total",
+        "net_total",
+        "additional1_title",
+        "additional1_detail",
+        "additional1_amount",
+        "additional2_title",
+        "additional2_detail",
+        "additional2_amount",
+        "terms_tab",
+        "term_title",
+        "term_detail",
+        "column_break_terms",
+        "validity",
+        "payterm",
+        "remark",
+        "section_print",
+        "printed_by",
+        "void_section",
+        "is_void",
+        "void_reason",
+        "void_at",
+        "void_by"
+    ],
+    "fields": [
+        {
+            "fieldname": "main_tab",
+            "fieldtype": "Tab Break",
+            "label": "Main"
+        },
+        {
+            "fieldname": "number",
+            "fieldtype": "Data",
+            "label": "Number",
+            "unique": 1,
+            "in_list_view": 1,
+            "in_standard_filter": 1
+        },
+        {
+            "fieldname": "subject",
+            "fieldtype": "Data",
+            "label": "Subject",
+            "in_list_view": 1,
+            "fetch_from": "inquiry.subject",
+            "fetch_if_empty": 1
+        },
+        {
+            "fieldname": "column_break_1",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "state",
+            "fieldtype": "Select",
+            "label": "State",
+            "options": "Draft\nCreated\nSent\nApproved\nRejected\nExpired\nConverted",
+            "default": "Draft",
+            "in_standard_filter": 1,
+            "read_only": 1
+        },
+        {
+            "fieldname": "date",
+            "fieldtype": "Date",
+            "label": "Date",
+            "default": "Today",
+            "in_list_view": 1
+        },
+        {
+            "fieldname": "disabled",
+            "fieldtype": "Check",
+            "label": "Disabled",
+            "default": "0"
+        },
+        {
+            "fieldname": "section_break_customer",
+            "fieldtype": "Section Break",
+            "label": "Customer"
+        },
+        {
+            "fieldname": "account",
+            "fieldtype": "Link",
+            "label": "Account",
+            "options": "CRM Organization",
+            "in_list_view": 1,
+            "fetch_from": "inquiry.organization",
+            "fetch_if_empty": 1,
+            "read_only": 1
+        },
+        {
+            "fieldname": "account_name",
+            "fieldtype": "Data",
+            "label": "Account Name",
+            "fetch_from": "account.organization_name"
+        },
+        {
+            "fieldname": "contact_name",
+            "fieldtype": "Link",
+            "label": "Contact",
+            "options": "Contact"
+        },
+        {
+            "fieldname": "column_break_customer",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "attention",
+            "fieldtype": "Data",
+            "label": "Attention"
+        },
+        {
+            "fieldname": "inquiry",
+            "fieldtype": "Link",
+            "label": "Inquiry",
+            "options": "CRM Deal",
+            "link_filters": "{\"status\":\"Won\"}",
+            "unique": 1
+        },
+        {
+            "fieldname": "inquiry_details",
+            "fieldtype": "HTML",
+            "label": "Inquiry Details"
+        },
+        {
+            "fieldname": "section_break_company",
+            "fieldtype": "Section Break",
+            "label": "Company & Currency"
+        },
+        {
+            "fieldname": "company",
+            "fieldtype": "Link",
+            "label": "Company",
+            "options": "Company"
+        },
+        {
+            "fieldname": "branch",
+            "fieldtype": "Data",
+            "label": "Branch"
+        },
+        {
+            "fieldname": "cost_center",
+            "fieldtype": "Link",
+            "label": "Cost Center",
+            "options": "Cost Center"
+        },
+        {
+            "fieldname": "column_break_company",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "currency",
+            "fieldtype": "Link",
+            "label": "Currency",
+            "options": "Currency",
+            "default": "IDR"
+        },
+        {
+            "fieldname": "rate",
+            "fieldtype": "Float",
+            "label": "Exchange Rate",
+            "default": "1.0",
+            "precision": "6"
+        },
+        {
+            "fieldname": "cargo_tab",
+            "fieldtype": "Tab Break",
+            "label": "Cargo & Logistics"
+        },
+        {
+            "fieldname": "cargo",
+            "fieldtype": "Data",
+            "label": "Cargo"
+        },
+        {
+            "fieldname": "packaging",
+            "fieldtype": "Data",
+            "label": "Packaging"
+        },
+        {
+            "fieldname": "loading",
+            "fieldtype": "Small Text",
+            "label": "Loading"
+        },
+        {
+            "fieldname": "unloading",
+            "fieldtype": "Small Text",
+            "label": "Unloading"
+        },
+        {
+            "fieldname": "products_tab",
+            "fieldtype": "Tab Break",
+            "label": "Products"
+        },
+        {
+            "fieldname": "products",
+            "fieldtype": "Table",
+            "label": "Products",
+            "options": "CRM Quotation Product"
+        },
+        {
+            "fieldname": "section_break_total",
+            "fieldtype": "Section Break"
+        },
+        {
+            "fieldname": "net_total",
+            "fieldtype": "Currency",
+            "label": "Net Total",
+            "options": "currency",
+            "read_only": 1,
+            "in_list_view": 1
+        },
+        {
+            "fieldname": "column_break_terms",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "validity",
+            "fieldtype": "Data",
+            "label": "Validity"
+        },
+        {
+            "fieldname": "payterm",
+            "fieldtype": "Data",
+            "label": "Payment Term"
+        },
+        {
+            "fieldname": "additional1_title",
+            "fieldtype": "Data",
+            "label": "Additional Title"
+        },
+        {
+            "fieldname": "additional1_item",
+            "fieldtype": "Small Text",
+            "label": "Additional Item"
+        },
+        {
+            "fieldname": "additional1_amount",
+            "fieldtype": "Data",
+            "label": "Additional Amount"
+        },
+        {
+            "fieldname": "additional2_title",
+            "fieldtype": "Data",
+            "label": "Additional Title 2"
+        },
+        {
+            "fieldname": "additional2_item",
+            "fieldtype": "Small Text",
+            "label": "Additional Item 2"
+        },
+        {
+            "fieldname": "additional2_amount",
+            "fieldtype": "Data",
+            "label": "Additional Amount 2"
+        },
+        {
+            "fieldname": "term_detail",
+            "fieldtype": "Text",
+            "label": "Terms Detail"
+        },{
+            "fieldname": "TaC",
+            "fieldtype": "Data",
+            "label": "Terms and Conditions Title",
+            "default": "Terms and Conditions"
+        },
+        {
+            "fieldname": "TaC_detail",
+            "fieldtype": "Text Editor",
+            "label": "Terms and Conditions Detail"
+        },
+        {
+            "fieldname": "rates_tab",
+            "fieldtype": "Tab Break",
+            "label": "Rate Info"
+        },
+        {
+            "fieldname": "rate_include",
+            "fieldtype": "Text",
+            "label": "Rate Include"
+        },
+        {
+            "fieldname": "rate_exclude",
+            "fieldtype": "Text",
+            "label": "Rate Exclude"
+        },
+        {
+            "fieldname": "remark",
+            "fieldtype": "Small Text",
+            "label": "Remark"
+        },
+        {
+            "fieldname": "section_print",
+            "fieldtype": "Section Break",
+            "label": "Print"
+        },
+        {
+            "fieldname": "printed_by",
+            "fieldtype": "Link",
+            "label": "Printed By",
+            "options": "User"
+        },
+        {
+            "fieldname": "void_section",
+            "fieldtype": "Section Break",
+            "label": "Void"
+        },
+        {
+            "fieldname": "is_void",
+            "fieldtype": "Check",
+            "label": "Void",
+            "default": "0",
+            "read_only": 1,
+            "in_standard_filter": 1
+        },
+        {
+            "fieldname": "void_reason",
+            "fieldtype": "Small Text",
+            "label": "Void Reason",
+            "read_only": 1
+        },
+        {
+            "fieldname": "void_at",
+            "fieldtype": "Datetime",
+            "label": "Voided At",
+            "read_only": 1
+        },
+        {
+            "fieldname": "void_by",
+            "fieldtype": "Link",
+            "label": "Voided By",
+            "options": "User",
+            "read_only": 1
+        }
+    ],
+    "grid_page_length": 50,
+    "index_web_pages_for_search": 1,
+    "links": [],
+    "modified": "2026-05-29 00:00:00",
+    "modified_by": "Administrator",
+    "module": "FCRM",
+    "name": "CRM Quotation",
+    "naming_rule": "By fieldname",
+    "owner": "Administrator",
+    "permissions": [
+        {
+            "create": 1,
+            "delete": 1,
+            "email": 1,
+            "export": 1,
+            "print": 1,
+            "read": 1,
+            "report": 1,
+            "role": "System Manager",
+            "share": 1,
+            "write": 1
+        },
+        {
+            "create": 1,
+            "delete": 1,
+            "email": 1,
+            "export": 1,
+            "print": 1,
+            "read": 1,
+            "report": 1,
+            "role": "Sales Manager",
+            "share": 1,
+            "write": 1
+        },
+        {
+            "create": 1,
+            "delete": 1,
+            "email": 1,
+            "export": 1,
+            "print": 1,
+            "read": 1,
+            "report": 1,
+            "role": "Sales User",
+            "share": 1,
+            "write": 1
+        }
+    ],
+    "row_format": "Dynamic",
+    "sort_field": "modified",
+    "sort_order": "DESC",
+    "states": [],
+    "title_field": "subject",
+    "track_changes": 1
+}
