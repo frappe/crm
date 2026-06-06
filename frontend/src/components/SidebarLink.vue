@@ -72,9 +72,20 @@ function handleClick() {
 }
 
 let isActive = computed(() => {
-  if (route.query.view) {
-    return route.query.view == props.to?.query?.view
+  if (!props.to) return false
+  if (typeof props.to === 'string') {
+    return route.name === props.to && !route.query.view
   }
-  return route.name === props.to
+
+  if (route.name !== props.to.name) return false
+
+  let targetQuery = props.to.query || {}
+  let targetQueryKeys = Object.keys(targetQuery)
+
+  if (targetQueryKeys.length) {
+    return targetQueryKeys.every((key) => route.query[key] == targetQuery[key])
+  }
+
+  return !route.query.view && !route.query.party_type && !route.query.lead_scope
 })
 </script>

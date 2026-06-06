@@ -12,18 +12,19 @@
         variant="solid"
         :label="__('Create')"
         iconLeft="plus"
-        @click="showLeadModal = true"
+        @click="openLeadModal()"
       />
     </template>
   </LayoutHeader>
   <ViewControls
+    :key="route.query.party_type || route.query.lead_scope || 'all'"
     ref="viewControls"
     v-model="leads"
     v-model:loadMore="loadMore"
     v-model:resizeColumn="triggerResize"
     v-model:updatedPageCount="updatedPageCount"
     doctype="CRM Lead"
-    :filters="{ converted: 0 }"
+    :filters="lockedLeadFilters"
     :options="{
       allowedViews: ['list', 'group_by', 'kanban'],
     }"
@@ -309,14 +310,38 @@ const { showModal } = useDoctypeModal()
 
 const route = useRoute()
 
+const lockedLeadFilters = computed(() => {
+  let filters = { converted: 0 }
+  if (['Buyer', 'Seller'].includes(route.query.party_type)) {
+    filters.party_type = route.query.party_type
+  }
+  return filters
+})
+
 const leadsListView = ref(null)
 const showLeadModal = ref(false)
 
 on('trigger_lead_create', (data) => {
-  showLeadModal.value = Boolean(data)
+  if (data) {
+    openLeadModal()
+  } else {
+    showLeadModal.value = false
+  }
 })
 
 const defaults = reactive({})
+
+function applyLeadTypeDefault() {
+  delete defaults.party_type
+  if (['Buyer', 'Seller'].includes(route.query.party_type)) {
+    defaults.party_type = route.query.party_type
+  }
+}
+
+function openLeadModal() {
+  applyLeadTypeDefault()
+  showLeadModal.value = true
+}
 
 // leads data is loaded in the ViewControls component
 const leads = ref({})
@@ -528,7 +553,7 @@ function onNewClick(column) {
     defaults[column_field] = column.column.name
   }
 
-  showLeadModal.value = true
+  openLeadModal()
 }
 
 function actions(itemName) {

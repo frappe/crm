@@ -56,15 +56,45 @@
             </div>
           </template>
           <nav class="flex flex-col">
-            <SidebarLink
-              v-for="link in view.views"
-              :key="link.label"
-              :icon="link.icon"
-              :label="__(link.label)"
-              :to="link.to"
-              :isCollapsed="isSidebarCollapsed"
-              class="mx-2 my-[1.5px]"
-            />
+            <div v-for="link in view.views" :key="link.label">
+              <SidebarLink
+                :icon="link.icon"
+                :label="__(link.label)"
+                :to="link.to"
+                :isCollapsed="isSidebarCollapsed"
+                class="mx-2 my-[1.5px]"
+                @click="() => toggleSidebarGroup(link)"
+              >
+                <template
+                  v-if="link.children?.length && !isSidebarCollapsed"
+                  #right
+                >
+                  <FeatherIcon
+                    name="chevron-right"
+                    class="h-4 text-ink-gray-7 transition-all duration-300 ease-in-out"
+                    :class="{ 'rotate-90': openedSidebarGroups[link.label] }"
+                  />
+                </template>
+              </SidebarLink>
+              <div
+                v-if="
+                  link.children?.length &&
+                  openedSidebarGroups[link.label] &&
+                  !isSidebarCollapsed
+                "
+                class="ml-6 flex flex-col border-l border-outline-gray-1 pl-1"
+              >
+                <SidebarLink
+                  v-for="child in link.children"
+                  :key="child.label"
+                  :icon="child.icon"
+                  :label="__(child.label)"
+                  :to="child.to"
+                  :isCollapsed="isSidebarCollapsed"
+                  class="mx-2 my-[1.5px]"
+                />
+              </div>
+            </div>
           </nav>
         </CollapsibleSection>
       </div>
@@ -216,6 +246,7 @@ const { clearDemoData, isDemoDataCreated } = useDemoData()
 const { send } = useBroadcast()
 
 const isSidebarCollapsed = useStorage('isSidebarCollapsed', false)
+const openedSidebarGroups = reactive({ Leads: true })
 
 const isFCSite = ref(window.is_fc_site)
 const isDemoSite = ref(window.is_demo_site)
@@ -230,7 +261,24 @@ const links = [
   {
     label: 'Leads',
     icon: LeadsIcon,
-    to: 'Leads',
+    to: { name: 'Leads' },
+    children: [
+      {
+        label: 'All Leads',
+        icon: LeadsIcon,
+        to: { name: 'Leads', query: { lead_scope: 'all' } },
+      },
+      {
+        label: 'Buyers',
+        icon: LeadsIcon,
+        to: { name: 'Leads', query: { party_type: 'Buyer' } },
+      },
+      {
+        label: 'Sellers',
+        icon: LeadsIcon,
+        to: { name: 'Leads', query: { party_type: 'Seller' } },
+      },
+    ],
   },
   {
     label: 'Deals',
@@ -312,17 +360,46 @@ const allViews = computed(() => {
 })
 
 function parseView(views) {
-  return views.map((view) => {
-    return {
-      label: view.label,
-      icon: getIcon(view.route_name, view.icon),
-      to: {
-        name: view.route_name,
-        params: { viewType: view.type || 'list' },
-        query: { view: view.name },
-      },
-    }
-  })
+  return views
+    .filter((view) => !isDuplicatedSidebarView(view))
+    .map((view) => {
+      return {
+        label: view.label,
+        icon: getIcon(view.route_name, view.icon),
+        to: {
+          name: view.route_name,
+          params: { viewType: view.type || 'list' },
+          query: { view: view.name },
+        },
+      }
+    })
+}
+
+function isDuplicatedSidebarView(view) {
+  let primaryLinks = links.map((link) => ({
+    label: link.label,
+    routeName: typeof link.to === 'string' ? link.to : link.to?.name,
+  }))
+
+  let duplicatesPrimaryLink = primaryLinks.some(
+    (link) => link.routeName === view.route_name && link.label === view.label,
+  )
+  if (duplicatesPrimaryLink) return true
+
+  if (view.route_name !== 'Leads') return false
+  return [
+    'Leads',
+    'All Leads',
+    'Buyers',
+    'Buyer Leads',
+    'Sellers',
+    'Seller Leads',
+  ].includes(view.label)
+}
+
+function toggleSidebarGroup(link) {
+  if (!link.children?.length) return
+  openedSidebarGroups[link.label] = !openedSidebarGroups[link.label]
 }
 
 function getIcon(routeName, icon) {
