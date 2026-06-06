@@ -1,0 +1,14 @@
+{
+ "doctype": "DocType",
+ "name": "Credit Ledger Entry",
+ "module": "FCRM",
+ "is_submittable": 1,
+ "fields": [
+  {"fieldname": "tripartite_contract", "fieldtype": "Link", "label": "Tripartite Contract", "options": "Tripartite Contract", "reqd": 1},
+  {"fieldname": "transaction_type", "fieldtype": "Select", "label": "Transaction Type", "options": "Delivered\nReturned\nAdjustment", "reqd": 1},
+  {"fieldname": "amount", "fieldtype": "Currency", "label": "Amount", "reqd": 1},
+  {"fieldname": "reference_doc", "fieldtype": "Dynamic Link", "label": "Reference Document", "options": "reference_doctype"},
+  {"fieldname": "reference_doctype", "fieldtype": "Link", "label": "Reference DocType", "options": "DocType"},
+  {"fieldname": "notes", "fieldtype": "Small Text", "label": "Notes"}
+ ]
+}
