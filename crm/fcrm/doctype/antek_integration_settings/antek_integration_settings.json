@@ -1,0 +1,83 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-06-05 20:56:57.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "fastapi_webhook_url",
+  "signature_secret",
+  "request_timeout_seconds",
+  "max_retries",
+  "sync_enabled"
+ ],
+ "fields": [
+  {
+   "fieldname": "fastapi_webhook_url",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "FastAPI Webhook URL",
+   "reqd": 1
+  },
+  {
+   "fieldname": "signature_secret",
+   "fieldtype": "Password",
+   "in_list_view": 1,
+   "label": "Signature Secret",
+   "reqd": 1
+  },
+  {
+   "default": "5",
+   "fieldname": "request_timeout_seconds",
+   "fieldtype": "Int",
+   "label": "Request Timeout (Seconds)"
+  },
+  {
+   "default": "3",
+   "fieldname": "max_retries",
+   "fieldtype": "Int",
+   "label": "Max Retries"
+  },
+  {
+   "default": "1",
+   "fieldname": "sync_enabled",
+   "fieldtype": "Check",
+   "label": "Sync Enabled"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2026-06-05 20:56:57.000000",
+ "modified_by": "Administrator",
+ "module": "FCRM",
+ "name": "AnTek Integration Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "Sales Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}
