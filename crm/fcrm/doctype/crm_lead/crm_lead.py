@@ -167,7 +167,7 @@ class CRMLead(Document):
 					# the agent is already set as an assignee
 					return
 
-		assign({"assign_to": [agent], "doctype": "CRM Lead", "name": self.name}, ignore_permissions=True)
+		assign({"assign_to": [agent], "doctype": "CRM Lead", "name": self.name})
 
 	def share_with_agent(self, agent):
 		if not agent:

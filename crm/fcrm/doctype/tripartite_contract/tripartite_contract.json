@@ -1,0 +1,19 @@
+{
+ "doctype": "DocType",
+ "name": "Tripartite Contract",
+ "module": "FCRM",
+ "fields": [
+  {"fieldname": "contract_id", "fieldtype": "Data", "label": "Contract ID", "reqd": 1, "unique": 1},
+  {"fieldname": "deal_link", "fieldtype": "Link", "label": "Deal", "options": "CRM Deal"},
+  {"fieldname": "contractor", "fieldtype": "Link", "label": "Contractor", "options": "CRM Organization"},
+  {"fieldname": "owner_contact", "fieldtype": "Link", "label": "Owner", "options": "Contact"},
+  {"fieldname": "credit_limit", "fieldtype": "Currency", "label": "Credit Limit", "default": "200000000.00", "reqd": 1},
+  {"fieldname": "current_debt", "fieldtype": "Currency", "label": "Current Debt", "read_only": 1, "default": "0"},
+  {"fieldname": "remaining_credit", "fieldtype": "Currency", "label": "Remaining Credit", "read_only": 1, "default": "0"},
+  {"fieldname": "credit_locked", "fieldtype": "Check", "label": "Credit Locked", "read_only": 1, "default": "0"},
+  {"fieldname": "sync_status", "fieldtype": "Select", "label": "Sync Status", "options": "Pending\nSynced\nFailed", "default": "Pending"},
+  {"fieldname": "sync_error", "fieldtype": "Small Text", "label": "Sync Error"},
+  {"fieldname": "last_synced_at", "fieldtype": "Datetime", "label": "Last Synced At"},
+  {"fieldname": "last_sync_event_id", "fieldtype": "Data", "label": "Last Sync Event ID"}
+ ]
+}
