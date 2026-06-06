@@ -26,3 +26,4 @@ crm.patches.v1_0.add_email_in_default_lead_sources
 crm.patches.v1_0.create_email_account_custom_field
 crm.patches.v1_0.create_default_quick_filters
 crm.patches.v1_0.create_custom_fields_for_product_item_sync
+crm.patches.v1_0.create_antek_partner_role_fields

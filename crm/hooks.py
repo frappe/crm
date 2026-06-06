@@ -207,6 +207,9 @@ doc_events = {
 		"before_validate": ["crm.api.live_demo.validate_user"],
 		"validate_reset_password": ["crm.api.live_demo.validate_reset_password"],
 	},
+	"Credit Ledger Entry": {
+		"on_submit": ["crm.fcrm.doctype.credit_ledger_entry.credit_ledger_entry.handle_credit_ledger_submit"],
+	},
 }
 
 # Scheduled Tasks

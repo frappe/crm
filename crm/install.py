@@ -31,7 +31,31 @@ def after_install(force=False):
 	create_default_manager_dashboard(force)
 	create_assignment_rule_custom_fields()
 	add_assignment_rule_property_setters()
+	create_antek_partner_role_fields()
 	frappe.db.commit()
+
+
+def create_antek_partner_role_fields():
+	create_custom_fields(
+		{
+			"CRM Organization": [
+				{
+					"fieldname": "partner_role",
+					"fieldtype": "Select",
+					"label": "Partner Role",
+					"options": "Contractor\nProject Owner",
+				}
+			],
+			"Contact": [
+				{
+					"fieldname": "partner_role",
+					"fieldtype": "Select",
+					"label": "Partner Role",
+					"options": "Contractor\nProject Owner",
+				}
+			],
+		}
+	)
 
 
 def add_default_lead_statuses():
