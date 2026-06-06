@@ -55,14 +55,14 @@
           <div class="flex items-center justify-between border-b px-5 py-3">
             <div>
               <div class="text-base font-medium text-ink-gray-9">
-                {{ __('Linked Properties') }}
+                {{ linkedPropertiesTitle }}
               </div>
               <div class="text-sm text-ink-gray-6">
-                {{ __('Units connected to this lead as buyer interest or seller inventory.') }}
+                {{ linkedPropertiesDescription }}
               </div>
             </div>
             <Button
-              v-if="doc.party_type === 'Seller'"
+              v-if="isSellerLead"
               :label="__('Assign Property Unit')"
               variant="solid"
               @click="assignPropertyUnitToSeller"
@@ -76,38 +76,64 @@
               {{ __('Loading linked properties...') }}
             </div>
             <div
-              v-else-if="!linkedPropertyRows.length"
+              v-else-if="!visibleLinkedPropertyRows.length"
               class="rounded border border-outline-gray-1 p-5 text-sm text-ink-gray-6"
             >
-              {{ __('No linked properties found for this lead yet.') }}
+              {{ linkedPropertiesEmptyText }}
             </div>
             <div
               v-else
               class="overflow-hidden rounded border border-outline-gray-1"
             >
-              <table class="w-full text-left text-sm">
+              <table v-if="isBuyerLead" class="w-full text-left text-sm">
                 <thead class="border-b bg-surface-gray-1 text-ink-gray-6">
                   <tr>
-                    <th class="px-4 py-3 font-medium">{{ __('Relationship') }}</th>
-                    <th class="px-4 py-3 font-medium">{{ __('Unit') }}</th>
-                    <th class="px-4 py-3 font-medium">{{ __('Project') }}</th>
-                    <th class="px-4 py-3 font-medium">{{ __('Type') }}</th>
-                    <th class="px-4 py-3 font-medium">{{ __('Status') }}</th>
-                    <th class="px-4 py-3 font-medium">{{ __('Price') }}</th>
+                    <th class="px-4 py-3 font-medium">{{ __('Unit SKU') }}</th>
+                    <th class="px-4 py-3 font-medium">{{ __('Unit Name') }}</th>
+                    <th class="px-4 py-3 font-medium">{{ __('Basic Specs Info') }}</th>
+                    <th class="px-4 py-3 font-medium">{{ __('Proposal Status') }}</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr
-                    v-for="row in linkedPropertyRows"
+                    v-for="row in visibleLinkedPropertyRows"
                     :key="row.name"
                     class="border-b last:border-b-0"
                   >
-                    <td class="px-4 py-3 text-ink-gray-8">{{ row.relationship || __('Property') }}</td>
-                    <td class="px-4 py-3 text-ink-gray-9">{{ row.sku || row.name }}</td>
+                    <td class="px-4 py-3 text-ink-gray-9">{{ row.sku || __('—') }}</td>
+                    <td class="px-4 py-3 text-ink-gray-8">{{ row.name || __('—') }}</td>
+                    <td class="px-4 py-3 text-ink-gray-8">{{ formatBuyerSpecs(row) }}</td>
+                    <td class="px-4 py-3 text-ink-gray-8">{{ row.proposal_status || __('Not Sent') }}</td>
+                  </tr>
+                </tbody>
+              </table>
+              <table v-else class="w-full text-left text-sm">
+                <thead class="border-b bg-surface-gray-1 text-ink-gray-6">
+                  <tr>
+                    <th class="px-4 py-3 font-medium">{{ __('Property Code / SKU') }}</th>
+                    <th class="px-4 py-3 font-medium">{{ __('Property Title / Unit') }}</th>
+                    <th class="px-4 py-3 font-medium">{{ __('Compound / Project') }}</th>
+                    <th class="px-4 py-3 font-medium">{{ __('Developer') }}</th>
+                    <th class="px-4 py-3 font-medium">{{ __('Unit Type') }}</th>
+                    <th class="px-4 py-3 font-medium">{{ __('Finishing Type') }}</th>
+                    <th class="px-4 py-3 font-medium">{{ __('Target Asking Price') }}</th>
+                    <th class="px-4 py-3 font-medium">{{ __('Status') }}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    v-for="row in visibleLinkedPropertyRows"
+                    :key="row.name"
+                    class="border-b last:border-b-0"
+                  >
+                    <td class="px-4 py-3 text-ink-gray-9">{{ row.sku || row.property_code || __('—') }}</td>
+                    <td class="px-4 py-3 text-ink-gray-8">{{ row.property_title || row.name || __('—') }}</td>
                     <td class="px-4 py-3 text-ink-gray-8">{{ row.project || __('—') }}</td>
+                    <td class="px-4 py-3 text-ink-gray-8">{{ row.developer || __('—') }}</td>
                     <td class="px-4 py-3 text-ink-gray-8">{{ row.unit_type || __('—') }}</td>
-                    <td class="px-4 py-3 text-ink-gray-8">{{ row.status || __('—') }}</td>
+                    <td class="px-4 py-3 text-ink-gray-8">{{ row.finishing_type || __('—') }}</td>
                     <td class="px-4 py-3 text-ink-gray-8">{{ formatPrice(row.price) }}</td>
+                    <td class="px-4 py-3 text-ink-gray-8">{{ row.status || __('—') }}</td>
                   </tr>
                 </tbody>
               </table>
@@ -305,15 +331,11 @@ import ErrorPage from '@/components/ErrorPage.vue'
 import Icon from '@/components/Icon.vue'
 import Resizer from '@/components/Resizer.vue'
 import ActivityIcon from '@/components/Icons/ActivityIcon.vue'
-import EmailIcon from '@/components/Icons/EmailIcon.vue'
 import Email2Icon from '@/components/Icons/Email2Icon.vue'
 import CommentIcon from '@/components/Icons/CommentIcon.vue'
 import DetailsIcon from '@/components/Icons/DetailsIcon.vue'
 import EventIcon from '@/components/Icons/EventIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
-import TaskIcon from '@/components/Icons/TaskIcon.vue'
-import NoteIcon from '@/components/Icons/NoteIcon.vue'
-import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import CameraIcon from '@/components/Icons/CameraIcon.vue'
 import LinkIcon from '@/components/Icons/LinkIcon.vue'
@@ -341,7 +363,6 @@ import { globalStore } from '@/stores/global'
 import { statusesStore } from '@/stores/statuses'
 import { getMeta } from '@/stores/meta'
 import { useDocument } from '@/data/document'
-import { whatsappEnabled } from '@/composables/whatsapp'
 import { callEnabled } from '@/composables/telephony'
 import {
   createResource,
@@ -392,6 +413,8 @@ const {
 const canDelete = computed(() => permissions.data?.permissions?.delete || false)
 
 const doc = computed(() => document.doc || {})
+const isBuyerLead = computed(() => doc.value.party_type !== 'Seller')
+const isSellerLead = computed(() => doc.value.party_type === 'Seller')
 
 onMounted(async () => {
   if (document.doc) await triggerOnRender()
@@ -475,16 +498,21 @@ usePageMeta(() => {
 })
 
 const tabs = computed(() => {
-  let tabOptions = [
+  return [
     {
-      name: 'Activity',
-      label: __('Activity'),
-      icon: ActivityIcon,
+      name: 'Data',
+      label: __('Data'),
+      icon: DetailsIcon,
     },
     {
-      name: 'Emails',
-      label: __('Emails'),
-      icon: EmailIcon,
+      name: 'Properties',
+      label: isBuyerLead.value ? __('Interest') : __('Properties'),
+      icon: LinkIcon,
+    },
+    {
+      name: 'Events',
+      label: __('Event'),
+      icon: EventIcon,
     },
     {
       name: 'Comments',
@@ -492,48 +520,11 @@ const tabs = computed(() => {
       icon: CommentIcon,
     },
     {
-      name: 'Properties',
-      label: __('Properties'),
-      icon: LinkIcon,
-    },
-    {
-      name: 'Data',
-      label: __('Data'),
-      icon: DetailsIcon,
-    },
-    {
-      name: 'Events',
-      label: __('Events'),
-      icon: EventIcon,
-    },
-    {
-      name: 'Calls',
-      label: __('Calls'),
-      icon: PhoneIcon,
-    },
-    {
-      name: 'Tasks',
-      label: __('Tasks'),
-      icon: TaskIcon,
-    },
-    {
-      name: 'Notes',
-      label: __('Notes'),
-      icon: NoteIcon,
-    },
-    {
-      name: 'Attachments',
-      label: __('Attachments'),
-      icon: AttachmentIcon,
-    },
-    {
-      name: 'WhatsApp',
-      label: __('WhatsApp'),
-      icon: WhatsAppIcon,
-      condition: () => whatsappEnabled.value,
+      name: 'Activity',
+      label: __('Activity'),
+      icon: ActivityIcon,
     },
   ]
-  return tabOptions.filter((tab) => (tab.condition ? tab.condition() : true))
 })
 
 const { tabIndex, changeTabTo } = useActiveTabManager(tabs, 'lastLeadTab')
@@ -549,6 +540,29 @@ const linkedProperties = createResource({
 
 const linkedPropertyRows = computed(() => linkedProperties.data || [])
 
+const visibleLinkedPropertyRows = computed(() => {
+  if (isSellerLead.value) {
+    return linkedPropertyRows.value.filter((row) => row.owner_lead === props.leadId)
+  }
+  return linkedPropertyRows.value.filter((row) => row.relationship !== 'Seller Unit')
+})
+
+const linkedPropertiesTitle = computed(() =>
+  isBuyerLead.value ? __('Interest') : __('Properties'),
+)
+
+const linkedPropertiesDescription = computed(() =>
+  isBuyerLead.value
+    ? __('Buyer interest list: unit SKU, unit link, basic specs, and proposal status.')
+    : __('Seller property onboarding list: property identity, compound, developer, type, finishing, asking price, and status.'),
+)
+
+const linkedPropertiesEmptyText = computed(() =>
+  isBuyerLead.value
+    ? __('No interested units linked to this buyer lead yet.')
+    : __('No seller properties assigned to this lead yet.'),
+)
+
 const sections = createResource({
   url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_sidepanel_sections',
   cache: ['sidePanelSections', 'CRM Lead'],
@@ -559,6 +573,17 @@ const sections = createResource({
 function formatPrice(value) {
   if (value === null || value === undefined || value === '') return __('—')
   return value
+}
+
+function formatBuyerSpecs(row) {
+  const specs = [
+    row.unit_type,
+    row.floor ? `${__('Floor')} ${row.floor}` : null,
+    row.finishing_type,
+    row.price ? `${__('Price')}: ${formatPrice(row.price)}` : null,
+  ].filter(Boolean)
+
+  return specs.length ? specs.join(' · ') : __('—')
 }
 
 async function assignPropertyUnitToSeller() {
