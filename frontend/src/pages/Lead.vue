@@ -774,20 +774,43 @@ async function editBuyerInterestPreferences() {
   })
 }
 
+function getSelectedInterestUnitName(row) {
+  if (!row) return null
+  if (typeof row === 'string') return row
+  return row.unit || row.value || row.name || row.real_estate_unit || null
+}
+
 async function addSelectedInterestedUnits() {
-  if (!selectedInterestUnits.value.length) return
+  if (!selectedInterestUnits.value.length) {
+    toast.error(__('Please select at least one inventory unit'))
+    return
+  }
 
-  const units = selectedInterestUnits.value.map((row) => row.unit).filter(Boolean)
-  if (!units.length) return
+  const units = selectedInterestUnits.value
+    .map(getSelectedInterestUnitName)
+    .filter(Boolean)
 
-  await call('real_estate_crm_customs.api.link_interested_units', {
-    lead: props.leadId,
-    units,
-  })
-  selectedInterestUnits.value = []
-  linkedProperties.reload()
-  document.reload?.()
-  toast.success(__('Selected inventory units added to the buyer interest list'))
+  if (!units.length) {
+    toast.error(__('Selected rows do not contain valid inventory units'))
+    return
+  }
+
+  try {
+    await call('real_estate_crm_customs.api.link_interested_units', {
+      lead: props.leadId,
+      units: JSON.stringify([...new Set(units)]),
+    })
+    selectedInterestUnits.value = []
+    linkedProperties.reload()
+    document.reload?.()
+    toast.success(__('Selected inventory units added to the buyer interest list'))
+  } catch (err) {
+    toast.error(
+      err.messages?.[0] ||
+        err.message ||
+        __('Error adding selected inventory units'),
+    )
+  }
 }
 
 async function assignPropertyUnitToSeller() {
