@@ -61,14 +61,76 @@
                 {{ linkedPropertiesDescription }}
               </div>
             </div>
-            <Button
-              v-if="isSellerLead"
-              :label="__('Assign Property Unit')"
-              variant="solid"
-              @click="assignPropertyUnitToSeller"
-            />
+            <div class="flex gap-2">
+              <Button
+                v-if="isBuyerLead"
+                :label="__('Edit Interest Details')"
+                variant="subtle"
+                @click="editBuyerInterestPreferences"
+              />
+              <Button
+                v-if="isSellerLead"
+                :label="__('Assign Property Unit')"
+                variant="solid"
+                @click="assignPropertyUnitToSeller"
+              />
+            </div>
           </div>
           <div class="flex-1 overflow-auto p-5">
+            <div v-if="isBuyerLead" class="mb-5 flex flex-col gap-4">
+              <div class="rounded border border-outline-gray-1 bg-surface-white p-4">
+                <div class="mb-3 flex items-center justify-between gap-3">
+                  <div>
+                    <div class="text-sm font-medium text-ink-gray-9">
+                      {{ __('Interest Details') }}
+                    </div>
+                    <div class="text-xs text-ink-gray-6">
+                      {{ __('Buyer requirements used before selecting inventory units.') }}
+                    </div>
+                  </div>
+                  <Button
+                    :label="__('Edit')"
+                    variant="subtle"
+                    @click="editBuyerInterestPreferences"
+                  />
+                </div>
+                <div class="grid gap-3 text-sm md:grid-cols-2 xl:grid-cols-4">
+                  <div
+                    v-for="item in buyerInterestPreferenceRows"
+                    :key="item.label"
+                    class="rounded bg-surface-gray-1 p-3"
+                  >
+                    <div class="text-xs text-ink-gray-5">{{ item.label }}</div>
+                    <div class="mt-1 font-medium text-ink-gray-9">
+                      {{ item.value || __('—') }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="rounded border border-outline-gray-1 bg-surface-white p-4">
+                <div class="mb-3">
+                  <div class="text-sm font-medium text-ink-gray-9">
+                    {{ __('Add Inventory Units to Interest') }}
+                  </div>
+                  <div class="text-xs text-ink-gray-6">
+                    {{ __('Select one or many available inventory units, then save them to this buyer interest list.') }}
+                  </div>
+                </div>
+                <div class="flex flex-col gap-3 lg:flex-row lg:items-start">
+                  <TableMultiselectInput
+                    v-model="selectedInterestUnits"
+                    class="flex-1"
+                    doctype="Lead Interested Unit"
+                  />
+                  <Button
+                    :label="__('Add Selected Units')"
+                    variant="solid"
+                    :disabled="!selectedInterestUnits.length"
+                    @click="addSelectedInterestedUnits"
+                  />
+                </div>
+              </div>
+            </div>
             <div
               v-if="linkedProperties.loading"
               class="rounded border border-outline-gray-1 p-5 text-sm text-ink-gray-6"
@@ -90,7 +152,11 @@
                   <tr>
                     <th class="px-4 py-3 font-medium">{{ __('Unit SKU') }}</th>
                     <th class="px-4 py-3 font-medium">{{ __('Unit Name') }}</th>
-                    <th class="px-4 py-3 font-medium">{{ __('Basic Specs Info') }}</th>
+                    <th class="px-4 py-3 font-medium">{{ __('Area') }}</th>
+                    <th class="px-4 py-3 font-medium">{{ __('Developer') }}</th>
+                    <th class="px-4 py-3 font-medium">{{ __('Compound') }}</th>
+                    <th class="px-4 py-3 font-medium">{{ __('Finishing Type') }}</th>
+                    <th class="px-4 py-3 font-medium">{{ __('Budget') }}</th>
                     <th class="px-4 py-3 font-medium">{{ __('Proposal Status') }}</th>
                   </tr>
                 </thead>
@@ -102,7 +168,11 @@
                   >
                     <td class="px-4 py-3 text-ink-gray-9">{{ row.sku || __('—') }}</td>
                     <td class="px-4 py-3 text-ink-gray-8">{{ row.name || __('—') }}</td>
-                    <td class="px-4 py-3 text-ink-gray-8">{{ formatBuyerSpecs(row) }}</td>
+                    <td class="px-4 py-3 text-ink-gray-8">{{ formatUnitArea(row) }}</td>
+                    <td class="px-4 py-3 text-ink-gray-8">{{ row.developer || __('—') }}</td>
+                    <td class="px-4 py-3 text-ink-gray-8">{{ row.project || __('—') }}</td>
+                    <td class="px-4 py-3 text-ink-gray-8">{{ row.finishing_type || __('—') }}</td>
+                    <td class="px-4 py-3 text-ink-gray-8">{{ formatPrice(row.price) }}</td>
                     <td class="px-4 py-3 text-ink-gray-8">{{ row.proposal_status || __('Not Sent') }}</td>
                   </tr>
                 </tbody>
@@ -347,6 +417,7 @@ import AssignTo from '@/components/AssignTo.vue'
 import FilesUploader from '@/components/FilesUploader/FilesUploader.vue'
 import SidePanelLayout from '@/components/SidePanelLayout.vue'
 import SLASection from '@/components/SLASection.vue'
+import TableMultiselectInput from '@/components/Controls/TableMultiselectInput.vue'
 import CustomActions from '@/components/CustomActions.vue'
 import ConvertToDealModal from '@/components/Modals/ConvertToDealModal.vue'
 import {
@@ -399,6 +470,7 @@ const errorMessage = ref('')
 const showDeleteLinkedDocModal = ref(false)
 const showConvertToDealModal = ref(false)
 const showFilesUploader = ref(false)
+const selectedInterestUnits = ref([])
 
 const {
   triggerOnChange,
@@ -553,7 +625,7 @@ const linkedPropertiesTitle = computed(() =>
 
 const linkedPropertiesDescription = computed(() =>
   isBuyerLead.value
-    ? __('Buyer interest list: unit SKU, unit link, basic specs, and proposal status.')
+    ? __('Buyer interest details plus one or many selected inventory units.')
     : __('Seller property onboarding list: property identity, compound, developer, type, finishing, asking price, and status.'),
 )
 
@@ -562,6 +634,37 @@ const linkedPropertiesEmptyText = computed(() =>
     ? __('No interested units linked to this buyer lead yet.')
     : __('No seller properties assigned to this lead yet.'),
 )
+
+const buyerInterestPreferenceRows = computed(() => [
+  {
+    label: __('Interested Unit Area'),
+    value: formatPreferredArea(),
+  },
+  {
+    label: __('Area'),
+    value: doc.value.preferred_area,
+  },
+  {
+    label: __('Developer'),
+    value: doc.value.preferred_developer,
+  },
+  {
+    label: __('Compound'),
+    value: doc.value.preferred_compound,
+  },
+  {
+    label: __('Finishing Type'),
+    value: doc.value.preferred_finishing_type,
+  },
+  {
+    label: __('Delivery Time'),
+    value: doc.value.preferred_delivery_time,
+  },
+  {
+    label: __('Budget'),
+    value: formatPrice(doc.value.buyer_budget),
+  },
+])
 
 const sections = createResource({
   url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_sidepanel_sections',
@@ -575,15 +678,116 @@ function formatPrice(value) {
   return value
 }
 
-function formatBuyerSpecs(row) {
-  const specs = [
-    row.unit_type,
-    row.floor ? `${__('Floor')} ${row.floor}` : null,
-    row.finishing_type,
-    row.price ? `${__('Price')}: ${formatPrice(row.price)}` : null,
-  ].filter(Boolean)
+function formatPreferredArea() {
+  if (!doc.value.interested_unit_area) return ''
+  return [doc.value.interested_unit_area, doc.value.area_unit].filter(Boolean).join(' ')
+}
 
-  return specs.length ? specs.join(' · ') : __('—')
+function formatUnitArea(row) {
+  const unitArea = row.unit_area || row.area || row.size
+  return unitArea ? [unitArea, doc.value.area_unit].filter(Boolean).join(' ') : __('—')
+}
+
+async function editBuyerInterestPreferences() {
+  if (!isBuyerLead.value) {
+    toast.error(__('Only buyer leads can have interest details'))
+    return
+  }
+
+  let values = await renderFieldLayoutDialog({
+    title: __('Edit Interest Details'),
+    size: 'xl',
+    defaults: {
+      interested_unit_area: doc.value.interested_unit_area,
+      area_unit: doc.value.area_unit || 'Sq M',
+      preferred_area: doc.value.preferred_area,
+      preferred_developer: doc.value.preferred_developer,
+      preferred_compound: doc.value.preferred_compound,
+      preferred_finishing_type: doc.value.preferred_finishing_type,
+      preferred_delivery_time: doc.value.preferred_delivery_time,
+      buyer_budget: doc.value.buyer_budget,
+    },
+    fields: [
+      {
+        fieldname: 'interested_unit_area',
+        fieldtype: 'Float',
+        label: __('Interested Unit Area'),
+      },
+      {
+        fieldname: 'area_unit',
+        fieldtype: 'Select',
+        label: __('Area Unit'),
+        options: 'Sq M\nSq Ft',
+      },
+      {
+        fieldname: 'preferred_area',
+        fieldtype: 'Data',
+        label: __('Area'),
+      },
+      {
+        fieldname: 'preferred_developer',
+        fieldtype: 'Link',
+        label: __('Developer'),
+        options: 'Property Developer',
+      },
+      {
+        fieldname: 'preferred_compound',
+        fieldtype: 'Link',
+        label: __('Compound / Project'),
+        options: 'Real Estate Project',
+      },
+      {
+        fieldname: 'preferred_finishing_type',
+        fieldtype: 'Select',
+        label: __('Finishing Type'),
+        options: '\nCore & Shell\nSemi-Finished\nFully Finished',
+      },
+      {
+        fieldname: 'preferred_delivery_time',
+        fieldtype: 'Data',
+        label: __('Delivery Time'),
+      },
+      {
+        fieldname: 'buyer_budget',
+        fieldtype: 'Currency',
+        label: __('Budget'),
+      },
+    ],
+    submitLabel: __('Save Interest Details'),
+  })
+
+  if (!values) return
+
+  Object.entries(values).forEach(([fieldname, value]) => {
+    doc.value[fieldname] = value
+  })
+
+  document.save.submit(null, {
+    onSuccess: () => {
+      sections.reload()
+      toast.success(__('Interest details updated'))
+    },
+    onError: (err) => {
+      toast.error(err.messages?.[0] || __('Error updating interest details'))
+      document.reload?.()
+    },
+  })
+}
+
+async function addSelectedInterestedUnits() {
+  if (!selectedInterestUnits.value.length) return
+
+  const units = selectedInterestUnits.value.map((row) => row.unit).filter(Boolean)
+  if (!units.length) return
+
+  await call('real_estate_crm_customs.api.link_interested_units', {
+    lead: props.leadId,
+    units,
+  })
+  selectedInterestUnits.value = []
+  linkedProperties.reload()
+  document.reload?.()
+  toast.success(__('Selected inventory units added to the buyer interest list'))
 }
 
 async function assignPropertyUnitToSeller() {
