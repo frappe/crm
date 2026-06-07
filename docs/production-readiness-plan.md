@@ -14,6 +14,11 @@
 1. Server test gate (`.github/workflows/server-tests.yml`) not yet executed in CI-like environment.
 2. Staging and operational readiness gates not yet completed.
 
+**Prep package ready:**
+- Workflow approval/run guide: `docs/pr-2253-workflow-run-approval-guide.md`
+- Staging/ops checklist: `docs/staging-ops-readiness-checklist.md`
+- Security risk register: `docs/security-risk-register.md`
+
 ---
 
 ## Scope and Objectives
