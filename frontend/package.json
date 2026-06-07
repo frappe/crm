@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build --base=/assets/crm/frontend/ && yarn copy-html-entry",
-    "copy-html-entry": "cp ../crm/public/frontend/index.html ../crm/www/crm.html",
+    "copy-html-entry": "node -e \"const fs=require('node:fs'); fs.copyFileSync('../crm/public/frontend/index.html','../crm/www/crm.html')\"",
     "serve": "vite preview",
     "test": "vitest",
     "test:run": "vitest run",
@@ -30,7 +30,6 @@
     "socket.io-client": "^4.7.2",
     "sortablejs": "^1.15.0",
     "vite": "^5.4.21",
-    "vite-plugin-pwa": "^0.21.2",
     "vue": "^3.5.13",
     "vue-router": "^4.2.2",
     "vuedraggable": "^4.1.0"
