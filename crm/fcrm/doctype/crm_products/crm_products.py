@@ -31,6 +31,28 @@ class CRMProducts(Document):
 	pass
 
 
+@frappe.whitelist()
+def get_product_rate_details(product_code: str) -> dict:
+	product = (
+		frappe.db.get_value("CRM Product", product_code, ["product_name", "standard_rate"], as_dict=True)
+		or {}
+	)
+	rate = _item_price_rate(product_code) or product.get("standard_rate")
+	return {"product_name": product.get("product_name"), "rate": rate}
+
+
+def _item_price_rate(product_code: str):
+	"""Latest valid selling Item Price for the linked ERPNext Item"""
+	if not frappe.get_meta("CRM Product").has_field("erpnext_item_code"):
+		return None
+	item_code = frappe.db.get_value("CRM Product", product_code, "erpnext_item_code")
+	if not item_code or not frappe.db.exists("DocType", "Item Price"):
+		return None
+	from crm.integrations.erpnext.item import get_item_price_rate
+
+	return get_item_price_rate(item_code)
+
+
 def create_product_details_script(doctype):
 	if not frappe.db.exists("CRM Form Script", "Product Details Script for " + doctype):
 		script = get_product_details_script(doctype)
@@ -91,15 +113,14 @@ class CRMProducts {
   async product_code(idx) {
     let row = this.doc.getRow('products', idx)
 
-    let a = await call("frappe.client.get_value", {
-        doctype: "CRM Product",
-        filters: { name: row.product_code },
-        fieldname: ["product_name", "standard_rate"],
+    let a = await call("crm.fcrm.doctype.crm_products.crm_products.get_product_rate_details", {
+        product_code: row.product_code,
     })
+    if (!a) return
 
     row.product_name = a.product_name
-    if (a.standard_rate && !row.rate) {
-        row.rate = a.standard_rate
+    if (a.rate && !row.rate) {
+        row.rate = a.rate
         row.trigger("rate")
     }
   }
