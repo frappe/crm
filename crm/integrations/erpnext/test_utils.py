@@ -13,14 +13,12 @@ class TestSyncHookWiring(FrappeTestCase):
 			self.assertNotIn(doctype, override_doctype_class)
 
 	def test_doc_event_handlers_are_importable(self):
-		from frappe.utils import get_attr
-
 		from crm.hooks import doc_events
 
 		for doctype in SYNC_DOCTYPES:
 			for handlers in doc_events[doctype].values():
 				for path in handlers:
-					self.assertTrue(callable(get_attr(path)), path)
+					self.assertTrue(callable(frappe.get_attr(path)), path)
 
 
 class TestFindTargetFor(FrappeTestCase):
