@@ -34,6 +34,55 @@ class TestFindTargetFor(FrappeTestCase):
 		self.assertIsNone(find_target_for("Item", None))
 
 
+class TestItemRateFallback(FrappeTestCase):
+	def test_standard_rate_present_skips_item_price(self):
+		from crm.integrations.erpnext import item
+
+		doc = frappe._dict(name="ITM-A", standard_rate=50, image=None, disabled=0, description="d")
+		calls = []
+		original = item.get_item_price_rate
+		item.get_item_price_rate = lambda code: calls.append(code) or 999
+		try:
+			data = item._catalogue_data(doc)
+		finally:
+			item.get_item_price_rate = original
+		self.assertEqual(data["standard_rate"], 50)
+		self.assertEqual(calls, [])
+
+	def test_null_standard_rate_falls_back_to_item_price(self):
+		from crm.integrations.erpnext import item
+
+		doc = frappe._dict(name="ITM-B", standard_rate=None, image=None, disabled=0, description="d")
+		original = item.get_item_price_rate
+		item.get_item_price_rate = lambda code: 123 if code == "ITM-B" else None
+		try:
+			data = item._catalogue_data(doc)
+		finally:
+			item.get_item_price_rate = original
+		self.assertEqual(data["standard_rate"], 123)
+
+	def test_get_item_price_rate_queries_latest_selling_price(self):
+		from crm.integrations.erpnext import item
+
+		captured = {}
+		original = frappe.db.get_value
+
+		def fake_get_value(doctype, filters, fieldname, **kwargs):
+			captured.update(doctype=doctype, filters=filters, fieldname=fieldname, kwargs=kwargs)
+			return 77
+
+		frappe.db.get_value = fake_get_value
+		try:
+			rate = item.get_item_price_rate("ITM-C")
+		finally:
+			frappe.db.get_value = original
+		self.assertEqual(rate, 77)
+		self.assertEqual(captured["doctype"], "Item Price")
+		self.assertEqual(captured["filters"], {"item_code": "ITM-C", "selling": 1})
+		self.assertEqual(captured["fieldname"], "price_list_rate")
+		self.assertEqual(captured["kwargs"].get("order_by"), "valid_from desc")
+
+
 class TestCascadeFlag(FrappeTestCase):
 	def test_flag_round_trip(self):
 		from crm.integrations.erpnext.utils import CASCADE_FLAG, in_cascade
