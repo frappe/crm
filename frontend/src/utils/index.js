@@ -876,6 +876,11 @@ export function isTranslatable(doctype) {
 }
 
 export function sanitizeHTML(html = '', options = {}) {
-  if (typeof html !== 'string') return ''
+  if (typeof html !== 'string') return html
   return DOMPurify.sanitize(html, options)
+}
+
+export function sanitizeText(text = '') {
+  if (typeof text !== 'string') return text
+  return text.replace(/\p{Cf}/gu, '')
 }

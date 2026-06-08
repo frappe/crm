@@ -44,6 +44,7 @@
 </template>
 <script setup>
 import LucideLayoutDashboard from '~icons/lucide/layout-dashboard'
+import LucideNetwork from '~icons/lucide/network'
 import MonitorCogIcon from '~icons/lucide/monitor-cog'
 import SlidersIcon from '@/components/Icons/SlidersIcon.vue'
 import SparkleIcon from '@/components/Icons/SparkleIcon.vue'
@@ -56,6 +57,7 @@ import EmailTemplateIcon from '@/components/Icons/EmailTemplateIcon.vue'
 import SettingsIcon from '@/components/Icons/SettingsIcon.vue'
 import SettingsIcon2 from '@/components/Icons/SettingsIcon2.vue'
 import Users from '@/components/Settings/Users.vue'
+import Hierarchy from '@/components/Settings/Hierarchy/Hierarchy.vue'
 import InviteUserPage from '@/components/Settings/InviteUserPage.vue'
 import ProfilePage from '@/components/Settings/Profile/ProfilePage.vue'
 import PreferencesSettings from '@/components/Settings/PreferencesSettings.vue'
@@ -74,11 +76,11 @@ import EmailConfig from '@/components/Settings/EmailConfig.vue'
 import SidebarLink from '@/components/SidebarLink.vue'
 import { usersStore } from '@/stores/users'
 import {
-  isWhatsappInstalled,
   showSettings,
   activeSettingsPage,
   disableSettingModalOutsideClick,
 } from '@/composables/settings'
+import { isWhatsappInstalled } from '@/composables/whatsapp'
 import { Dialog, Avatar } from 'frappe-ui'
 import { ref, markRaw, computed, watch, h } from 'vue'
 import AssignmentRulePage from './AssignmentRules/AssignmentRulePage.vue'
@@ -155,6 +157,12 @@ const tabs = computed(() => {
           label: __('Invite User'),
           icon: 'user-plus',
           component: markRaw(InviteUserPage),
+          condition: () => isManager(),
+        },
+        {
+          label: __('Sales Hierarchy'),
+          icon: LucideNetwork,
+          component: markRaw(Hierarchy),
           condition: () => isManager(),
         },
       ],

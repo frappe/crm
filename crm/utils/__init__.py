@@ -10,7 +10,7 @@ from phonenumbers import NumberParseException
 from phonenumbers import PhoneNumberFormat as PNF
 
 
-def parse_phone_number(phone_number, default_country="IN"):
+def parse_phone_number(phone_number: str, default_country: str = "IN"):
 	try:
 		# Parse the number
 		number = phonenumbers.parse(phone_number, default_country)
@@ -36,7 +36,7 @@ def parse_phone_number(phone_number, default_country="IN"):
 		return {"success": False, "error": str(e)}
 
 
-def are_same_phone_number(number1, number2, default_region="IN", validate=True):
+def are_same_phone_number(number1: str, number2: str, default_region: str = "IN", validate: bool = True):
 	"""
 	Check if two phone numbers are the same, regardless of their format.
 
@@ -67,7 +67,7 @@ def are_same_phone_number(number1, number2, default_region="IN", validate=True):
 		return False
 
 
-def seconds_to_duration(seconds):
+def seconds_to_duration(seconds: float | int) -> str:
 	if not seconds:
 		return "0s"
 
@@ -123,7 +123,7 @@ def is_sales_user(user: str | None = None) -> bool:
 	return is_admin() or "Sales Manager" in frappe.get_roles(user) or "Sales User" in frappe.get_roles(user)
 
 
-def sales_user_only(fn):
+def sales_user_only(fn: callable) -> callable:
 	"""Decorator to validate if user is an agent."""
 
 	@functools.wraps(fn)
@@ -248,7 +248,7 @@ def on_comment_insert(doc: Comment, method: str | None = None):
 		frappe.enqueue(update_modified_background, doctype=doc.reference_doctype, docname=doc.reference_name)
 
 
-def update_modified_background(doctype, docname):
+def update_modified_background(doctype: str, docname: str):
 	frappe.db.set_value(doctype, docname, "modified", now(), update_modified=False)
 
 

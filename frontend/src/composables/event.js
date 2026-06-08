@@ -82,9 +82,6 @@ export function useEvent({
             parent: ['in', eventNames],
           },
         })
-        if (!eventParticipantsResource.list.loading) {
-          eventParticipantsResource.reload()
-        }
       } else {
         eventsResource.data.forEach((event) => {
           if (typeof event.owner !== 'object') {
@@ -126,9 +123,6 @@ export function useEvent({
             parent: ['in', eventNames],
           },
         })
-        if (!eventNotificationsResource.list.loading) {
-          eventNotificationsResource.reload()
-        }
       } else {
         eventsResource.data.forEach((event) => {
           event.notifications = [

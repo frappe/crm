@@ -9,6 +9,7 @@
   "restore_defaults",
   "restore_demo_data",
   "enable_forecasting",
+  "enable_sales_hierarchy",
   "auto_update_expected_deal_value",
   "update_timestamp_on_new_communication",
   "auto_mark_replied_on_response",
@@ -80,6 +81,13 @@
    "fieldname": "enable_forecasting",
    "fieldtype": "Check",
    "label": "Enable Forecasting"
+  },
+  {
+   "default": "0",
+   "description": "Restrict Lead and Deal visibility based on the Sales Hierarchy tree. Managers can see all records owned by or assigned to their reports.",
+   "fieldname": "enable_sales_hierarchy",
+   "fieldtype": "Check",
+   "label": "Enable Sales Hierarchy Permissions"
   },
   {
    "fieldname": "currency",
