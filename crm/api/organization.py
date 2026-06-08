@@ -37,6 +37,19 @@ def create_lead_from_organization(organization: str):
     lead.no_of_employees = org_doc.no_of_employees
     lead.annual_revenue = org_doc.annual_revenue
     lead.image = org_doc.organization_logo
+    # Add contacts
+    print(f"Finding contacts linked to organization {org_doc.organization_name}...")
+    contacts = frappe.get_all(
+        "Contact",
+        or_filters=[
+            ["custom_org", "=", org_doc.organization_name],
+            ["company_name", "=", org_doc.organization_name],
+        ],
+        pluck="name",
+    )
+    print(f"Found {len(contacts)} contacts linked to organization {org_doc.organization_name}")
+    for contact in contacts:
+        lead.append("custom_contacts", {"contact": contact})
     lead.insert()
 
     return lead.name
