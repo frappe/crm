@@ -147,7 +147,7 @@
       </div>
       <div
         v-if="!callLog?.data?._lead && !callLog?.data?._deal"
-        class="px-4 pb-7 pt-4 sm:px-6"
+        class="px-4 pb-7 pt-4 sm:px-6 hidden"
       >
         <Button
           class="w-full"
