@@ -96,6 +96,10 @@ class TestOrgHierarchy(FrappeTestCase):
 		lead = make_lead("rep1@hier.test")
 		self.assertTrue(has_lead_permission(lead, "read", "Administrator"))
 
+	def test_sales_user_can_create_lead(self):
+		new_lead = frappe.get_doc({"doctype": "CRM Lead", "lead_owner": "rep1@hier.test"})
+		self.assertTrue(has_lead_permission(new_lead, "create", "rep1@hier.test"))
+
 	# ------------------------------------------------------------------
 	# Lead permissions -- ToDo-based
 	# ------------------------------------------------------------------
