@@ -160,6 +160,7 @@ router.beforeEach(async (to, from, next) => {
     try {
       await users.promise
     } catch (error) {
+      console.error('Error loading users', error)
       return next(false)
     }
   }
