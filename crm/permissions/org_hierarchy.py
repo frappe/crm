@@ -74,9 +74,6 @@ def _has_permission(doc, ptype, user, doctype: str) -> bool | None:
 	if not user:
 		user = frappe.session.user
 
-	if ptype == "create":
-		return True
-
 	if user == "Administrator":
 		return True
 
@@ -85,7 +82,7 @@ def _has_permission(doc, ptype, user, doctype: str) -> bool | None:
 		return True
 
 	if ptype == "create" or not doc.name:
-		return None
+		return True
 
 	in_tree = hierarchy_enabled() and _in_hierarchy(user)
 	if "Sales Manager" in roles and not in_tree:
