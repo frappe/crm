@@ -74,6 +74,9 @@ def _has_permission(doc, ptype, user, doctype: str) -> bool | None:
 	if not user:
 		user = frappe.session.user
 
+	if ptype == "create":
+		return True
+
 	if user == "Administrator":
 		return True
 
