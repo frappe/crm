@@ -180,12 +180,8 @@ import CameraIcon from '@/components/Icons/CameraIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import DealsListView from '@/components/ListViews/DealsListView.vue'
 import CustomActions from '@/components/CustomActions.vue'
-import {
-  formatDate,
-  timeAgo,
-  validateIsImageFile,
-  setupCustomizations,
-} from '@/utils'
+import { validateIsImageFile, setupCustomizations } from '@/utils'
+import { timestampCell } from '@/composables/useTimelinePreferences'
 import { getView } from '@/utils/view'
 import { useDocument } from '@/data/document'
 import { getSettings } from '@/stores/settings'
@@ -510,10 +506,7 @@ function getDealRowObject(deal) {
       label: deal.deal_owner && getUser(deal.deal_owner).full_name,
       ...(deal.deal_owner && getUser(deal.deal_owner)),
     },
-    modified: {
-      label: formatDate(deal.modified),
-      timeAgo: __(timeAgo(deal.modified)),
-    },
+    modified: timestampCell(deal.modified),
   }
 }
 
