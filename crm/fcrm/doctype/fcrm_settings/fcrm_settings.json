@@ -15,6 +15,7 @@
   "auto_mark_replied_on_response",
   "auto_reopen_on_new_communication",
   "activity_timeline_section",
+  "crm_timeline_timestamp_format",
   "crm_timeline_sort_order",
   "currency_tab",
   "currency",
@@ -193,6 +194,14 @@
    "fieldname": "activity_timeline_section",
    "fieldtype": "Section Break",
    "label": "Activity Timeline"
+  },
+  {
+   "default": "Relative",
+   "description": "How timestamps are shown in the activity timeline for all users",
+   "fieldname": "crm_timeline_timestamp_format",
+   "fieldtype": "Select",
+   "label": "Timeline Timestamp Format",
+   "options": "Relative\nExact"
   },
   {
    "default": "Oldest First",
