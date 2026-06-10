@@ -490,6 +490,7 @@ import FilesUploader from '@/components/FilesUploader/FilesUploader.vue'
 import { timeAgo, formatDate, startCase } from '@/utils'
 import { globalStore } from '@/stores/global'
 import { usersStore } from '@/stores/users'
+import { useTimelinePreferences } from '@/composables/useTimelinePreferences'
 import { whatsappEnabled } from '@/composables/whatsapp'
 import { useDocument } from '@/data/document'
 import { useTelemetry } from 'frappe-ui/frappe'
@@ -510,6 +511,7 @@ import { useRoute } from 'vue-router'
 const { $socket } = globalStore()
 const { getUser } = usersStore()
 const { capture } = useTelemetry()
+const { isNewestFirst } = useTimelinePreferences()
 
 const props = defineProps({
   doctype: { type: String, default: 'CRM Lead' },
@@ -641,7 +643,7 @@ const activities = computed(() => {
     )
   } else if (title.value == 'Calls') {
     if (!all_activities.data?.calls) return []
-    return sortByCreation(all_activities.data.calls)
+    return sortByCreation(all_activities.data.calls, isNewestFirst.value)
   } else if (title.value == 'Tasks') {
     if (!all_activities.data?.tasks) return []
     return sortByModified(all_activities.data.tasks)
@@ -672,11 +674,18 @@ const activities = computed(() => {
       })
     }
   })
-  return sortByCreation(_activities)
+  return sortByCreation(_activities, isNewestFirst.value)
 })
 
-function sortByCreation(list) {
-  return list.sort((a, b) => new Date(a.creation) - new Date(b.creation))
+function sortByCreation(list, newestFirst = false) {
+  // Direction comes from the comparator operand order (like sortByModified),
+  // not .reverse(). A consistent comparator keeps .sort() idempotent, so
+  // sorting the reactive array in place doesn't re-trigger this computed.
+  return list.sort((a, b) =>
+    newestFirst
+      ? new Date(b.creation) - new Date(a.creation)
+      : new Date(a.creation) - new Date(b.creation),
+  )
 }
 function sortByModified(list) {
   return list.sort((b, a) => new Date(a.modified) - new Date(b.modified))
@@ -829,7 +838,7 @@ function scroll(hash) {
     let el
     if (!hash) {
       let e = document.getElementsByClassName('activity')
-      el = e[e.length - 1]
+      el = isNewestFirst.value ? e[0] : e[e.length - 1]
     } else {
       el = document.getElementById(hash)
     }
