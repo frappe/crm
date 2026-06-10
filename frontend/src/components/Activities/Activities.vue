@@ -226,11 +226,7 @@
                 />
               </div>
               <div class="ml-auto whitespace-nowrap">
-                <Tooltip :text="formatDate(activity.creation)">
-                  <div class="text-sm text-ink-gray-5">
-                    {{ __(timeAgo(activity.creation)) }}
-                  </div>
-                </Tooltip>
+                <TimelineTimestamp :date="activity.creation" />
               </div>
             </div>
           </div>
@@ -311,11 +307,7 @@
               </div>
 
               <div class="ml-auto whitespace-nowrap">
-                <Tooltip :text="formatDate(activity.creation)">
-                  <div class="text-sm text-ink-gray-5">
-                    {{ __(timeAgo(activity.creation)) }}
-                  </div>
-                </Tooltip>
+                <TimelineTimestamp :date="activity.creation" />
               </div>
             </div>
             <div
@@ -378,11 +370,7 @@
                 </div>
 
                 <div class="ml-auto whitespace-nowrap">
-                  <Tooltip :text="formatDate(a.creation)">
-                    <div class="text-sm text-ink-gray-5">
-                      {{ __(timeAgo(a.creation)) }}
-                    </div>
-                  </Tooltip>
+                  <TimelineTimestamp :date="a.creation" />
                 </div>
               </div>
             </div>
@@ -487,14 +475,15 @@ import CommunicationArea from '@/components/CommunicationArea.vue'
 import WhatsappTemplateSelectorModal from '@/components/Modals/WhatsappTemplateSelectorModal.vue'
 import AllModals from '@/components/Activities/AllModals.vue'
 import FilesUploader from '@/components/FilesUploader/FilesUploader.vue'
-import { timeAgo, formatDate, startCase } from '@/utils'
+import TimelineTimestamp from '@/components/Activities/TimelineTimestamp.vue'
+import { startCase } from '@/utils'
 import { globalStore } from '@/stores/global'
 import { usersStore } from '@/stores/users'
 import { useTimelinePreferences } from '@/composables/useTimelinePreferences'
 import { whatsappEnabled } from '@/composables/whatsapp'
 import { useDocument } from '@/data/document'
 import { useTelemetry } from 'frappe-ui/frappe'
-import { Button, Tooltip, createResource, toast } from 'frappe-ui'
+import { Button, createResource, toast } from 'frappe-ui'
 import { useElementVisibility } from '@vueuse/core'
 import {
   ref,
