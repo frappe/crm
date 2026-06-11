@@ -296,6 +296,29 @@ class TestCRMLead(IntegrationTestCase):
 			lead2.create_contact()
 		self.assertIn("Contact already exists", str(context.exception))
 
+	def test_contact_not_reused_when_only_phone_matches(self):
+		"""A different person sharing only a phone must not be reused as the contact"""
+		lead1 = create_lead(
+			first_name="Jane",
+			last_name="Doe",
+			email="frappe@example.com",
+			mobile_no="+910000000099",
+		)
+		existing_contact = lead1.create_contact()
+
+		# Different person, no email, but the same mobile number
+		lead2 = create_lead(
+			first_name="John",
+			last_name="Doe",
+			mobile_no="+910000000099",
+		)
+		contact_name = lead2.create_contact()
+
+		self.assertNotEqual(contact_name, existing_contact)
+		contact = frappe.get_doc("Contact", contact_name)
+		self.assertEqual(contact.first_name, "John")
+		self.assertEqual(contact.last_name, "Doe")
+
 	def test_convert_lead_to_deal(self):
 		"""Test converting a lead to a deal with new contact and organization"""
 		lead = create_lead(
