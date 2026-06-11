@@ -277,29 +277,23 @@ class CRMLead(Document):
 		)
 
 	def contact_exists(self, throw=True):
+		# Match only on email which uniquely identifies a person
+		if not self.email:
+			return False
+
 		email_exist = frappe.db.exists("Contact Email", {"email_id": self.email})
-		phone_exist = frappe.db.exists("Contact Phone", {"phone": self.phone})
-		mobile_exist = frappe.db.exists("Contact Phone", {"phone": self.mobile_no})
+		if not email_exist:
+			return False
 
-		doctype = "Contact Email" if email_exist else "Contact Phone"
-		name = email_exist or phone_exist or mobile_exist
+		contact = frappe.db.get_value("Contact Email", email_exist, "parent")
 
-		if name:
-			text = "Email" if email_exist else "Phone" if phone_exist else "Mobile No"
-			data = self.email if email_exist else self.phone if phone_exist else self.mobile_no
+		if throw:
+			frappe.throw(
+				_("Contact already exists with Email: {0}").format(self.email),
+				title=_("Contact Already Exists"),
+			)
 
-			value = "{0}: {1}".format(text, data)
-
-			contact = frappe.db.get_value(doctype, name, "parent")
-
-			if throw:
-				frappe.throw(
-					_("Contact already exists with {0}").format(value),
-					title=_("Contact Already Exists"),
-				)
-			return contact
-
-		return False
+		return contact
 
 	def create_deal(self, contact, organization, deal=None):
 		new_deal = frappe.new_doc("CRM Deal")
