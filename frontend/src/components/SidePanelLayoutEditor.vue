@@ -155,34 +155,30 @@ const props = defineProps({
 const sections = defineModel({ type: Array, default: () => [] })
 
 const restrictedFieldTypes = [
-  'Tab Break',
   'Section Break',
   'Column Break',
+  'Tab Break',
   'Table',
   'Table MultiSelect',
-  'Geolocation',
-  'Attach',
-  'Attach Image',
-  'HTML',
   'Signature',
+  'Image',
 ]
 
 const { getFields } = getMeta(props.doctype)
 
 const fields = computed(() => {
-  let _fields = getFields() || []
+  let _fields =
+    getFields({ restrictNoValueFields: false, restrictedFieldTypes }) || []
   if (!_fields.length) return []
 
-  return _fields
-    .filter((field) => !restrictedFieldTypes.includes(field.fieldtype))
-    .map((field) => {
-      return {
-        label: field.label,
-        value: field.fieldname,
-        fieldname: field.fieldname,
-        fieldtype: field.fieldtype,
-      }
-    })
+  return _fields.map((field) => {
+    return {
+      label: field.label,
+      value: field.fieldname,
+      fieldname: field.fieldname,
+      fieldtype: field.fieldtype,
+    }
+  })
 })
 
 function addField(section, field) {

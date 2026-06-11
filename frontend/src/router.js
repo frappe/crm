@@ -133,6 +133,8 @@ let router = createRouter({
 })
 
 router.beforeEach(async (to, from, next) => {
+  router.previousRoute = from
+
   const { isLoggedIn } = sessionStore()
   const { users, isCrmUser } = usersStore()
 

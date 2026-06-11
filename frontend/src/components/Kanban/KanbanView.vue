@@ -145,7 +145,7 @@
         </div>
       </template>
     </Draggable>
-    <div v-if="deletedColumns.length" class="shrink-0 min-w-64">
+    <div class="shrink-0 min-w-64">
       <Autocomplete
         value=""
         :options="deletedColumns"
@@ -159,11 +159,20 @@
             @click="togglePopover()"
           />
         </template>
+        <template #footer>
+          <Button
+            class="w-full"
+            :label="__('Reload Columns')"
+            :iconLeft="RefreshIcon"
+            @click="updateColumn(null, true)"
+          />
+        </template>
       </Autocomplete>
     </div>
   </div>
 </template>
 <script setup>
+import RefreshIcon from '@/components/Icons/RefreshIcon.vue'
 import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import { isTouchScreenDevice, colors, parseColor } from '@/utils'
@@ -205,10 +214,11 @@ const columns = computed(() => {
 })
 
 const deletedColumns = computed(() => {
-  return columns.value
-    .filter((col) => col.column['delete'])
+  const _columns = kanban.value?.data?.kanban_columns || []
+  return _columns
+    ?.filter((col) => col['delete'])
     .map((col) => {
-      return { label: col.column.name, value: col.column.name }
+      return { label: col.name, value: col.name }
     })
 })
 
@@ -234,10 +244,12 @@ function actions(column) {
 function addColumn(e) {
   let column = columns.value.find((col) => col.column.name == e.value)
   column.column['delete'] = false
+  columns.value.splice(columns.value.indexOf(column), 1)
+  columns.value.push(column)
   updateColumn()
 }
 
-function updateColumn(d) {
+function updateColumn(d, fetchNewColumns = false) {
   let toColumn = d?.to?.dataset.column
   let fromColumn = d?.from?.dataset.column
   let itemName = d?.item?.dataset.name
@@ -251,7 +263,7 @@ function updateColumn(d) {
     _columns.push(col.column)
   })
 
-  let data = { kanban_columns: _columns }
+  let data = { kanban_columns: _columns, fetchNewColumns }
 
   if (toColumn != fromColumn) {
     data = { item: itemName, to: toColumn, kanban_columns: _columns }

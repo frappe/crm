@@ -62,7 +62,7 @@
       v-model="tabIndex"
       as="div"
       :tabs="tabs"
-      class="flex flex-1 overflow-auto flex-col [&_[role='tab']]:px-0 [&_[role='tablist']]:px-3 [&_[role='tablist']]:gap-7.5 [&_[role='tabpanel']:not([hidden])]:flex [&_[role='tabpanel']:not([hidden])]:grow"
+      class="flex flex-1 overflow-auto flex-col [&_[role='tab']]:px-0 [&_[role='tab']]:shrink-0 [&_[role='tablist']]:px-3 [&_[role='tablist']]:min-h-[45px] [&_[role='tablist']]:gap-7.5 [&_[role='tabpanel']:not([hidden])]:flex [&_[role='tabpanel']:not([hidden])]:grow"
     >
       <template #tab-panel="{ tab }">
         <div v-if="tab.name == 'Details'">
@@ -150,7 +150,8 @@ import { globalStore } from '@/stores/global'
 import { statusesStore } from '@/stores/statuses'
 import { getMeta } from '@/stores/meta'
 import { useDocument } from '@/data/document'
-import { whatsappEnabled, isMobileView } from '@/composables/settings'
+import { isMobileView } from '@/composables/settings'
+import { whatsappEnabled } from '@/composables/whatsapp'
 import { useActiveTabManager } from '@/composables/useActiveTabManager'
 import {
   createResource,
@@ -161,7 +162,7 @@ import {
   usePageMeta,
   toast,
 } from 'frappe-ui'
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import ConvertToDealModal from '@/components/Modals/ConvertToDealModal.vue'
 
@@ -181,12 +182,20 @@ const errorTitle = ref('')
 const errorMessage = ref('')
 const showDeleteLinkedDocModal = ref(false)
 
-const { triggerOnChange, assignees, document, scripts, error } = useDocument(
-  'CRM Lead',
-  props.leadId,
-)
+const {
+  triggerOnChange,
+  triggerOnRender,
+  assignees,
+  document,
+  scripts,
+  error,
+} = useDocument('CRM Lead', props.leadId)
 
 const doc = computed(() => document.doc || {})
+
+onMounted(async () => {
+  if (document.doc) await triggerOnRender()
+})
 
 watch(error, (err) => {
   if (err) {

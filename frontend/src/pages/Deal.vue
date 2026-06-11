@@ -41,7 +41,7 @@
       v-model="tabIndex"
       as="div"
       :tabs="tabs"
-      class="flex flex-1 overflow-hidden flex-col [&_[role='tab']]:px-0 [&_[role='tablist']]:px-5 [&_[role='tablist']]:gap-7.5 [&_[role='tabpanel']:not([hidden])]:flex [&_[role='tabpanel']:not([hidden])]:grow"
+      class="flex flex-1 overflow-hidden flex-col [&_[role='tab']]:px-0 [&_[role='tab']]:shrink-0 [&_[role='tablist']]:px-5 [&_[role='tablist']::-webkit-scrollbar]:h-0 [&_[role='tablist']]:min-h-[45px] [&_[role='tablist']]:gap-7.5 [&_[role='tabpanel']:not([hidden])]:flex [&_[role='tabpanel']:not([hidden])]:grow"
     >
       <template #tab-panel>
         <Activities
@@ -52,7 +52,7 @@
           :docname="dealId"
           :tabs="tabs"
           @beforeSave="beforeStatusChange"
-          @afterSave="reloadAssignees"
+          @afterSave="reloadResources"
         />
       </template>
     </Tabs>
@@ -143,7 +143,7 @@
           :docname="dealId"
           @reload="sections.reload"
           @beforeFieldChange="beforeStatusChange"
-          @afterFieldChange="reloadAssignees"
+          @afterFieldChange="reloadResources"
         >
           <template #actions="{ section }">
             <div v-if="section.name == 'contacts_section'" class="pr-2">
@@ -379,7 +379,9 @@ import { globalStore } from '@/stores/global'
 import { statusesStore } from '@/stores/statuses'
 import { getMeta } from '@/stores/meta'
 import { useDocument } from '@/data/document'
-import { whatsappEnabled, callEnabled } from '@/composables/settings'
+import { whatsappEnabled } from '@/composables/whatsapp'
+import { callEnabled } from '@/composables/telephony'
+import { useBroadcast } from '@/composables/useBroadcast'
 import {
   createResource,
   Dropdown,
@@ -404,6 +406,7 @@ import {
 import { useRoute, useRouter } from 'vue-router'
 import { useActiveTabManager } from '@/composables/useActiveTabManager'
 
+const { on } = useBroadcast()
 const { brand } = getSettings()
 const { $dialog, $socket, makeCall } = globalStore()
 const { statusOptions, getDealStatus } = statusesStore()
@@ -423,8 +426,15 @@ const errorTitle = ref('')
 const errorMessage = ref('')
 const showDeleteLinkedDocModal = ref(false)
 
-const { triggerOnChange, assignees, permissions, document, scripts, error } =
-  useDocument('CRM Deal', props.dealId)
+const {
+  triggerOnChange,
+  triggerOnRender,
+  assignees,
+  permissions,
+  document,
+  scripts,
+  error,
+} = useDocument('CRM Deal', props.dealId)
 
 const canDelete = computed(() => permissions.data?.permissions?.delete || false)
 
@@ -484,10 +494,11 @@ watch(
 
 const organization = computed(() => organizationDocument.value?.doc || {})
 
-onMounted(() => {
+onMounted(async () => {
   $socket.on('crm_customer_created', () => {
     toast.success(__('Customer Created Successfully'))
   })
+  if (document.doc) await triggerOnRender()
 })
 
 onBeforeUnmount(() => {
@@ -607,6 +618,8 @@ const sections = createResource({
   params: { doctype: 'CRM Deal' },
   transform: (data) => getParsedSections(data),
 })
+
+on('reload-deal-sections', () => sections.reload())
 
 if (!sections.data) sections.fetch()
 
@@ -782,7 +795,9 @@ function setLostReason() {
     (document.doc.lost_reason && document.doc.lost_reason !== 'Other') ||
     (document.doc.lost_reason === 'Other' && document.doc.lost_notes)
   ) {
-    document.save.submit()
+    document.save.submit(null, {
+      onSuccess: () => sections.reload(),
+    })
     return
   }
 
@@ -797,14 +812,20 @@ function beforeStatusChange(data) {
     setLostReason()
   } else {
     document.save.submit(null, {
-      onSuccess: () => reloadAssignees(data),
+      onSuccess: () => reloadResources(data),
     })
   }
 }
 
-function reloadAssignees(data) {
+function reloadResources(data) {
   if (Object.hasOwn(data ?? {}, 'deal_owner')) {
     assignees.reload()
+  }
+  if (
+    Object.hasOwn(data ?? {}, 'status') &&
+    getDealStatus(data.status).type != 'Lost'
+  ) {
+    sections.reload()
   }
 }
 </script>

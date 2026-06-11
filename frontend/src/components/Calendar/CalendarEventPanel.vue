@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/no-v-html -->
 <template>
   <div v-if="show" class="flex flex-col w-[352px] text-base h-full">
     <!-- Event Header -->
@@ -254,7 +255,7 @@
         </div>
         <div
           class="px-4.5 py-2 text-ink-gray-7 text-p-base"
-          v-html="_event.description"
+          v-html="sanitizeHTML(_event.description)"
         />
       </div>
     </div>
@@ -561,7 +562,7 @@ import EventNotifications from '@/components/Calendar/EventNotifications.vue'
 import ShortcutTooltip from '@/components/ShortcutTooltip.vue'
 import { globalStore } from '@/stores/global'
 import { sessionStore } from '@/stores/session'
-import { validateEmail, deepClone } from '@/utils'
+import { validateEmail, deepClone, sanitizeHTML } from '@/utils'
 import {
   normalizeParticipants,
   buildEndTimeOptions,

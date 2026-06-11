@@ -113,6 +113,8 @@ const state = reactive({
   enable_outgoing: props.accountData.enable_outgoing || false,
   default_outgoing: props.accountData.default_outgoing || false,
   default_incoming: props.accountData.default_incoming || false,
+  create_lead_from_incoming_email:
+    props.accountData.create_lead_from_incoming_email || false,
 })
 
 const info = {

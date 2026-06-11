@@ -35,21 +35,43 @@
       <div class="flex gap-4 items-center justify-between py-3 px-2">
         <div class="flex flex-col">
           <div class="text-p-base font-medium text-ink-gray-7 truncate">
-            {{ __('Auto update communication status') }}
+            {{ __('Mark lead/deal as replied on response') }}
           </div>
           <div class="text-p-sm text-ink-gray-5">
             {{
               __(
-                'Automatically update the Communication status for Leads & Deals when SLA is enabled. Set status to “Open” on new communication and “Replied” when a response is received',
+                'Automatically sets Communication Status to “Replied” for the lead or deal when a response is received. Applies only when SLA is enabled',
               )
             }}
           </div>
         </div>
         <div>
           <Switch
-            v-model="settings.doc.auto_update_communication_status"
+            v-model="settings.doc.auto_mark_replied_on_response"
             size="sm"
-            @click.stop="toggle('auto_update_communication_status')"
+            @click.stop="toggle('auto_mark_replied_on_response')"
+          />
+        </div>
+      </div>
+      <div class="h-px border-t mx-2 border-outline-gray-modals" />
+      <div class="flex gap-4 items-center justify-between py-3 px-2">
+        <div class="flex flex-col">
+          <div class="text-p-base font-medium text-ink-gray-7 truncate">
+            {{ __('Reopen lead/deal on new communication') }}
+          </div>
+          <div class="text-p-sm text-ink-gray-5">
+            {{
+              __(
+                'Automatically sets Communication Status to “Open” for the lead or deal when a new communication is created. Applies only when SLA is enabled',
+              )
+            }}
+          </div>
+        </div>
+        <div>
+          <Switch
+            v-model="settings.doc.auto_reopen_on_new_communication"
+            size="sm"
+            @click.stop="toggle('auto_reopen_on_new_communication')"
           />
         </div>
       </div>

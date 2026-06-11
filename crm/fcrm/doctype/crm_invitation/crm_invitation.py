@@ -57,7 +57,7 @@ class CRMInvitation(Document):
 		self.accept()
 
 	def accept(self):
-		if self.status == "Expired":
+		if self.status != "Pending":
 			frappe.throw(_("Invalid or expired key"))
 
 		user = self.create_user_if_not_exists()
@@ -72,6 +72,7 @@ class CRMInvitation(Document):
 
 		self.status = "Accepted"
 		self.accepted_at = frappe.utils.now()
+		self.key = None
 		self.save(ignore_permissions=True)
 
 	def update_module_in_user(self, user, module):

@@ -7,7 +7,7 @@ crm.patches.v1_0.rename_twilio_settings_to_crm_twilio_settings
 [post_model_sync]
 # Patches added in this section will be executed after doctypes are migrated
 crm.patches.v1_0.create_email_template_custom_fields
-crm.patches.v1_0.create_default_fields_layout #22/01/2025
+crm.patches.v1_0.create_default_fields_layout #26/04/2026
 crm.patches.v1_0.create_default_sidebar_fields_layout
 crm.patches.v1_0.update_deal_quick_entry_layout
 crm.patches.v1_0.update_layouts_to_new_format
@@ -24,3 +24,6 @@ crm.patches.v1_0.create_custom_fields_for_erpnext_in_crm
 execute:frappe.db.set_single_value("FCRM Settings", "update_timestamp_on_new_communication", 1)
 crm.patches.v1_0.add_email_in_default_lead_sources
 crm.patches.v1_0.create_email_account_custom_field
+crm.patches.v1_0.create_default_quick_filters
+crm.patches.v1_0.create_custom_fields_for_product_item_sync
+crm.patches.v1_0.add_forecasting_section_in_quick_entry

@@ -172,7 +172,6 @@ import {
   FormControl,
   Switch,
   toast,
-  createResource,
   ErrorMessage,
   Tabs,
 } from 'frappe-ui'

@@ -4,6 +4,7 @@
 import json
 
 import frappe
+from frappe import _
 from frappe.model.document import Document
 from frappe.utils import random_string
 
@@ -128,8 +129,6 @@ def get_sidepanel_sections(doctype: str):
 	fields = frappe.get_meta(doctype).fields
 	fields = [field for field in fields if field.fieldtype not in not_allowed_fieldtypes]
 
-	add_forecasting_section(layout, doctype)
-
 	for section in layout:
 		section["name"] = section.get("name") or section.get("label")
 		for column in section.get("columns") if section.get("columns") else []:
@@ -145,38 +144,6 @@ def get_sidepanel_sections(doctype: str):
 		fields_meta[field.fieldname] = field
 
 	return layout
-
-
-def add_forecasting_section(layout, doctype):
-	if (
-		doctype == "CRM Deal"
-		and frappe.db.get_single_value("FCRM Settings", "enable_forecasting")
-		and not any(section.get("name") == "forecasted_sales_section" for section in layout)
-	):
-		contacts_section_index = next(
-			(
-				i
-				for i, section in enumerate(layout)
-				if section.get("name") == "contacts_section" or section.get("label") == "Contacts"
-			),
-			None,
-		)
-
-		if contacts_section_index is not None:
-			layout.insert(
-				contacts_section_index + 1,
-				{
-					"name": "forecasted_sales_section",
-					"label": "Forecasted Sales",
-					"opened": True,
-					"columns": [
-						{
-							"name": "column_" + str(random_string(4)),
-							"fields": ["expected_closure_date", "probability", "expected_deal_value"],
-						}
-					],
-				},
-			)
 
 
 def handle_perm_level_restrictions(field, doctype, parent_doctype=None):
@@ -226,6 +193,9 @@ def get_field_obj(field):
 
 @frappe.whitelist()
 def save_fields_layout(doctype: str, type: str, layout: str):
+	if not frappe.has_permission("CRM Fields Layout", "write"):
+		frappe.throw(_("Not permitted to modify fields layout"), frappe.PermissionError)
+
 	if frappe.db.exists("CRM Fields Layout", {"dt": doctype, "type": type}):
 		doc = frappe.get_doc("CRM Fields Layout", {"dt": doctype, "type": type})
 	else:
@@ -238,7 +208,7 @@ def save_fields_layout(doctype: str, type: str, layout: str):
 			"layout": layout,
 		}
 	)
-	doc.save(ignore_permissions=True)
+	doc.save()
 
 	return doc.layout
 

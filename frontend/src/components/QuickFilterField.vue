@@ -42,7 +42,7 @@
 import Link from '@/components/Controls/Link.vue'
 import { FormControl, DatePicker, DateTimePicker } from 'frappe-ui'
 import { useDebounceFn } from '@vueuse/core'
-import { reactive } from 'vue'
+import { reactive, watch } from 'vue'
 
 const props = defineProps({
   filter: { type: Object, required: true },
@@ -51,6 +51,12 @@ const props = defineProps({
 const filter = reactive(props.filter)
 
 const emit = defineEmits(['applyQuickFilter'])
+
+watch(
+  () => props.filter,
+  (newFilter) => Object.assign(filter, newFilter),
+  { deep: true },
+)
 
 const debouncedFn = useDebounceFn((f, value) => {
   emit('applyQuickFilter', f, value)

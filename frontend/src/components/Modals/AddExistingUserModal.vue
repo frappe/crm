@@ -69,7 +69,7 @@ import { usersStore } from '@/stores/users'
 import { createResource, toast } from 'frappe-ui'
 import { ref, computed } from 'vue'
 
-const { users, isAdmin, isManager } = usersStore()
+const { users, isAdmin } = usersStore()
 
 const show = defineModel({ type: Boolean })
 
@@ -90,7 +90,7 @@ const description = computed(() => {
 const roleOptions = computed(() => {
   return [
     { value: 'Sales User', label: __('Sales User') },
-    ...(isManager() ? [{ value: 'Sales Manager', label: __('Manager') }] : []),
+    ...(isAdmin() ? [{ value: 'Sales Manager', label: __('Manager') }] : []),
     ...(isAdmin() ? [{ value: 'System Manager', label: __('Admin') }] : []),
   ]
 })

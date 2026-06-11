@@ -5,14 +5,12 @@ import phonenumbers
 from frappe import _
 from frappe.core.doctype.comment.comment import Comment
 from frappe.core.doctype.communication.communication import Communication
-from frappe.model.docstatus import DocStatus
-from frappe.model.dynamic_links import get_dynamic_link_map
 from frappe.utils import floor, now
 from phonenumbers import NumberParseException
 from phonenumbers import PhoneNumberFormat as PNF
 
 
-def parse_phone_number(phone_number, default_country="IN"):
+def parse_phone_number(phone_number: str, default_country: str = "IN"):
 	try:
 		# Parse the number
 		number = phonenumbers.parse(phone_number, default_country)
@@ -38,7 +36,7 @@ def parse_phone_number(phone_number, default_country="IN"):
 		return {"success": False, "error": str(e)}
 
 
-def are_same_phone_number(number1, number2, default_region="IN", validate=True):
+def are_same_phone_number(number1: str, number2: str, default_region: str = "IN", validate: bool = True):
 	"""
 	Check if two phone numbers are the same, regardless of their format.
 
@@ -69,7 +67,7 @@ def are_same_phone_number(number1, number2, default_region="IN", validate=True):
 		return False
 
 
-def seconds_to_duration(seconds):
+def seconds_to_duration(seconds: float | int) -> str:
 	if not seconds:
 		return "0s"
 
@@ -103,135 +101,6 @@ def seconds_to_duration(seconds):
 		return "0s"
 
 
-# Extracted from frappe core frappe/model/delete_doc.py/check_if_doc_is_linked
-def get_linked_docs(doc, method="Delete"):
-	from frappe.model.rename_doc import get_link_fields
-
-	link_fields = get_link_fields(doc.doctype)
-	ignored_doctypes = set()
-
-	if method == "Cancel" and (doc_ignore_flags := doc.get("ignore_linked_doctypes")):
-		ignored_doctypes.update(doc_ignore_flags)
-	if method == "Delete":
-		ignored_doctypes.update(frappe.get_hooks("ignore_links_on_delete"))
-
-	docs = []
-
-	for lf in link_fields:
-		link_dt, link_field, issingle = lf["parent"], lf["fieldname"], lf["issingle"]
-		if link_dt in ignored_doctypes or (link_field == "amended_from" and method == "Cancel"):
-			continue
-
-		try:
-			meta = frappe.get_meta(link_dt)
-		except frappe.DoesNotExistError:
-			frappe.clear_last_message()
-			# This mostly happens when app do not remove their customizations, we shouldn't
-			# prevent link checks from failing in those cases
-			continue
-
-		if issingle:
-			if frappe.db.get_single_value(link_dt, link_field) == doc.name:
-				docs.append({"doc": doc.name, "link_dt": link_dt, "link_field": link_field})
-			continue
-
-		fields = ["name", "docstatus"]
-
-		if meta.istable:
-			fields.extend(["parent", "parenttype"])
-
-		for item in frappe.db.get_values(link_dt, {link_field: doc.name}, fields, as_dict=True):
-			# available only in child table cases
-			item_parent = getattr(item, "parent", None)
-			linked_parent_doctype = item.parenttype if item_parent else link_dt
-
-			if linked_parent_doctype in ignored_doctypes:
-				continue
-
-			if method != "Delete" and (method != "Cancel" or not DocStatus(item.docstatus).is_submitted()):
-				# don't raise exception if not
-				# linked to a non-cancelled doc when deleting or to a submitted doc when cancelling
-				continue
-			elif link_dt == doc.doctype and (item_parent or item.name) == doc.name:
-				# don't raise exception if not
-				# linked to same item or doc having same name as the item
-				continue
-			else:
-				reference_docname = item_parent or item.name
-				docs.append(
-					{
-						"doc": doc.name,
-						"reference_doctype": linked_parent_doctype,
-						"reference_docname": reference_docname,
-					}
-				)
-	return docs
-
-
-# Extracted from frappe core frappe/model/delete_doc.py/check_if_doc_is_dynamically_linked
-def get_dynamic_linked_docs(doc, method="Delete"):
-	docs = []
-	for df in get_dynamic_link_map().get(doc.doctype, []):
-		ignore_linked_doctypes = doc.get("ignore_linked_doctypes") or []
-
-		if df.parent in frappe.get_hooks("ignore_links_on_delete") or (
-			df.parent in ignore_linked_doctypes and method == "Cancel"
-		):
-			# don't check for communication and todo!
-			continue
-
-		meta = frappe.get_meta(df.parent)
-		if meta.issingle:
-			# dynamic link in single doc
-			refdoc = frappe.db.get_singles_dict(df.parent)
-			if (
-				refdoc.get(df.options) == doc.doctype
-				and refdoc.get(df.fieldname) == doc.name
-				and (
-					# linked to an non-cancelled doc when deleting
-					(method == "Delete" and not DocStatus(refdoc.docstatus).is_cancelled())
-					# linked to a submitted doc when cancelling
-					or (method == "Cancel" and DocStatus(refdoc.docstatus).is_submitted())
-				)
-			):
-				docs.append({"doc": doc.name, "reference_doctype": df.parent, "reference_docname": df.parent})
-		else:
-			# dynamic link in table
-			df["table"] = ", `parent`, `parenttype`, `idx`" if meta.istable else ""
-			query = """select `name`, `docstatus` {table} from `tab{parent}` where
-			`{options}`=%s and `{fieldname}`=%s""".format(**df)
-			for refdoc in frappe.db.sql(
-				query,
-				(doc.doctype, doc.name),
-				as_dict=True,
-			):
-				# linked to an non-cancelled doc when deleting
-				# or linked to a submitted doc when cancelling
-				if (method == "Delete" and not DocStatus(refdoc.docstatus).is_cancelled()) or (
-					method == "Cancel" and DocStatus(refdoc.docstatus).is_submitted()
-				):
-					reference_doctype = refdoc.parenttype if meta.istable else df.parent
-					reference_docname = refdoc.parent if meta.istable else refdoc.name
-
-					if reference_doctype in frappe.get_hooks("ignore_links_on_delete") or (
-						reference_doctype in ignore_linked_doctypes and method == "Cancel"
-					):
-						# don't check for communication and todo!
-						continue
-
-					at_position = f"at Row: {refdoc.idx}" if meta.istable else ""
-
-					docs.append(
-						{
-							"doc": doc.name,
-							"reference_doctype": reference_doctype,
-							"reference_docname": reference_docname,
-							"at_position": at_position,
-						}
-					)
-	return docs
-
-
 def is_admin(user: str | None = None) -> bool:
 	"""
 	Check whether `user` is an admin
@@ -254,7 +123,7 @@ def is_sales_user(user: str | None = None) -> bool:
 	return is_admin() or "Sales Manager" in frappe.get_roles(user) or "Sales User" in frappe.get_roles(user)
 
 
-def sales_user_only(fn):
+def sales_user_only(fn: callable) -> callable:
 	"""Decorator to validate if user is an agent."""
 
 	@functools.wraps(fn)
@@ -285,54 +154,41 @@ def is_frappe_version(version: str, above: bool = False, below: bool = False):
 	return major_version == target_version
 
 
-def update_modified_timestamp(doc: Communication | Comment, method: str | None = None):
+def _should_update_modified(doc: Communication | Comment) -> bool:
 	if not frappe.db.get_single_value("FCRM Settings", "update_timestamp_on_new_communication"):
-		return
+		return False
 
 	if not (doc.reference_doctype and doc.reference_name):
-		return
+		return False
 
-	elif doc.doctype not in ["Comment", "Communication"]:
-		return
+	if doc.reference_doctype not in ["CRM Lead", "CRM Deal"]:
+		return False
 
-	frappe.db.set_value(
-		dt=doc.reference_doctype,
-		dn=doc.reference_name,
-		field="modified",
-		val=now(),
-		update_modified=False,
-	)
+	if doc.doctype not in ["Comment", "Communication"]:
+		return False
+
+	return True
 
 
-def update_communication_status(doc: Communication, method: str | None = None):
-	if not frappe.db.get_single_value("FCRM Settings", "auto_update_communication_status"):
-		return
-
-	if not (doc.reference_doctype and doc.reference_name):
-		return
-
+def _get_communication_status(doc: Communication) -> str | None:
 	if doc.doctype != "Communication":
-		return
+		return None
+
+	if not (doc.reference_doctype and doc.reference_name):
+		return None
 
 	if doc.sent_or_received not in ("Sent", "Received"):
-		return
+		return None
 
-	last_communication = frappe.get_last_doc(
-		"Communication",
-		{"reference_doctype": doc.reference_doctype, "reference_name": doc.reference_name},
-	)
+	auto_reopen = frappe.db.get_single_value("FCRM Settings", "auto_reopen_on_new_communication")
+	auto_replied = frappe.db.get_single_value("FCRM Settings", "auto_mark_replied_on_response")
 
-	if not last_communication or (last_communication.name != doc.name):
-		return
+	if doc.sent_or_received == "Received" and auto_reopen:
+		return "Open"
+	elif doc.sent_or_received == "Sent" and auto_replied:
+		return "Replied"
 
-	status = "Open" if doc.sent_or_received == "Received" else "Replied"
-
-	frappe.db.set_value(
-		doc.reference_doctype,
-		doc.reference_name,
-		"communication_status",
-		status,
-	)
+	return None
 
 
 def create_lead_from_incoming_email(doc: Communication, method: str | None = None):
@@ -358,14 +214,77 @@ def create_lead_from_incoming_email(doc: Communication, method: str | None = Non
 		return
 
 	lead = frappe.new_doc("CRM Lead")
-
-	lead.doctype = "CRM Lead"
 	lead.email = doc.sender
-	lead.first_name = doc.sender_full_name or doc.sender.split("@")[0]
+
+	if doc.sender_full_name:
+		lead.first_name = doc.sender_full_name.split(" ")[0]
+		lead.last_name = (
+			doc.sender_full_name.split(" ")[-1] if len(doc.sender_full_name.split(" ")) > 1 else ""
+		)
+	else:
+		lead.first_name = doc.sender.split("@")[0]
 
 	if frappe.db.exists("CRM Lead Source", "Email"):
-		lead.lead_source = "Email"
-	if frappe.db.exists("CRM Lead Status", "New"):
-		lead.lead_status = "New"
+		lead.source = "Email"
 
 	lead.insert(ignore_permissions=True)
+
+	doc.reference_doctype = "CRM Lead"
+	doc.reference_name = lead.name
+	doc.save(ignore_permissions=True)
+
+
+def on_comment_insert(doc: Comment, method: str | None = None):
+	if not (doc.reference_doctype and doc.reference_name):
+		return
+
+	if doc.reference_doctype not in ["CRM Lead", "CRM Deal"] or doc.comment_type != "Comment":
+		return
+
+	if not _should_update_modified(doc):
+		return
+
+	if doc.reference_doctype and doc.reference_name:
+		frappe.enqueue(update_modified_background, doctype=doc.reference_doctype, docname=doc.reference_name)
+
+
+def update_modified_background(doctype: str, docname: str):
+	frappe.db.set_value(doctype, docname, "modified", now(), update_modified=False)
+
+
+def on_communication_insert(doc: Communication, method: str | None = None):
+	create_lead_from_incoming_email(doc)
+
+
+def on_communication_update(doc: Communication, method: str | None = None):
+	if not (doc.reference_doctype and doc.reference_name):
+		return
+
+	if doc.reference_doctype not in ["CRM Lead", "CRM Deal"]:
+		return
+
+	should_update_modified = _should_update_modified(doc)
+	status = _get_communication_status(doc)
+
+	values = {}
+
+	if should_update_modified:
+		values["modified"] = now()
+
+	if status:
+		last_communication = frappe.get_last_doc(
+			"Communication",
+			{"reference_doctype": doc.reference_doctype, "reference_name": doc.reference_name},
+		)
+		if last_communication and last_communication.name == doc.name:
+			values["communication_status"] = status
+
+	if not values:
+		return
+
+	frappe.db.set_value(
+		doc.reference_doctype,
+		doc.reference_name,
+		values,
+		update_modified=False,
+	)

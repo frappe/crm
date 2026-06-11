@@ -57,7 +57,7 @@
       v-model="tabIndex"
       as="div"
       :tabs="tabs"
-      class="flex flex-1 overflow-auto flex-col [&_[role='tab']]:px-0 [&_[role='tablist']]:px-3 [&_[role='tablist']]:gap-7.5 [&_[role='tabpanel']:not([hidden])]:flex [&_[role='tabpanel']:not([hidden])]:grow"
+      class="flex flex-1 overflow-auto flex-col [&_[role='tab']]:px-0 [&_[role='tab']]:shrink-0 [&_[role='tablist']]:px-3 [&_[role='tablist']]:min-h-[45px] [&_[role='tablist']]:gap-7.5 [&_[role='tabpanel']:not([hidden])]:flex [&_[role='tabpanel']:not([hidden])]:grow"
     >
       <template #tab-panel="{ tab }">
         <div v-if="tab.name == 'Details'">
@@ -299,11 +299,9 @@ import { globalStore } from '@/stores/global'
 import { statusesStore } from '@/stores/statuses'
 import { getMeta } from '@/stores/meta'
 import { useDocument } from '@/data/document'
-import {
-  whatsappEnabled,
-  callEnabled,
-  isMobileView,
-} from '@/composables/settings'
+import { isMobileView } from '@/composables/settings'
+import { whatsappEnabled } from '@/composables/whatsapp'
+import { callEnabled } from '@/composables/telephony'
 import { useActiveTabManager } from '@/composables/useActiveTabManager'
 import {
   createResource,
@@ -315,13 +313,14 @@ import {
   usePageMeta,
   toast,
 } from 'frappe-ui'
-import { ref, computed, h, watch } from 'vue'
+import { ref, computed, h, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 const { brand } = getSettings()
 const { $dialog, $socket } = globalStore()
 const { statusOptions, getDealStatus } = statusesStore()
 const { doctypeMeta } = getMeta('CRM Deal')
+
 const route = useRoute()
 const router = useRouter()
 
@@ -333,12 +332,20 @@ const errorTitle = ref('')
 const errorMessage = ref('')
 const showDeleteLinkedDocModal = ref(false)
 
-const { triggerOnChange, assignees, document, scripts, error } = useDocument(
-  'CRM Deal',
-  props.dealId,
-)
+const {
+  triggerOnChange,
+  triggerOnRender,
+  assignees,
+  document,
+  scripts,
+  error,
+} = useDocument('CRM Deal', props.dealId)
 
 const doc = computed(() => document.doc || {})
+
+onMounted(async () => {
+  if (document.doc) await triggerOnRender()
+})
 
 watch(error, (err) => {
   if (err) {

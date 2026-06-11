@@ -5,12 +5,13 @@ import frappe
 from frappe.tests import IntegrationTestCase, UnitTestCase
 
 from crm.utils import (
+	_get_communication_status,
+	_should_update_modified,
 	are_same_phone_number,
 	create_lead_from_incoming_email,
+	on_communication_update,
 	parse_phone_number,
 	seconds_to_duration,
-	update_communication_status,
-	update_modified_timestamp,
 )
 
 
@@ -126,12 +127,32 @@ class TestUtils(UnitTestCase):
 
 
 class TestUpdateModifiedTimestamp(IntegrationTestCase):
+	def setUp(self):
+		super().setUp()
+		# Patch frappe.enqueue to run update_modified_background synchronously in tests
+		self._enqueue_patch = patch("frappe.enqueue", self._immediate_enqueue)
+		self._enqueue_patch.start()
+
+	@staticmethod
+	def _immediate_enqueue(method, **kwargs):
+		# Only patch for update_modified_background
+		from crm.utils import update_modified_background
+
+		if method == update_modified_background or (
+			isinstance(method, str) and method.endswith("update_modified_background")
+		):
+			return update_modified_background(kwargs["doctype"], kwargs["docname"])
+		# fallback: do nothing
+		return None
+
 	@classmethod
 	def setUpClass(cls):
 		super().setUpClass()
-		# Ensure FCRM Settings has the flag enabled; disable status hook to isolate timestamp behaviour
+		# Ensure FCRM Settings has the flag enabled; disable both status hooks to isolate
+		# timestamp behaviour from communication-status side-effects.
 		frappe.db.set_single_value("FCRM Settings", "update_timestamp_on_new_communication", 1)
-		frappe.db.set_single_value("FCRM Settings", "auto_update_communication_status", 0)
+		frappe.db.set_single_value("FCRM Settings", "auto_reopen_on_new_communication", 0)
+		frappe.db.set_single_value("FCRM Settings", "auto_mark_replied_on_response", 0)
 
 	@classmethod
 	def tearDownClass(cls):
@@ -140,6 +161,8 @@ class TestUpdateModifiedTimestamp(IntegrationTestCase):
 
 	def tearDown(self):
 		frappe.db.rollback()
+		self._enqueue_patch.stop()
+		super().tearDown()
 
 	def _make_lead(self):
 		lead = frappe.get_doc(
@@ -236,11 +259,13 @@ class TestUpdateModifiedTimestamp(IntegrationTestCase):
 			}
 		)
 		with patch("frappe.db.set_value") as mock_set_value:
-			update_modified_timestamp(comm)
+			# _should_update_modified returns False when no reference — set_value must not be called
+			result = _should_update_modified(comm)
+			self.assertFalse(result)
 			mock_set_value.assert_not_called()
 
 	def test_timestamp_direct_call_updates_lead(self):
-		"""Direct call to update_modified_timestamp updates the reference doc."""
+		"""Direct call to on_communication_update updates the reference doc modified timestamp."""
 		lead = self._make_lead()
 
 		time.sleep(0.1)
@@ -256,12 +281,11 @@ class TestUpdateModifiedTimestamp(IntegrationTestCase):
 				"reference_name": lead.name,
 			}
 		)
-		comm.flags.ignore_permissions = True
 		comm.insert(ignore_permissions=True)
 
 		before = frappe.db.get_value("CRM Lead", lead.name, "modified")
 		time.sleep(0.1)
-		update_modified_timestamp(comm)
+		on_communication_update(comm)
 		after = frappe.db.get_value("CRM Lead", lead.name, "modified")
 		self.assertGreaterEqual(after, before)
 
@@ -270,7 +294,8 @@ class TestUpdateCommunicationStatus(IntegrationTestCase):
 	@classmethod
 	def setUpClass(cls):
 		super().setUpClass()
-		frappe.db.set_single_value("FCRM Settings", "auto_update_communication_status", 1)
+		frappe.db.set_single_value("FCRM Settings", "auto_reopen_on_new_communication", 1)
+		frappe.db.set_single_value("FCRM Settings", "auto_mark_replied_on_response", 1)
 		frappe.db.set_single_value("FCRM Settings", "update_timestamp_on_new_communication", 0)
 
 	@classmethod
@@ -280,8 +305,8 @@ class TestUpdateCommunicationStatus(IntegrationTestCase):
 
 	def tearDown(self):
 		frappe.db.rollback()
-		# Keep settings in their proper state between tests
-		frappe.db.set_single_value("FCRM Settings", "auto_update_communication_status", 1)
+		frappe.db.set_single_value("FCRM Settings", "auto_reopen_on_new_communication", 1)
+		frappe.db.set_single_value("FCRM Settings", "auto_mark_replied_on_response", 1)
 
 	def _make_lead(self, suffix=""):
 		lead = frappe.get_doc(
@@ -310,7 +335,7 @@ class TestUpdateCommunicationStatus(IntegrationTestCase):
 		return comm
 
 	def test_status_set_to_open_on_received_communication(self):
-		"""Receiving a communication should set lead's communication_status to 'Open'."""
+		"""Receiving an incoming communication should set the lead's communication_status to 'Open'."""
 		lead = self._make_lead("recv")
 		self._insert_communication(lead, "Received")
 
@@ -318,20 +343,33 @@ class TestUpdateCommunicationStatus(IntegrationTestCase):
 		self.assertEqual(status, "Open")
 
 	def test_status_set_to_replied_on_sent_communication(self):
-		"""Sending a communication should set lead's communication_status to 'Replied'."""
+		"""Sending an outgoing communication should set the lead's communication_status to 'Replied'."""
 		lead = self._make_lead("sent")
 		self._insert_communication(lead, "Sent")
 
 		status = frappe.db.get_value("CRM Lead", lead.name, "communication_status")
 		self.assertEqual(status, "Replied")
 
-	def test_status_not_updated_when_setting_disabled(self):
-		"""When auto_update_communication_status is off nothing should change."""
-		frappe.db.set_single_value("FCRM Settings", "auto_update_communication_status", 0)
+	def test_status_not_updated_when_reopen_setting_disabled(self):
+		"""When auto_reopen_on_new_communication is off, a Received communication should NOT set status."""
+		frappe.db.set_single_value("FCRM Settings", "auto_reopen_on_new_communication", 0)
+		frappe.db.set_single_value("FCRM Settings", "auto_mark_replied_on_response", 0)
 
-		lead = self._make_lead("off")
+		lead = self._make_lead("reopen-off")
 		original_status = frappe.db.get_value("CRM Lead", lead.name, "communication_status")
 		self._insert_communication(lead, "Received")
+
+		status = frappe.db.get_value("CRM Lead", lead.name, "communication_status")
+		self.assertEqual(status, original_status)
+
+	def test_status_not_updated_when_replied_setting_disabled(self):
+		"""When auto_mark_replied_on_response is off, a Sent communication should NOT set status."""
+		frappe.db.set_single_value("FCRM Settings", "auto_mark_replied_on_response", 0)
+		frappe.db.set_single_value("FCRM Settings", "auto_reopen_on_new_communication", 0)
+
+		lead = self._make_lead("replied-off")
+		original_status = frappe.db.get_value("CRM Lead", lead.name, "communication_status")
+		self._insert_communication(lead, "Sent")
 
 		status = frappe.db.get_value("CRM Lead", lead.name, "communication_status")
 		self.assertEqual(status, original_status)
@@ -340,20 +378,17 @@ class TestUpdateCommunicationStatus(IntegrationTestCase):
 		"""Only the most recent communication should determine the status."""
 		lead = self._make_lead("last")
 
-		# First a Received communication → status Open
 		self._insert_communication(lead, "Received")
 		self.assertEqual(frappe.db.get_value("CRM Lead", lead.name, "communication_status"), "Open")
 
-		# Then a Sent communication → status Replied
 		self._insert_communication(lead, "Sent")
 		self.assertEqual(frappe.db.get_value("CRM Lead", lead.name, "communication_status"), "Replied")
 
-		# And back to Received → status Open again
 		self._insert_communication(lead, "Received")
 		self.assertEqual(frappe.db.get_value("CRM Lead", lead.name, "communication_status"), "Open")
 
 	def test_status_not_updated_when_no_reference(self):
-		"""A Communication with no reference should not touch the DB."""
+		"""A Communication with no reference doctype/name should not touch the DB."""
 		comm = frappe.get_doc(
 			{
 				"doctype": "Communication",
@@ -364,11 +399,11 @@ class TestUpdateCommunicationStatus(IntegrationTestCase):
 			}
 		)
 		with patch("frappe.db.set_value") as mock_set_value:
-			update_communication_status(comm)
+			on_communication_update(comm)
 			mock_set_value.assert_not_called()
 
 	def test_status_not_updated_for_non_communication_doctype(self):
-		"""Calling update_communication_status with a non-Communication doc should not touch the DB."""
+		"""Calling _get_communication_status with a non-Communication doc should return None."""
 		comment = frappe.get_doc(
 			{
 				"doctype": "Comment",
@@ -378,9 +413,7 @@ class TestUpdateCommunicationStatus(IntegrationTestCase):
 				"content": "test",
 			}
 		)
-		with patch("frappe.db.set_value") as mock_set_value:
-			update_communication_status(comment)
-			mock_set_value.assert_not_called()
+		self.assertIsNone(_get_communication_status(comment))
 
 	def test_status_not_updated_for_unknown_sent_or_received_value(self):
 		"""A Communication with an unexpected sent_or_received value should be skipped."""
@@ -400,8 +433,8 @@ class TestUpdateCommunicationStatus(IntegrationTestCase):
 		comm.insert(ignore_permissions=True)
 
 		comm.sent_or_received = "Unknown"
-		update_communication_status(comm)
-		# Status should remain "Open" from the first insert
+		self.assertIsNone(_get_communication_status(comm))
+
 		status = frappe.db.get_value("CRM Lead", lead.name, "communication_status")
 		self.assertEqual(status, "Open")
 
@@ -410,7 +443,8 @@ class TestCreateLeadFromIncomingEmail(IntegrationTestCase):
 	@classmethod
 	def setUpClass(cls):
 		super().setUpClass()
-		frappe.db.set_single_value("FCRM Settings", "auto_update_communication_status", 0)
+		frappe.db.set_single_value("FCRM Settings", "auto_reopen_on_new_communication", 0)
+		frappe.db.set_single_value("FCRM Settings", "auto_mark_replied_on_response", 0)
 		frappe.db.set_single_value("FCRM Settings", "update_timestamp_on_new_communication", 0)
 
 	@classmethod
@@ -420,7 +454,8 @@ class TestCreateLeadFromIncomingEmail(IntegrationTestCase):
 
 	def tearDown(self):
 		frappe.db.rollback()
-		frappe.db.set_single_value("FCRM Settings", "auto_update_communication_status", 0)
+		frappe.db.set_single_value("FCRM Settings", "auto_reopen_on_new_communication", 0)
+		frappe.db.set_single_value("FCRM Settings", "auto_mark_replied_on_response", 0)
 		frappe.db.set_single_value("FCRM Settings", "update_timestamp_on_new_communication", 0)
 
 	def _make_email_account(self, create_lead=1):
@@ -556,8 +591,10 @@ class TestCreateLeadFromIncomingEmail(IntegrationTestCase):
 		doc = self._incoming_comm("fullname@example.com", email_account.name, sender_full_name="Jane Doe")
 		create_lead_from_incoming_email(doc)
 
-		lead = frappe.db.get_value("CRM Lead", {"email": "fullname@example.com"}, "first_name")
-		self.assertEqual(lead, "Jane Doe")
+		lead = frappe.db.get_values(
+			"CRM Lead", {"email": "fullname@example.com"}, ["first_name", "last_name"], as_dict=True
+		)
+		self.assertEqual(lead, [{"first_name": "Jane", "last_name": "Doe"}])
 
 	def test_lead_first_name_falls_back_to_email_prefix(self):
 		"""When sender_full_name is absent, the email prefix should be used as first_name."""
@@ -567,3 +604,59 @@ class TestCreateLeadFromIncomingEmail(IntegrationTestCase):
 
 		lead = frappe.db.get_value("CRM Lead", {"email": "prefix@example.com"}, "first_name")
 		self.assertEqual(lead, "prefix")
+
+	def test_lead_last_name_empty_for_single_word_sender_full_name(self):
+		"""When sender_full_name is a single word, last_name should be empty."""
+		email_account = self._make_email_account()
+		doc = self._incoming_comm("singlename@example.com", email_account.name, sender_full_name="Mononym")
+		create_lead_from_incoming_email(doc)
+
+		lead = frappe.db.get_values(
+			"CRM Lead", {"email": "singlename@example.com"}, ["first_name", "last_name"], as_dict=True
+		)
+		self.assertEqual(lead, [{"first_name": "Mononym", "last_name": ""}])
+
+	def test_communication_linked_back_to_created_lead(self):
+		"""After lead creation, the communication's reference_doctype and reference_name should point to the new lead."""
+		email_account = self._make_email_account()
+		doc = self._incoming_comm("linked@example.com", email_account.name, sender_full_name="Link Test")
+		create_lead_from_incoming_email(doc)
+
+		self.assertEqual(doc.reference_doctype, "CRM Lead")
+		lead_name = frappe.db.get_value("CRM Lead", {"email": "linked@example.com"}, "name")
+		self.assertEqual(doc.reference_name, lead_name)
+
+	def test_lead_source_set_to_email_when_source_exists(self):
+		"""Lead source should be set to 'Email' when the CRM Lead Source 'Email' exists."""
+		if not frappe.db.exists("CRM Lead Source", "Email"):
+			frappe.get_doc({"doctype": "CRM Lead Source", "name": "Email"}).insert(ignore_permissions=True)
+
+		email_account = self._make_email_account()
+		doc = self._incoming_comm("leadsource@example.com", email_account.name)
+		create_lead_from_incoming_email(doc)
+
+		source = frappe.db.get_value("CRM Lead", {"email": "leadsource@example.com"}, "source")
+		self.assertEqual(source, "Email")
+
+	def test_lead_created_for_sent_communication_with_communication_type(self):
+		"""A sent communication with communication_type='Communication' should still create a lead.
+
+		The guard condition uses AND: both sent_or_received != 'Received' AND
+		communication_type != 'Communication' must be true to bail out. When the
+		type IS 'Communication', the second condition is false and the function proceeds.
+		"""
+		email_account = self._make_email_account()
+		doc = frappe.get_doc(
+			{
+				"doctype": "Communication",
+				"communication_type": "Communication",
+				"communication_medium": "Email",
+				"sent_or_received": "Sent",
+				"subject": "Sent communication type",
+				"sender": "sentcomm@example.com",
+				"email_account": email_account.name,
+			}
+		)
+		create_lead_from_incoming_email(doc)
+
+		self.assertTrue(frappe.db.exists("CRM Lead", {"email": "sentcomm@example.com"}))

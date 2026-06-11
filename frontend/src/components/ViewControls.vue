@@ -762,20 +762,8 @@ const quickFilterOptions = computed(() => {
   if (!fields) return []
 
   let existingQuickFilters = newQuickFilters.value.map((f) => f.fieldname)
-  let restrictedFieldtypes = [
-    'Tab Break',
-    'Section Break',
-    'Column Break',
-    'Table',
-    'Table MultiSelect',
-    'HTML',
-    'Button',
-    'Image',
-    'Fold',
-    'Heading',
-  ]
   let options = fields
-    .filter((f) => f.label && !restrictedFieldtypes.includes(f.fieldtype))
+    .filter((f) => f.label)
     .filter((f) => !existingQuickFilters.includes(f.fieldname))
     .map((field) => ({
       label: field.label,
@@ -939,14 +927,20 @@ function updateColumns(obj) {
   }
 }
 
-async function updateKanbanSettings(data) {
+function updateKanbanSettings(data) {
   if (data.item && data.to) {
-    await call('frappe.client.set_value', {
+    call('frappe.client.set_value', {
       doctype: props.doctype,
       name: data.item,
       fieldname: view.value.column_field,
       value: data.to,
     })
+    return
+  }
+
+  if (data.fetchNewColumns) {
+    fetchAndUpdateKanbanColumns(view.value)
+    return
   }
 
   viewUpdated.value = true
@@ -1225,6 +1219,19 @@ function deleteView(v, close) {
   close()
 }
 
+function fetchAndUpdateKanbanColumns(v) {
+  call(
+    'crm.fcrm.doctype.crm_view_settings.crm_view_settings.fetch_and_update_kanban_columns',
+    {
+      name: v.name,
+    },
+  ).then((columns) => {
+    list.value.params.kanban_columns = columns
+    view.value.kanban_columns = columns
+    list.value.reload()
+  })
+}
+
 function cancelChanges() {
   reload()
   viewUpdated.value = false
@@ -1254,7 +1261,7 @@ function saveView() {
 }
 
 function applyFilter({ event, idx, column, item, firstColumn }) {
-  let restrictedFieldtypes = ['Duration', 'Datetime', 'Time']
+  let restrictedFieldtypes = ['Datetime', 'Time']
   if (restrictedFieldtypes.includes(column.type) || idx === 0) return
   if (idx === 1 && firstColumn.key == '_liked_by') return
 
@@ -1263,9 +1270,9 @@ function applyFilter({ event, idx, column, item, firstColumn }) {
 
   let filters = { ...list.value.params.filters }
 
-  let value = item.name || item.label || item
+  let value = item.name ?? item.label ?? item
 
-  if (value) {
+  if (value !== null && value !== undefined && value !== '') {
     filters[column.key] = value
   } else {
     delete filters[column.key]
@@ -1309,6 +1316,7 @@ defineExpose({
   applyLikeFilter,
   likeDoc,
   updateKanbanSettings,
+  fetchAndUpdateKanbanColumns,
   loadMoreKanban,
   viewActions,
   viewsDropdownOptions,

@@ -1,6 +1,13 @@
 <template>
   <div v-if="field.visible" class="field">
-    <div v-if="field.fieldtype != 'Check'" class="mb-2 text-sm text-ink-gray-5">
+    <div
+      v-if="
+        field.fieldtype != 'Check' &&
+        field.fieldtype != 'Button' &&
+        field.fieldtype != 'HTML'
+      "
+      class="mb-2 text-sm text-ink-gray-5"
+    >
       {{ __(field.label) }}
       <span
         v-if="
@@ -13,10 +20,22 @@
     </div>
     <FormControl
       v-if="
-        field.read_only &&
-        !['Int', 'Float', 'Currency', 'Percent', 'Check'].includes(
-          field.fieldtype,
-        )
+        (field.read_only || field.fieldtype === 'Read Only') &&
+        ![
+          'Int',
+          'Float',
+          'Currency',
+          'Percent',
+          'Check',
+          'Duration',
+          'Rating',
+          'Button',
+          'Attach',
+          'Attach Image',
+          'HTML',
+          'Geolocation',
+          'Text Editor',
+        ].includes(field.fieldtype)
       "
       v-model="data[field.fieldname]"
       type="text"
@@ -215,11 +234,59 @@
       :description="field.description"
       @change="fieldChange(flt($event.target.value), field)"
     />
+    <DurationInput
+      v-else-if="field.fieldtype === 'Duration'"
+      :value="data[field.fieldname]"
+      :placeholder="getPlaceholder(field)"
+      :disabled="Boolean(field.read_only)"
+      :description="field.description"
+      @change="(v) => fieldChange(v, field)"
+    />
+    <RatingInput
+      v-else-if="field.fieldtype === 'Rating'"
+      :value="data[field.fieldname]"
+      :max="field.options || 5"
+      :disabled="Boolean(field.read_only)"
+      @change="(v) => fieldChange(v, field)"
+    />
+    <ButtonControl
+      v-else-if="field.fieldtype === 'Button'"
+      :label="field.label"
+      :icon="field.icon"
+      :theme="getButtonTheme(field.button_color)"
+      :variant="getButtonVariant(field.button_color)"
+      :disabled="Boolean(field.read_only)"
+      @click="handleButtonClick(field)"
+    />
+    <AttachControl
+      v-else-if="['Attach', 'Attach Image'].includes(field.fieldtype)"
+      :value="data[field.fieldname]"
+      :doctype="doctype"
+      :docname="data.name"
+      :fieldname="field.fieldname"
+      :imageOnly="field.fieldtype === 'Attach Image'"
+      :disabled="Boolean(field.read_only)"
+      @change="(v) => fieldChange(v, field)"
+    />
+    <HtmlControl v-else-if="field.fieldtype === 'HTML'" :html="resolvedHtml" />
+    <TextEditorControl
+      v-else-if="field.fieldtype === 'Text Editor'"
+      :value="data[field.fieldname]"
+      :placeholder="getPlaceholder(field)"
+      :disabled="Boolean(field.read_only)"
+      @change="(v) => fieldChange(v, field)"
+    />
+    <GeolocationControl
+      v-else-if="field.fieldtype === 'Geolocation'"
+      :value="data[field.fieldname]"
+      :disabled="Boolean(field.read_only)"
+      @change="(v) => fieldChange(v, field)"
+    />
     <FormControl
       v-else
       type="text"
       :placeholder="getPlaceholder(field)"
-      :value="getDataValue(data[field.fieldname], field)"
+      :value="data[field.fieldname]"
       :disabled="Boolean(field.read_only)"
       :description="field.description"
       @change="fieldChange($event.target.value, field)"
@@ -229,6 +296,16 @@
 <script setup>
 import Password from '@/components/Controls/Password.vue'
 import FormattedInput from '@/components/Controls/FormattedInput.vue'
+import DurationInput from '@/components/Controls/DurationInput.vue'
+import RatingInput from '@/components/Controls/RatingInput.vue'
+import AttachControl from '@/components/Controls/AttachControl.vue'
+import HtmlControl from '@/components/Controls/HtmlControl.vue'
+import TextEditorControl from '@/components/Controls/TextEditorControl.vue'
+import GeolocationControl from '@/components/Controls/GeolocationControl.vue'
+import ButtonControl, {
+  getButtonTheme,
+  getButtonVariant,
+} from '@/components/Controls/ButtonControl.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
@@ -236,11 +313,18 @@ import TableMultiselectInput from '@/components/Controls/TableMultiselectInput.v
 import Link from '@/components/Controls/Link.vue'
 import Grid from '@/components/Controls/Grid.vue'
 import { createDocument } from '@/composables/document'
-import { getFormat, evaluateDependsOnValue } from '@/utils'
-import { flt } from '@/utils/numberFormat.js'
+import {
+  getFormat,
+  evaluateDependsOnValue,
+  isNull,
+  interpolateTemplate,
+} from '@/utils'
+import { flt, formatNumber, formatCurrency } from '@/utils/numberFormat.js'
 import { getMeta } from '@/stores/meta'
+import { parseLinkFilters } from '@/utils/fieldTransforms'
 import { usersStore } from '@/stores/users'
 import { useDocument } from '@/data/document'
+
 import {
   Combobox,
   Tooltip,
@@ -248,7 +332,7 @@ import {
   DateTimePicker,
   TimePicker,
 } from 'frappe-ui'
-import { computed, provide, inject } from 'vue'
+import { computed, provide, inject, ref } from 'vue'
 
 const props = defineProps({
   field: { type: Object, required: true },
@@ -256,41 +340,132 @@ const props = defineProps({
 
 const data = inject('data')
 const doctype = inject('doctype')
+const docname = inject('docname', null)
 const preview = inject('preview')
 const isGridRow = inject('isGridRow')
 
-const { getFormattedPercent, getFormattedFloat, getFormattedCurrency } =
-  getMeta(doctype)
+// Guard getMeta — skip when doctype is empty (inline/standalone mode)
+let getFormattedPercent, getFormattedFloat, getFormattedCurrency
+if (doctype) {
+  ;({ getFormattedPercent, getFormattedFloat, getFormattedCurrency } =
+    getMeta(doctype))
+} else {
+  getFormattedPercent = (fn, doc) => formatNumber(doc[fn], '', null) + '%'
+  getFormattedFloat = (fn, doc) => formatNumber(doc[fn], '', null)
+  getFormattedCurrency = (fn, doc) =>
+    formatCurrency(doc[fn], '', window.sysdefaults?.currency || 'USD', null)
+}
 
 const { users, getUser } = usersStore()
 
 let triggerOnChange
+let triggerButton
 let parentDoc
+const formDocument = ref(null)
 
-if (!isGridRow) {
+// Standalone mode: context injected from FieldLayout when context prop is set
+const standaloneContext = inject('fieldLayoutContext', null)
+
+if (standaloneContext) {
+  // Standalone mode — no useDocument, no scripting triggers
+  // Field changes update data directly
+  triggerOnChange = async (fieldname, value, row) => {
+    if (row) {
+      row[fieldname] = value
+    } else {
+      data.value[fieldname] = value
+    }
+  }
+  triggerButton = async () => {}
+  formDocument.value = standaloneContext
+
+  // Provide no-op triggers for child Grid components
+  provide('triggerOnChange', triggerOnChange)
+  provide('triggerButton', triggerButton)
+  provide('triggerOnRowAdd', async () => {})
+  provide('triggerOnRowRemove', async () => {})
+  provide(
+    'fieldPropertyOverrides',
+    computed(() => standaloneContext?.fieldPropertyOverrides || {}),
+  )
+} else if (!isGridRow) {
+  // Bind to the document by its authoritative name (injected from FieldLayout),
+  // falling back to data.name. Using data.name alone breaks the first edit of a
+  // freshly-loaded doc: name is still empty, so changes write to the wrong
+  // (new-document) cache slot and the first save serializes the pristine doc.
+  const resolvedName = docname != null ? docname.value : data.value.name
   const {
     triggerOnChange: trigger,
+    triggerButton: triggerBtn,
     triggerOnRowAdd,
     triggerOnRowRemove,
-  } = useDocument(doctype, data.value.name)
+    document: doc,
+  } = useDocument(doctype, resolvedName)
   triggerOnChange = trigger
+  triggerButton = triggerBtn
+  formDocument.value = doc
 
   provide('triggerOnChange', triggerOnChange)
+  provide('triggerButton', triggerButton)
   provide('triggerOnRowAdd', triggerOnRowAdd)
   provide('triggerOnRowRemove', triggerOnRowRemove)
+  provide(
+    'fieldPropertyOverrides',
+    computed(() => formDocument.value?.fieldPropertyOverrides || {}),
+  )
 } else {
   triggerOnChange = inject('triggerOnChange', () => {})
+  triggerButton = inject('triggerButton', () => {})
   parentDoc = inject('parentDoc')
 }
 
+// For grid rows: inject overrides provided by Grid.vue
+const injectedOverrides = inject(
+  'fieldPropertyOverrides',
+  computed(() => ({})),
+)
+const injectedParentFieldname = inject('parentFieldname', '')
+
+/**
+ * Resolve field property overrides.
+ * For grid row fields, uses dot notation (parentfield.childfield)
+ * with per-row support (parentfield.childfield:rowName).
+ * For normal fields, reads directly from formDocument.
+ */
+function getFieldOverrides(fieldname) {
+  if (isGridRow) {
+    const ov = injectedOverrides.value || {}
+    const pf = injectedParentFieldname
+    if (!pf) return undefined
+
+    const colKey = `${pf}.${fieldname}`
+    const rowName = data.value?.name
+    const rowKey = rowName ? `${colKey}:${rowName}` : null
+
+    const colOv = ov[colKey]
+    const rowOv = rowKey ? ov[rowKey] : null
+
+    if (!colOv && !rowOv) return undefined
+    return { ...(colOv || {}), ...(rowOv || {}) }
+  }
+  return formDocument.value?.fieldPropertyOverrides?.[fieldname]
+}
+
 const field = computed(() => {
-  let field = props.field
+  let field = { ...props.field }
+
+  // ── Script property overrides ──
+  const overrides = getFieldOverrides(field.fieldname)
+  if (overrides) {
+    Object.assign(field, overrides)
+  }
+
   if (field.fieldtype == 'Select' && typeof field.options === 'string') {
     field.options = field.options.split('\n').map((option) => {
       return { label: option, value: option }
     })
 
-    if (field.options[0].value !== '') {
+    if (field.options[0].value !== '' && !field.reqd) {
       field.options.unshift({ label: '', value: '' })
     }
   }
@@ -298,9 +473,9 @@ const field = computed(() => {
   if (field.fieldtype === 'Link' && field.options === 'User') {
     field.fieldtype = 'User'
     field.link_filters = JSON.stringify({
-      ...(field.link_filters ? JSON.parse(field.link_filters) : {}),
       name: ['in', users.data.crmUsers?.map((user) => user.name)],
       ignore_user_type: 1,
+      ...(parseLinkFilters(field.link_filters) || {}),
     })
   }
 
@@ -320,43 +495,65 @@ const field = computed(() => {
     data.value,
   )
 
+  // Script overrides for read_only take priority over depends_on
+  const scriptReadOnly = overrides?.read_only
+  const effectiveReadOnly =
+    scriptReadOnly !== undefined
+      ? scriptReadOnly
+      : field.read_only ||
+        (field.read_only_depends_on && read_only_via_depends_on)
+
+  // Script overrides for depends_on visibility
+  const scriptHidden = overrides?.hidden
+  const displayViaDependsOn = evaluateDependsOnValue(
+    field.depends_on,
+    data.value,
+  )
+
   let _field = {
     ...field,
-    filters: field.link_filters && JSON.parse(field.link_filters),
+    filters: parseLinkFilters(field.link_filters),
     placeholder: field.placeholder || field.label,
-    display_via_depends_on: evaluateDependsOnValue(
-      field.depends_on,
-      data.value,
-    ),
+    display_via_depends_on: displayViaDependsOn,
     mandatory_via_depends_on: evaluateDependsOnValue(
       field.mandatory_depends_on,
       data.value,
     ),
-    read_only:
-      field.read_only ||
-      (field.read_only_depends_on && read_only_via_depends_on),
+    read_only: effectiveReadOnly,
   }
 
-  _field.visible = isFieldVisible(_field)
+  _field.visible = isFieldVisible(_field, scriptHidden)
   return _field
 })
 
-function isFieldVisible(field) {
+function isFieldVisible(field, scriptHidden) {
   if (preview.value) return true
 
-  const hideEmptyReadOnly = Number(
-    window.sysdefaults?.hide_empty_read_only_fields ?? 1,
-  )
+  // Script override for hidden wins over everything
+  if (scriptHidden !== undefined) return !scriptHidden
 
-  const shouldShowReadOnly =
-    field.read_only && (data.value[field.fieldname] || !hideEmptyReadOnly)
+  let readOnlyField =
+    field.read_only || field.fieldtype === 'Read Only' ? true : false
+
+  let hideEmptyReadOnlyField =
+    isNull(data.value[field.fieldname]) &&
+    Number(window.sysdefaults?.hide_empty_read_only_fields ?? 1)
+
+  let showReadOnlyField = readOnlyField && !hideEmptyReadOnlyField
 
   return (
-    (field.fieldtype == 'Check' || shouldShowReadOnly || !field.read_only) &&
+    (field.fieldtype == 'Check' || showReadOnlyField || !readOnlyField) &&
     (!field.depends_on || field.display_via_depends_on) &&
     !field.hidden
   )
 }
+
+const resolvedHtml = computed(() => {
+  if (field.value.fieldtype !== 'HTML') return ''
+  const injected = formDocument.value?.fieldHtmlMap?.[field.value.fieldname]
+  if (injected !== undefined) return injected
+  return interpolateTemplate(field.value.options || '', data.value)
+})
 
 const getPlaceholder = (field) => {
   if (field.placeholder) {
@@ -381,7 +578,15 @@ const getOptions = (options) => {
   }
 }
 
-function fieldChange(value, df) {
+async function handleButtonClick(field) {
+  if (typeof field.click === 'function') {
+    return await field.click(data.value)
+  } else {
+    return await triggerButton(field.fieldname)
+  }
+}
+
+async function fieldChange(value, df) {
   value = Array.isArray(value)
     ? value
     : typeof value === 'object' && value !== null && 'value' in value
@@ -389,17 +594,10 @@ function fieldChange(value, df) {
       : value
 
   if (isGridRow) {
-    triggerOnChange(df.fieldname, value, data.value)
+    await triggerOnChange(df.fieldname, value, data.value)
   } else {
-    triggerOnChange(df.fieldname, value)
+    await triggerOnChange(df.fieldname, value)
   }
-}
-
-function getDataValue(value, field) {
-  if (field.fieldtype === 'Duration') {
-    return value || 0
-  }
-  return value
 }
 </script>
 <style scoped>

@@ -45,7 +45,7 @@
     <Tabs
       v-model="tabIndex"
       :tabs="tabs"
-      class="flex flex-1 overflow-hidden flex-col [&_[role='tab']]:px-0 [&_[role='tablist']]:px-5 [&_[role='tablist']]:gap-7.5 [&_[role='tabpanel']:not([hidden])]:flex [&_[role='tabpanel']:not([hidden])]:grow"
+      class="flex flex-1 overflow-hidden flex-col [&_[role='tab']]:px-0 [&_[role='tab']]:shrink-0 [&_[role='tablist']]:px-5 [&_[role='tablist']::-webkit-scrollbar]:h-0 [&_[role='tablist']]:min-h-[45px] [&_[role='tablist']]:gap-7.5 [&_[role='tabpanel']:not([hidden])]:flex [&_[role='tabpanel']:not([hidden])]:grow"
     >
       <template #tab-panel>
         <Activities
@@ -56,7 +56,7 @@
           :docname="leadId"
           :tabs="tabs"
           @beforeSave="beforeStatusChange"
-          @afterSave="reloadAssignees"
+          @afterSave="reloadResources"
         />
       </template>
     </Tabs>
@@ -192,7 +192,7 @@
           :docname="leadId"
           @reload="sections.reload"
           @beforeFieldChange="beforeStatusChange"
-          @afterFieldChange="reloadAssignees"
+          @afterFieldChange="reloadResources"
         />
       </div>
     </Resizer>
@@ -273,7 +273,8 @@ import { globalStore } from '@/stores/global'
 import { statusesStore } from '@/stores/statuses'
 import { getMeta } from '@/stores/meta'
 import { useDocument } from '@/data/document'
-import { whatsappEnabled, callEnabled } from '@/composables/settings'
+import { whatsappEnabled } from '@/composables/whatsapp'
+import { callEnabled } from '@/composables/telephony'
 import {
   createResource,
   FileUploader,
@@ -286,7 +287,7 @@ import {
   usePageMeta,
   toast,
 } from 'frappe-ui'
-import { ref, computed, watch, nextTick } from 'vue'
+import { ref, computed, watch, nextTick, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useActiveTabManager } from '@/composables/useActiveTabManager'
 
@@ -310,12 +311,23 @@ const showDeleteLinkedDocModal = ref(false)
 const showConvertToDealModal = ref(false)
 const showFilesUploader = ref(false)
 
-const { triggerOnChange, assignees, permissions, document, scripts, error } =
-  useDocument('CRM Lead', props.leadId)
+const {
+  triggerOnChange,
+  triggerOnRender,
+  assignees,
+  permissions,
+  document,
+  scripts,
+  error,
+} = useDocument('CRM Lead', props.leadId)
 
 const canDelete = computed(() => permissions.data?.permissions?.delete || false)
 
 const doc = computed(() => document.doc || {})
+
+onMounted(async () => {
+  if (document.doc) await triggerOnRender()
+})
 
 watch(error, (err) => {
   if (err) {
@@ -513,7 +525,9 @@ function setLostReason() {
     (document.doc.lost_reason && document.doc.lost_reason !== 'Other') ||
     (document.doc.lost_reason === 'Other' && document.doc.lost_notes)
   ) {
-    document.save.submit()
+    document.save.submit(null, {
+      onSuccess: () => sections.reload(),
+    })
     return
   }
 
@@ -528,14 +542,20 @@ function beforeStatusChange(data) {
     setLostReason()
   } else {
     document.save.submit(null, {
-      onSuccess: () => reloadAssignees(data),
+      onSuccess: () => reloadResources(data),
     })
   }
 }
 
-function reloadAssignees(data) {
+function reloadResources(data) {
   if (Object.hasOwn(data ?? {}, 'lead_owner')) {
     assignees.reload()
+  }
+  if (
+    Object.hasOwn(data ?? {}, 'status') &&
+    getLeadStatus(data.status).type != 'Lost'
+  ) {
+    sections.reload()
   }
 }
 </script>

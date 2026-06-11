@@ -1,11 +1,14 @@
 # Copyright (c) 2024, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 
+import json
+
 import frappe
 from frappe import _
 from frappe.custom.doctype.property_setter.property_setter import delete_property_setter, make_property_setter
 from frappe.model.document import Document
 
+from crm.demo.api import create_demo_data
 from crm.install import after_install
 
 
@@ -23,7 +26,8 @@ class FCRMSettings(Document):
 
 		access_key: DF.Data | None
 		all_day_event_notifications: DF.Table[EventNotifications]
-		auto_update_communication_status: DF.Check
+		auto_mark_replied_on_response: DF.Check
+		auto_reopen_on_new_communication: DF.Check
 		auto_update_expected_deal_value: DF.Check
 		brand_logo: DF.Attach | None
 		brand_name: DF.Data | None
@@ -42,6 +46,10 @@ class FCRMSettings(Document):
 	@frappe.whitelist()
 	def restore_defaults(self, force: bool = False):
 		after_install(force)
+
+	@frappe.whitelist()
+	def restore_demo_data(self):
+		create_demo_data()
 
 	def validate(self):
 		self.do_not_allow_to_delete_if_standard()
@@ -64,6 +72,8 @@ class FCRMSettings(Document):
 	def setup_forecasting(self):
 		if self.has_value_changed("enable_forecasting"):
 			if not self.enable_forecasting:
+				self.remove_forecasting_section("Side Panel")
+				self.remove_forecasting_section("Quick Entry")
 				delete_property_setter(
 					"CRM Deal",
 					"reqd",
@@ -75,6 +85,8 @@ class FCRMSettings(Document):
 					"expected_deal_value",
 				)
 			else:
+				self.add_forecasting_section("Side Panel")
+				self.add_forecasting_section("Quick Entry")
 				make_property_setter(
 					"CRM Deal",
 					"expected_closure_date",
@@ -99,6 +111,76 @@ class FCRMSettings(Document):
 				1,
 				"Check",
 			)
+
+	def add_forecasting_section(self, layout_type):
+		layout_name = f"CRM Deal-{layout_type}"
+		if not frappe.db.exists("CRM Fields Layout", layout_name):
+			return
+		doc = frappe.get_doc("CRM Fields Layout", layout_name)
+		layout = json.loads(doc.layout) if doc.layout else []
+		# layout is either a plain list of sections or a list of tabs with sections
+		has_tabs = any("sections" in item for item in layout)
+		sections = layout[-1].setdefault("sections", []) if has_tabs else layout
+		all_sections = (
+			[section for tab in layout for section in tab.get("sections", [])] if has_tabs else layout
+		)
+		if any(section.get("name") == "forecasted_sales_section" for section in all_sections):
+			return
+		existing_fields = {
+			field
+			for section in all_sections
+			for column in section.get("columns") or []
+			for field in column.get("fields") or []
+		}
+		fields = [
+			field
+			for field in ("expected_deal_value", "expected_closure_date", "probability")
+			if field not in existing_fields
+		]
+		if not fields:
+			return
+
+		if layout_type == "Side Panel":
+			new_section = {
+				"name": "forecasted_sales_section",
+				"label": "Forecasted Sales",
+				"opened": True,
+				"columns": [{"name": "forecasted_sales_column", "fields": fields}],
+			}
+			# Insert after contacts_section if it's the first section, else insert at the beginning
+			if sections and sections[0].get("name") == "contacts_section":
+				sections.insert(1, new_section)
+			else:
+				sections.insert(0, new_section)
+		else:
+			# one column per field so they render in a single row
+			new_section = {
+				"name": "forecasted_sales_section",
+				"columns": [{"name": field + "_column", "fields": [field]} for field in fields],
+			}
+			sections.append(new_section)
+
+		doc.layout = json.dumps(layout)
+		doc.save(ignore_permissions=True)
+
+	def remove_forecasting_section(self, layout_type):
+		layout_name = f"CRM Deal-{layout_type}"
+		if not frappe.db.exists("CRM Fields Layout", layout_name):
+			return
+		doc = frappe.get_doc("CRM Fields Layout", layout_name)
+		layout = json.loads(doc.layout) if doc.layout else []
+		has_tabs = any("sections" in item for item in layout)
+		if has_tabs:
+			for tab in layout:
+				tab["sections"] = [
+					section
+					for section in tab.get("sections", [])
+					if section.get("name") != "forecasted_sales_section"
+				]
+		else:
+			layout = [section for section in layout if section.get("name") != "forecasted_sales_section"]
+		doc.layout = json.dumps(layout)
+		doc.save(ignore_permissions=True)
 
 
 def get_standard_dropdown_items():

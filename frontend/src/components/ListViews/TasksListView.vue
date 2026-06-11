@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/no-v-html -->
 <template>
   <ListView
     :columns="columns"
@@ -48,7 +49,12 @@
           </div>
         </Tooltip>
       </div>
-      <ListRowItem v-else :item="item" :align="column.align">
+      <ListRowItem
+        v-else
+        :item="item"
+        :align="column.align"
+        class="overflow-hidden"
+      >
         <template #prefix>
           <div v-if="column.key === 'status'">
             <TaskStatusIcon :status="item" />
@@ -88,7 +94,7 @@
           <div
             v-else-if="column.type === 'Text Editor'"
             class="truncate text-base h-4 [&>p]:truncate"
-            v-html="item"
+            v-html="sanitizeHTML(item)"
           />
           <div v-else-if="column.type === 'Check'">
             <FormControl
@@ -110,6 +116,23 @@
               <HeartIcon class="h-4 w-4" />
             </Button>
           </div>
+          <RatingInput
+            v-else-if="column.type === 'Rating'"
+            :value="item"
+            class="!opacity-100 flex-nowrap overflow-auto"
+            :disabled="true"
+            :max="column.options || 5"
+            @click="
+              (event) =>
+                emit('applyFilter', {
+                  event,
+                  idx,
+                  column,
+                  item,
+                  firstColumn: columns[0],
+                })
+            "
+          />
           <div
             v-else-if="label"
             class="truncate text-base"
@@ -162,9 +185,15 @@ import HeartIcon from '@/components/Icons/HeartIcon.vue'
 import TaskStatusIcon from '@/components/Icons/TaskStatusIcon.vue'
 import TaskPriorityIcon from '@/components/Icons/TaskPriorityIcon.vue'
 import CalendarIcon from '@/components/Icons/CalendarIcon.vue'
+import RatingInput from '@/components/Controls/RatingInput.vue'
 import ListBulkActions from '@/components/ListBulkActions.vue'
 import ListRows from '@/components/ListViews/ListRows.vue'
-import { formatDate, isTranslatable } from '@/utils'
+import {
+  formatDate,
+  isTranslatable,
+  formatDuration,
+  sanitizeHTML,
+} from '@/utils'
 import {
   Avatar,
   ListView,
@@ -209,6 +238,7 @@ const pageLengthCount = defineModel({ type: Number })
 const list = defineModel('list', { type: Object })
 
 function getLabel(label, column) {
+  if (column.type === 'Duration') return formatDuration(label)
   if (column.options && isTranslatable(column.options)) return __(label)
   return label
 }
