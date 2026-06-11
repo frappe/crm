@@ -81,6 +81,9 @@ def _has_permission(doc, ptype, user, doctype: str) -> bool | None:
 	if "System Manager" in roles:
 		return True
 
+	if ptype == "create" or not doc.name:
+		return True
+
 	in_tree = hierarchy_enabled() and _in_hierarchy(user)
 	if "Sales Manager" in roles and not in_tree:
 		return True
