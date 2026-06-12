@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Frappe CRM VERSION\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2026-05-24 10:10+0000\n"
-"PO-Revision-Date: 2026-05-24 10:10+0000\n"
+"POT-Creation-Date: 2026-05-31 10:17+0000\n"
+"PO-Revision-Date: 2026-05-31 10:17+0000\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: shariq@frappe.io\n"
 "MIME-Version: 1.0\n"
@@ -1295,6 +1295,7 @@ msgstr ""
 msgid "Can't retry sync for this without source!"
 msgstr ""
 
+#: frontend/src/components/Activities/CommentArea.vue:41
 #: frontend/src/components/BulkDeleteLinkedDocModal.vue:82
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:917
 #: frontend/src/components/ColumnSettings.vue:123
@@ -2594,6 +2595,7 @@ msgstr ""
 msgid "ERPNext is not integrated with the CRM"
 msgstr ""
 
+#: frontend/src/components/Activities/CommentArea.vue:93
 #: frontend/src/components/FieldLayout/Field.vue:110
 #: frontend/src/components/FieldLayoutEditor.vue:414
 #: frontend/src/components/FieldLayoutEditor.vue:457
@@ -3236,6 +3238,10 @@ msgstr ""
 msgid "Failed to create template"
 msgstr ""
 
+#: frontend/src/components/Activities/CommentArea.vue:143
+msgid "Failed to delete comment"
+msgstr ""
+
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:180
 msgid "Failed to delete lead sync source"
 msgstr ""
@@ -3281,7 +3287,7 @@ msgstr ""
 msgid "Failed to send WhatsApp message"
 msgstr ""
 
-#: frontend/src/components/Activities/Activities.vue:606
+#: frontend/src/components/Activities/Activities.vue:613
 msgid "Failed to send WhatsApp template"
 msgstr ""
 
@@ -3303,6 +3309,10 @@ msgstr ""
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:874
 msgid "Failed to update attending status"
+msgstr ""
+
+#: frontend/src/components/Activities/CommentArea.vue:129
+msgid "Failed to update comment"
 msgstr ""
 
 #: frontend/src/components/Modals/ChangePasswordModal.vue:106
@@ -3622,7 +3632,7 @@ msgstr ""
 msgid "Hidden"
 msgstr ""
 
-#: frontend/src/components/Activities/Activities.vue:246
+#: frontend/src/components/Activities/Activities.vue:253
 msgid "Hide"
 msgstr ""
 
@@ -6373,6 +6383,7 @@ msgstr ""
 msgid "Saturday"
 msgstr ""
 
+#: frontend/src/components/Activities/CommentArea.vue:44
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:511
 #: frontend/src/components/Controls/GeolocationControl.vue:60
 #: frontend/src/components/Controls/GridFieldsEditorModal.vue:84
@@ -6719,7 +6730,7 @@ msgstr ""
 msgid "Setup your password"
 msgstr ""
 
-#: frontend/src/components/Activities/Activities.vue:246
+#: frontend/src/components/Activities/Activities.vue:253
 msgid "Show"
 msgstr ""
 
@@ -8038,7 +8049,7 @@ msgstr ""
 msgid "blue"
 msgstr ""
 
-#: frontend/src/components/Activities/Activities.vue:249
+#: frontend/src/components/Activities/Activities.vue:256
 msgid "changes from"
 msgstr ""
 
@@ -8356,8 +8367,8 @@ msgstr ""
 msgid "teal"
 msgstr ""
 
-#: frontend/src/components/Activities/Activities.vue:288
-#: frontend/src/components/Activities/Activities.vue:355
+#: frontend/src/components/Activities/Activities.vue:295
+#: frontend/src/components/Activities/Activities.vue:362
 msgid "to"
 msgstr ""
 
