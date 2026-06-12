@@ -49,7 +49,10 @@ require_type_annotated_api_methods = True
 # page_js = {"page" : "public/js/file.js"}
 
 # include js in doctype views
-# doctype_js = {"doctype" : "public/js/doctype.js"}
+doctype_js = {
+	"Quotation": "public/js/erpnext_quotation_prefill.js",
+	"Sales Order": "public/js/erpnext_sales_order_customer.js",
+}
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
@@ -175,6 +178,30 @@ doc_events = {
 		"on_update": [
 			"crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.create_customer_in_erpnext"
 		],
+	},
+	"Sales Order": {
+		"before_validate": [
+			"crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.create_customer_on_sales_order"
+		],
+	},
+	"Item": {
+		"after_insert": ["crm.integrations.erpnext.item.after_insert"],
+		"on_update": ["crm.integrations.erpnext.item.on_update"],
+		"before_rename": ["crm.integrations.erpnext.item.before_rename"],
+		"after_rename": ["crm.integrations.erpnext.item.after_rename"],
+		"on_trash": ["crm.integrations.erpnext.item.on_trash"],
+	},
+	"User Permission": {
+		"before_validate": ["crm.integrations.erpnext.user_permission.before_validate"],
+		"after_insert": ["crm.integrations.erpnext.user_permission.after_insert"],
+		"on_update": ["crm.integrations.erpnext.user_permission.on_update"],
+		"on_trash": ["crm.integrations.erpnext.user_permission.on_trash"],
+	},
+	"DocShare": {
+		"before_validate": ["crm.integrations.erpnext.doc_share.before_validate"],
+		"after_insert": ["crm.integrations.erpnext.doc_share.after_insert"],
+		"on_update": ["crm.integrations.erpnext.doc_share.on_update"],
+		"on_trash": ["crm.integrations.erpnext.doc_share.on_trash"],
 	},
 	"User": {
 		"before_validate": ["crm.api.live_demo.validate_user"],
