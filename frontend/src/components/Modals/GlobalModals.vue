@@ -16,6 +16,7 @@
     v-model="showChangePasswordModal"
   />
   <AboutModal v-model="showAboutModal" />
+  <FeedbackModal v-if="showFeedbackModal" v-model="showFeedbackModal" />
   <FieldLayoutDialogContainer />
 </template>
 <script setup>
@@ -24,6 +25,7 @@ import ChangePasswordModal from '@/components/Modals/ChangePasswordModal.vue'
 import CreateDocumentModal from '@/components/Modals/CreateDocumentModal.vue'
 import QuickEntryModal from '@/components/Modals/QuickEntryModal.vue'
 import AboutModal from '@/components/Modals/AboutModal.vue'
+import FeedbackModal from '@/components/Modals/FeedbackModal.vue'
 import {
   showCreateDocumentModal,
   createDocumentDoctype,
@@ -35,5 +37,6 @@ import {
   quickEntryProps,
   showAboutModal,
   showChangePasswordModal,
+  showFeedbackModal,
 } from '@/composables/modals'
 </script>
