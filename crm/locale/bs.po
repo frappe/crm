@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2026-06-07 10:20+0000\n"
-"PO-Revision-Date: 2026-06-14 17:46\n"
+"POT-Creation-Date: 2026-06-14 10:35+0000\n"
+"PO-Revision-Date: 2026-06-15 18:52\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Bosnian\n"
 "MIME-Version: 1.0\n"
@@ -1723,7 +1723,7 @@ msgstr "Kontakt dodan"
 msgid "Contact Already Added"
 msgstr "Kontakt je već dodan"
 
-#: crm/fcrm/doctype/crm_lead/crm_lead.py:298
+#: crm/fcrm/doctype/crm_lead/crm_lead.py:293
 msgid "Contact Already Exists"
 msgstr "Kontakt već postoji"
 
@@ -1752,9 +1752,9 @@ msgstr "Kontakt ažuriran"
 msgid "Contact Us"
 msgstr "Kontaktirajte nas"
 
-#: crm/fcrm/doctype/crm_lead/crm_lead.py:297
-msgid "Contact already exists with {0}"
-msgstr "Kontakt već postoji sa {0}"
+#: crm/fcrm/doctype/crm_lead/crm_lead.py:292
+msgid "Contact already exists with Email: {0}"
+msgstr ""
 
 #: frontend/src/pages/Contact.vue:293
 msgid "Contact image updated"
@@ -1843,7 +1843,7 @@ msgstr "Broj"
 #: frontend/src/components/Modals/ContactModal.vue:41
 #: frontend/src/components/Modals/CreateDocumentModal.vue:88
 #: frontend/src/components/Modals/DealModal.vue:65
-#: frontend/src/components/Modals/DoctypeModal.vue:51
+#: frontend/src/components/Modals/DoctypeModal.vue:52
 #: frontend/src/components/Modals/EmailTemplateSelectorModal.vue:19
 #: frontend/src/components/Modals/EventModal.vue:215
 #: frontend/src/components/Modals/LeadModal.vue:37
@@ -3006,7 +3006,7 @@ msgstr "Unesi Facebook Pristupni Token"
 msgid "Enter your personal mobile number used by Exotel to make calls"
 msgstr "Unesi svoj lični broj mobilnog telefona koji Exotel koristi za upućivanje poziva"
 
-#: frontend/src/components/FieldLayout/Field.vue:559
+#: frontend/src/components/FieldLayout/Field.vue:565
 msgid "Enter {0}"
 msgstr "Unesi {0}"
 
@@ -4633,7 +4633,7 @@ msgstr "Upravljajte svojim politikama ugovora o nivou usluge"
 msgid "Manager"
 msgstr "Upravitelj"
 
-#: frontend/src/components/Modals/DoctypeModal.vue:121
+#: frontend/src/components/Modals/DoctypeModal.vue:122
 #: frontend/src/data/document.js:68
 msgid "Mandatory field error: {0}"
 msgstr "Greška obaveznog polja: {0}"
@@ -5167,7 +5167,7 @@ msgstr "Nije sinhronizovano"
 msgid "Not allowed to add contact to Deal"
 msgstr "Nije dozvoljeno dodavanje kontakta u ponudu"
 
-#: crm/fcrm/doctype/crm_lead/crm_lead.py:506
+#: crm/fcrm/doctype/crm_lead/crm_lead.py:500
 msgid "Not allowed to convert Lead to Deal"
 msgstr "Nije dozvoljeno pretvaranje Potencijalnog Klijenta u Posao"
 
@@ -6618,7 +6618,7 @@ msgstr "Odaberite želite li prikazivati vrijeme sa ili bez sekundi"
 msgid "Select your ERPNext company to connect with"
 msgstr "Odaberi poduzeće Sistema s kojom ćete se povezati"
 
-#: frontend/src/components/FieldLayout/Field.vue:557
+#: frontend/src/components/FieldLayout/Field.vue:563
 msgid "Select {0}"
 msgstr "Odaberi {0}"
 
@@ -7657,7 +7657,7 @@ msgstr "Neimenovan"
 #: frontend/src/components/ColumnSettings.vue:129
 #: frontend/src/components/Modals/AssignmentModal.vue:80
 #: frontend/src/components/Modals/ChangePasswordModal.vue:58
-#: frontend/src/components/Modals/DoctypeModal.vue:51
+#: frontend/src/components/Modals/DoctypeModal.vue:52
 #: frontend/src/components/Modals/EventModal.vue:212
 #: frontend/src/components/Settings/BrandSettings.vue:16
 #: frontend/src/components/Settings/CalendarSettings.vue:21
