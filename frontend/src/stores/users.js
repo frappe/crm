@@ -10,6 +10,10 @@ export const usersStore = defineStore('crm-users', () => {
   let usersByName = reactive({})
   const router = useRouter()
 
+  // Fast initial fetch — returns only the ~few CRM users so the UI is
+  // interactive immediately. Non-CRM user profile data is filled in
+  // afterwards by the background `usersFull` fetch (and by `get_user_info`
+  // for the race window before that lands).
   const users = createResource({
     url: 'crm.api.session.get_users',
     cache: 'crm-users',
@@ -29,7 +33,75 @@ export const usersStore = defineStore('crm-users', () => {
         router.push('/login')
       }
     },
+    onSuccess() {
+      scheduleBackgroundFetch()
+    },
   })
+
+  // Background full-list fetch fired on browser idle. Only System Manager
+  // sessions receive a larger payload here; for others the server returns
+  // the same crm-users-only list. Populates usersByName so existing
+  // getUser(email) call sites keep working for non-CRM emails (comment
+  // authors, doc owners, email recipient typeahead, etc.).
+  const usersFull = createResource({
+    url: 'crm.api.session.get_users',
+    params: { include_all: 1 },
+    cache: 'crm-users-full',
+    auto: false,
+    transform([allUsers]) {
+      for (let user of allUsers) {
+        if (!usersByName[user.name]) {
+          usersByName[user.name] = user
+        }
+      }
+      return { allUsers }
+    },
+  })
+
+  let backgroundFetchScheduled = false
+  function scheduleBackgroundFetch() {
+    if (backgroundFetchScheduled) return
+    backgroundFetchScheduled = true
+    const fire = () => usersFull.fetch()
+    if (typeof requestIdleCallback === 'function') {
+      requestIdleCallback(fire, { timeout: 5000 })
+    } else {
+      setTimeout(fire, 2000)
+    }
+  }
+
+  // Coalesced on-demand resolver. Used when getUser(email) is called for
+  // an email that the fast fetch did not cover and the background full
+  // fetch has not yet landed.
+  const pendingResolves = new Set()
+  let flushScheduled = false
+
+  function queueResolve(email) {
+    pendingResolves.add(email)
+    if (flushScheduled) return
+    flushScheduled = true
+    queueMicrotask(flush)
+  }
+
+  async function flush() {
+    flushScheduled = false
+    if (!pendingResolves.size) return
+    const batch = [...pendingResolves]
+    pendingResolves.clear()
+    try {
+      const r = createResource({
+        url: 'crm.api.session.get_user_info',
+        params: { users: batch },
+        auto: false,
+      })
+      const records = await r.fetch()
+      for (const u of records || []) {
+        usersByName[u.name] = { ...usersByName[u.name], ...u }
+      }
+    } catch (e) {
+      // best-effort — the synthesized stub remains on failure
+    }
+  }
 
   function getUser(email) {
     if (!email || email === 'sessionUser') {
@@ -44,6 +116,11 @@ export const usersStore = defineStore('crm-users', () => {
         last_name: '',
         user_image: null,
         role: null,
+      }
+      // Try to upgrade the stub via a batched fetch unless the full list
+      // has already arrived.
+      if (!usersFull.data) {
+        queueResolve(email)
       }
     }
     return usersByName[email]
@@ -66,7 +143,7 @@ export const usersStore = defineStore('crm-users', () => {
   }
 
   function isTelephonyAgent(email) {
-    return getUser(email).is_telphony_agent
+    return getUser(email).is_telephony_agent
   }
 
   function getUserRole(email) {
@@ -84,8 +161,9 @@ export const usersStore = defineStore('crm-users', () => {
 
   return {
     users,
-    allUsers: computed(() => users.data.allUsers),
-    crmUsers: computed(() => users.data.crmUsers),
+    usersFull,
+    allUsers: computed(() => usersFull.data?.allUsers || users.data?.allUsers),
+    crmUsers: computed(() => users.data?.crmUsers),
     getUser,
     isAdmin,
     isManager,
