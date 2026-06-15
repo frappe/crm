@@ -1,14 +1,6 @@
 # Copyright (c) 2024, Frappe Technologies Pvt. Ltd. and Contributors
 # See license.txt
 
-<<<<<<< HEAD
-# import frappe
-from frappe.tests.utils import FrappeTestCase
-
-
-class TestFCRMSettings(FrappeTestCase):
-	pass
-=======
 import json
 
 import frappe
@@ -115,4 +107,3 @@ class TestFCRMSettings(IntegrationTestCase):
 		fields = self.get_quick_entry_fields()
 		for field in FORECASTING_FIELDS:
 			self.assertIn(field, fields)
->>>>>>> 409ae685 (fix: add forecasting fields to deal quick entry layout (#2250))
