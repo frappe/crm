@@ -43,12 +43,14 @@ class CRMLead(Document):
 		gender: DF.Link | None
 		image: DF.AttachImage | None
 		industry: DF.Link | None
+		is_duplicate: DF.Check
 		job_title: DF.Data | None
 		last_name: DF.Data | None
 		last_responded_on: DF.Datetime | None
 		last_response_time: DF.Duration | None
 		lead_name: DF.Data | None
 		lead_owner: DF.Link | None
+		merged_into: DF.Link | None
 		lost_notes: DF.Text | None
 		lost_reason: DF.Link | None
 		middle_name: DF.Data | None
@@ -408,7 +410,7 @@ class CRMLead(Document):
 
 	@staticmethod
 	def get_non_filterable_fields():
-		return ["converted"]
+		return ["converted", "is_duplicate"]
 
 	@staticmethod
 	def default_list_data():

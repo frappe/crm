@@ -53,10 +53,12 @@ import { sessionStore } from '@/stores/session'
 import { isMobileView } from '@/composables/settings'
 import { showQuickEntryModal, quickEntryProps } from '@/composables/modals'
 import { useOnboarding, useTelemetry } from 'frappe-ui/frappe'
-import { createResource } from 'frappe-ui'
+import { createResource, toast } from 'frappe-ui'
 import { useDocument } from '@/data/document'
-import { computed, onMounted, ref, nextTick } from 'vue'
+import { computed, onMounted, nextTick, ref } from 'vue'
 import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 const props = defineProps({
   defaults: { type: Object, default: () => ({}) },
@@ -68,7 +70,6 @@ const { getLeadStatus, statusOptions } = statusesStore()
 const { updateOnboardingStep } = useOnboarding('frappecrm')
 
 const show = defineModel({ type: Boolean })
-const router = useRouter()
 const error = ref(null)
 const isLeadCreating = ref(false)
 
@@ -105,7 +106,7 @@ const tabs = createResource({
 })
 
 const createLead = createResource({
-  url: 'frappe.client.insert',
+  url: 'crm.api.lead.create_lead',
 })
 
 async function createNewLead() {
@@ -115,65 +116,63 @@ async function createNewLead() {
 
   await triggerOnBeforeCreate?.()
 
-  createLead.submit(
-    {
+  error.value = null
+  if (!lead.doc.first_name) {
+    error.value = __('First Name is mandatory')
+    return
+  }
+  if (lead.doc.annual_revenue) {
+    if (typeof lead.doc.annual_revenue === 'string') {
+      lead.doc.annual_revenue = lead.doc.annual_revenue.replace(/,/g, '')
+    } else if (isNaN(lead.doc.annual_revenue)) {
+      error.value = __('Annual Revenue should be a number')
+      return
+    }
+  }
+  if (lead.doc.mobile_no && isNaN(lead.doc.mobile_no.replace(/[-+() ]/g, ''))) {
+    error.value = __('Mobile No. should be a number')
+    return
+  }
+  if (lead.doc.email && !lead.doc.email.includes('@')) {
+    error.value = __('Invalid email address')
+    return
+  }
+  if (!lead.doc.status) {
+    error.value = __('Status is required')
+    return
+  }
+
+  isLeadCreating.value = true
+  try {
+    const data = await createLead.submit({
       doc: {
         doctype: 'CRM Lead',
         ...lead.doc,
       },
-    },
-    {
-      validate() {
-        error.value = null
-        if (!lead.doc.first_name) {
-          error.value = __('First Name is mandatory')
-          return error.value
-        }
-        if (lead.doc.annual_revenue) {
-          if (typeof lead.doc.annual_revenue === 'string') {
-            lead.doc.annual_revenue = lead.doc.annual_revenue.replace(/,/g, '')
-          } else if (isNaN(lead.doc.annual_revenue)) {
-            error.value = __('Annual Revenue should be a number')
-            return error.value
-          }
-        }
-        if (
-          lead.doc.mobile_no &&
-          isNaN(lead.doc.mobile_no.replace(/[-+() ]/g, ''))
-        ) {
-          error.value = __('Mobile No. should be a number')
-          return error.value
-        }
-        if (lead.doc.email && !lead.doc.email.includes('@')) {
-          error.value = __('Invalid email address')
-          return error.value
-        }
-        if (!lead.doc.status) {
-          error.value = __('Status is required')
-          return error.value
-        }
-        isLeadCreating.value = true
-      },
-      onSuccess(data) {
-        capture('lead_created')
-        isLeadCreating.value = false
-        show.value = false
-        lead.doc = {}
-        router.push({ name: 'Lead', params: { leadId: data.name } })
-        updateOnboardingStep('create_first_lead', true, false, () => {
-          localStorage.setItem('firstLead' + user, data.name)
-        })
-      },
-      onError(err) {
-        isLeadCreating.value = false
-        if (!err.messages) {
-          error.value = err.message
-          return
-        }
-        error.value = err.messages.join('\n')
-      },
-    },
-  )
+    })
+
+    capture('lead_created')
+    isLeadCreating.value = false
+    router.push({ name: 'Lead', params: { leadId: data.name } })
+    show.value = false
+    lead.doc = {}
+    updateOnboardingStep('create_first_lead', true, false, () => {
+      localStorage.setItem('firstLead' + user, data.name)
+    })
+    if (data.duplicate_warning && data.possible_duplicates?.length) {
+      const names = data.possible_duplicates
+        .map((d) => d.lead_name || d.name)
+        .join(', ')
+      toast.warning(__('Possible duplicate with: {0}', [names]))
+    }
+  } catch (err) {
+    isLeadCreating.value = false
+    if (!err.messages) {
+      error.value = err.message
+      return
+    }
+    error.value = err.messages.join('\n')
+  }
 }
 
 function openQuickEntryModal() {
