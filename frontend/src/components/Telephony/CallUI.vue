@@ -1,6 +1,7 @@
 <template>
   <TwilioCallUI ref="twilio" />
   <ExotelCallUI ref="exotel" />
+  <YeasterCallUI ref="yeastar" />
   <Dialog
     v-model="show"
     :options="{
@@ -23,9 +24,8 @@
         />
         <FormControl
           v-model="callMedium"
-          type="select"
           :label="__('Calling Medium')"
-          :options="['Twilio', 'Exotel']"
+          :options="['Twilio', 'Exotel', 'Yeastar']"
         />
         <div class="flex flex-col gap-1">
           <FormControl
@@ -47,6 +47,7 @@
 <script setup>
 import TwilioCallUI from '@/components/Telephony/TwilioCallUI.vue'
 import ExotelCallUI from '@/components/Telephony/ExotelCallUI.vue'
+import YeasterCallUI from './YeastarCallUI.vue'
 import { defaultCallingMedium, useTelephony } from '@/composables/telephony'
 import { globalStore } from '@/stores/global'
 import { FormControl, call, toast } from 'frappe-ui'
@@ -57,6 +58,7 @@ const { isEnabled, isAnyEnabled } = useTelephony()
 
 const twilio = ref(null)
 const exotel = ref(null)
+const yeastar = ref(null)
 
 const callMedium = ref('Twilio')
 const isDefaultMedium = ref(false)
@@ -68,6 +70,7 @@ const enabledIntegrations = computed(() =>
   [
     { key: 'twilio', label: 'Twilio', ref: twilio },
     { key: 'exotel', label: 'Exotel', ref: exotel },
+    { key: 'yeastar', label: 'Yeastar', ref: yeastar },
   ].filter(({ key }) => isEnabled(key)),
 )
 
@@ -98,6 +101,10 @@ function makeCallUsing() {
 
   if (callMedium.value === 'Exotel') {
     exotel.value.makeOutgoingCall(mobileNumber.value)
+  }
+
+  if (callMedium.value === 'Yeastar') {
+    yeastar.value.makeOutgoingCall(mobileNumber.value)
   }
   show.value = false
 }
