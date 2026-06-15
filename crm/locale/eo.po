@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2026-06-07 10:20+0000\n"
-"PO-Revision-Date: 2026-06-14 17:46\n"
+"POT-Creation-Date: 2026-06-14 10:35+0000\n"
+"PO-Revision-Date: 2026-06-15 18:53\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Esperanto\n"
 "MIME-Version: 1.0\n"
@@ -1723,7 +1723,7 @@ msgstr "crwdns196212:0crwdne196212:0"
 msgid "Contact Already Added"
 msgstr "crwdns196214:0crwdne196214:0"
 
-#: crm/fcrm/doctype/crm_lead/crm_lead.py:298
+#: crm/fcrm/doctype/crm_lead/crm_lead.py:293
 msgid "Contact Already Exists"
 msgstr "crwdns152975:0crwdne152975:0"
 
@@ -1752,9 +1752,9 @@ msgstr "crwdns196220:0crwdne196220:0"
 msgid "Contact Us"
 msgstr "crwdns152977:0crwdne152977:0"
 
-#: crm/fcrm/doctype/crm_lead/crm_lead.py:297
-msgid "Contact already exists with {0}"
-msgstr "crwdns152983:0{0}crwdne152983:0"
+#: crm/fcrm/doctype/crm_lead/crm_lead.py:292
+msgid "Contact already exists with Email: {0}"
+msgstr "crwdns203753:0{0}crwdne203753:0"
 
 #: frontend/src/pages/Contact.vue:293
 msgid "Contact image updated"
@@ -1843,7 +1843,7 @@ msgstr "crwdns156226:0crwdne156226:0"
 #: frontend/src/components/Modals/ContactModal.vue:41
 #: frontend/src/components/Modals/CreateDocumentModal.vue:88
 #: frontend/src/components/Modals/DealModal.vue:65
-#: frontend/src/components/Modals/DoctypeModal.vue:51
+#: frontend/src/components/Modals/DoctypeModal.vue:52
 #: frontend/src/components/Modals/EmailTemplateSelectorModal.vue:19
 #: frontend/src/components/Modals/EventModal.vue:215
 #: frontend/src/components/Modals/LeadModal.vue:37
@@ -3006,7 +3006,7 @@ msgstr "crwdns160766:0crwdne160766:0"
 msgid "Enter your personal mobile number used by Exotel to make calls"
 msgstr "crwdns199036:0crwdne199036:0"
 
-#: frontend/src/components/FieldLayout/Field.vue:559
+#: frontend/src/components/FieldLayout/Field.vue:565
 msgid "Enter {0}"
 msgstr "crwdns153191:0{0}crwdne153191:0"
 
@@ -4633,7 +4633,7 @@ msgstr "crwdns196540:0crwdne196540:0"
 msgid "Manager"
 msgstr "crwdns156462:0crwdne156462:0"
 
-#: frontend/src/components/Modals/DoctypeModal.vue:121
+#: frontend/src/components/Modals/DoctypeModal.vue:122
 #: frontend/src/data/document.js:68
 msgid "Mandatory field error: {0}"
 msgstr "crwdns156464:0{0}crwdne156464:0"
@@ -5167,7 +5167,7 @@ msgstr "crwdns160832:0crwdne160832:0"
 msgid "Not allowed to add contact to Deal"
 msgstr "crwdns153623:0crwdne153623:0"
 
-#: crm/fcrm/doctype/crm_lead/crm_lead.py:506
+#: crm/fcrm/doctype/crm_lead/crm_lead.py:500
 msgid "Not allowed to convert Lead to Deal"
 msgstr "crwdns153625:0crwdne153625:0"
 
@@ -6618,7 +6618,7 @@ msgstr "crwdns200280:0crwdne200280:0"
 msgid "Select your ERPNext company to connect with"
 msgstr "crwdns200114:0crwdne200114:0"
 
-#: frontend/src/components/FieldLayout/Field.vue:557
+#: frontend/src/components/FieldLayout/Field.vue:563
 msgid "Select {0}"
 msgstr "crwdns153865:0{0}crwdne153865:0"
 
@@ -7657,7 +7657,7 @@ msgstr "crwdns154039:0crwdne154039:0"
 #: frontend/src/components/ColumnSettings.vue:129
 #: frontend/src/components/Modals/AssignmentModal.vue:80
 #: frontend/src/components/Modals/ChangePasswordModal.vue:58
-#: frontend/src/components/Modals/DoctypeModal.vue:51
+#: frontend/src/components/Modals/DoctypeModal.vue:52
 #: frontend/src/components/Modals/EventModal.vue:212
 #: frontend/src/components/Settings/BrandSettings.vue:16
 #: frontend/src/components/Settings/CalendarSettings.vue:21
