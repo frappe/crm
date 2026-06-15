@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2026-06-07 10:20+0000\n"
-"PO-Revision-Date: 2026-06-14 17:45\n"
+"POT-Creation-Date: 2026-06-14 10:35+0000\n"
+"PO-Revision-Date: 2026-06-15 18:52\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Hungarian\n"
 "MIME-Version: 1.0\n"
@@ -1723,7 +1723,7 @@ msgstr "Kapcsolat elmentve"
 msgid "Contact Already Added"
 msgstr "A névjegy már hozzá van adva"
 
-#: crm/fcrm/doctype/crm_lead/crm_lead.py:298
+#: crm/fcrm/doctype/crm_lead/crm_lead.py:293
 msgid "Contact Already Exists"
 msgstr "A kapcsolat már létezik"
 
@@ -1752,9 +1752,9 @@ msgstr "Kapcsolat frissítve"
 msgid "Contact Us"
 msgstr "Lépjen kapcsolatba velünk"
 
-#: crm/fcrm/doctype/crm_lead/crm_lead.py:297
-msgid "Contact already exists with {0}"
-msgstr "A kapcsolat már létezik a következővel: {0}"
+#: crm/fcrm/doctype/crm_lead/crm_lead.py:292
+msgid "Contact already exists with Email: {0}"
+msgstr ""
 
 #: frontend/src/pages/Contact.vue:293
 msgid "Contact image updated"
@@ -1843,7 +1843,7 @@ msgstr "Mennyiség"
 #: frontend/src/components/Modals/ContactModal.vue:41
 #: frontend/src/components/Modals/CreateDocumentModal.vue:88
 #: frontend/src/components/Modals/DealModal.vue:65
-#: frontend/src/components/Modals/DoctypeModal.vue:51
+#: frontend/src/components/Modals/DoctypeModal.vue:52
 #: frontend/src/components/Modals/EmailTemplateSelectorModal.vue:19
 #: frontend/src/components/Modals/EventModal.vue:215
 #: frontend/src/components/Modals/LeadModal.vue:37
@@ -3006,7 +3006,7 @@ msgstr "Add meg a Facebook hozzáférési tokenedet"
 msgid "Enter your personal mobile number used by Exotel to make calls"
 msgstr "Add meg az Exotel által hívások kezdeményezéséhez használt személyes mobilszámodat"
 
-#: frontend/src/components/FieldLayout/Field.vue:559
+#: frontend/src/components/FieldLayout/Field.vue:565
 msgid "Enter {0}"
 msgstr "Adja meg: {0}"
 
@@ -4633,7 +4633,7 @@ msgstr "Szolgáltatási szintű szerződési szabályzatok kezelése"
 msgid "Manager"
 msgstr ""
 
-#: frontend/src/components/Modals/DoctypeModal.vue:121
+#: frontend/src/components/Modals/DoctypeModal.vue:122
 #: frontend/src/data/document.js:68
 msgid "Mandatory field error: {0}"
 msgstr "Kötelező mezőhiba: {0}"
@@ -5167,7 +5167,7 @@ msgstr "Nincs szinkronizálva"
 msgid "Not allowed to add contact to Deal"
 msgstr "Nem engedélyezett kapcsolat hozzáadása az ügylethez"
 
-#: crm/fcrm/doctype/crm_lead/crm_lead.py:506
+#: crm/fcrm/doctype/crm_lead/crm_lead.py:500
 msgid "Not allowed to convert Lead to Deal"
 msgstr "Nem engedélyezett az érdeklődésl ügyletté alakítása"
 
@@ -6618,7 +6618,7 @@ msgstr "Válaszd ki, hogy az idő másodpercekkel vagy anélkül jelenjen meg"
 msgid "Select your ERPNext company to connect with"
 msgstr "Válaszd ki az ERPNext vállalatodat, amellyel kapcsolatba szeretne lépni"
 
-#: frontend/src/components/FieldLayout/Field.vue:557
+#: frontend/src/components/FieldLayout/Field.vue:563
 msgid "Select {0}"
 msgstr "{0} kiválasztása"
 
@@ -7657,7 +7657,7 @@ msgstr "Névtelen"
 #: frontend/src/components/ColumnSettings.vue:129
 #: frontend/src/components/Modals/AssignmentModal.vue:80
 #: frontend/src/components/Modals/ChangePasswordModal.vue:58
-#: frontend/src/components/Modals/DoctypeModal.vue:51
+#: frontend/src/components/Modals/DoctypeModal.vue:52
 #: frontend/src/components/Modals/EventModal.vue:212
 #: frontend/src/components/Settings/BrandSettings.vue:16
 #: frontend/src/components/Settings/CalendarSettings.vue:21
