@@ -35,52 +35,71 @@ class TestFindTargetFor(FrappeTestCase):
 
 
 class TestItemRateFallback(FrappeTestCase):
-	def test_standard_rate_present_skips_item_price(self):
+	def test_item_price_takes_precedence_over_standard_rate(self):
 		from crm.integrations.erpnext import item
 
-		doc = frappe._dict(name="ITM-A", standard_rate=50, image=None, disabled=0, description="d")
-		calls = []
+		doc = frappe._dict(
+			name="ITM-A", stock_uom="Nos", standard_rate=50, image=None, disabled=0, description="d"
+		)
 		original = item.get_item_price_rate
-		item.get_item_price_rate = lambda code: calls.append(code) or 999
+		item.get_item_price_rate = lambda code, uom=None: 999
+		try:
+			data = item._catalogue_data(doc)
+		finally:
+			item.get_item_price_rate = original
+		self.assertEqual(data["standard_rate"], 999)
+
+	def test_falls_back_to_standard_rate_when_no_item_price(self):
+		from crm.integrations.erpnext import item
+
+		doc = frappe._dict(
+			name="ITM-B", stock_uom="Nos", standard_rate=50, image=None, disabled=0, description="d"
+		)
+		original = item.get_item_price_rate
+		item.get_item_price_rate = lambda code, uom=None: None
 		try:
 			data = item._catalogue_data(doc)
 		finally:
 			item.get_item_price_rate = original
 		self.assertEqual(data["standard_rate"], 50)
-		self.assertEqual(calls, [])
 
-	def test_null_standard_rate_falls_back_to_item_price(self):
+	def test_get_item_price_rate_uses_default_price_list_and_general_party(self):
 		from crm.integrations.erpnext import item
-
-		doc = frappe._dict(name="ITM-B", standard_rate=None, image=None, disabled=0, description="d")
-		original = item.get_item_price_rate
-		item.get_item_price_rate = lambda code: 123 if code == "ITM-B" else None
-		try:
-			data = item._catalogue_data(doc)
-		finally:
-			item.get_item_price_rate = original
-		self.assertEqual(data["standard_rate"], 123)
-
-	def test_get_item_price_rate_queries_latest_selling_price(self):
-		from crm.integrations.erpnext import item
+		from erpnext.stock import get_item_details
 
 		captured = {}
-		original = frappe.db.get_value
+		orig_single = frappe.db.get_single_value
+		orig_get_item_price = get_item_details.get_item_price
+		frappe.db.get_single_value = lambda doctype, field: "Standard Selling"
 
-		def fake_get_value(doctype, filters, fieldname, **kwargs):
-			captured.update(doctype=doctype, filters=filters, fieldname=fieldname, kwargs=kwargs)
-			return 77
+		def fake_get_item_price(pctx, item_code, **kwargs):
+			captured.update(pctx=dict(pctx), item_code=item_code, kwargs=kwargs)
+			return [frappe._dict(name="IP-1", price_list_rate=77, uom="Nos")]
 
-		frappe.db.get_value = fake_get_value
+		get_item_details.get_item_price = fake_get_item_price
 		try:
-			rate = item.get_item_price_rate("ITM-C")
+			rate = item.get_item_price_rate("ITM-C", "Nos")
 		finally:
-			frappe.db.get_value = original
+			frappe.db.get_single_value = orig_single
+			get_item_details.get_item_price = orig_get_item_price
 		self.assertEqual(rate, 77)
-		self.assertEqual(captured["doctype"], "Item Price")
-		self.assertEqual(captured["filters"], {"item_code": "ITM-C", "selling": 1})
-		self.assertEqual(captured["fieldname"], "price_list_rate")
-		self.assertEqual(captured["kwargs"].get("order_by"), "valid_from desc")
+		self.assertEqual(captured["item_code"], "ITM-C")
+		self.assertEqual(captured["pctx"]["price_list"], "Standard Selling")
+		self.assertEqual(captured["pctx"]["uom"], "Nos")
+		self.assertIn("transaction_date", captured["pctx"])
+		# No customer/supplier and ignore_party unset -> ERPNext selects general prices only
+		self.assertNotIn("customer", captured["pctx"])
+		self.assertFalse(captured["kwargs"].get("ignore_party"))
+
+	def test_get_item_price_rate_returns_none_without_default_price_list(self):
+		from crm.integrations.erpnext import item
+
+		original = frappe.db.get_single_value
+		frappe.db.get_single_value = lambda doctype, field: None
+		try:
+			self.assertIsNone(item.get_item_price_rate("ITM-X"))
+		finally:
+			frappe.db.get_single_value = original
 
 
 class TestCascadeFlag(FrappeTestCase):
