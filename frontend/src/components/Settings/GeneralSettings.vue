@@ -75,15 +75,74 @@
           />
         </div>
       </div>
+      <div class="h-px border-t mx-2 border-outline-gray-modals" />
+      <div class="flex gap-4 items-center justify-between py-3 px-2">
+        <div class="flex flex-col">
+          <div class="text-p-base font-medium text-ink-gray-7 truncate">
+            {{ __('Timeline timestamp format') }}
+          </div>
+          <div class="text-p-sm text-ink-gray-5">
+            {{
+              __(
+                'Show timestamps in the activity timeline as relative time (5 mins ago) or an exact date & time',
+              )
+            }}
+          </div>
+        </div>
+        <div>
+          <FormControl
+            v-model="settings.doc.crm_timeline_timestamp_format"
+            type="select"
+            class="w-40"
+            :options="timestampFormatOptions"
+            :placeholder="__('Relative')"
+            @update:modelValue="save()"
+          />
+        </div>
+      </div>
+      <div class="h-px border-t mx-2 border-outline-gray-modals" />
+      <div class="flex gap-4 items-center justify-between py-3 px-2">
+        <div class="flex flex-col">
+          <div class="text-p-base font-medium text-ink-gray-7 truncate">
+            {{ __('Timeline sort order') }}
+          </div>
+          <div class="text-p-sm text-ink-gray-5">
+            {{
+              __(
+                'Order of activities, emails, comments and calls in the timeline',
+              )
+            }}
+          </div>
+        </div>
+        <div>
+          <FormControl
+            v-model="settings.doc.crm_timeline_sort_order"
+            type="select"
+            class="w-40"
+            :options="sortOrderOptions"
+            :placeholder="__('Oldest First')"
+            @update:modelValue="save()"
+          />
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
 import { getSettings } from '@/stores/settings'
-import { Switch, toast } from 'frappe-ui'
+import { FormControl, Switch, toast } from 'frappe-ui'
 
 const { _settings: settings } = getSettings()
+
+const timestampFormatOptions = [
+  { label: __('Relative (5 mins ago)'), value: 'Relative' },
+  { label: __('Exact (Jun 9, 2026 14:02)'), value: 'Exact' },
+]
+const sortOrderOptions = [
+  { label: __('Oldest First'), value: 'Oldest First' },
+  { label: __('Newest First'), value: 'Newest First' },
+]
 
 function toggle(settingKey) {
   settings.save.submit(null, {
@@ -94,6 +153,12 @@ function toggle(settingKey) {
           : __('Setting disabled successfully'),
       )
     },
+  })
+}
+
+function save() {
+  settings.save.submit(null, {
+    onSuccess: () => toast.success(__('Setting updated successfully')),
   })
 }
 </script>

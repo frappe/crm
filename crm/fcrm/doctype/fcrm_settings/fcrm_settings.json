@@ -14,6 +14,9 @@
   "update_timestamp_on_new_communication",
   "auto_mark_replied_on_response",
   "auto_reopen_on_new_communication",
+  "activity_timeline_section",
+  "crm_timeline_timestamp_format",
+  "crm_timeline_sort_order",
   "currency_tab",
   "currency",
   "exchange_rate_provider_section",
@@ -186,6 +189,27 @@
    "fieldname": "restore_demo_data",
    "fieldtype": "Button",
    "label": "Restore Demo Data"
+  },
+  {
+   "fieldname": "activity_timeline_section",
+   "fieldtype": "Section Break",
+   "label": "Activity Timeline"
+  },
+  {
+   "default": "Relative",
+   "description": "How timestamps are shown in the activity timeline for all users",
+   "fieldname": "crm_timeline_timestamp_format",
+   "fieldtype": "Select",
+   "label": "Timeline Timestamp Format",
+   "options": "Relative\nExact"
+  },
+  {
+   "default": "Oldest First",
+   "description": "Order of activities, emails, comments and calls in the timeline for all users",
+   "fieldname": "crm_timeline_sort_order",
+   "fieldtype": "Select",
+   "label": "Timeline Sort Order",
+   "options": "Oldest First\nNewest First"
   }
  ],
  "index_web_pages_for_search": 1,
