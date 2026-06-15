@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2026-06-07 10:20+0000\n"
-"PO-Revision-Date: 2026-06-14 17:45\n"
+"POT-Creation-Date: 2026-06-14 10:35+0000\n"
+"PO-Revision-Date: 2026-06-15 18:52\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Dutch\n"
 "MIME-Version: 1.0\n"
@@ -1723,7 +1723,7 @@ msgstr ""
 msgid "Contact Already Added"
 msgstr ""
 
-#: crm/fcrm/doctype/crm_lead/crm_lead.py:298
+#: crm/fcrm/doctype/crm_lead/crm_lead.py:293
 msgid "Contact Already Exists"
 msgstr "Contact bestaat al"
 
@@ -1752,9 +1752,9 @@ msgstr ""
 msgid "Contact Us"
 msgstr "Contact ons"
 
-#: crm/fcrm/doctype/crm_lead/crm_lead.py:297
-msgid "Contact already exists with {0}"
-msgstr "Contact bestaat al met {0}"
+#: crm/fcrm/doctype/crm_lead/crm_lead.py:292
+msgid "Contact already exists with Email: {0}"
+msgstr ""
 
 #: frontend/src/pages/Contact.vue:293
 msgid "Contact image updated"
@@ -1843,7 +1843,7 @@ msgstr "Count"
 #: frontend/src/components/Modals/ContactModal.vue:41
 #: frontend/src/components/Modals/CreateDocumentModal.vue:88
 #: frontend/src/components/Modals/DealModal.vue:65
-#: frontend/src/components/Modals/DoctypeModal.vue:51
+#: frontend/src/components/Modals/DoctypeModal.vue:52
 #: frontend/src/components/Modals/EmailTemplateSelectorModal.vue:19
 #: frontend/src/components/Modals/EventModal.vue:215
 #: frontend/src/components/Modals/LeadModal.vue:37
@@ -3006,7 +3006,7 @@ msgstr "Voer uw Facebook Access Token in"
 msgid "Enter your personal mobile number used by Exotel to make calls"
 msgstr ""
 
-#: frontend/src/components/FieldLayout/Field.vue:559
+#: frontend/src/components/FieldLayout/Field.vue:565
 msgid "Enter {0}"
 msgstr "Voer {0}in"
 
@@ -4633,7 +4633,7 @@ msgstr ""
 msgid "Manager"
 msgstr "Manager"
 
-#: frontend/src/components/Modals/DoctypeModal.vue:121
+#: frontend/src/components/Modals/DoctypeModal.vue:122
 #: frontend/src/data/document.js:68
 msgid "Mandatory field error: {0}"
 msgstr "Verplicht veld fout: {0}"
@@ -5167,7 +5167,7 @@ msgstr "Niet gesynchroniseerd"
 msgid "Not allowed to add contact to Deal"
 msgstr "Niet toegestaan om contact toe te voegen aan deal"
 
-#: crm/fcrm/doctype/crm_lead/crm_lead.py:506
+#: crm/fcrm/doctype/crm_lead/crm_lead.py:500
 msgid "Not allowed to convert Lead to Deal"
 msgstr "Niet toegestaan om Lead om te zetten naar Deal"
 
@@ -6618,7 +6618,7 @@ msgstr ""
 msgid "Select your ERPNext company to connect with"
 msgstr ""
 
-#: frontend/src/components/FieldLayout/Field.vue:557
+#: frontend/src/components/FieldLayout/Field.vue:563
 msgid "Select {0}"
 msgstr "Selecteer {0}"
 
@@ -7657,7 +7657,7 @@ msgstr "Ongetiteld"
 #: frontend/src/components/ColumnSettings.vue:129
 #: frontend/src/components/Modals/AssignmentModal.vue:80
 #: frontend/src/components/Modals/ChangePasswordModal.vue:58
-#: frontend/src/components/Modals/DoctypeModal.vue:51
+#: frontend/src/components/Modals/DoctypeModal.vue:52
 #: frontend/src/components/Modals/EventModal.vue:212
 #: frontend/src/components/Settings/BrandSettings.vue:16
 #: frontend/src/components/Settings/CalendarSettings.vue:21
