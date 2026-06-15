@@ -537,9 +537,51 @@ def create_customer_from_deal(doc, erpnext_crm_settings):
 
 	if customer_name:
 		frappe.db.set_value("CRM Deal", doc.name, "erpnext_customer", customer_name)
+		link_deal_addresses_to_customer(doc.name, customer_name, erpnext_crm_settings)
 		frappe.publish_realtime("crm_customer_created")
 
 	return customer_name
+
+
+def link_deal_addresses_to_customer(deal_name, customer_name, erpnext_crm_settings):
+	"""Link all addresses associated with the CRM Deal to the newly created Customer.
+
+	When a Customer is auto-created from a CRM Deal, addresses that were added
+	to the deal (via Dynamic Links) only reference the CRM Deal. This function
+	adds a Dynamic Link to the new Customer on each address so that the addresses
+	are usable in ERPNext transactions (Sales Orders, Invoices, etc.).
+
+	For remote ERPNext sites, the organization address is already handled via the
+	create_address API call in create_customer_from_deal.
+	"""
+	if erpnext_crm_settings.is_erpnext_in_different_site:
+		return
+
+	address_names = frappe.get_all(
+		"Dynamic Link",
+		filters={"link_doctype": "CRM Deal", "link_name": deal_name, "parenttype": "Address"},
+		pluck="parent",
+		distinct=True,
+	)
+
+	for address_name in address_names:
+		try:
+			address_doc = frappe.get_doc("Address", address_name)
+			already_linked = any(
+				link.link_doctype == "Customer" and link.link_name == customer_name
+				for link in address_doc.links
+			)
+			if not already_linked:
+				address_doc.append("links", {
+					"link_doctype": "Customer",
+					"link_name": customer_name,
+				})
+				address_doc.save(ignore_permissions=True)
+		except Exception:
+			frappe.log_error(
+				frappe.get_traceback(),
+				f"Error linking address {address_name} to customer {customer_name}",
+			)
 
 
 @frappe.whitelist()
