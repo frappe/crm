@@ -31,8 +31,11 @@ def get_item_price_rate(item_code: str, uom: str | None = None):
 
 def _catalogue_data(doc) -> dict:
 	data = {f: doc.get(f) for f in CATALOGUE_FIELDS}
-	if not data.get("standard_rate"):
-		data["standard_rate"] = get_item_price_rate(doc.name)
+	# Give preference to Item Price over standard rate
+	# keep standard_rate as fallback
+	rate = get_item_price_rate(doc.name, doc.get("stock_uom"))
+	if rate is not None:
+		data["standard_rate"] = rate
 	return data
 
 
