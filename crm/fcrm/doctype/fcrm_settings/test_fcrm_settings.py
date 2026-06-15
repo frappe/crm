@@ -4,12 +4,12 @@
 import json
 
 import frappe
-from frappe.tests import IntegrationTestCase
+from frappe.tests.utils import FrappeTestCase
 
 FORECASTING_FIELDS = ["expected_closure_date", "probability", "expected_deal_value"]
 
 
-class TestFCRMSettings(IntegrationTestCase):
+class TestFCRMSettings(FrappeTestCase):
 	def tearDown(self) -> None:
 		frappe.db.rollback()
 
