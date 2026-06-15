@@ -7,7 +7,7 @@
           isCollapsed
             ? 'w-auto px-0'
             : open
-              ? 'w-full px-2 bg-surface-white shadow-sm'
+              ? 'w-full bg-surface-white px-2 shadow-sm'
               : 'w-full px-2 hover:bg-surface-gray-3'
         "
       >
@@ -34,7 +34,7 @@
           :class="
             isCollapsed
               ? 'ml-0 w-0 overflow-hidden opacity-0'
-              : 'ml-2 w-auto opacity-100'
+              : 'ml-2 w-auto opacity-100 rtl:mr-2 rtl:ml-0'
           "
         >
           <FeatherIcon
