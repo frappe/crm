@@ -17,14 +17,16 @@ def _should_sync(doc) -> bool:
 	return should_sync() and not doc.flags.get("ignore_crm_sync")
 
 
-def get_item_price_rate(item_code: str):
-	"""Fall back to the latest valid selling Item Price when standard_rate is null."""
-	return frappe.db.get_value(
-		"Item Price",
-		{"item_code": item_code, "selling": 1},
-		"price_list_rate",
-		order_by="valid_from desc",
-	)
+def get_item_price_rate(item_code: str, uom: str | None = None):
+
+	from erpnext.stock.get_item_details import get_item_price
+
+	price_list = frappe.db.get_single_value("Selling Settings", "selling_price_list")
+	if not price_list:
+		return None
+	pctx = {"price_list": price_list, "uom": uom, "transaction_date": frappe.utils.nowdate()}
+	rows = get_item_price(pctx, item_code)
+	return rows[0].price_list_rate if rows else None
 
 
 def _catalogue_data(doc) -> dict:
