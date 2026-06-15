@@ -1,6 +1,6 @@
 <template>
-  <SlaPolicyList v-if="step.screen == 'list'" />
-  <SlaPolicyView v-else-if="step.screen == 'view'" />
+  <SlaPolicyList v-if="slaActiveStep.screen == 'list'" />
+  <SlaPolicyView v-else-if="slaActiveStep.screen == 'view'" />
 </template>
 
 <script setup>
@@ -8,9 +8,9 @@ import SlaPolicyList from './SlaPolicyList.vue'
 import SlaPolicyView from './SlaPolicyView.vue'
 import { ref, provide, onUnmounted } from 'vue'
 import { createListResource } from 'frappe-ui'
+import { slaActiveStep } from './utils'
 
 const slaSearchQuery = ref('')
-const step = ref({ screen: 'list', data: null, fetchData: false })
 
 const slaPolicyListData = createListResource({
   doctype: 'CRM Service Level Agreement',
@@ -24,12 +24,6 @@ const slaPolicyListData = createListResource({
 
 provide('slaSearchQuery', slaSearchQuery)
 provide('slaPolicyListResource', slaPolicyListData)
-provide('step', step)
-provide('updateStep', updateStep)
-
-function updateStep(newStep, data, fetchData) {
-  step.value = { screen: newStep, data, fetchData }
-}
 
 onUnmounted(() => {
   slaSearchQuery.value = ''

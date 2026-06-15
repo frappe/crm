@@ -1,6 +1,20 @@
 import { ref } from 'vue'
 import { validateConditions } from '../../../utils'
 
+export const isSlaDirty = ref(false)
+export const isSlaNew = ref(false)
+export const initialSlaData = ref(null)
+
+export const slaActiveStep = ref({
+  screen: 'list',
+  data: null,
+  fetchData: false,
+})
+
+export function updateStep(newStep, data, fetchData) {
+  slaActiveStep.value = { screen: newStep, data, fetchData }
+}
+
 const working_hours = [
   {
     workday: 'Monday',
@@ -61,6 +75,7 @@ export const resetSlaData = () => {
     holiday_list: '',
     working_hours: working_hours,
   }
+  isSlaDirty.value = false
 }
 
 export const slaDataErrors = ref({
