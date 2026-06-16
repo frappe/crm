@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-06-14 10:35+0000\n"
-"PO-Revision-Date: 2026-06-15 18:52\n"
+"PO-Revision-Date: 2026-06-16 19:02\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Persian\n"
 "MIME-Version: 1.0\n"
@@ -172,7 +172,7 @@ msgstr "یک لاگ تماس معتبر مورد نیاز است."
 
 #: frontend/src/components/Settings/Hierarchy/useDragDrop.js:69
 msgid "A {0} cannot report to a {1}"
-msgstr ""
+msgstr "یک {0} نمی‌تواند به یک {1} گزارش دهد"
 
 #. Label of the api_key (Data) field in DocType 'CRM Exotel Settings'
 #. Label of the api_key (Data) field in DocType 'CRM Twilio Settings'
@@ -308,7 +308,7 @@ msgstr "افزودن"
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:160
 #: frontend/src/components/Settings/Hierarchy/HierarchyRow.vue:85
 msgid "Add ({0})"
-msgstr ""
+msgstr "افزودن ({0})"
 
 #: frontend/src/components/Settings/EmailAccountList.vue:19
 msgid "Add Account"
@@ -324,7 +324,7 @@ msgstr ""
 
 #: crm/fcrm/doctype/crm_product/crm_product_list.js:3
 msgid "Add CRM Product"
-msgstr ""
+msgstr "افزودن محصول CRM"
 
 #: frontend/src/components/Dashboard/AddChartModal.vue:4
 msgid "Add Chart"
@@ -438,7 +438,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:36
 msgid "Add User"
-msgstr ""
+msgstr "افزودن کاربر"
 
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:157
 msgid "Add Users"
@@ -2710,7 +2710,7 @@ msgstr "ویرایش یادداشت"
 
 #: frontend/src/components/Modals/QuickEntryModal.vue:7
 msgid "Edit Quick Entry Layout"
-msgstr ""
+msgstr "ویرایش چیدمان ثبت سریع"
 
 #: frontend/src/components/Settings/Sla/EditResponseResolutionModal.vue:5
 msgid "Edit Response & Resolution"
