@@ -323,6 +323,7 @@ import { getSettings } from '@/stores/settings'
 import { globalStore } from '@/stores/global'
 import { viewsStore } from '@/stores/views'
 import { usersStore } from '@/stores/users'
+import { organizationsStore } from '@/stores/organizations'
 import { getMeta } from '@/stores/meta'
 import { isEmoji } from '@/utils'
 import {
@@ -334,7 +335,7 @@ import {
   FeatherIcon,
   usePageMeta,
 } from 'frappe-ui'
-import { computed, ref, onMounted, watch, h, markRaw } from 'vue'
+import { computed, ref, onMounted, onBeforeUnmount, watch, h, markRaw } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useDebounceFn } from '@vueuse/core'
 import { isMobileView } from '@/composables/settings'
@@ -356,9 +357,10 @@ const props = defineProps({
 })
 
 const { brand } = getSettings()
-const { $dialog } = globalStore()
+const { $dialog, $socket } = globalStore()
 const { reload: reloadView, getDefaultView, getView } = viewsStore()
 const { isManager } = usersStore()
+const { organizations } = organizationsStore()
 
 const list = defineModel({ type: Object, default: () => ({}) })
 const loadMore = defineModel('loadMore', { type: Boolean })
@@ -540,7 +542,35 @@ list.value = createResource({
   },
 })
 
-onMounted(() => useDebounceFn(reload, 100)())
+// Refresh the list when a Website Intelligence enrichment finishes for this
+// doctype, so newly-filled fields (logo, etc.) show without a manual reload.
+function onEnrichmentDone(data) {
+  if (data?.status !== 'completed') return
+  const propagated = data?.payload?.propagated_to || []
+  const linkedOrg = data?.payload?.linked_organization
+  const touchesThisDoctype =
+    data.reference_doctype === props.doctype ||
+    propagated.some((p) => typeof p === 'string' && p.startsWith(props.doctype + ':')) ||
+    // a Deal enrichment can create/link a CRM Organization
+    (linkedOrg && props.doctype === 'CRM Organization')
+  if (touchesThisDoctype) reload()
+  // The Deals list logo comes from the cached organizations store
+  // (getOrganization → organization_logo), not the deal row. Refresh that store so a
+  // newly enriched/created org's logo appears without a hard refresh; `rows` is a
+  // computed reading the store, so it re-renders reactively.
+  if (props.doctype === 'CRM Deal' || linkedOrg) {
+    organizations.reload()
+  }
+}
+
+onMounted(() => {
+  useDebounceFn(reload, 100)()
+  $socket?.on('website_intelligence_progress', onEnrichmentDone)
+})
+
+onBeforeUnmount(() => {
+  $socket?.off('website_intelligence_progress', onEnrichmentDone)
+})
 
 const isLoading = computed(() => list.value?.loading)
 

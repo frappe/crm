@@ -27,3 +27,7 @@ crm.patches.v1_0.create_email_account_custom_field
 crm.patches.v1_0.create_default_quick_filters
 crm.patches.v1_0.create_custom_fields_for_product_item_sync
 crm.patches.v1_0.add_forecasting_section_in_quick_entry
+crm.patches.v1_0.add_website_intelligence_field
+crm.patches.v1_0.add_website_intelligence_to_side_panel
+crm.patches.v1_0.add_website_intelligence_to_data_fields
+crm.patches.v1_0.regroup_website_intelligence_data_fields
