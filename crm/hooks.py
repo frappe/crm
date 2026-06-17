@@ -52,6 +52,9 @@ require_type_annotated_api_methods = True
 doctype_js = {
 	"Quotation": "public/js/erpnext_quotation_prefill.js",
 	"Sales Order": "public/js/erpnext_sales_order_customer.js",
+	"CRM Lead": "public/js/website_intelligence.js",
+	"CRM Organization": "public/js/website_intelligence.js",
+	"CRM Deal": "public/js/website_intelligence.js",
 }
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}

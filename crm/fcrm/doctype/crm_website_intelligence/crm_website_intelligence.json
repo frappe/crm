@@ -1,0 +1,149 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-06-15 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "crawl_date",
+  "industry",
+  "industry_confidence",
+  "column_break_signals",
+  "hiring_signal",
+  "funding_signal",
+  "ai_signal",
+  "section_company",
+  "company_description",
+  "technologies",
+  "section_contacts",
+  "emails_found",
+  "phones_found",
+  "social_profiles",
+  "contacts_found",
+  "section_raw",
+  "raw_json"
+ ],
+ "fields": [
+  {
+   "fieldname": "crawl_date",
+   "fieldtype": "Datetime",
+   "in_list_view": 1,
+   "label": "Crawl Date",
+   "read_only": 1
+  },
+  {
+   "fieldname": "industry",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Industry",
+   "read_only": 1
+  },
+  {
+   "fieldname": "industry_confidence",
+   "fieldtype": "Percent",
+   "in_list_view": 1,
+   "label": "Industry Confidence",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_signals",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "hiring_signal",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Hiring Signal",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "funding_signal",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Funding Signal",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "ai_signal",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "AI Signal",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_company",
+   "fieldtype": "Section Break",
+   "label": "Company"
+  },
+  {
+   "fieldname": "company_description",
+   "fieldtype": "Small Text",
+   "label": "Company Description",
+   "read_only": 1
+  },
+  {
+   "fieldname": "technologies",
+   "fieldtype": "Small Text",
+   "label": "Technologies",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_contacts",
+   "fieldtype": "Section Break",
+   "label": "Contact Intelligence"
+  },
+  {
+   "fieldname": "emails_found",
+   "fieldtype": "Small Text",
+   "label": "Emails Found",
+   "read_only": 1
+  },
+  {
+   "fieldname": "phones_found",
+   "fieldtype": "Small Text",
+   "label": "Phones Found",
+   "read_only": 1
+  },
+  {
+   "fieldname": "social_profiles",
+   "fieldtype": "Small Text",
+   "label": "Social Profiles",
+   "read_only": 1
+  },
+  {
+   "fieldname": "contacts_found",
+   "fieldtype": "Small Text",
+   "label": "Contacts Found",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_raw",
+   "fieldtype": "Section Break",
+   "label": "Raw Result"
+  },
+  {
+   "description": "Full explainable enrichment result (value + source + method per field).",
+   "fieldname": "raw_json",
+   "fieldtype": "Code",
+   "label": "Raw JSON",
+   "options": "JSON",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-06-15 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "FCRM",
+ "name": "CRM Website Intelligence",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
