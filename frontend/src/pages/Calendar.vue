@@ -61,7 +61,7 @@
               <template #target="{ togglePopover }">
                 <Button
                   variant="ghost"
-                  class="text-lg font-medium text-ink-gray-7"
+                  class="text-lg-medium text-ink-gray-7"
                   :label="currentMonthYear"
                   iconRight="chevron-down"
                   @click="togglePopover"
@@ -132,7 +132,7 @@
       class="overflow-hidden flex-none transition-all duration-300 ease-in-out flex flex-col"
       :class="
         showEventPanel
-          ? 'w-[352px] border-l bg-surface-white'
+          ? 'w-[352px] border-l bg-surface-base'
           : 'w-0 border-l-0'
       "
     >

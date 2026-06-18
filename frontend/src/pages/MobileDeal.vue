@@ -199,7 +199,7 @@
                     </div>
                     <div
                       v-if="i != section.contacts.length - 1"
-                      class="mx-2 h-px border-t border-outline-gray-modals"
+                      class="mx-2 h-px border-t border-outline-elevation-2"
                     />
                   </div>
                   <div

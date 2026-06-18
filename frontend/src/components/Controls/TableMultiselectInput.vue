@@ -10,7 +10,7 @@
         :label="value"
         theme="gray"
         variant="subtle"
-        class="rounded bg-surface-white hover:!bg-surface-gray-1 focus-visible:ring-outline-gray-4"
+        class="rounded bg-surface-base hover:!bg-surface-gray-1 focus-visible:ring-outline-gray-4"
         @keydown.delete.capture.stop="removeLastValue"
       >
         <template #suffix>

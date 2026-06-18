@@ -70,13 +70,13 @@
             :key="sla.name"
           >
             <div
-              class="grid grid-cols-7 items-center gap-4 cursor-pointer hover:bg-surface-menu-bar rounded"
+              class="grid grid-cols-7 items-center gap-4 cursor-pointer hover:bg-surface-sidebar rounded"
             >
               <div
                 class="w-full pl-2 col-span-5 flex items-center h-14 gap-2"
                 @click="updateStep('view', sla, true)"
               >
-                <div class="text-base text-ink-gray-7 font-medium truncate">
+                <div class="text-base-medium text-ink-gray-7 truncate">
                   {{ sla.name }}
                 </div>
                 <Badge v-if="sla.default" color="gray" size="sm">Default</Badge>

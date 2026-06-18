@@ -3,7 +3,7 @@
     <div class="flex justify-between px-2 pt-2">
       <div class="flex flex-col gap-1 w-9/12">
         <div class="flex gap-2 items-center">
-          <h2 class="flex text-xl font-semibold leading-none h-5">
+          <h2 class="flex text-2xl-semibold leading-none h-5">
             {{ __('Sales Hierarchy') }}
           </h2>
           <Tooltip :text="__('View documentation')">
@@ -58,7 +58,7 @@
       >
         <lucide-network class="size-7.5 text-ink-gray-5" />
         <div class="flex flex-col items-center gap-1.5 text-center">
-          <span class="text-lg font-medium text-ink-gray-8">
+          <span class="text-lg-medium text-ink-gray-8">
             {{ __('Enable Sales Hierarchy') }}
           </span>
           <span class="text-center text-p-base text-ink-gray-6">
@@ -177,9 +177,9 @@
     </Dialog>
     <Dialog v-model="showRemoveDialog" :options="{ size: 'md' }">
       <template #body>
-        <div class="bg-surface-modal px-4 pb-6 pt-5 sm:px-6">
+        <div class="bg-surface-elevation-2 px-4 pb-6 pt-5 sm:px-6">
           <div class="mb-4 flex items-center justify-between">
-            <h3 class="text-2xl leading-6 text-ink-gray-9 font-semibold">
+            <h3 class="text-3xl-semibold leading-6 text-ink-gray-9">
               {{ __('Delete') }}
             </h3>
             <Button
@@ -206,7 +206,7 @@
             </template>
           </div>
         </div>
-        <div class="bg-surface-modal px-4 pb-6 pt-0 sm:px-6">
+        <div class="bg-surface-elevation-2 px-4 pb-6 pt-0 sm:px-6">
           <div class="flex w-full justify-end gap-2">
             <template v-if="checkTargetChild">
               <Button

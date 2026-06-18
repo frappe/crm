@@ -13,7 +13,7 @@
   <FadedScrollableDiv class="flex flex-col h-full overflow-y-auto">
     <div
       v-if="all_activities?.loading"
-      class="flex flex-1 flex-col items-center justify-center gap-3 text-xl font-medium text-ink-gray-4"
+      class="flex flex-1 flex-col items-center justify-center gap-3 text-2xl-medium text-ink-gray-4"
     >
       <LoadingIndicator class="h-6 w-6" />
       <span>{{ __('Loading...') }}</span>
@@ -54,13 +54,13 @@
             class="activity grid grid-cols-[30px_minmax(auto,_1fr)] gap-2 px-3 sm:gap-4 sm:px-10"
           >
             <div
-              class="z-0 relative flex justify-center before:absolute before:left-[50%] before:-z-[1] before:top-0 before:border-l before:border-outline-gray-modals"
+              class="z-0 relative flex justify-center before:absolute before:left-[50%] before:-z-[1] before:top-0 before:border-l before:border-outline-elevation-2"
               :class="
                 i != activities.length - 1 ? 'before:h-full' : 'before:h-4'
               "
             >
               <div
-                class="flex h-8 w-7 items-center justify-center bg-surface-white"
+                class="flex h-8 w-7 items-center justify-center bg-surface-base"
               >
                 <CommentIcon class="text-ink-gray-8" />
               </div>
@@ -82,17 +82,17 @@
             class="activity grid grid-cols-[30px_minmax(auto,_1fr)] gap-4 px-3 sm:px-10"
           >
             <div
-              class="z-0 relative flex justify-center before:absolute before:left-[50%] before:-z-[1] before:top-0 before:border-l before:border-outline-gray-modals"
+              class="z-0 relative flex justify-center before:absolute before:left-[50%] before:-z-[1] before:top-0 before:border-l before:border-outline-elevation-2"
               :class="
                 i != activities.length - 1 ? 'before:h-full' : 'before:h-4'
               "
             >
               <div
-                class="flex h-8 w-7 items-center justify-center bg-surface-white text-ink-gray-8"
+                class="flex h-8 w-7 items-center justify-center bg-surface-base text-ink-gray-8"
               >
                 <MissedCallIcon
                   v-if="call.status == 'No Answer'"
-                  class="text-ink-red-4"
+                  class="text-ink-red-8"
                 />
                 <DeclinedCallIcon v-else-if="call.status == 'Busy'" />
                 <component
@@ -129,16 +129,16 @@
         >
           <div
             v-if="['Activity', 'Emails'].includes(title)"
-            class="z-0 relative flex justify-center before:absolute before:left-[50%] before:-z-[1] before:top-0 before:border-l before:border-outline-gray-modals"
+            class="z-0 relative flex justify-center before:absolute before:left-[50%] before:-z-[1] before:top-0 before:border-l before:border-outline-elevation-2"
             :class="[
               i != activities.length - 1 ? 'before:h-full' : 'before:h-4',
             ]"
           >
             <div
-              class="flex h-7 w-7 items-center justify-center bg-surface-white"
+              class="flex h-7 w-7 items-center justify-center bg-surface-base"
               :class="{
                 'mt-2.5': ['communication'].includes(activity.activity_type),
-                'bg-surface-white': ['added', 'removed', 'changed'].includes(
+                'bg-surface-base': ['added', 'removed', 'changed'].includes(
                   activity.activity_type,
                 ),
                 'h-8': [
@@ -160,7 +160,7 @@
                     activity.activity_type,
                   ) && activity.status == 'No Answer'
                 "
-                class="text-ink-red-4"
+                class="text-ink-red-8"
               />
               <DeclinedCallIcon
                 v-else-if="

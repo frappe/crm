@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col gap-5 justify-center items-center h-full">
-    <div class="font-semibold text-2xl text-ink-gray-8 mb-3">
+    <div class=" text-3xl-semibold text-ink-gray-8 mb-3">
       {{ __('Welcome {0}, lets add your first lead', [name]) }}
     </div>
     <div class="flex gap-3">
@@ -12,7 +12,7 @@
             <div
               v-for="i in 3"
               :key="i"
-              class="bg-surface-gray-3 ring-2 ring-outline-white p-2.5 rounded-full"
+              class="bg-surface-gray-3 ring-2 ring-outline-base p-2.5 rounded-full"
             >
               <AvatarIcon />
             </div>

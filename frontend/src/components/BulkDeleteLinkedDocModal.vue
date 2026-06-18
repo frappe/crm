@@ -1,10 +1,10 @@
 <template>
   <Dialog v-model="show" :options="{ size: 'xl' }">
     <template #body>
-      <div class="bg-surface-modal px-4 pb-6 pt-5 sm:px-6">
+      <div class="bg-surface-elevation-2 px-4 pb-6 pt-5 sm:px-6">
         <div class="mb-6 flex items-center justify-between">
           <div>
-            <h3 class="text-2xl leading-6 text-ink-gray-9 font-semibold">
+            <h3 class="text-3xl-semibold leading-6 text-ink-gray-9">
               {{ __('Delete') }}
             </h3>
           </div>
@@ -41,11 +41,11 @@
       </div>
       <div
         v-if="confirmDeleteInfo.show"
-        class="bg-surface-modal px-4 pb-6 pt-5 sm:px-6"
+        class="bg-surface-elevation-2 px-4 pb-6 pt-5 sm:px-6"
       >
         <div class="mb-6 flex items-center justify-between">
           <div>
-            <h3 class="text-2xl leading-6 text-ink-gray-9 font-semibold">
+            <h3 class="text-3xl-semibold leading-6 text-ink-gray-9">
               {{ __('Delete') }}
             </h3>
           </div>

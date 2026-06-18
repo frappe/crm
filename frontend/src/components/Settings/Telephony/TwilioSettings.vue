@@ -7,7 +7,7 @@
           icon-left="chevron-left"
           :label="__('Twilio Settings')"
           size="md"
-          class="cursor-pointer -ml-4 hover:bg-transparent focus:bg-transparent focus:outline-none focus:ring-0 focus:ring-offset-0 focus-visible:none active:bg-transparent active:outline-none active:ring-0 active:ring-offset-0 active:text-ink-gray-5 font-semibold text-xl hover:opacity-70 !pr-0 !max-w-96 !justify-start"
+          class="cursor-pointer -ml-4 hover:bg-transparent focus:bg-transparent focus:outline-none focus:ring-0 focus:ring-offset-0 focus-visible:none active:bg-transparent active:outline-none active:ring-0 active:ring-offset-0 active:text-ink-gray-5 text-2xl-semibold hover:opacity-70 !pr-0 !max-w-96 !justify-start"
           @click="emit('updateStep', 'telephony-settings')"
         />
         <Badge
@@ -57,14 +57,14 @@
           </div>
           <div
             v-if="twilio.originalDoc?.account_sid && twilioApps.length > 0"
-            class="h-px border-t border-outline-gray-modals"
+            class="h-px border-t border-outline-elevation-2"
           />
           <div
             v-if="twilio.originalDoc?.account_sid && twilioApps.length > 0"
             class="flex items-center justify-between gap-8"
           >
             <div class="flex flex-col">
-              <div class="text-p-base font-medium text-ink-gray-7 truncate">
+              <div class="text-p-base-medium text-ink-gray-7 truncate">
                 {{ __('Twilio App Name') }}
               </div>
               <div class="text-p-sm text-ink-gray-5">
@@ -89,7 +89,7 @@
           </div>
           <div class="flex items-center justify-between">
             <div class="flex flex-col">
-              <div class="text-p-base font-medium text-ink-gray-7 truncate">
+              <div class="text-p-base-medium text-ink-gray-7 truncate">
                 {{ __('Record Calls') }}
               </div>
               <div class="text-p-sm text-ink-gray-5 truncate">
@@ -111,7 +111,7 @@
           >
             <div class="flex flex-col items-center gap-1.5 text-center">
               <PhoneIcon class="size-7.5 text-ink-gray-7" />
-              <span class="text-lg font-medium text-ink-gray-8">
+              <span class="text-lg-medium text-ink-gray-8">
                 {{ __('Twilio Integration Disabled') }}
               </span>
               <span class="text-center text-p-base text-ink-gray-6">

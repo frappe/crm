@@ -102,7 +102,7 @@
           <span class="text-xs text-ink-gray-4">{{ __('SUBJECT') }}:</span>
           <input
             v-model="subject"
-            class="flex-1 border-none text-ink-gray-9 text-base bg-surface-white hover:bg-surface-white focus:border-none focus:!shadow-none focus-visible:!ring-0"
+            class="flex-1 border-none text-ink-gray-9 text-base bg-surface-base hover:bg-surface-base focus:border-none focus:!shadow-none focus-visible:!ring-0"
           />
         </div>
       </div>

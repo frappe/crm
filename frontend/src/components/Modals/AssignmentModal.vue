@@ -30,7 +30,7 @@
             >
               <div>
                 <div
-                  class="flex items-center text-sm text-ink-gray-6 border border-outline-gray-1 bg-surface-white rounded-full hover:bg-surface-white !p-0.5"
+                  class="flex items-center text-sm text-ink-gray-6 border border-outline-gray-1 bg-surface-base rounded-full hover:bg-surface-base !p-0.5"
                   @click.stop
                 >
                   <UserAvatar :user="assignee.name" size="sm" />

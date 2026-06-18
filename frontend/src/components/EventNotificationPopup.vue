@@ -8,7 +8,7 @@
         <div
           v-for="alert in visibleAlerts"
           :key="alert.id"
-          class="group flex flex-col relative bg-surface-cards rounded-lg drop-shadow-2xl shadow-sm"
+          class="group flex flex-col relative bg-surface-elevation-1 rounded-lg drop-shadow-2xl shadow-sm"
         >
           <div class="flex justify-between items-center gap-1 p-3">
             <div class="flex items-stretch space-x-2">
@@ -36,7 +36,7 @@
             />
           </div>
           <Button
-            class="absolute -top-2 -left-2 shadow ring-inset !bg-surface-cards hover:!bg-surface-gray-1 text-ink-gray-3 !p-0 !size-5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+            class="absolute -top-2 -left-2 shadow ring-inset !bg-surface-elevation-1 hover:!bg-surface-gray-1 text-ink-gray-3 !p-0 !size-5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
             @click="completeAlert(alert.id)"
           >
             <FeatherIcon name="x" class="size-4 text-ink-gray-3 stroke-2" />

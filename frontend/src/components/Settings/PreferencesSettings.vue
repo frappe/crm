@@ -12,14 +12,14 @@
       <div>
         <div class="flex items-center justify-between">
           <div class="flex gap-2 items-center">
-            <div class="text-base font-semibold text-ink-gray-9">
+            <div class="text-base-semibold text-ink-gray-9">
               {{ __('Appearance') }}
             </div>
           </div>
         </div>
         <div class="flex flex-col gap-4 my-6">
           <div class="flex flex-col gap-1">
-            <span class="text-base font-medium text-ink-gray-8">
+            <span class="text-base-medium text-ink-gray-8">
               {{ __('Theme') }}
             </span>
             <span class="text-p-sm text-ink-gray-6">
@@ -33,7 +33,7 @@
         </div>
         <div class="flex items-center justify-between">
           <div class="flex gap-2 items-center h-7">
-            <div class="text-base font-semibold text-ink-gray-9">
+            <div class="text-base-semibold text-ink-gray-9">
               {{ __('Language & Time') }}
             </div>
             <Badge
@@ -53,7 +53,7 @@
         </div>
         <div class="flex items-center justify-between mt-6">
           <div class="flex flex-col gap-1">
-            <span class="text-base font-medium text-ink-gray-8">
+            <span class="text-base-medium text-ink-gray-8">
               {{ __('Language') }}
             </span>
             <span class="text-p-sm text-ink-gray-6">
@@ -64,7 +64,7 @@
         </div>
         <div class="flex items-center justify-between mt-6">
           <div class="flex flex-col gap-1">
-            <span class="text-base font-medium text-ink-gray-8">
+            <span class="text-base-medium text-ink-gray-8">
               {{ __('Timezone') }}
             </span>
             <span class="text-p-sm text-ink-gray-6">

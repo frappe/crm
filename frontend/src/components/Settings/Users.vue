@@ -3,7 +3,7 @@
     <!-- Header -->
     <div class="flex justify-between px-2 pt-2">
       <div class="flex flex-col gap-1 w-9/12">
-        <h2 class="flex gap-2 text-xl font-semibold leading-none h-5">
+        <h2 class="flex gap-2 text-2xl-semibold leading-none h-5">
           {{ __('Users') }}
         </h2>
         <p class="text-p-base text-ink-gray-6">
@@ -85,7 +85,7 @@
           ]"
         />
       </div>
-      <ul class="divide-y divide-outline-gray-modals overflow-y-auto px-2">
+      <ul class="divide-y divide-outline-elevation-2 overflow-y-auto px-2">
         <template v-for="user in usersList" :key="user.name">
           <li class="flex items-center justify-between py-2">
             <div class="flex items-center">

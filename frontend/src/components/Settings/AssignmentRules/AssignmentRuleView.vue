@@ -12,7 +12,7 @@
             assignmentRuleData.assignmentRuleName || __('New Assignment Rule')
           "
           size="md"
-          class="cursor-pointer -ml-4 hover:bg-transparent focus:bg-transparent focus:outline-none focus:ring-0 focus:ring-offset-0 focus-visible:none active:bg-transparent active:outline-none active:ring-0 active:ring-offset-0 active:text-ink-gray-5 font-semibold text-xl hover:opacity-70 !pr-0 !max-w-96 !justify-start"
+          class="cursor-pointer -ml-4 hover:bg-transparent focus:bg-transparent focus:outline-none focus:ring-0 focus:ring-offset-0 focus-visible:none active:bg-transparent active:outline-none active:ring-0 active:ring-offset-0 active:text-ink-gray-5 text-2xl-semibold hover:opacity-70 !pr-0 !max-w-96 !justify-start"
           @click="goBack()"
         />
         <Badge
@@ -65,7 +65,7 @@
           <Popover>
             <template #target="{ togglePopover }">
               <div
-                class="flex items-center justify-between text-base rounded h-7 py-1.5 pl-2 pr-2 border border-outline-gray-2 bg-surface-gray-2 placeholder-ink-gray-4 hover:border-outline-gray-modals hover:bg-surface-gray-3 focus:bg-surface-white focus:border-outline-gray-4 focus:shadow-sm focus:ring-0 focus-visible:ring-2 focus-visible:ring-outline-gray-3 text-ink-gray-8 transition-colors w-full dark:[color-scheme:dark] cursor-default"
+                class="flex items-center justify-between text-base rounded h-7 py-1.5 pl-2 pr-2 border border-outline-gray-2 bg-surface-gray-2 placeholder-ink-gray-4 hover:border-outline-elevation-2 hover:bg-surface-gray-3 focus:bg-surface-base focus:border-outline-gray-4 focus:shadow-sm focus:ring-0 focus-visible:ring-2 focus-visible:ring-outline-gray-3 text-ink-gray-8 transition-colors w-full dark:[color-scheme:dark] cursor-default"
                 @click="togglePopover()"
               >
                 <div>
@@ -141,7 +141,7 @@
       <hr class="my-8" />
       <div>
         <div class="flex flex-col gap-1">
-          <span class="text-lg font-semibold text-ink-gray-8">{{
+          <span class="text-lg-semibold text-ink-gray-8">{{
             __('Assignment Condition')
           }}</span>
           <div class="flex items-center justify-between gap-6">
@@ -220,7 +220,7 @@
       <hr class="my-8" />
       <div>
         <div class="flex flex-col gap-1">
-          <span class="text-lg font-semibold text-ink-gray-8">{{
+          <span class="text-lg-semibold text-ink-gray-8">{{
             __('Unassignment Condition')
           }}</span>
           <div class="flex items-center justify-between gap-6">
@@ -298,7 +298,7 @@
       <hr class="my-8" />
       <div>
         <div class="flex flex-col gap-1">
-          <span class="text-lg font-semibold text-ink-gray-8">{{
+          <span class="text-lg-semibold text-ink-gray-8">{{
             __('Assignment Schedule')
           }}</span>
           <span class="text-p-sm text-ink-gray-6">

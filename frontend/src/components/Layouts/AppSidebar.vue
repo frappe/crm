@@ -18,13 +18,13 @@
         >
           <template #right>
             <Badge
-              v-if="!isSidebarCollapsed && unreadNotificationsCount"
-              :label="unreadNotificationsCount"
+              v-if="!isSidebarCollapsed && frameworkUnreadCount"
+              :label="frameworkUnreadCount"
               variant="subtle"
             />
             <div
-              v-else-if="unreadNotificationsCount"
-              class="absolute -left-1.5 top-1 z-20 h-[5px] w-[5px] translate-x-6 translate-y-1 rounded-full bg-surface-gray-6 ring-1 ring-white"
+              v-else-if="frameworkUnreadCount"
+              class="absolute -left-1.5 top-1 z-20 h-[5px] w-[5px] translate-x-6 translate-y-1 rounded-full bg-surface-gray-9 ring-1 ring-white"
             />
           </template>
         </SidebarLink>
@@ -92,7 +92,7 @@
       </div>
       <SidebarLink
         v-if="isManager() && isDemoDataCreated"
-        class="text-ink-red-3 hover:bg-surface-red-2 focus:bg-surface-red-2"
+        class="text-ink-red-6 hover:bg-surface-red-2 focus:bg-surface-red-2"
         :label="__('Clear Demo Data')"
         :isCollapsed="isSidebarCollapsed"
         @click="() => clearDemoData()"
@@ -182,9 +182,11 @@ import Settings from '@/components/Settings/Settings.vue'
 import SalesHierarchyBanner from '@/components/SalesHierarchyBanner.vue'
 import { viewsStore } from '@/stores/views'
 import {
-  unreadNotificationsCount,
+  frameworkUnreadCount,
+  reloadFrameworkUnreadCount,
   notificationsStore,
 } from '@/stores/notifications'
+import { globalStore } from '@/stores/global'
 import { usersStore } from '@/stores/users'
 import { sessionStore } from '@/stores/session'
 import { showSettings, activeSettingsPage } from '@/composables/settings'
@@ -205,10 +207,24 @@ import {
 import router from '@/router'
 import { useStorage } from '@vueuse/core'
 import { useDemoData } from '@/composables/demoData'
-import { ref, reactive, computed, markRaw, onMounted } from 'vue'
+import {
+  ref,
+  reactive,
+  computed,
+  markRaw,
+  onMounted,
+  onBeforeUnmount,
+} from 'vue'
 
 const { getPinnedViews, getPublicViews } = viewsStore()
+const { $socket } = globalStore()
 const { toggle: toggleNotificationPanel } = notificationsStore()
+
+// keep the sidebar unread badge live while the panel is closed (the panel itself updates
+// the count via @update:unread-count while open)
+const onNotificationRealtime = () => reloadFrameworkUnreadCount()
+onMounted(() => $socket.on('notification', onNotificationRealtime))
+onBeforeUnmount(() => $socket.off('notification', onNotificationRealtime))
 const { capture } = useTelemetry()
 const { clearDemoData, isDemoDataCreated } = useDemoData()
 const { send } = useBroadcast()

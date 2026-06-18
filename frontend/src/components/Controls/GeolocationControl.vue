@@ -125,7 +125,7 @@ const sizeClasses = computed(
       sm: 'h-7 text-base rounded',
       md: 'h-8 text-base rounded',
       lg: 'h-10 text-lg rounded-md',
-      xl: 'h-10 text-xl rounded-md',
+      xl: 'h-10 text-2xl rounded-md',
     })[attrs.size || 'sm'],
 )
 
@@ -150,9 +150,9 @@ const variantClasses = computed(() => {
   }
   return {
     subtle:
-      'border border-[--surface-gray-2] bg-surface-gray-2 hover:border-outline-gray-modals hover:bg-surface-gray-3',
+      'border border-[--surface-gray-2] bg-surface-gray-2 hover:border-outline-elevation-2 hover:bg-surface-gray-3',
     outline:
-      'border border-outline-gray-2 bg-surface-white hover:border-outline-gray-3 hover:shadow-sm',
+      'border border-outline-gray-2 bg-surface-base hover:border-outline-gray-3 hover:shadow-sm',
     ghost: 'border-0',
   }[attrs.variant || 'subtle']
 })

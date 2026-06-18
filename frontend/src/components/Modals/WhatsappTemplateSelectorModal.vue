@@ -40,7 +40,7 @@
           @click="emit('send', template.name)"
         >
           <div
-            class="border-b pb-2 text-base font-semibold truncate"
+            class="border-b pb-2 text-base-semibold truncate"
             :title="template.name"
           >
             {{ template.name }}

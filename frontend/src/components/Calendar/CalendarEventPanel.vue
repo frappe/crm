@@ -3,7 +3,7 @@
   <div v-if="show" class="flex flex-col w-[352px] text-base h-full">
     <!-- Event Header -->
     <div
-      class="flex items-center justify-between p-4.5 text-ink-gray-7 text-lg font-medium"
+      class="flex items-center justify-between p-4.5 text-ink-gray-7 text-lg-medium"
     >
       <div
         class="flex items-center gap-x-2"
@@ -56,7 +56,7 @@
         />
         <div class="flex flex-col gap-[3px]">
           <div
-            class="text-xl font-semibold"
+            class="text-2xl-semibold"
             :class="
               attending == 'No'
                 ? 'line-through text-ink-gray-7'
@@ -113,7 +113,7 @@
         />
         <Link
           v-model="_event.referenceDocname"
-          class="[&_button]:bg-surface-white [&_button]:select-text [&_button]:text-ink-gray-7 [&_button]:cursor-text"
+          class="[&_button]:bg-surface-base [&_button]:select-text [&_button]:text-ink-gray-7 [&_button]:cursor-text"
           :doctype="_event.referenceDoctype"
           :disabled="true"
         />
@@ -156,7 +156,7 @@
                 <UserAvatar :user="_event.owner?.value" class="-ml-1 !size-5" />
                 <div
                   v-if="_event.attending"
-                  class="flex items-center justify-center absolute -bottom-[2px] -right-[2px] ring-1 ring-outline-white size-2.5 rounded-full"
+                  class="flex items-center justify-center absolute -bottom-[2px] -right-[2px] ring-1 ring-outline-base size-2.5 rounded-full"
                   :class="{
                     'bg-green-600': _event.attending === 'Yes',
                     'bg-gray-500': _event.attending === 'Maybe',
@@ -165,7 +165,7 @@
                 >
                   <div
                     v-if="_event.attending == 'Maybe'"
-                    class="text-ink-white font-extrabold text-[8px] pt-px"
+                    class="text-ink-base font-extrabold text-[8px] pt-px"
                   >
                     ?
                   </div>
@@ -178,7 +178,7 @@
                           ? 'x'
                           : ''
                     "
-                    class="size-[7px] stroke-[4px] text-ink-white"
+                    class="size-[7px] stroke-[4px] text-ink-base"
                   />
                 </div>
               </div>
@@ -198,7 +198,7 @@
                 <UserAvatar :user="att.email" class="-ml-1 !size-5" />
                 <div
                   v-if="att.attending"
-                  class="flex items-center justify-center absolute -bottom-[2px] -right-[2px] ring-1 ring-outline-white size-2.5 rounded-full"
+                  class="flex items-center justify-center absolute -bottom-[2px] -right-[2px] ring-1 ring-outline-base size-2.5 rounded-full"
                   :class="{
                     'bg-green-600': att.attending === 'Yes',
                     'bg-gray-500': att.attending === 'Maybe',
@@ -207,7 +207,7 @@
                 >
                   <div
                     v-if="att.attending == 'Maybe'"
-                    class="text-ink-white font-extrabold text-[8px] pt-px"
+                    class="text-ink-base font-extrabold text-[8px] pt-px"
                   >
                     ?
                   </div>
@@ -220,7 +220,7 @@
                           ? 'x'
                           : ''
                     "
-                    class="size-[7px] stroke-[4px] text-ink-white"
+                    class="size-[7px] stroke-[4px] text-ink-base"
                   />
                 </div>
               </div>
@@ -265,7 +265,7 @@
       <div class="flex gap-2 items-center px-4.5 py-3">
         <Dropdown class="ml-1" :options="colors">
           <div
-            class="flex items-center justify-center size-8 shrink-0 border border-outline-gray-2 bg-surface-white hover:border-outline-gray-3 hover:shadow-sm rounded cursor-pointer"
+            class="flex items-center justify-center size-8 shrink-0 border border-outline-gray-2 bg-surface-base hover:border-outline-gray-3 hover:shadow-sm rounded cursor-pointer"
           >
             <div
               class="size-2.5 rounded-full cursor-pointer"
@@ -383,7 +383,7 @@
         <DescriptionIcon class="size-4 mt-1.5" />
         <div class="flex w-full items-center gap-x-2 border rounded py-1">
           <TextEditor
-            editor-class="!prose-sm !leading-[1.13rem] overflow-auto px-2.5 rounded placeholder-ink-gray-4 focus:bg-surface-white focus:ring-0 text-ink-gray-8 transition-colors"
+            editor-class="!prose-sm !leading-[1.13rem] overflow-auto px-2.5 rounded placeholder-ink-gray-4 focus:bg-surface-base focus:ring-0 text-ink-gray-8 transition-colors"
             :bubbleMenu="true"
             :content="_event.description"
             :placeholder="__('Add Description')"

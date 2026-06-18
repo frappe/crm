@@ -11,7 +11,7 @@
       </template>
       <template #body="{ togglePopover }">
         <div
-          class="mt-1 rounded-lg bg-surface-white py-1 text-base shadow-2xl w-60"
+          class="mt-1 rounded-lg bg-surface-base py-1 text-base shadow-2xl w-60"
         >
           <div class="relative px-1.5 pt-0.5">
             <ComboboxInput

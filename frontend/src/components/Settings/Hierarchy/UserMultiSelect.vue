@@ -27,7 +27,7 @@
       >
         <Avatar :image="user.user_image" :label="user.full_name" size="lg" />
         <div class="flex flex-col items-start min-w-0 flex-1">
-          <span class="text-ink-gray-8 truncate text-sm font-medium">
+          <span class="text-ink-gray-8 truncate text-sm-medium">
             {{ user.full_name }}
           </span>
           <div v-if="showMail" class="flex flex-row items-center gap-2 min-w-0">

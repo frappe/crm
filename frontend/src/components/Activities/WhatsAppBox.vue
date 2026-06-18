@@ -9,9 +9,9 @@
       :class="reply.type == 'Incoming' ? 'border-green-500' : 'border-blue-400'"
     >
       <div
-        class="mb-1 text-sm font-bold"
+        class="mb-1 text-sm-bold"
         :class="
-          reply.type == 'Incoming' ? 'text-ink-green-2' : 'text-ink-blue-link'
+          reply.type == 'Incoming' ? 'text-ink-green-5' : 'text-ink-blue-link'
         "
       >
         {{ reply.from_name || __('You') }}
@@ -50,7 +50,7 @@
         "
       >
         <SmileIcon
-          class="flex size-4.5 cursor-pointer rounded-sm text-xl leading-none text-ink-gray-4"
+          class="flex size-4.5 cursor-pointer rounded-sm text-2xl leading-none text-ink-gray-4"
           @click="togglePopover"
         />
       </IconPicker>

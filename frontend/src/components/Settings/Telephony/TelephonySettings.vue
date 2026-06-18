@@ -4,7 +4,7 @@
     <div class="flex justify-between px-2 text-ink-gray-8">
       <div class="flex flex-col gap-1 w-9/12">
         <h2
-          class="flex gap-2 text-xl font-semibold leading-none h-5 text-ink-gray-8"
+          class="flex gap-2 text-2xl-semibold leading-none h-5 text-ink-gray-8"
         >
           {{ __('Telephony Settings') }}
           <Badge
@@ -34,7 +34,7 @@
     <div v-if="telephonyAgent.doc" class="flex-1 flex flex-col overflow-y-auto">
       <div class="flex items-center justify-between gap-8 py-3 pl-2 pr-1">
         <div class="flex flex-col">
-          <div class="text-p-base font-medium text-ink-gray-7 truncate">
+          <div class="text-p-base-medium text-ink-gray-7 truncate">
             {{ __('Default Medium') }}
           </div>
           <div class="text-p-sm text-ink-gray-5">
@@ -63,14 +63,14 @@
       </div>
       <div
         v-if="isEnabled('twilio')"
-        class="h-px border-t mx-2 border-outline-gray-modals"
+        class="h-px border-t mx-2 border-outline-elevation-2"
       />
       <div
         v-if="isEnabled('twilio')"
         class="flex items-center justify-between gap-8 py-3 pl-2 pr-1"
       >
         <div class="flex flex-col">
-          <div class="text-p-base font-medium text-ink-gray-7 truncate">
+          <div class="text-p-base-medium text-ink-gray-7 truncate">
             {{ __('Twilio Number') }}
           </div>
           <div class="text-p-sm text-ink-gray-5">
@@ -88,14 +88,14 @@
       </div>
       <div
         v-if="isEnabled('exotel')"
-        class="h-px border-t mx-2 border-outline-gray-modals"
+        class="h-px border-t mx-2 border-outline-elevation-2"
       />
       <div
         v-if="isEnabled('exotel')"
         class="flex items-center justify-between gap-8 py-3 pl-2 pr-1"
       >
         <div class="flex flex-col">
-          <div class="text-p-base font-medium text-ink-gray-7 truncate">
+          <div class="text-p-base-medium text-ink-gray-7 truncate">
             {{ __('Exotel Number') }}
           </div>
           <div class="text-p-sm text-ink-gray-5">
@@ -116,7 +116,7 @@
         class="flex items-center justify-between gap-8 py-3 pl-2 pr-1"
       >
         <div class="flex flex-col">
-          <div class="text-p-base font-medium text-ink-gray-7 truncate">
+          <div class="text-p-base-medium text-ink-gray-7 truncate">
             {{ __('Personal Mobile No.') }}
           </div>
           <div class="text-p-sm text-ink-gray-5">
@@ -139,7 +139,7 @@
 
       <div
         v-if="isManager()"
-        class="flex items-center justify-between text-lg text-ink-gray-8 font-semibold mt-4 py-3 px-2"
+        class="flex items-center justify-between text-lg-semibold text-ink-gray-8 mt-4 py-3 px-2"
       >
         {{ __('Integrations') }}
       </div>
@@ -149,7 +149,7 @@
         class="flex items-center justify-between py-3 px-2"
       >
         <div class="flex flex-col gap-1">
-          <span class="text-base font-medium text-ink-gray-8">
+          <span class="text-base-medium text-ink-gray-8">
             {{ __('Twilio') }}
           </span>
           <span class="text-p-sm text-ink-gray-6">
@@ -168,7 +168,7 @@
 
       <div
         v-if="isManager()"
-        class="h-px border-t mx-2 border-outline-gray-modals"
+        class="h-px border-t mx-2 border-outline-elevation-2"
       />
 
       <div
@@ -176,7 +176,7 @@
         class="flex items-center justify-between py-3 px-2"
       >
         <div class="flex flex-col gap-1">
-          <span class="text-base font-medium text-ink-gray-8">
+          <span class="text-base-medium text-ink-gray-8">
             {{ __('Exotel') }}
           </span>
           <span class="text-p-sm text-ink-gray-6">

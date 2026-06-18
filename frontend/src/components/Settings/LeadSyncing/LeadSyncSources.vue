@@ -4,7 +4,7 @@
     <div class="flex justify-between px-2 pt-2">
       <div class="flex flex-col gap-1 w-9/12">
         <h2
-          class="flex gap-2 text-xl font-semibold leading-none h-5 items-center"
+          class="flex gap-2 text-2xl-semibold leading-none h-5 items-center"
         >
           {{ __('Lead Sources') }}
           <Badge theme="orange" size="sm">Beta</Badge>
@@ -58,21 +58,21 @@
         <div class="w-1/6">{{ __('Source') }}</div>
         <div class="w-1/6">{{ __('Enabled') }}</div>
       </div>
-      <div class="h-px border-t mx-4 border-outline-gray-modals" />
+      <div class="h-px border-t mx-4 border-outline-elevation-2" />
       <ul class="overflow-y-auto px-2">
         <template v-for="(source, i) in sourcesList" :key="source.name">
           <li
-            class="flex items-center justify-between p-3 cursor-pointer hover:bg-surface-menu-bar rounded"
+            class="flex items-center justify-between p-3 cursor-pointer hover:bg-surface-sidebar rounded"
             @click="() => emit('updateStep', 'edit-source', { ...source })"
           >
             <div class="flex flex-col w-4/6 pr-5">
-              <div class="text-p-base font-medium text-ink-gray-7 truncate">
+              <div class="text-p-base-medium text-ink-gray-7 truncate">
                 {{ source.name }}
               </div>
             </div>
 
             <div class="flex flex-col w-1/6 pr-5">
-              <div class="text-p-base font-medium text-ink-gray-7 truncate">
+              <div class="text-p-base-medium text-ink-gray-7 truncate">
                 {{ source.type }}
               </div>
             </div>
@@ -102,7 +102,7 @@
           </li>
           <div
             v-if="sourcesList.length !== i + 1"
-            class="h-px border-t mx-2 border-outline-gray-modals"
+            class="h-px border-t mx-2 border-outline-elevation-2"
           />
         </template>
         <!-- Load More Button -->

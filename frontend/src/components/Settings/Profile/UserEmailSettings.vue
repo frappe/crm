@@ -7,7 +7,7 @@
           icon-left="chevron-left"
           :label="__('Email Settings')"
           size="md"
-          class="cursor-pointer -ml-4 hover:bg-transparent focus:bg-transparent focus:outline-none focus:ring-0 focus:ring-offset-0 focus-visible:none active:bg-transparent active:outline-none active:ring-0 active:ring-offset-0 active:text-ink-gray-5 font-semibold text-xl hover:opacity-70 !pr-0 !max-w-96 !justify-start"
+          class="cursor-pointer -ml-4 hover:bg-transparent focus:bg-transparent focus:outline-none focus:ring-0 focus:ring-offset-0 focus-visible:none active:bg-transparent active:outline-none active:ring-0 active:ring-offset-0 active:text-ink-gray-5 text-2xl-semibold hover:opacity-70 !pr-0 !max-w-96 !justify-start"
           @click="emit('updateStep', 'profile-settings')"
         />
         <Badge
@@ -29,7 +29,7 @@
     <template #content>
       <div class="flex flex-col gap-4">
         <div class="flex flex-col gap-1">
-          <span class="text-base font-medium text-ink-gray-8">
+          <span class="text-base-medium text-ink-gray-8">
             {{ __('Signature') }}
           </span>
           <span class="text-p-sm text-ink-gray-6">
@@ -37,7 +37,7 @@
           </span>
         </div>
         <TextEditor
-          editor-class="prose-sm min-h-28 max-w-full border rounded-b-lg border-t-0 p-2 border-outline-gray-modals"
+          editor-class="prose-sm min-h-28 max-w-full border rounded-b-lg border-t-0 p-2 border-outline-elevation-2"
           :content="user.doc.email_signature"
           placeholder="Type something..."
           :bubbleMenu="true"
@@ -47,7 +47,7 @@
       </div>
       <div class="flex flex-col gap-4 mt-6">
         <div class="flex flex-col gap-1">
-          <span class="text-base font-medium text-ink-gray-8">
+          <span class="text-base-medium text-ink-gray-8">
             {{ __('Emails') }}
           </span>
           <span class="text-p-sm text-ink-gray-6">
@@ -59,10 +59,10 @@
         <div>
           <div
             v-if="user.doc.user_emails?.length"
-            class="w-full border rounded-md mb-2 border-outline-gray-modals"
+            class="w-full border rounded-md mb-2 border-outline-elevation-2"
           >
             <div
-              class="grid grid-cols-[4fr_4fr_0.3fr] gap-2 px-4 py-3 text-sm font-medium text-ink-gray-5 border-b border-outline-gray-modals"
+              class="grid grid-cols-[4fr_4fr_0.3fr] gap-2 px-4 py-3 text-sm-medium text-ink-gray-5 border-b border-outline-elevation-2"
             >
               <span>{{ __('Email Account') }}</span>
               <span>{{ __('Email') }}</span>
@@ -71,7 +71,7 @@
             <div
               v-for="e in user.doc.user_emails"
               :key="e.name"
-              class="grid grid-cols-[4fr_4fr_0.3fr] gap-2 group items-center px-4 py-2.5 text-base border-b border-outline-gray-modals last:border-b-0"
+              class="grid grid-cols-[4fr_4fr_0.3fr] gap-2 group items-center px-4 py-2.5 text-base border-b border-outline-elevation-2 last:border-b-0"
             >
               <span class="text-ink-gray-8 font-medium truncate">
                 {{ e.email_account }}
@@ -95,7 +95,7 @@
           >
             <template #target="{ togglePopover }">
               <Button
-                class="!bg-surface-modal"
+                class="!bg-surface-elevation-2"
                 variant="outline"
                 :label="__('Add Email')"
                 iconLeft="plus"

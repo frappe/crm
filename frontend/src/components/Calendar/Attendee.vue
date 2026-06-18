@@ -10,7 +10,7 @@
         @update:modelValue="onSelect"
       >
         <ComboboxAnchor
-          class="flex w-full text-base items-center gap-1 rounded border border-outline-gray-2 bg-surface-white hover:border-outline-gray-3 focus:border-outline-gray-4 focus:ring-0 focus-visible:ring-2 focus-visible:ring-outline-gray-3 px-2 py-1"
+          class="flex w-full text-base items-center gap-1 rounded border border-outline-gray-2 bg-surface-base hover:border-outline-gray-3 focus:border-outline-gray-4 focus:ring-0 focus-visible:ring-2 focus-visible:ring-outline-gray-3 px-2 py-1"
           :class="[size === 'sm' ? 'h-7' : 'h-8 ', inputClass]"
           @click="showOptions = true"
         >
@@ -32,7 +32,7 @@
         </ComboboxAnchor>
         <ComboboxPortal>
           <ComboboxContent
-            class="z-10 mt-1 min-w-48 w-full max-w-md bg-surface-modal overflow-hidden rounded-lg shadow-2xl ring-1 ring-black ring-opacity-5"
+            class="z-10 mt-1 min-w-48 w-full max-w-md bg-surface-elevation-2 overflow-hidden rounded-lg shadow-2xl ring-1 ring-black ring-opacity-5"
             position="popper"
             :align="'start'"
             @openAutoFocus.prevent
@@ -54,7 +54,7 @@
               >
                 <UserAvatar class="mr-2" :user="option.value" size="lg" />
                 <div class="flex flex-col gap-1 p-1 text-ink-gray-8">
-                  <div class="text-base font-medium">{{ option.label }}</div>
+                  <div class="text-base-medium">{{ option.label }}</div>
                   <div class="text-sm text-ink-gray-5">{{ option.value }}</div>
                 </div>
               </ComboboxItem>

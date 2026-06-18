@@ -14,7 +14,7 @@
   <div v-else>
     <div
       v-show="files.length === 0"
-      class="flex flex-col items-center justify-center gap-4 rounded-lg border border-dashed border-outline-gray-modals min-h-64 text-ink-gray-5"
+      class="flex flex-col items-center justify-center gap-4 rounded-lg border border-dashed border-outline-elevation-2 min-h-64 text-ink-gray-5"
       @dragover.prevent="dragover"
       @dragleave.prevent="dragleave"
       @drop.prevent="dropfiles"
@@ -99,7 +99,7 @@
           <CircularProgressBar
             v-if="file.uploading || file.uploaded == file.total"
             :class="{
-              'text-ink-green-2': file.uploaded == file.total,
+              'text-ink-green-5': file.uploaded == file.total,
             }"
             :theme="{
               primary: '#22C55E',

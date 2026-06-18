@@ -12,7 +12,7 @@
     </template>
     <template #body="{ close }">
       <div
-        class="my-2 p-1.5 min-w-40 rounded-lg bg-surface-modal shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
+        class="my-2 p-1.5 min-w-40 rounded-lg bg-surface-elevation-2 shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
       >
         <div v-if="!edit">
           <Draggable
@@ -54,7 +54,7 @@
             </template>
           </Draggable>
           <div
-            class="mt-1.5 flex flex-col gap-1 border-t border-outline-gray-modals pt-1.5"
+            class="mt-1.5 flex flex-col gap-1 border-t border-outline-elevation-2 pt-1.5"
           >
             <Autocomplete
               value=""
