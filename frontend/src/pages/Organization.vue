@@ -12,7 +12,6 @@
         v-if="organization._actions?.length"
         :actions="organization._actions"
       />
-      <!-- TODO: This doesn't work really -->
       <EnrichFromWebsite
         doctype="CRM Organization"
         :docname="props.organizationId"

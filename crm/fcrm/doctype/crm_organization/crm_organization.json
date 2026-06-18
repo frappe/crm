@@ -15,6 +15,9 @@
   "organization_logo",
   "column_break_pnpp",
   "website",
+  "company_description",
+  "linkedin",
+  "twitter",
   "territory",
   "industry",
   "address"
@@ -85,6 +88,25 @@
    "fieldname": "exchange_rate",
    "fieldtype": "Float",
    "label": "Exchange Rate"
+  },
+  {
+   "fieldname": "company_description",
+   "fieldtype": "Small Text",
+   "label": "Company Description",
+   "no_copy": 1,
+   "description": "Company description discovered by Domain Enrichment."
+  },
+  {
+   "fieldname": "linkedin",
+   "fieldtype": "Data",
+   "label": "LinkedIn",
+   "no_copy": 1
+  },
+  {
+   "fieldname": "twitter",
+   "fieldtype": "Data",
+   "label": "X (Twitter)",
+   "no_copy": 1
   }
  ],
  "image_field": "organization_logo",

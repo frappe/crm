@@ -31,7 +31,3 @@ crm.patches.v1_0.set_persona_captured_for_existing_sites
 crm.patches.v1_0.reorder_address_quick_entry_layout
 crm.patches.v1_0.set_seen_for_existing_deals_and_leads
 crm.patches.v1_0.rebuild_crm_territory_tree
-crm.patches.v1_0.add_website_intelligence_field
-crm.patches.v1_0.add_website_intelligence_to_side_panel
-crm.patches.v1_0.add_website_intelligence_to_data_fields
-crm.patches.v1_0.regroup_website_intelligence_data_fields

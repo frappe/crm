@@ -1,0 +1,271 @@
+# Copyright (c) 2026, Frappe Technologies Pvt. Ltd. and contributors
+# For license information, please see license.txt
+
+"""Same-domain, depth-limited BFS crawler. Caps, priorities and skip-patterns
+come from config (Settings child tables), not module constants.
+
+Exposes:
+
+    crawl()             -> ranked list of (CrawledPage, soup) tuples, homepage first
+    crawl_page()        -> fetch + parse a single page into a CrawledPage
+    extract_content()   -> pull title/headings/visible text from soup
+
+Same registrable domain only; respects the page cap, depth cap, and skip patterns.
+"""
+
+from __future__ import annotations
+
+import re
+from collections import deque
+from urllib.parse import urldefrag, urljoin, urlparse
+
+from bs4 import BeautifulSoup
+
+from .http import build_session, fetch
+from .result import CrawledPage
+
+# Asset / non-HTML extensions we never want to crawl (mechanics, not knowledge).
+SKIP_EXTENSIONS = (
+	".pdf",
+	".jpg",
+	".jpeg",
+	".png",
+	".gif",
+	".svg",
+	".webp",
+	".ico",
+	".css",
+	".js",
+	".zip",
+	".gz",
+	".mp4",
+	".mp3",
+	".avi",
+	".woff",
+	".woff2",
+	".ttf",
+	".eot",
+	".xml",
+	".json",
+	".rss",
+)
+SKIP_SCHEMES = ("mailto:", "tel:", "javascript:", "data:", "#")
+
+# A 2xx HTML page with fewer readable chars than this is treated as JS-rendered
+# (matches diagnose_readability's "empty" cutoff) and is eligible for the Chromium
+# render fallback when allow_render + Settings.render_js are on.
+JS_RENDER_MIN_TEXT = 200
+
+
+def normalize_url(url: str) -> str:
+	"""Strip fragments and trailing slashes for stable dedupe."""
+	url, _frag = urldefrag(url)
+	if url.endswith("/") and len(urlparse(url).path) > 1:
+		url = url.rstrip("/")
+	return url
+
+
+def registrable_domain(netloc: str) -> str:
+	"""Pragmatic same-site check: compare the last two labels (example.com),
+	treating www as insignificant. Good enough for MVP scoping."""
+	netloc = netloc.lower().split(":")[0]
+	if netloc.startswith("www."):
+		netloc = netloc[4:]
+	parts = netloc.split(".")
+	return ".".join(parts[-2:]) if len(parts) >= 2 else netloc
+
+
+def same_site(url: str, base_netloc: str) -> bool:
+	try:
+		return registrable_domain(urlparse(url).netloc) == registrable_domain(base_netloc)
+	except Exception:
+		return False
+
+
+def _link_priority(url: str, anchor_text: str, priority_keywords: list) -> float:
+	"""Lower number = crawl sooner. Priority pages score by their keyword's rank,
+	weighted; non-priority pages sort last. ``priority_keywords`` is a list of
+	(keyword, weight) tuples from config."""
+	haystack = (urlparse(url).path + " " + (anchor_text or "")).lower()
+	best = None
+	for idx, (kw, weight) in enumerate(priority_keywords):
+		if kw and kw in haystack:
+			# Higher weight -> earlier; ties broken by config order.
+			score = idx - (weight or 1.0)
+			if best is None or score < best:
+				best = score
+	return best if best is not None else len(priority_keywords) + 1
+
+
+def _is_crawlable(url: str, skip_patterns: list) -> bool:
+	low = url.lower()
+	if any(low.startswith(s) for s in SKIP_SCHEMES):
+		return False
+	path = urlparse(url).path.lower()
+	if path.endswith(SKIP_EXTENSIONS):
+		return False
+	if urlparse(url).scheme not in ("http", "https"):
+		return False
+	for pat in skip_patterns:
+		try:
+			if re.search(pat, url, re.IGNORECASE):
+				return False
+		except re.error:
+			# Treat a malformed admin skip-pattern as a plain substring.
+			if pat.lower() in low:
+				return False
+	return True
+
+
+def extract_content(soup: BeautifulSoup) -> dict:
+	"""Pull title, headings and clean visible text out of a parsed page.
+
+	NOTE: this mutates ``soup`` (it decomposes script/style nodes), so callers
+	that need the original DOM afterwards must pass a throwaway copy.
+	"""
+	title = ""
+	if soup.title and soup.title.string:
+		title = soup.title.string.strip()
+
+	headings = []
+	for tag in soup.find_all(["h1", "h2", "h3"]):
+		txt = tag.get_text(" ", strip=True)
+		if txt:
+			headings.append(txt)
+
+	# Remove non-content nodes before grabbing text.
+	for node in soup(["script", "style", "noscript", "template", "svg"]):
+		node.decompose()
+	text = soup.get_text(" ", strip=True)
+	text = " ".join(text.split())  # collapse runaway whitespace
+
+	return {"title": title, "headings": headings, "text": text}
+
+
+def _links_on_page(soup, page_url, base_netloc, skip_patterns):
+	"""Yield (normalized_url, anchor_text) for same-site, crawlable links."""
+	for a in soup.find_all("a", href=True):
+		href = a["href"].strip()
+		if not href or any(href.lower().startswith(s) for s in SKIP_SCHEMES):
+			continue
+		absolute = normalize_url(urljoin(page_url, href))
+		if not _is_crawlable(absolute, skip_patterns):
+			continue
+		if not same_site(absolute, base_netloc):
+			continue
+		yield absolute, a.get_text(" ", strip=True)
+
+
+def _parse_and_fill(page, html):
+	"""Parse ``html``, fill ``page`` title/headings/text, and return a fresh soup.
+
+	``extract_content`` mutates its soup (decomposes script/style), so it runs on a
+	throwaway parse while the returned soup stays unmutated for the caller.
+	"""
+	soup = BeautifulSoup(html, "html.parser")
+	content = extract_content(BeautifulSoup(html, "html.parser"))
+	page.title = content["title"]
+	page.headings = content["headings"]
+	page.text = content["text"]
+	return soup
+
+
+def crawl_page(url, cfg, session=None, allow_render=False):
+	"""Fetch and parse a single page. Returns (CrawledPage, soup_or_None).
+
+	Failures are captured on ``CrawledPage.error`` rather than raised. The soup
+	returned is a fresh, unmutated parse (``extract_content`` runs on a copy).
+
+	JS-render fallback: when ``allow_render`` (background-job only) and
+	``Settings.render_js`` are on and the fetched page is a 2xx HTML doc with almost
+	no readable text (a client-rendered SPA), the page is re-rendered via Chromium
+	(``browser.render``) and adopted only if it yields more text than the fast
+	requests fetch. Requests remains the default path.
+	"""
+	status, html, error = fetch(url, cfg, session=session)
+	page = CrawledPage(url=url, status_code=status, html=html or "", error=error)
+	soup = _parse_and_fill(page, html) if (html and not error) else None
+
+	if (
+		allow_render
+		and cfg.setting("render_js")
+		and not error
+		and status == 200
+		and html
+		and len(page.text) < JS_RENDER_MIN_TEXT
+	):
+		from . import browser
+
+		r_status, r_html, r_error = browser.render(url, cfg)
+		if not r_error and r_html:
+			r_page = CrawledPage(url=url, status_code=r_status, html=r_html)
+			r_soup = _parse_and_fill(r_page, r_html)
+			if len(r_page.text) > len(page.text):  # adopt only a richer render
+				page, soup = r_page, r_soup
+
+	return page, soup
+
+
+def crawl(start_url, cfg, session=None, progress=None, allow_render=False):
+	"""Breadth-first crawl from ``start_url``, prioritizing company-info pages.
+
+	Caps (``max_pages``/``max_depth``), priority keywords and skip patterns all
+	come from ``cfg``. Returns a list of (CrawledPage, soup) tuples, homepage
+	first. Respects the page cap, depth cap, and same-domain rule.
+
+	``progress`` is an optional ``fn(message)`` called per crawled URL.
+	``allow_render`` enables the per-page Chromium JS-render fallback (background-job
+	only; the synchronous preview path leaves it False).
+	"""
+	max_pages = int(cfg.setting("max_pages"))
+	max_depth = int(cfg.setting("max_depth"))
+	priority_keywords = cfg.priority_keywords
+	skip_patterns = cfg.skip_patterns
+
+	own_session = session is None
+	session = session or build_session(cfg)
+	start_url = normalize_url(start_url)
+	base_netloc = urlparse(start_url).netloc
+
+	visited = set()
+	results = []
+	# Queue holds (url, depth, anchor_text). We pop the highest-priority item.
+	queue = deque([(start_url, 0, "")])
+
+	try:
+		while queue and len(results) < max_pages:
+			# Pick the highest-priority queued URL (homepage first, then by keyword).
+			queue = deque(
+				sorted(
+					queue,
+					key=lambda item: (
+						0 if item[1] == 0 else 1,
+						_link_priority(item[0], item[2], priority_keywords),
+					),
+				)
+			)
+			url, depth, _anchor = queue.popleft()
+			url = normalize_url(url)
+			if url in visited:
+				continue
+			visited.add(url)
+
+			if progress:
+				progress(f"Crawling {url}")
+			page, soup = crawl_page(url, cfg, session=session, allow_render=allow_render)
+			results.append((page, soup))
+
+			if soup is None or depth >= max_depth:
+				continue
+
+			seen_here = set()
+			for link, anchor in _links_on_page(soup, url, base_netloc, skip_patterns):
+				if link in visited or link in seen_here:
+					continue
+				seen_here.add(link)
+				queue.append((link, depth + 1, anchor))
+	finally:
+		if own_session:
+			session.close()
+
+	return results
