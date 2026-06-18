@@ -82,19 +82,24 @@ def get_deal_product_rate(item_code: str, deal: str | None = None):
 
 
 def create_product_details_script(doctype):
-	if not frappe.db.exists("CRM Form Script", "Product Details Script for " + doctype):
-		script = get_product_details_script(doctype)
-		frappe.get_doc(
-			{
-				"doctype": "CRM Form Script",
-				"name": "Product Details Script for " + doctype,
-				"dt": doctype,
-				"view": "Form",
-				"script": script,
-				"enabled": 1,
-				"is_standard": 1,
-			}
-		).insert()
+	name = "Product Details Script for " + doctype
+	script = get_product_details_script(doctype)
+	# Standard script is app-owned: keep it in sync with code on every migrate.
+	if frappe.db.exists("CRM Form Script", name):
+		if frappe.db.get_value("CRM Form Script", name, "script") != script:
+			frappe.db.set_value("CRM Form Script", name, "script", script)
+		return
+	frappe.get_doc(
+		{
+			"doctype": "CRM Form Script",
+			"name": name,
+			"dt": doctype,
+			"view": "Form",
+			"script": script,
+			"enabled": 1,
+			"is_standard": 1,
+		}
+	).insert()
 
 
 def get_product_details_script(doctype):
