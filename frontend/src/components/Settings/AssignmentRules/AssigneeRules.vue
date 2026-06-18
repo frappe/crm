@@ -43,7 +43,7 @@
                   )?.label
                 }}
               </div>
-              <FeatherIcon name="chevron-down" class="size-4" />
+              <span class="lucide-chevron-down size-4" aria-hidden="true" />
             </div>
           </template>
           <template #body="{ togglePopover }">
@@ -64,10 +64,10 @@
                 <span>
                   {{ option.label }}
                 </span>
-                <FeatherIcon
+                <span
                   v-if="assignmentRuleData.rule == option.value"
-                  name="check"
-                  class="size-4"
+                  class="lucide-check size-4"
+                  aria-hidden="true"
                 />
               </div>
             </div>

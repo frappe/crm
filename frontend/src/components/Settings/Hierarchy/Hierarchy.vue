@@ -85,7 +85,10 @@
           class="w-1/3"
         >
           <template #prefix>
-            <FeatherIcon name="search" class="size-4 text-ink-gray-6" />
+            <span
+              class="lucide-search size-4 text-ink-gray-6"
+              aria-hidden="true"
+            />
           </template>
         </TextInput>
       </div>
@@ -254,7 +257,6 @@ import LucideCircleQuestionMark from '~icons/lucide/circle-question-mark'
 import {
   Button,
   Dialog,
-  FeatherIcon,
   LoadingIndicator,
   TextInput,
   Tooltip,

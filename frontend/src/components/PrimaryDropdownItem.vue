@@ -48,7 +48,7 @@
       </div>
     </div>
     <div v-if="option.selected">
-      <FeatherIcon name="check" class="text-ink-gray-5 h-4 w-6" />
+      <span class="lucide-check text-ink-gray-5 h-4 w-6" aria-hidden="true" />
     </div>
   </div>
 </template>

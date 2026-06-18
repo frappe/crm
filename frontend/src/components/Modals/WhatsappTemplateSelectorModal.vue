@@ -16,7 +16,10 @@
           :placeholder="__('Welcome Message')"
         >
           <template #prefix>
-            <FeatherIcon name="search" class="h-4 w-4 text-ink-gray-4" />
+            <span
+              class="lucide-search h-4 w-4 text-ink-gray-4"
+              aria-hidden="true"
+            />
           </template>
         </TextInput>
         <Button
@@ -25,7 +28,7 @@
           @click="newWhatsappTemplate"
         >
           <template #prefix>
-            <FeatherIcon name="plus" class="h-4 w-4" />
+            <span class="lucide-plus h-4 w-4" aria-hidden="true" />
           </template>
         </Button>
       </div>
@@ -71,7 +74,7 @@
 </template>
 
 <script setup>
-import { FeatherIcon, TextEditor, createListResource } from 'frappe-ui'
+import { TextEditor, createListResource } from 'frappe-ui'
 import { ref, computed, nextTick, watch, onMounted } from 'vue'
 
 const props = defineProps({

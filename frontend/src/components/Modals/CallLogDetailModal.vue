@@ -72,9 +72,9 @@
                 <div class="ml-1 flex flex-col gap-1">
                   {{ field.value.caller.label }}
                 </div>
-                <FeatherIcon
-                  name="arrow-right"
-                  class="mx-1 h-4 w-4 text-ink-gray-5"
+                <span
+                  class="lucide-arrow-right mx-1 h-4 w-4 text-ink-gray-5"
+                  aria-hidden="true"
                 />
                 <Avatar
                   :image="field.value.receiver.image"

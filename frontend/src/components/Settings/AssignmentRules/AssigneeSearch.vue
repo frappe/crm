@@ -27,7 +27,7 @@
               class="absolute right-1.5 inline-flex h-7 w-7 items-center justify-center"
               @click="query = ''"
             >
-              <FeatherIcon name="x" class="w-4" />
+              <span class="lucide-x w-4" aria-hidden="true" />
             </button>
           </div>
           <ComboboxOptions class="my-2 max-h-64 overflow-y-auto px-1.5" static>

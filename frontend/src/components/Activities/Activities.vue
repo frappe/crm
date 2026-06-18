@@ -219,10 +219,10 @@
                   <span>{{ activity.data.file_name }}</span>
                 </a>
                 <span v-else>{{ activity.data.file_name }}</span>
-                <FeatherIcon
+                <span
                   v-if="activity.data.is_private"
-                  name="lock"
-                  class="size-3"
+                  class="lucide-lock size-3"
+                  aria-hidden="true"
                 />
               </div>
               <div class="ml-auto whitespace-nowrap">
@@ -337,9 +337,9 @@
                   >
                     {{ __(a.data.field_label) }}
                   </span>
-                  <FeatherIcon
-                    name="arrow-right"
-                    class="mx-1 h-4 w-4 text-ink-gray-5"
+                  <span
+                    class="lucide-arrow-right mx-1 h-4 w-4 text-ink-gray-5"
+                    aria-hidden="true"
                   />
                   <span v-if="a.type">
                     {{ startCase(__(a.type)) }}

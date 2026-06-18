@@ -62,7 +62,10 @@
           :debounce="300"
         >
           <template #prefix>
-            <FeatherIcon name="search" class="h-4 w-4 text-ink-gray-6" />
+            <span
+              class="lucide-search h-4 w-4 text-ink-gray-6"
+              aria-hidden="true"
+            />
           </template>
         </TextInput>
         <FormControl
@@ -149,14 +152,7 @@
 import EmailTemplateIcon from '@/components/Icons/EmailTemplateIcon.vue'
 import EmptyState from '../../ListViews/EmptyState.vue'
 import { useBroadcast } from '@/composables/useBroadcast'
-import {
-  TextInput,
-  FormControl,
-  Switch,
-  Dropdown,
-  FeatherIcon,
-  toast,
-} from 'frappe-ui'
+import { TextInput, FormControl, Switch, Dropdown, toast } from 'frappe-ui'
 import { ref, computed, inject } from 'vue'
 import { ConfirmDelete } from '../../../utils'
 

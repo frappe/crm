@@ -10,10 +10,10 @@
               class="flex max-w-fit cursor-pointer items-center gap-2 text-base leading-4 text-ink-gray-9"
               @click="section.opened = !section.opened"
             >
-              <FeatherIcon
-                name="chevron-right"
-                class="h-4 transition-all duration-300 ease-in-out"
+              <span
+                class="lucide-chevron-right h-4 transition-all duration-300 ease-in-out"
                 :class="{ 'rotate-90': section.opened }"
+                aria-hidden="true"
               />
               <div v-if="!section.editingLabel">
                 {{ __(section.label) || __('Untitled') }}

@@ -19,7 +19,10 @@
             {{ __('Apps') }}
           </span>
         </div>
-        <FeatherIcon name="chevron-right" class="size-4 text-ink-gray-5" />
+        <span
+          class="lucide-chevron-right size-4 text-ink-gray-5"
+          aria-hidden="true"
+        />
       </button>
     </template>
     <template #body>

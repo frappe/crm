@@ -11,7 +11,9 @@
           :disabled="isCreateDisabled"
           @click="newEvent"
         >
-          <template #prefix><FeatherIcon name="plus" class="h-4" /></template>
+          <template #prefix
+            ><span class="lucide-plus h-4" aria-hidden="true"
+          /></template>
         </Button>
       </ShortcutTooltip>
     </template>
@@ -131,9 +133,7 @@
     <div
       class="overflow-hidden flex-none transition-all duration-300 ease-in-out flex flex-col"
       :class="
-        showEventPanel
-          ? 'w-[352px] border-l bg-surface-base'
-          : 'w-0 border-l-0'
+        showEventPanel ? 'w-[352px] border-l bg-surface-base' : 'w-0 border-l-0'
       "
     >
       <CalendarEventPanel

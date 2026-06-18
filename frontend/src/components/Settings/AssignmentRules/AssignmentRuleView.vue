@@ -75,7 +75,7 @@
                     )?.label
                   }}
                 </div>
-                <FeatherIcon name="chevron-down" class="size-4" />
+                <span class="lucide-chevron-down size-4" aria-hidden="true" />
               </div>
             </template>
             <template #body="{ togglePopover }">
@@ -94,10 +94,10 @@
                   "
                 >
                   {{ option.label }}
-                  <FeatherIcon
+                  <span
                     v-if="assignmentRuleData.priority == option.value"
-                    name="check"
-                    class="size-4"
+                    class="lucide-check size-4"
+                    aria-hidden="true"
                   />
                 </div>
               </div>
@@ -165,7 +165,7 @@
                     class="text-sm text-ink-gray-6 flex gap-1 cursor-default text-nowrap items-center"
                   >
                     <span>{{ __('Old Condition') }}</span>
-                    <FeatherIcon name="info" class="size-4" />
+                    <span class="lucide-info size-4" aria-hidden="true" />
                   </div>
                 </template>
                 <template #body-main>
@@ -249,7 +249,7 @@
                     class="text-sm text-ink-gray-6 flex gap-1 cursor-default text-nowrap items-center"
                   >
                     <span> {{ __('Old Condition') }} </span>
-                    <FeatherIcon name="info" class="size-4" />
+                    <span class="lucide-info size-4" aria-hidden="true" />
                   </div>
                 </template>
                 <template #body-main>

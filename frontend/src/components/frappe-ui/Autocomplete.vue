@@ -33,10 +33,9 @@
               >
                 {{ placeholder || '' }}
               </div>
-              <FeatherIcon
+              <span
                 v-if="!disabled"
-                name="chevron-down"
-                class="absolute h-4 w-4 text-ink-gray-5 right-2"
+                class="lucide-chevron-down absolute h-4 w-4 text-ink-gray-5 right-2"
                 aria-hidden="true"
               />
             </button>
@@ -66,7 +65,7 @@
                 class="absolute right-1.5 inline-flex h-7 w-7 items-center justify-center"
                 @click="selectedValue = null"
               >
-                <FeatherIcon name="x" class="w-4 text-ink-gray-8" />
+                <span class="lucide-x w-4 text-ink-gray-8" aria-hidden="true" />
               </button>
             </div>
             <ComboboxOptions
@@ -143,7 +142,7 @@ import {
   ComboboxOptions,
   ComboboxOption,
 } from '@headlessui/vue'
-import { Popover, FeatherIcon } from 'frappe-ui'
+import { Popover } from 'frappe-ui'
 import { ref, computed, useAttrs, useSlots, watch, nextTick } from 'vue'
 
 const props = defineProps({

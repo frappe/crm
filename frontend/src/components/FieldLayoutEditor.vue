@@ -54,7 +54,7 @@
             >
               <template #default>
                 <Button variant="ghost" class="!p-1 !h-4">
-                  <FeatherIcon name="more-horizontal" class="h-4" />
+                  <span class="lucide-more-horizontal h-4" aria-hidden="true" />
                 </Button>
               </template>
             </Dropdown>
@@ -68,7 +68,7 @@
         @click="addTab"
       >
         <template #[slotName]>
-          <FeatherIcon name="plus" class="h-4" />
+          <span class="lucide-plus h-4" aria-hidden="true" />
         </template>
       </Button>
     </div>
@@ -121,10 +121,10 @@
                     }"
                   >
                     {{ __(section.label) || __('No Label') }}
-                    <FeatherIcon
+                    <span
                       v-if="section.collapsible"
-                      name="chevron-down"
-                      class="h-4 transition-all duration-300 ease-in-out"
+                      class="lucide-chevron-down h-4 transition-all duration-300 ease-in-out"
+                      aria-hidden="true"
                     />
                   </div>
                   <div v-else class="flex gap-2 items-center">
@@ -161,7 +161,10 @@
                 <Dropdown :options="getSectionOptions(i, section, tab)">
                   <template #default>
                     <Button variant="ghost">
-                      <FeatherIcon name="more-horizontal" class="h-4" />
+                      <span
+                        class="lucide-more-horizontal h-4"
+                        aria-hidden="true"
+                      />
                     </Button>
                   </template>
                 </Dropdown>

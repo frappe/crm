@@ -88,9 +88,9 @@
               @update:modelValue="(date) => updateDate(date, true)"
             >
               <template #suffix="{ togglePopover }">
-                <FeatherIcon
-                  name="chevron-down"
-                  class="h-4 w-4 cursor-pointer"
+                <span
+                  class="lucide-chevron-down h-4 w-4 cursor-pointer"
+                  aria-hidden="true"
                   @click="togglePopover"
                 />
               </template>

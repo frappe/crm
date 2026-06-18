@@ -315,9 +315,9 @@
             @update:modelValue="(date) => updateDate(date, true)"
           >
             <template #suffix="{ togglePopover }">
-              <FeatherIcon
-                name="chevron-down"
-                class="h-4 w-4 cursor-pointer"
+              <span
+                class="lucide-chevron-down h-4 w-4 cursor-pointer"
+                aria-hidden="true"
                 @click="togglePopover"
               />
             </template>
@@ -328,7 +328,7 @@
         v-if="!_event.isFullDay"
         class="flex items-center justify-between gap-3 px-4.5 py-[7px] text-ink-gray-7"
       >
-        <FeatherIcon name="clock" class="size-4" />
+        <span class="lucide-clock size-4" aria-hidden="true" />
         <div class="flex w-full items-center gap-x-1.5">
           <TimePicker
             v-if="!_event.isFullDay"
@@ -406,7 +406,7 @@
         <div
           class="flex items-center justify-between gap-3 px-4.5 py-[7px] text-ink-gray-7"
         >
-          <FeatherIcon name="plus-circle" class="size-4" />
+          <span class="lucide-plus-circle size-4" aria-hidden="true" />
           <div class="flex items-center gap-x-1.5 w-full">
             <FormControl
               v-model="_event.referenceDoctype"

@@ -73,10 +73,10 @@
                 />
               </template>
             </Dropdown>
-            <FeatherIcon
+            <span
               v-if="isCurrentView(item)"
-              name="check"
-              class="size-4 text-ink-gray-7"
+              class="lucide-check size-4 text-ink-gray-7"
+              aria-hidden="true"
             />
           </div>
         </button>

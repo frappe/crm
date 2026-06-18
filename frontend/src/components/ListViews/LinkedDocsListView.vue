@@ -36,9 +36,9 @@
               <span class="max-w-[90%] truncate">
                 {{ label }}
               </span>
-              <FeatherIcon
-                name="external-link"
-                class="h-4 w-4 cursor-pointer"
+              <span
+                class="lucide-external-link h-4 w-4 cursor-pointer"
+                aria-hidden="true"
                 @click.stop="viewLinkedDoc(row)"
               />
             </div>

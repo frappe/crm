@@ -30,9 +30,9 @@
         <template #default="{ openFileSelector }">
           <div class="flex items-center space-x-2">
             <Dropdown :options="uploadOptions(openFileSelector)">
-              <FeatherIcon
-                name="plus"
-                class="size-4.5 cursor-pointer text-ink-gray-5"
+              <span
+                class="lucide-plus size-4.5 cursor-pointer text-ink-gray-5"
+                aria-hidden="true"
               />
             </Dropdown>
           </div>

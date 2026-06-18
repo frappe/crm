@@ -71,7 +71,10 @@
           :debounce="300"
         >
           <template #prefix>
-            <FeatherIcon name="search" class="h-4 w-4 text-ink-gray-6" />
+            <span
+              class="lucide-search h-4 w-4 text-ink-gray-6"
+              aria-hidden="true"
+            />
           </template>
         </TextInput>
         <FormControl
@@ -167,15 +170,7 @@ import EmptyState from '@/components/ListViews/EmptyState.vue'
 import { activeSettingsPage } from '@/composables/settings'
 import { usersStore } from '@/stores/users'
 import { DropdownOption } from '@/utils'
-import {
-  Dropdown,
-  Avatar,
-  TextInput,
-  toast,
-  call,
-  FeatherIcon,
-  Tooltip,
-} from 'frappe-ui'
+import { Dropdown, Avatar, TextInput, toast, call, Tooltip } from 'frappe-ui'
 import { ref, computed, onMounted } from 'vue'
 import { ConfirmDelete } from '../../utils'
 

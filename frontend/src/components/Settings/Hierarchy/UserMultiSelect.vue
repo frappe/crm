@@ -7,7 +7,10 @@
         :debounce="200"
       >
         <template #prefix>
-          <FeatherIcon name="search" class="size-4 text-ink-gray-5" />
+          <span
+            class="lucide-search size-4 text-ink-gray-5"
+            aria-hidden="true"
+          />
         </template>
       </TextInput>
     </div>
@@ -64,7 +67,7 @@
 </template>
 
 <script setup>
-import { Avatar, FeatherIcon, LoadingIndicator, TextInput } from 'frappe-ui'
+import { Avatar, LoadingIndicator, TextInput } from 'frappe-ui'
 import { computed, ref } from 'vue'
 import CheckIcon from '@/components/Icons/CheckIcon.vue'
 const props = defineProps({

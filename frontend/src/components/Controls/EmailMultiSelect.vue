@@ -15,9 +15,9 @@
         @keydown.delete.capture.stop="removeLastValue"
       >
         <template #suffix>
-          <FeatherIcon
-            class="h-3.5"
-            name="x"
+          <span
+            class="lucide-x h-3.5"
+            aria-hidden="true"
             @click.stop="removeValue(value)"
           />
         </template>
@@ -63,10 +63,10 @@
                 <ComboboxEmpty
                   class="flex gap-2 rounded px-2 py-1 text-base text-ink-gray-5"
                 >
-                  <FeatherIcon
+                  <span
                     v-if="showSearchIcon"
-                    name="search"
-                    class="h-4"
+                    class="lucide-search h-4"
+                    aria-hidden="true"
                   />
                   {{ emptyStateText }}
                 </ComboboxEmpty>

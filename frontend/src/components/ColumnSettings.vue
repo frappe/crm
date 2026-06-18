@@ -46,7 +46,7 @@
                     @click="removeColumn(element)"
                   >
                     <template #icon>
-                      <FeatherIcon name="x" class="h-3.5" />
+                      <span class="lucide-x h-3.5" aria-hidden="true" />
                     </template>
                   </Button>
                 </div>

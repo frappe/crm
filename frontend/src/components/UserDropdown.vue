@@ -20,9 +20,7 @@
               : 'ml-2 w-auto opacity-100'
           "
         >
-          <div
-            class="text-base-medium leading-none text-ink-gray-9 truncate"
-          >
+          <div class="text-base-medium leading-none text-ink-gray-9 truncate">
             {{ __(brand.name || 'CRM') }}
           </div>
           <div class="mt-1 text-sm leading-none text-ink-gray-7 truncate">
@@ -37,9 +35,8 @@
               : 'ml-2 w-auto opacity-100'
           "
         >
-          <FeatherIcon
-            name="chevron-down"
-            class="size-4 text-ink-gray-5"
+          <span
+            class="lucide-chevron-down size-4 text-ink-gray-5"
             aria-hidden="true"
           />
         </div>

@@ -5,7 +5,7 @@
   >
     <div class="flex items-start justify-between gap-2">
       <div class="inline-flex text-ink-gray-9 gap-2 items-center font-medium">
-        <FeatherIcon class="h-4" name="info" />
+        <span class="lucide-info h-4" aria-hidden="true" />
         {{ __('Permissions update') }}
       </div>
       <button
@@ -13,7 +13,7 @@
         :aria-label="__('Dismiss')"
         @click="dismiss"
       >
-        <FeatherIcon class="h-3.5" name="x" />
+        <span class="lucide-x h-3.5" aria-hidden="true" />
       </button>
     </div>
     <div class="text-ink-gray-7 text-p-sm">
@@ -21,17 +21,17 @@
     </div>
     <Button :label="__('Learn more')" @click="openBlog">
       <template #suffix>
-        <FeatherIcon class="h-3.5" name="external-link" />
+        <span class="lucide-external-link h-3.5" aria-hidden="true" />
       </template>
     </Button>
   </div>
   <Button v-else-if="isSidebarCollapsed && showBanner" @click="openBlog">
-    <FeatherIcon class="h-4 my-0.5 shrink-0" name="info" />
+    <span class="lucide-info h-4 my-0.5 shrink-0" aria-hidden="true" />
   </Button>
 </template>
 
 <script setup>
-import { Button, FeatherIcon } from 'frappe-ui'
+import { Button } from 'frappe-ui'
 import { useStorage } from '@vueuse/core'
 import { computed } from 'vue'
 import { usersStore } from '@/stores/users'

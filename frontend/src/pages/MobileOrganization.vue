@@ -66,7 +66,7 @@
               </div>
               <div class="flex items-center gap-1.5">
                 <Button @click="openWebsite">
-                  <FeatherIcon name="link" class="h-4 w-4" />
+                  <span class="lucide-link h-4 w-4" aria-hidden="true" />
                 </Button>
                 <Button
                   v-if="canDelete"
