@@ -115,7 +115,7 @@ const chooseExistingContact = ref(false)
 const chooseExistingOrganization = ref(false)
 const { capture } = useTelemetry()
 
-// Prefill the form from the company website (Website Intelligence) — synchronous,
+// Prefill the form from the company website (Domain Enrichment) — synchronous,
 // no document is created until the user clicks Create.
 async function enrichFromWebsite() {
   const website = (deal.doc.website || '').trim()
@@ -126,15 +126,27 @@ async function enrichFromWebsite() {
   isEnriching.value = true
   try {
     const { fields, notes } = await call(
-      'crm.api.website_intelligence.get_enrichment_for_website',
+      'crm.domain_enrichment.api.enrich_preview',
       { website, doctype: 'CRM Deal' },
     )
-    const filled = Object.keys(fields || {})
+    // Fill-empty semantics: never clobber values the user already typed in the
+    // modal — only set fields that are currently empty on deal.doc.
+    const filled = Object.keys(fields || {}).filter((key) => {
+      const current = deal.doc[key]
+      if (current === undefined || current === null || current === '') {
+        deal.doc[key] = fields[key]
+        return true
+      }
+      return false
+    })
     if (filled.length) {
-      Object.assign(deal.doc, fields)
-      toast.success(__('Filled {0} field(s) from the website.', [filled.length]))
+      toast.success(
+        __('Filled {0} field(s) from the website.', [filled.length]),
+      )
     } else {
-      toast.info(notes?.[0] || __('Nothing could be extracted from this website.'))
+      toast.info(
+        notes?.[0] || __('Nothing could be extracted from this website.'),
+      )
     }
   } catch (e) {
     toast.error(e.messages?.[0] || __('Could not enrich from the website.'))

@@ -29,7 +29,7 @@ const emit = defineEmits(['done'])
 
 const { $socket } = globalStore()
 const { organizations } = organizationsStore()
-const EVENT = 'website_intelligence_progress'
+const EVENT = 'domain_enrichment_progress'
 
 const running = ref(false)
 
@@ -57,23 +57,14 @@ function onProgress(data) {
     // the event — otherwise navigating back to a list serves stale cached data.
     organizations.reload()
     const filled = (data.payload && data.payload.filled_fields) || []
-    const linked = (data.payload && data.payload.propagated_to) || []
-    const org = data.payload && data.payload.linked_organization
     const notes = (data.payload && data.payload.notes) || []
-    if (!filled.length && !org && notes.length) {
+    if (filled.length) {
+      toast.success(__('Enriched. Filled: {0}', [filled.join(', ')]))
+    } else if (notes.length) {
       // Nothing extracted — explain why (blocked / JS-only site).
       toast.warning(notes[0])
     } else {
-      let msg = filled.length
-        ? __('Enriched. Filled: {0}', [filled.join(', ')])
-        : __('Enrichment complete.')
-      if (org) {
-        msg += ' ' + __('Linked organization: {0}.', [org])
-      }
-      if (linked.length) {
-        msg += ' ' + __('Updated {0} linked record(s).', [linked.length])
-      }
-      toast.success(msg)
+      toast.success(__('Enrichment complete.'))
     }
     emit('done') // parent reloads the document + side panel — no manual refresh
   } else if (data.status === 'error') {
@@ -93,7 +84,7 @@ async function enrich() {
   $socket.on(EVENT, onProgress)
 
   try {
-    await call('crm.api.website_intelligence.enrich_from_website', {
+    await call('crm.domain_enrichment.api.enrich', {
       reference_doctype: props.doctype,
       reference_name: props.docname,
     })

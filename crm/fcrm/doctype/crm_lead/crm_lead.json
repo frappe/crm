@@ -21,6 +21,10 @@
   "details",
   "organization",
   "website",
+  "organization_logo",
+  "company_description",
+  "linkedin",
+  "twitter",
   "territory",
   "industry",
   "job_title",
@@ -419,6 +423,32 @@
   {
    "fieldname": "column_break_opsm",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "organization_logo",
+   "fieldtype": "Attach Image",
+   "label": "Organization Logo",
+   "no_copy": 1,
+   "description": "Company logo discovered by Domain Enrichment."
+  },
+  {
+   "fieldname": "company_description",
+   "fieldtype": "Small Text",
+   "label": "Company Description",
+   "no_copy": 1,
+   "description": "Company description discovered by Domain Enrichment."
+  },
+  {
+   "fieldname": "linkedin",
+   "fieldtype": "Data",
+   "label": "LinkedIn",
+   "no_copy": 1
+  },
+  {
+   "fieldname": "twitter",
+   "fieldtype": "Data",
+   "label": "X (Twitter)",
+   "no_copy": 1
   }
  ],
  "grid_page_length": 50,

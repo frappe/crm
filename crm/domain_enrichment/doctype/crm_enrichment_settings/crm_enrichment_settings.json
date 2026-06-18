@@ -1,0 +1,243 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-06-17 00:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "general_tab",
+  "enabled",
+  "enabled_doctypes_section",
+  "enable_lead",
+  "enable_deal",
+  "enable_organization",
+  "crawl_tab",
+  "max_pages",
+  "max_depth",
+  "request_timeout",
+  "column_break_crawl",
+  "max_download_bytes",
+  "retry_count",
+  "user_agent",
+  "render_js",
+  "preview_section",
+  "preview_max_pages",
+  "preview_timeout",
+  "tuning_section",
+  "priority_keywords",
+  "column_break_tuning",
+  "skip_patterns",
+  "security_tab",
+  "allow_private_networks",
+  "allowed_domains_section",
+  "allowed_domains",
+  "blocked_domains_section",
+  "blocked_domains"
+ ],
+ "fields": [
+  {
+   "fieldname": "general_tab",
+   "fieldtype": "Tab Break",
+   "label": "General"
+  },
+  {
+   "default": "1",
+   "description": "Master switch for the Domain Enrichment feature.",
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "label": "Enabled"
+  },
+  {
+   "fieldname": "enabled_doctypes_section",
+   "fieldtype": "Section Break",
+   "label": "Enabled Doctypes"
+  },
+  {
+   "default": "1",
+   "fieldname": "enable_lead",
+   "fieldtype": "Check",
+   "label": "Enable for CRM Lead"
+  },
+  {
+   "default": "1",
+   "fieldname": "enable_deal",
+   "fieldtype": "Check",
+   "label": "Enable for CRM Deal"
+  },
+  {
+   "default": "1",
+   "fieldname": "enable_organization",
+   "fieldtype": "Check",
+   "label": "Enable for CRM Organization"
+  },
+  {
+   "fieldname": "crawl_tab",
+   "fieldtype": "Tab Break",
+   "label": "Crawl"
+  },
+  {
+   "default": "10",
+   "description": "Maximum number of pages crawled per enrichment.",
+   "fieldname": "max_pages",
+   "fieldtype": "Int",
+   "label": "Max Pages"
+  },
+  {
+   "default": "2",
+   "description": "Maximum link depth followed from the homepage.",
+   "fieldname": "max_depth",
+   "fieldtype": "Int",
+   "label": "Max Depth"
+  },
+  {
+   "default": "10",
+   "description": "Per-request timeout in seconds.",
+   "fieldname": "request_timeout",
+   "fieldtype": "Int",
+   "label": "Request Timeout (s)"
+  },
+  {
+   "fieldname": "column_break_crawl",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "3000000",
+   "description": "Maximum bytes downloaded per page (the stream is capped).",
+   "fieldname": "max_download_bytes",
+   "fieldtype": "Int",
+   "label": "Max Download Bytes"
+  },
+  {
+   "default": "2",
+   "description": "Number of retries on a failed request.",
+   "fieldname": "retry_count",
+   "fieldtype": "Int",
+   "label": "Retry Count"
+  },
+  {
+   "default": "Mozilla/5.0 (compatible; FrappeCRM-DomainEnrichment/1.0)",
+   "fieldname": "user_agent",
+   "fieldtype": "Data",
+   "label": "User Agent"
+  },
+  {
+   "default": "0",
+   "description": "Re-render JavaScript-only pages with headless Chromium when the fast fetch returns near-empty content. Runs in the background enrichment job only and requires Chromium to be provisioned (bench setup-chromium).",
+   "fieldname": "render_js",
+   "fieldtype": "Check",
+   "label": "Render JavaScript (Chromium fallback)"
+  },
+  {
+   "fieldname": "preview_section",
+   "fieldtype": "Section Break",
+   "label": "Quick Prefill (Preview)"
+  },
+  {
+   "default": "1",
+   "description": "Pages crawled for the fast, synchronous create-time prefill.",
+   "fieldname": "preview_max_pages",
+   "fieldtype": "Int",
+   "label": "Preview Max Pages"
+  },
+  {
+   "default": "8",
+   "description": "Per-request timeout in seconds for the preview prefill.",
+   "fieldname": "preview_timeout",
+   "fieldtype": "Int",
+   "label": "Preview Timeout (s)"
+  },
+  {
+   "fieldname": "tuning_section",
+   "fieldtype": "Section Break",
+   "label": "Crawl Tuning"
+  },
+  {
+   "description": "Substrings that boost a candidate link's crawl priority.",
+   "fieldname": "priority_keywords",
+   "fieldtype": "Table",
+   "label": "Priority Keywords",
+   "options": "CRM Enrichment Priority Keyword"
+  },
+  {
+   "fieldname": "column_break_tuning",
+   "fieldtype": "Column Break"
+  },
+  {
+   "description": "Substrings that exclude a candidate link from the crawl.",
+   "fieldname": "skip_patterns",
+   "fieldtype": "Table",
+   "label": "Skip Patterns",
+   "options": "CRM Enrichment Skip Pattern"
+  },
+  {
+   "fieldname": "security_tab",
+   "fieldtype": "Tab Break",
+   "label": "Security"
+  },
+  {
+   "default": "0",
+   "description": "Danger: allows the crawler to reach private / internal networks. Leave off unless you understand the SSRF risk.",
+   "fieldname": "allow_private_networks",
+   "fieldtype": "Check",
+   "label": "Allow Private Networks"
+  },
+  {
+   "fieldname": "allowed_domains_section",
+   "fieldtype": "Section Break",
+   "label": "Allowed Domains"
+  },
+  {
+   "description": "If set, only these domains may be crawled (allowlist).",
+   "fieldname": "allowed_domains",
+   "fieldtype": "Table",
+   "label": "Allowed Domains",
+   "options": "CRM Enrichment Domain"
+  },
+  {
+   "fieldname": "blocked_domains_section",
+   "fieldtype": "Section Break",
+   "label": "Blocked Domains"
+  },
+  {
+   "description": "Domains that may never be crawled (denylist).",
+   "fieldname": "blocked_domains",
+   "fieldtype": "Table",
+   "label": "Blocked Domains",
+   "options": "CRM Enrichment Domain"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2026-06-17 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Domain Enrichment",
+ "name": "CRM Enrichment Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "Sales Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

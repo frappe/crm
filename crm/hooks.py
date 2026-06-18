@@ -52,9 +52,9 @@ require_type_annotated_api_methods = True
 doctype_js = {
 	"Quotation": "public/js/erpnext_quotation_prefill.js",
 	"Sales Order": "public/js/erpnext_sales_order_customer.js",
-	"CRM Lead": "public/js/website_intelligence.js",
-	"CRM Organization": "public/js/website_intelligence.js",
-	"CRM Deal": "public/js/website_intelligence.js",
+	"CRM Lead": "public/js/domain_enrichment.js",
+	"CRM Organization": "public/js/domain_enrichment.js",
+	"CRM Deal": "public/js/domain_enrichment.js",
 }
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
@@ -210,6 +210,17 @@ doc_events = {
 		"before_validate": ["crm.api.live_demo.validate_user"],
 		"validate_reset_password": ["crm.api.live_demo.validate_reset_password"],
 	},
+	"CRM Enrichment Settings": {
+		"on_update": ["crm.domain_enrichment.config.clear_config_cache"],
+	},
+	"CRM Enrichment Rule": {
+		"on_update": ["crm.domain_enrichment.config.clear_config_cache"],
+		"on_trash": ["crm.domain_enrichment.config.clear_config_cache"],
+	},
+	"CRM Enrichment Field Mapping": {
+		"on_update": ["crm.domain_enrichment.config.clear_config_cache"],
+		"on_trash": ["crm.domain_enrichment.config.clear_config_cache"],
+	},
 }
 
 # Scheduled Tasks
@@ -305,6 +316,7 @@ ignore_links_on_delete = ["Failed Lead Sync Log"]
 after_migrate = [
 	"crm.fcrm.doctype.fcrm_settings.fcrm_settings.after_migrate",
 	"crm.api.whatsapp.add_roles",
+	"crm.domain_enrichment.install.seed_default_rules_and_mappings",
 ]
 
 standard_dropdown_items = [

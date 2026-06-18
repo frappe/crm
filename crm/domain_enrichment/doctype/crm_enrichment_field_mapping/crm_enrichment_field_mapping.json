@@ -1,0 +1,125 @@
+{
+ "actions": [],
+ "allow_import": 1,
+ "allow_rename": 1,
+ "creation": "2026-06-17 00:00:00.000000",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "enabled",
+  "source_key",
+  "column_break_main",
+  "target_doctype",
+  "target_fieldname",
+  "policy_section",
+  "write_policy",
+  "create_missing_link",
+  "default_values"
+ ],
+ "fields": [
+  {
+   "default": "1",
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Enabled"
+  },
+  {
+   "description": "The enrichment result key to read the value from.",
+   "fieldname": "source_key",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Source Key",
+   "options": "company_name\ndescription\nlogo\nindustry\nprimary_email\nprimary_phone\nsecondary_phone\nlinkedin\ntwitter\ngithub\nfacebook\ninstagram\nyoutube",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_main",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "target_doctype",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Target Doctype",
+   "options": "DocType",
+   "reqd": 1
+  },
+  {
+   "description": "The fieldname on the target doctype to write the value to.",
+   "fieldname": "target_fieldname",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Target Fieldname",
+   "reqd": 1
+  },
+  {
+   "fieldname": "policy_section",
+   "fieldtype": "Section Break",
+   "label": "Write Policy"
+  },
+  {
+   "default": "Fill if empty",
+   "description": "Fill if empty: only write when the field is blank. Always refresh: overwrite on every run (for fully enrichment-derived fields). Override defaults: write even when the current value is a known default (see Default Values).",
+   "fieldname": "write_policy",
+   "fieldtype": "Select",
+   "label": "Write Policy",
+   "options": "Fill if empty\nAlways refresh\nOverride defaults",
+   "reqd": 1
+  },
+  {
+   "default": "0",
+   "description": "If the value names a missing linked record (e.g. a CRM Industry), create it. Opt-in only.",
+   "fieldname": "create_missing_link",
+   "fieldtype": "Check",
+   "label": "Create Missing Link"
+  },
+  {
+   "depends_on": "eval:doc.write_policy=='Override defaults'",
+   "description": "Newline-separated values treated as \"unset\" defaults that may be overwritten, in addition to a truly empty field.",
+   "fieldname": "default_values",
+   "fieldtype": "Small Text",
+   "label": "Default Values"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-06-17 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Domain Enrichment",
+ "name": "CRM Enrichment Field Mapping",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
