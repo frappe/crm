@@ -7,7 +7,7 @@
       <Button
         :label="__('New')"
         variant="solid"
-        icon-left="plus"
+        icon-left="lucide-plus"
         @click="createNewSlaPolicy"
       />
     </template>
@@ -28,7 +28,7 @@
         />
         <Button
           v-if="slaSearchQuery"
-          icon="x"
+          icon="lucide-x"
           variant="ghost"
           class="absolute right-1 top-1/2 -translate-y-1/2"
           @click="slaSearchQuery = ''"
@@ -95,7 +95,7 @@
                 <div>
                   <Dropdown placement="right" :options="dropdownOptions(sla)">
                     <Button
-                      icon="more-horizontal"
+                      icon="lucide-more-horizontal"
                       variant="ghost"
                       @click="isConfirmingDelete = false"
                     />

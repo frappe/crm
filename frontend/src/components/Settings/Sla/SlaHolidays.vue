@@ -45,7 +45,7 @@
               <div class="flex cursor-pointer items-center gap-1">
                 <Button
                   variant="ghost"
-                  icon="edit"
+                  icon="lucide-edit"
                   @click.stop="editHolidayList(holiday)"
                 />
               </div>
@@ -64,7 +64,7 @@
               class="w-full !justify-start !text-ink-gray-5"
               variant="ghost"
               :label="__('Create New Holiday List')"
-              icon-left="plus"
+              icon-left="lucide-plus"
               @click="createNewHolidayList()"
             />
           </div>
@@ -137,7 +137,7 @@
           <div class="flex justify-end">
             <Dropdown placement="right" :options="dropdownOptions(row)">
               <Button
-                icon="more-horizontal"
+                icon="lucide-more-horizontal"
                 variant="ghost"
                 @click="isConfirmingDelete = false"
               />
@@ -161,7 +161,7 @@
         v-if="slaData.working_hours?.length < 7"
         variant="subtle"
         :label="__('Add Row')"
-        icon-left="plus"
+        icon-left="lucide-plus"
         @click="addWorkDay"
       />
       <ErrorMessage :message="slaDataErrors.working_hours" />

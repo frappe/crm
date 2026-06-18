@@ -71,7 +71,7 @@
             />
           </div>
           <Button
-            icon="x"
+            icon="lucide-x"
             variant="ghost"
             @click="
               notifications.splice(notifications.indexOf(notification), 1)
@@ -132,7 +132,7 @@
             />
           </div>
           <Button
-            icon="x"
+            icon="lucide-x"
             variant="ghost"
             @click="
               notifications.splice(notifications.indexOf(notification), 1)

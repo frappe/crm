@@ -7,7 +7,7 @@
       <div class="flex items-center gap-2">
         <Button
           variant="ghost"
-          icon-left="chevron-left"
+          icon-left="lucide-chevron-left"
           :label="
             assignmentRuleData.assignmentRuleName || __('New Assignment Rule')
           "

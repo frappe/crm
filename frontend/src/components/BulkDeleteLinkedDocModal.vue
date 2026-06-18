@@ -9,7 +9,7 @@
             </h3>
           </div>
           <div class="flex items-center gap-1">
-            <Button variant="ghost" icon="x" @click="show = false" />
+            <Button variant="ghost" icon="lucide-x" @click="show = false" />
           </div>
         </div>
         <div>
@@ -26,14 +26,14 @@
         <div class="flex flex-row-reverse gap-2">
           <Button
             :label="__('Delete {0} items', [props.items.length])"
-            icon-left="trash-2"
+            icon-left="lucide-trash-2"
             variant="solid"
             theme="red"
             @click="confirmDelete()"
           />
           <Button
             :label="__('Unlink & Delete {0} items', [props.items.length])"
-            icon-left="unlock"
+            icon-left="lucide-unlock"
             variant="solid"
             @click="confirmUnlink()"
           />
@@ -50,7 +50,7 @@
             </h3>
           </div>
           <div class="flex items-center gap-1">
-            <Button variant="ghost" icon="x" @click="show = false" />
+            <Button variant="ghost" icon="lucide-x" @click="show = false" />
           </div>
         </div>
         <div>

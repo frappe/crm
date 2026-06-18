@@ -31,7 +31,7 @@
               ]"
             >
               <template #default>
-                <Button variant="ghost" icon="more-horizontal" />
+                <Button variant="ghost" icon="lucide-more-horizontal" />
               </template>
             </Dropdown>
             <Button
@@ -43,7 +43,7 @@
               @click="openCallLogModal"
             />
             <Button
-              icon="x"
+              icon="lucide-x"
               variant="ghost"
               class="w-7"
               @click="show = false"

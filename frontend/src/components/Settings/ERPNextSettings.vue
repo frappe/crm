@@ -158,7 +158,7 @@
                       theme="gray"
                       variant="ghost"
                       class="w-full"
-                      icon-left="refresh-cw"
+                      icon-left="lucide-refresh-cw"
                       :loading="
                         erpnextCRMSettingsResource.getExternalCompanies.loading
                       "

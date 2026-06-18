@@ -16,7 +16,7 @@
             </h3>
           </div>
           <div class="flex items-center gap-1">
-            <Button variant="ghost" icon="x" @click="show = false" />
+            <Button variant="ghost" icon="lucide-x" @click="show = false" />
           </div>
         </div>
         <div>
@@ -89,7 +89,7 @@
           <Button
             v-if="linkedDocs?.length == 0"
             variant="solid"
-            icon-left="trash-2"
+            icon-left="lucide-trash-2"
             :label="__('Delete')"
             :loading="isDealCreating"
             theme="red"
@@ -108,7 +108,7 @@
             </h3>
           </div>
           <div class="flex items-center gap-1">
-            <Button variant="ghost" icon="x" @click="show = false" />
+            <Button variant="ghost" icon="lucide-x" @click="show = false" />
           </div>
         </div>
         <div class="text-ink-gray-5 text-base">

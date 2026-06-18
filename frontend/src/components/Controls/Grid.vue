@@ -57,7 +57,7 @@
             :tooltip="__('Edit Grid Fields')"
             class="rounded !bg-surface-gray-2 border-0 !text-ink-gray-5"
             variant="outline"
-            icon="settings"
+            icon="lucide-settings"
             @click="showGridFieldsEditorModal = true"
           />
         </div>

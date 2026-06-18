@@ -15,7 +15,7 @@
             :icon="EditIcon"
             @click="openQuickEntryModal"
           />
-          <Button icon="x" variant="ghost" @click="show = false" />
+          <Button icon="lucide-x" variant="ghost" @click="show = false" />
         </div>
       </div>
     </template>

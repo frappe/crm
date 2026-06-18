@@ -122,7 +122,7 @@
                 v-if="isManager() && user.role == 'System Manager'"
                 :text="__('Cannot change role of user with Admin access')"
               >
-                <Button :label="__('Admin')" icon-left="shield" />
+                <Button :label="__('Admin')" icon-left="lucide-shield" />
               </Tooltip>
               <Dropdown
                 v-else
@@ -151,7 +151,7 @@
             class="mt-3.5 p-2"
             :loading="users.loading"
             :label="__('Load More')"
-            icon-left="refresh-cw"
+            icon-left="lucide-refresh-cw"
             @click="() => users.next()"
           />
         </div>

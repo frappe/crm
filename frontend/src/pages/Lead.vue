@@ -168,7 +168,7 @@
                   :tooltip="__('Delete')"
                   variant="subtle"
                   theme="red"
-                  icon="trash-2"
+                  icon="lucide-trash-2"
                   @click="deleteLead"
                 />
               </div>

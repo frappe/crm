@@ -41,7 +41,7 @@
         <Button
           :tooltip="__('Delete')"
           variant="ghost"
-          icon="x"
+          icon="lucide-x"
           class="opacity-0 hover:bg-surface-gray-4 group-hover:opacity-100"
           @click="() => option.onDelete(option, isNew)"
         />

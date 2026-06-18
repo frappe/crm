@@ -34,7 +34,7 @@
         />
         <Button
           :label="__('Add User')"
-          icon-left="plus"
+          icon-left="lucide-plus"
           variant="solid"
           @click="openAddDialog()"
         />
@@ -187,7 +187,7 @@
             </h3>
             <Button
               variant="ghost"
-              icon="x"
+              icon="lucide-x"
               @click="showRemoveDialog = false"
             />
           </div>
@@ -214,7 +214,7 @@
             <template v-if="checkTargetChild">
               <Button
                 :label="__('Unlink & Delete {0} Users', [unlinkCount])"
-                icon-left="trash-2"
+                icon-left="lucide-trash-2"
                 variant="solid"
                 theme="red"
                 :loading="removing === 'cascade'"
@@ -222,7 +222,7 @@
               />
               <Button
                 :label="__('Delete Only User')"
-                icon-left="unlock"
+                icon-left="lucide-unlock"
                 variant="subtle"
                 :loading="removing === 'reassign'"
                 @click="confirmRemove('reassign')"
@@ -231,7 +231,7 @@
             <Button
               v-else
               :label="__('Delete')"
-              icon-left="trash-2"
+              icon-left="lucide-trash-2"
               variant="solid"
               theme="red"
               :loading="removing === 'simple'"

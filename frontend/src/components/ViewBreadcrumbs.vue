@@ -68,7 +68,7 @@
                 <Button
                   variant="ghost"
                   class="group-hover:!w-auto !w-0 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto"
-                  icon="more-horizontal"
+                  icon="lucide-more-horizontal"
                   @click.stop
                 />
               </template>

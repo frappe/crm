@@ -27,17 +27,17 @@
           combo="Delete"
           :alt-combos="['Backspace']"
         >
-          <Button icon="trash-2" variant="ghost" @click="deleteEvent" />
+          <Button icon="lucide-trash-2" variant="ghost" @click="deleteEvent" />
         </ShortcutTooltip>
         <ShortcutTooltip
           v-if="mode === 'edit' || mode === 'details'"
           :label="__('Duplicate Event')"
           combo="Mod+D"
         >
-          <Button icon="copy" variant="ghost" @click="duplicateEvent" />
+          <Button icon="lucide-copy" variant="ghost" @click="duplicateEvent" />
         </ShortcutTooltip>
         <ShortcutTooltip :label="__('Close Panel')" combo="Esc">
-          <Button icon="x" variant="ghost" @click="close" />
+          <Button icon="lucide-x" variant="ghost" @click="close" />
         </ShortcutTooltip>
       </div>
     </div>

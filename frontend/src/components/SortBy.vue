@@ -120,7 +120,7 @@
                   </template>
                 </Autocomplete>
               </div>
-              <Button variant="ghost" icon="x" @click="removeSort(i)" />
+              <Button variant="ghost" icon="lucide-x" @click="removeSort(i)" />
             </div>
           </div>
           <div

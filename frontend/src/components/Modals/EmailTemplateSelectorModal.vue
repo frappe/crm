@@ -19,7 +19,7 @@
             />
           </template>
         </TextInput>
-        <Button :label="__('Create')" icon-left="plus" @click="create" />
+        <Button :label="__('Create')" icon-left="lucide-plus" @click="create" />
       </div>
       <div
         v-if="filteredTemplates.length"

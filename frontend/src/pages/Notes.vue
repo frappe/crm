@@ -48,7 +48,7 @@
             ]"
           >
             <Button
-              icon="more-horizontal"
+              icon="lucide-more-horizontal"
               variant="ghosted"
               class="hover:bg-surface-base"
               @click.stop

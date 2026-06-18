@@ -20,7 +20,7 @@
           v-if="filters?.size"
           :tooltip="__('Clear All Filters')"
           class="rounded-l-none border-l"
-          icon="x"
+          icon="lucide-x"
           @click.stop="clearfilter(close)"
         />
       </div>
@@ -45,7 +45,7 @@
                   <Button
                     class="flex"
                     variant="ghost"
-                    icon="x"
+                    icon="lucide-x"
                     @click="removeFilter(i)"
                   />
                 </div>
@@ -113,7 +113,7 @@
                 <Button
                   class="flex"
                   variant="ghost"
-                  icon="x"
+                  icon="lucide-x"
                   @click="removeFilter(i)"
                 />
               </div>

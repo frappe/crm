@@ -80,7 +80,7 @@
                   :label="__('Delete')"
                   theme="red"
                   size="sm"
-                  icon-left="trash-2"
+                  icon-left="lucide-trash-2"
                   @click="deleteContact"
                 />
                 <Avatar

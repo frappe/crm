@@ -99,7 +99,7 @@
                       <Button
                         class="h-7 px-3"
                         variant="ghost"
-                        icon="plus"
+                        icon="lucide-plus"
                         @click="togglePopover()"
                       />
                     </template>
@@ -157,7 +157,7 @@
                             <div class="flex items-center">
                               <Dropdown :options="contactOptions(contact.name)">
                                 <Button
-                                  icon="more-horizontal"
+                                  icon="lucide-more-horizontal"
                                   class="text-ink-gray-5"
                                   variant="ghost"
                                 />

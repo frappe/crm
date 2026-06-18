@@ -29,7 +29,7 @@
             <Button
               variant="ghost"
               class="w-7"
-              icon="x"
+              icon="lucide-x"
               @click="show = false"
             />
           </div>

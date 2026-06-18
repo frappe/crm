@@ -22,14 +22,11 @@
         </div>
         <Button
           class="rounded-full"
-          icon="plus"
+          icon="lucide-plus"
           @click.stop="() => (reaction = false)"
         />
       </div>
-      <div
-        v-else
-        class="my-3 max-w-max transform bg-surface-base px-4 sm:px-0"
-      >
+      <div v-else class="my-3 max-w-max transform bg-surface-base px-4 sm:px-0">
         <div
           class="relative max-h-96 pb-3 overflow-y-auto min-w-40 rounded-lg bg-surface-elevation-2 shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
         >

@@ -95,7 +95,7 @@
                 />
                 <Button
                   :tooltip="__('Open Website')"
-                  icon="link"
+                  icon="lucide-link"
                   @click="openWebsite"
                 />
               </div>

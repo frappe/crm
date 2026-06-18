@@ -62,7 +62,7 @@
         </div>
         <Dropdown :options="options">
           <Button
-            icon="more-horizontal"
+            icon="lucide-more-horizontal"
             variant="ghost"
             @click="showPlaybackSpeed = false"
           />

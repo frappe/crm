@@ -19,7 +19,7 @@
           :label="__('Add Account')"
           theme="gray"
           variant="solid"
-          icon-left="plus"
+          icon-left="lucide-plus"
           @click="emit('update:step', 'email-add')"
         />
       </div>

@@ -40,7 +40,7 @@
                 />
                 <Button
                   v-if="tab.editingLabel"
-                  icon="check"
+                  icon="lucide-check"
                   variant="ghost"
                   @click="tab.editingLabel = false"
                 />
@@ -136,7 +136,7 @@
                     />
                     <Button
                       v-if="section.editingLabel"
-                      icon="check"
+                      icon="lucide-check"
                       variant="ghost"
                       @click="section.editingLabel = false"
                     />
@@ -204,7 +204,7 @@
                         <Button
                           variant="ghost"
                           class="!size-4 rounded-sm"
-                          icon="x"
+                          icon="lucide-x"
                           @click="
                             column.fields.splice(
                               column.fields.indexOf(field),

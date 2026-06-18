@@ -27,7 +27,7 @@
                 />
                 <Button
                   v-if="section.editingLabel"
-                  icon="check"
+                  icon="lucide-check"
                   class="!size-4 rounded-sm"
                   variant="ghost"
                   @click.stop="section.editingLabel = false"
@@ -48,7 +48,7 @@
               <Button
                 v-if="section.editable !== false"
                 class="!size-4 rounded-sm"
-                icon="x"
+                icon="lucide-x"
                 variant="ghost"
                 @click="sections.splice(sections.indexOf(section), 1)"
               />
@@ -72,7 +72,7 @@
                   </div>
                   <Button
                     variant="ghost"
-                    icon="x"
+                    icon="lucide-x"
                     class="!size-4 rounded-sm"
                     @click="
                       section.columns[0].fields.splice(

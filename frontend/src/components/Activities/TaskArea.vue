@@ -75,7 +75,7 @@
             ]"
           >
             <Button
-              icon="more-horizontal"
+              icon="lucide-more-horizontal"
               variant="ghosted"
               class="hover:bg-surface-gray-4 text-ink-gray-9"
               @click.stop.prevent

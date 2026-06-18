@@ -17,7 +17,7 @@
       <div class="flex item-center space-x-2 w-3/12 justify-end">
         <Button
           :label="__('New')"
-          icon-left="plus"
+          icon-left="lucide-plus"
           variant="solid"
           @click="emit('updateStep', 'new-template')"
         />
@@ -140,7 +140,7 @@
             class="mt-3.5 p-2"
             :loading="templates.loading"
             :label="__('Load More')"
-            icon-left="refresh-cw"
+            icon-left="lucide-refresh-cw"
             @click="() => templates.next()"
           />
         </div>

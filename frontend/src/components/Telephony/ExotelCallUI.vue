@@ -131,7 +131,7 @@
           <Button
             v-if="callStatus == 'Call ended' || callStatus == 'No answer'"
             class="bg-surface-gray-10 text-ink-base hover:bg-surface-gray-9 shrink-0"
-            icon="x"
+            icon="lucide-x"
             size="md"
             @click="closeCallPopup"
           />

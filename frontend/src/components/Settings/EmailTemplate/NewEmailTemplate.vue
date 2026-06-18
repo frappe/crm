@@ -5,7 +5,7 @@
       <div class="flex gap-1 -ml-4 w-9/12">
         <Button
           variant="ghost"
-          icon-left="chevron-left"
+          icon-left="lucide-chevron-left"
           :label="
             templateData?.name ? __('Duplicate Template') : __('New Template')
           "
@@ -21,7 +21,7 @@
         </div>
         <Button
           :label="templateData?.name ? __('Duplicate') : __('Create')"
-          icon-left="plus"
+          icon-left="lucide-plus"
           variant="solid"
           @click="createTemplate"
         />

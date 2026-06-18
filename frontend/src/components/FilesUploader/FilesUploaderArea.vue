@@ -35,19 +35,23 @@
             @change="onFileInput"
           />
           <div>
-            <Button icon="monitor" size="md" @click="browseFiles" />
+            <Button icon="lucide-monitor" size="md" @click="browseFiles" />
             <div class="mt-1">{{ __('Device') }}</div>
           </div>
           <div v-if="!disableFileBrowser">
-            <Button icon="folder" size="md" @click="showFileBrowser = true" />
+            <Button
+              icon="lucide-folder"
+              size="md"
+              @click="showFileBrowser = true"
+            />
             <div class="mt-1">{{ __('Library') }}</div>
           </div>
           <div v-if="allowWebLink">
-            <Button icon="link" size="md" @click="showWebLink = true" />
+            <Button icon="lucide-link" size="md" @click="showWebLink = true" />
             <div class="mt-1">{{ __('Link') }}</div>
           </div>
           <div v-if="allowTakePhoto">
-            <Button icon="camera" size="md" @click="startCamera" />
+            <Button icon="lucide-camera" size="md" @click="startCamera" />
             <div class="mt-1">{{ __('Camera') }}</div>
           </div>
         </div>
@@ -114,7 +118,7 @@
           <Button
             v-else
             variant="ghost"
-            icon="trash-2"
+            icon="lucide-trash-2"
             @click="removeFile(file.name)"
           />
         </div>

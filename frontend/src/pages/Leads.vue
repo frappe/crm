@@ -227,7 +227,7 @@
           variant="ghost"
           @click.stop.prevent
         >
-          <Button icon="plus" variant="ghost" />
+          <Button icon="lucide-plus" variant="ghost" />
         </Dropdown>
       </div>
     </template>

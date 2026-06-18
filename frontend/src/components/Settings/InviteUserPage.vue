@@ -57,9 +57,7 @@
       </div>
       <template v-if="pendingInvitations.data?.length && !invitees.length">
         <div class="flex flex-col gap-4">
-          <div
-            class="flex items-center justify-between text-base-semibold"
-          >
+          <div class="flex items-center justify-between text-base-semibold">
             <div>{{ __('Pending Invites') }}</div>
           </div>
           <ul class="flex flex-col gap-1">
@@ -79,7 +77,7 @@
               <div>
                 <Button
                   :tooltip="__('Delete Invitation')"
-                  icon="x"
+                  icon="lucide-x"
                   variant="ghost"
                   :loading="
                     pendingInvitations.delete.loading &&

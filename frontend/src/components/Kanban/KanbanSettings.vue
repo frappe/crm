@@ -62,7 +62,11 @@
                 <div>{{ field.label }}</div>
               </div>
               <div>
-                <Button variant="ghost" icon="x" @click="removeField(field)" />
+                <Button
+                  variant="ghost"
+                  icon="lucide-x"
+                  @click="removeField(field)"
+                />
               </div>
             </div>
           </template>

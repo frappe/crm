@@ -64,7 +64,7 @@
               <Button
                 variant="ghost"
                 size="sm"
-                icon="plus"
+                icon="lucide-plus"
                 @click="togglePopover()"
               />
             </Tooltip>
@@ -94,7 +94,7 @@
             <Button
               variant="ghost"
               size="sm"
-              icon="more-horizontal"
+              icon="lucide-more-horizontal"
               :class="syncDropdown(open)"
             />
           </template>

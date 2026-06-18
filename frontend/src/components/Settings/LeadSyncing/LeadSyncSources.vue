@@ -3,9 +3,7 @@
     <!-- Header -->
     <div class="flex justify-between px-2 pt-2">
       <div class="flex flex-col gap-1 w-9/12">
-        <h2
-          class="flex gap-2 text-2xl-semibold leading-none h-5 items-center"
-        >
+        <h2 class="flex gap-2 text-2xl-semibold leading-none h-5 items-center">
           {{ __('Lead Sources') }}
           <Badge theme="orange" size="sm">Beta</Badge>
         </h2>
@@ -20,7 +18,7 @@
       <div class="flex item-center space-x-2 w-3/12 justify-end">
         <Button
           :label="__('New')"
-          icon-left="plus"
+          icon-left="lucide-plus"
           variant="solid"
           @click="emit('updateStep', 'new-source')"
         />
@@ -114,7 +112,7 @@
             class="mt-3.5 p-2"
             :loading="sources.loading"
             :label="__('Load More')"
-            icon-left="refresh-cw"
+            icon-left="lucide-refresh-cw"
             @click="() => sources.next()"
           />
         </div>
