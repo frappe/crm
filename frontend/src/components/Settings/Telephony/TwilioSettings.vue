@@ -72,7 +72,7 @@
               </div>
             </div>
             <div class="flex items-center gap-2">
-              <Autocomplete v-model="twilio.doc.app_name" :options="twilioApps">
+              <Combobox v-model="twilio.doc.app_name" :options="twilioApps">
                 <template #footer>
                   <Button
                     :label="__('Refresh Apps')"
@@ -84,7 +84,7 @@
                     @click="twilio.fetchTwilioApps.fetch"
                   />
                 </template>
-              </Autocomplete>
+              </Combobox>
             </div>
           </div>
           <div class="flex items-center justify-between">
@@ -138,7 +138,7 @@
 <script setup>
 import { setEnabled } from '@/composables/telephony'
 import { useDocument } from '@/data/document'
-import { Autocomplete, Switch } from 'frappe-ui'
+import { Combobox, Switch } from 'frappe-ui'
 import { computed } from 'vue'
 
 const emit = defineEmits(['updateStep'])
