@@ -18,12 +18,12 @@
         >
           <template #right>
             <Badge
-              v-if="!isSidebarCollapsed && frameworkUnreadCount"
-              :label="frameworkUnreadCount"
+              v-if="!isSidebarCollapsed && unreadNotificationsCount"
+              :label="unreadNotificationsCount"
               variant="subtle"
             />
             <div
-              v-else-if="frameworkUnreadCount"
+              v-else-if="unreadNotificationsCount"
               class="absolute -left-1.5 top-1 z-20 h-[5px] w-[5px] translate-x-6 translate-y-1 rounded-full bg-surface-gray-9 ring-1 ring-white"
             />
           </template>
@@ -182,11 +182,9 @@ import Settings from '@/components/Settings/Settings.vue'
 import SalesHierarchyBanner from '@/components/SalesHierarchyBanner.vue'
 import { viewsStore } from '@/stores/views'
 import {
-  frameworkUnreadCount,
-  reloadFrameworkUnreadCount,
+  unreadNotificationsCount,
   notificationsStore,
 } from '@/stores/notifications'
-import { globalStore } from '@/stores/global'
 import { usersStore } from '@/stores/users'
 import { sessionStore } from '@/stores/session'
 import { showSettings, activeSettingsPage } from '@/composables/settings'
@@ -207,24 +205,10 @@ import {
 import router from '@/router'
 import { useStorage } from '@vueuse/core'
 import { useDemoData } from '@/composables/demoData'
-import {
-  ref,
-  reactive,
-  computed,
-  markRaw,
-  onMounted,
-  onBeforeUnmount,
-} from 'vue'
+import { ref, reactive, computed, markRaw, onMounted } from 'vue'
 
 const { getPinnedViews, getPublicViews } = viewsStore()
-const { $socket } = globalStore()
 const { toggle: toggleNotificationPanel } = notificationsStore()
-
-// keep the sidebar unread badge live while the panel is closed (the panel itself updates
-// the count via @update:unread-count while open)
-const onNotificationRealtime = () => reloadFrameworkUnreadCount()
-onMounted(() => $socket.on('notification', onNotificationRealtime))
-onBeforeUnmount(() => $socket.off('notification', onNotificationRealtime))
 const { capture } = useTelemetry()
 const { clearDemoData, isDemoDataCreated } = useDemoData()
 const { send } = useBroadcast()
