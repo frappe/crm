@@ -1,6 +1,6 @@
 <template>
-  <Dialog v-model="show" :options="{ title: __('Change Password') }">
-    <template #body-content>
+  <Dialog v-model:open="show" :title="__('Change Password')">
+    <template #default>
       <div class="flex flex-col gap-4">
         <div>
           <Password

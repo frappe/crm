@@ -1,9 +1,6 @@
 <template>
-  <Dialog
-    v-model="show"
-    :options="{ title: __('Email Templates'), size: '4xl' }"
-  >
-    <template #body-content>
+  <Dialog v-model:open="show" :title="__('Email Templates')" :size="'4xl'">
+    <template #default>
       <div class="flex items-center gap-2">
         <TextInput
           ref="searchInput"

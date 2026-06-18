@@ -1,11 +1,6 @@
 <template>
-  <Dialog
-    v-model="dialog"
-    :options="{
-      title: __('Edit Response & Resolution'),
-    }"
-  >
-    <template #body-content>
+  <Dialog v-model:open="dialog" :title="__('Edit Response & Resolution')">
+    <template #default>
       <div class="flex flex-col gap-4">
         <FormControl
           v-model="priorityData.priority"

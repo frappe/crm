@@ -1,10 +1,6 @@
 <template>
-  <Dialog
-    v-model="show"
-    :options="{ title: __('Lost Reason') }"
-    @close="cancel"
-  >
-    <template #body-content>
+  <Dialog v-model:open="show" :title="__('Lost Reason')" @close="cancel">
+    <template #default>
       <div class="-mt-3 mb-4 text-p-base text-ink-gray-7">
         {{
           __('Please provide a reason for marking this {0} as lost', [

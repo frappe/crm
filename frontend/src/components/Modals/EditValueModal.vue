@@ -1,6 +1,6 @@
 <template>
-  <Dialog v-model="show" :options="{ title: __('Bulk Edit') }">
-    <template #body-content>
+  <Dialog v-model:open="show" :title="__('Bulk Edit')">
+    <template #default>
       <div class="mb-4">
         <div class="mb-1.5 text-sm text-ink-gray-5">{{ __('Field') }}</div>
         <Autocomplete

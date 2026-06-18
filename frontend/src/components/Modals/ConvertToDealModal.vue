@@ -1,5 +1,5 @@
 <template>
-  <Dialog v-model="show" :options="{ size: 'xl' }">
+  <Dialog v-model:open="show" :size="'xl'">
     <template #body-header>
       <div class="mb-6 flex items-center justify-between">
         <div>
@@ -19,7 +19,7 @@
         </div>
       </div>
     </template>
-    <template #body-content>
+    <template #default>
       <div class="mb-4 flex items-center gap-2 text-ink-gray-5">
         <OrganizationsIcon class="h-4 w-4" />
         <label class="block text-base">{{ __('Organization') }}</label>

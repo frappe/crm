@@ -46,13 +46,11 @@
 
   <!-- Map Dialog -->
   <Dialog
-    v-model="showModal"
-    :options="{
-      title: disabled ? __('View Location') : __('Set Location'),
-      size: '4xl',
-    }"
+    v-model:open="showModal"
+    :title="disabled ? __('View Location') : __('Set Location')"
+    :size="'4xl'"
   >
-    <template #body-content>
+    <template #default>
       <div :id="mapId" class="h-[500px] w-full rounded" />
     </template>
     <template #actions>

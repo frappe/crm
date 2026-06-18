@@ -1,6 +1,6 @@
 <template>
-  <Dialog v-model="show" :options="dialogOptions">
-    <template #body>
+  <Dialog v-model:open="show" :size="dialogOptions.size" bare>
+    <template #default>
       <div class="bg-surface-elevation-2 px-4 pb-6 pt-5 sm:px-6">
         <div class="mb-5 flex items-center justify-between">
           <div>

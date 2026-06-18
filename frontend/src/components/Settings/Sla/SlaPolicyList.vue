@@ -108,10 +108,10 @@
               class="mx-2 border-outline-gray-2"
             />
             <Dialog
-              v-model="duplicateDialog.show"
-              :options="{ title: __('Duplicate SLA Policy') }"
+              v-model:open="duplicateDialog.show"
+              :title="__('Duplicate SLA Policy')"
             >
-              <template #body-content>
+              <template #default>
                 <div class="flex flex-col gap-4">
                   <FormControl
                     v-model="duplicateDialog.name"

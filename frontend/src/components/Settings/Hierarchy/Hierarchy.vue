@@ -155,21 +155,19 @@
       </div>
     </Teleport>
     <Dialog
-      v-model="showAddDialog"
-      :options="{
-        title: __('Add Users'),
-        actions: [
-          {
-            label: __('Add ({0})', [dialogSelected.length]),
-            variant: 'solid',
-            disabled: !dialogSelected.length,
-            loading: saving,
-            onClick: confirmBulkAdd,
-          },
-        ],
-      }"
+      v-model:open="showAddDialog"
+      :title="__('Add Users')"
+      :actions="[
+        {
+          label: __('Add ({0})', [dialogSelected.length]),
+          variant: 'solid',
+          disabled: !dialogSelected.length,
+          loading: saving,
+          onClick: confirmBulkAdd,
+        },
+      ]"
     >
-      <template #body-content>
+      <template #default>
         <UserMultiSelect
           v-model="dialogSelected"
           :show-mail="true"
@@ -178,7 +176,7 @@
         />
       </template>
     </Dialog>
-    <Dialog v-model="showRemoveDialog" :options="{ size: 'md' }">
+    <Dialog v-model:open="showRemoveDialog" :size="'md'">
       <template #body>
         <div class="bg-surface-elevation-2 px-4 pb-6 pt-5 sm:px-6">
           <div class="mb-4 flex items-center justify-between">

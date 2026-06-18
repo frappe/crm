@@ -5,8 +5,8 @@
     :iconLeft="KanbanIcon"
     @click="showDialog = true"
   />
-  <Dialog v-model="showDialog" :options="{ title: __('Kanban Settings') }">
-    <template #body-content>
+  <Dialog v-model:open="showDialog" :title="__('Kanban Settings')">
+    <template #default>
       <div>
         <div class="text-base text-ink-gray-8 mb-2">
           {{ __('Column Field') }}

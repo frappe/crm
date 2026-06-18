@@ -43,10 +43,10 @@
     </div>
   </div>
   <Dialog
-    v-model="duplicateDialog.show"
-    :options="{ title: __('Duplicate Assignment Rule') }"
+    v-model:open="duplicateDialog.show"
+    :title="__('Duplicate Assignment Rule')"
   >
-    <template #body-content>
+    <template #default>
       <div class="flex flex-col gap-4">
         <FormControl
           v-model="duplicateDialog.name"

@@ -1,10 +1,10 @@
 <template>
   <Dialog
-    v-model="show"
-    :options="{ title: __('Add Existing User') }"
+    v-model:open="show"
+    :title="__('Add Existing User')"
     @close="show = false"
   >
-    <template #body-content>
+    <template #default>
       <div class="flex gap-1 border rounded mb-4 p-2 text-ink-gray-5">
         <span class="lucide-info size-3.5 mt-0.5" aria-hidden="true" />
         <p class="text-p-sm">

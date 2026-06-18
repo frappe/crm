@@ -1,6 +1,6 @@
 <template>
-  <Dialog v-model="show">
-    <template #body-title>
+  <Dialog v-model:open="show">
+    <template #title>
       <h3
         class="flex items-center gap-2 text-3xl-semibold leading-6 text-ink-gray-9"
       >
@@ -13,7 +13,7 @@
         />
       </h3>
     </template>
-    <template #body-content>
+    <template #default>
       <div class="mt-4">
         <div class="text-base text-ink-gray-8 mb-2">
           {{ __('Fields Order') }}

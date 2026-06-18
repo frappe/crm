@@ -1,7 +1,7 @@
 <template>
   <Dialog
-    v-model="showSettings"
-    :options="{ size: '5xl' }"
+    v-model:open="showSettings"
+    :size="'5xl'"
     :disableOutsideClickToClose="disableSettingModalOutsideClick"
     @close="activeSettingsPage = ''"
   >
@@ -35,7 +35,9 @@
             </nav>
           </template>
         </div>
-        <div class="flex flex-col flex-1 overflow-y-auto bg-surface-elevation-2">
+        <div
+          class="flex flex-col flex-1 overflow-y-auto bg-surface-elevation-2"
+        >
           <component :is="activeTab.component" v-if="activeTab" />
         </div>
       </div>

@@ -1,10 +1,11 @@
 <template>
   <Dialog
-    v-model="show"
-    :options="{ title: __('Assign To'), size: 'xl' }"
+    v-model:open="show"
+    :title="__('Assign To')"
+    :size="'xl'"
     @close="() => (assignees = [...oldAssignees])"
   >
-    <template #body-content>
+    <template #default>
       <Link
         class="form-control"
         value=""
