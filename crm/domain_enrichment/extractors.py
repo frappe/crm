@@ -235,29 +235,70 @@ def _clean_company_name(raw, site_url=""):
 	return name or raw
 
 
-def extract_favicon(soup, base_url):
-	"""Best favicon URL for use as the company logo (mechanics)."""
-	best_score, best_url = -1, ""
+# apple-touch-icons are 180px by convention when no explicit size is declared.
+_APPLE_TOUCH_PX = 180
+
+
+def _best_icon(soup, base_url):
+	"""Best ``<link rel=icon>`` candidate URL.
+
+	Scalable SVGs win over any raster; among rasters the largest declared size wins
+	(apple-touch-icons default to 180px). Returns ``""`` if no icon is declared.
+	"""
+	candidates = []
 	for tag in soup.find_all("link", href=True):
 		rel = tag.get("rel") or []
 		rel = " ".join(rel).lower() if isinstance(rel, list) else str(rel).lower()
 		if "icon" not in rel:
 			continue
-		score = 0
-		if "apple-touch" in rel:
-			score += 1000
+		href = tag["href"].strip()
+		is_svg = (
+			"svg" in (tag.get("type") or "").lower()
+			or href.lower().split("?")[0].endswith(".svg")
+			or "mask-icon" in rel
+		)
 		m = re.search(r"(\d+)x\d+", tag.get("sizes", "") or "")
-		if m:
-			score += int(m.group(1))
-		if score > best_score:
-			best_score = score
-			best_url = urljoin(base_url, tag["href"].strip())
-	if best_url:
-		return best_url
+		px = int(m.group(1)) if m else (_APPLE_TOUCH_PX if "apple-touch" in rel else 0)
+		# Sort key: SVG beats any raster; then by pixel size.
+		candidates.append(((1 if is_svg else 0, px), urljoin(base_url, href)))
+	if not candidates:
+		return ""
+	candidates.sort(key=lambda c: c[0], reverse=True)
+	return candidates[0][1]
+
+
+def extract_logo(soup, base_url):
+	"""Best available company logo, maximizing resolution (mechanics).
+
+	Priority: JSON-LD ``Organization.logo`` (curated, full-size) → ``og:image`` /
+	``twitter:image`` (high-res social-share image) → the best declared icon (scalable
+	SVG, then largest raster / apple-touch) → the conventional ``/favicon.ico``. Returns
+	a :class:`Field` carrying the source method.
+	"""
+	# 1. JSON-LD Organization.logo -- a real, full-size brand logo.
+	for block in parse_json_ld(soup):
+		if not _ld_type_matches(block, _ORG_TYPES):
+			continue
+		logo = block.get("logo")
+		url = logo.get("url") if isinstance(logo, dict) else (logo if isinstance(logo, str) else "")
+		if url:
+			return Field(urljoin(base_url, url.strip()), base_url, Method.JSON_LD)
+
+	# 2. og:image / twitter:image -- prefer the highest-resolution image available.
+	og_content, _name = _meta_with_method(soup, "og:image", "og:image:url", "twitter:image")
+	if og_content:
+		return Field(urljoin(base_url, og_content.strip()), base_url, Method.META_TAG)
+
+	# 3. Best declared icon (scalable SVG > largest raster).
+	icon_url = _best_icon(soup, base_url)
+	if icon_url:
+		return Field(icon_url, base_url, Method.FAVICON)
+
+	# 4. Conventional fallback.
 	parsed = urlparse(base_url)
 	if parsed.scheme and parsed.netloc:
-		return f"{parsed.scheme}://{parsed.netloc}/favicon.ico"
-	return ""
+		return Field(f"{parsed.scheme}://{parsed.netloc}/favicon.ico", base_url, Method.FAVICON)
+	return Field()
 
 
 # schema.org @types that denote a company/organization.
@@ -349,9 +390,7 @@ def extract_company_info(homepage, soup):
 		if content:
 			info["description"] = Field(content, url, Method.META_TAG)
 
-	favicon = extract_favicon(soup, url)
-	if favicon:
-		info["logo"] = Field(favicon, url, Method.FAVICON)
+	info["logo"] = extract_logo(soup, url)
 
 	return info
 

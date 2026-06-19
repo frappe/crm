@@ -269,9 +269,11 @@ write back to the Organization. The field-writing reuses `mapper.apply_to_docume
   **intentionally removed** — the per-worker Chromium memory footprint isn't worth it
   for a fallback. (The implementation is preserved locally in the gitignored
   `CHROMIUM_FALLBACK.local.md` if it ever needs to be reintroduced.)
-- **Favicon-as-logo.** The "logo" is the best favicon/touch-icon, which is a small
-  square icon, not always a full brand logo. Good enough for an avatar; not a media
-  asset.
+- **Logo resolution.** The "logo" maximizes resolution (`extract_logo`): JSON-LD
+  `Organization.logo` → `og:image`/`twitter:image` → the best declared icon (scalable
+  SVG, then largest raster / apple-touch) → `/favicon.ico`. `og:image` is preferred over
+  icons for raw resolution, so the logo may be a social-share image rather than a strict
+  brand mark; the conventional favicon is only a last resort.
 - **Scheduled re-enrichment — _future feature, not implemented._** Triggering is
   either manual (Enrich button) or automatic on Organization creation (`auto_enrich`);
   there is no *scheduled* re-enrichment of existing records. A future version could enqueue periodic re-enrichment of

@@ -101,6 +101,27 @@ WORDPRESS = """
 
 EMPTY = "<html><head></head><body></body></html>"
 
+# A JavaScript-only SPA shell (e.g. a Vite/React build). The body is an empty mount
+# point; everything meaningful is rendered client-side, so requests + BeautifulSoup
+# see only the build-tool-default title and favicon -- no description, og, or JSON-LD.
+JS_SPA_SHELL = """
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vite App</title>
+    <script type="module" crossorigin src="/assets/index-5d175413.js"></script>
+    <link rel="stylesheet" href="/assets/index-57b7cd59.css">
+    <script type="module">window.onerror = () => {};</script>
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
+"""
+
 BROKEN_JSON_LD = """
 <html><head>
 <script type="application/ld+json">{ this is not valid json ]</script>
