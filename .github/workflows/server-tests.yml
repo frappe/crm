@@ -41,12 +41,22 @@ jobs:
             - name: Clone
               uses: actions/checkout@v6
 
+            - name: Detect erpnext integration changes
+              uses: dorny/paths-filter@v3
+              id: changes
+              with:
+                  filters: |
+                      erpnext:
+                          - 'crm/integrations/erpnext/**'
+                          - '.github/helper/install.sh'
+
             - name: Setup environment
               uses: ./.github/actions/setup-server-env
               with:
                   python-version: "3.14"
                   node-version: "24"
                   type: "server"
+                  install-erpnext: ${{ steps.changes.outputs.erpnext }}
 
             - name: Run server tests
               uses: ./.github/actions/run-server-tests
