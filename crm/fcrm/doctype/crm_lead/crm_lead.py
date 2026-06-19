@@ -276,6 +276,7 @@ class CRMLead(Document):
 			"industry",
 			"linkedin",
 			"twitter",
+			"facebook",
 		)
 		before = {f: self.get(f) for f in enriched_fields if self.meta.has_field(f)}
 

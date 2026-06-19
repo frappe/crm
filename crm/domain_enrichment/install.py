@@ -267,7 +267,7 @@ FIELD_MAPPINGS = [
 	*[
 		(k, dt, fn, "Fill if empty", None, 0)
 		for dt in (_LEAD, _DEAL, _ORG)
-		for k, fn in (("linkedin", "linkedin"), ("twitter", "twitter"))
+		for k, fn in (("linkedin", "linkedin"), ("twitter", "twitter"), ("facebook", "facebook"))
 	],
 ]
 

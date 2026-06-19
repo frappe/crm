@@ -17,7 +17,7 @@ from urllib.parse import urlparse
 
 from . import extractors
 from .config import EnrichmentConfig, get_config
-from .crawler import crawl
+from .crawler import crawl, probe_about_pages
 from .http import build_session
 from .result import EnrichmentResult, Field, Method
 
@@ -46,18 +46,13 @@ def _normalize_website(url: str) -> str:
 	return url
 
 
-def run(
-	website: str, cfg: EnrichmentConfig = None, progress=None, allow_render: bool = False
-) -> EnrichmentResult:
+def run(website: str, cfg: EnrichmentConfig = None, progress=None) -> EnrichmentResult:
 	"""Run the full enrichment engine for ``website`` and return the result.
 
 	:param website: the site to enrich (scheme optional; https assumed).
 	:param cfg: an :class:`EnrichmentConfig`; loaded via ``get_config()`` if omitted.
 	:param progress: optional ``fn(step_index, message)`` callback (0-based index
 	    into ``PROGRESS_STEPS``); exceptions in it are swallowed.
-	:param allow_render: enable the Chromium JS-render fallback in the crawler.
-	    **Background-job only** -- defaults False so the synchronous preview path
-	    never spins up a browser. Only ``tasks.run_enrichment`` passes True.
 	"""
 	website = _normalize_website(website)
 	cfg = cfg or get_config()
@@ -74,9 +69,7 @@ def run(
 	try:
 		# 1 + 2. Discover + crawl (BFS does both; reported together).
 		emit(0)
-		crawled = crawl(
-			website, cfg, session=session, progress=lambda msg: emit(1, msg), allow_render=allow_render
-		)
+		crawled = crawl(website, cfg, session=session, progress=lambda msg: emit(1, msg))
 		pages = [page for page, _soup in crawled]
 		soups_by_url = {page.url: soup for page, soup in crawled}
 		result.pages_crawled = [{"url": p.url, "status": p.status_code, "error": p.error} for p in pages]
@@ -94,6 +87,18 @@ def run(
 
 		homepage = pages[0]
 		home_soup = soups_by_url.get(homepage.url)
+
+		# If the BFS didn't surface an About page, probe the common paths -- it's the
+		# best source of a company description (and helps industry/contacts too).
+		if home_soup and not any(extractors._is_about_page(p.url) for p in pages):
+			for page, soup in probe_about_pages(
+				homepage.url, cfg, session=session, skip_urls=[p.url for p in pages]
+			):
+				pages.append(page)
+				soups_by_url[page.url] = soup
+				result.pages_crawled.append(
+					{"url": page.url, "status": page.status_code, "error": page.error}
+				)
 
 		# 3. Company information (each field carries provenance).
 		emit(2)

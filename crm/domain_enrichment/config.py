@@ -29,6 +29,7 @@ DEFAULT_SETTINGS = {
 	"enable_lead": 1,
 	"enable_deal": 1,
 	"enable_organization": 1,
+	"auto_enrich": 0,
 	"max_pages": 10,
 	"max_depth": 2,
 	"request_timeout": 10,
@@ -38,7 +39,6 @@ DEFAULT_SETTINGS = {
 	"preview_max_pages": 1,
 	"preview_timeout": 8,
 	"allow_private_networks": 0,
-	"render_js": 0,
 }
 
 # Industry classifier thresholds. These are mechanics (how confident the winner

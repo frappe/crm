@@ -182,6 +182,9 @@ doc_events = {
 			"crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.create_customer_in_erpnext"
 		],
 	},
+	"CRM Organization": {
+		"after_insert": ["crm.domain_enrichment.tasks.auto_enrich_on_create"],
+	},
 	"Sales Order": {
 		"before_validate": [
 			"crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.create_customer_on_sales_order"

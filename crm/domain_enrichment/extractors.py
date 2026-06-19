@@ -356,14 +356,45 @@ def extract_company_info(homepage, soup):
 	return info
 
 
+# Tags whose text is chrome (navigation/forms), not company copy -- skipped when
+# hunting for a body paragraph.
+_NON_CONTENT_PARENTS = {"nav", "header", "footer", "aside", "form"}
+_MIN_PARAGRAPH_LEN = 80
+
+
+def first_paragraph(soup):
+	"""First substantial body paragraph on a page (mechanics).
+
+	Returns the cleaned text of the first ``<p>`` that holds sentence-like copy and is
+	not inside nav/header/footer/aside/form chrome, or ``""`` if none qualifies. Used
+	as a description fallback when a site exposes no description metadata. Read-only --
+	does not mutate ``soup``.
+	"""
+	for p in soup.find_all("p"):
+		if any(parent.name in _NON_CONTENT_PARENTS for parent in p.parents):
+			continue
+		text = " ".join((p.get_text(" ") or "").split())
+		if len(text) >= _MIN_PARAGRAPH_LEN and " " in text:
+			return text
+	return ""
+
+
 def select_description(pages, soups_by_url):
-	"""Pick the best *company* description across crawled pages (mechanics)."""
+	"""Pick the best *company* description across crawled pages (mechanics).
+
+	Priority (highest first): JSON-LD ``Organization.description`` → About-page body
+	paragraph → head ``og:description``/``<meta description>`` → home-page body
+	paragraph (last resort). The body-paragraph fallbacks let descriptions be derived
+	even when a site exposes no description metadata at all.
+	"""
 	home_url = pages[0].url if pages else ""
 	best_key = None
 	best_field = None
 
 	def consider(field_obj, score):
 		nonlocal best_key, best_field
+		if not field_obj.value:
+			return
 		key = (score, min(len(field_obj.value), 300))
 		if best_key is None or key > best_key:
 			best_key, best_field = key, field_obj
@@ -373,24 +404,30 @@ def select_description(pages, soups_by_url):
 		if soup is None:
 			continue
 
-		for block in parse_json_ld(soup):
-			if _ld_type_matches(block, _ORG_TYPES) and block.get("description"):
-				consider(Field(block["description"].strip(), page.url, Method.JSON_LD), 5)
-				break
-
 		is_home = page.url == home_url
 		is_about = _is_about_page(page.url)
-		if not (is_home or is_about):
-			continue
-		content, _name = _meta_with_method(soup, "og:description", "description")
-		if not content:
-			continue
-		content = content.strip()
+
+		# JSON-LD Organization.description -- curated structured data, highest priority.
+		for block in parse_json_ld(soup):
+			if _ld_type_matches(block, _ORG_TYPES) and block.get("description"):
+				consider(Field(block["description"].strip(), page.url, Method.JSON_LD), 6)
+				break
+
+		# About-page body paragraph outranks head meta.
+		if is_about:
+			consider(Field(first_paragraph(soup), page.url, Method.BODY_TEXT), 5)
+
+		# Head description on the home or About page.
+		if is_home or is_about:
+			content, _name = _meta_with_method(soup, "og:description", "description")
+			if content:
+				content = content.strip()
+				score = 2 if (is_home and _COMMERCE_RE.search(content)) else 4
+				consider(Field(content, page.url, Method.META_TAG), score)
+
+		# Home-page body paragraph -- last resort.
 		if is_home:
-			score = 2 if _COMMERCE_RE.search(content) else 4
-		else:
-			score = 3
-		consider(Field(content, page.url, Method.META_TAG), score)
+			consider(Field(first_paragraph(soup), page.url, Method.BODY_TEXT), 1)
 
 	return best_field or Field()
 

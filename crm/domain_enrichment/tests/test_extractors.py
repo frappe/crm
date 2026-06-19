@@ -163,6 +163,54 @@ class DescriptionSelectionTest(UnitTestCase):
 		desc = extractors.select_description(pages, soups)
 		self.assertEqual(desc.method, Method.JSON_LD)
 
+	def test_about_body_paragraph_when_no_meta(self):
+		# No description metadata anywhere -> derive it from the About page's body copy.
+		about_body = (
+			"<main><p>Acme Robotics designs autonomous warehouse robots that help "
+			"retailers fulfil orders faster and at lower cost.</p></main>"
+		)
+		pages, soups = _pages(
+			("https://acme.example", "<html><head><title>Acme</title></head><body></body></html>"),
+			("https://acme.example/about", f"<html><body>{about_body}</body></html>"),
+		)
+		desc = extractors.select_description(pages, soups)
+		self.assertIn("autonomous warehouse robots", desc.value)
+		self.assertEqual(desc.method, Method.BODY_TEXT)
+		self.assertEqual(desc.source, "https://acme.example/about")
+
+	def test_head_meta_beats_home_body_paragraph(self):
+		# With an og:description present, head meta wins over a homepage body paragraph.
+		pages, soups = _pages(
+			(
+				"https://acme.example",
+				"<html><head><meta name='description' content='Acme makes developer tools.'>"
+				"</head><body><main><p>Some long homepage marketing paragraph that is "
+				"definitely over the minimum length threshold for a body paragraph.</p>"
+				"</main></body></html>",
+			),
+		)
+		desc = extractors.select_description(pages, soups)
+		self.assertEqual(desc.value, "Acme makes developer tools.")
+		self.assertEqual(desc.method, Method.META_TAG)
+
+
+class FirstParagraphTest(UnitTestCase):
+	def test_skips_nav_and_returns_first_substantial_paragraph(self):
+		html = (
+			"<html><body><nav><p>Home About Contact Login Signup Pricing Docs Blog "
+			"Resources Careers Partners Support Status Community Downloads Enterprise</p></nav>"
+			"<main><p>Short.</p><p>Globex Corp is a logistics platform that moves freight "
+			"across the country for enterprise shippers.</p></main></body></html>"
+		)
+		_page, soup = fixtures.make_page("https://globex.example", html)
+		result = extractors.first_paragraph(soup)
+		self.assertIn("logistics platform", result)
+		self.assertNotIn("Login", result)  # nav paragraph skipped despite being long
+
+	def test_returns_empty_when_no_substantial_paragraph(self):
+		_page, soup = fixtures.make_page("https://x.example", "<html><body><p>Hi.</p></body></html>")
+		self.assertEqual(extractors.first_paragraph(soup), "")
+
 
 # --------------------------------------------------------------------------- #
 # Contacts: emails + phones (mechanics)

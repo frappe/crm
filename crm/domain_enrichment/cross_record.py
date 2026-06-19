@@ -36,6 +36,7 @@ _ORG_ENRICHED_FIELDS = (
 	"industry",
 	"linkedin",
 	"twitter",
+	"facebook",
 )
 
 
@@ -67,7 +68,7 @@ def _result_from_organization(org) -> EnrichmentResult:
 	result.logo = Field(value=org.get("organization_logo") or "")
 	result.industry = Field(value=org.get("industry") or "")
 
-	for network in ("linkedin", "twitter"):
+	for network in ("linkedin", "twitter", "facebook"):
 		value = org.get(network)
 		if value:
 			result.social_profiles[network] = SocialProfile(value=value)

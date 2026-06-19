@@ -26,6 +26,7 @@ class CRMEnrichmentSettings(Document):
 
 		allow_private_networks: DF.Check
 		allowed_domains: DF.Table[CRMEnrichmentDomain]
+		auto_enrich: DF.Check
 		blocked_domains: DF.Table[CRMEnrichmentDomain]
 		enable_deal: DF.Check
 		enable_lead: DF.Check
@@ -37,7 +38,6 @@ class CRMEnrichmentSettings(Document):
 		max_pages: DF.Int
 		preview_max_pages: DF.Int
 		preview_timeout: DF.Int
-		render_js: DF.Check
 		request_timeout: DF.Int
 		retry_count: DF.Int
 		skip_patterns: DF.Table[CRMEnrichmentSkipPattern]
