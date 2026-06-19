@@ -272,6 +272,7 @@ doc_events = {
 			"crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.create_customer_in_erpnext",
 			"crm.automation.events.on_deal_update",
 		],
+		"after_insert": ["crm.domain_enrichment.tasks.auto_enrich_on_create"],
 	},
 	"CRM Lead": {
 		"on_update": ["crm.automation.events.on_lead_update"],

@@ -94,17 +94,30 @@ def write_run(
 	return doc.name
 
 
-def auto_enrich_on_create(doc, method=None):
-	"""``after_insert`` hook for CRM Organization: enqueue enrichment automatically.
+# DocType -> the Settings checkbox that gates auto-enrichment for it (mirrors
+# api.ENABLE_FLAG_BY_DOCTYPE). Auto-enrich is wired (hooks.py after_insert) for the
+# doctypes that own a ``website`` and are created standalone: Organization + Deal.
+AUTO_ENRICH_FLAG_BY_DOCTYPE = {
+	"CRM Lead": "enable_lead",
+	"CRM Deal": "enable_deal",
+	"CRM Organization": "enable_organization",
+}
 
-	Best-effort and never raises into the org save. Fires only when the feature is
-	enabled, enabled for CRM Organization, ``auto_enrich`` is on, and the org has a
-	website. Reuses the same per-doc ``job_id`` + ``deduplicate`` as the manual
-	``api.enrich`` path, so a manual click and the auto-fire never double-run.
+
+def auto_enrich_on_create(doc, method=None):
+	"""``after_insert`` hook: auto-enqueue enrichment for a new CRM record.
+
+	Wired for CRM Organization and CRM Deal. Best-effort and never raises into the
+	save. Fires only when the feature is enabled, ``auto_enrich`` is on, the doctype is
+	enabled, and the record has a website. Reuses the same per-doc ``job_id`` +
+	``deduplicate`` as the manual ``api.enrich`` path, so a manual click and the
+	auto-fire never double-run. A new Deal created with a website is therefore enriched
+	alongside its Organization -- each crawls independently and writes its own fields.
 	"""
 	try:
 		cfg = get_config()
-		if not (cfg.setting("enabled") and cfg.setting("enable_organization") and cfg.setting("auto_enrich")):
+		flag = AUTO_ENRICH_FLAG_BY_DOCTYPE.get(doc.doctype)
+		if not (cfg.setting("enabled") and cfg.setting("auto_enrich") and flag and cfg.setting(flag)):
 			return
 
 		website = (doc.get("website") or "").strip()

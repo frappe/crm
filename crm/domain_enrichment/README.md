@@ -79,7 +79,7 @@ on the next enrichment without a restart.
 |---|---|
 | `enabled` | Master on/off for the whole feature. |
 | `enable_lead` / `enable_deal` / `enable_organization` | Which doctypes can be enriched. |
-| `auto_enrich` | When `1`, a newly-created CRM Organization with a website is enriched automatically in a background job (`after_insert`). Default `0` — enrichment is manual via the Enrich button. Requires `enable_organization`. |
+| `auto_enrich` | When `1`, a newly-created CRM Organization **or CRM Deal** that has a website is enriched automatically in a background job (`after_insert`). A new Deal with a new Organization enriches both (each crawls and writes its own fields). Default `0` — enrichment is otherwise manual via the Enrich button. Gated per doctype by `enable_organization` / `enable_deal`. |
 | `max_pages` / `max_depth` | Crawl breadth/depth caps (BFS). |
 | `request_timeout` | Per-request timeout (seconds). |
 | `max_download_bytes` | Hard cap on bytes read per page (streamed). |

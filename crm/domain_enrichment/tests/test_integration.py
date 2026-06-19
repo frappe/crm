@@ -23,6 +23,7 @@ from crm.domain_enrichment.config import get_config
 from crm.domain_enrichment.cross_record import copy_enrichment_from_organization
 from crm.domain_enrichment.mapper import apply_to_document
 from crm.domain_enrichment.result import EnrichmentResult, Field, SocialProfile
+from crm.domain_enrichment.tests import fixtures
 
 
 def canned_result(website="https://acme.example") -> EnrichmentResult:
@@ -202,6 +203,58 @@ class CrossRecordCopyTest(IntegrationTestCase):
 		filled = copy_enrichment_from_organization(deal)
 		self.assertEqual(filled, [])
 		self.assertFalse(deal.company_description)
+
+
+class AutoEnrichOnCreateTest(IntegrationTestCase):
+	"""The after_insert auto-enrich hook (Organization + Deal), gated by Settings."""
+
+	def _cfg(self, **overrides):
+		settings = {
+			"enabled": 1,
+			"auto_enrich": 1,
+			"enable_organization": 1,
+			"enable_deal": 1,
+			"request_timeout": 10,
+			"max_pages": 10,
+		}
+		settings.update(overrides)
+		return fixtures.make_config(settings=settings)
+
+	def _doc(self, doctype, website="https://acme.example", name="X1"):
+		return frappe._dict(doctype=doctype, name=name, website=website)
+
+	def _run(self, doc, cfg):
+		with (
+			mock.patch.object(tasks, "get_config", return_value=cfg),
+			mock.patch.object(tasks.frappe, "enqueue") as enq,
+		):
+			tasks.auto_enrich_on_create(doc)
+		return enq
+
+	def test_enqueues_for_new_deal(self):
+		enq = self._run(self._doc("CRM Deal", name="D1"), self._cfg())
+		enq.assert_called_once()
+		kwargs = enq.call_args.kwargs
+		self.assertEqual(kwargs["reference_doctype"], "CRM Deal")
+		self.assertEqual(kwargs["job_id"], "domain-enrich-CRM Deal-D1")
+		self.assertTrue(kwargs["deduplicate"])
+
+	def test_enqueues_for_new_organization(self):
+		enq = self._run(self._doc("CRM Organization", name="O1"), self._cfg())
+		enq.assert_called_once()
+		self.assertEqual(enq.call_args.kwargs["reference_doctype"], "CRM Organization")
+
+	def test_skips_when_auto_enrich_off(self):
+		enq = self._run(self._doc("CRM Deal"), self._cfg(auto_enrich=0))
+		enq.assert_not_called()
+
+	def test_skips_when_doctype_disabled(self):
+		enq = self._run(self._doc("CRM Deal"), self._cfg(enable_deal=0))
+		enq.assert_not_called()
+
+	def test_skips_without_website(self):
+		enq = self._run(self._doc("CRM Deal", website=""), self._cfg())
+		enq.assert_not_called()
 
 
 def _make_minimal_user():
