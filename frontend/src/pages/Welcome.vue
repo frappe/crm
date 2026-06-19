@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col gap-5 justify-center items-center h-full">
-    <div class=" text-3xl-semibold text-ink-gray-8 mb-3">
+    <div class="text-3xl-semibold text-ink-gray-8 mb-3">
       {{ __('Welcome {0}, lets add your first lead', [name]) }}
     </div>
     <div class="flex gap-3">
