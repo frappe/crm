@@ -31,11 +31,11 @@
       <div
         v-for="note in notes.data.data"
         :key="note.name"
-        class="group flex h-56 cursor-pointer flex-col justify-between gap-2 rounded-lg border px-5 py-4 shadow-sm hover:bg-surface-menu-bar"
+        class="group flex h-56 cursor-pointer flex-col justify-between gap-2 rounded-lg border px-5 py-4 shadow-sm hover:bg-surface-sidebar"
         @click="editNote(note.name)"
       >
         <div class="flex items-center justify-between">
-          <div class="truncate text-lg font-medium text-ink-gray-9">
+          <div class="truncate text-lg-medium text-ink-gray-9">
             {{ note.title }}
           </div>
           <Dropdown
@@ -48,9 +48,9 @@
             ]"
           >
             <Button
-              icon="more-horizontal"
+              icon="lucide-more-horizontal"
               variant="ghosted"
-              class="hover:bg-surface-white"
+              class="hover:bg-surface-base"
               @click.stop
             />
           </Dropdown>

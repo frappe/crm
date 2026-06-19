@@ -1,10 +1,10 @@
 <template>
   <Dialog
-    v-model="dialog.show"
-    :options="{ title: __('Edit Workday') }"
+    v-model:open="dialog.show"
+    :title="__('Edit Workday')"
     @after-leave="resetForm"
   >
-    <template #body-content>
+    <template #default>
       <div class="flex flex-col gap-4">
         <div>
           <FormControl
@@ -64,7 +64,7 @@
             variant="subtle"
             :theme="isConfirmingDelete ? 'red' : 'gray'"
             :label="isConfirmingDelete ? __('Confirm Delete') : __('Delete')"
-            icon-left="trash-2"
+            icon-left="lucide-trash-2"
             @click="deleteWorkDay"
           />
         </div>

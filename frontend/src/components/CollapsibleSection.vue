@@ -11,11 +11,11 @@
           :class="labelClass"
           @click="collapsible && toggle()"
         >
-          <FeatherIcon
+          <span
             v-if="collapsible && collapseIconPosition === 'left'"
-            name="chevron-right"
-            class="h-4 transition-all duration-300 ease-in-out"
+            class="lucide-chevron-right h-4 transition-all duration-300 ease-in-out"
             :class="{ 'rotate-90': opened }"
+            aria-hidden="true"
           />
           <span>
             {{ __(label) || __('Untitled') }}
@@ -26,11 +26,11 @@
             :variant="countVariant"
             :theme="countTheme"
           />
-          <FeatherIcon
+          <span
             v-if="collapsible && collapseIconPosition === 'right'"
-            name="chevron-right"
-            class="h-4 transition-all duration-300 ease-in-out"
+            class="lucide-chevron-right h-4 transition-all duration-300 ease-in-out"
             :class="{ 'rotate-90': opened }"
+            aria-hidden="true"
           />
         </div>
         <slot name="actions"></slot>

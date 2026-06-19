@@ -5,10 +5,10 @@
       <div class="flex gap-1 -ml-4 w-9/12">
         <Button
           variant="ghost"
-          icon-left="chevron-left"
+          icon-left="lucide-chevron-left"
           :label="isLocal ? __('New Lead Sync Source') : syncSource.name"
           size="md"
-          class="cursor-pointer hover:bg-transparent focus:bg-transparent focus:outline-none focus:ring-0 focus:ring-offset-0 focus-visible:none active:bg-transparent active:outline-none active:ring-0 active:ring-offset-0 active:text-ink-gray-5 font-semibold text-xl hover:opacity-70 !pr-0 !max-w-96 !justify-start"
+          class="cursor-pointer hover:bg-transparent focus:bg-transparent focus:outline-none focus:ring-0 focus:ring-offset-0 focus-visible:none active:bg-transparent active:outline-none active:ring-0 active:ring-offset-0 active:text-ink-gray-5 text-2xl-semibold hover:opacity-70 !pr-0 !max-w-96 !justify-start"
           @click="() => emit('updateStep', 'source-list')"
         />
       </div>
@@ -28,7 +28,7 @@
 
         <Button
           :label="isLocal ? __('Create') : __('Update')"
-          icon-left="plus"
+          icon-left="lucide-plus"
           variant="solid"
           :loading="
             sources.setValue.loading ||

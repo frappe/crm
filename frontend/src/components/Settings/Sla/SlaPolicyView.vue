@@ -4,10 +4,10 @@
       <div class="flex items-center gap-2">
         <Button
           variant="ghost"
-          icon-left="chevron-left"
+          icon-left="lucide-chevron-left"
           :label="slaData.sla_name || __('New SLA Policy')"
           size="md"
-          class="cursor-pointer -ml-4 hover:bg-transparent focus:bg-transparent focus:outline-none focus:ring-0 focus:ring-offset-0 focus-visible:none active:bg-transparent active:outline-none active:ring-0 active:ring-offset-0 active:text-ink-gray-5 font-semibold text-ink-gray-7 text-lg hover:opacity-70 !pr-0 !max-w-96 !justify-start"
+          class="cursor-pointer -ml-4 hover:bg-transparent focus:bg-transparent focus:outline-none focus:ring-0 focus:ring-offset-0 focus-visible:none active:bg-transparent active:outline-none active:ring-0 active:ring-offset-0 active:text-ink-gray-5 text-ink-gray-7 text-lg-semibold hover:opacity-70 !pr-0 !max-w-96 !justify-start"
           @click="goBack()"
         />
         <Badge
@@ -26,7 +26,7 @@
           @click="toggleEnabled"
         >
           <Switch size="sm" :model-value="slaData.enabled" />
-          <span class="text-sm text-ink-gray-7 font-medium">
+          <span class="text-sm-medium text-ink-gray-7">
             {{ __('Enabled') }}
           </span>
         </div>
@@ -100,7 +100,7 @@
         <hr class="my-8 border-outline-gray-2" />
         <div>
           <div class="flex flex-col gap-1">
-            <span class="text-lg font-semibold text-ink-gray-8">{{
+            <span class="text-lg-semibold text-ink-gray-8">{{
               __('Assignment conditions')
             }}</span>
             <span class="text-p-sm text-ink-gray-6">
@@ -112,7 +112,7 @@
               <Checkbox
                 :label="__('Set as default SLA')"
                 :model-value="slaData.default"
-                class="text-ink-gray-6 text-base font-medium"
+                class="text-ink-gray-6 text-base-medium"
                 @update:model-value="toggleDefaultSla"
               />
               <div v-if="isOldSla && step.data && !slaData.default">
@@ -122,7 +122,7 @@
                       class="text-sm text-ink-gray-6 flex gap-1 cursor-default"
                     >
                       {{ __('Old Conditions') }}
-                      <FeatherIcon name="info" class="size-4" />
+                      <span class="lucide-info size-4" aria-hidden="true" />
                     </div>
                   </template>
                   <template #body-main>
@@ -164,7 +164,7 @@
         <hr class="my-8 border-outline-gray-2" />
         <div>
           <div class="flex flex-col gap-1">
-            <span class="text-lg font-semibold text-ink-gray-8">
+            <span class="text-lg-semibold text-ink-gray-8">
               {{ __('Valid From') }}
             </span>
             <span class="text-p-sm text-ink-gray-6">
@@ -211,7 +211,7 @@
         <hr class="my-8 border-outline-gray-2" />
         <div>
           <div class="flex flex-col gap-1">
-            <span class="text-lg font-semibold text-ink-gray-8">
+            <span class="text-lg-semibold text-ink-gray-8">
               {{ __('Response & Follow Up') }}
             </span>
             <span class="text-p-sm text-ink-gray-6">
@@ -251,7 +251,6 @@ import {
   createResource,
   DatePicker,
   ErrorMessage,
-  FeatherIcon,
   FormControl,
   FormLabel,
   LoadingIndicator,

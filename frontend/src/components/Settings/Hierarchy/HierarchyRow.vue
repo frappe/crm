@@ -5,7 +5,7 @@
   >
     <div
       v-if="hasChildren"
-      class="z-10 size-5 shrink-0 flex items-center justify-center rounded-full border border-outline-gray-modals bg-white text-ink-gray-1 cursor-pointer hover:bg-surface-gray-2"
+      class="z-10 size-5 shrink-0 flex items-center justify-center rounded-full border border-outline-elevation-2 bg-white text-ink-gray-1 cursor-pointer hover:bg-surface-gray-2"
       @click.stop="emit('toggle', $event)"
     >
       <FeatherIcon
@@ -16,7 +16,7 @@
     <span v-else class="size-5 shrink-0"></span>
 
     <div
-      class="group relative flex-1 flex items-center gap-2 px-2 py-1.5 text-base rounded-md select-none after:content-[''] after:absolute after:bottom-0 after:left-1 after:right-3 after:border-outline-gray-modals"
+      class="group relative flex-1 flex items-center gap-2 px-2 py-1.5 text-base rounded-md select-none after:content-[''] after:absolute after:bottom-0 after:left-1 after:right-3 after:border-outline-elevation-2"
       :class="[
         rowClass,
         canEdit ? 'cursor-grab' : 'cursor-pointer',
@@ -64,14 +64,14 @@
               <Button
                 variant="ghost"
                 size="sm"
-                icon="plus"
+                icon="lucide-plus"
                 @click="togglePopover()"
               />
             </Tooltip>
           </template>
           <template #body="{ togglePopover }">
             <div
-              class="mt-1 rounded-lg bg-surface-white shadow-2xl w-72 border border-outline-gray-2"
+              class="mt-1 rounded-lg bg-surface-base shadow-2xl w-72 border border-outline-gray-2"
             >
               <UserMultiSelect
                 v-model="selected"
@@ -94,7 +94,7 @@
             <Button
               variant="ghost"
               size="sm"
-              icon="more-horizontal"
+              icon="lucide-more-horizontal"
               :class="syncDropdown(open)"
             />
           </template>
@@ -182,7 +182,7 @@ li:has(> .hierarchy-tree-row)::before {
   left: -18px;
   top: -8px;
   bottom: -4px;
-  border-left: 1px solid var(--outline-gray-modals);
+  border-left: 1px solid var(--outline-elevation-2);
 }
 
 li:has(> .hierarchy-tree-row)::after {
@@ -191,7 +191,7 @@ li:has(> .hierarchy-tree-row)::after {
   left: -18px;
   top: 20px;
   width: 42px;
-  border-bottom: 1px solid var(--outline-gray-modals);
+  border-bottom: 1px solid var(--outline-elevation-2);
 }
 
 li:has(> [data-has-children='true'])::after {
@@ -202,7 +202,7 @@ li:has(> .hierarchy-tree-row):last-child::before {
   bottom: auto;
   height: 30px;
   width: 16px;
-  border-bottom: 1px solid var(--outline-gray-modals);
+  border-bottom: 1px solid var(--outline-elevation-2);
   border-bottom-left-radius: 6px;
 }
 

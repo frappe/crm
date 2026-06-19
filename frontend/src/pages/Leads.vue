@@ -205,17 +205,17 @@
           <span v-if="getRow(itemName, '_email_count').label">
             {{ getRow(itemName, '_email_count').label }}
           </span>
-          <span class="text-3xl leading-[0]"> &middot; </span>
+          <span class="text-4xl leading-[0]"> &middot; </span>
           <NoteIcon class="h-4 w-4" />
           <span v-if="getRow(itemName, '_note_count').label">
             {{ getRow(itemName, '_note_count').label }}
           </span>
-          <span class="text-3xl leading-[0]"> &middot; </span>
+          <span class="text-4xl leading-[0]"> &middot; </span>
           <TaskIcon class="h-4 w-4" />
           <span v-if="getRow(itemName, '_task_count').label">
             {{ getRow(itemName, '_task_count').label }}
           </span>
-          <span class="text-3xl leading-[0]"> &middot; </span>
+          <span class="text-4xl leading-[0]"> &middot; </span>
           <CommentIcon class="h-4 w-4" />
           <span v-if="getRow(itemName, '_comment_count').label">
             {{ getRow(itemName, '_comment_count').label }}
@@ -227,7 +227,7 @@
           variant="ghost"
           @click.stop.prevent
         >
-          <Button icon="plus" variant="ghost" />
+          <Button icon="lucide-plus" variant="ghost" />
         </Dropdown>
       </div>
     </template>

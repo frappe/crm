@@ -3,7 +3,7 @@
     <div class="flex justify-between items-center">
       <Button
         variant="ghost"
-        icon-left="chevron-left"
+        icon-left="lucide-chevron-left"
         @click="selectedLog = null"
       >
         {{ __('Back to All Logs') }}
