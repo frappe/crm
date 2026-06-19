@@ -1,8 +1,8 @@
 <template>
-  <Dialog v-model="show">
-    <template #body-title>
+  <Dialog v-model:open="show">
+    <template #title>
       <h3
-        class="flex items-center gap-2 text-2xl font-semibold leading-6 text-ink-gray-9"
+        class="flex items-center gap-2 text-3xl-semibold leading-6 text-ink-gray-9"
       >
         <div>{{ __('Edit Grid Fields Layout') }}</div>
         <Badge
@@ -13,7 +13,7 @@
         />
       </h3>
     </template>
-    <template #body-content>
+    <template #default>
       <div class="mt-4">
         <div class="text-base text-ink-gray-8 mb-2">
           {{ __('Fields Order') }}
@@ -27,7 +27,7 @@
         >
           <template #item="{ element: field }">
             <div
-              class="px-1 py-0.5 bg-surface-gray-2 border border-outline-gray-modals rounded text-base text-ink-gray-8 flex items-center justify-between gap-2"
+              class="px-1 py-0.5 bg-surface-gray-2 border border-outline-elevation-2 rounded text-base text-ink-gray-8 flex items-center justify-between gap-2"
             >
               <div class="flex items-center gap-2">
                 <DragVerticalIcon class="h-3.5 cursor-grab" />
@@ -40,7 +40,11 @@
                   type="number"
                   class="w-20"
                 />
-                <Button variant="ghost" icon="x" @click="removeField(field)" />
+                <Button
+                  variant="ghost"
+                  icon="lucide-x"
+                  @click="removeField(field)"
+                />
               </div>
             </div>
           </template>

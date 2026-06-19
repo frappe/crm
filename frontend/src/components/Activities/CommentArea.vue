@@ -23,7 +23,11 @@
           placement="right"
           @click="confirmingDelete = false"
         >
-          <Button icon="more-horizontal" variant="ghost" class="!h-6 !w-6" />
+          <Button
+            icon="lucide-more-horizontal"
+            variant="ghost"
+            class="!h-6 !w-6"
+          />
         </Dropdown>
       </div>
     </div>

@@ -1,6 +1,6 @@
 <template>
-  <Dialog v-model="show" :options="{ title: __('Bulk Edit') }">
-    <template #body-content>
+  <Dialog v-model:open="show" :title="__('Bulk Edit')">
+    <template #default>
       <div class="mb-4">
         <div class="mb-1.5 text-sm text-ink-gray-5">{{ __('Field') }}</div>
         <Autocomplete
@@ -164,7 +164,7 @@ function getValueComponent(f) {
     return h(TextEditor, {
       variant: 'outline',
       editorClass:
-        '!prose-sm overflow-auto min-h-[80px] max-h-80 py-1.5 px-2 rounded border border-outline-gray-2 bg-surface-white hover:border-outline-gray-3 hover:shadow-sm focus:bg-surface-white focus:border-outline-gray-4 focus:shadow-sm focus:ring-0 focus-visible:ring-2 focus-visible:ring-outline-gray-3 text-ink-gray-8 transition-colors',
+        '!prose-sm overflow-auto min-h-[80px] max-h-80 py-1.5 px-2 rounded border border-outline-gray-2 bg-surface-base hover:border-outline-gray-3 hover:shadow-sm focus:bg-surface-base focus:border-outline-gray-4 focus:shadow-sm focus:ring-0 focus-visible:ring-2 focus-visible:ring-outline-gray-3 text-ink-gray-8 transition-colors',
       bubbleMenu: true,
       content: newValue.value,
     })

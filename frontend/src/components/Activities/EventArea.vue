@@ -6,11 +6,11 @@
       class="activity grid grid-cols-[30px_minmax(auto,_1fr)] gap-4 px-3 sm:px-10"
     >
       <div
-        class="z-0 relative flex justify-center before:absolute before:left-[50%] before:-z-[1] before:top-0 before:border-l before:border-outline-gray-modals"
+        class="z-0 relative flex justify-center before:absolute before:left-[50%] before:-z-[1] before:top-0 before:border-l before:border-outline-elevation-2"
         :class="i != events.length - 1 ? 'before:h-full' : 'before:h-4'"
       >
         <div
-          class="flex h-8 w-7 items-center justify-center bg-surface-white text-ink-gray-8"
+          class="flex h-8 w-7 items-center justify-center bg-surface-base text-ink-gray-8"
         >
           <CalendarIcon class="h-4 w-4" />
         </div>
@@ -39,7 +39,7 @@
           </div>
         </div>
         <div
-          class="flex gap-2 border cursor-pointer border-outline-gray-modals rounded-lg bg-surface-cards px-2.5 py-2.5 text-ink-gray-9"
+          class="flex gap-2 border cursor-pointer border-outline-elevation-2 rounded-lg bg-surface-elevation-1 px-2.5 py-2.5 text-ink-gray-9"
           @click="showEvent(event)"
         >
           <div

@@ -55,7 +55,17 @@ export default defineConfig(async ({ mode }) => {
     resolve: {
       alias: {
         '@': path.resolve(__dirname, 'src'),
+        // point at the package src dir (not index.ts) so subpath imports like
+        // `@framework/ui/components/Notifications` resolve. Importing subpaths avoids the
+        // barrel, which `export *`s components (Grid/Phone/FormLayout) that need a newer
+        // frappe-ui (`frappe-ui/internals`) than this app pins.
+        '@framework/ui': path.resolve(__dirname, '../../frappe/ui/src'),
       },
+      // ensure the linked framework package reuses the host app's single copy of each peer.
+      // `dompurify` is an implicit dep of @framework/ui's sanitize util (not declared in its
+      // package.json); dedupe resolves it to the host's copy since the symlinked source has
+      // no node_modules of its own.
+      dedupe: ['vue', 'vue-router', 'frappe-ui', 'dompurify'],
     },
     optimizeDeps: {
       include: [
@@ -69,7 +79,9 @@ export default defineConfig(async ({ mode }) => {
     },
     server: {
       fs: {
-        allow: [path.resolve(__dirname, '..')],
+        // allow the bench `apps/` dir so Vite can serve linked local packages
+        // (frappe-ui, @framework/ui) that live in sibling app repos
+        allow: [path.resolve(__dirname, '../..')],
       },
     },
   }
@@ -130,6 +142,18 @@ function getAliases(config) {
       '../frappe-ui/src/style.css',
     ),
     'frappe-ui/frappe': path.resolve(__dirname, '../frappe-ui/frappe/index.js'),
+    // subpath entries must precede the bare `frappe-ui` key: a plain string alias
+    // matches by prefix, so without these `frappe-ui/editor` would rewrite to
+    // `.../src/index.ts/editor`. `internals` is pulled in by @framework/ui.
+    'frappe-ui/editor': path.resolve(
+      __dirname,
+      '../frappe-ui/src/molecules/editor/index.ts',
+    ),
+    'frappe-ui/editor-style.css': path.resolve(
+      __dirname,
+      '../frappe-ui/src/molecules/editor/style.css',
+    ),
+    'frappe-ui/internals': path.resolve(__dirname, '../frappe-ui/internals.ts'),
     'frappe-ui': path.resolve(__dirname, '../frappe-ui/src/index.ts'),
   }
 }
