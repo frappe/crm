@@ -82,19 +82,19 @@ def same_site(url: str, base_netloc: str) -> bool:
 		return False
 
 
-def _link_priority(url: str, anchor_text: str, priority_keywords: list) -> float:
-	"""Lower number = crawl sooner. Priority pages score by their keyword's rank,
-	weighted; non-priority pages sort last. ``priority_keywords`` is a list of
+def _link_priority(url: str, anchor_text: str, link_priority: list) -> float:
+	"""Lower number = crawl sooner. Matching links score by their keyword's rank,
+	weighted; non-matching pages sort last. ``link_priority`` is a list of
 	(keyword, weight) tuples from config."""
 	haystack = (urlparse(url).path + " " + (anchor_text or "")).lower()
 	best = None
-	for idx, (kw, weight) in enumerate(priority_keywords):
+	for idx, (kw, weight) in enumerate(link_priority):
 		if kw and kw in haystack:
 			# Higher weight -> earlier; ties broken by config order.
 			score = idx - (weight or 1.0)
 			if best is None or score < best:
 				best = score
-	return best if best is not None else len(priority_keywords) + 1
+	return best if best is not None else len(link_priority) + 1
 
 
 def _is_crawlable(url: str, skip_patterns: list) -> bool:
@@ -209,7 +209,7 @@ def crawl_page(url, cfg, session=None, allow_render=False):
 def crawl(start_url, cfg, session=None, progress=None, allow_render=False):
 	"""Breadth-first crawl from ``start_url``, prioritizing company-info pages.
 
-	Caps (``max_pages``/``max_depth``), priority keywords and skip patterns all
+	Caps (``max_pages``/``max_depth``), link-priority order and skip patterns all
 	come from ``cfg``. Returns a list of (CrawledPage, soup) tuples, homepage
 	first. Respects the page cap, depth cap, and same-domain rule.
 
@@ -219,7 +219,7 @@ def crawl(start_url, cfg, session=None, progress=None, allow_render=False):
 	"""
 	max_pages = int(cfg.setting("max_pages"))
 	max_depth = int(cfg.setting("max_depth"))
-	priority_keywords = cfg.priority_keywords
+	link_priority = cfg.link_priority
 	skip_patterns = cfg.skip_patterns
 
 	own_session = session is None
@@ -240,7 +240,7 @@ def crawl(start_url, cfg, session=None, progress=None, allow_render=False):
 					queue,
 					key=lambda item: (
 						0 if item[1] == 0 else 1,
-						_link_priority(item[0], item[2], priority_keywords),
+						_link_priority(item[0], item[2], link_priority),
 					),
 				)
 			)

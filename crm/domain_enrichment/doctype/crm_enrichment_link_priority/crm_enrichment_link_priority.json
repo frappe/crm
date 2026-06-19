@@ -32,7 +32,7 @@
  "modified": "2026-06-17 00:00:00.000000",
  "modified_by": "Administrator",
  "module": "Domain Enrichment",
- "name": "CRM Enrichment Priority Keyword",
+ "name": "CRM Enrichment Link Priority",
  "owner": "Administrator",
  "permissions": [],
  "row_format": "Dynamic",
