@@ -525,7 +525,7 @@
       </div>
       <TabButtons
         v-model="attending"
-        class="w-full [&_button]:w-full [&_div]:w-full"
+        class="w-full [&_button]:w-full [&_div]:w-full [&_button>span]:w-full"
         :buttons="[
           {
             label: __('Yes'),
