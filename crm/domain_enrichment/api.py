@@ -85,9 +85,9 @@ def enrich_preview(website: str, doctype: str = "CRM Deal") -> dict:
 	"""Bounded, fast, synchronous prefill for the create-record modal.
 
 	Runs the pipeline with the Settings preview bounds (homepage-only /
-	``preview_max_pages``, short ``preview_timeout``) and never renders via Chromium
-	(``allow_render`` defaults off), SSRF enforced by the engine. Maps the result to
-	the given doctype's Field Mapping. No DB writes, no doc, no job -- returns quickly.
+	``preview_max_pages``, short ``preview_timeout``), SSRF enforced by the engine.
+	Maps the result to the given doctype's Field Mapping. No DB writes, no doc, no
+	job -- returns quickly.
 
 	Returns ``{fields: {fieldname: value}, notes: [...]}``.
 	"""
@@ -103,7 +103,7 @@ def enrich_preview(website: str, doctype: str = "CRM Deal") -> dict:
 		)
 
 	# Build a bounded copy of the config: homepage-only crawl, short timeout. The
-	# engine still enforces SSRF; Chromium render is never used here (allow_render off).
+	# engine still enforces SSRF.
 	preview_settings = dict(cfg.settings)
 	preview_settings["max_pages"] = cfg.setting("preview_max_pages", 1)
 	preview_settings["max_depth"] = 0
@@ -118,7 +118,6 @@ def enrich_preview(website: str, doctype: str = "CRM Deal") -> dict:
 		blocked_domains=cfg.blocked_domains,
 	)
 
-	# allow_render defaults False -> the sync preview never spins up Chromium.
 	result = run_pipeline(website, cfg=preview_cfg)
 
 	fields: dict = {}

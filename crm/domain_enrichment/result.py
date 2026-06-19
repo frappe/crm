@@ -21,6 +21,7 @@ class Method:
 	JSON_LD = "JSON-LD"
 	META_TAG = "Meta Tag"
 	TITLE_TAG = "Title Tag"
+	BODY_TEXT = "Body Text"
 	FAVICON = "Favicon"
 	REGEX = "Regex"
 	TEL_LINK = "tel: link"

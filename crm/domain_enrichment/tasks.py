@@ -94,6 +94,39 @@ def write_run(
 	return doc.name
 
 
+def auto_enrich_on_create(doc, method=None):
+	"""``after_insert`` hook for CRM Organization: enqueue enrichment automatically.
+
+	Best-effort and never raises into the org save. Fires only when the feature is
+	enabled, enabled for CRM Organization, ``auto_enrich`` is on, and the org has a
+	website. Reuses the same per-doc ``job_id`` + ``deduplicate`` as the manual
+	``api.enrich`` path, so a manual click and the auto-fire never double-run.
+	"""
+	try:
+		cfg = get_config()
+		if not (cfg.setting("enabled") and cfg.setting("enable_organization") and cfg.setting("auto_enrich")):
+			return
+
+		website = (doc.get("website") or "").strip()
+		if not website:
+			return
+
+		timeout = int(cfg.setting("request_timeout", 10)) * int(cfg.setting("max_pages", 10)) + 60
+		frappe.enqueue(
+			"crm.domain_enrichment.tasks.run_enrichment",
+			queue="long",
+			timeout=timeout,
+			job_id=f"domain-enrich-{doc.doctype}-{doc.name}",
+			deduplicate=True,
+			reference_doctype=doc.doctype,
+			reference_name=doc.name,
+			website=website,
+			user=frappe.session.user,
+		)
+	except Exception:
+		frappe.log_error(title="Domain Enrichment: auto_enrich_on_create failed")
+
+
 def run_enrichment(reference_doctype: str, reference_name: str, website: str, user: str | None = None):
 	"""Enqueued worker: crawl, map onto the origin doc, write a Run, stream progress.
 
@@ -119,8 +152,7 @@ def run_enrichment(reference_doctype: str, reference_name: str, website: str, us
 		cfg = get_config()
 		_publish(reference_doctype, reference_name, status="running", message="Starting", step=0, user=user)
 
-		# Background job -> allow the Chromium JS-render fallback (gated by Settings.render_js).
-		result = run_pipeline(website, cfg=cfg, progress=progress, allow_render=True)
+		result = run_pipeline(website, cfg=cfg, progress=progress)
 
 		doc = frappe.get_doc(reference_doctype, reference_name)
 		doc.check_permission("write")

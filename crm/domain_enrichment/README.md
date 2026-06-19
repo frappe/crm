@@ -26,12 +26,11 @@ itself; it loads rules and executes them.
 - **Provenance preserved.** Every extracted value records `{value, source, method}`
   — which page it came from and how it was found — so a reviewer can judge how much
   to trust it. The full provenance JSON is stored on each run.
-- **Self-contained.** The only outbound traffic is fetching/rendering the target
-  site itself — no third-party APIs.
-- **Framework-native.** Outbound HTTP uses `frappe.utils.get_request_session`; the
-  optional JS-render fallback uses Frappe's bundled headless Chromium
-  (`frappe.utils.chromium`); background work uses `frappe.enqueue`; progress streams
-  over `frappe.publish_realtime`; config is cached in `frappe.cache()`.
+- **Self-contained.** The only outbound traffic is fetching the target site itself —
+  no third-party APIs.
+- **Framework-native.** Outbound HTTP uses `frappe.utils.get_request_session`;
+  background work uses `frappe.enqueue`; progress streams over
+  `frappe.publish_realtime`; config is cached in `frappe.cache()`.
 
 ---
 
@@ -44,10 +43,10 @@ DESK ADMIN (data)                         ENGINE (code, rule-agnostic)        RE
  CRM Enrichment Field Mapping ─────┘      http.py (session+SSRF+cap)           (Dynamic Link to
         │ on_update → clear cache         crawler.py (BFS; caps from cfg)       Lead/Deal/Org)
         │                                 extractors.py (rule executors)              ▲
-        ▼                                 browser.py (Chromium JS fallback)           │
-   bench migrate syncs                    pipeline.py → EnrichmentResult        mapper.py writes
-   native fields onto                     api.py (@whitelist) / tasks.py        mapped fields onto
-   Lead/Deal/Organization                 (enqueue + realtime)                 the record (policy)
+        ▼                                 pipeline.py → EnrichmentResult              │
+   bench migrate syncs                    api.py (@whitelist) / tasks.py        mapper.py writes
+   native fields onto                     (enqueue + realtime)                  mapped fields onto
+   Lead/Deal/Organization                                                      the record (policy)
 ```
 
 ### Module map (`crm/domain_enrichment/`)
@@ -56,7 +55,7 @@ DESK ADMIN (data)                         ENGINE (code, rule-agnostic)        RE
 |---|---|
 | `config.py` | `get_config()` → cached `EnrichmentConfig` (settings + `Rule`/`Mapping` objects). Invalidated by `clear_config_cache`. |
 | `http.py` | `fetch(url, cfg)` on the framework session; the **SSRF guard** (`validate_url`); byte cap; HTML-only filter; never-raise `(status, html, error)` contract. |
-| `crawler.py` | Same-domain, depth-limited BFS. Caps / link-priority order / skip patterns from config. Optional per-page Chromium JS-render fallback (background only). |
+| `crawler.py` | Same-domain, depth-limited BFS. Caps / link-priority order / skip patterns from config. |
 | `extractors.py` | **Generic rule executor** (`apply_keyword_rules`) + the pure mechanics. No literal keyword tables. |
 | `result.py` | `EnrichmentResult` and its `{value, source, method}` provenance schema. Pure dataclasses, no framework import. |
 | `pipeline.py` | `run(website, cfg, progress)` orchestrates crawl → extract → assemble `EnrichmentResult`. Never writes to the DB. |
@@ -64,7 +63,6 @@ DESK ADMIN (data)                         ENGINE (code, rule-agnostic)        RE
 | `tasks.py` | `run_enrichment` (enqueued worker) + `write_run` (the **single** run-history writer). Streams realtime progress; never raises. |
 | `api.py` | Whitelisted `enrich` (enqueue) + `enrich_preview` (bounded sync prefill). Type-annotated; permission- and rate-limited. |
 | `cross_record.py` | `copy_enrichment_from_organization` — the one link-time Org→Lead/Deal copy. |
-| `browser.py` | Background-only Chromium render fallback (`render(url, cfg)`) for JS-only pages; SSRF-guarded, never-raises. |
 | `install.py` | Idempotent seeder: translates the original constant tables into Rule + Field Mapping records. |
 
 ---
@@ -81,12 +79,12 @@ on the next enrichment without a restart.
 |---|---|
 | `enabled` | Master on/off for the whole feature. |
 | `enable_lead` / `enable_deal` / `enable_organization` | Which doctypes can be enriched. |
+| `auto_enrich` | When `1`, a newly-created CRM Organization with a website is enriched automatically in a background job (`after_insert`). Default `0` — enrichment is manual via the Enrich button. Requires `enable_organization`. |
 | `max_pages` / `max_depth` | Crawl breadth/depth caps (BFS). |
 | `request_timeout` | Per-request timeout (seconds). |
 | `max_download_bytes` | Hard cap on bytes read per page (streamed). |
 | `retry_count` | Transient-error retries on the session. |
 | `user_agent` | Crawler User-Agent header. |
-| `render_js` | Background-only Chromium fallback for JS-rendered pages. Default `0`; requires `bench setup-chromium`. |
 | `preview_max_pages` / `preview_timeout` | Bounds for the fast `enrich_preview` (create-modal) path. |
 | `allow_private_networks` | **SSRF bypass.** Default `0`. When `1` the guard does not reject private/loopback IPs (use only for internal testing). |
 | `allowed_domains` / `blocked_domains` (child) | SSRF allow/block lists (subdomain-aware). A blocked host is always rejected; if an allow list exists, only listed hosts pass. |
@@ -153,10 +151,6 @@ classifier picks it up on the next run.
 `CRM Enrichment Field Mapping` — change `target_fieldname`, or flip `write_policy`
 from `Fill if empty` to `Always refresh`. To stop a field being written, untick
 `enabled` on its mapping.
-
-**Enable JS rendering.** Run `bench setup-chromium` once, then set `render_js = 1`
-in Settings. The background enrichment job will re-render JS-only pages via headless
-Chromium; the fast preview path is unaffected.
 
 **Tune crawl limits / SSRF.** Raise `max_pages`/`max_depth` for deeper crawls; add a
 `skip_patterns` row (e.g. `/blog/`) to skip noisy sections; add a `blocked_domains`
@@ -231,30 +225,6 @@ write back to the Organization. The field-writing reuses `mapper.apply_to_docume
 
 ---
 
-## JavaScript rendering (Chromium fallback)
-
-The fast path is a plain `requests` fetch (`http.fetch`). Sites whose body is
-client-rendered come back with near-empty text; for those, the crawler can re-render
-the page with Frappe's bundled headless Chromium (`frappe.utils.chromium`) and use the
-resulting DOM. This is **off by default** and **runs in the background job only**:
-
-- `browser.render(url, cfg)` navigates the URL (waiting for `networkIdle`), returns
-  `document.documentElement.outerHTML`, and mirrors `http.fetch`'s never-raise
-  `(status, html, error)` contract. It is modeled on `frappe.utils.preview`.
-- `crawler.crawl_page` invokes it only when **all** hold: `allow_render` is set,
-  `Settings.render_js` is on, the requests fetch returned 2xx HTML, and the extracted
-  text is `< JS_RENDER_MIN_TEXT`. The rendered HTML is adopted only if it has more text.
-- **Background-only is structural:** `pipeline.run(allow_render=...)` defaults `False`;
-  only `tasks.run_enrichment` passes `True`. `enrich_preview` never renders. As defense
-  in depth, `browser.render` refuses to launch in a web-request context.
-- The SSRF guard (`http.validate_url`) runs before any navigation.
-
-**Enable:** `bench setup-chromium`, then Settings → `render_js = 1`. If Chromium is
-absent or rendering fails, `render()` returns an error tuple and the crawler keeps the
-requests HTML — no crash.
-
----
-
 ## SSRF Guard
 
 - **SSRF guard (`http.validate_url`).** Mandatory and not provided by the framework.
@@ -292,16 +262,19 @@ requests HTML — no crash.
 
 ## Limitations & future
 
-- **JS-rendered sites.** The fast path reads server-delivered HTML only, so a
-  client-rendered site yields only `<head>` metadata unless the Chromium fallback is
-  enabled (`render_js` + `bench setup-chromium`) — see "JavaScript rendering" above.
-  Rendering is background-only and slower (~1 concurrent browser per worker).
+- **JS-rendered sites.** Enrichment reads server-delivered HTML only (`requests` +
+  BeautifulSoup), so a fully client-rendered site yields only `<head>` metadata; the
+  run records the "main content is JavaScript-rendered" note (`READABILITY_MESSAGES["empty"]`)
+  and fields may be blank. A headless-Chromium render fallback was prototyped but
+  **intentionally removed** — the per-worker Chromium memory footprint isn't worth it
+  for a fallback. (The implementation is preserved locally in the gitignored
+  `CHROMIUM_FALLBACK.local.md` if it ever needs to be reintroduced.)
 - **Favicon-as-logo.** The "logo" is the best favicon/touch-icon, which is a small
   square icon, not always a full brand logo. Good enough for an avatar; not a media
   asset.
 - **Scheduled re-enrichment — _future feature, not implemented._** Triggering is
-  manual only; there is no scheduler, no auto re-enrich, and intentionally no inert
-  Settings field for it. A future version could enqueue periodic re-enrichment of
+  either manual (Enrich button) or automatic on Organization creation (`auto_enrich`);
+  there is no *scheduled* re-enrichment of existing records. A future version could enqueue periodic re-enrichment of
   stale records (e.g. via a scheduled job that re-runs `tasks.run_enrichment` for
   records whose last `CRM Enrichment Run` is older than N days).
 

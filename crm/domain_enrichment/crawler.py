@@ -51,11 +51,6 @@ SKIP_EXTENSIONS = (
 )
 SKIP_SCHEMES = ("mailto:", "tel:", "javascript:", "data:", "#")
 
-# A 2xx HTML page with fewer readable chars than this is treated as JS-rendered
-# (matches diagnose_readability's "empty" cutoff) and is eligible for the Chromium
-# render fallback when allow_render + Settings.render_js are on.
-JS_RENDER_MIN_TEXT = 200
-
 
 def normalize_url(url: str) -> str:
 	"""Strip fragments and trailing slashes for stable dedupe."""
@@ -170,43 +165,56 @@ def _parse_and_fill(page, html):
 	return soup
 
 
-def crawl_page(url, cfg, session=None, allow_render=False):
+def crawl_page(url, cfg, session=None):
 	"""Fetch and parse a single page. Returns (CrawledPage, soup_or_None).
 
 	Failures are captured on ``CrawledPage.error`` rather than raised. The soup
 	returned is a fresh, unmutated parse (``extract_content`` runs on a copy).
-
-	JS-render fallback: when ``allow_render`` (background-job only) and
-	``Settings.render_js`` are on and the fetched page is a 2xx HTML doc with almost
-	no readable text (a client-rendered SPA), the page is re-rendered via Chromium
-	(``browser.render``) and adopted only if it yields more text than the fast
-	requests fetch. Requests remains the default path.
 	"""
 	status, html, error = fetch(url, cfg, session=session)
 	page = CrawledPage(url=url, status_code=status, html=html or "", error=error)
 	soup = _parse_and_fill(page, html) if (html and not error) else None
-
-	if (
-		allow_render
-		and cfg.setting("render_js")
-		and not error
-		and status == 200
-		and html
-		and len(page.text) < JS_RENDER_MIN_TEXT
-	):
-		from . import browser
-
-		r_status, r_html, r_error = browser.render(url, cfg)
-		if not r_error and r_html:
-			r_page = CrawledPage(url=url, status_code=r_status, html=r_html)
-			r_soup = _parse_and_fill(r_page, r_html)
-			if len(r_page.text) > len(page.text):  # adopt only a richer render
-				page, soup = r_page, r_soup
-
 	return page, soup
 
 
-def crawl(start_url, cfg, session=None, progress=None, allow_render=False):
+# Common About-page paths probed when the BFS didn't surface one (some sites don't
+# link About prominently, but it's the best source of a company description).
+ABOUT_PROBE_PATHS = ("/about", "/about-us", "/company", "/our-story")
+# A probed page needs at least this much readable text to be worth keeping.
+ABOUT_MIN_TEXT = 200
+
+
+def probe_about_pages(home_url, cfg, session=None, skip_urls=()):
+	"""Best-effort fetch of common About-page paths not already crawled.
+
+	Returns ``[(CrawledPage, soup)]`` for the first probed path that returns a readable
+	page (or empty). SSRF + byte caps are enforced by ``fetch``; failures are ignored.
+	Bounded: stops at the first readable hit, at most ``len(ABOUT_PROBE_PATHS)`` fetches.
+	"""
+	skip = {normalize_url(u) for u in skip_urls}
+	own_session = session is None
+	session = session or build_session(cfg)
+	try:
+		for path in ABOUT_PROBE_PATHS:
+			url = normalize_url(urljoin(home_url, path))
+			if url in skip:
+				continue
+			skip.add(url)
+			page, soup = crawl_page(url, cfg, session=session)
+			if (
+				soup is not None
+				and page.status_code == 200
+				and not page.error
+				and len(page.text) >= ABOUT_MIN_TEXT
+			):
+				return [(page, soup)]
+	finally:
+		if own_session:
+			session.close()
+	return []
+
+
+def crawl(start_url, cfg, session=None, progress=None):
 	"""Breadth-first crawl from ``start_url``, prioritizing company-info pages.
 
 	Caps (``max_pages``/``max_depth``), link-priority order and skip patterns all
@@ -214,8 +222,6 @@ def crawl(start_url, cfg, session=None, progress=None, allow_render=False):
 	first. Respects the page cap, depth cap, and same-domain rule.
 
 	``progress`` is an optional ``fn(message)`` called per crawled URL.
-	``allow_render`` enables the per-page Chromium JS-render fallback (background-job
-	only; the synchronous preview path leaves it False).
 	"""
 	max_pages = int(cfg.setting("max_pages"))
 	max_depth = int(cfg.setting("max_depth"))
@@ -252,7 +258,7 @@ def crawl(start_url, cfg, session=None, progress=None, allow_render=False):
 
 			if progress:
 				progress(f"Crawling {url}")
-			page, soup = crawl_page(url, cfg, session=session, allow_render=allow_render)
+			page, soup = crawl_page(url, cfg, session=session)
 			results.append((page, soup))
 
 			if soup is None or depth >= max_depth:

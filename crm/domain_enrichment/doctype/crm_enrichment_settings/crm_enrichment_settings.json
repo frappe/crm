@@ -11,6 +11,8 @@
   "enable_lead",
   "enable_deal",
   "enable_organization",
+  "automation_section",
+  "auto_enrich",
   "crawl_tab",
   "max_pages",
   "max_depth",
@@ -19,7 +21,6 @@
   "max_download_bytes",
   "retry_count",
   "user_agent",
-  "render_js",
   "preview_section",
   "preview_max_pages",
   "preview_timeout",
@@ -71,6 +72,19 @@
    "label": "Enable for CRM Organization"
   },
   {
+   "fieldname": "automation_section",
+   "fieldtype": "Section Break",
+   "label": "Automation"
+  },
+  {
+   "default": "0",
+   "description": "Automatically enrich a CRM Organization in the background as soon as it is created (requires a website). When off, enrichment is triggered manually via the Enrich button.",
+   "depends_on": "eval:doc.enable_organization",
+   "fieldname": "auto_enrich",
+   "fieldtype": "Check",
+   "label": "Auto-enrich new Organizations"
+  },
+  {
    "fieldname": "crawl_tab",
    "fieldtype": "Tab Break",
    "label": "Crawl"
@@ -119,13 +133,6 @@
    "fieldname": "user_agent",
    "fieldtype": "Data",
    "label": "User Agent"
-  },
-  {
-   "default": "0",
-   "description": "Re-render JavaScript-only pages with headless Chromium when the fast fetch returns near-empty content. Runs in the background enrichment job only and requires Chromium to be provisioned (bench setup-chromium).",
-   "fieldname": "render_js",
-   "fieldtype": "Check",
-   "label": "Render JavaScript (Chromium fallback)"
   },
   {
    "fieldname": "preview_section",
