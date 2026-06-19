@@ -126,6 +126,48 @@ class PipelineRunTest(UnitTestCase):
 		self.assertTrue(result.notes)  # carries the "couldn't reach" note
 
 
+class JsSpaSiteTest(UnitTestCase):
+	"""Enriching a JavaScript-only SPA (empty body, client-rendered content).
+
+	Without a render step the engine sees only the build-tool-default `<head>` metadata
+	and an empty `<body>`. It must (a) flag the page as JS-rendered, (b) not fabricate
+	a description/industry/contacts, and (c) still surface whatever metadata exists
+	(title-tag company name + favicon), all without raising.
+	"""
+
+	def _spa_crawl(self, *_a, **_k):
+		return [fixtures.make_page("https://spa.example", fixtures.JS_SPA_SHELL)]
+
+	def test_js_only_site_yields_metadata_only(self):
+		cfg = _full_config()
+		with (
+			mock.patch.object(pipeline_mod, "crawl", self._spa_crawl),
+			# No About page is crawled; the probe must not hit the real network.
+			mock.patch.object(pipeline_mod, "probe_about_pages", return_value=[]),
+		):
+			result = run_pipeline("https://spa.example", cfg=cfg)
+		out = result.to_dict()
+
+		# Flagged as JS-rendered, and nothing fabricated.
+		self.assertTrue(any("JavaScript-rendered" in n for n in result.notes))
+		self.assertEqual(out["description"]["value"], "")
+		self.assertEqual(out["industry"]["value"], "")
+		self.assertEqual(out["emails"], [])
+		self.assertEqual(out["phones"], [])
+		self.assertTrue(all(p.value == "" for p in result.social_profiles.values()))
+
+		# Only the metadata the shell actually exposes is surfaced.
+		self.assertEqual(out["company_name"]["value"], "Vite App")
+		self.assertEqual(out["company_name"]["method"], "Title Tag")
+		self.assertTrue(out["logo"]["value"].endswith("/vite.svg"))
+
+	def test_readability_diagnosed_empty(self):
+		from crm.domain_enrichment import extractors
+
+		page, _soup = fixtures.make_page("https://spa.example", fixtures.JS_SPA_SHELL)
+		self.assertEqual(extractors.diagnose_readability([page]), "empty")
+
+
 class SchemaStabilityTest(UnitTestCase):
 	"""The result schema must be identical regardless of what a site exposes."""
 
