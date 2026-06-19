@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-06-14 10:35+0000\n"
-"PO-Revision-Date: 2026-06-15 18:52\n"
+"PO-Revision-Date: 2026-06-19 19:45\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Swedish\n"
 "MIME-Version: 1.0\n"
@@ -1101,7 +1101,7 @@ msgstr "Exotel Inställningar"
 #. Name of a DocType
 #: crm/fcrm/doctype/crm_fields_layout/crm_fields_layout.json
 msgid "CRM Fields Layout"
-msgstr "Fält Upplägg"
+msgstr "Fält Utseende"
 
 #. Name of a DocType
 #: crm/fcrm/doctype/crm_form_script/crm_form_script.json
@@ -2240,7 +2240,7 @@ msgstr "Standard Samtal medium angiven till {0}"
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.js:26
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.js:38
 msgid "Default statuses, custom fields and layouts restored successfully."
-msgstr "Standard status, anpassade fält och upplägg återställdes."
+msgstr "Standard status, anpassade fält och utseende återställdes."
 
 #: frontend/src/components/Settings/Settings.vue:130
 msgid "Defaults"
@@ -2667,7 +2667,7 @@ msgstr "Redigera Samtalslogg"
 
 #: frontend/src/components/Modals/DataFieldsModal.vue:7
 msgid "Edit Data Fields Layout"
-msgstr "Redigera Datafält Upplägg"
+msgstr "Redigera Datafält Utseende"
 
 #: frontend/src/components/Settings/EmailEdit.vue:6
 msgid "Edit Email"
@@ -2679,7 +2679,7 @@ msgstr "Redigera Händelse"
 
 #: frontend/src/components/Modals/SidePanelModal.vue:7
 msgid "Edit Field Layout"
-msgstr "Redigera Fält Upplägg"
+msgstr "Redigera Fält Utseende"
 
 #: frontend/src/components/Activities/DataFields.vue:17
 #: frontend/src/components/Controls/GridRowModal.vue:14
@@ -2690,7 +2690,7 @@ msgstr "Redigera Fält Upplägg"
 #: frontend/src/components/Modals/LeadModal.vue:16
 #: frontend/src/components/Modals/OrganizationModal.vue:16
 msgid "Edit Fields Layout"
-msgstr "Redigera Fält Upplägg"
+msgstr "Redigera Fält Utseende"
 
 #: frontend/src/components/Controls/Grid.vue:57
 msgid "Edit Grid Fields"
@@ -2698,11 +2698,11 @@ msgstr "Redigera Rutnät Fält"
 
 #: frontend/src/components/Controls/GridFieldsEditorModal.vue:7
 msgid "Edit Grid Fields Layout"
-msgstr "Redigera Rutnät Fält Upplägg"
+msgstr "Redigera Rutnät Fält Utseende"
 
 #: frontend/src/components/Controls/GridRowFieldsModal.vue:7
 msgid "Edit Grid Row Fields Layout"
-msgstr "Redigera Rutnätsrad Fält Upplägg"
+msgstr "Redigera Rutnätsrad Fält Utseende"
 
 #: frontend/src/components/Modals/CallLogDetailModal.vue:20
 msgid "Edit Note"
@@ -2710,7 +2710,7 @@ msgstr "Redigera Anteckning"
 
 #: frontend/src/components/Modals/QuickEntryModal.vue:7
 msgid "Edit Quick Entry Layout"
-msgstr "Redigera Snabbinmatning Upplägg"
+msgstr "Redigera Snabbinmatning Utseende"
 
 #: frontend/src/components/Settings/Sla/EditResponseResolutionModal.vue:5
 msgid "Edit Response & Resolution"
@@ -3313,7 +3313,7 @@ msgstr "Misslyckades med att hämta växelkurs från {0} till {1} {2}. Kontrolle
 
 #: frontend/src/components/Modals/FieldLayoutDialog.vue:172
 msgid "Failed to load fields layout"
-msgstr "Misslyckades med att ladda fältlayout"
+msgstr "Misslyckades med att ladda fält utseende"
 
 #: frontend/src/data/script.js:150
 msgid "Failed to load file-based form controller: {0}"
@@ -4276,7 +4276,7 @@ msgstr "Senaste användare tilldelad av denna regel"
 #: crm/fcrm/doctype/crm_dashboard/crm_dashboard.json
 #: crm/fcrm/doctype/crm_fields_layout/crm_fields_layout.json
 msgid "Layout"
-msgstr "Upplägg"
+msgstr "Utseende"
 
 #. Label of the lead (Link) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
@@ -5225,7 +5225,7 @@ msgstr "Inte tillåtet att komma åt refererad WhatsApp meddelande."
 
 #: crm/fcrm/doctype/crm_fields_layout/crm_fields_layout.py:197
 msgid "Not permitted to modify fields layout"
-msgstr "Det är inte tillåtet att ändra fältlayout"
+msgstr "Det är inte tillåtet att ändra fält utseende"
 
 #. Label of the note (Link) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
@@ -5894,7 +5894,7 @@ msgstr "Snabb Post"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:624
 msgid "Quick Entry Layout"
-msgstr "Snabbinmatning Upplägg"
+msgstr "Snabbinmatning Utseende"
 
 #. Option for the 'Type' (Select) field in DocType 'CRM Global Settings'
 #: crm/fcrm/doctype/crm_global_settings/crm_global_settings.json
@@ -6884,7 +6884,7 @@ msgstr "Fel inträffade när Service Nivå Avtal Princip döptes om"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:766
 msgid "Some error occurred while renaming assignment rule"
-msgstr "Ett fel uppstod när tilldelningsregeln bytte namn"
+msgstr "Fel uppstod när tilldelning regel döptes om"
 
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:476
 msgid "Some error occurred while updating SLA policy"
