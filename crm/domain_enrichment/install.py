@@ -282,6 +282,23 @@ def seed_default_rules_and_mappings():
 	_seed_industry_rules()
 	_seed_social_rules()
 	_seed_field_mappings()
+	_seed_settings_defaults()
+
+
+def _seed_settings_defaults():
+	"""Embed the default Link Priority Order rows into Settings.
+
+	Idempotent: only populated when the table is empty, so admin edits/removals are
+	never clobbered. The default list lives in ``config.DEFAULT_LINK_PRIORITY``.
+	"""
+	from crm.domain_enrichment.config import DEFAULT_LINK_PRIORITY
+
+	settings = frappe.get_single("CRM Enrichment Settings")
+	if settings.link_priority_order:
+		return
+	for keyword, weight in DEFAULT_LINK_PRIORITY:
+		settings.append("link_priority_order", {"keyword": keyword, "weight": weight})
+	settings.save(ignore_permissions=True)
 
 
 def _ensure_industry(industry: str):

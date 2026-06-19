@@ -56,7 +56,7 @@ DESK ADMIN (data)                         ENGINE (code, rule-agnostic)        RE
 |---|---|
 | `config.py` | `get_config()` → cached `EnrichmentConfig` (settings + `Rule`/`Mapping` objects). Invalidated by `clear_config_cache`. |
 | `http.py` | `fetch(url, cfg)` on the framework session; the **SSRF guard** (`validate_url`); byte cap; HTML-only filter; never-raise `(status, html, error)` contract. |
-| `crawler.py` | Same-domain, depth-limited BFS. Caps / priority keywords / skip patterns from config. Optional per-page Chromium JS-render fallback (background only). |
+| `crawler.py` | Same-domain, depth-limited BFS. Caps / link-priority order / skip patterns from config. Optional per-page Chromium JS-render fallback (background only). |
 | `extractors.py` | **Generic rule executor** (`apply_keyword_rules`) + the pure mechanics. No literal keyword tables. |
 | `result.py` | `EnrichmentResult` and its `{value, source, method}` provenance schema. Pure dataclasses, no framework import. |
 | `pipeline.py` | `run(website, cfg, progress)` orchestrates crawl → extract → assemble `EnrichmentResult`. Never writes to the DB. |
@@ -90,7 +90,7 @@ on the next enrichment without a restart.
 | `preview_max_pages` / `preview_timeout` | Bounds for the fast `enrich_preview` (create-modal) path. |
 | `allow_private_networks` | **SSRF bypass.** Default `0`. When `1` the guard does not reject private/loopback IPs (use only for internal testing). |
 | `allowed_domains` / `blocked_domains` (child) | SSRF allow/block lists (subdomain-aware). A blocked host is always rejected; if an allow list exists, only listed hosts pass. |
-| `priority_keywords` (child) | `keyword` + `weight`: pages whose URL/anchor contain these are crawled sooner. |
+| `link_priority_order` (child) | `keyword` + `weight`: a crawl-ordering hint — links whose URL/anchor contain these are fetched first (higher weight = sooner). Defaults are seeded on install. |
 | `skip_patterns` (child) | URL substrings/regexes to never crawl. |
 
 If the Single has never been saved, the engine falls back to sane defaults
@@ -255,7 +255,7 @@ requests HTML — no crash.
 
 ---
 
-## Security
+## SSRF Guard
 
 - **SSRF guard (`http.validate_url`).** Mandatory and not provided by the framework.
   It rejects non-`http(s)` schemes, resolves the hostname, and rejects any URL that

@@ -24,10 +24,10 @@
   "preview_max_pages",
   "preview_timeout",
   "tuning_section",
-  "priority_keywords",
+  "link_priority_order",
   "column_break_tuning",
   "skip_patterns",
-  "security_tab",
+  "ssrf_guard_tab",
   "allow_private_networks",
   "allowed_domains_section",
   "allowed_domains",
@@ -152,11 +152,11 @@
    "label": "Crawl Tuning"
   },
   {
-   "description": "Substrings that boost a candidate link's crawl priority.",
-   "fieldname": "priority_keywords",
+   "description": "Crawl-ordering hints (not extraction). Links whose URL path or anchor text contain one of these are fetched first; higher weight = sooner. Lets the crawler spend its page budget on company pages (about/contact/team) before the cap. Defaults are seeded; edit or remove as needed.",
+   "fieldname": "link_priority_order",
    "fieldtype": "Table",
-   "label": "Priority Keywords",
-   "options": "CRM Enrichment Priority Keyword"
+   "label": "Link Priority Order",
+   "options": "CRM Enrichment Link Priority"
   },
   {
    "fieldname": "column_break_tuning",
@@ -170,9 +170,9 @@
    "options": "CRM Enrichment Skip Pattern"
   },
   {
-   "fieldname": "security_tab",
+   "fieldname": "ssrf_guard_tab",
    "fieldtype": "Tab Break",
-   "label": "Security"
+   "label": "SSRF Guard"
   },
   {
    "default": "0",
@@ -187,7 +187,7 @@
    "label": "Allowed Domains"
   },
   {
-   "description": "If set, only these domains may be crawled (allowlist).",
+   "description": "Allowlist (subdomain-aware). If you add any domains here, the crawler may ONLY visit those domains and their subdomains — everything else is rejected by the SSRF guard. Leave empty (the normal case) to allow any public site; this is for locked-down deployments that should reach only specific domains.",
    "fieldname": "allowed_domains",
    "fieldtype": "Table",
    "label": "Allowed Domains",
@@ -199,7 +199,7 @@
    "label": "Blocked Domains"
   },
   {
-   "description": "Domains that may never be crawled (denylist).",
+   "description": "Denylist (subdomain-aware). A host that equals or is a subdomain of any entry is always rejected by the SSRF guard — e.g. blocking \"acme.com\" also blocks \"shop.acme.com\". Use it to permanently exclude internal domains, known-bad hosts, or link shorteners. Always wins over the allowlist.",
    "fieldname": "blocked_domains",
    "fieldtype": "Table",
    "label": "Blocked Domains",

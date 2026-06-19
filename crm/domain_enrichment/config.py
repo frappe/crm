@@ -47,9 +47,9 @@ DEFAULT_SETTINGS = {
 INDUSTRY_MIN_SCORE = 2  # at least one headline keyword hit (weighted)
 INDUSTRY_MIN_CONFIDENCE = 0.34  # the winner must clearly lead
 
-# Default page-priority keywords (BFS ordering) used when Settings has no
-# priority_keywords child rows. Same spirit as the POC's PRIORITY_KEYWORDS.
-DEFAULT_PRIORITY_KEYWORDS = [
+# Default link-priority ordering (BFS) -- seeded into Settings.link_priority_order
+# on install, and used as a fallback when that table is empty.
+DEFAULT_LINK_PRIORITY = [
 	("about", 1.0),
 	("contact", 1.0),
 	("team", 1.0),
@@ -107,7 +107,7 @@ class EnrichmentConfig:
 	settings: dict = field(default_factory=dict)
 	rules_by_type: dict = field(default_factory=dict)  # rule_type -> list[Rule]
 	mappings_by_doctype: dict = field(default_factory=dict)  # doctype -> list[Mapping]
-	priority_keywords: list = field(default_factory=list)  # list[(keyword, weight)]
+	link_priority: list = field(default_factory=list)  # list[(keyword, weight)]
 	skip_patterns: list = field(default_factory=list)  # list[str]
 	allowed_domains: list = field(default_factory=list)
 	blocked_domains: list = field(default_factory=list)
@@ -198,9 +198,11 @@ def _build_settings(settings_doc) -> dict:
 def _build_config() -> EnrichmentConfig:
 	settings_doc = frappe.get_cached_doc("CRM Enrichment Settings")
 
-	priority_keywords = [
-		(kw.keyword.lower(), kw.weight or 1.0) for kw in (settings_doc.priority_keywords or []) if kw.keyword
-	] or list(DEFAULT_PRIORITY_KEYWORDS)
+	link_priority = [
+		(kw.keyword.lower(), kw.weight or 1.0)
+		for kw in (settings_doc.link_priority_order or [])
+		if kw.keyword
+	] or list(DEFAULT_LINK_PRIORITY)
 
 	skip_patterns = [sp.pattern for sp in (settings_doc.skip_patterns or []) if sp.pattern]
 
@@ -211,7 +213,7 @@ def _build_config() -> EnrichmentConfig:
 		settings=_build_settings(settings_doc),
 		rules_by_type=_build_rules(),
 		mappings_by_doctype=_build_mappings(),
-		priority_keywords=priority_keywords,
+		link_priority=link_priority,
 		skip_patterns=skip_patterns,
 		allowed_domains=allowed_domains,
 		blocked_domains=blocked_domains,
