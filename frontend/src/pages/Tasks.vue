@@ -147,7 +147,7 @@
           variant="ghost"
           @click.stop.prevent
         >
-          <Button icon="more-horizontal" variant="ghost" />
+          <Button icon="lucide-more-horizontal" variant="ghost" />
         </Dropdown>
       </div>
     </template>

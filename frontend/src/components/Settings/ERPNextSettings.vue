@@ -5,7 +5,7 @@
   >
     <template #title>
       <div class="flex gap-2 items-center">
-        <h2 class="flex text-xl font-semibold leading-none h-5">
+        <h2 class="flex text-2xl-semibold leading-none h-5">
           {{ __('ERPNext Settings') }}
         </h2>
         <Tooltip text="View documentation">
@@ -115,7 +115,7 @@
               !erpnextCRMSettingsResource.isERPNextInstalled.data &&
               isUpdateButtonVisible
             "
-            class="h-px border-t my-4 border-outline-gray-modals"
+            class="h-px border-t my-4 border-outline-elevation-2"
           />
           <div
             v-if="
@@ -126,7 +126,7 @@
           >
             <div class="flex items-center justify-between pb-3 px-2">
               <div class="flex flex-col">
-                <div class="text-p-base font-medium text-ink-gray-7 truncate">
+                <div class="text-p-base-medium text-ink-gray-7 truncate">
                   {{ __('Company Name') }}
                 </div>
                 <div class="text-p-sm text-ink-gray-5 truncate">
@@ -158,7 +158,7 @@
                       theme="gray"
                       variant="ghost"
                       class="w-full"
-                      icon-left="refresh-cw"
+                      icon-left="lucide-refresh-cw"
                       :loading="
                         erpnextCRMSettingsResource.getExternalCompanies.loading
                       "
@@ -180,14 +180,14 @@
             </div>
             <div
               v-if="erpnextCRMSettingsResource.isERPNextInstalled.data"
-              class="h-px border-t border-outline-gray-modals"
+              class="h-px border-t border-outline-elevation-2"
             />
             <div
               v-if="erpnextCRMSettingsResource.isERPNextInstalled.data"
               class="flex items-center justify-between py-3 px-2"
             >
               <div class="flex flex-col">
-                <div class="text-p-base font-medium text-ink-gray-7 truncate">
+                <div class="text-p-base-medium text-ink-gray-7 truncate">
                   {{ __('Sync Products with ERPNext') }}
                 </div>
                 <div class="text-p-sm text-ink-gray-5 truncate">
@@ -206,10 +206,10 @@
                 {{ __('Sync Now') }}
               </Button>
             </div>
-            <div class="h-px border-t border-outline-gray-modals" />
+            <div class="h-px border-t border-outline-elevation-2" />
             <div class="flex items-center justify-between py-3 px-2">
               <div class="flex flex-col">
-                <div class="text-p-base font-medium text-ink-gray-7 truncate">
+                <div class="text-p-base-medium text-ink-gray-7 truncate">
                   {{ __('Auto Create Customer') }}
                 </div>
                 <div class="text-p-sm text-ink-gray-5 truncate">
@@ -237,7 +237,7 @@
             >
               <div class="flex items-center justify-between py-3 px-2 gap-4">
                 <div class="flex flex-col">
-                  <div class="text-p-base font-medium text-ink-gray-7">
+                  <div class="text-p-base-medium text-ink-gray-7">
                     {{ __('Deal Status') }}
                   </div>
                   <div class="text-p-sm text-ink-gray-5">
@@ -270,7 +270,7 @@
           >
             <ERPNextIcon class="size-7.5 text-ink-gray-5" />
             <div class="flex flex-col items-center gap-1.5 text-center">
-              <span class="text-lg font-medium text-ink-gray-8">
+              <span class="text-lg-medium text-ink-gray-8">
                 {{ __('Connect ERPNext to Frappe CRM') }}
               </span>
               <span class="text-center text-p-base text-ink-gray-6">

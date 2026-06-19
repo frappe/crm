@@ -1,11 +1,11 @@
 <!-- eslint-disable vue/no-v-html -->
 <template>
-  <Dialog v-model="show">
+  <Dialog v-model:open="show">
     <template #body>
-      <div class="bg-surface-modal px-4 pb-6 pt-5 sm:px-6">
+      <div class="bg-surface-elevation-2 px-4 pb-6 pt-5 sm:px-6">
         <div class="mb-5 flex items-center justify-between">
           <div>
-            <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9">
+            <h3 class="text-3xl-semibold leading-6 text-ink-gray-9">
               {{ __('Call Details') }}
             </h3>
           </div>
@@ -31,7 +31,7 @@
               ]"
             >
               <template #default>
-                <Button variant="ghost" icon="more-horizontal" />
+                <Button variant="ghost" icon="lucide-more-horizontal" />
               </template>
             </Dropdown>
             <Button
@@ -43,7 +43,7 @@
               @click="openCallLogModal"
             />
             <Button
-              icon="x"
+              icon="lucide-x"
               variant="ghost"
               class="w-7"
               @click="show = false"
@@ -72,9 +72,9 @@
                 <div class="ml-1 flex flex-col gap-1">
                   {{ field.value.caller.label }}
                 </div>
-                <FeatherIcon
-                  name="arrow-right"
-                  class="mx-1 h-4 w-4 text-ink-gray-5"
+                <span
+                  class="lucide-arrow-right mx-1 h-4 w-4 text-ink-gray-5"
+                  aria-hidden="true"
                 />
                 <Avatar
                   :image="field.value.receiver.image"

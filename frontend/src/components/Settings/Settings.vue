@@ -1,20 +1,20 @@
 <template>
   <Dialog
-    v-model="showSettings"
-    :options="{ size: '5xl' }"
+    v-model:open="showSettings"
+    :size="'5xl'"
     :disableOutsideClickToClose="disableSettingModalOutsideClick"
     @close="activeSettingsPage = ''"
   >
     <template #body>
-      <div class="flex h-[calc(100vh_-_8rem)] bg-surface-menu-bar">
+      <div class="flex h-[calc(100vh_-_8rem)] bg-surface-sidebar">
         <div
-          class="flex flex-col m-1 rounded-l-lg w-56 shrink-0 bg-surface-menu-bar overflow-y-auto"
+          class="flex flex-col m-1 rounded-l-lg w-56 shrink-0 bg-surface-sidebar overflow-y-auto"
         >
           <template v-for="(tab, i) in tabs" :key="tab.label">
             <div v-if="!tab.hideLabel && i != 0" class="mx-1 mb-0.5 mt-[5px]" />
             <div
               v-if="!tab.hideLabel"
-              class="h-7.5 px-2 py-[7px] my-[3px] flex cursor-pointer gap-1.5 text-xs font-medium text-ink-gray-5 transition-all duration-300 ease-in-out sticky top-0 z-10 bg-surface-menu-bar"
+              class="h-7.5 px-2 py-[7px] my-[3px] flex cursor-pointer gap-1.5 text-xs-medium text-ink-gray-5 transition-all duration-300 ease-in-out sticky top-0 z-10 bg-surface-sidebar"
             >
               <span>{{ __(tab.label) }}</span>
             </div>
@@ -27,7 +27,7 @@
                 class="w-full"
                 :class="
                   activeTab?.label == item.label
-                    ? 'bg-surface-selected shadow-sm hover:bg-surface-selected'
+                    ? 'bg-surface-elevation-3 shadow-sm hover:bg-surface-elevation-3'
                     : 'hover:bg-surface-gray-3'
                 "
                 @click="activeSettingsPage = item.label"
@@ -35,7 +35,9 @@
             </nav>
           </template>
         </div>
-        <div class="flex flex-col flex-1 overflow-y-auto bg-surface-modal">
+        <div
+          class="flex flex-col flex-1 overflow-y-auto bg-surface-elevation-2"
+        >
           <component :is="activeTab.component" v-if="activeTab" />
         </div>
       </div>

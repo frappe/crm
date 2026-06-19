@@ -1,9 +1,9 @@
 <template>
-  <Dialog v-model="show" :options="{ size: 'xl' }">
+  <Dialog v-model:open="show" :size="'xl'">
     <template #body-header>
       <div class="mb-6 flex items-center justify-between">
         <div>
-          <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9">
+          <h3 class="text-3xl-semibold leading-6 text-ink-gray-9">
             {{ __('Convert to Deal') }}
           </h3>
         </div>
@@ -15,11 +15,11 @@
             :icon="EditIcon"
             @click="openQuickEntryModal"
           />
-          <Button icon="x" variant="ghost" @click="show = false" />
+          <Button icon="lucide-x" variant="ghost" @click="show = false" />
         </div>
       </div>
     </template>
-    <template #body-content>
+    <template #default>
       <div class="mb-4 flex items-center gap-2 text-ink-gray-5">
         <OrganizationsIcon class="h-4 w-4" />
         <label class="block text-base">{{ __('Organization') }}</label>
