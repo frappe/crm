@@ -174,7 +174,7 @@ const tabs = computed(() => {
       label: __('Email'),
       items: [
         {
-          label: __('Accounts'),
+          label: __('Account'),
           icon: Email2Icon,
           component: markRaw(EmailConfig),
           condition: () => isManager(),
