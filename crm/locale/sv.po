@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-06-14 10:35+0000\n"
-"PO-Revision-Date: 2026-06-19 19:45\n"
+"PO-Revision-Date: 2026-06-20 19:58\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Swedish\n"
 "MIME-Version: 1.0\n"
@@ -918,23 +918,23 @@ msgstr "Automatisering & Regler"
 
 #: crm/api/dashboard.py:252
 msgid "Average deal value of non won/lost deals"
-msgstr "Medel affärsvärde för ej vunna/förlorade affärer"
+msgstr "Medelaffärsvärde för ej vunna/förlorade affärer"
 
 #: crm/api/dashboard.py:419
 msgid "Average deal value of ongoing & won deals"
-msgstr "Medel affärsvärde för pågående och vunna affärer"
+msgstr "Medelaffärsvärde för pågående och vunna affärer"
 
 #: crm/api/dashboard.py:365
 msgid "Average deal value of won deals"
-msgstr "Medel affärsvärde för vunna affärer"
+msgstr "Medelaffärsvärde för vunna affärer"
 
 #: crm/api/dashboard.py:546
 msgid "Average time taken from deal creation to deal closure"
-msgstr "Medel tid från det att affären skapades till att den avslutades"
+msgstr "Medeltid från det att affären skapades till att den avslutades"
 
 #: crm/api/dashboard.py:483
 msgid "Average time taken from lead creation to deal closure"
-msgstr "Medel tidsåtgång från skapande av potentiell kund till affär avslut"
+msgstr "Medeltidsåtgång från skapande av potentiell kund till affär avslut"
 
 #: frontend/src/components/Dashboard/AddChartModal.vue:81
 msgid "Avg Deal Value"
@@ -3193,7 +3193,7 @@ msgstr "Utgått"
 #: frontend/src/components/ViewControls.vue:215
 #: frontend/src/components/ViewControls.vue:263
 msgid "Export"
-msgstr "Export"
+msgstr "Exportera"
 
 #: frontend/src/components/ViewControls.vue:277
 msgid "Export Type"
@@ -6539,7 +6539,7 @@ msgstr "Se Alla Deltagare"
 
 #: frontend/src/components/SidePanelLayout.vue:154
 msgid "Select"
-msgstr "Välj i Listan"
+msgstr "Välj"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:176
 msgid "Select Company"
