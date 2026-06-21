@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-06-14 10:35+0000\n"
-"PO-Revision-Date: 2026-06-15 18:52\n"
+"PO-Revision-Date: 2026-06-21 20:01\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Polish\n"
 "MIME-Version: 1.0\n"
@@ -7204,7 +7204,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:79
 msgid "Template Name"
-msgstr ""
+msgstr "Nazwa szablonu"
 
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:175
 msgid "Template created successfully"
