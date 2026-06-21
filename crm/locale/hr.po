@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-06-14 10:35+0000\n"
-"PO-Revision-Date: 2026-06-18 19:34\n"
+"PO-Revision-Date: 2026-06-21 20:02\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Croatian\n"
 "MIME-Version: 1.0\n"
@@ -1692,7 +1692,7 @@ msgstr "Potvrdi prepisivanje"
 
 #: frontend/src/components/Modals/ChangePasswordModal.vue:30
 msgid "Confirm Password"
-msgstr "Potvrdi Lozinku"
+msgstr "Potvrdi lozinku"
 
 #: frontend/src/utils/index.js:822 frontend/src/utils/index.js:825
 msgid "Confirm {0}"
@@ -5132,7 +5132,7 @@ msgstr "Br."
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
 msgid "No. of Employees"
-msgstr "Personalni Broj"
+msgstr "Broj Osoblja"
 
 #: frontend/src/components/Activities/AudioPlayer.vue:148
 msgid "Normal"
@@ -7083,7 +7083,7 @@ msgstr "Mjenjaj se između odlaznih e-mail računa prilikom slanja e-mailova"
 #: frontend/src/components/Settings/ERPNextSettings.vue:206
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:23
 msgid "Sync Now"
-msgstr "Sinhronizuj Sad"
+msgstr "Sinkronizuj Sad"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:191
 msgid "Sync Products with ERPNext"
