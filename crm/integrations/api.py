@@ -61,6 +61,9 @@ def set_default_calling_medium(medium: str):
 @frappe.whitelist()
 def add_note_to_call_log(call_sid: str, note: dict):
 	"""Add/Update note to call log based on call sid."""
+	if not frappe.has_permission("CRM Call Log", "write", call_sid):
+		frappe.throw(_("Not permitted"), frappe.PermissionError)
+
 	_note = None
 	if not note.get("name"):
 		_note = frappe.get_doc(
@@ -83,6 +86,9 @@ def add_note_to_call_log(call_sid: str, note: dict):
 @frappe.whitelist()
 def add_task_to_call_log(call_sid: str, task: dict):
 	"""Add/Update task to call log based on call sid."""
+	if not frappe.has_permission("CRM Call Log", "write", call_sid):
+		frappe.throw(_("Not permitted"), frappe.PermissionError)
+
 	_task = None
 	if not task.get("name"):
 		_task = frappe.get_doc(
@@ -178,17 +184,29 @@ def get_contact(phone_number: str, country: str = "IN", exact_match: bool = Fals
 		.replace("+", "")
 	)
 
-	# Check if the number is associated with a contact
+	# Check if the number is associated with a contact.
+	# Search all of a contact's numbers (phone_nos child table) and not just the
+	# primary mobile_no, so calls from a secondary number still resolve.
 	Contact = frappe.qb.DocType("Contact")
+	ContactPhone = frappe.qb.DocType("Contact Phone")
 	normalized_phone = Replace(
-		Replace(Replace(Replace(Replace(Contact.mobile_no, " ", ""), "-", ""), "(", ""), ")", ""), "+", ""
+		Replace(Replace(Replace(Replace(ContactPhone.phone, " ", ""), "-", ""), "(", ""), ")", ""), "+", ""
 	)
 
 	query = (
-		frappe.qb.from_(Contact)
-		.select(Contact.name, Contact.full_name, Contact.image, Contact.mobile_no)
+		frappe.qb.from_(ContactPhone)
+		.join(Contact)
+		.on(ContactPhone.parent == Contact.name)
+		.select(
+			Contact.name,
+			Contact.full_name,
+			Contact.image,
+			Contact.mobile_no,
+			ContactPhone.phone.as_("matched_phone"),
+		)
+		.where(ContactPhone.parenttype == "Contact")
 		.where(normalized_phone.like(f"%{cleaned_number}%"))
-		.orderby("modified", order=Order.desc)
+		.orderby(Contact.modified, order=Order.desc)
 	)
 	contacts = query.run(as_dict=True)
 
@@ -199,7 +217,9 @@ def get_contact(phone_number: str, country: str = "IN", exact_match: bool = Fals
 				deal = frappe.db.get_value(
 					"CRM Contacts", {"contact": contact.name, "is_primary": 1}, "parent"
 				)
-				if are_same_phone_number(contact.mobile_no, phone_number, country, validate=not exact_match):
+				if are_same_phone_number(
+					contact.matched_phone, phone_number, country, validate=not exact_match
+				):
 					contact["deal"] = deal
 					return contact
 
@@ -226,7 +246,7 @@ def get_contact(phone_number: str, country: str = "IN", exact_match: bool = Fals
 				return lead
 
 	if len(contacts) and are_same_phone_number(
-		contacts[0].mobile_no, phone_number, country, validate=not exact_match
+		contacts[0].matched_phone, phone_number, country, validate=not exact_match
 	):
 		return contacts[0]
 
