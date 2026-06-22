@@ -24,7 +24,8 @@ def ensure_erpnext_fixtures():
 		return
 	from erpnext.setup.setup_wizard.operations.install_fixtures import install
 
-	install()
+	# A country is required: install() builds a root Territory named after it.
+	install("India")
 
 
 def load_crm_user_test_records():
