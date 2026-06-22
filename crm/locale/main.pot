@@ -326,15 +326,11 @@ msgstr ""
 msgid "Add Attendee"
 msgstr ""
 
-<<<<<<< HEAD
-#: frontend/src/components/Dashboard/AddChartModal.vue:4
-=======
 #: crm/fcrm/doctype/crm_product/crm_product_list.js:3
 msgid "Add CRM Product"
 msgstr ""
 
 #: frontend/src/components/Dashboard/AddChartModal.vue:2
->>>>>>> 9e34de39 (chore: update POT file)
 msgid "Add Chart"
 msgstr ""
 
@@ -1025,15 +1021,11 @@ msgstr ""
 msgid "Between"
 msgstr ""
 
-<<<<<<< HEAD
-#: frontend/src/components/Settings/Settings.vue:135
-=======
 #: frontend/src/components/Settings/ERPNextSettings.vue:195
 msgid "Bidirectional sync of existing CRM Products and ERPNext Items. Runs in the background."
 msgstr ""
 
 #: frontend/src/components/Settings/Settings.vue:137
->>>>>>> 9e34de39 (chore: update POT file)
 msgid "Brand"
 msgstr ""
 
@@ -1355,13 +1347,10 @@ msgstr ""
 msgid "Cannot delete standard items {0}"
 msgstr ""
 
-<<<<<<< HEAD
-=======
 #: crm/fcrm/doctype/crm_product/crm_product.py:81
 msgid "Cannot delete: linked ERPNext Item {0} is referenced by a Quotation. Remove the reference or delete the Item in ERPNext first."
 msgstr ""
 
->>>>>>> 9e34de39 (chore: update POT file)
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:170
 msgid "Cannot enable rule without adding users in it"
 msgstr ""
@@ -1374,15 +1363,11 @@ msgstr ""
 msgid "Cannot move a manager under one of their own reports"
 msgstr ""
 
-<<<<<<< HEAD
-#: frontend/src/components/FilesUploader/FilesUploader.vue:91
-=======
 #: crm/integrations/erpnext/utils.py:64
 msgid "Cannot rename: an unrelated {0} '{1}' already exists on the other side. Resolve manually first."
 msgstr ""
 
 #: frontend/src/components/FilesUploader/FilesUploader.vue:85
->>>>>>> 9e34de39 (chore: update POT file)
 msgid "Capture"
 msgstr ""
 
@@ -8666,4 +8651,3 @@ msgstr ""
 #: frontend/src/data/script.js:257
 msgid "⚠️ No row found for idx: {0} in parent field: {1}"
 msgstr ""
-
