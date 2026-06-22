@@ -40,6 +40,7 @@
             :tabs="layout.data"
             :data="doc"
             :doctype="doctype"
+            :docname="docname"
           />
           <ErrorMessage v-if="error" class="mt-4" :message="__(error)" />
         </div>
