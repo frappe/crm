@@ -32,41 +32,74 @@ class CRMProducts(Document):
 
 
 @frappe.whitelist()
-def get_product_rate_details(product_code: str) -> dict:
+def get_product_rate_details(product_code: str, deal: str | None = None) -> dict:
 	product = (
 		frappe.db.get_value("CRM Product", product_code, ["product_name", "standard_rate"], as_dict=True)
 		or {}
 	)
-	rate = _item_price_rate(product_code) or product.get("standard_rate")
+	rate = _contextual_rate(product_code, deal) or product.get("standard_rate")
 	return {"product_name": product.get("product_name"), "rate": rate}
 
 
-def _item_price_rate(product_code: str):
-	"""Latest valid selling Item Price for the linked ERPNext Item"""
+def _contextual_rate(product_code: str, deal: str | None):
+	"""Rate from the linked ERPNext Item, priced in the deal's context."""
 	if not frappe.get_meta("CRM Product").has_field("erpnext_item_code"):
 		return None
 	item_code = frappe.db.get_value("CRM Product", product_code, "erpnext_item_code")
-	if not item_code or not frappe.db.exists("DocType", "Item Price"):
+	if not item_code:
 		return None
-	from crm.integrations.erpnext.item import get_item_price_rate
+	return get_deal_product_rate(item_code, deal)
 
-	return get_item_price_rate(item_code)
+
+def _resolve_price_list(customer: str | None):
+	"""Customer's default price list, else the default selling price list."""
+	if customer and frappe.db.exists("Customer", customer):
+		from erpnext.accounts.party import get_default_price_list
+
+		if pl := get_default_price_list(frappe.get_cached_doc("Customer", customer)):
+			return pl
+	return frappe.db.get_single_value("Selling Settings", "selling_price_list")
+
+
+def get_deal_product_rate(item_code: str, deal: str | None = None):
+	"""Resolve a deal line rate the way ERPNext prices a quotation line."""
+	if not frappe.db.exists("DocType", "Item Price"):
+		return None
+	customer = frappe.db.get_value("CRM Deal", deal, "erpnext_customer") if deal else None
+	price_list = _resolve_price_list(customer)
+	if not price_list:
+		return None
+	from erpnext.stock.get_item_details import get_item_price
+
+	pctx = {
+		"price_list": price_list,
+		"customer": customer,
+		"uom": frappe.db.get_value("Item", item_code, "stock_uom"),
+		"transaction_date": frappe.utils.nowdate(),
+	}
+	rows = get_item_price(pctx, item_code)
+	return rows[0].price_list_rate if rows else None
 
 
 def create_product_details_script(doctype):
-	if not frappe.db.exists("CRM Form Script", "Product Details Script for " + doctype):
-		script = get_product_details_script(doctype)
-		frappe.get_doc(
-			{
-				"doctype": "CRM Form Script",
-				"name": "Product Details Script for " + doctype,
-				"dt": doctype,
-				"view": "Form",
-				"script": script,
-				"enabled": 1,
-				"is_standard": 1,
-			}
-		).insert()
+	name = "Product Details Script for " + doctype
+	script = get_product_details_script(doctype)
+	# Standard script is app-owned: keep it in sync with code on every migrate.
+	if frappe.db.exists("CRM Form Script", name):
+		if frappe.db.get_value("CRM Form Script", name, "script") != script:
+			frappe.db.set_value("CRM Form Script", name, "script", script)
+		return
+	frappe.get_doc(
+		{
+			"doctype": "CRM Form Script",
+			"name": name,
+			"dt": doctype,
+			"view": "Form",
+			"script": script,
+			"enabled": 1,
+			"is_standard": 1,
+		}
+	).insert()
 
 
 def get_product_details_script(doctype):
@@ -115,6 +148,7 @@ class CRMProducts {
 
     let a = await call("crm.fcrm.doctype.crm_products.crm_products.get_product_rate_details", {
         product_code: row.product_code,
+        deal: this.doc.name,
     })
     if (!a) return
 
