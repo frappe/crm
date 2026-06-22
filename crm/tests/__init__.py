@@ -5,6 +5,13 @@ import frappe
 
 
 def before_tests():
+	# When ERPNext is installed (integration CI), creating Company test records
+	# triggers default account/warehouse setup, which needs setup-wizard fixtures
+	# (e.g. the "Transit" Warehouse Type) that a bare install-app does not create.
+	# CRM tests never exercise that accounting setup, so skip it.
+	if frappe.db.exists("DocType", "Company"):
+		frappe.flags.ignore_chart_of_accounts = True
+
 	load_crm_user_test_records()
 
 
