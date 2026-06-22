@@ -44,7 +44,7 @@ bench get-app crm "${GITHUB_WORKSPACE}"
 
 # Only pull erpnext when the integration is under test, to keep other runs fast.
 if [ "${INSTALL_ERPNEXT}" = "true" ]; then
-    bench get-app erpnext --branch develop
+    bench get-app erpnext --branch version-15
 fi
 
 bench setup requirements --dev
