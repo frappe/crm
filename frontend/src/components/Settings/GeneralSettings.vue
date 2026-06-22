@@ -136,8 +136,8 @@ import { FormControl, Switch, toast } from 'frappe-ui'
 const { _settings: settings } = getSettings()
 
 const timestampFormatOptions = [
-  { label: __('Relative (5 mins ago)'), value: 'Relative' },
-  { label: __('Exact (Jun 9, 2026 14:02)'), value: 'Exact' },
+  { label: __('Relative'), value: 'Relative' },
+  { label: __('Exact'), value: 'Exact' },
 ]
 const sortOrderOptions = [
   { label: __('Oldest First'), value: 'Oldest First' },
