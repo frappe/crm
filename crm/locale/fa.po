@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2026-06-07 10:20+0000\n"
-"PO-Revision-Date: 2026-06-14 17:46\n"
+"POT-Creation-Date: 2026-06-14 10:35+0000\n"
+"PO-Revision-Date: 2026-06-21 20:02\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Persian\n"
 "MIME-Version: 1.0\n"
@@ -172,7 +172,7 @@ msgstr "یک لاگ تماس معتبر مورد نیاز است."
 
 #: frontend/src/components/Settings/Hierarchy/useDragDrop.js:69
 msgid "A {0} cannot report to a {1}"
-msgstr ""
+msgstr "یک {0} نمی‌تواند به یک {1} گزارش دهد"
 
 #. Label of the api_key (Data) field in DocType 'CRM Exotel Settings'
 #. Label of the api_key (Data) field in DocType 'CRM Twilio Settings'
@@ -308,7 +308,7 @@ msgstr "افزودن"
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:160
 #: frontend/src/components/Settings/Hierarchy/HierarchyRow.vue:85
 msgid "Add ({0})"
-msgstr ""
+msgstr "افزودن ({0})"
 
 #: frontend/src/components/Settings/EmailAccountList.vue:19
 msgid "Add Account"
@@ -324,7 +324,7 @@ msgstr ""
 
 #: crm/fcrm/doctype/crm_product/crm_product_list.js:3
 msgid "Add CRM Product"
-msgstr ""
+msgstr "افزودن محصول CRM"
 
 #: frontend/src/components/Dashboard/AddChartModal.vue:4
 msgid "Add Chart"
@@ -438,7 +438,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:36
 msgid "Add User"
-msgstr ""
+msgstr "افزودن کاربر"
 
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:157
 msgid "Add Users"
@@ -1723,7 +1723,7 @@ msgstr ""
 msgid "Contact Already Added"
 msgstr ""
 
-#: crm/fcrm/doctype/crm_lead/crm_lead.py:298
+#: crm/fcrm/doctype/crm_lead/crm_lead.py:293
 msgid "Contact Already Exists"
 msgstr "مخاطب از قبل وجود دارد"
 
@@ -1752,9 +1752,9 @@ msgstr ""
 msgid "Contact Us"
 msgstr "تماس با ما"
 
-#: crm/fcrm/doctype/crm_lead/crm_lead.py:297
-msgid "Contact already exists with {0}"
-msgstr "مخاطب از قبل با {0} وجود دارد"
+#: crm/fcrm/doctype/crm_lead/crm_lead.py:292
+msgid "Contact already exists with Email: {0}"
+msgstr ""
 
 #: frontend/src/pages/Contact.vue:293
 msgid "Contact image updated"
@@ -1843,7 +1843,7 @@ msgstr "شمردن"
 #: frontend/src/components/Modals/ContactModal.vue:41
 #: frontend/src/components/Modals/CreateDocumentModal.vue:88
 #: frontend/src/components/Modals/DealModal.vue:65
-#: frontend/src/components/Modals/DoctypeModal.vue:51
+#: frontend/src/components/Modals/DoctypeModal.vue:52
 #: frontend/src/components/Modals/EmailTemplateSelectorModal.vue:19
 #: frontend/src/components/Modals/EventModal.vue:215
 #: frontend/src/components/Modals/LeadModal.vue:37
@@ -2710,7 +2710,7 @@ msgstr "ویرایش یادداشت"
 
 #: frontend/src/components/Modals/QuickEntryModal.vue:7
 msgid "Edit Quick Entry Layout"
-msgstr ""
+msgstr "ویرایش چیدمان ثبت سریع"
 
 #: frontend/src/components/Settings/Sla/EditResponseResolutionModal.vue:5
 msgid "Edit Response & Resolution"
@@ -3006,7 +3006,7 @@ msgstr "توکن دسترسی فیسبوک خود را وارد کنید"
 msgid "Enter your personal mobile number used by Exotel to make calls"
 msgstr ""
 
-#: frontend/src/components/FieldLayout/Field.vue:559
+#: frontend/src/components/FieldLayout/Field.vue:565
 msgid "Enter {0}"
 msgstr "{0} را وارد کنید"
 
@@ -4633,7 +4633,7 @@ msgstr ""
 msgid "Manager"
 msgstr "مدیر"
 
-#: frontend/src/components/Modals/DoctypeModal.vue:121
+#: frontend/src/components/Modals/DoctypeModal.vue:122
 #: frontend/src/data/document.js:68
 msgid "Mandatory field error: {0}"
 msgstr ""
@@ -5167,7 +5167,7 @@ msgstr "همگام‌سازی نشده"
 msgid "Not allowed to add contact to Deal"
 msgstr ""
 
-#: crm/fcrm/doctype/crm_lead/crm_lead.py:506
+#: crm/fcrm/doctype/crm_lead/crm_lead.py:500
 msgid "Not allowed to convert Lead to Deal"
 msgstr ""
 
@@ -6618,7 +6618,7 @@ msgstr ""
 msgid "Select your ERPNext company to connect with"
 msgstr ""
 
-#: frontend/src/components/FieldLayout/Field.vue:557
+#: frontend/src/components/FieldLayout/Field.vue:563
 msgid "Select {0}"
 msgstr "انتخاب {0}"
 
@@ -7204,7 +7204,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:79
 msgid "Template Name"
-msgstr "نام الگو"
+msgstr ""
 
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:175
 msgid "Template created successfully"
@@ -7657,7 +7657,7 @@ msgstr "بدون عنوان"
 #: frontend/src/components/ColumnSettings.vue:129
 #: frontend/src/components/Modals/AssignmentModal.vue:80
 #: frontend/src/components/Modals/ChangePasswordModal.vue:58
-#: frontend/src/components/Modals/DoctypeModal.vue:51
+#: frontend/src/components/Modals/DoctypeModal.vue:52
 #: frontend/src/components/Modals/EventModal.vue:212
 #: frontend/src/components/Settings/BrandSettings.vue:16
 #: frontend/src/components/Settings/CalendarSettings.vue:21

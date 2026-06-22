@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2026-06-07 10:20+0000\n"
-"PO-Revision-Date: 2026-06-14 17:46\n"
+"POT-Creation-Date: 2026-06-14 10:35+0000\n"
+"PO-Revision-Date: 2026-06-21 20:02\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Bosnian\n"
 "MIME-Version: 1.0\n"
@@ -172,7 +172,7 @@ msgstr "Potreban je važeći zapis poziva."
 
 #: frontend/src/components/Settings/Hierarchy/useDragDrop.js:69
 msgid "A {0} cannot report to a {1}"
-msgstr ""
+msgstr "{0} ne može podnijeti izvještaj {1}"
 
 #. Label of the api_key (Data) field in DocType 'CRM Exotel Settings'
 #. Label of the api_key (Data) field in DocType 'CRM Twilio Settings'
@@ -308,7 +308,7 @@ msgstr "Dodaj"
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:160
 #: frontend/src/components/Settings/Hierarchy/HierarchyRow.vue:85
 msgid "Add ({0})"
-msgstr ""
+msgstr "Dodaj ({0})"
 
 #: frontend/src/components/Settings/EmailAccountList.vue:19
 msgid "Add Account"
@@ -324,7 +324,7 @@ msgstr "Dodaj Učesnika"
 
 #: crm/fcrm/doctype/crm_product/crm_product_list.js:3
 msgid "Add CRM Product"
-msgstr ""
+msgstr "Dodaj Artikal"
 
 #: frontend/src/components/Dashboard/AddChartModal.vue:4
 msgid "Add Chart"
@@ -438,11 +438,11 @@ msgstr "Dodaj Zadatak"
 
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:36
 msgid "Add User"
-msgstr ""
+msgstr "Dodaj Korisnika"
 
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:157
 msgid "Add Users"
-msgstr ""
+msgstr "Dodaj Korisnike"
 
 #. Label of the add_weekly_holidays_section (Section Break) field in DocType
 #. 'CRM Holiday List'
@@ -477,7 +477,7 @@ msgstr "Dodaj opis..."
 
 #: frontend/src/components/Settings/Hierarchy/HierarchyRow.vue:63
 msgid "Add direct reports"
-msgstr ""
+msgstr "Dodajte direktne izvještaje"
 
 #: frontend/src/components/Modals/AddExistingUserModal.vue:12
 msgid "Add existing system users to this CRM. Assign them a role to grant access with their current credentials."
@@ -1019,7 +1019,7 @@ msgstr "Između"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:195
 msgid "Bidirectional sync of existing CRM Products and ERPNext Items. Runs in the background."
-msgstr ""
+msgstr "Dvosmjerna sinhronizacija postojećih Artikala Prodajne Podrške i Artikala Sistema. Radi u pozadini."
 
 #: frontend/src/components/Settings/Settings.vue:135
 msgid "Brand"
@@ -1176,7 +1176,7 @@ msgstr "Artikal"
 #. Name of a DocType
 #: crm/fcrm/doctype/crm_product_sync_issue/crm_product_sync_issue.json
 msgid "CRM Product Sync Issue"
-msgstr ""
+msgstr "Problem sa Sinhronizacijom Artikla"
 
 #. Name of a DocType
 #: crm/fcrm/doctype/crm_products/crm_products.json
@@ -1191,7 +1191,7 @@ msgstr "Vrijeme odziva Podrške Prodaje"
 #. Name of a DocType
 #: crm/fcrm/doctype/crm_sales_hierarchy/crm_sales_hierarchy.json
 msgid "CRM Sales Hierarchy"
-msgstr ""
+msgstr "Prodajna Hijerarhija"
 
 #. Name of a DocType
 #: crm/fcrm/doctype/crm_service_day/crm_service_day.json
@@ -1350,7 +1350,7 @@ msgstr "Nije moguće izbrisati standardne stavke {0}"
 
 #: crm/fcrm/doctype/crm_product/crm_product.py:90
 msgid "Cannot delete: linked ERPNext Item {0} is referenced by a Quotation. Remove the reference or delete the Item in ERPNext first."
-msgstr ""
+msgstr "Ne može se obrisati: povezana artikal Sistema {0} je referencirana u Ponudi. Uklonite referencu ili prvo obrišite artikal u Sistemu."
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:170
 msgid "Cannot enable rule without adding users in it"
@@ -1362,11 +1362,11 @@ msgstr "Ne mogu pozvati za ovu ulogu"
 
 #: frontend/src/components/Settings/Hierarchy/useDragDrop.js:73
 msgid "Cannot move a manager under one of their own reports"
-msgstr ""
+msgstr "Nemože se premjestiti odgovornog pod jedan od njegovih vlastitih izvještaja"
 
 #: crm/integrations/erpnext/utils.py:64
 msgid "Cannot rename: an unrelated {0} '{1}' already exists on the other side. Resolve manually first."
-msgstr ""
+msgstr "Nemože se preimenovati: nepovezani {0} '{1}' već postoji na drugoj strani. Prvo ručno riješite problem."
 
 #: frontend/src/components/FilesUploader/FilesUploader.vue:91
 msgid "Capture"
@@ -1692,7 +1692,7 @@ msgstr "Potvrdi Prepisivanje"
 
 #: frontend/src/components/Modals/ChangePasswordModal.vue:30
 msgid "Confirm Password"
-msgstr "Potvrdi Lozinku"
+msgstr "Potvrdi lozinku"
 
 #: frontend/src/utils/index.js:822 frontend/src/utils/index.js:825
 msgid "Confirm {0}"
@@ -1723,7 +1723,7 @@ msgstr "Kontakt dodan"
 msgid "Contact Already Added"
 msgstr "Kontakt je već dodan"
 
-#: crm/fcrm/doctype/crm_lead/crm_lead.py:298
+#: crm/fcrm/doctype/crm_lead/crm_lead.py:293
 msgid "Contact Already Exists"
 msgstr "Kontakt već postoji"
 
@@ -1752,9 +1752,9 @@ msgstr "Kontakt ažuriran"
 msgid "Contact Us"
 msgstr "Kontaktirajte nas"
 
-#: crm/fcrm/doctype/crm_lead/crm_lead.py:297
-msgid "Contact already exists with {0}"
-msgstr "Kontakt već postoji sa {0}"
+#: crm/fcrm/doctype/crm_lead/crm_lead.py:292
+msgid "Contact already exists with Email: {0}"
+msgstr "Kontakt već postoji sa adresom e-pošte: {0}"
 
 #: frontend/src/pages/Contact.vue:293
 msgid "Contact image updated"
@@ -1829,11 +1829,11 @@ msgstr "Kopirano u međuspremnik"
 
 #: frontend/src/components/Settings/Hierarchy/useRemoveNode.js:16
 msgid "Could not remove."
-msgstr ""
+msgstr "Nije moguće ukloniti."
 
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:469
 msgid "Could not update report to"
-msgstr ""
+msgstr "Nije moguće ažurirati izvještaj na"
 
 #: crm/api/dashboard.py:647 crm/api/dashboard.py:795 crm/api/dashboard.py:852
 #: crm/api/dashboard.py:945
@@ -1843,7 +1843,7 @@ msgstr "Broj"
 #: frontend/src/components/Modals/ContactModal.vue:41
 #: frontend/src/components/Modals/CreateDocumentModal.vue:88
 #: frontend/src/components/Modals/DealModal.vue:65
-#: frontend/src/components/Modals/DoctypeModal.vue:51
+#: frontend/src/components/Modals/DoctypeModal.vue:52
 #: frontend/src/components/Modals/EmailTemplateSelectorModal.vue:19
 #: frontend/src/components/Modals/EventModal.vue:215
 #: frontend/src/components/Modals/LeadModal.vue:37
@@ -1890,7 +1890,7 @@ msgstr "Kreiraj novu listu praznika"
 
 #: frontend/src/components/Modals/WhatsappTemplateSelectorModal.vue:23
 msgid "Create New Template"
-msgstr ""
+msgstr "Kreiraj novi Šablon"
 
 #: frontend/src/components/Modals/ViewModal.vue:9
 #: frontend/src/components/ViewControls.vue:696
@@ -1915,7 +1915,7 @@ msgstr "Kreiraj Klijenta kod promjene statusa"
 #: crm/fcrm/doctype/crm_product/crm_product_list.js:10
 #: frontend/src/composables/document.js:29
 msgid "Create products as Items in ERPNext"
-msgstr ""
+msgstr "Kreirajte artikle kao Artikle u Sistemu"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:435
 msgid "Create quotation button on deal page and auto customer creation on deal status change will be disabled. Are you sure?"
@@ -2316,7 +2316,7 @@ msgstr "Izbriši povezanu stavku"
 
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:221
 msgid "Delete Only User"
-msgstr ""
+msgstr "Obriši Samo Korisnika"
 
 #: frontend/src/pages/MobileOrganization.vue:275
 msgid "Delete Organization"
@@ -2382,7 +2382,7 @@ msgstr "Radni Prostor"
 #. Label of the detail (Small Text) field in DocType 'CRM Product Sync Issue'
 #: crm/fcrm/doctype/crm_product_sync_issue/crm_product_sync_issue.json
 msgid "Detail"
-msgstr ""
+msgstr "Detalj"
 
 #. Label of the details (Tab Break) field in DocType 'CRM Lead'
 #. Label of the details (Text Editor) field in DocType 'CRM Lead Source'
@@ -2399,7 +2399,7 @@ msgstr "Detalji"
 #. Issue'
 #: crm/fcrm/doctype/crm_product_sync_issue/crm_product_sync_issue.json
 msgid "Detected On"
-msgstr ""
+msgstr "Otkriveno"
 
 #. Label of the call_receiving_device (Select) field in DocType 'CRM Telephony
 #. Agent'
@@ -2424,7 +2424,7 @@ msgstr "Onemogući integraciju Sistema"
 
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:310
 msgid "Disable Sales Hierarchy"
-msgstr ""
+msgstr "Onemogući Prodajnu Hijerarhiju"
 
 #. Label of the disabled (Check) field in DocType 'CRM Product'
 #: crm/fcrm/doctype/crm_product/crm_product.json
@@ -2463,7 +2463,7 @@ msgstr "Odbaci"
 #. Label of the dismissed (Check) field in DocType 'CRM Product Sync Issue'
 #: crm/fcrm/doctype/crm_product_sync_issue/crm_product_sync_issue.json
 msgid "Dismissed"
-msgstr ""
+msgstr "Odbačen"
 
 #: frontend/src/components/Settings/DefaultsSettings.vue:114
 msgid "Display format for dates across the system"
@@ -2628,11 +2628,11 @@ msgstr "URL Web Stranice Sistema"
 
 #: crm/fcrm/doctype/crm_product/crm_product.py:42
 msgid "ERPNext integration is active. Create an Item in ERPNext and it will appear in CRM Product automatically."
-msgstr ""
+msgstr "Integracija sa Sistemom je aktivna. Kreiraj Artikal u Sistemu i ona će se automatski pojaviti u Prodajnoj Podršci."
 
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:205
 msgid "ERPNext integration must be enabled on the same site"
-msgstr ""
+msgstr "Integracija sa Sistemom mora biti omogućena na istoj web stranici"
 
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:70
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:91
@@ -2881,12 +2881,12 @@ msgstr "Omogući Odlaznu"
 
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:62
 msgid "Enable Sales Hierarchy"
-msgstr ""
+msgstr "Omogući Prodajnu Hijerarhiju"
 
 #. Label of the enable_sales_hierarchy (Check) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 msgid "Enable Sales Hierarchy Permissions"
-msgstr ""
+msgstr "Omogući Dozvole Prodajne Hijerarhije"
 
 #: frontend/src/components/Settings/Telephony/TwilioSettings.vue:119
 msgid "Enable Twilio integration to make and receive calls directly from your CRM"
@@ -3006,7 +3006,7 @@ msgstr "Unesi Facebook Pristupni Token"
 msgid "Enter your personal mobile number used by Exotel to make calls"
 msgstr "Unesi svoj lični broj mobilnog telefona koji Exotel koristi za upućivanje poziva"
 
-#: frontend/src/components/FieldLayout/Field.vue:559
+#: frontend/src/components/FieldLayout/Field.vue:565
 msgid "Enter {0}"
 msgstr "Unesi {0}"
 
@@ -3293,7 +3293,7 @@ msgstr "Nije uspjelo kreiranje šablona"
 
 #: frontend/src/components/Activities/CommentArea.vue:143
 msgid "Failed to delete comment"
-msgstr ""
+msgstr "Brisanje komentara nije uspjelo"
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:180
 msgid "Failed to delete lead sync source"
@@ -3317,7 +3317,7 @@ msgstr "Neuspjelo učitavanje rasporeda polja"
 
 #: frontend/src/data/script.js:150
 msgid "Failed to load file-based form controller: {0}"
-msgstr ""
+msgstr "Neuspjelo učitavanje kontrolera obrasca zasnovanog na datoteci: {0}"
 
 #: frontend/src/data/script.js:168
 msgid "Failed to load form controller: {0}"
@@ -3354,7 +3354,7 @@ msgstr "Slanje e-pošte nije uspjelo!"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:333
 msgid "Failed to start sync"
-msgstr ""
+msgstr "Nije uspjelo pokretanje sinhronizaciju"
 
 #: frontend/src/components/Settings/EmailEdit.vue:216
 msgid "Failed to update Email Account, Invalid credentials"
@@ -3370,7 +3370,7 @@ msgstr "Ažuriranje statusa prisustva nije uspjelo"
 
 #: frontend/src/components/Activities/CommentArea.vue:129
 msgid "Failed to update comment"
-msgstr ""
+msgstr "Neuspjelo ažuriranje komentara"
 
 #: frontend/src/components/Modals/ChangePasswordModal.vue:106
 msgid "Failed to update password"
@@ -3378,7 +3378,7 @@ msgstr "Ažuriranje lozinke nije uspjelo"
 
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:290
 msgid "Failed to update setting"
-msgstr ""
+msgstr "Ažuriranje postavke nije uspjelo"
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:165
 msgid "Failed to update source"
@@ -4162,7 +4162,7 @@ msgstr "Ključ"
 #. Label of the kind (Select) field in DocType 'CRM Product Sync Issue'
 #: crm/fcrm/doctype/crm_product_sync_issue/crm_product_sync_issue.json
 msgid "Kind"
-msgstr ""
+msgstr "Vrsta"
 
 #. Label of the label (Data) field in DocType 'CRM Dropdown Item'
 #. Label of the label (Data) field in DocType 'CRM View Settings'
@@ -4342,7 +4342,7 @@ msgstr "Sinkronizacija Potencijalnih Klijenata"
 
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:311
 msgid "Lead and deal visibility will no longer be restricted by the reporting tree. Are you sure?"
-msgstr ""
+msgstr "Pregled potencijalnih klijenata i poslova više neće biti ograničena stablom izvještavanja. Jeste li sigurni?"
 
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.py:287
 msgid "Lead from call {0}"
@@ -4425,7 +4425,7 @@ msgstr "Veza"
 
 #: crm/fcrm/doctype/crm_product/reconcile_job.py:100
 msgid "Linked Item {0} no longer exists"
-msgstr ""
+msgstr "Povezani Artikal {0} više ne postoji"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:404
 msgid "Linked With"
@@ -4633,7 +4633,7 @@ msgstr "Upravljajte svojim politikama ugovora o nivou usluge"
 msgid "Manager"
 msgstr "Upravitelj"
 
-#: frontend/src/components/Modals/DoctypeModal.vue:121
+#: frontend/src/components/Modals/DoctypeModal.vue:122
 #: frontend/src/data/document.js:68
 msgid "Mandatory field error: {0}"
 msgstr "Greška obaveznog polja: {0}"
@@ -4805,11 +4805,11 @@ msgstr "Pređi na prethodnu karticu"
 
 #: frontend/src/components/Settings/Hierarchy/HierarchyRow.vue:160
 msgid "Move to top level"
-msgstr ""
+msgstr "Premjesti na najviši nivo"
 
 #: frontend/src/components/Settings/Hierarchy/useDragDrop.js:100
 msgid "Move under {0}"
-msgstr ""
+msgstr "Premjesti pod {0}"
 
 #: frontend/src/components/Modals/ViewModal.vue:30
 msgid "My Open Deals"
@@ -5088,7 +5088,7 @@ msgstr "Nije pronađena lista praznika"
 
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:104
 msgid "No matching users"
-msgstr ""
+msgstr "Nema odgovarajućih korisnika"
 
 #: frontend/src/components/Calendar/Attendee.vue:211
 #: frontend/src/components/Controls/EmailMultiSelect.vue:133
@@ -5102,11 +5102,11 @@ msgstr "Nisu pronađeni korisnici"
 
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:105
 msgid "No users in hierarchy"
-msgstr ""
+msgstr "Nema korisnika u hijerarhiji"
 
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:109
 msgid "No users match the current filter."
-msgstr ""
+msgstr "Nema korisnika koji odgovaraju trenutnom filtru."
 
 #: frontend/src/components/ListViews/EmptyState.vue:37
 #: frontend/src/pages/MobileOrganization.vue:145
@@ -5167,7 +5167,7 @@ msgstr "Nije sinhronizovano"
 msgid "Not allowed to add contact to Deal"
 msgstr "Nije dozvoljeno dodavanje kontakta u ponudu"
 
-#: crm/fcrm/doctype/crm_lead/crm_lead.py:506
+#: crm/fcrm/doctype/crm_lead/crm_lead.py:500
 msgid "Not allowed to convert Lead to Deal"
 msgstr "Nije dozvoljeno pretvaranje Potencijalnog Klijenta u Posao"
 
@@ -5465,7 +5465,7 @@ msgstr "Naziv Poduzeća"
 
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:488
 msgid "Organization or a primary Contact is required to create a customer"
-msgstr ""
+msgstr "Za kreiranje klijenta potrebna je organizacija ili primarni kontakt"
 
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
@@ -5591,7 +5591,7 @@ msgstr "Period"
 
 #: frontend/src/components/SalesHierarchyBanner.vue:9
 msgid "Permissions update"
-msgstr ""
+msgstr "Ažuriranje Dozvola"
 
 #. Label of the person_section (Section Break) field in DocType 'CRM Deal'
 #. Label of the person_tab (Tab Break) field in DocType 'CRM Lead'
@@ -5827,11 +5827,11 @@ msgstr "Naziv Artikla"
 #. Label of the sync_issues (Table) field in DocType 'ERPNext CRM Settings'
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.json
 msgid "Product Sync Issues"
-msgstr ""
+msgstr "Problem sa Sinhronizacijom Artikla"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:330
 msgid "Product sync started. Items will appear shortly."
-msgstr ""
+msgstr "Sinhronizacija artikala je započela. Artikli će se uskoro pojaviti."
 
 #. Label of the products_tab (Tab Break) field in DocType 'CRM Deal'
 #. Label of the products (Table) field in DocType 'CRM Deal'
@@ -6060,15 +6060,15 @@ msgstr "Ukloni karticu"
 
 #: crm/api/user.py:111
 msgid "Remove this user from the sales hierarchy before changing their role to Sales User"
-msgstr ""
+msgstr "Ukloni ovog korisnika iz prodajne hijerarhije prije nego što mu promijenite ulogu u Prodajnog Korisnika"
 
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:194
 msgid "Remove {0} from the hierarchy. What should happen to their direct reports?"
-msgstr ""
+msgstr "Ukloni {0} iz hijerarhije. Šta treba da se desi sa njihovim direktnim podređenima?"
 
 #: frontend/src/components/Settings/Hierarchy/useRemoveNode.js:13
 msgid "Removed from hierarchy."
-msgstr ""
+msgstr "Uklonjen iz hijerarhije."
 
 #. Label of the auto_reopen_on_new_communication (Check) field in DocType 'FCRM
 #. Settings'
@@ -6188,15 +6188,15 @@ msgstr "Vrati demo podatke"
 #. DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 msgid "Restrict Lead and Deal visibility based on the Sales Hierarchy tree. Managers can see all records owned by or assigned to their reports."
-msgstr ""
+msgstr "Ograniči pregled potencijalnih klijenata i poslova na osnovu stabla prodajne hijerarhije. Odgovorni mogu vidjeti sve zapise kojima su njihovi podređeni vlasnici ili kojima su dodijeljeni."
 
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:20
 msgid "Restrict visibility of Leads and Deals based on a reporting tree."
-msgstr ""
+msgstr "Ograniči pregled potencijalnih klijenata i poslova na osnovu izvještajnog stabla."
 
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:65
 msgid "Restrict visibility using a reporting tree"
-msgstr ""
+msgstr "Ograniči pregled pomoću stabla izvještavanja"
 
 #: frontend/src/components/FilesUploader/FilesUploader.vue:51
 msgid "Retake"
@@ -6345,15 +6345,15 @@ msgstr "PREDMET"
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:7
 #: frontend/src/components/Settings/Settings.vue:163
 msgid "Sales Hierarchy"
-msgstr ""
+msgstr "Prodajna Hijerarhija"
 
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:323
 msgid "Sales Hierarchy disabled"
-msgstr ""
+msgstr "Prodajna Hijerarhija onemogućena"
 
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:334
 msgid "Sales Hierarchy enabled"
-msgstr ""
+msgstr "Prodajna Hijerarhija onemogućena"
 
 #. Name of a role
 #. Option for the 'Role' (Select) field in DocType 'CRM Invitation'
@@ -6527,7 +6527,7 @@ msgstr "Korisnik Pretrage"
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:83
 #: frontend/src/components/Settings/Hierarchy/UserMultiSelect.vue:6
 msgid "Search users"
-msgstr ""
+msgstr "Pretraži korisnike"
 
 #: frontend/src/components/FieldLayoutEditor.vue:454
 msgid "Section"
@@ -6618,7 +6618,7 @@ msgstr "Odaberite želite li prikazivati vrijeme sa ili bez sekundi"
 msgid "Select your ERPNext company to connect with"
 msgstr "Odaberi poduzeće Sistema s kojom ćete se povezati"
 
-#: frontend/src/components/FieldLayout/Field.vue:557
+#: frontend/src/components/FieldLayout/Field.vue:563
 msgid "Select {0}"
 msgstr "Odaberi {0}"
 
@@ -6896,7 +6896,7 @@ msgstr "Došlo je do greške prilikom ažuriranja pravila dodjeljivanja"
 
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:508
 msgid "Some users could not be added"
-msgstr ""
+msgstr "Neki korisnici nisu mogli biti dodani"
 
 #: frontend/src/components/Settings/Users.vue:279
 #: frontend/src/components/Settings/Users.vue:292
@@ -7087,7 +7087,7 @@ msgstr "Sinhronizuj Sad"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:191
 msgid "Sync Products with ERPNext"
-msgstr ""
+msgstr "Sinkroniziraj Artikle s Sistemom"
 
 #: frontend/src/components/Settings/LeadSyncing/FailureLogs.vue:132
 msgid "Sync Successful!"
@@ -7620,7 +7620,7 @@ msgstr "Prekini vezu & Izbriši"
 
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:213
 msgid "Unlink & Delete {0} Users"
-msgstr ""
+msgstr "Prekini vezu & Izbriši {0} Korisnika"
 
 #: frontend/src/components/BulkDeleteLinkedDocModal.vue:35
 msgid "Unlink & Delete {0} items"
@@ -7657,7 +7657,7 @@ msgstr "Neimenovan"
 #: frontend/src/components/ColumnSettings.vue:129
 #: frontend/src/components/Modals/AssignmentModal.vue:80
 #: frontend/src/components/Modals/ChangePasswordModal.vue:58
-#: frontend/src/components/Modals/DoctypeModal.vue:51
+#: frontend/src/components/Modals/DoctypeModal.vue:52
 #: frontend/src/components/Modals/EventModal.vue:212
 #: frontend/src/components/Settings/BrandSettings.vue:16
 #: frontend/src/components/Settings/CalendarSettings.vue:21
@@ -7708,7 +7708,7 @@ msgstr "Ažuriraj {0} Zapisa"
 
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:466
 msgid "Updated reports to"
-msgstr ""
+msgstr "Ažurirani izvještaji na"
 
 #: frontend/src/components/Controls/ImageUploader.vue:15
 #: frontend/src/components/FilesUploader/FilesUploader.vue:83
@@ -7746,7 +7746,7 @@ msgstr "Prijenos {0}%"
 
 #: crm/fcrm/doctype/crm_product/crm_product.py:45
 msgid "Use ERPNext to Create Products"
-msgstr ""
+msgstr "Koristi Sistem za kreiranje artikala"
 
 #. Label of the user (Link) field in DocType 'CRM Dashboard'
 #. Label of the user (Link) field in DocType 'CRM Sales Hierarchy'
@@ -7774,7 +7774,7 @@ msgstr "Korisničko Ime"
 
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:502
 msgid "User added to hierarchy"
-msgstr ""
+msgstr "Korisnik je dodan u hijerarhiju"
 
 #: crm/api/user.py:141
 msgid "User {0} cannot be removed as it has a Role Profile assigned to it."
@@ -7790,7 +7790,7 @@ msgstr "Korisnik {0} je uklonjen iz Podrške Prodaje uloga."
 
 #: crm/fcrm/doctype/crm_sales_hierarchy/crm_sales_hierarchy.py:43
 msgid "User {0} is already mapped to hierarchy node {1}."
-msgstr ""
+msgstr "Korisnik {0} je već mapiran na čvor hijerarhije {1}."
 
 #: frontend/src/components/Modals/AddExistingUserModal.vue:20
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:608
@@ -7843,7 +7843,7 @@ msgstr "Prikaži Ime"
 
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:9
 msgid "View documentation"
-msgstr ""
+msgstr "Pogledaj dokumentaciju"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:596
 msgid "Views"
@@ -7855,7 +7855,7 @@ msgstr "Vidljivost"
 
 #: frontend/src/components/SalesHierarchyBanner.vue:20
 msgid "We are changing how permissions work in Frappe CRM"
-msgstr ""
+msgstr "Mijenjamo način na koji dozvole funkcionišu u Prodajnoj Podršci"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:593
 msgid "Web Form"
@@ -8465,7 +8465,7 @@ msgstr "sutra"
 #. Option for the 'Kind' (Select) field in DocType 'CRM Product Sync Issue'
 #: crm/fcrm/doctype/crm_product_sync_issue/crm_product_sync_issue.json
 msgid "unlinked_orphan"
-msgstr ""
+msgstr "unlinked_orphan"
 
 #: crm/api/activities.py:106 crm/api/activities.py:247
 msgid "value"
@@ -8604,7 +8604,7 @@ msgstr "{0} ne"
 
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:503
 msgid "{0} users added to hierarchy"
-msgstr ""
+msgstr "{0} korisnika dodano u hijerarhiju"
 
 #: frontend/src/utils/index.js:160
 msgid "{0} w"
