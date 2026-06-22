@@ -141,6 +141,21 @@ has_permission = {
 	"CRM Deal": "crm.permissions.org_hierarchy.has_deal_permission",
 }
 
+# Custom Fields
+# ---------------
+
+custom_fields = {
+	"CRM Deal": [
+		{
+			"fieldname": "custom_course",
+			"fieldtype": "Link",
+			"label": "Course",
+			"insert_after": "currency",
+			"options": "Course",
+		},
+	],
+}
+
 # DocType Class
 # ---------------
 # Override standard doctype classes
@@ -174,9 +189,13 @@ doc_events = {
 		"validate": ["crm.api.whatsapp.validate"],
 		"on_update": ["crm.api.whatsapp.on_update"],
 	},
+	"Student Attendance": {
+		"validate": ["crm.api.abonement.adjust_abonement_on_attendance"],
+	},
 	"CRM Deal": {
 		"on_update": [
-			"crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.create_customer_in_erpnext"
+			"crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.create_customer_in_erpnext",
+			"crm.api.lms.on_deal_won_create_student",
 		],
 	},
 	"Sales Order": {

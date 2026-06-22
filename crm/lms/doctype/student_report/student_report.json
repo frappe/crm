@@ -1,0 +1,178 @@
+{
+ "actions": [],
+ "allow_import": 1,
+ "autoname": "format:RPT-{YYYY}-{####}",
+ "creation": "2026-06-22 12:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "student",
+  "student_name",
+  "instructor",
+  "column_break_abcd",
+  "report_date",
+  "template",
+  "section_overall",
+  "overall_performance",
+  "section_skills",
+  "technical_skills",
+  "column_break_efgh",
+  "behavior",
+  "engagement",
+  "section_recommendations",
+  "recommendations",
+  "publish_section",
+  "is_published"
+ ],
+ "fields": [
+  {
+   "fieldname": "student",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Student",
+   "options": "Student",
+   "reqd": 1,
+   "search_index": 1
+  },
+  {
+   "fetch_from": "student.student_name",
+   "fieldname": "student_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Student Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "instructor",
+   "fieldtype": "Link",
+   "label": "Instructor",
+   "options": "User",
+   "reqd": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "column_break_abcd",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "Today",
+   "fieldname": "report_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Report Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "template",
+   "fieldtype": "Select",
+   "label": "Template",
+   "options": "General Progress\nTechnical Skills\nBehavior\nCustom",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_overall",
+   "fieldtype": "Section Break",
+   "label": "Overall Performance"
+  },
+  {
+   "fieldname": "overall_performance",
+   "fieldtype": "Select",
+   "label": "Overall Performance",
+   "options": "Excellent\nGood\nSatisfactory\nNeeds Improvement"
+  },
+  {
+   "fieldname": "section_skills",
+   "fieldtype": "Section Break",
+   "label": "Skills & Behavior"
+  },
+  {
+   "fieldname": "technical_skills",
+   "fieldtype": "Text Editor",
+   "label": "Technical Skills"
+  },
+  {
+   "fieldname": "column_break_efgh",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "behavior",
+   "fieldtype": "Text Editor",
+   "label": "Behavior"
+  },
+  {
+   "fieldname": "engagement",
+   "fieldtype": "Text Editor",
+   "label": "Engagement"
+  },
+  {
+   "fieldname": "section_recommendations",
+   "fieldtype": "Section Break",
+   "label": "Recommendations"
+  },
+  {
+   "fieldname": "recommendations",
+   "fieldtype": "Text Editor",
+   "label": "Recommendations"
+  },
+  {
+   "fieldname": "publish_section",
+   "fieldtype": "Section Break",
+   "label": "Publishing"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_published",
+   "fieldtype": "Check",
+   "label": "Published (visible to parent)"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-06-22 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "LMS",
+ "name": "Student Report",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Instructor",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Student",
+   "share": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "student_name",
+ "track_changes": 1
+}

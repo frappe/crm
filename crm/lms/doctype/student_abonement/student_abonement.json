@@ -1,0 +1,148 @@
+{
+ "actions": [],
+ "allow_import": 1,
+ "autoname": "format:SAB-{YYYY}-{####}",
+ "creation": "2026-06-22 12:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "student",
+  "abonement_type",
+  "status",
+  "column_break_abcd",
+  "start_date",
+  "end_date",
+  "classes_section",
+  "total_classes",
+  "column_break_efgh",
+  "classes_remaining"
+ ],
+ "fields": [
+  {
+   "fieldname": "student",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Student",
+   "options": "Student",
+   "reqd": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "abonement_type",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Abonement Type",
+   "options": "Abonement Type",
+   "reqd": 1
+  },
+  {
+   "default": "Active",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Status",
+   "options": "Active\nFrozen\nExpired"
+  },
+  {
+   "fieldname": "column_break_abcd",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "Today",
+   "fieldname": "start_date",
+   "fieldtype": "Date",
+   "label": "Start Date"
+  },
+  {
+   "fieldname": "end_date",
+   "fieldtype": "Date",
+   "label": "End Date",
+   "read_only": 1
+  },
+  {
+   "fieldname": "classes_section",
+   "fieldtype": "Section Break",
+   "label": "Classes"
+  },
+  {
+   "fetch_from": "abonement_type.total_classes",
+   "fieldname": "total_classes",
+   "fieldtype": "Int",
+   "label": "Total Classes",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_efgh",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "classes_remaining",
+   "fieldtype": "Int",
+   "label": "Classes Remaining",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [
+  {
+   "link_doctype": "Payment",
+   "link_fieldname": "student_abonement",
+   "group": "Payments",
+   "table_fieldname": "payments"
+  },
+  {
+   "link_doctype": "Student Attendance",
+   "link_fieldname": "linked_abonement",
+   "group": "Attendance",
+   "table_fieldname": "attendance_records"
+  }
+ ],
+ "modified": "2026-06-22 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "LMS",
+ "name": "Student Abonement",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Instructor",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Student",
+   "share": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}
