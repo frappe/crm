@@ -64,8 +64,9 @@ class TestItemRateFallback(FrappeTestCase):
 		self.assertEqual(data["standard_rate"], 50)
 
 	def test_get_item_price_rate_uses_default_price_list_and_general_party(self):
-		from crm.integrations.erpnext import item
 		from erpnext.stock import get_item_details
+
+		from crm.integrations.erpnext import item
 
 		captured = {}
 		orig_single = frappe.db.get_single_value
