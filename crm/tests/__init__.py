@@ -19,13 +19,17 @@ def before_tests():
 
 
 def ensure_erpnext_fixtures():
-	"""Create ERPNext's standard setup-wizard fixtures needed by integration tests."""
-	if frappe.db.exists("Item Group", "All Item Groups"):
-		return
-	from erpnext.setup.setup_wizard.operations.install_fixtures import install
+	"""Create ERPNext setup-wizard fixtures the integration tests rely on."""
+	if not frappe.db.exists("Item Group", "All Item Groups"):
+		from erpnext.setup.setup_wizard.operations.install_fixtures import install
 
-	# A country is required: install() builds a root Territory named after it.
-	install("India")
+		# A country is required: install() builds a root Territory named after it.
+		install("India")
+
+	# Item creation defaults stock_uom from Stock Settings; a bare install leaves
+	# it unset (UOM "Nos" is created by install_fixtures above).
+	if not frappe.db.get_single_value("Stock Settings", "stock_uom"):
+		frappe.db.set_single_value("Stock Settings", "stock_uom", "Nos")
 
 
 def load_crm_user_test_records():
