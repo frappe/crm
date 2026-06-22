@@ -13,6 +13,10 @@ inputs:
         description: Bench install type passed to install script
         required: false
         default: "server"
+    install-erpnext:
+        description: When "true", fetch and install erpnext alongside crm
+        required: false
+        default: "false"
 runs:
     using: composite
     steps:
@@ -82,4 +86,5 @@ runs:
           shell: bash
           env:
               TYPE: ${{ inputs.type }}
+              INSTALL_ERPNEXT: ${{ inputs.install-erpnext }}
           run: bash ${GITHUB_WORKSPACE}/.github/helper/install.sh

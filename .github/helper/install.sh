@@ -41,8 +41,20 @@ sed -i 's/socketio:/# socketio:/g' Procfile
 sed -i 's/redis_socketio:/# redis_socketio:/g' Procfile
 
 bench get-app crm "${GITHUB_WORKSPACE}"
+
+# Only pull erpnext when the integration is under test, to keep other runs fast.
+if [ "${INSTALL_ERPNEXT}" = "true" ]; then
+    bench get-app erpnext --branch version-15
+fi
+
 bench setup requirements --dev
 
 bench start &>> ~/frappe-bench/bench_start.log &
 CI=Yes bench build --app frappe &
 bench --site test_site reinstall --yes
+
+if [ "${INSTALL_ERPNEXT}" = "true" ]; then
+    bench --verbose --site test_site install-app erpnext crm
+else
+    bench --verbose --site test_site install-app crm
+fi
