@@ -176,6 +176,13 @@ import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import CollapseSidebar from '@/components/Icons/CollapseSidebar.vue'
 import NotificationsIcon from '@/components/Icons/NotificationsIcon.vue'
 import HelpIcon from '@/components/Icons/HelpIcon.vue'
+import BookOpenIcon from '~icons/lucide/book-open'
+import UsersIcon from '~icons/lucide/users'
+import CalendarCheckIcon from '~icons/lucide/calendar-check'
+import WalletIcon from '~icons/lucide/wallet'
+import CreditCardIcon from '~icons/lucide/credit-card'
+import UserCheckIcon from '~icons/lucide/user-check'
+import GraduationCapIcon from '~icons/lucide/graduation-cap'
 import SidebarLink from '@/components/SidebarLink.vue'
 import Notifications from '@/components/Notifications.vue'
 import Settings from '@/components/Settings/Settings.vue'
@@ -267,6 +274,64 @@ const links = [
   },
 ]
 
+const session = sessionStore()
+const userRoles = window.frappe?.boot?.user?.roles || []
+const hasRole = (role) => {
+  if (session.user === 'Administrator') return true
+  return userRoles.includes(role)
+}
+
+const lmsLinks = [
+  {
+    label: 'My Learning',
+    icon: GraduationCapIcon,
+    to: { name: 'LmsStudentDashboard' },
+    condition: () => hasRole('Student'),
+  },
+  {
+    label: 'Dashboard',
+    icon: LucideLayoutDashboard,
+    to: { name: 'LmsInstructorDashboard' },
+    condition: () => hasRole('Instructor') || hasRole('System Manager'),
+  },
+  {
+    label: 'Courses',
+    icon: BookOpenIcon,
+    to: { name: 'LmsCourses' },
+    condition: () => hasRole('Instructor') || hasRole('System Manager'),
+  },
+  {
+    label: 'Knowledge Base',
+    icon: BookOpenIcon,
+    to: { name: 'LmsKnowledgeBase' },
+    condition: () => hasRole('Instructor') || hasRole('System Manager'),
+  },
+  {
+    label: 'Students',
+    icon: UsersIcon,
+    to: { name: 'LmsStudents' },
+    condition: () => hasRole('Instructor') || hasRole('System Manager'),
+  },
+  {
+    label: 'Groups',
+    icon: UserCheckIcon,
+    to: { name: 'LmsGroups' },
+    condition: () => hasRole('Instructor') || hasRole('System Manager'),
+  },
+  {
+    label: 'Abonements',
+    icon: WalletIcon,
+    to: { name: 'LmsAbonements' },
+    condition: () => hasRole('Instructor') || hasRole('System Manager'),
+  },
+  {
+    label: 'Payments',
+    icon: CreditCardIcon,
+    to: { name: 'LmsPayments' },
+    condition: () => hasRole('Instructor') || hasRole('System Manager'),
+  },
+]
+
 const allViews = computed(() => {
   let _views = [
     {
@@ -274,6 +339,16 @@ const allViews = computed(() => {
       hideLabel: true,
       opened: true,
       views: links.filter((link) => {
+        if (link.condition) {
+          return link.condition()
+        }
+        return true
+      }),
+    },
+    {
+      name: 'LMS',
+      opened: false,
+      views: lmsLinks.filter((link) => {
         if (link.condition) {
           return link.condition()
         }

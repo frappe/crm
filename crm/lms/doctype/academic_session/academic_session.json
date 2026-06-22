@@ -1,0 +1,191 @@
+{
+    "actions":  [
+
+                ],
+    "allow_import":  1,
+    "autoname":  "format:AS-{YYYY}{MM}{DD}-{####}",
+    "creation":  "2026-06-22 12:00:00.000000",
+    "doctype":  "DocType",
+    "engine":  "InnoDB",
+    "field_order":  [
+                        "title",
+                        "group",
+                        "course",
+                        "column_break_abcd",
+                        "date",
+                        "status",
+                        "time_section",
+                        "start_time",
+                        "column_break_efgh",
+                        "end_time",
+                        "instructor",
+                        "room",
+                        "content_section",
+                        "topic",
+                        "homework"
+                    ],
+    "fields":  [
+                   {
+                       "fieldname":  "title",
+                       "fieldtype":  "Data",
+                       "in_list_view":  1,
+                       "label":  "Title",
+                       "read_only":  1
+                   },
+                   {
+                       "fieldname":  "group",
+                       "fieldtype":  "Link",
+                       "in_list_view":  1,
+                       "in_standard_filter":  1,
+                       "label":  "Student Group",
+                       "options":  "Student Group",
+                       "reqd":  1,
+                       "search_index":  1
+                   },
+                   {
+                       "fetch_from":  "group.course",
+                       "fieldname":  "course",
+                       "fieldtype":  "Link",
+                       "in_list_view":  1,
+                       "in_standard_filter":  1,
+                       "label":  "Course",
+                       "options":  "Course",
+                       "read_only":  1
+                   },
+                   {
+                       "fieldname":  "column_break_abcd",
+                       "fieldtype":  "Column Break"
+                   },
+                   {
+                       "fieldname":  "date",
+                       "fieldtype":  "Date",
+                       "in_list_view":  1,
+                       "in_standard_filter":  1,
+                       "label":  "Date",
+                       "reqd":  1
+                   },
+                   {
+                       "default":  "Scheduled",
+                       "fieldname":  "status",
+                       "fieldtype":  "Select",
+                       "in_list_view":  1,
+                       "in_standard_filter":  1,
+                       "label":  "Status",
+                       "options":  "Scheduled\nCompleted\nCancelled"
+                   },
+                   {
+                       "fieldname":  "time_section",
+                       "fieldtype":  "Section Break",
+                       "label":  "Time"
+                   },
+                   {
+                       "fieldname":  "start_time",
+                       "fieldtype":  "Time",
+                       "in_list_view":  1,
+                       "label":  "Start Time",
+                       "reqd":  1
+                   },
+                   {
+                       "fieldname":  "column_break_efgh",
+                       "fieldtype":  "Column Break"
+                   },
+                   {
+                       "fieldname":  "end_time",
+                       "fieldtype":  "Time",
+                       "in_list_view":  1,
+                       "label":  "End Time",
+                       "reqd":  1
+                   },
+                   {
+                       "fetch_from":  "group.instructor",
+                       "fieldname":  "instructor",
+                       "fieldtype":  "Link",
+                       "label":  "Instructor",
+                       "options":  "User",
+                       "read_only":  1
+                   },
+                   {
+                       "fieldname":  "room",
+                       "fieldtype":  "Data",
+                       "label":  "Room"
+                   },
+                   {
+                       "fieldname":  "content_section",
+                       "fieldtype":  "Section Break",
+                       "label":  "Content"
+                   },
+                   {
+                       "fieldname":  "topic",
+                       "fieldtype":  "Small Text",
+                       "label":  "Topic"
+                   },
+                   {
+                       "fieldname":  "homework",
+                       "fieldtype":  "Text Editor",
+                       "label":  "Homework"
+                   },
+                   {
+                       "fieldtype":  "Data",
+                       "label":  "Video Recording URL",
+                       "insert_after":  "topic",
+                       "fieldname":  "video_recording_url"
+                   }
+               ],
+    "index_web_pages_for_search":  1,
+    "links":  [
+                  {
+                      "link_doctype":  "Student Attendance",
+                      "link_fieldname":  "academic_session",
+                      "group":  "Attendance",
+                      "table_fieldname":  "attendance_records"
+                  }
+              ],
+    "modified":  "2026-06-22 12:00:00.000000",
+    "modified_by":  "Administrator",
+    "module":  "LMS",
+    "name":  "Academic Session",
+    "owner":  "Administrator",
+    "permissions":  [
+                        {
+                            "create":  1,
+                            "delete":  1,
+                            "email":  1,
+                            "export":  1,
+                            "print":  1,
+                            "read":  1,
+                            "report":  1,
+                            "role":  "System Manager",
+                            "share":  1,
+                            "write":  1
+                        },
+                        {
+                            "create":  1,
+                            "delete":  1,
+                            "email":  1,
+                            "export":  1,
+                            "print":  1,
+                            "read":  1,
+                            "report":  1,
+                            "role":  "Instructor",
+                            "share":  1,
+                            "write":  1
+                        },
+                        {
+                            "email":  1,
+                            "export":  1,
+                            "print":  1,
+                            "read":  1,
+                            "report":  1,
+                            "role":  "Student",
+                            "share":  1
+                        }
+                    ],
+    "row_format":  "Dynamic",
+    "sort_field":  "date",
+    "sort_order":  "DESC",
+    "states":  [
+
+               ],
+    "title_field":  "title",
+    "track_changes":  1
+}

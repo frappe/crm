@@ -1,0 +1,236 @@
+{
+    "actions":  [
+
+                ],
+    "allow_import":  1,
+    "allow_rename":  1,
+    "autoname":  "format:STU-{YYYY}-{####}",
+    "creation":  "2026-06-22 12:00:00.000000",
+    "doctype":  "DocType",
+    "engine":  "InnoDB",
+    "field_order":  [
+                        "student_name",
+                        "contact",
+                        "user",
+                        "column_break_abcd",
+                        "image",
+                        "status",
+                        "enrolled_on",
+                        "personal_section",
+                        "date_of_birth",
+                        "gender",
+                        "column_break_efgh",
+                        "address",
+                        "medical_notes",
+                        "parent_section",
+                        "parent_name",
+                        "parent_phone",
+                        "column_break_ijkl",
+                        "parent_email",
+                        "notes_section",
+                        "notes"
+                    ],
+    "fields":  [
+                   {
+                       "fieldname":  "student_name",
+                       "fieldtype":  "Data",
+                       "in_list_view":  1,
+                       "in_standard_filter":  1,
+                       "label":  "Student Name",
+                       "reqd":  1
+                   },
+                   {
+                       "fieldname":  "contact",
+                       "fieldtype":  "Link",
+                       "in_list_view":  1,
+                       "label":  "Contact",
+                       "options":  "Contact",
+                       "reqd":  1,
+                       "search_index":  1,
+                       "unique":  1
+                   },
+                   {
+                       "fieldname":  "user",
+                       "fieldtype":  "Link",
+                       "label":  "User",
+                       "options":  "User"
+                   },
+                   {
+                       "fieldname":  "column_break_abcd",
+                       "fieldtype":  "Column Break"
+                   },
+                   {
+                       "fieldname":  "image",
+                       "fieldtype":  "Attach Image",
+                       "label":  "Photo"
+                   },
+                   {
+                       "default":  "Active",
+                       "fieldname":  "status",
+                       "fieldtype":  "Select",
+                       "in_list_view":  1,
+                       "in_standard_filter":  1,
+                       "label":  "Status",
+                       "options":  "Active\nInactive\nGraduated\nDropped"
+                   },
+                   {
+                       "fieldname":  "enrolled_on",
+                       "fieldtype":  "Date",
+                       "label":  "Enrolled On"
+                   },
+                   {
+                       "fieldname":  "personal_section",
+                       "fieldtype":  "Section Break",
+                       "label":  "Personal Details"
+                   },
+                   {
+                       "fieldname":  "date_of_birth",
+                       "fieldtype":  "Date",
+                       "label":  "Date of Birth"
+                   },
+                   {
+                       "fieldname":  "gender",
+                       "fieldtype":  "Link",
+                       "label":  "Gender",
+                       "options":  "Gender"
+                   },
+                   {
+                       "fieldname":  "column_break_efgh",
+                       "fieldtype":  "Column Break"
+                   },
+                   {
+                       "fieldname":  "address",
+                       "fieldtype":  "Small Text",
+                       "label":  "Address"
+                   },
+                   {
+                       "fieldname":  "medical_notes",
+                       "fieldtype":  "Small Text",
+                       "label":  "Medical Notes"
+                   },
+                   {
+                       "fieldname":  "parent_section",
+                       "fieldtype":  "Section Break",
+                       "label":  "Parent / Guardian"
+                   },
+                   {
+                       "fieldname":  "parent_name",
+                       "fieldtype":  "Data",
+                       "label":  "Parent Name"
+                   },
+                   {
+                       "fieldname":  "parent_phone",
+                       "fieldtype":  "Data",
+                       "label":  "Parent Phone",
+                       "options":  "Phone"
+                   },
+                   {
+                       "fieldname":  "column_break_ijkl",
+                       "fieldtype":  "Column Break"
+                   },
+                   {
+                       "fieldname":  "parent_email",
+                       "fieldtype":  "Data",
+                       "label":  "Parent Email",
+                       "options":  "Email"
+                   },
+                   {
+                       "fieldname":  "notes_section",
+                       "fieldtype":  "Section Break",
+                       "label":  "Notes"
+                   },
+                   {
+                       "fieldname":  "notes",
+                       "fieldtype":  "Text",
+                       "label":  "Notes"
+                   },
+                   {
+                       "fieldtype":  "Int",
+                       "default":  0,
+                       "label":  "Codify Coins",
+                       "insert_after":  "notes",
+                       "fieldname":  "codify_coins"
+                   }
+               ],
+    "index_web_pages_for_search":  1,
+    "links":  [
+                  {
+                      "link_doctype":  "Enrollment",
+                      "link_fieldname":  "student",
+                      "group":  "Enrollments",
+                      "table_fieldname":  "enrollments"
+                  },
+                  {
+                      "link_doctype":  "Student Attendance",
+                      "link_fieldname":  "student",
+                      "group":  "Attendance",
+                      "table_fieldname":  "attendance_records"
+                  },
+                  {
+                      "link_doctype":  "Student Abonement",
+                      "link_fieldname":  "student",
+                      "group":  "Abonements",
+                      "table_fieldname":  "abonements"
+                  },
+                  {
+                      "link_doctype":  "Student Rating",
+                      "link_fieldname":  "student",
+                      "group":  "Ratings",
+                      "table_fieldname":  "ratings"
+                  },
+                  {
+                      "link_doctype":  "Student Feedback",
+                      "link_fieldname":  "student",
+                      "group":  "Feedback",
+                      "table_fieldname":  "feedback"
+                  }
+              ],
+    "modified":  "2026-06-22 12:00:00.000000",
+    "modified_by":  "Administrator",
+    "module":  "LMS",
+    "name":  "Student",
+    "owner":  "Administrator",
+    "permissions":  [
+                        {
+                            "create":  1,
+                            "delete":  1,
+                            "email":  1,
+                            "export":  1,
+                            "print":  1,
+                            "read":  1,
+                            "report":  1,
+                            "role":  "System Manager",
+                            "share":  1,
+                            "write":  1
+                        },
+                        {
+                            "create":  1,
+                            "delete":  1,
+                            "email":  1,
+                            "export":  1,
+                            "print":  1,
+                            "read":  1,
+                            "report":  1,
+                            "role":  "Instructor",
+                            "share":  1,
+                            "write":  1
+                        },
+                        {
+                            "email":  1,
+                            "export":  1,
+                            "print":  1,
+                            "read":  1,
+                            "report":  1,
+                            "role":  "Student",
+                            "share":  1
+                        }
+                    ],
+    "row_format":  "Dynamic",
+    "sort_field":  "modified",
+    "sort_order":  "DESC",
+    "states":  [
+
+               ],
+    "title_field":  "student_name",
+    "track_changes":  1
+}

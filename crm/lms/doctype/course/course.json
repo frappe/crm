@@ -1,0 +1,197 @@
+{
+ "actions": [],
+ "allow_import": 1,
+ "allow_rename": 1,
+ "autoname": "field:title",
+ "creation": "2026-06-22 12:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "title",
+  "category",
+  "status",
+  "column_break_abcd",
+  "image",
+  "instructor",
+  "pricing_section",
+  "price",
+  "column_break_efgh",
+  "duration",
+  "description_section",
+  "description",
+  "stats_section",
+  "lesson_count",
+  "column_break_ijkl",
+  "student_count"
+ ],
+ "fields": [
+  {
+   "fieldname": "title",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Course Title",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "category",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Category",
+   "options": "Course Category"
+  },
+  {
+   "default": "Draft",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Status",
+   "options": "Draft\nPublished\nArchived"
+  },
+  {
+   "fieldname": "column_break_abcd",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "image",
+   "fieldtype": "Attach Image",
+   "label": "Cover Image"
+  },
+  {
+   "fieldname": "instructor",
+   "fieldtype": "Link",
+   "label": "Instructor",
+   "options": "User"
+  },
+  {
+   "fieldname": "pricing_section",
+   "fieldtype": "Section Break",
+   "label": "Pricing"
+  },
+  {
+   "fieldname": "price",
+   "fieldtype": "Currency",
+   "label": "Price",
+   "non_negative": 1
+  },
+  {
+   "fieldname": "column_break_efgh",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "duration",
+   "fieldtype": "Int",
+   "label": "Duration (hours)",
+   "non_negative": 1
+  },
+  {
+   "fieldname": "description_section",
+   "fieldtype": "Section Break",
+   "label": "Description"
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Text Editor",
+   "label": "Description"
+  },
+  {
+   "fieldname": "stats_section",
+   "fieldtype": "Section Break",
+   "label": "Statistics"
+  },
+  {
+   "fieldname": "lesson_count",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Number of Lessons",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_ijkl",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "student_count",
+   "fieldtype": "Int",
+   "label": "Enrolled Students",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [
+  {
+   "link_doctype": "Course Module",
+   "link_fieldname": "course",
+   "group": "Modules",
+   "table_fieldname": "modules"
+  },
+  {
+   "link_doctype": "Course Lecture",
+   "link_fieldname": "course",
+   "group": "Lectures",
+   "table_fieldname": "lectures"
+  },
+  {
+   "link_doctype": "Enrollment",
+   "link_fieldname": "course",
+   "group": "Enrollments",
+   "table_fieldname": "enrollments"
+  },
+  {
+   "link_doctype": "Student Group",
+   "link_fieldname": "course",
+   "group": "Groups",
+   "table_fieldname": "groups"
+  }
+ ],
+ "modified": "2026-06-22 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "LMS",
+ "name": "Course",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Instructor",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Student",
+   "share": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "title",
+ "track_changes": 1
+}

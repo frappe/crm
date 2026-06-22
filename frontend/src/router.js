@@ -89,6 +89,77 @@ const routes = [
     name: 'Calendar',
     component: () => import('@/pages/Calendar.vue'),
   },
+  // --- LMS Routes ---
+  {
+    path: '/lms/courses',
+    name: 'LmsCourses',
+    component: () => import('@/pages/lms/LmsCourses.vue'),
+  },
+  {
+    path: '/lms/courses/:courseId',
+    name: 'LmsCourseDetail',
+    component: () => import('@/pages/lms/LmsCourseDetail.vue'),
+    props: true,
+  },
+  {
+    path: '/lms/students',
+    name: 'LmsStudents',
+    component: () => import('@/pages/lms/LmsStudents.vue'),
+  },
+  {
+    path: '/lms/students/:studentId',
+    name: 'LmsStudentDetail',
+    component: () => import('@/pages/lms/LmsStudentDetail.vue'),
+    props: true,
+  },
+  {
+    path: '/lms/student',
+    name: 'LmsStudentDashboard',
+    component: () => import('@/pages/lms/LmsStudentDashboard.vue'),
+  },
+  {
+    path: '/lms/student/lecture/:lectureId',
+    name: 'LmsStudentLecture',
+    component: () => import('@/pages/lms/LmsStudentLecture.vue'),
+    props: true,
+  },
+  {
+    path: '/lms/instructor',
+    name: 'LmsInstructorDashboard',
+    component: () => import('@/pages/lms/LmsInstructorDashboard.vue'),
+  },
+  {
+    path: '/lms/instructor/group/:groupId/journal',
+    name: 'LmsGroupJournal',
+    component: () => import('@/pages/lms/LmsGroupJournal.vue'),
+    props: true,
+  },
+  {
+    path: '/lms/instructor/knowledge-base',
+    name: 'LmsKnowledgeBase',
+    component: () => import('@/pages/lms/LmsKnowledgeBase.vue'),
+  },
+  {
+    path: '/lms/instructor/group/:groupId/attendance',
+    name: 'LmsGroupAttendance',
+    component: () => import('@/pages/lms/LmsGroupAttendance.vue'),
+    props: true,
+  },
+  {
+    path: '/lms/groups',
+    name: 'LmsGroups',
+    component: () => import('@/pages/lms/LmsGroups.vue'),
+  },
+  {
+    path: '/lms/abonements',
+    name: 'LmsAbonements',
+    component: () => import('@/pages/lms/LmsAbonements.vue'),
+  },
+  {
+    path: '/lms/payments',
+    name: 'LmsPayments',
+    component: () => import('@/pages/lms/LmsPayments.vue'),
+  },
   {
     path: '/data-import',
     name: 'DataImportList',
