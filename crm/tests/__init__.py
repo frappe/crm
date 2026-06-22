@@ -26,10 +26,11 @@ def ensure_erpnext_fixtures():
 		# A country is required: install() builds a root Territory named after it.
 		install("India")
 
-	# Item creation defaults stock_uom from Stock Settings; a bare install leaves
-	# it unset (UOM "Nos" is created by install_fixtures above).
-	if not frappe.db.get_single_value("Stock Settings", "stock_uom"):
-		frappe.db.set_single_value("Stock Settings", "stock_uom", "Nos")
+	# Item defaults stock_uom from the global default ERPNext normally sets when
+	# Stock Settings is saved; a bare install never sets it (UOM "Nos" is created
+	# by install_fixtures above), so set the default directly.
+	if not frappe.db.get_default("stock_uom"):
+		frappe.db.set_default("stock_uom", "Nos")
 
 
 def load_crm_user_test_records():
