@@ -1,4 +1,5 @@
-import { formatDate, timeAgo } from '@/utils'
+import { formatDate } from '@/utils'
+import { timestampCell } from '@/composables/useTimelinePreferences'
 import { getMeta } from '@/stores/meta'
 
 const { getFormattedPercent, getFormattedFloat, getFormattedCurrency } =
@@ -33,10 +34,7 @@ export function getCallLogDetail(row, log, columns = []) {
       color: statusColorMap[log.status],
     }
   } else if (['modified', 'creation'].includes(row)) {
-    return {
-      label: formatDate(log[row]),
-      timeAgo: __(timeAgo(log[row])),
-    }
+    return timestampCell(log[row])
   }
 
   let fieldType = columns?.find((col) => (col.key || col.value) == row)?.type

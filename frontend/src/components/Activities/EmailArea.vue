@@ -24,11 +24,7 @@
           variant="subtle"
           :theme="status.color"
         />
-        <Tooltip :text="formatDate(activity.communication_date)">
-          <div class="text-sm text-ink-gray-5">
-            {{ __(timeAgo(activity.communication_date)) }}
-          </div>
-        </Tooltip>
+        <TimelineTimestamp :date="activity.communication_date" />
         <div class="flex gap-0.5">
           <Button
             :tooltip="__('Reply')"
@@ -81,8 +77,8 @@ import ReplyIcon from '@/components/Icons/ReplyIcon.vue'
 import ReplyAllIcon from '@/components/Icons/ReplyAllIcon.vue'
 import AttachmentItem from '@/components/AttachmentItem.vue'
 import EmailContent from '@/components/Activities/EmailContent.vue'
-import { Badge, Tooltip } from 'frappe-ui'
-import { timeAgo, formatDate } from '@/utils'
+import { Badge } from 'frappe-ui'
+import TimelineTimestamp from '@/components/Activities/TimelineTimestamp.vue'
 import { reactive, computed } from 'vue'
 
 const props = defineProps({

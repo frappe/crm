@@ -17,11 +17,7 @@
         }}</span>
       </div>
       <div class="ml-auto whitespace-nowrap">
-        <Tooltip :text="formatDate(call.creation)">
-          <div class="text-sm text-ink-gray-5">
-            {{ __(timeAgo(call.creation)) }}
-          </div>
-        </Tooltip>
+        <TimelineTimestamp :date="call.creation" />
       </div>
     </div>
     <div
@@ -105,9 +101,10 @@ import DurationIcon from '@/components/Icons/DurationIcon.vue'
 import MultipleAvatar from '@/components/MultipleAvatar.vue'
 import AudioPlayer from '@/components/Activities/AudioPlayer.vue'
 import CallLogDetailModal from '@/components/Modals/CallLogDetailModal.vue'
+import TimelineTimestamp from '@/components/Activities/TimelineTimestamp.vue'
 import { statusLabelMap, statusColorMap } from '@/utils/callLog.js'
-import { formatDate, timeAgo } from '@/utils'
-import { Avatar, Badge, Tooltip, createResource } from 'frappe-ui'
+import { formatDate } from '@/utils'
+import { Avatar, Badge, createResource } from 'frappe-ui'
 import { reactive, ref } from 'vue'
 
 const props = defineProps({
