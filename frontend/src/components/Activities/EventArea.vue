@@ -31,11 +31,7 @@
             <span>{{ 'has created an event' }}</span>
           </div>
           <div class="ml-auto whitespace-nowrap">
-            <Tooltip :text="formatDate(event.creation)">
-              <div class="text-sm text-ink-gray-5">
-                {{ __(timeAgo(event.creation)) }}
-              </div>
-            </Tooltip>
+            <TimelineTimestamp :date="event.creation" />
           </div>
         </div>
         <div
@@ -87,8 +83,8 @@ import EmptyState from '@/components/ListViews/EmptyState.vue'
 import CalendarIcon from '@/components/Icons/CalendarIcon.vue'
 import MultipleAvatar from '@/components/MultipleAvatar.vue'
 import { useEvent, showEventModal, activeEvent } from '@/composables/event'
-import { formatDate, timeAgo } from '@/utils'
-import { Tooltip, Avatar } from 'frappe-ui'
+import TimelineTimestamp from '@/components/Activities/TimelineTimestamp.vue'
+import { Avatar } from 'frappe-ui'
 
 const props = defineProps({
   doctype: { type: String, default: '' },

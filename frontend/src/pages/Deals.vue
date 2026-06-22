@@ -266,6 +266,7 @@ import { organizationsStore } from '@/stores/organizations'
 import { statusesStore } from '@/stores/statuses'
 import { callEnabled } from '@/composables/telephony'
 import { formatDate, timeAgo, website, formatTime } from '@/utils'
+import { timestampCell } from '@/composables/useTimelinePreferences'
 import { useOnboarding, useTelemetry } from 'frappe-ui/frappe'
 import { Tooltip, Avatar, Dropdown } from 'frappe-ui'
 import { useRoute } from 'vue-router'
@@ -459,10 +460,7 @@ function parseRows(rows, columns = []) {
           label: getUser(user).full_name,
         }))
       } else if (['modified', 'creation'].includes(row)) {
-        _rows[row] = {
-          label: formatDate(deal[row]),
-          timeAgo: __(timeAgo(deal[row])),
-        }
+        _rows[row] = timestampCell(deal[row])
       } else if (
         ['first_response_time', 'first_responded_on', 'response_by'].includes(
           row,

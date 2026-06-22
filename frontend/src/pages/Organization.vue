@@ -199,12 +199,11 @@ import { usersStore } from '@/stores/users'
 import { statusesStore } from '@/stores/statuses'
 import { getView } from '@/utils/view'
 import {
-  formatDate,
-  timeAgo,
   validateIsImageFile,
   setupCustomizations,
   openWebsite as openExternalWebsite,
 } from '@/utils'
+import { timestampCell } from '@/composables/useTimelinePreferences'
 import {
   Breadcrumbs,
   Avatar,
@@ -461,10 +460,7 @@ function getDealRowObject(deal) {
       label: deal.deal_owner && getUser(deal.deal_owner).full_name,
       ...(deal.deal_owner && getUser(deal.deal_owner)),
     },
-    modified: {
-      label: formatDate(deal.modified),
-      timeAgo: __(timeAgo(deal.modified)),
-    },
+    modified: timestampCell(deal.modified),
   }
 }
 
@@ -482,10 +478,7 @@ function getContactRowObject(contact) {
       label: contact.company_name,
       logo: organization.doc?.organization_logo,
     },
-    modified: {
-      label: formatDate(contact.modified),
-      timeAgo: __(timeAgo(contact.modified)),
-    },
+    modified: timestampCell(contact.modified),
   }
 }
 
