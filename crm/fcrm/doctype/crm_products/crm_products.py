@@ -31,8 +31,6 @@ class CRMProducts(Document):
 	pass
 
 
-<<<<<<< HEAD
-=======
 @frappe.whitelist()
 def get_product_rate_details(product_code: str, deal: str | None = None) -> dict:
 	product = (
@@ -83,7 +81,6 @@ def get_deal_product_rate(item_code: str, deal: str | None = None):
 	return rows[0].price_list_rate if rows else None
 
 
->>>>>>> a5955da3 (feat: price deal products from ERPNext context)
 def create_product_details_script(doctype):
 	name = "Product Details Script for " + doctype
 	script = get_product_details_script(doctype)
@@ -149,21 +146,15 @@ class CRMProducts {
   async product_code(idx) {
     let row = this.doc.getRow('products', idx)
 
-<<<<<<< HEAD
-    let a = await call("frappe.client.get_value", {
-        doctype: "CRM Product",
-        filters: { name: row.product_code },
-        fieldname: ["product_name", "standard_rate"],
-=======
     let a = await call("crm.fcrm.doctype.crm_products.crm_products.get_product_rate_details", {
         product_code: row.product_code,
         deal: this.doc.name,
->>>>>>> a5955da3 (feat: price deal products from ERPNext context)
     })
+    if (!a) return
 
     row.product_name = a.product_name
-    if (a.standard_rate && !row.rate) {
-        row.rate = a.standard_rate
+    if (a.rate && !row.rate) {
+        row.rate = a.rate
         row.trigger("rate")
     }
   }
