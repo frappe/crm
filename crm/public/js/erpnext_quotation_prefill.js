@@ -2,9 +2,11 @@ frappe.ui.form.on('Quotation', {
 	refresh(frm) {
 		const field = frm.get_field('crm_deal')
 		if (!field) return
+		// Render as a link only works for read only display an editable data
+		field.df.read_only = 1
 		field.df.formatter = (value) =>
 			value
-				? `<a href="/crm/deals/${encodeURIComponent(value)}" target="_blank" rel="noopener">${frappe.utils.escape_html(value)}</a>`
+				? `<a href="${window.location.origin}/crm/deals/${encodeURIComponent(value)}" target="_blank" rel="noopener">${frappe.utils.escape_html(value)}</a>`
 				: value
 		field.refresh()
 	},

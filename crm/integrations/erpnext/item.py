@@ -17,6 +17,23 @@ def _should_sync(doc) -> bool:
 	return should_sync() and not doc.flags.get("ignore_crm_sync")
 
 
+def get_item_price_rate(item_code: str):
+	"""Fall back to the latest valid selling Item Price when standard_rate is null."""
+	return frappe.db.get_value(
+		"Item Price",
+		{"item_code": item_code, "selling": 1},
+		"price_list_rate",
+		order_by="valid_from desc",
+	)
+
+
+def _catalogue_data(doc) -> dict:
+	data = {f: doc.get(f) for f in CATALOGUE_FIELDS}
+	if not data.get("standard_rate"):
+		data["standard_rate"] = get_item_price_rate(doc.name)
+	return data
+
+
 def after_insert(doc, method=None):
 	if not _should_sync(doc):
 		return
@@ -27,7 +44,7 @@ def after_insert(doc, method=None):
 			"doctype": "CRM Product",
 			"product_code": doc.item_code,
 			"product_name": doc.item_name,
-			**{f: doc.get(f) for f in CATALOGUE_FIELDS},
+			**_catalogue_data(doc),
 		}
 	)
 	product.flags.ignore_erpnext_sync = True
@@ -43,7 +60,7 @@ def on_update(doc, method=None):
 		return
 	data = {
 		"product_name": doc.item_name,
-		**{f: doc.get(f) for f in CATALOGUE_FIELDS},
+		**_catalogue_data(doc),
 	}
 	current = frappe.db.get_value("CRM Product", product_name, list(data.keys()), as_dict=True) or {}
 	if not payload_differs(data, current):
