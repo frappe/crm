@@ -32,11 +32,7 @@
           </div>
         </div>
         <div class="flex flex-col items-end gap-2 flex-shrink-0">
-          <Tooltip :text="formatDate(attachment.creation)">
-            <div class="text-sm text-ink-gray-5">
-              {{ __(timeAgo(attachment.creation)) }}
-            </div>
-          </Tooltip>
+          <TimelineTimestamp :date="attachment.creation" />
           <div class="flex gap-1">
             <Button
               :tooltip="
@@ -78,8 +74,9 @@ import FileAudioIcon from '@/components/Icons/FileAudioIcon.vue'
 import FileTextIcon from '@/components/Icons/FileTextIcon.vue'
 import FileVideoIcon from '@/components/Icons/FileVideoIcon.vue'
 import { globalStore } from '@/stores/global'
-import { call, Tooltip } from 'frappe-ui'
-import { formatDate, timeAgo, convertSize, isImage } from '@/utils'
+import { call } from 'frappe-ui'
+import TimelineTimestamp from '@/components/Activities/TimelineTimestamp.vue'
+import { convertSize, isImage } from '@/utils'
 
 defineProps({
   attachments: { type: Array, default: () => [] },
