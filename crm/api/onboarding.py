@@ -50,6 +50,22 @@ def complete_setup_for_fc_site(doc, method=None):
 	frappe.db.set_single_value("System Settings", "setup_complete", 1)
 
 
+def set_home_page_on_login(login_manager=None):
+	"""Land users on the CRM app only when it is the sole product app installed.
+
+	Frappe routes System Users to the desk after login (via `get_home_page()`), which
+	doesn't consult the app-screen logic that already knows the default app. So on a
+	CRM-only site we set the request-scoped `home_page` flag — which `get_home_page()`
+	honours first — to send users to `/crm`. On a multi-app site we leave it unset so
+	users fall through to the desk, matching Frappe's `get_default_path()` behaviour.
+	"""
+	from frappe.apps import get_apps
+
+	product_apps = [app for app in get_apps() if app.get("name") != "frappe"]
+	if len(product_apps) == 1 and product_apps[0].get("name") == "crm":
+		frappe.local.flags.home_page = "crm"
+
+
 @frappe.whitelist()
 def get_first_lead():
 	lead = frappe.get_all(
