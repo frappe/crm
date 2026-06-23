@@ -61,7 +61,13 @@ doctype_js = {
 # ----------
 
 # application home page (will override Website Settings)
+<<<<<<< HEAD
 # home_page = "login"
+=======
+# Set dynamically on login (see on_login below): CRM becomes the landing page only
+# when it is the sole product app installed, otherwise users fall through to the desk.
+# home_page = "crm"
+>>>>>>> 5ec4e43c (feat: land on /crm only when CRM is the sole product app, else desk (#2337))
 
 # website user home page (by Role)
 # role_home_page = {
@@ -298,6 +304,8 @@ ignore_links_on_delete = ["Failed Lead Sync Log"]
 # auth_hooks = [
 # "crm.auth.validate"
 # ]
+
+on_login = ["crm.api.onboarding.set_home_page_on_login"]
 
 after_migrate = [
 	"crm.fcrm.doctype.fcrm_settings.fcrm_settings.after_migrate",
