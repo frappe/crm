@@ -22,10 +22,14 @@ def complete_setup_for_fc_site(doc, method=None):
 	if doc.user_type != "System User" or doc.name == "Administrator":
 		return
 
-	# Imported lazily so this module stays importable on Frappe installs that don't
-	# ship the frappe_providers integration (older versions / community forks) — keeping
-	# the unrelated whitelisted endpoints below working there.
-	from frappe.integrations.frappe_providers.frappecloud_billing import is_fc_site
+	# Imported lazily and guarded: on installs without the frappe_providers integration
+	# (older versions / community forks) the module is absent, which also means the site
+	# can't be a Frappe Cloud site — so bail out without letting the ImportError bubble
+	# up and abort the in-progress user-insert transaction.
+	try:
+		from frappe.integrations.frappe_providers.frappecloud_billing import is_fc_site
+	except ImportError:
+		return
 
 	if not is_fc_site():
 		return
