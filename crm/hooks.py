@@ -204,6 +204,7 @@ doc_events = {
 		"on_trash": ["crm.integrations.erpnext.doc_share.on_trash"],
 	},
 	"User": {
+		"after_insert": ["crm.api.onboarding.complete_setup_for_fc_site"],
 		"before_validate": ["crm.api.live_demo.validate_user"],
 		"validate_reset_password": ["crm.api.live_demo.validate_reset_password"],
 	},
