@@ -61,13 +61,9 @@ doctype_js = {
 # ----------
 
 # application home page (will override Website Settings)
-<<<<<<< HEAD
-# home_page = "login"
-=======
 # Set dynamically on login (see on_login below): CRM becomes the landing page only
 # when it is the sole product app installed, otherwise users fall through to the desk.
 # home_page = "crm"
->>>>>>> 5ec4e43c (feat: land on /crm only when CRM is the sole product app, else desk (#2337))
 
 # website user home page (by Role)
 # role_home_page = {
@@ -210,6 +206,7 @@ doc_events = {
 		"on_trash": ["crm.integrations.erpnext.doc_share.on_trash"],
 	},
 	"User": {
+		"after_insert": ["crm.api.onboarding.complete_setup_for_fc_site"],
 		"before_validate": ["crm.api.live_demo.validate_user"],
 		"validate_reset_password": ["crm.api.live_demo.validate_reset_password"],
 	},

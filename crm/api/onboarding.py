@@ -1,8 +1,6 @@
 import frappe
 
 
-<<<<<<< HEAD
-=======
 def complete_setup_for_fc_site(doc, method=None):
 	"""Auto-complete the setup wizard on Frappe Cloud provisioned sites.
 
@@ -68,7 +66,6 @@ def set_home_page_on_login(login_manager=None):
 		frappe.local.flags.home_page = "crm"
 
 
->>>>>>> 5ec4e43c (feat: land on /crm only when CRM is the sole product app, else desk (#2337))
 @frappe.whitelist()
 def get_first_lead():
 	lead = frappe.get_all(
