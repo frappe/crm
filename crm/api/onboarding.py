@@ -1,5 +1,4 @@
 import frappe
-from frappe.integrations.frappe_providers.frappecloud_billing import is_fc_site
 
 
 def complete_setup_for_fc_site(doc, method=None):
@@ -15,11 +14,19 @@ def complete_setup_for_fc_site(doc, method=None):
 	`create_or_update_user()` is the last step it runs, so by the time this handler
 	executes both System Settings and the user already exist.
 	"""
-	# Only act during the provisioning window, on FC sites, for the prefilled System User.
+	# Only act during the provisioning window, for the prefilled System User. These
+	# cheap guards run first so the common case (setup already complete) returns before
+	# importing anything.
 	if frappe.is_setup_complete():
 		return
 	if doc.user_type != "System User" or doc.name == "Administrator":
 		return
+
+	# Imported lazily so this module stays importable on Frappe installs that don't
+	# ship the frappe_providers integration (older versions / community forks) — keeping
+	# the unrelated whitelisted endpoints below working there.
+	from frappe.integrations.frappe_providers.frappecloud_billing import is_fc_site
+
 	if not is_fc_site():
 		return
 
@@ -29,7 +36,7 @@ def complete_setup_for_fc_site(doc, method=None):
 	# work doesn't slow down or risk failing Press's prefill request — the flags below
 	# flip synchronously so `setup_complete` is true immediately.
 	for hook in frappe.get_hooks("setup_wizard_complete"):
-		frappe.enqueue(hook, args={}, enqueue_after_commit=True)
+		frappe.enqueue(hook, enqueue_after_commit=True)
 
 	# Flip the completion flags. Marking "frappe" is enough for frappe.is_setup_complete()
 	# (it only checks installed-app rows, so erpnext is irrelevant on a CRM-only site);
