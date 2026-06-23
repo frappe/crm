@@ -302,7 +302,7 @@ ignore_links_on_delete = ["Failed Lead Sync Log"]
 # "crm.auth.validate"
 # ]
 
-on_login = "crm.api.onboarding.set_home_page_on_login"
+on_login = ["crm.api.onboarding.set_home_page_on_login"]
 
 after_migrate = [
 	"crm.fcrm.doctype.fcrm_settings.fcrm_settings.after_migrate",
