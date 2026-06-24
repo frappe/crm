@@ -206,7 +206,6 @@ doc_events = {
 		"on_trash": ["crm.integrations.erpnext.doc_share.on_trash"],
 	},
 	"User": {
-		"after_insert": ["crm.api.onboarding.complete_setup_for_fc_site"],
 		"before_validate": ["crm.api.live_demo.validate_user"],
 		"validate_reset_password": ["crm.api.live_demo.validate_reset_password"],
 	},
@@ -302,7 +301,10 @@ ignore_links_on_delete = ["Failed Lead Sync Log"]
 # "crm.auth.validate"
 # ]
 
-on_login = "crm.api.onboarding.set_home_page_on_login"
+on_login = [
+	"crm.api.onboarding.set_home_page_on_login",
+	"crm.api.onboarding.complete_setup_for_fc_site",
+]
 
 after_migrate = [
 	"crm.fcrm.doctype.fcrm_settings.fcrm_settings.after_migrate",
