@@ -50,7 +50,11 @@ export const usersStore = defineStore('crm-users', () => {
     auto: false,
     transform([allUsers]) {
       for (let user of allUsers) {
-        if (!usersByName[user.name]) {
+        // upgrade partial get_user_info so always full record is used
+        const existing = usersByName[user.name]
+        if (existing) {
+          Object.assign(existing, user)
+        } else {
           usersByName[user.name] = user
         }
       }
