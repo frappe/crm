@@ -1,5 +1,12 @@
+import unittest
+from importlib.util import find_spec
+
 import frappe
 from frappe.tests.utils import FrappeTestCase
+
+# Skip tests that import erpnext when it isn't installed. CI only installs
+# ERPNext when integration code under crm/integrations/erpnext/** is touched.
+ERPNEXT_INSTALLED = find_spec("erpnext") is not None
 
 # Doctypes whose sync behaviour moved from override_doctype_class to doc_events
 SYNC_DOCTYPES = ("Item", "User Permission", "DocShare")
@@ -63,6 +70,7 @@ class TestItemRateFallback(FrappeTestCase):
 			item.get_item_price_rate = original
 		self.assertEqual(data["standard_rate"], 50)
 
+	@unittest.skipUnless(ERPNEXT_INSTALLED, "erpnext not installed")
 	def test_get_item_price_rate_uses_default_price_list_and_general_party(self):
 		from erpnext.stock import get_item_details
 
@@ -92,6 +100,7 @@ class TestItemRateFallback(FrappeTestCase):
 		self.assertNotIn("customer", captured["pctx"])
 		self.assertFalse(captured["kwargs"].get("ignore_party"))
 
+	@unittest.skipUnless(ERPNEXT_INSTALLED, "erpnext not installed")
 	def test_get_item_price_rate_returns_none_without_default_price_list(self):
 		from crm.integrations.erpnext import item
 
