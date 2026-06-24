@@ -15,14 +15,21 @@ def complete_setup_for_fc_site(login_manager=None):
 	fresh provisions and re-provisions. The `is_setup_complete()` guard makes it
 	idempotent and cheap on subsequent logins.
 	"""
+	# Dedicated log file (logs/fc_onboarding.log) so the auto-complete decision path
+	# can be traced on test deployments without sifting through the main web log.
+	logger = frappe.logger("fc_onboarding", allow_site=True, file_count=5)
+	logger.info(f"complete_setup_for_fc_site: invoked (session.user={frappe.session.user})")
+
 	# Act only while setup is pending, and only for a real System User. These cheap
 	# guards run first so the common case (setup already complete) returns before
 	# importing anything or hitting the DB.
 	if frappe.is_setup_complete():
+		logger.info("complete_setup_for_fc_site: bail — setup already complete")
 		return
 	# Site has opted out of the setup wizard entirely (site_config), so there is
 	# nothing to auto-complete.
 	if frappe.conf.skip_setup_wizard:
+		logger.info("complete_setup_for_fc_site: bail — skip_setup_wizard set in site_config")
 		return
 
 	# Only auto-complete once Frappe Cloud has prefilled the account — which it
@@ -37,6 +44,7 @@ def complete_setup_for_fc_site(login_manager=None):
 		"User",
 		{"user_type": "System User", "name": ("not in", ("Administrator", "Guest"))},
 	):
+		logger.info("complete_setup_for_fc_site: bail — no prefilled non-admin System User yet")
 		return
 
 	# Imported lazily and guarded: on installs without the frappe_providers integration
@@ -46,9 +54,13 @@ def complete_setup_for_fc_site(login_manager=None):
 	try:
 		from frappe.integrations.frappe_providers.frappecloud_billing import is_fc_site
 	except ImportError:
+		logger.info("complete_setup_for_fc_site: bail — frappe_providers integration absent (not an FC site)")
 		return
 
 	if not is_fc_site():
+		logger.info(
+			"complete_setup_for_fc_site: bail — is_fc_site() is False (no System Manager role / no fc_communication_secret)"
+		)
 		return
 
 	from frappe.desk.page.setup_wizard.setup_wizard import enable_setup_wizard_complete
@@ -65,6 +77,7 @@ def complete_setup_for_fc_site(login_manager=None):
 	enable_setup_wizard_complete("frappe")
 	enable_setup_wizard_complete("crm")
 	frappe.db.set_single_value("System Settings", "setup_complete", 1)
+	logger.info("complete_setup_for_fc_site: marked setup complete (frappe + crm + System Settings)")
 
 
 def set_home_page_on_login(login_manager=None):
