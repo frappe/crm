@@ -1,3 +1,5 @@
+import logging
+
 import frappe
 
 
@@ -17,18 +19,41 @@ def complete_setup_for_fc_site(login_manager=None):
 	"""
 	# Dedicated log file (logs/fc_onboarding.log) so the auto-complete decision path
 	# can be traced on test deployments without sifting through the main web log.
+	# Force INFO: frappe's default level is ERROR on non-dev benches (see
+	# frappe/utils/logger.py default_log_level), which would silently drop every
+	# line below and leave the file empty.
 	logger = frappe.logger("fc_onboarding", allow_site=True, file_count=5)
-	logger.info(f"complete_setup_for_fc_site: invoked (session.user={frappe.session.user})")
+	logger.setLevel(logging.INFO)
+
+	# Snapshot the full decision state up front, so the log shows why we proceed or
+	# bail regardless of which guard fires first.
+	setup_complete = frappe.is_setup_complete()
+	system_settings_setup_complete = frappe.db.get_single_value("System Settings", "setup_complete")
+	non_admin_system_user_exists = bool(
+		frappe.db.exists(
+			"User",
+			{"user_type": "System User", "name": ("not in", ("Administrator", "Guest"))},
+		)
+	)
+	skip_setup_wizard = bool(frappe.conf.skip_setup_wizard)
+	logger.info(
+		"complete_setup_for_fc_site: invoked | "
+		f"session.user={frappe.session.user} | "
+		f"is_setup_complete()={setup_complete} | "
+		f"System Settings.setup_complete={system_settings_setup_complete} | "
+		f"non_admin_system_user_exists={non_admin_system_user_exists} | "
+		f"skip_setup_wizard={skip_setup_wizard}"
+	)
 
 	# Act only while setup is pending, and only for a real System User. These cheap
 	# guards run first so the common case (setup already complete) returns before
 	# importing anything or hitting the DB.
-	if frappe.is_setup_complete():
+	if setup_complete:
 		logger.info("complete_setup_for_fc_site: bail — setup already complete")
 		return
 	# Site has opted out of the setup wizard entirely (site_config), so there is
 	# nothing to auto-complete.
-	if frappe.conf.skip_setup_wizard:
+	if skip_setup_wizard:
 		logger.info("complete_setup_for_fc_site: bail — skip_setup_wizard set in site_config")
 		return
 
@@ -40,10 +65,7 @@ def complete_setup_for_fc_site(login_manager=None):
 	# while setup is pending, Press's "Setup Site" action logs in as Administrator
 	# (POST /api/method/login), so gating on the session user would skip exactly the
 	# login that lands on the wizard.
-	if not frappe.db.exists(
-		"User",
-		{"user_type": "System User", "name": ("not in", ("Administrator", "Guest"))},
-	):
+	if not non_admin_system_user_exists:
 		logger.info("complete_setup_for_fc_site: bail — no prefilled non-admin System User yet")
 		return
 
