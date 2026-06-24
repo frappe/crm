@@ -161,6 +161,9 @@ def delete_lecture(lecture: str) -> bool:
 def get_courses_by_instructor(instructor: str | None = None) -> list:
     if not instructor:
         instructor = frappe.session.user
+    elif instructor != frappe.session.user:
+        if "System Manager" not in frappe.get_roles() and not _has_instructor_role():
+            frappe.throw(_("Not permitted to view this instructor's courses"), frappe.PermissionError)
     return frappe.get_all(
         "Course",
         filters={"instructor": instructor},
@@ -547,6 +550,9 @@ def grade_assignment(data: str | dict) -> str:
 def get_instructor_dashboard(instructor: str | None = None) -> dict:
     if not instructor:
         instructor = frappe.session.user
+    elif instructor != frappe.session.user:
+        if "System Manager" not in frappe.get_roles() and not _has_instructor_role():
+            frappe.throw(_("Not permitted to view this instructor's dashboard"), frappe.PermissionError)
 
     today = frappe.utils.nowdate()
     my_groups = frappe.get_all(
