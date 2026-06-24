@@ -31,6 +31,7 @@ def after_install(force=False):
 	create_default_manager_dashboard(force)
 	create_assignment_rule_custom_fields()
 	add_assignment_rule_property_setters()
+	add_lms_roles()
 	frappe.db.commit()
 
 
@@ -570,3 +571,12 @@ def create_assignment_rule_custom_fields():
 		)
 
 		frappe.clear_cache(doctype="Assignment Rule")
+
+
+def add_lms_roles():
+	new_roles = ["Instructor", "Student"]
+	for role_name in new_roles:
+		if not frappe.db.exists("Role", role_name):
+			frappe.get_doc({"doctype": "Role", "role_name": role_name, "desk_access": 1}).insert(
+				ignore_permissions=True
+			)
