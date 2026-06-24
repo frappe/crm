@@ -25,10 +25,18 @@ def complete_setup_for_fc_site(login_manager=None):
 	if frappe.conf.skip_setup_wizard:
 		return
 
-	user = frappe.session.user
-	if user in ("Administrator", "Guest"):
-		return
-	if frappe.db.get_value("User", user, "user_type") != "System User":
+	# Only auto-complete once Frappe Cloud has prefilled the account — which it
+	# signals by creating a real (non-Administrator) System User on the site. Until
+	# then there is no gathered data to stand in for the wizard, so let it run.
+	#
+	# We check that such a user *exists*, not that the *logged-in* user is one:
+	# while setup is pending, Press's "Setup Site" action logs in as Administrator
+	# (POST /api/method/login), so gating on the session user would skip exactly the
+	# login that lands on the wizard.
+	if not frappe.db.exists(
+		"User",
+		{"user_type": "System User", "name": ("not in", ("Administrator", "Guest"))},
+	):
 		return
 
 	# Imported lazily and guarded: on installs without the frappe_providers integration
