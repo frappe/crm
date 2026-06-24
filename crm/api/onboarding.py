@@ -20,6 +20,10 @@ def complete_setup_for_fc_site(login_manager=None):
 	# importing anything or hitting the DB.
 	if frappe.is_setup_complete():
 		return
+	# Site has opted out of the setup wizard entirely (site_config), so there is
+	# nothing to auto-complete.
+	if frappe.conf.skip_setup_wizard:
+		return
 
 	user = frappe.session.user
 	if user in ("Administrator", "Guest"):
