@@ -1,0 +1,140 @@
+{
+ "actions": [],
+ "allow_import": 1,
+ "autoname": "format:LP-{YYYY}-{####}",
+ "creation": "2026-06-24 12:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "student",
+  "lecture",
+  "course",
+  "column_break_abcd",
+  "enrollment",
+  "status",
+  "progress_section",
+  "completed_at",
+  "column_break_efgh",
+  "time_spent"
+ ],
+ "fields": [
+  {
+   "fieldname": "student",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Student",
+   "options": "Student",
+   "reqd": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "lecture",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Lecture",
+   "options": "Course Lecture",
+   "reqd": 1,
+   "search_index": 1
+  },
+  {
+   "fetch_from": "lecture.course",
+   "fieldname": "course",
+   "fieldtype": "Link",
+   "label": "Course",
+   "options": "Course",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_abcd",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "enrollment",
+   "fieldtype": "Link",
+   "label": "Enrollment",
+   "options": "Enrollment"
+  },
+  {
+   "default": "Not Started",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Status",
+   "options": "Not Started\nIn Progress\nCompleted"
+  },
+  {
+   "fieldname": "progress_section",
+   "fieldtype": "Section Break",
+   "label": "Progress Details"
+  },
+  {
+   "fieldname": "completed_at",
+   "fieldtype": "Datetime",
+   "label": "Completed At",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_efgh",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "time_spent",
+   "fieldtype": "Int",
+   "label": "Time Spent (minutes)",
+   "non_negative": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-06-24 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "LMS",
+ "name": "Lecture Progress",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Instructor",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Student",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "student",
+ "track_changes": 1
+}

@@ -1,0 +1,15 @@
+{
+ "doctype": "Report",
+ "name": "Payment Report",
+ "module": "LMS",
+ "is_standard": "Yes",
+ "ref_doctype": "Payment",
+ "report_type": "Report Builder",
+ "columns": [
+  {"fieldname": "student", "fieldtype": "Link", "label": "Student", "options": "Student", "width": 150},
+  {"fieldname": "amount", "fieldtype": "Currency", "label": "Amount", "width": 100},
+  {"fieldname": "payment_method", "fieldtype": "Select", "label": "Method", "width": 100},
+  {"fieldname": "payment_date", "fieldtype": "Date", "label": "Date", "width": 100},
+  {"fieldname": "student_abonement", "fieldtype": "Link", "label": "Abonement", "options": "Student Abonement", "width": 120}
+ ]
+}

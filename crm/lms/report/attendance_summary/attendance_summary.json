@@ -1,0 +1,15 @@
+{
+ "doctype": "Report",
+ "name": "Attendance Summary",
+ "module": "LMS",
+ "is_standard": "Yes",
+ "ref_doctype": "Student Attendance",
+ "report_type": "Report Builder",
+ "columns": [
+  {"fieldname": "student", "fieldtype": "Link", "label": "Student", "options": "Student", "width": 150},
+  {"fieldname": "group", "fieldtype": "Data", "label": "Group", "width": 120},
+  {"fieldname": "status", "fieldtype": "Select", "label": "Status", "width": 100},
+  {"fieldname": "date", "fieldtype": "Date", "label": "Date", "width": 100},
+  {"fieldname": "academic_session", "fieldtype": "Link", "label": "Session", "options": "Academic Session", "width": 120}
+ ]
+}

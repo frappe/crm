@@ -1,24 +1,21 @@
-#!bin/bash
+#!/bin/bash
 
 if [ -d "/home/frappe/frappe-bench/apps/frappe" ]; then
     echo "Bench already exists, skipping init"
-    cd frappe-bench
-    bench start
-else
-    echo "Creating new bench..."
+    cd /home/frappe/frappe-bench
+    exec bench start
 fi
 
-bench init --skip-redis-config-generation frappe-bench --version version-15
+echo "Creating new bench..."
+bench init --skip-redis-config-generation /home/frappe/frappe-bench --version version-15
 
-cd frappe-bench
+cd /home/frappe/frappe-bench
 
-# Use containers instead of localhost
 bench set-mariadb-host mariadb
 bench set-redis-cache-host redis://redis:6379
 bench set-redis-queue-host redis://redis:6379
 bench set-redis-socketio-host redis://redis:6379
 
-# Remove redis, watch from Procfile
 sed -i '/redis/d' ./Procfile
 sed -i '/watch/d' ./Procfile
 
@@ -37,4 +34,4 @@ bench --site crm.localhost set-config server_script_enabled 1
 bench --site crm.localhost clear-cache
 bench use crm.localhost
 
-bench start
+exec bench start

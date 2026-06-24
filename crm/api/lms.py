@@ -1,48 +1,61 @@
-# Copyright (c) 2026, Frappe Technologies Pvt. Ltd. and contributors
-# For license information, please see license.txt
-
 import frappe
 from frappe import _
 
 
-def _require_role(role):
+def _require_role(role: str) -> None:
     if role not in frappe.get_roles():
         frappe.throw(_("Not permitted"), frappe.PermissionError)
 
 
-def _resolve_student_from_session():
+def _resolve_student_from_session() -> str | None:
     students = frappe.get_all("Student", filters={"user": frappe.session.user}, limit=1)
     return students[0].name if students else None
 
 
-def _update_course_lesson_count(course):
+def _update_course_lesson_count(course: str) -> None:
     count = frappe.db.count("Course Lecture", {"course": course})
     frappe.db.set_value("Course", course, "lesson_count", count)
 
 
+def _has_instructor_role() -> bool:
+    return "Instructor" in frappe.get_roles()
+
+
+def _paginate(doctype: str, fields: list, filters: dict | None = None, start: int = 0, page_length: int = 20, order_by: str = "modified desc", pluck: str | None = None):
+    kwargs = {
+        "doctype": doctype,
+        "filters": filters or {},
+        "start": start,
+        "page_length": page_length,
+        "order_by": order_by,
+    }
+    if pluck:
+        kwargs["pluck"] = pluck
+    else:
+        kwargs["fields"] = fields
+    data = frappe.get_all(**kwargs)
+    total = frappe.db.count(doctype, filters or {})
+    return {"data": data, "total": total}
+
+
+# ---------------------------------------------------------------------------
+# Courses
+# ---------------------------------------------------------------------------
+
+
 @frappe.whitelist()
-def get_courses():
-    courses = frappe.get_all(
+def get_courses(start: int = 0, page_length: int = 20) -> dict:
+    return _paginate(
         "Course",
-        fields=[
-            "name",
-            "title",
-            "category",
-            "status",
-            "price",
-            "duration",
-            "lesson_count",
-            "student_count",
-            "image",
-            "instructor",
-        ],
+        fields=["name", "title", "category", "status", "price", "duration", "lesson_count", "student_count", "image", "instructor"],
         order_by="modified desc",
+        start=start,
+        page_length=page_length,
     )
-    return courses
 
 
 @frappe.whitelist()
-def get_course_detail(course):
+def get_course_detail(course: str) -> dict:
     course_doc = frappe.get_doc("Course", course)
     modules = frappe.get_all(
         "Course Module",
@@ -53,26 +66,14 @@ def get_course_detail(course):
     lectures = frappe.get_all(
         "Course Lecture",
         filters={"course": course},
-        fields=[
-            "name",
-            "title",
-            "module",
-            "position",
-            "duration",
-            "content_type",
-            "video_url",
-        ],
+        fields=["name", "title", "module", "position", "duration", "content_type", "video_url"],
         order_by="position asc",
     )
-    return {
-        "course": course_doc,
-        "modules": modules,
-        "lectures": lectures,
-    }
+    return {"course": course_doc, "modules": modules, "lectures": lectures}
 
 
 @frappe.whitelist()
-def get_lecture_detail(lecture):
+def get_lecture_detail(lecture: str) -> dict:
     lecture_doc = frappe.get_doc("Course Lecture", lecture)
     lecture_doc.materials = frappe.get_all(
         "Lecture Material",
@@ -83,24 +84,24 @@ def get_lecture_detail(lecture):
 
 
 @frappe.whitelist()
-def create_course(data):
+def create_course(data: str | dict) -> str:
     data = frappe.parse_json(data) if isinstance(data, str) else data
     _require_role("Instructor")
+    if not frappe.has_permission("Course", "create"):
+        frappe.throw(_("Not permitted to create Course"), frappe.PermissionError)
 
     course = frappe.new_doc("Course")
-    course.update(
-        {
-            "title": data.get("title"),
-            "category": data.get("category"),
-            "status": data.get("status") or "Draft",
-            "price": data.get("price", 0),
-            "duration": data.get("duration", 0),
-            "description": data.get("description"),
-            "instructor": data.get("instructor"),
-            "image": data.get("image"),
-        }
-    )
-    course.insert(ignore_permissions=True)
+    course.update({
+        "title": data.get("title"),
+        "category": data.get("category"),
+        "status": data.get("status") or "Draft",
+        "price": data.get("price", 0),
+        "duration": data.get("duration", 0),
+        "description": data.get("description"),
+        "instructor": data.get("instructor"),
+        "image": data.get("image"),
+    })
+    course.insert()
 
     for i, module_data in enumerate(data.get("modules", [])):
         mod = frappe.new_doc("Course Module")
@@ -108,29 +109,29 @@ def create_course(data):
         mod.module_name = module_data.get("module_name")
         mod.position = module_data.get("position", i + 1)
         mod.description = module_data.get("description")
-        mod.insert(ignore_permissions=True)
+        mod.insert()
 
     return course.name
 
 
 @frappe.whitelist()
-def create_lecture(data):
+def create_lecture(data: str | dict) -> str:
     data = frappe.parse_json(data) if isinstance(data, str) else data
     _require_role("Instructor")
+    if not frappe.has_permission("Course Lecture", "create"):
+        frappe.throw(_("Not permitted to create Lecture"), frappe.PermissionError)
 
     lecture = frappe.new_doc("Course Lecture")
-    lecture.update(
-        {
-            "title": data.get("title"),
-            "course": data.get("course"),
-            "module": data.get("module"),
-            "position": data.get("position", 0),
-            "duration": data.get("duration", 0),
-            "content_type": data.get("content_type", "Text"),
-            "content": data.get("content"),
-            "video_url": data.get("video_url"),
-        }
-    )
+    lecture.update({
+        "title": data.get("title"),
+        "course": data.get("course"),
+        "module": data.get("module"),
+        "position": data.get("position", 0),
+        "duration": data.get("duration", 0),
+        "content_type": data.get("content_type", "Text"),
+        "content": data.get("content"),
+        "video_url": data.get("video_url"),
+    })
 
     for material_data in data.get("materials", []):
         material = lecture.append("materials", {})
@@ -138,14 +139,17 @@ def create_lecture(data):
         material.type = material_data.get("type", "Document")
         material.file = material_data.get("file")
 
-    lecture.insert(ignore_permissions=True)
+    lecture.insert()
     _update_course_lesson_count(lecture.course)
     return lecture.name
 
 
 @frappe.whitelist()
-def delete_lecture(lecture):
+def delete_lecture(lecture: str) -> bool:
     _require_role("Instructor")
+    if not frappe.has_permission("Course Lecture", "delete"):
+        frappe.throw(_("Not permitted to delete Lecture"), frappe.PermissionError)
+
     lecture_doc = frappe.get_doc("Course Lecture", lecture)
     course = lecture_doc.course
     lecture_doc.delete()
@@ -154,35 +158,33 @@ def delete_lecture(lecture):
 
 
 @frappe.whitelist()
-def get_courses_by_instructor(instructor=None):
+def get_courses_by_instructor(instructor: str | None = None) -> list:
     if not instructor:
         instructor = frappe.session.user
-    courses = frappe.get_all(
+    return frappe.get_all(
         "Course",
         filters={"instructor": instructor},
         fields=["name", "title", "status", "lesson_count", "student_count"],
         order_by="modified desc",
     )
-    return courses
 
 
 @frappe.whitelist()
-def get_course_categories():
-    categories = frappe.get_all(
+def get_course_categories() -> list:
+    return frappe.get_all(
         "Course Category",
         fields=["name", "category_name", "image"],
         order_by="category_name asc",
     )
-    return categories
 
 
 # ---------------------------------------------------------------------------
-# Stage 2 — Students, Enrollments, Groups, Sessions, Attendance
+# Students, Enrollments, Groups, Sessions, Attendance
 # ---------------------------------------------------------------------------
 
 
-def on_deal_won_create_student(doc, method):
-    """Hook: when CRM Deal status type changes to "Won", auto-create Student + Enrollment."""
+def on_deal_won_create_student(doc, method) -> None:
+    """Hook: when CRM Deal status type changes to Won, auto-create Student + Enrollment."""
     status_type = frappe.db.get_value("CRM Deal Status", doc.status, "type")
     if status_type != "Won":
         return
@@ -209,7 +211,7 @@ def on_deal_won_create_student(doc, method):
             student.user = email_user
     student.status = "Active"
     student.enrolled_on = frappe.utils.nowdate()
-    student.insert(ignore_permissions=True)
+    student.insert()
 
     course = doc.get("custom_course")
     if course:
@@ -218,58 +220,38 @@ def on_deal_won_create_student(doc, method):
         enrollment.course = course
         enrollment.enrollment_date = frappe.utils.nowdate()
         enrollment.status = "Active"
-        enrollment.insert(ignore_permissions=True)
-
-
-# --- Student APIs ---
+        enrollment.insert()
 
 
 @frappe.whitelist()
-def get_students():
-    students = frappe.get_all(
+def get_students(start: int = 0, page_length: int = 20) -> dict:
+    return _paginate(
         "Student",
-        fields=[
-            "name",
-            "student_name",
-            "contact",
-            "user",
-            "image",
-            "status",
-            "enrolled_on",
-            "date_of_birth",
-            "gender",
-            "parent_name",
-            "parent_phone",
-        ],
+        fields=["name", "student_name", "contact", "user", "image", "status", "enrolled_on", "date_of_birth", "gender", "parent_name", "parent_phone"],
         order_by="student_name asc",
+        start=start,
+        page_length=page_length,
     )
-    return students
 
 
 @frappe.whitelist()
-def get_student_detail(student):
+def get_student_detail(student: str) -> dict:
     student_doc = frappe.get_doc("Student", student)
     enrollments = frappe.get_all(
         "Enrollment",
         filters={"student": student},
-        fields=["name", "course", "group", "enrollment_date", "status"],
+        fields=["name", "course", "group", "enrollment_date", "status", "total_lessons", "completed_lessons"],
         order_by="enrollment_date desc",
     )
-    return {
-        "student": student_doc,
-        "enrollments": enrollments,
-    }
-
-
-# --- Enrollment APIs ---
+    return {"student": student_doc, "enrollments": enrollments}
 
 
 @frappe.whitelist()
-def get_enrollments(course=None, student=None, group=None):
+def get_enrollments(course: str | None = None, student: str | None = None, group: str | None = None, start: int = 0, page_length: int = 20) -> dict:
     if not student:
         student = _resolve_student_from_session()
     if not student:
-        return []
+        return {"data": [], "total": 0}
 
     filters = {"student": student}
     if course:
@@ -277,127 +259,93 @@ def get_enrollments(course=None, student=None, group=None):
     if group:
         filters["group"] = group
 
-    enrollments = frappe.get_all(
+    return _paginate(
         "Enrollment",
         filters=filters,
-        fields=[
-            "name",
-            "student",
-            "course",
-            "group",
-            "enrollment_date",
-            "status",
-            "total_lessons",
-            "completed_lessons",
-        ],
+        fields=["name", "student", "course", "group", "enrollment_date", "status", "total_lessons", "completed_lessons"],
         order_by="enrollment_date desc",
+        start=start,
+        page_length=page_length,
     )
-    return enrollments
 
 
 @frappe.whitelist()
-def create_enrollment(data):
+def create_enrollment(data: str | dict) -> str:
     data = frappe.parse_json(data) if isinstance(data, str) else data
     _require_role("Instructor")
+    if not frappe.has_permission("Enrollment", "create"):
+        frappe.throw(_("Not permitted to create Enrollment"), frappe.PermissionError)
 
     enrollment = frappe.new_doc("Enrollment")
-    enrollment.update(
-        {
-            "student": data.get("student"),
-            "course": data.get("course"),
-            "group": data.get("group"),
-            "enrollment_date": data.get("enrollment_date") or frappe.utils.nowdate(),
-            "status": data.get("status") or "Active",
-        }
-    )
-    enrollment.insert(ignore_permissions=True)
+    enrollment.update({
+        "student": data.get("student"),
+        "course": data.get("course"),
+        "group": data.get("group"),
+        "enrollment_date": data.get("enrollment_date") or frappe.utils.nowdate(),
+        "status": data.get("status") or "Active",
+    })
+    enrollment.insert()
     return enrollment.name
 
 
-# --- Student Group APIs ---
-
-
 @frappe.whitelist()
-def get_student_groups(course=None):
+def get_student_groups(course: str | None = None, start: int = 0, page_length: int = 20) -> dict:
     filters = {}
     if course:
         filters["course"] = course
 
-    groups = frappe.get_all(
+    return _paginate(
         "Student Group",
         filters=filters,
         fields=["name", "group_name", "course", "instructor", "max_students", "status"],
         order_by="group_name asc",
+        start=start,
+        page_length=page_length,
     )
-    return groups
-
-
-# --- Academic Session APIs ---
 
 
 @frappe.whitelist()
-def get_academic_sessions(group=None, date=None):
+def get_academic_sessions(group: str | None = None, date: str | None = None, start: int = 0, page_length: int = 20) -> dict:
     filters = {}
     if group:
         filters["group"] = group
     if date:
         filters["date"] = date
 
-    sessions = frappe.get_all(
+    return _paginate(
         "Academic Session",
         filters=filters,
-        fields=[
-            "name",
-            "title",
-            "group",
-            "course",
-            "date",
-            "start_time",
-            "end_time",
-            "status",
-            "topic",
-        ],
+        fields=["name", "title", "group", "course", "date", "start_time", "end_time", "status", "topic"],
         order_by="date desc, start_time asc",
+        start=start,
+        page_length=page_length,
     )
-    return sessions
-
-
-# --- Attendance APIs ---
 
 
 @frappe.whitelist()
-def mark_attendance(data):
-    """Mark attendance for a single student in a session."""
+def mark_attendance(data: str | dict) -> str:
     data = frappe.parse_json(data) if isinstance(data, str) else data
     _require_role("Instructor")
+    if not frappe.has_permission("Student Attendance", "create"):
+        frappe.throw(_("Not permitted to mark attendance"), frappe.PermissionError)
 
     attendance = frappe.new_doc("Student Attendance")
-    attendance.update(
-        {
-            "student": data.get("student"),
-            "academic_session": data.get("academic_session"),
-            "status": data.get("status", "Present"),
-            "notes": data.get("notes"),
-        }
-    )
-    attendance.insert(ignore_permissions=True)
+    attendance.update({
+        "student": data.get("student"),
+        "academic_session": data.get("academic_session"),
+        "status": data.get("status", "Present"),
+        "notes": data.get("notes"),
+    })
+    attendance.insert()
     return attendance.name
 
 
 @frappe.whitelist()
-def batch_mark_attendance(data):
-    """Batch mark attendance for a session.
-
-    data: {
-        "academic_session": "AS-...",
-        "attendance_list": [
-            {"student": "STU-...", "status": "Present", "notes": ""},
-            ...
-        ]
-    }
-    """
+def batch_mark_attendance(data: str | dict) -> list:
     data = frappe.parse_json(data) if isinstance(data, str) else data
     _require_role("Instructor")
+    if not frappe.has_permission("Student Attendance", "create"):
+        frappe.throw(_("Not permitted to mark attendance"), frappe.PermissionError)
 
     session = data.get("academic_session")
     attendance_list = data.get("attendance_list", [])
@@ -417,14 +365,14 @@ def batch_mark_attendance(data):
         attendance.academic_session = session
         attendance.status = entry.get("status", "Present")
         attendance.notes = entry.get("notes", "")
-        attendance.insert(ignore_permissions=True)
+        attendance.insert()
         results.append({"student": entry.get("student"), "status": "created", "name": attendance.name})
 
     return results
 
 
 @frappe.whitelist()
-def get_attendance(session=None, student=None, date=None):
+def get_attendance(session: str | None = None, student: str | None = None, date: str | None = None, start: int = 0, page_length: int = 20) -> dict:
     filters = {}
     if session:
         filters["academic_session"] = session
@@ -433,154 +381,132 @@ def get_attendance(session=None, student=None, date=None):
     if date:
         filters["date"] = date
 
-    records = frappe.get_all(
+    return _paginate(
         "Student Attendance",
         filters=filters,
         fields=["name", "student", "academic_session", "group", "course", "date", "status", "notes"],
         order_by="date desc",
+        start=start,
+        page_length=page_length,
     )
-    return records
 
 
 # ---------------------------------------------------------------------------
-# Stage 3 — Abonements, Payments, Assignments
+# Abonements, Payments, Assignments
 # ---------------------------------------------------------------------------
 
 
 @frappe.whitelist()
-def get_abonement_types():
-    types = frappe.get_all(
+def get_abonement_types(start: int = 0, page_length: int = 20) -> dict:
+    return _paginate(
         "Abonement Type",
         fields=["name", "abonement_name", "total_classes", "price", "validity_days"],
         order_by="abonement_name asc",
+        start=start,
+        page_length=page_length,
     )
-    return types
 
 
 @frappe.whitelist()
-def get_student_abonements(student=None):
+def get_student_abonements(student: str | None = None, start: int = 0, page_length: int = 20) -> dict:
     filters = {}
     if student:
         filters["student"] = student
 
-    abonements = frappe.get_all(
+    return _paginate(
         "Student Abonement",
         filters=filters,
-        fields=[
-            "name",
-            "student",
-            "abonement_type",
-            "status",
-            "total_classes",
-            "classes_remaining",
-            "start_date",
-            "end_date",
-        ],
+        fields=["name", "student", "abonement_type", "status", "total_classes", "classes_remaining", "start_date", "end_date"],
         order_by="start_date desc",
+        start=start,
+        page_length=page_length,
     )
-    return abonements
 
 
 @frappe.whitelist()
-def create_student_abonement(data):
+def create_student_abonement(data: str | dict) -> str:
     data = frappe.parse_json(data) if isinstance(data, str) else data
     _require_role("Instructor")
+    if not frappe.has_permission("Student Abonement", "create"):
+        frappe.throw(_("Not permitted to create Abonement"), frappe.PermissionError)
 
     ab = frappe.new_doc("Student Abonement")
-    ab.update(
-        {
-            "student": data.get("student"),
-            "abonement_type": data.get("abonement_type"),
-            "start_date": data.get("start_date") or frappe.utils.nowdate(),
-            "status": data.get("status") or "Active",
-        }
-    )
-    ab.insert(ignore_permissions=True)
+    ab.update({
+        "student": data.get("student"),
+        "abonement_type": data.get("abonement_type"),
+        "start_date": data.get("start_date") or frappe.utils.nowdate(),
+        "status": data.get("status") or "Active",
+    })
+    ab.insert()
     return ab.name
 
 
 @frappe.whitelist()
-def get_payments(student=None):
+def get_payments(student: str | None = None, start: int = 0, page_length: int = 20) -> dict:
     filters = {}
     if student:
         filters["student"] = student
 
-    payments = frappe.get_all(
+    return _paginate(
         "Payment",
         filters=filters,
-        fields=[
-            "name",
-            "student",
-            "student_abonement",
-            "amount",
-            "payment_method",
-            "payment_date",
-            "notes",
-        ],
+        fields=["name", "student", "student_abonement", "amount", "payment_method", "payment_date", "notes"],
         order_by="payment_date desc",
+        start=start,
+        page_length=page_length,
     )
-    return payments
 
 
 @frappe.whitelist()
-def create_payment(data):
+def create_payment(data: str | dict) -> str:
     data = frappe.parse_json(data) if isinstance(data, str) else data
     _require_role("Instructor")
+    if not frappe.has_permission("Payment", "create"):
+        frappe.throw(_("Not permitted to create Payment"), frappe.PermissionError)
 
     payment = frappe.new_doc("Payment")
-    payment.update(
-        {
-            "student": data.get("student"),
-            "student_abonement": data.get("student_abonement"),
-            "amount": data.get("amount"),
-            "payment_method": data.get("payment_method", "Cash"),
-            "payment_date": data.get("payment_date") or frappe.utils.nowdate(),
-            "notes": data.get("notes"),
-        }
-    )
-    payment.insert(ignore_permissions=True)
+    payment.update({
+        "student": data.get("student"),
+        "student_abonement": data.get("student_abonement"),
+        "amount": data.get("amount"),
+        "payment_method": data.get("payment_method", "Cash"),
+        "payment_date": data.get("payment_date") or frappe.utils.nowdate(),
+        "notes": data.get("notes"),
+    })
+    payment.insert()
     return payment.name
 
 
 @frappe.whitelist()
-def get_assignments(student=None, lecture=None):
+def get_assignments(student: str | None = None, lecture: str | None = None, start: int = 0, page_length: int = 20) -> dict:
     filters = {}
     if student:
         filters["student"] = student
     if lecture:
         filters["lecture"] = lecture
 
-    assignments = frappe.get_all(
+    return _paginate(
         "Student Assignment",
         filters=filters,
-        fields=[
-            "name",
-            "student",
-            "lecture",
-            "course",
-            "title",
-            "status",
-            "score",
-            "instructor",
-            "comment",
-            "submitted_at",
-            "due_date",
-            "file",
-        ],
+        fields=["name", "student", "lecture", "course", "title", "status", "score", "instructor", "comment", "submitted_at", "due_date", "file"],
         order_by="modified desc",
+        start=start,
+        page_length=page_length,
     )
-    return assignments
 
 
 @frappe.whitelist()
-def submit_assignment(data):
-    """Student or Instructor — upload file, set status to Submitted."""
+def submit_assignment(data: str | dict) -> str:
     data = frappe.parse_json(data) if isinstance(data, str) else data
 
     assignment_name = data.get("name")
     if assignment_name and frappe.db.exists("Student Assignment", assignment_name):
         assignment = frappe.get_doc("Student Assignment", assignment_name)
+        if not frappe.has_permission("Student Assignment", "write", assignment):
+            frappe.throw(_("Not permitted to update this assignment"), frappe.PermissionError)
     else:
+        if not frappe.has_permission("Student Assignment", "create"):
+            frappe.throw(_("Not permitted to create assignments"), frappe.PermissionError)
         assignment = frappe.new_doc("Student Assignment")
         assignment.student = data.get("student")
         assignment.lecture = data.get("lecture")
@@ -592,95 +518,87 @@ def submit_assignment(data):
     assignment.status = "Submitted"
     assignment.file = data.get("file")
     assignment.submitted_at = frappe.utils.now_datetime()
-    assignment.save(ignore_permissions=True)
+    assignment.save()
     return assignment.name
 
 
 @frappe.whitelist()
-def grade_assignment(data):
-    """Instructor only — set score, comment, status (Approved/Rejected)."""
+def grade_assignment(data: str | dict) -> str:
     data = frappe.parse_json(data) if isinstance(data, str) else data
     _require_role("Instructor")
+    if not frappe.has_permission("Student Assignment", "write"):
+        frappe.throw(_("Not permitted to grade assignments"), frappe.PermissionError)
 
     assignment = frappe.get_doc("Student Assignment", data.get("assignment"))
     assignment.score = data.get("score")
     assignment.comment = data.get("comment")
     assignment.instructor = data.get("instructor") or frappe.session.user
     assignment.status = data.get("status", "Approved")
-    assignment.save(ignore_permissions=True)
+    assignment.save()
     return assignment.name
 
 
 # ---------------------------------------------------------------------------
-# Stage 4 — Instructor Dashboard, Journal, Coins, Knowledge Base, Reports
+# Instructor Dashboard, Journal, Coins, Knowledge Base, Reports
 # ---------------------------------------------------------------------------
 
 
 @frappe.whitelist()
-def get_instructor_dashboard(instructor=None):
-    """Return today's schedule + active groups summary for the instructor."""
+def get_instructor_dashboard(instructor: str | None = None) -> dict:
     if not instructor:
         instructor = frappe.session.user
 
     today = frappe.utils.nowdate()
-
-    # Today's sessions (schedule)
-    sessions = frappe.get_all(
-        "Academic Session",
-        filters={
-            "date": today,
-        },
-        fields=[
-            "name",
-            "title",
-            "group",
-            "course",
-            "date",
-            "start_time",
-            "end_time",
-            "status",
-            "topic",
-            "room",
-            "video_recording_url",
-        ],
-        order_by="start_time asc",
-    )
-    # Filter by groups where this user is the instructor
     my_groups = frappe.get_all(
         "Student Group",
         filters={"instructor": instructor},
         pluck="name",
     )
-    sessions = [s for s in sessions if s.group in my_groups]
 
-    # Active groups with progress
+    sessions = frappe.get_all(
+        "Academic Session",
+        filters={"date": today, "group": ["in", my_groups]},
+        fields=["name", "title", "group", "course", "date", "start_time", "end_time", "status", "topic", "room", "video_recording_url"],
+        order_by="start_time asc",
+    ) if my_groups else []
+
     groups = frappe.get_all(
         "Student Group",
         filters={"instructor": instructor},
-        fields=[
-            "name",
-            "group_name",
-            "course",
-            "max_students",
-            "status",
-        ],
+        fields=["name", "group_name", "course", "max_students", "status"],
         order_by="group_name asc",
     )
-    for g in groups:
-        enrolled = frappe.db.count("Enrollment", {"group": g.name, "status": "Active"})
-        g.enrolled_count = enrolled
-
-        total_lessons = frappe.db.count("Course Lecture", {"course": g.course})
-        completed_lessons = frappe.db.count(
-            "Academic Session",
-            {"group": g.name, "status": "Completed"},
-        )
-        g.total_lessons = total_lessons
-        g.completed_lessons = completed_lessons
-        g.progress_pct = round((completed_lessons / total_lessons * 100) if total_lessons else 0)
-
-    # Count pending assignments for instructor's groups
     group_names = [g.name for g in groups]
+
+    enrolled_counts = {}
+    total_les_counts = {}
+    completed_les_counts = {}
+
+    if group_names:
+        enrolled_data = frappe.get_all(
+            "Enrollment",
+            filters={"group": ["in", group_names], "status": "Active"},
+            fields=["group", "name"],
+        )
+        for g_name in group_names:
+            enrolled_counts[g_name] = sum(1 for e in enrolled_data if e.group == g_name)
+
+        course_map = {g.name: g.course for g in groups}
+        for g in groups:
+            total_les_counts[g.name] = frappe.db.count("Course Lecture", {"course": g.course})
+            completed_les_counts[g.name] = frappe.db.count(
+                "Academic Session",
+                {"group": g.name, "status": "Completed"},
+            )
+
+    for g in groups:
+        g.enrolled_count = enrolled_counts.get(g.name, 0)
+        total = total_les_counts.get(g.name, 0)
+        completed = completed_les_counts.get(g.name, 0)
+        g.total_lessons = total
+        g.completed_lessons = completed
+        g.progress_pct = round((completed / total * 100) if total else 0)
+
     pending_assignments = 0
     if group_names:
         students_in_my_groups = frappe.get_all(
@@ -691,10 +609,7 @@ def get_instructor_dashboard(instructor=None):
         if students_in_my_groups:
             pending_assignments = frappe.db.count(
                 "Student Assignment",
-                {
-                    "student": ["in", students_in_my_groups],
-                    "status": "Submitted",
-                },
+                {"student": ["in", students_in_my_groups], "status": "Submitted"},
             )
 
     return {
@@ -705,8 +620,7 @@ def get_instructor_dashboard(instructor=None):
 
 
 @frappe.whitelist()
-def get_group_students(group, date=None):
-    """Return students in a group with their attendance, scores, and coins for the given date."""
+def get_group_students(group: str, date: str | None = None) -> dict:
     if not date:
         date = frappe.utils.nowdate()
 
@@ -727,7 +641,6 @@ def get_group_students(group, date=None):
     )
     session = today_session[0] if today_session else None
 
-    # Attendance for today
     attendance_map = {}
     if session:
         records = frappe.get_all(
@@ -738,87 +651,78 @@ def get_group_students(group, date=None):
         for r in records:
             attendance_map[r.student] = r
 
-    # Assignments/scores per student
     scores_map = {}
     if session:
         course = frappe.db.get_value("Student Group", group, "course")
-        lectures = frappe.get_all(
-            "Course Lecture",
-            filters={"course": course},
-            pluck="name",
-        )
-        if lectures:
+        lectures = frappe.get_all("Course Lecture", filters={"course": course}, pluck="name") if course else []
+        if lectures and student_names:
             assignments = frappe.get_all(
                 "Student Assignment",
-                filters={
-                    "student": ["in", student_names],
-                    "lecture": ["in", lectures],
-                },
+                filters={"student": ["in", student_names], "lecture": ["in", lectures]},
                 fields=["student", "lecture", "score", "status", "name"],
             )
             for a in assignments:
-                if a.student not in scores_map:
-                    scores_map[a.student] = []
-                scores_map[a.student].append(a)
+                scores_map.setdefault(a.student, []).append(a)
 
-    # Student details with coins
+    # Batch-load all students in one query instead of N+1 get_doc calls
+    student_docs_map = {}
+    if student_names:
+        student_data = frappe.get_all(
+            "Student",
+            filters={"name": ["in", student_names]},
+            fields=["name", "student_name", "image", "codify_coins", "parent_name"],
+        )
+        student_docs_map = {s.name: s for s in student_data}
+
     students = []
     for s_name in student_names:
-        student_doc = frappe.get_doc("Student", s_name)
+        sd = student_docs_map.get(s_name, {})
         att = attendance_map.get(s_name)
-        students.append(
-            {
-                "name": s_name,
-                "student_name": student_doc.student_name,
-                "image": student_doc.image,
-                "codify_coins": student_doc.codify_coins or 0,
-                "attendance_status": att.status if att else None,
-                "attendance_name": att.name if att else None,
-                "scores": scores_map.get(s_name, []),
-                "parent_name": student_doc.parent_name,
-            }
-        )
+        students.append({
+            "name": s_name,
+            "student_name": sd.get("student_name", ""),
+            "image": sd.get("image"),
+            "codify_coins": sd.get("codify_coins") or 0,
+            "attendance_status": att.status if att else None,
+            "attendance_name": att.name if att else None,
+            "scores": scores_map.get(s_name, []),
+            "parent_name": sd.get("parent_name"),
+        })
 
-    return {
-        "students": students,
-        "session": session,
-    }
+    return {"students": students, "session": session}
 
 
 @frappe.whitelist()
-def update_student_coins(data):
-    """Add or subtract Codify Coins for a student."""
+def update_student_coins(data: str | dict) -> dict:
     data = frappe.parse_json(data) if isinstance(data, str) else data
     _require_role("Instructor")
+    if not frappe.has_permission("Student", "write"):
+        frappe.throw(_("Not permitted to update student coins"), frappe.PermissionError)
 
     student = frappe.get_doc("Student", data.get("student"))
     delta = int(data.get("delta", 0))
-    reason = data.get("reason", "")
-
     student.codify_coins = (student.codify_coins or 0) + delta
-    student.save(ignore_permissions=True)
-
-    # You could log coin transactions here
+    student.save()
 
     return {
         "student": student.name,
         "codify_coins": student.codify_coins,
         "delta": delta,
-        "reason": reason,
+        "reason": data.get("reason", ""),
     }
 
 
 @frappe.whitelist()
-def update_student_score(data):
-    """Update homework score for a student's assignment in a given lecture."""
+def update_student_score(data: str | dict) -> str:
     data = frappe.parse_json(data) if isinstance(data, str) else data
     _require_role("Instructor")
+    if not frappe.has_permission("Student Assignment", "write"):
+        frappe.throw(_("Not permitted to update scores"), frappe.PermissionError)
 
     assignment_name = data.get("assignment")
     if assignment_name and frappe.db.exists("Student Assignment", assignment_name):
         assignment = frappe.get_doc("Student Assignment", assignment_name)
     else:
-        # Create new assignment if none exists
         assignment = frappe.new_doc("Student Assignment")
         assignment.student = data.get("student")
         assignment.lecture = data.get("lecture")
@@ -827,23 +731,16 @@ def update_student_score(data):
         assignment.title = f"{student_name} — {lecture_title}"
 
     assignment.score = data.get("score")
-    assignment.status = data.get("status", "Graded")
+    assignment.status = data.get("status", "Approved")
     assignment.instructor = data.get("instructor") or frappe.session.user
     if data.get("comment"):
         assignment.comment = data.get("comment")
-    assignment.save(ignore_permissions=True)
+    assignment.save()
     return assignment.name
 
 
 @frappe.whitelist()
-def get_lectures_by_module(course=None, module=None):
-    """Return lectures grouped by module for knowledge base view."""
-    filters = {}
-    if course:
-        filters["course"] = course
-    if module:
-        filters["module"] = module
-
+def get_lectures_by_module(course: str | None = None, module: str | None = None) -> dict:
     modules = frappe.get_all(
         "Course Module",
         filters={"course": course} if course else {},
@@ -855,19 +752,10 @@ def get_lectures_by_module(course=None, module=None):
         m.lectures = frappe.get_all(
             "Course Lecture",
             filters={"module": m.name},
-            fields=[
-                "name",
-                "title",
-                "position",
-                "duration",
-                "content_type",
-                "content",
-                "video_url",
-            ],
+            fields=["name", "title", "position", "duration", "content_type", "content", "video_url"],
             order_by="position asc",
         )
 
-    # Also get ungrouped lectures
     ungrouped = frappe.get_all(
         "Course Lecture",
         filters={"course": course, "module": ["is", "not set"]} if course else None,
@@ -875,65 +763,51 @@ def get_lectures_by_module(course=None, module=None):
         order_by="position asc",
     )
 
-    return {
-        "modules": modules,
-        "ungrouped": ungrouped or [],
-    }
+    return {"modules": modules, "ungrouped": ungrouped or []}
 
 
 @frappe.whitelist()
-def update_session_recording(data):
-    """Save video recording URL for an academic session."""
+def update_session_recording(data: str | dict) -> str:
     data = frappe.parse_json(data) if isinstance(data, str) else data
     _require_role("Instructor")
+    if not frappe.has_permission("Academic Session", "write"):
+        frappe.throw(_("Not permitted to update session recording"), frappe.PermissionError)
 
     session = frappe.get_doc("Academic Session", data.get("session"))
     session.video_recording_url = data.get("video_url")
-    session.save(ignore_permissions=True)
+    session.save()
     return session.name
 
 
-# --- Smart Reports ---
-
-
 @frappe.whitelist()
-def get_student_reports(student=None, instructor=None):
-    """Return reports for a student, optionally filtered by instructor."""
+def get_student_reports(student: str | None = None, instructor: str | None = None, start: int = 0, page_length: int = 20) -> dict:
     filters = {}
     if student:
         filters["student"] = student
     if instructor:
         filters["instructor"] = instructor
 
-    reports = frappe.get_all(
+    return _paginate(
         "Student Report",
         filters=filters,
-        fields=[
-            "name",
-            "student",
-            "student_name",
-            "instructor",
-            "report_date",
-            "template",
-            "overall_performance",
-            "is_published",
-        ],
+        fields=["name", "student", "student_name", "instructor", "report_date", "template", "overall_performance", "is_published"],
         order_by="report_date desc",
+        start=start,
+        page_length=page_length,
     )
-    return reports
 
 
 @frappe.whitelist()
-def get_student_report_detail(report):
-    """Return full report content."""
+def get_student_report_detail(report: str) -> dict:
     return frappe.get_doc("Student Report", report)
 
 
 @frappe.whitelist()
-def create_student_report(data):
-    """Create or update a smart report for a student."""
+def create_student_report(data: str | dict) -> str:
     data = frappe.parse_json(data) if isinstance(data, str) else data
     _require_role("Instructor")
+    if not frappe.has_permission("Student Report", "create") and not frappe.has_permission("Student Report", "write"):
+        frappe.throw(_("Not permitted to create or update reports"), frappe.PermissionError)
 
     report_name = data.get("name")
     if report_name and frappe.db.exists("Student Report", report_name):
@@ -951,13 +825,74 @@ def create_student_report(data):
     report.engagement = data.get("engagement")
     report.recommendations = data.get("recommendations")
     report.is_published = data.get("is_published", 0)
-    report.save(ignore_permissions=True)
+    report.save()
     return report.name
 
 
 @frappe.whitelist()
-def delete_student_report(report):
-    """Delete a student report."""
+def delete_student_report(report: str) -> bool:
     _require_role("Instructor")
+    if not frappe.has_permission("Student Report", "delete"):
+        frappe.throw(_("Not permitted to delete reports"), frappe.PermissionError)
+
     frappe.get_doc("Student Report", report).delete()
     return True
+
+
+# ---------------------------------------------------------------------------
+# Lecture Progress
+# ---------------------------------------------------------------------------
+
+
+@frappe.whitelist()
+def mark_lecture_complete(data: str | dict) -> str:
+    """Mark a lecture as completed for a student. Auto-updates enrollment progress."""
+    data = frappe.parse_json(data) if isinstance(data, str) else data
+
+    student = data.get("student")
+    lecture = data.get("lecture")
+
+    existing = frappe.db.exists(
+        "Lecture Progress",
+        {"student": student, "lecture": lecture, "status": "Completed"},
+    )
+    if existing:
+        return existing
+
+    progress = frappe.new_doc("Lecture Progress")
+    progress.student = student
+    progress.lecture = lecture
+    progress.status = "Completed"
+    progress.insert()
+
+    return progress.name
+
+
+@frappe.whitelist()
+def get_lecture_progress(student: str | None = None, course: str | None = None) -> dict:
+    """Get lecture completion progress for a student, optionally filtered by course."""
+    if not student:
+        student = _resolve_student_from_session()
+    if not student:
+        return {"data": [], "total": 0}
+
+    filters = {"student": student}
+    if course:
+        filters["course"] = course
+
+    records = frappe.get_all(
+        "Lecture Progress",
+        filters=filters,
+        fields=["name", "lecture", "course", "enrollment", "status", "completed_at", "time_spent"],
+        order_by="modified desc",
+    )
+
+    total = frappe.db.count("Course Lecture", {"course": course}) if course else 0
+    completed = sum(1 for r in records if r.status == "Completed")
+
+    return {
+        "data": records,
+        "total_lectures": total,
+        "completed": completed,
+        "progress_pct": round((completed / total * 100) if total else 0),
+    }

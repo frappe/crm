@@ -1,12 +1,9 @@
-# Copyright (c) 2026, Frappe Technologies Pvt. Ltd. and contributors
-# For license information, please see license.txt
-
 import frappe
 from frappe import _
+from frappe.model.document import Document
 
 
-def _find_active_abonement(student):
-    """FIFO: find oldest active abonement with remaining classes."""
+def _find_active_abonement(student: str) -> dict | None:
     abonements = frappe.get_all(
         "Student Abonement",
         filters={
@@ -21,15 +18,7 @@ def _find_active_abonement(student):
     return abonements[0] if abonements else None
 
 
-def adjust_abonement_on_attendance(doc, method):
-    """Hook on Student Attendance validate — FIFO deduction / restore.
-
-    Cases:
-    - New record with Present/Late → deduct from oldest active abonement.
-    - Existing record changed from Absent→Present/Late → deduct.
-    - Existing record changed from Present/Late→Absent → restore.
-    - Frozen/Expired → skip deduction, throw if no active abonement found.
-    """
+def adjust_abonement_on_attendance(doc: Document, method: str) -> None:
     if frappe.flags.in_patch or frappe.flags.in_install:
         return
 
@@ -38,14 +27,12 @@ def adjust_abonement_on_attendance(doc, method):
 
     old = doc.get_doc_before_save()
 
-    # Determine if status actually changed
     if old and old.status == doc.status:
         return
 
     was_present = old and old.status in ("Present", "Late")
 
     if is_present and not was_present:
-        # Deduct one class from oldest active abonement
         ab = _find_active_abonement(doc.student)
         if not ab:
             frappe.throw(
@@ -56,30 +43,33 @@ def adjust_abonement_on_attendance(doc, method):
             )
 
         ab_doc = frappe.get_doc("Student Abonement", ab.name)
+        if not frappe.has_permission("Student Abonement", "write", user=frappe.session.user):
+            frappe.throw(_("Insufficient permissions to modify abonement"))
         ab_doc.classes_remaining = ab.classes_remaining - 1
         if ab_doc.classes_remaining <= 0:
             ab_doc.status = "Expired"
-        ab_doc.save(ignore_permissions=True)
+        ab_doc.save()
 
         doc.linked_abonement = ab.name
 
     elif was_present and is_absent:
-        # Restore one class to the linked abonement
         linked = doc.linked_abonement
         if not linked:
             return
 
         ab = frappe.get_doc("Student Abonement", linked)
+        if not frappe.has_permission("Student Abonement", "write", user=frappe.session.user):
+            frappe.throw(_("Insufficient permissions to modify abonement"))
         if ab.status == "Expired":
             ab.status = "Active"
         ab.classes_remaining = (ab.classes_remaining or 0) + 1
-        ab.save(ignore_permissions=True)
+        ab.save()
 
         doc.linked_abonement = None
 
 
 @frappe.whitelist()
-def check_abonement_balance(student=None):
+def check_abonement_balance(student: str | None = None) -> dict:
     if not student:
         students = frappe.get_all("Student", filters={"user": frappe.session.user}, limit=1)
         if not students:

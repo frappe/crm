@@ -1,0 +1,15 @@
+{
+ "doctype": "Report",
+ "name": "Grade Report",
+ "module": "LMS",
+ "is_standard": "Yes",
+ "ref_doctype": "Student Assignment",
+ "report_type": "Report Builder",
+ "columns": [
+  {"fieldname": "student", "fieldtype": "Link", "label": "Student", "options": "Student", "width": 150},
+  {"fieldname": "lecture", "fieldtype": "Link", "label": "Lecture", "options": "Course Lecture", "width": 200},
+  {"fieldname": "score", "fieldtype": "Int", "label": "Score", "width": 80},
+  {"fieldname": "status", "fieldtype": "Select", "label": "Status", "width": 100},
+  {"fieldname": "instructor", "fieldtype": "Link", "label": "Instructor", "options": "User", "width": 120}
+ ]
+}
