@@ -799,7 +799,10 @@ def get_student_reports(student: str | None = None, instructor: str | None = Non
 
 @frappe.whitelist()
 def get_student_report_detail(report: str) -> dict:
-    return frappe.get_doc("Student Report", report)
+    doc = frappe.get_doc("Student Report", report)
+    if not frappe.has_permission("Student Report", "read", doc):
+        frappe.throw(_("Not permitted to view this report"), frappe.PermissionError)
+    return doc
 
 
 @frappe.whitelist()
@@ -851,6 +854,11 @@ def mark_lecture_complete(data: str | dict) -> str:
 
     student = data.get("student")
     lecture = data.get("lecture")
+
+    student_user = frappe.db.get_value("Student", student, "user")
+    if student_user and student_user != frappe.session.user:
+        if not _has_instructor_role():
+            frappe.throw(_("Not permitted to mark completion for another student"), frappe.PermissionError)
 
     existing = frappe.db.exists(
         "Lecture Progress",

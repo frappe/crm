@@ -3,6 +3,13 @@ from frappe import _
 from frappe.model.document import Document
 
 
+def _assert_student_ownership(student: str) -> None:
+    student_user = frappe.db.get_value("Student", student, "user")
+    if student_user and student_user != frappe.session.user:
+        if "Instructor" not in frappe.get_roles():
+            frappe.throw(_("Not permitted to view this student's data"), frappe.PermissionError)
+
+
 def _find_active_abonement(student: str) -> dict | None:
     abonements = frappe.get_all(
         "Student Abonement",
@@ -75,6 +82,8 @@ def check_abonement_balance(student: str | None = None) -> dict:
         if not students:
             return {"available": False, "remaining": 0}
         student = students[0].name
+    else:
+        _assert_student_ownership(student)
     ab = _find_active_abonement(student)
     if not ab:
         return {"available": False, "remaining": 0}

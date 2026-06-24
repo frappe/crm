@@ -34,7 +34,7 @@ def execute(filters: dict | None = None):
     where = " AND ".join(conditions) if conditions else "1=1"
 
     data = frappe.db.sql(
-        f"""
+        """
         SELECT
             sa.student,
             s.student_name,
@@ -46,7 +46,7 @@ def execute(filters: dict | None = None):
         LEFT JOIN `tabStudent` s ON s.name = sa.student
         WHERE {where}
         ORDER BY sa.date DESC, sa.student ASC
-        """,
+        """.format(where=where),
         values,
         as_dict=1,
     )
