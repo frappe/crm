@@ -129,7 +129,7 @@ class FCRMSettings(Document):
 		# FIX: fields inside columns are dicts; extract "fieldname" string for set
 		# comparison instead of using dicts as set elements (unhashable on Python 3.14)
 		existing_fields = {
-			field.get("fieldname") if isinstance(field, dict) else field
+			(field.get("fieldname") or field.get("name")) if isinstance(field, dict) else field
 			for section in all_sections
 			for column in section.get("columns") or []
 			for field in column.get("fields") or []
