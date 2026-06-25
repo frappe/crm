@@ -4,7 +4,8 @@
 import json
 
 import frappe
-from frappe.tests.utils import FrappeTestCase
+
+from crm.tests import CRMTestCase as FrappeTestCase
 
 FORECASTING_FIELDS = ["expected_closure_date", "probability", "expected_deal_value"]
 

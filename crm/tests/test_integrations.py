@@ -2,7 +2,6 @@
 # See license.txt
 
 import frappe
-from frappe.tests.utils import FrappeTestCase
 
 from crm.integrations.api import (
 	add_note_to_call_log,
@@ -13,6 +12,7 @@ from crm.integrations.api import (
 	is_call_integration_enabled,
 	set_default_calling_medium,
 )
+from crm.tests import CRMTestCase as FrappeTestCase
 
 
 class TestIntegrations(FrappeTestCase):

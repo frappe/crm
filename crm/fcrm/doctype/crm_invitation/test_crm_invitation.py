@@ -4,7 +4,8 @@
 from unittest.mock import patch
 
 import frappe
-from frappe.tests.utils import FrappeTestCase
+
+from crm.tests import CRMTestCase as FrappeTestCase
 
 
 class TestCRMInvitation(FrappeTestCase):

@@ -2,7 +2,8 @@ import unittest
 from importlib.util import find_spec
 
 import frappe
-from frappe.tests.utils import FrappeTestCase
+
+from crm.tests import CRMTestCase as FrappeTestCase
 
 # Skip tests that import erpnext when it isn't installed. CI only installs
 # ERPNext when integration code under crm/integrations/erpnext/** is touched.
