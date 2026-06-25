@@ -61,22 +61,14 @@ jobs:
             - name: Clone
               uses: actions/checkout@v6
 
-            - name: Detect erpnext integration changes
-              uses: dorny/paths-filter@v3
-              id: changes
-              with:
-                  filters: |
-                      erpnext:
-                          - 'crm/integrations/erpnext/**'
-                          - '.github/helper/install.sh'
-
             - name: Setup environment
               uses: ./.github/actions/setup-server-env
               with:
                   python-version: ${{ matrix.python-version }}
                   node-version: "24"
                   type: "server"
-                  install-erpnext: ${{ steps.changes.outputs.erpnext }}
+                  # erpnext: stable lane only, never v16 (v16 test bootstrap broken on bare bench)
+                  install-erpnext: ${{ (github.base_ref == 'main-hotfix' || github.base_ref == 'main') && matrix.frappe-branch != 'version-16' }}
                   frappe-branch: ${{ matrix.frappe-branch }}
 
             - name: Run server tests
