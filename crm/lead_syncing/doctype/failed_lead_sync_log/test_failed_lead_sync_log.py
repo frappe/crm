@@ -2,7 +2,7 @@
 # See license.txt
 
 # import frappe
-from frappe.tests.utils import FrappeTestCase
+from crm.tests import CRMTestCase as FrappeTestCase
 
 # On IntegrationTestCase, the doctype test records and all
 # link-field test record dependencies are recursively loaded

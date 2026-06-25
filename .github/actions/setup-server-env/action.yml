@@ -17,6 +17,10 @@ inputs:
         description: When "true", fetch and install erpnext alongside crm
         required: false
         default: "false"
+    frappe-branch:
+        description: Frappe (and erpnext) branch to install and test against
+        required: false
+        default: "develop"
 runs:
     using: composite
     steps:
@@ -87,4 +91,5 @@ runs:
           env:
               TYPE: ${{ inputs.type }}
               INSTALL_ERPNEXT: ${{ inputs.install-erpnext }}
+              FRAPPE_BRANCH: ${{ inputs.frappe-branch }}
           run: bash ${GITHUB_WORKSPACE}/.github/helper/install.sh

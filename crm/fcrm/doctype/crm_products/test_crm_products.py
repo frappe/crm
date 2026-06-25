@@ -2,7 +2,8 @@ import unittest
 from importlib.util import find_spec
 
 import frappe
-from frappe.tests.utils import FrappeTestCase
+
+from crm.tests import CRMTestCase as FrappeTestCase
 
 # These exercise ERPNext's pricing API; skip when erpnext isn't importable.
 ERPNEXT_INSTALLED = find_spec("erpnext") is not None

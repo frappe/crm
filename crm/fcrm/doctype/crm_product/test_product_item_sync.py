@@ -1,5 +1,6 @@
 import frappe
-from frappe.tests.utils import FrappeTestCase
+
+from crm.tests import CRMTestCase as FrappeTestCase
 
 ITEM_GROUP = "All Item Groups"
 

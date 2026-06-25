@@ -2,13 +2,13 @@
 # See license.txt
 
 import frappe
-from frappe.tests.utils import FrappeTestCase
 
 from crm.fcrm.doctype.crm_call_log.crm_call_log import (
 	create_lead_from_call_log,
 	get_call_log,
 	parse_call_log,
 )
+from crm.tests import CRMTestCase as FrappeTestCase
 
 
 class TestCRMCallLog(FrappeTestCase):
