@@ -2,7 +2,6 @@
 # For license information, please see license.txt
 
 import frappe
-from frappe.tests.utils import FrappeTestCase
 from frappe.utils.nestedset import rebuild_tree
 
 from crm.permissions.org_hierarchy import (
@@ -11,6 +10,7 @@ from crm.permissions.org_hierarchy import (
 	has_lead_permission,
 	hierarchy_enabled,
 )
+from crm.tests import CRMTestCase as FrappeTestCase
 
 TEST_USERS = ("manager@hier.test", "rep1@hier.test", "rep2@hier.test", "outsider@hier.test")
 

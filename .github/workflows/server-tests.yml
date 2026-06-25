@@ -21,12 +21,32 @@ concurrency:
     cancel-in-progress: true
 
 jobs:
+    setup:
+        name: Resolve frappe matrix
+        runs-on: ubuntu-latest
+        outputs:
+            matrix: ${{ steps.resolve.outputs.matrix }}
+        steps:
+            - name: Resolve frappe matrix from target branch
+              id: resolve
+              run: |
+                  BASE="${{ github.base_ref || github.ref_name }}"
+                  # Pair each frappe branch with a Python it supports:
+                  # frappe v15 needs >=3.10,<3.15; v16 and develop need >=3.14.
+                  if [ "$BASE" = "develop" ]; then
+                      echo 'matrix={"include":[{"frappe-branch":"develop","python-version":"3.14"}]}' >> "$GITHUB_OUTPUT"
+                  else
+                      echo 'matrix={"include":[{"frappe-branch":"version-15","python-version":"3.10"},{"frappe-branch":"version-16","python-version":"3.14"}]}' >> "$GITHUB_OUTPUT"
+                  fi
+
     test:
-        name: Tests
+        name: Tests (frappe ${{ matrix.frappe-branch }})
+        needs: setup
         runs-on: ubuntu-latest
         timeout-minutes: 60
         strategy:
             fail-fast: false
+            matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
 
         services:
             mysql:
@@ -41,22 +61,15 @@ jobs:
             - name: Clone
               uses: actions/checkout@v6
 
-            - name: Detect erpnext integration changes
-              uses: dorny/paths-filter@v3
-              id: changes
-              with:
-                  filters: |
-                      erpnext:
-                          - 'crm/integrations/erpnext/**'
-                          - '.github/helper/install.sh'
-
             - name: Setup environment
               uses: ./.github/actions/setup-server-env
               with:
-                  python-version: "3.10"
+                  python-version: ${{ matrix.python-version }}
                   node-version: "24"
                   type: "server"
-                  install-erpnext: ${{ steps.changes.outputs.erpnext }}
+                  # erpnext: stable lane only, never v16 (v16 test bootstrap broken on bare bench)
+                  install-erpnext: ${{ (github.base_ref == 'main-hotfix' || github.base_ref == 'main') && matrix.frappe-branch != 'version-16' }}
+                  frappe-branch: ${{ matrix.frappe-branch }}
 
             - name: Run server tests
               uses: ./.github/actions/run-server-tests
@@ -72,7 +85,7 @@ jobs:
               if: github.base_ref == 'develop' || github.ref_name == 'develop'
               uses: ./.github/actions/upload-coverage
               with:
-                  artifact-name: coverage-${{ matrix.container }}
+                  artifact-name: coverage-${{ matrix.frappe-branch }}
                   coverage-path: /home/runner/frappe-bench/sites/coverage.xml
 
     coverage:
