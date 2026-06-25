@@ -12,11 +12,7 @@ sudo apt install libcups2-dev redis-server mariadb-client libmariadb-dev
 FRAPPE_BRANCH="${FRAPPE_BRANCH:-develop}"
 
 pip install frappe-bench
-<<<<<<< HEAD
-git clone "https://github.com/frappe/frappe" --branch "version-15" --depth 1 
-=======
 git clone "https://github.com/frappe/frappe" --branch "${FRAPPE_BRANCH}" --depth 1
->>>>>>> 55a4883b (chore(ci): honor FRAPPE_BRANCH env in install script)
 bench init --skip-assets --frappe-path ~/frappe --python "$(which python)" frappe-bench
 
 mkdir ~/frappe-bench/sites/test_site
@@ -51,11 +47,7 @@ bench get-app crm "${GITHUB_WORKSPACE}"
 
 # Only pull erpnext when the integration is under test, to keep other runs fast.
 if [ "${INSTALL_ERPNEXT}" = "true" ]; then
-<<<<<<< HEAD
-    bench get-app erpnext --branch version-15
-=======
     bench get-app erpnext --branch "${FRAPPE_BRANCH}"
->>>>>>> 55a4883b (chore(ci): honor FRAPPE_BRANCH env in install script)
 fi
 
 bench setup requirements --dev
