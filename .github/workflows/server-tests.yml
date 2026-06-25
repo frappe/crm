@@ -76,7 +76,8 @@ jobs:
                   python-version: "3.14"
                   node-version: "24"
                   type: "server"
-                  install-erpnext: ${{ steps.changes.outputs.erpnext }}
+                  # Always test the erpnext integration on the stable lane; elsewhere only when it changes.
+                  install-erpnext: ${{ steps.changes.outputs.erpnext == 'true' || github.base_ref == 'main-hotfix' || github.base_ref == 'main' }}
                   frappe-branch: ${{ matrix.frappe-branch }}
 
             - name: Run server tests
