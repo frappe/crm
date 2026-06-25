@@ -67,8 +67,13 @@ jobs:
                   python-version: ${{ matrix.python-version }}
                   node-version: "24"
                   type: "server"
+<<<<<<< HEAD
                   # erpnext: stable lane only, never v16 (v16 test bootstrap broken on bare bench)
                   install-erpnext: ${{ (github.base_ref == 'main-hotfix' || github.base_ref == 'main') && matrix.frappe-branch != 'version-16' }}
+=======
+                  # Always test the erpnext integration on the stable lane; elsewhere only when it changes.
+                  install-erpnext: ${{ steps.changes.outputs.erpnext == 'true' || github.base_ref == 'main-hotfix' || github.base_ref == 'main' }}
+>>>>>>> 97deb422 (chore(ci): always test erpnext on stable lane)
                   frappe-branch: ${{ matrix.frappe-branch }}
 
             - name: Run server tests
