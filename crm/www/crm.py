@@ -38,6 +38,7 @@ def get_boot():
 			"frappe_version": frappe.__version__,
 			"default_route": get_default_route(),
 			"site_name": frappe.local.site,
+			"socketio_port": frappe.conf.socketio_port,
 			"read_only_mode": frappe.flags.read_only,
 			"csrf_token": frappe.sessions.get_csrf_token(),
 			"setup_complete": cint(frappe.get_system_settings("setup_complete")),
