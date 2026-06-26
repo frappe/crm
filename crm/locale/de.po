@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-06-22 19:37+0553\n"
-"PO-Revision-Date: 2026-06-23 19:59\n"
+"PO-Revision-Date: 2026-06-26 20:28\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: German\n"
 "MIME-Version: 1.0\n"
@@ -4701,7 +4701,7 @@ msgstr ""
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:539
 msgid "Maybe"
-msgstr ""
+msgstr "Vielleicht"
 
 #. Label of the medium (Data) field in DocType 'CRM Call Log'
 #. Option for the 'Priority' (Select) field in DocType 'CRM Task'
