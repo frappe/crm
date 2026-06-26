@@ -25,18 +25,17 @@ jobs:
         name: Resolve frappe matrix
         runs-on: ubuntu-latest
         outputs:
-            matrix: ${{ steps.resolve.outputs.matrix }}
+            frappe-branches: ${{ steps.resolve.outputs.branches }}
         steps:
-            - name: Resolve frappe matrix from target branch
+            - name: Resolve frappe branches from target branch
               id: resolve
               run: |
                   BASE="${{ github.base_ref || github.ref_name }}"
-                  # Pair each frappe branch with a Python it supports:
-                  # frappe v15 needs >=3.10,<3.15; v16 and develop need >=3.14.
+                  # develop tracks frappe develop; the stable lane ships frappe 15 and 16.
                   if [ "$BASE" = "develop" ]; then
-                      echo 'matrix={"include":[{"frappe-branch":"develop","python-version":"3.14"}]}' >> "$GITHUB_OUTPUT"
+                      echo 'branches=["develop"]' >> "$GITHUB_OUTPUT"
                   else
-                      echo 'matrix={"include":[{"frappe-branch":"version-15","python-version":"3.10"},{"frappe-branch":"version-16","python-version":"3.14"}]}' >> "$GITHUB_OUTPUT"
+                      echo 'branches=["version-15","version-16"]' >> "$GITHUB_OUTPUT"
                   fi
 
     test:
@@ -46,7 +45,8 @@ jobs:
         timeout-minutes: 60
         strategy:
             fail-fast: false
-            matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
+            matrix:
+                frappe-branch: ${{ fromJson(needs.setup.outputs.frappe-branches) }}
 
         services:
             mysql:
@@ -64,7 +64,7 @@ jobs:
             - name: Setup environment
               uses: ./.github/actions/setup-server-env
               with:
-                  python-version: ${{ matrix.python-version }}
+                  python-version: "3.14"
                   node-version: "24"
                   type: "server"
                   # erpnext: stable lane only, never v16 (v16 test bootstrap broken on bare bench)
