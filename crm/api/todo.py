@@ -26,6 +26,18 @@ def on_update(doc, method):
 		and doc.allocated_to
 	):
 		notify_assigned_user(doc, is_cancelled=True)
+		clear_owner_on_unassign(doc)
+
+
+def clear_owner_on_unassign(doc):
+	# Owner concept only exists for Lead/Deal, not Task.
+	if doc.reference_type not in ["CRM Lead", "CRM Deal"]:
+		return
+	fieldname = "lead_owner" if doc.reference_type == "CRM Lead" else "deal_owner"
+	owner = frappe.db.get_value(doc.reference_type, doc.reference_name, fieldname)
+	# Only clear when the user being unassigned is the current owner.
+	if owner and owner == doc.allocated_to:
+		frappe.db.set_value(doc.reference_type, doc.reference_name, fieldname, None, update_modified=False)
 
 
 def notify_assigned_user(doc, is_cancelled=False):
