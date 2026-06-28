@@ -147,7 +147,7 @@
       </div>
       <div
         v-if="!callLog?.data?._lead && !callLog?.data?._deal"
-        class="px-4 pb-7 pt-4 sm:px-6"
+        class="px-4 pb-7 pt-4 sm:px-6 hidden"
       >
         <Button
           class="w-full"
@@ -156,13 +156,37 @@
           @click="createLead"
         />
       </div>
+      <div
+        v-if="!callLog?.data?.custom_contact"
+        class="px-4 py-4 sm:px-6"
+      >
+        <Button
+          class="w-full"
+          variant="outline"
+          :label="__('Create Contact')"
+          :loading="linkingContact"
+          @click="handleCreateContact"
+        />
+      </div>
     </template>
   </Dialog>
+  <ContactModal
+    v-if="showCreateContactModal"
+    v-model="showCreateContactModal"
+    :contact="{ mobile_no: newContactPhone }"
+    :options="{
+      redirect: false,
+      afterInsert: (contact) => {
+        callLog.value?.reload?.()
+      },
+    }"
+  />
 </template>
 
 <script setup>
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import ArrowUpRightIcon from '@/components/Icons/ArrowUpRightIcon.vue'
+import ContactModal from '@/components/Modals/ContactModal.vue'
 import DurationIcon from '@/components/Icons/DurationIcon.vue'
 import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
 import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
@@ -194,6 +218,9 @@ const { showModal } = useDoctypeModal()
 
 const note = ref('')
 const task = ref('')
+const showCreateContactModal = ref(false)
+const newContactPhone = ref('')
+const linkingContact = ref(false)
 
 function showNote(name) {
   showModal({
@@ -328,7 +355,7 @@ const detailFields = computed(() => {
       value: data._tasks?.[0] ?? null,
     },
   ]
-
+  console.log('callLog', callLog.value?.data)
   return details
     .filter((detail) => detail.value)
     .filter((detail) => (detail.condition ? detail.condition() : true))
@@ -344,7 +371,7 @@ async function createLead() {
     () => (show.value = false),
   )
 
-  call('crm.fcrm.doctype.crm_call_log.crm_call_log.create_lead_from_call_log', {
+  call('ouredu_fcrm_customizations.ouredu_fcrm_customizations.overrides.crm_call_log.create_lead_from_call_log', {
     call_log: callLog.value?.data,
     lead_details: leadDetails.value,
   })
@@ -358,6 +385,27 @@ async function createLead() {
         __('Error creating lead: {0}', [err.messages?.[0] || err.message]),
       )
     })
+}
+
+async function handleCreateContact() {
+  linkingContact.value = true
+  try {
+    const result = await call(
+      'ouredu_fcrm_customizations.ouredu_fcrm_customizations.overrides.crm_call_log.link_call_log_to_contact',
+      { call_log_name: callLog.value?.data?.name },
+    )
+    if (result?.contact) {
+      callLog.value?.reload?.()
+      toast.success(__('Contact linked successfully'))
+    } else {
+      newContactPhone.value = result?.phone || ''
+      showCreateContactModal.value = true
+    }
+  } catch (err) {
+    toast.error(__('Error: {0}', [err.messages?.[0] || err.message]))
+  } finally {
+    linkingContact.value = false
+  }
 }
 
 function openCallLogModal() {

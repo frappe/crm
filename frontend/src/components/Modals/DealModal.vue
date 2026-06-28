@@ -106,24 +106,33 @@ const chooseExistingContact = ref(false)
 const chooseExistingOrganization = ref(false)
 const { capture } = useTelemetry()
 
+function applySectionVisibility(organization, contact) {
+  tabs.data?.forEach((tab) => {
+    tab.sections.forEach((section) => {
+      if (section.name === 'organization_section') {
+        section.hidden = !organization
+      } else if (section.name === 'organization_details_section') {
+        section.hidden = organization
+      } else if (section.name === 'contact_section') {
+        section.hidden = !contact
+      } else if (section.name === 'contact_details_section') {
+        section.hidden = contact
+      }
+    })
+  })
+}
+
+// Re-apply whenever the switches are toggled
 watch(
   [chooseExistingOrganization, chooseExistingContact],
   ([organization, contact]) => {
-    tabs.data.forEach((tab) => {
-      tab.sections.forEach((section) => {
-        if (section.name === 'organization_section') {
-          section.hidden = !organization
-        } else if (section.name === 'organization_details_section') {
-          section.hidden = organization
-        } else if (section.name === 'contact_section') {
-          section.hidden = !contact
-        } else if (section.name === 'contact_details_section') {
-          section.hidden = contact
-        }
-      })
-    })
+    applySectionVisibility(organization, contact)
   },
 )
+
+// First-open (async): tabs.data changes null → array after API returns.
+// Without { immediate }, this only fires on actual change — not for cached data
+// (which is already set when the watcher is created, so no change event fires).
 
 const tabs = createResource({
   url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_fields_layout',
@@ -132,22 +141,22 @@ const tabs = createResource({
   auto: true,
   transform: (_tabs) => {
     hasOrganizationSections.value = false
-    return _tabs.forEach((tab) => {
+    _tabs.forEach((tab) => {
       tab.sections.forEach((section) => {
+        if (
+          ['organization_section', 'organization_details_section'].includes(
+            section.name,
+          )
+        ) {
+          hasOrganizationSections.value = true
+        } else if (
+          ['contact_section', 'contact_details_section'].includes(
+            section.name,
+          )
+        ) {
+          hasContactSections.value = true
+        }
         section.columns.forEach((column) => {
-          if (
-            ['organization_section', 'organization_details_section'].includes(
-              section.name,
-            )
-          ) {
-            hasOrganizationSections.value = true
-          } else if (
-            ['contact_section', 'contact_details_section'].includes(
-              section.name,
-            )
-          ) {
-            hasContactSections.value = true
-          }
           column.fields.forEach((field) => {
             if (field.fieldname == 'status') {
               field.fieldtype = 'Select'
@@ -162,8 +171,20 @@ const tabs = createResource({
         })
       })
     })
+    return _tabs
   },
 })
+
+// Must be declared after tabs — watches tabs.data for the async first-open case
+watch(
+  () => tabs.data,
+  () => nextTick(
+    () => applySectionVisibility(
+        chooseExistingOrganization.value,
+        chooseExistingContact.value,
+    )
+  ),
+)
 
 const dealStatuses = computed(() => statusOptions('deal'))
 
@@ -234,9 +255,22 @@ function openQuickEntryModal() {
   nextTick(() => (show.value = false))
 }
 
-onMounted(() => {
+onMounted(async () => {
+  // Reset all state from any previous open
+  deal.doc = {}
+  chooseExistingOrganization.value = false
+  chooseExistingContact.value = false
+
   deal.doc.no_of_employees = '1-10'
   Object.assign(deal.doc, props.defaults)
+
+  if (props.defaults.organization) {
+    chooseExistingOrganization.value = true
+  }
+
+  if (props.defaults.contact) {
+    chooseExistingContact.value = true
+  }
 
   if (!deal.doc.deal_owner) {
     deal.doc.deal_owner = getUser().name
@@ -244,5 +278,13 @@ onMounted(() => {
   if (!deal.doc.status && dealStatuses.value[0].value) {
     deal.doc.status = dealStatuses.value[0].value
   }
+
+  // Cached-data case: tabs.data is already set so the watch won't fire.
+  // Apply visibility after FieldLayout renders with the reset data.
+  await nextTick()
+  applySectionVisibility(
+    chooseExistingOrganization.value,
+    chooseExistingContact.value,
+  )
 })
 </script>

@@ -101,6 +101,12 @@
             />
 
             <Button
+              :tooltip="__('Print')"
+              :icon="PrinterIcon"
+              @click="printDeal"
+            />
+
+            <Button
               :tooltip="__('Go to Website')"
               :icon="LinkIcon"
               @click="
@@ -355,6 +361,7 @@ import LinkIcon from '@/components/Icons/LinkIcon.vue'
 import ArrowUpRightIcon from '@/components/Icons/ArrowUpRightIcon.vue'
 import SuccessIcon from '@/components/Icons/SuccessIcon.vue'
 import AttachmentIcon from '@/components/Icons/AttachmentIcon.vue'
+import PrinterIcon from '@/components/Icons/PrinterIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import Activities from '@/components/Activities/Activities.vue'
 import OrganizationModal from '@/components/Modals/OrganizationModal.vue'
@@ -780,6 +787,14 @@ function openEmailBox() {
     activities.value.changeTabTo('emails')
   }
   nextTick(() => (activities.value.emailBox.show = true))
+}
+
+function printDeal() {
+  // const url = `/printview?doctype=CRM+Deal&name=${encodeURIComponent(props.dealId)}`
+  // const url = `/api/method/frappe.utils.print_format.download_pdf?doctype=CRM%20Deal&name=${encodeURIComponent(props.dealId)}&format=Standard&no_letterhead=0&letterhead=Company%20Letterhead%20-%20Grey&settings=%7B%7D&_lang=en&pdf_generator=wkhtmltopdf`
+  // const url = `/printview?doctype=CRM%20Deal&name=${encodeURIComponent(props.dealId)}&format=Standard&no_letterhead=0&letterhead=Company%20Letterhead%20-%20Grey&settings=%7B%7D&_lang=en&pdf_generator=wkhtmltopdf`
+  const url = `/printview?doctype=CRM%20Deal&name=${encodeURIComponent(props.dealId)}&format=CRM%20Deal&no_letterhead=0&letterhead=Company%20Letterhead%20-%20Grey&settings=%7B%7D&_lang=en&pdf_generator=wkhtmltopdf`
+  window.open(url, '_blank')
 }
 
 function statusLabel(status) {
