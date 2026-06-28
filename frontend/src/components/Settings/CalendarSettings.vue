@@ -4,7 +4,7 @@
     <!-- Header -->
     <div class="flex justify-between px-2 text-ink-gray-8">
       <div class="flex flex-col gap-1">
-        <h2 class="flex gap-2 text-xl font-semibold leading-none h-5">
+        <h2 class="flex gap-2 text-2xl-semibold leading-none h-5">
           {{ __('Calendar Settings') }}
         </h2>
         <p class="text-p-base text-ink-gray-6">
@@ -30,7 +30,7 @@
     <div class="flex flex-1 flex-col overflow-y-auto">
       <div class="flex items-center justify-between gap-8 py-3 px-2">
         <div class="flex flex-col">
-          <div class="text-p-base font-medium text-ink-gray-7 truncate">
+          <div class="text-p-base-medium text-ink-gray-7 truncate">
             {{ __('Default View') }}
           </div>
           <div class="text-p-sm text-ink-gray-5">
@@ -55,10 +55,10 @@
           />
         </div>
       </div>
-      <div class="h-px border-t mx-2 border-outline-gray-modals" />
+      <div class="h-px border-t mx-2 border-outline-elevation-2" />
       <div class="flex flex-col gap-3 px-2 py-3">
         <div>
-          <div class="text-p-base font-medium text-ink-gray-7 truncate">
+          <div class="text-p-base-medium text-ink-gray-7 truncate">
             {{ __('Event Notifications') }}
           </div>
           <div
@@ -129,7 +129,7 @@
                 @update:modelValue="() => handleIntervalChange(notification)"
               />
               <Button
-                icon="x"
+                icon="lucide-x"
                 variant="ghost"
                 @click="
                   notifications.splice(notifications.indexOf(notification), 1)
@@ -151,10 +151,10 @@
           "
         />
       </div>
-      <div class="h-px border-t mx-2 border-outline-gray-modals" />
+      <div class="h-px border-t mx-2 border-outline-elevation-2" />
       <div class="flex flex-col gap-3 py-3 px-2">
         <div>
-          <div class="text-p-base font-medium text-ink-gray-7 truncate">
+          <div class="text-p-base-medium text-ink-gray-7 truncate">
             {{ __('All Day Event Notifications') }}
           </div>
           <div
@@ -226,7 +226,7 @@
                 :placeholder="__('08:00 pm')"
               />
               <Button
-                icon="x"
+                icon="lucide-x"
                 variant="ghost"
                 @click="
                   allDayNotifications.splice(

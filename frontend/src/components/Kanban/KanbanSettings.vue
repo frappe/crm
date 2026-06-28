@@ -5,8 +5,8 @@
     :iconLeft="KanbanIcon"
     @click="showDialog = true"
   />
-  <Dialog v-model="showDialog" :options="{ title: __('Kanban Settings') }">
-    <template #body-content>
+  <Dialog v-model:open="showDialog" :title="__('Kanban Settings')">
+    <template #default>
       <div>
         <div class="text-base text-ink-gray-8 mb-2">
           {{ __('Column Field') }}
@@ -55,14 +55,18 @@
         >
           <template #item="{ element: field }">
             <div
-              class="px-1 py-0.5 border border-outline-gray-modals rounded text-base text-ink-gray-8 flex items-center justify-between gap-2"
+              class="px-1 py-0.5 border border-outline-elevation-2 rounded text-base text-ink-gray-8 flex items-center justify-between gap-2"
             >
               <div class="flex items-center gap-2">
                 <DragVerticalIcon class="h-3.5 cursor-grab" />
                 <div>{{ field.label }}</div>
               </div>
               <div>
-                <Button variant="ghost" icon="x" @click="removeField(field)" />
+                <Button
+                  variant="ghost"
+                  icon="lucide-x"
+                  @click="removeField(field)"
+                />
               </div>
             </div>
           </template>

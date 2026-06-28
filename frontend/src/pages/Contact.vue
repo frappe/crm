@@ -77,7 +77,7 @@
                   </component>
                 </div>
                 <div class="flex flex-col gap-2 truncate text-ink-gray-9">
-                  <div class="truncate text-2xl font-medium">
+                  <div class="truncate text-3xl-medium">
                     <span v-if="contact.doc.salutation">
                       {{ contact.doc.salutation + ' ' }}
                     </span>
@@ -153,8 +153,8 @@
           <component :is="tab.icon" v-if="tab.icon" class="h-5" />
           {{ __(tab.label) }}
           <Badge
-            class="group-hover:bg-surface-gray-7"
-            :class="[selected ? 'bg-surface-gray-7' : 'bg-gray-600']"
+            class="group-hover:bg-surface-gray-10"
+            :class="[selected ? 'bg-surface-gray-10' : 'bg-gray-600']"
             variant="solid"
             theme="gray"
             size="sm"
@@ -205,6 +205,7 @@ import CameraIcon from '@/components/Icons/CameraIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import DealsListView from '@/components/ListViews/DealsListView.vue'
 import CustomActions from '@/components/CustomActions.vue'
+import { timestampCell } from '@/composables/useTimelinePreferences'
 import DealModal from '@/components/Modals/DealModal.vue'
 import {
   formatDate,
@@ -568,10 +569,7 @@ function getDealRowObject(deal) {
       label: deal.deal_owner && getUser(deal.deal_owner).full_name,
       ...(deal.deal_owner && getUser(deal.deal_owner)),
     },
-    modified: {
-      label: formatDate(deal.modified),
-      timeAgo: __(timeAgo(deal.modified)),
-    },
+    modified: timestampCell(deal.modified),
   }
 }
 
@@ -583,7 +581,7 @@ const dealColumns = [
   },
   {
     label: __('Amount'),
-    key: 'annual_revenue',
+    key: 'deal_value',
     align: 'right',
     width: '9rem',
   },

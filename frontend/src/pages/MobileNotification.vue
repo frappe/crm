@@ -32,7 +32,7 @@
         <div class="mt-1 flex items-center gap-2.5">
           <div
             class="size-[5px] rounded-full"
-            :class="[n.read ? 'bg-transparent' : 'bg-surface-gray-7']"
+            :class="[n.read ? 'bg-transparent' : 'bg-surface-gray-10']"
           />
           <WhatsAppIcon v-if="n.type == 'WhatsApp'" class="size-7" />
           <UserAvatar v-else :user="n.from_user.name" size="lg" />
@@ -61,7 +61,7 @@
     </div>
     <div v-else class="flex flex-1 flex-col items-center justify-center gap-2">
       <NotificationsIcon class="h-20 w-20 text-ink-gray-2" />
-      <div class="text-lg font-medium text-ink-gray-4">
+      <div class="text-lg-medium text-ink-gray-4">
         {{ __('No New Notifications') }}
       </div>
     </div>

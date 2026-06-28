@@ -1,6 +1,6 @@
 <template>
   <div
-    class="cursor-pointer flex flex-col rounded-md shadow bg-surface-cards px-3 py-1.5 text-base transition-all duration-300 ease-in-out"
+    class="cursor-pointer flex flex-col rounded-md shadow bg-surface-elevation-1 px-3 py-1.5 text-base transition-all duration-300 ease-in-out"
   >
     <div
       class="-mb-0.5 flex items-center justify-between gap-2 truncate text-ink-gray-9"
@@ -24,11 +24,7 @@
           variant="subtle"
           :theme="status.color"
         />
-        <Tooltip :text="formatDate(activity.communication_date)">
-          <div class="text-sm text-ink-gray-5">
-            {{ __(timeAgo(activity.communication_date)) }}
-          </div>
-        </Tooltip>
+        <TimelineTimestamp :date="activity.communication_date" />
         <div class="flex gap-0.5">
           <Button
             :tooltip="__('Reply')"
@@ -64,7 +60,7 @@
         <span v-if="activity.data.bcc">{{ activity.data.bcc }}</span>
       </div>
     </div>
-    <div class="border-0 border-t mt-3 mb-1 border-outline-gray-modals" />
+    <div class="border-0 border-t mt-3 mb-1 border-outline-elevation-2" />
     <EmailContent :content="activity.data.content" />
     <div v-if="activity.data?.attachments?.length" class="flex flex-wrap gap-2">
       <AttachmentItem
@@ -81,8 +77,8 @@ import ReplyIcon from '@/components/Icons/ReplyIcon.vue'
 import ReplyAllIcon from '@/components/Icons/ReplyAllIcon.vue'
 import AttachmentItem from '@/components/AttachmentItem.vue'
 import EmailContent from '@/components/Activities/EmailContent.vue'
-import { Badge, Tooltip } from 'frappe-ui'
-import { timeAgo, formatDate } from '@/utils'
+import { Badge } from 'frappe-ui'
+import TimelineTimestamp from '@/components/Activities/TimelineTimestamp.vue'
 import { reactive, computed } from 'vue'
 
 const props = defineProps({

@@ -61,12 +61,12 @@
               </component>
             </div>
             <div class="flex flex-col gap-2 truncate">
-              <div class="truncate text-lg font-medium text-ink-gray-9">
+              <div class="truncate text-lg-medium text-ink-gray-9">
                 {{ organization.doc.name }}
               </div>
               <div class="flex items-center gap-1.5">
                 <Button @click="openWebsite">
-                  <FeatherIcon name="link" class="h-4 w-4" />
+                  <span class="lucide-link h-4 w-4" aria-hidden="true" />
                 </Button>
                 <Button
                   v-if="canDelete"
@@ -98,8 +98,8 @@
           <component :is="tab.icon" v-if="tab.icon" class="h-5" />
           {{ __(tab.label) }}
           <Badge
-            class="group-hover:bg-surface-gray-7"
-            :class="[selected ? 'bg-surface-gray-7' : 'bg-gray-600']"
+            class="group-hover:bg-surface-gray-10"
+            :class="[selected ? 'bg-surface-gray-10' : 'bg-gray-600']"
             variant="solid"
             theme="gray"
             size="sm"
@@ -138,7 +138,7 @@
         />
         <div
           v-if="!rows.length && tab.name !== 'Details'"
-          class="grid flex-1 place-items-center text-xl font-medium text-ink-gray-4"
+          class="grid flex-1 place-items-center text-2xl-medium text-ink-gray-4"
         >
           <div class="flex flex-col items-center justify-center space-y-3">
             <component :is="tab.icon" class="!h-10 !w-10" />
@@ -168,11 +168,10 @@ import { usersStore } from '@/stores/users'
 import { statusesStore } from '@/stores/statuses'
 import { getView } from '@/utils/view'
 import {
-  formatDate,
-  timeAgo,
   validateIsImageFile,
   openWebsite as openExternalWebsite,
 } from '@/utils'
+import { timestampCell } from '@/composables/useTimelinePreferences'
 import {
   Breadcrumbs,
   Avatar,
@@ -431,10 +430,7 @@ function getDealRowObject(deal) {
       label: deal.deal_owner && getUser(deal.deal_owner).full_name,
       ...(deal.deal_owner && getUser(deal.deal_owner)),
     },
-    modified: {
-      label: formatDate(deal.modified),
-      timeAgo: __(timeAgo(deal.modified)),
-    },
+    modified: timestampCell(deal.modified),
   }
 }
 
@@ -452,10 +448,7 @@ function getContactRowObject(contact) {
       label: contact.company_name,
       logo: organization.doc?.organization_logo,
     },
-    modified: {
-      label: formatDate(contact.modified),
-      timeAgo: __(timeAgo(contact.modified)),
-    },
+    modified: timestampCell(contact.modified),
   }
 }
 

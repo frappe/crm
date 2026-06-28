@@ -3,7 +3,7 @@
     <!-- Header -->
     <div class="flex justify-between px-2 pt-2">
       <div class="flex flex-col gap-1 w-9/12">
-        <h2 class="flex gap-2 text-xl font-semibold leading-none h-5">
+        <h2 class="flex gap-2 text-2xl-semibold leading-none h-5">
           {{ __('Users') }}
         </h2>
         <p class="text-p-base text-ink-gray-6">
@@ -71,7 +71,10 @@
           :debounce="300"
         >
           <template #prefix>
-            <FeatherIcon name="search" class="h-4 w-4 text-ink-gray-6" />
+            <span
+              class="lucide-search h-4 w-4 text-ink-gray-6"
+              aria-hidden="true"
+            />
           </template>
         </TextInput>
         <FormControl
@@ -85,7 +88,7 @@
           ]"
         />
       </div>
-      <ul class="divide-y divide-outline-gray-modals overflow-y-auto px-2">
+      <ul class="divide-y divide-outline-elevation-2 overflow-y-auto px-2">
         <template v-for="user in usersList" :key="user.name">
           <li class="flex items-center justify-between py-2">
             <div class="flex items-center">
@@ -119,7 +122,7 @@
                 v-if="isManager() && user.role == 'System Manager'"
                 :text="__('Cannot change role of user with Admin access')"
               >
-                <Button :label="__('Admin')" icon-left="shield" />
+                <Button :label="__('Admin')" icon-left="lucide-shield" />
               </Tooltip>
               <Dropdown
                 v-else
@@ -148,7 +151,7 @@
             class="mt-3.5 p-2"
             :loading="users.loading"
             :label="__('Load More')"
-            icon-left="refresh-cw"
+            icon-left="lucide-refresh-cw"
             @click="() => users.next()"
           />
         </div>
@@ -167,15 +170,7 @@ import EmptyState from '@/components/ListViews/EmptyState.vue'
 import { activeSettingsPage } from '@/composables/settings'
 import { usersStore } from '@/stores/users'
 import { DropdownOption } from '@/utils'
-import {
-  Dropdown,
-  Avatar,
-  TextInput,
-  toast,
-  call,
-  FeatherIcon,
-  Tooltip,
-} from 'frappe-ui'
+import { Dropdown, Avatar, TextInput, toast, call, Tooltip } from 'frappe-ui'
 import { ref, computed, onMounted } from 'vue'
 import { ConfirmDelete } from '../../utils'
 

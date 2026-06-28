@@ -61,7 +61,7 @@
               </component>
             </div>
             <div class="flex flex-col gap-2 truncate">
-              <div class="truncate text-lg font-medium text-ink-gray-9">
+              <div class="truncate text-lg-medium text-ink-gray-9">
                 <span v-if="contact.doc.salutation">
                   {{ contact.doc.salutation + '. ' }}
                 </span>
@@ -80,7 +80,7 @@
                   :label="__('Delete')"
                   theme="red"
                   size="sm"
-                  icon-left="trash-2"
+                  icon-left="lucide-trash-2"
                   @click="deleteContact"
                 />
                 <Avatar
@@ -113,8 +113,8 @@
           <component :is="tab.icon" v-if="tab.icon" class="h-5" />
           {{ __(tab.label) }}
           <Badge
-            class="group-hover:bg-surface-gray-7"
-            :class="[selected ? 'bg-surface-gray-7' : 'bg-gray-600']"
+            class="group-hover:bg-surface-gray-10"
+            :class="[selected ? 'bg-surface-gray-10' : 'bg-gray-600']"
             variant="solid"
             theme="gray"
             size="sm"
@@ -146,7 +146,7 @@
         />
         <div
           v-if="tab.label === 'Deals' && !rows.length"
-          class="grid flex-1 place-items-center text-xl font-medium text-ink-gray-4"
+          class="grid flex-1 place-items-center text-2xl-medium text-ink-gray-4"
         >
           <div class="flex flex-col items-center justify-center space-y-3">
             <component :is="tab.icon" class="!h-10 !w-10" />
@@ -167,7 +167,8 @@ import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import CameraIcon from '@/components/Icons/CameraIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import DealsListView from '@/components/ListViews/DealsListView.vue'
-import { formatDate, timeAgo, validateIsImageFile } from '@/utils'
+import { validateIsImageFile } from '@/utils'
+import { timestampCell } from '@/composables/useTimelinePreferences'
 import { getView } from '@/utils/view'
 import { useDocument } from '@/data/document'
 import { getSettings } from '@/stores/settings'
@@ -503,10 +504,7 @@ function getDealRowObject(deal) {
       label: deal.deal_owner && getUser(deal.deal_owner).full_name,
       ...(deal.deal_owner && getUser(deal.deal_owner)),
     },
-    modified: {
-      label: formatDate(deal.modified),
-      timeAgo: __(timeAgo(deal.modified)),
-    },
+    modified: timestampCell(deal.modified),
   }
 }
 

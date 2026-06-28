@@ -9,15 +9,15 @@
         theme="gray"
         variant="subtle"
         :class="{
-          'rounded bg-surface-white hover:!bg-surface-gray-1 focus-visible:ring-outline-gray-4':
+          'rounded bg-surface-base hover:!bg-surface-gray-1 focus-visible:ring-outline-gray-4':
             variant === 'subtle',
         }"
         @keydown.delete.capture.stop="removeLastValue"
       >
         <template #suffix>
-          <FeatherIcon
-            class="h-3.5"
-            name="x"
+          <span
+            class="lucide-x h-3.5"
+            aria-hidden="true"
             @click.stop="removeValue(value)"
           />
         </template>
@@ -34,7 +34,7 @@
             class="flex h-7 max-w-full w-auto items-center gap-2 rounded px-2 py-1 border border-transparent"
             :class="[
               variant == 'ghost'
-                ? 'bg-surface-white hover:bg-surface-white'
+                ? 'bg-surface-base hover:bg-surface-base'
                 : 'bg-surface-gray-2 hover:bg-surface-gray-3',
               inputClass,
             ]"
@@ -53,7 +53,7 @@
           </ComboboxAnchor>
           <ComboboxPortal>
             <ComboboxContent
-              class="z-10 mt-1 min-w-48 w-auto max-w-96 bg-surface-modal overflow-hidden rounded-lg shadow-2xl ring-1 ring-black ring-opacity-5"
+              class="z-10 mt-1 min-w-48 w-auto max-w-96 bg-surface-elevation-2 overflow-hidden rounded-lg shadow-2xl ring-1 ring-black ring-opacity-5"
               position="popper"
               :align="'start'"
               @openAutoFocus.prevent
@@ -63,10 +63,10 @@
                 <ComboboxEmpty
                   class="flex gap-2 rounded px-2 py-1 text-base text-ink-gray-5"
                 >
-                  <FeatherIcon
+                  <span
                     v-if="showSearchIcon"
-                    name="search"
-                    class="h-4"
+                    class="lucide-search h-4"
+                    aria-hidden="true"
                   />
                   {{ emptyStateText }}
                 </ComboboxEmpty>
@@ -79,7 +79,7 @@
                 >
                   <UserAvatar class="mr-2" :user="option.value" size="lg" />
                   <div class="flex flex-col gap-1 p-1 text-ink-gray-8">
-                    <div class="text-base font-medium">{{ option.label }}</div>
+                    <div class="text-base-medium">{{ option.label }}</div>
                     <div class="text-sm text-ink-gray-5">
                       {{ option.value }}
                     </div>
@@ -94,7 +94,7 @@
     <ErrorMessage v-if="error" class="mt-2 pl-2" :message="error" />
     <div
       v-if="info"
-      class="whitespace-pre-line text-sm text-ink-blue-3 mt-2 pl-2"
+      class="whitespace-pre-line text-sm text-ink-blue-6 mt-2 pl-2"
     >
       {{ info }}
     </div>
@@ -157,8 +157,10 @@ const query = ref('')
 const showOptions = ref(false)
 const tempSelection = ref(null)
 
-// Users data
-const { users } = usersStore()
+// Users data — use the store's `allUsers` computed so we get the full
+// list once the background fetch lands, falling back to the smaller
+// crm-users-only payload during initial load.
+const { users, allUsers } = usersStore()
 
 // Contacts resource (only if needed)
 const filterOptions = ref(null)
@@ -206,7 +208,7 @@ function reload(val) {
 const options = computed(() => {
   const mode = effectiveMode.value
   if (mode === 'users') {
-    let list = users?.data?.allUsers || []
+    let list = allUsers.value || []
     list = list.map((u) => ({
       label: u.full_name || u.name || u.email,
       value: u.email,

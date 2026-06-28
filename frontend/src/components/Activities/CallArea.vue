@@ -17,19 +17,15 @@
         }}</span>
       </div>
       <div class="ml-auto whitespace-nowrap">
-        <Tooltip :text="formatDate(call.creation)">
-          <div class="text-sm text-ink-gray-5">
-            {{ __(timeAgo(call.creation)) }}
-          </div>
-        </Tooltip>
+        <TimelineTimestamp :date="call.creation" />
       </div>
     </div>
     <div
-      class="flex flex-col gap-2 border cursor-pointer border-outline-gray-modals rounded-md bg-surface-cards px-3 py-2.5 text-ink-gray-9"
+      class="flex flex-col gap-2 border cursor-pointer border-outline-elevation-2 rounded-md bg-surface-elevation-1 px-3 py-2.5 text-ink-gray-9"
       @click="showCallLogDetailModal = true"
     >
       <div class="flex items-center justify-between">
-        <div class="inline-flex gap-2 items-center text-base font-medium">
+        <div class="inline-flex gap-2 items-center text-base-medium">
           <div>
             {{
               call.type == 'Incoming' ? __('Inbound Call') : __('Outbound Call')
@@ -105,9 +101,10 @@ import DurationIcon from '@/components/Icons/DurationIcon.vue'
 import MultipleAvatar from '@/components/MultipleAvatar.vue'
 import AudioPlayer from '@/components/Activities/AudioPlayer.vue'
 import CallLogDetailModal from '@/components/Modals/CallLogDetailModal.vue'
+import TimelineTimestamp from '@/components/Activities/TimelineTimestamp.vue'
 import { statusLabelMap, statusColorMap } from '@/utils/callLog.js'
-import { formatDate, timeAgo } from '@/utils'
-import { Avatar, Badge, Tooltip, createResource } from 'frappe-ui'
+import { formatDate } from '@/utils'
+import { Avatar, Badge, createResource } from 'frappe-ui'
 import { reactive, ref } from 'vue'
 
 const props = defineProps({

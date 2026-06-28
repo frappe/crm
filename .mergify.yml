@@ -4,7 +4,8 @@ pull_request_rules:
           - and:
                 - and:
                       - author!=shariquerik
-                      - author!=pratikb64
+                      - author!=shahzeelahmed
+                      - author!=ps173
                       - author!=frappe-pr-bot
                       - author!=mergify[bot]
                 - or:
@@ -44,3 +45,23 @@ pull_request_rules:
                   - main
               assignees:
                   - "{{ author }}"
+
+    - name: add conflicts label when PR has conflicts
+      conditions:
+          - conflict
+      actions:
+          label:
+              add:
+                  - conflicts
+          comment:
+              message: |
+                  @{{author}} this pull request has merge conflicts. Please resolve them so it can be reviewed and merged.
+
+    - name: remove conflicts label once resolved
+      conditions:
+          - -conflict
+          - label=conflicts
+      actions:
+          label:
+              remove:
+                  - conflicts

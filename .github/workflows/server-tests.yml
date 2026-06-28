@@ -21,12 +21,32 @@ concurrency:
     cancel-in-progress: true
 
 jobs:
+    setup:
+        name: Resolve frappe matrix
+        runs-on: ubuntu-latest
+        outputs:
+            frappe-branches: ${{ steps.resolve.outputs.branches }}
+        steps:
+            - name: Resolve frappe branches from target branch
+              id: resolve
+              run: |
+                  BASE="${{ github.base_ref || github.ref_name }}"
+                  # develop tracks frappe develop; the stable lane ships frappe 15 and 16.
+                  if [ "$BASE" = "develop" ]; then
+                      echo 'branches=["develop"]' >> "$GITHUB_OUTPUT"
+                  else
+                      echo 'branches=["version-15","version-16"]' >> "$GITHUB_OUTPUT"
+                  fi
+
     test:
-        name: Tests
+        name: Tests (frappe ${{ matrix.frappe-branch }})
+        needs: setup
         runs-on: ubuntu-latest
         timeout-minutes: 60
         strategy:
             fail-fast: false
+            matrix:
+                frappe-branch: ${{ fromJson(needs.setup.outputs.frappe-branches) }}
 
         services:
             mysql:
@@ -47,6 +67,9 @@ jobs:
                   python-version: "3.14"
                   node-version: "24"
                   type: "server"
+                  # erpnext: stable lane only, never v16 (v16 test bootstrap broken on bare bench)
+                  install-erpnext: ${{ (github.base_ref == 'main-hotfix' || github.base_ref == 'main') && matrix.frappe-branch != 'version-16' }}
+                  frappe-branch: ${{ matrix.frappe-branch }}
 
             - name: Run server tests
               uses: ./.github/actions/run-server-tests
@@ -62,7 +85,7 @@ jobs:
               if: github.base_ref == 'develop' || github.ref_name == 'develop'
               uses: ./.github/actions/upload-coverage
               with:
-                  artifact-name: coverage-${{ matrix.container }}
+                  artifact-name: coverage-${{ matrix.frappe-branch }}
                   coverage-path: /home/runner/frappe-bench/sites/coverage.xml
 
     coverage:
