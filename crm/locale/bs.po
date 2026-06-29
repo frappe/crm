@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-06-22 19:37+0553\n"
-"PO-Revision-Date: 2026-06-23 20:00\n"
+"PO-Revision-Date: 2026-06-28 20:53\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Bosnian\n"
 "MIME-Version: 1.0\n"
@@ -4713,7 +4713,7 @@ msgstr "Srednje"
 #. Option for the 'Type' (Select) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
 msgid "Mention"
-msgstr "Pomeni"
+msgstr "Spominjanje"
 
 #: frontend/src/components/Notifications.vue:120
 msgid "Mentions"
@@ -5149,7 +5149,7 @@ msgstr "Nije pronađeno {0}"
 
 #: frontend/src/components/Controls/Grid.vue:27
 msgid "No."
-msgstr "Br."
+msgstr "Broj."
 
 #. Label of the no_of_employees (Select) field in DocType 'CRM Deal'
 #. Label of the no_of_employees (Select) field in DocType 'CRM Lead'
