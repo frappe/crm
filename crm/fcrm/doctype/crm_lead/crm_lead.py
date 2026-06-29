@@ -482,6 +482,56 @@ class CRMLead(Document):
 			"kanban_fields": '["organization", "email", "mobile_no", "_assign", "modified"]',
 		}
 
+@frappe.whitelist()
+def find_duplicate_leads(
+	email: str | None = None,
+	mobile_no: str | None = None,
+	current_lead: str | None = None,
+):
+	"""
+	Return existing CRM Leads matching the given email and/or mobile number.
+	Used before creating a Lead to warn the user about existing Leads.
+	"""
+
+	email = email.strip() if email else None
+	mobile_no = mobile_no.strip() if mobile_no else None
+
+	if not email and not mobile_no:
+		return []
+
+	duplicates = {}
+
+	fields = [
+		"name",
+		"lead_name",
+		"email",
+		"mobile_no",
+		"status",
+		"organization",
+	]
+
+	if email:
+		filters = {"email": email}
+		if current_lead:
+			filters["name"] = ["!=", current_lead]
+
+		for lead in frappe.get_all("CRM Lead", filters=filters, fields=fields):
+			lead["matched_on"] = ["Email"]
+			duplicates[lead["name"]] = lead
+
+	if mobile_no:
+		filters = {"mobile_no": mobile_no}
+		if current_lead:
+			filters["name"] = ["!=", current_lead]
+
+		for lead in frappe.get_all("CRM Lead", filters=filters, fields=fields):
+			if lead["name"] in duplicates:
+				duplicates[lead["name"]]["matched_on"].append("Mobile Number")
+			else:
+				lead["matched_on"] = ["Mobile Number"]
+				duplicates[lead["name"]] = lead
+
+	return list(duplicates.values())
 
 @frappe.whitelist()
 def convert_to_deal(
