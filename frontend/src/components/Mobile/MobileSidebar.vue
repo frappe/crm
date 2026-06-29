@@ -11,7 +11,11 @@
         leave-to="-translate-x-full"
       >
         <div
+<<<<<<< HEAD
           class="relative z-10 flex h-full w-[260px] flex-col justify-between border-r bg-surface-menu-bar transition-all duration-300 ease-in-out"
+=======
+          class="relative z-10 flex h-full w-[260px] flex-col justify-between border-r bg-surface-gray-1 transition-all duration-300 ease-in-out"
+>>>>>>> e520346c (chore: unify sidebar background token to bg-surface-gray-1 across desktop, mobile, and settings layouts)
         >
           <div>
             <UserDropdown class="p-2" :isCollapsed="!sidebarOpened" />
