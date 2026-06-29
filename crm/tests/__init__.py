@@ -3,6 +3,14 @@ import os
 
 import frappe
 
+# Version-aware base test case: frappe v16 ships IntegrationTestCase (which avoids
+# the legacy compat preload that imports erpnext's heavy test bootstrap); v15 only
+# has FrappeTestCase. Tests import CRMTestCase so the same suite runs on both.
+try:
+	from frappe.tests import IntegrationTestCase as CRMTestCase
+except ImportError:
+	from frappe.tests.utils import FrappeTestCase as CRMTestCase
+
 
 def before_tests():
 	# In integration CI ERPNext is installed via `install-app`, which does not run

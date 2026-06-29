@@ -4,9 +4,9 @@
 from unittest.mock import MagicMock, patch
 
 import frappe
-from frappe.tests.utils import FrappeTestCase
 
 from crm.api.whatsapp import notify_agent, validate
+from crm.tests import CRMTestCase as FrappeTestCase
 
 
 class TestWhatsAppHooks(FrappeTestCase):

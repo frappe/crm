@@ -4,8 +4,9 @@
 from datetime import datetime, time
 
 import frappe
-from frappe.tests.utils import FrappeTestCase
 from frappe.utils import add_to_date, get_datetime, now_datetime
+
+from crm.tests import CRMTestCase as FrappeTestCase
 
 
 class TestCRMServiceLevelAgreement(FrappeTestCase):
