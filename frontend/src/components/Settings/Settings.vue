@@ -3,21 +3,47 @@
     v-model:open="showSettings"
     :size="'5xl'"
     :disableOutsideClickToClose="disableSettingModalOutsideClick"
-    @close="activeSettingsPage = ''"
+    @close="
+      activeSettingsPage = '';
+      searchQuery = '';
+    "
   >
     <template #body>
       <div class="flex h-[calc(100vh_-_8rem)] bg-surface-sidebar">
         <div
           class="flex flex-col m-1 rounded-l-lg w-56 shrink-0 bg-surface-sidebar overflow-y-auto"
         >
-          <template v-for="(tab, i) in tabs" :key="tab.label">
-            <div v-if="!tab.hideLabel && i != 0" class="mx-1 mb-0.5 mt-[5px]" />
+          <!-- Search Bar -->
+          <div class="sticky top-0 z-20 bg-surface-sidebar p-2">
+            <input
+              v-model="searchQuery"
+              :placeholder="__('Search settings...')"
+              class="w-full rounded-md border border-outline-gray-2 bg-surface-white px-3 py-2 text-sm focus:outline-none focus:ring-0 focus:border-outline-gray-4"
+            />
+          </div>
+
+          <!-- No Results -->
+          <div
+            v-if="filteredTabs.length === 0"
+            class="p-4 text-sm text-ink-gray-5"
+          >
+            {{ __('No settings found.') }}
+          </div>
+
+          <!-- Settings List -->
+          <template v-else v-for="(tab, i) in filteredTabs" :key="tab.label">
+            <div
+              v-if="!tab.hideLabel && i != 0"
+              class="mx-1 mb-0.5 mt-[5px]"
+            />
+
             <div
               v-if="!tab.hideLabel"
-              class="h-7.5 px-2 py-[7px] my-[3px] flex cursor-pointer gap-1.5 text-xs-medium text-ink-gray-5 transition-all duration-300 ease-in-out sticky top-0 z-10 bg-surface-sidebar"
+              class="h-7.5 px-2 py-[7px] my-[3px] flex gap-1.5 text-xs-medium text-ink-gray-5 sticky top-0 z-10 bg-surface-sidebar"
             >
               <span>{{ __(tab.label) }}</span>
             </div>
+
             <nav class="space-y-[3px] px-1">
               <SidebarLink
                 v-for="item in tab.items"
@@ -35,15 +61,20 @@
             </nav>
           </template>
         </div>
+
         <div
           class="flex flex-col flex-1 overflow-y-auto bg-surface-elevation-2"
         >
-          <component :is="activeTab.component" v-if="activeTab" />
+          <component
+            :is="activeTab.component"
+            v-if="activeTab"
+          />
         </div>
       </div>
     </template>
   </Dialog>
 </template>
+
 <script setup>
 import LucideLayoutDashboard from '~icons/lucide/layout-dashboard'
 import LucideNetwork from '~icons/lucide/network'
@@ -92,6 +123,8 @@ import SlaConfig from './Sla/SlaConfig.vue'
 const { isManager, getUser } = usersStore()
 
 const user = computed(() => getUser() || {})
+
+const searchQuery = ref('')
 
 const tabs = computed(() => {
   let _tabs = [
@@ -255,17 +288,82 @@ const tabs = computed(() => {
   })
 })
 
+function getMatchScore(label, query) {
+  const text = label.toLowerCase()
+
+  // Exact beginning of label
+  if (text.startsWith(query)) return 3
+
+  // Beginning of any word
+  if (text.split(/\s+/).some(word => word.startsWith(query))) return 2
+
+  // Anywhere in label
+  if (text.includes(query)) return 1
+
+  return 0
+}
+
+const filteredTabs = computed(() => {
+  const query = searchQuery.value.trim().toLowerCase()
+
+  if (!query) {
+    return tabs.value
+  }
+
+  return tabs.value
+    .map((tab) => {
+      // If section title matches, keep the entire section
+      const sectionScore = getMatchScore(tab.label, query)
+
+      if (sectionScore > 0) {
+        return {
+          ...tab,
+          maxScore: sectionScore,
+        }
+      }
+
+      const items = tab.items
+        .map((item) => ({
+          ...item,
+          score: getMatchScore(item.label, query),
+        }))
+        .filter((item) => item.score > 0)
+        .sort((a, b) => b.score - a.score)
+
+      return {
+        ...tab,
+        items,
+        maxScore: items.length
+          ? Math.max(...items.map((item) => item.score))
+          : 0,
+      }
+    })
+    .filter((tab) => tab.items.length > 0)
+    .sort((a, b) => b.maxScore - a.maxScore)
+})
+
 const activeTab = ref(tabs.value[0].items[0])
 
 function setActiveTab(tabName) {
   activeTab.value =
     (tabName &&
       tabs.value
-        .map((tab) => tab.items)
-        .flat()
-        .find((tab) => tab.label === tabName)) ||
+        .flatMap((tab) => tab.items)
+        .find((item) => item.label === tabName)) ||
     tabs.value[0].items[0]
 }
 
-watch(activeSettingsPage, (activePage) => setActiveTab(activePage))
+watch(activeSettingsPage, (activePage) => {
+  setActiveTab(activePage)
+})
+
+watch(filteredTabs, (newTabs) => {
+  if (!newTabs.length) return
+
+  const visibleItems = newTabs.flatMap((tab) => tab.items)
+
+  if (!visibleItems.find((item) => item.label === activeTab.value?.label)) {
+    activeTab.value = visibleItems[0]
+  }
+})
 </script>
