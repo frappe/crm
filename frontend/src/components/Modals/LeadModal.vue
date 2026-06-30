@@ -325,16 +325,28 @@ function insertLead() {
 }
 
 async function createNewLead() {
+  if (isLeadCreating.value) return
+
+  isLeadCreating.value = true
+
   if (lead.doc.website && !lead.doc.website.startsWith('http')) {
     lead.doc.website = 'https://' + lead.doc.website
   }
 
-  await triggerOnBeforeCreate?.()
+  let existingLeads
 
-  const existingLeads = await checkDuplicateLead.submit({
-    email: lead.doc.email,
-    mobile_no: lead.doc.mobile_no,
-  })
+  try {
+    await triggerOnBeforeCreate?.()
+    
+    existingLeads = await checkDuplicateLead.submit({
+      email: lead.doc.email,
+      mobile_no: lead.doc.mobile_no,
+    })
+  } catch (err) {
+    isLeadCreating.value = false
+    error.value = err.message || __('Failed to check for duplicate leads')
+    return
+  }
 
   if (!existingLeads || existingLeads.length === 0) {
     insertLead()
@@ -343,6 +355,7 @@ async function createNewLead() {
 
   duplicateLeads.value = existingLeads
   showDuplicateDialog.value = true
+  isLeadCreating.value = false
 }
 
 function continueAnyway() {

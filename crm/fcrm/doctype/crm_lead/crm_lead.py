@@ -516,6 +516,9 @@ def find_duplicate_leads(
 			filters["name"] = ["!=", current_lead]
 
 		for lead in frappe.get_all("CRM Lead", filters=filters, fields=fields):
+			if not frappe.has_permission("CRM Lead", "read", lead["name"]):
+				continue
+
 			lead["matched_on"] = ["Email"]
 			duplicates[lead["name"]] = lead
 
@@ -525,12 +528,15 @@ def find_duplicate_leads(
 			filters["name"] = ["!=", current_lead]
 
 		for lead in frappe.get_all("CRM Lead", filters=filters, fields=fields):
+			if not frappe.has_permission("CRM Lead", "read", lead["name"]):
+				continue
+
 			if lead["name"] in duplicates:
 				duplicates[lead["name"]]["matched_on"].append("Mobile Number")
 			else:
 				lead["matched_on"] = ["Mobile Number"]
 				duplicates[lead["name"]] = lead
-
+				
 	return list(duplicates.values())
 
 @frappe.whitelist()
