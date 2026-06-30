@@ -9,9 +9,9 @@
     "
   >
     <template #body>
-      <div class="flex h-[calc(100vh_-_8rem)] bg-surface-sidebar">
+      <div class="flex h-[calc(100vh_-_8rem)] bg-surface-gray-1">
         <div
-          class="flex flex-col m-1 rounded-l-lg w-56 shrink-0 bg-surface-sidebar overflow-y-auto"
+          class="flex flex-col m-1 rounded-l-lg w-56 shrink-0 bg-surface-gray-1 overflow-y-auto"
         >
           <!-- Search Bar -->
           <div class="sticky top-0 z-20 bg-surface-sidebar p-2">
@@ -39,7 +39,7 @@
 
             <div
               v-if="!tab.hideLabel"
-              class="h-7.5 px-2 py-[7px] my-[3px] flex gap-1.5 text-xs-medium text-ink-gray-5 sticky top-0 z-10 bg-surface-sidebar"
+              class="h-7.5 px-2 py-[7px] my-[3px] flex gap-1.5 text-xs-medium text-ink-gray-5 sticky top-0 z-10 bg-surface-gray-1"
             >
               <span>{{ __(tab.label) }}</span>
             </div>
