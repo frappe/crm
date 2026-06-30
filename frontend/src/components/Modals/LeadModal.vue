@@ -359,6 +359,9 @@ async function createNewLead() {
 }
 
 function continueAnyway() {
+  if (isLeadCreating.value) return
+
+  isLeadCreating.value = true
   showDuplicateDialog.value = false
   insertLead()
 }
