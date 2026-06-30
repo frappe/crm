@@ -345,12 +345,15 @@ const filteredTabs = computed(() => {
 const activeTab = ref(tabs.value[0].items[0])
 
 function setActiveTab(tabName) {
-  activeTab.value =
-    (tabName &&
-      tabs.value
-        .flatMap((tab) => tab.items)
-        .find((item) => item.label === tabName)) ||
-    tabs.value[0].items[0]
+  const items = filteredTabs.value.flatMap((tab) => tab.items)
+
+  const selected =
+    items.find((item) => item.label === tabName) ||
+    items[0] ||
+    null
+
+  activeTab.value = selected
+  activeSettingsPage.value = selected?.label || ''
 }
 
 watch(activeSettingsPage, (activePage) => {
@@ -358,12 +361,17 @@ watch(activeSettingsPage, (activePage) => {
 })
 
 watch(filteredTabs, (newTabs) => {
-  if (!newTabs.length) return
+  if (!newTabs.length) {
+    activeTab.value = null
+    activeSettingsPage.value = ''
+    return
+  }
 
   const visibleItems = newTabs.flatMap((tab) => tab.items)
 
   if (!visibleItems.find((item) => item.label === activeTab.value?.label)) {
     activeTab.value = visibleItems[0]
+    activeSettingsPage.value = visibleItems[0].label
   }
 })
 </script>
