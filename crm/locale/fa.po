@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-06-22 19:37+0553\n"
-"PO-Revision-Date: 2026-06-23 20:00\n"
+"PO-Revision-Date: 2026-06-28 20:52\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Persian\n"
 "MIME-Version: 1.0\n"
@@ -304,7 +304,7 @@ msgstr "فعالیت"
 #. 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 msgid "Activity Timeline"
-msgstr ""
+msgstr "خط زمانی فعالیت‌ها"
 
 #: frontend/src/components/Dashboard/AddChartModal.vue:37
 #: frontend/src/components/Modals/AddExistingUserModal.vue:55
@@ -758,7 +758,7 @@ msgstr ""
 #. Option for the 'Type' (Select) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
 msgid "Assignment"
-msgstr "تخصیص"
+msgstr ""
 
 #: frontend/src/components/ListBulkActions.vue:152
 msgid "Assignment Cleared Successfully"
@@ -3118,7 +3118,7 @@ msgstr "هر ۵ دقیقه"
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 #: frontend/src/components/Settings/GeneralSettings.vue:140
 msgid "Exact"
-msgstr ""
+msgstr "دقیق"
 
 #: frontend/src/components/ViewControls.vue:282
 #: frontend/src/components/ViewControls.vue:290
@@ -3768,7 +3768,7 @@ msgstr "ساعتی"
 #. 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 msgid "How timestamps are shown in the activity timeline for all users"
-msgstr ""
+msgstr "چگونگی نمایش برچسب‌های زمانی در جدول زمانی فعالیت‌های کاربران"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:199
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:283
@@ -4990,7 +4990,7 @@ msgstr "{0} جدید"
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 #: frontend/src/components/Settings/GeneralSettings.vue:144
 msgid "Newest First"
-msgstr ""
+msgstr "جدیدترین‌ها اول"
 
 #: frontend/src/components/Filter.vue:709
 msgid "Next 6 Months"
@@ -5362,7 +5362,7 @@ msgstr "مرجع پیشین"
 #: frontend/src/components/Settings/GeneralSettings.vue:123
 #: frontend/src/components/Settings/GeneralSettings.vue:143
 msgid "Oldest First"
-msgstr ""
+msgstr "ابتدا قدیمی ترین"
 
 #. Option for the 'Type' (Select) field in DocType 'CRM Deal Status'
 #. Option for the 'Type' (Select) field in DocType 'CRM Lead Status'
@@ -5464,13 +5464,13 @@ msgstr "سفارش توسط"
 
 #: frontend/src/components/Settings/GeneralSettings.vue:111
 msgid "Order of activities, emails, comments and calls in the timeline"
-msgstr ""
+msgstr "ترتیب فعالیت‌ها، ایمیل‌ها، نظرات و تماس‌ها در جدول زمانی"
 
 #. Description of the 'Timeline Sort Order' (Select) field in DocType 'FCRM
 #. Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 msgid "Order of activities, emails, comments and calls in the timeline for all users"
-msgstr ""
+msgstr "ترتیب فعالیت‌ها، ایمیل‌ها، نظرات و تماس‌ها در جدول زمانی برای همه کاربران"
 
 #. Label of the organization (Link) field in DocType 'CRM Deal'
 #. Label of the organization_tab (Tab Break) field in DocType 'CRM Deal'
@@ -6715,7 +6715,7 @@ msgstr "جداکننده"
 #. Label of the naming_series (Select) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Series"
-msgstr "سری"
+msgstr ""
 
 #: frontend/src/components/Layouts/AppSidebar.vue:611
 msgid "Service Level Agreement"
