@@ -151,6 +151,63 @@ class TestCRMDeal(FrappeTestCase):
 		assignees_after = deal.get_assigned_users()
 		self.assertEqual(len(assignees_after), initial_count)
 
+<<<<<<< HEAD
+=======
+	def test_owner_cleared_on_unassign(self):
+		"""Unassigning the current owner clears deal_owner"""
+		deal = create_test_deal(organization="Owner Clear Org", deal_owner="crm.user1@example.com")
+		self.assertEqual(deal.deal_owner, "crm.user1@example.com")
+
+		assign_remove("CRM Deal", deal.name, "crm.user1@example.com")
+
+		self.assertIsNone(frappe.db.get_value("CRM Deal", deal.name, "deal_owner"))
+
+	def test_reassignment_moves_owner(self):
+		"""After the owner is unassigned, assigning a new user makes them the owner"""
+		deal = create_test_deal(organization="Reassign Org", deal_owner="crm.user1@example.com")
+
+		# Frappe assignment rules unassign before assign in one cycle; mirror that order
+		assign_remove("CRM Deal", deal.name, "crm.user1@example.com")
+		self.assertIsNone(frappe.db.get_value("CRM Deal", deal.name, "deal_owner"))
+
+		assign_add({"assign_to": ["crm.user2@example.com"], "doctype": "CRM Deal", "name": deal.name})
+
+		self.assertEqual(frappe.db.get_value("CRM Deal", deal.name, "deal_owner"), "crm.user2@example.com")
+
+	def test_assignment_overrides_owner(self):
+		"""A new assignment takes ownership even when an owner already exists (newest owns)."""
+		deal = create_test_deal(organization="Override Org", deal_owner="crm.user1@example.com")
+		assign_add({"assign_to": ["crm.user2@example.com"], "doctype": "CRM Deal", "name": deal.name})
+		self.assertEqual(frappe.db.get_value("CRM Deal", deal.name, "deal_owner"), "crm.user2@example.com")
+
+	def test_removing_any_assignee_clears_owner(self):
+		"""Accepted simplification: cancelling ANY assignment clears the owner,
+		even when other assignees remain (owner is single-valued, _assign is a list)."""
+		deal = create_test_deal(organization="Wrinkle Org", deal_owner="crm.user1@example.com")
+		assign_add({"assign_to": ["crm.user2@example.com"], "doctype": "CRM Deal", "name": deal.name})
+		# newest assignment owns
+		self.assertEqual(frappe.db.get_value("CRM Deal", deal.name, "deal_owner"), "crm.user2@example.com")
+
+		assign_remove("CRM Deal", deal.name, "crm.user1@example.com")  # remove a non-owner assignee
+		self.assertIsNone(frappe.db.get_value("CRM Deal", deal.name, "deal_owner"))
+
+	def test_task_unassign_does_not_touch_owner(self):
+		"""Cancelling a CRM Task assignment is a no-op for owner fields"""
+		deal = create_test_deal(organization="Task Org")
+		task = frappe.get_doc(
+			{
+				"doctype": "CRM Task",
+				"title": "Owner sync task",
+				"reference_doctype": "CRM Deal",
+				"reference_docname": deal.name,
+			}
+		).insert()
+
+		assign_add({"assign_to": ["crm.user1@example.com"], "doctype": "CRM Task", "name": task.name})
+		# Should not raise
+		assign_remove("CRM Task", task.name, "crm.user1@example.com")
+
+>>>>>>> b67ffde5 (fix: make lead/deal owner mirror assign_to (assignment-driven, overridable))
 	def test_add_contact_api(self):
 		"""Test add_contact API function"""
 		deal = create_test_deal(organization="Add Contact Org")
