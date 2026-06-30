@@ -2,12 +2,9 @@
 # See license.txt
 
 import frappe
-<<<<<<< HEAD
-=======
 from frappe.desk.form.assign_to import add as assign_add
 from frappe.desk.form.assign_to import remove as assign_remove
 from frappe.tests import IntegrationTestCase
->>>>>>> 5c0fd53e (fix: clear lead/deal owner when current owner is unassigned)
 
 from crm.fcrm.doctype.crm_deal.crm_deal import (
 	add_contact,
