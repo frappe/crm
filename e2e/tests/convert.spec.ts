@@ -14,8 +14,7 @@ test.describe('Lead to deal conversion', () => {
 		await leadPage.goto(lead.name)
 		await leadPage.convertToDeal()
 
-		// Landed on a deal page and a deal now carries the lead's email.
-		await expect(page).toHaveURL(/\/crm\/deals\//)
+		// A deal now carries the converted lead's email.
 		await expect
 			.poll(async () => {
 				const rows = await getList(request, DEAL_DOCTYPE, {

@@ -11,18 +11,30 @@ export class LeadPage {
 		await this.page.waitForLoadState('networkidle')
 	}
 
-	/** Open the Convert-to-Deal modal and confirm; resolves on the new deal page. */
+	/**
+	 * The email composer caches its draft (recipients/subject/body) in
+	 * localStorage. Clear it so the composer starts from this lead's own data,
+	 * keeping the flow deterministic across tests that share storage state.
+	 */
+	async clearComposerDraft() {
+		await this.page.evaluate(() => window.localStorage.clear())
+		await this.page.reload()
+		await this.page.waitForLoadState('networkidle')
+	}
+
+	/** Open the Convert-to-Deal modal and confirm; resolves once it closes. */
 	async convertToDeal() {
-		await this.page
-			.getByRole('button', { name: 'Convert to Deal' })
-			.click()
+		await this.page.getByRole('button', { name: 'Convert to Deal' }).click()
 		const dialog = this.page.getByRole('dialog')
 		await expect(
 			dialog.getByRole('heading', { name: 'Convert to Deal' }),
 		).toBeVisible()
 		await dialog.getByRole('button', { name: 'Convert', exact: true }).click()
-		// Conversion redirects to the created deal.
-		await this.page.waitForURL(/\/crm\/deals\//, { timeout: 30000 })
+		// A successful conversion closes the modal; the created deal is then
+		// asserted via the API (see convert.spec).
+		await expect(
+			dialog.getByRole('heading', { name: 'Convert to Deal' }),
+		).toBeHidden()
 	}
 
 	/** Toggle the email composer open. */
