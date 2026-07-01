@@ -25,6 +25,7 @@ def is_call_integration_enabled():
 		"integrations": {
 			"twilio": bool(frappe.db.get_single_value("CRM Twilio Settings", "enabled")),
 			"exotel": bool(frappe.db.get_single_value("CRM Exotel Settings", "enabled")),
+			"yeastar": bool(frappe.db.get_single_value("CRM Yeastar Settings", "enabled")),
 		},
 		"default_calling_medium": get_user_default_calling_medium(),
 	}
@@ -226,7 +227,13 @@ def get_contact(phone_number: str, country: str = "IN", exact_match: bool = Fals
 	# Else, Check if the number is associated with a lead
 	Lead = frappe.qb.DocType("CRM Lead")
 	normalized_phone = Replace(
-		Replace(Replace(Replace(Replace(Lead.mobile_no, " ", ""), "-", ""), "(", ""), ")", ""), "+", ""
+		Replace(
+			Replace(Replace(Replace(Lead.mobile_no, " ", ""), "-", ""), "(", ""),
+			")",
+			"",
+		),
+		"+",
+		"",
 	)
 
 	query = (
