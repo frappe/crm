@@ -116,20 +116,14 @@ jobs:
           bench --site crm.test set-config allow_tests true
           bench --site crm.test set-config host_name "http://crm.test:8000"
           # Dummy default-outgoing account so send-email queues without real SMTP.
+          # Flat top-level statements only — piped IPython drops indented blocks.
           bench --site crm.test console <<'PY'
           import frappe
-          if not frappe.db.exists("Email Account", {"default_outgoing": 1}):
-              frappe.get_doc({
-                  "doctype": "Email Account",
-                  "email_account_name": "E2E Outgoing",
-                  "email_id": "e2e@example.com",
-                  "smtp_server": "localhost",
-                  "smtp_port": 25,
-                  "enable_outgoing": 1,
-                  "default_outgoing": 1,
-                  "no_smtp_authentication": 1,
-              }).insert(ignore_permissions=True)
-              frappe.db.commit()
+          frappe.flags.in_patch = True  # skip the outgoing SMTP connection check on insert
+          acc = {"doctype": "Email Account", "email_account_name": "E2E Outgoing", "email_id": "e2e@example.com", "smtp_server": "localhost", "smtp_port": 25, "enable_outgoing": 1, "default_outgoing": 1, "no_smtp_authentication": 1}
+          frappe.get_doc(acc).insert(ignore_permissions=True) if not frappe.db.exists("Email Account", {"default_outgoing": 1}) else None
+          frappe.db.commit()
+          print("DEFAULT_OUTGOING_EXISTS:", bool(frappe.db.exists("Email Account", {"default_outgoing": 1})))
           PY
 
       - name: Start Frappe Server
