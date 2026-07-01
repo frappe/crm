@@ -14,11 +14,18 @@ export class LoginPage {
 
 	async login(email = 'Administrator', password = 'admin') {
 		await this.goto()
-		await this.page.fill('#login_email', email)
-		await this.page.fill('#login_password', password)
-		// Submit via Enter to avoid coupling to the button label/class, which
-		// varies across Frappe versions.
-		await this.page.locator('#login_password').press('Enter')
+		const emailInput = this.page.locator('#login_email')
+		const passwordInput = this.page.locator('#login_password')
+		await emailInput.waitFor({ state: 'visible' })
+		// Frappe's login.js can reset the fields as it initialises, so keep
+		// filling until the email value actually sticks before submitting.
+		await expect(async () => {
+			await emailInput.fill(email)
+			await passwordInput.fill(password)
+			await expect(emailInput).toHaveValue(email)
+		}).toPass({ timeout: 15000 })
+		// btn-login is stable across Frappe versions (button text is not).
+		await this.page.locator('button.btn-login[type="submit"]').first().click()
 		// Wait until we actually leave the login page — a plain /crm match would
 		// pass immediately because the URL carries redirect-to=/crm.
 		await this.page.waitForURL((url) => !url.pathname.startsWith('/login'), {
