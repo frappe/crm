@@ -39,6 +39,6 @@ test.describe('Send email from lead view', () => {
 		// recipient row reflects this lead's email and renders outside the
 		// sandboxed body iframe, so it is reliable to assert on.
 		await leadPage.openTab('Emails')
-		await expect(page.getByText(lead.email).first()).toBeVisible()
+		await expect(page.getByText(lead.email!).first()).toBeVisible()
 	})
 })
