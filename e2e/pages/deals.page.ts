@@ -19,17 +19,31 @@ export class DealsPage {
 	}
 
 	/**
-	 * Submit the deal. The Create Deal modal's fields are mostly Link/Select
-	 * with sensible defaults, so an email is enough to identify it later.
+	 * Submit the deal. "Primary email" identifies it later. Value and closure
+	 * date are only mandatory when a site customizes them (Property Setter), so
+	 * they are filled conditionally to stay portable across sites.
 	 */
 	async createDeal(email: string) {
 		const dialog = this.page.getByRole('dialog')
-		const emailInput = dialog.getByPlaceholder('Enter Email')
-		if (await emailInput.count()) await emailInput.fill(email)
+		await dialog.getByPlaceholder('Primary email', { exact: true }).fill(email)
+		await this.fillIfPresent(dialog, 'Expected Deal Value', '1000')
+		await this.fillIfPresent(dialog, 'Expected Closure Date', '2026-12-31', true)
 
 		await dialog.getByRole('button', { name: 'Create', exact: true }).click()
 		await expect(
 			this.page.getByRole('heading', { name: 'Create Deal' }),
 		).toBeHidden()
+	}
+
+	private async fillIfPresent(
+		scope: ReturnType<Page['getByRole']>,
+		placeholder: string,
+		value: string,
+		isDate = false,
+	) {
+		const field = scope.getByPlaceholder(placeholder, { exact: true })
+		if (!(await field.count())) return
+		await field.fill(value)
+		if (isDate) await field.press('Enter')
 	}
 }

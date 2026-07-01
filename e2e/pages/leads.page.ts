@@ -4,9 +4,9 @@ import { LeadData } from '../helpers/crm'
 /**
  * Leads list view (/crm/leads) and the "Create Lead" modal.
  *
- * Fields render via FieldLayout: a plain label div plus an input whose
- * placeholder is "Enter {label}" (text) or "Select {label}" (Link/Select).
- * We drive the plain text fields by placeholder for stable selectors.
+ * Fields render via FieldLayout; the quick-entry text fields carry the
+ * label itself as their placeholder (e.g. "First Name", "Email"), so we
+ * drive them by placeholder scoped to the dialog for stable selectors.
  */
 export class LeadsPage {
 	constructor(private page: Page) {}
@@ -26,11 +26,11 @@ export class LeadsPage {
 	/** Fill the mandatory text fields and submit; resolves once the modal closes. */
 	async createLead(data: LeadData) {
 		const dialog = this.page.getByRole('dialog')
-		await dialog.getByPlaceholder('Enter First Name').fill(data.first_name)
+		await dialog.getByPlaceholder('First Name', { exact: true }).fill(data.first_name)
 		if (data.last_name)
-			await dialog.getByPlaceholder('Enter Last Name').fill(data.last_name)
+			await dialog.getByPlaceholder('Last Name', { exact: true }).fill(data.last_name)
 		if (data.email)
-			await dialog.getByPlaceholder('Enter Email').fill(data.email)
+			await dialog.getByPlaceholder('Email', { exact: true }).fill(data.email)
 
 		await dialog.getByRole('button', { name: 'Create', exact: true }).click()
 		await expect(
