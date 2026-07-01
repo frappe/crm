@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2026-06-22 19:37+0553\n"
-"PO-Revision-Date: 2026-06-23 20:00\n"
+"POT-Creation-Date: 2026-06-28 10:20+0000\n"
+"PO-Revision-Date: 2026-07-01 21:10\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Esperanto\n"
 "MIME-Version: 1.0\n"
@@ -1833,6 +1833,10 @@ msgstr "crwdns196222:0crwdne196222:0"
 msgid "Copied to Clipboard"
 msgstr "crwdns196224:0crwdne196224:0"
 
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:156
+msgid "Could not create the Frappe CRM custom fields on {0} automatically. If it is running the latest ERPNext, enable <b>Frappe CRM Data Synchronization</b> in its CRM Settings, Otherwise check the Error Log."
+msgstr "crwdns206089:0{0}crwdne206089:0"
+
 #: frontend/src/components/Settings/Hierarchy/useRemoveNode.js:16
 msgid "Could not remove."
 msgstr "crwdns203639:0crwdne203639:0"
@@ -2632,17 +2636,21 @@ msgstr "crwdns153131:0crwdne153131:0"
 msgid "ERPNext Site URL"
 msgstr "crwdns153133:0crwdne153133:0"
 
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:161
+msgid "ERPNext custom fields not created"
+msgstr "crwdns206091:0crwdne206091:0"
+
 #: crm/fcrm/doctype/crm_product/crm_product.py:42
 msgid "ERPNext integration is active. Create an Item in ERPNext and it will appear in CRM Product automatically."
 msgstr "crwdns203659:0crwdne203659:0"
 
-#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:205
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:220
 msgid "ERPNext integration must be enabled on the same site"
 msgstr "crwdns203661:0crwdne203661:0"
 
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:70
-#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:91
-#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:508
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:87
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:523
 msgid "ERPNext is not installed in the current site"
 msgstr "crwdns153135:0crwdne153135:0"
 
@@ -2825,7 +2833,7 @@ msgstr "crwdns196352:0crwdne196352:0"
 msgid "Email Templates"
 msgstr "crwdns153171:0crwdne153171:0"
 
-#: frontend/src/components/Controls/EmailMultiSelect.vue:254
+#: frontend/src/components/Controls/EmailMultiSelect.vue:256
 msgid "Email already exists"
 msgstr "crwdns196354:0crwdne196354:0"
 
@@ -5508,7 +5516,7 @@ msgstr "crwdns153673:0crwdne153673:0"
 msgid "Organization Name"
 msgstr "crwdns153675:0crwdne153675:0"
 
-#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:488
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:503
 msgid "Organization or a primary Contact is required to create a customer"
 msgstr "crwdns203699:0crwdne203699:0"
 
@@ -8155,11 +8163,11 @@ msgstr "crwdns158948:0crwdne158948:0"
 msgid "You will need a Meta developer account and an access token to sync leads from Facebook. Read more"
 msgstr "crwdns196940:0crwdne196940:0"
 
-#: crm/api/todo.py:100
+#: crm/api/todo.py:112
 msgid "Your assignment on task {0} has been removed by {1}"
 msgstr "crwdns154213:0{0}crwdnd154213:0{1}crwdne154213:0"
 
-#: crm/api/todo.py:37 crm/api/todo.py:78
+#: crm/api/todo.py:49 crm/api/todo.py:90
 msgid "Your assignment on {0} {1} has been removed by {2}"
 msgstr "crwdns154107:0{0}crwdnd154107:0{1}crwdnd154107:0{2}crwdne154107:0"
 
@@ -8186,11 +8194,11 @@ msgstr "crwdns154109:0crwdne154109:0"
 msgid "amber"
 msgstr "crwdns154111:0crwdne154111:0"
 
-#: crm/api/todo.py:109
+#: crm/api/todo.py:121
 msgid "assigned a new task {0} to you"
 msgstr "crwdns154215:0{0}crwdne154215:0"
 
-#: crm/api/todo.py:89
+#: crm/api/todo.py:101
 msgid "assigned a {0} {1} to you"
 msgstr "crwdns154217:0{0}crwdnd154217:0{1}crwdne154217:0"
 
@@ -8605,7 +8613,7 @@ msgstr "crwdns196986:0{0}crwdne196986:0"
 msgid "{0} M"
 msgstr "crwdns156750:0{0}crwdne156750:0"
 
-#: crm/api/todo.py:41
+#: crm/api/todo.py:53
 msgid "{0} assigned a {1} {2} to you"
 msgstr "crwdns154165:0{0}crwdnd154165:0{1}crwdnd154165:0{2}crwdne154165:0"
 
