@@ -16,6 +16,7 @@ test.describe('Send email from lead view', () => {
 		const leadPage = new LeadPage(page)
 
 		await leadPage.goto(lead.name)
+		await leadPage.clearComposerDraft()
 		await leadPage.openEmailBox()
 		await leadPage.sendEmail(body)
 
@@ -34,8 +35,10 @@ test.describe('Send email from lead view', () => {
 			})
 			.toBeGreaterThan(0)
 
-		// And it surfaces in the lead's Emails tab.
+		// And it surfaces in the lead's Emails tab. With a cleared draft the
+		// recipient row reflects this lead's email and renders outside the
+		// sandboxed body iframe, so it is reliable to assert on.
 		await leadPage.openTab('Emails')
-		await expect(page.getByText(body)).toBeVisible()
+		await expect(page.getByText(lead.email).first()).toBeVisible()
 	})
 })

@@ -14,6 +14,7 @@ frontend/coverage
 e2e/.auth
 test-results
 playwright-report
+package-lock.json
 
 .vscode
 .github/instructions
