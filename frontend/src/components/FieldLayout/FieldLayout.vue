@@ -7,7 +7,7 @@
     }"
   >
     <Tabs
-      v-model="tabIndex"
+      v-model="selectedTabIndex"
       as="div"
       :tabs="processedTabs"
       :class="[
@@ -30,7 +30,7 @@
 import Section from '@/components/FieldLayout/Section.vue'
 import { useDocument } from '@/data/document'
 import { Tabs } from 'frappe-ui'
-import { ref, computed, provide } from 'vue'
+import { computed, provide, watch } from 'vue'
 
 const props = defineProps({
   tabs: { type: Array, default: () => [] },
@@ -42,7 +42,8 @@ const props = defineProps({
   context: { type: Object, default: null },
 })
 
-const tabIndex = ref(0)
+const tabIndex = defineModel('tabIndex', { type: Number, default: 0 })
+const tabName = defineModel('tabName', { type: String, default: '' })
 
 // The authoritative document name. Prefer the explicit docname prop (known
 // synchronously by the parent modal) over data.name, which is empty while the
@@ -86,6 +87,42 @@ const hasTabs = computed(() => {
     (processedTabs.value.length == 1 && processedTabs.value[0].label)
   )
 })
+
+const selectedTabIndex = computed({
+  get() {
+    if (tabName.value) {
+      const namedTabIndex = processedTabs.value.findIndex(
+        (tab) => tab.name === tabName.value,
+      )
+      if (namedTabIndex !== -1) return namedTabIndex
+    }
+    return tabIndex.value
+  },
+  set(value) {
+    tabIndex.value = value
+    tabName.value = processedTabs.value[value]?.name || ''
+  },
+})
+
+watch(
+  processedTabs,
+  (tabs) => {
+    if (!tabs.length) {
+      tabIndex.value = 0
+      tabName.value = ''
+      return
+    }
+    if (tabName.value && tabs.some((tab) => tab.name === tabName.value)) {
+      tabIndex.value = tabs.findIndex((tab) => tab.name === tabName.value)
+      return
+    }
+    if (tabIndex.value >= tabs.length) {
+      tabIndex.value = tabs.length - 1
+    }
+    tabName.value = tabs[tabIndex.value]?.name || ''
+  },
+  { immediate: true },
+)
 
 provide(
   'data',
