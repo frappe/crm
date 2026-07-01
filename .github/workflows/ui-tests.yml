@@ -83,7 +83,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright-${{ hashFiles('**/package.json') }}
+          key: ${{ runner.os }}-playwright-${{ hashFiles('package.json') }}
           restore-keys: |
             ${{ runner.os }}-playwright-
 
