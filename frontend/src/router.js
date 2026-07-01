@@ -143,11 +143,16 @@ router.beforeEach(async (to, from, next) => {
       await users.promise
     } catch (error) {
       console.error('Error loading users', error)
+      return next(false)
     }
   }
 
-  if (isLoggedIn && to.name !== 'Not Permitted' && !isCrmUser()) {
+  const crmUserCheck = isCrmUser()
+
+  if (isLoggedIn && to.name !== 'Not Permitted' && !crmUserCheck) {
     next({ name: 'Not Permitted' })
+  } else if (to.name === 'Not Permitted' && isLoggedIn && crmUserCheck) {
+    next({ name: 'Home' })
   } else if (to.name === 'Home' && isLoggedIn) {
     const { views, getDefaultView } = viewsStore()
     await views.promise
