@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2026-06-22 19:37+0553\n"
-"PO-Revision-Date: 2026-06-23 20:00\n"
+"POT-Creation-Date: 2026-06-28 10:20+0000\n"
+"PO-Revision-Date: 2026-07-01 21:09\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Serbian (Cyrillic)\n"
 "MIME-Version: 1.0\n"
@@ -1833,6 +1833,10 @@ msgstr "Успешно конвертовано"
 msgid "Copied to Clipboard"
 msgstr "Копирано у међуспремник"
 
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:156
+msgid "Could not create the Frappe CRM custom fields on {0} automatically. If it is running the latest ERPNext, enable <b>Frappe CRM Data Synchronization</b> in its CRM Settings, Otherwise check the Error Log."
+msgstr ""
+
 #: frontend/src/components/Settings/Hierarchy/useRemoveNode.js:16
 msgid "Could not remove."
 msgstr ""
@@ -2632,17 +2636,21 @@ msgstr "ERPNext API сајта"
 msgid "ERPNext Site URL"
 msgstr "ERPNext URL сајта"
 
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:161
+msgid "ERPNext custom fields not created"
+msgstr ""
+
 #: crm/fcrm/doctype/crm_product/crm_product.py:42
 msgid "ERPNext integration is active. Create an Item in ERPNext and it will appear in CRM Product automatically."
 msgstr ""
 
-#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:205
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:220
 msgid "ERPNext integration must be enabled on the same site"
 msgstr ""
 
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:70
-#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:91
-#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:508
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:87
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:523
 msgid "ERPNext is not installed in the current site"
 msgstr "ERPNext није инсталиран на тренутном сајту"
 
@@ -2825,7 +2833,7 @@ msgstr "Имејл шаблон"
 msgid "Email Templates"
 msgstr "Имејл шаблони"
 
-#: frontend/src/components/Controls/EmailMultiSelect.vue:254
+#: frontend/src/components/Controls/EmailMultiSelect.vue:256
 msgid "Email already exists"
 msgstr "Имејл већ постоји"
 
@@ -5508,7 +5516,7 @@ msgstr "Лого организације"
 msgid "Organization Name"
 msgstr "Назив организације"
 
-#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:488
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:503
 msgid "Organization or a primary Contact is required to create a customer"
 msgstr ""
 
@@ -8155,11 +8163,11 @@ msgstr "Бићете преусмерени на страницу за пози�
 msgid "You will need a Meta developer account and an access token to sync leads from Facebook. Read more"
 msgstr "Неопходан Вам је Meta програмерски налог и приступни токен за синхронизацију потенцијалних клијената са Facebook-а. Прочитајте више"
 
-#: crm/api/todo.py:100
+#: crm/api/todo.py:112
 msgid "Your assignment on task {0} has been removed by {1}"
 msgstr "Ваше задужење на задатку {0} је уклоњено од стране {1}"
 
-#: crm/api/todo.py:37 crm/api/todo.py:78
+#: crm/api/todo.py:49 crm/api/todo.py:90
 msgid "Your assignment on {0} {1} has been removed by {2}"
 msgstr "Ваша додела за {0} {1} је уклоњена од стране {2}"
 
@@ -8186,11 +8194,11 @@ msgstr "додато је"
 msgid "amber"
 msgstr "амбер"
 
-#: crm/api/todo.py:109
+#: crm/api/todo.py:121
 msgid "assigned a new task {0} to you"
 msgstr "додељен Вам је нови задатак {0}"
 
-#: crm/api/todo.py:89
+#: crm/api/todo.py:101
 msgid "assigned a {0} {1} to you"
 msgstr "додељен Вам је {0} {1}"
 
@@ -8605,7 +8613,7 @@ msgstr "{0} (неважећи формат времена)"
 msgid "{0} M"
 msgstr "{0} М"
 
-#: crm/api/todo.py:41
+#: crm/api/todo.py:53
 msgid "{0} assigned a {1} {2} to you"
 msgstr "Додељено Вам је {1} {2} од стране {0}"
 
