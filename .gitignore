@@ -11,6 +11,11 @@ crm/www/crm.html
 build
 frontend/coverage
 
+e2e/.auth
+test-results
+playwright-report
+package-lock.json
+
 .vscode
 .github/instructions
 .github/skills
