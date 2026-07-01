@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-06-22 19:37+0553\n"
-"PO-Revision-Date: 2026-06-24 20:07\n"
+"PO-Revision-Date: 2026-06-27 20:46\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Uzbek\n"
 "MIME-Version: 1.0\n"
@@ -156,7 +156,7 @@ msgstr ""
 
 #: crm/fcrm/doctype/crm_lead/crm_lead.py:125
 msgid "A Lead requires either a person's name or an organization's name"
-msgstr ""
+msgstr "Potensial mijozlar uchun shaxsning ismi yoki tashkilot nomi kerak bo'ladi"
 
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.py:49
 msgid "A lead sync source is already enabled for this Facebook Lead Form!"
@@ -240,11 +240,11 @@ msgstr ""
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 #: frontend/src/components/Settings/DashboardSettings.vue:135
 msgid "Access Key"
-msgstr ""
+msgstr "Kirish kaliti"
 
 #: crm/api/exchange_rate.py:98 crm/api/exchange_rate.py:114
 msgid "Access Key is required for Service Provider: {0}"
-msgstr ""
+msgstr "Xizmat ko'rsatuvchi provayder uchun kirish kaliti talab qilinadi: {0}"
 
 #. Label of the access_token (Small Text) field in DocType 'Facebook Page'
 #. Label of the access_token (Password) field in DocType 'Lead Sync Source'
@@ -270,7 +270,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/emailConfig.js:13
 msgid "Account Name"
-msgstr ""
+msgstr "Hisob nomi"
 
 #. Label of the account_sid (Data) field in DocType 'CRM Exotel Settings'
 #. Label of the account_sid (Data) field in DocType 'CRM Twilio Settings'
@@ -287,7 +287,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/Settings.vue:177
 msgid "Accounts"
-msgstr ""
+msgstr "Hisoblar"
 
 #: frontend/src/components/CustomActions.vue:76
 #: frontend/src/components/ViewControls.vue:693
@@ -454,7 +454,7 @@ msgstr ""
 #. 'CRM Holiday List'
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
 msgid "Add Weekly Holidays"
-msgstr ""
+msgstr "Haftalik ta'tillarni qo'shish"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRulesSection.vue:20
 msgid "Add a Condition"
@@ -467,7 +467,7 @@ msgstr ""
 #: frontend/src/components/Telephony/ExotelCallUI.vue:183
 #: frontend/src/components/Telephony/TwilioCallUI.vue:57
 msgid "Add a Note"
-msgstr ""
+msgstr "Izoh qo'shish"
 
 #: frontend/src/components/Telephony/ExotelCallUI.vue:191
 msgid "Add a Task"
@@ -574,7 +574,7 @@ msgstr ""
 #: frontend/src/pages/MobileOrganization.vue:462
 #: frontend/src/pages/Organization.vue:492
 msgid "Amount"
-msgstr ""
+msgstr "Miqdori"
 
 #. Description of the 'Net Amount' (Currency) field in DocType 'CRM Products'
 #: crm/fcrm/doctype/crm_products/crm_products.json
@@ -611,7 +611,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
 msgid "Annual Revenue"
-msgstr ""
+msgstr "Yillik daromad"
 
 #: frontend/src/components/Modals/DealModal.vue:193
 #: frontend/src/components/Modals/LeadModal.vue:136
