@@ -1,0 +1,181 @@
+name: UI Tests
+
+# E2E (Playwright) suite. Heavy gate: runs on the main-hotfix staging lane
+# before promoting to main, plus on demand. Develop stays on the fast lane.
+on:
+  push:
+    branches:
+      - main-hotfix
+  pull_request:
+    branches:
+      - main-hotfix
+  workflow_dispatch:
+
+concurrency:
+  group: ui-tests-crm-${{ github.event.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  FRAPPE_BRANCH: develop
+
+jobs:
+  ui-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    name: Playwright E2E Tests
+
+    services:
+      redis-cache:
+        image: redis:alpine
+        ports:
+          - 13000:6379
+      redis-queue:
+        image: redis:alpine
+        ports:
+          - 11000:6379
+      mariadb:
+        image: mariadb:10.6
+        env:
+          MYSQL_ROOT_PASSWORD: root
+        ports:
+          - 3306:3306
+        options: --health-cmd="mariadb-admin ping" --health-interval=5s --health-timeout=2s --health-retries=3
+
+    steps:
+      - name: Clone
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          check-latest: true
+
+      - name: Add to Hosts
+        run: echo "127.0.0.1 crm.test" | sudo tee -a /etc/hosts
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/*requirements.txt', '**/pyproject.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: 'echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT'
+
+      - name: Cache yarn
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('**/package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-playwright-
+
+      - name: Install MariaDB Client
+        run: |
+          sudo apt update
+          sudo apt-get install mariadb-client
+
+      - name: Setup Bench
+        run: |
+          pip install frappe-bench
+          bench init --skip-redis-config-generation --skip-assets --frappe-branch "$FRAPPE_BRANCH" --python "$(which python)" ~/frappe-bench
+          mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL character_set_server = 'utf8mb4'"
+          mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL collation_server = 'utf8mb4_unicode_ci'"
+
+      - name: Install CRM
+        working-directory: /home/runner/frappe-bench
+        run: |
+          bench get-app crm $GITHUB_WORKSPACE
+          bench setup requirements --dev
+          bench new-site --db-root-password root --admin-password admin crm.test
+          bench --site crm.test install-app crm
+          bench build --app crm
+        env:
+          CI: "Yes"
+
+      - name: Configure Site for UI Tests
+        working-directory: /home/runner/frappe-bench
+        run: |
+          bench --site crm.test set-config allow_tests true
+          bench --site crm.test set-config host_name "http://crm.test:8000"
+          # Dummy default-outgoing account so send-email queues without real SMTP.
+          bench --site crm.test console <<'PY'
+          import frappe
+          if not frappe.db.exists("Email Account", {"default_outgoing": 1}):
+              frappe.get_doc({
+                  "doctype": "Email Account",
+                  "email_account_name": "E2E Outgoing",
+                  "email_id": "e2e@example.com",
+                  "smtp_server": "localhost",
+                  "smtp_port": 25,
+                  "enable_outgoing": 1,
+                  "default_outgoing": 1,
+                  "no_smtp_authentication": 1,
+              }).insert(ignore_permissions=True)
+              frappe.db.commit()
+          PY
+
+      - name: Start Frappe Server
+        working-directory: /home/runner/frappe-bench
+        run: |
+          sed -i 's/^watch:/# watch:/g' Procfile
+          sed -i 's/^schedule:/# schedule:/g' Procfile
+          bench start &> bench_start.log &
+          echo "Waiting for Frappe server to start..."
+          timeout 60 bash -c 'until curl -s http://crm.test:8000 > /dev/null; do sleep 2; done'
+          echo "Frappe server is ready!"
+
+      - name: Install Playwright
+        run: |
+          npm install --ignore-scripts
+          npx playwright install --with-deps chromium
+
+      - name: Run Playwright Tests
+        run: npx playwright test
+        env:
+          BASE_URL: http://crm.test:8000
+          FRAPPE_USER: Administrator
+          FRAPPE_PASSWORD: admin
+
+      - name: Upload Playwright Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
+
+      - name: Upload Test Results
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: test-results
+          path: test-results/
+          retention-days: 7
+
+      - name: Show Bench Logs on Failure
+        if: failure()
+        working-directory: /home/runner/frappe-bench
+        run: |
+          echo "=== Bench Start Log ==="
+          cat bench_start.log || true
+          echo ""
+          echo "=== Frappe Logs ==="
+          cat logs/*.log || true
