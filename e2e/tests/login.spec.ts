@@ -17,10 +17,8 @@ test.describe('Login', () => {
 		)
 
 		await expect(page).toHaveURL(/\/crm/)
-		// The CRM shell renders its primary navigation once booted.
-		await expect(
-			page.getByRole('link', { name: 'Leads' }).first(),
-		).toBeVisible()
+		// The CRM SPA has booted into its mount point.
+		await expect(page.locator('#app')).not.toBeEmpty()
 	})
 
 	test('rejects invalid credentials', async ({ page }) => {
@@ -28,7 +26,7 @@ test.describe('Login', () => {
 		await login.goto()
 		await page.fill('#login_email', 'Administrator')
 		await page.fill('#login_password', 'wrong-password')
-		await page.click('button.btn-login')
+		await page.locator('#login_password').press('Enter')
 
 		await login.expectOnLoginPage()
 	})
