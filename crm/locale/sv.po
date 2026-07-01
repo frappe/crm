@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2026-06-22 19:37+0553\n"
-"PO-Revision-Date: 2026-06-26 20:28\n"
+"POT-Creation-Date: 2026-06-28 10:20+0000\n"
+"PO-Revision-Date: 2026-07-01 21:09\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Swedish\n"
 "MIME-Version: 1.0\n"
@@ -1833,6 +1833,10 @@ msgstr "Konverterad"
 msgid "Copied to Clipboard"
 msgstr "Kopierad till Urklipp"
 
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:156
+msgid "Could not create the Frappe CRM custom fields on {0} automatically. If it is running the latest ERPNext, enable <b>Frappe CRM Data Synchronization</b> in its CRM Settings, Otherwise check the Error Log."
+msgstr "Kunde inte skapa Säljstöd anpassade fält {0} automatiskt. Om det körs på senaste Affärssystem, aktivera <b>Säljstöd Data Synkronisering</b> i Säljstöd Inställningar, annars kontrollera fellogg."
+
 #: frontend/src/components/Settings/Hierarchy/useRemoveNode.js:16
 msgid "Could not remove."
 msgstr "Kunde inte ta bort."
@@ -2632,17 +2636,21 @@ msgstr "Affärssystem Webbplats API'er"
 msgid "ERPNext Site URL"
 msgstr "Affärssystem Webbplats URL"
 
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:161
+msgid "ERPNext custom fields not created"
+msgstr "Affärssystem anpassade fält skapades inte"
+
 #: crm/fcrm/doctype/crm_product/crm_product.py:42
 msgid "ERPNext integration is active. Create an Item in ERPNext and it will appear in CRM Product automatically."
 msgstr "Affärssystem Integration är aktiv. Skapa artikel i Affärssystem så visas det automatiskt som Säljstöd Artikel."
 
-#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:205
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:220
 msgid "ERPNext integration must be enabled on the same site"
 msgstr "Affärssystem integration måste vara aktiverad på samma webbplats"
 
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:70
-#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:91
-#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:508
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:87
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:523
 msgid "ERPNext is not installed in the current site"
 msgstr "Afförsystem är inte installerat på aktuell webbplats"
 
@@ -2825,7 +2833,7 @@ msgstr "E-post Mall"
 msgid "Email Templates"
 msgstr "E-Post Mallar"
 
-#: frontend/src/components/Controls/EmailMultiSelect.vue:254
+#: frontend/src/components/Controls/EmailMultiSelect.vue:256
 msgid "Email already exists"
 msgstr "E-post Adress finns redan"
 
@@ -5508,7 +5516,7 @@ msgstr "Organisation Logotyp"
 msgid "Organization Name"
 msgstr "Bolag Namn"
 
-#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:488
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:503
 msgid "Organization or a primary Contact is required to create a customer"
 msgstr "Organisation eller primär kontakt erfordras för att skapa kund"
 
@@ -8155,11 +8163,11 @@ msgstr "Du kommer att omdirigeras till inbjudning sida för användare, osparade
 msgid "You will need a Meta developer account and an access token to sync leads from Facebook. Read more"
 msgstr "Meta utvecklarkonto och åtkomst token erfordras för att synkronisera Potentiella Kunder från Facebook. Läs mer om hur du gör"
 
-#: crm/api/todo.py:100
+#: crm/api/todo.py:112
 msgid "Your assignment on task {0} has been removed by {1}"
 msgstr "Din tilldelning för uppgift {0} togs bort av {1}"
 
-#: crm/api/todo.py:37 crm/api/todo.py:78
+#: crm/api/todo.py:49 crm/api/todo.py:90
 msgid "Your assignment on {0} {1} has been removed by {2}"
 msgstr "Din tilldelning {0} {1} togs bort av {2}"
 
@@ -8186,11 +8194,11 @@ msgstr "la till "
 msgid "amber"
 msgstr "bärnsten"
 
-#: crm/api/todo.py:109
+#: crm/api/todo.py:121
 msgid "assigned a new task {0} to you"
 msgstr "tilldelade dig en ny uppgift {0}"
 
-#: crm/api/todo.py:89
+#: crm/api/todo.py:101
 msgid "assigned a {0} {1} to you"
 msgstr "tilldelade {0} {1} till dig"
 
@@ -8605,7 +8613,7 @@ msgstr "{0} (ogiltigt tidsformat)"
 msgid "{0} M"
 msgstr "{0} M"
 
-#: crm/api/todo.py:41
+#: crm/api/todo.py:53
 msgid "{0} assigned a {1} {2} to you"
 msgstr "{0} tilldelade {1} {2} till dig"
 
