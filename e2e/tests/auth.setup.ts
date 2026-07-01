@@ -45,9 +45,10 @@ setup('authenticate', async ({ page }) => {
 		return w.csrf_token || w.frappe?.csrf_token
 	})
 
-	if (csrfToken) {
-		fs.writeFileSync(csrfFile, JSON.stringify({ csrf_token: csrfToken }))
-	}
+	// A missing token means later API writes would fail with an opaque 417;
+	// fail the setup loudly instead of proceeding with no CSRF header.
+	expect(csrfToken).toBeTruthy()
+	fs.writeFileSync(csrfFile, JSON.stringify({ csrf_token: csrfToken }))
 
 	await page.context().storageState({ path: authFile })
 })
