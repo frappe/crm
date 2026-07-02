@@ -11,7 +11,12 @@ async function shouldCapturePersona() {
     doctype: 'FCRM Settings',
     field: 'persona_captured',
   })
-  return !captured
+  if (captured) return false
+  // The wizard only feeds telemetry; skip it entirely if the user opted out.
+  const telemetryEnabled = await call(
+    'frappe.utils.telemetry.pulse.client.is_enabled',
+  )
+  return !!telemetryEnabled
 }
 
 const routes = [
