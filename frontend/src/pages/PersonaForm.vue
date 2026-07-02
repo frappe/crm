@@ -4,20 +4,13 @@
     :class="leaving ? 'opacity-0' : 'opacity-100'"
   >
     <div class="flex flex-1 flex-col justify-center px-4 py-10">
-      <div class="mb-10 flex flex-col items-center text-center">
-        <div class="flex items-center gap-x-2">
-          <CRMLogo class="size-7" />
-          <span
-            class="select-none text-3xl-semibold tracking-tight text-ink-gray-9"
-          >
-            {{ __('Frappe CRM') }}
-          </span>
-        </div>
-        <p class="mt-3 text-p-base text-ink-gray-6">
-          {{
-            __('Answer a few quick questions so we can set Frappe CRM up for you')
-          }}
-        </p>
+      <div class="mb-8 flex items-center justify-center gap-x-2">
+        <CRMLogo class="size-7" />
+        <span
+          class="select-none text-3xl-semibold tracking-tight text-ink-gray-9"
+        >
+          {{ __('Frappe CRM') }}
+        </span>
       </div>
 
       <Questionnaire
@@ -25,15 +18,15 @@
         :show-skip="false"
         @submit="submitPersona"
       />
-    </div>
 
-    <button
-      type="button"
-      class="absolute inset-x-0 bottom-0 py-4 text-center text-sm text-ink-gray-5 transition-colors hover:text-ink-gray-7"
-      @click="skipPersonaForm"
-    >
-      {{ __('Skip for now') }}
-    </button>
+      <button
+        type="button"
+        class="mx-auto mt-6 block text-sm text-ink-gray-5 transition-colors hover:text-ink-gray-7"
+        @click="skipPersonaForm"
+      >
+        {{ __('Skip for now') }}
+      </button>
+    </div>
   </div>
 </template>
 
