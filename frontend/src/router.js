@@ -4,7 +4,6 @@ import { usersStore } from '@/stores/users'
 import { sessionStore } from '@/stores/session'
 import { viewsStore } from '@/stores/views'
 
-// Run the onboarding persona check at most once per app load.
 let personaChecked = false
 
 async function shouldCapturePersona() {
@@ -163,7 +162,6 @@ router.beforeEach(async (to, from, next) => {
     }
   }
 
-  // First admin on a fresh site gets the onboarding persona wizard, once.
   if (
     isLoggedIn &&
     isCrmUser() &&
@@ -177,7 +175,7 @@ router.beforeEach(async (to, from, next) => {
         return next({ name: 'Onboarding' })
       }
     } catch (error) {
-      // Fail open — a transient API error must not block navigation.
+      // fail open
     }
   }
 

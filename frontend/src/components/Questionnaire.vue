@@ -138,8 +138,6 @@ const percent = computed(() => {
   return total.value ? Math.floor((current.value / total.value) * 100) : 0
 })
 
-// A question is answered when it has a value; multi-select needs a non-empty
-// array. Optional questions can always be moved past.
 const answered = computed(() => {
   const value = answers[question.value.key]
   if (question.value.multiple) return Array.isArray(value) && value.length > 0
@@ -147,8 +145,7 @@ const answered = computed(() => {
 })
 const canProceed = computed(() => question.value.optional || answered.value)
 
-// Single required questions auto-advance on select; multi-select and optional
-// questions wait for an explicit Next/Finish so users can pick more or skip.
+// Single required questions auto-advance; multi/optional wait for Next/Finish.
 const autoAdvance = (q) => !q.multiple && !q.optional
 
 function isSelected(option) {
@@ -188,7 +185,6 @@ function back() {
 
 function finish() {
   if (!canProceed.value || completed.value) return
-  // Fill the bar to 100% and hold a beat before handing off.
   completed.value = true
   setTimeout(() => emit('submit', { ...answers }), 700)
 }
