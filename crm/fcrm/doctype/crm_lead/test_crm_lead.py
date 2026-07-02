@@ -2,6 +2,8 @@
 # See license.txt
 
 import frappe
+from frappe.desk.form.assign_to import remove as assign_remove
+from frappe.tests import IntegrationTestCase
 
 from crm.fcrm.doctype.crm_lead.crm_lead import convert_to_deal
 from crm.tests import CRMTestCase as FrappeTestCase
@@ -506,6 +508,15 @@ class TestCRMLead(FrappeTestCase):
 		deal_assignees = deal.get_assigned_users()
 		self.assertIn("Administrator", deal_assignees)
 		self.assertIn("crm.user1@example.com", deal_assignees)
+
+	def test_owner_cleared_on_unassign(self):
+		"""Unassigning the current owner clears lead_owner"""
+		lead = create_lead(first_name="Owner", lead_owner="crm.user1@example.com")
+		self.assertEqual(lead.lead_owner, "crm.user1@example.com")
+
+		assign_remove("CRM Lead", lead.name, "crm.user1@example.com")
+
+		self.assertIsNone(frappe.db.get_value("CRM Lead", lead.name, "lead_owner"))
 
 
 def create_lead(**kwargs):
