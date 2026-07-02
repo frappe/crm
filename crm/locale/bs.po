@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2026-06-22 19:37+0553\n"
-"PO-Revision-Date: 2026-06-28 20:53\n"
+"POT-Creation-Date: 2026-06-28 10:20+0000\n"
+"PO-Revision-Date: 2026-07-01 21:10\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Bosnian\n"
 "MIME-Version: 1.0\n"
@@ -1833,6 +1833,10 @@ msgstr "Konvertirano"
 msgid "Copied to Clipboard"
 msgstr "Kopirano u međuspremnik"
 
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:156
+msgid "Could not create the Frappe CRM custom fields on {0} automatically. If it is running the latest ERPNext, enable <b>Frappe CRM Data Synchronization</b> in its CRM Settings, Otherwise check the Error Log."
+msgstr "Nije moguće automatski izraditi prilagođena polja za Prodajnu Podršku {0}. Ako se koristi najnovija verzija Sistema, omogućite <b>Sinhronizacija Podataka Prodajne Podrške</b> u Postavkama Prodajne Podrške. U suprotnom, provjerite zapisnik grešaka."
+
 #: frontend/src/components/Settings/Hierarchy/useRemoveNode.js:16
 msgid "Could not remove."
 msgstr "Nije moguće ukloniti."
@@ -2632,17 +2636,21 @@ msgstr "API-ji Web Stranice Sistema"
 msgid "ERPNext Site URL"
 msgstr "URL Web Stranice Sistema"
 
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:161
+msgid "ERPNext custom fields not created"
+msgstr "Prilagođena polja Sistema nisu izrađena"
+
 #: crm/fcrm/doctype/crm_product/crm_product.py:42
 msgid "ERPNext integration is active. Create an Item in ERPNext and it will appear in CRM Product automatically."
 msgstr "Integracija sa Sistemom je aktivna. Kreiraj Artikal u Sistemu i ona će se automatski pojaviti u Prodajnoj Podršci."
 
-#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:205
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:220
 msgid "ERPNext integration must be enabled on the same site"
 msgstr "Integracija sa Sistemom mora biti omogućena na istoj web stranici"
 
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:70
-#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:91
-#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:508
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:87
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:523
 msgid "ERPNext is not installed in the current site"
 msgstr "Sistem nije instaliran na trenutnoj Web Stranici"
 
@@ -2825,7 +2833,7 @@ msgstr "Šablon e-pošte"
 msgid "Email Templates"
 msgstr "Šablon e-pošte"
 
-#: frontend/src/components/Controls/EmailMultiSelect.vue:254
+#: frontend/src/components/Controls/EmailMultiSelect.vue:256
 msgid "Email already exists"
 msgstr "E-pošta već postoji"
 
@@ -5508,7 +5516,7 @@ msgstr "Logo Organizacije"
 msgid "Organization Name"
 msgstr "Naziv Poduzeća"
 
-#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:488
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:503
 msgid "Organization or a primary Contact is required to create a customer"
 msgstr "Za kreiranje klijenta potrebna je organizacija ili primarni kontakt"
 
@@ -8155,11 +8163,11 @@ msgstr "Bit ćete preusmjereni na stranicu za pozivanje korisnika, nesačuvane p
 msgid "You will need a Meta developer account and an access token to sync leads from Facebook. Read more"
 msgstr "Trebat će vam Meta developerski račun i pristupni token za sinhronizaciju potencijalnih klijenata s Facebooka. Pročitajte više"
 
-#: crm/api/todo.py:100
+#: crm/api/todo.py:112
 msgid "Your assignment on task {0} has been removed by {1}"
 msgstr "Vaš dodjelu za zadatak {0} je uklonio {1}"
 
-#: crm/api/todo.py:37 crm/api/todo.py:78
+#: crm/api/todo.py:49 crm/api/todo.py:90
 msgid "Your assignment on {0} {1} has been removed by {2}"
 msgstr "Vašu dodjelu {0} {1} je uklonio {2}"
 
@@ -8186,11 +8194,11 @@ msgstr "dodao"
 msgid "amber"
 msgstr "jantar"
 
-#: crm/api/todo.py:109
+#: crm/api/todo.py:121
 msgid "assigned a new task {0} to you"
 msgstr "vam je dodijelio novi zadatak {0}"
 
-#: crm/api/todo.py:89
+#: crm/api/todo.py:101
 msgid "assigned a {0} {1} to you"
 msgstr "vam je dodijelio {0} {1}"
 
@@ -8605,7 +8613,7 @@ msgstr "{0} (Nevažeći format vremena)"
 msgid "{0} M"
 msgstr "{0} M"
 
-#: crm/api/todo.py:41
+#: crm/api/todo.py:53
 msgid "{0} assigned a {1} {2} to you"
 msgstr "{0} vam je dodijelio {1} {2}"
 
