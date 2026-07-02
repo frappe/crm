@@ -110,8 +110,9 @@ const questions = computed(() => [
     ],
   },
   {
-    key: 'biggest_challenge',
-    title: __("What's your biggest challenge with sales today?"),
+    key: 'biggest_challenges',
+    title: __('What are your biggest challenges with sales today?'),
+    multiple: true,
     options: [
       { label: __('Capturing leads'), value: 'capturing_leads' },
       { label: __('Following up consistently'), value: 'following_up' },
