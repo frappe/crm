@@ -1,6 +1,8 @@
 <template>
-  <div class="relative mx-auto w-full max-w-2xl">
-    <div class="flex min-h-[22rem] flex-col">
+  <div
+    class="relative mx-auto w-full max-w-2xl rounded-2xl border border-outline-gray-2 bg-surface-white p-8"
+  >
+    <div class="flex min-h-[17rem] flex-col">
       <div class="flex items-center justify-between">
         <span class="text-xs font-medium uppercase tracking-wide text-ink-gray-5">
           {{ labels.progress(current + 1, total) }}
@@ -25,8 +27,8 @@
           <legend class="p-0 text-xl font-semibold text-ink-gray-9">
             {{ question.title }}
           </legend>
-          <p v-if="question.multiple" class="mt-1 text-sm text-ink-gray-5">
-            {{ labels.selectMultiple }}
+          <p class="mt-1 h-5 text-sm text-ink-gray-5">
+            {{ question.multiple ? labels.selectMultiple : '' }}
           </p>
           <div class="mt-5 flex flex-wrap gap-2.5">
             <Button
