@@ -29,50 +29,39 @@
             {{ labels.selectMultiple }}
           </p>
           <div class="mt-5 flex flex-wrap gap-2.5">
-            <label
+            <Button
               v-for="option in question.options"
               :key="String(option.value)"
-              class="inline-flex cursor-pointer items-center rounded-full border px-4 py-2 text-sm transition-colors focus-within:ring-2 focus-within:ring-outline-gray-3 focus-within:ring-offset-1"
-              :class="
-                isSelected(option)
-                  ? 'border-transparent bg-surface-gray-10 text-ink-white'
-                  : 'border-outline-gray-2 bg-surface-white text-ink-gray-8 hover:border-outline-gray-3 hover:bg-surface-gray-2'
-              "
-            >
-              <input
-                :type="question.multiple ? 'checkbox' : 'radio'"
-                class="sr-only"
-                :name="question.key"
-                :value="option.value"
-                :checked="isSelected(option)"
-                @change="select(option)"
-              />
-              {{ option.label }}
-            </label>
+              :label="option.label"
+              :variant="isSelected(option) ? 'solid' : 'outline'"
+              size="md"
+              class="!rounded-full"
+              @click="select(option)"
+            />
           </div>
         </fieldset>
       </Transition>
     </div>
 
-    <button
+    <Button
       v-if="current > 0"
-      type="button"
-      class="absolute right-full top-1/3 mr-4 -translate-y-1/2 inline-flex items-center gap-1 rounded-lg border border-outline-gray-2 bg-surface-white p-1.5 text-sm font-medium text-ink-gray-7 transition-colors hover:border-outline-gray-3 hover:bg-surface-gray-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-outline-gray-3 focus-visible:ring-offset-1"
+      variant="outline"
+      class="absolute right-full top-1/3 mr-4 -translate-y-1/2"
       :aria-label="labels.back"
       @click="back"
     >
       <LucideChevronLeft class="size-4" />
-    </button>
+    </Button>
 
-    <button
+    <Button
       v-if="canProceed && current < total - 1"
-      type="button"
-      class="absolute left-full top-1/3 ml-4 -translate-y-1/2 inline-flex items-center gap-1 rounded-lg border border-outline-gray-2 bg-surface-white p-1.5 text-sm font-medium text-ink-gray-7 transition-colors hover:border-outline-gray-3 hover:bg-surface-gray-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-outline-gray-3 focus-visible:ring-offset-1"
+      variant="outline"
+      class="absolute left-full top-1/3 ml-4 -translate-y-1/2"
       :aria-label="labels.next"
       @click="next"
     >
       <LucideChevronRight class="size-4" />
-    </button>
+    </Button>
 
     <div class="mt-8 flex justify-center">
       <Button
