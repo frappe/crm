@@ -33,9 +33,14 @@
               v-for="option in question.options"
               :key="String(option.value)"
               :label="option.label"
-              :variant="isSelected(option) ? 'solid' : 'outline'"
+              variant="outline"
               size="md"
-              class="!rounded-full"
+              class="!rounded-full !border"
+              :class="
+                isSelected(option)
+                  ? '!border-transparent !bg-surface-gray-9 !text-ink-white hover:!bg-surface-gray-8'
+                  : ''
+              "
               @click="select(option)"
             />
           </div>
