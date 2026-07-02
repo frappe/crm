@@ -1,7 +1,19 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { call } from 'frappe-ui'
 import { usersStore } from '@/stores/users'
 import { sessionStore } from '@/stores/session'
 import { viewsStore } from '@/stores/views'
+
+// Run the onboarding persona check at most once per app load.
+let personaChecked = false
+
+async function shouldCapturePersona() {
+  const captured = await call('frappe.client.get_single_value', {
+    doctype: 'FCRM Settings',
+    field: 'persona_captured',
+  })
+  return !captured
+}
 
 const routes = [
   {
@@ -112,6 +124,11 @@ const routes = [
     component: () => import('@/pages/Welcome.vue'),
   },
   {
+    path: '/onboarding',
+    name: 'Onboarding',
+    component: () => import('@/pages/PersonaForm.vue'),
+  },
+  {
     path: '/:invalidpath',
     name: 'Invalid Page',
     component: () => import('@/pages/InvalidPage.vue'),
@@ -135,14 +152,32 @@ let router = createRouter({
 router.beforeEach(async (to, from, next) => {
   router.previousRoute = from
 
-  const { isLoggedIn } = sessionStore()
-  const { users, isCrmUser } = usersStore()
+  const { isLoggedIn, user } = sessionStore()
+  const { users, isCrmUser, isAdmin } = usersStore()
 
   if (isLoggedIn && !users.fetched) {
     try {
       await users.promise
     } catch (error) {
       console.error('Error loading users', error)
+    }
+  }
+
+  // First admin on a fresh site gets the onboarding persona wizard, once.
+  if (
+    isLoggedIn &&
+    isCrmUser() &&
+    !personaChecked &&
+    to.name !== 'Onboarding' &&
+    (isAdmin() || user === 'Administrator')
+  ) {
+    personaChecked = true
+    try {
+      if (await shouldCapturePersona()) {
+        return next({ name: 'Onboarding' })
+      }
+    } catch (error) {
+      // Fail open — a transient API error must not block navigation.
     }
   }
 
