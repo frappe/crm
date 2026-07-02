@@ -4,14 +4,20 @@
   >
     <div class="flex min-h-[17rem] flex-col">
       <div class="flex items-center justify-between">
-        <span class="text-xs font-medium uppercase tracking-wide text-ink-gray-5">
+        <span
+          class="text-xs font-medium uppercase tracking-wide text-ink-gray-5"
+        >
           {{ labels.progress(current + 1, total) }}
         </span>
-        <span class="text-xs font-medium uppercase tracking-wide text-ink-gray-5">
+        <span
+          class="text-xs font-medium uppercase tracking-wide text-ink-gray-5"
+        >
           {{ labels.complete(percent) }}
         </span>
       </div>
-      <div class="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-surface-gray-3">
+      <div
+        class="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-surface-gray-3"
+      >
         <div
           class="h-full rounded-full bg-surface-gray-10 transition-all duration-500 ease-out"
           :style="{ width: `${percent}%` }"
@@ -154,7 +160,11 @@ function select(option) {
   if (question.value.multiple) {
     const value = Array.isArray(answers[key]) ? [...answers[key]] : []
     const index = value.indexOf(option.value)
-    index === -1 ? value.push(option.value) : value.splice(index, 1)
+    if (index === -1) {
+      value.push(option.value)
+    } else {
+      value.splice(index, 1)
+    }
     answers[key] = value
     return
   }
@@ -189,7 +199,9 @@ function focusQuestion(el) {
 <style scoped>
 .q-fade-enter-active,
 .q-fade-leave-active {
-  transition: opacity 0.15s ease, transform 0.15s ease;
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
 }
 .q-fade-enter-from {
   opacity: 0;
