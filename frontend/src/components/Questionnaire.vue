@@ -117,8 +117,8 @@ const props = defineProps({
 const emit = defineEmits(['submit', 'skip'])
 
 const labels = computed(() => ({
-  progress: (n, total) => __('Question {0} of {1}').format(n, total),
-  complete: (pct) => __('{0}% complete').format(pct),
+  progress: (n, total) => __('Question {0} of {1}', [n, total]),
+  complete: (pct) => __('{0}% complete', [pct]),
   selectMultiple: __('Select all that apply'),
   back: __('Back to previous question'),
   next: __('Next question'),
