@@ -37,6 +37,7 @@ import { call, usePageMeta } from 'frappe-ui'
 import { useTelemetry } from 'frappe-ui/frappe'
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { PERSONA_DONE_KEY } from '@/router'
 
 const router = useRouter()
 const { capture } = useTelemetry()
@@ -45,6 +46,8 @@ const FADE_MS = 300
 
 const leaveHome = async () => {
   leaving.value = true
+  // Mark done client-side so a failed server persist can't re-loop the wizard.
+  localStorage.setItem(PERSONA_DONE_KEY, '1')
   const fade = new Promise((resolve) => setTimeout(resolve, FADE_MS))
   const persist = call('frappe.client.set_value', {
     doctype: 'FCRM Settings',
