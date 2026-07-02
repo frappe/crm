@@ -112,7 +112,10 @@ const questions = computed(() => [
     options: [
       { label: __('Capturing leads'), value: 'capturing_leads' },
       { label: __('Following up consistently'), value: 'following_up' },
-      { label: __('Keeping my pipeline organized'), value: 'pipeline_organized' },
+      {
+        label: __('Keeping my pipeline organized'),
+        value: 'pipeline_organized',
+      },
       {
         label: __('Managing contacts and companies'),
         value: 'managing_contacts',
