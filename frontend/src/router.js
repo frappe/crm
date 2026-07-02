@@ -5,8 +5,11 @@ import { sessionStore } from '@/stores/session'
 import { viewsStore } from '@/stores/views'
 
 let personaChecked = false
+export const PERSONA_DONE_KEY = 'crm_persona_captured'
 
 async function shouldCapturePersona() {
+  // Client-side flag guards against re-prompting if the server persist failed.
+  if (localStorage.getItem(PERSONA_DONE_KEY)) return false
   const captured = await call('frappe.client.get_single_value', {
     doctype: 'FCRM Settings',
     field: 'persona_captured',
@@ -162,12 +165,19 @@ router.beforeEach(async (to, from, next) => {
     }
   }
 
+  const isAdminUser = isAdmin() || user === 'Administrator'
+
+  // Only admins may reach the onboarding wizard, even via a direct URL.
+  if (isLoggedIn && to.name === 'Onboarding' && !isAdminUser) {
+    return next({ name: 'Home' })
+  }
+
   if (
     isLoggedIn &&
     isCrmUser() &&
     !personaChecked &&
     to.name !== 'Onboarding' &&
-    (isAdmin() || user === 'Administrator')
+    isAdminUser
   ) {
     personaChecked = true
     try {
