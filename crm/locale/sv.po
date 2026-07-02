@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-06-28 10:20+0000\n"
-"PO-Revision-Date: 2026-07-01 21:09\n"
+"PO-Revision-Date: 2026-07-02 21:25\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Swedish\n"
 "MIME-Version: 1.0\n"
@@ -1835,7 +1835,7 @@ msgstr "Kopierad till Urklipp"
 
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:156
 msgid "Could not create the Frappe CRM custom fields on {0} automatically. If it is running the latest ERPNext, enable <b>Frappe CRM Data Synchronization</b> in its CRM Settings, Otherwise check the Error Log."
-msgstr "Kunde inte skapa Säljstöd anpassade fält {0} automatiskt. Om det körs på senaste Affärssystem, aktivera <b>Säljstöd Data Synkronisering</b> i Säljstöd Inställningar, annars kontrollera fellogg."
+msgstr "Kunde inte skapa Säljstöd anpassade fält {0} automatiskt. Om det körs på senaste Affärssystem, aktivera <b>Säljstöd Data Synkronisering</b> i Säljstöd Inställningar, eller kontrollera fellogg."
 
 #: frontend/src/components/Settings/Hierarchy/useRemoveNode.js:16
 msgid "Could not remove."
