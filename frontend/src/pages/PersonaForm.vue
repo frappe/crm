@@ -50,8 +50,6 @@ const { capture } = useTelemetry()
 const leaving = ref(false)
 const FADE_MS = 300
 
-// Flip the flag ourselves so a reload can't reopen the wizard, fade out, then
-// go home. Fail open on error — a stuck flag must not trap the user here.
 const leaveHome = async () => {
   leaving.value = true
   const fade = new Promise((resolve) => setTimeout(resolve, FADE_MS))
