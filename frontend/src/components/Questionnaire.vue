@@ -35,12 +35,8 @@
               :label="option.label"
               variant="outline"
               size="md"
-              class="!rounded-full !border"
-              :class="
-                isSelected(option)
-                  ? '!border-transparent !bg-surface-gray-9 !text-ink-white hover:!bg-surface-gray-8'
-                  : ''
-              "
+              class="!rounded-full"
+              :class="isSelected(option) ? '!bg-surface-gray-2' : ''"
               @click="select(option)"
             />
           </div>
