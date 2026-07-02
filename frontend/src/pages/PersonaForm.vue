@@ -94,7 +94,7 @@ const questions = computed(() => [
     multiple: true,
     options: [
       { label: __('Website forms'), value: 'website_forms' },
-      { label: __('Meta (Facebook/Instagram) Lead Ads'), value: 'meta_ads' },
+      { label: __('Facebook/Instagram Ads'), value: 'meta_ads' },
       { label: __('Google Ads'), value: 'google_ads' },
       { label: __('WhatsApp'), value: 'whatsapp' },
       { label: __('Email'), value: 'email' },
