@@ -1,34 +1,14 @@
 <template>
   <div
-    class="relative mx-auto w-full max-w-2xl rounded-2xl border border-outline-gray-2 bg-surface-white p-8"
+    class="relative mx-auto w-full max-w-2xl rounded-2xl bg-surface-white p-4"
   >
     <div class="flex min-h-[17rem] flex-col">
-      <div class="flex items-center justify-between">
-        <span
-          class="text-xs font-medium uppercase tracking-wide text-ink-gray-5"
-        >
-          {{ labels.progress(current + 1, total) }}
-        </span>
-        <span
-          class="text-xs font-medium uppercase tracking-wide text-ink-gray-5"
-        >
-          {{ labels.complete(percent) }}
-        </span>
-      </div>
-      <div
-        class="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-surface-gray-3"
-      >
-        <div
-          class="h-full rounded-full bg-surface-gray-10 transition-all duration-500 ease-out"
-          :style="{ width: `${percent}%` }"
-        />
-      </div>
-
+      <CRMLogo class="size-8" />
       <Transition name="q-fade" mode="out-in" @after-enter="focusQuestion">
         <fieldset
           :key="question.key"
           tabindex="-1"
-          class="mt-6 mx-0 min-w-0 border-0 p-0 focus:outline-none"
+          class="mt-6 mx-0 flex min-w-0 flex-1 flex-col justify-center border-0 p-0 focus:outline-none"
         >
           <legend class="p-0 text-xl font-semibold text-ink-gray-9">
             {{ question.title }}
@@ -43,8 +23,8 @@
               :label="option.label"
               variant="outline"
               size="md"
-              class="!rounded-full"
-              :class="isSelected(option) ? '!bg-surface-gray-2' : ''"
+              class="!rounded-full bg-surface-gray-1 hover:bg-surface-gray-3"
+              :class="isSelected(option) ? ['!bg-black text-white'] : ''"
               @click="select(option)"
             />
           </div>
@@ -52,44 +32,36 @@
       </Transition>
     </div>
 
-    <Button
-      v-if="current > 0"
-      variant="outline"
-      class="absolute right-full top-1/3 mr-4 -translate-y-1/2"
-      :aria-label="labels.back"
-      @click="back"
-    >
-      <LucideChevronLeft class="size-4" />
-    </Button>
+    <div class="mt-6 flex items-center justify-between">
+      <div class="text-sm font-medium text-ink-gray-5">
+        {{ labels.progress(current + 1, total) }}
+      </div>
 
-    <Button
-      v-if="canProceed && current < total - 1"
-      variant="outline"
-      class="absolute left-full top-1/3 ml-4 -translate-y-1/2"
-      :aria-label="labels.next"
-      @click="next"
-    >
-      <LucideChevronRight class="size-4" />
-    </Button>
+      <div class="flex items-center gap-2">
+        <Button
+          :disabled="current < 1"
+          variant="solid"
+          label="Previous"
+          @click="back"
+        />
 
-    <div class="mt-8 flex justify-center">
-      <Button
-        v-if="current === total - 1"
-        variant="solid"
-        :label="labels.finish"
-        :disabled="!canProceed"
-        @click="finish"
-      />
+        <Button
+          v-if="current < total - 1"
+          variant="solid"
+          :disabled="!canProceed"
+          icon-right="lucide-arrow-right"
+          label="Next"
+          @click="next"
+        />
+        <Button
+          v-if="current === total - 1"
+          :disabled="!canProceed"
+          variant="solid"
+          :label="labels.finish"
+          @click="finish"
+        />
+      </div>
     </div>
-
-    <button
-      v-if="showSkip"
-      type="button"
-      class="mx-auto mt-6 block text-sm text-ink-gray-5 transition-colors hover:text-ink-gray-7"
-      @click="emit('skip')"
-    >
-      {{ labels.skip }}
-    </button>
   </div>
 </template>
 
@@ -115,7 +87,7 @@ const props = defineProps({
 const emit = defineEmits(['submit', 'skip'])
 
 const labels = computed(() => ({
-  progress: (n, total) => __('Question {0} of {1}', [n, total]),
+  progress: (n, total) => __('Step {0} of {1}', [n, total]),
   complete: (pct) => __('{0}% complete', [pct]),
   selectMultiple: __('Select all that apply'),
   back: __('Back to previous question'),
@@ -131,10 +103,6 @@ const answers = reactive({})
 
 const total = computed(() => props.questions.length)
 const question = computed(() => props.questions[current.value])
-const percent = computed(() => {
-  if (completed.value) return 100
-  return total.value ? Math.floor((current.value / total.value) * 100) : 0
-})
 
 const answered = computed(() => {
   const value = answers[question.value.key]
