@@ -4,19 +4,16 @@
     :class="leaving ? 'opacity-0' : 'opacity-100'"
   >
     <div class="flex flex-1 flex-col justify-center px-4 py-6">
-
       <Questionnaire
         :questions="questions"
         :show-skip="false"
         @submit="submitPersona"
       />
-
     </div>
   </div>
 </template>
 
 <script setup>
-
 import Questionnaire from '@/components/Questionnaire.vue'
 import { call, usePageMeta } from 'frappe-ui'
 import { useTelemetry } from 'frappe-ui/frappe'
@@ -52,7 +49,6 @@ const submitPersona = (answers) => {
   capture('onboarding_persona', answers)
   leaveHome()
 }
-
 
 const questions = computed(() => [
   {
