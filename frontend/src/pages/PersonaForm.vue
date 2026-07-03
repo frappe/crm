@@ -3,7 +3,7 @@
     class="relative flex min-h-screen flex-col overflow-y-auto bg-surface-gray-1 transition-opacity duration-300 ease-out"
     :class="leaving ? 'opacity-0' : 'opacity-100'"
   >
-    <div class="flex flex-1 flex-col justify-center px-4 py-6">
+    <div class="flex flex-1 flex-col justify-start px-4 pt-24">
       <Questionnaire
         :questions="questions"
         :show-skip="false"
