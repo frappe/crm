@@ -5,9 +5,9 @@ import json
 
 import frappe
 from frappe import _
-from frappe.desk.form.assign_to import add as assign
+from frappe.desk.form.assign_to import _add as assign
 from frappe.model.document import Document
-from frappe.utils import has_gravatar, validate_email_address
+from frappe.utils import validate_email_address
 
 from crm.fcrm.doctype.crm_service_level_agreement.utils import get_sla
 from crm.fcrm.doctype.crm_status_change_log.crm_status_change_log import (
@@ -140,9 +140,6 @@ class CRMLead(Document):
 
 			if self.email == self.lead_owner:
 				frappe.throw(_("Lead Owner cannot be same as the Lead Email Address"))
-
-			if self.is_new() or not self.image:
-				self.image = has_gravatar(self.email)
 
 	def validate_lost_reason(self):
 		"""

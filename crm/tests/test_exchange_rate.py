@@ -4,7 +4,6 @@
 from unittest.mock import MagicMock, patch
 
 import frappe
-from frappe.tests.utils import FrappeTestCase
 
 from crm.api.exchange_rate import (
 	_fetch_from_exchangerate_api,
@@ -13,6 +12,7 @@ from crm.api.exchange_rate import (
 	_fetch_from_frankfurter,
 	get_exchange_rate,
 )
+from crm.tests import CRMTestCase as FrappeTestCase
 
 
 def _make_response(ok: bool, json_data: dict) -> MagicMock:

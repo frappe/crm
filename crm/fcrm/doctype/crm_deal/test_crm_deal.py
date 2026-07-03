@@ -2,7 +2,6 @@
 # See license.txt
 
 import frappe
-from frappe.tests.utils import FrappeTestCase
 
 from crm.fcrm.doctype.crm_deal.crm_deal import (
 	add_contact,
@@ -10,6 +9,7 @@ from crm.fcrm.doctype.crm_deal.crm_deal import (
 	remove_contact,
 	set_primary_contact,
 )
+from crm.tests import CRMTestCase as FrappeTestCase
 
 
 class TestCRMDeal(FrappeTestCase):

@@ -8,8 +8,11 @@ sudo apt update
 sudo apt remove mysql-server mysql-client
 sudo apt install libcups2-dev redis-server mariadb-client libmariadb-dev
 
+# Frappe (and erpnext) branch to test against; set by CI matrix, defaults to develop.
+FRAPPE_BRANCH="${FRAPPE_BRANCH:-develop}"
+
 pip install frappe-bench
-git clone "https://github.com/frappe/frappe" --branch "version-15" --depth 1 
+git clone "https://github.com/frappe/frappe" --branch "${FRAPPE_BRANCH}" --depth 1
 bench init --skip-assets --frappe-path ~/frappe --python "$(which python)" frappe-bench
 
 mkdir ~/frappe-bench/sites/test_site
@@ -41,8 +44,20 @@ sed -i 's/socketio:/# socketio:/g' Procfile
 sed -i 's/redis_socketio:/# redis_socketio:/g' Procfile
 
 bench get-app crm "${GITHUB_WORKSPACE}"
+
+# Only pull erpnext when the integration is under test, to keep other runs fast.
+if [ "${INSTALL_ERPNEXT}" = "true" ]; then
+    bench get-app erpnext --branch "${FRAPPE_BRANCH}"
+fi
+
 bench setup requirements --dev
 
 bench start &>> ~/frappe-bench/bench_start.log &
 CI=Yes bench build --app frappe &
 bench --site test_site reinstall --yes
+
+if [ "${INSTALL_ERPNEXT}" = "true" ]; then
+    bench --verbose --site test_site install-app erpnext crm
+else
+    bench --verbose --site test_site install-app crm
+fi

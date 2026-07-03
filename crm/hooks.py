@@ -49,7 +49,10 @@ require_type_annotated_api_methods = True
 # page_js = {"page" : "public/js/file.js"}
 
 # include js in doctype views
-# doctype_js = {"doctype" : "public/js/doctype.js"}
+doctype_js = {
+	"Quotation": "public/js/erpnext_quotation_prefill.js",
+	"Sales Order": "public/js/erpnext_sales_order_customer.js",
+}
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
@@ -176,6 +179,30 @@ doc_events = {
 			"crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.create_customer_in_erpnext"
 		],
 	},
+	"Sales Order": {
+		"before_validate": [
+			"crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.create_customer_on_sales_order"
+		],
+	},
+	"Item": {
+		"after_insert": ["crm.integrations.erpnext.item.after_insert"],
+		"on_update": ["crm.integrations.erpnext.item.on_update"],
+		"before_rename": ["crm.integrations.erpnext.item.before_rename"],
+		"after_rename": ["crm.integrations.erpnext.item.after_rename"],
+		"on_trash": ["crm.integrations.erpnext.item.on_trash"],
+	},
+	"User Permission": {
+		"before_validate": ["crm.integrations.erpnext.user_permission.before_validate"],
+		"after_insert": ["crm.integrations.erpnext.user_permission.after_insert"],
+		"on_update": ["crm.integrations.erpnext.user_permission.on_update"],
+		"on_trash": ["crm.integrations.erpnext.user_permission.on_trash"],
+	},
+	"DocShare": {
+		"before_validate": ["crm.integrations.erpnext.doc_share.before_validate"],
+		"after_insert": ["crm.integrations.erpnext.doc_share.after_insert"],
+		"on_update": ["crm.integrations.erpnext.doc_share.on_update"],
+		"on_trash": ["crm.integrations.erpnext.doc_share.on_trash"],
+	},
 	"User": {
 		"before_validate": ["crm.api.live_demo.validate_user"],
 		"validate_reset_password": ["crm.api.live_demo.validate_reset_password"],
@@ -186,6 +213,13 @@ doc_events = {
 # ---------------
 
 scheduler_events = {
+	"all": ["crm.api.event.trigger_offset_event_notifications"],
+	"hourly": ["crm.api.event.trigger_hourly_event_notifications"],
+	"daily": [
+		"crm.api.event.trigger_daily_event_notifications",
+		"crm.fcrm.doctype.crm_view_settings.crm_view_settings.clear_old_versions",
+	],
+	"weekly": ["crm.api.event.trigger_weekly_event_notifications"],
 	"daily_long": ["crm.lead_syncing.background_sync.sync_leads_from_sources_daily"],
 	"hourly_long": ["crm.lead_syncing.background_sync.sync_leads_from_sources_hourly"],
 	"monthly_long": ["crm.lead_syncing.background_sync.sync_leads_from_sources_monthly"],
@@ -265,9 +299,12 @@ ignore_links_on_delete = ["Failed Lead Sync Log"]
 # "crm.auth.validate"
 # ]
 
+on_login = "crm.api.onboarding.complete_setup_for_fc_site"
+
 after_migrate = [
 	"crm.fcrm.doctype.fcrm_settings.fcrm_settings.after_migrate",
 	"crm.api.whatsapp.add_roles",
+	"crm.install.add_default_scripts",
 ]
 
 standard_dropdown_items = [

@@ -2,7 +2,8 @@ import json
 import os
 
 import frappe
-from frappe.tests.utils import FrappeTestCase
+
+from crm.tests import CRMTestCase as FrappeTestCase
 
 
 class TestDemoData(FrappeTestCase):

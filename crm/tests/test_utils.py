@@ -2,8 +2,8 @@ import time
 from unittest.mock import patch
 
 import frappe
-from frappe.tests.utils import FrappeTestCase
 
+from crm.tests import CRMTestCase as FrappeTestCase
 from crm.utils import (
 	_get_communication_status,
 	_should_update_modified,
