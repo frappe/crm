@@ -2,13 +2,13 @@
   <div
     class="relative mx-auto w-full max-w-2xl rounded-2xl bg-surface-white p-4"
   >
-    <div class="flex min-h-[17rem] flex-col">
+    <div class="flex flex-col">
       <CRMLogo class="size-8" />
       <Transition name="q-fade" mode="out-in" @after-enter="focusQuestion">
         <fieldset
           :key="question.key"
           tabindex="-1"
-          class="mt-6 mx-0 flex min-w-0 flex-1 flex-col justify-center border-0 p-0 focus:outline-none"
+          class="mt-6 mx-0 min-w-0 border-0 p-0 focus:outline-none"
         >
           <legend class="p-0 text-xl font-semibold text-ink-gray-9">
             {{ question.title }}
@@ -40,8 +40,9 @@
       <div class="flex items-center gap-2">
         <Button
           :disabled="current < 1"
-          variant="solid"
+          variant="subtle"
           label="Previous"
+          icon-left="lucide-arrow-left"
           @click="back"
         />
 
