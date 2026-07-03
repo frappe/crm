@@ -61,9 +61,7 @@ doctype_js = {
 # ----------
 
 # application home page (will override Website Settings)
-# Set dynamically on login (see on_login below): CRM becomes the landing page only
-# when it is the sole product app installed, otherwise users fall through to the desk.
-# home_page = "crm"
+# home_page = "login"
 
 # website user home page (by Role)
 # role_home_page = {
@@ -208,7 +206,6 @@ doc_events = {
 		"on_trash": ["crm.integrations.erpnext.doc_share.on_trash"],
 	},
 	"User": {
-		"after_insert": ["crm.api.onboarding.complete_setup_for_fc_site"],
 		"before_validate": ["crm.api.live_demo.validate_user"],
 		"validate_reset_password": ["crm.api.live_demo.validate_reset_password"],
 	},
@@ -303,8 +300,6 @@ ignore_links_on_delete = ["Failed Lead Sync Log"]
 # auth_hooks = [
 # "crm.auth.validate"
 # ]
-
-on_login = ["crm.api.onboarding.set_home_page_on_login"]
 
 after_migrate = [
 	"crm.fcrm.doctype.fcrm_settings.fcrm_settings.after_migrate",
