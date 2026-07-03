@@ -50,7 +50,7 @@ def get_linked_deals(contact: str):
 				"name",
 				"organization",
 				"currency",
-				"annual_revenue",
+				"deal_value",
 				"status",
 				"email",
 				"mobile_no",
