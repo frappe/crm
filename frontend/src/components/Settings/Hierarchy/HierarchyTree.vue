@@ -82,7 +82,7 @@ const iconRef = ref(null)
 const hasChildren = computed(() => props.node.children?.length > 0)
 
 function toggleCollapsed(event) {
-  event.stopPropagation()
+  event?.stopPropagation()
   if (hasChildren.value) isCollapsed.value = !isCollapsed.value
 }
 
