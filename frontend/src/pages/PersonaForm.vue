@@ -3,15 +3,7 @@
     class="relative flex min-h-screen flex-col overflow-y-auto bg-surface-gray-1 transition-opacity duration-300 ease-out"
     :class="leaving ? 'opacity-0' : 'opacity-100'"
   >
-    <div class="flex flex-1 flex-col justify-center px-4 py-10">
-      <div class="mb-8 flex items-center justify-center gap-x-2">
-        <CRMLogo class="size-7" />
-        <span
-          class="select-none text-3xl-semibold tracking-tight text-ink-gray-9"
-        >
-          {{ __('Frappe CRM') }}
-        </span>
-      </div>
+    <div class="flex flex-1 flex-col justify-center px-4 py-6">
 
       <Questionnaire
         :questions="questions"
@@ -19,19 +11,12 @@
         @submit="submitPersona"
       />
 
-      <button
-        type="button"
-        class="mx-auto mt-6 block text-sm text-ink-gray-5 transition-colors hover:text-ink-gray-7"
-        @click="skipPersonaForm"
-      >
-        {{ __('Skip for now') }}
-      </button>
     </div>
   </div>
 </template>
 
 <script setup>
-import CRMLogo from '@/components/Icons/CRMLogo.vue'
+
 import Questionnaire from '@/components/Questionnaire.vue'
 import { call, usePageMeta } from 'frappe-ui'
 import { useTelemetry } from 'frappe-ui/frappe'
@@ -68,10 +53,6 @@ const submitPersona = (answers) => {
   leaveHome()
 }
 
-const skipPersonaForm = () => {
-  capture('onboarding_persona_skipped')
-  leaveHome()
-}
 
 const questions = computed(() => [
   {
