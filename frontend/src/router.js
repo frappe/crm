@@ -172,9 +172,11 @@ router.beforeEach(async (to, from, next) => {
 
   const isAdminUser = isAdmin() || user === 'Administrator'
 
-  // Only admins may reach the onboarding wizard, even via a direct URL.
-  if (isLoggedIn && to.name === 'Onboarding' && !isAdminUser) {
-    return next({ name: 'Home' })
+  // Only admins who haven't finished may reach the wizard, even via direct URL.
+  if (isLoggedIn && to.name === 'Onboarding') {
+    if (!isAdminUser || !(await shouldCapturePersona())) {
+      return next({ name: 'Home' })
+    }
   }
 
   if (
