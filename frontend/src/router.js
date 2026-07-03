@@ -174,7 +174,11 @@ router.beforeEach(async (to, from, next) => {
 
   // Only admins who haven't finished may reach the wizard, even via direct URL.
   if (isLoggedIn && to.name === 'Onboarding') {
-    if (!isAdminUser || !(await shouldCapturePersona())) {
+    try {
+      if (!isAdminUser || !(await shouldCapturePersona())) {
+        return next({ name: 'Home' })
+      }
+    } catch {
       return next({ name: 'Home' })
     }
   }
