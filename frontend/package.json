@@ -23,7 +23,7 @@
     "@vitejs/plugin-vue-jsx": "^4.2.0",
     "@vueuse/integrations": "^10.3.0",
     "dompurify": "^3.3.3",
-    "frappe-ui": "1.0.0-beta.11",
+    "frappe-ui": "1.0.0-beta.19",
     "gemoji": "^8.1.0",
     "leaflet": "^1.9.4",
     "leaflet-draw": "^1.0.4",
