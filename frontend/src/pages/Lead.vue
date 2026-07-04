@@ -62,7 +62,7 @@
     </Tabs>
     <Resizer class="flex flex-col justify-between border-l" side="right">
       <div
-        class="flex h-[45px] cursor-copy items-center border-b px-5 py-2.5 text-lg font-medium text-ink-gray-9"
+        class="flex h-[45px] cursor-copy items-center border-b px-5 py-2.5 text-lg-medium text-ink-gray-9"
         @click="copyToClipboard(leadId)"
       >
         {{ __(leadId) }}
@@ -117,7 +117,7 @@
             </div>
             <div class="flex flex-col gap-2.5 truncate">
               <Tooltip :text="doc.lead_name || __('Set First Name')">
-                <div class="truncate text-2xl font-medium text-ink-gray-9">
+                <div class="truncate text-3xl-medium text-ink-gray-9">
                   {{ title }}
                 </div>
               </Tooltip>
@@ -168,7 +168,7 @@
                   :tooltip="__('Delete')"
                   variant="subtle"
                   theme="red"
-                  icon="trash-2"
+                  icon="lucide-trash-2"
                   @click="deleteLead"
                 />
               </div>

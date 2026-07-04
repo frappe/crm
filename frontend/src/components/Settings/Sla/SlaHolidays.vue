@@ -1,7 +1,7 @@
 <template>
   <div class="flex items-center justify-between">
     <div class="flex flex-col gap-1">
-      <div class="text-lg font-semibold text-ink-gray-8">
+      <div class="text-lg-semibold text-ink-gray-8">
         {{ __('Work Schedule & Holidays') }}
       </div>
       <div class="text-p-sm text-ink-gray-6 max-w-lg">
@@ -22,7 +22,7 @@
       </template>
       <template #body>
         <div
-          class="my-2 min-w-40 rounded-lg bg-surface-modal shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
+          class="my-2 min-w-40 rounded-lg bg-surface-elevation-2 shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
         >
           <div class="max-h-52 overflow-y-auto p-1">
             <div
@@ -45,7 +45,7 @@
               <div class="flex cursor-pointer items-center gap-1">
                 <Button
                   variant="ghost"
-                  icon="edit"
+                  icon="lucide-edit"
                   @click.stop="editHolidayList(holiday)"
                 />
               </div>
@@ -58,13 +58,13 @@
             </div>
           </div>
           <div
-            class="flex flex-col gap-1 border-t border-outline-gray-modals pt-1.5 p-1"
+            class="flex flex-col gap-1 border-t border-outline-elevation-2 pt-1.5 p-1"
           >
             <Button
               class="w-full !justify-start !text-ink-gray-5"
               variant="ghost"
               :label="__('Create New Holiday List')"
-              icon-left="plus"
+              icon-left="lucide-plus"
               @click="createNewHolidayList()"
             />
           </div>
@@ -137,7 +137,7 @@
           <div class="flex justify-end">
             <Dropdown placement="right" :options="dropdownOptions(row)">
               <Button
-                icon="more-horizontal"
+                icon="lucide-more-horizontal"
                 variant="ghost"
                 @click="isConfirmingDelete = false"
               />
@@ -161,7 +161,7 @@
         v-if="slaData.working_hours?.length < 7"
         variant="subtle"
         :label="__('Add Row')"
-        icon-left="plus"
+        icon-left="lucide-plus"
         @click="addWorkDay"
       />
       <ErrorMessage :message="slaDataErrors.working_hours" />

@@ -11,20 +11,26 @@
           :class="labelClass"
           @click="collapsible && toggle()"
         >
-          <FeatherIcon
+          <span
             v-if="collapsible && collapseIconPosition === 'left'"
-            name="chevron-right"
-            class="h-4 transition-all duration-300 ease-in-out"
+            class="lucide-chevron-right h-4 transition-all duration-300 ease-in-out"
             :class="{ 'rotate-90': opened }"
+            aria-hidden="true"
           />
           <span>
             {{ __(label) || __('Untitled') }}
           </span>
-          <FeatherIcon
+          <Badge
+            v-if="count"
+            :label="count"
+            :variant="countVariant"
+            :theme="countTheme"
+          />
+          <span
             v-if="collapsible && collapseIconPosition === 'right'"
-            name="chevron-right"
-            class="h-4 transition-all duration-300 ease-in-out"
+            class="lucide-chevron-right h-4 transition-all duration-300 ease-in-out"
             :class="{ 'rotate-90': opened }"
+            aria-hidden="true"
           />
         </div>
         <slot name="actions"></slot>
@@ -45,10 +51,14 @@
   </div>
 </template>
 <script setup>
+import { Badge } from 'frappe-ui'
 import { ref } from 'vue'
 
 const props = defineProps({
   label: { type: String, default: '' },
+  count: { type: [String, Number], default: '' },
+  countVariant: { type: String, default: 'subtle' },
+  countTheme: { type: String, default: 'gray' },
   hideLabel: { type: Boolean, default: false },
   opened: { type: Boolean, default: true },
   collapsible: { type: Boolean, default: true },
