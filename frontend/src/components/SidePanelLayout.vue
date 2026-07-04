@@ -410,7 +410,7 @@ import ButtonControl, {
   getButtonTheme,
   getButtonVariant,
 } from '@/components/Controls/ButtonControl.vue'
-import Section from '@/components/Section.vue'
+import Section from '@/components/CollapsibleSection.vue'
 import PrimaryDropdown from '@/components/PrimaryDropdown.vue'
 import FadedScrollableDiv from '@/components/FadedScrollableDiv.vue'
 import ArrowUpRightIcon from '@/components/Icons/ArrowUpRightIcon.vue'

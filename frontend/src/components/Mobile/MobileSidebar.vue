@@ -90,7 +90,7 @@ import {
   Dialog,
   DialogOverlay,
 } from '@headlessui/vue'
-import Section from '@/components/Section.vue'
+import Section from '@/components/CollapsibleSection.vue'
 import PinIcon from '@/components/Icons/PinIcon.vue'
 import UserDropdown from '@/components/UserDropdown.vue'
 import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
