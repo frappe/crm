@@ -12,7 +12,7 @@
     </Button>
   </template>
   <Dropdown v-if="groupedActions.length" :options="groupedActions">
-    <Button icon="more-horizontal" />
+    <Button icon="lucide-more-horizontal" />
   </Dropdown>
   <template v-if="groupedWithLabelActions.length && !isMobileView">
     <div v-for="g in groupedWithLabelActions" :key="g.label">

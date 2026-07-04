@@ -3,7 +3,7 @@
     <template #target="{ isOpen, togglePopover }">
       <Button
         :label="value"
-        class="dropdown-button flex items-center justify-between bg-surface-white !px-2.5 py-1.5 text-base text-ink-gray-8 placeholder-ink-gray-4 transition-colors hover:bg-surface-white focus:bg-surface-white focus:shadow-sm focus:outline-none focus:ring-0"
+        class="dropdown-button flex items-center justify-between bg-surface-base !px-2.5 py-1.5 text-base text-ink-gray-8 placeholder-ink-gray-4 transition-colors hover:bg-surface-base focus:bg-surface-base focus:shadow-sm focus:outline-none focus:ring-0"
         @click="togglePopover"
       >
         <div v-if="value" class="truncate">{{ value }}</div>
@@ -20,7 +20,7 @@
     </template>
     <template #body>
       <div
-        class="my-2 p-1.5 min-w-40 space-y-1.5 divide-y divide-outline-gray-1 rounded-lg bg-surface-modal shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
+        class="my-2 p-1.5 min-w-40 space-y-1.5 divide-y divide-outline-gray-1 rounded-lg bg-surface-elevation-2 shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
       >
         <div>
           <PrimaryDropdownItem

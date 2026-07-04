@@ -41,14 +41,14 @@
         <Button
           :tooltip="__('Delete')"
           variant="ghost"
-          icon="x"
+          icon="lucide-x"
           class="opacity-0 hover:bg-surface-gray-4 group-hover:opacity-100"
           @click="() => option.onDelete(option, isNew)"
         />
       </div>
     </div>
     <div v-if="option.selected">
-      <FeatherIcon name="check" class="text-ink-gray-5 h-4 w-6" />
+      <span class="lucide-check text-ink-gray-5 h-4 w-6" aria-hidden="true" />
     </div>
   </div>
 </template>

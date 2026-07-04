@@ -1,10 +1,10 @@
 <template>
-  <Dialog v-model="show" :options="{ size: size }">
-    <template #body>
-      <div class="bg-surface-modal px-4 pb-6 pt-5 sm:px-6">
+  <Dialog v-model:open="show" :size="size" bare>
+    <template #default>
+      <div class="bg-surface-elevation-1 px-4 pb-6 pt-5 sm:px-6">
         <div class="mb-5 flex items-center justify-between">
           <div>
-            <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9">
+            <h3 class="text-3xl-semibold leading-6 text-ink-gray-9">
               {{ __(title) }}
             </h3>
           </div>
@@ -12,7 +12,7 @@
             <Button
               variant="ghost"
               class="w-7"
-              icon="x"
+              icon="lucide-x"
               @click="handleCancel"
             />
           </div>

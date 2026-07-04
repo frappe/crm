@@ -23,7 +23,7 @@
           <Button
             variant="subtle"
             class="w-max"
-            icon-right="refresh-cw"
+            icon-right="lucide-refresh-cw"
             :disabled="props.itemIndex > 2"
             :label="conjunction"
             @click="toggleConjunction"
@@ -91,15 +91,12 @@
     </div>
     <div :class="'w-max'">
       <Dropdown placement="right" :options="dropdownOptions">
-        <Button variant="ghost" icon="more-horizontal" />
+        <Button variant="ghost" icon="lucide-more-horizontal" />
       </Dropdown>
     </div>
   </div>
-  <Dialog
-    v-model="show"
-    :options="{ size: '3xl', title: __('Nested Conditions') }"
-  >
-    <template #body-content>
+  <Dialog v-model:open="show" :size="'3xl'" :title="__('Nested Conditions')">
+    <template #default>
       <CFConditions
         :conditions="condition"
         :isChild="true"

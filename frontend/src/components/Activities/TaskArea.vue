@@ -75,7 +75,7 @@
             ]"
           >
             <Button
-              icon="more-horizontal"
+              icon="lucide-more-horizontal"
               variant="ghosted"
               class="hover:bg-surface-gray-4 text-ink-gray-9"
               @click.stop.prevent
@@ -85,7 +85,7 @@
       </div>
       <div
         v-if="i < tasks.length - 1"
-        class="mx-2 h-px border-t border-outline-gray-modals"
+        class="mx-2 h-px border-t border-outline-elevation-2"
       />
     </div>
   </div>

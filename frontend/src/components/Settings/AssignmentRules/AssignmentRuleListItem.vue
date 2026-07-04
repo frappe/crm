@@ -1,9 +1,9 @@
 <template>
   <div
-    class="flex p-3 items-center justify-between cursor-pointer hover:bg-surface-menu-bar rounded"
+    class="flex p-3 items-center justify-between cursor-pointer hover:bg-surface-sidebar rounded"
   >
     <div class="w-7/12" @click="updateStep('view', data)">
-      <div class="text-base text-ink-gray-7 font-medium">{{ data.name }}</div>
+      <div class="text-base-medium text-ink-gray-7">{{ data.name }}</div>
       <div
         v-if="data.description && data.description.length > 0"
         class="text-p-base w-full text-ink-gray-5 mt-0.5 whitespace-nowrap overflow-ellipsis overflow-hidden"
@@ -35,7 +35,7 @@
       />
       <Dropdown placement="right" :options="dropdownOptions">
         <Button
-          icon="more-horizontal"
+          icon="lucide-more-horizontal"
           variant="ghost"
           @click="isConfirmingDelete = false"
         />
@@ -43,10 +43,10 @@
     </div>
   </div>
   <Dialog
-    v-model="duplicateDialog.show"
-    :options="{ title: __('Duplicate Assignment Rule') }"
+    v-model:open="duplicateDialog.show"
+    :title="__('Duplicate Assignment Rule')"
   >
-    <template #body-content>
+    <template #default>
       <div class="flex flex-col gap-4">
         <FormControl
           v-model="duplicateDialog.name"
