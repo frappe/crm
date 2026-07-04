@@ -3,7 +3,7 @@
     <template #body>
       <div
         v-if="!confirmDeleteInfo.show"
-        class="bg-surface-elevation-2 px-4 pb-6 pt-5 sm:px-6"
+        class="bg-surface-elevation-1 px-4 pb-6 pt-5 sm:px-6"
       >
         <div class="mb-6 flex items-center justify-between">
           <div>
@@ -99,7 +99,7 @@
       </div>
       <div
         v-if="confirmDeleteInfo.show"
-        class="bg-surface-elevation-2 px-4 pb-6 pt-5 sm:px-6"
+        class="bg-surface-elevation-1 px-4 pb-6 pt-5 sm:px-6"
       >
         <div class="mb-6 flex items-center justify-between">
           <div>
