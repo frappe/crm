@@ -20,8 +20,8 @@
             class="flex items-center gap-2 cursor-pointer rounded shrink-0"
             :class="[
               tabIndex == i
-                ? 'text-ink-gray-9 bg-surface-white shadow-sm'
-                : 'text-ink-gray-5 hover:text-ink-gray-9 hover:bg-surface-white hover:shadow-sm',
+                ? 'text-ink-gray-9 bg-surface-base shadow-sm'
+                : 'text-ink-gray-5 hover:text-ink-gray-9 hover:bg-surface-base hover:shadow-sm',
               tab.editingLabel ? 'p-1' : 'px-2 py-1',
             ]"
             @click="tabIndex = i"
@@ -40,7 +40,7 @@
                 />
                 <Button
                   v-if="tab.editingLabel"
-                  icon="check"
+                  icon="lucide-check"
                   variant="ghost"
                   @click="tab.editingLabel = false"
                 />
@@ -54,7 +54,7 @@
             >
               <template #default>
                 <Button variant="ghost" class="!p-1 !h-4">
-                  <FeatherIcon name="more-horizontal" class="h-4" />
+                  <span class="lucide-more-horizontal h-4" aria-hidden="true" />
                 </Button>
               </template>
             </Dropdown>
@@ -68,7 +68,7 @@
         @click="addTab"
       >
         <template #[slotName]>
-          <FeatherIcon name="plus" class="h-4" />
+          <span class="lucide-plus h-4" aria-hidden="true" />
         </template>
       </Button>
     </div>
@@ -103,7 +103,7 @@
           >
             <div class="flex items-center justify-between">
               <div
-                class="flex h-7 max-w-fit items-center gap-2 text-base font-medium leading-4 text-ink-gray-9"
+                class="flex h-7 max-w-fit items-center gap-2 text-base-medium leading-4 text-ink-gray-9"
               >
                 <DragVerticalIcon
                   class="section-drag-handle h-3.5 cursor-grab shrink-0 text-ink-gray-3"
@@ -121,10 +121,10 @@
                     }"
                   >
                     {{ __(section.label) || __('No Label') }}
-                    <FeatherIcon
+                    <span
                       v-if="section.collapsible"
-                      name="chevron-down"
-                      class="h-4 transition-all duration-300 ease-in-out"
+                      class="lucide-chevron-down h-4 transition-all duration-300 ease-in-out"
+                      aria-hidden="true"
                     />
                   </div>
                   <div v-else class="flex gap-2 items-center">
@@ -136,7 +136,7 @@
                     />
                     <Button
                       v-if="section.editingLabel"
-                      icon="check"
+                      icon="lucide-check"
                       variant="ghost"
                       @click="section.editingLabel = false"
                     />
@@ -161,7 +161,10 @@
                 <Dropdown :options="getSectionOptions(i, section, tab)">
                   <template #default>
                     <Button variant="ghost">
-                      <FeatherIcon name="more-horizontal" class="h-4" />
+                      <span
+                        class="lucide-more-horizontal h-4"
+                        aria-hidden="true"
+                      />
                     </Button>
                   </template>
                 </Dropdown>
@@ -177,7 +180,7 @@
             >
               <template #item="{ element: column }">
                 <div
-                  class="flex flex-col gap-1.5 flex-1 p-2 border border-dashed border-outline-gray-2 rounded bg-surface-modal cursor-grab"
+                  class="flex flex-col gap-1.5 flex-1 p-2 border border-dashed border-outline-gray-2 rounded bg-surface-elevation-2 cursor-grab"
                 >
                   <Draggable
                     :list="column.fields"
@@ -190,7 +193,7 @@
                   >
                     <template #item="{ element: field }">
                       <div
-                        class="field px-2.5 py-2 border border-outline-gray-2 rounded text-base bg-surface-modal text-ink-gray-8 flex items-center leading-4 justify-between gap-2 cursor-auto"
+                        class="field px-2.5 py-2 border border-outline-gray-2 rounded text-base bg-surface-elevation-2 text-ink-gray-8 flex items-center leading-4 justify-between gap-2 cursor-auto"
                       >
                         <div class="flex items-center gap-2 truncate">
                           <DragVerticalIcon
@@ -201,7 +204,7 @@
                         <Button
                           variant="ghost"
                           class="!size-4 rounded-sm"
-                          icon="x"
+                          icon="lucide-x"
                           @click="
                             column.fields.splice(
                               column.fields.indexOf(field),
@@ -220,7 +223,7 @@
                     <template #target="{ togglePopover }">
                       <div class="gap-2 w-full">
                         <Button
-                          class="w-full !h-8 !bg-surface-modal"
+                          class="w-full !h-8 !bg-surface-elevation-2"
                           variant="outline"
                           :label="__('Add Field')"
                           iconLeft="plus"

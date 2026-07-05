@@ -10,10 +10,10 @@
               class="flex max-w-fit cursor-pointer items-center gap-2 text-base leading-4 text-ink-gray-9"
               @click="section.opened = !section.opened"
             >
-              <FeatherIcon
-                name="chevron-right"
-                class="h-4 transition-all duration-300 ease-in-out"
+              <span
+                class="lucide-chevron-right h-4 transition-all duration-300 ease-in-out"
                 :class="{ 'rotate-90': section.opened }"
+                aria-hidden="true"
               />
               <div v-if="!section.editingLabel">
                 {{ __(section.label) || __('Untitled') }}
@@ -27,7 +27,7 @@
                 />
                 <Button
                   v-if="section.editingLabel"
-                  icon="check"
+                  icon="lucide-check"
                   class="!size-4 rounded-sm"
                   variant="ghost"
                   @click.stop="section.editingLabel = false"
@@ -48,7 +48,7 @@
               <Button
                 v-if="section.editable !== false"
                 class="!size-4 rounded-sm"
-                icon="x"
+                icon="lucide-x"
                 variant="ghost"
                 @click="sections.splice(sections.indexOf(section), 1)"
               />
@@ -64,7 +64,7 @@
             >
               <template #item="{ element: field }">
                 <div
-                  class="px-2.5 py-2 border border-outline-gray-modals rounded text-base leading-4 text-ink-gray-8 flex items-center justify-between gap-2"
+                  class="px-2.5 py-2 border border-outline-elevation-2 rounded text-base leading-4 text-ink-gray-8 flex items-center justify-between gap-2"
                 >
                   <div class="flex items-center gap-2">
                     <DragVerticalIcon class="h-3.5 cursor-grab" />
@@ -72,7 +72,7 @@
                   </div>
                   <Button
                     variant="ghost"
-                    icon="x"
+                    icon="lucide-x"
                     class="!size-4 rounded-sm"
                     @click="
                       section.columns[0].fields.splice(
@@ -110,7 +110,7 @@
             </Autocomplete>
             <div
               v-else
-              class="flex justify-center items-center border rounded border-dashed border-outline-gray-modals p-3"
+              class="flex justify-center items-center border rounded border-dashed border-outline-elevation-2 p-3"
             >
               <div class="text-sm text-ink-gray-4">
                 {{ __('This section is not editable') }}

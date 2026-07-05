@@ -1,13 +1,13 @@
 <template>
-  <Dialog v-model="show" :options="{ size: 'xl' }">
+  <Dialog v-model:open="show" :size="'xl'">
     <template #body>
       <div
         v-if="!confirmDeleteInfo.show"
-        class="bg-surface-modal px-4 pb-6 pt-5 sm:px-6"
+        class="bg-surface-elevation-1 px-4 pb-6 pt-5 sm:px-6"
       >
         <div class="mb-6 flex items-center justify-between">
           <div>
-            <h3 class="text-2xl leading-6 text-ink-gray-9 font-semibold">
+            <h3 class="text-3xl-semibold leading-6 text-ink-gray-9">
               {{
                 linkedDocs?.length == 0
                   ? __('Delete')
@@ -16,7 +16,7 @@
             </h3>
           </div>
           <div class="flex items-center gap-1">
-            <Button variant="ghost" icon="x" @click="show = false" />
+            <Button variant="ghost" icon="lucide-x" @click="show = false" />
           </div>
         </div>
         <div>
@@ -89,7 +89,7 @@
           <Button
             v-if="linkedDocs?.length == 0"
             variant="solid"
-            icon-left="trash-2"
+            icon-left="lucide-trash-2"
             :label="__('Delete')"
             :loading="isDealCreating"
             theme="red"
@@ -99,16 +99,16 @@
       </div>
       <div
         v-if="confirmDeleteInfo.show"
-        class="bg-surface-modal px-4 pb-6 pt-5 sm:px-6"
+        class="bg-surface-elevation-1 px-4 pb-6 pt-5 sm:px-6"
       >
         <div class="mb-6 flex items-center justify-between">
           <div>
-            <h3 class="text-2xl leading-6 text-ink-gray-9 font-semibold">
+            <h3 class="text-3xl-semibold leading-6 text-ink-gray-9">
               {{ confirmDeleteInfo.title }}
             </h3>
           </div>
           <div class="flex items-center gap-1">
-            <Button variant="ghost" icon="x" @click="show = false" />
+            <Button variant="ghost" icon="lucide-x" @click="show = false" />
           </div>
         </div>
         <div class="text-ink-gray-5 text-base">

@@ -42,8 +42,8 @@ const editorClasses = computed(() => {
 
   const variantMap = {
     outline: props.disabled
-      ? 'border border-t rounded-lg bg-surface-white'
-      : 'border border-t-0 rounded-b-lg bg-surface-white',
+      ? 'border border-t rounded-lg bg-surface-base'
+      : 'border border-t-0 rounded-b-lg bg-surface-base',
     subtle: props.disabled
       ? 'border border-t rounded-lg bg-surface-gray-2'
       : 'border border-t-0 rounded-b-lg bg-surface-gray-2',

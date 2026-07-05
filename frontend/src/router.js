@@ -1,7 +1,26 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { call } from 'frappe-ui'
 import { usersStore } from '@/stores/users'
 import { sessionStore } from '@/stores/session'
 import { viewsStore } from '@/stores/views'
+
+let personaChecked = false
+export const PERSONA_DONE_KEY = 'crm_persona_captured'
+
+async function shouldCapturePersona() {
+  // Client-side flag guards against re-prompting if the server persist failed.
+  if (localStorage.getItem(PERSONA_DONE_KEY)) return false
+  const captured = await call('frappe.client.get_single_value', {
+    doctype: 'FCRM Settings',
+    field: 'persona_captured',
+  })
+  if (captured) return false
+  // The wizard only feeds telemetry; skip it entirely if the user opted out.
+  const telemetryEnabled = await call(
+    'frappe.utils.telemetry.pulse.client.is_enabled',
+  )
+  return !!telemetryEnabled
+}
 
 const routes = [
   {
@@ -107,6 +126,11 @@ const routes = [
     component: () => import('@/pages/Welcome.vue'),
   },
   {
+    path: '/onboarding',
+    name: 'Onboarding',
+    component: () => import('@/pages/PersonaForm.vue'),
+  },
+  {
     path: '/:invalidpath',
     name: 'Invalid Page',
     component: () => import('@/pages/InvalidPage.vue'),
@@ -130,14 +154,44 @@ let router = createRouter({
 router.beforeEach(async (to, from, next) => {
   router.previousRoute = from
 
-  const { isLoggedIn } = sessionStore()
-  const { users, isCrmUser } = usersStore()
+  const { isLoggedIn, user } = sessionStore()
+  const { users, isCrmUser, isAdmin } = usersStore()
 
   if (isLoggedIn && !users.fetched) {
     try {
       await users.promise
     } catch (error) {
       console.error('Error loading users', error)
+    }
+  }
+
+  const isAdminUser = isAdmin() || user === 'Administrator'
+
+  // Only admins who haven't finished may reach the wizard, even via direct URL.
+  if (isLoggedIn && to.name === 'Onboarding') {
+    try {
+      if (!isAdminUser || !(await shouldCapturePersona())) {
+        return next({ name: 'Home' })
+      }
+    } catch {
+      return next({ name: 'Home' })
+    }
+  }
+
+  if (
+    isLoggedIn &&
+    isCrmUser() &&
+    !personaChecked &&
+    to.name !== 'Onboarding' &&
+    isAdminUser
+  ) {
+    personaChecked = true
+    try {
+      if (await shouldCapturePersona()) {
+        return next({ name: 'Onboarding' })
+      }
+    } catch (error) {
+      // fail open
     }
   }
 

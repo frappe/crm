@@ -5,7 +5,11 @@
     :class="[containerClasses, 'cursor-pointer']"
     @click="showUploader = true"
   >
-    <FeatherIcon name="paperclip" :class="[iconClasses, 'text-ink-gray-5']" />
+    <span
+      class="lucide-paperclip size-4"
+      :class="[iconClasses, 'text-ink-gray-5']"
+      aria-hidden="true"
+    />
     <span class="whitespace-nowrap text-ink-gray-4">{{
       __('Attach file…')
     }}</span>
@@ -18,7 +22,11 @@
 
   <!-- Has value -->
   <div v-else :class="[containerClasses, '!pr-1']">
-    <FeatherIcon name="paperclip" :class="[iconClasses, 'text-ink-gray-7']" />
+    <span
+      class="lucide-paperclip size-4"
+      :class="[iconClasses, 'text-ink-gray-7']"
+      aria-hidden="true"
+    />
     <Tooltip class="min-w-0 flex-1">
       <template #body>
         <div v-if="isImage" class="overflow-hidden rounded shadow-xl">
@@ -30,7 +38,7 @@
         </div>
         <div
           v-else
-          class="rounded bg-surface-gray-7 px-2 py-1.5 text-xs text-ink-white shadow-xl"
+          class="rounded bg-surface-gray-10 px-2 py-1.5 text-xs text-ink-base shadow-xl"
         >
           {{ filename }}
         </div>
@@ -50,7 +58,7 @@
       :title="__('Clear')"
       @click.prevent="clearAttachment"
     >
-      <FeatherIcon name="x" class="h-3 w-3" />
+      <span class="lucide-x h-3 w-3" aria-hidden="true" />
     </button>
   </div>
 
@@ -67,7 +75,7 @@
 
 <script setup>
 import { ref, computed, useAttrs } from 'vue'
-import { Tooltip, FeatherIcon } from 'frappe-ui'
+import { Tooltip } from 'frappe-ui'
 import FilesUploader from '@/components/FilesUploader/FilesUploader.vue'
 
 defineOptions({ inheritAttrs: false })
@@ -96,7 +104,7 @@ const sizeClasses = computed(
       sm: 'h-7 text-base rounded',
       md: 'h-8 text-base rounded',
       lg: 'h-10 text-lg rounded-md',
-      xl: 'h-10 text-xl rounded-md',
+      xl: 'h-10 text-2xl rounded-md',
     })[attrs.size || 'sm'],
 )
 
@@ -123,9 +131,9 @@ const variantClasses = computed(() => {
   }
   return {
     subtle:
-      'border border-[--surface-gray-2] bg-surface-gray-2 hover:border-outline-gray-modals hover:bg-surface-gray-3',
+      'border border-[--surface-gray-2] bg-surface-gray-2 hover:border-outline-elevation-2 hover:bg-surface-gray-3',
     outline:
-      'border border-outline-gray-2 bg-surface-white hover:border-outline-gray-3 hover:shadow-sm',
+      'border border-outline-gray-2 bg-surface-base hover:border-outline-gray-3 hover:shadow-sm',
     ghost: 'border-0',
   }[attrs.variant || 'subtle']
 })

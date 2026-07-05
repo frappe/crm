@@ -2,7 +2,7 @@
   <div class="flex h-full flex-col gap-6 py-8 px-6 text-ink-gray-8">
     <div class="flex justify-between px-2 text-ink-gray-8">
       <div class="flex flex-col gap-1">
-        <h2 class="flex gap-2 text-xl font-semibold leading-none h-5">
+        <h2 class="flex gap-2 text-2xl-semibold leading-none h-5">
           {{ __('System Defaults') }}
         </h2>
         <p class="text-p-base text-ink-gray-6">
@@ -27,7 +27,7 @@
     <div class="flex-1 flex flex-col overflow-y-auto">
       <div class="flex items-center justify-between gap-4 py-3 px-2">
         <div class="flex flex-col">
-          <div class="text-p-base font-medium text-ink-gray-7 truncate">
+          <div class="text-p-base-medium text-ink-gray-7 truncate">
             {{ __('Currency') }}
           </div>
           <div class="text-p-sm text-ink-gray-5">
@@ -48,7 +48,7 @@
       </div>
       <div class="flex items-center justify-between gap-4 py-3 px-2">
         <div class="flex flex-col">
-          <div class="text-p-base font-medium text-ink-gray-7 truncate">
+          <div class="text-p-base-medium text-ink-gray-7 truncate">
             {{ __('Currency Precision') }}
           </div>
           <div class="text-p-sm text-ink-gray-5">
@@ -64,10 +64,10 @@
           />
         </div>
       </div>
-      <div class="h-px border-t mx-2 border-outline-gray-modals" />
+      <div class="h-px border-t mx-2 border-outline-elevation-2" />
       <div class="flex items-center justify-between gap-4 py-3 px-2">
         <div class="flex flex-col">
-          <div class="text-p-base font-medium text-ink-gray-7 truncate">
+          <div class="text-p-base-medium text-ink-gray-7 truncate">
             {{ __('Number Format') }}
           </div>
           <div class="text-p-sm text-ink-gray-5">
@@ -88,7 +88,7 @@
       </div>
       <div class="flex items-center justify-between gap-4 py-3 px-2">
         <div class="flex flex-col">
-          <div class="text-p-base font-medium text-ink-gray-7 truncate">
+          <div class="text-p-base-medium text-ink-gray-7 truncate">
             {{ __('Float Precision') }}
           </div>
           <div class="text-p-sm text-ink-gray-5">
@@ -104,10 +104,10 @@
           />
         </div>
       </div>
-      <div class="h-px border-t mx-2 border-outline-gray-modals" />
+      <div class="h-px border-t mx-2 border-outline-elevation-2" />
       <div class="flex items-center justify-between gap-4 py-3 px-2">
         <div class="flex flex-col">
-          <div class="text-p-base font-medium text-ink-gray-7 truncate">
+          <div class="text-p-base-medium text-ink-gray-7 truncate">
             {{ __('Date Format') }}
           </div>
           <div class="text-p-sm text-ink-gray-5">
@@ -124,7 +124,7 @@
       </div>
       <div class="flex items-center justify-between gap-4 py-3 px-2">
         <div class="flex flex-col">
-          <div class="text-p-base font-medium text-ink-gray-7 truncate">
+          <div class="text-p-base-medium text-ink-gray-7 truncate">
             {{ __('Time Format') }}
           </div>
           <div class="text-p-sm text-ink-gray-5">

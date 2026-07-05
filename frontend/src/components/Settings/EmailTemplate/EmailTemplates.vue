@@ -3,7 +3,7 @@
     <!-- Header -->
     <div class="flex justify-between px-2 pt-2">
       <div class="flex flex-col gap-1 w-9/12">
-        <h2 class="flex gap-2 text-xl font-semibold leading-none h-5">
+        <h2 class="flex gap-2 text-2xl-semibold leading-none h-5">
           {{ __('Email Templates') }}
         </h2>
         <p class="text-p-base text-ink-gray-6">
@@ -17,7 +17,7 @@
       <div class="flex item-center space-x-2 w-3/12 justify-end">
         <Button
           :label="__('New')"
-          icon-left="plus"
+          icon-left="lucide-plus"
           variant="solid"
           @click="emit('updateStep', 'new-template')"
         />
@@ -62,7 +62,10 @@
           :debounce="300"
         >
           <template #prefix>
-            <FeatherIcon name="search" class="h-4 w-4 text-ink-gray-6" />
+            <span
+              class="lucide-search h-4 w-4 text-ink-gray-6"
+              aria-hidden="true"
+            />
           </template>
         </TextInput>
         <FormControl
@@ -80,15 +83,15 @@
         <div class="w-1/6">{{ __('For') }}</div>
         <div class="w-1/6">{{ __('Enabled') }}</div>
       </div>
-      <div class="h-px border-t mx-4 border-outline-gray-modals" />
+      <div class="h-px border-t mx-4 border-outline-elevation-2" />
       <ul class="overflow-y-auto px-2">
         <template v-for="(template, i) in templatesList" :key="template.name">
           <li
-            class="flex items-center justify-between p-3 cursor-pointer hover:bg-surface-menu-bar rounded"
+            class="flex items-center justify-between p-3 cursor-pointer hover:bg-surface-sidebar rounded"
             @click="() => emit('updateStep', 'edit-template', { ...template })"
           >
             <div class="flex flex-col w-4/6 pr-5">
-              <div class="text-p-base font-medium text-ink-gray-7 truncate">
+              <div class="text-p-base-medium text-ink-gray-7 truncate">
                 {{ template.name }}
               </div>
               <div class="text-p-sm text-ink-gray-5 truncate">
@@ -125,7 +128,7 @@
           </li>
           <div
             v-if="templatesList.length !== i + 1"
-            class="h-px border-t mx-2 border-outline-gray-modals"
+            class="h-px border-t mx-2 border-outline-elevation-2"
           />
         </template>
         <!-- Load More Button -->
@@ -137,7 +140,7 @@
             class="mt-3.5 p-2"
             :loading="templates.loading"
             :label="__('Load More')"
-            icon-left="refresh-cw"
+            icon-left="lucide-refresh-cw"
             @click="() => templates.next()"
           />
         </div>
@@ -149,14 +152,7 @@
 import EmailTemplateIcon from '@/components/Icons/EmailTemplateIcon.vue'
 import EmptyState from '../../ListViews/EmptyState.vue'
 import { useBroadcast } from '@/composables/useBroadcast'
-import {
-  TextInput,
-  FormControl,
-  Switch,
-  Dropdown,
-  FeatherIcon,
-  toast,
-} from 'frappe-ui'
+import { TextInput, FormControl, Switch, Dropdown, toast } from 'frappe-ui'
 import { ref, computed, inject } from 'vue'
 import { ConfirmDelete } from '../../../utils'
 

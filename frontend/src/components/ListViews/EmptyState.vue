@@ -7,7 +7,7 @@
     >
       <Icon :icon="icon" class="size-7.5 text-ink-gray-5" />
       <div class="flex flex-col items-center gap-1">
-        <span class="text-lg font-medium text-ink-gray-8">
+        <span class="text-lg-medium text-ink-gray-8">
           {{ computedTitle }}
         </span>
         <span class="text-center text-p-base text-ink-gray-6">
