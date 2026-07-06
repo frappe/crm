@@ -23,7 +23,7 @@ def get_item_price_rate(item_code: str, uom: str | None = None):
 	price_list = frappe.db.get_single_value("Selling Settings", "selling_price_list")
 	if not price_list:
 		return None
-	pctx = {"price_list": price_list, "uom": uom, "transaction_date": frappe.utils.nowdate()}
+	pctx = frappe._dict({"price_list": price_list, "uom": uom, "transaction_date": frappe.utils.nowdate()})
 	rows = get_item_price(pctx, item_code)
 	return rows[0].price_list_rate if rows else None
 
