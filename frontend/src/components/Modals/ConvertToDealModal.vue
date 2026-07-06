@@ -99,7 +99,7 @@ import { showQuickEntryModal, quickEntryProps } from '@/composables/modals'
 import { isMobileView } from '@/composables/settings'
 import { useOnboarding, useTelemetry } from 'frappe-ui/frappe'
 import { Switch, Dialog, createResource, call } from 'frappe-ui'
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 const props = defineProps({
@@ -206,10 +206,6 @@ const dealTabs = createResource({
               field.options = dealStatuses.value
               field.prefix = getDealStatus(deal.doc.status).color
             }
-
-            if (field.fieldtype === 'Table') {
-              deal.doc[field.fieldname] = []
-            }
           })
         })
       })
@@ -217,6 +213,40 @@ const dealTabs = createResource({
     return hasFields ? parsedTabs : []
   },
 })
+
+const leadDealFieldMap = { deal_owner: 'lead_owner' }
+const skipPrefillFields = ['organization', 'status']
+
+watch(
+  () => dealTabs.data,
+  (tabs) => {
+    deal.doc = { __newDocument: true, doctype: 'CRM Deal' }
+    tabs?.forEach((tab) =>
+      tab.sections?.forEach((section) =>
+        section.columns?.forEach((column) =>
+          column.fields?.forEach((field) => {
+            if (field.fieldtype === 'Table') {
+              deal.doc[field.fieldname] = []
+            } else {
+              prefillFromLead(field)
+            }
+          }),
+        ),
+      ),
+    )
+  },
+  { immediate: true },
+)
+
+function prefillFromLead(field) {
+  if (skipPrefillFields.includes(field.fieldname)) return
+
+  const leadFieldname = leadDealFieldMap[field.fieldname] || field.fieldname
+  const value = props.lead[leadFieldname]
+  if (value != null && value !== '') {
+    deal.doc[field.fieldname] = value
+  }
+}
 
 function openQuickEntryModal() {
   showQuickEntryModal.value = true
