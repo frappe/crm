@@ -16,10 +16,9 @@ async function shouldCapturePersona() {
   })
   if (captured) return false
   // The wizard only feeds telemetry; skip it entirely if the user opted out.
-  const telemetryEnabled = await call(
-    'frappe.utils.telemetry.pulse.client.is_enabled',
-  )
-  return !!telemetryEnabled
+  const { enabled } =
+    (await call('frappe.utils.telemetry.pulse.client.boot_config')) || {}
+  return !!enabled
 }
 
 const routes = [
