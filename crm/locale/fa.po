@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-06-28 10:20+0000\n"
-"PO-Revision-Date: 2026-07-01 21:09\n"
+"PO-Revision-Date: 2026-07-07 09:44\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Persian\n"
 "MIME-Version: 1.0\n"
@@ -3049,7 +3049,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:290
 msgid "Error creating Lead Sync Source"
-msgstr ""
+msgstr "خطا در ایجاد منبع همگام‌سازی سرنخ"
 
 #: frontend/src/components/Modals/CallLogDetailModal.vue:358
 msgid "Error creating lead: {0}"
@@ -3065,7 +3065,7 @@ msgstr "خطا در همگام‌سازی سرنخ‌ها"
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:271
 msgid "Error updating Lead Sync Source"
-msgstr ""
+msgstr "خطا در به‌روزرسانی منبع همگام‌سازی سرنخ"
 
 #: frontend/src/pages/Deal.vue:766 frontend/src/pages/Lead.vue:498
 #: frontend/src/pages/MobileDeal.vue:619 frontend/src/pages/MobileLead.vue:360
@@ -3260,12 +3260,12 @@ msgstr ""
 #. Name of a DocType
 #: crm/lead_syncing/doctype/facebook_lead_form_question/facebook_lead_form_question.json
 msgid "Facebook Lead Form Question"
-msgstr ""
+msgstr "سؤال فرم سرنخ فیس بوک"
 
 #. Label of the facebook_lead_id (Data) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Facebook Lead ID"
-msgstr ""
+msgstr "شناسه سرنخ فیس بوک"
 
 #. Name of a DocType
 #. Label of the facebook_page (Link) field in DocType 'Lead Sync Source'
@@ -4322,7 +4322,7 @@ msgstr "سرنخ"
 #: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.json
 #: frontend/src/components/Settings/LeadSyncing/FailureLogs.vue:40
 msgid "Lead Data"
-msgstr ""
+msgstr "داده‌های سرنخ"
 
 #. Label of the lead_details_tab (Tab Break) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
@@ -4352,12 +4352,12 @@ msgstr ""
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
 msgid "Lead Statuses"
-msgstr ""
+msgstr "وضعیت‌های سرنخ"
 
 #. Name of a DocType
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
 msgid "Lead Sync Source"
-msgstr ""
+msgstr "منبع همگام‌سازی سرنخ"
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:285
 msgid "Lead Sync Source created successfully"
@@ -4365,7 +4365,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/Settings.vue:237
 msgid "Lead Syncing"
-msgstr ""
+msgstr "همگام‌سازی سرنخ"
 
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:311
 msgid "Lead and deal visibility will no longer be restricted by the reporting tree. Are you sure?"
@@ -4381,7 +4381,7 @@ msgstr ""
 
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.js:8
 msgid "Lead sync initiated."
-msgstr ""
+msgstr "همگام‌سازی سرنخ آغاز شد."
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:175
 msgid "Lead sync source deleted successfully"
