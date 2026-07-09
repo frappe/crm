@@ -41,7 +41,7 @@
                   __(
                     documentRoutingOptions.find(
                       (option) => option.value == assignmentRuleData.rule,
-                    )?.label,
+                    )?.label || '',
                   )
                 }}
               </div>
