@@ -72,6 +72,39 @@ export function processField(rawField, options = {}) {
 }
 
 /**
+ * Turn the Address `state` field into a country-driven Autocomplete.
+ *
+ * When a regional app (e.g. India Compliance) is installed, the CRM boot exposes a
+ * `{ country: [states] }` map. If the address's country has a known state list, the
+ * plain-text `state` field is rendered as a searchable dropdown of those states.
+ * Otherwise the field is returned unchanged (free text).
+ *
+ * Autocomplete (not Select) is used so a legacy free-text state value that isn't in
+ * the list is still preserved.
+ *
+ * @param {object} field - processed field object (from processField)
+ * @param {object} doc - the document data (reads `doc.country`)
+ * @param {string} doctype - the field's doctype; only 'Address' is enhanced
+ * @param {object} [stateOptionsByCountry] - { India: ['Goa', ...] } from the boot
+ * @returns {object} the field, possibly with fieldtype='Autocomplete' + options set
+ */
+export function applyStateFieldOptions(
+  field,
+  doc,
+  doctype,
+  stateOptionsByCountry,
+) {
+  if (!field || doctype !== 'Address' || field.fieldname !== 'state') {
+    return field
+  }
+
+  const options = stateOptionsByCountry?.[doc?.country]
+  if (!options?.length) return field
+
+  return { ...field, fieldtype: 'Autocomplete', options }
+}
+
+/**
  * Find mandatory fields that are missing values in the doc.
  * Respects script overrides for reqd and hidden.
  *
