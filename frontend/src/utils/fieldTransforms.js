@@ -80,10 +80,11 @@ export function processField(rawField, options = {}) {
  * Otherwise the field is returned unchanged (free text).
  *
  * Autocomplete (not Select) is used so a legacy free-text state value that isn't in
- * the list is still preserved.
+ * the list is still preserved. Such a value is also prepended to the options, so the
+ * Combobox shows its label rather than a blank (it derives the label from options).
  *
  * @param {object} field - processed field object (from processField)
- * @param {object} doc - the document data (reads `doc.country`)
+ * @param {object} doc - the document data (reads `doc.country` and `doc.state`)
  * @param {string} doctype - the field's doctype; only 'Address' is enhanced
  * @param {object} [stateOptionsByCountry] - { India: ['Goa', ...] } from the boot
  * @returns {object} the field, possibly with fieldtype='Autocomplete' + options set
@@ -98,8 +99,13 @@ export function applyStateFieldOptions(
     return field
   }
 
-  const options = stateOptionsByCountry?.[doc?.country]
-  if (!options?.length) return field
+  const states = stateOptionsByCountry?.[doc?.country]
+  if (!states?.length) return field
+
+  // Keep an existing out-of-list value visible (the Combobox labels by matching options).
+  const current = doc?.state
+  const options =
+    current && !states.includes(current) ? [current, ...states] : states
 
   return { ...field, fieldtype: 'Autocomplete', options }
 }

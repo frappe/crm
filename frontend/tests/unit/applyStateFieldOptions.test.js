@@ -15,6 +15,26 @@ describe('applyStateFieldOptions', () => {
     expect(result.options).toEqual(['Goa', 'Kerala', 'Punjab'])
   })
 
+  it('prepends an out-of-list current state value so it stays visible', () => {
+    const result = applyStateFieldOptions(
+      stateField,
+      { country: 'India', state: 'California' },
+      'Address',
+      stateOptions,
+    )
+    expect(result.options).toEqual(['California', 'Goa', 'Kerala', 'Punjab'])
+  })
+
+  it('does not duplicate a current value already in the list', () => {
+    const result = applyStateFieldOptions(
+      stateField,
+      { country: 'India', state: 'Goa' },
+      'Address',
+      stateOptions,
+    )
+    expect(result.options).toEqual(['Goa', 'Kerala', 'Punjab'])
+  })
+
   it('does not mutate the input field', () => {
     applyStateFieldOptions(
       stateField,
