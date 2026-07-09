@@ -64,7 +64,7 @@
                 "
               >
                 <span>
-                  {{ option.label }}
+                  {{ __(option.label) }}
                 </span>
                 <span
                   v-if="assignmentRuleData.rule == option.value"
