@@ -34,12 +34,12 @@ const props = defineProps({
 })
 
 const computedTitle = computed(() => {
-  return props.title ? props.title : __('No {0} Found', [__(props.name)])
+  return props.title ? __(props.title) : __('No {0} Found', [__(props.name)])
 })
 
 const computedDescription = computed(() => {
   return props.description
-    ? props.description
+    ? __(props.description)
     : __(
         'It appears that there are currently no {0} available. You can create more {0} by using the Create button.',
         [__(props.name)],
