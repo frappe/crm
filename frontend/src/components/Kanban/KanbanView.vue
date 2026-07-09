@@ -11,7 +11,7 @@
       <template #item="{ element: column }">
         <div
           v-if="!column.column.delete"
-          class="flex flex-col gap-2.5 min-w-72 w-72 rounded-lg p-2.5"
+          class="flex flex-col gap-2.5 min-w-72 w-72 hover:bg-surface-gray-2 rounded-lg p-2.5"
           :class="parseBgColor(column.column.color)"
         >
           <div class="flex gap-2 items-center group justify-between">
