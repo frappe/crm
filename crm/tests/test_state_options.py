@@ -68,13 +68,9 @@ class TestGetBoot(FrappeTestCase):
 		self.assertIn("state_options", boot)
 		self.assertIsInstance(boot["state_options"], dict)
 
-	def test_boot_survives_state_options_failure(self):
-		# Even if the state lookup somehow raises, get_boot itself must succeed.
-		with patch("crm.www.crm.get_state_options", side_effect=Exception("boom")):
-			with self.assertRaises(Exception):
-				# Sanity: the mock does raise when called directly...
-				get_state_options()
-		# ...but get_state_options in production swallows errors, so boot is safe.
+	def test_boot_degrades_when_state_lookup_fails(self):
+		# The v15 boot-context concern: if get_installed_apps misbehaves, get_boot must
+		# still succeed and state_options must be an empty map (never break page load).
 		with patch("frappe.get_installed_apps", side_effect=Exception("boot context")):
 			boot = get_boot()
 		self.assertEqual(boot["state_options"], {})
