@@ -433,6 +433,14 @@ export function parseColor(color) {
   return textColor
 }
 
+export function parseBgColor(color) {
+  if (!color) return ''
+  if (color == 'black') {
+    return '!bg-gray-100'
+  }
+  return `!bg-${color}-50`
+}
+
 export function isEmoji(str) {
   const emojiList = gemoji.map((emoji) => emoji.emoji)
   return emojiList.includes(str)
