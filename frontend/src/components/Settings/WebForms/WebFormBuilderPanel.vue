@@ -108,24 +108,17 @@
 
         <!-- fields -->
         <div>
-          <div class="flex items-center justify-between">
-            <div class="flex flex-col gap-1">
-              <span class="text-lg-semibold text-ink-gray-8">{{
-                __('Fields')
-              }}</span>
-              <span class="text-p-sm text-ink-gray-6">
-                {{
-                  inputFieldCount
-                    ? __('{0} fields · drag to reorder.', [inputFieldCount])
-                    : __('Add the fields people fill in.')
-                }}
-              </span>
-            </div>
-            <Button
-              :label="__('Add field')"
-              icon-left="plus"
-              @click="openAddField"
-            />
+          <div class="flex flex-col gap-1">
+            <span class="text-lg-semibold text-ink-gray-8">{{
+              __('Fields')
+            }}</span>
+            <span class="text-p-sm text-ink-gray-6">
+              {{
+                inputFieldCount
+                  ? __('{0} fields · drag to reorder.', [inputFieldCount])
+                  : __('Add the fields people fill in.')
+              }}
+            </span>
           </div>
 
           <div
@@ -133,10 +126,7 @@
             class="mt-4 rounded-lg border border-dashed py-8 text-center text-sm text-ink-gray-4"
           >
             {{
-              __(
-                'No fields yet. Click “Add field” to choose from {0} fields.',
-                [docLabel(form.document_type)],
-              )
+              __('No fields yet — add one below.')
             }}
           </div>
 
@@ -296,6 +286,26 @@
               </div>
             </template>
           </Draggable>
+
+          <!-- inline add controls -->
+          <div class="mt-3 flex items-center gap-2">
+            <Autocomplete
+              :options="availableFieldOptions"
+              :value="''"
+              :placeholder="__('Search fields…')"
+              @change="onPickField"
+            >
+              <template #target="{ togglePopover }">
+                <Button :label="__('Add field')" icon-left="plus" @click="togglePopover" />
+              </template>
+            </Autocomplete>
+            <Button variant="ghost" :label="__('Section break')" @click="addBreak('Section Break')">
+              <template #prefix><LucideRows3 class="h-4 w-4" /></template>
+            </Button>
+            <Button variant="ghost" :label="__('Column break')" @click="addBreak('Column Break')">
+              <template #prefix><LucideColumns3 class="h-4 w-4" /></template>
+            </Button>
+          </div>
         </div>
 
         <hr class="my-8 border-outline-gray-2" />
@@ -471,70 +481,6 @@
       </div>
     </div>
 
-    <!-- add field dialog -->
-    <Dialog v-model="addOpen" :options="{ title: __('Add field') }">
-      <template #body-content>
-        <div class="mb-3 flex gap-2">
-          <Button
-            class="flex-1"
-            :label="__('Section break')"
-            @click="addBreak('Section Break')"
-          >
-            <template #prefix><LucideRows3 class="h-4 w-4" /></template>
-          </Button>
-          <Button
-            class="flex-1"
-            :label="__('Column break')"
-            @click="addBreak('Column Break')"
-          >
-            <template #prefix><LucideColumns3 class="h-4 w-4" /></template>
-          </Button>
-        </div>
-        <div
-          class="mb-2 text-xs font-medium uppercase tracking-wide text-ink-gray-4"
-        >
-          {{ __('Fields') }}
-        </div>
-        <FormControl
-          v-model="fieldQuery"
-          type="text"
-          :placeholder="__('Search fields…')"
-          class="mb-2"
-        >
-          <template #prefix
-            ><LucideSearch class="h-4 w-4 text-ink-gray-4"
-          /></template>
-        </FormControl>
-        <div class="flex max-h-72 flex-col gap-0.5 overflow-y-auto">
-          <button
-            v-for="af in filteredAvailable"
-            :key="af.fieldname"
-            class="flex flex-col rounded px-2 py-1.5 text-left leading-tight hover:bg-surface-gray-2"
-            @click="addField(af)"
-          >
-            <span class="text-base text-ink-gray-8">{{ af.label }}</span>
-            <span class="mt-0.5 text-xs text-ink-gray-4"
-              >{{ af.fieldname }} · {{ af.fieldtype }}</span
-            >
-          </button>
-          <div
-            v-if="!filteredAvailable.length"
-            class="px-2 py-6 text-center text-sm text-ink-gray-4"
-          >
-            {{ __('No fields left to add') }}
-          </div>
-        </div>
-        <p class="mt-3 border-t pt-3 text-xs text-ink-gray-4">
-          {{
-            __(
-              'Only fields on {0} show here. Add a custom field to the DocType first.',
-              [docLabel(form.document_type)],
-            )
-          }}
-        </p>
-      </template>
-    </Dialog>
-
     <!-- share dialog -->
     <Dialog v-model="shareOpen" :options="{ title: __('Embed this form') }">
       <template #body-content>
@@ -627,6 +573,7 @@ import {
   toast,
   createResource,
 } from 'frappe-ui'
+import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import LucideCopy from '~icons/lucide/copy'
 import Draggable from 'vuedraggable'
 import LucideChevronDown from '~icons/lucide/chevron-down'
@@ -635,7 +582,6 @@ import LucideX from '~icons/lucide/x'
 import LucideShare2 from '~icons/lucide/share-2'
 import LucideEye from '~icons/lucide/eye'
 import LucidePencil from '~icons/lucide/pencil'
-import LucideSearch from '~icons/lucide/search'
 import LucideExternalLink from '~icons/lucide/external-link'
 import LucideCheck from '~icons/lucide/check'
 import LucideRows3 from '~icons/lucide/rows-3'
@@ -658,9 +604,7 @@ const saving = ref(false)
 const dirty = ref(false)
 const mode = ref('edit') // edit | preview
 const expanded = ref(null)
-const addOpen = ref(false)
 const shareOpen = ref(false)
-const fieldQuery = ref('')
 const copied = ref(false)
 const dragging = ref(false)
 
@@ -789,7 +733,7 @@ function addBreak(fieldtype) {
     field_description: '',
   })
   markDirty()
-  addOpen.value = false
+  // keep the dialog open so multiple breaks can be added in one go
 }
 
 // load
@@ -826,19 +770,17 @@ const availableFields = createResource({
   makeParams: () => ({ document_type: form.document_type }),
 })
 
-const filteredAvailable = computed(() => {
+// unused (not-yet-added) target fields, as Autocomplete options
+const availableFieldOptions = computed(() => {
   const used = new Set(form.fields.map((f) => f.fieldname))
-  const q = fieldQuery.value.toLowerCase()
   return (availableFields.data || [])
     .filter((f) => !used.has(f.fieldname))
-    .filter(
-      (f) => !q || f.label.toLowerCase().includes(q) || f.fieldname.includes(q),
-    )
+    .map((af) => ({ label: af.label, value: af.fieldname, af }))
 })
 
-function openAddField() {
-  fieldQuery.value = ''
-  addOpen.value = true
+function onPickField(option) {
+  if (!option?.af) return
+  addField(option.af)
 }
 function addField(af) {
   form.fields.push({
@@ -851,7 +793,6 @@ function addField(af) {
     field_description: '',
   })
   markDirty()
-  addOpen.value = false
 }
 function removeField(i) {
   form.fields.splice(i, 1)
