@@ -403,6 +403,7 @@ def add_default_lead_sources():
 		"Walk In",
 		"Facebook",
 		"Website",
+		"Web Form",
 	]
 
 	for source in lead_sources:

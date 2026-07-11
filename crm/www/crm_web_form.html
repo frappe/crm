@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ form_title }}</title>
+    <meta name="robots" content="noindex" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --ink: #1f272e;
+        --muted: #7c7f86;
+        --border: #e2e2e5;
+        --bg: #f4f4f6;
+        --card: #ffffff;
+        --accent: #171717;
+        --danger: #e03636;
+        --ring: rgba(23, 23, 23, 0.12);
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; }
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background: var(--bg);
+        color: var(--ink);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        padding: 48px 16px;
+        -webkit-font-smoothing: antialiased;
+      }
+      .card {
+        width: 100%;
+        max-width: 560px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 28px 28px 26px;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 12px 32px rgba(0, 0, 0, 0.05);
+      }
+      .title { font-size: 20px; font-weight: 600; margin: 0 0 5px; letter-spacing: -0.01em; }
+      .subtitle { font-size: 14px; color: var(--muted); margin: 0 0 22px; line-height: 1.5; }
+      .section { margin-bottom: 4px; }
+      .section-title { font-size: 15px; font-weight: 600; color: var(--ink); margin: 20px 0 12px; }
+      .section:first-child .section-title { margin-top: 0; }
+      .cols { display: grid; gap: 0 20px; }
+      @media (max-width: 520px) { .cols { grid-template-columns: 1fr !important; } }
+      .field { margin-bottom: 16px; }
+      .field label { display: block; font-size: 13px; font-weight: 400; margin-bottom: 6px; color: var(--muted); }
+      .field .req { color: var(--danger); margin-left: 2px; }
+      .field .desc { font-size: 12px; color: var(--muted); margin-top: 5px; line-height: 1.4; }
+      input[type="text"], input[type="email"], input[type="tel"], input[type="number"],
+      input[type="date"], input[type="datetime-local"], textarea, select {
+        width: 100%;
+        font: inherit;
+        font-size: 14px;
+        line-height: 1.4;
+        color: var(--ink);
+        background: #f4f4f6;
+        border: 1px solid transparent;
+        border-radius: 8px;
+        padding: 6px 10px;
+        outline: none;
+        transition: border-color 0.12s, box-shadow 0.12s, background 0.12s;
+      }
+      textarea { min-height: 68px; resize: vertical; }
+      select {
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        padding-right: 32px;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%237c7f86' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 10px center;
+        cursor: pointer;
+      }
+      input:focus, textarea:focus, select:focus {
+        border-color: #c7c7cc;
+        box-shadow: 0 0 0 2px var(--ring);
+        background: #fff;
+      }
+      .has-error, .has-error:focus {
+        border-color: var(--danger);
+        box-shadow: 0 0 0 2px rgba(224, 54, 54, 0.14);
+      }
+      .check { display: flex; align-items: center; gap: 9px; }
+      .check input { width: 16px; height: 16px; accent-color: var(--accent); }
+      .check label { margin: 0; font-weight: 400; font-size: 14px; }
+      button.submit {
+        width: 100%;
+        margin-top: 8px;
+        font: inherit;
+        font-size: 14px;
+        font-weight: 500;
+        color: #fff;
+        background: var(--accent);
+        border: none;
+        border-radius: 8px;
+        padding: 8px 16px;
+        cursor: pointer;
+        transition: opacity 0.12s, transform 0.02s;
+      }
+      button.submit:hover { opacity: 0.9; }
+      button.submit:active { transform: translateY(1px); }
+      button.submit:disabled { opacity: 0.5; cursor: default; }
+      .form-error {
+        display: none;
+        background: #fdecec;
+        color: var(--danger);
+        font-size: 13px;
+        border-radius: 9px;
+        padding: 10px 12px;
+        margin-bottom: 16px;
+      }
+      .success { text-align: center; padding: 20px 4px 8px; }
+      .success .check-ring {
+        width: 48px; height: 48px; border-radius: 999px; margin: 0 auto 16px;
+        background: #e8f5ec; color: #1f9d55; display: flex; align-items: center;
+        justify-content: center; font-size: 24px;
+      }
+      .success h2 { font-size: 19px; margin: 0 0 6px; }
+      .success p { color: var(--muted); font-size: 14px; margin: 0; line-height: 1.5; }
+      .footer { text-align: center; margin-top: 22px; font-size: 12px; color: #a9abb1; }
+      .footer a { color: #83868d; text-decoration: none; }
+      .draft-banner {
+        width: 100%; max-width: 560px; margin: 0 auto 12px; padding: 8px 14px; border-radius: 10px;
+        background: #fff7ed; color: #b45309; border: 1px solid #fed7aa;
+        font: 500 13px/1.4 "Inter", sans-serif; text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    {% if draft_preview %}
+    <div class="draft-banner">
+      {{ _("Draft preview — only you can see this. Publish the form to make it public.") }}
+    </div>
+    {% endif %}
+    <div class="card">
+      <div id="form-view">
+        <h1 class="title">{{ form_title }}</h1>
+        {% if form_description %}<p class="subtitle">{{ form_description }}</p>{% endif %}
+
+        <div class="form-error" id="form-error"></div>
+
+        <form id="web-form" novalidate>
+          {% for section in layout %}
+          <div class="section">
+            {% if section.label %}<div class="section-title">{{ section.label }}</div>{% endif %}
+            <div class="cols" style="grid-template-columns: repeat({{ section.columns|length }}, minmax(0, 1fr))">
+              {% for col in section.columns %}
+              <div class="col">
+                {% for f in col %}
+                <div class="field">
+                  {% if f.fieldtype == "Check" %}
+                  <div class="check">
+                    <input type="checkbox" id="{{ f.fieldname }}" name="{{ f.fieldname }}" />
+                    <label for="{{ f.fieldname }}">{{ f.label }}{% if f.reqd %}<span class="req">*</span>{% endif %}</label>
+                  </div>
+                  {% else %}
+                  <label for="{{ f.fieldname }}">{{ f.label }}{% if f.reqd %}<span class="req">*</span>{% endif %}</label>
+                  {% if f.fieldtype in ("Small Text", "Text", "Long Text") %}
+                  <textarea id="{{ f.fieldname }}" name="{{ f.fieldname }}" placeholder="{{ f.placeholder }}" {% if f.reqd %}required{% endif %}></textarea>
+                  {% elif f.fieldtype == "Select" %}
+                  <select id="{{ f.fieldname }}" name="{{ f.fieldname }}" {% if f.reqd %}required{% endif %}>
+                    <option value="">Select…</option>
+                    {% for opt in f.options.split("\n") %}{% if opt %}<option value="{{ opt }}">{{ opt }}</option>{% endif %}{% endfor %}
+                  </select>
+                  {% elif f.fieldtype in ("Int", "Float", "Currency") %}
+                  <input type="number" id="{{ f.fieldname }}" name="{{ f.fieldname }}" placeholder="{{ f.placeholder }}" {% if f.reqd %}required{% endif %} />
+                  {% elif f.fieldtype == "Date" %}
+                  <input type="date" id="{{ f.fieldname }}" name="{{ f.fieldname }}" {% if f.reqd %}required{% endif %} />
+                  {% elif f.fieldtype == "Datetime" %}
+                  <input type="datetime-local" id="{{ f.fieldname }}" name="{{ f.fieldname }}" {% if f.reqd %}required{% endif %} />
+                  {% else %}
+                  <input
+                    type="{% if f.options == 'Email' %}email{% elif f.options == 'Phone' or f.fieldtype == 'Phone' %}tel{% else %}text{% endif %}"
+                    id="{{ f.fieldname }}" name="{{ f.fieldname }}" placeholder="{{ f.placeholder }}" {% if f.reqd %}required{% endif %} />
+                  {% endif %}
+                  {% endif %}
+                  {% if f.description %}<div class="desc">{{ f.description }}</div>{% endif %}
+                </div>
+                {% endfor %}
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+          {% endfor %}
+
+          <button type="submit" class="submit" id="submit-btn">{{ submit_label }}</button>
+        </form>
+      </div>
+
+      <div class="success" id="success-view" style="display: none">
+        <div class="check-ring">&#10003;</div>
+        <h2 id="success-title">{{ success_message }}</h2>
+        <p id="success-note">Your response has been recorded.</p>
+      </div>
+
+      <div class="footer">Powered by <a href="https://frappe.io/crm" target="_blank" rel="noopener">Frappe CRM</a></div>
+    </div>
+
+    <script>
+      (function () {
+        var ROUTE = {{ form_route | tojson }};
+        var FIELDS = {{ fields | tojson }};
+        var CSRF = {{ csrf_token | tojson }};
+        var form = document.getElementById("web-form");
+        var errBox = document.getElementById("form-error");
+        var btn = document.getElementById("submit-btn");
+        var BREAKS = { "Section Break": 1, "Column Break": 1 };
+
+        function showError(msg) {
+          errBox.textContent = msg || "Something went wrong. Please try again.";
+          errBox.style.display = "block";
+          errBox.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        }
+        function clearFieldErrors() {
+          [].forEach.call(form.querySelectorAll(".has-error"), function (el) {
+            el.classList.remove("has-error");
+          });
+        }
+
+        form.addEventListener("submit", function (e) {
+          e.preventDefault();
+          errBox.style.display = "none";
+          clearFieldErrors();
+
+          var values = {};
+          var missing = [];
+          FIELDS.forEach(function (f) {
+            if (BREAKS[f.fieldtype]) return;
+            var el = document.getElementById(f.fieldname);
+            if (!el) return;
+            var val = f.fieldtype === "Check" ? (el.checked ? 1 : 0) : el.value;
+            values[f.fieldname] = val;
+            if (f.reqd && (val === "" || val === null || val === undefined)) {
+              missing.push(f);
+              el.classList.add("has-error");
+            }
+          });
+
+          if (missing.length) {
+            showError(
+              missing.length === 1
+                ? "Please fill in the required field: " + (missing[0].label || "")
+                : "Please fill in all required fields."
+            );
+            var first = document.getElementById(missing[0].fieldname);
+            if (first && first.focus) first.focus();
+            return;
+          }
+
+          btn.disabled = true;
+          var original = btn.textContent;
+          btn.textContent = "Submitting…";
+
+          fetch("/api/method/crm.api.web_form.submit_web_form", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "X-Frappe-CSRF-Token": (CSRF || "") },
+            body: JSON.stringify({ route: ROUTE, values: values }),
+          })
+            .then(function (r) {
+              return r.json().then(function (data) { return { ok: r.ok, data: data }; });
+            })
+            .then(function (res) {
+              if (!res.ok) {
+                var m = res.data && res.data._server_messages;
+                var msg = "";
+                try { msg = m ? JSON.parse(JSON.parse(m)[0]).message : ""; } catch (e) {}
+                showError(msg || "Sorry, we couldn't submit your response. Please try again.");
+                btn.disabled = false;
+                btn.textContent = original;
+                return;
+              }
+              if (res.data && res.data.message && res.data.message.test) {
+                document.getElementById("success-note").textContent =
+                  "Test submission — no record was created. Publish the form to start collecting responses.";
+              }
+              document.getElementById("form-view").style.display = "none";
+              document.getElementById("success-view").style.display = "block";
+            })
+            .catch(function () {
+              showError();
+              btn.disabled = false;
+              btn.textContent = original;
+            });
+        });
+      })();
+    </script>
+  </body>
+</html>

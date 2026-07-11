@@ -70,6 +70,7 @@ doctype_js = {
 
 website_route_rules = [
 	{"from_route": "/crm/<path:app_path>", "to_route": "crm"},
+	{"from_route": "/crm-form/<route>", "to_route": "crm_web_form"},
 ]
 
 # Generators
