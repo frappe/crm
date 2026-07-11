@@ -234,15 +234,14 @@ write back to the Organization. The field-writing reuses `mapper.apply_to_docume
   `blocked_domains` / `allowed_domains` lists and **re-validates after every
   redirect** (redirects are followed manually). `allow_private_networks = 1` bypasses
   the IP check (internal testing only).
-- **Known limitation — DNS-rebinding TOCTOU (deferred).** `validate_url` resolves and
-  checks the host, but `requests` performs its own DNS resolution when it connects, so
-  the IP that is *checked* and the IP that is *connected to* are resolved separately. A
-  host that controls its DNS (short TTL, alternating answers) can therefore pass the
-  guard with a public IP and then have the connection land on a private one. Closing
-  this requires pinning the validated IP onto the connection (resolve once, connect to
-  that IP with the original Host/SNI). It is deferred for the in-CRM experiment: it
-  requires an attacker to both control a target record's `website` and run a rebinding
-  DNS server. Revisit before any untrusted/multi-tenant exposure or at engine extraction.
+- **DNS-rebinding TOCTOU — closed by IP pinning.** The guard validates the resolved
+  addresses and the connection is then made to one of those exact addresses
+  (`http._pinned_get`): the URL netloc is rewritten to the validated IP while the
+  Host header, TLS SNI and certificate verification stay on the original hostname
+  (urllib3 `server_hostname`). A host that alternates DNS answers (short TTL) can no
+  longer pass validation with a public IP and serve the request from a private one.
+  Each redirect hop is re-validated and re-pinned. With `allow_private_networks = 1`
+  the guard (and therefore pinning) is bypassed entirely.
 - **Permissions.** `api.enrich` enforces the Settings allow-list and
   `doc.check_permission("write")` — a user who cannot edit the record cannot enrich
   it. The worker save is a normal permission-respecting save. The only

@@ -13,7 +13,9 @@ provide:
 * a mandatory **SSRF guard** that resolves the hostname and rejects loopback /
   private / link-local / reserved addresses, honors the Settings allow/block lists,
   and **re-validates the resolved IP after every redirect** (it does not blindly
-  follow redirects).
+  follow redirects). Every connection is **pinned to the IP the guard validated**
+  (Host header and TLS SNI/verification stay on the original hostname), so a
+  DNS-rebinding host cannot pass validation with one address and connect to another.
 
 Limits (timeout, byte cap, retries, user-agent) come from config, not constants.
 """
@@ -27,6 +29,7 @@ from urllib.parse import urlparse
 
 import frappe
 from frappe.utils import get_request_session
+from requests.adapters import HTTPAdapter, Retry
 
 HTML_CONTENT_TYPES = ("text/html", "application/xhtml")
 RETRY_STATUS_FORCELIST = (429, 500, 502, 503, 504)
@@ -91,6 +94,18 @@ def validate_url(url: str, cfg) -> str:
 	lists: a blocked domain is always rejected; if an allow list exists the host
 	must be on it.
 	"""
+	_validated_ips(url, cfg)
+	return url
+
+
+def _validated_ips(url: str, cfg) -> list | None:
+	"""Run the full SSRF checks for ``url`` and return the resolved, validated IPs.
+
+	The caller connects to one of these exact addresses (see ``_pinned_get``), so
+	the IP that was checked is the IP that serves the request. Returns ``None``
+	when the IP check is bypassed (``allow_private_networks``) -- there is then no
+	address to pin. Raises ``SSRFError`` on any rejection.
+	"""
 	parsed = urlparse(url)
 	if parsed.scheme not in ("http", "https"):
 		raise SSRFError(f"unsupported URL scheme: {parsed.scheme or '(none)'}")
@@ -107,18 +122,23 @@ def validate_url(url: str, cfg) -> str:
 		raise SSRFError(f"host is not on the allowed-domains list: {host}")
 
 	allow_private = bool(cfg.setting("allow_private_networks")) if cfg else False
-	if not allow_private:
-		try:
-			ips = _resolve_ips(host)
-		except socket.gaierror as exc:
-			raise SSRFError(f"could not resolve host {host}: {exc}") from exc
-		if not ips:
-			raise SSRFError(f"could not resolve host {host}")
-		for ip in ips:
-			if _is_blocked_ip(ip):
-				raise SSRFError(f"host {host} resolves to a non-public address: {ip}")
+	if allow_private:
+		return None
 
-	return url
+	try:
+		ips = _resolve_ips(host)
+	except socket.gaierror as exc:
+		raise SSRFError(f"could not resolve host {host}: {exc}") from exc
+	if not ips:
+		raise SSRFError(f"could not resolve host {host}")
+	for ip in ips:
+		if _is_blocked_ip(ip):
+			raise SSRFError(f"host {host} resolves to a non-public address: {ip}")
+
+	# Deterministic order, IPv4 first: the caller pins the first entry, and unlike
+	# requests' resolver it won't fall back across address families, so an IPv6
+	# answer must not shadow a reachable IPv4 one on v4-only networks.
+	return sorted(ips, key=lambda ip: (":" in ip, ip))
 
 
 # --------------------------------------------------------------------------- #
@@ -138,15 +158,7 @@ def build_session(cfg=None):
 	session = get_request_session(max_retries=retries)
 	# get_request_session only forces 500; widen to the usual transient set.
 	try:
-		from requests.adapters import HTTPAdapter, Retry
-
-		retry = Retry(
-			total=retries,
-			backoff_factor=0.3,
-			status_forcelist=RETRY_STATUS_FORCELIST,
-			allowed_methods=frozenset(["GET", "HEAD"]),
-		)
-		adapter = HTTPAdapter(max_retries=retry)
+		adapter = HTTPAdapter(max_retries=_retry_policy(retries))
 		session.mount("http://", adapter)
 		session.mount("https://", adapter)
 	except Exception:  # pragma: no cover - keep the framework default on any issue
@@ -173,6 +185,87 @@ def build_session(cfg=None):
 		}
 	)
 	return session
+
+
+def _retry_policy(retries: int) -> Retry:
+	return Retry(
+		total=retries,
+		backoff_factor=0.3,
+		status_forcelist=RETRY_STATUS_FORCELIST,
+		allowed_methods=frozenset(["GET", "HEAD"]),
+	)
+
+
+# --------------------------------------------------------------------------- #
+# Pinned connections (DNS-rebinding defense)
+# --------------------------------------------------------------------------- #
+class _PinnedIPAdapter(HTTPAdapter):
+	"""Transport adapter for URLs whose netloc was rewritten to a pre-validated IP.
+
+	``server_hostname`` keeps TLS SNI on the original hostname, and urllib3 also
+	matches the certificate against it (it falls back to ``server_hostname`` when
+	``assert_hostname`` is unset), so pinning does not weaken TLS verification.
+	urllib3 strips ``server_hostname`` for plain-HTTP pools, so the same adapter
+	serves both schemes.
+	"""
+
+	def __init__(self, hostname: str, **kwargs):
+		self._server_hostname = hostname
+		super().__init__(**kwargs)
+
+	def init_poolmanager(self, *args, **kwargs):
+		kwargs["server_hostname"] = self._server_hostname
+		super().init_poolmanager(*args, **kwargs)
+
+
+def _pinned_adapter(session, hostname: str, retries: int) -> _PinnedIPAdapter:
+	"""Per-hostname adapter cache on the session, so keep-alive pooling survives
+	across the pages of a crawl instead of reconnecting for every request."""
+	cache = getattr(session, "_pinned_adapters", None)
+	if cache is None:
+		cache = {}
+		session._pinned_adapters = cache
+	adapter = cache.get(hostname)
+	if adapter is None:
+		adapter = _PinnedIPAdapter(hostname, max_retries=_retry_policy(retries))
+		cache[hostname] = adapter
+	return adapter
+
+
+def _pinned_get(session, url: str, pinned_ip: str | None, timeout: int, retries: int):
+	"""GET ``url`` connecting to ``pinned_ip`` -- an address the SSRF guard just
+	validated -- so a DNS answer that changes between validation and connection
+	(rebinding) cannot steer the socket somewhere else. Only the socket target is
+	rewritten: the Host header, TLS SNI and certificate verification all stay on
+	the original hostname. With no pinned IP (``allow_private_networks``) this is
+	a plain session GET.
+	"""
+	if not pinned_ip:
+		return session.get(url, timeout=timeout, allow_redirects=False, stream=True)
+
+	import requests
+
+	parsed = urlparse(url)
+	host = parsed.hostname or ""
+	ip_netloc = f"[{pinned_ip}]" if ":" in pinned_ip else pinned_ip
+	if parsed.port:
+		ip_netloc = f"{ip_netloc}:{parsed.port}"
+	host_header = f"{host}:{parsed.port}" if parsed.port else host
+
+	prepared = session.prepare_request(
+		requests.Request(
+			"GET",
+			parsed._replace(netloc=ip_netloc).geturl(),
+			headers={"Host": host_header},
+		)
+	)
+	return _pinned_adapter(session, host, retries).send(
+		prepared,
+		timeout=timeout,
+		stream=True,
+		verify=session.verify,
+		cert=session.cert,
+	)
 
 
 # --------------------------------------------------------------------------- #
@@ -228,15 +321,16 @@ def fetch(url: str, cfg, session=None, html_only: bool = True):
 	record provenance against the right host. Pass ``html_only=False`` to accept
 	non-HTML bodies (e.g. ``text/plain`` robots.txt).
 
-	SSRF note: ``validate_url`` resolves and checks the host, but requests re-resolves
-	it when connecting, so a DNS-rebinding host (short TTL, alternating answers) can
-	still pass the guard and connect to a private IP. Pinning the validated IP to the
-	connection is deferred -- see the module docstring / README.
+	SSRF note: each hop connects to the exact IP the guard validated for it
+	(``_pinned_get``), so a DNS-rebinding host (short TTL, alternating answers)
+	cannot pass validation with a public address and serve the request from a
+	private one.
 	"""
 	import requests
 
 	timeout = int(cfg.setting("request_timeout")) if cfg else 10
 	max_bytes = int(cfg.setting("max_download_bytes")) if cfg else 3_000_000
+	retries = int(cfg.setting("retry_count")) if cfg else 2
 
 	own_session = session is None
 	session = session or build_session(cfg)
@@ -244,16 +338,12 @@ def fetch(url: str, cfg, session=None, html_only: bool = True):
 	try:
 		for _hop in range(MAX_REDIRECTS + 1):
 			try:
-				validate_url(current, cfg)
+				ips = _validated_ips(current, cfg)
 			except SSRFError as exc:
 				return 0, "", f"blocked by SSRF guard: {exc}", current
 
-			resp = session.get(
-				current,
-				timeout=timeout,
-				allow_redirects=False,  # follow manually to re-validate each hop
-				stream=True,
-			)
+			# Redirects are followed manually (each hop re-validated and re-pinned).
+			resp = _pinned_get(session, current, ips[0] if ips else None, timeout, retries)
 
 			if resp.is_redirect or resp.is_permanent_redirect:
 				location = resp.headers.get("Location")
