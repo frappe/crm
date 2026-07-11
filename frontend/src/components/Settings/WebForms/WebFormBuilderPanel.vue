@@ -89,12 +89,14 @@
             item-key="fieldname"
             handle=".drag-handle"
             class="mt-4 flex flex-col gap-2"
+            :class="{ 'select-none': dragging }"
             ghost-class="opacity-40"
             :animation="150"
             :force-fallback="true"
             :fallback-on-body="false"
             fallback-class="wf-drag-fallback"
-            @end="markDirty"
+            @start="dragging = true"
+            @end="onSortEnd"
           >
             <template #item="{ element: f, index: i }">
               <div>
@@ -407,6 +409,12 @@ const addOpen = ref(false)
 const shareOpen = ref(false)
 const fieldQuery = ref('')
 const copied = ref(false)
+const dragging = ref(false)
+
+function onSortEnd() {
+  dragging.value = false
+  markDirty()
+}
 const previewModel = reactive({}) // throwaway values so the preview is interactive
 const previewSubmitted = ref(false)
 
