@@ -21,6 +21,14 @@ import frappe
 # clear_config_cache).
 CONFIG_CACHE_KEY = "domain_enrichment_config"
 
+# DocType -> the Settings checkbox that enables enrichment for it. Single source of
+# truth shared by the manual (api) and auto-enrich (tasks) paths.
+ENABLE_FLAG_BY_DOCTYPE = {
+	"CRM Lead": "enable_lead",
+	"CRM Deal": "enable_deal",
+	"CRM Organization": "enable_organization",
+}
+
 
 # Sensible fallbacks applied when the Single doctype has not been saved yet (the
 # JSON field defaults only populate a freshly-created row, which may not exist).
@@ -223,10 +231,9 @@ def _build_config() -> EnrichmentConfig:
 def get_config() -> EnrichmentConfig:
 	"""Return the cached, assembled enrichment config.
 
-	The cache stores a plain dict (``EnrichmentConfig`` is JSON/pickle-friendly via
-	dataclasses, but compiled regexes do not survive pickling), so we cache the
-	*built object* in-process via ``frappe.cache().get_value`` with a generator and
-	rebuild on cache miss. The generator returns the dataclass directly; frappe's
+	Caches the assembled ``EnrichmentConfig`` object (not a plain dict -- the config
+	carries compiled regexes) via ``frappe.cache().get_value`` with a generator that
+	rebuilds it on a cache miss. The generator returns the dataclass directly; frappe's
 	RedisWrapper pickles it -- compiled patterns pickle fine under cPickle, so this
 	is safe and avoids re-querying on every call within a request/worker.
 	"""

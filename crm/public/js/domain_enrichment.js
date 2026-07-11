@@ -1,9 +1,8 @@
 // Domain Enrichment — desk form button + live progress.
 //
 // Adds an "Enrich from Website" button to CRM Lead / CRM Organization / CRM Deal.
-// Clicking it queues a background job; the 9 progress steps stream back over
-// realtime and are shown to the user. When done, the form reloads so the new
-// Domain Enrichment child row is visible.
+// Clicking it queues a background job; the progress steps stream back over realtime
+// and are shown to the user. When done, the form reloads to show the enriched fields.
 
 frappe.provide("crm.domain_enrichment");
 
@@ -26,7 +25,7 @@ crm.domain_enrichment.setup = function (frm) {
 
 crm.domain_enrichment.run = function (frm, website) {
 	// A determinate progress dialog driven by realtime events.
-	const total = 9;
+	const total = 7; // pipeline.PROGRESS_STEPS; each event also carries data.total
 	frappe.show_progress(__("Domain Enrichment"), 0, total, __("Queued…"));
 
 	const event = "domain_enrichment_progress";

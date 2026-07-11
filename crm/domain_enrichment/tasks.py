@@ -17,7 +17,7 @@ from __future__ import annotations
 
 import frappe
 
-from .config import get_config
+from .config import ENABLE_FLAG_BY_DOCTYPE, get_config
 from .mapper import apply_to_document
 from .pipeline import PROGRESS_STEPS
 from .pipeline import run as run_pipeline
@@ -96,14 +96,29 @@ def write_run(
 	return doc.name
 
 
-# DocType -> the Settings checkbox that gates auto-enrichment for it (mirrors
-# api.ENABLE_FLAG_BY_DOCTYPE). Auto-enrich is wired (hooks.py after_insert) for every
-# doctype that owns a ``website``: Lead, Deal, and Organization.
-AUTO_ENRICH_FLAG_BY_DOCTYPE = {
-	"CRM Lead": "enable_lead",
-	"CRM Deal": "enable_deal",
-	"CRM Organization": "enable_organization",
-}
+def enqueue_enrichment(cfg, reference_doctype: str, reference_name: str, website: str, user: str) -> dict:
+	"""Enqueue one ``run_enrichment`` job (long queue, per-doc ``job_id`` +
+	``deduplicate``, after commit). The single place the job is enqueued -- shared by
+	the manual (``api.enrich``/``api.retry``) and auto (``after_insert``) paths so a
+	manual click and an auto-fire never double-run, and the enqueue options stay in
+	one spot. ``enqueue_after_commit`` matters for the ``after_insert`` caller, whose
+	transaction has not committed yet; it is harmless for the already-saved paths.
+	"""
+	timeout = int(cfg.setting("request_timeout", 10)) * int(cfg.setting("max_pages", 10)) + 60
+	job_id = f"domain-enrich-{reference_doctype}-{reference_name}"
+	frappe.enqueue(
+		"crm.domain_enrichment.tasks.run_enrichment",
+		queue="long",
+		timeout=timeout,
+		job_id=job_id,
+		deduplicate=True,
+		enqueue_after_commit=True,
+		reference_doctype=reference_doctype,
+		reference_name=reference_name,
+		website=website,
+		user=user,
+	)
+	return {"queued": True, "job_id": job_id, "website": website}
 
 
 def auto_enrich_on_create(doc, method=None):
@@ -118,7 +133,7 @@ def auto_enrich_on_create(doc, method=None):
 	"""
 	try:
 		cfg = get_config()
-		flag = AUTO_ENRICH_FLAG_BY_DOCTYPE.get(doc.doctype)
+		flag = ENABLE_FLAG_BY_DOCTYPE.get(doc.doctype)
 		if not (cfg.setting("enabled") and cfg.setting("auto_enrich") and flag and cfg.setting(flag)):
 			return
 
@@ -126,21 +141,7 @@ def auto_enrich_on_create(doc, method=None):
 		if not website:
 			return
 
-		timeout = int(cfg.setting("request_timeout", 10)) * int(cfg.setting("max_pages", 10)) + 60
-		frappe.enqueue(
-			"crm.domain_enrichment.tasks.run_enrichment",
-			queue="long",
-			timeout=timeout,
-			job_id=f"domain-enrich-{doc.doctype}-{doc.name}",
-			deduplicate=True,
-			# after_insert runs inside the uncommitted transaction; wait for commit so
-			# the worker can't pick the job up before the new record is visible.
-			enqueue_after_commit=True,
-			reference_doctype=doc.doctype,
-			reference_name=doc.name,
-			website=website,
-			user=frappe.session.user,
-		)
+		enqueue_enrichment(cfg, doc.doctype, doc.name, website, frappe.session.user)
 	except Exception:
 		frappe.log_error(title="Domain Enrichment: auto_enrich_on_create failed")
 

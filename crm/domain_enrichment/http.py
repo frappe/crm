@@ -41,14 +41,6 @@ class SSRFError(Exception):
 # --------------------------------------------------------------------------- #
 # SSRF guard
 # --------------------------------------------------------------------------- #
-def _registrable_domain(netloc: str) -> str:
-	netloc = (netloc or "").lower().split(":")[0]
-	if netloc.startswith("www."):
-		netloc = netloc[4:]
-	parts = netloc.split(".")
-	return ".".join(parts[-2:]) if len(parts) >= 2 else netloc
-
-
 def _domain_in_list(host: str, domains: list) -> bool:
 	"""True if ``host`` equals or is a subdomain of any entry in ``domains``."""
 	host = (host or "").lower().split(":")[0]

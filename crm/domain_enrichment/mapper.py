@@ -8,7 +8,7 @@ into CRM document fields. Phase 5's link-time Organization -> Lead/Deal copy reu
 it, so all the write-policy / has-field / never-overwrite guards live here once.
 
 The mapping itself is data: each ``CRM Enrichment Field Mapping`` record names a
-``source_key`` (one of the 15 frozen in Phase 2), a ``target_fieldname``, a
+``source_key`` (one of the 13 frozen in Phase 2), a ``target_fieldname``, a
 ``write_policy`` (Fill if empty / Always refresh / Override defaults) and optional
 ``default_values`` / ``create_missing_link``. This module knows how to resolve a
 ``source_key`` against the result and how to apply each policy -- nothing else.
@@ -20,6 +20,8 @@ from urllib.parse import urlparse
 
 import frappe
 from frappe import _
+
+from .crawler import registrable_domain
 
 # Human labels for the realtime "filled: ..." toast, keyed by source_key. Falls
 # back to the field's meta label, then the fieldname, when not listed here.
@@ -48,14 +50,6 @@ POLICY_ALWAYS_REFRESH = "Always refresh"
 POLICY_OVERRIDE_DEFAULTS = "Override defaults"
 
 
-def _registrable_domain(url: str) -> str:
-	"""Registrable domain, e.g. "frappe.io" from "https://crm.frappe.io/x"."""
-	netloc = (urlparse(url or "").netloc or "").lower().split(":")[0]
-	if netloc.startswith("www."):
-		netloc = netloc[4:]
-	return ".".join(netloc.split(".")[-2:]) if netloc.count(".") >= 1 else netloc
-
-
 def _first_email(result) -> str:
 	"""Prefer an email on the company's own registrable domain, else the first.
 
@@ -64,7 +58,7 @@ def _first_email(result) -> str:
 	"""
 	if not result.emails:
 		return ""
-	registrable = _registrable_domain(result.website)
+	registrable = registrable_domain(urlparse(result.website or "").netloc)
 	if registrable:
 		for e in result.emails:
 			domain = e.value.lower().split("@")[-1]
@@ -86,7 +80,7 @@ def _phone_at(result, index: int) -> str:
 
 
 def get_value_for_source_key(result, source_key: str):
-	"""Resolve one of the 15 frozen source_keys against an ``EnrichmentResult``.
+	"""Resolve one of the 13 frozen source_keys against an ``EnrichmentResult``.
 
 	Returns a plain scalar (``""`` means "nothing to fill"). Scalar provenance
 	fields expose ``.value``; emails/phones/contacts are read off the result's

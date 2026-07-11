@@ -79,7 +79,7 @@ on the next enrichment without a restart.
 |---|---|
 | `enabled` | Master on/off for the whole feature. |
 | `enable_lead` / `enable_deal` / `enable_organization` | Which doctypes can be enriched. |
-| `auto_enrich` | When `1`, a newly-created CRM Organization **or CRM Deal** that has a website is enriched automatically in a background job (`after_insert`). A new Deal with a new Organization enriches both (each crawls and writes its own fields). Default `0` — enrichment is otherwise manual via the Enrich button. Gated per doctype by `enable_organization` / `enable_deal`. |
+| `auto_enrich` | When `1`, a newly-created CRM **Lead, Deal or Organization** that has a website is enriched automatically in a background job (`after_insert`). A new Deal with a new Organization enriches both (each crawls and writes its own fields). Default `0` — enrichment is otherwise manual via the Enrich button. Gated per doctype by `enable_lead` / `enable_deal` / `enable_organization`. |
 | `max_pages` / `max_depth` | Crawl breadth/depth caps (BFS). |
 | `request_timeout` | Per-request timeout (seconds). |
 | `max_download_bytes` | Hard cap on bytes read per page (streamed). |
@@ -116,7 +116,7 @@ The single source of result→field truth. One record = one field written.
 | Field | Meaning |
 |---|---|
 | `enabled` | Disabled mappings are skipped. |
-| `source_key` | One of the 15 frozen result keys (below). |
+| `source_key` | One of the 13 frozen result keys (below). |
 | `target_doctype` | `CRM Lead` / `CRM Deal` / `CRM Organization`. |
 | `target_fieldname` | The field on that doctype to fill (validated to exist). |
 | `write_policy` | `Fill if empty` / `Always refresh` / `Override defaults` (below). |
@@ -284,7 +284,7 @@ write back to the Organization. The field-writing reuses `mapper.apply_to_docume
   icons for raw resolution, so the logo may be a social-share image rather than a strict
   brand mark; the conventional favicon is only a last resort.
 - **Scheduled re-enrichment — _future feature, not implemented._** Triggering is
-  either manual (Enrich button) or automatic on Organization creation (`auto_enrich`);
+  either manual (Enrich button) or automatic on Lead/Deal/Organization creation (`auto_enrich`);
   there is no *scheduled* re-enrichment of existing records. A future version could enqueue periodic re-enrichment of
   stale records (e.g. via a scheduled job that re-runs `tasks.run_enrichment` for
   records whose last `CRM Enrichment Run` is older than N days).

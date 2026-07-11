@@ -36,3 +36,15 @@ write-policy P". The single source of result→field truth.
 **Run**:
 A history record of one enrichment execution against one origin document, holding
 status, summary, and full provenance JSON.
+
+## Deferred cleanups (from code review)
+
+Known but intentionally out of scope for now — revisit later:
+
+- **Frontend `isExternalUrl` / `openExternalUrl` duplication.** These two helpers are
+  byte-identical in `frontend/src/components/FieldLayout/Field.vue` and
+  `frontend/src/components/SidePanelLayout.vue` (the POC, `bba9a77c`, added the second
+  copy). Per `AGENTS.md` ("add tests in `tests/unit/` when adding pure logic to
+  `src/utils/`") they should be extracted to `frontend/src/utils/externalUrl.js` with a
+  unit test, and imported in both components. Deferred as a frontend-general cleanup,
+  not part of the enrichment backend work.
