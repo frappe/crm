@@ -11,10 +11,13 @@ ALLOWED_DOCTYPES = ("CRM Lead", "CRM Deal")
 
 def get_context(context):
 	route = resolve_route()
-	filters = {"route": route, "published": 1, "doc_type": ["in", ALLOWED_DOCTYPES]}
+	filters = {"route": route, "crm_published": 1, "doc_type": ["in", ALLOWED_DOCTYPES]}
 	name = frappe.db.get_value("Web Form", filters)
-	# let logged-in authors preview an unpublished (draft) form; guests only see published
-	if not name and frappe.session.user != "Guest" and frappe.has_permission("Web Form", "read"):
+	# let CRM managers preview an unpublished (draft) form; guests only see published
+	is_author = frappe.session.user != "Guest" and bool(
+		set(frappe.get_roles()) & {"System Manager", "Sales Manager"}
+	)
+	if not name and is_author:
 		name = frappe.db.get_value("Web Form", {"route": route, "doc_type": ["in", ALLOWED_DOCTYPES]})
 	if not name:
 		raise frappe.DoesNotExistError
@@ -27,7 +30,7 @@ def get_context(context):
 	except Exception:
 		context.csrf_token = ""
 	context.web_form_name = doc.name
-	context.draft_preview = not doc.published
+	context.draft_preview = not doc.crm_published
 	context.form_title = doc.title
 	context.form_description = doc.introduction_text or ""
 	context.form_route = doc.route

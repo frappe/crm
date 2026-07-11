@@ -11,17 +11,28 @@
         @click="$emit('back')"
       />
       <div class="flex items-center gap-3">
-        <Badge v-if="dirty" :label="__('Not Saved')" variant="subtle" theme="orange" />
+        <Badge
+          v-if="dirty"
+          :label="__('Not Saved')"
+          variant="subtle"
+          theme="orange"
+        />
         <Button
           :label="mode === 'edit' ? __('Preview') : __('Edit')"
-          @click="((mode = mode === 'edit' ? 'preview' : 'edit'), resetPreview())"
+          @click="(mode = mode === 'edit' ? 'preview' : 'edit'), resetPreview()"
         >
           <template #prefix>
             <LucideEye v-if="mode === 'edit'" class="h-4 w-4" />
             <LucidePencil v-else class="h-4 w-4" />
           </template>
         </Button>
-        <Button variant="solid" :label="__('Update')" :loading="saving" :disabled="!dirty" @click="save" />
+        <Button
+          variant="solid"
+          :label="__('Update')"
+          :loading="saving"
+          :disabled="!dirty"
+          @click="save"
+        />
       </div>
     </div>
 
@@ -31,17 +42,34 @@
         <!-- form details -->
         <div>
           <div class="flex flex-col gap-1">
-            <span class="text-lg-semibold text-ink-gray-8">{{ __('Form details') }}</span>
-            <span class="text-p-sm text-ink-gray-6">{{ __('Basic settings for this form.') }}</span>
+            <span class="text-lg-semibold text-ink-gray-8">{{
+              __('Form details')
+            }}</span>
+            <span class="text-p-sm text-ink-gray-6">{{
+              __('Basic settings for this form.')
+            }}</span>
           </div>
           <div class="mt-3.5 flex flex-col gap-4">
             <div class="grid grid-cols-2 gap-4">
-              <FormControl v-model="form.title" type="text" :label="__('Title')" @input="markDirty" />
+              <FormControl
+                v-model="form.title"
+                type="text"
+                :label="__('Title')"
+                @input="markDirty"
+              />
               <div>
-                <div class="mb-1.5 text-sm text-ink-gray-5">{{ __('Route') }}</div>
+                <div class="mb-1.5 text-sm text-ink-gray-5">
+                  {{ __('Route') }}
+                </div>
                 <div class="flex items-center gap-1.5">
-                  <span class="whitespace-nowrap text-sm text-ink-gray-4">/crm-form/</span>
-                  <TextInput v-model="form.route" class="flex-1" @input="markDirty" />
+                  <span class="whitespace-nowrap text-sm text-ink-gray-4"
+                    >/crm-form/</span
+                  >
+                  <TextInput
+                    v-model="form.route"
+                    class="flex-1"
+                    @input="markDirty"
+                  />
                 </div>
               </div>
               <FormControl
@@ -51,9 +79,20 @@
                 :options="targetOptions"
                 @update:modelValue="onDoctypeChange"
               />
-              <FormControl v-model="form.submit_button_label" type="text" :label="__('Submit button label')" @input="markDirty" />
+              <FormControl
+                v-model="form.submit_button_label"
+                type="text"
+                :label="__('Submit button label')"
+                @input="markDirty"
+              />
             </div>
-            <FormControl v-model="form.description" type="textarea" :label="__('Description')" :rows="2" @input="markDirty" />
+            <FormControl
+              v-model="form.description"
+              type="textarea"
+              :label="__('Description')"
+              :rows="2"
+              @input="markDirty"
+            />
             <FormControl
               v-model="form.success_message"
               type="textarea"
@@ -71,16 +110,34 @@
         <div>
           <div class="flex items-center justify-between">
             <div class="flex flex-col gap-1">
-              <span class="text-lg-semibold text-ink-gray-8">{{ __('Fields') }}</span>
+              <span class="text-lg-semibold text-ink-gray-8">{{
+                __('Fields')
+              }}</span>
               <span class="text-p-sm text-ink-gray-6">
-                {{ inputFieldCount ? __('{0} fields · drag to reorder.', [inputFieldCount]) : __('Add the fields people fill in.') }}
+                {{
+                  inputFieldCount
+                    ? __('{0} fields · drag to reorder.', [inputFieldCount])
+                    : __('Add the fields people fill in.')
+                }}
               </span>
             </div>
-            <Button :label="__('Add field')" icon-left="plus" @click="openAddField" />
+            <Button
+              :label="__('Add field')"
+              icon-left="plus"
+              @click="openAddField"
+            />
           </div>
 
-          <div v-if="!form.fields.length" class="mt-4 rounded-lg border border-dashed py-8 text-center text-sm text-ink-gray-4">
-            {{ __('No fields yet. Click “Add field” to choose from {0} fields.', [docLabel(form.document_type)]) }}
+          <div
+            v-if="!form.fields.length"
+            class="mt-4 rounded-lg border border-dashed py-8 text-center text-sm text-ink-gray-4"
+          >
+            {{
+              __(
+                'No fields yet. Click “Add field” to choose from {0} fields.',
+                [docLabel(form.document_type)],
+              )
+            }}
           </div>
 
           <Draggable
@@ -100,84 +157,142 @@
           >
             <template #item="{ element: f, index: i }">
               <div>
-              <!-- SECTION BREAK -->
-              <div
-                v-if="f.fieldtype === 'Section Break'"
-                class="flex items-center gap-2 rounded-lg border border-dashed bg-surface-gray-1 px-3 py-2"
-              >
-                <LucideGripVertical class="drag-handle h-4 w-4 shrink-0 cursor-grab text-ink-gray-4" />
-                <span class="shrink-0 text-xs font-medium uppercase tracking-wide text-ink-gray-4">{{ __('Section') }}</span>
-                <TextInput v-model="f.label" class="flex-1" size="sm" :placeholder="__('Section title (optional)')" @input="markDirty" />
-                <Button variant="ghost" @click="removeField(i)">
-                  <template #icon><LucideX class="h-4 w-4 text-ink-gray-5" /></template>
-                </Button>
-              </div>
-
-              <!-- COLUMN BREAK -->
-              <div
-                v-else-if="f.fieldtype === 'Column Break'"
-                class="flex items-center gap-2 rounded-lg border border-dashed bg-surface-gray-1 px-3 py-2"
-              >
-                <LucideGripVertical class="drag-handle h-4 w-4 shrink-0 cursor-grab text-ink-gray-4" />
-                <span class="flex-1 text-xs font-medium uppercase tracking-wide text-ink-gray-4">{{ __('Column break') }}</span>
-                <Button variant="ghost" @click="removeField(i)">
-                  <template #icon><LucideX class="h-4 w-4 text-ink-gray-5" /></template>
-                </Button>
-              </div>
-
-              <!-- FIELD -->
-              <div v-else class="rounded-lg border">
-                <div class="flex items-center gap-2 px-3 py-2.5">
-                  <LucideGripVertical class="drag-handle h-4 w-4 shrink-0 cursor-grab text-ink-gray-4" />
-                  <div class="min-w-0 flex-1 cursor-pointer" @click="toggle(i)">
-                    <div class="truncate text-base text-ink-gray-8">
-                      {{ f.label }}<span v-if="f.reqd" class="text-ink-red-5">*</span>
-                    </div>
-                    <div class="truncate text-xs text-ink-gray-4">{{ f.fieldname }} · {{ f.fieldtype }}</div>
-                  </div>
-                  <Button variant="ghost" @click="toggle(i)">
-                    <template #icon>
-                      <LucideChevronDown class="h-4 w-4 transition-transform" :class="{ 'rotate-180': expanded === i }" />
-                    </template>
-                  </Button>
-                  <Button variant="ghost" @click="removeField(i)">
-                    <template #icon><LucideX class="h-4 w-4 text-ink-gray-5" /></template>
-                  </Button>
-                </div>
-                <div v-if="expanded === i" class="border-t bg-surface-gray-1 px-3 py-3">
-                  <div class="flex items-center justify-between py-1">
-                    <span class="text-sm text-ink-gray-7">{{ __('Required') }}</span>
-                    <Switch v-model="f.reqd" @update:modelValue="markDirty" />
-                  </div>
-                  <div class="mt-2 grid grid-cols-2 gap-3">
-                    <FormControl v-model="f.label" type="text" :label="__('Label')" @input="markDirty" />
-                    <FormControl v-model="f.placeholder" type="text" :label="__('Placeholder')" @input="markDirty" />
-                  </div>
-                  <FormControl
-                    v-model="f.field_description"
-                    type="text"
-                    class="mt-3"
-                    :label="__('Description')"
-                    :placeholder="__('Helper text under the field')"
+                <!-- SECTION BREAK -->
+                <div
+                  v-if="f.fieldtype === 'Section Break'"
+                  class="flex items-center gap-2 rounded-lg border border-dashed bg-surface-gray-1 px-3 py-2"
+                >
+                  <LucideGripVertical
+                    class="drag-handle h-4 w-4 shrink-0 cursor-grab text-ink-gray-4"
+                  />
+                  <span
+                    class="shrink-0 text-xs font-medium uppercase tracking-wide text-ink-gray-4"
+                    >{{ __('Section') }}</span
+                  >
+                  <TextInput
+                    v-model="f.label"
+                    class="flex-1"
+                    size="sm"
+                    :placeholder="__('Section title (optional)')"
                     @input="markDirty"
                   />
-                  <div v-if="f.fieldtype === 'Select' && optionList(f).length" class="mt-3">
-                    <div class="mb-1.5 text-sm text-ink-gray-5">{{ __('Options') }}</div>
-                    <div class="flex flex-wrap gap-1.5">
-                      <span
-                        v-for="o in optionList(f)"
-                        :key="o"
-                        class="rounded bg-surface-white px-2 py-1 text-xs text-ink-gray-7 ring-1 ring-outline-gray-2"
-                      >
-                        {{ o }}
-                      </span>
+                  <Button variant="ghost" @click="removeField(i)">
+                    <template #icon
+                      ><LucideX class="h-4 w-4 text-ink-gray-5"
+                    /></template>
+                  </Button>
+                </div>
+
+                <!-- COLUMN BREAK -->
+                <div
+                  v-else-if="f.fieldtype === 'Column Break'"
+                  class="flex items-center gap-2 rounded-lg border border-dashed bg-surface-gray-1 px-3 py-2"
+                >
+                  <LucideGripVertical
+                    class="drag-handle h-4 w-4 shrink-0 cursor-grab text-ink-gray-4"
+                  />
+                  <span
+                    class="flex-1 text-xs font-medium uppercase tracking-wide text-ink-gray-4"
+                    >{{ __('Column break') }}</span
+                  >
+                  <Button variant="ghost" @click="removeField(i)">
+                    <template #icon
+                      ><LucideX class="h-4 w-4 text-ink-gray-5"
+                    /></template>
+                  </Button>
+                </div>
+
+                <!-- FIELD -->
+                <div v-else class="rounded-lg border">
+                  <div class="flex items-center gap-2 px-3 py-2.5">
+                    <LucideGripVertical
+                      class="drag-handle h-4 w-4 shrink-0 cursor-grab text-ink-gray-4"
+                    />
+                    <div
+                      class="min-w-0 flex-1 cursor-pointer"
+                      @click="toggle(i)"
+                    >
+                      <div class="truncate text-base text-ink-gray-8">
+                        {{ f.label
+                        }}<span v-if="f.reqd" class="text-ink-red-5">*</span>
+                      </div>
+                      <div class="truncate text-xs text-ink-gray-4">
+                        {{ f.fieldname }} · {{ f.fieldtype }}
+                      </div>
                     </div>
-                    <p class="mt-1.5 text-xs text-ink-gray-4">
-                      {{ __('Choices come from the {0} field on {1}.', [f.fieldname, docLabel(form.document_type)]) }}
-                    </p>
+                    <Button variant="ghost" @click="toggle(i)">
+                      <template #icon>
+                        <LucideChevronDown
+                          class="h-4 w-4 transition-transform"
+                          :class="{ 'rotate-180': expanded === i }"
+                        />
+                      </template>
+                    </Button>
+                    <Button variant="ghost" @click="removeField(i)">
+                      <template #icon
+                        ><LucideX class="h-4 w-4 text-ink-gray-5"
+                      /></template>
+                    </Button>
+                  </div>
+                  <div
+                    v-if="expanded === i"
+                    class="border-t bg-surface-gray-1 px-3 py-3"
+                  >
+                    <div class="flex items-center justify-between py-1">
+                      <span class="text-sm text-ink-gray-7">{{
+                        __('Required')
+                      }}</span>
+                      <Switch v-model="f.reqd" @update:modelValue="markDirty" />
+                    </div>
+                    <div class="mt-2 grid grid-cols-2 gap-3">
+                      <FormControl
+                        v-model="f.label"
+                        type="text"
+                        :label="__('Label')"
+                        @input="markDirty"
+                      />
+                      <FormControl
+                        v-model="f.placeholder"
+                        type="text"
+                        :label="__('Placeholder')"
+                        @input="markDirty"
+                      />
+                    </div>
+                    <FormControl
+                      v-model="f.field_description"
+                      type="text"
+                      class="mt-3"
+                      :label="__('Description')"
+                      :placeholder="__('Helper text under the field')"
+                      @input="markDirty"
+                    />
+                    <div
+                      v-if="f.fieldtype === 'Select' && optionList(f).length"
+                      class="mt-3"
+                    >
+                      <div class="mb-1.5 text-sm text-ink-gray-5">
+                        {{ __('Options') }}
+                      </div>
+                      <div class="flex flex-wrap gap-1.5">
+                        <span
+                          v-for="o in optionList(f)"
+                          :key="o"
+                          class="rounded bg-surface-white px-2 py-1 text-xs text-ink-gray-7 ring-1 ring-outline-gray-2"
+                        >
+                          {{ o }}
+                        </span>
+                      </div>
+                      <p class="mt-1.5 text-xs text-ink-gray-4">
+                        {{
+                          __('Choices come from the {0} field on {1}.', [
+                            f.fieldname,
+                            docLabel(form.document_type),
+                          ])
+                        }}
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
               </div>
             </template>
           </Draggable>
@@ -189,15 +304,26 @@
         <div>
           <div class="flex items-center justify-between">
             <div class="flex flex-col gap-1 pr-4">
-              <span class="text-lg-semibold text-ink-gray-8">{{ __('Publish') }}</span>
+              <span class="text-lg-semibold text-ink-gray-8">{{
+                __('Publish')
+              }}</span>
               <span class="text-p-sm text-ink-gray-6">
-                {{ form.published ? __('This form is live and accepting submissions.') : __('Turn on to make this form public.') }}
+                {{
+                  form.published
+                    ? __('This form is live and accepting submissions.')
+                    : __('Turn on to make this form public.')
+                }}
               </span>
             </div>
             <Switch v-model="publishedModel" />
           </div>
           <div v-if="form.published" class="mt-4 flex items-center gap-2">
-            <TextInput class="flex-1" size="sm" readonly :modelValue="publicUrl">
+            <TextInput
+              class="flex-1"
+              size="sm"
+              readonly
+              :modelValue="publicUrl"
+            >
               <template #suffix>
                 <button
                   class="flex text-ink-gray-5 transition-colors hover:text-ink-gray-8"
@@ -208,7 +334,10 @@
                 </button>
               </template>
             </TextInput>
-            <Button :label="__('Embed')" @click="((shareTab = 'iframe'), (shareOpen = true))">
+            <Button
+              :label="__('Embed')"
+              @click="(shareTab = 'iframe'), (shareOpen = true)"
+            >
               <template #prefix><LucideShare2 class="h-4 w-4" /></template>
             </Button>
           </div>
@@ -229,8 +358,13 @@
         </div>
         <div class="rounded-xl border bg-surface-white p-7">
           <!-- simulated success screen -->
-          <div v-if="previewSubmitted" class="flex flex-col items-center gap-3 py-10 text-center">
-            <div class="flex h-12 w-12 items-center justify-center rounded-full bg-surface-green-2 text-ink-green-3">
+          <div
+            v-if="previewSubmitted"
+            class="flex flex-col items-center gap-3 py-10 text-center"
+          >
+            <div
+              class="flex h-12 w-12 items-center justify-center rounded-full bg-surface-green-2 text-ink-green-3"
+            >
               <LucideCheck class="h-6 w-6" />
             </div>
             <div class="text-lg font-semibold text-ink-gray-9">
@@ -240,51 +374,98 @@
           </div>
 
           <template v-else>
-          <div class="text-lg font-semibold text-ink-gray-9">{{ form.title || __('Form title') }}</div>
-          <div v-if="form.description" class="mt-1 text-sm text-ink-gray-6">{{ form.description }}</div>
-          <div class="mt-5 flex flex-col gap-5">
-            <div v-for="(section, si) in layout" :key="si">
-              <div v-if="section.label" class="mb-3 text-sm font-semibold text-ink-gray-8">{{ section.label }}</div>
-              <div class="grid gap-x-5" :style="{ gridTemplateColumns: `repeat(${section.columns.length}, minmax(0,1fr))` }">
-                <div v-for="(col, ci) in section.columns" :key="ci" class="flex flex-col gap-4">
-                  <div v-for="f in col" :key="f.fieldname">
-                    <div v-if="f.fieldtype !== 'Check'" class="mb-1.5 text-sm text-ink-gray-5">
-                      {{ f.label }}<span v-if="f.reqd" class="text-ink-red-5">*</span>
+            <div class="text-lg font-semibold text-ink-gray-9">
+              {{ form.title || __('Form title') }}
+            </div>
+            <div v-if="form.description" class="mt-1 text-sm text-ink-gray-6">
+              {{ form.description }}
+            </div>
+            <div class="mt-5 flex flex-col gap-5">
+              <div v-for="(section, si) in layout" :key="si">
+                <div
+                  v-if="section.label"
+                  class="mb-3 text-sm font-semibold text-ink-gray-8"
+                >
+                  {{ section.label }}
+                </div>
+                <div
+                  class="grid gap-x-5"
+                  :style="{
+                    gridTemplateColumns: `repeat(${section.columns.length}, minmax(0,1fr))`,
+                  }"
+                >
+                  <div
+                    v-for="(col, ci) in section.columns"
+                    :key="ci"
+                    class="flex flex-col gap-4"
+                  >
+                    <div v-for="f in col" :key="f.fieldname">
+                      <div
+                        v-if="f.fieldtype !== 'Check'"
+                        class="mb-1.5 text-sm text-ink-gray-5"
+                      >
+                        {{ f.label
+                        }}<span v-if="f.reqd" class="text-ink-red-5">*</span>
+                      </div>
+                      <FormControl
+                        v-if="
+                          ['Small Text', 'Text', 'Long Text'].includes(
+                            f.fieldtype,
+                          )
+                        "
+                        v-model="previewModel[f.fieldname]"
+                        type="textarea"
+                        :placeholder="f.placeholder"
+                      />
+                      <FormControl
+                        v-else-if="f.fieldtype === 'Select'"
+                        v-model="previewModel[f.fieldname]"
+                        type="select"
+                        :options="selectOptions(f)"
+                        :placeholder="f.placeholder || __('Select an option')"
+                      />
+                      <div
+                        v-else-if="f.fieldtype === 'Check'"
+                        class="flex items-center gap-2"
+                      >
+                        <FormControl
+                          v-model="previewModel[f.fieldname]"
+                          type="checkbox"
+                        />
+                        <span class="text-sm text-ink-gray-5"
+                          >{{ f.label
+                          }}<span v-if="f.reqd" class="text-ink-red-5"
+                            >*</span
+                          ></span
+                        >
+                      </div>
+                      <FormControl
+                        v-else
+                        v-model="previewModel[f.fieldname]"
+                        :type="inputType(f)"
+                        :placeholder="f.placeholder"
+                      />
+                      <div
+                        v-if="f.field_description"
+                        class="mt-1 text-sm text-ink-gray-4"
+                      >
+                        {{ f.field_description }}
+                      </div>
                     </div>
-                    <FormControl
-                      v-if="['Small Text', 'Text', 'Long Text'].includes(f.fieldtype)"
-                      v-model="previewModel[f.fieldname]"
-                      type="textarea"
-                      :placeholder="f.placeholder"
-                    />
-                    <FormControl
-                      v-else-if="f.fieldtype === 'Select'"
-                      v-model="previewModel[f.fieldname]"
-                      type="select"
-                      :options="selectOptions(f)"
-                      :placeholder="f.placeholder || __('Select an option')"
-                    />
-                    <div v-else-if="f.fieldtype === 'Check'" class="flex items-center gap-2">
-                      <FormControl v-model="previewModel[f.fieldname]" type="checkbox" />
-                      <span class="text-sm text-ink-gray-5">{{ f.label }}<span v-if="f.reqd" class="text-ink-red-5">*</span></span>
-                    </div>
-                    <FormControl v-else v-model="previewModel[f.fieldname]" :type="inputType(f)" :placeholder="f.placeholder" />
-                    <div v-if="f.field_description" class="mt-1 text-sm text-ink-gray-4">{{ f.field_description }}</div>
                   </div>
                 </div>
               </div>
+              <div v-if="!inputFieldCount" class="text-sm text-ink-gray-4">
+                {{ __('Add fields to see them here.') }}
+              </div>
+              <Button
+                variant="solid"
+                size="md"
+                class="mt-1 w-full"
+                :label="form.submit_button_label || __('Submit')"
+                @click="previewSubmitted = true"
+              />
             </div>
-            <div v-if="!inputFieldCount" class="text-sm text-ink-gray-4">
-              {{ __('Add fields to see them here.') }}
-            </div>
-            <Button
-              variant="solid"
-              size="md"
-              class="mt-1 w-full"
-              :label="form.submit_button_label || __('Submit')"
-              @click="previewSubmitted = true"
-            />
-          </div>
           </template>
         </div>
       </div>
@@ -294,16 +475,35 @@
     <Dialog v-model="addOpen" :options="{ title: __('Add field') }">
       <template #body-content>
         <div class="mb-3 flex gap-2">
-          <Button class="flex-1" :label="__('Section break')" @click="addBreak('Section Break')">
+          <Button
+            class="flex-1"
+            :label="__('Section break')"
+            @click="addBreak('Section Break')"
+          >
             <template #prefix><LucideRows3 class="h-4 w-4" /></template>
           </Button>
-          <Button class="flex-1" :label="__('Column break')" @click="addBreak('Column Break')">
+          <Button
+            class="flex-1"
+            :label="__('Column break')"
+            @click="addBreak('Column Break')"
+          >
             <template #prefix><LucideColumns3 class="h-4 w-4" /></template>
           </Button>
         </div>
-        <div class="mb-2 text-xs font-medium uppercase tracking-wide text-ink-gray-4">{{ __('Fields') }}</div>
-        <FormControl v-model="fieldQuery" type="text" :placeholder="__('Search fields…')" class="mb-2">
-          <template #prefix><LucideSearch class="h-4 w-4 text-ink-gray-4" /></template>
+        <div
+          class="mb-2 text-xs font-medium uppercase tracking-wide text-ink-gray-4"
+        >
+          {{ __('Fields') }}
+        </div>
+        <FormControl
+          v-model="fieldQuery"
+          type="text"
+          :placeholder="__('Search fields…')"
+          class="mb-2"
+        >
+          <template #prefix
+            ><LucideSearch class="h-4 w-4 text-ink-gray-4"
+          /></template>
         </FormControl>
         <div class="flex max-h-72 flex-col gap-0.5 overflow-y-auto">
           <button
@@ -313,14 +513,24 @@
             @click="addField(af)"
           >
             <span class="text-base text-ink-gray-8">{{ af.label }}</span>
-            <span class="mt-0.5 text-xs text-ink-gray-4">{{ af.fieldname }} · {{ af.fieldtype }}</span>
+            <span class="mt-0.5 text-xs text-ink-gray-4"
+              >{{ af.fieldname }} · {{ af.fieldtype }}</span
+            >
           </button>
-          <div v-if="!filteredAvailable.length" class="px-2 py-6 text-center text-sm text-ink-gray-4">
+          <div
+            v-if="!filteredAvailable.length"
+            class="px-2 py-6 text-center text-sm text-ink-gray-4"
+          >
             {{ __('No fields left to add') }}
           </div>
         </div>
         <p class="mt-3 border-t pt-3 text-xs text-ink-gray-4">
-          {{ __('Only fields on {0} show here. Add a custom field to the DocType first.', [docLabel(form.document_type)]) }}
+          {{
+            __(
+              'Only fields on {0} show here. Add a custom field to the DocType first.',
+              [docLabel(form.document_type)],
+            )
+          }}
         </p>
       </template>
     </Dialog>
@@ -336,7 +546,11 @@
             v-for="t in shareTabs"
             :key="t.key"
             class="-mb-px border-b-2 pb-2 transition-colors focus:outline-none"
-            :class="shareTab === t.key ? 'border-ink-gray-9 font-medium text-ink-gray-9' : 'border-transparent text-ink-gray-5 hover:text-ink-gray-7'"
+            :class="
+              shareTab === t.key
+                ? 'border-ink-gray-9 font-medium text-ink-gray-9'
+                : 'border-transparent text-ink-gray-5 hover:text-ink-gray-7'
+            "
             @click="shareTab = t.key"
           >
             {{ t.label }}
@@ -352,16 +566,27 @@
           />
           <div class="mt-2 flex items-center justify-between">
             <p class="text-xs text-ink-gray-4">
-              {{ shareTab === 'iframe' ? __('Paste into any HTML page.') : __('Drop this script where the form should appear.') }}
+              {{
+                shareTab === 'iframe'
+                  ? __('Paste into any HTML page.')
+                  : __('Drop this script where the form should appear.')
+              }}
             </p>
-            <Button :label="copied ? __('Copied') : __('Copy')" @click="copy(shareSnippet)" />
+            <Button
+              :label="copied ? __('Copied') : __('Copy')"
+              @click="copy(shareSnippet)"
+            />
           </div>
         </div>
 
         <div class="mt-4 border-t pt-4">
           <div class="text-sm text-ink-gray-7">{{ __('Allowed domains') }}</div>
           <p class="mt-0.5 text-xs text-ink-gray-4">
-            {{ __('Sites where this form may be embedded, one per line. Browsers block the iframe on any site not listed here.') }}
+            {{
+              __(
+                'Sites where this form may be embedded, one per line. Browsers block the iframe on any site not listed here.',
+              )
+            }}
           </p>
           <textarea
             v-model="form.allowed_embedding_domains"
@@ -371,8 +596,15 @@
             class="mt-2 w-full resize-none rounded-md border border-outline-gray-2 px-3 py-2 font-mono text-xs text-ink-gray-8 outline-none focus:border-outline-gray-4"
             @input="markDirty"
           />
-          <p v-if="!embeddingDomains.length" class="mt-1.5 text-xs text-ink-amber-6">
-            {{ __('No domains added — the embed will only work on this site until you add one.') }}
+          <p
+            v-if="!embeddingDomains.length"
+            class="mt-1.5 text-xs text-ink-amber-6"
+          >
+            {{
+              __(
+                'No domains added — the embed will only work on this site until you add one.',
+              )
+            }}
           </p>
           <p v-if="dirty" class="mt-1.5 text-xs text-ink-gray-4">
             {{ __('Click Update to apply domain changes.') }}
@@ -464,8 +696,12 @@ const publishedModel = computed({
     markDirty()
   },
 })
-const publicUrl = computed(() => `${window.location.origin}/crm-form/${form.route}`)
-const embeddingDomains = computed(() => (form.allowed_embedding_domains || '').split(/\s+/).filter(Boolean))
+const publicUrl = computed(
+  () => `${window.location.origin}/crm-form/${form.route}`,
+)
+const embeddingDomains = computed(() =>
+  (form.allowed_embedding_domains || '').split(/\s+/).filter(Boolean),
+)
 
 const shareTab = ref('iframe')
 const shareTabs = [
@@ -488,7 +724,8 @@ const shareSnippet = computed(() => {
       `    f.width = '100%'; f.height = '640'; f.style.border = '0';\n` +
       `    document.getElementById('${id}').appendChild(f);\n` +
       `  })();\n` +
-      `</` + `script>`
+      `</` +
+      `script>`
     )
   }
   return url
@@ -594,7 +831,9 @@ const filteredAvailable = computed(() => {
   const q = fieldQuery.value.toLowerCase()
   return (availableFields.data || [])
     .filter((f) => !used.has(f.fieldname))
-    .filter((f) => !q || f.label.toLowerCase().includes(q) || f.fieldname.includes(q))
+    .filter(
+      (f) => !q || f.label.toLowerCase().includes(q) || f.fieldname.includes(q),
+    )
 })
 
 function openAddField() {
@@ -631,7 +870,12 @@ async function onDoctypeChange() {
   )
   const dropped = before - form.fields.length
   if (dropped) {
-    toast.info(__('{0} field(s) removed — not available on {1}', [dropped, docLabel(form.document_type)]))
+    toast.info(
+      __('{0} field(s) removed — not available on {1}', [
+        dropped,
+        docLabel(form.document_type),
+      ]),
+    )
   }
 }
 

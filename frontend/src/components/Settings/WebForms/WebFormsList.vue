@@ -7,17 +7,29 @@
           {{ __('Web Forms') }}
         </h2>
         <p class="text-p-base text-ink-gray-6">
-          {{ __('Capture leads and deals from public forms you embed on your website.') }}
+          {{
+            __(
+              'Capture leads and deals from public forms you embed on your website.',
+            )
+          }}
         </p>
       </div>
       <div class="flex item-center space-x-2 w-3/12 justify-end">
-        <Button :label="__('New')" icon-left="lucide-plus" variant="solid" @click="openCreate" />
+        <Button
+          :label="__('New')"
+          icon-left="lucide-plus"
+          variant="solid"
+          @click="openCreate"
+        />
       </div>
     </div>
 
     <!-- List -->
     <div class="flex h-full flex-col overflow-y-auto">
-      <div v-if="forms.loading && !forms.data" class="flex items-center justify-center mt-12">
+      <div
+        v-if="forms.loading && !forms.data"
+        class="flex items-center justify-center mt-12"
+      >
         <LoadingIndicator class="w-4" />
       </div>
       <EmptyState
@@ -34,18 +46,38 @@
         </div>
         <div class="h-px border-t mx-2 border-outline-elevation-2" />
         <template v-for="(form, i) in forms.data" :key="form.name">
-          <div class="flex w-full items-center rounded p-2 hover:bg-surface-gray-2">
-            <div class="w-6/12 min-w-0 cursor-pointer" @click="$emit('open', form.name)">
-              <div class="truncate text-base text-ink-gray-8">{{ form.title }}</div>
-              <div class="truncate text-p-sm text-ink-gray-4">/crm-form/{{ form.route }}</div>
+          <div
+            class="flex w-full items-center rounded p-2 hover:bg-surface-gray-2"
+          >
+            <div
+              class="w-6/12 min-w-0 cursor-pointer"
+              @click="$emit('open', form.name)"
+            >
+              <div class="truncate text-base text-ink-gray-8">
+                {{ form.title }}
+              </div>
+              <div class="truncate text-p-sm text-ink-gray-4">
+                /crm-form/{{ form.route }}
+              </div>
             </div>
-            <div class="w-3/12 cursor-pointer text-base text-ink-gray-7" @click="$emit('open', form.name)">
+            <div
+              class="w-3/12 cursor-pointer text-base text-ink-gray-7"
+              @click="$emit('open', form.name)"
+            >
               {{ docLabel(form.document_type) }}
             </div>
             <div class="flex w-3/12 items-center justify-between">
-              <Switch size="sm" :modelValue="!!form.published" @update:modelValue="(v) => togglePublished(form, v)" />
+              <Switch
+                size="sm"
+                :modelValue="!!form.published"
+                @update:modelValue="(v) => togglePublished(form, v)"
+              />
               <Dropdown placement="right" :options="rowOptions(form)">
-                <Button icon="lucide-more-horizontal" variant="ghost" @click="isConfirmingDelete = false" />
+                <Button
+                  icon="lucide-more-horizontal"
+                  variant="ghost"
+                  @click="isConfirmingDelete = false"
+                />
               </Dropdown>
             </div>
           </div>
@@ -69,16 +101,33 @@
         <div>
           <div class="mb-1.5 text-sm text-ink-gray-5">{{ __('Route') }}</div>
           <div class="flex items-center gap-1.5">
-            <span class="whitespace-nowrap text-sm text-ink-gray-4">/crm-form/</span>
-            <TextInput v-model="draft.route" class="flex-1" :placeholder="__('contact-sales')" />
+            <span class="whitespace-nowrap text-sm text-ink-gray-4"
+              >/crm-form/</span
+            >
+            <TextInput
+              v-model="draft.route"
+              class="flex-1"
+              :placeholder="__('contact-sales')"
+            />
           </div>
         </div>
-        <FormControl v-model="draft.document_type" type="select" :label="__('Maps to')" :options="targetOptions" />
+        <FormControl
+          v-model="draft.document_type"
+          type="select"
+          :label="__('Maps to')"
+          :options="targetOptions"
+        />
         <ErrorMessage v-if="createError" :message="createError" />
       </div>
     </template>
     <template #actions>
-      <Button class="w-full" variant="solid" :label="__('Create form')" :loading="creating" @click="createForm" />
+      <Button
+        class="w-full"
+        variant="solid"
+        :label="__('Create form')"
+        :loading="creating"
+        @click="createForm"
+      />
     </template>
   </Dialog>
 </template>
@@ -125,7 +174,12 @@ const draft = reactive({ title: '', route: '', document_type: 'CRM Lead' })
 let routeEdited = false
 
 function slugify(v) {
-  return (v || '').toString().trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')
+  return (v || '')
+    .toString()
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
 }
 function openCreate() {
   draft.title = ''
@@ -154,7 +208,8 @@ async function createForm() {
     showCreate.value = false
     emit('open', doc.name)
   } catch (e) {
-    createError.value = e?.messages?.[0] || e?.message || __('Could not create form')
+    createError.value =
+      e?.messages?.[0] || e?.message || __('Could not create form')
   } finally {
     creating.value = false
   }
@@ -162,7 +217,10 @@ async function createForm() {
 
 async function togglePublished(form, value) {
   try {
-    await call('crm.api.web_form.set_published', { name: form.name, published: value ? 1 : 0 })
+    await call('crm.api.web_form.set_published', {
+      name: form.name,
+      published: value ? 1 : 0,
+    })
     form.published = value ? 1 : 0
     toast.success(value ? __('Form published') : __('Form unpublished'))
   } catch (e) {
@@ -185,7 +243,11 @@ async function deleteForm(form) {
 
 function rowOptions(form) {
   return [
-    { label: __('Edit'), icon: 'edit-2', onClick: () => emit('open', form.name) },
+    {
+      label: __('Edit'),
+      icon: 'edit-2',
+      onClick: () => emit('open', form.name),
+    },
     { label: __('Copy link'), icon: 'link', onClick: () => copyLink(form) },
     ...ConfirmDelete({
       isConfirmingDelete,

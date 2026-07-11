@@ -212,6 +212,7 @@
         var WEB_FORM = {{ web_form_name | tojson }};
         var FIELDS = {{ fields | tojson }};
         var CSRF = {{ csrf_token | tojson }};
+        var DRAFT = {{ draft_preview | tojson }};
         var form = document.getElementById("web-form");
         var errBox = document.getElementById("form-error");
         var btn = document.getElementById("submit-btn");
@@ -262,11 +263,19 @@
           var original = btn.textContent;
           btn.textContent = "Submitting…";
 
-          // Submit through Frappe's built-in Web Form engine (validation + insert).
-          fetch("/api/method/frappe.website.doctype.web_form.web_form.accept", {
+          // Draft preview → dry-run (validate only, no record). Published → submit
+          // through Frappe's built-in Web Form engine (validation + insert).
+          var endpoint = DRAFT
+            ? "/api/method/crm.api.web_form.test_submit_web_form"
+            : "/api/method/frappe.website.doctype.web_form.web_form.accept";
+          var payload = DRAFT
+            ? { name: WEB_FORM, values: JSON.stringify(values) }
+            : { web_form: WEB_FORM, data: JSON.stringify(values) };
+
+          fetch(endpoint, {
             method: "POST",
             headers: { "Content-Type": "application/json", "X-Frappe-CSRF-Token": (CSRF || "") },
-            body: JSON.stringify({ web_form: WEB_FORM, data: JSON.stringify(values) }),
+            body: JSON.stringify(payload),
           })
             .then(function (r) {
               return r.json().then(function (data) { return { ok: r.ok, data: data }; });
@@ -280,6 +289,10 @@
                 btn.disabled = false;
                 btn.textContent = original;
                 return;
+              }
+              if (DRAFT) {
+                document.getElementById("success-note").textContent =
+                  "Test submission — no record was created. Publish the form to start collecting responses.";
               }
               document.getElementById("form-view").style.display = "none";
               document.getElementById("success-view").style.display = "block";
