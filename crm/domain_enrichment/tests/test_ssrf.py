@@ -137,3 +137,65 @@ class SSRFGuardTest(UnitTestCase):
 			self.assertFalse(http._is_blocked_ip(ip), ip)
 		# Unparseable -> rejected.
 		self.assertTrue(http._is_blocked_ip("not-an-ip"))
+
+
+class PinnedConnectionTest(UnitTestCase):
+	"""DNS-rebinding defense: the socket must go to the IP the guard validated.
+
+	``_pinned_get`` rewrites the URL netloc to the validated IP and keeps the
+	original hostname in the Host header / TLS SNI, so a resolver answer that
+	changes after validation can no longer steer the connection.
+	"""
+
+	def _capture_send(self, captured):
+		import requests
+
+		def fake_send(adapter, request, **kwargs):
+			captured["url"] = request.url
+			captured["host_header"] = request.headers.get("Host")
+			raise requests.exceptions.ConnectionError("offline test: no socket")
+
+		return mock.patch.object(http._PinnedIPAdapter, "send", autospec=True, side_effect=fake_send)
+
+	def test_pinned_get_connects_to_ip_with_hostname_host_header(self):
+		import requests
+
+		captured = {}
+		with self._capture_send(captured), self.assertRaises(requests.exceptions.ConnectionError):
+			http._pinned_get(requests.Session(), "https://example.com/about", "93.184.216.34", 5, 2)
+		self.assertEqual(captured["url"], "https://93.184.216.34/about")
+		self.assertEqual(captured["host_header"], "example.com")
+
+	def test_pinned_get_brackets_ipv6_and_keeps_explicit_port(self):
+		import requests
+
+		captured = {}
+		with self._capture_send(captured), self.assertRaises(requests.exceptions.ConnectionError):
+			http._pinned_get(requests.Session(), "https://example.com:8443/x", "2606:2800:220:1::", 5, 2)
+		self.assertEqual(captured["url"], "https://[2606:2800:220:1::]:8443/x")
+		self.assertEqual(captured["host_header"], "example.com:8443")
+
+	def test_pinned_adapter_keeps_tls_verification_on_hostname(self):
+		adapter = http._PinnedIPAdapter("example.com")
+		# urllib3 uses server_hostname for SNI and falls back to it for certificate
+		# matching, so verification stays against the hostname, not the IP literal.
+		self.assertEqual(adapter.poolmanager.connection_pool_kw.get("server_hostname"), "example.com")
+
+	def test_fetch_connects_to_the_validated_ip(self):
+		import requests
+
+		captured = {}
+		with _resolves_to({"rebind.example": "8.8.8.8"}), self._capture_send(captured):
+			status, _html, error, _final = http.fetch("http://rebind.example/", make_config())
+		self.assertEqual(captured["url"], "http://8.8.8.8/")
+		self.assertEqual(status, 0)
+		self.assertIn("connection error", error)
+
+	def test_pinned_get_falls_back_to_plain_get_when_ip_check_bypassed(self):
+		import requests
+
+		session = requests.Session()
+		with mock.patch.object(session, "get", side_effect=requests.exceptions.ConnectionError("x")) as get:
+			with self.assertRaises(requests.exceptions.ConnectionError):
+				http._pinned_get(session, "http://10.0.0.5/", None, 5, 2)
+		self.assertEqual(get.call_args.args[0], "http://10.0.0.5/")
