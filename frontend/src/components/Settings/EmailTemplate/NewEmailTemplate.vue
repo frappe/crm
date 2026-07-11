@@ -20,8 +20,7 @@
           <span class="text-sm text-ink-gray-7">{{ __('Enabled') }}</span>
         </div>
         <Button
-          :label="templateData?.name ? __('Duplicate') : __('Create')"
-          icon-left="lucide-plus"
+          :label="templateData?.name ? __('Duplicate') : __('Save')"
           variant="solid"
           @click="createTemplate"
         />
