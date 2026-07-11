@@ -14,6 +14,7 @@
   "description",
   "submit_button_label",
   "success_message",
+  "allowed_embedding_domains",
   "section_break_fields",
   "fields"
  ],
@@ -68,6 +69,12 @@
    "fieldname": "success_message",
    "fieldtype": "Small Text",
    "label": "Success Message"
+  },
+  {
+   "description": "One origin per line (e.g. https://example.com). Required to embed this form as an iframe on other sites.",
+   "fieldname": "allowed_embedding_domains",
+   "fieldtype": "Small Text",
+   "label": "Allowed Embedding Domains"
   },
   {
    "fieldname": "section_break_fields",

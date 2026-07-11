@@ -357,6 +357,27 @@
             <Button :label="copied ? __('Copied') : __('Copy')" @click="copy(shareSnippet)" />
           </div>
         </div>
+
+        <div class="mt-4 border-t pt-4">
+          <div class="text-sm text-ink-gray-7">{{ __('Allowed domains') }}</div>
+          <p class="mt-0.5 text-xs text-ink-gray-4">
+            {{ __('Sites where this form may be embedded, one per line. Browsers block the iframe on any site not listed here.') }}
+          </p>
+          <textarea
+            v-model="form.allowed_embedding_domains"
+            rows="2"
+            spellcheck="false"
+            placeholder="https://www.example.com"
+            class="mt-2 w-full resize-none rounded-md border border-outline-gray-2 px-3 py-2 font-mono text-xs text-ink-gray-8 outline-none focus:border-outline-gray-4"
+            @input="markDirty"
+          />
+          <p v-if="!embeddingDomains.length" class="mt-1.5 text-xs text-ink-amber-6">
+            {{ __('No domains added — the embed will only work on this site until you add one.') }}
+          </p>
+          <p v-if="dirty" class="mt-1.5 text-xs text-ink-gray-4">
+            {{ __('Click Update to apply domain changes.') }}
+          </p>
+        </div>
       </template>
     </Dialog>
   </div>
@@ -431,6 +452,7 @@ const form = reactive({
   description: '',
   submit_button_label: 'Submit',
   success_message: '',
+  allowed_embedding_domains: '',
   published: 0,
   fields: [],
 })
@@ -443,6 +465,7 @@ const publishedModel = computed({
   },
 })
 const publicUrl = computed(() => `${window.location.origin}/crm-form/${form.route}`)
+const embeddingDomains = computed(() => (form.allowed_embedding_domains || '').split(/\s+/).filter(Boolean))
 
 const shareTab = ref('iframe')
 const shareTabs = [
@@ -544,6 +567,7 @@ createResource({
     form.description = doc.description || ''
     form.submit_button_label = doc.submit_button_label || 'Submit'
     form.success_message = doc.success_message || ''
+    form.allowed_embedding_domains = doc.allowed_embedding_domains || ''
     form.published = doc.published || 0
     form.fields = (doc.fields || []).map((f) => ({
       name: f.name,
@@ -630,6 +654,7 @@ async function save() {
         description: form.description,
         submit_button_label: form.submit_button_label,
         success_message: form.success_message,
+        allowed_embedding_domains: form.allowed_embedding_domains,
         published: form.published ? 1 : 0,
         fields: form.fields.map((f) => ({
           fieldname: f.fieldname,

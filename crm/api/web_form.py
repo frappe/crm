@@ -122,6 +122,7 @@ def save_web_form(name: str, form: dict | str) -> dict:
 		"description",
 		"submit_button_label",
 		"success_message",
+		"allowed_embedding_domains",
 	):
 		if key in form:
 			doc.set(key, form[key])

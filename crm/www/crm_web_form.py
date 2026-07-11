@@ -16,6 +16,7 @@ def get_context(context):
 		raise frappe.DoesNotExistError
 
 	doc = frappe.get_doc("CRM Web Form", name)
+	set_embedding_headers(doc)
 	context.no_cache = 1
 	try:
 		context.csrf_token = frappe.sessions.get_csrf_token()
@@ -41,6 +42,20 @@ def get_context(context):
 	]
 	context.layout = build_layout(context.fields)
 	return context
+
+
+def set_embedding_headers(doc):
+	"""Allow this page to be embedded as an iframe on the form's allow-listed origins.
+
+	Emits a Content-Security-Policy `frame-ancestors` header. Modern browsers ignore
+	the default `X-Frame-Options: SAMEORIGIN` (set by nginx) whenever `frame-ancestors`
+	is present, so this is what makes cross-origin embedding work — without it a form
+	can only be embedded on its own site.
+	"""
+	domains = (doc.allowed_embedding_domains or "").split()
+	if not domains:
+		return
+	frappe.local.response_headers["Content-Security-Policy"] = "frame-ancestors 'self' " + " ".join(domains)
 
 
 def build_layout(fields):
