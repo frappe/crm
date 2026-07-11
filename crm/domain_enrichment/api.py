@@ -16,16 +16,10 @@ import frappe
 from frappe import _
 from frappe.rate_limiter import rate_limit
 
-from .config import EnrichmentConfig, get_config
+from .config import ENABLE_FLAG_BY_DOCTYPE, EnrichmentConfig, get_config
 from .mapper import get_value_for_source_key
 from .pipeline import run as run_pipeline
-
-# DocType -> the Settings checkbox that enables enrichment for it.
-ENABLE_FLAG_BY_DOCTYPE = {
-	"CRM Lead": "enable_lead",
-	"CRM Deal": "enable_deal",
-	"CRM Organization": "enable_organization",
-}
+from .tasks import enqueue_enrichment
 
 
 def _enabled_doctypes(cfg: EnrichmentConfig) -> list[str]:
@@ -56,23 +50,7 @@ def _enqueue_run(cfg, reference_doctype: str, reference_name: str, website: str)
 	if not website:
 		frappe.throw(_("Set a website on this record before enriching."), frappe.ValidationError)
 
-	job_id = f"domain-enrich-{reference_doctype}-{reference_name}"
-	timeout = int(cfg.setting("request_timeout", 10)) * int(cfg.setting("max_pages", 10)) + 60
-
-	frappe.enqueue(
-		"crm.domain_enrichment.tasks.run_enrichment",
-		queue="long",
-		timeout=timeout,
-		job_id=job_id,
-		deduplicate=True,
-		enqueue_after_commit=True,
-		reference_doctype=reference_doctype,
-		reference_name=reference_name,
-		website=website,
-		user=frappe.session.user,
-	)
-
-	return {"queued": True, "job_id": job_id, "website": website}
+	return enqueue_enrichment(cfg, reference_doctype, reference_name, website, frappe.session.user)
 
 
 @frappe.whitelist()
