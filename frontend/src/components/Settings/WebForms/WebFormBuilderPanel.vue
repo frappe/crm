@@ -36,29 +36,29 @@
           </div>
           <div class="mt-3.5 flex flex-col gap-4">
             <div class="grid grid-cols-2 gap-4">
-              <FormControl type="text" :label="__('Title')" v-model="form.title" @input="markDirty" />
+              <FormControl v-model="form.title" type="text" :label="__('Title')" @input="markDirty" />
               <div>
                 <div class="mb-1.5 text-sm text-ink-gray-5">{{ __('Route') }}</div>
                 <div class="flex items-center gap-1.5">
                   <span class="whitespace-nowrap text-sm text-ink-gray-4">/crm-form/</span>
-                  <TextInput class="flex-1" v-model="form.route" @input="markDirty" />
+                  <TextInput v-model="form.route" class="flex-1" @input="markDirty" />
                 </div>
               </div>
               <FormControl
+                v-model="form.document_type"
                 type="select"
                 :label="__('Maps to')"
-                v-model="form.document_type"
                 :options="targetOptions"
                 @update:modelValue="onDoctypeChange"
               />
-              <FormControl type="text" :label="__('Submit button label')" v-model="form.submit_button_label" @input="markDirty" />
+              <FormControl v-model="form.submit_button_label" type="text" :label="__('Submit button label')" @input="markDirty" />
             </div>
-            <FormControl type="textarea" :label="__('Description')" :rows="2" v-model="form.description" @input="markDirty" />
+            <FormControl v-model="form.description" type="textarea" :label="__('Description')" :rows="2" @input="markDirty" />
             <FormControl
+              v-model="form.success_message"
               type="textarea"
               :label="__('Success message')"
               :rows="2"
-              v-model="form.success_message"
               :placeholder="__('Shown after a successful submission')"
               @input="markDirty"
             />
@@ -107,7 +107,7 @@
               >
                 <LucideGripVertical class="drag-handle h-4 w-4 shrink-0 cursor-grab text-ink-gray-4" />
                 <span class="shrink-0 text-xs font-medium uppercase tracking-wide text-ink-gray-4">{{ __('Section') }}</span>
-                <TextInput class="flex-1" size="sm" v-model="f.label" :placeholder="__('Section title (optional)')" @input="markDirty" />
+                <TextInput v-model="f.label" class="flex-1" size="sm" :placeholder="__('Section title (optional)')" @input="markDirty" />
                 <Button variant="ghost" @click="removeField(i)">
                   <template #icon><LucideX class="h-4 w-4 text-ink-gray-5" /></template>
                 </Button>
@@ -150,14 +150,14 @@
                     <Switch v-model="f.reqd" @update:modelValue="markDirty" />
                   </div>
                   <div class="mt-2 grid grid-cols-2 gap-3">
-                    <FormControl type="text" :label="__('Label')" v-model="f.label" @input="markDirty" />
-                    <FormControl type="text" :label="__('Placeholder')" v-model="f.placeholder" @input="markDirty" />
+                    <FormControl v-model="f.label" type="text" :label="__('Label')" @input="markDirty" />
+                    <FormControl v-model="f.placeholder" type="text" :label="__('Placeholder')" @input="markDirty" />
                   </div>
                   <FormControl
+                    v-model="f.field_description"
                     type="text"
                     class="mt-3"
                     :label="__('Description')"
-                    v-model="f.field_description"
                     :placeholder="__('Helper text under the field')"
                     @input="markDirty"
                   />
@@ -253,22 +253,22 @@
                     </div>
                     <FormControl
                       v-if="['Small Text', 'Text', 'Long Text'].includes(f.fieldtype)"
-                      type="textarea"
                       v-model="previewModel[f.fieldname]"
+                      type="textarea"
                       :placeholder="f.placeholder"
                     />
                     <FormControl
                       v-else-if="f.fieldtype === 'Select'"
-                      type="select"
                       v-model="previewModel[f.fieldname]"
+                      type="select"
                       :options="selectOptions(f)"
                       :placeholder="f.placeholder || __('Select an option')"
                     />
                     <div v-else-if="f.fieldtype === 'Check'" class="flex items-center gap-2">
-                      <FormControl type="checkbox" v-model="previewModel[f.fieldname]" />
+                      <FormControl v-model="previewModel[f.fieldname]" type="checkbox" />
                       <span class="text-sm text-ink-gray-5">{{ f.label }}<span v-if="f.reqd" class="text-ink-red-5">*</span></span>
                     </div>
-                    <FormControl v-else :type="inputType(f)" v-model="previewModel[f.fieldname]" :placeholder="f.placeholder" />
+                    <FormControl v-else v-model="previewModel[f.fieldname]" :type="inputType(f)" :placeholder="f.placeholder" />
                     <div v-if="f.field_description" class="mt-1 text-sm text-ink-gray-4">{{ f.field_description }}</div>
                   </div>
                 </div>
@@ -302,7 +302,7 @@
           </Button>
         </div>
         <div class="mb-2 text-xs font-medium uppercase tracking-wide text-ink-gray-4">{{ __('Fields') }}</div>
-        <FormControl type="text" v-model="fieldQuery" :placeholder="__('Search fields…')" class="mb-2">
+        <FormControl v-model="fieldQuery" type="text" :placeholder="__('Search fields…')" class="mb-2">
           <template #prefix><LucideSearch class="h-4 w-4 text-ink-gray-4" /></template>
         </FormControl>
         <div class="flex max-h-72 flex-col gap-0.5 overflow-y-auto">
@@ -488,7 +488,7 @@ const shareSnippet = computed(() => {
       `    f.width = '100%'; f.height = '640'; f.style.border = '0';\n` +
       `    document.getElementById('${id}').appendChild(f);\n` +
       `  })();\n` +
-      `<\/script>`
+      `</` + `script>`
     )
   }
   return url

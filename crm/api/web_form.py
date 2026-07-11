@@ -78,7 +78,9 @@ def get_form_fields(document_type: str) -> list[dict]:
 	return fields
 
 
-@frappe.whitelist(allow_guest=True)
+# Public read of a published form's config — guest access is required so the
+# public page can render for anonymous visitors; only published forms are returned.
+@frappe.whitelist(allow_guest=True)  # nosemgrep: frappe-semgrep-rules.rules.security.guest-whitelisted-method
 def get_web_form(route: str) -> dict:
 	"""Public config for a published web form. Raises 404 if not published."""
 	name = frappe.db.get_value("CRM Web Form", {"route": route, "published": 1})
@@ -145,7 +147,6 @@ def save_web_form(name: str, form: dict | str) -> dict:
 		)
 
 	doc.save()
-	frappe.db.commit()
 	return {
 		"name": doc.name,
 		"route": doc.route,
@@ -153,7 +154,10 @@ def save_web_form(name: str, form: dict | str) -> dict:
 	}
 
 
-@frappe.whitelist(allow_guest=True, methods=["POST"])
+# Public form submission — guest access is required for anonymous visitors. Writes are
+# constrained to the form's declared fields and the allow-listed target doctypes, and the
+# endpoint is rate-limited below.
+@frappe.whitelist(allow_guest=True, methods=["POST"])  # nosemgrep: frappe-semgrep-rules.rules.security.guest-whitelisted-method
 @rate_limit(key="route", limit=20, seconds=60 * 60)
 def submit_web_form(route: str, values: dict | str) -> dict:
 	"""Create a record of the form's target DocType from a public submission.
@@ -229,7 +233,6 @@ def submit_web_form(route: str, values: dict | str) -> dict:
 		doc.source = ensure_web_form_source()
 
 	doc.insert(ignore_permissions=True)
-	frappe.db.commit()
 
 	return {
 		"name": doc.name,

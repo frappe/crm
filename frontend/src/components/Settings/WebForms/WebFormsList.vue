@@ -60,9 +60,9 @@
     <template #body-content>
       <div class="flex flex-col gap-4">
         <FormControl
+          v-model="draft.title"
           type="text"
           :label="__('Form title')"
-          v-model="draft.title"
           :placeholder="__('Contact sales')"
           @input="onTitleInput"
         />
@@ -70,10 +70,10 @@
           <div class="mb-1.5 text-sm text-ink-gray-5">{{ __('Route') }}</div>
           <div class="flex items-center gap-1.5">
             <span class="whitespace-nowrap text-sm text-ink-gray-4">/crm-form/</span>
-            <TextInput class="flex-1" v-model="draft.route" :placeholder="__('contact-sales')" />
+            <TextInput v-model="draft.route" class="flex-1" :placeholder="__('contact-sales')" />
           </div>
         </div>
-        <FormControl type="select" :label="__('Maps to')" v-model="draft.document_type" :options="targetOptions" />
+        <FormControl v-model="draft.document_type" type="select" :label="__('Maps to')" :options="targetOptions" />
         <ErrorMessage v-if="createError" :message="createError" />
       </div>
     </template>
