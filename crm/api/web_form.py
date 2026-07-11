@@ -102,7 +102,14 @@ def list_web_forms() -> list[dict]:
 	return frappe.get_all(
 		"Web Form",
 		filters={"doc_type": ["in", ALLOWED_DOCTYPES]},
-		fields=["name", "title", "route", "doc_type as document_type", "published", "modified"],
+		fields=[
+			"name",
+			"title",
+			"route",
+			"doc_type as document_type",
+			"crm_published as published",
+			"modified",
+		],
 		order_by="modified desc",
 	)
 
@@ -119,7 +126,7 @@ def get_web_form_config(name: str) -> dict:
 		"title": doc.title,
 		"route": doc.route,
 		"document_type": doc.doc_type,
-		"published": doc.published,
+		"published": doc.crm_published,
 		"submit_button_label": doc.button_label or _("Submit"),
 		"description": doc.introduction_text or "",
 		"success_message": doc.success_message or "",
@@ -160,7 +167,11 @@ def save_web_form(name: str | None, form: dict | str) -> dict:
 	doc.button_label = form.get("submit_button_label") or "Submit"
 	doc.success_message = form.get("success_message")
 	doc.allowed_embedding_domains = form.get("allowed_embedding_domains")
-	doc.published = 1 if form.get("published") else 0
+	# CRM forms are served only by the CRM's own public page, so the native
+	# `published` stays 0 (framework never renders /<route>); our own
+	# `crm_published` flag drives whether the CRM page serves it publicly.
+	doc.published = 0
+	doc.crm_published = 1 if form.get("published") else 0
 	# CRM forms are public, single-purpose lead/deal capture
 	doc.login_required = 0
 	doc.allow_multiple = 1
@@ -199,7 +210,8 @@ def set_published(name: str, published: int) -> None:
 	"""Publish/unpublish from the list, bypassing native Web Form role perms."""
 	_check_manager()
 	doc = _get_crm_web_form(name)
-	doc.published = 1 if int(published) else 0
+	doc.crm_published = 1 if int(published) else 0
+	doc.published = 0
 	doc.save(ignore_permissions=True)
 
 
@@ -210,11 +222,29 @@ def delete_web_form(name: str) -> None:
 	frappe.delete_doc("Web Form", name, ignore_permissions=True)
 
 
+@frappe.whitelist()
+def test_submit_web_form(name: str, values: dict | str) -> dict:
+	"""Dry-run a submission for an author previewing a draft: validate required
+	fields the same way the live form does, but create no record."""
+	_check_manager()
+	if isinstance(values, str):
+		values = json.loads(values or "{}")
+
+	doc = _get_crm_web_form(name)
+	for f in doc.web_form_fields:
+		if f.fieldtype in ("Section Break", "Column Break"):
+			continue
+		value = values.get(f.fieldname)
+		if f.reqd and (value is None or value == ""):
+			frappe.throw(_("{0} is required").format(f.label or f.fieldname))
+	return {"test": True}
+
+
 @frappe.whitelist(allow_guest=True)  # nosemgrep: frappe-semgrep-rules.rules.security.guest-whitelisted-method
 def get_web_form(route: str) -> dict:
 	"""Public config for a published CRM web form, for the espresso public page."""
 	name = frappe.db.get_value(
-		"Web Form", {"route": route, "published": 1, "doc_type": ["in", ALLOWED_DOCTYPES]}
+		"Web Form", {"route": route, "crm_published": 1, "doc_type": ["in", ALLOWED_DOCTYPES]}
 	)
 	if not name:
 		frappe.throw(_("Web form not found"), frappe.DoesNotExistError)

@@ -22,6 +22,7 @@ def after_install(force=False):
 	add_property_setter()
 	add_email_template_custom_fields()
 	add_email_account_custom_field()
+	add_web_form_custom_fields()
 	add_default_industries()
 	add_default_lead_sources()
 	add_default_lost_reasons()
@@ -322,6 +323,32 @@ def add_email_account_custom_field():
 		)
 
 		frappe.clear_cache(doctype="Email Account")
+
+
+def add_web_form_custom_fields():
+	"""CRM's own published flag on the native Web Form.
+
+	Kept separate from Web Form's built-in `published` so CRM forms are served
+	only by the CRM's own public page (and never rendered by the framework's
+	web form page). The native `published` is always left 0.
+	"""
+	if not frappe.get_meta("Web Form").has_field("crm_published"):
+		click.secho("* Installing Custom Fields in Web Form")
+		create_custom_fields(
+			{
+				"Web Form": [
+					{
+						"default": "0",
+						"fieldname": "crm_published",
+						"fieldtype": "Check",
+						"label": "CRM Published",
+						"insert_after": "published",
+						"hidden": 1,
+					}
+				]
+			}
+		)
+		frappe.clear_cache(doctype="Web Form")
 
 
 def add_default_industries():
