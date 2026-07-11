@@ -557,8 +557,8 @@ function addBreak(fieldtype) {
 
 // load
 createResource({
-  url: 'frappe.client.get',
-  params: { doctype: 'CRM Web Form', name: props.name },
+  url: 'crm.api.web_form.get_web_form_config',
+  params: { name: props.name },
   auto: true,
   onSuccess: (doc) => {
     form.title = doc.title || ''

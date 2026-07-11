@@ -6,27 +6,32 @@ import frappe
 no_cache = 1
 
 
+ALLOWED_DOCTYPES = ("CRM Lead", "CRM Deal")
+
+
 def get_context(context):
 	route = resolve_route()
-	name = frappe.db.get_value("CRM Web Form", {"route": route, "published": 1})
+	filters = {"route": route, "published": 1, "doc_type": ["in", ALLOWED_DOCTYPES]}
+	name = frappe.db.get_value("Web Form", filters)
 	# let logged-in authors preview an unpublished (draft) form; guests only see published
-	if not name and frappe.session.user != "Guest" and frappe.has_permission("CRM Web Form", "read"):
-		name = frappe.db.get_value("CRM Web Form", {"route": route})
+	if not name and frappe.session.user != "Guest" and frappe.has_permission("Web Form", "read"):
+		name = frappe.db.get_value("Web Form", {"route": route, "doc_type": ["in", ALLOWED_DOCTYPES]})
 	if not name:
 		raise frappe.DoesNotExistError
 
-	doc = frappe.get_doc("CRM Web Form", name)
+	doc = frappe.get_doc("Web Form", name)
 	set_embedding_headers(doc)
 	context.no_cache = 1
 	try:
 		context.csrf_token = frappe.sessions.get_csrf_token()
 	except Exception:
 		context.csrf_token = ""
+	context.web_form_name = doc.name
 	context.draft_preview = not doc.published
 	context.form_title = doc.title
-	context.form_description = doc.description or ""
+	context.form_description = doc.introduction_text or ""
 	context.form_route = doc.route
-	context.submit_label = doc.submit_button_label or "Submit"
+	context.submit_label = doc.button_label or "Submit"
 	context.success_message = doc.success_message or "Thank you!"
 	context.fields = [
 		{
@@ -36,9 +41,9 @@ def get_context(context):
 			"options": f.options or "",
 			"reqd": int(f.reqd or 0),
 			"placeholder": f.placeholder or "",
-			"description": f.field_description or "",
+			"description": f.description or "",
 		}
-		for f in doc.fields
+		for f in doc.web_form_fields
 	]
 	context.layout = build_layout(context.fields)
 	return context

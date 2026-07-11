@@ -178,9 +178,13 @@ doc_events = {
 		"on_update": ["crm.api.whatsapp.on_update"],
 	},
 	"CRM Deal": {
+		"before_insert": ["crm.api.web_form.enrich_web_form_submission"],
 		"on_update": [
 			"crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.create_customer_in_erpnext"
 		],
+	},
+	"CRM Lead": {
+		"before_insert": ["crm.api.web_form.enrich_web_form_submission"],
 	},
 	"Sales Order": {
 		"before_validate": [
