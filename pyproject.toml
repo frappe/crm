@@ -11,7 +11,9 @@ dependencies = [
     # "frappe~=15.0.0" # Installed and managed by bench.
     "twilio==8.5.0",
     "requests>=2.28.0",
-    "beautifulsoup4~=4.13.5"
+    # beautifulsoup4 is a hard dependency of frappe -- do not re-declare it here (the
+    # enrichment crawler imports `from bs4 import BeautifulSoup` and uses only the
+    # stdlib html.parser backend, so no extra dependency is needed).
 ]
 
 [build-system]

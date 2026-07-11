@@ -21,6 +21,7 @@ Limits (timeout, byte cap, retries, user-agent) come from config, not constants.
 from __future__ import annotations
 
 import ipaddress
+import re
 import socket
 from urllib.parse import urlparse
 
@@ -61,19 +62,19 @@ def _domain_in_list(host: str, domains: list) -> bool:
 
 
 def _is_blocked_ip(ip: str) -> bool:
-	"""True if ``ip`` is loopback / private / link-local / reserved / multicast."""
+	"""True if ``ip`` is not a public (globally-routable) address.
+
+	Mirrors the framework's own SSRF check (``make_safe_get_request`` in
+	frappe.utils.safe_exec): ``not is_global`` rejects loopback, private, link-local,
+	reserved and unspecified addresses -- and also shared/CGNAT ranges (100.64.0.0/10,
+	0.0.0.0/8) that an explicit flag enumeration tends to miss. ``is_global`` does NOT
+	cover multicast, so keep an explicit reject for it (the framework helper misses it).
+	"""
 	try:
 		addr = ipaddress.ip_address(ip)
 	except ValueError:
 		return True  # unparseable -> reject
-	return (
-		addr.is_loopback  # 127.0.0.0/8, ::1
-		or addr.is_private  # 10/8, 172.16/12, 192.168/16, fc00::/7, ...
-		or addr.is_link_local  # 169.254/16, fe80::/10
-		or addr.is_reserved
-		or addr.is_multicast
-		or addr.is_unspecified  # 0.0.0.0, ::
-	)
+	return not addr.is_global or addr.is_multicast
 
 
 def _resolve_ips(host: str) -> list:
@@ -164,6 +165,21 @@ def build_session(cfg=None):
 # --------------------------------------------------------------------------- #
 # Fetch
 # --------------------------------------------------------------------------- #
+_META_CHARSET_RE = re.compile(rb"""charset=["']?\s*([a-zA-Z0-9_\-]+)""", re.IGNORECASE)
+
+
+def _sniff_html_charset(raw: bytes) -> str | None:
+	"""Charset declared in a <meta> tag (handles both `<meta charset=...>` and
+	`<meta http-equiv content="...; charset=...">`); None if absent."""
+	match = _META_CHARSET_RE.search(raw[:4096])
+	if match:
+		try:
+			return match.group(1).decode("ascii")
+		except (UnicodeDecodeError, AttributeError):
+			return None
+	return None
+
+
 def _read_capped(resp, max_bytes: int) -> str:
 	chunks = []
 	total = 0
@@ -174,8 +190,14 @@ def _read_capped(resp, max_bytes: int) -> str:
 		chunks.append(chunk)
 		if total >= max_bytes:
 			break
-	encoding = resp.encoding or "utf-8"
 	raw = b"".join(chunks)
+	# requests defaults text/* without an explicit charset to ISO-8859-1, which
+	# mojibakes UTF-8 pages that only declare their charset in a <meta> tag. When the
+	# header carries no charset, trust the document's own declaration instead.
+	if "charset=" in resp.headers.get("Content-Type", "").lower():
+		encoding = resp.encoding or "utf-8"
+	else:
+		encoding = _sniff_html_charset(raw) or "utf-8"
 	try:
 		return raw.decode(encoding, errors="replace")
 	except (LookupError, TypeError):
@@ -183,12 +205,19 @@ def _read_capped(resp, max_bytes: int) -> str:
 
 
 def fetch(url: str, cfg, session=None):
-	"""Fetch a URL and return ``(status_code, html, error)``.
+	"""Fetch a URL and return ``(status_code, html, error, final_url)``.
 
 	Never raises -- any failure (SSRF rejection, timeout, non-HTML, oversized) is
 	reported as a non-empty ``error`` string with ``status_code`` 0 (or the actual
 	status for content-type skips). Redirects are followed manually so the resolved
-	IP of every hop is re-validated by the SSRF guard.
+	IP of every hop is re-validated by the SSRF guard; ``final_url`` is the URL that
+	actually served the body (post-redirect), so callers resolve relative links and
+	record provenance against the right host.
+
+	SSRF note: ``validate_url`` resolves and checks the host, but requests re-resolves
+	it when connecting, so a DNS-rebinding host (short TTL, alternating answers) can
+	still pass the guard and connect to a private IP. Pinning the validated IP to the
+	connection is deferred -- see the module docstring / README.
 	"""
 	import requests
 
@@ -203,7 +232,7 @@ def fetch(url: str, cfg, session=None):
 			try:
 				validate_url(current, cfg)
 			except SSRFError as exc:
-				return 0, "", f"blocked by SSRF guard: {exc}"
+				return 0, "", f"blocked by SSRF guard: {exc}", current
 
 			resp = session.get(
 				current,
@@ -216,7 +245,7 @@ def fetch(url: str, cfg, session=None):
 				location = resp.headers.get("Location")
 				resp.close()
 				if not location:
-					return resp.status_code, "", "redirect without Location header"
+					return resp.status_code, "", "redirect without Location header", current
 				current = requests.compat.urljoin(current, location)
 				continue
 
@@ -224,26 +253,26 @@ def fetch(url: str, cfg, session=None):
 			if content_type and not any(ct in content_type for ct in HTML_CONTENT_TYPES):
 				status = resp.status_code
 				resp.close()
-				return status, "", f"skipped non-HTML content-type: {content_type}"
+				return status, "", f"skipped non-HTML content-type: {content_type}", current
 
 			html = _read_capped(resp, max_bytes)
 			status = resp.status_code
 			resp.close()
-			return status, html, ""
+			return status, html, "", current
 
-		return 0, "", "too many redirects"
+		return 0, "", "too many redirects", current
 	except requests.exceptions.Timeout:
-		return 0, "", f"timeout after {timeout}s"
+		return 0, "", f"timeout after {timeout}s", current
 	except requests.exceptions.TooManyRedirects:
-		return 0, "", "too many redirects"
+		return 0, "", "too many redirects", current
 	except requests.exceptions.SSLError as exc:
-		return 0, "", f"ssl error: {exc}"
+		return 0, "", f"ssl error: {exc}", current
 	except requests.exceptions.ConnectionError as exc:
-		return 0, "", f"connection error: {exc}"
+		return 0, "", f"connection error: {exc}", current
 	except requests.exceptions.RequestException as exc:
-		return 0, "", f"request error: {exc}"
+		return 0, "", f"request error: {exc}", current
 	except Exception as exc:  # pragma: no cover - last-resort guard
-		return 0, "", f"unexpected error: {exc}"
+		return 0, "", f"unexpected error: {exc}", current
 	finally:
 		if own_session:
 			session.close()

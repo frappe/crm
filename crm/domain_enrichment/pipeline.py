@@ -89,8 +89,11 @@ def run(website: str, cfg: EnrichmentConfig = None, progress=None) -> Enrichment
 		home_soup = soups_by_url.get(homepage.url)
 
 		# If the BFS didn't surface an About page, probe the common paths -- it's the
-		# best source of a company description (and helps industry/contacts too).
-		if home_soup and not any(extractors._is_about_page(p.url) for p in pages):
+		# best source of a company description (and helps industry/contacts too). Only
+		# when the page budget allows more fetches, so the synchronous preview
+		# (max_pages=1) doesn't tie up a web worker on extra probes.
+		max_pages = int(cfg.setting("max_pages", 10) or 10)
+		if home_soup and len(pages) < max_pages and not any(extractors._is_about_page(p.url) for p in pages):
 			for page, soup in probe_about_pages(
 				homepage.url, cfg, session=session, skip_urls=[p.url for p in pages]
 			):

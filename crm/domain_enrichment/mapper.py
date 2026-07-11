@@ -67,7 +67,10 @@ def _first_email(result) -> str:
 	registrable = _registrable_domain(result.website)
 	if registrable:
 		for e in result.emails:
-			if e.value.lower().split("@")[-1].endswith(registrable):
+			domain = e.value.lower().split("@")[-1]
+			# Exact registrable domain or a subdomain of it -- not a lookalike like
+			# "notacme.com" endswith "acme.com".
+			if domain == registrable or domain.endswith("." + registrable):
 				return e.value
 	return result.emails[0].value
 
@@ -172,8 +175,8 @@ def apply_to_document(doc, result, cfg, fill_empty_only: bool = False) -> list[s
 	according to ``write_policy``:
 
 	* **Fill if empty** -- set only when the doc field is currently empty.
-	* **Always refresh** -- overwrite (or clear) with the fresh value; this is how
-	  stale guesses get cleaned on re-enrichment.
+	* **Always refresh** -- overwrite with a fresh non-empty value on re-enrichment;
+	  never clears a stored value to empty (enrichment must not destroy data).
 	* **Override defaults** -- treat the mapping's ``default_values`` as empty and
 	  fill over them, else respect a real user value.
 
@@ -199,15 +202,16 @@ def apply_to_document(doc, result, cfg, fill_empty_only: bool = False) -> list[s
 		policy = POLICY_FILL_IF_EMPTY if fill_empty_only else (mapping.write_policy or POLICY_FILL_IF_EMPTY)
 
 		if policy == POLICY_ALWAYS_REFRESH:
-			# Overwrite (or clear) with the fresh value, even if empty.
-			if current == value:
+			# Overwrite with a fresh value, but never clear a stored value to empty:
+			# enrichment must not destroy data a site temporarily stopped exposing.
+			if not value or current == value:
 				continue
-			if value and mapping.create_missing_link:
+			if mapping.create_missing_link:
 				value = _ensure_link_target(doc.doctype, fieldname, value)
 				if value is None:
 					continue
 			doc.set(fieldname, value)
-			if value and label not in filled:
+			if label not in filled:
 				filled.append(label)
 			continue
 

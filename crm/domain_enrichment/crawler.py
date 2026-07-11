@@ -171,8 +171,10 @@ def crawl_page(url, cfg, session=None):
 	Failures are captured on ``CrawledPage.error`` rather than raised. The soup
 	returned is a fresh, unmutated parse (``extract_content`` runs on a copy).
 	"""
-	status, html, error = fetch(url, cfg, session=session)
-	page = CrawledPage(url=url, status_code=status, html=html or "", error=error)
+	status, html, error, final_url = fetch(url, cfg, session=session)
+	# Use the post-redirect URL so relative links resolve and provenance is recorded
+	# against the host that actually served the body.
+	page = CrawledPage(url=final_url or url, status_code=status, html=html or "", error=error)
 	soup = _parse_and_fill(page, html) if (html and not error) else None
 	return page, soup
 
@@ -261,11 +263,19 @@ def crawl(start_url, cfg, session=None, progress=None):
 			page, soup = crawl_page(url, cfg, session=session)
 			results.append((page, soup))
 
+			# If the homepage redirected to another host, adopt the resolved domain as
+			# the same-site base so the rest of the crawl follows the real site.
+			if len(results) == 1:
+				resolved_netloc = urlparse(page.url).netloc
+				if resolved_netloc:
+					base_netloc = resolved_netloc
+
 			if soup is None or depth >= max_depth:
 				continue
 
+			# Resolve links against the page's resolved URL, not the requested one.
 			seen_here = set()
-			for link, anchor in _links_on_page(soup, url, base_netloc, skip_patterns):
+			for link, anchor in _links_on_page(soup, page.url, base_netloc, skip_patterns):
 				if link in visited or link in seen_here:
 					continue
 				seen_here.add(link)
