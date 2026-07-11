@@ -79,7 +79,9 @@ def write_run(
 		doc.notes = notes
 
 	if result is not None:
-		social = ", ".join(sorted(result.social_profiles.keys()))
+		# extract_social_profiles pre-seeds an empty entry per configured rule; only
+		# summarise the networks that were actually found.
+		social = ", ".join(sorted(k for k, v in result.social_profiles.items() if v.value))
 		doc.company_name = result.company_name.value or ""
 		doc.industry = result.industry.value or ""
 		doc.industry_confidence = result.industry_confidence or 0
@@ -95,8 +97,8 @@ def write_run(
 
 
 # DocType -> the Settings checkbox that gates auto-enrichment for it (mirrors
-# api.ENABLE_FLAG_BY_DOCTYPE). Auto-enrich is wired (hooks.py after_insert) for the
-# doctypes that own a ``website`` and are created standalone: Organization + Deal.
+# api.ENABLE_FLAG_BY_DOCTYPE). Auto-enrich is wired (hooks.py after_insert) for every
+# doctype that owns a ``website``: Lead, Deal, and Organization.
 AUTO_ENRICH_FLAG_BY_DOCTYPE = {
 	"CRM Lead": "enable_lead",
 	"CRM Deal": "enable_deal",
@@ -107,10 +109,10 @@ AUTO_ENRICH_FLAG_BY_DOCTYPE = {
 def auto_enrich_on_create(doc, method=None):
 	"""``after_insert`` hook: auto-enqueue enrichment for a new CRM record.
 
-	Wired for CRM Organization and CRM Deal. Best-effort and never raises into the
-	save. Fires only when the feature is enabled, ``auto_enrich`` is on, the doctype is
-	enabled, and the record has a website. Reuses the same per-doc ``job_id`` +
-	``deduplicate`` as the manual ``api.enrich`` path, so a manual click and the
+	Wired for CRM Lead, CRM Deal, and CRM Organization. Best-effort and never raises
+	into the save. Fires only when the feature is enabled, ``auto_enrich`` is on, the
+	doctype is enabled, and the record has a website. Reuses the same per-doc ``job_id``
+	+ ``deduplicate`` as the manual ``api.enrich`` path, so a manual click and the
 	auto-fire never double-run. A new Deal created with a website is therefore enriched
 	alongside its Organization -- each crawls independently and writes its own fields.
 	"""
@@ -131,6 +133,9 @@ def auto_enrich_on_create(doc, method=None):
 			timeout=timeout,
 			job_id=f"domain-enrich-{doc.doctype}-{doc.name}",
 			deduplicate=True,
+			# after_insert runs inside the uncommitted transaction; wait for commit so
+			# the worker can't pick the job up before the new record is visible.
+			enqueue_after_commit=True,
 			reference_doctype=doc.doctype,
 			reference_name=doc.name,
 			website=website,
@@ -196,6 +201,10 @@ def run_enrichment(reference_doctype: str, reference_name: str, website: str, us
 			user=user,
 		)
 	except Exception:
+		# Discard any partial writes (e.g. a doc.save() that fired side effects before a
+		# later step threw). execute_job commits when this function returns normally, so
+		# without the rollback those partials would be committed alongside the Failed run.
+		frappe.db.rollback()
 		frappe.log_error(
 			title="Domain Enrichment: run_enrichment failed",
 			message=frappe.get_traceback(),

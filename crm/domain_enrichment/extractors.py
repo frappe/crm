@@ -128,19 +128,28 @@ def _ld_type_matches(block, wanted):
 # Markers of a bot-protection / WAF challenge page served instead of content.
 # Kept as a small constant: these are diagnostic mechanics, not classifier
 # knowledge an admin tunes (and they map 1:1 to a fixed set of human messages).
-WAF_MARKERS = (
+# Strong markers: unambiguous WAF/challenge fingerprints -- a page carrying one is a
+# challenge page regardless of how much other text it has.
+WAF_MARKERS_STRONG = (
 	"_incapsula_resource",
 	"incapsula",
-	"captcha",
 	"cf-browser-verification",
 	"just a moment",
 	"attention required",
-	"access denied",
 	"ddos protection",
-	"please enable javascript",
-	"enable cookies to continue",
 	"are you a human",
 )
+# Weak markers: generic phrases that legitimate content-rich pages also contain (a
+# contact form embedding reCAPTCHA, a stock <noscript> notice). Only treat these as a
+# block when the page is also nearly devoid of readable text.
+WAF_MARKERS_WEAK = (
+	"captcha",
+	"please enable javascript",
+	"enable cookies to continue",
+	"access denied",
+)
+# Below this much readable text, a weak marker is taken as a real challenge page.
+WAF_WEAK_TEXT_THRESHOLD = 1000
 
 READABILITY_MESSAGES = {
 	"unreachable": "Couldn't reach this website (it timed out or refused the connection).",
@@ -167,9 +176,12 @@ def diagnose_readability(pages):
 	if home.status_code >= 500:
 		return "unreachable"
 	blob = (home.html or "")[:5000].lower()
-	if any(marker in blob for marker in WAF_MARKERS):
+	text_len = len(home.text or "")
+	if any(marker in blob for marker in WAF_MARKERS_STRONG):
 		return "blocked"
-	if len(home.text or "") < 200:
+	if text_len < WAF_WEAK_TEXT_THRESHOLD and any(marker in blob for marker in WAF_MARKERS_WEAK):
+		return "blocked"
+	if text_len < 200:
 		return "empty"
 	return ""
 

@@ -54,7 +54,7 @@ DESK ADMIN (data)                         ENGINE (code, rule-agnostic)        RE
 | File | Responsibility |
 |---|---|
 | `config.py` | `get_config()` → cached `EnrichmentConfig` (settings + `Rule`/`Mapping` objects). Invalidated by `clear_config_cache`. |
-| `http.py` | `fetch(url, cfg)` on the framework session; the **SSRF guard** (`validate_url`); byte cap; HTML-only filter; never-raise `(status, html, error)` contract. |
+| `http.py` | `fetch(url, cfg)` on the framework session; the **SSRF guard** (`validate_url`); byte cap; HTML-only filter; never-raise `(status, html, error, final_url)` contract. |
 | `crawler.py` | Same-domain, depth-limited BFS. Caps / link-priority order / skip patterns from config. |
 | `extractors.py` | **Generic rule executor** (`apply_keyword_rules`) + the pure mechanics. No literal keyword tables. |
 | `result.py` | `EnrichmentResult` and its `{value, source, method}` provenance schema. Pure dataclasses, no framework import. |
@@ -234,6 +234,15 @@ write back to the Organization. The field-writing reuses `mapper.apply_to_docume
   `blocked_domains` / `allowed_domains` lists and **re-validates after every
   redirect** (redirects are followed manually). `allow_private_networks = 1` bypasses
   the IP check (internal testing only).
+- **Known limitation — DNS-rebinding TOCTOU (deferred).** `validate_url` resolves and
+  checks the host, but `requests` performs its own DNS resolution when it connects, so
+  the IP that is *checked* and the IP that is *connected to* are resolved separately. A
+  host that controls its DNS (short TTL, alternating answers) can therefore pass the
+  guard with a public IP and then have the connection land on a private one. Closing
+  this requires pinning the validated IP onto the connection (resolve once, connect to
+  that IP with the original Host/SNI). It is deferred for the in-CRM experiment: it
+  requires an attacker to both control a target record's `website` and run a rebinding
+  DNS server. Revisit before any untrusted/multi-tenant exposure or at engine extraction.
 - **Permissions.** `api.enrich` enforces the Settings allow-list and
   `doc.check_permission("write")` — a user who cannot edit the record cannot enrich
   it. The worker save is a normal permission-respecting save. The only

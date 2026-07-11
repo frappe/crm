@@ -317,7 +317,11 @@ def _make_rule(
 	match_scope="Full Text",
 	is_regex=False,
 ):
-	if frappe.db.exists("CRM Enrichment Rule", rule_name):
+	# Match on the rule_name field, not the document name: the autoname
+	# ("{rule_type}.-.{rule_name}.-.####") means name != rule_name, so a bare-string
+	# exists() never matches a seeded rule and re-seeding would collide with the
+	# unique rule_name constraint (breaking bench migrate).
+	if frappe.db.exists("CRM Enrichment Rule", {"rule_name": rule_name}):
 		return
 	doc = frappe.get_doc(
 		{
