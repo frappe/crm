@@ -41,6 +41,15 @@ status, summary, and full provenance JSON.
 
 Known but intentionally out of scope for now — revisit later:
 
+- **TLS fingerprinting (deferred to the engine extraction).** The fetcher uses
+  `requests`, so the TLS ClientHello is standard OpenSSL and is trivially
+  fingerprinted (JA3/JA4) as a non-browser client — bot walls (Cloudflare, Akamai,
+  DataDome) that fingerprint TLS will still block it even though we now send
+  browser-like headers (`http.build_session`). Real evasion needs a TLS-impersonating
+  client (e.g. `curl_cffi`) or a headless browser, both of which carry weight the
+  in-CRM feature deliberately avoids. Revisit when the engine is pulled into its own
+  app, where a heavier optional fetch backend is a reasonable dependency to own.
+
 - **Frontend `isExternalUrl` / `openExternalUrl` duplication.** These two helpers are
   byte-identical in `frontend/src/components/FieldLayout/Field.vue` and
   `frontend/src/components/SidePanelLayout.vue` (the POC, `bba9a77c`, added the second

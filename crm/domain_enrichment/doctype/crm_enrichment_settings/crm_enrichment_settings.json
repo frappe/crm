@@ -129,7 +129,7 @@
    "label": "Retry Count"
   },
   {
-   "default": "Mozilla/5.0 (compatible; FrappeCRM-DomainEnrichment/1.0)",
+   "default": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",
    "fieldname": "user_agent",
    "fieldtype": "Data",
    "label": "User Agent"
