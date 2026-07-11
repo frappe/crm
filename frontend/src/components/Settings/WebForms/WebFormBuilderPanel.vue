@@ -125,167 +125,318 @@
             v-if="!form.fields.length"
             class="mt-4 rounded-lg border border-dashed py-8 text-center text-sm text-ink-gray-4"
           >
-            {{
-              __('No fields yet — add one below.')
-            }}
+            {{ __('No fields yet — add one below.') }}
           </div>
 
-          <Draggable
+          <!-- grouped, side-by-side layout (sections -> columns), draggable at every level -->
+          <div
             v-else
-            :list="form.fields"
-            item-key="fieldname"
-            handle=".drag-handle"
-            class="mt-4 flex flex-col gap-2"
+            class="mt-4 flex flex-col gap-3"
             :class="{ 'select-none': dragging }"
-            ghost-class="opacity-40"
-            :animation="150"
-            :force-fallback="true"
-            :fallback-on-body="false"
-            fallback-class="wf-drag-fallback"
-            @start="dragging = true"
-            @end="onSortEnd"
           >
-            <template #item="{ element: f, index: i }">
-              <div>
-                <!-- SECTION BREAK -->
-                <div
-                  v-if="f.fieldtype === 'Section Break'"
-                  class="flex items-center gap-2 rounded-lg border border-dashed bg-surface-gray-1 px-3 py-2"
-                >
-                  <LucideGripVertical
-                    class="drag-handle h-4 w-4 shrink-0 cursor-grab text-ink-gray-4"
-                  />
-                  <span
-                    class="shrink-0 text-xs font-medium uppercase tracking-wide text-ink-gray-4"
-                    >{{ __('Section') }}</span
-                  >
-                  <TextInput
-                    v-model="f.label"
-                    class="flex-1"
-                    size="sm"
-                    :placeholder="__('Section title (optional)')"
-                    @input="markDirty"
-                  />
-                  <Button variant="ghost" @click="removeField(i)">
-                    <template #icon
-                      ><LucideX class="h-4 w-4 text-ink-gray-5"
-                    /></template>
-                  </Button>
-                </div>
-
-                <!-- COLUMN BREAK -->
-                <div
-                  v-else-if="f.fieldtype === 'Column Break'"
-                  class="flex items-center gap-2 rounded-lg border border-dashed bg-surface-gray-1 px-3 py-2"
-                >
-                  <LucideGripVertical
-                    class="drag-handle h-4 w-4 shrink-0 cursor-grab text-ink-gray-4"
-                  />
-                  <span
-                    class="flex-1 text-xs font-medium uppercase tracking-wide text-ink-gray-4"
-                    >{{ __('Column break') }}</span
-                  >
-                  <Button variant="ghost" @click="removeField(i)">
-                    <template #icon
-                      ><LucideX class="h-4 w-4 text-ink-gray-5"
-                    /></template>
-                  </Button>
-                </div>
-
-                <!-- FIELD -->
-                <div v-else class="rounded-lg border">
-                  <div class="flex items-center gap-2 px-3 py-2.5">
-                    <LucideGripVertical
-                      class="drag-handle h-4 w-4 shrink-0 cursor-grab text-ink-gray-4"
-                    />
+            <!-- root section (fields before any section break; pinned first) -->
+            <div class="rounded-lg border border-dashed p-2">
+              <Draggable
+                :list="rootColumns"
+                :item-key="columnKey"
+                handle=".column-handle"
+                group="wf-cols-root"
+                class="flex items-stretch gap-2"
+                ghost-class="opacity-40"
+                :force-fallback="true"
+                :fallback-on-body="false"
+                fallback-class="wf-drag-fallback"
+                :animation="120"
+                @start="dragging = true"
+                @end="onSortEnd"
+              >
+                <template #item="{ element: col, index: ci }">
+                  <div class="flex min-w-0 flex-1 items-stretch">
                     <div
-                      class="min-w-0 flex-1 cursor-pointer"
-                      @click="toggle(i)"
+                      v-if="ci > 0"
+                      class="mr-2 flex w-7 shrink-0 flex-col items-center gap-1 self-stretch pt-1"
                     >
-                      <div class="truncate text-base text-ink-gray-8">
-                        {{ f.label
-                        }}<span v-if="f.reqd" class="text-ink-red-5">*</span>
-                      </div>
-                      <div class="truncate text-xs text-ink-gray-4">
-                        {{ f.fieldname }} · {{ f.fieldtype }}
-                      </div>
+                      <LucideGripVertical
+                        class="column-handle h-4 w-4 shrink-0 cursor-grab text-ink-gray-4"
+                        :title="__('Move column')"
+                      />
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        :tooltip="__('Remove column break')"
+                        @click="removeBreak(col.colField)"
+                      >
+                        <template #icon
+                          ><LucideX class="h-3.5 w-3.5 text-ink-gray-5"
+                        /></template>
+                      </Button>
+                      <div class="w-px flex-1 bg-outline-gray-3"></div>
                     </div>
-                    <Button variant="ghost" @click="toggle(i)">
-                      <template #icon>
-                        <LucideChevronDown
-                          class="h-4 w-4 transition-transform"
-                          :class="{ 'rotate-180': expanded === i }"
-                        />
-                      </template>
-                    </Button>
-                    <Button variant="ghost" @click="removeField(i)">
+                    <div class="min-w-[150px] flex-1">
+                      <Draggable
+                        :list="col.items"
+                        group="wf-fields"
+                        item-key="fieldname"
+                        class="flex min-h-[48px] flex-col gap-2 rounded-md"
+                        :class="[
+                          col.items.length ? '' : 'border border-dashed',
+                        ]"
+                        ghost-class="opacity-40"
+                        :force-fallback="true"
+                        :fallback-on-body="false"
+                        fallback-class="wf-drag-fallback"
+                        :animation="120"
+                        @start="dragging = true"
+                        @end="onSortEnd"
+                      >
+                        <template #item="{ element: f }">
+                          <div
+                            class="flex items-center gap-2 rounded-lg border bg-surface-white px-3 py-2.5"
+                            :class="
+                              expanded === f.fieldname
+                                ? 'ring-1 ring-ink-gray-4'
+                                : ''
+                            "
+                          >
+                            <LucideGripVertical
+                              class="drag-handle h-4 w-4 shrink-0 cursor-grab text-ink-gray-4"
+                            />
+                            <div
+                              class="min-w-0 flex-1 cursor-pointer"
+                              @click="toggle(f)"
+                            >
+                              <div class="truncate text-base text-ink-gray-8">
+                                {{ f.label
+                                }}<span v-if="f.reqd" class="text-ink-red-5"
+                                  >*</span
+                                >
+                              </div>
+                              <div
+                                class="mt-1 truncate text-xs text-ink-gray-4"
+                              >
+                                {{ f.fieldname }} · {{ f.fieldtype }}
+                              </div>
+                            </div>
+                            <Button variant="ghost" @click="removeField(f)">
+                              <template #icon
+                                ><LucideX class="h-4 w-4 text-ink-gray-5"
+                              /></template>
+                            </Button>
+                          </div>
+                        </template>
+                      </Draggable>
+                    </div>
+                  </div>
+                </template>
+              </Draggable>
+            </div>
+
+            <!-- sections (draggable) -->
+            <Draggable
+              :list="sections"
+              :item-key="sectionKey"
+              handle=".section-handle"
+              group="wf-sections"
+              class="flex flex-col gap-3"
+              ghost-class="opacity-40"
+              :force-fallback="true"
+              :fallback-on-body="false"
+              fallback-class="wf-drag-fallback"
+              :animation="120"
+              @start="dragging = true"
+              @end="onSortEnd"
+            >
+              <template #item="{ element: sec }">
+                <div class="rounded-lg border border-dashed p-2">
+                  <div class="mb-2 flex items-center gap-2 px-1">
+                    <LucideGripVertical
+                      class="section-handle h-4 w-4 shrink-0 cursor-grab text-ink-gray-4"
+                      :title="__('Move section')"
+                    />
+                    <TextInput
+                      v-model="sec.secField.label"
+                      class="flex-1"
+                      size="sm"
+                      :placeholder="__('Section title (optional)')"
+                      @input="markDirty"
+                    />
+                    <Button variant="ghost" @click="removeBreak(sec.secField)">
                       <template #icon
                         ><LucideX class="h-4 w-4 text-ink-gray-5"
                       /></template>
                     </Button>
                   </div>
-                  <div
-                    v-if="expanded === i"
-                    class="border-t bg-surface-gray-1 px-3 py-3"
+
+                  <Draggable
+                    :list="sec.columns"
+                    :item-key="columnKey"
+                    handle=".column-handle"
+                    :group="'wf-cols-' + sec.secField.fieldname"
+                    class="flex items-stretch gap-2"
+                    ghost-class="opacity-40"
+                    :force-fallback="true"
+                    :fallback-on-body="false"
+                    fallback-class="wf-drag-fallback"
+                    :animation="120"
+                    @start="dragging = true"
+                    @end="onSortEnd"
                   >
-                    <div class="flex items-center justify-between py-1">
-                      <span class="text-sm text-ink-gray-7">{{
-                        __('Required')
-                      }}</span>
-                      <Switch v-model="f.reqd" @update:modelValue="markDirty" />
-                    </div>
-                    <div class="mt-2 grid grid-cols-2 gap-3">
-                      <FormControl
-                        v-model="f.label"
-                        type="text"
-                        :label="__('Label')"
-                        @input="markDirty"
-                      />
-                      <FormControl
-                        v-model="f.placeholder"
-                        type="text"
-                        :label="__('Placeholder')"
-                        @input="markDirty"
-                      />
-                    </div>
-                    <FormControl
-                      v-model="f.field_description"
-                      type="text"
-                      class="mt-3"
-                      :label="__('Description')"
-                      :placeholder="__('Helper text under the field')"
-                      @input="markDirty"
-                    />
-                    <div
-                      v-if="f.fieldtype === 'Select' && optionList(f).length"
-                      class="mt-3"
-                    >
-                      <div class="mb-1.5 text-sm text-ink-gray-5">
-                        {{ __('Options') }}
-                      </div>
-                      <div class="flex flex-wrap gap-1.5">
-                        <span
-                          v-for="o in optionList(f)"
-                          :key="o"
-                          class="rounded bg-surface-white px-2 py-1 text-xs text-ink-gray-7 ring-1 ring-outline-gray-2"
+                    <template #item="{ element: col, index: ci }">
+                      <div class="flex min-w-0 flex-1 items-stretch">
+                        <div
+                          v-if="ci > 0"
+                          class="mr-2 flex w-7 shrink-0 flex-col items-center gap-1 self-stretch pt-1"
                         >
-                          {{ o }}
-                        </span>
+                          <LucideGripVertical
+                            class="column-handle h-4 w-4 shrink-0 cursor-grab text-ink-gray-4"
+                            :title="__('Move column')"
+                          />
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            :tooltip="__('Remove column break')"
+                            @click="removeBreak(col.colField)"
+                          >
+                            <template #icon
+                              ><LucideX class="h-3.5 w-3.5 text-ink-gray-5"
+                            /></template>
+                          </Button>
+                          <div class="w-px flex-1 bg-outline-gray-3"></div>
+                        </div>
+                        <div class="min-w-[150px] flex-1">
+                          <Draggable
+                            :list="col.items"
+                            group="wf-fields"
+                            item-key="fieldname"
+                            class="flex min-h-[48px] flex-col gap-2 rounded-md"
+                            :class="[
+                              col.items.length ? '' : 'border border-dashed',
+                            ]"
+                            ghost-class="opacity-40"
+                            :force-fallback="true"
+                            :fallback-on-body="false"
+                            fallback-class="wf-drag-fallback"
+                            :animation="120"
+                            @start="dragging = true"
+                            @end="onSortEnd"
+                          >
+                            <template #item="{ element: f }">
+                              <div
+                                class="flex items-center gap-2 rounded-lg border bg-surface-white px-3 py-2.5"
+                                :class="
+                                  expanded === f.fieldname
+                                    ? 'ring-1 ring-ink-gray-4'
+                                    : ''
+                                "
+                              >
+                                <LucideGripVertical
+                                  class="drag-handle h-4 w-4 shrink-0 cursor-grab text-ink-gray-4"
+                                />
+                                <div
+                                  class="min-w-0 flex-1 cursor-pointer"
+                                  @click="toggle(f)"
+                                >
+                                  <div
+                                    class="truncate text-base text-ink-gray-8"
+                                  >
+                                    {{ f.label
+                                    }}<span v-if="f.reqd" class="text-ink-red-5"
+                                      >*</span
+                                    >
+                                  </div>
+                                  <div
+                                    class="mt-1 truncate text-xs text-ink-gray-4"
+                                  >
+                                    {{ f.fieldname }} · {{ f.fieldtype }}
+                                  </div>
+                                </div>
+                                <Button variant="ghost" @click="removeField(f)">
+                                  <template #icon
+                                    ><LucideX class="h-4 w-4 text-ink-gray-5"
+                                  /></template>
+                                </Button>
+                              </div>
+                            </template>
+                          </Draggable>
+                        </div>
                       </div>
-                      <p class="mt-1.5 text-xs text-ink-gray-4">
-                        {{
-                          __('Choices come from the {0} field on {1}.', [
-                            f.fieldname,
-                            docLabel(form.document_type),
-                          ])
-                        }}
-                      </p>
-                    </div>
-                  </div>
+                    </template>
+                  </Draggable>
+                </div>
+              </template>
+            </Draggable>
+
+            <!-- field editor (full width, for the selected field) -->
+            <div
+              v-if="editingField"
+              class="rounded-lg border bg-surface-white px-3 py-3"
+            >
+              <div class="mb-2 flex items-center justify-between">
+                <span class="text-sm-medium text-ink-gray-8"
+                  >{{ editingField.label || editingField.fieldname }}
+                  <span class="text-ink-gray-4"
+                    >· {{ editingField.fieldtype }}</span
+                  ></span
+                >
+                <Button variant="ghost" size="sm" @click="expanded = null">
+                  <template #icon
+                    ><LucideX class="h-4 w-4 text-ink-gray-5"
+                  /></template>
+                </Button>
+              </div>
+              <div class="flex items-center justify-between py-1">
+                <span class="text-sm text-ink-gray-7">{{
+                  __('Required')
+                }}</span>
+                <Switch
+                  v-model="editingField.reqd"
+                  @update:modelValue="markDirty"
+                />
+              </div>
+              <div class="mt-2 grid grid-cols-2 gap-3">
+                <FormControl
+                  v-model="editingField.label"
+                  type="text"
+                  :label="__('Label')"
+                  @input="markDirty"
+                />
+                <FormControl
+                  v-model="editingField.placeholder"
+                  type="text"
+                  :label="__('Placeholder')"
+                  @input="markDirty"
+                />
+              </div>
+              <FormControl
+                v-model="editingField.field_description"
+                type="text"
+                class="mt-3"
+                :label="__('Description')"
+                :placeholder="__('Helper text under the field')"
+                @input="markDirty"
+              />
+              <div
+                v-if="
+                  editingField.fieldtype === 'Select' &&
+                  optionList(editingField).length
+                "
+                class="mt-3"
+              >
+                <div class="mb-1.5 text-sm text-ink-gray-5">
+                  {{ __('Options') }}
+                </div>
+                <div class="flex flex-wrap gap-1.5">
+                  <span
+                    v-for="o in optionList(editingField)"
+                    :key="o"
+                    class="rounded bg-surface-gray-2 px-2 py-1 text-xs text-ink-gray-7 ring-1 ring-outline-gray-2"
+                  >
+                    {{ o }}
+                  </span>
                 </div>
               </div>
-            </template>
-          </Draggable>
+            </div>
+          </div>
 
           <!-- inline add controls -->
           <div class="mt-3 flex items-center gap-2">
@@ -296,13 +447,31 @@
               @change="onPickField"
             >
               <template #target="{ togglePopover }">
-                <Button :label="__('Add field')" icon-left="plus" @click="togglePopover" />
+                <Button
+                  :label="__('Add field')"
+                  icon-left="plus"
+                  @click="togglePopover"
+                />
               </template>
             </Autocomplete>
-            <Button variant="ghost" :label="__('Section break')" @click="addBreak('Section Break')">
+            <Button
+              variant="ghost"
+              :label="__('Section break')"
+              @click="addBreak('Section Break')"
+            >
               <template #prefix><LucideRows3 class="h-4 w-4" /></template>
             </Button>
-            <Button variant="ghost" :label="__('Column break')" @click="addBreak('Column Break')">
+            <Button
+              variant="ghost"
+              :label="__('Column break')"
+              :disabled="columnBreakDisabled"
+              :tooltip="
+                columnBreakDisabled
+                  ? __('A section can have up to {0} columns', [MAX_COLUMNS])
+                  : ''
+              "
+              @click="addBreak('Column Break')"
+            >
               <template #prefix><LucideColumns3 class="h-4 w-4" /></template>
             </Button>
           </div>
@@ -576,7 +745,6 @@ import {
 import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import LucideCopy from '~icons/lucide/copy'
 import Draggable from 'vuedraggable'
-import LucideChevronDown from '~icons/lucide/chevron-down'
 import LucideGripVertical from '~icons/lucide/grip-vertical'
 import LucideX from '~icons/lucide/x'
 import LucideShare2 from '~icons/lucide/share-2'
@@ -603,15 +771,77 @@ const loaded = ref(false)
 const saving = ref(false)
 const dirty = ref(false)
 const mode = ref('edit') // edit | preview
-const expanded = ref(null)
+const expanded = ref(null) // fieldname of the expanded field editor
 const shareOpen = ref(false)
 const copied = ref(false)
 const dragging = ref(false)
 
-function onSortEnd() {
-  dragging.value = false
+// Editing model: form.fields (flat) is the source of truth. It's derived into a
+// pinned root section (fields before any section break) + a draggable list of
+// sections, each holding draggable columns of draggable field items. After any
+// drag / structural change we re-flatten back to form.fields.
+const rootColumns = ref([{ colField: null, items: [] }])
+const sections = ref([])
+
+function newColumn(colField = null) {
+  return { colField, items: [] }
+}
+
+function rebuildModel() {
+  const root = [newColumn()]
+  const secs = []
+  let cols = root
+  for (const f of form.fields || []) {
+    if (f.fieldtype === 'Section Break') {
+      const sec = { secField: f, columns: [newColumn()] }
+      secs.push(sec)
+      cols = sec.columns
+    } else if (f.fieldtype === 'Column Break') {
+      cols.push(newColumn(f))
+    } else {
+      cols[cols.length - 1].items.push(f)
+    }
+  }
+  rootColumns.value = root
+  sections.value = secs
+}
+
+// emit a container's columns, normalising column-break markers to position
+function emitColumns(out, cols) {
+  cols.forEach((col, i) => {
+    if (i === 0) {
+      col.colField = null
+    } else if (!col.colField) {
+      col.colField = makeMarker('Column Break')
+    }
+    if (col.colField) out.push(col.colField)
+    for (const f of col.items) out.push(f)
+  })
+}
+
+function flattenModel() {
+  const out = []
+  emitColumns(out, rootColumns.value)
+  for (const sec of sections.value) {
+    out.push(sec.secField)
+    emitColumns(out, sec.columns)
+  }
+  return out
+}
+
+function syncFromModel() {
+  form.fields = flattenModel()
   markDirty()
 }
+
+function onSortEnd() {
+  dragging.value = false
+  syncFromModel()
+}
+
+// vuedraggable item-keys
+const sectionKey = (sec) => sec.secField?.fieldname || 'sec'
+const columnKey = (col) => col.colField?.fieldname || 'col0'
 const previewModel = reactive({}) // throwaway values so the preview is interactive
 const previewSubmitted = ref(false)
 
@@ -678,9 +908,13 @@ const shareSnippet = computed(() => {
 function markDirty() {
   dirty.value = true
 }
-function toggle(i) {
-  expanded.value = expanded.value === i ? null : i
+function toggle(f) {
+  expanded.value = expanded.value === f.fieldname ? null : f.fieldname
 }
+// the field whose editor is open (rendered full-width under its section)
+const editingField = computed(
+  () => form.fields.find((f) => f.fieldname === expanded.value) || null,
+)
 function optionList(f) {
   return (f.options || '').split('\n').filter(Boolean)
 }
@@ -722,7 +956,38 @@ function uid(fieldtype) {
   const p = fieldtype === 'Section Break' ? 'section_break_' : 'column_break_'
   return p + Math.random().toString(36).slice(2, 8)
 }
+function makeMarker(fieldtype) {
+  return {
+    fieldname: uid(fieldtype),
+    label: '',
+    fieldtype,
+    options: '',
+    reqd: false,
+    placeholder: '',
+    field_description: '',
+  }
+}
+// a section can hold this many columns before it gets too cramped to build/fill
+const MAX_COLUMNS = 4
+
+// columns in the last container (where a new Column Break would land)
+const lastSectionColumns = computed(() => {
+  const secs = sections.value
+  return secs.length
+    ? secs[secs.length - 1].columns.length
+    : rootColumns.value.length
+})
+const columnBreakDisabled = computed(
+  () => lastSectionColumns.value >= MAX_COLUMNS,
+)
+
 function addBreak(fieldtype) {
+  if (fieldtype === 'Column Break' && columnBreakDisabled.value) {
+    toast.info(__('A section can have up to {0} columns', [MAX_COLUMNS]))
+    return
+  }
+  // append at the end: a Section Break starts a new section, a Column Break
+  // adds a new column to the last section
   form.fields.push({
     fieldname: uid(fieldtype),
     label: '',
@@ -732,8 +997,8 @@ function addBreak(fieldtype) {
     placeholder: '',
     field_description: '',
   })
+  rebuildModel()
   markDirty()
-  // keep the dialog open so multiple breaks can be added in one go
 }
 
 // load
@@ -760,6 +1025,7 @@ createResource({
       placeholder: f.placeholder,
       field_description: f.field_description,
     }))
+    rebuildModel()
     loaded.value = true
     availableFields.reload()
   },
@@ -783,6 +1049,7 @@ function onPickField(option) {
   addField(option.af)
 }
 function addField(af) {
+  // append to the last column of the last section
   form.fields.push({
     fieldname: af.fieldname,
     label: af.label,
@@ -792,11 +1059,20 @@ function addField(af) {
     placeholder: '',
     field_description: '',
   })
+  rebuildModel()
   markDirty()
 }
-function removeField(i) {
-  form.fields.splice(i, 1)
-  if (expanded.value === i) expanded.value = null
+function removeField(f) {
+  form.fields = form.fields.filter((x) => x !== f)
+  if (expanded.value === f.fieldname) expanded.value = null
+  rebuildModel()
+  markDirty()
+}
+function removeBreak(marker) {
+  // dropping a break marker merges its content back into the previous
+  // section/column (rebuildGroups normalises the structure)
+  form.fields = form.fields.filter((x) => x !== marker)
+  rebuildModel()
   markDirty()
 }
 
@@ -810,6 +1086,7 @@ async function onDoctypeChange() {
     (f) => BREAK_TYPES.includes(f.fieldtype) || valid.has(f.fieldname),
   )
   const dropped = before - form.fields.length
+  rebuildModel()
   if (dropped) {
     toast.info(
       __('{0} field(s) removed — not available on {1}', [
