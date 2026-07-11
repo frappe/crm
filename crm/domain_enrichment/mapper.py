@@ -23,23 +23,29 @@ from frappe import _
 
 from .crawler import registrable_domain
 
-# Human labels for the realtime "filled: ..." toast, keyed by source_key. Falls
-# back to the field's meta label, then the fieldname, when not listed here.
-SOURCE_KEY_LABELS = {
-	"company_name": _("Organization Name"),
-	"description": _("Company Description"),
-	"logo": _("Logo"),
-	"industry": _("Industry"),
-	"primary_email": _("Email"),
-	"primary_phone": _("Phone"),
-	"secondary_phone": _("Phone"),
-	"linkedin": _("LinkedIn"),
-	"twitter": _("X (Twitter)"),
-	"github": _("GitHub"),
-	"facebook": _("Facebook"),
-	"instagram": _("Instagram"),
-	"youtube": _("YouTube"),
-}
+
+def _source_key_labels() -> dict:
+	"""Human labels for the realtime "filled: ..." toast, keyed by source_key. Falls
+	back to the field's meta label, then the fieldname, when not listed here. Built
+	at call time so ``_()`` translates in the requesting user's language -- a
+	module-level dict would evaluate at import and cache one language for all
+	sites/users (semgrep: frappe-breaks-multitenancy)."""
+	return {
+		"company_name": _("Organization Name"),
+		"description": _("Company Description"),
+		"logo": _("Logo"),
+		"industry": _("Industry"),
+		"primary_email": _("Email"),
+		"primary_phone": _("Phone"),
+		"secondary_phone": _("Phone"),
+		"linkedin": _("LinkedIn"),
+		"twitter": _("X (Twitter)"),
+		"github": _("GitHub"),
+		"facebook": _("Facebook"),
+		"instagram": _("Instagram"),
+		"youtube": _("YouTube"),
+	}
+
 
 # source_keys backed by a social_profiles[<network>] entry on the result.
 _SOCIAL_KEYS = ("linkedin", "twitter", "github", "facebook", "instagram", "youtube")
@@ -144,8 +150,9 @@ def _ensure_link_target(target_doctype: str, target_fieldname: str, value: str):
 
 
 def _label_for(doc, source_key: str, target_fieldname: str) -> str:
-	if source_key in SOURCE_KEY_LABELS:
-		return SOURCE_KEY_LABELS[source_key]
+	label = _source_key_labels().get(source_key)
+	if label:
+		return label
 	df = doc.meta.get_field(target_fieldname)
 	return df.label if df and df.label else target_fieldname
 
