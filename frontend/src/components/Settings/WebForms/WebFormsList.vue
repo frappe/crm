@@ -94,7 +94,7 @@ import {
   TextInput,
   ErrorMessage,
   LoadingIndicator,
-  createListResource,
+  createResource,
   call,
   toast,
 } from 'frappe-ui'
@@ -112,11 +112,8 @@ const targetOptions = [
 ]
 const docLabel = (dt) => targetOptions.find((o) => o.value === dt)?.label || dt
 
-const forms = createListResource({
-  doctype: 'CRM Web Form',
-  fields: ['name', 'title', 'route', 'document_type', 'published', 'modified'],
-  orderBy: 'modified desc',
-  pageLength: 200,
+const forms = createResource({
+  url: 'crm.api.web_form.list_web_forms',
   auto: true,
 })
 
@@ -150,10 +147,9 @@ async function createForm() {
   }
   creating.value = true
   try {
-    const doc = await forms.insert.submit({
-      title: draft.title,
-      route,
-      document_type: draft.document_type,
+    const doc = await call('crm.api.web_form.save_web_form', {
+      name: null,
+      form: { title: draft.title, route, document_type: draft.document_type },
     })
     showCreate.value = false
     emit('open', doc.name)
@@ -166,12 +162,7 @@ async function createForm() {
 
 async function togglePublished(form, value) {
   try {
-    await call('frappe.client.set_value', {
-      doctype: 'CRM Web Form',
-      name: form.name,
-      fieldname: 'published',
-      value: value ? 1 : 0,
-    })
+    await call('crm.api.web_form.set_published', { name: form.name, published: value ? 1 : 0 })
     form.published = value ? 1 : 0
     toast.success(value ? __('Form published') : __('Form unpublished'))
   } catch (e) {
@@ -187,7 +178,7 @@ function copyLink(form) {
 }
 
 async function deleteForm(form) {
-  await call('frappe.client.delete', { doctype: 'CRM Web Form', name: form.name })
+  await call('crm.api.web_form.delete_web_form', { name: form.name })
   forms.reload()
   toast.success(__('Form deleted'))
 }

@@ -209,6 +209,7 @@
     <script>
       (function () {
         var ROUTE = {{ form_route | tojson }};
+        var WEB_FORM = {{ web_form_name | tojson }};
         var FIELDS = {{ fields | tojson }};
         var CSRF = {{ csrf_token | tojson }};
         var form = document.getElementById("web-form");
@@ -261,10 +262,11 @@
           var original = btn.textContent;
           btn.textContent = "Submitting…";
 
-          fetch("/api/method/crm.api.web_form.submit_web_form", {
+          // Submit through Frappe's built-in Web Form engine (validation + insert).
+          fetch("/api/method/frappe.website.doctype.web_form.web_form.accept", {
             method: "POST",
             headers: { "Content-Type": "application/json", "X-Frappe-CSRF-Token": (CSRF || "") },
-            body: JSON.stringify({ route: ROUTE, values: values }),
+            body: JSON.stringify({ web_form: WEB_FORM, data: JSON.stringify(values) }),
           })
             .then(function (r) {
               return r.json().then(function (data) { return { ok: r.ok, data: data }; });
@@ -278,10 +280,6 @@
                 btn.disabled = false;
                 btn.textContent = original;
                 return;
-              }
-              if (res.data && res.data.message && res.data.message.test) {
-                document.getElementById("success-note").textContent =
-                  "Test submission — no record was created. Publish the form to start collecting responses.";
               }
               document.getElementById("form-view").style.display = "none";
               document.getElementById("success-view").style.display = "block";
