@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-07-05 10:18+0000\n"
-"PO-Revision-Date: 2026-07-10 10:14\n"
+"PO-Revision-Date: 2026-07-11 10:20\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Bosnian\n"
 "MIME-Version: 1.0\n"
@@ -713,7 +713,7 @@ msgstr "Jeste li sigurni da želite ukloniti ovu karticu i sav njen sadržaj?"
 
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.js:9
 msgid "Are you sure you want to reset 'Create Quotation from CRM Deal' Form Script?"
-msgstr "Jeste li sigurni da želite poništiti skriptu forme 'Kreiraj Ponudu iz Posla'?"
+msgstr "Jeste li sigurni da želite poništiti skriptu obrasca 'Izradi Ponudu iz Posla'?"
 
 #: frontend/src/components/Settings/DashboardSettings.vue:236
 msgid "Are you sure you want to set the currency as {0}? This cannot be changed later."
@@ -1120,7 +1120,7 @@ msgstr "Izgled Polja"
 #. Name of a DocType
 #: crm/fcrm/doctype/crm_form_script/crm_form_script.json
 msgid "CRM Form Script"
-msgstr "Skripta Forme"
+msgstr "Skripta Obrasca"
 
 #. Name of a DocType
 #: crm/fcrm/doctype/crm_global_settings/crm_global_settings.json
@@ -3375,7 +3375,7 @@ msgstr "Neuspjelo učitavanje kontrolera obrasca zasnovanog na datoteci: {0}"
 
 #: frontend/src/data/script.js:168
 msgid "Failed to load form controller: {0}"
-msgstr "Nije uspjelo učitavanje kontrolera forme: {0}"
+msgstr "Nije uspjelo učitavanje kontrolera obrasca: {0}"
 
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:239
 msgid "Failed to rename template"
@@ -3580,7 +3580,7 @@ msgstr "Naziv Obrasca"
 
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.js:18
 msgid "Form Script updated successfully"
-msgstr "Skripta Forme je uspješno ažurirana"
+msgstr "Skripta Obrasca je uspješno ažurirana"
 
 #. Name of a Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
@@ -6302,7 +6302,7 @@ msgstr "Poništi Promjene"
 
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.js:7
 msgid "Reset ERPNext Form Script"
-msgstr "Poništi Sistemsku Skriptu Forme"
+msgstr "Poništi Sistemsku Skriptu Obrasca"
 
 #: frontend/src/components/ColumnSettings.vue:86
 #: frontend/src/pages/Dashboard.vue:28
@@ -7174,7 +7174,7 @@ msgstr "Faza"
 
 #: crm/fcrm/doctype/crm_form_script/crm_form_script.js:15
 msgid "Standard Form Scripts can not be modified, duplicate the Form Script instead."
-msgstr "Standard Skripte Forme ne mogu se mijenjati, umjesto toga kopiraj Skriptu Forme."
+msgstr "Standard Skripte Obrasca ne mogu se mijenjati, umjesto toga kopiraj Skriptu Obrasca."
 
 #. Label of the standard_rate (Currency) field in DocType 'CRM Product'
 #: crm/fcrm/doctype/crm_product/crm_product.json
@@ -8335,7 +8335,7 @@ msgstr "Morate biti prijavljeni da biste promijenili lozinku."
 
 #: crm/fcrm/doctype/crm_form_script/crm_form_script.py:39
 msgid "You need to be in developer mode to edit a Standard Form Script"
-msgstr "Morate biti u modu za programere da biste uređivali skriptu standardne forme"
+msgstr "Morate biti u režimu za razvojne programere da biste uredili Standardni Web Obrazac"
 
 #: frontend/src/components/Settings/AssignmentRules/AssigneeSearch.vue:152
 msgid "You will be redirected to invite user page, unsaved changes will be lost."
