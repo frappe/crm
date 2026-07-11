@@ -43,7 +43,10 @@ DEFAULT_SETTINGS = {
 	"request_timeout": 10,
 	"max_download_bytes": 3_000_000,
 	"retry_count": 2,
-	"user_agent": "Mozilla/5.0 (compatible; FrappeCRM-DomainEnrichment/1.0)",
+	"user_agent": (
+		"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+		"(KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+	),
 	"preview_max_pages": 1,
 	"preview_timeout": 8,
 	"allow_private_networks": 0,

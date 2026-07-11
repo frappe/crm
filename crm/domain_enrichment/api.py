@@ -107,6 +107,15 @@ def enrich_preview(website: str, doctype: str = "CRM Deal") -> dict:
 			frappe.ValidationError,
 		)
 
+	# Preview fetches an arbitrary URL on the caller's behalf, so gate it on the
+	# ability to create the target doctype (it prefills a create modal). Without this
+	# it is an authenticated open fetch/scrape oracle for any logged-in user.
+	if not frappe.has_permission(doctype, ptype="create"):
+		frappe.throw(
+			_("You are not permitted to create {0}.").format(doctype),
+			frappe.PermissionError,
+		)
+
 	# Build a bounded copy of the config: homepage-only crawl, short timeout. The
 	# engine still enforces SSRF.
 	preview_settings = dict(cfg.settings)

@@ -32,6 +32,12 @@ HTML_CONTENT_TYPES = ("text/html", "application/xhtml")
 RETRY_STATUS_FORCELIST = (429, 500, 502, 503, 504)
 # Cap redirect chases ourselves (we follow manually to re-check each hop).
 MAX_REDIRECTS = 5
+# Default crawler UA: a current desktop-Chrome string so bot walls that reject bare
+# clients serve HTML. Overridable via the CRM Enrichment Settings ``user_agent`` field.
+DEFAULT_USER_AGENT = (
+	"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+	"(KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+)
 
 
 class SSRFError(Exception):
@@ -121,13 +127,14 @@ def validate_url(url: str, cfg) -> str:
 def build_session(cfg=None):
 	"""Build the crawler session on the framework helper.
 
-	Sets crawler User-Agent + Accept headers from Settings and customizes the
-	retry status_forcelist for 429/5xx.
+	Sets a browser-like header set (User-Agent from Settings + Accept / Sec-Fetch /
+	client-hint headers a real browser sends) so servers that reject bare clients
+	still serve HTML, and customizes the retry status_forcelist for 429/5xx. Note:
+	this only spoofs headers -- the TLS fingerprint is still that of ``requests``
+	(see the TLS note in CONTEXT.md).
 	"""
 	retries = int(cfg.setting("retry_count")) if cfg else 2
-	user_agent = (
-		cfg.setting("user_agent") if cfg else "Mozilla/5.0 (compatible; FrappeCRM-DomainEnrichment/1.0)"
-	)
+	user_agent = cfg.setting("user_agent") if cfg else DEFAULT_USER_AGENT
 	session = get_request_session(max_retries=retries)
 	# get_request_session only forces 500; widen to the usual transient set.
 	try:
@@ -147,8 +154,22 @@ def build_session(cfg=None):
 	session.headers.update(
 		{
 			"User-Agent": user_agent,
-			"Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+			"Accept": (
+				"text/html,application/xhtml+xml,application/xml;q=0.9,"
+				"image/avif,image/webp,image/apng,*/*;q=0.8"
+			),
 			"Accept-Language": "en-US,en;q=0.9",
+			# Browser-ish request context so bot walls that check these serve HTML.
+			# (Accept-Encoding is left to requests so it only advertises codecs it can
+			# actually decode.)
+			"Upgrade-Insecure-Requests": "1",
+			"Sec-Fetch-Dest": "document",
+			"Sec-Fetch-Mode": "navigate",
+			"Sec-Fetch-Site": "none",
+			"Sec-Fetch-User": "?1",
+			"Sec-CH-UA": '"Chromium";v="125", "Not.A/Brand";v="24", "Google Chrome";v="125"',
+			"Sec-CH-UA-Mobile": "?0",
+			"Sec-CH-UA-Platform": '"Windows"',
 		}
 	)
 	return session
@@ -196,7 +217,7 @@ def _read_capped(resp, max_bytes: int) -> str:
 		return raw.decode("utf-8", errors="replace")
 
 
-def fetch(url: str, cfg, session=None):
+def fetch(url: str, cfg, session=None, html_only: bool = True):
 	"""Fetch a URL and return ``(status_code, html, error, final_url)``.
 
 	Never raises -- any failure (SSRF rejection, timeout, non-HTML, oversized) is
@@ -204,7 +225,8 @@ def fetch(url: str, cfg, session=None):
 	status for content-type skips). Redirects are followed manually so the resolved
 	IP of every hop is re-validated by the SSRF guard; ``final_url`` is the URL that
 	actually served the body (post-redirect), so callers resolve relative links and
-	record provenance against the right host.
+	record provenance against the right host. Pass ``html_only=False`` to accept
+	non-HTML bodies (e.g. ``text/plain`` robots.txt).
 
 	SSRF note: ``validate_url`` resolves and checks the host, but requests re-resolves
 	it when connecting, so a DNS-rebinding host (short TTL, alternating answers) can
@@ -242,7 +264,7 @@ def fetch(url: str, cfg, session=None):
 				continue
 
 			content_type = resp.headers.get("Content-Type", "").lower()
-			if content_type and not any(ct in content_type for ct in HTML_CONTENT_TYPES):
+			if html_only and content_type and not any(ct in content_type for ct in HTML_CONTENT_TYPES):
 				status = resp.status_code
 				resp.close()
 				return status, "", f"skipped non-HTML content-type: {content_type}", current
