@@ -157,8 +157,10 @@ const query = ref('')
 const showOptions = ref(false)
 const tempSelection = ref(null)
 
-// Users data
-const { users } = usersStore()
+// Users data — use the store's `allUsers` computed so we get the full
+// list once the background fetch lands, falling back to the smaller
+// crm-users-only payload during initial load.
+const { users, allUsers } = usersStore()
 
 // Contacts resource (only if needed)
 const filterOptions = ref(null)
@@ -206,7 +208,7 @@ function reload(val) {
 const options = computed(() => {
   const mode = effectiveMode.value
   if (mode === 'users') {
-    let list = users?.data?.allUsers || []
+    let list = allUsers.value || []
     list = list.map((u) => ({
       label: u.full_name || u.name || u.email,
       value: u.email,

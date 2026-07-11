@@ -226,11 +226,7 @@
                 />
               </div>
               <div class="ml-auto whitespace-nowrap">
-                <Tooltip :text="formatDate(activity.creation)">
-                  <div class="text-sm text-ink-gray-5">
-                    {{ __(timeAgo(activity.creation)) }}
-                  </div>
-                </Tooltip>
+                <TimelineTimestamp :date="activity.creation" />
               </div>
             </div>
           </div>
@@ -311,11 +307,7 @@
               </div>
 
               <div class="ml-auto whitespace-nowrap">
-                <Tooltip :text="formatDate(activity.creation)">
-                  <div class="text-sm text-ink-gray-5">
-                    {{ __(timeAgo(activity.creation)) }}
-                  </div>
-                </Tooltip>
+                <TimelineTimestamp :date="activity.creation" />
               </div>
             </div>
             <div
@@ -378,11 +370,7 @@
                 </div>
 
                 <div class="ml-auto whitespace-nowrap">
-                  <Tooltip :text="formatDate(a.creation)">
-                    <div class="text-sm text-ink-gray-5">
-                      {{ __(timeAgo(a.creation)) }}
-                    </div>
-                  </Tooltip>
+                  <TimelineTimestamp :date="a.creation" />
                 </div>
               </div>
             </div>
@@ -487,13 +475,15 @@ import CommunicationArea from '@/components/CommunicationArea.vue'
 import WhatsappTemplateSelectorModal from '@/components/Modals/WhatsappTemplateSelectorModal.vue'
 import AllModals from '@/components/Activities/AllModals.vue'
 import FilesUploader from '@/components/FilesUploader/FilesUploader.vue'
-import { timeAgo, formatDate, startCase } from '@/utils'
+import TimelineTimestamp from '@/components/Activities/TimelineTimestamp.vue'
+import { startCase } from '@/utils'
 import { globalStore } from '@/stores/global'
 import { usersStore } from '@/stores/users'
+import { useTimelinePreferences } from '@/composables/useTimelinePreferences'
 import { whatsappEnabled } from '@/composables/whatsapp'
 import { useDocument } from '@/data/document'
 import { useTelemetry } from 'frappe-ui/frappe'
-import { Button, Tooltip, createResource, toast } from 'frappe-ui'
+import { Button, createResource, toast } from 'frappe-ui'
 import { useElementVisibility } from '@vueuse/core'
 import {
   ref,
@@ -510,6 +500,7 @@ import { useRoute } from 'vue-router'
 const { $socket } = globalStore()
 const { getUser } = usersStore()
 const { capture } = useTelemetry()
+const { isNewestFirst } = useTimelinePreferences()
 
 const props = defineProps({
   doctype: { type: String, default: 'CRM Lead' },
@@ -641,7 +632,7 @@ const activities = computed(() => {
     )
   } else if (title.value == 'Calls') {
     if (!all_activities.data?.calls) return []
-    return sortByCreation(all_activities.data.calls)
+    return sortByCreation(all_activities.data.calls, isNewestFirst.value)
   } else if (title.value == 'Tasks') {
     if (!all_activities.data?.tasks) return []
     return sortByModified(all_activities.data.tasks)
@@ -672,11 +663,18 @@ const activities = computed(() => {
       })
     }
   })
-  return sortByCreation(_activities)
+  return sortByCreation(_activities, isNewestFirst.value)
 })
 
-function sortByCreation(list) {
-  return list.sort((a, b) => new Date(a.creation) - new Date(b.creation))
+function sortByCreation(list, newestFirst = false) {
+  // Direction comes from the comparator operand order (like sortByModified),
+  // not .reverse(). A consistent comparator keeps .sort() idempotent, so
+  // sorting the reactive array in place doesn't re-trigger this computed.
+  return list.sort((a, b) =>
+    newestFirst
+      ? new Date(b.creation) - new Date(a.creation)
+      : new Date(a.creation) - new Date(b.creation),
+  )
 }
 function sortByModified(list) {
   return list.sort((b, a) => new Date(a.modified) - new Date(b.modified))
@@ -829,7 +827,7 @@ function scroll(hash) {
     let el
     if (!hash) {
       let e = document.getElementsByClassName('activity')
-      el = e[e.length - 1]
+      el = isNewestFirst.value ? e[0] : e[e.length - 1]
     } else {
       el = document.getElementById(hash)
     }

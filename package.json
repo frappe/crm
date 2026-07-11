@@ -17,6 +17,14 @@
 		"postinstall": "cd frontend && yarn install --check-files",
 		"dev": "cd frontend && yarn dev",
 		"build": "cd frontend && yarn build",
-		"upgrade-frappeui": "cd frontend && yarn add frappe-ui@latest && cd .."
+		"upgrade-frappeui": "cd frontend && yarn add frappe-ui@latest && cd ..",
+		"test:e2e": "playwright test",
+		"test:e2e:ui": "playwright test --ui",
+		"test:e2e:headed": "playwright test --headed",
+		"test:e2e:debug": "playwright test --debug"
+	},
+	"devDependencies": {
+		"@playwright/test": "^1.49.0",
+		"@types/node": "^22.0.0"
 	}
 }

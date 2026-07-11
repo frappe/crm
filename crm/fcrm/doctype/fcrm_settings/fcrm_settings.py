@@ -126,8 +126,10 @@ class FCRMSettings(Document):
 		)
 		if any(section.get("name") == "forecasted_sales_section" for section in all_sections):
 			return
+		# FIX: fields inside columns are dicts; extract "fieldname" string for set
+		# comparison instead of using dicts as set elements (unhashable on Python 3.14)
 		existing_fields = {
-			field
+			(field.get("fieldname") or field.get("name")) if isinstance(field, dict) else field
 			for section in all_sections
 			for column in section.get("columns") or []
 			for field in column.get("fields") or []

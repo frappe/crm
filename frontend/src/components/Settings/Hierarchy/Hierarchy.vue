@@ -114,7 +114,7 @@
           "
           icon="users"
         />
-        <Tree
+        <HierarchyTree
           v-for="root in visibleRoots"
           :key="root.name"
           :node="root"
@@ -138,7 +138,7 @@
               @move-to-root="(n) => reparent(n.name, null)"
             />
           </template>
-        </Tree>
+        </HierarchyTree>
       </div>
     </div>
 
@@ -245,6 +245,7 @@
 <script setup>
 import EmptyState from '@/components/ListViews/EmptyState.vue'
 import HierarchyRow from './HierarchyRow.vue'
+import HierarchyTree from './HierarchyTree.vue'
 import UserMultiSelect from './UserMultiSelect.vue'
 import { useRemoveNode } from './useRemoveNode'
 import { useDragDrop } from './useDragDrop'
@@ -258,7 +259,6 @@ import {
   LoadingIndicator,
   TextInput,
   Tooltip,
-  Tree,
   call,
   createDocumentResource,
   createListResource,

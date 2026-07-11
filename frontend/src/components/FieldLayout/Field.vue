@@ -329,7 +329,10 @@ import {
 } from '@/utils'
 import { flt, formatNumber, formatCurrency } from '@/utils/numberFormat.js'
 import { getMeta } from '@/stores/meta'
-import { parseLinkFilters } from '@/utils/fieldTransforms'
+import {
+  parseLinkFilters,
+  applyStateFieldOptions,
+} from '@/utils/fieldTransforms'
 import { usersStore } from '@/stores/users'
 import { useDocument } from '@/data/document'
 
@@ -467,6 +470,14 @@ const field = computed(() => {
   if (overrides) {
     Object.assign(field, overrides)
   }
+
+  // ── Country-driven state dropdown (e.g. India Compliance installed) ──
+  field = applyStateFieldOptions(
+    field,
+    data.value,
+    doctype,
+    window.state_options,
+  )
 
   if (field.fieldtype == 'Select' && typeof field.options === 'string') {
     field.options = field.options.split('\n').map((option) => {
