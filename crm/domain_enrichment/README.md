@@ -243,10 +243,12 @@ write back to the Organization. The field-writing reuses `mapper.apply_to_docume
   Each redirect hop is re-validated and re-pinned.
 - **Permissions.** `api.enrich` enforces the Settings allow-list and
   `doc.check_permission("write")` — a user who cannot edit the record cannot enrich
-  it. The worker save is a normal permission-respecting save. The only
-  `ignore_permissions` writes are: creating a *master* (`CRM Industry`) for
-  `create_missing_link`, and writing the engine-owned `CRM Enrichment Run` — never a
-  cross-record write to data the user can't edit.
+  it. The worker save is a normal permission-respecting save. `create_missing_link`
+  auto-creation is permission-respecting too: `_ensure_link_target` only creates a
+  master (`CRM Industry`) when the enriching user has create rights on it, so a
+  scraped value can never escalate into an insert the user couldn't do by hand. The
+  only `ignore_permissions` write is the engine-owned `CRM Enrichment Run` audit log
+  — never a cross-record write to data the user can't edit.
 - **Rate limiting.** `api.enrich_preview` is decorated with
   `frappe.rate_limiter.rate_limit(limit=10, seconds=60)`.
 

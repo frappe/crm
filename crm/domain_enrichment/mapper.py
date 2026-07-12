@@ -114,10 +114,13 @@ def get_value_for_source_key(result, source_key: str):
 
 def _ensure_link_target(target_doctype: str, target_fieldname: str, value: str):
 	"""For a Link field with ``create_missing_link`` set, auto-create the linked
-	master if it is missing. Explicit, opt-in -- never a hidden side effect.
+	master if it is missing. Explicit, opt-in -- never a hidden side effect, and
+	permission-respecting: the master is only created if the enriching user could
+	create it themselves (no ``ignore_permissions`` escalation from scraped data).
 
-	Returns the value to write (the linked name) or ``None`` to skip the field.
-	Any failure is swallowed (the field is skipped, the run is not aborted).
+	Returns the value to write (the linked name) or ``None`` to skip the field --
+	when the master is missing and the user lacks create rights, or on any error
+	(the field is skipped, the run is not aborted).
 	"""
 	meta = frappe.get_meta(target_doctype)
 	df = meta.get_field(target_fieldname)
@@ -127,6 +130,12 @@ def _ensure_link_target(target_doctype: str, target_fieldname: str, value: str):
 	link_doctype = df.options
 	if frappe.db.exists(link_doctype, value):
 		return value
+	# Auto-create respects the enriching user's rights: the worker runs as the user
+	# who triggered enrichment (frappe.set_user in execute_job), so a user who cannot
+	# create the master must not be able to insert one via a crafted website. Skip the
+	# field rather than write a dangling link.
+	if not frappe.has_permission(link_doctype, ptype="create"):
+		return None
 	try:
 		link_meta = frappe.get_meta(link_doctype)
 		new_doc = {"doctype": link_doctype}
@@ -139,7 +148,8 @@ def _ensure_link_target(target_doctype: str, target_fieldname: str, value: str):
 			new_doc[link_meta.get_title_field()] = value
 		else:
 			new_doc["__newname"] = value
-		frappe.get_doc(new_doc).insert(ignore_permissions=True)
+		# Permission-respecting insert -- the create right was checked above.
+		frappe.get_doc(new_doc).insert()
 		return value
 	except Exception:
 		frappe.log_error(
