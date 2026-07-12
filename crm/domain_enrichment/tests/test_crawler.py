@@ -49,17 +49,39 @@ class RegistrableDomainTest(UnitTestCase):
 	def test_strips_www_and_port(self):
 		self.assertEqual(registrable_domain("www.example.com:443"), "example.com")
 
-	def test_last_two_labels(self):
+	def test_deep_subdomains_collapse_to_registrable(self):
 		self.assertEqual(registrable_domain("blog.shop.example.com"), "example.com")
 
 	def test_single_label(self):
 		self.assertEqual(registrable_domain("localhost"), "localhost")
+
+	def test_bare_ip_returns_itself(self):
+		self.assertEqual(registrable_domain("10.0.0.5"), "10.0.0.5")
+
+	def test_multi_label_public_suffix_keeps_registrable_label(self):
+		# The bug this guards: a last-two-labels rule returns "co.uk" here, so every
+		# *.co.uk site collapses into one same-site bucket. The PSL keeps the SLD.
+		self.assertEqual(registrable_domain("acme.co.uk"), "acme.co.uk")
+		self.assertEqual(registrable_domain("www.shop.acme.com.au"), "acme.com.au")
+
+	def test_distinct_orgs_under_a_public_suffix_are_distinct(self):
+		self.assertNotEqual(registrable_domain("acme.co.uk"), registrable_domain("evil.co.uk"))
+
+	def test_private_hosting_suffix_is_registrable(self):
+		# github.io is a PSL *private* suffix: two Pages tenants are different sites.
+		self.assertEqual(registrable_domain("acme.github.io"), "acme.github.io")
+		self.assertNotEqual(registrable_domain("acme.github.io"), registrable_domain("other.github.io"))
 
 
 class SameSiteTest(UnitTestCase):
 	def test_ignores_www_and_subdomains(self):
 		self.assertTrue(same_site("https://www.x.com/a", "x.com"))
 		self.assertTrue(same_site("https://blog.x.com/a", "x.com"))
+
+	def test_rejects_unrelated_org_sharing_a_public_suffix(self):
+		# Would be a false "same site" under the naive last-two-labels rule.
+		self.assertFalse(same_site("https://evil.co.uk/x", "acme.co.uk"))
+		self.assertFalse(same_site("https://other.github.io/x", "acme.github.io"))
 
 	def test_rejects_other_domain(self):
 		self.assertFalse(same_site("https://other.com/a", "x.com"))
