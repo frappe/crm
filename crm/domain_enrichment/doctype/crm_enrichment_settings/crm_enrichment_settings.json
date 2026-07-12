@@ -29,7 +29,6 @@
   "column_break_tuning",
   "skip_patterns",
   "ssrf_guard_tab",
-  "allow_private_networks",
   "allowed_domains_section",
   "allowed_domains",
   "blocked_domains_section",
@@ -180,13 +179,6 @@
    "fieldname": "ssrf_guard_tab",
    "fieldtype": "Tab Break",
    "label": "SSRF Guard"
-  },
-  {
-   "default": "0",
-   "description": "Danger: allows the crawler to reach private / internal networks. Leave off unless you understand the SSRF risk.",
-   "fieldname": "allow_private_networks",
-   "fieldtype": "Check",
-   "label": "Allow Private Networks"
   },
   {
    "fieldname": "allowed_domains_section",

@@ -24,7 +24,6 @@ class CRMEnrichmentSettings(Document):
 			CRMEnrichmentSkipPattern,
 		)
 
-		allow_private_networks: DF.Check
 		allowed_domains: DF.Table[CRMEnrichmentDomain]
 		auto_enrich: DF.Check
 		blocked_domains: DF.Table[CRMEnrichmentDomain]

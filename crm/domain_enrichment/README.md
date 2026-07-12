@@ -86,7 +86,6 @@ on the next enrichment without a restart.
 | `retry_count` | Transient-error retries on the session. |
 | `user_agent` | Crawler User-Agent header. |
 | `preview_max_pages` / `preview_timeout` | Bounds for the fast `enrich_preview` (create-modal) path. |
-| `allow_private_networks` | **SSRF bypass.** Default `0`. When `1` the guard does not reject private/loopback IPs (use only for internal testing). |
 | `allowed_domains` / `blocked_domains` (child) | SSRF allow/block lists (subdomain-aware). A blocked host is always rejected; if an allow list exists, only listed hosts pass. |
 | `link_priority_order` (child) | `keyword` + `weight`: a crawl-ordering hint — links whose URL/anchor contain these are fetched first (higher weight = sooner). Defaults are seeded on install. |
 | `skip_patterns` (child) | URL substrings/regexes to never crawl. |
@@ -232,16 +231,16 @@ write back to the Organization. The field-writing reuses `mapper.apply_to_docume
   resolves to a loopback / private / link-local / reserved / multicast / unspecified
   address — including the cloud-metadata endpoint `169.254.169.254`. It honors the
   `blocked_domains` / `allowed_domains` lists and **re-validates after every
-  redirect** (redirects are followed manually). `allow_private_networks = 1` bypasses
-  the IP check (internal testing only).
+  redirect** (redirects are followed manually). The private-network rejection is
+  **unconditional** — there is deliberately no setting to disable it (a crawler that
+  fetches user-supplied URLs must never be turnable into an internal-network probe).
 - **DNS-rebinding TOCTOU — closed by IP pinning.** The guard validates the resolved
   addresses and the connection is then made to one of those exact addresses
   (`http._pinned_get`): the URL netloc is rewritten to the validated IP while the
   Host header, TLS SNI and certificate verification stay on the original hostname
   (urllib3 `server_hostname`). A host that alternates DNS answers (short TTL) can no
   longer pass validation with a public IP and serve the request from a private one.
-  Each redirect hop is re-validated and re-pinned. With `allow_private_networks = 1`
-  the guard (and therefore pinning) is bypassed entirely.
+  Each redirect hop is re-validated and re-pinned.
 - **Permissions.** `api.enrich` enforces the Settings allow-list and
   `doc.check_permission("write")` — a user who cannot edit the record cannot enrich
   it. The worker save is a normal permission-respecting save. The only
