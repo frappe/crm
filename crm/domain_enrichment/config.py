@@ -49,7 +49,6 @@ DEFAULT_SETTINGS = {
 	),
 	"preview_max_pages": 1,
 	"preview_timeout": 8,
-	"allow_private_networks": 0,
 }
 
 # Industry classifier thresholds. These are mechanics (how confident the winner

@@ -7,7 +7,8 @@ These are fully offline: ``socket.getaddrinfo`` is monkeypatched so DNS resoluti
 is deterministic and no network call is ever made. The guard must reject loopback,
 link-local, private and reserved addresses (incl. the cloud-metadata endpoint
 169.254.169.254), reject non-http(s) schemes, honor allow/block domain lists, and
-allow a normal public host — unless ``allow_private_networks`` is set.
+allow a normal public host. The private-network rejection is unconditional --
+there is no setting to disable it.
 """
 
 from __future__ import annotations
@@ -46,7 +47,7 @@ def _resolves_to(ip_map):
 
 class SSRFGuardTest(UnitTestCase):
 	def setUp(self):
-		self.cfg = make_config()  # default: allow_private_networks falsy, no allow/block lists
+		self.cfg = make_config()  # default: no allow/block lists
 
 	# -- rejection of internal / dangerous addresses ----------------------- #
 	def test_rejects_loopback_127(self):
@@ -104,12 +105,14 @@ class SSRFGuardTest(UnitTestCase):
 			with self.assertRaises(SSRFError):
 				validate_url("http://mixed.example/", self.cfg)
 
-	# -- allow_private_networks bypass ------------------------------------- #
-	def test_allow_private_networks_bypasses_ip_check(self):
+	# -- the private-network guard is unconditional ------------------------ #
+	def test_private_network_guard_cannot_be_disabled(self):
+		# There is no setting to allow private networks -- a would-be bypass flag
+		# is inert, the guard still rejects a private address.
 		cfg = make_config(settings={"allow_private_networks": 1})
-		# No DNS patch needed: the guard must not resolve at all when bypassed.
-		self.assertEqual(validate_url("http://10.0.0.5/", cfg), "http://10.0.0.5/")
-		self.assertEqual(validate_url("http://localhost:8000/", cfg), "http://localhost:8000/")
+		with _resolves_to({"intranet.example": "10.0.0.5"}):
+			with self.assertRaises(SSRFError):
+				validate_url("http://intranet.example/", cfg)
 
 	# -- allow / block lists ----------------------------------------------- #
 	def test_blocked_domain_is_always_rejected(self):
@@ -190,12 +193,3 @@ class PinnedConnectionTest(UnitTestCase):
 		self.assertEqual(captured["url"], "http://8.8.8.8/")
 		self.assertEqual(status, 0)
 		self.assertIn("connection error", error)
-
-	def test_pinned_get_falls_back_to_plain_get_when_ip_check_bypassed(self):
-		import requests
-
-		session = requests.Session()
-		with mock.patch.object(session, "get", side_effect=requests.exceptions.ConnectionError("x")) as get:
-			with self.assertRaises(requests.exceptions.ConnectionError):
-				http._pinned_get(session, "http://10.0.0.5/", None, 5, 2)
-		self.assertEqual(get.call_args.args[0], "http://10.0.0.5/")

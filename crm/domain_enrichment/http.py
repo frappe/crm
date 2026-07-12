@@ -89,22 +89,22 @@ def validate_url(url: str, cfg) -> str:
 	"""SSRF guard entry point. Returns the validated URL or raises ``SSRFError``.
 
 	Validates the scheme, then resolves the hostname and rejects any URL that
-	resolves to a loopback/private/link-local/reserved address, unless
-	``allow_private_networks`` is set. Honors the Settings allow/block domain
-	lists: a blocked domain is always rejected; if an allow list exists the host
-	must be on it.
+	resolves to a loopback/private/link-local/reserved address. Honors the
+	Settings allow/block domain lists: a blocked domain is always rejected; if an
+	allow list exists the host must be on it. The private-network rejection is
+	unconditional -- there is no setting to disable it (that would be a pure SSRF
+	footgun for a crawler that fetches user-supplied URLs).
 	"""
 	_validated_ips(url, cfg)
 	return url
 
 
-def _validated_ips(url: str, cfg) -> list | None:
+def _validated_ips(url: str, cfg) -> list:
 	"""Run the full SSRF checks for ``url`` and return the resolved, validated IPs.
 
 	The caller connects to one of these exact addresses (see ``_pinned_get``), so
-	the IP that was checked is the IP that serves the request. Returns ``None``
-	when the IP check is bypassed (``allow_private_networks``) -- there is then no
-	address to pin. Raises ``SSRFError`` on any rejection.
+	the IP that was checked is the IP that serves the request. Raises ``SSRFError``
+	on any rejection.
 	"""
 	parsed = urlparse(url)
 	if parsed.scheme not in ("http", "https"):
@@ -120,10 +120,6 @@ def _validated_ips(url: str, cfg) -> list | None:
 		raise SSRFError(f"host is on the blocked-domains list: {host}")
 	if allowed and not _domain_in_list(host, allowed):
 		raise SSRFError(f"host is not on the allowed-domains list: {host}")
-
-	allow_private = bool(cfg.setting("allow_private_networks")) if cfg else False
-	if allow_private:
-		return None
 
 	try:
 		ips = _resolve_ips(host)
@@ -232,17 +228,13 @@ def _pinned_adapter(session, hostname: str, retries: int) -> _PinnedIPAdapter:
 	return adapter
 
 
-def _pinned_get(session, url: str, pinned_ip: str | None, timeout: int, retries: int):
+def _pinned_get(session, url: str, pinned_ip: str, timeout: int, retries: int):
 	"""GET ``url`` connecting to ``pinned_ip`` -- an address the SSRF guard just
 	validated -- so a DNS answer that changes between validation and connection
 	(rebinding) cannot steer the socket somewhere else. Only the socket target is
 	rewritten: the Host header, TLS SNI and certificate verification all stay on
-	the original hostname. With no pinned IP (``allow_private_networks``) this is
-	a plain session GET.
+	the original hostname.
 	"""
-	if not pinned_ip:
-		return session.get(url, timeout=timeout, allow_redirects=False, stream=True)
-
 	import requests
 
 	parsed = urlparse(url)
@@ -343,7 +335,7 @@ def fetch(url: str, cfg, session=None, html_only: bool = True):
 				return 0, "", f"blocked by SSRF guard: {exc}", current
 
 			# Redirects are followed manually (each hop re-validated and re-pinned).
-			resp = _pinned_get(session, current, ips[0] if ips else None, timeout, retries)
+			resp = _pinned_get(session, current, ips[0], timeout, retries)
 
 			if resp.is_redirect or resp.is_permanent_redirect:
 				location = resp.headers.get("Location")
