@@ -17,9 +17,11 @@ from __future__ import annotations
 
 import re
 from collections import deque
+from functools import lru_cache
 from urllib.parse import urldefrag, urljoin, urlparse
 from urllib.robotparser import RobotFileParser
 
+import tldextract
 from bs4 import BeautifulSoup
 
 from .http import build_session, fetch
@@ -61,14 +63,37 @@ def normalize_url(url: str) -> str:
 	return url
 
 
+@lru_cache(maxsize=1)
+def _tld_extractor() -> tldextract.TLDExtract:
+	"""Public Suffix List backed extractor, built once and cached.
+
+	``suffix_list_urls=()`` + ``cache_dir=None`` pin it to the snapshot bundled
+	with tldextract -- it never fetches the PSL over the network (deterministic,
+	offline, no surprise latency on first crawl). ``include_psl_private_domains``
+	makes hosting suffixes like ``github.io`` / ``vercel.app`` registrable, so two
+	tenants under one of them count as different sites for scoping.
+	"""
+	return tldextract.TLDExtract(
+		suffix_list_urls=(),
+		cache_dir=None,
+		include_psl_private_domains=True,
+	)
+
+
 def registrable_domain(netloc: str) -> str:
-	"""Pragmatic same-site check: compare the last two labels (example.com),
-	treating www as insignificant. Good enough for MVP scoping."""
+	"""The registrable domain of ``netloc`` per the Public Suffix List.
+
+	``www.acme.co.uk`` -> ``acme.co.uk``; ``blog.acme.com`` -> ``acme.com``. This
+	is the same-site key: a naive last-two-labels rule collapses every ``*.co.uk``
+	(or ``*.github.io``) to one bucket, so the crawler would wander into unrelated
+	third-party sites sharing a public suffix. Hosts with no registrable suffix
+	(bare hostnames, IPs, ``localhost``) fall back to the host itself.
+	"""
 	netloc = netloc.lower().split(":")[0]
-	if netloc.startswith("www."):
-		netloc = netloc[4:]
-	parts = netloc.split(".")
-	return ".".join(parts[-2:]) if len(parts) >= 2 else netloc
+	extracted = _tld_extractor()(netloc)
+	if extracted.domain and extracted.suffix:
+		return f"{extracted.domain}.{extracted.suffix}"
+	return extracted.domain or netloc
 
 
 def same_site(url: str, base_netloc: str) -> bool:
