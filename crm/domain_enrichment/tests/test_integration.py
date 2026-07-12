@@ -95,6 +95,23 @@ class MapperWritePolicyTest(IntegrationTestCase):
 		self.assertTrue(frappe.db.exists("CRM Industry", industry))
 		self.assertEqual(org.industry, industry)
 
+	def test_create_missing_link_respects_user_create_permission(self):
+		# A user without CRM Industry create rights must not be able to auto-create a
+		# master from a scraped value: the master is not inserted and the field is
+		# skipped (no dangling link), rather than an ignore_permissions escalation.
+		industry = "Contraband Industry " + frappe.generate_hash(length=6)
+		result = canned_result()
+		result.industry = Field(industry, "https://x.example", "Keyword Classifier")
+		org = self._new_org(industry="")
+
+		user = _make_minimal_user()
+		self.addCleanup(frappe.set_user, "Administrator")
+		frappe.set_user(user)
+		apply_to_document(org, result, self.cfg)
+
+		self.assertFalse(frappe.db.exists("CRM Industry", industry))
+		self.assertFalse(org.industry)
+
 
 class RunWriterTest(IntegrationTestCase):
 	def tearDown(self):
