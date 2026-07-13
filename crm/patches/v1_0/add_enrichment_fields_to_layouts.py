@@ -4,9 +4,10 @@ The enrichment fields (company_description, linkedin, twitter, facebook) were ad
 to the default Lead/Deal/Organization layouts in ``crm/install.py``, but that seeder
 is skip-if-exists -- so sites installed before this feature never get them and users
 can't see what enrichment writes. This patch injects any missing enrichment field
-into the relevant Side Panel / Data Fields / Quick Entry layouts (the Deal Quick Entry
-is what the create-modal quick-enrich prefill fills). Idempotent: a field already
-present anywhere in the layout (or absent from the doctype) is left untouched.
+into the relevant Side Panel / Data Fields / Quick Entry layouts (the Lead/Deal/
+Organization Quick Entry layouts are what the create-modal quick-enrich prefill
+fills). Idempotent: a field already present anywhere in the layout (or absent from
+the doctype) is left untouched.
 """
 
 import json
@@ -21,7 +22,10 @@ TARGET_LAYOUTS = [
 	"CRM Organization-Side Panel",
 	"CRM Lead-Data Fields",
 	"CRM Deal-Data Fields",
+	# Quick Entry = the create-modal layout; enrichment prefill must be visible there.
+	"CRM Lead-Quick Entry",
 	"CRM Deal-Quick Entry",
+	"CRM Organization-Quick Entry",
 ]
 
 
