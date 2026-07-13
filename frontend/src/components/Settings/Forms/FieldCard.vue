@@ -76,7 +76,7 @@
           v-if="locked"
           :text="
             __(
-              &quot;This field is required by the record and can't be made optional. Remove it to move it to hidden fields.&quot;,
+              'This field is required by the record and can\'t be made optional. Remove it to move it to hidden fields.',
             )
           "
         >

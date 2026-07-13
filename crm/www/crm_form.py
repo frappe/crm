@@ -42,8 +42,7 @@ def get_context(context):
 			"fieldname": f.fieldname,
 			# breaks (Section/Column) keep an empty label when blank so unlabeled
 			# sections render no heading; only real fields fall back to fieldname
-			"label": f.label
-			or ("" if f.fieldtype in ("Section Break", "Column Break") else f.fieldname),
+			"label": f.label or ("" if f.fieldtype in ("Section Break", "Column Break") else f.fieldname),
 			"fieldtype": f.fieldtype,
 			"options": f.options or "",
 			"reqd": int(f.reqd or 0),
