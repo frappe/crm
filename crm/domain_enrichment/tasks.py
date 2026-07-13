@@ -122,11 +122,13 @@ def enqueue_enrichment(cfg, reference_doctype: str, reference_name: str, website
 
 
 def auto_enrich_on_create(doc, method=None):
-	"""``after_insert`` hook: auto-enqueue enrichment for a new CRM record.
+	"""Auto-enqueue enrichment for a new CRM record.
 
-	Wired for CRM Lead, CRM Deal, and CRM Organization. Best-effort and never raises
-	into the save. Fires only when the feature is enabled, ``auto_enrich`` is on, the
-	doctype is enabled, and the record has a website. Reuses the same per-doc ``job_id``
+	Called from the ``after_insert`` of the CRM Lead / CRM Deal / CRM Organization
+	controllers (the trigger stays visible where the record lives, rather than as a
+	doc_events hook). Best-effort and never raises into the save. Fires only when the
+	feature is enabled, ``auto_enrich`` is on, the doctype is enabled, and the record
+	has a website. Reuses the same per-doc ``job_id``
 	+ ``deduplicate`` as the manual ``api.enrich`` path, so a manual click and the
 	auto-fire never double-run. A new Deal created with a website is therefore enriched
 	alongside its Organization -- each crawls independently and writes its own fields.
