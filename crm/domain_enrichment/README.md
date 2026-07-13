@@ -279,11 +279,13 @@ write back to the Organization. The field-writing reuses `mapper.apply_to_docume
   **intentionally removed** — the per-worker Chromium memory footprint isn't worth it
   for a fallback. (The implementation is preserved locally in the gitignored
   `CHROMIUM_FALLBACK.local.md` if it ever needs to be reintroduced.)
-- **Logo resolution.** The "logo" maximizes resolution (`extract_logo`): JSON-LD
-  `Organization.logo` → `og:image`/`twitter:image` → the best declared icon (scalable
-  SVG, then largest raster / apple-touch) → `/favicon.ico`. `og:image` is preferred over
-  icons for raw resolution, so the logo may be a social-share image rather than a strict
-  brand mark; the conventional favicon is only a last resort.
+- **Logo vs image.** The `logo` is the company's **link icon** (`extract_logo`): the
+  best declared `<link rel=icon>` — scalable SVG > largest raster / apple-touch — with
+  `/favicon.ico` as the fallback. It's the crisp, square brand mark suited to an avatar.
+  The larger social/brand image (`extract_image`: JSON-LD `Organization.logo` →
+  `og:image`/`twitter:image`) is captured separately as `image` in the run JSON — it is
+  **not** used as the logo (`og:image` is usually a wide banner) and isn't mapped to a
+  record field by default.
 - **Scheduled re-enrichment — _future feature, not implemented._** Triggering is
   either manual (Enrich button) or automatic on Lead/Deal/Organization creation (`auto_enrich`);
   there is no *scheduled* re-enrichment of existing records. A future version could enqueue periodic re-enrichment of

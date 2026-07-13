@@ -93,6 +93,7 @@ def preview(website: str, cfg: EnrichmentConfig = None) -> EnrichmentResult:
 	result.company_name = company.get("company_name") or Field()
 	result.description = company.get("description") or Field()
 	result.logo = company.get("logo") or Field()
+	result.image = company.get("image") or Field()
 	result.social_profiles = extractors.extract_social_profiles(
 		[], {}, cfg.rules("Social"), extra_links=company.get("social_links")
 	)
@@ -161,6 +162,7 @@ def run(website: str, cfg: EnrichmentConfig = None, progress=None) -> Enrichment
 		company = extractors.extract_company_info(homepage, home_soup) if home_soup else {}
 		result.company_name = company.get("company_name") or Field()
 		result.logo = company.get("logo") or Field()
+		result.image = company.get("image") or Field()
 		result.description = (
 			extractors.select_description(pages, soups_by_url) or company.get("description") or Field()
 		)

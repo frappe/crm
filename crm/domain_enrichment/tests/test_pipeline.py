@@ -27,6 +27,7 @@ EXPECTED_TOP_KEYS = {
 	"company_name",
 	"description",
 	"logo",
+	"image",
 	"industry",
 	"industry_confidence",
 	"emails",
