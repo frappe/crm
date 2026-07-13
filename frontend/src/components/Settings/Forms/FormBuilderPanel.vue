@@ -396,10 +396,47 @@
                 </div>
 
                 <div class="mt-3.5 flex flex-col gap-5">
+                  <!-- inline embed (no iframe) -->
                   <div>
-                    <div class="mb-1.5 text-base text-ink-gray-5">
+                    <div class="mb-1 text-base text-ink-gray-5">
+                      {{ __('Inline embed') }}
+                    </div>
+                    <p class="mb-2 text-p-sm text-ink-gray-5">
+                      {{
+                        __(
+                          'Renders the form right inside your page — no frame, inherits your site’s width and fonts.',
+                        )
+                      }}
+                    </p>
+                    <div class="relative">
+                      <textarea
+                        readonly
+                        rows="3"
+                        class="w-full resize-none rounded-md border border-outline-gray-2 bg-surface-gray-1 py-2 pl-3 pr-10 font-mono text-xs text-ink-gray-7 focus:border-outline-gray-4 focus:shadow-sm focus:outline-none focus:ring-0 focus-visible:outline-none"
+                        :value="jsSnippet"
+                      />
+                      <button
+                        class="absolute right-2 top-2 flex text-ink-gray-5 transition-colors hover:text-ink-gray-8"
+                        :title="__('Copy')"
+                        @click="copy(jsSnippet)"
+                      >
+                        <LucideCopy class="h-4 w-4" />
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- iframe (isolated) -->
+                  <div>
+                    <div class="mb-1 text-base text-ink-gray-5">
                       {{ __('iframe') }}
                     </div>
+                    <p class="mb-2 text-p-sm text-ink-gray-5">
+                      {{
+                        __(
+                          'Sandboxed in a frame — simplest, but a fixed height and its own styling.',
+                        )
+                      }}
+                    </p>
                     <div class="relative">
                       <textarea
                         readonly
@@ -411,27 +448,6 @@
                         class="absolute right-2 top-2 flex text-ink-gray-5 transition-colors hover:text-ink-gray-8"
                         :title="__('Copy')"
                         @click="copy(iframeSnippet)"
-                      >
-                        <LucideCopy class="h-4 w-4" />
-                      </button>
-                    </div>
-                  </div>
-
-                  <div>
-                    <div class="mb-1.5 text-base text-ink-gray-5">
-                      {{ __('JavaScript') }}
-                    </div>
-                    <div class="relative">
-                      <textarea
-                        readonly
-                        rows="7"
-                        class="w-full resize-none rounded-md border border-outline-gray-2 bg-surface-gray-1 py-2 pl-3 pr-10 font-mono text-xs text-ink-gray-7 focus:border-outline-gray-4 focus:shadow-sm focus:outline-none focus:ring-0 focus-visible:outline-none"
-                        :value="jsSnippet"
-                      />
-                      <button
-                        class="absolute right-2 top-2 flex text-ink-gray-5 transition-colors hover:text-ink-gray-8"
-                        :title="__('Copy')"
-                        @click="copy(jsSnippet)"
                       >
                         <LucideCopy class="h-4 w-4" />
                       </button>
@@ -864,18 +880,10 @@ const iframeSnippet = computed(
     `<iframe src="${publicUrl.value}" width="100%" height="640" style="border:0" title="${form.title || 'Web form'}"></iframe>`,
 )
 const jsSnippet = computed(() => {
-  const url = publicUrl.value
-  const id = `crm-web-form-${form.route || 'form'}`
+  const origin = window.location.origin
   return (
-    `<div id="${id}"></div>\n` +
-    `<script>\n` +
-    `  (function () {\n` +
-    `    var f = document.createElement('iframe');\n` +
-    `    f.src = '${url}';\n` +
-    `    f.width = '100%'; f.height = '640'; f.style.border = '0';\n` +
-    `    document.getElementById('${id}').appendChild(f);\n` +
-    `  })();\n` +
-    `</` +
+    `<div data-crm-form="${form.route || 'form'}"></div>\n` +
+    `<script src="${origin}/assets/crm/js/crm_form_embed.js" async></` +
     `script>`
   )
 })
