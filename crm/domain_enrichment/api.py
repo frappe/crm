@@ -19,7 +19,7 @@ from frappe.rate_limiter import rate_limit
 
 from .config import ENABLE_FLAG_BY_DOCTYPE, EnrichmentConfig, get_config
 from .mapper import get_value_for_source_key
-from .pipeline import run as run_pipeline
+from .pipeline import preview as run_preview
 from .tasks import enqueue_enrichment
 
 # Per-user, per-minute cap on each enrich entry point (each gets its own bucket).
@@ -96,12 +96,14 @@ def retry(run: str) -> dict:
 @frappe.whitelist()
 @rate_limit(limit=ENRICH_RATE_LIMIT, seconds=60)
 def enrich_preview(website: str, doctype: str = "CRM Deal") -> dict:
-	"""Bounded, fast, synchronous prefill for the create-record modal.
+	"""Fast, metadata-only prefill for the create-record modal.
 
-	Runs the pipeline with the Settings preview bounds (homepage-only /
-	``preview_max_pages``, short ``preview_timeout``), SSRF enforced by the engine.
-	Maps the result to the given doctype's Field Mapping. No DB writes, no doc, no
-	job -- returns quickly.
+	Reads only the homepage's declared ``<head>`` metadata (JSON-LD / OG / meta /
+	favicon + social links) via ``pipeline.preview`` -- no crawl, no body-text
+	extraction, no industry classifier. Those run in the background full enrichment
+	after the record is saved, so there is no point paying for them synchronously
+	here. SSRF enforced by the engine. Maps the result to the doctype's Field
+	Mappings; no DB writes, no doc, no job.
 
 	Returns ``{fields: {fieldname: value}, notes: [...]}``.
 	"""
@@ -125,26 +127,10 @@ def enrich_preview(website: str, doctype: str = "CRM Deal") -> dict:
 			frappe.PermissionError,
 		)
 
-	# Build a bounded copy of the config: homepage-only crawl, short timeout. The
-	# engine still enforces SSRF.
-	preview_settings = dict(cfg.settings)
-	preview_settings["max_pages"] = cfg.setting("preview_max_pages", 1)
-	preview_settings["max_depth"] = 0
-	preview_settings["request_timeout"] = cfg.setting("preview_timeout", 8)
-	preview_cfg = EnrichmentConfig(
-		settings=preview_settings,
-		rules_by_type=cfg.rules_by_type,
-		mappings_by_doctype=cfg.mappings_by_doctype,
-		link_priority=cfg.link_priority,
-		skip_patterns=cfg.skip_patterns,
-		allowed_domains=cfg.allowed_domains,
-		blocked_domains=cfg.blocked_domains,
-	)
-
-	result = run_pipeline(website, cfg=preview_cfg)
+	result = run_preview(website, cfg=cfg)
 
 	fields: dict = {}
-	for mapping in preview_cfg.mappings_by_doctype.get(doctype, []):
+	for mapping in cfg.mappings_by_doctype.get(doctype, []):
 		value = get_value_for_source_key(result, mapping.source_key)
 		if value:
 			fields[mapping.target_fieldname] = value

@@ -168,6 +168,42 @@ class JsSpaSiteTest(UnitTestCase):
 		self.assertEqual(extractors.diagnose_readability([page]), "empty")
 
 
+class PreviewTest(UnitTestCase):
+	"""pipeline.preview is metadata-only: it reads the homepage <head> declarations
+	and deliberately skips the body-text extractors and industry classifier (those
+	run in the background full enrichment after the record is saved)."""
+
+	def setUp(self):
+		self.cfg = _full_config()
+
+	def _homepage_only(self, *_a, **_k):
+		return [fixtures.make_page("https://acme.example", fixtures.HOMEPAGE)]
+
+	def test_extracts_head_metadata(self):
+		with mock.patch.object(pipeline_mod, "crawl", self._homepage_only):
+			result = pipeline_mod.preview("https://acme.example", cfg=self.cfg)
+		self.assertEqual(result.company_name.value, "Acme Analytics Inc.")
+		self.assertTrue(result.description.value)
+		self.assertTrue(result.logo.value)
+		# JSON-LD sameAs social links are classified from the head metadata.
+		self.assertTrue(result.social_profiles.get("linkedin"))
+		self.assertTrue(result.social_profiles["linkedin"].value)
+
+	def test_skips_heavy_extractors(self):
+		with mock.patch.object(pipeline_mod, "crawl", self._homepage_only):
+			result = pipeline_mod.preview("https://acme.example", cfg=self.cfg)
+		# No industry classification, no contact harvesting on the preview path.
+		self.assertEqual(result.industry.value, "")
+		self.assertEqual(result.emails, [])
+		self.assertEqual(result.phones, [])
+
+	def test_unreadable_homepage_returns_notes_without_raising(self):
+		with mock.patch.object(pipeline_mod, "crawl", lambda *a, **k: []):
+			result = pipeline_mod.preview("https://acme.example", cfg=self.cfg)
+		self.assertEqual(result.company_name.value, "")
+		self.assertTrue(result.notes)
+
+
 class SchemaStabilityTest(UnitTestCase):
 	"""The result schema must be identical regardless of what a site exposes."""
 
