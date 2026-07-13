@@ -114,7 +114,7 @@
             <input
               v-model="draft.route"
               :placeholder="__('contact-sales')"
-              class="min-w-0 flex-1 border-0 bg-transparent p-0 text-ink-gray-8 placeholder:text-ink-gray-4 focus:outline-none focus:ring-0"
+              class="min-w-0 flex-1 border-0 bg-transparent p-0 text-base text-ink-gray-8 placeholder:text-ink-gray-4 focus:outline-none focus:ring-0"
               @input="routeEdited = true"
             />
           </div>
