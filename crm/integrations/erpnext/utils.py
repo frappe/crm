@@ -7,11 +7,13 @@ ALLOWED_DOCTYPES = ("CRM Product", "Item")
 
 
 def should_sync() -> bool:
-	"""Product sync runs only when integration is enabled AND same-site."""
+	"""Product sync runs only when integration is enabled, same-site AND product sync is on."""
 	if "erpnext" not in frappe.get_installed_apps():
 		return False
 	settings = frappe.get_cached_doc("ERPNext CRM Settings")
-	return bool(settings.enabled) and not settings.is_erpnext_in_different_site
+	return (
+		bool(settings.enabled) and not settings.is_erpnext_in_different_site and bool(settings.sync_products)
+	)
 
 
 def in_cascade() -> bool:
