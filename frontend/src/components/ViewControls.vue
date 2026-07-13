@@ -641,7 +641,10 @@ const viewsDropdownOptions = computed(() => {
     {
       group: __('Standard Views'),
       hideLabel: true,
-      items: standardViews,
+      items: standardViews.map((item) => ({
+        ...item,
+        selected: item.name === currentView.value.name,
+      })),
     },
   ]
 
@@ -650,6 +653,7 @@ const viewsDropdownOptions = computed(() => {
       view.label = __(view.label)
       view.type = view.type || 'list'
       view.icon = getIcon(view.icon, view.type)
+      view.selected = view.name === currentView.value.name
       view.filters =
         typeof view.filters == 'string'
           ? JSON.parse(view.filters)
