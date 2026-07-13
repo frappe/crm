@@ -13,9 +13,7 @@
       <div class="flex items-center gap-3">
         <Button
           :label="mode === 'edit' ? __('Preview') : __('Edit')"
-          @click="
-            ((mode = mode === 'edit' ? 'preview' : 'edit'), resetPreview())
-          "
+          @click="(mode = mode === 'edit' ? 'preview' : 'edit'), resetPreview()"
         >
           <template #prefix>
             <LucideEye v-if="mode === 'edit'" class="h-4 w-4" />
@@ -292,7 +290,7 @@
                         <input
                           v-model="form.route"
                           class="min-w-0 flex-1 border-0 bg-transparent p-0 text-base text-ink-gray-8 placeholder:text-ink-gray-4 focus:outline-none focus:ring-0"
-                          @input="((routeEdited = true), markDirty())"
+                          @input="(routeEdited = true), markDirty()"
                         />
                       </div>
                     </div>
