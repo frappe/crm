@@ -16,12 +16,11 @@
       <input
         v-if="editingLabel"
         ref="labelInput"
-        v-model="field.label"
+        v-model="labelModel"
         :placeholder="field.fieldname"
         class="min-w-0 flex-1 border-0 bg-transparent p-0 text-base text-ink-gray-8 placeholder:text-ink-gray-4 focus:outline-none focus:ring-0"
         @blur="editingLabel = false"
         @keydown.enter="editingLabel = false"
-        @input="$emit('dirty')"
       />
       <div
         v-else
@@ -86,28 +85,21 @@
             <Switch :modelValue="true" size="sm" class="pointer-events-none" />
           </div>
         </Tooltip>
-        <Switch
-          v-else
-          v-model="field.reqd"
-          size="sm"
-          @update:modelValue="$emit('dirty')"
-        />
+        <Switch v-else v-model="reqdModel" size="sm" />
       </div>
       <FormControl
-        v-model="field.placeholder"
+        v-model="placeholderModel"
         type="text"
         size="sm"
         :label="__('Placeholder')"
         :placeholder="__('Optional')"
-        @input="$emit('dirty')"
       />
       <FormControl
-        v-model="field.field_description"
+        v-model="descriptionModel"
         type="text"
         size="sm"
         :label="__('Description')"
         :placeholder="__('Helper text under the field (optional)')"
-        @input="$emit('dirty')"
       />
     </div>
   </div>
@@ -129,7 +121,20 @@ const props = defineProps({
   locked: { type: Boolean, default: false },
 })
 
-const emit = defineEmits(['open', 'toggle', 'remove', 'dirty'])
+const emit = defineEmits(['open', 'toggle', 'remove', 'update'])
+
+// writable proxies: never mutate the `field` prop directly — emit a patch the
+// parent applies to its own model (keeps one-way data flow / lint happy)
+function fieldModel(key) {
+  return computed({
+    get: () => props.field[key],
+    set: (value) => emit('update', { [key]: value }),
+  })
+}
+const labelModel = fieldModel('label')
+const reqdModel = fieldModel('reqd')
+const placeholderModel = fieldModel('placeholder')
+const descriptionModel = fieldModel('field_description')
 
 const editingLabel = ref(false)
 const labelInput = ref(null)

@@ -160,7 +160,7 @@
                                 @open="open(f)"
                                 @toggle="toggle(f)"
                                 @remove="removeField(f)"
-                                @dirty="markDirty"
+                                @update="(patch) => updateField(f, patch)"
                               />
                             </template>
                           </Draggable>
@@ -763,7 +763,7 @@ async function ensureLinkOptions(doctype) {
       order_by: 'name asc',
     })
     linkOptions[doctype] = (rows || []).map((r) => r.name)
-  } catch (e) {
+  } catch {
     linkOptions[doctype] = []
   }
 }
@@ -1140,6 +1140,12 @@ const availableFieldOptions = computed(() => {
     .filter((f) => !used.has(f.fieldname))
     .map((af) => ({ label: af.label, value: af.fieldname, af }))
 })
+
+// apply an edit emitted by a FieldCard to the parent-owned field object
+function updateField(f, patch) {
+  Object.assign(f, patch)
+  markDirty()
+}
 
 function removeField(f) {
   form.fields = form.fields.filter((x) => x !== f)
