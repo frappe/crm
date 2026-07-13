@@ -279,7 +279,8 @@
                         {{ __('Route') }}
                       </div>
                       <div
-                        class="flex h-7 items-center rounded border border-transparent bg-surface-gray-2 px-2.5 text-base transition-colors hover:bg-surface-gray-3 focus-within:border-outline-gray-4 focus-within:bg-surface-base focus-within:shadow-sm"
+                        class="flex h-7 cursor-text items-center rounded border border-transparent bg-surface-gray-2 px-2.5 text-base transition-colors hover:bg-surface-gray-3 focus-within:border-outline-gray-4 focus-within:bg-surface-base focus-within:shadow-sm"
+                        @click="focusRouteEnd"
                       >
                         <span class="shrink-0 text-ink-gray-4">/crm-form/</span>
                         <input
@@ -693,6 +694,16 @@ function slugify(v) {
 function onTitleInput() {
   if (!routeEdited.value && !form.published) form.route = slugify(form.title)
   markDirty()
+}
+
+// clicking the /crm-form/ prefix or the box padding focuses the slug input with
+// the caret at the end (not the start)
+function focusRouteEnd(e) {
+  if (e.target.tagName === 'INPUT') return
+  const input = e.currentTarget.querySelector('input')
+  if (!input) return
+  input.focus()
+  input.setSelectionRange(input.value.length, input.value.length)
 }
 
 // keep the description textarea sized to its content
