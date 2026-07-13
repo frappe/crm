@@ -2,7 +2,7 @@
 # GNU GPLv3 License. See license.txt
 
 import frappe
-from frappe import _
+from frappe import _, get_installed_apps
 from frappe.integrations.frappe_providers.frappecloud_billing import is_fc_site
 from frappe.translate import get_messages_for_boot, get_translated_doctypes
 from frappe.utils import cint, get_system_timezone
@@ -67,11 +67,11 @@ def get_state_options() -> dict[str, list[str]]:
 	text) on any failure.
 
 	This runs inside ``get_boot``, so it must never raise — a failure here would break
-	the whole CRM page load. ``frappe.get_installed_apps`` can return `[]` or raise in
+	the whole CRM page load. ``get_installed_apps`` can return `[]` or raise in
 	unauthenticated/boot contexts (notably on v15), so the lookup is wrapped defensively.
 	"""
 	try:
-		if "india_compliance" not in frappe.get_installed_apps():
+		if "india_compliance" not in get_installed_apps():
 			return {}
 
 		from india_compliance.gst_india.constants import INDIAN_STATES
