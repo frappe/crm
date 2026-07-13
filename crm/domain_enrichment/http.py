@@ -51,10 +51,15 @@ class SSRFError(Exception):
 # SSRF guard
 # --------------------------------------------------------------------------- #
 def _domain_in_list(host: str, domains: list) -> bool:
-	"""True if ``host`` equals or is a subdomain of any entry in ``domains``."""
-	host = (host or "").lower().split(":")[0]
+	"""True if ``host`` equals or is a subdomain of any entry in ``domains``.
+
+	The trailing dot of a fully-qualified name (``evil.com.``) is stripped from both
+	sides -- it resolves identically in DNS, so leaving it on would let ``evil.com.``
+	slip past a ``evil.com`` block/allow rule.
+	"""
+	host = (host or "").lower().split(":")[0].rstrip(".")
 	for d in domains:
-		d = (d or "").lower().strip()
+		d = (d or "").lower().strip().rstrip(".")
 		if not d:
 			continue
 		if host == d or host.endswith("." + d):
@@ -110,7 +115,10 @@ def _validated_ips(url: str, cfg) -> list:
 	if parsed.scheme not in ("http", "https"):
 		raise SSRFError(f"unsupported URL scheme: {parsed.scheme or '(none)'}")
 
-	host = (parsed.hostname or "").strip()
+	# Strip the trailing dot of a fully-qualified name at the source, so the SAME
+	# canonical host feeds the allow/block check AND DNS resolution -- ``evil.com.``
+	# resolves identically to ``evil.com`` and must not bypass either.
+	host = (parsed.hostname or "").strip().rstrip(".")
 	if not host:
 		raise SSRFError("URL has no host")
 

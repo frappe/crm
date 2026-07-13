@@ -125,6 +125,25 @@ class SSRFGuardTest(UnitTestCase):
 			with self.assertRaises(SSRFError):
 				validate_url("http://sub.evil.com/", cfg)
 
+	def test_trailing_dot_fqdn_does_not_bypass_block_list(self):
+		# evil.com. resolves the same as evil.com in DNS, so the trailing dot must not
+		# slip past the block rule (the block check fires before resolution).
+		cfg = make_config(blocked_domains=["evil.com"])
+		with self.assertRaises(SSRFError):
+			validate_url("http://evil.com./", cfg)
+		with self.assertRaises(SSRFError):
+			validate_url("http://sub.evil.com./", cfg)
+		# And a block entry that itself carries a trailing dot still matches.
+		self.assertTrue(http._domain_in_list("evil.com", ["evil.com."]))
+
+	def test_trailing_dot_host_is_normalized_for_allow_list_and_resolution(self):
+		# The stripped host feeds both the allow-list check and DNS resolution: the
+		# resolver only knows "good.com" (no dot), so passing "good.com." proves the
+		# trailing dot was stripped before both steps.
+		cfg = make_config(allowed_domains=["good.com"])
+		with _resolves_to({"good.com": "8.8.8.8"}):
+			self.assertEqual(validate_url("http://good.com./", cfg), "http://good.com./")
+
 	def test_allow_list_restricts_to_listed_hosts(self):
 		cfg = make_config(allowed_domains=["good.com"])
 		with _resolves_to({"good.com": "8.8.8.8", "other.com": "8.8.8.8"}):

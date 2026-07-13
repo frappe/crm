@@ -151,6 +151,27 @@ class LogoResolutionTest(UnitTestCase):
 		self.assertEqual(logo.value, "https://x.example/favicon.ico")
 		self.assertEqual(logo.method, Method.FAVICON)
 
+	def test_rejects_unsafe_scheme_in_icon(self):
+		# A crawled site injecting a javascript: icon href must not be stored as the
+		# logo -- it is skipped and the safe favicon.ico fallback is used.
+		_p, soup = fixtures.make_page(
+			"https://x.example",
+			"<html><head><link rel='icon' href='javascript:alert(1)'></head><body></body></html>",
+		)
+		logo = extractors.extract_logo(soup, "https://x.example")
+		self.assertEqual(logo.value, "https://x.example/favicon.ico")
+
+	def test_rejects_unsafe_scheme_in_image(self):
+		# javascript:/data: in JSON-LD logo or og:image is dropped, never stored.
+		_p, soup = fixtures.make_page(
+			"https://x.example",
+			"<html><head>"
+			'<script type="application/ld+json">{"@type":"Organization","logo":"javascript:evil()"}</script>'
+			"<meta property='og:image' content='data:image/svg+xml;base64,PHN2Zz4='>"
+			"</head><body></body></html>",
+		)
+		self.assertEqual(extractors.extract_image(soup, "https://x.example").value, "")
+
 
 class CompanyNameCleaningTest(UnitTestCase):
 	def test_strips_tagline_after_separator(self):
