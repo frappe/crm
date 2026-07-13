@@ -21,6 +21,7 @@
         </div>
         <Button
           :label="templateData?.name ? __('Duplicate') : __('Save')"
+          :icon-left="templateData?.name ? 'lucide-copy' : undefined"
           variant="solid"
           @click="createTemplate"
         />
