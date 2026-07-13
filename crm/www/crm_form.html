@@ -139,6 +139,8 @@
       }
       .success h2 { font-size: 19px; color: var(--ink-strong); margin: 0 0 6px; }
       .success p { color: var(--muted); font-size: 14px; margin: 0; line-height: 1.5; }
+      .redirect-note { margin-top: 12px !important; font-size: 13px; }
+      .redirect-note a { color: var(--ink-strong); text-decoration: underline; margin-left: 4px; }
       /* frappe-ui Alert — yellow, subtle: surface-amber-2 bg, amber triangle-alert
          icon, ink-gray-9 text, rounded-md, px-4 py-3.5, gap-3, text-base */
       .draft-banner {
@@ -218,6 +220,7 @@
         <div class="check-ring">&#10003;</div>
         <h2 id="success-title">{{ success_message }}</h2>
         <p id="success-note">Your response has been recorded.</p>
+        <p class="redirect-note" id="redirect-note" style="display: none"></p>
       </div>
     </div>
 
@@ -243,6 +246,29 @@
           [].forEach.call(form.querySelectorAll(".has-error"), function (el) {
             el.classList.remove("has-error");
           });
+        }
+        function redirectWithCountdown(url) {
+          var note = document.getElementById("redirect-note");
+          var link = document.createElement("a");
+          link.href = url;
+          link.textContent = "Go now";
+          var secs = 5;
+          function render() {
+            note.textContent =
+              "Redirecting in " + secs + (secs === 1 ? " second" : " seconds") + "…";
+            note.appendChild(link);
+          }
+          note.style.display = "block";
+          render();
+          var iv = setInterval(function () {
+            secs -= 1;
+            if (secs <= 0) {
+              clearInterval(iv);
+              window.location.assign(url);
+              return;
+            }
+            render();
+          }, 1000);
         }
 
         form.addEventListener("submit", function (e) {
@@ -306,17 +332,16 @@
                 btn.textContent = original;
                 return;
               }
-              // live submissions with a redirect URL go straight there
-              if (!DRAFT && SUCCESS_URL) {
-                window.location.assign(SUCCESS_URL);
-                return;
-              }
+              document.getElementById("form-view").style.display = "none";
+              document.getElementById("success-view").style.display = "block";
               if (DRAFT) {
                 document.getElementById("success-note").textContent =
                   "Test submission — no record was created. Publish the form to start collecting responses.";
+              } else if (SUCCESS_URL) {
+                // like the framework: show the success message, then redirect
+                // after a short countdown (with a manual fallback link)
+                redirectWithCountdown(SUCCESS_URL);
               }
-              document.getElementById("form-view").style.display = "none";
-              document.getElementById("success-view").style.display = "block";
             })
             .catch(function () {
               showError();
