@@ -326,29 +326,41 @@ def add_email_account_custom_field():
 
 
 def add_web_form_custom_fields():
-	"""CRM's own published flag on the native Web Form.
+	"""CRM's own fields on the native Web Form.
 
-	Kept separate from Web Form's built-in `published` so CRM forms are served
-	only by the CRM's own public page (and never rendered by the framework's
-	web form page). The native `published` is always left 0.
+	- `crm_published`: separate publish flag so CRM forms are served only by the
+	  CRM's own public page (and never rendered by the framework's web form page).
+	  The native `published` is always left 0.
+	- `crm_hidden_defaults`: JSON of doctype-mandatory fields the author removed
+	  from the visible form, with the default value to apply on submission so the
+	  target record can still be created.
 	"""
-	if not frappe.get_meta("Web Form").has_field("crm_published"):
-		click.secho("* Installing Custom Fields in Web Form")
-		create_custom_fields(
-			{
-				"Web Form": [
-					{
-						"default": "0",
-						"fieldname": "crm_published",
-						"fieldtype": "Check",
-						"label": "CRM Published",
-						"insert_after": "published",
-						"hidden": 1,
-					}
-				]
-			}
-		)
-		frappe.clear_cache(doctype="Web Form")
+	meta = frappe.get_meta("Web Form")
+	if meta.has_field("crm_published") and meta.has_field("crm_hidden_defaults"):
+		return
+	click.secho("* Installing Custom Fields in Web Form")
+	create_custom_fields(
+		{
+			"Web Form": [
+				{
+					"default": "0",
+					"fieldname": "crm_published",
+					"fieldtype": "Check",
+					"label": "CRM Published",
+					"insert_after": "published",
+					"hidden": 1,
+				},
+				{
+					"fieldname": "crm_hidden_defaults",
+					"fieldtype": "Long Text",
+					"label": "CRM Hidden Field Defaults",
+					"insert_after": "crm_published",
+					"hidden": 1,
+				},
+			]
+		}
+	)
+	frappe.clear_cache(doctype="Web Form")
 
 
 def add_default_industries():

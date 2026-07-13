@@ -71,7 +71,7 @@ import DefaultsSettings from '@/components/Settings/DefaultsSettings.vue'
 import BrandSettings from '@/components/Settings/BrandSettings.vue'
 import CalendarSettings from '@/components/Settings/CalendarSettings.vue'
 import HomeActions from '@/components/Settings/HomeActions.vue'
-import WebFormsSettings from '@/components/Settings/WebForms/WebFormsSettings.vue'
+import FormsSettings from '@/components/Settings/Forms/FormsSettings.vue'
 import GeneralSettings from '@/components/Settings/GeneralSettings.vue'
 import DashboardSettings from '@/components/Settings/DashboardSettings.vue'
 import EmailTemplatePage from '@/components/Settings/EmailTemplate/EmailTemplatePage.vue'
@@ -213,8 +213,8 @@ const tabs = computed(() => {
           icon: 'home',
         },
         {
-          label: __('Web Forms'),
-          component: markRaw(WebFormsSettings),
+          label: __('Forms'),
+          component: markRaw(FormsSettings),
           icon: markRaw(LucideTextCursorInput),
         },
       ],

@@ -36,10 +36,14 @@ def get_context(context):
 	context.form_route = doc.route
 	context.submit_label = doc.button_label or "Submit"
 	context.success_message = doc.success_message or "Thank you!"
+	context.success_url = doc.success_url or ""
 	context.fields = [
 		{
 			"fieldname": f.fieldname,
-			"label": f.label or f.fieldname,
+			# breaks (Section/Column) keep an empty label when blank so unlabeled
+			# sections render no heading; only real fields fall back to fieldname
+			"label": f.label
+			or ("" if f.fieldtype in ("Section Break", "Column Break") else f.fieldname),
 			"fieldtype": f.fieldtype,
 			"options": f.options or "",
 			"reqd": int(f.reqd or 0),

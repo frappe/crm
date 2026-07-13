@@ -13,14 +13,23 @@
     />
     <style>
       :root {
-        --ink: #1f272e;
-        --muted: #7c7f86;
-        --border: #e2e2e5;
-        --bg: #f4f4f6;
-        --card: #ffffff;
-        --accent: #171717;
-        --danger: #e03636;
-        --ring: rgba(23, 23, 23, 0.12);
+        /* espresso / frappe-ui light-theme tokens (pure-neutral grays) */
+        --ink-strong: oklch(0.168 0 0);       /* ink-gray-9 — headings */
+        --ink: oklch(0.205 0 0);              /* ink-gray-8 — field text */
+        --muted: oklch(0.586 0 0);            /* ink-gray-5 — labels */
+        --faint: oklch(0.683 0 0);            /* ink-gray-4 — placeholders */
+        --border: oklch(0.913 0 0);           /* outline-gray-2 */
+        --border-focus: oklch(0.83 0 0);      /* outline-gray-3 */
+        --bg: oklch(0.964 0 0);               /* surface-gray-2 — page */
+        --card: oklch(1 0 0);                 /* white surface */
+        --field: oklch(0.964 0 0);            /* surface-gray-2 — inputs */
+        --accent: oklch(0.205 0 0);           /* surface-gray-10 — button */
+        --accent-hover: oklch(0.341 0 0);     /* surface-gray-9 */
+        --danger: oklch(0.507 0.165 25.286);  /* ink-red-5 */
+        --danger-bg: oklch(0.978 0.011 17.34); /* surface-red-1 */
+        --success-bg: oklch(0.965 0.03 155.987); /* surface-green-2 */
+        --success-ink: oklch(0.506 0.118 155.358); /* ink-green-5 */
+        --ring: oklch(0.586 0 0 / 0.15);
       }
       * { box-sizing: border-box; }
       html, body { margin: 0; padding: 0; }
@@ -45,10 +54,12 @@
         padding: 28px 28px 26px;
         box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 12px 32px rgba(0, 0, 0, 0.05);
       }
-      .title { font-size: 20px; font-weight: 600; margin: 0 0 5px; letter-spacing: -0.01em; }
+      .title { font-size: 20px; font-weight: 600; color: var(--ink-strong); margin: 0 0 5px; letter-spacing: -0.01em; }
+      /* with no description, the title supplies the gap the subtitle normally would */
+      .title.title-only { margin-bottom: 22px; }
       .subtitle { font-size: 14px; color: var(--muted); margin: 0 0 22px; line-height: 1.5; }
       .section { margin-bottom: 4px; }
-      .section-title { font-size: 15px; font-weight: 600; color: var(--ink); margin: 20px 0 12px; }
+      .section-title { font-size: 15px; font-weight: 600; color: var(--ink-strong); margin: 20px 0 12px; }
       .section:first-child .section-title { margin-top: 0; }
       .cols { display: grid; gap: 0 20px; }
       @media (max-width: 520px) { .cols { grid-template-columns: 1fr !important; } }
@@ -63,32 +74,33 @@
         font-size: 14px;
         line-height: 1.4;
         color: var(--ink);
-        background: #f4f4f6;
+        background: var(--field);
         border: 1px solid transparent;
         border-radius: 8px;
         padding: 6px 10px;
         outline: none;
         transition: border-color 0.12s, box-shadow 0.12s, background 0.12s;
       }
+      ::placeholder { color: var(--faint); }
       textarea { min-height: 68px; resize: vertical; }
       select {
         appearance: none;
         -webkit-appearance: none;
         -moz-appearance: none;
         padding-right: 32px;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%237c7f86' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%237c7c7c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
         background-repeat: no-repeat;
         background-position: right 10px center;
         cursor: pointer;
       }
       input:focus, textarea:focus, select:focus {
-        border-color: #c7c7cc;
+        border-color: var(--border-focus);
         box-shadow: 0 0 0 2px var(--ring);
-        background: #fff;
+        background: var(--card);
       }
       .has-error, .has-error:focus {
         border-color: var(--danger);
-        box-shadow: 0 0 0 2px rgba(224, 54, 54, 0.14);
+        box-shadow: 0 0 0 2px var(--danger-bg);
       }
       .check { display: flex; align-items: center; gap: 9px; }
       .check input { width: 16px; height: 16px; accent-color: var(--accent); }
@@ -99,20 +111,20 @@
         font: inherit;
         font-size: 14px;
         font-weight: 500;
-        color: #fff;
+        color: oklch(1 0 0);
         background: var(--accent);
         border: none;
         border-radius: 8px;
         padding: 8px 16px;
         cursor: pointer;
-        transition: opacity 0.12s, transform 0.02s;
+        transition: background 0.12s, transform 0.02s;
       }
-      button.submit:hover { opacity: 0.9; }
+      button.submit:hover { background: var(--accent-hover); }
       button.submit:active { transform: translateY(1px); }
       button.submit:disabled { opacity: 0.5; cursor: default; }
       .form-error {
         display: none;
-        background: #fdecec;
+        background: var(--danger-bg);
         color: var(--danger);
         font-size: 13px;
         border-radius: 9px;
@@ -122,29 +134,34 @@
       .success { text-align: center; padding: 20px 4px 8px; }
       .success .check-ring {
         width: 48px; height: 48px; border-radius: 999px; margin: 0 auto 16px;
-        background: #e8f5ec; color: #1f9d55; display: flex; align-items: center;
+        background: var(--success-bg); color: var(--success-ink); display: flex; align-items: center;
         justify-content: center; font-size: 24px;
       }
-      .success h2 { font-size: 19px; margin: 0 0 6px; }
+      .success h2 { font-size: 19px; color: var(--ink-strong); margin: 0 0 6px; }
       .success p { color: var(--muted); font-size: 14px; margin: 0; line-height: 1.5; }
-      .footer { text-align: center; margin-top: 22px; font-size: 12px; color: #a9abb1; }
-      .footer a { color: #83868d; text-decoration: none; }
+      /* frappe-ui Alert — yellow, subtle: surface-amber-2 bg, amber triangle-alert
+         icon, ink-gray-9 text, rounded-md, px-4 py-3.5, gap-3, text-base */
       .draft-banner {
-        width: 100%; max-width: 560px; margin: 0 auto 12px; padding: 8px 14px; border-radius: 10px;
-        background: #fff7ed; color: #b45309; border: 1px solid #fed7aa;
-        font: 500 13px/1.4 "Inter", sans-serif; text-align: center;
+        display: flex; align-items: flex-start; gap: 12px;
+        width: 100%; max-width: 560px; margin: 0 auto 12px;
+        padding: 14px 16px; border-radius: 6px;
+        background: oklch(0.967 0.045 91.733);  /* surface-amber-2 */
+        color: var(--ink-strong);               /* ink-gray-9 */
+        font: 400 14px/1.5 "Inter", sans-serif; text-align: left;
       }
+      .draft-banner svg { flex-shrink: 0; width: 16px; height: 16px; margin-top: 1px; color: oklch(0.599 0.141 56.803); }
     </style>
   </head>
   <body>
     {% if draft_preview %}
     <div class="draft-banner">
-      {{ _("Draft preview — only you can see this. Publish the form to make it public.") }}
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+      <span>{{ _("Draft preview — only you can see this. Publish the form to make it public.") }}</span>
     </div>
     {% endif %}
     <div class="card">
       <div id="form-view">
-        <h1 class="title">{{ form_title }}</h1>
+        <h1 class="title{% if not form_description %} title-only{% endif %}">{{ form_title }}</h1>
         {% if form_description %}<p class="subtitle">{{ form_description }}</p>{% endif %}
 
         <div class="form-error" id="form-error"></div>
@@ -202,8 +219,6 @@
         <h2 id="success-title">{{ success_message }}</h2>
         <p id="success-note">Your response has been recorded.</p>
       </div>
-
-      <div class="footer">Powered by <a href="https://frappe.io/crm" target="_blank" rel="noopener">Frappe CRM</a></div>
     </div>
 
     <script>
@@ -213,6 +228,7 @@
         var FIELDS = {{ fields | tojson }};
         var CSRF = {{ csrf_token | tojson }};
         var DRAFT = {{ draft_preview | tojson }};
+        var SUCCESS_URL = {{ success_url | tojson }};
         var form = document.getElementById("web-form");
         var errBox = document.getElementById("form-error");
         var btn = document.getElementById("submit-btn");
@@ -266,7 +282,7 @@
           // Draft preview → dry-run (validate only, no record). Published → submit
           // through Frappe's built-in Web Form engine (validation + insert).
           var endpoint = DRAFT
-            ? "/api/method/crm.api.web_form.test_submit_web_form"
+            ? "/api/method/crm.api.form.test_submit_form"
             : "/api/method/frappe.website.doctype.web_form.web_form.accept";
           var payload = DRAFT
             ? { name: WEB_FORM, values: JSON.stringify(values) }
@@ -288,6 +304,11 @@
                 showError(msg || "Sorry, we couldn't submit your response. Please try again.");
                 btn.disabled = false;
                 btn.textContent = original;
+                return;
+              }
+              // live submissions with a redirect URL go straight there
+              if (!DRAFT && SUCCESS_URL) {
+                window.location.assign(SUCCESS_URL);
                 return;
               }
               if (DRAFT) {
