@@ -6,6 +6,9 @@ import LucideHash from '~icons/lucide/hash'
 import LucideChevronsUpDown from '~icons/lucide/chevrons-up-down'
 import LucideCalendar from '~icons/lucide/calendar'
 import LucideCalendarClock from '~icons/lucide/calendar-clock'
+import LucideClock from '~icons/lucide/clock'
+import LucidePercent from '~icons/lucide/percent'
+import LucidePalette from '~icons/lucide/palette'
 import LucideSquareCheck from '~icons/lucide/square-check'
 import LucideLink from '~icons/lucide/link'
 
@@ -20,10 +23,16 @@ export function fieldTypeIcon(field) {
     case 'Float':
     case 'Currency':
       return LucideHash
+    case 'Percent':
+      return LucidePercent
     case 'Date':
       return LucideCalendar
     case 'Datetime':
       return LucideCalendarClock
+    case 'Time':
+      return LucideClock
+    case 'Color':
+      return LucidePalette
     case 'Check':
       return LucideSquareCheck
     case 'Phone':
@@ -31,6 +40,9 @@ export function fieldTypeIcon(field) {
     case 'Small Text':
     case 'Text':
     case 'Long Text':
+    case 'Text Editor':
+    case 'HTML Editor':
+    case 'Markdown Editor':
       return LucideAlignLeft
     case 'Link':
       return LucideLink

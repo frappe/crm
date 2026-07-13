@@ -103,8 +103,9 @@
       wrap.appendChild(l);
       return { control: wrap, input: wrap.querySelector("input"), noLabel: true };
     }
+    var TEXTAREA = { "Small Text": 1, "Text": 1, "Long Text": 1, "Text Editor": 1, "HTML Editor": 1, "Markdown Editor": 1 };
     var input;
-    if (ft === "Small Text" || ft === "Text" || ft === "Long Text") {
+    if (TEXTAREA[ft]) {
       input = el("textarea", { id: id, name: f.fieldname });
       if (f.placeholder) input.placeholder = f.placeholder;
     } else if (ft === "Select") {
@@ -118,9 +119,11 @@
       var type = "text";
       if (f.options === "Email") type = "email";
       else if (f.options === "Phone" || ft === "Phone") type = "tel";
-      else if (ft === "Int" || ft === "Float" || ft === "Currency") type = "number";
+      else if (ft === "Int" || ft === "Float" || ft === "Currency" || ft === "Percent") type = "number";
       else if (ft === "Date") type = "date";
       else if (ft === "Datetime") type = "datetime-local";
+      else if (ft === "Time") type = "time";
+      else if (ft === "Color") type = "color";
       input = el("input", { type: type, id: id, name: f.fieldname });
       if (f.placeholder) input.placeholder = f.placeholder;
     }
