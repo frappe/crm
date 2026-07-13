@@ -41,28 +41,6 @@
             :offset="15"
             :options="viewControls.viewActions(item, close)"
           >
-<<<<<<< HEAD
-            <Dropdown
-              placement="right-start"
-              :options="viewControls.viewActions(item, close)"
-            >
-              <template #default>
-                <Button
-                  variant="ghost"
-                  class="group-hover:!w-auto !w-0 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto"
-                  icon="lucide-more-horizontal"
-                  @click.stop
-                />
-              </template>
-            </Dropdown>
-            <span
-              v-if="isCurrentView(item)"
-              class="lucide-check size-4 text-ink-gray-7"
-              aria-hidden="true"
-            />
-          </div>
-        </button>
-=======
             <template #default>
               <Button
                 variant="ghost"
@@ -78,7 +56,6 @@
             aria-hidden="true"
           />
         </div>
->>>>>>> 286c7972 (fix: use frappe-ui's built in selection handler)
       </template>
     </Dropdown>
   </div>
