@@ -562,9 +562,13 @@ watch(
 
 onBeforeUnmount(() => {
   $socket.off('whatsapp_message')
+  $socket.off('docinfo_update', handleDocinfoUpdate)
+  $socket.emit('doc_unsubscribe', props.doctype, props.docname)
 })
 
 onMounted(() => {
+  $socket.emit('doc_subscribe', props.doctype, props.docname)
+  $socket.on('docinfo_update', handleDocinfoUpdate)
   $socket.on('whatsapp_message', (data) => {
     if (
       data.reference_doctype === props.doctype &&
@@ -582,6 +586,15 @@ onMounted(() => {
     }
   })
 })
+
+function handleDocinfoUpdate({ doc, key }) {
+  if (key !== 'comments') return
+  if (doc.reference_doctype !== props.doctype) return
+  if (doc.reference_name !== props.docname) return
+
+  all_activities.reload()
+  _document.reload()
+}
 
 function sendTemplate(template) {
   showWhatsappTemplates.value = false
