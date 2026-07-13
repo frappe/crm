@@ -10,8 +10,10 @@
 import { usePageMeta } from 'frappe-ui'
 import { DataImport } from 'frappe-ui/frappe'
 import { useRoute } from 'vue-router'
+import { getSettings } from '@/stores/settings'
 
 const route = useRoute()
+const { brand } = getSettings()
 
 const doctypeMap = {
   'CRM Lead': {
@@ -47,6 +49,7 @@ const doctypeMap = {
 usePageMeta(() => {
   return {
     title: __('Data Import'),
+    icon: brand.favicon,
   }
 })
 </script>
