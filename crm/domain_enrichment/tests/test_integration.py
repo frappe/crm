@@ -18,7 +18,7 @@ from unittest import mock
 import frappe
 from frappe.tests import IntegrationTestCase
 
-from crm.domain_enrichment import install, tasks
+from crm.domain_enrichment import config, install, tasks
 from crm.domain_enrichment.config import get_config
 from crm.domain_enrichment.cross_record import copy_enrichment_from_organization
 from crm.domain_enrichment.mapper import apply_to_document
@@ -167,11 +167,12 @@ class ApiPermissionTest(IntegrationTestCase):
 		with self.assertRaises(frappe.PermissionError):
 			enrich("CRM Organization", org.name)
 
-	def test_enrich_preview_is_rate_limited(self):
-		# The decorator is frappe.rate_limiter.rate_limit(limit=10, seconds=60).
+	def test_enrich_routes_are_rate_limited(self):
+		# enrich / retry / enrich_preview each carry rate_limit(limit=ENRICH_RATE_LIMIT).
 		from crm.domain_enrichment import api
 
-		self.assertTrue(hasattr(api.enrich_preview, "__wrapped__"))
+		for fn in (api.enrich, api.retry, api.enrich_preview):
+			self.assertTrue(hasattr(fn, "__wrapped__"), fn.__name__)
 
 
 class CrossRecordCopyTest(IntegrationTestCase):
@@ -225,8 +226,8 @@ class CrossRecordCopyTest(IntegrationTestCase):
 class AutoEnrichOnCreateTest(IntegrationTestCase):
 	"""The after_insert auto-enrich hook (Organization + Deal), gated by Settings."""
 
-	def _cfg(self, **overrides):
-		settings = {
+	def _settings(self, **overrides):
+		s = {
 			"enabled": 1,
 			"auto_enrich": 1,
 			"enable_organization": 1,
@@ -234,22 +235,26 @@ class AutoEnrichOnCreateTest(IntegrationTestCase):
 			"request_timeout": 10,
 			"max_pages": 10,
 		}
-		settings.update(overrides)
-		return fixtures.make_config(settings=settings)
+		s.update(overrides)
+		return frappe._dict(s)
 
 	def _doc(self, doctype, website="https://acme.example", name="X1"):
 		return frappe._dict(doctype=doctype, name=name, website=website)
 
-	def _run(self, doc, cfg):
+	def _run(self, doc, settings):
+		# auto_enrich_on_create now does a Settings-only gate (config.get_settings), and
+		# enqueue_enrichment reads its timeout the same way -- patch both to the fake
+		# Settings and assert on frappe.enqueue.
 		with (
-			mock.patch.object(tasks, "get_config", return_value=cfg),
+			mock.patch.object(config, "get_settings", return_value=settings),
+			mock.patch.object(tasks, "get_settings", return_value=settings),
 			mock.patch.object(tasks.frappe, "enqueue") as enq,
 		):
 			tasks.auto_enrich_on_create(doc)
 		return enq
 
 	def test_enqueues_for_new_deal(self):
-		enq = self._run(self._doc("CRM Deal", name="D1"), self._cfg())
+		enq = self._run(self._doc("CRM Deal", name="D1"), self._settings())
 		enq.assert_called_once()
 		kwargs = enq.call_args.kwargs
 		self.assertEqual(kwargs["reference_doctype"], "CRM Deal")
@@ -257,20 +262,20 @@ class AutoEnrichOnCreateTest(IntegrationTestCase):
 		self.assertTrue(kwargs["deduplicate"])
 
 	def test_enqueues_for_new_organization(self):
-		enq = self._run(self._doc("CRM Organization", name="O1"), self._cfg())
+		enq = self._run(self._doc("CRM Organization", name="O1"), self._settings())
 		enq.assert_called_once()
 		self.assertEqual(enq.call_args.kwargs["reference_doctype"], "CRM Organization")
 
 	def test_skips_when_auto_enrich_off(self):
-		enq = self._run(self._doc("CRM Deal"), self._cfg(auto_enrich=0))
+		enq = self._run(self._doc("CRM Deal"), self._settings(auto_enrich=0))
 		enq.assert_not_called()
 
 	def test_skips_when_doctype_disabled(self):
-		enq = self._run(self._doc("CRM Deal"), self._cfg(enable_deal=0))
+		enq = self._run(self._doc("CRM Deal"), self._settings(enable_deal=0))
 		enq.assert_not_called()
 
 	def test_skips_without_website(self):
-		enq = self._run(self._doc("CRM Deal", website=""), self._cfg())
+		enq = self._run(self._doc("CRM Deal", website=""), self._settings())
 		enq.assert_not_called()
 
 

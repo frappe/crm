@@ -17,7 +17,7 @@ from __future__ import annotations
 
 import frappe
 
-from .config import ENABLE_FLAG_BY_DOCTYPE, get_config
+from .config import _setting, auto_enrich_enabled_for, get_config, get_settings
 from .mapper import apply_to_document
 from .pipeline import PROGRESS_STEPS
 from .pipeline import run as run_pipeline
@@ -96,15 +96,19 @@ def write_run(
 	return doc.name
 
 
-def enqueue_enrichment(cfg, reference_doctype: str, reference_name: str, website: str, user: str) -> dict:
+def enqueue_enrichment(reference_doctype: str, reference_name: str, website: str, user: str) -> dict:
 	"""Enqueue one ``run_enrichment`` job (long queue, per-doc ``job_id`` +
 	``deduplicate``, after commit). The single place the job is enqueued -- shared by
 	the manual (``api.enrich``/``api.retry``) and auto (``after_insert``) paths so a
 	manual click and an auto-fire never double-run, and the enqueue options stay in
 	one spot. ``enqueue_after_commit`` matters for the ``after_insert`` caller, whose
 	transaction has not committed yet; it is harmless for the already-saved paths.
+
+	Reads only the Settings Single for the timeout bound (cheap, framework-cached) --
+	it never assembles the full config.
 	"""
-	timeout = int(cfg.setting("request_timeout", 10)) * int(cfg.setting("max_pages", 10)) + 60
+	s = get_settings()
+	timeout = int(_setting(s, "request_timeout")) * int(_setting(s, "max_pages")) + 60
 	job_id = f"domain-enrich-{reference_doctype}-{reference_name}"
 	frappe.enqueue(
 		"crm.domain_enrichment.tasks.run_enrichment",
@@ -134,16 +138,16 @@ def auto_enrich_on_create(doc, method=None):
 	alongside its Organization -- each crawls independently and writes its own fields.
 	"""
 	try:
-		cfg = get_config()
-		flag = ENABLE_FLAG_BY_DOCTYPE.get(doc.doctype)
-		if not (cfg.setting("enabled") and cfg.setting("auto_enrich") and flag and cfg.setting(flag)):
+		# Cheap Settings-only gate -- runs on every Lead/Deal/Org insert, so it must
+		# not assemble the full config (Rules/Mappings). The worker builds that later.
+		if not auto_enrich_enabled_for(doc.doctype):
 			return
 
 		website = (doc.get("website") or "").strip()
 		if not website:
 			return
 
-		enqueue_enrichment(cfg, doc.doctype, doc.name, website, frappe.session.user)
+		enqueue_enrichment(doc.doctype, doc.name, website, frappe.session.user)
 	except Exception:
 		frappe.log_error(title="Domain Enrichment: auto_enrich_on_create failed")
 
