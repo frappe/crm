@@ -415,16 +415,33 @@ def test_submit_form(name: str, values: dict | str) -> dict:
 	return {"test": True}
 
 
-@frappe.whitelist(allow_guest=True)  # nosemgrep: frappe-semgrep-rules.rules.security.guest-whitelisted-method
-def get_form(route: str) -> dict:
-	"""Public config for a published CRM form, for the espresso public page."""
+def _allow_cors():
+	"""Let the inline embed script call these endpoints from any site. The form is
+	already publicly hosted/submittable, so echoing the request Origin is safe and
+	avoids the credentials caveats of a wildcard."""
+	try:
+		origin = frappe.get_request_header("Origin")
+	except Exception:
+		return
+	if origin:
+		frappe.local.response_headers["Access-Control-Allow-Origin"] = origin
+		frappe.local.response_headers["Vary"] = "Origin"
+
+
+def _published_form(route: str):
 	name = frappe.db.get_value(
 		"Web Form", {"route": route, "crm_published": 1, "doc_type": ["in", ALLOWED_DOCTYPES]}
 	)
 	if not name:
 		frappe.throw(_("Form not found"), frappe.DoesNotExistError)
+	return frappe.get_doc("Web Form", name)
 
-	doc = frappe.get_doc("Web Form", name)
+
+@frappe.whitelist(allow_guest=True)  # nosemgrep: frappe-semgrep-rules.rules.security.guest-whitelisted-method
+def get_form(route: str) -> dict:
+	"""Public config for a published CRM form, for the hosted page + inline embed."""
+	_allow_cors()
+	doc = _published_form(route)
 	return {
 		"name": doc.name,
 		"title": doc.title,
@@ -433,6 +450,7 @@ def get_form(route: str) -> dict:
 		"document_type": doc.doc_type,
 		"submit_button_label": doc.button_label or _("Submit"),
 		"success_message": doc.success_message or _("Thank you!"),
+		"redirect_url": doc.success_url or "",
 		"fields": [
 			{
 				"fieldname": f.fieldname,
@@ -446,6 +464,42 @@ def get_form(route: str) -> dict:
 			for f in doc.web_form_fields
 		],
 	}
+
+
+@frappe.whitelist(allow_guest=True)  # nosemgrep: frappe-semgrep-rules.rules.security.guest-whitelisted-method
+def submit_form(route: str, values: dict | str) -> dict:
+	"""Accept an inline-embed submission and create the target Lead/Deal.
+
+	Mirrors the framework Web Form `accept()`: only fields declared on the form are
+	written, required fields are validated, and `in_web_form` is set so the CRM
+	enrichment (source/org/contact) + hidden-field defaults are applied.
+	"""
+	_allow_cors()
+	doc = _published_form(route)
+	if isinstance(values, str):
+		values = json.loads(values or "{}")
+
+	allowed = {
+		f.fieldname: f
+		for f in doc.web_form_fields
+		if f.fieldtype not in ("Section Break", "Column Break")
+	}
+	data = {}
+	for fieldname, df in allowed.items():
+		val = values.get(fieldname)
+		if df.reqd and (val is None or str(val).strip() == ""):
+			frappe.throw(_("{0} is required").format(df.label or fieldname))
+		if fieldname in values:
+			data[fieldname] = val
+
+	target = frappe.new_doc(doc.doc_type)
+	target.update(data)
+	# scope the enrichment + hidden defaults to this submission
+	frappe.flags.in_web_form = True
+	frappe.form_dict["web_form"] = doc.name
+	target.insert(ignore_permissions=True)
+	frappe.db.commit()  # nosemgrep: this is a public submission endpoint
+	return {"ok": True}
 
 
 def enrich_form_submission(doc, method=None):

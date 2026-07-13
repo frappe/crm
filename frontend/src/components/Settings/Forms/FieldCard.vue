@@ -25,21 +25,29 @@
       />
       <div
         v-else
-        class="flex min-w-0 flex-1 cursor-text items-center gap-0.5"
+        class="group/label flex min-w-0 flex-1 cursor-text items-center"
+        :title="__('Click to rename')"
         @click="beginEdit"
       >
         <span
-          class="truncate text-base"
-          :class="field.label ? 'text-ink-gray-8' : 'text-ink-gray-4'"
+          class="-ml-1 inline-flex min-w-0 max-w-full items-center gap-1 rounded px-1 py-0.5 transition-colors group-hover/label:bg-surface-gray-3"
         >
-          {{ field.label || field.fieldname }}
+          <span
+            class="min-w-0 truncate text-base"
+            :class="field.label ? 'text-ink-gray-8' : 'text-ink-gray-4'"
+          >
+            {{ field.label || field.fieldname }}
+          </span>
+          <span v-if="field.reqd" class="shrink-0 text-ink-red-5">*</span>
+          <LucideLock
+            v-if="locked"
+            class="h-3 w-3 shrink-0 text-ink-gray-4"
+            :title="__('Required by the record')"
+          />
+          <LucidePencil
+            class="h-3 w-3 shrink-0 text-ink-gray-4 opacity-0 transition-opacity group-hover/label:opacity-100"
+          />
         </span>
-        <span v-if="field.reqd" class="shrink-0 text-ink-red-5">*</span>
-        <LucideLock
-          v-if="locked"
-          class="h-3 w-3 shrink-0 text-ink-gray-4"
-          :title="__('Required by the record')"
-        />
       </div>
       <Button
         variant="ghost"
@@ -111,6 +119,7 @@ import { Switch, Button, FormControl, Tooltip } from 'frappe-ui'
 import DragVerticalIcon from '@/components/Icons/DragVerticalIcon.vue'
 import LucideX from '~icons/lucide/x'
 import LucideLock from '~icons/lucide/lock'
+import LucidePencil from '~icons/lucide/pencil'
 import LucideChevronDown from '~icons/lucide/chevron-down'
 import { fieldTypeIcon, fieldTypeLabel } from './fieldTypeIcon'
 
