@@ -358,14 +358,10 @@ def save_form(name: str | None, form: dict | str) -> dict:
 	# empty default on a hidden required field would break record creation
 	if doc.crm_published:
 		missing = [
-			h.get("label") or h.get("fieldname")
-			for h in hidden
-			if not str(h.get("default") or "").strip()
+			h.get("label") or h.get("fieldname") for h in hidden if not str(h.get("default") or "").strip()
 		]
 		if missing:
-			frappe.throw(
-				_("Set a default value before publishing for: {0}").format(", ".join(missing))
-			)
+			frappe.throw(_("Set a default value before publishing for: {0}").format(", ".join(missing)))
 	doc.crm_hidden_defaults = json.dumps(hidden) if hidden else ""
 
 	doc.save(ignore_permissions=True)
@@ -391,9 +387,7 @@ def set_published(name: str, published: int) -> None:
 			if not str(h.get("default") or "").strip()
 		]
 		if missing:
-			frappe.throw(
-				_("Set a default value before publishing for: {0}").format(", ".join(missing))
-			)
+			frappe.throw(_("Set a default value before publishing for: {0}").format(", ".join(missing)))
 	doc.crm_published = 1 if int(published) else 0
 	doc.published = 0
 	doc.save(ignore_permissions=True)
@@ -489,9 +483,7 @@ def submit_form(route: str, values: dict | str) -> dict:
 		values = json.loads(values or "{}")
 
 	allowed = {
-		f.fieldname: f
-		for f in doc.web_form_fields
-		if f.fieldtype not in ("Section Break", "Column Break")
+		f.fieldname: f for f in doc.web_form_fields if f.fieldtype not in ("Section Break", "Column Break")
 	}
 	data = {}
 	for fieldname, df in allowed.items():
@@ -507,7 +499,7 @@ def submit_form(route: str, values: dict | str) -> dict:
 	frappe.flags.in_web_form = True
 	frappe.form_dict["web_form"] = doc.name
 	target.insert(ignore_permissions=True)
-	frappe.db.commit()  # nosemgrep: this is a public submission endpoint
+	# the framework commits the transaction after a successful POST request
 	return {"ok": True}
 
 

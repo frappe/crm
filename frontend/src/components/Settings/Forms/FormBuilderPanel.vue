@@ -49,7 +49,9 @@
                 <textarea
                   ref="descInput"
                   v-model="form.description"
-                  :placeholder="__('Add a description to help people fill out this form')"
+                  :placeholder="
+                    __('Add a description to help people fill out this form')
+                  "
                   rows="1"
                   class="mt-2 w-full resize-none border-0 bg-transparent p-0 text-base leading-relaxed text-ink-gray-6 placeholder:text-ink-gray-4 focus:outline-none focus:ring-0"
                   @input="(e) => (autoGrow(e.target), markDirty())"
@@ -254,7 +256,11 @@
                   <ErrorMessage
                     v-if="hiddenMissingDefault"
                     class="mt-2"
-                    :message="__('Set a default value for each field to publish this form.')"
+                    :message="
+                      __(
+                        'Set a default value for each field to publish this form.',
+                      )
+                    "
                   />
                 </div>
               </div>
@@ -902,7 +908,8 @@ function scheduleAutosave() {
   if (autosaveTimer) clearTimeout(autosaveTimer)
   autosaveTimer = setTimeout(() => {
     autosaveTimer = null
-    if (dirty.value && !saving.value && !publishing.value) save({ silent: true })
+    if (dirty.value && !saving.value && !publishing.value)
+      save({ silent: true })
   }, 1000)
 }
 function markDirty() {
@@ -1016,7 +1023,8 @@ const TEXTAREA_TYPES = [
 ]
 function inputType(f) {
   if (f.options === 'Email') return 'email'
-  if (['Int', 'Float', 'Currency', 'Percent'].includes(f.fieldtype)) return 'number'
+  if (['Int', 'Float', 'Currency', 'Percent'].includes(f.fieldtype))
+    return 'number'
   if (f.fieldtype === 'Date') return 'date'
   if (f.fieldtype === 'Datetime') return 'datetime-local'
   if (f.fieldtype === 'Time') return 'time'
@@ -1356,7 +1364,8 @@ async function save({ silent = false } = {}) {
     emit('saved')
     return true
   } catch (e) {
-    if (!silent) toast.error(e?.messages?.[0] || e?.message || __('Could not save'))
+    if (!silent)
+      toast.error(e?.messages?.[0] || e?.message || __('Could not save'))
     return false
   } finally {
     saving.value = false
