@@ -4,9 +4,9 @@
 """Loads enrichment configuration (Settings + Rules + Field Mappings) from the desk.
 
 The engine is rule-agnostic: it loads admin-edited config here and executes it.
-``get_config()`` returns a cached ``EnrichmentConfig`` assembled from the three
-Phase 2 config doctypes; it is invalidated by ``clear_config_cache`` (wired to the
-config doctypes' doc_events in hooks.py).
+``get_config()`` assembles an ``EnrichmentConfig`` from the config doctypes on demand
+(not cached -- see the note on ``get_config``). Hot paths that only need the Settings
+toggles use ``get_settings`` / ``auto_enrich_enabled_for`` instead of the full build.
 """
 
 from __future__ import annotations
@@ -15,11 +15,6 @@ import re
 from dataclasses import dataclass, field
 
 import frappe
-
-# Cache key holding the assembled config. Built lazily by get_config() and cleared
-# whenever any of the three config doctypes changes (see hooks.py doc_events ->
-# clear_config_cache).
-CONFIG_CACHE_KEY = "domain_enrichment_config"
 
 # DocType -> the Settings checkbox that enables enrichment for it. Single source of
 # truth shared by the manual (api) and auto-enrich (tasks) paths.
@@ -50,6 +45,32 @@ DEFAULT_SETTINGS = {
 	"preview_max_pages": 1,
 	"preview_timeout": 8,
 }
+
+
+def _setting(doc, key):
+	"""One Settings field, falling back to DEFAULT_SETTINGS when unset."""
+	val = doc.get(key)
+	return DEFAULT_SETTINGS.get(key) if val in (None, "") else val
+
+
+def get_settings():
+	"""The CRM Enrichment Settings Single, framework-cached via ``get_cached_doc``.
+
+	Cheap: reads only the Single, never assembling Rules/Mappings. For hot paths --
+	the per-insert auto-enrich flag check and the enqueue timeout -- that must not
+	build the full config on every record creation.
+	"""
+	return frappe.get_cached_doc("CRM Enrichment Settings")
+
+
+def auto_enrich_enabled_for(doctype: str) -> bool:
+	"""True if auto-enrich-on-create should fire for ``doctype``. A cheap,
+	Settings-only check (feature enabled + auto_enrich on + this doctype enabled) --
+	no Rules/Mappings assembled."""
+	s = get_settings()
+	flag = ENABLE_FLAG_BY_DOCTYPE.get(doctype)
+	return bool(_setting(s, "enabled") and _setting(s, "auto_enrich") and flag and _setting(s, flag))
+
 
 # Industry classifier thresholds. These are mechanics (how confident the winner
 # must be), not tunable knowledge, so they stay constants. If an admin ever needs
@@ -231,22 +252,14 @@ def _build_config() -> EnrichmentConfig:
 
 
 def get_config() -> EnrichmentConfig:
-	"""Return the cached, assembled enrichment config.
+	"""Assemble the full enrichment config (Settings + Rules + Field Mappings) fresh.
 
-	Caches the assembled ``EnrichmentConfig`` object (not a plain dict -- the config
-	carries compiled regexes) via ``frappe.cache().get_value`` with a generator that
-	rebuilds it on a cache miss. The generator returns the dataclass directly; frappe's
-	RedisWrapper pickles it -- compiled patterns pickle fine under cPickle, so this
-	is safe and avoids re-querying on every call within a request/worker.
+	Deliberately NOT cached. It is built at most a couple of times per enrichment run,
+	and a run is a multi-second, network-bound crawl -- so the handful of small queries
+	here is noise. A cache, by contrast, buys nothing measurable and adds a real
+	stale-config surface (any write that bypasses ``on_update`` -- a bulk ``db_set``,
+	direct SQL -- would serve stale rules until a restart). The per-insert hot path does
+	NOT call this; it uses ``auto_enrich_enabled_for`` (Settings-only). Do not re-add a
+	cache here without a measured hot-path caller that justifies it.
 	"""
-	return frappe.cache().get_value(CONFIG_CACHE_KEY, generator=_build_config)
-
-
-def clear_config_cache(doc=None, method=None):
-	"""Drop the cached enrichment config.
-
-	Wired to on_update / on_trash of CRM Enrichment Settings / Rule / Field
-	Mapping so an admin edit takes effect on the next enrichment without a
-	restart. The ``doc``/``method`` signature matches Frappe doc_event hooks.
-	"""
-	frappe.cache().delete_value(CONFIG_CACHE_KEY)
+	return _build_config()

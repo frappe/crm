@@ -30,7 +30,7 @@ itself; it loads rules and executes them.
   no third-party APIs.
 - **Framework-native.** Outbound HTTP uses `frappe.utils.get_request_session`;
   background work uses `frappe.enqueue`; progress streams over
-  `frappe.publish_realtime`; config is cached in `frappe.cache()`.
+  `frappe.publish_realtime`.
 
 ---
 
@@ -41,7 +41,7 @@ DESK ADMIN (data)                         ENGINE (code, rule-agnostic)        RE
  CRM Enrichment Settings (Single) ─┐       crm/domain_enrichment/
  CRM Enrichment Rule (+Pattern) ───┼─►get_config()──► config.py              CRM Enrichment Run
  CRM Enrichment Field Mapping ─────┘      http.py (session+SSRF+cap)           (Dynamic Link to
-        │ on_update → clear cache         crawler.py (BFS; caps from cfg)       Lead/Deal/Org)
+                                          crawler.py (BFS; caps from cfg)       Lead/Deal/Org)
         │                                 extractors.py (rule executors)              ▲
         ▼                                 pipeline.py → EnrichmentResult              │
    bench migrate syncs                    api.py (@whitelist) / tasks.py        mapper.py writes
@@ -53,7 +53,7 @@ DESK ADMIN (data)                         ENGINE (code, rule-agnostic)        RE
 
 | File | Responsibility |
 |---|---|
-| `config.py` | `get_config()` → cached `EnrichmentConfig` (settings + `Rule`/`Mapping` objects). Invalidated by `clear_config_cache`. |
+| `config.py` | `get_config()` → `EnrichmentConfig` (settings + `Rule`/`Mapping` objects), built on demand (not cached). `get_settings()` / `auto_enrich_enabled_for()` are the cheap Settings-only reads for hot paths. |
 | `http.py` | `fetch(url, cfg)` on the framework session; the **SSRF guard** (`validate_url`); byte cap; HTML-only filter; never-raise `(status, html, error, final_url)` contract. |
 | `crawler.py` | Same-domain, depth-limited BFS. Caps / link-priority order / skip patterns from config. |
 | `extractors.py` | **Generic rule executor** (`apply_keyword_rules`) + the pure mechanics. No literal keyword tables. |
@@ -69,9 +69,8 @@ DESK ADMIN (data)                         ENGINE (code, rule-agnostic)        RE
 
 ## Configuration guide
 
-Three doctypes hold all the tunable knowledge. Editing any of them clears the
-config cache (`on_update`/`on_trash` → `clear_config_cache`), so changes take effect
-on the next enrichment without a restart.
+Three doctypes hold all the tunable knowledge. `get_config()` reads them on demand
+(no cache), so an edit takes effect on the very next enrichment without a restart.
 
 ### 1. CRM Enrichment Settings (Single)
 
@@ -249,8 +248,10 @@ write back to the Organization. The field-writing reuses `mapper.apply_to_docume
   scraped value can never escalate into an insert the user couldn't do by hand. The
   only `ignore_permissions` write is the engine-owned `CRM Enrichment Run` audit log
   — never a cross-record write to data the user can't edit.
-- **Rate limiting.** `api.enrich_preview` is decorated with
-  `frappe.rate_limiter.rate_limit(limit=10, seconds=60)`.
+- **Rate limiting.** Every entry point that triggers a fetch — `enrich`, `retry`,
+  and `enrich_preview` — is decorated with `rate_limit(limit=ENRICH_RATE_LIMIT,
+  seconds=60)` (per user, per route). `enrich`/`retry` only enqueue a per-doc-
+  deduplicated job; `enrich_preview` does one synchronous crawl.
 
 ---
 
@@ -288,6 +289,11 @@ write back to the Organization. The field-writing reuses `mapper.apply_to_docume
   there is no *scheduled* re-enrichment of existing records. A future version could enqueue periodic re-enrichment of
   stale records (e.g. via a scheduled job that re-runs `tasks.run_enrichment` for
   records whose last `CRM Enrichment Run` is older than N days).
+- **TLS fingerprinting.** The fetcher uses `requests`, so its TLS ClientHello
+  fingerprints (JA3/JA4) as a non-browser client. Bot walls that fingerprint TLS
+  (Cloudflare, Akamai, DataDome) can still block it even though `http.build_session`
+  sends browser-like headers. Real evasion needs a TLS-impersonating client
+  (`curl_cffi`) or a headless browser — deliberately out of scope here.
 
 ---
 

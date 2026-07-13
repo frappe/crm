@@ -212,17 +212,6 @@ doc_events = {
 		"before_validate": ["crm.api.live_demo.validate_user"],
 		"validate_reset_password": ["crm.api.live_demo.validate_reset_password"],
 	},
-	"CRM Enrichment Settings": {
-		"on_update": ["crm.domain_enrichment.config.clear_config_cache"],
-	},
-	"CRM Enrichment Rule": {
-		"on_update": ["crm.domain_enrichment.config.clear_config_cache"],
-		"on_trash": ["crm.domain_enrichment.config.clear_config_cache"],
-	},
-	"CRM Enrichment Field Mapping": {
-		"on_update": ["crm.domain_enrichment.config.clear_config_cache"],
-		"on_trash": ["crm.domain_enrichment.config.clear_config_cache"],
-	},
 }
 
 # Scheduled Tasks

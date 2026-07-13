@@ -6,8 +6,9 @@
 
 Both are type-annotated -- hooks.py sets ``require_type_annotated_api_methods``.
 Security: enrich enforces the doctype allow-list (from Settings) + a ``write``
-permission check; enrich_preview is rate-limited per user and SSRF-checked (the
-engine enforces SSRF, we don't bypass it).
+permission check; enrich_preview additionally requires ``create`` on the target and
+is SSRF-checked (the engine enforces SSRF, we don't bypass it). Every entry point
+that triggers a fetch is rate-limited per user (see ``ENRICH_RATE_LIMIT``).
 """
 
 from __future__ import annotations
@@ -20,6 +21,12 @@ from .config import ENABLE_FLAG_BY_DOCTYPE, EnrichmentConfig, get_config
 from .mapper import get_value_for_source_key
 from .pipeline import run as run_pipeline
 from .tasks import enqueue_enrichment
+
+# Per-user, per-minute cap on each enrich entry point (each gets its own bucket).
+# enrich/retry only enqueue a per-doc-deduplicated job, and enrich_preview does one
+# synchronous crawl -- 10/min is far above any real human burst while capping scripted
+# abuse (queue-flooding, or using preview as a fetch oracle).
+ENRICH_RATE_LIMIT = 10
 
 
 def _enabled_doctypes(cfg: EnrichmentConfig) -> list[str]:
@@ -50,10 +57,11 @@ def _enqueue_run(cfg, reference_doctype: str, reference_name: str, website: str)
 	if not website:
 		frappe.throw(_("Set a website on this record before enriching."), frappe.ValidationError)
 
-	return enqueue_enrichment(cfg, reference_doctype, reference_name, website, frappe.session.user)
+	return enqueue_enrichment(reference_doctype, reference_name, website, frappe.session.user)
 
 
 @frappe.whitelist()
+@rate_limit(limit=ENRICH_RATE_LIMIT, seconds=60)
 def enrich(reference_doctype: str, reference_name: str) -> dict:
 	"""Enqueue a full enrichment run for one CRM record, using the record's own
 	``website`` field. The initial trigger (the "Enrich from Website" button).
@@ -67,6 +75,7 @@ def enrich(reference_doctype: str, reference_name: str) -> dict:
 
 
 @frappe.whitelist()
+@rate_limit(limit=ENRICH_RATE_LIMIT, seconds=60)
 def retry(run: str) -> dict:
 	"""Re-run the enrichment recorded by a ``CRM Enrichment Run`` (the desk "Retry"
 	button on each run). Re-enriches the run's linked record, preferring the record's
@@ -85,7 +94,7 @@ def retry(run: str) -> dict:
 
 
 @frappe.whitelist()
-@rate_limit(limit=10, seconds=60)
+@rate_limit(limit=ENRICH_RATE_LIMIT, seconds=60)
 def enrich_preview(website: str, doctype: str = "CRM Deal") -> dict:
 	"""Bounded, fast, synchronous prefill for the create-record modal.
 
