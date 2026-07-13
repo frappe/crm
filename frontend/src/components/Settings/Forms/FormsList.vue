@@ -108,7 +108,8 @@
         <div>
           <div class="mb-1.5 text-sm text-ink-gray-5">{{ __('Route') }}</div>
           <div
-            class="flex h-7 items-center rounded border border-transparent bg-surface-gray-2 px-2.5 text-base transition-colors hover:bg-surface-gray-3 focus-within:border-outline-gray-4 focus-within:bg-surface-base focus-within:shadow-sm"
+            class="flex h-7 cursor-text items-center rounded border border-transparent bg-surface-gray-2 px-2.5 text-base transition-colors hover:bg-surface-gray-3 focus-within:border-outline-gray-4 focus-within:bg-surface-base focus-within:shadow-sm"
+            @click="focusRouteEnd"
           >
             <span class="shrink-0 text-ink-gray-4">/crm-form/</span>
             <input
@@ -193,6 +194,14 @@ function openCreate() {
 }
 function onTitleInput(e) {
   if (!routeEdited) draft.route = slugify(e?.target?.value ?? draft.title)
+}
+// clicking the /crm-form/ prefix or box padding focuses the slug at the end
+function focusRouteEnd(e) {
+  if (e.target.tagName === 'INPUT') return
+  const input = e.currentTarget.querySelector('input')
+  if (!input) return
+  input.focus()
+  input.setSelectionRange(input.value.length, input.value.length)
 }
 async function createForm() {
   createError.value = ''
