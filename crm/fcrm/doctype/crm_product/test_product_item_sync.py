@@ -13,6 +13,7 @@ def enable_product_sync():
 	settings = frappe.get_single("ERPNext CRM Settings")
 	settings.enabled = 1
 	settings.is_erpnext_in_different_site = 0
+	settings.sync_products = 1
 	settings.save(ignore_permissions=True)
 
 	from crm.patches.v1_0.create_custom_fields_for_product_item_sync import execute
