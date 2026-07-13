@@ -69,8 +69,12 @@ class TestGetBoot(FrappeTestCase):
 		self.assertIsInstance(boot["state_options"], dict)
 
 	def test_boot_degrades_when_state_lookup_fails(self):
-		# The v15 boot-context concern: if get_installed_apps misbehaves, get_boot must
+		# The v15 boot-context concern: when india_compliance isn't available, get_boot must
 		# still succeed and state_options must be an empty map (never break page load).
-		with patch("frappe.get_installed_apps", side_effect=Exception("boot context")):
+		# NB: get_installed_apps is used by other boot steps too (e.g. get_translated_doctypes
+		# -> hook resolution), so we drive the degrade path with a non-raising mock rather than
+		# a global side_effect. The raise-resilience of get_state_options itself is covered by
+		# test_resilient_when_get_installed_apps_raises.
+		with patch("frappe.get_installed_apps", return_value=["frappe", "crm"]):
 			boot = get_boot()
 		self.assertEqual(boot["state_options"], {})
