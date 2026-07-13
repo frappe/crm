@@ -103,6 +103,11 @@ class CRMDeal(Document):
 				self.share_with_agent(self.deal_owner)
 			self.assign_agent(self.deal_owner)
 
+		# Auto-enrich a new Deal from its website (best-effort, background job).
+		from crm.domain_enrichment.tasks import auto_enrich_on_create
+
+		auto_enrich_on_create(self)
+
 	def before_save(self):
 		self.apply_sla()
 
