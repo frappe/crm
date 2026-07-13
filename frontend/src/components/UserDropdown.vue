@@ -48,14 +48,14 @@
 <script setup>
 import BrandLogo from '@/components/BrandLogo.vue'
 import FrappeCloudIcon from '@/components/Icons/FrappeCloudIcon.vue'
-import Apps from '@/components/Apps.vue'
+import AppsIcon from '@/components/Icons/AppsIcon.vue'
 import { sessionStore } from '@/stores/session'
 import { usersStore } from '@/stores/users'
 import { getSettings } from '@/stores/settings'
 import { showSettings, isMobileView } from '@/composables/settings'
 import { showAboutModal } from '@/composables/modals'
 import { confirmLoginToFrappeCloud } from '@/composables/frappecloud'
-import { Dropdown } from 'frappe-ui'
+import { createResource, Dropdown } from 'frappe-ui'
 import { computed, h, markRaw } from 'vue'
 
 defineProps({
@@ -67,6 +67,13 @@ const { logout } = sessionStore()
 const { getUser } = usersStore()
 
 const user = computed(() => getUser() || {})
+
+const apps = createResource({
+  url: 'frappe.apps.get_apps',
+  cache: 'apps',
+  auto: true,
+  transform: (data) => [deskApp(), ...crmSiblingApps(data)],
+})
 
 const dropdownItems = computed(() => {
   if (!settings.value?.dropdown_items) return []
@@ -123,7 +130,9 @@ function getStandardItem(item) {
   switch (item.name1) {
     case 'app_selector':
       return {
-        component: markRaw(Apps),
+        icon: markRaw(AppsIcon),
+        label: __(item.label),
+        submenu: appMenuItems(),
       }
     case 'settings':
       return {
@@ -152,5 +161,35 @@ function getStandardItem(item) {
         onClick: () => logout.submit(),
       }
   }
+}
+
+function appMenuItems() {
+  return (apps.data || []).map((app) => ({
+    label: app.title,
+    onClick: () => (window.location.href = app.route),
+    slots: {
+      prefix: () => h('img', { class: 'size-5 rounded', src: app.logo }),
+    },
+  }))
+}
+
+function deskApp() {
+  return {
+    name: 'frappe',
+    logo: '/assets/frappe/images/framework.png',
+    title: __('Desk'),
+    route: '/desk',
+  }
+}
+
+function crmSiblingApps(data) {
+  return data
+    .filter((app) => app.name !== 'crm')
+    .map((app) => ({
+      name: app.name,
+      logo: app.logo,
+      title: __(app.title),
+      route: app.route,
+    }))
 }
 </script>
