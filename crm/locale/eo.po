@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2026-06-22 19:37+0553\n"
-"PO-Revision-Date: 2026-06-23 20:00\n"
+"POT-Creation-Date: 2026-07-05 10:18+0000\n"
+"PO-Revision-Date: 2026-07-09 10:16\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Esperanto\n"
 "MIME-Version: 1.0\n"
@@ -618,6 +618,10 @@ msgstr "crwdns152759:0crwdne152759:0"
 msgid "Annual Revenue should be a number"
 msgstr "crwdns152761:0crwdne152761:0"
 
+#: frontend/src/pages/PersonaForm.vue:64
+msgid "Another CRM"
+msgstr "crwdns207223:0crwdne207223:0"
+
 #: frontend/src/components/Settings/LeadSyncing/FailureLogs.vue:69
 msgid "Any failed lead syncs will show up here"
 msgstr "crwdns160902:0crwdne160902:0"
@@ -1007,6 +1011,10 @@ msgstr "crwdns196148:0crwdne196148:0"
 msgid "Back to File Upload"
 msgstr "crwdns196150:0crwdne196150:0"
 
+#: frontend/src/components/Questionnaire.vue:94
+msgid "Back to previous question"
+msgstr "crwdns207225:0crwdne207225:0"
+
 #. Label of the background_sync_frequency (Select) field in DocType 'Lead Sync
 #. Source'
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
@@ -1253,6 +1261,10 @@ msgstr "crwdns152887:0crwdne152887:0"
 msgid "CSV"
 msgstr "crwdns152889:0crwdne152889:0"
 
+#: frontend/src/pages/PersonaForm.vue:81
+msgid "CSV imports"
+msgstr "crwdns207227:0crwdne207227:0"
+
 #. Label of the calendar_tab (Tab Break) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 #: frontend/src/components/Settings/Settings.vue:142
@@ -1378,9 +1390,17 @@ msgstr "crwdns203637:0{0}crwdnd203637:0{1}crwdne203637:0"
 msgid "Capture"
 msgstr "crwdns152917:0crwdne152917:0"
 
+#: frontend/src/pages/PersonaForm.vue:122
+msgid "Capture my first lead"
+msgstr "crwdns207229:0crwdne207229:0"
+
 #: frontend/src/components/Layouts/AppSidebar.vue:591
 msgid "Capturing Leads"
 msgstr "crwdns196170:0crwdne196170:0"
+
+#: frontend/src/pages/PersonaForm.vue:90
+msgid "Capturing leads"
+msgstr "crwdns207231:0crwdne207231:0"
 
 #. Label of the category (Data) field in DocType 'Facebook Page'
 #: crm/lead_syncing/doctype/facebook_page/facebook_page.json
@@ -1523,10 +1543,18 @@ msgstr "crwdns152939:0crwdne152939:0"
 msgid "Close Panel"
 msgstr "crwdns196188:0crwdne196188:0"
 
+#: frontend/src/pages/PersonaForm.vue:126
+msgid "Close my first deal"
+msgstr "crwdns207233:0crwdne207233:0"
+
 #. Label of the closed_date (Date) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 msgid "Closed Date"
 msgstr "crwdns156198:0crwdne156198:0"
+
+#: frontend/src/pages/PersonaForm.vue:100
+msgid "Collaborating with my team"
+msgstr "crwdns207235:0crwdne207235:0"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:120
 msgid "Collapse"
@@ -1832,6 +1860,10 @@ msgstr "crwdns196222:0crwdne196222:0"
 #: frontend/src/utils/index.js:405
 msgid "Copied to Clipboard"
 msgstr "crwdns196224:0crwdne196224:0"
+
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:156
+msgid "Could not create the Frappe CRM custom fields on {0} automatically. If it is running the latest ERPNext, enable <b>Frappe CRM Data Synchronization</b> in its CRM Settings, Otherwise check the Error Log."
+msgstr "crwdns206089:0{0}crwdne206089:0"
 
 #: frontend/src/components/Settings/Hierarchy/useRemoveNode.js:16
 msgid "Could not remove."
@@ -2632,17 +2664,21 @@ msgstr "crwdns153131:0crwdne153131:0"
 msgid "ERPNext Site URL"
 msgstr "crwdns153133:0crwdne153133:0"
 
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:161
+msgid "ERPNext custom fields not created"
+msgstr "crwdns206091:0crwdne206091:0"
+
 #: crm/fcrm/doctype/crm_product/crm_product.py:42
 msgid "ERPNext integration is active. Create an Item in ERPNext and it will appear in CRM Product automatically."
 msgstr "crwdns203659:0crwdne203659:0"
 
-#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:205
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:220
 msgid "ERPNext integration must be enabled on the same site"
 msgstr "crwdns203661:0crwdne203661:0"
 
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:70
-#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:91
-#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:508
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:87
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:523
 msgid "ERPNext is not installed in the current site"
 msgstr "crwdns153135:0crwdne153135:0"
 
@@ -2768,6 +2804,7 @@ msgstr "crwdns153165:0{0}crwdne153165:0"
 #: frontend/src/pages/MobileOrganization.vue:501
 #: frontend/src/pages/Organization.vue:503
 #: frontend/src/pages/Organization.vue:531
+#: frontend/src/pages/PersonaForm.vue:77
 msgid "Email"
 msgstr "crwdns153167:0crwdne153167:0"
 
@@ -2825,7 +2862,7 @@ msgstr "crwdns196352:0crwdne196352:0"
 msgid "Email Templates"
 msgstr "crwdns153171:0crwdne153171:0"
 
-#: frontend/src/components/Controls/EmailMultiSelect.vue:254
+#: frontend/src/components/Controls/EmailMultiSelect.vue:256
 msgid "Email already exists"
 msgstr "crwdns196354:0crwdne196354:0"
 
@@ -3266,6 +3303,10 @@ msgstr "crwdns160788:0crwdne160788:0"
 msgid "Facebook Page"
 msgstr "crwdns160790:0crwdne160790:0"
 
+#: frontend/src/pages/PersonaForm.vue:74
+msgid "Facebook/Instagram Ads"
+msgstr "crwdns207237:0crwdne207237:0"
+
 #. Option for the 'Status' (Select) field in DocType 'CRM Call Log'
 #. Option for the 'SLA Status' (Select) field in DocType 'CRM Deal'
 #. Option for the 'SLA Status' (Select) field in DocType 'CRM Lead'
@@ -3449,6 +3490,10 @@ msgstr "crwdns153259:0crwdne153259:0"
 msgid "Filters"
 msgstr "crwdns153261:0crwdne153261:0"
 
+#: frontend/src/components/Questionnaire.vue:96
+msgid "Finish"
+msgstr "crwdns207239:0crwdne207239:0"
+
 #. Label of the first_name (Data) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: frontend/src/components/ColumnSettings.vue:103
@@ -3500,6 +3545,10 @@ msgstr "crwdns153275:0crwdne153275:0"
 #: frontend/src/components/Settings/DefaultsSettings.vue:92
 msgid "Float Precision"
 msgstr "crwdns200260:0crwdne200260:0"
+
+#: frontend/src/pages/PersonaForm.vue:91
+msgid "Following up consistently"
+msgstr "crwdns207241:0crwdne207241:0"
 
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:48
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:83
@@ -3652,6 +3701,10 @@ msgstr "crwdns196440:0crwdne196440:0"
 msgid "Going?"
 msgstr "crwdns196442:0crwdne196442:0"
 
+#: frontend/src/pages/PersonaForm.vue:75
+msgid "Google Ads"
+msgstr "crwdns207243:0crwdne207243:0"
+
 #: frontend/src/components/Filter.vue:366
 msgid "Greater than"
 msgstr "crwdns199984:0crwdne199984:0"
@@ -3764,11 +3817,27 @@ msgstr "crwdns159312:0crwdne159312:0"
 msgid "Hourly"
 msgstr "crwdns160802:0crwdne160802:0"
 
+#: frontend/src/pages/PersonaForm.vue:56
+msgid "How are you managing your sales today?"
+msgstr "crwdns207245:0crwdne207245:0"
+
+#: frontend/src/pages/PersonaForm.vue:70
+msgid "How do new leads usually come to you?"
+msgstr "crwdns207247:0crwdne207247:0"
+
+#: frontend/src/pages/PersonaForm.vue:108
+msgid "How many people will use Frappe CRM?"
+msgstr "crwdns207249:0crwdne207249:0"
+
 #. Description of the 'Timeline Timestamp Format' (Select) field in DocType
 #. 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 msgid "How timestamps are shown in the activity timeline for all users"
 msgstr "crwdns204737:0crwdne204737:0"
+
+#: frontend/src/pages/PersonaForm.vue:60
+msgid "HubSpot"
+msgstr "crwdns207251:0crwdne207251:0"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:199
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:283
@@ -3825,6 +3894,10 @@ msgstr "crwdns153337:0crwdne153337:0"
 #: frontend/src/components/ViewControls.vue:203
 msgid "Import"
 msgstr "crwdns196462:0crwdne196462:0"
+
+#: frontend/src/pages/PersonaForm.vue:121
+msgid "Import my existing data"
+msgstr "crwdns207253:0crwdne207253:0"
 
 #: frontend/src/components/Filter.vue:277
 #: frontend/src/components/Filter.vue:298
@@ -4046,6 +4119,10 @@ msgstr "crwdns156420:0crwdne156420:0"
 msgid "Invite Users"
 msgstr "crwdns196492:0crwdne196492:0"
 
+#: frontend/src/pages/PersonaForm.vue:125
+msgid "Invite my team"
+msgstr "crwdns207255:0crwdne207255:0"
+
 #: frontend/src/components/Settings/InviteUserPage.vue:10
 msgid "Invite users to access CRM. Specify their roles to control access and permissions"
 msgstr "crwdns156424:0crwdne156424:0"
@@ -4146,6 +4223,14 @@ msgstr "crwdns153395:0crwdne153395:0"
 msgid "John, Jane, Doe"
 msgstr "crwdns196500:0crwdne196500:0"
 
+#: frontend/src/pages/PersonaForm.vue:127
+msgid "Just exploring"
+msgstr "crwdns207257:0crwdne207257:0"
+
+#: frontend/src/pages/PersonaForm.vue:110
+msgid "Just me"
+msgstr "crwdns207259:0crwdne207259:0"
+
 #. Label of the kanban_tab (Tab Break) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
 #: frontend/src/components/ViewControls.vue:392
@@ -4170,6 +4255,10 @@ msgstr "crwdns153403:0crwdne153403:0"
 #: frontend/src/components/Kanban/KanbanSettings.vue:3
 msgid "Kanban settings"
 msgstr "crwdns196502:0crwdne196502:0"
+
+#: frontend/src/pages/PersonaForm.vue:93
+msgid "Keeping my pipeline organized"
+msgstr "crwdns207261:0crwdne207261:0"
 
 #. Label of the key (Data) field in DocType 'CRM Invitation'
 #. Label of the key (Data) field in DocType 'Facebook Lead Form Question'
@@ -4652,6 +4741,10 @@ msgstr "crwdns196540:0crwdne196540:0"
 msgid "Manager"
 msgstr "crwdns156462:0crwdne156462:0"
 
+#: frontend/src/pages/PersonaForm.vue:97
+msgid "Managing contacts and companies"
+msgstr "crwdns207263:0crwdne207263:0"
+
 #: frontend/src/components/Modals/DoctypeModal.vue:122
 #: frontend/src/data/document.js:68
 msgid "Mandatory field error: {0}"
@@ -4797,6 +4890,10 @@ msgstr "crwdns160824:0crwdne160824:0"
 #: frontend/src/components/ViewControls.vue:234
 msgid "More Options"
 msgstr "crwdns158676:0crwdne158676:0"
+
+#: frontend/src/pages/PersonaForm.vue:113
+msgid "More than 20"
+msgstr "crwdns207265:0crwdne207265:0"
 
 #: frontend/src/components/FieldLayoutEditor.vue:617
 msgid "Move Last Column to Next Section"
@@ -5016,6 +5113,10 @@ msgstr "crwdns153577:0crwdne153577:0"
 #: frontend/src/components/Filter.vue:713
 msgid "Next Year"
 msgstr "crwdns153579:0crwdne153579:0"
+
+#: frontend/src/components/Questionnaire.vue:95
+msgid "Next question"
+msgstr "crwdns207267:0crwdne207267:0"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:535
 msgid "No"
@@ -5508,7 +5609,7 @@ msgstr "crwdns153673:0crwdne153673:0"
 msgid "Organization Name"
 msgstr "crwdns153675:0crwdne153675:0"
 
-#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:488
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:503
 msgid "Organization or a primary Contact is required to create a customer"
 msgstr "crwdns203699:0crwdne203699:0"
 
@@ -5519,9 +5620,18 @@ msgstr "crwdns203699:0crwdne203699:0"
 msgid "Organizations"
 msgstr "crwdns153681:0crwdne153681:0"
 
+#: frontend/src/pages/PersonaForm.vue:124
+msgid "Organize my contacts"
+msgstr "crwdns207269:0crwdne207269:0"
+
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:151
 msgid "Organizer"
 msgstr "crwdns158904:0crwdne158904:0"
+
+#: frontend/src/pages/PersonaForm.vue:65 frontend/src/pages/PersonaForm.vue:82
+#: frontend/src/pages/PersonaForm.vue:103
+msgid "Other"
+msgstr "crwdns207271:0crwdne207271:0"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:605
 msgid "Other Features"
@@ -5645,6 +5755,11 @@ msgstr "crwdns203701:0crwdne203701:0"
 msgid "Person"
 msgstr "crwdns153703:0crwdne153703:0"
 
+#. Label of the persona_captured (Check) field in DocType 'FCRM Settings'
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
+msgid "Persona Captured"
+msgstr "crwdns207273:0crwdne207273:0"
+
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:120
 msgid "Personal Mobile No."
 msgstr "crwdns199042:0crwdne199042:0"
@@ -5665,6 +5780,10 @@ msgstr "crwdns153705:0crwdne153705:0"
 msgid "Phone Numbers"
 msgstr "crwdns153707:0crwdne153707:0"
 
+#: frontend/src/pages/PersonaForm.vue:78
+msgid "Phone calls"
+msgstr "crwdns207275:0crwdne207275:0"
+
 #: frontend/src/components/ViewControls.vue:1097
 msgid "Pin View"
 msgstr "crwdns153709:0crwdne153709:0"
@@ -5681,6 +5800,10 @@ msgstr "crwdns196658:0crwdne196658:0"
 #: frontend/src/components/ViewControls.vue:686
 msgid "Pinned Views"
 msgstr "crwdns153713:0crwdne153713:0"
+
+#: frontend/src/pages/PersonaForm.vue:63
+msgid "Pipedrive"
+msgstr "crwdns207277:0crwdne207277:0"
 
 #: frontend/src/components/Activities/AudioPlayer.vue:176
 msgid "Playback Speed"
@@ -6024,6 +6147,10 @@ msgstr "crwdns196704:0{0}crwdnd196704:0{1}crwdne196704:0"
 msgid "Referenced WhatsApp message does not exist."
 msgstr "crwdns199996:0crwdne199996:0"
 
+#: frontend/src/pages/PersonaForm.vue:79
+msgid "Referrals"
+msgstr "crwdns207279:0crwdne207279:0"
+
 #: frontend/src/components/ViewControls.vue:26
 #: frontend/src/components/ViewControls.vue:159
 #: frontend/src/pages/Dashboard.vue:10
@@ -6130,6 +6257,10 @@ msgstr "crwdns203711:0crwdne203711:0"
 msgid "Reopen lead/deal on new communication"
 msgstr "crwdns199530:0crwdne199530:0"
 
+#: frontend/src/pages/PersonaForm.vue:102
+msgid "Replacing my current CRM"
+msgstr "crwdns207281:0crwdne207281:0"
+
 #: frontend/src/components/Activities/EmailArea.vue:30
 #: frontend/src/components/CommunicationArea.vue:9
 msgid "Reply"
@@ -6142,6 +6273,10 @@ msgstr "crwdns153795:0crwdne153795:0"
 #: frontend/src/components/Modals/AboutModal.vue:65
 msgid "Report an Issue"
 msgstr "crwdns156562:0crwdne156562:0"
+
+#: frontend/src/pages/PersonaForm.vue:101
+msgid "Reporting & forecasting"
+msgstr "crwdns207283:0crwdne207283:0"
 
 #. Label of the reports_to (Link) field in DocType 'CRM Sales Hierarchy'
 #: crm/fcrm/doctype/crm_sales_hierarchy/crm_sales_hierarchy.json
@@ -6495,6 +6630,10 @@ msgstr "crwdns153847:0crwdne153847:0"
 msgid "Sales trend"
 msgstr "crwdns156568:0crwdne156568:0"
 
+#: frontend/src/pages/PersonaForm.vue:61
+msgid "Salesforce"
+msgstr "crwdns207285:0crwdne207285:0"
+
 #: crm/api/dashboard.py:1133
 msgid "Salesperson"
 msgstr "crwdns156572:0crwdne156572:0"
@@ -6647,6 +6786,10 @@ msgstr "crwdns199048:0crwdne199048:0"
 msgid "Select a Value"
 msgstr "crwdns196772:0crwdne196772:0"
 
+#: frontend/src/components/Questionnaire.vue:93
+msgid "Select all that apply"
+msgstr "crwdns207287:0crwdne207287:0"
+
 #: frontend/src/components/Filter.vue:601
 msgid "Select an Option"
 msgstr "crwdns196774:0crwdne196774:0"
@@ -6778,6 +6921,12 @@ msgstr "crwdns196800:0crwdne196800:0"
 msgid "Set location…"
 msgstr "crwdns200118:0crwdne200118:0"
 
+#. Description of the 'Persona Captured' (Check) field in DocType 'FCRM
+#. Settings'
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
+msgid "Set once the first admin completes the onboarding persona questionnaire"
+msgstr "crwdns207289:0crwdne207289:0"
+
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:102
 msgid "Set the Exotel number to be used for outgoing calls."
 msgstr "crwdns199050:0crwdne199050:0"
@@ -6789,6 +6938,10 @@ msgstr "crwdns199052:0crwdne199052:0"
 #: frontend/src/components/Settings/BrandSettings.vue:33
 msgid "Set the name of your brand. Appears in the left sidebar."
 msgstr "crwdns199054:0crwdne199054:0"
+
+#: frontend/src/pages/PersonaForm.vue:123
+msgid "Set up my sales pipeline"
+msgstr "crwdns207291:0crwdne207291:0"
 
 #: frontend/src/components/Settings/Sla/SlaHolidays.vue:9
 msgid "Set working days, hours, and holidays by selecting a predefined schedule or creating a new one"
@@ -6935,6 +7088,10 @@ msgstr "crwdns200124:0crwdne200124:0"
 msgid "Site connection validated"
 msgstr "crwdns200126:0crwdne200126:0"
 
+#: frontend/src/components/Questionnaire.vue:97
+msgid "Skip for now"
+msgstr "crwdns207293:0crwdne207293:0"
+
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:438
 msgid "Some error occurred while creating SLA Policy"
 msgstr "crwdns196828:0crwdne196828:0"
@@ -7006,6 +7163,10 @@ msgstr "crwdns160850:0crwdne160850:0"
 #: frontend/src/components/Dashboard/DashboardItem.vue:21
 msgid "Spacer"
 msgstr "crwdns156614:0crwdne156614:0"
+
+#: frontend/src/pages/PersonaForm.vue:59
+msgid "Spreadsheets"
+msgstr "crwdns207295:0crwdne207295:0"
 
 #: crm/api/dashboard.py:790 crm/api/dashboard.py:848
 msgid "Stage"
@@ -7096,6 +7257,10 @@ msgstr "crwdns153927:0crwdne153927:0"
 #: frontend/src/components/Modals/LeadModal.vue:152
 msgid "Status is required"
 msgstr "crwdns153929:0crwdne153929:0"
+
+#: frontend/src/components/Questionnaire.vue:91
+msgid "Step {0} of {1}"
+msgstr "crwdns207297:0{0}crwdnd207297:0{1}crwdne207297:0"
 
 #. Label of the subdomain (Data) field in DocType 'CRM Exotel Settings'
 #: crm/fcrm/doctype/crm_exotel_settings/crm_exotel_settings.json
@@ -7369,6 +7534,10 @@ msgstr "crwdns200128:0crwdne200128:0"
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:177
 msgid "This field is required"
 msgstr "crwdns196864:0crwdne196864:0"
+
+#: frontend/src/pages/PersonaForm.vue:58
+msgid "This is my first CRM"
+msgstr "crwdns207299:0crwdne207299:0"
 
 #: crm/www/crm.py:31
 msgid "This method is only meant for developer mode"
@@ -7934,6 +8103,10 @@ msgstr "crwdns156694:0crwdne156694:0"
 msgid "Visibility"
 msgstr "crwdns196912:0crwdne196912:0"
 
+#: frontend/src/pages/PersonaForm.vue:80
+msgid "Walk-ins"
+msgstr "crwdns207301:0crwdne207301:0"
+
 #: frontend/src/components/SalesHierarchyBanner.vue:20
 msgid "We are changing how permissions work in Frappe CRM"
 msgstr "crwdns203745:0crwdne203745:0"
@@ -7958,6 +8131,10 @@ msgstr "crwdns154067:0crwdne154067:0"
 #: frontend/src/components/Modals/AboutModal.vue:50
 msgid "Website"
 msgstr "crwdns154069:0crwdne154069:0"
+
+#: frontend/src/pages/PersonaForm.vue:73
+msgid "Website forms"
+msgstr "crwdns207303:0crwdne207303:0"
 
 #. Option for the 'Weekly Off' (Select) field in DocType 'CRM Holiday List'
 #. Option for the 'Workday' (Select) field in DocType 'CRM Service Day'
@@ -7988,9 +8165,21 @@ msgstr "crwdns154075:0crwdne154075:0"
 msgid "Welcome Message"
 msgstr "crwdns154077:0crwdne154077:0"
 
+#: frontend/src/pages/PersonaForm.vue:132
+msgid "Welcome to Frappe CRM"
+msgstr "crwdns207305:0crwdne207305:0"
+
 #: frontend/src/pages/Welcome.vue:4
 msgid "Welcome {0}, lets add your first lead"
 msgstr "crwdns156698:0{0}crwdne156698:0"
+
+#: frontend/src/pages/PersonaForm.vue:87
+msgid "What are your biggest challenges with sales today?"
+msgstr "crwdns207307:0crwdne207307:0"
+
+#: frontend/src/pages/PersonaForm.vue:118
+msgid "What would you like to accomplish first?"
+msgstr "crwdns207309:0crwdne207309:0"
 
 #. Option for the 'Type' (Select) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
@@ -7998,6 +8187,7 @@ msgstr "crwdns156698:0{0}crwdne156698:0"
 #: frontend/src/components/Settings/Settings.vue:225
 #: frontend/src/pages/Deal.vue:606 frontend/src/pages/Lead.vue:458
 #: frontend/src/pages/MobileDeal.vue:478 frontend/src/pages/MobileLead.vue:325
+#: frontend/src/pages/PersonaForm.vue:76
 msgid "WhatsApp"
 msgstr "crwdns154079:0crwdne154079:0"
 
@@ -8155,11 +8345,11 @@ msgstr "crwdns158948:0crwdne158948:0"
 msgid "You will need a Meta developer account and an access token to sync leads from Facebook. Read more"
 msgstr "crwdns196940:0crwdne196940:0"
 
-#: crm/api/todo.py:100
+#: crm/api/todo.py:110
 msgid "Your assignment on task {0} has been removed by {1}"
 msgstr "crwdns154213:0{0}crwdnd154213:0{1}crwdne154213:0"
 
-#: crm/api/todo.py:37 crm/api/todo.py:78
+#: crm/api/todo.py:47 crm/api/todo.py:88
 msgid "Your assignment on {0} {1} has been removed by {2}"
 msgstr "crwdns154107:0{0}crwdnd154107:0{1}crwdnd154107:0{2}crwdne154107:0"
 
@@ -8175,6 +8365,10 @@ msgstr "crwdns158950:0crwdne158950:0"
 msgid "Your old conditions will be overwritten. Are you sure you want to save?"
 msgstr "crwdns196942:0crwdne196942:0"
 
+#: frontend/src/pages/PersonaForm.vue:62
+msgid "Zoho CRM"
+msgstr "crwdns207311:0crwdne207311:0"
+
 #: frontend/src/components/Activities/CommentArea.vue:9
 msgid "added a"
 msgstr "crwdns154109:0crwdne154109:0"
@@ -8186,11 +8380,11 @@ msgstr "crwdns154109:0crwdne154109:0"
 msgid "amber"
 msgstr "crwdns154111:0crwdne154111:0"
 
-#: crm/api/todo.py:109
+#: crm/api/todo.py:119
 msgid "assigned a new task {0} to you"
 msgstr "crwdns154215:0{0}crwdne154215:0"
 
-#: crm/api/todo.py:89
+#: crm/api/todo.py:99
 msgid "assigned a {0} {1} to you"
 msgstr "crwdns154217:0{0}crwdnd154217:0{1}crwdne154217:0"
 
@@ -8605,7 +8799,7 @@ msgstr "crwdns196986:0{0}crwdne196986:0"
 msgid "{0} M"
 msgstr "crwdns156750:0{0}crwdne156750:0"
 
-#: crm/api/todo.py:41
+#: crm/api/todo.py:51
 msgid "{0} assigned a {1} {2} to you"
 msgstr "crwdns154165:0{0}crwdnd154165:0{1}crwdnd154165:0{2}crwdne154165:0"
 
@@ -8706,6 +8900,11 @@ msgstr "crwdns156776:0{0}crwdne156776:0"
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:645
 msgid "{0} yes"
 msgstr "crwdns197000:0{0}crwdne197000:0"
+
+#: frontend/src/components/Questionnaire.vue:92
+#, python-format
+msgid "{0}% complete"
+msgstr "crwdns207313:0{0}crwdne207313:0"
 
 #: frontend/src/utils/scriptHelpers.js:43
 msgid "⚠️ Avoid using \"trigger\" as a field name — it conflicts with the built-in trigger() method."
