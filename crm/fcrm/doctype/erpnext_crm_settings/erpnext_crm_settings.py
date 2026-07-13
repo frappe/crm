@@ -48,6 +48,7 @@ class ERPNextCRMSettings(Document):
 		erpnext_site_url: DF.Data | None
 		is_erpnext_in_different_site: DF.Check
 		sync_issues: DF.Table[CRMProductSyncIssue]
+		sync_products: DF.Check
 	# end: auto-generated types
 
 	def validate(self):
@@ -59,7 +60,7 @@ class ERPNextCRMSettings(Document):
 			self.create_custom_fields()
 			self.create_crm_form_script()
 			self.grant_item_access_to_sales_roles()
-			if not was_active and not self.is_erpnext_in_different_site:
+			if not was_active and not self.is_erpnext_in_different_site and self.sync_products:
 				from crm.fcrm.doctype.crm_product.reconcile_job import enqueue_reconciliation
 
 				enqueue_reconciliation()
@@ -218,6 +219,8 @@ class ERPNextCRMSettings(Document):
 	def run_product_sync(self):
 		if not self.enabled or self.is_erpnext_in_different_site:
 			frappe.throw(_("ERPNext integration must be enabled on the same site"))
+		if not self.sync_products:
+			frappe.throw(_("Product synchronization is turned off"))
 		from crm.fcrm.doctype.crm_product.reconcile_job import enqueue_reconciliation
 
 		enqueue_reconciliation()
