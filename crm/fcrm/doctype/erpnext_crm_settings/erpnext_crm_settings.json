@@ -10,6 +10,7 @@
   "erpnext_company",
   "column_break_vfru",
   "is_erpnext_in_different_site",
+  "sync_products",
   "erpnext_site_url",
   "section_break_oubd",
   "api_key",
@@ -84,6 +85,13 @@
    "label": "Is ERPNext installed on a different site?"
   },
   {
+   "default": "1",
+   "depends_on": "eval:doc.enabled && !doc.is_erpnext_in_different_site",
+   "fieldname": "sync_products",
+   "fieldtype": "Check",
+   "label": "Sync Products with ERPNext"
+  },
+  {
    "fieldname": "section_break_jnbn",
    "fieldtype": "Section Break"
   },
@@ -110,7 +118,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2026-04-14 12:59:09.417774",
+ "modified": "2026-07-13 12:49:50.042124",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "ERPNext CRM Settings",

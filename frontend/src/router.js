@@ -164,7 +164,7 @@ router.beforeEach(async (to, from, next) => {
     }
   }
 
-  const isAdminUser = isAdmin() || user === 'Administrator'
+  const isAdminUser = isLoggedIn && (isAdmin() || user === 'Administrator')
 
   // Only admins who haven't finished may reach the wizard, even via direct URL.
   if (isLoggedIn && to.name === 'Onboarding') {

@@ -519,7 +519,11 @@ function clearfilter(close) {
 function updateValue(value, filter) {
   value = value.target ? value.target.value : value
   if (filter.operator === 'between') {
-    filter.value = [value.split(',')[0], value.split(',')[1]]
+    // DateRangePicker emits a [from, to] array; tolerate a legacy "from,to" string too
+    if (typeof value === 'string') {
+      value = value.split(',').map((v) => v.trim())
+    }
+    filter.value = value
   } else {
     filter.value = value
   }
