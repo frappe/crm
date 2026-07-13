@@ -7,13 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Frappe CRM VERSION\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-<<<<<<< HEAD
-"POT-Creation-Date: 2026-06-22 19:37+0553\n"
-"PO-Revision-Date: 2026-06-22 19:37+0553\n"
-=======
 "POT-Creation-Date: 2026-07-05 10:18+0000\n"
 "PO-Revision-Date: 2026-07-05 10:18+0000\n"
->>>>>>> 90153eae (chore: update POT file)
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: shariq@frappe.io\n"
 "MIME-Version: 1.0\n"
@@ -8272,19 +8267,11 @@ msgstr ""
 msgid "You will need a Meta developer account and an access token to sync leads from Facebook. Read more"
 msgstr ""
 
-<<<<<<< HEAD
 #: crm/api/todo.py:100
 msgid "Your assignment on task {0} has been removed by {1}"
 msgstr ""
 
 #: crm/api/todo.py:37 crm/api/todo.py:78
-=======
-#: crm/api/todo.py:110
-msgid "Your assignment on task {0} has been removed by {1}"
-msgstr ""
-
-#: crm/api/todo.py:47 crm/api/todo.py:88
->>>>>>> 90153eae (chore: update POT file)
 msgid "Your assignment on {0} {1} has been removed by {2}"
 msgstr ""
 
@@ -8315,19 +8302,11 @@ msgstr ""
 msgid "amber"
 msgstr ""
 
-<<<<<<< HEAD
 #: crm/api/todo.py:109
 msgid "assigned a new task {0} to you"
 msgstr ""
 
 #: crm/api/todo.py:89
-=======
-#: crm/api/todo.py:119
-msgid "assigned a new task {0} to you"
-msgstr ""
-
-#: crm/api/todo.py:99
->>>>>>> 90153eae (chore: update POT file)
 msgid "assigned a {0} {1} to you"
 msgstr ""
 
@@ -8737,11 +8716,7 @@ msgstr ""
 msgid "{0} M"
 msgstr ""
 
-<<<<<<< HEAD
 #: crm/api/todo.py:41
-=======
-#: crm/api/todo.py:51
->>>>>>> 90153eae (chore: update POT file)
 msgid "{0} assigned a {1} {2} to you"
 msgstr ""
 
