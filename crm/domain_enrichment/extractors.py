@@ -280,14 +280,30 @@ def _best_icon(soup, base_url):
 
 
 def extract_logo(soup, base_url):
-	"""Best available company logo, maximizing resolution (mechanics).
+	"""The company's **link icon** -- the crisp, square brand mark suitable as an
+	avatar. Only ``<link rel=icon>`` sources are considered: scalable SVG > largest
+	declared raster / apple-touch > the conventional ``/favicon.ico`` fallback.
 
-	Priority: JSON-LD ``Organization.logo`` (curated, full-size) → ``og:image`` /
-	``twitter:image`` (high-res social-share image) → the best declared icon (scalable
-	SVG, then largest raster / apple-touch) → the conventional ``/favicon.ico``. Returns
-	a :class:`Field` carrying the source method.
+	The larger social-share / JSON-LD image is deliberately NOT used as the logo
+	(``og:image`` is usually a wide banner, not a brand mark); it is captured
+	separately by :func:`extract_image`. Returns a :class:`Field`.
 	"""
-	# 1. JSON-LD Organization.logo -- a real, full-size brand logo.
+	icon_url = _best_icon(soup, base_url)
+	if icon_url:
+		return Field(icon_url, base_url, Method.FAVICON)
+
+	parsed = urlparse(base_url)
+	if parsed.scheme and parsed.netloc:
+		return Field(f"{parsed.scheme}://{parsed.netloc}/favicon.ico", base_url, Method.FAVICON)
+	return Field()
+
+
+def extract_image(soup, base_url):
+	"""The company's larger brand / social image: JSON-LD ``Organization.logo``
+	(curated, full-size) → ``og:image`` / ``twitter:image`` (social-share). Kept in the
+	run JSON for reference; it is NOT the company logo (that is the link icon -- see
+	:func:`extract_logo`). Returns a :class:`Field`, empty if none is declared.
+	"""
 	for block in parse_json_ld(soup):
 		if not _ld_type_matches(block, _ORG_TYPES):
 			continue
@@ -296,20 +312,9 @@ def extract_logo(soup, base_url):
 		if url:
 			return Field(urljoin(base_url, url.strip()), base_url, Method.JSON_LD)
 
-	# 2. og:image / twitter:image -- prefer the highest-resolution image available.
 	og_content, _name = _meta_with_method(soup, "og:image", "og:image:url", "twitter:image")
 	if og_content:
 		return Field(urljoin(base_url, og_content.strip()), base_url, Method.META_TAG)
-
-	# 3. Best declared icon (scalable SVG > largest raster).
-	icon_url = _best_icon(soup, base_url)
-	if icon_url:
-		return Field(icon_url, base_url, Method.FAVICON)
-
-	# 4. Conventional fallback.
-	parsed = urlparse(base_url)
-	if parsed.scheme and parsed.netloc:
-		return Field(f"{parsed.scheme}://{parsed.netloc}/favicon.ico", base_url, Method.FAVICON)
 	return Field()
 
 
@@ -373,6 +378,7 @@ def extract_company_info(homepage, soup):
 		"company_name": Field(),
 		"description": Field(),
 		"logo": Field(),
+		"image": Field(),
 		"social_links": [],
 	}
 
@@ -403,6 +409,7 @@ def extract_company_info(homepage, soup):
 			info["description"] = Field(content, url, Method.META_TAG)
 
 	info["logo"] = extract_logo(soup, url)
+	info["image"] = extract_image(soup, url)
 
 	return info
 

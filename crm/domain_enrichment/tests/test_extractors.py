@@ -46,11 +46,14 @@ class CompanyInfoTest(UnitTestCase):
 		info = extractors.extract_company_info(self.page, self.soup)
 		self.assertIn("analytics", info["description"].value.lower())
 
-	def test_logo_prefers_json_ld_over_favicon(self):
-		# HOMEPAGE declares a JSON-LD Organization.logo -- a real, full-size logo wins.
+	def test_logo_is_link_icon_not_json_ld_image(self):
+		# The company logo is the link icon (HOMEPAGE declares none -> favicon.ico
+		# fallback), NOT the JSON-LD Organization.logo. That image is kept separately.
 		info = extractors.extract_company_info(self.page, self.soup)
-		self.assertEqual(info["logo"].method, Method.JSON_LD)
-		self.assertEqual(info["logo"].value, "https://acme.example/ld-logo.png")
+		self.assertEqual(info["logo"].method, Method.FAVICON)
+		self.assertEqual(info["logo"].value, "https://acme.example/favicon.ico")
+		self.assertEqual(info["image"].method, Method.JSON_LD)
+		self.assertEqual(info["image"].value, "https://acme.example/ld-logo.png")
 
 	def test_logo_prefers_declared_apple_touch_icon(self):
 		page, soup = fixtures.make_page(
@@ -79,7 +82,8 @@ class CompanyInfoTest(UnitTestCase):
 
 
 class LogoResolutionTest(UnitTestCase):
-	"""extract_logo prefers higher-resolution sources over a tiny favicon."""
+	"""extract_logo returns the link icon only; the larger social/JSON-LD image is
+	captured by extract_image, never used as the logo."""
 
 	def test_scalable_svg_beats_small_png(self):
 		_p, soup = fixtures.make_page(
@@ -93,8 +97,9 @@ class LogoResolutionTest(UnitTestCase):
 		self.assertEqual(logo.value, "https://x.example/logo.svg")
 		self.assertEqual(logo.method, Method.FAVICON)
 
-	def test_og_image_beats_tiny_favicon(self):
-		# Only a 16px favicon as an icon -> the larger og:image is used instead.
+	def test_logo_is_link_icon_even_when_og_image_exists(self):
+		# A declared link icon is the logo; the bigger og:image is NOT the logo -- it
+		# is captured as the image instead.
 		_p, soup = fixtures.make_page(
 			"https://x.example",
 			"<html><head>"
@@ -103,24 +108,27 @@ class LogoResolutionTest(UnitTestCase):
 			"</head><body></body></html>",
 		)
 		logo = extractors.extract_logo(soup, "https://x.example")
-		self.assertEqual(logo.value, "https://x.example/social-1200.png")
-		self.assertEqual(logo.method, Method.META_TAG)
+		self.assertEqual(logo.value, "https://x.example/fav.ico")
+		self.assertEqual(logo.method, Method.FAVICON)
+		image = extractors.extract_image(soup, "https://x.example")
+		self.assertEqual(image.value, "https://x.example/social-1200.png")
+		self.assertEqual(image.method, Method.META_TAG)
 
-	def test_og_image_beats_large_icon(self):
-		# Maximize raw resolution: og:image is preferred over even a large icon.
+	def test_falls_back_to_favicon_ico_ignoring_og_image(self):
+		# No link icon declared -> favicon.ico, even though an og:image exists.
 		_p, soup = fixtures.make_page(
 			"https://x.example",
 			"<html><head>"
-			"<link rel='icon' href='/icon-192.png' sizes='192x192'>"
 			"<meta property='og:image' content='https://x.example/banner.png'>"
 			"</head><body></body></html>",
 		)
 		logo = extractors.extract_logo(soup, "https://x.example")
-		self.assertEqual(logo.value, "https://x.example/banner.png")
-		self.assertEqual(logo.method, Method.META_TAG)
+		self.assertEqual(logo.value, "https://x.example/favicon.ico")
+		self.assertEqual(logo.method, Method.FAVICON)
 
-	def test_json_ld_logo_beats_og_image(self):
-		# A curated JSON-LD logo still outranks a social-share image.
+	def test_image_prefers_json_ld_logo_over_og_image(self):
+		# extract_image keeps the old "best big image" priority: curated JSON-LD logo
+		# outranks a social-share og:image.
 		_p, soup = fixtures.make_page(
 			"https://x.example",
 			"<html><head>"
@@ -129,9 +137,13 @@ class LogoResolutionTest(UnitTestCase):
 			"<meta property='og:image' content='https://x.example/banner.png'>"
 			"</head><body></body></html>",
 		)
-		logo = extractors.extract_logo(soup, "https://x.example")
-		self.assertEqual(logo.value, "https://x.example/brand.png")
-		self.assertEqual(logo.method, Method.JSON_LD)
+		image = extractors.extract_image(soup, "https://x.example")
+		self.assertEqual(image.value, "https://x.example/brand.png")
+		self.assertEqual(image.method, Method.JSON_LD)
+
+	def test_image_empty_when_none_declared(self):
+		_p, soup = fixtures.make_page("https://x.example", "<html><head></head><body></body></html>")
+		self.assertEqual(extractors.extract_image(soup, "https://x.example").value, "")
 
 	def test_falls_back_to_favicon_ico(self):
 		_p, soup = fixtures.make_page("https://x.example", "<html><head></head><body></body></html>")

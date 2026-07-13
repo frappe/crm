@@ -85,7 +85,8 @@ class EnrichmentResult:
 	# Scalar fields carry their own provenance via Field.
 	company_name: Field = field(default_factory=Field)
 	description: Field = field(default_factory=Field)
-	logo: Field = field(default_factory=Field)
+	logo: Field = field(default_factory=Field)  # the company link icon (favicon / apple-touch)
+	image: Field = field(default_factory=Field)  # larger social/JSON-LD image; kept, not the logo
 	industry: Field = field(default_factory=Field)
 	industry_confidence: float = 0.0
 
@@ -106,6 +107,7 @@ class EnrichmentResult:
 			"company_name": self.company_name.to_dict(),
 			"description": self.description.to_dict(),
 			"logo": self.logo.to_dict(),
+			"image": self.image.to_dict(),
 			"industry": self.industry.to_dict(),
 			"industry_confidence": round(self.industry_confidence, 2),
 			"emails": [e.to_dict() for e in self.emails],

@@ -98,6 +98,8 @@ def get_value_for_source_key(result, source_key: str):
 		return result.description.value or ""
 	if source_key == "logo":
 		return result.logo.value or ""
+	if source_key == "image":
+		return result.image.value or ""
 	if source_key == "industry":
 		return result.industry.value or ""
 	if source_key == "primary_email":
