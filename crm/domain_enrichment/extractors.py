@@ -251,6 +251,23 @@ def _clean_company_name(raw, site_url=""):
 _APPLE_TOUCH_PX = 180
 
 
+def _safe_url(base_url, raw):
+	"""Resolve ``raw`` against ``base_url``; return it only if it is a non-empty
+	``http(s)`` URL. Rejects ``javascript:`` / ``data:`` / other schemes a crawled
+	site could inject into a stored logo/image/icon value (defense against stored XSS
+	-- these values land in a CRM field). Returns ``""`` otherwise."""
+	raw = (raw or "").strip()
+	if not raw:
+		return ""
+	# Reject an explicit non-http(s) scheme on the raw value up front (urljoin keeps
+	# javascript:/data: as-is), then re-check the resolved URL for relative inputs.
+	scheme = urlparse(raw).scheme.lower()
+	if scheme and scheme not in ("http", "https"):
+		return ""
+	resolved = urljoin(base_url, raw)
+	return resolved if urlparse(resolved).scheme in ("http", "https") else ""
+
+
 def _best_icon(soup, base_url):
 	"""Best ``<link rel=icon>`` candidate URL.
 
@@ -264,6 +281,9 @@ def _best_icon(soup, base_url):
 		if "icon" not in rel:
 			continue
 		href = tag["href"].strip()
+		safe = _safe_url(base_url, href)
+		if not safe:
+			continue
 		is_svg = (
 			"svg" in (tag.get("type") or "").lower()
 			or href.lower().split("?")[0].endswith(".svg")
@@ -272,7 +292,7 @@ def _best_icon(soup, base_url):
 		m = re.search(r"(\d+)x\d+", tag.get("sizes", "") or "")
 		px = int(m.group(1)) if m else (_APPLE_TOUCH_PX if "apple-touch" in rel else 0)
 		# Sort key: SVG beats any raster; then by pixel size.
-		candidates.append(((1 if is_svg else 0, px), urljoin(base_url, href)))
+		candidates.append(((1 if is_svg else 0, px), safe))
 	if not candidates:
 		return ""
 	candidates.sort(key=lambda c: c[0], reverse=True)
@@ -309,12 +329,14 @@ def extract_image(soup, base_url):
 			continue
 		logo = block.get("logo")
 		url = logo.get("url") if isinstance(logo, dict) else (logo if isinstance(logo, str) else "")
-		if url:
-			return Field(urljoin(base_url, url.strip()), base_url, Method.JSON_LD)
+		safe = _safe_url(base_url, url)
+		if safe:
+			return Field(safe, base_url, Method.JSON_LD)
 
 	og_content, _name = _meta_with_method(soup, "og:image", "og:image:url", "twitter:image")
-	if og_content:
-		return Field(urljoin(base_url, og_content.strip()), base_url, Method.META_TAG)
+	safe = _safe_url(base_url, og_content)
+	if safe:
+		return Field(safe, base_url, Method.META_TAG)
 	return Field()
 
 
