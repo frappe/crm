@@ -30,20 +30,29 @@ def ensure_form_source() -> str:
 	return FORM_SOURCE
 
 
-# Fieldtypes a form can render/collect. Kept to simple input types for now.
+# Fieldtypes a form can render/collect — standard + custom fields of these types
+# show up in the picker. Excludes types that need external data or special widgets
+# (Link/Dynamic Link, Table, Attach, etc.), which can't be safely collected on a
+# public form.
 SUPPORTED_FIELDTYPES = (
 	"Data",
 	"Small Text",
 	"Text",
 	"Long Text",
+	"Text Editor",
+	"HTML Editor",
+	"Markdown Editor",
 	"Select",
 	"Int",
 	"Float",
 	"Currency",
+	"Percent",
 	"Check",
 	"Date",
 	"Datetime",
+	"Time",
 	"Phone",
+	"Color",
 )
 
 # Never expose these as mappable fields even if their type is supported.

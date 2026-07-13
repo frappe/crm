@@ -184,19 +184,23 @@
                   </div>
                   {% else %}
                   <label for="{{ f.fieldname }}">{{ f.label }}{% if f.reqd %}<span class="req">*</span>{% endif %}</label>
-                  {% if f.fieldtype in ("Small Text", "Text", "Long Text") %}
+                  {% if f.fieldtype in ("Small Text", "Text", "Long Text", "Text Editor", "HTML Editor", "Markdown Editor") %}
                   <textarea id="{{ f.fieldname }}" name="{{ f.fieldname }}" placeholder="{{ f.placeholder }}" {% if f.reqd %}required{% endif %}></textarea>
                   {% elif f.fieldtype == "Select" %}
                   <select id="{{ f.fieldname }}" name="{{ f.fieldname }}" {% if f.reqd %}required{% endif %}>
                     <option value="">Select…</option>
                     {% for opt in f.options.split("\n") %}{% if opt %}<option value="{{ opt }}">{{ opt }}</option>{% endif %}{% endfor %}
                   </select>
-                  {% elif f.fieldtype in ("Int", "Float", "Currency") %}
+                  {% elif f.fieldtype in ("Int", "Float", "Currency", "Percent") %}
                   <input type="number" id="{{ f.fieldname }}" name="{{ f.fieldname }}" placeholder="{{ f.placeholder }}" {% if f.reqd %}required{% endif %} />
                   {% elif f.fieldtype == "Date" %}
                   <input type="date" id="{{ f.fieldname }}" name="{{ f.fieldname }}" {% if f.reqd %}required{% endif %} />
                   {% elif f.fieldtype == "Datetime" %}
                   <input type="datetime-local" id="{{ f.fieldname }}" name="{{ f.fieldname }}" {% if f.reqd %}required{% endif %} />
+                  {% elif f.fieldtype == "Time" %}
+                  <input type="time" id="{{ f.fieldname }}" name="{{ f.fieldname }}" {% if f.reqd %}required{% endif %} />
+                  {% elif f.fieldtype == "Color" %}
+                  <input type="color" id="{{ f.fieldname }}" name="{{ f.fieldname }}" {% if f.reqd %}required{% endif %} />
                   {% else %}
                   <input
                     type="{% if f.options == 'Email' %}email{% elif f.options == 'Phone' or f.fieldtype == 'Phone' %}tel{% else %}text{% endif %}"

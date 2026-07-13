@@ -560,11 +560,7 @@
                         }}<span v-if="f.reqd" class="text-ink-red-5">*</span>
                       </div>
                       <FormControl
-                        v-if="
-                          ['Small Text', 'Text', 'Long Text'].includes(
-                            f.fieldtype,
-                          )
-                        "
+                        v-if="TEXTAREA_TYPES.includes(f.fieldtype)"
                         v-model="previewModel[f.fieldname]"
                         type="textarea"
                         :placeholder="f.placeholder"
@@ -999,11 +995,21 @@ function selectOptions(f) {
   const opts = optionList(f).map((o) => ({ label: o, value: o }))
   return [{ label: __('Select an option'), value: '' }, ...opts]
 }
+const TEXTAREA_TYPES = [
+  'Small Text',
+  'Text',
+  'Long Text',
+  'Text Editor',
+  'HTML Editor',
+  'Markdown Editor',
+]
 function inputType(f) {
   if (f.options === 'Email') return 'email'
-  if (['Int', 'Float', 'Currency'].includes(f.fieldtype)) return 'number'
+  if (['Int', 'Float', 'Currency', 'Percent'].includes(f.fieldtype)) return 'number'
   if (f.fieldtype === 'Date') return 'date'
   if (f.fieldtype === 'Datetime') return 'datetime-local'
+  if (f.fieldtype === 'Time') return 'time'
+  if (f.fieldtype === 'Color') return 'color'
   return 'text'
 }
 
