@@ -1,6 +1,6 @@
 <template>
-  <WebFormsList v-if="screen === 'list'" ref="listRef" @open="openBuilder" />
-  <WebFormBuilderPanel
+  <FormsList v-if="screen === 'list'" ref="listRef" @open="openBuilder" />
+  <FormBuilderPanel
     v-else
     :key="activeName"
     :name="activeName"
@@ -11,8 +11,8 @@
 
 <script setup>
 import { ref, nextTick } from 'vue'
-import WebFormsList from './WebFormsList.vue'
-import WebFormBuilderPanel from './WebFormBuilderPanel.vue'
+import FormsList from './FormsList.vue'
+import FormBuilderPanel from './FormBuilderPanel.vue'
 
 const screen = ref('list')
 const activeName = ref(null)

@@ -4,7 +4,7 @@
     <div class="flex justify-between px-2 pt-2">
       <div class="flex flex-col gap-1 w-9/12">
         <h2 class="flex gap-2 text-2xl-semibold leading-none h-5">
-          {{ __('Web Forms') }}
+          {{ __('Forms') }}
         </h2>
         <p class="text-p-base text-ink-gray-6">
           {{
@@ -67,10 +67,11 @@
               {{ docLabel(form.document_type) }}
             </div>
             <div class="flex w-3/12 items-center justify-between">
-              <Switch
-                size="sm"
-                :modelValue="!!form.published"
-                @update:modelValue="(v) => togglePublished(form, v)"
+              <Badge
+                :theme="form.published ? 'green' : 'gray'"
+                variant="subtle"
+                size="md"
+                :label="form.published ? __('Published') : __('Unpublished')"
               />
               <Dropdown placement="right" :options="rowOptions(form)">
                 <Button
@@ -94,29 +95,30 @@
         <FormControl
           v-model="draft.title"
           type="text"
-          :label="__('Form title')"
+          :label="__('Title')"
           :placeholder="__('Contact sales')"
           @input="onTitleInput"
         />
-        <div>
-          <div class="mb-1.5 text-sm text-ink-gray-5">{{ __('Route') }}</div>
-          <div class="flex items-center gap-1.5">
-            <span class="whitespace-nowrap text-sm text-ink-gray-4"
-              >/crm-form/</span
-            >
-            <TextInput
-              v-model="draft.route"
-              class="flex-1"
-              :placeholder="__('contact-sales')"
-            />
-          </div>
-        </div>
         <FormControl
           v-model="draft.document_type"
           type="select"
           :label="__('Maps to')"
           :options="targetOptions"
         />
+        <div>
+          <div class="mb-1.5 text-sm text-ink-gray-5">{{ __('Route') }}</div>
+          <div
+            class="flex h-7 items-center rounded border border-transparent bg-surface-gray-2 px-2.5 text-base transition-colors hover:bg-surface-gray-3 focus-within:border-outline-gray-4 focus-within:bg-surface-base focus-within:shadow-sm"
+          >
+            <span class="shrink-0 text-ink-gray-4">/crm-form/</span>
+            <input
+              v-model="draft.route"
+              :placeholder="__('contact-sales')"
+              class="min-w-0 flex-1 border-0 bg-transparent p-0 text-ink-gray-8 placeholder:text-ink-gray-4 focus:outline-none focus:ring-0"
+              @input="routeEdited = true"
+            />
+          </div>
+        </div>
         <ErrorMessage v-if="createError" :message="createError" />
       </div>
     </template>
@@ -136,11 +138,10 @@
 import EmptyState from '@/components/ListViews/EmptyState.vue'
 import {
   Button,
-  Switch,
+  Badge,
   Dropdown,
   Dialog,
   FormControl,
-  TextInput,
   ErrorMessage,
   LoadingIndicator,
   createResource,
@@ -162,11 +163,12 @@ const targetOptions = [
 const docLabel = (dt) => targetOptions.find((o) => o.value === dt)?.label || dt
 
 const forms = createResource({
-  url: 'crm.api.web_form.list_web_forms',
+  url: 'crm.api.form.list_forms',
   auto: true,
 })
 
-// create
+// create dialog: title, maps-to and route captured up front (maps-to governs
+// which fields are available, so it's a first-class creation choice)
 const showCreate = ref(false)
 const creating = ref(false)
 const createError = ref('')
@@ -201,12 +203,13 @@ async function createForm() {
   }
   creating.value = true
   try {
-    const doc = await call('crm.api.web_form.save_web_form', {
+    const doc = await call('crm.api.form.save_form', {
       name: null,
       form: { title: draft.title, route, document_type: draft.document_type },
     })
     showCreate.value = false
     emit('open', doc.name)
+    forms.reload()
   } catch (e) {
     createError.value =
       e?.messages?.[0] || e?.message || __('Could not create form')
@@ -217,7 +220,7 @@ async function createForm() {
 
 async function togglePublished(form, value) {
   try {
-    await call('crm.api.web_form.set_published', {
+    await call('crm.api.form.set_published', {
       name: form.name,
       published: value ? 1 : 0,
     })
@@ -236,7 +239,7 @@ function copyLink(form) {
 }
 
 async function deleteForm(form) {
-  await call('crm.api.web_form.delete_web_form', { name: form.name })
+  await call('crm.api.form.delete_form', { name: form.name })
   forms.reload()
   toast.success(__('Form deleted'))
 }
@@ -247,6 +250,11 @@ function rowOptions(form) {
       label: __('Edit'),
       icon: 'edit-2',
       onClick: () => emit('open', form.name),
+    },
+    {
+      label: form.published ? __('Unpublish') : __('Publish'),
+      icon: form.published ? 'eye-off' : 'eye',
+      onClick: () => togglePublished(form, !form.published),
     },
     { label: __('Copy link'), icon: 'link', onClick: () => copyLink(form) },
     ...ConfirmDelete({
