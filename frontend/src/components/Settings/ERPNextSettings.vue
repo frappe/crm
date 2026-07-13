@@ -198,13 +198,20 @@
                   }}
                 </div>
               </div>
-              <Button
-                variant="subtle"
-                :loading="erpnextCRMSettingsResource.runProductSync.loading"
-                @click="runProductSync"
-              >
-                {{ __('Sync Now') }}
-              </Button>
+              <div class="flex items-center gap-3">
+                <Button
+                  v-if="erpnextCRMSettingsResource.doc.sync_products"
+                  variant="subtle"
+                  :loading="erpnextCRMSettingsResource.runProductSync.loading"
+                  @click="runProductSync"
+                >
+                  {{ __('Sync Now') }}
+                </Button>
+                <Switch
+                  v-model="erpnextCRMSettingsResource.doc.sync_products"
+                  size="sm"
+                />
+              </div>
             </div>
             <div class="h-px border-t border-outline-elevation-2" />
             <div class="flex items-center justify-between py-3 px-2">
@@ -396,6 +403,7 @@ const isDirty = computed(() => {
     'erpnext_company',
     'create_customer_on_status_change',
     'deal_status',
+    'sync_products',
   ]
 
   return fields.some((field) => oldData[field] !== newData[field])
@@ -411,6 +419,7 @@ const saveSettings = async () => {
         !erpnextCRMSettingsResource.isERPNextInstalled.data,
       create_customer_on_status_change:
         erpnextCRMSettingsResource.doc.create_customer_on_status_change,
+      sync_products: erpnextCRMSettingsResource.doc.sync_products,
       erpnext_company: erpnextCRMSettingsResource.doc.erpnext_company,
       deal_status: erpnextCRMSettingsResource.doc.deal_status,
       erpnext_site_url: erpnextCRMSettingsResource.doc.erpnext_site_url,
