@@ -27,6 +27,8 @@ def run_reconciliation() -> dict:
 		return {"skipped": "integration_disabled"}
 	if settings.is_erpnext_in_different_site:
 		return {"skipped": "cross_site_not_supported"}
+	if not settings.sync_products:
+		return {"skipped": "product_sync_disabled"}
 
 	summary = {
 		"already_linked": 0,
