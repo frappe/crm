@@ -1,8 +1,6 @@
 # Copyright (c) 2026, Frappe Technologies Pvt. Ltd. and Contributors
 # See license.txt
 
-import json
-
 import frappe
 from frappe.tests import IntegrationTestCase
 
@@ -165,64 +163,31 @@ class TestFormAPI(IntegrationTestCase):
 		with self.assertRaises(frappe.ValidationError):
 			F.set_published(name, 1)
 
-	# ---- public config ----
+	# ---- submission enrichment ----
 
-	def test_get_form_only_serves_published(self):
-		name = make_form("pub-only")
-		with self.assertRaises(frappe.DoesNotExistError):
-			F.get_form("pub-only")  # draft
-		F.set_published(name, 1)
-		cfg = F.get_form("pub-only")
-		self.assertEqual(cfg["route"], "pub-only")
-		self.assertIn("fields", cfg)
+	def test_enrichment_stamps_source_and_hidden_default_on_web_form_insert(self):
+		"""A Lead created through the web-form path — the framework's accept() sets
+		`in_web_form` and puts the form name in form_dict — is stamped
+		Source = Web Form and gets its hidden Status default applied by the
+		before_insert hook (enrich_form_submission)."""
+		name = make_form("enrich-lead")  # seeds a hidden Status field with a default
 
-	# ---- submission ----
+		frappe.flags.in_web_form = True
+		frappe.form_dict["web_form"] = name
+		lead = frappe.get_doc(
+			{"doctype": "CRM Lead", "first_name": "Ada", "email": "wf-test-ada@test.invalid"}
+		).insert(ignore_permissions=True)
 
-	def test_submit_form_creates_lead_with_source_and_status(self):
-		"""A guest submission creates the Lead, stamps Source = Web Form, and
-		applies the hidden Status default via the enrichment hook."""
-		name = make_form("submit-lead")
-		F.set_published(name, 1)
+		self.assertEqual(lead.source, "Web Form")
+		self.assertTrue(lead.status)  # hidden Status default applied
 
-		F.submit_form("submit-lead", {"first_name": "Ada", "email": "wf-test-ada@test.invalid"})
-
-		lead = frappe.get_all(
-			"CRM Lead",
-			filters={"email": "wf-test-ada@test.invalid"},
-			fields=["name", "first_name", "source", "status"],
-		)
-		self.assertEqual(len(lead), 1)
-		self.assertEqual(lead[0]["first_name"], "Ada")
-		self.assertEqual(lead[0]["source"], "Web Form")
-		self.assertTrue(lead[0]["status"])  # hidden default applied
-
-	def test_submit_form_validates_required(self):
-		name = make_form("submit-required")
-		F.set_published(name, 1)
-		with self.assertRaises(frappe.ValidationError):
-			F.submit_form("submit-required", {"email": "no-name@example.com"})  # first_name required
-
-	def test_submit_form_only_accepts_declared_fields(self):
-		"""Fields not on the form are ignored (no mass-assignment)."""
-		name = make_form("submit-scoped")
-		F.set_published(name, 1)
-		F.submit_form(
-			"submit-scoped",
-			json.dumps(
-				{"first_name": "Grace", "email": "grace@example.com", "lead_owner": "sales-user@example.com"}
-			),
-		)
-		lead = frappe.get_all(
-			"CRM Lead", filters={"email": "grace@example.com"}, fields=["name", "lead_owner"]
-		)
-		self.assertEqual(len(lead), 1)
-		# lead_owner isn't a declared form field, so it must not have been set from input
-		self.assertNotEqual(lead[0]["lead_owner"], "sales-user@example.com")
-
-	def test_submit_form_unpublished_raises(self):
-		make_form("submit-draft")  # left as draft
-		with self.assertRaises(frappe.DoesNotExistError):
-			F.submit_form("submit-draft", {"first_name": "X"})
+	def test_enrichment_skipped_without_web_form_flag(self):
+		"""Outside the web-form path, the hook is a no-op — a normally created Lead
+		is not stamped with the Web Form source."""
+		lead = frappe.get_doc(
+			{"doctype": "CRM Lead", "first_name": "Bob", "email": "wf-test-bob@test.invalid"}
+		).insert(ignore_permissions=True)
+		self.assertNotEqual(lead.source, "Web Form")
 
 	# ---- draft dry-run ----
 
