@@ -289,6 +289,16 @@ def _load_hidden_fields(doc) -> list[dict]:
 		return []
 
 
+def _assert_hidden_defaults_set(hidden: list[dict]):
+	"""Publishing requires every hidden required field to carry a default — a blank
+	one would break record creation on submission. Drafts may save without them."""
+	missing = [
+		h.get("label") or h.get("fieldname") for h in hidden if not str(h.get("default") or "").strip()
+	]
+	if missing:
+		frappe.throw(_("Set a default value before publishing for: {0}").format(", ".join(missing)))
+
+
 @frappe.whitelist()
 def save_form(name: str | None, form: dict | str) -> dict:
 	"""Create/update a native Web Form scoped to CRM doctypes."""
@@ -354,14 +364,8 @@ def save_form(name: str | None, form: dict | str) -> dict:
 	if isinstance(hidden, str):
 		hidden = json.loads(hidden or "[]")
 	hidden = hidden or []
-	# drafts may auto-save with a blank default, but a published form can't — an
-	# empty default on a hidden required field would break record creation
 	if doc.crm_published:
-		missing = [
-			h.get("label") or h.get("fieldname") for h in hidden if not str(h.get("default") or "").strip()
-		]
-		if missing:
-			frappe.throw(_("Set a default value before publishing for: {0}").format(", ".join(missing)))
+		_assert_hidden_defaults_set(hidden)
 	doc.crm_hidden_defaults = json.dumps(hidden) if hidden else ""
 
 	doc.save(ignore_permissions=True)
@@ -381,13 +385,7 @@ def set_published(name: str, published: int) -> None:
 	_check_manager()
 	doc = _get_crm_form(name)
 	if int(published):
-		missing = [
-			h.get("label") or h.get("fieldname")
-			for h in _load_hidden_fields(doc)
-			if not str(h.get("default") or "").strip()
-		]
-		if missing:
-			frappe.throw(_("Set a default value before publishing for: {0}").format(", ".join(missing)))
+		_assert_hidden_defaults_set(_load_hidden_fields(doc))
 	doc.crm_published = 1 if int(published) else 0
 	doc.published = 0
 	doc.save(ignore_permissions=True)
