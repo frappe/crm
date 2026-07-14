@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2026-07-05 10:18+0000\n"
-"PO-Revision-Date: 2026-07-09 10:16\n"
+"POT-Creation-Date: 2026-07-12 10:53+0000\n"
+"PO-Revision-Date: 2026-07-14 10:26\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Esperanto\n"
 "MIME-Version: 1.0\n"
@@ -22,7 +22,7 @@ msgstr ""
 msgid " (New)"
 msgstr "crwdns152667:0crwdne152667:0"
 
-#: frontend/src/components/Filter.vue:587
+#: frontend/src/components/Filter.vue:591
 msgid "%John%"
 msgstr "crwdns196020:0%John%crwdne196020:0"
 
@@ -30,7 +30,7 @@ msgstr "crwdns196020:0%John%crwdne196020:0"
 msgid "(No Title)"
 msgstr "crwdns196022:0crwdne196022:0"
 
-#: frontend/src/components/Filter.vue:577
+#: frontend/src/components/Filter.vue:581
 msgid "01/01/2022 to 01/31/2022"
 msgstr "crwdns196024:0crwdne196024:0"
 
@@ -3037,7 +3037,7 @@ msgstr "crwdns160764:0crwdne160764:0"
 msgid "Enter Twilio Number"
 msgstr "crwdns199034:0crwdne199034:0"
 
-#: frontend/src/components/Filter.vue:605
+#: frontend/src/components/Filter.vue:609
 msgid "Enter Value"
 msgstr "crwdns196372:0crwdne196372:0"
 
@@ -3049,7 +3049,7 @@ msgstr "crwdns160766:0crwdne160766:0"
 msgid "Enter your personal mobile number used by Exotel to make calls"
 msgstr "crwdns199036:0crwdne199036:0"
 
-#: frontend/src/components/FieldLayout/Field.vue:565
+#: frontend/src/components/FieldLayout/Field.vue:576
 msgid "Enter {0}"
 msgstr "crwdns153191:0{0}crwdne153191:0"
 
@@ -4212,14 +4212,14 @@ msgid "Job Title"
 msgstr "crwdns153393:0crwdne153393:0"
 
 #: frontend/src/components/AssignToBody.vue:10
-#: frontend/src/components/Filter.vue:603
+#: frontend/src/components/Filter.vue:607
 #: frontend/src/components/Modals/AssignmentModal.vue:13
 #: frontend/src/components/Telephony/TaskPanel.vue:46
 #: frontend/src/pages/Calendar.vue:113
 msgid "John Doe"
 msgstr "crwdns153395:0crwdne153395:0"
 
-#: frontend/src/components/Filter.vue:582
+#: frontend/src/components/Filter.vue:586
 msgid "John, Jane, Doe"
 msgstr "crwdns196500:0crwdne196500:0"
 
@@ -4298,7 +4298,7 @@ msgstr "crwdns158880:0crwdne158880:0"
 msgid "Last 30 Days"
 msgstr "crwdns196508:0crwdne196508:0"
 
-#: frontend/src/components/Filter.vue:661
+#: frontend/src/components/Filter.vue:665
 msgid "Last 6 Months"
 msgstr "crwdns153409:0crwdne153409:0"
 
@@ -4322,7 +4322,7 @@ msgstr "crwdns196514:0crwdne196514:0"
 msgid "Last Modified"
 msgstr "crwdns196516:0crwdne196516:0"
 
-#: frontend/src/components/Filter.vue:653
+#: frontend/src/components/Filter.vue:657
 msgid "Last Month"
 msgstr "crwdns153411:0crwdne153411:0"
 
@@ -4331,7 +4331,7 @@ msgstr "crwdns153411:0crwdne153411:0"
 msgid "Last Name"
 msgstr "crwdns153413:0crwdne153413:0"
 
-#: frontend/src/components/Filter.vue:657
+#: frontend/src/components/Filter.vue:661
 msgid "Last Quarter"
 msgstr "crwdns153415:0crwdne153415:0"
 
@@ -4361,12 +4361,12 @@ msgstr "crwdns153417:0crwdne153417:0"
 msgid "Last Synced At"
 msgstr "crwdns160806:0crwdne160806:0"
 
-#: frontend/src/components/Filter.vue:591
-#: frontend/src/components/Filter.vue:649
+#: frontend/src/components/Filter.vue:595
+#: frontend/src/components/Filter.vue:653
 msgid "Last Week"
 msgstr "crwdns153419:0crwdne153419:0"
 
-#: frontend/src/components/Filter.vue:665
+#: frontend/src/components/Filter.vue:669
 msgid "Last Year"
 msgstr "crwdns153421:0crwdne153421:0"
 
@@ -5089,15 +5089,15 @@ msgstr "crwdns156482:0{0}crwdne156482:0"
 msgid "Newest First"
 msgstr "crwdns204739:0crwdne204739:0"
 
-#: frontend/src/components/Filter.vue:709
+#: frontend/src/components/Filter.vue:713
 msgid "Next 6 Months"
 msgstr "crwdns153569:0crwdne153569:0"
 
-#: frontend/src/components/Filter.vue:701
+#: frontend/src/components/Filter.vue:705
 msgid "Next Month"
 msgstr "crwdns153571:0crwdne153571:0"
 
-#: frontend/src/components/Filter.vue:705
+#: frontend/src/components/Filter.vue:709
 msgid "Next Quarter"
 msgstr "crwdns153573:0crwdne153573:0"
 
@@ -5106,11 +5106,11 @@ msgstr "crwdns153573:0crwdne153573:0"
 msgid "Next Step"
 msgstr "crwdns153575:0crwdne153575:0"
 
-#: frontend/src/components/Filter.vue:697
+#: frontend/src/components/Filter.vue:701
 msgid "Next Week"
 msgstr "crwdns153577:0crwdne153577:0"
 
-#: frontend/src/components/Filter.vue:713
+#: frontend/src/components/Filter.vue:717
 msgid "Next Year"
 msgstr "crwdns153579:0crwdne153579:0"
 
@@ -6782,7 +6782,7 @@ msgstr "crwdns196770:0crwdne196770:0"
 msgid "Select a Twilio App for your CRM"
 msgstr "crwdns199048:0crwdne199048:0"
 
-#: frontend/src/components/Filter.vue:599
+#: frontend/src/components/Filter.vue:603
 msgid "Select a Value"
 msgstr "crwdns196772:0crwdne196772:0"
 
@@ -6790,7 +6790,7 @@ msgstr "crwdns196772:0crwdne196772:0"
 msgid "Select all that apply"
 msgstr "crwdns207287:0crwdne207287:0"
 
-#: frontend/src/components/Filter.vue:601
+#: frontend/src/components/Filter.vue:605
 msgid "Select an Option"
 msgstr "crwdns196774:0crwdne196774:0"
 
@@ -6814,7 +6814,7 @@ msgstr "crwdns200280:0crwdne200280:0"
 msgid "Select your ERPNext company to connect with"
 msgstr "crwdns200114:0crwdne200114:0"
 
-#: frontend/src/components/FieldLayout/Field.vue:563
+#: frontend/src/components/FieldLayout/Field.vue:574
 msgid "Select {0}"
 msgstr "crwdns153865:0{0}crwdne153865:0"
 
@@ -6869,7 +6869,7 @@ msgstr "crwdns196786:0crwdne196786:0"
 msgid "Service Provider"
 msgstr "crwdns157276:0crwdne157276:0"
 
-#: frontend/src/components/Filter.vue:589
+#: frontend/src/components/Filter.vue:593
 msgid "Set"
 msgstr "crwdns196788:0crwdne196788:0"
 
@@ -7511,19 +7511,19 @@ msgstr "crwdns199356:0crwdne199356:0"
 msgid "There can only be one default priority in Priorities table"
 msgstr "crwdns153969:0crwdne153969:0"
 
-#: frontend/src/components/Filter.vue:685
+#: frontend/src/components/Filter.vue:689
 msgid "This Month"
 msgstr "crwdns153971:0crwdne153971:0"
 
-#: frontend/src/components/Filter.vue:689
+#: frontend/src/components/Filter.vue:693
 msgid "This Quarter"
 msgstr "crwdns153973:0crwdne153973:0"
 
-#: frontend/src/components/Filter.vue:681
+#: frontend/src/components/Filter.vue:685
 msgid "This Week"
 msgstr "crwdns153975:0crwdne153975:0"
 
-#: frontend/src/components/Filter.vue:693
+#: frontend/src/components/Filter.vue:697
 msgid "This Year"
 msgstr "crwdns153977:0crwdne153977:0"
 
@@ -7667,7 +7667,7 @@ msgstr "crwdns153995:0crwdne153995:0"
 msgid "To know more about setting up email accounts, click"
 msgstr "crwdns156658:0crwdne156658:0"
 
-#: frontend/src/components/Filter.vue:673 frontend/src/pages/Calendar.vue:85
+#: frontend/src/components/Filter.vue:677 frontend/src/pages/Calendar.vue:85
 msgid "Today"
 msgstr "crwdns153997:0crwdne153997:0"
 
@@ -7680,7 +7680,7 @@ msgstr "crwdns153999:0crwdne153999:0"
 msgid "Toggle on for Preview"
 msgstr "crwdns196870:0crwdne196870:0"
 
-#: frontend/src/components/Filter.vue:677
+#: frontend/src/components/Filter.vue:681
 msgid "Tomorrow"
 msgstr "crwdns154003:0crwdne154003:0"
 
@@ -8247,11 +8247,11 @@ msgid "Working Hours"
 msgstr "crwdns154091:0crwdne154091:0"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:531
-#: frontend/src/components/Filter.vue:597
+#: frontend/src/components/Filter.vue:601
 msgid "Yes"
 msgstr "crwdns196926:0crwdne196926:0"
 
-#: frontend/src/components/Filter.vue:669
+#: frontend/src/components/Filter.vue:673
 msgid "Yesterday"
 msgstr "crwdns154093:0crwdne154093:0"
 
