@@ -470,7 +470,17 @@
                   @input="markDirty"
                 />
                 <p
-                  v-if="!embeddingDomains.length"
+                  v-if="invalidEmbeddingDomains.length"
+                  class="mt-1.5 text-xs text-ink-red-5"
+                >
+                  {{
+                    __('Not a valid domain and will be ignored: {0}', [
+                      invalidEmbeddingDomains.join(', '),
+                    ])
+                  }}
+                </p>
+                <p
+                  v-else-if="!embeddingDomains.length"
                   class="mt-1.5 text-xs text-ink-amber-6"
                 >
                   {{
@@ -865,6 +875,14 @@ const publicUrl = computed(
 )
 const embeddingDomains = computed(() =>
   (form.allowed_embedding_domains || '').split(/\s+/).filter(Boolean),
+)
+// mirror the server's ALLOWED_EMBEDDING_DOMAIN_RE (crm/www/crm_form.py): bare host,
+// optional scheme/port, optional leading "*." wildcard. Anything else is dropped
+// from the CSP header server-side, so flag it here instead of failing silently.
+const EMBEDDING_DOMAIN_RE =
+  /^(https?:\/\/)?(\*\.)?[a-zA-Z0-9](?:[a-zA-Z0-9.-]*[a-zA-Z0-9])?(?::\d+)?$/
+const invalidEmbeddingDomains = computed(() =>
+  embeddingDomains.value.filter((d) => !EMBEDDING_DOMAIN_RE.test(d)),
 )
 
 const iframeSnippet = computed(
