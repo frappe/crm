@@ -422,7 +422,7 @@
                     <p class="mb-2 text-p-sm text-ink-gray-5">
                       {{
                         __(
-                          'Sandboxed in a frame — simplest, but a fixed height and its own styling.',
+                          'Sandboxed in a frame. Simplest, but a fixed height and its own styling.',
                         )
                       }}
                     </p>
@@ -1194,7 +1194,7 @@ function removeField(f) {
       default: catalogDefault(f.fieldname),
     })
     toast.info(
-      __('{0} moved to hidden required fields — set a default value', [
+      __('{0} moved to hidden required fields. Set a default value.', [
         f.label || f.fieldname,
       ]),
     )
@@ -1299,7 +1299,7 @@ async function commitDoctype(newDt, valid) {
   markDirty()
   if (dropped) {
     toast.info(
-      __('{0} field(s) removed — not available on {1}', [
+      __('{0} field(s) removed. Not available on {1}.', [
         dropped,
         docLabel(newDt),
       ]),
