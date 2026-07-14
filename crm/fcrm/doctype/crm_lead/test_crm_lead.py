@@ -4,7 +4,6 @@
 import frappe
 from frappe.desk.form.assign_to import add as assign_add
 from frappe.desk.form.assign_to import remove as assign_remove
-from frappe.tests import IntegrationTestCase
 
 from crm.fcrm.doctype.crm_lead.crm_lead import convert_to_deal
 from crm.tests import CRMTestCase as FrappeTestCase
