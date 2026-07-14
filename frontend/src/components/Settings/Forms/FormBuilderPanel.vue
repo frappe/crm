@@ -2,15 +2,31 @@
   <div class="flex h-full flex-col text-ink-gray-8">
     <!-- header -->
     <div class="flex items-center justify-between border-b px-6 py-3">
-      <Button
-        variant="ghost"
-        icon-left="lucide-chevron-left"
-        :label="form.title || __('Untitled')"
-        size="md"
-        class="-ml-4 cursor-pointer !max-w-96 !justify-start !pr-0 text-2xl-semibold no-underline hover:bg-transparent hover:no-underline hover:opacity-70 focus:bg-transparent focus:outline-none focus:ring-0"
-        @click="$emit('back')"
-      />
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-2">
+        <Button
+          variant="ghost"
+          icon-left="lucide-chevron-left"
+          :label="form.title || __('Untitled')"
+          size="md"
+          class="-ml-4 cursor-pointer !max-w-96 !justify-start !pr-0 text-2xl-semibold no-underline hover:bg-transparent hover:no-underline hover:opacity-70 focus:bg-transparent focus:outline-none focus:ring-0"
+          @click="goBack"
+        />
+        <Badge
+          v-if="dirty"
+          variant="subtle"
+          theme="orange"
+          size="sm"
+          :label="__('Not Saved')"
+        />
+      </div>
+      <div class="flex items-center gap-4">
+        <div
+          class="flex items-center justify-between gap-2 h-7"
+          @click="togglePublish"
+        >
+          <Switch size="sm" :model-value="Boolean(form.published)" />
+          <span class="text-sm text-ink-gray-7">{{ __('Publish') }}</span>
+        </div>
         <Button
           :label="mode === 'edit' ? __('Preview') : __('Edit')"
           @click="(mode = mode === 'edit' ? 'preview' : 'edit'), resetPreview()"
@@ -21,10 +37,12 @@
           </template>
         </Button>
         <Button
+          :disabled="!dirty"
+          :label="__('Save')"
+          theme="gray"
           variant="solid"
-          :label="form.published ? __('Unpublish') : __('Publish')"
-          :loading="publishing"
-          @click="togglePublish"
+          :loading="saving"
+          @click="saveNow"
         />
       </div>
     </div>
@@ -337,18 +355,13 @@
 
             <!-- SHARE TAB -->
             <div v-else class="flex flex-col pt-5">
-              <Alert
-                v-if="!form.published"
-                class="mb-5"
-                theme="yellow"
-                variant="subtle"
-                :dismissible="false"
-                :title="
+              <p v-if="!form.published" class="mb-5 text-p-sm text-ink-gray-5">
+                {{
                   __(
-                    'This form isn’t published yet — hit Publish to make the link and embeds live.',
+                    'This form isn’t published yet. Turn on Publish to make the link and embeds live.',
                   )
-                "
-              />
+                }}
+              </p>
 
               <!-- link -->
               <div>
@@ -401,35 +414,6 @@
                 </div>
 
                 <div class="mt-3.5 flex flex-col gap-5">
-                  <!-- inline embed (no iframe) -->
-                  <div>
-                    <div class="mb-1 text-base text-ink-gray-5">
-                      {{ __('Inline embed') }}
-                    </div>
-                    <p class="mb-2 text-p-sm text-ink-gray-5">
-                      {{
-                        __(
-                          'Renders the form right inside your page — no frame, inherits your site’s width and fonts.',
-                        )
-                      }}
-                    </p>
-                    <div class="relative">
-                      <textarea
-                        readonly
-                        rows="3"
-                        class="w-full resize-none rounded-md border border-outline-gray-2 bg-surface-gray-1 py-2 pl-3 pr-10 font-mono text-xs text-ink-gray-7 focus:border-outline-gray-4 focus:shadow-sm focus:outline-none focus:ring-0 focus-visible:outline-none"
-                        :value="jsSnippet"
-                      />
-                      <button
-                        class="absolute right-2 top-2 flex text-ink-gray-5 transition-colors hover:text-ink-gray-8"
-                        :title="__('Copy')"
-                        @click="copyToClipboard(jsSnippet)"
-                      >
-                        <LucideCopy class="h-4 w-4" />
-                      </button>
-                    </div>
-                  </div>
-
                   <!-- iframe (isolated) -->
                   <div>
                     <div class="mb-1 text-base text-ink-gray-5">
@@ -503,16 +487,6 @@
 
       <!-- PREVIEW MODE -->
       <div v-else class="mx-auto max-w-2xl pt-6">
-        <div class="mb-3 flex items-center justify-end">
-          <a
-            :href="publicUrl"
-            target="_blank"
-            class="flex items-center gap-1 text-sm text-ink-gray-5 hover:text-ink-gray-8"
-          >
-            <LucideExternalLink class="h-3.5 w-3.5" />
-            {{ __('Open live form') }}
-          </a>
-        </div>
         <div class="rounded-xl border bg-surface-white p-7">
           <!-- simulated success screen -->
           <div
@@ -611,13 +585,20 @@
               <div v-if="!inputFieldCount" class="text-sm text-ink-gray-4">
                 {{ __('Add fields to see them here.') }}
               </div>
-              <Button
-                variant="solid"
-                size="md"
-                class="mt-1 w-full"
-                :label="form.submit_button_label || __('Submit')"
-                @click="previewSubmitted = true"
-              />
+              <div class="mt-1 flex justify-end gap-2.5">
+                <Button
+                  variant="subtle"
+                  size="md"
+                  :label="__('Discard')"
+                  @click="resetPreview"
+                />
+                <Button
+                  variant="solid"
+                  size="md"
+                  :label="form.submit_button_label || __('Submit')"
+                  @click="previewSubmitted = true"
+                />
+              </div>
             </div>
           </template>
         </div>
@@ -628,8 +609,9 @@
 
 <script setup>
 import {
-  Alert,
+  Badge,
   Button,
+  Switch,
   Tabs,
   TextInput,
   FormControl,
@@ -672,7 +654,6 @@ const docLabel = (dt) => targetOptions.find((o) => o.value === dt)?.label || dt
 
 const loaded = ref(false)
 const saving = ref(false)
-const publishing = ref(false)
 const dirty = ref(false)
 const mode = ref('edit') // edit | preview
 const tabIndex = ref(0)
@@ -888,31 +869,44 @@ const embeddingDomains = computed(() =>
 
 const iframeSnippet = computed(
   () =>
-    `<iframe src="${publicUrl.value}" width="100%" height="640" style="border:0" title="${form.title || 'Web form'}"></iframe>`,
+    `<iframe src="${publicUrl.value}?embed=1" width="100%" height="640" style="border:0" title="${form.title || 'Web form'}"></iframe>`,
 )
-const jsSnippet = computed(() => {
-  const origin = window.location.origin
-  return (
-    `<div data-crm-form="${form.route || 'form'}"></div>\n` +
-    `<script src="${origin}/assets/crm/js/crm_form_embed.js" async></` +
-    `script>`
-  )
-})
 
-// auto-save: every edit funnels through markDirty(), which (re)arms a debounced
-// save ~1s after the last change
-let autosaveTimer = null
-function scheduleAutosave() {
-  if (autosaveTimer) clearTimeout(autosaveTimer)
-  autosaveTimer = setTimeout(() => {
-    autosaveTimer = null
-    if (dirty.value && !saving.value && !publishing.value)
-      save({ silent: true })
-  }, 1000)
-}
+// every edit funnels through markDirty(), which just flags unsaved changes;
+// the user persists explicitly via the header Save button (saveNow)
 function markDirty() {
   dirty.value = true
-  scheduleAutosave()
+}
+// header Save button: persist and confirm (errors are toasted inside save())
+async function saveNow() {
+  if (!dirty.value || saving.value) return
+  const ok = await save()
+  if (ok) toast.success(__('Form updated'))
+}
+// with autosave gone, warn before leaving the editor with unsaved changes
+// (same $dialog pattern as the Assignment Rule page)
+function goBack() {
+  if (dirty.value) {
+    $dialog({
+      title: __('Unsaved Changes'),
+      message: __(
+        'Are you sure you want to go back? Unsaved changes will be lost.',
+      ),
+      variant: 'solid',
+      actions: [
+        {
+          label: __('Go Back'),
+          variant: 'solid',
+          onClick: (close) => {
+            emit('back')
+            close()
+          },
+        },
+      ],
+    })
+    return
+  }
+  emit('back')
 }
 function toggle(f) {
   expanded.value = expanded.value === f.fieldname ? null : f.fieldname
@@ -1363,23 +1357,12 @@ async function save({ silent = false } = {}) {
   }
 }
 
-// header Publish/Unpublish action: flush any pending autosave, flip the flag,
-// and persist immediately (reverting if the save is rejected, e.g. missing default)
-async function togglePublish() {
-  if (autosaveTimer) {
-    clearTimeout(autosaveTimer)
-    autosaveTimer = null
-  }
-  const prev = form.published
-  form.published = prev ? 0 : 1
-  publishing.value = true
-  const ok = await save()
-  publishing.value = false
-  if (!ok) {
-    form.published = prev
-    return
-  }
-  toast.success(form.published ? __('Form published') : __('Form unpublished'))
+// header Publish toggle: flip the flag locally (instant, no animation) and mark
+// dirty — like Assignment Rule's Enabled switch, it persists on Save, where the
+// publish guard (every hidden field needs a default) is enforced
+function togglePublish() {
+  form.published = form.published ? 0 : 1
+  markDirty()
 }
 </script>
 

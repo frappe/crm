@@ -30,6 +30,9 @@ def get_context(context):
 	except Exception:
 		context.csrf_token = ""
 	context.web_form_name = doc.name
+	# ?embed=1 (set by the iframe snippet) strips the page chrome so the form sits
+	# flush inside the host page instead of showing our own card-on-gray-background
+	context.embed = frappe.form_dict.get("embed") in ("1", "true", "yes")
 	context.draft_preview = not doc.crm_published
 	context.form_title = doc.title
 	context.form_description = doc.introduction_text or ""

@@ -54,6 +54,11 @@
         padding: 28px 28px 26px;
         box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 12px 32px rgba(0, 0, 0, 0.05);
       }
+      /* embed mode (?embed=1): drop the page chrome so the form sits flush inside
+         the host page — no gray backdrop, no card border/shadow, full width */
+      body.embed { background: transparent; padding: 0; min-height: 0; }
+      body.embed .card { max-width: none; border: none; border-radius: 0; box-shadow: none; padding: 0; }
+      body.embed .draft-banner { max-width: none; }
       .title { font-size: 20px; font-weight: 600; color: var(--ink-strong); margin: 0 0 5px; letter-spacing: -0.01em; }
       /* with no description, the title supplies the gap the subtitle normally would */
       .title.title-only { margin-bottom: 22px; }
@@ -105,23 +110,23 @@
       .check { display: flex; align-items: center; gap: 9px; }
       .check input { width: 16px; height: 16px; accent-color: var(--accent); }
       .check label { margin: 0; font-weight: 400; font-size: 14px; }
-      button.submit {
-        width: 100%;
-        margin-top: 8px;
+      .actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 8px; }
+      button.submit, button.discard {
         font: inherit;
         font-size: 14px;
         font-weight: 500;
-        color: oklch(1 0 0);
-        background: var(--accent);
         border: none;
         border-radius: 8px;
-        padding: 8px 16px;
+        padding: 8px 18px;
         cursor: pointer;
         transition: background 0.12s, transform 0.02s;
       }
+      button.submit { color: oklch(1 0 0); background: var(--accent); }
       button.submit:hover { background: var(--accent-hover); }
       button.submit:active { transform: translateY(1px); }
       button.submit:disabled { opacity: 0.5; cursor: default; }
+      button.discard { color: var(--ink); background: var(--field); }
+      button.discard:hover { background: var(--border); }
       .form-error {
         display: none;
         background: var(--danger-bg);
@@ -154,7 +159,7 @@
       .draft-banner svg { flex-shrink: 0; width: 16px; height: 16px; margin-top: 1px; color: oklch(0.599 0.141 56.803); }
     </style>
   </head>
-  <body>
+  <body class="{% if embed %}embed{% endif %}">
     {% if draft_preview %}
     <div class="draft-banner">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
@@ -216,7 +221,10 @@
           </div>
           {% endfor %}
 
-          <button type="submit" class="submit" id="submit-btn">{{ submit_label }}</button>
+          <div class="actions">
+            <button type="reset" class="discard" id="discard-btn">{{ _("Discard") }}</button>
+            <button type="submit" class="submit" id="submit-btn">{{ submit_label }}</button>
+          </div>
         </form>
       </div>
 
@@ -274,6 +282,12 @@
             render();
           }, 1000);
         }
+
+        // Discard (type="reset") clears the inputs natively; also drop our error UI
+        form.addEventListener("reset", function () {
+          errBox.style.display = "none";
+          clearFieldErrors();
+        });
 
         form.addEventListener("submit", function (e) {
           e.preventDefault();

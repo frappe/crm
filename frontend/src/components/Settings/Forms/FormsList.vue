@@ -219,6 +219,7 @@ async function createForm() {
     showCreate.value = false
     emit('open', doc.name)
     forms.reload()
+    toast.success(__('Form created'))
   } catch (e) {
     createError.value =
       e?.messages?.[0] || e?.message || __('Could not create form')
