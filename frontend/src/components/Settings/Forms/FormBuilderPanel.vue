@@ -371,7 +371,7 @@
                       <button
                         class="flex text-ink-gray-5 transition-colors hover:text-ink-gray-8"
                         :title="__('Copy link')"
-                        @click="copy(publicUrl)"
+                        @click="copyToClipboard(publicUrl)"
                       >
                         <LucideCopy class="h-4 w-4" />
                       </button>
@@ -423,7 +423,7 @@
                       <button
                         class="absolute right-2 top-2 flex text-ink-gray-5 transition-colors hover:text-ink-gray-8"
                         :title="__('Copy')"
-                        @click="copy(jsSnippet)"
+                        @click="copyToClipboard(jsSnippet)"
                       >
                         <LucideCopy class="h-4 w-4" />
                       </button>
@@ -452,7 +452,7 @@
                       <button
                         class="absolute right-2 top-2 flex text-ink-gray-5 transition-colors hover:text-ink-gray-8"
                         :title="__('Copy')"
-                        @click="copy(iframeSnippet)"
+                        @click="copyToClipboard(iframeSnippet)"
                       >
                         <LucideCopy class="h-4 w-4" />
                       </button>
@@ -654,6 +654,7 @@ import LucideCheck from '~icons/lucide/check'
 import LucideLayoutList from '~icons/lucide/layout-list'
 import LucideSettings from '~icons/lucide/settings'
 import { globalStore } from '@/stores/global'
+import { copyToClipboard } from '@/utils'
 import { ref, reactive, computed, nextTick } from 'vue'
 
 const { $dialog } = globalStore()
@@ -716,7 +717,6 @@ function autoGrow(el) {
   el.style.height = 'auto'
   el.style.height = el.scrollHeight + 'px'
 }
-const copied = ref(false)
 const dragging = ref(false)
 
 // Editing model: form.fields (flat) is the source of truth, derived into a
@@ -1293,13 +1293,6 @@ async function commitDoctype(newDt, valid) {
       ]),
     )
   }
-}
-
-function copy(text) {
-  navigator.clipboard?.writeText(text)
-  copied.value = true
-  toast.success(__('Copied to clipboard'))
-  setTimeout(() => (copied.value = false), 1500)
 }
 
 async function save({ silent = false } = {}) {
