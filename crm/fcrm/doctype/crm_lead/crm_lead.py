@@ -95,6 +95,11 @@ class CRMLead(Document):
 				self.share_with_agent(self.lead_owner)
 			self.assign_agent(self.lead_owner)
 
+		# Auto-enrich a new Lead from its website (best-effort, background job).
+		from crm.domain_enrichment.tasks import auto_enrich_on_create
+
+		auto_enrich_on_create(self)
+
 	def before_save(self):
 		self.apply_sla()
 
@@ -244,6 +249,7 @@ class CRMLead(Document):
 		)
 		if existing_organization:
 			self.db_set("organization", existing_organization)
+			self.copy_enrichment_from_organization()
 			return existing_organization
 
 		organization = frappe.new_doc("CRM Organization")
@@ -258,6 +264,34 @@ class CRMLead(Document):
 		)
 		organization.insert(ignore_permissions=True)
 		return organization.name
+
+	def copy_enrichment_from_organization(self):
+		"""Fill-empty copy of a linked enriched Organization's fields onto this Lead.
+
+		Called when an existing (already-enriched) CRM Organization is linked. The
+		shared helper mutates ``self`` in place (fill-empty, user data preserved);
+		any filled native fields are then persisted with ``db_set`` to match this
+		branch's already-saved flow. Best-effort -- never blocks the Lead save.
+		"""
+		from crm.domain_enrichment.cross_record import copy_enrichment_from_organization
+
+		enriched_fields = (
+			"organization_logo",
+			"company_description",
+			"industry",
+			"linkedin",
+			"twitter",
+			"facebook",
+		)
+		before = {f: self.get(f) for f in enriched_fields if self.meta.has_field(f)}
+
+		filled = copy_enrichment_from_organization(self)
+
+		for fieldname, old_value in before.items():
+			new_value = self.get(fieldname)
+			if new_value != old_value:
+				self.db_set(fieldname, new_value)
+		return filled
 
 	def update_lead_contact(self, contact):
 		contact = frappe.get_cached_doc("Contact", contact)

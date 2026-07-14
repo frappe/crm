@@ -18,8 +18,7 @@
           <span class="text-sm text-ink-gray-7">{{ __('Enabled') }}</span>
         </div>
         <Button
-          :label="__('Update')"
-          icon-left="lucide-plus"
+          :label="__('Save')"
           variant="solid"
           :disabled="!dirty"
           :loading="renameDoc.loading || templates.setValue.loading"

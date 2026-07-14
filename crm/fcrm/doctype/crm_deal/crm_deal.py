@@ -94,12 +94,19 @@ class CRMDeal(Document):
 		self.validate_forecasting_fields()
 		self.validate_lost_reason()
 		self.update_exchange_rate()
+		if self.organization and (self.is_new() or self.has_value_changed("organization")):
+			self.copy_enrichment_from_organization()
 
 	def after_insert(self):
 		if self.deal_owner:
 			if self.deal_owner != frappe.session.user:
 				self.share_with_agent(self.deal_owner)
 			self.assign_agent(self.deal_owner)
+
+		# Auto-enrich a new Deal from its website (best-effort, background job).
+		from crm.domain_enrichment.tasks import auto_enrich_on_create
+
+		auto_enrich_on_create(self)
 
 	def before_save(self):
 		self.apply_sla()
@@ -192,6 +199,18 @@ class CRMDeal(Document):
 					user,
 					flags={"ignore_share_permission": True, "ignore_permissions": True},
 				)
+
+	def copy_enrichment_from_organization(self):
+		"""Fill-empty copy of the linked enriched Organization's fields onto this Deal.
+
+		Called from ``validate`` when ``organization`` is set or changed to an
+		already-enriched CRM Organization. The shared helper mutates ``self`` in place
+		(fill-empty, so user-entered data is preserved); the in-progress save persists
+		the changes. Best-effort -- never blocks the Deal save.
+		"""
+		from crm.domain_enrichment.cross_record import copy_enrichment_from_organization
+
+		return copy_enrichment_from_organization(self)
 
 	def set_sla(self):
 		"""
