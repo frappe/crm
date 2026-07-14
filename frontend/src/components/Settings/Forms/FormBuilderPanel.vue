@@ -471,7 +471,7 @@
                 />
                 <p
                   v-if="invalidEmbeddingDomains.length"
-                  class="mt-1.5 text-xs text-ink-red-5"
+                  class="mt-1.5 text-xs text-ink-red-6"
                 >
                   {{
                     __('Not a valid domain and will be ignored: {0}', [
@@ -481,11 +481,11 @@
                 </p>
                 <p
                   v-else-if="!embeddingDomains.length"
-                  class="mt-1.5 text-xs text-ink-amber-6"
+                  class="mt-1.5 text-xs text-ink-gray-5"
                 >
                   {{
                     __(
-                      'No domains added — the embed will only work on this site until you add one.',
+                      'No domains added. The embed will only work on this site until you add one.',
                     )
                   }}
                 </p>
