@@ -2,12 +2,9 @@
 # See license.txt
 
 import frappe
-<<<<<<< HEAD
-=======
 from frappe.desk.form.assign_to import add as assign_add
 from frappe.desk.form.assign_to import remove as assign_remove
 from frappe.tests import IntegrationTestCase
->>>>>>> b67ffde5 (fix: make lead/deal owner mirror assign_to (assignment-driven, overridable))
 
 from crm.fcrm.doctype.crm_lead.crm_lead import convert_to_deal
 from crm.tests import CRMTestCase as FrappeTestCase
@@ -513,8 +510,6 @@ class TestCRMLead(FrappeTestCase):
 		self.assertIn("Administrator", deal_assignees)
 		self.assertIn("crm.user1@example.com", deal_assignees)
 
-<<<<<<< HEAD
-=======
 	def test_owner_cleared_on_unassign(self):
 		"""Unassigning the current owner clears lead_owner"""
 		lead = create_lead(first_name="Owner", lead_owner="crm.user1@example.com")
@@ -530,7 +525,6 @@ class TestCRMLead(FrappeTestCase):
 		assign_add({"assign_to": ["crm.user2@example.com"], "doctype": "CRM Lead", "name": lead.name})
 		self.assertEqual(frappe.db.get_value("CRM Lead", lead.name, "lead_owner"), "crm.user2@example.com")
 
->>>>>>> b67ffde5 (fix: make lead/deal owner mirror assign_to (assignment-driven, overridable))
 
 def create_lead(**kwargs):
 	"""Helper function to create a CRM Lead for testing"""

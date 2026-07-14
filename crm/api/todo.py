@@ -25,8 +25,6 @@ def on_update(doc, method):
 		and doc.allocated_to
 	):
 		notify_assigned_user(doc, is_cancelled=True)
-<<<<<<< HEAD
-=======
 		clear_owner_on_unassign(doc)
 
 
@@ -38,7 +36,6 @@ def clear_owner_on_unassign(doc):
 	# Mirror assign_to: cancelling an assignment clears the owner. Wrinkle (accepted):
 	# removing one of several manual co-assignees also clears, since owner is single-valued.
 	frappe.db.set_value(doc.reference_type, doc.reference_name, fieldname, None, update_modified=False)
->>>>>>> b67ffde5 (fix: make lead/deal owner mirror assign_to (assignment-driven, overridable))
 
 
 def notify_assigned_user(doc, is_cancelled=False):

@@ -151,8 +151,6 @@ class TestCRMDeal(FrappeTestCase):
 		assignees_after = deal.get_assigned_users()
 		self.assertEqual(len(assignees_after), initial_count)
 
-<<<<<<< HEAD
-=======
 	def test_owner_cleared_on_unassign(self):
 		"""Unassigning the current owner clears deal_owner"""
 		deal = create_test_deal(organization="Owner Clear Org", deal_owner="crm.user1@example.com")
@@ -207,7 +205,6 @@ class TestCRMDeal(FrappeTestCase):
 		# Should not raise
 		assign_remove("CRM Task", task.name, "crm.user1@example.com")
 
->>>>>>> b67ffde5 (fix: make lead/deal owner mirror assign_to (assignment-driven, overridable))
 	def test_add_contact_api(self):
 		"""Test add_contact API function"""
 		deal = create_test_deal(organization="Add Contact Org")
