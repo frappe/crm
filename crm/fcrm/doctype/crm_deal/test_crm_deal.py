@@ -2,6 +2,8 @@
 # See license.txt
 
 import frappe
+from frappe.desk.form.assign_to import add as assign_add
+from frappe.desk.form.assign_to import remove as assign_remove
 
 from crm.fcrm.doctype.crm_deal.crm_deal import (
 	add_contact,
@@ -10,8 +12,6 @@ from crm.fcrm.doctype.crm_deal.crm_deal import (
 	set_primary_contact,
 )
 from crm.tests import CRMTestCase as FrappeTestCase
-from frappe.desk.form.assign_to import add as assign_add
-from frappe.desk.form.assign_to import remove as assign_remove
 
 
 class TestCRMDeal(FrappeTestCase):
