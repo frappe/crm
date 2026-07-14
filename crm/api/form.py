@@ -235,7 +235,7 @@ def list_forms() -> list[dict]:
 	_check_manager()
 	return frappe.get_all(
 		"Web Form",
-		filters={"doc_type": ["in", ALLOWED_DOCTYPES]},
+		filters={"module": FORM_MODULE, "doc_type": ["in", ALLOWED_DOCTYPES]},
 		fields=[
 			"name",
 			"title",
@@ -252,9 +252,7 @@ def list_forms() -> list[dict]:
 def get_form_config(name: str) -> dict:
 	"""Full config for the builder, read from the native Web Form record."""
 	_check_manager()
-	doc = frappe.get_doc("Web Form", name)
-	if doc.doc_type not in ALLOWED_DOCTYPES:
-		frappe.throw(_("Not a CRM form"))
+	doc = _get_crm_form(name)
 	return {
 		"name": doc.name,
 		"title": doc.title,
@@ -309,9 +307,7 @@ def save_form(name: str | None, form: dict | str) -> dict:
 	if form.get("document_type") not in ALLOWED_DOCTYPES:
 		frappe.throw(_("Forms can only map to: {0}").format(", ".join(ALLOWED_DOCTYPES)))
 
-	doc = frappe.get_doc("Web Form", name) if name else frappe.new_doc("Web Form")
-	if name and doc.doc_type not in ALLOWED_DOCTYPES:
-		frappe.throw(_("Not a CRM form"))
+	doc = _get_crm_form(name) if name else frappe.new_doc("Web Form")
 
 	doc.title = form.get("title")
 	doc.route = form.get("route")
@@ -377,7 +373,9 @@ def save_form(name: str | None, form: dict | str) -> dict:
 
 def _get_crm_form(name: str):
 	doc = frappe.get_doc("Web Form", name)
-	if doc.doc_type not in ALLOWED_DOCTYPES:
+	# scope to CRM's own forms — a Web Form from another app that happens to target
+	# CRM Lead/Deal must not be readable/mutable/deletable through this API
+	if doc.module != FORM_MODULE or doc.doc_type not in ALLOWED_DOCTYPES:
 		frappe.throw(_("Not a CRM form"))
 	return doc
 

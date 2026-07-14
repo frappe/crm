@@ -207,6 +207,31 @@ class TestFormAPI(IntegrationTestCase):
 		with self.assertRaises(frappe.ValidationError):
 			F.test_submit_form(name, {})
 
+	# ---- scope ----
+
+	def test_non_crm_web_form_is_out_of_scope(self):
+		"""A Web Form from another module that happens to target CRM Lead must not be
+		listed, read, published, or deleted through the CRM forms API."""
+		other = frappe.get_doc(
+			{
+				"doctype": "Web Form",
+				"title": "Other App Form",
+				"route": "other-app-form",
+				"doc_type": "CRM Lead",
+				"module": "Core",  # not FCRM
+				"is_standard": 0,
+				"web_form_fields": [{"fieldname": "first_name", "fieldtype": "Data", "label": "First Name"}],
+			}
+		).insert(ignore_permissions=True)
+
+		self.assertNotIn(other.name, [f["name"] for f in F.list_forms()])
+		with self.assertRaises(frappe.ValidationError):
+			F.get_form_config(other.name)
+		with self.assertRaises(frappe.ValidationError):
+			F.set_published(other.name, 1)
+		with self.assertRaises(frappe.ValidationError):
+			F.delete_form(other.name)
+
 	# ---- permissions ----
 
 	def test_non_manager_cannot_manage_forms(self):
