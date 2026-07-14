@@ -3,10 +3,9 @@
 
 import frappe
 
+from crm.api.form import ALLOWED_DOCTYPES
+
 no_cache = 1
-
-
-ALLOWED_DOCTYPES = ("CRM Lead", "CRM Deal")
 
 
 def get_context(context):

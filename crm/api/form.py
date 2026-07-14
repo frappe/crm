@@ -339,21 +339,24 @@ def save_form(name: str | None, form: dict | str) -> dict:
 	if not name and not fields:
 		fields = _seed_visible_fields(form["document_type"])
 
-	doc.set("web_form_fields", [])
-	for i, f in enumerate(fields or []):
-		doc.append(
-			"web_form_fields",
-			{
-				"fieldname": f.get("fieldname"),
-				"label": f.get("label"),
-				"fieldtype": f.get("fieldtype"),
-				"options": f.get("options"),
-				"reqd": 1 if f.get("reqd") else 0,
-				"placeholder": f.get("placeholder"),
-				"description": f.get("field_description"),
-				"idx": i + 1,
-			},
-		)
+	# only rewrite the layout when fields were actually sent — an update that omits
+	# `fields` (e.g. a settings-only save) must not wipe the existing layout
+	if fields is not None:
+		doc.set("web_form_fields", [])
+		for i, f in enumerate(fields):
+			doc.append(
+				"web_form_fields",
+				{
+					"fieldname": f.get("fieldname"),
+					"label": f.get("label"),
+					"fieldtype": f.get("fieldtype"),
+					"options": f.get("options"),
+					"reqd": 1 if f.get("reqd") else 0,
+					"placeholder": f.get("placeholder"),
+					"description": f.get("field_description"),
+					"idx": i + 1,
+				},
+			)
 
 	# hidden required fields: mandatory fields kept out of the visible form, with
 	# the default value applied on submission (see enrich_form_submission). Seeded
@@ -422,9 +425,9 @@ def test_submit_form(name: str, values: dict | str) -> dict:
 # `in_web_form` flag. No CRM-owned guest endpoint is needed for that path.
 
 
-def enrich_form_submission(doc, method=None):
-	"""before_insert hook: when a Lead/Deal is created via ANY web form, apply the
-	same enrichment the CRM applies on manual creation.
+def enrich_form_submission(doc):
+	"""Called from the CRM Lead/Deal `before_insert`: when the record is created via a
+	web form, apply the same enrichment the CRM applies on manual creation.
 
 	The framework's Web Form `accept()` just inserts the target doc, so without this
 	web submissions would miss Source / Organization / primary Contact. `accept()`
@@ -467,7 +470,13 @@ def _apply_hidden_defaults(doc):
 	web_form = frappe.form_dict.get("web_form")
 	if not web_form:
 		return
-	raw = frappe.db.get_value("Web Form", web_form, "crm_hidden_defaults")
+	# `web_form` comes from the (client-controllable) POST body — only trust a CRM
+	# form that targets this exact doctype, else a submission could pull in another
+	# form's defaults (or a different doctype's).
+	form = frappe.db.get_value("Web Form", web_form, ["doc_type", "crm_hidden_defaults"], as_dict=True)
+	if not form or form.doc_type not in ALLOWED_DOCTYPES or form.doc_type != doc.doctype:
+		return
+	raw = form.crm_hidden_defaults
 	if not raw:
 		return
 	try:
