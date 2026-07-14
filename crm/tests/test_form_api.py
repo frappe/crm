@@ -168,6 +168,33 @@ class TestFormAPI(IntegrationTestCase):
 		).insert(ignore_permissions=True)
 		self.assertNotEqual(lead.source, "Web Form")
 
+	def test_hidden_defaults_ignored_when_form_targets_other_doctype(self):
+		"""A submission referencing a form for a different doctype must not pull in
+		that form's hidden defaults — guards against a spoofed `web_form` param."""
+		deal_form = make_form("spoof-deal", document_type="CRM Deal")  # seeds Status = Qualification
+
+		frappe.flags.in_web_form = True
+		frappe.form_dict["web_form"] = deal_form  # a Deal form, but we insert a Lead
+		lead = frappe.get_doc(
+			{"doctype": "CRM Lead", "first_name": "Eve", "email": "wf-test-eve@test.invalid"}
+		).insert(ignore_permissions=True)
+
+		# "Qualification" is a Deal status; the guard must keep it off the Lead
+		self.assertNotEqual(lead.status, "Qualification")
+
+	# ---- layout persistence ----
+
+	def test_save_without_fields_key_preserves_layout(self):
+		"""An update that omits `fields` (e.g. a settings-only save) keeps the existing
+		layout instead of wiping it."""
+		name = make_form("keep-layout")
+		before = len(F.get_form_config(name)["fields"])
+		self.assertTrue(before)  # seeded layout exists
+
+		F.save_form(name=name, form={"title": "Renamed", "route": "keep-layout", "document_type": "CRM Lead"})
+
+		self.assertEqual(len(F.get_form_config(name)["fields"]), before)
+
 	# ---- draft dry-run ----
 
 	def test_test_submit_validates_but_creates_nothing(self):
