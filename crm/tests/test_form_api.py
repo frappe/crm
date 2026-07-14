@@ -15,27 +15,6 @@ def make_form(route, document_type="CRM Lead", **kw):
 
 
 class TestFormAPI(IntegrationTestCase):
-	@classmethod
-	def setUpClass(cls):
-		# a CRM-manager-less user, to exercise the permission gate
-		if not frappe.db.exists("User", "sales-user@example.com"):
-			user = frappe.get_doc(
-				{
-					"doctype": "User",
-					"email": "sales-user@example.com",
-					"first_name": "Sales",
-					"roles": [{"role": "Sales User"}],
-				}
-			).insert(ignore_permissions=True)
-			user.reload()
-			frappe.db.commit()  # nosemgrep
-		super().setUpClass()
-
-	@classmethod
-	def tearDownClass(cls):
-		frappe.db.rollback()
-		super().tearDownClass()
-
 	def tearDown(self):
 		frappe.set_user("Administrator")
 		frappe.flags.in_web_form = False
@@ -204,6 +183,17 @@ class TestFormAPI(IntegrationTestCase):
 	# ---- permissions ----
 
 	def test_non_manager_cannot_manage_forms(self):
+		# a user without CRM-manager roles, to exercise the permission gate — created
+		# in-transaction (no commit) so tearDown's rollback cleans it up
+		if not frappe.db.exists("User", "sales-user@example.com"):
+			frappe.get_doc(
+				{
+					"doctype": "User",
+					"email": "sales-user@example.com",
+					"first_name": "Sales",
+					"roles": [{"role": "Sales User"}],
+				}
+			).insert(ignore_permissions=True)
 		frappe.set_user("sales-user@example.com")
 		with self.assertRaises(frappe.PermissionError):
 			F.list_forms()
