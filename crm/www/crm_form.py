@@ -1,11 +1,20 @@
 # Copyright (c) 2026, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 
+import re
+
 import frappe
 
 from crm.api.form import ALLOWED_DOCTYPES
 
 no_cache = 1
+
+# bare host, optional scheme/port, optional leading "*." wildcard — rejects any
+# token containing CSP metacharacters like ";" so admin-entered domains can't
+# inject extra directives into the Content-Security-Policy header
+ALLOWED_EMBEDDING_DOMAIN_RE = re.compile(
+	r"^(https?://)?(\*\.)?[a-zA-Z0-9](?:[a-zA-Z0-9.-]*[a-zA-Z0-9])?(?::\d+)?$"
+)
 
 
 def get_context(context):
@@ -65,7 +74,8 @@ def set_embedding_headers(doc):
 	is present, so this is what makes cross-origin embedding work — without it a form
 	can only be embedded on its own site.
 	"""
-	domains = (doc.allowed_embedding_domains or "").split()
+	raw_domains = (doc.allowed_embedding_domains or "").split()
+	domains = [d for d in raw_domains if ALLOWED_EMBEDDING_DOMAIN_RE.match(d)]
 	if not domains:
 		return
 	frappe.local.response_headers["Content-Security-Policy"] = "frame-ancestors 'self' " + " ".join(domains)
