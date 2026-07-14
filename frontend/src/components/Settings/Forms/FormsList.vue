@@ -151,7 +151,7 @@ import {
 } from 'frappe-ui'
 import LucideTextCursorInput from '~icons/lucide/text-cursor-input'
 import { ref, reactive, h } from 'vue'
-import { ConfirmDelete } from '../../../utils'
+import { ConfirmDelete, copyToClipboard } from '../../../utils'
 
 const emit = defineEmits(['open'])
 
@@ -242,9 +242,7 @@ async function togglePublished(form, value) {
 }
 
 function copyLink(form) {
-  const url = `${window.location.origin}/crm-form/${form.route}`
-  navigator.clipboard?.writeText(url)
-  toast.success(__('Copied to clipboard'))
+  copyToClipboard(`${window.location.origin}/crm-form/${form.route}`)
 }
 
 async function deleteForm(form) {
