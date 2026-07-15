@@ -319,11 +319,12 @@ def save_form(name: str | None, form: dict | str) -> dict:
 	# blank falls back to showing the success message
 	doc.success_url = form.get("redirect_url") or ""
 	doc.allowed_embedding_domains = form.get("allowed_embedding_domains")
-	# CRM forms are served only by the CRM's own public page, so the native
-	# `published` stays 0 (framework never renders /<route>); our own
-	# `crm_published` flag drives whether the CRM page serves it publicly.
-	doc.published = 0
+	# `crm_published` drives the CRM's own branded page at /crm-form/<route>; mirror
+	# it onto the native `published` so the Desk Web Form view shows the right state.
+	# (This also makes Frappe serve its generic form at /<route> — an additional,
+	# unbranded public URL alongside /crm-form/<route>.)
 	doc.crm_published = 1 if form.get("published") else 0
+	doc.published = doc.crm_published
 	# CRM forms are public, single-purpose lead/deal capture
 	doc.login_required = 0
 	doc.allow_multiple = 1
@@ -388,7 +389,7 @@ def set_published(name: str, published: int) -> None:
 	if int(published):
 		_assert_hidden_defaults_set(_load_hidden_fields(doc))
 	doc.crm_published = 1 if int(published) else 0
-	doc.published = 0
+	doc.published = doc.crm_published  # mirror onto native flag (see save_form)
 	doc.save(ignore_permissions=True)
 
 
