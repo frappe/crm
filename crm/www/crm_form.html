@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ form_title }}</title>
+    <meta name="robots" content="noindex" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        /* espresso / frappe-ui light-theme tokens (pure-neutral grays) */
+        --ink-strong: oklch(0.168 0 0);       /* ink-gray-9 — headings */
+        --ink: oklch(0.205 0 0);              /* ink-gray-8 — field text */
+        --muted: oklch(0.586 0 0);            /* ink-gray-5 — labels */
+        --faint: oklch(0.683 0 0);            /* ink-gray-4 — placeholders */
+        --border: oklch(0.913 0 0);           /* outline-gray-2 */
+        --border-focus: oklch(0.83 0 0);      /* outline-gray-3 */
+        --bg: oklch(0.964 0 0);               /* surface-gray-2 — page */
+        --card: oklch(1 0 0);                 /* white surface */
+        --field: oklch(0.964 0 0);            /* surface-gray-2 — inputs */
+        --accent: oklch(0.205 0 0);           /* surface-gray-10 — button */
+        --accent-hover: oklch(0.341 0 0);     /* surface-gray-9 */
+        --danger: oklch(0.507 0.165 25.286);  /* ink-red-5 */
+        --danger-bg: oklch(0.978 0.011 17.34); /* surface-red-1 */
+        --success-bg: oklch(0.965 0.03 155.987); /* surface-green-2 */
+        --success-ink: oklch(0.506 0.118 155.358); /* ink-green-5 */
+        --ring: oklch(0.586 0 0 / 0.15);
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; }
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background: var(--bg);
+        color: var(--ink);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        padding: 48px 16px;
+        -webkit-font-smoothing: antialiased;
+      }
+      .card {
+        width: 100%;
+        max-width: 560px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 28px 28px 26px;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 12px 32px rgba(0, 0, 0, 0.05);
+      }
+      /* embed mode (?embed=1): drop the page chrome so the form sits flush inside
+         the host page — no gray backdrop, no card border/shadow, full width */
+      body.embed { background: transparent; padding: 0; min-height: 0; }
+      body.embed .card { max-width: none; border: none; border-radius: 0; box-shadow: none; padding: 0; }
+      body.embed .draft-banner { max-width: none; }
+      .title { font-size: 20px; font-weight: 600; color: var(--ink-strong); margin: 0 0 5px; letter-spacing: -0.01em; }
+      /* with no description, the title supplies the gap the subtitle normally would */
+      .title.title-only { margin-bottom: 22px; }
+      .subtitle { font-size: 14px; color: var(--muted); margin: 0 0 22px; line-height: 1.5; }
+      .section { margin-bottom: 4px; }
+      .section-title { font-size: 15px; font-weight: 600; color: var(--ink-strong); margin: 20px 0 12px; }
+      .section:first-child .section-title { margin-top: 0; }
+      .cols { display: grid; gap: 0 20px; }
+      @media (max-width: 520px) { .cols { grid-template-columns: 1fr !important; } }
+      .field { margin-bottom: 16px; }
+      .field label { display: block; font-size: 13px; font-weight: 400; margin-bottom: 6px; color: var(--muted); }
+      .field .req { color: var(--danger); margin-left: 2px; }
+      .field .desc { font-size: 12px; color: var(--muted); margin-top: 5px; line-height: 1.4; }
+      input[type="text"], input[type="email"], input[type="tel"], input[type="number"],
+      input[type="date"], input[type="datetime-local"], textarea, select {
+        width: 100%;
+        font: inherit;
+        font-size: 14px;
+        line-height: 1.4;
+        color: var(--ink);
+        background: var(--field);
+        border: 1px solid transparent;
+        border-radius: 8px;
+        padding: 6px 10px;
+        outline: none;
+        transition: border-color 0.12s, box-shadow 0.12s, background 0.12s;
+      }
+      ::placeholder { color: var(--faint); }
+      textarea { min-height: 68px; resize: vertical; }
+      select {
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        padding-right: 32px;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%237c7c7c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 10px center;
+        cursor: pointer;
+      }
+      input:focus, textarea:focus, select:focus {
+        border-color: var(--border-focus);
+        box-shadow: 0 0 0 2px var(--ring);
+        background: var(--card);
+      }
+      .has-error, .has-error:focus {
+        border-color: var(--danger);
+        box-shadow: 0 0 0 2px var(--danger-bg);
+      }
+      .check { display: flex; align-items: center; gap: 9px; }
+      .check input { width: 16px; height: 16px; accent-color: var(--accent); }
+      .check label { margin: 0; font-weight: 400; font-size: 14px; }
+      .actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 8px; }
+      button.submit, button.discard {
+        font: inherit;
+        font-size: 14px;
+        font-weight: 500;
+        border: none;
+        border-radius: 8px;
+        padding: 8px 18px;
+        cursor: pointer;
+        transition: background 0.12s, transform 0.02s;
+      }
+      button.submit { color: oklch(1 0 0); background: var(--accent); }
+      button.submit:hover { background: var(--accent-hover); }
+      button.submit:active { transform: translateY(1px); }
+      button.submit:disabled { opacity: 0.5; cursor: default; }
+      button.discard { color: var(--ink); background: var(--field); }
+      button.discard:hover { background: var(--border); }
+      .form-error {
+        display: none;
+        background: var(--danger-bg);
+        color: var(--danger);
+        font-size: 13px;
+        border-radius: 9px;
+        padding: 10px 12px;
+        margin-bottom: 16px;
+      }
+      .success { text-align: center; padding: 20px 4px 8px; }
+      .success .check-ring {
+        width: 48px; height: 48px; border-radius: 999px; margin: 0 auto 16px;
+        background: var(--success-bg); color: var(--success-ink); display: flex; align-items: center;
+        justify-content: center; font-size: 24px;
+      }
+      .success h2 { font-size: 19px; color: var(--ink-strong); margin: 0 0 6px; }
+      .success p { color: var(--muted); font-size: 14px; margin: 0; line-height: 1.5; }
+      .redirect-note { margin-top: 12px !important; font-size: 13px; }
+      .redirect-note a { color: var(--ink-strong); text-decoration: underline; margin-left: 4px; }
+      /* frappe-ui Alert — yellow, subtle: surface-amber-2 bg, amber triangle-alert
+         icon, ink-gray-9 text, rounded-md, px-4 py-3.5, gap-3, text-base */
+      .draft-banner {
+        display: flex; align-items: flex-start; gap: 12px;
+        width: 100%; max-width: 560px; margin: 0 auto 12px;
+        padding: 14px 16px; border-radius: 6px;
+        background: oklch(0.967 0.045 91.733);  /* surface-amber-2 */
+        color: var(--ink-strong);               /* ink-gray-9 */
+        font: 400 14px/1.5 "Inter", sans-serif; text-align: left;
+      }
+      .draft-banner svg { flex-shrink: 0; width: 16px; height: 16px; margin-top: 1px; color: oklch(0.599 0.141 56.803); }
+    </style>
+  </head>
+  <body class="{% if embed %}embed{% endif %}">
+    {% if draft_preview %}
+    <div class="draft-banner">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+      <span>{{ _("Draft preview — only you can see this. Publish the form to make it public.") }}</span>
+    </div>
+    {% endif %}
+    <div class="card">
+      <div id="form-view">
+        <h1 class="title{% if not form_description %} title-only{% endif %}">{{ form_title }}</h1>
+        {% if form_description %}<p class="subtitle">{{ form_description }}</p>{% endif %}
+
+        <div class="form-error" id="form-error"></div>
+
+        <form id="web-form" novalidate>
+          {% for section in layout %}
+          <div class="section">
+            {% if section.label %}<div class="section-title">{{ section.label }}</div>{% endif %}
+            <div class="cols" style="grid-template-columns: repeat({{ section.columns|length }}, minmax(0, 1fr))">
+              {% for col in section.columns %}
+              <div class="col">
+                {% for f in col %}
+                <div class="field">
+                  {% if f.fieldtype == "Check" %}
+                  <div class="check">
+                    <input type="checkbox" id="{{ f.fieldname }}" name="{{ f.fieldname }}" />
+                    <label for="{{ f.fieldname }}">{{ f.label }}{% if f.reqd %}<span class="req">*</span>{% endif %}</label>
+                  </div>
+                  {% else %}
+                  <label for="{{ f.fieldname }}">{{ f.label }}{% if f.reqd %}<span class="req">*</span>{% endif %}</label>
+                  {% if f.fieldtype in ("Small Text", "Text", "Long Text", "Text Editor", "HTML Editor", "Markdown Editor") %}
+                  <textarea id="{{ f.fieldname }}" name="{{ f.fieldname }}" placeholder="{{ f.placeholder }}" {% if f.reqd %}required{% endif %}></textarea>
+                  {% elif f.fieldtype == "Select" %}
+                  <select id="{{ f.fieldname }}" name="{{ f.fieldname }}" {% if f.reqd %}required{% endif %}>
+                    <option value="">Select…</option>
+                    {% for opt in f.options.split("\n") %}{% if opt %}<option value="{{ opt }}">{{ opt }}</option>{% endif %}{% endfor %}
+                  </select>
+                  {% elif f.fieldtype in ("Int", "Float", "Currency", "Percent") %}
+                  <input type="number" id="{{ f.fieldname }}" name="{{ f.fieldname }}" placeholder="{{ f.placeholder }}" {% if f.reqd %}required{% endif %} />
+                  {% elif f.fieldtype == "Date" %}
+                  <input type="date" id="{{ f.fieldname }}" name="{{ f.fieldname }}" {% if f.reqd %}required{% endif %} />
+                  {% elif f.fieldtype == "Datetime" %}
+                  <input type="datetime-local" id="{{ f.fieldname }}" name="{{ f.fieldname }}" {% if f.reqd %}required{% endif %} />
+                  {% elif f.fieldtype == "Time" %}
+                  <input type="time" id="{{ f.fieldname }}" name="{{ f.fieldname }}" {% if f.reqd %}required{% endif %} />
+                  {% elif f.fieldtype == "Color" %}
+                  <input type="color" id="{{ f.fieldname }}" name="{{ f.fieldname }}" {% if f.reqd %}required{% endif %} />
+                  {% else %}
+                  <input
+                    type="{% if f.options == 'Email' %}email{% elif f.options == 'Phone' or f.fieldtype == 'Phone' %}tel{% else %}text{% endif %}"
+                    id="{{ f.fieldname }}" name="{{ f.fieldname }}" placeholder="{{ f.placeholder }}" {% if f.reqd %}required{% endif %} />
+                  {% endif %}
+                  {% endif %}
+                  {% if f.description %}<div class="desc">{{ f.description }}</div>{% endif %}
+                </div>
+                {% endfor %}
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+          {% endfor %}
+
+          <div class="actions">
+            <button type="reset" class="discard" id="discard-btn">{{ _("Discard") }}</button>
+            <button type="submit" class="submit" id="submit-btn">{{ submit_label }}</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="success" id="success-view" style="display: none">
+        <div class="check-ring">&#10003;</div>
+        <h2 id="success-title">{{ success_message }}</h2>
+        <p id="success-note">Your response has been recorded.</p>
+        <p class="redirect-note" id="redirect-note" style="display: none"></p>
+      </div>
+    </div>
+
+    <script>
+      (function () {
+        var ROUTE = {{ form_route | tojson }};
+        var WEB_FORM = {{ web_form_name | tojson }};
+        var FIELDS = {{ fields | tojson }};
+        var CSRF = {{ csrf_token | tojson }};
+        var DRAFT = {{ draft_preview | tojson }};
+        var SUCCESS_URL = {{ success_url | tojson }};
+        var form = document.getElementById("web-form");
+        var errBox = document.getElementById("form-error");
+        var btn = document.getElementById("submit-btn");
+        var BREAKS = { "Section Break": 1, "Column Break": 1 };
+
+        function showError(msg) {
+          errBox.textContent = msg || "Something went wrong. Please try again.";
+          errBox.style.display = "block";
+          errBox.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        }
+        function clearFieldErrors() {
+          [].forEach.call(form.querySelectorAll(".has-error"), function (el) {
+            el.classList.remove("has-error");
+          });
+        }
+        function redirectWithCountdown(url) {
+          var note = document.getElementById("redirect-note");
+          var link = document.createElement("a");
+          link.href = url;
+          link.textContent = "Go now";
+          var secs = 5;
+          function render() {
+            note.textContent =
+              "Redirecting in " + secs + (secs === 1 ? " second" : " seconds") + "…";
+            note.appendChild(link);
+          }
+          note.style.display = "block";
+          render();
+          var iv = setInterval(function () {
+            secs -= 1;
+            if (secs <= 0) {
+              clearInterval(iv);
+              window.location.assign(url);
+              return;
+            }
+            render();
+          }, 1000);
+        }
+
+        // Discard (type="reset") clears the inputs natively; also drop our error UI
+        form.addEventListener("reset", function () {
+          errBox.style.display = "none";
+          clearFieldErrors();
+        });
+
+        form.addEventListener("submit", function (e) {
+          e.preventDefault();
+          errBox.style.display = "none";
+          clearFieldErrors();
+
+          var values = {};
+          var missing = [];
+          FIELDS.forEach(function (f) {
+            if (BREAKS[f.fieldtype]) return;
+            var el = document.getElementById(f.fieldname);
+            if (!el) return;
+            var val = f.fieldtype === "Check" ? (el.checked ? 1 : 0) : el.value;
+            values[f.fieldname] = val;
+            if (f.reqd && (val === "" || val === null || val === undefined)) {
+              missing.push(f);
+              el.classList.add("has-error");
+            }
+          });
+
+          if (missing.length) {
+            showError(
+              missing.length === 1
+                ? "Please fill in the required field: " + (missing[0].label || "")
+                : "Please fill in all required fields."
+            );
+            var first = document.getElementById(missing[0].fieldname);
+            if (first && first.focus) first.focus();
+            return;
+          }
+
+          btn.disabled = true;
+          var original = btn.textContent;
+          btn.textContent = "Submitting…";
+
+          // Draft preview → dry-run (validate only, no record). Published → submit
+          // through Frappe's built-in Web Form engine (validation + insert).
+          var endpoint = DRAFT
+            ? "/api/method/crm.api.form.test_submit_form"
+            : "/api/method/frappe.website.doctype.web_form.web_form.accept";
+          var payload = DRAFT
+            ? { name: WEB_FORM, values: JSON.stringify(values) }
+            : { web_form: WEB_FORM, data: JSON.stringify(values) };
+
+          fetch(endpoint, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "X-Frappe-CSRF-Token": (CSRF || "") },
+            body: JSON.stringify(payload),
+          })
+            .then(function (r) {
+              return r.json().then(function (data) { return { ok: r.ok, data: data }; });
+            })
+            .then(function (res) {
+              if (!res.ok) {
+                var m = res.data && res.data._server_messages;
+                var msg = "";
+                try { msg = m ? JSON.parse(JSON.parse(m)[0]).message : ""; } catch (e) {}
+                showError(msg || "Sorry, we couldn't submit your response. Please try again.");
+                btn.disabled = false;
+                btn.textContent = original;
+                return;
+              }
+              document.getElementById("form-view").style.display = "none";
+              document.getElementById("success-view").style.display = "block";
+              if (DRAFT) {
+                document.getElementById("success-note").textContent =
+                  "Test submission — no record was created. Publish the form to start collecting responses.";
+              } else if (SUCCESS_URL) {
+                // like the framework: show the success message, then redirect
+                // after a short countdown (with a manual fallback link)
+                redirectWithCountdown(SUCCESS_URL);
+              }
+            })
+            .catch(function () {
+              showError();
+              btn.disabled = false;
+              btn.textContent = original;
+            });
+        });
+      })();
+    </script>
+  </body>
+</html>

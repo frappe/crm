@@ -73,6 +73,7 @@ doctype_js = {
 
 website_route_rules = [
 	{"from_route": "/crm/<path:app_path>", "to_route": "crm"},
+	{"from_route": "/crm-form/<route>", "to_route": "crm_form"},
 ]
 
 # Generators
@@ -309,6 +310,7 @@ after_migrate = [
 	"crm.api.whatsapp.add_roles",
 	"crm.domain_enrichment.install.seed_default_rules_and_mappings",
 	"crm.install.add_default_scripts",
+	"crm.install.add_web_form_custom_fields",
 ]
 
 standard_dropdown_items = [
