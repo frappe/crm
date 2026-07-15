@@ -46,9 +46,10 @@
 <script setup>
 import FieldLayout from '@/components/FieldLayout/FieldLayout.vue'
 import FieldLayoutEditor from '@/components/FieldLayoutEditor.vue'
+import { useDebounceFn } from '@vueuse/core'
 import { useTelemetry } from 'frappe-ui/frappe'
 import { Dialog, Badge, call, createResource } from 'frappe-ui'
-import { ref, watch, nextTick } from 'vue'
+import { ref, watch, onMounted, nextTick } from 'vue'
 
 const props = defineProps({
   doctype: { type: String, default: 'CRM Lead' },
@@ -72,7 +73,6 @@ const tabs = createResource({
   url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_fields_layout',
   cache: ['QuickEntryModal', _doctype.value, props.onlyRequired],
   params: getParams(),
-  auto: true,
   onSuccess(data) {
     tabs.originalData = JSON.parse(JSON.stringify(data))
   },
@@ -86,6 +86,8 @@ watch(
   },
   { deep: true },
 )
+
+onMounted(() => useDebounceFn(reload, 100)())
 
 function reload() {
   nextTick(() => {
