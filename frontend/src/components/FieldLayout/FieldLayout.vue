@@ -3,7 +3,7 @@
     class="flex flex-col"
     :class="{
       'border border-outline-gray-1 rounded-lg': hasTabs,
-      'border-outline-gray-modals': hasTabs,
+      'border-outline-elevation-2': hasTabs,
     }"
   >
     <Tabs

@@ -4,7 +4,6 @@
 import frappe
 from frappe.desk.form.assign_to import add as assign_add
 from frappe.desk.form.assign_to import remove as assign_remove
-from frappe.tests import IntegrationTestCase
 
 from crm.fcrm.doctype.crm_deal.crm_deal import (
 	add_contact,
@@ -175,14 +174,22 @@ class TestCRMDeal(FrappeTestCase):
 
 		self.assertEqual(frappe.db.get_value("CRM Deal", deal.name, "deal_owner"), "crm.user2@example.com")
 
-	def test_non_owner_removal_leaves_owner(self):
-		"""Removing a non-owner assignee does not touch the owner"""
-		deal = create_test_deal(organization="Non Owner Org", deal_owner="crm.user1@example.com")
+	def test_assignment_overrides_owner(self):
+		"""A new assignment takes ownership even when an owner already exists (newest owns)."""
+		deal = create_test_deal(organization="Override Org", deal_owner="crm.user1@example.com")
 		assign_add({"assign_to": ["crm.user2@example.com"], "doctype": "CRM Deal", "name": deal.name})
+		self.assertEqual(frappe.db.get_value("CRM Deal", deal.name, "deal_owner"), "crm.user2@example.com")
 
-		assign_remove("CRM Deal", deal.name, "crm.user2@example.com")
+	def test_removing_any_assignee_clears_owner(self):
+		"""Accepted simplification: cancelling ANY assignment clears the owner,
+		even when other assignees remain (owner is single-valued, _assign is a list)."""
+		deal = create_test_deal(organization="Wrinkle Org", deal_owner="crm.user1@example.com")
+		assign_add({"assign_to": ["crm.user2@example.com"], "doctype": "CRM Deal", "name": deal.name})
+		# newest assignment owns
+		self.assertEqual(frappe.db.get_value("CRM Deal", deal.name, "deal_owner"), "crm.user2@example.com")
 
-		self.assertEqual(frappe.db.get_value("CRM Deal", deal.name, "deal_owner"), "crm.user1@example.com")
+		assign_remove("CRM Deal", deal.name, "crm.user1@example.com")  # remove a non-owner assignee
+		self.assertIsNone(frappe.db.get_value("CRM Deal", deal.name, "deal_owner"))
 
 	def test_task_unassign_does_not_touch_owner(self):
 		"""Cancelling a CRM Task assignment is a no-op for owner fields"""

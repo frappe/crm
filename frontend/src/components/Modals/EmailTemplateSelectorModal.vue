@@ -1,9 +1,6 @@
 <template>
-  <Dialog
-    v-model="show"
-    :options="{ title: __('Email Templates'), size: '4xl' }"
-  >
-    <template #body-content>
+  <Dialog v-model:open="show" :title="__('Email Templates')" :size="'4xl'">
+    <template #default>
       <div class="flex items-center gap-2">
         <TextInput
           ref="searchInput"
@@ -13,10 +10,13 @@
           :placeholder="__('Payment Reminder')"
         >
           <template #prefix>
-            <FeatherIcon name="search" class="h-4 w-4 text-ink-gray-4" />
+            <span
+              class="lucide-search h-4 w-4 text-ink-gray-4"
+              aria-hidden="true"
+            />
           </template>
         </TextInput>
-        <Button :label="__('Create')" icon-left="plus" @click="create" />
+        <Button :label="__('Create')" icon-left="lucide-plus" @click="create" />
       </div>
       <div
         v-if="filteredTemplates.length"
@@ -28,7 +28,7 @@
           class="flex h-56 cursor-pointer flex-col gap-2 rounded-lg border p-3 hover:bg-surface-gray-2"
           @click="emit('apply', template)"
         >
-          <div class="border-b pb-2 text-base font-semibold">
+          <div class="border-b pb-2 text-base-semibold">
             {{ template.name }}
           </div>
           <div v-if="template.subject" class="text-sm text-ink-gray-5">

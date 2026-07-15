@@ -27,9 +27,9 @@
             :label="a.file_name"
           >
             <template #suffix>
-              <FeatherIcon
-                class="h-3.5"
-                name="x"
+              <span
+                class="lucide-x h-3.5"
+                aria-hidden="true"
                 @click.stop="removeAttachment(a)"
               />
             </template>
@@ -136,7 +136,7 @@ const users = computed(() => {
     usersList.data?.crmUsers
       ?.filter((user) => user.enabled)
       .map((user) => ({
-        label: user.full_name.trimEnd(),
+        label: user.full_name?.trim() || user.name,
         value: user.name,
       })) || []
   )

@@ -1,9 +1,9 @@
 <template>
-  <Dialog v-model="show" :options="{ size: 'xl' }">
+  <Dialog v-model:open="show" :size="'xl'">
     <template #body-header>
       <div class="mb-6 flex items-center justify-between">
         <div>
-          <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9">
+          <h3 class="text-3xl-semibold leading-6 text-ink-gray-9">
             {{ __('Convert to Deal') }}
           </h3>
         </div>
@@ -15,11 +15,11 @@
             :icon="EditIcon"
             @click="openQuickEntryModal"
           />
-          <Button icon="x" variant="ghost" @click="show = false" />
+          <Button icon="lucide-x" variant="ghost" @click="show = false" />
         </div>
       </div>
     </template>
-    <template #body-content>
+    <template #default>
       <div class="mb-4 flex items-center gap-2 text-ink-gray-5">
         <OrganizationsIcon class="h-4 w-4" />
         <label class="block text-base">{{ __('Organization') }}</label>
@@ -99,7 +99,7 @@ import { showQuickEntryModal, quickEntryProps } from '@/composables/modals'
 import { isMobileView } from '@/composables/settings'
 import { useOnboarding, useTelemetry } from 'frappe-ui/frappe'
 import { Switch, Dialog, createResource, call } from 'frappe-ui'
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 const props = defineProps({
@@ -206,10 +206,6 @@ const dealTabs = createResource({
               field.options = dealStatuses.value
               field.prefix = getDealStatus(deal.doc.status).color
             }
-
-            if (field.fieldtype === 'Table') {
-              deal.doc[field.fieldname] = []
-            }
           })
         })
       })
@@ -217,6 +213,40 @@ const dealTabs = createResource({
     return hasFields ? parsedTabs : []
   },
 })
+
+const leadDealFieldMap = { deal_owner: 'lead_owner' }
+const skipPrefillFields = ['organization', 'status']
+
+watch(
+  () => dealTabs.data,
+  (tabs) => {
+    deal.doc = { __newDocument: true, doctype: 'CRM Deal' }
+    tabs?.forEach((tab) =>
+      tab.sections?.forEach((section) =>
+        section.columns?.forEach((column) =>
+          column.fields?.forEach((field) => {
+            if (field.fieldtype === 'Table') {
+              deal.doc[field.fieldname] = []
+            } else {
+              prefillFromLead(field)
+            }
+          }),
+        ),
+      ),
+    )
+  },
+  { immediate: true },
+)
+
+function prefillFromLead(field) {
+  if (skipPrefillFields.includes(field.fieldname)) return
+
+  const leadFieldname = leadDealFieldMap[field.fieldname] || field.fieldname
+  const value = props.lead[leadFieldname]
+  if (value != null && value !== '') {
+    deal.doc[field.fieldname] = value
+  }
+}
 
 function openQuickEntryModal() {
   showQuickEntryModal.value = true

@@ -1,15 +1,15 @@
 <template>
   <Dialog
-    v-model="show"
-    :options="{
-      title: editMode
+    v-model:open="show"
+    :title="
+      editMode
         ? __('Edit View')
         : duplicateMode
           ? __('Duplicate View')
-          : __('Create View'),
-    }"
+          : __('Create View')
+    "
   >
-    <template #body-content>
+    <template #default>
       <div class="mb-1.5 block text-base text-ink-gray-5">
         {{ __('View Name') }}
       </div>
@@ -17,7 +17,7 @@
         <IconPicker v-slot="{ togglePopover }" v-model="view.icon">
           <Button
             size="md"
-            class="flex size-8 text-2xl leading-none"
+            class="flex size-8 text-3xl leading-none"
             :label="view.icon"
             @click="togglePopover"
           />

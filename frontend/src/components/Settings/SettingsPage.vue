@@ -6,15 +6,15 @@
           <Button
             v-if="back"
             variant="ghost"
-            icon-left="chevron-left"
+            icon-left="lucide-chevron-left"
             :label="title || __(doctype)"
             size="md"
-            class="cursor-pointer -ml-4 hover:bg-transparent focus:bg-transparent focus:outline-none focus:ring-0 focus:ring-offset-0 focus-visible:none active:bg-transparent active:outline-none active:ring-0 active:ring-offset-0 active:text-ink-gray-5 font-semibold text-xl hover:opacity-70 !pr-0 !max-w-96 !justify-start"
+            class="cursor-pointer -ml-4 hover:bg-transparent focus:bg-transparent focus:outline-none focus:ring-0 focus:ring-offset-0 focus-visible:none active:bg-transparent active:outline-none active:ring-0 active:ring-offset-0 active:text-ink-gray-5 text-2xl-semibold hover:opacity-70 !pr-0 !max-w-96 !justify-start"
             @click="back"
           />
           <h2
             v-else
-            class="flex gap-2 text-xl font-semibold leading-none h-5 text-ink-gray-8"
+            class="flex gap-2 text-2xl-semibold leading-none h-5 text-ink-gray-8"
           >
             {{ title || __(doctype) }}
           </h2>

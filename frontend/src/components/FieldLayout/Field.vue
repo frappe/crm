@@ -14,7 +14,7 @@
           field.reqd ||
           (field.mandatory_depends_on && field.mandatory_via_depends_on)
         "
-        class="text-ink-red-2"
+        class="text-ink-red-5"
         >*</span
       >
     </div>
@@ -86,7 +86,7 @@
         "
       >
         {{ __(field.label) }}
-        <span v-if="field.mandatory" class="text-ink-red-3">*</span>
+        <span v-if="field.mandatory" class="text-ink-red-6">*</span>
       </label>
     </div>
     <div
@@ -321,7 +321,10 @@ import {
 } from '@/utils'
 import { flt, formatNumber, formatCurrency } from '@/utils/numberFormat.js'
 import { getMeta } from '@/stores/meta'
-import { parseLinkFilters } from '@/utils/fieldTransforms'
+import {
+  parseLinkFilters,
+  applyStateFieldOptions,
+} from '@/utils/fieldTransforms'
 import { usersStore } from '@/stores/users'
 import { useDocument } from '@/data/document'
 import {
@@ -458,6 +461,14 @@ const field = computed(() => {
   if (overrides) {
     Object.assign(field, overrides)
   }
+
+  // ── Country-driven state dropdown (e.g. India Compliance installed) ──
+  field = applyStateFieldOptions(
+    field,
+    data.value,
+    doctype,
+    window.state_options,
+  )
 
   if (field.fieldtype == 'Select' && typeof field.options === 'string') {
     field.options = field.options.split('\n').map((option) => {
