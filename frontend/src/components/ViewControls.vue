@@ -337,7 +337,6 @@ import {
 } from 'frappe-ui'
 import { computed, ref, onMounted, watch, h, markRaw } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { useDebounceFn } from '@vueuse/core'
 import { isMobileView } from '@/composables/settings'
 import Draggable from 'vuedraggable'
 import _ from 'lodash'
@@ -516,6 +515,7 @@ list.value = createResource({
   url: 'crm.api.doc.get_data',
   params: getParams(),
   cache: [props.doctype, route.query.view, route.params.viewType],
+  auto: true,
   onSuccess(data) {
     let cv = getView(route.query.view, route.params.viewType, props.doctype)
     let params = list.value.params ? list.value.params : getParams()
@@ -541,7 +541,31 @@ list.value = createResource({
   },
 })
 
+<<<<<<< HEAD
 onMounted(() => useDebounceFn(reload, 100)())
+=======
+// Refresh the list when a Domain Enrichment enrichment finishes for this
+// doctype, so newly-filled fields (logo, etc.) show without a manual reload.
+function onEnrichmentDone(data) {
+  if (data?.status !== 'completed') return
+  if (data.reference_doctype === props.doctype) reload()
+  // The Deals list logo comes from the cached organizations store
+  // (getOrganization → organization_logo), not the deal row. Refresh that store so a
+  // newly enriched org's logo appears without a hard refresh; `rows` is a
+  // computed reading the store, so it re-renders reactively.
+  if (props.doctype === 'CRM Deal') {
+    organizations.reload()
+  }
+}
+
+onMounted(() => {
+  $socket?.on('domain_enrichment_progress', onEnrichmentDone)
+})
+
+onBeforeUnmount(() => {
+  $socket?.off('domain_enrichment_progress', onEnrichmentDone)
+})
+>>>>>>> 57cd5fae (fix(list-view): refetch cached list resource on remount)
 
 const isLoading = computed(() => list.value?.loading)
 
