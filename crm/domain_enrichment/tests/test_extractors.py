@@ -419,7 +419,15 @@ class FirstParagraphTest(UnitTestCase):
 
 class AboutPageDetectionTest(UnitTestCase):
 	def test_canonical_about_slugs_match(self):
-		for path in ("/about", "/about-us", "/aboutus", "/company", "/our-story", "/en/about-us"):
+		for path in (
+			"/about",
+			"/about-us",
+			"/about_us",
+			"/aboutus",
+			"/company",
+			"/our-story",
+			"/en/about-us",
+		):
 			self.assertTrue(extractors._is_about_page(f"https://x.example{path}"), path)
 
 	def test_prefix_match_no_longer_qualifies(self):
