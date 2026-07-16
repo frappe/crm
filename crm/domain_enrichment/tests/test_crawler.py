@@ -48,6 +48,16 @@ class NormalizeUrlTest(UnitTestCase):
 		# A bare root "/" must not be stripped (path length 1).
 		self.assertEqual(normalize_url("https://x.com/"), "https://x.com/")
 
+	def test_strips_query_string(self):
+		# Query-string variants of the same page (tracking params, product-variant
+		# params) must collapse to one dedupe key -- otherwise the same page gets
+		# queued and fetched multiple times under different query strings.
+		self.assertEqual(normalize_url("https://x.com/w/book/1?ean=123"), "https://x.com/w/book/1")
+		self.assertEqual(
+			normalize_url("https://x.com/w/book/1?terms=free-shipping"), "https://x.com/w/book/1"
+		)
+		self.assertEqual(normalize_url("https://x.com/w/book/1"), "https://x.com/w/book/1")
+
 
 class RegistrableDomainTest(UnitTestCase):
 	def test_strips_www_and_port(self):
@@ -106,6 +116,15 @@ class LinkPriorityTest(UnitTestCase):
 	def test_non_priority_sorts_last(self):
 		generic = _link_priority("https://x.com/random", "", PRIORITY)
 		self.assertEqual(generic, len(PRIORITY) + 1)
+
+	def test_ancestor_segment_does_not_leak_priority_to_unrelated_leaf(self):
+		# A news article nested under "/about-us/..." must not inherit "about-us"'s
+		# priority from an ancestor path segment alone -- only the leaf segment counts.
+		news_article = _link_priority("https://x.com/about-us/corporate-news/2023/some-award", "", PRIORITY)
+		generic = _link_priority("https://x.com/blog/post", "", PRIORITY)
+		about_page = _link_priority("https://x.com/about-us", "", PRIORITY)
+		self.assertEqual(news_article, generic)
+		self.assertLess(about_page, news_article)
 
 
 class IsCrawlableTest(UnitTestCase):
@@ -328,3 +347,121 @@ class CrawlSitemapSeedingTest(UnitTestCase):
 		self.assertIn("https://acme.example/contact", urls)
 		self.assertNotIn("https://acme.example/hidden-about", urls)
 		self.assertEqual(len(results), 2)  # homepage + contact only, no crash, no phantom pages
+
+
+class RedirectDedupTest(UnitTestCase):
+	"""A redirect can land two different *requested* URLs on the same resolved page
+	(e.g. /contact.html -> /contact) -- the pre-fetch `visited` check can't catch
+	this since the requested URLs genuinely differ. crawl() must collapse the
+	duplicate after the fact and not let it consume a page-budget slot.
+	"""
+
+	def test_redirect_collapsed_duplicate_does_not_consume_budget(self):
+		homepage_html = (
+			'<html><body><a href="/contact">Contact</a>'
+			'<a href="/contact.html">Contact (alt)</a>'
+			'<a href="/team">Team</a></body></html>'
+		)
+		responses = {
+			"https://acme.example": (200, homepage_html),
+			"https://acme.example/contact": (200, "<html><body>Contact page</body></html>"),
+			"https://acme.example/contact.html": (200, "<html><body>Contact page</body></html>"),
+			"https://acme.example/team": (200, "<html><body>Team page</body></html>"),
+		}
+		# /contact.html resolves (redirects) to the same page as /contact.
+		redirects = {"https://acme.example/contact.html": "https://acme.example/contact"}
+		cfg = make_config(
+			settings={"max_pages": 10, "max_depth": 1, "use_sitemap": 0},
+			link_priority=PRIORITY,
+			skip_patterns=[],
+		)
+		with mock.patch.object(
+			crawler, "fetch", side_effect=fixtures.fake_fetch_with_redirects(responses, redirects)
+		):
+			results = crawler.crawl("https://acme.example", cfg)
+		urls = [page.url for page, _soup in results]
+		self.assertEqual(urls.count("https://acme.example/contact"), 1)
+		# The freed budget slot means /team -- otherwise starved by the wasted
+		# duplicate fetch -- still gets crawled.
+		self.assertIn("https://acme.example/team", urls)
+
+
+class OffSiteRedirectScopeTest(UnitTestCase):
+	"""A same-site link that redirects off-domain must not be treated as an
+	in-scope crawled page: fetch()'s redirect loop only re-validates SSRF safety
+	per hop, never registrable-domain scope.
+	"""
+
+	def test_offsite_redirect_marked_out_of_scope(self):
+		homepage_html = (
+			'<html><body><a href="/investor-relations">IR</a><a href="/team">Team</a></body></html>'
+		)
+		responses = {
+			"https://jpm-test.com": (200, homepage_html),
+			"https://jpm-test.com/investor-relations": (200, "<html><body>redirected content</body></html>"),
+			"https://jpm-test.com/team": (200, "<html><body>Team page</body></html>"),
+		}
+		redirects = {
+			"https://jpm-test.com/investor-relations": "https://reports.jpmchase-test.com/ir/2022.htm"
+		}
+		cfg = make_config(
+			settings={"max_pages": 10, "max_depth": 1, "use_sitemap": 0},
+			link_priority=PRIORITY,
+			skip_patterns=[],
+		)
+		with mock.patch.object(
+			crawler, "fetch", side_effect=fixtures.fake_fetch_with_redirects(responses, redirects)
+		):
+			results = crawler.crawl("https://jpm-test.com", cfg)
+		offsite = next(
+			page for page, _soup in results if page.url == "https://reports.jpmchase-test.com/ir/2022.htm"
+		)
+		self.assertTrue(offsite.error)
+		self.assertEqual(offsite.html, "")
+		self.assertEqual(offsite.text, "")
+
+	def test_offsite_redirect_clears_title_and_headings(self):
+		# title/headings are parsed by crawl_page() before the off-site check runs,
+		# so clearing html/text/soup alone isn't enough -- extractors that read
+		# title/headings straight off the CrawledPage (e.g. classify_industry's
+		# About-page lookup) would otherwise still see off-site content.
+		homepage_html = '<html><body><a href="/about">About</a></body></html>'
+		responses = {
+			"https://jpm-test.com": (200, homepage_html),
+			"https://jpm-test.com/about": (
+				200,
+				"<html><head><title>Global Widget Manufacturing Co</title></head>"
+				"<body><h1>Leading widget manufacturer since 1900</h1></body></html>",
+			),
+		}
+		redirects = {"https://jpm-test.com/about": "https://widgetco-test.com/about"}
+		cfg = make_config(
+			settings={"max_pages": 10, "max_depth": 1, "use_sitemap": 0},
+			link_priority=PRIORITY,
+			skip_patterns=[],
+		)
+		with mock.patch.object(
+			crawler, "fetch", side_effect=fixtures.fake_fetch_with_redirects(responses, redirects)
+		):
+			results = crawler.crawl("https://jpm-test.com", cfg)
+		offsite = next(page for page, _soup in results if page.url == "https://widgetco-test.com/about")
+		self.assertTrue(offsite.error)
+		self.assertEqual(offsite.title, "")
+		self.assertEqual(offsite.headings, [])
+
+	def test_homepage_redirect_is_still_adopted_not_flagged(self):
+		# The existing "homepage moved to a new host" behavior must be unaffected --
+		# only NON-homepage pages get the off-site-scope check.
+		responses = {"https://old-home-test.com": (200, "<html><body>hi</body></html>")}
+		redirects = {"https://old-home-test.com": "https://new-home-test.com"}
+		cfg = make_config(
+			settings={"max_pages": 1, "max_depth": 0, "use_sitemap": 0},
+			link_priority=PRIORITY,
+			skip_patterns=[],
+		)
+		with mock.patch.object(
+			crawler, "fetch", side_effect=fixtures.fake_fetch_with_redirects(responses, redirects)
+		):
+			results = crawler.crawl("https://old-home-test.com", cfg)
+		self.assertEqual(results[0][0].url, "https://new-home-test.com")
+		self.assertFalse(results[0][0].error)

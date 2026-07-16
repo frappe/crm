@@ -172,6 +172,20 @@ def fake_fetch(responses):
 	return fake
 
 
+def fake_fetch_with_redirects(responses, redirects):
+	"""Like ``fake_fetch``, but ``redirects`` maps a requested URL to the resolved
+	(post-redirect) URL returned as ``final_url`` -- simulates a 301/302 hop without
+	modeling the actual redirect chain, since callers only ever look at the result.
+	"""
+	base = fake_fetch(responses)
+
+	def fake(url, cfg, session=None, html_only=True):
+		status, body, error, final_url = base(url, cfg, session=session, html_only=html_only)
+		return status, body, error, redirects.get(url, final_url)
+
+	return fake
+
+
 # --------------------------------------------------------------------------- #
 # Page helper
 # --------------------------------------------------------------------------- #
