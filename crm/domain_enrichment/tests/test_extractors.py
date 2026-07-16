@@ -381,6 +381,41 @@ class FirstParagraphTest(UnitTestCase):
 			extractors.first_paragraph(soup, industry_rules=None).startswith("Putting our long-tenured")
 		)
 
+	def test_company_name_breaks_tie_between_equal_keyword_hits(self):
+		# Both paragraphs mention "banking" exactly once (tied on industry hits) --
+		# only the one that also names the company should win.
+		finance_rules = [fixtures.keyword_rule("Industry", ["banking"], industry="Finance")]
+		html = (
+			"<html><body><main>"
+			"<p>Our roots trace back decades of steady growth in commercial banking "
+			"and long-term client relationships across every region we serve.</p>"
+			"<p>Acme Bank has led the market in retail banking with award-winning "
+			"service for individuals, families and small businesses nationwide.</p>"
+			"</main></body></html>"
+		)
+		_page, soup = fixtures.make_page("https://acmebank.example", html)
+		result = extractors.first_paragraph(soup, industry_rules=finance_rules, company_name="Acme Bank")
+		self.assertTrue(result.startswith("Acme Bank has led the market"))
+
+	def test_company_name_mentions_cannot_outrank_more_industry_hits(self):
+		# The first paragraph scores 2 industry hits and never names the company; the
+		# second scores only 1 industry hit despite repeating the company name three
+		# times. Industry hits must still decide -- company name is tiebreak-only.
+		finance_rules = [
+			fixtures.keyword_rule("Industry", ["financial institution", "banking"], industry="Finance")
+		]
+		html = (
+			"<html><body><main>"
+			"<p>A full-service financial institution built on decades of trusted "
+			"commercial and retail banking relationships across every market.</p>"
+			"<p>Acme Bank, Acme Bank, Acme Bank -- proud to serve local businesses "
+			"with award-winning retail banking and community-first values.</p>"
+			"</main></body></html>"
+		)
+		_page, soup = fixtures.make_page("https://acmebank.example", html)
+		result = extractors.first_paragraph(soup, industry_rules=finance_rules, company_name="Acme Bank")
+		self.assertTrue(result.startswith("A full-service financial institution"))
+
 
 class AboutPageDetectionTest(UnitTestCase):
 	def test_canonical_about_slugs_match(self):
