@@ -1,14 +1,14 @@
 <template>
   <div class="flex h-full flex-col text-ink-gray-8">
     <!-- header -->
-    <div class="flex items-center justify-between border-b px-6 py-3">
+    <div class="flex items-center justify-between px-6 pt-8 pb-4">
       <div class="flex items-center gap-2">
         <Button
           variant="ghost"
           icon-left="lucide-chevron-left"
           :label="form.title || __('Untitled')"
           size="md"
-          class="-ml-4 cursor-pointer !max-w-96 !justify-start !pr-0 text-2xl-semibold no-underline hover:bg-transparent hover:no-underline hover:opacity-70 focus:bg-transparent focus:outline-none focus:ring-0"
+          class="-ml-4 cursor-pointer !max-w-96 !justify-start !pr-0 text-lg-semibold text-ink-gray-7 no-underline hover:bg-transparent hover:no-underline hover:opacity-70 focus:bg-transparent focus:outline-none focus:ring-0"
           @click="goBack"
         />
         <Badge
@@ -49,7 +49,7 @@
 
     <div v-if="loaded" class="flex-1 overflow-y-auto px-6 pb-6">
       <!-- EDIT MODE -->
-      <div v-if="mode === 'edit'" class="wf-tabs mx-auto max-w-2xl">
+      <div v-if="mode === 'edit'" class="wf-tabs">
         <Tabs v-model="tabIndex" as="div" :tabs="tabs">
           <template #tab-panel="{ tab }">
             <!-- EDITOR TAB -->
@@ -329,7 +329,7 @@
                     v-model="form.success_message"
                     type="textarea"
                     :label="__('Success message')"
-                    :rows="2"
+                    :rows="4"
                     :placeholder="__('Shown after a successful submission')"
                     @input="markDirty"
                   />
@@ -496,7 +496,7 @@
       </div>
 
       <!-- PREVIEW MODE -->
-      <div v-else class="mx-auto max-w-2xl pt-6">
+      <div v-else class="max-w-2xl pt-6">
         <div class="rounded-xl border bg-surface-white p-7">
           <!-- simulated success screen -->
           <div
@@ -515,10 +515,11 @@
           </div>
 
           <template v-else>
-            <div class="text-lg font-semibold text-ink-gray-9">
+            <!-- mirror the public page (crm_form.html): 20px title, ~14px gap -->
+            <div class="text-xl font-semibold text-ink-gray-9">
               {{ form.title || __('Form title') }}
             </div>
-            <div v-if="form.description" class="mt-1 text-sm text-ink-gray-6">
+            <div v-if="form.description" class="mt-3.5 text-sm text-ink-gray-6">
               {{ form.description }}
             </div>
             <div class="mt-5 flex flex-col gap-5">
@@ -647,7 +648,7 @@ import LucideLayoutList from '~icons/lucide/layout-list'
 import LucideSettings from '~icons/lucide/settings'
 import { globalStore } from '@/stores/global'
 import { copyToClipboard } from '@/utils'
-import { ref, reactive, computed, nextTick } from 'vue'
+import { ref, reactive, computed, watch, onMounted } from 'vue'
 
 const { $dialog } = globalStore()
 
@@ -869,6 +870,16 @@ const form = reactive({
   published: 0,
   fields: [],
 })
+
+// Keep the description box sized to its text. flush:'post' runs after the DOM
+// settles, so it fires whenever the textarea actually mounts (initial load, or
+// re-entering Edit — it lives inside a lazily-rendered Tabs panel) or its content
+// changes — no more 1-row box scrolled to the last line.
+watch([descInput, () => form.description], () => autoGrow(descInput.value), {
+  flush: 'post',
+})
+// re-measure once web fonts load: scrollHeight with the fallback font wraps wrong
+onMounted(() => document.fonts?.ready?.then(() => autoGrow(descInput.value)))
 
 const publicUrl = computed(
   () => `${window.location.origin}/crm-form/${form.route}`,
@@ -1151,7 +1162,6 @@ createResource({
     routeEdited.value = !/^untitled-form(-\d+)?$/.test(form.route)
     loaded.value = true
     availableFields.reload()
-    nextTick(() => autoGrow(descInput.value))
   },
 })
 
