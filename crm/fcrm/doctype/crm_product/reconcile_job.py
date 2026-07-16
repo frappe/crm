@@ -19,7 +19,8 @@ def enqueue_reconciliation():
 
 
 def run_reconciliation() -> dict:
-	skip_reason = _get_skip_reason()
+	settings = frappe.get_single("ERPNext CRM Settings")
+	skip_reason = _get_skip_reason(settings)
 	if skip_reason:
 		return {"skipped": skip_reason}
 
@@ -28,7 +29,6 @@ def run_reconciliation() -> dict:
 	products = _get_products_by_code()
 	_sync_items_to_products(items, products, summary)
 
-	settings = frappe.get_single("ERPNext CRM Settings")
 	issues = _sync_products_to_items(products, set(items.keys()), summary, settings)
 	_record_issues(settings, issues)
 	_sync_framework_mirrors()
@@ -82,11 +82,9 @@ def _unlink_orphan(product, existing_item_codes, issues):
 	return True
 
 
-def _get_skip_reason():
+def _get_skip_reason(settings):
 	if not frappe.db.exists("DocType", "Item"):
 		return "erpnext_not_installed"
-
-	settings = frappe.get_single("ERPNext CRM Settings")
 	if not settings.enabled:
 		return "integration_disabled"
 	if settings.is_erpnext_in_different_site:
