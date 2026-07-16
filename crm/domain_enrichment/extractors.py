@@ -350,8 +350,10 @@ _ORG_TYPES = {
 	"softwareapplication",
 }
 
+# Full-segment match, not a prefix: "about-our-reporting" (an ESG page) must not
+# qualify just because it starts with "about-".
 _ABOUT_SEGMENT_RE = re.compile(
-	r"^(about|about-us|aboutus|company|who-we-are|our-story|overview|mission)([-_]|$)",
+	r"^(about|about-us|aboutus|company|who-we-are|our-story|overview|mission)$",
 	re.I,
 )
 _NON_ABOUT_WORDS = (
@@ -440,32 +442,57 @@ def extract_company_info(homepage, soup):
 # hunting for a body paragraph.
 _NON_CONTENT_PARENTS = {"nav", "header", "footer", "aside", "form"}
 _MIN_PARAGRAPH_LEN = 80
+# How many qualifying paragraphs to score before picking a winner -- bounded so a
+# very long page doesn't turn this into a full scan.
+_MAX_PARAGRAPHS_SCANNED = 6
 
 
-def first_paragraph(soup):
-	"""First substantial body paragraph on a page (mechanics).
+def first_paragraph(soup, industry_rules=None):
+	"""Best substantial body paragraph on a page (mechanics).
 
-	Returns the cleaned text of the first ``<p>`` that holds sentence-like copy and is
-	not inside nav/header/footer/aside/form chrome, or ``""`` if none qualifies. Used
-	as a description fallback when a site exposes no description metadata. Read-only --
-	does not mutate ``soup``.
+	Scans up to ``_MAX_PARAGRAPHS_SCANNED`` qualifying ``<p>`` tags (sentence-like
+	copy, not inside nav/header/footer/aside/form chrome) and picks the one with the
+	most Industry-rule keyword hits -- the same keyword corpus ``classify_industry``
+	uses. A paragraph naming actual business/product terms ("chemicals", "adhesives")
+	is far more likely to be a genuine description than generic marketing filler
+	("customer-centric... quality and innovation..."), which typically scores zero.
+	Falls back to the first qualifying paragraph when no candidate has any keyword
+	hit, or when ``industry_rules`` is empty -- strictly backward compatible with the
+	old "just take the first one" behavior. Used as a description fallback when a
+	site exposes no description metadata. Read-only -- does not mutate ``soup``.
 	"""
+	candidates = []
 	for p in soup.find_all("p"):
 		if any(parent.name in _NON_CONTENT_PARENTS for parent in p.parents):
 			continue
 		text = " ".join((p.get_text(" ") or "").split())
-		if len(text) >= _MIN_PARAGRAPH_LEN and " " in text:
-			return text
-	return ""
+		if len(text) < _MIN_PARAGRAPH_LEN or " " not in text:
+			continue
+		candidates.append(text)
+		if len(candidates) >= _MAX_PARAGRAPHS_SCANNED:
+			break
+
+	if not candidates:
+		return ""
+	if not industry_rules:
+		return candidates[0]
+
+	# max() returns the first-encountered element on ties, so a paragraph earlier
+	# in document order still wins when nothing scores higher -- including the
+	# "every candidate has zero keyword hits" case, which naturally falls back to
+	# candidates[0] without needing to special-case it.
+	return max(candidates, key=lambda text: sum(rule.matches(text) for rule in industry_rules))
 
 
-def select_description(pages, soups_by_url):
+def select_description(pages, soups_by_url, industry_rules=None):
 	"""Pick the best *company* description across crawled pages (mechanics).
 
 	Priority (highest first): JSON-LD ``Organization.description`` → About-page body
 	paragraph → head ``og:description``/``<meta description>`` → home-page body
 	paragraph (last resort). The body-paragraph fallbacks let descriptions be derived
-	even when a site exposes no description metadata at all.
+	even when a site exposes no description metadata at all. ``industry_rules``, when
+	given, steers the body-paragraph fallbacks toward the most keyword-dense candidate
+	(see ``first_paragraph``).
 	"""
 	home_url = pages[0].url if pages else ""
 	best_key = None
@@ -495,7 +522,7 @@ def select_description(pages, soups_by_url):
 
 		# About-page body paragraph outranks head meta.
 		if is_about:
-			consider(Field(first_paragraph(soup), page.url, Method.BODY_TEXT), 5)
+			consider(Field(first_paragraph(soup, industry_rules), page.url, Method.BODY_TEXT), 5)
 
 		# Head description on the home or About page.
 		if is_home or is_about:
@@ -507,7 +534,7 @@ def select_description(pages, soups_by_url):
 
 		# Home-page body paragraph -- last resort.
 		if is_home:
-			consider(Field(first_paragraph(soup), page.url, Method.BODY_TEXT), 1)
+			consider(Field(first_paragraph(soup, industry_rules), page.url, Method.BODY_TEXT), 1)
 
 	return best_field or Field()
 
@@ -535,7 +562,15 @@ def extract_emails(pages):
 	return list(found.values())
 
 
+# TODO: Need to make this robust by adding proper mechanics or using a
+# thirdparty library like google/libphonenumbers
 def _valid_phone(raw):
+	# Require an explicit country-code prefix ("+..."). A number written without
+	# one is either a local/ambiguous format we can't verify, or noise (reference
+	# numbers, stats) that happens to fall in a phone-shaped digit range -- only
+	# accept numbers a page author clearly intended as international.
+	if not raw.strip().startswith("+"):
+		return False
 	digits = re.sub(r"\D", "", raw)
 	return 7 <= len(digits) <= 15
 
@@ -605,12 +640,18 @@ def extract_social_profiles(pages, soups_by_url, social_rules, extra_links=None)
 # Industry classification (config-driven via Industry rules)
 # --------------------------------------------------------------------------- #
 def classify_industry(pages, company_info, industry_rules):
-	"""Rule-based industry from the homepage's headline corpus only.
+	"""Rule-based industry from the homepage's (and, when crawled, the About page's)
+	headline corpus.
 
 	Builds a per-scope text map and runs ``apply_keyword_rules`` over Industry
 	rules. Industry rules are seeded with ``match_scope='Headline'`` so they match
 	the company name + description + homepage title/headings, never body/footer.
-	Returns (industry, confidence 0-1), or ("", 0.0) when the signal is too weak.
+	The homepage alone is frequently thin on plain descriptive language (stylized
+	brand copy, no meta description) -- when a genuine About page was crawled
+	(``_is_about_page``, already vetted for description selection), its title and
+	headings are folded in too, since that page far more often states what the
+	company actually does. Returns (industry, confidence 0-1), or ("", 0.0) when
+	the signal is too weak.
 	"""
 	if not industry_rules:
 		return "", 0.0
@@ -624,6 +665,10 @@ def classify_industry(pages, company_info, industry_rules):
 		home = pages[0]
 		headline_parts.append(home.title or "")
 		headline_parts.append(" ".join(home.headings))
+		about = next((p for p in pages[1:] if _is_about_page(p.url)), None)
+		if about:
+			headline_parts.append(about.title or "")
+			headline_parts.append(" ".join(about.headings))
 	headline = " ".join(p for p in headline_parts if p).lower()
 
 	# Provide the same corpus under common scopes so admins can re-scope rules
