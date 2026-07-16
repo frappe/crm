@@ -196,6 +196,11 @@ const tabs = computed(() => {
           icon: markRaw(h(ShieldCheck)),
           component: markRaw(SlaConfig),
         },
+        {
+          label: __('Forms'),
+          component: markRaw(FormsSettings),
+          icon: markRaw(LucideTextCursorInput),
+        },
       ],
       condition: () => isManager(),
     },
@@ -206,11 +211,6 @@ const tabs = computed(() => {
           label: __('Home Actions'),
           component: markRaw(HomeActions),
           icon: 'house',
-        },
-        {
-          label: __('Forms'),
-          component: markRaw(FormsSettings),
-          icon: markRaw(LucideTextCursorInput),
         },
       ],
       condition: () => isManager(),
