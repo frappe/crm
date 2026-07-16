@@ -27,8 +27,8 @@ NEW_LAYOUT = [
 		"name": "location_section",
 		"hideBorder": True,
 		"columns": [
-			{"name": "column_TCoZ", "fields": ["city", "state"]},
-			{"name": "column_PqrK", "fields": ["country", "pincode"]},
+			{"name": "column_TCoZ", "fields": ["country", "city"]},
+			{"name": "column_PqrK", "fields": ["state", "pincode"]},
 		],
 	},
 ]
