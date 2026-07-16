@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2026-07-05 10:18+0000\n"
-"PO-Revision-Date: 2026-07-10 10:14\n"
+"POT-Creation-Date: 2026-07-12 10:53+0000\n"
+"PO-Revision-Date: 2026-07-16 11:02\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Swedish\n"
 "MIME-Version: 1.0\n"
@@ -22,7 +22,7 @@ msgstr ""
 msgid " (New)"
 msgstr " (Ny)"
 
-#: frontend/src/components/Filter.vue:587
+#: frontend/src/components/Filter.vue:591
 msgid "%John%"
 msgstr "%John%"
 
@@ -30,7 +30,7 @@ msgstr "%John%"
 msgid "(No Title)"
 msgstr "(Ingen Benämning)"
 
-#: frontend/src/components/Filter.vue:577
+#: frontend/src/components/Filter.vue:581
 msgid "01/01/2022 to 01/31/2022"
 msgstr "2022-01-01-2022 till 2022-01-31"
 
@@ -3037,7 +3037,7 @@ msgstr "Ange Källans Namn"
 msgid "Enter Twilio Number"
 msgstr "Ange Twilio Nummer"
 
-#: frontend/src/components/Filter.vue:605
+#: frontend/src/components/Filter.vue:609
 msgid "Enter Value"
 msgstr "Ange Värde"
 
@@ -3049,7 +3049,7 @@ msgstr "Ange Facebook Åtkomst Token"
 msgid "Enter your personal mobile number used by Exotel to make calls"
 msgstr "Ange ditt personliga mobilnummer som används av Exotel för att ringa samtal"
 
-#: frontend/src/components/FieldLayout/Field.vue:565
+#: frontend/src/components/FieldLayout/Field.vue:576
 msgid "Enter {0}"
 msgstr "Ange {0}"
 
@@ -4212,14 +4212,14 @@ msgid "Job Title"
 msgstr "Jobb Benämning"
 
 #: frontend/src/components/AssignToBody.vue:10
-#: frontend/src/components/Filter.vue:603
+#: frontend/src/components/Filter.vue:607
 #: frontend/src/components/Modals/AssignmentModal.vue:13
 #: frontend/src/components/Telephony/TaskPanel.vue:46
 #: frontend/src/pages/Calendar.vue:113
 msgid "John Doe"
 msgstr "John Doe"
 
-#: frontend/src/components/Filter.vue:582
+#: frontend/src/components/Filter.vue:586
 msgid "John, Jane, Doe"
 msgstr "John, Jane, Doe"
 
@@ -4298,7 +4298,7 @@ msgstr "Sista"
 msgid "Last 30 Days"
 msgstr "Senaste 30 Dagar"
 
-#: frontend/src/components/Filter.vue:661
+#: frontend/src/components/Filter.vue:665
 msgid "Last 6 Months"
 msgstr "Senaste 6 Månader"
 
@@ -4322,7 +4322,7 @@ msgstr "Senaste 90 Dagar"
 msgid "Last Modified"
 msgstr "Senast Ändrad"
 
-#: frontend/src/components/Filter.vue:653
+#: frontend/src/components/Filter.vue:657
 msgid "Last Month"
 msgstr "Förra Månad"
 
@@ -4331,7 +4331,7 @@ msgstr "Förra Månad"
 msgid "Last Name"
 msgstr "Efternamn"
 
-#: frontend/src/components/Filter.vue:657
+#: frontend/src/components/Filter.vue:661
 msgid "Last Quarter"
 msgstr "Förra Kvartal"
 
@@ -4361,12 +4361,12 @@ msgstr "Senaste Statusändring Logg"
 msgid "Last Synced At"
 msgstr "Senast Synkroniserad"
 
-#: frontend/src/components/Filter.vue:591
-#: frontend/src/components/Filter.vue:649
+#: frontend/src/components/Filter.vue:595
+#: frontend/src/components/Filter.vue:653
 msgid "Last Week"
 msgstr "Förra Vecka"
 
-#: frontend/src/components/Filter.vue:665
+#: frontend/src/components/Filter.vue:669
 msgid "Last Year"
 msgstr "Förra Året"
 
@@ -5089,15 +5089,15 @@ msgstr "Ny {0}"
 msgid "Newest First"
 msgstr "Nyast Först"
 
-#: frontend/src/components/Filter.vue:709
+#: frontend/src/components/Filter.vue:713
 msgid "Next 6 Months"
 msgstr "Nästa 6 Månader"
 
-#: frontend/src/components/Filter.vue:701
+#: frontend/src/components/Filter.vue:705
 msgid "Next Month"
 msgstr "Nästa Månad"
 
-#: frontend/src/components/Filter.vue:705
+#: frontend/src/components/Filter.vue:709
 msgid "Next Quarter"
 msgstr "Nästa Kvartal"
 
@@ -5106,11 +5106,11 @@ msgstr "Nästa Kvartal"
 msgid "Next Step"
 msgstr "Nästa Steg"
 
-#: frontend/src/components/Filter.vue:697
+#: frontend/src/components/Filter.vue:701
 msgid "Next Week"
 msgstr "Nästa Vecka"
 
-#: frontend/src/components/Filter.vue:713
+#: frontend/src/components/Filter.vue:717
 msgid "Next Year"
 msgstr "Nästa År"
 
@@ -6782,7 +6782,7 @@ msgstr "Välj Arbetsdag"
 msgid "Select a Twilio App for your CRM"
 msgstr "Välj Twilio app för Säljstöd"
 
-#: frontend/src/components/Filter.vue:599
+#: frontend/src/components/Filter.vue:603
 msgid "Select a Value"
 msgstr "Välj Värde"
 
@@ -6790,7 +6790,7 @@ msgstr "Välj Värde"
 msgid "Select all that apply"
 msgstr "Välj allt som stämmer"
 
-#: frontend/src/components/Filter.vue:601
+#: frontend/src/components/Filter.vue:605
 msgid "Select an Option"
 msgstr "Välj Alternativ"
 
@@ -6814,7 +6814,7 @@ msgstr "Välj om tiden ska visas med eller utan sekunder"
 msgid "Select your ERPNext company to connect with"
 msgstr "Välj Affärssystem bolag att ansluta till"
 
-#: frontend/src/components/FieldLayout/Field.vue:563
+#: frontend/src/components/FieldLayout/Field.vue:574
 msgid "Select {0}"
 msgstr "Välj {0}"
 
@@ -6869,7 +6869,7 @@ msgstr "Service Nivå Avtal"
 msgid "Service Provider"
 msgstr "Service Leverantör"
 
-#: frontend/src/components/Filter.vue:589
+#: frontend/src/components/Filter.vue:593
 msgid "Set"
 msgstr "Ange"
 
@@ -7511,19 +7511,19 @@ msgstr "Tema"
 msgid "There can only be one default priority in Priorities table"
 msgstr "Det kan bara finnas en standard prioritet i Prioriteter tabellen "
 
-#: frontend/src/components/Filter.vue:685
+#: frontend/src/components/Filter.vue:689
 msgid "This Month"
 msgstr "Denna Månad"
 
-#: frontend/src/components/Filter.vue:689
+#: frontend/src/components/Filter.vue:693
 msgid "This Quarter"
 msgstr "Detta Kvartal"
 
-#: frontend/src/components/Filter.vue:681
+#: frontend/src/components/Filter.vue:685
 msgid "This Week"
 msgstr "Denna Vecka"
 
-#: frontend/src/components/Filter.vue:693
+#: frontend/src/components/Filter.vue:697
 msgid "This Year"
 msgstr "I År"
 
@@ -7667,7 +7667,7 @@ msgstr "Till Användare"
 msgid "To know more about setting up email accounts, click"
 msgstr "För att veta mer om hur du konfigurerar e-post konton, klicka här"
 
-#: frontend/src/components/Filter.vue:673 frontend/src/pages/Calendar.vue:85
+#: frontend/src/components/Filter.vue:677 frontend/src/pages/Calendar.vue:85
 msgid "Today"
 msgstr "Idag"
 
@@ -7680,7 +7680,7 @@ msgstr "Att Göra"
 msgid "Toggle on for Preview"
 msgstr "Aktivera för Förhandsvisning"
 
-#: frontend/src/components/Filter.vue:677
+#: frontend/src/components/Filter.vue:681
 msgid "Tomorrow"
 msgstr "I morgon"
 
@@ -8247,11 +8247,11 @@ msgid "Working Hours"
 msgstr "Arbets Timmar"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:531
-#: frontend/src/components/Filter.vue:597
+#: frontend/src/components/Filter.vue:601
 msgid "Yes"
 msgstr "Ja"
 
-#: frontend/src/components/Filter.vue:669
+#: frontend/src/components/Filter.vue:673
 msgid "Yesterday"
 msgstr "Igår"
 
