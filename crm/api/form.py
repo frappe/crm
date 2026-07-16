@@ -15,6 +15,7 @@ import json
 
 import frappe
 from frappe import _
+from frappe.utils.telemetry import capture
 
 ALLOWED_DOCTYPES = ("CRM Lead", "CRM Deal")
 FORM_SOURCE = "Web Form"
@@ -442,6 +443,12 @@ def enrich_form_submission(doc):
 	# stamp the source so form records are identifiable/filterable
 	if doc.meta.has_field("source") and not doc.get("source"):
 		doc.source = ensure_form_source()
+
+	capture(
+		"web_form_submitted",
+		"crm",
+		properties={"doctype": doc.doctype, "form": frappe.form_dict.get("web_form")},
+	)
 
 	if doc.doctype != "CRM Deal":
 		return
