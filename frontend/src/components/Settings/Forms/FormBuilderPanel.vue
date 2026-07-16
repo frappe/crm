@@ -675,6 +675,8 @@ const docLabel = (dt) => targetOptions.find((o) => o.value === dt)?.label || dt
 const loaded = ref(false)
 const saving = ref(false)
 const dirty = ref(false)
+
+const savedPublished = ref(false)
 const mode = ref('edit') // edit | preview
 const tabIndex = ref(0)
 const tabs = [
@@ -1137,6 +1139,7 @@ createResource({
     form.redirect_url = doc.redirect_url || ''
     form.allowed_embedding_domains = doc.allowed_embedding_domains || ''
     form.published = doc.published || 0
+    savedPublished.value = !!form.published
     form.fields = (doc.fields || []).map((f) => ({
       name: f.name,
       fieldname: f.fieldname,
@@ -1374,6 +1377,10 @@ async function save({ silent = false } = {}) {
     ;(doc.fields || []).forEach((df, i) => {
       if (form.fields[i]) form.fields[i].name = df.name
     })
+    if (form.published && !savedPublished.value) {
+      capture('form_published', { source: 'builder' })
+    }
+    savedPublished.value = !!form.published
     dirty.value = false
     emit('saved')
     return true
@@ -1391,7 +1398,6 @@ async function save({ silent = false } = {}) {
 // publish guard (every hidden field needs a default) is enforced
 function togglePublish() {
   form.published = form.published ? 0 : 1
-  if (form.published) capture('form_published', { source: 'builder' })
   markDirty()
 }
 </script>
