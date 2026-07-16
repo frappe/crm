@@ -227,6 +227,10 @@
                   <Switch
                     v-model="erpnextCRMSettingsResource.doc.sync_products"
                     size="sm"
+                    @update:modelValue="
+                      (v) =>
+                        capture('erpnext_product_sync_toggled', { enabled: v })
+                    "
                   />
                 </div>
               </div>
@@ -472,8 +476,10 @@ import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import Link from '../Controls/Link.vue'
 import { globalStore } from '@/stores/global'
 import { formatDate } from '@/utils'
+import { useTelemetry } from 'frappe-ui/frappe'
 
 const { $dialog, $socket } = globalStore()
+const { capture } = useTelemetry()
 
 const erpnextCRMSettingsResource = createDocumentResource({
   doctype: 'ERPNext CRM Settings',
@@ -642,6 +648,9 @@ const saveSettings = async () => {
     },
     {
       onSuccess: async () => {
+        if (erpnextCRMSettingsResource.doc.enabled) {
+          capture('erpnext_integration_enabled')
+        }
         if (!erpnextCRMSettingsResource.isERPNextInstalled.data) {
           await erpnextCRMSettingsResource.getExternalCompanies.submit()
         }
@@ -676,6 +685,7 @@ const toggleEnable = (value) => {
 }
 
 async function runProductSync() {
+  capture('erpnext_sync_now_clicked')
   if (
     erpnextCRMSettingsResource.originalDoc?.sync_products !==
     erpnextCRMSettingsResource.doc.sync_products
