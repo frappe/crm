@@ -447,7 +447,15 @@ _MIN_PARAGRAPH_LEN = 80
 _MAX_PARAGRAPHS_SCANNED = 6
 
 
-def first_paragraph(soup, industry_rules=None):
+def _company_name_hits(text, company_name):
+	"""Count case-insensitive, whole-word mentions of ``company_name`` in ``text``."""
+	name = (company_name or "").strip()
+	if not name:
+		return 0
+	return len(re.findall(rf"\b{re.escape(name)}\b", text, re.IGNORECASE))
+
+
+def first_paragraph(soup, industry_rules=None, company_name=""):
 	"""Best substantial body paragraph on a page (mechanics).
 
 	Scans up to ``_MAX_PARAGRAPHS_SCANNED`` qualifying ``<p>`` tags (sentence-like
@@ -456,6 +464,9 @@ def first_paragraph(soup, industry_rules=None):
 	uses. A paragraph naming actual business/product terms ("chemicals", "adhesives")
 	is far more likely to be a genuine description than generic marketing filler
 	("customer-centric... quality and innovation..."), which typically scores zero.
+	Mentions of ``company_name`` only break ties between paragraphs already tied on
+	keyword hits -- narrows down options further without letting a paragraph that
+	just happens to repeat the company name outrank one with real industry signal.
 	Falls back to the first qualifying paragraph when no candidate has any keyword
 	hit, or when ``industry_rules`` is empty -- strictly backward compatible with the
 	old "just take the first one" behavior. Used as a description fallback when a
@@ -480,19 +491,27 @@ def first_paragraph(soup, industry_rules=None):
 	# max() returns the first-encountered element on ties, so a paragraph earlier
 	# in document order still wins when nothing scores higher -- including the
 	# "every candidate has zero keyword hits" case, which naturally falls back to
-	# candidates[0] without needing to special-case it.
-	return max(candidates, key=lambda text: sum(rule.matches(text) for rule in industry_rules))
+	# candidates[0] without needing to special-case it. Company-name hits are a
+	# second tuple element, not added into the same number, so they can only ever
+	# decide between paragraphs already tied on industry hits.
+	return max(
+		candidates,
+		key=lambda text: (
+			sum(rule.matches(text) for rule in industry_rules),
+			_company_name_hits(text, company_name),
+		),
+	)
 
 
-def select_description(pages, soups_by_url, industry_rules=None):
+def select_description(pages, soups_by_url, industry_rules=None, company_name=""):
 	"""Pick the best *company* description across crawled pages (mechanics).
 
 	Priority (highest first): JSON-LD ``Organization.description`` → About-page body
 	paragraph → head ``og:description``/``<meta description>`` → home-page body
 	paragraph (last resort). The body-paragraph fallbacks let descriptions be derived
-	even when a site exposes no description metadata at all. ``industry_rules``, when
-	given, steers the body-paragraph fallbacks toward the most keyword-dense candidate
-	(see ``first_paragraph``).
+	even when a site exposes no description metadata at all. ``industry_rules`` and
+	``company_name``, when given, steer the body-paragraph fallbacks toward the most
+	keyword-dense candidate (see ``first_paragraph``).
 	"""
 	home_url = pages[0].url if pages else ""
 	best_key = None
@@ -522,7 +541,9 @@ def select_description(pages, soups_by_url, industry_rules=None):
 
 		# About-page body paragraph outranks head meta.
 		if is_about:
-			consider(Field(first_paragraph(soup, industry_rules), page.url, Method.BODY_TEXT), 5)
+			consider(
+				Field(first_paragraph(soup, industry_rules, company_name), page.url, Method.BODY_TEXT), 5
+			)
 
 		# Head description on the home or About page.
 		if is_home or is_about:
@@ -534,7 +555,9 @@ def select_description(pages, soups_by_url, industry_rules=None):
 
 		# Home-page body paragraph -- last resort.
 		if is_home:
-			consider(Field(first_paragraph(soup, industry_rules), page.url, Method.BODY_TEXT), 1)
+			consider(
+				Field(first_paragraph(soup, industry_rules, company_name), page.url, Method.BODY_TEXT), 1
+			)
 
 	return best_field or Field()
 
