@@ -56,13 +56,28 @@ describe('applyStateFieldOptions', () => {
     expect(result).toBe(stateField)
   })
 
-  it('leaves the field unchanged when there is no country', () => {
-    expect(
-      applyStateFieldOptions(stateField, {}, 'Address', stateOptions),
-    ).toBe(stateField)
-    expect(
-      applyStateFieldOptions(stateField, null, 'Address', stateOptions),
-    ).toBe(stateField)
+  it('hints to pick a country first when regional state data exists but no country is set', () => {
+    const withEmptyDoc = applyStateFieldOptions(
+      stateField,
+      {},
+      'Address',
+      stateOptions,
+    )
+    expect(withEmptyDoc.fieldtype).toBe('Data')
+    expect(withEmptyDoc.placeholder).toBe('Select Country to see state options')
+
+    const withNullDoc = applyStateFieldOptions(
+      stateField,
+      null,
+      'Address',
+      stateOptions,
+    )
+    expect(withNullDoc.placeholder).toBe('Select Country to see state options')
+  })
+
+  it('does not mutate the input field when adding the country hint', () => {
+    applyStateFieldOptions(stateField, {}, 'Address', stateOptions)
+    expect(stateField.placeholder).toBeUndefined()
   })
 
   it('leaves the field unchanged when no options map is provided (app absent)', () => {
