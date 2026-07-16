@@ -468,7 +468,7 @@ import {
   Tooltip,
 } from 'frappe-ui'
 import SettingsLayoutBase from '@/components/Layouts/SettingsLayoutBase.vue'
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import Link from '../Controls/Link.vue'
 import { globalStore } from '@/stores/global'
 import { formatDate } from '@/utils'
@@ -831,6 +831,17 @@ onMounted(async () => {
   if (
     erpnextCRMSettingsResource.isERPNextInstalled.data &&
     erpnextCRMSettingsResource.doc.enabled
+  ) {
+    productSyncStatus.submit()
+  }
+})
+
+// Fetch logs lazily when the tab is opened (e.g. after enabling in the same session)
+watch(activeSettingsTab, (tab) => {
+  if (
+    tab === 'logs' &&
+    erpnextCRMSettingsResource.isERPNextInstalled.data &&
+    !productSyncStatus.fetched
   ) {
     productSyncStatus.submit()
   }
