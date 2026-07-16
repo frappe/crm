@@ -149,11 +149,13 @@ import {
   call,
   toast,
 } from 'frappe-ui'
+import { useTelemetry } from 'frappe-ui/frappe'
 import LucideTextCursorInput from '~icons/lucide/text-cursor-input'
 import { ref, reactive, h } from 'vue'
 import { ConfirmDelete, copyToClipboard } from '../../../utils'
 
 const emit = defineEmits(['open'])
+const { capture } = useTelemetry()
 
 const isConfirmingDelete = ref(false)
 
@@ -216,6 +218,7 @@ async function createForm() {
       name: null,
       form: { title: draft.title, route, document_type: draft.document_type },
     })
+    capture('form_created', { doctype: draft.document_type })
     showCreate.value = false
     emit('open', doc.name)
     forms.reload()
@@ -235,6 +238,7 @@ async function togglePublished(form, value) {
       published: value ? 1 : 0,
     })
     form.published = value ? 1 : 0
+    if (value) capture('form_published', { source: 'list' })
     toast.success(value ? __('Form published') : __('Form unpublished'))
   } catch (e) {
     forms.reload()
