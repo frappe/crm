@@ -176,7 +176,7 @@ def add_default_fields_layout(force=False):
 		},
 		"Address-Quick Entry": {
 			"doctype": "Address",
-			"layout": '[{"name": "details_section", "columns": [{"name": "column_uSSG", "fields": ["address_title", "address_type", "address_line1", "address_line2"]}]}, {"name": "location_section", "hideBorder": true, "columns": [{"name": "column_TCoZ", "fields": ["city", "state"]}, {"name": "column_PqrK", "fields": ["country", "pincode"]}]}]',
+			"layout": '[{"name": "details_section", "columns": [{"name": "column_uSSG", "fields": ["address_title", "address_type", "address_line1", "address_line2"]}]}, {"name": "location_section", "hideBorder": true, "columns": [{"name": "column_TCoZ", "fields": ["country", "city"]}, {"name": "column_PqrK", "fields": ["state", "pincode"]}]}]',
 		},
 		"CRM Call Log-Quick Entry": {
 			"doctype": "CRM Call Log",
