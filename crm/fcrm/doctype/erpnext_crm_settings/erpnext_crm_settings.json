@@ -6,11 +6,11 @@
  "engine": "InnoDB",
  "field_order": [
   "enabled",
+  "sync_products",
   "sync_issues",
   "erpnext_company",
   "column_break_vfru",
   "is_erpnext_in_different_site",
-  "sync_products",
   "erpnext_site_url",
   "section_break_oubd",
   "api_key",
@@ -89,7 +89,7 @@
    "depends_on": "eval:doc.enabled && !doc.is_erpnext_in_different_site",
    "fieldname": "sync_products",
    "fieldtype": "Check",
-   "label": "Sync Products with ERPNext"
+   "label": "Bidirectional Product Sync"
   },
   {
    "fieldname": "section_break_jnbn",
