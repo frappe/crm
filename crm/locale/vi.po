@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2026-06-22 19:37+0553\n"
-"PO-Revision-Date: 2026-06-28 20:53\n"
+"POT-Creation-Date: 2026-07-05 10:18+0000\n"
+"PO-Revision-Date: 2026-07-09 10:15\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Vietnamese\n"
 "MIME-Version: 1.0\n"
@@ -618,6 +618,10 @@ msgstr "Doanh thu hàng năm"
 msgid "Annual Revenue should be a number"
 msgstr "Doanh thu hàng năm phải là một số"
 
+#: frontend/src/pages/PersonaForm.vue:64
+msgid "Another CRM"
+msgstr ""
+
 #: frontend/src/components/Settings/LeadSyncing/FailureLogs.vue:69
 msgid "Any failed lead syncs will show up here"
 msgstr "Bất kỳ đồng bộ lead nào thất bại sẽ hiển thị ở đây"
@@ -1007,6 +1011,10 @@ msgstr " Quay Lại Tất Cả Nhật Ký"
 msgid "Back to File Upload"
 msgstr " Quay Lại Tải Lên Tệp"
 
+#: frontend/src/components/Questionnaire.vue:94
+msgid "Back to previous question"
+msgstr ""
+
 #. Label of the background_sync_frequency (Select) field in DocType 'Lead Sync
 #. Source'
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
@@ -1253,6 +1261,10 @@ msgstr "Cài Đặt Xem CRM"
 msgid "CSV"
 msgstr "CSV"
 
+#: frontend/src/pages/PersonaForm.vue:81
+msgid "CSV imports"
+msgstr ""
+
 #. Label of the calendar_tab (Tab Break) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 #: frontend/src/components/Settings/Settings.vue:142
@@ -1378,9 +1390,17 @@ msgstr ""
 msgid "Capture"
 msgstr "Chụp"
 
+#: frontend/src/pages/PersonaForm.vue:122
+msgid "Capture my first lead"
+msgstr ""
+
 #: frontend/src/components/Layouts/AppSidebar.vue:591
 msgid "Capturing Leads"
 msgstr "Đang Thu Thập Leads"
+
+#: frontend/src/pages/PersonaForm.vue:90
+msgid "Capturing leads"
+msgstr "Nắm bắt khách hàng tiềm năng"
 
 #. Label of the category (Data) field in DocType 'Facebook Page'
 #: crm/lead_syncing/doctype/facebook_page/facebook_page.json
@@ -1523,10 +1543,18 @@ msgstr "Đóng"
 msgid "Close Panel"
 msgstr "Đóng Panel"
 
+#: frontend/src/pages/PersonaForm.vue:126
+msgid "Close my first deal"
+msgstr ""
+
 #. Label of the closed_date (Date) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 msgid "Closed Date"
 msgstr "Ngày Đóng"
+
+#: frontend/src/pages/PersonaForm.vue:100
+msgid "Collaborating with my team"
+msgstr ""
 
 #: frontend/src/components/Layouts/AppSidebar.vue:120
 msgid "Collapse"
@@ -1832,6 +1860,10 @@ msgstr "Chuyển đổi thành công"
 #: frontend/src/utils/index.js:405
 msgid "Copied to Clipboard"
 msgstr "Đã sao chép vào Bộ nhớ tạm"
+
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:156
+msgid "Could not create the Frappe CRM custom fields on {0} automatically. If it is running the latest ERPNext, enable <b>Frappe CRM Data Synchronization</b> in its CRM Settings, Otherwise check the Error Log."
+msgstr ""
 
 #: frontend/src/components/Settings/Hierarchy/useRemoveNode.js:16
 msgid "Could not remove."
@@ -2632,17 +2664,21 @@ msgstr "API Site ERPNext"
 msgid "ERPNext Site URL"
 msgstr "URL Site ERPNext"
 
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:161
+msgid "ERPNext custom fields not created"
+msgstr ""
+
 #: crm/fcrm/doctype/crm_product/crm_product.py:42
 msgid "ERPNext integration is active. Create an Item in ERPNext and it will appear in CRM Product automatically."
 msgstr ""
 
-#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:205
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:220
 msgid "ERPNext integration must be enabled on the same site"
 msgstr ""
 
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:70
-#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:91
-#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:508
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:87
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:523
 msgid "ERPNext is not installed in the current site"
 msgstr "ERPNext không được cài đặt trong site hiện tại"
 
@@ -2768,6 +2804,7 @@ msgstr "Đang chỉnh sửa Hàng {0}"
 #: frontend/src/pages/MobileOrganization.vue:501
 #: frontend/src/pages/Organization.vue:503
 #: frontend/src/pages/Organization.vue:531
+#: frontend/src/pages/PersonaForm.vue:77
 msgid "Email"
 msgstr "Email"
 
@@ -2825,7 +2862,7 @@ msgstr "Mẫu email"
 msgid "Email Templates"
 msgstr ""
 
-#: frontend/src/components/Controls/EmailMultiSelect.vue:254
+#: frontend/src/components/Controls/EmailMultiSelect.vue:256
 msgid "Email already exists"
 msgstr "Email đã tồn tại"
 
@@ -3266,6 +3303,10 @@ msgstr "ID Lead Facebook"
 msgid "Facebook Page"
 msgstr "Trang Facebook"
 
+#: frontend/src/pages/PersonaForm.vue:74
+msgid "Facebook/Instagram Ads"
+msgstr ""
+
 #. Option for the 'Status' (Select) field in DocType 'CRM Call Log'
 #. Option for the 'SLA Status' (Select) field in DocType 'CRM Deal'
 #. Option for the 'SLA Status' (Select) field in DocType 'CRM Lead'
@@ -3449,6 +3490,10 @@ msgstr "Lọc"
 msgid "Filters"
 msgstr "Bộ lọc"
 
+#: frontend/src/components/Questionnaire.vue:96
+msgid "Finish"
+msgstr "Hoàn thành"
+
 #. Label of the first_name (Data) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: frontend/src/components/ColumnSettings.vue:103
@@ -3500,6 +3545,10 @@ msgstr "Họ tên"
 #: frontend/src/components/Settings/DefaultsSettings.vue:92
 msgid "Float Precision"
 msgstr "Phao chính xác"
+
+#: frontend/src/pages/PersonaForm.vue:91
+msgid "Following up consistently"
+msgstr ""
 
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:48
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:83
@@ -3652,6 +3701,10 @@ msgstr "Đi đến Website"
 msgid "Going?"
 msgstr "Tham dự?"
 
+#: frontend/src/pages/PersonaForm.vue:75
+msgid "Google Ads"
+msgstr ""
+
 #: frontend/src/components/Filter.vue:366
 msgid "Greater than"
 msgstr "Lớn hơn"
@@ -3764,10 +3817,26 @@ msgstr "Hành động trang chủ"
 msgid "Hourly"
 msgstr "Hàng Giờ"
 
+#: frontend/src/pages/PersonaForm.vue:56
+msgid "How are you managing your sales today?"
+msgstr ""
+
+#: frontend/src/pages/PersonaForm.vue:70
+msgid "How do new leads usually come to you?"
+msgstr ""
+
+#: frontend/src/pages/PersonaForm.vue:108
+msgid "How many people will use Frappe CRM?"
+msgstr ""
+
 #. Description of the 'Timeline Timestamp Format' (Select) field in DocType
 #. 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 msgid "How timestamps are shown in the activity timeline for all users"
+msgstr ""
+
+#: frontend/src/pages/PersonaForm.vue:60
+msgid "HubSpot"
 msgstr ""
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:199
@@ -3825,6 +3894,10 @@ msgstr "Hình ảnh"
 #: frontend/src/components/ViewControls.vue:203
 msgid "Import"
 msgstr "Nhập dữ liệu"
+
+#: frontend/src/pages/PersonaForm.vue:121
+msgid "Import my existing data"
+msgstr ""
 
 #: frontend/src/components/Filter.vue:277
 #: frontend/src/components/Filter.vue:298
@@ -4046,6 +4119,10 @@ msgstr "Mời Người dùng"
 msgid "Invite Users"
 msgstr "Mời Người dùng"
 
+#: frontend/src/pages/PersonaForm.vue:125
+msgid "Invite my team"
+msgstr ""
+
 #: frontend/src/components/Settings/InviteUserPage.vue:10
 msgid "Invite users to access CRM. Specify their roles to control access and permissions"
 msgstr "Mời người dùng truy cập CRM. Chỉ định vai trò của họ để kiểm soát quyền truy cập và quyền hạn"
@@ -4146,6 +4223,14 @@ msgstr "John Doe"
 msgid "John, Jane, Doe"
 msgstr "John, Jane, Doe"
 
+#: frontend/src/pages/PersonaForm.vue:127
+msgid "Just exploring"
+msgstr ""
+
+#: frontend/src/pages/PersonaForm.vue:110
+msgid "Just me"
+msgstr ""
+
 #. Label of the kanban_tab (Tab Break) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
 #: frontend/src/components/ViewControls.vue:392
@@ -4170,6 +4255,10 @@ msgstr "Cài đặt Kanban"
 #: frontend/src/components/Kanban/KanbanSettings.vue:3
 msgid "Kanban settings"
 msgstr "Cài đặt kanban"
+
+#: frontend/src/pages/PersonaForm.vue:93
+msgid "Keeping my pipeline organized"
+msgstr ""
 
 #. Label of the key (Data) field in DocType 'CRM Invitation'
 #. Label of the key (Data) field in DocType 'Facebook Lead Form Question'
@@ -4652,6 +4741,10 @@ msgstr "Quản lý các chính sách thỏa thuận mức dịch vụ của bạ
 msgid "Manager"
 msgstr "Quản lý"
 
+#: frontend/src/pages/PersonaForm.vue:97
+msgid "Managing contacts and companies"
+msgstr ""
+
 #: frontend/src/components/Modals/DoctypeModal.vue:122
 #: frontend/src/data/document.js:68
 msgid "Mandatory field error: {0}"
@@ -4797,6 +4890,10 @@ msgstr "Hàng tháng"
 #: frontend/src/components/ViewControls.vue:234
 msgid "More Options"
 msgstr "Thêm tùy chọn"
+
+#: frontend/src/pages/PersonaForm.vue:113
+msgid "More than 20"
+msgstr ""
 
 #: frontend/src/components/FieldLayoutEditor.vue:617
 msgid "Move Last Column to Next Section"
@@ -5016,6 +5113,10 @@ msgstr "Tuần tới"
 #: frontend/src/components/Filter.vue:713
 msgid "Next Year"
 msgstr "Năm tới"
+
+#: frontend/src/components/Questionnaire.vue:95
+msgid "Next question"
+msgstr ""
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:535
 msgid "No"
@@ -5508,7 +5609,7 @@ msgstr "Logo Tổ chức"
 msgid "Organization Name"
 msgstr "Tên tổ chức"
 
-#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:488
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:503
 msgid "Organization or a primary Contact is required to create a customer"
 msgstr ""
 
@@ -5519,9 +5620,18 @@ msgstr ""
 msgid "Organizations"
 msgstr "Các Tổ chức"
 
+#: frontend/src/pages/PersonaForm.vue:124
+msgid "Organize my contacts"
+msgstr ""
+
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:151
 msgid "Organizer"
 msgstr "Người tổ chức"
+
+#: frontend/src/pages/PersonaForm.vue:65 frontend/src/pages/PersonaForm.vue:82
+#: frontend/src/pages/PersonaForm.vue:103
+msgid "Other"
+msgstr "Khác"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:605
 msgid "Other Features"
@@ -5645,6 +5755,11 @@ msgstr ""
 msgid "Person"
 msgstr "Người"
 
+#. Label of the persona_captured (Check) field in DocType 'FCRM Settings'
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
+msgid "Persona Captured"
+msgstr ""
+
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:120
 msgid "Personal Mobile No."
 msgstr "Số Di động Cá nhân"
@@ -5665,6 +5780,10 @@ msgstr "Điện thoại"
 msgid "Phone Numbers"
 msgstr "Số Điện thoại"
 
+#: frontend/src/pages/PersonaForm.vue:78
+msgid "Phone calls"
+msgstr ""
+
 #: frontend/src/components/ViewControls.vue:1097
 msgid "Pin View"
 msgstr "Ghim Chế độ xem"
@@ -5681,6 +5800,10 @@ msgstr "Chế độ xem Đã ghim"
 #: frontend/src/components/ViewControls.vue:686
 msgid "Pinned Views"
 msgstr "Các Chế độ xem Đã ghim"
+
+#: frontend/src/pages/PersonaForm.vue:63
+msgid "Pipedrive"
+msgstr ""
 
 #: frontend/src/components/Activities/AudioPlayer.vue:176
 msgid "Playback Speed"
@@ -6024,6 +6147,10 @@ msgstr "Tài liệu tham chiếu {0} {1} không tồn tại."
 msgid "Referenced WhatsApp message does not exist."
 msgstr "Tin nhắn WhatsApp được tham chiếu không tồn tại."
 
+#: frontend/src/pages/PersonaForm.vue:79
+msgid "Referrals"
+msgstr ""
+
 #: frontend/src/components/ViewControls.vue:26
 #: frontend/src/components/ViewControls.vue:159
 #: frontend/src/pages/Dashboard.vue:10
@@ -6130,6 +6257,10 @@ msgstr ""
 msgid "Reopen lead/deal on new communication"
 msgstr "Mở lại lead/deal khi có giao tiếp mới"
 
+#: frontend/src/pages/PersonaForm.vue:102
+msgid "Replacing my current CRM"
+msgstr ""
+
 #: frontend/src/components/Activities/EmailArea.vue:30
 #: frontend/src/components/CommunicationArea.vue:9
 msgid "Reply"
@@ -6142,6 +6273,10 @@ msgstr "Trả lời tất cả"
 #: frontend/src/components/Modals/AboutModal.vue:65
 msgid "Report an Issue"
 msgstr "Báo cáo sự cố"
+
+#: frontend/src/pages/PersonaForm.vue:101
+msgid "Reporting & forecasting"
+msgstr ""
 
 #. Label of the reports_to (Link) field in DocType 'CRM Sales Hierarchy'
 #: crm/fcrm/doctype/crm_sales_hierarchy/crm_sales_hierarchy.json
@@ -6495,6 +6630,10 @@ msgstr "Người dùng bán hàng"
 msgid "Sales trend"
 msgstr "Xu hướng bán hàng"
 
+#: frontend/src/pages/PersonaForm.vue:61
+msgid "Salesforce"
+msgstr "Lực lượng bán hàng"
+
 #: crm/api/dashboard.py:1133
 msgid "Salesperson"
 msgstr "Nhân viên kinh doanh"
@@ -6647,6 +6786,10 @@ msgstr "Chọn một Ứng dụng Twilio cho CRM của bạn"
 msgid "Select a Value"
 msgstr "Chọn một Giá trị"
 
+#: frontend/src/components/Questionnaire.vue:93
+msgid "Select all that apply"
+msgstr ""
+
 #: frontend/src/components/Filter.vue:601
 msgid "Select an Option"
 msgstr "Chọn một Tùy chọn"
@@ -6778,6 +6921,12 @@ msgstr ""
 msgid "Set location…"
 msgstr ""
 
+#. Description of the 'Persona Captured' (Check) field in DocType 'FCRM
+#. Settings'
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
+msgid "Set once the first admin completes the onboarding persona questionnaire"
+msgstr ""
+
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:102
 msgid "Set the Exotel number to be used for outgoing calls."
 msgstr "Đặt số Exotel để sử dụng cho các cuộc gọi đi."
@@ -6789,6 +6938,10 @@ msgstr "Đặt số Twilio để sử dụng cho các cuộc gọi đi."
 #: frontend/src/components/Settings/BrandSettings.vue:33
 msgid "Set the name of your brand. Appears in the left sidebar."
 msgstr "Đặt tên thương hiệu của bạn. Xuất hiện trong thanh bên trái."
+
+#: frontend/src/pages/PersonaForm.vue:123
+msgid "Set up my sales pipeline"
+msgstr ""
 
 #: frontend/src/components/Settings/Sla/SlaHolidays.vue:9
 msgid "Set working days, hours, and holidays by selecting a predefined schedule or creating a new one"
@@ -6935,6 +7088,10 @@ msgstr ""
 msgid "Site connection validated"
 msgstr ""
 
+#: frontend/src/components/Questionnaire.vue:97
+msgid "Skip for now"
+msgstr ""
+
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:438
 msgid "Some error occurred while creating SLA Policy"
 msgstr "Đã xảy ra lỗi khi tạo Chính sách SLA"
@@ -7006,6 +7163,10 @@ msgstr "Nguồn đã được kích hoạt thành công"
 #: frontend/src/components/Dashboard/DashboardItem.vue:21
 msgid "Spacer"
 msgstr "Dấu cách"
+
+#: frontend/src/pages/PersonaForm.vue:59
+msgid "Spreadsheets"
+msgstr ""
 
 #: crm/api/dashboard.py:790 crm/api/dashboard.py:848
 msgid "Stage"
@@ -7096,6 +7257,10 @@ msgstr "Nhật ký Thay đổi Trạng thái"
 #: frontend/src/components/Modals/LeadModal.vue:152
 msgid "Status is required"
 msgstr "Trạng thái là bắt buộc"
+
+#: frontend/src/components/Questionnaire.vue:91
+msgid "Step {0} of {1}"
+msgstr ""
 
 #. Label of the subdomain (Data) field in DocType 'CRM Exotel Settings'
 #: crm/fcrm/doctype/crm_exotel_settings/crm_exotel_settings.json
@@ -7369,6 +7534,10 @@ msgstr ""
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:177
 msgid "This field is required"
 msgstr "Trường này là bắt buộc"
+
+#: frontend/src/pages/PersonaForm.vue:58
+msgid "This is my first CRM"
+msgstr ""
 
 #: crm/www/crm.py:31
 msgid "This method is only meant for developer mode"
@@ -7934,6 +8103,10 @@ msgstr "Lượt xem"
 msgid "Visibility"
 msgstr "Khả năng hiển thị"
 
+#: frontend/src/pages/PersonaForm.vue:80
+msgid "Walk-ins"
+msgstr ""
+
 #: frontend/src/components/SalesHierarchyBanner.vue:20
 msgid "We are changing how permissions work in Frappe CRM"
 msgstr ""
@@ -7958,6 +8131,10 @@ msgstr "Webhook Verify Token"
 #: frontend/src/components/Modals/AboutModal.vue:50
 msgid "Website"
 msgstr "Website"
+
+#: frontend/src/pages/PersonaForm.vue:73
+msgid "Website forms"
+msgstr ""
 
 #. Option for the 'Weekly Off' (Select) field in DocType 'CRM Holiday List'
 #. Option for the 'Workday' (Select) field in DocType 'CRM Service Day'
@@ -7988,9 +8165,21 @@ msgstr "Nghỉ hàng tuần"
 msgid "Welcome Message"
 msgstr "Tin nhắn Chào mừng"
 
+#: frontend/src/pages/PersonaForm.vue:132
+msgid "Welcome to Frappe CRM"
+msgstr ""
+
 #: frontend/src/pages/Welcome.vue:4
 msgid "Welcome {0}, lets add your first lead"
 msgstr "Chào mừng {0}, hãy thêm lead đầu tiên của bạn"
+
+#: frontend/src/pages/PersonaForm.vue:87
+msgid "What are your biggest challenges with sales today?"
+msgstr ""
+
+#: frontend/src/pages/PersonaForm.vue:118
+msgid "What would you like to accomplish first?"
+msgstr ""
 
 #. Option for the 'Type' (Select) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
@@ -7998,6 +8187,7 @@ msgstr "Chào mừng {0}, hãy thêm lead đầu tiên của bạn"
 #: frontend/src/components/Settings/Settings.vue:225
 #: frontend/src/pages/Deal.vue:606 frontend/src/pages/Lead.vue:458
 #: frontend/src/pages/MobileDeal.vue:478 frontend/src/pages/MobileLead.vue:325
+#: frontend/src/pages/PersonaForm.vue:76
 msgid "WhatsApp"
 msgstr "WhatsApp"
 
@@ -8155,11 +8345,11 @@ msgstr "Bạn sẽ được chuyển hướng đến trang mời người dùng,
 msgid "You will need a Meta developer account and an access token to sync leads from Facebook. Read more"
 msgstr "Bạn sẽ cần tài khoản nhà phát triển Meta và mã thông báo truy cập để đồng bộ leads từ Facebook. Đọc thêm"
 
-#: crm/api/todo.py:100
+#: crm/api/todo.py:110
 msgid "Your assignment on task {0} has been removed by {1}"
 msgstr "Bài tập của bạn trên công việc {0} đã bị xóa bởi {1}"
 
-#: crm/api/todo.py:37 crm/api/todo.py:78
+#: crm/api/todo.py:47 crm/api/todo.py:88
 msgid "Your assignment on {0} {1} has been removed by {2}"
 msgstr "Bài tập của bạn trên {0} {1} đã bị {2}"
 
@@ -8175,6 +8365,10 @@ msgstr "Điều kiện cũ của bạn sẽ bị ghi đè. Bạn có chắc ch�
 msgid "Your old conditions will be overwritten. Are you sure you want to save?"
 msgstr ""
 
+#: frontend/src/pages/PersonaForm.vue:62
+msgid "Zoho CRM"
+msgstr ""
+
 #: frontend/src/components/Activities/CommentArea.vue:9
 msgid "added a"
 msgstr "đã thêm"
@@ -8186,11 +8380,11 @@ msgstr "đã thêm"
 msgid "amber"
 msgstr "màu hổ phách"
 
-#: crm/api/todo.py:109
+#: crm/api/todo.py:119
 msgid "assigned a new task {0} to you"
 msgstr "đã giao một công việc mới {0} cho bạn"
 
-#: crm/api/todo.py:89
+#: crm/api/todo.py:99
 msgid "assigned a {0} {1} to you"
 msgstr "đã giao {0} {1} cho bạn"
 
@@ -8605,7 +8799,7 @@ msgstr "{0} (Định dạng thời gian không hợp lệ)"
 msgid "{0} M"
 msgstr "{0} Phút"
 
-#: crm/api/todo.py:41
+#: crm/api/todo.py:51
 msgid "{0} assigned a {1} {2} to you"
 msgstr "{0} đã giao {1} {2} cho bạn"
 
@@ -8706,6 +8900,11 @@ msgstr "{0} năm trước"
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:645
 msgid "{0} yes"
 msgstr "{0} có"
+
+#: frontend/src/components/Questionnaire.vue:92
+#, python-format
+msgid "{0}% complete"
+msgstr ""
 
 #: frontend/src/utils/scriptHelpers.js:43
 msgid "⚠️ Avoid using \"trigger\" as a field name — it conflicts with the built-in trigger() method."
