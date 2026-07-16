@@ -468,12 +468,12 @@ import {
   Tooltip,
 } from 'frappe-ui'
 import SettingsLayoutBase from '@/components/Layouts/SettingsLayoutBase.vue'
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import Link from '../Controls/Link.vue'
 import { globalStore } from '@/stores/global'
 import { formatDate } from '@/utils'
 
-const { $dialog } = globalStore()
+const { $dialog, $socket } = globalStore()
 
 const erpnextCRMSettingsResource = createDocumentResource({
   doctype: 'ERPNext CRM Settings',
@@ -846,4 +846,13 @@ watch(activeSettingsTab, (tab) => {
     productSyncStatus.submit()
   }
 })
+
+// The sync runs in a background job; refresh logs when it signals completion
+function onSyncComplete() {
+  if (erpnextCRMSettingsResource.isERPNextInstalled.data) {
+    productSyncStatus.submit()
+  }
+}
+onMounted(() => $socket.on('crm_product_sync_complete', onSyncComplete))
+onBeforeUnmount(() => $socket.off('crm_product_sync_complete', onSyncComplete))
 </script>
