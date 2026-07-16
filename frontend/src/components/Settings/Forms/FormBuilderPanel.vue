@@ -384,7 +384,10 @@
                       <button
                         class="flex text-ink-gray-5 transition-colors hover:text-ink-gray-8"
                         :title="__('Copy link')"
-                        @click="copyToClipboard(publicUrl)"
+                        @click="
+                          copyToClipboard(publicUrl),
+                            capture('form_embed_copied', { embed_type: 'link' })
+                        "
                       >
                         <LucideCopy class="h-4 w-4" />
                       </button>
@@ -436,7 +439,12 @@
                       <button
                         class="absolute right-2 top-2 flex text-ink-gray-5 transition-colors hover:text-ink-gray-8"
                         :title="__('Copy')"
-                        @click="copyToClipboard(iframeSnippet)"
+                        @click="
+                          copyToClipboard(iframeSnippet),
+                            capture('form_embed_copied', {
+                              embed_type: 'iframe',
+                            })
+                        "
                       >
                         <LucideCopy class="h-4 w-4" />
                       </button>
@@ -650,10 +658,12 @@ import LucideCheck from '~icons/lucide/check'
 import LucideLayoutList from '~icons/lucide/layout-list'
 import LucideSettings from '~icons/lucide/settings'
 import { globalStore } from '@/stores/global'
+import { useTelemetry } from 'frappe-ui/frappe'
 import { copyToClipboard } from '@/utils'
 import { ref, reactive, computed, watch, onMounted } from 'vue'
 
 const { $dialog } = globalStore()
+const { capture } = useTelemetry()
 
 const BREAK_TYPES = ['Section Break', 'Column Break']
 
@@ -982,6 +992,7 @@ function addFieldToColumn(col, option) {
     placeholder: '',
     field_description: '',
   })
+  capture('form_field_added', { field_type: af.fieldtype })
   syncFromModel()
 }
 
@@ -1405,6 +1416,7 @@ async function save({ silent = false } = {}) {
 // publish guard (every hidden field needs a default) is enforced
 function togglePublish() {
   form.published = form.published ? 0 : 1
+  if (form.published) capture('form_published', { source: 'builder' })
   markDirty()
 }
 </script>
