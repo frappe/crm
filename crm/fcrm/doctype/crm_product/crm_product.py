@@ -9,7 +9,7 @@ from crm.fcrm.doctype.crm_product.sync_utils import payload_differs
 from crm.integrations.erpnext.utils import (
 	cascade_rename,
 	in_cascade,
-	should_sync,
+	should_push_to_erpnext,
 	validate_rename_conflict,
 )
 
@@ -37,7 +37,7 @@ class CRMProduct(Document):
 	def before_insert(self):
 		if self.flags.get("ignore_erpnext_sync"):
 			return
-		if should_sync():
+		if should_push_to_erpnext():
 			frappe.throw(
 				_(
 					"ERPNext integration is active. Create an Item in ERPNext and it will appear in CRM Product automatically."
@@ -56,7 +56,7 @@ class CRMProduct(Document):
 			return
 		if not self.get("erpnext_item_code"):
 			return
-		if not should_sync():
+		if not should_push_to_erpnext():
 			return
 		_push_to_item(self)
 
@@ -71,7 +71,7 @@ class CRMProduct(Document):
 			return
 		if not self.get("erpnext_item_code"):
 			return
-		if not should_sync():
+		if not should_push_to_erpnext():
 			return
 		if frappe.db.sql(
 			"SELECT 1 FROM `tabQuotation Item` WHERE item_code=%s LIMIT 1",
