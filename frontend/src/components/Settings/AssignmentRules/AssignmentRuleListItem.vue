@@ -78,8 +78,11 @@ import {
   Switch,
   toast,
 } from 'frappe-ui'
+import { useTelemetry } from 'frappe-ui/frappe'
 import { inject, ref, reactive, watch } from 'vue'
 import { ConfirmDelete } from '../../../utils'
+
+const { capture } = useTelemetry()
 
 const assignmentRulesList = inject('assignmentRulesList')
 const updateStep = inject('updateStep')
@@ -170,6 +173,7 @@ const onToggle = () => {
     toast.error(__('Cannot enable rule without adding users in it'))
     return
   }
+  capture('assignment_rule_toggled', { enabled: Boolean(props.data.disabled) })
   setAssignmentRuleValue('disabled', !props.data.disabled, 'status')
 }
 
