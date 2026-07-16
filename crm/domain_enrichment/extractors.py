@@ -30,7 +30,6 @@ from .result import (
 # --------------------------------------------------------------------------- #
 EMAIL_RE = re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}")
 
-# Loosely international phone numbers.
 PHONE_RE = re.compile(
 	r"""(?<!\w)
     (\+?\d{1,3}[\s.-]?)?      # optional country code
@@ -70,10 +69,8 @@ SCOPE_URL = "URL"
 
 
 def apply_keyword_rules(text_by_scope: dict, rules: list) -> dict:
-	"""Score keyword/regex rules against scoped text; each rule matches only its own
-	``match_scope``. Returns ``{label: weighted_score}`` -- ``label`` is the rule's
-	industry (Industry rules) or target_value (everything else), score is
-	``pattern_hits * weight`` summed per label."""
+	"""Returns ``{label: weighted_score}`` -- ``label`` is the rule's industry
+	(Industry rules) or target_value (everything else)."""
 	scores: dict = {}
 	for rule in rules:
 		text = text_by_scope.get(rule.match_scope, "")
@@ -87,7 +84,6 @@ def apply_keyword_rules(text_by_scope: dict, rules: list) -> dict:
 # JSON-LD (mechanics)
 # --------------------------------------------------------------------------- #
 def parse_json_ld(soup):
-	"""Return a flat list of JSON-LD dicts found on the page (handles @graph)."""
 	blocks = []
 	for tag in soup.find_all("script", attrs={"type": "application/ld+json"}):
 		raw = tag.string or tag.get_text() or ""
@@ -116,9 +112,6 @@ def _ld_type_matches(block, wanted):
 # --------------------------------------------------------------------------- #
 # Readability diagnosis (mechanics)
 # --------------------------------------------------------------------------- #
-# WAF/bot-protection markers. Strong markers alone mean "blocked". Weak markers
-# (also legitimate on content-rich pages, e.g. a reCAPTCHA contact form) only
-# count when the page is also nearly devoid of text.
 WAF_MARKERS_STRONG = (
 	"_incapsula_resource",
 	"incapsula",
@@ -175,7 +168,6 @@ def diagnose_readability(pages):
 # Company information (mechanics)
 # --------------------------------------------------------------------------- #
 def _meta_with_method(soup, *names):
-	"""Return (content, matched_name) for the first present meta tag."""
 	for name in names:
 		tag = soup.find("meta", attrs={"property": name}) or soup.find("meta", attrs={"name": name})
 		if tag and tag.get("content"):
@@ -254,7 +246,7 @@ def _safe_url(base_url, raw):
 
 def _best_icon(soup, base_url):
 	"""Best ``<link rel=icon>`` candidate: scalable SVG beats any raster, then
-	largest declared size wins. Returns ``""`` if no icon is declared."""
+	largest declared size wins."""
 	candidates = []
 	for tag in soup.find_all("link", href=True):
 		rel = tag.get("rel") or []
@@ -370,7 +362,6 @@ def _is_about_page(url):
 
 
 def extract_company_info(homepage, soup):
-	"""Extract company identity with full provenance (mechanics)."""
 	url = homepage.url
 	info = {
 		"company_name": Field(),
@@ -412,14 +403,12 @@ def extract_company_info(homepage, soup):
 	return info
 
 
-# Chrome tags skipped when hunting for a body paragraph.
 _NON_CONTENT_PARENTS = {"nav", "header", "footer", "aside", "form"}
 _MIN_PARAGRAPH_LEN = 80
-_MAX_PARAGRAPHS_SCANNED = 6  # bounded so a very long page isn't a full scan
+_MAX_PARAGRAPHS_SCANNED = 6
 
 
 def _company_name_hits(text, company_name):
-	"""Count case-insensitive, whole-word mentions of ``company_name`` in ``text``."""
 	name = (company_name or "").strip()
 	if not name:
 		return 0
@@ -427,13 +416,10 @@ def _company_name_hits(text, company_name):
 
 
 def first_paragraph(soup, industry_rules=None, company_name=""):
-	"""Best substantial body paragraph on a page (mechanics).
-
-	Scores up to ``_MAX_PARAGRAPHS_SCANNED`` qualifying ``<p>`` tags by Industry-rule
-	keyword hits (the same corpus ``classify_industry`` uses); ``company_name``
-	mentions only break ties, never outrank keyword signal. Falls back to the first
-	qualifying paragraph when nothing scores or ``industry_rules`` is empty.
-	Read-only -- does not mutate ``soup``.
+	"""Best substantial body paragraph on a page. Scores up to
+	``_MAX_PARAGRAPHS_SCANNED`` qualifying ``<p>`` tags by Industry-rule keyword hits
+	(the same corpus ``classify_industry`` uses); ``company_name`` mentions only
+	break ties, never outrank keyword signal. Read-only -- does not mutate ``soup``.
 	"""
 	candidates = []
 	for p in soup.find_all("p"):
@@ -465,7 +451,7 @@ def first_paragraph(soup, industry_rules=None, company_name=""):
 
 
 def select_description(pages, soups_by_url, industry_rules=None, company_name=""):
-	"""Pick the best *company* description across crawled pages (mechanics).
+	"""Pick the best *company* description across crawled pages.
 
 	Priority: JSON-LD ``Organization.description`` -> About-page body paragraph ->
 	head ``og:description``/``<meta description>`` -> home-page body paragraph
@@ -528,7 +514,6 @@ def _clean_email(email):
 
 
 def extract_emails(pages):
-	"""pages: list[CrawledPage] -> list[Email] (deduped, first source kept)."""
 	found = {}
 	for page in pages:
 		if not page.html:
@@ -553,7 +538,6 @@ def _valid_phone(raw):
 
 
 def extract_phones(pages):
-	"""Extract phone numbers, preferring tel: links, then visible text."""
 	found = {}
 	for page in pages:
 		if not page.html:
@@ -583,12 +567,8 @@ def extract_phones(pages):
 # Social profiles (config-driven via Social rules)
 # --------------------------------------------------------------------------- #
 def extract_social_profiles(pages, soups_by_url, social_rules, extra_links=None):
-	"""Return dict network -> SocialProfile(value, source, method).
-
-	Each Social rule's ``target_value`` is the network name; its patterns match
-	host/path. JSON-LD ``sameAs`` links are considered before anchor hrefs found
-	while crawling.
-	"""
+	"""Return dict network -> SocialProfile(value, source, method); each Social
+	rule's ``target_value`` is the network name."""
 	profiles = {rule.target_value: SocialProfile() for rule in social_rules}
 
 	home_url = pages[0].url if pages else ""
@@ -618,13 +598,11 @@ def extract_social_profiles(pages, soups_by_url, social_rules, extra_links=None)
 # --------------------------------------------------------------------------- #
 def classify_industry(pages, company_info, industry_rules):
 	"""Rule-based industry from the homepage's (and, when crawled, the About page's)
-	headline corpus.
-
-	Runs ``apply_keyword_rules`` over Industry rules (seeded ``match_scope='Headline'``,
-	so they match company name/description/title/headings, never body/footer). The
-	homepage alone is often thin (stylized brand copy, no meta description), so a
-	crawled About page's title/headings are folded in too. Returns
-	(industry, confidence 0-1), or ("", 0.0) when the signal is too weak.
+	headline corpus. Industry rules are typically seeded with ``match_scope='Headline'``
+	(company name/description/title/headings, never body/footer). The homepage alone
+	is often thin (stylized brand copy, no meta description), so a crawled About
+	page's title/headings are folded in too. Returns (industry, confidence 0-1), or
+	("", 0.0) when the signal is too weak.
 	"""
 	if not industry_rules:
 		return "", 0.0
