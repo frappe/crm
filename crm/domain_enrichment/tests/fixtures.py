@@ -129,6 +129,48 @@ BROKEN_JSON_LD = """
 </head><body><h1>Broken</h1></body></html>
 """
 
+# --------------------------------------------------------------------------- #
+# Sitemap fixtures
+# --------------------------------------------------------------------------- #
+URLSET_XML = """<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://acme.example/about</loc></url>
+  <url><loc>https://acme.example/contact</loc></url>
+  <url><loc>https://acme.example/blog/post-1</loc></url>
+</urlset>"""
+
+SITEMAP_INDEX_XML = """<?xml version="1.0" encoding="UTF-8"?>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <sitemap><loc>https://acme.example/sitemap-pages.xml</loc></sitemap>
+  <sitemap><loc>https://acme.example/sitemap-blog.xml</loc></sitemap>
+</sitemapindex>"""
+
+# A sitemap trying to smuggle a DTD entity-expansion payload -- must be rejected
+# outright by _parse_sitemap before ET.fromstring ever sees it.
+MALICIOUS_DOCTYPE_XML = """<?xml version="1.0"?>
+<!DOCTYPE foo [<!ENTITY xxe "boom">]>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://acme.example/&xxe;</loc></url>
+</urlset>"""
+
+
+def fake_fetch(responses):
+	"""Build a ``fetch(url, cfg, session=None, html_only=True)`` stub keyed by exact URL.
+
+	``responses`` maps url -> (status, body) for a 200-shaped response. A URL absent
+	from the map behaves like a 404 (mirrors a missing sitemap/robots.txt), so tests
+	only need to declare the endpoints they care about.
+	"""
+
+	def fake(url, cfg, session=None, html_only=True):
+		entry = responses.get(url)
+		if entry is None:
+			return 404, "", "not found", url
+		status, body = entry
+		return status, body, "", url
+
+	return fake
+
 
 # --------------------------------------------------------------------------- #
 # Page helper

@@ -20,6 +20,7 @@ from collections import deque
 from functools import lru_cache
 from urllib.parse import urldefrag, urljoin, urlparse
 from urllib.robotparser import RobotFileParser
+from xml.etree import ElementTree as ET
 
 import tldextract
 from bs4 import BeautifulSoup
@@ -286,6 +287,117 @@ def probe_about_pages(home_url, cfg, session=None, skip_urls=()):
 	return []
 
 
+# --------------------------------------------------------------------------- #
+# Sitemap discovery
+# --------------------------------------------------------------------------- #
+# Sitemap-derived URLs are an addition on top of the ordinary link-following BFS,
+# not a replacement: they seed the queue with pages the sitemap author flagged as
+# worth visiting (locale variants, sections not linked from the homepage nav), so
+# the crawler doesn't rely purely on stumbling onto them within max_depth. A site
+# with no sitemap -- or an unreadable one -- must fall straight through to plain
+# link-following with no error, no log noise, and no behavior change.
+SITEMAP_MAX_SITEMAPS = 5  # sitemap files fetched; guards pathological sitemap indexes
+SITEMAP_MAX_URLS = 200  # total <loc> entries collected across all fetched sitemaps
+
+
+def _local_tag(tag: str) -> str:
+	"""Strip the XML namespace off a tag: '{http://.../0.9}urlset' -> 'urlset'."""
+	return tag.rsplit("}", 1)[-1] if tag else tag
+
+
+def _parse_sitemap(xml_text: str):
+	"""Parse a sitemap document. Returns ('urlset' | 'sitemapindex' | None, [loc, ...]).
+
+	Rejects any document containing a DOCTYPE before parsing: a legitimate sitemap
+	never has one (the sitemaps.org schema defines none), so this is a zero-cost
+	guard against XML entity-expansion abuse from a hostile or compromised site.
+	Never raises -- malformed XML yields (None, []).
+	"""
+	if "<!doctype" in xml_text.lower():
+		return None, []
+	try:
+		root = ET.fromstring(xml_text)
+	except ET.ParseError:
+		return None, []
+	kind = _local_tag(root.tag)
+	if kind not in ("urlset", "sitemapindex"):
+		return None, []
+	child_tag = "sitemap" if kind == "sitemapindex" else "url"
+	locs = []
+	for el in root:
+		if _local_tag(el.tag) != child_tag:
+			continue
+		for child in el:
+			if _local_tag(child.tag) == "loc" and child.text:
+				locs.append(child.text.strip())
+				break
+	return kind, locs
+
+
+def discover_sitemap_urls(start_url, cfg, session, robots):
+	"""Best-effort page discovery from the site's sitemap(s).
+
+	Tries the sitemap location(s) declared via ``Sitemap:`` in robots.txt first,
+	falling back to the conventional ``/sitemap.xml`` path when robots.txt is
+	absent or declares none. Follows ``<sitemapindex>`` nesting one level deep,
+	bounded by ``SITEMAP_MAX_SITEMAPS`` / ``SITEMAP_MAX_URLS``. Every sitemap
+	fetch stays same-site and goes through the normal SSRF-guarded ``fetch()``.
+
+	Always returns a list, possibly empty -- a missing sitemap, a non-200, a
+	timeout, or malformed XML all silently fall through to the ordinary BFS.
+	Never raises.
+	"""
+	try:
+		parsed = urlparse(normalize_url(start_url))
+		if not parsed.netloc:
+			return []
+
+		candidates = []
+		if robots is not None:
+			try:
+				candidates.extend(robots.site_maps() or [])
+			except Exception:
+				pass
+		if not candidates:
+			candidates.append(f"{parsed.scheme}://{parsed.netloc}/sitemap.xml")
+
+		to_fetch = deque(candidates[:SITEMAP_MAX_SITEMAPS])
+		fetched_sitemaps = set()
+		urls = []
+		seen_urls = set()
+
+		while to_fetch and len(fetched_sitemaps) < SITEMAP_MAX_SITEMAPS and len(urls) < SITEMAP_MAX_URLS:
+			sitemap_url = to_fetch.popleft()
+			if sitemap_url in fetched_sitemaps:
+				continue
+			fetched_sitemaps.add(sitemap_url)
+			if not same_site(sitemap_url, parsed.netloc):
+				continue
+
+			status, body, error, _final = fetch(sitemap_url, cfg, session=session, html_only=False)
+			if error or status != 200 or not body:
+				continue
+
+			kind, locs = _parse_sitemap(body)
+			if kind == "sitemapindex":
+				for loc in locs:
+					if len(fetched_sitemaps) + len(to_fetch) < SITEMAP_MAX_SITEMAPS:
+						to_fetch.append(loc)
+			elif kind == "urlset":
+				for loc in locs:
+					norm = normalize_url(loc)
+					if norm in seen_urls:
+						continue
+					seen_urls.add(norm)
+					urls.append(norm)
+					if len(urls) >= SITEMAP_MAX_URLS:
+						break
+
+		return urls
+	except Exception:
+		return []
+
+
 def crawl(start_url, cfg, session=None, progress=None):
 	"""Breadth-first crawl from ``start_url``, prioritizing company-info pages.
 
@@ -309,12 +421,31 @@ def crawl(start_url, cfg, session=None, progress=None):
 	# Respect robots.txt for discovered links -- but only when we actually crawl beyond
 	# the homepage (skip the extra fetch for homepage-only / preview runs, which follow
 	# no links). The explicit start URL is always fetched; robots gates discovery.
-	robots = load_robots(start_url, cfg, session) if (max_depth >= 1 and max_pages > 1) else None
+	crawl_beyond_homepage = max_depth >= 1 and max_pages > 1
+	robots = load_robots(start_url, cfg, session) if crawl_beyond_homepage else None
 
 	visited = set()
 	results = []
 	# Queue holds (url, depth, anchor_text). We pop the highest-priority item.
 	queue = deque([(start_url, 0, "")])
+
+	# Sitemap-seeded candidates join at depth 1, never depth 0, so the homepage
+	# always still wins the first pop (the sort key's top tier is depth==0 only --
+	# see the priority sort below). An addition on top of ordinary link-following,
+	# not a replacement: a site with no sitemap contributes nothing here and the
+	# crawl proceeds exactly as it did before this existed.
+	if crawl_beyond_homepage and cfg.setting("use_sitemap", True):
+		queued_from_sitemap = set()
+		for loc in discover_sitemap_urls(start_url, cfg, session, robots):
+			link = normalize_url(loc)
+			if link == start_url or link in queued_from_sitemap:
+				continue
+			if not same_site(link, base_netloc) or not _is_crawlable(link, skip_patterns):
+				continue
+			if not _robots_allows(robots, user_agent, link):
+				continue
+			queued_from_sitemap.add(link)
+			queue.append((link, 1, ""))
 
 	try:
 		while queue and len(results) < max_pages:
