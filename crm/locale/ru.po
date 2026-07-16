@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2026-06-22 19:37+0553\n"
-"PO-Revision-Date: 2026-06-28 20:53\n"
+"POT-Creation-Date: 2026-07-05 10:18+0000\n"
+"PO-Revision-Date: 2026-07-09 10:15\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Russian\n"
 "MIME-Version: 1.0\n"
@@ -618,6 +618,10 @@ msgstr "Годовой доход"
 msgid "Annual Revenue should be a number"
 msgstr "Годовой доход должен быть числом"
 
+#: frontend/src/pages/PersonaForm.vue:64
+msgid "Another CRM"
+msgstr ""
+
 #: frontend/src/components/Settings/LeadSyncing/FailureLogs.vue:69
 msgid "Any failed lead syncs will show up here"
 msgstr "Здесь будут отображаться все неудачные попытки синхронизации лидов"
@@ -1007,6 +1011,10 @@ msgstr ""
 msgid "Back to File Upload"
 msgstr ""
 
+#: frontend/src/components/Questionnaire.vue:94
+msgid "Back to previous question"
+msgstr ""
+
 #. Label of the background_sync_frequency (Select) field in DocType 'Lead Sync
 #. Source'
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
@@ -1253,6 +1261,10 @@ msgstr "Настройки представления CRM"
 msgid "CSV"
 msgstr "CSV"
 
+#: frontend/src/pages/PersonaForm.vue:81
+msgid "CSV imports"
+msgstr ""
+
 #. Label of the calendar_tab (Tab Break) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 #: frontend/src/components/Settings/Settings.vue:142
@@ -1378,9 +1390,17 @@ msgstr ""
 msgid "Capture"
 msgstr "Захват"
 
+#: frontend/src/pages/PersonaForm.vue:122
+msgid "Capture my first lead"
+msgstr ""
+
 #: frontend/src/components/Layouts/AppSidebar.vue:591
 msgid "Capturing Leads"
 msgstr ""
+
+#: frontend/src/pages/PersonaForm.vue:90
+msgid "Capturing leads"
+msgstr "Захват лидов"
 
 #. Label of the category (Data) field in DocType 'Facebook Page'
 #: crm/lead_syncing/doctype/facebook_page/facebook_page.json
@@ -1523,10 +1543,18 @@ msgstr "Закрыть"
 msgid "Close Panel"
 msgstr ""
 
+#: frontend/src/pages/PersonaForm.vue:126
+msgid "Close my first deal"
+msgstr ""
+
 #. Label of the closed_date (Date) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 msgid "Closed Date"
 msgstr "Дата закрытия"
+
+#: frontend/src/pages/PersonaForm.vue:100
+msgid "Collaborating with my team"
+msgstr ""
 
 #: frontend/src/components/Layouts/AppSidebar.vue:120
 msgid "Collapse"
@@ -1831,6 +1859,10 @@ msgstr ""
 
 #: frontend/src/utils/index.js:405
 msgid "Copied to Clipboard"
+msgstr ""
+
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:156
+msgid "Could not create the Frappe CRM custom fields on {0} automatically. If it is running the latest ERPNext, enable <b>Frappe CRM Data Synchronization</b> in its CRM Settings, Otherwise check the Error Log."
 msgstr ""
 
 #: frontend/src/components/Settings/Hierarchy/useRemoveNode.js:16
@@ -2632,17 +2664,21 @@ msgstr "API сайта ERPNext"
 msgid "ERPNext Site URL"
 msgstr "URL сайта ERPNext"
 
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:161
+msgid "ERPNext custom fields not created"
+msgstr ""
+
 #: crm/fcrm/doctype/crm_product/crm_product.py:42
 msgid "ERPNext integration is active. Create an Item in ERPNext and it will appear in CRM Product automatically."
 msgstr ""
 
-#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:205
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:220
 msgid "ERPNext integration must be enabled on the same site"
 msgstr ""
 
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:70
-#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:91
-#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:508
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:87
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:523
 msgid "ERPNext is not installed in the current site"
 msgstr "ERPNext не установлен на текущем сайте"
 
@@ -2768,6 +2804,7 @@ msgstr "Редактирование строки {0}"
 #: frontend/src/pages/MobileOrganization.vue:501
 #: frontend/src/pages/Organization.vue:503
 #: frontend/src/pages/Organization.vue:531
+#: frontend/src/pages/PersonaForm.vue:77
 msgid "Email"
 msgstr "Email"
 
@@ -2825,7 +2862,7 @@ msgstr "Шаблон Email"
 msgid "Email Templates"
 msgstr "Шаблоны Email"
 
-#: frontend/src/components/Controls/EmailMultiSelect.vue:254
+#: frontend/src/components/Controls/EmailMultiSelect.vue:256
 msgid "Email already exists"
 msgstr ""
 
@@ -3266,6 +3303,10 @@ msgstr "Идентификатор лида Facebook"
 msgid "Facebook Page"
 msgstr "Страница Facebook"
 
+#: frontend/src/pages/PersonaForm.vue:74
+msgid "Facebook/Instagram Ads"
+msgstr ""
+
 #. Option for the 'Status' (Select) field in DocType 'CRM Call Log'
 #. Option for the 'SLA Status' (Select) field in DocType 'CRM Deal'
 #. Option for the 'SLA Status' (Select) field in DocType 'CRM Lead'
@@ -3449,6 +3490,10 @@ msgstr "Фильтр"
 msgid "Filters"
 msgstr "Фильтры"
 
+#: frontend/src/components/Questionnaire.vue:96
+msgid "Finish"
+msgstr "Завершить"
+
 #. Label of the first_name (Data) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: frontend/src/components/ColumnSettings.vue:103
@@ -3500,6 +3545,10 @@ msgstr "Имя"
 #: frontend/src/components/Settings/DefaultsSettings.vue:92
 msgid "Float Precision"
 msgstr "Поплавковая точность"
+
+#: frontend/src/pages/PersonaForm.vue:91
+msgid "Following up consistently"
+msgstr ""
 
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:48
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:83
@@ -3652,6 +3701,10 @@ msgstr ""
 msgid "Going?"
 msgstr ""
 
+#: frontend/src/pages/PersonaForm.vue:75
+msgid "Google Ads"
+msgstr ""
+
 #: frontend/src/components/Filter.vue:366
 msgid "Greater than"
 msgstr ""
@@ -3764,10 +3817,26 @@ msgstr "Действия на главной странице"
 msgid "Hourly"
 msgstr "Почасовая оплата"
 
+#: frontend/src/pages/PersonaForm.vue:56
+msgid "How are you managing your sales today?"
+msgstr ""
+
+#: frontend/src/pages/PersonaForm.vue:70
+msgid "How do new leads usually come to you?"
+msgstr ""
+
+#: frontend/src/pages/PersonaForm.vue:108
+msgid "How many people will use Frappe CRM?"
+msgstr ""
+
 #. Description of the 'Timeline Timestamp Format' (Select) field in DocType
 #. 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 msgid "How timestamps are shown in the activity timeline for all users"
+msgstr ""
+
+#: frontend/src/pages/PersonaForm.vue:60
+msgid "HubSpot"
 msgstr ""
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:199
@@ -3825,6 +3894,10 @@ msgstr "Изображение"
 #: frontend/src/components/ViewControls.vue:203
 msgid "Import"
 msgstr "Импорт"
+
+#: frontend/src/pages/PersonaForm.vue:121
+msgid "Import my existing data"
+msgstr ""
 
 #: frontend/src/components/Filter.vue:277
 #: frontend/src/components/Filter.vue:298
@@ -4046,6 +4119,10 @@ msgstr "Пригласить пользователя"
 msgid "Invite Users"
 msgstr ""
 
+#: frontend/src/pages/PersonaForm.vue:125
+msgid "Invite my team"
+msgstr ""
+
 #: frontend/src/components/Settings/InviteUserPage.vue:10
 msgid "Invite users to access CRM. Specify their roles to control access and permissions"
 msgstr "Пригласите пользователей для доступа к CRM. Укажите их роли для контроля доступа и разрешений"
@@ -4146,6 +4223,14 @@ msgstr "Джон Доуs"
 msgid "John, Jane, Doe"
 msgstr ""
 
+#: frontend/src/pages/PersonaForm.vue:127
+msgid "Just exploring"
+msgstr ""
+
+#: frontend/src/pages/PersonaForm.vue:110
+msgid "Just me"
+msgstr ""
+
 #. Label of the kanban_tab (Tab Break) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
 #: frontend/src/components/ViewControls.vue:392
@@ -4169,6 +4254,10 @@ msgstr "Настройки Канбана"
 
 #: frontend/src/components/Kanban/KanbanSettings.vue:3
 msgid "Kanban settings"
+msgstr ""
+
+#: frontend/src/pages/PersonaForm.vue:93
+msgid "Keeping my pipeline organized"
 msgstr ""
 
 #. Label of the key (Data) field in DocType 'CRM Invitation'
@@ -4652,6 +4741,10 @@ msgstr ""
 msgid "Manager"
 msgstr "Менеджер"
 
+#: frontend/src/pages/PersonaForm.vue:97
+msgid "Managing contacts and companies"
+msgstr ""
+
 #: frontend/src/components/Modals/DoctypeModal.vue:122
 #: frontend/src/data/document.js:68
 msgid "Mandatory field error: {0}"
@@ -4797,6 +4890,10 @@ msgstr "Ежемесячно"
 #: frontend/src/components/ViewControls.vue:234
 msgid "More Options"
 msgstr "Другие параметры"
+
+#: frontend/src/pages/PersonaForm.vue:113
+msgid "More than 20"
+msgstr ""
 
 #: frontend/src/components/FieldLayoutEditor.vue:617
 msgid "Move Last Column to Next Section"
@@ -5016,6 +5113,10 @@ msgstr "Следующая неделя"
 #: frontend/src/components/Filter.vue:713
 msgid "Next Year"
 msgstr "Следующий год"
+
+#: frontend/src/components/Questionnaire.vue:95
+msgid "Next question"
+msgstr ""
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:535
 msgid "No"
@@ -5508,7 +5609,7 @@ msgstr "Логотип организации"
 msgid "Organization Name"
 msgstr "Название организации"
 
-#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:488
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:503
 msgid "Organization or a primary Contact is required to create a customer"
 msgstr ""
 
@@ -5519,9 +5620,18 @@ msgstr ""
 msgid "Organizations"
 msgstr "Организации"
 
+#: frontend/src/pages/PersonaForm.vue:124
+msgid "Organize my contacts"
+msgstr ""
+
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:151
 msgid "Organizer"
 msgstr "Организатор"
+
+#: frontend/src/pages/PersonaForm.vue:65 frontend/src/pages/PersonaForm.vue:82
+#: frontend/src/pages/PersonaForm.vue:103
+msgid "Other"
+msgstr "Другие"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:605
 msgid "Other Features"
@@ -5645,6 +5755,11 @@ msgstr ""
 msgid "Person"
 msgstr "Человек"
 
+#. Label of the persona_captured (Check) field in DocType 'FCRM Settings'
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
+msgid "Persona Captured"
+msgstr "Персона захвачена"
+
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:120
 msgid "Personal Mobile No."
 msgstr ""
@@ -5665,6 +5780,10 @@ msgstr "Телефон"
 msgid "Phone Numbers"
 msgstr "Телефонный номер"
 
+#: frontend/src/pages/PersonaForm.vue:78
+msgid "Phone calls"
+msgstr ""
+
 #: frontend/src/components/ViewControls.vue:1097
 msgid "Pin View"
 msgstr "Закрепить вид"
@@ -5681,6 +5800,10 @@ msgstr ""
 #: frontend/src/components/ViewControls.vue:686
 msgid "Pinned Views"
 msgstr "Закрепленные просмотры"
+
+#: frontend/src/pages/PersonaForm.vue:63
+msgid "Pipedrive"
+msgstr ""
 
 #: frontend/src/components/Activities/AudioPlayer.vue:176
 msgid "Playback Speed"
@@ -6024,6 +6147,10 @@ msgstr ""
 msgid "Referenced WhatsApp message does not exist."
 msgstr ""
 
+#: frontend/src/pages/PersonaForm.vue:79
+msgid "Referrals"
+msgstr ""
+
 #: frontend/src/components/ViewControls.vue:26
 #: frontend/src/components/ViewControls.vue:159
 #: frontend/src/pages/Dashboard.vue:10
@@ -6130,6 +6257,10 @@ msgstr ""
 msgid "Reopen lead/deal on new communication"
 msgstr ""
 
+#: frontend/src/pages/PersonaForm.vue:102
+msgid "Replacing my current CRM"
+msgstr ""
+
 #: frontend/src/components/Activities/EmailArea.vue:30
 #: frontend/src/components/CommunicationArea.vue:9
 msgid "Reply"
@@ -6142,6 +6273,10 @@ msgstr "Ответить Всем"
 #: frontend/src/components/Modals/AboutModal.vue:65
 msgid "Report an Issue"
 msgstr "Сообщить о проблеме"
+
+#: frontend/src/pages/PersonaForm.vue:101
+msgid "Reporting & forecasting"
+msgstr ""
 
 #. Label of the reports_to (Link) field in DocType 'CRM Sales Hierarchy'
 #: crm/fcrm/doctype/crm_sales_hierarchy/crm_sales_hierarchy.json
@@ -6495,6 +6630,10 @@ msgstr "Продавец"
 msgid "Sales trend"
 msgstr "Тенденция продаж"
 
+#: frontend/src/pages/PersonaForm.vue:61
+msgid "Salesforce"
+msgstr "Отдел продаж"
+
 #: crm/api/dashboard.py:1133
 msgid "Salesperson"
 msgstr "Менеджер продаж"
@@ -6647,6 +6786,10 @@ msgstr ""
 msgid "Select a Value"
 msgstr ""
 
+#: frontend/src/components/Questionnaire.vue:93
+msgid "Select all that apply"
+msgstr ""
+
 #: frontend/src/components/Filter.vue:601
 msgid "Select an Option"
 msgstr ""
@@ -6778,6 +6921,12 @@ msgstr "Установить как SLA по умолчанию"
 msgid "Set location…"
 msgstr ""
 
+#. Description of the 'Persona Captured' (Check) field in DocType 'FCRM
+#. Settings'
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
+msgid "Set once the first admin completes the onboarding persona questionnaire"
+msgstr ""
+
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:102
 msgid "Set the Exotel number to be used for outgoing calls."
 msgstr ""
@@ -6788,6 +6937,10 @@ msgstr ""
 
 #: frontend/src/components/Settings/BrandSettings.vue:33
 msgid "Set the name of your brand. Appears in the left sidebar."
+msgstr ""
+
+#: frontend/src/pages/PersonaForm.vue:123
+msgid "Set up my sales pipeline"
 msgstr ""
 
 #: frontend/src/components/Settings/Sla/SlaHolidays.vue:9
@@ -6935,6 +7088,10 @@ msgstr ""
 msgid "Site connection validated"
 msgstr ""
 
+#: frontend/src/components/Questionnaire.vue:97
+msgid "Skip for now"
+msgstr ""
+
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:438
 msgid "Some error occurred while creating SLA Policy"
 msgstr ""
@@ -7006,6 +7163,10 @@ msgstr "Источник успешно включен"
 #: frontend/src/components/Dashboard/DashboardItem.vue:21
 msgid "Spacer"
 msgstr "Проставка"
+
+#: frontend/src/pages/PersonaForm.vue:59
+msgid "Spreadsheets"
+msgstr ""
 
 #: crm/api/dashboard.py:790 crm/api/dashboard.py:848
 msgid "Stage"
@@ -7096,6 +7257,10 @@ msgstr "Статус журнал изменения"
 #: frontend/src/components/Modals/LeadModal.vue:152
 msgid "Status is required"
 msgstr "Укажите статус"
+
+#: frontend/src/components/Questionnaire.vue:91
+msgid "Step {0} of {1}"
+msgstr ""
 
 #. Label of the subdomain (Data) field in DocType 'CRM Exotel Settings'
 #: crm/fcrm/doctype/crm_exotel_settings/crm_exotel_settings.json
@@ -7368,6 +7533,10 @@ msgstr ""
 
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:177
 msgid "This field is required"
+msgstr ""
+
+#: frontend/src/pages/PersonaForm.vue:58
+msgid "This is my first CRM"
 msgstr ""
 
 #: crm/www/crm.py:31
@@ -7934,6 +8103,10 @@ msgstr "Просмотры"
 msgid "Visibility"
 msgstr "Видимость"
 
+#: frontend/src/pages/PersonaForm.vue:80
+msgid "Walk-ins"
+msgstr ""
+
 #: frontend/src/components/SalesHierarchyBanner.vue:20
 msgid "We are changing how permissions work in Frappe CRM"
 msgstr ""
@@ -7958,6 +8131,10 @@ msgstr "Токен проверки Webhook"
 #: frontend/src/components/Modals/AboutModal.vue:50
 msgid "Website"
 msgstr "Сайт"
+
+#: frontend/src/pages/PersonaForm.vue:73
+msgid "Website forms"
+msgstr ""
 
 #. Option for the 'Weekly Off' (Select) field in DocType 'CRM Holiday List'
 #. Option for the 'Workday' (Select) field in DocType 'CRM Service Day'
@@ -7988,9 +8165,21 @@ msgstr "Еженедельный выходной"
 msgid "Welcome Message"
 msgstr "Приветственное сообщение"
 
+#: frontend/src/pages/PersonaForm.vue:132
+msgid "Welcome to Frappe CRM"
+msgstr ""
+
 #: frontend/src/pages/Welcome.vue:4
 msgid "Welcome {0}, lets add your first lead"
 msgstr "Добро пожаловать {0}, давайте добавим вашего первого лида"
+
+#: frontend/src/pages/PersonaForm.vue:87
+msgid "What are your biggest challenges with sales today?"
+msgstr ""
+
+#: frontend/src/pages/PersonaForm.vue:118
+msgid "What would you like to accomplish first?"
+msgstr ""
 
 #. Option for the 'Type' (Select) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
@@ -7998,6 +8187,7 @@ msgstr "Добро пожаловать {0}, давайте добавим ва�
 #: frontend/src/components/Settings/Settings.vue:225
 #: frontend/src/pages/Deal.vue:606 frontend/src/pages/Lead.vue:458
 #: frontend/src/pages/MobileDeal.vue:478 frontend/src/pages/MobileLead.vue:325
+#: frontend/src/pages/PersonaForm.vue:76
 msgid "WhatsApp"
 msgstr "WhatsApp"
 
@@ -8155,11 +8345,11 @@ msgstr "Вы будете перенаправлены на страницу п�
 msgid "You will need a Meta developer account and an access token to sync leads from Facebook. Read more"
 msgstr "Для синхронизации лидов из Facebook вам понадобится учётная запись разработчика Meta и токен доступа. Подробнее"
 
-#: crm/api/todo.py:100
+#: crm/api/todo.py:110
 msgid "Your assignment on task {0} has been removed by {1}"
 msgstr "Ваше задание {0} было удалено пользователем {1}"
 
-#: crm/api/todo.py:37 crm/api/todo.py:78
+#: crm/api/todo.py:47 crm/api/todo.py:88
 msgid "Your assignment on {0} {1} has been removed by {2}"
 msgstr "Ваше задание на {0} {1} было удалено {2}"
 
@@ -8175,6 +8365,10 @@ msgstr "Ваше старое условие будет перезаписано
 msgid "Your old conditions will be overwritten. Are you sure you want to save?"
 msgstr "Ваше старое условие будет перезаписано. Вы уверены, что хотите сохранить?"
 
+#: frontend/src/pages/PersonaForm.vue:62
+msgid "Zoho CRM"
+msgstr ""
+
 #: frontend/src/components/Activities/CommentArea.vue:9
 msgid "added a"
 msgstr "добавил"
@@ -8186,11 +8380,11 @@ msgstr "добавил"
 msgid "amber"
 msgstr "янтарный"
 
-#: crm/api/todo.py:109
+#: crm/api/todo.py:119
 msgid "assigned a new task {0} to you"
 msgstr "вам назначена новая задача {0}"
 
-#: crm/api/todo.py:89
+#: crm/api/todo.py:99
 msgid "assigned a {0} {1} to you"
 msgstr "Вам назначен {0} {1}"
 
@@ -8605,7 +8799,7 @@ msgstr ""
 msgid "{0} M"
 msgstr "{0} М"
 
-#: crm/api/todo.py:41
+#: crm/api/todo.py:51
 msgid "{0} assigned a {1} {2} to you"
 msgstr "{0} назначил вам {1} {2}"
 
@@ -8705,6 +8899,11 @@ msgstr "{0} лет назад"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:645
 msgid "{0} yes"
+msgstr ""
+
+#: frontend/src/components/Questionnaire.vue:92
+#, python-format
+msgid "{0}% complete"
 msgstr ""
 
 #: frontend/src/utils/scriptHelpers.js:43

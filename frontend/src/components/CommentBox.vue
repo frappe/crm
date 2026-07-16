@@ -136,7 +136,7 @@ const users = computed(() => {
     usersList.data?.crmUsers
       ?.filter((user) => user.enabled)
       .map((user) => ({
-        label: user.full_name.trimEnd(),
+        label: user.full_name?.trim() || user.name,
         value: user.name,
       })) || []
   )
