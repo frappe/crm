@@ -418,6 +418,8 @@ const isDirty = computed(() => {
 const saveSettings = async () => {
   if (!validateData() || !validateSiteConnection()) return
 
+  const wasEnabled = !!erpnextCRMSettingsResource.originalDoc?.enabled
+
   updateFields(
     {
       enabled: erpnextCRMSettingsResource.doc.enabled,
@@ -434,7 +436,7 @@ const saveSettings = async () => {
     },
     {
       onSuccess: async () => {
-        if (erpnextCRMSettingsResource.doc.enabled) {
+        if (erpnextCRMSettingsResource.doc.enabled && !wasEnabled) {
           capture('erpnext_integration_enabled')
         }
         if (!erpnextCRMSettingsResource.isERPNextInstalled.data) {
