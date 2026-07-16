@@ -319,7 +319,7 @@ _ORG_TYPES = {
 # Full-segment match, not a prefix: "about-our-reporting" (an ESG page) must not
 # qualify just because it starts with "about-".
 _ABOUT_SEGMENT_RE = re.compile(
-	r"^(about|about-us|aboutus|company|who-we-are|our-story|overview|mission)$",
+	r"^(about|about-us|about_us|aboutus|company|who-we-are|our-story|overview|mission)$",
 	re.I,
 )
 _NON_ABOUT_WORDS = (
