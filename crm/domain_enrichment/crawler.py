@@ -57,8 +57,19 @@ SKIP_SCHEMES = ("mailto:", "tel:", "javascript:", "data:", "#")
 
 
 def normalize_url(url: str) -> str:
-	"""Strip fragments and trailing slashes for stable dedupe."""
+	"""Strip fragments, query strings and trailing slashes for stable dedupe.
+
+	Query strings are dropped rather than canonicalized: for the pages this crawler
+	cares about (About/Contact/Team/company pages) a query string is overwhelmingly
+	tracking noise (``?utm_*``, ``?ref=``) or a variant parameter that still renders
+	the same page, not a distinct page identity. Keeping them let the same page get
+	queued and fetched multiple times under different query strings, wasting real
+	page-budget slots on duplicate content.
+	"""
 	url, _frag = urldefrag(url)
+	parsed = urlparse(url)
+	if parsed.query:
+		url = parsed._replace(query="").geturl()
 	if url.endswith("/") and len(urlparse(url).path) > 1:
 		url = url.rstrip("/")
 	return url
@@ -107,8 +118,16 @@ def same_site(url: str, base_netloc: str) -> bool:
 def _link_priority(url: str, anchor_text: str, link_priority: list) -> float:
 	"""Lower number = crawl sooner. Matching links score by their keyword's rank,
 	weighted; non-matching pages sort last. ``link_priority`` is a list of
-	(keyword, weight) tuples from config."""
-	haystack = (urlparse(url).path + " " + (anchor_text or "")).lower()
+	(keyword, weight) tuples from config.
+
+	Matches against the leaf path segment only, not the whole path: otherwise any
+	page nested under a segment that happens to match (e.g. "/about-us/corporate-news/
+	2023/some-unrelated-article") inherits top-tier priority from an ancestor
+	directory alone, starving the pages the keyword was actually meant to prioritize.
+	"""
+	path = urlparse(url).path.rstrip("/")
+	leaf = path.rsplit("/", 1)[-1] if path else ""
+	haystack = (leaf + " " + (anchor_text or "")).lower()
 	best = None
 	for idx, (kw, weight) in enumerate(link_priority):
 		if kw and kw in haystack:
@@ -425,6 +444,11 @@ def crawl(start_url, cfg, session=None, progress=None):
 	robots = load_robots(start_url, cfg, session) if crawl_beyond_homepage else None
 
 	visited = set()
+	# Resolved (post-redirect) URLs already crawled -- catches a duplicate that the
+	# pre-fetch `visited` check above can't (e.g. /contact.html redirecting to an
+	# already-crawled /contact): the two *requested* URLs genuinely differ, so only
+	# the resolved URL reveals they're the same page.
+	visited_resolved = set()
 	results = []
 	# Queue holds (url, depth, anchor_text). We pop the highest-priority item.
 	queue = deque([(start_url, 0, "")])
@@ -468,14 +492,48 @@ def crawl(start_url, cfg, session=None, progress=None):
 			if progress:
 				progress(f"Crawling {url}")
 			page, soup = crawl_page(url, cfg, session=session)
-			results.append((page, soup))
+			resolved = normalize_url(page.url) if page.url else ""
 
-			# If the homepage redirected to another host, adopt the resolved domain as
-			# the same-site base so the rest of the crawl follows the real site.
-			if len(results) == 1:
-				resolved_netloc = urlparse(page.url).netloc
-				if resolved_netloc:
-					base_netloc = resolved_netloc
+			if not results:
+				# Homepage: never a duplicate (nothing crawled yet). If it
+				# redirected to another host, adopt the resolved domain as the
+				# same-site base so the rest of the crawl follows the real site.
+				if resolved:
+					base_netloc = urlparse(page.url).netloc or base_netloc
+			else:
+				# A redirect can land on a page already crawled under a different
+				# requested URL (e.g. /contact.html -> /contact) -- drop the
+				# duplicate silently instead of double-reporting/double-extracting
+				# the same content, and don't let it consume a page-budget slot:
+				# the loop just fetches one more page in its place.
+				if resolved and resolved in visited_resolved:
+					continue
+				if soup is not None and page.url and not same_site(page.url, base_netloc):
+					# A same-site link that redirected off-domain mid-crawl.
+					# same_site() is only re-checked here, after the fact:
+					# fetch()'s redirect loop (http.py) re-validates each hop for
+					# SSRF safety but has no notion of "stay on this site" -- it's
+					# a generic HTTP layer also used for robots.txt/sitemaps.
+					# Treat the resolved page as out of scope: keep it visible as
+					# an error (consistent with a network failure) but don't
+					# extract from it or follow its links. Clear every parsed
+					# artifact, not just html/text -- title/headings are
+					# populated by crawl_page() before this check runs, and
+					# extractors (e.g. classify_industry's About-page lookup)
+					# read them straight off the CrawledPage without checking
+					# soup/error, so leaving them behind would leak off-site
+					# content past this guard.
+					page.error = page.error or f"redirected off-site to {urlparse(page.url).netloc}"
+					page.html = ""
+					page.text = ""
+					page.title = ""
+					page.headings = []
+					soup = None
+
+			if resolved:
+				visited_resolved.add(resolved)
+
+			results.append((page, soup))
 
 			if soup is None or depth >= max_depth:
 				continue
