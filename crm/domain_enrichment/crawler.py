@@ -93,9 +93,7 @@ def same_site(url: str, base_netloc: str) -> bool:
 
 
 def _link_priority(url: str, anchor_text: str, link_priority: list) -> float:
-	"""Lower number = crawl sooner. Matches the leaf path segment only -- an
-	ancestor match alone (e.g. a news article under "/about-us/...") must not
-	inherit that segment's priority."""
+	"""Lower number = crawl sooner."""
 	path = urlparse(url).path.rstrip("/")
 	leaf = path.rsplit("/", 1)[-1] if path else ""
 	haystack = (leaf + " " + (anchor_text or "")).lower()
@@ -123,7 +121,6 @@ def _is_crawlable(url: str, skip_patterns: list) -> bool:
 			if re.search(pat, url, re.IGNORECASE):
 				return False
 		except re.error:
-			# Malformed regex: fall back to substring match.
 			if pat.lower() in low:
 				return False
 	return True
@@ -151,7 +148,6 @@ def extract_content(soup: BeautifulSoup) -> dict:
 
 
 def _links_on_page(soup, page_url, base_netloc, skip_patterns):
-	"""Yield (normalized_url, anchor_text) for same-site, crawlable links."""
 	for a in soup.find_all("a", href=True):
 		href = a["href"].strip()
 		if not href or any(href.lower().startswith(s) for s in SKIP_SCHEMES):
@@ -175,8 +171,6 @@ def _parse_and_fill(page, html):
 
 
 def crawl_page(url, cfg, session=None):
-	"""Returns (CrawledPage, soup_or_None); failures land on ``CrawledPage.error``
-	instead of raising."""
 	status, html, error, final_url = fetch(url, cfg, session=session)
 	# Resolved URL: links and provenance match the host that actually served the body.
 	page = CrawledPage(url=final_url or url, status_code=status, html=html or "", error=error)
@@ -189,8 +183,7 @@ ABOUT_MIN_TEXT = 200
 
 
 def load_robots(start_url, cfg, session=None):
-	"""Returns ``None`` when absent/unreadable (convention: allow all). Never raises
-	-- robots is advisory and must not break enrichment."""
+	"""Returns ``None`` when absent/unreadable (convention: allow all)."""
 	try:
 		parsed = urlparse(normalize_url(start_url))
 		if not parsed.netloc:
@@ -213,7 +206,6 @@ def load_robots(start_url, cfg, session=None):
 
 
 def _robots_allows(robots, user_agent, url):
-	"""True if robots is absent or permits ``url`` for ``user_agent``; fails open."""
 	if robots is None:
 		return True
 	try:
@@ -223,8 +215,6 @@ def _robots_allows(robots, user_agent, url):
 
 
 def probe_about_pages(home_url, cfg, session=None, skip_urls=()):
-	"""Returns ``[(CrawledPage, soup)]`` for the first readable hit among
-	``ABOUT_PROBE_PATHS`` not already crawled, else ``[]``."""
 	skip = {normalize_url(u) for u in skip_urls}
 	user_agent = cfg.setting("user_agent")
 	own_session = session is None
@@ -256,7 +246,6 @@ def probe_about_pages(home_url, cfg, session=None, skip_urls=()):
 # Sitemap discovery
 # --------------------------------------------------------------------------- #
 # Additive on top of link-following BFS: seeds pages the sitemap author flagged.
-# No sitemap, or an unreadable one, falls through to plain link-following, silently.
 SITEMAP_MAX_SITEMAPS = 5  # sitemap files fetched; guards pathological sitemap indexes
 SITEMAP_MAX_URLS = 200  # total <loc> entries collected across all fetched sitemaps
 
@@ -294,9 +283,8 @@ def _parse_sitemap(xml_text: str):
 
 
 def discover_sitemap_urls(start_url, cfg, session, robots):
-	"""robots.txt ``Sitemap:`` first, else ``/sitemap.xml``. Follows one level of
-	``<sitemapindex>`` nesting, bounded by ``SITEMAP_MAX_SITEMAPS``/``SITEMAP_MAX_URLS``.
-	Never raises -- any failure returns ``[]`` and falls through to plain BFS."""
+	"""Falls back from robots.txt ``Sitemap:`` to ``/sitemap.xml``, bounded by
+	``SITEMAP_MAX_SITEMAPS``/``SITEMAP_MAX_URLS``."""
 	try:
 		parsed = urlparse(normalize_url(start_url))
 		if not parsed.netloc:
@@ -354,8 +342,6 @@ def discover_sitemap_urls(start_url, cfg, session, robots):
 
 
 def crawl(start_url, cfg, session=None, progress=None):
-	"""Breadth-first crawl prioritizing company-info pages. Caps, link-priority and
-	skip patterns come from ``cfg``. ``progress`` is an optional ``fn(message)`` callback."""
 	max_pages = int(cfg.setting("max_pages"))
 	max_depth = int(cfg.setting("max_depth"))
 	link_priority = cfg.link_priority
