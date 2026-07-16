@@ -35,6 +35,7 @@ DEFAULT_SETTINGS = {
 	"auto_enrich": 0,
 	"max_pages": 10,
 	"max_depth": 2,
+	"use_sitemap": 1,
 	"request_timeout": 10,
 	"max_download_bytes": 3_000_000,
 	"retry_count": 2,

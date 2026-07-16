@@ -10,8 +10,11 @@ rejection) and ``extract_content`` (title/headings/visible text).
 
 from __future__ import annotations
 
+from unittest import mock
+
 from frappe.tests import UnitTestCase
 
+from crm.domain_enrichment import crawler
 from crm.domain_enrichment.crawler import (
 	_is_crawlable,
 	_link_priority,
@@ -21,6 +24,7 @@ from crm.domain_enrichment.crawler import (
 	same_site,
 )
 from crm.domain_enrichment.tests import fixtures
+from crm.domain_enrichment.tests.fixtures import make_config
 
 # The default BFS priority keywords used by the engine when Settings has none.
 PRIORITY = [
@@ -144,3 +148,183 @@ class ExtractContentTest(UnitTestCase):
 		content = extract_content(soup)
 		self.assertIn("Visible", content["text"])
 		self.assertNotIn("var x", content["text"])
+
+
+class ParseSitemapTest(UnitTestCase):
+	def test_parses_urlset(self):
+		kind, locs = crawler._parse_sitemap(fixtures.URLSET_XML)
+		self.assertEqual(kind, "urlset")
+		self.assertIn("https://acme.example/about", locs)
+		self.assertIn("https://acme.example/contact", locs)
+		self.assertIn("https://acme.example/blog/post-1", locs)
+
+	def test_parses_sitemapindex(self):
+		kind, locs = crawler._parse_sitemap(fixtures.SITEMAP_INDEX_XML)
+		self.assertEqual(kind, "sitemapindex")
+		self.assertEqual(
+			locs,
+			["https://acme.example/sitemap-pages.xml", "https://acme.example/sitemap-blog.xml"],
+		)
+
+	def test_malformed_xml_returns_none_kind(self):
+		kind, locs = crawler._parse_sitemap("<urlset><url><loc>unclosed")
+		self.assertIsNone(kind)
+		self.assertEqual(locs, [])
+
+	def test_doctype_rejected_before_parsing(self):
+		# Must never reach ET.fromstring with a DTD payload.
+		kind, locs = crawler._parse_sitemap(fixtures.MALICIOUS_DOCTYPE_XML)
+		self.assertIsNone(kind)
+		self.assertEqual(locs, [])
+
+	def test_unrelated_root_element_ignored(self):
+		kind, locs = crawler._parse_sitemap("<rss><channel></channel></rss>")
+		self.assertIsNone(kind)
+		self.assertEqual(locs, [])
+
+
+class DiscoverSitemapUrlsTest(UnitTestCase):
+	def setUp(self):
+		self.cfg = make_config()
+
+	def test_uses_robots_declared_sitemap(self):
+		robots = mock.Mock()
+		robots.site_maps.return_value = ["https://acme.example/my-sitemap.xml"]
+		responses = {"https://acme.example/my-sitemap.xml": (200, fixtures.URLSET_XML)}
+		with mock.patch.object(crawler, "fetch", side_effect=fixtures.fake_fetch(responses)):
+			urls = crawler.discover_sitemap_urls("https://acme.example", self.cfg, None, robots)
+		self.assertIn("https://acme.example/about", urls)
+		self.assertIn("https://acme.example/contact", urls)
+
+	def test_falls_back_to_conventional_path_when_robots_declares_none(self):
+		robots = mock.Mock()
+		robots.site_maps.return_value = None
+		responses = {"https://acme.example/sitemap.xml": (200, fixtures.URLSET_XML)}
+		with mock.patch.object(crawler, "fetch", side_effect=fixtures.fake_fetch(responses)):
+			urls = crawler.discover_sitemap_urls("https://acme.example", self.cfg, None, robots)
+		self.assertIn("https://acme.example/about", urls)
+
+	def test_falls_back_when_robots_is_none(self):
+		responses = {"https://acme.example/sitemap.xml": (200, fixtures.URLSET_XML)}
+		with mock.patch.object(crawler, "fetch", side_effect=fixtures.fake_fetch(responses)):
+			urls = crawler.discover_sitemap_urls("https://acme.example", self.cfg, None, None)
+		self.assertIn("https://acme.example/about", urls)
+
+	def test_missing_sitemap_returns_empty_without_raising(self):
+		with mock.patch.object(crawler, "fetch", side_effect=fixtures.fake_fetch({})):
+			urls = crawler.discover_sitemap_urls("https://acme.example", self.cfg, None, None)
+		self.assertEqual(urls, [])
+
+	def test_malformed_xml_returns_empty(self):
+		responses = {"https://acme.example/sitemap.xml": (200, "not xml at all")}
+		with mock.patch.object(crawler, "fetch", side_effect=fixtures.fake_fetch(responses)):
+			urls = crawler.discover_sitemap_urls("https://acme.example", self.cfg, None, None)
+		self.assertEqual(urls, [])
+
+	def test_follows_one_level_of_sitemap_index(self):
+		responses = {
+			"https://acme.example/sitemap.xml": (200, fixtures.SITEMAP_INDEX_XML),
+			"https://acme.example/sitemap-pages.xml": (200, fixtures.URLSET_XML),
+			"https://acme.example/sitemap-blog.xml": (
+				200,
+				'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
+				"<url><loc>https://acme.example/blog/hello</loc></url></urlset>",
+			),
+		}
+		with mock.patch.object(crawler, "fetch", side_effect=fixtures.fake_fetch(responses)):
+			urls = crawler.discover_sitemap_urls("https://acme.example", self.cfg, None, None)
+		self.assertIn("https://acme.example/about", urls)
+		self.assertIn("https://acme.example/blog/hello", urls)
+
+	def test_rejects_cross_site_sitemap(self):
+		# The sitemap FILE lives on a different site than the one we're enriching --
+		# must never be fetched, regardless of what its <loc> entries claim. Uses
+		# real-style ".com" hosts (not "*.example") so registrable_domain() actually
+		# differentiates them -- ".example" isn't in the bundled Public Suffix List,
+		# so acme.example/evil.example would collapse to the same registrable domain.
+		robots = mock.Mock()
+		robots.site_maps.return_value = ["https://evil-corp.com/sitemap.xml"]
+		responses = {
+			"https://evil-corp.com/sitemap.xml": (
+				200,
+				'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
+				"<url><loc>https://evil-corp.com/about</loc></url></urlset>",
+			)
+		}
+		with mock.patch.object(crawler, "fetch", side_effect=fixtures.fake_fetch(responses)):
+			urls = crawler.discover_sitemap_urls("https://acme-corp.com", self.cfg, None, robots)
+		self.assertEqual(urls, [])
+
+
+class CrawlSitemapSeedingTest(UnitTestCase):
+	"""End-to-end: crawl() seeded from a robots.txt-declared sitemap.
+
+	Sitemap discovery must be a pure addition on top of the ordinary BFS: it should
+	surface a page that isn't linked from the homepage, without displacing the
+	homepage as the first crawled result, and it must disappear cleanly (no error)
+	when disabled or when the site has no sitemap at all.
+	"""
+
+	HOMEPAGE_HTML = '<html><head><title>Acme</title></head><body><a href="/contact">Contact</a></body></html>'
+	CONTACT_HTML = "<html><body>Contact us</body></html>"
+	HIDDEN_ABOUT_HTML = "<html><head><title>Hidden About</title></head><body><h1>About</h1></body></html>"
+	ROBOTS_TXT = "Sitemap: https://acme.example/sitemap.xml"
+	SITEMAP_XML = (
+		'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
+		"<url><loc>https://acme.example/hidden-about</loc></url></urlset>"
+	)
+
+	def _responses(self, **overrides):
+		base = {
+			"https://acme.example": (200, self.HOMEPAGE_HTML),
+			"https://acme.example/robots.txt": (200, self.ROBOTS_TXT),
+			"https://acme.example/sitemap.xml": (200, self.SITEMAP_XML),
+			"https://acme.example/contact": (200, self.CONTACT_HTML),
+			"https://acme.example/hidden-about": (200, self.HIDDEN_ABOUT_HTML),
+		}
+		base.update(overrides)
+		return base
+
+	def test_sitemap_only_page_is_crawled_homepage_stays_first(self):
+		cfg = make_config(
+			settings={"max_pages": 10, "max_depth": 1, "use_sitemap": 1},
+			link_priority=PRIORITY,
+			skip_patterns=[],
+		)
+		with mock.patch.object(crawler, "fetch", side_effect=fixtures.fake_fetch(self._responses())):
+			results = crawler.crawl("https://acme.example", cfg)
+		urls = [page.url for page, _soup in results]
+		self.assertEqual(urls[0], "https://acme.example")
+		self.assertIn("https://acme.example/hidden-about", urls)
+		self.assertIn("https://acme.example/contact", urls)
+
+	def test_use_sitemap_disabled_never_fetches_sitemap(self):
+		cfg = make_config(
+			settings={"max_pages": 10, "max_depth": 1, "use_sitemap": 0},
+			link_priority=PRIORITY,
+			skip_patterns=[],
+		)
+		with mock.patch.object(crawler, "fetch", side_effect=fixtures.fake_fetch(self._responses())):
+			results = crawler.crawl("https://acme.example", cfg)
+		urls = [page.url for page, _soup in results]
+		self.assertEqual(urls[0], "https://acme.example")
+		self.assertNotIn("https://acme.example/hidden-about", urls)
+		self.assertIn("https://acme.example/contact", urls)
+
+	def test_no_sitemap_falls_through_to_plain_link_following(self):
+		# robots.txt exists but declares no sitemap, and /sitemap.xml 404s -- the
+		# crawl must proceed exactly as ordinary link-following, no error surfaced.
+		responses = self._responses(**{"https://acme.example/robots.txt": (200, "User-agent: *")})
+		del responses["https://acme.example/sitemap.xml"]
+		cfg = make_config(
+			settings={"max_pages": 10, "max_depth": 1, "use_sitemap": 1},
+			link_priority=PRIORITY,
+			skip_patterns=[],
+		)
+		with mock.patch.object(crawler, "fetch", side_effect=fixtures.fake_fetch(responses)):
+			results = crawler.crawl("https://acme.example", cfg)
+		urls = [page.url for page, _soup in results]
+		self.assertEqual(urls[0], "https://acme.example")
+		self.assertIn("https://acme.example/contact", urls)
+		self.assertNotIn("https://acme.example/hidden-about", urls)
+		self.assertEqual(len(results), 2)  # homepage + contact only, no crash, no phantom pages
