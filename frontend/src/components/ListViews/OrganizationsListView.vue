@@ -23,11 +23,11 @@
         v-for="column in columns"
         :key="column.key"
         :item="column"
-        @columnWidthUpdated="emit('columnWidthUpdated', column)"
+        @columnWidthUpdated="(e) => onColumnWidthUpdated(e, column)"
       >
         <Button
           v-if="column.key == '_liked_by'"
-          variant="ghosted"
+          variant="ghost"
           class="!h-4"
           :class="isLikeFilterApplied ? 'fill-red-500' : 'fill-white'"
           @click="() => emit('applyLikeFilter')"
@@ -84,7 +84,7 @@
           <div v-else-if="column.key === '_liked_by'">
             <Button
               v-if="column.key == '_liked_by'"
-              variant="ghosted"
+              variant="ghost"
               :class="isLiked(item) ? 'fill-red-500' : 'fill-white'"
               @click.stop.prevent="
                 () => emit('likeDoc', { name: row.name, liked: isLiked(item) })
@@ -207,6 +207,11 @@ const route = useRoute()
 
 const pageLengthCount = defineModel({ type: Number })
 const list = defineModel('list', { type: Object })
+
+function onColumnWidthUpdated({ width, save }, column) {
+  column.width = width
+  if (save) emit('columnWidthUpdated', column)
+}
 
 function getLabel(label, column) {
   if (column.type === 'Duration') return formatDuration(label)
