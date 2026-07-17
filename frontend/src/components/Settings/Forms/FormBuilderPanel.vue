@@ -384,7 +384,10 @@
                       <button
                         class="flex text-ink-gray-5 transition-colors hover:text-ink-gray-8"
                         :title="__('Copy link')"
-                        @click="copyToClipboard(publicUrl)"
+                        @click="
+                          copyToClipboard(publicUrl),
+                            capture('form_embed_copied', { embed_type: 'link' })
+                        "
                       >
                         <LucideCopy class="h-4 w-4" />
                       </button>
@@ -436,7 +439,12 @@
                       <button
                         class="absolute right-2 top-2 flex text-ink-gray-5 transition-colors hover:text-ink-gray-8"
                         :title="__('Copy')"
-                        @click="copyToClipboard(iframeSnippet)"
+                        @click="
+                          copyToClipboard(iframeSnippet),
+                            capture('form_embed_copied', {
+                              embed_type: 'iframe',
+                            })
+                        "
                       >
                         <LucideCopy class="h-4 w-4" />
                       </button>
@@ -647,10 +655,12 @@ import LucideCheck from '~icons/lucide/check'
 import LucideLayoutList from '~icons/lucide/layout-list'
 import LucideSettings from '~icons/lucide/settings'
 import { globalStore } from '@/stores/global'
+import { useTelemetry } from 'frappe-ui/frappe'
 import { copyToClipboard } from '@/utils'
 import { ref, reactive, computed, watch, onMounted } from 'vue'
 
 const { $dialog } = globalStore()
+const { capture } = useTelemetry()
 
 const BREAK_TYPES = ['Section Break', 'Column Break']
 
@@ -666,6 +676,8 @@ const docLabel = (dt) => targetOptions.find((o) => o.value === dt)?.label || dt
 const loaded = ref(false)
 const saving = ref(false)
 const dirty = ref(false)
+
+const savedPublished = ref(false)
 const mode = ref('edit') // edit | preview
 const tabIndex = ref(0)
 const tabs = [
@@ -967,6 +979,7 @@ function addFieldToColumn(col, option) {
     placeholder: '',
     field_description: '',
   })
+  capture('form_field_added', { field_type: af.fieldtype })
   syncFromModel()
 }
 
@@ -1137,6 +1150,7 @@ createResource({
     form.redirect_url = doc.redirect_url || ''
     form.allowed_embedding_domains = doc.allowed_embedding_domains || ''
     form.published = doc.published || 0
+    savedPublished.value = !!form.published
     form.fields = (doc.fields || []).map((f) => ({
       name: f.name,
       fieldname: f.fieldname,
@@ -1373,6 +1387,10 @@ async function save({ silent = false } = {}) {
     ;(doc.fields || []).forEach((df, i) => {
       if (form.fields[i]) form.fields[i].name = df.name
     })
+    if (form.published && !savedPublished.value) {
+      capture('form_published', { source: 'builder' })
+    }
+    savedPublished.value = !!form.published
     dirty.value = false
     emit('saved')
     return true

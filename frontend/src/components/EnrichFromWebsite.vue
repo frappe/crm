@@ -16,6 +16,7 @@
 <script setup>
 import { ref, onBeforeUnmount } from 'vue'
 import { Button, FeatherIcon, call, toast } from 'frappe-ui'
+import { useTelemetry } from 'frappe-ui/frappe'
 import { globalStore } from '@/stores/global'
 import { organizationsStore } from '@/stores/organizations'
 
@@ -29,6 +30,7 @@ const emit = defineEmits(['done'])
 
 const { $socket } = globalStore()
 const { organizations } = organizationsStore()
+const { capture } = useTelemetry()
 const EVENT = 'domain_enrichment_progress'
 
 const running = ref(false)
@@ -79,6 +81,10 @@ async function enrich() {
     return
   }
 
+  capture('enrichment_quick_triggered', {
+    doctype: props.doctype,
+    source: 'detail',
+  })
   running.value = true
   // Subscribe before enqueueing so we never miss the completion event.
   $socket.on(EVENT, onProgress)
