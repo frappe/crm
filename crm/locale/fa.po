@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-07-12 10:53+0000\n"
-"PO-Revision-Date: 2026-07-16 11:02\n"
+"PO-Revision-Date: 2026-07-17 11:10\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Persian\n"
 "MIME-Version: 1.0\n"
@@ -2732,7 +2732,7 @@ msgstr ""
 #: frontend/src/components/Modals/LeadModal.vue:16
 #: frontend/src/components/Modals/OrganizationModal.vue:16
 msgid "Edit Fields Layout"
-msgstr ""
+msgstr "ویرایش چیدمان فیلدها"
 
 #: frontend/src/components/Controls/Grid.vue:57
 msgid "Edit Grid Fields"
@@ -2760,7 +2760,7 @@ msgstr ""
 
 #: frontend/src/components/Controls/Grid.vue:414
 msgid "Edit Row"
-msgstr ""
+msgstr "ویرایش ردیف"
 
 #: frontend/src/components/Modals/CallLogDetailModal.vue:25
 msgid "Edit Task"
