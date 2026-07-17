@@ -89,7 +89,7 @@
    "depends_on": "eval:doc.enabled && !doc.is_erpnext_in_different_site",
    "fieldname": "sync_products",
    "fieldtype": "Check",
-   "label": "Sync Products with ERPNext"
+   "label": "Bidirectional Product Sync"
   },
   {
    "fieldname": "section_break_jnbn",
