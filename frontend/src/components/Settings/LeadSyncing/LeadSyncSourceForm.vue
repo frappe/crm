@@ -176,6 +176,7 @@ import {
   Tabs,
 } from 'frappe-ui'
 
+import { useTelemetry } from 'frappe-ui/frappe'
 import { getMeta } from '@/stores/meta'
 import Link from '@/components/Controls/Link.vue'
 import Grid from '@/components/Controls/Grid.vue'
@@ -240,6 +241,7 @@ const fieldsMap = computed(() => {
 })
 
 const sources = inject('sources')
+const { capture } = useTelemetry()
 const syncSource = ref({
   name: '',
   type: '',
@@ -282,6 +284,9 @@ function createSource() {
     },
     {
       onSuccess: (newDoc) => {
+        capture('lead_sync_source_created', {
+          source_type: syncSource.value.type.value,
+        })
         toast.success(__('Lead Sync Source created successfully'))
         isLocal.value = false
         docResource.value = getSourceDocResource(newDoc.name)

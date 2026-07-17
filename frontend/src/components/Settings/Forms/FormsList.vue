@@ -42,21 +42,21 @@
         <div class="flex items-center p-2 text-sm text-ink-gray-5">
           <div class="w-6/12">{{ __('Form') }}</div>
           <div class="w-3/12">{{ __('Maps to') }}</div>
-          <div class="w-3/12">{{ __('Published') }}</div>
+          <div class="w-3/12">{{ __('Status') }}</div>
         </div>
         <div class="h-px border-t mx-2 border-outline-elevation-2" />
         <template v-for="(form, i) in forms.data" :key="form.name">
           <div
-            class="flex w-full items-center rounded p-2 hover:bg-surface-gray-2"
+            class="flex w-full items-center rounded px-2 py-3 hover:bg-surface-gray-2"
           >
             <div
               class="w-6/12 min-w-0 cursor-pointer"
               @click="$emit('open', form.name)"
             >
-              <div class="truncate text-base text-ink-gray-8">
+              <div class="truncate text-base-medium text-ink-gray-7">
                 {{ form.title }}
               </div>
-              <div class="truncate text-p-sm text-ink-gray-4">
+              <div class="mt-0.5 truncate text-p-base text-ink-gray-5">
                 /crm-form/{{ form.route }}
               </div>
             </div>
@@ -149,11 +149,13 @@ import {
   call,
   toast,
 } from 'frappe-ui'
+import { useTelemetry } from 'frappe-ui/frappe'
 import LucideTextCursorInput from '~icons/lucide/text-cursor-input'
 import { ref, reactive, h } from 'vue'
 import { ConfirmDelete, copyToClipboard } from '../../../utils'
 
 const emit = defineEmits(['open'])
+const { capture } = useTelemetry()
 
 const isConfirmingDelete = ref(false)
 
@@ -216,6 +218,7 @@ async function createForm() {
       name: null,
       form: { title: draft.title, route, document_type: draft.document_type },
     })
+    capture('form_created', { doctype: draft.document_type })
     showCreate.value = false
     emit('open', doc.name)
     forms.reload()
@@ -235,6 +238,7 @@ async function togglePublished(form, value) {
       published: value ? 1 : 0,
     })
     form.published = value ? 1 : 0
+    if (value) capture('form_published', { source: 'list' })
     toast.success(value ? __('Form published') : __('Form unpublished'))
   } catch (e) {
     forms.reload()

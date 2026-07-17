@@ -251,6 +251,7 @@ import { useRemoveNode } from './useRemoveNode'
 import { useDragDrop } from './useDragDrop'
 import { globalStore } from '@/stores/global'
 import { usersStore } from '@/stores/users'
+import { useTelemetry } from 'frappe-ui/frappe'
 import LucideNetwork from '~icons/lucide/network'
 import LucideCircleQuestionMark from '~icons/lucide/circle-question-mark'
 import {
@@ -280,6 +281,7 @@ const ROLE_LABEL = {
 const { users: usersResource, getUserRole, isAdmin } = usersStore()
 const canEdit = computed(() => isAdmin())
 const { $dialog } = globalStore()
+const { capture } = useTelemetry()
 
 const fcrmSettings = createDocumentResource({
   doctype: 'FCRM Settings',
@@ -331,7 +333,12 @@ function toggleEnable(currentlyEnabled) {
   } else {
     fcrmSettings.setValue.submit(
       { enable_sales_hierarchy: 1 },
-      { onSuccess: () => toast.success(__('Sales Hierarchy enabled')) },
+      {
+        onSuccess: () => {
+          capture('sales_hierarchy_enabled')
+          toast.success(__('Sales Hierarchy enabled'))
+        },
+      },
     )
   }
 }
@@ -497,6 +504,7 @@ async function bulkAdd(parent, userIds) {
       }
     }
     if (added) {
+      capture('sales_hierarchy_user_added', { count: added })
       toast.success(
         added === 1
           ? __('User added to hierarchy')
