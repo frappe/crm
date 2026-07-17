@@ -927,7 +927,19 @@ function updateColumns(obj) {
 
   if (!route.query.view) {
     createOrUpdateStandardView()
+  } else if (!view.value.public) {
+    persistCustomView()
   }
+}
+
+function persistCustomView() {
+  view.value.doctype = props.doctype
+  call('crm.fcrm.doctype.crm_view_settings.crm_view_settings.update', {
+    view: view.value,
+  }).then(() => {
+    reloadView()
+    viewUpdated.value = false
+  })
 }
 
 function updateKanbanSettings(data) {

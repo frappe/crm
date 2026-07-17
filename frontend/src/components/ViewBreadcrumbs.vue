@@ -44,7 +44,7 @@
             <template #default>
               <Button
                 variant="ghost"
-                class="!size-5 opacity-0 group-hover:opacity-100"
+                class="view-action-btn !size-5 opacity-0"
                 icon="lucide-more-horizontal"
                 @click.stop
               />
@@ -70,3 +70,12 @@ defineProps({
 
 const viewControls = defineModel({ type: Object, default: () => ({}) })
 </script>
+
+<style scoped>
+/* frappe-ui's Menu rewrite dropped the `group` class from item rows, so
+   reveal the view actions on row hover/highlight instead of `group-hover`. */
+[data-slot='item']:hover .view-action-btn,
+[data-slot='item'][data-highlighted] .view-action-btn {
+  opacity: 1;
+}
+</style>
