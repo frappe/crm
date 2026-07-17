@@ -15,6 +15,8 @@ from crm.fcrm.doctype.crm_status_change_log.crm_status_change_log import (
 )
 from crm.fcrm.doctype.utils import add_or_remove_lost_reason_section_in_sidepanel
 
+LEAD_DEAL_FIELD_MAP = {"lead_owner": "deal_owner"}
+
 
 class CRMLead(Document):
 	# begin: auto-generated types
@@ -335,10 +337,6 @@ class CRMLead(Document):
 	def create_deal(self, contact, organization, deal=None):
 		new_deal = frappe.new_doc("CRM Deal")
 
-		lead_deal_map = {
-			"lead_owner": "deal_owner",
-		}
-
 		restricted_fieldtypes = [
 			"Tab Break",
 			"Section Break",
@@ -376,11 +374,9 @@ class CRMLead(Document):
 			if field.fieldname in restricted_map_fields:
 				continue
 
-			fieldname = field.fieldname
-			if field.fieldname in lead_deal_map:
-				fieldname = lead_deal_map[field.fieldname]
+			fieldname = get_deal_fieldname(field, new_deal.meta)
 
-			if hasattr(new_deal, fieldname):
+			if fieldname:
 				if fieldname == "organization":
 					new_deal.update({fieldname: organization})
 				else:
@@ -546,3 +542,38 @@ def convert_to_deal(
 	organization = lead.create_organization(existing_organization)
 	_deal = lead.create_deal(contact, organization, deal)
 	return _deal
+
+
+def get_deal_fieldname(field, deal_meta):
+	mapped_fieldname = LEAD_DEAL_FIELD_MAP.get(field.fieldname)
+	if mapped_fieldname:
+		return mapped_fieldname if deal_meta.has_field(mapped_fieldname) else None
+	if deal_meta.has_field(field.fieldname):
+		return field.fieldname
+	if not is_custom_field(field):
+		return None
+	return get_matching_custom_deal_field(field, deal_meta)
+
+
+def get_matching_custom_deal_field(field, deal_meta):
+	matches = [
+		deal_field.fieldname for deal_field in deal_meta.fields if is_matching_custom_field(field, deal_field)
+	]
+	return matches[0] if len(matches) == 1 else None
+
+
+def is_matching_custom_field(lead_field, deal_field):
+	return (
+		is_custom_field(deal_field)
+		and lead_field.label == deal_field.label
+		and lead_field.fieldtype == deal_field.fieldtype
+	)
+
+
+def is_custom_field(field):
+	return bool(
+		field.get("is_custom_field")
+		or field.get("custom")
+		or (field.fieldname or "").startswith("custom_")
+		or field.name == f"{field.parent}-{field.fieldname}"
+	)
