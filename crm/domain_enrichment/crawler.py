@@ -5,12 +5,9 @@
 come from config (Settings child tables), not module constants.
 
 Exposes:
-
-    crawl()             -> ranked list of (CrawledPage, soup) tuples, homepage first
-    crawl_page()        -> fetch + parse a single page into a CrawledPage
-    extract_content()   -> pull title/headings/visible text from soup
-
-Same registrable domain only; respects the page cap, depth cap, and skip patterns.
+    crawl()           -> ranked list of (CrawledPage, soup) tuples, homepage first
+    crawl_page()      -> fetch + parse a single page into a CrawledPage
+    extract_content() -> pull title/headings/visible text from soup
 """
 
 from __future__ import annotations
@@ -20,6 +17,7 @@ from collections import deque
 from functools import lru_cache
 from urllib.parse import urldefrag, urljoin, urlparse
 from urllib.robotparser import RobotFileParser
+from xml.etree import ElementTree as ET
 
 import tldextract
 from bs4 import BeautifulSoup
@@ -27,7 +25,6 @@ from bs4 import BeautifulSoup
 from .http import build_session, fetch
 from .result import CrawledPage
 
-# Asset / non-HTML extensions we never want to crawl (mechanics, not knowledge).
 SKIP_EXTENSIONS = (
 	".pdf",
 	".jpg",
@@ -56,8 +53,12 @@ SKIP_SCHEMES = ("mailto:", "tel:", "javascript:", "data:", "#")
 
 
 def normalize_url(url: str) -> str:
-	"""Strip fragments and trailing slashes for stable dedupe."""
+	"""Query strings are dropped, not canonicalized -- almost always tracking
+	noise, not a distinct page identity, for the pages this crawler cares about."""
 	url, _frag = urldefrag(url)
+	parsed = urlparse(url)
+	if parsed.query:
+		url = parsed._replace(query="").geturl()
 	if url.endswith("/") and len(urlparse(url).path) > 1:
 		url = url.rstrip("/")
 	return url
@@ -65,14 +66,8 @@ def normalize_url(url: str) -> str:
 
 @lru_cache(maxsize=1)
 def _tld_extractor() -> tldextract.TLDExtract:
-	"""Public Suffix List backed extractor, built once and cached.
-
-	``suffix_list_urls=()`` + ``cache_dir=None`` pin it to the snapshot bundled
-	with tldextract -- it never fetches the PSL over the network (deterministic,
-	offline, no surprise latency on first crawl). ``include_psl_private_domains``
-	makes hosting suffixes like ``github.io`` / ``vercel.app`` registrable, so two
-	tenants under one of them count as different sites for scoping.
-	"""
+	"""Pinned to the bundled PSL snapshot (no network fetch); private suffixes like
+	``github.io``/``vercel.app`` stay registrable so distinct tenants count as distinct sites."""
 	return tldextract.TLDExtract(
 		suffix_list_urls=(),
 		cache_dir=None,
@@ -81,14 +76,8 @@ def _tld_extractor() -> tldextract.TLDExtract:
 
 
 def registrable_domain(netloc: str) -> str:
-	"""The registrable domain of ``netloc`` per the Public Suffix List.
-
-	``www.acme.co.uk`` -> ``acme.co.uk``; ``blog.acme.com`` -> ``acme.com``. This
-	is the same-site key: a naive last-two-labels rule collapses every ``*.co.uk``
-	(or ``*.github.io``) to one bucket, so the crawler would wander into unrelated
-	third-party sites sharing a public suffix. Hosts with no registrable suffix
-	(bare hostnames, IPs, ``localhost``) fall back to the host itself.
-	"""
+	"""``www.acme.co.uk`` -> ``acme.co.uk`` -- avoids a naive last-two-labels rule
+	collapsing all of ``*.co.uk`` into one same-site bucket."""
 	netloc = netloc.lower().split(":")[0]
 	extracted = _tld_extractor()(netloc)
 	if extracted.domain and extracted.suffix:
@@ -104,10 +93,10 @@ def same_site(url: str, base_netloc: str) -> bool:
 
 
 def _link_priority(url: str, anchor_text: str, link_priority: list) -> float:
-	"""Lower number = crawl sooner. Matching links score by their keyword's rank,
-	weighted; non-matching pages sort last. ``link_priority`` is a list of
-	(keyword, weight) tuples from config."""
-	haystack = (urlparse(url).path + " " + (anchor_text or "")).lower()
+	"""Lower number = crawl sooner."""
+	path = urlparse(url).path.rstrip("/")
+	leaf = path.rsplit("/", 1)[-1] if path else ""
+	haystack = (leaf + " " + (anchor_text or "")).lower()
 	best = None
 	for idx, (kw, weight) in enumerate(link_priority):
 		if kw and kw in haystack:
@@ -132,18 +121,14 @@ def _is_crawlable(url: str, skip_patterns: list) -> bool:
 			if re.search(pat, url, re.IGNORECASE):
 				return False
 		except re.error:
-			# Treat a malformed admin skip-pattern as a plain substring.
 			if pat.lower() in low:
 				return False
 	return True
 
 
 def extract_content(soup: BeautifulSoup) -> dict:
-	"""Pull title, headings and clean visible text out of a parsed page.
-
-	NOTE: this mutates ``soup`` (it decomposes script/style nodes), so callers
-	that need the original DOM afterwards must pass a throwaway copy.
-	"""
+	"""Mutates ``soup`` (decomposes script/style) -- pass a throwaway copy if the
+	caller needs the original DOM afterwards."""
 	title = ""
 	if soup.title and soup.title.string:
 		title = soup.title.string.strip()
@@ -154,17 +139,15 @@ def extract_content(soup: BeautifulSoup) -> dict:
 		if txt:
 			headings.append(txt)
 
-	# Remove non-content nodes before grabbing text.
 	for node in soup(["script", "style", "noscript", "template", "svg"]):
 		node.decompose()
 	text = soup.get_text(" ", strip=True)
-	text = " ".join(text.split())  # collapse runaway whitespace
+	text = " ".join(text.split())
 
 	return {"title": title, "headings": headings, "text": text}
 
 
 def _links_on_page(soup, page_url, base_netloc, skip_patterns):
-	"""Yield (normalized_url, anchor_text) for same-site, crawlable links."""
 	for a in soup.find_all("a", href=True):
 		href = a["href"].strip()
 		if not href or any(href.lower().startswith(s) for s in SKIP_SCHEMES):
@@ -178,11 +161,7 @@ def _links_on_page(soup, page_url, base_netloc, skip_patterns):
 
 
 def _parse_and_fill(page, html):
-	"""Parse ``html``, fill ``page`` title/headings/text, and return a fresh soup.
-
-	``extract_content`` mutates its soup (decomposes script/style), so it runs on a
-	throwaway parse while the returned soup stays unmutated for the caller.
-	"""
+	"""``extract_content`` runs on a throwaway parse so the returned soup stays unmutated."""
 	soup = BeautifulSoup(html, "html.parser")
 	content = extract_content(BeautifulSoup(html, "html.parser"))
 	page.title = content["title"]
@@ -192,34 +171,19 @@ def _parse_and_fill(page, html):
 
 
 def crawl_page(url, cfg, session=None):
-	"""Fetch and parse a single page. Returns (CrawledPage, soup_or_None).
-
-	Failures are captured on ``CrawledPage.error`` rather than raised. The soup
-	returned is a fresh, unmutated parse (``extract_content`` runs on a copy).
-	"""
 	status, html, error, final_url = fetch(url, cfg, session=session)
-	# Use the post-redirect URL so relative links resolve and provenance is recorded
-	# against the host that actually served the body.
+	# Resolved URL: links and provenance match the host that actually served the body.
 	page = CrawledPage(url=final_url or url, status_code=status, html=html or "", error=error)
 	soup = _parse_and_fill(page, html) if (html and not error) else None
 	return page, soup
 
 
-# Common About-page paths probed when the BFS didn't surface one (some sites don't
-# link About prominently, but it's the best source of a company description).
 ABOUT_PROBE_PATHS = ("/about", "/about-us", "/company", "/our-story")
-# A probed page needs at least this much readable text to be worth keeping.
 ABOUT_MIN_TEXT = 200
 
 
 def load_robots(start_url, cfg, session=None):
-	"""Fetch and parse the site's ``robots.txt`` via the SSRF-guarded fetcher.
-
-	Returns a populated ``RobotFileParser``, or ``None`` when robots.txt is absent or
-	unreadable (per convention: allow all). Uses ``fetch(..., html_only=False)`` so the
-	``text/plain`` body isn't skipped, and never raises -- robots is advisory here and
-	must not break enrichment.
-	"""
+	"""Returns ``None`` when absent/unreadable (convention: allow all)."""
 	try:
 		parsed = urlparse(normalize_url(start_url))
 		if not parsed.netloc:
@@ -242,8 +206,6 @@ def load_robots(start_url, cfg, session=None):
 
 
 def _robots_allows(robots, user_agent, url):
-	"""True if robots is absent or permits fetching ``url`` for ``user_agent``. A
-	malformed robots quirk never blocks enrichment (fails open)."""
 	if robots is None:
 		return True
 	try:
@@ -253,12 +215,6 @@ def _robots_allows(robots, user_agent, url):
 
 
 def probe_about_pages(home_url, cfg, session=None, skip_urls=()):
-	"""Best-effort fetch of common About-page paths not already crawled.
-
-	Returns ``[(CrawledPage, soup)]`` for the first probed path that returns a readable
-	page (or empty). SSRF + byte caps are enforced by ``fetch``; failures are ignored.
-	Bounded: stops at the first readable hit, at most ``len(ABOUT_PROBE_PATHS)`` fetches.
-	"""
 	skip = {normalize_url(u) for u in skip_urls}
 	user_agent = cfg.setting("user_agent")
 	own_session = session is None
@@ -286,15 +242,106 @@ def probe_about_pages(home_url, cfg, session=None, skip_urls=()):
 	return []
 
 
-def crawl(start_url, cfg, session=None, progress=None):
-	"""Breadth-first crawl from ``start_url``, prioritizing company-info pages.
+# --------------------------------------------------------------------------- #
+# Sitemap discovery
+# --------------------------------------------------------------------------- #
+# Additive on top of link-following BFS: seeds pages the sitemap author flagged.
+SITEMAP_MAX_SITEMAPS = 5  # sitemap files fetched; guards pathological sitemap indexes
+SITEMAP_MAX_URLS = 200  # total <loc> entries collected across all fetched sitemaps
 
-	Caps (``max_pages``/``max_depth``), link-priority order and skip patterns all
-	come from ``cfg``. Returns a list of (CrawledPage, soup) tuples, homepage
-	first. Respects the page cap, depth cap, and same-domain rule.
 
-	``progress`` is an optional ``fn(message)`` called per crawled URL.
+def _local_tag(tag: str) -> str:
+	"""Strip the XML namespace off a tag: '{http://.../0.9}urlset' -> 'urlset'."""
+	return tag.rsplit("}", 1)[-1] if tag else tag
+
+
+def _parse_sitemap(xml_text: str):
+	"""Returns ('urlset' | 'sitemapindex' | None, [loc, ...]); never raises.
+
+	Rejects any DOCTYPE before parsing as an XML entity-expansion guard -- a
+	legitimate sitemap never has one.
 	"""
+	if "<!doctype" in xml_text.lower():
+		return None, []
+	try:
+		root = ET.fromstring(xml_text)
+	except ET.ParseError:
+		return None, []
+	kind = _local_tag(root.tag)
+	if kind not in ("urlset", "sitemapindex"):
+		return None, []
+	child_tag = "sitemap" if kind == "sitemapindex" else "url"
+	locs = []
+	for el in root:
+		if _local_tag(el.tag) != child_tag:
+			continue
+		for child in el:
+			if _local_tag(child.tag) == "loc" and child.text:
+				locs.append(child.text.strip())
+				break
+	return kind, locs
+
+
+def discover_sitemap_urls(start_url, cfg, session, robots):
+	"""Falls back from robots.txt ``Sitemap:`` to ``/sitemap.xml``, bounded by
+	``SITEMAP_MAX_SITEMAPS``/``SITEMAP_MAX_URLS``."""
+	try:
+		parsed = urlparse(normalize_url(start_url))
+		if not parsed.netloc:
+			return []
+
+		candidates = []
+		if robots is not None:
+			try:
+				candidates.extend(robots.site_maps() or [])
+			except Exception:
+				pass
+		if not candidates:
+			candidates.append(f"{parsed.scheme}://{parsed.netloc}/sitemap.xml")
+
+		to_fetch = deque(candidates[:SITEMAP_MAX_SITEMAPS])
+		sitemaps_queued = len(to_fetch)  # running total: seed + discovered children
+		fetched_sitemaps = set()
+		urls = []
+		seen_urls = set()
+
+		while to_fetch and len(fetched_sitemaps) < SITEMAP_MAX_SITEMAPS and len(urls) < SITEMAP_MAX_URLS:
+			sitemap_url = to_fetch.popleft()
+			if sitemap_url in fetched_sitemaps:
+				continue
+			fetched_sitemaps.add(sitemap_url)
+			if not same_site(sitemap_url, parsed.netloc):
+				continue
+
+			status, body, error, _final = fetch(sitemap_url, cfg, session=session, html_only=False)
+			if error or status != 200 or not body:
+				continue
+
+			kind, locs = _parse_sitemap(body)
+
+			if kind == "sitemapindex":
+				for loc in locs:
+					if sitemaps_queued >= SITEMAP_MAX_SITEMAPS:
+						break
+					to_fetch.append(loc)
+					sitemaps_queued += 1
+
+			elif kind == "urlset":
+				for loc in locs:
+					norm = normalize_url(loc)
+					if norm in seen_urls:
+						continue
+					seen_urls.add(norm)
+					urls.append(norm)
+					if len(urls) >= SITEMAP_MAX_URLS:
+						break
+
+		return urls
+	except Exception:
+		return []
+
+
+def crawl(start_url, cfg, session=None, progress=None):
 	max_pages = int(cfg.setting("max_pages"))
 	max_depth = int(cfg.setting("max_depth"))
 	link_priority = cfg.link_priority
@@ -306,15 +353,32 @@ def crawl(start_url, cfg, session=None, progress=None):
 	start_url = normalize_url(start_url)
 	base_netloc = urlparse(start_url).netloc
 
-	# Respect robots.txt for discovered links -- but only when we actually crawl beyond
-	# the homepage (skip the extra fetch for homepage-only / preview runs, which follow
-	# no links). The explicit start URL is always fetched; robots gates discovery.
-	robots = load_robots(start_url, cfg, session) if (max_depth >= 1 and max_pages > 1) else None
+	# robots.txt only gates discovered links; skip the fetch for homepage-only runs.
+	crawl_beyond_homepage = max_depth >= 1 and max_pages > 1
+	robots = load_robots(start_url, cfg, session) if crawl_beyond_homepage else None
 
 	visited = set()
+	# Resolved (post-redirect) URLs already crawled -- catches a duplicate the
+	# pre-fetch `visited` check can't (e.g. /contact.html -> /contact).
+	visited_resolved = set()
 	results = []
-	# Queue holds (url, depth, anchor_text). We pop the highest-priority item.
+	# Queue holds (url, depth, anchor_text).
 	queue = deque([(start_url, 0, "")])
+
+	# Sitemap-seeded links join at depth 1, never 0, so the homepage still wins
+	# the first pop. Additive only -- a site with no sitemap is unaffected.
+	if crawl_beyond_homepage and cfg.setting("use_sitemap", True):
+		queued_from_sitemap = set()
+		for loc in discover_sitemap_urls(start_url, cfg, session, robots):
+			link = normalize_url(loc)
+			if link == start_url or link in queued_from_sitemap:
+				continue
+			if not same_site(link, base_netloc) or not _is_crawlable(link, skip_patterns):
+				continue
+			if not _robots_allows(robots, user_agent, link):
+				continue
+			queued_from_sitemap.add(link)
+			queue.append((link, 1, ""))
 
 	try:
 		while queue and len(results) < max_pages:
@@ -337,14 +401,34 @@ def crawl(start_url, cfg, session=None, progress=None):
 			if progress:
 				progress(f"Crawling {url}")
 			page, soup = crawl_page(url, cfg, session=session)
-			results.append((page, soup))
+			resolved = normalize_url(page.url) if page.url else ""
 
-			# If the homepage redirected to another host, adopt the resolved domain as
-			# the same-site base so the rest of the crawl follows the real site.
-			if len(results) == 1:
-				resolved_netloc = urlparse(page.url).netloc
-				if resolved_netloc:
-					base_netloc = resolved_netloc
+			if not results:
+				# Homepage: can't be a duplicate yet. Adopt its resolved host as the
+				# same-site base if it redirected elsewhere.
+				if resolved:
+					base_netloc = urlparse(page.url).netloc or base_netloc
+			else:
+				# A redirect can land here under a different requested URL (e.g.
+				# /contact.html -> /contact) -- drop the duplicate, no budget spent.
+				if resolved and resolved in visited_resolved:
+					continue
+				if soup is not None and page.url and not same_site(page.url, base_netloc):
+					# Same-site link redirected off-domain; fetch() only checks SSRF
+					# per hop, not same-site scope. Clear every parsed field (not just
+					# html/text) so nothing -- including title/headings, already
+					# filled in by crawl_page() -- leaks into extraction.
+					page.error = page.error or f"redirected off-site to {urlparse(page.url).netloc}"
+					page.html = ""
+					page.text = ""
+					page.title = ""
+					page.headings = []
+					soup = None
+
+			if resolved:
+				visited_resolved.add(resolved)
+
+			results.append((page, soup))
 
 			if soup is None or depth >= max_depth:
 				continue

@@ -289,6 +289,28 @@ class DescriptionSelectionTest(UnitTestCase):
 		self.assertEqual(desc.value, "Acme makes developer tools.")
 		self.assertEqual(desc.method, Method.META_TAG)
 
+	def test_industry_keyword_density_steers_about_paragraph_choice(self):
+		finance_rules = [
+			fixtures.keyword_rule("Industry", ["financial institution", "banking"], industry="Finance")
+		]
+		pages, soups = _pages(
+			(
+				"https://acmebank.example",
+				"<html><head><title>Acme Bank</title></head><body></body></html>",
+			),
+			(
+				"https://acmebank.example/about",
+				"<html><body><main>"
+				"<p>Putting our long-tenured investment teams on the line to earn the "
+				"trust of institutional investors across every market we serve.</p>"
+				"<p>Acme Bank is a full-service financial institution serving corporations, "
+				"institutions and private clients across commercial and investment banking.</p>"
+				"</main></body></html>",
+			),
+		)
+		desc = extractors.select_description(pages, soups, industry_rules=finance_rules)
+		self.assertTrue(desc.value.startswith("Acme Bank is a full-service"))
+
 
 class FirstParagraphTest(UnitTestCase):
 	def test_skips_nav_and_returns_first_substantial_paragraph(self):
@@ -306,6 +328,117 @@ class FirstParagraphTest(UnitTestCase):
 	def test_returns_empty_when_no_substantial_paragraph(self):
 		_page, soup = fixtures.make_page("https://x.example", "<html><body><p>Hi.</p></body></html>")
 		self.assertEqual(extractors.first_paragraph(soup), "")
+
+	def test_prefers_paragraph_with_more_keyword_hits_over_first_qualifying_one(self):
+		# A narrow pull-quote with zero industry-keyword hits precedes a genuine
+		# descriptive paragraph -- the keyword-denser paragraph should win.
+		finance_rules = [
+			fixtures.keyword_rule("Industry", ["financial institution", "banking"], industry="Finance")
+		]
+		html = (
+			"<html><body><main>"
+			"<p>Putting our long-tenured investment teams on the line to earn the "
+			"trust of institutional investors across every market we serve.</p>"
+			"<p>Acme Bank is a full-service financial institution serving corporations, "
+			"institutions and private clients across commercial and investment banking.</p>"
+			"</main></body></html>"
+		)
+		_page, soup = fixtures.make_page("https://acmebank.example", html)
+		result = extractors.first_paragraph(soup, industry_rules=finance_rules)
+		self.assertTrue(result.startswith("Acme Bank is a full-service"))
+
+	def test_falls_back_to_first_paragraph_when_no_keyword_hits(self):
+		finance_rules = [
+			fixtures.keyword_rule("Industry", ["financial institution", "banking"], industry="Finance")
+		]
+		html = (
+			"<html><body><main>"
+			"<p>Putting our long-tenured investment teams on the line to earn the "
+			"trust of institutional investors across every market we serve.</p>"
+			"</main></body></html>"
+		)
+		_page, soup = fixtures.make_page("https://acmebank.example", html)
+		result = extractors.first_paragraph(soup, industry_rules=finance_rules)
+		self.assertTrue(result.startswith("Putting our long-tenured"))
+
+	def test_falls_back_to_first_paragraph_when_no_industry_rules_given(self):
+		# No rules configured at all (industry_rules=None or []) -- must behave
+		# exactly like the plain "take the first qualifying paragraph" default.
+		html = (
+			"<html><body><main>"
+			"<p>Putting our long-tenured investment teams on the line to earn the "
+			"trust of institutional investors across every market we serve.</p>"
+			"<p>Acme Bank is a full-service financial institution serving corporations, "
+			"institutions and private clients across commercial and investment banking.</p>"
+			"</main></body></html>"
+		)
+		_page, soup = fixtures.make_page("https://acmebank.example", html)
+		self.assertTrue(extractors.first_paragraph(soup).startswith("Putting our long-tenured"))
+		self.assertTrue(
+			extractors.first_paragraph(soup, industry_rules=[]).startswith("Putting our long-tenured")
+		)
+		self.assertTrue(
+			extractors.first_paragraph(soup, industry_rules=None).startswith("Putting our long-tenured")
+		)
+
+	def test_company_name_breaks_tie_between_equal_keyword_hits(self):
+		# Both paragraphs mention "banking" exactly once (tied on industry hits) --
+		# only the one that also names the company should win.
+		finance_rules = [fixtures.keyword_rule("Industry", ["banking"], industry="Finance")]
+		html = (
+			"<html><body><main>"
+			"<p>Our roots trace back decades of steady growth in commercial banking "
+			"and long-term client relationships across every region we serve.</p>"
+			"<p>Acme Bank has led the market in retail banking with award-winning "
+			"service for individuals, families and small businesses nationwide.</p>"
+			"</main></body></html>"
+		)
+		_page, soup = fixtures.make_page("https://acmebank.example", html)
+		result = extractors.first_paragraph(soup, industry_rules=finance_rules, company_name="Acme Bank")
+		self.assertTrue(result.startswith("Acme Bank has led the market"))
+
+	def test_company_name_mentions_cannot_outrank_more_industry_hits(self):
+		# The first paragraph scores 2 industry hits and never names the company; the
+		# second scores only 1 industry hit despite repeating the company name three
+		# times. Industry hits must still decide -- company name is tiebreak-only.
+		finance_rules = [
+			fixtures.keyword_rule("Industry", ["financial institution", "banking"], industry="Finance")
+		]
+		html = (
+			"<html><body><main>"
+			"<p>A full-service financial institution built on decades of trusted "
+			"commercial and retail banking relationships across every market.</p>"
+			"<p>Acme Bank, Acme Bank, Acme Bank -- proud to serve local businesses "
+			"with award-winning retail banking and community-first values.</p>"
+			"</main></body></html>"
+		)
+		_page, soup = fixtures.make_page("https://acmebank.example", html)
+		result = extractors.first_paragraph(soup, industry_rules=finance_rules, company_name="Acme Bank")
+		self.assertTrue(result.startswith("A full-service financial institution"))
+
+
+class AboutPageDetectionTest(UnitTestCase):
+	def test_canonical_about_slugs_match(self):
+		for path in (
+			"/about",
+			"/about-us",
+			"/about_us",
+			"/aboutus",
+			"/company",
+			"/our-story",
+			"/en/about-us",
+		):
+			self.assertTrue(extractors._is_about_page(f"https://x.example{path}"), path)
+
+	def test_prefix_match_no_longer_qualifies(self):
+		# Regression guard: "about-our-reporting" (an ESG page) starts with "about-"
+		# but is not itself a canonical About-page slug.
+		self.assertFalse(extractors._is_about_page("https://x.example/esg-topics/about-our-reporting"))
+		self.assertFalse(extractors._is_about_page("https://x.example/about-cookies"))
+
+	def test_non_about_words_still_rejected(self):
+		self.assertFalse(extractors._is_about_page("https://x.example/about/careers"))
+		self.assertFalse(extractors._is_about_page("https://x.example/about-us/contact"))
 
 
 # --------------------------------------------------------------------------- #
@@ -346,6 +479,28 @@ class PhoneExtractionTest(UnitTestCase):
 		phones = extractors.extract_phones(self.pages)
 		self.assertIn(Method.TEL_LINK, {p.method for p in phones})
 		self.assertTrue(any("4155550142" in p.value.replace("+", "") for p in phones))
+
+	def test_international_number_captured(self):
+		pages, _ = _pages(
+			("https://x.example/contact", "<html><body><p>Call us: +612 9003 8888</p></body></html>")
+		)
+		phones = extractors.extract_phones(pages)
+		self.assertTrue(any("61290038888" in p.value.replace("+", "") for p in phones))
+
+	def test_number_without_country_code_rejected(self):
+		# Deliberate precision-over-recall call: a number with no "+" is either a
+		# local/ambiguous format or noise (reference numbers, stats) that happens to
+		# fall in a phone-shaped digit range -- only accept explicit international
+		# numbers, even though this means dropping some real local-format numbers.
+		pages, _ = _pages(
+			(
+				"https://x.example/contact",
+				"<html><body><p>Local line: 2165703. Toll-free: 1800-266-6066.</p>"
+				'<a href="tel:18002666066">Call</a></body></html>',
+			)
+		)
+		phones = extractors.extract_phones(pages)
+		self.assertEqual(phones, [])
 
 
 # --------------------------------------------------------------------------- #
@@ -434,6 +589,52 @@ class IndustryTest(UnitTestCase):
 			)[0],
 			"Manufacturing",
 		)
+
+	def test_about_page_headline_supplements_thin_homepage(self):
+		# A homepage with no meta description and abstract brand-voice headings
+		# carries no classification signal on its own -- a crawled About page's
+		# title/headings should still let the classifier find a match.
+		finance_rules = [
+			fixtures.keyword_rule(
+				"Industry",
+				["banking", "financial services"],
+				industry="Finance",
+				match_scope="Headline",
+			)
+		]
+		home, _ = fixtures.make_page(
+			"https://acmebank.example",
+			"<html><head><title>Acme | Official Website</title></head>"
+			"<body><h1>Acme home</h1><h2>What problem can we solve together?</h2></body></html>",
+		)
+		about, _ = fixtures.make_page(
+			"https://acmebank.example/about",
+			"<html><head><title>About Acme</title></head>"
+			"<body><h2>A leader in financial services and banking</h2></body></html>",
+		)
+		company = {"company_name": "Acme", "description": ""}
+		industry, conf = extractors.classify_industry([home, about], company, finance_rules)
+		self.assertEqual(industry, "Finance")
+		self.assertGreater(conf, 0.0)
+
+	def test_homepage_only_still_returns_nothing_when_thin(self):
+		finance_rules = [
+			fixtures.keyword_rule(
+				"Industry",
+				["banking", "financial services"],
+				industry="Finance",
+				match_scope="Headline",
+			)
+		]
+		home, _ = fixtures.make_page(
+			"https://acmebank.example",
+			"<html><head><title>Acme | Official Website</title></head>"
+			"<body><h1>Acme home</h1><h2>What problem can we solve together?</h2></body></html>",
+		)
+		company = {"company_name": "Acme", "description": ""}
+		industry, conf = extractors.classify_industry([home], company, finance_rules)
+		self.assertEqual(industry, "")
+		self.assertEqual(conf, 0.0)
 
 
 # --------------------------------------------------------------------------- #

@@ -16,6 +16,7 @@
   "crawl_tab",
   "max_pages",
   "max_depth",
+  "use_sitemap",
   "request_timeout",
   "column_break_crawl",
   "max_download_bytes",
@@ -108,6 +109,13 @@
    "fieldname": "request_timeout",
    "fieldtype": "Int",
    "label": "Request Timeout (s)"
+  },
+  {
+   "default": "1",
+   "description": "Seed the crawl queue from the site's sitemap (declared in robots.txt, or the conventional /sitemap.xml) so pages not reachable within Max Depth still get a chance to be crawled. This is an addition on top of ordinary link-following, not a replacement -- a site with no sitemap falls straight through to link-following with no error.",
+   "fieldname": "use_sitemap",
+   "fieldtype": "Check",
+   "label": "Use Sitemap"
   },
   {
    "fieldname": "column_break_crawl",
@@ -208,7 +216,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2026-06-17 00:00:00.000000",
+ "modified": "2026-07-14 00:00:00.000000",
  "modified_by": "Administrator",
  "module": "Domain Enrichment",
  "name": "CRM Enrichment Settings",
