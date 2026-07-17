@@ -20,7 +20,7 @@
         v-for="column in columns"
         :key="column.key"
         :item="column"
-        @columnWidthUpdated="emit('columnWidthUpdated', column)"
+        @columnWidthUpdated="(e) => onColumnWidthUpdated(e, column)"
       >
         <Button
           v-if="column.key == '_liked_by'"
@@ -227,6 +227,11 @@ const emit = defineEmits([
 
 const pageLengthCount = defineModel({ type: Number })
 const list = defineModel('list', { type: Object })
+
+function onColumnWidthUpdated({ width, save }, column) {
+  column.width = width
+  if (save) emit('columnWidthUpdated', column)
+}
 
 function getLabel(label, column) {
   if (column.options && isTranslatable(column.options)) return __(label)
