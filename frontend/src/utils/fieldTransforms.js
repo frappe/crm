@@ -108,7 +108,7 @@ export function applyStateFieldOptions(
     const hasRegionalStateData =
       stateOptionsByCountry && Object.keys(stateOptionsByCountry).length > 0
     if (hasRegionalStateData && !doc?.country) {
-      return { ...field, placeholder: 'Select Country to see state options' }
+      return { ...field, placeholder: __('Select Country to see state options') }
     }
     return field
   }
