@@ -219,7 +219,9 @@ function getCurrencySymbol(currencyCode) {
   }
 }
 
+const _symbolOnRightCache = {}
 function getCurrencySymbolOnRight(currencyCode) {
+  if (currencyCode in _symbolOnRightCache) return _symbolOnRightCache[currencyCode]
   try {
     const formatter = new Intl.NumberFormat(undefined, {
       style: 'currency',
@@ -228,10 +230,11 @@ function getCurrencySymbolOnRight(currencyCode) {
       maximumFractionDigits: 0,
     })
     const parts = formatter.formatToParts(1)
-    return parts[parts.length - 1].type === 'currency'
+    _symbolOnRightCache[currencyCode] = parts[parts.length - 1].type === 'currency'
   } catch {
-    return false
+    _symbolOnRightCache[currencyCode] = false
   }
+  return _symbolOnRightCache[currencyCode]
 }
 
 function getNumberFormatInfo(format) {
