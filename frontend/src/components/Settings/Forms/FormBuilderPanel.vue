@@ -527,7 +527,10 @@
             <div class="text-xl font-semibold text-ink-gray-9">
               {{ form.title || __('Form title') }}
             </div>
-            <div v-if="form.description" class="mt-3.5 text-sm text-ink-gray-6">
+            <div
+              v-if="form.description"
+              class="mt-3.5 whitespace-pre-wrap text-sm text-ink-gray-6"
+            >
               {{ form.description }}
             </div>
             <div class="mt-5 flex flex-col gap-5">
@@ -721,6 +724,18 @@ function autoGrow(el) {
   el.style.height = 'auto'
   el.style.height = el.scrollHeight + 'px'
 }
+// Robustly size the description box: measure on an animation frame (after layout),
+// and if the box isn't laid out yet — it lives in a lazily-rendered Tabs panel, so
+// on re-navigation it can be briefly zero-width/hidden — retry on the next frame.
+// Without this, opening a saved multi-line description shows only the first line.
+function sizeDescription(tries = 0) {
+  requestAnimationFrame(() => {
+    const el = descInput.value
+    if (!el) return
+    if (!el.clientWidth && tries < 20) return sizeDescription(tries + 1)
+    autoGrow(el)
+  })
+}
 const dragging = ref(false)
 
 // Editing model: form.fields (flat) is the source of truth, derived into a
@@ -887,11 +902,11 @@ const form = reactive({
 // settles, so it fires whenever the textarea actually mounts (initial load, or
 // re-entering Edit — it lives inside a lazily-rendered Tabs panel) or its content
 // changes — no more 1-row box scrolled to the last line.
-watch([descInput, () => form.description], () => autoGrow(descInput.value), {
+watch([descInput, () => form.description], () => sizeDescription(), {
   flush: 'post',
 })
 // re-measure once web fonts load: scrollHeight with the fallback font wraps wrong
-onMounted(() => document.fonts?.ready?.then(() => autoGrow(descInput.value)))
+onMounted(() => document.fonts?.ready?.then(() => sizeDescription()))
 
 const publicUrl = computed(
   () => `${window.location.origin}/crm-form/${form.route}`,
