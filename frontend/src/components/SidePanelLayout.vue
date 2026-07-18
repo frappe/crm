@@ -369,11 +369,6 @@
                           class="h-4 w-4 shrink-0 cursor-pointer text-ink-gray-5 hover:text-ink-gray-8"
                           @click.stop="field.link(doc[field.fieldname])"
                         />
-                        <ArrowUpRightIcon
-                          v-else-if="isExternalUrl(doc[field.fieldname])"
-                          class="h-4 w-4 shrink-0 cursor-pointer text-ink-gray-5 hover:text-ink-gray-8"
-                          @click.stop="openExternalUrl(doc[field.fieldname])"
-                        />
                         <EditIcon
                           v-if="
                             field.fieldtype === 'Link' &&
@@ -424,7 +419,6 @@ import Link from '@/components/Controls/Link.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import SidePanelModal from '@/components/Modals/SidePanelModal.vue'
 import { getMeta } from '@/stores/meta'
-import { createDocument } from '@/composables/document'
 import { parseLinkFilters } from '@/utils/fieldTransforms'
 import { usersStore } from '@/stores/users'
 import { isMobileView } from '@/composables/settings'
@@ -506,17 +500,6 @@ function parsedField(field) {
     }
   }
 
-  if (field.fieldtype === 'Link' && field.options !== 'User') {
-    if (!field.create) {
-      field.create = (value, close) => {
-        const callback = (d) => {
-          if (d) fieldChange(d.name, field)
-        }
-        createDocument(field.options, value, close, callback)
-      }
-    }
-  }
-
   if (field.fieldtype === 'Link' && field.options === 'User') {
     field.fieldtype = 'User'
     field.link_filters = JSON.stringify({
@@ -557,14 +540,6 @@ function parsedField(field) {
 
 const instance = getCurrentInstance()
 const attrs = instance?.vnode?.props ?? {}
-
-function isExternalUrl(value) {
-  return typeof value === 'string' && /^https?:\/\//i.test(value.trim())
-}
-
-function openExternalUrl(value) {
-  window.open(value.trim(), '_blank', 'noopener,noreferrer')
-}
 
 async function fieldChange(value, df) {
   if (props.preview) return
