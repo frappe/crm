@@ -343,6 +343,7 @@ import {
   toast,
   ConfirmDialog,
 } from 'frappe-ui'
+import { useTelemetry } from 'frappe-ui/frappe'
 import {
   onMounted,
   onUnmounted,
@@ -363,6 +364,7 @@ const isDirty = ref(false)
 const initialData = ref(null)
 const isLoading = ref(false)
 const updateStep = inject('updateStep')
+const { capture } = useTelemetry()
 const step = inject('step')
 const { $dialog } = globalStore()
 
@@ -695,6 +697,9 @@ const createAssignmentRule = () => {
         })
         .then(() => {
           isLoading.value = false
+          capture('assignment_rule_created', {
+            doctype: assignmentRuleData.value.documentType,
+          })
           toast.success(__('Assignment Rule Created'))
         })
       updateStep('view', data)
