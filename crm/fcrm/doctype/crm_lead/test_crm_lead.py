@@ -2,6 +2,7 @@
 # See license.txt
 
 import frappe
+from frappe.custom.doctype.custom_field.custom_field import create_custom_fields
 from frappe.desk.form.assign_to import add as assign_add
 from frappe.desk.form.assign_to import remove as assign_remove
 
@@ -488,6 +489,20 @@ class TestCRMLead(FrappeTestCase):
 		self.assertEqual(deal.annual_revenue, 750000)
 		self.assertEqual(deal.job_title, "CEO")
 
+	def test_custom_fields_copied_to_deal_by_label(self):
+		"""Custom Lead fields map to matching custom Deal fields."""
+		create_lead_deal_custom_fields()
+		lead = create_lead(
+			first_name="Custom",
+			organization="Custom Field Inc",
+			custom_lead_conversion_region="North",
+		)
+
+		deal_name = lead.convert_to_deal()
+		deal = frappe.get_doc("CRM Deal", deal_name)
+
+		self.assertEqual(deal.custom_deal_conversion_region, "North")
+
 	def test_assignees_transferred_on_conversion(self):
 		"""Test that additional assignees are transferred from lead to deal on conversion"""
 		lead = create_lead(
@@ -530,3 +545,24 @@ def create_lead(**kwargs):
 	data = {"doctype": "CRM Lead"}
 	data.update(kwargs)
 	return frappe.get_doc(data).insert()
+
+
+def create_lead_deal_custom_fields():
+	create_custom_fields(
+		{
+			"CRM Lead": [conversion_region_field("custom_lead_conversion_region")],
+			"CRM Deal": [conversion_region_field("custom_deal_conversion_region")],
+		},
+		ignore_validate=True,
+	)
+	frappe.clear_cache(doctype="CRM Lead")
+	frappe.clear_cache(doctype="CRM Deal")
+
+
+def conversion_region_field(fieldname):
+	return {
+		"fieldname": fieldname,
+		"fieldtype": "Data",
+		"insert_after": "source",
+		"label": "Conversion Region",
+	}
