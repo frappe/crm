@@ -2,7 +2,7 @@
 # GNU GPLv3 License. See license.txt
 
 import frappe
-from frappe import _
+from frappe import _, get_installed_apps
 from frappe.integrations.frappe_providers.frappecloud_billing import is_fc_site
 from frappe.translate import get_messages_for_boot, get_translated_doctypes
 from frappe.utils import cint, get_system_timezone
@@ -54,8 +54,33 @@ def get_boot():
 				"user": frappe.db.get_value("User", frappe.session.user, "time_zone")
 				or get_system_timezone(),
 			},
+			"state_options": get_state_options(),
 		}
 	)
+
+
+def get_state_options() -> dict[str, list[str]]:
+	"""Country -> list of states, so the frontend can render a state dropdown.
+
+	Sourced from India Compliance's own constant when that app is installed, so the
+	options stay in sync with the desk. Returns an empty map (state field stays free
+	text) on any failure.
+
+	This runs inside ``get_boot``, so it must never raise — a failure here would break
+	the whole CRM page load. ``get_installed_apps`` can return `[]` or raise in
+	unauthenticated/boot contexts (notably on v15), so the lookup is wrapped defensively.
+	"""
+	try:
+		if "india_compliance" not in get_installed_apps():
+			return {}
+
+		from india_compliance.gst_india.constants import INDIAN_STATES
+
+		return {"India": list(INDIAN_STATES)}
+	except Exception:
+		# Degrade silently to free-text: this runs in boot, so the except branch
+		# must not do anything that can itself raise (e.g. logging to a missing dir).
+		return {}
 
 
 def get_default_route():

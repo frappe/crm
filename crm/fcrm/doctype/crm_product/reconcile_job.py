@@ -19,16 +19,26 @@ def enqueue_reconciliation():
 
 
 def run_reconciliation() -> dict:
-	if not frappe.db.exists("DocType", "Item"):
-		return {"skipped": "erpnext_not_installed"}
-
 	settings = frappe.get_single("ERPNext CRM Settings")
-	if not settings.enabled:
-		return {"skipped": "integration_disabled"}
-	if settings.is_erpnext_in_different_site:
-		return {"skipped": "cross_site_not_supported"}
+	skip_reason = _get_skip_reason(settings)
+	if skip_reason:
+		return {"skipped": skip_reason}
 
-	summary = {
+	summary = _initial_summary()
+	items = _get_items_by_code()
+	products = _get_products_by_code()
+	_sync_items_to_products(items, products, summary)
+
+	issues = _sync_products_to_items(products, set(items.keys()), summary, settings)
+	_record_issues(settings, issues)
+	_sync_framework_mirrors()
+	frappe.publish_realtime("crm_product_sync_complete", user=frappe.session.user)
+	frappe.log_error(message=frappe.as_json(summary), title="CRM Product Reconciliation")
+	return summary
+
+
+def _initial_summary():
+	return {
 		"already_linked": 0,
 		"linked_by_exact_code": 0,
 		"created_in_crm": 0,
@@ -36,7 +46,53 @@ def run_reconciliation() -> dict:
 		"unlinked_orphans": 0,
 	}
 
-	items = {
+
+def _sync_items_to_products(items, products, summary):
+	for code, item in items.items():
+		_sync_item_to_product(item, products.get(code), summary)
+
+
+def _sync_products_to_items(products, existing_item_codes, summary, settings):
+	issues = []
+	for code, product in products.items():
+		if code in existing_item_codes:
+			continue
+		if _unlink_orphan(product, existing_item_codes, issues):
+			summary["unlinked_orphans"] += 1
+			continue
+		if product.get("erpnext_item_code") or not settings.sync_products:
+			continue
+		doc = frappe.get_doc("CRM Product", product["name"])
+		_create_item_from_product(doc)
+		summary["created_in_erpnext"] += 1
+	return issues
+
+
+def _unlink_orphan(product, existing_item_codes, issues):
+	if not detect_orphan(product, existing_item_codes):
+		return False
+	frappe.db.set_value("CRM Product", product["name"], "erpnext_item_code", None)
+	issues.append(
+		{
+			"product": product["name"],
+			"kind": "unlinked_orphan",
+			"detail": _("Linked Item {0} no longer exists").format(product["erpnext_item_code"]),
+		}
+	)
+	return True
+
+
+def _get_skip_reason(settings):
+	if not frappe.db.exists("DocType", "Item"):
+		return "erpnext_not_installed"
+	if not settings.enabled:
+		return "integration_disabled"
+	if settings.is_erpnext_in_different_site:
+		return "cross_site_not_supported"
+
+
+def _get_items_by_code():
+	return {
 		i["item_code"]: i
 		for i in frappe.db.get_all(
 			"Item",
@@ -51,7 +107,10 @@ def run_reconciliation() -> dict:
 			],
 		)
 	}
-	products = {
+
+
+def _get_products_by_code():
+	return {
 		p["product_code"]: p
 		for p in frappe.db.get_all(
 			"CRM Product",
@@ -68,51 +127,22 @@ def run_reconciliation() -> dict:
 		)
 	}
 
-	issues = []
 
-	for code, item in items.items():
-		product = products.get(code)
-		if not product:
-			_create_crm_product_from_item(item)
-			summary["created_in_crm"] += 1
-			continue
-		action = classify_pair(item, product)
-		if action.rule == "already_linked":
-			summary["already_linked"] += 1
-		else:
-			summary["linked_by_exact_code"] += 1
-		if action.crm_updates:
-			frappe.db.set_value("CRM Product", product["name"], action.crm_updates)
-		if action.item_updates:
-			frappe.db.set_value("Item", item["item_code"], action.item_updates)
+def _sync_item_to_product(item, product, summary):
+	if not product:
+		_create_crm_product_from_item(item)
+		summary["created_in_crm"] += 1
+		return
 
-	existing_item_codes = set(items.keys())
-
-	for code, product in products.items():
-		if code in existing_item_codes:
-			continue
-		if detect_orphan(product, existing_item_codes):
-			frappe.db.set_value("CRM Product", product["name"], "erpnext_item_code", None)
-			issues.append(
-				{
-					"product": product["name"],
-					"kind": "unlinked_orphan",
-					"detail": _("Linked Item {0} no longer exists").format(product["erpnext_item_code"]),
-				}
-			)
-			summary["unlinked_orphans"] += 1
-			continue
-		if product.get("erpnext_item_code"):
-			continue
-		doc = frappe.get_doc("CRM Product", product["name"])
-		_create_item_from_product(doc)
-		summary["created_in_erpnext"] += 1
-
-	_record_issues(settings, issues)
-	_sync_framework_mirrors()
-	frappe.publish_realtime("crm_product_sync_complete", user=frappe.session.user)
-	frappe.log_error(message=frappe.as_json(summary), title="CRM Product Reconciliation")
-	return summary
+	action = classify_pair(item, product)
+	if action.rule == "already_linked":
+		summary["already_linked"] += 1
+	else:
+		summary["linked_by_exact_code"] += 1
+	if action.crm_updates:
+		frappe.db.set_value("CRM Product", product["name"], action.crm_updates)
+	if action.item_updates:
+		frappe.db.set_value("Item", item["item_code"], action.item_updates)
 
 
 def _sync_framework_mirrors():

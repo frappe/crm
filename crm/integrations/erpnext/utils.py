@@ -7,11 +7,19 @@ ALLOWED_DOCTYPES = ("CRM Product", "Item")
 
 
 def should_sync() -> bool:
-	"""Product sync runs only when integration is enabled AND same-site."""
+	"""ERPNext Item to CRM Product sync runs when same-site integration is enabled."""
 	if "erpnext" not in frappe.get_installed_apps():
 		return False
 	settings = frappe.get_cached_doc("ERPNext CRM Settings")
 	return bool(settings.enabled) and not settings.is_erpnext_in_different_site
+
+
+def should_push_to_erpnext() -> bool:
+	"""CRM Product to ERPNext Item sync is optional until CRM supports ERPNext tax details."""
+	if not should_sync():
+		return False
+	settings = frappe.get_cached_doc("ERPNext CRM Settings")
+	return bool(settings.sync_products)
 
 
 def in_cascade() -> bool:
@@ -45,7 +53,7 @@ def find_target_for(doctype: str | None, value: str | None) -> tuple[str, str] |
 
 
 def validate_rename_conflict(self_doctype, olddn, newdn, merge):
-	if in_cascade() or not should_sync():
+	if in_cascade() or not _should_sync_direction(self_doctype):
 		return
 	other_doctype, other_link_field = _other_side(self_doctype)
 	linked = frappe.db.get_value(other_doctype, {other_link_field: olddn}, "name")
@@ -69,7 +77,7 @@ def validate_rename_conflict(self_doctype, olddn, newdn, merge):
 
 
 def cascade_rename(self_doctype, olddn, newdn, merge):
-	if in_cascade() or not should_sync():
+	if in_cascade() or not _should_sync_direction(self_doctype):
 		return
 	other_doctype, other_link_field = _other_side(self_doctype)
 	linked = frappe.db.get_value(other_doctype, {other_link_field: olddn}, "name")
@@ -104,3 +112,9 @@ def _resync_links(self_doctype, self_name, other_name):
 		frappe.db.set_value("CRM Product", prod, "erpnext_item_code", item, update_modified=False)
 	if frappe.db.exists("Item", item):
 		frappe.db.set_value("Item", item, "crm_product_code", prod, update_modified=False)
+
+
+def _should_sync_direction(self_doctype):
+	if self_doctype == "CRM Product":
+		return should_push_to_erpnext()
+	return should_sync()

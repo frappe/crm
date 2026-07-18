@@ -613,7 +613,7 @@ def get_assigned_users(doctype: str, name: str | int, default_assigned_to: str |
 		filters={
 			"reference_type": doctype,
 			"reference_name": name,
-			"status": ("!=", "Cancelled"),
+			"status": ("not in", ("Closed", "Cancelled")),
 		},
 		pluck="allocated_to",
 	)

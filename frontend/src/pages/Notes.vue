@@ -49,7 +49,7 @@
           >
             <Button
               icon="lucide-more-horizontal"
-              variant="ghosted"
+              variant="ghost"
               class="hover:bg-surface-base"
               @click.stop
             />
