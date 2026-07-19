@@ -1,6 +1,7 @@
 import frappe
 from frappe.exceptions import ValidationError
 from frappe.integrations.utils import make_get_request
+from frappe.utils.telemetry import capture
 
 FB_GRAPH_API_BASE = "https://graph.facebook.com"
 FB_GRAPH_API_VERSION = "v23.0"
@@ -34,9 +35,16 @@ class FacebookSyncSource:
 
 	def sync(self):
 		leads = self.fetch_leads()
+		created = 0
 		for lead in leads:
-			self.sync_single_lead(lead)
+			if self.sync_single_lead(lead):
+				created += 1
 		self.update_last_synced_at()
+		capture(
+			"lead_sync_completed",
+			"crm",
+			properties={"source_type": "Facebook", "count": created},
+		)
 
 	def sync_single_lead(self, lead, raise_exception=False):
 		question_to_field_map = self.get_form_questions_mapping()

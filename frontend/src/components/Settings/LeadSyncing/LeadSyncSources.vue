@@ -122,6 +122,7 @@
 </template>
 <script setup>
 import { Switch, Dropdown, toast, Badge } from 'frappe-ui'
+import { useTelemetry } from 'frappe-ui/frappe'
 import { ref, computed, inject } from 'vue'
 import EmptyState from '../../ListViews/EmptyState.vue'
 import { ConfirmDelete } from '../../../utils'
@@ -129,6 +130,7 @@ import { ConfirmDelete } from '../../../utils'
 const emit = defineEmits(['updateStep'])
 
 const sources = inject('sources')
+const { capture } = useTelemetry()
 
 const search = ref('')
 const confirmDelete = ref(false)
@@ -153,6 +155,10 @@ function toggleLeadSyncSourceEnabled(source) {
     },
     {
       onSuccess: () => {
+        capture('lead_sync_source_toggled', {
+          enabled: Boolean(source.enabled),
+          source_type: source.type,
+        })
         toast.success(
           source.enabled
             ? __('Source enabled successfully')

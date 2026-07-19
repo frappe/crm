@@ -6,25 +6,28 @@ export const createDocumentDoctype = ref('')
 export const createDocumentData = ref({})
 export const createDocumentCallback = ref(null)
 
-let erpnextEnabledCache = null
-
-async function isERPNextSyncEnabled() {
-  if (erpnextEnabledCache !== null) return erpnextEnabledCache
+async function shouldCreateProductInERPNext() {
   try {
-    const enabled = await call('frappe.client.get_single_value', {
-      doctype: 'ERPNext CRM Settings',
-      field: 'enabled',
-    })
-    erpnextEnabledCache = !!enabled
+    const [enabled, syncProducts] = await Promise.all([
+      getERPNextSetting('enabled'),
+      getERPNextSetting('sync_products'),
+    ])
+    return !!enabled && !!syncProducts
   } catch {
-    erpnextEnabledCache = false
+    return false
   }
-  return erpnextEnabledCache
+}
+
+function getERPNextSetting(field) {
+  return call('frappe.client.get_single_value', {
+    doctype: 'ERPNext CRM Settings',
+    field,
+  })
 }
 
 export async function createDocument(doctype, obj, close, callback) {
   if (!doctype) return
-  if (doctype === 'CRM Product' && (await isERPNextSyncEnabled())) {
+  if (doctype === 'CRM Product' && (await shouldCreateProductInERPNext())) {
     close?.()
     toast.info(__('Create products as Items in ERPNext'))
     window.open('/app/item/new', '_blank')

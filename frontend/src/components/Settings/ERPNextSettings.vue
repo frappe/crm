@@ -124,147 +124,306 @@
             "
             class="-mx-2"
           >
-            <div class="flex items-center justify-between pb-3 px-2">
-              <div class="flex flex-col">
-                <div class="text-p-base-medium text-ink-gray-7 truncate">
-                  {{ __('Company Name') }}
-                </div>
-                <div class="text-p-sm text-ink-gray-5 truncate">
-                  {{ __('Select your ERPNext company to connect with') }}
-                </div>
-              </div>
-              <div class="w-48">
-                <Autocomplete
-                  v-if="!erpnextCRMSettingsResource.isERPNextInstalled.data"
-                  :model-value="erpnextCRMSettingsResource.doc.erpnext_company"
-                  :options="
-                    erpnextCRMSettingsResource.getExternalCompanies.data?.map(
-                      (company) => ({
-                        label: company.company_name,
-                        value: company.company_name,
-                      }),
-                    ) || []
-                  "
-                  required
-                  class="pb-0.5"
-                  @update:modelValue="
-                    erpnextCRMSettingsResource.doc.erpnext_company =
-                      $event?.value
-                  "
-                >
-                  <template #footer>
-                    <Button
-                      :label="__('Refresh Companies')"
-                      theme="gray"
-                      variant="ghost"
-                      class="w-full"
-                      icon-left="lucide-refresh-cw"
-                      :loading="
-                        erpnextCRMSettingsResource.getExternalCompanies.loading
-                      "
-                      @click="
-                        erpnextCRMSettingsResource.getExternalCompanies.submit()
-                      "
-                    />
-                  </template>
-                </Autocomplete>
-                <Link
-                  v-else
-                  v-model="erpnextCRMSettingsResource.doc.erpnext_company"
-                  :doc="'Company'"
-                  :doctype="'Company'"
-                  :placeholder="__('Select Company')"
-                  class="w-48 flex-shrink-0"
-                />
-              </div>
-            </div>
             <div
               v-if="erpnextCRMSettingsResource.isERPNextInstalled.data"
-              class="h-px border-t border-outline-elevation-2"
-            />
-            <div
-              v-if="erpnextCRMSettingsResource.isERPNextInstalled.data"
-              class="flex items-center justify-between py-3 px-2"
+              class="flex gap-5 border-b border-outline-elevation-2 px-2 mb-3"
+              role="tablist"
             >
-              <div class="flex flex-col">
-                <div class="text-p-base-medium text-ink-gray-7 truncate">
-                  {{ __('Sync Products with ERPNext') }}
+              <button
+                v-for="tab in settingsTabs"
+                :key="tab.name"
+                class="border-b-2 pb-2 text-p-sm"
+                :class="
+                  activeSettingsTab === tab.name
+                    ? 'border-ink-gray-8 text-ink-gray-8'
+                    : 'border-transparent text-ink-gray-5'
+                "
+                role="tab"
+                :aria-selected="activeSettingsTab === tab.name"
+                @click="activeSettingsTab = tab.name"
+              >
+                {{ __(tab.label) }}
+              </button>
+            </div>
+            <div v-show="activeSettingsTab === 'general'">
+              <div class="flex items-center justify-between pb-3 px-2">
+                <div class="flex flex-col">
+                  <div class="text-p-base-medium text-ink-gray-7 truncate">
+                    {{ __('Company Name') }}
+                  </div>
+                  <div class="text-p-sm text-ink-gray-5 truncate">
+                    {{ __('Select your ERPNext company to connect with') }}
+                  </div>
                 </div>
-                <div class="text-p-sm text-ink-gray-5 truncate">
-                  {{
-                    __(
-                      'Bidirectional sync of existing CRM Products and ERPNext Items. Runs in the background.',
-                    )
-                  }}
+                <div class="w-48">
+                  <Autocomplete
+                    v-if="!erpnextCRMSettingsResource.isERPNextInstalled.data"
+                    :model-value="
+                      erpnextCRMSettingsResource.doc.erpnext_company
+                    "
+                    :options="
+                      erpnextCRMSettingsResource.getExternalCompanies.data?.map(
+                        (company) => ({
+                          label: company.company_name,
+                          value: company.company_name,
+                        }),
+                      ) || []
+                    "
+                    required
+                    class="pb-0.5"
+                    @update:modelValue="
+                      erpnextCRMSettingsResource.doc.erpnext_company =
+                        $event?.value
+                    "
+                  >
+                    <template #footer>
+                      <Button
+                        :label="__('Refresh Companies')"
+                        theme="gray"
+                        variant="ghost"
+                        class="w-full"
+                        icon-left="lucide-refresh-cw"
+                        :loading="
+                          erpnextCRMSettingsResource.getExternalCompanies
+                            .loading
+                        "
+                        @click="
+                          erpnextCRMSettingsResource.getExternalCompanies.submit()
+                        "
+                      />
+                    </template>
+                  </Autocomplete>
+                  <Link
+                    v-else
+                    v-model="erpnextCRMSettingsResource.doc.erpnext_company"
+                    :doc="'Company'"
+                    :doctype="'Company'"
+                    :placeholder="__('Select Company')"
+                    class="w-48 flex-shrink-0"
+                  />
                 </div>
               </div>
-              <div class="flex items-center gap-3">
+              <div
+                v-if="erpnextCRMSettingsResource.isERPNextInstalled.data"
+                class="h-px border-t border-outline-elevation-2"
+              />
+              <div
+                v-if="erpnextCRMSettingsResource.isERPNextInstalled.data"
+                class="flex items-center justify-between py-3 px-2 gap-4"
+              >
+                <div class="flex flex-col">
+                  <div class="text-p-base-medium text-ink-gray-7 truncate">
+                    {{ __('Bidirectional Product Sync') }}
+                  </div>
+                  <div class="text-p-sm text-ink-gray-5">
+                    {{
+                      __(
+                        'ERPNext Items always sync into CRM Products. Turn this on to also sync CRM Product changes back to ERPNext Items.',
+                      )
+                    }}
+                  </div>
+                </div>
+                <div>
+                  <Switch
+                    v-model="erpnextCRMSettingsResource.doc.sync_products"
+                    size="sm"
+                    @update:modelValue="
+                      (v) =>
+                        capture('erpnext_product_sync_toggled', { enabled: v })
+                    "
+                  />
+                </div>
+              </div>
+              <div
+                v-if="erpnextCRMSettingsResource.isERPNextInstalled.data"
+                class="h-px border-t border-outline-elevation-2"
+              />
+              <div
+                v-if="erpnextCRMSettingsResource.isERPNextInstalled.data"
+                class="flex items-center justify-between py-3 px-2 gap-4"
+              >
+                <div class="flex flex-col">
+                  <div class="text-p-base-medium text-ink-gray-7 truncate">
+                    {{ __('Manual Sync') }}
+                  </div>
+                  <div class="text-p-sm text-ink-gray-5">
+                    {{
+                      erpnextCRMSettingsResource.doc.sync_products
+                        ? __(
+                            'Run a manual bi-directional sync between ERPNext Items and CRM Products.',
+                          )
+                        : __(
+                            'Run a manual synchronization to pull the latest Items from ERPNext.',
+                          )
+                    }}
+                  </div>
+                </div>
                 <Button
-                  v-if="erpnextCRMSettingsResource.doc.sync_products"
                   variant="subtle"
+                  icon-left="lucide-refresh-cw"
                   :loading="erpnextCRMSettingsResource.runProductSync.loading"
                   @click="runProductSync"
                 >
                   {{ __('Sync Now') }}
                 </Button>
-                <Switch
-                  v-model="erpnextCRMSettingsResource.doc.sync_products"
-                  size="sm"
-                />
               </div>
-            </div>
-            <div class="h-px border-t border-outline-elevation-2" />
-            <div class="flex items-center justify-between py-3 px-2">
-              <div class="flex flex-col">
-                <div class="text-p-base-medium text-ink-gray-7 truncate">
-                  {{ __('Auto Create Customer') }}
-                </div>
-                <div class="text-p-sm text-ink-gray-5 truncate">
-                  {{
-                    __(
-                      'Create customer in ERPNext when the deal status is changed',
-                    )
-                  }}
-                </div>
-              </div>
-              <div>
-                <Switch
-                  v-model="
-                    erpnextCRMSettingsResource.doc
-                      .create_customer_on_status_change
-                  "
-                  size="sm"
-                />
-              </div>
-            </div>
-            <div
-              v-if="
-                erpnextCRMSettingsResource.doc.create_customer_on_status_change
-              "
-            >
-              <div class="flex items-center justify-between py-3 px-2 gap-4">
+              <div class="h-px border-t border-outline-elevation-2" />
+              <div class="flex items-center justify-between py-3 px-2">
                 <div class="flex flex-col">
-                  <div class="text-p-base-medium text-ink-gray-7">
-                    {{ __('Deal Status') }}
+                  <div class="text-p-base-medium text-ink-gray-7 truncate">
+                    {{ __('Auto Create Customer') }}
                   </div>
-                  <div class="text-p-sm text-ink-gray-5">
+                  <div class="text-p-sm text-ink-gray-5 truncate">
                     {{
                       __(
-                        'Select the deal status to trigger the auto customer creation in ERPNext',
+                        'Create customer in ERPNext when the deal status is changed',
                       )
                     }}
                   </div>
                 </div>
-                <Link
-                  v-model="erpnextCRMSettingsResource.doc.deal_status"
-                  doctype="CRM Deal Status"
-                  :placeholder="__('Won')"
-                  :disabled="
-                    !erpnextCRMSettingsResource.doc
-                      .create_customer_on_status_change
-                  "
-                  class="w-48 flex-shrink-0"
-                />
+                <div>
+                  <Switch
+                    v-model="
+                      erpnextCRMSettingsResource.doc
+                        .create_customer_on_status_change
+                    "
+                    size="sm"
+                  />
+                </div>
+              </div>
+              <div class="h-px border-t border-outline-elevation-2" />
+              <div
+                v-if="
+                  erpnextCRMSettingsResource.doc
+                    .create_customer_on_status_change
+                "
+              >
+                <div class="flex items-center justify-between py-3 px-2 gap-4">
+                  <div class="flex flex-col">
+                    <div class="text-p-base-medium text-ink-gray-7">
+                      {{ __('Deal Status') }}
+                    </div>
+                    <div class="text-p-sm text-ink-gray-5">
+                      {{
+                        __(
+                          'Select the deal status to trigger the auto customer creation in ERPNext',
+                        )
+                      }}
+                    </div>
+                  </div>
+                  <Link
+                    v-model="erpnextCRMSettingsResource.doc.deal_status"
+                    doctype="CRM Deal Status"
+                    :placeholder="__('Won')"
+                    :disabled="
+                      !erpnextCRMSettingsResource.doc
+                        .create_customer_on_status_change
+                    "
+                    class="w-48 flex-shrink-0"
+                  />
+                </div>
+              </div>
+            </div>
+            <div
+              v-if="erpnextCRMSettingsResource.isERPNextInstalled.data"
+              v-show="activeSettingsTab === 'logs'"
+              class="px-2"
+            >
+              <div
+                v-if="productSyncStatus.loading"
+                class="flex items-center justify-center py-10"
+              >
+                <LoadingIndicator class="size-5" />
+              </div>
+              <div v-else class="flex flex-col gap-2">
+                <div
+                  class="flex gap-5 border-b border-outline-elevation-2 overflow-x-auto"
+                  role="tablist"
+                >
+                  <button
+                    v-for="section in productSyncSections"
+                    :key="section.name"
+                    class="flex items-center gap-1 whitespace-nowrap border-b-2 px-0 pb-2 text-p-sm"
+                    :class="
+                      activeProductSyncLogTab === section.name
+                        ? 'border-ink-gray-8 text-ink-gray-8'
+                        : 'border-transparent text-ink-gray-5'
+                    "
+                    role="tab"
+                    :aria-selected="activeProductSyncLogTab === section.name"
+                    @click="activeProductSyncLogTab = section.name"
+                  >
+                    <span>{{ __(section.label) }}</span>
+                    <span
+                      class="rounded bg-surface-gray-2 px-1.5 text-xs text-ink-gray-6"
+                    >
+                      {{ section.count }}
+                    </span>
+                  </button>
+                </div>
+                <div
+                  v-if="activeProductSyncLogTab === 'failed' && unsyncedSummary"
+                  class="rounded bg-surface-gray-2 px-3 py-2 text-p-sm text-ink-gray-6"
+                >
+                  {{ unsyncedSummary }}
+                </div>
+                <div
+                  v-if="!currentProductSyncRows.length"
+                  class="rounded border border-outline-elevation-2 px-3 py-2 text-p-sm text-ink-gray-5"
+                >
+                  {{ __(currentProductSyncSection.emptyLabel) }}
+                </div>
+                <div v-else class="flex flex-col">
+                  <div
+                    v-for="row in currentProductSyncRows"
+                    :key="row.name"
+                    class="flex items-start justify-between gap-2 border-b border-outline-elevation-2 py-2 last:border-b-0"
+                  >
+                    <div class="min-w-0">
+                      <a
+                        v-if="getDeskUrl(row)"
+                        :href="getDeskUrl(row)"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="inline-flex max-w-full items-center gap-1 text-p-sm-medium text-ink-gray-8 hover:underline"
+                      >
+                        <span class="truncate">{{ getSyncRowName(row) }}</span>
+                        <lucide-square-arrow-out-up-right
+                          class="size-3.5 shrink-0 text-ink-gray-6"
+                        />
+                      </a>
+                      <div
+                        v-else
+                        class="truncate text-p-sm-medium text-ink-gray-8"
+                      >
+                        {{ getSyncRowName(row) }}
+                      </div>
+                      <div
+                        v-if="isSyncedDocumentLog"
+                        class="mt-0.5 flex flex-wrap gap-x-3 gap-y-1"
+                      >
+                        <span
+                          v-if="getSyncRowGroup(row)"
+                          class="text-p-sm text-ink-gray-5"
+                        >
+                          {{ __('Item Group') }}: {{ getSyncRowGroup(row) }}
+                        </span>
+                        <span class="text-p-sm text-ink-gray-5">
+                          {{ __('ID') }}: {{ getSyncRowId(row) }}
+                        </span>
+                      </div>
+                      <div v-else class="truncate text-p-sm text-ink-gray-5">
+                        {{ row.detail || row.kind }}
+                      </div>
+                    </div>
+                    <div
+                      v-if="!isSyncedDocumentLog"
+                      class="shrink-0 text-p-sm text-ink-gray-5"
+                    >
+                      {{ getSyncRowMeta(row) }}
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -305,6 +464,7 @@
 import {
   Button,
   createDocumentResource,
+  createResource,
   FormControl,
   LoadingIndicator,
   Switch,
@@ -312,11 +472,14 @@ import {
   Tooltip,
 } from 'frappe-ui'
 import SettingsLayoutBase from '@/components/Layouts/SettingsLayoutBase.vue'
-import { computed, onMounted } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import Link from '../Controls/Link.vue'
 import { globalStore } from '@/stores/global'
+import { formatDate } from '@/utils'
+import { useTelemetry } from 'frappe-ui/frappe'
 
-const { $dialog } = globalStore()
+const { $dialog, $socket } = globalStore()
+const { capture } = useTelemetry()
 
 const erpnextCRMSettingsResource = createDocumentResource({
   doctype: 'ERPNext CRM Settings',
@@ -334,7 +497,8 @@ const erpnextCRMSettingsResource = createDocumentResource({
     runProductSync: {
       method: 'run_product_sync',
       onSuccess() {
-        toast.success(__('Product sync started. Items will appear shortly.'))
+        toast.success(__('Product sync started.'))
+        productSyncStatus.submit()
       },
       onError(error) {
         toast.error(error?.messages?.[0] || __('Failed to start sync'))
@@ -350,6 +514,62 @@ const erpnextCRMSettingsResource = createDocumentResource({
       toast.error(message)
     },
   },
+})
+
+const activeSettingsTab = ref('general')
+const activeProductSyncLogTab = ref('products')
+
+const settingsTabs = [
+  { name: 'general', label: 'General Settings' },
+  { name: 'logs', label: 'Logs' },
+]
+
+const productSyncStatus = createResource({
+  url: 'crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.get_product_sync_status',
+})
+
+const productSyncSections = computed(() => {
+  const data = productSyncStatus.data || {}
+  return [
+    getProductSyncSection('products', 'Products', 'No CRM Products'),
+    getProductSyncSection('items', 'Items', 'No synced ERPNext Items'),
+    getProductSyncSection('failed', 'Failed Logs', 'No failed syncs'),
+  ].map((section) => ({
+    ...section,
+    rows: data[section.name]?.rows || data[section.name] || [],
+    count: data[section.name]?.count ?? data[section.name]?.length ?? 0,
+  }))
+})
+
+const currentProductSyncSection = computed(
+  () =>
+    productSyncSections.value.find(
+      (section) => section.name === activeProductSyncLogTab.value,
+    ) || productSyncSections.value[0],
+)
+
+const currentProductSyncRows = computed(
+  () => currentProductSyncSection.value?.rows || [],
+)
+
+const isSyncedDocumentLog = computed(() =>
+  ['products', 'items'].includes(activeProductSyncLogTab.value),
+)
+
+const unsyncedSummary = computed(() => {
+  const data = productSyncStatus.data?.unsynced
+  if (!data) return ''
+  const parts = []
+  if (data.items) {
+    parts.push(`${data.items} ${data.items === 1 ? __('item') : __('items')}`)
+  }
+  if (data.sync_products && data.products) {
+    parts.push(
+      `${data.products} ${data.products === 1 ? __('product') : __('products')}`,
+    )
+  }
+  if (!parts.length) return ''
+  return __('{0} not yet synced', [parts.join(__(' and '))])
 })
 
 const isDisabled = computed(() => {
@@ -412,6 +632,8 @@ const isDirty = computed(() => {
 const saveSettings = async () => {
   if (!validateData() || !validateSiteConnection()) return
 
+  const wasEnabled = !!erpnextCRMSettingsResource.originalDoc?.enabled
+
   updateFields(
     {
       enabled: erpnextCRMSettingsResource.doc.enabled,
@@ -428,6 +650,9 @@ const saveSettings = async () => {
     },
     {
       onSuccess: async () => {
+        if (erpnextCRMSettingsResource.doc.enabled && !wasEnabled) {
+          capture('erpnext_integration_enabled')
+        }
         if (!erpnextCRMSettingsResource.isERPNextInstalled.data) {
           await erpnextCRMSettingsResource.getExternalCompanies.submit()
         }
@@ -461,8 +686,56 @@ const toggleEnable = (value) => {
   }
 }
 
-function runProductSync() {
-  erpnextCRMSettingsResource.runProductSync.submit()
+async function runProductSync() {
+  capture('erpnext_sync_now_clicked')
+  if (
+    erpnextCRMSettingsResource.originalDoc?.sync_products !==
+    erpnextCRMSettingsResource.doc.sync_products
+  ) {
+    await updateFields(
+      'sync_products',
+      erpnextCRMSettingsResource.doc.sync_products,
+    )
+  }
+  await erpnextCRMSettingsResource.runProductSync.submit()
+}
+
+function getProductSyncSection(name, label, emptyLabel) {
+  return { name, label, emptyLabel }
+}
+
+function getSyncRowName(row) {
+  return row.product_name || row.item_name || row.product || row.name
+}
+
+function getSyncRowMeta(row) {
+  if (activeProductSyncLogTab.value === 'products') return row.erpnext_item_code
+  if (activeProductSyncLogTab.value === 'items') return row.crm_product_code
+  return row.detected_on ? formatDate(row.detected_on) : row.kind || ''
+}
+
+function getSyncRowGroup(row) {
+  return row.item_group
+}
+
+function getSyncRowId(row) {
+  if (activeProductSyncLogTab.value === 'products')
+    return row.product_code || row.name
+  if (activeProductSyncLogTab.value === 'items')
+    return row.item_code || row.name
+  return row.product || row.name
+}
+
+function getDeskUrl(row) {
+  const doctype = getDeskDoctype()
+  if (!doctype || !row.name) return ''
+  return `${window.location.origin}/app/${doctype}/${encodeURIComponent(row.name)}`
+}
+
+function getDeskDoctype() {
+  if (activeProductSyncLogTab.value === 'products') return 'crm-product'
+  if (activeProductSyncLogTab.value === 'items') return 'item'
+  return ''
 }
 
 function verifyConnection() {
@@ -548,7 +821,7 @@ function updateFields(fields, value, options) {
     obj[fields] = value
   }
 
-  erpnextCRMSettingsResource.setValue.submit(obj, options)
+  return erpnextCRMSettingsResource.setValue.submit(obj, options)
 }
 
 onMounted(async () => {
@@ -567,5 +840,31 @@ onMounted(async () => {
       }
     },
   })
+  if (
+    erpnextCRMSettingsResource.isERPNextInstalled.data &&
+    erpnextCRMSettingsResource.doc.enabled
+  ) {
+    productSyncStatus.submit()
+  }
 })
+
+// Fetch logs lazily when the tab is opened (e.g. after enabling in the same session)
+watch(activeSettingsTab, (tab) => {
+  if (
+    tab === 'logs' &&
+    erpnextCRMSettingsResource.isERPNextInstalled.data &&
+    !productSyncStatus.fetched
+  ) {
+    productSyncStatus.submit()
+  }
+})
+
+// The sync runs in a background job; refresh logs when it signals completion
+function onSyncComplete() {
+  if (erpnextCRMSettingsResource.isERPNextInstalled.data) {
+    productSyncStatus.submit()
+  }
+}
+onMounted(() => $socket.on('crm_product_sync_complete', onSyncComplete))
+onBeforeUnmount(() => $socket.off('crm_product_sync_complete', onSyncComplete))
 </script>

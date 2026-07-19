@@ -95,6 +95,7 @@ import { useDocument } from '@/data/document'
 import { usersStore } from '@/stores/users'
 import { sessionStore } from '@/stores/session'
 import { statusesStore } from '@/stores/statuses'
+import { getMeta } from '@/stores/meta'
 import { showQuickEntryModal, quickEntryProps } from '@/composables/modals'
 import { isMobileView } from '@/composables/settings'
 import { useOnboarding, useTelemetry } from 'frappe-ui/frappe'
@@ -114,6 +115,7 @@ const { statusOptions, getDealStatus } = statusesStore()
 const { isManager } = usersStore()
 const { user } = sessionStore()
 const { updateOnboardingStep } = useOnboarding('frappecrm')
+const { doctypeMeta: leadMeta } = getMeta('CRM Lead')
 
 const existingContactChecked = ref(false)
 const existingOrganizationChecked = ref(false)
@@ -196,7 +198,7 @@ const dealTabs = createResource({
   auto: true,
   transform: (_tabs) => {
     let hasFields = false
-    let parsedTabs = _tabs?.forEach((tab) => {
+    _tabs?.forEach((tab) => {
       tab.sections?.forEach((section) => {
         section.columns?.forEach((column) => {
           column.fields?.forEach((field) => {
@@ -210,42 +212,94 @@ const dealTabs = createResource({
         })
       })
     })
-    return hasFields ? parsedTabs : []
+    return hasFields ? _tabs : []
   },
 })
 
 const leadDealFieldMap = { deal_owner: 'lead_owner' }
 const skipPrefillFields = ['organization', 'status']
+const leadFields = computed(() => leadMeta.value?.fields || [])
 
 watch(
   () => dealTabs.data,
-  (tabs) => {
-    deal.doc = { __newDocument: true, doctype: 'CRM Deal' }
-    tabs?.forEach((tab) =>
-      tab.sections?.forEach((section) =>
-        section.columns?.forEach((column) =>
-          column.fields?.forEach((field) => {
-            if (field.fieldtype === 'Table') {
-              deal.doc[field.fieldname] = []
-            } else {
-              prefillFromLead(field)
-            }
-          }),
-        ),
-      ),
-    )
-  },
+  (tabs) => resetDealDoc(tabs),
   { immediate: true },
 )
 
+watch(leadFields, () => prefillFields(dealTabs.data))
+
+function resetDealDoc(tabs) {
+  deal.doc = { __newDocument: true, doctype: 'CRM Deal' }
+  prefillFields(tabs)
+}
+
+function prefillFields(tabs) {
+  tabs?.forEach((tab) =>
+    tab.sections?.forEach((section) =>
+      section.columns?.forEach((column) =>
+        column.fields?.forEach((field) => prefillField(field)),
+      ),
+    ),
+  )
+}
+
+function prefillField(field) {
+  if (field.fieldtype === 'Table') {
+    deal.doc[field.fieldname] = []
+    return
+  }
+  prefillFromLead(field)
+}
+
 function prefillFromLead(field) {
   if (skipPrefillFields.includes(field.fieldname)) return
+  if (hasValue(deal.doc[field.fieldname])) return
 
-  const leadFieldname = leadDealFieldMap[field.fieldname] || field.fieldname
+  const leadFieldname = getLeadFieldname(field)
+  if (!leadFieldname) return
+
   const value = props.lead[leadFieldname]
   if (value != null && value !== '') {
     deal.doc[field.fieldname] = value
   }
+}
+
+function getLeadFieldname(field) {
+  const mappedFieldname = leadDealFieldMap[field.fieldname]
+  if (mappedFieldname) return mappedFieldname
+  if (Object.hasOwn(props.lead, field.fieldname)) return field.fieldname
+
+  return getMatchingCustomLeadField(field)?.fieldname
+}
+
+function getMatchingCustomLeadField(field) {
+  if (!isCustomField(field)) return
+
+  const matches = leadFields.value.filter((leadField) =>
+    isMatchingCustomField(leadField, field),
+  )
+  return matches.length === 1 ? matches[0] : null
+}
+
+function isMatchingCustomField(leadField, dealField) {
+  return (
+    isCustomField(leadField) &&
+    leadField.label === dealField.label &&
+    leadField.fieldtype === dealField.fieldtype
+  )
+}
+
+function isCustomField(field) {
+  return Boolean(
+    field?.is_custom_field ||
+      field?.custom ||
+      field?.fieldname?.startsWith('custom_') ||
+      field?.name === `${field?.parent}-${field?.fieldname}`,
+  )
+}
+
+function hasValue(value) {
+  return value != null && value !== ''
 }
 
 function openQuickEntryModal() {
