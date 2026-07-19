@@ -220,20 +220,20 @@ function getCurrencySymbol(currencyCode) {
 }
 
 const _symbolOnRightCache = {}
+
 function getCurrencySymbolOnRight(currencyCode) {
-  if (currencyCode in _symbolOnRightCache) return _symbolOnRightCache[currencyCode]
-  try {
-    const formatter = new Intl.NumberFormat(undefined, {
-      style: 'currency',
-      currency: currencyCode,
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    })
-    const parts = formatter.formatToParts(1)
-    _symbolOnRightCache[currencyCode] = parts[parts.length - 1].type === 'currency'
-  } catch {
-    _symbolOnRightCache[currencyCode] = false
+  if (currencyCode in _symbolOnRightCache) {
+    return _symbolOnRightCache[currencyCode]
   }
+  _symbolOnRightCache[currencyCode] = false
+  fetch(`/api/resource/Currency/${encodeURIComponent(currencyCode)}?fields=["symbol_on_right"]`)
+    .then((r) => r.json())
+    .then((d) => {
+      _symbolOnRightCache[currencyCode] = !!d.data?.symbol_on_right
+    })
+    .catch(() => {
+      _symbolOnRightCache[currencyCode] = false
+    })
   return _symbolOnRightCache[currencyCode]
 }
 
