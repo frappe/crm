@@ -159,7 +159,12 @@ export function formatNumber(v, format, decimals) {
   return (isNegative ? '-' : '') + part[0] + part[1]
 }
 
-export function formatCurrency(value, format, currency = 'USD', precision = 2) {
+export function formatCurrency(
+  value,
+  format,
+  currency = 'USD',
+  precision = 2,
+) {
   value = value == null || value === '' ? 0 : value
 
   if (typeof precision != 'number') {
@@ -219,22 +224,45 @@ function getCurrencySymbol(currencyCode) {
   }
 }
 
-const _symbolOnRightCache = {}
+// Module-level map of currencyCode -> symbol_on_right (boolean).
+// Populated once via preloadCurrencySymbolPlacement(), called at app boot,
+// so formatCurrency() can read it synchronously with no per-call fetch race.
+let _symbolOnRightMap = null
+let _symbolOnRightPromise = null
 
-function getCurrencySymbolOnRight(currencyCode) {
-  if (currencyCode in _symbolOnRightCache) {
-    return _symbolOnRightCache[currencyCode]
-  }
-  _symbolOnRightCache[currencyCode] = false
-  fetch(`/api/resource/Currency/${encodeURIComponent(currencyCode)}?fields=["symbol_on_right"]`)
+/**
+ * Fetches symbol_on_right for all currencies once and caches the result.
+ * Call this once during app startup, before mounting, e.g. in main.js:
+ *
+ *   import { preloadCurrencySymbolPlacement } from '@/utils/numberFormat'
+ *   preloadCurrencySymbolPlacement()
+ *
+ * Safe to call multiple times - subsequent calls reuse the in-flight
+ * or resolved promise.
+ */
+export function preloadCurrencySymbolPlacement() {
+  if (_symbolOnRightPromise) return _symbolOnRightPromise
+
+  _symbolOnRightPromise = fetch(
+    '/api/method/frappe.client.get_list?doctype=Currency&fields=["name","symbol_on_right"]&limit_page_length=0',
+  )
     .then((r) => r.json())
     .then((d) => {
-      _symbolOnRightCache[currencyCode] = !!d.data?.symbol_on_right
+      _symbolOnRightMap = {}
+      ;(d.message || []).forEach((row) => {
+        _symbolOnRightMap[row.name] = !!row.symbol_on_right
+      })
     })
     .catch(() => {
-      _symbolOnRightCache[currencyCode] = false
+      _symbolOnRightMap = {}
     })
-  return _symbolOnRightCache[currencyCode]
+
+  return _symbolOnRightPromise
+}
+
+function getCurrencySymbolOnRight(currencyCode) {
+  if (!_symbolOnRightMap) return false
+  return !!_symbolOnRightMap[currencyCode]
 }
 
 function getNumberFormatInfo(format) {
