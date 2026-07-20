@@ -159,12 +159,7 @@ export function formatNumber(v, format, decimals) {
   return (isNegative ? '-' : '') + part[0] + part[1]
 }
 
-export function formatCurrency(
-  value,
-  format,
-  currency = 'USD',
-  precision = 2,
-) {
+export function formatCurrency(value, format, currency = 'USD', precision = 2) {
   value = value == null || value === '' ? 0 : value
 
   if (typeof precision != 'number') {
