@@ -239,7 +239,7 @@ export function preloadCurrencySymbolPlacement() {
   if (_symbolOnRightPromise) return _symbolOnRightPromise
 
   _symbolOnRightPromise = fetch(
-    '/api/method/frappe.client.get_list?doctype=Currency&fields=["name","symbol_on_right"]&limit_page_length=0',
+    '/api/method/frappe.client.get_list?doctype=Currency&fields=["name","symbol_on_right"]&limit_page_length=500',
   )
     .then((r) => r.json())
     .then((d) => {
