@@ -24,7 +24,7 @@
         <div class="flex gap-2">
           <Button
             :tooltip="__('Refresh')"
-            :icon="RefreshIcon"
+            icon="lucide-refresh-ccw"
             :loading="isLoading"
             @click="reload()"
           />
@@ -157,7 +157,7 @@
       <div class="flex items-center gap-2">
         <Button
           :tooltip="__('Refresh')"
-          :icon="RefreshIcon"
+          icon="lucide-refresh-ccw"
           :loading="isLoading"
           @click="reload()"
         />
@@ -304,7 +304,6 @@ import ListIcon from '@/components/Icons/ListIcon.vue'
 import KanbanIcon from '@/components/Icons/KanbanIcon.vue'
 import GroupByIcon from '@/components/Icons/GroupByIcon.vue'
 import QuickFilterField from '@/components/QuickFilterField.vue'
-import RefreshIcon from '@/components/Icons/RefreshIcon.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import DuplicateIcon from '@/components/Icons/DuplicateIcon.vue'
 import CheckIcon from '@/components/Icons/CheckIcon.vue'
