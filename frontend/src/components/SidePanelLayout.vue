@@ -137,6 +137,7 @@
                           v-model="doc[field.fieldname]"
                           class="form-control cursor-pointer [&_select]:cursor-pointer truncate [&>*]:!ring-0"
                           type="select"
+                          variant="ghost"
                           :options="field.options"
                           :placeholder="field.placeholder"
                           @update:modelValue="(v) => fieldChange(v, field)"
@@ -670,6 +671,14 @@ function firstVisibleIndex() {
 :deep(.form-control button svg) {
   color: white;
   width: 0;
+}
+
+/* PrimaryDropdown (Dropdown fields like Email/Mobile) is a borderless button
+   with px-2.5 (10px); trim to 9px so its text aligns with the inputs and
+   Link fields, which start at 9px (1px transparent border + 8px padding). */
+:deep(.dropdown-button) {
+  padding-left: 9px !important;
+  padding-right: 9px !important;
 }
 
 .sections .section .column {
