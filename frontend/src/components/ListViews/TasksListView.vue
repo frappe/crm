@@ -12,15 +12,12 @@
     row-key="name"
     @update:selections="(selections) => emit('selectionsChanged', selections)"
   >
-    <ListHeader
-      class="mx-3 sm:mx-5"
-      @columnWidthUpdated="emit('columnWidthUpdated')"
-    >
+    <ListHeader class="mx-3 sm:mx-5" @columnWidthUpdated="onColumnWidthUpdated">
       <ListHeaderItem
         v-for="column in columns"
         :key="column.key"
         :item="column"
-        @columnWidthUpdated="emit('columnWidthUpdated', column)"
+        @columnWidthUpdated="onColumnWidthUpdated"
       >
         <Button
           v-if="column.key == '_liked_by'"
@@ -188,6 +185,7 @@ import CalendarIcon from '@/components/Icons/CalendarIcon.vue'
 import RatingInput from '@/components/Controls/RatingInput.vue'
 import ListBulkActions from '@/components/ListBulkActions.vue'
 import ListRows from '@/components/ListViews/ListRows.vue'
+import { createColumnResizeHandler } from '@/utils/columnResize'
 import {
   formatDate,
   isTranslatable,
@@ -236,6 +234,7 @@ const emit = defineEmits([
 
 const pageLengthCount = defineModel({ type: Number })
 const list = defineModel('list', { type: Object })
+const onColumnWidthUpdated = createColumnResizeHandler(list, emit)
 
 function getLabel(label, column) {
   if (column.type === 'Duration') return formatDuration(label)

@@ -16,15 +16,12 @@
     row-key="name"
     @update:selections="(selections) => emit('selectionsChanged', selections)"
   >
-    <ListHeader
-      class="sm:mx-5 mx-3"
-      @columnWidthUpdated="emit('columnWidthUpdated')"
-    >
+    <ListHeader class="sm:mx-5 mx-3" @columnWidthUpdated="onColumnWidthUpdated">
       <ListHeaderItem
         v-for="column in columns"
         :key="column.key"
         :item="column"
-        @columnWidthUpdated="emit('columnWidthUpdated', column)"
+        @columnWidthUpdated="onColumnWidthUpdated"
       >
         <Button
           v-if="column.key == '_liked_by'"
@@ -224,6 +221,7 @@ import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import RatingInput from '@/components/Controls/RatingInput.vue'
 import ListBulkActions from '@/components/ListBulkActions.vue'
 import ListRows from '@/components/ListViews/ListRows.vue'
+import { createColumnResizeHandler } from '@/utils/columnResize'
 import { isTranslatable, formatDuration } from '@/utils'
 import {
   Avatar,
@@ -269,6 +267,7 @@ const route = useRoute()
 
 const pageLengthCount = defineModel({ type: Number })
 const list = defineModel('list', { type: Object })
+const onColumnWidthUpdated = createColumnResizeHandler(list, emit)
 
 function getLabel(label, column) {
   if (column.type === 'Duration') return formatDuration(label)
