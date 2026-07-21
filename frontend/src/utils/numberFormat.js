@@ -195,17 +195,9 @@ function getCurrencySymbol(currencyCode) {
 }
 
 function getCurrencySymbolOnRight(currencyCode) {
-  try {
-    const parts = new Intl.NumberFormat(undefined, {
-      style: 'currency',
-      currency: currencyCode,
-    }).formatToParts(1)
-    const symbolIndex = parts.findIndex((p) => p.type === 'currency')
-    const integerIndex = parts.findIndex((p) => p.type === 'integer')
-    return symbolIndex > integerIndex
-  } catch {
-    return false
-  }
+  const currencies = window.frappe?.boot?.currencies || []
+  const currency = currencies.find((c) => c.name === currencyCode)
+  return currency ? !!currency.symbol_on_right : false
 }
 
 function getNumberFormatInfo(format) {
