@@ -2120,6 +2120,13 @@
   resolved "https://registry.yarnpkg.com/@tiptap/extensions/-/extensions-3.27.0.tgz#ca0011ea33d96281f5f96a2f358657d12c8c1089"
   integrity sha512-G4ufNa/F4upDI/2YWFBCVBs4skcCeQ2jvRQiFrLJCitUFcl03evP0znAvx5JKj9+nfm4ILYpPpncEFyMq4mFEg==
 
+"@tiptap/markdown@^3.26.0":
+  version "3.28.0"
+  resolved "https://registry.yarnpkg.com/@tiptap/markdown/-/markdown-3.28.0.tgz#3b57916c879bb48a3e79bbfbcf7bdfeea968d050"
+  integrity sha512-AefLVBgpjmBDbGDx8i0UDr4KyPxfsDnpIGYROTDSyGJswovGZDzCm3YjMGm8roxP31Opw4UCtts4WkFzWPI0og==
+  dependencies:
+    marked "^17.0.1"
+
 "@tiptap/pm@^3.26.0", "@tiptap/pm@^3.27.0":
   version "3.27.0"
   resolved "https://registry.yarnpkg.com/@tiptap/pm/-/pm-3.27.0.tgz#aa7e1cb56056f2c29a7dc0b3427db46d19776e69"
@@ -3648,10 +3655,10 @@ fraction.js@^5.3.4:
   resolved "https://registry.yarnpkg.com/fraction.js/-/fraction.js-5.3.4.tgz#8c0fcc6a9908262df4ed197427bdeef563e0699a"
   integrity sha512-1X1NTtiJphryn/uLQz3whtY6jK3fTqoE3ohKs0tT+Ujr1W59oopxmoEh7Lu5p6vBaPbgoM0bzveAW4Qi5RyWDQ==
 
-frappe-ui@1.0.0-beta.19:
-  version "1.0.0-beta.19"
-  resolved "https://registry.yarnpkg.com/frappe-ui/-/frappe-ui-1.0.0-beta.19.tgz#9b5dbf60b8e6bb573b382f6dc49abed5d92c7289"
-  integrity sha512-tiXRcAk7U73ICSTo9/5rlE3EBTn2V0tsirLMjdbF5w0V+AxviLneK61gjcIJVYfpE2Bz2g9pm82HSTnYtTVFUw==
+frappe-ui@1.0.0-beta.24:
+  version "1.0.0-beta.24"
+  resolved "https://registry.yarnpkg.com/frappe-ui/-/frappe-ui-1.0.0-beta.24.tgz#af2009e2140ca119e6931ccd9004a76db44509d5"
+  integrity sha512-70xNZJ2jlGd/9UX6dQ4wglFFBqoxmsS/a/SlD9g2Lu5+31/eJDufwQUAvHitRQSw6Feb8wvVt1TLKSGkkWpirA==
   dependencies:
     "@codemirror/lang-css" "^6.3.0"
     "@codemirror/lang-html" "^6.4.9"
@@ -3700,6 +3707,7 @@ frappe-ui@1.0.0-beta.19:
     "@tiptap/extension-typography" "^3.26.0"
     "@tiptap/extension-underline" "^3.26.0"
     "@tiptap/extensions" "^3.26.0"
+    "@tiptap/markdown" "^3.26.0"
     "@tiptap/pm" "^3.26.0"
     "@tiptap/starter-kit" "^3.26.0"
     "@tiptap/suggestion" "^3.26.0"
@@ -4568,6 +4576,11 @@ marked@^15.0.12:
   version "15.0.12"
   resolved "https://registry.yarnpkg.com/marked/-/marked-15.0.12.tgz#30722c7346e12d0a2d0207ab9b0c4f0102d86c4e"
   integrity sha512-8dD6FusOQSrpv9Z1rdNMdlSgQOIP880DHqnohobOmYLElGEqAL/JvxvuxZO16r4HtjTlfPRDC1hbvxC9dPN2nA==
+
+marked@^17.0.1:
+  version "17.0.6"
+  resolved "https://registry.yarnpkg.com/marked/-/marked-17.0.6.tgz#2a97586a272d3be5880f198e020b74ad27cf86ba"
+  integrity sha512-gB0gkNafnonOw0obSTEGZTT86IuhILt2Wfx0mWH/1Au83kybTayroZ/V6nS25mN7u8ASy+5fMhgB3XPNrOZdmA==
 
 math-intrinsics@^1.1.0:
   version "1.1.0"
