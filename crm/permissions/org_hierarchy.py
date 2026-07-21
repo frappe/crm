@@ -62,12 +62,12 @@ def _permission_query_conditions(user: str | None, doctype: str):
 
 def get_lead_permission_query_conditions(user=None):
 	cond = _permission_query_conditions(user, "CRM Lead")
-	return cond.get_sql(quote_char="`", secondary_quote_char="'") if cond else ""
+	return cond.get_sql(with_namespace=True, quote_char="`", secondary_quote_char="'") if cond else ""
 
 
 def get_deal_permission_query_conditions(user=None):
 	cond = _permission_query_conditions(user, "CRM Deal")
-	return cond.get_sql(quote_char="`", secondary_quote_char="'") if cond else ""
+	return cond.get_sql(with_namespace=True, quote_char="`", secondary_quote_char="'") if cond else ""
 
 
 def _has_permission(doc, ptype, user, doctype: str) -> bool | None:
