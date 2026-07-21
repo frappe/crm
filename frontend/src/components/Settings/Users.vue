@@ -61,13 +61,13 @@
     >
       <div
         v-if="users.data?.crmUsers?.length > 10"
-        class="flex items-center justify-between mb-4 px-2 pt-0.5"
+        class="flex items-center gap-2 mb-4 px-2 pt-0.5"
       >
         <TextInput
           ref="searchRef"
           v-model="search"
           :placeholder="__('Search User')"
-          class="w-1/3"
+          class="w-full"
           :debounce="300"
         >
           <template #prefix>
@@ -77,9 +77,9 @@
             />
           </template>
         </TextInput>
-        <FormControl
+        <Select
           v-model="currentRole"
-          type="select"
+          class="shrink-0"
           :options="[
             { label: __('All'), value: 'All' },
             { label: __('Admin'), value: 'System Manager' },
@@ -170,7 +170,15 @@ import EmptyState from '@/components/ListViews/EmptyState.vue'
 import { activeSettingsPage } from '@/composables/settings'
 import { usersStore } from '@/stores/users'
 import { DropdownOption } from '@/utils'
-import { Dropdown, Avatar, TextInput, toast, call, Tooltip } from 'frappe-ui'
+import {
+  Dropdown,
+  Avatar,
+  TextInput,
+  toast,
+  call,
+  Tooltip,
+  Select,
+} from 'frappe-ui'
 import { ref, computed, onMounted } from 'vue'
 import { ConfirmDelete } from '../../utils'
 
