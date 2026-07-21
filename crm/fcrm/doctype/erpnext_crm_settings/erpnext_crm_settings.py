@@ -219,8 +219,6 @@ class ERPNextCRMSettings(Document):
 	def run_product_sync(self):
 		if not self.enabled or self.is_erpnext_in_different_site:
 			frappe.throw(_("ERPNext integration must be enabled on the same site"))
-		if not self.sync_products:
-			frappe.throw(_("Product synchronization is turned off"))
 		from crm.fcrm.doctype.crm_product.reconcile_job import enqueue_reconciliation
 
 		enqueue_reconciliation()
