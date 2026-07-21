@@ -195,17 +195,10 @@ function getCurrencySymbol(currencyCode) {
 }
 
 function getCurrencySymbolOnRight(currencyCode) {
-  try {
-    const parts = new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currencyCode,
-    }).formatToParts(1)
-    const symbolIndex = parts.findIndex((p) => p.type === 'currency')
-    const integerIndex = parts.findIndex((p) => p.type === 'integer')
-    return symbolIndex > integerIndex
-  } catch {
-    return false
-  }
+  // symbol_on_right must be sourced from Frappe's Currency DocType
+  // (e.g. frappe.boot.currency_info[currencyCode]?.symbol_on_right).
+  // Using Intl.NumberFormat with 'en-US' always returns false for EUR/GBP/etc.
+  return window.frappe?.boot?.currency_info?.[currencyCode]?.symbol_on_right ?? false
 }
 
 function getNumberFormatInfo(format) {
