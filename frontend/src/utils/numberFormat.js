@@ -196,7 +196,7 @@ function getCurrencySymbol(currencyCode) {
 
 function getCurrencySymbolOnRight(currencyCode) {
   try {
-    const parts = new Intl.NumberFormat('en-US', {
+    const parts = new Intl.NumberFormat(undefined, {
       style: 'currency',
       currency: currencyCode,
     }).formatToParts(1)
