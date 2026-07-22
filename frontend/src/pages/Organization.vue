@@ -13,14 +13,14 @@
         :actions="organization._actions"
       />
       <Button
-        v-if="tabIndex === 0"
+        v-if="tabs[tabIndex]?.name === 'Deals'"
         variant="solid"
         :label="__('Create Deal')"
         iconLeft="plus"
         @click="showDealModal = true"
       />
       <Button
-        v-if="tabIndex === 1"
+        v-if="tabs[tabIndex]?.name === 'Contacts'"
         variant="solid"
         :label="__('Create Contact')"
         iconLeft="plus"
@@ -28,109 +28,163 @@
       />
     </template>
   </LayoutHeader>
-  <div v-if="organization.doc" ref="parentRef" class="flex h-full">
-    <Resizer
-      v-if="organization.doc"
-      :parent="$refs.parentRef"
-      class="flex h-full flex-col overflow-hidden border-r"
+  <div v-if="organization.doc" class="flex h-full overflow-hidden">
+    <Tabs
+      v-model="tabIndex"
+      :tabs="tabs"
+      class="flex flex-1 overflow-hidden flex-col [&_[role='tab']]:px-0 [&_[role='tab']]:shrink-0 [&_[role='tablist']]:px-5 [&_[role='tablist']::-webkit-scrollbar]:h-0 [&_[role='tablist']]:min-h-[45px] [&_[role='tabpanel']:not([hidden])]:flex [&_[role='tabpanel']:not([hidden])]:grow"
     >
-      <div class="border-b">
-        <FileUploader
-          :validateFile="validateIsImageFile"
-          @success="changeOrganizationImage"
-        >
-          <template #default="{ openFileSelector, error }">
-            <div class="flex flex-col items-start justify-start gap-4 p-5">
-              <div class="flex gap-4 items-center">
-                <div class="group relative h-15.5 w-15.5">
-                  <Avatar
-                    size="3xl"
-                    class="h-15.5 w-15.5"
-                    :label="organization.doc.organization_name"
-                    :image="organization.doc.organization_logo"
-                  />
-                  <component
-                    :is="organization.doc.organization_logo ? Dropdown : 'div'"
-                    v-bind="
-                      organization.doc.organization_logo
-                        ? {
-                            options: [
-                              {
-                                icon: 'upload',
-                                label: organization.doc.organization_logo
-                                  ? __('Change Image')
-                                  : __('Upload Image'),
-                                onClick: openFileSelector,
-                              },
-                              {
-                                icon: 'trash-2',
-                                label: __('Remove Image'),
-                                onClick: () => changeOrganizationImage(''),
-                              },
-                            ],
-                          }
-                        : { onClick: openFileSelector }
-                    "
-                    class="!absolute bottom-0 left-0 right-0"
-                  >
-                    <div
-                      class="z-1 absolute bottom-0 left-0 right-0 flex h-14 cursor-pointer items-center justify-center rounded-b-full bg-black bg-opacity-40 pt-5 opacity-0 duration-300 ease-in-out group-hover:opacity-100"
-                      style="
-                        -webkit-clip-path: inset(22px 0 0 0);
-                        clip-path: inset(22px 0 0 0);
-                      "
-                    >
-                      <CameraIcon class="h-6 w-6 cursor-pointer text-white" />
-                    </div>
-                  </component>
-                </div>
-                <div class="flex flex-col gap-2 truncate">
-                  <div class="truncate text-2xl font-medium text-ink-gray-9">
-                    <span>{{ organization.doc.name }}</span>
-                  </div>
+      <template #tab-panel>
+        <Activities
+          v-if="!['Deals', 'Contacts'].includes(tabs[tabIndex]?.name)"
+          ref="activities"
+          v-model:reload="reload"
+          v-model:tabIndex="tabIndex"
+          doctype="CRM Organization"
+          :docname="props.organizationId"
+          :tabs="activityTabs"
+        />
+        <div v-else class="flex flex-1 flex-col overflow-y-auto">
+          <DealsListView
+            v-if="tabs[tabIndex]?.name === 'Deals' && dealRows.length"
+            class="mt-4"
+            :rows="dealRows"
+            :columns="dealColumns"
+            :options="{ selectable: false, showTooltip: false }"
+          />
+          <ContactsListView
+            v-else-if="tabs[tabIndex]?.name === 'Contacts' && contactRows.length"
+            class="mt-4"
+            :rows="contactRows"
+            :columns="contactColumns"
+            :options="{ selectable: false, showTooltip: false }"
+          />
+          <EmptyState
+            v-else
+            :icon="tabs[tabIndex]?.icon"
+            :name="__(tabs[tabIndex]?.label)"
+          />
+        </div>
+      </template>
+    </Tabs>
+    <Resizer
+      class="flex flex-col justify-between border-l"
+      side="right"
+    >
+      <div
+        class="flex h-[45px] cursor-copy items-center border-b px-5 py-2.5 text-lg font-medium text-ink-gray-9"
+        @click="copyToClipboard(props.organizationId)"
+      >
+        {{ __(props.organizationId) }}
+      </div>
+      <FileUploader
+        :validateFile="validateIsImageFile"
+        @success="changeOrganizationImage"
+      >
+        <template #default="{ openFileSelector, error }">
+          <div class="flex flex-col items-start justify-start gap-4 border-b p-5">
+            <div class="flex gap-4 items-center">
+              <div class="group relative h-15.5 w-15.5">
+                <Avatar
+                  size="3xl"
+                  class="h-15.5 w-15.5"
+                  :label="organization.doc.organization_name"
+                  :image="organization.doc.organization_logo"
+                />
+                <component
+                  :is="organization.doc.organization_logo ? Dropdown : 'div'"
+                  v-bind="
+                    organization.doc.organization_logo
+                      ? {
+                          options: [
+                            {
+                              icon: 'upload',
+                              label: organization.doc.organization_logo
+                                ? __('Change Image')
+                                : __('Upload Image'),
+                              onClick: openFileSelector,
+                            },
+                            {
+                              icon: 'trash-2',
+                              label: __('Remove Image'),
+                              onClick: () => changeOrganizationImage(''),
+                            },
+                          ],
+                        }
+                      : { onClick: openFileSelector }
+                  "
+                  class="!absolute bottom-0 left-0 right-0"
+                >
                   <div
-                    v-if="organization.doc.website"
-                    class="flex items-center gap-1.5 text-base text-ink-gray-8"
+                    class="z-1 absolute bottom-0 left-0 right-0 flex h-14 cursor-pointer items-center justify-center rounded-b-full bg-black bg-opacity-40 pt-5 opacity-0 duration-300 ease-in-out group-hover:opacity-100"
+                    style="
+                      -webkit-clip-path: inset(22px 0 0 0);
+                      clip-path: inset(22px 0 0 0);
+                    "
                   >
-                    <WebsiteIcon class="size-4" />
-                    <span>{{ website(organization.doc.website) }}</span>
+                    <CameraIcon class="h-6 w-6 cursor-pointer text-white" />
                   </div>
-                  <ErrorMessage :message="__(error)" />
-                </div>
+                </component>
               </div>
-              <div class="flex gap-1.5">
-                <Button
-                  v-if="canDelete"
-                  :label="__('Delete')"
-                  theme="red"
-                  size="sm"
-                  iconLeft="trash-2"
-                  @click="deleteOrganization()"
-                />
-                <Button
-                  :tooltip="__('Open Website')"
-                  icon="link"
-                  @click="openWebsite"
-                />
-                <Button
-                  v-if="linkedLead"
-                  :label="__('Go to Lead')"
-                  size="sm"
-                  iconLeft="arrow-right"
-                  @click="router.push({ name: 'Lead', params: { leadId: linkedLead } })"
-                />
-                <Button
-                  v-else
-                  :label="__('Create Lead')"
-                  size="sm"
-                  iconLeft="plus"
-                  @click="createLeadFromOrg()"
-                />
+              <div class="flex flex-col gap-2 truncate">
+                <div class="truncate text-2xl font-medium text-ink-gray-9">
+                  <span>{{ organization.doc.name }}</span>
+                </div>
+                <div
+                  v-if="organization.doc.website"
+                  class="flex items-center gap-1.5 text-base text-ink-gray-8"
+                >
+                  <WebsiteIcon class="size-4" />
+                  <span>{{ website(organization.doc.website) }}</span>
+                </div>
+                <ErrorMessage :message="__(error)" />
               </div>
             </div>
-          </template>
-        </FileUploader>
-      </div>
+            <div class="flex gap-1.5 flex-wrap">
+              <Button
+                :tooltip="__('Send an Email')"
+                size="sm"
+                :iconLeft="Email2Icon"
+                @click="openEmailBox()"
+              />
+              <Button
+                :tooltip="__('Attach a File')"
+                size="sm"
+                :iconLeft="AttachmentIcon"
+                @click="showFilesUploader = true"
+              />
+              <Button
+                :tooltip="__('Open Website')"
+                icon="link"
+                size="sm"
+                @click="openWebsite"
+              />
+              <Button
+                v-if="linkedLead"
+                :label="__('Go to Lead')"
+                size="sm"
+                iconLeft="arrow-right"
+                @click="router.push({ name: 'Lead', params: { leadId: linkedLead } })"
+              />
+              <Button
+                v-else
+                :label="__('Create Lead')"
+                size="sm"
+                iconLeft="plus"
+                @click="createLeadFromOrg()"
+              />
+              <Button
+                v-if="canDelete"
+                :label="__('Delete')"
+                theme="red"
+                size="sm"
+                iconLeft="trash-2"
+                @click="deleteOrganization()"
+              />
+            </div>
+          </div>
+        </template>
+      </FileUploader>
       <div
         v-if="sections.data"
         class="flex flex-1 flex-col justify-between overflow-hidden"
@@ -144,52 +198,6 @@
         />
       </div>
     </Resizer>
-    <Tabs
-      v-model="tabIndex"
-      as="div"
-      :tabs="tabs"
-      class="flex flex-1 overflow-hidden flex-col [&_[role='tablist']]:gap-7.5 [&_[role='tablist']]:px-5 [&_[role='tablist']::-webkit-scrollbar]:h-0 [&_[role='tablist']]:min-h-[45px] [&_[role='tabpanel']:not([hidden])]:flex [&_[role='tabpanel']:not([hidden])]:grow"
-    >
-      <template #tab-item="{ tab, selected }">
-        <button
-          class="group flex items-center gap-2 border-b border-transparent py-2.5 text-base text-ink-gray-5 duration-300 ease-in-out hover:text-ink-gray-9"
-          :class="{ 'text-ink-gray-9': selected }"
-        >
-          <component :is="tab.icon" v-if="tab.icon" class="h-5" />
-          {{ __(tab.label) }}
-          <Badge
-            class="group-hover:bg-surface-gray-7"
-            :class="[selected ? 'bg-surface-gray-7' : 'bg-gray-600']"
-            variant="solid"
-            theme="gray"
-            size="sm"
-          >
-            {{ tab.count }}
-          </Badge>
-        </button>
-      </template>
-      <template #tab-panel="{ tab }">
-        <DealsListView
-          v-if="tab.label === 'Deals' && rows.length"
-          class="mt-4"
-          :rows="rows"
-          :columns="columns"
-          :options="{ selectable: false, showTooltip: false }"
-        />
-        <ContactsListView
-          v-if="tab.label === 'Contacts' && rows.length"
-          class="mt-4"
-          :rows="rows"
-          :columns="columns"
-          :options="{ selectable: false, showTooltip: false }"
-        />
-        <EmptyState
-          v-if="!rows.length"
-          :icon="tab.icon"
-          :name="__(tab.label)"
-        />
-      </template>
-    </Tabs>
   </div>
   <ErrorPage
     v-else-if="errorTitle"
@@ -214,9 +222,21 @@
     v-model="showDealModal"
     :defaults="{ organization: props.organizationId }"
   />
+  <FilesUploader
+    v-model="showFilesUploader"
+    doctype="CRM Organization"
+    :docname="props.organizationId"
+    @after="
+      () => {
+        activities?.all_activities?.reload()
+      }
+    "
+  />
 </template>
 
 <script setup>
+import Activities from '@/components/Activities/Activities.vue'
+import FilesUploader from '@/components/FilesUploader/FilesUploader.vue'
 import ErrorPage from '@/components/ErrorPage.vue'
 import Resizer from '@/components/Resizer.vue'
 import SidePanelLayout from '@/components/SidePanelLayout.vue'
@@ -224,14 +244,27 @@ import Icon from '@/components/Icon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import DealsListView from '@/components/ListViews/DealsListView.vue'
 import ContactsListView from '@/components/ListViews/ContactsListView.vue'
+import EmptyState from '@/components/ListViews/EmptyState.vue'
 import WebsiteIcon from '@/components/Icons/WebsiteIcon.vue'
 import CameraIcon from '@/components/Icons/CameraIcon.vue'
+import Email2Icon from '@/components/Icons/Email2Icon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
+import AttachmentIcon from '@/components/Icons/AttachmentIcon.vue'
+import ActivityIcon from '@/components/Icons/ActivityIcon.vue'
+import EmailIcon from '@/components/Icons/EmailIcon.vue'
+import CommentIcon from '@/components/Icons/CommentIcon.vue'
+import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
+import EventIcon from '@/components/Icons/EventIcon.vue'
+import TaskIcon from '@/components/Icons/TaskIcon.vue'
+import NoteIcon from '@/components/Icons/NoteIcon.vue'
+import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import DeleteLinkedDocModal from '@/components/DeleteLinkedDocModal.vue'
 import CustomActions from '@/components/CustomActions.vue'
 import ContactModal from '@/components/Modals/ContactModal.vue'
 import DealModal from '@/components/Modals/DealModal.vue'
+import { whatsappEnabled } from '@/composables/whatsapp'
+import { useActiveTabManager } from '@/composables/useActiveTabManager'
 import { useDocument } from '@/data/document'
 import { getSettings } from '@/stores/settings'
 import { globalStore } from '@/stores/global'
@@ -244,6 +277,7 @@ import {
   timeAgo,
   validateIsImageFile,
   setupCustomizations,
+  copyToClipboard,
   openWebsite as openExternalWebsite,
 } from '@/utils'
 import {
@@ -260,7 +294,7 @@ import {
 } from 'frappe-ui'
 import { useDoctypeModal } from '@/composables/doctypeModal'
 import { useTelemetry } from 'frappe-ui/frappe'
-import { computed, ref, watch, onMounted } from 'vue'
+import { computed, ref, watch, onMounted, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 const props = defineProps({
@@ -279,38 +313,13 @@ const router = useRouter()
 
 const errorTitle = ref('')
 const errorMessage = ref('')
-
+const reload = ref(false)
+const activities = ref(null)
+const showFilesUploader = ref(false)
 const showDeleteLinkedDocModal = ref(false)
 const showContactModal = ref(false)
 const showDealModal = ref(false)
 const linkedLead = ref(null)
-
-async function fetchLinkedLead() {
-  try {
-    const result = await call('crm.api.organization.get_linked_lead', {
-      organization: props.organizationId,
-    })
-    linkedLead.value = result || null
-  } catch {
-    linkedLead.value = null
-  }
-}
-
-async function createLeadFromOrg() {
-  try {
-    const leadName = await call(
-      'crm.api.organization.create_lead_from_organization',
-      { organization: props.organizationId },
-    )
-    if (leadName) {
-      linkedLead.value = leadName
-      toast.success(__('Lead created successfully'))
-      router.push({ name: 'Lead', params: { leadId: leadName } })
-    }
-  } catch (e) {
-    toast.error(e.messages?.[0] || __('Failed to create lead'))
-  }
-}
 
 const {
   document: organization,
@@ -332,11 +341,7 @@ const breadcrumbs = computed(() => {
   let items = [{ label: __('Organizations'), route: { name: 'Organizations' } }]
 
   if (route.query.view || route.query.viewType) {
-    let view = getView(
-      route.query.view,
-      route.query.viewType,
-      'CRM Organization',
-    )
+    let view = getView(route.query.view, route.query.viewType, 'CRM Organization')
     if (view) {
       items.push({
         label: __(view.label),
@@ -371,6 +376,83 @@ usePageMeta(() => {
     icon: brand.favicon,
   }
 })
+
+const tabs = computed(() => {
+  let tabOptions = [
+    { name: 'Activity', label: __('Activity'), icon: ActivityIcon },
+    { name: 'Emails', label: __('Emails'), icon: EmailIcon },
+    { name: 'Comments', label: __('Comments'), icon: CommentIcon },
+    { name: 'Calls', label: __('Calls'), icon: PhoneIcon },
+    { name: 'Events', label: __('Events'), icon: EventIcon },
+    { name: 'Tasks', label: __('Tasks'), icon: TaskIcon },
+    { name: 'Notes', label: __('Notes'), icon: NoteIcon },
+    { name: 'Attachments', label: __('Attachments'), icon: AttachmentIcon },
+    {
+      name: 'WhatsApp',
+      label: __('WhatsApp'),
+      icon: WhatsAppIcon,
+      condition: () => whatsappEnabled.value,
+    },
+    {
+      name: 'Deals',
+      label: __('Deals'),
+      icon: DealsIcon,
+      count: computed(() => deals.data?.length || 0),
+    },
+    {
+      name: 'Contacts',
+      label: __('Contacts'),
+      icon: ContactsIcon,
+      count: computed(() => contacts.data?.length || 0),
+    },
+  ]
+  return tabOptions.filter((tab) => (tab.condition ? tab.condition() : true))
+})
+
+const activityTabs = computed(() =>
+  tabs.value.filter((t) => !['Deals', 'Contacts'].includes(t.name)),
+)
+
+const { tabIndex, changeTabTo } = useActiveTabManager(tabs, 'lastOrganizationTab')
+
+function openEmailBox() {
+  let currentTab = tabs.value[tabIndex.value]
+  if (!['Emails', 'Comments', 'Activity'].includes(currentTab?.name)) {
+    changeTabTo('emails')
+  }
+  nextTick(() => {
+    if (activities.value?.emailBox) {
+      activities.value.emailBox.show = true
+    }
+  })
+}
+
+async function fetchLinkedLead() {
+  try {
+    const result = await call('crm.api.organization.get_linked_lead', {
+      organization: props.organizationId,
+    })
+    linkedLead.value = result || null
+  } catch {
+    linkedLead.value = null
+  }
+}
+
+async function createLeadFromOrg() {
+  try {
+    const leadName = await call(
+      'crm.api.organization.create_lead_from_organization',
+      { organization: props.organizationId },
+    )
+    if (leadName) {
+      linkedLead.value = leadName
+      toast.success(__('Lead created successfully'))
+      router.push({ name: 'Lead', params: { leadId: leadName } })
+    }
+  } catch (e) {
+    toast.error(e.messages?.[0] || __('Failed to create lead'))
+  }
+}
 
 async function deleteOrganization() {
   showDeleteLinkedDocModal.value = true
@@ -408,7 +490,6 @@ function openWebsite() {
     toast.error(__('No Website Found'))
     return
   }
-
   openExternalWebsite(organization.doc.website)
 }
 
@@ -443,20 +524,6 @@ function getParsedSections(_sections) {
   })
 }
 
-const tabIndex = ref(0)
-const tabs = [
-  {
-    label: 'Deals',
-    icon: DealsIcon,
-    count: computed(() => deals.data?.length),
-  },
-  {
-    label: 'Contacts',
-    icon: ContactsIcon,
-    count: computed(() => contacts.data?.length),
-  },
-]
-
 const deals = createListResource({
   type: 'list',
   doctype: 'CRM Deal',
@@ -472,9 +539,7 @@ const deals = createListResource({
     'deal_owner',
     'modified',
   ],
-  filters: {
-    organization: props.organizationId,
-  },
+  filters: { organization: props.organizationId },
   orderBy: 'modified desc',
   pageLength: 20,
   auto: true,
@@ -493,28 +558,22 @@ const contacts = createListResource({
     'company_name',
     'modified',
   ],
-  filters: {
-    company_name: props.organizationId,
-  },
+  filters: { company_name: props.organizationId },
   orderBy: 'modified desc',
   pageLength: 20,
   auto: true,
 })
 
-const rows = computed(() => {
-  let list = !tabIndex.value ? deals : contacts
-
-  if (!list.data) return []
-
-  return list.data.map((row) => {
-    return !tabIndex.value ? getDealRowObject(row) : getContactRowObject(row)
-  })
-})
-
 const { getFormattedCurrency } = getMeta('CRM Deal')
 
-const columns = computed(() => {
-  return tabIndex.value === 0 ? dealColumns : contactColumns
+const dealRows = computed(() => {
+  if (!deals.data) return []
+  return deals.data.map((row) => getDealRowObject(row))
+})
+
+const contactRows = computed(() => {
+  if (!contacts.data) return []
+  return contacts.data.map((row) => getContactRowObject(row))
 })
 
 function getDealRowObject(deal) {
@@ -564,70 +623,21 @@ function getContactRowObject(contact) {
 }
 
 const dealColumns = [
-  {
-    label: __('Organization'),
-    key: 'organization',
-    width: '11rem',
-  },
-  {
-    label: __('Amount'),
-    key: 'annual_revenue',
-    align: 'right',
-    width: '9rem',
-  },
-  {
-    label: __('Status'),
-    key: 'status',
-    width: '10rem',
-  },
-  {
-    label: __('Email'),
-    key: 'email',
-    width: '12rem',
-  },
-  {
-    label: __('Mobile No.'),
-    key: 'mobile_no',
-    width: '11rem',
-  },
-  {
-    label: __('Deal Owner'),
-    key: 'deal_owner',
-    width: '10rem',
-  },
-  {
-    label: __('Last Modified'),
-    key: 'modified',
-    width: '8rem',
-  },
+  { label: __('Organization'), key: 'organization', width: '11rem' },
+  { label: __('Amount'), key: 'annual_revenue', align: 'right', width: '9rem' },
+  { label: __('Status'), key: 'status', width: '10rem' },
+  { label: __('Email'), key: 'email', width: '12rem' },
+  { label: __('Mobile No.'), key: 'mobile_no', width: '11rem' },
+  { label: __('Deal Owner'), key: 'deal_owner', width: '10rem' },
+  { label: __('Last Modified'), key: 'modified', width: '8rem' },
 ]
 
 const contactColumns = [
-  {
-    label: __('Name'),
-    key: 'full_name',
-    width: '17rem',
-  },
-  {
-    label: __('Email'),
-    key: 'email',
-    width: '12rem',
-  },
-  {
-    label: __('Phone'),
-    key: 'mobile_no',
-    width: '12rem',
-  },
-  {
-    label: __('Organization'),
-    key: 'company_name',
-    width: '12rem',
-  },
-  {
-    label: __('Last Modified'),
-    key: 'modified',
-    width: '8rem',
-  },
+  { label: __('Name'), key: 'full_name', width: '17rem' },
+  { label: __('Email'), key: 'email', width: '12rem' },
+  { label: __('Phone'), key: 'mobile_no', width: '12rem' },
+  { label: __('Organization'), key: 'company_name', width: '12rem' },
+  { label: __('Last Modified'), key: 'modified', width: '8rem' },
 ]
 
 const { showModal } = useDoctypeModal()
@@ -646,7 +656,6 @@ function showAddressModal(_address) {
   })
 }
 
-// Fetch linked lead when doc is available
 watch(
   () => organization.doc,
   async (doc) => {
@@ -655,7 +664,6 @@ watch(
   { once: true },
 )
 
-// Setup custom actions from Form Scripts
 watch(
   () => organization.doc,
   async (_doc) => {
