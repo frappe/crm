@@ -2,7 +2,7 @@
   <div class="flex items-center">
     <router-link
       :to="{ name: routeName }"
-      class="px-0.5 py-1 text-lg font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-outline-gray-3"
+      class="px-0.5 py-1 text-lg-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-outline-gray-3"
       :class="[
         viewControls && viewControls.viewsDropdownOptions
           ? 'text-ink-gray-5 hover:text-ink-gray-7'
@@ -25,7 +25,7 @@
       <template #default="{ open }">
         <Button
           variant="ghost"
-          class="text-lg font-medium text-nowrap"
+          class="text-lg-medium text-nowrap"
           :label="__(viewControls.currentView?.label)"
           :iconRight="open ? 'chevron-up' : 'chevron-down'"
         >
@@ -68,15 +68,15 @@
                 <Button
                   variant="ghost"
                   class="group-hover:!w-auto !w-0 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto"
-                  icon="more-horizontal"
+                  icon="lucide-more-horizontal"
                   @click.stop
                 />
               </template>
             </Dropdown>
-            <FeatherIcon
+            <span
               v-if="isCurrentView(item)"
-              name="check"
-              class="size-4 text-ink-gray-7"
+              class="lucide-check size-4 text-ink-gray-7"
+              aria-hidden="true"
             />
           </div>
         </button>

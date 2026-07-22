@@ -19,12 +19,15 @@
             {{ __('Apps') }}
           </span>
         </div>
-        <FeatherIcon name="chevron-right" class="size-4 text-ink-gray-5" />
+        <span
+          class="lucide-chevron-right size-4 text-ink-gray-5"
+          aria-hidden="true"
+        />
       </button>
     </template>
     <template #body>
       <div
-        class="flex w-fit mx-2 min-w-32 max-w-48 flex-col rounded-lg border border-outline-gray-2 bg-surface-white p-1.5 text-sm text-ink-gray-8 shadow-xl auto-fill-[100px]"
+        class="flex w-fit mx-2 min-w-32 max-w-48 flex-col rounded-lg border border-outline-gray-2 bg-surface-base p-1.5 text-sm text-ink-gray-8 shadow-xl auto-fill-[100px]"
       >
         <a
           v-for="app in apps.data"

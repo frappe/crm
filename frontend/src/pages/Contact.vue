@@ -52,50 +52,63 @@
       class="flex flex-col justify-between border-l"
       side="right"
     >
-      <div
-        class="flex h-[45px] cursor-copy items-center border-b px-5 py-2.5 text-lg font-medium text-ink-gray-9"
-        @click="copyToClipboard(props.contactId)"
-      >
-        {{ __(props.contactId) }}
-      </div>
-      <FileUploader
-        :validateFile="validateIsImageFile"
-        @success="changeContactImage"
-      >
-        <template #default="{ openFileSelector, error }">
-          <div class="flex flex-col items-start justify-start gap-4 border-b p-5">
-            <div class="flex gap-4 items-center">
-              <div class="group relative h-15.5 w-15.5">
-                <Avatar
-                  size="3xl"
-                  class="h-15.5 w-15.5"
-                  :label="contact.doc.full_name"
-                  :image="contact.doc.image"
-                />
-                <component
-                  :is="contact.doc.image ? Dropdown : 'div'"
-                  v-bind="
-                    contact.doc.image
-                      ? {
-                          options: [
-                            {
-                              icon: 'upload',
-                              label: contact.doc.image
-                                ? __('Change Image')
-                                : __('Upload Image'),
-                              onClick: openFileSelector,
-                            },
-                            {
-                              icon: 'trash-2',
-                              label: __('Remove Image'),
-                              onClick: () => changeContactImage(''),
-                            },
-                          ],
-                        }
-                      : { onClick: openFileSelector }
-                  "
-                  class="!absolute bottom-0 left-0 right-0"
-                >
+      <div class="border-b">
+        <FileUploader
+          :validateFile="validateIsImageFile"
+          @success="changeContactImage"
+        >
+          <template #default="{ openFileSelector, error }">
+            <div class="flex flex-col items-start justify-start gap-4 p-5">
+              <div class="flex gap-4 items-center">
+                <div class="group relative h-15.5 w-15.5">
+                  <Avatar
+                    size="3xl"
+                    class="h-15.5 w-15.5"
+                    :label="contact.doc.full_name"
+                    :image="contact.doc.image"
+                  />
+                  <component
+                    :is="contact.doc.image ? Dropdown : 'div'"
+                    v-bind="
+                      contact.doc.image
+                        ? {
+                            options: [
+                              {
+                                icon: 'upload',
+                                label: contact.doc.image
+                                  ? __('Change Image')
+                                  : __('Upload Image'),
+                                onClick: openFileSelector,
+                              },
+                              {
+                                icon: 'trash-2',
+                                label: __('Remove Image'),
+                                onClick: () => changeContactImage(''),
+                              },
+                            ],
+                          }
+                        : { onClick: openFileSelector }
+                    "
+                    class="!absolute bottom-0 left-0 right-0"
+                  >
+                    <div
+                      class="z-1 absolute bottom-0 left-0 right-0 flex h-14 cursor-pointer items-center justify-center rounded-b-full bg-black bg-opacity-40 pt-5 opacity-0 duration-300 ease-in-out group-hover:opacity-100"
+                      style="
+                        -webkit-clip-path: inset(22px 0 0 0);
+                        clip-path: inset(22px 0 0 0);
+                      "
+                    >
+                      <CameraIcon class="h-6 w-6 cursor-pointer text-white" />
+                    </div>
+                  </component>
+                </div>
+                <div class="flex flex-col gap-2 truncate text-ink-gray-9">
+                  <div class="truncate text-3xl-medium">
+                    <span v-if="contact.doc.salutation">
+                      {{ contact.doc.salutation + ' ' }}
+                    </span>
+                    <span>{{ contact.doc.full_name }}</span>
+                  </div>
                   <div
                     class="z-1 absolute bottom-0 left-0 right-0 flex h-14 cursor-pointer items-center justify-center rounded-b-full bg-black bg-opacity-40 pt-5 opacity-0 duration-300 ease-in-out group-hover:opacity-100"
                     style="
@@ -181,6 +194,41 @@
         />
       </div>
     </Resizer>
+    <Tabs
+      v-model="tabIndex"
+      as="div"
+      :tabs="tabs"
+      class="flex flex-1 overflow-hidden flex-col [&_[role='tab']]:px-0 [&_[role='tab']]:shrink-0 [&_[role='tablist']]:px-5 [&_[role='tablist']::-webkit-scrollbar]:h-0 [&_[role='tablist']]:min-h-[45px] [&_[role='tablist']]:gap-7.5 [&_[role='tabpanel']:not([hidden])]:flex [&_[role='tabpanel']:not([hidden])]:grow"
+    >
+      <template #tab-item="{ tab, selected }">
+        <button
+          class="group flex items-center gap-2 border-b border-transparent py-2.5 text-base text-ink-gray-5 duration-300 ease-in-out hover:text-ink-gray-9"
+          :class="{ 'text-ink-gray-9': selected }"
+        >
+          <component :is="tab.icon" v-if="tab.icon" class="h-5" />
+          {{ __(tab.label) }}
+          <Badge
+            class="group-hover:bg-surface-gray-10"
+            :class="[selected ? 'bg-surface-gray-10' : 'bg-gray-600']"
+            variant="solid"
+            theme="gray"
+            size="sm"
+          >
+            {{ tab.count }}
+          </Badge>
+        </button>
+      </template>
+      <template #tab-panel="{ tab }">
+        <DealsListView
+          v-if="tab.label === 'Deals' && rows.length"
+          class="mt-4"
+          :rows="rows"
+          :columns="columns"
+          :options="{ selectable: false, showTooltip: false }"
+        />
+        <EmptyState v-if="!rows.length" :icon="tab.icon" name="Deals" />
+      </template>
+    </Tabs>
   </div>
   <ErrorPage
     v-else-if="errorTitle"
@@ -222,6 +270,7 @@ import LayoutHeader from '@/components/LayoutHeader.vue'
 import DealsListView from '@/components/ListViews/DealsListView.vue'
 import EmptyState from '@/components/ListViews/EmptyState.vue'
 import CustomActions from '@/components/CustomActions.vue'
+import { timestampCell } from '@/composables/useTimelinePreferences'
 import DealModal from '@/components/Modals/DealModal.vue'
 import DeleteLinkedDocModal from '@/components/DeleteLinkedDocModal.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
@@ -673,21 +722,47 @@ function getDealRowObject(deal) {
       label: deal.deal_owner && getUser(deal.deal_owner).full_name,
       ...(deal.deal_owner && getUser(deal.deal_owner)),
     },
-    modified: {
-      label: formatDate(deal.modified),
-      timeAgo: __(timeAgo(deal.modified)),
-    },
+    modified: timestampCell(deal.modified),
   }
 }
 
 const dealColumns = [
-  { label: __('Organization'), key: 'organization', width: '11rem' },
-  { label: __('Amount'), key: 'annual_revenue', align: 'right', width: '9rem' },
-  { label: __('Status'), key: 'status', width: '10rem' },
-  { label: __('Email'), key: 'email', width: '12rem' },
-  { label: __('Mobile No.'), key: 'mobile_no', width: '11rem' },
-  { label: __('Deal Owner'), key: 'deal_owner', width: '10rem' },
-  { label: __('Last Modified'), key: 'modified', width: '8rem' },
+  {
+    label: __('Organization'),
+    key: 'organization',
+    width: '11rem',
+  },
+  {
+    label: __('Amount'),
+    key: 'deal_value',
+    align: 'right',
+    width: '9rem',
+  },
+  {
+    label: __('Status'),
+    key: 'status',
+    width: '10rem',
+  },
+  {
+    label: __('Email'),
+    key: 'email',
+    width: '12rem',
+  },
+  {
+    label: __('Mobile No.'),
+    key: 'mobile_no',
+    width: '11rem',
+  },
+  {
+    label: __('Deal Owner'),
+    key: 'deal_owner',
+    width: '10rem',
+  },
+  {
+    label: __('Last Modified'),
+    key: 'modified',
+    width: '8rem',
+  },
 ]
 
 const { showModal } = useDoctypeModal()

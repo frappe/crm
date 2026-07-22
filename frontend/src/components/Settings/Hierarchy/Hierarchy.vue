@@ -1,0 +1,579 @@
+<template>
+  <div class="flex h-full flex-col gap-4 p-6 text-ink-gray-8">
+    <div class="flex justify-between px-2 pt-2">
+      <div class="flex flex-col gap-1 w-9/12">
+        <div class="flex gap-2 items-center">
+          <h2 class="flex text-2xl-semibold leading-none h-5">
+            {{ __('Sales Hierarchy') }}
+          </h2>
+          <Tooltip :text="__('View documentation')">
+            <a
+              href="https://docs.frappe.io/crm/settings/sales-hierarchy"
+              target="_blank"
+            >
+              <LucideCircleQuestionMark class="h-4 w-4 text-ink-gray-6" />
+            </a>
+          </Tooltip>
+        </div>
+        <p class="text-p-base text-ink-gray-6">
+          {{
+            __(
+              'Restrict visibility of Leads and Deals based on a reporting tree.',
+            )
+          }}
+        </p>
+      </div>
+      <div
+        v-if="hierarchyEnabled && canEdit"
+        class="flex item-center space-x-2 w-3/12 justify-end"
+      >
+        <Button
+          :label="__('Disable')"
+          :loading="fcrmSettings.setValue.loading"
+          @click="toggleEnable(true)"
+        />
+        <Button
+          :label="__('Add User')"
+          icon-left="lucide-plus"
+          variant="solid"
+          @click="openAddDialog()"
+        />
+      </div>
+    </div>
+
+    <div
+      v-if="fcrmSettings.loading && !fcrmSettings.doc"
+      class="flex flex-1 items-center justify-center"
+    >
+      <LoadingIndicator class="size-6" />
+    </div>
+
+    <div
+      v-else-if="!hierarchyEnabled"
+      class="relative flex flex-1 w-full justify-center"
+    >
+      <div
+        class="absolute left-1/2 flex w-64 -translate-x-1/2 flex-col items-center gap-3"
+        :style="{ top: '35%' }"
+      >
+        <lucide-network class="size-7.5 text-ink-gray-5" />
+        <div class="flex flex-col items-center gap-1.5 text-center">
+          <span class="text-lg-medium text-ink-gray-8">
+            {{ __('Enable Sales Hierarchy') }}
+          </span>
+          <span class="text-center text-p-base text-ink-gray-6">
+            {{ __('Restrict visibility using a reporting tree') }}
+          </span>
+          <Button
+            variant="solid"
+            :loading="fcrmSettings.setValue.loading"
+            @click="toggleEnable(false)"
+          >
+            {{ __('Enable') }}
+          </Button>
+        </div>
+      </div>
+    </div>
+
+    <div v-else class="flex-1 min-h-0 flex flex-col px-2">
+      <div class="flex items-center gap-2 pt-0.5 pb-4">
+        <TextInput
+          v-if="enrichedNodes.length"
+          v-model="search"
+          :placeholder="__('Search users')"
+          :debounce="200"
+          class="w-1/3"
+        >
+          <template #prefix>
+            <span
+              class="lucide-search size-4 text-ink-gray-6"
+              aria-hidden="true"
+            />
+          </template>
+        </TextInput>
+      </div>
+      <div class="flex-1 min-h-0 overflow-y-auto">
+        <div
+          v-if="nodes.loading"
+          class="flex items-center justify-center py-12"
+        >
+          <LoadingIndicator class="size-6" />
+        </div>
+        <EmptyState
+          v-else-if="!visibleRoots.length"
+          name="Users in Hierarchy"
+          :title="
+            search || roleFilter !== 'All'
+              ? __('No matching users')
+              : __('No users in hierarchy')
+          "
+          :description="
+            search || roleFilter !== 'All'
+              ? __('No users match the current filter.')
+              : __('Add one to get started.')
+          "
+          icon="users"
+        />
+        <Tree
+          v-for="root in visibleRoots"
+          :key="root.name"
+          :node="root"
+          node-key="name"
+          :options="treeOptions"
+        >
+          <template #node="{ node, hasChildren, isCollapsed, toggleCollapsed }">
+            <HierarchyRow
+              :node="node"
+              :has-children="hasChildren"
+              :is-collapsed="isCollapsed"
+              :is-last="node.name === lastNodeName"
+              :row-class="rowClasses(node)"
+              :handlers="dragHandlers"
+              :get-candidates="getCandidates"
+              :candidates-loading="candidatesLoading"
+              :can-edit="canEdit"
+              @toggle="toggleCollapsed"
+              @bulk-add="({ parent, userIds }) => bulkAdd(parent, userIds)"
+              @remove="(n) => openRemoveDialog(n)"
+              @move-to-root="(n) => reparent(n.name, null)"
+            />
+          </template>
+        </Tree>
+      </div>
+    </div>
+
+    <Teleport to="body">
+      <div
+        v-if="dragLabel"
+        class="fixed pointer-events-none px-2 py-1 rounded-md bg-gray-900 text-white text-xs shadow-lg"
+        :style="{
+          top: `${dragState.y + 25}px`,
+          left: `${dragState.x - 25}px`,
+        }"
+      >
+        {{ dragLabel }}
+      </div>
+    </Teleport>
+    <Dialog
+      v-model:open="showAddDialog"
+      :title="__('Add Users')"
+      :actions="[
+        {
+          label: __('Add ({0})', [dialogSelected.length]),
+          variant: 'solid',
+          disabled: !dialogSelected.length,
+          loading: saving,
+          onClick: confirmBulkAdd,
+        },
+      ]"
+    >
+      <template #default>
+        <UserMultiSelect
+          v-model="dialogSelected"
+          :show-mail="true"
+          :candidates="getCandidates(null)"
+          :loading="candidatesLoading"
+        />
+      </template>
+    </Dialog>
+    <Dialog v-model:open="showRemoveDialog" :size="'md'">
+      <template #body>
+        <div class="bg-surface-elevation-2 px-4 pb-6 pt-5 sm:px-6">
+          <div class="mb-4 flex items-center justify-between">
+            <h3 class="text-3xl-semibold leading-6 text-ink-gray-9">
+              {{ __('Delete') }}
+            </h3>
+            <Button
+              variant="ghost"
+              icon="lucide-x"
+              @click="showRemoveDialog = false"
+            />
+          </div>
+          <div class="text-ink-gray-5 text-base">
+            <template v-if="checkTargetChild">
+              {{
+                __(
+                  'Remove {0} from the hierarchy. What should happen to their direct reports?',
+                  [removeTarget?.full_name],
+                )
+              }}
+            </template>
+            <template v-else>
+              {{
+                __('Are you sure you want to remove {0} from the hierarchy?', [
+                  removeTarget?.full_name,
+                ])
+              }}
+            </template>
+          </div>
+        </div>
+        <div class="bg-surface-elevation-2 px-4 pb-6 pt-0 sm:px-6">
+          <div class="flex w-full justify-end gap-2">
+            <template v-if="checkTargetChild">
+              <Button
+                :label="__('Unlink & Delete {0} Users', [unlinkCount])"
+                icon-left="lucide-trash-2"
+                variant="solid"
+                theme="red"
+                :loading="removing === 'cascade'"
+                @click="confirmRemove('cascade')"
+              />
+              <Button
+                :label="__('Delete Only User')"
+                icon-left="lucide-unlock"
+                variant="subtle"
+                :loading="removing === 'reassign'"
+                @click="confirmRemove('reassign')"
+              />
+            </template>
+            <Button
+              v-else
+              :label="__('Delete')"
+              icon-left="lucide-trash-2"
+              variant="solid"
+              theme="red"
+              :loading="removing === 'simple'"
+              @click="confirmRemove('simple')"
+            />
+          </div>
+        </div>
+      </template>
+    </Dialog>
+  </div>
+</template>
+
+<script setup>
+import EmptyState from '@/components/ListViews/EmptyState.vue'
+import HierarchyRow from './HierarchyRow.vue'
+import UserMultiSelect from './UserMultiSelect.vue'
+import { useRemoveNode } from './useRemoveNode'
+import { useDragDrop } from './useDragDrop'
+import { globalStore } from '@/stores/global'
+import { usersStore } from '@/stores/users'
+import LucideNetwork from '~icons/lucide/network'
+import LucideCircleQuestionMark from '~icons/lucide/circle-question-mark'
+import {
+  Button,
+  Dialog,
+  LoadingIndicator,
+  TextInput,
+  Tooltip,
+  Tree,
+  call,
+  createDocumentResource,
+  createListResource,
+  toast,
+} from 'frappe-ui'
+import { computed, ref } from 'vue'
+
+const DOCTYPE = 'CRM Sales Hierarchy'
+
+const ROLE_RANK = {
+  'Sales Manager': 0,
+  'Sales User': 1,
+}
+const ROLE_LABEL = {
+  'Sales Manager': __('Sales Manager'),
+  'Sales User': __('Sales User'),
+}
+
+const { users: usersResource, getUserRole, isAdmin } = usersStore()
+const canEdit = computed(() => isAdmin())
+const { $dialog } = globalStore()
+
+const fcrmSettings = createDocumentResource({
+  doctype: 'FCRM Settings',
+  name: 'FCRM Settings',
+  auto: true,
+  setValue: {
+    onError(error) {
+      toast.error(error?.messages?.[0] || __('Failed to update setting'))
+    },
+  },
+})
+
+const hierarchyEnabled = computed(
+  () => !!fcrmSettings.doc?.enable_sales_hierarchy,
+)
+
+const nodes = createListResource({
+  doctype: DOCTYPE,
+  fields: ['name', 'user', 'full_name', 'reports_to', 'is_group'],
+  orderBy: 'lft asc',
+  pageLength: 0,
+  auto: true,
+})
+
+function toggleEnable(currentlyEnabled) {
+  if (currentlyEnabled) {
+    $dialog({
+      title: __('Disable Sales Hierarchy'),
+      message: __(
+        'Lead and deal visibility will no longer be restricted by the reporting tree. Are you sure?',
+      ),
+      actions: [
+        {
+          label: __('Disable'),
+          variant: 'solid',
+          theme: 'red',
+          onClick: ({ close }) => {
+            fcrmSettings.setValue.submit(
+              { enable_sales_hierarchy: 0 },
+              {
+                onSuccess: () => toast.success(__('Sales Hierarchy disabled')),
+              },
+            )
+            close()
+          },
+        },
+      ],
+    })
+  } else {
+    fcrmSettings.setValue.submit(
+      { enable_sales_hierarchy: 1 },
+      { onSuccess: () => toast.success(__('Sales Hierarchy enabled')) },
+    )
+  }
+}
+
+const search = ref('')
+const roleFilter = ref('All')
+const showAddDialog = ref(false)
+const dialogSelected = ref([])
+const saving = ref(false)
+
+const treeOptions = {
+  rowHeight: '32px',
+  indentWidth: '28px',
+  defaultCollapsed: false,
+}
+
+function enrich(node) {
+  const user =
+    usersResource.data?.crmUsers?.find((x) => x.name === node.user) || {}
+  const role = getUserRole(node.user) || 'Sales User'
+  const role_rank = ROLE_RANK[role]
+  if (role_rank == undefined) return
+
+  return {
+    ...node,
+    full_name: user.full_name || node.full_name || node.user,
+    email: user.email || node.user,
+    user_image: user.user_image,
+    enabled: user.enabled !== 0,
+    role,
+    role_label: ROLE_LABEL[role] || role,
+    role_rank,
+  }
+}
+
+const enrichedNodes = computed(() =>
+  (nodes.data || []).map(enrich).filter(Boolean),
+)
+
+const tree = computed(() => {
+  const byName = new Map(
+    enrichedNodes.value.map((n) => [n.name, { ...n, children: [] }]),
+  )
+  const roots = []
+  for (const n of byName.values()) {
+    if (n.reports_to && byName.has(n.reports_to)) {
+      byName.get(n.reports_to).children.push(n)
+    } else {
+      roots.push(n)
+    }
+  }
+  return roots
+})
+
+function matchesFilters(node) {
+  const query = search.value.trim().toLowerCase()
+  const matchSearch =
+    !query ||
+    node.full_name?.toLowerCase().includes(query) ||
+    node.email?.toLowerCase().includes(query)
+  const matchRole = roleFilter.value === 'All' || node.role === roleFilter.value
+  return matchSearch && matchRole
+}
+
+function clearTree(node) {
+  if (matchesFilters(node)) {
+    return { ...node, children: node.children || [] }
+  }
+  const children = (node.children || [])
+    .map(clearTree)
+    .filter((c) => c !== null)
+  if (children.length) {
+    return { ...node, children }
+  }
+  return null
+}
+
+const visibleRoots = computed(() =>
+  tree.value.map(clearTree).filter((n) => n !== null),
+)
+
+function getLastNode(list) {
+  if (!list?.length) return null
+  const last = list[list.length - 1]
+  if (last.children?.length) return getLastNode(last.children)
+  return last
+}
+
+const lastNodeName = computed(() => getLastNode(visibleRoots.value)?.name)
+
+const placedUserIds = computed(
+  () => new Set(enrichedNodes.value.map((n) => n.user)),
+)
+
+const ALLOWED_ROLES = new Set(['Sales Manager', 'Sales User'])
+
+function getCandidates(parent) {
+  const all = usersResource.data?.crmUsers || []
+  const parentRank = parent?.role_rank ?? -1
+  return all
+    .filter((u) => {
+      if (placedUserIds.value.has(u.name)) return false
+      if (u.name === 'Administrator') return false
+      const role = getUserRole(u.name)
+      if (!ALLOWED_ROLES.has(role)) return false
+      return (ROLE_RANK[role] ?? 99) >= parentRank
+    })
+    .map((u) => {
+      const role = getUserRole(u.name)
+      return {
+        value: u.name,
+        full_name: u.full_name || u.name,
+        email: u.email || u.name,
+        user_image: u.user_image,
+        role_label: ROLE_LABEL[role] || role,
+      }
+    })
+}
+
+const candidatesLoading = computed(
+  () => !!(usersResource.loading || nodes.loading),
+)
+
+async function reparent(name, newParent) {
+  try {
+    await call('frappe.client.set_value', {
+      doctype: DOCTYPE,
+      name,
+      fieldname: 'reports_to',
+      value: newParent || '',
+    })
+    toast.success(__('Updated reports to'))
+    nodes.reload()
+  } catch (e) {
+    toast.error(e?.messages?.[0] || __('Could not update report to'))
+  }
+}
+
+function openAddDialog() {
+  dialogSelected.value = []
+  showAddDialog.value = true
+}
+
+async function bulkAdd(parent, userIds) {
+  if (!userIds?.length) return false
+  saving.value = true
+  let added = 0
+  let lastError = null
+  try {
+    for (const user of userIds) {
+      try {
+        await call('frappe.client.insert', {
+          doc: {
+            doctype: DOCTYPE,
+            user,
+            reports_to: parent ? parent.name : null,
+            is_group: 0,
+          },
+        })
+        added++
+      } catch (e) {
+        lastError = e
+      }
+    }
+    if (added) {
+      toast.success(
+        added === 1
+          ? __('User added to hierarchy')
+          : __('{0} users added to hierarchy', [added]),
+      )
+    }
+    if (lastError) {
+      toast.error(
+        lastError?.messages?.[0] || __('Some users could not be added'),
+      )
+    }
+    await nodes.reload()
+    return added > 0 && !lastError
+  } finally {
+    saving.value = false
+  }
+}
+
+async function confirmBulkAdd() {
+  const ok = await bulkAdd(null, dialogSelected.value)
+  if (ok) {
+    showAddDialog.value = false
+    dialogSelected.value = []
+  }
+}
+
+const { removeNode } = useRemoveNode({
+  doctype: DOCTYPE,
+  nodes,
+  enrichedNodes,
+})
+
+const showRemoveDialog = ref(false)
+const removeTarget = ref(null)
+const removing = ref(null)
+
+const checkTargetChild = computed(() =>
+  enrichedNodes.value.some((n) => n.reports_to === removeTarget.value?.name),
+)
+
+const unlinkCount = computed(() => {
+  if (!removeTarget.value) return 0
+  const queue = [removeTarget.value.name]
+  let count = 0
+  while (queue.length) {
+    const name = queue.shift()
+    count++
+    enrichedNodes.value.forEach((n) => {
+      if (n.reports_to === name) queue.push(n.name)
+    })
+  }
+  return count
+})
+
+function openRemoveDialog(node) {
+  removeTarget.value = node
+  showRemoveDialog.value = true
+}
+
+async function confirmRemove(mode) {
+  if (!removeTarget.value) return
+  removing.value = mode
+  try {
+    await removeNode(removeTarget.value, mode)
+    showRemoveDialog.value = false
+    removeTarget.value = null
+  } finally {
+    removing.value = null
+  }
+}
+
+const {
+  handlers: dragHandlers,
+  rowClasses,
+  dragState,
+  dragLabel,
+} = useDragDrop({
+  onReparent: reparent,
+})
+</script>

@@ -71,50 +71,60 @@
       class="flex flex-col justify-between border-l"
       side="right"
     >
-      <div
-        class="flex h-[45px] cursor-copy items-center border-b px-5 py-2.5 text-lg font-medium text-ink-gray-9"
-        @click="copyToClipboard(props.organizationId)"
-      >
-        {{ __(props.organizationId) }}
-      </div>
-      <FileUploader
-        :validateFile="validateIsImageFile"
-        @success="changeOrganizationImage"
-      >
-        <template #default="{ openFileSelector, error }">
-          <div class="flex flex-col items-start justify-start gap-4 border-b p-5">
-            <div class="flex gap-4 items-center">
-              <div class="group relative h-15.5 w-15.5">
-                <Avatar
-                  size="3xl"
-                  class="h-15.5 w-15.5"
-                  :label="organization.doc.organization_name"
-                  :image="organization.doc.organization_logo"
-                />
-                <component
-                  :is="organization.doc.organization_logo ? Dropdown : 'div'"
-                  v-bind="
-                    organization.doc.organization_logo
-                      ? {
-                          options: [
-                            {
-                              icon: 'upload',
-                              label: organization.doc.organization_logo
-                                ? __('Change Image')
-                                : __('Upload Image'),
-                              onClick: openFileSelector,
-                            },
-                            {
-                              icon: 'trash-2',
-                              label: __('Remove Image'),
-                              onClick: () => changeOrganizationImage(''),
-                            },
-                          ],
-                        }
-                      : { onClick: openFileSelector }
-                  "
-                  class="!absolute bottom-0 left-0 right-0"
-                >
+      <div class="border-b">
+        <FileUploader
+          :validateFile="validateIsImageFile"
+          @success="changeOrganizationImage"
+        >
+          <template #default="{ openFileSelector, error }">
+            <div class="flex flex-col items-start justify-start gap-4 p-5">
+              <div class="flex gap-4 items-center">
+                <div class="group relative h-15.5 w-15.5">
+                  <Avatar
+                    size="3xl"
+                    class="h-15.5 w-15.5"
+                    :label="organization.doc.organization_name"
+                    :image="organization.doc.organization_logo"
+                  />
+                  <component
+                    :is="organization.doc.organization_logo ? Dropdown : 'div'"
+                    v-bind="
+                      organization.doc.organization_logo
+                        ? {
+                            options: [
+                              {
+                                icon: 'upload',
+                                label: organization.doc.organization_logo
+                                  ? __('Change Image')
+                                  : __('Upload Image'),
+                                onClick: openFileSelector,
+                              },
+                              {
+                                icon: 'trash-2',
+                                label: __('Remove Image'),
+                                onClick: () => changeOrganizationImage(''),
+                              },
+                            ],
+                          }
+                        : { onClick: openFileSelector }
+                    "
+                    class="!absolute bottom-0 left-0 right-0"
+                  >
+                    <div
+                      class="z-1 absolute bottom-0 left-0 right-0 flex h-14 cursor-pointer items-center justify-center rounded-b-full bg-black bg-opacity-40 pt-5 opacity-0 duration-300 ease-in-out group-hover:opacity-100"
+                      style="
+                        -webkit-clip-path: inset(22px 0 0 0);
+                        clip-path: inset(22px 0 0 0);
+                      "
+                    >
+                      <CameraIcon class="h-6 w-6 cursor-pointer text-white" />
+                    </div>
+                  </component>
+                </div>
+                <div class="flex flex-col gap-2 truncate">
+                  <div class="truncate text-3xl-medium text-ink-gray-9">
+                    <span>{{ organization.doc.name }}</span>
+                  </div>
                   <div
                     class="z-1 absolute bottom-0 left-0 right-0 flex h-14 cursor-pointer items-center justify-center rounded-b-full bg-black bg-opacity-40 pt-5 opacity-0 duration-300 ease-in-out group-hover:opacity-100"
                     style="
@@ -126,18 +136,34 @@
                   </div>
                 </component>
               </div>
-              <div class="flex flex-col gap-2 truncate">
-                <div class="truncate text-2xl font-medium text-ink-gray-9">
-                  <span>{{ organization.doc.name }}</span>
-                </div>
-                <div
-                  v-if="organization.doc.website"
-                  class="flex items-center gap-1.5 text-base text-ink-gray-8"
-                >
-                  <WebsiteIcon class="size-4" />
-                  <span>{{ website(organization.doc.website) }}</span>
-                </div>
-                <ErrorMessage :message="__(error)" />
+              <div class="flex gap-1.5">
+                <Button
+                  v-if="canDelete"
+                  :label="__('Delete')"
+                  theme="red"
+                  size="sm"
+                  iconLeft="trash-2"
+                  @click="deleteOrganization()"
+                />
+                <Button
+                  :tooltip="__('Open Website')"
+                  icon="lucide-link"
+                  @click="openWebsite"
+                />
+                <Button
+                  v-if="linkedLead"
+                  :label="__('Go to Lead')"
+                  size="sm"
+                  iconLeft="arrow-right"
+                  @click="router.push({ name: 'Lead', params: { leadId: linkedLead } })"
+                />
+                <Button
+                  v-else
+                  :label="__('Create Lead')"
+                  size="sm"
+                  iconLeft="plus"
+                  @click="createLeadFromOrg()"
+                />
               </div>
             </div>
             <div class="flex gap-1.5 flex-wrap">
@@ -198,6 +224,52 @@
         />
       </div>
     </Resizer>
+    <Tabs
+      v-model="tabIndex"
+      as="div"
+      :tabs="tabs"
+      class="flex flex-1 overflow-hidden flex-col [&_[role='tablist']]:gap-7.5 [&_[role='tablist']]:px-5 [&_[role='tablist']::-webkit-scrollbar]:h-0 [&_[role='tablist']]:min-h-[45px] [&_[role='tabpanel']:not([hidden])]:flex [&_[role='tabpanel']:not([hidden])]:grow"
+    >
+      <template #tab-item="{ tab, selected }">
+        <button
+          class="group flex items-center gap-2 border-b border-transparent py-2.5 text-base text-ink-gray-5 duration-300 ease-in-out hover:text-ink-gray-9"
+          :class="{ 'text-ink-gray-9': selected }"
+        >
+          <component :is="tab.icon" v-if="tab.icon" class="h-5" />
+          {{ __(tab.label) }}
+          <Badge
+            class="group-hover:bg-surface-gray-10"
+            :class="[selected ? 'bg-surface-gray-10' : 'bg-gray-600']"
+            variant="solid"
+            theme="gray"
+            size="sm"
+          >
+            {{ tab.count }}
+          </Badge>
+        </button>
+      </template>
+      <template #tab-panel="{ tab }">
+        <DealsListView
+          v-if="tab.label === 'Deals' && rows.length"
+          class="mt-4"
+          :rows="rows"
+          :columns="columns"
+          :options="{ selectable: false, showTooltip: false }"
+        />
+        <ContactsListView
+          v-if="tab.label === 'Contacts' && rows.length"
+          class="mt-4"
+          :rows="rows"
+          :columns="columns"
+          :options="{ selectable: false, showTooltip: false }"
+        />
+        <EmptyState
+          v-if="!rows.length"
+          :icon="tab.icon"
+          :name="__(tab.label)"
+        />
+      </template>
+    </Tabs>
   </div>
   <ErrorPage
     v-else-if="errorTitle"
@@ -273,13 +345,12 @@ import { usersStore } from '@/stores/users'
 import { statusesStore } from '@/stores/statuses'
 import { getView } from '@/utils/view'
 import {
-  formatDate,
-  timeAgo,
   validateIsImageFile,
   setupCustomizations,
   copyToClipboard,
   openWebsite as openExternalWebsite,
 } from '@/utils'
+import { timestampCell } from '@/composables/useTimelinePreferences'
 import {
   Breadcrumbs,
   Avatar,
@@ -594,10 +665,7 @@ function getDealRowObject(deal) {
       label: deal.deal_owner && getUser(deal.deal_owner).full_name,
       ...(deal.deal_owner && getUser(deal.deal_owner)),
     },
-    modified: {
-      label: formatDate(deal.modified),
-      timeAgo: __(timeAgo(deal.modified)),
-    },
+    modified: timestampCell(deal.modified),
   }
 }
 
@@ -615,10 +683,7 @@ function getContactRowObject(contact) {
       label: contact.company_name,
       logo: organization.doc?.organization_logo,
     },
-    modified: {
-      label: formatDate(contact.modified),
-      timeAgo: __(timeAgo(contact.modified)),
-    },
+    modified: timestampCell(contact.modified),
   }
 }
 

@@ -147,7 +147,7 @@
           variant="ghost"
           @click.stop.prevent
         >
-          <Button icon="more-horizontal" variant="ghost" />
+          <Button icon="lucide-more-horizontal" variant="ghost" />
         </Dropdown>
       </div>
     </template>
@@ -198,7 +198,8 @@ import KanbanView from '@/components/Kanban/KanbanView.vue'
 import { useDoctypeModal } from '@/composables/doctypeModal'
 import { getMeta } from '@/stores/meta'
 import { usersStore } from '@/stores/users'
-import { formatDate, timeAgo } from '@/utils'
+import { formatDate } from '@/utils'
+import { timestampCell } from '@/composables/useTimelinePreferences'
 import { useOnboarding, useTelemetry } from 'frappe-ui/frappe'
 import { Tooltip, Avatar, TextEditor, Dropdown, call } from 'frappe-ui'
 import { computed, ref } from 'vue'
@@ -303,10 +304,7 @@ function parseRows(rows, columns = []) {
       }
 
       if (['modified', 'creation'].includes(row)) {
-        _rows[row] = {
-          label: formatDate(task[row]),
-          timeAgo: __(timeAgo(task[row])),
-        }
+        _rows[row] = timestampCell(task[row])
       } else if (row == 'assigned_to') {
         _rows[row] = {
           label: task.assigned_to && getUser(task.assigned_to).full_name,

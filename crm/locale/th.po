@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2026-04-26 09:49+0000\n"
-"PO-Revision-Date: 2026-04-27 02:48\n"
+"POT-Creation-Date: 2026-06-22 19:37+0553\n"
+"PO-Revision-Date: 2026-06-23 20:00\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Thai\n"
 "MIME-Version: 1.0\n"
@@ -18,7 +18,7 @@ msgstr ""
 "X-Crowdin-File-ID: 97\n"
 "Language: th_TH\n"
 
-#: frontend/src/components/ViewControls.vue:1175
+#: frontend/src/components/ViewControls.vue:1176
 msgid " (New)"
 msgstr " (ใหม่)"
 
@@ -50,7 +50,7 @@ msgstr ""
 msgid "1 hour ago"
 msgstr "1 ชั่วโมงที่แล้ว"
 
-#: frontend/src/composables/event.js:213
+#: frontend/src/composables/event.js:207
 msgid "1 hr"
 msgstr "1 ชม."
 
@@ -166,9 +166,13 @@ msgstr ""
 msgid "A new account has been created for you at {0}"
 msgstr "บัญชีใหม่ได้ถูกสร้างขึ้นสำหรับคุณที่ {0}"
 
-#: crm/fcrm/doctype/crm_call_log/crm_call_log.py:251
+#: crm/fcrm/doctype/crm_call_log/crm_call_log.py:257
 msgid "A valid call log is required."
 msgstr "จำเป็นต้องมีบันทึกการโทรที่ถูกต้อง"
+
+#: frontend/src/components/Settings/Hierarchy/useDragDrop.js:69
+msgid "A {0} cannot report to a {1}"
+msgstr ""
 
 #. Label of the api_key (Data) field in DocType 'CRM Exotel Settings'
 #. Label of the api_key (Data) field in DocType 'CRM Twilio Settings'
@@ -197,12 +201,12 @@ msgstr "API Secret"
 msgid "API Token"
 msgstr "API Tokens"
 
-#: frontend/src/components/Settings/ERPNextSettings.vue:459
+#: frontend/src/components/Settings/ERPNextSettings.vue:500
 #: frontend/src/components/Settings/emailConfig.js:192
 msgid "API key is required"
 msgstr ""
 
-#: frontend/src/components/Settings/ERPNextSettings.vue:462
+#: frontend/src/components/Settings/ERPNextSettings.vue:503
 msgid "API secret is required"
 msgstr ""
 
@@ -260,7 +264,7 @@ msgstr "จำเป็นต้องใช้โทเค็นการเข
 msgid "Account ID"
 msgstr "ID บัญชี"
 
-#: frontend/src/components/Settings/Profile/ProfileSettings.vue:87
+#: frontend/src/components/Settings/Profile/ProfileSettings.vue:91
 msgid "Account Info & Security"
 msgstr ""
 
@@ -281,25 +285,36 @@ msgstr "Account SID"
 msgid "Account name is required"
 msgstr "ต้องระบุชื่อบัญชี"
 
-#: frontend/src/components/Settings/Settings.vue:167
+#: frontend/src/components/Settings/Settings.vue:177
 msgid "Accounts"
 msgstr "บัญชี"
 
-#: frontend/src/components/CustomActions.vue:66
-#: frontend/src/components/ViewControls.vue:692
-#: frontend/src/components/ViewControls.vue:1067
+#: frontend/src/components/CustomActions.vue:76
+#: frontend/src/components/ViewControls.vue:693
+#: frontend/src/components/ViewControls.vue:1068
 msgid "Actions"
 msgstr "การดำเนินการ"
 
-#: frontend/src/pages/Deal.vue:560 frontend/src/pages/Lead.vue:412
-#: frontend/src/pages/MobileDeal.vue:438 frontend/src/pages/MobileLead.vue:284
+#: frontend/src/pages/Deal.vue:561 frontend/src/pages/Lead.vue:413
+#: frontend/src/pages/MobileDeal.vue:437 frontend/src/pages/MobileLead.vue:285
 msgid "Activity"
 msgstr "กิจกรรม"
 
-#: frontend/src/components/Dashboard/AddChartModal.vue:41
+#. Label of the activity_timeline_section (Section Break) field in DocType
+#. 'FCRM Settings'
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
+msgid "Activity Timeline"
+msgstr ""
+
+#: frontend/src/components/Dashboard/AddChartModal.vue:37
 #: frontend/src/components/Modals/AddExistingUserModal.vue:55
 msgid "Add"
 msgstr "เพิ่ม"
+
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:162
+#: frontend/src/components/Settings/Hierarchy/HierarchyRow.vue:85
+msgid "Add ({0})"
+msgstr ""
 
 #: frontend/src/components/Settings/EmailAccountList.vue:19
 msgid "Add Account"
@@ -309,17 +324,21 @@ msgstr "เพิ่มบัญชี"
 msgid "Add Assignee"
 msgstr "เพิ่มผู้รับมอบหมาย"
 
-#: frontend/src/components/Calendar/Attendee.vue:118
+#: frontend/src/components/Calendar/Attendee.vue:122
 msgid "Add Attendee"
 msgstr "เพิ่มผู้เข้าร่วม"
 
-#: frontend/src/components/Dashboard/AddChartModal.vue:4
+#: crm/fcrm/doctype/crm_product/crm_product_list.js:3
+msgid "Add CRM Product"
+msgstr ""
+
+#: frontend/src/components/Dashboard/AddChartModal.vue:2
 msgid "Add Chart"
 msgstr "เพิ่มแผนภูมิ"
 
 #: frontend/src/components/ColumnSettings.vue:68
-#: frontend/src/components/FieldLayoutEditor.vue:562
-#: frontend/src/components/Kanban/KanbanView.vue:157
+#: frontend/src/components/FieldLayoutEditor.vue:565
+#: frontend/src/components/Kanban/KanbanView.vue:161
 msgid "Add Column"
 msgstr "เพิ่มคอลัมน์"
 
@@ -355,9 +374,9 @@ msgstr ""
 msgid "Add Existing User"
 msgstr "เพิ่มผู้ใช้ที่มีอยู่แล้ว"
 
-#: frontend/src/components/Controls/GridFieldsEditorModal.vue:57
-#: frontend/src/components/FieldLayoutEditor.vue:225
-#: frontend/src/components/Kanban/KanbanSettings.vue:74
+#: frontend/src/components/Controls/GridFieldsEditorModal.vue:61
+#: frontend/src/components/FieldLayoutEditor.vue:228
+#: frontend/src/components/Kanban/KanbanSettings.vue:78
 #: frontend/src/components/SidePanelLayoutEditor.vue:97
 msgid "Add Field"
 msgstr "เพิ่มฟิลด์"
@@ -376,7 +395,7 @@ msgstr "เพิ่มลูกค้าเป้าหมายหรือด
 msgid "Add Location"
 msgstr ""
 
-#: frontend/src/pages/Contact.vue:438
+#: frontend/src/pages/Contact.vue:436
 msgid "Add Mobile Number..."
 msgstr ""
 
@@ -392,7 +411,7 @@ msgstr "เพิ่มโน้ต"
 msgid "Add Notification"
 msgstr ""
 
-#: frontend/src/pages/Contact.vue:439
+#: frontend/src/pages/Contact.vue:437
 msgid "Add Organization..."
 msgstr ""
 
@@ -406,7 +425,7 @@ msgstr "เพิ่มแถว"
 msgid "Add Sample Data"
 msgstr ""
 
-#: frontend/src/components/FieldLayoutEditor.vue:258
+#: frontend/src/components/FieldLayoutEditor.vue:261
 #: frontend/src/components/SidePanelLayoutEditor.vue:127
 msgid "Add Section"
 msgstr "เพิ่มส่วน"
@@ -421,6 +440,14 @@ msgstr "เพิ่มแท็บ"
 
 #: frontend/src/components/Modals/CallLogDetailModal.vue:25
 msgid "Add Task"
+msgstr ""
+
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:36
+msgid "Add User"
+msgstr ""
+
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:159
+msgid "Add Users"
 msgstr ""
 
 #. Label of the add_weekly_holidays_section (Section Break) field in DocType
@@ -454,12 +481,17 @@ msgstr "เพิ่มชื่อสำหรับแหล่งที่ม
 msgid "Add description..."
 msgstr "เพิ่มคำอธิบาย..."
 
+#: frontend/src/components/Settings/Hierarchy/HierarchyRow.vue:63
+msgid "Add direct reports"
+msgstr ""
+
 #: frontend/src/components/Modals/AddExistingUserModal.vue:12
 msgid "Add existing system users to this CRM. Assign them a role to grant access with their current credentials."
 msgstr "เพิ่มผู้ใช้ระบบที่มีอยู่เข้าสู่ระบบ CRM นี้ มอบบทบาทให้พวกเขาเพื่อให้สิทธิ์การเข้าถึงด้วยข้อมูลประจำตัวปัจจุบันของพวกเขา"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRulesList.vue:11
 #: frontend/src/components/Settings/EmailAccountList.vue:51
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:113
 #: frontend/src/components/Settings/Users.vue:53
 msgid "Add one to get started."
 msgstr "เพิ่มหนึ่งเพื่อเริ่มต้น"
@@ -478,7 +510,7 @@ msgstr ""
 msgid "Add to Holidays"
 msgstr "เพิ่มวันหยุด"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:460
+#: frontend/src/components/Layouts/AppSidebar.vue:466
 msgid "Add your first comment"
 msgstr "เพิ่มความคิดเห็นแรกของคุณ"
 
@@ -486,7 +518,7 @@ msgstr "เพิ่มความคิดเห็นแรกของคุ
 msgid "Add, edit, and manage email templates for various CRM communications"
 msgstr "เพิ่ม แก้ไข และจัดการเทมเพลตอีเมลสำหรับการสื่อสาร CRM ที่หลากหลาย"
 
-#: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:14
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:12
 msgid "Add, edit, and manage sources for automatic lead syncing to your CRM"
 msgstr "เพิ่ม แก้ไข และจัดการแหล่งที่มาสำหรับการซิงค์ข้อมูลลูกค้าเป้าหมายอัตโนมัติไปยัง CRM ของคุณ"
 
@@ -496,13 +528,13 @@ msgid "Address"
 msgstr "ที่อยู่"
 
 #: frontend/src/components/Modals/AddExistingUserModal.vue:94
-#: frontend/src/components/Settings/InviteUserPage.vue:166
-#: frontend/src/components/Settings/InviteUserPage.vue:173
-#: frontend/src/components/Settings/Users.vue:82
-#: frontend/src/components/Settings/Users.vue:122
-#: frontend/src/components/Settings/Users.vue:190
-#: frontend/src/components/Settings/Users.vue:226
-#: frontend/src/components/Settings/Users.vue:229
+#: frontend/src/components/Settings/InviteUserPage.vue:164
+#: frontend/src/components/Settings/InviteUserPage.vue:171
+#: frontend/src/components/Settings/Users.vue:85
+#: frontend/src/components/Settings/Users.vue:125
+#: frontend/src/components/Settings/Users.vue:185
+#: frontend/src/components/Settings/Users.vue:221
+#: frontend/src/components/Settings/Users.vue:224
 msgid "Admin"
 msgstr "ผู้ดูแลระบบ"
 
@@ -511,17 +543,17 @@ msgid "Agent is unavailable to take the call, please call after some time."
 msgstr "เจ้าหน้าที่ไม่สามารถรับสายได้ในขณะนี้ กรุณาลองโทรกลับใหม่ในภายหลัง"
 
 #: frontend/src/components/Notifications.vue:118
-#: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:72
-#: frontend/src/components/Settings/Users.vue:81
+#: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:75
+#: frontend/src/components/Settings/Users.vue:84
 msgid "All"
 msgstr "ทั้งหมด"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:294
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:940
-#: frontend/src/components/EventNotificationPopup.vue:90
+#: frontend/src/components/EventNotificationPopup.vue:93
 #: frontend/src/components/EventNotificationsArea.vue:188
 #: frontend/src/components/Modals/EventModal.vue:71
-#: frontend/src/composables/event.js:172
+#: frontend/src/composables/event.js:166
 msgid "All Day"
 msgstr "ทั้งวัน"
 
@@ -538,9 +570,9 @@ msgstr ""
 
 #. Label of the amount (Currency) field in DocType 'CRM Products'
 #: crm/fcrm/doctype/crm_products/crm_products.json
-#: frontend/src/pages/Contact.vue:525 frontend/src/pages/MobileContact.vue:518
-#: frontend/src/pages/MobileOrganization.vue:467
-#: frontend/src/pages/Organization.vue:497
+#: frontend/src/pages/Contact.vue:520 frontend/src/pages/MobileContact.vue:518
+#: frontend/src/pages/MobileOrganization.vue:462
+#: frontend/src/pages/Organization.vue:492
 msgid "Amount"
 msgstr "จำนวน"
 
@@ -550,11 +582,11 @@ msgid "Amount after discount"
 msgstr "จำนวนหลังหักส่วนลด"
 
 #: frontend/src/components/Modals/FieldLayoutDialog.vue:277
-#: frontend/src/data/script.js:53 frontend/src/data/script.js:54
+#: frontend/src/data/script.js:78 frontend/src/data/script.js:79
 msgid "An error occurred"
 msgstr "เกิดข้อผิดพลาด"
 
-#: frontend/src/data/document.js:73
+#: frontend/src/data/document.js:77
 msgid "An error occurred while updating the document"
 msgstr "เกิดข้อผิดพลาดขณะอัปเดตเอกสาร"
 
@@ -607,7 +639,7 @@ msgstr "แสดงในแถบด้านซ้าย ขนาดที�
 msgid "Appears next to the title in your browser tab. Recommended size is 32x32 px in PNG or ICO"
 msgstr "แสดงอยู่ข้างๆ ชื่อเรื่องบนแท็บเบราว์เซอร์ของคุณ ขนาดที่แนะนำคือ 32x32 พิกเซล ในรูปแบบ PNG หรือ ICO"
 
-#: frontend/src/components/Kanban/KanbanSettings.vue:94
+#: frontend/src/components/Kanban/KanbanSettings.vue:98
 #: frontend/src/components/Kanban/KanbanView.vue:46
 msgid "Apply"
 msgstr "นำไปใช้"
@@ -637,16 +669,16 @@ msgstr ""
 msgid "Are you sure you want to delete this attachment?"
 msgstr "คุณต้องการลบไฟล์แนบนี้ใช่หรือไม่?"
 
-#: frontend/src/pages/MobileContact.vue:271
+#: frontend/src/pages/MobileContact.vue:274
 msgid "Are you sure you want to delete this contact?"
 msgstr "คุณแน่ใจหรือไม่ว่าต้องการลบผู้ติดต่อรายนี้?"
 
 #: frontend/src/components/Modals/EventModal.vue:468
-#: frontend/src/pages/Calendar.vue:401
+#: frontend/src/pages/Calendar.vue:409
 msgid "Are you sure you want to delete this event?"
 msgstr "คุณแน่ใจหรือไม่ว่าคุณต้องการลบเหตุการณ์นี้"
 
-#: frontend/src/pages/MobileOrganization.vue:274
+#: frontend/src/pages/MobileOrganization.vue:275
 msgid "Are you sure you want to delete this organization?"
 msgstr "คุณแน่ใจหรือไม่ว่าต้องการลบข้อมูลองค์กรนี้?"
 
@@ -663,7 +695,7 @@ msgid "Are you sure you want to discard unsaved changes to this event?"
 msgstr "คุณแน่ใจหรือไม่ว่าต้องการยกเลิกการเปลี่ยนแปลงที่ยังไม่ได้บันทึกสำหรับกิจกรรมนี้?"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:576
-#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:347
+#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:346
 msgid "Are you sure you want to go back? Unsaved changes will be lost."
 msgstr "คุณแน่ใจหรือไม่ว่าต้องการกลับ? การเปลี่ยนแปลงที่ยังไม่ได้บันทึกจะสูญหาย"
 
@@ -671,7 +703,7 @@ msgstr "คุณแน่ใจหรือไม่ว่าต้องกา
 msgid "Are you sure you want to login to your Frappe Cloud dashboard?"
 msgstr "คุณแน่ใจหรือไม่ว่าต้องการล็อกอินเข้าสู่แดชบอร์ดด้วย Frappe Cloud ของคุณ?"
 
-#: frontend/src/components/FieldLayoutEditor.vue:428
+#: frontend/src/components/FieldLayoutEditor.vue:431
 msgid "Are you sure you want to remove this tab and all its content?"
 msgstr ""
 
@@ -706,7 +738,7 @@ msgstr ""
 msgid "Assign To"
 msgstr "มอบหมายให้กับ"
 
-#: frontend/src/components/AssignToBody.vue:64
+#: frontend/src/components/AssignToBody.vue:67
 msgid "Assign To Me"
 msgstr ""
 
@@ -748,7 +780,7 @@ msgstr ""
 
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
-#: frontend/src/components/Layouts/AppSidebar.vue:606
+#: frontend/src/components/Layouts/AppSidebar.vue:612
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRulesList.vue:16
 msgid "Assignment Rule"
 msgstr "กฎการมอบหมายงาน"
@@ -774,7 +806,7 @@ msgid "Assignment Rule {0} Updated"
 msgstr ""
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRules.vue:7
-#: frontend/src/components/Settings/Settings.vue:183
+#: frontend/src/components/Settings/Settings.vue:193
 msgid "Assignment Rules"
 msgstr "กฎเกณฑ์การมอบหมายงาน"
 
@@ -786,11 +818,11 @@ msgstr "ตารางการมอบหมายงาน"
 msgid "Assignment conditions"
 msgstr "เงื่อนไขการมอบหมายงาน"
 
-#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:306
+#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:305
 msgid "Assignment conditions are invalid or corrupt, recreate the conditions."
 msgstr ""
 
-#: frontend/src/components/Controls/GridFieldsEditorModal.vue:184
+#: frontend/src/components/Controls/GridFieldsEditorModal.vue:188
 msgid "At least one field is required"
 msgstr "จำเป็นต้องมีอย่างน้อยหนึ่งช่อง"
 
@@ -802,8 +834,8 @@ msgstr ""
 msgid "At least one valid Workday with Workday, Start Time, and End Time is required"
 msgstr ""
 
-#: frontend/src/components/FilesUploader/FilesUploader.vue:5
-#: frontend/src/components/FilesUploader/FilesUploader.vue:73
+#: frontend/src/components/FilesUploader/FilesUploader.vue:2
+#: frontend/src/components/FilesUploader/FilesUploader.vue:67
 msgid "Attach"
 msgstr "แนบ"
 
@@ -813,12 +845,12 @@ msgstr "แนบ"
 msgid "Attach a File"
 msgstr ""
 
-#: frontend/src/components/Controls/AttachControl.vue:10
+#: frontend/src/components/Controls/AttachControl.vue:14
 msgid "Attach file…"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:600 frontend/src/pages/Lead.vue:452
-#: frontend/src/pages/MobileDeal.vue:474 frontend/src/pages/MobileLead.vue:319
+#: frontend/src/pages/Deal.vue:601 frontend/src/pages/Lead.vue:453
+#: frontend/src/pages/MobileDeal.vue:473 frontend/src/pages/MobileLead.vue:320
 msgid "Attachments"
 msgstr "ไฟล์แนบ"
 
@@ -836,7 +868,7 @@ msgstr ""
 msgid "Auth Token"
 msgstr "Auth Token"
 
-#: frontend/src/components/Settings/ERPNextSettings.vue:185
+#: frontend/src/components/Settings/ERPNextSettings.vue:213
 msgid "Auto Create Customer"
 msgstr ""
 
@@ -886,7 +918,7 @@ msgstr ""
 msgid "Automatically update \"Expected Deal Value\" based on the total value of associated products in a deal"
 msgstr "อัปเดต \"มูลค่าดีลที่คาดหวัง\" โดยอัตโนมัติตามมูลค่ารวมของผลิตภัณฑ์ที่เกี่ยวข้องในดีล"
 
-#: frontend/src/components/Settings/Settings.vue:180
+#: frontend/src/components/Settings/Settings.vue:190
 msgid "Automation & Rules"
 msgstr "ระบบอัตโนมัติและกฎเกณฑ์"
 
@@ -910,23 +942,23 @@ msgstr "เวลาเฉลี่ยที่ใช้ตั้งแต่ก
 msgid "Average time taken from lead creation to deal closure"
 msgstr "เวลาเฉลี่ยที่ใช้ตั้งแต่การสร้างลูกค้าเป้าหมายจนถึงการปิดการขาย"
 
-#: frontend/src/components/Dashboard/AddChartModal.vue:81
+#: frontend/src/components/Dashboard/AddChartModal.vue:77
 msgid "Avg Deal Value"
 msgstr ""
 
-#: frontend/src/components/Dashboard/AddChartModal.vue:78
+#: frontend/src/components/Dashboard/AddChartModal.vue:74
 msgid "Avg Ongoing Deal Value"
 msgstr ""
 
-#: frontend/src/components/Dashboard/AddChartModal.vue:87
+#: frontend/src/components/Dashboard/AddChartModal.vue:83
 msgid "Avg Time to Close a Deal"
 msgstr ""
 
-#: frontend/src/components/Dashboard/AddChartModal.vue:83
+#: frontend/src/components/Dashboard/AddChartModal.vue:79
 msgid "Avg Time to Close a Lead"
 msgstr ""
 
-#: frontend/src/components/Dashboard/AddChartModal.vue:80
+#: frontend/src/components/Dashboard/AddChartModal.vue:76
 msgid "Avg Won Deal Value"
 msgstr ""
 
@@ -950,18 +982,18 @@ msgstr "เวลาเฉลี่ยในการปิดการขาย
 msgid "Avg. won deal value"
 msgstr "มูลค่าเฉลี่ยของดีลที่ได้รับ"
 
-#: frontend/src/components/Dashboard/AddChartModal.vue:26
-#: frontend/src/components/Dashboard/AddChartModal.vue:70
+#: frontend/src/components/Dashboard/AddChartModal.vue:22
+#: frontend/src/components/Dashboard/AddChartModal.vue:66
 msgid "Axis Chart"
 msgstr ""
 
-#: frontend/src/components/Activities/EmailArea.vue:62
+#: frontend/src/components/Activities/EmailArea.vue:58
 #: frontend/src/components/EmailEditor.vue:62
 #: frontend/src/components/EmailEditor.vue:88
 msgid "BCC"
 msgstr "BCC"
 
-#: frontend/src/components/FilesUploader/FilesUploader.vue:31
+#: frontend/src/components/FilesUploader/FilesUploader.vue:25
 #: frontend/src/components/Settings/EmailAdd.vue:80
 #: frontend/src/components/Settings/EmailEdit.vue:68
 msgid "Back"
@@ -971,7 +1003,7 @@ msgstr "ย้อนกลับ"
 msgid "Back to All Logs"
 msgstr ""
 
-#: frontend/src/components/FilesUploader/FilesUploader.vue:31
+#: frontend/src/components/FilesUploader/FilesUploader.vue:25
 msgid "Back to File Upload"
 msgstr ""
 
@@ -991,7 +1023,11 @@ msgstr "รายการสิ่งที่ต้องทำ"
 msgid "Between"
 msgstr "ระหว่าง"
 
-#: frontend/src/components/Settings/Settings.vue:133
+#: frontend/src/components/Settings/ERPNextSettings.vue:195
+msgid "Bidirectional sync of existing CRM Products and ERPNext Items. Runs in the background."
+msgstr ""
+
+#: frontend/src/components/Settings/Settings.vue:137
 msgid "Brand"
 msgstr "แบรนด์"
 
@@ -1021,7 +1057,7 @@ msgstr "แก้ไขเป็นกลุ่ม"
 msgid "Busy"
 msgstr "ไม่ว่าง"
 
-#: frontend/src/components/Activities/EmailArea.vue:57
+#: frontend/src/components/Activities/EmailArea.vue:53
 #: frontend/src/components/EmailEditor.vue:52
 #: frontend/src/components/EmailEditor.vue:74
 msgid "CC"
@@ -1144,6 +1180,11 @@ msgid "CRM Product"
 msgstr "ผลิตภัณฑ์ CRM"
 
 #. Name of a DocType
+#: crm/fcrm/doctype/crm_product_sync_issue/crm_product_sync_issue.json
+msgid "CRM Product Sync Issue"
+msgstr ""
+
+#. Name of a DocType
 #: crm/fcrm/doctype/crm_products/crm_products.json
 msgid "CRM Products"
 msgstr "ผลิตภัณฑ์ CRM"
@@ -1152,6 +1193,11 @@ msgstr "ผลิตภัณฑ์ CRM"
 #: crm/fcrm/doctype/crm_rolling_response_time/crm_rolling_response_time.json
 msgid "CRM Rolling Response Time"
 msgstr "เวลาตอบสนองแบบหมุนเวียนของ CRM"
+
+#. Name of a DocType
+#: crm/fcrm/doctype/crm_sales_hierarchy/crm_sales_hierarchy.json
+msgid "CRM Sales Hierarchy"
+msgstr ""
 
 #. Name of a DocType
 #: crm/fcrm/doctype/crm_service_day/crm_service_day.json
@@ -1203,13 +1249,13 @@ msgstr "การตั้งค่า CRM Twilio"
 msgid "CRM View Settings"
 msgstr "การตั้งค่ามุมมอง CRM"
 
-#: frontend/src/components/ViewControls.vue:285
+#: frontend/src/components/ViewControls.vue:286
 msgid "CSV"
 msgstr "CSV"
 
 #. Label of the calendar_tab (Tab Break) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
-#: frontend/src/components/Settings/Settings.vue:138
+#: frontend/src/components/Settings/Settings.vue:142
 msgid "Calendar"
 msgstr "ปฏิทิน"
 
@@ -1221,7 +1267,7 @@ msgstr ""
 msgid "Call Details"
 msgstr "รายละเอียดการโทร"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:580
+#: frontend/src/components/Layouts/AppSidebar.vue:586
 msgid "Call Log"
 msgstr "บันทึกการโทร"
 
@@ -1230,12 +1276,12 @@ msgstr "บันทึกการโทร"
 msgid "Call Received By"
 msgstr "การโทรได้รับโดย"
 
-#: crm/integrations/api.py:155 crm/integrations/twilio/api.py:148
+#: crm/integrations/api.py:158 crm/integrations/twilio/api.py:148
 #: crm/integrations/twilio/api.py:166
 msgid "Call log not found"
 msgstr ""
 
-#: frontend/src/components/Telephony/CallUI.vue:10
+#: frontend/src/components/Telephony/CallUI.vue:9
 msgid "Call using {0}"
 msgstr "โทรโดยใช้ {0}"
 
@@ -1248,7 +1294,7 @@ msgstr "โทรหาจอห์น โด"
 msgid "Caller"
 msgstr "ผู้โทร"
 
-#: frontend/src/components/Telephony/CallUI.vue:27
+#: frontend/src/components/Telephony/CallUI.vue:25
 msgid "Calling Medium"
 msgstr "กำลังโทรหา Medium"
 
@@ -1257,12 +1303,12 @@ msgstr "กำลังโทรหา Medium"
 msgid "Calling..."
 msgstr "กำลังโทร..."
 
-#: frontend/src/pages/Deal.vue:585 frontend/src/pages/Lead.vue:437
-#: frontend/src/pages/MobileDeal.vue:458 frontend/src/pages/MobileLead.vue:304
+#: frontend/src/pages/Deal.vue:586 frontend/src/pages/Lead.vue:438
+#: frontend/src/pages/MobileDeal.vue:457 frontend/src/pages/MobileLead.vue:305
 msgid "Calls"
 msgstr "การโทร"
 
-#: frontend/src/components/FilesUploader/FilesUploaderArea.vue:51
+#: frontend/src/components/FilesUploader/FilesUploaderArea.vue:55
 msgid "Camera"
 msgstr "กล้อง"
 
@@ -1270,16 +1316,17 @@ msgstr "กล้อง"
 msgid "Can't retry sync for this without source!"
 msgstr "ไม่สามารถลองซิงค์ใหม่นี้ได้หากไม่มีแหล่งข้อมูล!"
 
+#: frontend/src/components/Activities/CommentArea.vue:41
 #: frontend/src/components/BulkDeleteLinkedDocModal.vue:82
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:917
 #: frontend/src/components/ColumnSettings.vue:123
-#: frontend/src/components/Controls/GeolocationControl.vue:54
-#: frontend/src/components/Dashboard/AddChartModal.vue:40
+#: frontend/src/components/Controls/GeolocationControl.vue:60
+#: frontend/src/components/Dashboard/AddChartModal.vue:36
 #: frontend/src/components/DeleteLinkedDocModal.vue:119
-#: frontend/src/components/Modals/AssignmentModal.vue:70
+#: frontend/src/components/Modals/AssignmentModal.vue:74
 #: frontend/src/components/Modals/EventModal.vue:207
-#: frontend/src/components/Modals/LostReasonModal.vue:48
-#: frontend/src/components/Settings/Sla/EditResponseResolutionModal.vue:53
+#: frontend/src/components/Modals/LostReasonModal.vue:44
+#: frontend/src/components/Settings/Sla/EditResponseResolutionModal.vue:48
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:75
 #: frontend/src/components/Telephony/TwilioCallUI.vue:73
 #: frontend/src/components/ViewControls.vue:57
@@ -1291,7 +1338,7 @@ msgstr "ยกเลิก"
 #. Option for the 'Status' (Select) field in DocType 'CRM Call Log'
 #. Option for the 'Status' (Select) field in DocType 'CRM Task'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
-#: crm/fcrm/doctype/crm_task/crm_task.json frontend/src/utils/callLog.js:69
+#: crm/fcrm/doctype/crm_task/crm_task.json frontend/src/utils/callLog.js:67
 msgid "Canceled"
 msgstr "ถูกยกเลิก"
 
@@ -1299,13 +1346,17 @@ msgstr "ถูกยกเลิก"
 msgid "Cannot assign this role"
 msgstr ""
 
-#: frontend/src/components/Settings/Users.vue:120
+#: frontend/src/components/Settings/Users.vue:123
 msgid "Cannot change role of user with Admin access"
 msgstr "ไม่สามารถเปลี่ยนบทบาทของผู้ใช้ที่มีสิทธิ์ผู้ดูแลระบบได้"
 
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.py:70
 msgid "Cannot delete standard items {0}"
 msgstr "ไม่สามารถลบรายการมาตรฐานได้ {0}"
+
+#: crm/fcrm/doctype/crm_product/crm_product.py:81
+msgid "Cannot delete: linked ERPNext Item {0} is referenced by a Quotation. Remove the reference or delete the Item in ERPNext first."
+msgstr ""
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:170
 msgid "Cannot enable rule without adding users in it"
@@ -1315,11 +1366,19 @@ msgstr "ไม่สามารถเปิดใช้งานกฎได้
 msgid "Cannot invite for this role"
 msgstr ""
 
-#: frontend/src/components/FilesUploader/FilesUploader.vue:91
+#: frontend/src/components/Settings/Hierarchy/useDragDrop.js:73
+msgid "Cannot move a manager under one of their own reports"
+msgstr ""
+
+#: crm/integrations/erpnext/utils.py:64
+msgid "Cannot rename: an unrelated {0} '{1}' already exists on the other side. Resolve manually first."
+msgstr ""
+
+#: frontend/src/components/FilesUploader/FilesUploader.vue:85
 msgid "Capture"
 msgstr "Capture"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:585
+#: frontend/src/components/Layouts/AppSidebar.vue:591
 msgid "Capturing Leads"
 msgstr ""
 
@@ -1329,7 +1388,7 @@ msgid "Category"
 msgstr "หมวดหมู่"
 
 #: frontend/src/components/Controls/ImageUploader.vue:14
-#: frontend/src/components/Layouts/AppSidebar.vue:514
+#: frontend/src/components/Layouts/AppSidebar.vue:520
 msgid "Change"
 msgstr "เปลี่ยนแปลง"
 
@@ -1341,11 +1400,11 @@ msgid "Change Image"
 msgstr "เปลี่ยนรูปภาพ"
 
 #: frontend/src/components/Modals/ChangePasswordModal.vue:2
-#: frontend/src/components/Settings/Profile/ProfileSettings.vue:117
+#: frontend/src/components/Settings/Profile/ProfileSettings.vue:121
 msgid "Change Password"
 msgstr "เปลี่ยนรหัสผ่าน"
 
-#: frontend/src/components/Settings/Profile/ProfileSettings.vue:158
+#: frontend/src/components/Settings/Profile/ProfileSettings.vue:162
 msgid "Change Photo"
 msgstr ""
 
@@ -1353,8 +1412,8 @@ msgstr ""
 msgid "Change Status"
 msgstr "เปลี่ยนสถานะ"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:504
-#: frontend/src/components/Layouts/AppSidebar.vue:513
+#: frontend/src/components/Layouts/AppSidebar.vue:510
+#: frontend/src/components/Layouts/AppSidebar.vue:519
 msgid "Change deal status"
 msgstr "เปลี่ยนสถานะข้อตกลง"
 
@@ -1366,7 +1425,7 @@ msgstr "เปลี่ยนภาษาของแอปพลิเคชั
 msgid "Change timezone of the application."
 msgstr ""
 
-#: frontend/src/components/Settings/Profile/ProfileSettings.vue:113
+#: frontend/src/components/Settings/Profile/ProfileSettings.vue:117
 msgid "Change your account password for security."
 msgstr "เปลี่ยนรหัสผ่านบัญชีของคุณเพื่อความปลอดภัย"
 
@@ -1374,7 +1433,7 @@ msgstr "เปลี่ยนรหัสผ่านบัญชีของค
 msgid "Chart"
 msgstr "แผนภูมิ"
 
-#: frontend/src/components/Dashboard/AddChartModal.vue:12
+#: frontend/src/components/Dashboard/AddChartModal.vue:8
 msgid "Chart Type"
 msgstr "ประเภทแผนภูมิ"
 
@@ -1419,8 +1478,8 @@ msgstr ""
 msgid "Choose which {0} are affected by this un-assignment rule."
 msgstr "เลือกว่า {0} ใดบ้างที่ได้รับผลกระทบจากกฎการยกเลิกการกำหนดนี้"
 
-#: frontend/src/components/Controls/AttachControl.vue:50
-#: frontend/src/components/Controls/GeolocationControl.vue:32
+#: frontend/src/components/Controls/AttachControl.vue:58
+#: frontend/src/components/Controls/GeolocationControl.vue:40
 #: frontend/src/components/Controls/Link.vue:59
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:59
 msgid "Clear"
@@ -1436,7 +1495,7 @@ msgstr ""
 msgid "Clear Assignment"
 msgstr "ล้างการมอบหมายงาน"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:92
+#: frontend/src/components/Layouts/AppSidebar.vue:96
 #: frontend/src/composables/demoData.js:20
 msgid "Clear Demo Data"
 msgstr "ล้างข้อมูลสาธิต"
@@ -1454,7 +1513,7 @@ msgstr "ล้างตาราง"
 msgid "Click on the link below to complete your registration and set a new password"
 msgstr "คลิกที่ลิงก์ด้านล่างเพื่อทำการลงทะเบียนให้เสร็จสมบูรณ์และตั้งรหัสผ่านใหม่"
 
-#: frontend/src/components/Controls/GeolocationControl.vue:54
+#: frontend/src/components/Controls/GeolocationControl.vue:60
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:62
 #: frontend/src/components/Settings/Sla/SlaPolicyList.vue:128
 msgid "Close"
@@ -1469,11 +1528,11 @@ msgstr ""
 msgid "Closed Date"
 msgstr "วันที่ปิด"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:116
+#: frontend/src/components/Layouts/AppSidebar.vue:120
 msgid "Collapse"
 msgstr "ยุบ"
 
-#: frontend/src/components/FieldLayoutEditor.vue:462
+#: frontend/src/components/FieldLayoutEditor.vue:465
 msgid "Collapsible"
 msgstr "ส่วนที่ย่อ/ขยายได้"
 
@@ -1484,7 +1543,7 @@ msgstr "ส่วนที่ย่อ/ขยายได้"
 msgid "Color"
 msgstr "สี"
 
-#: frontend/src/components/FieldLayoutEditor.vue:559
+#: frontend/src/components/FieldLayoutEditor.vue:562
 msgid "Column"
 msgstr "คอลัมน์"
 
@@ -1502,10 +1561,10 @@ msgstr "คอลัมน์"
 
 #. Label of the comment (Link) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
-#: frontend/src/components/Activities/ActivityHeader.vue:125
+#: frontend/src/components/Activities/ActivityHeader.vue:126
 #: frontend/src/components/CommentBox.vue:78
 #: frontend/src/components/CommunicationArea.vue:15
-#: frontend/src/components/Layouts/AppSidebar.vue:603
+#: frontend/src/components/Layouts/AppSidebar.vue:609
 msgid "Comment"
 msgstr "ความคิดเห็น"
 
@@ -1513,8 +1572,8 @@ msgstr "ความคิดเห็น"
 msgid "Comment sent"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:570 frontend/src/pages/Lead.vue:422
-#: frontend/src/pages/MobileDeal.vue:448 frontend/src/pages/MobileLead.vue:294
+#: frontend/src/pages/Deal.vue:571 frontend/src/pages/Lead.vue:423
+#: frontend/src/pages/MobileDeal.vue:447 frontend/src/pages/MobileLead.vue:295
 msgid "Comments"
 msgstr "ความคิดเห็น"
 
@@ -1543,7 +1602,7 @@ msgstr "ชื่อบริษัท"
 msgid "Company in ERPNext site"
 msgstr ""
 
-#: frontend/src/components/Settings/ERPNextSettings.vue:476
+#: frontend/src/components/Settings/ERPNextSettings.vue:517
 msgid "Company name is required"
 msgstr ""
 
@@ -1553,7 +1612,7 @@ msgstr "ลงทะเบียนให้สมบูรณ์"
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
-#: frontend/src/utils/callLog.js:64
+#: frontend/src/utils/callLog.js:62
 msgid "Completed"
 msgstr "เสร็จสมบูรณ์"
 
@@ -1576,9 +1635,9 @@ msgstr "เงื่อนไข"
 msgid "Conditions for this rule were created from"
 msgstr "เงื่อนไขสำหรับกฎนี้ถูกสร้างขึ้นจาก"
 
-#: frontend/src/components/Settings/Profile/ProfileSettings.vue:103
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:162
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:187
+#: frontend/src/components/Settings/Profile/ProfileSettings.vue:107
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:163
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:190
 msgid "Configure"
 msgstr ""
 
@@ -1614,7 +1673,7 @@ msgstr ""
 msgid "Configure your Calendar Settings like Default View and Event Notifications here"
 msgstr ""
 
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:182
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:184
 msgid "Configure your Exotel Telephony Integration Settings here"
 msgstr ""
 
@@ -1627,13 +1686,13 @@ msgstr ""
 msgid "Confirm"
 msgstr "ยืนยัน"
 
-#: frontend/src/components/Settings/Sla/EditResponseResolutionModal.vue:44
+#: frontend/src/components/Settings/Sla/EditResponseResolutionModal.vue:39
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:66
 msgid "Confirm Delete"
 msgstr "ยืนยันการลบ"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:640
-#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:400
+#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:399
 msgid "Confirm Overwrite"
 msgstr ""
 
@@ -1645,7 +1704,7 @@ msgstr "ยืนยันรหัสผ่าน"
 msgid "Confirm {0}"
 msgstr "ยืนยัน {0}"
 
-#: frontend/src/components/Settings/ERPNextSettings.vue:246
+#: frontend/src/components/Settings/ERPNextSettings.vue:274
 msgid "Connect ERPNext to Frappe CRM"
 msgstr ""
 
@@ -1657,28 +1716,28 @@ msgstr ""
 #. Label of the contact (Link) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_contacts/crm_contacts.json
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
-#: frontend/src/components/Layouts/AppSidebar.vue:576
+#: frontend/src/components/Layouts/AppSidebar.vue:582
 #: frontend/src/components/Modals/ConvertToDealModal.vue:51
 msgid "Contact"
 msgstr "ติดต่อ"
 
-#: frontend/src/pages/Deal.vue:681 frontend/src/pages/MobileDeal.vue:552
+#: frontend/src/pages/Deal.vue:682 frontend/src/pages/MobileDeal.vue:551
 msgid "Contact Added"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:671 frontend/src/pages/MobileDeal.vue:542
+#: frontend/src/pages/Deal.vue:672 frontend/src/pages/MobileDeal.vue:541
 msgid "Contact Already Added"
 msgstr ""
 
-#: crm/fcrm/doctype/crm_lead/crm_lead.py:298
+#: crm/fcrm/doctype/crm_lead/crm_lead.py:290
 msgid "Contact Already Exists"
 msgstr "มีชื่อติดต่อนี้อยู่แล้ว"
 
-#: frontend/src/pages/MobileContact.vue:263
+#: frontend/src/pages/MobileContact.vue:266
 msgid "Contact Image Updated"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:692 frontend/src/pages/MobileDeal.vue:563
+#: frontend/src/pages/Deal.vue:693 frontend/src/pages/MobileDeal.vue:562
 msgid "Contact Removed"
 msgstr ""
 
@@ -1686,12 +1745,12 @@ msgstr ""
 msgid "Contact Support"
 msgstr "ติดต่อฝ่ายสนับสนุน"
 
-#: frontend/src/pages/Contact.vue:450 frontend/src/pages/Contact.vue:463
-#: frontend/src/pages/Contact.vue:476 frontend/src/pages/Contact.vue:486
-#: frontend/src/pages/MobileContact.vue:443
-#: frontend/src/pages/MobileContact.vue:456
-#: frontend/src/pages/MobileContact.vue:469
-#: frontend/src/pages/MobileContact.vue:479
+#: frontend/src/pages/Contact.vue:448 frontend/src/pages/Contact.vue:461
+#: frontend/src/pages/Contact.vue:474 frontend/src/pages/Contact.vue:484
+#: frontend/src/pages/MobileContact.vue:446
+#: frontend/src/pages/MobileContact.vue:459
+#: frontend/src/pages/MobileContact.vue:472
+#: frontend/src/pages/MobileContact.vue:482
 msgid "Contact Updated"
 msgstr ""
 
@@ -1699,11 +1758,11 @@ msgstr ""
 msgid "Contact Us"
 msgstr "ติดต่อเรา"
 
-#: crm/fcrm/doctype/crm_lead/crm_lead.py:297
-msgid "Contact already exists with {0}"
-msgstr "ผู้ติดต่อมีอยู่แล้วกับ {0}"
+#: crm/fcrm/doctype/crm_lead/crm_lead.py:289
+msgid "Contact already exists with Email: {0}"
+msgstr ""
 
-#: frontend/src/pages/Contact.vue:291
+#: frontend/src/pages/Contact.vue:289
 msgid "Contact image updated"
 msgstr "อัปเดตภาพติดต่อ"
 
@@ -1712,8 +1771,8 @@ msgstr "อัปเดตภาพติดต่อ"
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
-#: frontend/src/pages/Contact.vue:246 frontend/src/pages/MobileContact.vue:223
-#: frontend/src/pages/MobileOrganization.vue:348
+#: frontend/src/pages/Contact.vue:244 frontend/src/pages/MobileContact.vue:226
+#: frontend/src/pages/MobileOrganization.vue:349
 msgid "Contacts"
 msgstr "ผู้ติดต่อ"
 
@@ -1742,15 +1801,15 @@ msgstr "จำเป็นต้องมีเนื้อหา"
 msgid "Controls how numbers are displayed (e.g., commas, decimal separators)"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:399
+#: frontend/src/components/Layouts/AppSidebar.vue:405
 #: frontend/src/components/ListBulkActions.vue:86
 #: frontend/src/components/Modals/ConvertToDealModal.vue:83
 #: frontend/src/pages/MobileLead.vue:54
 msgid "Convert"
 msgstr "แปลง"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:390
-#: frontend/src/components/Layouts/AppSidebar.vue:398
+#: frontend/src/components/Layouts/AppSidebar.vue:396
+#: frontend/src/components/Layouts/AppSidebar.vue:404
 msgid "Convert lead to deal"
 msgstr "เปลี่ยนผู้ติดต่อเป็นดีล"
 
@@ -1774,22 +1833,27 @@ msgstr ""
 msgid "Copied to Clipboard"
 msgstr ""
 
+#: frontend/src/components/Settings/Hierarchy/useRemoveNode.js:16
+msgid "Could not remove."
+msgstr ""
+
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:469
+msgid "Could not update report to"
+msgstr ""
+
 #: crm/api/dashboard.py:647 crm/api/dashboard.py:795 crm/api/dashboard.py:852
 #: crm/api/dashboard.py:945
 msgid "Count"
 msgstr "จำนวน"
 
-#: frontend/src/components/Modals/AddressModal.vue:90
-#: frontend/src/components/Modals/CallLogModal.vue:91
 #: frontend/src/components/Modals/ContactModal.vue:41
 #: frontend/src/components/Modals/CreateDocumentModal.vue:88
 #: frontend/src/components/Modals/DealModal.vue:65
+#: frontend/src/components/Modals/DoctypeModal.vue:52
 #: frontend/src/components/Modals/EmailTemplateSelectorModal.vue:19
 #: frontend/src/components/Modals/EventModal.vue:215
 #: frontend/src/components/Modals/LeadModal.vue:37
-#: frontend/src/components/Modals/NoteModal.vue:53
 #: frontend/src/components/Modals/OrganizationModal.vue:41
-#: frontend/src/components/Modals/TaskModal.vue:53
 #: frontend/src/components/Modals/ViewModal.vue:43
 #: frontend/src/components/Settings/EmailAdd.vue:86
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:23
@@ -1821,7 +1885,7 @@ msgstr ""
 
 #: frontend/src/components/Controls/Link.vue:50
 #: frontend/src/components/Modals/EmailTemplateSelectorModal.vue:58
-#: frontend/src/components/Modals/WhatsappTemplateSelectorModal.vue:45
+#: frontend/src/components/Modals/WhatsappTemplateSelectorModal.vue:60
 #: frontend/src/components/PrimaryDropdown.vue:41
 msgid "Create New"
 msgstr "สร้างใหม่"
@@ -1830,16 +1894,12 @@ msgstr "สร้างใหม่"
 msgid "Create New Holiday List"
 msgstr ""
 
-#: frontend/src/components/Modals/NoteModal.vue:8
-msgid "Create Note"
-msgstr "สร้างบันทึก"
-
-#: frontend/src/components/Modals/TaskModal.vue:8
-msgid "Create Task"
-msgstr "สร้างงาน"
+#: frontend/src/components/Modals/WhatsappTemplateSelectorModal.vue:20
+msgid "Create New Template"
+msgstr ""
 
 #: frontend/src/components/Modals/ViewModal.vue:9
-#: frontend/src/components/ViewControls.vue:696
+#: frontend/src/components/ViewControls.vue:697
 msgid "Create View"
 msgstr "สร้างมุมมอง"
 
@@ -1847,7 +1907,7 @@ msgstr "สร้างมุมมอง"
 msgid "Create an Event"
 msgstr ""
 
-#: frontend/src/components/Settings/ERPNextSettings.vue:189
+#: frontend/src/components/Settings/ERPNextSettings.vue:217
 msgid "Create customer in ERPNext when the deal status is changed"
 msgstr ""
 
@@ -1857,19 +1917,25 @@ msgstr ""
 msgid "Create customer on status change"
 msgstr "สร้างลูกค้าเมื่อมีการเปลี่ยนแปลงสถานะ"
 
-#: frontend/src/components/Settings/ERPNextSettings.vue:398
+#: crm/fcrm/doctype/crm_product/crm_product.js:12
+#: crm/fcrm/doctype/crm_product/crm_product_list.js:10
+#: frontend/src/composables/document.js:29
+msgid "Create products as Items in ERPNext"
+msgstr ""
+
+#: frontend/src/components/Settings/ERPNextSettings.vue:435
 msgid "Create quotation button on deal page and auto customer creation on deal status change will be disabled. Are you sure?"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:365
+#: frontend/src/components/Layouts/AppSidebar.vue:371
 msgid "Create your first lead"
 msgstr "สร้างลูกค้าเป้าหมายรายแรกของคุณ"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:439
+#: frontend/src/components/Layouts/AppSidebar.vue:445
 msgid "Create your first note"
 msgstr "สร้างบันทึกแรกของคุณ"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:418
+#: frontend/src/components/Layouts/AppSidebar.vue:424
 msgid "Create your first task"
 msgstr "สร้างงานแรกของคุณ"
 
@@ -1900,19 +1966,19 @@ msgstr ""
 msgid "Current pipeline distribution"
 msgstr "การกระจายท่อส่งในปัจจุบัน"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:615
+#: frontend/src/components/Layouts/AppSidebar.vue:621
 msgid "Custom Actions"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:565
+#: frontend/src/components/Layouts/AppSidebar.vue:571
 msgid "Custom Branding"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:614
+#: frontend/src/components/Layouts/AppSidebar.vue:620
 msgid "Custom Fields"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:617
+#: frontend/src/components/Layouts/AppSidebar.vue:623
 msgid "Custom List Actions"
 msgstr ""
 
@@ -1920,16 +1986,16 @@ msgstr ""
 msgid "Custom Range"
 msgstr "ช่วงที่กำหนดเอง"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:616
+#: frontend/src/components/Layouts/AppSidebar.vue:622
 msgid "Custom Statuses"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:498
+#: frontend/src/pages/Deal.vue:499
 msgid "Customer Created Successfully"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:611
-#: frontend/src/components/Settings/Settings.vue:196
+#: frontend/src/components/Layouts/AppSidebar.vue:617
+#: frontend/src/components/Settings/Settings.vue:206
 msgid "Customization"
 msgstr "การปรับแต่ง"
 
@@ -1956,7 +2022,7 @@ msgid "Dark"
 msgstr "มืด"
 
 #: frontend/src/components/Settings/DashboardSettings.vue:6
-#: frontend/src/components/Settings/Settings.vue:123
+#: frontend/src/components/Settings/Settings.vue:127
 msgid "Dashboard"
 msgstr "แดชบอร์ด"
 
@@ -1973,9 +2039,9 @@ msgid "Dashboard settings updated successfully"
 msgstr ""
 
 #: frontend/src/components/Activities/DataFields.vue:6
-#: frontend/src/components/Layouts/AppSidebar.vue:604
-#: frontend/src/pages/Deal.vue:575 frontend/src/pages/Lead.vue:427
-#: frontend/src/pages/MobileDeal.vue:453 frontend/src/pages/MobileLead.vue:299
+#: frontend/src/components/Layouts/AppSidebar.vue:610
+#: frontend/src/pages/Deal.vue:576 frontend/src/pages/Lead.vue:428
+#: frontend/src/pages/MobileDeal.vue:452 frontend/src/pages/MobileLead.vue:300
 msgid "Data"
 msgstr "ข้อมูล"
 
@@ -2002,16 +2068,16 @@ msgid "Date Format"
 msgstr "รูปแบบวันที่"
 
 #: frontend/src/components/Settings/Sla/SlaHolidays.vue:214
-#: frontend/src/pages/Calendar.vue:91
+#: frontend/src/pages/Calendar.vue:101
 msgid "Day"
 msgstr "วัน"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:425
-#: frontend/src/components/Layouts/AppSidebar.vue:575
+#: frontend/src/components/Layouts/AppSidebar.vue:581
 #: frontend/src/components/Settings/AssignmentRules/AssigneeRules.vue:20
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:51
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:59
-#: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:74
+#: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:77
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:51
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:59
 #: frontend/src/components/Telephony/ExotelCallUI.vue:200
@@ -2020,16 +2086,16 @@ msgid "Deal"
 msgstr "ดีล"
 
 #. Label of the deal_owner (Link) field in DocType 'CRM Deal'
-#: crm/fcrm/doctype/crm_deal/crm_deal.json frontend/src/pages/Contact.vue:546
+#: crm/fcrm/doctype/crm_deal/crm_deal.json frontend/src/pages/Contact.vue:541
 #: frontend/src/pages/MobileContact.vue:539
-#: frontend/src/pages/MobileOrganization.vue:488
-#: frontend/src/pages/Organization.vue:518
+#: frontend/src/pages/MobileOrganization.vue:483
+#: frontend/src/pages/Organization.vue:513
 msgid "Deal Owner"
 msgstr "เจ้าของดีล"
 
 #. Label of the deal_status (Link) field in DocType 'ERPNext CRM Settings'
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.json
-#: frontend/src/components/Settings/ERPNextSettings.vue:213
+#: frontend/src/components/Settings/ERPNextSettings.vue:241
 msgid "Deal Status"
 msgstr "สถานะของข้อตกลง"
 
@@ -2047,7 +2113,7 @@ msgstr "มูลค่าของข้อตกลง"
 msgid "Deal generation channel analysis"
 msgstr "การวิเคราะห์ช่องทางการสร้างดีล"
 
-#: frontend/src/components/Settings/ERPNextSettings.vue:481
+#: frontend/src/components/Settings/ERPNextSettings.vue:522
 msgid "Deal status is required"
 msgstr ""
 
@@ -2057,29 +2123,29 @@ msgstr "มูลค่าของข้อตกลง"
 
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
-#: frontend/src/pages/Deal.vue:513 frontend/src/pages/MobileContact.vue:299
-#: frontend/src/pages/MobileDeal.vue:392
-#: frontend/src/pages/MobileOrganization.vue:342
+#: frontend/src/pages/Deal.vue:514 frontend/src/pages/MobileContact.vue:302
+#: frontend/src/pages/MobileDeal.vue:391
+#: frontend/src/pages/MobileOrganization.vue:343
 msgid "Deals"
 msgstr "ข้อเสนอพิเศษ"
 
-#: frontend/src/components/Dashboard/AddChartModal.vue:97
+#: frontend/src/components/Dashboard/AddChartModal.vue:93
 msgid "Deals by Ongoing & Won Stage"
 msgstr ""
 
-#: frontend/src/components/Dashboard/AddChartModal.vue:100
+#: frontend/src/components/Dashboard/AddChartModal.vue:96
 msgid "Deals by Salesperson"
 msgstr ""
 
-#: frontend/src/components/Dashboard/AddChartModal.vue:107
+#: frontend/src/components/Dashboard/AddChartModal.vue:103
 msgid "Deals by Source"
 msgstr ""
 
-#: frontend/src/components/Dashboard/AddChartModal.vue:105
+#: frontend/src/components/Dashboard/AddChartModal.vue:101
 msgid "Deals by Stage"
 msgstr ""
 
-#: frontend/src/components/Dashboard/AddChartModal.vue:99
+#: frontend/src/components/Dashboard/AddChartModal.vue:95
 msgid "Deals by Territory"
 msgstr ""
 
@@ -2108,7 +2174,7 @@ msgstr "ข้อเสนอโดยภูมิภาค"
 msgid "Dear {{ lead_name }}, \\n\\nThis is a reminder for the payment of {{ grand_total }}. \\n\\nThanks, \\nFrappé"
 msgstr "เรียน คุณ {{ lead_name }}, \\n\\nขอแจ้งเตือนเรื่องการชำระเงินสำหรับ {{ grand_total }} \\n\\nขอบคุณครับ/ค่ะ, \\nFrappé"
 
-#: frontend/src/utils/callLog.js:66
+#: frontend/src/utils/callLog.js:64
 msgid "Declined"
 msgstr ""
 
@@ -2173,7 +2239,7 @@ msgstr "ข้อตกลงระดับการให้บริการ
 msgid "Default View"
 msgstr "มุมมองเริ่มต้น"
 
-#: frontend/src/components/Telephony/CallUI.vue:112
+#: frontend/src/components/Telephony/CallUI.vue:110
 msgid "Default calling medium set successfully to {0}"
 msgstr "ตั้งค่าสื่อการโทรเริ่มต้นสำเร็จแล้วที่ {0}"
 
@@ -2182,7 +2248,7 @@ msgstr "ตั้งค่าสื่อการโทรเริ่มต้
 msgid "Default statuses, custom fields and layouts restored successfully."
 msgstr "สถานะเริ่มต้น, ฟิลด์ที่กำหนดเอง และเลย์เอาต์ได้รับการกู้คืนสำเร็จแล้ว"
 
-#: frontend/src/components/Settings/Settings.vue:128
+#: frontend/src/components/Settings/Settings.vue:132
 msgid "Defaults"
 msgstr "ค่าเริ่มต้น"
 
@@ -2201,24 +2267,27 @@ msgstr ""
 #: frontend/src/components/Controls/Grid.vue:447
 #: frontend/src/components/DeleteLinkedDocModal.vue:13
 #: frontend/src/components/DeleteLinkedDocModal.vue:93
-#: frontend/src/components/Kanban/KanbanView.vue:232
+#: frontend/src/components/Kanban/KanbanView.vue:236
 #: frontend/src/components/ListBulkActions.vue:177
 #: frontend/src/components/Modals/EventModal.vue:467
 #: frontend/src/components/Modals/EventModal.vue:471
 #: frontend/src/components/PrimaryDropdownItem.vue:42
-#: frontend/src/components/Settings/Sla/EditResponseResolutionModal.vue:44
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:184
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:231
+#: frontend/src/components/Settings/Hierarchy/HierarchyRow.vue:166
+#: frontend/src/components/Settings/Sla/EditResponseResolutionModal.vue:39
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:66
-#: frontend/src/components/ViewControls.vue:1119
-#: frontend/src/components/ViewControls.vue:1130
-#: frontend/src/pages/Calendar.vue:400 frontend/src/pages/Calendar.vue:404
+#: frontend/src/components/ViewControls.vue:1120
+#: frontend/src/components/ViewControls.vue:1131
+#: frontend/src/pages/Calendar.vue:408 frontend/src/pages/Calendar.vue:412
 #: frontend/src/pages/Contact.vue:99 frontend/src/pages/Deal.vue:121
 #: frontend/src/pages/Lead.vue:168 frontend/src/pages/MobileContact.vue:80
-#: frontend/src/pages/MobileContact.vue:274
-#: frontend/src/pages/MobileDeal.vue:523
+#: frontend/src/pages/MobileContact.vue:277
+#: frontend/src/pages/MobileDeal.vue:522
 #: frontend/src/pages/MobileOrganization.vue:73
-#: frontend/src/pages/MobileOrganization.vue:277
+#: frontend/src/pages/MobileOrganization.vue:278
 #: frontend/src/pages/Notes.vue:44 frontend/src/pages/Organization.vue:90
-#: frontend/src/pages/Tasks.vue:380 frontend/src/utils/index.js:802
+#: frontend/src/pages/Tasks.vue:363 frontend/src/utils/index.js:802
 msgid "Delete"
 msgstr "ลบ"
 
@@ -2230,12 +2299,12 @@ msgstr "ลบและกู้คืน"
 msgid "Delete All"
 msgstr "ลบทั้งหมด"
 
-#: frontend/src/components/Activities/AttachmentArea.vue:58
+#: frontend/src/components/Activities/AttachmentArea.vue:54
 #: frontend/src/components/Activities/AttachmentArea.vue:127
 msgid "Delete Attachment"
 msgstr "ลบไฟล์แนบ"
 
-#: frontend/src/pages/MobileContact.vue:270
+#: frontend/src/pages/MobileContact.vue:273
 msgid "Delete Contact"
 msgstr ""
 
@@ -2243,7 +2312,7 @@ msgstr ""
 msgid "Delete Event"
 msgstr ""
 
-#: frontend/src/components/Settings/InviteUserPage.vue:81
+#: frontend/src/components/Settings/InviteUserPage.vue:79
 msgid "Delete Invitation"
 msgstr ""
 
@@ -2251,7 +2320,11 @@ msgstr ""
 msgid "Delete Linked Item"
 msgstr ""
 
-#: frontend/src/pages/MobileOrganization.vue:273
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:222
+msgid "Delete Only User"
+msgstr ""
+
+#: frontend/src/pages/MobileOrganization.vue:274
 msgid "Delete Organization"
 msgstr ""
 
@@ -2259,8 +2332,8 @@ msgstr ""
 msgid "Delete Task"
 msgstr "ลบงาน"
 
-#: frontend/src/components/ViewControls.vue:1115
-#: frontend/src/components/ViewControls.vue:1123
+#: frontend/src/components/ViewControls.vue:1116
+#: frontend/src/components/ViewControls.vue:1124
 msgid "Delete View"
 msgstr "ลบมุมมอง"
 
@@ -2280,7 +2353,7 @@ msgstr ""
 msgid "Delete {0} items"
 msgstr "ลบ {0} รายการ"
 
-#: frontend/src/components/Activities/NoteArea.vue:74
+#: frontend/src/components/Activities/NoteArea.vue:73
 msgid "Deleting note..."
 msgstr ""
 
@@ -2308,20 +2381,31 @@ msgstr "คำอธิบาย"
 msgid "Description is required"
 msgstr "จำเป็นต้องมีคำอธิบาย"
 
-#: frontend/src/components/Apps.vue:61
+#: frontend/src/components/Apps.vue:64
 msgid "Desk"
 msgstr "เดสก์"
+
+#. Label of the detail (Small Text) field in DocType 'CRM Product Sync Issue'
+#: crm/fcrm/doctype/crm_product_sync_issue/crm_product_sync_issue.json
+msgid "Detail"
+msgstr ""
 
 #. Label of the details (Tab Break) field in DocType 'CRM Lead'
 #. Label of the details (Text Editor) field in DocType 'CRM Lead Source'
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: crm/fcrm/doctype/crm_lead_source/crm_lead_source.json
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:197
-#: frontend/src/pages/MobileContact.vue:294
-#: frontend/src/pages/MobileDeal.vue:432 frontend/src/pages/MobileLead.vue:278
-#: frontend/src/pages/MobileOrganization.vue:337
+#: frontend/src/pages/MobileContact.vue:297
+#: frontend/src/pages/MobileDeal.vue:431 frontend/src/pages/MobileLead.vue:279
+#: frontend/src/pages/MobileOrganization.vue:338
 msgid "Details"
 msgstr "รายละเอียด"
+
+#. Label of the detected_on (Datetime) field in DocType 'CRM Product Sync
+#. Issue'
+#: crm/fcrm/doctype/crm_product_sync_issue/crm_product_sync_issue.json
+msgid "Detected On"
+msgstr ""
 
 #. Label of the call_receiving_device (Select) field in DocType 'CRM Telephony
 #. Agent'
@@ -2332,14 +2416,20 @@ msgstr "อุปกรณ์"
 
 #: crm/fcrm/doctype/crm_form_script/crm_form_script.js:30
 #: frontend/src/components/Settings/ERPNextSettings.vue:32
-#: frontend/src/components/Settings/ERPNextSettings.vue:403
+#: frontend/src/components/Settings/ERPNextSettings.vue:440
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:31
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:316
 #: frontend/src/components/Settings/Telephony/ExotelSettings.vue:29
 #: frontend/src/components/Settings/Telephony/TwilioSettings.vue:29
 msgid "Disable"
 msgstr "ปิดการใช้งาน"
 
-#: frontend/src/components/Settings/ERPNextSettings.vue:397
+#: frontend/src/components/Settings/ERPNextSettings.vue:434
 msgid "Disable ERPNext Integration"
+msgstr ""
+
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:310
+msgid "Disable Sales Hierarchy"
 msgstr ""
 
 #. Label of the disabled (Check) field in DocType 'CRM Product'
@@ -2372,6 +2462,15 @@ msgstr "ส่วนลด %"
 msgid "Discount Amount"
 msgstr "จำนวนส่วนลด"
 
+#: frontend/src/components/SalesHierarchyBanner.vue:13
+msgid "Dismiss"
+msgstr "ยกเลิก"
+
+#. Label of the dismissed (Check) field in DocType 'CRM Product Sync Issue'
+#: crm/fcrm/doctype/crm_product_sync_issue/crm_product_sync_issue.json
+msgid "Dismissed"
+msgstr ""
+
 #: frontend/src/components/Settings/DefaultsSettings.vue:114
 msgid "Display format for dates across the system"
 msgstr ""
@@ -2389,7 +2488,7 @@ msgstr "ประเภทเอกสาร"
 msgid "Doctype is required"
 msgstr ""
 
-#: frontend/src/pages/MobileLead.vue:203
+#: frontend/src/pages/MobileLead.vue:204
 msgid "Document Not Found"
 msgstr ""
 
@@ -2398,19 +2497,19 @@ msgstr ""
 msgid "Document Type"
 msgstr "ประเภทเอกสาร"
 
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:236
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:242
 msgid "Document created successfully"
 msgstr ""
 
-#: frontend/src/data/document.js:37
+#: frontend/src/data/document.js:41
 msgid "Document does not exist"
 msgstr "เอกสารไม่มีอยู่"
 
-#: crm/api/activities.py:20 frontend/src/pages/MobileDeal.vue:355
+#: crm/api/activities.py:20 frontend/src/pages/MobileDeal.vue:354
 msgid "Document not found"
 msgstr "ไม่พบเอกสาร"
 
-#: frontend/src/data/document.js:51
+#: frontend/src/data/document.js:55
 msgid "Document updated successfully"
 msgstr "เอกสารได้รับการอัปเดตสำเร็จ"
 
@@ -2423,13 +2522,13 @@ msgstr "เอกสารประกอบ"
 msgid "Done"
 msgstr "เสร็จสิ้น"
 
-#: frontend/src/components/Dashboard/AddChartModal.vue:33
-#: frontend/src/components/Dashboard/AddChartModal.vue:71
+#: frontend/src/components/Dashboard/AddChartModal.vue:29
+#: frontend/src/components/Dashboard/AddChartModal.vue:67
 msgid "Donut Chart"
 msgstr ""
 
 #: frontend/src/components/Activities/AudioPlayer.vue:166
-#: frontend/src/components/ViewControls.vue:266
+#: frontend/src/components/ViewControls.vue:268
 msgid "Download"
 msgstr "ดาวน์โหลด"
 
@@ -2437,11 +2536,11 @@ msgstr "ดาวน์โหลด"
 msgid "Drag & Drop files here or upload from"
 msgstr ""
 
-#: frontend/src/components/FieldLayoutEditor.vue:250
+#: frontend/src/components/FieldLayoutEditor.vue:253
 msgid "Drag a section or a field here to get started"
 msgstr ""
 
-#: frontend/src/components/FilesUploader/FilesUploaderArea.vue:56
+#: frontend/src/components/FilesUploader/FilesUploaderArea.vue:60
 msgid "Drop files here"
 msgstr "วางไฟล์ที่นี่"
 
@@ -2461,12 +2560,12 @@ msgstr "วันที่ครบกำหนด"
 #: frontend/src/components/Modals/ViewModal.vue:42
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:65
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:131
-#: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:229
+#: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:225
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:23
-#: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:188
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:186
 #: frontend/src/components/Settings/Sla/SlaPolicyList.vue:133
 #: frontend/src/components/Settings/Sla/SlaPolicyList.vue:183
-#: frontend/src/components/ViewControls.vue:1071
+#: frontend/src/components/ViewControls.vue:1072
 msgid "Duplicate"
 msgstr "ซ้ำ"
 
@@ -2507,8 +2606,8 @@ msgstr ""
 msgid "Duration"
 msgstr "ระยะเวลา"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:628
-#: frontend/src/components/Settings/Settings.vue:221
+#: frontend/src/components/Layouts/AppSidebar.vue:634
+#: frontend/src/components/Settings/Settings.vue:231
 msgid "ERPNext"
 msgstr "เออีอาร์พีเน็กซ์"
 
@@ -2533,9 +2632,17 @@ msgstr "API ของเว็บไซต์ ERPNext"
 msgid "ERPNext Site URL"
 msgstr "URL เว็บไซต์ ERPNext"
 
-#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:60
-#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:81
-#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:331
+#: crm/fcrm/doctype/crm_product/crm_product.py:42
+msgid "ERPNext integration is active. Create an Item in ERPNext and it will appear in CRM Product automatically."
+msgstr ""
+
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:205
+msgid "ERPNext integration must be enabled on the same site"
+msgstr ""
+
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:70
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:91
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:508
 msgid "ERPNext is not installed in the current site"
 msgstr "ERPNext ไม่ได้รับการติดตั้งในไซต์ปัจจุบัน"
 
@@ -2547,20 +2654,20 @@ msgstr ""
 msgid "ERPNext is not integrated with the CRM"
 msgstr "ERPNext ไม่ได้รวมกับ CRM"
 
+#: frontend/src/components/Activities/CommentArea.vue:94
 #: frontend/src/components/FieldLayout/Field.vue:110
-#: frontend/src/components/FieldLayoutEditor.vue:414
-#: frontend/src/components/FieldLayoutEditor.vue:457
+#: frontend/src/components/FieldLayoutEditor.vue:417
+#: frontend/src/components/FieldLayoutEditor.vue:460
 #: frontend/src/components/ListBulkActions.vue:170
 #: frontend/src/components/PrimaryDropdownItem.vue:35
 #: frontend/src/components/Settings/Sla/SlaHolidays.vue:202
 #: frontend/src/components/Settings/Sla/SlaPriorityList.vue:188
-#: frontend/src/components/ViewControls.vue:1089
+#: frontend/src/components/ViewControls.vue:1090
 #: frontend/src/pages/Dashboard.vue:16
 msgid "Edit"
 msgstr "แก้ไข"
 
 #: frontend/src/components/Modals/CallLogDetailModal.vue:40
-#: frontend/src/components/Modals/CallLogModal.vue:87
 msgid "Edit Call Log"
 msgstr "แก้ไขบันทึกการโทร"
 
@@ -2582,15 +2689,12 @@ msgstr "แก้ไขเค้าโครงฟิลด์"
 
 #: frontend/src/components/Activities/DataFields.vue:17
 #: frontend/src/components/Controls/GridRowModal.vue:14
-#: frontend/src/components/Modals/AddressModal.vue:14
-#: frontend/src/components/Modals/CallLogModal.vue:16
 #: frontend/src/components/Modals/ContactModal.vue:16
 #: frontend/src/components/Modals/CreateDocumentModal.vue:16
 #: frontend/src/components/Modals/DealModal.vue:16
+#: frontend/src/components/Modals/DoctypeModal.vue:25
 #: frontend/src/components/Modals/LeadModal.vue:16
-#: frontend/src/components/Modals/NoteModal.vue:27
 #: frontend/src/components/Modals/OrganizationModal.vue:16
-#: frontend/src/components/Modals/TaskModal.vue:27
 msgid "Edit Fields Layout"
 msgstr ""
 
@@ -2607,7 +2711,6 @@ msgid "Edit Grid Row Fields Layout"
 msgstr "แก้ไขเค้าโครงฟิลด์แถวตาราง"
 
 #: frontend/src/components/Modals/CallLogDetailModal.vue:20
-#: frontend/src/components/Modals/NoteModal.vue:8
 msgid "Edit Note"
 msgstr "แก้ไขบันทึก"
 
@@ -2615,7 +2718,7 @@ msgstr "แก้ไขบันทึก"
 msgid "Edit Quick Entry Layout"
 msgstr "แก้ไขเค้าโครงการป้อนข้อมูลด่วน"
 
-#: frontend/src/components/Settings/Sla/EditResponseResolutionModal.vue:5
+#: frontend/src/components/Settings/Sla/EditResponseResolutionModal.vue:2
 msgid "Edit Response & Resolution"
 msgstr ""
 
@@ -2624,7 +2727,6 @@ msgid "Edit Row"
 msgstr ""
 
 #: frontend/src/components/Modals/CallLogDetailModal.vue:25
-#: frontend/src/components/Modals/TaskModal.vue:8
 msgid "Edit Task"
 msgstr "แก้ไขงาน"
 
@@ -2654,18 +2756,18 @@ msgstr "การแก้ไขแถว {0}"
 #: crm/fcrm/doctype/crm_contacts/crm_contacts.json
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
-#: frontend/src/components/Activities/ActivityHeader.vue:120
+#: frontend/src/components/Activities/ActivityHeader.vue:121
 #: frontend/src/components/Calendar/EventNotifications.vue:26
 #: frontend/src/components/Calendar/EventNotifications.vue:94
 #: frontend/src/components/Settings/CalendarSettings.vue:89
 #: frontend/src/components/Settings/CalendarSettings.vue:188
 #: frontend/src/components/Settings/Profile/UserEmailSettings.vue:68
-#: frontend/src/components/Settings/Settings.vue:164
-#: frontend/src/pages/Contact.vue:536 frontend/src/pages/MobileContact.vue:529
-#: frontend/src/pages/MobileOrganization.vue:478
-#: frontend/src/pages/MobileOrganization.vue:506
-#: frontend/src/pages/Organization.vue:508
-#: frontend/src/pages/Organization.vue:536
+#: frontend/src/components/Settings/Settings.vue:174
+#: frontend/src/pages/Contact.vue:531 frontend/src/pages/MobileContact.vue:529
+#: frontend/src/pages/MobileOrganization.vue:473
+#: frontend/src/pages/MobileOrganization.vue:501
+#: frontend/src/pages/Organization.vue:503
+#: frontend/src/pages/Organization.vue:531
 msgid "Email"
 msgstr "อีเมล"
 
@@ -2685,11 +2787,11 @@ msgstr ""
 msgid "Email Accounts"
 msgstr "บัญชีอีเมล"
 
-#: frontend/src/components/Calendar/Attendee.vue:274
+#: frontend/src/components/Calendar/Attendee.vue:278
 msgid "Email Already Exists"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:602
+#: frontend/src/components/Layouts/AppSidebar.vue:608
 msgid "Email Communication"
 msgstr ""
 
@@ -2714,11 +2816,11 @@ msgstr "ส่งอีเมลเมื่อ"
 msgid "Email Settings"
 msgstr "การตั้งค่าอีเมล"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:581
+#: frontend/src/components/Layouts/AppSidebar.vue:587
 msgid "Email Template"
 msgstr "แม่แบบอีเมล"
 
-#: frontend/src/components/Modals/EmailTemplateSelectorModal.vue:4
+#: frontend/src/components/Modals/EmailTemplateSelectorModal.vue:2
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:7
 msgid "Email Templates"
 msgstr "เทมเพลตอีเมล"
@@ -2736,12 +2838,12 @@ msgid "Email settings updated successfully"
 msgstr ""
 
 #: frontend/src/components/Settings/Profile/UserEmailSettings.vue:51
-#: frontend/src/pages/Deal.vue:565 frontend/src/pages/Lead.vue:417
-#: frontend/src/pages/MobileDeal.vue:443 frontend/src/pages/MobileLead.vue:289
+#: frontend/src/pages/Deal.vue:566 frontend/src/pages/Lead.vue:418
+#: frontend/src/pages/MobileDeal.vue:442 frontend/src/pages/MobileLead.vue:290
 msgid "Emails"
 msgstr "อีเมล"
 
-#: frontend/src/components/Settings/Profile/ProfileSettings.vue:92
+#: frontend/src/components/Settings/Profile/ProfileSettings.vue:96
 msgid "Emails & Signature"
 msgstr ""
 
@@ -2758,7 +2860,8 @@ msgid "Empty - Choose a field to sort by"
 msgstr "ว่าง - เลือกฟิลด์เพื่อจัดเรียง"
 
 #: crm/fcrm/doctype/crm_form_script/crm_form_script.js:30
-#: frontend/src/components/Settings/ERPNextSettings.vue:259
+#: frontend/src/components/Settings/ERPNextSettings.vue:287
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:72
 #: frontend/src/components/Settings/Telephony/ExotelSettings.vue:117
 #: frontend/src/components/Settings/Telephony/TwilioSettings.vue:124
 msgid "Enable"
@@ -2782,6 +2885,15 @@ msgstr "เปิดใช้งานขาเข้า"
 msgid "Enable Outgoing"
 msgstr "เปิดใช้งานขาออก"
 
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:62
+msgid "Enable Sales Hierarchy"
+msgstr ""
+
+#. Label of the enable_sales_hierarchy (Check) field in DocType 'FCRM Settings'
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
+msgid "Enable Sales Hierarchy Permissions"
+msgstr ""
+
 #: frontend/src/components/Settings/Telephony/TwilioSettings.vue:119
 msgid "Enable Twilio integration to make and receive calls directly from your CRM"
 msgstr ""
@@ -2791,7 +2903,7 @@ msgstr ""
 msgid "Enable call recording for incoming and outgoing calls"
 msgstr ""
 
-#: frontend/src/components/Settings/ERPNextSettings.vue:250
+#: frontend/src/components/Settings/ERPNextSettings.vue:278
 msgid "Enable the integration to create quotations and auto create customers in ERPNext."
 msgstr ""
 
@@ -2808,10 +2920,10 @@ msgstr ""
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:32
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRulesList.vue:18
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:18
-#: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:81
+#: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:84
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:20
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:18
-#: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:59
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:57
 #: frontend/src/components/Settings/Sla/SlaPolicyList.vue:65
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:30
 msgid "Enabled"
@@ -2844,7 +2956,7 @@ msgstr ""
 msgid "End Time"
 msgstr "เวลาสิ้นสุด"
 
-#: frontend/src/composables/event.js:256
+#: frontend/src/composables/event.js:250
 msgid "End Time Should Be After Start Time"
 msgstr ""
 
@@ -2900,7 +3012,7 @@ msgstr "ป้อนโทเค็นการเข้าถึง Facebook �
 msgid "Enter your personal mobile number used by Exotel to make calls"
 msgstr ""
 
-#: frontend/src/components/FieldLayout/Field.vue:559
+#: frontend/src/components/FieldLayout/Field.vue:565
 msgid "Enter {0}"
 msgstr "ป้อน {0}"
 
@@ -2915,7 +3027,7 @@ msgstr "ป้อน {0}"
 msgid "Equals"
 msgstr "เท่ากับ"
 
-#: frontend/src/pages/MobileLead.vue:204
+#: frontend/src/pages/MobileLead.vue:205
 msgid "Error Occurred"
 msgstr "เกิดข้อผิดพลาด"
 
@@ -2931,11 +3043,11 @@ msgstr "ข้อผิดพลาดในการแปลงเป็นด
 msgid "Error creating Lead Sync Source"
 msgstr "เกิดข้อผิดพลาดในการสร้างแหล่งข้อมูลซิงค์ลูกค้าเป้าหมาย"
 
-#: frontend/src/components/Modals/CallLogDetailModal.vue:326
+#: frontend/src/components/Modals/CallLogDetailModal.vue:358
 msgid "Error creating lead: {0}"
 msgstr ""
 
-#: frontend/src/pages/MobileDeal.vue:356
+#: frontend/src/pages/MobileDeal.vue:355
 msgid "Error occurred"
 msgstr ""
 
@@ -2947,10 +3059,8 @@ msgstr "เกิดข้อผิดพลาดในการซิงค์
 msgid "Error updating Lead Sync Source"
 msgstr "เกิดข้อผิดพลาดในการอัปเดตแหล่งข้อมูลการซิงค์ลูกค้าเป้าหมาย"
 
-#: frontend/src/components/Modals/NoteModal.vue:210
-#: frontend/src/components/Modals/TaskModal.vue:210
-#: frontend/src/pages/Deal.vue:765 frontend/src/pages/Lead.vue:497
-#: frontend/src/pages/MobileDeal.vue:620 frontend/src/pages/MobileLead.vue:359
+#: frontend/src/pages/Deal.vue:766 frontend/src/pages/Lead.vue:498
+#: frontend/src/pages/MobileDeal.vue:619 frontend/src/pages/MobileLead.vue:360
 msgid "Error updating field"
 msgstr "เกิดข้อผิดพลาดในการอัปเดตฟิลด์"
 
@@ -2972,16 +3082,16 @@ msgstr "การแจ้งเตือนกิจกรรม"
 msgid "Event Title"
 msgstr ""
 
-#: frontend/src/pages/Calendar.vue:331
+#: frontend/src/pages/Calendar.vue:339
 msgid "Event created successfully"
 msgstr ""
 
-#: frontend/src/pages/Calendar.vue:410
+#: frontend/src/pages/Calendar.vue:418
 msgid "Event deleted successfully"
 msgstr ""
 
 #: frontend/src/components/Notifications.vue:119
-#: frontend/src/pages/Deal.vue:580 frontend/src/pages/Lead.vue:432
+#: frontend/src/pages/Deal.vue:581 frontend/src/pages/Lead.vue:433
 msgid "Events"
 msgstr "เหตุการณ์"
 
@@ -3003,8 +3113,15 @@ msgstr "ทุก 15 นาที"
 msgid "Every 5 Minutes"
 msgstr "ทุก 5 นาที"
 
-#: frontend/src/components/ViewControls.vue:281
-#: frontend/src/components/ViewControls.vue:289
+#. Option for the 'Timeline Timestamp Format' (Select) field in DocType 'FCRM
+#. Settings'
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
+#: frontend/src/components/Settings/GeneralSettings.vue:140
+msgid "Exact"
+msgstr ""
+
+#: frontend/src/components/ViewControls.vue:282
+#: frontend/src/components/ViewControls.vue:290
 msgid "Excel"
 msgstr "เอ็กเซล"
 
@@ -3027,9 +3144,9 @@ msgstr "ผู้ให้บริการอัตราแลกเปลี
 #. Agent'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
-#: frontend/src/components/Layouts/AppSidebar.vue:626
+#: frontend/src/components/Layouts/AppSidebar.vue:632
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:52
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:178
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:180
 msgid "Exotel"
 msgstr "เอ็กโซเทล"
 
@@ -3059,7 +3176,7 @@ msgstr "หมายเลข Exotel {0} ไม่ถูกต้อง"
 msgid "Exotel Settings"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:116
+#: frontend/src/components/Layouts/AppSidebar.vue:120
 msgid "Expand"
 msgstr "ขยาย"
 
@@ -3087,15 +3204,15 @@ msgid "Expired"
 msgstr "หมดอายุ"
 
 #: frontend/src/components/ViewControls.vue:215
-#: frontend/src/components/ViewControls.vue:263
+#: frontend/src/components/ViewControls.vue:265
 msgid "Export"
 msgstr "ส่งออก"
 
-#: frontend/src/components/ViewControls.vue:277
+#: frontend/src/components/ViewControls.vue:278
 msgid "Export Type"
 msgstr "ประเภทการส่งออก"
 
-#: frontend/src/components/ViewControls.vue:295
+#: frontend/src/components/ViewControls.vue:296
 msgid "Export all {0} record(s)"
 msgstr ""
 
@@ -3158,7 +3275,7 @@ msgstr "เพจ Facebook"
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: crm/fcrm/doctype/crm_rolling_response_time/crm_rolling_response_time.json
-#: frontend/src/utils/callLog.js:67
+#: frontend/src/utils/callLog.js:65
 msgid "Failed"
 msgstr "ล้มเหลว"
 
@@ -3171,7 +3288,7 @@ msgstr "บันทึกการซิงค์ลีดที่ล้มเ
 msgid "Failed to Add Users"
 msgstr ""
 
-#: frontend/src/components/Activities/WhatsAppArea.vue:244
+#: frontend/src/components/Activities/WhatsAppArea.vue:247
 msgid "Failed to add reaction to the message"
 msgstr ""
 
@@ -3187,15 +3304,19 @@ msgstr ""
 msgid "Failed to create template"
 msgstr "ไม่สามารถสร้างเทมเพลตได้"
 
-#: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:180
+#: frontend/src/components/Activities/CommentArea.vue:144
+msgid "Failed to delete comment"
+msgstr ""
+
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:178
 msgid "Failed to delete lead sync source"
 msgstr ""
 
-#: frontend/src/components/Activities/NoteArea.vue:76
+#: frontend/src/components/Activities/NoteArea.vue:75
 msgid "Failed to delete note"
 msgstr ""
 
-#: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:221
+#: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:217
 msgid "Failed to delete template"
 msgstr "ไม่สามารถลบเทมเพลตได้"
 
@@ -3207,7 +3328,11 @@ msgstr "ไม่สามารถดึงอัตราแลกเปลี
 msgid "Failed to load fields layout"
 msgstr ""
 
-#: frontend/src/data/script.js:109
+#: frontend/src/data/script.js:150
+msgid "Failed to load file-based form controller: {0}"
+msgstr ""
+
+#: frontend/src/data/script.js:168
 msgid "Failed to load form controller: {0}"
 msgstr "ไม่สามารถโหลดตัวควบคุมฟอร์ม: {0}"
 
@@ -3216,7 +3341,7 @@ msgid "Failed to rename template"
 msgstr "ไม่สามารถเปลี่ยนชื่อเทมเพลตได้"
 
 #: frontend/src/components/Settings/DefaultsSettings.vue:169
-#: frontend/src/components/Settings/ERPNextSettings.vue:305
+#: frontend/src/components/Settings/ERPNextSettings.vue:342
 msgid "Failed to save settings"
 msgstr ""
 
@@ -3228,7 +3353,7 @@ msgstr ""
 msgid "Failed to send WhatsApp message"
 msgstr ""
 
-#: frontend/src/components/Activities/Activities.vue:598
+#: frontend/src/components/Activities/Activities.vue:604
 msgid "Failed to send WhatsApp template"
 msgstr ""
 
@@ -3238,6 +3363,10 @@ msgstr ""
 
 #: frontend/src/components/CommunicationArea.vue:260
 msgid "Failed to send email!"
+msgstr ""
+
+#: frontend/src/components/Settings/ERPNextSettings.vue:333
+msgid "Failed to start sync"
 msgstr ""
 
 #: frontend/src/components/Settings/EmailEdit.vue:216
@@ -3252,16 +3381,24 @@ msgstr "ไม่สามารถอัปเดตสถานะการโ
 msgid "Failed to update attending status"
 msgstr ""
 
+#: frontend/src/components/Activities/CommentArea.vue:130
+msgid "Failed to update comment"
+msgstr ""
+
 #: frontend/src/components/Modals/ChangePasswordModal.vue:106
 msgid "Failed to update password"
 msgstr "ไม่สามารถอัปเดตรหัสผ่านได้"
 
-#: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:165
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:290
+msgid "Failed to update setting"
+msgstr ""
+
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:163
 msgid "Failed to update source"
 msgstr "ไม่สามารถอัปเดตแหล่งข้อมูลได้"
 
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:205
-#: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:206
+#: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:202
 msgid "Failed to update template"
 msgstr "ไม่สามารถอัปเดตเทมเพลตได้"
 
@@ -3290,15 +3427,15 @@ msgstr "ฟิลด์"
 msgid "Fields Order"
 msgstr "คำสั่งภาคสนาม"
 
-#: frontend/src/components/FilesUploader/FilesUploaderArea.vue:330
+#: frontend/src/components/FilesUploader/FilesUploaderArea.vue:334
 msgid "File \"{0}\" was skipped because of invalid file type"
 msgstr "ไฟล์ \"{0}\" ถูกข้ามเนื่องจากประเภทไฟล์ไม่ถูกต้อง"
 
-#: frontend/src/components/FilesUploader/FilesUploaderArea.vue:351
+#: frontend/src/components/FilesUploader/FilesUploaderArea.vue:355
 msgid "File \"{0}\" was skipped because only {1} uploads are allowed"
 msgstr "ไฟล์ \"{0}\" ถูกข้ามไปเนื่องจากอนุญาตให้อัปโหลดเฉพาะไฟล์ที่มีนามสกุล {1} เท่านั้น"
 
-#: frontend/src/components/FilesUploader/FilesUploaderArea.vue:356
+#: frontend/src/components/FilesUploader/FilesUploaderArea.vue:360
 msgid "File \"{0}\" was skipped because only {1} uploads are allowed for DocType \"{2}\""
 msgstr "ไฟล์ \"{0}\" ถูกข้ามไปเนื่องจากอนุญาตให้อัปโหลดเฉพาะไฟล์ที่มีนามสกุล \" {1} \" เท่านั้นสำหรับประเภทเอกสาร \"{2}\""
 
@@ -3350,7 +3487,7 @@ msgstr "เวลาตอบสนองครั้งแรก"
 #. Label of the first_response_time (Duration) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
-#: frontend/src/components/Settings/Sla/EditResponseResolutionModal.vue:22
+#: frontend/src/components/Settings/Sla/EditResponseResolutionModal.vue:17
 #: frontend/src/components/Settings/Sla/SlaPriorityList.vue:176
 msgid "First Response Time"
 msgstr "เวลาการตอบกลับครั้งแรก"
@@ -3365,7 +3502,7 @@ msgid "Float Precision"
 msgstr "ความแม่นยำของการลอยตัว"
 
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:48
-#: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:80
+#: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:83
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:48
 msgid "For"
 msgstr "สำหรับ"
@@ -3374,7 +3511,7 @@ msgstr "สำหรับ"
 msgid "For all-day events, <b>set a time</b> to send reminders before the event starts"
 msgstr ""
 
-#: frontend/src/components/Dashboard/AddChartModal.vue:95
+#: frontend/src/components/Dashboard/AddChartModal.vue:91
 msgid "Forecasted Revenue"
 msgstr ""
 
@@ -3401,7 +3538,7 @@ msgstr "แบบฟอร์มสคริปต์ได้รับการ
 msgid "Frappe CRM"
 msgstr "Frappe CRM"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:632
+#: frontend/src/components/Layouts/AppSidebar.vue:638
 msgid "Frappe CRM mobile"
 msgstr "Frappe CRM มือถือ"
 
@@ -3455,12 +3592,14 @@ msgstr "สำเร็จ"
 
 #. Label of the full_name (Data) field in DocType 'CRM Contacts'
 #. Label of the lead_name (Data) field in DocType 'CRM Lead'
+#. Label of the full_name (Data) field in DocType 'CRM Sales Hierarchy'
 #: crm/fcrm/doctype/crm_contacts/crm_contacts.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
+#: crm/fcrm/doctype/crm_sales_hierarchy/crm_sales_hierarchy.json
 msgid "Full Name"
 msgstr "ชื่อ-นามสกุล"
 
-#: frontend/src/components/Dashboard/AddChartModal.vue:96
+#: frontend/src/components/Dashboard/AddChartModal.vue:92
 msgid "Funnel Conversion"
 msgstr ""
 
@@ -3481,7 +3620,7 @@ msgstr "GMT+5:30"
 msgid "Gender"
 msgstr "เพศ"
 
-#: frontend/src/components/Settings/Settings.vue:118
+#: frontend/src/components/Settings/Settings.vue:122
 msgid "General"
 msgstr "ทั่วไป"
 
@@ -3528,8 +3667,8 @@ msgstr "แถวตาราง"
 
 #. Label of the group_by_tab (Tab Break) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
-#: frontend/src/components/ViewControls.vue:386
-#: frontend/src/components/ViewControls.vue:618 frontend/src/utils/view.js:16
+#: frontend/src/components/ViewControls.vue:387
+#: frontend/src/components/ViewControls.vue:619 frontend/src/utils/view.js:16
 msgid "Group By"
 msgstr "จัดกลุ่มตาม"
 
@@ -3550,7 +3689,7 @@ msgstr ""
 msgid "Hello"
 msgstr "สวัสดี"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:102
+#: frontend/src/components/Layouts/AppSidebar.vue:106
 msgid "Help"
 msgstr "ช่วยเหลือ"
 
@@ -3563,15 +3702,15 @@ msgstr "สวัสดีจอห์น, \\n\\nกรุณาให้รา�
 msgid "Hidden"
 msgstr "ซ่อน"
 
-#: frontend/src/components/Activities/Activities.vue:246
+#: frontend/src/components/Activities/Activities.vue:249
 msgid "Hide"
 msgstr "ซ่อน"
 
-#: frontend/src/components/FieldLayoutEditor.vue:472
+#: frontend/src/components/FieldLayoutEditor.vue:475
 msgid "Hide Border"
 msgstr "ซ่อนขอบ"
 
-#: frontend/src/components/FieldLayoutEditor.vue:467
+#: frontend/src/components/FieldLayoutEditor.vue:470
 msgid "Hide Label"
 msgstr "ซ่อนป้ายกำกับ"
 
@@ -3586,7 +3725,7 @@ msgstr "ซ่อนรหัสผ่าน"
 msgid "Hide Preview"
 msgstr "ซ่อนตัวอย่าง"
 
-#: frontend/src/components/Activities/CallArea.vue:70
+#: frontend/src/components/Activities/CallArea.vue:66
 msgid "Hide Recording"
 msgstr "ซ่อนการบันทึก"
 
@@ -3613,9 +3752,9 @@ msgstr "ชื่อรายการวันหยุด"
 msgid "Holidays"
 msgstr "วันหยุด"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:566
+#: frontend/src/components/Layouts/AppSidebar.vue:572
 #: frontend/src/components/Settings/HomeActions.vue:7
-#: frontend/src/components/Settings/Settings.vue:199
+#: frontend/src/components/Settings/Settings.vue:209
 msgid "Home Actions"
 msgstr "หน้าแรก การดำเนินการ"
 
@@ -3624,6 +3763,12 @@ msgstr "หน้าแรก การดำเนินการ"
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
 msgid "Hourly"
 msgstr "รายชั่วโมง"
+
+#. Description of the 'Timeline Timestamp Format' (Select) field in DocType
+#. 'FCRM Settings'
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
+msgid "How timestamps are shown in the activity timeline for all users"
+msgstr ""
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:199
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:283
@@ -3692,7 +3837,7 @@ msgstr "ใน"
 #. Option for the 'Status' (Select) field in DocType 'CRM Call Log'
 #. Option for the 'Status' (Select) field in DocType 'CRM Task'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
-#: crm/fcrm/doctype/crm_task/crm_task.json frontend/src/utils/callLog.js:72
+#: crm/fcrm/doctype/crm_task/crm_task.json frontend/src/utils/callLog.js:70
 msgid "In Progress"
 msgstr "กำลังดำเนินการ"
 
@@ -3700,7 +3845,7 @@ msgstr "กำลังดำเนินการ"
 msgid "In less than a minute"
 msgstr "ในเวลาไม่ถึงหนึ่งนาที"
 
-#: frontend/src/components/Activities/CallArea.vue:35
+#: frontend/src/components/Activities/CallArea.vue:31
 msgid "Inbound Call"
 msgstr "สายเรียกเข้า"
 
@@ -3739,7 +3884,7 @@ msgstr "อุตสาหกรรม"
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
-#: frontend/src/utils/callLog.js:65
+#: frontend/src/utils/callLog.js:63
 msgid "Initiated"
 msgstr "เริ่มต้นแล้ว"
 
@@ -3756,7 +3901,7 @@ msgstr "แทรกเทมเพลตอีเมล"
 msgid "Insert Emoji"
 msgstr "ใส่ อีโมจิ"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:622
+#: frontend/src/components/Layouts/AppSidebar.vue:628
 msgid "Integration"
 msgstr "การบูรณาการ"
 
@@ -3768,13 +3913,13 @@ msgstr "การผสานรวมไม่เปิดใช้งาน"
 msgid "Integrations"
 msgstr "การรวม"
 
-#: frontend/src/components/Settings/Settings.vue:207
+#: frontend/src/components/Settings/Settings.vue:217
 msgctxt "FCRM"
 msgid "Integrations"
 msgstr "การรวม"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:553
-#: frontend/src/components/Layouts/AppSidebar.vue:556
+#: frontend/src/components/Layouts/AppSidebar.vue:559
+#: frontend/src/components/Layouts/AppSidebar.vue:562
 msgid "Introduction"
 msgstr "การแนะนำ"
 
@@ -3782,7 +3927,7 @@ msgstr "การแนะนำ"
 msgid "Invalid Account SID or Auth Token."
 msgstr "บัญชี SID หรือโทเค็นการยืนยันไม่ถูกต้อง"
 
-#: frontend/src/components/Modals/ContactModal.vue:114
+#: frontend/src/components/Modals/ContactModal.vue:110
 msgid "Invalid Email Address"
 msgstr ""
 
@@ -3794,15 +3939,15 @@ msgstr ""
 msgid "Invalid Exotel Number"
 msgstr "หมายเลข Exotel ไม่ถูกต้อง"
 
-#: frontend/src/components/Controls/GeolocationControl.vue:116
+#: frontend/src/components/Controls/GeolocationControl.vue:122
 msgid "Invalid GeoJSON"
 msgstr ""
 
-#: frontend/src/components/Settings/ERPNextSettings.vue:454
+#: frontend/src/components/Settings/ERPNextSettings.vue:495
 msgid "Invalid Site URL"
 msgstr ""
 
-#: frontend/src/composables/event.js:253
+#: frontend/src/composables/event.js:247
 msgid "Invalid Start Or End Time"
 msgstr ""
 
@@ -3843,7 +3988,7 @@ msgstr ""
 msgid "Invalid field"
 msgstr ""
 
-#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:391
+#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:390
 msgid "Invalid fields, check if all are filled in and values are correct."
 msgstr "ฟิลด์ไม่ถูกต้อง ตรวจสอบว่ากรอกข้อมูลครบถ้วนและค่าถูกต้อง"
 
@@ -3859,7 +4004,7 @@ msgstr ""
 msgid "Invalid format. Try: 1h 30m 45s, 1:30:45, 90s"
 msgstr ""
 
-#: crm/fcrm/doctype/crm_call_log/crm_call_log.py:263
+#: crm/fcrm/doctype/crm_call_log/crm_call_log.py:269
 msgid "Invalid lead details supplied."
 msgstr ""
 
@@ -3872,7 +4017,7 @@ msgstr ""
 msgid "Invalid page or not permitted to access"
 msgstr "หน้าไม่ถูกต้อง หรือไม่ได้รับอนุญาตให้เข้าถึง"
 
-#: frontend/src/components/Settings/InviteUserPage.vue:189
+#: frontend/src/components/Settings/InviteUserPage.vue:187
 msgid "Invitations sent successfully"
 msgstr ""
 
@@ -3893,11 +4038,11 @@ msgstr ""
 msgid "Invite New User"
 msgstr "เชิญผู้ใช้ใหม่"
 
-#: frontend/src/components/Settings/Settings.vue:155
+#: frontend/src/components/Settings/Settings.vue:159
 msgid "Invite User"
 msgstr "เชิญผู้ใช้"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:567
+#: frontend/src/components/Layouts/AppSidebar.vue:573
 msgid "Invite Users"
 msgstr ""
 
@@ -3905,7 +4050,7 @@ msgstr ""
 msgid "Invite users to access CRM. Specify their roles to control access and permissions"
 msgstr "เชิญผู้ใช้ให้เข้าถึงระบบ CRM ระบุบทบาทของพวกเขาเพื่อควบคุมการเข้าถึงและสิทธิ์"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:377
+#: frontend/src/components/Layouts/AppSidebar.vue:383
 msgid "Invite your team"
 msgstr "เชิญทีมของคุณ"
 
@@ -3936,7 +4081,9 @@ msgstr "เป็นค่าเริ่มต้น"
 msgid "Is ERPNext installed on a different site?"
 msgstr "ERPNext ถูกติดตั้งบนเว็บไซต์อื่นหรือไม่?"
 
+#. Label of the is_group (Check) field in DocType 'CRM Sales Hierarchy'
 #. Label of the is_group (Check) field in DocType 'CRM Territory'
+#: crm/fcrm/doctype/crm_sales_hierarchy/crm_sales_hierarchy.json
 #: crm/fcrm/doctype/crm_territory/crm_territory.json
 msgid "Is Group"
 msgstr "เป็นกลุ่ม"
@@ -3989,9 +4136,9 @@ msgstr "ตำแหน่งงาน"
 
 #: frontend/src/components/AssignToBody.vue:10
 #: frontend/src/components/Filter.vue:603
-#: frontend/src/components/Modals/AssignmentModal.vue:12
+#: frontend/src/components/Modals/AssignmentModal.vue:13
 #: frontend/src/components/Telephony/TaskPanel.vue:46
-#: frontend/src/pages/Calendar.vue:103
+#: frontend/src/pages/Calendar.vue:113
 msgid "John Doe"
 msgstr "จอห์น โด"
 
@@ -4001,8 +4148,8 @@ msgstr ""
 
 #. Label of the kanban_tab (Tab Break) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
-#: frontend/src/components/ViewControls.vue:391
-#: frontend/src/components/ViewControls.vue:607 frontend/src/utils/view.js:20
+#: frontend/src/components/ViewControls.vue:392
+#: frontend/src/components/ViewControls.vue:608 frontend/src/utils/view.js:20
 msgid "Kanban"
 msgstr "คัมบัง"
 
@@ -4030,6 +4177,11 @@ msgstr ""
 #: crm/lead_syncing/doctype/facebook_lead_form_question/facebook_lead_form_question.json
 msgid "Key"
 msgstr "คีย์"
+
+#. Label of the kind (Select) field in DocType 'CRM Product Sync Issue'
+#: crm/fcrm/doctype/crm_product_sync_issue/crm_product_sync_issue.json
+msgid "Kind"
+msgstr ""
 
 #. Label of the label (Data) field in DocType 'CRM Dropdown Item'
 #. Label of the label (Data) field in DocType 'CRM View Settings'
@@ -4073,11 +4225,11 @@ msgstr "7 วันที่ผ่านมา"
 msgid "Last 90 Days"
 msgstr "90 วันที่ผ่านมา"
 
-#: frontend/src/pages/Contact.vue:551 frontend/src/pages/MobileContact.vue:544
-#: frontend/src/pages/MobileOrganization.vue:493
-#: frontend/src/pages/MobileOrganization.vue:521
-#: frontend/src/pages/Organization.vue:523
-#: frontend/src/pages/Organization.vue:551
+#: frontend/src/pages/Contact.vue:546 frontend/src/pages/MobileContact.vue:544
+#: frontend/src/pages/MobileOrganization.vue:488
+#: frontend/src/pages/MobileOrganization.vue:516
+#: frontend/src/pages/Organization.vue:518
+#: frontend/src/pages/Organization.vue:546
 msgid "Last Modified"
 msgstr "แก้ไขล่าสุด"
 
@@ -4148,10 +4300,10 @@ msgstr "เลย์เอาต์"
 #. Label of the lead (Link) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:421
-#: frontend/src/components/Layouts/AppSidebar.vue:574
+#: frontend/src/components/Layouts/AppSidebar.vue:580
 #: frontend/src/components/Settings/AssignmentRules/AssigneeRules.vue:19
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:55
-#: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:73
+#: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:76
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:55
 #: frontend/src/components/Telephony/ExotelCallUI.vue:200
 #: frontend/src/pages/Tasks.vue:133
@@ -4185,7 +4337,7 @@ msgstr "เจ้าของลูกค้าเป้าหมายไม่
 
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
-#: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:9
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:7
 msgid "Lead Sources"
 msgstr "แหล่งที่มาของข้อมูล"
 
@@ -4203,11 +4355,15 @@ msgstr "แหล่งที่มาของการซิงค์หลั
 msgid "Lead Sync Source created successfully"
 msgstr "แหล่งข้อมูลซิงค์หลักถูกสร้างสำเร็จแล้ว"
 
-#: frontend/src/components/Settings/Settings.vue:227
+#: frontend/src/components/Settings/Settings.vue:237
 msgid "Lead Syncing"
 msgstr "การซิงค์ข้อมูลหลัก"
 
-#: crm/fcrm/doctype/crm_call_log/crm_call_log.py:281
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:311
+msgid "Lead and deal visibility will no longer be restricted by the reporting tree. Are you sure?"
+msgstr ""
+
+#: crm/fcrm/doctype/crm_call_log/crm_call_log.py:287
 msgid "Lead from call {0}"
 msgstr ""
 
@@ -4219,7 +4375,7 @@ msgstr "การวิเคราะห์ช่องทางการสร
 msgid "Lead sync initiated."
 msgstr "เริ่มการซิงค์ข้อมูลหลัก"
 
-#: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:177
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:175
 msgid "Lead sync source deleted successfully"
 msgstr ""
 
@@ -4229,12 +4385,12 @@ msgstr "นำสู่กระบวนการเปลี่ยนโอก
 
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
-#: frontend/src/pages/InvalidPage.vue:9 frontend/src/pages/Lead.vue:368
-#: frontend/src/pages/MobileLead.vue:238
+#: frontend/src/pages/InvalidPage.vue:9 frontend/src/pages/Lead.vue:369
+#: frontend/src/pages/MobileLead.vue:239
 msgid "Leads"
 msgstr "ลูกค้าเป้าหมาย"
 
-#: frontend/src/components/Dashboard/AddChartModal.vue:106
+#: frontend/src/components/Dashboard/AddChartModal.vue:102
 msgid "Leads by Source"
 msgstr ""
 
@@ -4247,7 +4403,13 @@ msgstr "แหล่งที่มาของลีด"
 msgid "Learn about conditions"
 msgstr "เรียนรู้เกี่ยวกับเงื่อนไข"
 
+#: frontend/src/components/SalesHierarchyBanner.vue:22
+msgid "Learn more"
+msgstr "เรียนรู้เพิ่มเติม"
+
+#. Label of the lft (Int) field in DocType 'CRM Sales Hierarchy'
 #. Label of the lft (Int) field in DocType 'CRM Territory'
+#: crm/fcrm/doctype/crm_sales_hierarchy/crm_sales_hierarchy.json
 #: crm/fcrm/doctype/crm_territory/crm_territory.json
 msgid "Left"
 msgstr "ซ้าย"
@@ -4260,7 +4422,7 @@ msgstr ""
 msgid "Less than or equal to"
 msgstr ""
 
-#: frontend/src/components/FilesUploader/FilesUploaderArea.vue:43
+#: frontend/src/components/FilesUploader/FilesUploaderArea.vue:47
 msgid "Library"
 msgstr "ห้องสมุด"
 
@@ -4276,9 +4438,13 @@ msgstr "แสง"
 msgid "Like"
 msgstr "ถูกใจ"
 
-#: frontend/src/components/FilesUploader/FilesUploaderArea.vue:47
+#: frontend/src/components/FilesUploader/FilesUploaderArea.vue:51
 msgid "Link"
 msgstr "ลิงก์"
+
+#: crm/fcrm/doctype/crm_product/reconcile_job.py:100
+msgid "Linked Item {0} no longer exists"
+msgstr ""
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:404
 msgid "Linked With"
@@ -4293,12 +4459,12 @@ msgstr "ลิงก์"
 #. Label of the list_tab (Tab Break) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_form_script/crm_form_script.json
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
-#: frontend/src/components/ViewControls.vue:381
-#: frontend/src/components/ViewControls.vue:596 frontend/src/utils/view.js:12
+#: frontend/src/components/ViewControls.vue:382
+#: frontend/src/components/ViewControls.vue:597 frontend/src/utils/view.js:12
 msgid "List"
 msgstr "รายการ"
 
-#: frontend/src/components/Activities/CallArea.vue:70
+#: frontend/src/components/Activities/CallArea.vue:66
 msgid "Listen"
 msgstr "ฟัง"
 
@@ -4308,10 +4474,10 @@ msgstr "ฟัง"
 msgid "Load Default Columns"
 msgstr "โหลดคอลัมน์เริ่มต้น"
 
-#: frontend/src/components/Kanban/KanbanView.vue:140
-#: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:139
-#: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:116
-#: frontend/src/components/Settings/Users.vue:150
+#: frontend/src/components/Kanban/KanbanView.vue:144
+#: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:142
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:114
+#: frontend/src/components/Settings/Users.vue:153
 msgid "Load More"
 msgstr "โหลดเพิ่มเติม"
 
@@ -4337,9 +4503,8 @@ msgstr "บันทึก"
 msgid "Log ID"
 msgstr "รหัสล็อก"
 
-#: frontend/src/components/Activities/ActivityHeader.vue:135
-#: frontend/src/components/Activities/ActivityHeader.vue:178
-#: frontend/src/components/Modals/CallLogModal.vue:87
+#: frontend/src/components/Activities/ActivityHeader.vue:136
+#: frontend/src/components/Activities/ActivityHeader.vue:179
 msgid "Log a Call"
 msgstr "บันทึกการโทร"
 
@@ -4363,7 +4528,7 @@ msgstr "โลโก้"
 msgid "Lost"
 msgstr "สูญหาย"
 
-#: frontend/src/components/Dashboard/AddChartModal.vue:98
+#: frontend/src/components/Dashboard/AddChartModal.vue:94
 msgid "Lost Deal Reasons"
 msgstr ""
 
@@ -4378,11 +4543,11 @@ msgstr ""
 #. Label of the lost_notes (Text) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
-#: frontend/src/components/Modals/LostReasonModal.vue:32
+#: frontend/src/components/Modals/LostReasonModal.vue:28
 msgid "Lost Notes"
 msgstr "บันทึกที่สูญหาย"
 
-#: frontend/src/components/Modals/LostReasonModal.vue:88
+#: frontend/src/components/Modals/LostReasonModal.vue:84
 msgid "Lost Notes are required when Lost Reason is \"Other\""
 msgstr ""
 
@@ -4392,12 +4557,12 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: crm/fcrm/doctype/crm_lost_reason/crm_lost_reason.json
-#: frontend/src/components/Modals/LostReasonModal.vue:4
-#: frontend/src/components/Modals/LostReasonModal.vue:18
+#: frontend/src/components/Modals/LostReasonModal.vue:2
+#: frontend/src/components/Modals/LostReasonModal.vue:14
 msgid "Lost Reason"
 msgstr "เหตุผลที่สูญหาย"
 
-#: frontend/src/components/Modals/LostReasonModal.vue:84
+#: frontend/src/components/Modals/LostReasonModal.vue:80
 msgid "Lost Reason is required"
 msgstr ""
 
@@ -4410,25 +4575,25 @@ msgstr "เหตุผลที่ทำให้ดีลล่ม"
 msgid "Low"
 msgstr "ต่ำ"
 
-#: frontend/src/components/Telephony/CallUI.vue:7
+#: frontend/src/components/Telephony/CallUI.vue:6
 #: frontend/src/pages/Contact.vue:92
 msgid "Make Call"
 msgstr "โทรออก"
 
-#: frontend/src/components/Activities/AttachmentArea.vue:43
-#: frontend/src/components/ViewControls.vue:1104
+#: frontend/src/components/Activities/AttachmentArea.vue:39
+#: frontend/src/components/ViewControls.vue:1105
 msgid "Make Private"
 msgstr "ตั้งค่าเป็นส่วนตัว"
 
-#: frontend/src/components/Activities/AttachmentArea.vue:43
-#: frontend/src/components/ViewControls.vue:1104
+#: frontend/src/components/Activities/AttachmentArea.vue:39
+#: frontend/src/components/ViewControls.vue:1105
 msgid "Make Public"
 msgstr "เปิดเผยต่อสาธารณะ"
 
-#: frontend/src/components/Activities/ActivityHeader.vue:140
-#: frontend/src/components/Activities/ActivityHeader.vue:183
-#: frontend/src/pages/Deal.vue:86 frontend/src/pages/Deals.vue:516
-#: frontend/src/pages/Lead.vue:127 frontend/src/pages/Leads.vue:550
+#: frontend/src/components/Activities/ActivityHeader.vue:141
+#: frontend/src/components/Activities/ActivityHeader.vue:184
+#: frontend/src/pages/Deal.vue:86 frontend/src/pages/Deals.vue:503
+#: frontend/src/pages/Lead.vue:127 frontend/src/pages/Leads.vue:537
 #: frontend/src/pages/MobileContact.vue:73
 msgid "Make a Call"
 msgstr "โทรออก"
@@ -4441,7 +4606,7 @@ msgstr "สร้างการเชื่อมต่อ {0}"
 msgid "Make {0}"
 msgstr "สร้าง {0}"
 
-#: frontend/src/components/Telephony/CallUI.vue:34
+#: frontend/src/components/Telephony/CallUI.vue:32
 msgid "Make {0} as default calling medium"
 msgstr "ตั้งค่าให้ {0} เป็นช่องทางโทรออกเริ่มต้น"
 
@@ -4457,7 +4622,7 @@ msgstr "จัดการผู้ใช้ CRM โดยการเพิ่�
 msgid "Manage ERPNext integration settings"
 msgstr ""
 
-#: frontend/src/components/Settings/Profile/ProfileSettings.vue:96
+#: frontend/src/components/Settings/Profile/ProfileSettings.vue:100
 msgid "Manage your account emails and email signature for communication."
 msgstr ""
 
@@ -4478,18 +4643,17 @@ msgid "Manage your service level agreement policies"
 msgstr ""
 
 #: frontend/src/components/Modals/AddExistingUserModal.vue:93
-#: frontend/src/components/Settings/InviteUserPage.vue:165
-#: frontend/src/components/Settings/InviteUserPage.vue:172
-#: frontend/src/components/Settings/Users.vue:83
-#: frontend/src/components/Settings/Users.vue:191
-#: frontend/src/components/Settings/Users.vue:237
-#: frontend/src/components/Settings/Users.vue:240
+#: frontend/src/components/Settings/InviteUserPage.vue:163
+#: frontend/src/components/Settings/InviteUserPage.vue:170
+#: frontend/src/components/Settings/Users.vue:86
+#: frontend/src/components/Settings/Users.vue:186
+#: frontend/src/components/Settings/Users.vue:232
+#: frontend/src/components/Settings/Users.vue:235
 msgid "Manager"
 msgstr "ผู้จัดการ"
 
-#: frontend/src/components/Modals/NoteModal.vue:154
-#: frontend/src/components/Modals/TaskModal.vue:154
-#: frontend/src/data/document.js:64
+#: frontend/src/components/Modals/DoctypeModal.vue:122
+#: frontend/src/data/document.js:68
 msgid "Mandatory field error: {0}"
 msgstr "ข้อผิดพลาดภาคบังคับ: {0}"
 
@@ -4498,7 +4662,7 @@ msgid "Mandatory field(s) {0} must be mapped"
 msgstr "ฟิลด์ที่จำเป็น {0} ต้องถูกแมป"
 
 #: frontend/src/components/Modals/FieldLayoutDialog.vue:207
-#: frontend/src/data/document.js:220 frontend/src/data/document.js:222
+#: frontend/src/data/document.js:226 frontend/src/data/document.js:228
 msgid "Mandatory fields required: {0}"
 msgstr "ข้อมูลที่จำเป็น: {0}"
 
@@ -4526,7 +4690,7 @@ msgstr "ทำเครื่องหมายทั้งหมดว่าอ
 msgid "Mark lead/deal as replied on response"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:571
+#: frontend/src/components/Layouts/AppSidebar.vue:577
 msgid "Masters"
 msgstr "ข้อมูลหลัก"
 
@@ -4569,7 +4733,7 @@ msgstr "ชื่อกลาง"
 msgid "Minimize"
 msgstr "ลดให้เหลือน้อยที่สุด"
 
-#: frontend/src/utils/callLog.js:71
+#: frontend/src/utils/callLog.js:69
 msgid "Missed Call"
 msgstr ""
 
@@ -4577,7 +4741,7 @@ msgstr ""
 msgid "Missing mandatory fields: {0}"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:635
+#: frontend/src/components/Layouts/AppSidebar.vue:641
 msgid "Mobile App Installation"
 msgstr ""
 
@@ -4587,20 +4751,20 @@ msgstr ""
 #: crm/fcrm/doctype/crm_contacts/crm_contacts.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
-#: frontend/src/pages/Contact.vue:541 frontend/src/pages/MobileContact.vue:534
-#: frontend/src/pages/MobileOrganization.vue:483
-#: frontend/src/pages/Organization.vue:513
+#: frontend/src/pages/Contact.vue:536 frontend/src/pages/MobileContact.vue:534
+#: frontend/src/pages/MobileOrganization.vue:478
+#: frontend/src/pages/Organization.vue:508
 msgid "Mobile No."
 msgstr "หมายเลขโทรศัพท์มือถือ"
 
-#: frontend/src/components/Modals/ContactModal.vue:121
+#: frontend/src/components/Modals/ContactModal.vue:117
 #: frontend/src/components/Modals/DealModal.vue:201
 #: frontend/src/components/Modals/LeadModal.vue:144
 msgid "Mobile No. should be a number"
 msgstr ""
 
-#: frontend/src/components/Telephony/CallUI.vue:22
-#: frontend/src/pages/Contact.vue:433
+#: frontend/src/components/Telephony/CallUI.vue:20
+#: frontend/src/pages/Contact.vue:431
 msgid "Mobile Number"
 msgstr "หมายเลขมือถือ"
 
@@ -4615,7 +4779,7 @@ msgstr "หมายเลขโทรศัพท์เคลื่อนที
 msgid "Monday"
 msgstr "วันจันทร์"
 
-#: crm/api/dashboard.py:721 frontend/src/pages/Calendar.vue:93
+#: crm/api/dashboard.py:721 frontend/src/pages/Calendar.vue:103
 msgid "Month"
 msgstr "เดือน"
 
@@ -4630,32 +4794,40 @@ msgid "Monthly"
 msgstr "รายเดือน"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:466
-#: frontend/src/components/ViewControls.vue:233
+#: frontend/src/components/ViewControls.vue:234
 msgid "More Options"
 msgstr "ตัวเลือกเพิ่มเติม"
 
-#: frontend/src/components/FieldLayoutEditor.vue:614
+#: frontend/src/components/FieldLayoutEditor.vue:617
 msgid "Move Last Column to Next Section"
 msgstr ""
 
-#: frontend/src/components/FieldLayoutEditor.vue:654
+#: frontend/src/components/FieldLayoutEditor.vue:657
 msgid "Move Last Column to Next Tab"
 msgstr ""
 
-#: frontend/src/components/FieldLayoutEditor.vue:624
+#: frontend/src/components/FieldLayoutEditor.vue:627
 msgid "Move Last Column to Previous Section"
 msgstr ""
 
-#: frontend/src/components/FieldLayoutEditor.vue:634
+#: frontend/src/components/FieldLayoutEditor.vue:637
 msgid "Move Last Column to Previous Tab"
 msgstr ""
 
-#: frontend/src/components/FieldLayoutEditor.vue:543
+#: frontend/src/components/FieldLayoutEditor.vue:546
 msgid "Move to Next Tab"
 msgstr ""
 
-#: frontend/src/components/FieldLayoutEditor.vue:529
+#: frontend/src/components/FieldLayoutEditor.vue:532
 msgid "Move to Previous Tab"
+msgstr ""
+
+#: frontend/src/components/Settings/Hierarchy/HierarchyRow.vue:160
+msgid "Move to top level"
+msgstr ""
+
+#: frontend/src/components/Settings/Hierarchy/useDragDrop.js:100
+msgid "Move under {0}"
 msgstr ""
 
 #: frontend/src/components/Modals/ViewModal.vue:30
@@ -4674,13 +4846,13 @@ msgstr "ข้อเสนอที่เปิดอยู่ของฉัน
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:603
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:39
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:39
-#: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:57
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:55
 #: frontend/src/components/Settings/LeadSyncing/leadSyncSourceConfig.js:23
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:62
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:63
-#: frontend/src/components/ViewControls.vue:776
-#: frontend/src/pages/MobileOrganization.vue:501
-#: frontend/src/pages/Organization.vue:531
+#: frontend/src/components/ViewControls.vue:777
+#: frontend/src/pages/MobileOrganization.vue:496
+#: frontend/src/pages/Organization.vue:526
 msgid "Name"
 msgstr "ชื่อ"
 
@@ -4697,7 +4869,7 @@ msgstr "จำเป็นต้องระบุชื่อ"
 msgid "Naming Series"
 msgstr "ชุดการตั้งชื่อ"
 
-#: frontend/src/components/ConditionsFilter/CFCondition.vue:100
+#: frontend/src/components/ConditionsFilter/CFCondition.vue:98
 msgid "Nested Conditions"
 msgstr ""
 
@@ -4716,15 +4888,11 @@ msgstr "ยอดรวมสุทธิ"
 #: frontend/src/components/Activities/ActivityHeader.vue:76
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRules.vue:19
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:19
-#: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:22
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:20
 #: frontend/src/components/Settings/Sla/SlaPolicyList.vue:8
 #: frontend/src/components/Settings/Users.vue:30
 msgid "New"
 msgstr "ใหม่"
-
-#: frontend/src/components/Modals/AddressModal.vue:85
-msgid "New Address"
-msgstr "ที่อยู่ใหม่"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:12
 msgid "New Assignment Rule"
@@ -4759,7 +4927,7 @@ msgid "New Message"
 msgstr "ข้อความใหม่"
 
 #: frontend/src/components/Activities/ActivityHeader.vue:41
-#: frontend/src/pages/Deals.vue:522 frontend/src/pages/Leads.vue:556
+#: frontend/src/pages/Deals.vue:509 frontend/src/pages/Leads.vue:543
 msgid "New Note"
 msgstr "บันทึกใหม่"
 
@@ -4783,13 +4951,13 @@ msgstr "ชื่อนโยบาย SLA ใหม่"
 msgid "New Section"
 msgstr "ส่วนใหม่"
 
-#: frontend/src/components/FieldLayoutEditor.vue:356
-#: frontend/src/components/FieldLayoutEditor.vue:369
+#: frontend/src/components/FieldLayoutEditor.vue:359
+#: frontend/src/components/FieldLayoutEditor.vue:372
 msgid "New Tab"
 msgstr "แท็บใหม่"
 
 #: frontend/src/components/Activities/ActivityHeader.vue:48
-#: frontend/src/pages/Deals.vue:527 frontend/src/pages/Leads.vue:561
+#: frontend/src/pages/Deals.vue:514 frontend/src/pages/Leads.vue:548
 msgid "New Task"
 msgstr "งานใหม่"
 
@@ -4816,6 +4984,13 @@ msgstr ""
 #: frontend/src/components/Modals/CreateDocumentModal.vue:84
 msgid "New {0}"
 msgstr "{0} ใหม่"
+
+#. Option for the 'Timeline Sort Order' (Select) field in DocType 'FCRM
+#. Settings'
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
+#: frontend/src/components/Settings/GeneralSettings.vue:144
+msgid "Newest First"
+msgstr ""
 
 #: frontend/src/components/Filter.vue:709
 msgid "Next 6 Months"
@@ -4864,7 +5039,7 @@ msgstr "ไม่มีข้อมูล"
 msgid "No Details Added"
 msgstr ""
 
-#: frontend/src/components/Activities/EventArea.vue:77
+#: frontend/src/components/Activities/EventArea.vue:73
 msgid "No Events Scheduled"
 msgstr "ไม่มีกิจกรรมที่กำหนดไว้"
 
@@ -4876,7 +5051,7 @@ msgstr ""
 msgid "No Label"
 msgstr "ไม่มีฉลาก"
 
-#: frontend/src/pages/Deal.vue:731
+#: frontend/src/pages/Deal.vue:732
 msgid "No Mobile Number Set"
 msgstr ""
 
@@ -4884,7 +5059,7 @@ msgstr ""
 msgid "No New Notifications"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:726
+#: frontend/src/pages/Deal.vue:727
 msgid "No Primary Contact Set"
 msgstr ""
 
@@ -4897,7 +5072,7 @@ msgid "No Results Found"
 msgstr ""
 
 #: frontend/src/components/Modals/EmailTemplateSelectorModal.vue:56
-#: frontend/src/components/Modals/WhatsappTemplateSelectorModal.vue:42
+#: frontend/src/components/Modals/WhatsappTemplateSelectorModal.vue:57
 msgid "No Templates Found"
 msgstr ""
 
@@ -4911,8 +5086,8 @@ msgstr "ไม่มีชื่อเรื่อง"
 msgid "No Users Found"
 msgstr ""
 
-#: frontend/src/pages/MobileOrganization.vue:295
-#: frontend/src/pages/Organization.vue:332
+#: frontend/src/pages/MobileOrganization.vue:296
+#: frontend/src/pages/Organization.vue:333
 msgid "No Website Found"
 msgstr ""
 
@@ -4921,14 +5096,15 @@ msgid "No Workdays in the List"
 msgstr ""
 
 #: frontend/src/components/Settings/EmailEdit.vue:153
+#: frontend/src/components/Settings/Hierarchy/useDragDrop.js:63
 msgid "No changes made"
 msgstr "ไม่มีการเปลี่ยนแปลง"
 
-#: frontend/src/components/Settings/ERPNextSettings.vue:295
+#: frontend/src/components/Settings/ERPNextSettings.vue:323
 msgid "No companies found in the given site"
 msgstr ""
 
-#: frontend/src/components/Activities/EventArea.vue:79
+#: frontend/src/components/Activities/EventArea.vue:75
 msgid "No events coming up. Create a new one to keep things on track."
 msgstr ""
 
@@ -4936,11 +5112,27 @@ msgstr ""
 msgid "No holiday list found"
 msgstr ""
 
-#: frontend/src/components/Calendar/Attendee.vue:211
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:107
+msgid "No matching users"
+msgstr ""
+
+#: frontend/src/components/Calendar/Attendee.vue:215
 #: frontend/src/components/Controls/EmailMultiSelect.vue:133
-#: frontend/src/components/frappe-ui/Autocomplete.vue:120
+#: frontend/src/components/frappe-ui/Autocomplete.vue:119
 msgid "No results found"
 msgstr "ไม่พบผลลัพธ์"
+
+#: frontend/src/components/Settings/Hierarchy/UserMultiSelect.vue:64
+msgid "No users found"
+msgstr "ไม่พบผู้ใช้"
+
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:108
+msgid "No users in hierarchy"
+msgstr ""
+
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:112
+msgid "No users match the current filter."
+msgstr ""
 
 #: frontend/src/components/ListViews/EmptyState.vue:37
 #: frontend/src/pages/MobileOrganization.vue:145
@@ -5001,7 +5193,7 @@ msgstr "ไม่ซิงค์"
 msgid "Not allowed to add contact to Deal"
 msgstr "ไม่อนุญาตให้เพิ่มผู้ติดต่อในดีล"
 
-#: crm/fcrm/doctype/crm_lead/crm_lead.py:506
+#: crm/fcrm/doctype/crm_lead/crm_lead.py:497
 msgid "Not allowed to convert Lead to Deal"
 msgstr "ไม่อนุญาตให้เปลี่ยนจากลูกค้าเป้าหมายเป็นดีล"
 
@@ -5046,6 +5238,7 @@ msgstr ""
 #: crm/api/contact.py:70 crm/api/contact.py:91
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.py:133
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.py:162
+#: crm/integrations/api.py:65 crm/integrations/api.py:90
 msgid "Not permitted"
 msgstr "ไม่ได้รับอนุญาต"
 
@@ -5063,17 +5256,17 @@ msgstr ""
 
 #. Label of the note (Link) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
-#: frontend/src/components/Activities/ActivityHeader.vue:146
-#: frontend/src/components/Layouts/AppSidebar.vue:578
+#: frontend/src/components/Activities/ActivityHeader.vue:147
+#: frontend/src/components/Layouts/AppSidebar.vue:584
 msgid "Note"
 msgstr "หมายเหตุ"
 
-#: frontend/src/components/Activities/NoteArea.vue:75
+#: frontend/src/components/Activities/NoteArea.vue:74
 msgid "Note deleted"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:595 frontend/src/pages/Lead.vue:447
-#: frontend/src/pages/MobileDeal.vue:469 frontend/src/pages/MobileLead.vue:314
+#: frontend/src/pages/Deal.vue:596 frontend/src/pages/Lead.vue:448
+#: frontend/src/pages/MobileDeal.vue:468 frontend/src/pages/MobileLead.vue:315
 msgid "Notes"
 msgstr "บันทึก"
 
@@ -5084,7 +5277,7 @@ msgstr ""
 #: frontend/src/components/Activities/EmailArea.vue:15
 #: frontend/src/components/Calendar/EventNotifications.vue:22
 #: frontend/src/components/Calendar/EventNotifications.vue:90
-#: frontend/src/components/Layouts/AppSidebar.vue:607
+#: frontend/src/components/Layouts/AppSidebar.vue:613
 #: frontend/src/components/Settings/CalendarSettings.vue:85
 #: frontend/src/components/Settings/CalendarSettings.vue:93
 #: frontend/src/components/Settings/CalendarSettings.vue:184
@@ -5122,8 +5315,8 @@ msgstr "การแจ้งเตือน"
 msgid "Number"
 msgstr "หมายเลข"
 
-#: frontend/src/components/Dashboard/AddChartModal.vue:19
-#: frontend/src/components/Dashboard/AddChartModal.vue:69
+#: frontend/src/components/Dashboard/AddChartModal.vue:15
+#: frontend/src/components/Dashboard/AddChartModal.vue:65
 msgid "Number Chart"
 msgstr ""
 
@@ -5156,10 +5349,20 @@ msgstr "สภาพเก่า"
 msgid "Old Conditions"
 msgstr "เงื่อนไขเก่า"
 
+#. Label of the old_parent (Link) field in DocType 'CRM Sales Hierarchy'
 #. Label of the old_parent (Link) field in DocType 'CRM Territory'
+#: crm/fcrm/doctype/crm_sales_hierarchy/crm_sales_hierarchy.json
 #: crm/fcrm/doctype/crm_territory/crm_territory.json
 msgid "Old Parent"
 msgstr "หลักเดิม"
+
+#. Option for the 'Timeline Sort Order' (Select) field in DocType 'FCRM
+#. Settings'
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
+#: frontend/src/components/Settings/GeneralSettings.vue:123
+#: frontend/src/components/Settings/GeneralSettings.vue:143
+msgid "Oldest First"
+msgstr ""
 
 #. Option for the 'Type' (Select) field in DocType 'CRM Deal Status'
 #. Option for the 'Type' (Select) field in DocType 'CRM Lead Status'
@@ -5175,7 +5378,7 @@ msgstr "ระงับ"
 msgid "Ongoing"
 msgstr "Ongoing"
 
-#: frontend/src/components/Dashboard/AddChartModal.vue:77
+#: frontend/src/components/Dashboard/AddChartModal.vue:73
 msgid "Ongoing Deals"
 msgstr ""
 
@@ -5191,7 +5394,7 @@ msgstr ""
 msgid "Only System Managers can assign the System Manager role"
 msgstr ""
 
-#: crm/api/user.py:92 crm/api/user.py:128
+#: crm/api/user.py:92 crm/api/user.py:137
 msgid "Only System Managers can modify other System Managers"
 msgstr ""
 
@@ -5215,16 +5418,6 @@ msgstr ""
 msgid "Open"
 msgstr "เปิด"
 
-#: frontend/src/components/Modals/NoteModal.vue:15
-#: frontend/src/components/Modals/TaskModal.vue:15
-msgid "Open Deal"
-msgstr "Open Deal"
-
-#: frontend/src/components/Modals/NoteModal.vue:16
-#: frontend/src/components/Modals/TaskModal.vue:16
-msgid "Open Lead"
-msgstr "Open Lead"
-
 #: frontend/src/components/ConditionsFilter/CFCondition.vue:88
 msgid "Open Nested Conditions"
 msgstr ""
@@ -5243,12 +5436,17 @@ msgstr "Open in Portal"
 msgid "Open in new window"
 msgstr "Open in new window"
 
+#: frontend/src/doctypes/crm_task/form.js:9
+#: frontend/src/doctypes/fcrm_note/form.js:9
+msgid "Open {0}"
+msgstr "เปิด {0}"
+
 #: frontend/src/components/ConditionsFilter/CFCondition.vue:47
-#: frontend/src/pages/Calendar.vue:95
+#: frontend/src/pages/Calendar.vue:105
 msgid "Operator"
 msgstr "ผู้ปฏิบัติงาน"
 
-#: frontend/src/components/Kanban/KanbanView.vue:228
+#: frontend/src/components/Kanban/KanbanView.vue:232
 #: frontend/src/components/Modals/CallLogDetailModal.vue:16
 #: frontend/src/components/ViewControls.vue:199
 msgid "Options"
@@ -5264,19 +5462,29 @@ msgstr "Or create leads manually"
 msgid "Order By"
 msgstr "เรียงตาม"
 
+#: frontend/src/components/Settings/GeneralSettings.vue:111
+msgid "Order of activities, emails, comments and calls in the timeline"
+msgstr ""
+
+#. Description of the 'Timeline Sort Order' (Select) field in DocType 'FCRM
+#. Settings'
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
+msgid "Order of activities, emails, comments and calls in the timeline for all users"
+msgstr ""
+
 #. Label of the organization (Link) field in DocType 'CRM Deal'
 #. Label of the organization_tab (Tab Break) field in DocType 'CRM Deal'
 #. Label of the organization (Data) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
-#: frontend/src/components/Layouts/AppSidebar.vue:577
+#: frontend/src/components/Layouts/AppSidebar.vue:583
 #: frontend/src/components/Modals/ConvertToDealModal.vue:25
-#: frontend/src/pages/Contact.vue:434 frontend/src/pages/Contact.vue:520
+#: frontend/src/pages/Contact.vue:432 frontend/src/pages/Contact.vue:515
 #: frontend/src/pages/MobileContact.vue:513
-#: frontend/src/pages/MobileOrganization.vue:462
-#: frontend/src/pages/MobileOrganization.vue:516
-#: frontend/src/pages/Organization.vue:492
-#: frontend/src/pages/Organization.vue:546
+#: frontend/src/pages/MobileOrganization.vue:457
+#: frontend/src/pages/MobileOrganization.vue:511
+#: frontend/src/pages/Organization.vue:487
+#: frontend/src/pages/Organization.vue:541
 msgid "Organization"
 msgstr "องค์กร"
 
@@ -5300,14 +5508,14 @@ msgstr "Organization Logo"
 msgid "Organization Name"
 msgstr "ชื่อองค์กร"
 
-#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:309
-msgid "Organization is required to create a customer"
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:488
+msgid "Organization or a primary Contact is required to create a customer"
 msgstr ""
 
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
-#: frontend/src/pages/MobileOrganization.vue:218
-#: frontend/src/pages/Organization.vue:256
+#: frontend/src/pages/MobileOrganization.vue:219
+#: frontend/src/pages/Organization.vue:257
 msgid "Organizations"
 msgstr "Organizations"
 
@@ -5315,7 +5523,7 @@ msgstr "Organizations"
 msgid "Organizer"
 msgstr "Organizer"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:599
+#: frontend/src/components/Layouts/AppSidebar.vue:605
 msgid "Other Features"
 msgstr ""
 
@@ -5324,7 +5532,7 @@ msgstr ""
 msgid "Others"
 msgstr "อื่นๆ"
 
-#: frontend/src/components/Activities/CallArea.vue:35
+#: frontend/src/components/Activities/CallArea.vue:31
 msgid "Outbound Call"
 msgstr "Outbound Call"
 
@@ -5357,7 +5565,7 @@ msgstr "ชื่อหน้า"
 msgid "Parent CRM Territory"
 msgstr "Parent CRM Territory"
 
-#: frontend/src/components/Settings/Profile/ProfileSettings.vue:110
+#: frontend/src/components/Settings/Profile/ProfileSettings.vue:114
 #: frontend/src/components/Settings/emailConfig.js:71
 msgid "Password"
 msgstr "รหัสผ่าน"
@@ -5399,7 +5607,7 @@ msgstr "รหัสผ่านไม่ตรงกัน"
 msgid "Passwords match"
 msgstr "รหัสผ่านตรงกัน"
 
-#: frontend/src/components/Modals/EmailTemplateSelectorModal.vue:13
+#: frontend/src/components/Modals/EmailTemplateSelectorModal.vue:10
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:38
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:38
 msgid "Payment Reminder"
@@ -5418,13 +5626,17 @@ msgstr ""
 msgid "Pending"
 msgstr "รอดำเนินการ"
 
-#: frontend/src/components/Settings/InviteUserPage.vue:63
+#: frontend/src/components/Settings/InviteUserPage.vue:61
 msgid "Pending Invites"
 msgstr "Pending Invites"
 
 #: frontend/src/pages/Dashboard.vue:66
 msgid "Period"
 msgstr "ช่วงเวลา"
+
+#: frontend/src/components/SalesHierarchyBanner.vue:9
+msgid "Permissions update"
+msgstr ""
 
 #. Label of the person_section (Section Break) field in DocType 'CRM Deal'
 #. Label of the person_tab (Tab Break) field in DocType 'CRM Lead'
@@ -5443,8 +5655,8 @@ msgstr ""
 #: crm/fcrm/doctype/crm_contacts/crm_contacts.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
-#: frontend/src/pages/MobileOrganization.vue:511
-#: frontend/src/pages/Organization.vue:541
+#: frontend/src/pages/MobileOrganization.vue:506
+#: frontend/src/pages/Organization.vue:536
 msgid "Phone"
 msgstr "โทรศัพท์"
 
@@ -5453,7 +5665,7 @@ msgstr "โทรศัพท์"
 msgid "Phone Numbers"
 msgstr "Phone Numbers"
 
-#: frontend/src/components/ViewControls.vue:1096
+#: frontend/src/components/ViewControls.vue:1097
 msgid "Pin View"
 msgstr "Pin View"
 
@@ -5462,11 +5674,11 @@ msgstr "Pin View"
 msgid "Pinned"
 msgstr "Pinned"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:595
+#: frontend/src/components/Layouts/AppSidebar.vue:601
 msgid "Pinned View"
 msgstr ""
 
-#: frontend/src/components/ViewControls.vue:685
+#: frontend/src/components/ViewControls.vue:686
 msgid "Pinned Views"
 msgstr "Pinned Views"
 
@@ -5482,7 +5694,7 @@ msgstr "Please check your access token"
 msgid "Please enable twilio settings before making a call."
 msgstr "Please enable twilio settings before making a call."
 
-#: frontend/src/components/FilesUploader/FilesUploader.vue:161
+#: frontend/src/components/FilesUploader/FilesUploader.vue:155
 msgid "Please enter a valid URL"
 msgstr "Please enter a valid URL"
 
@@ -5490,7 +5702,7 @@ msgstr "Please enter a valid URL"
 msgid "Please fix the errors in the form"
 msgstr ""
 
-#: frontend/src/components/Settings/Sla/EditResponseResolutionModal.vue:93
+#: frontend/src/components/Settings/Sla/EditResponseResolutionModal.vue:88
 msgid "Please select a Priority"
 msgstr ""
 
@@ -5534,7 +5746,7 @@ msgstr "Please setup Exotel intergration"
 msgid "Please specify a reason for losing the deal."
 msgstr "Please specify a reason for losing the deal."
 
-#: crm/fcrm/doctype/crm_lead/crm_lead.py:153
+#: crm/fcrm/doctype/crm_lead/crm_lead.py:150
 msgid "Please specify a reason for losing the lead."
 msgstr ""
 
@@ -5542,7 +5754,7 @@ msgstr ""
 msgid "Please specify the reason for losing the deal."
 msgstr "กรุณาระบุเหตุผลที่สูญเสียการตกลง"
 
-#: crm/fcrm/doctype/crm_lead/crm_lead.py:155
+#: crm/fcrm/doctype/crm_lead/crm_lead.py:152
 msgid "Please specify the reason for losing the lead."
 msgstr ""
 
@@ -5558,7 +5770,7 @@ msgid "Position"
 msgstr "ตำแหน่ง"
 
 #: frontend/src/components/Settings/PreferencesSettings.vue:4
-#: frontend/src/components/Settings/Settings.vue:108
+#: frontend/src/components/Settings/Settings.vue:112
 msgid "Preferences"
 msgstr "การตั้งค่า"
 
@@ -5570,7 +5782,7 @@ msgstr ""
 msgid "Primary"
 msgstr "หลัก"
 
-#: frontend/src/pages/Deal.vue:703 frontend/src/pages/MobileDeal.vue:574
+#: frontend/src/pages/Deal.vue:704 frontend/src/pages/MobileDeal.vue:573
 msgid "Primary Contact Set"
 msgstr ""
 
@@ -5605,7 +5817,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_task/crm_task.json
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:64
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRulesList.vue:17
-#: frontend/src/components/Settings/Sla/EditResponseResolutionModal.vue:16
+#: frontend/src/components/Settings/Sla/EditResponseResolutionModal.vue:11
 #: frontend/src/components/Settings/Sla/SlaPriorityList.vue:171
 msgid "Priority"
 msgstr "ลำดับความสำคัญ"
@@ -5621,7 +5833,7 @@ msgstr ""
 #. Label of the private (Check) field in DocType 'CRM Dashboard'
 #: crm/fcrm/doctype/crm_dashboard/crm_dashboard.json
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:479
-#: frontend/src/components/FilesUploader/FilesUploaderArea.vue:89
+#: frontend/src/components/FilesUploader/FilesUploaderArea.vue:93
 #: frontend/src/components/Modals/EventModal.vue:143
 msgid "Private"
 msgstr "ส่วนตัว"
@@ -5638,7 +5850,9 @@ msgstr ""
 msgid "Probability"
 msgstr "ความน่าจะเป็น"
 
+#. Label of the product (Link) field in DocType 'CRM Product Sync Issue'
 #. Label of the product_code (Link) field in DocType 'CRM Products'
+#: crm/fcrm/doctype/crm_product_sync_issue/crm_product_sync_issue.json
 #: crm/fcrm/doctype/crm_products/crm_products.json
 msgid "Product"
 msgstr "สินค้า"
@@ -5655,6 +5869,15 @@ msgstr "รหัสสินค้า"
 msgid "Product Name"
 msgstr "ชื่อสินค้า"
 
+#. Label of the sync_issues (Table) field in DocType 'ERPNext CRM Settings'
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.json
+msgid "Product Sync Issues"
+msgstr ""
+
+#: frontend/src/components/Settings/ERPNextSettings.vue:330
+msgid "Product sync started. Items will appear shortly."
+msgstr ""
+
 #. Label of the products_tab (Tab Break) field in DocType 'CRM Deal'
 #. Label of the products (Table) field in DocType 'CRM Deal'
 #. Label of the products_tab (Tab Break) field in DocType 'CRM Lead'
@@ -5664,13 +5887,13 @@ msgstr "ชื่อสินค้า"
 msgid "Products"
 msgstr "สินค้า"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:564
+#: frontend/src/components/Layouts/AppSidebar.vue:570
 #: frontend/src/components/Settings/Profile/ProfileSettings.vue:4
-#: frontend/src/components/Settings/Settings.vue:98
+#: frontend/src/components/Settings/Settings.vue:102
 msgid "Profile"
 msgstr "โปรไฟล์"
 
-#: frontend/src/components/Settings/Profile/ProfileSettings.vue:190
+#: frontend/src/components/Settings/Profile/ProfileSettings.vue:194
 msgid "Profile Updated Successfully"
 msgstr ""
 
@@ -5685,11 +5908,11 @@ msgstr "รายได้ที่คาดการณ์เทียบกั
 msgid "Public"
 msgstr "สาธารณะ"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:594
+#: frontend/src/components/Layouts/AppSidebar.vue:600
 msgid "Public View"
 msgstr ""
 
-#: frontend/src/components/ViewControls.vue:679
+#: frontend/src/components/ViewControls.vue:680
 msgid "Public Views"
 msgstr "ความคิดเห็นของสาธารณชน"
 
@@ -5705,7 +5928,7 @@ msgstr "คำถาม"
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
-#: frontend/src/utils/callLog.js:68
+#: frontend/src/utils/callLog.js:66
 msgid "Queued"
 msgstr "อยู่ในคิว"
 
@@ -5714,7 +5937,7 @@ msgstr "อยู่ในคิว"
 msgid "Quick Entry"
 msgstr "การป้อนข้อมูลอย่างรวดเร็ว"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:618
+#: frontend/src/components/Layouts/AppSidebar.vue:624
 msgid "Quick Entry Layout"
 msgstr ""
 
@@ -5723,7 +5946,7 @@ msgstr ""
 msgid "Quick Filters"
 msgstr "ตัวกรองด่วน"
 
-#: frontend/src/components/ViewControls.vue:740
+#: frontend/src/components/ViewControls.vue:741
 msgid "Quick filters updated successfully"
 msgstr ""
 
@@ -5759,7 +5982,7 @@ msgstr "บันทึกการโทรออก"
 msgid "Recording URL"
 msgstr "การบันทึก URL"
 
-#: crm/integrations/api.py:160
+#: crm/integrations/api.py:163
 msgid "Recording URL not found"
 msgstr ""
 
@@ -5823,7 +6046,15 @@ msgstr "ปฏิเสธ"
 msgid "Reject Call"
 msgstr ""
 
-#: frontend/src/components/Kanban/KanbanView.vue:165
+#. Option for the 'Timeline Timestamp Format' (Select) field in DocType 'FCRM
+#. Settings'
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
+#: frontend/src/components/Settings/GeneralSettings.vue:98
+#: frontend/src/components/Settings/GeneralSettings.vue:139
+msgid "Relative"
+msgstr ""
+
+#: frontend/src/components/Kanban/KanbanView.vue:169
 msgid "Reload Columns"
 msgstr ""
 
@@ -5831,22 +6062,22 @@ msgstr ""
 msgid "Reminders will be sent <b>before the event starts</b>, based on the configured time"
 msgstr ""
 
-#: frontend/src/components/ConditionsFilter/CFCondition.vue:178
+#: frontend/src/components/ConditionsFilter/CFCondition.vue:175
 #: frontend/src/components/Controls/ImageUploader.vue:21
-#: frontend/src/components/FieldLayoutEditor.vue:434
-#: frontend/src/components/FieldLayoutEditor.vue:492
-#: frontend/src/components/FieldLayoutEditor.vue:587
+#: frontend/src/components/FieldLayoutEditor.vue:437
+#: frontend/src/components/FieldLayoutEditor.vue:495
+#: frontend/src/components/FieldLayoutEditor.vue:590
 #: frontend/src/components/Settings/Profile/UserEmailSettings.vue:84
-#: frontend/src/components/Settings/Users.vue:218
-#: frontend/src/pages/Deal.vue:652
+#: frontend/src/components/Settings/Users.vue:213
+#: frontend/src/pages/Deal.vue:653
 msgid "Remove"
 msgstr "ลบ"
 
-#: frontend/src/components/FilesUploader/FilesUploader.vue:23
+#: frontend/src/components/FilesUploader/FilesUploader.vue:17
 msgid "Remove All"
 msgstr ""
 
-#: frontend/src/components/ConditionsFilter/CFCondition.vue:186
+#: frontend/src/components/ConditionsFilter/CFCondition.vue:183
 msgid "Remove Group"
 msgstr ""
 
@@ -5857,27 +6088,39 @@ msgstr ""
 msgid "Remove Image"
 msgstr ""
 
-#: frontend/src/components/FieldLayoutEditor.vue:574
-#: frontend/src/components/FieldLayoutEditor.vue:580
+#: frontend/src/components/FieldLayoutEditor.vue:577
+#: frontend/src/components/FieldLayoutEditor.vue:583
 msgid "Remove Last Column"
 msgstr ""
 
-#: frontend/src/components/FieldLayoutEditor.vue:604
+#: frontend/src/components/FieldLayoutEditor.vue:607
 msgid "Remove Last Column (move fields to previous)"
 msgstr ""
 
-#: frontend/src/components/Settings/Profile/ProfileSettings.vue:157
+#: frontend/src/components/Settings/Profile/ProfileSettings.vue:161
 msgid "Remove Photo"
 msgstr ""
 
-#: frontend/src/components/FieldLayoutEditor.vue:477
-#: frontend/src/components/FieldLayoutEditor.vue:485
+#: frontend/src/components/FieldLayoutEditor.vue:480
+#: frontend/src/components/FieldLayoutEditor.vue:488
 msgid "Remove Section"
 msgstr "ลบส่วน"
 
-#: frontend/src/components/FieldLayoutEditor.vue:419
-#: frontend/src/components/FieldLayoutEditor.vue:427
+#: frontend/src/components/FieldLayoutEditor.vue:422
+#: frontend/src/components/FieldLayoutEditor.vue:430
 msgid "Remove Tab"
+msgstr ""
+
+#: crm/api/user.py:111
+msgid "Remove this user from the sales hierarchy before changing their role to Sales User"
+msgstr ""
+
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:195
+msgid "Remove {0} from the hierarchy. What should happen to their direct reports?"
+msgstr ""
+
+#: frontend/src/components/Settings/Hierarchy/useRemoveNode.js:13
+msgid "Removed from hierarchy."
 msgstr ""
 
 #. Label of the auto_reopen_on_new_communication (Check) field in DocType 'FCRM
@@ -5887,12 +6130,12 @@ msgstr ""
 msgid "Reopen lead/deal on new communication"
 msgstr ""
 
-#: frontend/src/components/Activities/EmailArea.vue:34
+#: frontend/src/components/Activities/EmailArea.vue:30
 #: frontend/src/components/CommunicationArea.vue:9
 msgid "Reply"
 msgstr "ตอบกลับ"
 
-#: frontend/src/components/Activities/EmailArea.vue:41
+#: frontend/src/components/Activities/EmailArea.vue:37
 msgid "Reply All"
 msgstr "ตอบกลับทั้งหมด"
 
@@ -5900,12 +6143,17 @@ msgstr "ตอบกลับทั้งหมด"
 msgid "Report an Issue"
 msgstr "รายงานปัญหา"
 
+#. Label of the reports_to (Link) field in DocType 'CRM Sales Hierarchy'
+#: crm/fcrm/doctype/crm_sales_hierarchy/crm_sales_hierarchy.json
+msgid "Reports To"
+msgstr "รายงานถึง"
+
 #. Option for the 'Type' (Select) field in DocType 'CRM Fields Layout'
 #: crm/fcrm/doctype/crm_fields_layout/crm_fields_layout.json
 msgid "Required Fields"
 msgstr "ข้อมูลที่จำเป็น"
 
-#: frontend/src/components/Controls/GridFieldsEditorModal.vue:79
+#: frontend/src/components/Controls/GridFieldsEditorModal.vue:83
 #: frontend/src/components/Controls/GridRowFieldsModal.vue:30
 #: frontend/src/components/Modals/DataFieldsModal.vue:30
 #: frontend/src/components/Modals/QuickEntryModal.vue:30
@@ -5961,7 +6209,7 @@ msgstr "รายละเอียดการตอบกลับ"
 msgid "Response Time"
 msgstr "เวลาตอบสนอง"
 
-#: frontend/src/components/Settings/Sla/EditResponseResolutionModal.vue:99
+#: frontend/src/components/Settings/Sla/EditResponseResolutionModal.vue:94
 msgid "Response Time is required"
 msgstr ""
 
@@ -5989,7 +6237,21 @@ msgstr "คืนค่าเริ่มต้น"
 msgid "Restore Demo Data"
 msgstr ""
 
-#: frontend/src/components/FilesUploader/FilesUploader.vue:51
+#. Description of the 'Enable Sales Hierarchy Permissions' (Check) field in
+#. DocType 'FCRM Settings'
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
+msgid "Restrict Lead and Deal visibility based on the Sales Hierarchy tree. Managers can see all records owned by or assigned to their reports."
+msgstr ""
+
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:20
+msgid "Restrict visibility of Leads and Deals based on a reporting tree."
+msgstr ""
+
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:65
+msgid "Restrict visibility using a reporting tree"
+msgstr ""
+
+#: frontend/src/components/FilesUploader/FilesUploader.vue:45
 msgid "Retake"
 msgstr "สอบซ่อม"
 
@@ -6007,14 +6269,16 @@ msgstr "รายได้"
 msgid "Rich Text"
 msgstr "ข้อความที่มีรูปแบบ"
 
+#. Label of the rgt (Int) field in DocType 'CRM Sales Hierarchy'
 #. Label of the rgt (Int) field in DocType 'CRM Territory'
+#: crm/fcrm/doctype/crm_sales_hierarchy/crm_sales_hierarchy.json
 #: crm/fcrm/doctype/crm_territory/crm_territory.json
 msgid "Right"
 msgstr "ขวา"
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
-#: frontend/src/utils/callLog.js:70
+#: frontend/src/utils/callLog.js:68
 msgid "Ringing"
 msgstr "กำลังโทร"
 
@@ -6086,12 +6350,12 @@ msgstr "การสร้าง SLA"
 msgid "SLA Name"
 msgstr "ชื่อ SLA"
 
-#: frontend/src/components/Settings/Settings.vue:188
+#: frontend/src/components/Settings/Settings.vue:198
 #: frontend/src/components/Settings/Sla/SlaPolicyList.vue:3
 msgid "SLA Policies"
 msgstr ""
 
-#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:429
+#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:428
 msgid "SLA Policy Created"
 msgstr ""
 
@@ -6111,7 +6375,7 @@ msgstr ""
 msgid "SLA Policy Status Updated"
 msgstr ""
 
-#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:499
+#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:498
 msgid "SLA Policy Updated"
 msgstr ""
 
@@ -6123,13 +6387,26 @@ msgid "SLA Status"
 msgstr "สถานะ SLA"
 
 #: frontend/src/components/Settings/Sla/SlaPolicyList.vue:254
-#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:373
+#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:372
 msgid "SLA set as default cannot be disabled"
 msgstr "ตั้งค่า SLA เป็นค่าเริ่มต้นไม่สามารถปิดการใช้งานได้"
 
 #: frontend/src/components/EmailEditor.vue:102
 msgid "SUBJECT"
 msgstr "เรื่อง"
+
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:7
+#: frontend/src/components/Settings/Settings.vue:165
+msgid "Sales Hierarchy"
+msgstr ""
+
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:323
+msgid "Sales Hierarchy disabled"
+msgstr ""
+
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:334
+msgid "Sales Hierarchy enabled"
+msgstr ""
 
 #. Name of a role
 #. Option for the 'Role' (Select) field in DocType 'CRM Invitation'
@@ -6152,6 +6429,7 @@ msgstr "เรื่อง"
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
 #: crm/fcrm/doctype/crm_product/crm_product.json
+#: crm/fcrm/doctype/crm_sales_hierarchy/crm_sales_hierarchy.json
 #: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.json
 #: crm/fcrm/doctype/crm_task/crm_task.json
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
@@ -6165,10 +6443,11 @@ msgstr "เรื่อง"
 #: crm/lead_syncing/doctype/facebook_page/facebook_page.json
 #: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.json
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:276
 msgid "Sales Manager"
 msgstr "ผู้จัดการฝ่ายขาย"
 
-#: frontend/src/components/Dashboard/AddChartModal.vue:94
+#: frontend/src/components/Dashboard/AddChartModal.vue:90
 msgid "Sales Trend"
 msgstr ""
 
@@ -6192,6 +6471,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
 #: crm/fcrm/doctype/crm_product/crm_product.json
+#: crm/fcrm/doctype/crm_sales_hierarchy/crm_sales_hierarchy.json
 #: crm/fcrm/doctype/crm_task/crm_task.json
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
 #: crm/fcrm/doctype/crm_territory/crm_territory.json
@@ -6200,12 +6480,13 @@ msgstr ""
 #: crm/fcrm/doctype/fcrm_note/fcrm_note.json
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 #: frontend/src/components/Modals/AddExistingUserModal.vue:92
-#: frontend/src/components/Settings/InviteUserPage.vue:164
-#: frontend/src/components/Settings/InviteUserPage.vue:171
-#: frontend/src/components/Settings/Users.vue:84
-#: frontend/src/components/Settings/Users.vue:192
-#: frontend/src/components/Settings/Users.vue:248
-#: frontend/src/components/Settings/Users.vue:251
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:277
+#: frontend/src/components/Settings/InviteUserPage.vue:162
+#: frontend/src/components/Settings/InviteUserPage.vue:169
+#: frontend/src/components/Settings/Users.vue:87
+#: frontend/src/components/Settings/Users.vue:187
+#: frontend/src/components/Settings/Users.vue:243
+#: frontend/src/components/Settings/Users.vue:246
 #: frontend/src/pages/Dashboard.vue:95
 msgid "Sales User"
 msgstr "ผู้ใช้การขาย"
@@ -6232,21 +6513,20 @@ msgstr "คำทักทาย"
 msgid "Saturday"
 msgstr "วันเสาร์"
 
+#: frontend/src/components/Activities/CommentArea.vue:44
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:511
-#: frontend/src/components/Controls/GeolocationControl.vue:60
-#: frontend/src/components/Controls/GridFieldsEditorModal.vue:84
+#: frontend/src/components/Controls/GeolocationControl.vue:66
+#: frontend/src/components/Controls/GridFieldsEditorModal.vue:88
 #: frontend/src/components/Controls/GridRowFieldsModal.vue:26
-#: frontend/src/components/Modals/AddressModal.vue:90
-#: frontend/src/components/Modals/CallLogModal.vue:91
 #: frontend/src/components/Modals/DataFieldsModal.vue:26
-#: frontend/src/components/Modals/LostReasonModal.vue:49
+#: frontend/src/components/Modals/LostReasonModal.vue:45
 #: frontend/src/components/Modals/QuickEntryModal.vue:26
 #: frontend/src/components/Modals/SidePanelModal.vue:26
 #: frontend/src/components/PrimaryDropdownItem.vue:21
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:36
 #: frontend/src/components/Settings/DashboardSettings.vue:244
 #: frontend/src/components/Settings/PreferencesSettings.vue:49
-#: frontend/src/components/Settings/Sla/EditResponseResolutionModal.vue:56
+#: frontend/src/components/Settings/Sla/EditResponseResolutionModal.vue:51
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:34
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:78
 #: frontend/src/components/Telephony/ExotelCallUI.vue:221
@@ -6261,11 +6541,11 @@ msgstr "บันทึก"
 msgid "Save Changes"
 msgstr "บันทึกการเปลี่ยนแปลง"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:593
+#: frontend/src/components/Layouts/AppSidebar.vue:599
 msgid "Saved View"
 msgstr ""
 
-#: frontend/src/components/ViewControls.vue:673
+#: frontend/src/components/ViewControls.vue:674
 msgid "Saved Views"
 msgstr "มุมมองที่บันทึกไว้"
 
@@ -6274,7 +6554,7 @@ msgid "Schedule a task..."
 msgstr "กำหนดเวลาสำหรับงาน..."
 
 #: frontend/src/components/Activities/ActivityHeader.vue:36
-#: frontend/src/components/Activities/ActivityHeader.vue:130
+#: frontend/src/components/Activities/ActivityHeader.vue:131
 msgid "Schedule an Event"
 msgstr "กำหนดการกิจกรรม"
 
@@ -6285,7 +6565,7 @@ msgstr "สคริปต์"
 
 #: frontend/src/components/Settings/AssignmentRules/AssigneeSearch.vue:23
 #: frontend/src/components/Settings/Sla/SlaPolicyList.vue:21
-#: frontend/src/components/frappe-ui/Autocomplete.vue:58
+#: frontend/src/components/frappe-ui/Autocomplete.vue:57
 msgid "Search"
 msgstr "ค้นหา"
 
@@ -6297,7 +6577,12 @@ msgstr ""
 msgid "Search User"
 msgstr ""
 
-#: frontend/src/components/FieldLayoutEditor.vue:454
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:83
+#: frontend/src/components/Settings/Hierarchy/UserMultiSelect.vue:6
+msgid "Search users"
+msgstr ""
+
+#: frontend/src/components/FieldLayoutEditor.vue:457
 msgid "Section"
 msgstr "หมวด"
 
@@ -6325,7 +6610,7 @@ msgstr ""
 msgid "Select Medium"
 msgstr ""
 
-#: frontend/src/components/Settings/Sla/EditResponseResolutionModal.vue:15
+#: frontend/src/components/Settings/Sla/EditResponseResolutionModal.vue:10
 msgid "Select Priority"
 msgstr ""
 
@@ -6370,7 +6655,7 @@ msgstr ""
 msgid "Select the assignees for {0}."
 msgstr "เลือกผู้รับมอบหมายสำหรับ {0}"
 
-#: frontend/src/components/Settings/ERPNextSettings.vue:217
+#: frontend/src/components/Settings/ERPNextSettings.vue:245
 msgid "Select the deal status to trigger the auto customer creation in ERPNext"
 msgstr ""
 
@@ -6386,7 +6671,7 @@ msgstr ""
 msgid "Select your ERPNext company to connect with"
 msgstr ""
 
-#: frontend/src/components/FieldLayout/Field.vue:557
+#: frontend/src/components/FieldLayout/Field.vue:563
 msgid "Select {0}"
 msgstr "เลือก {0}"
 
@@ -6410,7 +6695,7 @@ msgstr "ส่งเทมเพลต"
 msgid "Send an Email"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:482
+#: frontend/src/components/Layouts/AppSidebar.vue:488
 msgid "Send email"
 msgstr "ส่งอีเมล"
 
@@ -6432,7 +6717,7 @@ msgstr "ตัวคั่น"
 msgid "Series"
 msgstr "ชุด"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:605
+#: frontend/src/components/Layouts/AppSidebar.vue:611
 msgid "Service Level Agreement"
 msgstr "ข้อตกลงระดับการให้บริการ"
 
@@ -6445,7 +6730,7 @@ msgstr "ผู้ให้บริการ"
 msgid "Set"
 msgstr "ตั้งค่า"
 
-#: frontend/src/components/ViewControls.vue:1081
+#: frontend/src/components/ViewControls.vue:1082
 msgid "Set As Default"
 msgstr ""
 
@@ -6457,7 +6742,7 @@ msgstr "ตั้งค่าเป็นหลัก"
 msgid "Set Currency"
 msgstr ""
 
-#: frontend/src/components/Settings/Sla/EditResponseResolutionModal.vue:34
+#: frontend/src/components/Settings/Sla/EditResponseResolutionModal.vue:29
 msgid "Set Default Priority"
 msgstr ""
 
@@ -6465,15 +6750,15 @@ msgstr ""
 msgid "Set First Name"
 msgstr ""
 
-#: frontend/src/components/Controls/GeolocationControl.vue:43
+#: frontend/src/components/Controls/GeolocationControl.vue:50
 msgid "Set Location"
 msgstr ""
 
-#: frontend/src/components/FilesUploader/FilesUploader.vue:66
+#: frontend/src/components/FilesUploader/FilesUploader.vue:60
 msgid "Set all as private"
 msgstr "ตั้งค่าทั้งหมดเป็นส่วนตัว"
 
-#: frontend/src/components/FilesUploader/FilesUploader.vue:59
+#: frontend/src/components/FilesUploader/FilesUploader.vue:53
 msgid "Set all as public"
 msgstr "ตั้งค่าทั้งหมดเป็นสาธารณะ"
 
@@ -6481,7 +6766,7 @@ msgstr "ตั้งค่าทั้งหมดเป็นสาธารณ
 msgid "Set an Organization"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:660 frontend/src/pages/MobileDeal.vue:531
+#: frontend/src/pages/Deal.vue:661 frontend/src/pages/MobileDeal.vue:530
 msgid "Set as Primary Contact"
 msgstr "ตั้งเป็นผู้ติดต่อหลัก"
 
@@ -6489,7 +6774,7 @@ msgstr "ตั้งเป็นผู้ติดต่อหลัก"
 msgid "Set as default SLA"
 msgstr "ตั้งค่าเป็น SLA เริ่มต้น"
 
-#: frontend/src/components/Controls/GeolocationControl.vue:10
+#: frontend/src/components/Controls/GeolocationControl.vue:14
 msgid "Set location…"
 msgstr ""
 
@@ -6509,15 +6794,15 @@ msgstr ""
 msgid "Set working days, hours, and holidays by selecting a predefined schedule or creating a new one"
 msgstr "กำหนดวันทำงาน, ชั่วโมง, และวันหยุดโดยการเลือกตารางเวลาที่กำหนดไว้ล่วงหน้าหรือสร้างตารางใหม่"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:557
+#: frontend/src/components/Layouts/AppSidebar.vue:563
 msgid "Setting Up"
 msgstr ""
 
-#: frontend/src/components/Settings/GeneralSettings.vue:94
+#: frontend/src/components/Settings/GeneralSettings.vue:153
 msgid "Setting disabled successfully"
 msgstr ""
 
-#: frontend/src/components/Settings/GeneralSettings.vue:93
+#: frontend/src/components/Settings/GeneralSettings.vue:152
 msgid "Setting enabled successfully"
 msgstr ""
 
@@ -6549,13 +6834,17 @@ msgstr ""
 msgid "Setting up Yandex requires you to enable two factor authentication and app specific passwords. Read more"
 msgstr ""
 
+#: frontend/src/components/Settings/GeneralSettings.vue:161
+msgid "Setting updated successfully"
+msgstr ""
+
 #. Label of the defaults_tab (Tab Break) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
-#: frontend/src/components/Layouts/AppSidebar.vue:561
+#: frontend/src/components/Layouts/AppSidebar.vue:567
 msgid "Settings"
 msgstr "การตั้งค่า"
 
-#: frontend/src/components/Settings/ERPNextSettings.vue:302
+#: frontend/src/components/Settings/ERPNextSettings.vue:339
 msgid "Settings saved"
 msgstr ""
 
@@ -6571,19 +6860,19 @@ msgstr "ตั้งค่าอีเมล"
 msgid "Setup the Exchange Rate Provider other than 'Frankfurter' in settings, as default provider does not support currency conversion for {0} to {1}."
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:354
+#: frontend/src/components/Layouts/AppSidebar.vue:360
 msgid "Setup your password"
 msgstr "ตั้งค่ารหัสผ่านของคุณ"
 
-#: frontend/src/components/Activities/Activities.vue:246
+#: frontend/src/components/Activities/Activities.vue:249
 msgid "Show"
 msgstr "แสดง"
 
-#: frontend/src/components/FieldLayoutEditor.vue:472
+#: frontend/src/components/FieldLayoutEditor.vue:475
 msgid "Show Border"
 msgstr ""
 
-#: frontend/src/components/FieldLayoutEditor.vue:467
+#: frontend/src/components/FieldLayoutEditor.vue:470
 msgid "Show Label"
 msgstr ""
 
@@ -6601,6 +6890,10 @@ msgstr "แสดงรหัสผ่าน"
 #: frontend/src/components/Modals/SidePanelModal.vue:20
 msgid "Show Preview"
 msgstr "แสดงตัวอย่าง"
+
+#: frontend/src/components/Settings/GeneralSettings.vue:86
+msgid "Show timestamps in the activity timeline as relative time (5 mins ago) or an exact date & time"
+msgstr ""
 
 #. Option for the 'Type' (Select) field in DocType 'CRM Fields Layout'
 #: crm/fcrm/doctype/crm_fields_layout/crm_fields_layout.json
@@ -6634,19 +6927,19 @@ msgstr "เนื่องจากคุณได้ลบ {0} ออกจา�
 msgid "Site URL"
 msgstr ""
 
-#: frontend/src/components/Settings/ERPNextSettings.vue:449
+#: frontend/src/components/Settings/ERPNextSettings.vue:490
 msgid "Site URL is required"
 msgstr ""
 
-#: frontend/src/components/Settings/ERPNextSettings.vue:432
+#: frontend/src/components/Settings/ERPNextSettings.vue:473
 msgid "Site connection validated"
 msgstr ""
 
-#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:439
+#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:438
 msgid "Some error occurred while creating SLA Policy"
 msgstr ""
 
-#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:485
+#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:484
 msgid "Some error occurred while renaming SLA policy"
 msgstr ""
 
@@ -6654,7 +6947,7 @@ msgstr ""
 msgid "Some error occurred while renaming assignment rule"
 msgstr "เกิดข้อผิดพลาดขณะเปลี่ยนชื่อกฎการมอบหมายงาน"
 
-#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:476
+#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:475
 msgid "Some error occurred while updating SLA policy"
 msgstr ""
 
@@ -6662,8 +6955,12 @@ msgstr ""
 msgid "Some error occurred while updating assignment rule"
 msgstr "เกิดข้อผิดพลาดขณะอัปเดตกฎการมอบหมายงาน"
 
-#: frontend/src/components/Settings/Users.vue:279
-#: frontend/src/components/Settings/Users.vue:292
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:508
+msgid "Some users could not be added"
+msgstr ""
+
+#: frontend/src/components/Settings/Users.vue:274
+#: frontend/src/components/Settings/Users.vue:287
 msgid "Something went wrong"
 msgstr "มีบางอย่างผิดพลาด"
 
@@ -6683,7 +6980,7 @@ msgstr "จัดเรียง"
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.json
 #: frontend/src/components/Modals/EditValueModal.vue:9
-#: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:58
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:56
 msgid "Source"
 msgstr "แหล่งที่มา"
 
@@ -6697,15 +6994,15 @@ msgstr "ชื่อต้นทาง"
 msgid "Source Type"
 msgstr "ประเภทต้นทาง"
 
-#: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:161
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:159
 msgid "Source disabled successfully"
 msgstr "แหล่งที่มาถูกปิดใช้งานสำเร็จ"
 
-#: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:160
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:158
 msgid "Source enabled successfully"
 msgstr "เปิดใช้งานแหล่งที่มาสำเร็จแล้ว"
 
-#: frontend/src/components/Dashboard/AddChartModal.vue:68
+#: frontend/src/components/Dashboard/AddChartModal.vue:64
 #: frontend/src/components/Dashboard/DashboardItem.vue:21
 msgid "Spacer"
 msgstr "ตัวเว้นวรรค"
@@ -6723,11 +7020,11 @@ msgstr "ไม่สามารถแก้ไขแบบฟอร์มสค
 msgid "Standard Selling Rate"
 msgstr "อัตราการขายมาตรฐาน"
 
-#: frontend/src/components/ViewControls.vue:641
+#: frontend/src/components/ViewControls.vue:642
 msgid "Standard Views"
 msgstr "มุมมองมาตรฐาน"
 
-#: frontend/src/composables/event.js:248
+#: frontend/src/composables/event.js:242
 msgid "Start & End Time Are Required"
 msgstr ""
 
@@ -6781,10 +7078,10 @@ msgstr "เริ่มต้นด้วยตัวอย่าง 10 รา�
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
 #: crm/fcrm/doctype/crm_rolling_response_time/crm_rolling_response_time.json
-#: crm/fcrm/doctype/crm_task/crm_task.json frontend/src/pages/Contact.vue:531
+#: crm/fcrm/doctype/crm_task/crm_task.json frontend/src/pages/Contact.vue:526
 #: frontend/src/pages/MobileContact.vue:524
-#: frontend/src/pages/MobileOrganization.vue:473
-#: frontend/src/pages/Organization.vue:503
+#: frontend/src/pages/MobileOrganization.vue:468
+#: frontend/src/pages/Organization.vue:498
 msgid "Status"
 msgstr "สถานะ"
 
@@ -6831,7 +7128,7 @@ msgstr "วันอาทิตย์"
 msgid "Support / Sales"
 msgstr "ฝ่ายสนับสนุน / ฝ่ายขาย"
 
-#: frontend/src/components/FilesUploader/FilesUploader.vue:46
+#: frontend/src/components/FilesUploader/FilesUploader.vue:40
 msgid "Switch Camera"
 msgstr "สลับกล้อง"
 
@@ -6844,9 +7141,14 @@ msgid "Switch between outgoing email accounts when sending emails"
 msgstr ""
 
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.js:6
+#: frontend/src/components/Settings/ERPNextSettings.vue:206
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:23
 msgid "Sync Now"
 msgstr "ซิงค์เดี๋ยวนี้"
+
+#: frontend/src/components/Settings/ERPNextSettings.vue:191
+msgid "Sync Products with ERPNext"
+msgstr ""
 
 #: frontend/src/components/Settings/LeadSyncing/FailureLogs.vue:132
 msgid "Sync Successful!"
@@ -6878,7 +7180,7 @@ msgstr "การซิงค์เริ่มต้นในพื้นหล
 msgid "System"
 msgstr "ระบบ"
 
-#: frontend/src/components/Settings/Settings.vue:115
+#: frontend/src/components/Settings/Settings.vue:119
 msgid "System Configuration"
 msgstr "การกำหนดค่าระบบ"
 
@@ -6907,6 +7209,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
 #: crm/fcrm/doctype/crm_product/crm_product.json
+#: crm/fcrm/doctype/crm_sales_hierarchy/crm_sales_hierarchy.json
 #: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.json
 #: crm/fcrm/doctype/crm_task/crm_task.json
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
@@ -6933,17 +7236,17 @@ msgstr "จดบันทึกไว้..."
 
 #. Option for the 'Type' (Select) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
-#: frontend/src/components/Activities/ActivityHeader.vue:151
-#: frontend/src/components/Layouts/AppSidebar.vue:579
+#: frontend/src/components/Activities/ActivityHeader.vue:152
+#: frontend/src/components/Layouts/AppSidebar.vue:585
 msgid "Task"
 msgstr "งาน"
 
-#: frontend/src/pages/Deal.vue:590 frontend/src/pages/Lead.vue:442
-#: frontend/src/pages/MobileDeal.vue:464 frontend/src/pages/MobileLead.vue:309
+#: frontend/src/pages/Deal.vue:591 frontend/src/pages/Lead.vue:443
+#: frontend/src/pages/MobileDeal.vue:463 frontend/src/pages/MobileLead.vue:310
 msgid "Tasks"
 msgstr "งาน"
 
-#: frontend/src/components/Settings/Settings.vue:210
+#: frontend/src/components/Settings/Settings.vue:220
 msgid "Telephony"
 msgstr "โทรศัพท์"
 
@@ -6956,11 +7259,11 @@ msgstr "โทรศัพท์"
 msgid "Telephony Settings"
 msgstr ""
 
-#: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:218
+#: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:214
 msgid "Template Deleted Successfully"
 msgstr ""
 
-#: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:79
+#: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:82
 msgid "Template Name"
 msgstr "ชื่อแม่แบบ"
 
@@ -6968,11 +7271,11 @@ msgstr "ชื่อแม่แบบ"
 msgid "Template created successfully"
 msgstr "สร้างแม่แบบสำเร็จแล้ว"
 
-#: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:201
+#: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:197
 msgid "Template disabled successfully"
 msgstr "เทมเพลตถูกปิดใช้งานเรียบร้อยแล้ว"
 
-#: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:200
+#: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:196
 msgid "Template enabled successfully"
 msgstr "เปิดใช้งานเทมเพลตสำเร็จแล้ว"
 
@@ -6984,7 +7287,7 @@ msgstr "เทมเพลตถูกเปลี่ยนชื่อเรี
 msgid "Template updated successfully"
 msgstr "แม่แบบได้รับการอัปเดตสำเร็จแล้ว"
 
-#: frontend/src/components/Settings/Settings.vue:173
+#: frontend/src/components/Settings/Settings.vue:183
 msgid "Templates"
 msgstr "เทมเพลต"
 
@@ -7043,11 +7346,6 @@ msgstr "ธีม"
 msgid "There can only be one default priority in Priorities table"
 msgstr "สามารถมีลำดับความสำคัญเริ่มต้นได้เพียงหนึ่งรายการเท่านั้นในตารางลำดับความสำคัญ"
 
-#: frontend/src/components/Modals/AddressModal.vue:120
-#: frontend/src/components/Modals/CallLogModal.vue:121
-msgid "These fields are required: {0}"
-msgstr "ฟิลด์เหล่านี้เป็นข้อบังคับ: {0}"
-
 #: frontend/src/components/Filter.vue:685
 msgid "This Month"
 msgstr "เดือนนี้"
@@ -7064,7 +7362,7 @@ msgstr "สัปดาห์นี้"
 msgid "This Year"
 msgstr "ปีนี้"
 
-#: frontend/src/components/FieldLayoutEditor.vue:581
+#: frontend/src/components/FieldLayoutEditor.vue:584
 msgid "This column contains fields. Are you sure you want to remove it?"
 msgstr ""
 
@@ -7076,7 +7374,7 @@ msgstr ""
 msgid "This method is only meant for developer mode"
 msgstr "วิธีการนี้มีไว้สำหรับโหมดนักพัฒนาเท่านั้น"
 
-#: frontend/src/components/FieldLayoutEditor.vue:486
+#: frontend/src/components/FieldLayoutEditor.vue:489
 msgid "This section contains fields. Are you sure you want to remove it?"
 msgstr ""
 
@@ -7117,6 +7415,26 @@ msgstr "รูปแบบเวลา"
 msgid "Time before the event when a reminder notification will be sent by default. This will be applied to all events unless a custom notification is set for a specific event."
 msgstr ""
 
+#. Label of the crm_timeline_sort_order (Select) field in DocType 'FCRM
+#. Settings'
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
+msgid "Timeline Sort Order"
+msgstr ""
+
+#. Label of the crm_timeline_timestamp_format (Select) field in DocType 'FCRM
+#. Settings'
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
+msgid "Timeline Timestamp Format"
+msgstr ""
+
+#: frontend/src/components/Settings/GeneralSettings.vue:107
+msgid "Timeline sort order"
+msgstr ""
+
+#: frontend/src/components/Settings/GeneralSettings.vue:82
+msgid "Timeline timestamp format"
+msgstr ""
+
 #: frontend/src/components/Filter.vue:357
 msgid "Timespan"
 msgstr "ช่วงเวลา"
@@ -7146,7 +7464,7 @@ msgstr "จำเป็นต้องมีชื่อเรื่อง"
 
 #. Label of the to (Data) field in DocType 'CRM Status Change Log'
 #: crm/fcrm/doctype/crm_status_change_log/crm_status_change_log.json
-#: frontend/src/components/Activities/EmailArea.vue:53
+#: frontend/src/components/Activities/EmailArea.vue:49
 msgid "To"
 msgstr "ถึง"
 
@@ -7180,7 +7498,7 @@ msgstr "ถึงผู้ใช้"
 msgid "To know more about setting up email accounts, click"
 msgstr "หากต้องการทราบข้อมูลเพิ่มเติมเกี่ยวกับการตั้งค่าบัญชีอีเมล คลิก"
 
-#: frontend/src/components/Filter.vue:673 frontend/src/pages/Calendar.vue:79
+#: frontend/src/components/Filter.vue:673 frontend/src/pages/Calendar.vue:85
 msgid "Today"
 msgstr "วันนี้"
 
@@ -7213,7 +7531,7 @@ msgstr "รวม"
 msgid "Total Holidays"
 msgstr "รวมวันหยุด"
 
-#: frontend/src/components/Dashboard/AddChartModal.vue:76
+#: frontend/src/components/Dashboard/AddChartModal.vue:72
 msgid "Total Leads"
 msgstr ""
 
@@ -7253,7 +7571,7 @@ msgstr "การติดตามเส้นทาง"
 msgid "Tuesday"
 msgstr "วันอังคาร"
 
-#: frontend/src/components/ConditionsFilter/CFCondition.vue:159
+#: frontend/src/components/ConditionsFilter/CFCondition.vue:156
 msgid "Turn into a Group"
 msgstr ""
 
@@ -7267,7 +7585,7 @@ msgstr "TwiML SID"
 #. Agent'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
-#: frontend/src/components/Layouts/AppSidebar.vue:625
+#: frontend/src/components/Layouts/AppSidebar.vue:631
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:51
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:153
 msgid "Twilio"
@@ -7331,7 +7649,7 @@ msgstr ""
 msgid "Type"
 msgstr "ประเภท"
 
-#: frontend/src/components/Calendar/Attendee.vue:212
+#: frontend/src/components/Calendar/Attendee.vue:216
 msgid "Type an email address to add attendee"
 msgstr "พิมพ์ที่อยู่อีเมลเพื่อเพิ่มผู้เข้าร่วม"
 
@@ -7356,11 +7674,11 @@ msgstr ""
 msgid "Unauthorized request"
 msgstr "คำขอที่ไม่ได้รับอนุญาต"
 
-#: frontend/src/components/FieldLayoutEditor.vue:462
+#: frontend/src/components/FieldLayoutEditor.vue:465
 msgid "Uncollapsible"
 msgstr "ไม่สามารถยุบได้"
 
-#: frontend/src/components/ConditionsFilter/CFCondition.vue:169
+#: frontend/src/components/ConditionsFilter/CFCondition.vue:166
 msgid "Ungroup Conditions"
 msgstr ""
 
@@ -7381,6 +7699,10 @@ msgstr "ยกเลิกการเชื่อมโยง"
 msgid "Unlink & Delete"
 msgstr ""
 
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:214
+msgid "Unlink & Delete {0} Users"
+msgstr ""
+
 #: frontend/src/components/BulkDeleteLinkedDocModal.vue:35
 msgid "Unlink & Delete {0} items"
 msgstr ""
@@ -7397,30 +7719,27 @@ msgstr ""
 msgid "Unlink {0} Item(s)"
 msgstr ""
 
-#: frontend/src/components/ViewControls.vue:1096
+#: frontend/src/components/ViewControls.vue:1097
 msgid "Unpin View"
 msgstr "ยกเลิกการปักหมุดมุมมอง"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:575
-#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:346
+#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:345
 msgid "Unsaved Changes"
 msgstr ""
 
 #: frontend/src/components/CollapsibleSection.vue:21
 #: frontend/src/components/FieldLayoutEditor.vue:32
-#: frontend/src/components/Modals/AddressModal.vue:8
-#: frontend/src/components/Modals/CallLogModal.vue:8
 #: frontend/src/components/Modals/CreateDocumentModal.vue:8
 #: frontend/src/components/SidePanelLayoutEditor.vue:19
 msgid "Untitled"
 msgstr "ไม่มีชื่อเรื่อง"
 
 #: frontend/src/components/ColumnSettings.vue:129
-#: frontend/src/components/Modals/AssignmentModal.vue:80
+#: frontend/src/components/Modals/AssignmentModal.vue:84
 #: frontend/src/components/Modals/ChangePasswordModal.vue:58
+#: frontend/src/components/Modals/DoctypeModal.vue:52
 #: frontend/src/components/Modals/EventModal.vue:212
-#: frontend/src/components/Modals/NoteModal.vue:53
-#: frontend/src/components/Modals/TaskModal.vue:53
 #: frontend/src/components/Settings/BrandSettings.vue:16
 #: frontend/src/components/Settings/CalendarSettings.vue:21
 #: frontend/src/components/Settings/DashboardSettings.vue:19
@@ -7442,8 +7761,8 @@ msgstr "อัปเดต"
 msgid "Update Account"
 msgstr "อัปเดตบัญชี"
 
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:162
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:187
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:163
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:190
 msgid "Update Configuration"
 msgstr ""
 
@@ -7468,13 +7787,17 @@ msgstr "อัปเดตการประทับเวลาบนการ
 msgid "Update {0} Records"
 msgstr "อัปเดต {0} บันทึก"
 
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:466
+msgid "Updated reports to"
+msgstr ""
+
 #: frontend/src/components/Controls/ImageUploader.vue:15
-#: frontend/src/components/FilesUploader/FilesUploader.vue:83
+#: frontend/src/components/FilesUploader/FilesUploader.vue:77
 msgid "Upload"
 msgstr "อัปโหลด"
 
 #: frontend/src/components/Activities/ActivityHeader.vue:55
-#: frontend/src/components/Activities/ActivityHeader.vue:156
+#: frontend/src/components/Activities/ActivityHeader.vue:157
 msgid "Upload Attachment"
 msgstr "อัปโหลดไฟล์แนบ"
 
@@ -7490,7 +7813,7 @@ msgstr "อัปโหลดเอกสาร"
 msgid "Upload Image"
 msgstr "อัปโหลดภาพ"
 
-#: frontend/src/components/Settings/Profile/ProfileSettings.vue:158
+#: frontend/src/components/Settings/Profile/ProfileSettings.vue:162
 msgid "Upload Photo"
 msgstr ""
 
@@ -7502,20 +7825,26 @@ msgstr "อัปโหลดวิดีโอ"
 msgid "Uploading {0}%"
 msgstr "กำลังอัปโหลด {0}%"
 
+#: crm/fcrm/doctype/crm_product/crm_product.py:45
+msgid "Use ERPNext to Create Products"
+msgstr ""
+
 #. Label of the user (Link) field in DocType 'CRM Dashboard'
+#. Label of the user (Link) field in DocType 'CRM Sales Hierarchy'
 #. Label of the user (Link) field in DocType 'CRM Telephony Agent'
 #. Label of the user (Link) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_dashboard/crm_dashboard.json
+#: crm/fcrm/doctype/crm_sales_hierarchy/crm_sales_hierarchy.json
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
 msgid "User"
 msgstr "ผู้ใช้"
 
-#: frontend/src/components/Settings/Settings.vue:95
+#: frontend/src/components/Settings/Settings.vue:99
 msgid "User Configuration"
 msgstr ""
 
-#: frontend/src/components/Settings/Settings.vue:146
+#: frontend/src/components/Settings/Settings.vue:150
 msgid "User Management"
 msgstr "การจัดการผู้ใช้"
 
@@ -7524,21 +7853,29 @@ msgstr "การจัดการผู้ใช้"
 msgid "User Name"
 msgstr "ชื่อผู้ใช้"
 
-#: crm/api/user.py:132
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:502
+msgid "User added to hierarchy"
+msgstr ""
+
+#: crm/api/user.py:141
 msgid "User {0} cannot be removed as it has a Role Profile assigned to it."
 msgstr ""
 
-#: frontend/src/components/Settings/Users.vue:288
+#: frontend/src/components/Settings/Users.vue:283
 msgid "User {0} has been removed"
 msgstr "ผู้ใช้ {0} ได้ถูกลบออกแล้ว"
 
-#: crm/api/user.py:141
+#: crm/api/user.py:158
 msgid "User {0} has been removed from CRM roles."
+msgstr ""
+
+#: crm/fcrm/doctype/crm_sales_hierarchy/crm_sales_hierarchy.py:43
+msgid "User {0} is already mapped to hierarchy node {1}."
 msgstr ""
 
 #: frontend/src/components/Modals/AddExistingUserModal.vue:20
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:608
-#: frontend/src/components/Settings/Settings.vue:149
+#: frontend/src/components/Settings/Settings.vue:153
 #: frontend/src/components/Settings/Users.vue:7
 msgid "Users"
 msgstr "ผู้ใช้"
@@ -7577,7 +7914,7 @@ msgstr ""
 msgid "View Contact"
 msgstr ""
 
-#: frontend/src/components/Controls/GeolocationControl.vue:43
+#: frontend/src/components/Controls/GeolocationControl.vue:50
 msgid "View Location"
 msgstr ""
 
@@ -7585,7 +7922,11 @@ msgstr ""
 msgid "View Name"
 msgstr "ชื่อที่แสดง"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:590
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:9
+msgid "View documentation"
+msgstr ""
+
+#: frontend/src/components/Layouts/AppSidebar.vue:596
 msgid "Views"
 msgstr "การดู"
 
@@ -7593,7 +7934,11 @@ msgstr "การดู"
 msgid "Visibility"
 msgstr "การมองเห็น"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:587
+#: frontend/src/components/SalesHierarchyBanner.vue:20
+msgid "We are changing how permissions work in Frappe CRM"
+msgstr ""
+
+#: frontend/src/components/Layouts/AppSidebar.vue:593
 msgid "Web Form"
 msgstr "ฟอร์มเว็บ"
 
@@ -7621,7 +7966,7 @@ msgstr "เว็บไซต์"
 msgid "Wednesday"
 msgstr "วันพุธ"
 
-#: frontend/src/pages/Calendar.vue:92
+#: frontend/src/pages/Calendar.vue:102
 msgid "Week"
 msgstr "สัปดาห์"
 
@@ -7639,7 +7984,7 @@ msgstr "รายสัปดาห์"
 msgid "Weekly Off"
 msgstr "หยุดรายสัปดาห์"
 
-#: frontend/src/components/Modals/WhatsappTemplateSelectorModal.vue:11
+#: frontend/src/components/Modals/WhatsappTemplateSelectorModal.vue:10
 msgid "Welcome Message"
 msgstr "ข้อความต้อนรับ"
 
@@ -7649,18 +7994,18 @@ msgstr "ยินดีต้อนรับ {0}, มาเพิ่มลูก
 
 #. Option for the 'Type' (Select) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
-#: frontend/src/components/Layouts/AppSidebar.vue:627
-#: frontend/src/components/Settings/Settings.vue:215
-#: frontend/src/pages/Deal.vue:605 frontend/src/pages/Lead.vue:457
-#: frontend/src/pages/MobileDeal.vue:479 frontend/src/pages/MobileLead.vue:324
+#: frontend/src/components/Layouts/AppSidebar.vue:633
+#: frontend/src/components/Settings/Settings.vue:225
+#: frontend/src/pages/Deal.vue:606 frontend/src/pages/Lead.vue:458
+#: frontend/src/pages/MobileDeal.vue:478 frontend/src/pages/MobileLead.vue:325
 msgid "WhatsApp"
 msgstr "WhatsApp"
 
-#: frontend/src/components/Activities/ActivityHeader.vue:161
+#: frontend/src/components/Activities/ActivityHeader.vue:162
 msgid "WhatsApp Message"
 msgstr ""
 
-#: frontend/src/components/Modals/WhatsappTemplateSelectorModal.vue:4
+#: frontend/src/components/Modals/WhatsappTemplateSelectorModal.vue:2
 msgid "WhatsApp Templates"
 msgstr "เทมเพลต WhatsApp"
 
@@ -7681,11 +8026,11 @@ msgstr "ความกว้างสามารถระบุเป็นจ
 #. Option for the 'Type' (Select) field in DocType 'CRM Lead Status'
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
-#: frontend/src/components/Settings/ERPNextSettings.vue:226
+#: frontend/src/components/Settings/ERPNextSettings.vue:254
 msgid "Won"
 msgstr "ชนะ"
 
-#: frontend/src/components/Dashboard/AddChartModal.vue:79
+#: frontend/src/components/Dashboard/AddChartModal.vue:75
 msgid "Won Deals"
 msgstr ""
 
@@ -7742,11 +8087,11 @@ msgstr ""
 msgid "You are not permitted to access this resource."
 msgstr "คุณไม่ได้รับอนุญาตให้เข้าถึงทรัพยากรนี้"
 
-#: crm/fcrm/doctype/crm_call_log/crm_call_log.py:259
+#: crm/fcrm/doctype/crm_call_log/crm_call_log.py:265
 msgid "You are not permitted to create leads."
 msgstr ""
 
-#: crm/fcrm/doctype/crm_call_log/crm_call_log.py:256
+#: crm/fcrm/doctype/crm_call_log/crm_call_log.py:262
 msgid "You are not permitted to update this call log."
 msgstr ""
 
@@ -7754,7 +8099,7 @@ msgstr ""
 msgid "You can also copy-paste following link in your browser"
 msgstr "คุณยังสามารถคัดลอก-วางลิงก์ต่อไปนี้ในเบราว์เซอร์ของคุณ"
 
-#: frontend/src/components/Telephony/CallUI.vue:39
+#: frontend/src/components/Telephony/CallUI.vue:37
 msgid "You can change the default calling medium from the settings"
 msgstr "คุณสามารถเปลี่ยนวิธีการโทรเริ่มต้นได้จากตั้งค่า"
 
@@ -7766,7 +8111,7 @@ msgstr ""
 msgid "You can invite multiple users by comma separating their email addresses"
 msgstr "คุณสามารถเชิญผู้ใช้หลายคนได้โดยใช้เครื่องหมายจุลภาคคั่นที่อยู่อีเมลของพวกเขา"
 
-#: crm/api/user.py:120
+#: crm/api/user.py:129
 msgid "You cannot remove yourself."
 msgstr ""
 
@@ -7786,7 +8131,7 @@ msgstr "คุณยังไม่ได้ตั้งค่าหมายเ
 msgid "You do not have permission to access Frappe CRM"
 msgstr "คุณไม่มีสิทธิ์เข้าถึง Frappe CRM"
 
-#: frontend/src/data/document.js:41
+#: frontend/src/data/document.js:45
 msgid "You do not have permission to access this document"
 msgstr "คุณไม่มีสิทธิ์เข้าถึงเอกสารนี้"
 
@@ -7826,7 +8171,7 @@ msgstr "รหัสเข้าสู่ระบบของคุณคือ
 msgid "Your old condition will be overwritten. Are you sure you want to save?"
 msgstr "สถานะเดิมของคุณจะถูกเขียนทับ คุณแน่ใจหรือไม่ว่าต้องการบันทึก?"
 
-#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:401
+#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:400
 msgid "Your old conditions will be overwritten. Are you sure you want to save?"
 msgstr "เงื่อนไขเก่าของคุณจะถูกแทนที่. คุณแน่ใจหรือไม่ว่าคุณต้องการบันทึก?"
 
@@ -7871,7 +8216,7 @@ msgstr "สีดำ"
 msgid "blue"
 msgstr "สีน้ำเงิน"
 
-#: frontend/src/components/Activities/Activities.vue:249
+#: frontend/src/components/Activities/Activities.vue:252
 msgid "changes from"
 msgstr "การเปลี่ยนแปลงจาก"
 
@@ -7920,7 +8265,7 @@ msgstr "วัน"
 msgid "days before"
 msgstr ""
 
-#: frontend/src/components/Settings/AssignmentRules/AssigneeRules.vue:131
+#: frontend/src/components/Settings/AssignmentRules/AssigneeRules.vue:135
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:380
 msgid "deals"
 msgstr "ข้อเสนอ"
@@ -7929,6 +8274,10 @@ msgstr "ข้อเสนอ"
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:274
 msgid "desk"
 msgstr "เดสก์"
+
+#: frontend/src/components/Settings/Hierarchy/HierarchyRow.vue:47
+msgid "disabled"
+msgstr "ปิดใช้งานแล้ว"
 
 #. Option for the 'Service Provider' (Select) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
@@ -8085,7 +8434,7 @@ msgstr "คัมบัง"
 msgid "label"
 msgstr "ป้ายกำกับ"
 
-#: frontend/src/components/Settings/AssignmentRules/AssigneeRules.vue:130
+#: frontend/src/components/Settings/AssignmentRules/AssigneeRules.vue:134
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:379
 msgid "leads"
 msgstr "ลูกค้าเป้าหมาย"
@@ -8122,7 +8471,7 @@ msgstr "นาที"
 msgid "minutes before"
 msgstr ""
 
-#: frontend/src/components/FieldLayoutEditor.vue:510
+#: frontend/src/components/FieldLayoutEditor.vue:513
 msgid "next"
 msgstr "ถัดไป"
 
@@ -8148,7 +8497,7 @@ msgstr "สีส้ม"
 msgid "pink"
 msgstr "สีชมพู"
 
-#: frontend/src/components/FieldLayoutEditor.vue:510
+#: frontend/src/components/FieldLayoutEditor.vue:513
 msgid "previous"
 msgstr "ก่อนหน้า"
 
@@ -8185,14 +8534,19 @@ msgstr "สีแดง"
 msgid "teal"
 msgstr "สีฟ้าอมเขียว"
 
-#: frontend/src/components/Activities/Activities.vue:288
-#: frontend/src/components/Activities/Activities.vue:355
+#: frontend/src/components/Activities/Activities.vue:291
+#: frontend/src/components/Activities/Activities.vue:354
 msgid "to"
 msgstr "ถึง"
 
 #: frontend/src/utils/index.js:137 frontend/src/utils/index.js:184
 msgid "tomorrow"
 msgstr "พรุ่งนี้"
+
+#. Option for the 'Kind' (Select) field in DocType 'CRM Product Sync Issue'
+#: crm/fcrm/doctype/crm_product_sync_issue/crm_product_sync_issue.json
+msgid "unlinked_orphan"
+msgstr ""
 
 #: crm/api/activities.py:106 crm/api/activities.py:247
 msgid "value"
@@ -8279,7 +8633,7 @@ msgstr "{0} ชั่วโมง"
 msgid "{0} hours ago"
 msgstr "{0} ชั่วโมงที่ผ่านมา"
 
-#: frontend/src/composables/event.js:213
+#: frontend/src/composables/event.js:207
 msgid "{0} hrs"
 msgstr "{0} ชั่วโมง"
 
@@ -8287,7 +8641,7 @@ msgstr "{0} ชั่วโมง"
 msgid "{0} is an Invalid Value"
 msgstr ""
 
-#: frontend/src/components/Calendar/Attendee.vue:122
+#: frontend/src/components/Calendar/Attendee.vue:126
 msgid "{0} is an Invalid value"
 msgstr ""
 
@@ -8300,7 +8654,7 @@ msgstr ""
 msgid "{0} is an invalid email address"
 msgstr "{0} เป็นอีเมลที่ไม่ถูกต้อง"
 
-#: frontend/src/components/Modals/ContactModal.vue:110
+#: frontend/src/components/Modals/ContactModal.vue:106
 #: frontend/src/components/Modals/ConvertToDealModal.vue:169
 msgid "{0} is required"
 msgstr "{0} เป็นสิ่งจำเป็น"
@@ -8313,7 +8667,7 @@ msgstr "{0} นาที"
 msgid "{0} maybe"
 msgstr ""
 
-#: frontend/src/composables/event.js:207
+#: frontend/src/composables/event.js:201
 msgid "{0} mins"
 msgstr "{0} นาที"
 
@@ -8327,6 +8681,10 @@ msgstr "{0} เดือนที่ผ่านมา"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:647
 msgid "{0} no"
+msgstr ""
+
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:503
+msgid "{0} users added to hierarchy"
 msgstr ""
 
 #: frontend/src/utils/index.js:160
@@ -8357,15 +8715,15 @@ msgstr "⚠️ หลีกเลี่ยงการใช้คำว่า \
 msgid "⚠️ Method \"{0}\" not found in class."
 msgstr "⚠️ ไม่พบเมธอด \"{0}\" ในคลาส"
 
-#: frontend/src/data/script.js:86
+#: frontend/src/data/script.js:116
 msgid "⚠️ No class found for doctype: {0}, it is mandatory to have a class for the parent doctype. it can be empty, but it should be present."
 msgstr "⚠️ ไม่พบคลาสสำหรับ doctype: {0}, จำเป็นต้องมีคลาสสำหรับ doctype ของแม่แบบ (parent doctype) ซึ่งสามารถว่างเปล่าได้ แต่ต้องมีอยู่"
 
-#: frontend/src/data/script.js:183
+#: frontend/src/data/script.js:249
 msgid "⚠️ No data found for parent field: {0}"
 msgstr "⚠️ ไม่พบข้อมูลสำหรับฟิลด์พ่อแม่: {0}"
 
-#: frontend/src/data/script.js:191
+#: frontend/src/data/script.js:257
 msgid "⚠️ No row found for idx: {0} in parent field: {1}"
 msgstr "⚠️ ไม่พบแถวสำหรับ idx: {0} ในฟิลด์พ่อ: {1}"
 

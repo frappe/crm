@@ -24,7 +24,7 @@
             />
             <div
               v-else-if="unreadNotificationsCount"
-              class="absolute -left-1.5 top-1 z-20 h-[5px] w-[5px] translate-x-6 translate-y-1 rounded-full bg-surface-gray-6 ring-1 ring-white"
+              class="absolute -left-1.5 top-1 z-20 h-[5px] w-[5px] translate-x-6 translate-y-1 rounded-full bg-surface-gray-9 ring-1 ring-white"
             />
           </template>
         </SidebarLink>
@@ -47,10 +47,10 @@
               "
               @click="toggle()"
             >
-              <FeatherIcon
-                name="chevron-right"
-                class="h-4 text-ink-gray-9 transition-all duration-300 ease-in-out"
+              <span
+                class="lucide-chevron-right h-4 text-ink-gray-9 transition-all duration-300 ease-in-out"
                 :class="{ 'rotate-90': opened }"
+                aria-hidden="true"
               />
               <span>{{ __(view.name) }}</span>
             </div>
@@ -71,6 +71,10 @@
     </div>
     <div class="m-2 flex flex-col gap-1">
       <div class="flex flex-col gap-2 mb-1">
+        <SalesHierarchyBanner
+          v-if="showSalesHierarchyBanner"
+          :isSidebarCollapsed="isSidebarCollapsed"
+        />
         <SignupBanner
           v-if="isDemoSite"
           :isSidebarCollapsed="isSidebarCollapsed"
@@ -88,7 +92,7 @@
       </div>
       <SidebarLink
         v-if="isManager() && isDemoDataCreated"
-        class="text-ink-red-3 hover:bg-surface-red-2 focus:bg-surface-red-2"
+        class="text-ink-red-6 hover:bg-surface-red-2 focus:bg-surface-red-2"
         :label="__('Clear Demo Data')"
         :isCollapsed="isSidebarCollapsed"
         @click="() => clearDemoData()"
@@ -175,6 +179,7 @@ import HelpIcon from '@/components/Icons/HelpIcon.vue'
 import SidebarLink from '@/components/SidebarLink.vue'
 import Notifications from '@/components/Notifications.vue'
 import Settings from '@/components/Settings/Settings.vue'
+import SalesHierarchyBanner from '@/components/SalesHierarchyBanner.vue'
 import { viewsStore } from '@/stores/views'
 import {
   unreadNotificationsCount,
@@ -185,7 +190,7 @@ import { sessionStore } from '@/stores/session'
 import { showSettings, activeSettingsPage } from '@/composables/settings'
 import { showChangePasswordModal } from '@/composables/modals'
 import { useBroadcast } from '@/composables/useBroadcast.js'
-import { FeatherIcon, call } from 'frappe-ui'
+import { call } from 'frappe-ui'
 import {
   SignupBanner,
   TrialBanner,
@@ -212,6 +217,7 @@ const isSidebarCollapsed = useStorage('isSidebarCollapsed', false)
 
 const isFCSite = ref(window.is_fc_site)
 const isDemoSite = ref(window.is_demo_site)
+const showSalesHierarchyBanner = ref(!!window.show_sales_hierarchy_banner)
 
 const links = [
   {
