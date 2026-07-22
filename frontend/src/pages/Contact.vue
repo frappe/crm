@@ -20,113 +20,155 @@
       />
     </template>
   </LayoutHeader>
-  <div v-if="contact.doc" ref="parentRef" class="flex h-full">
-    <Resizer
-      v-if="contact.doc"
-      :parent="$refs.parentRef"
-      class="flex h-full flex-col overflow-hidden border-r"
+  <div v-if="contact.doc" class="flex h-full overflow-hidden">
+    <Tabs
+      v-model="tabIndex"
+      :tabs="tabs"
+      class="flex flex-1 overflow-hidden flex-col [&_[role='tab']]:px-0 [&_[role='tab']]:shrink-0 [&_[role='tablist']]:px-5 [&_[role='tablist']::-webkit-scrollbar]:h-0 [&_[role='tablist']]:min-h-[45px] [&_[role='tabpanel']:not([hidden])]:flex [&_[role='tabpanel']:not([hidden])]:grow"
     >
-      <div class="border-b">
-        <FileUploader
-          :validateFile="validateIsImageFile"
-          @success="changeContactImage"
-        >
-          <template #default="{ openFileSelector, error }">
-            <div class="flex flex-col items-start justify-start gap-4 p-5">
-              <div class="flex gap-4 items-center">
-                <div class="group relative h-15.5 w-15.5">
-                  <Avatar
-                    size="3xl"
-                    class="h-15.5 w-15.5"
-                    :label="contact.doc.full_name"
-                    :image="contact.doc.image"
-                  />
-                  <component
-                    :is="contact.doc.image ? Dropdown : 'div'"
-                    v-bind="
-                      contact.doc.image
-                        ? {
-                            options: [
-                              {
-                                icon: 'upload',
-                                label: contact.doc.image
-                                  ? __('Change Image')
-                                  : __('Upload Image'),
-                                onClick: openFileSelector,
-                              },
-                              {
-                                icon: 'trash-2',
-                                label: __('Remove Image'),
-                                onClick: () => changeContactImage(''),
-                              },
-                            ],
-                          }
-                        : { onClick: openFileSelector }
-                    "
-                    class="!absolute bottom-0 left-0 right-0"
-                  >
-                    <div
-                      class="z-1 absolute bottom-0 left-0 right-0 flex h-14 cursor-pointer items-center justify-center rounded-b-full bg-black bg-opacity-40 pt-5 opacity-0 duration-300 ease-in-out group-hover:opacity-100"
-                      style="
-                        -webkit-clip-path: inset(22px 0 0 0);
-                        clip-path: inset(22px 0 0 0);
-                      "
-                    >
-                      <CameraIcon class="h-6 w-6 cursor-pointer text-white" />
-                    </div>
-                  </component>
-                </div>
-                <div class="flex flex-col gap-2 truncate text-ink-gray-9">
-                  <div class="truncate text-2xl font-medium">
-                    <span v-if="contact.doc.salutation">
-                      {{ contact.doc.salutation + ' ' }}
-                    </span>
-                    <span>{{ contact.doc.full_name }}</span>
-                  </div>
+      <template #tab-panel>
+        <Activities
+          v-if="tabs[tabIndex]?.name !== 'Deals'"
+          ref="activities"
+          v-model:reload="reload"
+          v-model:tabIndex="tabIndex"
+          doctype="Contact"
+          :docname="props.contactId"
+          :tabs="activityTabs"
+        />
+        <div v-else class="flex flex-1 flex-col overflow-y-auto">
+          <DealsListView
+            v-if="rows.length"
+            class="mt-4"
+            :rows="rows"
+            :columns="columns"
+            :options="{ selectable: false, showTooltip: false }"
+          />
+          <EmptyState v-else :icon="DealsIcon" name="Deals" />
+        </div>
+      </template>
+    </Tabs>
+    <Resizer
+      class="flex flex-col justify-between border-l"
+      side="right"
+    >
+      <div
+        class="flex h-[45px] cursor-copy items-center border-b px-5 py-2.5 text-lg font-medium text-ink-gray-9"
+        @click="copyToClipboard(props.contactId)"
+      >
+        {{ __(props.contactId) }}
+      </div>
+      <FileUploader
+        :validateFile="validateIsImageFile"
+        @success="changeContactImage"
+      >
+        <template #default="{ openFileSelector, error }">
+          <div class="flex flex-col items-start justify-start gap-4 border-b p-5">
+            <div class="flex gap-4 items-center">
+              <div class="group relative h-15.5 w-15.5">
+                <Avatar
+                  size="3xl"
+                  class="h-15.5 w-15.5"
+                  :label="contact.doc.full_name"
+                  :image="contact.doc.image"
+                />
+                <component
+                  :is="contact.doc.image ? Dropdown : 'div'"
+                  v-bind="
+                    contact.doc.image
+                      ? {
+                          options: [
+                            {
+                              icon: 'upload',
+                              label: contact.doc.image
+                                ? __('Change Image')
+                                : __('Upload Image'),
+                              onClick: openFileSelector,
+                            },
+                            {
+                              icon: 'trash-2',
+                              label: __('Remove Image'),
+                              onClick: () => changeContactImage(''),
+                            },
+                          ],
+                        }
+                      : { onClick: openFileSelector }
+                  "
+                  class="!absolute bottom-0 left-0 right-0"
+                >
                   <div
-                    v-if="contact.doc.company_name"
-                    class="flex items-center gap-1.5 text-base text-ink-gray-8"
+                    class="z-1 absolute bottom-0 left-0 right-0 flex h-14 cursor-pointer items-center justify-center rounded-b-full bg-black bg-opacity-40 pt-5 opacity-0 duration-300 ease-in-out group-hover:opacity-100"
+                    style="
+                      -webkit-clip-path: inset(22px 0 0 0);
+                      clip-path: inset(22px 0 0 0);
+                    "
                   >
-                    {{ contact.doc.company_name }}
+                    <CameraIcon class="h-6 w-6 cursor-pointer text-white" />
                   </div>
-                  <ErrorMessage :message="__(error)" />
-                </div>
+                </component>
               </div>
-              <div class="flex gap-1.5">
-                <Button
-                  v-if="callEnabled && contact.doc.mobile_no"
-                  :label="__('Make Call')"
-                  size="sm"
-                  :iconLeft="PhoneIcon"
-                  @click="callEnabled && makeCall(contact.doc.mobile_no)"
-                />
-                <Button
-                  v-if="canDelete"
-                  :label="__('Delete')"
-                  theme="red"
-                  size="sm"
-                  iconLeft="trash-2"
-                  @click="deleteContact()"
-                />
-                <Button
-                  v-if="linkedLead"
-                  :label="__('Go to Lead')"
-                  size="sm"
-                  iconLeft="arrow-right"
-                  @click="router.push({ name: 'Lead', params: { leadId: linkedLead } })"
-                />
-                <Button
-                  v-else
-                  :label="__('Create Lead')"
-                  size="sm"
-                  iconLeft="plus"
-                  @click="createLead()"
-                />
+              <div class="flex flex-col gap-2 truncate text-ink-gray-9">
+                <div class="truncate text-2xl font-medium">
+                  <span v-if="contact.doc.salutation">
+                    {{ contact.doc.salutation + ' ' }}
+                  </span>
+                  <span>{{ contact.doc.full_name }}</span>
+                </div>
+                <div
+                  v-if="contact.doc.company_name"
+                  class="flex items-center gap-1.5 text-base text-ink-gray-8"
+                >
+                  {{ contact.doc.company_name }}
+                </div>
+                <ErrorMessage :message="__(error)" />
               </div>
             </div>
-          </template>
-        </FileUploader>
-      </div>
+            <div class="flex gap-1.5 flex-wrap">
+              <Button
+                v-if="callEnabled && contact.doc.mobile_no"
+                :tooltip="__('Make a Call')"
+                size="sm"
+                :iconLeft="PhoneIcon"
+                @click="callEnabled && makeCall(contact.doc.mobile_no)"
+              />
+              <Button
+                :tooltip="__('Send an Email')"
+                size="sm"
+                :iconLeft="Email2Icon"
+                @click="openEmailBox()"
+              />
+              <Button
+                :tooltip="__('Attach a File')"
+                size="sm"
+                :iconLeft="AttachmentIcon"
+                @click="showFilesUploader = true"
+              />
+              <Button
+                v-if="linkedLead"
+                :label="__('Go to Lead')"
+                size="sm"
+                iconLeft="arrow-right"
+                @click="router.push({ name: 'Lead', params: { leadId: linkedLead } })"
+              />
+              <Button
+                v-else
+                :label="__('Create Lead')"
+                size="sm"
+                iconLeft="plus"
+                @click="createLead()"
+              />
+              <Button
+                v-if="canDelete"
+                :label="__('Delete')"
+                theme="red"
+                size="sm"
+                iconLeft="trash-2"
+                @click="deleteContact()"
+              />
+            </div>
+          </div>
+        </template>
+      </FileUploader>
       <div
         v-if="sections.data"
         class="flex flex-1 flex-col justify-between overflow-hidden"
@@ -139,41 +181,6 @@
         />
       </div>
     </Resizer>
-    <Tabs
-      v-model="tabIndex"
-      as="div"
-      :tabs="tabs"
-      class="flex flex-1 overflow-hidden flex-col [&_[role='tab']]:px-0 [&_[role='tab']]:shrink-0 [&_[role='tablist']]:px-5 [&_[role='tablist']::-webkit-scrollbar]:h-0 [&_[role='tablist']]:min-h-[45px] [&_[role='tablist']]:gap-7.5 [&_[role='tabpanel']:not([hidden])]:flex [&_[role='tabpanel']:not([hidden])]:grow"
-    >
-      <template #tab-item="{ tab, selected }">
-        <button
-          class="group flex items-center gap-2 border-b border-transparent py-2.5 text-base text-ink-gray-5 duration-300 ease-in-out hover:text-ink-gray-9"
-          :class="{ 'text-ink-gray-9': selected }"
-        >
-          <component :is="tab.icon" v-if="tab.icon" class="h-5" />
-          {{ __(tab.label) }}
-          <Badge
-            class="group-hover:bg-surface-gray-7"
-            :class="[selected ? 'bg-surface-gray-7' : 'bg-gray-600']"
-            variant="solid"
-            theme="gray"
-            size="sm"
-          >
-            {{ tab.count }}
-          </Badge>
-        </button>
-      </template>
-      <template #tab-panel="{ tab }">
-        <DealsListView
-          v-if="tab.label === 'Deals' && rows.length"
-          class="mt-4"
-          :rows="rows"
-          :columns="columns"
-          :options="{ selectable: false, showTooltip: false }"
-        />
-        <EmptyState v-if="!rows.length" :icon="tab.icon" name="Deals" />
-      </template>
-    </Tabs>
   </div>
   <ErrorPage
     v-else-if="errorTitle"
@@ -184,7 +191,7 @@
     v-if="showDeleteLinkedDocModal"
     v-model="showDeleteLinkedDocModal"
     :doctype="'Contact'"
-    :docname="contact.doc.name"
+    :docname="contact.doc?.name"
     name="Contacts"
   />
   <DealModal
@@ -192,25 +199,52 @@
     v-model="showDealModal"
     :defaults="{ contact: props.contactId }"
   />
+  <FilesUploader
+    v-model="showFilesUploader"
+    doctype="Contact"
+    :docname="props.contactId"
+    @after="
+      () => {
+        activities?.all_activities?.reload()
+      }
+    "
+  />
 </template>
 
 <script setup>
+import Activities from '@/components/Activities/Activities.vue'
+import FilesUploader from '@/components/FilesUploader/FilesUploader.vue'
 import ErrorPage from '@/components/ErrorPage.vue'
 import Resizer from '@/components/Resizer.vue'
 import Icon from '@/components/Icon.vue'
 import SidePanelLayout from '@/components/SidePanelLayout.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
-import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
-import CameraIcon from '@/components/Icons/CameraIcon.vue'
-import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import DealsListView from '@/components/ListViews/DealsListView.vue'
+import EmptyState from '@/components/ListViews/EmptyState.vue'
 import CustomActions from '@/components/CustomActions.vue'
 import DealModal from '@/components/Modals/DealModal.vue'
+import DeleteLinkedDocModal from '@/components/DeleteLinkedDocModal.vue'
+import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
+import Email2Icon from '@/components/Icons/Email2Icon.vue'
+import CameraIcon from '@/components/Icons/CameraIcon.vue'
+import DealsIcon from '@/components/Icons/DealsIcon.vue'
+import ActivityIcon from '@/components/Icons/ActivityIcon.vue'
+import EmailIcon from '@/components/Icons/EmailIcon.vue'
+import CommentIcon from '@/components/Icons/CommentIcon.vue'
+import EventIcon from '@/components/Icons/EventIcon.vue'
+import AttachmentIcon from '@/components/Icons/AttachmentIcon.vue'
+import DetailsIcon from '@/components/Icons/DetailsIcon.vue'
+import NoteIcon from '@/components/Icons/NoteIcon.vue'
+import TaskIcon from '@/components/Icons/TaskIcon.vue'
+import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
+import { whatsappEnabled } from '@/composables/whatsapp'
+import { useActiveTabManager } from '@/composables/useActiveTabManager'
 import {
   formatDate,
   timeAgo,
   validateIsImageFile,
   setupCustomizations,
+  copyToClipboard,
 } from '@/utils'
 import { getView } from '@/utils/view'
 import { useDocument } from '@/data/document'
@@ -234,13 +268,11 @@ import {
 } from 'frappe-ui'
 import { useDoctypeModal } from '@/composables/doctypeModal'
 import { useTelemetry } from 'frappe-ui/frappe'
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, computed, watch, onMounted, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import EmptyState from '@/components/ListViews/EmptyState.vue'
 
 const { brand } = getSettings()
 const { makeCall, $dialog, $socket } = globalStore()
-
 const { getUser } = usersStore()
 const { getOrganization } = organizationsStore()
 const { getDealStatus } = statusesStore()
@@ -256,6 +288,12 @@ const router = useRouter()
 
 const errorTitle = ref('')
 const errorMessage = ref('')
+const reload = ref(false)
+const activities = ref(null)
+const showFilesUploader = ref(false)
+const showDeleteLinkedDocModal = ref(false)
+const showDealModal = ref(false)
+const linkedLead = ref(null)
 
 const {
   document: contact,
@@ -309,58 +347,87 @@ usePageMeta(() => {
     icon: brand.favicon,
   }
 })
-const showDeleteLinkedDocModal = ref(false)
-const showDealModal = ref(false)
-const linkedLead = ref(null)
 
-async function fetchLinkedLead() {
-  if (!contact.doc) return
-  try {
-    const result = await call('crm.api.contact.get_linked_lead', {
-      contact: props.contactId,
-    })
-    linkedLead.value = result || null
-  } catch {
-    linkedLead.value = null
-  }
-}
-
-async function createLead() {
-  try {
-    const leadName = await call('crm.api.contact.create_lead_from_contact', {
-      contact: props.contactId,
-    })
-    if (leadName) {
-      linkedLead.value = leadName
-      toast.success(__('Lead created successfully'))
-      router.push({ name: 'Lead', params: { leadId: leadName } })
-    }
-  } catch (e) {
-    toast.error(e.messages?.[0] || __('Failed to create lead'))
-  }
-}
-
-async function deleteContact() {
-  showDeleteLinkedDocModal.value = true
-}
-
-function changeContactImage(file) {
-  contact.doc.image = file?.file_url || ''
-  contact.save.submit(null, {
-    onSuccess: () => {
-      toast.success(__('Contact image updated'))
+const tabs = computed(() => {
+  let tabOptions = [
+    {
+      name: 'Activity',
+      label: __('Activity'),
+      icon: ActivityIcon,
     },
+    {
+      name: 'Emails',
+      label: __('Emails'),
+      icon: EmailIcon,
+    },
+    {
+      name: 'Comments',
+      label: __('Comments'),
+      icon: CommentIcon,
+    },
+    {
+      name: 'Data',
+      label: __('Data'),
+      icon: DetailsIcon,
+    },
+    {
+      name: 'Calls',
+      label: __('Calls'),
+      icon: PhoneIcon,
+    },
+    {
+      name: 'Events',
+      label: __('Events'),
+      icon: EventIcon,
+    },
+    {
+      name: 'Tasks',
+      label: __('Tasks'),
+      icon: TaskIcon,
+    },
+    {
+      name: 'Notes',
+      label: __('Notes'),
+      icon: NoteIcon,
+    },
+    {
+      name: 'Attachments',
+      label: __('Attachments'),
+      icon: AttachmentIcon,
+    },
+    {
+      name: 'WhatsApp',
+      label: __('WhatsApp'),
+      icon: WhatsAppIcon,
+      condition: () => whatsappEnabled.value,
+    },
+    {
+      name: 'Deals',
+      label: __('Deals'),
+      icon: DealsIcon,
+      count: computed(() => deals.data?.length || 0),
+    },
+  ]
+  return tabOptions.filter((tab) => (tab.condition ? tab.condition() : true))
+})
+
+const activityTabs = computed(() =>
+  tabs.value.filter((t) => t.name !== 'Deals'),
+)
+
+const { tabIndex, changeTabTo } = useActiveTabManager(tabs, 'lastContactTab')
+
+function openEmailBox() {
+  let currentTab = tabs.value[tabIndex.value]
+  if (!['Emails', 'Comments', 'Activity'].includes(currentTab?.name)) {
+    changeTabTo('emails')
+  }
+  nextTick(() => {
+    if (activities.value?.emailBox) {
+      activities.value.emailBox.show = true
+    }
   })
 }
-
-const tabIndex = ref(0)
-const tabs = [
-  {
-    label: 'Deals',
-    icon: DealsIcon,
-    count: computed(() => deals.data?.length),
-  },
-]
 
 const deals = createResource({
   url: 'crm.api.contact.get_linked_deals',
@@ -371,7 +438,6 @@ const deals = createResource({
 
 const rows = computed(() => {
   if (!deals.data || deals.data == []) return []
-
   return deals.data.map((row) => getDealRowObject(row))
 })
 
@@ -421,7 +487,6 @@ const parsedSections = computed(() => {
               },
             })),
             create: () => {
-              // Add a temporary new option locally (mirrors original behavior)
               contact.doc.email_ids = [
                 ...(contact.doc.email_ids || []),
                 {
@@ -546,6 +611,46 @@ async function deleteOption(doctype, name) {
   toast.success(__('Contact Updated'))
 }
 
+async function fetchLinkedLead() {
+  if (!contact.doc) return
+  try {
+    const result = await call('crm.api.contact.get_linked_lead', {
+      contact: props.contactId,
+    })
+    linkedLead.value = result || null
+  } catch {
+    linkedLead.value = null
+  }
+}
+
+async function createLead() {
+  try {
+    const leadName = await call('crm.api.contact.create_lead_from_contact', {
+      contact: props.contactId,
+    })
+    if (leadName) {
+      linkedLead.value = leadName
+      toast.success(__('Lead created successfully'))
+      router.push({ name: 'Lead', params: { leadId: leadName } })
+    }
+  } catch (e) {
+    toast.error(e.messages?.[0] || __('Failed to create lead'))
+  }
+}
+
+async function deleteContact() {
+  showDeleteLinkedDocModal.value = true
+}
+
+function changeContactImage(file) {
+  contact.doc.image = file?.file_url || ''
+  contact.save.submit(null, {
+    onSuccess: () => {
+      toast.success(__('Contact image updated'))
+    },
+  })
+}
+
 const { getFormattedCurrency } = getMeta('CRM Deal')
 
 const columns = computed(() => dealColumns)
@@ -576,42 +681,13 @@ function getDealRowObject(deal) {
 }
 
 const dealColumns = [
-  {
-    label: __('Organization'),
-    key: 'organization',
-    width: '11rem',
-  },
-  {
-    label: __('Amount'),
-    key: 'annual_revenue',
-    align: 'right',
-    width: '9rem',
-  },
-  {
-    label: __('Status'),
-    key: 'status',
-    width: '10rem',
-  },
-  {
-    label: __('Email'),
-    key: 'email',
-    width: '12rem',
-  },
-  {
-    label: __('Mobile No.'),
-    key: 'mobile_no',
-    width: '11rem',
-  },
-  {
-    label: __('Deal Owner'),
-    key: 'deal_owner',
-    width: '10rem',
-  },
-  {
-    label: __('Last Modified'),
-    key: 'modified',
-    width: '8rem',
-  },
+  { label: __('Organization'), key: 'organization', width: '11rem' },
+  { label: __('Amount'), key: 'annual_revenue', align: 'right', width: '9rem' },
+  { label: __('Status'), key: 'status', width: '10rem' },
+  { label: __('Email'), key: 'email', width: '12rem' },
+  { label: __('Mobile No.'), key: 'mobile_no', width: '11rem' },
+  { label: __('Deal Owner'), key: 'deal_owner', width: '10rem' },
+  { label: __('Last Modified'), key: 'modified', width: '8rem' },
 ]
 
 const { showModal } = useDoctypeModal()
@@ -630,7 +706,6 @@ function showAddressModal(_address) {
   })
 }
 
-// Fetch linked lead when doc is available
 watch(
   () => contact.doc,
   async (doc) => {
@@ -639,7 +714,6 @@ watch(
   { once: true },
 )
 
-// Setup custom actions from Form Scripts
 watch(
   () => contact.doc,
   async (_doc) => {
