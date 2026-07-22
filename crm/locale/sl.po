@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-07-19 10:53+0000\n"
-"PO-Revision-Date: 2026-07-21 11:26\n"
+"PO-Revision-Date: 2026-07-22 11:23\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Slovenian\n"
 "MIME-Version: 1.0\n"
@@ -24,7 +24,7 @@ msgstr " (Novi)"
 
 #: frontend/src/components/Filter.vue:591
 msgid "%John%"
-msgstr ""
+msgstr "%John%"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:66
 msgid "(No Title)"
@@ -742,13 +742,13 @@ msgstr ""
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:912
 msgid "Are you sure you want to discard unsaved changes to this event?"
-msgstr ""
+msgstr "Ali ste prepričani, da želite zavreči neshranjene spremembe tega dogodka?"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:578
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:948
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:346
 msgid "Are you sure you want to go back? Unsaved changes will be lost."
-msgstr ""
+msgstr "Ali ste prepričani, da se želite vrniti? Ne shranjene spremembe bodo izgubljene."
 
 #: frontend/src/composables/frappecloud.js:24
 msgid "Are you sure you want to login to your Frappe Cloud dashboard?"
@@ -2738,7 +2738,7 @@ msgstr ""
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:911
 msgid "Discard Unsaved Changes?"
-msgstr ""
+msgstr "Ali želite zavrniti neshranjene spremembe?"
 
 #. Label of the discount_percentage (Percent) field in DocType 'CRM Products'
 #: crm/fcrm/doctype/crm_products/crm_products.json
@@ -3777,11 +3777,11 @@ msgstr ""
 #: frontend/src/components/Settings/DefaultsSettings.vue:169
 #: frontend/src/components/Settings/ERPNextSettings.vue:513
 msgid "Failed to save settings"
-msgstr ""
+msgstr "Shranjevanje nastavitev ni uspelo"
 
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:265
 msgid "Failed to save workday: {0}"
-msgstr ""
+msgstr "Shranjevanje delovnega dneva ni uspelo: {0}"
 
 #: frontend/src/components/Activities/WhatsAppBox.vue:144
 msgid "Failed to send WhatsApp message"
@@ -3976,7 +3976,7 @@ msgstr ""
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:83
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:48
 msgid "For"
-msgstr ""
+msgstr "Za"
 
 #: frontend/src/components/Settings/CalendarSettings.vue:163
 msgid "For all-day events, <b>set a time</b> to send reminders before the event starts"
@@ -7517,15 +7517,15 @@ msgstr "Shrani"
 #: frontend/src/components/ViewControls.vue:58
 #: frontend/src/components/ViewControls.vue:155
 msgid "Save Changes"
-msgstr ""
+msgstr "Shrani spremembe"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:599
 msgid "Saved View"
-msgstr ""
+msgstr "Shranjeni pogled"
 
 #: frontend/src/components/ViewControls.vue:708
 msgid "Saved Views"
-msgstr ""
+msgstr "Shranjeni pogledi"
 
 #: frontend/src/components/Telephony/TaskPanel.vue:8
 msgid "Schedule a task..."
@@ -7895,7 +7895,7 @@ msgstr "Nastavitve"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:510
 msgid "Settings saved"
-msgstr ""
+msgstr "Nastavitve so shranjene"
 
 #: frontend/src/components/Settings/DefaultsSettings.vue:166
 msgid "Settings updated successfully"
@@ -8966,7 +8966,7 @@ msgstr ""
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:947
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:345
 msgid "Unsaved Changes"
-msgstr ""
+msgstr "Neshranjene spremembe"
 
 #: frontend/src/components/CollapsibleSection.vue:21
 #: frontend/src/components/FieldLayoutEditor.vue:32
@@ -9454,7 +9454,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/AssignmentRules/AssigneeSearch.vue:152
 msgid "You will be redirected to invite user page, unsaved changes will be lost."
-msgstr ""
+msgstr "Preusmerjeni boste na stran za povabilo uporabnika, neshranjene spremembe pa bodo izgubljene."
 
 #: frontend/src/components/Settings/LeadSyncing/leadSyncSourceConfig.js:8
 msgid "You will need a Meta developer account and an access token to sync leads from Facebook. Read more"
@@ -9478,11 +9478,11 @@ msgstr "Vaš prijavni ID je"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:643
 msgid "Your old condition will be overwritten. Are you sure you want to save?"
-msgstr ""
+msgstr "Vaš prejšnji stanje bo nadomeščeno. Ali ste prepričani, da želite shraniti?"
 
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:400
 msgid "Your old conditions will be overwritten. Are you sure you want to save?"
-msgstr ""
+msgstr "Vaši stari pogoji bodo nadomeščeni. Ali ste prepričani, da želite shraniti?"
 
 #: frontend/src/pages/PersonaForm.vue:62
 msgid "Zoho CRM"
