@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-07-19 10:53+0000\n"
-"PO-Revision-Date: 2026-07-21 11:27\n"
+"PO-Revision-Date: 2026-07-22 11:23\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Persian\n"
 "MIME-Version: 1.0\n"
@@ -6702,7 +6702,7 @@ msgstr "احتمال"
 #: crm/fcrm/doctype/crm_product_sync_issue/crm_product_sync_issue.json
 #: crm/fcrm/doctype/crm_products/crm_products.json
 msgid "Product"
-msgstr "تولید - محصول"
+msgstr "محصول"
 
 #. Label of the product_code (Data) field in DocType 'CRM Product'
 #: crm/fcrm/doctype/crm_product/crm_product.json
@@ -9355,7 +9355,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
 msgid "X (Twitter)"
-msgstr ""
+msgstr "ایکس (توییتر)"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:531
 #: frontend/src/components/Filter.vue:601
@@ -9394,7 +9394,7 @@ msgstr ""
 
 #: crm/domain_enrichment/api.py:126
 msgid "You are not permitted to create {0}."
-msgstr ""
+msgstr "شما مجاز به ایجاد {0} نیستید."
 
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.py:262
 msgid "You are not permitted to update this call log."
@@ -9648,7 +9648,7 @@ msgstr "frankfurter.app"
 #. Mapping'
 #: crm/domain_enrichment/doctype/crm_enrichment_field_mapping/crm_enrichment_field_mapping.json
 msgid "github"
-msgstr ""
+msgstr "گیت‌هاب"
 
 #. Option for the 'Color' (Select) field in DocType 'CRM Deal Status'
 #. Option for the 'Color' (Select) field in DocType 'CRM Lead Status'
@@ -9702,11 +9702,11 @@ msgstr ""
 
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:341
 msgid "https://example.com/thank-you"
-msgstr ""
+msgstr "https://example.com/thank-you"
 
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:423
 msgid "iframe"
-msgstr ""
+msgstr "iframe"
 
 #: frontend/src/utils/index.js:178
 msgid "in 1 hour"
@@ -9902,7 +9902,7 @@ msgstr "خصوصی"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:568
 msgid "product"
-msgstr "تولید - محصول"
+msgstr "محصول"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:568
 msgid "products"
@@ -10016,7 +10016,7 @@ msgstr "دیروز"
 #. Mapping'
 #: crm/domain_enrichment/doctype/crm_enrichment_field_mapping/crm_enrichment_field_mapping.json
 msgid "youtube"
-msgstr ""
+msgstr "یوتیوب"
 
 #: frontend/src/components/Settings/Sla/utils.js:254
 msgid "{0} (Invalid time format)"
@@ -10052,7 +10052,7 @@ msgstr "{0} ساعت"
 
 #: crm/domain_enrichment/doctype/crm_enrichment_field_mapping/crm_enrichment_field_mapping.py:48
 msgid "{0} has no field {1}"
-msgstr ""
+msgstr "{0} فیلد {1} ندارد"
 
 #: frontend/src/utils/index.js:206
 msgid "{0} hours ago"
@@ -10110,7 +10110,7 @@ msgstr "{0} خیر"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:572
 msgid "{0} not yet synced"
-msgstr ""
+msgstr "{0} هنوز همگام‌سازی نشده"
 
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:511
 msgid "{0} users added to hierarchy"
