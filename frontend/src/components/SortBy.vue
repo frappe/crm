@@ -8,7 +8,7 @@
   >
     <template #target="{ togglePopover }">
       <Button :label="__('Sort')" @click="togglePopover()">
-        <template v-if="hideLabel">
+        <template v-if="hideLabel" #icon>
           <SortIcon class="h-4" />
         </template>
         <template v-if="!hideLabel && !sortValues?.size" #prefix>
