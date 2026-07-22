@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-07-19 10:53+0000\n"
-"PO-Revision-Date: 2026-07-21 11:26\n"
+"PO-Revision-Date: 2026-07-22 11:23\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Swedish\n"
 "MIME-Version: 1.0\n"
@@ -2088,7 +2088,7 @@ msgstr "Antal"
 #. Settings'
 #: crm/domain_enrichment/doctype/crm_enrichment_settings/crm_enrichment_settings.json
 msgid "Crawl"
-msgstr "Krypa"
+msgstr "Sökning"
 
 #. Label of the tuning_section (Section Break) field in DocType 'CRM Enrichment
 #. Settings'
@@ -2100,7 +2100,7 @@ msgstr "Sökrobot Optimering"
 #. Enrichment Settings'
 #: crm/domain_enrichment/doctype/crm_enrichment_settings/crm_enrichment_settings.json
 msgid "Crawl-ordering hints (not extraction). Links whose URL path or anchor text contain one of these are fetched first; higher weight = sooner. Lets the crawler spend its page budget on company pages (about/contact/team) before the cap. Defaults are seeded; edit or remove as needed."
-msgstr "Tips för genomsökningsordning (inte extrahering). Länkar vars URL-sökväg eller ankartext innehåller något av dessa hämtas först; högre prioritet = tidigare. Låter sökrobot använda tilldelad tid på bolag sidor (om/kontakt/team) före tid är slut. Standardvärde sprids; redigera eller ta bort efter behov."
+msgstr "Tips för genomsökning ordning (inte extrahering). Länkar vars URL-sökväg eller ankartext innehåller något av dessa hämtas först; högre prioritet = tidigare. Låter sökrobot använda tilldelad tid på bolag sidor (om/kontakt/team) före tid är slut. Standardvärde sprids; redigera eller ta bort efter behov."
 
 #: frontend/src/components/Modals/ContactModal.vue:41
 #: frontend/src/components/Modals/CreateDocumentModal.vue:88
