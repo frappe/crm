@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-07-19 10:53+0000\n"
-"PO-Revision-Date: 2026-07-22 11:23\n"
+"PO-Revision-Date: 2026-07-23 11:36\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Bosnian\n"
 "MIME-Version: 1.0\n"
@@ -5406,7 +5406,7 @@ msgstr "Možda"
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 #: crm/fcrm/doctype/crm_task/crm_task.json
 msgid "Medium"
-msgstr "Srednje"
+msgstr "Medij"
 
 #. Option for the 'Type' (Select) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
@@ -7592,7 +7592,7 @@ msgstr "Pogledaj Zapisnik grešaka."
 #. Settings'
 #: crm/domain_enrichment/doctype/crm_enrichment_settings/crm_enrichment_settings.json
 msgid "Seed the crawl queue from the site's sitemap (declared in robots.txt, or the conventional /sitemap.xml) so pages not reachable within Max Depth still get a chance to be crawled. This is an addition on top of ordinary link-following, not a replacement -- a site with no sitemap falls straight through to link-following with no error."
-msgstr ""
+msgstr "Postavite red za indeksiranje sa mape stranice (deklarirane u robots.txt ili uobičajenoj /sitemap.xml) tako da stranice koje nisu dostupne unutar maksimalne dubine i dalje imaju šansu da budu indeksirane. Ovo je dodatak pored običnog praćenja linkova, a ne zamjena -- web stranicat bez mape stranice prelazi direktno na praćenje linkova bez greške."
 
 #: frontend/src/components/SidePanelLayout.vue:154
 msgid "Select"
@@ -7662,7 +7662,7 @@ msgstr "Odaberi opciju"
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:574
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1063
 msgid "Select an option"
-msgstr ""
+msgstr "Odaberi opciju"
 
 #: frontend/src/components/Settings/AssignmentRules/AssigneeRules.vue:84
 msgid "Select the assignees for {0}."
@@ -7714,11 +7714,11 @@ msgstr "Pošalji e-poštu"
 
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:373
 msgid "Send people straight to the hosted form."
-msgstr ""
+msgstr "Pošalji ljude direktno na hostovani obrazac."
 
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:346
 msgid "Send visitors here after they submit. Leave blank to show the success message."
-msgstr ""
+msgstr "Pošalji posjetioce ovdje nakon što podnesu. Ostavi prazno da biste prikazali poruku o uspjehu."
 
 #: frontend/src/components/CommunicationArea.vue:274
 msgid "Sending comment..."
@@ -7778,19 +7778,19 @@ msgstr "Postavi Lokaciju"
 #: crm/public/js/domain_enrichment.js:17
 #: frontend/src/components/EnrichFromWebsite.vue:80
 msgid "Set a Website on this record before enriching."
-msgstr ""
+msgstr "Postavi Web stranicu na ovaj zapis prije kompletiranja."
 
 #: crm/api/form.py:298
 msgid "Set a default value before publishing for: {0}"
-msgstr ""
+msgstr "Postavi standard vrijednost prije objavljivanja za: {0}"
 
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:276
 msgid "Set a default value for each field to publish this form."
-msgstr ""
+msgstr "Postavi standard vrijednost za svako polje da biste objavili ovaj obrazac."
 
 #: crm/domain_enrichment/api.py:58
 msgid "Set a website on this record before enriching."
-msgstr ""
+msgstr "Postavi web stranicu na ovaj zapis prije kompletiranja."
 
 #: frontend/src/components/FilesUploader/FilesUploader.vue:60
 msgid "Set all as private"
@@ -7950,7 +7950,7 @@ msgstr "Prikaži vremenske oznake na vremenskoj liniji aktivnosti kao relativno 
 
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:333
 msgid "Shown after a successful submission"
-msgstr ""
+msgstr "Prikazuje se nakon uspješnog podnošenja"
 
 #. Option for the 'Type' (Select) field in DocType 'CRM Fields Layout'
 #: crm/fcrm/doctype/crm_fields_layout/crm_fields_layout.json
@@ -7994,7 +7994,7 @@ msgstr "Veza sa stranicom potvrđena"
 
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:466
 msgid "Sites where this form may be embedded, one per line. Browsers block the iframe on any site not listed here."
-msgstr ""
+msgstr "Web stranice na kojima se ovaj obrazac može ugraditi, jedna po redu. Preglednici blokiraju iframe na svim web stranicama koje nisu ovdje navedene."
 
 #. Label of the skip_patterns (Table) field in DocType 'CRM Enrichment
 #. Settings'
@@ -8085,7 +8085,7 @@ msgstr "Tip Izvora"
 #. Label of the source_website (Data) field in DocType 'CRM Enrichment Run'
 #: crm/domain_enrichment/doctype/crm_enrichment_run/crm_enrichment_run.json
 msgid "Source Website"
-msgstr ""
+msgstr "Izvorna web stranica"
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:165
 msgid "Source disabled successfully"
@@ -8161,7 +8161,7 @@ msgstr "Počni s uzorkom od 10 potencijalnih klijenata"
 #. Label of the started_on (Datetime) field in DocType 'CRM Enrichment Run'
 #: crm/domain_enrichment/doctype/crm_enrichment_run/crm_enrichment_run.json
 msgid "Started On"
-msgstr ""
+msgstr "Pokrenuto"
 
 #. Label of the status (Select) field in DocType 'CRM Enrichment Run'
 #. Label of the status (Select) field in DocType 'CRM Call Log'
@@ -8239,19 +8239,19 @@ msgstr "Oznaka Dugmeta"
 #. Priority'
 #: crm/domain_enrichment/doctype/crm_enrichment_link_priority/crm_enrichment_link_priority.json
 msgid "Substring matched against a candidate URL/anchor to prioritise crawling it (e.g. \"about\", \"team\", \"contact\")."
-msgstr ""
+msgstr "Podniz se podudara s potencijalnim URL-om/tekstom linka kako bi se dao prioritet indeksiranju (npr. \"o nama\", \"tim\", \"kontakt\")."
 
 #. Description of the 'Pattern' (Data) field in DocType 'CRM Enrichment Skip
 #. Pattern'
 #: crm/domain_enrichment/doctype/crm_enrichment_skip_pattern/crm_enrichment_skip_pattern.json
 msgid "Substring; a candidate URL containing it is skipped during the crawl (e.g. \"/blog/\", \".pdf\", \"?\")."
-msgstr ""
+msgstr "Podniz; potencijalni URL koji ga sadrži se preskače tokom indeksiranja (npr. \"/blog/\", \".pdf\", \"?\")."
 
 #. Description of the 'Skip Patterns' (Table) field in DocType 'CRM Enrichment
 #. Settings'
 #: crm/domain_enrichment/doctype/crm_enrichment_settings/crm_enrichment_settings.json
 msgid "Substrings that exclude a candidate link from the crawl."
-msgstr ""
+msgstr "Podnizovi koji isključuju potencijalni link iz indeksiranja."
 
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:331
 msgid "Success message"
@@ -8288,7 +8288,7 @@ msgstr "Mjenjaj se između odlaznih e-mail računa prilikom slanja e-mailova"
 
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1276
 msgid "Switching to {0} will remove {1} field(s) that don't exist on {0}. This can't be undone."
-msgstr ""
+msgstr "Prebacivanje na {0} će ukloniti polje {1} koje ne postoji na {0}. Ovo se ne može poništiti."
 
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.js:6
 #: frontend/src/components/Settings/ERPNextSettings.vue:267
@@ -8502,13 +8502,13 @@ msgstr "Uslov '{0}' je nevažeći: {1}"
 #. Field Mapping'
 #: crm/domain_enrichment/doctype/crm_enrichment_field_mapping/crm_enrichment_field_mapping.json
 msgid "The enrichment result key to read the value from."
-msgstr ""
+msgstr "Ključ rezultata kompletiranja iz kojeg se čita vrijednost."
 
 #. Description of the 'Target Fieldname' (Data) field in DocType 'CRM
 #. Enrichment Field Mapping'
 #: crm/domain_enrichment/doctype/crm_enrichment_field_mapping/crm_enrichment_field_mapping.json
 msgid "The fieldname on the target doctype to write the value to."
-msgstr ""
+msgstr "Naziv polja na ciljanom doctype u koje se upisuje vrijednost."
 
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.py:64
 msgid "The holiday on {0} is not between From Date and To Date"
@@ -8529,7 +8529,7 @@ msgstr "Kurs koji se koristi za konverziju valute organizacije u osnovnu valutu 
 #. Rule'
 #: crm/domain_enrichment/doctype/crm_enrichment_rule/crm_enrichment_rule.json
 msgid "The value this rule resolves to when it matches (e.g. the social network \"linkedin\"). For Industry rules, use the Industry link instead."
-msgstr ""
+msgstr "Vrijednost koju ovo pravilo dobija kada se podudara (npr. društvena mreža \"linkedin\"). Za pravila branše, umjesto toga koristite link branše."
 
 #: frontend/src/components/Settings/PreferencesSettings.vue:23
 msgid "Theme"
@@ -8541,7 +8541,7 @@ msgstr "U tabeli prioriteta može postojati samo jedan standard prioritet"
 
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:228
 msgid "These fields aren't shown to users. Default values are used when the form is submitted."
-msgstr ""
+msgstr "Ova polja se ne prikazuju korisnicima. Standard vrijednosti se koriste prilikom podnošenja obrasca."
 
 #: frontend/src/components/Filter.vue:689
 msgid "This Month"
@@ -8569,7 +8569,7 @@ msgstr "Ovo polje je obavezno"
 
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:360
 msgid "This form isn’t published yet. Turn on Publish to make the link and embeds live."
-msgstr ""
+msgstr "Ovaj obrazac još nije objavljen. Uključi Objavi da biste aktivirali link i ugrađene elemente."
 
 #: frontend/src/pages/PersonaForm.vue:58
 msgid "This is my first CRM"
@@ -8581,7 +8581,7 @@ msgstr "Ova je metoda namijenjena samo za razvojni način rada"
 
 #: crm/domain_enrichment/api.py:88
 msgid "This run has no linked record to re-enrich."
-msgstr ""
+msgstr "Ovo pokretanje nema povezani zapis za ponovno kompletiranje."
 
 #: frontend/src/components/FieldLayoutEditor.vue:489
 msgid "This section contains fields. Are you sure you want to remove it?"
@@ -8675,7 +8675,7 @@ msgstr "Polje Naziva"
 
 #: frontend/src/components/Settings/Forms/FormsList.vue:212
 msgid "Title and route are required"
-msgstr ""
+msgstr "Naslov i ruta su obavezni"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:823
 #: frontend/src/components/Modals/EventModal.vue:376
@@ -8788,7 +8788,7 @@ msgstr "Povratno Praćenje"
 #. Pattern'
 #: crm/domain_enrichment/doctype/crm_enrichment_rule_pattern/crm_enrichment_rule_pattern.json
 msgid "Treat the pattern as a regular expression instead of a plain substring."
-msgstr ""
+msgstr "Tretiraj paternu kao regularni izraz umjesto običnog podniza."
 
 #. Option for the 'Weekly Off' (Select) field in DocType 'CRM Holiday List'
 #. Option for the 'Workday' (Select) field in DocType 'CRM Service Day'
