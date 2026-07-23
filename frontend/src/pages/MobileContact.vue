@@ -242,7 +242,11 @@ const breadcrumbs = computed(() => {
 
   items.push({
     label: title.value,
-    route: { name: 'Contact', params: { contactId: props.contactId } },
+    route: {
+      name: 'Contact',
+      params: { contactId: props.contactId },
+      query: route.query,
+    },
   })
   return items
 })
