@@ -36,7 +36,10 @@
                 >
                   <div
                     v-if="field.visible"
-                    class="field flex items-center gap-2 px-3 leading-5 first:mt-3"
+                    class="field flex gap-2 px-3 leading-5 first:mt-3"
+                    :class="
+                      isTextareaField(field) ? 'items-start' : 'items-center'
+                    "
                   >
                     <Tooltip
                       v-if="!['Button', 'HTML'].includes(field.fieldtype)"
@@ -45,6 +48,7 @@
                     >
                       <div
                         class="w-[35%] min-w-20 shrink-0 flex items-center gap-0.5"
+                        :class="{ 'pt-[9px]': isTextareaField(field) }"
                       >
                         <div class="truncate text-sm text-ink-gray-5">
                           {{ __(field.label) }}
@@ -127,6 +131,7 @@
                           "
                           class="form-control"
                           type="textarea"
+                          variant="subtle"
                           :value="doc[field.fieldname]"
                           :placeholder="field.placeholder"
                           :debounce="500"
@@ -137,6 +142,7 @@
                           v-model="doc[field.fieldname]"
                           class="form-control cursor-pointer [&_select]:cursor-pointer truncate [&>*]:!ring-0"
                           type="select"
+                          variant="ghost"
                           :options="field.options"
                           :placeholder="field.placeholder"
                           @update:modelValue="(v) => fieldChange(v, field)"
@@ -233,6 +239,7 @@
                           v-else-if="field.fieldtype === 'Percent'"
                           class="form-control"
                           type="text"
+                          variant="ghost"
                           :value="getFormattedPercent(field.fieldname, doc)"
                           :placeholder="field.placeholder"
                           :debounce="500"
@@ -244,6 +251,7 @@
                         <Password
                           v-else-if="field.fieldtype === 'Password'"
                           class="form-control"
+                          variant="ghost"
                           :value="doc[field.fieldname]"
                           :placeholder="field.placeholder"
                           :debounce="500"
@@ -254,6 +262,7 @@
                           v-else-if="field.fieldtype === 'Int'"
                           class="form-control"
                           type="text"
+                          variant="ghost"
                           :value="doc[field.fieldname] || '0'"
                           :placeholder="field.placeholder"
                           :debounce="500"
@@ -264,6 +273,7 @@
                           v-else-if="field.fieldtype === 'Float'"
                           class="form-control"
                           type="text"
+                          variant="ghost"
                           :value="getFormattedFloat(field.fieldname, doc)"
                           :placeholder="field.placeholder"
                           :debounce="500"
@@ -276,6 +286,7 @@
                           v-else-if="field.fieldtype === 'Currency'"
                           class="form-control"
                           type="text"
+                          variant="ghost"
                           :value="getFormattedCurrency(field.fieldname, doc)"
                           :placeholder="field.placeholder"
                           :debounce="500"
@@ -287,6 +298,7 @@
                         <DurationInput
                           v-else-if="field.fieldtype === 'Duration'"
                           class="form-control"
+                          variant="ghost"
                           :value="doc[field.fieldname]"
                           :placeholder="field.placeholder"
                           :disabled="Boolean(field.read_only)"
@@ -353,6 +365,7 @@
                           v-else
                           class="form-control"
                           type="text"
+                          variant="ghost"
                           :value="doc[field.fieldname]"
                           :placeholder="field.placeholder"
                           :debounce="500"
@@ -622,6 +635,11 @@ async function handleButtonClick(field) {
 function firstVisibleIndex() {
   return _sections.value.findIndex((section) => section.visible)
 }
+
+const textareaFieldtypes = ['Small Text', 'Text', 'Long Text', 'Code']
+function isTextareaField(field) {
+  return textareaFieldtypes.includes(field.fieldtype)
+}
 </script>
 
 <style scoped>
@@ -631,13 +649,22 @@ function firstVisibleIndex() {
 
 :deep(.form-control input:not([type='checkbox'])),
 :deep(.form-control select),
-:deep(.form-control textarea),
 :deep(.form-control button),
 :deep(.attach-control),
 :deep(.geolocation-control),
 .dropdown-button {
   border-color: transparent;
   background: transparent;
+}
+
+/* The ghost variant renders inputs with border-0, whereas the Link, Select and
+   Dropdown fields keep a 1px (transparent) border. Restore that 1px transparent
+   border here so every ghost field's text stays on the same 9px edge. (The
+   textarea uses the subtle variant and keeps its own visible border, so it is
+   intentionally excluded here and from the transparent overrides above.) */
+:deep(.form-control input:not([type='checkbox'])) {
+  border-width: 1px;
+  border-color: transparent;
 }
 
 :deep(.form-control button) {
@@ -657,6 +684,14 @@ function firstVisibleIndex() {
 :deep(.form-control button svg) {
   color: white;
   width: 0;
+}
+
+/* PrimaryDropdown (Dropdown fields like Email/Mobile) is a borderless button
+   with px-2.5 (10px); trim to 9px so its text aligns with the inputs and
+   Link fields, which start at 9px (1px transparent border + 8px padding). */
+:deep(.dropdown-button) {
+  padding-left: 9px !important;
+  padding-right: 9px !important;
 }
 
 .sections .section .column {

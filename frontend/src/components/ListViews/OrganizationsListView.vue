@@ -23,7 +23,7 @@
         v-for="column in columns"
         :key="column.key"
         :item="column"
-        @columnWidthUpdated="(e) => onColumnWidthUpdated(e, column)"
+        @columnWidthUpdated="onColumnWidthUpdated"
       >
         <Button
           v-if="column.key == '_liked_by'"
