@@ -23,15 +23,7 @@
         v-for="column in columns"
         :key="column.key"
         :item="column"
-<<<<<<< HEAD
-<<<<<<< HEAD
-        @columnWidthUpdated="(e) => onColumnWidthUpdated(e, column)"
-=======
         @columnWidthUpdated="onColumnWidthUpdated"
->>>>>>> af6af770 (fix: column resize in all the table ListViews)
-=======
-        @columnWidthUpdated="emit('columnWidthUpdated', column)"
->>>>>>> fa25ba38 (revert: column resize in all the table ListViews)
       >
         <Button
           v-if="column.key == '_liked_by'"
