@@ -42,7 +42,9 @@
   "resolutions": {
     "dompurify": "3.4.0",
     "brace-expansion": "2.1.0",
-    "picomatch": "4.0.4"
+    "picomatch": "4.0.4",
+    "prosemirror-model": "1.25.9",
+    "prosemirror-view": "1.41.9"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
