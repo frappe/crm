@@ -1,5 +1,5 @@
 <template>
-  <div class="flex justify-between gap-3 border-t px-4 py-2.5 sm:px-10">
+  <div class="flex justify-between gap-3 border-t px-4 py-2.5">
     <div class="flex gap-1.5">
       <Button
         variant="ghost"
@@ -57,7 +57,11 @@
       "
     />
   </div>
-  <div v-show="showCommentBox">
+  <div
+    v-show="showCommentBox"
+    @keydown.ctrl.enter.capture.stop="submitComment"
+    @keydown.meta.enter.capture.stop="submitComment"
+  >
     <CommentBox
       ref="newCommentEditor"
       v-model:content="newComment"
@@ -87,6 +91,7 @@ import EmailEditor from '@/components/EmailEditor.vue'
 import CommentBox from '@/components/CommentBox.vue'
 import CommentIcon from '@/components/Icons/CommentIcon.vue'
 import Email2Icon from '@/components/Icons/Email2Icon.vue'
+import { isContentEmpty } from '@/utils'
 import { usersStore } from '@/stores/users'
 import { useStorage } from '@vueuse/core'
 import { useOnboarding, useTelemetry } from 'frappe-ui/frappe'
@@ -111,6 +116,12 @@ const showCommentBox = ref(false)
 const newEmail = useStorage(
   `emailBoxContent-${getUser().email}-${props.doctype}-${doc.value.name}`,
   '',
+)
+// A restored draft already carries its signature; this flag (persisted with the
+// draft) stops setSignature from prepending another one on every reopen/reload.
+const signatureAdded = useStorage(
+  `emailSignatureAdded-${getUser().email}-${props.doctype}-${doc.value.name}`,
+  false,
 )
 const newComment = useStorage(
   `commentBoxContent-${getUser().email}-${props.doctype}-${doc.value.name}`,
@@ -148,15 +159,22 @@ const signature = createResource({
 })
 
 function setSignature(editor) {
-  if (!signature.data) return
-  signature.data = signature.data.replace(/\n/g, '<br>')
+  if (!signature.data || signatureAdded.value) return
+  const sig = signature.data.replace(/\n/g, '<br>')
   let emailContent = editor.getHTML()
   emailContent = emailContent.startsWith('<p></p>')
     ? emailContent.slice(7)
     : emailContent
-  editor.commands.setContent(signature.data + emailContent)
+  editor.commands.setContent(sig + emailContent)
   editor.commands.focus('start')
+  signatureAdded.value = true
 }
+
+// Clearing the draft (send / discard) resets the guard so the next fresh
+// compose gets its signature again.
+watch(newEmail, (value) => {
+  if (!value) signatureAdded.value = false
+})
 
 watch(
   () => showEmailBox.value,
@@ -178,17 +196,12 @@ watch(
   },
 )
 
-const commentEmpty = computed(() => {
-  return !newComment.value || newComment.value === '<p></p>'
-})
+const commentEmpty = computed(() => isContentEmpty(newComment.value))
 
-const emailEmpty = computed(() => {
-  return (
-    !newEmail.value ||
-    newEmail.value === '<p></p>' ||
-    !newEmailEditor.value?.toEmails?.length
-  )
-})
+const emailEmpty = computed(
+  () =>
+    isContentEmpty(newEmail.value) || !newEmailEditor.value?.toEmails?.length,
+)
 
 async function sendMail() {
   let fromEmail = newEmailEditor.value.fromEmail || getUser().email
@@ -254,11 +267,20 @@ async function deleteAttachedFiles() {
 async function submitEmail() {
   if (emailEmpty.value) return
   showEmailBox.value = false
-  await toast.promise(sendMail(), {
+  // toast.promise returns the toast id (not the promise), so await the send
+  // itself — otherwise the reload below fires before the email is committed and
+  // the new email is missing from the refetched list.
+  const sending = sendMail()
+  toast.promise(sending, {
     loading: __('Sending email...'),
     success: __('Email sent'),
     error: (e) => e?.messages?.[0] || __('Failed to send email!'),
   })
+  try {
+    await sending
+  } catch {
+    return
+  }
   newEmail.value = ''
   attachments.value = []
   reload.value = true
@@ -270,11 +292,17 @@ async function submitEmail() {
 async function submitComment() {
   if (commentEmpty.value) return
   showCommentBox.value = false
-  await toast.promise(sendComment(), {
+  const sending = sendComment()
+  toast.promise(sending, {
     loading: __('Sending comment...'),
     success: __('Comment sent'),
     error: (e) => e?.messages?.[0] || __('Failed to send comment!'),
   })
+  try {
+    await sending
+  } catch {
+    return
+  }
   newComment.value = ''
   attachments.value = []
   reload.value = true

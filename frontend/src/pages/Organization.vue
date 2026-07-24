@@ -292,6 +292,7 @@ const breadcrumbs = computed(() => {
     route: {
       name: 'Organization',
       params: { organizationId: props.organizationId },
+      query: route.query,
     },
   })
   return items

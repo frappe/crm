@@ -2,7 +2,7 @@
   <Popover placement="bottom-end">
     <template #target="{ togglePopover }">
       <Button :label="__('Columns')" @click="togglePopover">
-        <template v-if="hideLabel">
+        <template v-if="hideLabel" #icon>
           <ColumnsIcon class="h-4" />
         </template>
         <template v-if="!hideLabel" #prefix>
