@@ -69,7 +69,7 @@
             <div class="flex w-3/12 items-center justify-between">
               <Badge
                 :theme="form.published ? 'green' : 'gray'"
-                variant="subtle"
+                :variant="form.published ? 'subtle' : 'outline'"
                 size="md"
                 :label="form.published ? __('Published') : __('Unpublished')"
               />
