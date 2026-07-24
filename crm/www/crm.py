@@ -62,7 +62,7 @@ def get_boot():
 
 def _get_currencies():
 	try:
-		return frappe.get_all("Currency", fields=["name", "symbol_on_right"], limit=0)
+		return frappe.db.get_all("Currency", fields=["name", "symbol_on_right"], limit=0)
 	except Exception:
 		return []
 
