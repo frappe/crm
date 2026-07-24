@@ -11,7 +11,7 @@
       <div class="flex flex-col gap-3">
         <div
           v-if="from.length"
-          class="sm:mx-10 mx-4 flex items-center gap-2 border-t pt-2.5 h-10"
+          class="mx-4 flex items-center gap-2 border-t pt-2.5 h-10"
         >
           <span class="text-xs text-ink-gray-4">{{ __('FROM') }}:</span>
           <FormControl
@@ -24,7 +24,7 @@
           />
         </div>
         <div
-          class="sm:mx-10 mx-4 flex items-center gap-2"
+          class="mx-4 flex items-center gap-2"
           :class="from.length ? '' : 'border-t pt-2.5'"
         >
           <span class="text-xs text-ink-gray-4 mr-2">{{ __('TO') }}:</span>
@@ -61,7 +61,7 @@
             />
           </div>
         </div>
-        <div v-if="cc" class="sm:mx-10 mx-4 flex items-center gap-2">
+        <div v-if="cc" class="mx-4 flex items-center gap-2">
           <span class="text-xs text-ink-gray-4">{{ __('CC') }}:</span>
           <EmailMultiSelect
             ref="ccInput"
@@ -75,7 +75,7 @@
             "
           />
         </div>
-        <div v-if="bcc" class="sm:mx-10 mx-4 flex items-center gap-2">
+        <div v-if="bcc" class="mx-4 flex items-center gap-2">
           <span class="text-xs text-ink-gray-4">{{ __('BCC') }}:</span>
           <EmailMultiSelect
             ref="bccInput"
@@ -89,7 +89,7 @@
             "
           />
         </div>
-        <div class="sm:mx-10 mx-4 flex items-center gap-2 pb-2.5">
+        <div class="mx-4 flex items-center gap-2 pb-2.5">
           <span class="text-xs text-ink-gray-4">{{ __('SUBJECT') }}:</span>
           <input
             v-model="subject"
@@ -100,13 +100,12 @@
       <EditorContent
         :class="[
           'prose-sm max-w-none [&_p.reply-to-content]:hidden',
-          editable &&
-            'sm:mx-10 mx-4 max-h-[35vh] overflow-y-auto border-t py-3',
+          editable && 'mx-4 max-h-[35vh] overflow-y-auto border-t py-3',
         ]"
       />
       <EditorTableMenu />
       <div v-if="editable" class="flex flex-col gap-2">
-        <div class="flex flex-wrap gap-2 sm:px-10 px-4">
+        <div class="flex flex-wrap gap-2 px-4">
           <AttachmentItem
             v-for="a in attachments"
             :key="a.file_url"
@@ -122,7 +121,7 @@
           </AttachmentItem>
         </div>
         <div
-          class="flex justify-between gap-2 overflow-hidden border-t sm:px-10 px-4 py-2.5"
+          class="flex justify-between gap-2 overflow-hidden border-t px-4 py-2.5"
         >
           <div class="flex gap-1 items-center overflow-x-auto">
             <EditorFixedMenu :items="fullToolbar" />

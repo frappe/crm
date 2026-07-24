@@ -1,5 +1,5 @@
 <template>
-  <div class="flex justify-between gap-3 border-t px-4 py-2.5 sm:px-10">
+  <div class="flex justify-between gap-3 border-t px-4 py-2.5">
     <div class="flex gap-1.5">
       <Button
         variant="ghost"
