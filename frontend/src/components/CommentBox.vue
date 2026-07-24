@@ -12,12 +12,12 @@
         :class="[
           'prose-sm max-w-none',
           editable &&
-            'sm:mx-10 mx-4 max-h-[50vh] min-h-[7rem] overflow-y-auto border-t py-3',
+            'mx-4 max-h-[50vh] min-h-[7rem] overflow-y-auto border-t py-3',
         ]"
       />
       <EditorTableMenu />
       <div v-if="editable" class="flex flex-col gap-2">
-        <div class="flex flex-wrap gap-2 sm:px-10 px-4">
+        <div class="flex flex-wrap gap-2 px-4">
           <AttachmentItem
             v-for="a in attachments"
             :key="a.file_url"
@@ -33,7 +33,7 @@
           </AttachmentItem>
         </div>
         <div
-          class="flex justify-between gap-2 overflow-hidden border-t sm:px-10 px-4 py-2.5"
+          class="flex justify-between gap-2 overflow-hidden border-t px-4 py-2.5"
         >
           <div class="flex gap-1 items-center overflow-x-auto">
             <EditorFixedMenu :items="fullToolbar" />
