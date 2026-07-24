@@ -166,7 +166,7 @@
             <Button
               variant="solid"
               v-bind="submitButtonProps || {}"
-              :label="__('Send')"
+              :label="`${__('Send')} (${submitShortcutLabel})`"
             />
           </div>
         </div>
@@ -202,7 +202,7 @@ import {
 } from 'frappe-ui/editor'
 import { useTelemetry } from 'frappe-ui/frappe'
 import { useDocument } from '@/data/document'
-import { validateEmail } from '@/utils'
+import { validateEmail, submitShortcutLabel } from '@/utils'
 import Paragraph from '@tiptap/extension-paragraph'
 import { ref, computed, nextTick, inject, watch } from 'vue'
 

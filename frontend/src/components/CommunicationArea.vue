@@ -57,7 +57,11 @@
       "
     />
   </div>
-  <div v-show="showCommentBox">
+  <div
+    v-show="showCommentBox"
+    @keydown.ctrl.enter.capture.stop="submitComment"
+    @keydown.meta.enter.capture.stop="submitComment"
+  >
     <CommentBox
       ref="newCommentEditor"
       v-model:content="newComment"
