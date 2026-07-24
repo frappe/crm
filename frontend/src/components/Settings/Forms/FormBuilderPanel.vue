@@ -301,7 +301,7 @@
                         {{ __('Route') }}
                       </div>
                       <div
-                        class="flex h-7 cursor-text items-center rounded border border-transparent bg-surface-gray-2 px-2.5 text-base transition-colors hover:bg-surface-gray-3 focus-within:border-outline-gray-4 focus-within:bg-surface-base focus-within:shadow-sm"
+                        class="flex h-7 cursor-text items-center rounded border border-transparent bg-surface-gray-2 px-2.5 text-base transition-colors hover:bg-surface-gray-3 focus-within:border-outline-gray-4 focus-within:bg-surface-base"
                         @click="focusRouteEnd"
                       >
                         <span class="shrink-0 text-ink-gray-4">/crm-form/</span>
@@ -433,7 +433,7 @@
                       <textarea
                         readonly
                         rows="3"
-                        class="w-full resize-none rounded-md border border-outline-gray-2 bg-surface-gray-1 py-2 pl-3 pr-10 font-mono text-xs text-ink-gray-7 focus:border-outline-gray-4 focus:shadow-sm focus:outline-none focus:ring-0 focus-visible:outline-none"
+                        class="w-full resize-none rounded-md border border-outline-gray-2 bg-surface-gray-1 py-2 pl-3 pr-10 font-mono text-xs text-ink-gray-7 focus:border-outline-gray-4 focus:outline-none focus:ring-0 focus-visible:outline-none"
                         :value="iframeSnippet"
                       />
                       <button
@@ -474,7 +474,7 @@
                   rows="3"
                   spellcheck="false"
                   placeholder="https://www.example.com"
-                  class="mt-3.5 w-full resize-none rounded-md border border-outline-gray-2 px-3 py-2 font-mono text-xs text-ink-gray-8 focus:border-outline-gray-4 focus:shadow-sm focus:outline-none focus:ring-0 focus-visible:outline-none"
+                  class="mt-3.5 w-full resize-none rounded-md border border-outline-gray-2 px-3 py-2 font-mono text-xs text-ink-gray-8 focus:border-outline-gray-4 focus:outline-none focus:ring-0 focus-visible:outline-none"
                   @input="markDirty"
                 />
                 <p

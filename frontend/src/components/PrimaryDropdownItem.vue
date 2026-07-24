@@ -3,9 +3,11 @@
     class="group flex w-full items-center justify-between rounded bg-transparent p-1 pl-2 text-base text-ink-gray-8 transition-colors hover:bg-surface-gray-3 active:bg-surface-gray-4"
   >
     <div class="flex flex-1 items-center justify-between gap-7">
-      <div v-show="!editMode">{{ option.value }}</div>
+      <!-- v-if, not v-show: TextInput has a fragment root when it has no
+           label/description/error, and Vue drops directives on such roots -->
+      <div v-if="!editMode">{{ option.value }}</div>
       <TextInput
-        v-show="editMode"
+        v-else
         ref="inputRef"
         v-model="localOption.value"
         class="w-full"
@@ -78,14 +80,14 @@ onMounted(() => {
   if (!props.option?.value) {
     editMode.value = true
     isNew.value = true
-    nextTick(() => inputRef.value.el.focus())
+    nextTick(() => inputRef.value?.el?.focus())
   }
 })
 
 const toggleEditMode = () => {
   editMode.value = !editMode.value
   if (editMode.value) {
-    nextTick(() => inputRef.value.el.focus())
+    nextTick(() => inputRef.value?.el?.focus())
   }
 }
 
