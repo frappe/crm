@@ -511,6 +511,11 @@ function getParams() {
   }
 }
 
+/** Return cloned active filters even before resource params initialize. */
+function getCurrentFilters() {
+  return { ...(list.value.params?.filters ?? getParams().filters) }
+}
+
 list.value = createResource({
   url: 'crm.api.doc.get_data',
   params: getParams(),
@@ -833,7 +838,7 @@ function setupNewQuickFilters(filters) {
 }
 
 function applyQuickFilter(filter, value) {
-  let filters = { ...list.value.params.filters }
+  let filters = getCurrentFilters()
   let field = filter.fieldname
   if (value) {
     if (
@@ -1283,7 +1288,7 @@ function applyFilter({ event, idx, column, item, firstColumn }) {
   event.stopPropagation()
   event.preventDefault()
 
-  let filters = { ...list.value.params.filters }
+  let filters = getCurrentFilters()
 
   let value = item.name ?? item.label ?? item
 
@@ -1308,7 +1313,7 @@ function applyFilter({ event, idx, column, item, firstColumn }) {
 }
 
 function applyLikeFilter() {
-  let filters = { ...list.value.params.filters }
+  let filters = getCurrentFilters()
   if (!filters._liked_by) {
     filters['_liked_by'] = ['LIKE', '%@me%']
   } else {
