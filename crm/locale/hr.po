@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-07-19 10:53+0000\n"
-"PO-Revision-Date: 2026-07-21 11:27\n"
+"PO-Revision-Date: 2026-07-24 12:22\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Croatian\n"
 "MIME-Version: 1.0\n"
@@ -5406,7 +5406,7 @@ msgstr "Možda"
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 #: crm/fcrm/doctype/crm_task/crm_task.json
 msgid "Medium"
-msgstr "Srednje"
+msgstr "Medij"
 
 #. Option for the 'Type' (Select) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
