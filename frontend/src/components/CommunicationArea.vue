@@ -112,6 +112,12 @@ const newEmail = useStorage(
   `emailBoxContent-${getUser().email}-${props.doctype}-${doc.value.name}`,
   '',
 )
+// A restored draft already carries its signature; this flag (persisted with the
+// draft) stops setSignature from prepending another one on every reopen/reload.
+const signatureAdded = useStorage(
+  `emailSignatureAdded-${getUser().email}-${props.doctype}-${doc.value.name}`,
+  false,
+)
 const newComment = useStorage(
   `commentBoxContent-${getUser().email}-${props.doctype}-${doc.value.name}`,
   '',
@@ -148,15 +154,22 @@ const signature = createResource({
 })
 
 function setSignature(editor) {
-  if (!signature.data) return
-  signature.data = signature.data.replace(/\n/g, '<br>')
+  if (!signature.data || signatureAdded.value) return
+  const sig = signature.data.replace(/\n/g, '<br>')
   let emailContent = editor.getHTML()
   emailContent = emailContent.startsWith('<p></p>')
     ? emailContent.slice(7)
     : emailContent
-  editor.commands.setContent(signature.data + emailContent)
+  editor.commands.setContent(sig + emailContent)
   editor.commands.focus('start')
+  signatureAdded.value = true
 }
+
+// Clearing the draft (send / discard) resets the guard so the next fresh
+// compose gets its signature again.
+watch(newEmail, (value) => {
+  if (!value) signatureAdded.value = false
+})
 
 watch(
   () => showEmailBox.value,
