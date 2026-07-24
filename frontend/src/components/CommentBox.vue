@@ -1,24 +1,21 @@
 <template>
-  <TextEditor
-    ref="textEditor"
-    :editor-class="['prose-sm max-w-none', editable && 'min-h-[7rem]']"
-    :content="content"
-    :starterkit-options="{ heading: { levels: [2, 3, 4, 5, 6] } }"
+  <Editor
+    ref="commentEditor"
+    v-model="content"
+    :extensions="extensions"
     :placeholder="placeholder"
     :editable="editable"
-    :mentions="users"
-    @change="editable ? (content = $event) : null"
+    :upload-function="(file) => uploadFile(file, doctype, modelValue.name)"
   >
-    <template #editor="{ editor: _editor }">
+    <div class="relative w-full">
       <EditorContent
         :class="[
+          'prose-sm max-w-none',
           editable &&
-            'sm:mx-10 mx-4 max-h-[50vh] overflow-y-auto border-t py-3',
+            'sm:mx-10 mx-4 max-h-[50vh] min-h-[7rem] overflow-y-auto border-t py-3',
         ]"
-        :editor="_editor"
       />
-    </template>
-    <template #bottom>
+      <EditorTableMenu />
       <div v-if="editable" class="flex flex-col gap-2">
         <div class="flex flex-wrap gap-2 sm:px-10 px-4">
           <AttachmentItem
@@ -39,7 +36,7 @@
           class="flex justify-between gap-2 overflow-hidden border-t sm:px-10 px-4 py-2.5"
         >
           <div class="flex gap-1 items-center overflow-x-auto">
-            <TextEditorBubbleMenu :buttons="textEditorMenuButtons" />
+            <EditorFixedMenu :items="fullToolbar" />
             <IconPicker
               v-slot="{ togglePopover }"
               v-model="emoji"
@@ -80,18 +77,28 @@
           </div>
         </div>
       </div>
-    </template>
-  </TextEditor>
+    </div>
+  </Editor>
 </template>
 <script setup>
 import IconPicker from '@/components/IconPicker.vue'
 import SmileIcon from '@/components/Icons/SmileIcon.vue'
 import AttachmentIcon from '@/components/Icons/AttachmentIcon.vue'
 import AttachmentItem from '@/components/AttachmentItem.vue'
+import {
+  buildEditorExtensions,
+  fullToolbar,
+  uploadFile,
+} from '@/components/editor/config'
 import { usersStore } from '@/stores/users'
 import { useTelemetry } from 'frappe-ui/frappe'
-import { TextEditorBubbleMenu, TextEditor, FileUploader } from 'frappe-ui'
-import { EditorContent } from '@tiptap/vue-3'
+import { FileUploader } from 'frappe-ui'
+import {
+  Editor,
+  EditorContent,
+  EditorFixedMenu,
+  EditorTableMenu,
+} from 'frappe-ui/editor'
 import { ref, computed } from 'vue'
 
 defineProps({
@@ -113,12 +120,22 @@ const content = defineModel('content', { type: String, default: '' })
 const { users: usersList } = usersStore()
 const { capture } = useTelemetry()
 
-const textEditor = ref(null)
+const commentEditor = ref(null)
 const emoji = ref('')
 
-const editor = computed(() => {
-  return textEditor.value.editor
-})
+const editor = computed(() => commentEditor.value?.editor)
+
+const users = computed(
+  () =>
+    usersList.data?.crmUsers
+      ?.filter((user) => user.enabled)
+      .map((user) => ({
+        id: user.name,
+        label: user.full_name?.trim() || user.name,
+      })) || [],
+)
+
+const extensions = buildEditorExtensions({ mentions: () => users.value })
 
 function appendEmoji() {
   editor.value.commands.insertContent(emoji.value)
@@ -131,54 +148,5 @@ function removeAttachment(attachment) {
   attachments.value = attachments.value.filter((a) => a !== attachment)
 }
 
-const users = computed(() => {
-  return (
-    usersList.data?.crmUsers
-      ?.filter((user) => user.enabled)
-      .map((user) => ({
-        label: user.full_name?.trim() || user.name,
-        value: user.name,
-      })) || []
-  )
-})
-
 defineExpose({ editor })
-
-const textEditorMenuButtons = [
-  'Paragraph',
-  ['Heading 2', 'Heading 3', 'Heading 4', 'Heading 5', 'Heading 6'],
-  'Separator',
-  'Bold',
-  'Italic',
-  'Separator',
-  'Bullet List',
-  'Numbered List',
-  'Separator',
-  'Align Left',
-  'Align Center',
-  'Align Right',
-  'FontColor',
-  'Separator',
-  'Image',
-  'Video',
-  'Link',
-  'Blockquote',
-  'Code',
-  'Horizontal Rule',
-  [
-    'InsertTable',
-    'AddColumnBefore',
-    'AddColumnAfter',
-    'DeleteColumn',
-    'AddRowBefore',
-    'AddRowAfter',
-    'DeleteRow',
-    'MergeCells',
-    'SplitCell',
-    'ToggleHeaderColumn',
-    'ToggleHeaderRow',
-    'ToggleHeaderCell',
-    'DeleteTable',
-  ],
-]
 </script>
