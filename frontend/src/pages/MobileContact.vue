@@ -167,7 +167,7 @@ import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import CameraIcon from '@/components/Icons/CameraIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import DealsListView from '@/components/ListViews/DealsListView.vue'
-import { validateIsImageFile } from '@/utils'
+import { validateIsImageFile, validateEmail, validatePhone } from '@/utils'
 import { timestampCell } from '@/composables/useTimelinePreferences'
 import { getView } from '@/utils/view'
 import { useDocument } from '@/data/document'
@@ -217,6 +217,27 @@ const {
 } = useDocument('Contact', props.contactId)
 
 const canDelete = computed(() => permissions.data?.permissions?.delete || false)
+
+// UI-only draft rows for new emails/phones. Kept out of contact.doc so an
+// incomplete entry never leaks into an auto-save (Contact.validate would crash
+// on a child row whose email_id/phone is empty).
+const emailDrafts = ref([])
+const phoneDrafts = ref([])
+let draftCounter = 0
+
+function addDraft(drafts) {
+  drafts.value.push({ name: `new-${++draftCounter}`, value: '' })
+}
+
+function removeDraft(drafts, name) {
+  drafts.value = drafts.value.filter((d) => d.name !== name)
+}
+
+const validateEmailOption = (value) =>
+  validateEmail(value) ? '' : __('Please enter a valid email address')
+
+const validatePhoneOption = (value) =>
+  validatePhone(value) ? '' : __('Please enter a valid phone number')
 
 onMounted(async () => {
   if (contact.doc) await triggerOnRender()
@@ -338,87 +359,84 @@ function getParsedSections(_sections) {
           return {
             ...field,
             type: 'dropdown',
-            options:
-              contact.doc?.email_ids?.map((email) => {
+            options: [
+              ...(contact.doc?.email_ids?.map((email) => {
                 return {
                   name: email.name,
                   value: email.email_id,
                   selected: email.email_id === contact.doc.email_id,
                   placeholder: 'john@doe.com',
+                  validate: validateEmailOption,
                   onClick: () => {
                     setAsPrimary('email', email.email_id)
                   },
-                  onSave: (option, isNew) => {
-                    if (isNew) {
-                      createNew('email', option.value)
-                    } else {
-                      editOption(
-                        'Contact Email',
-                        option.name,
-                        'email_id',
-                        option.value,
-                      )
-                    }
-                  },
-                  onDelete: async (option, isNew) => {
+                  onSave: (option) =>
+                    editOption(
+                      'Contact Email',
+                      option.name,
+                      'email_id',
+                      option.value,
+                    ),
+                  onDelete: async (option) => {
                     contact.doc.email_ids = contact.doc.email_ids.filter(
                       (email) => email.name !== option.name,
                     )
-                    if (!isNew) await deleteOption('Contact Email', option.name)
+                    await deleteOption('Contact Email', option.name)
                   },
                 }
-              }) || [],
-            create: () => {
-              contact.doc?.email_ids?.push({
-                name: 'new-1',
-                value: '',
+              }) || []),
+              ...emailDrafts.value.map((draft) => ({
+                name: draft.name,
+                value: draft.value,
                 selected: false,
-                isNew: true,
-              })
-            },
+                placeholder: 'john@doe.com',
+                validate: validateEmailOption,
+                onSave: (option) => createNew('email', option.value),
+                onDelete: () => removeDraft(emailDrafts, draft.name),
+              })),
+            ],
+            create: () => addDraft(emailDrafts),
           }
         } else if (field.name === 'mobile_no') {
           return {
             ...field,
             read_only: false,
             fieldtype: 'dropdown',
-            options:
-              contact.doc?.phone_nos?.map((phone) => {
+            options: [
+              ...(contact.doc?.phone_nos?.map((phone) => {
                 return {
                   name: phone.name,
                   value: phone.phone,
                   selected: phone.phone === contact.doc.mobile_no,
+                  validate: validatePhoneOption,
                   onClick: () => {
                     setAsPrimary('mobile_no', phone.phone)
                   },
-                  onSave: (option, isNew) => {
-                    if (isNew) {
-                      createNew('phone', option.value)
-                    } else {
-                      editOption(
-                        'Contact Phone',
-                        option.name,
-                        'phone',
-                        option.value,
-                      )
-                    }
-                  },
-                  onDelete: async (option, isNew) => {
+                  onSave: (option) =>
+                    editOption(
+                      'Contact Phone',
+                      option.name,
+                      'phone',
+                      option.value,
+                    ),
+                  onDelete: async (option) => {
                     contact.doc.phone_nos = contact.doc.phone_nos.filter(
                       (phone) => phone.name !== option.name,
                     )
-                    if (!isNew) await deleteOption('Contact Phone', option.name)
+                    await deleteOption('Contact Phone', option.name)
                   },
                 }
-              }) || [],
-            create: () => {
-              contact.doc?.phone_nos?.push({
-                name: 'new-1',
-                value: '',
+              }) || []),
+              ...phoneDrafts.value.map((draft) => ({
+                name: draft.name,
+                value: draft.value,
                 selected: false,
-                isNew: true,
-              })
-            },
+                validate: validatePhoneOption,
+                onSave: (option) => createNew('phone', option.value),
+                onDelete: () => removeDraft(phoneDrafts, draft.name),
+              })),
+            ],
+            create: () => addDraft(phoneDrafts),
           }
         } else if (field.name === 'address') {
           return {
@@ -459,6 +477,8 @@ async function createNew(field, value) {
     value,
   })
   if (d) {
+    if (field === 'email') emailDrafts.value = []
+    else phoneDrafts.value = []
     contact.reload()
     toast.success(__('Contact Updated'))
   }
