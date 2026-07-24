@@ -319,6 +319,14 @@ export function htmlToText(html) {
   return div.textContent || div.innerText || ''
 }
 
+export function isContentEmpty(html) {
+  if (!html) return true
+  // Media/embeds are content even without text, so they post fine.
+  if (/<(img|video|iframe|table|hr)\b/i.test(html)) return false
+  // .trim() also strips U+00A0 (nbsp), so whitespace-only content reads empty.
+  return htmlToText(html).trim() === ''
+}
+
 export function startCase(str) {
   return str.charAt(0).toUpperCase() + str.slice(1)
 }
