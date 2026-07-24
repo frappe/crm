@@ -568,6 +568,11 @@ usePageMeta(() => {
 const tabs = computed(() => {
   let tabOptions = [
     {
+      name: 'Data',
+      label: __('Data'),
+      icon: DetailsIcon,
+    },
+    {
       name: 'Activity',
       label: __('Activity'),
       icon: ActivityIcon,
@@ -581,11 +586,6 @@ const tabs = computed(() => {
       name: 'Comments',
       label: __('Comments'),
       icon: CommentIcon,
-    },
-    {
-      name: 'Data',
-      label: __('Data'),
-      icon: DetailsIcon,
     },
     {
       name: 'Events',

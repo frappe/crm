@@ -121,6 +121,7 @@
  "search_fields": "product_name,description",
  "show_name_in_global_search": 1,
  "show_preview_popup": 1,
+ "show_title_field_in_link": 1,
  "sort_field": "creation",
  "sort_order": "DESC",
  "states": [],

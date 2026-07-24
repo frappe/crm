@@ -678,29 +678,34 @@ const viewsDropdownOptions = computed(() => {
   ]
 
   if (list.value?.data?.views) {
-    list.value.data.views.forEach((view) => {
-      view.label = __(view.label)
-      view.type = view.type || 'list'
-      view.icon = getIcon(view.icon, view.type)
-      view.selected = view.name === currentView.value.name
-      view.filters =
+    let derivedViews = list.value.data.views.map((view) => {
+      let type = view.type || 'list'
+      let filters =
         typeof view.filters == 'string'
           ? JSON.parse(view.filters)
           : view.filters
-      view.onClick = () => {
-        viewUpdated.value = false
-        router.push({
-          name: route.name,
-          params: { viewType: view.type },
-          query: { view: view.name },
-        })
+      return {
+        ...view,
+        label: __(view.label),
+        type,
+        icon: getIcon(view.icon, type),
+        selected: view.name === currentView.value.name,
+        filters,
+        onClick: () => {
+          viewUpdated.value = false
+          router.push({
+            name: route.name,
+            params: { viewType: type },
+            query: { view: view.name },
+          })
+        },
       }
     })
-    let publicViews = list.value.data.views.filter((v) => v.public)
-    let savedViews = list.value.data.views.filter(
+    let publicViews = derivedViews.filter((v) => v.public)
+    let savedViews = derivedViews.filter(
       (v) => !v.pinned && !v.public && !v.is_standard,
     )
-    let pinnedViews = list.value.data.views.filter((v) => v.pinned)
+    let pinnedViews = derivedViews.filter((v) => v.pinned)
 
     if (savedViews.length) {
       _views.push({

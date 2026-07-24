@@ -182,37 +182,11 @@ export function formatCurrency(value, format, currency = 'USD', precision = 2) {
 
   format = getNumberFormat(format)
 
-  if (currency) {
-    let symbol = getCurrencySymbol(currency)
-
-    if (symbol) {
-      return __(symbol) + ' ' + formatNumber(value, format, precision)
-    }
-  }
-
   return formatNumber(value, format, precision)
 }
 
 function getNumberFormat(format = null) {
   return format || window.sysdefaults.number_format || '#,###.##'
-}
-
-function getCurrencySymbol(currencyCode) {
-  try {
-    const formatter = new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currencyCode,
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    })
-    // Extract the currency symbol from the formatted string
-    const parts = formatter.formatToParts(1)
-    const symbol = parts.find((part) => part.type === 'currency')
-    return symbol ? symbol.value : null
-  } catch {
-    console.error(`Invalid currency code: ${currencyCode}`)
-    return null
-  }
 }
 
 function getNumberFormatInfo(format) {
