@@ -91,6 +91,7 @@ import EmailEditor from '@/components/EmailEditor.vue'
 import CommentBox from '@/components/CommentBox.vue'
 import CommentIcon from '@/components/Icons/CommentIcon.vue'
 import Email2Icon from '@/components/Icons/Email2Icon.vue'
+import { isContentEmpty } from '@/utils'
 import { usersStore } from '@/stores/users'
 import { useStorage } from '@vueuse/core'
 import { useOnboarding, useTelemetry } from 'frappe-ui/frappe'
@@ -195,17 +196,12 @@ watch(
   },
 )
 
-const commentEmpty = computed(() => {
-  return !newComment.value || newComment.value === '<p></p>'
-})
+const commentEmpty = computed(() => isContentEmpty(newComment.value))
 
-const emailEmpty = computed(() => {
-  return (
-    !newEmail.value ||
-    newEmail.value === '<p></p>' ||
-    !newEmailEditor.value?.toEmails?.length
-  )
-})
+const emailEmpty = computed(
+  () =>
+    isContentEmpty(newEmail.value) || !newEmailEditor.value?.toEmails?.length,
+)
 
 async function sendMail() {
   let fromEmail = newEmailEditor.value.fromEmail || getUser().email
