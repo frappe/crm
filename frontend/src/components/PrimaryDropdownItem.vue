@@ -5,16 +5,19 @@
     <div class="flex flex-1 items-center justify-between gap-7">
       <!-- v-if, not v-show: TextInput has a fragment root when it has no
            label/description/error, and Vue drops directives on such roots -->
-      <div v-if="!editMode">{{ option.value }}</div>
-      <TextInput
-        v-else
-        ref="inputRef"
-        v-model="localOption.value"
-        class="w-full"
-        :placeholder="option.placeholder"
-        @blur.stop="saveOption"
-        @keydown.enter.stop="(e) => e.target.blur()"
-      />
+      <div v-if="!editMode">{{ localOption.value }}</div>
+      <div v-else class="flex w-full flex-col gap-1">
+        <TextInput
+          ref="inputRef"
+          v-model="localOption.value"
+          :placeholder="option.placeholder"
+          @blur.stop="saveOption"
+          @keydown.enter.stop="(e) => e.target.blur()"
+        />
+        <div v-if="errorMessage" class="text-xs font-medium text-ink-red-6">
+          {{ errorMessage }}
+        </div>
+      </div>
 
       <div class="actions flex items-center justify-center">
         <Button
@@ -75,6 +78,12 @@ watch(
 const editMode = ref(false)
 const isNew = ref(false)
 const inputRef = ref(null)
+const errorMessage = ref('')
+
+watch(
+  () => localOption.value,
+  () => (errorMessage.value = ''),
+)
 
 onMounted(() => {
   if (!props.option?.value) {
@@ -91,13 +100,19 @@ const toggleEditMode = () => {
   }
 }
 
-const saveOption = (e) => {
-  if (!e.target.value) return
+const saveOption = () => {
+  const value = localOption.value?.trim()
+  if (!value) return
+
+  const error = props.option.validate?.(value)
+  if (error) {
+    errorMessage.value = error
+    nextTick(() => inputRef.value?.el?.focus())
+    return
+  }
+
+  props.option.onSave({ ...props.option, value }, isNew.value)
   toggleEditMode()
-  props.option.onSave(
-    { ...props.option, value: localOption.value },
-    isNew.value,
-  )
   isNew.value = false
 }
 </script>
