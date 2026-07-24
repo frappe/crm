@@ -180,7 +180,12 @@ import CameraIcon from '@/components/Icons/CameraIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import DealsListView from '@/components/ListViews/DealsListView.vue'
 import CustomActions from '@/components/CustomActions.vue'
-import { validateIsImageFile, setupCustomizations } from '@/utils'
+import {
+  validateIsImageFile,
+  setupCustomizations,
+  validateEmail,
+  validatePhone,
+} from '@/utils'
 import { timestampCell } from '@/composables/useTimelinePreferences'
 import { getView } from '@/utils/view'
 import { useDocument } from '@/data/document'
@@ -235,6 +240,27 @@ const {
 } = useDocument('Contact', props.contactId)
 
 const canDelete = computed(() => permissions.data?.permissions?.delete || false)
+
+// UI-only draft rows for new emails/phones. Kept out of contact.doc so an
+// incomplete entry never leaks into an auto-save (Contact.validate would crash
+// on a child row whose email_id/phone is empty).
+const emailDrafts = ref([])
+const phoneDrafts = ref([])
+let draftCounter = 0
+
+function addDraft(drafts) {
+  drafts.value.push({ name: `new-${++draftCounter}`, value: '' })
+}
+
+function removeDraft(drafts, name) {
+  drafts.value = drafts.value.filter((d) => d.name !== name)
+}
+
+const validateEmailOption = (value) =>
+  validateEmail(value) ? '' : __('Please enter a valid email address')
+
+const validatePhoneOption = (value) =>
+  validatePhone(value) ? '' : __('Please enter a valid phone number')
 
 onMounted(async () => {
   if (contact.doc) await triggerOnRender()
@@ -340,40 +366,39 @@ const parsedSections = computed(() => {
             ...field,
             read_only: false,
             fieldtype: 'Dropdown',
-            options: (contact.doc?.email_ids || []).map((email) => ({
-              name: email.name,
-              value: email.email_id,
-              selected: email.email_id === contact.doc.email_id,
-              placeholder: 'john@doe.com',
-              onClick: () => setAsPrimary('email', email.email_id),
-              onSave: (option, isNew) =>
-                isNew
-                  ? createNew('email', option.value)
-                  : editOption(
-                      'Contact Email',
-                      option.name,
-                      'email_id',
-                      option.value,
-                    ),
-              onDelete: async (option, isNew) => {
-                contact.doc.email_ids = contact.doc.email_ids.filter(
-                  (e) => e.name !== option.name,
-                )
-                if (!isNew) await deleteOption('Contact Email', option.name)
-              },
-            })),
-            create: () => {
-              // Add a temporary new option locally (mirrors original behavior)
-              contact.doc.email_ids = [
-                ...(contact.doc.email_ids || []),
-                {
-                  name: 'new-1',
-                  value: '',
-                  selected: false,
-                  isNew: true,
+            options: [
+              ...(contact.doc?.email_ids || []).map((email) => ({
+                name: email.name,
+                value: email.email_id,
+                selected: email.email_id === contact.doc.email_id,
+                placeholder: 'john@doe.com',
+                validate: validateEmailOption,
+                onClick: () => setAsPrimary('email', email.email_id),
+                onSave: (option) =>
+                  editOption(
+                    'Contact Email',
+                    option.name,
+                    'email_id',
+                    option.value,
+                  ),
+                onDelete: async (option) => {
+                  contact.doc.email_ids = contact.doc.email_ids.filter(
+                    (e) => e.name !== option.name,
+                  )
+                  await deleteOption('Contact Email', option.name)
                 },
-              ]
-            },
+              })),
+              ...emailDrafts.value.map((draft) => ({
+                name: draft.name,
+                value: draft.value,
+                selected: false,
+                placeholder: 'john@doe.com',
+                validate: validateEmailOption,
+                onSave: (option) => createNew('email', option.value),
+                onDelete: () => removeDraft(emailDrafts, draft.name),
+              })),
+            ],
+            create: () => addDraft(emailDrafts),
           }
         }
         if (field.fieldname === 'mobile_no') {
@@ -381,38 +406,37 @@ const parsedSections = computed(() => {
             ...field,
             read_only: false,
             fieldtype: 'Dropdown',
-            options: (contact.doc?.phone_nos || []).map((phone) => ({
-              name: phone.name,
-              value: phone.phone,
-              selected: phone.phone === contact.doc.mobile_no,
-              onClick: () => setAsPrimary('mobile_no', phone.phone),
-              onSave: (option, isNew) =>
-                isNew
-                  ? createNew('phone', option.value)
-                  : editOption(
-                      'Contact Phone',
-                      option.name,
-                      'phone',
-                      option.value,
-                    ),
-              onDelete: async (option, isNew) => {
-                contact.doc.phone_nos = contact.doc.phone_nos.filter(
-                  (p) => p.name !== option.name,
-                )
-                if (!isNew) await deleteOption('Contact Phone', option.name)
-              },
-            })),
-            create: () => {
-              contact.doc.phone_nos = [
-                ...(contact.doc.phone_nos || []),
-                {
-                  name: 'new-1',
-                  value: '',
-                  selected: false,
-                  isNew: true,
+            options: [
+              ...(contact.doc?.phone_nos || []).map((phone) => ({
+                name: phone.name,
+                value: phone.phone,
+                selected: phone.phone === contact.doc.mobile_no,
+                validate: validatePhoneOption,
+                onClick: () => setAsPrimary('mobile_no', phone.phone),
+                onSave: (option) =>
+                  editOption(
+                    'Contact Phone',
+                    option.name,
+                    'phone',
+                    option.value,
+                  ),
+                onDelete: async (option) => {
+                  contact.doc.phone_nos = contact.doc.phone_nos.filter(
+                    (p) => p.name !== option.name,
+                  )
+                  await deleteOption('Contact Phone', option.name)
                 },
-              ]
-            },
+              })),
+              ...phoneDrafts.value.map((draft) => ({
+                name: draft.name,
+                value: draft.value,
+                selected: false,
+                validate: validatePhoneOption,
+                onSave: (option) => createNew('phone', option.value),
+                onDelete: () => removeDraft(phoneDrafts, draft.name),
+              })),
+            ],
+            create: () => addDraft(phoneDrafts),
           }
         }
         if (field.fieldname === 'address') {
@@ -461,6 +485,8 @@ async function createNew(field, value) {
     value,
   })
   if (d) {
+    if (field === 'email') emailDrafts.value = []
+    else phoneDrafts.value = []
     contact.reload()
     toast.success(__('Contact Updated'))
   }
