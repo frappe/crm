@@ -54,12 +54,17 @@ def get_boot():
 				"user": frappe.db.get_value("User", frappe.session.user, "time_zone")
 				or get_system_timezone(),
 			},
-			"currencies": frappe.get_all(
-				"Currency", fields=["name", "symbol_on_right"], limit=0
-			),
+			"currencies": _get_currencies(),
 			"state_options": get_state_options(),
 		}
 	)
+
+
+def _get_currencies():
+	try:
+		return frappe.get_all("Currency", fields=["name", "symbol_on_right"], limit=0)
+	except Exception:
+		return []
 
 
 def get_state_options() -> dict[str, list[str]]:
