@@ -1,12 +1,11 @@
 import json
 
 import frappe
-from bs4 import BeautifulSoup
 from frappe import _
 from frappe.desk.form.load import get_docinfo
 from frappe.query_builder import JoinType
-from frappe.translate import get_translated_doctypes
 
+from crm.api.activity_helpers import get_communication_directions, is_translatable, parse_attachment_log
 from crm.fcrm.doctype.crm_call_log.crm_call_log import parse_call_log
 
 
@@ -26,6 +25,7 @@ def get_deal_activities(name: str):
 
 	get_docinfo("", "CRM Deal", name)
 	docinfo = frappe.response["docinfo"]
+	communication_directions = get_communication_directions(docinfo.communications)
 	deal_meta = frappe.get_meta("CRM Deal")
 	deal_fields = {
 		field.fieldname: {"label": field.label, "options": field.options} for field in deal_meta.fields
@@ -147,6 +147,7 @@ def get_deal_activities(name: str):
 				"attachments": get_attachments("Communication", communication.name),
 				"read_by_recipient": communication.read_by_recipient,
 				"delivery_status": communication.delivery_status,
+				"sent_or_received": communication_directions.get(communication.name),
 			},
 			"is_lead": False,
 		}
@@ -180,6 +181,7 @@ def get_lead_activities(name: str):
 
 	get_docinfo("", "CRM Lead", name)
 	docinfo = frappe.response["docinfo"]
+	communication_directions = get_communication_directions(docinfo.communications)
 	lead_meta = frappe.get_meta("CRM Lead")
 	lead_fields = {
 		field.fieldname: {"label": field.label, "options": field.options} for field in lead_meta.fields
@@ -288,6 +290,7 @@ def get_lead_activities(name: str):
 				"attachments": get_attachments("Communication", communication.name),
 				"read_by_recipient": communication.read_by_recipient,
 				"delivery_status": communication.delivery_status,
+				"sent_or_received": communication_directions.get(communication.name),
 			},
 			"is_lead": True,
 		}
@@ -493,31 +496,3 @@ def get_linked_tasks(name: str):
 		],
 	)
 	return tasks or []
-
-
-def parse_attachment_log(html: str, type: str):
-	soup = BeautifulSoup(html, "html.parser")
-	a_tag = soup.find("a")
-	type = "added" if type == "Attachment" else "removed"
-	if not a_tag:
-		return {
-			"type": type,
-			"file_name": html.replace("Removed ", ""),
-			"file_url": "",
-			"is_private": False,
-		}
-
-	is_private = False
-	if "private/files" in a_tag["href"]:
-		is_private = True
-
-	return {
-		"type": type,
-		"file_name": a_tag.text,
-		"file_url": a_tag["href"],
-		"is_private": is_private,
-	}
-
-
-def is_translatable(doctype: str) -> bool:
-	return doctype in get_translated_doctypes()
