@@ -54,22 +54,20 @@ def get_boot():
 				"user": frappe.db.get_value("User", frappe.session.user, "time_zone")
 				or get_system_timezone(),
 			},
+			"currencies": _get_currencies(),
 			"state_options": get_state_options(),
 		}
 	)
 
 
+def _get_currencies():
+	try:
+		return frappe.db.get_all("Currency", fields=["name", "symbol_on_right"], limit=0)
+	except Exception:
+		return []
+
+
 def get_state_options() -> dict[str, list[str]]:
-	"""Country -> list of states, so the frontend can render a state dropdown.
-
-	Sourced from India Compliance's own constant when that app is installed, so the
-	options stay in sync with the desk. Returns an empty map (state field stays free
-	text) on any failure.
-
-	This runs inside ``get_boot``, so it must never raise — a failure here would break
-	the whole CRM page load. ``get_installed_apps`` can return `[]` or raise in
-	unauthenticated/boot contexts (notably on v15), so the lookup is wrapped defensively.
-	"""
 	try:
 		if "india_compliance" not in get_installed_apps():
 			return {}
@@ -78,8 +76,6 @@ def get_state_options() -> dict[str, list[str]]:
 
 		return {"India": list(INDIAN_STATES)}
 	except Exception:
-		# Degrade silently to free-text: this runs in boot, so the except branch
-		# must not do anything that can itself raise (e.g. logging to a missing dir).
 		return {}
 
 
