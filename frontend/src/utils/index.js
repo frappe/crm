@@ -329,6 +329,14 @@ export function validateEmail(email) {
   return regExp.test(email)
 }
 
+export const isMac =
+  typeof navigator !== 'undefined' &&
+  /Mac|iPod|iPhone|iPad/i.test(
+    navigator.userAgentData?.platform || navigator.platform || '',
+  )
+
+export const submitShortcutLabel = isMac ? '⌘⏎' : 'Ctrl+⏎'
+
 export function parseAssignees(assignees) {
   let { getUser } = usersStore()
   return assignees.map((user) => ({

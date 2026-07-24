@@ -72,7 +72,7 @@
             <Button
               variant="solid"
               v-bind="submitButtonProps || {}"
-              :label="__('Comment')"
+              :label="`${__('Comment')} (${submitShortcutLabel})`"
             />
           </div>
         </div>
@@ -90,6 +90,7 @@ import {
   fullToolbar,
   uploadFile,
 } from '@/components/editor/config'
+import { submitShortcutLabel } from '@/utils'
 import { usersStore } from '@/stores/users'
 import { useTelemetry } from 'frappe-ui/frappe'
 import { FileUploader } from 'frappe-ui'
