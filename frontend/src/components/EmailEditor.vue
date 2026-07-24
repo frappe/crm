@@ -1,26 +1,17 @@
 <template>
-  <TextEditor
+  <Editor
     ref="textEditor"
-    :editor-class="[
-      'prose-sm max-w-none',
-      editable && 'min-h-[7rem]',
-      '[&_p.reply-to-content]:hidden',
-    ]"
-    :content="content"
-    :starterkit-options="{
-      heading: { levels: [2, 3, 4, 5, 6] },
-      paragraph: false,
-    }"
+    v-model="content"
+    :extensions="extensions"
     :placeholder="placeholder"
     :editable="editable"
-    :extensions="[CustomParagraph]"
-    @change="editable ? (content = $event) : null"
+    :upload-function="(file) => uploadFile(file, doctype, modelValue.name)"
   >
-    <template #top>
+    <div class="relative w-full">
       <div class="flex flex-col gap-3">
         <div
           v-if="from.length"
-          class="sm:mx-10 mx-4 flex items-center gap-2 border-t pt-2.5 h-10"
+          class="mx-4 flex items-center gap-2 border-t pt-2.5 h-10"
         >
           <span class="text-xs text-ink-gray-4">{{ __('FROM') }}:</span>
           <FormControl
@@ -33,7 +24,7 @@
           />
         </div>
         <div
-          class="sm:mx-10 mx-4 flex items-center gap-2"
+          class="mx-4 flex items-center gap-2"
           :class="from.length ? '' : 'border-t pt-2.5'"
         >
           <span class="text-xs text-ink-gray-4 mr-2">{{ __('TO') }}:</span>
@@ -70,7 +61,7 @@
             />
           </div>
         </div>
-        <div v-if="cc" class="sm:mx-10 mx-4 flex items-center gap-2">
+        <div v-if="cc" class="mx-4 flex items-center gap-2">
           <span class="text-xs text-ink-gray-4">{{ __('CC') }}:</span>
           <EmailMultiSelect
             ref="ccInput"
@@ -84,7 +75,7 @@
             "
           />
         </div>
-        <div v-if="bcc" class="sm:mx-10 mx-4 flex items-center gap-2">
+        <div v-if="bcc" class="mx-4 flex items-center gap-2">
           <span class="text-xs text-ink-gray-4">{{ __('BCC') }}:</span>
           <EmailMultiSelect
             ref="bccInput"
@@ -98,7 +89,7 @@
             "
           />
         </div>
-        <div class="sm:mx-10 mx-4 flex items-center gap-2 pb-2.5">
+        <div class="mx-4 flex items-center gap-2 pb-2.5">
           <span class="text-xs text-ink-gray-4">{{ __('SUBJECT') }}:</span>
           <input
             v-model="subject"
@@ -106,19 +97,15 @@
           />
         </div>
       </div>
-    </template>
-    <template #editor="{ editor: _editor }">
       <EditorContent
         :class="[
-          editable &&
-            'sm:mx-10 mx-4 max-h-[35vh] overflow-y-auto border-t py-3',
+          'prose-sm max-w-none [&_p.reply-to-content]:hidden',
+          editable && 'mx-4 max-h-[35vh] overflow-y-auto border-t py-3',
         ]"
-        :editor="_editor"
       />
-    </template>
-    <template #bottom>
+      <EditorTableMenu />
       <div v-if="editable" class="flex flex-col gap-2">
-        <div class="flex flex-wrap gap-2 sm:px-10 px-4">
+        <div class="flex flex-wrap gap-2 px-4">
           <AttachmentItem
             v-for="a in attachments"
             :key="a.file_url"
@@ -134,10 +121,10 @@
           </AttachmentItem>
         </div>
         <div
-          class="flex justify-between gap-2 overflow-hidden border-t sm:px-10 px-4 py-2.5"
+          class="flex justify-between gap-2 overflow-hidden border-t px-4 py-2.5"
         >
           <div class="flex gap-1 items-center overflow-x-auto">
-            <TextEditorBubbleMenu :buttons="textEditorMenuButtons" />
+            <EditorFixedMenu :items="fullToolbar" />
             <IconPicker
               v-slot="{ togglePopover }"
               v-model="emoji"
@@ -179,13 +166,13 @@
             <Button
               variant="solid"
               v-bind="submitButtonProps || {}"
-              :label="__('Send')"
+              :label="`${__('Send')} (${submitShortcutLabel})`"
             />
           </div>
         </div>
       </div>
-    </template>
-  </TextEditor>
+    </div>
+  </Editor>
   <EmailTemplateSelectorModal
     v-model="showEmailTemplateSelectorModal"
     :doctype="doctype"
@@ -202,17 +189,21 @@ import AttachmentItem from '@/components/AttachmentItem.vue'
 import EmailMultiSelect from '@/components/Controls/EmailMultiSelect.vue'
 import EmailTemplateSelectorModal from '@/components/Modals/EmailTemplateSelectorModal.vue'
 import {
-  TextEditorBubbleMenu,
-  TextEditor,
-  FileUploader,
-  call,
-  FormControl,
-} from 'frappe-ui'
+  buildEditorExtensions,
+  fullToolbar,
+  uploadFile,
+} from '@/components/editor/config'
+import { FileUploader, call, FormControl } from 'frappe-ui'
+import {
+  Editor,
+  EditorContent,
+  EditorFixedMenu,
+  EditorTableMenu,
+} from 'frappe-ui/editor'
 import { useTelemetry } from 'frappe-ui/frappe'
 import { useDocument } from '@/data/document'
-import { validateEmail } from '@/utils'
+import { validateEmail, submitShortcutLabel } from '@/utils'
 import Paragraph from '@tiptap/extension-paragraph'
-import { EditorContent } from '@tiptap/vue-3'
 import { ref, computed, nextTick, inject, watch } from 'vue'
 
 const props = defineProps({
@@ -267,6 +258,11 @@ const bccEmails = ref([])
 const ccInput = ref(null)
 const bccInput = ref(null)
 
+const extensions = buildEditorExtensions({
+  starterKit: { paragraph: false },
+  extra: [CustomParagraph],
+})
+
 const from = computed(() => {
   if (!user.doc || !user.doc.user_emails?.length) return []
   let emails = user.doc.user_emails.map((e) => {
@@ -291,9 +287,7 @@ watch(
   { immediate: true },
 )
 
-const editor = computed(() => {
-  return textEditor.value.editor
-})
+const editor = computed(() => textEditor.value?.editor)
 
 function removeAttachment(attachment) {
   attachments.value = attachments.value.filter((a) => a !== attachment)
@@ -316,7 +310,6 @@ async function applyEmailTemplate(template) {
 
   if (template.response) {
     content.value = data.message
-    editor.value.commands.setContent(data.message)
   }
   showEmailTemplateSelectorModal.value = false
   capture('email_template_applied', { doctype: props.doctype })
@@ -349,42 +342,4 @@ defineExpose({
   ccEmails,
   bccEmails,
 })
-
-const textEditorMenuButtons = [
-  'Paragraph',
-  ['Heading 2', 'Heading 3', 'Heading 4', 'Heading 5', 'Heading 6'],
-  'Separator',
-  'Bold',
-  'Italic',
-  'Separator',
-  'Bullet List',
-  'Numbered List',
-  'Separator',
-  'Align Left',
-  'Align Center',
-  'Align Right',
-  'FontColor',
-  'Separator',
-  'Image',
-  'Video',
-  'Link',
-  'Blockquote',
-  'Code',
-  'Horizontal Rule',
-  [
-    'InsertTable',
-    'AddColumnBefore',
-    'AddColumnAfter',
-    'DeleteColumn',
-    'AddRowBefore',
-    'AddRowAfter',
-    'DeleteRow',
-    'MergeCells',
-    'SplitCell',
-    'ToggleHeaderColumn',
-    'ToggleHeaderRow',
-    'ToggleHeaderCell',
-    'DeleteTable',
-  ],
-]
 </script>
