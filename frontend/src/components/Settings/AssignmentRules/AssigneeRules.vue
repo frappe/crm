@@ -38,9 +38,11 @@
             >
               <div>
                 {{
-                  documentRoutingOptions.find(
-                    (option) => option.value == assignmentRuleData.rule,
-                  )?.label
+                  __(
+                    documentRoutingOptions.find(
+                      (option) => option.value == assignmentRuleData.rule,
+                    )?.label || '',
+                  )
                 }}
               </div>
               <span class="lucide-chevron-down size-4" aria-hidden="true" />
@@ -62,7 +64,7 @@
                 "
               >
                 <span>
-                  {{ option.label }}
+                  {{ __(option.label) }}
                 </span>
                 <span
                   v-if="assignmentRuleData.rule == option.value"
