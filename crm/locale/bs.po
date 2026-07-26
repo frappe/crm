@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-07-19 10:53+0000\n"
-"PO-Revision-Date: 2026-07-23 11:36\n"
+"PO-Revision-Date: 2026-07-26 13:01\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Bosnian\n"
 "MIME-Version: 1.0\n"
@@ -4803,7 +4803,7 @@ msgstr "Ključna riječ"
 #. Label of the kind (Select) field in DocType 'CRM Product Sync Issue'
 #: crm/fcrm/doctype/crm_product_sync_issue/crm_product_sync_issue.json
 msgid "Kind"
-msgstr "Vrsta"
+msgstr "Tip"
 
 #. Label of the label (Data) field in DocType 'CRM Dropdown Item'
 #. Label of the label (Data) field in DocType 'CRM View Settings'
@@ -8284,7 +8284,7 @@ msgstr "Mjenjanje između svijetle, tamne ili sistemske teme"
 
 #: frontend/src/components/Settings/Profile/UserEmailSettings.vue:55
 msgid "Switch between outgoing email accounts when sending emails"
-msgstr "Mjenjaj se između odlaznih e-mail računa prilikom slanja e-mailova"
+msgstr "Prebaci između odlaznih računa e-pošte prilikom slanja e-pošte"
 
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1276
 msgid "Switching to {0} will remove {1} field(s) that don't exist on {0}. This can't be undone."
