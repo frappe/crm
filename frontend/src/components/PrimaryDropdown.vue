@@ -20,7 +20,7 @@
     </template>
     <template #body>
       <div
-        class="my-2 p-1.5 min-w-72 space-y-1.5 divide-y divide-outline-gray-1 rounded-lg bg-surface-elevation-2 shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
+        class="my-2 p-1.5 w-72 space-y-1.5 divide-y divide-outline-gray-1 rounded-lg bg-surface-elevation-2 shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
       >
         <div>
           <PrimaryDropdownItem
