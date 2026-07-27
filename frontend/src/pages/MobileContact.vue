@@ -168,7 +168,7 @@ import CameraIcon from '@/components/Icons/CameraIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import DealsListView from '@/components/ListViews/DealsListView.vue'
 import { validateIsImageFile } from '@/utils'
-import { contactFieldTransform } from '@/utils/contactFields'
+import { useContactFields } from '@/composables/useContactFields'
 import { timestampCell } from '@/composables/useTimelinePreferences'
 import { getView } from '@/utils/view'
 import { useDocument } from '@/data/document'
@@ -219,7 +219,7 @@ const {
 
 const canDelete = computed(() => permissions.data?.permissions?.delete || false)
 
-const transformField = contactFieldTransform(contact)
+const transformField = useContactFields(contact)
 
 onMounted(async () => {
   if (contact.doc) await triggerOnRender()
