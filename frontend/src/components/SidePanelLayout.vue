@@ -106,8 +106,10 @@
                           v-else-if="field.fieldtype === 'Dropdown'"
                           :value="doc[field.fieldname]"
                           :placeholder="field.placeholder"
+                          :itemPlaceholder="field.itemPlaceholder"
                           :options="field.options"
-                          :create="field.create"
+                          :validate="field.validate"
+                          :onCreate="field.onCreate"
                           :label="field.label"
                         />
                         <FormControl
