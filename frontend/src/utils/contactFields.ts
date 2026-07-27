@@ -46,13 +46,14 @@ export function contactFieldTransform(contact: ContactDocument) {
   }
 
   async function createNew(field: string, value: string) {
-    if (!value) return
+    if (!value) return false
     const created = await call('crm.api.contact.create_new', {
       contact: contact.doc.name,
       field,
       value,
     })
     if (created) reloadWithToast()
+    return Boolean(created)
   }
 
   async function editOption(
@@ -68,6 +69,7 @@ export function contactFieldTransform(contact: ContactDocument) {
       value,
     })
     if (updated) reloadWithToast()
+    return Boolean(updated)
   }
 
   async function deleteOption(doctype: string, name: string) {
