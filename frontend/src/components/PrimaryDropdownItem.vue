@@ -87,6 +87,7 @@ const editMode = ref(false)
 const isNew = ref(false)
 const inputRef = ref(null)
 const errorMessage = ref('')
+const saving = ref(false)
 
 watch(
   () => localOption.value,
@@ -136,7 +137,11 @@ const cancelEdit = () => {
   editMode.value = false
 }
 
-const saveOption = () => {
+const saveOption = async () => {
+  // Blur and the Save click both fire this; guard so a create/update is
+  // issued once, never duplicated.
+  if (saving.value) return
+
   const value = localOption.value?.trim()
   if (!value) return
 
@@ -147,8 +152,26 @@ const saveOption = () => {
     return
   }
 
-  props.option.onSave({ ...props.option, value }, isNew.value)
-  toggleEditMode()
-  isNew.value = false
+  saving.value = true
+  try {
+    const saved = await props.option.onSave(
+      { ...props.option, value },
+      isNew.value,
+    )
+    // Only leave edit mode once the value is actually persisted; a failed
+    // save stays editable instead of showing an unsaved value as saved.
+    if (!saved) {
+      errorMessage.value = __('Could not save, please try again')
+      nextTick(() => inputRef.value?.el?.focus())
+      return
+    }
+    editMode.value = false
+    isNew.value = false
+  } catch {
+    errorMessage.value = __('Could not save, please try again')
+    nextTick(() => inputRef.value?.el?.focus())
+  } finally {
+    saving.value = false
+  }
 }
 </script>

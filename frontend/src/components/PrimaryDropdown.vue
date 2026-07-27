@@ -81,8 +81,11 @@ function addDraft() {
     value: '',
     selected: false,
     onSave: async (option) => {
-      await props.onCreate?.(option.value)
-      draft.value = null
+      // Clear the draft only once the create succeeds; on failure it stays
+      // so the value remains editable. Returns success to the item.
+      const created = await props.onCreate?.(option.value)
+      if (created) draft.value = null
+      return created
     },
     onDelete: () => (draft.value = null),
   }
