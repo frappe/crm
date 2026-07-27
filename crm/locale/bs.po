@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-07-19 10:53+0000\n"
-"PO-Revision-Date: 2026-07-26 13:01\n"
+"PO-Revision-Date: 2026-07-27 13:04\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Bosnian\n"
 "MIME-Version: 1.0\n"
@@ -940,7 +940,7 @@ msgstr "Automatsko dodjeljivanje potencijalnih klijenata/poslova pravom prodajno
 #. Label of the auto_enrich (Check) field in DocType 'CRM Enrichment Settings'
 #: crm/domain_enrichment/doctype/crm_enrichment_settings/crm_enrichment_settings.json
 msgid "Auto-enrich new Organizations"
-msgstr "Automatski kompletiraj nove Organizacija"
+msgstr "Automatski kompletiraj nove Organizacije"
 
 #. Description of the 'Condition' (Code) field in DocType 'CRM Service Level
 #. Agreement'
@@ -957,7 +957,7 @@ msgstr "Automatsko Dovršavanje"
 #. 'CRM Enrichment Settings'
 #: crm/domain_enrichment/doctype/crm_enrichment_settings/crm_enrichment_settings.json
 msgid "Automatically enrich a CRM Organization in the background as soon as it is created (requires a website). When off, enrichment is triggered manually via the Enrich button."
-msgstr "Automatskikompletira Organizaciju u pozadini čim se izradi (zahtijeva web stranicu). Kada je isključeno, kompletiranje se pokreće ručno putem dugmeta Kompletiraj."
+msgstr "Automatski kompletira Organizaciju u pozadini čim se izradi (zahtijeva web stranicu). Kada je isključeno, kompletiranje se pokreće ručno putem dugmeta Kompletiraj."
 
 #. Description of the 'Reopen lead/deal on new communication' (Check) field in
 #. DocType 'FCRM Settings'
@@ -1103,7 +1103,7 @@ msgstr "Između"
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.json
 #: frontend/src/components/Settings/ERPNextSettings.vue:216
 msgid "Bidirectional Product Sync"
-msgstr "Dvosmjerna sinhronizacija artikala"
+msgstr "Dvosmjerna Sinhronizacija Artikala"
 
 #. Label of the blocked_domains_section (Section Break) field in DocType 'CRM
 #. Enrichment Settings'
@@ -1188,17 +1188,17 @@ msgstr "Padajuća Stavka"
 #. Name of a DocType
 #: crm/domain_enrichment/doctype/crm_enrichment_domain/crm_enrichment_domain.json
 msgid "CRM Enrichment Domain"
-msgstr "Kompletiranje Domene"
+msgstr "Domene Kompletiranja"
 
 #. Name of a DocType
 #: crm/domain_enrichment/doctype/crm_enrichment_field_mapping/crm_enrichment_field_mapping.json
 msgid "CRM Enrichment Field Mapping"
-msgstr "Kompletiranje Mapiranje Polja"
+msgstr "Mapiranje Polja Kompletiranja"
 
 #. Name of a DocType
 #: crm/domain_enrichment/doctype/crm_enrichment_link_priority/crm_enrichment_link_priority.json
 msgid "CRM Enrichment Link Priority"
-msgstr "Kompletiranje Linka Prioriteta"
+msgstr "Linka Prioriteta Kompletiranja"
 
 #. Name of a DocType
 #: crm/domain_enrichment/doctype/crm_enrichment_rule/crm_enrichment_rule.json
@@ -1510,7 +1510,7 @@ msgstr "Uhvati"
 
 #: frontend/src/components/Settings/Forms/FormsList.vue:11
 msgid "Capture leads and deals from public forms you embed on your website."
-msgstr "Prikupljaj potencijalne klijente i poslove putem javnih obrazaca koje ugrađujete na svoju web stranicu."
+msgstr "Prikupljaj potencijalne klijente i poslove putem javnih obrazaca koje ugrađujete na web stranicu."
 
 #: frontend/src/pages/PersonaForm.vue:122
 msgid "Capture my first lead"
@@ -3177,7 +3177,7 @@ msgstr "E-pošta & Potpis"
 #. Label of the emails_found (Int) field in DocType 'CRM Enrichment Run'
 #: crm/domain_enrichment/doctype/crm_enrichment_run/crm_enrichment_run.json
 msgid "Emails Found"
-msgstr "Pronađen e-pošta"
+msgstr "Pronađena e-pošta"
 
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:412
 msgid "Embed"
@@ -7714,7 +7714,7 @@ msgstr "Pošalji e-poštu"
 
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:373
 msgid "Send people straight to the hosted form."
-msgstr "Pošalji ljude direktno na hostovani obrazac."
+msgstr "Pošalji posjetioce direktno na obrazac."
 
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:346
 msgid "Send visitors here after they submit. Leave blank to show the success message."
@@ -8529,7 +8529,7 @@ msgstr "Kurs koji se koristi za konverziju valute organizacije u osnovnu valutu 
 #. Rule'
 #: crm/domain_enrichment/doctype/crm_enrichment_rule/crm_enrichment_rule.json
 msgid "The value this rule resolves to when it matches (e.g. the social network \"linkedin\"). For Industry rules, use the Industry link instead."
-msgstr "Vrijednost koju ovo pravilo dobija kada se podudara (npr. društvena mreža \"linkedin\"). Za pravila branše, umjesto toga koristite link branše."
+msgstr "Vrijednost koju ovo pravilo rješava kada se podudara (npr. društvena mreža \"linkedin\"). Za pravila branše, umjesto toga koristite link branše."
 
 #: frontend/src/components/Settings/PreferencesSettings.vue:23
 msgid "Theme"
