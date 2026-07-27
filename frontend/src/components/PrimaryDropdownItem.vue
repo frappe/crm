@@ -1,16 +1,31 @@
 <template>
   <div
-    class="group flex w-full items-center justify-between rounded bg-transparent p-1 pl-2 text-base text-ink-gray-8 transition-colors hover:bg-surface-gray-3 active:bg-surface-gray-4"
+    class="group flex w-full gap-2 rounded p-1 pl-2 text-base text-ink-gray-8 transition-colors"
+    :class="
+      editMode
+        ? 'items-start'
+        : 'items-center cursor-pointer hover:bg-surface-gray-3 active:bg-surface-gray-4'
+    "
+    @click="selectRow"
   >
-    <div class="flex flex-1 items-center justify-between gap-7">
+    <!-- Prefix reserved on every row so text stays aligned; the primary row
+         shows the indicator. Clicking a row makes it primary. -->
+    <div class="flex w-4 shrink-0 items-center justify-center">
+      <Tooltip v-if="option.selected" :text="__('Primary')">
+        <span class="lucide-check size-4 text-ink-gray-8" aria-hidden="true" />
+      </Tooltip>
+    </div>
+
+    <div class="min-w-0 flex-1">
       <!-- v-if, not v-show: TextInput has a fragment root when it has no
            label/description/error, and Vue drops directives on such roots -->
-      <div v-if="!editMode">{{ localOption.value }}</div>
-      <div v-else class="flex w-full flex-col gap-1">
+      <div v-if="!editMode" class="truncate">{{ localOption.value }}</div>
+      <div v-else class="flex max-w-40 flex-col gap-1">
         <TextInput
           ref="inputRef"
           v-model="localOption.value"
-          :placeholder="option.placeholder"
+          class="w-full"
+          :placeholder="placeholder"
           @blur.stop="saveOption"
           @keydown.enter.stop="(e) => e.target.blur()"
         />
@@ -18,54 +33,47 @@
           {{ errorMessage }}
         </div>
       </div>
-
-      <div class="actions flex items-center justify-center">
-        <Button
-          v-if="editMode"
-          variant="ghost"
-          :label="__('Save')"
-          class="opacity-0 hover:bg-surface-gray-4 group-hover:opacity-100"
-          @click="saveOption"
-        />
-        <Button
-          v-if="!isNew && !option.selected"
-          :tooltip="__('Set As Primary')"
-          variant="ghost"
-          :icon="SuccessIcon"
-          class="opacity-0 hover:bg-surface-gray-4 group-hover:opacity-100"
-          @click="option.onClick"
-        />
-        <Button
-          v-if="!editMode"
-          :tooltip="__('Edit')"
-          variant="ghost"
-          :icon="EditIcon"
-          class="opacity-0 hover:bg-surface-gray-4 group-hover:opacity-100"
-          @click="toggleEditMode"
-        />
-        <Button
-          :tooltip="__('Delete')"
-          variant="ghost"
-          icon="lucide-x"
-          class="opacity-0 hover:bg-surface-gray-4 group-hover:opacity-100"
-          @click="() => option.onDelete(option, isNew)"
-        />
-      </div>
     </div>
-    <div v-if="option.selected">
-      <span class="lucide-check text-ink-gray-5 h-4 w-6" aria-hidden="true" />
+
+    <div v-if="!editMode" class="shrink-0">
+      <Dropdown
+        :options="menuOptions"
+        :side="isMobileView ? 'bottom' : 'right'"
+        :align="isMobileView ? 'end' : 'start'"
+        offset="2"
+      >
+        <template #default="{ open }">
+          <button
+            class="flex cursor-pointer rounded p-1 text-ink-gray-6 transition-colors hover:bg-surface-gray-4"
+            :class="open ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'"
+            @click.stop
+          >
+            <FeatherIcon name="more-vertical" class="size-4" />
+          </button>
+        </template>
+      </Dropdown>
+    </div>
+    <div v-else class="flex shrink-0 items-center">
+      <Button variant="ghost" :label="__('Save')" @click="saveOption" />
+      <Button
+        variant="ghost"
+        icon="lucide-x"
+        :tooltip="__('Cancel')"
+        @click="cancelEdit"
+      />
     </div>
   </div>
 </template>
 
 <script setup>
-import SuccessIcon from '@/components/Icons/SuccessIcon.vue'
-import EditIcon from '@/components/Icons/EditIcon.vue'
-import { TextInput } from 'frappe-ui'
+import { Dropdown, TextInput, Tooltip } from 'frappe-ui'
+import { isMobileView } from '@/composables/settings'
 import { nextTick, ref, onMounted, reactive, watch } from 'vue'
 
 const props = defineProps({
-  option: { type: Object, default: () => {} },
+  option: { type: Object, default: () => ({}) },
+  placeholder: { type: String, default: '' },
+  validate: { type: Function, default: null },
 })
 
 const localOption = reactive({ ...props.option })
@@ -93,6 +101,25 @@ onMounted(() => {
   }
 })
 
+const menuOptions = [
+  {
+    label: __('Edit'),
+    icon: 'lucide-square-pen',
+    onClick: () => toggleEditMode(),
+  },
+  {
+    label: __('Delete'),
+    icon: 'lucide-trash-2',
+    theme: 'red',
+    onClick: () => props.option.onDelete(props.option, isNew.value),
+  },
+]
+
+const selectRow = () => {
+  if (editMode.value || isNew.value) return
+  if (!props.option.selected) props.option.onClick?.()
+}
+
 const toggleEditMode = () => {
   editMode.value = !editMode.value
   if (editMode.value) {
@@ -100,11 +127,20 @@ const toggleEditMode = () => {
   }
 }
 
+const cancelEdit = () => {
+  if (isNew.value) {
+    props.option.onDelete(props.option, true)
+    return
+  }
+  localOption.value = props.option.value
+  editMode.value = false
+}
+
 const saveOption = () => {
   const value = localOption.value?.trim()
   if (!value) return
 
-  const error = props.option.validate?.(value)
+  const error = props.validate?.(value)
   if (error) {
     errorMessage.value = error
     nextTick(() => inputRef.value?.el?.focus())
