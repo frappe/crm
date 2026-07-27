@@ -30,10 +30,14 @@ interface DropdownOption {
 
 type SidePanelField = Record<string, unknown> & { fieldname?: string }
 
-export function contactFieldTransform(contact: ContactDocument) {
-  async function reloadWithToast() {
+export function useContactFields(contact: ContactDocument) {
+  // 'email' | 'mobile_no' (setAsPrimary) and 'email' | 'phone' (createNew)
+  const isEmailField = (field: string) => field === 'email'
+  const isEmailDoctype = (doctype: string) => doctype === 'Contact Email'
+
+  async function reloadWithToast(message: string) {
     await contact.reload()
-    toast.success(__('Contact Updated'))
+    toast.success(message)
   }
 
   async function setAsPrimary(field: string, value: string) {
@@ -42,7 +46,12 @@ export function contactFieldTransform(contact: ContactDocument) {
       field,
       value,
     })
-    if (updated) reloadWithToast()
+    if (updated)
+      reloadWithToast(
+        isEmailField(field)
+          ? __('Primary email address updated')
+          : __('Primary mobile number updated'),
+      )
   }
 
   async function createNew(field: string, value: string) {
@@ -52,7 +61,12 @@ export function contactFieldTransform(contact: ContactDocument) {
       field,
       value,
     })
-    if (created) reloadWithToast()
+    if (created)
+      reloadWithToast(
+        isEmailField(field)
+          ? __('Email address added')
+          : __('Mobile number added'),
+      )
     return Boolean(created)
   }
 
@@ -68,13 +82,22 @@ export function contactFieldTransform(contact: ContactDocument) {
       fieldname,
       value,
     })
-    if (updated) reloadWithToast()
+    if (updated)
+      reloadWithToast(
+        isEmailDoctype(doctype)
+          ? __('Email address updated')
+          : __('Mobile number updated'),
+      )
     return Boolean(updated)
   }
 
   async function deleteOption(doctype: string, name: string) {
     await call('frappe.client.delete', { doctype, name })
-    reloadWithToast()
+    reloadWithToast(
+      isEmailDoctype(doctype)
+        ? __('Email address removed')
+        : __('Mobile number removed'),
+    )
   }
 
   const validateEmailOption = (value: string) =>
