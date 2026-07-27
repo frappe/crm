@@ -54,11 +54,19 @@
       </Dropdown>
     </div>
     <div v-else class="flex shrink-0 items-center">
-      <Button variant="ghost" :label="__('Save')" @click="saveOption" />
+      <!-- mousedown.prevent keeps the input from blurring when a button is
+           clicked, so Cancel discards instead of the blur-save persisting it -->
+      <Button
+        variant="ghost"
+        :label="__('Save')"
+        @mousedown.prevent
+        @click="saveOption"
+      />
       <Button
         variant="ghost"
         icon="lucide-x"
         :tooltip="__('Cancel')"
+        @mousedown.prevent
         @click="cancelEdit"
       />
     </div>
@@ -129,18 +137,20 @@ const toggleEditMode = () => {
 }
 
 const cancelEdit = () => {
+  // Exit edit mode first so a blur fired while the input unmounts is a no-op.
+  editMode.value = false
   if (isNew.value) {
     props.option.onDelete(props.option, true)
     return
   }
   localOption.value = props.option.value
-  editMode.value = false
 }
 
 const saveOption = async () => {
   // Blur and the Save click both fire this; guard so a create/update is
-  // issued once, never duplicated.
-  if (saving.value) return
+  // issued once, never duplicated. Also bail once edit mode has exited (e.g.
+  // Cancel), so an unmount blur can't persist a discarded value.
+  if (saving.value || !editMode.value) return
 
   const value = localOption.value?.trim()
   if (!value) return
