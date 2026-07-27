@@ -10,7 +10,7 @@
   >
     <!-- Prefix reserved on every row so text stays aligned; the primary row
          shows the indicator. Clicking a row makes it primary. -->
-    <div class="flex w-4 shrink-0 items-center justify-center">
+    <div class="flex h-7 w-4 shrink-0 items-center justify-center">
       <Tooltip v-if="option.selected" :text="__('Primary')">
         <span class="lucide-check size-4 text-ink-gray-8" aria-hidden="true" />
       </Tooltip>
