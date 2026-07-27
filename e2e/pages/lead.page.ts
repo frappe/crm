@@ -47,7 +47,9 @@ export class LeadPage {
 		const editor = this.page.locator('[contenteditable="true"]').last()
 		await editor.click()
 		await editor.fill(body)
-		await this.page.getByRole('button', { name: 'Send', exact: true }).click()
+		// The label carries a platform-dependent shortcut hint, e.g. "Send (⌘⏎)".
+		// Anchored both ends so it can't match "Send an Email" / "Send Template".
+		await this.page.getByRole('button', { name: /^Send(\s*\(.*\))?$/ }).click()
 	}
 
 	/** Switch to a named tab in the activity area (Activity, Emails, ...). */
