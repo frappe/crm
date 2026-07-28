@@ -1,6 +1,11 @@
 <template>
   <TransitionRoot :show="sidebarOpened">
     <Dialog as="div" class="fixed inset-0" @close="sidebarOpened = false">
+      <!-- The panel wrapper below needs w-fit so it stays at the sidebar's
+           width. Without it the block div spans the viewport and swallows the
+           clicks meant for DialogOverlay, so tapping outside would not close
+           the drawer. It also has to be the lone child of TransitionChild,
+           which renders as a template and forwards its ref to a single node. -->
       <TransitionChild
         as="template"
         enter="transition ease-in-out duration-200 transform"
@@ -10,6 +15,7 @@
         leave-from="translate-x-0"
         leave-to="-translate-x-full"
       >
+<<<<<<< HEAD
 <<<<<<< HEAD
         <div
           class="relative z-10 flex h-full w-[260px] flex-col justify-between border-r bg-surface-gray-1 transition-all duration-300 ease-in-out"
@@ -70,6 +76,9 @@
           </div>
 =======
         <div class="relative z-10 h-full">
+=======
+        <div class="relative z-10 h-full w-fit">
+>>>>>>> 9e1d6ef4 (fix: mobile sidebar not closing due to z index mismatch)
           <AppSidebar mobile />
 >>>>>>> 02838e56 (feat: migrate to frappe-ui sidebar)
         </div>
