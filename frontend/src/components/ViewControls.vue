@@ -540,6 +540,9 @@ list.value = createResource({
   },
 })
 
+// createResource leaves `params` null until a fetch passes them explicitly
+list.value.params = getParams()
+
 const isLoading = computed(() => list.value?.loading)
 
 function reload() {
