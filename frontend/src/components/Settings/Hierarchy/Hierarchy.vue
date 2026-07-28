@@ -82,7 +82,7 @@
           v-model="search"
           :placeholder="__('Search users')"
           :debounce="200"
-          class="w-1/3"
+          class="w-full"
         >
           <template #prefix>
             <span
