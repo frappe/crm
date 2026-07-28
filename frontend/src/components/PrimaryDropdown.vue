@@ -6,7 +6,7 @@
         class="dropdown-button flex w-full items-center !justify-between bg-surface-base !px-2.5 py-1.5 text-base text-ink-gray-8 placeholder-ink-gray-4 transition-colors hover:bg-surface-base focus:bg-surface-base focus:outline-none focus:ring-0"
         @click="togglePopover"
       >
-        <div v-if="value" class="truncate">{{ value }}</div>
+        <div v-if="value" forclass="truncate">{{ value }}</div>
         <div v-else class="text-base leading-5 text-ink-gray-4 truncate">
           {{ placeholder }}
         </div>
@@ -30,7 +30,7 @@
           />
           <div v-if="!options?.length">
             <div class="p-1.5 pl-3 pr-4 text-base text-ink-gray-4">
-              {{ __('No {0} available', [label]) }}
+              {{ __("No {0} available", [label]) }}
             </div>
           </div>
         </div>
@@ -49,45 +49,40 @@
 </template>
 
 <script setup>
-import PrimaryDropdownItem from '@/components/PrimaryDropdownItem.vue'
-import { Popover } from 'frappe-ui'
+import PrimaryDropdownItem from "@/components/PrimaryDropdownItem.vue";
+import { Popover } from "frappe-ui";
 
 defineProps({
-  value: { type: [String, Number], default: '' },
-  placeholder: { type: String, default: '' },
+  value: { type: [String, Number], default: "" },
+  placeholder: { type: String, default: "" },
   options: { type: Array, default: () => [] },
   create: { type: Function, default: null },
-  label: { type: String, default: '' },
-})
-<<<<<<< HEAD
-=======
+  label: { type: String, default: "" },
+});
 
 // Drafted here, never in the parent's doc, so an incomplete value can't leak
 // into an auto-save
-const draft = ref(null)
+const draft = ref(null);
 
 function addDraft() {
   draft.value = {
-    value: '',
+    value: "",
     selected: false,
     onSave: async (option) => {
       // On failure the draft stays, so the value remains editable
-      const created = await props.onCreate?.(option.value)
-      if (created) draft.value = null
-      return created
+      const created = await props.onCreate?.(option.value);
+      if (created) draft.value = null;
+      return created;
     },
     onDelete: () => (draft.value = null),
-  }
+  };
 }
->>>>>>> f2c408ac (fix: improve ux to match the older style)
 </script>
 
 <style scoped>
 .dropdown-button {
   border-color: transparent;
   background: transparent;
-<<<<<<< HEAD
-=======
   /* A shrink-0 flex child with min-width:auto overflows on long values */
   min-width: 0;
 }
@@ -96,6 +91,5 @@ function addDraft() {
 :deep(.dropdown-button > span) {
   min-width: 0;
   flex: 1;
->>>>>>> f2c408ac (fix: improve ux to match the older style)
 }
 </style>
