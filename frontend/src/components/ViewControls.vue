@@ -550,6 +550,9 @@ list.value = createResource({
   },
 })
 
+// createResource leaves `params` null until a fetch passes them explicitly
+list.value.params = getParams()
+
 // Refresh the list when a Domain Enrichment enrichment finishes for this
 // doctype, so newly-filled fields (logo, etc.) show without a manual reload.
 function onEnrichmentDone(data) {
