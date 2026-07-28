@@ -412,6 +412,16 @@ watch(
 watch(show, (value) => {
   if (value) recordingError.value = false
 })
+
+// and reset when the recording source changes — a reload (e.g. afterUpdate)
+// can make a previously-missing recording available while the modal stays open,
+// leaving name and show unchanged so neither watch above fires
+watch(
+  () => callLog.value?.data?.recording_url_path,
+  () => {
+    recordingError.value = false
+  },
+)
 </script>
 
 <style scoped>
