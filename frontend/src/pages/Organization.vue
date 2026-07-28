@@ -403,7 +403,7 @@ const deals = createListResource({
     'name',
     'organization',
     'currency',
-    'annual_revenue',
+    'deal_value',
     'status',
     'email',
     'mobile_no',
@@ -462,7 +462,7 @@ function getDealRowObject(deal) {
       label: deal.organization,
       logo: organization.doc?.organization_logo,
     },
-    annual_revenue: getFormattedCurrency('annual_revenue', deal),
+    deal_value: getFormattedCurrency('deal_value', deal),
     status: {
       label: deal.status,
       color: getDealStatus(deal.status)?.color,
@@ -503,7 +503,7 @@ const dealColumns = [
   },
   {
     label: __('Amount'),
-    key: 'annual_revenue',
+    key: 'deal_value',
     align: 'right',
     width: '9rem',
   },
