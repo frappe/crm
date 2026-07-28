@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-07-19 10:53+0000\n"
-"PO-Revision-Date: 2026-07-21 11:27\n"
+"PO-Revision-Date: 2026-07-28 13:21\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Portuguese, Brazilian\n"
 "MIME-Version: 1.0\n"
@@ -1661,7 +1661,7 @@ msgstr ""
 
 #: crm/templates/emails/helpdesk_invitation.html:7
 msgid "Click on the link below to complete your registration and set a new password"
-msgstr "Clique no link abaixo para concluir seu cadastro e definir uma nova senha"
+msgstr "Clique no link abaixo para completar o seu registo e definir uma nova senha"
 
 #: frontend/src/components/Settings/Forms/FieldCard.vue:28
 msgid "Click to rename"
@@ -9474,7 +9474,7 @@ msgstr "Sua tarefa em {0} {1} foi removida por {2}"
 
 #: crm/templates/emails/helpdesk_invitation.html:6
 msgid "Your login id is"
-msgstr "Seu ID de login é"
+msgstr "Sua identificação de acesso é"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:643
 msgid "Your old condition will be overwritten. Are you sure you want to save?"
