@@ -1,6 +1,6 @@
 <template>
   <div
-    class="cursor-pointer flex flex-col rounded-md shadow bg-surface-elevation-1 px-3 py-1.5 text-base transition-all duration-300 ease-in-out"
+    class="cursor-pointer flex flex-col rounded-md shadow-sm bg-surface-elevation-1 px-3 py-1.5 text-base transition-all duration-300 ease-in-out"
   >
     <div
       class="-mb-0.5 flex items-center justify-between gap-2 truncate text-ink-gray-9"
