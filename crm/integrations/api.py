@@ -153,7 +153,12 @@ def get_contact_by_phone_number(phone_number: str):
 
 @frappe.whitelist()
 def get_recording_url(call_log_name: str):
-	"""Fetch and stream a call recording, authenticating with the provider's credentials."""
+	"""Proxy a call recording (authenticating with the provider) so it plays in the browser.
+
+	Forwards the browser's Range request to the provider and passes the response back with
+	Accept-Ranges/Content-Length set. Without range support the HTML <audio> element can't
+	read the recording's duration (shows 0:00) or seek within it.
+	"""
 	if not call_log_name or not frappe.db.exists("CRM Call Log", call_log_name):
 		frappe.throw(_("Call log not found"), frappe.DoesNotExistError)
 
@@ -163,11 +168,34 @@ def get_recording_url(call_log_name: str):
 		frappe.throw(_("Recording URL not found"), frappe.DoesNotExistError)
 
 	auth = _get_recording_credentials(log.telephony_medium)
-	with requests.get(log.recording_url, auth=auth, stream=True, timeout=10) as r:
-		r.raise_for_status()
-		response = Response()
-		response.data = r.content
-		response.mimetype = "audio/mpeg"
+	# forward the browser's Range header so the provider (Twilio/Exotel CDN) can return
+	# just the requested bytes; falls back to the full file if it doesn't support ranges
+	req_headers = {}
+	range_header = frappe.get_request_header("Range")
+	if range_header:
+		req_headers["Range"] = range_header
+
+	# stream instead of buffering the whole file: the provider's Content-Length reaches
+	# the browser immediately so the <audio> element can show the duration right away,
+	# rather than waiting for the entire recording to download server-side first
+	upstream = requests.get(log.recording_url, auth=auth, headers=req_headers, stream=True, timeout=30)
+	upstream.raise_for_status()
+
+	def _stream():
+		try:
+			yield from upstream.iter_content(chunk_size=64 * 1024)
+		finally:
+			upstream.close()
+
+	response = Response(
+		_stream(),
+		status=upstream.status_code,
+		mimetype=upstream.headers.get("Content-Type") or "audio/mpeg",
+	)
+	response.headers["Accept-Ranges"] = "bytes"
+	for header in ("Content-Length", "Content-Range"):
+		if upstream.headers.get(header):
+			response.headers[header] = upstream.headers[header]
 	return response
 
 

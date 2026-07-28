@@ -93,10 +93,18 @@
                 class="w-full"
               >
                 <audio
+                  v-if="!recordingError"
                   class="audio-control w-full"
                   controls
                   :src="field.value"
+                  @error="recordingError = true"
                 ></audio>
+                <div
+                  v-else
+                  class="flex h-9 items-center text-base text-ink-gray-5"
+                >
+                  {{ __('Recording not available') }}
+                </div>
               </div>
               <div
                 v-else-if="field.name == 'note'"
@@ -194,6 +202,10 @@ const { showModal } = useDoctypeModal()
 
 const note = ref('')
 const task = ref('')
+// a call log can carry a recording_url that no longer resolves to a playable file
+// (recording never made / expired) — track load failure to show a fallback instead
+// of a dead 0:00 player
+const recordingError = ref(false)
 
 function showNote(name) {
   showModal({
@@ -389,6 +401,7 @@ watch(
   () => callLog.value?.data?.name,
   (value) => {
     if (!value) return
+    recordingError.value = false
     d.value = useDocument('CRM Call Log', value)
   },
 )
