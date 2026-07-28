@@ -95,28 +95,28 @@
         </Draggable>
       </FadedScrollableDiv>
       <div>
-        <Autocomplete
-          value=""
+        <Combobox
+          :model-value="null"
           :options="quickFilterOptions"
-          @change="(e) => addQuickFilter(e)"
+          @update:selected-option="(e) => addQuickFilter(e)"
         >
-          <template #target="{ togglePopover }">
+          <template #trigger="{ open, setOpen }">
             <Button
               class="whitespace-nowrap mr-2"
               variant="ghost"
               :label="__('Add Filter')"
               iconLeft="plus"
-              @click="togglePopover()"
+              @click="setOpen(!open)"
             />
           </template>
-          <template #item-label="{ option }">
-            <Tooltip :text="option.value" :hover-delay="1">
+          <template #item-label="{ item }">
+            <Tooltip :text="item.value" :hover-delay="1">
               <div class="flex-1 truncate text-ink-gray-7">
-                {{ option.label }}
+                {{ item.label }}
               </div>
             </Tooltip>
           </template>
-        </Autocomplete>
+        </Combobox>
       </div>
     </div>
     <div class="-ml-2 h-[70%] border-l" />
@@ -312,7 +312,6 @@ import UnpinIcon from '@/components/Icons/UnpinIcon.vue'
 import ExportIcon from '@/components/Icons/ExportIcon.vue'
 import QuickFilterIcon from '@/components/Icons/QuickFilterIcon.vue'
 import ViewModal from '@/components/Modals/ViewModal.vue'
-import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import SortBy from '@/components/SortBy.vue'
 import Filter from '@/components/Filter.vue'
 import GroupBy from '@/components/GroupBy.vue'
@@ -327,6 +326,7 @@ import { organizationsStore } from '@/stores/organizations'
 import { getMeta } from '@/stores/meta'
 import { isEmoji } from '@/utils'
 import {
+  Combobox,
   Tooltip,
   createResource,
   Dropdown,
@@ -549,6 +549,9 @@ list.value = createResource({
     }
   },
 })
+
+// createResource leaves `params` null until a fetch passes them explicitly
+list.value.params = getParams()
 
 // Refresh the list when a Domain Enrichment enrichment finishes for this
 // doctype, so newly-filled fields (logo, etc.) show without a manual reload.
