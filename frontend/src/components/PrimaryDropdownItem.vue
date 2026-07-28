@@ -92,94 +92,103 @@
 </template>
 
 <script setup>
-import { ErrorMessage, ItemListRow, TextInput, Tooltip } from "frappe-ui";
-import { nextTick, ref, onMounted, reactive, watch } from "vue";
+import { ErrorMessage, ItemListRow, TextInput, Tooltip } from 'frappe-ui'
+import { nextTick, ref, onMounted, reactive, watch } from 'vue'
 
 const props = defineProps({
-  option: { type: Object, default: () => {} },
-});
+  option: { type: Object, default: () => ({}) },
+  placeholder: { type: String, default: '' },
+  validate: { type: Function, default: null },
+})
 
-const localOption = reactive({ ...props.option });
+const localOption = reactive({ ...props.option })
 watch(
   () => props.option,
   (val) => Object.assign(localOption, val),
   { deep: true },
-);
+)
 
-const editMode = ref(false);
-const isNew = ref(false);
-const inputRef = ref(null);
+const editMode = ref(false)
+const isNew = ref(false)
+const inputRef = ref(null)
+const errorMessage = ref('')
+const saving = ref(false)
+
+watch(
+  () => localOption.value,
+  () => (errorMessage.value = ''),
+)
 
 onMounted(() => {
   if (!props.option?.value) {
-    editMode.value = true;
-    isNew.value = true;
-    nextTick(() => inputRef.value?.el?.focus());
+    editMode.value = true
+    isNew.value = true
+    nextTick(() => inputRef.value?.el?.focus())
   }
-});
+})
 
 const selectRow = () => {
-  if (editMode.value || isNew.value) return;
-  if (!props.option.selected) props.option.onClick?.();
-};
+  if (editMode.value || isNew.value) return
+  if (!props.option.selected) props.option.onClick?.()
+}
 
 const selectRowOnKey = (e) => {
-  if (editMode.value || (e.key !== "Enter" && e.key !== " ")) return;
-  e.preventDefault();
-  selectRow();
-};
+  if (editMode.value || (e.key !== 'Enter' && e.key !== ' ')) return
+  e.preventDefault()
+  selectRow()
+}
 
 const toggleEditMode = () => {
-  editMode.value = !editMode.value;
+  editMode.value = !editMode.value
   if (editMode.value) {
-    nextTick(() => inputRef.value?.el?.focus());
+    nextTick(() => inputRef.value?.el?.focus())
   }
-};
+}
 
 const cancelEdit = () => {
   // Exit first so the blur fired while the input unmounts is a no-op
-  editMode.value = false;
+  editMode.value = false
   if (isNew.value) {
-    props.option.onDelete(props.option, true);
-    return;
+    props.option.onDelete(props.option, true)
+    return
   }
-  localOption.value = props.option.value;
-};
+  localOption.value = props.option.value
+}
 
 const saveOption = async () => {
   // Blur and the Save click both fire this: save once, and never after edit
   // mode has exited, so an unmount blur can't persist a discarded value
-  if (saving.value || !editMode.value) return;
+  if (saving.value || !editMode.value) return
 
-  const value = localOption.value?.trim();
-  if (!value) return;
+  const value = localOption.value?.trim()
+  if (!value) return
 
-  const error = props.validate?.(value);
+  const error = props.validate?.(value)
   if (error) {
-    errorMessage.value = error;
-    nextTick(() => inputRef.value?.el?.focus());
-    return;
+    errorMessage.value = error
+    nextTick(() => inputRef.value?.el?.focus())
+    return
   }
 
-  saving.value = true;
+  saving.value = true
   try {
     const saved = await props.option.onSave(
       { ...props.option, value },
       isNew.value,
-    );
+    )
     // A failed save stays editable instead of showing the value as saved
     if (!saved) {
-      errorMessage.value = __("Could not save, try again");
-      nextTick(() => inputRef.value?.el?.focus());
-      return;
+      errorMessage.value = __('Could not save, try again')
+      nextTick(() => inputRef.value?.el?.focus())
+      return
     }
-    editMode.value = false;
-    isNew.value = false;
+    editMode.value = false
+    isNew.value = false
   } catch {
-    errorMessage.value = __("Could not save, try again");
-    nextTick(() => inputRef.value?.el?.focus());
+    errorMessage.value = __('Could not save, try again')
+    nextTick(() => inputRef.value?.el?.focus())
   } finally {
-    saving.value = false;
+    saving.value = false
   }
-};
+}
 </script>

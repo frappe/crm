@@ -337,6 +337,11 @@ export function validateEmail(email) {
   return regExp.test(email)
 }
 
+export function validatePhone(phone) {
+  let value = String(phone).trim()
+  return /^\+?[\d\s()-]+$/.test(value) && /\d/.test(value)
+}
+
 export const isMac =
   typeof navigator !== 'undefined' &&
   /Mac|iPod|iPhone|iPad/i.test(
