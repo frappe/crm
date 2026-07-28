@@ -10,6 +10,7 @@
         leave-from="translate-x-0"
         leave-to="-translate-x-full"
       >
+<<<<<<< HEAD
         <div
           class="relative z-10 flex h-full w-[260px] flex-col justify-between border-r bg-surface-gray-1 transition-all duration-300 ease-in-out"
         >
@@ -67,6 +68,10 @@
               </Section>
             </div>
           </div>
+=======
+        <div class="relative z-10 h-full">
+          <AppSidebar mobile />
+>>>>>>> 02838e56 (feat: migrate to frappe-ui sidebar)
         </div>
       </TransitionChild>
       <TransitionChild
@@ -90,6 +95,7 @@ import {
   Dialog,
   DialogOverlay,
 } from '@headlessui/vue'
+<<<<<<< HEAD
 import Section from '@/components/CollapsibleSection.vue'
 import PinIcon from '@/components/Icons/PinIcon.vue'
 import UserDropdown from '@/components/UserDropdown.vue'
@@ -105,107 +111,19 @@ import SidebarLink from '@/components/SidebarLink.vue'
 import { viewsStore } from '@/stores/views'
 import { unreadNotificationsCount } from '@/stores/notifications'
 import { computed, h } from 'vue'
+=======
+import AppSidebar from '@/components/Layouts/AppSidebar.vue'
+>>>>>>> 02838e56 (feat: migrate to frappe-ui sidebar)
 import { mobileSidebarOpened as sidebarOpened } from '@/composables/settings'
+import { watch } from 'vue'
+import { useRoute } from 'vue-router'
 
-const { getPinnedViews, getPublicViews } = viewsStore()
+const route = useRoute()
 
-const links = [
-  {
-    label: 'Leads',
-    icon: LeadsIcon,
-    to: 'Leads',
-  },
-  {
-    label: 'Deals',
-    icon: DealsIcon,
-    to: 'Deals',
-  },
-  {
-    label: 'Contacts',
-    icon: ContactsIcon,
-    to: 'Contacts',
-  },
-  {
-    label: 'Organizations',
-    icon: OrganizationsIcon,
-    to: 'Organizations',
-  },
-  {
-    label: 'Notes',
-    icon: NoteIcon,
-    to: 'Notes',
-  },
-  {
-    label: 'Tasks',
-    icon: TaskIcon,
-    to: 'Tasks',
-  },
-  {
-    label: 'Call Logs',
-    icon: PhoneIcon,
-    to: 'Call Logs',
-  },
-]
-
-const allViews = computed(() => {
-  let _views = [
-    {
-      name: 'All Views',
-      hideLabel: true,
-      opened: true,
-      views: links,
-    },
-  ]
-  if (getPublicViews().length) {
-    _views.push({
-      name: 'Public Views',
-      opened: true,
-      views: parseView(getPublicViews()),
-    })
-  }
-
-  if (getPinnedViews().length) {
-    _views.push({
-      name: 'Pinned Views',
-      opened: true,
-      views: parseView(getPinnedViews()),
-    })
-  }
-  return _views
-})
-
-function parseView(views) {
-  return views.map((view) => {
-    return {
-      label: view.label,
-      icon: getIcon(view.route_name, view.icon),
-      to: {
-        name: view.route_name,
-        params: { viewType: view.type || 'list' },
-        query: { view: view.name },
-      },
-    }
-  })
-}
-
-function getIcon(routeName, icon) {
-  if (icon) return h('div', { class: 'size-auto' }, icon)
-
-  switch (routeName) {
-    case 'Leads':
-      return LeadsIcon
-    case 'Deals':
-      return DealsIcon
-    case 'Contacts':
-      return ContactsIcon
-    case 'Organizations':
-      return OrganizationsIcon
-    case 'Notes':
-      return NoteIcon
-    case 'Call Logs':
-      return PhoneIcon
-    default:
-      return PinIcon
-  }
-}
+// Close on any navigation, which also covers browser back — the sidebar rows
+// no longer close the drawer themselves.
+watch(
+  () => route.fullPath,
+  () => (sidebarOpened.value = false),
+)
 </script>

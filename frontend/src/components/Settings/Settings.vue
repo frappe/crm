@@ -19,19 +19,21 @@
               <span>{{ __(tab.label) }}</span>
             </div>
             <nav class="space-y-[3px] px-1">
-              <SidebarLink
+              <SidebarItem
                 v-for="item in tab.items"
                 :key="item.label"
-                :icon="item.icon"
                 :label="__(item.label)"
+                :active="activeTab?.label == item.label"
                 class="w-full"
                 :class="
-                  activeTab?.label == item.label
-                    ? 'bg-surface-elevation-3 shadow-sm hover:bg-surface-elevation-3'
-                    : 'hover:bg-surface-gray-3'
+                  activeTab?.label != item.label && 'hover:!bg-surface-gray-3'
                 "
                 @click="activeSettingsPage = item.label"
-              />
+              >
+                <template #prefix>
+                  <Icon :icon="item.icon" class="size-4 text-ink-gray-7" />
+                </template>
+              </SidebarItem>
             </nav>
           </template>
         </div>
@@ -73,7 +75,7 @@ import DashboardSettings from '@/components/Settings/DashboardSettings.vue'
 import EmailTemplatePage from '@/components/Settings/EmailTemplate/EmailTemplatePage.vue'
 import TelephonyPage from '@/components/Settings/Telephony/TelephonyPage.vue'
 import EmailConfig from '@/components/Settings/EmailConfig.vue'
-import SidebarLink from '@/components/SidebarLink.vue'
+import Icon from '@/components/Icon.vue'
 import { usersStore } from '@/stores/users'
 import {
   showSettings,
@@ -81,7 +83,7 @@ import {
   disableSettingModalOutsideClick,
 } from '@/composables/settings'
 import { isWhatsappInstalled } from '@/composables/whatsapp'
-import { Dialog, Avatar } from 'frappe-ui'
+import { Dialog, Avatar, SidebarItem } from 'frappe-ui'
 import { ref, markRaw, computed, watch, h } from 'vue'
 import AssignmentRulePage from './AssignmentRules/AssignmentRulePage.vue'
 import ShieldCheck from '~icons/lucide/shield-check'
