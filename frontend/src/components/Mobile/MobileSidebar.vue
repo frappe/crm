@@ -47,8 +47,9 @@ import { useRoute } from 'vue-router'
 
 const route = useRoute()
 
-// Close on any navigation, which also covers browser back — the sidebar rows
-// no longer close the drawer themselves.
+// Covers navigation the sidebar does not originate, such as browser back or a
+// redirect. Rows close the drawer themselves on click, since re-selecting the
+// current route leaves fullPath unchanged and would not trigger this.
 watch(
   () => route.fullPath,
   () => (sidebarOpened.value = false),
