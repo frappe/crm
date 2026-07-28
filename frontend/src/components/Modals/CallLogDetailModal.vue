@@ -405,6 +405,13 @@ watch(
     d.value = useDocument('CRM Call Log', value)
   },
 )
+
+// also reset when the modal reopens — the name watch above won't fire when the
+// same call log is opened again, which would otherwise keep a stale error state
+// and hide a now-playable recording behind "Recording not available"
+watch(show, (value) => {
+  if (value) recordingError.value = false
+})
 </script>
 
 <style scoped>
