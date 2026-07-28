@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-07-19 10:53+0000\n"
-"PO-Revision-Date: 2026-07-21 11:26\n"
+"PO-Revision-Date: 2026-07-28 13:20\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Spanish\n"
 "MIME-Version: 1.0\n"
@@ -9402,7 +9402,7 @@ msgstr ""
 
 #: crm/templates/emails/helpdesk_invitation.html:22
 msgid "You can also copy-paste following link in your browser"
-msgstr "También puede copiar y pegar el siguiente enlace en su navegador"
+msgstr ""
 
 #: frontend/src/components/Telephony/CallUI.vue:37
 msgid "You can change the default calling medium from the settings"
