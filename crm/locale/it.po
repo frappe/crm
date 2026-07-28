@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-07-19 10:53+0000\n"
-"PO-Revision-Date: 2026-07-21 11:26\n"
+"PO-Revision-Date: 2026-07-28 13:20\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Italian\n"
 "MIME-Version: 1.0\n"
@@ -164,7 +164,7 @@ msgstr ""
 
 #: crm/templates/emails/helpdesk_invitation.html:5
 msgid "A new account has been created for you at {0}"
-msgstr "Un nuovo account è stato creato per te su {0}"
+msgstr ""
 
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1003
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1135
@@ -1661,7 +1661,7 @@ msgstr "Cancella Tabella"
 
 #: crm/templates/emails/helpdesk_invitation.html:7
 msgid "Click on the link below to complete your registration and set a new password"
-msgstr "Fare clic sul collegamento sottostante per completare la registrazione e impostare una nuova password"
+msgstr ""
 
 #: frontend/src/components/Settings/Forms/FieldCard.vue:28
 msgid "Click to rename"
@@ -9402,7 +9402,7 @@ msgstr ""
 
 #: crm/templates/emails/helpdesk_invitation.html:22
 msgid "You can also copy-paste following link in your browser"
-msgstr "Puoi anche copiare e incollare il seguente collegamento nel tuo browser"
+msgstr ""
 
 #: frontend/src/components/Telephony/CallUI.vue:37
 msgid "You can change the default calling medium from the settings"
@@ -9474,7 +9474,7 @@ msgstr "La tua assegnazione su {0} {1} è stata rimossa da {2}"
 
 #: crm/templates/emails/helpdesk_invitation.html:6
 msgid "Your login id is"
-msgstr "Il tuo ID di login è"
+msgstr "Il tuo ID di accesso è"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:643
 msgid "Your old condition will be overwritten. Are you sure you want to save?"
