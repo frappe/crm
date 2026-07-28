@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-1.5 p-[2px] -m-[2px]">
+  <div class="space-y-1.5 p-[2px] !-m-[2px]">
     <label v-if="attrs.label" class="block" :class="labelClasses">
       {{ __(attrs.label) }}
     </label>

@@ -8,7 +8,7 @@
   >
     <template #trigger="{ open, setOpen }">
       <Button :label="__('Sort')" @click="setOpen(!open)">
-        <template v-if="hideLabel">
+        <template v-if="hideLabel" #icon>
           <SortIcon class="h-4" />
         </template>
         <template v-if="!hideLabel && !sortValues?.size" #prefix>
