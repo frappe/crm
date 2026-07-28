@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-07-19 10:53+0000\n"
-"PO-Revision-Date: 2026-07-27 13:04\n"
+"PO-Revision-Date: 2026-07-28 13:21\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Croatian\n"
 "MIME-Version: 1.0\n"
@@ -164,7 +164,7 @@ msgstr "Izvor sinkronizacije potencijalnih klijenata već je omogućen za ovaj F
 
 #: crm/templates/emails/helpdesk_invitation.html:5
 msgid "A new account has been created for you at {0}"
-msgstr "Za vas je stvoren novi račun na {0}"
+msgstr "Za vas je stvoren novi račun {0}"
 
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1003
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1135
@@ -1661,7 +1661,7 @@ msgstr "Očisti Tabelu"
 
 #: crm/templates/emails/helpdesk_invitation.html:7
 msgid "Click on the link below to complete your registration and set a new password"
-msgstr "Klikni na vezu ispod kako biste dovršili registraciju i postavili novu lozinku"
+msgstr "Kliknite na poveznicu ispod kako biste dovršili registraciju i postavili novu lozinku"
 
 #: frontend/src/components/Settings/Forms/FieldCard.vue:28
 msgid "Click to rename"
