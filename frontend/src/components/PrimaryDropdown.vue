@@ -22,7 +22,7 @@
       <div
         class="my-2 p-1.5 min-w-40 space-y-1.5 divide-y divide-outline-gray-1 rounded-lg bg-surface-elevation-2 shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
       >
-        <div>
+        <div class="space-y-1">
           <PrimaryDropdownItem
             v-for="option in options"
             :key="option.name || option.value"
@@ -59,11 +59,43 @@ defineProps({
   create: { type: Function, default: null },
   label: { type: String, default: '' },
 })
+<<<<<<< HEAD
+=======
+
+// Drafted here, never in the parent's doc, so an incomplete value can't leak
+// into an auto-save
+const draft = ref(null)
+
+function addDraft() {
+  draft.value = {
+    value: '',
+    selected: false,
+    onSave: async (option) => {
+      // On failure the draft stays, so the value remains editable
+      const created = await props.onCreate?.(option.value)
+      if (created) draft.value = null
+      return created
+    },
+    onDelete: () => (draft.value = null),
+  }
+}
+>>>>>>> f2c408ac (fix: improve ux to match the older style)
 </script>
 
 <style scoped>
 .dropdown-button {
   border-color: transparent;
   background: transparent;
+<<<<<<< HEAD
+=======
+  /* A shrink-0 flex child with min-width:auto overflows on long values */
+  min-width: 0;
+}
+
+/* The truncate span Button wraps the value in needs to shrink too */
+:deep(.dropdown-button > span) {
+  min-width: 0;
+  flex: 1;
+>>>>>>> f2c408ac (fix: improve ux to match the older style)
 }
 </style>
