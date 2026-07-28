@@ -36,19 +36,6 @@
           class="flex justify-between gap-2 overflow-hidden border-t px-4 py-2.5"
         >
           <div class="flex gap-1 items-center overflow-x-auto">
-            <EditorFixedMenu :items="fullToolbar" />
-            <IconPicker
-              v-slot="{ togglePopover }"
-              v-model="emoji"
-              @update:modelValue="() => appendEmoji()"
-            >
-              <Button
-                :tooltip="__('Insert Emoji')"
-                :icon="SmileIcon"
-                variant="ghost"
-                @click="togglePopover()"
-              />
-            </IconPicker>
             <FileUploader
               :upload-args="{
                 doctype: doctype,
@@ -66,6 +53,19 @@
                 />
               </template>
             </FileUploader>
+            <EditorFixedMenu :items="fullToolbar" />
+            <IconPicker
+              v-slot="{ togglePopover }"
+              v-model="emoji"
+              @update:modelValue="() => appendEmoji()"
+            >
+              <Button
+                :tooltip="__('Insert Emoji')"
+                :icon="SmileIcon"
+                variant="ghost"
+                @click="togglePopover()"
+              />
+            </IconPicker>
           </div>
           <div class="mt-2 flex items-center justify-end space-x-2 sm:mt-0">
             <Button v-bind="discardButtonProps || {}" :label="__('Discard')" />
