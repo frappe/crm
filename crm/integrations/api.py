@@ -8,15 +8,25 @@ from werkzeug.wrappers import Response
 from crm.utils import are_same_phone_number, parse_phone_number
 
 
-def _get_recording_credentials(telephony_medium: str) -> tuple:
-	"""Return (api_key, secret) for the given telephony medium."""
+def _get_recording_credentials(telephony_medium: str) -> tuple | None:
+	"""Return (api_key, secret) for the given telephony medium, or None when the
+	recording needs no auth.
+
+	A manual/unrecognized medium (a recording added by hand) is fetched as-is, and
+	a provider whose credentials aren't configured yet falls back to no auth rather
+	than raising — so the proxy attempts the fetch and lets the provider decide,
+	instead of 500-ing before the request is even made.
+	"""
 	if telephony_medium == "Twilio":
 		s = frappe.get_single("CRM Twilio Settings")
-		return s.api_key, s.get_password("api_secret")
+		secret = s.get_password("api_secret", raise_exception=False)
+		return (s.api_key, secret) if s.api_key and secret else None
 	elif telephony_medium == "Exotel":
 		s = frappe.get_single("CRM Exotel Settings")
-		return s.api_key, s.get_password("api_token")
-	frappe.throw(_("Unknown telephony medium: {0}").format(telephony_medium))
+		token = s.get_password("api_token", raise_exception=False)
+		return (s.api_key, token) if s.api_key and token else None
+	# manual or unrecognized medium: no provider auth to apply
+	return None
 
 
 @frappe.whitelist()
