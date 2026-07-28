@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-07-19 10:53+0000\n"
-"PO-Revision-Date: 2026-07-21 11:26\n"
+"PO-Revision-Date: 2026-07-28 13:20\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Russian\n"
 "MIME-Version: 1.0\n"
@@ -164,7 +164,7 @@ msgstr "Источник синхронизации лидов уже включ
 
 #: crm/templates/emails/helpdesk_invitation.html:5
 msgid "A new account has been created for you at {0}"
-msgstr "Новая учетная запись была создана для вас на {0}"
+msgstr "Для вас создана новая учетная запись на сайте {0}."
 
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1003
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1135
@@ -9474,7 +9474,7 @@ msgstr "Ваше задание на {0} {1} было удалено {2}"
 
 #: crm/templates/emails/helpdesk_invitation.html:6
 msgid "Your login id is"
-msgstr "Ваш логин id"
+msgstr "Ваш логин"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:643
 msgid "Your old condition will be overwritten. Are you sure you want to save?"
