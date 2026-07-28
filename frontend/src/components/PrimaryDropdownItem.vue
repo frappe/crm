@@ -1,81 +1,98 @@
 <template>
-  <div
-    class="group flex w-full gap-2 rounded p-1 pl-2 text-base text-ink-gray-8 transition-colors"
-    :class="
-      editMode
-        ? 'items-start'
-        : 'items-center cursor-pointer hover:bg-surface-gray-3 active:bg-surface-gray-4'
-    "
-    @click="selectRow"
-  >
-    <!-- Prefix reserved on every row so text stays aligned; the primary row
-         shows the indicator. Clicking a row makes it primary. -->
-    <div class="flex h-7 w-4 shrink-0 items-center justify-center">
-      <Tooltip v-if="option.selected" :text="__('Primary')">
-        <span class="lucide-check size-4 text-ink-gray-8" aria-hidden="true" />
-      </Tooltip>
-    </div>
+  <div>
+    <!-- Tabbable so the popover focuses the row on open, not the first action
+         button, which would pop its tooltip open -->
+    <ItemListRow
+      class="group"
+      size="sm"
+      :class="editMode ? '' : 'cursor-pointer hover:bg-surface-gray-2'"
+      :selected="localOption.selected"
+      :tabindex="editMode ? -1 : 0"
+      @click="selectRow"
+      @keydown="selectRowOnKey"
+    >
+      <!-- Reserved on every row so labels stay aligned -->
+      <template #prefix>
+        <Tooltip v-if="localOption.selected" :text="__('Primary')">
+          <span
+            class="lucide-check size-4 text-ink-gray-8"
+            aria-hidden="true"
+          />
+        </Tooltip>
+        <span v-else class="size-4" aria-hidden="true" />
+      </template>
 
-    <div class="min-w-0 flex-1">
-      <!-- v-if, not v-show: TextInput has a fragment root when it has no
-           label/description/error, and Vue drops directives on such roots -->
-      <div v-if="!editMode" class="truncate">{{ localOption.value }}</div>
-      <div v-else class="flex max-w-40 flex-col gap-1">
-        <TextInput
-          ref="inputRef"
-          v-model="localOption.value"
-          class="w-full"
-          :placeholder="placeholder"
-          @blur.stop="saveOption"
-          @keydown.enter.stop="(e) => e.target.blur()"
-        />
-        <div v-if="errorMessage" class="text-xs font-medium text-ink-red-6">
-          {{ errorMessage }}
-        </div>
+      <!-- v-if, not v-show: Vue drops directives on TextInput's fragment root -->
+      <div v-if="!editMode" class="truncate">
+        {{ localOption.value }}
       </div>
-    </div>
+      <!-- -mx-2 -my-1 cancel the input's own box so it sits where the read-mode
+           text does, inside the row's padding; the forms base layer gives the
+           input a white background until it is cleared -->
+      <TextInput
+        v-else
+        ref="inputRef"
+        v-model="localOption.value"
+        size="sm"
+        variant="ghost"
+        class="-mx-2 -my-1 [&_input]:bg-transparent"
+        :placeholder="placeholder"
+        @blur.stop="saveOption"
+        @keydown.enter.stop="(e) => e.target.blur()"
+      />
 
-    <div v-if="!editMode" class="shrink-0">
-      <Dropdown
-        :options="menuOptions"
-        :side="isMobileView ? 'bottom' : 'right'"
-        :align="isMobileView ? 'end' : 'start'"
-        offset="2"
-      >
-        <template #default="{ open }">
-          <button
-            class="flex cursor-pointer rounded p-1 text-ink-gray-6 transition-colors hover:bg-surface-gray-4"
-            :class="open ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'"
-            @click.stop
-          >
-            <FeatherIcon name="more-vertical" class="size-4" />
-          </button>
-        </template>
-      </Dropdown>
-    </div>
-    <div v-else class="flex shrink-0 items-center">
-      <!-- mousedown.prevent keeps the input from blurring when a button is
-           clicked, so Cancel discards instead of the blur-save persisting it -->
-      <Button
-        variant="ghost"
-        :label="__('Save')"
-        @mousedown.prevent
-        @click="saveOption"
-      />
-      <Button
-        variant="ghost"
-        icon="lucide-x"
-        :tooltip="__('Cancel')"
-        @mousedown.prevent
-        @click="cancelEdit"
-      />
-    </div>
+      <template #suffix>
+        <!-- Left visible on touch, which has no hover to reveal them -->
+        <div
+          v-if="!editMode"
+          class="-my-1 flex items-center gap-1 transition-opacity [&:has(:focus-visible)]:opacity-100 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100"
+        >
+          <Button
+            variant="ghost"
+            icon="lucide-square-pen"
+            :tooltip="__('Edit')"
+            @click.stop="toggleEditMode"
+          />
+          <Button
+            variant="ghost"
+            theme="red"
+            icon="lucide-trash-2"
+            :tooltip="__('Delete')"
+            @click.stop="option.onDelete(option, isNew)"
+          />
+        </div>
+        <!-- mousedown.prevent stops the blur-save, so Cancel can discard -->
+        <div v-else class="-my-1 flex items-center gap-1">
+          <Button
+            variant="outline"
+            icon="lucide-check"
+            size="sm"
+            :label="__('Save')"
+            @mousedown.prevent
+            @click.stop="saveOption"
+          />
+          <Button
+            variant="outline"
+            icon="lucide-x"
+            :tooltip="__('Cancel')"
+            @mousedown.prevent
+            @click.stop="cancelEdit"
+          />
+        </div>
+      </template>
+    </ItemListRow>
+
+    <!-- pl-8 = the row's px-2 + prefix + gap, so it lines up with the label -->
+    <ErrorMessage
+      v-if="errorMessage"
+      class="pl-8 pr-2 pt-1"
+      :message="errorMessage"
+    />
   </div>
 </template>
 
 <script setup>
-import { Dropdown, TextInput, Tooltip } from 'frappe-ui'
-import { isMobileView } from '@/composables/settings'
+import { ErrorMessage, ItemListRow, TextInput, Tooltip } from 'frappe-ui'
 import { nextTick, ref, onMounted, reactive, watch } from 'vue'
 
 const props = defineProps({
@@ -110,23 +127,15 @@ onMounted(() => {
   }
 })
 
-const menuOptions = [
-  {
-    label: __('Edit'),
-    icon: 'lucide-square-pen',
-    onClick: () => toggleEditMode(),
-  },
-  {
-    label: __('Delete'),
-    icon: 'lucide-trash-2',
-    theme: 'red',
-    onClick: () => props.option.onDelete(props.option, isNew.value),
-  },
-]
-
 const selectRow = () => {
   if (editMode.value || isNew.value) return
   if (!props.option.selected) props.option.onClick?.()
+}
+
+const selectRowOnKey = (e) => {
+  if (editMode.value || (e.key !== 'Enter' && e.key !== ' ')) return
+  e.preventDefault()
+  selectRow()
 }
 
 const toggleEditMode = () => {
@@ -137,7 +146,7 @@ const toggleEditMode = () => {
 }
 
 const cancelEdit = () => {
-  // Exit edit mode first so a blur fired while the input unmounts is a no-op.
+  // Exit first so the blur fired while the input unmounts is a no-op
   editMode.value = false
   if (isNew.value) {
     props.option.onDelete(props.option, true)
@@ -147,9 +156,8 @@ const cancelEdit = () => {
 }
 
 const saveOption = async () => {
-  // Blur and the Save click both fire this; guard so a create/update is
-  // issued once, never duplicated. Also bail once edit mode has exited (e.g.
-  // Cancel), so an unmount blur can't persist a discarded value.
+  // Blur and the Save click both fire this: save once, and never after edit
+  // mode has exited, so an unmount blur can't persist a discarded value
   if (saving.value || !editMode.value) return
 
   const value = localOption.value?.trim()
@@ -168,17 +176,16 @@ const saveOption = async () => {
       { ...props.option, value },
       isNew.value,
     )
-    // Only leave edit mode once the value is actually persisted; a failed
-    // save stays editable instead of showing an unsaved value as saved.
+    // A failed save stays editable instead of showing the value as saved
     if (!saved) {
-      errorMessage.value = __('Could not save, please try again')
+      errorMessage.value = __('Could not save, try again')
       nextTick(() => inputRef.value?.el?.focus())
       return
     }
     editMode.value = false
     isNew.value = false
   } catch {
-    errorMessage.value = __('Could not save, please try again')
+    errorMessage.value = __('Could not save, try again')
     nextTick(() => inputRef.value?.el?.focus())
   } finally {
     saving.value = false
