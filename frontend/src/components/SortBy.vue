@@ -1,13 +1,13 @@
 <template>
-  <Autocomplete
+  <Combobox
     v-if="!sortValues?.size"
     :options="options"
-    value=""
+    :model-value="null"
     :placeholder="__('First Name')"
-    @change="(e) => setSort(e)"
+    @update:selected-option="(e) => setSort(e)"
   >
-    <template #target="{ togglePopover }">
-      <Button :label="__('Sort')" @click="togglePopover()">
+    <template #trigger="{ open, setOpen }">
+      <Button :label="__('Sort')" @click="setOpen(!open)">
         <template v-if="hideLabel" #icon>
           <SortIcon class="h-4" />
         </template>
@@ -16,7 +16,7 @@
         </template>
       </Button>
     </template>
-  </Autocomplete>
+  </Combobox>
   <Popover v-else placement="bottom-end">
     <template #target="{ isOpen, togglePopover }">
       <Button
@@ -95,30 +95,23 @@
                     }
                   "
                 />
-                <Autocomplete
+                <Combobox
                   class="[&>_div]:w-full"
-                  :value="sort.fieldname"
-                  :options="sortOptions.data"
+                  :model-value="sort.fieldname"
+                  :options="allSortOptions"
                   :placeholder="__('First Name')"
-                  @change="(e) => updateSort(e, i)"
+                  @update:selected-option="(e) => updateSort(e, i)"
                 >
-                  <template
-                    #target="{
-                      open,
-                      togglePopover,
-                      selectedValue,
-                      displayValue,
-                    }"
-                  >
+                  <template #trigger="{ open, setOpen, displayValue }">
                     <Button
                       class="flex w-full items-center justify-between rounded-l-none !text-ink-gray-5"
                       size="md"
-                      :label="displayValue(selectedValue)"
+                      :label="displayValue"
                       :iconRight="open ? 'chevron-down' : 'chevron-up'"
-                      @click="togglePopover()"
+                      @click="setOpen(!open)"
                     />
                   </template>
-                </Autocomplete>
+                </Combobox>
               </div>
               <Button variant="ghost" icon="lucide-x" @click="removeSort(i)" />
             </div>
@@ -130,22 +123,22 @@
             {{ __('Empty - Choose a field to sort by') }}
           </div>
           <div class="flex items-center justify-between gap-2">
-            <Autocomplete
+            <Combobox
               :options="options"
-              value=""
+              :model-value="null"
               :placeholder="__('First Name')"
-              @change="(e) => setSort(e)"
+              @update:selected-option="(e) => setSort(e)"
             >
-              <template #target="{ togglePopover }">
+              <template #trigger="{ open, setOpen }">
                 <Button
                   class="!text-ink-gray-5"
                   :label="__('Add Sort')"
                   variant="ghost"
                   iconLeft="plus"
-                  @click="togglePopover()"
+                  @click="setOpen(!open)"
                 />
               </template>
-            </Autocomplete>
+            </Combobox>
             <Button
               v-if="sortValues?.size"
               class="!text-ink-gray-5"
@@ -165,9 +158,8 @@ import AscendingIcon from '@/components/Icons/AscendingIcon.vue'
 import DesendingIcon from '@/components/Icons/DesendingIcon.vue'
 import SortIcon from '@/components/Icons/SortIcon.vue'
 import DragIcon from '@/components/Icons/DragIcon.vue'
-import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import { useSortable } from '@vueuse/integrations/useSortable'
-import { createResource, Popover } from 'frappe-ui'
+import { Combobox, createResource, Popover } from 'frappe-ui'
 import { computed, nextTick, onMounted } from 'vue'
 
 const props = defineProps({
@@ -206,12 +198,16 @@ const sortValues = computed({
   },
 })
 
+const allSortOptions = computed(() =>
+  (sortOptions.data || []).map((o) => ({ ...o, value: o.fieldname })),
+)
+
 const options = computed(() => {
-  if (!sortOptions.data) return []
-  if (!sortValues.value.size) return sortOptions.data
+  if (!allSortOptions.value.length) return []
+  if (!sortValues.value.size) return allSortOptions.value
   const selectedOptions = [...sortValues.value].map((sort) => sort.fieldname)
   restartSort()
-  return sortOptions.data.filter((option) => {
+  return allSortOptions.value.filter((option) => {
     return !selectedOptions.includes(option.fieldname)
   })
 })
