@@ -22,7 +22,7 @@
       <div
         class="my-2 p-1.5 w-72 space-y-1.5 divide-y divide-outline-gray-1 rounded-lg bg-surface-elevation-2 shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
       >
-        <div>
+        <div class="space-y-1">
           <PrimaryDropdownItem
             v-for="option in options"
             :key="option.name || option.value"
@@ -71,9 +71,8 @@ const props = defineProps({
   label: { type: String, default: '' },
 })
 
-// A new entry is drafted here, never in the parent's doc, so an incomplete
-// value can never leak into an auto-save. The draft is saved by handing its
-// value to onCreate, and cleared once saved or dismissed.
+// Drafted here, never in the parent's doc, so an incomplete value can't leak
+// into an auto-save
 const draft = ref(null)
 
 function addDraft() {
@@ -81,8 +80,7 @@ function addDraft() {
     value: '',
     selected: false,
     onSave: async (option) => {
-      // Clear the draft only once the create succeeds; on failure it stays
-      // so the value remains editable. Returns success to the item.
+      // On failure the draft stays, so the value remains editable
       const created = await props.onCreate?.(option.value)
       if (created) draft.value = null
       return created
@@ -96,13 +94,11 @@ function addDraft() {
 .dropdown-button {
   border-color: transparent;
   background: transparent;
-  /* The button is a shrink-0 flex child with min-width:auto, so it overflows
-     its container on long values. Allow it to shrink so the value can truncate. */
+  /* A shrink-0 flex child with min-width:auto overflows on long values */
   min-width: 0;
 }
 
-/* Button wraps the value in a `truncate` span; it also needs min-width:0 to
-   shrink in the button's flex row so the long value ellipsizes. */
+/* The truncate span Button wraps the value in needs to shrink too */
 :deep(.dropdown-button > span) {
   min-width: 0;
   flex: 1;
