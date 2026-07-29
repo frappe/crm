@@ -15,7 +15,7 @@ class TestGetDealProductRate(FrappeTestCase):
 		from erpnext.stock import get_item_details
 
 		def fake(pctx, item_code, **kwargs):
-			captured.update(pctx=dict(pctx), item_code=item_code)
+			captured.update(pctx=pctx, item_code=item_code)
 			return result
 
 		orig = get_item_details.get_item_price
@@ -52,9 +52,19 @@ class TestGetDealProductRate(FrappeTestCase):
 
 		self.assertEqual(rate, 1021)
 		self.assertEqual(captured["item_code"], "ITM")
+		self.assertIsInstance(captured["pctx"], frappe._dict)
 		self.assertEqual(captured["pctx"]["price_list"], "_Test Price List 2")
 		self.assertEqual(captured["pctx"]["uom"], "Nos")
 		self.assertIn("transaction_date", captured["pctx"])
+
+	def test_reads_v15_tuple_result(self):
+		from crm.fcrm.doctype.crm_products import crm_products
+
+		self._fake_get_item_price({}, [("IP-1", 1021, "Nos")])
+		self._fake_stock_uom("Nos")
+		self._fake_price_list("_Test Price List 2")
+
+		self.assertEqual(crm_products.get_deal_product_rate("ITM"), 1021)
 
 	def test_returns_none_when_no_matching_price(self):
 		from crm.fcrm.doctype.crm_products import crm_products
@@ -112,3 +122,14 @@ class TestGetProductRateDetails(FrappeTestCase):
 		out = crm_products.get_product_rate_details("CRM-1001")
 
 		self.assertEqual(out["rate"], 90)
+
+
+class TestProductDetailsScript(unittest.TestCase):
+	def test_product_change_replaces_existing_rate(self):
+		from crm.fcrm.doctype.crm_products.crm_products import get_product_details_script
+
+		script = get_product_details_script("CRM Deal")
+
+		self.assertIn("row.rate = a.rate ?? 0", script)
+		self.assertNotIn("!row.rate", script)
+		self.assertIn("row.product_code !== productCode", script)
