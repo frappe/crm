@@ -46,12 +46,20 @@ def count_synced_leads(days: int | None = None) -> int:
 def product_sync_state() -> dict:
 	settings = frappe.get_cached_doc("ERPNext CRM Settings")
 
-	return {
+	state = {
 		"erpnext_sync_enabled": bool(settings.enabled),
 		"products_sync_enabled": bool(settings.sync_products),
-		"products_synced_total": frappe.db.count("CRM Product"),
+		"products_total": frappe.db.count("CRM Product"),
 		"product_sync_issues_open": frappe.db.count("CRM Product Sync Issue", {"dismissed": 0}),
 	}
+
+	# erpnext_item_code is a custom field, added only once the integration is enabled
+	if frappe.db.has_column("CRM Product", "erpnext_item_code"):
+		state["products_synced_total"] = frappe.db.count(
+			"CRM Product", {"erpnext_item_code": ["is", "set"]}
+		)
+
+	return state
 
 
 def sales_hierarchy_state() -> dict:
