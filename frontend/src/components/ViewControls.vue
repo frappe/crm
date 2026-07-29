@@ -528,6 +528,7 @@ list.value = createResource({
   onSuccess(data) {
     let cv = getView(route.query.view, route.params.viewType, props.doctype)
     let params = list.value.params ? list.value.params : getParams()
+    list.value.params = params
     defaultParams.value = {
       doctype: props.doctype,
       filters: params.filters,
