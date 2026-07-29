@@ -1,58 +1,4 @@
 <template>
-<<<<<<< HEAD
-  <div
-    class="relative flex h-full flex-col justify-between transition-all duration-300 ease-in-out"
-    :class="isSidebarCollapsed ? 'w-12' : 'w-[220px]'"
-  >
-    <div class="p-2">
-      <UserDropdown :isCollapsed="isSidebarCollapsed" />
-    </div>
-    <div class="flex-1 overflow-y-auto">
-      <div class="flex flex-col">
-        <SidebarLink
-          id="notifications-btn"
-          :label="__('Notifications')"
-          :icon="NotificationsIcon"
-          :isCollapsed="isSidebarCollapsed"
-          class="relative mx-2 my-[1.5px]"
-          @click="() => toggleNotificationPanel()"
-        >
-          <template #right>
-            <Badge
-              v-if="!isSidebarCollapsed && unreadNotificationsCount"
-              :label="unreadNotificationsCount"
-              variant="subtle"
-            />
-            <div
-              v-else-if="unreadNotificationsCount"
-              class="absolute -left-1.5 top-1 z-20 h-[5px] w-[5px] translate-x-6 translate-y-1 rounded-full bg-surface-gray-9 ring-1 ring-white"
-            />
-          </template>
-        </SidebarLink>
-      </div>
-      <div v-for="view in allViews" :key="view.label">
-        <div class="mx-2 my-1.5" />
-        <Section
-          :label="view.name"
-          :hideLabel="view.hideLabel"
-          :opened="view.opened"
-        >
-          <template #header="{ opened, hide, toggle }">
-            <div
-              v-if="!hide"
-              class="flex items-center cursor-pointer gap-1.5 text-base text-ink-gray-5 transition-all duration-300 ease-in-out"
-              :class="
-                isSidebarCollapsed
-                  ? 'h-0 overflow-hidden opacity-0'
-                  : 'px-4 pt-[11px] pb-2.5 w-auto opacity-100'
-              "
-              @click="toggle()"
-            >
-              <span
-                class="lucide-chevron-right h-4 text-ink-gray-9 transition-all duration-300 ease-in-out"
-                :class="{ 'rotate-90': opened }"
-                aria-hidden="true"
-=======
   <!-- The notifications panel is absolutely positioned at `left: 100%`, so it
        needs a positioning context that is not the Sidebar itself (Sidebar sets
        overflow-x-hidden, which would clip the panel away). -->
@@ -92,7 +38,6 @@
                 class="mr-2"
                 :label="unreadNotificationsCount"
                 variant="subtle"
->>>>>>> 02838e56 (feat: migrate to frappe-ui sidebar)
               />
             </template>
           </SidebarItem>
@@ -154,71 +99,10 @@
               :isSidebarCollapsed="isCollapsed"
               :afterSignup="() => capture('signup_from_demo_site')"
             />
-<<<<<<< HEAD
-          </nav>
-        </Section>
-      </div>
-    </div>
-    <div class="m-2 flex flex-col gap-1">
-      <div class="flex flex-col gap-2 mb-1">
-        <SignupBanner
-          v-if="isDemoSite"
-          :isSidebarCollapsed="isSidebarCollapsed"
-          :afterSignup="() => capture('signup_from_demo_site')"
-        />
-        <TrialBanner
-          v-if="isFCSite"
-          :isSidebarCollapsed="isSidebarCollapsed"
-          :afterUpgrade="() => capture('upgrade_plan_from_trial_banner')"
-        />
-        <GettingStartedBanner
-          v-if="!isOnboardingStepsCompleted"
-          :isSidebarCollapsed="isSidebarCollapsed"
-        />
-      </div>
-      <SidebarLink
-        v-if="isManager() && isDemoDataCreated"
-        class="text-ink-red-6 hover:bg-surface-red-2 focus:bg-surface-red-2"
-        :label="__('Clear Demo Data')"
-        :isCollapsed="isSidebarCollapsed"
-        @click="() => clearDemoData()"
-      >
-        <template #icon>
-          <BrushCleaningIcon class="h-4 w-4" />
-        </template>
-      </SidebarLink>
-      <SidebarLink
-        v-if="isOnboardingStepsCompleted"
-        :label="__('Help')"
-        :isCollapsed="isSidebarCollapsed"
-        @click="
-          () => {
-            showHelpModal = minimize ? true : !showHelpModal
-            minimize = !showHelpModal
-          }
-        "
-      >
-        <template #icon>
-          <HelpIcon class="h-4 w-4" />
-        </template>
-      </SidebarLink>
-      <SidebarLink
-        :label="isSidebarCollapsed ? __('Expand') : __('Collapse')"
-        :isCollapsed="isSidebarCollapsed"
-        class=""
-        @click="isSidebarCollapsed = !isSidebarCollapsed"
-      >
-        <template #icon>
-          <span class="grid h-4 w-4 flex-shrink-0 place-items-center">
-            <CollapseSidebar
-              class="h-4 w-4 text-ink-gray-7 duration-300 ease-in-out"
-              :class="{ '[transform:rotateY(180deg)]': isSidebarCollapsed }"
-=======
             <TrialBanner
               v-if="isFCSite"
               :isSidebarCollapsed="isCollapsed"
               :afterUpgrade="() => capture('upgrade_plan_from_trial_banner')"
->>>>>>> 02838e56 (feat: migrate to frappe-ui sidebar)
             />
             <GettingStartedBanner
               v-if="!isOnboardingStepsCompleted"
@@ -290,12 +174,8 @@ import ConvertIcon from '@/components/Icons/ConvertIcon.vue'
 import CommentIcon from '@/components/Icons/CommentIcon.vue'
 import EmailIcon from '@/components/Icons/EmailIcon.vue'
 import StepsIcon from '@/components/Icons/StepsIcon.vue'
-<<<<<<< HEAD
-import Section from '@/components/CollapsibleSection.vue'
-=======
 import CollapsibleSection from '@/components/CollapsibleSection.vue'
 import Icon from '@/components/Icon.vue'
->>>>>>> 02838e56 (feat: migrate to frappe-ui sidebar)
 import PinIcon from '@/components/Icons/PinIcon.vue'
 import UserDropdown from '@/components/UserDropdown.vue'
 import SquareAsterisk from '@/components/Icons/SquareAsterisk.vue'
@@ -402,15 +282,12 @@ const links = [
     to: 'Tasks',
   },
   {
-<<<<<<< HEAD
-=======
     label: 'Calendar',
     icon: CalendarIcon,
     to: 'Calendar',
     condition: () => !props.mobile,
   },
   {
->>>>>>> 02838e56 (feat: migrate to frappe-ui sidebar)
     label: 'Call Logs',
     icon: PhoneIcon,
     to: 'Call Logs',
