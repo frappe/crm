@@ -1,8 +1,6 @@
 <template>
   <div class="flex h-screen w-screen">
-    <div class="h-full border-r bg-surface-gray-1">
-      <AppSidebar />
-    </div>
+    <AppSidebar />
     <div class="flex-1 flex flex-col h-full overflow-auto bg-surface-base">
       <AppHeader />
       <slot />

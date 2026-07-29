@@ -447,7 +447,7 @@ class CRMLead(Document):
 	def default_list_data():
 		columns = [
 			{
-				"label": "Name",
+				"label": "Full Name",
 				"type": "Data",
 				"key": "lead_name",
 				"width": "12rem",

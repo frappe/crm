@@ -32,11 +32,12 @@
       </div>
       <div v-if="!props.isGroup" class="flex items-center gap-2 w-full">
         <div id="fieldname" class="w-full">
-          <Autocomplete
-            :options="filterableFields.data"
-            :modelValue="condition[0]"
+          <Combobox
+            trigger="button"
+            :options="filterableFields.data || []"
+            :model-value="condition[0]"
             :placeholder="__('Field')"
-            @update:modelValue="updateField"
+            @update:selected-option="updateField"
           />
         </div>
         <div id="operator">
@@ -114,7 +115,7 @@ import UnGroupIcon from '~icons/lucide/ungroup'
 import CFConditions from './CFConditions.vue'
 import Link from '@/components/Controls/Link.vue'
 import {
-  Autocomplete,
+  Combobox,
   Button,
   DatePicker,
   DateRangePicker,

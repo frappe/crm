@@ -181,6 +181,7 @@ import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import DealsListView from '@/components/ListViews/DealsListView.vue'
 import CustomActions from '@/components/CustomActions.vue'
 import { validateIsImageFile, setupCustomizations } from '@/utils'
+import { useContactFields } from '@/composables/useContactFields'
 import { timestampCell } from '@/composables/useTimelinePreferences'
 import { getView } from '@/utils/view'
 import { useDocument } from '@/data/document'
@@ -235,6 +236,8 @@ const {
 } = useDocument('Contact', props.contactId)
 
 const canDelete = computed(() => permissions.data?.permissions?.delete || false)
+
+const transformField = useContactFields(contact)
 
 onMounted(async () => {
   if (contact.doc) await triggerOnRender()
@@ -334,98 +337,7 @@ const parsedSections = computed(() => {
         field.label = fieldLabelMap[field.fieldname] || field.label
         field.placeholder =
           fieldPlaceholderMap[field.fieldname] || field.placeholder
-
-        if (field.fieldname === 'email_id') {
-          return {
-            ...field,
-            read_only: false,
-            fieldtype: 'Dropdown',
-            options: (contact.doc?.email_ids || []).map((email) => ({
-              name: email.name,
-              value: email.email_id,
-              selected: email.email_id === contact.doc.email_id,
-              placeholder: 'john@doe.com',
-              onClick: () => setAsPrimary('email', email.email_id),
-              onSave: (option, isNew) =>
-                isNew
-                  ? createNew('email', option.value)
-                  : editOption(
-                      'Contact Email',
-                      option.name,
-                      'email_id',
-                      option.value,
-                    ),
-              onDelete: async (option, isNew) => {
-                contact.doc.email_ids = contact.doc.email_ids.filter(
-                  (e) => e.name !== option.name,
-                )
-                if (!isNew) await deleteOption('Contact Email', option.name)
-              },
-            })),
-            create: () => {
-              // Add a temporary new option locally (mirrors original behavior)
-              contact.doc.email_ids = [
-                ...(contact.doc.email_ids || []),
-                {
-                  name: 'new-1',
-                  value: '',
-                  selected: false,
-                  isNew: true,
-                },
-              ]
-            },
-          }
-        }
-        if (field.fieldname === 'mobile_no') {
-          return {
-            ...field,
-            read_only: false,
-            fieldtype: 'Dropdown',
-            options: (contact.doc?.phone_nos || []).map((phone) => ({
-              name: phone.name,
-              value: phone.phone,
-              selected: phone.phone === contact.doc.mobile_no,
-              onClick: () => setAsPrimary('mobile_no', phone.phone),
-              onSave: (option, isNew) =>
-                isNew
-                  ? createNew('phone', option.value)
-                  : editOption(
-                      'Contact Phone',
-                      option.name,
-                      'phone',
-                      option.value,
-                    ),
-              onDelete: async (option, isNew) => {
-                contact.doc.phone_nos = contact.doc.phone_nos.filter(
-                  (p) => p.name !== option.name,
-                )
-                if (!isNew) await deleteOption('Contact Phone', option.name)
-              },
-            })),
-            create: () => {
-              contact.doc.phone_nos = [
-                ...(contact.doc.phone_nos || []),
-                {
-                  name: 'new-1',
-                  value: '',
-                  selected: false,
-                  isNew: true,
-                },
-              ]
-            },
-          }
-        }
-        if (field.fieldname === 'address') {
-          return {
-            ...field,
-            create: (_value, close) => {
-              showAddressModal()
-              close?.()
-            },
-            edit: (address) => showAddressModal(address),
-          }
-        }
-        return field
+        return transformField(field, { showAddressModal })
       }),
     })),
   }))
@@ -441,53 +353,6 @@ const fieldPlaceholderMap = {
   company_name: __('Add Organization...'),
 }
 
-async function setAsPrimary(field, value) {
-  let d = await call('crm.api.contact.set_as_primary', {
-    contact: contact.doc.name,
-    field,
-    value,
-  })
-  if (d) {
-    contact.reload()
-    toast.success(__('Contact Updated'))
-  }
-}
-
-async function createNew(field, value) {
-  if (!value) return
-  let d = await call('crm.api.contact.create_new', {
-    contact: contact.doc.name,
-    field,
-    value,
-  })
-  if (d) {
-    contact.reload()
-    toast.success(__('Contact Updated'))
-  }
-}
-
-async function editOption(doctype, name, fieldname, value) {
-  let d = await call('frappe.client.set_value', {
-    doctype,
-    name,
-    fieldname,
-    value,
-  })
-  if (d) {
-    contact.reload()
-    toast.success(__('Contact Updated'))
-  }
-}
-
-async function deleteOption(doctype, name) {
-  await call('frappe.client.delete', {
-    doctype,
-    name,
-  })
-  await contact.reload()
-  toast.success(__('Contact Updated'))
-}
-
 const { getFormattedCurrency } = getMeta('CRM Deal')
 
 const columns = computed(() => dealColumns)
@@ -499,7 +364,7 @@ function getDealRowObject(deal) {
       label: deal.organization,
       logo: getOrganization(deal.organization)?.organization_logo,
     },
-    annual_revenue: getFormattedCurrency('annual_revenue', deal),
+    deal_value: getFormattedCurrency('deal_value', deal),
     status: {
       label: deal.status,
       color: getDealStatus(deal.status)?.color,

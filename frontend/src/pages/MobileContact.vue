@@ -168,6 +168,7 @@ import CameraIcon from '@/components/Icons/CameraIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import DealsListView from '@/components/ListViews/DealsListView.vue'
 import { validateIsImageFile } from '@/utils'
+import { useContactFields } from '@/composables/useContactFields'
 import { timestampCell } from '@/composables/useTimelinePreferences'
 import { getView } from '@/utils/view'
 import { useDocument } from '@/data/document'
@@ -217,6 +218,8 @@ const {
 } = useDocument('Contact', props.contactId)
 
 const canDelete = computed(() => permissions.data?.permissions?.delete || false)
+
+const transformField = useContactFields(contact)
 
 onMounted(async () => {
   if (contact.doc) await triggerOnRender()
@@ -333,157 +336,13 @@ const sections = createResource({
 function getParsedSections(_sections) {
   return _sections.map((section) => {
     section.columns = section.columns.map((column) => {
-      column.fields = column.fields.map((field) => {
-        if (field.fieldname === 'email_id') {
-          return {
-            ...field,
-            type: 'dropdown',
-            options:
-              contact.doc?.email_ids?.map((email) => {
-                return {
-                  name: email.name,
-                  value: email.email_id,
-                  selected: email.email_id === contact.doc.email_id,
-                  placeholder: 'john@doe.com',
-                  onClick: () => {
-                    setAsPrimary('email', email.email_id)
-                  },
-                  onSave: (option, isNew) => {
-                    if (isNew) {
-                      createNew('email', option.value)
-                    } else {
-                      editOption(
-                        'Contact Email',
-                        option.name,
-                        'email_id',
-                        option.value,
-                      )
-                    }
-                  },
-                  onDelete: async (option, isNew) => {
-                    contact.doc.email_ids = contact.doc.email_ids.filter(
-                      (email) => email.name !== option.name,
-                    )
-                    if (!isNew) await deleteOption('Contact Email', option.name)
-                  },
-                }
-              }) || [],
-            create: () => {
-              contact.doc?.email_ids?.push({
-                name: 'new-1',
-                value: '',
-                selected: false,
-                isNew: true,
-              })
-            },
-          }
-        } else if (field.name === 'mobile_no') {
-          return {
-            ...field,
-            read_only: false,
-            fieldtype: 'dropdown',
-            options:
-              contact.doc?.phone_nos?.map((phone) => {
-                return {
-                  name: phone.name,
-                  value: phone.phone,
-                  selected: phone.phone === contact.doc.mobile_no,
-                  onClick: () => {
-                    setAsPrimary('mobile_no', phone.phone)
-                  },
-                  onSave: (option, isNew) => {
-                    if (isNew) {
-                      createNew('phone', option.value)
-                    } else {
-                      editOption(
-                        'Contact Phone',
-                        option.name,
-                        'phone',
-                        option.value,
-                      )
-                    }
-                  },
-                  onDelete: async (option, isNew) => {
-                    contact.doc.phone_nos = contact.doc.phone_nos.filter(
-                      (phone) => phone.name !== option.name,
-                    )
-                    if (!isNew) await deleteOption('Contact Phone', option.name)
-                  },
-                }
-              }) || [],
-            create: () => {
-              contact.doc?.phone_nos?.push({
-                name: 'new-1',
-                value: '',
-                selected: false,
-                isNew: true,
-              })
-            },
-          }
-        } else if (field.name === 'address') {
-          return {
-            ...field,
-            create: (value, close) => {
-              showAddressModal()
-              close()
-            },
-            edit: (address) => showAddressModal(address),
-          }
-        } else {
-          return field
-        }
-      })
+      column.fields = column.fields.map((field) =>
+        transformField(field, { showAddressModal }),
+      )
       return column
     })
     return section
   })
-}
-
-async function setAsPrimary(field, value) {
-  let d = await call('crm.api.contact.set_as_primary', {
-    contact: contact.doc.name,
-    field,
-    value,
-  })
-  if (d) {
-    contact.reload()
-    toast.success(__('Contact Updated'))
-  }
-}
-
-async function createNew(field, value) {
-  if (!value) return
-  let d = await call('crm.api.contact.create_new', {
-    contact: contact.doc.name,
-    field,
-    value,
-  })
-  if (d) {
-    contact.reload()
-    toast.success(__('Contact Updated'))
-  }
-}
-
-async function editOption(doctype, name, fieldname, value) {
-  let d = await call('frappe.client.set_value', {
-    doctype,
-    name,
-    fieldname,
-    value,
-  })
-  if (d) {
-    contact.reload()
-    toast.success(__('Contact Updated'))
-  }
-}
-
-async function deleteOption(doctype, name) {
-  await call('frappe.client.delete', {
-    doctype,
-    name,
-  })
-  await contact.reload()
-  toast.success(__('Contact Updated'))
 }
 
 const { getFormattedCurrency } = getMeta('CRM Deal')
@@ -497,7 +356,7 @@ function getDealRowObject(deal) {
       label: deal.organization,
       logo: getOrganization(deal.organization)?.organization_logo,
     },
-    annual_revenue: getFormattedCurrency('annual_revenue', deal),
+    deal_value: getFormattedCurrency('deal_value', deal),
     status: {
       label: deal.status,
       color: getDealStatus(deal.status)?.color,
@@ -520,7 +379,7 @@ const dealColumns = [
   },
   {
     label: __('Amount'),
-    key: 'annual_revenue',
+    key: 'deal_value',
     align: 'right',
     width: '9rem',
   },

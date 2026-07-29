@@ -3,11 +3,13 @@
     <template #default>
       <div class="mb-4">
         <div class="mb-1.5 text-sm text-ink-gray-5">{{ __('Field') }}</div>
-        <Autocomplete
-          :value="field.label"
-          :options="fields.data"
+        <Combobox
+          class="w-full"
+          trigger="button"
+          :model-value="field.fieldname"
+          :options="fields.data || []"
           :placeholder="__('Source')"
-          @change="(e) => changeField(e)"
+          @update:selected-option="(e) => changeField(e)"
         />
       </div>
       <div>
@@ -35,9 +37,9 @@
 
 <script setup>
 import Link from '@/components/Controls/Link.vue'
-import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import { useTelemetry } from 'frappe-ui/frappe'
 import {
+  Combobox,
   FormControl,
   call,
   createResource,
@@ -71,7 +73,9 @@ const fields = createResource({
     doctype: props.doctype,
   },
   transform: (data) => {
-    return data.filter((f) => f.hidden == 0 && f.read_only == 0)
+    return data
+      .filter((f) => f.hidden == 0 && f.read_only == 0)
+      .map((f) => ({ ...f, value: f.fieldname }))
   },
 })
 

@@ -84,30 +84,30 @@
                 </div>
               </template>
             </Draggable>
-            <Autocomplete
+            <Combobox
               v-if="section.editable !== false"
-              value=""
+              :model-value="null"
               :options="fields"
-              @change="(e) => addField(section, e)"
+              @update:selected-option="(e) => addField(section, e)"
             >
-              <template #target="{ togglePopover }">
+              <template #trigger="{ open, setOpen }">
                 <Button
                   class="w-full h-8 mt-1.5 !bg-surface-gray-1"
                   variant="outline"
                   :label="__('Add Field')"
                   iconLeft="plus"
-                  @click="togglePopover()"
+                  @click="setOpen(!open)"
                 />
               </template>
-              <template #item-label="{ option }">
+              <template #item-label="{ item }">
                 <div class="flex flex-col gap-1 text-ink-gray-9">
-                  <div>{{ option.label }}</div>
+                  <div>{{ item.label }}</div>
                   <div class="text-ink-gray-4 text-sm">
-                    {{ `${option.fieldname} - ${option.fieldtype}` }}
+                    {{ `${item.fieldname} - ${item.fieldtype}` }}
                   </div>
                 </div>
               </template>
-            </Autocomplete>
+            </Combobox>
             <div
               v-else
               class="flex justify-center items-center border rounded border-dashed border-outline-elevation-2 p-3"
@@ -140,12 +140,11 @@
 </template>
 <script setup>
 import EditIcon from '@/components/Icons/EditIcon.vue'
-import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import DragVerticalIcon from '@/components/Icons/DragVerticalIcon.vue'
 import { getRandom } from '@/utils'
 import { getMeta } from '@/stores/meta'
 import Draggable from 'vuedraggable'
-import { Input } from 'frappe-ui'
+import { Combobox, Input } from 'frappe-ui'
 import { computed } from 'vue'
 
 const props = defineProps({

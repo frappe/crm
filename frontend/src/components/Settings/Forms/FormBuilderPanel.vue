@@ -182,22 +182,24 @@
                               />
                             </template>
                           </Draggable>
-                          <Autocomplete
+                          <Combobox
                             :options="availableFieldOptions"
-                            value=""
+                            :model-value="null"
                             :placeholder="__('Search fields…')"
-                            @change="(e) => addFieldToColumn(col, e)"
+                            @update:selected-option="
+                              (e) => addFieldToColumn(col, e)
+                            "
                           >
-                            <template #target="{ togglePopover }">
+                            <template #trigger="{ open, setOpen }">
                               <Button
                                 class="!h-8 w-full !bg-surface-elevation-2"
                                 variant="outline"
                                 :label="__('Add Field')"
                                 icon-left="plus"
-                                @click="togglePopover()"
+                                @click="setOpen(!open)"
                               />
                             </template>
-                          </Autocomplete>
+                          </Combobox>
                         </div>
                       </div>
                     </div>
@@ -634,6 +636,7 @@ import {
   Badge,
   Button,
   Switch,
+  Combobox,
   Tabs,
   TextInput,
   FormControl,
@@ -643,7 +646,6 @@ import {
   toast,
   createResource,
 } from 'frappe-ui'
-import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import FieldCard from '@/components/Settings/Forms/FieldCard.vue'
 import { fieldTypeIcon } from '@/components/Settings/Forms/fieldTypeIcon'
 import DragVerticalIcon from '@/components/Icons/DragVerticalIcon.vue'
