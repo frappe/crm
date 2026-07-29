@@ -1,28 +1,4 @@
 <template>
-<<<<<<< HEAD
-  <div
-    class="relative flex h-full flex-col justify-between transition-all duration-300 ease-in-out"
-    :class="isSidebarCollapsed ? 'w-12' : 'w-[220px]'"
-  >
-    <div class="p-2">
-      <UserDropdown :isCollapsed="isSidebarCollapsed" />
-    </div>
-    <div class="flex-1 overflow-y-auto">
-      <div class="flex flex-col">
-        <SidebarLink
-          id="notifications-btn"
-          :label="__('Notifications')"
-          :icon="NotificationsIcon"
-          :isCollapsed="isSidebarCollapsed"
-          class="relative mx-2 my-[1.5px]"
-          @click="() => toggleNotificationPanel()"
-        >
-          <template #right>
-            <Badge
-              v-if="!isSidebarCollapsed && unreadNotificationsCount"
-              :label="unreadNotificationsCount"
-              variant="subtle"
-=======
   <!-- The notifications panel is absolutely positioned at `left: 100%`, so it
        needs a positioning context that is not the Sidebar itself (Sidebar sets
        overflow-x-hidden, which would clip the panel away).
@@ -128,7 +104,6 @@
               v-if="isDemoSite"
               :isSidebarCollapsed="isCollapsed"
               :afterSignup="() => capture('signup_from_demo_site')"
->>>>>>> ccd2c21b (fix: app sidebar background in dark mode)
             />
             <div
               v-else-if="unreadNotificationsCount"
