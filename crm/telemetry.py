@@ -2,11 +2,14 @@
 
 import frappe
 from frappe.utils import add_days, nowdate
-from frappe.utils.telemetry import capture
+from frappe.utils.telemetry import capture, is_pulse_enabled
 
 
 def capture_feature_state():
 	"""Emit one `crm_feature_state` event per site per day."""
+	if not is_pulse_enabled():
+		return
+
 	properties = {}
 
 	for collect in (lead_sync_state, product_sync_state, sales_hierarchy_state):
