@@ -201,7 +201,7 @@ const tabs = computed(() => {
         {
           label: __('Home Actions'),
           component: markRaw(HomeActions),
-          icon: 'home',
+          icon: 'house',
         },
       ],
       condition: () => isManager(),
