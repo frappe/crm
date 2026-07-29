@@ -4,6 +4,7 @@
       <div class="mb-4">
         <div class="mb-1.5 text-sm text-ink-gray-5">{{ __('Field') }}</div>
         <Combobox
+          class="w-full"
           trigger="button"
           :model-value="field.fieldname"
           :options="fields.data || []"
