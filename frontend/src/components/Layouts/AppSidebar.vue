@@ -1,8 +1,14 @@
 <template>
   <!-- The notifications panel is absolutely positioned at `left: 100%`, so it
        needs a positioning context that is not the Sidebar itself (Sidebar sets
-       overflow-x-hidden, which would clip the panel away). -->
-  <div class="relative flex h-full">
+       overflow-x-hidden, which would clip the panel away).
+
+       It also paints the sidebar surface: Sidebar's own `bg-surface-sidebar` is
+       transparent in dark mode, and nothing behind it sets a background, so the
+       column falls through to the white page canvas. The token cannot be
+       overridden on the Sidebar element itself — `bg-surface-sidebar` is emitted
+       after `bg-surface-gray-1` in the utilities layer and would win. -->
+  <div class="relative flex h-full bg-surface-gray-1">
     <Sidebar
       v-model:collapsed="isSidebarCollapsed"
       :disable-collapse="mobile"
@@ -28,7 +34,7 @@
                 <NotificationsIcon class="size-4 text-ink-gray-7" />
                 <span
                   v-if="isCollapsed && unreadNotificationsCount"
-                  class="absolute -right-1 -top-1 size-1.5 rounded-full bg-surface-gray-9 ring-1 ring-white"
+                  class="absolute -right-1 -top-1 size-1.5 rounded-full bg-surface-gray-9 ring-1 ring-[var(--surface-gray-1)]"
                 />
               </span>
             </template>
