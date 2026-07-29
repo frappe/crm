@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-07-19 10:53+0000\n"
-"PO-Revision-Date: 2026-07-22 11:23\n"
+"PO-Revision-Date: 2026-07-29 13:24\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Persian\n"
 "MIME-Version: 1.0\n"
@@ -8388,22 +8388,22 @@ msgstr "یادداشت کنید..."
 #. Mapping'
 #: crm/domain_enrichment/doctype/crm_enrichment_field_mapping/crm_enrichment_field_mapping.json
 msgid "Target Doctype"
-msgstr ""
+msgstr "نوع سند هدف"
 
 #: crm/domain_enrichment/doctype/crm_enrichment_field_mapping/crm_enrichment_field_mapping.py:46
 msgid "Target Doctype must be one of: {0}"
-msgstr ""
+msgstr "نوع سند هدف باید یکی از موارد زیر باشد: {0}"
 
 #. Label of the target_fieldname (Data) field in DocType 'CRM Enrichment Field
 #. Mapping'
 #: crm/domain_enrichment/doctype/crm_enrichment_field_mapping/crm_enrichment_field_mapping.json
 msgid "Target Fieldname"
-msgstr ""
+msgstr "نام فیلد هدف"
 
 #. Label of the target_value (Data) field in DocType 'CRM Enrichment Rule'
 #: crm/domain_enrichment/doctype/crm_enrichment_rule/crm_enrichment_rule.json
 msgid "Target Value"
-msgstr ""
+msgstr "مقدار هدف"
 
 #. Option for the 'Type' (Select) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
@@ -9174,7 +9174,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:9
 msgid "View documentation"
-msgstr ""
+msgstr "مشاهده مستندات"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:596
 msgid "Views"
