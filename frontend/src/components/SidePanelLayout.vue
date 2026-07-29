@@ -112,17 +112,14 @@
                           :onCreate="field.onCreate"
                           :label="field.label"
                         />
-                        <FormControl
+                        <Checkbox
                           v-else-if="field.fieldtype == 'Check'"
-                          v-model="doc[field.fieldname]"
-                          class="form-control"
-                          type="checkbox"
+                          class="checkbox-control"
+                          :modelValue="Boolean(doc[field.fieldname])"
                           :disabled="Boolean(field.read_only)"
-                          @change.stop="
-                            fieldChange($event.target.checked, field)
-                          "
+                          @update:modelValue="(v) => checkChange(v, field)"
                         />
-                        <FormControl
+                        <Textarea
                           v-else-if="
                             [
                               'Small Text',
@@ -132,19 +129,17 @@
                             ].includes(field.fieldtype)
                           "
                           class="form-control"
-                          type="textarea"
-                          variant="subtle"
-                          :value="doc[field.fieldname]"
+                          variant="ghost"
+                          :modelValue="doc[field.fieldname]"
                           :placeholder="field.placeholder"
                           :debounce="500"
-                          @change.stop="fieldChange($event.target.value, field)"
+                          @update:modelValue="(v) => fieldChange(v, field)"
                         />
-                        <FormControl
+                        <Select
                           v-else-if="field.fieldtype === 'Select'"
-                          v-model="doc[field.fieldname]"
-                          class="form-control cursor-pointer [&_select]:cursor-pointer truncate [&>*]:!ring-0"
-                          type="select"
+                          class="form-control select-control cursor-pointer truncate"
                           variant="ghost"
+                          :modelValue="doc[field.fieldname]"
                           :options="field.options"
                           :placeholder="field.placeholder"
                           @update:modelValue="(v) => fieldChange(v, field)"
@@ -250,15 +245,17 @@
                             fieldChange(flt($event.target.value), field)
                           "
                         />
+                        <!-- Password has no debounce prop, so debounce the save -->
                         <Password
                           v-else-if="field.fieldtype === 'Password'"
                           class="form-control"
                           variant="ghost"
-                          :value="doc[field.fieldname]"
+                          :modelValue="doc[field.fieldname]"
                           :placeholder="field.placeholder"
-                          :debounce="500"
                           :disabled="Boolean(field.read_only)"
-                          @change.stop="fieldChange($event.target.value, field)"
+                          @update:modelValue="
+                            (v) => debouncedFieldChange(v, field)
+                          "
                         />
                         <FormattedInput
                           v-else-if="field.fieldtype === 'Int'"
@@ -297,22 +294,28 @@
                             fieldChange(flt($event.target.value), field)
                           "
                         />
-                        <DurationInput
+                        <Duration
                           v-else-if="field.fieldtype === 'Duration'"
                           class="form-control"
                           variant="ghost"
-                          :value="doc[field.fieldname]"
+                          :modelValue="doc[field.fieldname]"
                           :placeholder="field.placeholder"
                           :disabled="Boolean(field.read_only)"
-                          @change="(v) => fieldChange(v, field)"
+                          @update:modelValue="(v) => fieldChange(v, field)"
                         />
-                        <RatingInput
+                        <!-- Frappe stores Rating as a 0-1 fraction; Rating works in star units -->
+                        <Rating
                           v-else-if="field.fieldtype === 'Rating'"
                           class="pl-[10px]"
-                          :value="doc[field.fieldname]"
-                          :max="field.options || 5"
+                          :step="0.5"
+                          :modelValue="
+                            (doc[field.fieldname] || 0) * ratingMax(field)
+                          "
+                          :max="ratingMax(field)"
                           :disabled="Boolean(field.read_only)"
-                          @change="(v) => fieldChange(v, field)"
+                          @update:modelValue="
+                            (v) => fieldChange(v / ratingMax(field), field)
+                          "
                         />
                         <ButtonControl
                           v-else-if="field.fieldtype === 'Button'"
@@ -363,15 +366,15 @@
                           :disabled="Boolean(field.read_only)"
                           @change="(v) => fieldChange(v, field)"
                         />
-                        <FormControl
+                        <TextInput
                           v-else
                           class="form-control"
                           type="text"
                           variant="ghost"
-                          :value="doc[field.fieldname]"
+                          :modelValue="doc[field.fieldname]"
                           :placeholder="field.placeholder"
                           :debounce="500"
-                          @change.stop="fieldChange($event.target.value, field)"
+                          @update:modelValue="(v) => fieldChange(v, field)"
                         />
                       </div>
                       <div class="ml-1">
@@ -418,10 +421,7 @@
 </template>
 
 <script setup>
-import Password from '@/components/Controls/Password.vue'
 import FormattedInput from '@/components/Controls/FormattedInput.vue'
-import DurationInput from '@/components/Controls/DurationInput.vue'
-import RatingInput from '@/components/Controls/RatingInput.vue'
 import AttachControl from '@/components/Controls/AttachControl.vue'
 import HtmlControl from '@/components/Controls/HtmlControl.vue'
 import GeolocationControl from '@/components/Controls/GeolocationControl.vue'
@@ -449,7 +449,20 @@ import {
   interpolateTemplate,
 } from '@/utils'
 import { flt } from '@/utils/numberFormat.js'
-import { Tooltip, DateTimePicker, DatePicker, TimePicker } from 'frappe-ui'
+import {
+  Checkbox,
+  DatePicker,
+  DateTimePicker,
+  debounce,
+  Duration,
+  Password,
+  Rating,
+  Select,
+  Textarea,
+  TextInput,
+  TimePicker,
+  Tooltip,
+} from 'frappe-ui'
 import { useDocument } from '@/data/document'
 import { ref, computed, getCurrentInstance } from 'vue'
 
@@ -655,6 +668,26 @@ const textareaFieldtypes = ['Small Text', 'Text', 'Long Text', 'Code']
 function isTextareaField(field) {
   return textareaFieldtypes.includes(field.fieldtype)
 }
+
+function ratingMax(field) {
+  return Number(field.options) || 5
+}
+
+function checkChange(value, df) {
+  const next = value ? 1 : 0
+  if (next === (doc.value[df.fieldname] ? 1 : 0)) return
+  fieldChange(next, df)
+}
+
+// One timer per field: a shared debounce would let an edit to one field cancel
+// another field's pending save.
+const fieldDebounces = {}
+function debouncedFieldChange(value, df) {
+  if (!fieldDebounces[df.fieldname]) {
+    fieldDebounces[df.fieldname] = debounce(fieldChange, 500)
+  }
+  fieldDebounces[df.fieldname](value, df)
+}
 </script>
 
 <style scoped>
@@ -662,8 +695,11 @@ function isTextareaField(field) {
   margin: 2px;
 }
 
-:deep(.form-control input:not([type='checkbox'])),
-:deep(.form-control select),
+/* Textarea renders no wrapper, so `form-control` lands on the element itself;
+   the inputs sit inside one. Both shapes need the transparent treatment —
+   without it the textarea keeps the forms-plugin's white base background. */
+:deep(.form-control input),
+:deep(textarea.form-control),
 :deep(.form-control button),
 :deep(.attach-control),
 :deep(.geolocation-control),
@@ -672,12 +708,8 @@ function isTextareaField(field) {
   background: transparent;
 }
 
-/* The ghost variant renders inputs with border-0, whereas the Link, Select and
-   Dropdown fields keep a 1px (transparent) border. Restore that 1px transparent
-   border here so every ghost field's text stays on the same 9px edge. (The
-   textarea uses the subtle variant and keeps its own visible border, so it is
-   intentionally excluded here and from the transparent overrides above.) */
-:deep(.form-control input:not([type='checkbox'])) {
+:deep(.form-control input),
+:deep(textarea.form-control) {
   border-width: 1px;
   border-color: transparent;
 }
@@ -685,7 +717,13 @@ function isTextareaField(field) {
 :deep(.form-control button) {
   gap: 0;
 }
-:deep(.form-control [type='checkbox']) {
+
+:deep(button.select-control:hover),
+:deep(button.select-control:focus) {
+  background-color: var(--surface-gray-1);
+}
+
+:deep(input.checkbox-control) {
   margin-left: 9px;
   cursor: pointer;
 }
