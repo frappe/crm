@@ -105,113 +105,53 @@
               :isSidebarCollapsed="isCollapsed"
               :afterSignup="() => capture('signup_from_demo_site')"
             />
-            <div
-              v-else-if="unreadNotificationsCount"
-              class="absolute -left-1.5 top-1 z-20 h-[5px] w-[5px] translate-x-6 translate-y-1 rounded-full bg-surface-gray-9 ring-1 ring-white"
+            <TrialBanner
+              v-if="isFCSite"
+              :isSidebarCollapsed="isCollapsed"
+              :afterUpgrade="() => capture('upgrade_plan_from_trial_banner')"
             />
-          </template>
-        </SidebarLink>
-      </div>
-      <div v-for="view in allViews" :key="view.label">
-        <div class="mx-2 my-1.5" />
-        <Section
-          :label="view.name"
-          :hideLabel="view.hideLabel"
-          :opened="view.opened"
-        >
-          <template #header="{ opened, hide, toggle }">
-            <div
-              v-if="!hide"
-              class="flex items-center cursor-pointer gap-1.5 text-base text-ink-gray-5 transition-all duration-300 ease-in-out"
-              :class="
-                isSidebarCollapsed
-                  ? 'h-0 overflow-hidden opacity-0'
-                  : 'px-4 pt-[11px] pb-2.5 w-auto opacity-100'
-              "
-              @click="toggle()"
-            >
-              <span
-                class="lucide-chevron-right h-4 text-ink-gray-9 transition-all duration-300 ease-in-out"
-                :class="{ 'rotate-90': opened }"
-                aria-hidden="true"
+            <GettingStartedBanner
+              v-if="!isOnboardingStepsCompleted"
+              :isSidebarCollapsed="isCollapsed"
+            />
+          </div>
+          <SidebarItem
+            v-if="isManager() && isDemoDataCreated"
+            :label="__('Clear Demo Data')"
+            class="!text-ink-red-6 hover:!bg-surface-red-2"
+            @click="() => clearDemoData()"
+          >
+            <template #prefix>
+              <BrushCleaningIcon class="size-4" />
+            </template>
+          </SidebarItem>
+          <SidebarItem
+            v-if="isOnboardingStepsCompleted"
+            :label="__('Help')"
+            @click="toggleHelpModal"
+          >
+            <template #prefix>
+              <HelpIcon class="size-4 text-ink-gray-7" />
+            </template>
+          </SidebarItem>
+          <SidebarItem
+            :label="isCollapsed ? __('Expand') : __('Collapse')"
+            @click="isSidebarCollapsed = !isSidebarCollapsed"
+          >
+            <template #prefix>
+              <CollapseSidebar
+                class="size-4 text-ink-gray-7 duration-300 ease-in-out"
+                :class="{ '[transform:rotateY(180deg)]': isCollapsed }"
               />
-              <span>{{ __(view.name) }}</span>
-            </div>
-          </template>
-          <nav class="flex flex-col">
-            <SidebarLink
-              v-for="link in view.views"
-              :key="link.label"
-              :icon="link.icon"
-              :label="__(link.label)"
-              :to="link.to"
-              :isCollapsed="isSidebarCollapsed"
-              class="mx-2 my-[1.5px]"
-            />
-          </nav>
-        </Section>
+            </template>
+          </SidebarItem>
+        </div>
       </div>
-    </div>
-    <div class="m-2 flex flex-col gap-1">
-      <div class="flex flex-col gap-2 mb-1">
-        <SignupBanner
-          v-if="isDemoSite"
-          :isSidebarCollapsed="isSidebarCollapsed"
-          :afterSignup="() => capture('signup_from_demo_site')"
-        />
-        <TrialBanner
-          v-if="isFCSite"
-          :isSidebarCollapsed="isSidebarCollapsed"
-          :afterUpgrade="() => capture('upgrade_plan_from_trial_banner')"
-        />
-        <GettingStartedBanner
-          v-if="!isOnboardingStepsCompleted"
-          :isSidebarCollapsed="isSidebarCollapsed"
-        />
-      </div>
-      <SidebarLink
-        v-if="isManager() && isDemoDataCreated"
-        class="text-ink-red-6 hover:bg-surface-red-2 focus:bg-surface-red-2"
-        :label="__('Clear Demo Data')"
-        :isCollapsed="isSidebarCollapsed"
-        @click="() => clearDemoData()"
-      >
-        <template #icon>
-          <BrushCleaningIcon class="h-4 w-4" />
-        </template>
-      </SidebarLink>
-      <SidebarLink
-        v-if="isOnboardingStepsCompleted"
-        :label="__('Help')"
-        :isCollapsed="isSidebarCollapsed"
-        @click="
-          () => {
-            showHelpModal = minimize ? true : !showHelpModal
-            minimize = !showHelpModal
-          }
-        "
-      >
-        <template #icon>
-          <HelpIcon class="h-4 w-4" />
-        </template>
-      </SidebarLink>
-      <SidebarLink
-        :label="isSidebarCollapsed ? __('Expand') : __('Collapse')"
-        :isCollapsed="isSidebarCollapsed"
-        class=""
-        @click="isSidebarCollapsed = !isSidebarCollapsed"
-      >
-        <template #icon>
-          <span class="grid h-4 w-4 flex-shrink-0 place-items-center">
-            <CollapseSidebar
-              class="h-4 w-4 text-ink-gray-7 duration-300 ease-in-out"
-              :class="{ '[transform:rotateY(180deg)]': isSidebarCollapsed }"
-            />
-          </span>
-        </template>
-      </SidebarLink>
-    </div>
-    <Notifications />
+    </Sidebar>
+    <Notifications v-if="!mobile" />
+  </div>
+
+  <template v-if="!mobile">
     <Settings />
     <HelpModal
       v-if="showHelpModal"
@@ -228,7 +168,7 @@
       v-model="showIntermediateModal"
       :currentStep="currentStep"
     />
-  </div>
+  </template>
 </template>
 
 <script setup>
@@ -240,7 +180,8 @@ import ConvertIcon from '@/components/Icons/ConvertIcon.vue'
 import CommentIcon from '@/components/Icons/CommentIcon.vue'
 import EmailIcon from '@/components/Icons/EmailIcon.vue'
 import StepsIcon from '@/components/Icons/StepsIcon.vue'
-import Section from '@/components/CollapsibleSection.vue'
+import CollapsibleSection from '@/components/CollapsibleSection.vue'
+import Icon from '@/components/Icon.vue'
 import PinIcon from '@/components/Icons/PinIcon.vue'
 import UserDropdown from '@/components/UserDropdown.vue'
 import SquareAsterisk from '@/components/Icons/SquareAsterisk.vue'
@@ -250,11 +191,11 @@ import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
 import OrganizationsIcon from '@/components/Icons/OrganizationsIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
+import CalendarIcon from '@/components/Icons/CalendarIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import CollapseSidebar from '@/components/Icons/CollapseSidebar.vue'
 import NotificationsIcon from '@/components/Icons/NotificationsIcon.vue'
 import HelpIcon from '@/components/Icons/HelpIcon.vue'
-import SidebarLink from '@/components/SidebarLink.vue'
 import Notifications from '@/components/Notifications.vue'
 import Settings from '@/components/Settings/Settings.vue'
 import { viewsStore } from '@/stores/views'
@@ -264,10 +205,14 @@ import {
 } from '@/stores/notifications'
 import { usersStore } from '@/stores/users'
 import { sessionStore } from '@/stores/session'
-import { showSettings, activeSettingsPage } from '@/composables/settings'
+import {
+  showSettings,
+  activeSettingsPage,
+  mobileSidebarOpened,
+} from '@/composables/settings'
 import { showChangePasswordModal } from '@/composables/modals'
 import { useBroadcast } from '@/composables/useBroadcast.js'
-import { call } from 'frappe-ui'
+import { call, Sidebar, SidebarItem, SidebarLabel, Tooltip } from 'frappe-ui'
 import {
   SignupBanner,
   TrialBanner,
@@ -282,7 +227,14 @@ import {
 import router from '@/router'
 import { useStorage } from '@vueuse/core'
 import { useDemoData } from '@/composables/demoData'
-import { ref, reactive, computed, markRaw, onMounted } from 'vue'
+import { ref, reactive, computed, markRaw, onMounted, watch } from 'vue'
+import { useRoute } from 'vue-router'
+
+const props = defineProps({
+  mobile: { type: Boolean, default: false },
+})
+
+const route = useRoute()
 
 const { getPinnedViews, getPublicViews } = viewsStore()
 const { toggle: toggleNotificationPanel } = notificationsStore()
@@ -292,6 +244,10 @@ const { send } = useBroadcast()
 
 const isSidebarCollapsed = useStorage('isSidebarCollapsed', false)
 
+// The mobile drawer pins the sidebar open, so it is never visually collapsed
+// even when the stored rail state says otherwise.
+const isCollapsed = computed(() => isSidebarCollapsed.value && !props.mobile)
+
 const isFCSite = ref(window.is_fc_site)
 const isDemoSite = ref(window.is_demo_site)
 
@@ -300,6 +256,7 @@ const links = [
     label: 'Dashboard',
     icon: LucideLayoutDashboard,
     to: 'Dashboard',
+    condition: () => !props.mobile,
   },
   {
     label: 'Leads',
@@ -332,6 +289,12 @@ const links = [
     to: 'Tasks',
   },
   {
+    label: 'Calendar',
+    icon: CalendarIcon,
+    to: 'Calendar',
+    condition: () => !props.mobile,
+  },
+  {
     label: 'Call Logs',
     icon: PhoneIcon,
     to: 'Call Logs',
@@ -344,12 +307,19 @@ const allViews = computed(() => {
       name: 'All Views',
       hideLabel: true,
       opened: true,
-      views: links.filter((link) => {
-        if (link.condition) {
-          return link.condition()
-        }
-        return true
-      }),
+      views: links
+        .filter((link) => {
+          if (link.condition) {
+            return link.condition()
+          }
+          return true
+        })
+        .map((link) => ({
+          label: link.label,
+          icon: link.icon,
+          key: link.to,
+          to: { name: link.to },
+        })),
     },
   ]
   if (getPublicViews().length) {
@@ -375,6 +345,7 @@ function parseView(views) {
     return {
       label: view.label,
       icon: getIcon(view.route_name, view.icon),
+      key: view.name,
       to: {
         name: view.route_name,
         params: { viewType: view.type || 'list' },
@@ -403,6 +374,53 @@ function getIcon(routeName, icon) {
     default:
       return PinIcon
   }
+}
+
+// A saved view's key is its name; a plain nav item's key is its route name.
+function currentRouteKey() {
+  return route.query.view || route.name
+}
+
+// Set the highlight on click rather than waiting for the route, since route
+// components are lazily imported and the first visit waits on a chunk fetch.
+// Modified clicks open a new tab without navigating this one, so they must not
+// move the highlight here.
+const activeItem = ref(currentRouteKey())
+
+function selectItem(event, key) {
+  if (
+    event.metaKey ||
+    event.ctrlKey ||
+    event.shiftKey ||
+    event.altKey ||
+    event.button === 1
+  ) {
+    return
+  }
+  activeItem.value = key
+  // Selecting the row for the route already open leaves the URL unchanged, so
+  // the drawer's navigation watcher never fires. Close it here too.
+  if (props.mobile) {
+    mobileSidebarOpened.value = false
+  }
+}
+
+watch(
+  () => [route.name, route.query.view],
+  () => (activeItem.value = currentRouteKey()),
+)
+
+function onNotificationsClick(event) {
+  if (props.mobile) {
+    selectItem(event, 'Notifications')
+  } else {
+    toggleNotificationPanel()
+  }
+}
+
+function toggleHelpModal() {
+  showHelpModal.value = minimize.value ? true : !showHelpModal.value
+  minimize.value = !showHelpModal.value
 }
 
 // onboarding
@@ -612,6 +630,8 @@ const steps = reactive([
 ])
 
 onMounted(async () => {
+  if (props.mobile) return
+
   await users.promise
 
   const filteredSteps = steps.filter((step) => {
