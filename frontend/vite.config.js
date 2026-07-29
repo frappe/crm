@@ -171,6 +171,7 @@ function getAliases(config) {
       '../frappe-ui/src/molecules/editor/style.css',
     ),
     'frappe-ui/internals': path.resolve(__dirname, '../frappe-ui/internals.ts'),
+    'frappe-ui/icons': path.resolve(__dirname, '../frappe-ui/icons/index.ts'),
     'frappe-ui': path.resolve(__dirname, '../frappe-ui/src/index.ts'),
   }
 }
