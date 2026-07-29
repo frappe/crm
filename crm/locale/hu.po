@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2026-07-05 10:18+0000\n"
-"PO-Revision-Date: 2026-07-09 10:15\n"
+"POT-Creation-Date: 2026-07-12 10:53+0000\n"
+"PO-Revision-Date: 2026-07-16 11:02\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Hungarian\n"
 "MIME-Version: 1.0\n"
@@ -22,7 +22,7 @@ msgstr ""
 msgid " (New)"
 msgstr " (Új)"
 
-#: frontend/src/components/Filter.vue:587
+#: frontend/src/components/Filter.vue:591
 msgid "%John%"
 msgstr "%John%"
 
@@ -30,7 +30,7 @@ msgstr "%John%"
 msgid "(No Title)"
 msgstr "(Nincs cím)"
 
-#: frontend/src/components/Filter.vue:577
+#: frontend/src/components/Filter.vue:581
 msgid "01/01/2022 to 01/31/2022"
 msgstr "2022.01.01. - 2022.01.31."
 
@@ -3037,7 +3037,7 @@ msgstr "Add meg a forrás nevét"
 msgid "Enter Twilio Number"
 msgstr "Twilio-szám megadása"
 
-#: frontend/src/components/Filter.vue:605
+#: frontend/src/components/Filter.vue:609
 msgid "Enter Value"
 msgstr "Érték megadása"
 
@@ -3049,7 +3049,7 @@ msgstr "Add meg a Facebook hozzáférési tokenedet"
 msgid "Enter your personal mobile number used by Exotel to make calls"
 msgstr "Add meg az Exotel által hívások kezdeményezéséhez használt személyes mobilszámodat"
 
-#: frontend/src/components/FieldLayout/Field.vue:565
+#: frontend/src/components/FieldLayout/Field.vue:576
 msgid "Enter {0}"
 msgstr "Adja meg: {0}"
 
@@ -4212,14 +4212,14 @@ msgid "Job Title"
 msgstr "Beosztás"
 
 #: frontend/src/components/AssignToBody.vue:10
-#: frontend/src/components/Filter.vue:603
+#: frontend/src/components/Filter.vue:607
 #: frontend/src/components/Modals/AssignmentModal.vue:13
 #: frontend/src/components/Telephony/TaskPanel.vue:46
 #: frontend/src/pages/Calendar.vue:113
 msgid "John Doe"
 msgstr "Kovács János"
 
-#: frontend/src/components/Filter.vue:582
+#: frontend/src/components/Filter.vue:586
 msgid "John, Jane, Doe"
 msgstr "John, Jane, Doe"
 
@@ -4298,7 +4298,7 @@ msgstr "Utolsó"
 msgid "Last 30 Days"
 msgstr "Elmúlt 30 nap"
 
-#: frontend/src/components/Filter.vue:661
+#: frontend/src/components/Filter.vue:665
 msgid "Last 6 Months"
 msgstr "Elmúlt 6 hónap"
 
@@ -4322,7 +4322,7 @@ msgstr "Elmúlt 90 nap"
 msgid "Last Modified"
 msgstr "Utoljára módosítva"
 
-#: frontend/src/components/Filter.vue:653
+#: frontend/src/components/Filter.vue:657
 msgid "Last Month"
 msgstr "Múlt Hónap"
 
@@ -4331,7 +4331,7 @@ msgstr "Múlt Hónap"
 msgid "Last Name"
 msgstr "Vezetéknév"
 
-#: frontend/src/components/Filter.vue:657
+#: frontend/src/components/Filter.vue:661
 msgid "Last Quarter"
 msgstr "Utolsó Negyedév"
 
@@ -4361,12 +4361,12 @@ msgstr "Utolsó állapotváltozás naplója"
 msgid "Last Synced At"
 msgstr "Utolsó szinkronizálás dátuma"
 
-#: frontend/src/components/Filter.vue:591
-#: frontend/src/components/Filter.vue:649
+#: frontend/src/components/Filter.vue:595
+#: frontend/src/components/Filter.vue:653
 msgid "Last Week"
 msgstr "Múlt Hét"
 
-#: frontend/src/components/Filter.vue:665
+#: frontend/src/components/Filter.vue:669
 msgid "Last Year"
 msgstr "Tavaly"
 
@@ -5089,15 +5089,15 @@ msgstr "Új {0}"
 msgid "Newest First"
 msgstr ""
 
-#: frontend/src/components/Filter.vue:709
+#: frontend/src/components/Filter.vue:713
 msgid "Next 6 Months"
 msgstr "Következő 6 hónap"
 
-#: frontend/src/components/Filter.vue:701
+#: frontend/src/components/Filter.vue:705
 msgid "Next Month"
 msgstr "Következő hónap"
 
-#: frontend/src/components/Filter.vue:705
+#: frontend/src/components/Filter.vue:709
 msgid "Next Quarter"
 msgstr "Következő negyedév"
 
@@ -5106,11 +5106,11 @@ msgstr "Következő negyedév"
 msgid "Next Step"
 msgstr "Következő lépés"
 
-#: frontend/src/components/Filter.vue:697
+#: frontend/src/components/Filter.vue:701
 msgid "Next Week"
 msgstr "Következő hét"
 
-#: frontend/src/components/Filter.vue:713
+#: frontend/src/components/Filter.vue:717
 msgid "Next Year"
 msgstr "Következő év"
 
@@ -6782,7 +6782,7 @@ msgstr "Munkanap kiválasztása"
 msgid "Select a Twilio App for your CRM"
 msgstr "Válassz egy Twilio alkalmazást a CRM-edhez"
 
-#: frontend/src/components/Filter.vue:599
+#: frontend/src/components/Filter.vue:603
 msgid "Select a Value"
 msgstr "Válassz egy értéket"
 
@@ -6790,7 +6790,7 @@ msgstr "Válassz egy értéket"
 msgid "Select all that apply"
 msgstr ""
 
-#: frontend/src/components/Filter.vue:601
+#: frontend/src/components/Filter.vue:605
 msgid "Select an Option"
 msgstr "Válassz egy lehetőséget"
 
@@ -6814,7 +6814,7 @@ msgstr "Válaszd ki, hogy az idő másodpercekkel vagy anélkül jelenjen meg"
 msgid "Select your ERPNext company to connect with"
 msgstr "Válaszd ki az ERPNext vállalatodat, amellyel kapcsolatba szeretne lépni"
 
-#: frontend/src/components/FieldLayout/Field.vue:563
+#: frontend/src/components/FieldLayout/Field.vue:574
 msgid "Select {0}"
 msgstr "{0} kiválasztása"
 
@@ -6869,7 +6869,7 @@ msgstr "Szolgáltatási szint Megállapodás"
 msgid "Service Provider"
 msgstr ""
 
-#: frontend/src/components/Filter.vue:589
+#: frontend/src/components/Filter.vue:593
 msgid "Set"
 msgstr "Beállít"
 
@@ -7511,19 +7511,19 @@ msgstr "Téma"
 msgid "There can only be one default priority in Priorities table"
 msgstr "A Prioritások táblázatban csak egy alapértelmezett prioritás lehet"
 
-#: frontend/src/components/Filter.vue:685
+#: frontend/src/components/Filter.vue:689
 msgid "This Month"
 msgstr "Ebben a hónapban"
 
-#: frontend/src/components/Filter.vue:689
+#: frontend/src/components/Filter.vue:693
 msgid "This Quarter"
 msgstr "Ebben a negyedévben"
 
-#: frontend/src/components/Filter.vue:681
+#: frontend/src/components/Filter.vue:685
 msgid "This Week"
 msgstr "Ezen a héten"
 
-#: frontend/src/components/Filter.vue:693
+#: frontend/src/components/Filter.vue:697
 msgid "This Year"
 msgstr "Ebben az évben"
 
@@ -7667,7 +7667,7 @@ msgstr "Felhasználónak"
 msgid "To know more about setting up email accounts, click"
 msgstr "Ha többet szeretnél megtudni az e-mail fiókok beállításáról, kattints"
 
-#: frontend/src/components/Filter.vue:673 frontend/src/pages/Calendar.vue:85
+#: frontend/src/components/Filter.vue:677 frontend/src/pages/Calendar.vue:85
 msgid "Today"
 msgstr "Ma"
 
@@ -7680,7 +7680,7 @@ msgstr "Teendő"
 msgid "Toggle on for Preview"
 msgstr "Bekapcsolás az előnézethez"
 
-#: frontend/src/components/Filter.vue:677
+#: frontend/src/components/Filter.vue:681
 msgid "Tomorrow"
 msgstr "Holnap"
 
@@ -8247,11 +8247,11 @@ msgid "Working Hours"
 msgstr "Munkaidő"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:531
-#: frontend/src/components/Filter.vue:597
+#: frontend/src/components/Filter.vue:601
 msgid "Yes"
 msgstr "Igen"
 
-#: frontend/src/components/Filter.vue:669
+#: frontend/src/components/Filter.vue:673
 msgid "Yesterday"
 msgstr "Tegnap"
 

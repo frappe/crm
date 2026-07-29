@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2026-07-05 10:18+0000\n"
-"PO-Revision-Date: 2026-07-09 10:14\n"
+"POT-Creation-Date: 2026-07-12 10:53+0000\n"
+"PO-Revision-Date: 2026-07-16 11:01\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: French\n"
 "MIME-Version: 1.0\n"
@@ -22,7 +22,7 @@ msgstr ""
 msgid " (New)"
 msgstr " (Nouveau)"
 
-#: frontend/src/components/Filter.vue:587
+#: frontend/src/components/Filter.vue:591
 msgid "%John%"
 msgstr "%John%"
 
@@ -30,7 +30,7 @@ msgstr "%John%"
 msgid "(No Title)"
 msgstr "(Sans titre)"
 
-#: frontend/src/components/Filter.vue:577
+#: frontend/src/components/Filter.vue:581
 msgid "01/01/2022 to 01/31/2022"
 msgstr "01/01/2022 au 31/01/2022"
 
@@ -3037,7 +3037,7 @@ msgstr "Saisir le nom de la source"
 msgid "Enter Twilio Number"
 msgstr "Saisir le numéro Twilio"
 
-#: frontend/src/components/Filter.vue:605
+#: frontend/src/components/Filter.vue:609
 msgid "Enter Value"
 msgstr "Entrez une Valeur"
 
@@ -3049,7 +3049,7 @@ msgstr "Saisir votre jeton d'accès Facebook"
 msgid "Enter your personal mobile number used by Exotel to make calls"
 msgstr "Saisissez votre numéro de mobile personnel utilisé par Exotel pour passer des appels"
 
-#: frontend/src/components/FieldLayout/Field.vue:565
+#: frontend/src/components/FieldLayout/Field.vue:576
 msgid "Enter {0}"
 msgstr "Entrez {0}"
 
@@ -4212,14 +4212,14 @@ msgid "Job Title"
 msgstr "Titre du poste"
 
 #: frontend/src/components/AssignToBody.vue:10
-#: frontend/src/components/Filter.vue:603
+#: frontend/src/components/Filter.vue:607
 #: frontend/src/components/Modals/AssignmentModal.vue:13
 #: frontend/src/components/Telephony/TaskPanel.vue:46
 #: frontend/src/pages/Calendar.vue:113
 msgid "John Doe"
 msgstr "John Doe"
 
-#: frontend/src/components/Filter.vue:582
+#: frontend/src/components/Filter.vue:586
 msgid "John, Jane, Doe"
 msgstr "John, Jane, Doe"
 
@@ -4298,7 +4298,7 @@ msgstr "Dernier"
 msgid "Last 30 Days"
 msgstr "30 derniers jours"
 
-#: frontend/src/components/Filter.vue:661
+#: frontend/src/components/Filter.vue:665
 msgid "Last 6 Months"
 msgstr "6 derniers mois"
 
@@ -4322,7 +4322,7 @@ msgstr "90 derniers jours"
 msgid "Last Modified"
 msgstr "Dernière modification"
 
-#: frontend/src/components/Filter.vue:653
+#: frontend/src/components/Filter.vue:657
 msgid "Last Month"
 msgstr "Mois dernier"
 
@@ -4331,7 +4331,7 @@ msgstr "Mois dernier"
 msgid "Last Name"
 msgstr "Nom de famille"
 
-#: frontend/src/components/Filter.vue:657
+#: frontend/src/components/Filter.vue:661
 msgid "Last Quarter"
 msgstr "Dernier trimestre"
 
@@ -4361,12 +4361,12 @@ msgstr "Dernier journal de changement de statut"
 msgid "Last Synced At"
 msgstr "Dernière synchronisation le"
 
-#: frontend/src/components/Filter.vue:591
-#: frontend/src/components/Filter.vue:649
+#: frontend/src/components/Filter.vue:595
+#: frontend/src/components/Filter.vue:653
 msgid "Last Week"
 msgstr "Semaine dernière"
 
-#: frontend/src/components/Filter.vue:665
+#: frontend/src/components/Filter.vue:669
 msgid "Last Year"
 msgstr "Année dernière"
 
@@ -5089,15 +5089,15 @@ msgstr "Nouveau(elle) {0}"
 msgid "Newest First"
 msgstr ""
 
-#: frontend/src/components/Filter.vue:709
+#: frontend/src/components/Filter.vue:713
 msgid "Next 6 Months"
 msgstr "6 prochains mois"
 
-#: frontend/src/components/Filter.vue:701
+#: frontend/src/components/Filter.vue:705
 msgid "Next Month"
 msgstr "Mois prochain"
 
-#: frontend/src/components/Filter.vue:705
+#: frontend/src/components/Filter.vue:709
 msgid "Next Quarter"
 msgstr "Prochain trimestre"
 
@@ -5106,11 +5106,11 @@ msgstr "Prochain trimestre"
 msgid "Next Step"
 msgstr "Étape suivante"
 
-#: frontend/src/components/Filter.vue:697
+#: frontend/src/components/Filter.vue:701
 msgid "Next Week"
 msgstr "Semaine prochaine"
 
-#: frontend/src/components/Filter.vue:713
+#: frontend/src/components/Filter.vue:717
 msgid "Next Year"
 msgstr "Année prochaine"
 
@@ -6782,7 +6782,7 @@ msgstr "Sélectionner le jour ouvré"
 msgid "Select a Twilio App for your CRM"
 msgstr "Sélectionner une application Twilio pour votre CRM"
 
-#: frontend/src/components/Filter.vue:599
+#: frontend/src/components/Filter.vue:603
 msgid "Select a Value"
 msgstr "Sélectionner une valeur"
 
@@ -6790,7 +6790,7 @@ msgstr "Sélectionner une valeur"
 msgid "Select all that apply"
 msgstr ""
 
-#: frontend/src/components/Filter.vue:601
+#: frontend/src/components/Filter.vue:605
 msgid "Select an Option"
 msgstr "Sélectionner une option"
 
@@ -6814,7 +6814,7 @@ msgstr "Choisissez d'afficher l'heure avec ou sans les secondes"
 msgid "Select your ERPNext company to connect with"
 msgstr "Sélectionnez votre entreprise ERPNext à connecter"
 
-#: frontend/src/components/FieldLayout/Field.vue:563
+#: frontend/src/components/FieldLayout/Field.vue:574
 msgid "Select {0}"
 msgstr "Sélectionnez {0}"
 
@@ -6869,7 +6869,7 @@ msgstr "Contrat de niveau de service"
 msgid "Service Provider"
 msgstr "Prestataire de service"
 
-#: frontend/src/components/Filter.vue:589
+#: frontend/src/components/Filter.vue:593
 msgid "Set"
 msgstr "Définir"
 
@@ -7511,19 +7511,19 @@ msgstr "Thème"
 msgid "There can only be one default priority in Priorities table"
 msgstr "Il ne peut y avoir qu'une seule priorité par défaut dans le tableau des priorités"
 
-#: frontend/src/components/Filter.vue:685
+#: frontend/src/components/Filter.vue:689
 msgid "This Month"
 msgstr "Ce mois-ci"
 
-#: frontend/src/components/Filter.vue:689
+#: frontend/src/components/Filter.vue:693
 msgid "This Quarter"
 msgstr "Ce trimestre"
 
-#: frontend/src/components/Filter.vue:681
+#: frontend/src/components/Filter.vue:685
 msgid "This Week"
 msgstr "Cette semaine"
 
-#: frontend/src/components/Filter.vue:693
+#: frontend/src/components/Filter.vue:697
 msgid "This Year"
 msgstr "Cette année"
 
@@ -7667,7 +7667,7 @@ msgstr "À l'utilisateur"
 msgid "To know more about setting up email accounts, click"
 msgstr "Pour en savoir plus sur la configuration des comptes de messagerie, cliquez"
 
-#: frontend/src/components/Filter.vue:673 frontend/src/pages/Calendar.vue:85
+#: frontend/src/components/Filter.vue:677 frontend/src/pages/Calendar.vue:85
 msgid "Today"
 msgstr "Aujourd’hui"
 
@@ -7680,7 +7680,7 @@ msgstr "À faire"
 msgid "Toggle on for Preview"
 msgstr "Activer pour l'aperçu"
 
-#: frontend/src/components/Filter.vue:677
+#: frontend/src/components/Filter.vue:681
 msgid "Tomorrow"
 msgstr "Demain"
 
@@ -8247,11 +8247,11 @@ msgid "Working Hours"
 msgstr "Heures de travail"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:531
-#: frontend/src/components/Filter.vue:597
+#: frontend/src/components/Filter.vue:601
 msgid "Yes"
 msgstr "Oui"
 
-#: frontend/src/components/Filter.vue:669
+#: frontend/src/components/Filter.vue:673
 msgid "Yesterday"
 msgstr "Hier"
 

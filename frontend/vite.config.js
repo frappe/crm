@@ -65,7 +65,24 @@ export default defineConfig(async ({ mode }) => {
       // `dompurify` is an implicit dep of @framework/ui's sanitize util (not declared in its
       // package.json); dedupe resolves it to the host's copy since the symlinked source has
       // no node_modules of its own.
-      dedupe: ['vue', 'vue-router', 'frappe-ui', 'dompurify'],
+      // the editor packages must resolve to one copy each: tiptap imports
+      // `@tiptap/pm/model` while prosemirror-state/transform/tables import bare
+      // `prosemirror-model`, so a nested install of either throws "multiple
+      // versions of prosemirror-model were loaded" on mention insert. Unlike
+      // optimizeDeps (dev-only) this also applies to the production build.
+      dedupe: [
+        'vue',
+        'vue-router',
+        'frappe-ui',
+        'dompurify',
+        '@tiptap/core',
+        '@tiptap/pm',
+        '@tiptap/vue-3',
+        'prosemirror-model',
+        'prosemirror-state',
+        'prosemirror-view',
+        'prosemirror-transform',
+      ],
     },
     optimizeDeps: {
       include: [
@@ -143,8 +160,9 @@ function getAliases(config) {
     ),
     'frappe-ui/frappe': path.resolve(__dirname, '../frappe-ui/frappe/index.js'),
     // subpath entries must precede the bare `frappe-ui` key: a plain string alias
-    // matches by prefix, so without these `frappe-ui/editor` would rewrite to
-    // `.../src/index.ts/editor`. `internals` is pulled in by @framework/ui.
+    // matches by prefix, so without these subpaths would rewrite under
+    // `.../src/index.ts`. `internals` is pulled in by @framework/ui.
+    'frappe-ui/icons': path.resolve(__dirname, '../frappe-ui/icons/index.ts'),
     'frappe-ui/editor': path.resolve(
       __dirname,
       '../frappe-ui/src/molecules/editor/index.ts',

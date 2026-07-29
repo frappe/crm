@@ -50,17 +50,18 @@
                   />
                 </div>
                 <div id="fieldname" class="w-full">
-                  <Autocomplete
-                    :value="f.field.fieldname"
-                    :options="filterableFields.data"
+                  <Combobox
+                    trigger="button"
+                    :model-value="f.field.fieldname"
+                    :options="filterFieldOptions"
                     :placeholder="__('First Name')"
-                    @change="(e) => updateFilter(e, i)"
+                    @update:selected-option="(e) => updateFilter(e, i)"
                   />
                 </div>
                 <div id="operator">
-                  <FormControl
+                  <Combobox
                     v-model="f.operator"
-                    type="select"
+                    trigger="button"
                     :options="
                       getOperators(f.field.fieldtype, f.field.fieldname)
                     "
@@ -83,17 +84,18 @@
                     {{ i == 0 ? __('Where') : __('And') }}
                   </div>
                   <div id="fieldname" class="!min-w-[140px]">
-                    <Autocomplete
-                      :value="f.field.fieldname"
-                      :options="filterableFields.data"
+                    <Combobox
+                      trigger="button"
+                      :model-value="f.field.fieldname"
+                      :options="filterFieldOptions"
                       :placeholder="__('First Name')"
-                      @change="(e) => updateFilter(e, i)"
+                      @update:selected-option="(e) => updateFilter(e, i)"
                     />
                   </div>
                   <div id="operator">
-                    <FormControl
+                    <Combobox
                       v-model="f.operator"
-                      type="select"
+                      trigger="button"
                       :options="
                         getOperators(f.field.fieldtype, f.field.fieldname)
                       "
@@ -126,22 +128,22 @@
             {{ __('Empty - Choose a field to filter by') }}
           </div>
           <div class="flex items-center justify-between gap-2">
-            <Autocomplete
-              value=""
+            <Combobox
+              :model-value="null"
               :options="availableFilters"
               :placeholder="__('First Name')"
-              @change="(e) => setfilter(e)"
+              @update:selected-option="(e) => setfilter(e)"
             >
-              <template #target="{ togglePopover }">
+              <template #trigger="{ open, setOpen }">
                 <Button
                   class="!text-ink-gray-5"
                   variant="ghost"
                   :label="__('Add Filter')"
                   iconLeft="plus"
-                  @click="togglePopover()"
+                  @click="setOpen(!open)"
                 />
               </template>
-            </Autocomplete>
+            </Combobox>
             <Button
               v-if="filters?.size"
               class="!text-ink-gray-5"
@@ -158,10 +160,10 @@
 <script setup>
 import FilterIcon from '@/components/Icons/FilterIcon.vue'
 import Link from '@/components/Controls/Link.vue'
-import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import DurationInput from '@/components/Controls/DurationInput.vue'
 import RatingInput from '@/components/Controls/RatingInput.vue'
 import {
+  Combobox,
   FormControl,
   createResource,
   Popover,
@@ -218,6 +220,33 @@ const filters = computed(() => {
   return convertFilters(filterableFields.data, allFilters)
 })
 
+// `name` is labelled "Name" but holds the document ID, which reads as the
+// record's full name on these doctypes. Mark it with an ID icon.
+const idFieldDoctypes = ['CRM Lead', 'CRM Deal']
+
+const filterFieldOptions = computed(() => {
+  const fields = filterableFields.data || []
+  const markIdField = idFieldDoctypes.includes(props.doctype)
+
+  return fields.map((field) => {
+    // Drop the description: it renders as a second line in the dropdown, and
+    // the popover has no max width, so one long description (CRM Deal's
+    // exchange rate) stretches the whole list.
+    const { description, ...option } = field
+
+    if (markIdField && option.fieldname === 'name') {
+      option.slots = {
+        suffix: () =>
+          h('span', {
+            class: 'lucide-id-card size-4 shrink-0 text-ink-gray-5',
+            title: __('Document ID, not the full name'),
+          }),
+      }
+    }
+    return option
+  })
+})
+
 const availableFilters = computed(() => {
   if (!filterableFields.data) return []
 
@@ -226,7 +255,7 @@ const availableFilters = computed(() => {
     selectedFieldNames.add(filter.fieldname)
   }
 
-  return filterableFields.data.filter(
+  return filterFieldOptions.value.filter(
     (field) => !selectedFieldNames.has(field.fieldname),
   )
 })
@@ -378,8 +407,8 @@ function getValueControl(f) {
   const { field, operator } = f
   const { fieldtype, options } = field
   if (operator == 'is') {
-    return h(FormControl, {
-      type: 'select',
+    return h(Combobox, {
+      trigger: 'button',
       options: [
         {
           label: 'Set',
@@ -394,8 +423,8 @@ function getValueControl(f) {
       'onUpdate:modelValue': (v) => updateValue(v, f),
     })
   } else if (operator == 'timespan') {
-    return h(FormControl, {
-      type: 'select',
+    return h(Combobox, {
+      trigger: 'button',
       options: timespanOptions,
       modelValue: f.value,
       'onUpdate:modelValue': (v) => updateValue(v, f),
@@ -405,8 +434,8 @@ function getValueControl(f) {
   } else if (typeSelect.includes(fieldtype) || typeCheck.includes(fieldtype)) {
     const _options =
       fieldtype == 'Check' ? ['Yes', 'No'] : getSelectOptions(options)
-    return h(FormControl, {
-      type: 'select',
+    return h(Combobox, {
+      trigger: 'button',
       options: _options.map((o) => ({
         label: o,
         value: o,
@@ -488,7 +517,7 @@ function setfilter(data) {
 }
 
 function updateFilter(data, index) {
-  if (!data.fieldname) return
+  if (!data?.fieldname) return
 
   filters.value.delete(Array.from(filters.value)[index])
   filters.value.add({

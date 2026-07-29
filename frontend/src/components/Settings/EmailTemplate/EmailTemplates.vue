@@ -52,13 +52,13 @@
     >
       <div
         v-if="templates.data?.length > 10"
-        class="flex items-center justify-between mb-4 px-2 pt-0.5"
+        class="flex items-center gap-2 mb-4 px-2 pt-0.5"
       >
         <TextInput
           ref="searchRef"
           v-model="search"
           :placeholder="__('Search Template')"
-          class="w-1/3"
+          class="w-full"
           :debounce="300"
         >
           <template #prefix>
@@ -68,9 +68,9 @@
             />
           </template>
         </TextInput>
-        <FormControl
+        <Select
           v-model="currentDoctype"
-          type="select"
+          class="shrink-0"
           :options="[
             { label: __('All'), value: 'All' },
             { label: __('Lead'), value: 'CRM Lead' },
@@ -152,7 +152,7 @@
 import EmailTemplateIcon from '@/components/Icons/EmailTemplateIcon.vue'
 import EmptyState from '../../ListViews/EmptyState.vue'
 import { useBroadcast } from '@/composables/useBroadcast'
-import { TextInput, FormControl, Switch, Dropdown, toast } from 'frappe-ui'
+import { TextInput, Select, Switch, Dropdown, toast } from 'frappe-ui'
 import { ref, computed, inject } from 'vue'
 import { ConfirmDelete } from '../../../utils'
 

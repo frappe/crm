@@ -42,7 +42,7 @@
           >
             <Button
               :tooltip="__('Change Status')"
-              variant="ghosted"
+              variant="ghost"
               class="hover:bg-surface-gray-4"
               @click.stop.prevent
             >
@@ -76,7 +76,7 @@
           >
             <Button
               icon="lucide-more-horizontal"
-              variant="ghosted"
+              variant="ghost"
               class="hover:bg-surface-gray-4 text-ink-gray-9"
               @click.stop.prevent
             />

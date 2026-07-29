@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2026-07-05 10:18+0000\n"
-"PO-Revision-Date: 2026-07-09 10:15\n"
+"POT-Creation-Date: 2026-07-12 10:53+0000\n"
+"PO-Revision-Date: 2026-07-16 11:02\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Serbian (Cyrillic)\n"
 "MIME-Version: 1.0\n"
@@ -22,7 +22,7 @@ msgstr ""
 msgid " (New)"
 msgstr " (Ново)"
 
-#: frontend/src/components/Filter.vue:587
+#: frontend/src/components/Filter.vue:591
 msgid "%John%"
 msgstr "%John%"
 
@@ -30,7 +30,7 @@ msgstr "%John%"
 msgid "(No Title)"
 msgstr "(Без наслова)"
 
-#: frontend/src/components/Filter.vue:577
+#: frontend/src/components/Filter.vue:581
 msgid "01/01/2022 to 01/31/2022"
 msgstr "01.01.2022. до 31.01.2022"
 
@@ -3037,7 +3037,7 @@ msgstr "Унесите назив извора"
 msgid "Enter Twilio Number"
 msgstr "Унесите Twilio број"
 
-#: frontend/src/components/Filter.vue:605
+#: frontend/src/components/Filter.vue:609
 msgid "Enter Value"
 msgstr "Унесите вредност"
 
@@ -3049,7 +3049,7 @@ msgstr "Унесите свој Facebook приступни токен"
 msgid "Enter your personal mobile number used by Exotel to make calls"
 msgstr "Унесите лични број мобилног телефона који Exotel користи за позиве"
 
-#: frontend/src/components/FieldLayout/Field.vue:565
+#: frontend/src/components/FieldLayout/Field.vue:576
 msgid "Enter {0}"
 msgstr "Унесите {0}"
 
@@ -4212,14 +4212,14 @@ msgid "Job Title"
 msgstr "Радно место"
 
 #: frontend/src/components/AssignToBody.vue:10
-#: frontend/src/components/Filter.vue:603
+#: frontend/src/components/Filter.vue:607
 #: frontend/src/components/Modals/AssignmentModal.vue:13
 #: frontend/src/components/Telephony/TaskPanel.vue:46
 #: frontend/src/pages/Calendar.vue:113
 msgid "John Doe"
 msgstr "Петар Петровић"
 
-#: frontend/src/components/Filter.vue:582
+#: frontend/src/components/Filter.vue:586
 msgid "John, Jane, Doe"
 msgstr "John, Jane, Doe"
 
@@ -4298,7 +4298,7 @@ msgstr "Последње"
 msgid "Last 30 Days"
 msgstr "Последњих 30 дана"
 
-#: frontend/src/components/Filter.vue:661
+#: frontend/src/components/Filter.vue:665
 msgid "Last 6 Months"
 msgstr "Последњих 6 месеци"
 
@@ -4322,7 +4322,7 @@ msgstr "Последњих 90 дана"
 msgid "Last Modified"
 msgstr "Последњи пут измењено"
 
-#: frontend/src/components/Filter.vue:653
+#: frontend/src/components/Filter.vue:657
 msgid "Last Month"
 msgstr "Прошли месец"
 
@@ -4331,7 +4331,7 @@ msgstr "Прошли месец"
 msgid "Last Name"
 msgstr "Презиме"
 
-#: frontend/src/components/Filter.vue:657
+#: frontend/src/components/Filter.vue:661
 msgid "Last Quarter"
 msgstr "Прошли квартал"
 
@@ -4361,12 +4361,12 @@ msgstr "Евиденција последње промене статуса"
 msgid "Last Synced At"
 msgstr "Последња синхронизација у"
 
-#: frontend/src/components/Filter.vue:591
-#: frontend/src/components/Filter.vue:649
+#: frontend/src/components/Filter.vue:595
+#: frontend/src/components/Filter.vue:653
 msgid "Last Week"
 msgstr "Прошла недеља"
 
-#: frontend/src/components/Filter.vue:665
+#: frontend/src/components/Filter.vue:669
 msgid "Last Year"
 msgstr "Прошла година"
 
@@ -5089,15 +5089,15 @@ msgstr "Нови {0}"
 msgid "Newest First"
 msgstr ""
 
-#: frontend/src/components/Filter.vue:709
+#: frontend/src/components/Filter.vue:713
 msgid "Next 6 Months"
 msgstr "Следећих 6 месеци"
 
-#: frontend/src/components/Filter.vue:701
+#: frontend/src/components/Filter.vue:705
 msgid "Next Month"
 msgstr "Следећи месец"
 
-#: frontend/src/components/Filter.vue:705
+#: frontend/src/components/Filter.vue:709
 msgid "Next Quarter"
 msgstr "Следећи квартал"
 
@@ -5106,11 +5106,11 @@ msgstr "Следећи квартал"
 msgid "Next Step"
 msgstr "Следећи корак"
 
-#: frontend/src/components/Filter.vue:697
+#: frontend/src/components/Filter.vue:701
 msgid "Next Week"
 msgstr "Следећа недеља"
 
-#: frontend/src/components/Filter.vue:713
+#: frontend/src/components/Filter.vue:717
 msgid "Next Year"
 msgstr "Следећа година"
 
@@ -6782,7 +6782,7 @@ msgstr "Изаберите радни дан"
 msgid "Select a Twilio App for your CRM"
 msgstr "Изаберите Twilio апликацију за Ваш CRM"
 
-#: frontend/src/components/Filter.vue:599
+#: frontend/src/components/Filter.vue:603
 msgid "Select a Value"
 msgstr "Изаберите вредност"
 
@@ -6790,7 +6790,7 @@ msgstr "Изаберите вредност"
 msgid "Select all that apply"
 msgstr ""
 
-#: frontend/src/components/Filter.vue:601
+#: frontend/src/components/Filter.vue:605
 msgid "Select an Option"
 msgstr "Изаберите опцију"
 
@@ -6814,7 +6814,7 @@ msgstr "Изаберите да ли желите приказ времена с
 msgid "Select your ERPNext company to connect with"
 msgstr "Изаберите ERPNext компанију за повезивање"
 
-#: frontend/src/components/FieldLayout/Field.vue:563
+#: frontend/src/components/FieldLayout/Field.vue:574
 msgid "Select {0}"
 msgstr "Изаберите {0}"
 
@@ -6869,7 +6869,7 @@ msgstr "Споразум о нивоу услуге"
 msgid "Service Provider"
 msgstr "Пружалац услуге"
 
-#: frontend/src/components/Filter.vue:589
+#: frontend/src/components/Filter.vue:593
 msgid "Set"
 msgstr "Постави"
 
@@ -7511,19 +7511,19 @@ msgstr "Тема"
 msgid "There can only be one default priority in Priorities table"
 msgstr "У табели приоритета може постојати само један подразумевани приоритет"
 
-#: frontend/src/components/Filter.vue:685
+#: frontend/src/components/Filter.vue:689
 msgid "This Month"
 msgstr "Овај месец"
 
-#: frontend/src/components/Filter.vue:689
+#: frontend/src/components/Filter.vue:693
 msgid "This Quarter"
 msgstr "Овај квартал"
 
-#: frontend/src/components/Filter.vue:681
+#: frontend/src/components/Filter.vue:685
 msgid "This Week"
 msgstr "Ове недеље"
 
-#: frontend/src/components/Filter.vue:693
+#: frontend/src/components/Filter.vue:697
 msgid "This Year"
 msgstr "Ове године"
 
@@ -7667,7 +7667,7 @@ msgstr "За корисника"
 msgid "To know more about setting up email accounts, click"
 msgstr "Да бисте сазнали више о подешавањима имејл налога, кликните"
 
-#: frontend/src/components/Filter.vue:673 frontend/src/pages/Calendar.vue:85
+#: frontend/src/components/Filter.vue:677 frontend/src/pages/Calendar.vue:85
 msgid "Today"
 msgstr "Данас"
 
@@ -7680,7 +7680,7 @@ msgstr "За урадити"
 msgid "Toggle on for Preview"
 msgstr "Укључите за преглед"
 
-#: frontend/src/components/Filter.vue:677
+#: frontend/src/components/Filter.vue:681
 msgid "Tomorrow"
 msgstr "Сутра"
 
@@ -8247,11 +8247,11 @@ msgid "Working Hours"
 msgstr "Радно време"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:531
-#: frontend/src/components/Filter.vue:597
+#: frontend/src/components/Filter.vue:601
 msgid "Yes"
 msgstr "Да"
 
-#: frontend/src/components/Filter.vue:669
+#: frontend/src/components/Filter.vue:673
 msgid "Yesterday"
 msgstr "Јуче"
 

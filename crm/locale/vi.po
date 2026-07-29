@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2026-07-05 10:18+0000\n"
-"PO-Revision-Date: 2026-07-09 10:15\n"
+"POT-Creation-Date: 2026-07-12 10:53+0000\n"
+"PO-Revision-Date: 2026-07-16 11:02\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Vietnamese\n"
 "MIME-Version: 1.0\n"
@@ -22,7 +22,7 @@ msgstr ""
 msgid " (New)"
 msgstr " (Mới)"
 
-#: frontend/src/components/Filter.vue:587
+#: frontend/src/components/Filter.vue:591
 msgid "%John%"
 msgstr "%John%"
 
@@ -30,7 +30,7 @@ msgstr "%John%"
 msgid "(No Title)"
 msgstr "(Không Có Tiêu Đề)"
 
-#: frontend/src/components/Filter.vue:577
+#: frontend/src/components/Filter.vue:581
 msgid "01/01/2022 to 01/31/2022"
 msgstr "01/01/2022 đến 01/31/2022"
 
@@ -3037,7 +3037,7 @@ msgstr "Nhập Tên Nguồn"
 msgid "Enter Twilio Number"
 msgstr "Nhập Số Twilio"
 
-#: frontend/src/components/Filter.vue:605
+#: frontend/src/components/Filter.vue:609
 msgid "Enter Value"
 msgstr "Nhập Giá trị"
 
@@ -3049,7 +3049,7 @@ msgstr "Nhập Facebook Access Token của bạn"
 msgid "Enter your personal mobile number used by Exotel to make calls"
 msgstr "Nhập số điện thoại di động cá nhân của bạn được Exotel sử dụng để thực hiện cuộc gọi"
 
-#: frontend/src/components/FieldLayout/Field.vue:565
+#: frontend/src/components/FieldLayout/Field.vue:576
 msgid "Enter {0}"
 msgstr "Nhập {0}"
 
@@ -4212,14 +4212,14 @@ msgid "Job Title"
 msgstr "Chức danh"
 
 #: frontend/src/components/AssignToBody.vue:10
-#: frontend/src/components/Filter.vue:603
+#: frontend/src/components/Filter.vue:607
 #: frontend/src/components/Modals/AssignmentModal.vue:13
 #: frontend/src/components/Telephony/TaskPanel.vue:46
 #: frontend/src/pages/Calendar.vue:113
 msgid "John Doe"
 msgstr "John Doe"
 
-#: frontend/src/components/Filter.vue:582
+#: frontend/src/components/Filter.vue:586
 msgid "John, Jane, Doe"
 msgstr "John, Jane, Doe"
 
@@ -4298,7 +4298,7 @@ msgstr "Cuối cùng"
 msgid "Last 30 Days"
 msgstr "30 ngày qua"
 
-#: frontend/src/components/Filter.vue:661
+#: frontend/src/components/Filter.vue:665
 msgid "Last 6 Months"
 msgstr "6 Tháng Qua"
 
@@ -4322,7 +4322,7 @@ msgstr "90 ngày qua"
 msgid "Last Modified"
 msgstr ""
 
-#: frontend/src/components/Filter.vue:653
+#: frontend/src/components/Filter.vue:657
 msgid "Last Month"
 msgstr "Tháng trước"
 
@@ -4331,7 +4331,7 @@ msgstr "Tháng trước"
 msgid "Last Name"
 msgstr "Họ"
 
-#: frontend/src/components/Filter.vue:657
+#: frontend/src/components/Filter.vue:661
 msgid "Last Quarter"
 msgstr "Quý trước"
 
@@ -4361,12 +4361,12 @@ msgstr "Nhật ký thay đổi trạng thái cuối"
 msgid "Last Synced At"
 msgstr "Đồng bộ lần cuối lúc"
 
-#: frontend/src/components/Filter.vue:591
-#: frontend/src/components/Filter.vue:649
+#: frontend/src/components/Filter.vue:595
+#: frontend/src/components/Filter.vue:653
 msgid "Last Week"
 msgstr "Tuần trước"
 
-#: frontend/src/components/Filter.vue:665
+#: frontend/src/components/Filter.vue:669
 msgid "Last Year"
 msgstr "Năm ngoái"
 
@@ -5089,15 +5089,15 @@ msgstr "Mới {0}"
 msgid "Newest First"
 msgstr ""
 
-#: frontend/src/components/Filter.vue:709
+#: frontend/src/components/Filter.vue:713
 msgid "Next 6 Months"
 msgstr "6 Tháng Tiếp Theo"
 
-#: frontend/src/components/Filter.vue:701
+#: frontend/src/components/Filter.vue:705
 msgid "Next Month"
 msgstr "Tháng tới"
 
-#: frontend/src/components/Filter.vue:705
+#: frontend/src/components/Filter.vue:709
 msgid "Next Quarter"
 msgstr "Quý tiếp theo"
 
@@ -5106,11 +5106,11 @@ msgstr "Quý tiếp theo"
 msgid "Next Step"
 msgstr "Bước tiếp theo"
 
-#: frontend/src/components/Filter.vue:697
+#: frontend/src/components/Filter.vue:701
 msgid "Next Week"
 msgstr "Tuần tới"
 
-#: frontend/src/components/Filter.vue:713
+#: frontend/src/components/Filter.vue:717
 msgid "Next Year"
 msgstr "Năm tới"
 
@@ -6782,7 +6782,7 @@ msgstr "Chọn Ngày làm việc"
 msgid "Select a Twilio App for your CRM"
 msgstr "Chọn một Ứng dụng Twilio cho CRM của bạn"
 
-#: frontend/src/components/Filter.vue:599
+#: frontend/src/components/Filter.vue:603
 msgid "Select a Value"
 msgstr "Chọn một Giá trị"
 
@@ -6790,7 +6790,7 @@ msgstr "Chọn một Giá trị"
 msgid "Select all that apply"
 msgstr ""
 
-#: frontend/src/components/Filter.vue:601
+#: frontend/src/components/Filter.vue:605
 msgid "Select an Option"
 msgstr "Chọn một Tùy chọn"
 
@@ -6814,7 +6814,7 @@ msgstr ""
 msgid "Select your ERPNext company to connect with"
 msgstr ""
 
-#: frontend/src/components/FieldLayout/Field.vue:563
+#: frontend/src/components/FieldLayout/Field.vue:574
 msgid "Select {0}"
 msgstr "Chọn {0}"
 
@@ -6869,7 +6869,7 @@ msgstr "Thỏa thuận cấp độ dịch vụ"
 msgid "Service Provider"
 msgstr "Nhà cung cấp Dịch vụ"
 
-#: frontend/src/components/Filter.vue:589
+#: frontend/src/components/Filter.vue:593
 msgid "Set"
 msgstr "Đặt"
 
@@ -7511,19 +7511,19 @@ msgstr "Chủ đề"
 msgid "There can only be one default priority in Priorities table"
 msgstr "Chỉ có thể có một mức ưu tiên mặc định trong bảng Ưu tiên"
 
-#: frontend/src/components/Filter.vue:685
+#: frontend/src/components/Filter.vue:689
 msgid "This Month"
 msgstr "Tháng Này"
 
-#: frontend/src/components/Filter.vue:689
+#: frontend/src/components/Filter.vue:693
 msgid "This Quarter"
 msgstr "Quý này"
 
-#: frontend/src/components/Filter.vue:681
+#: frontend/src/components/Filter.vue:685
 msgid "This Week"
 msgstr "Tuần này"
 
-#: frontend/src/components/Filter.vue:693
+#: frontend/src/components/Filter.vue:697
 msgid "This Year"
 msgstr "Năm nay"
 
@@ -7667,7 +7667,7 @@ msgstr ""
 msgid "To know more about setting up email accounts, click"
 msgstr "Để biết thêm về thiết lập tài khoản email, nhấp vào"
 
-#: frontend/src/components/Filter.vue:673 frontend/src/pages/Calendar.vue:85
+#: frontend/src/components/Filter.vue:677 frontend/src/pages/Calendar.vue:85
 msgid "Today"
 msgstr "Hôm nay"
 
@@ -7680,7 +7680,7 @@ msgstr "Việc cần làm"
 msgid "Toggle on for Preview"
 msgstr "Bật để Xem trước"
 
-#: frontend/src/components/Filter.vue:677
+#: frontend/src/components/Filter.vue:681
 msgid "Tomorrow"
 msgstr "Ngày mai"
 
@@ -8247,11 +8247,11 @@ msgid "Working Hours"
 msgstr "Giờ làm việc"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:531
-#: frontend/src/components/Filter.vue:597
+#: frontend/src/components/Filter.vue:601
 msgid "Yes"
 msgstr "Có"
 
-#: frontend/src/components/Filter.vue:669
+#: frontend/src/components/Filter.vue:673
 msgid "Yesterday"
 msgstr "Hôm qua"
 

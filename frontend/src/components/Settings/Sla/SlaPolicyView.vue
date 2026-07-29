@@ -71,6 +71,7 @@
             <FormLabel :label="__('Apply On')" required />
             <Select
               v-model="slaData.apply_on"
+              class="w-full"
               :options="[
                 {
                   label: 'Lead',

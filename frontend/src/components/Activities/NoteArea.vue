@@ -19,7 +19,7 @@
       >
         <Button
           icon="lucide-more-horizontal"
-          variant="ghosted"
+          variant="ghost"
           class="!h-6 !w-6 hover:bg-surface-gray-2"
           @click.stop.prevent
         />

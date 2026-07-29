@@ -50,18 +50,18 @@
           <div class="grid grid-cols-2 gap-4">
             <FormControl
               v-model="syncSource.type"
-              type="autocomplete"
+              type="combobox"
               required="true"
               :options="supportedSourceTypes"
               :label="__('Source Type')"
               :placeholder="__('Select Source Type')"
             >
-              <template v-if="syncSource.type" #prefix>
-                <component :is="syncSource.type.icon" class="mr-2 size-4" />
+              <template v-if="selectedSourceType" #prefix>
+                <component :is="selectedSourceType.icon" class="mr-2 size-4" />
               </template>
 
-              <template #item-prefix="{ option }">
-                <component :is="option.icon" class="size-4" />
+              <template #item-prefix="{ item }">
+                <component :is="item.icon" class="size-4" />
               </template>
             </FormControl>
 
@@ -253,6 +253,10 @@ const syncSource = ref({
 
 const isLocal = ref(true)
 
+const selectedSourceType = computed(() =>
+  supportedSourceTypes.find((type) => type.value === syncSource.value.type),
+)
+
 function updateSource(data) {
   sources.setValue.submit(
     {
@@ -278,7 +282,7 @@ function createSource() {
   sources.insert.submit(
     {
       ...syncSource.value,
-      type: syncSource.value.type.value,
+      type: syncSource.value.type,
     },
     {
       onSuccess: (newDoc) => {
@@ -299,7 +303,7 @@ function createOrUpdateSource() {
   } else {
     updateSource({
       ...syncSource.value,
-      type: syncSource.value.type.value,
+      type: syncSource.value.type,
     })
   }
 }
@@ -325,9 +329,7 @@ watch(
     if (newDoc) {
       Object.assign(syncSource.value, {
         ...newDoc,
-        type:
-          supportedSourceTypes.find((type) => type.value === newDoc.type) ||
-          newDoc.type,
+        type: newDoc.type,
       })
 
       mappingFormDocResource.value = useDocument(

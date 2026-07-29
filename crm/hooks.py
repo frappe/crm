@@ -52,6 +52,9 @@ require_type_annotated_api_methods = True
 doctype_js = {
 	"Quotation": "public/js/erpnext_quotation_prefill.js",
 	"Sales Order": "public/js/erpnext_sales_order_customer.js",
+	"CRM Lead": "public/js/domain_enrichment.js",
+	"CRM Organization": "public/js/domain_enrichment.js",
+	"CRM Deal": "public/js/domain_enrichment.js",
 }
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
@@ -70,6 +73,7 @@ doctype_js = {
 
 website_route_rules = [
 	{"from_route": "/crm/<path:app_path>", "to_route": "crm"},
+	{"from_route": "/crm-form/<route>", "to_route": "crm_form"},
 ]
 
 # Generators
@@ -220,6 +224,7 @@ scheduler_events = {
 	"daily": [
 		"crm.api.event.trigger_daily_event_notifications",
 		"crm.fcrm.doctype.crm_view_settings.crm_view_settings.clear_old_versions",
+		"crm.telemetry.capture_feature_state",
 	],
 	"weekly": ["crm.api.event.trigger_weekly_event_notifications"],
 	"daily_long": ["crm.lead_syncing.background_sync.sync_leads_from_sources_daily"],
@@ -304,7 +309,9 @@ ignore_links_on_delete = ["Failed Lead Sync Log"]
 after_migrate = [
 	"crm.fcrm.doctype.fcrm_settings.fcrm_settings.after_migrate",
 	"crm.api.whatsapp.add_roles",
+	"crm.domain_enrichment.install.seed_default_rules_and_mappings",
 	"crm.install.add_default_scripts",
+	"crm.install.add_web_form_custom_fields",
 ]
 
 standard_dropdown_items = [

@@ -83,6 +83,10 @@ export function processField(rawField, options = {}) {
  * the list is still preserved. Such a value is also prepended to the options, so the
  * Combobox shows its label rather than a blank (it derives the label from options).
  *
+ * If a regional app is installed but no country is picked yet (so which state list
+ * applies is still unknown), the field is left as free text but gets a placeholder
+ * nudging the user to pick a country first.
+ *
  * @param {object} field - processed field object (from processField)
  * @param {object} doc - the document data (reads `doc.country` and `doc.state`)
  * @param {string} doctype - the field's doctype; only 'Address' is enhanced
@@ -100,7 +104,14 @@ export function applyStateFieldOptions(
   }
 
   const states = stateOptionsByCountry?.[doc?.country]
-  if (!states?.length) return field
+  if (!states?.length) {
+    const hasRegionalStateData =
+      stateOptionsByCountry && Object.keys(stateOptionsByCountry).length > 0
+    if (hasRegionalStateData && !doc?.country) {
+      return { ...field, placeholder: 'Select Country to see state options' }
+    }
+    return field
+  }
 
   // Keep an existing out-of-list value visible (the Combobox labels by matching options).
   const current = doc?.state

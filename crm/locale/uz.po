@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2026-07-05 10:18+0000\n"
-"PO-Revision-Date: 2026-07-09 10:16\n"
+"POT-Creation-Date: 2026-07-12 10:53+0000\n"
+"PO-Revision-Date: 2026-07-16 11:03\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Uzbek\n"
 "MIME-Version: 1.0\n"
@@ -22,7 +22,7 @@ msgstr ""
 msgid " (New)"
 msgstr " (Yangi)"
 
-#: frontend/src/components/Filter.vue:587
+#: frontend/src/components/Filter.vue:591
 msgid "%John%"
 msgstr "%John%"
 
@@ -30,7 +30,7 @@ msgstr "%John%"
 msgid "(No Title)"
 msgstr "(Sarlavha yo'q)"
 
-#: frontend/src/components/Filter.vue:577
+#: frontend/src/components/Filter.vue:581
 msgid "01/01/2022 to 01/31/2022"
 msgstr "01/01/2022 dan 01/31/2022 gacha"
 
@@ -3037,7 +3037,7 @@ msgstr "Manba nomini kiriting"
 msgid "Enter Twilio Number"
 msgstr "Twilio raqamini kiriting"
 
-#: frontend/src/components/Filter.vue:605
+#: frontend/src/components/Filter.vue:609
 msgid "Enter Value"
 msgstr "Qiymatni kiriting"
 
@@ -3049,7 +3049,7 @@ msgstr "Facebook kirish tokeningizni kiriting"
 msgid "Enter your personal mobile number used by Exotel to make calls"
 msgstr "Exotel tomonidan qo'ng'iroq qilish uchun ishlatiladigan shaxsiy mobil raqamingizni kiriting"
 
-#: frontend/src/components/FieldLayout/Field.vue:565
+#: frontend/src/components/FieldLayout/Field.vue:576
 msgid "Enter {0}"
 msgstr "{0} kiriting"
 
@@ -4212,14 +4212,14 @@ msgid "Job Title"
 msgstr "Lavozim"
 
 #: frontend/src/components/AssignToBody.vue:10
-#: frontend/src/components/Filter.vue:603
+#: frontend/src/components/Filter.vue:607
 #: frontend/src/components/Modals/AssignmentModal.vue:13
 #: frontend/src/components/Telephony/TaskPanel.vue:46
 #: frontend/src/pages/Calendar.vue:113
 msgid "John Doe"
 msgstr "Jon Doe"
 
-#: frontend/src/components/Filter.vue:582
+#: frontend/src/components/Filter.vue:586
 msgid "John, Jane, Doe"
 msgstr "Jon, Jeyn, Doe"
 
@@ -4298,7 +4298,7 @@ msgstr "Oxirgi"
 msgid "Last 30 Days"
 msgstr "Oxirgi 30 kun"
 
-#: frontend/src/components/Filter.vue:661
+#: frontend/src/components/Filter.vue:665
 msgid "Last 6 Months"
 msgstr "So'nggi 6 oy"
 
@@ -4322,7 +4322,7 @@ msgstr "Oxirgi 90 kun"
 msgid "Last Modified"
 msgstr "Oxirgi marta o'zgartirilgan"
 
-#: frontend/src/components/Filter.vue:653
+#: frontend/src/components/Filter.vue:657
 msgid "Last Month"
 msgstr "O'tgan oy"
 
@@ -4331,7 +4331,7 @@ msgstr "O'tgan oy"
 msgid "Last Name"
 msgstr "Familiya"
 
-#: frontend/src/components/Filter.vue:657
+#: frontend/src/components/Filter.vue:661
 msgid "Last Quarter"
 msgstr "Oxirgi chorak"
 
@@ -4361,12 +4361,12 @@ msgstr "Oxirgi holat o'zgarishi jurnali"
 msgid "Last Synced At"
 msgstr "Oxirgi sinxronlash vaqti"
 
-#: frontend/src/components/Filter.vue:591
-#: frontend/src/components/Filter.vue:649
+#: frontend/src/components/Filter.vue:595
+#: frontend/src/components/Filter.vue:653
 msgid "Last Week"
 msgstr "O'tkan hafta"
 
-#: frontend/src/components/Filter.vue:665
+#: frontend/src/components/Filter.vue:669
 msgid "Last Year"
 msgstr "O'tkan yili"
 
@@ -5089,15 +5089,15 @@ msgstr "Yangi {0}"
 msgid "Newest First"
 msgstr "Eng yangisi birinchi"
 
-#: frontend/src/components/Filter.vue:709
+#: frontend/src/components/Filter.vue:713
 msgid "Next 6 Months"
 msgstr "Keyingi 6 oy"
 
-#: frontend/src/components/Filter.vue:701
+#: frontend/src/components/Filter.vue:705
 msgid "Next Month"
 msgstr "Keyingi oy"
 
-#: frontend/src/components/Filter.vue:705
+#: frontend/src/components/Filter.vue:709
 msgid "Next Quarter"
 msgstr "Keyingi chorak"
 
@@ -5106,11 +5106,11 @@ msgstr "Keyingi chorak"
 msgid "Next Step"
 msgstr "Keyingi qadam"
 
-#: frontend/src/components/Filter.vue:697
+#: frontend/src/components/Filter.vue:701
 msgid "Next Week"
 msgstr "Keyingi hafta"
 
-#: frontend/src/components/Filter.vue:713
+#: frontend/src/components/Filter.vue:717
 msgid "Next Year"
 msgstr "Keyingi yil"
 
@@ -6782,7 +6782,7 @@ msgstr "Ish kunini tanlang"
 msgid "Select a Twilio App for your CRM"
 msgstr "CRM tizimingiz uchun Twilio ilovasini tanlang"
 
-#: frontend/src/components/Filter.vue:599
+#: frontend/src/components/Filter.vue:603
 msgid "Select a Value"
 msgstr "Qiymatni tanlang"
 
@@ -6790,7 +6790,7 @@ msgstr "Qiymatni tanlang"
 msgid "Select all that apply"
 msgstr ""
 
-#: frontend/src/components/Filter.vue:601
+#: frontend/src/components/Filter.vue:605
 msgid "Select an Option"
 msgstr "Variantni tanlang"
 
@@ -6814,7 +6814,7 @@ msgstr "Vaqtni soniya bilan yoki soniyasiz ko'rsatishni tanlang"
 msgid "Select your ERPNext company to connect with"
 msgstr "Bog'lanish uchun ERPNext kompaniyangizni tanlang"
 
-#: frontend/src/components/FieldLayout/Field.vue:563
+#: frontend/src/components/FieldLayout/Field.vue:574
 msgid "Select {0}"
 msgstr "{0} ni tanlang"
 
@@ -6869,7 +6869,7 @@ msgstr "Xizmat ko'rsatish darajasi shartnomasi"
 msgid "Service Provider"
 msgstr "Xizmat ko'rsatuvchi provayder"
 
-#: frontend/src/components/Filter.vue:589
+#: frontend/src/components/Filter.vue:593
 msgid "Set"
 msgstr "O'rnatish"
 
@@ -7511,19 +7511,19 @@ msgstr "Mavzu"
 msgid "There can only be one default priority in Priorities table"
 msgstr "Ustuvorliklar jadvalida faqat bitta standart ustuvorlik bo'lishi mumkin"
 
-#: frontend/src/components/Filter.vue:685
+#: frontend/src/components/Filter.vue:689
 msgid "This Month"
 msgstr "Bu oy"
 
-#: frontend/src/components/Filter.vue:689
+#: frontend/src/components/Filter.vue:693
 msgid "This Quarter"
 msgstr "Bu chorak"
 
-#: frontend/src/components/Filter.vue:681
+#: frontend/src/components/Filter.vue:685
 msgid "This Week"
 msgstr "Ushbu hafta"
 
-#: frontend/src/components/Filter.vue:693
+#: frontend/src/components/Filter.vue:697
 msgid "This Year"
 msgstr "Bu yil"
 
@@ -7667,7 +7667,7 @@ msgstr "Foydalanuvchiga"
 msgid "To know more about setting up email accounts, click"
 msgstr "Elektron pochta hisoblarini sozlash haqida ko'proq bilish uchun bosing"
 
-#: frontend/src/components/Filter.vue:673 frontend/src/pages/Calendar.vue:85
+#: frontend/src/components/Filter.vue:677 frontend/src/pages/Calendar.vue:85
 msgid "Today"
 msgstr "Bugun"
 
@@ -7680,7 +7680,7 @@ msgstr "Todo"
 msgid "Toggle on for Preview"
 msgstr "Oldindan ko'rish uchun yoqing"
 
-#: frontend/src/components/Filter.vue:677
+#: frontend/src/components/Filter.vue:681
 msgid "Tomorrow"
 msgstr "Ertaga"
 
@@ -8247,11 +8247,11 @@ msgid "Working Hours"
 msgstr "Ish vaqti"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:531
-#: frontend/src/components/Filter.vue:597
+#: frontend/src/components/Filter.vue:601
 msgid "Yes"
 msgstr "Ha"
 
-#: frontend/src/components/Filter.vue:669
+#: frontend/src/components/Filter.vue:673
 msgid "Yesterday"
 msgstr "Kecha"
 
