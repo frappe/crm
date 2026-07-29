@@ -666,7 +666,15 @@ function checkChange(value, df) {
   fieldChange(next, df)
 }
 
-const debouncedFieldChange = debounce(fieldChange, 500)
+// One timer per field: a shared debounce would let an edit to one field cancel
+// another field's pending save.
+const fieldDebounces = {}
+function debouncedFieldChange(value, df) {
+  if (!fieldDebounces[df.fieldname]) {
+    fieldDebounces[df.fieldname] = debounce(fieldChange, 500)
+  }
+  fieldDebounces[df.fieldname](value, df)
+}
 </script>
 
 <style scoped>
