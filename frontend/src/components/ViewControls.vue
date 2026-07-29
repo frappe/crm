@@ -633,7 +633,7 @@ function getIcon(icon, type) {
     return markRaw(GroupByIcon)
   } else if (!icon && type === 'kanban') {
     return markRaw(KanbanIcon)
-  } else if (typeof icon === 'string') {
+  } else if (icon && typeof icon === 'string') {
     // a lucide icon name (from the IconPicker) — render it through Icon so it
     // resolves from the injected lucide sprite. The Dropdown renders a bare
     // string via FeatherIcon, which lacks the newer lucide names and shows blank.
