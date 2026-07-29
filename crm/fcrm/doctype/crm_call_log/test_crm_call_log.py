@@ -4,20 +4,17 @@
 from unittest.mock import MagicMock, patch
 
 import frappe
+from frappe.tests import IntegrationTestCase
 
 from crm.fcrm.doctype.crm_call_log.crm_call_log import (
 	create_lead_from_call_log,
 	get_call_log,
 	parse_call_log,
 )
-<<<<<<< HEAD
-from crm.tests import CRMTestCase as FrappeTestCase
-=======
 from crm.integrations.api import _get_recording_credentials
->>>>>>> 2afa641f (test(telephony): cover recording credential resolution)
 
 
-class TestCRMCallLog(FrappeTestCase):
+class TestCRMCallLog(IntegrationTestCase):
 	def tearDown(self):
 		frappe.db.rollback()
 
