@@ -54,6 +54,7 @@
       <div class="flex justify-end">
         <Button
           variant="solid"
+          :disabled="!view.label?.trim()"
           :label="
             editMode
               ? __('Save Changes')
