@@ -227,10 +227,6 @@
                   <Switch
                     v-model="erpnextCRMSettingsResource.doc.sync_products"
                     size="sm"
-                    @update:modelValue="
-                      (v) =>
-                        capture('erpnext_product_sync_toggled', { enabled: v })
-                    "
                   />
                 </div>
               </div>
@@ -633,8 +629,6 @@ const isDirty = computed(() => {
 const saveSettings = async () => {
   if (!validateData() || !validateSiteConnection()) return
 
-  const wasEnabled = !!erpnextCRMSettingsResource.originalDoc?.enabled
-
   updateFields(
     {
       enabled: erpnextCRMSettingsResource.doc.enabled,
@@ -651,9 +645,6 @@ const saveSettings = async () => {
     },
     {
       onSuccess: async () => {
-        if (erpnextCRMSettingsResource.doc.enabled && !wasEnabled) {
-          capture('erpnext_integration_enabled')
-        }
         if (!erpnextCRMSettingsResource.isERPNextInstalled.data) {
           await erpnextCRMSettingsResource.getExternalCompanies.submit()
         }
