@@ -7,8 +7,8 @@
           isCollapsed
             ? 'w-auto px-0'
             : open
-              ? 'w-full px-2 bg-surface-base shadow-sm'
-              : 'w-full px-2 hover:bg-surface-gray-3'
+              ? 'w-full px-2 bg-surface-elevation-3 shadow-sm'
+              : 'w-full px-2 hover:bg-surface-gray-2'
         "
       >
         <BrandLogo v-model="brand" class="h-8 max-w-16 flex-shrink-0" />
