@@ -55,9 +55,7 @@ def product_sync_state() -> dict:
 
 	# erpnext_item_code is a custom field, added only once the integration is enabled
 	if frappe.db.has_column("CRM Product", "erpnext_item_code"):
-		state["products_synced_total"] = frappe.db.count(
-			"CRM Product", {"erpnext_item_code": ["is", "set"]}
-		)
+		state["products_synced_total"] = frappe.db.count("CRM Product", {"erpnext_item_code": ["is", "set"]})
 
 	return state
 
