@@ -71,14 +71,22 @@ def get_deal_product_rate(item_code: str, deal: str | None = None):
 		return None
 	from erpnext.stock.get_item_details import get_item_price
 
-	pctx = {
-		"price_list": price_list,
-		"customer": customer,
-		"uom": frappe.db.get_value("Item", item_code, "stock_uom"),
-		"transaction_date": frappe.utils.nowdate(),
-	}
-	rows = get_item_price(pctx, item_code)
-	return rows[0].price_list_rate if rows else None
+	pctx = frappe._dict(
+		{
+			"price_list": price_list,
+			"customer": customer,
+			"uom": frappe.db.get_value("Item", item_code, "stock_uom"),
+			"transaction_date": frappe.utils.nowdate(),
+		}
+	)
+	return _price_list_rate(get_item_price(pctx, item_code))
+
+
+def _price_list_rate(rows):
+	if not rows:
+		return None
+	row = rows[0]
+	return row.price_list_rate if isinstance(row, dict) else row[1]
 
 
 def create_product_details_script(doctype):
@@ -145,18 +153,17 @@ class CRMProducts {
 
   async product_code(idx) {
     let row = this.doc.getRow('products', idx)
+    let productCode = row.product_code
 
     let a = await call("crm.fcrm.doctype.crm_products.crm_products.get_product_rate_details", {
-        product_code: row.product_code,
+        product_code: productCode,
         deal: this.doc.name,
     })
-    if (!a) return
+    if (!a || row.product_code !== productCode) return
 
     row.product_name = a.product_name
-    if (a.rate && !row.rate) {
-        row.rate = a.rate
-        row.trigger("rate")
-    }
+    row.rate = a.rate ?? 0
+    row.trigger("rate")
   }
 
   qty(idx) {
