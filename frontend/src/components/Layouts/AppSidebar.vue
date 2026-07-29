@@ -1,4 +1,5 @@
 <template>
+<<<<<<< HEAD
   <div
     class="relative flex h-full flex-col justify-between transition-all duration-300 ease-in-out"
     :class="isSidebarCollapsed ? 'w-12' : 'w-[220px]'"
@@ -21,6 +22,113 @@
               v-if="!isSidebarCollapsed && unreadNotificationsCount"
               :label="unreadNotificationsCount"
               variant="subtle"
+=======
+  <!-- The notifications panel is absolutely positioned at `left: 100%`, so it
+       needs a positioning context that is not the Sidebar itself (Sidebar sets
+       overflow-x-hidden, which would clip the panel away).
+
+       It also paints the sidebar surface: Sidebar's own `bg-surface-sidebar` is
+       transparent in dark mode, and nothing behind it sets a background, so the
+       column falls through to the white page canvas. The token cannot be
+       overridden on the Sidebar element itself — `bg-surface-sidebar` is emitted
+       after `bg-surface-gray-1` in the utilities layer and would win. -->
+  <div class="relative flex h-full bg-surface-gray-1">
+    <Sidebar
+      v-model:collapsed="isSidebarCollapsed"
+      :disable-collapse="mobile"
+      :width="mobile ? '260px' : undefined"
+      class="border-r border-outline-gray-1"
+    >
+      <div class="flex h-full flex-col p-2">
+        <UserDropdown :isCollapsed="isCollapsed" />
+
+        <!-- overflow-y-auto forces overflow-x to clip too, which would slice the
+             active row's shadow. Widen the scroll box to the sidebar edges and
+             pad the content back in so the shadow has room. -->
+        <div class="-mx-2 mt-2 flex flex-1 flex-col gap-1 overflow-y-auto px-2">
+          <SidebarItem
+            id="notifications-btn"
+            :label="__('Notifications')"
+            :to="mobile ? { name: 'Notifications' } : undefined"
+            :active="mobile && activeItem === 'Notifications'"
+            @click="onNotificationsClick"
+          >
+            <template #prefix>
+              <span class="relative grid size-4 place-items-center">
+                <NotificationsIcon class="size-4 text-ink-gray-7" />
+                <span
+                  v-if="isCollapsed && unreadNotificationsCount"
+                  class="absolute -right-1 -top-1 size-1.5 rounded-full bg-surface-gray-9 ring-1 ring-[var(--surface-gray-1)]"
+                />
+              </span>
+            </template>
+            <template #suffix>
+              <Badge
+                v-if="unreadNotificationsCount"
+                class="mr-2"
+                :label="unreadNotificationsCount"
+                variant="subtle"
+              />
+            </template>
+          </SidebarItem>
+
+          <CollapsibleSection
+            v-for="section in allViews"
+            :key="section.name"
+            :label="section.name"
+            :hideLabel="section.hideLabel"
+            :opened="section.opened"
+          >
+            <template #header="{ opened, hide, toggle }">
+              <SidebarLabel
+                v-if="!hide"
+                divider
+                class="mb-1 mt-4 select-none"
+                :class="!isCollapsed && 'cursor-pointer'"
+                @click="toggle()"
+              >
+                <span class="flex items-center gap-1.5">
+                  <span
+                    class="lucide-chevron-right -ml-0.5 size-4 shrink-0 text-ink-gray-9 transition-transform duration-300 ease-in-out"
+                    :class="{ 'rotate-90': opened }"
+                    aria-hidden="true"
+                  />
+                  <span class="truncate">{{ __(section.name) }}</span>
+                </span>
+              </SidebarLabel>
+            </template>
+            <nav class="flex flex-col gap-1">
+              <SidebarItem
+                v-for="link in section.views"
+                :key="link.key"
+                :to="link.to"
+                :label="__(link.label)"
+                :active="activeItem === link.key"
+                @click="selectItem($event, link.key)"
+              >
+                <template #prefix>
+                  <Icon :icon="link.icon" class="size-4 text-ink-gray-7" />
+                </template>
+                <Tooltip
+                  :text="__(link.label)"
+                  placement="right"
+                  :hoverDelay="1.5"
+                  :disabled="isCollapsed"
+                >
+                  <span class="truncate text-sm">{{ __(link.label) }}</span>
+                </Tooltip>
+              </SidebarItem>
+            </nav>
+          </CollapsibleSection>
+        </div>
+
+        <div v-if="!mobile" class="mt-auto flex flex-col gap-1 pt-2">
+          <div class="mb-1 flex flex-col gap-2">
+            <SignupBanner
+              v-if="isDemoSite"
+              :isSidebarCollapsed="isCollapsed"
+              :afterSignup="() => capture('signup_from_demo_site')"
+>>>>>>> ccd2c21b (fix: app sidebar background in dark mode)
             />
             <div
               v-else-if="unreadNotificationsCount"
