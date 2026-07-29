@@ -4,7 +4,7 @@
 from unittest.mock import MagicMock, patch
 
 import frappe
-from frappe.tests import IntegrationTestCase
+from frappe.tests import FrappeTestCase
 
 from crm.fcrm.doctype.crm_call_log.crm_call_log import (
 	create_lead_from_call_log,
@@ -14,7 +14,7 @@ from crm.fcrm.doctype.crm_call_log.crm_call_log import (
 from crm.integrations.api import _get_recording_credentials
 
 
-class TestCRMCallLog(IntegrationTestCase):
+class TestCRMCallLog(FrappeTestCase):
 	def tearDown(self):
 		frappe.db.rollback()
 
