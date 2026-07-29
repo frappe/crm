@@ -215,6 +215,7 @@ doc_events = {
 scheduler_events = {
 	"daily": [
 		"crm.fcrm.doctype.crm_view_settings.crm_view_settings.clear_old_versions",
+		"crm.telemetry.capture_feature_state",
 	],
 	"daily_long": ["crm.lead_syncing.background_sync.sync_leads_from_sources_daily"],
 	"hourly_long": ["crm.lead_syncing.background_sync.sync_leads_from_sources_hourly"],
