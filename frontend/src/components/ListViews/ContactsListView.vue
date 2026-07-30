@@ -34,7 +34,7 @@
         >
           <HeartIcon
             class="h-4 w-4"
-            :class="isLikeFilterApplied ? 'fill-red-500 text-red-500' : ''"
+            :class="isLikeFilterApplied ? 'fill-surface-blue-6 text-ink-blue-6' : ''"
           />
         </Button>
       </ListHeaderItem>
@@ -105,7 +105,7 @@
             >
               <HeartIcon
                 class="h-4 w-4"
-                :class="isLiked(item) ? 'fill-red-500 text-red-500' : ''"
+                :class="isLiked(item) ? 'fill-surface-blue-6 text-ink-blue-6' : ''"
               />
             </Button>
           </div>

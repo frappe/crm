@@ -238,7 +238,7 @@ function setCurrency(value) {
       [value],
     ),
     variant: 'solid',
-    theme: 'blue',
+    theme: 'red',
     actions: [
       {
         label: __('Save'),

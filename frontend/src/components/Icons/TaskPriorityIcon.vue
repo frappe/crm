@@ -4,7 +4,7 @@
       class="h-3 w-3 rounded-full"
       :class="
         ({
-          'bg-red-500': priority === 'High',
+          'bg-surface-blue-6': priority === 'High',
           'bg-yellow-500': priority === 'Medium',
           'bg-surface-gray-4': priority === 'Low',
         },

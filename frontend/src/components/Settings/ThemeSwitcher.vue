@@ -12,9 +12,9 @@
       <div class="pl-5 pt-3.5 bg-surface-gray-2 rounded-t-[10.5px]">
         <div class="bg-white rounded-tl-sm">
           <div class="flex gap-[3px] py-[3px] px-1 border-b border-gray-100">
-            <div class="size-1.5 bg-[#FF5F57] rounded-full"></div>
-            <div class="size-1.5 bg-[#FEBC2D] rounded-full"></div>
-            <div class="size-1.5 bg-[#28C840] rounded-full"></div>
+            <div class="size-1.5 bg-gray-300 rounded-full"></div>
+            <div class="size-1.5 bg-gray-300 rounded-full"></div>
+            <div class="size-1.5 bg-gray-300 rounded-full"></div>
           </div>
           <div class="flex items-start justify-between gap-2 p-2.5 pr-0 pb-1">
             <div
@@ -60,9 +60,9 @@
       <div class="pl-5 pt-3.5 bg-surface-gray-2 rounded-t-[10.5px]">
         <div class="bg-gray-900 rounded-tl-sm">
           <div class="flex gap-[3px] py-[3px] px-1 border-b border-gray-800">
-            <div class="size-1.5 bg-[#FF5F57] rounded-full"></div>
-            <div class="size-1.5 bg-[#FEBC2D] rounded-full"></div>
-            <div class="size-1.5 bg-[#28C840] rounded-full"></div>
+            <div class="size-1.5 bg-gray-300 rounded-full"></div>
+            <div class="size-1.5 bg-gray-300 rounded-full"></div>
+            <div class="size-1.5 bg-gray-300 rounded-full"></div>
           </div>
           <div class="flex items-start justify-between gap-2 p-2.5 pr-0 pb-1">
             <div
@@ -113,9 +113,9 @@
         >
           <div class="bg-white rounded-tl-sm w-full">
             <div class="flex gap-[3px] py-[3px] px-1 border-b border-gray-100">
-              <div class="size-1.5 bg-[#FF5F57] rounded-full"></div>
-              <div class="size-1.5 bg-[#FEBC2D] rounded-full"></div>
-              <div class="size-1.5 bg-[#28C840] rounded-full"></div>
+              <div class="size-1.5 bg-gray-300 rounded-full"></div>
+              <div class="size-1.5 bg-gray-300 rounded-full"></div>
+              <div class="size-1.5 bg-gray-300 rounded-full"></div>
             </div>
             <div class="flex items-start justify-between gap-2 p-2.5 pr-0 pb-1">
               <div
@@ -137,9 +137,9 @@
         >
           <div class="bg-gray-900 rounded-tl-sm w-full">
             <div class="flex gap-[3px] py-[3px] px-1 border-b border-gray-800">
-              <div class="size-1.5 bg-[#FF5F57] rounded-full"></div>
-              <div class="size-1.5 bg-[#FEBC2D] rounded-full"></div>
-              <div class="size-1.5 bg-[#28C840] rounded-full"></div>
+              <div class="size-1.5 bg-gray-300 rounded-full"></div>
+              <div class="size-1.5 bg-gray-300 rounded-full"></div>
+              <div class="size-1.5 bg-gray-300 rounded-full"></div>
             </div>
             <div class="flex items-start justify-between gap-2 p-2.5 pb-3 pr-0">
               <div

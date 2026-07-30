@@ -1,5 +1,125 @@
 @import 'frappe-ui/style.css';
 
+/* =============================================================================
+   Tiberbu CRM brand theme (E1-S1)
+   -----------------------------------------------------------------------------
+   Tiberbu identity = red / black / white. Frappe CRM's neutral base (gray ramp
+   + white surfaces) is ALREADY the black/white half — its primary button is
+   near-black (#171717 = surface-gray-10). What is off-brand is the leftover
+   BLUE interactive accent (links, selection, focus rings, checkboxes) and the
+   magenta logo. So the re-skin remaps the blue accent token family -> Tiberbu
+   red, and leaves the neutral surfaces alone.
+
+   Mechanism (verified against frappe-ui/tailwind/colorPalette.js generator):
+   - Semantic tokens keep the same var name in :root and [data-theme="dark"],
+     with different resolved values -> override BOTH blocks for dark/light parity.
+   - Raw shade vars are `--blue-N` in light and `--dark-blue-N` in dark.
+   These overrides win because this file imports frappe-ui/style.css FIRST.
+
+   Anchor = Tiberbu primary red #bc1823 (from tiberbu.com). Ramp derived to keep
+   500-ish as the anchor, lighter tints for backgrounds, darker for active.
+   Semantic status colors (success/error/warning) are NOT touched.
+   ========================================================================== */
+
+:root {
+  /* --- Tiberbu red ramp (light mode) --- */
+  --blue-50: #fdf2f3;
+  --blue-100: #fbe0e2;
+  --blue-200: #f6c2c5;
+  --blue-300: #ee9499;
+  --blue-400: #e15b62;
+  --blue-500: #bc1823; /* Tiberbu primary red */
+  --blue-600: #a5141f;
+  --blue-700: #8f111b;
+  --blue-800: #760f17;
+  --blue-900: #5c0c12;
+  --blue-950: #3a070b;
+
+  /* --- Semantic accent -> red (surfaces / ink / outline) --- */
+  --surface-blue-1: #fdf2f3;
+  --surface-blue-2: #fbe0e2;
+  --surface-blue-3: #f6c2c5;
+  --surface-blue-4: #ee9499;
+  --surface-blue-5: #e15b62;
+  --surface-blue-6: #bc1823;
+  --surface-blue-7: #a5141f;
+  --surface-blue-8: #8f111b;
+  --surface-blue-9: #760f17;
+  --surface-blue-10: #5c0c12;
+
+  --ink-blue-1: #ffffff;
+  --ink-blue-2: #fbe0e2;
+  --ink-blue-3: #f6c2c5;
+  --ink-blue-4: #ee9499;
+  --ink-blue-5: #e15b62;
+  --ink-blue-6: #bc1823; /* link/interactive text default */
+  --ink-blue-7: #a5141f;
+  --ink-blue-8: #8f111b;
+  --ink-blue-9: #760f17;
+  --ink-blue-10: #5c0c12;
+  --ink-blue-link: #bc1823;
+
+  --outline-blue-1: #fbe0e2;
+  --outline-blue-2: #f6c2c5;
+  --outline-blue-3: #ee9499;
+  --outline-blue-4: #e15b62;
+  --outline-blue-5: #bc1823;
+  --outline-blue-6: #a5141f;
+  --outline-blue-7: #8f111b;
+  --outline-blue-8: #760f17;
+  --outline-blue-9: #5c0c12;
+  --outline-blue-10: #3a070b;
+}
+
+[data-theme='dark'] {
+  /* --- Tiberbu red ramp (dark mode): lighter for contrast on dark surfaces --- */
+  --dark-blue-50: #ffdedf;
+  --dark-blue-100: #ffc1c3;
+  --dark-blue-200: #ff8f93;
+  --dark-blue-300: #f26a6f;
+  --dark-blue-400: #e0545a;
+  --dark-blue-500: #d23a41; /* brighter red so it reads on near-black */
+  --dark-blue-600: #bc1823;
+  --dark-blue-700: #a5141f;
+  --dark-blue-800: #8f111b;
+  --dark-blue-900: #760f17;
+  --dark-blue-950: #5c0c12;
+
+  --surface-blue-1: #2a0d10;
+  --surface-blue-2: #3a070b;
+  --surface-blue-3: #5c0c12;
+  --surface-blue-4: #760f17;
+  --surface-blue-5: #8f111b;
+  --surface-blue-6: #d23a41;
+  --surface-blue-7: #e0545a;
+  --surface-blue-8: #f26a6f;
+  --surface-blue-9: #ff8f93;
+  --surface-blue-10: #ffc1c3;
+
+  --ink-blue-1: #2a0d10;
+  --ink-blue-2: #3a070b;
+  --ink-blue-3: #5c0c12;
+  --ink-blue-4: #8f111b;
+  --ink-blue-5: #e0545a;
+  --ink-blue-6: #e86a70;
+  --ink-blue-7: #f28f93;
+  --ink-blue-8: #ffc1c3;
+  --ink-blue-9: #ffdedf;
+  --ink-blue-10: #ffeeef;
+  --ink-blue-link: #e86a70;
+
+  --outline-blue-1: #5c0c12;
+  --outline-blue-2: #760f17;
+  --outline-blue-3: #8f111b;
+  --outline-blue-4: #a5141f;
+  --outline-blue-5: #d23a41;
+  --outline-blue-6: #e0545a;
+  --outline-blue-7: #f26a6f;
+  --outline-blue-8: #ff8f93;
+  --outline-blue-9: #ffc1c3;
+  --outline-blue-10: #ffdedf;
+}
+
 @layer components {
   .prose-f {
     @apply break-all

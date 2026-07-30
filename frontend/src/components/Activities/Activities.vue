@@ -593,7 +593,7 @@ onMounted(() => {
 })
 
 function handleDocinfoUpdate({ doc, key }) {
-  if (key !== 'comments') return
+  if (key !== 'comments' && key !== 'communications') return
   if (doc.reference_doctype !== props.doctype) return
   if (doc.reference_name !== props.docname) return
 

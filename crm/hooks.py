@@ -1,4 +1,14 @@
 app_name = "crm"
+
+try:
+	from frappe_devsecops_dashboard.email.ses_email_account_decoupler import apply_queue_builder_patches
+	apply_queue_builder_patches()
+except ImportError:
+	import logging as _logging
+	_logging.getLogger("crm").warning(
+		"frappe_devsecops_dashboard not installed — SES QueueBuilder patches not applied. "
+		"CRM emails will fall back to native SMTP."
+	)
 app_title = "Frappe CRM"
 app_publisher = "Frappe Technologies Pvt. Ltd."
 app_description = "Kick-ass Open Source CRM"
@@ -63,8 +73,10 @@ doctype_js = {
 # Home Pages
 # ----------
 
-# application home page (will override Website Settings)
-# home_page = "login"
+# Tiberbu CRM (E2-S1): public landing page at site root. `home_page` overrides Website
+# Settings (verified: frappe website/utils.py get_home_page). Guests -> /index (branded
+# landing); logged-in users are bounced to /crm by index.py before workspace resolution.
+home_page = "index"
 
 # website user home page (by Role)
 # role_home_page = {
@@ -74,6 +86,9 @@ doctype_js = {
 website_route_rules = [
 	{"from_route": "/crm/<path:app_path>", "to_route": "crm"},
 	{"from_route": "/crm-form/<route>", "to_route": "crm_form"},
+	# E2-S1: route /login to the branded login page (shadows stock login *page* only;
+	# the /api/method/login *method* is untouched).
+	{"from_route": "/login", "to_route": "login"},
 ]
 
 # Generators
@@ -154,7 +169,10 @@ has_permission = {
 override_doctype_class = {
 	"Contact": "crm.overrides.contact.CustomContact",
 	"Email Template": "crm.overrides.email_template.CustomEmailTemplate",
+	"Email Queue": "frappe_devsecops_dashboard.email.email_queue_override.AwsSesAwareEmailQueue",
 }
+
+override_email_send = "frappe_devsecops_dashboard.email.aws_ses_override.send"
 
 # Document Events
 # ---------------
@@ -181,9 +199,22 @@ doc_events = {
 		"on_update": ["crm.api.whatsapp.on_update"],
 	},
 	"CRM Deal": {
-		"on_update": [
-			"crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.create_customer_in_erpnext"
+		"after_insert": [
+			# E7: catch a Deal created directly as Won (import / quick-create).
+			"crm.automation.support_journey.on_deal_update",
 		],
+		"on_update": [
+			"crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.create_customer_in_erpnext",
+			# E7: onboarding journey — fires only when the Deal ENTERS a Won status
+			# (the handler detects the transition explicitly; not a blind side-effect,
+			# and the work is enqueued to a background job).
+			"crm.automation.support_journey.on_deal_update",
+		],
+	},
+	# E7: missed-call recovery — seed a callback task for a missed inbound Avaya call.
+	"CRM Call Log": {
+		"after_insert": ["crm.automation.support_journey.on_call_log_update"],
+		"on_update": ["crm.automation.support_journey.on_call_log_update"],
 	},
 	"Sales Order": {
 		"before_validate": [
@@ -267,7 +298,15 @@ ignore_links_on_delete = ["Failed Lead Sync Log"]
 
 # Request Events
 # ----------------
-# before_request = ["crm.utils.before_request"]
+# E2-S2: desk fence — block non-allow-listed users from /app|/desk, redirect to the
+# branded /access-restricted page. Allow-list = Administrator + site_config
+# "desk_access_users". Guests pass through to normal login.
+# pin_home_page_to_landing MUST run first: it forces '/' -> index so a System User's
+# default_workspace can't resolve the root to /desk/<workspace> and slip past the guard.
+before_request = [
+	"crm.api.route_guard.pin_home_page_to_landing",
+	"crm.api.route_guard.guard_desk_access",
+]
 # after_request = ["crm.utils.after_request"]
 
 # Job Events

@@ -1,3 +1,4 @@
+.dev-credentials
 .DS_Store
 *.pyc
 *.local.md

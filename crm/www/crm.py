@@ -14,8 +14,17 @@ no_cache = 1
 def get_context():
 	from crm.api import check_app_permission
 
+	# E2-S4: guests reaching the SPA shell go to the branded login (not a stock 403),
+	# returning to /crm after auth. Keeps the "zero native Frappe screens" guarantee.
+	if frappe.session.user == "Guest":
+		frappe.local.flags.redirect_location = "/login?redirect-to=/crm"
+		raise frappe.Redirect
+
+	# Authenticated but without CRM access (e.g. a Website User) -> branded access page
+	# instead of the stock PermissionError screen.
 	if not check_app_permission():
-		frappe.throw(_("You do not have permission to access Frappe CRM"), frappe.PermissionError)
+		frappe.local.flags.redirect_location = "/access-restricted"
+		raise frappe.Redirect
 
 	frappe.db.commit()
 	context = frappe._dict()

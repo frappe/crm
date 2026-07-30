@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <meta name="robots" content="noindex, nofollow">
+
+    <link rel="icon" type="image/svg+xml" href="{{ favicon or '/assets/crm/images/tiberbu-mark.svg' }}">
+    <link rel="stylesheet" href="/assets/crm/css/tiberbu-brand.css">
+    <style>
+        :root {
+            --brand: {{ brand_primary or '#bc1823' }};
+            --brand-dark: {{ brand_primary_dark or '#8f111b' }};
+            --ink: #1f272e;        /* ink-gray-9 */
+            --muted: #667075;      /* ink-gray-6 */
+            --glass-strong: rgba(255,255,255,0.82);
+            --glass-border: 1px solid rgba(255,255,255,0.6);
+            --glass-shadow: 0 20px 60px rgba(17,24,39,0.12);
+            --glass-inset: inset 0 1px 0 rgba(255,255,255,0.7);
+            --font: 'InterVar','Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+        }
+        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family:var(--font); color:var(--ink); min-height:100vh;
+            display:flex; align-items:center; justify-content:center; padding:24px;
+            -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+            background:
+                radial-gradient(55% 45% at 15% 15%, rgba(188,24,35,0.10) 0%, transparent 55%),
+                radial-gradient(50% 45% at 88% 85%, rgba(188,24,35,0.07) 0%, transparent 55%),
+                linear-gradient(165deg, #f7f8fa 0%, #eef0f4 100%);
+        }
+        .card {
+            width:100%; max-width:440px; text-align:center; padding:44px 38px;
+            background: var(--glass-strong);
+            -webkit-backdrop-filter: blur(20px) saturate(160%);
+            backdrop-filter: blur(20px) saturate(160%);
+            border: var(--glass-border); border-radius:20px;
+            box-shadow: var(--glass-shadow), var(--glass-inset);
+            animation: rise .45s cubic-bezier(.22,.61,.36,1) both;
+        }
+        @keyframes rise { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:none; } }
+
+        .brand { display:inline-flex; align-items:center; gap:10px; margin-bottom:26px; }
+        .brand img { height:38px; width:38px; border-radius:10px; }
+        .brand span { font-size:16px; font-weight:600; }
+
+        .icon {
+            width:76px; height:76px; margin:0 auto 22px; border-radius:50%;
+            display:flex; align-items:center; justify-content:center;
+            background: rgba(188,24,35,0.10); color:var(--brand);
+        }
+        .icon svg { width:34px; height:34px; }
+
+        h1 { font-size:22px; font-weight:600; letter-spacing:-0.01em; margin-bottom:12px; }
+        p.lead { font-size:14.5px; line-height:1.6; color:var(--muted); margin-bottom:28px; }
+
+        .actions { display:flex; flex-direction:column; gap:12px; }
+        .btn {
+            display:inline-flex; align-items:center; justify-content:center; min-height:46px; padding:0 22px;
+            border-radius:12px; font-size:14px; font-weight:600; text-decoration:none; cursor:pointer;
+            border:1px solid transparent; font-family:var(--font);
+            transition:background .12s, transform .06s, box-shadow .12s;
+        }
+        .btn-primary { background:var(--brand); color:#fff; box-shadow:0 8px 22px rgba(188,24,35,0.26); }
+        .btn-primary:hover { background:var(--brand-dark); transform:translateY(-1px); }
+        .btn-ghost { background:transparent; color:var(--muted); border-color:rgba(17,24,39,0.14); }
+        .btn-ghost:hover { background:rgba(255,255,255,0.6); color:var(--ink); }
+        :where(a, button):focus-visible { outline:none; box-shadow:0 0 0 3px rgba(188,24,35,0.22); }
+
+        @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+            .card { background:#ffffff; }
+        }
+        @media (prefers-reduced-motion: reduce) { *,*::before,*::after { animation-duration:.001ms !important; transition-duration:.001ms !important; } }
+    </style>
+</head>
+<body>
+    <main class="card" role="alert" aria-labelledby="restricted-title">
+        <div class="brand">
+            {% if brand_logo %}<img src="{{ brand_logo }}" alt="{{ app_name }}">{% endif %}
+            <span>{{ app_name or 'Tiberbu CRM' }}</span>
+        </div>
+
+        <div class="icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+        </div>
+
+        <h1 id="restricted-title">Access Restricted</h1>
+        <p class="lead">
+            You don't have permission to access the administration desk.
+            This area is reserved for system administrators.
+        </p>
+
+        <div class="actions">
+            <a class="btn btn-primary" href="{{ home_route or '/crm' }}">Go to {{ app_name or 'Tiberbu CRM' }}</a>
+            <button type="button" class="btn btn-ghost" id="signOut">Sign out</button>
+        </div>
+    </main>
+
+    <script>
+    (function () {
+        // /api/method/logout is POST-only; a GET anchor 403s. POST with the CSRF token,
+        // then land on the branded login. Falls back to the stock /logout page on error.
+        var btn = document.getElementById('signOut');
+        if (!btn) return;
+        btn.addEventListener('click', function () {
+            fetch('/api/method/logout', {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: { 'X-Frappe-CSRF-Token': {{ (csrf_token or '') | tojson }} }
+            }).then(function () {
+                window.location.href = '/login';
+            }).catch(function () {
+                window.location.href = '/logout';
+            });
+        });
+    })();
+    </script>
+</body>
+</html>

@@ -50,7 +50,7 @@
                 <div
                   class="size-2.5 rounded-full cursor-pointer"
                   :style="{
-                    backgroundColor: _event.color || '#30A66D',
+                    backgroundColor: _event.color || '#bc1823',
                   }"
                 />
               </div>

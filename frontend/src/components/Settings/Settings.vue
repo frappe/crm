@@ -79,6 +79,7 @@ import DashboardSettings from '@/components/Settings/DashboardSettings.vue'
 import EmailTemplatePage from '@/components/Settings/EmailTemplate/EmailTemplatePage.vue'
 import TelephonyPage from '@/components/Settings/Telephony/TelephonyPage.vue'
 import EmailConfig from '@/components/Settings/EmailConfig.vue'
+import SESSettings from '@/components/Settings/SESSettings.vue'
 import Icon from '@/components/Icon.vue'
 import { usersStore } from '@/stores/users'
 import {
@@ -181,6 +182,12 @@ const tabs = computed(() => {
           label: __('Accounts'),
           icon: Email2Icon,
           component: markRaw(EmailConfig),
+          condition: () => isManager(),
+        },
+        {
+          label: __('AWS SES'),
+          icon: 'mail-check',
+          component: markRaw(SESSettings),
           condition: () => isManager(),
         },
         {
