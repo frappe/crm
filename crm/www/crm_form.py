@@ -5,7 +5,7 @@ import re
 
 import frappe
 
-from crm.api.form import ALLOWED_DOCTYPES
+from crm.api.form import ALLOWED_DOCTYPES, guest_can_select
 
 no_cache = 1
 
@@ -82,10 +82,12 @@ def get_context(context):
 
 def _link_field_options(doctype: str) -> list[dict]:
 	"""Existing records of `doctype` as {value, label} dropdown options — value is the
-	stored name, label is the record's title (falling back to name). Read with
-	`get_all` so options show to guests regardless of the linked doctype's own
-	permissions (exposing them is the form author's deliberate choice)."""
+	stored name, label is the record's title (falling back to name). Only enumerated
+	when Guest may select the target (see `guest_can_select`), so a public form never
+	leaks records of a doctype an admin hasn't deliberately exposed."""
 	if not doctype or not frappe.db.exists("DocType", doctype):
+		return []
+	if not guest_can_select(doctype):
 		return []
 	meta = frappe.get_meta(doctype)
 	title_field = meta.title_field or "name"

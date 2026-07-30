@@ -103,6 +103,20 @@ def _seeded_visible_fieldnames(document_type: str) -> set:
 	return names
 
 
+def guest_can_select(doctype: str) -> bool:
+	"""Whether an anonymous visitor may reference `doctype` in a Link field — i.e.
+	Guest has `select` (or `read`) permission on it. `select` is Frappe's purpose-built
+	tier for linking records without exposing full read access (it's what the desk Link
+	control itself checks, see DatabaseQuery). Gating Link exposure on this keeps a public
+	form permission-preserving: a doctype (custom or standard) becomes linkable only when
+	an admin deliberately grants Guest select/read on it — no hardcoded allowlist, no
+	enumerating restricted records (User, Contact, Lead, …) into a public page."""
+	return bool(doctype) and (
+		frappe.has_permission(doctype, ptype="select", user="Guest")
+		or frappe.has_permission(doctype, ptype="read", user="Guest")
+	)
+
+
 def _mappable_fields(document_type: str) -> list[dict]:
 	"""Fields of a target DocType a form may collect (shared by the picker and by
 	the brand-new-form seeding)."""
@@ -114,6 +128,10 @@ def _mappable_fields(document_type: str) -> list[dict]:
 		if not df.fieldname or df.fieldname in DENIED_FIELDNAMES:
 			continue
 		if df.hidden or df.read_only:
+			continue
+		# a Link is only offered if guests may actually pick from its target — otherwise
+		# it'd render as an empty (and permission-leaking) dropdown on the public form
+		if df.fieldtype == "Link" and not guest_can_select(df.options):
 			continue
 		fields.append(
 			{
