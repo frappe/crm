@@ -196,7 +196,7 @@
               }}
             </span>
             <Button
-              :label="__('I understand, Add Conditions')"
+              :label="__('I understand, add conditions')"
               variant="subtle"
               theme="gray"
               @click="useNewUI = true"
@@ -280,7 +280,7 @@
               }}
             </span>
             <Button
-              :label="__('I understand, Add Conditions')"
+              :label="__('I understand, add conditions')"
               variant="subtle"
               theme="gray"
               @click="useNewUI = true"
@@ -434,11 +434,11 @@ const validateAssignmentRule = (key, skipConditionCheck = false) => {
         assignmentRuleErrors.value.assignCondition =
           assignmentRuleData.value.assignConditionJson?.length > 0
             ? ''
-            : __('Assign Condition is required')
+            : __('Assign condition is required')
 
         if (!validateConditions(assignmentRuleData.value.assignConditionJson)) {
           assignmentRuleErrors.value.assignConditionError = __(
-            'Assign Conditions are invalid',
+            'Assign conditions are invalid',
           )
         } else {
           assignmentRuleErrors.value.assignConditionError = ''
@@ -454,7 +454,7 @@ const validateAssignmentRule = (key, skipConditionCheck = false) => {
           !validateConditions(assignmentRuleData.value.unassignConditionJson)
         ) {
           assignmentRuleErrors.value.unassignConditionError = __(
-            'Unassign Conditions are invalid',
+            'Unassign conditions are invalid',
           )
         } else {
           assignmentRuleErrors.value.unassignConditionError = ''
@@ -700,7 +700,7 @@ const createAssignmentRule = () => {
           capture('assignment_rule_created', {
             doctype: assignmentRuleData.value.documentType,
           })
-          toast.success(__('Assignment Rule Created'))
+          toast.success(__('Assignment rule created'))
         })
       updateStep('view', data)
     },
@@ -782,7 +782,7 @@ const updateAssignmentRule = async () => {
     getAssignmentRuleData.reload()
   }
   isLoading.value = false
-  toast.success(__('Assignment Rule Updated'))
+  toast.success(__('Assignment rule updated'))
 }
 
 watch(

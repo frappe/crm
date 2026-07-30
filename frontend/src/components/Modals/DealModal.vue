@@ -198,7 +198,7 @@ async function createDeal() {
         deal.doc.mobile_no &&
         isNaN(deal.doc.mobile_no.replace(/[-+() ]/g, ''))
       ) {
-        error.value = __('Mobile No. should be a number')
+        error.value = __('Mobile number should be a number')
         return error.value
       }
       if (deal.doc.email && !deal.doc.email.includes('@')) {
