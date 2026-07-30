@@ -802,7 +802,8 @@ const getOptions = (options) => {
   box-shadow: none;
 }
 
-:deep(.grid-row input:focus-within) :deep(.grid-row textarea:focus-within) {
+:deep(.grid-row input:focus-within),
+:deep(.grid-row textarea:focus-within) {
   border: 1px solid var(--outline-gray-2);
 }
 
@@ -830,7 +831,8 @@ const getOptions = (options) => {
   border-bottom-right-radius: 7px;
 }
 
-:deep(.grid-row button:focus) :deep(.grid-row button:hover) {
+:deep(.grid-row button:focus),
+:deep(.grid-row button:hover) {
   box-shadow: none;
   background-color: var(--surface-base);
 }
