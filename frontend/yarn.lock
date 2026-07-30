@@ -3222,6 +3222,11 @@ es-errors@^1.3.0:
   resolved "https://registry.yarnpkg.com/es-errors/-/es-errors-1.3.0.tgz#05f75a25dab98e4fb1dcd5e1472c0546d5057c8f"
   integrity sha512-Zf5H2Kxt2xjTvbJvP2ZWLEICxA6j+hAmMzIlypy4xcBg1vKVnx89Wy0GbS+kf5cwCVFFzdCFh2XSCFNULS6csw==
 
+es-module-lexer@^1.7.0:
+  version "1.7.0"
+  resolved "https://registry.yarnpkg.com/es-module-lexer/-/es-module-lexer-1.7.0.tgz#9159601561880a85f2734560a9099b2c31e5372a"
+  integrity sha512-jEQoCwk8hyb2AZziIOLhDqpm5+2ww5uIE6lkO/6jcOCusfk6LhMHpXXfBLXTZ7Ydyt0j4VoUQv6uGNYbdW+kBA==
+
 es-module-lexer@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/es-module-lexer/-/es-module-lexer-2.0.0.tgz#f657cd7a9448dcdda9c070a3cb75e5dc1e85f5b1"
@@ -3548,10 +3553,10 @@ fraction.js@^5.3.4:
   resolved "https://registry.yarnpkg.com/fraction.js/-/fraction.js-5.3.4.tgz#8c0fcc6a9908262df4ed197427bdeef563e0699a"
   integrity sha512-1X1NTtiJphryn/uLQz3whtY6jK3fTqoE3ohKs0tT+Ujr1W59oopxmoEh7Lu5p6vBaPbgoM0bzveAW4Qi5RyWDQ==
 
-frappe-ui@1.0.0-beta.24:
-  version "1.0.0-beta.24"
-  resolved "https://registry.yarnpkg.com/frappe-ui/-/frappe-ui-1.0.0-beta.24.tgz#af2009e2140ca119e6931ccd9004a76db44509d5"
-  integrity sha512-70xNZJ2jlGd/9UX6dQ4wglFFBqoxmsS/a/SlD9g2Lu5+31/eJDufwQUAvHitRQSw6Feb8wvVt1TLKSGkkWpirA==
+frappe-ui@1.0.0-beta.29:
+  version "1.0.0-beta.29"
+  resolved "https://registry.yarnpkg.com/frappe-ui/-/frappe-ui-1.0.0-beta.29.tgz#0b9ae7cd17c6867739a595656bba5525349a32f9"
+  integrity sha512-Uovz5JUEQBOJ85CyKtjTADgk+SjXWknfF8U54xgQQ/j3QP2nZ96abjnugh2I2Y5u5KHBl+k8tbKJZ3xbTD8Q7w==
   dependencies:
     "@codemirror/lang-css" "^6.3.0"
     "@codemirror/lang-html" "^6.4.9"
@@ -3610,6 +3615,7 @@ frappe-ui@1.0.0-beta.24:
     dayjs "^1.11.13"
     dompurify "^3.4.0"
     echarts "^5.6.0"
+    es-module-lexer "^1.7.0"
     feather-icons "^4.28.0"
     fuzzysort "^3.1.0"
     grid-layout-plus "^1.1.0"
@@ -3617,11 +3623,12 @@ frappe-ui@1.0.0-beta.24:
     idb-keyval "^6.2.0"
     lowlight "^3.3.0"
     lucide-static "^1.16.0"
+    magic-string "^0.30.21"
     marked "^15.0.12"
     ora "5.4.1"
     prettier "^3.3.2"
     prosemirror-tables "^1.8.1"
-    reka-ui "^2.5.0"
+    reka-ui "^2.9.9"
     slugify "^1.6.6"
     socket.io-client "^4.5.1"
     tippy.js "^6.3.7"
@@ -5084,10 +5091,10 @@ regjsparser@^0.13.0:
   dependencies:
     jsesc "~3.1.0"
 
-reka-ui@^2.5.0:
-  version "2.9.6"
-  resolved "https://registry.yarnpkg.com/reka-ui/-/reka-ui-2.9.6.tgz#980db045e442742c5e87ea962915c02524258f2a"
-  integrity sha512-K6bL457owpvWONc7hsjFxo3HDC9s6IzhRqShW0w9JSKelPGfRbkHD558UQTn/NH1cvrXVHygKyC7fExFmRketg==
+reka-ui@^2.9.9:
+  version "2.10.1"
+  resolved "https://registry.yarnpkg.com/reka-ui/-/reka-ui-2.10.1.tgz#af51db13cf753668385639900f0e01e99c386f44"
+  integrity sha512-drcOQ4rQtDYAcGCsyQBqQg8QQ+H3B+zDaMJU0h8KPEPMa7g9BHu3zcOi4OB39XJSWizceFoNO0Z9tctSGLOXqg==
   dependencies:
     "@floating-ui/dom" "^1.6.13"
     "@floating-ui/vue" "^1.1.6"
