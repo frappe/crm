@@ -62,7 +62,10 @@ export default defineConfig(async ({ mode }) => {
         // `@framework/ui/components/Notifications` resolve. Importing subpaths avoids the
         // barrel, which `export *`s components (Grid/Phone/FormLayout) that need a newer
         // frappe-ui (`frappe-ui/internals`) than this app pins.
-        '@framework/ui': path.resolve(import.meta.dirname, '../../frappe/ui/src'),
+        '@framework/ui': path.resolve(
+          import.meta.dirname,
+          '../../frappe/ui/src',
+        ),
       },
       // ensure the linked framework package reuses the host app's single copy of each peer.
       // `dompurify` is an implicit dep of @framework/ui's sanitize util (not declared in its
@@ -187,9 +190,6 @@ function getAliases(config) {
       import.meta.dirname,
       '../frappe-ui/internals.ts',
     ),
-    'frappe-ui': path.resolve(
-      import.meta.dirname,
-      '../frappe-ui/src/index.ts',
-    ),
+    'frappe-ui': path.resolve(import.meta.dirname, '../frappe-ui/src/index.ts'),
   }
 }
