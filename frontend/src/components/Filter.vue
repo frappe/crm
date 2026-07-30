@@ -53,15 +53,15 @@
                   <Combobox
                     trigger="button"
                     :model-value="f.field.fieldname"
-                    :options="filterableFields.data || []"
+                    :options="filterFieldOptions"
                     :placeholder="__('First Name')"
                     @update:selected-option="(e) => updateFilter(e, i)"
                   />
                 </div>
                 <div id="operator">
-                  <FormControl
+                  <Combobox
                     v-model="f.operator"
-                    type="select"
+                    trigger="button"
                     :options="
                       getOperators(f.field.fieldtype, f.field.fieldname)
                     "
@@ -87,15 +87,15 @@
                     <Combobox
                       trigger="button"
                       :model-value="f.field.fieldname"
-                      :options="filterableFields.data || []"
+                      :options="filterFieldOptions"
                       :placeholder="__('First Name')"
                       @update:selected-option="(e) => updateFilter(e, i)"
                     />
                   </div>
                   <div id="operator">
-                    <FormControl
+                    <Combobox
                       v-model="f.operator"
-                      type="select"
+                      trigger="button"
                       :options="
                         getOperators(f.field.fieldtype, f.field.fieldname)
                       "
@@ -220,6 +220,30 @@ const filters = computed(() => {
   return convertFilters(filterableFields.data, allFilters)
 })
 
+// `name` is labelled "Name" but holds the document ID, which reads as the
+// record's full name on these doctypes. Mark it with an ID icon.
+const idFieldDoctypes = ['CRM Lead', 'CRM Deal']
+
+const filterFieldOptions = computed(() => {
+  const fields = filterableFields.data || []
+  if (!idFieldDoctypes.includes(props.doctype)) return fields
+
+  return fields.map((field) =>
+    field.fieldname === 'name'
+      ? {
+          ...field,
+          slots: {
+            suffix: () =>
+              h('span', {
+                class: 'lucide-id-card size-4 shrink-0 text-ink-gray-5',
+                title: __('Document ID, not the full name'),
+              }),
+          },
+        }
+      : field,
+  )
+})
+
 const availableFilters = computed(() => {
   if (!filterableFields.data) return []
 
@@ -228,7 +252,7 @@ const availableFilters = computed(() => {
     selectedFieldNames.add(filter.fieldname)
   }
 
-  return filterableFields.data.filter(
+  return filterFieldOptions.value.filter(
     (field) => !selectedFieldNames.has(field.fieldname),
   )
 })
@@ -380,8 +404,8 @@ function getValueControl(f) {
   const { field, operator } = f
   const { fieldtype, options } = field
   if (operator == 'is') {
-    return h(FormControl, {
-      type: 'select',
+    return h(Combobox, {
+      trigger: 'button',
       options: [
         {
           label: 'Set',
@@ -396,8 +420,8 @@ function getValueControl(f) {
       'onUpdate:modelValue': (v) => updateValue(v, f),
     })
   } else if (operator == 'timespan') {
-    return h(FormControl, {
-      type: 'select',
+    return h(Combobox, {
+      trigger: 'button',
       options: timespanOptions,
       modelValue: f.value,
       'onUpdate:modelValue': (v) => updateValue(v, f),
@@ -407,8 +431,8 @@ function getValueControl(f) {
   } else if (typeSelect.includes(fieldtype) || typeCheck.includes(fieldtype)) {
     const _options =
       fieldtype == 'Check' ? ['Yes', 'No'] : getSelectOptions(options)
-    return h(FormControl, {
-      type: 'select',
+    return h(Combobox, {
+      trigger: 'button',
       options: _options.map((o) => ({
         label: o,
         value: o,

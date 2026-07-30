@@ -30,10 +30,12 @@
           v-if="column.key == '_liked_by'"
           variant="ghost"
           class="!h-4"
-          :class="isLikeFilterApplied ? 'fill-red-500' : 'fill-white'"
           @click="() => emit('applyLikeFilter')"
         >
-          <HeartIcon class="h-4 w-4" />
+          <HeartIcon
+            class="h-4 w-4"
+            :class="isLikeFilterApplied ? 'fill-red-500 text-red-500' : ''"
+          />
         </Button>
       </ListHeaderItem>
     </ListHeader>
@@ -89,14 +91,15 @@
           </div>
           <div v-else-if="column.key === '_liked_by'">
             <Button
-              v-if="column.key == '_liked_by'"
               variant="ghost"
-              :class="isLiked(item) ? 'fill-red-500' : 'fill-white'"
               @click.stop.prevent="
                 () => emit('likeDoc', { name: row.name, liked: isLiked(item) })
               "
             >
-              <HeartIcon class="h-4 w-4" />
+              <HeartIcon
+                class="h-4 w-4"
+                :class="isLiked(item) ? 'fill-red-500 text-red-500' : ''"
+              />
             </Button>
           </div>
         </template>

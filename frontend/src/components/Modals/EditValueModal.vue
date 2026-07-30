@@ -4,6 +4,7 @@
       <div class="mb-4">
         <div class="mb-1.5 text-sm text-ink-gray-5">{{ __('Field') }}</div>
         <Combobox
+          class="w-full"
           trigger="button"
           :model-value="field.fieldname"
           :options="fields.data || []"
@@ -72,9 +73,14 @@ const fields = createResource({
     doctype: props.doctype,
   },
   transform: (data) => {
+    // `description` renders as a second line in the dropdown, which has no
+    // max width, so a long one stretches the whole list.
     return data
       .filter((f) => f.hidden == 0 && f.read_only == 0)
-      .map((f) => ({ ...f, value: f.fieldname }))
+      .map(({ description, ...field }) => ({
+        ...field,
+        value: field.fieldname,
+      }))
   },
 })
 

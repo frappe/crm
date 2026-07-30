@@ -300,6 +300,7 @@
   </Dialog>
 </template>
 <script setup>
+import Icon from '@/components/Icon.vue'
 import ListIcon from '@/components/Icons/ListIcon.vue'
 import KanbanIcon from '@/components/Icons/KanbanIcon.vue'
 import GroupByIcon from '@/components/Icons/GroupByIcon.vue'
@@ -518,6 +519,7 @@ list.value = createResource({
   onSuccess(data) {
     let cv = getView(route.query.view, route.params.viewType, props.doctype)
     let params = list.value.params ? list.value.params : getParams()
+    list.value.params = params
     defaultParams.value = {
       doctype: props.doctype,
       filters: params.filters,
@@ -632,6 +634,11 @@ function getIcon(icon, type) {
     return markRaw(GroupByIcon)
   } else if (!icon && type === 'kanban') {
     return markRaw(KanbanIcon)
+  } else if (icon && typeof icon === 'string') {
+    // a lucide icon name (from the IconPicker) — render it through Icon so it
+    // resolves from the injected lucide sprite. The Dropdown renders a bare
+    // string via FeatherIcon, which lacks the newer lucide names and shows blank.
+    return () => h(Icon, { icon, class: 'h-4 w-4' })
   }
   return icon || markRaw(ListIcon)
 }

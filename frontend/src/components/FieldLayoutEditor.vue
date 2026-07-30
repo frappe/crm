@@ -221,15 +221,13 @@
                     @update:selected-option="(e) => addField(column, e)"
                   >
                     <template #trigger="{ open, setOpen }">
-                      <div class="gap-2 w-full">
-                        <Button
-                          class="w-full !h-8 !bg-surface-elevation-2"
-                          variant="outline"
-                          :label="__('Add Field')"
-                          iconLeft="plus"
-                          @click="setOpen(!open)"
-                        />
-                      </div>
+                      <Button
+                        class="w-full !h-8 !bg-surface-elevation-2"
+                        variant="outline"
+                        :label="__('Add Field')"
+                        iconLeft="plus"
+                        @click="setOpen(!open)"
+                      />
                     </template>
                     <template #item-label="{ item }">
                       <div class="flex flex-col gap-1 text-ink-gray-9">
