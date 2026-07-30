@@ -41,7 +41,7 @@ Tiberbu CRM is a **brownfield fork of `frappe/crm`** (upstream remote = `tiberbu
 ## 3. Environment state (what I changed — all reversible, nothing committed)
 
 - **cr-dev.tiberbu.app**: uninstalled `client_registry` (backup first: `sites/cr-dev.tiberbu.app/private/backups/20260729_224447-*`). Now has `frappe` + `erpnext` + **`crm` (installed)**.
-- Admin password on cr-dev set to `Tiberbu@2026` (dev only).
+- Admin password on cr-dev set (dev only) — stored in `.dev-credentials` (gitignored).
 - A dev server may be running: `bench --site cr-dev.tiberbu.app serve --port 8005` (log `/tmp/crm-serve.log`). Re-start if gone.
 - **Nothing is committed or pushed.** `git status` will show modifications to `index.css`, `CRMLogo.vue`, `index.html`, `vite.config.js`, `crm_lead.py`, `crm_deal.py`, plus new `docs/*.md`.
 
@@ -53,7 +53,7 @@ Tiberbu CRM is a **brownfield fork of `frappe/crm`** (upstream remote = `tiberbu
 
 CRM login page/API needs the right Host header. Playwright is at `apps/crm/node_modules/playwright-core` (CommonJS — `import pkg from ...; const {chromium}=pkg`). Chromium build 1234 is missing; use installed build:
 `executablePath: '/home/ubuntu/.cache/ms-playwright/chromium_headless_shell-1228/chrome-headless-shell-linux64/chrome-headless-shell'`, `args:['--no-sandbox']`.
-Route every request adding `host: 'cr-dev.tiberbu.app'`. Login via `POST /api/method/login` `{usr:'Administrator', pwd:'Tiberbu@2026'}`. Toggle dark via `localStorage.setItem('theme','dark')` + `document.documentElement.setAttribute('data-theme','dark')` then reload. Working script: `/tmp/crm-proof/shot.mjs`. If the image-Read hook times out, verify objectively with PIL pixel analysis (count Tiberbu-red `#bc1823`±50 vs blue px) — that pattern is proven.
+Route every request adding `host: 'cr-dev.tiberbu.app'`. Login via `POST /api/method/login` `{usr:'Administrator', pwd:'<see .dev-credentials>'}`. Toggle dark via `localStorage.setItem('theme','dark')` + `document.documentElement.setAttribute('data-theme','dark')` then reload. Working script: `/tmp/crm-proof/shot.mjs`. If the image-Read hook times out, verify objectively with PIL pixel analysis (count Tiberbu-red `#bc1823`±50 vs blue px) — that pattern is proven.
 
 ---
 

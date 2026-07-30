@@ -94,6 +94,6 @@ Screenshots in `/tmp/crm-proof/e2-*.png`.
 ## Environment notes / watch-outs
 
 - **Email 2FA method**: on cr-dev, Email OTP can't complete — no default outgoing Email Account **and** a stale `careverse_hq/templates/emails/otp_verification.html` override throws `TemplateNotFound`. Stock Frappe login fails identically here. Our page degrades gracefully (clean message, no traceback leak). OTP App (fully testable) proved the complete MFA flow. Re-verify Email/SMS once a mail account + SMS gateway exist.
-- **Test fixture**: `sales.tester@tiberbu.test` (Sales User, pw `Tiberbu@Sales1`) created on cr-dev for the desk-fence + MFA proofs; 2FA toggled on then **restored to disabled** (original state). Remove the test user before any prod cut.
+- **Test fixture**: `sales.tester@tiberbu.test` (Sales User) created on cr-dev for the desk-fence + MFA proofs; 2FA toggled on then **restored to disabled** (original state). Credentials stored in `.dev-credentials` (gitignored). Remove the test user before any prod cut.
 - **`desk_access_users`** not set in `site_config.json` → only `Administrator` reaches the desk. Add ops/SRE usernames there as needed.
 - Upstream-merge: re-run this walkthrough after any `git merge upstream/develop`; watch the two core edits (`hooks.py`, `crm.py`) for conflicts.
