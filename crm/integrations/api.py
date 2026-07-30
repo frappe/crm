@@ -1,3 +1,7 @@
+import ipaddress
+import socket
+from urllib.parse import urlparse, urlunparse
+
 import frappe
 import requests
 from frappe import _
@@ -161,6 +165,88 @@ def get_contact_by_phone_number(phone_number: str):
 		return get_contact(phone_number, number.get("country"), exact_match=True)
 
 
+def _resolve_validated_ip(hostname: str, port: int) -> str:
+	# Refuse any host that resolves to a non-public address (cloud metadata, localhost,
+	# private/link-local ranges) and return a single validated IP to connect to. Returning
+	# the exact resolved IP — rather than re-resolving at connect time — is what closes the
+	# DNS-rebinding TOCTOU window.
+	try:
+		addrinfos = socket.getaddrinfo(hostname, port, proto=socket.IPPROTO_TCP)
+	except socket.gaierror:
+		frappe.throw(_("Invalid recording URL"), frappe.ValidationError)
+
+	ips = [info[4][0] for info in addrinfos]
+	if not ips:
+		frappe.throw(_("Invalid recording URL"), frappe.ValidationError)
+
+	for ip in ips:
+		if not ipaddress.ip_address(ip).is_global:
+			frappe.throw(_("Recording URL is not allowed"), frappe.ValidationError)
+
+	return ips[0]
+
+
+class _PinnedIPAdapter(requests.adapters.HTTPAdapter):
+	# Connect to a pre-validated IP while keeping the original hostname for the Host header,
+	# TLS SNI and certificate verification. The socket therefore reaches the exact IP that was
+	# checked, so DNS can't be rebound to an internal address between check and connect.
+	def __init__(self, pinned_ip: str, hostname: str, **kwargs):
+		self._pinned_ip = pinned_ip
+		self._hostname = hostname
+		super().__init__(**kwargs)
+
+	def send(self, request, **kwargs):
+		parsed = urlparse(request.url)
+		literal_ip = (
+			f"[{self._pinned_ip}]" if ipaddress.ip_address(self._pinned_ip).version == 6 else self._pinned_ip
+		)
+		netloc = f"{literal_ip}:{parsed.port}" if parsed.port else literal_ip
+		request.url = urlunparse(parsed._replace(netloc=netloc))
+		host = f"[{parsed.hostname}]" if ":" in parsed.hostname else parsed.hostname
+		request.headers["Host"] = f"{host}:{parsed.port}" if parsed.port else host
+		if parsed.scheme == "https":
+			self.poolmanager.connection_pool_kw["server_hostname"] = self._hostname
+			self.poolmanager.connection_pool_kw["assert_hostname"] = self._hostname
+		return super().send(request, **kwargs)
+
+
+def _safe_get(url: str, auth, headers: dict):
+	# TODO: this SSRF-safe fetch (host validation + IP pinning) will likely need to be shared
+	# with domain enrichment; until that feature ships, this local helper is the interim workaround.
+	parsed = urlparse(url)
+	if parsed.scheme not in ("http", "https") or not parsed.hostname:
+		frappe.throw(_("Invalid recording URL"), frappe.ValidationError)
+
+	port = parsed.port or (443 if parsed.scheme == "https" else 80)
+	pinned_ip = _resolve_validated_ip(parsed.hostname, port)
+
+	session = requests.Session()
+	session.mount(f"{parsed.scheme}://", _PinnedIPAdapter(pinned_ip, parsed.hostname))
+	resp = session.get(url, auth=auth, headers=headers, stream=True, timeout=30, allow_redirects=False)
+	return resp, session
+
+
+def _fetch_recording(url: str, auth, headers: dict):
+	# Follow redirects manually so every hop is validated and IP-pinned: a provider URL can
+	# 302 to a signed CDN URL (legitimate), but without per-hop checks a redirect to an
+	# internal address would bypass validation. Provider credentials are dropped after the
+	# first hop so they aren't leaked to the redirect target.
+	current_url = url
+	current_auth = auth
+	for _hop in range(5):
+		resp, session = _safe_get(current_url, current_auth, headers)
+		if resp.is_redirect and resp.headers.get("Location"):
+			current_url = requests.compat.urljoin(current_url, resp.headers["Location"])
+			current_auth = None
+			resp.close()
+			session.close()
+			continue
+		resp._pinned_session = session
+		return resp
+
+	frappe.throw(_("Too many redirects while fetching recording"), frappe.ValidationError)
+
+
 @frappe.whitelist()
 def get_recording_url(call_log_name: str):
 	"""Proxy a call recording (authenticating with the provider) so it plays in the browser.
@@ -173,6 +259,7 @@ def get_recording_url(call_log_name: str):
 		frappe.throw(_("Call log not found"), frappe.DoesNotExistError)
 
 	log = frappe.get_doc("CRM Call Log", call_log_name)
+	log.check_permission("read")
 
 	if not log.recording_url:
 		frappe.throw(_("Recording URL not found"), frappe.DoesNotExistError)
@@ -188,7 +275,7 @@ def get_recording_url(call_log_name: str):
 	# stream instead of buffering the whole file: the provider's Content-Length reaches
 	# the browser immediately so the <audio> element can show the duration right away,
 	# rather than waiting for the entire recording to download server-side first
-	upstream = requests.get(log.recording_url, auth=auth, headers=req_headers, stream=True, timeout=30)
+	upstream = _fetch_recording(log.recording_url, auth, req_headers)
 	upstream.raise_for_status()
 
 	def _stream():
@@ -196,6 +283,9 @@ def get_recording_url(call_log_name: str):
 			yield from upstream.iter_content(chunk_size=64 * 1024)
 		finally:
 			upstream.close()
+			session = getattr(upstream, "_pinned_session", None)
+			if session is not None:
+				session.close()
 
 	response = Response(
 		_stream(),
