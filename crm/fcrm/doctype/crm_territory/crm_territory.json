@@ -84,7 +84,7 @@
  "index_web_pages_for_search": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2026-03-05 12:44:13.642717",
+ "modified": "2026-07-30 12:00:00.000000",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Territory",
@@ -127,6 +127,10 @@
    "role": "Sales User",
    "share": 1,
    "write": 1
+  },
+  {
+   "role": "Guest",
+   "select": 1
   }
  ],
  "row_format": "Dynamic",
