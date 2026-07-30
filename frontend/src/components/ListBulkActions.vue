@@ -80,7 +80,7 @@ function convertToDeal(selections, unselectAll) {
       selections.size,
     ]),
     variant: 'solid',
-    theme: 'blue',
+    theme: 'red',
     actions: [
       {
         label: __('Convert'),

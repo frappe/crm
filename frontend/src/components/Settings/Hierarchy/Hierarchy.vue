@@ -145,7 +145,7 @@
     <Teleport to="body">
       <div
         v-if="dragLabel"
-        class="fixed pointer-events-none px-2 py-1 rounded-md bg-gray-900 text-white text-xs shadow-lg"
+        class="fixed pointer-events-none px-2 py-1 rounded-md bg-surface-gray-10 text-ink-base text-xs shadow-lg"
         :style="{
           top: `${dragState.y + 25}px`,
           left: `${dragState.x - 25}px`,

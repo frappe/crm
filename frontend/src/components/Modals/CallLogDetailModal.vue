@@ -430,14 +430,14 @@ watch(
   outline: none;
   border-radius: 10px;
   cursor: pointer;
-  background-color: rgb(237, 237, 237);
+  background-color: var(--surface-gray-2);
 }
 
 audio::-webkit-media-controls-panel {
-  background-color: rgb(237, 237, 237) !important;
+  background-color: var(--surface-gray-2) !important;
 }
 
 .audio-control::-webkit-media-controls-panel {
-  background-color: white;
+  background-color: var(--surface-base);
 }
 </style>

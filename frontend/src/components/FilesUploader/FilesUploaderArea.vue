@@ -105,10 +105,7 @@
             :class="{
               'text-ink-green-5': file.uploaded == file.total,
             }"
-            :theme="{
-              primary: '#22C55E',
-              secondary: 'lightgray',
-            }"
+            :theme="progressTheme"
             :step="file.uploaded || 1"
             :totalSteps="file.total || 100"
             size="xs"
@@ -137,7 +134,7 @@ import {
   createResource,
   toast,
 } from 'frappe-ui'
-import { ref, onMounted, watch, onUnmounted } from 'vue'
+import { ref, onMounted, watch, onUnmounted, computed } from 'vue'
 
 const props = defineProps({
   doctype: { type: String, required: true },
@@ -156,6 +153,14 @@ const webLink = ref('')
 const cameraImage = ref(null)
 
 const allowMultiple = ref(props.options.allowMultiple == false ? false : true)
+
+const progressTheme = computed(() => {
+  const brandRed =
+    getComputedStyle(document.documentElement)
+      .getPropertyValue('--surface-blue-6')
+      .trim() || '#bc1823'
+  return { primary: brandRed, secondary: 'lightgray' }
+})
 const disableFileBrowser = ref(props.options.disableFileBrowser || true)
 const allowWebLink = ref(props.options.allowWebLink == false ? false : true)
 const allowTakePhoto = ref(

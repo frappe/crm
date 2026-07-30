@@ -1,4 +1,14 @@
 app_name = "crm"
+
+try:
+	from frappe_devsecops_dashboard.email.ses_email_account_decoupler import apply_queue_builder_patches
+	apply_queue_builder_patches()
+except ImportError:
+	import logging as _logging
+	_logging.getLogger("crm").warning(
+		"frappe_devsecops_dashboard not installed — SES QueueBuilder patches not applied. "
+		"CRM emails will fall back to native SMTP."
+	)
 app_title = "Frappe CRM"
 app_publisher = "Frappe Technologies Pvt. Ltd."
 app_description = "Kick-ass Open Source CRM"
@@ -159,7 +169,10 @@ has_permission = {
 override_doctype_class = {
 	"Contact": "crm.overrides.contact.CustomContact",
 	"Email Template": "crm.overrides.email_template.CustomEmailTemplate",
+	"Email Queue": "frappe_devsecops_dashboard.email.email_queue_override.AwsSesAwareEmailQueue",
 }
+
+override_email_send = "frappe_devsecops_dashboard.email.aws_ses_override.send"
 
 # Document Events
 # ---------------

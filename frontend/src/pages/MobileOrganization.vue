@@ -99,7 +99,7 @@
           {{ __(tab.label) }}
           <Badge
             class="group-hover:bg-surface-gray-10"
-            :class="[selected ? 'bg-surface-gray-10' : 'bg-gray-600']"
+            :class="[selected ? 'bg-surface-gray-10' : 'bg-surface-gray-6']"
             variant="solid"
             theme="gray"
             size="sm"
