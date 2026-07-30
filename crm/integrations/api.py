@@ -202,7 +202,8 @@ class _PinnedIPAdapter(requests.adapters.HTTPAdapter):
 		)
 		netloc = f"{literal_ip}:{parsed.port}" if parsed.port else literal_ip
 		request.url = urlunparse(parsed._replace(netloc=netloc))
-		request.headers["Host"] = f"{parsed.hostname}:{parsed.port}" if parsed.port else parsed.hostname
+		host = f"[{parsed.hostname}]" if ":" in parsed.hostname else parsed.hostname
+		request.headers["Host"] = f"{host}:{parsed.port}" if parsed.port else host
 		if parsed.scheme == "https":
 			self.poolmanager.connection_pool_kw["server_hostname"] = self._hostname
 			self.poolmanager.connection_pool_kw["assert_hostname"] = self._hostname
