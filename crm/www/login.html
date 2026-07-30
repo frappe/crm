@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <meta name="robots" content="noindex, nofollow">
+
+    <link rel="icon" type="image/svg+xml" href="{{ favicon or '/assets/crm/images/tiberbu-mark.svg' }}">
+    <link rel="stylesheet" href="/assets/crm/css/tiberbu-brand.css">
+    <style>
+        :root {
+            --brand: {{ brand_primary or '#bc1823' }};
+            --brand-dark: {{ brand_primary_dark or '#8f111b' }};
+            /* ink-gray ramp mirrored from frappe-ui for CRM consistency */
+            --ink: #1f272e;        /* ink-gray-9 */
+            --ink-soft: #4c5257;   /* ink-gray-7 */
+            --muted: #667075;      /* ink-gray-6 */
+            --line: rgba(17,24,39,0.10);
+            --error: #d92d20;
+            --success: #067647;
+            /* glass */
+            --glass-bg: rgba(255,255,255,0.62);
+            --glass-strong: rgba(255,255,255,0.86);
+            --glass-border: 1px solid rgba(255,255,255,0.55);
+            --glass-shadow: 0 20px 60px rgba(17,24,39,0.12);
+            --glass-inset: inset 0 1px 0 rgba(255,255,255,0.7);
+            --radius: 18px;
+            --focus: 0 0 0 3px rgba(188,24,35,0.16);
+            --font: 'InterVar','Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+        }
+        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+        html, body {
+            font-family: var(--font); color: var(--ink); min-height: 100vh;
+            -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+            /* non-flat scene behind the glass: soft Tiberbu-red + neutral blobs */
+            background:
+                radial-gradient(60% 50% at 8% 20%, rgba(188,24,35,0.10) 0%, transparent 60%),
+                radial-gradient(45% 40% at 92% 85%, rgba(188,24,35,0.07) 0%, transparent 60%),
+                linear-gradient(165deg, #f7f8fa 0%, #eef0f4 100%);
+            overflow-x: hidden;
+        }
+
+        .shell { display:flex; min-height:100vh; height:100vh; position:relative; }
+
+        /* ---------- LEFT: brand showcase (decorative, no data) ----------
+           3-row flow column: brand (top) / hero (center, flex:1) / footer (bottom).
+           Everything is IN FLOW (no absolute positioning) so tall content pushes rows
+           apart and never overlaps or clips at any viewport height. */
+        .left {
+            flex: 0 0 52%;
+            position: relative;
+            display: flex; flex-direction: column;
+            gap: 20px;
+            padding: clamp(1.75rem, 4vh, 3rem) clamp(2.5rem, 5vw, 4.5rem);
+            overflow-y: auto;   /* on very short viewports the panel scrolls, never clips */
+            color: #fff;
+            /* black-dominant (matches the SPA #171717 sidebar); red only as a subtle
+               glow accent. A subtle healthcare photo sits UNDER a heavy dark scrim so
+               it reads as texture, not a busy image — text + red stay dominant/legible. */
+            background:
+                radial-gradient(60% 50% at 82% 8%, rgba(188,24,35,0.34) 0%, transparent 58%),
+                radial-gradient(50% 45% at 10% 100%, rgba(188,24,35,0.18) 0%, transparent 60%),
+                linear-gradient(155deg, rgba(20,20,22,0.92) 0%, rgba(23,23,23,0.90) 45%, rgba(15,15,16,0.95) 100%),
+                url('/assets/crm/images/login-bg.jpg');
+            background-size: cover;
+            background-position: center;
+        }
+        /* faint dot grid */
+        .left::before {
+            content:''; position:absolute; inset:0;
+            background-image: radial-gradient(circle, rgba(255,255,255,0.10) 1px, transparent 1px);
+            background-size: 34px 34px; opacity:.6; z-index:0;
+        }
+        /* soft floating orbs */
+        .orb { position:absolute; border-radius:999px; filter: blur(8px); opacity:.5; z-index:0; }
+        .orb.a { width:320px; height:320px; top:-90px; right:-70px; background: radial-gradient(circle, rgba(255,255,255,0.22), transparent 70%); }
+        .orb.b { width:240px; height:240px; bottom:-60px; left:-40px; background: radial-gradient(circle, rgba(255,255,255,0.14), transparent 70%); }
+        .left > * { position:relative; z-index:1; }
+
+        .l-brand { flex:0 0 auto; display:flex; align-items:center; gap:12px; }
+        .l-brand img { height:36px; width:36px; border-radius:9px; background:#fff; padding:4px; }
+        .l-brand span { font-size:17px; font-weight:600; letter-spacing:.01em; }
+
+        /* hero takes the middle row and centers its own content vertically; it may
+           shrink (min-height:0) and hides any overflow rather than bleeding into the
+           footer row on short viewports */
+        .l-hero { flex:1 1 auto; display:flex; flex-direction:column; justify-content:center; max-width: 460px; padding: 24px 0; }
+        .l-eyebrow { font-size:13px; font-weight:600; letter-spacing:.01em; color:#f0a8ad; }
+        .l-hero h1 { font-size: clamp(1.75rem, 2.4vw, 2.35rem); line-height:1.15; font-weight:600; letter-spacing:-0.02em; margin:10px 0 12px; }
+        .l-hero p { font-size:14.5px; line-height:1.55; opacity:.85; max-width:400px; }
+
+        .l-points { display:flex; flex-direction:column; gap:10px; margin-top:20px; }
+        .l-point { display:flex; align-items:center; gap:12px; font-size:13.5px; font-weight:500; opacity:.95; }
+        .l-point .tick {
+            flex:0 0 auto; width:22px; height:22px; border-radius:7px;
+            background: var(--brand); border:1px solid rgba(255,255,255,0.14);
+            display:flex; align-items:center; justify-content:center;
+        }
+        .l-point svg { width:13px; height:13px; stroke:#fff; }
+        .l-foot { flex:0 0 auto; font-size:12.5px; opacity:.7; }
+
+        /* ---------- RIGHT: glass form panel ---------- */
+        .right {
+            flex:1; display:flex; align-items:center; justify-content:center;
+            padding: clamp(1.5rem, 4vw, 3rem);
+            overflow-y:auto;   /* card scrolls within the fixed-height shell if tall */
+        }
+        .card {
+            width:100%; max-width:400px;
+            background: var(--glass-strong);
+            -webkit-backdrop-filter: blur(20px) saturate(160%);
+            backdrop-filter: blur(20px) saturate(160%);
+            border: var(--glass-border);
+            border-radius: var(--radius);
+            box-shadow: var(--glass-shadow), var(--glass-inset);
+            padding: 40px 36px;
+            animation: rise .5s cubic-bezier(.22,.61,.36,1) both;
+        }
+        @keyframes rise { from { opacity:0; transform: translateY(14px); } to { opacity:1; transform:none; } }
+
+        /* compact brand header, shown only when the left panel is hidden (mobile) */
+        .mob-brand { display:none; align-items:center; gap:10px; margin-bottom:22px; }
+        .mob-brand img { height:36px; width:36px; border-radius:9px; }
+        .mob-brand span { font-size:16px; font-weight:600; }
+
+        .hdr { margin-bottom:24px; }
+        .hdr h1 { font-size:22px; font-weight:600; letter-spacing:-0.01em; }
+        .hdr p { font-size:13.5px; color:var(--muted); margin-top:6px; }
+
+        .fg { margin-bottom:15px; }
+        .fg label { display:block; font-size:12.5px; font-weight:600; margin-bottom:6px; color:var(--ink-soft); }
+        .fc {
+            width:100%; height:44px; padding:0 14px;
+            border:1px solid rgba(17,24,39,0.14); border-radius:11px;
+            font-size:14px; font-family:var(--font); color:var(--ink);
+            background: rgba(255,255,255,0.7);
+            transition: border-color .12s, box-shadow .12s, background .12s;
+        }
+        .fc:focus { outline:none; border-color:var(--brand); box-shadow:var(--focus); background:#fff; }
+        .fc:disabled { background: rgba(17,24,39,0.04); color:var(--muted); }
+        .field-error { color:var(--error); font-size:12px; margin-top:5px; }
+
+        .mfa-step { display:none; }
+        .mfa-prompt { font-size:13px; color:var(--ink-soft); margin-bottom:14px; padding:11px 13px; background:rgba(188,24,35,0.06); border:1px solid rgba(188,24,35,0.12); border-radius:11px; }
+        .mfa-prompt.warn { color:var(--error); background:rgba(217,45,32,0.08); }
+        .mfa-back { background:none; border:none; color:var(--brand); font-size:13px; font-weight:600; cursor:pointer; padding:4px 0; margin-top:2px; font-family:var(--font); }
+        .mfa-back:hover { text-decoration:underline; }
+
+        .sub {
+            width:100%; height:47px; border:none; border-radius:11px; margin-top:4px;
+            background: var(--brand); color:#fff; font-size:15px; font-weight:600; cursor:pointer; font-family:var(--font);
+            display:flex; align-items:center; justify-content:center; gap:8px;
+            box-shadow: 0 8px 22px rgba(188,24,35,0.26);
+            transition: background .12s, transform .06s, box-shadow .12s;
+        }
+        .sub:hover { background:var(--brand-dark); transform:translateY(-1px); }
+        .sub:active { transform:translateY(0); }
+        .sub:disabled { opacity:.55; cursor:not-allowed; box-shadow:none; }
+        .spinner { display:none; width:16px; height:16px; border:2px solid rgba(255,255,255,.4); border-top-color:#fff; border-radius:50%; animation:spin .7s linear infinite; }
+        .sub.loading .spinner { display:inline-block; }
+        @keyframes spin { to { transform:rotate(360deg); } }
+
+        .status { margin-top:16px; font-size:13px; padding:10px 13px; border-radius:11px; display:none; }
+        .status.show { display:block; }
+        .status.ok { color:var(--success); background:rgba(6,118,71,0.08); }
+        .status.error { color:var(--error); background:rgba(217,45,32,0.08); }
+        .status .sub-detail { display:block; margin-top:4px; font-size:12px; opacity:.85; }
+
+        .social-divider { display:flex; align-items:center; gap:12px; margin:22px 0 15px; color:var(--muted); font-size:12px; }
+        .social-divider::before, .social-divider::after { content:''; flex:1; height:1px; background:var(--line); }
+        .social-btns { display:flex; flex-direction:column; gap:10px; }
+        .btn-social {
+            display:flex; align-items:center; justify-content:center; gap:8px; height:44px;
+            border:1px solid rgba(17,24,39,0.14); border-radius:11px; text-decoration:none;
+            color:var(--ink); font-size:14px; font-weight:500; background:rgba(255,255,255,0.6); transition:background .12s;
+        }
+        .btn-social:hover { background:#fff; }
+        .provider-icon img, .provider-icon svg { height:18px; width:18px; vertical-align:middle; }
+
+        .lr { display:flex; justify-content:space-between; margin-top:20px; }
+        .lk { color:var(--brand); font-size:13px; font-weight:500; text-decoration:none; }
+        .lk:hover { text-decoration:underline; }
+        .lk.muted { color:var(--muted); }
+
+        /* fallback when backdrop-filter unsupported: solid-ish card */
+        @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+            .card { background: #ffffff; }
+        }
+
+        /* ---------- responsive: collapse to single column ---------- */
+        @media (max-width: 900px) {
+            .left { display:none; }
+            .right { padding: 24px; }
+            .mob-brand { display:flex; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration:.001ms !important; transition-duration:.001ms !important; }
+        }
+    </style>
+</head>
+<body>
+    <div class="shell">
+        <!-- LEFT: brand showcase -->
+        <aside class="left">
+            <span class="orb a"></span>
+            <span class="orb b"></span>
+
+            <div class="l-brand">
+                {% if brand_logo %}<img src="{{ brand_logo }}" alt="{{ app_name }}">{% endif %}
+                <span>{{ app_name or 'Tiberbu CRM' }}</span>
+            </div>
+
+            <div class="l-hero">
+                <div class="l-eyebrow">{{ tagline or 'Powering better health' }}</div>
+                <h1>The care &amp; revenue platform for modern health teams.</h1>
+                <p>Leads, referrals, telephony and support — unified around the Careverse HMIS.</p>
+
+                <div class="l-points">
+                    <div class="l-point"><span class="tick" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span> Unified patient &amp; partner relationships</div>
+                    <div class="l-point"><span class="tick" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span> Sales &amp; referral pipelines built for health</div>
+                    <div class="l-point"><span class="tick" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span> Integrated telephony &amp; support automation</div>
+                </div>
+            </div>
+
+            <div class="l-foot">&copy; {{ app_name or 'Tiberbu CRM' }} — {{ tagline or 'Powering Better Health' }}</div>
+        </aside>
+
+        <!-- RIGHT: glass form panel -->
+        <main class="right">
+            <div class="card">
+                <div class="mob-brand">
+                    {% if brand_logo %}<img src="{{ brand_logo }}" alt="{{ app_name }}">{% endif %}
+                    <span>{{ app_name or 'Tiberbu CRM' }}</span>
+                </div>
+
+                <div class="hdr">
+                    <h1>Welcome back</h1>
+                    <p>Sign in to continue to {{ app_name or 'Tiberbu CRM' }}.</p>
+                </div>
+
+                <form id="loginForm" novalidate>
+                    {% if not disable_user_pass_login %}
+                    <div class="fg" id="usrGroup">
+                        <label for="usr">{{ login_label or 'Email' }}</label>
+                        <input type="text" id="usr" name="usr" class="fc" placeholder="{{ login_label or 'Email' }}" autocomplete="username" />
+                        <div id="usrError" class="field-error" aria-live="polite"></div>
+                    </div>
+                    <div class="fg" id="pwdGroup">
+                        <label for="pwd">Password</label>
+                        <input type="password" id="pwd" name="pwd" class="fc" placeholder="Password" autocomplete="current-password" />
+                        <div id="pwdError" class="field-error" aria-live="polite"></div>
+                    </div>
+
+                    <div id="mfaStep" class="mfa-step" aria-live="polite">
+                        <div id="mfaPrompt" class="mfa-prompt"></div>
+                        <div class="fg">
+                            <label for="loginOtp">Verification code</label>
+                            <input type="text" id="loginOtp" name="otp" class="fc" placeholder="Enter code"
+                                   autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]*" disabled />
+                            <div id="otpError" class="field-error" aria-live="polite"></div>
+                        </div>
+                        <button type="button" id="btnMfaBack" class="mfa-back">Use a different account</button>
+                    </div>
+
+                    <button type="submit" class="sub" id="btnLogin">
+                        <span class="bt">Sign In</span>
+                        <span class="spinner"></span>
+                    </button>
+                    {% else %}
+                    <div class="status show error">Password login is disabled. Use single sign-on below.</div>
+                    {% endif %}
+
+                    <div id="loginStatus" class="status" aria-live="polite"></div>
+
+                    {% if provider_logins %}
+                    {% if not disable_user_pass_login %}
+                    <div class="social-divider"><span>or continue with</span></div>
+                    {% endif %}
+                    <div class="social-btns">
+                        {% for provider in provider_logins %}
+                        <a href="{{ provider.auth_url }}" class="btn-social">
+                            {% if provider.icon %}<span class="provider-icon">{{ provider.icon }}</span>{% endif %}
+                            Sign in with {{ provider.provider_name }}
+                        </a>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <div class="lr">
+                        {% if not disable_user_pass_login %}
+                        <a href="/update-password" class="lk">Forgot password?</a>
+                        {% endif %}
+                        <a href="/" class="lk muted">Back to Home</a>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <script>
+    (function () {
+        var config = {
+            endpoint: '/api/method/login',
+            redirectTo: {{ (redirect_to or '/crm') | tojson }}
+        };
+        window.csrf_token = {{ (csrf_token or '') | tojson }};
+
+        // ---- element refs ----
+        var loginForm = document.getElementById('loginForm');
+        var usrEl = document.getElementById('usr');
+        var pwdEl = document.getElementById('pwd');
+        var usrGroup = document.getElementById('usrGroup');
+        var pwdGroup = document.getElementById('pwdGroup');
+        var usrError = document.getElementById('usrError');
+        var pwdError = document.getElementById('pwdError');
+        var otpError = document.getElementById('otpError');
+        var mfaStep = document.getElementById('mfaStep');
+        var mfaPrompt = document.getElementById('mfaPrompt');
+        var loginOtp = document.getElementById('loginOtp');
+        var btnLogin = document.getElementById('btnLogin');
+        var btnLoginText = btnLogin ? btnLogin.querySelector('.bt') : null;
+        var btnMfaBack = document.getElementById('btnMfaBack');
+        var statusEl = document.getElementById('loginStatus');
+
+        // ---- MFA state ----
+        var inMfaVerification = false;
+        var pendingTmpId = null;
+        var activeVerification = null;
+        var mfaEntryBlocked = false;
+
+        // ---- helpers ----
+        function getCookie(name) {
+            var m = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+            return m ? decodeURIComponent(m.pop()) : '';
+        }
+        function cleanText(s) { return (s == null ? '' : String(s)).trim(); }
+
+        function setLoading(on) {
+            if (!btnLogin) return;
+            btnLogin.classList.toggle('loading', !!on);
+            btnLogin.disabled = !!on || (inMfaVerification && mfaEntryBlocked);
+        }
+        function setStatus(msg, kind, detail) {
+            if (!statusEl) return;
+            statusEl.className = 'status show ' + (kind || '');
+            statusEl.innerHTML = '';
+            statusEl.appendChild(document.createTextNode(msg));
+            if (detail) {
+                var d = document.createElement('span');
+                d.className = 'sub-detail';
+                d.textContent = detail;
+                statusEl.appendChild(d);
+            }
+        }
+        function clearStatus() { if (statusEl) { statusEl.className = 'status'; statusEl.textContent = ''; } }
+        function setFieldError(input, node, msg) { if (node) node.textContent = msg || ''; if (input && msg) input.focus(); }
+        function clearAllFieldErrors() {
+            [usrError, pwdError, otpError].forEach(function (n) { if (n) n.textContent = ''; });
+        }
+        function showAuthError(msg) { setStatus(msg || 'Something went wrong. Please try again.', 'error'); }
+
+        // ---- response parsing (unwrap Frappe {message:{...}}) ----
+        async function parseResponse(response) {
+            var text = await response.text();
+            try { return JSON.parse(text); } catch (e) { return { _raw: text }; }
+        }
+        function getFriendlyError(data) {
+            var msg = '';
+            if (data) {
+                if (typeof data.message === 'string') msg = data.message;
+                else if (data._server_messages) {
+                    try {
+                        var arr = JSON.parse(data._server_messages);
+                        if (arr.length) { var first = JSON.parse(arr[0]); msg = first.message || ''; }
+                    } catch (e) {}
+                } else if (data.exc_type) msg = data.exc_type;
+            }
+            msg = cleanText(msg);
+            // Scrub internals; present a clean message.
+            if (!msg || /traceback|pymysql|frappe\.|\bexception\b/i.test(msg)) {
+                return 'Invalid login credentials. Please try again.';
+            }
+            return msg;
+        }
+
+        // ---- redirect safety (mirror server whitelist) ----
+        function getSafeRedirectTarget(target) {
+            target = cleanText(target);
+            if (!target) return '';
+            // reject absolute/cross-origin
+            if (/^https?:\/\//i.test(target)) {
+                try {
+                    var u = new URL(target);
+                    if (u.host !== window.location.host) return '';
+                    target = u.pathname + u.search;
+                } catch (e) { return ''; }
+            }
+            if (target.charAt(0) !== '/') target = '/' + target;
+            // /update-password is included so a forced/expired password-reset redirect
+            // (…/update-password?key=…) survives the guard WITH its key intact.
+            var safe = ['/crm', '/app', '/desk', '/api', '/update-password'];
+            var ok = safe.some(function (p) { return target.indexOf(p) === 0; });
+            return ok ? target : '';
+        }
+
+        // ---- MFA prompt resolution (OTP App / SMS / Email) ----
+        function canProceedWithVerification(v) {
+            if (!v) return false;
+            var method = (v.method || '').toLowerCase();
+            // OTP App first-time setup (setup === false): user must scan QR from email; no code to enter yet.
+            if (method === 'otp app' && v.setup === false) return false;
+            // SMS / Email: only proceed if the token was actually delivered.
+            if (method === 'sms' || method === 'email') return v.token_delivery !== false;
+            return true;
+        }
+        function getVerificationPrompt(v) {
+            v = v || {};
+            if (v.prompt) return v.prompt;
+            var method = (v.method || '').toLowerCase();
+            if (method === 'otp app') {
+                return v.setup === false
+                    ? 'Check your email for setup instructions, scan the QR into your authenticator, then enter the generated code.'
+                    : 'Enter the code from your authenticator app.';
+            }
+            if (method === 'sms') return 'Enter the verification code sent to your registered mobile number.';
+            if (method === 'email') return 'Enter the verification code sent to your registered email address.';
+            return 'Enter your verification code to continue.';
+        }
+
+        // ---- step transitions ----
+        function enterCredentialsStep() {
+            inMfaVerification = false;
+            pendingTmpId = null;
+            activeVerification = null;
+            mfaEntryBlocked = false;
+            document.cookie = 'tmp_id=; Max-Age=0; path=/; SameSite=Lax';
+
+            if (usrGroup) usrGroup.style.display = '';
+            if (pwdGroup) pwdGroup.style.display = '';
+            if (usrEl) usrEl.disabled = false;
+            if (pwdEl) { pwdEl.disabled = false; pwdEl.value = ''; }
+            if (mfaStep) mfaStep.style.display = 'none';
+            if (mfaPrompt) { mfaPrompt.textContent = ''; mfaPrompt.classList.remove('warn'); }
+            if (loginOtp) { loginOtp.value = ''; loginOtp.disabled = true; }
+            if (btnLoginText) btnLoginText.textContent = 'Sign In';
+            if (btnLogin) btnLogin.disabled = false;
+            clearAllFieldErrors();
+            if (usrEl) usrEl.focus();
+        }
+        function enterVerificationStep(verification, tmpId) {
+            activeVerification = verification || {};
+            mfaEntryBlocked = !canProceedWithVerification(activeVerification);
+            pendingTmpId = cleanText(tmpId) || cleanText(getCookie('tmp_id'));
+            if (!pendingTmpId) {
+                setStatus('Verification session expired. Please sign in again.', 'error');
+                enterCredentialsStep();
+                return;
+            }
+            document.cookie = 'tmp_id=' + encodeURIComponent(pendingTmpId) + '; path=/; SameSite=Lax';
+
+            inMfaVerification = true;
+            if (usrGroup) usrGroup.style.display = 'none';
+            if (pwdGroup) pwdGroup.style.display = 'none';
+            if (usrEl) usrEl.disabled = true;
+            if (pwdEl) pwdEl.disabled = true;
+            if (mfaStep) mfaStep.style.display = 'block';
+            if (mfaPrompt) {
+                mfaPrompt.textContent = getVerificationPrompt(activeVerification);
+                mfaPrompt.classList.toggle('warn', mfaEntryBlocked);
+            }
+            if (btnLoginText) btnLoginText.textContent = 'Verify Code';
+            if (loginOtp) {
+                loginOtp.disabled = mfaEntryBlocked;
+                loginOtp.value = '';
+                if (!mfaEntryBlocked) loginOtp.focus();
+            }
+            if (btnLogin) btnLogin.disabled = mfaEntryBlocked;
+        }
+
+        // ---- redirect on success ----
+        function handleSuccessRedirect(data) {
+            var safeRedirect = getSafeRedirectTarget(data && data.redirect_to);
+            if (data && data.message === 'Password Reset') {
+                window.location.href = safeRedirect || '/update-password';
+                return;
+            }
+            var target = safeRedirect
+                || getSafeRedirectTarget(data && data.home_page)
+                || getSafeRedirectTarget(config.redirectTo)
+                || '/crm';
+            window.location.href = target;
+        }
+
+        // ---- the POST that handles ALL states ----
+        async function submitLogin(payload) {
+            setLoading(true);
+            clearStatus();
+            try {
+                var response = await fetch(config.endpoint, {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-Frappe-CSRF-Token': window.csrf_token || ''
+                    },
+                    body: JSON.stringify(payload)
+                });
+                var data = await parseResponse(response);
+
+                // "Logged In" (System User), "No App" (Website User), "Password Reset" all = success.
+                var isLoginSuccess = response.ok &&
+                    (data.message === 'Logged In' || data.message === 'No App' || data.message === 'Password Reset');
+                // 2FA: server returns a verification object + tmp_id, message not yet "Logged In".
+                var hasVerification = response.ok && data.verification && data.message !== 'Logged In';
+
+                if (isLoginSuccess) {
+                    setStatus('Signed in. Redirecting…', 'ok');
+                    handleSuccessRedirect(data);
+                    return;
+                }
+                if (hasVerification) {
+                    enterVerificationStep(data.verification || {}, data.tmp_id);
+                    if (canProceedWithVerification(data.verification || {})) {
+                        setStatus('Verification required. Enter your code to continue.', 'ok');
+                    } else {
+                        setStatus(getVerificationPrompt(data.verification || {}), 'ok');
+                    }
+                    return;
+                }
+
+                showAuthError(getFriendlyError(data));
+                if (inMfaVerification && loginOtp && !mfaEntryBlocked) loginOtp.focus();
+            } catch (err) {
+                var m = cleanText(err && err.message);
+                if (!m || /failed to fetch|networkerror|load failed/i.test(m)) {
+                    showAuthError('Connection error. Please check your internet and try again.');
+                } else {
+                    showAuthError(m);
+                }
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        // ---- form submit ----
+        if (loginForm) {
+            loginForm.addEventListener('submit', async function (e) {
+                e.preventDefault();
+                clearAllFieldErrors();
+
+                if (inMfaVerification) {
+                    if (mfaEntryBlocked) { setStatus(getVerificationPrompt(activeVerification || {}), 'error'); return; }
+                    var otp = loginOtp ? loginOtp.value.trim() : '';
+                    var tmpId = pendingTmpId || cleanText(getCookie('tmp_id'));
+                    if (!otp) { setFieldError(loginOtp, otpError, 'Verification code is required.'); return; }
+                    if (!tmpId) { showAuthError('Verification session expired. Please sign in again.'); enterCredentialsStep(); return; }
+                    await submitLogin({ otp: otp, tmp_id: tmpId });
+                    return;
+                }
+
+                if (!usrEl || !pwdEl) return;
+                var usr = usrEl.value.trim();
+                var pwd = pwdEl.value;
+                if (!usr || !pwd) {
+                    if (!usr) setFieldError(usrEl, usrError, 'Sign-in ID is required.');
+                    if (!pwd) setFieldError(pwdEl, pwdError, 'Password is required.');
+                    return;
+                }
+                await submitLogin({ usr: usr, pwd: pwd });
+            });
+        }
+        if (btnMfaBack) btnMfaBack.addEventListener('click', enterCredentialsStep);
+    })();
+    </script>
+</body>
+</html>

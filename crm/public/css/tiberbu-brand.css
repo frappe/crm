@@ -1,0 +1,138 @@
+/* =============================================================================
+   Tiberbu CRM — centralized brand theme for public (www/) surfaces
+   -----------------------------------------------------------------------------
+   Single source of truth shared by login / index / access-restricted /
+   crm_form / update-password. Tokens mirror the frappe-ui CRM SPA (pure-neutral
+   ink-gray oklch ramp + local InterVar) so the www pages match the app the user
+   works in daily. Brand = bright Tiberbu red #bc1823 (NOT deep/maroon).
+   Served at /assets/crm/css/tiberbu-brand.css.
+   ========================================================================== */
+
+/* Local variable font — same file the SPA ships; no Google Fonts (render-blocking). */
+@font-face {
+  font-family: 'InterVar';
+  font-weight: 100 900;
+  font-display: swap;
+  font-style: normal;
+  src: url('/assets/crm/fonts/Inter.var.woff2') format('woff2-variations'),
+       url('/assets/crm/fonts/Inter.var.woff2') format('woff2');
+}
+
+:root {
+  /* --- brand (bright red, kept) --- */
+  --brand: #bc1823;
+  --brand-dark: #a3141d;              /* hover: still red, only slightly deeper */
+  --brand-tint-07: rgba(188, 24, 35, 0.07);
+  --brand-tint-10: rgba(188, 24, 35, 0.10);
+  --brand-tint-12: rgba(188, 24, 35, 0.12);
+  --brand-ring: rgba(188, 24, 35, 0.22);
+  --brand-shadow: rgba(188, 24, 35, 0.24);
+
+  /* --- structural black (matches SPA #171717 sidebar / surface-gray-10) --- */
+  --black: #171717;
+
+  /* --- frappe-ui ink-gray ramp (pure neutral, oklch — from the CRM's own CSS).
+         hex fallbacks in comments for reference. --- */
+  --ink-gray-9: oklch(0.168 0 0);     /* ~#171717  primary text / headings */
+  --ink-gray-8: oklch(0.205 0 0);     /* ~#212121  strong text */
+  --ink-gray-7: oklch(0.341 0 0);     /* ~#404040  secondary text */
+  --ink-gray-6: oklch(0.439 0 0);     /* ~#575757  muted labels */
+  --ink-gray-5: oklch(0.580 0 0);     /* ~#808080  faint / placeholder */
+
+  /* aliases used by page CSS */
+  --ink: var(--ink-gray-9);
+  --ink-strong: var(--ink-gray-9);
+  --ink-soft: var(--ink-gray-7);
+  --muted: var(--ink-gray-6);
+  --faint: var(--ink-gray-5);
+
+  /* --- lines / surfaces (frappe-ui outline/surface-gray) --- */
+  --outline-gray-2: oklch(0.913 0 0); /* ~#e8e8e8  hairline borders */
+  --line: var(--outline-gray-2);
+  --surface-2: oklch(0.964 0 0);      /* ~#f4f4f4  subtle page bg */
+
+  /* --- semantic status (kept distinct from brand red) --- */
+  --error: #d92d20;
+  --error-bg: rgba(217, 45, 32, 0.08);
+  --success: #067647;
+  --success-bg: rgba(6, 118, 71, 0.08);
+
+  /* --- glass --- */
+  --glass-bg: rgba(255, 255, 255, 0.62);
+  --glass-strong: rgba(255, 255, 255, 0.86);
+  --glass-border: 1px solid rgba(255, 255, 255, 0.6);
+  --glass-shadow: 0 20px 60px rgba(23, 23, 23, 0.12);
+  --glass-inset: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+
+  /* --- shape / motion --- */
+  --radius: 18px;
+  --radius-sm: 11px;
+  --focus: 0 0 0 3px var(--brand-ring);
+  --font: 'InterVar', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* --- base --- */
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: var(--font);
+  color: var(--ink-gray-9);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+*, *::before, *::after { box-sizing: border-box; }
+
+/* --- shared soft red scene (light pages) --- */
+.t-scene {
+  background:
+    radial-gradient(60% 50% at 12% 6%, var(--brand-tint-10) 0%, transparent 58%),
+    linear-gradient(180deg, #ffffff 0%, #f4f5f7 100%);
+  background-attachment: fixed;
+}
+
+/* --- typography primitives (context7 frappe-ui: sentence case; headings tight LH,
+       weight <=600 semibold max; prose loose LH) --- */
+.t-h1 { font-weight: 600; line-height: 1.15; letter-spacing: -0.02em; color: var(--ink-gray-9); }
+.t-h2 { font-weight: 600; line-height: 1.2;  letter-spacing: -0.01em; color: var(--ink-gray-9); }
+.t-label { font-weight: 600; font-size: 12.5px; color: var(--ink-gray-7); }
+.t-prose { line-height: 1.6; color: var(--ink-gray-6); }
+
+/* --- brand primary button --- */
+.t-btn-primary {
+  display: inline-flex; align-items: center; justify-content: center;
+  border: none; border-radius: var(--radius-sm);
+  background: var(--brand); color: #fff; font-weight: 600; font-family: var(--font);
+  cursor: pointer; box-shadow: 0 8px 22px var(--brand-shadow);
+  transition: background 0.12s, transform 0.06s, box-shadow 0.12s;
+}
+.t-btn-primary:hover { background: var(--brand-dark); transform: translateY(-1px); }
+.t-btn-primary:disabled { opacity: 0.55; cursor: not-allowed; box-shadow: none; }
+
+/* --- glass card --- */
+.t-card {
+  background: var(--glass-strong);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  backdrop-filter: blur(20px) saturate(160%);
+  border: var(--glass-border);
+  border-radius: var(--radius);
+  box-shadow: var(--glass-shadow), var(--glass-inset);
+}
+
+/* --- focus affordance for every interactive element --- */
+:where(a, button, [role="button"], input, select, textarea):focus-visible {
+  outline: none;
+  box-shadow: var(--focus);
+  border-radius: var(--radius-sm);
+}
+
+/* --- fallbacks --- */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .t-card { background: #ffffff; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

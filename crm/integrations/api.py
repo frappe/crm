@@ -25,6 +25,20 @@ def _get_recording_credentials(telephony_medium: str) -> tuple | None:
 		s = frappe.get_single("CRM Exotel Settings")
 		token = s.get_password("api_token", raise_exception=False)
 		return (s.api_key, token) if s.api_key and token else None
+	elif telephony_medium == "Avaya":
+		# Avaya recording auth (E4-S3), mode-aware: On-Prem recordings come from the AES
+		# recorder (recorder_auth); Cloud (AXP) recordings authenticate via the AXP API
+		# client credentials (client_secret). Returns None cleanly when unconfigured so
+		# the proxy attempts the fetch without auth rather than raising. The exact
+		# recorder scheme is confirmed during E5/E6 — until then "not configured" is not
+		# an error, just "not connected".
+		s = frappe.get_single("CRM Avaya Settings")
+		if s.mode == "On-Prem (Aura/AES)":
+			auth = s.get_password("recorder_auth", raise_exception=False)
+			return (s.cti_user, auth) if auth and s.cti_user else None
+		# Cloud (AXP)
+		secret = s.get_password("client_secret", raise_exception=False)
+		return (s.client_id or s.account_id, secret) if secret and (s.client_id or s.account_id) else None
 	# manual or unrecognized medium: no provider auth to apply
 	return None
 
@@ -35,6 +49,7 @@ def is_call_integration_enabled():
 		"integrations": {
 			"twilio": bool(frappe.db.get_single_value("CRM Twilio Settings", "enabled")),
 			"exotel": bool(frappe.db.get_single_value("CRM Exotel Settings", "enabled")),
+			"avaya": bool(frappe.db.get_single_value("CRM Avaya Settings", "enabled")),
 		},
 		"default_calling_medium": get_user_default_calling_medium(),
 	}

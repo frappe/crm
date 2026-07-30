@@ -18,11 +18,11 @@ export default defineConfig(async ({ mode }) => {
         },
         manifest: {
           display: 'standalone',
-          name: 'Frappe CRM',
-          short_name: 'Frappe CRM',
+          name: 'Tiberbu CRM',
+          short_name: 'Tiberbu CRM',
           start_url: '/crm',
           description:
-            'Modern & 100% Open-source CRM tool to supercharge your sales operations',
+            'Tiberbu CRM — manage the Careverse HMIS customer journey, sales, and support',
           icons: [
             {
               src: '/assets/crm/manifest/manifest-icon-192.maskable.png',
@@ -112,10 +112,22 @@ export default defineConfig(async ({ mode }) => {
       buildConfig: {
         indexHtmlPath: '../crm/www/crm.html',
         emptyOutDir: true,
-        sourcemap: true,
+        // PERF-S1: do NOT ship source maps to production. Default was true, which
+        // emitted ~98 .map files (up to 9 MB each) served alongside the app — dead
+        // weight for end users. (Vite's own default is false; context7-verified.)
+        sourcemap: false,
       },
     }),
   )
+
+  // PERF-S1: deliberately NO manualChunks. Rollup's automatic code-splitting already
+  // keeps route-heavy deps (leaflet, dashboard, editor) in their own LAZY chunks loaded
+  // on demand. A catch-all `vendor` manualChunk is a known footgun here: it hoists those
+  // lazy-only deps into a single EAGER vendor chunk, which *increases* first-load bytes.
+  // The big win — dropping 98 source-map files (~22 MB) — comes from `sourcemap: false`
+  // above. Chunk-size warning is cosmetic; raise the threshold to quiet it.
+  config.build = config.build || {}
+  config.build.chunkSizeWarningLimit = 3000
 
   return config
 })

@@ -17,8 +17,9 @@ class CRMTelephonyAgent(Document):
 
 		from crm.fcrm.doctype.crm_telephony_phone.crm_telephony_phone import CRMTelephonyPhone
 
+		avaya_number: DF.Data | None
 		call_receiving_device: DF.Literal["Computer", "Phone"]
-		default_medium: DF.Literal["", "Twilio", "Exotel"]
+		default_medium: DF.Literal["", "Twilio", "Exotel", "Avaya"]
 		exotel_number: DF.Data | None
 		mobile_no: DF.Data | None
 		phone_nos: DF.Table[CRMTelephonyPhone]

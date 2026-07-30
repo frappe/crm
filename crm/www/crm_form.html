@@ -5,37 +5,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{{ form_title }}</title>
     <meta name="robots" content="noindex" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
+    <link rel="stylesheet" href="/assets/crm/css/tiberbu-brand.css" />
     <style>
       :root {
-        /* espresso / frappe-ui light-theme tokens (pure-neutral grays) */
-        --ink-strong: oklch(0.168 0 0);       /* ink-gray-9 — headings */
-        --ink: oklch(0.205 0 0);              /* ink-gray-8 — field text */
-        --muted: oklch(0.586 0 0);            /* ink-gray-5 — labels */
-        --faint: oklch(0.683 0 0);            /* ink-gray-4 — placeholders */
-        --border: oklch(0.913 0 0);           /* outline-gray-2 */
-        --border-focus: oklch(0.83 0 0);      /* outline-gray-3 */
-        --bg: oklch(0.964 0 0);               /* surface-gray-2 — page */
-        --card: oklch(1 0 0);                 /* white surface */
-        --field: oklch(0.964 0 0);            /* surface-gray-2 — inputs */
-        --accent: oklch(0.205 0 0);           /* surface-gray-10 — button */
-        --accent-hover: oklch(0.341 0 0);     /* surface-gray-9 */
-        --danger: oklch(0.507 0.165 25.286);  /* ink-red-5 */
-        --danger-bg: oklch(0.978 0.011 17.34); /* surface-red-1 */
-        --success-bg: oklch(0.965 0.03 155.987); /* surface-green-2 */
-        --success-ink: oklch(0.506 0.118 155.358); /* ink-green-5 */
-        --ring: oklch(0.586 0 0 / 0.15);
+        /* Tiberbu brand + frappe-ui ink-gray ramp (consistency with login/landing) */
+        --brand: #bc1823;
+        --brand-dark: #8f111b;
+        --ink-strong: #1f272e;   /* ink-gray-9 — headings */
+        --ink: #2f353b;          /* ink-gray-8 — field text */
+        --muted: #667075;        /* ink-gray-6 — labels */
+        --faint: #8b9096;        /* ink-gray-5 — placeholders */
+        --border: rgba(23,23,23,0.12);
+        --border-focus: var(--brand);
+        --card: rgba(255,255,255,0.82);   /* glass */
+        --field: rgba(255,255,255,0.7);
+        --accent: var(--brand);           /* button = brand red */
+        --accent-hover: var(--brand-dark);
+        --danger: #d92d20;                /* semantic error red, distinct from brand */
+        --danger-bg: rgba(217,45,32,0.08);
+        --success-bg: rgba(188,24,35,0.08);   /* on-brand red-tint confirmation */
+        --success-ink: var(--brand);
+        --ring: rgba(188,24,35,0.22);
+        --glass-border: 1px solid rgba(255,255,255,0.6);
+        --glass-shadow: 0 10px 40px rgba(23,23,23,0.08);
+        --glass-inset: inset 0 1px 0 rgba(255,255,255,0.7);
       }
       * { box-sizing: border-box; }
       html, body { margin: 0; padding: 0; }
       body {
-        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        background: var(--bg);
+        font-family: 'InterVar','Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
         color: var(--ink);
         min-height: 100vh;
         display: flex;
@@ -44,22 +42,34 @@
         justify-content: flex-start;
         padding: 48px 16px;
         -webkit-font-smoothing: antialiased;
+        /* one restrained scene device (matches login/landing): soft red wash on white */
+        background:
+          radial-gradient(60% 45% at 12% 4%, rgba(188,24,35,0.08) 0%, transparent 58%),
+          linear-gradient(180deg, #ffffff 0%, #f4f5f7 100%);
+        background-attachment: fixed;
       }
+      :where(a, button, input, textarea, select):focus-visible { outline: none; box-shadow: 0 0 0 3px var(--ring); }
       .card {
         width: 100%;
         max-width: 560px;
         background: var(--card);
-        border: 1px solid var(--border);
-        border-radius: 14px;
-        padding: 28px 28px 26px;
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 12px 32px rgba(0, 0, 0, 0.05);
+        -webkit-backdrop-filter: blur(20px) saturate(160%);
+        backdrop-filter: blur(20px) saturate(160%);
+        border: var(--glass-border);
+        border-radius: 18px;
+        padding: 32px 30px 28px;
+        box-shadow: var(--glass-shadow), var(--glass-inset);
       }
       /* embed mode (?embed=1): drop the page chrome so the form sits flush inside
-         the host page — no gray backdrop, no card border/shadow, full width */
+         the host page — no backdrop, no card border/shadow/blur, full width */
       body.embed { background: transparent; padding: 0; min-height: 0; }
-      body.embed .card { max-width: none; border: none; border-radius: 0; box-shadow: none; padding: 0; }
+      body.embed .card { max-width: none; border: none; border-radius: 0; box-shadow: none; padding: 0; background: transparent; -webkit-backdrop-filter: none; backdrop-filter: none; }
       body.embed .draft-banner { max-width: none; }
-      .title { font-size: 20px; font-weight: 600; color: var(--ink-strong); margin: 0 0 14px; letter-spacing: -0.01em; line-height: 1.3; }
+      @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+        .card { background: #ffffff; }
+      }
+      @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition-duration: .001ms !important; } }
+      .title { font-size: 22px; font-weight:600; color: var(--ink-strong); margin: 0 0 14px; letter-spacing: -0.02em; line-height: 1.25; }
       /* with no description, the title supplies the gap the subtitle normally would */
       .title.title-only { margin-bottom: 22px; }
       .subtitle { font-size: 14px; color: var(--muted); margin: 0 0 22px; line-height: 1.5; white-space: pre-wrap; }
@@ -80,9 +90,9 @@
         line-height: 1.4;
         color: var(--ink);
         background: var(--field);
-        border: 1px solid transparent;
-        border-radius: 8px;
-        padding: 6px 10px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 9px 12px;
         outline: none;
         transition: border-color 0.12s, box-shadow 0.12s, background 0.12s;
       }
@@ -100,8 +110,8 @@
       }
       input:focus, textarea:focus, select:focus {
         border-color: var(--border-focus);
-        box-shadow: 0 0 0 2px var(--ring);
-        background: var(--card);
+        box-shadow: 0 0 0 3px var(--ring);
+        background: #fff;
       }
       .has-error, .has-error:focus {
         border-color: var(--danger);
@@ -114,15 +124,15 @@
       button.submit, button.discard {
         font: inherit;
         font-size: 14px;
-        font-weight: 500;
+        font-weight: 600;
         border: none;
-        border-radius: 8px;
-        padding: 8px 18px;
+        border-radius: 11px;
+        padding: 11px 22px;
         cursor: pointer;
-        transition: background 0.12s, transform 0.02s;
+        transition: background 0.12s, transform 0.06s, box-shadow 0.12s;
       }
-      button.submit { color: oklch(1 0 0); background: var(--accent); }
-      button.submit:hover { background: var(--accent-hover); }
+      button.submit { color: #fff; background: var(--accent); box-shadow: 0 8px 22px rgba(188,24,35,0.24); }
+      button.submit:hover { background: var(--accent-hover); transform: translateY(-1px); }
       button.submit:active { transform: translateY(1px); }
       button.submit:disabled { opacity: 0.5; cursor: default; }
       button.discard { color: var(--ink); background: var(--field); }
@@ -146,6 +156,9 @@
       .success p { color: var(--muted); font-size: 14px; margin: 0; line-height: 1.5; }
       .redirect-note { margin-top: 12px !important; font-size: 13px; }
       .redirect-note a { color: var(--ink-strong); text-decoration: underline; margin-left: 4px; }
+      .back-home { margin-top: 18px !important; }
+      .back-home a { color: var(--brand); font-size: 13px; font-weight: 600; text-decoration: none; }
+      .back-home a:hover { color: var(--brand-dark); text-decoration: underline; }
       /* frappe-ui Alert — yellow, subtle: surface-amber-2 bg, amber triangle-alert
          icon, ink-gray-9 text, rounded-md, px-4 py-3.5, gap-3, text-base */
       .draft-banner {
@@ -233,6 +246,7 @@
         <h2 id="success-title">{{ success_message }}</h2>
         <p id="success-note">Your response has been recorded.</p>
         <p class="redirect-note" id="redirect-note" style="display: none"></p>
+        {% if not embed %}<p class="back-home"><a href="/">Back to home</a></p>{% endif %}
       </div>
     </div>
 

@@ -51,7 +51,7 @@
         <div
           class="mx-0.5 my-[5px] size-2.5 rounded-full cursor-pointer"
           :style="{
-            backgroundColor: _event.color || '#30A66D',
+            backgroundColor: _event.color || '#bc1823',
           }"
         />
         <div class="flex flex-col gap-[3px]">
@@ -270,7 +270,7 @@
             <div
               class="size-2.5 rounded-full cursor-pointer"
               :style="{
-                backgroundColor: _event.color || '#30A66D',
+                backgroundColor: _event.color || '#bc1823',
               }"
             />
           </div>

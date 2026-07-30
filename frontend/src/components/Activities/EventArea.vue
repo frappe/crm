@@ -40,7 +40,7 @@
         >
           <div
             class="flex w-[2px] rounded-lg"
-            :style="{ backgroundColor: event.color || '#30A66D' }"
+            :style="{ backgroundColor: event.color || '#bc1823' }"
           />
           <div class="flex-1 flex flex-col gap-1 text-base">
             <div

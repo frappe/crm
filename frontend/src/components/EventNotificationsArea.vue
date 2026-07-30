@@ -47,7 +47,7 @@
                     <div class="flex justify-center items-center size-4">
                       <div
                         class="size-[6px] rounded shrink-0"
-                        :style="{ backgroundColor: e.color || '#30A66D' }"
+                        :style="{ backgroundColor: e.color || '#bc1823' }"
                       />
                     </div>
                     <div class="font-medium text-ink-gray-7">{{ e.title }}</div>

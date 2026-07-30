@@ -120,19 +120,20 @@ function onStarClick(event, i) {
 </script>
 
 <style scoped>
-/* Light mode */
+/* Light mode — Tiberbu red ramp (E1-S4); empty stays neutral gray */
 .rating-stars {
-  --rating-filled: #eab308; /* yellow-500 */
-  --rating-preview: #fde68a; /* yellow-200 */
-  --rating-removing: #fcd34d; /* yellow-300 */
+  --rating-filled: #bc1823; /* Tiberbu primary red */
+  --rating-preview: #ee9499; /* red-300 tint — ghost / will-add  */
+  --rating-removing: #e15b62; /* red-400 — will-remove            */
   --rating-empty: #d1d5db; /* gray-300   */
 }
 
-/* Dark mode — [data-theme="dark"] is how frappe-ui activates dark mode */
+/* Dark mode — [data-theme="dark"] is how frappe-ui activates dark mode.
+   Brighter reds so they read on the near-black surface. */
 [data-theme='dark'] .rating-stars {
-  --rating-filled: #eab308; /* yellow-500 — same, readable on dark */
-  --rating-preview: #fde68a; /* yellow-200 — bright preview on dark  */
-  --rating-removing: #fcd34d; /* yellow-300                           */
+  --rating-filled: #e0545a; /* bright brand red, readable on dark */
+  --rating-preview: #f6c2c5; /* light pink — ghost / will-add       */
+  --rating-removing: #d23a41; /* mid red — will-remove              */
   --rating-empty: #4b5563; /* gray-600   — visible on dark bg      */
 }
 </style>

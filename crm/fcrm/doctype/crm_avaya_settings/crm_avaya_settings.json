@@ -1,0 +1,219 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-07-30 00:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "enabled",
+  "column_break_mode",
+  "mode",
+  "record_calls",
+  "section_break_common",
+  "webhook_verify_token",
+  "column_break_common",
+  "connector_endpoint",
+  "cloud_section",
+  "axp_base_url",
+  "axp_region",
+  "column_break_cloud",
+  "account_id",
+  "client_id",
+  "client_secret",
+  "onprem_section",
+  "aes_host",
+  "cm_id",
+  "cti_user",
+  "cti_password",
+  "column_break_onprem",
+  "dmcc_or_tsapi_link",
+  "recorder_base_url",
+  "recorder_auth"
+ ],
+ "fields": [
+  {
+   "default": "0",
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "label": "Enabled"
+  },
+  {
+   "fieldname": "column_break_mode",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "Cloud (AXP)",
+   "depends_on": "enabled",
+   "fieldname": "mode",
+   "fieldtype": "Select",
+   "label": "Mode",
+   "mandatory_depends_on": "enabled",
+   "options": "Cloud (AXP)\nOn-Prem (Aura/AES)"
+  },
+  {
+   "default": "0",
+   "depends_on": "enabled",
+   "fieldname": "record_calls",
+   "fieldtype": "Check",
+   "label": "Record Calls"
+  },
+  {
+   "depends_on": "enabled",
+   "fieldname": "section_break_common",
+   "fieldtype": "Section Break",
+   "label": "Common"
+  },
+  {
+   "depends_on": "enabled",
+   "description": "Shared secret validated on inbound Avaya webhooks (?key=...).",
+   "fieldname": "webhook_verify_token",
+   "fieldtype": "Password",
+   "label": "Webhook Verify Token",
+   "mandatory_depends_on": "enabled"
+  },
+  {
+   "fieldname": "column_break_common",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "enabled",
+   "description": "Optional server-side CTI connector endpoint (used by On-Prem bridge / custom middleware).",
+   "fieldname": "connector_endpoint",
+   "fieldtype": "Data",
+   "label": "Connector Endpoint"
+  },
+  {
+   "depends_on": "eval:doc.enabled && doc.mode=='Cloud (AXP)'",
+   "fieldname": "cloud_section",
+   "fieldtype": "Section Break",
+   "label": "Cloud (AXP)"
+  },
+  {
+   "depends_on": "eval:doc.enabled && doc.mode=='Cloud (AXP)'",
+   "fieldname": "axp_base_url",
+   "fieldtype": "Data",
+   "label": "AXP Base URL",
+   "mandatory_depends_on": "eval:doc.enabled && doc.mode=='Cloud (AXP)'"
+  },
+  {
+   "depends_on": "eval:doc.enabled && doc.mode=='Cloud (AXP)'",
+   "fieldname": "axp_region",
+   "fieldtype": "Data",
+   "label": "AXP Region"
+  },
+  {
+   "fieldname": "column_break_cloud",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:doc.enabled && doc.mode=='Cloud (AXP)'",
+   "fieldname": "account_id",
+   "fieldtype": "Data",
+   "label": "Account ID"
+  },
+  {
+   "depends_on": "eval:doc.enabled && doc.mode=='Cloud (AXP)'",
+   "fieldname": "client_id",
+   "fieldtype": "Data",
+   "label": "Client ID",
+   "mandatory_depends_on": "eval:doc.enabled && doc.mode=='Cloud (AXP)'"
+  },
+  {
+   "depends_on": "eval:doc.enabled && doc.mode=='Cloud (AXP)'",
+   "fieldname": "client_secret",
+   "fieldtype": "Password",
+   "label": "Client Secret",
+   "mandatory_depends_on": "eval:doc.enabled && doc.mode=='Cloud (AXP)'"
+  },
+  {
+   "depends_on": "eval:doc.enabled && doc.mode=='On-Prem (Aura/AES)'",
+   "fieldname": "onprem_section",
+   "fieldtype": "Section Break",
+   "label": "On-Prem (Aura/AES)"
+  },
+  {
+   "depends_on": "eval:doc.enabled && doc.mode=='On-Prem (Aura/AES)'",
+   "fieldname": "aes_host",
+   "fieldtype": "Data",
+   "label": "AES Host",
+   "mandatory_depends_on": "eval:doc.enabled && doc.mode=='On-Prem (Aura/AES)'"
+  },
+  {
+   "depends_on": "eval:doc.enabled && doc.mode=='On-Prem (Aura/AES)'",
+   "fieldname": "cm_id",
+   "fieldtype": "Data",
+   "label": "Communication Manager ID"
+  },
+  {
+   "depends_on": "eval:doc.enabled && doc.mode=='On-Prem (Aura/AES)'",
+   "fieldname": "cti_user",
+   "fieldtype": "Data",
+   "label": "CTI User",
+   "mandatory_depends_on": "eval:doc.enabled && doc.mode=='On-Prem (Aura/AES)'"
+  },
+  {
+   "depends_on": "eval:doc.enabled && doc.mode=='On-Prem (Aura/AES)'",
+   "fieldname": "cti_password",
+   "fieldtype": "Password",
+   "label": "CTI Password",
+   "mandatory_depends_on": "eval:doc.enabled && doc.mode=='On-Prem (Aura/AES)'"
+  },
+  {
+   "fieldname": "column_break_onprem",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:doc.enabled && doc.mode=='On-Prem (Aura/AES)'",
+   "description": "DMCC (JTAPI/DMCC) or TSAPI link name configured on AES.",
+   "fieldname": "dmcc_or_tsapi_link",
+   "fieldtype": "Data",
+   "label": "DMCC / TSAPI Link"
+  },
+  {
+   "depends_on": "eval:doc.enabled && doc.mode=='On-Prem (Aura/AES)'",
+   "fieldname": "recorder_base_url",
+   "fieldtype": "Data",
+   "label": "Recorder Base URL"
+  },
+  {
+   "depends_on": "eval:doc.enabled && doc.mode=='On-Prem (Aura/AES)'",
+   "fieldname": "recorder_auth",
+   "fieldtype": "Password",
+   "label": "Recorder Auth"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2026-07-30 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "FCRM",
+ "name": "CRM Avaya Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "Sales Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}
