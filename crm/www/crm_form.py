@@ -9,6 +9,12 @@ from crm.api.form import ALLOWED_DOCTYPES
 
 no_cache = 1
 
+# Upper bound on how many options a Link field renders into the page. Not a
+# permission gate (the form author chooses which Link fields to expose) — just a
+# page-weight guard so a Link to a very large table can't bloat the HTML. Every
+# real CRM link target (Status, Industry, Source, …) is far below this.
+MAX_LINK_OPTIONS = 500
+
 # bare host, optional scheme/port, optional leading "*." wildcard — rejects any
 # token containing CSP metacharacters like ";" so admin-entered domains can't
 # inject extra directives into the Content-Security-Policy header
@@ -63,7 +69,34 @@ def get_context(context):
 		for f in doc.web_form_fields
 	]
 	context.layout = build_layout(context.fields)
+	# Link fields render as a server-populated dropdown of existing records. Resolve
+	# their options here (keyed by fieldname) so the template stays presentation-only
+	# and the JS `fields` payload isn't bloated with option lists.
+	context.link_options = {
+		f["fieldname"]: _link_field_options(f["options"])
+		for f in context.fields
+		if f["fieldtype"] == "Link" and f["options"]
+	}
 	return context
+
+
+def _link_field_options(doctype: str) -> list[dict]:
+	"""Existing records of `doctype` as {value, label} dropdown options — value is the
+	stored name, label is the record's title (falling back to name). Read with
+	`get_all` so options show to guests regardless of the linked doctype's own
+	permissions (exposing them is the form author's deliberate choice)."""
+	if not doctype or not frappe.db.exists("DocType", doctype):
+		return []
+	meta = frappe.get_meta(doctype)
+	title_field = meta.title_field or "name"
+	fields = ["name"] if title_field == "name" else ["name", title_field]
+	rows = frappe.get_all(
+		doctype,
+		fields=fields,
+		order_by=f"{title_field} asc",
+		limit=MAX_LINK_OPTIONS,
+	)
+	return [{"value": r["name"], "label": r.get(title_field) or r["name"]} for r in rows]
 
 
 def set_embedding_headers(doc):

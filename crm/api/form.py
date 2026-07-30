@@ -32,9 +32,11 @@ def ensure_form_source() -> str:
 
 
 # Fieldtypes a form can render/collect — standard + custom fields of these types
-# show up in the picker. Excludes types that need external data or special widgets
-# (Link/Dynamic Link, Table, Attach, etc.), which can't be safely collected on a
-# public form.
+# show up in the picker. A `Link` renders as a server-populated dropdown of existing
+# records (pick-only, no create — see crm_form.py/_link_field_options), so it's safe
+# on a public form; the framework's own link validation rejects any tampered value on
+# insert. Still excludes types that need a live widget or file upload (Dynamic Link,
+# Table, Attach, etc.), which can't be collected as static HTML.
 SUPPORTED_FIELDTYPES = (
 	"Data",
 	"Small Text",
@@ -44,6 +46,7 @@ SUPPORTED_FIELDTYPES = (
 	"HTML Editor",
 	"Markdown Editor",
 	"Select",
+	"Link",
 	"Int",
 	"Float",
 	"Currency",
