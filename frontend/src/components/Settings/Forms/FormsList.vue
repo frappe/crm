@@ -69,9 +69,9 @@
             <div class="flex w-3/12 items-center justify-between">
               <Badge
                 :theme="form.published ? 'green' : 'gray'"
-                :variant="form.published ? 'subtle' : 'outline'"
+                variant="outline"
                 size="md"
-                :label="form.published ? __('Published') : __('Unpublished')"
+                :label="form.published ? __('Published') : __('Draft')"
               />
               <Dropdown placement="right" :options="rowOptions(form)">
                 <Button
