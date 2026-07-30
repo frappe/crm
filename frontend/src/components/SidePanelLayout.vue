@@ -132,8 +132,7 @@
                           variant="ghost"
                           :modelValue="doc[field.fieldname]"
                           :placeholder="field.placeholder"
-                          :debounce="500"
-                          @update:modelValue="(v) => fieldChange(v, field)"
+                          @change.stop="fieldChange($event.target.value, field)"
                         />
                         <Select
                           v-else-if="field.fieldtype === 'Select'"
@@ -245,7 +244,6 @@
                             fieldChange(flt($event.target.value), field)
                           "
                         />
-                        <!-- Password has no debounce prop, so debounce the save -->
                         <Password
                           v-else-if="field.fieldtype === 'Password'"
                           class="form-control"
@@ -253,9 +251,7 @@
                           :modelValue="doc[field.fieldname]"
                           :placeholder="field.placeholder"
                           :disabled="Boolean(field.read_only)"
-                          @update:modelValue="
-                            (v) => debouncedFieldChange(v, field)
-                          "
+                          @change.stop="fieldChange($event.target.value, field)"
                         />
                         <FormattedInput
                           v-else-if="field.fieldtype === 'Int'"
@@ -373,8 +369,7 @@
                           variant="ghost"
                           :modelValue="doc[field.fieldname]"
                           :placeholder="field.placeholder"
-                          :debounce="500"
-                          @update:modelValue="(v) => fieldChange(v, field)"
+                          @change.stop="fieldChange($event.target.value, field)"
                         />
                       </div>
                       <div class="ml-1">
@@ -453,7 +448,6 @@ import {
   Checkbox,
   DatePicker,
   DateTimePicker,
-  debounce,
   Duration,
   Password,
   Rating,
@@ -677,16 +671,6 @@ function checkChange(value, df) {
   const next = value ? 1 : 0
   if (next === (doc.value[df.fieldname] ? 1 : 0)) return
   fieldChange(next, df)
-}
-
-// One timer per field: a shared debounce would let an edit to one field cancel
-// another field's pending save.
-const fieldDebounces = {}
-function debouncedFieldChange(value, df) {
-  if (!fieldDebounces[df.fieldname]) {
-    fieldDebounces[df.fieldname] = debounce(fieldChange, 500)
-  }
-  fieldDebounces[df.fieldname](value, df)
 }
 </script>
 
