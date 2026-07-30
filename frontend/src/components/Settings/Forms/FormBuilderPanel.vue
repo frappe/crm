@@ -154,14 +154,14 @@
                         <div
                           v-for="col in sec.columns"
                           :key="columnKey(col)"
-                          class="flex flex-1 flex-col gap-1.5 rounded border border-dashed border-outline-gray-2 bg-surface-elevation-2 p-2"
+                          class="flex min-w-0 flex-1 flex-col gap-1.5 rounded border border-dashed border-outline-gray-2 bg-surface-elevation-2 p-2"
                         >
                           <Draggable
                             :list="col.items"
                             group="wf-fields"
                             item-key="fieldname"
                             handle=".drag-handle"
-                            class="flex min-h-[34px] flex-1 flex-col gap-1.5"
+                            class="flex min-h-[34px] min-w-0 flex-1 flex-col gap-1.5"
                             ghost-class="opacity-40"
                             :force-fallback="true"
                             :fallback-on-body="false"
@@ -573,6 +573,13 @@
                         v-model="previewModel[f.fieldname]"
                         type="select"
                         :options="selectOptions(f)"
+                        :placeholder="f.placeholder || __('Select an option')"
+                      />
+                      <FormControl
+                        v-else-if="f.fieldtype === 'Link'"
+                        v-model="previewModel[f.fieldname]"
+                        type="select"
+                        :options="linkSelectOptions(f)"
                         :placeholder="f.placeholder || __('Select an option')"
                       />
                       <div
@@ -1062,6 +1069,14 @@ function optionList(f) {
 }
 function selectOptions(f) {
   const opts = optionList(f).map((o) => ({ label: o, value: o }))
+  return [{ label: __('Select an option'), value: '' }, ...opts]
+}
+// preview dropdown for a Link field — existing records of the target doctype
+// (f.options), fetched lazily into `linkOptions`. Mirrors the public form's
+// server-populated <select>.
+function linkSelectOptions(f) {
+  ensureLinkOptions(f.options)
+  const opts = (linkOptions[f.options] || []).map((o) => ({ label: o, value: o }))
   return [{ label: __('Select an option'), value: '' }, ...opts]
 }
 const TEXTAREA_TYPES = [
