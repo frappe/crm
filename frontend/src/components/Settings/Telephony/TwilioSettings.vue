@@ -68,7 +68,7 @@
                 {{ __('Twilio App Name') }}
               </div>
               <div class="text-p-sm text-ink-gray-5">
-                {{ __('Select a Twilio App for your CRM') }}
+                {{ __('Select a Twilio app for your CRM') }}
               </div>
             </div>
             <div class="flex items-center gap-2">

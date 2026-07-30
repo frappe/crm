@@ -149,7 +149,7 @@
                   conditions from this UI.
                 </span>
                 <Button
-                  :label="__('I understand, Add Conditions')"
+                  :label="__('I understand, add conditions')"
                   variant="subtle"
                   theme="gray"
                   @click="useNewUI = true"
@@ -370,7 +370,7 @@ const goBack = () => {
 
 const toggleEnabled = () => {
   if (slaData.value.default) {
-    toast.error(__('SLA set as default cannot be disabled'))
+    toast.error(__('An SLA set as default cannot be disabled'))
     return
   }
   slaData.value.enabled = !slaData.value.enabled
@@ -426,7 +426,7 @@ const createSla = () => {
     },
     {
       onSuccess(data) {
-        toast.success(__('SLA Policy Created'))
+        toast.success(__('SLA policy created'))
         updateStep('view', data, true)
         getSlaResource.submit({
           doctype: 'CRM Service Level Agreement',
@@ -436,7 +436,7 @@ const createSla = () => {
       onError(err) {
         const message = err?.messages?.[0]
         toast.error(
-          message || __('Some error occurred while creating SLA Policy'),
+          message || __('Some error occurred while creating SLA policy'),
         )
       },
     },
@@ -496,7 +496,7 @@ const updateSla = async () => {
     await getSlaResource.reload()
   }
 
-  toast.success(__('SLA Policy Updated'))
+  toast.success(__('SLA policy updated'))
   slaPolicyListResource.reload()
 }
 
