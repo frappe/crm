@@ -89,19 +89,6 @@
           <div v-else-if="column.key === 'mobile_no' && item">
             <PhoneIcon class="h-4 w-4" />
           </div>
-          <div v-else-if="column.key === '_liked_by'">
-            <Button
-              variant="ghost"
-              @click.stop.prevent="
-                () => emit('likeDoc', { name: row.name, liked: isLiked(item) })
-              "
-            >
-              <HeartIcon
-                class="h-4 w-4"
-                :class="isLiked(item) ? 'fill-red-500 text-red-500' : ''"
-              />
-            </Button>
-          </div>
         </template>
         <template #default="{ label }">
           <div
@@ -159,6 +146,19 @@
               :disabled="true"
               class="text-ink-gray-9"
             />
+          </div>
+          <div v-else-if="column.key === '_liked_by'">
+            <Button
+              variant="ghost"
+              @click.stop.prevent="
+                () => emit('likeDoc', { name: row.name, liked: isLiked(item) })
+              "
+            >
+              <HeartIcon
+                class="h-4 w-4"
+                :class="isLiked(item) ? 'fill-red-500 text-red-500' : ''"
+              />
+            </Button>
           </div>
           <RatingInput
             v-else-if="column.type === 'Rating'"
