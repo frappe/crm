@@ -55,6 +55,15 @@ export const incomingOutgoingFields = [
     ),
   },
   {
+    label: __('Append Emails To'),
+    name: 'append_to',
+    type: 'text',
+    description: __(
+      'DocType that inbound emails are linked to. Set to "CRM Lead" to thread replies on lead records.',
+    ),
+    condition: (state) => state.enable_incoming,
+  },
+  {
     label: __('Create Lead from Incoming Emails'),
     name: 'create_lead_from_incoming_email',
     type: 'checkbox',
