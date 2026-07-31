@@ -46,11 +46,7 @@
             v-model="telephonyAgent.doc.default_medium"
             type="select"
             class="w-44 p-1"
-            :options="[
-              { label: __(''), value: '' },
-              { label: __('Twilio'), value: 'Twilio' },
-              { label: __('Exotel'), value: 'Exotel' },
-            ]"
+            :options="defaultMediumOptions"
             :placeholder="__('Select Medium')"
           />
           <Button
@@ -138,6 +134,32 @@
       </div>
 
       <div
+        v-if="isEnabled('avaya')"
+        class="h-px border-t mx-2 border-outline-elevation-2"
+      />
+      <div
+        v-if="isEnabled('avaya')"
+        class="flex items-center justify-between gap-8 py-3 pl-2 pr-1"
+      >
+        <div class="flex flex-col">
+          <div class="text-p-base-medium text-ink-gray-7 truncate">
+            {{ __('Avaya Extension / Number') }}
+          </div>
+          <div class="text-p-sm text-ink-gray-5">
+            {{ __('Your Avaya extension or DID number used for calls.') }}
+          </div>
+        </div>
+        <div>
+          <FormControl
+            v-model="telephonyAgent.doc.avaya_number"
+            class="flex-1 truncate w-44 p-1"
+            :placeholder="__('Enter Avaya Extension')"
+            placement="bottom-end"
+          />
+        </div>
+      </div>
+
+      <div
         v-if="isManager()"
         class="flex items-center justify-between text-lg-semibold text-ink-gray-8 mt-4 py-3 px-2"
       >
@@ -192,6 +214,33 @@
           @click="emit('updateStep', 'exotel-settings')"
         />
       </div>
+
+      <div
+        v-if="isManager()"
+        class="h-px border-t mx-2 border-outline-elevation-2"
+      />
+
+      <div
+        v-if="isManager()"
+        class="flex items-center justify-between py-3 px-2"
+      >
+        <div class="flex flex-col gap-1">
+          <span class="text-base-medium text-ink-gray-8">
+            {{ __('Avaya') }}
+          </span>
+          <span class="text-p-sm text-ink-gray-6">
+            {{
+              __('Configure your Avaya Telephony Integration Settings here')
+            }}
+          </span>
+        </div>
+        <Button
+          :label="
+            isEnabled('avaya') ? __('Update Configuration') : __('Configure')
+          "
+          @click="emit('updateStep', 'avaya-settings')"
+        />
+      </div>
     </div>
     <ErrorMessage
       :message="isNewDoc ? insertResource.error : telephonyAgent.save?.error"
@@ -212,6 +261,13 @@ import { usersStore } from '@/stores/users'
 import { ref, computed } from 'vue'
 
 const { isEnabled } = useTelephony()
+
+const defaultMediumOptions = computed(() => [
+  { label: __(''), value: '' },
+  { label: __('Twilio'), value: 'Twilio', disabled: !isEnabled('twilio') },
+  { label: __('Exotel'), value: 'Exotel', disabled: !isEnabled('exotel') },
+  { label: __('Avaya'), value: 'Avaya', disabled: !isEnabled('avaya') },
+])
 
 const emit = defineEmits(['updateStep'])
 
