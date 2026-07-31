@@ -120,6 +120,7 @@ const state = reactive({
   enable_outgoing: false,
   default_incoming: false,
   default_outgoing: false,
+  append_to: '',
   create_lead_from_incoming_email: false,
 })
 const { capture } = useTelemetry()

@@ -29,16 +29,22 @@ def create_email_account(data: dict):
 				**service_config,
 			}
 		)
+		append_to = data.get("append_to") or "CRM Lead"
+		create_lead = bool(data.get("create_lead_from_incoming_email"))
+
 		if service == "Frappe Mail":
 			email_doc.api_key = data.get("api_key")
 			email_doc.api_secret = data.get("api_secret")
 			email_doc.frappe_mail_site = data.get("frappe_mail_site")
-			email_doc.append_to = "CRM Lead"
+			email_doc.append_to = append_to
 		else:
-			email_doc.append("imap_folder", {"append_to": "CRM Lead", "folder_name": "INBOX"})
+			email_doc.append("imap_folder", {"append_to": append_to, "folder_name": "INBOX"})
+			email_doc.append_to = append_to
 			email_doc.password = data.get("password")
 			# validate whether the credentials are correct
 			email_doc.get_incoming_server()
+
+		email_doc.create_lead_from_incoming_email = create_lead
 
 		# if correct credentials, save the email account
 		email_doc.save()
