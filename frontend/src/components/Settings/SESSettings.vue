@@ -84,30 +84,8 @@
             {{ __('Sender Identity') }}
           </div>
           <div class="flex flex-col gap-3">
-            <div class="flex items-start gap-4">
-              <label class="text-p-sm text-ink-gray-7 w-44 shrink-0 pt-0.5">
-                {{ __('Sender Mode') }}
-              </label>
-              <div class="flex-1 flex flex-col gap-1">
-                <FormControl
-                  v-model="form.sender_mode"
-                  type="select"
-                  :options="senderModeOptions"
-                  class="w-48"
-                  @update:modelValue="markDirty"
-                />
-                <p class="text-p-xs text-ink-gray-5">
-                  <template v-if="form.sender_mode === 'user_first'">
-                    {{ __('From: logged-in user when on SES-verified domain. Requires domain identity verification.') }}
-                  </template>
-                  <template v-else>
-                    {{ __('From: always uses Default Sender Email. Safe for individual address verification.') }}
-                  </template>
-                </p>
-              </div>
-            </div>
             <div class="flex items-center gap-4">
-              <label class="text-p-sm text-ink-gray-7 w-44 shrink-0">{{ __('Default Sender Email') }}</label>
+              <label class="text-p-sm text-ink-gray-7 w-44 shrink-0">{{ __('Sender Email') }}</label>
               <FormControl
                 v-model="form.default_sender_email"
                 type="text"
@@ -117,7 +95,7 @@
               />
             </div>
             <div class="flex items-center gap-4">
-              <label class="text-p-sm text-ink-gray-7 w-44 shrink-0">{{ __('Default Sender Name') }}</label>
+              <label class="text-p-sm text-ink-gray-7 w-44 shrink-0">{{ __('Sender Name') }}</label>
               <FormControl
                 v-model="form.default_sender_name"
                 type="text"
@@ -319,7 +297,6 @@ const form = reactive({
   aws_region: '',
   default_sender_email: '',
   default_sender_name: '',
-  sender_mode: 'user_first',
   configuration_set_name: '',
   retry_mode: 'standard',
   total_max_attempts: 8,
@@ -335,11 +312,6 @@ const form = reactive({
   append_to: 'CRM Lead',
   create_lead_from_incoming_email: false,
 })
-
-const senderModeOptions = [
-  { label: __('User first (recommended)'), value: 'user_first' },
-  { label: __('Static'), value: 'static' },
-]
 
 const retryModeOptions = [
   { label: __('Standard'), value: 'standard' },

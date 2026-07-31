@@ -8,7 +8,6 @@
   "enabled",
   "aws_region",
   "column_break_outbound",
-  "sender_mode",
   "sender_section",
   "default_sender_email",
   "column_break_sender",
@@ -57,15 +56,6 @@
    "fieldtype": "Column Break"
   },
   {
-   "default": "user_first",
-   "depends_on": "eval:doc.enabled",
-   "fieldname": "sender_mode",
-   "fieldtype": "Select",
-   "label": "Sender Mode",
-   "options": "user_first\nstatic",
-   "description": "user_first: From = logged-in user when on SES-verified domain. static: always use Default Sender Email."
-  },
-  {
    "depends_on": "eval:doc.enabled",
    "fieldname": "sender_section",
    "fieldtype": "Section Break",
@@ -75,8 +65,8 @@
    "depends_on": "eval:doc.enabled",
    "fieldname": "default_sender_email",
    "fieldtype": "Data",
-   "label": "Default Sender Email",
-   "description": "SES-verified address used when sender_mode is static or as fallback."
+   "label": "Sender Email",
+   "description": "SES-verified address used as the From address for all outbound CRM email."
   },
   {
    "fieldname": "column_break_sender",

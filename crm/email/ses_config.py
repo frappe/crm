@@ -48,16 +48,12 @@ def prime_ses_config() -> None:
 	if total_max_attempts < 1:
 		total_max_attempts = 8
 
-	sender_mode = cstr(doc.get("sender_mode") or "user_first").strip().lower()
-	if sender_mode not in {"user_first", "static"}:
-		sender_mode = "user_first"
-
 	config = AwsSesRuntimeConfig(
 		enabled=enabled,
 		aws_region=cstr(doc.get("aws_region")).strip(),
 		default_sender_email=cstr(doc.get("default_sender_email")).strip(),
 		default_sender_name=cstr(doc.get("default_sender_name")).strip(),
-		sender_mode=sender_mode,
+		sender_mode="static",
 		configuration_set_name=cstr(doc.get("configuration_set_name")).strip(),
 		endpoint_url="",
 		profile_name="",
