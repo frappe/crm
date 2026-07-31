@@ -7,7 +7,7 @@
           {{ __('Brand Settings') }}
         </h2>
         <p class="text-p-base text-ink-gray-6">
-          {{ __('Configure your Brand Name, Logo, and Favicon') }}
+          {{ __('Configure your brand name, logo and favicon') }}
         </p>
       </div>
       <div class="flex item-center space-x-2 w-3/12 justify-end">

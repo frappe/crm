@@ -195,7 +195,7 @@ async function createNewLead() {
           lead.doc.mobile_no &&
           isNaN(lead.doc.mobile_no.replace(/[-+() ]/g, ''))
         ) {
-          error.value = __('Mobile No. should be a number')
+          error.value = __('Mobile number should be a number')
           return error.value
         }
         if (lead.doc.email && !lead.doc.email.includes('@')) {
