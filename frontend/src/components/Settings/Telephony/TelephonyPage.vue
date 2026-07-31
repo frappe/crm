@@ -11,11 +11,16 @@
     v-else-if="step === 'exotel-settings'"
     @updateStep="updateStep"
   />
+  <AvayaSettings
+    v-else-if="step === 'avaya-settings'"
+    @updateStep="updateStep"
+  />
 </template>
 <script setup>
 import TelephonySettings from './TelephonySettings.vue'
 import ExotelSettings from './ExotelSettings.vue'
 import TwilioSettings from './TwilioSettings.vue'
+import AvayaSettings from './AvayaSettings.vue'
 import { ref } from 'vue'
 
 const step = ref('telephony-settings')

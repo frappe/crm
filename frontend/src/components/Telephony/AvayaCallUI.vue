@@ -331,10 +331,15 @@ function callSid() {
 }
 
 function createUpdateNote() {
+  const sid = callSid()
+  if (!sid) {
+    toast.error(__('Cannot save note: call log not yet created'))
+    return
+  }
   createResource({
     url: 'crm.integrations.api.add_note_to_call_log',
     params: {
-      call_sid: callSid(),
+      call_sid: sid,
       note: note.value,
     },
     auto: true,
@@ -343,6 +348,9 @@ function createUpdateNote() {
       nextTick(() => {
         dirty.value = false
       })
+    },
+    onError(err) {
+      toast.error(err?.messages?.[0] || __('Failed to save note'))
     },
   })
 }
@@ -370,10 +378,15 @@ function showTaskWindow() {
 }
 
 function createUpdateTask() {
+  const sid = callSid()
+  if (!sid) {
+    toast.error(__('Cannot save task: call log not yet created'))
+    return
+  }
   createResource({
     url: 'crm.integrations.api.add_task_to_call_log',
     params: {
-      call_sid: callSid(),
+      call_sid: sid,
       task: task.value,
     },
     auto: true,
@@ -382,6 +395,9 @@ function createUpdateTask() {
       nextTick(() => {
         dirty.value = false
       })
+    },
+    onError(err) {
+      toast.error(err?.messages?.[0] || __('Failed to save task'))
     },
   })
 }
@@ -432,7 +448,7 @@ function setup() {
 
     if (!showCallPopup.value && !showSmallCallPopup.value) {
       const agent = data.AgentEmail || data.agent
-      if (agent && agent == (user || user.value)) {
+      if (agent && agent === user.value) {
         // Incoming call
         phoneNumber.value = data.CallFrom || data.From || data.from
         showCallPopup.value = true
