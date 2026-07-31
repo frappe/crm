@@ -8,8 +8,6 @@
   "defaults_tab",
   "restore_defaults",
   "restore_demo_data",
-  "inbound_email_section",
-  "inbound_email_account",
   "enable_forecasting",
   "enable_sales_hierarchy",
   "auto_update_expected_deal_value",
@@ -221,18 +219,6 @@
    "fieldtype": "Check",
    "hidden": 1,
    "label": "Persona Captured"
-  },
-  {
-   "fieldname": "inbound_email_section",
-   "fieldtype": "Section Break",
-   "label": "Inbound Email"
-  },
-  {
-   "fieldname": "inbound_email_account",
-   "fieldtype": "Link",
-   "label": "Inbound Email Account",
-   "options": "Email Account",
-   "description": "Email Account used to poll for inbound replies to CRM leads and deals. Must have Enable Incoming turned on."
   }
  ],
  "index_web_pages_for_search": 1,

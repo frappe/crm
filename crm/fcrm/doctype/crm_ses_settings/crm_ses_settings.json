@@ -1,0 +1,240 @@
+{
+ "actions": [],
+ "creation": "2026-07-31 00:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "outbound_section",
+  "enabled",
+  "aws_region",
+  "column_break_outbound",
+  "sender_mode",
+  "sender_section",
+  "default_sender_email",
+  "column_break_sender",
+  "default_sender_name",
+  "transport_section",
+  "configuration_set_name",
+  "column_break_transport",
+  "retry_mode",
+  "total_max_attempts",
+  "credentials_section",
+  "use_explicit_credentials",
+  "access_key_id",
+  "column_break_creds",
+  "secret_access_key",
+  "session_token",
+  "inbound_section",
+  "inbound_email_account",
+  "enable_incoming",
+  "column_break_inbound",
+  "default_incoming",
+  "append_to",
+  "create_lead_from_incoming_email"
+ ],
+ "fields": [
+  {
+   "fieldname": "outbound_section",
+   "fieldtype": "Section Break",
+   "label": "Outbound"
+  },
+  {
+   "default": "0",
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "label": "Enable SES Override",
+   "description": "Route all CRM outbound email through AWS SES instead of SMTP."
+  },
+  {
+   "depends_on": "eval:doc.enabled",
+   "fieldname": "aws_region",
+   "fieldtype": "Data",
+   "label": "AWS Region",
+   "description": "e.g. eu-west-1"
+  },
+  {
+   "fieldname": "column_break_outbound",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "user_first",
+   "depends_on": "eval:doc.enabled",
+   "fieldname": "sender_mode",
+   "fieldtype": "Select",
+   "label": "Sender Mode",
+   "options": "user_first\nstatic",
+   "description": "user_first: From = logged-in user when on SES-verified domain. static: always use Default Sender Email."
+  },
+  {
+   "depends_on": "eval:doc.enabled",
+   "fieldname": "sender_section",
+   "fieldtype": "Section Break",
+   "label": "Sender Identity"
+  },
+  {
+   "depends_on": "eval:doc.enabled",
+   "fieldname": "default_sender_email",
+   "fieldtype": "Data",
+   "label": "Default Sender Email",
+   "description": "SES-verified address used when sender_mode is static or as fallback."
+  },
+  {
+   "fieldname": "column_break_sender",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:doc.enabled",
+   "fieldname": "default_sender_name",
+   "fieldtype": "Data",
+   "label": "Default Sender Name"
+  },
+  {
+   "depends_on": "eval:doc.enabled",
+   "fieldname": "transport_section",
+   "fieldtype": "Section Break",
+   "label": "Transport"
+  },
+  {
+   "fieldname": "configuration_set_name",
+   "fieldtype": "Data",
+   "label": "Configuration Set Name",
+   "description": "Optional SES configuration set for tracking/reputation."
+  },
+  {
+   "fieldname": "column_break_transport",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "standard",
+   "fieldname": "retry_mode",
+   "fieldtype": "Select",
+   "label": "Retry Mode",
+   "options": "standard\nadaptive\nlegacy"
+  },
+  {
+   "default": "8",
+   "fieldname": "total_max_attempts",
+   "fieldtype": "Int",
+   "label": "Max Retry Attempts"
+  },
+  {
+   "depends_on": "eval:doc.enabled",
+   "fieldname": "credentials_section",
+   "fieldtype": "Section Break",
+   "label": "AWS Credentials"
+  },
+  {
+   "default": "0",
+   "fieldname": "use_explicit_credentials",
+   "fieldtype": "Check",
+   "label": "Use Explicit Credentials",
+   "description": "Off = use EC2/ECS instance profile or environment (recommended). On = enter key/secret below."
+  },
+  {
+   "depends_on": "eval:doc.use_explicit_credentials",
+   "fieldname": "access_key_id",
+   "fieldtype": "Data",
+   "label": "Access Key ID"
+  },
+  {
+   "fieldname": "column_break_creds",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:doc.use_explicit_credentials",
+   "fieldname": "secret_access_key",
+   "fieldtype": "Password",
+   "label": "Secret Access Key"
+  },
+  {
+   "depends_on": "eval:doc.use_explicit_credentials",
+   "fieldname": "session_token",
+   "fieldtype": "Password",
+   "label": "Session Token",
+   "description": "Only needed for temporary STS credentials."
+  },
+  {
+   "depends_on": "eval:doc.enabled",
+   "fieldname": "inbound_section",
+   "fieldtype": "Section Break",
+   "label": "Inbound Email"
+  },
+  {
+   "fieldname": "inbound_email_account",
+   "fieldtype": "Link",
+   "label": "Email Account",
+   "options": "Email Account",
+   "description": "Email Account polled for inbound replies to leads and deals."
+  },
+  {
+   "default": "0",
+   "depends_on": "eval:doc.inbound_email_account",
+   "fieldname": "enable_incoming",
+   "fieldtype": "Check",
+   "label": "Enable Incoming",
+   "description": "Pull emails from this account on the Frappe scheduler."
+  },
+  {
+   "fieldname": "column_break_inbound",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "depends_on": "eval:doc.inbound_email_account",
+   "fieldname": "default_incoming",
+   "fieldtype": "Check",
+   "label": "Default Incoming",
+   "description": "All company replies land here. Only one account can be default."
+  },
+  {
+   "depends_on": "eval:doc.inbound_email_account",
+   "fieldname": "append_to",
+   "fieldtype": "Data",
+   "label": "Append Emails To",
+   "default": "CRM Lead",
+   "description": "DocType inbound emails are threaded onto (usually CRM Lead)."
+  },
+  {
+   "default": "0",
+   "depends_on": "eval:doc.inbound_email_account",
+   "fieldname": "create_lead_from_incoming_email",
+   "fieldtype": "Check",
+   "label": "Create Lead from Incoming Emails",
+   "description": "Auto-create a lead when an email arrives from an unknown contact."
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "issingle": 1,
+ "links": [],
+ "modified": "2026-07-31 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "FCRM",
+ "name": "CRM SES Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "Sales Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "ASC",
+ "states": [],
+ "track_changes": 1
+}

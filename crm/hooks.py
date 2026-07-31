@@ -306,6 +306,7 @@ ignore_links_on_delete = ["Failed Lead Sync Log"]
 before_request = [
 	"crm.api.route_guard.pin_home_page_to_landing",
 	"crm.api.route_guard.guard_desk_access",
+	"crm.email.ses_config.prime_ses_config",
 ]
 # after_request = ["crm.utils.after_request"]
 
