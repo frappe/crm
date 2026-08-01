@@ -49,6 +49,29 @@ Key customisations over upstream:
 
 ---
 
+## Mandatory: context7 before every framework decision
+
+Before writing any Vue, Frappe Python, frappe-ui, or Vite pattern — no exceptions:
+
+1. `mcp__context7__resolve-library-id` → map the library to a context7 ID
+2. `mcp__context7__query-docs` → fetch current docs
+
+Covers: Vue 3, frappe-ui, Vite, Frappe v15, TanStack Query, Tailwind, boto3.
+If context7 is unreachable → block and surface it. Never fall back to training memory.
+
+## Mandatory: BMAD discipline for all work
+
+All work follows the BMAD pipeline:
+1. **Plan** — epic + stories written in `_bmad-output/<epic>/planning-artifacts/` before any code
+2. **Stories** — reviewed against `STORY-RULES.md`, mapped to a BRD section
+3. **Implement** — worker dispatched from Studio to `implementation-artifacts/` workdir
+4. **Review** → **QA** → **Done** — `sprint-status.yaml` updated at each gate
+5. **Never set `done`** — agents stop at `review`. Salim promotes.
+
+No code written without a story. No story without a BRD. No BRD without a planning session.
+
+---
+
 ## Critical Implementation Rules
 
 ### Python / Frappe

@@ -108,7 +108,22 @@ Before any story enters Studio, draw the dependency graph. Stories with no incom
 
 ---
 
-## Rule 11 — Frappe-specific rules (mandatory)
+## Rule 11 — context7 validation is mandatory before any framework decision
+
+Before writing any Vue component, Frappe controller, hook registration, whitelist method,
+DocType field, or API call pattern:
+
+1. `mcp__context7__resolve-library-id` — map the library name to a context7 ID
+2. `mcp__context7__query-docs` — fetch current upstream documentation
+
+This applies to: Vue 3, frappe-ui, Vite, Frappe v15 Python, TanStack Query, Tailwind.
+It applies even to patterns you believe you know — training data lags real releases.
+
+If context7 is unreachable → surface it as a blocker. Do NOT fall back to memory.
+
+---
+
+## Rule 12 — Frappe-specific rules (mandatory)
 
 - `bench restart` after every Python change — no exceptions.
 - `bench migrate` after every DocType JSON change.
