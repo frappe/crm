@@ -1,0 +1,46 @@
+# Sprint Status
+# Project: crm (Tiberbu CRM fork)
+# Tracking: Claude Code Studio
+# Updated: 2026-08-01
+
+summary:
+  total: 9
+  ready-for-dev: 6
+  in-progress: 0
+  review: 0
+  done: 3
+  cancelled: 0
+
+development_status:
+
+  # Chain: epic-ses-inbound
+  epic-ses-inbound: in-progress
+
+  # E1 — AWS Provisioning (done — code shipped in careverse_fixes PR #4)
+  ses-inbound-e1-s1-1-s3-bucket-lifecycle: done           # [dev-story] S3 bucket + 48h lifecycle + SES bucket policy
+  ses-inbound-e1-s1-2-sns-topic-subscription: done        # [dev-story] SNS topic + HTTPS subscription
+  ses-inbound-e1-s1-3-ses-receipt-rule: done              # [dev-story] SES receipt rule set + rule
+
+  # E2 — CRM Webhook (done — code shipped in careverse_fixes PR #4)
+  ses-inbound-e2-s2-1-sns-verify-confirm: done            # [dev-story] SNS sig verify + subscription confirm
+  ses-inbound-e2-s2-2-mime-fetch-branch: done             # [dev-story] Inline vs S3 MIME fetch branch
+  ses-inbound-e2-s2-3-thread-matching: done               # [dev-story] Thread match → Communication
+  ses-inbound-e2-s2-4-attachment-storage: done            # [dev-story] Attachment → Frappe File
+
+  # E3 — Settings UI (done — code shipped in careverse_fixes PR #4)
+  ses-inbound-e3-s3-1-doctype-fields: done                # [dev-story] DocType + api/ses.py: 4 inbound AWS fields
+  ses-inbound-e3-s3-2-vue-provision-ui: done              # [dev-story] SESSettings.vue: Inbound section + provision button
+
+  # Pending: DevOps execution + end-to-end test
+  ses-inbound-devops-provision: ready-for-dev             # [task] DevOps: run provision(), add MX record, confirm SNS
+  ses-inbound-qa-e2e: ready-for-dev                       # [qa] E2E: send test email → Communication + File created
+
+  # Chain: epic-partner-portal
+  epic-partner-portal: ready-for-dev
+
+  partner-portal-e1-api-leads: ready-for-dev              # [dev-story] Partner API: create/get/list/update leads
+  partner-portal-e1-api-deals: ready-for-dev              # [dev-story] Partner API: create/get/list/update deals
+  partner-portal-e1-api-contacts: ready-for-dev           # [dev-story] Partner API: create/list/link contacts
+  partner-portal-e2-webhooks: ready-for-dev               # [dev-story] Outbound webhooks: lead/deal lifecycle events
+  partner-portal-e3-ref-data: ready-for-dev               # [dev-story] Reference data endpoints + rate limiting
+  partner-portal-qa: ready-for-dev                        # [qa] Partner portal full flow QA
