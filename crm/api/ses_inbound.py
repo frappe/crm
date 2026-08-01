@@ -63,7 +63,7 @@ def receive():
             frappe.response["http_status_code"] = 403
             frappe.log_error(
                 title="SES Inbound: SNS Signature Rejected",
-                message=f"TopicArn={payload.get('TopicArn')} MessageId={payload.get('MessageId')}",
+                message="TopicArn=%s MessageId=%s" % (payload.get("TopicArn"), payload.get("MessageId")),
             )
             return
         _enqueue_notification(payload)
@@ -156,7 +156,7 @@ def _build_sign_string(payload: dict) -> str:
 
 
 def _get_cached_cert(cert_url: str) -> str | None:
-    cache_key = f"sns_cert_{hashlib.md5(cert_url.encode()).hexdigest()}"
+    cache_key = "sns_cert_" + hashlib.md5(cert_url.encode()).hexdigest()
     cached = frappe.cache().get_value(cache_key)
     if cached:
         return cached
@@ -216,7 +216,7 @@ def _fetch_raw_mime(payload: dict) -> bytes | None:
     if not bucket or not key:
         frappe.log_error(
             title="SES Inbound: No Content and No S3 Key",
-            message=f"MessageId={payload.get('MessageId')} receipt={message_obj.get('receipt')}",
+            message="MessageId=%s receipt=%s" % (payload.get("MessageId"), message_obj.get("receipt")),
         )
         return None
 
@@ -238,13 +238,13 @@ def _fetch_from_s3(bucket: str, key: str) -> bytes | None:
     except s3.exceptions.NoSuchKey:
         frappe.log_error(
             title="SES Inbound: S3 Object Expired or Missing",
-            message=f"bucket={bucket} key={key} — 48h window may have elapsed",
+            message="bucket=%s key=%s — 48h window may have elapsed" % (bucket, key),
         )
         return None
     except Exception as exc:
         frappe.log_error(
             title="SES Inbound: S3 Fetch Failed",
-            message=f"bucket={bucket} key={key} error={exc}",
+            message="bucket=%s key=%s error=%s" % (bucket, key, exc),
         )
         return None
 
@@ -334,7 +334,7 @@ def _match_thread(
     # 4. Unlinked — log and continue
     frappe.log_error(
         title="SES Inbound: Unmatched Email",
-        message=f"sender={sender_email} in_reply_to={in_reply_to}",
+        message="sender=%s in_reply_to=%s" % (sender_email, in_reply_to),
     )
     return None, None
 
@@ -398,7 +398,7 @@ def _save_attachments(msg, communication_name: str) -> None:
         except Exception as exc:
             frappe.log_error(
                 title="SES Inbound: Attachment Save Failed",
-                message=f"file={filename} comm={communication_name} error={exc}",
+                message="file=%s comm=%s error=%s" % (filename, communication_name, exc),
             )
 
 

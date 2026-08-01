@@ -1,7 +1,0 @@
-[bandit]
-# B608 (hardcoded SQL) and B703/B702 (Django XSS) are not applicable to this
-# Frappe/Python stack and produce false positives on log/error message f-strings.
-# Real XSS surface: inbound email body_text is escaped via frappe.utils.escape_html
-# before being wrapped in HTML (ses_inbound.py). From-header display names are
-# plain-text email headers, never rendered as HTML.
-skips = B608,B703,B702

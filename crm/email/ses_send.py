@@ -53,7 +53,7 @@ def send(queue_doc, sender: str, recipient: str, message: bytes):
 			transport = "ses"
 			frappe.throw(
 				"Email payload is too large for Amazon SES transport. "
-				f"Size: {payload_size} bytes, max: {SES_V2_MAX_RAW_MESSAGE_BYTES} bytes."
+				"Size: %d bytes, max: %d bytes." % (payload_size, SES_V2_MAX_RAW_MESSAGE_BYTES)
 			)
 
 		if payload_size > SES_V1_MAX_RAW_MESSAGE_BYTES:
@@ -362,12 +362,12 @@ def _log_send_success(queue_doc, recipient: str, transport: str, message_id) -> 
 def _log_send_error(queue_doc, recipient: str, transport: str, exc: Exception) -> None:
 	frappe.log_error(
 		title="CRM SES Send Failure",
-		message=(
-			"CRM SES override send failed\n"
-			f"queue={getattr(queue_doc, 'name', '')}\n"
-			f"recipient={recipient}\n"
-			f"transport={transport}\n"
-			f"error_type={type(exc).__name__}\n"
-			f"error={exc}"
-		),
+		message="\n".join([
+			"CRM SES override send failed",
+			"queue=" + getattr(queue_doc, "name", ""),
+			"recipient=" + recipient,
+			"transport=" + transport,
+			"error_type=" + type(exc).__name__,
+			"error=" + str(exc),
+		]),
 	)

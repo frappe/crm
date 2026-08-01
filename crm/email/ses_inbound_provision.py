@@ -116,7 +116,7 @@ def _s3_put_bucket_policy(s3_client, bucket_name: str, account_id: str) -> None:
                 "Effect": "Allow",
                 "Principal": {"Service": "ses.amazonaws.com"},
                 "Action": "s3:PutObject",
-                "Resource": f"arn:aws:s3:::{bucket_name}/*",
+                "Resource": "arn:aws:s3:::" + bucket_name + "/*",
                 "Condition": {
                     "StringEquals": {"aws:Referer": account_id}
                 },
