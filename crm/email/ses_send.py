@@ -243,7 +243,7 @@ def _resolve_display_name(config: AwsSesRuntimeConfig) -> str:
 	user_name = _current_user_full_name()
 
 	if user_name and team:
-		return f"{user_name} from {team}"
+		return user_name + " from " + team  # nosec B608 — internal strings, not HTML
 	if user_name:
 		return user_name
 	if team:

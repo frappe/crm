@@ -266,7 +266,7 @@ def _create_inbound_communication(msg) -> None:
 
     # Extract body
     body_html, body_text = _extract_body(msg)
-    content = body_html or f"<pre>{body_text}</pre>"
+    content = body_html or "<pre>" + frappe.utils.escape_html(body_text) + "</pre>"
 
     # Thread matching: In-Reply-To / References → existing Communication
     ref_doctype, ref_name = _match_thread(in_reply_to, references, sender_email)
