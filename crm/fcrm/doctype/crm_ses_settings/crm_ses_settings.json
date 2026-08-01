@@ -12,6 +12,7 @@
   "default_sender_email",
   "column_break_sender",
   "default_sender_name",
+  "sender_team_label",
   "transport_section",
   "configuration_set_name",
   "column_break_transport",
@@ -29,7 +30,13 @@
   "column_break_inbound",
   "default_incoming",
   "append_to",
-  "create_lead_from_incoming_email"
+  "create_lead_from_incoming_email",
+  "inbound_aws_section",
+  "inbound_region",
+  "inbound_domain",
+  "column_break_inbound_aws",
+  "s3_bucket_name",
+  "sns_topic_arn"
  ],
  "fields": [
   {
@@ -76,7 +83,15 @@
    "depends_on": "eval:doc.enabled",
    "fieldname": "default_sender_name",
    "fieldtype": "Data",
-   "label": "Default Sender Name"
+   "label": "Default Sender Name",
+   "description": "Fixed From display name for all outbound email. Leave blank to auto-compose e.g. 'Salim from Careverse Team'."
+  },
+  {
+   "depends_on": "eval:doc.enabled && !doc.default_sender_name",
+   "fieldname": "sender_team_label",
+   "fieldtype": "Data",
+   "label": "Team Label",
+   "description": "Used only when Default Sender Name is blank: '{User} from {Team Label}'. Falls back to the brand name; never renders 'None'."
   },
   {
    "depends_on": "eval:doc.enabled",
@@ -191,6 +206,42 @@
    "fieldtype": "Check",
    "label": "Create Lead from Incoming Emails",
    "description": "Auto-create a lead when an email arrives from an unknown contact."
+  },
+  {
+   "depends_on": "eval:doc.enabled",
+   "fieldname": "inbound_aws_section",
+   "fieldtype": "Section Break",
+   "label": "Inbound (AWS)"
+  },
+  {
+   "default": "eu-west-1",
+   "fieldname": "inbound_region",
+   "fieldtype": "Data",
+   "label": "Inbound Region",
+   "description": "AWS region for SES receiving. Must be eu-west-1, us-east-1, or us-west-2."
+  },
+  {
+   "fieldname": "inbound_domain",
+   "fieldtype": "Data",
+   "label": "Inbound Domain",
+   "description": "Domain that receives email, e.g. tiberbu.com. Must have MX record pointing to SES."
+  },
+  {
+   "fieldname": "column_break_inbound_aws",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "s3_bucket_name",
+   "fieldtype": "Data",
+   "label": "S3 Bucket Name",
+   "description": "S3 bucket created by provisioning for large inbound email storage (48h lifecycle)."
+  },
+  {
+   "fieldname": "sns_topic_arn",
+   "fieldtype": "Data",
+   "label": "SNS Topic ARN",
+   "read_only": 1,
+   "description": "Auto-filled by provisioning script. e.g. arn:aws:sns:eu-west-1:...:careverse-crm-inbound"
   }
  ],
  "index_web_pages_for_search": 0,

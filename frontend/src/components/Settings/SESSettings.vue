@@ -84,25 +84,50 @@
             {{ __('Sender Identity') }}
           </div>
           <div class="flex flex-col gap-3">
-            <div class="flex items-center gap-4">
-              <label class="text-p-sm text-ink-gray-7 w-44 shrink-0">{{ __('Sender Email') }}</label>
-              <FormControl
-                v-model="form.default_sender_email"
-                type="text"
-                placeholder="crm@tiberbu.app"
-                class="flex-1"
-                @input="markDirty"
-              />
+            <div class="flex items-start gap-4">
+              <label class="text-p-sm text-ink-gray-7 w-44 shrink-0 pt-0.5">{{ __('Sender Email') }}</label>
+              <div class="flex-1 flex flex-col gap-1">
+                <FormControl
+                  v-model="form.default_sender_email"
+                  type="text"
+                  placeholder="crm@tiberbu.app"
+                  class="flex-1"
+                  @input="markDirty"
+                />
+                <p class="text-p-xs text-ink-gray-5">
+                  {{ __('SES-verified address used as the From address. With SES on, no outgoing Email Account is required for sending.') }}
+                </p>
+              </div>
             </div>
             <div class="flex items-center gap-4">
               <label class="text-p-sm text-ink-gray-7 w-44 shrink-0">{{ __('Sender Name') }}</label>
-              <FormControl
-                v-model="form.default_sender_name"
-                type="text"
-                placeholder="Tiberbu CRM"
-                class="flex-1"
-                @input="markDirty"
-              />
+              <div class="flex-1 flex flex-col gap-1">
+                <FormControl
+                  v-model="form.default_sender_name"
+                  type="text"
+                  placeholder="Tiberbu CRM"
+                  class="flex-1"
+                  @input="markDirty"
+                />
+                <p class="text-p-xs text-ink-gray-5">
+                  {{ __('Fixed From name for all outbound email. Leave blank to auto-compose per sender.') }}
+                </p>
+              </div>
+            </div>
+            <div v-if="!form.default_sender_name" class="flex items-start gap-4">
+              <label class="text-p-sm text-ink-gray-7 w-44 shrink-0 pt-0.5">{{ __('Team Label') }}</label>
+              <div class="flex-1 flex flex-col gap-1">
+                <FormControl
+                  v-model="form.sender_team_label"
+                  type="text"
+                  :placeholder="__('e.g. Careverse Team')"
+                  class="flex-1"
+                  @input="markDirty"
+                />
+                <p class="text-p-xs text-ink-gray-5">
+                  {{ __("Used only when Sender Name is blank: composes '{User} from {Team Label}', e.g. 'Salim from Careverse Team'. Falls back to the brand name; never shows 'None'.") }}
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -207,15 +232,15 @@
                 {{ __('Email Account') }}
               </label>
               <div class="flex-1 flex flex-col gap-1">
-                <FormControl
+                <Link
                   v-model="form.inbound_email_account"
-                  type="text"
-                  :placeholder="__('e.g. CRM Inbox')"
+                  doctype="Email Account"
+                  :placeholder="__('Select an Email Account')"
                   class="flex-1"
-                  @input="markDirty"
+                  @update:modelValue="markDirty"
                 />
                 <p class="text-p-xs text-ink-gray-5">
-                  {{ __('Name of the Email Account polled for inbound replies to leads and deals.') }}
+                  {{ __('Email Account (IMAP) polled for inbound replies to leads and deals. Inbound still requires a real, pollable account.') }}
                 </p>
               </div>
             </div>
@@ -268,6 +293,80 @@
           </div>
         </div>
 
+        <!-- Inbound (AWS) -->
+        <div class="h-px border-t mx-2 border-outline-elevation-2" />
+        <div class="px-2 pt-4 pb-2">
+          <div class="text-xs-medium text-ink-gray-5 uppercase tracking-wider mb-3">
+            {{ __('Inbound (AWS)') }}
+          </div>
+          <div class="flex flex-col gap-3">
+            <div class="flex items-start gap-4">
+              <label class="text-p-sm text-ink-gray-7 w-44 shrink-0 pt-0.5">{{ __('Inbound Region') }}</label>
+              <FormControl
+                v-model="form.inbound_region"
+                type="text"
+                placeholder="eu-west-1"
+                class="flex-1"
+                @input="markDirty"
+              />
+            </div>
+            <div class="flex items-start gap-4">
+              <label class="text-p-sm text-ink-gray-7 w-44 shrink-0 pt-0.5">{{ __('Inbound Domain') }}</label>
+              <div class="flex-1 flex flex-col gap-1">
+                <FormControl
+                  v-model="form.inbound_domain"
+                  type="text"
+                  placeholder="tiberbu.com"
+                  class="flex-1"
+                  @input="markDirty"
+                />
+                <p class="text-p-xs text-ink-gray-5">
+                  {{ __('Domain that receives email. Must have MX record pointing to SES inbound endpoint.') }}
+                </p>
+              </div>
+            </div>
+            <div class="flex items-start gap-4">
+              <label class="text-p-sm text-ink-gray-7 w-44 shrink-0 pt-0.5">{{ __('S3 Bucket Name') }}</label>
+              <FormControl
+                v-model="form.s3_bucket_name"
+                type="text"
+                placeholder="careverse-crm-inbound-email"
+                class="flex-1"
+                @input="markDirty"
+              />
+            </div>
+            <div class="flex items-start gap-4">
+              <label class="text-p-sm text-ink-gray-7 w-44 shrink-0 pt-0.5">{{ __('SNS Topic ARN') }}</label>
+              <div class="flex-1 flex flex-col gap-1">
+                <FormControl
+                  v-model="form.sns_topic_arn"
+                  type="text"
+                  :placeholder="__('Auto-filled after provisioning')"
+                  class="flex-1"
+                  readonly
+                />
+                <p class="text-p-xs text-ink-gray-5">
+                  {{ __('Auto-filled when you run provisioning below.') }}
+                </p>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-3 pt-1">
+              <Button
+                variant="outline"
+                :label="__('Provision AWS Infrastructure')"
+                :loading="provisioning"
+                :disabled="!form.inbound_region || !form.inbound_domain || !form.s3_bucket_name"
+                @click="provision"
+              />
+              <span v-if="provisionSuccess" class="text-p-sm text-green-600">
+                {{ __('Provisioning complete — SNS ARN saved.') }}
+              </span>
+            </div>
+            <ErrorMessage v-if="provisionError" :message="provisionError" />
+          </div>
+        </div>
+
       </template>
     </div>
 
@@ -287,16 +386,21 @@ import {
   toast,
 } from 'frappe-ui'
 import { ref, reactive } from 'vue'
+import Link from '@/components/Controls/Link.vue'
 
 const saving = ref(false)
 const saveError = ref('')
 const isDirty = ref(false)
+const provisioning = ref(false)
+const provisionError = ref('')
+const provisionSuccess = ref(false)
 
 const form = reactive({
   enabled: false,
   aws_region: '',
   default_sender_email: '',
   default_sender_name: '',
+  sender_team_label: '',
   configuration_set_name: '',
   retry_mode: 'standard',
   total_max_attempts: 8,
@@ -311,6 +415,10 @@ const form = reactive({
   default_incoming: false,
   append_to: 'CRM Lead',
   create_lead_from_incoming_email: false,
+  inbound_region: 'eu-west-1',
+  inbound_domain: '',
+  s3_bucket_name: '',
+  sns_topic_arn: '',
 })
 
 const retryModeOptions = [
@@ -324,10 +432,43 @@ const settings = createResource({
   auto: true,
   onSuccess(data) {
     Object.assign(form, data)
-    // passwords come back as booleans (has_secret_access_key); clear the input fields
     form.secret_access_key = ''
     form.session_token = ''
     isDirty.value = false
+  },
+})
+
+const provisionResource = createResource({
+  url: 'crm.api.ses_inbound_provision_api.provision',
+  method: 'POST',
+  onSuccess(data) {
+    form.sns_topic_arn = data.sns_topic_arn || ''
+    form.s3_bucket_name = data.s3_bucket_name || ''
+    provisionSuccess.value = true
+    provisionError.value = ''
+    provisioning.value = false
+    toast.success(__('AWS infrastructure provisioned successfully'))
+  },
+  onError(err) {
+    provisionError.value = err?.message || __('Provisioning failed')
+    provisioning.value = false
+  },
+})
+
+const saveResource = createResource({
+  url: 'crm.api.ses.update_settings',
+  method: 'POST',
+  onSuccess(data) {
+    Object.assign(form, data)
+    form.secret_access_key = ''
+    form.session_token = ''
+    isDirty.value = false
+    saving.value = false
+    toast.success(__('SES settings saved'))
+  },
+  onError(err) {
+    saveError.value = err?.message || __('Failed to save settings')
+    saving.value = false
   },
 })
 
@@ -336,34 +477,35 @@ function markDirty() {
   saveError.value = ''
 }
 
-async function save() {
+function provision() {
+  provisionError.value = ''
+  provisionSuccess.value = false
+  provisioning.value = true
+  const siteUrl = window.location.origin
+  provisionResource.submit({
+    aws_region_inbound: form.inbound_region,
+    recipient_domain: form.inbound_domain,
+    s3_bucket_name: form.s3_bucket_name,
+    sns_topic_name: 'careverse-crm-inbound',
+    webhook_url: `${siteUrl}/api/method/crm.api.ses_inbound.receive`,
+  })
+}
+
+function save() {
+  if (form.enabled && !form.default_sender_email?.trim()) {
+    saveError.value = __('Sender Email is required when SES Override is enabled.')
+    toast.error(saveError.value)
+    return
+  }
+
+  const payload = { ...form }
+  delete payload.has_secret_access_key
+  delete payload.has_session_token
+  if (!payload.secret_access_key) delete payload.secret_access_key
+  if (!payload.session_token) delete payload.session_token
+
   saving.value = true
   saveError.value = ''
-  try {
-    const payload = { ...form }
-    // Never send the boolean sentinel fields back
-    delete payload.has_secret_access_key
-    delete payload.has_session_token
-    // Empty password fields mean "don't change" — strip them out
-    if (!payload.secret_access_key) delete payload.secret_access_key
-    if (!payload.session_token) delete payload.session_token
-
-    const result = await createResource({
-      url: 'crm.api.ses.update_settings',
-      method: 'POST',
-    }).submit({ settings: payload })
-
-    if (result) {
-      Object.assign(form, result)
-      form.secret_access_key = ''
-      form.session_token = ''
-    }
-    isDirty.value = false
-    toast.success(__('SES settings saved'))
-  } catch (err) {
-    saveError.value = err?.message || __('Failed to save settings')
-  } finally {
-    saving.value = false
-  }
+  saveResource.submit({ settings: payload })
 }
 </script>
