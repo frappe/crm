@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import json
+
 import frappe
 from frappe import _
 
@@ -17,6 +19,7 @@ _SES_FIELDS = {
 	"aws_region",
 	"default_sender_email",
 	"default_sender_name",
+	"sender_team_label",
 	"configuration_set_name",
 	"retry_mode",
 	"total_max_attempts",
@@ -27,6 +30,10 @@ _SES_FIELDS = {
 	"default_incoming",
 	"append_to",
 	"create_lead_from_incoming_email",
+	"inbound_region",
+	"inbound_domain",
+	"s3_bucket_name",
+	"sns_topic_arn",
 }
 
 
@@ -44,6 +51,7 @@ def get_settings() -> dict:
 		"aws_region": doc.get("aws_region") or "",
 		"default_sender_email": doc.get("default_sender_email") or "",
 		"default_sender_name": doc.get("default_sender_name") or "",
+		"sender_team_label": doc.get("sender_team_label") or "",
 		"configuration_set_name": doc.get("configuration_set_name") or "",
 		"retry_mode": doc.get("retry_mode") or "standard",
 		"total_max_attempts": doc.get("total_max_attempts") or 8,
@@ -56,18 +64,26 @@ def get_settings() -> dict:
 		"has_session_token": bool(
 			doc.get_password("session_token", raise_exception=False)
 		),
-		# inbound
+		# inbound (IMAP)
 		"inbound_email_account": doc.get("inbound_email_account") or "",
 		"enable_incoming": bool(doc.get("enable_incoming")),
 		"default_incoming": bool(doc.get("default_incoming")),
 		"append_to": doc.get("append_to") or "CRM Lead",
 		"create_lead_from_incoming_email": bool(doc.get("create_lead_from_incoming_email")),
+		# inbound (AWS)
+		"inbound_region": doc.get("inbound_region") or "eu-west-1",
+		"inbound_domain": doc.get("inbound_domain") or "",
+		"s3_bucket_name": doc.get("s3_bucket_name") or "",
+		"sns_topic_arn": doc.get("sns_topic_arn") or "",
 	}
 
 
 @frappe.whitelist(methods=["POST"])
-def update_settings(settings: dict) -> dict:
+def update_settings(settings) -> dict:
 	"""Persist CRM SES Settings including credentials and inbound Email Account fields."""
+	if isinstance(settings, str):
+		settings = json.loads(settings)
+
 	_require_manager()
 
 	try:
@@ -89,11 +105,8 @@ def update_settings(settings: dict) -> dict:
 	frappe.clear_cache(doctype=_DOCTYPE)
 
 	# Invalidate the per-request SES config cache so the next send uses new values
-	try:
-		from frappe_devsecops_dashboard.email.aws_ses_config import clear_ses_runtime_config_cache
-		clear_ses_runtime_config_cache()
-	except ImportError:
-		pass
+	from crm.email.ses_runtime import clear_ses_runtime_config_cache
+	clear_ses_runtime_config_cache()
 
 	return get_settings()
 

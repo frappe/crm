@@ -1,14 +1,20 @@
-app_name = "crm"
+import logging as _logging
 
-try:
-	from frappe_devsecops_dashboard.email.ses_email_account_decoupler import apply_queue_builder_patches
-	apply_queue_builder_patches()
-except ImportError:
-	import logging as _logging
-	_logging.getLogger("crm").warning(
-		"frappe_devsecops_dashboard not installed — SES QueueBuilder patches not applied. "
-		"CRM emails will fall back to native SMTP."
-	)
+_HOOKS_LOGGER = _logging.getLogger(__name__)
+
+
+def _apply_queue_builder_patches_safely():
+	try:
+		from crm.email.queue_patch import apply_queue_builder_patches
+
+		apply_queue_builder_patches()
+	except Exception:
+		_HOOKS_LOGGER.exception("Failed to apply SES QueueBuilder patches during hook import")
+
+
+_apply_queue_builder_patches_safely()
+
+app_name = "crm"
 app_title = "Frappe CRM"
 app_publisher = "Frappe Technologies Pvt. Ltd."
 app_description = "Kick-ass Open Source CRM"
@@ -169,10 +175,10 @@ has_permission = {
 override_doctype_class = {
 	"Contact": "crm.overrides.contact.CustomContact",
 	"Email Template": "crm.overrides.email_template.CustomEmailTemplate",
-	"Email Queue": "frappe_devsecops_dashboard.email.email_queue_override.AwsSesAwareEmailQueue",
+	"Email Queue": "crm.email.email_queue.CrmSesAwareEmailQueue",
 }
 
-override_email_send = "frappe_devsecops_dashboard.email.aws_ses_override.send"
+override_email_send = "crm.email.ses_send.send"
 
 # Document Events
 # ---------------
@@ -306,7 +312,6 @@ ignore_links_on_delete = ["Failed Lead Sync Log"]
 before_request = [
 	"crm.api.route_guard.pin_home_page_to_landing",
 	"crm.api.route_guard.guard_desk_access",
-	"crm.email.ses_config.prime_ses_config",
 ]
 # after_request = ["crm.utils.after_request"]
 

@@ -41,7 +41,8 @@
           :content="user.doc.email_signature"
           placeholder="Type something..."
           :bubbleMenu="true"
-          :fixed-menu="true"
+          :fixed-menu="signatureMenuButtons"
+          :upload-function="uploadSignatureImage"
           @change="(val) => (user.doc.email_signature = val)"
         />
       </div>
@@ -126,8 +127,43 @@ import {
   createListResource,
   TextEditor,
   toast,
+  useFileUpload,
 } from 'frappe-ui'
 import { computed, inject } from 'vue'
+
+// Toolbar for the signature editor. Mirrors the default set plus an explicit
+// Image button so users can embed a logo/photo in their signature.
+const signatureMenuButtons = [
+  'Paragraph',
+  ['Heading 2', 'Heading 3', 'Heading 4', 'Heading 5', 'Heading 6'],
+  'Separator',
+  'Bold',
+  'Italic',
+  'Separator',
+  'Bullet List',
+  'Numbered List',
+  'Separator',
+  'Align Left',
+  'Align Center',
+  'Align Right',
+  'Font Color',
+  'Separator',
+  'Image',
+  'Link',
+  'Blockquote',
+  'Horizontal Rule',
+]
+
+// Signature images must be publicly readable and referenced by an ABSOLUTE URL —
+// external mail clients cannot reach a relative or /private/files/ path. Upload as
+// public and rewrite the returned file_url to an absolute origin URL.
+async function uploadSignatureImage(file) {
+  const uploaded = await useFileUpload().upload(file, { private: false })
+  if (uploaded?.file_url && uploaded.file_url.startsWith('/')) {
+    uploaded.file_url = window.location.origin + uploaded.file_url
+  }
+  return uploaded
+}
 
 const emit = defineEmits(['updateStep'])
 
