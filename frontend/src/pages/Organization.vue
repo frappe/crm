@@ -162,10 +162,111 @@
           :options="{ selectable: false, showTooltip: false }"
         />
         <EmptyState
-          v-if="!rows.length"
+          v-if="tab.label !== 'Facilities' && !rows.length"
           :icon="tab.icon"
           :name="__(tab.label)"
         />
+
+        <!-- Facilities tab -->
+        <div v-if="tab.label === 'Facilities'" class="flex flex-col gap-3 p-4 overflow-y-auto">
+          <!-- Header -->
+          <div class="flex items-center justify-between">
+            <span class="text-p-sm-medium text-ink-gray-6">
+              {{ organization.doc.facilities?.length
+                  ? __('Linked Facilities ({0})', [organization.doc.facilities.length])
+                  : __('No facilities linked') }}
+            </span>
+            <Button
+              v-if="hfrEnabled && !showAddPanel"
+              variant="subtle"
+              size="sm"
+              iconLeft="lucide-plus"
+              :label="__('Add Facility')"
+              @click="showAddPanel = true"
+            />
+          </div>
+
+          <!-- Inline add panel -->
+          <div v-if="showAddPanel"
+               class="rounded-lg border border-outline-gray-2 bg-surface-gray-1 p-3">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-p-sm-medium text-ink-gray-7">{{ __('Search Health Facility Registry') }}</span>
+              <button class="text-ink-gray-4 hover:text-ink-gray-7 transition-colors"
+                      @click="showAddPanel = false">
+                <svg class="size-4" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M4 4l8 8M12 4l-8 8"/>
+                </svg>
+              </button>
+            </div>
+            <HfrSearchPanel
+              :doc="organization.doc"
+              childDoctype="CRM Org Facility"
+              @row-added="onFacilityAdded"
+            />
+          </div>
+
+          <!-- Saved facility rows -->
+          <div
+            v-for="row in (organization.doc.facilities || [])"
+            :key="row.name || row.hfr_facility_id"
+            class="rounded-lg border border-outline-gray-2 bg-surface-white dark:bg-surface-gray-2 px-3 py-2.5"
+          >
+            <div class="flex items-start gap-2">
+              <div class="flex flex-col flex-1 min-w-0 gap-1">
+                <span class="text-p-sm-medium text-ink-gray-8 truncate">{{ row.facility_name }}</span>
+                <div class="flex items-center gap-1.5 flex-wrap">
+                  <span v-if="row.mfl_code"
+                        class="text-p-xs bg-surface-gray-2 dark:bg-surface-gray-3
+                               text-ink-gray-6 rounded px-1.5 py-0.5">
+                    MFL {{ row.mfl_code }}
+                  </span>
+                  <span v-if="row.facility_level"
+                        class="text-p-xs bg-surface-gray-2 dark:bg-surface-gray-3
+                               text-ink-gray-6 rounded px-1.5 py-0.5">
+                    {{ row.facility_level }}
+                  </span>
+                  <span v-if="row.hfr_county" class="text-p-xs text-ink-gray-5">
+                    {{ row.hfr_county }}
+                  </span>
+                  <span v-if="row.facility_owner_type" class="text-p-xs text-ink-gray-4">
+                    · {{ row.facility_owner_type }}
+                  </span>
+                </div>
+                <div class="flex items-center gap-2 mt-0.5">
+                  <span
+                    class="text-p-xs rounded px-1.5 py-0.5"
+                    :class="row.hfr_sync_status === 'HFR Verified'
+                      ? 'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300'
+                      : 'bg-surface-gray-2 text-ink-gray-5'"
+                  >{{ row.hfr_sync_status || 'Manual' }}</span>
+                  <span v-if="row.hfr_last_synced" class="text-p-xs text-ink-gray-4">
+                    {{ __('Synced') }} {{ row.hfr_last_synced }}
+                  </span>
+                </div>
+              </div>
+              <div class="flex items-center gap-1 shrink-0">
+                <Button
+                  v-if="hfrEnabled && row.hfr_facility_id && row.name"
+                  variant="ghost"
+                  size="sm"
+                  icon="lucide-refresh-cw"
+                  :loading="resyncingRow === row.name"
+                  :tooltip="__('Re-sync from HFR')"
+                  @click="resyncRow(row.name)"
+                />
+                <Button
+                  v-if="row.name"
+                  variant="ghost"
+                  size="sm"
+                  icon="lucide-trash-2"
+                  theme="red"
+                  :tooltip="__('Remove facility')"
+                  @click="removeRow(row.name)"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
       </template>
     </Tabs>
   </div>
@@ -198,6 +299,7 @@ import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
 import DeleteLinkedDocModal from '@/components/DeleteLinkedDocModal.vue'
 import CustomActions from '@/components/CustomActions.vue'
 import EnrichFromWebsite from '@/components/EnrichFromWebsite.vue'
+import HfrSearchPanel from '@/components/HfrSearchPanel.vue'
 import { useDocument } from '@/data/document'
 import { getSettings } from '@/stores/settings'
 import { globalStore } from '@/stores/global'
@@ -225,7 +327,7 @@ import {
 } from 'frappe-ui'
 import { useDoctypeModal } from '@/composables/doctypeModal'
 import { useTelemetry } from 'frappe-ui/frappe'
-import { computed, ref, watch, onMounted } from 'vue'
+import { computed, inject, ref, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 const props = defineProps({
@@ -255,6 +357,45 @@ const {
 } = useDocument('CRM Organization', props.organizationId)
 
 const canDelete = computed(() => permissions.data?.permissions?.delete || false)
+
+// HFR Facilities
+const hfrEnabled = inject('hfrEnabled', ref(false))
+const showAddPanel = ref(false)
+const resyncingRow = ref(null)
+
+const resyncRowResource = createResource({
+  url: 'crm.api.hfr.resync_facility_row',
+  onSuccess() {
+    resyncingRow.value = null
+    organization.reload()
+    toast.success(__('Facility re-synced'))
+  },
+  onError(err) {
+    resyncingRow.value = null
+    toast.error((err && err.messages && err.messages[0]) || __('Re-sync failed'))
+  },
+})
+
+function resyncRow(rowName) {
+  resyncingRow.value = rowName
+  resyncRowResource.submit({
+    doctype: 'CRM Organization',
+    docname: props.organizationId,
+    row_name: rowName,
+  })
+}
+
+function removeRow(rowName) {
+  organization.doc.facilities = (organization.doc.facilities || []).filter(
+    r => r.name !== rowName
+  )
+  organization.save.submit()
+}
+
+function onFacilityAdded() {
+  showAddPanel.value = false
+  organization.save.submit()
+}
 
 function onEnriched() {
   organization.reload?.()
@@ -382,18 +523,24 @@ function getParsedSections(_sections) {
 }
 
 const tabIndex = ref(0)
-const tabs = [
-  {
-    label: 'Deals',
-    icon: DealsIcon,
-    count: computed(() => deals.data?.length),
-  },
-  {
-    label: 'Contacts',
-    icon: ContactsIcon,
-    count: computed(() => contacts.data?.length),
-  },
-]
+const tabs = computed(() => {
+  const base = [
+    {
+      label: 'Deals',
+      icon: DealsIcon,
+      count: computed(() => deals.data?.length),
+    },
+    {
+      label: 'Contacts',
+      icon: ContactsIcon,
+      count: computed(() => contacts.data?.length),
+    },
+  ]
+  if (hfrEnabled.value) {
+    base.push({ label: 'Facilities', icon: null, count: computed(() => organization.doc?.facilities?.length || null) })
+  }
+  return base
+})
 
 const deals = createListResource({
   type: 'list',

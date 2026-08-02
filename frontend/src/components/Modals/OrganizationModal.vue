@@ -25,6 +25,13 @@
             />
           </div>
         </div>
+        <!-- HFR Search Panel -->
+        <HfrSearchPanel
+          :doc="organization.doc"
+          childDoctype="CRM Org Facility"
+          class="mb-4"
+        />
+
         <FieldLayout
           v-if="tabs.data?.length"
           :tabs="tabs.data"
@@ -59,6 +66,7 @@
 
 <script setup>
 import FieldLayout from '@/components/FieldLayout/FieldLayout.vue'
+import HfrSearchPanel from '@/components/HfrSearchPanel.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import { usersStore } from '@/stores/users'
 import { isMobileView } from '@/composables/settings'
@@ -91,6 +99,7 @@ const { document: organization, triggerOnBeforeCreate } =
   useDocument('CRM Organization')
 
 const isEnriching = ref(false)
+
 
 // Prefill the form from the company website (Domain Enrichment) — synchronous,
 // no document is created until the user clicks Create.

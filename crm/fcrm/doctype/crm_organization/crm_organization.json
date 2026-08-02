@@ -21,7 +21,9 @@
   "facebook",
   "territory",
   "industry",
-  "address"
+  "address",
+  "facilities_section",
+  "facilities"
  ],
  "fields": [
   {
@@ -117,13 +119,24 @@
    "fieldtype": "Data",
    "label": "Facebook",
    "no_copy": 1
+  },
+  {
+   "fieldname": "facilities_section",
+   "fieldtype": "Section Break",
+   "label": "Facilities"
+  },
+  {
+   "fieldname": "facilities",
+   "fieldtype": "Table",
+   "label": "Facilities",
+   "options": "CRM Org Facility"
   }
  ],
  "image_field": "organization_logo",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-03-26 12:51:34.002222",
- "modified_by": "shariq@frappe.io",
+ "modified": "2026-08-02 00:00:00.000000",
+ "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Organization",
  "naming_rule": "By fieldname",

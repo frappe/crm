@@ -1,0 +1,164 @@
+{
+ "actions": [],
+ "creation": "2026-08-02 00:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "hfr_facility_id",
+  "facility_name",
+  "mfl_code",
+  "facility_type",
+  "facility_category",
+  "facility_level",
+  "facility_owner",
+  "facility_owner_type",
+  "regulatory_body",
+  "registration_number",
+  "operational_status",
+  "hfr_county",
+  "hfr_sub_county",
+  "hfr_ward",
+  "latitude",
+  "longitude",
+  "license_number",
+  "license_expiry",
+  "facility_standing",
+  "number_of_beds",
+  "hfr_sync_status",
+  "hfr_last_synced"
+ ],
+ "fields": [
+  {
+   "fieldname": "hfr_facility_id",
+   "fieldtype": "Data",
+   "label": "HFR Facility ID",
+   "in_list_view": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "facility_name",
+   "fieldtype": "Data",
+   "label": "Facility Name",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "mfl_code",
+   "fieldtype": "Data",
+   "label": "MFL Code",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "facility_type",
+   "fieldtype": "Data",
+   "label": "Facility Type"
+  },
+  {
+   "fieldname": "facility_category",
+   "fieldtype": "Data",
+   "label": "Category"
+  },
+  {
+   "fieldname": "facility_level",
+   "fieldtype": "Data",
+   "label": "Facility Level",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "facility_owner",
+   "fieldtype": "Data",
+   "label": "Facility Owner"
+  },
+  {
+   "fieldname": "facility_owner_type",
+   "fieldtype": "Data",
+   "label": "Owner Type",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "regulatory_body",
+   "fieldtype": "Data",
+   "label": "Regulatory Body"
+  },
+  {
+   "fieldname": "registration_number",
+   "fieldtype": "Data",
+   "label": "Registration Number"
+  },
+  {
+   "fieldname": "operational_status",
+   "fieldtype": "Data",
+   "label": "Operational Status"
+  },
+  {
+   "fieldname": "hfr_county",
+   "fieldtype": "Data",
+   "label": "County",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "hfr_sub_county",
+   "fieldtype": "Data",
+   "label": "Sub-County"
+  },
+  {
+   "fieldname": "hfr_ward",
+   "fieldtype": "Data",
+   "label": "Ward"
+  },
+  {
+   "fieldname": "latitude",
+   "fieldtype": "Float",
+   "label": "Latitude"
+  },
+  {
+   "fieldname": "longitude",
+   "fieldtype": "Float",
+   "label": "Longitude"
+  },
+  {
+   "fieldname": "license_number",
+   "fieldtype": "Data",
+   "label": "License Number"
+  },
+  {
+   "fieldname": "license_expiry",
+   "fieldtype": "Data",
+   "label": "License Expiry"
+  },
+  {
+   "fieldname": "facility_standing",
+   "fieldtype": "Data",
+   "label": "Standing"
+  },
+  {
+   "fieldname": "number_of_beds",
+   "fieldtype": "Int",
+   "label": "Number of Beds"
+  },
+  {
+   "fieldname": "hfr_sync_status",
+   "fieldtype": "Select",
+   "label": "Sync Status",
+   "options": "\nHFR Verified\nManual",
+   "default": "Manual",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "hfr_last_synced",
+   "fieldtype": "Datetime",
+   "label": "Last Synced",
+   "read_only": 1
+  }
+ ],
+ "istable": 1,
+ "links": [],
+ "modified": "2026-08-02 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "FCRM",
+ "name": "CRM Org Facility",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "idx",
+ "sort_order": "ASC",
+ "states": []
+}

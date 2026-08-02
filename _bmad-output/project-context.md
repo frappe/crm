@@ -151,3 +151,5 @@ Worker `workdir` for Studio = `_bmad-output/<epic>/implementation-artifacts/`
 |------|--------|-----|
 | ses-inbound | Code done, DevOps pending | `ses-inbound/planning-artifacts/WI-DevOps-AWS-Provisioning-2026-08-01.md` |
 | partner-portal | Ready for dev | `partner-portal/planning-artifacts/` (BRD: `docs/partner-portal-brd.md`) |
+| hfr-integration | v1.1 shipped, superseded by cardinality refactor | `hfr-integration/planning-artifacts/hfr-integration-brd.md` |
+| hfr-refactor | Ready for dev — BRD + ADR complete | `hfr-integration/planning-artifacts/hfr-cardinality-refactor-brd.md` |

@@ -4,8 +4,8 @@
 # Updated: 2026-08-01
 
 summary:
-  total: 9
-  ready-for-dev: 6
+  total: 18
+  ready-for-dev: 14
   in-progress: 0
   review: 0
   done: 3
@@ -34,6 +34,50 @@ development_status:
   # Pending: DevOps execution + end-to-end test
   ses-inbound-devops-provision: ready-for-dev             # [task] DevOps: run provision(), add MX record, confirm SNS
   ses-inbound-qa-e2e: ready-for-dev                       # [qa] E2E: send test email → Communication + File created
+
+  # Chain: epic-hfr-integration (v1.1 — flat-field model, SUPERSEDED by cardinality refactor)
+  epic-hfr-integration: superseded                # cardinality was wrong; refactor in epic-hfr-refactor
+
+  # v1.1 stories — shipped code exists but will be replaced by refactor
+  hfr-p1-doctype-org-fields: superseded           # flat columns → child table in refactor
+  hfr-p1-doctype-lead-fields: superseded          # flat columns → child table in refactor
+  hfr-p1-settings-fields: done                    # CRM HFR Settings — no change needed
+  hfr-p1-api-module: superseded                   # resync_organization replaced by resync_facility_row
+  hfr-p2-composable: superseded                   # applyHfrPreview replaced by append-row semantics
+  hfr-p2-org-modal: superseded                    # modal Facilities section redesigned
+  hfr-p2-lead-modal: superseded                   # modal Facilities section redesigned
+  hfr-p3-org-detail-registry: superseded          # flat Registry tab → child table Facilities tab
+  hfr-p4-settings-ui: done                        # HFRSettings.vue — no change needed
+  hfr-qa-full-flow: superseded                    # re-run after refactor
+
+  # Chain: epic-hfr-refactor (cardinality fix — BRD + ADR complete)
+  epic-hfr-refactor: ready-for-dev
+
+  # Phase 1 — Child DocTypes + migration
+  hfr-c1a-crm-org-facility-doctype: review       # [dev-story] CRM Org Facility child DocType
+  hfr-c1b-crm-lead-facility-doctype: review      # [dev-story] CRM Lead Facility child DocType
+  hfr-c1c-crm-deal-facility-doctype: review      # [dev-story] CRM Deal Facility child DocType
+  hfr-c1d-migration-patch: review                # [dev-story] patch: flat→child rows + drop columns
+  hfr-c1e-parent-doctype-updates: review         # [dev-story] Org/Lead/Deal JSON: remove flat, add table
+
+  # Phase 2 — Python backend
+  # hfr-c2a removed — no validate() roll-up (OQ-1 resolved: row-level sync only)
+  hfr-c2b-lead-py-refactor: review               # [dev-story] crm_lead.py: create_organization() uses child rows
+  hfr-c2c-api-resync-row: review                 # [dev-story] hfr.py: resync_facility_row(), remove flat resync
+  hfr-c2d-convert-to-deal: review                # [dev-story] convert_to_deal() copies facility rows
+
+  # Phase 3 — Frontend: modals
+  hfr-c3a-search-panel-append: review            # [dev-story] HfrSearchPanel.vue: append-row + pending list
+  hfr-c3b-org-modal-facilities: review           # [dev-story] OrganizationModal.vue: Facilities section
+  hfr-c3c-lead-modal-facilities: review          # [dev-story] LeadModal.vue: Facilities section
+
+  # Phase 4 — Frontend: detail pages
+  hfr-c4a-org-facilities-tab: review             # [dev-story] Organization.vue: Facilities tab
+  hfr-c4b-lead-facilities-section: review        # [dev-story] Lead.vue: Facilities section
+  hfr-c4c-deal-facilities-section: review        # [dev-story] Deal.vue: Facilities section
+
+  # Phase 5 — QA
+  hfr-c5-qa-refactor: review                     # [qa] Migration + multi-facility + convert-to-deal + re-sync
 
   # Chain: epic-partner-portal
   epic-partner-portal: ready-for-dev

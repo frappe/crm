@@ -1,0 +1,83 @@
+{
+ "actions": [],
+ "creation": "2026-08-01 00:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "hfr_enabled",
+  "hie_credentials_section",
+  "hfr_url",
+  "hfr_fetch_path",
+  "column_break_hfr_1",
+  "hfr_username",
+  "hfr_password",
+  "hfr_jwt_expiry"
+ ],
+ "fields": [
+  {
+   "default": "0",
+   "fieldname": "hfr_enabled",
+   "fieldtype": "Check",
+   "label": "Enable HFR Integration"
+  },
+  {
+   "depends_on": "eval:doc.hfr_enabled",
+   "fieldname": "hie_credentials_section",
+   "fieldtype": "Section Break",
+   "label": "HIE Credentials"
+  },
+  {
+   "depends_on": "eval:doc.hfr_enabled",
+   "fieldname": "hfr_url",
+   "fieldtype": "Data",
+   "label": "HIE Base URL"
+  },
+  {
+   "default": "/v1/hfr/facilities",
+   "depends_on": "eval:doc.hfr_enabled",
+   "fieldname": "hfr_fetch_path",
+   "fieldtype": "Data",
+   "label": "HFR Fetch Path"
+  },
+  {
+   "fieldname": "column_break_hfr_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:doc.hfr_enabled",
+   "fieldname": "hfr_username",
+   "fieldtype": "Data",
+   "label": "HIE Username"
+  },
+  {
+   "depends_on": "eval:doc.hfr_enabled",
+   "fieldname": "hfr_password",
+   "fieldtype": "Password",
+   "label": "HIE Password"
+  },
+  {
+   "default": "20000",
+   "depends_on": "eval:doc.hfr_enabled",
+   "fieldname": "hfr_jwt_expiry",
+   "fieldtype": "Int",
+   "label": "JWT Expiry (seconds)"
+  }
+ ],
+ "issingle": 1,
+ "links": [],
+ "modified": "2026-08-01 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "FCRM",
+ "name": "CRM HFR Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "read": 1,
+   "role": "System Manager",
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

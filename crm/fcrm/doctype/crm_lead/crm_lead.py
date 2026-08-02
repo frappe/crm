@@ -13,7 +13,45 @@ from crm.fcrm.doctype.crm_service_level_agreement.utils import get_sla
 from crm.fcrm.doctype.crm_status_change_log.crm_status_change_log import (
 	add_status_change_log,
 )
+
 from crm.fcrm.doctype.utils import add_or_remove_lost_reason_section_in_sidepanel
+
+
+def _copy_facilities_to_org(lead, org_name):
+	"""Fill-empty by FID: copy lead facility rows onto an existing org, skip duplicates."""
+	org = frappe.get_doc("CRM Organization", org_name)
+	existing_fids = {r.hfr_facility_id for r in (org.facilities or [])}
+	dirty = False
+	for row in lead.facilities or []:
+		if row.hfr_facility_id in existing_fids:
+			continue
+		org.append("facilities", {
+			"hfr_facility_id": row.hfr_facility_id,
+			"facility_name": row.facility_name,
+			"mfl_code": row.mfl_code,
+			"facility_type": row.facility_type,
+			"facility_category": row.facility_category,
+			"facility_level": row.facility_level,
+			"facility_owner": row.facility_owner,
+			"facility_owner_type": row.facility_owner_type,
+			"regulatory_body": row.regulatory_body,
+			"registration_number": row.registration_number,
+			"operational_status": row.operational_status,
+			"hfr_county": row.hfr_county,
+			"hfr_sub_county": row.hfr_sub_county,
+			"hfr_ward": row.hfr_ward,
+			"latitude": row.latitude,
+			"longitude": row.longitude,
+			"license_number": row.license_number,
+			"license_expiry": row.license_expiry,
+			"facility_standing": row.facility_standing,
+			"number_of_beds": row.number_of_beds,
+			"hfr_sync_status": row.hfr_sync_status,
+			"hfr_last_synced": row.hfr_last_synced,
+		})
+		dirty = True
+	if dirty:
+		org.save(ignore_permissions=True)  # SYSTEM-INTERNAL
 
 LEAD_DEAL_FIELD_MAP = {"lead_owner": "deal_owner"}
 
@@ -258,6 +296,7 @@ class CRMLead(Document):
 		if existing_organization:
 			self.db_set("organization", existing_organization)
 			self.copy_enrichment_from_organization()
+			_copy_facilities_to_org(self, existing_organization)
 			return existing_organization
 
 		organization = frappe.new_doc("CRM Organization")
@@ -270,7 +309,32 @@ class CRMLead(Document):
 				"annual_revenue": self.annual_revenue,
 			}
 		)
-		organization.insert(ignore_permissions=True)
+		for row in self.facilities or []:
+			organization.append("facilities", {
+				"hfr_facility_id": row.hfr_facility_id,
+				"facility_name": row.facility_name,
+				"mfl_code": row.mfl_code,
+				"facility_type": row.facility_type,
+				"facility_category": row.facility_category,
+				"facility_level": row.facility_level,
+				"facility_owner": row.facility_owner,
+				"facility_owner_type": row.facility_owner_type,
+				"regulatory_body": row.regulatory_body,
+				"registration_number": row.registration_number,
+				"operational_status": row.operational_status,
+				"hfr_county": row.hfr_county,
+				"hfr_sub_county": row.hfr_sub_county,
+				"hfr_ward": row.hfr_ward,
+				"latitude": row.latitude,
+				"longitude": row.longitude,
+				"license_number": row.license_number,
+				"license_expiry": row.license_expiry,
+				"facility_standing": row.facility_standing,
+				"number_of_beds": row.number_of_beds,
+				"hfr_sync_status": row.hfr_sync_status,
+				"hfr_last_synced": row.hfr_last_synced,
+			})
+		organization.insert(ignore_permissions=True)  # SYSTEM-INTERNAL
 		return organization.name
 
 	def copy_enrichment_from_organization(self):
@@ -405,6 +469,36 @@ class CRMLead(Document):
 			new_deal.update(deal)
 
 		new_deal.insert(ignore_permissions=True)
+
+		for row in self.facilities or []:
+			frappe.get_doc({
+				"doctype": "CRM Deal Facility",
+				"parent": new_deal.name,
+				"parenttype": "CRM Deal",
+				"parentfield": "facilities",
+				"hfr_facility_id": row.hfr_facility_id,
+				"facility_name": row.facility_name,
+				"mfl_code": row.mfl_code,
+				"facility_type": row.facility_type,
+				"facility_category": row.facility_category,
+				"facility_level": row.facility_level,
+				"facility_owner": row.facility_owner,
+				"facility_owner_type": row.facility_owner_type,
+				"regulatory_body": row.regulatory_body,
+				"registration_number": row.registration_number,
+				"operational_status": row.operational_status,
+				"hfr_county": row.hfr_county,
+				"hfr_sub_county": row.hfr_sub_county,
+				"hfr_ward": row.hfr_ward,
+				"latitude": row.latitude,
+				"longitude": row.longitude,
+				"license_number": row.license_number,
+				"license_expiry": row.license_expiry,
+				"facility_standing": row.facility_standing,
+				"number_of_beds": row.number_of_beds,
+				"hfr_sync_status": row.hfr_sync_status,
+				"hfr_last_synced": row.hfr_last_synced,
+			}).insert(ignore_permissions=True)  # SYSTEM-INTERNAL
 
 		for user in self.get_assigned_users():
 			if user and user != new_deal.deal_owner:
