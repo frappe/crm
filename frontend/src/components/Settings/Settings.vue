@@ -80,6 +80,7 @@ import EmailTemplatePage from '@/components/Settings/EmailTemplate/EmailTemplate
 import TelephonyPage from '@/components/Settings/Telephony/TelephonyPage.vue'
 import EmailConfig from '@/components/Settings/EmailConfig.vue'
 import SESSettings from '@/components/Settings/SESSettings.vue'
+import HFRSettings from '@/components/Settings/HFRSettings.vue'
 import Icon from '@/components/Icon.vue'
 import { usersStore } from '@/stores/users'
 import {
@@ -253,6 +254,12 @@ const tabs = computed(() => {
           label: __('Lead Syncing'),
           icon: 'refresh-cw',
           component: markRaw(LeadSyncSourcePage),
+          condition: () => isManager(),
+        },
+        {
+          label: __('HFR Integration'),
+          icon: 'lucide-hospital',
+          component: markRaw(HFRSettings),
           condition: () => isManager(),
         },
       ],

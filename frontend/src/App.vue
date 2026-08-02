@@ -18,10 +18,22 @@ import DoctypeModals from '@/components/Modals/DoctypeModals.vue'
 import { Dialogs } from '@/utils/dialogs'
 import { sessionStore } from '@/stores/session'
 import { FrappeUIProvider, setConfig, useTheme } from 'frappe-ui'
-import { computed, defineAsyncComponent, provide } from 'vue'
+import { computed, defineAsyncComponent, provide, ref } from 'vue'
+import { createResource } from 'frappe-ui'
 
 const session = sessionStore()
 provide('session', session)
+
+const hfrEnabled = ref(false)
+provide('hfrEnabled', hfrEnabled)
+
+createResource({
+  url: 'crm.api.hfr.get_hfr_settings',
+  auto: true,
+  onSuccess(data) {
+    hfrEnabled.value = !!(data && data.hfr_enabled)
+  },
+})
 
 const { setTheme } = useTheme()
 if (!localStorage.getItem('theme')) {

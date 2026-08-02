@@ -75,7 +75,9 @@
   "facebook_form_id",
   "lost_details_tab",
   "lost_reason",
-  "lost_notes"
+  "lost_notes",
+  "facilities_tab",
+  "facilities"
  ],
  "fields": [
   {
@@ -459,13 +461,24 @@
    "fieldtype": "Data",
    "label": "Facebook",
    "no_copy": 1
+  },
+  {
+   "fieldname": "facilities_tab",
+   "fieldtype": "Tab Break",
+   "label": "Facilities"
+  },
+  {
+   "fieldname": "facilities",
+   "fieldtype": "Table",
+   "label": "Facilities",
+   "options": "CRM Lead Facility"
   }
  ],
  "grid_page_length": 50,
  "image_field": "image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-04-04 12:33:17.177897",
+ "modified": "2026-08-02 00:00:00.000000",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Lead",

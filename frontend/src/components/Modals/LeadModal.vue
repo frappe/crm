@@ -25,6 +25,13 @@
             />
           </div>
         </div>
+        <!-- HFR Search Panel -->
+        <HfrSearchPanel
+          :doc="lead.doc"
+          childDoctype="CRM Lead Facility"
+          class="mb-4"
+        />
+
         <div>
           <FieldLayout v-if="tabs.data" :tabs="tabs.data" :data="lead.doc" />
           <ErrorMessage v-if="error" class="mt-4" :message="__(error)" />
@@ -55,6 +62,7 @@
 <script setup>
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import FieldLayout from '@/components/FieldLayout/FieldLayout.vue'
+import HfrSearchPanel from '@/components/HfrSearchPanel.vue'
 import { usersStore } from '@/stores/users'
 import { statusesStore } from '@/stores/statuses'
 import { sessionStore } from '@/stores/session'
@@ -83,6 +91,7 @@ const isLeadCreating = ref(false)
 const { document: lead, triggerOnBeforeCreate } = useDocument('CRM Lead')
 
 const isEnriching = ref(false)
+
 
 // Prefill the form from the company website (Domain Enrichment) — synchronous,
 // no document is created until the user clicks Create.
