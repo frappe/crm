@@ -4,8 +4,13 @@
 from unittest.mock import patch
 
 import frappe
+<<<<<<< HEAD
 
 from crm.tests import CRMTestCase as FrappeTestCase
+=======
+from frappe.tests.utils import FrappeTestCase
+from frappe.utils import add_days, now
+>>>>>>> e21d1ff4 (test(invitation): cover expiry and desk acceptance)
 
 
 class TestCRMInvitation(FrappeTestCase):
@@ -106,6 +111,41 @@ class TestCRMInvitation(FrappeTestCase):
 
 		login_manager.login_as.assert_called_once_with("existing-invitee@example.com")
 		self.assertEqual(frappe.local.response["location"], "/crm")
+
+	def test_desk_accept_mails_new_user_a_set_password_link(self):
+		invitation = self.make_invitation(email="desk-invitee@example.com")
+
+		with patch("frappe.core.doctype.user.user.User.send_welcome_mail_to_user") as welcome_mail:
+			invitation.accept_invitation()
+
+		welcome_mail.assert_called_once()
+
+	def test_desk_accept_does_not_mail_existing_user(self):
+		frappe.get_doc(
+			doctype="User",
+			user_type="System User",
+			email="desk-existing@example.com",
+			send_welcome_email=0,
+			first_name="Desk Existing",
+		).insert(ignore_permissions=True)
+		invitation = self.make_invitation(email="desk-existing@example.com")
+
+		with patch("frappe.core.doctype.user.user.User.send_welcome_mail_to_user") as welcome_mail:
+			invitation.accept_invitation()
+
+		welcome_mail.assert_not_called()
+
+	def test_expire_invitations_expires_old_pending_invites(self):
+		from crm.fcrm.doctype.crm_invitation.crm_invitation import expire_invitations
+
+		invitation = self.make_invitation(email="stale@example.com")
+		frappe.db.set_value(
+			"CRM Invitation", invitation.name, "creation", add_days(now(), -4), update_modified=False
+		)
+
+		expire_invitations()
+
+		self.assertEqual(frappe.db.get_value("CRM Invitation", invitation.name, "status"), "Expired")
 
 	def test_accept_grants_role_to_user(self):
 		invitation = self.make_invitation(email="manager@example.com", role="Sales Manager")
