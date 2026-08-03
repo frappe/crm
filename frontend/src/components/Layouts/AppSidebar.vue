@@ -8,7 +8,7 @@
        column falls through to the white page canvas. The token cannot be
        overridden on the Sidebar element itself — `bg-surface-sidebar` is emitted
        after `bg-surface-gray-1` in the utilities layer and would win. -->
-  <div class="relative flex h-full bg-surface-gray-1">
+  <div class="relative flex h-full bg-surface-gray-1 crm-sidebar-wrap">
     <Sidebar
       v-model:collapsed="isSidebarCollapsed"
       :disable-collapse="mobile"
@@ -734,3 +734,27 @@ const articles = ref([
   },
 ])
 </script>
+
+<style scoped>
+/* Faint top-glow using ::before so bg-surface-gray-1 stays intact */
+.crm-sidebar-wrap {
+  isolation: isolate;
+}
+.crm-sidebar-wrap::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background: radial-gradient(
+    70% 28% at 50% 0%,
+    var(--brand-tint-07) 0%,
+    transparent 55%
+  );
+}
+/* Ensure sidebar children sit above the glow layer */
+.crm-sidebar-wrap > * {
+  position: relative;
+  z-index: 1;
+}
+</style>
