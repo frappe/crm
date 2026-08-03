@@ -11,6 +11,8 @@ except ImportError:
 	from frappe.desk.form.assign_to import add as _assign
 from frappe.model.document import Document
 
+from crm.fcrm.naming import generate_random5
+
 from crm.api.exchange_rate import get_exchange_rate
 from crm.fcrm.doctype.crm_service_level_agreement.utils import get_sla
 from crm.fcrm.doctype.crm_status_change_log.crm_status_change_log import add_status_change_log
@@ -81,6 +83,9 @@ class CRMDeal(Document):
 		total: DF.Currency
 		website: DF.Data | None
 	# end: auto-generated types
+
+	def autoname(self):
+		self.name = "CS-" + generate_random5(self, "RANDOM5")
 
 	def before_insert(self):
 		# apply CRM enrichment (source/organization/contact) when created via a web form

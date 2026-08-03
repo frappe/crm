@@ -81,11 +81,11 @@
  ],
  "fields": [
   {
-   "default": "CRM-LEAD-.YYYY.-",
+   "default": "LD-.RANDOM5",
    "fieldname": "naming_series",
    "fieldtype": "Select",
    "label": "Series",
-   "options": "CRM-LEAD-.YYYY.-"
+   "options": "LD-.RANDOM5"
   },
   {
    "fieldname": "salutation",
