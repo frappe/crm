@@ -3,7 +3,12 @@
 
 import frappe
 from frappe import _
-from frappe.desk.form.assign_to import add as assign
+try:
+	# v15: public add() has no ignore_permissions; _add() is the internal impl that does
+	from frappe.desk.form.assign_to import _add as _assign
+except ImportError:
+	# v16+: ignore_permissions is a kwarg on the public add()
+	from frappe.desk.form.assign_to import add as _assign
 from frappe.model.document import Document
 
 from crm.api.exchange_rate import get_exchange_rate
@@ -172,7 +177,7 @@ class CRMDeal(Document):
 					# the agent is already set as an assignee
 					return
 
-		assign({"assign_to": [agent], "doctype": "CRM Deal", "name": self.name}, ignore_permissions=True)
+		_assign({"assign_to": [agent], "doctype": "CRM Deal", "name": self.name}, ignore_permissions=True)
 
 	def share_with_agent(self, agent):
 		if not agent:
