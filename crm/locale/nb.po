@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-07-19 10:53+0000\n"
-"PO-Revision-Date: 2026-07-21 11:27\n"
+"PO-Revision-Date: 2026-08-03 09:13\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Norwegian Bokmal\n"
 "MIME-Version: 1.0\n"
@@ -3418,7 +3418,7 @@ msgstr ""
 
 #: frontend/src/components/Filter.vue:609
 msgid "Enter Value"
-msgstr ""
+msgstr "Angi verdi"
 
 #: frontend/src/components/Modals/DealModal.vue:123
 #: frontend/src/components/Modals/LeadModal.vue:92
