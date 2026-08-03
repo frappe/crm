@@ -58,6 +58,54 @@ class TestCRMInvitation(FrappeTestCase):
 		with self.assertRaises(frappe.ValidationError):
 			invitation.accept()
 
+	def test_accept_reports_newly_created_user(self):
+		invitation = self.make_invitation(email="brand-new@example.com")
+
+		self.assertTrue(invitation.accept())
+		self.assertEqual(frappe.db.get_value("User", invitation.email, "default_app"), "crm")
+
+	def test_accept_reports_existing_user(self):
+		frappe.get_doc(
+			doctype="User",
+			user_type="System User",
+			email="already-there@example.com",
+			send_welcome_email=0,
+			first_name="Already There",
+		).insert(ignore_permissions=True)
+		invitation = self.make_invitation(email="already-there@example.com")
+
+		self.assertFalse(invitation.accept())
+
+	def test_accept_invitation_sends_new_user_to_set_password(self):
+		"""A new user must set a password instead of being logged in directly."""
+		from crm.api import accept_invitation
+
+		invitation = self.make_invitation(email="new-invitee@example.com")
+
+		accept_invitation(key=invitation.key)
+
+		self.assertEqual(frappe.local.response["type"], "redirect")
+		self.assertIn("/update-password?key=", frappe.local.response["location"])
+
+	def test_accept_invitation_logs_in_existing_user(self):
+		"""An existing user already has a password, so log them straight in."""
+		from crm.api import accept_invitation
+
+		frappe.get_doc(
+			doctype="User",
+			user_type="System User",
+			email="existing-invitee@example.com",
+			send_welcome_email=0,
+			first_name="Existing Invitee",
+		).insert(ignore_permissions=True)
+		invitation = self.make_invitation(email="existing-invitee@example.com")
+
+		with patch.object(frappe.local, "login_manager", create=True) as login_manager:
+			accept_invitation(key=invitation.key)
+
+		login_manager.login_as.assert_called_once_with("existing-invitee@example.com")
+		self.assertEqual(frappe.local.response["location"], "/crm")
+
 	def test_accept_grants_role_to_user(self):
 		invitation = self.make_invitation(email="manager@example.com", role="Sales Manager")
 
