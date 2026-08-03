@@ -120,6 +120,88 @@
   --outline-blue-10: #ffdedf;
 }
 
+/* =============================================================================
+   Tiberbu brand tokens for the SPA
+   -----------------------------------------------------------------------------
+   Mirrors tiberbu-brand.css (the www/ source of truth) so the same glass,
+   radius, shadow, and focus values are available inside the Vue app.
+   Both :root (light) and [data-theme="dark"] are defined for full parity.
+   ========================================================================== */
+
+:root {
+  /* brand tints */
+  --brand-tint-07: rgba(188, 24, 35, 0.07);
+  --brand-tint-10: rgba(188, 24, 35, 0.10);
+  --brand-ring:    rgba(188, 24, 35, 0.22);
+  --brand-shadow:  rgba(188, 24, 35, 0.24);
+
+  /* glass */
+  --glass-bg:      rgba(255, 255, 255, 0.62);
+  --glass-strong:  rgba(255, 255, 255, 0.86);
+  --glass-border:  1px solid rgba(255, 255, 255, 0.60);
+  --glass-border-color: rgba(0, 0, 0, 0.08);
+  --glass-shadow:  0 20px 60px rgba(23, 23, 23, 0.12);
+  --glass-inset:   inset 0 1px 0 rgba(255, 255, 255, 0.70);
+
+  /* shape */
+  --radius:    18px;
+  --radius-sm: 11px;
+
+  /* focus ring */
+  --focus: 0 0 0 3px var(--brand-ring);
+}
+
+[data-theme='dark'] {
+  /* brand tints (use brightened dark-mode red) */
+  --brand-tint-07: rgba(210, 58, 65, 0.08);
+  --brand-tint-10: rgba(210, 58, 65, 0.10);
+  --brand-ring:    rgba(232, 106, 112, 0.28);
+  --brand-shadow:  rgba(232, 106, 112, 0.20);
+
+  /* glass (dark surfaces) */
+  --glass-bg:      rgba(30, 30, 30, 0.55);
+  --glass-strong:  rgba(24, 24, 24, 0.82);
+  --glass-border:  1px solid rgba(255, 255, 255, 0.08);
+  --glass-border-color: rgba(255, 255, 255, 0.07);
+  --glass-shadow:  0 20px 60px rgba(0, 0, 0, 0.35);
+  --glass-inset:   inset 0 1px 0 rgba(255, 255, 255, 0.06);
+
+  /* shape stays the same */
+  --radius:    18px;
+  --radius-sm: 11px;
+
+  /* focus ring */
+  --focus: 0 0 0 3px var(--brand-ring);
+}
+
+/* --- Page heading utility (applied to ViewBreadcrumbs active crumb) --- */
+.crm-page-title {
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: var(--ink-gray-9);
+}
+
+/* --- Global focus ring (zero-specificity :where so any existing ring wins) --- */
+:where(a, button, [role='button'], input, select, textarea):focus-visible {
+  outline: none;
+  box-shadow: var(--focus);
+  border-radius: var(--radius-sm);
+}
+
+/* --- Thin scrollbar --- */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: var(--outline-gray-3) transparent;
+}
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: var(--outline-gray-3);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--outline-gray-4); }
+
 @layer components {
   .prose-f {
     @apply break-all

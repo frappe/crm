@@ -14,6 +14,8 @@ except ImportError:
 from frappe.model.document import Document
 from frappe.utils import validate_email_address
 
+from crm.fcrm.naming import generate_random5
+
 from crm.fcrm.doctype.crm_service_level_agreement.utils import get_sla
 from crm.fcrm.doctype.crm_status_change_log.crm_status_change_log import (
 	add_status_change_log,
@@ -117,6 +119,9 @@ class CRMLead(Document):
 		total: DF.Currency
 		website: DF.Data | None
 	# end: auto-generated types
+
+	def autoname(self):
+		self.name = "LD-" + generate_random5(self, "RANDOM5")
 
 	def before_insert(self):
 		# apply CRM enrichment (source/contact) when created via a web form

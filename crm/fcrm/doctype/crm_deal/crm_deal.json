@@ -129,11 +129,11 @@
    "options": "User"
   },
   {
-   "default": "CRM-DEAL-.YYYY.-",
+   "default": "CS-.RANDOM5",
    "fieldname": "naming_series",
    "fieldtype": "Select",
    "label": "Naming Series",
-   "options": "CRM-DEAL-.YYYY.-"
+   "options": "CS-.RANDOM5"
   },
   {
    "fieldname": "contacts_tab",
@@ -422,7 +422,7 @@
   },
   {
    "default": "1",
-   "description": "The rate used to convert the deal\u2019s currency to your crm's base currency (set in CRM Settings). It is set once when the currency is first added and doesn't change automatically.",
+   "description": "The rate used to convert the deal’s currency to your crm's base currency (set in CRM Settings). It is set once when the currency is first added and doesn't change automatically.",
    "fieldname": "exchange_rate",
    "fieldtype": "Float",
    "label": "Exchange Rate"
