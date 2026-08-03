@@ -214,6 +214,11 @@ doc_events = {
 
 scheduler_events = {
 	"daily": [
+<<<<<<< HEAD
+=======
+		"crm.api.event.trigger_daily_event_notifications",
+		"crm.fcrm.doctype.crm_invitation.crm_invitation.expire_invitations",
+>>>>>>> e9a6e8d6 (fix(invitation): run expire_invitations on the daily scheduler)
 		"crm.fcrm.doctype.crm_view_settings.crm_view_settings.clear_old_versions",
 		"crm.telemetry.capture_feature_state",
 	],
