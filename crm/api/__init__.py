@@ -2,6 +2,7 @@ import frappe
 from bs4 import BeautifulSoup
 from frappe import _
 from frappe.core.api.file import get_max_file_size
+from frappe.rate_limiter import rate_limit
 from frappe.translate import get_all_translations
 from frappe.utils import cstr, split_emails, validate_email_address
 
@@ -76,6 +77,7 @@ def check_app_permission():
 
 
 @frappe.whitelist(allow_guest=True)
+@rate_limit(limit=10, seconds=60 * 60)
 def accept_invitation(key: str | None = None):
 	if not key:
 		frappe.throw(_("Invalid or expired key"))
