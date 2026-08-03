@@ -54,13 +54,15 @@ class CRMInvitation(Document):
 	@frappe.whitelist()
 	def accept_invitation(self):
 		frappe.only_for(["System Manager", "Sales Manager"], True)
-		self.accept()
+		if self.accept():
+			# the invitee was not around to set a password, mail them a link to do it
+			frappe.get_doc("User", self.email).send_welcome_mail_to_user()
 
 	def accept(self):
 		if self.status != "Pending":
 			frappe.throw(_("Invalid or expired key"))
 
-		user = self.create_user_if_not_exists()
+		user, is_new_user = self.create_user_if_not_exists()
 		user.append_roles(self.role)
 		if self.role == "System Manager":
 			user.append_roles("Sales Manager", "Sales User")
@@ -74,6 +76,8 @@ class CRMInvitation(Document):
 		self.accepted_at = frappe.utils.now()
 		self.key = None
 		self.save(ignore_permissions=True)
+
+		return is_new_user
 
 	def update_module_in_user(self, user, module):
 		block_modules = frappe.get_all(
@@ -94,10 +98,11 @@ class CRMInvitation(Document):
 				email=self.email,
 				send_welcome_email=0,
 				first_name=first_name,
+				default_app="crm",
 			).insert(ignore_permissions=True)
-		else:
-			user = frappe.get_doc("User", self.email)
-		return user
+			return user, True
+
+		return frappe.get_doc("User", self.email), False
 
 
 def expire_invitations():
