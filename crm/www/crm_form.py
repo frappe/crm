@@ -5,9 +5,13 @@ import re
 
 import frappe
 
-from crm.api.form import ALLOWED_DOCTYPES
+from crm.api.form import ALLOWED_DOCTYPES, guest_can_select
 
 no_cache = 1
+
+# Cap on options a Link renders into the page — a page-weight guard against a huge
+# target table, not a permission gate.
+MAX_LINK_OPTIONS = 500
 
 # bare host, optional scheme/port, optional leading "*." wildcard — rejects any
 # token containing CSP metacharacters like ";" so admin-entered domains can't
@@ -63,7 +67,42 @@ def get_context(context):
 		for f in doc.web_form_fields
 	]
 	context.layout = build_layout(context.fields)
+	# Link fields render as a server-populated dropdown of existing records. Resolve
+	# resolve Link options here (keyed by fieldname) so the template stays presentation-only.
+	context.link_options = {
+		f["fieldname"]: _link_field_options(f["options"])
+		for f in context.fields
+		if f["fieldtype"] == "Link" and f["options"]
+	}
 	return context
+
+
+def _link_field_options(doctype: str) -> list[dict]:
+	"""Existing records of `doctype` as {value, label} dropdown options. Run as the Guest
+	user so the result honours the target's permissions at every level (doctype `select`,
+	row rules, if_owner) and shows exactly what an anonymous visitor may see. We switch the
+	session to Guest rather than `get_list(user="Guest")` because the latter still derives
+	its permission *tier* from the active session, so a manager preview would be checked for
+	Guest `read` and fail on a select-only target."""
+	if not doctype or not frappe.db.exists("DocType", doctype):
+		return []
+	if not guest_can_select(doctype):
+		return []
+	meta = frappe.get_meta(doctype)
+	title_field = meta.title_field or "name"
+	fields = ["name"] if title_field == "name" else ["name", title_field]
+	current_user = frappe.session.user
+	try:
+		frappe.set_user("Guest")  # nosemgrep — restored in finally; see docstring
+		rows = frappe.get_list(
+			doctype,
+			fields=fields,
+			order_by=f"{title_field} asc",
+			limit=MAX_LINK_OPTIONS,
+		)
+	finally:
+		frappe.set_user(current_user)  # nosemgrep
+	return [{"value": r["name"], "label": r.get(title_field) or r["name"]} for r in rows]
 
 
 def set_embedding_headers(doc):
