@@ -16,6 +16,12 @@
         v-if="document.actions?.length"
         :actions="document.actions"
       />
+      <EnrichFromWebsite
+        doctype="CRM Deal"
+        :docname="dealId"
+        :website="doc.website"
+        @done="onEnriched"
+      />
       <AssignTo v-model="assignees.data" doctype="CRM Deal" :docname="dealId" />
       <Dropdown
         v-if="doc && document.statuses"
@@ -58,7 +64,7 @@
     </Tabs>
     <Resizer side="right" class="flex flex-col justify-between border-l">
       <div
-        class="flex h-[45px] cursor-copy items-center border-b px-5 py-2.5 text-lg font-medium text-ink-gray-9"
+        class="flex h-[45px] cursor-copy items-center border-b px-5 py-2.5 text-lg-medium text-ink-gray-9"
         @click="copyToClipboard(dealId)"
       >
         {{ __(dealId) }}
@@ -70,13 +76,13 @@
               size="3xl"
               class="size-12"
               :label="title"
-              :image="organization?.organization_logo"
+              :image="doc.organization_logo || organization?.organization_logo"
             />
           </div>
         </Tooltip>
         <div class="flex flex-col gap-2.5 truncate text-ink-gray-9">
           <Tooltip :text="organization?.name || __('Set an Organization')">
-            <div class="truncate text-2xl font-medium">
+            <div class="truncate text-3xl-medium">
               {{ title }}
             </div>
           </Tooltip>
@@ -120,7 +126,7 @@
               v-if="canDelete"
               :tooltip="__('Delete')"
               variant="subtle"
-              icon="trash-2"
+              icon="lucide-trash-2"
               theme="red"
               @click="deleteDeal"
             />
@@ -166,7 +172,7 @@
                   <Button
                     class="h-7 px-3"
                     variant="ghost"
-                    icon="plus"
+                    icon="lucide-plus"
                     @click="togglePopover()"
                   />
                 </template>
@@ -219,7 +225,7 @@
                         <div class="flex items-center">
                           <Dropdown :options="contactOptions(contact)">
                             <Button
-                              icon="more-horizontal"
+                              icon="lucide-more-horizontal"
                               class="text-ink-gray-5"
                               variant="ghost"
                             />
@@ -239,7 +245,7 @@
                             variant="ghost"
                             class="transition-all duration-300 ease-in-out"
                             :class="{ 'rotate-90': opened }"
-                            icon="chevron-right"
+                            icon="lucide-chevron-right"
                             @click="toggle()"
                           />
                         </div>
@@ -271,7 +277,7 @@
                 </div>
                 <div
                   v-if="i != dealContacts.data.length - 1"
-                  class="mx-2 h-px border-t border-outline-gray-modals"
+                  class="mx-2 h-px border-t border-outline-elevation-2"
                 />
               </div>
               <div
@@ -367,6 +373,7 @@ import CollapsibleSection from '@/components/CollapsibleSection.vue'
 import SidePanelLayout from '@/components/SidePanelLayout.vue'
 import SLASection from '@/components/SLASection.vue'
 import CustomActions from '@/components/CustomActions.vue'
+import EnrichFromWebsite from '@/components/EnrichFromWebsite.vue'
 import {
   openWebsite,
   setupCustomizations,
@@ -530,7 +537,11 @@ const breadcrumbs = computed(() => {
 
   items.push({
     label: title.value,
-    route: { name: 'Deal', params: { dealId: props.dealId } },
+    route: {
+      name: 'Deal',
+      params: { dealId: props.dealId },
+      query: route.query,
+    },
   })
   return items
 })
@@ -815,6 +826,11 @@ function beforeStatusChange(data) {
       onSuccess: () => reloadResources(data),
     })
   }
+}
+
+function onEnriched() {
+  document.reload?.()
+  sections.reload()
 }
 
 function reloadResources(data) {

@@ -6,9 +6,11 @@
  "engine": "InnoDB",
  "field_order": [
   "enabled",
+  "sync_issues",
   "erpnext_company",
   "column_break_vfru",
   "is_erpnext_in_different_site",
+  "sync_products",
   "erpnext_site_url",
   "section_break_oubd",
   "api_key",
@@ -69,11 +71,25 @@
    "label": "Enabled"
   },
   {
+   "fieldname": "sync_issues",
+   "fieldtype": "Table",
+   "label": "Product Sync Issues",
+   "options": "CRM Product Sync Issue",
+   "read_only": 1
+  },
+  {
    "default": "0",
    "depends_on": "enabled",
    "fieldname": "is_erpnext_in_different_site",
    "fieldtype": "Check",
    "label": "Is ERPNext installed on a different site?"
+  },
+  {
+   "default": "1",
+   "depends_on": "eval:doc.enabled && !doc.is_erpnext_in_different_site",
+   "fieldname": "sync_products",
+   "fieldtype": "Check",
+   "label": "Bidirectional Product Sync"
   },
   {
    "fieldname": "section_break_jnbn",
@@ -102,7 +118,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2026-04-14 12:59:09.417774",
+ "modified": "2026-07-13 12:49:50.042124",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "ERPNext CRM Settings",

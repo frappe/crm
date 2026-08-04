@@ -43,6 +43,25 @@ jobs:
             - name: Oxlint
               run: cd frontend && npx oxlint src
 
+    build:
+        name: Production Build
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v4
+
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: "24"
+                  cache: yarn
+                  cache-dependency-path: frontend/yarn.lock
+
+            - name: Install dependencies
+              run: cd frontend && yarn install --frozen-lockfile
+
+            - name: Build frontend
+              run: cd frontend && yarn build
+
     test:
         name: Unit Tests & Coverage
         runs-on: ubuntu-latest

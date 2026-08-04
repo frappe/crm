@@ -2,7 +2,7 @@
   <Popover placement="bottom-end">
     <template #target="{ togglePopover }">
       <Button :label="__('Columns')" @click="togglePopover">
-        <template v-if="hideLabel">
+        <template v-if="hideLabel" #icon>
           <ColumnsIcon class="h-4" />
         </template>
         <template v-if="!hideLabel" #prefix>
@@ -12,7 +12,7 @@
     </template>
     <template #body="{ close }">
       <div
-        class="my-2 p-1.5 min-w-40 rounded-lg bg-surface-modal shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
+        class="my-2 p-1.5 min-w-40 rounded-lg bg-surface-elevation-2 shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
       >
         <div v-if="!edit">
           <Draggable
@@ -46,7 +46,7 @@
                     @click="removeColumn(element)"
                   >
                     <template #icon>
-                      <FeatherIcon name="x" class="h-3.5" />
+                      <span class="lucide-x h-3.5" aria-hidden="true" />
                     </template>
                   </Button>
                 </div>
@@ -54,23 +54,23 @@
             </template>
           </Draggable>
           <div
-            class="mt-1.5 flex flex-col gap-1 border-t border-outline-gray-modals pt-1.5"
+            class="mt-1.5 flex flex-col gap-1 border-t border-outline-elevation-2 pt-1.5"
           >
-            <Autocomplete
-              value=""
+            <Combobox
+              :model-value="null"
               :options="fields"
-              @change="(e) => addColumn(e)"
+              @update:selected-option="(e) => addColumn(e)"
             >
-              <template #target="{ togglePopover }">
+              <template #trigger="{ open, setOpen }">
                 <Button
                   class="w-full !justify-start !text-ink-gray-5"
                   variant="ghost"
                   :label="__('Add Column')"
                   iconLeft="plus"
-                  @click="togglePopover"
+                  @click="setOpen(!open)"
                 />
               </template>
-            </Autocomplete>
+            </Combobox>
             <Button
               v-if="columnsUpdated"
               class="w-full !justify-start !text-ink-gray-5"
@@ -143,10 +143,9 @@ import ColumnsIcon from '@/components/Icons/ColumnsIcon.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import DragIcon from '@/components/Icons/DragIcon.vue'
 import ReloadIcon from '@/components/Icons/ReloadIcon.vue'
-import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import { isTouchScreenDevice } from '@/utils'
 import { getMeta } from '@/stores/meta'
-import { Popover } from 'frappe-ui'
+import { Combobox, Popover } from 'frappe-ui'
 import Draggable from 'vuedraggable'
 import { computed, ref } from 'vue'
 import { watchOnce } from '@vueuse/core'
@@ -206,12 +205,14 @@ const fields = computed(() => {
     existingFields = columns.value.map((column) => column.key)
   }
 
-  return _fields.filter((field) => {
-    return (
-      !columns.value.find((column) => column.key === field.fieldname) &&
-      !existingFields.includes(field.fieldname)
-    )
-  })
+  return _fields
+    .filter((field) => {
+      return (
+        !columns.value.find((column) => column.key === field.fieldname) &&
+        !existingFields.includes(field.fieldname)
+      )
+    })
+    .map((field) => ({ ...field, value: field.fieldname }))
 })
 
 function addColumn(c) {

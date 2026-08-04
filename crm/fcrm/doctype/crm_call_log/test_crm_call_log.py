@@ -1,6 +1,8 @@
 # Copyright (c) 2023, Frappe Technologies Pvt. Ltd. and Contributors
 # See license.txt
 
+from unittest.mock import MagicMock, patch
+
 import frappe
 from frappe.tests import IntegrationTestCase
 
@@ -9,6 +11,7 @@ from crm.fcrm.doctype.crm_call_log.crm_call_log import (
 	get_call_log,
 	parse_call_log,
 )
+from crm.integrations.api import _get_recording_credentials
 
 
 class TestCRMCallLog(IntegrationTestCase):
@@ -421,6 +424,43 @@ class TestCRMCallLog(IntegrationTestCase):
 
 		call2 = create_test_call_log(telephony_medium="Exotel")
 		self.assertEqual(call2.telephony_medium, "Exotel")
+
+	def test_recording_credentials_manual_medium_needs_no_auth(self):
+		"""A manually added recording is fetched as-is, with no provider auth."""
+		self.assertIsNone(_get_recording_credentials("Manual"))
+
+	def test_recording_credentials_unknown_medium_returns_none(self):
+		"""An empty/unrecognized medium must not raise; it just skips auth."""
+		self.assertIsNone(_get_recording_credentials(""))
+		self.assertIsNone(_get_recording_credentials(None))
+
+	def test_recording_credentials_twilio_unconfigured_returns_none(self):
+		"""Twilio without a configured secret falls back to no auth instead of raising.
+
+		Regression: get_password used to raise when the secret was unset, which made
+		the recording proxy 500 and the UI show "Recording not available".
+		"""
+		settings = MagicMock()
+		settings.api_key = "ACxxxxxxxx"
+		settings.get_password.return_value = None
+		with patch("crm.integrations.api.frappe.get_single", return_value=settings):
+			self.assertIsNone(_get_recording_credentials("Twilio"))
+
+	def test_recording_credentials_twilio_configured_returns_tuple(self):
+		"""Twilio with both key and secret set yields the auth pair."""
+		settings = MagicMock()
+		settings.api_key = "ACxxxxxxxx"
+		settings.get_password.return_value = "twilio_secret"
+		with patch("crm.integrations.api.frappe.get_single", return_value=settings):
+			self.assertEqual(_get_recording_credentials("Twilio"), ("ACxxxxxxxx", "twilio_secret"))
+
+	def test_recording_credentials_exotel_configured_returns_tuple(self):
+		"""Exotel with both key and token set yields the auth pair."""
+		settings = MagicMock()
+		settings.api_key = "exotel_key"
+		settings.get_password.return_value = "exotel_token"
+		with patch("crm.integrations.api.frappe.get_single", return_value=settings):
+			self.assertEqual(_get_recording_credentials("Exotel"), ("exotel_key", "exotel_token"))
 
 
 def create_test_call_log(**kwargs):

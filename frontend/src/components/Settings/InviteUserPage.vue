@@ -2,7 +2,7 @@
   <div class="flex h-full flex-col gap-6 py-8 px-6 text-ink-gray-8">
     <div class="flex px-2 justify-between">
       <div class="flex flex-col gap-1 w-9/12">
-        <h2 class="flex gap-2 text-xl font-semibold leading-none h-5">
+        <h2 class="flex gap-2 text-2xl-semibold leading-none h-5">
           {{ __('Send Invites To') }}
         </h2>
         <p class="text-p-base text-ink-gray-6">
@@ -42,7 +42,7 @@
         />
         <div
           v-if="userExistMessage || inviteeExistMessage"
-          class="text-xs text-ink-red-3 mt-1.5"
+          class="text-xs text-ink-red-6 mt-1.5"
         >
           {{ userExistMessage || inviteeExistMessage }}
         </div>
@@ -57,9 +57,7 @@
       </div>
       <template v-if="pendingInvitations.data?.length && !invitees.length">
         <div class="flex flex-col gap-4">
-          <div
-            class="flex items-center justify-between text-base font-semibold"
-          >
+          <div class="flex items-center justify-between text-base-semibold">
             <div>{{ __('Pending Invites') }}</div>
           </div>
           <ul class="flex flex-col gap-1">
@@ -79,7 +77,7 @@
               <div>
                 <Button
                   :tooltip="__('Delete Invitation')"
-                  icon="x"
+                  icon="lucide-x"
                   variant="ghost"
                   :loading="
                     pendingInvitations.delete.loading &&

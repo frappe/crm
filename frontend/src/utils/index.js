@@ -319,6 +319,14 @@ export function htmlToText(html) {
   return div.textContent || div.innerText || ''
 }
 
+export function isContentEmpty(html) {
+  if (!html) return true
+  // Media/embeds are content even without text, so they post fine.
+  if (/<(img|video|iframe|table|hr)\b/i.test(html)) return false
+  // .trim() also strips U+00A0 (nbsp), so whitespace-only content reads empty.
+  return htmlToText(html).trim() === ''
+}
+
 export function startCase(str) {
   return str.charAt(0).toUpperCase() + str.slice(1)
 }
@@ -328,6 +336,19 @@ export function validateEmail(email) {
     /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
   return regExp.test(email)
 }
+
+export function validatePhone(phone) {
+  let value = String(phone).trim()
+  return /^\+?[\d\s()-]+$/.test(value) && /\d/.test(value)
+}
+
+export const isMac =
+  typeof navigator !== 'undefined' &&
+  /Mac|iPod|iPhone|iPad/i.test(
+    navigator.userAgentData?.platform || navigator.platform || '',
+  )
+
+export const submitShortcutLabel = isMac ? '⌘⏎' : 'Ctrl+⏎'
 
 export function parseAssignees(assignees) {
   let { getUser } = usersStore()
@@ -773,7 +794,7 @@ export function TemplateOption({ active, option, variant, icon, onClick }) {
       class: [
         active ? 'bg-surface-gray-2' : 'text-ink-gray-7',
         'group flex w-full gap-2 items-center rounded-md px-2 py-2 text-base hover:bg-surface-gray-3',
-        variant == 'danger' ? 'text-ink-red-3 hover:bg-ink-red-1' : '',
+        variant == 'danger' ? 'text-ink-red-6 hover:bg-ink-red-1' : '',
       ],
       onClick: onClick,
     },
@@ -876,11 +897,11 @@ export function isTranslatable(doctype) {
 }
 
 export function sanitizeHTML(html = '', options = {}) {
-  if (typeof html !== 'string') return ''
+  if (typeof html !== 'string') return html
   return DOMPurify.sanitize(html, options)
 }
 
 export function sanitizeText(text = '') {
-  if (typeof text !== 'string') return ''
+  if (typeof text !== 'string') return text
   return text.replace(/\p{Cf}/gu, '')
 }

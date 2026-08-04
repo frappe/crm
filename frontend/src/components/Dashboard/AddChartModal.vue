@@ -1,10 +1,6 @@
 <template>
-  <Dialog
-    v-model="show"
-    :options="{ title: __('Add Chart') }"
-    @close="show = false"
-  >
-    <template #body-content>
+  <Dialog v-model:open="show" :title="__('Add Chart')" @close="show = false">
+    <template #default>
       <div class="flex flex-col gap-4">
         <FormControl
           v-model="chartType"

@@ -2,6 +2,19 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on("CRM Product", {
+  onload: function (frm) {
+    if (!frm.is_new()) return;
+    frappe.db
+      .get_single_value("ERPNext CRM Settings", "enabled")
+      .then((enabled) => {
+        if (!enabled) return;
+        frappe.show_alert({
+          message: __("Create products as Items in ERPNext"),
+          indicator: "blue",
+        });
+        frappe.set_route("Form", "Item", "new");
+      });
+  },
   product_code: function (frm) {
     if (!frm.doc.product_name)
       frm.set_value("product_name", frm.doc.product_code);

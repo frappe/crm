@@ -205,17 +205,17 @@
           <span v-if="getRow(itemName, '_email_count').label">
             {{ getRow(itemName, '_email_count').label }}
           </span>
-          <span class="text-3xl leading-[0]"> &middot; </span>
+          <span class="text-4xl leading-[0]"> &middot; </span>
           <NoteIcon class="h-4 w-4" />
           <span v-if="getRow(itemName, '_note_count').label">
             {{ getRow(itemName, '_note_count').label }}
           </span>
-          <span class="text-3xl leading-[0]"> &middot; </span>
+          <span class="text-4xl leading-[0]"> &middot; </span>
           <TaskIcon class="h-4 w-4" />
           <span v-if="getRow(itemName, '_task_count').label">
             {{ getRow(itemName, '_task_count').label }}
           </span>
-          <span class="text-3xl leading-[0]"> &middot; </span>
+          <span class="text-4xl leading-[0]"> &middot; </span>
           <CommentIcon class="h-4 w-4" />
           <span v-if="getRow(itemName, '_comment_count').label">
             {{ getRow(itemName, '_comment_count').label }}
@@ -227,7 +227,7 @@
           variant="ghost"
           @click.stop.prevent
         >
-          <Button icon="plus" variant="ghost" />
+          <Button icon="lucide-plus" variant="ghost" />
         </Dropdown>
       </div>
     </template>
@@ -292,6 +292,7 @@ import { statusesStore } from '@/stores/statuses'
 import { callEnabled } from '@/composables/telephony'
 import { useBroadcast } from '@/composables/useBroadcast'
 import { formatDate, timeAgo, website, formatTime } from '@/utils'
+import { timestampCell } from '@/composables/useTimelinePreferences'
 import { useOnboarding, useTelemetry } from 'frappe-ui/frappe'
 import { Avatar, Tooltip, Dropdown } from 'frappe-ui'
 import { useRoute } from 'vue-router'
@@ -493,10 +494,7 @@ function parseRows(rows, columns = []) {
           label: getUser(user).full_name,
         }))
       } else if (['modified', 'creation'].includes(row)) {
-        _rows[row] = {
-          label: formatDate(lead[row]),
-          timeAgo: __(timeAgo(lead[row])),
-        }
+        _rows[row] = timestampCell(lead[row])
       } else if (
         ['first_response_time', 'first_responded_on', 'response_by'].includes(
           row,

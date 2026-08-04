@@ -29,14 +29,14 @@
                   />
                   <div
                     v-if="user.doc.user_image"
-                    class="z-1 size-4 absolute -top-1 -right-1 flex cursor-pointer items-center justify-center rounded-full bg-surface-white opacity-0 duration-300 ease-in-out group-hover:opacity-100 hover:bg-surface-gray-2 outline outline-black-overlay-50"
+                    class="z-1 size-4 absolute -top-1 -right-1 flex cursor-pointer items-center justify-center rounded-full bg-surface-base opacity-0 duration-300 ease-in-out group-hover:opacity-100 hover:bg-surface-gray-2 outline outline-black-overlay-50"
                     @click.stop="updateImage()"
                     @mouseenter="isHoveringRemove = true"
                     @mouseleave="isHoveringRemove = false"
                   >
-                    <FeatherIcon
-                      name="x"
-                      class="size-3.5 cursor-pointer text-ink-gray-4"
+                    <span
+                      class="lucide-x size-3.5 cursor-pointer text-ink-gray-4"
+                      aria-hidden="true"
                     />
                   </div>
                 </Tooltip>
@@ -51,7 +51,7 @@
                 <div class="flex flex-col gap-1">
                   <div v-if="!editName" class="flex items-center gap-1">
                     <span
-                      class="text-lg sm:text-xl !font-semibold text-ink-gray-8"
+                      class="text-lg sm:text-2xl !font-semibold text-ink-gray-8"
                     >
                       {{ fullName }}
                     </span>
@@ -70,7 +70,11 @@
                       @keydown.enter="save"
                       @keydown.esc.stop="editName = false"
                     />
-                    <Button variant="outline" icon="check" @click="save" />
+                    <Button
+                      variant="outline"
+                      icon="lucide-check"
+                      @click="save"
+                    />
                   </div>
                   <span class="text-p-sm text-ink-gray-6">
                     {{ user.doc.email }}
@@ -83,12 +87,12 @@
         </FileUploader>
       </div>
       <div>
-        <div class="text-base font-semibold text-ink-gray-9">
+        <div class="text-base-semibold text-ink-gray-9">
           {{ __('Account Info & Security') }}
         </div>
         <div class="flex items-center justify-between mt-6">
           <div class="flex flex-col gap-1">
-            <span class="text-base font-medium text-ink-gray-8">
+            <span class="text-base-medium text-ink-gray-8">
               {{ __('Emails & Signature') }}
             </span>
             <span class="text-p-sm text-ink-gray-6">
@@ -106,7 +110,7 @@
         </div>
         <div class="flex items-center justify-between mt-6">
           <div class="flex flex-col gap-1">
-            <span class="text-base font-medium text-ink-gray-8">
+            <span class="text-base-medium text-ink-gray-8">
               {{ __('Password') }}
             </span>
             <span class="text-p-sm text-ink-gray-6">

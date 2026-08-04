@@ -6,7 +6,7 @@
 
     <div
       v-if="fields?.length"
-      class="rounded border border-outline-gray-modals"
+      class="rounded border border-outline-elevation-2"
     >
       <!-- Header -->
       <div
@@ -47,7 +47,7 @@
                 field.reqd ||
                 (field.mandatory_depends_on && field.mandatory_via_depends_on)
               "
-              class="text-ink-red-2"
+              class="text-ink-red-5"
               >*</span
             >
           </div>
@@ -57,7 +57,7 @@
             :tooltip="__('Edit Grid Fields')"
             class="rounded !bg-surface-gray-2 border-0 !text-ink-gray-5"
             variant="outline"
-            icon="settings"
+            icon="lucide-settings"
             @click="showGridFieldsEditorModal = true"
           />
         </div>
@@ -74,7 +74,7 @@
         >
           <template #item="{ element: row, index }">
             <div
-              class="grid-row flex cursor-pointer items-center border-b border-outline-gray-modals bg-surface-modals last:rounded-b last:border-b-0"
+              class="grid-row flex cursor-pointer items-center border-b border-outline-elevation-2 bg-surface-modals last:rounded-b last:border-b-0"
               @click.stop="
                 () => {
                   if (!gridSettings.editable_grid) {
@@ -84,7 +84,7 @@
               "
             >
               <div
-                class="grid-row-checkbox inline-flex h-9.5 items-center bg-surface-white justify-center border-r border-outline-gray-modals p-2 w-12"
+                class="grid-row-checkbox inline-flex h-9.5 items-center bg-surface-base justify-center border-r border-outline-elevation-2 p-2 w-12"
               >
                 <Checkbox
                   class="cursor-pointer duration-300"
@@ -93,7 +93,7 @@
                 />
               </div>
               <div
-                class="flex h-9.5 items-center justify-center bg-surface-white border-r border-outline-gray-modals py-2 px-1 text-sm text-ink-gray-8 w-12"
+                class="flex h-9.5 items-center justify-center bg-surface-base border-r border-outline-elevation-2 py-2 px-1 text-sm text-ink-gray-8 w-12"
               >
                 {{ index + 1 }}
               </div>
@@ -108,7 +108,7 @@
                   <!-- Resolve per-row field overrides -->
                   <div
                     v-if="!getRowFieldObj(baseField, row).hidden"
-                    class="border-r border-outline-gray-modals h-9.5"
+                    class="border-r border-outline-elevation-2 h-9.5"
                   >
                     <template
                       v-for="field in [getRowFieldObj(baseField, row)]"
@@ -189,7 +189,7 @@
                       </Link>
                       <div
                         v-else-if="field.fieldtype === 'Check'"
-                        class="flex h-full bg-surface-white justify-center items-center"
+                        class="flex h-full bg-surface-base justify-center items-center"
                       >
                         <Checkbox
                           v-model="row[field.fieldname]"
@@ -818,7 +818,7 @@ const getOptions = (options) => {
 :deep(.grid-row .combobox > div > div) {
   border: none;
   border-radius: 0;
-  background-color: var(--surface-white);
+  background-color: var(--surface-base);
   height: 38px;
 }
 
@@ -832,7 +832,7 @@ const getOptions = (options) => {
 
 :deep(.grid-row button:focus) :deep(.grid-row button:hover) {
   box-shadow: none;
-  background-color: var(--surface-white);
+  background-color: var(--surface-base);
 }
 
 :deep(.grid-row button:focus-within:not(.rating-star):not(.button-control)) {

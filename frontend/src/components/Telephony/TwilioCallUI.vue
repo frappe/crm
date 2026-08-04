@@ -2,7 +2,7 @@
   <div v-show="showCallPopup" v-bind="$attrs">
     <div
       ref="callPopup"
-      class="fixed z-20 flex w-60 cursor-move select-none flex-col rounded-lg bg-surface-gray-7 p-4 text-ink-gray-2 shadow-2xl"
+      class="fixed z-20 flex w-60 cursor-move select-none flex-col rounded-lg bg-surface-gray-10 p-4 text-ink-gray-2 shadow-2xl"
       :style="style"
     >
       <div class="flex flex-row-reverse items-center gap-1">
@@ -20,7 +20,7 @@
           :class="onCall || calling ? '' : 'pulse'"
         />
         <div class="flex flex-col items-center justify-center gap-1">
-          <div class="text-xl font-medium">
+          <div class="text-2xl-medium">
             {{ contact?.full_name ?? __('Unknown') }}
           </div>
           <div class="text-sm text-ink-gray-5">{{ contact?.mobile_no }}</div>
@@ -59,7 +59,7 @@
             @click="openNoteModal"
           />
           <Button
-            class="rounded-full bg-surface-red-5 hover:bg-surface-red-6 rotate-[135deg] text-ink-white"
+            class="rounded-full bg-surface-red-7 hover:bg-surface-red-8 rotate-[135deg] text-ink-base"
             :tooltip="__('Hang Up')"
             :icon="PhoneIcon"
             @click="hangUpCall"
@@ -71,7 +71,7 @@
             variant="solid"
             theme="red"
             :label="__('Cancel')"
-            class="rounded-lg text-ink-white"
+            class="rounded-lg text-ink-base"
             :disabled="callStatus == 'initiating'"
             @click="cancelCall"
           >
@@ -86,7 +86,7 @@
             variant="solid"
             theme="green"
             :label="__('Accept')"
-            class="rounded-lg text-ink-white"
+            class="rounded-lg text-ink-base"
             :iconLeft="PhoneIcon"
             @click="acceptIncomingCall"
           />
@@ -95,7 +95,7 @@
             variant="solid"
             theme="red"
             :label="__('Reject')"
-            class="rounded-lg text-ink-white"
+            class="rounded-lg text-ink-base"
             @click="rejectIncomingCall"
           >
             <template #prefix>
@@ -108,7 +108,7 @@
   </div>
   <div
     v-show="showSmallCallWindow"
-    class="ml-2 flex cursor-pointer select-none items-center justify-between gap-3 rounded-lg bg-surface-gray-7 px-2 py-[7px] text-base text-ink-gray-2"
+    class="ml-2 flex cursor-pointer select-none items-center justify-between gap-3 rounded-lg bg-surface-gray-10 px-2 py-[7px] text-base text-ink-gray-2"
     v-bind="$attrs"
     @click="toggleCallWindow"
   >
@@ -130,7 +130,7 @@
       <Button
         variant="solid"
         theme="red"
-        class="!h-6 !w-6 rounded-full rotate-[135deg] text-ink-white"
+        class="!h-6 !w-6 rounded-full rotate-[135deg] text-ink-base"
         :icon="PhoneIcon"
         @click.stop="hangUpCall"
       />
@@ -142,7 +142,7 @@
       <Button
         variant="solid"
         theme="red"
-        class="!h-6 !w-6 rounded-full rotate-[135deg] text-ink-white"
+        class="!h-6 !w-6 rounded-full rotate-[135deg] text-ink-base"
         :icon="PhoneIcon"
         @click.stop="cancelCall"
       />
@@ -151,7 +151,7 @@
       <Button
         variant="solid"
         theme="green"
-        class="pulse relative !h-6 !w-6 rounded-full animate-pulse text-ink-white"
+        class="pulse relative !h-6 !w-6 rounded-full animate-pulse text-ink-base"
         :tooltip="__('Accept Call')"
         :icon="PhoneIcon"
         @click.stop="acceptIncomingCall"
@@ -159,7 +159,7 @@
       <Button
         variant="solid"
         theme="red"
-        class="!h-6 !w-6 rounded-full rotate-[135deg] text-ink-white"
+        class="!h-6 !w-6 rounded-full rotate-[135deg] text-ink-base"
         :tooltip="__('Reject Call')"
         :icon="PhoneIcon"
         @click.stop="rejectIncomingCall"

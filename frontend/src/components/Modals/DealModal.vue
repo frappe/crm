@@ -1,10 +1,10 @@
 <template>
-  <Dialog v-model="show" :options="{ size: '3xl' }">
+  <Dialog v-model:open="show" :size="'3xl'">
     <template #body>
-      <div class="bg-surface-modal px-4 pb-6 pt-5 sm:px-6">
+      <div class="bg-surface-elevation-2 px-4 pb-6 pt-5 sm:px-6">
         <div class="mb-5 flex items-center justify-between">
           <div>
-            <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9">
+            <h3 class="text-3xl-semibold leading-6 text-ink-gray-9">
               {{ __('Create Deal') }}
             </h3>
           </div>
@@ -20,7 +20,7 @@
             <Button
               variant="ghost"
               class="w-7"
-              icon="x"
+              icon="lucide-x"
               @click="show = false"
             />
           </div>
@@ -66,6 +66,14 @@
             :loading="isDealCreating"
             @click="createDeal"
           />
+          <Button
+            :label="__('Enrich')"
+            :loading="isEnriching"
+            :disabled="!deal.doc.website"
+            :tooltip="__('Fill fields from the company website')"
+            iconLeft="zap"
+            @click="enrichFromWebsite"
+          />
         </div>
       </div>
     </template>
@@ -81,7 +89,7 @@ import { isMobileView } from '@/composables/settings'
 import { showQuickEntryModal, quickEntryProps } from '@/composables/modals'
 import { useDocument } from '@/data/document'
 import { useTelemetry } from 'frappe-ui/frappe'
-import { Switch, createResource } from 'frappe-ui'
+import { Switch, createResource, call, toast } from 'frappe-ui'
 import { computed, ref, onMounted, nextTick, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -102,9 +110,54 @@ const hasOrganizationSections = ref(true)
 const hasContactSections = ref(true)
 
 const isDealCreating = ref(false)
+const isEnriching = ref(false)
 const chooseExistingContact = ref(false)
 const chooseExistingOrganization = ref(false)
 const { capture } = useTelemetry()
+
+// Prefill the form from the company website (Domain Enrichment) — synchronous,
+// no document is created until the user clicks Create.
+async function enrichFromWebsite() {
+  const website = (deal.doc.website || '').trim()
+  if (!website) {
+    toast.warning(__('Enter a Website first.'))
+    return
+  }
+  capture('enrichment_quick_triggered', {
+    doctype: 'CRM Deal',
+    source: 'create_modal',
+  })
+  isEnriching.value = true
+  try {
+    const { fields, notes } = await call(
+      'crm.domain_enrichment.api.enrich_preview',
+      { website, doctype: 'CRM Deal' },
+    )
+    // Fill-empty semantics: never clobber values the user already typed in the
+    // modal — only set fields that are currently empty on deal.doc.
+    const filled = Object.keys(fields || {}).filter((key) => {
+      const current = deal.doc[key]
+      if (current === undefined || current === null || current === '') {
+        deal.doc[key] = fields[key]
+        return true
+      }
+      return false
+    })
+    if (filled.length) {
+      toast.success(
+        __('Filled {0} field(s) from the website.', [filled.length]),
+      )
+    } else {
+      toast.info(
+        notes?.[0] || __('Nothing could be extracted from this website.'),
+      )
+    }
+  } catch (e) {
+    toast.error(e.messages?.[0] || __('Could not enrich from the website.'))
+  } finally {
+    isEnriching.value = false
+  }
+}
 
 watch(
   [chooseExistingOrganization, chooseExistingContact],

@@ -28,7 +28,7 @@
                 </template>
                 <template #body>
                   <div
-                    class="flex flex-col gap-3 px-3 py-2.5 min-w-40 rounded-lg bg-surface-modal shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
+                    class="flex flex-col gap-3 px-3 py-2.5 min-w-40 rounded-lg bg-surface-elevation-2 shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
                   >
                     <div class="flex gap-1">
                       <Button
@@ -57,13 +57,13 @@
                 <template #default>
                   <Button
                     class="opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-opacity"
-                    icon="more-horizontal"
+                    icon="lucide-more-horizontal"
                     variant="ghost"
                   />
                 </template>
               </Dropdown>
               <Button
-                icon="plus"
+                icon="lucide-plus"
                 variant="ghost"
                 @click="options.onNewClick(column)"
               />
@@ -82,7 +82,7 @@
               <template #item="{ element: fields }">
                 <component
                   :is="options.getRoute ? 'router-link' : 'div'"
-                  class="pt-3 px-3.5 pb-2.5 rounded-lg border bg-surface-white text-base flex flex-col text-ink-gray-9"
+                  class="pt-3 px-3.5 pb-2.5 rounded-lg border bg-surface-base text-base flex flex-col text-ink-gray-9"
                   :data-name="fields.name"
                   v-bind="{
                     to: options.getRoute ? options.getRoute(fields) : undefined,
@@ -126,7 +126,11 @@
                   <slot name="actions" v-bind="{ itemName: fields.name }">
                     <div class="flex gap-2 items-center justify-between">
                       <div></div>
-                      <Button icon="plus" variant="ghost" @click.stop.prevent />
+                      <Button
+                        icon="lucide-plus"
+                        variant="ghost"
+                        @click.stop.prevent
+                      />
                     </div>
                   </slot>
                 </component>
@@ -146,17 +150,17 @@
       </template>
     </Draggable>
     <div class="shrink-0 min-w-64">
-      <Autocomplete
-        value=""
+      <Combobox
+        :model-value="null"
         :options="deletedColumns"
-        @change="(e) => addColumn(e)"
+        @update:selected-option="(e) => addColumn(e)"
       >
-        <template #target="{ togglePopover }">
+        <template #trigger="{ open, setOpen }">
           <Button
             class="w-full mt-2.5 mb-1 mr-5"
             :label="__('Add Column')"
             iconLeft="plus"
-            @click="togglePopover()"
+            @click="setOpen(!open)"
           />
         </template>
         <template #footer>
@@ -167,17 +171,16 @@
             @click="updateColumn(null, true)"
           />
         </template>
-      </Autocomplete>
+      </Combobox>
     </div>
   </div>
 </template>
 <script setup>
 import RefreshIcon from '@/components/Icons/RefreshIcon.vue'
-import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import { isTouchScreenDevice, colors, parseColor } from '@/utils'
 import Draggable from 'vuedraggable'
-import { Dropdown, Popover } from 'frappe-ui'
+import { Combobox, Dropdown, Popover } from 'frappe-ui'
 import { computed } from 'vue'
 
 defineProps({

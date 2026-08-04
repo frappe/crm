@@ -24,7 +24,7 @@
         <div class="flex gap-2">
           <Button
             :tooltip="__('Refresh')"
-            :icon="RefreshIcon"
+            icon="lucide-refresh-ccw"
             :loading="isLoading"
             @click="reload()"
           />
@@ -83,9 +83,9 @@
                   </Tooltip>
                 </template>
                 <template #suffix>
-                  <FeatherIcon
-                    class="h-3.5 cursor-pointer group-hover:flex hidden"
-                    name="x"
+                  <span
+                    class="lucide-x h-3.5 cursor-pointer group-hover:flex hidden"
+                    aria-hidden="true"
                     @click.stop="removeQuickFilter(filter)"
                   />
                 </template>
@@ -95,28 +95,28 @@
         </Draggable>
       </FadedScrollableDiv>
       <div>
-        <Autocomplete
-          value=""
+        <Combobox
+          :model-value="null"
           :options="quickFilterOptions"
-          @change="(e) => addQuickFilter(e)"
+          @update:selected-option="(e) => addQuickFilter(e)"
         >
-          <template #target="{ togglePopover }">
+          <template #trigger="{ open, setOpen }">
             <Button
               class="whitespace-nowrap mr-2"
               variant="ghost"
               :label="__('Add Filter')"
               iconLeft="plus"
-              @click="togglePopover()"
+              @click="setOpen(!open)"
             />
           </template>
-          <template #item-label="{ option }">
-            <Tooltip :text="option.value" :hover-delay="1">
+          <template #item-label="{ item }">
+            <Tooltip :text="item.value" :hover-delay="1">
               <div class="flex-1 truncate text-ink-gray-7">
-                {{ option.label }}
+                {{ item.label }}
               </div>
             </Tooltip>
           </template>
-        </Autocomplete>
+        </Combobox>
       </div>
     </div>
     <div class="-ml-2 h-[70%] border-l" />
@@ -126,7 +126,7 @@
         :loading="updateQuickFilters.loading"
         @click="saveQuickFilters"
       />
-      <Button icon="x" @click="customizeQuickFilter = false" />
+      <Button icon="lucide-x" @click="customizeQuickFilter = false" />
     </div>
   </div>
   <div v-else class="flex items-center justify-between gap-2 px-5 py-4">
@@ -157,7 +157,7 @@
       <div class="flex items-center gap-2">
         <Button
           :tooltip="__('Refresh')"
-          :icon="RefreshIcon"
+          icon="lucide-refresh-ccw"
           :loading="isLoading"
           @click="reload()"
         />
@@ -230,7 +230,10 @@
           ]"
         >
           <template #default>
-            <Button :tooltip="__('More Options')" icon="more-horizontal" />
+            <Button
+              :tooltip="__('More Options')"
+              icon="lucide-more-horizontal"
+            />
           </template>
         </Dropdown>
       </div>
@@ -258,19 +261,17 @@
     }"
   />
   <Dialog
-    v-model="showExportDialog"
-    :options="{
-      title: __('Export'),
-      actions: [
-        {
-          label: __('Download'),
-          variant: 'solid',
-          onClick: () => exportRows(),
-        },
-      ],
-    }"
+    v-model:open="showExportDialog"
+    :title="__('Export')"
+    :actions="[
+      {
+        label: __('Download'),
+        variant: 'solid',
+        onClick: () => exportRows(),
+      },
+    ]"
   >
-    <template #body-content>
+    <template #default>
       <FormControl
         v-model="export_type"
         variant="outline"
@@ -299,11 +300,11 @@
   </Dialog>
 </template>
 <script setup>
+import Icon from '@/components/Icon.vue'
 import ListIcon from '@/components/Icons/ListIcon.vue'
 import KanbanIcon from '@/components/Icons/KanbanIcon.vue'
 import GroupByIcon from '@/components/Icons/GroupByIcon.vue'
 import QuickFilterField from '@/components/QuickFilterField.vue'
-import RefreshIcon from '@/components/Icons/RefreshIcon.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import DuplicateIcon from '@/components/Icons/DuplicateIcon.vue'
 import CheckIcon from '@/components/Icons/CheckIcon.vue'
@@ -312,7 +313,6 @@ import UnpinIcon from '@/components/Icons/UnpinIcon.vue'
 import ExportIcon from '@/components/Icons/ExportIcon.vue'
 import QuickFilterIcon from '@/components/Icons/QuickFilterIcon.vue'
 import ViewModal from '@/components/Modals/ViewModal.vue'
-import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import SortBy from '@/components/SortBy.vue'
 import Filter from '@/components/Filter.vue'
 import GroupBy from '@/components/GroupBy.vue'
@@ -323,9 +323,11 @@ import { getSettings } from '@/stores/settings'
 import { globalStore } from '@/stores/global'
 import { viewsStore } from '@/stores/views'
 import { usersStore } from '@/stores/users'
+import { organizationsStore } from '@/stores/organizations'
 import { getMeta } from '@/stores/meta'
 import { isEmoji } from '@/utils'
 import {
+  Combobox,
   Tooltip,
   createResource,
   Dropdown,
@@ -334,9 +336,16 @@ import {
   FeatherIcon,
   usePageMeta,
 } from 'frappe-ui'
-import { computed, ref, onMounted, watch, h, markRaw } from 'vue'
+import {
+  computed,
+  ref,
+  onMounted,
+  onBeforeUnmount,
+  watch,
+  h,
+  markRaw,
+} from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { useDebounceFn } from '@vueuse/core'
 import { isMobileView } from '@/composables/settings'
 import Draggable from 'vuedraggable'
 import _ from 'lodash'
@@ -356,9 +365,10 @@ const props = defineProps({
 })
 
 const { brand } = getSettings()
-const { $dialog } = globalStore()
+const { $dialog, $socket } = globalStore()
 const { reload: reloadView, getDefaultView, getView } = viewsStore()
 const { isManager } = usersStore()
+const { organizations } = organizationsStore()
 
 const list = defineModel({ type: Object, default: () => ({}) })
 const loadMore = defineModel('loadMore', { type: Boolean })
@@ -515,9 +525,11 @@ list.value = createResource({
   url: 'crm.api.doc.get_data',
   params: getParams(),
   cache: [props.doctype, route.query.view, route.params.viewType],
+  auto: true,
   onSuccess(data) {
     let cv = getView(route.query.view, route.params.viewType, props.doctype)
     let params = list.value.params ? list.value.params : getParams()
+    list.value.params = params
     defaultParams.value = {
       doctype: props.doctype,
       filters: params.filters,
@@ -540,7 +552,30 @@ list.value = createResource({
   },
 })
 
-onMounted(() => useDebounceFn(reload, 100)())
+// createResource leaves `params` null until a fetch passes them explicitly
+list.value.params = getParams()
+
+// Refresh the list when a Domain Enrichment enrichment finishes for this
+// doctype, so newly-filled fields (logo, etc.) show without a manual reload.
+function onEnrichmentDone(data) {
+  if (data?.status !== 'completed') return
+  if (data.reference_doctype === props.doctype) reload()
+  // The Deals list logo comes from the cached organizations store
+  // (getOrganization → organization_logo), not the deal row. Refresh that store so a
+  // newly enriched org's logo appears without a hard refresh; `rows` is a
+  // computed reading the store, so it re-renders reactively.
+  if (props.doctype === 'CRM Deal') {
+    organizations.reload()
+  }
+}
+
+onMounted(() => {
+  $socket?.on('domain_enrichment_progress', onEnrichmentDone)
+})
+
+onBeforeUnmount(() => {
+  $socket?.off('domain_enrichment_progress', onEnrichmentDone)
+})
 
 const isLoading = computed(() => list.value?.loading)
 
@@ -631,6 +666,11 @@ function getIcon(icon, type) {
     return markRaw(GroupByIcon)
   } else if (!icon && type === 'kanban') {
     return markRaw(KanbanIcon)
+  } else if (icon && typeof icon === 'string') {
+    // a lucide icon name (from the IconPicker) — render it through Icon so it
+    // resolves from the injected lucide sprite. The Dropdown renders a bare
+    // string via FeatherIcon, which lacks the newer lucide names and shows blank.
+    return () => h(Icon, { icon, class: 'h-4 w-4' })
   }
   return icon || markRaw(ListIcon)
 }
@@ -640,7 +680,10 @@ const viewsDropdownOptions = computed(() => {
     {
       group: __('Standard Views'),
       hideLabel: true,
-      items: standardViews,
+      items: standardViews.map((item) => ({
+        ...item,
+        selected: item.name === currentView.value.name,
+      })),
     },
   ]
 
@@ -649,6 +692,7 @@ const viewsDropdownOptions = computed(() => {
       view.label = __(view.label)
       view.type = view.type || 'list'
       view.icon = getIcon(view.icon, view.type)
+      view.selected = view.name === currentView.value.name
       view.filters =
         typeof view.filters == 'string'
           ? JSON.parse(view.filters)
@@ -924,7 +968,19 @@ function updateColumns(obj) {
 
   if (!route.query.view) {
     createOrUpdateStandardView()
+  } else if (!view.value.public) {
+    persistCustomView()
   }
+}
+
+function persistCustomView() {
+  view.value.doctype = props.doctype
+  call('crm.fcrm.doctype.crm_view_settings.crm_view_settings.update', {
+    view: view.value,
+  }).then(() => {
+    reloadView()
+    viewUpdated.value = false
+  })
 }
 
 function updateKanbanSettings(data) {

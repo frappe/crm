@@ -1,11 +1,6 @@
 <template>
-  <Dialog
-    v-model="dialog"
-    :options="{
-      title: __('Edit Response & Resolution'),
-    }"
-  >
-    <template #body-content>
+  <Dialog v-model:open="dialog" :title="__('Edit Response & Resolution')">
+    <template #default>
       <div class="flex flex-col gap-4">
         <FormControl
           v-model="priorityData.priority"
@@ -42,7 +37,7 @@
             variant="subtle"
             :theme="isConfirmingDelete ? 'red' : 'gray'"
             :label="isConfirmingDelete ? __('Confirm Delete') : __('Delete')"
-            icon-left="trash-2"
+            icon-left="lucide-trash-2"
             @click="deleteItem"
           />
         </div>

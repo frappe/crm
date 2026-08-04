@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col gap-2 truncate">
     <div
-      class="inline-flex items-center cursor-pointer transition-colors focus:outline-none shrink-0 text-ink-gray-8 bg-surface-white border border-outline-gray-2 hover:border-outline-gray-3 active:border-outline-gray-3 active:bg-surface-gray-4 focus-visible:ring focus-visible:ring-outline-gray-3 h-7 text-base px-2 rounded"
+      class="inline-flex items-center cursor-pointer transition-colors focus:outline-none shrink-0 text-ink-gray-8 bg-surface-base border border-outline-gray-2 hover:border-outline-gray-3 active:border-outline-gray-3 active:bg-surface-gray-4 focus-visible:ring focus-visible:ring-outline-gray-3 h-7 text-base px-2 rounded"
       @click="addShowNotifications"
     >
       <div class="truncate">
@@ -71,7 +71,7 @@
             />
           </div>
           <Button
-            icon="x"
+            icon="lucide-x"
             variant="ghost"
             @click="
               notifications.splice(notifications.indexOf(notification), 1)
@@ -132,7 +132,7 @@
             />
           </div>
           <Button
-            icon="x"
+            icon="lucide-x"
             variant="ghost"
             @click="
               notifications.splice(notifications.indexOf(notification), 1)

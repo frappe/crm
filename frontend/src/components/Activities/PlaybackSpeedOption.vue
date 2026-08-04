@@ -7,7 +7,7 @@
       @click="onClick"
     >
       <template v-if="active" #suffix>
-        <FeatherIcon class="size-4" name="check" />
+        <span class="lucide-check size-4" aria-hidden="true" />
       </template>
     </Button>
   </div>

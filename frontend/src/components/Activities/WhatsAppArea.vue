@@ -37,17 +37,17 @@
           @click="() => scrollToMessage(whatsapp.reply_to)"
         >
           <div
-            class="mb-1 text-sm font-bold"
+            class="mb-1 text-sm-bold"
             :class="
-              whatsapp.reply_to_direction == 'Incoming'
-                ? 'text-ink-green-2'
+              whatsapp.reply_to_type == 'Incoming'
+                ? 'text-ink-green-5'
                 : 'text-ink-blue-link'
             "
           >
             {{ whatsapp.reply_to_from || __('You') }}
           </div>
           <div class="flex flex-col gap-2 max-h-12 overflow-hidden">
-            <div v-if="whatsapp.header" class="text-base font-semibold">
+            <div v-if="whatsapp.header" class="text-base-semibold">
               {{ whatsapp.header }}
             </div>
             <div v-html="formatWhatsAppMessage(whatsapp.reply_message)" />

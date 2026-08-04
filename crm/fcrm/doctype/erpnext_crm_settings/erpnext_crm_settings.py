@@ -37,6 +37,8 @@ class ERPNextCRMSettings(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
+		from crm.fcrm.doctype.crm_product_sync_issue.crm_product_sync_issue import CRMProductSyncIssue
+
 		api_key: DF.Data | None
 		api_secret: DF.Password | None
 		create_customer_on_status_change: DF.Check
@@ -45,14 +47,23 @@ class ERPNextCRMSettings(Document):
 		erpnext_company: DF.Data | None
 		erpnext_site_url: DF.Data | None
 		is_erpnext_in_different_site: DF.Check
+		sync_issues: DF.Table[CRMProductSyncIssue]
+		sync_products: DF.Check
 	# end: auto-generated types
 
 	def validate(self):
+		old = self.get_doc_before_save()
+		was_active = bool(old and old.enabled and not old.is_erpnext_in_different_site)
 		if self.enabled:
 			self.validate_if_erpnext_installed()
 			self.add_quotation_to_option()
 			self.create_custom_fields()
 			self.create_crm_form_script()
+			self.grant_item_access_to_sales_roles()
+			if not was_active and not self.is_erpnext_in_different_site:
+				from crm.fcrm.doctype.crm_product.reconcile_job import enqueue_reconciliation
+
+				enqueue_reconciliation()
 
 	def validate_if_erpnext_installed(self):
 		if not self.is_erpnext_in_different_site:
@@ -73,11 +84,7 @@ class ERPNextCRMSettings(Document):
 
 	def create_custom_fields(self):
 		if not self.is_erpnext_in_different_site:
-			try:
-				from erpnext.crm.frappe_crm_api import create_custom_fields_for_frappe_crm
-
-				create_custom_fields_for_frappe_crm()
-			except ImportError:
+			if not _is_erpnext_installed():
 				frappe.throw(_("ERPNext is not installed in the current site"))
 		else:
 			self.create_custom_fields_in_remote_site()
@@ -93,8 +100,48 @@ class ERPNextCRMSettings(Document):
 					"label": "Customer in ERPNext",
 					"insert_after": "lead_name",
 				}
-			]
+			],
+			"CRM Product": [
+				{
+					"fieldname": "erpnext_item_code",
+					"fieldtype": "Data",
+					"label": "Item Code in ERPNext",
+					"read_only": 1,
+					"insert_after": "product_code",
+				}
+			],
 		}
+		if frappe.db.exists("DocType", "Item"):
+			custom_fields["Item"] = [
+				{
+					"fieldname": "crm_product_code",
+					"fieldtype": "Data",
+					"label": "CRM Product",
+					"read_only": 1,
+					"no_copy": 1,
+					"insert_after": "item_code",
+				}
+			]
+		if frappe.db.exists("DocType", "Quotation"):
+			custom_fields["Quotation"] = [
+				{
+					"fieldname": "crm_deal",
+					"fieldtype": "Data",
+					"label": "Frappe CRM Deal",
+					"read_only": 1,
+					"insert_after": "party_name",
+				}
+			]
+		if frappe.db.exists("DocType", "Customer"):
+			custom_fields["Customer"] = [
+				{
+					"fieldname": "crm_deal",
+					"fieldtype": "Data",
+					"label": "Frappe CRM Deal",
+					"read_only": 1,
+					"insert_after": "prospect_name",
+				}
+			]
 		_create_custom_fields(custom_fields, ignore_validate=True)
 
 	def create_custom_fields_in_remote_site(self):
@@ -102,10 +149,33 @@ class ERPNextCRMSettings(Document):
 		try:
 			client.post_api("erpnext.crm.frappe_crm_api.create_custom_fields_for_frappe_crm")
 		except Exception:
-			_log_and_throw(
-				"Error while creating custom field in ERPNext, check error log for more details",
-				f"Error while creating custom field in the remote erpnext site: {self.erpnext_site_url}",
+			frappe.log_error(
+				frappe.get_traceback(),
+				f"Could not create custom fields on remote ERPNext site: {self.erpnext_site_url}",
 			)
+			frappe.msgprint(
+				_(
+					"Could not create the Frappe CRM custom fields on {0} automatically. "
+					"If it is running the latest ERPNext, enable <b>Frappe CRM Data Synchronization</b> "
+					"in its CRM Settings, Otherwise check the Error Log."
+				).format(self.erpnext_site_url),
+				title=_("ERPNext custom fields not created"),
+				indicator="orange",
+			)
+
+	def grant_item_access_to_sales_roles(self):
+		if self.is_erpnext_in_different_site:
+			return
+		if not frappe.db.exists("DocType", "Item"):
+			return
+		from frappe.permissions import add_permission, update_permission_property
+
+		for role in ("Sales User", "Sales Manager"):
+			if frappe.db.exists("Custom DocPerm", {"parent": "Item", "role": role, "permlevel": 0}):
+				continue
+			add_permission("Item", role, 0, "write")
+			for prop in ("create", "delete", "share", "print", "report", "export"):
+				update_permission_property("Item", role, 0, prop, 1)
 
 	def create_crm_form_script(self):
 		if not frappe.db.exists("CRM Form Script", "Create Quotation from CRM Deal"):
@@ -145,6 +215,120 @@ class ERPNextCRMSettings(Document):
 	def is_erpnext_installed(self):
 		return _is_erpnext_installed()
 
+	@frappe.whitelist()
+	def run_product_sync(self):
+		if not self.enabled or self.is_erpnext_in_different_site:
+			frappe.throw(_("ERPNext integration must be enabled on the same site"))
+		from crm.fcrm.doctype.crm_product.reconcile_job import enqueue_reconciliation
+
+		enqueue_reconciliation()
+		return True
+
+
+@frappe.whitelist()
+def get_open_sync_issues():
+	if not frappe.has_permission("CRM Product", "read"):
+		return []
+	settings = frappe.get_single("ERPNext CRM Settings")
+	return [
+		{
+			"name": issue.name,
+			"product": issue.product,
+			"kind": issue.kind,
+			"detail": issue.detail,
+			"detected_on": issue.detected_on,
+		}
+		for issue in settings.sync_issues
+		if not issue.dismissed
+	]
+
+
+@frappe.whitelist()
+def dismiss_sync_issue(issue_name: str):
+	settings = frappe.get_single("ERPNext CRM Settings")
+	for issue in settings.sync_issues:
+		if issue.name == issue_name:
+			issue.dismissed = 1
+			settings.save()
+			return True
+	return False
+
+
+@frappe.whitelist()
+def get_product_sync_status():
+	if not frappe.has_permission("CRM Product", "read"):
+		return {}
+	return {
+		"products": _get_products(),
+		"items": _get_synced_items(),
+		"failed": get_open_sync_issues(),
+		"unsynced": _get_unsynced_counts(),
+	}
+
+
+def _get_unsynced_counts():
+	settings = frappe.get_single("ERPNext CRM Settings")
+	items = _count_linked("Item", "crm_product_code", is_set=False) if _can_read_items() else 0
+	return {
+		"items": items,
+		"products": frappe.db.count("CRM Product", filters={"erpnext_item_code": ["is", "not set"]}),
+		"sync_products": bool(settings.sync_products),
+	}
+
+
+def _get_products():
+	rows = frappe.get_all(
+		"CRM Product",
+		fields=["name", "product_code", "product_name", "erpnext_item_code"],
+		limit=20,
+		order_by="modified desc",
+	)
+	_set_product_item_groups(rows)
+	return {
+		"count": frappe.db.count("CRM Product"),
+		"rows": rows,
+	}
+
+
+def _get_synced_items():
+	if not _can_read_items():
+		return {"count": 0, "rows": []}
+	return {
+		"count": _count_linked("Item", "crm_product_code"),
+		"rows": frappe.get_all(
+			"Item",
+			fields=["name", "item_code", "item_name", "item_group", "crm_product_code"],
+			filters={"crm_product_code": ["is", "set"]},
+			limit=20,
+			order_by="modified desc",
+		),
+	}
+
+
+def _set_product_item_groups(rows):
+	item_codes = [row.erpnext_item_code for row in rows if row.erpnext_item_code]
+	if not item_codes or not _can_read_items():
+		return
+	item_groups = frappe.get_all(
+		"Item",
+		fields=["name", "item_group"],
+		filters={"name": ["in", item_codes]},
+	)
+	item_groups = {row.name: row.item_group for row in item_groups}
+	for row in rows:
+		row["item_group"] = item_groups.get(row.erpnext_item_code)
+
+
+def _count_linked(doctype: str, fieldname: str, is_set: bool = True):
+	if not frappe.db.has_column(doctype, fieldname):
+		return 0
+	operator = "set" if is_set else "not set"
+	return frappe.db.count(doctype, filters={fieldname: ["is", operator]})
+
+
+def _can_read_items():
+	return frappe.db.exists("DocType", "Item") and frappe.has_permission("Item", "read")
+
 
 def get_erpnext_site_client(erpnext_crm_settings):
 	site_url = erpnext_crm_settings.erpnext_site_url
@@ -154,14 +338,19 @@ def get_erpnext_site_client(erpnext_crm_settings):
 	return FrappeClient(site_url, api_key=api_key, api_secret=api_secret)
 
 
+def get_local_customer(crm_deal: str):
+	customer = frappe.db.exists("Customer", {"crm_deal": crm_deal})
+	if not customer:
+		customer = frappe.db.get_value("CRM Deal", crm_deal, "erpnext_customer")
+	return customer
+
+
 @frappe.whitelist()
 def get_customer_link(crm_deal: str):
 	erpnext_crm_settings = _get_enabled_settings()
 
 	if not erpnext_crm_settings.is_erpnext_in_different_site:
-		customer = frappe.db.exists("Customer", {"crm_deal": crm_deal})
-		if not customer:
-			customer = frappe.db.get_value("CRM Deal", crm_deal, "erpnext_customer")
+		customer = get_local_customer(crm_deal)
 		return get_url_to_form("Customer", customer) if customer else ""
 
 	client = get_erpnext_site_client(erpnext_crm_settings)
@@ -191,11 +380,12 @@ def get_quotation_url(crm_deal: str, organization: str | None = None):
 	address_name = address.get("name") if address else None
 
 	if not erpnext_crm_settings.is_erpnext_in_different_site:
+		customer = get_local_customer(crm_deal)
 		base_url = f"{get_url_to_list('Quotation')}/new"
 		params = {
-			"quotation_to": "CRM Deal",
+			"quotation_to": "Customer" if customer else "CRM Deal",
 			"crm_deal": crm_deal,
-			"party_name": crm_deal,
+			"party_name": customer or crm_deal,
 			"company": erpnext_crm_settings.erpnext_company,
 			"contact_person": contact,
 			"customer_address": address_name,
@@ -253,6 +443,27 @@ def create_prospect_in_remote_site(crm_deal, erpnext_crm_settings):
 		)
 
 
+@frappe.whitelist()
+def prefill_quotation_items(crm_deal: str):
+	if not frappe.db.exists("CRM Deal", crm_deal):
+		return []
+	deal = frappe.get_doc("CRM Deal", crm_deal)
+	items = []
+	for row in deal.products:
+		item_code = frappe.db.get_value("CRM Product", row.product_code, "erpnext_item_code")
+		if not item_code:
+			continue
+		items.append(
+			{
+				"item_code": item_code,
+				"qty": row.qty or 1,
+				"price_list_rate": row.rate or 0,
+				"discount_percentage": row.discount_percentage or 0,
+			}
+		)
+	return items
+
+
 def get_primary_contact(crm_deal):
 	doc = frappe.get_cached_doc("CRM Deal", crm_deal)
 	for c in doc.contacts:
@@ -305,14 +516,73 @@ def create_customer_in_erpnext(doc, method):
 	):
 		return
 
-	if not doc.organization:
-		frappe.throw(_("Organization is required to create a customer"))
+	create_customer_from_deal(doc, erpnext_crm_settings)
 
+
+def create_customer_on_sales_order(doc, method):
+	if doc.customer:
+		return
+
+	crm_deal = get_deal_from_sales_order(doc)
+	customer = check_customer_for_deal(crm_deal) if crm_deal else None
+	if customer:
+		doc.customer = customer
+
+
+def check_customer_for_deal(crm_deal: str):
+	"""Return the ERPNext Customer for the deal and create it if it doesn't exist"""
+	erpnext_crm_settings = frappe.get_single("ERPNext CRM Settings")
+	if not erpnext_crm_settings.enabled or erpnext_crm_settings.is_erpnext_in_different_site:
+		return None
+	if not crm_deal or not frappe.db.exists("CRM Deal", crm_deal):
+		return None
+
+	customer = get_local_customer(crm_deal)
+	if not customer:
+		customer = create_customer_from_deal(
+			frappe.get_cached_doc("CRM Deal", crm_deal), erpnext_crm_settings
+		)
+	return customer
+
+
+@frappe.whitelist()
+def check_customer_for_quotation(quotation: str):
+	"""Create/fetch the Customer for the CRM Deal behind a quotation. Called when a
+	Sales Order form is opened from a CRM Deal quotation that has no customer yet.
+	"""
+	crm_deal = frappe.db.get_value("Quotation", quotation, "crm_deal")
+	if not crm_deal:
+		return None
+	return check_customer_for_deal(crm_deal)
+
+
+def get_deal_from_sales_order(doc):
+	for item in doc.items:
+		quotation = item.get("prevdoc_docname")
+		if quotation:
+			crm_deal = frappe.db.get_value("Quotation", quotation, "crm_deal")
+			if crm_deal:
+				return crm_deal
+	return None
+
+
+def create_customer_from_deal(doc, erpnext_crm_settings):
 	contacts = get_contacts(doc)
 	address = get_organization_address(doc.organization)
+
+	if doc.organization:
+		customer_title = doc.organization
+		customer_type = "Company"
+	else:
+		primary_contact = next((c for c in contacts if c.get("is_primary")), None)
+		customer_title = (primary_contact or {}).get("full_name") or doc.lead_name
+		if not customer_title:
+			frappe.throw(_("Organization or a primary Contact is required to create a customer"))
+		customer_type = "Individual"
+
 	customer_data = {
-		"customer_name": doc.organization,
-		"customer_type": "Company",
+		"customer_name": customer_title,
+		"customer_type": customer_type,
 		"territory": doc.territory,
 		"default_currency": doc.currency,
 		"industry": doc.industry,
@@ -330,10 +600,10 @@ def create_customer_in_erpnext(doc, method):
 				frappe.throw(_("ERPNext is not installed in the current site"))
 
 			if doc.territory and not frappe.db.exists("Territory", doc.territory):
-				customer_data.territory = ""
+				customer_data["territory"] = ""
 
 			if doc.industry and not frappe.db.exists("Industry Type", doc.industry):
-				customer_data.industry = ""
+				customer_data["industry"] = ""
 
 			customer_name = create_customer(customer_data)
 		else:
@@ -352,7 +622,7 @@ def create_customer_in_erpnext(doc, method):
 				"Error while creating customer in ERPNext, check error log for more details",
 				f"Error while creating customer in ERPNext for CRM Deal: {doc.name}",
 			)
-	except frappe.ValidationError:
+	except (frappe.ValidationError, frappe.PermissionError):
 		raise
 	except Exception:
 		_log_and_throw("Error while creating customer in ERPNext, check error log for more details")
@@ -360,6 +630,8 @@ def create_customer_in_erpnext(doc, method):
 	if customer_name:
 		frappe.db.set_value("CRM Deal", doc.name, "erpnext_customer", customer_name)
 		frappe.publish_realtime("crm_customer_created")
+
+	return customer_name
 
 
 @frappe.whitelist()

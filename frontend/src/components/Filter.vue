@@ -10,7 +10,7 @@
         >
           <template v-if="filters?.size" #suffix>
             <div
-              class="flex h-5 w-5 items-center justify-center rounded-[5px] bg-surface-white pt-px text-xs font-medium text-ink-gray-8 shadow-sm"
+              class="flex h-5 w-5 items-center justify-center rounded-[5px] bg-surface-base pt-px text-xs-medium text-ink-gray-8 shadow-sm"
             >
               {{ filters.size }}
             </div>
@@ -20,14 +20,14 @@
           v-if="filters?.size"
           :tooltip="__('Clear All Filters')"
           class="rounded-l-none border-l"
-          icon="x"
+          icon="lucide-x"
           @click.stop="clearfilter(close)"
         />
       </div>
     </template>
     <template #body="{ close }">
       <div
-        class="my-2 min-w-40 rounded-lg bg-surface-modal shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
+        class="my-2 min-w-40 rounded-lg bg-surface-elevation-2 shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
       >
         <div class="min-w-72 p-2 sm:min-w-[400px]">
           <template v-if="filters?.size">
@@ -45,22 +45,23 @@
                   <Button
                     class="flex"
                     variant="ghost"
-                    icon="x"
+                    icon="lucide-x"
                     @click="removeFilter(i)"
                   />
                 </div>
                 <div id="fieldname" class="w-full">
-                  <Autocomplete
-                    :value="f.field.fieldname"
-                    :options="filterableFields.data"
+                  <Combobox
+                    trigger="button"
+                    :model-value="f.field.fieldname"
+                    :options="filterFieldOptions"
                     :placeholder="__('First Name')"
-                    @change="(e) => updateFilter(e, i)"
+                    @update:selected-option="(e) => updateFilter(e, i)"
                   />
                 </div>
                 <div id="operator">
-                  <FormControl
+                  <Combobox
                     v-model="f.operator"
-                    type="select"
+                    trigger="button"
                     :options="
                       getOperators(f.field.fieldtype, f.field.fieldname)
                     "
@@ -83,17 +84,18 @@
                     {{ i == 0 ? __('Where') : __('And') }}
                   </div>
                   <div id="fieldname" class="!min-w-[140px]">
-                    <Autocomplete
-                      :value="f.field.fieldname"
-                      :options="filterableFields.data"
+                    <Combobox
+                      trigger="button"
+                      :model-value="f.field.fieldname"
+                      :options="filterFieldOptions"
                       :placeholder="__('First Name')"
-                      @change="(e) => updateFilter(e, i)"
+                      @update:selected-option="(e) => updateFilter(e, i)"
                     />
                   </div>
                   <div id="operator">
-                    <FormControl
+                    <Combobox
                       v-model="f.operator"
-                      type="select"
+                      trigger="button"
                       :options="
                         getOperators(f.field.fieldtype, f.field.fieldname)
                       "
@@ -113,7 +115,7 @@
                 <Button
                   class="flex"
                   variant="ghost"
-                  icon="x"
+                  icon="lucide-x"
                   @click="removeFilter(i)"
                 />
               </div>
@@ -126,22 +128,22 @@
             {{ __('Empty - Choose a field to filter by') }}
           </div>
           <div class="flex items-center justify-between gap-2">
-            <Autocomplete
-              value=""
+            <Combobox
+              :model-value="null"
               :options="availableFilters"
               :placeholder="__('First Name')"
-              @change="(e) => setfilter(e)"
+              @update:selected-option="(e) => setfilter(e)"
             >
-              <template #target="{ togglePopover }">
+              <template #trigger="{ open, setOpen }">
                 <Button
                   class="!text-ink-gray-5"
                   variant="ghost"
                   :label="__('Add Filter')"
                   iconLeft="plus"
-                  @click="togglePopover()"
+                  @click="setOpen(!open)"
                 />
               </template>
-            </Autocomplete>
+            </Combobox>
             <Button
               v-if="filters?.size"
               class="!text-ink-gray-5"
@@ -158,10 +160,10 @@
 <script setup>
 import FilterIcon from '@/components/Icons/FilterIcon.vue'
 import Link from '@/components/Controls/Link.vue'
-import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import DurationInput from '@/components/Controls/DurationInput.vue'
 import RatingInput from '@/components/Controls/RatingInput.vue'
 import {
+  Combobox,
   FormControl,
   createResource,
   Popover,
@@ -218,6 +220,33 @@ const filters = computed(() => {
   return convertFilters(filterableFields.data, allFilters)
 })
 
+// `name` is labelled "Name" but holds the document ID, which reads as the
+// record's full name on these doctypes. Mark it with an ID icon.
+const idFieldDoctypes = ['CRM Lead', 'CRM Deal']
+
+const filterFieldOptions = computed(() => {
+  const fields = filterableFields.data || []
+  const markIdField = idFieldDoctypes.includes(props.doctype)
+
+  return fields.map((field) => {
+    // Drop the description: it renders as a second line in the dropdown, and
+    // the popover has no max width, so one long description (CRM Deal's
+    // exchange rate) stretches the whole list.
+    const { description, ...option } = field
+
+    if (markIdField && option.fieldname === 'name') {
+      option.slots = {
+        suffix: () =>
+          h('span', {
+            class: 'lucide-id-card size-4 shrink-0 text-ink-gray-5',
+            title: __('Document ID, not the full name'),
+          }),
+      }
+    }
+    return option
+  })
+})
+
 const availableFilters = computed(() => {
   if (!filterableFields.data) return []
 
@@ -226,7 +255,7 @@ const availableFilters = computed(() => {
     selectedFieldNames.add(filter.fieldname)
   }
 
-  return filterableFields.data.filter(
+  return filterFieldOptions.value.filter(
     (field) => !selectedFieldNames.has(field.fieldname),
   )
 })
@@ -378,8 +407,8 @@ function getValueControl(f) {
   const { field, operator } = f
   const { fieldtype, options } = field
   if (operator == 'is') {
-    return h(FormControl, {
-      type: 'select',
+    return h(Combobox, {
+      trigger: 'button',
       options: [
         {
           label: 'Set',
@@ -394,8 +423,8 @@ function getValueControl(f) {
       'onUpdate:modelValue': (v) => updateValue(v, f),
     })
   } else if (operator == 'timespan') {
-    return h(FormControl, {
-      type: 'select',
+    return h(Combobox, {
+      trigger: 'button',
       options: timespanOptions,
       modelValue: f.value,
       'onUpdate:modelValue': (v) => updateValue(v, f),
@@ -405,8 +434,8 @@ function getValueControl(f) {
   } else if (typeSelect.includes(fieldtype) || typeCheck.includes(fieldtype)) {
     const _options =
       fieldtype == 'Check' ? ['Yes', 'No'] : getSelectOptions(options)
-    return h(FormControl, {
-      type: 'select',
+    return h(Combobox, {
+      trigger: 'button',
       options: _options.map((o) => ({
         label: o,
         value: o,
@@ -488,7 +517,7 @@ function setfilter(data) {
 }
 
 function updateFilter(data, index) {
-  if (!data.fieldname) return
+  if (!data?.fieldname) return
 
   filters.value.delete(Array.from(filters.value)[index])
   filters.value.add({
@@ -519,7 +548,11 @@ function clearfilter(close) {
 function updateValue(value, filter) {
   value = value.target ? value.target.value : value
   if (filter.operator === 'between') {
-    filter.value = [value.split(',')[0], value.split(',')[1]]
+    // DateRangePicker emits a [from, to] array; tolerate a legacy "from,to" string too
+    if (typeof value === 'string') {
+      value = value.split(',').map((v) => v.trim())
+    }
+    filter.value = value
   } else {
     filter.value = value
   }

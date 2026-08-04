@@ -305,6 +305,18 @@ def fetch_and_update_kanban_columns(name: str | int):
 	return doc.kanban_columns
 
 
+def clear_old_versions(days=14):
+	from frappe.utils import add_days, now_datetime
+
+	frappe.db.delete(
+		"Version",
+		{
+			"ref_doctype": "CRM View Settings",
+			"creation": ("<", add_days(now_datetime(), -days)),
+		},
+	)
+
+
 def get_route_name(doctype):
 	# Example: "CRM Lead" -> "Leads"
 	if doctype.startswith("CRM "):

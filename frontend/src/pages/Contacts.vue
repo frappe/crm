@@ -70,7 +70,8 @@ import EmptyState from '@/components/ListViews/EmptyState.vue'
 import ViewControls from '@/components/ViewControls.vue'
 import { getMeta } from '@/stores/meta'
 import { organizationsStore } from '@/stores/organizations.js'
-import { formatDate, timeAgo } from '@/utils'
+import { formatDate } from '@/utils'
+import { timestampCell } from '@/composables/useTimelinePreferences'
 import { ref, computed } from 'vue'
 
 const { getFormattedPercent, getFormattedFloat, getFormattedCurrency } =
@@ -135,10 +136,7 @@ const rows = computed(() => {
           logo: getOrganization(contact.company_name)?.organization_logo,
         }
       } else if (['modified', 'creation'].includes(row)) {
-        _rows[row] = {
-          label: formatDate(contact[row]),
-          timeAgo: __(timeAgo(contact[row])),
-        }
+        _rows[row] = timestampCell(contact[row])
       }
     })
     return _rows

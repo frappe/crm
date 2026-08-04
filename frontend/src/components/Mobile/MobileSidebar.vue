@@ -1,6 +1,11 @@
 <template>
   <TransitionRoot :show="sidebarOpened">
     <Dialog as="div" class="fixed inset-0" @close="sidebarOpened = false">
+      <!-- The panel wrapper below needs w-fit so it stays at the sidebar's
+           width. Without it the block div spans the viewport and swallows the
+           clicks meant for DialogOverlay, so tapping outside would not close
+           the drawer. It also has to be the lone child of TransitionChild,
+           which renders as a template and forwards its ref to a single node. -->
       <TransitionChild
         as="template"
         enter="transition ease-in-out duration-200 transform"
@@ -10,63 +15,8 @@
         leave-from="translate-x-0"
         leave-to="-translate-x-full"
       >
-        <div
-          class="relative z-10 flex h-full w-[260px] flex-col justify-between border-r bg-surface-menu-bar transition-all duration-300 ease-in-out"
-        >
-          <div>
-            <UserDropdown class="p-2" :isCollapsed="!sidebarOpened" />
-          </div>
-          <div class="flex-1 overflow-y-auto">
-            <div class="mb-3 flex flex-col">
-              <SidebarLink
-                id="notifications-btn"
-                :label="__('Notifications')"
-                :icon="NotificationsIcon"
-                :to="{ name: 'Notifications' }"
-                class="relative mx-2 my-0.5"
-              >
-                <template #right>
-                  <Badge
-                    v-if="unreadNotificationsCount"
-                    :label="unreadNotificationsCount"
-                    variant="subtle"
-                  />
-                </template>
-              </SidebarLink>
-            </div>
-            <div v-for="view in allViews" :key="view.label">
-              <CollapsibleSection
-                :label="view.name"
-                :hideLabel="view.hideLabel"
-                :opened="view.opened"
-              >
-                <template #header="{ opened, hide, toggle }">
-                  <div
-                    v-if="!hide"
-                    class="ml-2 mt-4 flex h-7 w-auto cursor-pointer gap-1.5 px-1 text-base font-medium text-ink-gray-5 opacity-100 transition-all duration-300 ease-in-out"
-                    @click="toggle()"
-                  >
-                    <FeatherIcon
-                      name="chevron-right"
-                      class="h-4 text-ink-gray-9 transition-all duration-300 ease-in-out"
-                      :class="{ 'rotate-90': opened }"
-                    />
-                    <span>{{ __(view.name) }}</span>
-                  </div>
-                </template>
-                <nav class="flex flex-col">
-                  <SidebarLink
-                    v-for="link in view.views"
-                    :key="link.label"
-                    :icon="link.icon"
-                    :label="__(link.label)"
-                    :to="link.to"
-                    class="mx-2 my-0.5"
-                  />
-                </nav>
-              </CollapsibleSection>
-            </div>
-          </div>
+        <div class="relative z-10 h-full w-fit">
+          <AppSidebar mobile />
         </div>
       </TransitionChild>
       <TransitionChild
@@ -78,7 +28,7 @@
         leave-from="opacity-100"
         leave-to="opacity-0"
       >
-        <DialogOverlay class="fixed inset-0 bg-surface-gray-5 bg-opacity-50" />
+        <DialogOverlay class="fixed inset-0 bg-surface-gray-8 bg-opacity-50" />
       </TransitionChild>
     </Dialog>
   </TransitionRoot>
@@ -90,122 +40,18 @@ import {
   Dialog,
   DialogOverlay,
 } from '@headlessui/vue'
-import CollapsibleSection from '@/components/CollapsibleSection.vue'
-import PinIcon from '@/components/Icons/PinIcon.vue'
-import UserDropdown from '@/components/UserDropdown.vue'
-import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
-import DealsIcon from '@/components/Icons/DealsIcon.vue'
-import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
-import OrganizationsIcon from '@/components/Icons/OrganizationsIcon.vue'
-import NoteIcon from '@/components/Icons/NoteIcon.vue'
-import TaskIcon from '@/components/Icons/TaskIcon.vue'
-import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
-import NotificationsIcon from '@/components/Icons/NotificationsIcon.vue'
-import SidebarLink from '@/components/SidebarLink.vue'
-import { viewsStore } from '@/stores/views'
-import { unreadNotificationsCount } from '@/stores/notifications'
-import { computed, h } from 'vue'
+import AppSidebar from '@/components/Layouts/AppSidebar.vue'
 import { mobileSidebarOpened as sidebarOpened } from '@/composables/settings'
+import { watch } from 'vue'
+import { useRoute } from 'vue-router'
 
-const { getPinnedViews, getPublicViews } = viewsStore()
+const route = useRoute()
 
-const links = [
-  {
-    label: 'Leads',
-    icon: LeadsIcon,
-    to: 'Leads',
-  },
-  {
-    label: 'Deals',
-    icon: DealsIcon,
-    to: 'Deals',
-  },
-  {
-    label: 'Contacts',
-    icon: ContactsIcon,
-    to: 'Contacts',
-  },
-  {
-    label: 'Organizations',
-    icon: OrganizationsIcon,
-    to: 'Organizations',
-  },
-  {
-    label: 'Notes',
-    icon: NoteIcon,
-    to: 'Notes',
-  },
-  {
-    label: 'Tasks',
-    icon: TaskIcon,
-    to: 'Tasks',
-  },
-  {
-    label: 'Call Logs',
-    icon: PhoneIcon,
-    to: 'Call Logs',
-  },
-]
-
-const allViews = computed(() => {
-  let _views = [
-    {
-      name: 'All Views',
-      hideLabel: true,
-      opened: true,
-      views: links,
-    },
-  ]
-  if (getPublicViews().length) {
-    _views.push({
-      name: 'Public Views',
-      opened: true,
-      views: parseView(getPublicViews()),
-    })
-  }
-
-  if (getPinnedViews().length) {
-    _views.push({
-      name: 'Pinned Views',
-      opened: true,
-      views: parseView(getPinnedViews()),
-    })
-  }
-  return _views
-})
-
-function parseView(views) {
-  return views.map((view) => {
-    return {
-      label: view.label,
-      icon: getIcon(view.route_name, view.icon),
-      to: {
-        name: view.route_name,
-        params: { viewType: view.type || 'list' },
-        query: { view: view.name },
-      },
-    }
-  })
-}
-
-function getIcon(routeName, icon) {
-  if (icon) return h('div', { class: 'size-auto' }, icon)
-
-  switch (routeName) {
-    case 'Leads':
-      return LeadsIcon
-    case 'Deals':
-      return DealsIcon
-    case 'Contacts':
-      return ContactsIcon
-    case 'Organizations':
-      return OrganizationsIcon
-    case 'Notes':
-      return NoteIcon
-    case 'Call Logs':
-      return PhoneIcon
-    default:
-      return PinIcon
-  }
-}
+// Covers navigation the sidebar does not originate, such as browser back or a
+// redirect. Rows close the drawer themselves on click, since re-selecting the
+// current route leaves fullPath unchanged and would not trigger this.
+watch(
+  () => route.fullPath,
+  () => (sidebarOpened.value = false),
+)
 </script>

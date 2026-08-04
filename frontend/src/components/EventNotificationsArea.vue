@@ -9,10 +9,10 @@
                 class="flex text-ink-gray-6 max-w-fit cursor-pointer items-center gap-2 text-base"
                 @click="toggleHeader()"
               >
-                <FeatherIcon
-                  name="chevron-right"
-                  class="h-4 transition-all duration-300 ease-in-out"
+                <span
+                  class="lucide-chevron-right h-4 transition-all duration-300 ease-in-out"
                   :class="{ 'rotate-90': opened }"
+                  aria-hidden="true"
                 />
                 <span>
                   {{ __(event.type) }}
@@ -31,14 +31,14 @@
             >
               <div class="flex items-stretch gap-1.5 flex-1 min-w-0">
                 <div
-                  class="flex flex-col justify-center items-center shadow bg-surface-white size-8 rounded-[8px]"
+                  class="flex flex-col justify-center items-center shadow bg-surface-base size-8 rounded-[8px]"
                 >
                   <div
-                    class="uppercase text-[8px] font-semibold text-ink-red-4"
+                    class="uppercase text-[8px] font-semibold text-ink-red-8"
                   >
                     {{ eventDate(e).month }}
                   </div>
-                  <div class="text-base font-semibold -mt-0.5">
+                  <div class="text-base-semibold -mt-0.5">
                     {{ eventDate(e).day }}
                   </div>
                 </div>
@@ -71,7 +71,7 @@
       </div>
       <div
         v-if="i < computedEvents.length - 1 && event.count"
-        class="border-t border-outline-gray-modals"
+        class="border-t border-outline-elevation-2"
       />
     </template>
   </div>
