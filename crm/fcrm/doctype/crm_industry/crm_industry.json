@@ -21,7 +21,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-07-30 12:00:00.000000",
+ "modified": "2026-03-05 12:44:24.510102",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Industry",
@@ -63,10 +63,6 @@
    "role": "Sales User",
    "share": 1,
    "write": 1
-  },
-  {
-   "role": "Guest",
-   "select": 1
   }
  ],
  "quick_entry": 1,
