@@ -82,13 +82,17 @@ def get_context(context):
 
 def _link_field_options(doctype: str) -> list[dict]:
 	"""Existing records of `doctype` as {value, label} dropdown options — value is the
-	stored name, label is the record's title (falling back to name). Enumerated with
-	`get_list(user="Guest")`, so the result respects the target's permissions at every
-	level — doctype `select` (see `guest_can_select`) *and* row-level rules (User
-	Permissions / permission_query_conditions) — while the actual session user is never
-	switched. A public form therefore shows exactly the records an anonymous visitor may
-	see, never a restricted one, regardless of who is rendering the page (guest
-	submission or author preview)."""
+	stored name, label is the record's title (falling back to name).
+
+	The enumeration is run as the **Guest** user, so the result honours the target's
+	permissions at every level — doctype `select` (see `guest_can_select`), row-level
+	rules (User Permissions / permission_query_conditions), and `if_owner` — and shows
+	exactly what an anonymous visitor may see, never a restricted record. We switch the
+	session to Guest (and always restore it) rather than passing `get_list(user="Guest")`:
+	the latter still derives its permission *tier* from the active session user, so a
+	manager previewing a form would be checked for Guest `read` and hit a PermissionError
+	on a select-only target. Switching the user makes both the tier check and the row
+	filters resolve as Guest, identically for a guest request and an author preview."""
 	if not doctype or not frappe.db.exists("DocType", doctype):
 		return []
 	if not guest_can_select(doctype):
@@ -96,13 +100,18 @@ def _link_field_options(doctype: str) -> list[dict]:
 	meta = frappe.get_meta(doctype)
 	title_field = meta.title_field or "name"
 	fields = ["name"] if title_field == "name" else ["name", title_field]
-	rows = frappe.get_list(
-		doctype,
-		fields=fields,
-		order_by=f"{title_field} asc",
-		limit=MAX_LINK_OPTIONS,
-		user="Guest",
-	)
+	current_user = frappe.session.user
+	try:
+		# drop privileges to render precisely a guest's view; restored in `finally`
+		frappe.set_user("Guest")  # nosemgrep
+		rows = frappe.get_list(
+			doctype,
+			fields=fields,
+			order_by=f"{title_field} asc",
+			limit=MAX_LINK_OPTIONS,
+		)
+	finally:
+		frappe.set_user(current_user)  # nosemgrep
 	return [{"value": r["name"], "label": r.get(title_field) or r["name"]} for r in rows]
 
 
