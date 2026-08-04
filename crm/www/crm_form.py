@@ -9,10 +9,8 @@ from crm.api.form import ALLOWED_DOCTYPES, guest_can_select
 
 no_cache = 1
 
-# Upper bound on how many options a Link field renders into the page. Not a
-# permission gate (the form author chooses which Link fields to expose) — just a
-# page-weight guard so a Link to a very large table can't bloat the HTML. Every
-# real CRM link target (Status, Industry, Source, …) is far below this.
+# Cap on options a Link renders into the page — a page-weight guard against a huge
+# target table, not a permission gate.
 MAX_LINK_OPTIONS = 500
 
 # bare host, optional scheme/port, optional leading "*." wildcard — rejects any
@@ -70,8 +68,7 @@ def get_context(context):
 	]
 	context.layout = build_layout(context.fields)
 	# Link fields render as a server-populated dropdown of existing records. Resolve
-	# their options here (keyed by fieldname) so the template stays presentation-only
-	# and the JS `fields` payload isn't bloated with option lists.
+	# resolve Link options here (keyed by fieldname) so the template stays presentation-only.
 	context.link_options = {
 		f["fieldname"]: _link_field_options(f["options"])
 		for f in context.fields
@@ -81,18 +78,12 @@ def get_context(context):
 
 
 def _link_field_options(doctype: str) -> list[dict]:
-	"""Existing records of `doctype` as {value, label} dropdown options — value is the
-	stored name, label is the record's title (falling back to name).
-
-	The enumeration is run as the **Guest** user, so the result honours the target's
-	permissions at every level — doctype `select` (see `guest_can_select`), row-level
-	rules (User Permissions / permission_query_conditions), and `if_owner` — and shows
-	exactly what an anonymous visitor may see, never a restricted record. We switch the
-	session to Guest (and always restore it) rather than passing `get_list(user="Guest")`:
-	the latter still derives its permission *tier* from the active session user, so a
-	manager previewing a form would be checked for Guest `read` and hit a PermissionError
-	on a select-only target. Switching the user makes both the tier check and the row
-	filters resolve as Guest, identically for a guest request and an author preview."""
+	"""Existing records of `doctype` as {value, label} dropdown options. Run as the Guest
+	user so the result honours the target's permissions at every level (doctype `select`,
+	row rules, if_owner) and shows exactly what an anonymous visitor may see. We switch the
+	session to Guest rather than `get_list(user="Guest")` because the latter still derives
+	its permission *tier* from the active session, so a manager preview would be checked for
+	Guest `read` and fail on a select-only target."""
 	if not doctype or not frappe.db.exists("DocType", doctype):
 		return []
 	if not guest_can_select(doctype):
@@ -102,8 +93,7 @@ def _link_field_options(doctype: str) -> list[dict]:
 	fields = ["name"] if title_field == "name" else ["name", title_field]
 	current_user = frappe.session.user
 	try:
-		# drop privileges to render precisely a guest's view; restored in `finally`
-		frappe.set_user("Guest")  # nosemgrep
+		frappe.set_user("Guest")  # nosemgrep — restored in finally; see docstring
 		rows = frappe.get_list(
 			doctype,
 			fields=fields,

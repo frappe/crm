@@ -157,7 +157,6 @@ const props = defineProps({
   field: { type: Object, required: true },
   expanded: { type: Boolean, default: false },
   locked: { type: Boolean, default: false },
-  // Link field whose target doctype guests can't select yet
   guestSelectMissing: { type: Boolean, default: false },
   granting: { type: Boolean, default: false },
 })

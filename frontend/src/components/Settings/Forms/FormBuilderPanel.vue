@@ -817,9 +817,8 @@ async function ensureLinkOptions(doctype) {
   }
 }
 
-// per-target-doctype: can an anonymous visitor select it? Drives the Link-field
-// warning in FieldCard. Undefined = not yet checked; fail-open on error so we
-// don't nag when the check itself fails.
+// per target doctype: can a guest select it? Drives the Link-field warning in
+// FieldCard. Fail-open on error so a failed check doesn't nag.
 const guestSelect = reactive({})
 const grantingSelect = reactive({})
 async function ensureGuestSelect(doctype) {
@@ -1032,8 +1031,7 @@ function sectionFieldCount(sec) {
   return sec.columns.reduce((n, c) => n + c.items.length, 0)
 }
 
-// opening the Add Field picker collapses any field editor that's currently open,
-// so an expanded field's settings don't hang around behind the picker
+// opening the Add Field picker collapses any open field editor
 function openFieldPicker(isOpen, setOpen) {
   if (!isOpen) expanded.value = null
   setOpen(!isOpen)
@@ -1127,9 +1125,8 @@ function selectOptions(f) {
   const opts = optionList(f).map((o) => ({ label: o, value: o }))
   return [{ label: __('Select an option'), value: '' }, ...opts]
 }
-// preview dropdown for a Link field — existing records of the target doctype
-// (f.options), fetched lazily into `linkOptions`. Mirrors the public form's
-// server-populated <select>.
+// preview dropdown for a Link field — the target doctype's records, fetched lazily
+// into `linkOptions`; mirrors the public form's server-populated <select>.
 function linkSelectOptions(f) {
   ensureLinkMeta(f.options)
   const opts = (linkOptions[f.options] || []).map((o) => ({
@@ -1262,8 +1259,7 @@ createResource({
     hiddenFields.value.forEach((h) => {
       if (h.fieldtype === 'Link') ensureLinkOptions(h.options)
     })
-    // resolve guest-access state up front so a visible Link field can surface its
-    // warning on the build tab without waiting for the preview to render
+    // resolve guest-access state up front so a Link field can warn on the build tab
     form.fields.forEach((f) => {
       if (f.fieldtype === 'Link') ensureLinkMeta(f.options)
     })
