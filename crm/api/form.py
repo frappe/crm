@@ -62,6 +62,10 @@ SUPPORTED_FIELDTYPES = (
 # Never expose these as mappable fields even if their type is supported.
 DENIED_FIELDNAMES = (
 	"naming_series",
+	# 'status' is a mandatory Link the system sets — now that Link is a supported
+	# fieldtype it must stay out of the picker and be seeded as a hidden field with a
+	# default (a public visitor never picks a lead/deal status), so deny it explicitly.
+	"status",
 	"lead_name",
 	"converted",
 	"sla_status",

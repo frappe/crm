@@ -83,11 +83,12 @@ def get_context(context):
 def _link_field_options(doctype: str) -> list[dict]:
 	"""Existing records of `doctype` as {value, label} dropdown options — value is the
 	stored name, label is the record's title (falling back to name). Enumerated with
-	`get_list` **as Guest**, so the result respects the target's permissions at every
+	`get_list(user="Guest")`, so the result respects the target's permissions at every
 	level — doctype `select` (see `guest_can_select`) *and* row-level rules (User
-	Permissions / permission_query_conditions). A public form therefore shows exactly
-	the records an anonymous visitor may see, never a restricted one, regardless of who
-	is rendering the page (guest submission or author preview)."""
+	Permissions / permission_query_conditions) — while the actual session user is never
+	switched. A public form therefore shows exactly the records an anonymous visitor may
+	see, never a restricted one, regardless of who is rendering the page (guest
+	submission or author preview)."""
 	if not doctype or not frappe.db.exists("DocType", doctype):
 		return []
 	if not guest_can_select(doctype):
@@ -95,17 +96,13 @@ def _link_field_options(doctype: str) -> list[dict]:
 	meta = frappe.get_meta(doctype)
 	title_field = meta.title_field or "name"
 	fields = ["name"] if title_field == "name" else ["name", title_field]
-	current_user = frappe.session.user
-	try:
-		frappe.set_user("Guest")
-		rows = frappe.get_list(
-			doctype,
-			fields=fields,
-			order_by=f"{title_field} asc",
-			limit=MAX_LINK_OPTIONS,
-		)
-	finally:
-		frappe.set_user(current_user)
+	rows = frappe.get_list(
+		doctype,
+		fields=fields,
+		order_by=f"{title_field} asc",
+		limit=MAX_LINK_OPTIONS,
+		user="Guest",
+	)
 	return [{"value": r["name"], "label": r.get(title_field) or r["name"]} for r in rows]
 
 
