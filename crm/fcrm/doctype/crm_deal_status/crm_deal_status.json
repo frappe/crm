@@ -58,7 +58,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-07-30 12:00:00.000000",
+ "modified": "2026-03-05 12:42:47.973700",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Deal Status",
@@ -100,10 +100,6 @@
    "role": "Sales User",
    "share": 1,
    "write": 1
-  },
-  {
-   "role": "Guest",
-   "select": 1
   }
  ],
  "row_format": "Dynamic",

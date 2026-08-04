@@ -175,10 +175,16 @@
                                 :field="f"
                                 :expanded="expanded === f.fieldname"
                                 :locked="isMandatory(f.fieldname)"
+                                :guest-select-missing="
+                                  f.fieldtype === 'Link' &&
+                                  guestSelect[f.options] === false
+                                "
+                                :granting="!!grantingSelect[f.options]"
                                 @open="open(f)"
                                 @toggle="toggle(f)"
                                 @remove="removeField(f)"
                                 @update="(patch) => updateField(f, patch)"
+                                @grant-guest="grantGuestSelect(f.options)"
                               />
                             </template>
                           </Draggable>
@@ -196,7 +202,7 @@
                                 variant="outline"
                                 :label="__('Add Field')"
                                 icon-left="plus"
-                                @click="setOpen(!open)"
+                                @click="openFieldPicker(open, setOpen)"
                               />
                             </template>
                           </Combobox>
@@ -811,6 +817,46 @@ async function ensureLinkOptions(doctype) {
   }
 }
 
+// per-target-doctype: can an anonymous visitor select it? Drives the Link-field
+// warning in FieldCard. Undefined = not yet checked; fail-open on error so we
+// don't nag when the check itself fails.
+const guestSelect = reactive({})
+const grantingSelect = reactive({})
+async function ensureGuestSelect(doctype) {
+  if (!doctype || doctype in guestSelect) return
+  guestSelect[doctype] = true
+  try {
+    const res = await call('crm.api.form.link_field_guest_access', { doctype })
+    guestSelect[doctype] = !!res?.guest_can_select
+  } catch {
+    guestSelect[doctype] = true
+  }
+}
+// author's explicit, informed choice to expose a doctype's records to guests
+async function grantGuestSelect(doctype) {
+  if (!doctype || grantingSelect[doctype]) return
+  grantingSelect[doctype] = true
+  try {
+    const res = await call('crm.api.form.grant_guest_link_access', { doctype })
+    guestSelect[doctype] = !!res?.guest_can_select
+    if (guestSelect[doctype]) {
+      // records are now guest-visible — refresh the preview dropdown
+      delete linkOptions[doctype]
+      ensureLinkOptions(doctype)
+      toast.success(__('Guests can now select {0} records.', [doctype]))
+    }
+  } catch (e) {
+    toast.error(e?.messages?.[0] || __('Could not grant guest access.'))
+  } finally {
+    grantingSelect[doctype] = false
+  }
+}
+// resolve both the preview options and the guest-access state for a Link target
+function ensureLinkMeta(doctype) {
+  ensureLinkOptions(doctype)
+  ensureGuestSelect(doctype)
+}
+
 function newColumn(colField = null) {
   return { colField, items: [] }
 }
@@ -986,10 +1032,19 @@ function sectionFieldCount(sec) {
   return sec.columns.reduce((n, c) => n + c.items.length, 0)
 }
 
+// opening the Add Field picker collapses any field editor that's currently open,
+// so an expanded field's settings don't hang around behind the picker
+function openFieldPicker(isOpen, setOpen) {
+  if (!isOpen) expanded.value = null
+  setOpen(!isOpen)
+}
+
 // add a field into a specific column, then re-flatten to form.fields
 function addFieldToColumn(col, option) {
   const af = option?.af || option
   if (!af?.fieldname) return
+  // a freshly added field starts collapsed, not stacked under a previously open one
+  expanded.value = null
   // re-adding a field that was moved to hidden brings it back onto the form
   hiddenFields.value = hiddenFields.value.filter(
     (h) => h.fieldname !== af.fieldname,
@@ -1003,6 +1058,7 @@ function addFieldToColumn(col, option) {
     placeholder: '',
     field_description: '',
   })
+  if (af.fieldtype === 'Link') ensureLinkMeta(af.options)
   capture('form_field_added', { field_type: af.fieldtype })
   syncFromModel()
 }
@@ -1075,7 +1131,7 @@ function selectOptions(f) {
 // (f.options), fetched lazily into `linkOptions`. Mirrors the public form's
 // server-populated <select>.
 function linkSelectOptions(f) {
-  ensureLinkOptions(f.options)
+  ensureLinkMeta(f.options)
   const opts = (linkOptions[f.options] || []).map((o) => ({ label: o, value: o }))
   return [{ label: __('Select an option'), value: '' }, ...opts]
 }
@@ -1203,6 +1259,11 @@ createResource({
     hiddenFields.value.forEach((h) => {
       if (h.fieldtype === 'Link') ensureLinkOptions(h.options)
     })
+    // resolve guest-access state up front so a visible Link field can surface its
+    // warning on the build tab without waiting for the preview to render
+    form.fields.forEach((f) => {
+      if (f.fieldtype === 'Link') ensureLinkMeta(f.options)
+    })
     rebuildModel()
     // only keep auto-syncing the route if it's still an untouched default
     routeEdited.value = !/^untitled-form(-\d+)?$/.test(form.route)
@@ -1328,6 +1389,7 @@ async function commitDoctype(newDt, valid) {
     if (!c) return
     f.options = c.options
     if (c.reqd) f.reqd = true
+    if (f.fieldtype === 'Link') ensureLinkMeta(f.options)
   })
   // rebuild hidden fields for the new doctype: its system-hidden fields (Status,
   // with the right options + default), plus any hidden fillable-mandatory field

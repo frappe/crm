@@ -84,7 +84,7 @@ def _link_field_options(doctype: str) -> list[dict]:
 	"""Existing records of `doctype` as {value, label} dropdown options — value is the
 	stored name, label is the record's title (falling back to name). Enumerated with
 	`get_list` **as Guest**, so the result respects the target's permissions at every
-	level — doctype select/read (see `guest_can_select`) *and* row-level rules (User
+	level — doctype `select` (see `guest_can_select`) *and* row-level rules (User
 	Permissions / permission_query_conditions). A public form therefore shows exactly
 	the records an anonymous visitor may see, never a restricted one, regardless of who
 	is rendering the page (guest submission or author preview)."""
