@@ -4,13 +4,8 @@
 from unittest.mock import patch
 
 import frappe
-<<<<<<< HEAD
-
-from crm.tests import CRMTestCase as FrappeTestCase
-=======
 from frappe.tests.utils import FrappeTestCase
 from frappe.utils import add_days, now
->>>>>>> e21d1ff4 (test(invitation): cover expiry and desk acceptance)
 
 
 class TestCRMInvitation(FrappeTestCase):
