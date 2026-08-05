@@ -338,6 +338,18 @@ if (step.value.data && step.value.fetchData) {
   getSlaResource.submit()
 } else {
   disableSettingModalOutsideClick.value = true
+
+  // SlaPriorityList fills in the default priorities only after its own fetch
+  // resolves, so snapshot the pristine form once they land instead of now
+  watch(
+    () => slaData.value.priorities.length,
+    () => {
+      initialData.value = JSON.stringify(slaData.value)
+    },
+    {
+      once: true,
+    },
+  )
 }
 
 const goBack = () => {
