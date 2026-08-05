@@ -259,7 +259,7 @@ import {
   Switch,
   toast,
 } from 'frappe-ui'
-import { inject, onMounted, onUnmounted, ref, watch } from 'vue'
+import { inject, onUnmounted, ref, watch } from 'vue'
 import SettingsLayoutBase from '../../Layouts/SettingsLayoutBase.vue'
 import {
   resetSlaDataErrors,
@@ -269,6 +269,7 @@ import {
 } from './utils'
 import SlaAssignmentConditions from './SlaAssignmentConditions.vue'
 import { disableSettingModalOutsideClick } from '../../../composables/settings'
+import { useUnsavedChangesWarning } from '../../../composables/useUnsavedChangesWarning'
 import { convertToConditions } from '../../../utils'
 import SlaHolidays from './SlaHolidays.vue'
 import SlaPriorityList from './SlaPriorityList.vue'
@@ -513,18 +514,9 @@ watch(
   { deep: true },
 )
 
-const beforeUnloadHandler = (event) => {
-  if (!isDirty.value) return
-  event.preventDefault()
-  event.returnValue = true
-}
-
-onMounted(() => {
-  addEventListener('beforeunload', beforeUnloadHandler)
-})
+useUnsavedChangesWarning(() => isDirty.value)
 
 onUnmounted(() => {
-  removeEventListener('beforeunload', beforeUnloadHandler)
   resetSlaDataErrors()
   disableSettingModalOutsideClick.value = false
 })
