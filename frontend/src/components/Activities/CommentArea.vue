@@ -134,14 +134,17 @@ async function saveEdit() {
 }
 
 async function deleteComment() {
-  try {
-    await call('frappe.client.delete', {
+  await toast.promise(
+    call('frappe.client.delete', {
       doctype: 'Comment',
       name: props.activity.name,
-    })
-    emit('reload')
-  } catch (e) {
-    toast.error(__('Failed to delete comment'))
-  }
+    }),
+    {
+      loading: __('Deleting comment…'),
+      success: __('Comment deleted'),
+      error: (e) => e?.messages?.[0] || __('Failed to delete comment'),
+    },
+  )
+  emit('reload')
 }
 </script>

@@ -80,7 +80,13 @@
     </template>
     <template #actions>
       <div class="flex justify-end">
-        <Button :label="__('Convert')" variant="solid" @click="convertToDeal" />
+        <Button
+          :label="__('Convert')"
+          variant="solid"
+          :loading="converting"
+          :disabled="converting"
+          @click="convertToDeal"
+        />
       </div>
     </template>
   </Dialog>
@@ -123,12 +129,14 @@ const existingOrganizationChecked = ref(false)
 const existingContact = ref('')
 const existingOrganization = ref('')
 const error = ref('')
+const converting = ref(false)
 const { capture } = useTelemetry()
 
 const { triggerConvertToDeal } = useDocument('CRM Lead', props.lead.name)
 const { document: deal } = useDocument('CRM Deal')
 
 async function convertToDeal() {
+  if (converting.value) return
   error.value = ''
 
   if (existingContactChecked.value && !existingContact.value) {
@@ -149,43 +157,48 @@ async function convertToDeal() {
     existingOrganization.value = ''
   }
 
-  await triggerConvertToDeal?.(props.lead, deal.doc, () => (show.value = false))
+  converting.value = true
+  try {
+    await triggerConvertToDeal?.(props.lead, deal.doc, () => (show.value = false))
 
-  let _deal = await call('crm.fcrm.doctype.crm_lead.crm_lead.convert_to_deal', {
-    lead: props.lead.name,
-    deal: deal.doc,
-    existing_contact: existingContact.value,
-    existing_organization: existingOrganization.value,
-  }).catch((err) => {
-    if (err.exc_type == 'MandatoryError') {
-      const errorMessage = err.messages
-        .map((msg) => {
-          let arr = msg.split(': ')
-          return arr[arr.length - 1].trim()
-        })
-        .join(', ')
+    let _deal = await call('crm.fcrm.doctype.crm_lead.crm_lead.convert_to_deal', {
+      lead: props.lead.name,
+      deal: deal.doc,
+      existing_contact: existingContact.value,
+      existing_organization: existingOrganization.value,
+    }).catch((err) => {
+      if (err.exc_type == 'MandatoryError') {
+        const errorMessage = err.messages
+          .map((msg) => {
+            let arr = msg.split(': ')
+            return arr[arr.length - 1].trim()
+          })
+          .join(', ')
 
-      if (errorMessage.toLowerCase().includes('required')) {
-        error.value = __(errorMessage)
-      } else {
-        error.value = __('{0} is required', [errorMessage])
+        if (errorMessage.toLowerCase().includes('required')) {
+          error.value = __(errorMessage)
+        } else {
+          error.value = __('{0} is required', [errorMessage])
+        }
+        return
       }
-      return
-    }
-    error.value = __('Error converting to deal: {0}', [err.messages?.[0]])
-  })
-  if (_deal) {
-    show.value = false
-    existingContactChecked.value = false
-    existingOrganizationChecked.value = false
-    existingContact.value = ''
-    existingOrganization.value = ''
-    error.value = ''
-    updateOnboardingStep('convert_lead_to_deal', true, false, () => {
-      localStorage.setItem('firstDeal' + user, _deal)
+      error.value = __('Error converting to deal: {0}', [err.messages?.[0]])
     })
-    capture('convert_lead_to_deal')
-    router.push({ name: 'Deal', params: { dealId: _deal } })
+    if (_deal) {
+      show.value = false
+      existingContactChecked.value = false
+      existingOrganizationChecked.value = false
+      existingContact.value = ''
+      existingOrganization.value = ''
+      error.value = ''
+      updateOnboardingStep('convert_lead_to_deal', true, false, () => {
+        localStorage.setItem('firstDeal' + user, _deal)
+      })
+      capture('convert_lead_to_deal')
+      router.push({ name: 'Deal', params: { dealId: _deal } })
+    }
+  } finally {
+    converting.value = false
   }
 }
 

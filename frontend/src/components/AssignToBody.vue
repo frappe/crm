@@ -75,7 +75,7 @@
 import UserAvatar from '@/components/UserAvatar.vue'
 import Link from '@/components/Controls/Link.vue'
 import { usersStore } from '@/stores/users'
-import { Tooltip, Switch, createResource } from 'frappe-ui'
+import { Tooltip, Switch, createResource, toast } from 'frappe-ui'
 import { useTelemetry } from 'frappe-ui/frappe'
 import { ref, watch } from 'vue'
 
@@ -190,6 +190,9 @@ const addAssignees = createResource({
   onSuccess: () => {
     capture('assign_to', { doctype: props.doctype })
   },
+  onError: (e) => {
+    toast.error(e?.messages?.[0] || __('Failed to assign'))
+  },
 })
 
 const removeAssignees = createResource({
@@ -199,5 +202,8 @@ const removeAssignees = createResource({
     name: props.docname,
     assignees: removedAssignees,
   }),
+  onError: (e) => {
+    toast.error(e?.messages?.[0] || __('Failed to remove assignment'))
+  },
 })
 </script>

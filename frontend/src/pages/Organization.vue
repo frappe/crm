@@ -348,6 +348,7 @@ const errorTitle = ref('')
 const errorMessage = ref('')
 
 const showDeleteLinkedDocModal = ref(false)
+const isRenaming = ref(false)
 
 const {
   document: organization,
@@ -461,18 +462,25 @@ function changeOrganizationImage(file) {
   })
 }
 
-function beforeFieldChange(data) {
+async function beforeFieldChange(data) {
   if (Object.hasOwn(data ?? {}, 'organization_name')) {
-    call('frappe.client.rename_doc', {
-      doctype: 'CRM Organization',
-      old_name: props.organizationId,
-      new_name: data.organization_name,
-    }).then(() => {
+    if (isRenaming.value) return
+    isRenaming.value = true
+    try {
+      await call('frappe.client.rename_doc', {
+        doctype: 'CRM Organization',
+        old_name: props.organizationId,
+        new_name: data.organization_name,
+      })
       router.push({
         name: 'Organization',
         params: { organizationId: data.organization_name },
       })
-    })
+    } catch (e) {
+      toast.error(e?.messages?.[0] || __('Rename failed'))
+    } finally {
+      isRenaming.value = false
+    }
   } else {
     organization.save.submit()
   }

@@ -91,7 +91,8 @@
             variant="solid"
             icon-left="lucide-trash-2"
             :label="__('Delete')"
-            :loading="isDealCreating"
+            :loading="isDeleting"
+            :disabled="isDeleting"
             theme="red"
             @click="deleteDoc()"
           />
@@ -121,6 +122,8 @@
           <Button
             variant="solid"
             :label="confirmDeleteInfo.title"
+            :loading="isUnlinking"
+            :disabled="isUnlinking"
             theme="red"
             @click="removeDocLinks()"
           />
@@ -131,7 +134,7 @@
 </template>
 
 <script setup>
-import { createResource, call } from 'frappe-ui'
+import { createResource, call, toast } from 'frappe-ui'
 import { useRouter } from 'vue-router'
 import { computed, ref } from 'vue'
 
@@ -154,6 +157,8 @@ const confirmDeleteInfo = ref({
   show: false,
   title: '',
 })
+const isDeleting = ref(false)
+const isUnlinking = ref(false)
 
 const linkedDocsResource = createResource({
   url: 'crm.api.doc.get_linked_docs_of_document',
@@ -183,7 +188,7 @@ const cancel = () => {
   viewControls.value.updateSelections([])
 }
 
-const unlinkLinkedDoc = (doc) => {
+const unlinkLinkedDoc = async (doc) => {
   let selectedDocs = []
   if (viewControls.value.selections.length > 0) {
     Array.from(viewControls.value.selections).forEach((selection) => {
@@ -200,17 +205,20 @@ const unlinkLinkedDoc = (doc) => {
     }))
   }
 
-  call('crm.api.doc.remove_linked_doc_reference', {
-    items: selectedDocs,
-    remove_contact: props.doctype == 'Contact',
-    delete: doc.delete,
-  }).then(() => {
+  isUnlinking.value = true
+  try {
+    await call('crm.api.doc.remove_linked_doc_reference', {
+      items: selectedDocs,
+      remove_contact: props.doctype == 'Contact',
+      delete: doc.delete,
+    })
     linkedDocsResource.reload()
-    confirmDeleteInfo.value = {
-      show: false,
-      title: '',
-    }
-  })
+    confirmDeleteInfo.value = { show: false, title: '' }
+  } catch (e) {
+    toast.error(e?.messages?.[0] || __('Failed to update linked documents'))
+  } finally {
+    isUnlinking.value = false
+  }
 }
 
 const confirmDelete = () => {
@@ -249,11 +257,20 @@ const removeDocLinks = () => {
 }
 
 const deleteDoc = async () => {
-  await call('frappe.client.delete', {
-    doctype: props.doctype,
-    name: props.docname,
-  })
-  router.push({ name: props.name })
-  props?.reload?.()
+  if (isDeleting.value) return
+  isDeleting.value = true
+  try {
+    await call('frappe.client.delete', {
+      doctype: props.doctype,
+      name: props.docname,
+    })
+    show.value = false
+    router.push({ name: props.name })
+    props?.reload?.()
+  } catch (e) {
+    toast.error(e?.messages?.[0] || __('Failed to delete document'))
+  } finally {
+    isDeleting.value = false
+  }
 }
 </script>

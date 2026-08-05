@@ -201,7 +201,7 @@ import { usersStore } from '@/stores/users'
 import { formatDate } from '@/utils'
 import { timestampCell } from '@/composables/useTimelinePreferences'
 import { useOnboarding, useTelemetry } from 'frappe-ui/frappe'
-import { Tooltip, Avatar, TextEditor, Dropdown, call } from 'frappe-ui'
+import { Tooltip, Avatar, TextEditor, Dropdown, call, toast } from 'frappe-ui'
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -371,10 +371,14 @@ function actions(name) {
 }
 
 async function deleteTask(name) {
-  await call('frappe.client.delete', {
-    doctype: 'CRM Task',
-    name,
-  })
+  await toast.promise(
+    call('frappe.client.delete', { doctype: 'CRM Task', name }),
+    {
+      loading: __('Deleting task…'),
+      success: __('Task deleted'),
+      error: (e) => e?.messages?.[0] || __('Failed to delete task'),
+    },
+  )
 }
 
 function redirect(doctype, docname) {
