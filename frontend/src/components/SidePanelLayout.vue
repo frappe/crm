@@ -377,30 +377,36 @@
                           @update:modelValue="(v) => fieldChange(v, field)"
                         />
                       </div>
-                      <div class="ml-1">
-                        <ArrowUpRightIcon
-                          v-if="
-                            field.fieldtype === 'Link' &&
-                            field.link &&
-                            doc[field.fieldname]
-                          "
-                          class="h-4 w-4 shrink-0 cursor-pointer text-ink-gray-5 hover:text-ink-gray-8"
-                          @click.stop="field.link(doc[field.fieldname])"
+                      <div class="ml-1 flex items-center">
+                        <LoadingIndicator
+                          v-if="savingField === field.fieldname"
+                          class="h-3 w-3 text-ink-gray-4"
                         />
-                        <ArrowUpRightIcon
-                          v-else-if="isExternalUrl(doc[field.fieldname])"
-                          class="h-4 w-4 shrink-0 cursor-pointer text-ink-gray-5 hover:text-ink-gray-8"
-                          @click.stop="openExternalUrl(doc[field.fieldname])"
-                        />
-                        <EditIcon
-                          v-if="
-                            field.fieldtype === 'Link' &&
-                            field.edit &&
-                            doc[field.fieldname]
-                          "
-                          class="size-3.5 shrink-0 cursor-pointer text-ink-gray-5 hover:text-ink-gray-8"
-                          @click.stop="field.edit(doc[field.fieldname])"
-                        />
+                        <template v-else>
+                          <ArrowUpRightIcon
+                            v-if="
+                              field.fieldtype === 'Link' &&
+                              field.link &&
+                              doc[field.fieldname]
+                            "
+                            class="h-4 w-4 shrink-0 cursor-pointer text-ink-gray-5 hover:text-ink-gray-8"
+                            @click.stop="field.link(doc[field.fieldname])"
+                          />
+                          <ArrowUpRightIcon
+                            v-else-if="isExternalUrl(doc[field.fieldname])"
+                            class="h-4 w-4 shrink-0 cursor-pointer text-ink-gray-5 hover:text-ink-gray-8"
+                            @click.stop="openExternalUrl(doc[field.fieldname])"
+                          />
+                          <EditIcon
+                            v-if="
+                              field.fieldtype === 'Link' &&
+                              field.edit &&
+                              doc[field.fieldname]
+                            "
+                            class="size-3.5 shrink-0 cursor-pointer text-ink-gray-5 hover:text-ink-gray-8"
+                            @click.stop="field.edit(doc[field.fieldname])"
+                          />
+                        </template>
                       </div>
                     </div>
                   </div>
@@ -455,12 +461,14 @@ import {
   DateTimePicker,
   debounce,
   Duration,
+  LoadingIndicator,
   Password,
   Rating,
   Select,
   Textarea,
   TextInput,
   TimePicker,
+  toast,
   Tooltip,
 } from 'frappe-ui'
 import { useDocument } from '@/data/document'
@@ -482,6 +490,7 @@ const { getFormattedPercent, getFormattedFloat, getFormattedCurrency } =
 const { users, isManager, getUser } = usersStore()
 
 const showSidePanelModal = ref(false)
+const savingField = ref(null)
 
 let document = { doc: {} }
 let triggerOnChange
@@ -592,8 +601,16 @@ async function fieldChange(value, df) {
   if (hasListener) {
     emit('beforeFieldChange', { [df.fieldname]: value })
   } else {
+    savingField.value = df.fieldname
     document.save.submit(null, {
-      onSuccess: () => emit('afterFieldChange', { [df.fieldname]: value }),
+      onSuccess: () => {
+        savingField.value = null
+        emit('afterFieldChange', { [df.fieldname]: value })
+      },
+      onError: (e) => {
+        savingField.value = null
+        toast.error(e?.messages?.[0] || __('Failed to save field'))
+      },
     })
   }
 }

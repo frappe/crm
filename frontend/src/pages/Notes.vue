@@ -102,7 +102,7 @@ import EmptyState from '@/components/ListViews/EmptyState.vue'
 import { usersStore } from '@/stores/users'
 import { timeAgo, formatDate } from '@/utils'
 import { useOnboarding, useTelemetry } from 'frappe-ui/frappe'
-import { TextEditor, call, Dropdown, Tooltip, ListFooter } from 'frappe-ui'
+import { TextEditor, call, Dropdown, Tooltip, ListFooter, toast } from 'frappe-ui'
 import { ref, watch } from 'vue'
 
 const { getUser } = usersStore()
@@ -155,10 +155,14 @@ function editNote(noteName) {
 }
 
 async function deleteNote(name) {
-  await call('frappe.client.delete', {
-    doctype: 'FCRM Note',
-    name,
-  })
+  await toast.promise(
+    call('frappe.client.delete', { doctype: 'FCRM Note', name }),
+    {
+      loading: __('Deleting note…'),
+      success: __('Note deleted'),
+      error: (e) => e?.messages?.[0] || __('Failed to delete note'),
+    },
+  )
   notes.value.reload()
 }
 

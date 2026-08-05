@@ -12,7 +12,7 @@ import EventModal from '@/components/Modals/EventModal.vue'
 import { showEventModal, activeEvent } from '@/composables/event'
 import { useDoctypeModal } from '@/composables/doctypeModal'
 import { useOnboarding, useTelemetry } from 'frappe-ui/frappe'
-import { call } from 'frappe-ui'
+import { call, toast } from 'frappe-ui'
 import { useRoute, useRouter } from 'vue-router'
 
 const props = defineProps({
@@ -50,22 +50,32 @@ function showTask(task) {
 }
 
 async function deleteTask(name) {
-  await call('frappe.client.delete', {
-    doctype: 'CRM Task',
-    name,
-  })
+  await toast.promise(
+    call('frappe.client.delete', { doctype: 'CRM Task', name }),
+    {
+      loading: __('Deleting task…'),
+      success: __('Task deleted'),
+      error: (e) => e?.messages?.[0] || __('Failed to delete task'),
+    },
+  )
   activities.value.reload()
 }
 
-function updateTaskStatus(status, task) {
-  call('frappe.client.set_value', {
-    doctype: 'CRM Task',
-    name: task.name,
-    fieldname: 'status',
-    value: status,
-  }).then(() => {
-    activities.value.reload()
-  })
+async function updateTaskStatus(status, task) {
+  await toast.promise(
+    call('frappe.client.set_value', {
+      doctype: 'CRM Task',
+      name: task.name,
+      fieldname: 'status',
+      value: status,
+    }),
+    {
+      loading: __('Updating…'),
+      success: __('Status updated'),
+      error: (e) => e?.messages?.[0] || __('Failed to update status'),
+    },
+  )
+  activities.value.reload()
 }
 
 // Notes

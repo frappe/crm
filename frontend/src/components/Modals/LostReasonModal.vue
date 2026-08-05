@@ -42,7 +42,13 @@
         <div><ErrorMessage :message="error" /></div>
         <div class="flex gap-2">
           <Button :label="__('Cancel')" @click="cancel" />
-          <Button variant="solid" :label="__('Save')" @click="save" />
+          <Button
+            variant="solid"
+            :label="__('Save')"
+            :loading="props.document.save.loading"
+            :disabled="props.document.save.loading"
+            @click="save"
+          />
         </div>
       </div>
     </template>
@@ -86,11 +92,19 @@ function save() {
   }
 
   error.value = ''
-  show.value = false
 
   doc.lost_reason = lostReason.value
   doc.lost_notes = lostNotes.value
-  props.document.save.submit()
+  props.document.save.submit(null, {
+    onSuccess: () => {
+      show.value = false
+      lostReason.value = ''
+      lostNotes.value = ''
+    },
+    onError: (e) => {
+      error.value = e?.messages?.[0] || __('Failed to save')
+    },
+  })
 }
 
 function onCreate(value, close) {

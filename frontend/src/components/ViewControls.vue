@@ -983,14 +983,19 @@ function persistCustomView() {
   })
 }
 
-function updateKanbanSettings(data) {
+async function updateKanbanSettings(data) {
   if (data.item && data.to) {
-    call('frappe.client.set_value', {
-      doctype: props.doctype,
-      name: data.item,
-      fieldname: view.value.column_field,
-      value: data.to,
-    })
+    try {
+      await call('frappe.client.set_value', {
+        doctype: props.doctype,
+        name: data.item,
+        fieldname: view.value.column_field,
+        value: data.to,
+      })
+    } catch (e) {
+      toast.error(e?.messages?.[0] || __('Failed to update status'))
+      list.value.reload()
+    }
     return
   }
 
