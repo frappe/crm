@@ -297,6 +297,7 @@ import {
 import { ref, computed, watch, nextTick, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useActiveTabManager } from '@/composables/useActiveTabManager'
+import { useUnsavedChangesWarning } from '@/composables/useUnsavedChangesWarning'
 
 const { brand } = getSettings()
 const { $dialog, $socket, makeCall } = globalStore()
@@ -331,6 +332,8 @@ const {
 const canDelete = computed(() => permissions.data?.permissions?.delete || false)
 
 const doc = computed(() => document.doc || {})
+
+useUnsavedChangesWarning(() => document.isDirty)
 
 onMounted(async () => {
   if (document.doc) await triggerOnRender()

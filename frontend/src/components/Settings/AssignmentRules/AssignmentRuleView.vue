@@ -344,20 +344,13 @@ import {
   ConfirmDialog,
 } from 'frappe-ui'
 import { useTelemetry } from 'frappe-ui/frappe'
-import {
-  onMounted,
-  onUnmounted,
-  ref,
-  inject,
-  watch,
-  provide,
-  computed,
-} from 'vue'
+import { onUnmounted, ref, inject, watch, provide, computed } from 'vue'
 import AssignmentRulesSection from './AssignmentRulesSection.vue'
 import AssignmentSchedule from './AssignmentSchedule.vue'
 import AssigneeRules from './AssigneeRules.vue'
 import { globalStore } from '@/stores/global'
 import { disableSettingModalOutsideClick } from '@/composables/settings'
+import { useUnsavedChangesWarning } from '@/composables/useUnsavedChangesWarning'
 import { convertToConditions, validateConditions } from '@/utils'
 
 const isDirty = ref(false)
@@ -799,20 +792,11 @@ watch(
   { deep: true },
 )
 
-const beforeUnloadHandler = (event) => {
-  if (!isDirty.value) return
-  event.preventDefault()
-  event.returnValue = true
-}
-
-onMounted(() => {
-  addEventListener('beforeunload', beforeUnloadHandler)
-})
+useUnsavedChangesWarning(() => isDirty.value)
 
 onUnmounted(() => {
   resetAssignmentRuleErrors()
   resetAssignmentRuleData()
-  removeEventListener('beforeunload', beforeUnloadHandler)
   disableSettingModalOutsideClick.value = false
 })
 </script>
