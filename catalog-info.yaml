@@ -1,0 +1,16 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: crm
+  description: Tiberbu CRM — fork of frappe/crm with custom integrations
+  annotations:
+    github.com/project-slug: tiberbu/crm
+    backstage.io/techdocs-ref: dir:.
+  tags:
+    - frappe
+    - crm
+    - tiberbu
+spec:
+  type: service
+  lifecycle: production
+  owner: group:default/tiberbu-platform
