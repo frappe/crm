@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2026-07-19 10:53+0000\n"
-"PO-Revision-Date: 2026-07-21 11:27\n"
+"POT-Creation-Date: 2026-08-02 10:59+0000\n"
+"PO-Revision-Date: 2026-08-05 10:05\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Serbian (Latin)\n"
 "MIME-Version: 1.0\n"
@@ -18,11 +18,11 @@ msgstr ""
 "X-Crowdin-File-ID: 97\n"
 "Language: sr_CS\n"
 
-#: frontend/src/components/ViewControls.vue:1222
+#: frontend/src/components/ViewControls.vue:1231
 msgid " (New)"
 msgstr " (Novo)"
 
-#: frontend/src/components/Filter.vue:591
+#: frontend/src/components/Filter.vue:620
 msgid "%John%"
 msgstr "%John%"
 
@@ -30,7 +30,7 @@ msgstr "%John%"
 msgid "(No Title)"
 msgstr "(Bez naslova)"
 
-#: frontend/src/components/Filter.vue:581
+#: frontend/src/components/Filter.vue:610
 msgid "01/01/2022 to 01/31/2022"
 msgstr "01.01.2022. do 31.01.2022"
 
@@ -150,7 +150,7 @@ msgstr "<p>Zdravo {{ lead_name }},</p>\\n\\n<p>Ovo je podsetnik za plaćanje {{ 
 msgid "<span class=\"h5\"><b>PORTAL</b></span>"
 msgstr "<span class=\"h5\"><b>PORTAL</b></span>"
 
-#: frontend/src/components/CommunicationArea.vue:80
+#: frontend/src/components/CommunicationArea.vue:84
 msgid "@John, can you please check this?"
 msgstr "@John, možeš li molim te proveriti ovo?"
 
@@ -166,8 +166,8 @@ msgstr "Izvor za sinhronizaciju potencijalnih klijenata je već omogućen za ova
 msgid "A new account has been created for you at {0}"
 msgstr "Novi nalog je kreiran za Vas na {0}"
 
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1003
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1135
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1005
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1137
 msgid "A section can have up to {0} columns"
 msgstr ""
 
@@ -216,12 +216,12 @@ msgstr "API tajna"
 msgid "API Token"
 msgstr "API token"
 
-#: frontend/src/components/Settings/ERPNextSettings.vue:782
+#: frontend/src/components/Settings/ERPNextSettings.vue:774
 #: frontend/src/components/Settings/emailConfig.js:192
 msgid "API key is required"
 msgstr "API ključ je neophodan"
 
-#: frontend/src/components/Settings/ERPNextSettings.vue:785
+#: frontend/src/components/Settings/ERPNextSettings.vue:777
 msgid "API secret is required"
 msgstr "API tajna je obavezna"
 
@@ -270,7 +270,7 @@ msgstr "Ključ za pristup je obavezan za pružaoca usluga: {0}"
 msgid "Access Token"
 msgstr "Pristupni token"
 
-#: crm/lead_syncing/doctype/lead_sync_source/facebook.py:153
+#: crm/lead_syncing/doctype/lead_sync_source/facebook.py:145
 msgid "Access token is required"
 msgstr "Pristupni token je neophodan"
 
@@ -300,18 +300,18 @@ msgstr "SID naloga"
 msgid "Account name is required"
 msgstr "Naziv naloga je obavezan"
 
-#: frontend/src/components/Settings/Settings.vue:179
+#: frontend/src/components/Settings/Settings.vue:181
 msgid "Accounts"
 msgstr "Računi"
 
 #: frontend/src/components/CustomActions.vue:76
-#: frontend/src/components/ViewControls.vue:727
-#: frontend/src/components/ViewControls.vue:1114
+#: frontend/src/components/ViewControls.vue:736
+#: frontend/src/components/ViewControls.vue:1123
 msgid "Actions"
 msgstr "Radnje"
 
-#: frontend/src/pages/Deal.vue:568 frontend/src/pages/Lead.vue:420
-#: frontend/src/pages/MobileDeal.vue:437 frontend/src/pages/MobileLead.vue:285
+#: frontend/src/pages/Deal.vue:572 frontend/src/pages/Lead.vue:424
+#: frontend/src/pages/MobileDeal.vue:441 frontend/src/pages/MobileLead.vue:289
 msgid "Activity"
 msgstr "Aktivnost"
 
@@ -352,9 +352,9 @@ msgid "Add Chart"
 msgstr "Dodaj dijagram"
 
 #: frontend/src/components/ColumnSettings.vue:68
-#: frontend/src/components/FieldLayoutEditor.vue:565
+#: frontend/src/components/FieldLayoutEditor.vue:562
 #: frontend/src/components/Kanban/KanbanView.vue:161
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1023
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1025
 msgid "Add Column"
 msgstr "Dodaj kolonu"
 
@@ -391,14 +391,14 @@ msgid "Add Existing User"
 msgstr "Dodaj postojećeg korisnika"
 
 #: frontend/src/components/Controls/GridFieldsEditorModal.vue:61
-#: frontend/src/components/FieldLayoutEditor.vue:228
-#: frontend/src/components/Kanban/KanbanSettings.vue:78
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:195
+#: frontend/src/components/FieldLayoutEditor.vue:227
+#: frontend/src/components/Kanban/KanbanSettings.vue:82
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:197
 #: frontend/src/components/SidePanelLayoutEditor.vue:97
 msgid "Add Field"
 msgstr "Dodaj polje"
 
-#: frontend/src/components/Filter.vue:139
+#: frontend/src/components/Filter.vue:141
 #: frontend/src/components/ViewControls.vue:107
 msgid "Add Filter"
 msgstr "Dodaj filter"
@@ -412,7 +412,7 @@ msgstr "Dodaj potencijalnog klijenta ili poslovnu priliku"
 msgid "Add Location"
 msgstr "Dodaj lokaciju"
 
-#: frontend/src/pages/Contact.vue:436
+#: frontend/src/pages/Contact.vue:352
 msgid "Add Mobile Number..."
 msgstr "Dodaj broj mobilnog telefona..."
 
@@ -428,7 +428,7 @@ msgstr "Dodaj belešku"
 msgid "Add Notification"
 msgstr "Dodaj obaveštenje"
 
-#: frontend/src/pages/Contact.vue:437
+#: frontend/src/pages/Contact.vue:353
 msgid "Add Organization..."
 msgstr "Dodaj organizaciju..."
 
@@ -442,13 +442,13 @@ msgstr "Dodaj red"
 msgid "Add Sample Data"
 msgstr "Dodaj probne podatke"
 
-#: frontend/src/components/FieldLayoutEditor.vue:261
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:210
+#: frontend/src/components/FieldLayoutEditor.vue:259
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:212
 #: frontend/src/components/SidePanelLayoutEditor.vue:127
 msgid "Add Section"
 msgstr "Dodaj odeljak"
 
-#: frontend/src/components/SortBy.vue:142
+#: frontend/src/components/SortBy.vue:135
 msgid "Add Sort"
 msgstr "Dodaj sortiranje"
 
@@ -511,7 +511,7 @@ msgstr ""
 msgid "Add existing system users to this CRM. Assign them a role to grant access with their current credentials."
 msgstr "Dodaj postojeće sistemske korisnike u ovaj CRM. Dodeli im ulogu kako bi im omogućio pristup sa postojećim kredencijalima."
 
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:608
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:610
 msgid "Add fields to see them here."
 msgstr ""
 
@@ -527,7 +527,7 @@ msgstr "Dodajte jedan da biste započeli."
 msgid "Add svg code or use feather icons e.g 'settings'"
 msgstr "Dodaj SVG kod ili koristi Feather ikonice, npr. 'podešavanje'"
 
-#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:219
+#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:220
 msgid "Add time targets around support milestones like first response"
 msgstr "Dodajte vremenske ciljeve za ključne tačke, kao na primer za prvi odgovor"
 
@@ -536,7 +536,7 @@ msgstr "Dodajte vremenske ciljeve za ključne tačke, kao na primer za prvi odgo
 msgid "Add to Holidays"
 msgstr "Dodaj u praznike"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:466
+#: frontend/src/components/Layouts/AppSidebar.vue:555
 msgid "Add your first comment"
 msgstr "Dodajte svoj prvi komentar"
 
@@ -558,9 +558,9 @@ msgstr "Adresa"
 #: frontend/src/components/Settings/InviteUserPage.vue:171
 #: frontend/src/components/Settings/Users.vue:85
 #: frontend/src/components/Settings/Users.vue:125
-#: frontend/src/components/Settings/Users.vue:185
-#: frontend/src/components/Settings/Users.vue:221
-#: frontend/src/components/Settings/Users.vue:224
+#: frontend/src/components/Settings/Users.vue:193
+#: frontend/src/components/Settings/Users.vue:229
+#: frontend/src/components/Settings/Users.vue:232
 msgid "Admin"
 msgstr "Administrator"
 
@@ -602,7 +602,7 @@ msgstr "Svi dostupni prioriteti su već dodati"
 msgid "Allowed Domains"
 msgstr ""
 
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:462
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:464
 msgid "Allowed domains"
 msgstr ""
 
@@ -620,9 +620,9 @@ msgstr ""
 
 #. Label of the amount (Currency) field in DocType 'CRM Products'
 #: crm/fcrm/doctype/crm_products/crm_products.json
-#: frontend/src/pages/Contact.vue:520 frontend/src/pages/MobileContact.vue:518
-#: frontend/src/pages/MobileOrganization.vue:462
-#: frontend/src/pages/Organization.vue:504
+#: frontend/src/pages/Contact.vue:389 frontend/src/pages/MobileContact.vue:381
+#: frontend/src/pages/MobileOrganization.vue:463
+#: frontend/src/pages/Organization.vue:505
 msgid "Amount"
 msgstr "Iznos"
 
@@ -630,6 +630,11 @@ msgstr "Iznos"
 #: crm/fcrm/doctype/crm_products/crm_products.json
 msgid "Amount after discount"
 msgstr "Iznos nakon popusta"
+
+#: frontend/src/components/Settings/Sla/SlaPolicyList.vue:254
+#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:373
+msgid "An SLA set as default cannot be disabled"
+msgstr ""
 
 #: frontend/src/components/Modals/FieldLayoutDialog.vue:277
 #: frontend/src/data/script.js:78 frontend/src/data/script.js:79
@@ -650,7 +655,7 @@ msgstr "Ikonica sa ekstenzijom .ico. Trebalo bi da bude razmere 16 x 16 px. Gene
 msgid "An image with 1:1 & 2:1 ratio is preferred"
 msgstr "Preporučuje se slika u razmeri 1:1 i 2:1"
 
-#: frontend/src/components/Filter.vue:43 frontend/src/components/Filter.vue:83
+#: frontend/src/components/Filter.vue:43 frontend/src/components/Filter.vue:84
 msgid "And"
 msgstr "i"
 
@@ -693,7 +698,7 @@ msgstr "Pojavljuje se u levoj bočnoj traci. Preporučena veličina je 32x32 px 
 msgid "Appears next to the title in your browser tab. Recommended size is 32x32 px in PNG or ICO"
 msgstr "Pojavljuje se pored naslova u kartici internet pretraživača. Preporučena veličina je 32x32 px u PNG ili ICO formatu"
 
-#: frontend/src/components/Kanban/KanbanSettings.vue:98
+#: frontend/src/components/Kanban/KanbanSettings.vue:102
 #: frontend/src/components/Kanban/KanbanView.vue:46
 msgid "Apply"
 msgstr "Primeni"
@@ -719,7 +724,7 @@ msgstr "Da li ste sigurni da želite da obrišete demo podatke? Ova radnja se ne
 msgid "Are you sure you want to delete this attachment?"
 msgstr "Da li ste sigurni da želite da obrišete ove priloge?"
 
-#: frontend/src/pages/MobileContact.vue:274
+#: frontend/src/pages/MobileContact.vue:281
 msgid "Are you sure you want to delete this contact?"
 msgstr "Da li ste sigurni da želite da obrišete ovaj kontakt?"
 
@@ -728,7 +733,7 @@ msgstr "Da li ste sigurni da želite da obrišete ovaj kontakt?"
 msgid "Are you sure you want to delete this event?"
 msgstr "Da li ste sigurni da želite da obrišete ovaj događaj?"
 
-#: frontend/src/pages/MobileOrganization.vue:275
+#: frontend/src/pages/MobileOrganization.vue:276
 msgid "Are you sure you want to delete this organization?"
 msgstr "Da li ste sigurni da želite da obrišete ovu organizaciju?"
 
@@ -745,8 +750,8 @@ msgid "Are you sure you want to discard unsaved changes to this event?"
 msgstr "Da li ste sigurni da želite da odbacite nesačuvane izmene ovog događaja?"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:578
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:948
-#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:346
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:950
+#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:347
 msgid "Are you sure you want to go back? Unsaved changes will be lost."
 msgstr "Da li ste sigurni da želite da se vratite? Nesačuvane izmene će biti izgubljene."
 
@@ -754,7 +759,7 @@ msgstr "Da li ste sigurni da želite da se vratite? Nesačuvane izmene će biti 
 msgid "Are you sure you want to login to your Frappe Cloud dashboard?"
 msgstr "Da li ste sigurni da želite da se prijavite na svoju Frappe Cloud kontrolnu tablu?"
 
-#: frontend/src/components/FieldLayoutEditor.vue:431
+#: frontend/src/components/FieldLayoutEditor.vue:428
 msgid "Are you sure you want to remove this tab and all its content?"
 msgstr "Da li ste sigurni da želite da uklonite ovu karticu i sav njen sadržaj?"
 
@@ -774,14 +779,6 @@ msgstr "Da li ste sigurni da želite da poništite povezivanje {0} povezanih sta
 msgid "Ask your manager to set up the Exchange Rate Provider, as default provider does not support currency conversion for {0} to {1}."
 msgstr "Zatražite od svog menadžera da postavi provajdera deviznih kurseva, jer podrazumevani provajder ne podržava konverziju valuta iz {0} u {1}."
 
-#: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:437
-msgid "Assign Condition is required"
-msgstr "Uslov za dodelu je obavezan"
-
-#: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:440
-msgid "Assign Conditions are invalid"
-msgstr "Uslovi za dodelu nisu ispravni"
-
 #: frontend/src/components/AssignTo.vue:11
 #: frontend/src/components/AssignToBody.vue:5
 #: frontend/src/components/ListBulkActions.vue:184
@@ -792,6 +789,14 @@ msgstr "Dodeli"
 #: frontend/src/components/AssignToBody.vue:67
 msgid "Assign To Me"
 msgstr "Dodeli sebi"
+
+#: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:437
+msgid "Assign condition is required"
+msgstr "Uslov dodeljivanja je obavezan"
+
+#: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:440
+msgid "Assign conditions are invalid"
+msgstr "Uslovi dodeljivanja su nevažeći"
 
 #. Label of the assigned_to (Link) field in DocType 'CRM Task'
 #: crm/fcrm/doctype/crm_task/crm_task.json
@@ -831,33 +836,13 @@ msgstr "Dani dodeljivanja su obavezni"
 
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
-#: frontend/src/components/Layouts/AppSidebar.vue:612
+#: frontend/src/components/Layouts/AppSidebar.vue:703
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRulesList.vue:16
 msgid "Assignment Rule"
 msgstr "Pravilo dodele zadatka"
 
-#: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:703
-msgid "Assignment Rule Created"
-msgstr "Pravilo dodeljivanja je kreirano"
-
-#: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:126
-msgid "Assignment Rule Deleted"
-msgstr "Pravilo dodeljivanja je obrisano"
-
-#: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:158
-msgid "Assignment Rule Duplicated"
-msgstr "Pravilo dodeljivanja je duplirano"
-
-#: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:785
-msgid "Assignment Rule Updated"
-msgstr "Pravilo dodeljivanja je ažurirano"
-
-#: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:191
-msgid "Assignment Rule {0} Updated"
-msgstr "Pravilo dodeljivanja {0} je ažurirano"
-
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRules.vue:7
-#: frontend/src/components/Settings/Settings.vue:195
+#: frontend/src/components/Settings/Settings.vue:197
 msgid "Assignment Rules"
 msgstr "Pravila dodele"
 
@@ -865,15 +850,35 @@ msgstr "Pravila dodele"
 msgid "Assignment Schedule"
 msgstr "Raspored dodeljivanja"
 
-#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:104
+#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:105
 msgid "Assignment conditions"
 msgstr "Uslovi dodele"
 
-#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:305
+#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:306
 msgid "Assignment conditions are invalid or corrupt, recreate the conditions."
 msgstr "Uslovi dodeljivanja su neispravni ili oštećeni, ponovo ih kreirajte."
 
-#: frontend/src/components/Controls/GridFieldsEditorModal.vue:188
+#: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:703
+msgid "Assignment rule created"
+msgstr "Pravilo dodeljivanja je kreirano"
+
+#: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:126
+msgid "Assignment rule deleted"
+msgstr "Pravilo dodeljivanja je obrisano"
+
+#: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:158
+msgid "Assignment rule duplicated"
+msgstr "Pravilo dodeljivanja je duplirano"
+
+#: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:785
+msgid "Assignment rule updated"
+msgstr "Pravilo dodeljivanja je ažurirano"
+
+#: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:191
+msgid "Assignment rule {0} updated"
+msgstr "Pravilo dodeljivanja {0} je ažurirano"
+
+#: frontend/src/components/Controls/GridFieldsEditorModal.vue:189
 msgid "At least one field is required"
 msgstr "Barem jedno polje je obavezno"
 
@@ -882,16 +887,16 @@ msgid "At least one priority is required"
 msgstr "Neophodan je barem jedan prioritet"
 
 #: frontend/src/components/Settings/Sla/utils.js:204
-msgid "At least one valid Workday with Workday, Start Time, and End Time is required"
-msgstr "Neophodan je barem jedan ispravan radni dan sa definisanim radnim vremenom, vremenom početka i vremenom završetka"
+msgid "At least one valid workday with a day, start time, and end time is required"
+msgstr ""
 
 #: frontend/src/components/FilesUploader/FilesUploader.vue:2
 #: frontend/src/components/FilesUploader/FilesUploader.vue:67
 msgid "Attach"
 msgstr "Priloži"
 
-#: frontend/src/components/CommentBox.vue:65
-#: frontend/src/components/EmailEditor.vue:163 frontend/src/pages/Deal.vue:120
+#: frontend/src/components/CommentBox.vue:49
+#: frontend/src/components/EmailEditor.vue:143 frontend/src/pages/Deal.vue:120
 #: frontend/src/pages/Lead.vue:167
 msgid "Attach a File"
 msgstr "Priloži fajl"
@@ -900,8 +905,8 @@ msgstr "Priloži fajl"
 msgid "Attach file…"
 msgstr "Priloži fajl…"
 
-#: frontend/src/pages/Deal.vue:608 frontend/src/pages/Lead.vue:460
-#: frontend/src/pages/MobileDeal.vue:473 frontend/src/pages/MobileLead.vue:320
+#: frontend/src/pages/Deal.vue:612 frontend/src/pages/Lead.vue:464
+#: frontend/src/pages/MobileDeal.vue:477 frontend/src/pages/MobileLead.vue:324
 msgid "Attachments"
 msgstr "Prilozi"
 
@@ -919,7 +924,7 @@ msgstr "Status prisustva je ažuriran"
 msgid "Auth Token"
 msgstr "Autentifikacioni token"
 
-#: frontend/src/components/Settings/ERPNextSettings.vue:274
+#: frontend/src/components/Settings/ERPNextSettings.vue:270
 msgid "Auto Create Customer"
 msgstr "Automatsko kreiranje klijenta"
 
@@ -948,11 +953,6 @@ msgstr ""
 msgid "Auto-generated from the portal view — do not edit directly unless you know what you're doing! "
 msgstr "Automatski generisano iz prikaza portala - ne uređujte direktno osim ukoliko niste potpuno sigurni šta radite! "
 
-#. Label of the autocomplete (Autocomplete) field in DocType 'CRM Products'
-#: crm/fcrm/doctype/crm_products/crm_products.json
-msgid "Autocomplete"
-msgstr "Automatsko izvršenje"
-
 #. Description of the 'Auto-enrich new Organizations' (Check) field in DocType
 #. 'CRM Enrichment Settings'
 #: crm/domain_enrichment/doctype/crm_enrichment_settings/crm_enrichment_settings.json
@@ -962,16 +962,22 @@ msgstr ""
 #. Description of the 'Reopen lead/deal on new communication' (Check) field in
 #. DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
-#: frontend/src/components/Settings/GeneralSettings.vue:64
 msgid "Automatically sets Communication Status to “Open” for the lead or deal when a new communication is created. Applies only when SLA is enabled"
 msgstr "Automatski postavlja status komunikacije na \"Otvoreno\" za potencijalnog klijenta ili poslovnu priliku kada se kreira nova komunikacija. Primenjuje se samo kada je sporazum o nivou usluge omogućen"
 
 #. Description of the 'Mark lead/deal as replied on response' (Check) field in
 #. DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
-#: frontend/src/components/Settings/GeneralSettings.vue:42
 msgid "Automatically sets Communication Status to “Replied” for the lead or deal when a response is received. Applies only when SLA is enabled"
 msgstr "Automatski postavlja status komunikacije na \"Odgovoreno\" za potencijalnog klijenta ili poslovnu priliku kada se zaprimi odgovor. Primenjuje se samo kada je sporazum o nivou usluge omogućen"
+
+#: frontend/src/components/Settings/GeneralSettings.vue:64
+msgid "Automatically sets communication status to “Open” for the lead or deal when a new communication is created. Applies only when SLA is enabled"
+msgstr ""
+
+#: frontend/src/components/Settings/GeneralSettings.vue:42
+msgid "Automatically sets communication status to “Replied” for the lead or deal when a response is received. Applies only when SLA is enabled"
+msgstr ""
 
 #. Description of the 'Auto update Expected Deal Value' (Check) field in
 #. DocType 'FCRM Settings'
@@ -986,7 +992,7 @@ msgstr "Automatski ažuriraj \"Očekivana vrednost poslovne prilike\" na osnovu 
 msgid "Automation"
 msgstr "Automatizacija"
 
-#: frontend/src/components/Settings/Settings.vue:192
+#: frontend/src/components/Settings/Settings.vue:194
 msgid "Automation & Rules"
 msgstr "Automatizacija i pravila"
 
@@ -1056,8 +1062,8 @@ msgid "Axis Chart"
 msgstr "Dijagram sa osama"
 
 #: frontend/src/components/Activities/EmailArea.vue:58
-#: frontend/src/components/EmailEditor.vue:62
-#: frontend/src/components/EmailEditor.vue:88
+#: frontend/src/components/EmailEditor.vue:53
+#: frontend/src/components/EmailEditor.vue:79
 msgid "BCC"
 msgstr "BCC"
 
@@ -1091,11 +1097,11 @@ msgstr "Učestalost pozadinske sinhronizacije"
 msgid "Backlog"
 msgstr "Zakašnjenje"
 
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:294
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:296
 msgid "Basic settings for this form."
 msgstr ""
 
-#: frontend/src/components/Filter.vue:356
+#: frontend/src/components/Filter.vue:385
 msgid "Between"
 msgstr "Između"
 
@@ -1113,7 +1119,7 @@ msgstr ""
 msgid "Blocked Domains"
 msgstr ""
 
-#: frontend/src/components/Settings/Settings.vue:139
+#: frontend/src/components/Settings/Settings.vue:141
 msgid "Brand"
 msgstr "Brend"
 
@@ -1144,8 +1150,8 @@ msgid "Busy"
 msgstr "Zauzet"
 
 #: frontend/src/components/Activities/EmailArea.vue:53
-#: frontend/src/components/EmailEditor.vue:52
-#: frontend/src/components/EmailEditor.vue:74
+#: frontend/src/components/EmailEditor.vue:43
+#: frontend/src/components/EmailEditor.vue:65
 msgid "CC"
 msgstr "CC"
 
@@ -1385,7 +1391,7 @@ msgstr ""
 
 #. Label of the calendar_tab (Tab Break) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
-#: frontend/src/components/Settings/Settings.vue:144
+#: frontend/src/components/Settings/Settings.vue:146
 msgid "Calendar"
 msgstr "Kalendar"
 
@@ -1397,7 +1403,7 @@ msgstr "Podešavanje kalendara"
 msgid "Call Details"
 msgstr "Detalji poziva"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:586
+#: frontend/src/components/Layouts/AppSidebar.vue:677
 msgid "Call Log"
 msgstr "Evidencija poziva"
 
@@ -1406,7 +1412,7 @@ msgstr "Evidencija poziva"
 msgid "Call Received By"
 msgstr "Poziv primio"
 
-#: crm/integrations/api.py:158 crm/integrations/twilio/api.py:148
+#: crm/integrations/api.py:259 crm/integrations/twilio/api.py:148
 #: crm/integrations/twilio/api.py:166
 msgid "Call log not found"
 msgstr "Evidencija poziva nije pronađena"
@@ -1433,8 +1439,8 @@ msgstr "Sredstvo za pozivanje"
 msgid "Calling..."
 msgstr "Pozivanje..."
 
-#: frontend/src/pages/Deal.vue:593 frontend/src/pages/Lead.vue:445
-#: frontend/src/pages/MobileDeal.vue:457 frontend/src/pages/MobileLead.vue:305
+#: frontend/src/pages/Deal.vue:597 frontend/src/pages/Lead.vue:449
+#: frontend/src/pages/MobileDeal.vue:461 frontend/src/pages/MobileLead.vue:309
 msgid "Calls"
 msgstr "Pozivi"
 
@@ -1456,6 +1462,7 @@ msgstr "Nije moguće ponovo pokušati sinhronizaciju bez izvora!"
 #: frontend/src/components/Modals/AssignmentModal.vue:74
 #: frontend/src/components/Modals/EventModal.vue:207
 #: frontend/src/components/Modals/LostReasonModal.vue:44
+#: frontend/src/components/PrimaryDropdownItem.vue:77
 #: frontend/src/components/Settings/Sla/EditResponseResolutionModal.vue:48
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:75
 #: frontend/src/components/Telephony/TwilioCallUI.vue:73
@@ -1516,7 +1523,7 @@ msgstr ""
 msgid "Capture my first lead"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:591
+#: frontend/src/components/Layouts/AppSidebar.vue:682
 msgid "Capturing Leads"
 msgstr "Prikupljanje potencijalnih klijenata"
 
@@ -1530,11 +1537,11 @@ msgid "Category"
 msgstr "Kategorija"
 
 #: frontend/src/components/Controls/ImageUploader.vue:14
-#: frontend/src/components/Layouts/AppSidebar.vue:520
+#: frontend/src/components/Layouts/AppSidebar.vue:609
 msgid "Change"
 msgstr "Promena"
 
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1283
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1285
 msgid "Change & remove fields"
 msgstr ""
 
@@ -1558,12 +1565,12 @@ msgstr "Promeni fotografiju"
 msgid "Change Status"
 msgstr "Promeni status"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:510
-#: frontend/src/components/Layouts/AppSidebar.vue:519
+#: frontend/src/components/Layouts/AppSidebar.vue:599
+#: frontend/src/components/Layouts/AppSidebar.vue:608
 msgid "Change deal status"
 msgstr "Promeni status poslovne prilike"
 
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1275
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1277
 msgid "Change form type?"
 msgstr ""
 
@@ -1600,7 +1607,7 @@ msgstr "Izaberi postojeći kontakt"
 msgid "Choose Existing Organization"
 msgstr "Izaberi postojeću organizaciju"
 
-#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:171
+#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:172
 msgid "Choose how long this SLA policy will be active."
 msgstr "Izaberite koliko će ova politika sporazuma o nivou usluge biti aktivna."
 
@@ -1612,15 +1619,15 @@ msgstr "Izaberite način korišćenja aplikacije podešavanjem Vaših preferenci
 msgid "Choose how {0} are assigned among salespeople."
 msgstr "Izaberite kako se {0} dodeljuju među prodavcima."
 
-#: frontend/src/components/Settings/EmailAdd.vue:9
-msgid "Choose the Email Service Provider you want to configure."
-msgstr "Izaberite provajdera imejl usluge kojeg želite da konfigurišete."
-
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:306
 msgid "Choose the days of the week when this rule should be active."
 msgstr "Izaberite dane u nedelji kada ovo pravilo treba da bude aktivno."
 
-#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:107
+#: frontend/src/components/Settings/EmailAdd.vue:9
+msgid "Choose the email service provider you want to configure."
+msgstr "Izaberi provajdera imejl usluge koga želiš da konfigurišeš."
+
+#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:108
 msgid "Choose which leads/deals are affected by this policy."
 msgstr "Izaberite na koje potencijalne klijente / poslovne prilike se ova politika primenjuje."
 
@@ -1635,7 +1642,7 @@ msgstr "Izaberite na koje {0} utiče ovo pravilo poništavanja dodele."
 msgid "Clear"
 msgstr "Očisti"
 
-#: frontend/src/components/Filter.vue:21 frontend/src/components/Filter.vue:149
+#: frontend/src/components/Filter.vue:21 frontend/src/components/Filter.vue:151
 msgid "Clear All Filters"
 msgstr "Očisti sve filtere"
 
@@ -1645,12 +1652,12 @@ msgstr "Očisti sve filtere"
 msgid "Clear Assignment"
 msgstr "Očisti dodeljene zadatke"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:96
+#: frontend/src/components/Layouts/AppSidebar.vue:120
 #: frontend/src/composables/demoData.js:20
 msgid "Clear Demo Data"
 msgstr "Očisti demo podatke"
 
-#: frontend/src/components/SortBy.vue:153
+#: frontend/src/components/SortBy.vue:146
 msgid "Clear Sort"
 msgstr "Očisti sortiranje"
 
@@ -1690,12 +1697,12 @@ msgstr "Datum zatvaranja"
 msgid "Collaborating with my team"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:120
+#: frontend/src/components/Layouts/AppSidebar.vue:138
 #: frontend/src/components/Settings/Forms/FieldCard.vue:53
 msgid "Collapse"
 msgstr "Sažmi"
 
-#: frontend/src/components/FieldLayoutEditor.vue:465
+#: frontend/src/components/FieldLayoutEditor.vue:462
 msgid "Collapsible"
 msgstr "Može se sažeti"
 
@@ -1706,8 +1713,8 @@ msgstr "Može se sažeti"
 msgid "Color"
 msgstr "Boja"
 
-#: frontend/src/components/FieldLayoutEditor.vue:562
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1055
+#: frontend/src/components/FieldLayoutEditor.vue:559
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1057
 msgid "Column"
 msgstr "Kolona"
 
@@ -1726,18 +1733,18 @@ msgstr "Kolone"
 #. Label of the comment (Link) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
 #: frontend/src/components/Activities/ActivityHeader.vue:126
-#: frontend/src/components/CommentBox.vue:78
+#: frontend/src/components/CommentBox.vue:75
 #: frontend/src/components/CommunicationArea.vue:15
-#: frontend/src/components/Layouts/AppSidebar.vue:609
+#: frontend/src/components/Layouts/AppSidebar.vue:700
 msgid "Comment"
 msgstr "Komentar"
 
-#: frontend/src/components/CommunicationArea.vue:275
+#: frontend/src/components/CommunicationArea.vue:298
 msgid "Comment sent"
 msgstr "Komentar je poslat"
 
-#: frontend/src/pages/Deal.vue:578 frontend/src/pages/Lead.vue:430
-#: frontend/src/pages/MobileDeal.vue:447 frontend/src/pages/MobileLead.vue:295
+#: frontend/src/pages/Deal.vue:582 frontend/src/pages/Lead.vue:434
+#: frontend/src/pages/MobileDeal.vue:451 frontend/src/pages/MobileLead.vue:299
 msgid "Comments"
 msgstr "Komentari"
 
@@ -1799,7 +1806,7 @@ msgstr "Kompanija na ERPNext sajtu"
 msgid "Company logo discovered by Domain Enrichment."
 msgstr ""
 
-#: frontend/src/components/Settings/ERPNextSettings.vue:799
+#: frontend/src/components/Settings/ERPNextSettings.vue:791
 msgid "Company name is required"
 msgstr "Naziv kompanije je obavezan"
 
@@ -1824,8 +1831,8 @@ msgstr "Računar"
 #. Label of the condition_json (Code) field in DocType 'CRM Service Level
 #. Agreement'
 #: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.json
-#: frontend/src/components/ConditionsFilter/CFCondition.vue:65
-#: frontend/src/components/ConditionsFilter/CFCondition.vue:72
+#: frontend/src/components/ConditionsFilter/CFCondition.vue:66
+#: frontend/src/components/ConditionsFilter/CFCondition.vue:73
 msgid "Condition"
 msgstr "Uslov"
 
@@ -1839,10 +1846,6 @@ msgstr "Uslovi za ovo pravilo su kreirani iz"
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:190
 msgid "Configure"
 msgstr "Konfiguriši"
-
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:18
-msgid "Configure Telephony Settings for your CRM"
-msgstr "Konfigurišite podešavanja telefonije za Vaš CRM"
 
 #: frontend/src/components/Settings/HomeActions.vue:10
 msgid "Configure actions that appear on the home dropdown"
@@ -1860,25 +1863,29 @@ msgstr "Konfigurišite opšta podešavanja za aplikaciju"
 msgid "Configure how your dashboard calculates, formats, and displays key metrics, including forecasting, deal values, and currency settings"
 msgstr "Konfiguriši način na koji kontrolna tabla izračunava, formatira i prikazuje ključne metrike, uključujući prognoziranje, vrednosti poslovnih prilika i podešavanja valuta"
 
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:18
+msgid "Configure telephony settings for your CRM"
+msgstr "Konfigurišite podešavanja telefonije za Vaš CRM"
+
 #: frontend/src/components/Settings/DashboardSettings.vue:102
-msgid "Configure the Exchange Rate Provider for your CRM"
-msgstr "Konfigurišite provajdera deviznog kursa za Vaš CRM"
-
-#: frontend/src/components/Settings/BrandSettings.vue:10
-msgid "Configure your Brand Name, Logo, and Favicon"
-msgstr "Konfigurišite naziv brenda, logo i favicon"
-
-#: frontend/src/components/Settings/CalendarSettings.vue:12
-msgid "Configure your Calendar Settings like Default View and Event Notifications here"
-msgstr "Ovde konfigurišite podešavanja kalendara kao što su podrazumevani prikaz i obaveštenja o događajima"
+msgid "Configure the exchange rate provider for your CRM"
+msgstr "Konfigurišite provajdera deviznih kurseva za Vaš CRM"
 
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:184
-msgid "Configure your Exotel Telephony Integration Settings here"
-msgstr "Ovde konfigurišite podešavanja integracije telefonije sa Exotel"
+msgid "Configure your Exotel telephony integration settings here"
+msgstr "Ovde konfigurišite Exotel integraciju telefonije"
 
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:157
-msgid "Configure your Twilio Telephony Integration Settings here"
-msgstr "Ovde konfigurišite podešavanja integracije telefonije sa Twilio"
+msgid "Configure your Twilio telephony integration settings here"
+msgstr "Ovde konfigurišite Twilio integraciju telefonije"
+
+#: frontend/src/components/Settings/BrandSettings.vue:10
+msgid "Configure your brand name, logo and favicon"
+msgstr ""
+
+#: frontend/src/components/Settings/CalendarSettings.vue:12
+msgid "Configure your calendar settings, including the default view and event notifications"
+msgstr ""
 
 #: frontend/src/composables/demoData.js:26
 #: frontend/src/composables/frappecloud.js:29
@@ -1891,7 +1898,7 @@ msgid "Confirm Delete"
 msgstr "Potvrdi brisanje"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:642
-#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:399
+#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:400
 msgid "Confirm Overwrite"
 msgstr "Potvrdite izmenu"
 
@@ -1899,11 +1906,11 @@ msgstr "Potvrdite izmenu"
 msgid "Confirm Password"
 msgstr "Potvrdi lozinku"
 
-#: frontend/src/utils/index.js:822 frontend/src/utils/index.js:825
+#: frontend/src/utils/index.js:843 frontend/src/utils/index.js:846
 msgid "Confirm {0}"
 msgstr "Potvrdi {0}"
 
-#: frontend/src/components/Settings/ERPNextSettings.vue:440
+#: frontend/src/components/Settings/ERPNextSettings.vue:436
 msgid "Connect ERPNext to Frappe CRM"
 msgstr "Povežite ERPNext sa Frappe CRM"
 
@@ -1915,16 +1922,16 @@ msgstr "Povežite svoj imejl"
 #. Label of the contact (Link) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_contacts/crm_contacts.json
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
-#: frontend/src/components/Layouts/AppSidebar.vue:582
+#: frontend/src/components/Layouts/AppSidebar.vue:673
 #: frontend/src/components/Modals/ConvertToDealModal.vue:51
 msgid "Contact"
 msgstr "Kontakt"
 
-#: frontend/src/pages/Deal.vue:689 frontend/src/pages/MobileDeal.vue:551
+#: frontend/src/pages/Deal.vue:693 frontend/src/pages/MobileDeal.vue:555
 msgid "Contact Added"
 msgstr "Kontakt je dodat"
 
-#: frontend/src/pages/Deal.vue:679 frontend/src/pages/MobileDeal.vue:541
+#: frontend/src/pages/Deal.vue:683 frontend/src/pages/MobileDeal.vue:545
 msgid "Contact Already Added"
 msgstr "Kontakt je već dodat"
 
@@ -1932,11 +1939,11 @@ msgstr "Kontakt je već dodat"
 msgid "Contact Already Exists"
 msgstr "Kontakt već postoji"
 
-#: frontend/src/pages/MobileContact.vue:266
+#: frontend/src/pages/MobileContact.vue:273
 msgid "Contact Image Updated"
 msgstr "Slika kontakta je ažurirana"
 
-#: frontend/src/pages/Deal.vue:700 frontend/src/pages/MobileDeal.vue:562
+#: frontend/src/pages/Deal.vue:704 frontend/src/pages/MobileDeal.vue:566
 msgid "Contact Removed"
 msgstr "Kontakt je uklonjen"
 
@@ -1944,16 +1951,7 @@ msgstr "Kontakt je uklonjen"
 msgid "Contact Support"
 msgstr "Kontaktirajte podršku"
 
-#: frontend/src/pages/Contact.vue:448 frontend/src/pages/Contact.vue:461
-#: frontend/src/pages/Contact.vue:474 frontend/src/pages/Contact.vue:484
-#: frontend/src/pages/MobileContact.vue:446
-#: frontend/src/pages/MobileContact.vue:459
-#: frontend/src/pages/MobileContact.vue:472
-#: frontend/src/pages/MobileContact.vue:482
-msgid "Contact Updated"
-msgstr "Kontakt je ažuriran"
-
-#: frontend/src/components/Modals/EditValueModal.vue:19
+#: frontend/src/components/Modals/EditValueModal.vue:21
 msgid "Contact Us"
 msgstr "Kontaktirajte nas"
 
@@ -1961,7 +1959,7 @@ msgstr "Kontaktirajte nas"
 msgid "Contact already exists with Email: {0}"
 msgstr ""
 
-#: frontend/src/pages/Contact.vue:289
+#: frontend/src/pages/Contact.vue:296
 msgid "Contact image updated"
 msgstr "Slika kontakta je ažurirana"
 
@@ -1974,8 +1972,8 @@ msgstr ""
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
-#: frontend/src/pages/Contact.vue:244 frontend/src/pages/MobileContact.vue:226
-#: frontend/src/pages/MobileOrganization.vue:349
+#: frontend/src/pages/Contact.vue:247 frontend/src/pages/MobileContact.vue:229
+#: frontend/src/pages/MobileOrganization.vue:350
 msgid "Contacts"
 msgstr "Kontakti"
 
@@ -2004,15 +2002,15 @@ msgstr "Sadržaj je obavezan"
 msgid "Controls how numbers are displayed (e.g., commas, decimal separators)"
 msgstr "Kontroliše način prikaza brojeva (npr. zarezi, decimalni separatori)"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:405
+#: frontend/src/components/Layouts/AppSidebar.vue:494
 #: frontend/src/components/ListBulkActions.vue:86
 #: frontend/src/components/Modals/ConvertToDealModal.vue:83
 #: frontend/src/pages/MobileLead.vue:54
 msgid "Convert"
 msgstr "Prebaci"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:396
-#: frontend/src/components/Layouts/AppSidebar.vue:404
+#: frontend/src/components/Layouts/AppSidebar.vue:485
+#: frontend/src/components/Layouts/AppSidebar.vue:493
 msgid "Convert lead to deal"
 msgstr "Prebaci potencijalnog klijenta u poslovnu priliku"
 
@@ -2032,15 +2030,15 @@ msgstr "Prebačeno"
 msgid "Converted Successfully"
 msgstr "Uspešno konvertovano"
 
-#: frontend/src/utils/index.js:405
+#: frontend/src/utils/index.js:426
 msgid "Copied to Clipboard"
 msgstr "Kopirano u međuspremnik"
 
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:441
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:443
 msgid "Copy"
 msgstr ""
 
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:386
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:388
 #: frontend/src/components/Settings/Forms/FormsList.vue:271
 msgid "Copy link"
 msgstr ""
@@ -2063,8 +2061,13 @@ msgstr ""
 msgid "Could not remove."
 msgstr ""
 
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1414
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1416
 msgid "Could not save"
+msgstr ""
+
+#: frontend/src/components/PrimaryDropdownItem.vue:181
+#: frontend/src/components/PrimaryDropdownItem.vue:188
+msgid "Could not save, try again"
 msgstr ""
 
 #: frontend/src/components/EnrichFromWebsite.vue:99
@@ -2075,7 +2078,7 @@ msgstr ""
 msgid "Could not update form"
 msgstr ""
 
-#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:476
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:473
 msgid "Could not update report to"
 msgstr ""
 
@@ -2110,7 +2113,7 @@ msgstr ""
 #: frontend/src/components/Modals/EventModal.vue:215
 #: frontend/src/components/Modals/LeadModal.vue:37
 #: frontend/src/components/Modals/OrganizationModal.vue:41
-#: frontend/src/components/Modals/ViewModal.vue:43
+#: frontend/src/components/Modals/ViewModal.vue:63
 #: frontend/src/components/Settings/EmailAdd.vue:86
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:30
 #: frontend/src/pages/Calendar.vue:10 frontend/src/pages/CallLogs.vue:13
@@ -2129,7 +2132,7 @@ msgstr "Kreiraj poslovnu priliku"
 msgid "Create Event"
 msgstr "Kreiraj događaj"
 
-#: frontend/src/components/Modals/CallLogDetailModal.vue:155
+#: frontend/src/components/Modals/CallLogDetailModal.vue:163
 #: frontend/src/components/Modals/LeadModal.vue:8
 msgid "Create Lead"
 msgstr "Kreiraj potencijalnog klijenta"
@@ -2147,7 +2150,7 @@ msgstr ""
 #: frontend/src/components/Controls/Link.vue:50
 #: frontend/src/components/Modals/EmailTemplateSelectorModal.vue:58
 #: frontend/src/components/Modals/WhatsappTemplateSelectorModal.vue:60
-#: frontend/src/components/PrimaryDropdown.vue:41
+#: frontend/src/components/PrimaryDropdown.vue:49
 msgid "Create New"
 msgstr "Kreiraj novi"
 
@@ -2160,7 +2163,7 @@ msgid "Create New Template"
 msgstr ""
 
 #: frontend/src/components/Modals/ViewModal.vue:9
-#: frontend/src/components/ViewControls.vue:731
+#: frontend/src/components/ViewControls.vue:740
 msgid "Create View"
 msgstr "Kreiraj prikaz"
 
@@ -2168,7 +2171,7 @@ msgstr "Kreiraj prikaz"
 msgid "Create an Event"
 msgstr "Kreiraj događaj"
 
-#: frontend/src/components/Settings/ERPNextSettings.vue:278
+#: frontend/src/components/Settings/ERPNextSettings.vue:274
 msgid "Create customer in ERPNext when the deal status is changed"
 msgstr "Kreiraj klijenta u ERPNext kada se status poslovne prilike promeni"
 
@@ -2192,19 +2195,19 @@ msgstr ""
 msgid "Create products as Items in ERPNext"
 msgstr ""
 
-#: frontend/src/components/Settings/ERPNextSettings.vue:669
+#: frontend/src/components/Settings/ERPNextSettings.vue:661
 msgid "Create quotation button on deal page and auto customer creation on deal status change will be disabled. Are you sure?"
 msgstr "Dugme za kreiranje ponude na stranici poslovne prilike i automatsko kreiranje klijenta pri promeni statusa biće onemogućeni. Da li ste sigurni?"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:371
+#: frontend/src/components/Layouts/AppSidebar.vue:460
 msgid "Create your first lead"
 msgstr "Kreiraj svoj prvog potencijalnog klijenta"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:445
+#: frontend/src/components/Layouts/AppSidebar.vue:534
 msgid "Create your first note"
 msgstr "Kreiraj svoju prvu belešku"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:424
+#: frontend/src/components/Layouts/AppSidebar.vue:513
 msgid "Create your first task"
 msgstr "Kreiraj svoj prvi zadatak"
 
@@ -2231,23 +2234,27 @@ msgstr "Valuta je uspešno postavljena kao {0}"
 msgid "Current Password"
 msgstr "Trenutna lozinka"
 
+#: frontend/src/components/Modals/ViewModal.vue:35
+msgid "Current icon"
+msgstr ""
+
 #: crm/api/dashboard.py:896
 msgid "Current pipeline distribution"
 msgstr "Trenutna raspodela prodajnog toka"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:621
+#: frontend/src/components/Layouts/AppSidebar.vue:712
 msgid "Custom Actions"
 msgstr "Prilagođene radnje"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:571
+#: frontend/src/components/Layouts/AppSidebar.vue:662
 msgid "Custom Branding"
 msgstr "Prilagođeno brendiranje"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:620
+#: frontend/src/components/Layouts/AppSidebar.vue:711
 msgid "Custom Fields"
 msgstr "Prilagođena polja"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:623
+#: frontend/src/components/Layouts/AppSidebar.vue:714
 msgid "Custom List Actions"
 msgstr "Prilagođena lista radnji"
 
@@ -2255,7 +2262,7 @@ msgstr "Prilagođena lista radnji"
 msgid "Custom Range"
 msgstr "Prilagođeni opseg"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:622
+#: frontend/src/components/Layouts/AppSidebar.vue:713
 msgid "Custom Statuses"
 msgstr "Prilagođeni statusi"
 
@@ -2263,8 +2270,8 @@ msgstr "Prilagođeni statusi"
 msgid "Customer Created Successfully"
 msgstr "Klijent je uspešno kreiran"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:617
-#: frontend/src/components/Settings/Settings.vue:213
+#: frontend/src/components/Layouts/AppSidebar.vue:708
+#: frontend/src/components/Settings/Settings.vue:215
 msgid "Customization"
 msgstr "Prilagođavanje"
 
@@ -2291,7 +2298,7 @@ msgid "Dark"
 msgstr "Tamno"
 
 #: frontend/src/components/Settings/DashboardSettings.vue:6
-#: frontend/src/components/Settings/Settings.vue:129
+#: frontend/src/components/Settings/Settings.vue:131
 msgid "Dashboard"
 msgstr "Kontrolna tabla"
 
@@ -2308,9 +2315,9 @@ msgid "Dashboard settings updated successfully"
 msgstr "Podešavanja kontrolne table su uspešno ažurirana"
 
 #: frontend/src/components/Activities/DataFields.vue:6
-#: frontend/src/components/Layouts/AppSidebar.vue:610
-#: frontend/src/pages/Deal.vue:583 frontend/src/pages/Lead.vue:435
-#: frontend/src/pages/MobileDeal.vue:452 frontend/src/pages/MobileLead.vue:300
+#: frontend/src/components/Layouts/AppSidebar.vue:701
+#: frontend/src/pages/Deal.vue:587 frontend/src/pages/Lead.vue:439
+#: frontend/src/pages/MobileDeal.vue:456 frontend/src/pages/MobileLead.vue:304
 msgid "Data"
 msgstr "Podaci"
 
@@ -2342,7 +2349,7 @@ msgid "Day"
 msgstr "Dan"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:425
-#: frontend/src/components/Layouts/AppSidebar.vue:581
+#: frontend/src/components/Layouts/AppSidebar.vue:672
 #: frontend/src/components/Settings/AssignmentRules/AssigneeRules.vue:20
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:50
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:58
@@ -2355,16 +2362,16 @@ msgid "Deal"
 msgstr "Poslovna prilika"
 
 #. Label of the deal_owner (Link) field in DocType 'CRM Deal'
-#: crm/fcrm/doctype/crm_deal/crm_deal.json frontend/src/pages/Contact.vue:541
-#: frontend/src/pages/MobileContact.vue:539
-#: frontend/src/pages/MobileOrganization.vue:483
-#: frontend/src/pages/Organization.vue:525
+#: crm/fcrm/doctype/crm_deal/crm_deal.json frontend/src/pages/Contact.vue:410
+#: frontend/src/pages/MobileContact.vue:402
+#: frontend/src/pages/MobileOrganization.vue:484
+#: frontend/src/pages/Organization.vue:526
 msgid "Deal Owner"
 msgstr "Vlasnik poslovne prilike"
 
 #. Label of the deal_status (Link) field in DocType 'ERPNext CRM Settings'
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.json
-#: frontend/src/components/Settings/ERPNextSettings.vue:304
+#: frontend/src/components/Settings/ERPNextSettings.vue:300
 msgid "Deal Status"
 msgstr "Status poslovne prilike"
 
@@ -2382,7 +2389,7 @@ msgstr "Vrednost poslovne prilike"
 msgid "Deal generation channel analysis"
 msgstr "Analiza kanala za generisanje poslovnih prilika"
 
-#: frontend/src/components/Settings/ERPNextSettings.vue:804
+#: frontend/src/components/Settings/ERPNextSettings.vue:796
 msgid "Deal status is required"
 msgstr "Status poslovne prilike je obavezan"
 
@@ -2392,9 +2399,9 @@ msgstr "Vrednost poslovne prilike"
 
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
-#: frontend/src/pages/Deal.vue:521 frontend/src/pages/MobileContact.vue:302
+#: frontend/src/pages/Deal.vue:521 frontend/src/pages/MobileContact.vue:309
 #: frontend/src/pages/MobileDeal.vue:391
-#: frontend/src/pages/MobileOrganization.vue:343
+#: frontend/src/pages/MobileOrganization.vue:344
 msgid "Deals"
 msgstr "Poslovne prilike"
 
@@ -2457,10 +2464,6 @@ msgstr "Podrazumevano"
 msgid "Default Calendar View"
 msgstr "Podrazumevani prikaz kalendara"
 
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:41
-msgid "Default Calling Medium for Logged In User"
-msgstr "Podrazumevani kanal pozivanja za prijavljenog korisnika"
-
 #. Label of the default_reminder_section (Section Break) field in DocType 'FCRM
 #. Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
@@ -2514,6 +2517,10 @@ msgstr ""
 msgid "Default View"
 msgstr "Podrazumevani prikaz"
 
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:41
+msgid "Default calling medium for logged-in user"
+msgstr ""
+
 #: frontend/src/components/Telephony/CallUI.vue:110
 msgid "Default calling medium set successfully to {0}"
 msgstr "Podrazumevano sredstvo za pozivanje je uspešno postavljeno na {0}"
@@ -2523,11 +2530,11 @@ msgstr "Podrazumevano sredstvo za pozivanje je uspešno postavljeno na {0}"
 msgid "Default statuses, custom fields and layouts restored successfully."
 msgstr "Podrazumevani statusi, prilagođena polja i rasporedi su uspešno vraćeni."
 
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:264
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:266
 msgid "Default value"
 msgstr ""
 
-#: frontend/src/components/Settings/Settings.vue:134
+#: frontend/src/components/Settings/Settings.vue:136
 msgid "Defaults"
 msgstr "Podrazumevane vrednosti"
 
@@ -2546,27 +2553,27 @@ msgstr "Definiše podrazumevanu valutu za sve zapise, može se promeniti na nivo
 #: frontend/src/components/Controls/Grid.vue:447
 #: frontend/src/components/DeleteLinkedDocModal.vue:13
 #: frontend/src/components/DeleteLinkedDocModal.vue:93
-#: frontend/src/components/Kanban/KanbanView.vue:236
+#: frontend/src/components/Kanban/KanbanView.vue:235
 #: frontend/src/components/ListBulkActions.vue:177
 #: frontend/src/components/Modals/EventModal.vue:467
 #: frontend/src/components/Modals/EventModal.vue:471
-#: frontend/src/components/PrimaryDropdownItem.vue:42
+#: frontend/src/components/PrimaryDropdownItem.vue:60
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:184
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:231
 #: frontend/src/components/Settings/Hierarchy/HierarchyRow.vue:166
 #: frontend/src/components/Settings/Sla/EditResponseResolutionModal.vue:39
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:66
-#: frontend/src/components/ViewControls.vue:1166
-#: frontend/src/components/ViewControls.vue:1177
+#: frontend/src/components/ViewControls.vue:1175
+#: frontend/src/components/ViewControls.vue:1186
 #: frontend/src/pages/Calendar.vue:408 frontend/src/pages/Calendar.vue:412
 #: frontend/src/pages/Contact.vue:99 frontend/src/pages/Deal.vue:127
 #: frontend/src/pages/Lead.vue:174 frontend/src/pages/MobileContact.vue:80
-#: frontend/src/pages/MobileContact.vue:277
-#: frontend/src/pages/MobileDeal.vue:522
+#: frontend/src/pages/MobileContact.vue:284
+#: frontend/src/pages/MobileDeal.vue:526
 #: frontend/src/pages/MobileOrganization.vue:73
-#: frontend/src/pages/MobileOrganization.vue:278
+#: frontend/src/pages/MobileOrganization.vue:279
 #: frontend/src/pages/Notes.vue:44 frontend/src/pages/Organization.vue:96
-#: frontend/src/pages/Tasks.vue:363 frontend/src/utils/index.js:802
+#: frontend/src/pages/Tasks.vue:363 frontend/src/utils/index.js:823
 msgid "Delete"
 msgstr "Obriši"
 
@@ -2583,7 +2590,7 @@ msgstr "Obriši sve"
 msgid "Delete Attachment"
 msgstr "Obriši prilog"
 
-#: frontend/src/pages/MobileContact.vue:273
+#: frontend/src/pages/MobileContact.vue:280
 msgid "Delete Contact"
 msgstr "Obriši kontakt"
 
@@ -2603,7 +2610,7 @@ msgstr "Obriši povezanu stavku"
 msgid "Delete Only User"
 msgstr ""
 
-#: frontend/src/pages/MobileOrganization.vue:274
+#: frontend/src/pages/MobileOrganization.vue:275
 msgid "Delete Organization"
 msgstr "Obriši organizaciju"
 
@@ -2611,8 +2618,8 @@ msgstr "Obriši organizaciju"
 msgid "Delete Task"
 msgstr "Obriši zadatak"
 
-#: frontend/src/components/ViewControls.vue:1162
-#: frontend/src/components/ViewControls.vue:1170
+#: frontend/src/components/ViewControls.vue:1171
+#: frontend/src/components/ViewControls.vue:1179
 msgid "Delete View"
 msgstr "Obriši prikaz"
 
@@ -2680,10 +2687,10 @@ msgstr ""
 #. Label of the details (Text Editor) field in DocType 'CRM Lead Source'
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: crm/fcrm/doctype/crm_lead_source/crm_lead_source.json
-#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:198
-#: frontend/src/pages/MobileContact.vue:297
-#: frontend/src/pages/MobileDeal.vue:431 frontend/src/pages/MobileLead.vue:279
-#: frontend/src/pages/MobileOrganization.vue:338
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:197
+#: frontend/src/pages/MobileContact.vue:304
+#: frontend/src/pages/MobileDeal.vue:435 frontend/src/pages/MobileLead.vue:283
+#: frontend/src/pages/MobileOrganization.vue:339
 msgid "Details"
 msgstr "Detalji"
 
@@ -2702,19 +2709,19 @@ msgstr "Uređaj"
 
 #: crm/fcrm/doctype/crm_form_script/crm_form_script.js:30
 #: frontend/src/components/Settings/ERPNextSettings.vue:32
-#: frontend/src/components/Settings/ERPNextSettings.vue:674
+#: frontend/src/components/Settings/ERPNextSettings.vue:666
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:31
-#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:318
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:316
 #: frontend/src/components/Settings/Telephony/ExotelSettings.vue:29
 #: frontend/src/components/Settings/Telephony/TwilioSettings.vue:29
 msgid "Disable"
 msgstr "Onemogući"
 
-#: frontend/src/components/Settings/ERPNextSettings.vue:668
+#: frontend/src/components/Settings/ERPNextSettings.vue:660
 msgid "Disable ERPNext Integration"
 msgstr "Onemogući ERPNext integraciju"
 
-#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:312
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:310
 msgid "Disable Sales Hierarchy"
 msgstr ""
 
@@ -2725,9 +2732,9 @@ msgstr "Onemogućeno"
 
 #: crm/www/crm_form.html:225
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:923
-#: frontend/src/components/CommentBox.vue:74
-#: frontend/src/components/EmailEditor.vue:178
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:614
+#: frontend/src/components/CommentBox.vue:71
+#: frontend/src/components/EmailEditor.vue:165
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:616
 msgid "Discard"
 msgstr "Odbaci"
 
@@ -2750,10 +2757,6 @@ msgstr "Popust %"
 msgid "Discount Amount"
 msgstr "Iznos popusta"
 
-#: frontend/src/components/SalesHierarchyBanner.vue:13
-msgid "Dismiss"
-msgstr "Odbaci"
-
 #. Label of the dismissed (Check) field in DocType 'CRM Product Sync Issue'
 #: crm/fcrm/doctype/crm_product_sync_issue/crm_product_sync_issue.json
 msgid "Dismissed"
@@ -2775,6 +2778,10 @@ msgstr "DocType"
 #: crm/api/doc.py:803
 msgid "Doctype is required"
 msgstr "DocType je obavezan"
+
+#: frontend/src/components/Filter.vue:242
+msgid "Document ID, not the full name"
+msgstr ""
 
 #: frontend/src/pages/MobileLead.vue:204
 msgid "Document Not Found"
@@ -2839,7 +2846,7 @@ msgstr ""
 msgid "Drag & Drop files here or upload from"
 msgstr "Prevucite i otpustite fajlove ovde ili ih otpremite sa"
 
-#: frontend/src/components/FieldLayoutEditor.vue:253
+#: frontend/src/components/FieldLayoutEditor.vue:251
 msgid "Drag a section or a field here to get started"
 msgstr "Prevucite odeljak ili polje ovde da biste započeli"
 
@@ -2847,7 +2854,7 @@ msgstr "Prevucite odeljak ili polje ovde da biste započeli"
 msgid "Drop files here"
 msgstr "Otpusti fajlove ovde"
 
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:415
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:417
 msgid "Drop the form into your own website."
 msgstr ""
 
@@ -2864,15 +2871,15 @@ msgstr "Datum dospeća"
 #. Option for the 'Type' (Select) field in DocType 'Failed Lead Sync Log'
 #: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.json
 #: frontend/src/components/Modals/EventModal.vue:214
-#: frontend/src/components/Modals/ViewModal.vue:42
+#: frontend/src/components/Modals/ViewModal.vue:62
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:65
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:134
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:225
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:23
-#: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:192
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:186
 #: frontend/src/components/Settings/Sla/SlaPolicyList.vue:133
 #: frontend/src/components/Settings/Sla/SlaPolicyList.vue:183
-#: frontend/src/components/ViewControls.vue:1118
+#: frontend/src/components/ViewControls.vue:1127
 msgid "Duplicate"
 msgstr "Duplikat"
 
@@ -2913,8 +2920,8 @@ msgstr "Duplikat događaja"
 msgid "Duration"
 msgstr "Trajanje"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:634
-#: frontend/src/components/Settings/Settings.vue:238
+#: frontend/src/components/Layouts/AppSidebar.vue:725
+#: frontend/src/components/Settings/Settings.vue:240
 msgid "ERPNext"
 msgstr "ERPNext"
 
@@ -2971,15 +2978,15 @@ msgstr "ERPNext nije integrisan sa CRM-om"
 
 #: frontend/src/components/Activities/CommentArea.vue:94
 #: frontend/src/components/FieldLayout/Field.vue:110
-#: frontend/src/components/FieldLayoutEditor.vue:417
-#: frontend/src/components/FieldLayoutEditor.vue:460
+#: frontend/src/components/FieldLayoutEditor.vue:414
+#: frontend/src/components/FieldLayoutEditor.vue:457
 #: frontend/src/components/ListBulkActions.vue:170
-#: frontend/src/components/PrimaryDropdownItem.vue:35
+#: frontend/src/components/PrimaryDropdownItem.vue:53
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:31
 #: frontend/src/components/Settings/Forms/FormsList.vue:262
 #: frontend/src/components/Settings/Sla/SlaHolidays.vue:202
 #: frontend/src/components/Settings/Sla/SlaPriorityList.vue:188
-#: frontend/src/components/ViewControls.vue:1136
+#: frontend/src/components/ViewControls.vue:1145
 #: frontend/src/pages/Dashboard.vue:16
 msgid "Edit"
 msgstr "Uredi"
@@ -3071,7 +3078,7 @@ msgstr "Uređivanje događaja"
 msgid "Editing Row {0}"
 msgstr "Uređivanje reda {0}"
 
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:687
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:689
 msgid "Editor"
 msgstr ""
 
@@ -3088,12 +3095,12 @@ msgstr ""
 #: frontend/src/components/Settings/CalendarSettings.vue:89
 #: frontend/src/components/Settings/CalendarSettings.vue:188
 #: frontend/src/components/Settings/Profile/UserEmailSettings.vue:68
-#: frontend/src/components/Settings/Settings.vue:176
-#: frontend/src/pages/Contact.vue:531 frontend/src/pages/MobileContact.vue:529
-#: frontend/src/pages/MobileOrganization.vue:473
-#: frontend/src/pages/MobileOrganization.vue:501
-#: frontend/src/pages/Organization.vue:515
-#: frontend/src/pages/Organization.vue:543
+#: frontend/src/components/Settings/Settings.vue:178
+#: frontend/src/pages/Contact.vue:400 frontend/src/pages/MobileContact.vue:392
+#: frontend/src/pages/MobileOrganization.vue:474
+#: frontend/src/pages/MobileOrganization.vue:502
+#: frontend/src/pages/Organization.vue:516
+#: frontend/src/pages/Organization.vue:544
 #: frontend/src/pages/PersonaForm.vue:77
 msgid "Email"
 msgstr "Imejl"
@@ -3101,14 +3108,6 @@ msgstr "Imejl"
 #: frontend/src/components/Settings/Profile/UserEmailSettings.vue:67
 msgid "Email Account"
 msgstr "Imejl nalog"
-
-#: frontend/src/components/Settings/EmailAdd.vue:145
-msgid "Email Account created successfully"
-msgstr "Imejl nalog je uspešno kreiran"
-
-#: frontend/src/components/Settings/EmailEdit.vue:211
-msgid "Email Account updated successfully"
-msgstr "Imejl nalog je uspešno ažuriran"
 
 #: frontend/src/components/Settings/EmailAccountList.vue:7
 msgid "Email Accounts"
@@ -3118,11 +3117,11 @@ msgstr "Imejl nalozi"
 msgid "Email Already Exists"
 msgstr "Imejl već postoji"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:608
+#: frontend/src/components/Layouts/AppSidebar.vue:699
 msgid "Email Communication"
 msgstr "Imejl komunikacija"
 
-#: frontend/src/components/EmailEditor.vue:222
+#: frontend/src/components/EmailEditor.vue:213
 msgid "Email From Lead"
 msgstr "Imejl od potencijalnog klijenta"
 
@@ -3143,7 +3142,7 @@ msgstr "Imejl poslat u"
 msgid "Email Settings"
 msgstr "Imejl podešavanja"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:587
+#: frontend/src/components/Layouts/AppSidebar.vue:678
 msgid "Email Template"
 msgstr "Imejl šablon"
 
@@ -3152,11 +3151,19 @@ msgstr "Imejl šablon"
 msgid "Email Templates"
 msgstr "Imejl šabloni"
 
+#: frontend/src/components/Settings/EmailAdd.vue:145
+msgid "Email account created successfully"
+msgstr "Imejl nalog je uspešno kreiran"
+
+#: frontend/src/components/Settings/EmailEdit.vue:211
+msgid "Email account updated successfully"
+msgstr "Imejl nalog je uspešno ažuriran"
+
 #: frontend/src/components/Controls/EmailMultiSelect.vue:256
 msgid "Email already exists"
 msgstr "Imejl već postoji"
 
-#: frontend/src/components/CommunicationArea.vue:259
+#: frontend/src/components/CommunicationArea.vue:276
 msgid "Email sent"
 msgstr "Imejl je poslat"
 
@@ -3165,8 +3172,8 @@ msgid "Email settings updated successfully"
 msgstr "Podešavanja imejla su uspešno ažurirana"
 
 #: frontend/src/components/Settings/Profile/UserEmailSettings.vue:51
-#: frontend/src/pages/Deal.vue:573 frontend/src/pages/Lead.vue:425
-#: frontend/src/pages/MobileDeal.vue:442 frontend/src/pages/MobileLead.vue:290
+#: frontend/src/pages/Deal.vue:577 frontend/src/pages/Lead.vue:429
+#: frontend/src/pages/MobileDeal.vue:446 frontend/src/pages/MobileLead.vue:294
 msgid "Emails"
 msgstr "Imejlovi"
 
@@ -3179,7 +3186,7 @@ msgstr "Imejlovi i potpisi"
 msgid "Emails Found"
 msgstr ""
 
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:412
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:414
 msgid "Embed"
 msgstr ""
 
@@ -3187,16 +3194,16 @@ msgstr ""
 msgid "Empty"
 msgstr "Prazno"
 
-#: frontend/src/components/Filter.vue:126
+#: frontend/src/components/Filter.vue:128
 msgid "Empty - Choose a field to filter by"
 msgstr "Prazno - Izaberite polje po kojem želite da filtirate"
 
-#: frontend/src/components/SortBy.vue:130
+#: frontend/src/components/SortBy.vue:123
 msgid "Empty - Choose a field to sort by"
 msgstr "Prazno - Izaberite polje po kojem želite da sortirate"
 
 #: crm/fcrm/doctype/crm_form_script/crm_form_script.js:30
-#: frontend/src/components/Settings/ERPNextSettings.vue:453
+#: frontend/src/components/Settings/ERPNextSettings.vue:449
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:72
 #: frontend/src/components/Settings/Telephony/ExotelSettings.vue:117
 #: frontend/src/components/Settings/Telephony/TwilioSettings.vue:124
@@ -3255,9 +3262,9 @@ msgstr ""
 msgid "Enable for CRM Organization"
 msgstr ""
 
-#: frontend/src/components/Settings/ERPNextSettings.vue:444
-msgid "Enable the integration to create quotations and auto create customers in ERPNext."
-msgstr "Omogućite integraciju za kreiranje ponuda i automatsko kreiranje klijenata u ERPNext-u."
+#: frontend/src/components/Settings/ERPNextSettings.vue:440
+msgid "Enable the integration to create quotations and more in ERPNext."
+msgstr ""
 
 #. Label of the enabled (Check) field in DocType 'CRM Enrichment Field Mapping'
 #. Label of the enabled (Check) field in DocType 'CRM Enrichment Rule'
@@ -3300,13 +3307,9 @@ msgstr "Omogućeno?"
 
 #. Label of the end_date (Date) field in DocType 'CRM Service Level Agreement'
 #: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.json
-#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:193
+#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:194
 msgid "End Date"
 msgstr "Datum završetka"
-
-#: frontend/src/components/Settings/Sla/utils.js:172
-msgid "End Date cannot be before start date"
-msgstr "Datum završetka ne može biti pre datuma početka"
 
 #. Label of the end_time (Datetime) field in DocType 'CRM Call Log'
 #. Label of the end_time (Time) field in DocType 'CRM Service Day'
@@ -3324,17 +3327,21 @@ msgstr "Vreme završetka"
 msgid "End Time Should Be After Start Time"
 msgstr "Vreme završetka mora biti nakon vremena početka"
 
+#: frontend/src/components/Settings/Sla/utils.js:172
+msgid "End date cannot be before start date"
+msgstr "Datum završetka ne može biti pre datuma početka"
+
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:189
-msgid "End Time is required"
-msgstr "Vreme završetka je obavezno"
+msgid "End time is required"
+msgstr ""
 
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:204
-msgid "End Time must be after Start Time"
-msgstr "Vreme završetka mora biti nakon vremena početka"
+msgid "End time must be after start time"
+msgstr ""
 
 #: frontend/src/components/Settings/Sla/utils.js:262
-msgid "End Time must be after Start Time for: {0}"
-msgstr "Vreme završetka mora biti nakon vremena početka za: {0}"
+msgid "End time must be after start time for: {0}"
+msgstr ""
 
 #: frontend/src/components/EnrichFromWebsite.vue:4
 #: frontend/src/components/Modals/DealModal.vue:70
@@ -3405,8 +3412,8 @@ msgid "Enter Exotel Number"
 msgstr "Unesite Exotel broj"
 
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:134
-msgid "Enter Personal Mobile No."
-msgstr "Unesite lični broj mobilnog telefona."
+msgid "Enter Personal Mobile Number"
+msgstr ""
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:74
 msgid "Enter Source Name"
@@ -3416,7 +3423,7 @@ msgstr "Unesite naziv izvora"
 msgid "Enter Twilio Number"
 msgstr "Unesite Twilio broj"
 
-#: frontend/src/components/Filter.vue:609
+#: frontend/src/components/Filter.vue:638
 msgid "Enter Value"
 msgstr "Unesite vrednost"
 
@@ -3438,14 +3445,14 @@ msgstr "Unesite lični broj mobilnog telefona koji Exotel koristi za pozive"
 msgid "Enter {0}"
 msgstr "Unesite {0}"
 
-#: frontend/src/components/Filter.vue:67 frontend/src/components/Filter.vue:100
-#: frontend/src/components/Filter.vue:273
-#: frontend/src/components/Filter.vue:294
-#: frontend/src/components/Filter.vue:311
-#: frontend/src/components/Filter.vue:322
-#: frontend/src/components/Filter.vue:333
-#: frontend/src/components/Filter.vue:349
-#: frontend/src/components/Filter.vue:364
+#: frontend/src/components/Filter.vue:68 frontend/src/components/Filter.vue:102
+#: frontend/src/components/Filter.vue:302
+#: frontend/src/components/Filter.vue:323
+#: frontend/src/components/Filter.vue:340
+#: frontend/src/components/Filter.vue:351
+#: frontend/src/components/Filter.vue:362
+#: frontend/src/components/Filter.vue:378
+#: frontend/src/components/Filter.vue:393
 msgid "Equals"
 msgstr "Jednako"
 
@@ -3453,19 +3460,15 @@ msgstr "Jednako"
 msgid "Error Occurred"
 msgstr "Došlo je do greške"
 
-#: frontend/src/components/Settings/LeadSyncing/FailureLogs.vue:139
-msgid "Error Syncing Lead"
-msgstr "Greška pri sinhronizaciji potencijalnog klijenta"
-
 #: frontend/src/components/Modals/ConvertToDealModal.vue:175
 msgid "Error converting to deal: {0}"
 msgstr "Greška prilikom prebacivanja u poslovnu priliku: {0}"
 
-#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:295
-msgid "Error creating Lead Sync Source"
-msgstr "Greška prilikom kreiranja izvora sinhronizacije potencijalnih klijenata"
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:294
+msgid "Error creating lead sync source"
+msgstr ""
 
-#: frontend/src/components/Modals/CallLogDetailModal.vue:358
+#: frontend/src/components/Modals/CallLogDetailModal.vue:370
 msgid "Error creating lead: {0}"
 msgstr "Greška pri kreiranju potencijalnog klijenta: {0}"
 
@@ -3473,18 +3476,22 @@ msgstr "Greška pri kreiranju potencijalnog klijenta: {0}"
 msgid "Error occurred"
 msgstr "Došlo je do greške"
 
-#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:389
+#: frontend/src/components/Settings/LeadSyncing/FailureLogs.vue:139
+msgid "Error syncing lead"
+msgstr "Greška pri sinhronizaciji potencijalnog klijenta"
+
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:386
 msgid "Error syncing leads"
 msgstr "Greška prilikom sinhronizacije potencijalnih klijenata"
 
-#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:273
-msgid "Error updating Lead Sync Source"
-msgstr "Greška prilikom ažuriranja izvora sinhronizacije potencijalnih klijenata"
-
-#: frontend/src/pages/Deal.vue:773 frontend/src/pages/Lead.vue:505
-#: frontend/src/pages/MobileDeal.vue:619 frontend/src/pages/MobileLead.vue:360
+#: frontend/src/pages/Deal.vue:777 frontend/src/pages/Lead.vue:509
+#: frontend/src/pages/MobileDeal.vue:623 frontend/src/pages/MobileLead.vue:364
 msgid "Error updating field"
 msgstr "Greška prilikom ažuriranja polja"
+
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:275
+msgid "Error updating lead sync source"
+msgstr ""
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:672
 msgid "Event Details"
@@ -3513,7 +3520,7 @@ msgid "Event deleted successfully"
 msgstr "Događaj je uspešno obrisan"
 
 #: frontend/src/components/Notifications.vue:119
-#: frontend/src/pages/Deal.vue:588 frontend/src/pages/Lead.vue:440
+#: frontend/src/pages/Deal.vue:592 frontend/src/pages/Lead.vue:444
 msgid "Events"
 msgstr "Događaji"
 
@@ -3566,7 +3573,7 @@ msgstr "Provajder deviznih kurseva"
 #. Agent'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
-#: frontend/src/components/Layouts/AppSidebar.vue:632
+#: frontend/src/components/Layouts/AppSidebar.vue:723
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:52
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:180
 msgid "Exotel"
@@ -3598,7 +3605,7 @@ msgstr "Exotel broj {0} nije važeći"
 msgid "Exotel Settings"
 msgstr "Exotel podešavanja"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:120
+#: frontend/src/components/Layouts/AppSidebar.vue:138
 msgid "Expand"
 msgstr "Proširi"
 
@@ -3648,7 +3655,7 @@ msgstr "FCRM beleška"
 msgid "FCRM Settings"
 msgstr "FCRM podešavanja"
 
-#: frontend/src/components/EmailEditor.vue:25
+#: frontend/src/components/EmailEditor.vue:16
 msgid "FROM"
 msgstr "OD"
 
@@ -3731,8 +3738,8 @@ msgid "Failed to capture Twilio recording"
 msgstr "Neuspešno snimanje putem Twilio"
 
 #: frontend/src/components/Settings/EmailAdd.vue:149
-msgid "Failed to create Email Account, Invalid credentials"
-msgstr "Kreiranje imejl naloga nije uspelo, nevažeći kredencijali"
+msgid "Failed to create email account: invalid credentials"
+msgstr ""
 
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:180
 msgid "Failed to create template"
@@ -3742,7 +3749,7 @@ msgstr "Neuspešno kreiranje šablona"
 msgid "Failed to delete comment"
 msgstr ""
 
-#: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:184
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:178
 msgid "Failed to delete lead sync source"
 msgstr "Brisanje izvora sinhronizacije potencijalnih klijenata nije uspelo"
 
@@ -3775,7 +3782,7 @@ msgid "Failed to rename template"
 msgstr "Neuspešno preimenovanje šablona"
 
 #: frontend/src/components/Settings/DefaultsSettings.vue:169
-#: frontend/src/components/Settings/ERPNextSettings.vue:513
+#: frontend/src/components/Settings/ERPNextSettings.vue:510
 msgid "Failed to save settings"
 msgstr "Čuvanje podešavanja nije uspelo"
 
@@ -3791,21 +3798,17 @@ msgstr "Neuspešno slanje WhatsApp poruke"
 msgid "Failed to send WhatsApp template"
 msgstr "Neuspešno slanje WhatsApp šablona"
 
-#: frontend/src/components/CommunicationArea.vue:276
+#: frontend/src/components/CommunicationArea.vue:299
 msgid "Failed to send comment!"
 msgstr "Slanje komentara nije uspelo!"
 
-#: frontend/src/components/CommunicationArea.vue:260
+#: frontend/src/components/CommunicationArea.vue:277
 msgid "Failed to send email!"
 msgstr "Slanje imejla nije uspelo!"
 
-#: frontend/src/components/Settings/ERPNextSettings.vue:504
+#: frontend/src/components/Settings/ERPNextSettings.vue:501
 msgid "Failed to start sync"
 msgstr ""
-
-#: frontend/src/components/Settings/EmailEdit.vue:216
-msgid "Failed to update Email Account, Invalid credentials"
-msgstr "Ažuriranje imejl naloga nije uspelo, nevažeći kredencijali"
 
 #: crm/integrations/twilio/api.py:181
 msgid "Failed to update Twilio call status"
@@ -3819,15 +3822,19 @@ msgstr "Ažuriranje statusa prisustva nije uspelo"
 msgid "Failed to update comment"
 msgstr ""
 
+#: frontend/src/components/Settings/EmailEdit.vue:216
+msgid "Failed to update email account: invalid credentials"
+msgstr ""
+
 #: frontend/src/components/Modals/ChangePasswordModal.vue:106
 msgid "Failed to update password"
 msgstr "Neuspešno ažuriranje lozinke"
 
-#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:292
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:290
 msgid "Failed to update setting"
 msgstr ""
 
-#: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:169
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:163
 msgid "Failed to update source"
 msgstr "Ažuriranje izvora nije uspelo"
 
@@ -3841,7 +3848,7 @@ msgstr "Neuspešno ažuriranje šablona"
 msgid "Failure"
 msgstr "Neuspeh"
 
-#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:205
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:204
 msgid "Failure Logs"
 msgstr "Evidencija neuspeha"
 
@@ -3851,7 +3858,7 @@ msgstr "Evidencija neuspeha"
 msgid "Favicon"
 msgstr "Favicon"
 
-#: frontend/src/components/ConditionsFilter/CFCondition.vue:38
+#: frontend/src/components/ConditionsFilter/CFCondition.vue:39
 #: frontend/src/components/Modals/EditValueModal.vue:5
 msgid "Field"
 msgstr "Polje"
@@ -3919,10 +3926,10 @@ msgstr ""
 #. Label of the first_name (Data) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: frontend/src/components/ColumnSettings.vue:103
-#: frontend/src/components/Filter.vue:56 frontend/src/components/Filter.vue:89
-#: frontend/src/components/Filter.vue:132 frontend/src/components/SortBy.vue:6
+#: frontend/src/components/Filter.vue:57 frontend/src/components/Filter.vue:91
+#: frontend/src/components/Filter.vue:134 frontend/src/components/SortBy.vue:6
 #: frontend/src/components/SortBy.vue:102
-#: frontend/src/components/SortBy.vue:136
+#: frontend/src/components/SortBy.vue:129
 msgid "First Name"
 msgstr "Ime"
 
@@ -4013,7 +4020,7 @@ msgstr ""
 msgid "Form deleted"
 msgstr ""
 
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:291
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:293
 msgid "Form details"
 msgstr ""
 
@@ -4022,7 +4029,7 @@ msgid "Form published"
 msgstr ""
 
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:61
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:528
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:530
 msgid "Form title"
 msgstr ""
 
@@ -4030,12 +4037,12 @@ msgstr ""
 msgid "Form unpublished"
 msgstr ""
 
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:940
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:942
 msgid "Form updated"
 msgstr ""
 
 #: frontend/src/components/Settings/Forms/FormsList.vue:7
-#: frontend/src/components/Settings/Settings.vue:205
+#: frontend/src/components/Settings/Settings.vue:207
 msgid "Forms"
 msgstr ""
 
@@ -4048,7 +4055,7 @@ msgstr ""
 msgid "Frappe CRM"
 msgstr "Frappe CRM"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:638
+#: frontend/src/components/Layouts/AppSidebar.vue:729
 msgid "Frappe CRM mobile"
 msgstr "Frappe CRM mobilna aplikacija"
 
@@ -4138,7 +4145,7 @@ msgstr "Rod"
 #. Label of the general_tab (Tab Break) field in DocType 'CRM Enrichment
 #. Settings'
 #: crm/domain_enrichment/doctype/crm_enrichment_settings/crm_enrichment_settings.json
-#: frontend/src/components/Settings/Settings.vue:124
+#: frontend/src/components/Settings/Settings.vue:126
 msgid "General"
 msgstr "Opšte"
 
@@ -4159,7 +4166,7 @@ msgid "GitHub Repository"
 msgstr "GitHub repozitorijum"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:584
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:954
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:956
 msgid "Go Back"
 msgstr "Vrati se"
 
@@ -4179,11 +4186,11 @@ msgstr "Da li odlazite?"
 msgid "Google Ads"
 msgstr ""
 
-#: frontend/src/components/Filter.vue:366
+#: frontend/src/components/Filter.vue:395
 msgid "Greater than"
 msgstr "Veće od"
 
-#: frontend/src/components/Filter.vue:368
+#: frontend/src/components/Filter.vue:397
 msgid "Greater than or equal to"
 msgstr "Veće ili jednako"
 
@@ -4195,7 +4202,7 @@ msgstr "Red u tabeli"
 #. Label of the group_by_tab (Tab Break) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
 #: frontend/src/components/ViewControls.vue:396
-#: frontend/src/components/ViewControls.vue:649 frontend/src/utils/view.js:16
+#: frontend/src/components/ViewControls.vue:653 frontend/src/utils/view.js:16
 msgid "Group By"
 msgstr "Grupisano po"
 
@@ -4204,7 +4211,7 @@ msgstr "Grupisano po"
 msgid "Group By Field"
 msgstr "Grupisano po polju"
 
-#: frontend/src/components/GroupBy.vue:8
+#: frontend/src/components/GroupBy.vue:12
 msgid "Group By: "
 msgstr "Grupisano po: "
 
@@ -4231,7 +4238,7 @@ msgstr "Naslov"
 msgid "Hello"
 msgstr "Zdravo"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:106
+#: frontend/src/components/Layouts/AppSidebar.vue:130
 msgid "Help"
 msgstr "Pomoć"
 
@@ -4248,7 +4255,7 @@ msgstr "Zdravo Petre, \\n\\nMožete li molim Vas da pružite više detalja o ovo
 msgid "Hidden"
 msgstr "Sakriveno"
 
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:223
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:225
 msgid "Hidden required fields"
 msgstr ""
 
@@ -4256,11 +4263,11 @@ msgstr ""
 msgid "Hide"
 msgstr "Sakrij"
 
-#: frontend/src/components/FieldLayoutEditor.vue:475
+#: frontend/src/components/FieldLayoutEditor.vue:472
 msgid "Hide Border"
 msgstr "Sakrij granicu"
 
-#: frontend/src/components/FieldLayoutEditor.vue:470
+#: frontend/src/components/FieldLayoutEditor.vue:467
 msgid "Hide Label"
 msgstr "Sakrij oznaku"
 
@@ -4302,9 +4309,9 @@ msgstr "Naziv liste praznika"
 msgid "Holidays"
 msgstr "Praznici"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:572
+#: frontend/src/components/Layouts/AppSidebar.vue:663
 #: frontend/src/components/Settings/HomeActions.vue:7
-#: frontend/src/components/Settings/Settings.vue:216
+#: frontend/src/components/Settings/Settings.vue:218
 msgid "Home Actions"
 msgstr "Radnje na početnoj stranici"
 
@@ -4338,8 +4345,8 @@ msgstr ""
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:199
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:283
-#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:151
-msgid "I understand, Add Conditions"
+#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:152
+msgid "I understand, add conditions"
 msgstr "Razumem, dodaj uslove"
 
 #. Label of the id (Data) field in DocType 'CRM Call Log'
@@ -4350,7 +4357,7 @@ msgstr "Razumem, dodaj uslove"
 #: crm/lead_syncing/doctype/facebook_lead_form/facebook_lead_form.json
 #: crm/lead_syncing/doctype/facebook_lead_form_question/facebook_lead_form_question.json
 #: crm/lead_syncing/doctype/facebook_page/facebook_page.json
-#: frontend/src/components/Settings/ERPNextSettings.vue:412
+#: frontend/src/components/Settings/ERPNextSettings.vue:408
 #: frontend/src/components/Settings/LeadSyncing/FailureLogs.vue:112
 msgid "ID"
 msgstr "ID"
@@ -4359,6 +4366,7 @@ msgstr "ID"
 #. Label of the icon (Data) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_dropdown_item/crm_dropdown_item.json
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
+#: frontend/src/components/Modals/ViewModal.vue:27
 msgid "Icon"
 msgstr "Ikonica"
 
@@ -4403,11 +4411,11 @@ msgstr "Uvoz"
 msgid "Import my existing data"
 msgstr ""
 
-#: frontend/src/components/Filter.vue:277
-#: frontend/src/components/Filter.vue:298
-#: frontend/src/components/Filter.vue:313
-#: frontend/src/components/Filter.vue:326
-#: frontend/src/components/Filter.vue:340
+#: frontend/src/components/Filter.vue:306
+#: frontend/src/components/Filter.vue:327
+#: frontend/src/components/Filter.vue:342
+#: frontend/src/components/Filter.vue:355
+#: frontend/src/components/Filter.vue:369
 msgid "In"
 msgstr "U"
 
@@ -4480,12 +4488,12 @@ msgstr "Započeto"
 msgid "Initiating call..."
 msgstr "Započinjanje poziva..."
 
-#: frontend/src/components/EmailEditor.vue:171
+#: frontend/src/components/EmailEditor.vue:128
 msgid "Insert Email Template"
 msgstr "Ubaci imejl šablon"
 
-#: frontend/src/components/CommentBox.vue:49
-#: frontend/src/components/EmailEditor.vue:147
+#: frontend/src/components/CommentBox.vue:63
+#: frontend/src/components/EmailEditor.vue:157
 msgid "Insert Emoji"
 msgstr "Ubaci emodži"
 
@@ -4493,7 +4501,7 @@ msgstr "Ubaci emodži"
 msgid "Instagram"
 msgstr "Instagram"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:628
+#: frontend/src/components/Layouts/AppSidebar.vue:719
 msgid "Integration"
 msgstr "Integracija"
 
@@ -4505,13 +4513,13 @@ msgstr "Integracija nije omogućena"
 msgid "Integrations"
 msgstr "Integracije"
 
-#: frontend/src/components/Settings/Settings.vue:224
+#: frontend/src/components/Settings/Settings.vue:226
 msgctxt "FCRM"
 msgid "Integrations"
 msgstr "Integracije"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:559
-#: frontend/src/components/Layouts/AppSidebar.vue:562
+#: frontend/src/components/Layouts/AppSidebar.vue:650
+#: frontend/src/components/Layouts/AppSidebar.vue:653
 msgid "Introduction"
 msgstr "Uvod"
 
@@ -4535,10 +4543,6 @@ msgstr "Nevažeći Exotel broj"
 msgid "Invalid GeoJSON"
 msgstr "Nevažeći GeoJSON"
 
-#: frontend/src/components/Settings/ERPNextSettings.vue:777
-msgid "Invalid Site URL"
-msgstr "Nevažeći URL sajta"
-
 #: frontend/src/composables/event.js:247
 msgid "Invalid Start Or End Time"
 msgstr "Nevažeće vreme početka ili završetka"
@@ -4555,7 +4559,7 @@ msgstr "Nevažeća Twilio aplikacija"
 msgid "Invalid Website URL"
 msgstr "Nevažeći URL veb-sajta"
 
-#: crm/lead_syncing/doctype/lead_sync_source/facebook.py:157
+#: crm/lead_syncing/doctype/lead_sync_source/facebook.py:149
 msgid "Invalid access token provided for Facebook."
 msgstr "Unet je nevažeći pristupni token za Facebook."
 
@@ -4580,7 +4584,7 @@ msgstr "Nevažeći imejl"
 msgid "Invalid field"
 msgstr "Nevažeće polje"
 
-#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:390
+#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:391
 msgid "Invalid fields, check if all are filled in and values are correct."
 msgstr "Nevažeća polja, proverite da li su sva polja popunjena i vrednosti tačne."
 
@@ -4609,6 +4613,15 @@ msgstr "Ključ je istekao ili je nevažeći"
 msgid "Invalid page or not permitted to access"
 msgstr "Nevažeća stranica ili nemate dozvolu za pristup"
 
+#: crm/integrations/api.py:176 crm/integrations/api.py:180
+#: crm/integrations/api.py:218
+msgid "Invalid recording URL"
+msgstr ""
+
+#: frontend/src/components/Settings/ERPNextSettings.vue:769
+msgid "Invalid site URL"
+msgstr ""
+
 #: frontend/src/components/Settings/InviteUserPage.vue:187
 msgid "Invitations sent successfully"
 msgstr "Pozivnice su uspešno poslate"
@@ -4630,11 +4643,11 @@ msgstr "Pozovite putem imejla"
 msgid "Invite New User"
 msgstr "Pozovite novog korisnika"
 
-#: frontend/src/components/Settings/Settings.vue:161
+#: frontend/src/components/Settings/Settings.vue:163
 msgid "Invite User"
 msgstr "Pozovite korisnika"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:573
+#: frontend/src/components/Layouts/AppSidebar.vue:664
 msgid "Invite Users"
 msgstr "Pozovite korisnike"
 
@@ -4646,7 +4659,7 @@ msgstr ""
 msgid "Invite users to access CRM. Specify their roles to control access and permissions"
 msgstr "Pozovite korisnike da pristupe CRM. Navedite njihove uloge radi kontrole pristupa i dozvola"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:383
+#: frontend/src/components/Layouts/AppSidebar.vue:472
 msgid "Invite your team"
 msgstr "Pozovite svoj tim"
 
@@ -4655,14 +4668,14 @@ msgstr "Pozovite svoj tim"
 msgid "Invited By"
 msgstr "Pozvan od strane"
 
-#: frontend/src/components/Filter.vue:279
-#: frontend/src/components/Filter.vue:288
-#: frontend/src/components/Filter.vue:300
-#: frontend/src/components/Filter.vue:315
-#: frontend/src/components/Filter.vue:328
-#: frontend/src/components/Filter.vue:342
-#: frontend/src/components/Filter.vue:351
-#: frontend/src/components/Filter.vue:370
+#: frontend/src/components/Filter.vue:308
+#: frontend/src/components/Filter.vue:317
+#: frontend/src/components/Filter.vue:329
+#: frontend/src/components/Filter.vue:344
+#: frontend/src/components/Filter.vue:357
+#: frontend/src/components/Filter.vue:371
+#: frontend/src/components/Filter.vue:380
+#: frontend/src/components/Filter.vue:399
 msgid "Is"
 msgstr "Jeste"
 
@@ -4715,7 +4728,7 @@ msgstr "Trenutno nema dostupnih {0}. Možete kreirati nove {0} korišćenjem dug
 msgid "It will make deal's \"Expected Closure Date\" & \"Expected Deal Value\" mandatory to get accurate forecasting insights"
 msgstr "Učiniće da su \"Očekivani datum zatvaranja\" i \"Očekivana vrednost poslovne prilike\" obavezni za precizno dobijanje uvida u prognozu"
 
-#: frontend/src/components/Settings/ERPNextSettings.vue:409
+#: frontend/src/components/Settings/ERPNextSettings.vue:405
 msgid "Item Group"
 msgstr "Grupa stavki"
 
@@ -4740,14 +4753,14 @@ msgid "Job Title"
 msgstr "Radno mesto"
 
 #: frontend/src/components/AssignToBody.vue:10
-#: frontend/src/components/Filter.vue:607
+#: frontend/src/components/Filter.vue:636
 #: frontend/src/components/Modals/AssignmentModal.vue:13
 #: frontend/src/components/Telephony/TaskPanel.vue:46
 #: frontend/src/pages/Calendar.vue:113
 msgid "John Doe"
 msgstr "Petar Petrović"
 
-#: frontend/src/components/Filter.vue:586
+#: frontend/src/components/Filter.vue:615
 msgid "John, Jane, Doe"
 msgstr "John, Jane, Doe"
 
@@ -4762,7 +4775,7 @@ msgstr ""
 #. Label of the kanban_tab (Tab Break) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
 #: frontend/src/components/ViewControls.vue:401
-#: frontend/src/components/ViewControls.vue:638 frontend/src/utils/view.js:20
+#: frontend/src/components/ViewControls.vue:642 frontend/src/utils/view.js:20
 msgid "Kanban"
 msgstr "Kanban"
 
@@ -4831,7 +4844,7 @@ msgstr "Poslednje"
 msgid "Last 30 Days"
 msgstr "Poslednjih 30 dana"
 
-#: frontend/src/components/Filter.vue:665
+#: frontend/src/components/Filter.vue:694
 msgid "Last 6 Months"
 msgstr "Poslednjih 6 meseci"
 
@@ -4847,15 +4860,15 @@ msgstr "Poslednjih 7 dana"
 msgid "Last 90 Days"
 msgstr "Poslednjih 90 dana"
 
-#: frontend/src/pages/Contact.vue:546 frontend/src/pages/MobileContact.vue:544
-#: frontend/src/pages/MobileOrganization.vue:488
-#: frontend/src/pages/MobileOrganization.vue:516
-#: frontend/src/pages/Organization.vue:530
-#: frontend/src/pages/Organization.vue:558
+#: frontend/src/pages/Contact.vue:415 frontend/src/pages/MobileContact.vue:407
+#: frontend/src/pages/MobileOrganization.vue:489
+#: frontend/src/pages/MobileOrganization.vue:517
+#: frontend/src/pages/Organization.vue:531
+#: frontend/src/pages/Organization.vue:559
 msgid "Last Modified"
 msgstr "Poslednji put izmenjeno"
 
-#: frontend/src/components/Filter.vue:657
+#: frontend/src/components/Filter.vue:686
 msgid "Last Month"
 msgstr "Prošli mesec"
 
@@ -4864,7 +4877,7 @@ msgstr "Prošli mesec"
 msgid "Last Name"
 msgstr "Prezime"
 
-#: frontend/src/components/Filter.vue:661
+#: frontend/src/components/Filter.vue:690
 msgid "Last Quarter"
 msgstr "Prošli kvartal"
 
@@ -4894,12 +4907,12 @@ msgstr "Evidencija poslednje promene statusa"
 msgid "Last Synced At"
 msgstr "Poslednja sinhronizacija u"
 
-#: frontend/src/components/Filter.vue:595
-#: frontend/src/components/Filter.vue:653
+#: frontend/src/components/Filter.vue:624
+#: frontend/src/components/Filter.vue:682
 msgid "Last Week"
 msgstr "Prošla nedelja"
 
-#: frontend/src/components/Filter.vue:669
+#: frontend/src/components/Filter.vue:698
 msgid "Last Year"
 msgstr "Prošla godina"
 
@@ -4922,7 +4935,7 @@ msgstr "Raspored"
 #. Label of the lead (Link) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:421
-#: frontend/src/components/Layouts/AppSidebar.vue:580
+#: frontend/src/components/Layouts/AppSidebar.vue:671
 #: frontend/src/components/Settings/AssignmentRules/AssigneeRules.vue:19
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:54
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:76
@@ -4973,15 +4986,11 @@ msgstr "Statusi potencijalnog klijenta"
 msgid "Lead Sync Source"
 msgstr "Izvor sinhronizacije potencijalnih klijenata"
 
-#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:290
-msgid "Lead Sync Source created successfully"
-msgstr "Izvor sinhronizacije potencijalnih klijenata je uspešno kreiran"
-
-#: frontend/src/components/Settings/Settings.vue:244
+#: frontend/src/components/Settings/Settings.vue:246
 msgid "Lead Syncing"
 msgstr "Sinhronizacija potencijalnih klijenata"
 
-#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:313
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:311
 msgid "Lead and deal visibility will no longer be restricted by the reporting tree. Are you sure?"
 msgstr ""
 
@@ -4997,7 +5006,11 @@ msgstr "Analiza kanala za generisanje potencijalnih klijenata"
 msgid "Lead sync initiated."
 msgstr "Sinhronizacija potencijalnih klijenata je pokrenuta."
 
-#: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:181
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:289
+msgid "Lead sync source created successfully"
+msgstr ""
+
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:175
 msgid "Lead sync source deleted successfully"
 msgstr "Izvor sinhronizacije potencijalnih klijenata je uspešno obrisan"
 
@@ -5025,10 +5038,6 @@ msgstr "Potencijalni klijenti po izvoru"
 msgid "Learn about conditions"
 msgstr "Saznajte više o uslovima"
 
-#: frontend/src/components/SalesHierarchyBanner.vue:22
-msgid "Learn more"
-msgstr "Saznaj više"
-
 #. Label of the lft (Int) field in DocType 'CRM Sales Hierarchy'
 #. Label of the lft (Int) field in DocType 'CRM Territory'
 #: crm/fcrm/doctype/crm_sales_hierarchy/crm_sales_hierarchy.json
@@ -5036,11 +5045,11 @@ msgstr "Saznaj više"
 msgid "Left"
 msgstr "Levo"
 
-#: frontend/src/components/Filter.vue:367
+#: frontend/src/components/Filter.vue:396
 msgid "Less than"
 msgstr "Manje od"
 
-#: frontend/src/components/Filter.vue:369
+#: frontend/src/components/Filter.vue:398
 msgid "Less than or equal to"
 msgstr "Manje ili jednako"
 
@@ -5052,16 +5061,16 @@ msgstr "Biblioteka"
 msgid "Light"
 msgstr "Svetlo"
 
-#: frontend/src/components/Filter.vue:275
-#: frontend/src/components/Filter.vue:286
-#: frontend/src/components/Filter.vue:296
-#: frontend/src/components/Filter.vue:324
-#: frontend/src/components/Filter.vue:338
+#: frontend/src/components/Filter.vue:304
+#: frontend/src/components/Filter.vue:315
+#: frontend/src/components/Filter.vue:325
+#: frontend/src/components/Filter.vue:353
+#: frontend/src/components/Filter.vue:367
 msgid "Like"
 msgstr "Lajk"
 
 #: frontend/src/components/FilesUploader/FilesUploaderArea.vue:51
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:370
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:372
 msgid "Link"
 msgstr "Link"
 
@@ -5098,7 +5107,7 @@ msgstr "Linkovi"
 #: crm/fcrm/doctype/crm_form_script/crm_form_script.json
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
 #: frontend/src/components/ViewControls.vue:391
-#: frontend/src/components/ViewControls.vue:627 frontend/src/utils/view.js:12
+#: frontend/src/components/ViewControls.vue:631 frontend/src/utils/view.js:12
 msgid "List"
 msgstr "Lista"
 
@@ -5220,12 +5229,12 @@ msgid "Make Call"
 msgstr "Pozovi"
 
 #: frontend/src/components/Activities/AttachmentArea.vue:39
-#: frontend/src/components/ViewControls.vue:1151
+#: frontend/src/components/ViewControls.vue:1160
 msgid "Make Private"
 msgstr "Postavi kao privatno"
 
 #: frontend/src/components/Activities/AttachmentArea.vue:39
-#: frontend/src/components/ViewControls.vue:1151
+#: frontend/src/components/ViewControls.vue:1160
 msgid "Make Public"
 msgstr "Postavi kao javno"
 
@@ -5285,9 +5294,9 @@ msgstr "Upravljajte politikama sporazuma o nivou usluge"
 #: frontend/src/components/Settings/InviteUserPage.vue:163
 #: frontend/src/components/Settings/InviteUserPage.vue:170
 #: frontend/src/components/Settings/Users.vue:86
-#: frontend/src/components/Settings/Users.vue:186
-#: frontend/src/components/Settings/Users.vue:232
-#: frontend/src/components/Settings/Users.vue:235
+#: frontend/src/components/Settings/Users.vue:194
+#: frontend/src/components/Settings/Users.vue:240
+#: frontend/src/components/Settings/Users.vue:243
 msgid "Manager"
 msgstr "Menadžer"
 
@@ -5314,7 +5323,7 @@ msgstr "Obavezna polja su neophodna: {0}"
 msgid "Manual"
 msgstr "Ručno"
 
-#: frontend/src/components/Settings/ERPNextSettings.vue:247
+#: frontend/src/components/Settings/ERPNextSettings.vue:243
 msgid "Manual Sync"
 msgstr ""
 
@@ -5324,7 +5333,7 @@ msgstr ""
 msgid "Mapped to CRM Field"
 msgstr "Mapirano u CRM polje"
 
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:318
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:320
 #: frontend/src/components/Settings/Forms/FormsList.vue:44
 #: frontend/src/components/Settings/Forms/FormsList.vue:105
 msgid "Maps to"
@@ -5349,7 +5358,7 @@ msgstr "Označi potencijalnog klijenta / poslovnu priliku kao odgovoreno nakon o
 msgid "Master switch for the Domain Enrichment feature."
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:577
+#: frontend/src/components/Layouts/AppSidebar.vue:668
 msgid "Masters"
 msgstr "Master podaci"
 
@@ -5439,7 +5448,7 @@ msgstr "Propušten poziv"
 msgid "Missing mandatory fields: {0}"
 msgstr "Nedostaju obavezna polja: {0}"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:641
+#: frontend/src/components/Layouts/AppSidebar.vue:732
 msgid "Mobile App Installation"
 msgstr "Instalacija mobilne aplikacije"
 
@@ -5449,26 +5458,26 @@ msgstr "Instalacija mobilne aplikacije"
 #: crm/fcrm/doctype/crm_contacts/crm_contacts.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
-#: frontend/src/pages/Contact.vue:536 frontend/src/pages/MobileContact.vue:534
-#: frontend/src/pages/MobileOrganization.vue:478
-#: frontend/src/pages/Organization.vue:520
 msgid "Mobile No."
 msgstr "Broj mobilnog telefona."
 
-#: frontend/src/components/Modals/ContactModal.vue:117
-#: frontend/src/components/Modals/DealModal.vue:254
-#: frontend/src/components/Modals/LeadModal.vue:198
-msgid "Mobile No. should be a number"
-msgstr "Broj mobilnog telefona mora biti numerička vrednost"
-
 #: frontend/src/components/Telephony/CallUI.vue:20
-#: frontend/src/pages/Contact.vue:431
+#: frontend/src/pages/Contact.vue:347 frontend/src/pages/Contact.vue:405
+#: frontend/src/pages/MobileContact.vue:397
+#: frontend/src/pages/MobileOrganization.vue:479
+#: frontend/src/pages/Organization.vue:521
 msgid "Mobile Number"
 msgstr "Broj mobilnog telefona"
 
 #: crm/integrations/exotel/handler.py:92
 msgid "Mobile Number Missing"
 msgstr "Broj mobilnog telefona nedostaje"
+
+#: frontend/src/components/Modals/ContactModal.vue:117
+#: frontend/src/components/Modals/DealModal.vue:254
+#: frontend/src/components/Modals/LeadModal.vue:198
+msgid "Mobile number should be a number"
+msgstr ""
 
 #. Option for the 'Weekly Off' (Select) field in DocType 'CRM Holiday List'
 #. Option for the 'Workday' (Select) field in DocType 'CRM Service Day'
@@ -5500,27 +5509,27 @@ msgstr "Više opcija"
 msgid "More than 20"
 msgstr ""
 
-#: frontend/src/components/FieldLayoutEditor.vue:617
+#: frontend/src/components/FieldLayoutEditor.vue:614
 msgid "Move Last Column to Next Section"
 msgstr "Premesti poslednju kolonu u sledeći odeljak"
 
-#: frontend/src/components/FieldLayoutEditor.vue:657
+#: frontend/src/components/FieldLayoutEditor.vue:654
 msgid "Move Last Column to Next Tab"
 msgstr "Premesti poslednju kolonu na sledeću karticu"
 
-#: frontend/src/components/FieldLayoutEditor.vue:627
+#: frontend/src/components/FieldLayoutEditor.vue:624
 msgid "Move Last Column to Previous Section"
 msgstr "Premesti poslednju kolonu u prethodni odeljak"
 
-#: frontend/src/components/FieldLayoutEditor.vue:637
+#: frontend/src/components/FieldLayoutEditor.vue:634
 msgid "Move Last Column to Previous Tab"
 msgstr "Premesti poslednju kolonu na prethodnu karticu"
 
-#: frontend/src/components/FieldLayoutEditor.vue:546
+#: frontend/src/components/FieldLayoutEditor.vue:543
 msgid "Move to Next Tab"
 msgstr "Pređite na sledeću karticu"
 
-#: frontend/src/components/FieldLayoutEditor.vue:532
+#: frontend/src/components/FieldLayoutEditor.vue:529
 msgid "Move to Previous Tab"
 msgstr "Vratite se na prethodnu karticu"
 
@@ -5532,7 +5541,7 @@ msgstr ""
 msgid "Move under {0}"
 msgstr ""
 
-#: frontend/src/components/Modals/ViewModal.vue:30
+#: frontend/src/components/Modals/ViewModal.vue:22
 msgid "My Open Deals"
 msgstr "Moje otvorene poslovne prilike"
 
@@ -5552,9 +5561,9 @@ msgstr "Moje otvorene poslovne prilike"
 #: frontend/src/components/Settings/LeadSyncing/leadSyncSourceConfig.js:23
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:62
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:63
-#: frontend/src/components/ViewControls.vue:811
-#: frontend/src/pages/MobileOrganization.vue:496
-#: frontend/src/pages/Organization.vue:538
+#: frontend/src/components/ViewControls.vue:820
+#: frontend/src/pages/MobileOrganization.vue:497
+#: frontend/src/pages/Organization.vue:539
 msgid "Name"
 msgstr "Naziv"
 
@@ -5571,7 +5580,7 @@ msgstr "Naziv je obavezan"
 msgid "Naming Series"
 msgstr "Serije imenovanja"
 
-#: frontend/src/components/ConditionsFilter/CFCondition.vue:98
+#: frontend/src/components/ConditionsFilter/CFCondition.vue:99
 msgid "Nested Conditions"
 msgstr "Ugnježdeni uslovi"
 
@@ -5654,8 +5663,8 @@ msgstr "Naziv nove politike sporazuma o nivou usluge"
 msgid "New Section"
 msgstr "Novi odeljak"
 
-#: frontend/src/components/FieldLayoutEditor.vue:359
-#: frontend/src/components/FieldLayoutEditor.vue:372
+#: frontend/src/components/FieldLayoutEditor.vue:356
+#: frontend/src/components/FieldLayoutEditor.vue:369
 msgid "New Tab"
 msgstr "Nova kartica"
 
@@ -5705,15 +5714,15 @@ msgstr ""
 msgid "Newline-separated values treated as \"unset\" defaults that may be overwritten, in addition to a truly empty field."
 msgstr ""
 
-#: frontend/src/components/Filter.vue:713
+#: frontend/src/components/Filter.vue:742
 msgid "Next 6 Months"
 msgstr "Sledećih 6 meseci"
 
-#: frontend/src/components/Filter.vue:705
+#: frontend/src/components/Filter.vue:734
 msgid "Next Month"
 msgstr "Sledeći mesec"
 
-#: frontend/src/components/Filter.vue:709
+#: frontend/src/components/Filter.vue:738
 msgid "Next Quarter"
 msgstr "Sledeći kvartal"
 
@@ -5722,11 +5731,11 @@ msgstr "Sledeći kvartal"
 msgid "Next Step"
 msgstr "Sledeći korak"
 
-#: frontend/src/components/Filter.vue:701
+#: frontend/src/components/Filter.vue:730
 msgid "Next Week"
 msgstr "Sledeća nedelja"
 
-#: frontend/src/components/Filter.vue:717
+#: frontend/src/components/Filter.vue:746
 msgid "Next Year"
 msgstr "Sledeća godina"
 
@@ -5768,7 +5777,7 @@ msgstr "Nema pronađenih evidencija grešaka"
 msgid "No Label"
 msgstr "Nema oznake"
 
-#: frontend/src/pages/Deal.vue:739
+#: frontend/src/pages/Deal.vue:743
 msgid "No Mobile Number Set"
 msgstr "Nije postavljen broj mobilnog telefona"
 
@@ -5776,7 +5785,7 @@ msgstr "Nije postavljen broj mobilnog telefona"
 msgid "No New Notifications"
 msgstr "Nema novih obaveštenja"
 
-#: frontend/src/pages/Deal.vue:734
+#: frontend/src/pages/Deal.vue:738
 msgid "No Primary Contact Set"
 msgstr "Nije postavljen primarni kontakt"
 
@@ -5807,8 +5816,8 @@ msgstr "Nema pronađenih korisnika"
 msgid "No Website"
 msgstr ""
 
-#: frontend/src/pages/MobileOrganization.vue:296
-#: frontend/src/pages/Organization.vue:345
+#: frontend/src/pages/MobileOrganization.vue:297
+#: frontend/src/pages/Organization.vue:346
 msgid "No Website Found"
 msgstr "Nema pronađenog veb-sajta"
 
@@ -5821,11 +5830,11 @@ msgstr "Nema radnih dana na listi"
 msgid "No changes made"
 msgstr "Nije izvršena nijedna promena"
 
-#: frontend/src/components/Settings/ERPNextSettings.vue:493
+#: frontend/src/components/Settings/ERPNextSettings.vue:490
 msgid "No companies found in the given site"
 msgstr "Nisu pronađene kompanije na datom sajtu"
 
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:495
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:497
 msgid "No domains added. The embed will only work on this site until you add one."
 msgstr ""
 
@@ -5868,17 +5877,13 @@ msgstr ""
 msgid "No {0} Found"
 msgstr "Nije pronađen nijedan {0}"
 
-#: frontend/src/components/PrimaryDropdown.vue:33
+#: frontend/src/components/PrimaryDropdown.vue:41
 msgid "No {0} available"
 msgstr "Nema dostupnih {0}"
 
 #: frontend/src/pages/MobileContact.vue:153
 msgid "No {0} found"
 msgstr "Nije pronađen nijedan {0}"
-
-#: frontend/src/components/Controls/Grid.vue:27
-msgid "No."
-msgstr "Br."
 
 #. Label of the no_of_employees (Select) field in DocType 'CRM Deal'
 #. Label of the no_of_employees (Select) field in DocType 'CRM Lead'
@@ -5939,12 +5944,12 @@ msgstr "Nije dozvoljeno ukloniti kontakt iz poslovne prilike"
 msgid "Not allowed to set primary contact for Deal"
 msgstr "Nije dozvoljeno postaviti primarni kontakt za poslovnu priliku"
 
-#: frontend/src/components/Filter.vue:274
-#: frontend/src/components/Filter.vue:295
-#: frontend/src/components/Filter.vue:312
-#: frontend/src/components/Filter.vue:323
-#: frontend/src/components/Filter.vue:350
-#: frontend/src/components/Filter.vue:365
+#: frontend/src/components/Filter.vue:303
+#: frontend/src/components/Filter.vue:324
+#: frontend/src/components/Filter.vue:341
+#: frontend/src/components/Filter.vue:352
+#: frontend/src/components/Filter.vue:379
+#: frontend/src/components/Filter.vue:394
 msgid "Not equals"
 msgstr "Nije jednako"
 
@@ -5952,19 +5957,19 @@ msgstr "Nije jednako"
 msgid "Not implemented yet!"
 msgstr "Još uvek nije implementirano!"
 
-#: frontend/src/components/Filter.vue:278
-#: frontend/src/components/Filter.vue:299
-#: frontend/src/components/Filter.vue:314
-#: frontend/src/components/Filter.vue:327
-#: frontend/src/components/Filter.vue:341
+#: frontend/src/components/Filter.vue:307
+#: frontend/src/components/Filter.vue:328
+#: frontend/src/components/Filter.vue:343
+#: frontend/src/components/Filter.vue:356
+#: frontend/src/components/Filter.vue:370
 msgid "Not in"
 msgstr "Nije u"
 
-#: frontend/src/components/Filter.vue:276
-#: frontend/src/components/Filter.vue:287
-#: frontend/src/components/Filter.vue:297
-#: frontend/src/components/Filter.vue:325
-#: frontend/src/components/Filter.vue:339
+#: frontend/src/components/Filter.vue:305
+#: frontend/src/components/Filter.vue:316
+#: frontend/src/components/Filter.vue:326
+#: frontend/src/components/Filter.vue:354
+#: frontend/src/components/Filter.vue:368
 msgid "Not like"
 msgstr "Nije slično"
 
@@ -5972,7 +5977,7 @@ msgstr "Nije slično"
 #: crm/api/contact.py:70 crm/api/contact.py:91 crm/api/form.py:213
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.py:133
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.py:162
-#: crm/integrations/api.py:65 crm/integrations/api.py:90
+#: crm/integrations/api.py:79 crm/integrations/api.py:104
 msgid "Not permitted"
 msgstr "Nije dozvoljeno"
 
@@ -5991,7 +5996,7 @@ msgstr "Nije dozvoljeno menjati raspored polja"
 #. Label of the note (Link) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 #: frontend/src/components/Activities/ActivityHeader.vue:147
-#: frontend/src/components/Layouts/AppSidebar.vue:584
+#: frontend/src/components/Layouts/AppSidebar.vue:675
 msgid "Note"
 msgstr "Beleška"
 
@@ -6001,8 +6006,8 @@ msgstr "Beleška je obrisana"
 
 #. Label of the notes (Small Text) field in DocType 'CRM Enrichment Run'
 #: crm/domain_enrichment/doctype/crm_enrichment_run/crm_enrichment_run.json
-#: frontend/src/pages/Deal.vue:603 frontend/src/pages/Lead.vue:455
-#: frontend/src/pages/MobileDeal.vue:468 frontend/src/pages/MobileLead.vue:315
+#: frontend/src/pages/Deal.vue:607 frontend/src/pages/Lead.vue:459
+#: frontend/src/pages/MobileDeal.vue:472 frontend/src/pages/MobileLead.vue:319
 msgid "Notes"
 msgstr "Beleške"
 
@@ -6019,7 +6024,7 @@ msgstr ""
 #: frontend/src/components/Activities/EmailArea.vue:15
 #: frontend/src/components/Calendar/EventNotifications.vue:22
 #: frontend/src/components/Calendar/EventNotifications.vue:90
-#: frontend/src/components/Layouts/AppSidebar.vue:613
+#: frontend/src/components/Layouts/AppSidebar.vue:704
 #: frontend/src/components/Settings/CalendarSettings.vue:85
 #: frontend/src/components/Settings/CalendarSettings.vue:93
 #: frontend/src/components/Settings/CalendarSettings.vue:184
@@ -6044,8 +6049,7 @@ msgstr "Vrsta obaveštenja dokumenta"
 msgid "Notification Type Doctype"
 msgstr "Vrsta obaveštenja DocType"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:13
-#: frontend/src/components/Mobile/MobileSidebar.vue:23
+#: frontend/src/components/Layouts/AppSidebar.vue:27
 #: frontend/src/components/Modals/EventModal.vue:187
 #: frontend/src/components/Notifications.vue:17
 #: frontend/src/pages/MobileNotification.vue:7
@@ -6054,6 +6058,7 @@ msgstr "Obaveštenja"
 
 #. Label of the number (Data) field in DocType 'CRM Telephony Phone'
 #: crm/fcrm/doctype/crm_telephony_phone/crm_telephony_phone.json
+#: frontend/src/components/Controls/Grid.vue:27
 msgid "Number"
 msgstr "Broj"
 
@@ -6093,7 +6098,7 @@ msgstr ""
 msgid "Old Condition"
 msgstr "Stari uslov"
 
-#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:124
+#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:125
 msgid "Old Conditions"
 msgstr "Stari uslovi"
 
@@ -6146,7 +6151,7 @@ msgstr "Isključivo sistem menadžeri mogu dodeliti ulogu sistem menadžera"
 msgid "Only System Managers can modify other System Managers"
 msgstr "Isključivo sistem menadžeri mogu menjati druge sistem menadžere"
 
-#: frontend/src/utils/index.js:484
+#: frontend/src/utils/index.js:505
 msgid "Only image files are allowed"
 msgstr "Dozvoljeni su samo fajlovi u formatu slike"
 
@@ -6163,11 +6168,11 @@ msgstr "Isključivo korisnici prodaje mogu pristupiti WhatsApp funkcionalnostima
 #. Option for the 'Type' (Select) field in DocType 'CRM Lead Status'
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:397
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:399
 msgid "Open"
 msgstr "Otvoreno"
 
-#: frontend/src/components/ConditionsFilter/CFCondition.vue:88
+#: frontend/src/components/ConditionsFilter/CFCondition.vue:89
 msgid "Open Nested Conditions"
 msgstr "Otvori ugnježdene uslove"
 
@@ -6190,7 +6195,7 @@ msgstr "Otvori u novom prozoru"
 msgid "Open {0}"
 msgstr "Otvori {0}"
 
-#: frontend/src/components/ConditionsFilter/CFCondition.vue:47
+#: frontend/src/components/ConditionsFilter/CFCondition.vue:48
 #: frontend/src/pages/Calendar.vue:105
 msgid "Operator"
 msgstr "Operator"
@@ -6199,7 +6204,7 @@ msgstr "Operator"
 msgid "Optional"
 msgstr ""
 
-#: frontend/src/components/Kanban/KanbanView.vue:232
+#: frontend/src/components/Kanban/KanbanView.vue:231
 #: frontend/src/components/Modals/CallLogDetailModal.vue:16
 #: frontend/src/components/ViewControls.vue:199
 msgid "Options"
@@ -6230,14 +6235,14 @@ msgstr ""
 #. Label of the organization (Data) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
-#: frontend/src/components/Layouts/AppSidebar.vue:583
+#: frontend/src/components/Layouts/AppSidebar.vue:674
 #: frontend/src/components/Modals/ConvertToDealModal.vue:25
-#: frontend/src/pages/Contact.vue:432 frontend/src/pages/Contact.vue:515
-#: frontend/src/pages/MobileContact.vue:513
-#: frontend/src/pages/MobileOrganization.vue:457
-#: frontend/src/pages/MobileOrganization.vue:511
-#: frontend/src/pages/Organization.vue:499
-#: frontend/src/pages/Organization.vue:553
+#: frontend/src/pages/Contact.vue:348 frontend/src/pages/Contact.vue:384
+#: frontend/src/pages/MobileContact.vue:376
+#: frontend/src/pages/MobileOrganization.vue:458
+#: frontend/src/pages/MobileOrganization.vue:512
+#: frontend/src/pages/Organization.vue:500
+#: frontend/src/pages/Organization.vue:554
 msgid "Organization"
 msgstr "Organizacija"
 
@@ -6289,7 +6294,7 @@ msgstr "Organizator"
 msgid "Other"
 msgstr "Ostalo"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:605
+#: frontend/src/components/Layouts/AppSidebar.vue:696
 msgid "Other Features"
 msgstr "Ostale funkcionalnosti"
 
@@ -6438,10 +6443,6 @@ msgstr ""
 msgid "Period"
 msgstr "Period"
 
-#: frontend/src/components/SalesHierarchyBanner.vue:9
-msgid "Permissions update"
-msgstr ""
-
 #. Label of the person_section (Section Break) field in DocType 'CRM Deal'
 #. Label of the person_tab (Tab Break) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
@@ -6455,8 +6456,8 @@ msgid "Persona Captured"
 msgstr "Zabeležen korisnički profil"
 
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:120
-msgid "Personal Mobile No."
-msgstr "Lični broj mobilnog telefona."
+msgid "Personal Mobile Number"
+msgstr ""
 
 #. Label of the phone (Data) field in DocType 'CRM Contacts'
 #. Label of the phone (Data) field in DocType 'CRM Lead'
@@ -6465,8 +6466,8 @@ msgstr "Lični broj mobilnog telefona."
 #: crm/fcrm/doctype/crm_contacts/crm_contacts.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
-#: frontend/src/pages/MobileOrganization.vue:506
-#: frontend/src/pages/Organization.vue:548
+#: frontend/src/pages/MobileOrganization.vue:507
+#: frontend/src/pages/Organization.vue:549
 msgid "Phone"
 msgstr "Telefon"
 
@@ -6484,7 +6485,7 @@ msgstr ""
 msgid "Phones Found"
 msgstr ""
 
-#: frontend/src/components/ViewControls.vue:1143
+#: frontend/src/components/ViewControls.vue:1152
 msgid "Pin View"
 msgstr "Fiksiraj prikaz"
 
@@ -6493,11 +6494,11 @@ msgstr "Fiksiraj prikaz"
 msgid "Pinned"
 msgstr "Fiksirano"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:601
+#: frontend/src/components/Layouts/AppSidebar.vue:692
 msgid "Pinned View"
 msgstr "Fiksirani prikaz"
 
-#: frontend/src/components/ViewControls.vue:720
+#: frontend/src/components/ViewControls.vue:729
 msgid "Pinned Views"
 msgstr "Fiksirani prikazi"
 
@@ -6513,7 +6514,7 @@ msgstr "Rezervisani tekst"
 msgid "Playback Speed"
 msgstr "Brzina reprodukcije"
 
-#: crm/lead_syncing/doctype/lead_sync_source/facebook.py:177
+#: crm/lead_syncing/doctype/lead_sync_source/facebook.py:169
 msgid "Please check your access token"
 msgstr "Molimo Vas da proverite svoj pristupni token"
 
@@ -6529,10 +6530,6 @@ msgstr "Molimo Vas da unesete važeći URL"
 msgid "Please fix the errors in the form"
 msgstr "Molimo Vas da ispravite greške u obrascu"
 
-#: frontend/src/components/Settings/Sla/EditResponseResolutionModal.vue:88
-msgid "Please select a Priority"
-msgstr "Molimo Vas da izaberete prioritet"
-
 #: frontend/src/components/Settings/DashboardSettings.vue:213
 msgid "Please select a currency before saving."
 msgstr "Molimo Vas da izaberete valutu pre čuvanja."
@@ -6540,6 +6537,10 @@ msgstr "Molimo Vas da izaberete valutu pre čuvanja."
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.py:67
 msgid "Please select a lead gen form before syncing!"
 msgstr "Molimo Vas da izaberete obrazac za generisanje potencijalnih klijenata pre sinhronizacije!"
+
+#: frontend/src/components/Settings/Sla/EditResponseResolutionModal.vue:88
+msgid "Please select a priority"
+msgstr ""
 
 #: frontend/src/components/Modals/ConvertToDealModal.vue:135
 msgid "Please select an existing contact"
@@ -6597,13 +6598,13 @@ msgid "Position"
 msgstr "Pozicija"
 
 #: frontend/src/components/Settings/PreferencesSettings.vue:4
-#: frontend/src/components/Settings/Settings.vue:114
+#: frontend/src/components/Settings/Settings.vue:116
 msgid "Preferences"
 msgstr "Preferencije"
 
 #: frontend/src/components/Settings/PreferencesSettings.vue:115
-msgid "Preferences Updated Successfully"
-msgstr "Preferencije su uspešno ažurirane"
+msgid "Preferences updated successfully"
+msgstr ""
 
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:31
 msgid "Preview"
@@ -6621,15 +6622,16 @@ msgstr ""
 msgid "Preview Timeout (s)"
 msgstr ""
 
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:522
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:524
 msgid "Preview again"
 msgstr ""
 
+#: frontend/src/components/PrimaryDropdownItem.vue:16
 #: frontend/src/pages/Deal.vue:221 frontend/src/pages/MobileDeal.vue:153
 msgid "Primary"
 msgstr "Primarna"
 
-#: frontend/src/pages/Deal.vue:711 frontend/src/pages/MobileDeal.vue:573
+#: frontend/src/pages/Deal.vue:715 frontend/src/pages/MobileDeal.vue:577
 msgid "Primary Contact Set"
 msgstr "Primarni kontakt je postavljen"
 
@@ -6670,12 +6672,12 @@ msgid "Priority"
 msgstr "Prioritet"
 
 #: frontend/src/components/Settings/Sla/utils.js:125
-msgid "Priority {0}: Priority Name is required"
-msgstr "Prioritet {0}: Naziv prioriteta je obavezan"
+msgid "Priority {0}: priority name is required"
+msgstr ""
 
 #: frontend/src/components/Settings/Sla/utils.js:133
-msgid "Priority {0}: Response Time is required"
-msgstr "Prioritet {0}: Vreme odgovora je obavezno"
+msgid "Priority {0}: response time is required"
+msgstr ""
 
 #. Label of the private (Check) field in DocType 'CRM Dashboard'
 #: crm/fcrm/doctype/crm_dashboard/crm_dashboard.json
@@ -6721,7 +6723,7 @@ msgstr "Naziv proizvoda"
 msgid "Product Sync Issues"
 msgstr ""
 
-#: frontend/src/components/Settings/ERPNextSettings.vue:500
+#: frontend/src/components/Settings/ERPNextSettings.vue:497
 msgid "Product sync started."
 msgstr ""
 
@@ -6734,14 +6736,14 @@ msgstr ""
 msgid "Products"
 msgstr "Proizvodi"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:570
+#: frontend/src/components/Layouts/AppSidebar.vue:661
 #: frontend/src/components/Settings/Profile/ProfileSettings.vue:4
-#: frontend/src/components/Settings/Settings.vue:104
+#: frontend/src/components/Settings/Settings.vue:106
 msgid "Profile"
 msgstr "Profil"
 
 #: frontend/src/components/Settings/Profile/ProfileSettings.vue:194
-msgid "Profile Updated Successfully"
+msgid "Profile updated successfully"
 msgstr "Profil je uspešno ažuriran"
 
 #: crm/api/dashboard.py:719
@@ -6755,11 +6757,11 @@ msgstr "Očekivani naspram stvarnih prihoda na osnovu verovatnoće poslovne pril
 msgid "Public"
 msgstr "Javni"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:600
+#: frontend/src/components/Layouts/AppSidebar.vue:691
 msgid "Public View"
 msgstr "Javni prikaz"
 
-#: frontend/src/components/ViewControls.vue:714
+#: frontend/src/components/ViewControls.vue:723
 msgid "Public Views"
 msgstr "Javni prikazi"
 
@@ -6800,7 +6802,7 @@ msgstr ""
 msgid "Quick Entry"
 msgstr "Brzi unos"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:624
+#: frontend/src/components/Layouts/AppSidebar.vue:715
 msgid "Quick Entry Layout"
 msgstr "Raspored za brzi unos"
 
@@ -6815,7 +6817,7 @@ msgstr "Brzi filteri"
 msgid "Quick Prefill (Preview)"
 msgstr ""
 
-#: frontend/src/components/ViewControls.vue:775
+#: frontend/src/components/ViewControls.vue:784
 msgid "Quick filters updated successfully"
 msgstr "Brzi filteri su uspešno ažurirani"
 
@@ -6862,11 +6864,19 @@ msgstr "Zabeleži odlazne pozive"
 msgid "Recording URL"
 msgstr "Zabeležiti URL"
 
-#: crm/integrations/api.py:163
+#: crm/integrations/api.py:184
+msgid "Recording URL is not allowed"
+msgstr ""
+
+#: crm/integrations/api.py:265
 msgid "Recording URL not found"
 msgstr "URL snimka nije pronađen"
 
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:340
+#: frontend/src/components/Modals/CallLogDetailModal.vue:106
+msgid "Recording not available"
+msgstr ""
+
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:342
 msgid "Redirect URL"
 msgstr "URL za preusmeravanje"
 
@@ -6955,15 +6965,15 @@ msgstr "Ponovo učitaj kolone"
 msgid "Reminders will be sent <b>before the event starts</b>, based on the configured time"
 msgstr "Podsetnici će biti poslati <b>pre početka događaja</b>, u skladu sa podešenim vremenom"
 
-#: frontend/src/components/ConditionsFilter/CFCondition.vue:175
+#: frontend/src/components/ConditionsFilter/CFCondition.vue:176
 #: frontend/src/components/Controls/ImageUploader.vue:21
-#: frontend/src/components/FieldLayoutEditor.vue:437
-#: frontend/src/components/FieldLayoutEditor.vue:495
-#: frontend/src/components/FieldLayoutEditor.vue:590
+#: frontend/src/components/FieldLayoutEditor.vue:434
+#: frontend/src/components/FieldLayoutEditor.vue:492
+#: frontend/src/components/FieldLayoutEditor.vue:587
 #: frontend/src/components/Settings/Forms/FieldCard.vue:63
 #: frontend/src/components/Settings/Profile/UserEmailSettings.vue:84
-#: frontend/src/components/Settings/Users.vue:213
-#: frontend/src/pages/Deal.vue:660
+#: frontend/src/components/Settings/Users.vue:221
+#: frontend/src/pages/Deal.vue:664
 msgid "Remove"
 msgstr "Ukloni"
 
@@ -6971,7 +6981,7 @@ msgstr "Ukloni"
 msgid "Remove All"
 msgstr "Ukloni sve"
 
-#: frontend/src/components/ConditionsFilter/CFCondition.vue:183
+#: frontend/src/components/ConditionsFilter/CFCondition.vue:184
 msgid "Remove Group"
 msgstr "Ukloni grupu"
 
@@ -6982,13 +6992,13 @@ msgstr "Ukloni grupu"
 msgid "Remove Image"
 msgstr "Ukloni sliku"
 
-#: frontend/src/components/FieldLayoutEditor.vue:577
-#: frontend/src/components/FieldLayoutEditor.vue:583
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1029
+#: frontend/src/components/FieldLayoutEditor.vue:574
+#: frontend/src/components/FieldLayoutEditor.vue:580
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1031
 msgid "Remove Last Column"
 msgstr "Ukloni poslednju kolonu"
 
-#: frontend/src/components/FieldLayoutEditor.vue:607
+#: frontend/src/components/FieldLayoutEditor.vue:604
 msgid "Remove Last Column (move fields to previous)"
 msgstr "Ukloni poslednju kolonu (premesti polja u prethodni deo)"
 
@@ -6996,14 +7006,14 @@ msgstr "Ukloni poslednju kolonu (premesti polja u prethodni deo)"
 msgid "Remove Photo"
 msgstr "Ukloni fotografiju"
 
-#: frontend/src/components/FieldLayoutEditor.vue:480
-#: frontend/src/components/FieldLayoutEditor.vue:488
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1049
+#: frontend/src/components/FieldLayoutEditor.vue:477
+#: frontend/src/components/FieldLayoutEditor.vue:485
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1051
 msgid "Remove Section"
 msgstr "Ukloni odeljak"
 
-#: frontend/src/components/FieldLayoutEditor.vue:422
-#: frontend/src/components/FieldLayoutEditor.vue:430
+#: frontend/src/components/FieldLayoutEditor.vue:419
+#: frontend/src/components/FieldLayoutEditor.vue:427
 msgid "Remove Tab"
 msgstr "Ukloni karticu"
 
@@ -7019,7 +7029,7 @@ msgstr ""
 msgid "Removed from hierarchy."
 msgstr ""
 
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1044
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1046
 msgid "Rename"
 msgstr "Preimenuj"
 
@@ -7029,6 +7039,10 @@ msgstr "Preimenuj"
 #: frontend/src/components/Settings/GeneralSettings.vue:60
 msgid "Reopen lead/deal on new communication"
 msgstr "Ponovo otvori potencijalnog klijenta / poslovnu priliku nakon ove komunikacije"
+
+#: frontend/src/components/Modals/ViewModal.vue:45
+msgid "Replace with an icon..."
+msgstr ""
 
 #: frontend/src/pages/PersonaForm.vue:102
 msgid "Replacing my current CRM"
@@ -7105,7 +7119,7 @@ msgstr "Odgovoreno na"
 #. Label of the section_break_ufaf (Section Break) field in DocType 'CRM
 #. Service Level Agreement'
 #: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.json
-#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:215
+#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:216
 msgid "Response & Follow Up"
 msgstr "Odgovor i praćenje"
 
@@ -7132,13 +7146,13 @@ msgid "Response Time"
 msgstr "Vreme odgovora"
 
 #: frontend/src/components/Settings/Sla/EditResponseResolutionModal.vue:94
-msgid "Response Time is required"
-msgstr "Vreme odgovora je obavezno"
+msgid "Response time is required"
+msgstr ""
 
 #. Description of the 'Rolling Responses' (Check) field in DocType 'CRM Service
 #. Level Agreement'
 #: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.json
-#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:93
+#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:94
 msgid "Restart the SLA each time the customer replies (status changes to Open) and fulfill it when marked as Replied"
 msgstr "Ponovo pokreni sporazum o nivou usluge svaki put kada kupac odgovori (status se menja u otvoreno) i izvrši ga kada bude označeno kao odgovoreno"
 
@@ -7238,14 +7252,14 @@ msgstr "Rok za odgovor"
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.json
-#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:89
+#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:90
 msgid "Rolling Responses"
 msgstr "Vremena odziva"
 
 #. Option for the 'Type' (Select) field in DocType 'CRM Dropdown Item'
 #. Label of the route (Data) field in DocType 'CRM Dropdown Item'
 #: crm/fcrm/doctype/crm_dropdown_item/crm_dropdown_item.json
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:301
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:303
 #: frontend/src/components/Settings/Forms/FormsList.vue:109
 msgid "Route"
 msgstr "Putanja"
@@ -7270,11 +7284,11 @@ msgstr "Naziv pravila"
 msgid "Rule Type"
 msgstr "Vrsta pravila"
 
-#: frontend/src/components/Settings/ERPNextSettings.vue:252
+#: frontend/src/components/Settings/ERPNextSettings.vue:248
 msgid "Run a manual bi-directional sync between ERPNext Items and CRM Products."
 msgstr ""
 
-#: frontend/src/components/Settings/ERPNextSettings.vue:255
+#: frontend/src/components/Settings/ERPNextSettings.vue:251
 msgid "Run a manual synchronization to pull the latest Items from ERPNext."
 msgstr ""
 
@@ -7306,34 +7320,10 @@ msgstr "Kreiranje sporazuma o nivou usluge"
 msgid "SLA Name"
 msgstr "Naziv sporazuma o nivou usluge"
 
-#: frontend/src/components/Settings/Settings.vue:200
+#: frontend/src/components/Settings/Settings.vue:202
 #: frontend/src/components/Settings/Sla/SlaPolicyList.vue:3
 msgid "SLA Policies"
 msgstr "Politike sporazuma o nivou usluge"
-
-#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:428
-msgid "SLA Policy Created"
-msgstr "Politika sporazuma o nivou usluge je kreirana"
-
-#: frontend/src/components/Settings/Sla/SlaPolicyList.vue:242
-msgid "SLA Policy Deleted"
-msgstr "Politika sporazuma o nivou usluge je obrisana"
-
-#: frontend/src/components/Settings/Sla/SlaPolicyList.vue:218
-msgid "SLA Policy Duplicated"
-msgstr "Politika sporazuma o nivou usluge je duplirana"
-
-#: frontend/src/components/Settings/Sla/utils.js:106
-msgid "SLA Policy Name is required"
-msgstr "Naziv politike sporazuma o nivou usluge je obavezan"
-
-#: frontend/src/components/Settings/Sla/SlaPolicyList.vue:264
-msgid "SLA Policy Status Updated"
-msgstr "Status politike sporazuma o nivou usluge je ažuriran"
-
-#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:498
-msgid "SLA Policy Updated"
-msgstr "Politika sporazuma o nivou usluge je ažurirana"
 
 #. Label of the sla_status (Select) field in DocType 'CRM Deal'
 #. Label of the sla_status (Select) field in DocType 'CRM Lead'
@@ -7342,10 +7332,29 @@ msgstr "Politika sporazuma o nivou usluge je ažurirana"
 msgid "SLA Status"
 msgstr "Status sporazuma o nivou usluge"
 
-#: frontend/src/components/Settings/Sla/SlaPolicyList.vue:254
-#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:372
-msgid "SLA set as default cannot be disabled"
-msgstr "Sporazum o nivou usluge postavljen kao podrazumevani ne može biti onemogućen"
+#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:429
+msgid "SLA policy created"
+msgstr "Politika sporazuma o nivou usluge je kreirana"
+
+#: frontend/src/components/Settings/Sla/SlaPolicyList.vue:242
+msgid "SLA policy deleted"
+msgstr "Politika sporazuma o nivou usluge je obrisana"
+
+#: frontend/src/components/Settings/Sla/SlaPolicyList.vue:218
+msgid "SLA policy duplicated"
+msgstr "Politika sporazuma o nivou usluge je duplirana"
+
+#: frontend/src/components/Settings/Sla/utils.js:106
+msgid "SLA policy name is required"
+msgstr ""
+
+#: frontend/src/components/Settings/Sla/SlaPolicyList.vue:264
+msgid "SLA policy status updated"
+msgstr "Status politike sporazuma o nivou usluge je ažuriran"
+
+#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:499
+msgid "SLA policy updated"
+msgstr "Politika sporazuma o nivou usluge je ažurirana"
 
 #. Label of the ssrf_guard_tab (Tab Break) field in DocType 'CRM Enrichment
 #. Settings'
@@ -7353,21 +7362,13 @@ msgstr "Sporazum o nivou usluge postavljen kao podrazumevani ne može biti onemo
 msgid "SSRF Guard"
 msgstr ""
 
-#: frontend/src/components/EmailEditor.vue:102
+#: frontend/src/components/EmailEditor.vue:93
 msgid "SUBJECT"
 msgstr "NASLOV"
 
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:7
-#: frontend/src/components/Settings/Settings.vue:167
+#: frontend/src/components/Settings/Settings.vue:169
 msgid "Sales Hierarchy"
-msgstr ""
-
-#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:325
-msgid "Sales Hierarchy disabled"
-msgstr ""
-
-#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:339
-msgid "Sales Hierarchy enabled"
 msgstr ""
 
 #. Name of a role
@@ -7409,7 +7410,7 @@ msgstr ""
 #: crm/lead_syncing/doctype/facebook_page/facebook_page.json
 #: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.json
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
-#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:277
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:276
 msgid "Sales Manager"
 msgstr "Menadžer prodaje"
 
@@ -7447,16 +7448,24 @@ msgstr "Trend prodaje"
 #: crm/fcrm/doctype/fcrm_note/fcrm_note.json
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 #: frontend/src/components/Modals/AddExistingUserModal.vue:92
-#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:278
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:277
 #: frontend/src/components/Settings/InviteUserPage.vue:162
 #: frontend/src/components/Settings/InviteUserPage.vue:169
 #: frontend/src/components/Settings/Users.vue:87
-#: frontend/src/components/Settings/Users.vue:187
-#: frontend/src/components/Settings/Users.vue:243
-#: frontend/src/components/Settings/Users.vue:246
+#: frontend/src/components/Settings/Users.vue:195
+#: frontend/src/components/Settings/Users.vue:251
+#: frontend/src/components/Settings/Users.vue:254
 #: frontend/src/pages/Dashboard.vue:95
 msgid "Sales User"
 msgstr "Korisnik prodaje"
+
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:323
+msgid "Sales hierarchy disabled"
+msgstr ""
+
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:336
+msgid "Sales hierarchy enabled"
+msgstr ""
 
 #: crm/api/dashboard.py:638
 msgid "Sales trend"
@@ -7477,7 +7486,7 @@ msgstr "Prodavac"
 msgid "Salutation"
 msgstr "Pozdrav"
 
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:427
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:429
 msgid "Sandboxed in a frame. Simplest, but a fixed height and its own styling."
 msgstr ""
 
@@ -7497,7 +7506,7 @@ msgstr "Subota"
 #: frontend/src/components/Modals/LostReasonModal.vue:45
 #: frontend/src/components/Modals/QuickEntryModal.vue:26
 #: frontend/src/components/Modals/SidePanelModal.vue:26
-#: frontend/src/components/PrimaryDropdownItem.vue:21
+#: frontend/src/components/PrimaryDropdownItem.vue:70
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:36
 #: frontend/src/components/Settings/DashboardSettings.vue:244
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:21
@@ -7513,17 +7522,17 @@ msgstr "Subota"
 msgid "Save"
 msgstr "Sačuvaj"
 
-#: frontend/src/components/Modals/ViewModal.vue:40
+#: frontend/src/components/Modals/ViewModal.vue:60
 #: frontend/src/components/ViewControls.vue:58
 #: frontend/src/components/ViewControls.vue:155
 msgid "Save Changes"
 msgstr "Sačuvaj promene"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:599
+#: frontend/src/components/Layouts/AppSidebar.vue:690
 msgid "Saved View"
 msgstr "Sačuvani prikaz"
 
-#: frontend/src/components/ViewControls.vue:708
+#: frontend/src/components/ViewControls.vue:717
 msgid "Saved Views"
 msgstr "Sačuvani prikazi"
 
@@ -7569,8 +7578,8 @@ msgstr ""
 msgid "Search users"
 msgstr ""
 
-#: frontend/src/components/FieldLayoutEditor.vue:457
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1041
+#: frontend/src/components/FieldLayoutEditor.vue:454
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1043
 msgid "Section"
 msgstr "Odeljak"
 
@@ -7594,7 +7603,7 @@ msgstr ""
 msgid "Seed the crawl queue from the site's sitemap (declared in robots.txt, or the conventional /sitemap.xml) so pages not reachable within Max Depth still get a chance to be crawled. This is an addition on top of ordinary link-following, not a replacement -- a site with no sitemap falls straight through to link-following with no error."
 msgstr ""
 
-#: frontend/src/components/SidePanelLayout.vue:154
+#: frontend/src/components/SidePanelLayout.vue:156
 msgid "Select"
 msgstr "Izaberi"
 
@@ -7644,10 +7653,10 @@ msgid "Select Workday"
 msgstr "Izaberite radni dan"
 
 #: frontend/src/components/Settings/Telephony/TwilioSettings.vue:71
-msgid "Select a Twilio App for your CRM"
-msgstr "Izaberite Twilio aplikaciju za Vaš CRM"
+msgid "Select a Twilio app for your CRM"
+msgstr ""
 
-#: frontend/src/components/Filter.vue:603
+#: frontend/src/components/Filter.vue:632
 msgid "Select a Value"
 msgstr "Izaberite vrednost"
 
@@ -7655,12 +7664,16 @@ msgstr "Izaberite vrednost"
 msgid "Select all that apply"
 msgstr ""
 
-#: frontend/src/components/Filter.vue:605
+#: frontend/src/components/Filter.vue:634
 msgid "Select an Option"
 msgstr "Izaberite opciju"
 
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:574
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1063
+#: frontend/src/components/Modals/ViewModal.vue:46
+msgid "Select an icon..."
+msgstr ""
+
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:576
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1065
 msgid "Select an option"
 msgstr ""
 
@@ -7668,7 +7681,7 @@ msgstr ""
 msgid "Select the assignees for {0}."
 msgstr "Izaberite izvršioce za {0}."
 
-#: frontend/src/components/Settings/ERPNextSettings.vue:308
+#: frontend/src/components/Settings/ERPNextSettings.vue:304
 msgid "Select the deal status to trigger the auto customer creation in ERPNext"
 msgstr "Izaberite status poslovne prilike koji pokreće automatsko kreiranje klijenta u ERPNext-u"
 
@@ -7688,7 +7701,7 @@ msgstr "Izaberite ERPNext kompaniju za povezivanje"
 msgid "Select {0}"
 msgstr "Izaberite {0}"
 
-#: frontend/src/components/EmailEditor.vue:182
+#: frontend/src/components/EmailEditor.vue:169
 msgid "Send"
 msgstr "Pošalji"
 
@@ -7708,23 +7721,23 @@ msgstr "Pošaljite šablon"
 msgid "Send an Email"
 msgstr "Pošalji imejl"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:488
+#: frontend/src/components/Layouts/AppSidebar.vue:577
 msgid "Send email"
 msgstr "Pošalji imejl"
 
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:373
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:375
 msgid "Send people straight to the hosted form."
 msgstr ""
 
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:346
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:348
 msgid "Send visitors here after they submit. Leave blank to show the success message."
 msgstr ""
 
-#: frontend/src/components/CommunicationArea.vue:274
+#: frontend/src/components/CommunicationArea.vue:297
 msgid "Sending comment..."
 msgstr "Slanje komentara..."
 
-#: frontend/src/components/CommunicationArea.vue:258
+#: frontend/src/components/CommunicationArea.vue:275
 msgid "Sending email..."
 msgstr "Slanje imejla..."
 
@@ -7738,7 +7751,7 @@ msgstr "Separator"
 msgid "Series"
 msgstr "Serija"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:611
+#: frontend/src/components/Layouts/AppSidebar.vue:702
 msgid "Service Level Agreement"
 msgstr "Sporazum o nivou usluge"
 
@@ -7747,17 +7760,13 @@ msgstr "Sporazum o nivou usluge"
 msgid "Service Provider"
 msgstr "Pružalac usluge"
 
-#: frontend/src/components/Filter.vue:593
+#: frontend/src/components/Filter.vue:622
 msgid "Set"
 msgstr "Postavi"
 
-#: frontend/src/components/ViewControls.vue:1128
+#: frontend/src/components/ViewControls.vue:1137
 msgid "Set As Default"
 msgstr "Postavite kao podrazumevano"
-
-#: frontend/src/components/PrimaryDropdownItem.vue:27
-msgid "Set As Primary"
-msgstr "Postavi kao primarni"
 
 #: frontend/src/components/Settings/DashboardSettings.vue:235
 msgid "Set Currency"
@@ -7784,7 +7793,7 @@ msgstr ""
 msgid "Set a default value before publishing for: {0}"
 msgstr ""
 
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:276
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:278
 msgid "Set a default value for each field to publish this form."
 msgstr ""
 
@@ -7804,11 +7813,11 @@ msgstr "Postavi sve kao javno"
 msgid "Set an Organization"
 msgstr "Postavite organizaciju"
 
-#: frontend/src/pages/Deal.vue:668 frontend/src/pages/MobileDeal.vue:530
+#: frontend/src/pages/Deal.vue:672 frontend/src/pages/MobileDeal.vue:534
 msgid "Set as Primary Contact"
 msgstr "Postavi kao primarni kontakt"
 
-#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:113
+#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:114
 msgid "Set as default SLA"
 msgstr "Postavi kao podrazumevani sporazum o nivou usluge"
 
@@ -7842,7 +7851,7 @@ msgstr ""
 msgid "Set working days, hours, and holidays by selecting a predefined schedule or creating a new one"
 msgstr "Postavite radne dane, radno vreme i praznike izborom unapred definisanog rasporeda ili kreiranjem novog"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:563
+#: frontend/src/components/Layouts/AppSidebar.vue:654
 msgid "Setting Up"
 msgstr "Postavljanje"
 
@@ -7855,8 +7864,8 @@ msgid "Setting enabled successfully"
 msgstr "Podešavanje je uspešno omogućeno"
 
 #: frontend/src/components/Settings/emailConfig.js:158
-msgid "Setting up Frappe Mail requires you to have an API key and API Secret of your email account. Read more"
-msgstr "Podešavanje Frappe Mail zahteva da imate API ključ i API tajnu za svoj imejl nalog. Saznajte više"
+msgid "Setting up Frappe Mail requires you to have an API key and API secret for your email account. Read more"
+msgstr ""
 
 #: frontend/src/components/Settings/emailConfig.js:104
 msgid "Setting up GMail requires you to enable two factor authentication and app specific passwords. Read more"
@@ -7888,12 +7897,12 @@ msgstr ""
 
 #. Label of the defaults_tab (Tab Break) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
-#: frontend/src/components/Layouts/AppSidebar.vue:567
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:688
+#: frontend/src/components/Layouts/AppSidebar.vue:658
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:690
 msgid "Settings"
 msgstr "Podešavanja"
 
-#: frontend/src/components/Settings/ERPNextSettings.vue:510
+#: frontend/src/components/Settings/ERPNextSettings.vue:507
 msgid "Settings saved"
 msgstr "Podešavanja su sačuvana"
 
@@ -7909,11 +7918,11 @@ msgstr "Podesite imejl"
 msgid "Setup the Exchange Rate Provider other than 'Frankfurter' in settings, as default provider does not support currency conversion for {0} to {1}."
 msgstr "Postavite provajdera deviznog kursa koji nije 'Frankfurter' u podešavanjima, jer podrazumevani provajder ne podržava konverziju valuta sa {0} u {1}."
 
-#: frontend/src/components/Layouts/AppSidebar.vue:360
+#: frontend/src/components/Layouts/AppSidebar.vue:449
 msgid "Setup your password"
 msgstr "Postavite Vašu lozinku"
 
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:689
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:691
 msgid "Share"
 msgstr "Podeli"
 
@@ -7921,11 +7930,11 @@ msgstr "Podeli"
 msgid "Show"
 msgstr "Prikaži"
 
-#: frontend/src/components/FieldLayoutEditor.vue:475
+#: frontend/src/components/FieldLayoutEditor.vue:472
 msgid "Show Border"
 msgstr "Prikaži okvir"
 
-#: frontend/src/components/FieldLayoutEditor.vue:470
+#: frontend/src/components/FieldLayoutEditor.vue:467
 msgid "Show Label"
 msgstr "Prikaži oznaku"
 
@@ -7948,7 +7957,7 @@ msgstr "Prikaži pregled"
 msgid "Show timestamps in the activity timeline as relative time (5 mins ago) or an exact date & time"
 msgstr ""
 
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:333
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:335
 msgid "Shown after a successful submission"
 msgstr ""
 
@@ -7984,15 +7993,15 @@ msgstr "S obzirom da ste uklonili {0} sa liste izvršilaca, {0} je zamenjen sled
 msgid "Site URL"
 msgstr "URL sajta"
 
-#: frontend/src/components/Settings/ERPNextSettings.vue:772
+#: frontend/src/components/Settings/ERPNextSettings.vue:764
 msgid "Site URL is required"
 msgstr "URL sajta je obavezan"
 
-#: frontend/src/components/Settings/ERPNextSettings.vue:755
+#: frontend/src/components/Settings/ERPNextSettings.vue:747
 msgid "Site connection validated"
 msgstr "Veza sa sajtom je potvrđena"
 
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:466
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:468
 msgid "Sites where this form may be embedded, one per line. Browsers block the iframe on any site not listed here."
 msgstr ""
 
@@ -8017,11 +8026,11 @@ msgstr ""
 msgid "Social Profiles"
 msgstr ""
 
-#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:438
-msgid "Some error occurred while creating SLA Policy"
-msgstr "Došlo je do greške prilikom kreiranja politike sporazuma o nivou usluge"
+#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:439
+msgid "Some error occurred while creating SLA policy"
+msgstr ""
 
-#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:484
+#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:485
 msgid "Some error occurred while renaming SLA policy"
 msgstr "Došlo je do greške prilikom preimenovanja politike sporazuma o nivou usluge"
 
@@ -8029,7 +8038,7 @@ msgstr "Došlo je do greške prilikom preimenovanja politike sporazuma o nivou u
 msgid "Some error occurred while renaming assignment rule"
 msgstr "Došlo je do greške pri preimenovanju pravila dodeljivanja"
 
-#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:475
+#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:476
 msgid "Some error occurred while updating SLA policy"
 msgstr "Došlo je do greške prilikom ažuriranja politike sporazuma o nivou usluge"
 
@@ -8037,12 +8046,12 @@ msgstr "Došlo je do greške prilikom ažuriranja politike sporazuma o nivou usl
 msgid "Some error occurred while updating assignment rule"
 msgstr "Došlo je do greške pri ažuriranju pravila dodeljivanja"
 
-#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:516
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:512
 msgid "Some users could not be added"
 msgstr ""
 
-#: frontend/src/components/Settings/Users.vue:274
-#: frontend/src/components/Settings/Users.vue:287
+#: frontend/src/components/Settings/Users.vue:282
+#: frontend/src/components/Settings/Users.vue:295
 msgid "Something went wrong"
 msgstr "Došlo je do greške"
 
@@ -8051,7 +8060,7 @@ msgid "Something went wrong, try again later"
 msgstr "Došlo je do greške, pokušajte ponovo kasnije"
 
 #: frontend/src/components/SortBy.vue:10 frontend/src/components/SortBy.vue:24
-#: frontend/src/components/SortBy.vue:226
+#: frontend/src/components/SortBy.vue:222
 msgid "Sort"
 msgstr "Sortiraj"
 
@@ -8061,7 +8070,7 @@ msgstr "Sortiraj"
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.json
-#: frontend/src/components/Modals/EditValueModal.vue:9
+#: frontend/src/components/Modals/EditValueModal.vue:11
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:56
 msgid "Source"
 msgstr "Izvor"
@@ -8087,11 +8096,11 @@ msgstr "Vrsta izvora"
 msgid "Source Website"
 msgstr ""
 
-#: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:165
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:159
 msgid "Source disabled successfully"
 msgstr "Izvor je uspešno onemogućen"
 
-#: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:164
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:158
 msgid "Source enabled successfully"
 msgstr "Izvor je uspešno omogućen"
 
@@ -8117,7 +8126,7 @@ msgstr "Standardne skripte obrasca ne mogu da se menjaju, umesto toga neophodan 
 msgid "Standard Selling Rate"
 msgstr "Standardna prodajna cena"
 
-#: frontend/src/components/ViewControls.vue:672
+#: frontend/src/components/ViewControls.vue:681
 msgid "Standard Views"
 msgstr "Standardni prikazi"
 
@@ -8130,13 +8139,9 @@ msgstr "Vreme početka i završetka su obavezni"
 #. Label of the start_date (Date) field in DocType 'CRM Task'
 #: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.json
 #: crm/fcrm/doctype/crm_task/crm_task.json
-#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:176
+#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:177
 msgid "Start Date"
 msgstr "Datum početka"
-
-#: frontend/src/components/Settings/Sla/utils.js:160
-msgid "Start Date cannot be after end date"
-msgstr "Datum početka ne može biti nakon datuma završetka"
 
 #. Label of the start_time (Datetime) field in DocType 'CRM Call Log'
 #. Label of the start_time (Time) field in DocType 'CRM Service Day'
@@ -8150,9 +8155,13 @@ msgstr "Datum početka ne može biti nakon datuma završetka"
 msgid "Start Time"
 msgstr "Vreme početka"
 
+#: frontend/src/components/Settings/Sla/utils.js:160
+msgid "Start date cannot be after end date"
+msgstr ""
+
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:186
-msgid "Start Time is required"
-msgstr "Vreme početka je obavezno"
+msgid "Start time is required"
+msgstr ""
 
 #: frontend/src/pages/Welcome.vue:21
 msgid "Start with sample 10 leads"
@@ -8184,9 +8193,9 @@ msgstr ""
 #: crm/fcrm/doctype/crm_rolling_response_time/crm_rolling_response_time.json
 #: crm/fcrm/doctype/crm_task/crm_task.json
 #: frontend/src/components/Settings/Forms/FormsList.vue:45
-#: frontend/src/pages/Contact.vue:526 frontend/src/pages/MobileContact.vue:524
-#: frontend/src/pages/MobileOrganization.vue:468
-#: frontend/src/pages/Organization.vue:510
+#: frontend/src/pages/Contact.vue:395 frontend/src/pages/MobileContact.vue:387
+#: frontend/src/pages/MobileOrganization.vue:469
+#: frontend/src/pages/Organization.vue:511
 msgid "Status"
 msgstr "Status"
 
@@ -8227,11 +8236,11 @@ msgid "Subject: {0}"
 msgstr "Naslov: {0}"
 
 #: crm/api/form.py:263
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:620
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:622
 msgid "Submit"
 msgstr "Podnesi"
 
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:324
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:326
 msgid "Submit button label"
 msgstr "Oznaka dugmeta za podnošenje"
 
@@ -8253,7 +8262,7 @@ msgstr ""
 msgid "Substrings that exclude a candidate link from the crawl."
 msgstr ""
 
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:331
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:333
 msgid "Success message"
 msgstr "Poruka o uspehu"
 
@@ -8286,23 +8295,23 @@ msgstr "Prebacivanje između svetlog, tamnog ili sistemskog režima"
 msgid "Switch between outgoing email accounts when sending emails"
 msgstr "Prebacivanje između odlaznih imejl naloga prilikom slanja imejlova"
 
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1276
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1278
 msgid "Switching to {0} will remove {1} field(s) that don't exist on {0}. This can't be undone."
 msgstr ""
 
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.js:6
-#: frontend/src/components/Settings/ERPNextSettings.vue:267
+#: frontend/src/components/Settings/ERPNextSettings.vue:263
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:23
 msgid "Sync Now"
 msgstr "Sinhronizuj sada"
 
-#: frontend/src/components/Settings/LeadSyncing/FailureLogs.vue:132
-msgid "Sync Successful!"
-msgstr "Sinhronizacija je uspešna!"
-
 #: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.js:16
 msgid "Sync Successful, CRM Lead: {0}!"
 msgstr "Sinhronizacija je uspešna, CRM potencijalni klijent: {0}!"
+
+#: frontend/src/components/Settings/LeadSyncing/FailureLogs.vue:132
+msgid "Sync successful!"
+msgstr "Sinhronizacija uspešna!"
 
 #: frontend/src/pages/Welcome.vue:32
 msgid "Sync your Contacts, Email and Calendars"
@@ -8318,7 +8327,7 @@ msgstr "Sinhronizovano"
 msgid "Syncing"
 msgstr "Sinhronizovanje"
 
-#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:385
+#: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:382
 msgid "Syncing started in background"
 msgstr "Sinhronizacija je započeta u pozadini"
 
@@ -8326,7 +8335,7 @@ msgstr "Sinhronizacija je započeta u pozadini"
 msgid "System"
 msgstr "Sistem"
 
-#: frontend/src/components/Settings/Settings.vue:121
+#: frontend/src/components/Settings/Settings.vue:123
 msgid "System Configuration"
 msgstr "Sistemska podešavanja"
 
@@ -8376,7 +8385,7 @@ msgstr "Podrazumevana sistemska podešavanja"
 msgid "System Manager"
 msgstr "Sistem menadžer"
 
-#: frontend/src/components/EmailEditor.vue:39
+#: frontend/src/components/EmailEditor.vue:30
 msgid "TO"
 msgstr "ZA"
 
@@ -8408,16 +8417,16 @@ msgstr ""
 #. Option for the 'Type' (Select) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
 #: frontend/src/components/Activities/ActivityHeader.vue:152
-#: frontend/src/components/Layouts/AppSidebar.vue:585
+#: frontend/src/components/Layouts/AppSidebar.vue:676
 msgid "Task"
 msgstr "Zadatak"
 
-#: frontend/src/pages/Deal.vue:598 frontend/src/pages/Lead.vue:450
-#: frontend/src/pages/MobileDeal.vue:463 frontend/src/pages/MobileLead.vue:310
+#: frontend/src/pages/Deal.vue:602 frontend/src/pages/Lead.vue:454
+#: frontend/src/pages/MobileDeal.vue:467 frontend/src/pages/MobileLead.vue:314
 msgid "Tasks"
 msgstr "Zadaci"
 
-#: frontend/src/components/Settings/Settings.vue:227
+#: frontend/src/components/Settings/Settings.vue:229
 msgid "Telephony"
 msgstr "Telefonija"
 
@@ -8430,10 +8439,6 @@ msgstr "Sredstvo telefonije"
 msgid "Telephony Settings"
 msgstr "Podešavanje telefonije"
 
-#: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:214
-msgid "Template Deleted Successfully"
-msgstr "Šablon je uspešno obrisan"
-
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:82
 msgid "Template Name"
 msgstr "Naziv šablona"
@@ -8441,6 +8446,10 @@ msgstr "Naziv šablona"
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:175
 msgid "Template created successfully"
 msgstr "Šablon je uspešno kreiran"
+
+#: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:214
+msgid "Template deleted successfully"
+msgstr "Šablon je uspešno obrisan"
 
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:197
 msgid "Template disabled successfully"
@@ -8458,7 +8467,7 @@ msgstr "Šablon je uspešno preimenovan"
 msgid "Template updated successfully"
 msgstr "Šablon je uspešno ažuriran"
 
-#: frontend/src/components/Settings/Settings.vue:185
+#: frontend/src/components/Settings/Settings.vue:187
 msgid "Templates"
 msgstr "Šabloni"
 
@@ -8486,7 +8495,7 @@ msgstr "Menadžer teritorije"
 msgid "Territory Name"
 msgstr "Naziv teritorije"
 
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:520
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:522
 msgid "Thank you!"
 msgstr "Hvala Vam!"
 
@@ -8539,27 +8548,27 @@ msgstr "Tema"
 msgid "There can only be one default priority in Priorities table"
 msgstr "U tabeli prioriteta može postojati samo jedan podrazumevani prioritet"
 
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:228
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:230
 msgid "These fields aren't shown to users. Default values are used when the form is submitted."
 msgstr ""
 
-#: frontend/src/components/Filter.vue:689
+#: frontend/src/components/Filter.vue:718
 msgid "This Month"
 msgstr "Ovaj mesec"
 
-#: frontend/src/components/Filter.vue:693
+#: frontend/src/components/Filter.vue:722
 msgid "This Quarter"
 msgstr "Ovaj kvartal"
 
-#: frontend/src/components/Filter.vue:685
+#: frontend/src/components/Filter.vue:714
 msgid "This Week"
 msgstr "Ove nedelje"
 
-#: frontend/src/components/Filter.vue:697
+#: frontend/src/components/Filter.vue:726
 msgid "This Year"
 msgstr "Ove godine"
 
-#: frontend/src/components/FieldLayoutEditor.vue:584
+#: frontend/src/components/FieldLayoutEditor.vue:581
 msgid "This column contains fields. Are you sure you want to remove it?"
 msgstr "Ova kolona sadrži polja. Da li ste sigurni da želite da je uklonite?"
 
@@ -8567,7 +8576,7 @@ msgstr "Ova kolona sadrži polja. Da li ste sigurni da želite da je uklonite?"
 msgid "This field is required"
 msgstr "Ovo polje je obavezno"
 
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:360
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:362
 msgid "This form isn’t published yet. Turn on Publish to make the link and embeds live."
 msgstr ""
 
@@ -8583,7 +8592,7 @@ msgstr "Ova metoda je namenjena samo za razvojni režim"
 msgid "This run has no linked record to re-enrich."
 msgstr ""
 
-#: frontend/src/components/FieldLayoutEditor.vue:489
+#: frontend/src/components/FieldLayoutEditor.vue:486
 msgid "This section contains fields. Are you sure you want to remove it?"
 msgstr "Ovaj odeljak sadrži polja. Da li ste sigurni da želite da ga uklonite?"
 
@@ -8644,7 +8653,7 @@ msgstr ""
 msgid "Timeline timestamp format"
 msgstr ""
 
-#: frontend/src/components/Filter.vue:357
+#: frontend/src/components/Filter.vue:386
 msgid "Timespan"
 msgstr "Vremenski opseg"
 
@@ -8718,7 +8727,7 @@ msgstr "Za korisnika"
 msgid "To know more about setting up email accounts, click"
 msgstr "Da biste saznali više o podešavanju imejl naloga, kliknite"
 
-#: frontend/src/components/Filter.vue:677 frontend/src/pages/Calendar.vue:85
+#: frontend/src/components/Filter.vue:706 frontend/src/pages/Calendar.vue:85
 msgid "Today"
 msgstr "Danas"
 
@@ -8731,13 +8740,17 @@ msgstr "Za uraditi"
 msgid "Toggle on for Preview"
 msgstr "Uključite za pregled"
 
-#: frontend/src/components/Filter.vue:681
+#: frontend/src/components/Filter.vue:710
 msgid "Tomorrow"
 msgstr "Sutra"
 
 #: crm/api/user.py:21
 msgid "Too many failed attempts. Please try again after some time."
 msgstr "Previše neuspelih pokušaja. Molimo Vas da pokušate ponovo kasnije."
+
+#: crm/integrations/api.py:247
+msgid "Too many redirects while fetching recording"
+msgstr ""
 
 #. Label of the total (Currency) field in DocType 'CRM Deal'
 #. Label of the total (Currency) field in DocType 'CRM Lead'
@@ -8797,7 +8810,7 @@ msgstr ""
 msgid "Tuesday"
 msgstr "Utorak"
 
-#: frontend/src/components/ConditionsFilter/CFCondition.vue:156
+#: frontend/src/components/ConditionsFilter/CFCondition.vue:157
 msgid "Turn into a Group"
 msgstr "Pretvori u grupu"
 
@@ -8811,7 +8824,7 @@ msgstr "TwiML SID"
 #. Agent'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
-#: frontend/src/components/Layouts/AppSidebar.vue:631
+#: frontend/src/components/Layouts/AppSidebar.vue:722
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:51
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:153
 msgid "Twilio"
@@ -8893,8 +8906,8 @@ msgid "Unable to connect to Twilio account to fetch applications."
 msgstr "Nije moguće povezati se sa Twilio nalogom radi preuzimanja aplikacija."
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:456
-msgid "Unassign Conditions are invalid"
-msgstr "Uslovi za poništavanje dodele nisu važeći"
+msgid "Unassign conditions are invalid"
+msgstr "Uslovi uklanjanja dodeljivanja su nevažeći"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:224
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:609
@@ -8905,11 +8918,11 @@ msgstr "Uslov poništavanja dodele"
 msgid "Unauthorized request"
 msgstr "Neovlašćeni zahtev"
 
-#: frontend/src/components/FieldLayoutEditor.vue:465
+#: frontend/src/components/FieldLayoutEditor.vue:462
 msgid "Uncollapsible"
 msgstr "Sažimanje nije moguće"
 
-#: frontend/src/components/ConditionsFilter/CFCondition.vue:166
+#: frontend/src/components/ConditionsFilter/CFCondition.vue:167
 msgid "Ungroup Conditions"
 msgstr "Razdvoji grupisanje uslova"
 
@@ -8917,10 +8930,6 @@ msgstr "Razdvoji grupisanje uslova"
 #: frontend/src/components/Telephony/TwilioCallUI.vue:123
 msgid "Unknown"
 msgstr "Nepoznat"
-
-#: crm/integrations/api.py:19
-msgid "Unknown telephony medium: {0}"
-msgstr "Nepoznato sredstvo telefonije: {0}"
 
 #: frontend/src/components/BulkDeleteLinkedDocModal.vue:124
 msgid "Unlink"
@@ -8950,7 +8959,7 @@ msgstr "Poništi vezu sa povezanom stavkom"
 msgid "Unlink {0} Item(s)"
 msgstr "Poništi vezu sa {0} stavki"
 
-#: frontend/src/components/ViewControls.vue:1143
+#: frontend/src/components/ViewControls.vue:1152
 msgid "Unpin View"
 msgstr "Ukloni fiksiranje prikaza"
 
@@ -8963,8 +8972,8 @@ msgid "Unpublished"
 msgstr "Neobjavljeno"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:577
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:947
-#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:345
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:949
+#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:346
 msgid "Unsaved Changes"
 msgstr "Nesačuvane promene"
 
@@ -9023,11 +9032,11 @@ msgstr "Ažuriranje vremenskog žiga pri novoj imejl komunikaciji i komentarima 
 msgid "Update timestamp on new communication"
 msgstr "Ažuriraj vremenski žig za nove komunikacije"
 
-#: frontend/src/components/Modals/EditValueModal.vue:29
+#: frontend/src/components/Modals/EditValueModal.vue:31
 msgid "Update {0} Records"
 msgstr "Ažuriraj {0} zapisa"
 
-#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:473
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:470
 msgid "Updated reports to"
 msgstr ""
 
@@ -9090,11 +9099,11 @@ msgstr "Korisnik"
 msgid "User Agent"
 msgstr "Korisnički agent"
 
-#: frontend/src/components/Settings/Settings.vue:101
+#: frontend/src/components/Settings/Settings.vue:103
 msgid "User Configuration"
 msgstr "Korisnička podešavanja"
 
-#: frontend/src/components/Settings/Settings.vue:152
+#: frontend/src/components/Settings/Settings.vue:154
 msgid "User Management"
 msgstr "Upravljanje korisnicima"
 
@@ -9103,7 +9112,7 @@ msgstr "Upravljanje korisnicima"
 msgid "User Name"
 msgstr "Korisničko ime"
 
-#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:510
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:506
 msgid "User added to hierarchy"
 msgstr ""
 
@@ -9111,7 +9120,7 @@ msgstr ""
 msgid "User {0} cannot be removed as it has a Role Profile assigned to it."
 msgstr "Korisnik {0} ne može biti uklonjen jer mu je dodeljen profil uloge."
 
-#: frontend/src/components/Settings/Users.vue:283
+#: frontend/src/components/Settings/Users.vue:291
 msgid "User {0} has been removed"
 msgstr "Korisnik {0} je uklonjen"
 
@@ -9125,7 +9134,7 @@ msgstr ""
 
 #: frontend/src/components/Modals/AddExistingUserModal.vue:20
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:610
-#: frontend/src/components/Settings/Settings.vue:155
+#: frontend/src/components/Settings/Settings.vue:157
 #: frontend/src/components/Settings/Users.vue:7
 msgid "Users"
 msgstr "Korisnici"
@@ -9138,7 +9147,7 @@ msgstr "Korisnici su uspešno dodati"
 msgid "Users are required"
 msgstr "Korisnici su obavezni"
 
-#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:168
+#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:169
 msgid "Valid From"
 msgstr "Važi od"
 
@@ -9152,7 +9161,7 @@ msgstr "Ispravni uslovi su obavezni"
 msgid "Validity"
 msgstr "Važenje"
 
-#: frontend/src/components/Modals/EditValueModal.vue:14
+#: frontend/src/components/Modals/EditValueModal.vue:16
 msgid "Value"
 msgstr "Vrednost"
 
@@ -9168,7 +9177,7 @@ msgstr "Prikaži kontakt"
 msgid "View Location"
 msgstr "Prikaži lokaciju"
 
-#: frontend/src/components/Modals/ViewModal.vue:14
+#: frontend/src/components/Modals/ViewModal.vue:16
 msgid "View Name"
 msgstr "Naziv prikaza"
 
@@ -9176,7 +9185,7 @@ msgstr "Naziv prikaza"
 msgid "View documentation"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:596
+#: frontend/src/components/Layouts/AppSidebar.vue:687
 msgid "Views"
 msgstr "Pregledi"
 
@@ -9188,11 +9197,7 @@ msgstr "Vidljivost"
 msgid "Walk-ins"
 msgstr ""
 
-#: frontend/src/components/SalesHierarchyBanner.vue:20
-msgid "We are changing how permissions work in Frappe CRM"
-msgstr ""
-
-#: frontend/src/components/Layouts/AppSidebar.vue:593
+#: frontend/src/components/Layouts/AppSidebar.vue:684
 msgid "Web Form"
 msgstr "Veb-obrazac"
 
@@ -9271,10 +9276,10 @@ msgstr ""
 
 #. Option for the 'Type' (Select) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
-#: frontend/src/components/Layouts/AppSidebar.vue:633
-#: frontend/src/components/Settings/Settings.vue:232
-#: frontend/src/pages/Deal.vue:613 frontend/src/pages/Lead.vue:465
-#: frontend/src/pages/MobileDeal.vue:478 frontend/src/pages/MobileLead.vue:325
+#: frontend/src/components/Layouts/AppSidebar.vue:724
+#: frontend/src/components/Settings/Settings.vue:234
+#: frontend/src/pages/Deal.vue:617 frontend/src/pages/Lead.vue:469
+#: frontend/src/pages/MobileDeal.vue:482 frontend/src/pages/MobileLead.vue:329
 #: frontend/src/pages/PersonaForm.vue:76
 msgid "WhatsApp"
 msgstr "WhatsApp"
@@ -9288,7 +9293,7 @@ msgid "WhatsApp Templates"
 msgstr "WhatsApp šabloni"
 
 #: frontend/src/components/ConditionsFilter/CFCondition.vue:20
-#: frontend/src/components/Filter.vue:43 frontend/src/components/Filter.vue:83
+#: frontend/src/components/Filter.vue:43 frontend/src/components/Filter.vue:84
 msgid "Where"
 msgstr "Gde"
 
@@ -9310,7 +9315,7 @@ msgstr "Širina može biti broj, piksel ili rem (npr. 3, 30px, 10rem)"
 #. Option for the 'Type' (Select) field in DocType 'CRM Lead Status'
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
-#: frontend/src/components/Settings/ERPNextSettings.vue:317
+#: frontend/src/components/Settings/ERPNextSettings.vue:313
 msgid "Won"
 msgstr "Dobijeno"
 
@@ -9358,11 +9363,11 @@ msgid "X (Twitter)"
 msgstr ""
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:531
-#: frontend/src/components/Filter.vue:601
+#: frontend/src/components/Filter.vue:630
 msgid "Yes"
 msgstr "Da"
 
-#: frontend/src/components/Filter.vue:673
+#: frontend/src/components/Filter.vue:702
 msgid "Yesterday"
 msgstr "Juče"
 
@@ -9409,8 +9414,8 @@ msgid "You can change the default calling medium from the settings"
 msgstr "Možete promeniti podrazumevano sredstvo za pozivanje u podešavanjima"
 
 #: frontend/src/components/Settings/DashboardSettings.vue:145
-msgid "You can get your Access Key from "
-msgstr "Pristupni ključ možete dobiti na "
+msgid "You can get your access key from "
+msgstr "Svoj ključ za pristup možete dobiti sa "
 
 #: frontend/src/components/Settings/InviteUserPage.vue:37
 msgid "You can invite multiple users by comma separating their email addresses"
@@ -9480,7 +9485,7 @@ msgstr "Vaš ID za prijavljivanje je"
 msgid "Your old condition will be overwritten. Are you sure you want to save?"
 msgstr "Vaš stari uslov će biti prepisan. Da li ste sigurni da želite da sačuvate?"
 
-#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:400
+#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:401
 msgid "Your old conditions will be overwritten. Are you sure you want to save?"
 msgstr "Vaši stari uslovi će biti prepisani. Da li ste sigurni da želite da sačuvate?"
 
@@ -9700,11 +9705,11 @@ msgstr "časovi"
 msgid "hours before"
 msgstr "časova ranije"
 
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:341
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:343
 msgid "https://example.com/thank-you"
 msgstr ""
 
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:423
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:425
 msgid "iframe"
 msgstr ""
 
@@ -9780,11 +9785,11 @@ msgstr "industrija"
 msgid "instagram"
 msgstr "instagram"
 
-#: frontend/src/components/Settings/ERPNextSettings.vue:564
+#: frontend/src/components/Settings/ERPNextSettings.vue:561
 msgid "item"
 msgstr "stavka"
 
-#: frontend/src/components/Settings/ERPNextSettings.vue:564
+#: frontend/src/components/Settings/ERPNextSettings.vue:561
 msgid "items"
 msgstr "stavke"
 
@@ -9854,7 +9859,7 @@ msgstr "minute"
 msgid "minutes before"
 msgstr "minuta ranije"
 
-#: frontend/src/components/FieldLayoutEditor.vue:513
+#: frontend/src/components/FieldLayoutEditor.vue:510
 msgid "next"
 msgstr "sledeći"
 
@@ -9880,7 +9885,7 @@ msgstr "narandžasta"
 msgid "pink"
 msgstr "roze"
 
-#: frontend/src/components/FieldLayoutEditor.vue:513
+#: frontend/src/components/FieldLayoutEditor.vue:510
 msgid "previous"
 msgstr "prethodno"
 
@@ -9900,11 +9905,11 @@ msgstr ""
 msgid "private"
 msgstr "privatno"
 
-#: frontend/src/components/Settings/ERPNextSettings.vue:568
+#: frontend/src/components/Settings/ERPNextSettings.vue:565
 msgid "product"
 msgstr "proizvod"
 
-#: frontend/src/components/Settings/ERPNextSettings.vue:568
+#: frontend/src/components/Settings/ERPNextSettings.vue:565
 msgid "products"
 msgstr "proizvodi"
 
@@ -10071,9 +10076,9 @@ msgid "{0} is an Invalid value"
 msgstr "{0} je nevažeća vrednost"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:368
-#: frontend/src/components/EmailEditor.vue:47
-#: frontend/src/components/EmailEditor.vue:83
-#: frontend/src/components/EmailEditor.vue:97
+#: frontend/src/components/EmailEditor.vue:38
+#: frontend/src/components/EmailEditor.vue:74
+#: frontend/src/components/EmailEditor.vue:88
 #: frontend/src/components/Modals/AddExistingUserModal.vue:37
 #: frontend/src/components/Modals/EventModal.vue:127
 msgid "{0} is an invalid email address"
@@ -10108,11 +10113,11 @@ msgstr "pre {0} meseci"
 msgid "{0} no"
 msgstr "{0} ne"
 
-#: frontend/src/components/Settings/ERPNextSettings.vue:572
+#: frontend/src/components/Settings/ERPNextSettings.vue:569
 msgid "{0} not yet synced"
 msgstr ""
 
-#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:511
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:507
 msgid "{0} users added to hierarchy"
 msgstr ""
 
