@@ -2,6 +2,7 @@ import json
 
 import frappe
 from frappe import _
+from twilio.twiml.voice_response import VoiceResponse
 from werkzeug.wrappers import Response
 
 from crm.integrations.api import get_contact_by_phone_number
@@ -64,6 +65,11 @@ def voice(**kwargs):
 
 	# Generate TwiML instructions to make a call
 	from_number = _get_caller_number(args.Caller)
+	if not from_number:
+		resp = VoiceResponse()
+		resp.say(_("Your account is not configured with a phone number. Please contact your administrator."))
+		return Response(resp.to_xml(), mimetype="text/xml")
+
 	resp = twilio.generate_twilio_dial_response(from_number, args.To)
 
 	call_details = TwilioCallDetails(args, call_from=from_number)
