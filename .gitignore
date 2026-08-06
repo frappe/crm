@@ -29,4 +29,7 @@ AGENTS.md
 .pi
 .patch
 *.pdf
+*.docx
 _bmad-output/
+mockups/
+crm/www/finance-mockups/
