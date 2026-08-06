@@ -183,10 +183,10 @@ function validateField(field) {
 
 function validateTimeRange() {
   if (!workDayData.start_time) {
-    errors.start_time = __('Start Time is required')
+    errors.start_time = __('Start time is required')
   }
   if (!workDayData.end_time) {
-    errors.end_time = __('End Time is required')
+    errors.end_time = __('End time is required')
   }
   if (!workDayData.start_time || !workDayData.end_time) {
     return false
@@ -201,7 +201,7 @@ function validateTimeRange() {
   const endTotalMinutes = endHours * 60 + endMinutes
 
   if (endTotalMinutes <= startTotalMinutes) {
-    errors.end_time = __('End Time must be after Start Time')
+    errors.end_time = __('End time must be after start time')
     return false
   }
 
