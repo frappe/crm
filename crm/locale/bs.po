@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-08-02 10:59+0000\n"
-"PO-Revision-Date: 2026-08-05 10:05\n"
+"PO-Revision-Date: 2026-08-06 09:59\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Bosnian\n"
 "MIME-Version: 1.0\n"
@@ -446,7 +446,7 @@ msgstr "Dodaj Uzorke Podataka"
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:212
 #: frontend/src/components/SidePanelLayoutEditor.vue:127
 msgid "Add Section"
-msgstr "Dodaj Sekciju"
+msgstr "Dodaj Odjeljak"
 
 #: frontend/src/components/SortBy.vue:135
 msgid "Add Sort"
@@ -505,7 +505,7 @@ msgstr "Dodaj opis..."
 
 #: frontend/src/components/Settings/Hierarchy/HierarchyRow.vue:63
 msgid "Add direct reports"
-msgstr "Dodajte direktne izvještaje"
+msgstr "Dodaj direktne izvještaje"
 
 #: frontend/src/components/Modals/AddExistingUserModal.vue:12
 msgid "Add existing system users to this CRM. Assign them a role to grant access with their current credentials."
@@ -529,7 +529,7 @@ msgstr "Dodaj svg kod ili koristite ikone perja, npr. 'postavke'"
 
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:220
 msgid "Add time targets around support milestones like first response"
-msgstr "Dodajte vremenske ciljeve oko ključnih prekretnica u podršci, kao što je prvi odgovor"
+msgstr "Dodaj vremenske ciljeve oko ključnih prekretnica u podršci, kao što je prvi odgovor"
 
 #. Label of the add_to_holidays (Button) field in DocType 'CRM Holiday List'
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
@@ -634,7 +634,7 @@ msgstr "Iznos nakon popusta"
 #: frontend/src/components/Settings/Sla/SlaPolicyList.vue:254
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:373
 msgid "An SLA set as default cannot be disabled"
-msgstr ""
+msgstr "Ugovor o Nivou Usluge je postavljen kao standard ne može se onemogućiti"
 
 #: frontend/src/components/Modals/FieldLayoutDialog.vue:277
 #: frontend/src/data/script.js:78 frontend/src/data/script.js:79
@@ -860,7 +860,7 @@ msgstr "Uslovi dodjele su nevažeći ili oštećeni, ponovo izradi uslove."
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:703
 msgid "Assignment rule created"
-msgstr "Pravilo dodjele je kreirano"
+msgstr "Pravilo dodjele je izrađeno"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:126
 msgid "Assignment rule deleted"
@@ -888,7 +888,7 @@ msgstr "Potreban je barem jedan prioritet"
 
 #: frontend/src/components/Settings/Sla/utils.js:204
 msgid "At least one valid workday with a day, start time, and end time is required"
-msgstr ""
+msgstr "Obavezan je barem jedan važeći radni dan sa danom, vremenom početka i vremenom završetka"
 
 #: frontend/src/components/FilesUploader/FilesUploader.vue:2
 #: frontend/src/components/FilesUploader/FilesUploader.vue:67
@@ -973,11 +973,11 @@ msgstr "Automatski postavlja status komunikacije na \"Odgovoreno\" za potencijal
 
 #: frontend/src/components/Settings/GeneralSettings.vue:64
 msgid "Automatically sets communication status to “Open” for the lead or deal when a new communication is created. Applies only when SLA is enabled"
-msgstr ""
+msgstr "Automatski postavlja status komunikacije na \"Otvoreno\" za potencijalnog klijenta ili posao kada se izradi nova komunikacija. Primjenjuje se samo kada je omogućen Ugovor o Nivou Usluge"
 
 #: frontend/src/components/Settings/GeneralSettings.vue:42
 msgid "Automatically sets communication status to “Replied” for the lead or deal when a response is received. Applies only when SLA is enabled"
-msgstr ""
+msgstr "Automatski postavlja status komunikacije na \"Odgovoreno\" za potencijalnog klijenta ili posao kada se primi odgovor. Primjenjuje se samo kada je Ugovor o Nivou Usluge omogućen"
 
 #. Description of the 'Auto update Expected Deal Value' (Check) field in
 #. DocType 'FCRM Settings'
@@ -1324,7 +1324,7 @@ msgstr "Artikli"
 #. Name of a DocType
 #: crm/fcrm/doctype/crm_rolling_response_time/crm_rolling_response_time.json
 msgid "CRM Rolling Response Time"
-msgstr "Vrijeme odziva Podrške Prodaje"
+msgstr "Vrijeme Odgovora Podrške Prodaje"
 
 #. Name of a DocType
 #: crm/fcrm/doctype/crm_sales_hierarchy/crm_sales_hierarchy.json
@@ -1839,7 +1839,7 @@ msgstr "Uslov"
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:188
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:272
 msgid "Conditions for this rule were created from"
-msgstr "Uslovi za ovo pravilo su stvoreni iz"
+msgstr "Uslovi za ovo pravilo su izrađeni iz"
 
 #: frontend/src/components/Settings/Profile/ProfileSettings.vue:107
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:163
@@ -1881,11 +1881,11 @@ msgstr "Ovdje konfiguririšite postavke integracije Twilio telefonije"
 
 #: frontend/src/components/Settings/BrandSettings.vue:10
 msgid "Configure your brand name, logo and favicon"
-msgstr ""
+msgstr "Konfiguriši naziv brenda, logo i favicon"
 
 #: frontend/src/components/Settings/CalendarSettings.vue:12
 msgid "Configure your calendar settings, including the default view and event notifications"
-msgstr ""
+msgstr "Konfigurišite postavke kalendara, uključujući standard prikaz i obavještenja o događajima"
 
 #: frontend/src/composables/demoData.js:26
 #: frontend/src/composables/frappecloud.js:29
@@ -2068,7 +2068,7 @@ msgstr "Nije moguće spremiti"
 #: frontend/src/components/PrimaryDropdownItem.vue:181
 #: frontend/src/components/PrimaryDropdownItem.vue:188
 msgid "Could not save, try again"
-msgstr ""
+msgstr "Nije moguće spremiti, pokušaj ponovo"
 
 #: frontend/src/components/EnrichFromWebsite.vue:99
 msgid "Could not start enrichment."
@@ -2236,7 +2236,7 @@ msgstr "Trenutna Lozinka"
 
 #: frontend/src/components/Modals/ViewModal.vue:35
 msgid "Current icon"
-msgstr ""
+msgstr "Trenutna ikona"
 
 #: crm/api/dashboard.py:896
 msgid "Current pipeline distribution"
@@ -2519,7 +2519,7 @@ msgstr "Standard Prikaz"
 
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:41
 msgid "Default calling medium for logged-in user"
-msgstr ""
+msgstr "Standard sredstvo poziva za prijavljenog korisnika"
 
 #: frontend/src/components/Telephony/CallUI.vue:110
 msgid "Default calling medium set successfully to {0}"
@@ -2781,7 +2781,7 @@ msgstr "Doctype je obavezan"
 
 #: frontend/src/components/Filter.vue:242
 msgid "Document ID, not the full name"
-msgstr ""
+msgstr "ID dokumenta, ne puno ime"
 
 #: frontend/src/pages/MobileLead.vue:204
 msgid "Document Not Found"
@@ -3153,7 +3153,7 @@ msgstr "Predložak e-pošte"
 
 #: frontend/src/components/Settings/EmailAdd.vue:145
 msgid "Email account created successfully"
-msgstr "Račun e-pošte uspješno kreiran"
+msgstr "Račun e-pošte uspješno izrađen"
 
 #: frontend/src/components/Settings/EmailEdit.vue:211
 msgid "Email account updated successfully"
@@ -3264,7 +3264,7 @@ msgstr "Omogući za Organizaciju"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:440
 msgid "Enable the integration to create quotations and more in ERPNext."
-msgstr ""
+msgstr "Omogućite integraciju za izradu ponuda i još mnogo toga u Sistemu."
 
 #. Label of the enabled (Check) field in DocType 'CRM Enrichment Field Mapping'
 #. Label of the enabled (Check) field in DocType 'CRM Enrichment Rule'
@@ -3333,15 +3333,15 @@ msgstr "Datum završetka ne može biti prije datuma početka"
 
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:189
 msgid "End time is required"
-msgstr ""
+msgstr "Vrijeme završetka je obavezno"
 
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:204
 msgid "End time must be after start time"
-msgstr ""
+msgstr "Vrijeme završetka mora biti nakon vremena početka"
 
 #: frontend/src/components/Settings/Sla/utils.js:262
 msgid "End time must be after start time for: {0}"
-msgstr ""
+msgstr "Vrijeme završetka mora biti nakon vremena početka za: {0}"
 
 #: frontend/src/components/EnrichFromWebsite.vue:4
 #: frontend/src/components/Modals/DealModal.vue:70
@@ -3413,7 +3413,7 @@ msgstr "Unesi Exotel broj"
 
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:134
 msgid "Enter Personal Mobile Number"
-msgstr ""
+msgstr "Unesi lični broj mobilnog telefona"
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:74
 msgid "Enter Source Name"
@@ -3466,7 +3466,7 @@ msgstr "Greška pri pretvaranju u posao: {0}"
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:294
 msgid "Error creating lead sync source"
-msgstr ""
+msgstr "Greška pri izradi izvora sinhronizacije potencijalnih klijenata"
 
 #: frontend/src/components/Modals/CallLogDetailModal.vue:370
 msgid "Error creating lead: {0}"
@@ -3491,7 +3491,7 @@ msgstr "Greška pri ažuriranju polja"
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:275
 msgid "Error updating lead sync source"
-msgstr ""
+msgstr "Greška pri ažuriranju izvora sinhronizacije potencijalnih klijenata"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:672
 msgid "Event Details"
@@ -4616,11 +4616,11 @@ msgstr "Nevažeća stranica ili nije dozvoljen pristup"
 #: crm/integrations/api.py:176 crm/integrations/api.py:180
 #: crm/integrations/api.py:218
 msgid "Invalid recording URL"
-msgstr ""
+msgstr "Nevažeći URL za snimanje"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:769
 msgid "Invalid site URL"
-msgstr ""
+msgstr "Nevažeći URL stranice"
 
 #: frontend/src/components/Settings/InviteUserPage.vue:187
 msgid "Invitations sent successfully"
@@ -5008,7 +5008,7 @@ msgstr "Sinkronizacija potencijalnog klijenta pokrenuta."
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:289
 msgid "Lead sync source created successfully"
-msgstr ""
+msgstr "Izvor sinhronizacije potencijalnih klijenata uspješno je izrađen"
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:175
 msgid "Lead sync source deleted successfully"
@@ -5477,7 +5477,7 @@ msgstr "Nedostaje broj mobilnog telefona"
 #: frontend/src/components/Modals/DealModal.vue:254
 #: frontend/src/components/Modals/LeadModal.vue:198
 msgid "Mobile number should be a number"
-msgstr ""
+msgstr "Broj mobilnog telefona treba biti broj"
 
 #. Option for the 'Weekly Off' (Select) field in DocType 'CRM Holiday List'
 #. Option for the 'Workday' (Select) field in DocType 'CRM Service Day'
@@ -5661,7 +5661,7 @@ msgstr "Naziv novog principa Ugovora o Nivou Usluge"
 
 #: frontend/src/components/SidePanelLayoutEditor.vue:131
 msgid "New Section"
-msgstr "Nova Sekciju"
+msgstr "Nova Odjeljak"
 
 #: frontend/src/components/FieldLayoutEditor.vue:356
 #: frontend/src/components/FieldLayoutEditor.vue:369
@@ -6457,7 +6457,7 @@ msgstr "Persona Uhvaćena"
 
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:120
 msgid "Personal Mobile Number"
-msgstr ""
+msgstr "Lični Broj Mobilnog Telefona"
 
 #. Label of the phone (Data) field in DocType 'CRM Contacts'
 #. Label of the phone (Data) field in DocType 'CRM Lead'
@@ -6540,7 +6540,7 @@ msgstr "Odaberi obrazac za izradu potencijalnih klijenata prije sinkronizacije!"
 
 #: frontend/src/components/Settings/Sla/EditResponseResolutionModal.vue:88
 msgid "Please select a priority"
-msgstr ""
+msgstr "Odaberi Prioritet"
 
 #: frontend/src/components/Modals/ConvertToDealModal.vue:135
 msgid "Please select an existing contact"
@@ -6673,11 +6673,11 @@ msgstr "Prioritet"
 
 #: frontend/src/components/Settings/Sla/utils.js:125
 msgid "Priority {0}: priority name is required"
-msgstr ""
+msgstr "Prioritet {0}: naziv prioriteta je obavezan"
 
 #: frontend/src/components/Settings/Sla/utils.js:133
 msgid "Priority {0}: response time is required"
-msgstr ""
+msgstr "Prioritet {0}: vrijeme odgovora je obavezno"
 
 #. Label of the private (Check) field in DocType 'CRM Dashboard'
 #: crm/fcrm/doctype/crm_dashboard/crm_dashboard.json
@@ -6866,7 +6866,7 @@ msgstr "URL Snimanja"
 
 #: crm/integrations/api.py:184
 msgid "Recording URL is not allowed"
-msgstr ""
+msgstr "URL za snimanje nije dozvoljen"
 
 #: crm/integrations/api.py:265
 msgid "Recording URL not found"
@@ -6874,7 +6874,7 @@ msgstr "URL snimka nije pronađen"
 
 #: frontend/src/components/Modals/CallLogDetailModal.vue:106
 msgid "Recording not available"
-msgstr ""
+msgstr "Snimanje nije dostupno"
 
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:342
 msgid "Redirect URL"
@@ -7042,7 +7042,7 @@ msgstr "Ponovno otvori potencijalnog klijenta/posao na osnovu nove komunikacije"
 
 #: frontend/src/components/Modals/ViewModal.vue:45
 msgid "Replace with an icon..."
-msgstr ""
+msgstr "Zamijeni ikonom..."
 
 #: frontend/src/pages/PersonaForm.vue:102
 msgid "Replacing my current CRM"
@@ -7147,14 +7147,14 @@ msgstr "Vrijeme Odgovora"
 
 #: frontend/src/components/Settings/Sla/EditResponseResolutionModal.vue:94
 msgid "Response time is required"
-msgstr ""
+msgstr "Vrijeme odgovora je obavezno"
 
 #. Description of the 'Rolling Responses' (Check) field in DocType 'CRM Service
 #. Level Agreement'
 #: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.json
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:94
 msgid "Restart the SLA each time the customer replies (status changes to Open) and fulfill it when marked as Replied"
-msgstr "Ponovo pokreni SLA svaki put kada klijent odgovori (status se mijenja u Otvoreno) i ispuni ga kada je označen kao Odgovoreno"
+msgstr "Ponovo pokreni SLA svaki put kada klijent odgovori (status se mijenja u Otvoreno) i ispuni ga kada je odabran kao Odgovoreno"
 
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.js:22
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.js:54
@@ -7334,7 +7334,7 @@ msgstr "Status Standard Nivo Ugovora"
 
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:429
 msgid "SLA policy created"
-msgstr "Ugovor o Nivou Usluge princip je kreiran"
+msgstr "Ugovor o Nivou Usluge princip je izrađen"
 
 #: frontend/src/components/Settings/Sla/SlaPolicyList.vue:242
 msgid "SLA policy deleted"
@@ -7346,7 +7346,7 @@ msgstr "Princip Ugovora o Nivou Usluge je dupliciran"
 
 #: frontend/src/components/Settings/Sla/utils.js:106
 msgid "SLA policy name is required"
-msgstr ""
+msgstr "Naziv Principa Ugovora o Nivou Usluge je obavezan"
 
 #: frontend/src/components/Settings/Sla/SlaPolicyList.vue:264
 msgid "SLA policy status updated"
@@ -7461,11 +7461,11 @@ msgstr "Korisnik Prodaje"
 
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:323
 msgid "Sales hierarchy disabled"
-msgstr ""
+msgstr "Hijerarhija prodaje onemogućena"
 
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:336
 msgid "Sales hierarchy enabled"
-msgstr ""
+msgstr "Hijerarhija prodaje omogućena"
 
 #: crm/api/dashboard.py:638
 msgid "Sales trend"
@@ -7654,7 +7654,7 @@ msgstr "Odaberi radni dan"
 
 #: frontend/src/components/Settings/Telephony/TwilioSettings.vue:71
 msgid "Select a Twilio app for your CRM"
-msgstr ""
+msgstr "Odaberi Twilio aplikaciju za Podršku Prodaje"
 
 #: frontend/src/components/Filter.vue:632
 msgid "Select a Value"
@@ -7670,7 +7670,7 @@ msgstr "Odaberi opciju"
 
 #: frontend/src/components/Modals/ViewModal.vue:46
 msgid "Select an icon..."
-msgstr ""
+msgstr "Odaberi ikonu..."
 
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:576
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1065
@@ -7865,7 +7865,7 @@ msgstr "Postavka je uspješno omogućena"
 
 #: frontend/src/components/Settings/emailConfig.js:158
 msgid "Setting up Frappe Mail requires you to have an API key and API secret for your email account. Read more"
-msgstr ""
+msgstr "Za postavljanje Frappe Mail obavezan je API ključ i API tajna za vaš račun e-pošte. Pročitaj više"
 
 #: frontend/src/components/Settings/emailConfig.js:104
 msgid "Setting up GMail requires you to enable two factor authentication and app specific passwords. Read more"
@@ -8028,7 +8028,7 @@ msgstr "Društveni Profili"
 
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:439
 msgid "Some error occurred while creating SLA policy"
-msgstr ""
+msgstr "Došlo je do greške prilikom izrade Principa Ugovora o Nivou Usluge"
 
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:485
 msgid "Some error occurred while renaming SLA policy"
@@ -8157,11 +8157,11 @@ msgstr "Počni Vrijeme"
 
 #: frontend/src/components/Settings/Sla/utils.js:160
 msgid "Start date cannot be after end date"
-msgstr ""
+msgstr "Datum početka ne može biti nakon datuma završetka"
 
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:186
 msgid "Start time is required"
-msgstr ""
+msgstr "Vrijeme početka je obavezno"
 
 #: frontend/src/pages/Welcome.vue:21
 msgid "Start with sample 10 leads"
@@ -8598,7 +8598,7 @@ msgstr "Ovaj odjeljak sadrži polja. Jeste li sigurni da ga želite ukloniti?"
 
 #: frontend/src/components/SidePanelLayoutEditor.vue:116
 msgid "This section is not editable"
-msgstr "Ovu sekciju nije moguće uređivati"
+msgstr "Ovu odjeljak nije moguće uređivati"
 
 #: frontend/src/components/BulkDeleteLinkedDocModal.vue:60
 msgid "This will delete selected items and items linked to it, are you sure?"
@@ -8750,7 +8750,7 @@ msgstr "Previše neuspjelih pokušaja. Pokušajte ponovo nakon nekog vremena."
 
 #: crm/integrations/api.py:247
 msgid "Too many redirects while fetching recording"
-msgstr ""
+msgstr "Previše preusmjeravanja prilikom preuzimanja snimka"
 
 #. Label of the total (Currency) field in DocType 'CRM Deal'
 #. Label of the total (Currency) field in DocType 'CRM Lead'
