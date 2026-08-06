@@ -20,6 +20,9 @@ class TestFormAPI(IntegrationTestCase):
 		frappe.flags.in_web_form = False
 		frappe.form_dict.pop("web_form", None)
 		frappe.db.rollback()
+		# a test may have added a Property Setter to CRM Lead; drop the cached meta so
+		# the rolled-back change can't leak into the next test
+		frappe.clear_cache(doctype="CRM Lead")
 
 	# ---- field picker ----
 
@@ -181,6 +184,58 @@ class TestFormAPI(IntegrationTestCase):
 
 		# "Qualification" is a Deal status; the guard must keep it off the Lead
 		self.assertNotEqual(lead.status, "Qualification")
+
+	# ---- field interdependencies ----
+
+	def test_save_form_carries_field_dependencies_from_doctype(self):
+		"""depends_on / mandatory_depends_on / read_only_depends_on defined on the
+		target DocType's fields are copied onto the Web Form fields, so the public
+		page can honour the same show/hide/require/read-only rules as the Desk form."""
+		from frappe.custom.doctype.property_setter.property_setter import make_property_setter
+
+		make_property_setter(
+			"CRM Lead",
+			"website",
+			"depends_on",
+			"eval:doc.organization",
+			"Data",
+			validate_fields_for_doctype=False,
+		)
+		make_property_setter(
+			"CRM Lead",
+			"phone",
+			"mandatory_depends_on",
+			'eval:doc.organization == "Acme"',
+			"Data",
+			validate_fields_for_doctype=False,
+		)
+		make_property_setter(
+			"CRM Lead",
+			"last_name",
+			"read_only_depends_on",
+			"eval:doc.first_name",
+			"Data",
+			validate_fields_for_doctype=False,
+		)
+		frappe.clear_cache(doctype="CRM Lead")
+
+		name = make_form(
+			"dep-carry",
+			fields=[
+				{"fieldname": "organization", "fieldtype": "Data"},
+				{"fieldname": "website", "fieldtype": "Data"},
+				{"fieldname": "phone", "fieldtype": "Data"},
+				{"fieldname": "last_name", "fieldtype": "Data"},
+			],
+			hidden_fields=[],
+		)
+		by = {f.fieldname: f for f in frappe.get_doc("Web Form", name).web_form_fields}
+		self.assertEqual(by["website"].depends_on, "eval:doc.organization")
+		self.assertEqual(by["phone"].mandatory_depends_on, 'eval:doc.organization == "Acme"')
+		self.assertEqual(by["last_name"].read_only_depends_on, "eval:doc.first_name")
+		# a field without any rule stays clean
+		self.assertFalse(by["organization"].depends_on)
+		self.assertFalse(by["organization"].mandatory_depends_on)
 
 	# ---- layout persistence ----
 

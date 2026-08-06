@@ -185,10 +185,10 @@
                   {% if f.fieldtype == "Check" %}
                   <div class="check">
                     <input type="checkbox" id="{{ f.fieldname }}" name="{{ f.fieldname }}" />
-                    <label for="{{ f.fieldname }}">{{ f.label }}{% if f.reqd %}<span class="req">*</span>{% endif %}</label>
+                    <label for="{{ f.fieldname }}">{{ f.label }}{% if f.reqd or f.mandatory_depends_on %}<span class="req"{% if not f.reqd %} style="display: none"{% endif %}>*</span>{% endif %}</label>
                   </div>
                   {% else %}
-                  <label for="{{ f.fieldname }}">{{ f.label }}{% if f.reqd %}<span class="req">*</span>{% endif %}</label>
+                  <label for="{{ f.fieldname }}">{{ f.label }}{% if f.reqd or f.mandatory_depends_on %}<span class="req"{% if not f.reqd %} style="display: none"{% endif %}>*</span>{% endif %}</label>
                   {% if f.fieldtype in ("Small Text", "Text", "Long Text", "Text Editor", "HTML Editor", "Markdown Editor") %}
                   <textarea id="{{ f.fieldname }}" name="{{ f.fieldname }}" placeholder="{{ f.placeholder }}" {% if f.reqd %}required{% endif %}></textarea>
                   {% elif f.fieldtype == "Select" %}
@@ -254,6 +254,83 @@
         var btn = document.getElementById("submit-btn");
         var BREAKS = { "Section Break": 1, "Column Break": 1 };
 
+        // ---- field interdependencies (depends_on / mandatory_depends_on /
+        // read_only_depends_on) — mirror the framework so the public form applies the
+        // same show/hide, require, and read-only rules the Desk form does.
+
+        // current values of every field, keyed by fieldname (hidden ones included, so
+        // an expression can still reference a field the user isn't seeing right now)
+        function collectDoc() {
+          var doc = {};
+          FIELDS.forEach(function (f) {
+            if (BREAKS[f.fieldtype]) return;
+            var el = document.getElementById(f.fieldname);
+            if (!el) return;
+            doc[f.fieldname] = f.fieldtype === "Check" ? (el.checked ? 1 : 0) : el.value;
+          });
+          return doc;
+        }
+
+        // evaluate a depends_on-style expression against `doc`. This is a small mirror
+        // of the framework's evaluate_depends_on_value()
+        // (frappe/public/js/frappe/form/layout.js) — same forms: "eval:<js>", a plain
+        // fieldname (truthiness), or a boolean. We re-implement rather than import
+        // because this public page ships without the frappe JS bundle. Enforcement is
+        // client-side in Frappe too (the server doesn't apply mandatory_depends_on).
+        // `fallback` is returned for an empty or invalid expression so a bad rule never
+        // silently hides or relaxes a field.
+        function truthy(expr, doc, fallback) {
+          var s = expr ? String(expr).trim() : "";
+          if (!s) return fallback;
+          try {
+            if (s.slice(0, 5) === "eval:") {
+              return !!Function("doc", "parent", '"use strict"; return (' + s.slice(5) + ");")(doc, doc);
+            }
+            if (s.slice(0, 3) === "fn:") return fallback; // server script hooks: N/A here
+            var v = doc[s];
+            return Array.isArray(v) ? v.length > 0 : !!v;
+          } catch (e) {
+            return fallback;
+          }
+        }
+        function isVisible(f, doc) {
+          return truthy(f.depends_on, doc, true);
+        }
+        function isRequired(f, doc) {
+          return f.reqd ? true : truthy(f.mandatory_depends_on, doc, false);
+        }
+        function isReadOnly(f, doc) {
+          return truthy(f.read_only_depends_on, doc, false);
+        }
+
+        // apply the rules to the DOM: toggle visibility, read-only, and the required *
+        function refreshDeps() {
+          var doc = collectDoc();
+          FIELDS.forEach(function (f) {
+            if (BREAKS[f.fieldtype]) return;
+            var el = document.getElementById(f.fieldname);
+            if (!el) return;
+            var wrap = el.closest(".field");
+            var visible = isVisible(f, doc);
+            if (wrap) wrap.style.display = visible ? "" : "none";
+
+            var ro = isReadOnly(f, doc);
+            // selects/checkboxes have no readOnly; disable them (JS still reads .value)
+            if (f.fieldtype === "Check" || f.fieldtype === "Select" || f.fieldtype === "Link") {
+              el.disabled = ro;
+            } else {
+              el.readOnly = ro;
+            }
+
+            // show the * for a conditionally-mandatory field only while it applies
+            // (statically required fields keep their always-on * untouched)
+            if (wrap && !f.reqd) {
+              var star = wrap.querySelector(".req");
+              if (star) star.style.display = visible && isRequired(f, doc) ? "" : "none";
+            }
+          });
+        }
+
         function showError(msg) {
           errBox.textContent = msg || "Something went wrong. Please try again.";
           errBox.style.display = "block";
@@ -288,10 +365,17 @@
           }, 1000);
         }
 
-        // Discard (type="reset") clears the inputs natively; also drop our error UI
+        // keep the rules live as the user types/selects, and apply them once on load
+        form.addEventListener("input", refreshDeps);
+        form.addEventListener("change", refreshDeps);
+        refreshDeps();
+
+        // Discard (type="reset") clears the inputs natively; also drop our error UI and
+        // re-apply the dependency rules against the now-empty form (reset fires first)
         form.addEventListener("reset", function () {
           errBox.style.display = "none";
           clearFieldErrors();
+          setTimeout(refreshDeps, 0);
         });
 
         form.addEventListener("submit", function (e) {
@@ -299,15 +383,19 @@
           errBox.style.display = "none";
           clearFieldErrors();
 
+          var doc = collectDoc();
           var values = {};
           var missing = [];
           FIELDS.forEach(function (f) {
             if (BREAKS[f.fieldtype]) return;
             var el = document.getElementById(f.fieldname);
             if (!el) return;
+            // a field hidden by depends_on is not collected or validated — it isn't
+            // part of the submission in its current state
+            if (!isVisible(f, doc)) return;
             var val = f.fieldtype === "Check" ? (el.checked ? 1 : 0) : el.value;
             values[f.fieldname] = val;
-            if (f.reqd && (val === "" || val === null || val === undefined)) {
+            if (isRequired(f, doc) && (val === "" || val === null || val === undefined)) {
               missing.push(f);
               el.classList.add("has-error");
             }

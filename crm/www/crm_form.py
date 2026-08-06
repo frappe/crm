@@ -63,6 +63,12 @@ def get_context(context):
 			"reqd": int(f.reqd or 0),
 			"placeholder": f.placeholder or "",
 			"description": f.description or "",
+			# interdependency expressions, evaluated client-side against the live form
+			# values (see the <script> in crm_form.html) so the public form mirrors the
+			# Desk form's show/hide, require, and read-only behaviour
+			"depends_on": f.depends_on or "",
+			"mandatory_depends_on": f.mandatory_depends_on or "",
+			"read_only_depends_on": f.read_only_depends_on or "",
 		}
 		for f in doc.web_form_fields
 	]
