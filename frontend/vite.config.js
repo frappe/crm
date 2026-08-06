@@ -129,6 +129,15 @@ export default defineConfig(async ({ mode }) => {
   config.build = config.build || {}
   config.build.chunkSizeWarningLimit = 3000
 
+  // Finance Cockpit: second Vite entry builds a self-contained bundle for the
+  // Frappe Desk Page at /app/finance-cockpit. Output goes to the same public/frontend/
+  // directory and is served at /assets/crm/frontend/.
+  config.build.rollupOptions = config.build.rollupOptions || {}
+  config.build.rollupOptions.input = {
+    main: path.resolve(__dirname, 'index.html'),
+    'finance-cockpit': path.resolve(__dirname, 'finance-cockpit.html'),
+  }
+
   return config
 })
 

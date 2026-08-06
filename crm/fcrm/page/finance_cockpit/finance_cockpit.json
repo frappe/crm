@@ -1,0 +1,24 @@
+{
+ "content": null,
+ "creation": "2026-08-06 00:00:00.000000",
+ "docstatus": 0,
+ "doctype": "Page",
+ "modified": "2026-08-06 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "FCRM",
+ "name": "finance-cockpit",
+ "owner": "Administrator",
+ "page_name": "finance-cockpit",
+ "roles": [
+  {"role": "Finance Manager"},
+  {"role": "AR Accountant"},
+  {"role": "AP Accountant"},
+  {"role": "Sales Manager"},
+  {"role": "Partner RM"},
+  {"role": "System Manager"}
+ ],
+ "script": null,
+ "standard": "Yes",
+ "style": null,
+ "title": "Finance Cockpit"
+}
