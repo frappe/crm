@@ -73,7 +73,12 @@ def voice(**kwargs):
 	resp = twilio.generate_twilio_dial_response(from_number, args.To)
 
 	call_details = TwilioCallDetails(args, call_from=from_number)
-	create_call_log(call_details)
+	try:
+		create_call_log(call_details)
+	except Exception:
+		frappe.db.rollback()
+		frappe.log_error(title="Error while creating Twilio call log")
+		frappe.db.commit()
 	return Response(resp.to_xml(), mimetype="text/xml")
 
 
@@ -83,7 +88,12 @@ def twilio_incoming_call_handler(**kwargs):
 	validate_twilio_request(args)
 
 	call_details = TwilioCallDetails(args)
-	create_call_log(call_details)
+	try:
+		create_call_log(call_details)
+	except Exception:
+		frappe.db.rollback()
+		frappe.log_error(title="Error while creating Twilio call log")
+		frappe.db.commit()
 
 	resp = IncomingCall(args.From, args.To).process()
 	return Response(resp.to_xml(), mimetype="text/xml")

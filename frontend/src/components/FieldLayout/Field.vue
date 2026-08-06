@@ -305,6 +305,8 @@
           field.options === 'Phone' &&
           Boolean(data[field.fieldname]) &&
           !validatePhone(data[field.fieldname])
+            ? __('Enter a valid phone number')
+            : undefined
         "
         @change="fieldChange($event.target.value, field)"
       />
