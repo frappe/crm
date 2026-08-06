@@ -106,12 +106,10 @@
           v-else-if="fieldName == 'description'"
           class="truncate text-base max-h-44"
         >
-          <TextEditor
+          <div
             v-if="getRow(itemName, fieldName).label"
-            :content="getRow(itemName, fieldName).label"
-            :editable="false"
-            editor-class="!prose-sm max-w-none focus:outline-none"
-            class="flex-1 overflow-hidden"
+            class="prose-f !prose-sm max-w-none flex-1 overflow-hidden"
+            v-html="sanitizeHTML(getRow(itemName, fieldName).label)"
           />
         </div>
         <div v-else class="truncate text-base">
@@ -198,10 +196,10 @@ import KanbanView from '@/components/Kanban/KanbanView.vue'
 import { useDoctypeModal } from '@/composables/doctypeModal'
 import { getMeta } from '@/stores/meta'
 import { usersStore } from '@/stores/users'
-import { formatDate } from '@/utils'
+import { formatDate, sanitizeHTML } from '@/utils'
 import { timestampCell } from '@/composables/useTimelinePreferences'
 import { useOnboarding, useTelemetry } from 'frappe-ui/frappe'
-import { Tooltip, Avatar, TextEditor, Dropdown, call } from 'frappe-ui'
+import { Tooltip, Avatar, Dropdown, call } from 'frappe-ui'
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
