@@ -271,24 +271,149 @@
           return doc;
         }
 
-        // evaluate a depends_on-style expression against `doc`. This is a small mirror
-        // of the framework's evaluate_depends_on_value()
-        // (frappe/public/js/frappe/form/layout.js) — same forms: "eval:<js>", a plain
-        // fieldname (truthiness), or a boolean. We re-implement rather than import
-        // because this public page ships without the frappe JS bundle. Enforcement is
-        // client-side in Frappe too (the server doesn't apply mandatory_depends_on).
-        // `fallback` is returned for an empty or invalid expression so a bad rule never
-        // silently hides or relaxes a field.
+        // A small, side-effect-free interpreter for a depends_on "eval:" expression.
+        // It mirrors the *supported forms* of the framework's evaluate_depends_on_value()
+        // (frappe/public/js/frappe/form/layout.js) but, because this is a public page,
+        // it PARSES the expression instead of running it through Function()/eval — so
+        // stored DocType metadata can never execute arbitrary JavaScript in a visitor's
+        // browser. It understands doc/parent member access, string/number/boolean/null
+        // literals, comparisons (== != === !== < <= > >=), logical (&& || !) and
+        // parentheses. Anything else (e.g. helper calls like in_list(...)) throws, and
+        // the caller falls back — never hiding or relaxing a field on an expression it
+        // can't safely evaluate.
+        function coerce(v) {
+          return Array.isArray(v) ? v.length > 0 : !!v;
+        }
+        function safeEval(src, doc, parent) {
+          var i = 0;
+          function ws() {
+            while (i < src.length && /\s/.test(src[i])) i++;
+          }
+          function starts(tok) {
+            ws();
+            return src.substr(i, tok.length) === tok;
+          }
+          function primary() {
+            ws();
+            if (starts("(")) {
+              i++;
+              var e = orExpr();
+              ws();
+              if (!starts(")")) throw new Error("expected )");
+              i++;
+              return e;
+            }
+            if (starts("!")) {
+              i++;
+              return !coerce(primary());
+            }
+            var ch = src[i];
+            if (ch === '"' || ch === "'") {
+              i++;
+              var str = "";
+              while (i < src.length && src[i] !== ch) {
+                if (src[i] === "\\") i++;
+                str += src[i++];
+              }
+              i++;
+              return str;
+            }
+            var num = /^-?\d+(?:\.\d+)?/.exec(src.slice(i));
+            if (num) {
+              i += num[0].length;
+              return parseFloat(num[0]);
+            }
+            var id = /^[A-Za-z_$][\w$]*/.exec(src.slice(i));
+            if (!id) throw new Error("unexpected token");
+            i += id[0].length;
+            if (id[0] === "true") return true;
+            if (id[0] === "false") return false;
+            if (id[0] === "null") return null;
+            var base;
+            if (id[0] === "doc") base = doc;
+            else if (id[0] === "parent") base = parent;
+            else throw new Error("unknown identifier: " + id[0]); // no globals reachable
+            for (;;) {
+              ws();
+              if (src[i] === ".") {
+                i++;
+                var m = /^[A-Za-z_$][\w$]*/.exec(src.slice(i));
+                if (!m) throw new Error("bad member");
+                i += m[0].length;
+                base = base == null ? undefined : base[m[0]];
+              } else if (src[i] === "[") {
+                i++;
+                var key = orExpr();
+                ws();
+                if (!starts("]")) throw new Error("expected ]");
+                i++;
+                base = base == null ? undefined : base[key];
+              } else break;
+            }
+            return base;
+          }
+          function cmp() {
+            var l = primary();
+            ws();
+            var ops = ["===", "!==", "==", "!=", "<=", ">=", "<", ">"];
+            for (var k = 0; k < ops.length; k++) {
+              if (src.substr(i, ops[k].length) === ops[k]) {
+                i += ops[k].length;
+                var r = primary();
+                switch (ops[k]) {
+                  case "===":
+                  case "==":
+                    return l == r; // eslint-disable-line eqeqeq
+                  case "!==":
+                  case "!=":
+                    return l != r; // eslint-disable-line eqeqeq
+                  case "<":
+                    return l < r;
+                  case "<=":
+                    return l <= r;
+                  case ">":
+                    return l > r;
+                  case ">=":
+                    return l >= r;
+                }
+              }
+            }
+            return l;
+          }
+          function andExpr() {
+            var l = cmp();
+            while (starts("&&")) {
+              i += 2;
+              var r = cmp();
+              l = coerce(l) && coerce(r);
+            }
+            return l;
+          }
+          function orExpr() {
+            var l = andExpr();
+            while (starts("||")) {
+              i += 2;
+              var r = andExpr();
+              l = coerce(l) || coerce(r);
+            }
+            return l;
+          }
+          var out = orExpr();
+          ws();
+          if (i < src.length) throw new Error("trailing input");
+          return out;
+        }
+
+        // resolve a depends_on-style expression to a boolean. `fallback` is returned for
+        // an empty, unsupported, or invalid expression so a bad rule never silently
+        // hides or relaxes a field.
         function truthy(expr, doc, fallback) {
           var s = expr ? String(expr).trim() : "";
           if (!s) return fallback;
           try {
-            if (s.slice(0, 5) === "eval:") {
-              return !!Function("doc", "parent", '"use strict"; return (' + s.slice(5) + ");")(doc, doc);
-            }
+            if (s.slice(0, 5) === "eval:") return coerce(safeEval(s.slice(5), doc, doc));
             if (s.slice(0, 3) === "fn:") return fallback; // server script hooks: N/A here
-            var v = doc[s];
-            return Array.isArray(v) ? v.length > 0 : !!v;
+            return coerce(doc[s]); // a plain fieldname
           } catch (e) {
             return fallback;
           }
