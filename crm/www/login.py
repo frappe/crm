@@ -18,7 +18,8 @@ from urllib.parse import urlparse
 import frappe
 from frappe import _
 from frappe.utils import cint
-from frappe.utils.oauth import get_oauth2_providers
+from frappe.utils.oauth import get_oauth2_authorize_url, get_oauth_keys
+from frappe.utils.password import get_decrypted_password
 
 from crm.branding import apply_brand_context, get_configured_app_brand
 
@@ -60,7 +61,7 @@ def get_context(context):
 
 	# In a provider-side OIDC authorize flow, suppress social buttons by policy.
 	is_oidc_flow = _is_oidc_authorize_redirect(redirect_to)
-	context.provider_logins = [] if is_oidc_flow else get_oauth2_providers()
+	context.provider_logins = [] if is_oidc_flow else _build_provider_logins(redirect_to or "/crm")
 
 	context.redirect_to = redirect_to or "/crm"
 	# CSRF token for the guest session (generating it is what makes /api/method/login
@@ -73,6 +74,47 @@ def _is_oidc_authorize_redirect(redirect_to: str | None) -> bool:
 	if not redirect_to:
 		return False
 	return "/api/method/frappe.integrations.oauth2.authorize" in redirect_to
+
+
+def _build_provider_logins(redirect_to: str) -> list[dict]:
+	"""Return a list of {provider_name, auth_url, icon} dicts for enabled Social Login Keys.
+
+	Mirrors the devsecops dashboard pattern: query the DocType directly, validate that
+	client_id + client_secret + base_url are all set, then call get_oauth2_authorize_url()
+	to produce the actual OAuth authorize URL. get_oauth2_providers() is intentionally
+	NOT used here — it returns an internal flow dict, not display-ready objects; iterating
+	it in Jinja yields the dict keys (strings), not provider records, causing the
+	"Login with No such element" bug.
+	"""
+	providers = frappe.get_list(
+		"Social Login Key",
+		filters={"enable_social_login": 1},
+		fields=["name", "provider_name", "client_id", "base_url", "icon"],
+		order_by="name",
+	)
+	result = []
+	for p in providers:
+		if not (p.client_id and p.base_url):
+			continue
+		if not get_oauth_keys(p.name):
+			continue
+		client_secret = get_decrypted_password(
+			"Social Login Key", p.name, "client_secret", raise_exception=False
+		)
+		if not client_secret:
+			continue
+		try:
+			auth_url = get_oauth2_authorize_url(p.name, redirect_to)
+		except Exception:
+			continue
+		result.append(
+			{
+				"provider_name": p.provider_name,
+				"auth_url": auth_url,
+				"icon": p.icon or "",
+			}
+		)
+	return result
 
 
 def sanitize_redirect(redirect_url):
