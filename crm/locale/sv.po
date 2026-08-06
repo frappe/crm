@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-08-02 10:59+0000\n"
-"PO-Revision-Date: 2026-08-05 10:04\n"
+"PO-Revision-Date: 2026-08-06 09:59\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Swedish\n"
 "MIME-Version: 1.0\n"
@@ -634,7 +634,7 @@ msgstr "Belopp efter rabatt"
 #: frontend/src/components/Settings/Sla/SlaPolicyList.vue:254
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:373
 msgid "An SLA set as default cannot be disabled"
-msgstr ""
+msgstr "Service Nivå Avtal som är angiven som standard kan inte inaktiveras"
 
 #: frontend/src/components/Modals/FieldLayoutDialog.vue:277
 #: frontend/src/data/script.js:78 frontend/src/data/script.js:79
@@ -888,7 +888,7 @@ msgstr "Åtminstone en prioritet erfordras"
 
 #: frontend/src/components/Settings/Sla/utils.js:204
 msgid "At least one valid workday with a day, start time, and end time is required"
-msgstr ""
+msgstr "Minst en giltig arbetsdag med dag, starttid och sluttid erfordras"
 
 #: frontend/src/components/FilesUploader/FilesUploader.vue:2
 #: frontend/src/components/FilesUploader/FilesUploader.vue:67
@@ -973,11 +973,11 @@ msgstr "Automatiskt anger Kommunikation Status till ”Besvarad” för potentie
 
 #: frontend/src/components/Settings/GeneralSettings.vue:64
 msgid "Automatically sets communication status to “Open” for the lead or deal when a new communication is created. Applies only when SLA is enabled"
-msgstr ""
+msgstr "Anger automatiskt kommunikation status till ”Öppen” för potentiell kund eller affär när ny kommunikation skapas. Gäller endast när Service Nivå Avtal är aktiverad"
 
 #: frontend/src/components/Settings/GeneralSettings.vue:42
 msgid "Automatically sets communication status to “Replied” for the lead or deal when a response is received. Applies only when SLA is enabled"
-msgstr ""
+msgstr "Anger automatiskt kommunikation status till ”Besvarad” för potentiell kund eller affär när svar mottas. Gäller endast när Service Nivå Avtal är aktiverad"
 
 #. Description of the 'Auto update Expected Deal Value' (Check) field in
 #. DocType 'FCRM Settings'
@@ -1881,11 +1881,11 @@ msgstr "Konfigurera Twilio telefoni integration inställningar här"
 
 #: frontend/src/components/Settings/BrandSettings.vue:10
 msgid "Configure your brand name, logo and favicon"
-msgstr ""
+msgstr "Konfigurera varumärke, logotyp och favicon"
 
 #: frontend/src/components/Settings/CalendarSettings.vue:12
 msgid "Configure your calendar settings, including the default view and event notifications"
-msgstr ""
+msgstr "Konfigurera kalender inställningar, inklusive standard vy och händelse aviseringar"
 
 #: frontend/src/composables/demoData.js:26
 #: frontend/src/composables/frappecloud.js:29
@@ -2068,7 +2068,7 @@ msgstr "Kunde inte spara"
 #: frontend/src/components/PrimaryDropdownItem.vue:181
 #: frontend/src/components/PrimaryDropdownItem.vue:188
 msgid "Could not save, try again"
-msgstr ""
+msgstr "Kunde inte spara, försök igen"
 
 #: frontend/src/components/EnrichFromWebsite.vue:99
 msgid "Could not start enrichment."
@@ -2236,7 +2236,7 @@ msgstr "Nuvarande Lösenord"
 
 #: frontend/src/components/Modals/ViewModal.vue:35
 msgid "Current icon"
-msgstr ""
+msgstr "Aktuell ikon"
 
 #: crm/api/dashboard.py:896
 msgid "Current pipeline distribution"
@@ -2519,7 +2519,7 @@ msgstr "Standard Vy"
 
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:41
 msgid "Default calling medium for logged-in user"
-msgstr ""
+msgstr "Standard uppringning medium för inloggad användare"
 
 #: frontend/src/components/Telephony/CallUI.vue:110
 msgid "Default calling medium set successfully to {0}"
@@ -2745,7 +2745,7 @@ msgstr "Ignorera Ändringar"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:911
 msgid "Discard Unsaved Changes?"
-msgstr "Ignorera ej sparade ändringar?"
+msgstr "Ignorera Osparade Ändringar?"
 
 #. Label of the discount_percentage (Percent) field in DocType 'CRM Products'
 #: crm/fcrm/doctype/crm_products/crm_products.json
@@ -2781,7 +2781,7 @@ msgstr "DocType erfordras"
 
 #: frontend/src/components/Filter.vue:242
 msgid "Document ID, not the full name"
-msgstr ""
+msgstr "Dokument ID, inte fullständigt namn"
 
 #: frontend/src/pages/MobileLead.vue:204
 msgid "Document Not Found"
@@ -2881,7 +2881,7 @@ msgstr "Förfallo Datum"
 #: frontend/src/components/Settings/Sla/SlaPolicyList.vue:183
 #: frontend/src/components/ViewControls.vue:1127
 msgid "Duplicate"
-msgstr "Kopiera"
+msgstr "Duplicera"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:47
 msgid "Duplicate Assignment Rule"
@@ -3264,7 +3264,7 @@ msgstr "Aktivera för Säljstöd Organisation"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:440
 msgid "Enable the integration to create quotations and more in ERPNext."
-msgstr ""
+msgstr "Aktivera integration för att skapa offerter och mer i Affärssystem."
 
 #. Label of the enabled (Check) field in DocType 'CRM Enrichment Field Mapping'
 #. Label of the enabled (Check) field in DocType 'CRM Enrichment Rule'
@@ -3333,15 +3333,15 @@ msgstr "Slut datum kan inte vara före Start datum"
 
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:189
 msgid "End time is required"
-msgstr ""
+msgstr "Sluttid erfordras"
 
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:204
 msgid "End time must be after start time"
-msgstr ""
+msgstr "Sluttid måste vara efter starttid"
 
 #: frontend/src/components/Settings/Sla/utils.js:262
 msgid "End time must be after start time for: {0}"
-msgstr ""
+msgstr "Sluttid måste vara efter starttid för: {0}"
 
 #: frontend/src/components/EnrichFromWebsite.vue:4
 #: frontend/src/components/Modals/DealModal.vue:70
@@ -3413,7 +3413,7 @@ msgstr "Ange Exotel Nummer"
 
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:134
 msgid "Enter Personal Mobile Number"
-msgstr ""
+msgstr "Ange Personlig Mobilnummer"
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:74
 msgid "Enter Source Name"
@@ -3466,7 +3466,7 @@ msgstr "Fel vid konvertering till affär: {0}"
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:294
 msgid "Error creating lead sync source"
-msgstr ""
+msgstr "Fel vid skapande av synkroniseringskälla för potentiella kunder"
 
 #: frontend/src/components/Modals/CallLogDetailModal.vue:370
 msgid "Error creating lead: {0}"
@@ -3491,7 +3491,7 @@ msgstr "Fel vid uppdatering av fält"
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:275
 msgid "Error updating lead sync source"
-msgstr ""
+msgstr "Fel vid uppdatering av synkronisering källa för potentiell kund"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:672
 msgid "Event Details"
@@ -3739,7 +3739,7 @@ msgstr "Misslyckades med att spara Twilio Inspelning"
 
 #: frontend/src/components/Settings/EmailAdd.vue:149
 msgid "Failed to create email account: invalid credentials"
-msgstr ""
+msgstr "Misslyckades med att skapa e-post konto: ogiltiga inloggning uppgifter"
 
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:180
 msgid "Failed to create template"
@@ -3824,7 +3824,7 @@ msgstr "Misslyckades med att uppdatera kommentar"
 
 #: frontend/src/components/Settings/EmailEdit.vue:216
 msgid "Failed to update email account: invalid credentials"
-msgstr ""
+msgstr "Misslyckades med att uppdatera e-post konto: ogiltiga inloggning uppgifter"
 
 #: frontend/src/components/Modals/ChangePasswordModal.vue:106
 msgid "Failed to update password"
@@ -4616,11 +4616,11 @@ msgstr "Ogiltig sida eller ingen åtkomstbehörighet"
 #: crm/integrations/api.py:176 crm/integrations/api.py:180
 #: crm/integrations/api.py:218
 msgid "Invalid recording URL"
-msgstr ""
+msgstr "Ogiltig inspelning URL"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:769
 msgid "Invalid site URL"
-msgstr ""
+msgstr "Ogiltig webbplats URL"
 
 #: frontend/src/components/Settings/InviteUserPage.vue:187
 msgid "Invitations sent successfully"
@@ -5008,7 +5008,7 @@ msgstr "Potentiell Kund synkronisering initierad."
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:289
 msgid "Lead sync source created successfully"
-msgstr ""
+msgstr "Potentiell kund synkronisering källa skapad"
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:175
 msgid "Lead sync source deleted successfully"
@@ -5477,7 +5477,7 @@ msgstr "Mobilnummer Saknas"
 #: frontend/src/components/Modals/DealModal.vue:254
 #: frontend/src/components/Modals/LeadModal.vue:198
 msgid "Mobile number should be a number"
-msgstr ""
+msgstr "Mobilnummer ska vara ett nummer"
 
 #. Option for the 'Weekly Off' (Select) field in DocType 'CRM Holiday List'
 #. Option for the 'Workday' (Select) field in DocType 'CRM Service Day'
@@ -6457,7 +6457,7 @@ msgstr "Persona Fångad"
 
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:120
 msgid "Personal Mobile Number"
-msgstr ""
+msgstr "Personlig Mobilnummer"
 
 #. Label of the phone (Data) field in DocType 'CRM Contacts'
 #. Label of the phone (Data) field in DocType 'CRM Lead'
@@ -6540,7 +6540,7 @@ msgstr "Välj Potentiell Kund formulär innan synkronisering!"
 
 #: frontend/src/components/Settings/Sla/EditResponseResolutionModal.vue:88
 msgid "Please select a priority"
-msgstr ""
+msgstr "Välj prioritet"
 
 #: frontend/src/components/Modals/ConvertToDealModal.vue:135
 msgid "Please select an existing contact"
@@ -6604,7 +6604,7 @@ msgstr "Inställningar"
 
 #: frontend/src/components/Settings/PreferencesSettings.vue:115
 msgid "Preferences updated successfully"
-msgstr ""
+msgstr "Inställningar uppdaterade"
 
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:31
 msgid "Preview"
@@ -6673,11 +6673,11 @@ msgstr "Prioritet"
 
 #: frontend/src/components/Settings/Sla/utils.js:125
 msgid "Priority {0}: priority name is required"
-msgstr ""
+msgstr "Prioritet {0}: prioritet namn erfordras"
 
 #: frontend/src/components/Settings/Sla/utils.js:133
 msgid "Priority {0}: response time is required"
-msgstr ""
+msgstr "Prioritet {0}: svarstid erfordras"
 
 #. Label of the private (Check) field in DocType 'CRM Dashboard'
 #: crm/fcrm/doctype/crm_dashboard/crm_dashboard.json
@@ -6866,7 +6866,7 @@ msgstr "Inspelning URL"
 
 #: crm/integrations/api.py:184
 msgid "Recording URL is not allowed"
-msgstr ""
+msgstr "Inspelning URL är inte tillåten"
 
 #: crm/integrations/api.py:265
 msgid "Recording URL not found"
@@ -6874,7 +6874,7 @@ msgstr "Inspelning URL hittades inte"
 
 #: frontend/src/components/Modals/CallLogDetailModal.vue:106
 msgid "Recording not available"
-msgstr ""
+msgstr "Inspelning är inte tillgänglig"
 
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:342
 msgid "Redirect URL"
@@ -7042,7 +7042,7 @@ msgstr "Återuppta potentiell kund/affär vid ny kommunikation"
 
 #: frontend/src/components/Modals/ViewModal.vue:45
 msgid "Replace with an icon..."
-msgstr ""
+msgstr "Ersätt med ikon..."
 
 #: frontend/src/pages/PersonaForm.vue:102
 msgid "Replacing my current CRM"
@@ -7147,7 +7147,7 @@ msgstr "Svarstid"
 
 #: frontend/src/components/Settings/Sla/EditResponseResolutionModal.vue:94
 msgid "Response time is required"
-msgstr ""
+msgstr "Svarstid erfordras"
 
 #. Description of the 'Rolling Responses' (Check) field in DocType 'CRM Service
 #. Level Agreement'
@@ -7346,7 +7346,7 @@ msgstr "Service Nivå Avtal Princip duplicerad"
 
 #: frontend/src/components/Settings/Sla/utils.js:106
 msgid "SLA policy name is required"
-msgstr ""
+msgstr "Service Nivå Avtal Princip Namn erfordras"
 
 #: frontend/src/components/Settings/Sla/SlaPolicyList.vue:264
 msgid "SLA policy status updated"
@@ -7461,11 +7461,11 @@ msgstr "Försäljning Användare"
 
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:323
 msgid "Sales hierarchy disabled"
-msgstr ""
+msgstr "Försäljning hierarki inaktiverad"
 
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:336
 msgid "Sales hierarchy enabled"
-msgstr ""
+msgstr "Försäljning hierarki aktiverad"
 
 #: crm/api/dashboard.py:638
 msgid "Sales trend"
@@ -7654,7 +7654,7 @@ msgstr "Välj Arbetsdag"
 
 #: frontend/src/components/Settings/Telephony/TwilioSettings.vue:71
 msgid "Select a Twilio app for your CRM"
-msgstr ""
+msgstr "Välj Twilio app för Säljstöd"
 
 #: frontend/src/components/Filter.vue:632
 msgid "Select a Value"
@@ -7670,7 +7670,7 @@ msgstr "Välj Alternativ"
 
 #: frontend/src/components/Modals/ViewModal.vue:46
 msgid "Select an icon..."
-msgstr ""
+msgstr "Välj ikon..."
 
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:576
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1065
@@ -7865,7 +7865,7 @@ msgstr "Inställning aktiverad"
 
 #: frontend/src/components/Settings/emailConfig.js:158
 msgid "Setting up Frappe Mail requires you to have an API key and API secret for your email account. Read more"
-msgstr ""
+msgstr "För att konfigurera Frappe Mail måste du ha API nyckel och en API hemlighet för ditt e-postkonto. Läs mer"
 
 #: frontend/src/components/Settings/emailConfig.js:104
 msgid "Setting up GMail requires you to enable two factor authentication and app specific passwords. Read more"
@@ -8028,7 +8028,7 @@ msgstr "Sociala Profiler"
 
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:439
 msgid "Some error occurred while creating SLA policy"
-msgstr ""
+msgstr "Fel uppstod vid skapandet av Service Nivå Avtal Princip"
 
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:485
 msgid "Some error occurred while renaming SLA policy"
@@ -8157,11 +8157,11 @@ msgstr "Start Tid"
 
 #: frontend/src/components/Settings/Sla/utils.js:160
 msgid "Start date cannot be after end date"
-msgstr ""
+msgstr "Startdatum får inte vara efter slutdatum"
 
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:186
 msgid "Start time is required"
-msgstr ""
+msgstr "Starttid erfordras"
 
 #: frontend/src/pages/Welcome.vue:21
 msgid "Start with sample 10 leads"
@@ -8750,7 +8750,7 @@ msgstr "För många misslyckade försök. Försök igen om en stund."
 
 #: crm/integrations/api.py:247
 msgid "Too many redirects while fetching recording"
-msgstr ""
+msgstr "För många omdirigeringar vid hämtning av inspelning"
 
 #. Label of the total (Currency) field in DocType 'CRM Deal'
 #. Label of the total (Currency) field in DocType 'CRM Lead'
