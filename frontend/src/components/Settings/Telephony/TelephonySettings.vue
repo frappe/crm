@@ -85,6 +85,8 @@
             :error="
               Boolean(telephonyAgent.doc.twilio_number) &&
               !validatePhone(telephonyAgent.doc.twilio_number)
+                ? __('Enter a valid phone number')
+                : undefined
             "
             placement="bottom-end"
           />
@@ -114,6 +116,8 @@
             :error="
               Boolean(telephonyAgent.doc.exotel_number) &&
               !validatePhone(telephonyAgent.doc.exotel_number)
+                ? __('Enter a valid phone number')
+                : undefined
             "
             placement="bottom-end"
           />
@@ -143,6 +147,8 @@
             :error="
               Boolean(telephonyAgent.doc.mobile_no) &&
               !validatePhone(telephonyAgent.doc.mobile_no)
+                ? __('Enter a valid phone number')
+                : undefined
             "
             placement="bottom-end"
           />

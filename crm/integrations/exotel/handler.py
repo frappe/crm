@@ -115,14 +115,19 @@ def make_a_call(to_number: str, from_number: str | None = None, caller_id: str |
 		res = response.json()
 		call_payload = res.get("Call", {})
 
-		create_call_log(
-			call_id=call_payload.get("Sid"),
-			from_number=call_payload.get("From"),
-			to_number=call_payload.get("To"),
-			medium=call_payload.get("PhoneNumberSid"),
-			call_type="Outgoing",
-			agent=frappe.session.user,
-		)
+		try:
+			create_call_log(
+				call_id=call_payload.get("Sid"),
+				from_number=call_payload.get("From"),
+				to_number=call_payload.get("To"),
+				medium=call_payload.get("PhoneNumberSid"),
+				call_type="Outgoing",
+				agent=frappe.session.user,
+			)
+		except Exception:
+			frappe.db.rollback()
+			frappe.log_error(title="Error while creating Exotel call log")
+			frappe.db.commit()
 
 	call_details = response.json().get("Call", {})
 	call_details["CallSid"] = call_details.get("Sid", "")
