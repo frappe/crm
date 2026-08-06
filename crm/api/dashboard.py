@@ -1162,8 +1162,11 @@ def get_deal_status_change_counts(
 	filters: dict | None = None,
 ):
 	"""
-	Get count of each status change (to) for each deal, excluding deals with current status type 'Lost'.
-	Order results by status position.
+	Get count of unique deals that ever reached each status (to), excluding deals with current status
+	type 'Lost'. Order results by status position.
+
+	Counts distinct deals per stage rather than status-change events, so a deal that re-enters a stage
+	(e.g. Won -> Negotiation -> Won) is counted once per stage and does not inflate the funnel.
 	Returns:
 	[
 	  {"status": "Qualification", "count": 120},
@@ -1185,7 +1188,7 @@ def get_deal_status_change_counts(
 		.on(CRMDeal.status == CurrentStatus.name)
 		.join(TargetStatus)
 		.on(CRMStatusChangeLog.to == TargetStatus.name)
-		.select(CRMStatusChangeLog.to.as_("stage"), Count("*").as_("count"))
+		.select(CRMStatusChangeLog.to.as_("stage"), Count(CRMStatusChangeLog.parent).distinct().as_("count"))
 		.where(
 			(CRMStatusChangeLog.to.isnotnull())
 			& (CRMStatusChangeLog.to != "")

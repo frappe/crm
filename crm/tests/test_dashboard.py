@@ -444,6 +444,34 @@ class TestDashboard(IntegrationTestCase):
 			for entry in result:
 				self.assertIsInstance(entry, dict)
 
+	def test_status_change_counts_deduplicate_reentered_stages(self):
+		"""Re-entering a stage (Won -> Negotiation -> Won) must not double-count the deal"""
+		# Baseline counts before adding the toggled deal
+		baseline = {r["stage"]: r["count"] for r in get_deal_status_change_counts(self.from_date, self.to_date)}
+
+		deal = frappe.get_doc(
+			{
+				"doctype": "CRM Deal",
+				"organization": "Acme Corp",
+				"status": "Qualification",
+				"currency": "USD",
+				"exchange_rate": 1,
+				"deal_owner": "Administrator",
+			}
+		).insert()
+
+		# Toggle the status back and forth: this appends multiple status change log rows,
+		# including two "Won" transitions and one "Negotiation" transition.
+		for status in ["Negotiation", "Won", "Negotiation", "Won"]:
+			deal.status = status
+			deal.save()
+
+		counts = {r["stage"]: r["count"] for r in get_deal_status_change_counts(self.from_date, self.to_date)}
+
+		# Despite reaching each stage multiple times, the single deal adds exactly one to each stage.
+		self.assertEqual(counts.get("Negotiation", 0), baseline.get("Negotiation", 0) + 1)
+		self.assertEqual(counts.get("Won", 0), baseline.get("Won", 0) + 1)
+
 	def test_user_filtering_isolation(self):
 		"""Test that user filtering correctly isolates data across metrics"""
 		result_crm_user = get_total_leads(self.from_date, self.to_date, self.user2_email)
