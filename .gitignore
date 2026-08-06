@@ -28,3 +28,5 @@ AGENTS.md
 .claude
 .pi
 .patch
+*.pdf
+_bmad-output/
