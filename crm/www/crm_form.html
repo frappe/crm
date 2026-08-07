@@ -185,10 +185,10 @@
                   {% if f.fieldtype == "Check" %}
                   <div class="check">
                     <input type="checkbox" id="{{ f.fieldname }}" name="{{ f.fieldname }}" />
-                    <label for="{{ f.fieldname }}">{{ f.label }}{% if f.reqd %}<span class="req">*</span>{% endif %}</label>
+                    <label for="{{ f.fieldname }}">{{ f.label }}{% if f.reqd or f.mandatory_depends_on %}<span class="req"{% if not f.reqd %} style="display: none"{% endif %}>*</span>{% endif %}</label>
                   </div>
                   {% else %}
-                  <label for="{{ f.fieldname }}">{{ f.label }}{% if f.reqd %}<span class="req">*</span>{% endif %}</label>
+                  <label for="{{ f.fieldname }}">{{ f.label }}{% if f.reqd or f.mandatory_depends_on %}<span class="req"{% if not f.reqd %} style="display: none"{% endif %}>*</span>{% endif %}</label>
                   {% if f.fieldtype in ("Small Text", "Text", "Long Text", "Text Editor", "HTML Editor", "Markdown Editor") %}
                   <textarea id="{{ f.fieldname }}" name="{{ f.fieldname }}" placeholder="{{ f.placeholder }}" {% if f.reqd %}required{% endif %}></textarea>
                   {% elif f.fieldtype == "Select" %}
@@ -254,6 +254,208 @@
         var btn = document.getElementById("submit-btn");
         var BREAKS = { "Section Break": 1, "Column Break": 1 };
 
+        // ---- field interdependencies (depends_on / mandatory_depends_on /
+        // read_only_depends_on) — mirror the framework so the public form applies the
+        // same show/hide, require, and read-only rules the Desk form does.
+
+        // current values of every field, keyed by fieldname (hidden ones included, so
+        // an expression can still reference a field the user isn't seeing right now)
+        function collectDoc() {
+          var doc = {};
+          FIELDS.forEach(function (f) {
+            if (BREAKS[f.fieldtype]) return;
+            var el = document.getElementById(f.fieldname);
+            if (!el) return;
+            doc[f.fieldname] = f.fieldtype === "Check" ? (el.checked ? 1 : 0) : el.value;
+          });
+          return doc;
+        }
+
+        // A small, side-effect-free interpreter for a depends_on "eval:" expression.
+        // It mirrors the *supported forms* of the framework's evaluate_depends_on_value()
+        // (frappe/public/js/frappe/form/layout.js) but, because this is a public page,
+        // it PARSES the expression instead of running it through Function()/eval — so
+        // stored DocType metadata can never execute arbitrary JavaScript in a visitor's
+        // browser. It understands doc/parent member access, string/number/boolean/null
+        // literals, comparisons (== != === !== < <= > >=), logical (&& || !) and
+        // parentheses. Anything else (e.g. helper calls like in_list(...)) throws, and
+        // the caller falls back — never hiding or relaxing a field on an expression it
+        // can't safely evaluate.
+        function coerce(v) {
+          return Array.isArray(v) ? v.length > 0 : !!v;
+        }
+        function safeEval(src, doc, parent) {
+          var i = 0;
+          function ws() {
+            while (i < src.length && /\s/.test(src[i])) i++;
+          }
+          function starts(tok) {
+            ws();
+            return src.substr(i, tok.length) === tok;
+          }
+          function primary() {
+            ws();
+            if (starts("(")) {
+              i++;
+              var e = orExpr();
+              ws();
+              if (!starts(")")) throw new Error("expected )");
+              i++;
+              return e;
+            }
+            if (starts("!")) {
+              i++;
+              return !coerce(primary());
+            }
+            var ch = src[i];
+            if (ch === '"' || ch === "'") {
+              i++;
+              var str = "";
+              while (i < src.length && src[i] !== ch) {
+                if (src[i] === "\\") i++;
+                str += src[i++];
+              }
+              i++;
+              return str;
+            }
+            var num = /^-?\d+(?:\.\d+)?/.exec(src.slice(i));
+            if (num) {
+              i += num[0].length;
+              return parseFloat(num[0]);
+            }
+            var id = /^[A-Za-z_$][\w$]*/.exec(src.slice(i));
+            if (!id) throw new Error("unexpected token");
+            i += id[0].length;
+            if (id[0] === "true") return true;
+            if (id[0] === "false") return false;
+            if (id[0] === "null") return null;
+            var base;
+            if (id[0] === "doc") base = doc;
+            else if (id[0] === "parent") base = parent;
+            else throw new Error("unknown identifier: " + id[0]); // no globals reachable
+            for (;;) {
+              ws();
+              if (src[i] === ".") {
+                i++;
+                var m = /^[A-Za-z_$][\w$]*/.exec(src.slice(i));
+                if (!m) throw new Error("bad member");
+                i += m[0].length;
+                base = base == null ? undefined : base[m[0]];
+              } else if (src[i] === "[") {
+                i++;
+                var key = orExpr();
+                ws();
+                if (!starts("]")) throw new Error("expected ]");
+                i++;
+                base = base == null ? undefined : base[key];
+              } else break;
+            }
+            return base;
+          }
+          function cmp() {
+            var l = primary();
+            ws();
+            var ops = ["===", "!==", "==", "!=", "<=", ">=", "<", ">"];
+            for (var k = 0; k < ops.length; k++) {
+              if (src.substr(i, ops[k].length) === ops[k]) {
+                i += ops[k].length;
+                var r = primary();
+                switch (ops[k]) {
+                  case "===":
+                  case "==":
+                    return l == r; // eslint-disable-line eqeqeq
+                  case "!==":
+                  case "!=":
+                    return l != r; // eslint-disable-line eqeqeq
+                  case "<":
+                    return l < r;
+                  case "<=":
+                    return l <= r;
+                  case ">":
+                    return l > r;
+                  case ">=":
+                    return l >= r;
+                }
+              }
+            }
+            return l;
+          }
+          function andExpr() {
+            var l = cmp();
+            while (starts("&&")) {
+              i += 2;
+              var r = cmp();
+              l = coerce(l) && coerce(r);
+            }
+            return l;
+          }
+          function orExpr() {
+            var l = andExpr();
+            while (starts("||")) {
+              i += 2;
+              var r = andExpr();
+              l = coerce(l) || coerce(r);
+            }
+            return l;
+          }
+          var out = orExpr();
+          ws();
+          if (i < src.length) throw new Error("trailing input");
+          return out;
+        }
+
+        // resolve a depends_on-style expression to a boolean. `fallback` is returned for
+        // an empty, unsupported, or invalid expression so a bad rule never silently
+        // hides or relaxes a field.
+        function truthy(expr, doc, fallback) {
+          var s = expr ? String(expr).trim() : "";
+          if (!s) return fallback;
+          try {
+            if (s.slice(0, 5) === "eval:") return coerce(safeEval(s.slice(5), doc, doc));
+            if (s.slice(0, 3) === "fn:") return fallback; // server script hooks: N/A here
+            return coerce(doc[s]); // a plain fieldname
+          } catch (e) {
+            return fallback;
+          }
+        }
+        function isVisible(f, doc) {
+          return truthy(f.depends_on, doc, true);
+        }
+        function isRequired(f, doc) {
+          return f.reqd ? true : truthy(f.mandatory_depends_on, doc, false);
+        }
+        function isReadOnly(f, doc) {
+          return truthy(f.read_only_depends_on, doc, false);
+        }
+
+        // apply the rules to the DOM: toggle visibility, read-only, and the required *
+        function refreshDeps() {
+          var doc = collectDoc();
+          FIELDS.forEach(function (f) {
+            if (BREAKS[f.fieldtype]) return;
+            var el = document.getElementById(f.fieldname);
+            if (!el) return;
+            var wrap = el.closest(".field");
+            var visible = isVisible(f, doc);
+            if (wrap) wrap.style.display = visible ? "" : "none";
+
+            var ro = isReadOnly(f, doc);
+            // selects/checkboxes have no readOnly; disable them (JS still reads .value)
+            if (f.fieldtype === "Check" || f.fieldtype === "Select" || f.fieldtype === "Link") {
+              el.disabled = ro;
+            } else {
+              el.readOnly = ro;
+            }
+
+            // show the * for a conditionally-mandatory field only while it applies
+            // (statically required fields keep their always-on * untouched)
+            if (wrap && !f.reqd) {
+              var star = wrap.querySelector(".req");
+              if (star) star.style.display = visible && isRequired(f, doc) ? "" : "none";
+            }
+          });
+        }
+
         function showError(msg) {
           errBox.textContent = msg || "Something went wrong. Please try again.";
           errBox.style.display = "block";
@@ -288,10 +490,17 @@
           }, 1000);
         }
 
-        // Discard (type="reset") clears the inputs natively; also drop our error UI
+        // keep the rules live as the user types/selects, and apply them once on load
+        form.addEventListener("input", refreshDeps);
+        form.addEventListener("change", refreshDeps);
+        refreshDeps();
+
+        // Discard (type="reset") clears the inputs natively; also drop our error UI and
+        // re-apply the dependency rules against the now-empty form (reset fires first)
         form.addEventListener("reset", function () {
           errBox.style.display = "none";
           clearFieldErrors();
+          setTimeout(refreshDeps, 0);
         });
 
         form.addEventListener("submit", function (e) {
@@ -299,15 +508,19 @@
           errBox.style.display = "none";
           clearFieldErrors();
 
+          var doc = collectDoc();
           var values = {};
           var missing = [];
           FIELDS.forEach(function (f) {
             if (BREAKS[f.fieldtype]) return;
             var el = document.getElementById(f.fieldname);
             if (!el) return;
+            // a field hidden by depends_on is not collected or validated — it isn't
+            // part of the submission in its current state
+            if (!isVisible(f, doc)) return;
             var val = f.fieldtype === "Check" ? (el.checked ? 1 : 0) : el.value;
             values[f.fieldname] = val;
-            if (f.reqd && (val === "" || val === null || val === undefined)) {
+            if (isRequired(f, doc) && (val === "" || val === null || val === undefined)) {
               missing.push(f);
               el.classList.add("has-error");
             }
