@@ -18,20 +18,9 @@ Design (per project rules):
   Deal/Call-Log write.
 """
 import frappe
-from frappe.utils import add_days, cstr, nowdate
+from frappe.utils import cstr, nowdate
 
 # --- Onboarding journey -----------------------------------------------------------
-
-# Staged onboarding tasks seeded when a Deal is Won. (title, days_from_now, priority)
-ONBOARDING_TASKS = (
-	("Welcome call with new customer", 1, "High"),
-	("Send onboarding pack & credentials", 2, "Medium"),
-	("Schedule kickoff / implementation session", 5, "Medium"),
-	("Day-30 check-in", 30, "Low"),
-)
-
-# A marker task title used to detect "already onboarded" (idempotency).
-_ONBOARDING_MARKER = ONBOARDING_TASKS[0][0]
 
 
 def on_deal_update(doc, method=None):
@@ -79,47 +68,38 @@ def _entered_won(doc) -> bool:
 
 
 def run_onboarding_journey(deal_name: str, triggered_by: str | None = None):
-	"""Background job: seed staged onboarding tasks + assign + notify the deal owner.
-	Idempotent — a marker-task existence check prevents re-seeding."""
+	"""Background job: auto-create CRM Onboarding Request for a Won Deal, then notify
+	the deal owner. Idempotent — skips if a request already exists for this deal."""
 	if not frappe.db.exists("CRM Deal", deal_name):
 		return
 	deal = frappe.get_doc("CRM Deal", deal_name)
 	owner = deal.get("deal_owner") or deal.owner
 
-	if frappe.db.exists(
-		"CRM Task",
-		{
-			"reference_doctype": "CRM Deal",
-			"reference_docname": deal.name,
-			"title": _ONBOARDING_MARKER,
-		},
-	):
-		return
+	# Derive partner role from linked Lead (Deal itself has no partner field)
+	lead_partner = None
+	if deal.get("lead"):
+		lead_partner = frappe.db.get_value("CRM Lead", deal.lead, "partner")
+	submitted_role = "Partner RM" if lead_partner else "Sales Manager"
 
-	created = 0
-	for title, offset_days, priority in ONBOARDING_TASKS:
-		_create_task(
-			title=title,
-			doctype="CRM Deal",
-			docname=deal.name,
-			assigned_to=owner,
-			priority=priority,
-			due_date=f"{add_days(nowdate(), offset_days)} 17:00:00",
-		)
-		created += 1
+	if not frappe.db.exists("CRM Onboarding Request", {"deal": deal.name}):
+		frappe.get_doc({
+			"doctype": "CRM Onboarding Request",
+			"deal": deal.name,
+			"submitted_by_role": submitted_role,
+			"submitted_by": triggered_by or owner or "Administrator",
+			"status": "Submitted",
+		}).insert(ignore_permissions=True)  # SYSTEM-INTERNAL: background job
+		frappe.db.commit()  # SYSTEM-INTERNAL: background job, persist before notify
 
 	if owner:
-		# from_user must differ from assignee or notify_user() early-returns; fall back
-		# to the triggering user, then Administrator.
 		from_user = triggered_by if (triggered_by and triggered_by != owner) else "Administrator"
 		_notify(
 			from_user=from_user,
 			assigned_to=owner,
 			reference_doctype="CRM Deal",
 			reference_docname=deal.name,
-			text=f"Deal <b>{cstr(deal.name)}</b> is Won — {created} onboarding tasks created.",
+			text="Deal <b>%s</b> is Won — an Onboarding Request has been created." % cstr(deal.name),
 		)
-	frappe.db.commit()  # SYSTEM-INTERNAL: background job, persist journey artifacts
 
 
 # --- Missed-call recovery ---------------------------------------------------------
