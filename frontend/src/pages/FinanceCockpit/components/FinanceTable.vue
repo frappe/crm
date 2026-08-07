@@ -112,6 +112,7 @@
 import { computed } from 'vue'
 import StatusPill from './StatusPill.vue'
 import { useBreakpoint } from '../composables/useBreakpoint.js'
+import { useCurrency } from '../composables/useCurrency.js'
 
 const props = defineProps({
   columns: { type: Array, default: () => [] },
@@ -126,20 +127,8 @@ const props = defineProps({
 defineEmits(['row-click', 'retry', 'update:page'])
 
 const { isMobile } = useBreakpoint()
+const { formatCurrency } = useCurrency()
 
 const amountCol = computed(() => props.columns.find(c => c.type === 'currency'))
 const statusCol = computed(() => props.columns.find(c => c.type === 'status'))
-
-function formatCurrency(amount, currency) {
-  if (amount == null) return '—'
-  try {
-    return new Intl.NumberFormat('en-KE', {
-      style: 'currency',
-      currency: currency || 'KES',
-      maximumFractionDigits: 0,
-    }).format(amount)
-  } catch {
-    return (currency || '') + ' ' + Number(amount).toLocaleString()
-  }
-}
 </script>

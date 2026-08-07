@@ -97,6 +97,12 @@ const routes = [
     props: true,
   },
   {
+    alias: '/quotes',
+    path: '/quotes',
+    name: 'Quotes',
+    component: () => import('@/pages/Quotes/QuotesList.vue'),
+  },
+  {
     alias: '/call-logs',
     path: '/call-logs/view/:viewType?',
     name: 'Call Logs',

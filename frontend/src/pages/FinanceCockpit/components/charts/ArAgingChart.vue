@@ -7,8 +7,8 @@
         <span class="text-xs text-gray-500 dark:text-gray-400 w-14 flex-shrink-0">{{ bucket.bucket }}</span>
         <div class="flex-1 h-5 bg-gray-100 dark:bg-gray-700 rounded overflow-hidden">
           <div
-            class="h-full rounded transition-all duration-500"
-            :style="{ width: barWidth(bucket.amount), backgroundColor: COLORS[i] }"
+            :class="['h-full rounded transition-all duration-500', COLOR_CLASSES[i] || 'bg-gray-400']"
+            :style="{ width: barWidth(bucket.amount) }"
           />
         </div>
         <span class="text-xs font-medium text-gray-700 dark:text-gray-300 w-20 text-right flex-shrink-0">
@@ -19,7 +19,7 @@
     <!-- colour legend -->
     <div class="flex flex-wrap gap-3 mt-3 text-xs text-gray-500 dark:text-gray-400">
       <span v-for="(b, i) in data" :key="b.bucket" class="flex items-center gap-1">
-        <span class="inline-block w-2.5 h-2.5 rounded-sm flex-shrink-0" :style="{ backgroundColor: COLORS[i] }" />
+        <span :class="['inline-block w-2.5 h-2.5 rounded-sm flex-shrink-0', COLOR_CLASSES[i] || 'bg-gray-400']" />
         {{ b.bucket }}
       </span>
     </div>
@@ -31,7 +31,13 @@ import { computed } from 'vue'
 
 const props = defineProps({ data: { type: Array, default: () => [] } })
 
-const COLORS = ['#10B981', '#F59E0B', '#F97316', '#EF4444']
+// Semantic Tailwind classes ordered from current → most overdue
+const COLOR_CLASSES = [
+  'bg-emerald-500',
+  'bg-amber-400',
+  'bg-orange-500',
+  'bg-red-500',
+]
 
 const maxAmount = computed(() => Math.max(...(props.data || []).map(b => b.amount), 1))
 

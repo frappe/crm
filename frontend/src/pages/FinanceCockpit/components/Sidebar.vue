@@ -3,9 +3,8 @@
   <!-- Mobile: fixed overlay, toggled by isOpen -->
   <aside
     :class="[
-      'fc-sidebar flex flex-col bg-gray-900 text-gray-100 transition-all duration-200',
-      'min-h-screen',
-      isMobile ? 'fixed top-0 left-0 z-50 h-full shadow-xl' : 'relative',
+      'fc-sidebar flex flex-col bg-gray-900 text-gray-100 transition-transform duration-200 flex-shrink-0',
+      isMobile ? 'fixed top-0 left-0 z-50 h-full shadow-2xl' : 'relative h-full',
       isMobile && !isOpen ? '-translate-x-full' : 'translate-x-0',
     ]"
     style="width: 220px;"
@@ -56,12 +55,21 @@ const emit = defineEmits(['navigate'])
 const { isOpen, close } = useSidebar()
 const { isMobile } = useBreakpoint()
 
-const visibleSections = computed(() =>
-  SIDEBAR_SECTIONS.filter(s => {
-    if (s.financeManagerOnly && !props.userRoles.includes('Finance Manager')) return false
+const visibleSections = computed(() => {
+  const roles = props.userRoles
+  const isAdmin = roles.includes('System Manager') || window.frappe?.session?.user === 'Administrator'
+  const isFM = isAdmin || roles.includes('Finance Manager')
+  const isAR = isFM || roles.includes('Accounts User') || roles.includes('Accounts Manager') || roles.includes('AR Accountant')
+  const isAP = isFM || roles.includes('Accounts User') || roles.includes('Accounts Manager') || roles.includes('AP Accountant')
+
+  return SIDEBAR_SECTIONS.filter(s => {
+    if (s.visibleRoles === 'fm')  return isFM
+    if (s.visibleRoles === 'ar')  return isAR
+    if (s.visibleRoles === 'ap')  return isAP
+    if (s.visibleRoles === 'all') return isFM || isAR || isAP
     return true
   })
-)
+})
 
 function navigate(section) {
   if (isMobile.value) close()
@@ -89,9 +97,3 @@ function getIconSvg(name) {
 }
 </script>
 
-<style scoped>
-.fc-sidebar {
-  /* ensure dark background always, regardless of parent theme */
-  background-color: rgb(17 24 39);
-}
-</style>

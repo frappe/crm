@@ -1,3 +1,9 @@
+/*
+ * DEPRECATED 2026-08-07 — Superseded by crm/api/quotes.py + CRM Quote DocType.
+ * This file previously auto-prefilled ERPNext Quotation items from CRM Deal data.
+ * The crm/hooks.py doctype_js entry was removed in qb-s1-4.
+ * Retained for reference only — do not restore the hook.
+ */
 frappe.ui.form.on('Quotation', {
 	refresh(frm) {
 		const field = frm.get_field('crm_deal')

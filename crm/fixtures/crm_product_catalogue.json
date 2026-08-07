@@ -1,0 +1,137 @@
+[
+ {
+  "doctype": "CRM Product",
+  "product_code": "CV-HIMS-SUB-CORE",
+  "product_name": "Careverse SaaS Subscription (Core)",
+  "standard_rate": 605149.06,
+  "max_discount": 45.0,
+  "disabled": 0,
+  "name": "CV-HIMS-SUB-CORE"
+ },
+ {
+  "doctype": "CRM Product",
+  "product_code": "CV-HIMS-SUB-ADV",
+  "product_name": "Careverse SaaS Subscription (Advanced)",
+  "standard_rate": 1821349.83,
+  "max_discount": 45.0,
+  "disabled": 0,
+  "name": "CV-HIMS-SUB-ADV"
+ },
+ {
+  "doctype": "CRM Product",
+  "product_code": "CV-HIMS-SUB-ENT",
+  "product_name": "Careverse SaaS Subscription (Enterprise)",
+  "standard_rate": 6044783.95,
+  "max_discount": 45.0,
+  "disabled": 0,
+  "name": "CV-HIMS-SUB-ENT"
+ },
+ {
+  "doctype": "CRM Product",
+  "product_code": "CV-HIMS-IMPL-CORE",
+  "product_name": "Implementation & Training (Core)",
+  "standard_rate": 620000.0,
+  "max_discount": 65.0,
+  "disabled": 0,
+  "name": "CV-HIMS-IMPL-CORE"
+ },
+ {
+  "doctype": "CRM Product",
+  "product_code": "CV-HIMS-IMPL-ADV",
+  "product_name": "Implementation & Training (Advanced)",
+  "standard_rate": 1870000.0,
+  "max_discount": 65.0,
+  "disabled": 0,
+  "name": "CV-HIMS-IMPL-ADV"
+ },
+ {
+  "doctype": "CRM Product",
+  "product_code": "CV-HIMS-IMPL-ENT",
+  "product_name": "Implementation & Training (Enterprise)",
+  "standard_rate": 6180000.0,
+  "max_discount": 65.0,
+  "disabled": 0,
+  "name": "CV-HIMS-IMPL-ENT"
+ },
+ {
+  "doctype": "CRM Product",
+  "product_code": "CV-HW-OPTIPLEX-7010",
+  "product_name": "Endpoint Workstation Dell OptiPlex 7010 MT",
+  "standard_rate": 84000.0,
+  "max_discount": 10.0,
+  "disabled": 0,
+  "name": "CV-HW-OPTIPLEX-7010"
+ },
+ {
+  "doctype": "CRM Product",
+  "product_code": "CV-HW-LATITUDE-5440",
+  "product_name": "Endpoint Laptop Dell Latitude 5440",
+  "standard_rate": 126000.0,
+  "max_discount": 10.0,
+  "disabled": 0,
+  "name": "CV-HW-LATITUDE-5440"
+ },
+ {
+  "doctype": "CRM Product",
+  "product_code": "CV-HW-TAB-10",
+  "product_name": "Endpoint Tablet 10.1 inch Android",
+  "standard_rate": 38888.89,
+  "max_discount": 10.0,
+  "disabled": 0,
+  "name": "CV-HW-TAB-10"
+ },
+ {
+  "doctype": "CRM Product",
+  "product_code": "CV-SW-ENDPOINT-SEC",
+  "product_name": "Endpoint Security Subscription",
+  "standard_rate": 8100.0,
+  "max_discount": 15.0,
+  "disabled": 0,
+  "name": "CV-SW-ENDPOINT-SEC"
+ },
+ {
+  "doctype": "CRM Product",
+  "product_code": "CV-SW-OFFICE-MGMT",
+  "product_name": "Office Management Suite",
+  "standard_rate": 13885.71,
+  "max_discount": 15.0,
+  "disabled": 0,
+  "name": "CV-SW-OFFICE-MGMT"
+ },
+ {
+  "doctype": "CRM Product",
+  "product_code": "CV-SVC-OUT-NAIROBI",
+  "product_name": "Implementation Outside Nairobi",
+  "standard_rate": 14500.0,
+  "max_discount": 30.0,
+  "disabled": 0,
+  "name": "CV-SVC-OUT-NAIROBI"
+ },
+ {
+  "doctype": "CRM Product",
+  "product_code": "CV-SVC-REFRESHER-VIRT",
+  "product_name": "Refresher Training Virtual",
+  "standard_rate": 2500.0,
+  "max_discount": 30.0,
+  "disabled": 0,
+  "name": "CV-SVC-REFRESHER-VIRT"
+ },
+ {
+  "doctype": "CRM Product",
+  "product_code": "CV-SVC-ONSITE-ENGINEER",
+  "product_name": "On-Site Support Engineer (5 days/week)",
+  "standard_rate": 220000.0,
+  "max_discount": 20.0,
+  "disabled": 0,
+  "name": "CV-SVC-ONSITE-ENGINEER"
+ },
+ {
+  "doctype": "CRM Product",
+  "product_code": "CV-SVC-PARTTIME-ENGINEER",
+  "product_name": "Part-Time Support Engineer (2 days/week)",
+  "standard_rate": 100000.0,
+  "max_discount": 20.0,
+  "disabled": 0,
+  "name": "CV-SVC-PARTTIME-ENGINEER"
+ }
+]

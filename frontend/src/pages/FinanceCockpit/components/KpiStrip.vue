@@ -1,17 +1,17 @@
 <template>
-  <div class="fc-kpi-strip space-y-3">
-    <div class="flex items-center justify-between flex-wrap gap-2">
-      <h2 class="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide">KPIs</h2>
+  <div class="fc-kpi-strip">
+    <!-- Period selector + refresh — top right -->
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Overview</h2>
       <div class="flex items-center gap-2">
         <PeriodSelector :model-value="period" @update:modelValue="onPeriodChange" />
         <button
-          class="p-1.5 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 transition-colors"
+          class="p-1.5 rounded hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 transition-colors"
           title="Refresh"
           :disabled="kpisResource.loading"
           @click="refresh"
         >
-          <!-- RefreshCw icon -->
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
             <path d="M21 3v5h-5"/>
             <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
@@ -22,22 +22,24 @@
     </div>
 
     <!-- Loading state -->
-    <div v-if="kpisResource.loading" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-      <div v-for="n in 4" :key="n" class="bg-gray-100 dark:bg-gray-800 rounded-lg h-24 animate-pulse" />
+    <div v-if="kpisResource.loading" class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div v-for="n in 8" :key="n" class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 h-28 animate-pulse" />
     </div>
 
     <!-- Error state -->
-    <div v-else-if="kpisResource.error" class="text-sm text-red-500 py-2">
-      Failed to load KPIs. <button class="underline" @click="refresh">Retry</button>
+    <div v-else-if="kpisResource.error" class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl px-4 py-3 text-sm text-red-600 dark:text-red-400 flex items-center gap-2">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
+      Failed to load KPIs.
+      <button class="underline font-medium ml-1" @click="refresh">Retry</button>
     </div>
 
     <!-- Empty state -->
-    <div v-else-if="!visibleTiles.length" class="text-sm text-gray-400 py-4 text-center">
+    <div v-else-if="!visibleTiles.length" class="text-sm text-gray-400 py-8 text-center">
       No KPI data available for this role.
     </div>
 
     <!-- Tiles -->
-    <div v-else class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+    <div v-else class="grid grid-cols-2 md:grid-cols-4 gap-4">
       <KpiTile
         v-for="tile in visibleTiles"
         :key="tile.key"

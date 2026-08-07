@@ -56,6 +56,7 @@
 
 <script setup>
 import { ref } from 'vue'
+import { useCurrency } from '../composables/useCurrency.js'
 
 const props = defineProps({
   item: { type: Object, required: true },
@@ -94,16 +95,5 @@ const urgencyBorderClass = URGENCY_BORDER[props.item.urgency] || URGENCY_BORDER.
 const urgencyBgClass = URGENCY_BG[props.item.urgency] || URGENCY_BG.normal
 const typeIconSvg = TYPE_ICONS[props.item.type] || TYPE_ICONS.overdue_invoice
 
-function formatCurrency(amount, currency) {
-  if (amount == null) return ''
-  try {
-    return new Intl.NumberFormat('en-KE', {
-      style: 'currency',
-      currency: currency || 'KES',
-      maximumFractionDigits: 0,
-    }).format(amount)
-  } catch {
-    return (currency || '') + ' ' + amount.toLocaleString()
-  }
-}
+const { formatCurrency } = useCurrency()
 </script>

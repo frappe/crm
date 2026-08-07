@@ -295,6 +295,11 @@ const links = [
     condition: () => !props.mobile,
   },
   {
+    label: 'Quotes',
+    icon: DealsIcon,
+    to: 'Quotes',
+  },
+  {
     label: 'Call Logs',
     icon: PhoneIcon,
     to: 'Call Logs',
