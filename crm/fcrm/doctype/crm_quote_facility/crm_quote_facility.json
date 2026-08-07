@@ -1,0 +1,133 @@
+{
+ "actions": [],
+ "creation": "2026-08-07 00:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "facility_name",
+  "package_tier",
+  "num_users",
+  "col_break_1",
+  "subscription_sku",
+  "impl_sku",
+  "section_break_prices",
+  "subscription_list_price",
+  "subscription_discount",
+  "subscription_net",
+  "col_break_prices",
+  "impl_list_price",
+  "impl_discount",
+  "impl_net",
+  "section_break_total",
+  "facility_total"
+ ],
+ "fields": [
+  {
+   "fieldname": "facility_name",
+   "fieldtype": "Data",
+   "label": "Facility Name",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "package_tier",
+   "fieldtype": "Select",
+   "label": "Package Tier",
+   "options": "Core\nAdvanced\nEnterprise",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "num_users",
+   "fieldtype": "Int",
+   "label": "Number of Users",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "col_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "subscription_sku",
+   "fieldtype": "Link",
+   "label": "Subscription SKU",
+   "options": "CRM Product",
+   "read_only": 1
+  },
+  {
+   "fieldname": "impl_sku",
+   "fieldtype": "Link",
+   "label": "Implementation SKU",
+   "options": "CRM Product",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_prices",
+   "fieldtype": "Section Break",
+   "label": "Pricing"
+  },
+  {
+   "fieldname": "subscription_list_price",
+   "fieldtype": "Currency",
+   "label": "Subscription List Price",
+   "read_only": 1
+  },
+  {
+   "fieldname": "subscription_discount",
+   "fieldtype": "Float",
+   "label": "Subscription Discount %",
+   "default": "0"
+  },
+  {
+   "fieldname": "subscription_net",
+   "fieldtype": "Currency",
+   "label": "Subscription Net",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "col_break_prices",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "impl_list_price",
+   "fieldtype": "Currency",
+   "label": "Implementation List Price",
+   "read_only": 1
+  },
+  {
+   "fieldname": "impl_discount",
+   "fieldtype": "Float",
+   "label": "Implementation Discount %",
+   "default": "0"
+  },
+  {
+   "fieldname": "impl_net",
+   "fieldtype": "Currency",
+   "label": "Implementation Net",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "section_break_total",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "facility_total",
+   "fieldtype": "Currency",
+   "label": "Facility Total",
+   "read_only": 1,
+   "in_list_view": 1,
+   "bold": 1
+  }
+ ],
+ "istable": 1,
+ "links": [],
+ "modified": "2026-08-07 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "FCRM",
+ "name": "CRM Quote Facility",
+ "owner": "Administrator",
+ "permissions": []
+}

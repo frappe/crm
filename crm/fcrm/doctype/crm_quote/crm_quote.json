@@ -1,0 +1,345 @@
+{
+ "actions": [],
+ "autoname": "naming_series:",
+ "creation": "2026-08-07 00:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "naming_series",
+  "deal",
+  "customer",
+  "partner",
+  "col_break_1",
+  "quote_date",
+  "valid_until",
+  "contract_start_date",
+  "section_break_meta",
+  "payment_terms",
+  "contract_term_yrs",
+  "currency",
+  "previous_version",
+  "submitted_by",
+  "section_break_status",
+  "status",
+  "erpnext_sales_invoice",
+  "section_break_lines",
+  "facilities",
+  "section_break_addons",
+  "addons",
+  "section_break_renewal",
+  "renewal_schedule",
+  "section_break_totals",
+  "subtotal_excl_vat",
+  "col_break_totals",
+  "discount_applied",
+  "vat_amount",
+  "grand_total",
+  "section_break_notes",
+  "notes",
+  "terms_and_conditions"
+ ],
+ "fields": [
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Naming Series",
+   "options": "QT-.YYYY.-.#####"
+  },
+  {
+   "fieldname": "deal",
+   "fieldtype": "Link",
+   "label": "CRM Deal",
+   "options": "CRM Deal",
+   "reqd": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "label": "Organization",
+   "options": "CRM Organization",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "partner",
+   "fieldtype": "Link",
+   "label": "CRM Partner",
+   "options": "CRM Partner",
+   "read_only": 1
+  },
+  {
+   "fieldname": "col_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "quote_date",
+   "fieldtype": "Date",
+   "label": "Quote Date",
+   "default": "Today",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "valid_until",
+   "fieldtype": "Date",
+   "label": "Valid Until",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "contract_start_date",
+   "fieldtype": "Date",
+   "label": "Contract Start Date",
+   "description": "Used for payment schedule due dates. Falls back to send date if blank."
+  },
+  {
+   "fieldname": "section_break_meta",
+   "fieldtype": "Section Break",
+   "label": "Terms"
+  },
+  {
+   "fieldname": "payment_terms",
+   "fieldtype": "Select",
+   "label": "Payment Terms",
+   "options": "Annual Upfront\nQuarterly Advance\nMonthly",
+   "default": "Annual Upfront"
+  },
+  {
+   "fieldname": "contract_term_yrs",
+   "fieldtype": "Int",
+   "label": "Contract Term (Years)",
+   "default": "1"
+  },
+  {
+   "fieldname": "currency",
+   "fieldtype": "Link",
+   "label": "Currency",
+   "options": "Currency",
+   "default": "KES"
+  },
+  {
+   "fieldname": "previous_version",
+   "fieldtype": "Link",
+   "label": "Previous Version",
+   "options": "CRM Quote",
+   "read_only": 1,
+   "description": "Set when this quote supersedes a rejected quote."
+  },
+  {
+   "fieldname": "submitted_by",
+   "fieldtype": "Link",
+   "label": "Submitted By",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_status",
+   "fieldtype": "Section Break",
+   "label": "Status"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Draft\nSent\nAccepted\nRejected",
+   "default": "Draft",
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "erpnext_sales_invoice",
+   "fieldtype": "Data",
+   "label": "ERPNext Sales Invoice",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_lines",
+   "fieldtype": "Section Break",
+   "label": "Facilities"
+  },
+  {
+   "fieldname": "facilities",
+   "fieldtype": "Table",
+   "label": "Facilities",
+   "options": "CRM Quote Facility"
+  },
+  {
+   "fieldname": "section_break_addons",
+   "fieldtype": "Section Break",
+   "label": "Add-ons"
+  },
+  {
+   "fieldname": "addons",
+   "fieldtype": "Table",
+   "label": "Add-ons",
+   "options": "CRM Quote Addon"
+  },
+  {
+   "fieldname": "section_break_renewal",
+   "fieldtype": "Section Break",
+   "label": "Renewal Schedule"
+  },
+  {
+   "fieldname": "renewal_schedule",
+   "fieldtype": "Table",
+   "label": "Renewal Schedule",
+   "options": "CRM Quote Renewal Schedule"
+  },
+  {
+   "fieldname": "section_break_totals",
+   "fieldtype": "Section Break",
+   "label": "Totals"
+  },
+  {
+   "fieldname": "subtotal_excl_vat",
+   "fieldtype": "Currency",
+   "label": "Subtotal (Excl. VAT)",
+   "read_only": 1,
+   "options": "currency"
+  },
+  {
+   "fieldname": "col_break_totals",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "discount_applied",
+   "fieldtype": "Currency",
+   "label": "Discount Applied",
+   "read_only": 1,
+   "options": "currency"
+  },
+  {
+   "fieldname": "vat_amount",
+   "fieldtype": "Currency",
+   "label": "VAT Amount (16%)",
+   "read_only": 1,
+   "options": "currency"
+  },
+  {
+   "fieldname": "grand_total",
+   "fieldtype": "Currency",
+   "label": "Grand Total (Incl. VAT)",
+   "read_only": 1,
+   "options": "currency",
+   "in_list_view": 1,
+   "bold": 1
+  },
+  {
+   "fieldname": "section_break_notes",
+   "fieldtype": "Section Break",
+   "label": "Notes & Terms"
+  },
+  {
+   "fieldname": "notes",
+   "fieldtype": "Long Text",
+   "label": "Notes"
+  },
+  {
+   "fieldname": "terms_and_conditions",
+   "fieldtype": "Long Text",
+   "label": "Terms and Conditions"
+  }
+ ],
+ "links": [],
+ "modified": "2026-08-07 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "FCRM",
+ "name": "CRM Quote",
+ "naming_rule": "By \"Naming Series\" field",
+ "naming_series": "QT-.YYYY.-.#####",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales User",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 0,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Partner RM",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 0,
+   "delete": 0,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Finance Manager",
+   "write": 0
+  },
+  {
+   "create": 0,
+   "delete": 0,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Accounts Manager",
+   "write": 0
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [
+  {
+   "color": "Gray",
+   "title": "Draft"
+  },
+  {
+   "color": "Blue",
+   "title": "Sent"
+  },
+  {
+   "color": "Green",
+   "title": "Accepted"
+  },
+  {
+   "color": "Red",
+   "title": "Rejected"
+  }
+ ],
+ "track_changes": 1
+}

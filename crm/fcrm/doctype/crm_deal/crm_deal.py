@@ -107,6 +107,7 @@ class CRMDeal(Document):
 			add_status_change_log(self)
 			if frappe.db.get_value("CRM Deal Status", self.status, "type") == "Won":
 				self.closed_date = frappe.utils.nowdate()
+				self._create_onboarding_request_if_needed()
 		self.validate_forecasting_fields()
 		self.validate_lost_reason()
 		self.update_exchange_rate()
@@ -298,6 +299,19 @@ class CRMDeal(Document):
 				frappe.throw(_("Please specify the reason for losing the deal."), frappe.ValidationError)
 		if self.has_value_changed("status"):
 			add_or_remove_lost_reason_section_in_sidepanel(self)
+
+	def _create_onboarding_request_if_needed(self):
+		"""Auto-create CRM Onboarding Request when a Deal transitions to Won."""
+		if frappe.db.exists("CRM Onboarding Request", {"deal": self.name}):
+			return
+		submitted_role = "Partner RM" if getattr(self, "source_partner", None) else "Sales Manager"
+		frappe.get_doc({
+			"doctype": "CRM Onboarding Request",
+			"deal": self.name,
+			"submitted_by_role": submitted_role,
+			"submitted_by": frappe.session.user,
+			"status": "Submitted",
+		}).insert(ignore_permissions=True)  # SYSTEM-INTERNAL
 
 	def update_exchange_rate(self):
 		if self.has_value_changed("currency") or not self.exchange_rate:

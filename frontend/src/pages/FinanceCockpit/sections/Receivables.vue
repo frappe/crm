@@ -1,7 +1,7 @@
 <template>
   <div class="fc-receivables space-y-4">
     <div class="flex items-center gap-2">
-      <h2 class="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide">Receivables</h2>
+      <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Receivables</h2>
     </div>
 
     <!-- Sub-tab nav -->

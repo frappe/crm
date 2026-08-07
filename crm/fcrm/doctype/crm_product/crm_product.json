@@ -13,6 +13,7 @@
   "column_break_bpdj",
   "disabled",
   "standard_rate",
+  "max_discount",
   "image",
   "section_break_rtwm",
   "description"
@@ -65,6 +66,13 @@
    "fieldname": "standard_rate",
    "fieldtype": "Currency",
    "label": "Standard Selling Rate"
+  },
+  {
+   "default": "0",
+   "fieldname": "max_discount",
+   "fieldtype": "Float",
+   "label": "Max Discount %",
+   "description": "Maximum discount allowed on this product (%)."
   }
  ],
  "grid_page_length": 50,

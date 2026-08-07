@@ -66,7 +66,6 @@ require_type_annotated_api_methods = True
 
 # include js in doctype views
 doctype_js = {
-	"Quotation": "public/js/erpnext_quotation_prefill.js",
 	"Sales Order": "public/js/erpnext_sales_order_customer.js",
 	"CRM Lead": "public/js/domain_enrichment.js",
 	"CRM Organization": "public/js/domain_enrichment.js",
@@ -265,6 +264,7 @@ scheduler_events = {
 		"crm.api.event.trigger_daily_event_notifications",
 		"crm.fcrm.doctype.crm_view_settings.crm_view_settings.clear_old_versions",
 		"crm.telemetry.capture_feature_state",
+		"crm.api.quotes.check_quote_expiry",
 	],
 	"weekly": ["crm.api.event.trigger_weekly_event_notifications"],
 	"daily_long": ["crm.lead_syncing.background_sync.sync_leads_from_sources_daily"],
@@ -365,6 +365,8 @@ after_migrate = [
 fixtures = [
 	{"dt": "Role", "filters": [["name", "=", "Partner RM"]]},
 	{"dt": "Workflow", "filters": [["name", "=", "CRM Lead Approval"]]},
+	{"dt": "Print Format", "filters": [["name", "=", "CRM Quote Standard"]]},
+	{"dt": "CRM Product", "filters": [["product_code", "like", "CV-%"]]},
 ]
 
 standard_dropdown_items = [

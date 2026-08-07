@@ -1,0 +1,473 @@
+{#
+  CRM Quote Standard — Tiberbu CareVerse
+  Mirrors the Excel "2 CUSTOMER QUOTE" template layout.
+  DocType: CRM Quote
+  Children accessed via doc.facilities, doc.addons, doc.renewal_schedule
+#}
+
+{%- macro fmt_kes(value) -%}
+  KES {{ "{:,.0f}".format(value or 0) }}
+{%- endmacro -%}
+
+{%- macro section_header(label) -%}
+<tr>
+  <td colspan="6" style="
+    background:#1e3a5f; color:#ffffff;
+    font-size:10px; font-weight:700;
+    letter-spacing:0.08em; text-transform:uppercase;
+    padding:5px 8px; border:none;">
+    {{ label }}
+  </td>
+</tr>
+{%- endmacro -%}
+
+<div class="page-break qt-wrap">
+
+<style>
+  /* ── Reset ── */
+  .qt-wrap { font-family: "Inter", Arial, sans-serif; color: #1a1a1a; font-size: 12px; line-height: 1.5; }
+  .qt-wrap * { box-sizing: border-box; }
+
+  /* ── Header band ── */
+  .qt-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 18px; }
+  .qt-company-name { font-size: 20px; font-weight: 800; color: #1e3a5f; letter-spacing: -0.01em; }
+  .qt-company-sub  { font-size: 10px; color: #64748b; margin-top: 2px; }
+  .qt-doc-meta     { text-align: right; }
+  .qt-doc-title    { font-size: 22px; font-weight: 800; color: #1e3a5f; letter-spacing: 0.06em; text-transform: uppercase; }
+  .qt-doc-ref      { font-size: 11px; color: #374151; margin-top: 4px; }
+  .qt-doc-ref span { font-weight: 600; }
+
+  /* ── Divider ── */
+  .qt-rule { border: none; border-top: 2px solid #1e3a5f; margin: 10px 0; }
+  .qt-rule-thin { border: none; border-top: 1px solid #e2e8f0; margin: 6px 0; }
+
+  /* ── Quote-to block ── */
+  .qt-to-block { margin-bottom: 14px; }
+  .qt-to-label { font-size: 10px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.06em; }
+  .qt-to-customer { font-size: 15px; font-weight: 700; color: #1e3a5f; }
+  .qt-to-sub { font-size: 11px; color: #374151; }
+
+  /* ── Pricing heading ── */
+  .qt-pricing-title {
+    background: #f0f4ff;
+    border-left: 4px solid #1e3a5f;
+    padding: 6px 10px;
+    font-size: 11px; font-weight: 700; color: #1e3a5f;
+    text-transform: uppercase; letter-spacing: 0.05em;
+    margin-bottom: 8px;
+  }
+
+  /* ── Main items table ── */
+  .qt-table { width: 100%; border-collapse: collapse; font-size: 11px; margin-bottom: 4px; }
+  .qt-table thead tr th {
+    background: #1e3a5f; color: #ffffff;
+    padding: 6px 8px; font-weight: 600; font-size: 10px;
+    text-transform: uppercase; letter-spacing: 0.06em;
+    border: 1px solid #1e3a5f;
+  }
+  .qt-table th.right, .qt-table td.right { text-align: right; }
+  .qt-table th.center, .qt-table td.center { text-align: center; }
+  .qt-table td { padding: 5px 8px; border: 1px solid #e2e8f0; vertical-align: top; }
+  .qt-table tbody tr:nth-child(even) td { background: #f8fafc; }
+  .qt-table .section-row td {
+    background: #1e3a5f; color: #ffffff;
+    font-weight: 700; font-size: 10px;
+    text-transform: uppercase; letter-spacing: 0.07em;
+    padding: 4px 8px; border-color: #1e3a5f;
+  }
+  .qt-table .pkg-pill {
+    display: inline-block;
+    padding: 1px 7px;
+    border-radius: 9px;
+    font-size: 9px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.05em;
+  }
+  .pkg-core       { background: #dcfce7; color: #166534; }
+  .pkg-advanced   { background: #dbeafe; color: #1e40af; }
+  .pkg-enterprise { background: #ede9fe; color: #5b21b6; }
+  .pkg-hardware   { background: #fef3c7; color: #92400e; }
+  .pkg-software   { background: #e0f2fe; color: #0c4a6e; }
+  .pkg-services   { background: #fce7f3; color: #831843; }
+
+  /* ── Totals block ── */
+  .qt-totals { float: right; width: 48%; margin-top: 6px; }
+  .qt-totals table { width: 100%; border-collapse: collapse; font-size: 11px; }
+  .qt-totals td { padding: 4px 8px; border-bottom: 1px solid #e2e8f0; }
+  .qt-totals .label { color: #64748b; text-align: right; width: 60%; }
+  .qt-totals .value { text-align: right; font-weight: 500; }
+  .qt-totals .grand td { background: #1e3a5f; color: #ffffff; font-weight: 700; font-size: 12px; }
+
+  /* ── Renewal & monthly tables ── */
+  .qt-sub-heading {
+    font-size: 10px; font-weight: 700; color: #1e3a5f;
+    text-transform: uppercase; letter-spacing: 0.07em;
+    background: #e8edf5; padding: 4px 8px; margin-top: 14px; margin-bottom: 0;
+    border-left: 3px solid #1e3a5f;
+  }
+  .qt-renewal-table { width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 0; }
+  .qt-renewal-table th {
+    background: #334155; color: #ffffff;
+    padding: 5px 8px; font-size: 10px; font-weight: 600;
+    text-align: right; border: 1px solid #334155;
+  }
+  .qt-renewal-table th:first-child { text-align: left; }
+  .qt-renewal-table td { padding: 4px 8px; border: 1px solid #e2e8f0; text-align: right; }
+  .qt-renewal-table td:first-child { text-align: left; font-weight: 600; }
+  .qt-renewal-table tbody tr:nth-child(even) td { background: #f8fafc; }
+  .qt-renewal-table .tco-row td { background: #1e3a5f; color: #fff; font-weight: 700; }
+
+  /* ── Payment schedule ── */
+  .qt-payment-table { width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 0; }
+  .qt-payment-table th {
+    background: #334155; color: #fff;
+    padding: 5px 8px; font-size: 10px;
+    text-align: left; border: 1px solid #334155;
+  }
+  .qt-payment-table td { padding: 4px 8px; border: 1px solid #e2e8f0; }
+  .qt-payment-table tbody tr:nth-child(even) td { background: #f8fafc; }
+
+  /* ── Notes & Terms ── */
+  .qt-section-title {
+    font-size: 10px; font-weight: 700; color: #1e3a5f;
+    text-transform: uppercase; letter-spacing: 0.07em;
+    margin-top: 14px; margin-bottom: 4px;
+    border-bottom: 1px solid #cbd5e1; padding-bottom: 2px;
+  }
+  .qt-notes-list { padding-left: 16px; margin: 0; }
+  .qt-notes-list li { margin-bottom: 3px; color: #374151; font-size: 11px; }
+  .qt-terms-list { padding-left: 16px; margin: 0; }
+  .qt-terms-list li { margin-bottom: 3px; color: #374151; font-size: 11px; }
+
+  /* ── Signature block ── */
+  .qt-sig-block { margin-top: 28px; display: flex; gap: 40px; }
+  .qt-sig-field { flex: 1; }
+  .qt-sig-label { font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 18px; }
+  .qt-sig-line { border-top: 1px solid #334155; padding-top: 4px; font-size: 10px; color: #94a3b8; }
+
+  /* ── Confidential footer ── */
+  .qt-confidential {
+    margin-top: 18px; text-align: center;
+    font-size: 9px; font-weight: 700; color: #94a3b8;
+    text-transform: uppercase; letter-spacing: 0.12em;
+  }
+
+  /* ── Draft watermark ── */
+  .qt-draft-stamp {
+    position: fixed; top: 40%; left: 20%;
+    font-size: 80px; font-weight: 900; color: rgba(30,58,95,0.07);
+    text-transform: uppercase; letter-spacing: 0.2em;
+    transform: rotate(-30deg); pointer-events: none; z-index: 0;
+  }
+</style>
+
+{% if doc.status == "Draft" %}
+<div class="qt-draft-stamp">DRAFT</div>
+{% endif %}
+
+{# ── HEADER ── #}
+<div class="qt-header">
+  <div>
+    <div class="qt-company-name">TIBERBU</div>
+    <div class="qt-company-sub">Tiberbu Healthnet Solutions Limited</div>
+    <div class="qt-company-sub">18th Floor, 4th Avenue Tower, Ngong Road, Nairobi</div>
+    <div class="qt-company-sub">P.O. Box 17587-00100 Nairobi, Kenya</div>
+    <div class="qt-company-sub">sales@tiberbu.com  |  +254 709 208 000</div>
+  </div>
+  <div class="qt-doc-meta">
+    <div class="qt-doc-title">QUOTATION</div>
+    <div class="qt-doc-ref">Quote No.: <span>{{ doc.name }}</span></div>
+    <div class="qt-doc-ref">Quote Date: <span>{{ frappe.utils.format_date(doc.quote_date) }}</span></div>
+    <div class="qt-doc-ref">Valid Until: <span>{{ frappe.utils.format_date(doc.valid_until) }}</span></div>
+    <div class="qt-doc-ref" style="margin-top:6px;">
+      Status:
+      <span style="
+        display:inline-block; padding:2px 8px; border-radius:8px; font-size:10px; font-weight:700;
+        {% if doc.status == 'Accepted' %}background:#dcfce7;color:#166534;
+        {% elif doc.status == 'Rejected' %}background:#fee2e2;color:#991b1b;
+        {% elif doc.status == 'Sent' %}background:#dbeafe;color:#1e40af;
+        {% else %}background:#f1f5f9;color:#475569;{% endif %}">
+        {{ doc.status }}
+      </span>
+    </div>
+  </div>
+</div>
+
+<hr class="qt-rule">
+
+{# ── QUOTE TO ── #}
+<div class="qt-to-block">
+  <div class="qt-to-label">Quote To</div>
+  <div class="qt-to-customer">{{ doc.customer or "—" }}</div>
+  {% if doc.partner %}
+  <div class="qt-to-sub">Partner: {{ doc.partner }}</div>
+  {% endif %}
+</div>
+
+{# ── PRICING TITLE ── #}
+{% set payment_label = doc.payment_terms or "Annual Upfront" %}
+<div class="qt-pricing-title">
+  PRICING FOR TIBERBU CAREVERSEHIMS SAAS SOLUTION — {{ payment_label | upper }}
+</div>
+
+{# ── MAIN ITEMS TABLE ── #}
+<table class="qt-table">
+  <thead>
+    <tr>
+      <th class="center" style="width:4%">No.</th>
+      <th style="width:22%">Category</th>
+      <th style="width:30%">Item / Description</th>
+      <th style="width:12%">Package</th>
+      <th class="right" style="width:6%">Qty</th>
+      <th class="right" style="width:13%">Unit Price (KES)</th>
+      <th class="right" style="width:13%">Total Price (KES)</th>
+    </tr>
+  </thead>
+  <tbody>
+
+    {# ── CareverseHIMS System section ── #}
+    <tr class="section-row"><td colspan="7">CareverseHIMS System</td></tr>
+    {% set ns = namespace(idx=1) %}
+    {% for row in doc.facilities %}
+    {# Subscription line #}
+    <tr>
+      <td class="center">{{ ns.idx }}</td>
+      <td>Hosted HIMS Software Solution</td>
+      <td>CareVerse SaaS Subscription — {{ row.facility_name }}</td>
+      <td>
+        <span class="qt-table pkg-pill
+          {% if row.package_tier == 'Core' %}pkg-core
+          {% elif row.package_tier == 'Advanced' %}pkg-advanced
+          {% else %}pkg-enterprise{% endif %}">
+          {{ row.package_tier }}
+        </span>
+      </td>
+      <td class="right">1</td>
+      <td class="right">{{ "{:,.0f}".format(row.subscription_net or 0) }}</td>
+      <td class="right">{{ "{:,.0f}".format(row.subscription_net or 0) }}</td>
+    </tr>
+    {% set ns.idx = ns.idx + 1 %}
+    {# Implementation line #}
+    <tr>
+      <td class="center">{{ ns.idx }}</td>
+      <td>Professional Services</td>
+      <td>Implementation &amp; Training Services (One-time) — {{ row.facility_name }}</td>
+      <td>
+        <span class="qt-table pkg-pill
+          {% if row.package_tier == 'Core' %}pkg-core
+          {% elif row.package_tier == 'Advanced' %}pkg-advanced
+          {% else %}pkg-enterprise{% endif %}">
+          {{ row.package_tier }}
+        </span>
+      </td>
+      <td class="right">1</td>
+      <td class="right">{{ "{:,.0f}".format(row.impl_net or 0) }}</td>
+      <td class="right">{{ "{:,.0f}".format(row.impl_net or 0) }}</td>
+    </tr>
+    {% set ns.idx = ns.idx + 1 %}
+    {% endfor %}
+
+    {# ── Add-ons grouped by category ── #}
+    {% set hw_addons = doc.addons | selectattr("category", "equalto", "Hardware") | list %}
+    {% set sw_addons = doc.addons | selectattr("category", "equalto", "Software") | list %}
+    {% set svc_addons = doc.addons | selectattr("category", "equalto", "Professional Services") | list %}
+
+    {% if hw_addons %}
+    <tr class="section-row"><td colspan="7">Hardware</td></tr>
+    {% for row in hw_addons %}
+    <tr>
+      <td class="center">{{ ns.idx }}</td>
+      <td>Hardware Products</td>
+      <td>{{ row.description }}</td>
+      <td><span class="qt-table pkg-pill pkg-hardware">Hardware</span></td>
+      <td class="right">{{ "{:,.0f}".format(row.qty or 0) }}</td>
+      <td class="right">{{ "{:,.0f}".format(row.unit_price or 0) }}</td>
+      <td class="right">{{ "{:,.0f}".format(row.total or 0) }}</td>
+    </tr>
+    {% set ns.idx = ns.idx + 1 %}
+    {% endfor %}
+    {% endif %}
+
+    {% if sw_addons %}
+    <tr class="section-row"><td colspan="7">Software</td></tr>
+    {% for row in sw_addons %}
+    <tr>
+      <td class="center">{{ ns.idx }}</td>
+      <td>Software Subscriptions</td>
+      <td>{{ row.description }}</td>
+      <td><span class="qt-table pkg-pill pkg-software">Software</span></td>
+      <td class="right">{{ "{:,.0f}".format(row.qty or 0) }}</td>
+      <td class="right">{{ "{:,.0f}".format(row.unit_price or 0) }}</td>
+      <td class="right">{{ "{:,.0f}".format(row.total or 0) }}</td>
+    </tr>
+    {% set ns.idx = ns.idx + 1 %}
+    {% endfor %}
+    {% endif %}
+
+    {% if svc_addons %}
+    <tr class="section-row"><td colspan="7">Other Optional Costs</td></tr>
+    {% for row in svc_addons %}
+    <tr>
+      <td class="center">{{ ns.idx }}</td>
+      <td>{{ row.description }}</td>
+      <td>{{ row.description }}</td>
+      <td><span class="qt-table pkg-pill pkg-services">Services</span></td>
+      <td class="right">{{ "{:,.0f}".format(row.qty or 0) }}</td>
+      <td class="right">{{ "{:,.0f}".format(row.unit_price or 0) }}</td>
+      <td class="right">{{ "{:,.0f}".format(row.total or 0) }}</td>
+    </tr>
+    {% set ns.idx = ns.idx + 1 %}
+    {% endfor %}
+    {% endif %}
+
+  </tbody>
+</table>
+
+{# ── TOTALS ── #}
+<div class="qt-totals">
+  <table>
+    <tr>
+      <td class="label">Sub Total in KES (Excl. VAT)</td>
+      <td class="value">{{ "{:,.0f}".format(doc.subtotal_excl_vat or 0) }}</td>
+    </tr>
+    {% if doc.discount_applied and doc.discount_applied > 0 %}
+    <tr>
+      <td class="label">Less Discount Applied</td>
+      <td class="value" style="color:#dc2626;">-{{ "{:,.0f}".format(doc.discount_applied or 0) }}</td>
+    </tr>
+    {% endif %}
+    <tr>
+      <td class="label">VAT 16%</td>
+      <td class="value">{{ "{:,.0f}".format(doc.vat_amount or 0) }}</td>
+    </tr>
+    <tr class="grand">
+      <td class="label" style="color:#fff;font-weight:700;">Grand Total in KES (Incl. VAT) — Year 1</td>
+      <td class="value" style="color:#fff;font-weight:700;">{{ "{:,.0f}".format(doc.grand_total or 0) }}</td>
+    </tr>
+  </table>
+</div>
+<div style="clear:both;"></div>
+
+{# ── RENEWAL SCHEDULE ── #}
+{% if doc.renewal_schedule %}
+<div class="qt-sub-heading">Discounted Annual Subscription Renewal</div>
+<table class="qt-renewal-table">
+  <thead>
+    <tr>
+      <th>Year</th>
+      <th>Description</th>
+      <th>Excl. VAT (KES)</th>
+      <th>Incl. VAT (KES)</th>
+      {% if doc.payment_terms == "Monthly" %}<th>Monthly Option (KES)</th>{% endif %}
+    </tr>
+  </thead>
+  <tbody>
+  {% set tco_excl = namespace(total=0) %}
+  {% set tco_incl = namespace(total=0) %}
+  {% for row in doc.renewal_schedule %}
+    <tr {% if loop.last %}class="tco-row"{% endif %}>
+      <td>Year {{ row.year }}</td>
+      <td>
+        {% if row.year == 1 %}First Year (Base)
+        {% else %}Renewal — {{ row.year - 1 }}x 5% SaaS true-up{% endif %}
+      </td>
+      <td>{{ "{:,.0f}".format(row.subscription_excl_vat or 0) }}</td>
+      <td>{{ "{:,.0f}".format(row.grand_total_incl_vat or 0) }}</td>
+      {% if doc.payment_terms == "Monthly" %}
+      <td>{{ "{:,.0f}".format(row.monthly_equivalent or 0) }}/mo</td>
+      {% endif %}
+    </tr>
+    {% set tco_excl.total = tco_excl.total + (row.subscription_excl_vat or 0) %}
+    {% set tco_incl.total = tco_incl.total + (row.grand_total_incl_vat or 0) %}
+  {% endfor %}
+  <tr class="tco-row">
+    <td colspan="2">5 Years Total Cost of Ownership</td>
+    <td>{{ "{:,.0f}".format(tco_excl.total) }}</td>
+    <td>{{ "{:,.0f}".format(tco_incl.total) }}</td>
+    {% if doc.payment_terms == "Monthly" %}<td>—</td>{% endif %}
+  </tr>
+  </tbody>
+</table>
+{% endif %}
+
+{# ── PAYMENT SCHEDULE (Quarterly) ── #}
+{% if doc.payment_terms == "Quarterly Advance" and doc.renewal_schedule %}
+<div class="qt-sub-heading">Quarterly Payment Schedule</div>
+<table class="qt-payment-table">
+  <thead>
+    <tr>
+      <th>Year</th><th>Description</th><th>No. of Payments</th>
+      <th>Payment Excl. VAT (KES)</th><th>Payment Incl. VAT (KES)</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for row in doc.renewal_schedule %}
+  <tr>
+    <td>Year {{ row.year }}</td>
+    <td>Quarterly Payment — paid at start of every 3 months</td>
+    <td style="text-align:center;">4</td>
+    <td style="text-align:right;">{{ "{:,.0f}".format((row.subscription_excl_vat or 0) / 4) }}</td>
+    <td style="text-align:right;">{{ "{:,.0f}".format((row.grand_total_incl_vat or 0) / 4) }}</td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endif %}
+
+<hr class="qt-rule-thin" style="margin-top:16px;">
+
+{# ── NOTES ── #}
+<div class="qt-section-title">Notes</div>
+<ol class="qt-notes-list">
+  <li>Price validity is 30 days from the date of this quotation/proposal.</li>
+  <li>For first-time customers, invoicing is done on LPO, and payments must be received before Go-Live.</li>
+  <li>All prices are in KES. Payment shall be made in KES.</li>
+  <li>All on-site services will be delivered within Kenya.</li>
+  <li>All payments are invoiced in advance.</li>
+  {% if doc.notes %}
+  <li>{{ doc.notes }}</li>
+  {% endif %}
+</ol>
+
+{# ── TERMS & CONDITIONS ── #}
+<div class="qt-section-title">Terms and Conditions</div>
+{% if doc.terms_and_conditions %}
+  <div style="font-size:11px;color:#374151;">{{ doc.terms_and_conditions }}</div>
+{% else %}
+<ol class="qt-terms-list">
+  <li>Local Purchase Orders must be signed and stamped to allow processing.</li>
+  <li>Tiberbu Healthnet Solutions will invoice the Total Price in accordance with the above. All pricing is in KES.</li>
+  <li>All invoices are non-cancellable once invoiced and shall be payable in accordance with the agreed payment schedule.</li>
+  <li>The invoice raised on receipt of the purchase order shall be payable as per the existing contract terms or approved quotation terms.</li>
+  <li>All payments are to be made to the contracted billing entity. Banking details will be provided in the invoice document.</li>
+  <li>Tiberbu Healthnet Solutions Limited reserves the right to adjust pricing due to OEM pricing changes, foreign exchange movements, regulatory changes, or other market-driven cost adjustments.</li>
+  <li>All invoicing and payment-related matters should be addressed to: <strong>accounts@tiberbu.co.ke</strong></li>
+</ol>
+{% endif %}
+
+{# ── CUSTOMER APPROVAL ── #}
+<div class="qt-section-title">Customer Quotation Approval</div>
+<div style="font-size:11px;color:#374151;margin-bottom:12px;">
+  Please confirm your acceptance of this quotation by signing below.
+</div>
+<div class="qt-sig-block">
+  <div class="qt-sig-field">
+    <div class="qt-sig-label">Full Name</div>
+    <div class="qt-sig-line">_________________________________________________</div>
+  </div>
+  <div class="qt-sig-field">
+    <div class="qt-sig-label">Role / Title</div>
+    <div class="qt-sig-line">_________________________________</div>
+  </div>
+  <div class="qt-sig-field">
+    <div class="qt-sig-label">Signature</div>
+    <div class="qt-sig-line">_________________________________________________</div>
+  </div>
+  <div class="qt-sig-field">
+    <div class="qt-sig-label">Date</div>
+    <div class="qt-sig-line">_________________________________</div>
+  </div>
+</div>
+
+<div class="qt-confidential">Private &amp; Confidential</div>
+
+</div>{# end page-break #}
