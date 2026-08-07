@@ -3,6 +3,7 @@ import { validateEmail } from '../../utils'
 import LogoGmail from '@/images/gmail.png'
 import LogoOutlook from '@/images/outlook.png'
 import LogoSendgrid from '@/images/sendgrid.png'
+import LogoBrevo from '@/images/brevo.svg'
 import LogoSparkpost from '@/images/sparkpost.webp'
 import LogoYahoo from '@/images/yahoo.png'
 import LogoYandex from '@/images/yandex.png'
@@ -126,6 +127,15 @@ export const services = [
     custom: false,
   },
   {
+    name: 'Brevo',
+    icon: LogoBrevo,
+    info: __(
+      'Brevo uses an SMTP key for authentication (not your account password). Create an SMTP key in Brevo and use it as the password here. Read more',
+    ),
+    link: 'https://help.brevo.com/hc/en-us/articles/209467485-Create-an-SMTP-key',
+    custom: false,
+  },
+  {
     name: 'SparkPost',
     icon: LogoSparkpost,
     info: __(
@@ -167,6 +177,7 @@ export const emailIcon = {
   GMail: LogoGmail,
   Outlook: LogoOutlook,
   Sendgrid: LogoSendgrid,
+  Brevo: LogoBrevo,
   SparkPost: LogoSparkpost,
   Yahoo: LogoYahoo,
   Yandex: LogoYandex,
