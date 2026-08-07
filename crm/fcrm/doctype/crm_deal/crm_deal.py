@@ -3,7 +3,7 @@
 
 import frappe
 from frappe import _
-from frappe.desk.form.assign_to import _add as assign
+from frappe.desk.form.assign_to import add as assign
 from frappe.model.document import Document
 
 from crm.api.exchange_rate import get_exchange_rate
@@ -172,7 +172,7 @@ class CRMDeal(Document):
 					# the agent is already set as an assignee
 					return
 
-		assign({"assign_to": [agent], "doctype": "CRM Deal", "name": self.name}, ignore_permissions=True)
+		assign({"assign_to": [agent], "doctype": "CRM Deal", "name": self.name})
 
 	def share_with_agent(self, agent):
 		if not agent:
