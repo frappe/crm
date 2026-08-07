@@ -52,8 +52,7 @@ def get_employee_advances(company, filters=None, page=0, page_size=20):
 
 
 def get_expense_journals(company, filters=None, page=0, page_size=20):
-    if not is_hrms_installed():
-        return {"items": [], "hrms_not_installed": True}
+    # Journal Entry is a core ERPNext doctype — no HRMS dependency
     base_filters = [
         ["company", "=", company],
         ["docstatus", "!=", 2],
@@ -68,7 +67,7 @@ def get_expense_journals(company, filters=None, page=0, page_size=20):
         limit_start=int(page) * int(page_size),
         order_by="posting_date desc",
     )
-    return {"items": rows, "hrms_not_installed": False}
+    return {"items": rows}
 
 
 def mark_expense_claim_paid(name):

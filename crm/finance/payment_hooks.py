@@ -14,8 +14,8 @@ def on_payment_entry_submit(doc, method):
             invoice = frappe.get_doc("Sales Invoice", ref.reference_name)
         except frappe.DoesNotExistError:
             continue
-        # Resolve CRM Deal via Customer.crm_deal custom field (set by erpnext_crm_settings integration)
-        crm_deal = frappe.db.get_value("Customer", invoice.customer, "crm_deal") if invoice.customer else None
+        # Resolve CRM Deal via Sales Invoice.crm_deal custom field (created by v1_0 patch)
+        crm_deal = frappe.db.get_value("Sales Invoice", invoice.name, "crm_deal")
         if not crm_deal:
             continue
         _maybe_create_rebate_voucher(doc, invoice, ref, crm_deal)

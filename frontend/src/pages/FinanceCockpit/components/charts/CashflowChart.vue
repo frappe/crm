@@ -8,13 +8,13 @@
         <line v-for="y in gridYs" :key="y" :x1="PAD_L" :x2="svgW - PAD_R" :y1="y" :y2="y"
           stroke="currentColor" stroke-width="0.5" class="text-gray-200 dark:text-gray-700" />
         <!-- area fill inflow -->
-        <path :d="areaPathInflow" fill="#3B82F6" fill-opacity="0.15" />
+        <path :d="areaPathInflow" class="fc-fill-inflow" fill-opacity="0.15" />
         <!-- area fill outflow -->
-        <path :d="areaPathOutflow" fill="#EF4444" fill-opacity="0.15" />
+        <path :d="areaPathOutflow" class="fc-fill-outflow" fill-opacity="0.15" />
         <!-- line inflow -->
-        <path :d="linePathInflow" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linejoin="round" />
+        <path :d="linePathInflow" fill="none" class="fc-stroke-inflow" stroke-width="2" stroke-linejoin="round" />
         <!-- line outflow -->
-        <path :d="linePathOutflow" fill="none" stroke="#EF4444" stroke-width="2" stroke-linejoin="round" />
+        <path :d="linePathOutflow" fill="none" class="fc-stroke-outflow" stroke-width="2" stroke-linejoin="round" />
         <!-- month labels -->
         <text v-for="(d, i) in data" :key="'lbl'+i"
           :x="xAt(i)" :y="svgH - 4"
@@ -23,15 +23,15 @@
         >{{ d.month.slice(0, 3) }}</text>
         <!-- dots inflow -->
         <circle v-for="(d, i) in data" :key="'di'+i"
-          :cx="xAt(i)" :cy="yAt(d.inflow)" r="3" fill="#3B82F6" />
+          :cx="xAt(i)" :cy="yAt(d.inflow)" r="3" class="fc-fill-inflow" />
         <!-- dots outflow -->
         <circle v-for="(d, i) in data" :key="'do'+i"
-          :cx="xAt(i)" :cy="yAt(d.outflow)" r="3" fill="#EF4444" />
+          :cx="xAt(i)" :cy="yAt(d.outflow)" r="3" class="fc-fill-outflow" />
       </svg>
     </div>
     <!-- legend -->
     <div class="flex gap-4 mt-2 text-xs text-gray-500 dark:text-gray-400">
-      <span class="flex items-center gap-1"><span class="inline-block w-3 h-0.5 bg-blue-500 rounded"></span>Inflow</span>
+      <span class="flex items-center gap-1"><span class="inline-block w-3 h-0.5 bg-emerald-500 rounded"></span>Inflow</span>
       <span class="flex items-center gap-1"><span class="inline-block w-3 h-0.5 bg-red-500 rounded"></span>Outflow</span>
     </div>
   </div>
@@ -98,3 +98,11 @@ const areaPathOutflow = computed(() => {
   return 'M ' + first + ' L ' + pts + ' L ' + last + ' Z'
 })
 </script>
+
+<style scoped>
+/* SVG elements can't use Tailwind utilities directly — map semantic colors here */
+.fc-fill-inflow  { fill:   #10b981; } /* emerald-500 */
+.fc-stroke-inflow { stroke: #10b981; }
+.fc-fill-outflow  { fill:   #ef4444; } /* red-500 */
+.fc-stroke-outflow { stroke: #ef4444; }
+</style>
