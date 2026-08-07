@@ -60,7 +60,7 @@ def notify_user(notification):
 	Notify the assigned user
 	"""
 	notification = frappe._dict(notification)
-	if notification.owner == notification.assigned_to:
+	if not notification.assigned_to or notification.owner == notification.assigned_to:
 		return
 
 	values = frappe._dict(
