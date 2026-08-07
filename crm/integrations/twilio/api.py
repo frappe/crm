@@ -70,8 +70,6 @@ def voice(**kwargs):
 		resp.say(_("Your account is not configured with a phone number. Please contact your administrator."))
 		return Response(resp.to_xml(), mimetype="text/xml")
 
-	resp = twilio.generate_twilio_dial_response(from_number, args.To)
-
 	call_details = TwilioCallDetails(args, call_from=from_number)
 	try:
 		create_call_log(call_details)
@@ -79,6 +77,9 @@ def voice(**kwargs):
 		frappe.db.rollback()
 		frappe.log_error(title="Error while creating Twilio call log")
 		frappe.db.commit()
+		return Response(_call_failed_response().to_xml(), mimetype="text/xml")
+
+	resp = twilio.generate_twilio_dial_response(from_number, args.To)
 	return Response(resp.to_xml(), mimetype="text/xml")
 
 
@@ -94,9 +95,16 @@ def twilio_incoming_call_handler(**kwargs):
 		frappe.db.rollback()
 		frappe.log_error(title="Error while creating Twilio call log")
 		frappe.db.commit()
+		return Response(_call_failed_response().to_xml(), mimetype="text/xml")
 
 	resp = IncomingCall(args.From, args.To).process()
 	return Response(resp.to_xml(), mimetype="text/xml")
+
+
+def _call_failed_response():
+	resp = VoiceResponse()
+	resp.say(_("We're unable to connect your call right now. Please try again later."))
+	return resp
 
 
 def create_call_log(call_details: TwilioCallDetails):
