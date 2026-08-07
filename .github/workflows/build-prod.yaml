@@ -76,7 +76,7 @@ jobs:
             },
             {
               "url": "https://mwogi:${GIT_TOKEN}@github.com/tiberbu/crm.git",
-              "branch": "master"
+              "branch": "develop"
             }
           ]
           EOF
