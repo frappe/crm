@@ -2,6 +2,7 @@ import frappe
 from bs4 import BeautifulSoup
 from frappe import _
 from frappe.core.api.file import get_max_file_size
+from frappe.rate_limiter import rate_limit
 from frappe.translate import get_all_translations
 from frappe.utils import cstr, split_emails, validate_email_address
 
@@ -75,7 +76,10 @@ def check_app_permission():
 	return False
 
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist(
+	allow_guest=True
+)  # nosemgrep: frappe-semgrep-rules.rules.security.guest-whitelisted-method — invite key required; rate-limited
+@rate_limit(limit=10, seconds=60 * 60)
 def accept_invitation(key: str | None = None):
 	if not key:
 		frappe.throw(_("Invalid or expired key"))
@@ -84,13 +88,22 @@ def accept_invitation(key: str | None = None):
 	if not result:
 		frappe.throw(_("Invalid or expired key"))
 	invitation = frappe.get_doc("CRM Invitation", result[0])
-	invitation.accept()
+	is_new_user = invitation.accept()
 	invitation.reload()
 
+	# this is a GET request, which is rolled back unless a commit is requested
+	frappe.local.flags.commit = True
+
 	if invitation.status == "Accepted":
-		frappe.local.login_manager.login_as(invitation.email)
 		frappe.local.response["type"] = "redirect"
-		frappe.local.response["location"] = "/crm"
+		if is_new_user:
+			# a new user has no password yet, send them to the set password page
+			# which logs them in and redirects to /crm once the password is set
+			user = frappe.get_doc("User", invitation.email)
+			frappe.local.response["location"] = user._reset_password()
+		else:
+			frappe.local.login_manager.login_as(invitation.email)
+			frappe.local.response["location"] = "/crm"
 
 
 @frappe.whitelist()
