@@ -250,6 +250,9 @@ doc_events = {
 		"before_validate": ["crm.api.live_demo.validate_user"],
 		"validate_reset_password": ["crm.api.live_demo.validate_reset_password"],
 	},
+	"Payment Entry": {
+		"on_submit": ["crm.finance.payment_hooks.on_payment_entry_submit"],
+	},
 }
 
 # Scheduled Tasks

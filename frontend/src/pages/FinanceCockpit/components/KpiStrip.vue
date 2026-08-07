@@ -63,7 +63,7 @@ import { useCompanyContext } from '../composables/useCompanyContext.js'
 const props = defineProps({
   userRoles: { type: Array, default: () => [] },
 })
-defineEmits(['navigate'])
+const emit = defineEmits(['navigate', 'update:period'])
 
 const { company } = useCompanyContext()
 const LS_PERIOD_KEY = 'fc_period'
@@ -81,6 +81,7 @@ function onPeriodChange(val) {
   period.value = val
   localStorage.setItem(LS_PERIOD_KEY, val)
   kpisResource.fetch()
+  emit('update:period', val)
 }
 
 function refresh() {

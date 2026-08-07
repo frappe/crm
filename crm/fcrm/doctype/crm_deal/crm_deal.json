@@ -83,7 +83,9 @@
   "lost_reason",
   "lost_notes",
   "facilities_tab",
-  "facilities"
+  "facilities",
+  "finance_tab",
+  "commission_pct"
  ],
  "fields": [
   {
@@ -523,6 +525,17 @@
    "fieldtype": "Table",
    "label": "Facilities",
    "options": "CRM Deal Facility"
+  },
+  {
+   "fieldname": "finance_tab",
+   "fieldtype": "Tab Break",
+   "label": "Finance"
+  },
+  {
+   "default": "0",
+   "fieldname": "commission_pct",
+   "fieldtype": "Float",
+   "label": "Commission %"
   }
  ],
  "grid_page_length": 50,
