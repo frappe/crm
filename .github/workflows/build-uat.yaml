@@ -9,7 +9,7 @@ on:
 
 env:
   AWS_REGION: eu-west-2
-  IMAGE_NAME: crm
+  IMAGE_NAME: crm-uat
   FRAPPE_REPO: https://github.com/frappe/frappe
   FRAPPE_VERSION: version-15
   PY_VERSION: "3.11.6"
