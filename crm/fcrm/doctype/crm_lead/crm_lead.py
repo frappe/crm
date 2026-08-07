@@ -225,6 +225,7 @@ class CRMLead(Document):
 		contact.update(
 			{
 				"first_name": self.first_name or self.lead_name,
+				"middle_name": self.middle_name,
 				"last_name": self.last_name,
 				"salutation": self.salutation,
 				"gender": self.gender,
