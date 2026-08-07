@@ -82,6 +82,12 @@
             v-model="telephonyAgent.doc.twilio_number"
             class="flex-1 truncate w-44 p-1"
             :placeholder="__('Enter Twilio Number')"
+            :error="
+              Boolean(telephonyAgent.doc.twilio_number) &&
+              !validatePhone(telephonyAgent.doc.twilio_number)
+                ? __('Enter a valid phone number')
+                : undefined
+            "
             placement="bottom-end"
           />
         </div>
@@ -107,6 +113,12 @@
             v-model="telephonyAgent.doc.exotel_number"
             class="flex-1 truncate w-44 p-1"
             :placeholder="__('Enter Exotel Number')"
+            :error="
+              Boolean(telephonyAgent.doc.exotel_number) &&
+              !validatePhone(telephonyAgent.doc.exotel_number)
+                ? __('Enter a valid phone number')
+                : undefined
+            "
             placement="bottom-end"
           />
         </div>
@@ -132,6 +144,12 @@
             v-model="telephonyAgent.doc.mobile_no"
             class="flex-1 truncate w-44 p-1"
             :placeholder="__('Enter Personal Mobile Number')"
+            :error="
+              Boolean(telephonyAgent.doc.mobile_no) &&
+              !validatePhone(telephonyAgent.doc.mobile_no)
+                ? __('Enter a valid phone number')
+                : undefined
+            "
             placement="bottom-end"
           />
         </div>
@@ -209,6 +227,7 @@ import {
 import { useTelephony } from '@/composables/telephony'
 import { useDocument } from '@/data/document'
 import { usersStore } from '@/stores/users'
+import { validatePhone } from '@/utils'
 import { ref, computed } from 'vue'
 
 const { isEnabled } = useTelephony()

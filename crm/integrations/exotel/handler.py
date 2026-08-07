@@ -45,7 +45,7 @@ def handle_request(**kwargs):
 
 		if call_log := get_call_log(call_payload):
 			update_call_log(call_payload, call_log=call_log)
-		else:
+		elif call_payload.get("Direction") == "incoming":
 			create_call_log(
 				call_id=call_payload.get("CallSid"),
 				from_number=call_payload.get("CallFrom"),
@@ -94,6 +94,7 @@ def make_a_call(to_number: str, from_number: str | None = None, caller_id: str |
 
 	record_call = frappe.db.get_single_value("CRM Exotel Settings", "record_call")
 
+	call_log_creation_failed = False
 	try:
 		response = requests.post(
 			endpoint,
@@ -115,17 +116,24 @@ def make_a_call(to_number: str, from_number: str | None = None, caller_id: str |
 		res = response.json()
 		call_payload = res.get("Call", {})
 
-		create_call_log(
-			call_id=call_payload.get("Sid"),
-			from_number=call_payload.get("From"),
-			to_number=call_payload.get("To"),
-			medium=call_payload.get("PhoneNumberSid"),
-			call_type="Outgoing",
-			agent=frappe.session.user,
-		)
+		try:
+			create_call_log(
+				call_id=call_payload.get("Sid"),
+				from_number=call_payload.get("From"),
+				to_number=call_payload.get("To"),
+				medium=call_payload.get("PhoneNumberSid"),
+				call_type="Outgoing",
+				agent=frappe.session.user,
+			)
+		except Exception:
+			frappe.db.rollback()
+			frappe.log_error(title="Error while creating Exotel call log")
+			frappe.db.commit()
+			call_log_creation_failed = True
 
 	call_details = response.json().get("Call", {})
 	call_details["CallSid"] = call_details.get("Sid", "")
+	call_details["call_log_creation_failed"] = call_log_creation_failed
 	return call_details
 
 
