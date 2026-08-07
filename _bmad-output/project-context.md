@@ -153,3 +153,14 @@ Worker `workdir` for Studio = `_bmad-output/<epic>/implementation-artifacts/`
 | partner-portal | Ready for dev | `partner-portal/planning-artifacts/` (BRD: `docs/partner-portal-brd.md`) |
 | hfr-integration | v1.1 shipped, superseded by cardinality refactor | `hfr-integration/planning-artifacts/hfr-integration-brd.md` |
 | hfr-refactor | Ready for dev — BRD + ADR complete | `hfr-integration/planning-artifacts/hfr-cardinality-refactor-brd.md` |
+| finance-cockpit | Ready for dev — BRD v2.0 + ADR v2.0 confirmed 2026-08-06 | `BRD_Tiberbu_Finance_Cockpit.docx`, `ADR-002_Finance_Cockpit.docx` |
+
+## Finance Cockpit — Key Constraints (confirmed 2026-08-06)
+
+1. **Frappe-native backend only.** All API methods `@frappe.whitelist()`. All reads `frappe.get_list()`. No raw SQL SELECTs. No custom REST layer. Write actions call existing ERPNext RPC.
+2. **RBAC mandatory on all surfaces including the dashboard.** `company` parameter on every Finance API method. `frappe.get_roles()` check at top of every method. Role-scoped KPI tiles — absent tiles = no access, not zero. Company switcher in topbar; switching re-executes all queries. `frappe.has_permission("Company", doc=company, ptype="read", throw=True)` before any data is returned.
+3. **Premium UI + mobile responsive.** Lucide icons (lucide-vue-next, already in node_modules) for all iconography. antd v5 theme tokens — no hardcoded hex. Mobile breakpoints: `sm:375px md:768px lg:1280px`. Sidebar collapses to hamburger overlay on `<768px`. Lists reflow to card layout on `<768px`. Touch targets min 44×44px.
+
+## Finance Cockpit — Story File
+
+`finance-cockpit/planning-artifacts/finance-cockpit-stories.md` — 18 stories across 5 sprints.

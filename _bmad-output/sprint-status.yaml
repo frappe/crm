@@ -79,6 +79,37 @@ development_status:
   # Phase 5 — QA
   hfr-c5-qa-refactor: review                     # [qa] Migration + multi-facility + convert-to-deal + re-sync
 
+  # Chain: epic-finance-cockpit (BRD + ADR confirmed 2026-08-06)
+  epic-finance-cockpit: in-progress
+
+  # Sprint 1 — Foundation
+  fc-s1-1-crm-partner-doctype: review               # [dev-story] CRM Partner + CRM Rebate Structure DocTypes; partner field on CRM Lead
+  fc-s1-2-lead-approval-workflow: review             # [dev-story] Frappe Workflow on CRM Lead: Draft→Pending→Approved/Rejected; Partner RM vs Sales Manager routing
+  fc-s1-3-cockpit-page-shell: review                # [dev-story] Frappe Page registration; Vue sidebar + topbar + company switcher + mobile hamburger
+  fc-s1-4-kpi-strip: review                         # [dev-story] get_finance_kpis API; KPI tiles + period selector; role-scoped + company-aware
+
+  # Sprint 2 — Inbox + AR/AP worklists + Onboarding Request
+  fc-s2-1-pending-actions-inbox: ready-for-dev      # [dev-story] get_pending_actions API; Inbox UI with 13 item types; urgency bands; role-scoped
+  fc-s2-2-receivables-section: ready-for-dev        # [dev-story] AR Invoices + Sales Orders + Payments + Customers; FinanceTable + StatusPill components
+  fc-s2-3-payables-section: ready-for-dev           # [dev-story] AP Invoices + Purchase Orders + Supplier Payments + Suppliers; approve_purchase_invoice
+  fc-s2-4-onboarding-request-doctype: ready-for-dev # [dev-story] CRM Onboarding Request DocType; auto-create on Deal Won; provisioning_complete endpoint
+
+  # Sprint 3 — Expenses, Banking, Partner & Commission
+  fc-s3-1-rebate-commission-doctypes: ready-for-dev # [dev-story] CRM Partner Rebate Voucher + CRM Sales Commission DocTypes; Payment Entry on_submit hook
+  fc-s3-2-expenses-section: ready-for-dev           # [dev-story] Expense Claims + Employee Advances + Expense Journals; hrms_adapter.py
+  fc-s3-3-partner-commission-section: ready-for-dev # [dev-story] Rebate Vouchers + Sales Commissions tabs; approve/confirm/mark-paid APIs; role-scoped
+  fc-s3-4-banking-section: ready-for-dev            # [dev-story] Bank Accounts + Bank Transactions; reconciliation link
+
+  # Sprint 4 — Dashboard charts, Reports, GL/Assets/Liabilities
+  fc-s4-1-dashboard-charts: ready-for-dev           # [dev-story] Cashflow + AR Aging + AP Aging + P&L charts; get_dashboard_charts API; lazy-loaded
+  fc-s4-2-reports-panel: ready-for-dev              # [dev-story] 32 report links in 6 groups; reportsConfig.ts; role-scoped; pre-filtered URLs
+  fc-s4-3-gl-liabilities-assets: ready-for-dev      # [dev-story] GL viewer + Journal Entries + Period Closing; Subscriptions + Deferred; Asset Register
+
+  # Sprint 5 — Scoped views, Global search, Setup, erpnext_adapter
+  fc-s5-1-scoped-views: ready-for-dev               # [dev-story] SalesManagerView + PartnerRmView; restricted sidebar; read-only commission/rebate lists
+  fc-s5-2-global-search: ready-for-dev              # [dev-story] Ctrl+K command palette; global_search API; role-scoped results; keyboard navigation
+  fc-s5-3-setup-erpnext-adapter: ready-for-dev      # [dev-story] Setup section links (Finance Manager only); erpnext_adapter.py cross-site wrapper
+
   # Chain: epic-partner-portal
   epic-partner-portal: ready-for-dev
 

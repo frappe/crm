@@ -1,0 +1,13 @@
+[
+ {
+  "creation": "2026-08-06 00:00:00.000000",
+  "doctype": "Role",
+  "modified": "2026-08-06 00:00:00.000000",
+  "modified_by": "Administrator",
+  "name": "Partner RM",
+  "owner": "Administrator",
+  "role_name": "Partner RM",
+  "desk_access": 1,
+  "is_custom": 1
+ }
+]

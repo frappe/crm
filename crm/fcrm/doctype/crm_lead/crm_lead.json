@@ -77,7 +77,13 @@
   "lost_reason",
   "lost_notes",
   "facilities_tab",
-  "facilities"
+  "facilities",
+  "partner_tab",
+  "partner",
+  "approval_owner",
+  "approval_notes",
+  "approved_date",
+  "workflow_state"
  ],
  "fields": [
   {
@@ -472,13 +478,49 @@
    "fieldtype": "Table",
    "label": "Facilities",
    "options": "CRM Lead Facility"
+  },
+  {
+   "fieldname": "partner_tab",
+   "fieldtype": "Tab Break",
+   "label": "Partner & Approval"
+  },
+  {
+   "fieldname": "partner",
+   "fieldtype": "Link",
+   "label": "Partner",
+   "options": "CRM Partner"
+  },
+  {
+   "fieldname": "approval_owner",
+   "fieldtype": "Link",
+   "label": "Approval Owner",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "approval_notes",
+   "fieldtype": "Small Text",
+   "label": "Approval Notes"
+  },
+  {
+   "fieldname": "approved_date",
+   "fieldtype": "Date",
+   "label": "Approved Date",
+   "read_only": 1
+  },
+  {
+   "fieldname": "workflow_state",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Workflow State",
+   "read_only": 1
   }
  ],
  "grid_page_length": 50,
  "image_field": "image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-08-02 00:00:00.000000",
+ "modified": "2026-08-06 00:00:00.000000",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Lead",

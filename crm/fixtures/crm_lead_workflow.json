@@ -1,0 +1,140 @@
+{
+ "creation": "2026-08-06 00:00:00.000000",
+ "doctype": "Workflow",
+ "document_type": "CRM Lead",
+ "is_active": 1,
+ "modified": "2026-08-06 00:00:00.000000",
+ "modified_by": "Administrator",
+ "name": "CRM Lead Approval",
+ "workflow_name": "CRM Lead Approval",
+ "owner": "Administrator",
+ "send_email_alert": 0,
+ "states": [
+  {
+   "allow_edit": "Sales User",
+   "doc_status": "0",
+   "name": "CRM Lead Approval-CRM Lead Approval0",
+   "state": "Draft",
+   "update_field": "workflow_state",
+   "update_value": "Draft"
+  },
+  {
+   "allow_edit": "System Manager",
+   "doc_status": "0",
+   "name": "CRM Lead Approval-CRM Lead Approval1",
+   "state": "Pending Approval",
+   "update_field": "workflow_state",
+   "update_value": "Pending Approval"
+  },
+  {
+   "allow_edit": "Sales User",
+   "doc_status": "0",
+   "name": "CRM Lead Approval-CRM Lead Approval2",
+   "state": "Approved",
+   "update_field": "workflow_state",
+   "update_value": "Approved"
+  },
+  {
+   "allow_edit": "System Manager",
+   "doc_status": "0",
+   "name": "CRM Lead Approval-CRM Lead Approval3",
+   "state": "Rejected",
+   "update_field": "workflow_state",
+   "update_value": "Rejected"
+  }
+ ],
+ "transitions": [
+  {
+   "action": "Submit for Approval",
+   "allowed": "Sales User",
+   "condition": null,
+   "idx": 1,
+   "name": "CRM Lead Approval-CRM Lead Approval-Transition0",
+   "next_state": "Pending Approval",
+   "state": "Draft"
+  },
+  {
+   "action": "Submit for Approval",
+   "allowed": "Sales Manager",
+   "condition": null,
+   "idx": 2,
+   "name": "CRM Lead Approval-CRM Lead Approval-Transition1",
+   "next_state": "Pending Approval",
+   "state": "Draft"
+  },
+  {
+   "action": "Submit for Approval",
+   "allowed": "Partner RM",
+   "condition": null,
+   "idx": 3,
+   "name": "CRM Lead Approval-CRM Lead Approval-Transition2",
+   "next_state": "Pending Approval",
+   "state": "Draft"
+  },
+  {
+   "action": "Approve",
+   "allowed": "Partner RM",
+   "condition": "doc.partner and 'Partner RM' in frappe.get_roles(frappe.session.user) or not doc.partner and 'Sales Manager' in frappe.get_roles(frappe.session.user)",
+   "idx": 4,
+   "name": "CRM Lead Approval-CRM Lead Approval-Transition3",
+   "next_state": "Approved",
+   "state": "Pending Approval"
+  },
+  {
+   "action": "Approve",
+   "allowed": "Sales Manager",
+   "condition": "doc.partner and 'Partner RM' in frappe.get_roles(frappe.session.user) or not doc.partner and 'Sales Manager' in frappe.get_roles(frappe.session.user)",
+   "idx": 5,
+   "name": "CRM Lead Approval-CRM Lead Approval-Transition4",
+   "next_state": "Approved",
+   "state": "Pending Approval"
+  },
+  {
+   "action": "Reject",
+   "allowed": "Partner RM",
+   "condition": "doc.approval_notes",
+   "idx": 6,
+   "name": "CRM Lead Approval-CRM Lead Approval-Transition5",
+   "next_state": "Rejected",
+   "state": "Pending Approval"
+  },
+  {
+   "action": "Reject",
+   "allowed": "Sales Manager",
+   "condition": "doc.approval_notes",
+   "idx": 7,
+   "name": "CRM Lead Approval-CRM Lead Approval-Transition6",
+   "next_state": "Rejected",
+   "state": "Pending Approval"
+  },
+  {
+   "action": "Revise",
+   "allowed": "Sales User",
+   "condition": null,
+   "idx": 8,
+   "name": "CRM Lead Approval-CRM Lead Approval-Transition7",
+   "next_state": "Draft",
+   "state": "Rejected"
+  },
+  {
+   "action": "Revise",
+   "allowed": "Sales Manager",
+   "condition": null,
+   "idx": 9,
+   "name": "CRM Lead Approval-CRM Lead Approval-Transition8",
+   "next_state": "Draft",
+   "state": "Rejected"
+  },
+  {
+   "action": "Revise",
+   "allowed": "Partner RM",
+   "condition": null,
+   "idx": 10,
+   "name": "CRM Lead Approval-CRM Lead Approval-Transition9",
+   "next_state": "Draft",
+   "state": "Rejected"
+  }
+ ],
+ "workflow_data": null,
+ "workflow_state_field": "workflow_state"
+}

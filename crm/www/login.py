@@ -17,17 +17,17 @@ from urllib.parse import urlparse
 
 import frappe
 from frappe import _
+from frappe.apps import get_default_path
 from frappe.utils import cint
+from frappe.utils.data import escape_html
+from frappe.utils.html_utils import get_icon_html
 from frappe.utils.oauth import get_oauth2_authorize_url, get_oauth_keys
 from frappe.utils.password import get_decrypted_password
+from frappe.website.utils import get_home_page
 
 from crm.branding import apply_brand_context, get_configured_app_brand
 
 no_cache = True
-
-# Redirect targets we accept post-login (open-redirect guard). ``/crm`` is home.
-# ``/update-password`` is allowed so a forced/expired-password reset redirect keeps its key.
-SAFE_REDIRECT_PREFIXES = ("/crm", "/app", "/desk", "/api", "/update-password")
 
 
 def get_context(context):
@@ -35,10 +35,17 @@ def get_context(context):
 	redirect_to = frappe.local.request.args.get("redirect-to")
 	redirect_to = sanitize_redirect(redirect_to)
 
-	# Already logged in -> bounce to target (default the SPA).
+	# Already logged in -> bounce to target. Branch on user_type like native: Website Users
+	# go to the website home page, not the SPA (which would 403 them).
 	if frappe.session.user != "Guest":
-		frappe.local.flags.redirect_location = redirect_to or "/crm"
-		raise frappe.Redirect
+		if not redirect_to:
+			if frappe.session.data.user_type == "Website User":
+				redirect_to = get_default_path() or get_home_page()
+			else:
+				redirect_to = get_default_path() or "/crm"
+		if redirect_to != "login":
+			frappe.local.flags.redirect_location = redirect_to
+			raise frappe.Redirect
 
 	brand = get_configured_app_brand()
 	context.no_cache = 1
@@ -50,18 +57,20 @@ def get_context(context):
 	# Auth settings consumed by the template (mirror stock login).
 	context.disable_user_pass_login = cint(frappe.get_system_settings("disable_user_pass_login")) or 0
 
-	# Login label (Email / Username / Mobile) — same composition as stock.
-	login_label = []
+	# Login label — Email first, matching native order.
+	login_label = [_("Email")]
 	if cint(frappe.get_system_settings("allow_login_using_mobile_number")):
 		login_label.append(_("Mobile"))
 	if cint(frappe.get_system_settings("allow_login_using_user_name")):
 		login_label.append(_("Username"))
-	login_label.append(_("Email"))
 	context.login_label = f" {_('or')} ".join(login_label)
+
+	context.login_with_email_link = frappe.get_system_settings("login_with_email_link")
 
 	# In a provider-side OIDC authorize flow, suppress social buttons by policy.
 	is_oidc_flow = _is_oidc_authorize_redirect(redirect_to)
 	context.provider_logins = [] if is_oidc_flow else _build_provider_logins(redirect_to or "/crm")
+	context.social_login = bool(context.provider_logins)
 
 	context.redirect_to = redirect_to or "/crm"
 	# CSRF token for the guest session (generating it is what makes /api/method/login
@@ -79,14 +88,11 @@ def _is_oidc_authorize_redirect(redirect_to: str | None) -> bool:
 def _build_provider_logins(redirect_to: str) -> list[dict]:
 	"""Return a list of {provider_name, auth_url, icon} dicts for enabled Social Login Keys.
 
-	Mirrors the devsecops dashboard pattern: query the DocType directly, validate that
-	client_id + client_secret + base_url are all set, then call get_oauth2_authorize_url()
-	to produce the actual OAuth authorize URL. get_oauth2_providers() is intentionally
-	NOT used here — it returns an internal flow dict, not display-ready objects; iterating
-	it in Jinja yields the dict keys (strings), not provider records, causing the
-	"Login with No such element" bug.
+	Uses frappe.get_all() matching native frappe/www/login.py — this page runs as Guest
+	and Social Login Key is System Manager-only, so get_all() (no permission check) is correct.
+	Icon HTML is built server-side so the template renders it with | safe.
 	"""
-	providers = frappe.get_list(
+	providers = frappe.get_all(
 		"Social Login Key",
 		filters={"enable_social_login": 1},
 		fields=["name", "provider_name", "client_id", "base_url", "icon"],
@@ -94,50 +100,48 @@ def _build_provider_logins(redirect_to: str) -> list[dict]:
 	)
 	result = []
 	for p in providers:
-		if not (p.client_id and p.base_url):
-			continue
-		if not get_oauth_keys(p.name):
-			continue
 		client_secret = get_decrypted_password(
 			"Social Login Key", p.name, "client_secret", raise_exception=False
 		)
 		if not client_secret:
 			continue
-		try:
-			auth_url = get_oauth2_authorize_url(p.name, redirect_to)
-		except Exception:
-			continue
-		result.append(
-			{
-				"provider_name": p.provider_name,
-				"auth_url": auth_url,
-				"icon": p.icon or "",
-			}
-		)
+
+		icon = None
+		if p.icon:
+			if p.provider_name == "Custom":
+				icon = get_icon_html(p.icon, small=True)
+			else:
+				icon = f"<img src={escape_html(p.icon)!r} alt={escape_html(p.provider_name)!r}>"
+
+		if p.client_id and p.base_url and get_oauth_keys(p.name):
+			try:
+				auth_url = get_oauth2_authorize_url(p.name, redirect_to)
+			except Exception:
+				continue
+			result.append(
+				{
+					"provider_name": p.provider_name,
+					"auth_url": auth_url,
+					"icon": icon,
+				}
+			)
 	return result
 
 
-def sanitize_redirect(redirect_url):
-	"""Prevent open-redirect: force internal path, whitelist known-safe prefixes."""
-	if not redirect_url:
-		return None
+def sanitize_redirect(redirect: str | None) -> str | None:
+	"""Allow same-host redirects only; reject cross-origin. Mirrors native frappe/www/login.py."""
+	if not redirect:
+		return redirect
 
-	parsed_redirect = urlparse(redirect_url)
-	parsed_request = urlparse(frappe.local.request.url)
+	parsed_redirect = urlparse(redirect)
+	parsed_request_host = urlparse(frappe.local.request.url)
+	output_parsed_url = parsed_redirect._replace(
+		netloc=parsed_request_host.netloc, scheme=parsed_request_host.scheme
+	)
+	if parsed_redirect.netloc:
+		if parsed_request_host.netloc != parsed_redirect.netloc:
+			output_parsed_url = output_parsed_url._replace(path="/crm")
+		else:
+			output_parsed_url = output_parsed_url._replace(path=parsed_redirect.path)
 
-	# Block cross-origin absolute URLs; keep only the path for same-origin ones.
-	if parsed_redirect.scheme or parsed_redirect.netloc:
-		if parsed_request.netloc != parsed_redirect.netloc:
-			return "/crm"
-		redirect_url = parsed_redirect.path or "/crm"
-		if parsed_redirect.query:
-			redirect_url = f"{redirect_url}?{parsed_redirect.query}"
-
-	if not redirect_url.startswith("/"):
-		redirect_url = "/" + redirect_url
-
-	is_safe = any(redirect_url.startswith(p) for p in SAFE_REDIRECT_PREFIXES)
-	if not is_safe and redirect_url not in ("/", "/crm"):
-		return "/crm"
-
-	return redirect_url
+	return output_parsed_url.geturl()

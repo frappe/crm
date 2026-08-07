@@ -139,6 +139,7 @@ class CRMLead(Document):
 		self.set_title()
 		self.validate_email()
 		self.validate_lost_reason()
+		self.derive_approval_owner()
 		if not self.is_new() and self.has_value_changed("lead_owner") and self.lead_owner:
 			self.share_with_agent(self.lead_owner)
 			self.assign_agent(self.lead_owner)
@@ -213,6 +214,33 @@ class CRMLead(Document):
 				frappe.throw(_("Please specify the reason for losing the lead."), frappe.ValidationError)
 		if self.has_value_changed("status"):
 			add_or_remove_lost_reason_section_in_sidepanel(self)
+
+	def derive_approval_owner(self):
+		# Only re-derive on new docs or when partner field changes — avoids overwriting
+		# approval_owner on every incidental save of an existing approved/rejected lead.
+		if not self.is_new() and not self.has_value_changed("partner"):
+			return
+		if self.partner:
+			self.approval_owner = frappe.db.get_value("CRM Partner", self.partner, "partner_rm")
+		else:
+			# Try CRM Finance Settings default_sales_manager first
+			default_sm = frappe.db.get_single_value("CRM Finance Settings", "default_sales_manager")
+			if default_sm:
+				self.approval_owner = default_sm
+			else:
+				# Fallback: first user with Sales Manager role
+				sm_users = frappe.get_list(
+					"Has Role",
+					filters={"role": "Sales Manager", "parenttype": "User"},
+					fields=["parent"],
+					limit=1,
+					order_by="creation asc",
+					ignore_permissions=True,  # SYSTEM-INTERNAL: role lookup during validate
+				)
+				self.approval_owner = sm_users[0].parent if sm_users else None
+		# Stamp approved_date when workflow transitions to Approved
+		if self.workflow_state == "Approved" and not self.approved_date:
+			self.approved_date = frappe.utils.today()
 
 	def assign_agent(self, agent):
 		if not agent:

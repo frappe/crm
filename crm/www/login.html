@@ -281,7 +281,7 @@
                     <div class="social-btns">
                         {% for provider in provider_logins %}
                         <a href="{{ provider.auth_url }}" class="btn-social">
-                            {% if provider.icon %}<span class="provider-icon">{{ provider.icon }}</span>{% endif %}
+                            {% if provider.icon %}<span class="provider-icon">{{ provider.icon | safe }}</span>{% endif %}
                             Sign in with {{ provider.provider_name }}
                         </a>
                         {% endfor %}

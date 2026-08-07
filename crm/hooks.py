@@ -359,6 +359,11 @@ after_migrate = [
 	"crm.install.add_web_form_custom_fields",
 ]
 
+fixtures = [
+	{"dt": "Role", "filters": [["name", "=", "Partner RM"]]},
+	{"dt": "Workflow", "filters": [["name", "=", "CRM Lead Approval"]]},
+]
+
 standard_dropdown_items = [
 	{
 		"name1": "app_selector",

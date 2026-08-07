@@ -39,6 +39,13 @@ from werkzeug.routing import RequestRedirect
 # System Manager in get_roles()" gotcha.
 DESK_ADMIN_USER = "Administrator"
 
+# Finance Cockpit page path — allow through for Finance roles without full desk access
+FINANCE_COCKPIT_PATH = "/app/finance-cockpit"
+FINANCE_COCKPIT_ROLES = frozenset([
+    "Finance Manager", "AR Accountant", "AP Accountant",
+    "Sales Manager", "Partner RM", "System Manager",
+])
+
 # site_config.json key holding EXTRA usernames permitted to reach Desk, e.g.:
 #   "desk_access_users": ["ops@example.com", "sre@example.com"]
 # Lives in site_config (not a DocType) on purpose: the allowlist gates System Managers,
@@ -71,6 +78,13 @@ def _desk_allowed_users() -> set:
 def is_desk_allowed(user: str | None) -> bool:
 	"""Public predicate: may ``user`` reach Desk? (username check, server-authoritative)."""
 	return bool(user) and user in _desk_allowed_users()
+
+
+def _has_finance_cockpit_role(user: str) -> bool:
+	try:
+		return bool(FINANCE_COCKPIT_ROLES & set(frappe.get_roles(user)))
+	except Exception:
+		return False
 
 
 def _is_desk_path(path: str) -> bool:
@@ -126,10 +140,18 @@ def guard_desk_access():
 	if is_desk_allowed(user):
 		return
 
+	# Finance Cockpit: allow users with Finance roles to reach /app/finance-cockpit.
+	# Use exact-or-slash anchoring (same discipline as _is_desk_path) to avoid
+	# prefix false-positives from routes that merely start with the same string.
+	p = (request_path or "").rstrip("/")
+	if p == FINANCE_COCKPIT_PATH or p.startswith(FINANCE_COCKPIT_PATH + "/"):
+		if _has_finance_cockpit_role(user):
+			return
+
 	# Non-allow-listed user attempting desk access -> branded unauthorized page.
 	# Audit trail: log the blocked attempt (no secrets/PII beyond user + path).
 	try:
-		frappe.logger("desk_access_guard").info(f"Blocked desk access: user={user} path={request_path}")
+		frappe.logger("desk_access_guard").info("Blocked desk access: user=%s path=%s", user, request_path)
 	except Exception:
 		# Logging must never break the guard.
 		pass
