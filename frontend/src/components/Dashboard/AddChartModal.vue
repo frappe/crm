@@ -1,6 +1,10 @@
 <template>
-  <Dialog v-model:open="show" :title="__('Add Chart')" @close="show = false">
-    <template #default>
+  <Dialog
+    v-model="show"
+    :options="{ title: __('Add Chart') }"
+    @close="show = false"
+  >
+    <template #body-content>
       <div class="flex flex-col gap-4">
         <FormControl
           v-model="chartType"
@@ -9,25 +13,11 @@
           :options="chartTypes"
         />
         <FormControl
-          v-if="chartType === 'number_chart'"
-          v-model="numberChart"
+          v-if="currentOptions.length"
+          v-model="selectedChart[chartType]"
           type="select"
-          :label="__('Number Chart')"
-          :options="numberCharts"
-        />
-        <FormControl
-          v-if="chartType === 'axis_chart'"
-          v-model="axisChart"
-          type="select"
-          :label="__('Axis Chart')"
-          :options="axisCharts"
-        />
-        <FormControl
-          v-if="chartType === 'donut_chart'"
-          v-model="donutChart"
-          type="select"
-          :label="__('Donut Chart')"
-          :options="donutCharts"
+          :label="currentTypeLabel"
+          :options="currentOptions"
         />
       </div>
     </template>
@@ -42,8 +32,9 @@
 
 <script setup lang="ts">
 import { getRandom } from '@/utils'
+import { chartTypes, chartOptionsByType } from '@/composables/dashboard'
 import { createResource, Dialog, FormControl } from 'frappe-ui'
-import { ref, reactive, inject } from 'vue'
+import { ref, reactive, inject, computed } from 'vue'
 
 const show = defineModel({
   type: Boolean,
@@ -60,48 +51,20 @@ const toDate = inject('toDate', ref(''))
 const filters = inject('filters', reactive({ period: '', user: '' }))
 
 const chartType = ref('spacer')
-const chartTypes = [
-  { label: __('Spacer'), value: 'spacer' },
-  { label: __('Number Chart'), value: 'number_chart' },
-  { label: __('Axis Chart'), value: 'axis_chart' },
-  { label: __('Donut Chart'), value: 'donut_chart' },
-]
 
-const numberChart = ref('')
-const numberCharts = [
-  { label: __('Total Leads'), value: 'total_leads' },
-  { label: __('Ongoing Deals'), value: 'ongoing_deals' },
-  { label: __('Avg Ongoing Deal Value'), value: 'average_ongoing_deal_value' },
-  { label: __('Won Deals'), value: 'won_deals' },
-  { label: __('Avg Won Deal Value'), value: 'average_won_deal_value' },
-  { label: __('Avg Deal Value'), value: 'average_deal_value' },
-  {
-    label: __('Avg Time to Close a Lead'),
-    value: 'average_time_to_close_a_lead',
-  },
-  {
-    label: __('Avg Time to Close a Deal'),
-    value: 'average_time_to_close_a_deal',
-  },
-]
+const selectedChart = reactive<Record<string, string>>({
+  axis_chart: 'sales_trend',
+  donut_chart: 'deals_by_stage_donut',
+})
 
-const axisChart = ref('sales_trend')
-const axisCharts = [
-  { label: __('Sales Trend'), value: 'sales_trend' },
-  { label: __('Forecasted Revenue'), value: 'forecasted_revenue' },
-  { label: __('Funnel Conversion'), value: 'funnel_conversion' },
-  { label: __('Deals by Ongoing & Won Stage'), value: 'deals_by_stage_axis' },
-  { label: __('Lost Deal Reasons'), value: 'lost_deal_reasons' },
-  { label: __('Deals by Territory'), value: 'deals_by_territory' },
-  { label: __('Deals by Salesperson'), value: 'deals_by_salesperson' },
-]
-
-const donutChart = ref('deals_by_stage_donut')
-const donutCharts = [
-  { label: __('Deals by Stage'), value: 'deals_by_stage_donut' },
-  { label: __('Leads by Source'), value: 'leads_by_source' },
-  { label: __('Deals by Source'), value: 'deals_by_source' },
-]
+const currentOptions = computed(
+  () => chartOptionsByType.value[chartType.value] || [],
+)
+const currentTypeLabel = computed(
+  () =>
+    chartTypes.value.find((option) => option.value === chartType.value)
+      ?.label || '',
+)
 
 async function addChart() {
   show.value = false
@@ -117,12 +80,7 @@ async function addChart() {
 }
 
 async function getChart(type: string) {
-  let name =
-    type == 'number_chart'
-      ? numberChart.value
-      : type == 'axis_chart'
-        ? axisChart.value
-        : donutChart.value
+  const name = selectedChart[type]
 
   await createResource({
     url: 'crm.api.dashboard.get_chart',

@@ -88,6 +88,45 @@ def get_chart(
 		return {"error": _("Invalid chart name")}
 
 
+@frappe.whitelist()
+@sales_user_only
+def get_chart_options():
+	"""
+	Return the selectable options for the "Add Chart" dialog, grouped by chart type."""
+	return {
+		"chart_types": [
+			{"label": _("Spacer"), "value": "spacer"},
+			{"label": _("Number Chart"), "value": "number_chart"},
+			{"label": _("Axis Chart"), "value": "axis_chart"},
+			{"label": _("Donut Chart"), "value": "donut_chart"},
+		],
+		"number_chart": [
+			{"label": _("Total Leads"), "value": "total_leads"},
+			{"label": _("Ongoing Deals"), "value": "ongoing_deals"},
+			{"label": _("Avg Ongoing Deal Value"), "value": "average_ongoing_deal_value"},
+			{"label": _("Won Deals"), "value": "won_deals"},
+			{"label": _("Avg Won Deal Value"), "value": "average_won_deal_value"},
+			{"label": _("Avg Deal Value"), "value": "average_deal_value"},
+			{"label": _("Avg Time to Close a Lead"), "value": "average_time_to_close_a_lead"},
+			{"label": _("Avg Time to Close a Deal"), "value": "average_time_to_close_a_deal"},
+		],
+		"axis_chart": [
+			{"label": _("Sales Trend"), "value": "sales_trend"},
+			{"label": _("Forecasted Revenue"), "value": "forecasted_revenue"},
+			{"label": _("Funnel Conversion"), "value": "funnel_conversion"},
+			{"label": _("Deals by Ongoing & Won Stage"), "value": "deals_by_stage_axis"},
+			{"label": _("Lost Deal Reasons"), "value": "lost_deal_reasons"},
+			{"label": _("Deals by Territory"), "value": "deals_by_territory"},
+			{"label": _("Deals by Salesperson"), "value": "deals_by_salesperson"},
+		],
+		"donut_chart": [
+			{"label": _("Deals by Stage"), "value": "deals_by_stage_donut"},
+			{"label": _("Leads by Source"), "value": "leads_by_source"},
+			{"label": _("Deals by Source"), "value": "deals_by_source"},
+		],
+	}
+
+
 def get_total_leads(from_date: str | None = None, to_date: str | None = None, user: str | None = None):
 	"""
 	Get lead count for the dashboard.
