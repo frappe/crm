@@ -91,6 +91,7 @@ def _build_provider_logins(redirect_to: str) -> list[dict]:
 		filters={"enable_social_login": 1},
 		fields=["name", "provider_name", "client_id", "base_url", "icon"],
 		order_by="name",
+		ignore_permissions=True,  # SYSTEM-INTERNAL: login page runs as Guest; Social Login Key is System Manager-only
 	)
 	result = []
 	for p in providers:
