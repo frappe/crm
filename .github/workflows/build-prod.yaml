@@ -107,14 +107,14 @@ jobs:
 
           echo "Workflow dispatch sent: ${{ env.IMAGE_NAME }}:${{ steps.version.outputs.version }}"
 
-      - name: Create and push git tag
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          TAG="v${{ steps.version.outputs.version }}"
-          git tag "$TAG"
-          git push origin "$TAG"
-          echo "Created and pushed tag: $TAG"
+      # - name: Create and push git tag
+      #   run: |
+      #     git config user.name "github-actions[bot]"
+      #     git config user.email "github-actions[bot]@users.noreply.github.com"
+      #     TAG="v${{ steps.version.outputs.version }}"
+      #     git tag "$TAG"
+      #     git push origin "$TAG"
+      #     echo "Created and pushed tag: $TAG"
 
       - name: Trigger Summary
         run: |
