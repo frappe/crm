@@ -370,7 +370,10 @@ import {
 import { useRouter, useRoute } from 'vue-router'
 import { isMobileView } from '@/composables/settings'
 import { useCommandPaletteContext } from '@/composables/useCommandPalette'
-import { commandFilterOptions } from '@/utils/commandPalette'
+import {
+  FILTERABLE_FIELDTYPES,
+  commandFilterOptions,
+} from '@/utils/commandPalette'
 import Draggable from 'vuedraggable'
 import _ from 'lodash'
 import ImportIcon from '~icons/lucide/import'
@@ -982,37 +985,45 @@ function viewCommands() {
     .map((item, index) => ({
       id: `list-view-${index}-${item.name || item.label}`,
       title: item.label,
+      icon: item.icon,
       checked: item.selected,
       perform: item.onClick,
     }))
 }
 
 function filterCommands() {
-  const commands = quickFilterList.value.flatMap(quickFilterCommands)
+  const commands = quickFilterList.value
+    .filter((filter) => FILTERABLE_FIELDTYPES.includes(filter.fieldtype))
+    .map(quickFilterCommand)
   if (Object.keys(list.value.params?.filters || {}).length) {
     commands.unshift({
       id: `list-filter-clear-${props.doctype}`,
       title: 'Clear all filters',
-      icon: 'x',
+      icon: 'filter-x',
       perform: () => updateFilter({}),
     })
   }
   return commands
 }
 
-function quickFilterCommands(filter) {
-  const options = commandFilterOptions(filter)
-  if (!options.length) return []
-  return [{
+function quickFilterCommand(filter) {
+  return {
     id: `list-filter-${filter.fieldname}`,
     title: filter.label,
-    children: async () => options.map((option) => ({
-      id: `list-filter-${filter.fieldname}-${option.value}`,
-      title: option.label,
-      checked: filter.value === option.value,
-      perform: () => applyQuickFilter(filter, option.value),
-    })),
-  }]
+    icon: 'list-filter',
+    children: async () => quickFilterOptionCommands(filter),
+  }
+}
+
+async function quickFilterOptionCommands(filter) {
+  const options = await commandFilterOptions(filter)
+  return options.map((option) => ({
+    id: `list-filter-${filter.fieldname}-${option.value}`,
+    title: option.label,
+    translate: false,
+    checked: filter.value === option.value,
+    perform: () => applyQuickFilter(filter, option.value),
+  }))
 }
 
 function setupNewQuickFilters(filters) {
