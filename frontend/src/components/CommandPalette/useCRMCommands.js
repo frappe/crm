@@ -213,7 +213,6 @@ function isOverdue(due) {
 }
 
 function dueBadge(due) {
-  console.log('dueBadge', due, isOverdue(due))
   const relative = prettyDate(due, true)
   return isOverdue(due) ? __('{0} overdue', [relative]) : relative
 }
