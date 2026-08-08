@@ -351,6 +351,8 @@ import {
 import { computed, ref, watch, h, markRaw } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { isMobileView } from '@/composables/settings'
+import { useCommandPaletteContext } from '@/composables/useCommandPalette'
+import { commandFilterOptions } from '@/utils/commandPalette'
 import Draggable from 'vuedraggable'
 import _ from 'lodash'
 import ImportIcon from '~icons/lucide/import'
@@ -893,6 +895,74 @@ const quickFilters = createResource({
 })
 
 if (!quickFilters.data) quickFilters.fetch()
+
+useCommandPaletteContext(() => listCommands())
+
+function listCommands() {
+  return [
+    {
+      id: `list-views-${props.doctype}`,
+      title: 'Switch view',
+      group: 'List',
+      icon: 'panels-top-left',
+      children: async () => viewCommands(),
+    },
+    {
+      id: `list-filters-${props.doctype}`,
+      title: 'Filter list',
+      group: 'List',
+      icon: 'list-filter',
+      children: async () => filterCommands(),
+    },
+    {
+      id: `list-refresh-${props.doctype}`,
+      title: 'Refresh list',
+      group: 'List',
+      icon: 'refresh-cw',
+      perform: reload,
+    },
+  ]
+}
+
+function viewCommands() {
+  return viewsDropdownOptions.value
+    .flatMap((group) => group.items || [])
+    .filter((item) => item.onClick && (!item.condition || item.condition()))
+    .map((item, index) => ({
+      id: `list-view-${index}-${item.name || item.label}`,
+      title: item.label,
+      checked: item.selected,
+      perform: item.onClick,
+    }))
+}
+
+function filterCommands() {
+  const commands = quickFilterList.value.flatMap(quickFilterCommands)
+  if (Object.keys(list.value.params?.filters || {}).length) {
+    commands.unshift({
+      id: `list-filter-clear-${props.doctype}`,
+      title: 'Clear all filters',
+      icon: 'x',
+      perform: () => updateFilter({}),
+    })
+  }
+  return commands
+}
+
+function quickFilterCommands(filter) {
+  const options = commandFilterOptions(filter)
+  if (!options.length) return []
+  return [{
+    id: `list-filter-${filter.fieldname}`,
+    title: filter.label,
+    children: async () => options.map((option) => ({
+      id: `list-filter-${filter.fieldname}-${option.value}`,
+      title: option.label,
+      checked: filter.value === option.value,
+      perform: () => applyQuickFilter(filter, option.value),
+    })),
+  }]
+}
 
 function setupNewQuickFilters(filters) {
   newQuickFilters.value = filters.map((f) => ({
