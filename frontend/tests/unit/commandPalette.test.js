@@ -1,4 +1,6 @@
 import {
+  commandFilterOptions,
+  flattenCommandActions,
   fuzzyScore,
   groupCommands,
   scoreCommand,
@@ -74,6 +76,23 @@ describe('groupCommands', () => {
     expect(groups[0].items.map((command) => command.id)).toEqual([
       'leads',
       'deals',
+    ])
+  })
+})
+
+describe('command capability helpers', () => {
+  it('flattens grouped script actions', () => {
+    const action = { label: 'Qualify' }
+    expect(flattenCommandActions([{ items: [action] }])).toEqual([action])
+  })
+
+  it('normalizes checkbox and string filter options', () => {
+    expect(commandFilterOptions({ fieldtype: 'Check' })).toEqual([
+      { label: 'Yes', value: '1' },
+      { label: 'No', value: '0' },
+    ])
+    expect(commandFilterOptions({ options: ['Open'] })).toEqual([
+      { label: 'Open', value: 'Open' },
     ])
   })
 })

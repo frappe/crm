@@ -388,6 +388,8 @@ import { getMeta } from '@/stores/meta'
 import { useDocument } from '@/data/document'
 import { whatsappEnabled } from '@/composables/whatsapp'
 import { callEnabled } from '@/composables/telephony'
+import { useCommandPaletteContext } from '@/composables/useCommandPalette'
+import { flattenCommandActions } from '@/utils/commandPalette'
 import { useBroadcast } from '@/composables/useBroadcast'
 import {
   createResource,
@@ -565,6 +567,75 @@ const statuses = computed(() => {
   return statusOptions('deal', customStatuses, triggerStatusChange)
 })
 
+useCommandPaletteContext(() => dealCommands())
+
+function dealCommands() {
+  const commands = [dealStatusCommand(), ...dealCommunicationCommands()]
+  commands.push(...dealScriptCommands())
+  if (canDelete.value) commands.push(deleteDealCommand())
+  return commands
+}
+
+function dealStatusCommand() {
+  return {
+    id: 'deal-status',
+    title: 'Change status',
+    group: 'Deal',
+    icon: 'circle-dot',
+    children: async () => dealStatusChildren(statuses.value),
+  }
+}
+
+function dealStatusChildren(options) {
+  return options.map((option) => ({
+    id: `deal-status-${option.label}`,
+    title: option.label,
+    checked: option.value === doc.value.status,
+    perform: option.onClick,
+  }))
+}
+
+function dealCommunicationCommands() {
+  const commands = []
+  if (doc.value.email) {
+    commands.push({ id: 'deal-email', title: 'Send email', group: 'Deal', icon: 'mail', perform: openEmailBox })
+  }
+  if (callEnabled.value) {
+    commands.push({ id: 'deal-call', title: 'Make a call', group: 'Deal', icon: 'phone', perform: triggerCall })
+  }
+  return commands
+}
+
+function dealScriptCommands() {
+  return flattenCommandActions([
+    ...(document._actions || []),
+    ...(document.actions || []),
+  ])
+    .filter(
+      (action) =>
+        action.label &&
+        action.onClick &&
+        (!action.condition || action.condition()),
+    )
+    .map((action, index) => ({
+      id: `deal-script-${index}-${action.label}`,
+      title: action.label,
+      group: 'Deal',
+      icon: action.icon || 'zap',
+      perform: () => action.onClick(() => {}),
+    }))
+}
+
+function deleteDealCommand() {
+  return {
+    id: 'deal-delete',
+    title: 'Delete deal',
+    group: 'Deal',
+    icon: 'trash-2',
+    perform: deleteDeal,
+  }
+}
+
 usePageMeta(() => {
   return {
     title: title.value,
@@ -736,7 +807,6 @@ if (!dealContacts.data) dealContacts.fetch()
 
 function triggerCall() {
   let primaryContact = dealContacts.data?.find((c) => c.is_primary)
-
   if (!primaryContact) {
     toast.error(__('No Primary Contact Set'))
     return

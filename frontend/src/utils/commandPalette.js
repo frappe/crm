@@ -60,6 +60,19 @@ export function groupCommands(commands, query = '') {
   return [...groups].map(([title, items]) => ({ title, items }))
 }
 
+export function flattenCommandActions(actions = []) {
+  return actions.flatMap((action) => action.items || action)
+}
+
+export function commandFilterOptions(filter) {
+  if (filter.fieldtype === 'Check') {
+    return [{ label: 'Yes', value: '1' }, { label: 'No', value: '0' }]
+  }
+  return (filter.options || []).map((option) =>
+    typeof option === 'object' ? option : { label: option, value: option },
+  )
+}
+
 function rankedCommands(commands, query) {
   const typed = Boolean(normalize(query))
   return commands
@@ -69,4 +82,3 @@ function rankedCommands(commands, query) {
     .sort((a, b) => b.score - a.score || a.index - b.index)
     .map(({ command }) => command)
 }
-
