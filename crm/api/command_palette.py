@@ -1,5 +1,13 @@
 import frappe
+from frappe.utils import add_days, add_to_date, now_datetime
 
+UPCOMING_LIMIT = 5
+UPCOMING_TASK_DAYS = 7
+UPCOMING_SLA_HOURS = 24
+# Anything older than this is backlog, not something to surface as upcoming.
+OVERDUE_GRACE_DAYS = 3
+SLA_DUE_STATUSES = ["First Response Due", "Rolling Response Due"]
+OPEN_TASK_STATUSES = ["Done", "Canceled"]
 
 SEARCH_TYPES = {
 	"CRM Lead": ("Lead", "lead_name", ["lead_name", "organization", "email", "mobile_no"]),
@@ -17,7 +25,84 @@ def search(query: str = "", recent_names: str | None = None):
 	return {
 		"matches": _search_all(query) if len(query) >= 2 else [],
 		"recent": _get_recent(recent) if not query else [],
+		"upcoming": _get_upcoming() if not query else [],
 	}
+
+
+def _get_upcoming():
+	"""Tasks due soon and SLA response deadlines, nearest first."""
+	items = _upcoming_tasks() + _upcoming_slas()
+	items.sort(key=lambda item: item["due"])
+	return items[:UPCOMING_LIMIT]
+
+
+def _upcoming_tasks():
+	if not frappe.has_permission("CRM Task", "read"):
+		return []
+	rows = frappe.get_list(
+		"CRM Task",
+		fields=["name", "title", "due_date", "reference_doctype", "reference_docname"],
+		filters={
+			"status": ["not in", OPEN_TASK_STATUSES],
+			"assigned_to": frappe.session.user,
+			"due_date": ["between", _window(UPCOMING_TASK_DAYS * 24)],
+		},
+		order_by="due_date asc",
+		limit_page_length=UPCOMING_LIMIT,
+	)
+	return [_upcoming_task(row) for row in rows]
+
+
+def _upcoming_task(row):
+	reference = SEARCH_TYPES.get(row.reference_doctype)
+	return {
+		"kind": "task",
+		"name": row.name,
+		"title": row.title,
+		"label": "Task",
+		"due": str(row.due_date),
+		"route": reference[0] if reference and row.reference_docname else "Tasks",
+		"route_name": row.reference_docname if reference else None,
+	}
+
+
+def _window(hours):
+	now = now_datetime()
+	return [add_days(now, -OVERDUE_GRACE_DAYS), add_to_date(now, hours=hours)]
+
+
+def _upcoming_slas():
+	items = []
+	for doctype, (route, title_field, _fields) in SEARCH_TYPES.items():
+		if doctype not in ("CRM Lead", "CRM Deal") or not frappe.has_permission(doctype, "read"):
+			continue
+		items.extend(_upcoming_sla(doctype, route, title_field))
+	return items
+
+
+def _upcoming_sla(doctype, route, title_field):
+	rows = frappe.get_list(
+		doctype,
+		fields=["name", title_field, "response_by"],
+		filters={
+			"sla_status": ["in", SLA_DUE_STATUSES],
+			"response_by": ["between", _window(UPCOMING_SLA_HOURS)],
+		},
+		order_by="response_by asc",
+		limit_page_length=UPCOMING_LIMIT,
+	)
+	return [
+		{
+			"kind": "sla",
+			"name": row.name,
+			"title": row.get(title_field) or row.name,
+			"label": "Response due",
+			"due": str(row.response_by),
+			"route": route,
+			"route_name": row.name,
+		}
+		for row in rows
+	]
 
 
 def _parse_recent(value: str | None):
