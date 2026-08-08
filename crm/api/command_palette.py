@@ -87,6 +87,7 @@ def _upcoming_sla(doctype, route, title_field):
 		filters={
 			"sla_status": ["in", SLA_DUE_STATUSES],
 			"response_by": ["between", _window(UPCOMING_SLA_HOURS)],
+			"_assign": ["like", f"%{frappe.session.user}%"],
 		},
 		order_by="response_by asc",
 		limit_page_length=UPCOMING_LIMIT,
