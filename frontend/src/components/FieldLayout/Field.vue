@@ -80,7 +80,7 @@
         @click="
           () => {
             if (!Boolean(field.read_only)) {
-              data[field.fieldname] = !data[field.fieldname]
+              fieldChange(!data[field.fieldname], field)
             }
           }
         "
