@@ -1,43 +1,38 @@
 <template>
-  <li
-    :id="optionId"
-    role="option"
-    :aria-selected="active"
-    :aria-disabled="command.disabled || undefined"
-    class="flex h-9 items-center gap-3 rounded-md px-3 text-base"
-    :class="rowClasses"
-    @click="!command.disabled && $emit('select')"
-    @mousemove="!command.disabled && $emit('activate')"
+  <div
+    class="flex w-full min-w-0 items-center rounded p-2 text-base font-medium text-gray-800"
+    :class="{ 'bg-gray-200': active }"
   >
-    <Icon v-if="command.icon" :icon="command.icon" class="size-4 shrink-0" />
-    <span class="flex-1 truncate">
-      {{ command.translate === false ? command.title : __(command.title) }}
+    <Icon
+      v-if="command.icon"
+      :icon="command.icon"
+      class="mr-3 h-4 w-4 text-gray-700"
+    />
+    <span class="overflow-hidden text-ellipsis whitespace-nowrap">
+      {{ command.translate === false ? command.title : __(command.title) }}&nbsp;
     </span>
-    <span v-if="command.subtitle" class="truncate text-sm text-ink-gray-5">
+    <span
+      v-if="command.subtitle"
+      class="ml-auto whitespace-nowrap pl-2 text-gray-600"
+    >
       {{ command.subtitle }}
     </span>
-    <span v-if="command.children" class="lucide-chevron-right size-4" />
-    <span v-if="command.checked" class="lucide-check size-4" />
-    <KeyboardShortcut v-if="command.hint" :combo="command.hint" bg />
-  </li>
+    <span
+      v-if="command.children"
+      class="lucide-chevron-right ml-auto h-4 w-4 text-gray-600"
+    />
+    <span
+      v-if="command.checked"
+      class="lucide-check ml-auto h-4 w-4 text-gray-600"
+    />
+  </div>
 </template>
 
 <script setup>
 import Icon from '@/components/Icon.vue'
-import { KeyboardShortcut } from 'frappe-ui'
-import { computed } from 'vue'
 
-const props = defineProps({
+defineProps({
   command: { type: Object, required: true },
-  active: { type: Boolean, default: false },
-  optionId: { type: String, required: true },
-})
-
-defineEmits(['activate', 'select'])
-
-const rowClasses = computed(() => {
-  if (props.command.disabled) return 'cursor-not-allowed text-ink-gray-4'
-  if (props.active) return 'cursor-pointer bg-surface-gray-2 text-ink-gray-9'
-  return 'cursor-pointer text-ink-gray-7'
+  active: { type: Boolean, required: true },
 })
 </script>
