@@ -8,7 +8,7 @@ export const commandPaletteQuery = ref('')
 const commandProvider = shallowRef(() => [])
 const contextualProvider = shallowRef(() => [])
 const stack = shallowRef([])
-const loading = ref(false)
+export const commandPaletteLoading = ref(false)
 let previousFocus = null
 
 export const commandPaletteDepth = computed(() => stack.value.length)
@@ -56,7 +56,13 @@ export function openCommandPalette() {
 
 export function closeCommandPalette() {
   commandPaletteOpen.value = false
-  requestAnimationFrame(() => previousFocus?.focus?.())
+}
+
+export function restoreCommandPaletteFocus() {
+  requestAnimationFrame(() => {
+    if (document.activeElement === document.body) previousFocus?.focus?.()
+    previousFocus = null
+  })
 }
 
 export function backCommandPalette() {
@@ -67,7 +73,7 @@ export function backCommandPalette() {
 }
 
 export async function runCommandPaletteItem(command) {
-  if (!command || loading.value) return
+  if (!command || command.disabled || commandPaletteLoading.value) return
   if (command.children) return openChildren(command)
   closeCommandPalette()
   try {
@@ -78,7 +84,7 @@ export async function runCommandPaletteItem(command) {
 }
 
 async function openChildren(command) {
-  loading.value = true
+  commandPaletteLoading.value = true
   try {
     const commands = await command.children()
     stack.value = [...stack.value, { title: command.title, commands }]
@@ -86,7 +92,7 @@ async function openChildren(command) {
   } catch (error) {
     showCommandError(error)
   } finally {
-    loading.value = false
+    commandPaletteLoading.value = false
   }
 }
 
@@ -102,7 +108,7 @@ export function useCommandPalette() {
     commandPaletteBreadcrumbs,
     commandPaletteGroups,
     commandPaletteItems,
-    commandPaletteLoading: loading,
+    commandPaletteLoading,
     commandPaletteOpen,
     commandPaletteQuery,
     openCommandPalette,
