@@ -369,7 +369,10 @@ import {
 } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { isMobileView } from '@/composables/settings'
-import { useCommandPaletteContext } from '@/composables/useCommandPalette'
+import {
+  commandPaletteOpen,
+  useCommandPaletteContext,
+} from '@/composables/useCommandPalette'
 import {
   FILTERABLE_FIELDTYPES,
   commandFilterOptions,
@@ -956,7 +959,15 @@ const filterableFields = createResource({
   cache: ['filterableFields', props.doctype],
 })
 
+const flatFilterOptions = ref({})
+
 useCommandPaletteContext(() => listCommands())
+
+watch(commandPaletteOpen, (open) => {
+  if (open && !Object.keys(flatFilterOptions.value).length) {
+    loadFlatFilterOptions()
+  }
+})
 
 function listCommands() {
   return [
@@ -981,7 +992,44 @@ function listCommands() {
       icon: 'refresh-cw',
       perform: reload,
     },
+    ...flatFilterCommands(),
   ]
+}
+
+// One row per quick filter value, so typing "qualified" applies it in one Enter.
+function flatFilterCommands() {
+  return quickFilterList.value
+    .filter(isFilterableField)
+    .flatMap((filter) =>
+      (flatFilterOptions.value[filter.fieldname] || []).map((option) =>
+        flatFilterCommand(filter, option),
+      ),
+    )
+}
+
+function flatFilterCommand(filter, option) {
+  return {
+    id: `list-filter-flat-${filter.fieldname}-${option.value}`,
+    title: `${filter.label}: ${option.label}`,
+    translate: false,
+    group: 'List',
+    icon: 'list-filter',
+    hideWhenEmpty: true,
+    keywords: option.label,
+    checked: currentFilterValue(filter) === option.value,
+    perform: () => applyQuickFilter(filter, option.value),
+  }
+}
+
+async function loadFlatFilterOptions() {
+  const filters = quickFilterList.value.filter(isFilterableField)
+  const entries = await Promise.all(
+    filters.map(async (filter) => [
+      filter.fieldname,
+      await commandFilterOptions(filter),
+    ]),
+  )
+  flatFilterOptions.value = Object.fromEntries(entries)
 }
 
 function viewCommands() {
