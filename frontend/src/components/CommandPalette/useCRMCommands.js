@@ -13,11 +13,65 @@ import {
   getCommandPaletteContext,
   setCommandPaletteProvider,
 } from '@/composables/useCommandPalette'
-import { navigationItems } from '@/utils/navigation'
+import { getNavigationItems } from '@/utils/navigation'
+import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
+import DealsIcon from '@/components/Icons/DealsIcon.vue'
+import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
+import OrganizationsIcon from '@/components/Icons/OrganizationsIcon.vue'
 import { sessionStore } from '@/stores/session'
 import { usersStore } from '@/stores/users'
 
 const RECENT_TYPES = { Lead: 'CRM Lead', Deal: 'CRM Deal' }
+
+const RECORD_ICONS = {
+  'CRM Lead': LeadsIcon,
+  'CRM Deal': DealsIcon,
+  Contact: ContactsIcon,
+  'CRM Organization': OrganizationsIcon,
+}
+
+const SETTINGS_SECTIONS = [
+  {
+    title: 'My settings',
+    pages: [
+      ['Profile', 'circle-user'],
+      ['Preferences', 'sliders-horizontal'],
+      ['Templates', 'notepad-text'],
+      ['Telephony', 'phone'],
+    ],
+  },
+  {
+    title: 'Workspace',
+    manager: true,
+    pages: [
+      ['General', 'settings'],
+      ['Brand', 'palette'],
+      ['Dashboard', 'layout-dashboard'],
+      ['Defaults', 'list-checks'],
+      ['Home Actions', 'house'],
+    ],
+  },
+  {
+    title: 'Team',
+    manager: true,
+    pages: [
+      ['Users', 'users'],
+      ['Invite User', 'user-plus'],
+      ['Sales Hierarchy', 'network'],
+      ['Assignment Rules', 'git-branch'],
+    ],
+  },
+  {
+    title: 'Integrations',
+    manager: true,
+    pages: [
+      ['SLA Policies', 'timer'],
+      ['Accounts', 'at-sign'],
+      ['ERPNext', 'blocks'],
+      ['Lead Syncing', 'refresh-cw'],
+    ],
+  },
+]
 
 export function useCRMCommands() {
   const { capture } = useTelemetry()
@@ -50,7 +104,8 @@ function createSearchState() {
 }
 
 function buildCommands(context) {
-  const { capture, emit, showModal, isManager, whatsappInstalled, state } = context
+  const { capture, emit, showModal, isManager, whatsappInstalled, state } =
+    context
   const tracked = trackWith(capture)
   return [
     ...navigationCommands(tracked),
@@ -59,7 +114,9 @@ function buildCommands(context) {
     ...getCommandPaletteContext().map((item) => tracked(item, 'contextual')),
     ...(state.error.value ? [searchErrorCommand()] : []),
     ...state.recent.value.map((item) => recordCommand(item, 'Recent', tracked)),
-    ...state.records.value.map((item) => recordCommand(item, 'Records', tracked)),
+    ...state.records.value.map((item) =>
+      recordCommand(item, 'Records', tracked),
+    ),
   ]
 }
 
@@ -125,13 +182,14 @@ function searchErrorCommand() {
 }
 
 function navigationCommands(tracked) {
-  return navigationItems.map((item) =>
+  return getNavigationItems().map((item) =>
     tracked(
       {
         id: `navigate-${item.route}`,
         title: item.label,
         group: 'Navigate',
         icon: item.icon,
+        weight: 0.7,
         keywords: `go open ${item.label}`,
         perform: () => router.push({ name: item.route }),
       },
@@ -177,26 +235,46 @@ function createRouteCommand(id, title, route, event, emit) {
 }
 
 function settingsCommands(tracked, isManager, whatsappInstalled) {
-  const pages = ['Profile', 'Preferences', 'Templates', 'Telephony']
-  if (isManager()) {
-    pages.push('General', 'Dashboard', 'Defaults', 'Brand', 'Users', 'Invite User')
-    pages.push('Sales Hierarchy', 'Accounts', 'Assignment Rules', 'SLA Policies')
-    pages.push('Home Actions', 'ERPNext', 'Lead Syncing')
-    if (whatsappInstalled) pages.push('WhatsApp')
-  }
-  return pages.map((page) =>
+  return [
     tracked(
       {
-        id: `settings-${page}`,
-        title: page,
-        group: 'Settings',
+        id: 'settings',
+        title: 'Settings',
+        group: 'Account',
         icon: 'settings',
-        keywords: `configure settings ${page}`,
-        perform: () => openSettings(page),
+        keywords: 'configure preferences profile users brand telephony erpnext',
+        children: () =>
+          settingsChildren(tracked, isManager(), whatsappInstalled),
       },
       'settings',
     ),
+  ]
+}
+
+function settingsChildren(tracked, isManager, whatsappInstalled) {
+  const sections = SETTINGS_SECTIONS.filter(
+    (section) => isManager || !section.manager,
   )
+  const commands = sections.flatMap((section) =>
+    section.pages.map(([page, icon]) =>
+      settingsChild(page, icon, section.title),
+    ),
+  )
+  if (isManager && whatsappInstalled) {
+    commands.push(settingsChild('WhatsApp', 'message-circle', 'Integrations'))
+  }
+  return commands.map((command) => tracked(command, 'settings'))
+}
+
+function settingsChild(page, icon, group) {
+  return {
+    id: `settings-${page}`,
+    title: page,
+    group,
+    icon,
+    keywords: `configure settings ${page}`,
+    perform: () => openSettings(page),
+  }
 }
 
 function openSettings(page) {
@@ -212,7 +290,10 @@ function recordCommand(record, group, tracked) {
       translate: false,
       subtitle: record.doctype.replace('CRM ', ''),
       group,
-      icon: 'file-text',
+      icon:
+        group === 'Recent'
+          ? 'clock'
+          : RECORD_ICONS[record.doctype] || 'file-text',
       rank: group === 'Recent' ? 300 : undefined,
       perform: () => router.push(recordRoute(record)),
     },
