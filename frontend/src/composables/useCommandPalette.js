@@ -74,6 +74,8 @@ export function backCommandPalette() {
 
 export async function runCommandPaletteItem(command) {
   if (!command || command.disabled || commandPaletteLoading.value) return
+  // Closing blurs the input, and headlessui re-emits the active option on blur.
+  if (!commandPaletteOpen.value) return
   if (command.children) return openChildren(command)
   closeCommandPalette()
   try {
