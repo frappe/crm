@@ -1,4 +1,4 @@
-import { computed, ref, shallowRef } from 'vue'
+import { computed, onBeforeUnmount, ref, shallowRef } from 'vue'
 import { groupCommands } from '@/utils/commandPalette'
 import { toast } from 'frappe-ui'
 
@@ -6,6 +6,7 @@ export const commandPaletteOpen = ref(false)
 export const commandPaletteQuery = ref('')
 
 const commandProvider = shallowRef(() => [])
+const contextualProvider = shallowRef(() => [])
 const stack = shallowRef([])
 const loading = ref(false)
 let previousFocus = null
@@ -29,6 +30,21 @@ export const commandPaletteItems = computed(() => {
 
 export function setCommandPaletteProvider(provider) {
   commandProvider.value = provider
+}
+
+export function setCommandPaletteContext(provider) {
+  contextualProvider.value = provider || (() => [])
+}
+
+export function getCommandPaletteContext() {
+  return contextualProvider.value()
+}
+
+export function useCommandPaletteContext(provider) {
+  setCommandPaletteContext(provider)
+  onBeforeUnmount(() => {
+    if (contextualProvider.value === provider) setCommandPaletteContext()
+  })
 }
 
 export function openCommandPalette() {
