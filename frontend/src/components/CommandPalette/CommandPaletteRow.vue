@@ -20,6 +20,13 @@
     <span v-if="command.subtitle" class="ms-3 shrink-0 text-xs text-ink-gray-4">
       {{ command.subtitle }}
     </span>
+    <span
+      v-if="command.badge"
+      class="ms-2 shrink-0 rounded bg-surface-gray-2 px-1.5 py-0.5 text-xs"
+      :class="command.badgeClass || 'text-ink-gray-5'"
+    >
+      {{ command.badge }}
+    </span>
     <LucideCheck
       v-if="command.checked"
       class="ms-3 size-3.5 shrink-0 text-ink-gray-7"
