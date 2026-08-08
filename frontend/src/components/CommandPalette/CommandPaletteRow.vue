@@ -1,35 +1,40 @@
 <template>
   <div
-    class="flex w-full min-w-0 items-center rounded p-2 text-base font-medium text-gray-800"
-    :class="{ 'bg-gray-200': active }"
+    class="flex h-9 w-full min-w-0 items-center rounded px-2 text-sm"
+    :class="[
+      active ? 'bg-surface-gray-2' : '',
+      command.disabled ? 'text-ink-gray-4' : 'text-ink-gray-8',
+    ]"
   >
     <Icon
       v-if="command.icon"
       :icon="command.icon"
-      class="mr-3 h-4 w-4 text-gray-700"
+      class="me-2.5 size-3.5 shrink-0"
+      :class="active ? 'text-ink-gray-7' : 'text-ink-gray-5'"
     />
-    <span class="overflow-hidden text-ellipsis whitespace-nowrap">
-      {{ command.translate === false ? command.title : __(command.title) }}&nbsp;
-    </span>
     <span
-      v-if="command.subtitle"
-      class="ml-auto whitespace-nowrap pl-2 text-gray-600"
+      class="min-w-0 flex-1 overflow-hidden text-ellipsis whitespace-nowrap"
     >
+      {{ command.translate === false ? command.title : __(command.title) }}
+    </span>
+    <span v-if="command.subtitle" class="ms-3 shrink-0 text-xs text-ink-gray-4">
       {{ command.subtitle }}
     </span>
-    <span
-      v-if="command.children"
-      class="lucide-chevron-right ml-auto h-4 w-4 text-gray-600"
-    />
-    <span
+    <LucideCheck
       v-if="command.checked"
-      class="lucide-check ml-auto h-4 w-4 text-gray-600"
+      class="ms-3 size-3.5 shrink-0 text-ink-gray-7"
+    />
+    <LucideChevronRight
+      v-if="command.children"
+      class="ms-2 size-3.5 shrink-0 text-ink-gray-4"
     />
   </div>
 </template>
 
 <script setup>
 import Icon from '@/components/Icon.vue'
+import LucideCheck from '~icons/lucide/check'
+import LucideChevronRight from '~icons/lucide/chevron-right'
 
 defineProps({
   command: { type: Object, required: true },
