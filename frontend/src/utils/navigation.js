@@ -6,9 +6,15 @@ import OrganizationsIcon from '@/components/Icons/OrganizationsIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import LucideLayoutDashboard from '~icons/lucide/layout-dashboard'
+import router from '@/router'
 
 export const navigationItems = [
-  { label: 'Dashboard', icon: LucideLayoutDashboard, route: 'Dashboard', desktopOnly: true },
+  {
+    label: 'Dashboard',
+    icon: LucideLayoutDashboard,
+    route: 'Dashboard',
+    desktopOnly: true,
+  },
   { label: 'Leads', icon: LeadsIcon, route: 'Leads' },
   { label: 'Deals', icon: DealsIcon, route: 'Deals' },
   { label: 'Contacts', icon: ContactsIcon, route: 'Contacts' },
@@ -19,5 +25,7 @@ export const navigationItems = [
 ]
 
 export function getNavigationItems({ mobile = false } = {}) {
-  return navigationItems.filter((item) => !mobile || !item.desktopOnly)
+  return navigationItems.filter(
+    (item) => router.hasRoute(item.route) && (!mobile || !item.desktopOnly),
+  )
 }
