@@ -25,6 +25,16 @@ import { usersStore } from '@/stores/users'
 
 const RECENT_TYPES = { Lead: 'CRM Lead', Deal: 'CRM Deal' }
 
+// Contextual groups are named after the page ('Lead', 'List'), not listed below.
+const CONTEXT_RANK = 350
+const GROUP_ORDER = {
+  Upcoming: 400,
+  Recent: 300,
+  Create: 250,
+  Navigate: 200,
+  Account: 150,
+}
+
 const RECORD_ICONS = {
   'CRM Lead': LeadsIcon,
   'CRM Deal': DealsIcon,
@@ -110,7 +120,7 @@ function buildCommands(context) {
   const { capture, emit, showModal, isManager, whatsappInstalled, state } =
     context
   const tracked = trackWith(capture)
-  return [
+  return ordered([
     ...(commandPaletteQuery.value.trim()
       ? []
       : upcomingCommands(state.upcoming.value, tracked)),
@@ -123,7 +133,17 @@ function buildCommands(context) {
     ...state.records.value.map((item) =>
       recordCommand(item, 'Records', tracked),
     ),
-  ]
+  ])
+}
+
+// Only the untyped list is ranked; a rank bypasses matching.
+function ordered(commands) {
+  if (commandPaletteQuery.value.trim()) return commands
+  return commands.map((command) =>
+    command.rank != null
+      ? command
+      : { ...command, rank: GROUP_ORDER[command.group] ?? 0 },
+  )
 }
 
 function trackWith(capture) {
@@ -200,7 +220,6 @@ function upcomingCommands(items, tracked) {
         subtitle: __(item.label),
         badge: dueBadge(item.due),
         badgeClass: isOverdue(item.due) ? 'text-ink-red-5' : 'text-ink-gray-5',
-        rank: 400,
         perform: () => router.push(upcomingRoute(item)),
       },
       'upcoming',
@@ -223,16 +242,14 @@ function upcomingRoute(item) {
   return { name: item.route, params: { [param]: item.route_name } }
 }
 
-// What you are looking at outranks the generic list, but never excludes it.
-// Ranks only order the untyped list; once typing starts, matching decides and
-// context just gets a thumb on the scale.
+// Context outranks the generic list, but weight never excludes a real match.
 function contextualCommands(tracked) {
   const typed = Boolean(commandPaletteQuery.value.trim())
   return getCommandPaletteContext().map((item) =>
     tracked(
       typed
         ? { ...item, weight: item.weight ?? 1.4 }
-        : { ...item, rank: item.rank ?? 350 },
+        : { ...item, rank: item.rank ?? CONTEXT_RANK },
       'contextual',
     ),
   )
@@ -351,7 +368,6 @@ function recordCommand(record, group, tracked) {
         group === 'Recent'
           ? 'clock'
           : RECORD_ICONS[record.doctype] || 'file-text',
-      rank: group === 'Recent' ? 300 : undefined,
       perform: () => router.push(recordRoute(record)),
     },
     'record',
