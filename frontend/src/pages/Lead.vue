@@ -429,7 +429,11 @@ const statuses = computed(() => {
 useCommandPaletteContext(() => leadCommands())
 
 function leadCommands() {
-  const commands = [statusCommand(), ...communicationCommands()]
+  const commands = [
+    statusCommand(),
+    ...flatStatusCommands(),
+    ...communicationCommands(),
+  ]
   commands.push(...scriptCommands())
   commands.push({
     id: 'lead-convert',
@@ -456,6 +460,23 @@ function statusChildren(options) {
   return options.map((option) => ({
     id: `lead-status-${option.label}`,
     title: option.label,
+    translate: false,
+    icon: option.icon,
+    checked: option.value === doc.value.status,
+    perform: option.onClick,
+  }))
+}
+
+// Typing a status name sets it in one Enter, without drilling in.
+function flatStatusCommands() {
+  return statuses.value.map((option) => ({
+    id: `lead-status-flat-${option.label}`,
+    title: __('Set status: {0}', [option.label]),
+    translate: false,
+    group: 'Lead',
+    icon: option.icon,
+    hideWhenEmpty: true,
+    keywords: option.label,
     checked: option.value === doc.value.status,
     perform: option.onClick,
   }))
@@ -464,10 +485,22 @@ function statusChildren(options) {
 function communicationCommands() {
   const commands = []
   if (doc.value.email) {
-    commands.push({ id: 'lead-email', title: 'Send email', group: 'Lead', icon: 'mail', perform: openEmailBox })
+    commands.push({
+      id: 'lead-email',
+      title: 'Send email',
+      group: 'Lead',
+      icon: 'mail',
+      perform: openEmailBox,
+    })
   }
   if (doc.value.mobile_no && callEnabled.value) {
-    commands.push({ id: 'lead-call', title: 'Make a call', group: 'Lead', icon: 'phone', perform: () => makeCall(doc.value.mobile_no) })
+    commands.push({
+      id: 'lead-call',
+      title: 'Make a call',
+      group: 'Lead',
+      icon: 'phone',
+      perform: () => makeCall(doc.value.mobile_no),
+    })
   }
   return commands
 }
