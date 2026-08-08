@@ -15,7 +15,9 @@
           v-model="commandPaletteQuery"
           role="combobox"
           aria-autocomplete="list"
+          aria-haspopup="listbox"
           aria-controls="command-palette-list"
+          aria-describedby="command-palette-results"
           :aria-expanded="commandPaletteOpen"
           :aria-activedescendant="activeOptionId"
           :placeholder="__('Search records or type a command...')"
@@ -87,6 +89,7 @@ import {
   commandPaletteOpen,
   commandPaletteQuery,
   openCommandPalette,
+  restoreCommandPaletteFocus,
   runCommandPaletteItem,
 } from '@/composables/useCommandPalette'
 import { useCRMCommands } from './useCRMCommands'
@@ -190,7 +193,7 @@ watch(activeIndex, async (index) => {
 })
 
 watch(commandPaletteOpen, async (open) => {
-  if (!open) return
+  if (!open) return restoreCommandPaletteFocus()
   await nextTick()
   input.value?.focus()
 })

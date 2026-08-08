@@ -1,5 +1,3 @@
-import json
-
 import frappe
 
 
@@ -15,11 +13,19 @@ SEARCH_TYPES = {
 def search(query: str = "", recent_names: str | None = None):
 	"""Return permission-filtered CRM records for the command palette."""
 	query = (query or "").strip()
-	recent = json.loads(recent_names or "{}")
+	recent = _parse_recent(recent_names)
 	return {
 		"matches": _search_all(query) if len(query) >= 2 else [],
 		"recent": _get_recent(recent) if not query else [],
 	}
+
+
+def _parse_recent(value: str | None):
+	try:
+		recent = frappe.parse_json(value or "{}")
+	except (TypeError, ValueError):
+		return {}
+	return recent if isinstance(recent, dict) else {}
 
 
 def _search_all(query: str):
@@ -36,7 +42,7 @@ def _search_doctype(doctype: str, config: tuple, query: str):
 	rows = frappe.get_list(
 		doctype,
 		fields=list(dict.fromkeys(fields)),
-		or_filters=[[field, "like", f"%{query}%"] for field in search_fields],
+		or_filters=[[field, "like", f"%{query}%"] for field in ["name", *search_fields]],
 		order_by="modified desc",
 		limit_page_length=5,
 	)
@@ -46,7 +52,7 @@ def _search_doctype(doctype: str, config: tuple, query: str):
 def _get_recent(recent: dict):
 	results = []
 	for doctype, names in recent.items():
-		if doctype in SEARCH_TYPES and frappe.has_permission(doctype, "read"):
+		if doctype in SEARCH_TYPES and isinstance(names, list) and frappe.has_permission(doctype, "read"):
 			results.extend(_recent_doctype(doctype, names[:5]))
 	return results
 

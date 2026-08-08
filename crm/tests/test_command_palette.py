@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 import frappe
 
-from crm.api.command_palette import _get_recent, _search_all
+from crm.api.command_palette import _get_recent, _search_all, search
 
 
 class TestCommandPalette(TestCase):
@@ -29,3 +29,13 @@ class TestCommandPalette(TestCase):
 		results = _get_recent({"CRM Lead": ["LEAD-2", "LEAD-1"]})
 
 		self.assertEqual([result["name"] for result in results], ["LEAD-2", "LEAD-1"])
+
+	@patch("crm.api.command_palette._get_recent")
+	@patch("crm.api.command_palette.frappe.parse_json", side_effect=ValueError)
+	def test_invalid_recent_payload_is_ignored(self, _parse_json, get_recent):
+		get_recent.return_value = []
+
+		result = search(recent_names="not-json")
+
+		self.assertEqual(result["recent"], [])
+		get_recent.assert_called_once_with({})

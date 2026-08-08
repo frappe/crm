@@ -1,11 +1,12 @@
 import { call } from 'frappe-ui'
-import { onBeforeUnmount, ref, watch } from 'vue'
+import { nextTick, onBeforeUnmount, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useTelemetry } from 'frappe-ui/frappe'
 import router from '@/router'
 import { activeSettingsPage, showSettings } from '@/composables/settings'
 import { useBroadcast } from '@/composables/useBroadcast'
 import { useDoctypeModal } from '@/composables/doctypeModal'
+import { isWhatsappInstalled } from '@/composables/whatsapp'
 import {
   commandPaletteOpen,
   commandPaletteQuery,
@@ -20,24 +21,43 @@ const RECENT_TYPES = { Lead: 'CRM Lead', Deal: 'CRM Deal' }
 
 export function useCRMCommands() {
   const { capture } = useTelemetry()
-  const { send } = useBroadcast()
+  const { emit } = useBroadcast()
   const { showModal } = useDoctypeModal()
   const { user } = sessionStore()
   const { isManager } = usersStore()
-  const state = { records: ref([]), recent: ref([]), requestId: 0, timer: null }
-  const context = { capture, send, showModal, user, isManager, state }
+  const state = createSearchState()
+  const context = {
+    capture,
+    emit,
+    showModal,
+    user,
+    isManager,
+    whatsappInstalled: isWhatsappInstalled,
+    state,
+  }
   setCommandPaletteProvider(() => buildCommands(context))
   installWatchers(context)
 }
 
+function createSearchState() {
+  return {
+    records: ref([]),
+    recent: ref([]),
+    error: ref(false),
+    requestId: 0,
+    timer: null,
+  }
+}
+
 function buildCommands(context) {
-  const { capture, send, showModal, isManager, state } = context
+  const { capture, emit, showModal, isManager, whatsappInstalled, state } = context
   const tracked = trackWith(capture)
   return [
     ...navigationCommands(tracked),
-    ...createCommands(tracked, send, showModal),
-    ...settingsCommands(tracked, isManager),
+    ...createCommands(tracked, emit, showModal),
+    ...settingsCommands(tracked, isManager, whatsappInstalled.value),
     ...getCommandPaletteContext().map((item) => tracked(item, 'contextual')),
+    ...(state.error.value ? [searchErrorCommand()] : []),
     ...state.recent.value.map((item) => recordCommand(item, 'Recent', tracked)),
     ...state.records.value.map((item) => recordCommand(item, 'Records', tracked)),
   ]
@@ -82,10 +102,25 @@ async function fetchRecords(query, context) {
       recent_names: JSON.stringify(readRecent(context.user)),
     })
     if (currentRequest !== context.state.requestId) return
+    context.state.error.value = false
     context.state.records.value = data.matches || []
     context.state.recent.value = data.recent || []
   } catch (error) {
-    if (currentRequest === context.state.requestId) console.error(error)
+    if (currentRequest !== context.state.requestId) return
+    context.state.error.value = true
+    context.state.records.value = []
+    console.error('Command palette record search failed', error)
+  }
+}
+
+function searchErrorCommand() {
+  return {
+    id: 'record-search-error',
+    title: 'Record search is unavailable',
+    subtitle: 'Try again shortly',
+    group: 'Records',
+    icon: 'circle-alert',
+    disabled: true,
   }
 }
 
@@ -105,28 +140,28 @@ function navigationCommands(tracked) {
   )
 }
 
-function createCommands(tracked, send, showModal) {
+function createCommands(tracked, emit, showModal) {
   const custom = [
-    createRouteCommand('lead', 'Lead', 'Leads', 'trigger_lead_create', send),
-    createRouteCommand('deal', 'Deal', 'Deals', 'trigger_deal_create', send),
+    createRouteCommand('lead', 'Lead', 'Leads', 'trigger_lead_create', emit),
+    createRouteCommand('deal', 'Deal', 'Deals', 'trigger_deal_create', emit),
   ]
   const generic = [
-    ['contact', 'Contact'],
-    ['organization', 'CRM Organization'],
-    ['note', 'FCRM Note'],
-    ['task', 'CRM Task'],
-  ].map(([id, doctype]) => ({
+    ['contact', 'Contact', 'Contact'],
+    ['organization', 'Organization', 'CRM Organization'],
+    ['note', 'Note', 'FCRM Note'],
+    ['task', 'Task', 'CRM Task'],
+  ].map(([id, title, doctype]) => ({
     id: `create-${id}`,
-    title: `Create ${id}`,
+    title: `Create ${title}`,
     group: 'Create',
     icon: 'plus',
     keywords: `new add ${id}`,
-    perform: () => showModal({ doctype, title: id }),
+    perform: () => showModal({ doctype, title }),
   }))
   return [...custom, ...generic].map((item) => tracked(item, 'create'))
 }
 
-function createRouteCommand(id, title, route, event, send) {
+function createRouteCommand(id, title, route, event, emit) {
   return {
     id: `create-${id}`,
     title: `Create ${title}`,
@@ -135,16 +170,19 @@ function createRouteCommand(id, title, route, event, send) {
     keywords: `new add ${id}`,
     async perform() {
       await router.push({ name: route })
-      requestAnimationFrame(() => send(event, true))
+      await nextTick()
+      emit(event, true)
     },
   }
 }
 
-function settingsCommands(tracked, isManager) {
-  const pages = ['Profile', 'Preferences', 'Templates']
+function settingsCommands(tracked, isManager, whatsappInstalled) {
+  const pages = ['Profile', 'Preferences', 'Templates', 'Telephony']
   if (isManager()) {
     pages.push('General', 'Dashboard', 'Defaults', 'Brand', 'Users', 'Invite User')
     pages.push('Sales Hierarchy', 'Accounts', 'Assignment Rules', 'SLA Policies')
+    pages.push('Home Actions', 'ERPNext', 'Lead Syncing')
+    if (whatsappInstalled) pages.push('WhatsApp')
   }
   return pages.map((page) =>
     tracked(
