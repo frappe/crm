@@ -21,6 +21,7 @@
           <LucideChevronRight class="size-3 text-ink-gray-4" />
         </button>
         <ComboboxInput
+          ref="inputRef"
           :placeholder="__('Search records or type a command...')"
           class="w-full border-none bg-transparent py-3.5 pe-4 ps-3 text-base text-ink-gray-8 placeholder-ink-gray-4 focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0"
           autofocus
@@ -101,7 +102,7 @@ import {
   ComboboxOptions,
 } from '@headlessui/vue'
 import { Dialog } from 'frappe-ui'
-import { computed, watch } from 'vue'
+import { computed, nextTick, ref, watch } from 'vue'
 import LucideChevronRight from '~icons/lucide/chevron-right'
 import LucideLoaderCircle from '~icons/lucide/loader-circle'
 import LucideSearch from '~icons/lucide/search'
@@ -126,7 +127,14 @@ import { useCRMCommands } from './useCRMCommands'
 
 useCRMCommands()
 
+const inputRef = ref(null)
+
 const currentStep = computed(() => commandPaletteBreadcrumbs.value.at(-1))
+
+// The Combobox is re-keyed per level, so every drill-in mounts a fresh input.
+watch([commandPaletteOpen, commandPaletteDepth], () =>
+  nextTick(() => inputRef.value?.$el?.focus()),
+)
 
 const emptyIcon = computed(() => {
   if (commandPaletteLoading.value) return LucideLoaderCircle
