@@ -127,8 +127,7 @@ const inputRef = ref(null)
 
 const currentStep = computed(() => commandPaletteBreadcrumbs.value.at(-1))
 
-// The Combobox is never re-keyed: unmounting it blurs the input, and headlessui
-// selects the active option on blur — which applied whatever row you were on.
+// Never re-key the Combobox: headlessui selects the active option on blur.
 watch([commandPaletteOpen, commandPaletteDepth], () =>
   nextTick(() => {
     const input = inputRef.value?.$el
