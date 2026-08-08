@@ -89,10 +89,13 @@ import {
   openCommandPalette,
   runCommandPaletteItem,
 } from '@/composables/useCommandPalette'
+import { useCRMCommands } from './useCRMCommands'
 
 const input = ref(null)
 const rowRefs = ref([])
 const activeIndex = ref(0)
+
+useCRMCommands()
 
 const indexedGroups = computed(() => {
   let index = 0

@@ -9,7 +9,9 @@
     @mousemove="$emit('activate')"
   >
     <Icon v-if="command.icon" :icon="command.icon" class="size-4 shrink-0" />
-    <span class="flex-1 truncate">{{ command.title }}</span>
+    <span class="flex-1 truncate">
+      {{ command.translate === false ? command.title : __(command.title) }}
+    </span>
     <span v-if="command.subtitle" class="truncate text-sm text-ink-gray-5">
       {{ command.subtitle }}
     </span>
