@@ -114,10 +114,10 @@ function buildCommands(context) {
     ...(commandPaletteQuery.value.trim()
       ? []
       : upcomingCommands(state.upcoming.value, tracked)),
+    ...contextualCommands(tracked),
     ...navigationCommands(tracked),
     ...createCommands(tracked, emit, showModal),
     ...settingsCommands(tracked, isManager, whatsappInstalled.value),
-    ...getCommandPaletteContext().map((item) => tracked(item, 'contextual')),
     ...(state.error.value ? [searchErrorCommand()] : []),
     ...state.recent.value.map((item) => recordCommand(item, 'Recent', tracked)),
     ...state.records.value.map((item) =>
@@ -221,6 +221,21 @@ function upcomingRoute(item) {
   if (!item.route_name) return { name: item.route }
   const param = `${item.route.toLowerCase()}Id`
   return { name: item.route, params: { [param]: item.route_name } }
+}
+
+// What you are looking at outranks the generic list, but never excludes it.
+// Ranks only order the untyped list; once typing starts, matching decides and
+// context just gets a thumb on the scale.
+function contextualCommands(tracked) {
+  const typed = Boolean(commandPaletteQuery.value.trim())
+  return getCommandPaletteContext().map((item) =>
+    tracked(
+      typed
+        ? { ...item, weight: item.weight ?? 1.4 }
+        : { ...item, rank: item.rank ?? 350 },
+      'contextual',
+    ),
+  )
 }
 
 function navigationCommands(tracked) {
