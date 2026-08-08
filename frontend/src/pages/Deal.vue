@@ -563,7 +563,11 @@ const statuses = computed(() => {
 useCommandPaletteContext(() => dealCommands())
 
 function dealCommands() {
-  const commands = [dealStatusCommand(), ...dealCommunicationCommands()]
+  const commands = [
+    dealStatusCommand(),
+    ...flatDealStatusCommands(),
+    ...dealCommunicationCommands(),
+  ]
   commands.push(...dealScriptCommands())
   if (canDelete.value) commands.push(deleteDealCommand())
   return commands
@@ -583,6 +587,23 @@ function dealStatusChildren(options) {
   return options.map((option) => ({
     id: `deal-status-${option.label}`,
     title: option.label,
+    translate: false,
+    icon: option.icon,
+    checked: option.value === doc.value.status,
+    perform: option.onClick,
+  }))
+}
+
+// Typing a status name sets it in one Enter, without drilling in.
+function flatDealStatusCommands() {
+  return statuses.value.map((option) => ({
+    id: `deal-status-flat-${option.label}`,
+    title: __('Set status: {0}', [option.label]),
+    translate: false,
+    group: 'Deal',
+    icon: option.icon,
+    hideWhenEmpty: true,
+    keywords: option.label,
     checked: option.value === doc.value.status,
     perform: option.onClick,
   }))
@@ -591,10 +612,22 @@ function dealStatusChildren(options) {
 function dealCommunicationCommands() {
   const commands = []
   if (doc.value.email) {
-    commands.push({ id: 'deal-email', title: 'Send email', group: 'Deal', icon: 'mail', perform: openEmailBox })
+    commands.push({
+      id: 'deal-email',
+      title: 'Send email',
+      group: 'Deal',
+      icon: 'mail',
+      perform: openEmailBox,
+    })
   }
   if (callEnabled.value) {
-    commands.push({ id: 'deal-call', title: 'Make a call', group: 'Deal', icon: 'phone', perform: triggerCall })
+    commands.push({
+      id: 'deal-call',
+      title: 'Make a call',
+      group: 'Deal',
+      icon: 'phone',
+      perform: triggerCall,
+    })
   }
   return commands
 }
