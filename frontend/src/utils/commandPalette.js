@@ -1,3 +1,5 @@
+import { call } from 'frappe-ui'
+
 const SCORE = {
   prefix: 1000,
   word: 850,
@@ -6,7 +8,9 @@ const SCORE = {
 }
 
 function normalize(value) {
-  return String(value || '').trim().toLocaleLowerCase()
+  return String(value || '')
+    .trim()
+    .toLocaleLowerCase()
 }
 
 function wordBoundaryIndex(text, term) {
@@ -64,20 +68,52 @@ export function flattenCommandActions(actions = []) {
   return actions.flatMap((action) => action.items || action)
 }
 
-export function commandFilterOptions(filter) {
+export const FILTERABLE_FIELDTYPES = ['Check', 'Select', 'Link']
+
+export async function commandFilterOptions(filter) {
   if (filter.fieldtype === 'Check') {
-    return [{ label: 'Yes', value: '1' }, { label: 'No', value: '0' }]
+    return [
+      { label: 'Yes', value: '1' },
+      { label: 'No', value: '0' },
+    ]
   }
-  return (filter.options || []).map((option) =>
-    typeof option === 'object' ? option : { label: option, value: option },
-  )
+  if (filter.fieldtype === 'Link') return linkOptions(filter.options)
+  return selectOptions(filter.options)
+}
+
+// `options` on a Link quick filter is the target doctype, not a list of values.
+async function linkOptions(doctype) {
+  if (!doctype) return []
+  const results = await call('frappe.desk.search.search_link', {
+    txt: '',
+    doctype,
+  })
+  return results.map((result) => ({
+    label: result.label || result.value,
+    value: result.value,
+  }))
+}
+
+function selectOptions(options) {
+  const values = Array.isArray(options)
+    ? options
+    : String(options || '').split('\n')
+  return values
+    .map((option) =>
+      typeof option === 'object' ? option : { label: option, value: option },
+    )
+    .filter((option) => option.value)
 }
 
 function rankedCommands(commands, query) {
   const typed = Boolean(normalize(query))
   return commands
     .filter((command) => typed || !command.hideWhenEmpty)
-    .map((command, index) => ({ command, index, score: scoreCommand(command, query) }))
+    .map((command, index) => ({
+      command,
+      index,
+      score: scoreCommand(command, query),
+    }))
     .filter(({ score }) => score >= 0)
     .sort((a, b) => b.score - a.score || a.index - b.index)
     .map(({ command }) => command)
