@@ -1,4 +1,4 @@
-import { call } from 'frappe-ui'
+import { call, dayjs, dayjsLocal } from 'frappe-ui'
 import { nextTick, onBeforeUnmount, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useTelemetry } from 'frappe-ui/frappe'
@@ -18,6 +18,8 @@ import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
 import OrganizationsIcon from '@/components/Icons/OrganizationsIcon.vue'
+import TaskIcon from '@/components/Icons/TaskIcon.vue'
+import { prettyDate } from '@/utils'
 import { sessionStore } from '@/stores/session'
 import { usersStore } from '@/stores/users'
 
@@ -97,6 +99,7 @@ function createSearchState() {
   return {
     records: ref([]),
     recent: ref([]),
+    upcoming: ref([]),
     error: ref(false),
     requestId: 0,
     timer: null,
@@ -108,6 +111,9 @@ function buildCommands(context) {
     context
   const tracked = trackWith(capture)
   return [
+    ...(commandPaletteQuery.value.trim()
+      ? []
+      : upcomingCommands(state.upcoming.value, tracked)),
     ...navigationCommands(tracked),
     ...createCommands(tracked, emit, showModal),
     ...settingsCommands(tracked, isManager, whatsappInstalled.value),
@@ -162,6 +168,7 @@ async function fetchRecords(query, context) {
     context.state.error.value = false
     context.state.records.value = data.matches || []
     context.state.recent.value = data.recent || []
+    context.state.upcoming.value = data.upcoming || []
   } catch (error) {
     if (currentRequest !== context.state.requestId) return
     context.state.error.value = true
@@ -179,6 +186,42 @@ function searchErrorCommand() {
     icon: 'circle-alert',
     disabled: true,
   }
+}
+
+function upcomingCommands(items, tracked) {
+  return items.map((item) =>
+    tracked(
+      {
+        id: `upcoming-${item.kind}-${item.name}`,
+        title: item.title,
+        translate: false,
+        group: 'Upcoming',
+        icon: item.kind === 'task' ? TaskIcon : 'timer',
+        subtitle: __(item.label),
+        badge: dueBadge(item.due),
+        badgeClass: isOverdue(item.due) ? 'text-ink-red-5' : 'text-ink-gray-5',
+        rank: 400,
+        perform: () => router.push(upcomingRoute(item)),
+      },
+      'upcoming',
+    ),
+  )
+}
+
+function isOverdue(due) {
+  return dayjsLocal(due).isBefore(dayjs())
+}
+
+function dueBadge(due) {
+  console.log('dueBadge', due, isOverdue(due))
+  const relative = prettyDate(due, true)
+  return isOverdue(due) ? __('{0} overdue', [relative]) : relative
+}
+
+function upcomingRoute(item) {
+  if (!item.route_name) return { name: item.route }
+  const param = `${item.route.toLowerCase()}Id`
+  return { name: item.route, params: { [param]: item.route_name } }
 }
 
 function navigationCommands(tracked) {
