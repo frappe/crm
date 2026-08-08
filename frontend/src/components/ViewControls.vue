@@ -899,6 +899,12 @@ const quickFilters = createResource({
 
 if (!quickFilters.data) quickFilters.fetch()
 
+const filterableFields = createResource({
+  url: 'crm.api.doc.get_filterable_fields',
+  params: { doctype: props.doctype },
+  cache: ['filterableFields', props.doctype],
+})
+
 useCommandPaletteContext(() => listCommands())
 
 function listCommands() {
@@ -940,10 +946,15 @@ function viewCommands() {
     }))
 }
 
-function filterCommands() {
-  const commands = quickFilterList.value
-    .filter((filter) => FILTERABLE_FIELDTYPES.includes(filter.fieldtype))
-    .map(quickFilterCommand)
+async function filterCommands() {
+  const quick = quickFilterList.value.filter(isFilterableField)
+  const configured = new Set(quick.map((filter) => filter.fieldname))
+  const commands = [
+    ...quick.map((filter) => filterFieldCommand(filter, 'Quick filters')),
+    ...(await otherFilterFields(configured)).map((field) =>
+      filterFieldCommand(field, 'All fields'),
+    ),
+  ]
   if (Object.keys(list.value.params?.filters || {}).length) {
     commands.unshift({
       id: `list-filter-clear-${props.doctype}`,
@@ -955,10 +966,25 @@ function filterCommands() {
   return commands
 }
 
-function quickFilterCommand(filter) {
+function isFilterableField(field) {
+  return (
+    FILTERABLE_FIELDTYPES.includes(field.fieldtype) &&
+    field.fieldname !== 'name'
+  )
+}
+
+async function otherFilterFields(configured) {
+  if (!filterableFields.data) await filterableFields.fetch()
+  return (filterableFields.data || []).filter(
+    (field) => isFilterableField(field) && !configured.has(field.fieldname),
+  )
+}
+
+function filterFieldCommand(filter, group) {
   return {
     id: `list-filter-${filter.fieldname}`,
     title: filter.label,
+    group,
     icon: 'list-filter',
     children: async () => quickFilterOptionCommands(filter),
   }
@@ -966,13 +992,20 @@ function quickFilterCommand(filter) {
 
 async function quickFilterOptionCommands(filter) {
   const options = await commandFilterOptions(filter)
+  const current = currentFilterValue(filter)
   return options.map((option) => ({
     id: `list-filter-${filter.fieldname}-${option.value}`,
     title: option.label,
     translate: false,
-    checked: filter.value === option.value,
+    checked: current === option.value,
     perform: () => applyQuickFilter(filter, option.value),
   }))
+}
+
+function currentFilterValue(filter) {
+  const value = list.value.params?.filters?.[filter.fieldname]
+  if (Array.isArray(value)) return String(value[1] ?? '').replace(/%/g, '')
+  return value ?? filter.value
 }
 
 function setupNewQuickFilters(filters) {
