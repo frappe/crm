@@ -4,11 +4,7 @@
     bare
     :options="{ size: '2xl', position: 'top' }"
   >
-    <Combobox
-      :key="commandPaletteDepth"
-      nullable
-      @update:model-value="onSelection"
-    >
+    <Combobox nullable @update:model-value="onSelection">
       <div class="flex items-center border-b border-outline-gray-1 px-1">
         <LucideSearch class="ms-3 size-4 shrink-0 text-ink-gray-4" />
         <button
@@ -131,9 +127,15 @@ const inputRef = ref(null)
 
 const currentStep = computed(() => commandPaletteBreadcrumbs.value.at(-1))
 
-// The Combobox is re-keyed per level, so every drill-in mounts a fresh input.
+// The Combobox is never re-keyed: unmounting it blurs the input, and headlessui
+// selects the active option on blur — which applied whatever row you were on.
 watch([commandPaletteOpen, commandPaletteDepth], () =>
-  nextTick(() => inputRef.value?.$el?.focus()),
+  nextTick(() => {
+    const input = inputRef.value?.$el
+    if (!input) return
+    input.value = commandPaletteQuery.value
+    input.focus()
+  }),
 )
 
 const emptyIcon = computed(() => {
