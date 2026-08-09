@@ -54,6 +54,16 @@ def handle_request(**kwargs):
 				status=get_call_log_status(call_payload),
 				agent=call_payload.get("AgentEmail"),
 			)
+		elif agent := frappe.request.args.get("agent"):
+			create_call_log(
+				call_id=call_payload.get("CallSid"),
+				from_number=call_payload.get("From") or call_payload.get("CallFrom"),
+				to_number=call_payload.get("DialWhomNumber") or call_payload.get("To"),
+				medium=call_payload.get("To"),
+				status=get_call_log_status(call_payload, direction=call_payload.get("Direction")),
+				agent=agent,
+				call_type="Outgoing",
+			)
 	except Exception:
 		request_log.status = "Failed"
 		request_log.error = frappe.get_traceback()
@@ -159,7 +169,10 @@ def get_status_updater_url():
 	from frappe.utils.data import get_url
 
 	webhook_verify_token = frappe.db.get_single_value("CRM Exotel Settings", "webhook_verify_token")
-	return get_url(f"api/method/crm.integrations.exotel.handler.handle_request?key={webhook_verify_token}")
+	return get_url(
+		f"api/method/crm.integrations.exotel.handler.handle_request"
+		f"?key={webhook_verify_token}&agent={frappe.session.user}"
+	)
 
 
 def get_exotel_settings():
