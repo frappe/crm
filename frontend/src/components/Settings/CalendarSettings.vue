@@ -10,7 +10,7 @@
         <p class="text-p-base text-ink-gray-6">
           {{
             __(
-              'Configure your Calendar Settings like Default View and Event Notifications here',
+              'Configure your calendar settings, including the default view and event notifications',
             )
           }}
         </p>

@@ -15,7 +15,7 @@
           />
         </h2>
         <p class="text-p-base text-ink-gray-6">
-          {{ __('Configure Telephony Settings for your CRM') }}
+          {{ __('Configure telephony settings for your CRM') }}
         </p>
       </div>
       <div class="flex item-center space-x-2 w-3/12 justify-end">
@@ -38,7 +38,7 @@
             {{ __('Default Medium') }}
           </div>
           <div class="text-p-sm text-ink-gray-5">
-            {{ __('Default Calling Medium for Logged In User') }}
+            {{ __('Default calling medium for logged-in user') }}
           </div>
         </div>
         <div class="flex items-center gap-1">
@@ -117,7 +117,7 @@
       >
         <div class="flex flex-col">
           <div class="text-p-base-medium text-ink-gray-7 truncate">
-            {{ __('Personal Mobile No.') }}
+            {{ __('Personal Mobile Number') }}
           </div>
           <div class="text-p-sm text-ink-gray-5">
             {{
@@ -131,7 +131,7 @@
           <FormControl
             v-model="telephonyAgent.doc.mobile_no"
             class="flex-1 truncate w-44 p-1"
-            :placeholder="__('Enter Personal Mobile No.')"
+            :placeholder="__('Enter Personal Mobile Number')"
             placement="bottom-end"
           />
         </div>
@@ -154,7 +154,7 @@
           </span>
           <span class="text-p-sm text-ink-gray-6">
             {{
-              __('Configure your Twilio Telephony Integration Settings here')
+              __('Configure your Twilio telephony integration settings here')
             }}
           </span>
         </div>
@@ -181,7 +181,7 @@
           </span>
           <span class="text-p-sm text-ink-gray-6">
             {{
-              __('Configure your Exotel Telephony Integration Settings here')
+              __('Configure your Exotel telephony integration settings here')
             }}
           </span>
         </div>
