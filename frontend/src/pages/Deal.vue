@@ -390,6 +390,7 @@ import { whatsappEnabled } from '@/composables/whatsapp'
 import { callEnabled } from '@/composables/telephony'
 import { useCommandPaletteContext } from '@/composables/useCommandPalette'
 import { flattenCommandActions } from '@/utils/commandPalette'
+import { recordCommands } from '@/components/CommandPalette/recordCommands'
 import { useBroadcast } from '@/composables/useBroadcast'
 import {
   createResource,
@@ -573,11 +574,80 @@ function dealCommands() {
   const commands = [
     dealStatusCommand(),
     ...flatDealStatusCommands(),
+    ...recordCommands(paletteContext()),
+    ...contactCommands(),
     ...dealCommunicationCommands(),
   ]
   commands.push(...dealScriptCommands())
   if (canDelete.value) commands.push(deleteDealCommand())
   return commands
+}
+
+function paletteContext() {
+  return {
+    doctype: 'CRM Deal',
+    docname: props.dealId,
+    group: 'Deal',
+    assignees,
+    tabs,
+    changeTabTo,
+    activities: () => activities.value,
+    hasEmail: () => Boolean(doc.value?.email),
+    openEmailBox,
+    openFileUploader: () => (showFilesUploader.value = true),
+  }
+}
+
+function contactCommands() {
+  const commands = [
+    {
+      id: 'deal-add-contact',
+      title: 'Add contact',
+      group: 'Deal',
+      icon: 'user-round-plus',
+      keywords: 'link person attach contact',
+      children: async () => contactPickerChildren(),
+    },
+  ]
+  if (dealContacts.data?.length > 1) commands.push(primaryContactCommand())
+  return commands
+}
+
+async function contactPickerChildren() {
+  const results = await call('frappe.desk.search.search_link', {
+    txt: '',
+    doctype: 'Contact',
+  })
+  return results
+    .filter(
+      (result) => !dealContacts.data?.some((c) => c.name === result.value),
+    )
+    .map((result) => ({
+      id: `deal-add-contact-${result.value}`,
+      title: result.label || result.value,
+      translate: false,
+      icon: 'user-round',
+      perform: () => addContact(result.value),
+    }))
+}
+
+function primaryContactCommand() {
+  return {
+    id: 'deal-primary-contact',
+    title: 'Set primary contact',
+    group: 'Deal',
+    icon: 'user-round-check',
+    keywords: 'main default contact',
+    children: async () =>
+      dealContacts.data.map((contact) => ({
+        id: `deal-primary-contact-${contact.name}`,
+        title: contact.full_name || contact.name,
+        translate: false,
+        icon: 'user-round',
+        checked: contact.is_primary,
+        perform: () => setPrimaryContact(contact.name),
+      })),
+  }
 }
 
 function dealStatusCommand() {
@@ -728,7 +798,7 @@ const tabs = computed(() => {
   return tabOptions.filter((tab) => (tab.condition ? tab.condition() : true))
 })
 
-const { tabIndex } = useActiveTabManager(tabs, 'lastDealTab')
+const { tabIndex, changeTabTo } = useActiveTabManager(tabs, 'lastDealTab')
 
 const sections = createResource({
   url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_sidepanel_sections',
