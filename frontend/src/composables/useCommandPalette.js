@@ -37,7 +37,13 @@ export function setCommandPaletteContext(provider) {
 }
 
 export function getCommandPaletteContext() {
-  return contextualProvider.value()
+  // A half-loaded page must not take the whole palette down with it.
+  try {
+    return contextualProvider.value() || []
+  } catch (error) {
+    console.error('Command palette context failed', error)
+    return []
+  }
 }
 
 export function useCommandPaletteContext(provider) {
