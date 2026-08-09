@@ -50,6 +50,7 @@ import { ref, computed, watch } from 'vue'
 import { createResource } from 'frappe-ui'
 import FinanceTable from '../../components/FinanceTable.vue'
 import { useCompanyContext } from '../../composables/useCompanyContext.js'
+import { useBoot } from '../../composables/useBoot.js'
 
 const { company } = useCompanyContext()
 const page = ref(0)
@@ -57,11 +58,8 @@ const statusFilter = ref('')
 const approvingRow = ref(null)
 
 const isFinanceManager = computed(() => {
-  try {
-    return (window.frappe?.boot?.user?.roles || []).includes('Finance Manager')
-  } catch {
-    return false
-  }
+  const { getRoles } = useBoot()
+  return getRoles().includes('Finance Manager')
 })
 
 const columns = [

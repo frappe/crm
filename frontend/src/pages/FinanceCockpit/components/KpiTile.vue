@@ -1,28 +1,29 @@
 <template>
   <div
-    class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 px-5 py-4 flex flex-col gap-2 cursor-pointer hover:shadow-md hover:border-blue-300 dark:hover:border-blue-600 transition-all min-w-0"
+    class="group rounded-xl border border-outline-gray-1 bg-surface-white overflow-hidden cursor-pointer hover:shadow-md hover:border-outline-gray-3 transition-all"
     @click="$emit('click')"
   >
-    <div class="flex items-start justify-between gap-2">
-      <span class="text-xs font-medium text-gray-500 dark:text-gray-400 leading-tight">{{ label }}</span>
-      <span
-        class="w-8 h-8 flex-shrink-0 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-500 dark:text-gray-300"
-        v-html="iconSvg"
-      />
+    <!-- Category accent strip — the tone carries the finance meaning (info /
+         inflow / attention / pending) so the eye groups tiles at a glance. -->
+    <div class="h-1 w-full" :class="tone.bar" />
+    <div class="px-5 py-4 flex flex-col gap-2">
+      <div class="flex items-start justify-between gap-2">
+        <span class="text-xs font-medium text-ink-gray-5 leading-tight">{{ label }}</span>
+        <span
+          class="w-7 h-7 flex-shrink-0 rounded-lg flex items-center justify-center transition-transform group-hover:scale-105"
+          :class="tone.chip"
+          v-html="iconSvg"
+        />
+      </div>
+      <div class="text-2xl font-bold text-ink-gray-9 tabular-nums truncate">
+        {{ formattedValue }}
+      </div>
+      <div class="flex items-center gap-1 text-xs" v-if="deltaPct !== 0">
+        <span :class="deltaClass" v-html="deltaIcon" />
+        <span :class="deltaClass">{{ Math.abs(deltaPct) }}% vs last period</span>
+      </div>
+      <div v-else class="text-xs text-ink-gray-4">—</div>
     </div>
-    <div class="text-2xl font-bold text-gray-900 dark:text-gray-100 tabular-nums truncate">
-      {{ formattedValue }}
-    </div>
-    <div class="flex items-center gap-1 text-xs" v-if="deltaPct !== 0">
-      <span
-        :class="deltaDirection === 'up' ? 'text-green-500' : deltaDirection === 'down' ? 'text-red-500' : 'text-gray-400'"
-        v-html="deltaIcon"
-      />
-      <span :class="deltaDirection === 'up' ? 'text-green-500' : deltaDirection === 'down' ? 'text-red-500' : 'text-gray-400'">
-        {{ Math.abs(deltaPct) }}% vs last period
-      </span>
-    </div>
-    <div v-else class="text-xs text-gray-400 dark:text-gray-500">—</div>
   </div>
 </template>
 
@@ -36,24 +37,46 @@ const props = defineProps({
   deltaPct: { type: Number, default: 0 },
   deltaDirection: { type: String, default: 'neutral' },
   iconSvg: { type: String, default: '' },
+  // Semantic tone: info | positive | attention | pending | neutral. Drives the
+  // accent strip + icon chip through theme-aware frappe-ui tokens (auto dark).
+  tone: { type: String, default: 'neutral' },
 })
 defineEmits(['click'])
 
+// Restrained finance palette on a red/black/white brand (this fork rebrands the
+// `blue` token family to Tiberbu red, so there is no blue tone). Each reads as a
+// category: neutral (gray) balances · positive (green) cash in · attention (red)
+// at-risk · pending (amber) awaiting. Chip = pale surface-*-2 fill + dark ink-*-6
+// glyph (contrast-verified light & dark); rail = saturated surface-*-6.
+const TONES = {
+  neutral:   { bar: 'bg-surface-gray-6',  chip: 'bg-surface-gray-3 text-ink-gray-7' },
+  positive:  { bar: 'bg-surface-green-6', chip: 'bg-surface-green-2 text-ink-green-6' },
+  attention: { bar: 'bg-surface-red-6',   chip: 'bg-surface-red-2 text-ink-red-6' },
+  pending:   { bar: 'bg-surface-amber-6', chip: 'bg-surface-amber-2 text-ink-amber-6' },
+}
+const tone = computed(() => TONES[props.tone] || TONES.neutral)
+
+const deltaClass = computed(() =>
+  props.deltaDirection === 'up'
+    ? 'text-ink-green-3'
+    : props.deltaDirection === 'down'
+      ? 'text-ink-red-3'
+      : 'text-ink-gray-4',
+)
+
 const formattedValue = computed(() => {
   const v = props.value ?? 0
-  const prefix = props.currency ? props.currency + ' ' : ''
+  const prefix = props.currency ? props.currency + ' ' : ''
   if (v >= 1_000_000) return prefix + (v / 1_000_000).toFixed(1) + 'M'
-  if (v >= 1_000)     return prefix + (v / 1_000).toFixed(1) + 'K'
+  if (v >= 1_000)     return prefix + (v / 1_000).toFixed(0) + 'K'
   return prefix + v.toLocaleString(undefined, { maximumFractionDigits: 0 })
 })
 
 const deltaIcon = computed(() => {
-  if (props.deltaDirection === 'up') {
-    return '<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg>'
-  }
-  if (props.deltaDirection === 'down') {
-    return '<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg>'
-  }
+  if (props.deltaDirection === 'up')
+    return '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg>'
+  if (props.deltaDirection === 'down')
+    return '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg>'
   return ''
 })
 </script>
