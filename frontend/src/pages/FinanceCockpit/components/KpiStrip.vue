@@ -49,6 +49,7 @@
         :delta-pct="tile.data.delta_pct"
         :delta-direction="tile.data.delta_direction"
         :icon-svg="tile.iconSvg"
+        :tone="tile.tone"
         @click="$emit('navigate', tile.section)"
       />
     </div>
@@ -100,15 +101,18 @@ const ICON_SVGS = {
   rebate: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" x2="21" y1="6" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>',
 }
 
+// tone maps each KPI to a finance meaning (see KpiTile TONES): outstanding
+// balances = neutral, cash-in = positive, overdue = attention, in-flight/obligations
+// = pending. (No `info`/blue tone — this fork rebrands blue to Tiberbu red.)
 const ALL_TILES = [
-  { key: 'ar_outstanding',     label: 'AR Outstanding',      section: 'receivables',        roles: ['Finance Manager', 'AR Accountant'],              iconSvg: ICON_SVGS.ar },
-  { key: 'ar_overdue',         label: 'AR Overdue',          section: 'receivables',        roles: ['Finance Manager', 'AR Accountant'],              iconSvg: ICON_SVGS.ar },
-  { key: 'invoiced_mtd',       label: 'Invoiced MTD',        section: 'receivables',        roles: ['Finance Manager', 'AR Accountant'],              iconSvg: ICON_SVGS.payment },
-  { key: 'collected_mtd',      label: 'Collected MTD',       section: 'receivables',        roles: ['Finance Manager', 'AR Accountant'],              iconSvg: ICON_SVGS.payment },
-  { key: 'ap_outstanding',     label: 'AP Outstanding',      section: 'payables',           roles: ['Finance Manager', 'AP Accountant'],              iconSvg: ICON_SVGS.ap },
-  { key: 'ap_overdue',         label: 'AP Overdue',          section: 'payables',           roles: ['Finance Manager', 'AP Accountant'],              iconSvg: ICON_SVGS.ap },
-  { key: 'pending_rebates',    label: 'Pending Rebates',     section: 'partner_commission', roles: ['Finance Manager', 'AR Accountant', 'Partner RM'], iconSvg: ICON_SVGS.rebate },
-  { key: 'unpaid_commissions', label: 'Unpaid Commissions',  section: 'partner_commission', roles: ['Finance Manager', 'Sales Manager'],              iconSvg: ICON_SVGS.rebate },
+  { key: 'ar_outstanding',     label: 'AR Outstanding',      section: 'receivables',        tone: 'neutral',   roles: ['Finance Manager', 'AR Accountant'],              iconSvg: ICON_SVGS.ar },
+  { key: 'ar_overdue',         label: 'AR Overdue',          section: 'receivables',        tone: 'attention', roles: ['Finance Manager', 'AR Accountant'],              iconSvg: ICON_SVGS.ar },
+  { key: 'invoiced_mtd',       label: 'Invoiced MTD',        section: 'receivables',        tone: 'pending',   roles: ['Finance Manager', 'AR Accountant'],              iconSvg: ICON_SVGS.payment },
+  { key: 'collected_mtd',      label: 'Collected MTD',       section: 'receivables',        tone: 'positive',  roles: ['Finance Manager', 'AR Accountant'],              iconSvg: ICON_SVGS.payment },
+  { key: 'ap_outstanding',     label: 'AP Outstanding',      section: 'payables',           tone: 'pending',   roles: ['Finance Manager', 'AP Accountant'],              iconSvg: ICON_SVGS.ap },
+  { key: 'ap_overdue',         label: 'AP Overdue',          section: 'payables',           tone: 'attention', roles: ['Finance Manager', 'AP Accountant'],              iconSvg: ICON_SVGS.ap },
+  { key: 'pending_rebates',    label: 'Pending Rebates',     section: 'partner_commission', tone: 'pending',   roles: ['Finance Manager', 'AR Accountant', 'Partner RM'], iconSvg: ICON_SVGS.rebate },
+  { key: 'unpaid_commissions', label: 'Unpaid Commissions',  section: 'partner_commission', tone: 'pending',   roles: ['Finance Manager', 'Sales Manager'],              iconSvg: ICON_SVGS.rebate },
 ]
 
 const visibleTiles = computed(() => {

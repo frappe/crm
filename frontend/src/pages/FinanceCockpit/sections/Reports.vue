@@ -77,13 +77,14 @@
 import { ref } from 'vue'
 import { REPORTS, GROUPS, GROUP_LABELS } from '../constants/reportsConfig.js'
 import { useCompanyContext } from '../composables/useCompanyContext.js'
+import { useBoot } from '../composables/useBoot.js'
 
 const { company } = useCompanyContext()
+const { getRoles, isAdministrator } = useBoot()
 
-const userRoles = window.frappe?.boot?.user?.roles ?? []
+const userRoles = getRoles()
 const today = new Date().toISOString().slice(0, 10)
 
-// All groups open by default
 const openGroups = ref(new Set(GROUPS))
 
 function toggleGroup(group) {
@@ -94,8 +95,7 @@ function toggleGroup(group) {
   }
 }
 
-const isAdmin = userRoles.includes('System Manager') ||
-  window.frappe?.session?.user === 'Administrator'
+const isAdmin = userRoles.includes('System Manager') || isAdministrator()
 
 function visibleReportsForGroup(group) {
   return REPORTS.filter(r =>

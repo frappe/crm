@@ -231,3 +231,20 @@ html {
 .menu-content {
   z-index: 101;
 }
+
+/* Finance Cockpit — glassmorphic card surface */
+.fc-glass-card {
+  @apply rounded-xl border border-outline-gray-1 p-5;
+  background: var(--glass-bg, rgba(255, 255, 255, 0.72));
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
+  backdrop-filter: blur(12px) saturate(140%);
+  box-shadow: 0 1px 3px 0 rgba(0,0,0,0.06), 0 0 0 1px rgba(255,255,255,0.5) inset;
+  transition: box-shadow 0.15s ease;
+}
+.fc-glass-card:hover {
+  box-shadow: 0 4px 12px 0 rgba(0,0,0,0.08), 0 0 0 1px rgba(255,255,255,0.6) inset;
+}
+[data-theme='dark'] .fc-glass-card {
+  background: var(--glass-bg, rgba(30, 30, 36, 0.72));
+  box-shadow: 0 1px 3px 0 rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.05) inset;
+}

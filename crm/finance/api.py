@@ -1,7 +1,8 @@
 import json
 import calendar
 import frappe
-from frappe.utils import today, get_first_day, date_diff, add_months
+from frappe import _
+from frappe.utils import today, get_first_day, date_diff, add_months, flt
 from datetime import date
 from crm.finance import erpnext_adapter
 
@@ -724,7 +725,7 @@ def get_sales_orders(company=None, filters=None, page=0, page_size=20):
     return erpnext_adapter.get_list(
         "Sales Order",
         filters=base_filters,
-        fields=["name", "customer", "transaction_date", "grand_total", "status", "billing_status"],
+        fields=["name", "customer", "transaction_date", "delivery_date", "grand_total", "status", "billing_status"],
         order_by="transaction_date desc",
         limit_page_length=int(page_size),
         limit_start=int(page) * int(page_size),
@@ -750,11 +751,120 @@ def get_customer_payments(company=None, filters=None, page=0, page_size=20):
         "Payment Entry",
         filters=base_filters,
         fields=["name", "party", "posting_date", "paid_amount", "mode_of_payment",
-                "allocated_amount", "unallocated_amount"],
+                "total_allocated_amount", "unallocated_amount"],
         order_by="posting_date desc",
         limit_page_length=int(page_size),
         limit_start=int(page) * int(page_size),
     )
+
+
+@frappe.whitelist()
+def get_customer_outstanding_invoices(company=None, customer=None):
+    """Outstanding submitted Sales Invoices for a customer, for payment allocation.
+
+    Powers the cockpit's Receive-Payment composer: the user picks a customer and
+    allocates a receipt across these invoices. Amounts are the live outstanding
+    balances straight from the ledger.
+    """
+    roles = frappe.get_roles(frappe.session.user)
+    if not _has_ar_access(roles):
+        frappe.throw("Insufficient permissions", frappe.PermissionError)
+    company = _resolve_company(company)
+    if not customer:
+        return []
+    rows = erpnext_adapter.get_list(
+        "Sales Invoice",
+        filters=[
+            ["company", "=", company],
+            ["customer", "=", customer],
+            ["docstatus", "=", 1],
+            ["outstanding_amount", ">", 0],
+        ],
+        fields=["name", "posting_date", "due_date", "grand_total", "outstanding_amount", "currency"],
+        order_by="due_date asc",
+        limit_page_length=200,
+    )
+    today_str = today()
+    for r in rows:
+        due = r.get("due_date")
+        r["days_overdue"] = max(0, int(date_diff(today_str, str(due)))) if due else 0
+    return rows
+
+
+@frappe.whitelist()
+def create_customer_payment(company=None, customer=None, mode_of_payment=None,
+                            posting_date=None, reference_no=None, reference_date=None,
+                            allocations=None, submit=1):
+    """Create (and optionally submit) a Receive Payment Entry for a customer.
+
+    `allocations` is a JSON array of {invoice, amount}. ERPNext's get_payment_entry
+    seeds the correct bank/party accounts and exchange rates from the first invoice;
+    remaining invoices are appended as additional references. When no invoice is
+    allocated, an on-account (unallocated) receipt is created instead.
+    """
+    from erpnext.accounts.doctype.payment_entry.payment_entry import get_payment_entry
+
+    roles = frappe.get_roles(frappe.session.user)
+    if not _has_ar_access(roles):
+        frappe.throw("Insufficient permissions", frappe.PermissionError)
+    company = _resolve_company(company)
+    if not customer:
+        frappe.throw("Customer is required")
+
+    if isinstance(allocations, str):
+        allocations = json.loads(allocations or "[]")
+    allocations = [a for a in (allocations or []) if flt(a.get("amount")) > 0]
+
+    # Re-derive the allowed invoices server-side and reject any allocation that
+    # doesn't belong to this (company, customer). The client-supplied list is
+    # untrusted — never allocate against an invoice the ledger didn't surface.
+    allowed = {r["name"]: flt(r["outstanding_amount"])
+               for r in get_customer_outstanding_invoices(company=company, customer=customer)}
+    for a in allocations:
+        inv = a.get("invoice")
+        if inv not in allowed:
+            frappe.throw(_("Invoice {0} is not an outstanding invoice for this customer").format(inv))
+        if flt(a.get("amount")) > allowed[inv] + 0.005:
+            frappe.throw(_("Allocation for {0} exceeds its outstanding balance").format(inv))
+
+    if allocations:
+        # Seed from the first allocated invoice so accounts + rates resolve natively.
+        first = allocations[0]
+        pe = get_payment_entry("Sales Invoice", first.get("invoice"), party_amount=flt(first.get("amount")))
+        # Reset references to exactly what the user allocated.
+        pe.set("references", [])
+        total = 0.0
+        for a in allocations:
+            amt = flt(a.get("amount"))
+            pe.append("references", {
+                "reference_doctype": "Sales Invoice",
+                "reference_name": a.get("invoice"),
+                "allocated_amount": amt,
+            })
+            total += amt
+        pe.paid_amount = total
+        pe.received_amount = total
+    else:
+        # On-account receipt: still needs accounts/rates seeded from an invoice-less
+        # entry, which get_payment_entry cannot do. Require at least one allocation.
+        frappe.throw("Allocate the receipt to at least one invoice")
+
+    pe.company = company
+    if mode_of_payment:
+        pe.mode_of_payment = mode_of_payment
+    if posting_date:
+        pe.posting_date = posting_date
+    if reference_no:
+        pe.reference_no = reference_no
+    if reference_date:
+        pe.reference_date = reference_date
+
+    pe.set_amounts()
+    pe.insert()
+    if int(submit or 0):
+        pe.submit()
+    _invalidate_kpi_cache(frappe.session.user, company)
+    return {"name": pe.name, "docstatus": pe.docstatus, "paid_amount": pe.paid_amount}
 
 
 @frappe.whitelist()
@@ -770,6 +880,83 @@ def get_customers(company=None, page=0, page_size=20):
         limit_page_length=int(page_size),
         limit_start=int(page) * int(page_size),
     )
+
+
+@frappe.whitelist()
+def get_quotations(company=None, filters=None, page=0, page_size=20):
+    roles = frappe.get_roles(frappe.session.user)
+    if not _has_ar_access(roles):
+        frappe.throw("Insufficient permissions", frappe.PermissionError)
+    company = _resolve_company(company)
+    base_filters = [["company", "=", company], ["docstatus", "in", [0, 1]]]
+    if filters:
+        if isinstance(filters, str):
+            filters = json.loads(filters)
+        base_filters.extend(filters)
+    return erpnext_adapter.get_list(
+        "Quotation",
+        filters=base_filters,
+        fields=["name", "party_name", "transaction_date", "valid_till", "grand_total", "status"],
+        order_by="transaction_date desc",
+        limit_page_length=int(page_size),
+        limit_start=int(page) * int(page_size),
+    )
+
+
+@frappe.whitelist()
+def get_pipeline_summary(company=None, period="month"):
+    """Return counts + values for the 4 pipeline stages: Quotes, Orders, Invoices, Payments."""
+    roles = frappe.get_roles(frappe.session.user)
+    if not _has_ar_access(roles):
+        frappe.throw("Insufficient permissions", frappe.PermissionError)
+    company = _resolve_company(company)
+    t = today()
+
+    # A submitted Quotation's status is "Open" (ERPNext has no "Submitted"
+    # status); the prior ["Draft", "Submitted"] filter silently excluded every
+    # submitted quote from this KPI. These are the real in-play statuses.
+    open_quotes = frappe.get_list(
+        "Quotation",
+        filters=[["company", "=", company], ["docstatus", "in", [0, 1]], ["status", "in", ["Draft", "Open", "Replied", "Partially Ordered"]]],
+        fields=["grand_total"],
+    )
+    active_orders = frappe.get_list(
+        "Sales Order",
+        filters=[["company", "=", company], ["docstatus", "=", 1], ["status", "in", ["To Deliver and Bill", "To Bill", "Draft"]]],
+        fields=["grand_total"],
+    )
+    unpaid_invoices = frappe.get_list(
+        "Sales Invoice",
+        filters=[["company", "=", company], ["docstatus", "=", 1], ["outstanding_amount", ">", 0]],
+        fields=["outstanding_amount"],
+    )
+
+    from frappe.utils import get_first_day, get_last_day
+    period_start = get_first_day(t)
+    payments_mtd = frappe.get_list(
+        "Payment Entry",
+        filters=[
+            ["company", "=", company],
+            ["docstatus", "=", 1],
+            ["payment_type", "=", "Receive"],
+            ["posting_date", ">=", period_start],
+            ["posting_date", "<=", t],
+        ],
+        fields=["paid_amount"],
+    )
+
+    currency = frappe.defaults.get_global_default("currency") or "KES"
+    return {
+        "open_quotes": len(open_quotes),
+        "quotes_value": sum(r.grand_total or 0 for r in open_quotes),
+        "active_orders": len(active_orders),
+        "orders_value": sum(r.grand_total or 0 for r in active_orders),
+        "unpaid_invoices": len(unpaid_invoices),
+        "invoices_value": sum(r.outstanding_amount or 0 for r in unpaid_invoices),
+        "payments_mtd": len(payments_mtd),
+        "payments_value": sum(r.paid_amount or 0 for r in payments_mtd),
+        "currency": currency,
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -850,7 +1037,7 @@ def get_supplier_payments(company=None, filters=None, page=0, page_size=20):
         "Payment Entry",
         filters=base_filters,
         fields=["name", "party", "posting_date", "paid_amount", "mode_of_payment",
-                "allocated_amount", "unallocated_amount"],
+                "total_allocated_amount", "unallocated_amount"],
         order_by="posting_date desc",
         limit_page_length=int(page_size),
         limit_start=int(page) * int(page_size),

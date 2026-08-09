@@ -4,10 +4,10 @@
 # Updated: 2026-08-01
 
 summary:
-  total: 18
+  total: 19
   ready-for-dev: 7
   in-progress: 0
-  review: 7
+  review: 10
   done: 3
   cancelled: 0
 
@@ -106,9 +106,15 @@ development_status:
   fc-s4-3-gl-liabilities-assets: review             # [dev-story] GL viewer + Journal Entries + Period Closing; Subscriptions + Deferred; Asset Register
 
   # Sprint 5 — Scoped views, Global search, Setup, erpnext_adapter
-  fc-s5-1-scoped-views: ready-for-dev               # [dev-story] SalesManagerView + PartnerRmView; restricted sidebar; read-only commission/rebate lists
-  fc-s5-2-global-search: ready-for-dev              # [dev-story] Ctrl+K command palette; global_search API; role-scoped results; keyboard navigation
-  fc-s5-3-setup-erpnext-adapter: ready-for-dev      # [dev-story] Setup section links (Finance Manager only); erpnext_adapter.py cross-site wrapper
+  fc-s5-1-scoped-views: review                      # [dev-story] SalesManagerView + PartnerRmView; restricted sidebar; read-only commission/rebate lists
+  fc-s5-2-global-search: review                     # [dev-story] Ctrl+K command palette; global_search API; role-scoped results; keyboard navigation
+  fc-s5-3-setup-erpnext-adapter: review             # [dev-story] Setup section links (Finance Manager only); erpnext_adapter.py cross-site wrapper
+
+  # Sprint 6 — Create-From (mapped-doc) flows
+  fc-s6-1-create-from-mapped-docs: review           # [dev-story] Orders "Create from Quote" + Invoices "Create from Quote"/"Create from Order" via native ERPNext mappers; inline submitted-source picker (company+docstatus=1, name+party search); FinanceForm seed path
+
+  # QA — full cockpit integration pass (all 18 stories complete)
+  fc-qa-full-cockpit: qa                 # [qa] Full Finance Cockpit end-to-end QA pass: all roles, all sections, mobile, dark/light mode
 
   # Chain: epic-partner-portal
   epic-partner-portal: ready-for-dev
@@ -119,3 +125,22 @@ development_status:
   partner-portal-e2-webhooks: ready-for-dev               # [dev-story] Outbound webhooks: lead/deal lifecycle events
   partner-portal-e3-ref-data: ready-for-dev               # [dev-story] Reference data endpoints + rate limiting
   partner-portal-qa: ready-for-dev                        # [qa] Partner portal full flow QA
+
+  # Chain: epic-crm-quote-builder (BRD + ADR + PRD confirmed 2026-08-07)
+  epic-crm-quote-builder: in-progress
+
+  # Sprint 1 — Backend Foundation
+  qb-s1-1-crm-quote-doctypes: review                # [dev-story] CRM Quote + Facility + Add-on + Renewal DocTypes; 15 product catalogue SKUs; Sales Invoice custom fields patch
+  qb-s1-2-quote-api: review                         # [dev-story] crm/api/quotes.py: all API methods, pricing engine, RBAC scoping; invoice_adapter.py
+  qb-s1-3-print-format: review                      # [dev-story] CRM Quote Standard print format: complete, test, migrate; PDF download verified
+  qb-s1-4-remove-legacy-redirect: review             # [dev-story] Remove doctype_js Quotation hook; deprecate erpnext_quotation_prefill.js
+
+  # Sprint 2 — Quote Builder UI
+  qb-s2-1-quoting-tab-and-list: review              # [dev-story] Quoting tab on Deal.vue; QuotingTab.vue; /crm/quotes global list view; Finance Cockpit handoff banner
+  qb-s2-2-builder-step1-facilities: review          # [dev-story] QuoteBuilder.vue overlay shell; Step 1 facility cards with tier pills + live subtotal
+  qb-s2-3-builder-steps2-3: review                  # [dev-story] Step 2 add-ons table; Step 3 discount sliders + payment terms + live pricing + 5-yr TCO
+  qb-s2-4-builder-step4-actions: review             # [dev-story] Step 4 review preview; Send/Accept/Reject wiring; PDF download
+
+  # Sprint 3 — Integration + QA
+  qb-s3-1-erpnext-handoff: review                   # [dev-story] accept_quote → Sales Invoice → Finance Cockpit AR; crm_deal + crm_quote fields verified
+  qb-s3-2-qa-full-pass: qa               # [qa] 19/20 pass; T-UI-12 mobile fix applied (MobileDeal.vue Quoting tab); rebuild clean
