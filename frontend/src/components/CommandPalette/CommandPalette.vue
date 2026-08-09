@@ -2,9 +2,14 @@
   <Dialog
     v-model="commandPaletteOpen"
     bare
-    :options="{ size: '2xl', position: 'top' }"
+    :options="{ size: '2xl', position: 'top', paddingTop: '10vh' }"
   >
-    <Combobox nullable @update:model-value="onSelection">
+    <Combobox
+      as="div"
+      class="crm-command-palette"
+      nullable
+      @update:model-value="onSelection"
+    >
       <div class="flex items-center border-b border-outline-gray-1 px-1">
         <LucideSearch class="ms-3 size-4 shrink-0 text-ink-gray-4" />
         <button
@@ -202,3 +207,9 @@ watch(commandPaletteOpen, (open) => {
   if (!open) restoreCommandPaletteFocus()
 })
 </script>
+
+<style>
+.dialog-content:has(.crm-command-palette) {
+  border-radius: 0.55rem;
+}
+</style>
