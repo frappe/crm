@@ -285,6 +285,7 @@ import { whatsappEnabled } from '@/composables/whatsapp'
 import { callEnabled } from '@/composables/telephony'
 import { useCommandPaletteContext } from '@/composables/useCommandPalette'
 import { flattenCommandActions } from '@/utils/commandPalette'
+import { recordCommands } from '@/components/CommandPalette/recordCommands'
 import {
   createResource,
   FileUploader,
@@ -432,6 +433,7 @@ function leadCommands() {
   const commands = [
     statusCommand(),
     ...flatStatusCommands(),
+    ...recordCommands(paletteContext()),
     ...communicationCommands(),
   ]
   commands.push(...scriptCommands())
@@ -444,6 +446,21 @@ function leadCommands() {
   })
   if (canDelete.value) commands.push(deleteLeadCommand())
   return commands
+}
+
+function paletteContext() {
+  return {
+    doctype: 'CRM Lead',
+    docname: props.leadId,
+    group: 'Lead',
+    assignees,
+    tabs,
+    changeTabTo,
+    activities: () => activities.value,
+    hasEmail: () => Boolean(doc.value?.email),
+    openEmailBox,
+    openFileUploader: () => (showFilesUploader.value = true),
+  }
 }
 
 function statusCommand() {
