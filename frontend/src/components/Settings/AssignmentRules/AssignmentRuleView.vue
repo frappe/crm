@@ -196,7 +196,7 @@
               }}
             </span>
             <Button
-              :label="__('I understand, Add Conditions')"
+              :label="__('I understand, add conditions')"
               variant="subtle"
               theme="gray"
               @click="useNewUI = true"
@@ -280,7 +280,7 @@
               }}
             </span>
             <Button
-              :label="__('I understand, Add Conditions')"
+              :label="__('I understand, add conditions')"
               variant="subtle"
               theme="gray"
               @click="useNewUI = true"
@@ -344,20 +344,13 @@ import {
   ConfirmDialog,
 } from 'frappe-ui'
 import { useTelemetry } from 'frappe-ui/frappe'
-import {
-  onMounted,
-  onUnmounted,
-  ref,
-  inject,
-  watch,
-  provide,
-  computed,
-} from 'vue'
+import { onUnmounted, ref, inject, watch, provide, computed } from 'vue'
 import AssignmentRulesSection from './AssignmentRulesSection.vue'
 import AssignmentSchedule from './AssignmentSchedule.vue'
 import AssigneeRules from './AssigneeRules.vue'
 import { globalStore } from '@/stores/global'
 import { disableSettingModalOutsideClick } from '@/composables/settings'
+import { useUnsavedChangesWarning } from '@/composables/useUnsavedChangesWarning'
 import { convertToConditions, validateConditions } from '@/utils'
 
 const isDirty = ref(false)
@@ -434,11 +427,11 @@ const validateAssignmentRule = (key, skipConditionCheck = false) => {
         assignmentRuleErrors.value.assignCondition =
           assignmentRuleData.value.assignConditionJson?.length > 0
             ? ''
-            : __('Assign Condition is required')
+            : __('Assign condition is required')
 
         if (!validateConditions(assignmentRuleData.value.assignConditionJson)) {
           assignmentRuleErrors.value.assignConditionError = __(
-            'Assign Conditions are invalid',
+            'Assign conditions are invalid',
           )
         } else {
           assignmentRuleErrors.value.assignConditionError = ''
@@ -454,7 +447,7 @@ const validateAssignmentRule = (key, skipConditionCheck = false) => {
           !validateConditions(assignmentRuleData.value.unassignConditionJson)
         ) {
           assignmentRuleErrors.value.unassignConditionError = __(
-            'Unassign Conditions are invalid',
+            'Unassign conditions are invalid',
           )
         } else {
           assignmentRuleErrors.value.unassignConditionError = ''
@@ -700,7 +693,7 @@ const createAssignmentRule = () => {
           capture('assignment_rule_created', {
             doctype: assignmentRuleData.value.documentType,
           })
-          toast.success(__('Assignment Rule Created'))
+          toast.success(__('Assignment rule created'))
         })
       updateStep('view', data)
     },
@@ -782,7 +775,7 @@ const updateAssignmentRule = async () => {
     getAssignmentRuleData.reload()
   }
   isLoading.value = false
-  toast.success(__('Assignment Rule Updated'))
+  toast.success(__('Assignment rule updated'))
 }
 
 watch(
@@ -799,20 +792,11 @@ watch(
   { deep: true },
 )
 
-const beforeUnloadHandler = (event) => {
-  if (!isDirty.value) return
-  event.preventDefault()
-  event.returnValue = true
-}
-
-onMounted(() => {
-  addEventListener('beforeunload', beforeUnloadHandler)
-})
+useUnsavedChangesWarning(() => isDirty.value)
 
 onUnmounted(() => {
   resetAssignmentRuleErrors()
   resetAssignmentRuleData()
-  removeEventListener('beforeunload', beforeUnloadHandler)
   disableSettingModalOutsideClick.value = false
 })
 </script>

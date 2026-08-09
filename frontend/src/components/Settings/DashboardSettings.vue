@@ -99,7 +99,7 @@
             {{ __('Exchange Rate Provider') }}
           </div>
           <div class="text-p-sm text-ink-gray-5">
-            {{ __('Configure the Exchange Rate Provider for your CRM') }}
+            {{ __('Configure the exchange rate provider for your CRM') }}
           </div>
         </div>
         <div class="flex items-center gap-2">
@@ -136,13 +136,13 @@
           </div>
           <div class="text-p-sm text-ink-gray-5">
             {{
-              __('Access Key for {0}. Required for fetching exchange rates.', [
+              __('Access key for {0}. Required for fetching exchange rates.', [
                 providerMeta.label,
               ])
             }}
           </div>
           <div class="text-p-sm text-ink-gray-5">
-            {{ __('You can get your Access Key from ') }}
+            {{ __('You can get your access key from ') }}
             <a
               class="hover:underline text-ink-gray-7"
               :href="providerMeta.docsUrl"
@@ -214,7 +214,7 @@ function updateSettings() {
         return errorMessage.value
       }
       if (requiresAccessKey.value && !settings.doc.access_key) {
-        errorMessage.value = __('Please enter the {0} Access Key.', [
+        errorMessage.value = __('Please enter the {0} access key.', [
           providerMeta.value.label,
         ])
         return errorMessage.value

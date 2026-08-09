@@ -65,7 +65,7 @@ import { computed } from 'vue'
 const props = defineProps({
   doctype: { type: String, required: true },
   title: { type: String, default: '' },
-  successMessage: { type: String, default: 'Updated Successfully' },
+  successMessage: { type: String, default: 'Updated successfully' },
   back: { type: Function, default: null },
 })
 
