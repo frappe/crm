@@ -56,15 +56,31 @@ describe('building a condition from filters', () => {
 })
 
 describe('reading a condition back into filters', () => {
-  it('round-trips what it generated', () => {
-    const filters = [
+  it('round-trips what it generated, conjunctions included', () => {
+    const conditions = [
       ['status', 'in', ['New', 'Open']],
+      'and',
       ['job_title', 'not like', 'intern'],
+      'or',
       ['organization', 'is', 'not set'],
     ]
-    const expression = toExpression(filters, fields)
+    const expression = toExpression(conditions, fields)
 
-    expect(toFilters(expression)).toEqual(filters)
+    expect(toFilters(expression)).toEqual(conditions)
+  })
+
+  it('keeps a group together', () => {
+    const conditions = [
+      ['status', '=', 'Open'],
+      'and',
+      [['source', '=', 'Website'], 'or', ['source', '=', 'Referral']],
+    ]
+    const expression = toExpression(conditions, fields)
+
+    expect(expression).toBe(
+      'doc.status == "Open" and (doc.source == "Website" or doc.source == "Referral")',
+    )
+    expect(toFilters(expression)).toEqual(conditions)
   })
 
   it('accepts the single quotes a Python-authored condition uses', () => {
@@ -97,9 +113,13 @@ describe('refusing expressions it cannot represent', () => {
     '"chief" in (doc.job_title or "").lower() or "head" in (doc.job_title or "").lower()'
   const TOTAL = '(context["steps"].get("a", {}).get("delta", 0)) >= 45'
 
-  it('rejects an or-chain instead of half-matching it', () => {
-    expect(toFilters(SENIORITY)).toBeNull()
-    expect(summarizeCondition(SENIORITY)).toBe(SENIORITY)
+  it('reads an or-chain as two contains rows', () => {
+    expect(toFilters(SENIORITY)).toEqual([
+      ['job_title', 'like', 'chief'],
+      'or',
+      ['job_title', 'like', 'head'],
+    ])
+    expect(toExpression(toFilters(SENIORITY), fields)).toBe(SENIORITY)
   })
 
   it('rejects expressions that are not a plain field comparison', () => {
