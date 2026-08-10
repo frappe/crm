@@ -43,6 +43,8 @@
   "annual_revenue",
   "image",
   "converted",
+  "lead_score",
+  "lead_temperature",
   "products_tab",
   "products",
   "section_break_ggwh",
@@ -224,6 +226,19 @@
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Converted"
+  },
+  {
+   "default": "0",
+   "fieldname": "lead_score",
+   "fieldtype": "Int",
+   "label": "Lead Score"
+  },
+  {
+   "fieldname": "lead_temperature",
+   "fieldtype": "Select",
+   "in_standard_filter": 1,
+   "label": "Lead Temperature",
+   "options": "\nCold\nWarm\nHot"
   },
   {
    "fieldname": "person_tab",
@@ -468,7 +483,7 @@
  "image_field": "image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-04-04 12:33:17.177897",
+ "modified": "2026-08-10 05:00:00.000000",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Lead",
