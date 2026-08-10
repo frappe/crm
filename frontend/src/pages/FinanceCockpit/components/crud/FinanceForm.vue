@@ -33,6 +33,18 @@
           :collapsed="!!sec.collapsed"
           :badge="sectionBadge(sec)"
         >
+          <!-- FC-02: Tax template picker in taxes section header -->
+          <template v-if="sec.kind === 'taxes'" #header-action>
+            <button
+              type="button"
+              class="text-xs font-medium text-ink-gray-5 hover:text-ink-gray-8 flex items-center gap-1 px-2 py-1 rounded border border-outline-gray-2 hover:bg-surface-gray-1 transition-colors"
+              @click.stop="openTaxTemplateFor = sec.tableField"
+            >
+              <FcIcon name="layers" :size="13" />
+              Apply Template
+            </button>
+          </template>
+
           <!-- Fields section -->
           <div v-if="sec.kind === 'fields'" class="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-4">
             <div
@@ -59,6 +71,7 @@
             :qty-field="sec.qtyField"
             :rate-field="sec.rateField"
             :amount-field="sec.amountField"
+            :price-list="doc.selling_price_list || ''"
             @update:rows="setField(sec.tableField, $event)"
           />
 
@@ -68,6 +81,8 @@
             :columns="sec.columns"
             :rows="doc[sec.tableField] || []"
             :currency="doc.currency"
+            :is-taxes="true"
+            :net-total="subtotal"
             @update:rows="setField(sec.tableField, $event)"
           />
 
@@ -78,6 +93,7 @@
             :tax="taxTotal"
             :grand-total="grandTotal"
             :currency="doc.currency"
+            :tax-rows="doc[layout.totals?.taxRowsField] || null"
             :notes="doc[layout.remarksField] || ''"
             :notes-label="layout.remarksLabel"
             :show-notes="!!layout.remarksField"
@@ -86,6 +102,31 @@
         </SectionCard>
       </form>
     </template>
+
+    <!-- FC-02: Tax template combobox (inline popover) -->
+    <div
+      v-if="openTaxTemplateFor"
+      class="fixed inset-0 z-40 flex items-center justify-center bg-black/20"
+      @click.self="openTaxTemplateFor = null"
+    >
+      <div class="bg-surface-white rounded-xl border border-outline-gray-2 shadow-xl p-5 w-80 space-y-3">
+        <div class="flex items-center justify-between">
+          <h4 class="text-sm font-semibold text-ink-gray-8">Apply Tax Template</h4>
+          <button type="button" class="text-ink-gray-4 hover:text-ink-gray-7" @click="openTaxTemplateFor = null">
+            <FcIcon name="x" :size="16" />
+          </button>
+        </div>
+        <Combobox
+          :model-value="null"
+          :options="taxTemplateOptions"
+          :filterable="false"
+          placeholder="Search template..."
+          @update:model-value="applyTaxTemplate"
+          @update:query="onTaxTemplateQuery"
+        />
+        <p v-if="taxTemplateHint" class="text-xs text-ink-gray-4">{{ taxTemplateHint }}</p>
+      </div>
+    </div>
 
     <!-- Sticky action bar -->
     <div
@@ -123,7 +164,7 @@
 
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
-import { Button, toast } from 'frappe-ui'
+import { Button, toast, Combobox, createResource, debounce } from 'frappe-ui'
 import FieldRenderer from './FieldRenderer.vue'
 import LineItemsGrid from './LineItemsGrid.vue'
 import SectionCard from './SectionCard.vue'
@@ -231,6 +272,62 @@ function sectionTone(sec) {
   if (sec.tone) return sec.tone
   return SECTION_TONE[sec.kind] || 'neutral'
 }
+
+/* ---- FC-02: Tax template picker ---- */
+const openTaxTemplateFor = ref(null)
+const taxTemplateOptions = ref([])
+const taxTemplateHint = ref('')
+const taxTemplateRes = createResource({ url: 'frappe.client.get_list' })
+const taxTemplateDocRes = createResource({ url: 'frappe.client.get' })
+
+const onTaxTemplateQuery = debounce(async (query) => {
+  taxTemplateHint.value = ''
+  try {
+    const rows = await taxTemplateRes.submit({
+      doctype: 'Sales Taxes and Charges Template',
+      filters: JSON.stringify(doc.company ? [['company', '=', doc.company]] : []),
+      fields: JSON.stringify(['name']),
+      limit_page_length: 15,
+      order_by: 'name asc',
+    })
+    const filtered = (rows || []).filter((r) => !query || r.name.toLowerCase().includes(query.toLowerCase()))
+    taxTemplateOptions.value = filtered.map((r) => ({ label: r.name, value: r.name }))
+  } catch {
+    taxTemplateOptions.value = []
+  }
+}, 200)
+
+async function applyTaxTemplate(templateName) {
+  if (!templateName) return
+  taxTemplateHint.value = 'Loading…'
+  try {
+    const tmpl = await taxTemplateDocRes.submit({
+      doctype: 'Sales Taxes and Charges Template',
+      name: templateName,
+    })
+    const rows = (tmpl?.taxes || []).map((r) => {
+      const rate = Number(r.rate ?? 0)
+      const netT = subtotal.value
+      return {
+        charge_type: r.charge_type || 'On Net Total',
+        account_head: r.account_head || null,
+        description: r.description || '',
+        rate,
+        tax_amount: r.charge_type === 'On Net Total' && netT > 0 ? (rate / 100) * netT : Number(r.tax_amount ?? 0),
+      }
+    })
+    // Write to the first taxes-kind section found.
+    const taxSec = layout.sections.find((s) => s.kind === 'taxes')
+    if (taxSec) setField(taxSec.tableField, rows)
+    taxTemplateHint.value = ''
+    openTaxTemplateFor.value = null
+  } catch {
+    taxTemplateHint.value = 'Failed to load template'
+  }
+}
+
+// Trigger initial search when the picker opens.
+const _origOpenWatch = null
 
 /* ---- Load / seed ---- */
 function seedDefaults() {

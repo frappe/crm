@@ -95,6 +95,7 @@ export const FORM_LAYOUTS = {
         hero: true,
         columns: [
           { fieldname: 'item_code', label: 'Item', type: 'link', options: 'Item', required: true },
+          { fieldname: 'item_name', label: 'Description', type: 'data', wideOnly: true },
           { fieldname: 'qty', label: 'Qty', type: 'float', required: true },
           { fieldname: 'rate', label: 'Rate', type: 'currency', required: true },
         ],
@@ -133,6 +134,7 @@ export const FORM_LAYOUTS = {
         remarksLabel: 'Remarks',
       },
     ],
+    summaryFields: ['customer', 'grand_total', 'status', 'due_date', 'outstanding_amount'],
   },
 
   Quotation: {
@@ -192,6 +194,7 @@ export const FORM_LAYOUTS = {
         hero: true,
         columns: [
           { fieldname: 'item_code', label: 'Item', type: 'link', options: 'Item', required: true },
+          { fieldname: 'item_name', label: 'Description', type: 'data', wideOnly: true },
           { fieldname: 'qty', label: 'Qty', type: 'float', required: true },
           { fieldname: 'rate', label: 'Rate', type: 'currency', required: true },
         ],
@@ -220,6 +223,7 @@ export const FORM_LAYOUTS = {
         remarksLabel: 'Terms & Conditions',
       },
     ],
+    summaryFields: ['party_name', 'grand_total', 'status', 'transaction_date', 'valid_till'],
   },
 
   'Sales Order': {
@@ -274,6 +278,7 @@ export const FORM_LAYOUTS = {
         hero: true,
         columns: [
           { fieldname: 'item_code', label: 'Item', type: 'link', options: 'Item', required: true },
+          { fieldname: 'item_name', label: 'Description', type: 'data', wideOnly: true },
           { fieldname: 'qty', label: 'Qty', type: 'float', required: true },
           { fieldname: 'rate', label: 'Rate', type: 'currency', required: true },
           { fieldname: 'delivery_date', label: 'Delivery', type: 'date' },
@@ -303,6 +308,7 @@ export const FORM_LAYOUTS = {
         remarksLabel: 'Terms & Conditions',
       },
     ],
+    summaryFields: ['customer', 'grand_total', 'status', 'transaction_date', 'delivery_date'],
   },
 
   // Read/detail-only layout: creation goes through PaymentAllocationForm, and
@@ -469,6 +475,7 @@ export function resolveLayout(doctype) {
     scalarFields,
     scalarByName,
     childTables,
+    summaryFields: config.summaryFields || null,
   }
 }
 
@@ -486,6 +493,7 @@ function normalizeField(f) {
     readOnly: !!f.readOnly,
     precision: f.precision ?? null,
     default: f.default ?? null,
+    wideOnly: !!f.wideOnly,
   }
 }
 
