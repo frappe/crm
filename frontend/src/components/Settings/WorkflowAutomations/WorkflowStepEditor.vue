@@ -33,18 +33,18 @@
     </template>
 
     <template v-else-if="step.step_type === 'Wait'">
-      <div class="flex gap-2">
+      <div class="flex items-start gap-2">
         <FormControl
           :model-value="params.value"
           type="number"
-          class="flex-1"
+          class="w-24 shrink-0"
           :label="__('Wait')"
           @update:model-value="setParam('value', Number($event))"
         />
         <FormControl
           :model-value="params.unit || 'Minutes'"
           type="select"
-          class="w-32"
+          class="min-w-0 flex-1"
           :label="__('Unit')"
           :options="waitUnits"
           @update:model-value="setParam('unit', $event)"
@@ -79,18 +79,18 @@
       <div class="text-xs text-ink-gray-5">
         {{ __('Only the event raised for this record resumes the run.') }}
       </div>
-      <div class="flex gap-2">
+      <div class="flex items-start gap-2">
         <FormControl
           :model-value="params.timeout_value"
           type="number"
-          class="flex-1"
+          class="w-24 shrink-0"
           :label="__('Timeout')"
           @update:model-value="setParam('timeout_value', Number($event))"
         />
         <FormControl
           :model-value="params.timeout_unit || 'Days'"
           type="select"
-          class="w-32"
+          class="min-w-0 flex-1"
           :label="__('Unit')"
           :options="waitUnits"
           @update:model-value="setParam('timeout_unit', $event)"
