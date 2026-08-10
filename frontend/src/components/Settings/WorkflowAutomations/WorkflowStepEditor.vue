@@ -19,7 +19,7 @@
     <template v-if="step.step_type === 'If'">
       <ConditionEditor
         v-model="step.step_condition"
-        :fields="fields"
+        :doctype="targetDoctype"
         :label="__('Condition')"
         :placeholder="__('doc.status == \'Qualified\'')"
       />
@@ -123,7 +123,7 @@
     <ConditionEditor
       v-if="step.step_type !== 'If'"
       v-model="step.step_condition"
-      :fields="fields"
+      :doctype="targetDoctype"
       :label="__('Only run when')"
       :placeholder="__('doc.status == \'Open\'')"
     />
