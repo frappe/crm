@@ -34,20 +34,18 @@
           <div v-if="template.subject" class="text-sm text-ink-gray-5">
             {{ __('Subject: {0}', [template.subject]) }}
           </div>
-          <TextEditor
+          <!-- eslint-disable vue/no-v-html -->
+          <div
             v-if="template.use_html && template.response_html"
-            :content="template.response_html"
-            :editable="false"
-            editor-class="!prose-sm max-w-none !text-sm text-ink-gray-5 focus:outline-none"
-            class="flex-1 overflow-hidden"
+            class="prose-f prose-sm max-w-none !text-sm text-ink-gray-5 flex-1 overflow-hidden"
+            v-html="sanitizeHTML(template.response_html)"
           />
-          <TextEditor
+          <div
             v-else-if="template.response"
-            :content="template.response"
-            :editable="false"
-            editor-class="!prose-sm max-w-none !text-sm text-ink-gray-5 focus:outline-none"
-            class="flex-1 overflow-hidden"
+            class="prose-f prose-sm max-w-none !text-sm text-ink-gray-5 flex-1 overflow-hidden"
+            v-html="sanitizeHTML(template.response)"
           />
+          <!-- eslint-enable vue/no-v-html -->
         </div>
       </div>
       <div v-else class="mt-2">
@@ -65,7 +63,8 @@
 <script setup>
 import { showSettings, activeSettingsPage } from '@/composables/settings'
 import { useBroadcast } from '@/composables/useBroadcast'
-import { TextEditor, createListResource } from 'frappe-ui'
+import { createListResource } from 'frappe-ui'
+import { sanitizeHTML } from '@/utils'
 import { ref, computed, nextTick, watch, onMounted } from 'vue'
 
 const props = defineProps({
