@@ -113,7 +113,16 @@ def reply_temperature() -> dict:
 			]
 		),
 		"relationships": frappe.as_json(
-			[{"alias": "lead", "source": "trigger", "relationship": "reference"}]
+			[
+				{
+					"alias": "lead",
+					"source": "trigger",
+					"relationship": "reference",
+					# `reference` allows a Lead or a Deal; naming which one lets the builder
+					# offer the right actions and fields for the alias.
+					"target_doctype": "CRM Lead",
+				}
+			]
 		),
 		"actions": [
 			temperature(1, "mark_warm", "Warm"),
