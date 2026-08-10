@@ -4,7 +4,6 @@
     :nodes="flowNodes"
     :edges="edges"
     class="workflow-flow"
-    :fit-view-on-init="true"
     :fit-view-options="fitViewOptions"
     :nodes-draggable="!readonly"
     :nodes-connectable="false"
@@ -17,115 +16,136 @@
   >
     <Background pattern-color="#7e7e7e" :gap="24" :size="1.5" />
     <Panel position="bottom-center">
-      <div class="workflow-controls">
-        <button
-          class="workflow-control"
-          :title="__('Zoom out')"
+      <div
+        class="flex items-center gap-0.5 rounded-[10px] border border-outline-gray-2 bg-surface-modal p-1 shadow-lg"
+      >
+        <Button
+          icon="lucide-minus"
+          variant="ghost"
           :aria-label="__('Zoom out')"
           @click="zoomOut({ duration: 150 })"
+        />
+        <span
+          class="min-w-11 text-center text-xs font-medium tabular-nums text-ink-gray-7"
         >
-          <ZoomOutIcon class="size-4" />
-        </button>
-        <span class="workflow-zoom">{{ zoomPercent }}</span>
-        <button
-          class="workflow-control"
-          :title="__('Zoom in')"
+          {{ zoomPercent }}
+        </span>
+        <Button
+          icon="lucide-plus"
+          variant="ghost"
           :aria-label="__('Zoom in')"
           @click="zoomIn({ duration: 150 })"
-        >
-          <PlusIcon class="size-4" />
-        </button>
-        <span class="workflow-controls-divider" />
-        <button
-          class="workflow-control"
-          :title="__('Fit entire flow')"
+        />
+        <span class="mx-0.5 h-4 w-px bg-outline-gray-2" />
+        <Button
+          icon="lucide-maximize"
+          variant="ghost"
           :aria-label="__('Fit entire flow')"
           @click="refitFlow"
-        >
-          <FitIcon class="size-4" />
-        </button>
+        />
       </div>
     </Panel>
     <template #node-automation="{ id, data }">
-      <div class="workflow-node-shell">
+      <div class="relative">
         <div
-          class="workflow-kicker"
-          :class="{ 'workflow-kicker-on': isOn(id) }"
+          class="absolute bottom-[calc(100%+4px)] left-0 rounded px-1.5 py-0.5 text-[10px] font-medium"
+          :class="
+            isOn(id)
+              ? 'bg-surface-blue-3 text-ink-white'
+              : 'bg-surface-gray-4 text-ink-gray-8'
+          "
         >
           {{ data.kicker }}
         </div>
         <div class="flex items-center">
-          <component
-            :is="picksTrigger(data) ? PickerMenu : 'div'"
-            v-bind="picksTrigger(data) ? triggerMenu : {}"
-            @select="$emit('pick-trigger', $event.value)"
+          <Combobox
+            :options="triggerGroups"
+            :disabled="!picksTrigger(data)"
+            trigger="button"
+            :placeholder="__('Search triggers')"
+            @update:model-value="$emit('pick-trigger', $event)"
           >
-            <div
-              class="workflow-node"
-              :class="nodeClasses(id, data)"
-              :tabindex="readonly ? -1 : 0"
-              :role="readonly ? undefined : 'button'"
-              :aria-label="`${data.kicker}: ${data.label}`"
-              @click.stop="selectNode(id)"
-              @keydown.enter="selectNode(id)"
-              @keydown.space.prevent="selectNode(id)"
-            >
-              <Handle
-                v-if="!data.isTrigger"
-                type="target"
-                :position="Position.Top"
-              />
-              <div class="workflow-node-icon">
-                <component
-                  :is="data.icon"
-                  class="size-[18px] text-ink-gray-6"
+            <template #trigger>
+              <div
+                class="relative flex w-[260px] items-center gap-2.5 rounded-[10px] border px-3 py-2.5 shadow-sm transition-colors"
+                :class="nodeClasses(id, data)"
+                :tabindex="readonly ? -1 : 0"
+                :role="readonly ? undefined : 'button'"
+                :aria-label="`${data.kicker}: ${data.label}`"
+                @click.stop="selectNode(id)"
+                @keydown.enter="selectNode(id)"
+                @keydown.space.prevent="selectNode(id)"
+              >
+                <Handle
+                  v-if="!data.isTrigger"
+                  type="target"
+                  :position="Position.Left"
                 />
-              </div>
-              <div class="min-w-0 flex-1">
-                <div class="truncate text-base-medium text-ink-gray-8">
-                  {{ data.label }}
+                <div
+                  v-if="!data.empty"
+                  class="flex size-8 shrink-0 items-center justify-center rounded-[7px] bg-surface-gray-2"
+                >
+                  <component
+                    :is="data.icon"
+                    class="size-[18px] text-ink-gray-6"
+                  />
                 </div>
                 <div
-                  v-if="data.detail"
-                  class="truncate text-p-sm text-ink-gray-5"
+                  class="min-w-0 flex-1"
+                  :class="{ 'text-center': data.empty }"
                 >
-                  {{ data.detail }}
+                  <div class="truncate text-base-medium text-ink-gray-8">
+                    {{ data.label }}
+                  </div>
+                  <div
+                    v-if="data.detail"
+                    class="truncate text-p-sm text-ink-gray-5"
+                  >
+                    {{ data.detail }}
+                  </div>
                 </div>
+                <ErrorIcon
+                  v-if="data.error"
+                  class="size-4 shrink-0 text-ink-red-4"
+                />
+                <Handle type="source" :position="Position.Right" />
               </div>
-              <ErrorIcon
-                v-if="data.error"
-                class="size-4 shrink-0 text-ink-red-4"
-              />
-              <Handle type="source" :position="Position.Bottom" />
-            </div>
-          </component>
-          <div v-if="showAdd(data)" class="workflow-add nodrag">
-            <span class="workflow-add-stem" />
-            <PickerMenu
-              :groups="blockGroups"
-              :placeholder="__('Search blocks')"
+            </template>
+          </Combobox>
+          <div v-if="showAdd(data)" class="nodrag flex items-center">
+            <span class="h-px w-5 bg-outline-gray-3" />
+            <Combobox
+              :options="blockGroups"
+              trigger="button"
               side="right"
-              @select="addBlock(data, null, $event)"
+              :placeholder="__('Search blocks')"
+              @update:model-value="addBlock(data, null, $event)"
             >
-              <button class="workflow-add-button" :aria-label="__('Add block')">
-                <PlusIcon class="size-4" />
-              </button>
-            </PickerMenu>
+              <template #trigger>
+                <Button icon="lucide-plus" :aria-label="__('Add block')" />
+              </template>
+            </Combobox>
           </div>
         </div>
-        <div v-if="data.arms && !readonly" class="workflow-arms nodrag">
-          <PickerMenu
+        <div
+          v-if="data.arms && !readonly"
+          class="nodrag absolute left-[calc(100%+12px)] top-1/2 flex -translate-y-1/2 flex-col gap-1.5"
+        >
+          <Combobox
             v-for="arm in ['If', 'Else']"
             :key="arm"
-            :groups="blockGroups"
+            :options="blockGroups"
+            trigger="button"
+            side="right"
             :placeholder="__('Search blocks')"
-            @select="addBlock(data, arm, $event)"
+            @update:model-value="addBlock(data, arm, $event)"
           >
-            <button class="workflow-arm">
-              <PlusIcon class="size-3" />
-              {{ data.arms[arm] }}
-            </button>
-          </PickerMenu>
+            <template #trigger>
+              <Button icon-left="lucide-plus" size="sm">
+                {{ data.arms[arm] }}
+              </Button>
+            </template>
+          </Combobox>
         </div>
       </div>
     </template>
@@ -135,13 +155,10 @@
 <script setup>
 import '@vue-flow/core/dist/style.css'
 import '@vue-flow/core/dist/theme-default.css'
-import PickerMenu from './WorkflowPickerMenu.vue'
 import { Handle, Panel, Position, VueFlow, useVueFlow } from '@vue-flow/core'
 import { Background } from '@vue-flow/background'
 import ErrorIcon from '~icons/lucide/circle-alert'
-import FitIcon from '~icons/lucide/maximize'
-import PlusIcon from '~icons/lucide/plus'
-import ZoomOutIcon from '~icons/lucide/minus'
+import { Button, Combobox } from 'frappe-ui'
 import { computed, nextTick, ref, useId, watch } from 'vue'
 
 const props = defineProps({
@@ -176,6 +193,16 @@ const flowNodes = computed(() =>
 
 const zoomPercent = computed(() => `${Math.round(viewport.value.zoom * 100)}%`)
 
+/** The combobox hands back a value; the step it stands for lives on the option. */
+const blocksByValue = computed(
+  () =>
+    new Map(
+      props.blockGroups.flatMap((group) =>
+        group.options.map((option) => [option.value, option]),
+      ),
+    ),
+)
+
 watch(() => props.nodes.map((node) => node.id).join('|'), refitFlow, {
   flush: 'post',
 })
@@ -198,25 +225,26 @@ function picksTrigger(data) {
   return Boolean(data.empty) && !props.readonly
 }
 
-const triggerMenu = computed(() => ({
-  groups: props.triggerGroups,
-  placeholder: __('Search triggers'),
-  hint: true,
-}))
-
 function isOn(id) {
   return !props.readonly && props.selectedId === id
 }
 
+/**
+ * One exclusive surface per state - stacking conflicting border utilities would let
+ * stylesheet order, not intent, decide which one wins.
+ * `nodrag` because dragging swallows the click that opens the picker, and a lone start
+ * block has nothing to arrange itself around anyway.
+ */
 function nodeClasses(id, data) {
-  return {
-    'workflow-node-selected': isOn(id),
-    'workflow-node-error': Boolean(data.error),
-    'workflow-node-empty': Boolean(data.empty),
-    // Dragging swallows the click that opens the picker, and a lone start block
-    // has nothing to arrange itself around anyway.
-    nodrag: picksTrigger(data),
-  }
+  return [picksTrigger(data) ? 'nodrag' : '', nodeSurface(id, data)]
+}
+
+function nodeSurface(id, data) {
+  if (data.empty) return 'border-dashed border-outline-gray-3 shadow-none'
+  if (data.error) return 'border-outline-red-2 bg-surface-modal'
+  if (isOn(id))
+    return 'border-outline-blue-2 bg-surface-blue-1 ring-1 ring-outline-blue-2'
+  return 'border-outline-gray-2 bg-surface-modal hover:border-outline-gray-3'
 }
 
 /** A branching node grows through its arms, so it gets no "after" button of its own. */
@@ -225,7 +253,9 @@ function showAdd(data) {
   return !data.isTrigger || props.nodes.length === 1
 }
 
-function addBlock(data, branch, block) {
+function addBlock(data, branch, value) {
+  const block = blocksByValue.value.get(value)
+  if (!block) return
   emit('add-step', { after: data.step || null, branch, values: block.values })
 }
 </script>
@@ -250,168 +280,5 @@ function addBlock(data, branch, block) {
 
 .workflow-flow .vue-flow__node.dragging {
   cursor: grabbing;
-}
-
-.workflow-controls {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-  border: 1px solid var(--outline-gray-2);
-  border-radius: 10px;
-  background: var(--surface-modal);
-  padding: 4px;
-  box-shadow: 0 4px 16px rgb(0 0 0 / 12%);
-}
-
-.workflow-control {
-  display: flex;
-  height: 28px;
-  width: 28px;
-  align-items: center;
-  justify-content: center;
-  border-radius: 6px;
-  color: var(--ink-gray-7);
-}
-
-.workflow-control:hover {
-  background: var(--surface-gray-2);
-}
-
-.workflow-zoom {
-  min-width: 44px;
-  text-align: center;
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--ink-gray-7);
-  font-variant-numeric: tabular-nums;
-}
-
-.workflow-controls-divider {
-  margin: 0 2px;
-  height: 16px;
-  width: 1px;
-  background: var(--outline-gray-2);
-}
-
-.workflow-node-shell {
-  position: relative;
-}
-
-/* The kicker rides above the card as a pill, so the card itself stays a clean two-line block. */
-.workflow-kicker {
-  position: absolute;
-  bottom: calc(100% + 4px);
-  left: 0;
-  border-radius: 5px;
-  background: var(--surface-gray-2);
-  padding: 2px 6px;
-  font-size: 10px;
-  font-weight: 500;
-  color: var(--ink-gray-6);
-}
-
-.workflow-kicker-on {
-  background: var(--surface-blue-2);
-  color: var(--ink-blue-3);
-}
-
-.workflow-node {
-  position: relative;
-  display: flex;
-  width: 260px;
-  align-items: center;
-  gap: 10px;
-  border: 1px solid var(--outline-gray-2);
-  border-radius: 10px;
-  background: var(--surface-modal);
-  padding: 10px 12px;
-  box-shadow: 0 1px 2px rgb(0 0 0 / 6%);
-}
-
-.workflow-node:hover {
-  border-color: var(--outline-gray-3);
-}
-
-.workflow-node-icon {
-  display: flex;
-  height: 32px;
-  width: 32px;
-  flex-shrink: 0;
-  align-items: center;
-  justify-content: center;
-  border-radius: 7px;
-  background: var(--surface-gray-2);
-}
-
-.workflow-node-selected {
-  border-color: var(--outline-blue-2);
-  box-shadow: 0 0 0 1px var(--outline-blue-2);
-  background: var(--surface-blue-1);
-}
-
-.workflow-node-error {
-  border-color: var(--surface-red-6);
-}
-
-.workflow-node-empty {
-  border-style: dashed;
-  background: transparent;
-  box-shadow: none;
-}
-
-.workflow-add {
-  display: flex;
-  align-items: center;
-}
-
-.workflow-add-stem {
-  height: 1px;
-  width: 20px;
-  background: var(--outline-gray-3);
-}
-
-.workflow-add-button {
-  display: flex;
-  height: 24px;
-  width: 24px;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid var(--outline-gray-2);
-  border-radius: 6px;
-  background: var(--surface-modal);
-  color: var(--ink-gray-7);
-  box-shadow: 0 1px 2px rgb(0 0 0 / 6%);
-}
-
-.workflow-add-button:hover {
-  background: var(--surface-gray-2);
-}
-
-.workflow-arms {
-  position: absolute;
-  top: calc(100% + 8px);
-  left: 50%;
-  z-index: 2;
-  display: flex;
-  gap: 6px;
-  transform: translateX(-50%);
-}
-
-.workflow-arm {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  border: 1px solid var(--outline-gray-2);
-  border-radius: 6px;
-  background: var(--surface-modal);
-  padding: 3px 8px;
-  font-size: 11px;
-  color: var(--ink-gray-7);
-  white-space: nowrap;
-  box-shadow: 0 1px 2px rgb(0 0 0 / 6%);
-}
-
-.workflow-arm:hover {
-  background: var(--surface-gray-2);
 }
 </style>
