@@ -15,11 +15,6 @@
       :label="__('Step Type')"
       :options="stepTypeOptions"
     />
-    <FormControl
-      v-model="step.step_key"
-      :label="__('Step Key')"
-      :placeholder="__('score_lead')"
-    />
 
     <template v-if="step.step_type === 'If'">
       <ConditionEditor
@@ -61,16 +56,29 @@
       <FormControl
         :model-value="params.event_name"
         type="select"
-        :label="__('Event')"
+        :label="__('Wait for')"
         :options="eventOptions"
-        @update:model-value="setParam('event_name', $event)"
+        :placeholder="__('Choose an event')"
+        @update:model-value="pickEvent($event)"
       />
       <FormControl
+        v-if="correlationOptions.length"
         :model-value="params.correlation_key"
-        :label="__('Correlation Key')"
+        type="select"
+        :label="__('Belonging to')"
+        :options="correlationOptions"
+        @update:model-value="setParam('correlation_key', $event)"
+      />
+      <FormControl
+        v-else
+        :model-value="params.correlation_key"
+        :label="__('Belonging to')"
         :placeholder="correlationPlaceholder"
         @update:model-value="setParam('correlation_key', $event)"
       />
+      <div class="text-xs text-ink-gray-5">
+        {{ __('Only the event raised for this record resumes the run.') }}
+      </div>
       <div class="flex gap-2">
         <FormControl
           :model-value="params.timeout_value"
@@ -88,26 +96,21 @@
           @update:model-value="setParam('timeout_unit', $event)"
         />
       </div>
-      <div class="text-xs text-ink-gray-5">
-        {{
-          __(
-            'Put the steps for a matched event on the If arm of a following condition, and the timeout steps on Else.',
-          )
-        }}
-      </div>
     </template>
 
     <template v-else>
-      <TargetPicker
-        v-model="step.target"
-        :targets="targets"
-        :label="__('Acts on')"
-      />
       <FormControl
         v-model="step.action_type"
         type="select"
         :label="__('Action')"
         :options="actionOptions"
+        :placeholder="__('Choose what this step does')"
+      />
+      <TargetPicker
+        v-if="targets.length > 1"
+        v-model="step.target"
+        :targets="targets"
+        :label="__('Record')"
       />
       <ParamEditor
         :action="step"
@@ -115,30 +118,7 @@
         :doctype="targetDoctype"
         :fields="fields"
       />
-      <FormControl
-        v-if="schema?.output_schema"
-        v-model="step.output_alias"
-        :label="__('Name the result')"
-        :placeholder="__('deal')"
-      />
-      <div
-        v-if="outputPaths.length"
-        class="min-w-0 overflow-hidden rounded bg-surface-gray-2 p-3"
-      >
-        <div class="mb-1 text-xs-semibold text-ink-gray-5">
-          {{ __('Available to later steps') }}
-        </div>
-        <div
-          v-for="path in outputPaths"
-          :key="path"
-          class="break-all font-mono text-xs text-ink-gray-7"
-        >
-          {{ path }}
-        </div>
-      </div>
     </template>
-
-    <RelatedCondition v-model="step.related_condition" :targets="targets" />
 
     <ConditionEditor
       v-if="step.step_type !== 'If'"
@@ -147,6 +127,50 @@
       :label="__('Only run when')"
       :placeholder="__('doc.status == \'Open\'')"
     />
+
+    <div class="border-t border-outline-gray-2 pt-4">
+      <button
+        class="flex w-full items-center gap-1 text-sm text-ink-gray-5"
+        :aria-expanded="showAdvanced"
+        @click="showAdvanced = !showAdvanced"
+      >
+        <ChevronIcon class="size-4" :class="{ 'rotate-90': showAdvanced }" />
+        {{ __('Advanced') }}
+      </button>
+      <div v-if="showAdvanced" class="mt-4 space-y-5">
+        <FormControl
+          v-model="step.step_key"
+          :label="__('Step name')"
+          :placeholder="suggestedKey"
+          :description="
+            __('Names this step in run logs and in its result path.')
+          "
+        />
+        <FormControl
+          v-if="schema?.output_schema"
+          v-model="step.output_alias"
+          :label="__('Name the result')"
+          :placeholder="__('deal')"
+          :description="__('Lets a later step act on what this one produced.')"
+        />
+        <div
+          v-if="outputPaths.length"
+          class="min-w-0 overflow-hidden rounded bg-surface-gray-2 p-3"
+        >
+          <div class="mb-1 text-xs-semibold text-ink-gray-5">
+            {{ __('Available to later steps') }}
+          </div>
+          <div
+            v-for="path in outputPaths"
+            :key="path"
+            class="break-all font-mono text-xs text-ink-gray-7"
+          >
+            {{ path }}
+          </div>
+        </div>
+        <RelatedCondition v-model="step.related_condition" :targets="targets" />
+      </div>
+    </div>
   </div>
 </template>
 
@@ -160,8 +184,10 @@ import {
   capabilitiesFor,
   stepParams,
 } from './workflowCapabilities'
+import { defaultStepKey } from './workflowSteps'
+import ChevronIcon from '~icons/lucide/chevron-right'
 import { FormControl } from 'frappe-ui'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 
 const props = defineProps({
   step: { type: Object, required: true },
@@ -180,7 +206,10 @@ const stepTypeOptions = [
 const waitUnits = ['Seconds', 'Minutes', 'Hours', 'Days']
 const correlationPlaceholder = '{{ doc.message_id or doc.name }}'
 
+const showAdvanced = ref(false)
+
 const params = computed(() => stepParams(props.step))
+const suggestedKey = computed(() => defaultStepKey(props.step))
 
 const targetDoctype = computed(
   () =>
@@ -215,6 +244,24 @@ function isChosen(action) {
 const eventOptions = computed(
   () => capabilitiesFor(props.doc.document_type)?.custom_events || [],
 )
+
+const correlationOptions = computed(() => {
+  const event = eventOptions.value.find(
+    (option) => option.value === params.value.event_name,
+  )
+  return event?.correlation_options || []
+})
+
+/** Picking an event brings its default correlation with it, so the step works untouched. */
+function pickEvent(name) {
+  const event = eventOptions.value.find((option) => option.value === name)
+  const suggested = event?.correlation_options?.[0]?.value
+  props.step.params = JSON.stringify(
+    { ...params.value, event_name: name, correlation_key: suggested || '' },
+    null,
+    2,
+  )
+}
 
 const schema = computed(() =>
   actionSchema(targetDoctype.value, props.step.action_type),
