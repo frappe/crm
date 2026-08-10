@@ -103,7 +103,7 @@ const condition = computed(() => {
 const sourceOptions = computed(() =>
   props.targets.map((target) => ({
     label: target.doctype
-      ? `${target.alias} — ${target.doctype}`
+      ? `${target.alias} (${target.doctype})`
       : target.alias,
     value: target.alias,
   })),
