@@ -18,7 +18,7 @@
     <WorkflowFilters
       v-if="mode === 'filters'"
       :model-value="filters"
-      :fields="fields"
+      :doctype="doctype"
       :label="''"
       @update:model-value="setFilters"
     />
@@ -43,6 +43,7 @@
 </template>
 
 <script setup>
+import { filterableFields } from '@/components/ConditionsFilter/filterableFields'
 import WorkflowFilters from './WorkflowFilters.vue'
 import {
   isFilterExpression,
@@ -54,7 +55,7 @@ import { computed, ref, watch } from 'vue'
 
 const props = defineProps({
   modelValue: { type: String, default: '' },
-  fields: { type: Array, default: () => [] },
+  doctype: { type: String, default: '' },
   label: { type: String, default: () => __('Condition') },
   placeholder: { type: String, default: '' },
 })
@@ -84,6 +85,7 @@ watch(
 
 function setFilters(value) {
   const rows = typeof value === 'string' ? JSON.parse(value || '[]') : value
-  emit('update:modelValue', toExpression(rows, props.fields))
+  // The builder already loaded this DocType's fields; they decide which values stay unquoted.
+  emit('update:modelValue', toExpression(rows, filterableFields.data || []))
 }
 </script>
