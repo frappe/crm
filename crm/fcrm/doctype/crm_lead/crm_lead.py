@@ -535,8 +535,8 @@ def convert_to_deal(
 	"""Convert a Lead into a Deal.
 
 	`if_converted` decides what an already-converted Lead does: "Create" (the interactive
-	default) makes another Deal, "Return Existing" replays the first one — which is what makes
-	an automation retry idempotent — and "Fail" refuses.
+	default) makes another Deal, "Return Existing" replays the first one - which is what makes
+	an automation retry idempotent - and "Fail" refuses.
 	"""
 	validate_conversion_access(lead, doc)
 	lead = lock_lead(lead)
