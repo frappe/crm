@@ -1,6 +1,8 @@
 <template>
   <div class="space-y-2">
-    <label class="block text-sm text-ink-gray-5">{{ label }}</label>
+    <label v-if="label" class="block text-sm text-ink-gray-5">{{
+      label
+    }}</label>
     <div
       v-for="(filter, index) in filters"
       :key="index"
