@@ -168,6 +168,13 @@ class SendEmailToRecord(AutomationAction):
 		},
 		{"fieldname": "subject", "label": "Subject", "fieldtype": "Data"},
 		{"fieldname": "message", "label": "Message", "fieldtype": "Text Editor"},
+		{
+			"fieldname": "sender",
+			"label": "Send As",
+			"fieldtype": "Link",
+			"options": "User",
+			"description": "Leave empty to send from the default outgoing account.",
+		},
 	]
 
 	def validate(self, params, doctype):
@@ -185,6 +192,7 @@ class SendEmailToRecord(AutomationAction):
 		if not recipient:
 			raise AutomationParamError(_("{0} has no email address").format(doc.doctype if doc else ""))
 		subject, message = self._content(doc, params)
+		sender = params.get("sender")
 		sent = make(
 			doctype=doc.doctype,
 			name=doc.name,
@@ -193,11 +201,14 @@ class SendEmailToRecord(AutomationAction):
 			recipients=recipient,
 			communication_type="Communication",
 			send_email=True,
+			sender=sender or None,
+			sender_full_name=frappe.db.get_value("User", sender, "full_name") if sender else None,
 		)
 		return {
 			"detail": _("Emailed {0}: {1}").format(recipient, subject),
 			"communication": sent.get("name"),
 			"recipient": recipient,
+			"sender": sender,
 		}
 
 	def _content(self, doc, params):
