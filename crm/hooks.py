@@ -160,15 +160,40 @@ automation_actions = [
 	"crm.automation.actions.SendEmailToRecord",
 ]
 
+# Correlation options are the keys `crm.automation.events` actually emits, offered to the
+# builder so waiting on an event never means hand-writing a Jinja expression.
+MESSAGE_CORRELATIONS = [
+	{"label": "This email thread", "value": "{{ doc.message_id or doc.name }}"},
+	{
+		"label": "This lead or deal",
+		"value": "{{ doc.reference_doctype }}:{{ doc.reference_name }}",
+	},
+]
+RECORD_CORRELATION = [{"label": "This record", "value": "{{ doc.name }}"}]
+
 automation_events = [
-	"crm.prospect_message_sent",
-	"crm.prospect_message_received",
-	"crm.lead_qualified",
-	"crm.lead_converted",
-	"crm.deal_stage_changed",
-	"crm.deal_won",
-	"crm.deal_lost",
-	"crm.task_overdue",
+	{
+		"crm.prospect_message_sent": {
+			"label": "We emailed the prospect",
+			"correlation_options": MESSAGE_CORRELATIONS,
+		},
+		"crm.prospect_message_received": {
+			"label": "The prospect replied",
+			"correlation_options": MESSAGE_CORRELATIONS,
+		},
+		"crm.lead_qualified": {"label": "Lead was qualified"},
+		"crm.lead_converted": {
+			"label": "Lead became a deal",
+			"correlation_options": RECORD_CORRELATION,
+		},
+		"crm.deal_stage_changed": {
+			"label": "Deal changed stage",
+			"correlation_options": RECORD_CORRELATION,
+		},
+		"crm.deal_won": {"label": "Deal was won", "correlation_options": RECORD_CORRELATION},
+		"crm.deal_lost": {"label": "Deal was lost", "correlation_options": RECORD_CORRELATION},
+		"crm.task_overdue": {"label": "Task went overdue", "correlation_options": RECORD_CORRELATION},
+	}
 ]
 
 # DocType Class
