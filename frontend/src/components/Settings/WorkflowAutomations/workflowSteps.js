@@ -9,7 +9,30 @@
 const ROW_HEIGHT = 150
 const BRANCH_OFFSET = 280
 
+/**
+ * A wait-for-event step is stored as two rows — the wait, then an `If` reading the outcome the
+ * runner recorded. That second row is pure plumbing, so the builder shows one node with two
+ * arms and writes the pair back out on save. Users never see or type this expression.
+ */
+export const EVENT_MATCHED =
+  'context.get("event", {}).get("outcome") == "Matched"'
+
 let uid = 0
+
+/** Steps that own an If and an Else arm. */
+export function isBranching(node) {
+  return node?.step_type === 'If' || node?.step_type === 'WaitForEvent'
+}
+
+export function armLabels(node) {
+  return node?.step_type === 'WaitForEvent'
+    ? { If: __('Event happened'), Else: __('Timed out') }
+    : { If: __('If'), Else: __('Else') }
+}
+
+function hasArms(node) {
+  return Boolean(node.children?.If.length || node.children?.Else.length)
+}
 
 export function newStep(values = {}) {
   return {
@@ -41,7 +64,32 @@ export function toTree(rows = []) {
     if (parent) parent.children[armOf(rows[index])].push(node)
     else roots.push(node)
   })
+  collapseOutcomeSteps(roots)
   return roots
+}
+
+/** Fold each `If` that only reads a preceding wait's outcome back into that wait. */
+function collapseOutcomeSteps(nodes) {
+  for (let index = nodes.length - 1; index >= 0; index--) {
+    const node = nodes[index]
+    if (isBranching(node)) {
+      collapseOutcomeSteps(node.children.If)
+      collapseOutcomeSteps(node.children.Else)
+    }
+    const outcome = nodes[index + 1]
+    if (!isOutcomeOf(node, outcome)) continue
+    node.children = outcome.children
+    node._outcomeKey = outcome.step_key
+    nodes.splice(index + 1, 1)
+  }
+}
+
+function isOutcomeOf(node, next) {
+  return (
+    node?.step_type === 'WaitForEvent' &&
+    next?.step_type === 'If' &&
+    next.step_condition === EVENT_MATCHED
+  )
 }
 
 export function toRows(tree) {
@@ -50,21 +98,83 @@ export function toRows(tree) {
   return rows
 }
 
-function appendRows(nodes, rows, parentIdx, branch) {
+/**
+ * A step key names the step in run logs and in `context.steps.<key>`, so it has to exist and
+ * be unique — but nobody should have to invent one. An untitled step gets a name from what it
+ * does, and only shows up under Advanced for the rare case where it needs to be pinned.
+ */
+export function defaultStepKey(node, taken = new Set()) {
+  const base = scrub(
+    node.action_type || KEY_BASES[node.step_type] || node.step_type,
+  )
+  let key = base
+  let suffix = 2
+  while (taken.has(key)) key = `${base}_${suffix++}`
+  return key
+}
+
+const KEY_BASES = {
+  If: 'condition',
+  Wait: 'wait',
+  WaitForEvent: 'wait_for_event',
+}
+
+function scrub(text) {
+  return String(text || 'step')
+    .replace(/([a-z\d])([A-Z])/g, '$1_$2')
+    .replace(/\W+/g, '_')
+    .toLowerCase()
+}
+
+function appendRows(nodes, rows, parentIdx, branch, taken = new Set()) {
   nodes.forEach((node) => {
     const { children, ...row } = node
     delete row._id
+    delete row._outcomeKey
+    row.step_key = row.step_key || defaultStepKey(node, taken)
+    taken.add(row.step_key)
     rows.push({
       ...row,
       idx: rows.length + 1,
       parent_step: parentIdx,
       branch: parentIdx ? branch : '',
     })
-    const idx = rows.length
-    if (node.step_type !== 'If') return
-    appendRows(children.If, rows, idx, 'If')
-    appendRows(children.Else, rows, idx, 'Else')
+    let idx = rows.length
+    if (!isBranching(node) || !hasArms(node)) return
+    if (node.step_type === 'WaitForEvent') {
+      const outcome = outcomeRow(
+        node,
+        rows.length + 1,
+        parentIdx,
+        branch,
+        taken,
+      )
+      taken.add(outcome.step_key)
+      rows.push(outcome)
+      idx = rows.length
+    }
+    appendRows(children.If, rows, idx, 'If', taken)
+    appendRows(children.Else, rows, idx, 'Else', taken)
   })
+}
+
+/** The `If` that turns a wait's recorded outcome into two arms. */
+function outcomeRow(node, idx, parentIdx, branch, taken) {
+  const key = node._outcomeKey || `${node.step_key || 'wait'}_outcome`
+  return {
+    doctype: 'Automation Action',
+    step_type: 'If',
+    step_key: taken.has(key) ? `${key}_2` : key,
+    action_type: '',
+    target: 'trigger',
+    output_alias: '',
+    params: '{}',
+    step_condition: EVENT_MATCHED,
+    related_condition: '',
+    idx,
+    parent_step: parentIdx,
+    branch: parentIdx ? branch : '',
+  }
 }
 
 /** Depth-first list of every node with its canvas position, in flattened (idx) order. */
@@ -79,7 +189,7 @@ function place(nodes, y, x, placed, spread = BRANCH_OFFSET) {
   nodes.forEach((node) => {
     placed.push({ node, position: { x, y } })
     y += ROW_HEIGHT
-    if (node.step_type !== 'If') return
+    if (!isBranching(node)) return
     const ifEnd = place(node.children.If, y, x - spread, placed, spread / 2)
     const elseEnd = place(node.children.Else, y, x + spread, placed, spread / 2)
     y = Math.max(ifEnd, elseEnd)
@@ -91,7 +201,7 @@ function place(nodes, y, x, placed, spread = BRANCH_OFFSET) {
 export function listOf(tree, node) {
   if (tree.includes(node)) return tree
   for (const candidate of tree) {
-    if (candidate.step_type !== 'If') continue
+    if (!isBranching(candidate)) continue
     const found =
       listOf(candidate.children.If, node) ||
       listOf(candidate.children.Else, node)
@@ -123,7 +233,7 @@ function collectBefore(nodes, target, earlier) {
   for (const node of nodes) {
     if (node === target) return true
     earlier.push(node)
-    if (node.step_type !== 'If') continue
+    if (!isBranching(node)) continue
     if (collectBefore(node.children.If, target, earlier)) return true
     if (collectBefore(node.children.Else, target, earlier)) return true
   }
