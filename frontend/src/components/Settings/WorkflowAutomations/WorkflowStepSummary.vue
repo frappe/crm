@@ -13,7 +13,7 @@
       </div>
     </div>
     <div
-      v-if="step.step_type === 'If'"
+      v-if="isBranching(step)"
       class="ml-3 space-y-2 border-l border-outline-gray-2 pl-3"
     >
       <div v-for="arm in arms" :key="arm.name" class="space-y-2">
@@ -32,6 +32,8 @@
 </template>
 
 <script setup>
+import { summarizeCondition } from './workflowConditions'
+import { armLabels, isBranching } from './workflowSteps'
 import { Badge } from 'frappe-ui'
 import { computed } from 'vue'
 
@@ -47,10 +49,17 @@ const params = computed(() => {
   }
 })
 
-const arms = computed(() => [
-  { name: 'If', label: __('If'), steps: props.step.children?.If || [] },
-  { name: 'Else', label: __('Else'), steps: props.step.children?.Else || [] },
-])
+const arms = computed(() => {
+  const labels = armLabels(props.step)
+  return [
+    { name: 'If', label: labels.If, steps: props.step.children?.If || [] },
+    {
+      name: 'Else',
+      label: labels.Else,
+      steps: props.step.children?.Else || [],
+    },
+  ]
+})
 
 const kicker = computed(() => props.step.step_key || props.step.step_type)
 
@@ -70,10 +79,10 @@ const headline = computed(() => {
 })
 
 const detail = computed(() => {
-  if (props.step.step_type === 'If') return props.step.step_condition
+  if (props.step.step_type === 'If')
+    return summarizeCondition(props.step.step_condition)
   if (props.step.step_type === 'WaitForEvent') {
-    return __('key {0}, timeout {1} {2}', [
-      params.value.correlation_key,
+    return __('gives up after {0} {1}', [
       params.value.timeout_value,
       params.value.timeout_unit,
     ])
