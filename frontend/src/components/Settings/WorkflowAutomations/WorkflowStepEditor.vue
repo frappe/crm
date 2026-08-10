@@ -193,12 +193,24 @@ const fields = computed(
   () => capabilitiesFor(targetDoctype.value)?.fields || [],
 )
 
-const actionOptions = computed(() =>
-  (capabilitiesFor(targetDoctype.value)?.actions || []).map((action) => ({
+const actionOptions = computed(() => {
+  const actions = capabilitiesFor(targetDoctype.value)?.actions || []
+  const options = actions.map((action) => ({
     label: action.label,
     value: action.action_type,
-  })),
-)
+  }))
+  // Never render a chosen action as an empty select, even if its DocType is still unknown.
+  if (props.step.action_type && !actions.some(isChosen))
+    options.unshift({
+      label: schema.value?.label || props.step.action_type,
+      value: props.step.action_type,
+    })
+  return options
+})
+
+function isChosen(action) {
+  return action.action_type === props.step.action_type
+}
 
 const eventOptions = computed(
   () => capabilitiesFor(props.doc.document_type)?.custom_events || [],
