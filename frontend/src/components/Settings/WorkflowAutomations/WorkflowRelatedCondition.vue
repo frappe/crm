@@ -59,11 +59,11 @@
           @update:model-value="update('value', Number($event))"
         />
       </div>
-      <FormControl
-        :model-value="filtersText"
-        type="textarea"
+      <WorkflowFilters
+        :model-value="condition.filters || []"
+        :doctype="relatedDoctype"
         :label="__('Filters')"
-        :placeholder="`[[&quot;sent_or_received&quot;, &quot;=&quot;, &quot;Received&quot;]]`"
+        flat
         @update:model-value="updateFilters($event)"
       />
       <div class="text-xs text-ink-gray-5">{{ jinjaHint }}</div>
@@ -72,6 +72,7 @@
 </template>
 
 <script setup>
+import WorkflowFilters from './WorkflowFilters.vue'
 import { capabilitiesFor } from './workflowCapabilities'
 import { Button, FormControl } from 'frappe-ui'
 import { computed } from 'vue'
@@ -124,8 +125,12 @@ const relationshipOptions = computed(() =>
   ),
 )
 
-const filtersText = computed(() =>
-  JSON.stringify(condition.value?.filters || [], null, 2),
+/** Filters here run against the related records, not the source record. */
+const relatedDoctype = computed(
+  () =>
+    (capabilitiesFor(sourceDoctype.value)?.relationships || []).find(
+      (definition) => definition.name === condition.value?.relationship,
+    )?.target_doctype,
 )
 
 function defaultCondition() {
@@ -143,12 +148,8 @@ function update(key, value) {
   commit({ ...condition.value, [key]: value })
 }
 
-function updateFilters(text) {
-  try {
-    update('filters', JSON.parse(text || '[]'))
-  } catch {
-    // keep the last valid filters until the JSON parses again
-  }
+function updateFilters(value) {
+  update('filters', value ? JSON.parse(value) : [])
 }
 
 function commit(next) {
