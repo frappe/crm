@@ -74,11 +74,11 @@ export const otherTriggers = [
   },
 ]
 
-/** Grouped for the canvas picker; the inspector renders the two lists directly. */
+/** Combobox-shaped for the canvas picker; the inspector renders the two lists directly. */
 export function triggerGroups() {
   return [
-    { label: __('Records'), options: documentTriggers },
-    { label: __('Others'), options: otherTriggers },
+    { group: __('Records'), options: documentTriggers },
+    { group: __('Others'), options: otherTriggers },
   ]
 }
 
