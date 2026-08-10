@@ -37,7 +37,7 @@
       {{ __('Python, evaluated against doc, target and context.') }}
     </p>
     <p v-else class="text-xs text-ink-gray-5">
-      {{ __('Too complex for filters — edit it as an expression.') }}
+      {{ __('Not something filters can express. Edit it below.') }}
     </p>
   </div>
 </template>
