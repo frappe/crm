@@ -32,6 +32,38 @@ export function isFilterExpression(expression) {
   return toFilters(expression) !== null
 }
 
+/** A one-line reading of a condition, for canvas nodes and the read-only view. */
+export function summarizeCondition(expression) {
+  const filters = toFilters(expression)
+  if (!filters) return String(expression || '')
+  return filters.map(describeFilter).join(__(' and '))
+}
+
+const PHRASES = {
+  '=': (field, value) => __('{0} is {1}', [field, value]),
+  '!=': (field, value) => __('{0} is not {1}', [field, value]),
+  in: (field, value) => __('{0} is one of {1}', [field, value]),
+  'not in': (field, value) => __('{0} is none of {1}', [field, value]),
+  like: (field, value) => __('{0} contains {1}', [field, value]),
+  'not like': (field, value) => __('{0} does not contain {1}', [field, value]),
+}
+
+function describeFilter([fieldname, operator, value]) {
+  const field = prettyField(fieldname)
+  if (operator === 'is')
+    return value === 'set'
+      ? __('{0} is set', [field])
+      : __('{0} is empty', [field])
+  const phrase = PHRASES[operator]
+  const text = Array.isArray(value) ? value.join(', ') : String(value ?? '')
+  return phrase ? phrase(field, text) : `${field} ${operator} ${text}`
+}
+
+function prettyField(fieldname) {
+  const words = String(fieldname || '').replace(/_/g, ' ')
+  return words.charAt(0).toUpperCase() + words.slice(1)
+}
+
 function clauseFor(filter, fields) {
   const [fieldname, operator, value] = filter
   if (operator === 'is') return presenceClause(fieldname, value)
@@ -87,10 +119,17 @@ function splitValues(value) {
 }
 
 // --- parsing -------------------------------------------------------------
+// Deliberately strict: a clause has to be a field, an operator and plain literals. Anything
+// looser would let a hand-written expression half-match, and rewriting it from the filter UI
+// would silently change what the step does.
+const LITERAL = `"[^"]*"|'[^']*'|-?\\d+(?:\\.\\d+)?`
 const PRESENCE = /^\(doc\.(\w+) or ""\) (==|!=) ""$/
-const CONTAINS = /^["'](.*)["'] (not in|in) \(doc\.(\w+) or ""\)\.lower\(\)$/
-const MEMBERSHIP = /^doc\.(\w+) (not in|in) \[(.*)\]$/
-const COMPARISON = /^doc\.(\w+) (==|!=|>=|<=|>|<) (.+)$/
+const CONTAINS =
+  /^"([^"]*)" (not in|in) \(doc\.(\w+) or ""\)\.lower\(\)$|^'([^']*)' (not in|in) \(doc\.(\w+) or ""\)\.lower\(\)$/
+const MEMBERSHIP = new RegExp(
+  `^doc\\.(\\w+) (not in|in) \\[((?:${LITERAL})(?:, *(?:${LITERAL}))*)?\\]$`,
+)
+const COMPARISON = new RegExp(`^doc\\.(\\w+) (==|!=|>=|<=|>|<) (${LITERAL})$`)
 
 function parseClause(clause) {
   return (
@@ -110,7 +149,11 @@ function parsePresence(clause) {
 function parseContains(clause) {
   const match = clause.match(CONTAINS)
   if (!match) return null
-  return [match[3], match[2] === 'in' ? 'like' : 'not like', unquote(match[1])]
+  const [value, operator, fieldname] =
+    match[1] === undefined
+      ? [match[4], match[5], match[6]]
+      : [match[1], match[2], match[3]]
+  return [fieldname, operator === 'in' ? 'like' : 'not like', unquote(value)]
 }
 
 function parseMembership(clause) {
