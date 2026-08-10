@@ -3,7 +3,7 @@
 
 """CRM automation actions.
 
-Registered through the `automation_actions` hook. Each one delegates to CRM domain logic —
+Registered through the `automation_actions` hook. Each one delegates to CRM domain logic -
 the engine only supplies the resolved target document and the step's params.
 """
 
@@ -18,7 +18,7 @@ from crm.fcrm.doctype.crm_lead.crm_lead import convert_to_deal, existing_deal
 
 
 def require_doctype(doctype, allowed, label):
-	"""`applicable_doctypes` only filters by the flow's DocType — a step aimed at a record
+	"""`applicable_doctypes` only filters by the flow's DocType - a step aimed at a record
 	alias has to be checked against that alias' DocType, at save time and again at run time."""
 	if doctype and doctype not in allowed:
 		raise AutomationParamError(

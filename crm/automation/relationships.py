@@ -4,7 +4,7 @@
 """The CRM relationships the schema can't derive on its own.
 
 Everything backed by a Link, a child-table Link or a Dynamic Link is already offered by the
-engine's schema provider, so this file only carries the edges that need a judgement call —
+engine's schema provider, so this file only carries the edges that need a judgement call -
 plus a few renames, which say nothing but "call this one `deals`, not `crm_deal_via_lead`".
 Renamed entries are still resolved by the schema provider, so they can't drift from the
 fields behind them.
@@ -57,8 +57,8 @@ def _task_filters(doc):
 
 
 def _dynamic_reference(name, label, doctype, filters) -> dict:
-	"""Dynamic references aren't derived — which DocTypes a reference pair points at is a fact
-	about data, not schema — so the CRM names the ones it cares about."""
+	"""Dynamic references aren't derived - which DocTypes a reference pair points at is a fact
+	about data, not schema - so the CRM names the ones it cares about."""
 	return {
 		"name": name,
 		"label": label,
@@ -87,7 +87,7 @@ def _communication_reference(doc) -> list[dict]:
 
 
 def _lead_organization(lead) -> list[dict]:
-	"""Leads hold an organization name, not a link — match it to a CRM Organization."""
+	"""Leads hold an organization name, not a link - match it to a CRM Organization."""
 	name = lead.organization and frappe.db.exists(
 		"CRM Organization", {"organization_name": lead.organization}
 	)

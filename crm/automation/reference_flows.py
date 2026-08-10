@@ -26,7 +26,7 @@ TEMPLATES = {
 	),
 	"CRM Lead Follow Up": (
 		"Following up, {{ doc.first_name }}",
-		"<p>Hi {{ doc.first_name }},</p><p>Circling back on my note from a couple of days ago — "
+		"<p>Hi {{ doc.first_name }},</p><p>Circling back on my note from a couple of days ago - "
 		"still happy to help.</p>",
 	),
 }
@@ -45,7 +45,7 @@ def install(enable: int = 0):
 def uninstall():
 	"""Remove the reference flows. The Email Templates are left in place.
 
-	Matched by their exact titles — the flows carry no marker of their own, and a flow a user
+	Matched by their exact titles - the flows carry no marker of their own, and a flow a user
 	built by hand is not ours to delete.
 	"""
 	for title in [build()["title"] for build in builders()]:
@@ -218,7 +218,7 @@ def _points_key(key) -> str:
 def _total_at_least(threshold) -> str:
 	"""Sum the deltas the scoring steps reported.
 
-	A step that was skipped leaves nothing behind, so its arm contributes zero — which is why
+	A step that was skipped leaves nothing behind, so its arm contributes zero - which is why
 	this reads the run's own outputs instead of the Lead, whose snapshot was loaded before any
 	of these steps wrote to it.
 	"""
@@ -343,7 +343,7 @@ def forecast_defaults() -> dict:
 def create_task_step(idx, key) -> dict:
 	"""Targets the Deal the previous step produced, so `doc` here is that Deal."""
 	values = {
-		"title": "Kickoff call — {{ doc.organization or doc.lead_name }}",
+		"title": "Kickoff call - {{ doc.organization or doc.lead_name }}",
 		"status": "Todo",
 		"priority": "High",
 		"assigned_to": "{{ trigger.lead_owner or '' }}",

@@ -3,7 +3,7 @@
 
 """CRM domain events published to the automation engine.
 
-Payloads carry identifiers only — never message bodies — because they are snapshotted onto
+Payloads carry identifiers only - never message bodies - because they are snapshotted onto
 event subscriptions and run logs.
 
 Correlation: a message event is emitted once per candidate key (thread first, then the
