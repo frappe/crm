@@ -22,9 +22,9 @@
     />
 
     <template v-if="step.step_type === 'If'">
-      <FormControl
+      <ConditionEditor
         v-model="step.step_condition"
-        type="textarea"
+        :fields="fields"
         :label="__('Condition')"
         :placeholder="__('doc.status == \'Qualified\'')"
       />
@@ -140,10 +140,10 @@
 
     <RelatedCondition v-model="step.related_condition" :targets="targets" />
 
-    <FormControl
+    <ConditionEditor
       v-if="step.step_type !== 'If'"
       v-model="step.step_condition"
-      type="textarea"
+      :fields="fields"
       :label="__('Only run when')"
       :placeholder="__('doc.status == \'Open\'')"
     />
@@ -151,6 +151,7 @@
 </template>
 
 <script setup>
+import ConditionEditor from './WorkflowConditionEditor.vue'
 import ParamEditor from './WorkflowParamEditor.vue'
 import RelatedCondition from './WorkflowRelatedCondition.vue'
 import TargetPicker from './WorkflowTargetPicker.vue'
