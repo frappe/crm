@@ -6,6 +6,7 @@ import WaitIcon from '~icons/lucide/timer'
 import { actionSchema } from './workflowCapabilities'
 import { summarizeCondition } from './workflowConditions'
 import { armLabels, isBranching, layoutSteps } from './workflowSteps'
+import { triggerDefinition } from './workflowTriggers'
 
 const STEP_ICONS = {
   Action: ActionIcon,
@@ -30,23 +31,22 @@ export function workflowEdges(actions = []) {
 }
 
 function triggerNode(doc) {
+  const trigger = triggerDefinition(doc.trigger_type)
   return {
     id: 'trigger',
     type: 'automation',
     position: { x: 0, y: 0 },
     data: {
-      icon: TriggerIcon,
+      icon: trigger?.icon || TriggerIcon,
       isTrigger: true,
+      empty: !doc.trigger_type,
       kicker: __('Trigger'),
-      label: triggerLabel(doc),
+      label: trigger?.label || __('Start from scratch'),
+      detail: doc.trigger_type
+        ? __('on {0}', [doc.document_type])
+        : __('Pick what starts this automation'),
     },
   }
-}
-
-function triggerLabel(doc) {
-  return doc.trigger_type
-    ? doc.trigger_type.replace(/^Doc /, 'Record ')
-    : __('Add a Trigger')
 }
 
 function stepNode(node, position, errors) {
