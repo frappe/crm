@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   isFilterExpression,
+  summarizeCondition,
   toExpression,
   toFilters,
 } from '../../src/components/Settings/WorkflowAutomations/workflowConditions'
@@ -88,5 +89,44 @@ describe('reading a condition back into filters', () => {
   it('treats an empty condition as no filters', () => {
     expect(toFilters('')).toEqual([])
     expect(isFilterExpression('')).toBe(true)
+  })
+})
+
+describe('refusing expressions it cannot represent', () => {
+  const SENIORITY =
+    '"chief" in (doc.job_title or "").lower() or "head" in (doc.job_title or "").lower()'
+  const TOTAL = '(context["steps"].get("a", {}).get("delta", 0)) >= 45'
+
+  it('rejects an or-chain instead of half-matching it', () => {
+    expect(toFilters(SENIORITY)).toBeNull()
+    expect(summarizeCondition(SENIORITY)).toBe(SENIORITY)
+  })
+
+  it('rejects expressions that are not a plain field comparison', () => {
+    expect(toFilters(TOTAL)).toBeNull()
+    expect(toFilters('doc.email.split("@")[-1] == "acme.com"')).toBeNull()
+    expect(toFilters('doc.status == doc.other')).toBeNull()
+  })
+
+  it('still accepts the plain forms it writes', () => {
+    expect(toFilters('doc.status == "Open"')).toEqual([['status', '=', 'Open']])
+    expect(toFilters('doc.score >= 45')).toEqual([['score', '>=', 45]])
+  })
+})
+
+describe('summaries', () => {
+  it('reads a condition as a sentence', () => {
+    expect(summarizeCondition('doc.source == "Website"')).toBe(
+      'Source is Website',
+    )
+    expect(summarizeCondition('(doc.organization or "") != ""')).toBe(
+      'Organization is set',
+    )
+    expect(summarizeCondition('doc.status in ["New", "Open"]')).toBe(
+      'Status is one of New, Open',
+    )
+    expect(summarizeCondition('"head" in (doc.job_title or "").lower()')).toBe(
+      'Job title contains head',
+    )
   })
 })
