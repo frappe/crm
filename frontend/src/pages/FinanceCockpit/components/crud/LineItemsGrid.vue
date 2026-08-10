@@ -81,7 +81,7 @@
       </table>
     </div>
 
-    <!-- Mobile stacked cards -->
+    <!-- Mobile stacked cards (wideOnly columns hidden) -->
     <div v-else class="space-y-3">
       <div v-if="!rows.length" class="rounded-lg border border-dashed border-outline-gray-2 py-8 text-center text-sm text-ink-gray-4">
         No line items yet.
@@ -107,7 +107,7 @@
         </div>
         <div class="space-y-2.5">
           <FieldRenderer
-            v-for="col in columns"
+            v-for="col in mobileColumns"
             :key="col.fieldname"
             :field="col"
             :show-label="true"
@@ -133,11 +133,20 @@
     >
       <FcIcon name="plus" :size="16" /> Add line
     </button>
+
+    <!-- Item price hint per row (shown below grid when no price found) -->
+    <p
+      v-for="(hint, idx) in priceHints"
+      v-show="hint"
+      :key="'hint-' + idx"
+      class="mt-1 text-xs text-ink-gray-4 ml-1"
+    >Line {{ idx + 1 }}: {{ hint }}</p>
   </div>
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { ref, computed, watch } from 'vue'
+import { createResource, debounce } from 'frappe-ui'
 import FieldRenderer from './FieldRenderer.vue'
 import FcIcon from './FcIcon.vue'
 import { useBreakpoint } from '../../composables/useBreakpoint.js'
@@ -153,6 +162,12 @@ const props = defineProps({
   qtyField: { type: String, default: '' },
   rateField: { type: String, default: '' },
   amountField: { type: String, default: '' },
+  // For tax auto-calc (FC-01): net total from FinanceForm.
+  netTotal: { type: Number, default: 0 },
+  // For item price auto-lookup (FC-05): active selling price list.
+  priceList: { type: String, default: '' },
+  // Whether this grid is in taxes mode (no qtyField/rateField).
+  isTaxes: { type: Boolean, default: false },
 })
 
 const emit = defineEmits(['update:rows'])
@@ -162,10 +177,14 @@ const { formatCurrency } = useCurrency()
 
 const showAmount = computed(() => !!(props.qtyField && props.rateField))
 
-// Curated columns from layout config; exclude the computed amount field (it is
-// rendered as its own running-total column) to avoid duplication.
+// Desktop columns: exclude the computed amount field from columns.
 const columns = computed(() =>
   (props.columns || []).filter((f) => f.fieldname !== props.amountField),
+)
+
+// Mobile: additionally hide wideOnly columns.
+const mobileColumns = computed(() =>
+  columns.value.filter((f) => !f.wideOnly),
 )
 
 const totalCols = computed(
@@ -205,15 +224,99 @@ function removeRow(idx) {
 function updateCell(idx, fieldname, value) {
   const next = props.rows.slice()
   const updated = { ...next[idx], [fieldname]: value }
-  // Keep the stored amount in sync so the saved doc carries a value pre-server-recompute.
+
+  // FC-01: tax auto-calc — when rate% changes on an On Net Total row, compute tax_amount.
+  if (props.isTaxes && fieldname === 'rate' && props.netTotal > 0) {
+    const chargeType = updated['charge_type']
+    if (!chargeType || chargeType === 'On Net Total') {
+      updated['tax_amount'] = (Number(value) / 100) * props.netTotal
+    }
+  }
+
+  // Line item amount: keep stored amount in sync so the saved doc carries a
+  // value before server recompute.
   if (props.amountField && (fieldname === props.qtyField || fieldname === props.rateField)) {
     const qty = Number(fieldname === props.qtyField ? value : updated[props.qtyField] ?? 0)
     const rate = Number(fieldname === props.rateField ? value : updated[props.rateField] ?? 0)
     updated[props.amountField] = qty * rate
   }
+
+  // FC-05: trigger item price lookup when item_code changes.
+  if (fieldname === 'item_code' && !props.isTaxes) {
+    fetchItemPrice(idx, value, updated)
+    next[idx] = updated
+    emit('update:rows', next)
+    return
+  }
+
   next[idx] = updated
   emit('update:rows', next)
 }
+
+/* ---- FC-05: Item price auto-lookup ---- */
+const priceHints = ref([])
+const itemPriceRes = createResource({ url: 'frappe.client.get_list' })
+
+async function fetchItemPrice(idx, itemCode, rowSnapshot) {
+  // Clear existing hint for this row.
+  const hints = [...priceHints.value]
+  hints[idx] = ''
+  priceHints.value = hints
+
+  if (!itemCode || !props.priceList) return
+
+  try {
+    const rows = await itemPriceRes.submit({
+      doctype: 'Item Price',
+      filters: JSON.stringify([
+        ['item_code', '=', itemCode],
+        ['price_list', '=', props.priceList],
+        ['selling', '=', 1],
+      ]),
+      fields: JSON.stringify(['price_list_rate', 'item_name']),
+      limit_page_length: 1,
+      order_by: 'modified desc',
+    })
+    if (rows && rows.length) {
+      const next = props.rows.slice()
+      const updated = { ...rowSnapshot }
+      updated[props.rateField] = rows[0].price_list_rate
+      if ('item_name' in (rowSnapshot || {})) updated['item_name'] = rows[0].item_name || ''
+      if (props.amountField) {
+        const qty = Number(updated[props.qtyField] ?? 0)
+        updated[props.amountField] = qty * rows[0].price_list_rate
+      }
+      next[idx] = updated
+      emit('update:rows', next)
+    } else {
+      const h = [...priceHints.value]
+      h[idx] = 'No price on ' + props.priceList
+      priceHints.value = h
+    }
+  } catch {
+    // silently ignore — rate stays user-editable
+  }
+}
+
+// FC-05: when priceList changes, re-fetch all rows that have an item_code.
+watch(() => props.priceList, debounce((newList) => {
+  if (!newList) return
+  props.rows.forEach((row, idx) => {
+    if (row['item_code']) fetchItemPrice(idx, row['item_code'], row)
+  })
+}, 300))
+
+// FC-01: when netTotal changes, recompute On Net Total tax rows.
+watch(() => props.netTotal, (newNet) => {
+  if (!props.isTaxes || !newNet) return
+  const next = props.rows.map((row) => {
+    if ((row['charge_type'] || 'On Net Total') === 'On Net Total' && row['rate'] != null) {
+      return { ...row, tax_amount: (Number(row['rate']) / 100) * newNet }
+    }
+    return row
+  })
+  emit('update:rows', next)
+})
 
 defineExpose({ runningTotal })
 </script>

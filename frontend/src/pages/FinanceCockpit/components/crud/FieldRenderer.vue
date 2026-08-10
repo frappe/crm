@@ -40,7 +40,25 @@
       />
     </div>
 
-    <!-- Number (int / float / currency) -->
+    <!-- Currency: symbol prefix badge in edit mode -->
+    <div v-else-if="field.type === 'currency'" :class="showLabel ? '' : ''">
+      <label v-if="showLabel" class="block text-xs font-medium text-ink-gray-6 mb-1">
+        {{ field.label }}<span v-if="field.required" class="text-red-500 ml-0.5">*</span>
+      </label>
+      <div class="flex items-center gap-1.5">
+        <span v-if="currency" class="text-xs font-medium text-ink-gray-5 w-8 text-right flex-shrink-0">{{ currency }}</span>
+        <FormControl
+          type="number"
+          :required="field.required"
+          step="any"
+          :model-value="modelValue ?? ''"
+          class="fc-num flex-1"
+          @update:model-value="emitNumber"
+        />
+      </div>
+    </div>
+
+    <!-- Number (int / float) -->
     <FormControl
       v-else-if="isNumeric"
       type="number"

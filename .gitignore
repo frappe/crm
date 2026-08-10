@@ -31,6 +31,7 @@ AGENTS.md
 .patch
 *.pdf
 *.docx
+*.xlsx
 _bmad-output/
 mockups/
 crm/www/finance-mockups/

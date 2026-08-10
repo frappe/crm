@@ -75,6 +75,14 @@
               Cancel
             </Button>
             <Button
+              variant="outline"
+              theme="gray"
+              @click="printDoc"
+            >
+              <template #prefix><FcIcon name="printer" :size="14" /></template>
+              Print
+            </Button>
+            <Button
               theme="red"
               variant="subtle"
               :loading="busy"
@@ -88,11 +96,15 @@
           </div>
         </div>
 
-        <!-- Summary strip: key facts -->
+        <!-- FC-13: Explicit summary strip -->
         <div class="border-t border-outline-gray-1 bg-surface-gray-1 px-5 sm:px-6 py-3 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
           <div v-for="fact in summaryFacts" :key="fact.fieldname" class="min-w-0">
             <dt class="text-[11px] font-medium text-ink-gray-5 uppercase tracking-wide">{{ fact.label }}</dt>
-            <dd class="text-sm font-medium text-ink-gray-8 mt-0.5 truncate" :class="fact.numeric ? 'tabular-nums' : ''">{{ fact.display }}</dd>
+            <dd
+              class="text-sm font-medium mt-0.5 truncate"
+              :class="[fact.numeric ? 'tabular-nums' : '', fact.color || 'text-ink-gray-8']"
+            >{{ fact.display }}</dd>
+            <dd v-if="fact.subLabel" class="text-xs mt-0.5" :class="fact.subColor || 'text-ink-gray-4'">{{ fact.subLabel }}</dd>
           </div>
         </div>
       </div>
@@ -126,6 +138,7 @@
               :tax="taxTotal"
               :grand-total="grandTotal"
               :currency="doc.currency"
+              :tax-rows="doc[layout.totals?.taxRowsField] || null"
               :notes="doc[layout.remarksField] || ''"
               :notes-label="layout.remarksLabel"
               :show-notes="!!layout.remarksField"
@@ -146,6 +159,41 @@
               </dd>
             </div>
           </dl>
+        </SectionCard>
+
+        <!-- FC-14: Related documents panel -->
+        <SectionCard v-if="relatedItems.length" title="Related" icon="link" tone="neutral">
+          <div class="flex flex-wrap gap-2">
+            <a
+              v-for="item in relatedItems"
+              :key="item.href"
+              :href="item.href"
+              class="inline-flex items-center gap-1.5 text-xs font-medium text-ink-gray-7 border border-outline-gray-2 rounded-lg px-3 py-1.5 hover:bg-surface-gray-1 hover:text-ink-gray-9 transition-colors"
+            >
+              <FcIcon :name="item.icon" :size="13" />
+              {{ item.label }}
+            </a>
+          </div>
+        </SectionCard>
+
+        <!-- FC-14: Payment Entry references (invoice allocations) -->
+        <SectionCard
+          v-if="doctype === 'Payment Entry' && paymentRefs.length"
+          title="Allocated Invoices"
+          icon="receipt"
+          tone="positive"
+          :badge="paymentRefs.length"
+        >
+          <div class="divide-y divide-outline-gray-1">
+            <div
+              v-for="ref in paymentRefs"
+              :key="ref.reference_name"
+              class="flex items-center justify-between py-2"
+            >
+              <span class="text-sm font-medium text-ink-gray-8">{{ ref.reference_name }}</span>
+              <span class="text-sm tabular-nums text-ink-gray-6">{{ formatCurrency(ref.allocated_amount, doc.currency) }}</span>
+            </div>
+          </div>
         </SectionCard>
       </div>
     </template>
@@ -227,9 +275,20 @@ const grandTotal = computed(() => {
   return subtotal.value + taxTotal.value
 })
 
-/* ---- Summary strip: prominent scalar facts from configured fields sections ---- */
+/* ---- FC-13: Explicit summary strip ---- */
+const TODAY = new Date().toISOString().slice(0, 10)
+
 const summaryFacts = computed(() => {
-  if (!doc.value) return []
+  const d = doc.value
+  if (!d) return []
+
+  // Use explicit summaryFields list from layout if provided; otherwise fall back
+  // to first-5 scalar fields (excluding check/textarea) as before.
+  const fieldNames = layout.summaryFields
+  if (fieldNames) {
+    return fieldNames.map((fn) => buildFact(fn, d)).filter(Boolean)
+  }
+
   const fields = []
   for (const sec of layout.sections) {
     if (sec.kind === 'fields') fields.push(...(sec.fields || []))
@@ -237,28 +296,57 @@ const summaryFacts = computed(() => {
   return fields
     .filter((f) => f.type !== 'check' && f.type !== 'textarea')
     .slice(0, 5)
-    .map((f) => ({
-      fieldname: f.fieldname,
-      label: f.label,
-      numeric: isNum(f),
-      display:
-        f.type === 'currency'
-          ? formatCurrency(doc.value[f.fieldname], doc.value.currency)
-          : displayVal(doc.value[f.fieldname]),
-    }))
+    .map((f) => buildFact(f.fieldname, d))
+    .filter(Boolean)
 })
+
+function buildFact(fieldname, d) {
+  // Gather field meta from layout.
+  const allFields = []
+  for (const sec of layout.sections) {
+    if (sec.kind === 'fields') allFields.push(...(sec.fields || []))
+  }
+  const fieldMeta = allFields.find((f) => f.fieldname === fieldname)
+  const label = fieldMeta?.label || fieldname
+  const type = fieldMeta?.type || 'data'
+  const val = d[fieldname]
+
+  let display = displayVal(val)
+  let color = null
+  let subLabel = null
+  let subColor = null
+
+  if (type === 'currency') {
+    display = formatCurrency(val, d.currency)
+  }
+
+  // FC-13: paid-in-full indicator on outstanding_amount.
+  if (fieldname === 'outstanding_amount' && Number(val ?? -1) === 0) {
+    display = 'Paid in Full'
+    color = 'text-ink-green-6'
+  }
+
+  // FC-13: "X days overdue" sub-label on due_date.
+  if (fieldname === 'due_date' && val && val < TODAY && docstatus.value === 1) {
+    const days = Math.floor((new Date(TODAY) - new Date(val)) / 86400000)
+    subLabel = days + (days === 1 ? ' day overdue' : ' days overdue')
+    subColor = 'text-red-500 dark:text-red-400'
+  }
+
+  return { fieldname, label, numeric: isNumericType(type), display, color, subLabel, subColor }
+}
 
 // Configured scalar fields not already shown in the summary strip.
 const detailFields = computed(() => {
   if (!doc.value) return []
-  const shown = new Set(summaryFacts.value.map((f) => f.fieldname))
-  if (layout.remarksField) shown.add(layout.remarksField)
+  const shownNames = new Set(summaryFacts.value.map((f) => f.fieldname))
+  if (layout.remarksField) shownNames.add(layout.remarksField)
   const seen = new Set()
   const out = []
   for (const sec of layout.sections) {
     if (sec.kind !== 'fields') continue
     for (const f of sec.fields || []) {
-      if (shown.has(f.fieldname) || seen.has(f.fieldname)) continue
+      if (shownNames.has(f.fieldname) || seen.has(f.fieldname)) continue
       seen.add(f.fieldname)
       const v = doc.value[f.fieldname]
       if (v === null || v === undefined || v === '') continue
@@ -266,6 +354,32 @@ const detailFields = computed(() => {
     }
   }
   return out
+})
+
+/* ---- FC-14: Related documents ---- */
+const relatedItems = computed(() => {
+  const d = doc.value
+  if (!d) return []
+  const items = []
+
+  if (props.doctype === 'Sales Invoice') {
+    if (d.crm_deal) {
+      items.push({ label: 'View Deal →', icon: 'briefcase', href: '/crm/deals/' + d.crm_deal })
+    }
+    if (d.crm_quotation) {
+      items.push({ label: 'View Quote →', icon: 'file-text', href: '/crm/quotes/' + d.crm_quotation })
+    }
+  }
+
+  return items
+})
+
+// Payment Entry: invoice references from child table.
+const paymentRefs = computed(() => {
+  if (props.doctype !== 'Payment Entry') return []
+  return (doc.value?.references || []).filter(
+    (r) => r.reference_doctype === 'Sales Invoice' && r.allocated_amount > 0,
+  )
 })
 
 function isNum(f) {
@@ -343,5 +457,10 @@ function onDelete() {
       }
     },
   })
+}
+
+function printDoc() {
+  const url = `/printview?doctype=${encodeURIComponent(props.doctype)}&name=${encodeURIComponent(props.name)}&trigger_print=1`
+  window.open(url, '_blank')
 }
 </script>
