@@ -532,7 +532,12 @@
             if (!isVisible(f, doc)) return; // hidden by depends_on → not submitted/validated
             var val = f.fieldtype === "Check" ? (el.checked ? 1 : 0) : el.value;
             values[f.fieldname] = val;
-            if (isRequired(f, doc) && (val === "" || val === null || val === undefined)) {
+            // a required checkbox must be checked; unchecked is 0, not "empty"
+            var empty =
+              f.fieldtype === "Check"
+                ? val === 0
+                : val === "" || val === null || val === undefined;
+            if (isRequired(f, doc) && empty) {
               missing.push(f);
               el.classList.add("has-error");
             }
