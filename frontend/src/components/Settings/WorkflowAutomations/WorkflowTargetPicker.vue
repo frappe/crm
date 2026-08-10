@@ -26,7 +26,7 @@ defineEmits(['update:modelValue'])
 const options = computed(() =>
   props.targets.map((target) => ({
     label: target.doctype
-      ? `${target.alias} — ${target.doctype}`
+      ? `${target.alias} (${target.doctype})`
       : target.alias,
     value: target.alias,
   })),
@@ -38,7 +38,7 @@ const hint = computed(() => {
   )
   if (!target) return __('This alias is not available at this step')
   return target.doctype
-    ? __('{0} · one record', [target.doctype])
+    ? __('One {0} record', [target.doctype])
     : __('DocType resolved at runtime')
 })
 </script>
