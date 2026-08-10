@@ -32,8 +32,8 @@ const flowBlocks = [
 export function blockGroups(doctype) {
   const actions = (capabilitiesFor(doctype)?.actions || []).map(actionBlock)
   return [
-    { label: __('Flow'), options: flowBlocks },
-    { label: __('Actions'), options: actions },
+    { group: __('Flow'), options: flowBlocks },
+    { group: __('Actions'), options: actions },
   ].filter((group) => group.options.length)
 }
 
