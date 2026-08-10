@@ -1,7 +1,7 @@
 # Copyright (c) 2026, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 
-"""Five reference Automation Flows, installable on any CRM site.
+"""Eight reference Automation Flows, installable on any CRM site.
 
 	bench --site <site> execute crm.automation.reference_flows.install
 	bench --site <site> execute crm.automation.reference_flows.install --kwargs "{'enable': 1}"
@@ -58,7 +58,16 @@ def uninstall():
 
 
 def builders() -> tuple:
-	return (welcome_sequence, reply_temperature, profile_scoring, qualified_conversion, stalled_deal)
+	return (
+		welcome_sequence,
+		reply_temperature,
+		profile_scoring,
+		assign_on_outreach,
+		lead_routing,
+		engagement_scoring,
+		qualified_conversion,
+		stalled_deal,
+	)
 
 
 def replace_flow(payload) -> str:
@@ -229,7 +238,118 @@ def _total_at_least(threshold) -> str:
 
 
 # ---------------------------------------------------------------------------
-# 4. A lead reaching Qualified becomes a Deal, with a kickoff task on the new Deal.
+# 4. Ownership follows the lead: whoever should be on it next gets assigned.
+#
+# A flow has one trigger, so routing is two flows: one on the outreach itself, one on the
+# lead changing. Neither waits, so both land the moment you act in the UI.
+# ---------------------------------------------------------------------------
+OUTREACH_OWNER = "crm.rep1@example.com"
+HOT_LEAD_OWNER = "crm.supervisor@example.com"
+QUALIFIED_OWNER = "crm.rep2@example.com"
+HOT_SCORE = 50
+
+
+def assign_on_outreach() -> dict:
+	"""We emailed a prospect, so the lead lands on the rep who owns the follow-up."""
+	return {
+		**flow("Assign the lead when we email it", "Communication", "Doc Created"),
+		"filters": frappe.as_json(
+			[
+				["communication_type", "=", "Communication"],
+				["sent_or_received", "=", "Sent"],
+				["reference_doctype", "=", "CRM Lead"],
+			]
+		),
+		"relationships": frappe.as_json(
+			[
+				{
+					"alias": "lead",
+					"source": "trigger",
+					"relationship": "reference",
+					"target_doctype": "CRM Lead",
+				}
+			]
+		),
+		"actions": [
+			assign_step(1, "assign_outreach_owner", OUTREACH_OWNER, "We emailed this lead", target="lead")
+		],
+	}
+
+
+def lead_routing() -> dict:
+	"""Two independent checks on every lead update, so one save can fire both."""
+	return {
+		**flow("Route the lead as it changes", "CRM Lead", "Doc Updated"),
+		"actions": [
+			step(1, "is_hot", "If", condition=f"doc.lead_score >= {HOT_SCORE}"),
+			assign_step(
+				2,
+				"assign_hot_lead",
+				HOT_LEAD_OWNER,
+				"Lead score reached {{ doc.lead_score }}",
+				parent=1,
+				branch="If",
+			),
+			step(3, "is_qualified", "If", condition='doc.status == "Qualified"'),
+			assign_step(4, "assign_qualified", QUALIFIED_OWNER, "Lead is qualified", parent=3, branch="If"),
+			email_step(
+				5,
+				"qualified_email",
+				"CRM Lead Follow Up",
+				sender=QUALIFIED_OWNER,
+				parent=3,
+				branch="If",
+			),
+		],
+	}
+
+
+# ---------------------------------------------------------------------------
+# 5. Scoring the lead as it is worked, which is the other half of the profile scoring
+# that runs on creation.
+# ---------------------------------------------------------------------------
+ENGAGEMENT_SIGNALS = [
+	("reached_out", "Reached out to the lead", 'doc.status == "Contacted"', 5),
+	("nurturing", "Lead moved to nurture", 'doc.status == "Nurture"', 10),
+	("qualified", "Lead qualified", 'doc.status == "Qualified"', 20),
+	("went_cold", "Lead was disqualified", 'doc.status in ["Unqualified", "Junk"]', -30),
+]
+
+
+def engagement_scoring() -> dict:
+	"""Scores each move through the pipeline, and bands the running total afterwards.
+
+	Triggered on the status field changing rather than on any update: a plain update fires on
+	every save, so a signal like this would add its points again each time the record is
+	touched. A field change fires once per actual transition.
+	"""
+	rows, idx = [], 1
+	for key, label, condition, points in ENGAGEMENT_SIGNALS:
+		rows.append(step(idx, key, "If", condition=condition))
+		rows.append(score(idx + 1, _points_key(key), points, label, parent=idx, branch="If"))
+		idx += 2
+	rows += _engagement_banding(idx)
+	return {
+		**flow("Score the lead as it is worked", "CRM Lead", "Field Value Changed"),
+		"trigger_field": "status",
+		"actions": rows,
+	}
+
+
+def _engagement_banding(idx) -> list[dict]:
+	"""Bands on the score the Lead now carries, not on this run's points, because the score
+	has been built up by earlier runs too."""
+	return [
+		step(idx, "now_hot", "If", condition=f"doc.lead_score >= {HOT_SCORE}"),
+		temperature(idx + 1, "engagement_hot", "Hot", target="trigger", parent=idx, branch="If"),
+		step(idx + 2, "now_warm", "If", condition="doc.lead_score >= 20", parent=idx, branch="Else"),
+		temperature(idx + 3, "engagement_warm", "Warm", target="trigger", parent=idx + 2, branch="If"),
+		temperature(idx + 4, "engagement_cold", "Cold", target="trigger", parent=idx + 2, branch="Else"),
+	]
+
+
+# ---------------------------------------------------------------------------
+# 6. A lead reaching Qualified becomes a Deal, with a kickoff task on the new Deal.
 # ---------------------------------------------------------------------------
 def qualified_conversion() -> dict:
 	return {
@@ -246,7 +366,7 @@ def qualified_conversion() -> dict:
 
 
 # ---------------------------------------------------------------------------
-# 5. A deal changes stage: chase it, and after three quiet days score its Lead down.
+# 7. A deal changes stage: chase it, and after three quiet days score its Lead down.
 # ---------------------------------------------------------------------------
 def stalled_deal() -> dict:
 	return {
@@ -310,8 +430,22 @@ def action(idx, key, action_type, params, target="trigger", **extra) -> dict:
 	return row
 
 
-def email_step(idx, key, template, **extra) -> dict:
-	return action(idx, key, "SendCRMEmail", {"email_template": template}, **extra)
+def email_step(idx, key, template, sender=None, **extra) -> dict:
+	params = {"email_template": template}
+	if sender:
+		params["sender"] = sender
+	return action(idx, key, "SendCRMEmail", params, **extra)
+
+
+def assign_step(idx, key, user, description, target="trigger", **extra) -> dict:
+	return action(
+		idx,
+		key,
+		"AssignToUser",
+		{"assign_to": [user], "description": description},
+		target=target,
+		**extra,
+	)
 
 
 def temperature(idx, key, value, target="lead", **extra) -> dict:
