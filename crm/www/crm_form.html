@@ -136,6 +136,16 @@
         padding: 10px 12px;
         margin-bottom: 16px;
       }
+      /* inline confirmation after an embedded submit (form stays, just clears) */
+      .form-ok {
+        display: none;
+        background: var(--success-bg);
+        color: var(--success-ink);
+        font-size: 13px;
+        border-radius: 9px;
+        padding: 10px 12px;
+        margin-bottom: 16px;
+      }
       .success { text-align: center; padding: 20px 4px 8px; }
       .success .check-ring {
         width: 48px; height: 48px; border-radius: 999px; margin: 0 auto 16px;
@@ -172,6 +182,7 @@
         {% if form_description %}<p class="subtitle">{{ form_description }}</p>{% endif %}
 
         <div class="form-error" id="form-error"></div>
+        <div class="form-ok" id="form-ok"></div>
 
         <form id="web-form" novalidate>
           {% for section in layout %}
@@ -249,17 +260,15 @@
         var CSRF = {{ csrf_token | tojson }};
         var DRAFT = {{ draft_preview | tojson }};
         var SUCCESS_URL = {{ success_url | tojson }};
+        var EMBED = {{ embed | tojson }};
         var form = document.getElementById("web-form");
         var errBox = document.getElementById("form-error");
+        var okBox = document.getElementById("form-ok");
         var btn = document.getElementById("submit-btn");
         var BREAKS = { "Section Break": 1, "Column Break": 1 };
 
-        // ---- field interdependencies (depends_on / mandatory_depends_on /
-        // read_only_depends_on) — mirror the framework so the public form applies the
-        // same show/hide, require, and read-only rules the Desk form does.
-
-        // current values of every field, keyed by fieldname (hidden ones included, so
-        // an expression can still reference a field the user isn't seeing right now)
+        // Field interdependencies: apply the DocType's depends_on / mandatory_depends_on
+        // / read_only_depends_on client-side, same rules as the Desk form.
         function collectDoc() {
           var doc = {};
           FIELDS.forEach(function (f) {
@@ -270,20 +279,12 @@
           });
           return doc;
         }
-
-        // A small, side-effect-free interpreter for a depends_on "eval:" expression.
-        // It mirrors the *supported forms* of the framework's evaluate_depends_on_value()
-        // (frappe/public/js/frappe/form/layout.js) but, because this is a public page,
-        // it PARSES the expression instead of running it through Function()/eval — so
-        // stored DocType metadata can never execute arbitrary JavaScript in a visitor's
-        // browser. It understands doc/parent member access, string/number/boolean/null
-        // literals, comparisons (== != === !== < <= > >=), logical (&& || !) and
-        // parentheses. Anything else (e.g. helper calls like in_list(...)) throws, and
-        // the caller falls back — never hiding or relaxing a field on an expression it
-        // can't safely evaluate.
         function coerce(v) {
           return Array.isArray(v) ? v.length > 0 : !!v;
         }
+        // Parse (never execute) an "eval:" expression, so stored metadata can't run JS on
+        // this public page. Supports doc/parent access, literals, comparisons, && || !,
+        // and parentheses; anything else throws → caller's fallback.
         function safeEval(src, doc, parent) {
           var i = 0;
           function ws() {
@@ -403,17 +404,14 @@
           if (i < src.length) throw new Error("trailing input");
           return out;
         }
-
-        // resolve a depends_on-style expression to a boolean. `fallback` is returned for
-        // an empty, unsupported, or invalid expression so a bad rule never silently
-        // hides or relaxes a field.
+        // `fallback` covers an empty, unsupported, or invalid expression
         function truthy(expr, doc, fallback) {
           var s = expr ? String(expr).trim() : "";
           if (!s) return fallback;
           try {
             if (s.slice(0, 5) === "eval:") return coerce(safeEval(s.slice(5), doc, doc));
-            if (s.slice(0, 3) === "fn:") return fallback; // server script hooks: N/A here
-            return coerce(doc[s]); // a plain fieldname
+            if (s.slice(0, 3) === "fn:") return fallback;
+            return coerce(doc[s]);
           } catch (e) {
             return fallback;
           }
@@ -447,8 +445,7 @@
               el.readOnly = ro;
             }
 
-            // show the * for a conditionally-mandatory field only while it applies
-            // (statically required fields keep their always-on * untouched)
+            // toggle the * for a conditionally-mandatory field (static ones keep theirs)
             if (wrap && !f.reqd) {
               var star = wrap.querySelector(".req");
               if (star) star.style.display = visible && isRequired(f, doc) ? "" : "none";
@@ -460,6 +457,16 @@
           errBox.textContent = msg || "Something went wrong. Please try again.";
           errBox.style.display = "block";
           errBox.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        }
+        // transient success acknowledgement used in embed mode (auto-hides)
+        function showOk(msg) {
+          okBox.textContent = msg || "Your response has been recorded.";
+          okBox.style.display = "block";
+          okBox.scrollIntoView({ behavior: "smooth", block: "nearest" });
+          clearTimeout(showOk._t);
+          showOk._t = setTimeout(function () {
+            okBox.style.display = "none";
+          }, 5000);
         }
         function clearFieldErrors() {
           [].forEach.call(form.querySelectorAll(".has-error"), function (el) {
@@ -490,13 +497,20 @@
           }, 1000);
         }
 
-        // keep the rules live as the user types/selects, and apply them once on load
-        form.addEventListener("input", refreshDeps);
-        form.addEventListener("change", refreshDeps);
+        // keep the rules live as the user types/selects; also dismiss the success note
+        // as soon as they start the next entry
+        function onEdit() {
+          if (okBox.style.display !== "none") {
+            okBox.style.display = "none";
+            clearTimeout(showOk._t);
+          }
+          refreshDeps();
+        }
+        form.addEventListener("input", onEdit);
+        form.addEventListener("change", onEdit);
         refreshDeps();
 
-        // Discard (type="reset") clears the inputs natively; also drop our error UI and
-        // re-apply the dependency rules against the now-empty form (reset fires first)
+        // Discard (type="reset") clears inputs; also drop errors and re-apply the rules
         form.addEventListener("reset", function () {
           errBox.style.display = "none";
           clearFieldErrors();
@@ -515,9 +529,7 @@
             if (BREAKS[f.fieldtype]) return;
             var el = document.getElementById(f.fieldname);
             if (!el) return;
-            // a field hidden by depends_on is not collected or validated — it isn't
-            // part of the submission in its current state
-            if (!isVisible(f, doc)) return;
+            if (!isVisible(f, doc)) return; // hidden by depends_on → not submitted/validated
             var val = f.fieldtype === "Check" ? (el.checked ? 1 : 0) : el.value;
             values[f.fieldname] = val;
             if (isRequired(f, doc) && (val === "" || val === null || val === undefined)) {
@@ -564,6 +576,16 @@
                 var msg = "";
                 try { msg = m ? JSON.parse(JSON.parse(m)[0]).message : ""; } catch (e) {}
                 showError(msg || "Sorry, we couldn't submit your response. Please try again.");
+                btn.disabled = false;
+                btn.textContent = original;
+                return;
+              }
+              // embedded (and not redirecting): clear in place for the next submission
+              // instead of swapping the form out for the success page
+              if (EMBED && !DRAFT && !SUCCESS_URL) {
+                var okMsg = document.getElementById("success-title").textContent;
+                form.reset();
+                showOk(okMsg);
                 btn.disabled = false;
                 btn.textContent = original;
                 return;

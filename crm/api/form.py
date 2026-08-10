@@ -431,9 +431,7 @@ def save_form(name: str | None, form: dict | str) -> dict:
 	# only rewrite the layout when fields were actually sent — an update that omits
 	# `fields` (e.g. a settings-only save) must not wipe the existing layout
 	if fields is not None:
-		# carry each field's interdependencies (depends_on / mandatory_depends_on /
-		# read_only_depends_on) from the target DocType so the public form honours the
-		# same show/hide/require rules the Desk form does (evaluated client-side)
+		# carry each field's depends_on rules from the target DocType onto the web form
 		src_meta = frappe.get_meta(doc.doc_type)
 		doc.set("web_form_fields", [])
 		for i, f in enumerate(fields):
