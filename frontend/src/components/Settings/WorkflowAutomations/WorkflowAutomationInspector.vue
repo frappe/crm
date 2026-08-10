@@ -111,15 +111,7 @@ import SwitchField from './WorkflowSwitchField.vue'
 import TriggerDetails from './WorkflowTriggerDetails.vue'
 import WorkflowFilters from './WorkflowFilters.vue'
 import { capabilitiesFor } from './workflowCapabilities'
-import CreatedIcon from '~icons/lucide/list-plus'
-import UpdatedIcon from '~icons/lucide/refresh-cw'
-import DeletedIcon from '~icons/lucide/trash-2'
-import ChangedIcon from '~icons/lucide/pencil-line'
-import ManualIcon from '~icons/lucide/hand'
-import ScheduleIcon from '~icons/lucide/clock'
-import EventIcon from '~icons/lucide/webhook'
-import SubmitIcon from '~icons/lucide/send'
-import CancelIcon from '~icons/lucide/circle-slash'
+import { documentTriggers, otherTriggers } from './workflowTriggers'
 import { Button, FormControl, LoadingIndicator } from 'frappe-ui'
 import { computed } from 'vue'
 
@@ -139,34 +131,6 @@ const runAsOptions = ['Triggering User', 'Document Owner', 'Automation User']
 const capabilities = computed(() => capabilitiesFor(props.doc.document_type))
 const fields = computed(() => capabilities.value?.fields || [])
 const events = computed(() => capabilities.value?.custom_events || [])
-
-const documentTriggers = [
-  { label: __('Record is created'), value: 'Doc Created', icon: CreatedIcon },
-  { label: __('Record is updated'), value: 'Doc Updated', icon: UpdatedIcon },
-  { label: __('Record is deleted'), value: 'Doc Deleted', icon: DeletedIcon },
-  {
-    label: __('Field value changes'),
-    value: 'Field Value Changed',
-    icon: ChangedIcon,
-  },
-  {
-    label: __('Record is submitted'),
-    value: 'Doc Submitted',
-    icon: SubmitIcon,
-  },
-  {
-    label: __('Record is cancelled'),
-    value: 'Doc Cancelled',
-    icon: CancelIcon,
-  },
-]
-
-const otherTriggers = [
-  { label: __('Launch manually'), value: 'Manual', icon: ManualIcon },
-  { label: __('On a schedule'), value: 'Scheduled', icon: ScheduleIcon },
-  { label: __('On a date'), value: 'Date Based', icon: ScheduleIcon },
-  { label: __('Custom event'), value: 'Custom Event', icon: EventIcon },
-]
 </script>
 
 <style scoped>
