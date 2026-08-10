@@ -55,16 +55,12 @@
         <WorkflowFlow
           :nodes="nodes"
           :edges="edges"
+          :block-groups="blocks"
+          :trigger-groups="triggers"
           :selected-id="selectedId"
           @select="selectedId = $event"
           @add-step="addStep"
-        />
-        <Button
-          v-if="!doc.actions.length"
-          class="absolute bottom-4 left-1/2 -translate-x-1/2"
-          icon-left="lucide-plus"
-          :label="__('Add Step')"
-          @click="addStep(null)"
+          @pick-trigger="doc.trigger_type = $event"
         />
       </div>
       <div
@@ -102,8 +98,10 @@
 import AutomationInspector from './WorkflowAutomationInspector.vue'
 import AutomationRuns from './WorkflowAutomationRuns.vue'
 import WorkflowFlow from './WorkflowFlow.vue'
+import { blockGroups } from './workflowBlocks'
 import { aliasTargets, loadCapabilities } from './workflowCapabilities'
 import { workflowEdges, workflowNodes } from './workflowGraph'
+import { triggerGroups } from './workflowTriggers'
 import {
   insertAfter,
   layoutSteps,
@@ -147,6 +145,8 @@ const selectedStep = computed(() => {
 
 const nodes = computed(() => workflowNodes(doc, errors))
 const edges = computed(() => workflowEdges(doc.actions))
+const blocks = computed(() => blockGroups(doc.document_type))
+const triggers = triggerGroups()
 
 const relationships = computed(() => parseJson(doc.relationships, []))
 
@@ -197,7 +197,7 @@ function defaultDoc() {
     document_type: 'CRM Lead',
     enabled: 0,
     log_only: 0,
-    trigger_type: 'Doc Created',
+    trigger_type: '',
     trigger_field: '',
     from_value: '',
     to_value: '',
@@ -285,11 +285,11 @@ function targetsFor(step) {
   )
 }
 
-function addStep(step, branch) {
-  const created = newStep()
-  if (!step) doc.actions.push(created)
-  else if (branch) step.children[branch].push(created)
-  else insertAfter(doc.actions, step, created)
+function addStep({ after, branch, values }) {
+  const created = newStep(values)
+  if (!after) doc.actions.push(created)
+  else if (branch) after.children[branch].push(created)
+  else insertAfter(doc.actions, after, created)
   selectedId.value = created._id
 }
 
