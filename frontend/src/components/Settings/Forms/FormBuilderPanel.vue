@@ -1055,6 +1055,9 @@ function addFieldToColumn(col, option) {
     reqd: !!af.reqd,
     placeholder: '',
     field_description: '',
+    depends_on: '',
+    mandatory_depends_on: '',
+    read_only_depends_on: '',
   })
   if (af.fieldtype === 'Link') ensureLinkMeta(af.options)
   capture('form_field_added', { field_type: af.fieldtype })
@@ -1248,6 +1251,9 @@ createResource({
       reqd: !!f.reqd,
       placeholder: f.placeholder,
       field_description: f.field_description,
+      depends_on: f.depends_on || '',
+      mandatory_depends_on: f.mandatory_depends_on || '',
+      read_only_depends_on: f.read_only_depends_on || '',
     }))
     hiddenFields.value = (doc.hidden_fields || []).map((h) => ({
       fieldname: h.fieldname,
@@ -1466,6 +1472,9 @@ async function save({ silent = false } = {}) {
           reqd: f.reqd ? 1 : 0,
           placeholder: f.placeholder,
           field_description: f.field_description,
+          depends_on: f.depends_on || '',
+          mandatory_depends_on: f.mandatory_depends_on || '',
+          read_only_depends_on: f.read_only_depends_on || '',
         })),
         hidden_fields: hiddenFields.value.map((h) => ({
           fieldname: h.fieldname,
