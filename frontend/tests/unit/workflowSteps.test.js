@@ -8,29 +8,41 @@ import {
 } from '../../src/components/Settings/WorkflowAutomations/workflowSteps'
 
 describe('workflow layout', () => {
-  it('places sequential steps from top to bottom', () => {
-    const first = newStep()
-    const second = newStep()
+  it('places sequential steps left to right on one row', () => {
+    const positions = layoutSteps([newStep(), newStep()]).map(
+      ({ position }) => position,
+    )
 
-    expect(
-      layoutSteps([first, second]).map(({ position }) => position),
-    ).toEqual([
-      { x: 0, y: 150 },
-      { x: 0, y: 300 },
-    ])
+    expect(positions.map(({ y }) => y)).toEqual([0, 0])
+    expect(positions[1].x).toBeGreaterThan(positions[0].x)
   })
 
-  it('splits condition branches horizontally', () => {
+  it('splits condition arms above and below the trunk', () => {
     const condition = newStep({ step_type: 'If' })
     condition.children.If.push(newStep())
     condition.children.Else.push(newStep())
 
-    const positions = layoutSteps([condition]).map(({ position }) => position)
-    expect(positions).toEqual([
-      { x: 0, y: 150 },
-      { x: -280, y: 300 },
-      { x: 280, y: 300 },
-    ])
+    const [branch, ifArm, elseArm] = layoutSteps([condition]).map(
+      ({ position }) => position,
+    )
+
+    expect(branch.y).toBe(0)
+    expect(ifArm.y).toBeLessThan(0)
+    expect(elseArm.y).toBeGreaterThan(0)
+    expect(ifArm.x).toBe(elseArm.x)
+    expect(ifArm.x).toBeGreaterThan(branch.x)
+  })
+
+  it('gives a wait-for-event step the same two arms', () => {
+    const wait = newStep({ step_type: 'WaitForEvent' })
+    wait.children.If.push(newStep())
+    wait.children.Else.push(newStep())
+
+    const [, ifArm, elseArm] = layoutSteps([wait]).map(
+      ({ position }) => position,
+    )
+
+    expect(ifArm.y).toBeLessThan(elseArm.y)
   })
 })
 
