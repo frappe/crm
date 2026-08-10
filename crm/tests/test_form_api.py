@@ -182,6 +182,41 @@ class TestFormAPI(IntegrationTestCase):
 		# "Qualification" is a Deal status; the guard must keep it off the Lead
 		self.assertNotEqual(lead.status, "Qualification")
 
+	# ---- field conditional logic ----
+
+	def test_save_form_persists_field_conditional_rules(self):
+		"""depends_on / mandatory_depends_on / read_only_depends_on authored per field in
+		the builder are stored on the Web Form fields and returned by get_form_config, so
+		the public page can honour them (same model as the framework's Web Form)."""
+		name = make_form(
+			"dep-rules",
+			fields=[
+				{"fieldname": "organization", "fieldtype": "Data"},
+				{"fieldname": "website", "fieldtype": "Data", "depends_on": "eval:doc.organization"},
+				{
+					"fieldname": "phone",
+					"fieldtype": "Data",
+					"mandatory_depends_on": 'eval:doc.organization == "Acme"',
+				},
+				{
+					"fieldname": "last_name",
+					"fieldtype": "Data",
+					"read_only_depends_on": "eval:doc.first_name",
+				},
+			],
+			hidden_fields=[],
+		)
+		by = {f.fieldname: f for f in frappe.get_doc("Web Form", name).web_form_fields}
+		self.assertEqual(by["website"].depends_on, "eval:doc.organization")
+		self.assertEqual(by["phone"].mandatory_depends_on, 'eval:doc.organization == "Acme"')
+		self.assertEqual(by["last_name"].read_only_depends_on, "eval:doc.first_name")
+		self.assertFalse(by["organization"].depends_on)
+
+		cfg = {f["fieldname"]: f for f in F.get_form_config(name)["fields"]}
+		self.assertEqual(cfg["website"]["depends_on"], "eval:doc.organization")
+		self.assertEqual(cfg["phone"]["mandatory_depends_on"], 'eval:doc.organization == "Acme"')
+		self.assertEqual(cfg["last_name"]["read_only_depends_on"], "eval:doc.first_name")
+
 	# ---- layout persistence ----
 
 	def test_save_without_fields_key_preserves_layout(self):

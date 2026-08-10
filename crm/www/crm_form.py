@@ -63,6 +63,10 @@ def get_context(context):
 			"reqd": int(f.reqd or 0),
 			"placeholder": f.placeholder or "",
 			"description": f.description or "",
+			# conditional-logic expressions, evaluated client-side (see crm_form.html)
+			"depends_on": f.depends_on or "",
+			"mandatory_depends_on": f.mandatory_depends_on or "",
+			"read_only_depends_on": f.read_only_depends_on or "",
 		}
 		for f in doc.web_form_fields
 	]
