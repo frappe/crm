@@ -176,7 +176,7 @@ function nudgeResize(step) {
   setInspectorWidth(inspectorWidth.value + step)
 }
 
-/** Measured from the panes' own right edge — the builder is inset inside a dialog. */
+/** Measured from the panes' own right edge - the builder is inset inside a dialog. */
 function startResize() {
   const right = panes.value.getBoundingClientRect().right
   const onMove = (event) => setInspectorWidth(right - event.clientX)
@@ -341,7 +341,7 @@ function clearErrors() {
   Object.keys(errors).forEach((key) => delete errors[key])
 }
 
-/** Server errors read "Row 3: ..." — map that flattened row back onto its node. */
+/** Server errors read "Row 3: ..." - map that flattened row back onto its node. */
 function attachError(error) {
   const message = String(error?.messages?.[0] || error?.message || error)
   const match = message.match(/Row (\d+)/)

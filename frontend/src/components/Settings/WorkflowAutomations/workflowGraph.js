@@ -74,7 +74,7 @@ function kickerFor(node) {
     : __('Action')
 }
 
-/** Nodes read as sentences, not class names — the canvas is the first thing anyone scans. */
+/** Nodes read as sentences, not class names - the canvas is the first thing anyone scans. */
 function labelFor(node) {
   if (node.step_type === 'If')
     return node.step_condition
