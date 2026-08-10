@@ -5,9 +5,12 @@
     >
       <div class="flex min-w-0 items-center gap-2">
         <FormControl
-          v-model="doc.title"
+          :model-value="doc.title"
+          :aria-label="__('Automation title')"
           :placeholder="__('Untitled automation')"
-          class="min-w-72"
+          class="w-[min(28rem,50vw)] min-w-0"
+          @focus="$event.target.select()"
+          @update:model-value="setTitle"
         />
         <Badge
           v-if="!doc.enabled"
@@ -43,7 +46,11 @@
         />
       </div>
     </div>
-    <div class="grid min-h-0 flex-1 grid-cols-[1fr_340px]">
+    <div
+      ref="panes"
+      class="grid min-h-0 flex-1"
+      :style="{ gridTemplateColumns: `1fr 6px ${inspectorWidth}px` }"
+    >
       <div class="relative min-h-0">
         <WorkflowFlow
           :nodes="nodes"
@@ -60,6 +67,16 @@
           @click="addStep(null)"
         />
       </div>
+      <div
+        class="cursor-col-resize bg-surface-gray-2 transition-colors hover:bg-surface-gray-4"
+        role="separator"
+        aria-orientation="vertical"
+        :aria-label="__('Resize panel')"
+        tabindex="0"
+        @mousedown.prevent="startResize"
+        @keydown.left.prevent="nudgeResize(24)"
+        @keydown.right.prevent="nudgeResize(-24)"
+      />
       <div
         class="min-h-0 border-l border-outline-gray-2 bg-surface-elevation-1"
       >
@@ -105,8 +122,14 @@ const props = defineProps({
 
 const emit = defineEmits(['close', 'saved', 'update:dirty'])
 
+const INSPECTOR_WIDTH_KEY = 'crm:automation-inspector-width'
+const MIN_INSPECTOR_WIDTH = 280
+const MAX_INSPECTOR_WIDTH = 720
+
 const loading = ref(false)
 const saving = ref(false)
+const inspectorWidth = ref(storedInspectorWidth())
+const panes = ref(null)
 const showRuns = ref(false)
 const selectedId = ref('trigger')
 const errors = reactive({})
@@ -135,6 +158,37 @@ watch(relationships, loadTargetCapabilities, { deep: true })
 watch(dirty, (value) => emit('update:dirty', value), { immediate: true })
 
 loadAutomation()
+
+function storedInspectorWidth() {
+  return clampWidth(Number(localStorage.getItem(INSPECTOR_WIDTH_KEY)) || 340)
+}
+
+function clampWidth(width) {
+  return Math.min(Math.max(width, MIN_INSPECTOR_WIDTH), MAX_INSPECTOR_WIDTH)
+}
+
+function setInspectorWidth(width) {
+  inspectorWidth.value = clampWidth(width)
+  localStorage.setItem(INSPECTOR_WIDTH_KEY, String(inspectorWidth.value))
+}
+
+function nudgeResize(step) {
+  setInspectorWidth(inspectorWidth.value + step)
+}
+
+/** Measured from the panes' own right edge — the builder is inset inside a dialog. */
+function startResize() {
+  const right = panes.value.getBoundingClientRect().right
+  const onMove = (event) => setInspectorWidth(right - event.clientX)
+  const onUp = () => {
+    window.removeEventListener('mousemove', onMove)
+    window.removeEventListener('mouseup', onUp)
+    document.body.style.userSelect = ''
+  }
+  document.body.style.userSelect = 'none'
+  window.addEventListener('mousemove', onMove)
+  window.addEventListener('mouseup', onUp)
+}
 
 function defaultDoc() {
   return {
@@ -183,6 +237,10 @@ async function loadAutomation() {
 
 function markClean() {
   savedSnapshot.value = JSON.stringify(payload())
+}
+
+function setTitle(title) {
+  doc.title = title
 }
 
 function normalizeRow(row) {
