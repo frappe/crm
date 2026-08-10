@@ -78,9 +78,21 @@ function addRelationshipAlias(targets, item) {
   const definition = relationshipDefinition(source?.doctype, item.relationship)
   targets.push({
     alias: item.alias,
-    doctype: item.target_doctype || definition?.target_doctype || null,
+    doctype: item.target_doctype || resolvedTarget(definition),
     label: definition?.label || item.relationship,
+    choices: definition?.target_doctypes || [],
   })
+}
+
+/**
+ * A relationship may allow several DocTypes (a dynamic reference narrowed to a few). One
+ * choice needs no asking; more than one stays unknown until the flow picks, because the
+ * builder can't offer actions or fields without knowing which DocType it is dealing with.
+ */
+function resolvedTarget(definition) {
+  if (definition?.target_doctype) return definition.target_doctype
+  const choices = definition?.target_doctypes || []
+  return choices.length === 1 ? choices[0] : null
 }
 
 function addOutputAlias(targets, step) {
