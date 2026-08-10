@@ -13,8 +13,6 @@ address, so turning them on is a deliberate act.
 
 import frappe
 
-FLOW_PREFIX = "[Reference] "
-
 TEMPLATES = {
 	"CRM Web Lead Welcome": (
 		"Thanks for reaching out, {{ doc.first_name }}",
@@ -37,13 +35,7 @@ TEMPLATES = {
 def install(enable: int = 0):
 	"""Create (or replace) the reference flows and everything they depend on."""
 	ensure_email_templates()
-	for build in (
-		welcome_sequence,
-		reply_temperature,
-		profile_scoring,
-		qualified_conversion,
-		stalled_deal,
-	):
+	for build in builders():
 		flow = build()
 		flow["enabled"] = frappe.utils.cint(enable)
 		print("installed:", replace_flow(flow))
@@ -51,13 +43,22 @@ def install(enable: int = 0):
 
 
 def uninstall():
-	"""Remove the reference flows. The Email Templates are left in place."""
-	for name in frappe.get_all(
-		"Automation Flow", filters={"title": ("like", f"{FLOW_PREFIX}%")}, pluck="name"
-	):
+	"""Remove the reference flows. The Email Templates are left in place.
+
+	Matched by their exact titles — the flows carry no marker of their own, and a flow a user
+	built by hand is not ours to delete.
+	"""
+	for title in [build()["title"] for build in builders()]:
+		name = frappe.db.get_value("Automation Flow", {"title": title}, "name")
+		if not name:
+			continue
 		frappe.delete_doc("Automation Flow", name, force=True, ignore_permissions=True)
-		print("removed:", name)
+		print("removed:", title)
 	frappe.db.commit()
+
+
+def builders() -> tuple:
+	return (welcome_sequence, reply_temperature, profile_scoring, qualified_conversion, stalled_deal)
 
 
 def replace_flow(payload) -> str:
@@ -269,7 +270,7 @@ EVENT_MATCHED = 'context.get("event", {}).get("outcome") == "Matched"'
 def flow(title, document_type, trigger_type) -> dict:
 	return {
 		"doctype": "Automation Flow",
-		"title": f"{FLOW_PREFIX}{title}",
+		"title": title,
 		"document_type": document_type,
 		"trigger_type": trigger_type,
 		"enabled": 0,
