@@ -89,7 +89,7 @@ function targetsBefore(index) {
 function sourceOptions(index) {
   return targetsBefore(index).map((target) => ({
     label: target.doctype
-      ? `${target.alias} — ${target.doctype}`
+      ? `${target.alias} (${target.doctype})`
       : target.alias,
     value: target.alias,
   }))
