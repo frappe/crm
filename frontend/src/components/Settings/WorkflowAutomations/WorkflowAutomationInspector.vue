@@ -67,7 +67,11 @@
           v-model="doc.relationships"
           :document-type="doc.document_type"
         />
-        <WorkflowFilters v-model="doc.filters" :fields="fields" />
+        <WorkflowFilters
+          v-model="doc.filters"
+          :doctype="doc.document_type"
+          flat
+        />
         <FormControl
           v-model="doc.condition"
           type="textarea"
