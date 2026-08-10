@@ -5,9 +5,9 @@
  * row and every branch child ordered after its `If`.
  */
 
-// The canvas runs top to bottom: each step is a row, an If's arms split horizontally.
-const ROW_HEIGHT = 150
-const BRANCH_OFFSET = 280
+// The canvas runs left to right: each step is a column, an If's arms split vertically.
+const COLUMN_WIDTH = 340
+const BRANCH_OFFSET = 140
 
 /**
  * A wait-for-event step is stored as two rows - the wait, then an `If` reading the outcome the
@@ -180,21 +180,21 @@ function outcomeRow(node, idx, parentIdx, branch, taken) {
 /** Depth-first list of every node with its canvas position, in flattened (idx) order. */
 export function layoutSteps(tree) {
   const placed = []
-  place(tree, ROW_HEIGHT, 0, placed)
+  place(tree, COLUMN_WIDTH, 0, placed)
   return placed
 }
 
 // Arms of a nested If sit closer together than their parent's, keeping nested branches compact.
-function place(nodes, y, x, placed, spread = BRANCH_OFFSET) {
+function place(nodes, x, y, placed, spread = BRANCH_OFFSET) {
   nodes.forEach((node) => {
     placed.push({ node, position: { x, y } })
-    y += ROW_HEIGHT
+    x += COLUMN_WIDTH
     if (!isBranching(node)) return
-    const ifEnd = place(node.children.If, y, x - spread, placed, spread / 2)
-    const elseEnd = place(node.children.Else, y, x + spread, placed, spread / 2)
-    y = Math.max(ifEnd, elseEnd)
+    const ifEnd = place(node.children.If, x, y - spread, placed, spread / 2)
+    const elseEnd = place(node.children.Else, x, y + spread, placed, spread / 2)
+    x = Math.max(ifEnd, elseEnd)
   })
-  return y
+  return x
 }
 
 /** The array a node lives in, so callers can insert a sibling or splice it out. */
