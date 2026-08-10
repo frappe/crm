@@ -49,6 +49,14 @@
         :options="relationshipOptions(item, index)"
         @update:model-value="update(index, 'relationship', $event)"
       />
+      <FormControl
+        v-if="choicesFor(item, index).length > 1"
+        :model-value="item.target_doctype"
+        type="select"
+        :label="__('Record type')"
+        :options="choicesFor(item, index)"
+        @update:model-value="update(index, 'target_doctype', $event)"
+      />
     </div>
   </div>
 </template>
@@ -98,6 +106,17 @@ function relationshipOptions(item, index) {
       label: definition.label || definition.name,
       value: definition.name,
     }))
+}
+
+/** DocTypes a relationship may resolve to, when it allows more than one. */
+function choicesFor(item, index) {
+  const source = targetsBefore(index).find(
+    (target) => target.alias === (item.source || 'trigger'),
+  )
+  const definition = (
+    capabilitiesFor(source?.doctype)?.relationships || []
+  ).find((candidate) => candidate.name === item.relationship)
+  return definition?.target_doctypes || []
 }
 
 function addAlias() {
