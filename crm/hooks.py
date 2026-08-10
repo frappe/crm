@@ -147,6 +147,30 @@ has_permission = {
 	"CRM Notification": "crm.fcrm.doctype.crm_notification.crm_notification.has_permission",
 }
 
+# Automation Engine
+# ---------------
+# CRM relationships, actions and events available to Automation Flows
+
+automation_relationships = ["crm.automation.relationships.CRMRelationshipProvider"]
+
+automation_actions = [
+	"crm.automation.actions.AdjustLeadScore",
+	"crm.automation.actions.SetLeadTemperature",
+	"crm.automation.actions.ConvertLeadToDeal",
+	"crm.automation.actions.SendEmailToRecord",
+]
+
+automation_events = [
+	"crm.prospect_message_sent",
+	"crm.prospect_message_received",
+	"crm.lead_qualified",
+	"crm.lead_converted",
+	"crm.deal_stage_changed",
+	"crm.deal_won",
+	"crm.deal_lost",
+	"crm.task_overdue",
+]
+
 # DocType Class
 # ---------------
 # Override standard doctype classes
@@ -173,7 +197,10 @@ doc_events = {
 		"on_update": ["crm.api.todo.on_update"],
 	},
 	"Communication": {
-		"after_insert": ["crm.utils.on_communication_insert"],
+		"after_insert": [
+			"crm.utils.on_communication_insert",
+			"crm.automation.events.on_communication",
+		],
 		"on_update": ["crm.utils.on_communication_update"],
 	},
 	"Comment": {
@@ -182,12 +209,19 @@ doc_events = {
 	},
 	"WhatsApp Message": {
 		"validate": ["crm.api.whatsapp.validate"],
-		"on_update": ["crm.api.whatsapp.on_update"],
+		"on_update": [
+			"crm.api.whatsapp.on_update",
+			"crm.automation.events.on_whatsapp_message",
+		],
 	},
 	"CRM Deal": {
 		"on_update": [
-			"crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.create_customer_in_erpnext"
+			"crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.create_customer_in_erpnext",
+			"crm.automation.events.on_deal_update",
 		],
+	},
+	"CRM Lead": {
+		"on_update": ["crm.automation.events.on_lead_update"],
 	},
 	"Sales Order": {
 		"before_validate": [
@@ -224,7 +258,10 @@ doc_events = {
 
 scheduler_events = {
 	"all": ["crm.api.event.trigger_offset_event_notifications"],
-	"hourly": ["crm.api.event.trigger_hourly_event_notifications"],
+	"hourly": [
+		"crm.api.event.trigger_hourly_event_notifications",
+		"crm.automation.events.emit_overdue_tasks",
+	],
 	"daily": [
 		"crm.api.event.trigger_daily_event_notifications",
 		"crm.fcrm.doctype.crm_invitation.crm_invitation.expire_invitations",
