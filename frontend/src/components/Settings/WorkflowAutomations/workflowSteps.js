@@ -1,7 +1,7 @@
 /**
  * Automation Flow steps are stored flat: a child row points at the `idx` of the `If` row it
  * belongs to (`parent_step`) and which arm it sits in (`branch`). The builder edits a tree
- * instead, and flattens it on save — that is what keeps `parent_step` pointing at an earlier
+ * instead, and flattens it on save - that is what keeps `parent_step` pointing at an earlier
  * row and every branch child ordered after its `If`.
  */
 
@@ -10,7 +10,7 @@ const ROW_HEIGHT = 150
 const BRANCH_OFFSET = 280
 
 /**
- * A wait-for-event step is stored as two rows — the wait, then an `If` reading the outcome the
+ * A wait-for-event step is stored as two rows - the wait, then an `If` reading the outcome the
  * runner recorded. That second row is pure plumbing, so the builder shows one node with two
  * arms and writes the pair back out on save. Users never see or type this expression.
  */
@@ -100,7 +100,7 @@ export function toRows(tree) {
 
 /**
  * A step key names the step in run logs and in `context.steps.<key>`, so it has to exist and
- * be unique — but nobody should have to invent one. An untitled step gets a name from what it
+ * be unique - but nobody should have to invent one. An untitled step gets a name from what it
  * does, and only shows up under Advanced for the rare case where it needs to be pinned.
  */
 export function defaultStepKey(node, taken = new Set()) {
@@ -224,7 +224,7 @@ export function insertAfter(tree, node, step) {
 /** Steps that run before `node`, i.e. the ones whose outputs it may reference. */
 export function stepsBefore(tree, node) {
   const earlier = []
-  // A node that isn't in this tree has no earlier steps — never fall back to "all of them",
+  // A node that isn't in this tree has no earlier steps - never fall back to "all of them",
   // or the target picker would offer outputs that don't exist yet at that point in the run.
   return collectBefore(tree, node, earlier) ? earlier : []
 }

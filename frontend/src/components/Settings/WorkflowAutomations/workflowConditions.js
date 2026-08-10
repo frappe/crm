@@ -3,7 +3,7 @@
  *
  * The engine evaluates `step_condition` with `safe_eval`, so the expression stays the stored
  * form and the filter rows are only a way to write one. Anything this module can't parse back
- * is still a perfectly good condition — the editor just falls back to editing it as text.
+ * is still a perfectly good condition - the editor just falls back to editing it as text.
  *
  * `safe_eval` exposes no builtins, so the generated code sticks to comparisons, `in` and `or`.
  */
