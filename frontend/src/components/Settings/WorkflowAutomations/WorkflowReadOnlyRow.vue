@@ -5,7 +5,7 @@
       class="min-w-0 break-words text-ink-gray-8"
       :class="{ 'font-mono text-xs': mono }"
     >
-      {{ value || '—' }}
+      {{ value || '-' }}
     </div>
   </div>
 </template>
