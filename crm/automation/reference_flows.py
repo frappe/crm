@@ -1,7 +1,7 @@
 # Copyright (c) 2026, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 
-"""Four reference Automation Flows, installable on any CRM site.
+"""Five reference Automation Flows, installable on any CRM site.
 
 	bench --site <site> execute crm.automation.reference_flows.install
 	bench --site <site> execute crm.automation.reference_flows.install --kwargs "{'enable': 1}"
@@ -37,7 +37,13 @@ TEMPLATES = {
 def install(enable: int = 0):
 	"""Create (or replace) the reference flows and everything they depend on."""
 	ensure_email_templates()
-	for build in (welcome_sequence, reply_temperature, qualified_conversion, stalled_deal):
+	for build in (
+		welcome_sequence,
+		reply_temperature,
+		profile_scoring,
+		qualified_conversion,
+		stalled_deal,
+	):
 		flow = build()
 		flow["enabled"] = frappe.utils.cint(enable)
 		print("installed:", replace_flow(flow))
@@ -133,7 +139,87 @@ def reply_temperature() -> dict:
 
 
 # ---------------------------------------------------------------------------
-# 3. A lead reaching Qualified becomes a Deal, with a kickoff task on the new Deal.
+# 3. Score a new lead on its profile, then band the total into a temperature.
+# ---------------------------------------------------------------------------
+FREE_EMAIL_DOMAINS = ["gmail.com", "yahoo.com", "hotmail.com", "outlook.com", "icloud.com", "aol.com"]
+SENIOR_TITLES = ["chief", "head", "vp", "vice president", "director", "founder", "owner", "president"]
+LARGE_COMPANY_SIZES = ["201-500", "501-1000", "1000+"]
+INBOUND_SOURCES = ["Website", "Referral", "Existing Customer"]
+
+
+def _title_is_senior() -> str:
+	"""Written out as an `or` chain: conditions run through `safe_eval`, which has no `any`."""
+	return " or ".join(f'"{word}" in (doc.job_title or "").lower()' for word in SENIOR_TITLES)
+
+
+SIGNALS = [
+	(
+		"business_email",
+		"Work email address",
+		f'doc.email and doc.email.split("@")[-1].lower() not in {FREE_EMAIL_DOMAINS}',
+		15,
+	),
+	("named_organization", "Organization is known", '(doc.organization or "") != ""', 10),
+	("senior_contact", "Job title looks senior", _title_is_senior(), 15),
+	("large_company", "Company is large", f"doc.no_of_employees in {LARGE_COMPANY_SIZES}", 10),
+]
+
+HOT_AT = 45
+WARM_AT = 25
+
+
+def profile_scoring() -> dict:
+	"""Every signal is its own If, so the run log reads as a scorecard: each step shows what it
+	found and what it added. The banding at the end totals the points the run actually awarded."""
+	rows, idx = [], 1
+	for key, label, condition, points in SIGNALS:
+		rows.append(step(idx, key, "If", condition=condition))
+		rows.append(score(idx + 1, _points_key(key), points, label, parent=idx, branch="If"))
+		idx += 2
+
+	rows += _source_signal(idx)
+	rows += _banding(idx + 3)
+	return {**flow("Lead scoring from the profile", "CRM Lead", "Doc Created"), "actions": rows}
+
+
+def _source_signal(idx) -> list[dict]:
+	"""The one signal that scores on both arms: an inbound lead is worth more than an outbound one."""
+	return [
+		step(idx, "inbound_source", "If", condition=f"doc.source in {INBOUND_SOURCES}"),
+		score(idx + 1, _points_key("inbound_source"), 20, "Inbound lead", parent=idx, branch="If"),
+		score(idx + 2, _points_key("outbound_source"), 5, "Outbound lead", parent=idx, branch="Else"),
+	]
+
+
+def _banding(idx) -> list[dict]:
+	return [
+		step(idx, "is_hot", "If", condition=_total_at_least(HOT_AT)),
+		temperature(idx + 1, "mark_hot", "Hot", target="trigger", parent=idx, branch="If"),
+		step(idx + 2, "is_warm", "If", condition=_total_at_least(WARM_AT), parent=idx, branch="Else"),
+		temperature(idx + 3, "mark_warm", "Warm", target="trigger", parent=idx + 2, branch="If"),
+		temperature(idx + 4, "mark_cold", "Cold", target="trigger", parent=idx + 2, branch="Else"),
+	]
+
+
+def _points_key(key) -> str:
+	return f"{key}_points"
+
+
+def _total_at_least(threshold) -> str:
+	"""Sum the deltas the scoring steps reported.
+
+	A step that was skipped leaves nothing behind, so its arm contributes zero — which is why
+	this reads the run's own outputs instead of the Lead, whose snapshot was loaded before any
+	of these steps wrote to it.
+	"""
+	keys = [_points_key(signal[0]) for signal in SIGNALS]
+	keys += [_points_key("inbound_source"), _points_key("outbound_source")]
+	awarded = " + ".join(f'context["steps"].get("{key}", {{}}).get("delta", 0)' for key in keys)
+	return f"({awarded}) >= {threshold}"
+
+
+# ---------------------------------------------------------------------------
+# 4. A lead reaching Qualified becomes a Deal, with a kickoff task on the new Deal.
 # ---------------------------------------------------------------------------
 def qualified_conversion() -> dict:
 	return {
@@ -150,7 +236,7 @@ def qualified_conversion() -> dict:
 
 
 # ---------------------------------------------------------------------------
-# 4. A deal changes stage: chase it, and after three quiet days score its Lead down.
+# 5. A deal changes stage: chase it, and after three quiet days score its Lead down.
 # ---------------------------------------------------------------------------
 def stalled_deal() -> dict:
 	return {
@@ -218,8 +304,8 @@ def email_step(idx, key, template, **extra) -> dict:
 	return action(idx, key, "SendCRMEmail", {"email_template": template}, **extra)
 
 
-def temperature(idx, key, value, **extra) -> dict:
-	return action(idx, key, "SetLeadTemperature", {"temperature": value}, target="lead", **extra)
+def temperature(idx, key, value, target="lead", **extra) -> dict:
+	return action(idx, key, "SetLeadTemperature", {"temperature": value}, target=target, **extra)
 
 
 def score(idx, key, amount, reason, target="trigger", **extra) -> dict:
