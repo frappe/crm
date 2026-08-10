@@ -12,19 +12,120 @@ const NUMERIC_FIELDTYPES = ['Int', 'Float', 'Currency', 'Percent']
 const COMPARISONS = ['==', '!=', '>=', '<=', '>', '<']
 const OPERATOR_TO_PYTHON = { '=': '==', '!=': '!=' }
 
-export function toExpression(filters, fields = []) {
-  const clauses = (filters || [])
-    .filter((filter) => filter[0] && filter[1])
-    .map((filter) => clauseFor(filter, fields))
-    .filter(Boolean)
-  return clauses.join(' and ')
+/**
+ * `conditions` is the list view's builder shape: leaf rows with `and` / `or` between them, and
+ * a nested list wherever the user grouped some. Groups become parentheses.
+ */
+export function toExpression(conditions, fields = []) {
+  const parts = []
+  withConjunctions(conditions || []).forEach((item) => {
+    if (typeof item === 'string') return parts.push(item)
+    const clause = isGroup(item)
+      ? groupExpression(item, fields)
+      : clauseFor(item, fields)
+    parts.push(clause || '')
+  })
+  return joinParts(parts)
+}
+
+/** A plain list of rows, with no conjunctions between them, means "all of these". */
+function withConjunctions(conditions) {
+  if (conditions.some((item) => typeof item === 'string')) return conditions
+  return conditions.flatMap((item, index) => (index ? ['and', item] : [item]))
+}
+
+/** A leaf is [field, operator, value]; a group holds conditions, so it starts with one. */
+function isGroup(item) {
+  return Array.isArray(item) && Array.isArray(item[0])
+}
+
+function groupExpression(item, fields) {
+  const inner = toExpression(item, fields)
+  return inner ? `(${inner})` : ''
+}
+
+/** Drop conjunctions left dangling by a row that produced nothing. */
+function joinParts(parts) {
+  const kept = []
+  parts.forEach((part) => {
+    const conjunction = part === 'and' || part === 'or'
+    if (!part) return
+    if (conjunction && !kept.length) return
+    if (conjunction && (kept.at(-1) === 'and' || kept.at(-1) === 'or')) return
+    kept.push(part)
+  })
+  if (kept.at(-1) === 'and' || kept.at(-1) === 'or') kept.pop()
+  return kept.join(' ')
 }
 
 export function toFilters(expression) {
   const text = String(expression || '').trim()
   if (!text) return []
-  const parsed = text.split(' and ').map((clause) => parseClause(clause.trim()))
+  const parts = splitTopLevel(text)
+  if (!parts) return null
+  const parsed = parts.map((part) => {
+    if (part === 'and' || part === 'or') return part
+    // `expandGroups` already turned a parenthesised part into its own condition list.
+    return Array.isArray(part) ? part : parseClause(part)
+  })
   return parsed.every(Boolean) ? parsed : null
+}
+
+/** Split on `and` / `or` that sit outside any parentheses; parenthesised groups recurse. */
+function splitTopLevel(text) {
+  const parts = []
+  let depth = 0
+  let current = ''
+  let quote = ''
+  for (let index = 0; index < text.length; index++) {
+    const char = text[index]
+    if (quote) {
+      if (char === quote) quote = ''
+      current += char
+      continue
+    }
+    if (char === '"' || char === "'") quote = char
+    if (char === '(') depth++
+    if (char === ')') depth--
+    const keyword = depth === 0 && matchKeyword(text, index)
+    if (!keyword) {
+      current += char
+      continue
+    }
+    parts.push(current.trim(), keyword)
+    current = ''
+    index += keyword.length
+  }
+  parts.push(current.trim())
+  return depth === 0 ? expandGroups(parts.filter(Boolean)) : null
+}
+
+function matchKeyword(text, index) {
+  const before = index === 0 || /\s/.test(text[index - 1])
+  if (!before) return null
+  return ['and', 'or'].find(
+    (word) =>
+      text.startsWith(word, index) &&
+      /\s/.test(text[index + word.length] || ''),
+  )
+}
+
+function expandGroups(parts) {
+  const expanded = []
+  for (const part of parts) {
+    if (part === 'and' || part === 'or') {
+      expanded.push(part)
+      continue
+    }
+    if (!part.startsWith('(') || !part.endsWith(')')) {
+      expanded.push(part)
+      continue
+    }
+    const inner = toFilters(part.slice(1, -1))
+    if (!inner) return null
+    expanded.push(inner)
+  }
+  return expanded
 }
 
 /** Whether the filter UI can represent this expression without losing anything. */
@@ -34,9 +135,20 @@ export function isFilterExpression(expression) {
 
 /** A one-line reading of a condition, for canvas nodes and the read-only view. */
 export function summarizeCondition(expression) {
-  const filters = toFilters(expression)
-  if (!filters) return String(expression || '')
-  return filters.map(describeFilter).join(__(' and '))
+  const conditions = toFilters(expression)
+  if (!conditions) return String(expression || '')
+  return describeConditions(conditions)
+}
+
+function describeConditions(conditions) {
+  return conditions
+    .map((item) => {
+      if (typeof item === 'string') return item === 'or' ? __('or') : __('and')
+      return isGroup(item)
+        ? `(${describeConditions(item)})`
+        : describeFilter(item)
+    })
+    .join(' ')
 }
 
 const PHRASES = {
