@@ -1,11 +1,13 @@
 # Copyright (c) 2026, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 
-"""CRM relationship graph exposed to the automation engine.
+"""The CRM relationships the schema can't derive on its own.
 
-The engine never learns how a CRM record links to another one — it only asks this provider
-for a relationship by name and gets `{doctype, name}` references back, which it then
-allow-lists and permission-checks itself.
+Everything backed by a Link, a child-table Link or a Dynamic Link is already offered by the
+engine's schema provider, so this file only carries the edges that need a judgement call —
+plus a few renames, which say nothing but "call this one `deals`, not `crm_deal_via_lead`".
+Renamed entries are still resolved by the schema provider, so they can't drift from the
+fields behind them.
 """
 
 import frappe
@@ -19,8 +21,7 @@ class CRMRelationshipProvider(AutomationRelationshipProvider):
 		return [_public(definition) for definition in DEFINITIONS.get(source_doctype, [])]
 
 	def resolve(self, source_doc, relationship: str, params: dict) -> list[dict]:
-		definition = _definition(source_doc.doctype, relationship)
-		return definition["resolve"](source_doc)
+		return _definition(source_doc.doctype, relationship)["resolve"](source_doc)
 
 	def query(self, source_doc, relationship: str, filters: list, limit: int) -> list[dict]:
 		definition = _definition(source_doc.doctype, relationship)
@@ -47,15 +48,6 @@ def _references(doctype, names) -> list[dict]:
 	return [{"doctype": doctype, "name": name} for name in names if name]
 
 
-def _linked(doctype, filters):
-	"""Definition helper for relationships backed by a single filtered query."""
-	return lambda doc: (doctype, filters(doc))
-
-
-def _from_query(doctype, filters):
-	return lambda doc: _references(doctype, frappe.get_all(doctype, filters=filters(doc), pluck="name"))
-
-
 def _communication_filters(doc):
 	return [["reference_doctype", "=", doc.doctype], ["reference_name", "=", doc.name]]
 
@@ -64,7 +56,31 @@ def _task_filters(doc):
 	return [["reference_doctype", "=", doc.doctype], ["reference_docname", "=", doc.name]]
 
 
+def _dynamic_reference(name, label, doctype, filters) -> dict:
+	"""Dynamic references aren't derived — which DocTypes a reference pair points at is a fact
+	about data, not schema — so the CRM names the ones it cares about."""
+	return {
+		"name": name,
+		"label": label,
+		"cardinality": "many",
+		"target_doctype": doctype,
+		"resolve": lambda doc: _references(
+			doctype, frappe.get_all(doctype, filters=filters(doc), pluck="name")
+		),
+		"linked": lambda doc: (doctype, filters(doc)),
+	}
+
+
+def _communications() -> dict:
+	return _dynamic_reference("communications", "Communications", "Communication", _communication_filters)
+
+
+def _tasks() -> dict:
+	return _dynamic_reference("tasks", "Tasks", "CRM Task", _task_filters)
+
+
 def _communication_reference(doc) -> list[dict]:
+	"""A Communication can reference anything on the site; a CRM flow only means these two."""
 	if doc.reference_doctype not in COMMUNICATION_REFERENCE_DOCTYPES:
 		return []
 	return _references(doc.reference_doctype, [doc.reference_name])
@@ -90,8 +106,8 @@ def _lead_contacts(lead) -> list[dict]:
 	return _references("Contact", sorted(set(names)))
 
 
-def _deal_contacts(deal) -> list[dict]:
-	return _references("Contact", [row.contact for row in deal.contacts or []])
+def _rename(name, derived_from, label) -> dict:
+	return {"name": name, "derived_from": derived_from, "label": label}
 
 
 DEFINITIONS: dict[str, list[dict]] = {
@@ -119,68 +135,13 @@ DEFINITIONS: dict[str, list[dict]] = {
 			"target_doctype": "Contact",
 			"resolve": _lead_contacts,
 		},
-		{
-			"name": "deals",
-			"label": "Deals",
-			"cardinality": "many",
-			"target_doctype": "CRM Deal",
-			"resolve": _from_query("CRM Deal", lambda doc: {"lead": doc.name}),
-			"linked": _linked("CRM Deal", lambda doc: [["lead", "=", doc.name]]),
-		},
-		{
-			"name": "communications",
-			"label": "Communications",
-			"cardinality": "many",
-			"target_doctype": "Communication",
-			"resolve": _from_query("Communication", _communication_filters),
-			"linked": _linked("Communication", _communication_filters),
-		},
-		{
-			"name": "tasks",
-			"label": "Tasks",
-			"cardinality": "many",
-			"target_doctype": "CRM Task",
-			"resolve": _from_query("CRM Task", _task_filters),
-			"linked": _linked("CRM Task", _task_filters),
-		},
+		_communications(),
+		_tasks(),
+		_rename("deals", "crm_deal_via_lead", "Deals"),
 	],
 	"CRM Deal": [
-		{
-			"name": "lead",
-			"label": "Lead",
-			"cardinality": "one",
-			"target_doctype": "CRM Lead",
-			"resolve": lambda doc: _references("CRM Lead", [doc.lead]),
-		},
-		{
-			"name": "organization",
-			"label": "Organization",
-			"cardinality": "one",
-			"target_doctype": "CRM Organization",
-			"resolve": lambda doc: _references("CRM Organization", [doc.organization]),
-		},
-		{
-			"name": "contacts",
-			"label": "Contacts",
-			"cardinality": "many",
-			"target_doctype": "Contact",
-			"resolve": _deal_contacts,
-		},
-		{
-			"name": "communications",
-			"label": "Communications",
-			"cardinality": "many",
-			"target_doctype": "Communication",
-			"resolve": _from_query("Communication", _communication_filters),
-			"linked": _linked("Communication", _communication_filters),
-		},
-		{
-			"name": "tasks",
-			"label": "Tasks",
-			"cardinality": "many",
-			"target_doctype": "CRM Task",
-			"resolve": _from_query("CRM Task", _task_filters),
-			"linked": _linked("CRM Task", _task_filters),
-		},
+		_communications(),
+		_tasks(),
+		_rename("contacts", "contacts_contact", "Contacts"),
 	],
 }
