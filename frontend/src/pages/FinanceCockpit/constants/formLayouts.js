@@ -111,6 +111,7 @@ export const FORM_LAYOUTS = {
         columns: [
           { fieldname: 'charge_type', label: 'Type', type: 'select', options: CHARGE_TYPES, required: true },
           { fieldname: 'account_head', label: 'Account', type: 'link', options: 'Account', required: true },
+          { fieldname: 'description', label: 'Description', type: 'data', required: true, wideOnly: true },
           { fieldname: 'rate', label: 'Rate %', type: 'float' },
           { fieldname: 'tax_amount', label: 'Amount', type: 'currency' },
         ],
@@ -210,6 +211,7 @@ export const FORM_LAYOUTS = {
         columns: [
           { fieldname: 'charge_type', label: 'Type', type: 'select', options: CHARGE_TYPES, required: true },
           { fieldname: 'account_head', label: 'Account', type: 'link', options: 'Account', required: true },
+          { fieldname: 'description', label: 'Description', type: 'data', required: true, wideOnly: true },
           { fieldname: 'rate', label: 'Rate %', type: 'float' },
           { fieldname: 'tax_amount', label: 'Amount', type: 'currency' },
         ],
@@ -295,6 +297,7 @@ export const FORM_LAYOUTS = {
         columns: [
           { fieldname: 'charge_type', label: 'Type', type: 'select', options: CHARGE_TYPES, required: true },
           { fieldname: 'account_head', label: 'Account', type: 'link', options: 'Account', required: true },
+          { fieldname: 'description', label: 'Description', type: 'data', required: true, wideOnly: true },
           { fieldname: 'rate', label: 'Rate %', type: 'float' },
           { fieldname: 'tax_amount', label: 'Amount', type: 'currency' },
         ],
