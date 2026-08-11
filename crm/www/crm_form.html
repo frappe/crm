@@ -279,6 +279,8 @@
           });
           return doc;
         }
+        // security boundary; tested by frontend/tests/unit/webFormConditionalEval.test.js
+        // [conditional-eval:start]
         function coerce(v) {
           return Array.isArray(v) ? v.length > 0 : !!v;
         }
@@ -416,6 +418,7 @@
             return fallback;
           }
         }
+        // [conditional-eval:end]
         function isVisible(f, doc) {
           return truthy(f.depends_on, doc, true);
         }

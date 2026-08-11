@@ -672,7 +672,7 @@ import {
 } from 'frappe-ui'
 import FieldCard from '@/components/Settings/Forms/FieldCard.vue'
 import { fieldTypeIcon } from '@/components/Settings/Forms/fieldTypeIcon'
-import { evalRule } from '@/components/Settings/Forms/dependsOn'
+import { evaluateDependsOnValue } from '@/utils/expressions'
 import DragVerticalIcon from '@/components/Icons/DragVerticalIcon.vue'
 import LucideCopy from '~icons/lucide/copy'
 import Draggable from 'vuedraggable'
@@ -944,12 +944,13 @@ const sectionKey = (sec) => sec.secField?.fieldname || 'sec'
 const columnKey = (col) => col.colField?.fieldname || 'col0'
 const previewModel = reactive({}) // throwaway values so the preview is interactive
 
-// preview honours the same conditional-logic rules the public page does
-const fieldVisible = (f) => evalRule(f.depends_on, previewModel, true)
+// preview honours the same conditional-logic rules, reusing the app's evaluator
+const evalRule = (expr, fallback) =>
+  expr ? evaluateDependsOnValue(expr, previewModel) : fallback
+const fieldVisible = (f) => evalRule(f.depends_on, true)
 const fieldRequired = (f) =>
-  f.reqd ? true : evalRule(f.mandatory_depends_on, previewModel, false)
-const fieldReadOnly = (f) =>
-  evalRule(f.read_only_depends_on, previewModel, false)
+  f.reqd ? true : evalRule(f.mandatory_depends_on, false)
+const fieldReadOnly = (f) => evalRule(f.read_only_depends_on, false)
 const previewSubmitted = ref(false)
 
 function resetPreview() {
