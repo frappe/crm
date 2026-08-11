@@ -540,7 +540,9 @@
               f.fieldtype === "Check"
                 ? val === 0
                 : val === "" || val === null || val === undefined;
-            if (isRequired(f, doc) && empty) {
+            // don't require a field the visitor can't edit (read-only) — otherwise a
+            // field that's both required and read-only would deadlock submission
+            if (isRequired(f, doc) && !isReadOnly(f, doc) && empty) {
               missing.push(f);
               el.classList.add("has-error");
             }
