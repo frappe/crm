@@ -311,7 +311,7 @@ async function applyTaxTemplate(templateName) {
       return {
         charge_type: r.charge_type || 'On Net Total',
         account_head: r.account_head || null,
-        description: r.description || '',
+        description: r.description || r.account_head || '',
         rate,
         tax_amount: r.charge_type === 'On Net Total' && netT > 0 ? (rate / 100) * netT : Number(r.tax_amount ?? 0),
       }

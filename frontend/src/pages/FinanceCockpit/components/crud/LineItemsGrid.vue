@@ -225,6 +225,11 @@ function updateCell(idx, fieldname, value) {
   const next = props.rows.slice()
   const updated = { ...next[idx], [fieldname]: value }
 
+  // Mirror account_head → description when description is blank (ERPNext convention).
+  if (props.isTaxes && fieldname === 'account_head' && value && !updated['description']) {
+    updated['description'] = value
+  }
+
   // FC-01: tax auto-calc — when rate% changes on an On Net Total row, compute tax_amount.
   if (props.isTaxes && fieldname === 'rate' && props.netTotal > 0) {
     const chargeType = updated['charge_type']

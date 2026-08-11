@@ -1,34 +1,34 @@
 <template>
-  <div class="fc-dashboard-charts space-y-6 mt-6">
+  <div class="fc-dashboard-charts space-y-4 mt-6">
     <!-- Loading skeleton -->
     <div v-if="loading" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div v-for="n in 4" :key="n" class="bg-gray-100 dark:bg-gray-800 rounded-lg p-4 h-48 animate-pulse" />
+      <div v-for="n in 4" :key="n" class="fc-glass-card h-48 animate-pulse !p-0" />
     </div>
 
     <!-- Error -->
-    <div v-else-if="error" class="text-sm text-red-500 py-2">
+    <div v-else-if="error" class="text-sm text-ink-red-6 py-2">
       Failed to load chart data. <button class="underline" @click="refetch">Retry</button>
     </div>
 
     <!-- Charts grid -->
     <div v-else-if="chartData" class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <!-- Cashflow: full-width on mobile, spans 2 cols on md -->
-      <div class="md:col-span-2 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+      <div class="md:col-span-2 fc-glass-card">
         <CashflowChart :data="chartData.cashflow" />
       </div>
 
       <!-- AR Aging -->
-      <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+      <div class="fc-glass-card">
         <ArAgingChart :data="chartData.ar_aging" />
       </div>
 
       <!-- AP Aging (hidden for AR Accountant — API omits it) -->
-      <div v-if="chartData.ap_aging" class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+      <div v-if="chartData.ap_aging" class="fc-glass-card">
         <ApAgingChart :data="chartData.ap_aging" />
       </div>
 
       <!-- P&L Summary -->
-      <div :class="['bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4', !chartData.ap_aging ? 'md:col-span-1' : '']">
+      <div :class="['fc-glass-card', !chartData.ap_aging ? 'md:col-span-1' : '']">
         <PlSummaryBar :data="chartData.pl" />
       </div>
     </div>

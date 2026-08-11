@@ -232,19 +232,25 @@ html {
   z-index: 101;
 }
 
-/* Finance Cockpit — glassmorphic card surface */
+/* Finance Cockpit — flat glass card surface */
 .fc-glass-card {
   @apply rounded-xl border border-outline-gray-1 p-5;
-  background: var(--glass-bg, rgba(255, 255, 255, 0.72));
-  -webkit-backdrop-filter: blur(12px) saturate(140%);
-  backdrop-filter: blur(12px) saturate(140%);
-  box-shadow: 0 1px 3px 0 rgba(0,0,0,0.06), 0 0 0 1px rgba(255,255,255,0.5) inset;
-  transition: box-shadow 0.15s ease;
+  background: var(--glass-bg, rgba(255, 255, 255, 0.80));
+  -webkit-backdrop-filter: blur(10px) saturate(130%);
+  backdrop-filter: blur(10px) saturate(130%);
+  box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05);
+  transition: box-shadow 0.15s ease, transform 0.15s ease, border-color 0.15s ease;
 }
 .fc-glass-card:hover {
-  box-shadow: 0 4px 12px 0 rgba(0,0,0,0.08), 0 0 0 1px rgba(255,255,255,0.6) inset;
+  box-shadow: 0 4px 16px 0 rgba(0,0,0,0.08);
+  transform: translateY(-1px);
+  border-color: rgba(0,0,0,0.10);
 }
 [data-theme='dark'] .fc-glass-card {
-  background: var(--glass-bg, rgba(30, 30, 36, 0.72));
-  box-shadow: 0 1px 3px 0 rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.05) inset;
+  background: var(--glass-bg, rgba(28, 28, 34, 0.82));
+  box-shadow: 0 1px 3px 0 rgba(0,0,0,0.35);
+}
+[data-theme='dark'] .fc-glass-card:hover {
+  box-shadow: 0 4px 16px 0 rgba(0,0,0,0.45);
+  border-color: rgba(255,255,255,0.10);
 }

@@ -20,16 +20,14 @@
       </div>
     </div>
 
-    <!-- ── KPI tiles (Gestalt: proximity → 4 AR metrics grouped together) ── -->
+    <!-- ── KPI tiles ── -->
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
       <div
         v-for="tile in kpiTiles"
         :key="tile.key"
-        class="fc-glass-card group cursor-pointer relative overflow-hidden !pl-6"
+        class="fc-glass-card group cursor-pointer"
         @click="$emit('navigate', tile.section)"
       >
-        <!-- Semantic accent rail: colour encodes finance meaning, not decoration -->
-        <span class="absolute inset-y-0 left-0 w-1" :class="tile.tone.rail" aria-hidden="true" />
         <div class="flex items-start justify-between mb-3">
           <span class="text-xs font-medium text-ink-gray-5 leading-tight">{{ tile.label }}</span>
           <span
@@ -43,8 +41,8 @@
         <div v-else class="text-2xl font-bold text-ink-gray-9 tabular-nums">{{ tile.formatted }}</div>
         <div class="mt-2 flex items-center gap-1 text-xs">
           <template v-if="!loading && tile.delta !== 0">
-            <span :class="['size-3', tile.delta > 0 ? 'lucide-trending-up text-ink-green-3' : 'lucide-trending-down text-ink-red-3']" />
-            <span :class="tile.delta > 0 ? 'text-ink-green-3' : 'text-ink-red-3'">{{ Math.abs(tile.delta) }}%</span>
+            <span :class="['size-3', tile.delta > 0 ? 'lucide-trending-up text-ink-green-6' : 'lucide-trending-down text-ink-red-6']" />
+            <span :class="tile.delta > 0 ? 'text-ink-green-6' : 'text-ink-red-6'">{{ Math.abs(tile.delta) }}%</span>
             <span class="text-ink-gray-4">vs last period</span>
           </template>
           <span v-else class="text-ink-gray-4">—</span>
@@ -52,7 +50,7 @@
       </div>
     </div>
 
-    <!-- ── Pipeline bar (Gestalt: similarity → each stage same shape, colour encodes state) ── -->
+    <!-- ── Pipeline bar ── -->
     <div class="fc-glass-card !p-0 overflow-hidden">
       <div class="px-5 pt-4 pb-3 border-b border-outline-gray-1/60">
         <h3 class="text-sm font-semibold text-ink-gray-8">Sales Pipeline</h3>
@@ -72,7 +70,7 @@
           @click="$emit('navigate', stage.section)"
         >
           <div class="flex items-center gap-1.5 mb-1.5">
-            <span :class="[stage.dot, 'w-1.5 h-1.5 rounded-full flex-shrink-0']" />
+            <span :class="[stage.dot, 'w-2 h-2 rounded-full flex-shrink-0']" />
             <span class="text-xs font-medium text-ink-gray-5 group-hover:text-ink-gray-7 transition-colors">{{ stage.label }}</span>
           </div>
           <p class="text-2xl font-bold text-ink-gray-9 tabular-nums">{{ stage.count }}</p>
@@ -81,12 +79,12 @@
       </div>
     </div>
 
-    <!-- ── Recent invoices (Gestalt: continuity → rows scan left-right with consistent rhythm) ── -->
+    <!-- ── Recent invoices ── -->
     <div class="fc-glass-card !p-0 overflow-hidden">
       <div class="px-5 pt-4 pb-3 border-b border-outline-gray-1/60 flex items-center justify-between">
         <h3 class="text-sm font-semibold text-ink-gray-8">Recent Invoices</h3>
         <button
-          class="text-xs font-medium text-ink-blue-6 hover:text-ink-blue-8 transition-colors"
+          class="text-xs font-medium text-ink-red-6 hover:text-ink-red-8 transition-colors"
           @click="$emit('navigate', 'invoices')"
         >View all →</button>
       </div>
@@ -177,19 +175,12 @@ function fmtKpi(key) {
 }
 function delta(key) { return kd.value[key]?.delta_pct ?? 0 }
 
-// Finance-semantic tones. NOTE: this fork rebrands the whole `blue` family to
-// Tiberbu red (see index.css) — so `surface-blue-*` is NOT blue here. We deliberately
-// avoid blue and build hierarchy from the untouched status hues on a red/black/white
-// brand: neutral (gray) = a plain balance, attention (red, = brand accent) = the one
-// alarm, pending (amber) = activity in flight, positive (green) = cash secured.
-// Rails use the saturated surface-*-6 (foreground `ink-*` has no bg- utility);
-// chips pair a pale surface-*-2 fill with a legible ink-*-6 glyph (ink-*-3 is
-// ~same lightness as surface-*-2 → pale-on-pale, invisible in light mode).
+// Finance-semantic tones. Chip = pale surface-*-2 fill + ink-*-6 glyph.
 const TONES = {
-  neutral:   { rail: 'bg-surface-gray-6',  chip: 'bg-surface-gray-3 text-ink-gray-7' },
-  attention: { rail: 'bg-surface-red-6',   chip: 'bg-surface-red-2 text-ink-red-6' },
-  pending:   { rail: 'bg-surface-amber-6', chip: 'bg-surface-amber-2 text-ink-amber-6' },
-  positive:  { rail: 'bg-surface-green-6', chip: 'bg-surface-green-2 text-ink-green-6' },
+  neutral:   { chip: 'bg-surface-gray-3 text-ink-gray-7' },
+  attention: { chip: 'bg-surface-red-2 text-ink-red-6' },
+  pending:   { chip: 'bg-surface-amber-2 text-ink-amber-6' },
+  positive:  { chip: 'bg-surface-green-2 text-ink-green-6' },
 }
 
 const kpiTiles = computed(() => [
@@ -201,10 +192,10 @@ const kpiTiles = computed(() => [
 
 const pd = computed(() => pipeline.data || {})
 const pipelineStages = computed(() => [
-  { key: 'quotes',   label: 'Open Quotes',     section: 'quotes',   dot: 'bg-surface-gray-6',   count: pd.value.open_quotes      ?? '—', amount: fmtCurrency(pd.value.quotes_value    ?? 0, pd.value.currency) },
-  { key: 'orders',   label: 'Active Orders',   section: 'orders',   dot: 'bg-surface-amber-6',  count: pd.value.active_orders    ?? '—', amount: fmtCurrency(pd.value.orders_value    ?? 0, pd.value.currency) },
-  { key: 'invoices', label: 'Unpaid Invoices', section: 'invoices', dot: 'bg-surface-red-6',    count: pd.value.unpaid_invoices  ?? '—', amount: fmtCurrency(pd.value.invoices_value  ?? 0, pd.value.currency) },
-  { key: 'payments', label: 'Received MTD',    section: 'payments', dot: 'bg-surface-green-6',  count: pd.value.payments_mtd     ?? '—', amount: fmtCurrency(pd.value.payments_value  ?? 0, pd.value.currency) },
+  { key: 'quotes',   label: 'Open Quotes',     section: 'quotes',   dot: 'bg-surface-gray-6',   count: pd.value.open_quotes     ?? '—', amount: fmtCurrency(pd.value.quotes_value    ?? 0, pd.value.currency) },
+  { key: 'orders',   label: 'Active Orders',   section: 'orders',   dot: 'bg-surface-amber-6',  count: pd.value.active_orders   ?? '—', amount: fmtCurrency(pd.value.orders_value    ?? 0, pd.value.currency) },
+  { key: 'invoices', label: 'Unpaid Invoices', section: 'invoices', dot: 'bg-surface-red-6',    count: pd.value.unpaid_invoices ?? '—', amount: fmtCurrency(pd.value.invoices_value  ?? 0, pd.value.currency) },
+  { key: 'payments', label: 'Received MTD',    section: 'payments', dot: 'bg-surface-green-6',  count: pd.value.payments_mtd    ?? '—', amount: fmtCurrency(pd.value.payments_value  ?? 0, pd.value.currency) },
 ])
 
 const recentInvoices = computed(() => recentResource.data || [])
@@ -219,10 +210,10 @@ function fmtDate(d) {
 }
 function statusClass(s) {
   return {
-    'Unpaid':      'bg-surface-red-2 text-ink-red-3',
-    'Partly Paid': 'bg-surface-amber-2 text-ink-amber-3',
-    'Paid':        'bg-surface-green-2 text-ink-green-3',
-    'Overdue':     'bg-surface-red-2 text-ink-red-3',
+    'Unpaid':      'bg-surface-red-2 text-ink-red-6',
+    'Partly Paid': 'bg-surface-amber-2 text-ink-amber-6',
+    'Paid':        'bg-surface-green-2 text-ink-green-6',
+    'Overdue':     'bg-surface-red-2 text-ink-red-6',
   }[s] || 'bg-surface-gray-2 text-ink-gray-6'
 }
 </script>

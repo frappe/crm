@@ -1,12 +1,9 @@
 <template>
   <div
-    class="group rounded-xl border border-outline-gray-1 bg-surface-white overflow-hidden cursor-pointer hover:shadow-md hover:border-outline-gray-3 transition-all"
+    class="group fc-glass-card cursor-pointer"
     @click="$emit('click')"
   >
-    <!-- Category accent strip — the tone carries the finance meaning (info /
-         inflow / attention / pending) so the eye groups tiles at a glance. -->
-    <div class="h-1 w-full" :class="tone.bar" />
-    <div class="px-5 py-4 flex flex-col gap-2">
+    <div class="flex flex-col gap-2">
       <div class="flex items-start justify-between gap-2">
         <span class="text-xs font-medium text-ink-gray-5 leading-tight">{{ label }}</span>
         <span
@@ -26,6 +23,7 @@
     </div>
   </div>
 </template>
+
 
 <script setup>
 import { computed } from 'vue'
@@ -49,18 +47,18 @@ defineEmits(['click'])
 // at-risk · pending (amber) awaiting. Chip = pale surface-*-2 fill + dark ink-*-6
 // glyph (contrast-verified light & dark); rail = saturated surface-*-6.
 const TONES = {
-  neutral:   { bar: 'bg-surface-gray-6',  chip: 'bg-surface-gray-3 text-ink-gray-7' },
-  positive:  { bar: 'bg-surface-green-6', chip: 'bg-surface-green-2 text-ink-green-6' },
-  attention: { bar: 'bg-surface-red-6',   chip: 'bg-surface-red-2 text-ink-red-6' },
-  pending:   { bar: 'bg-surface-amber-6', chip: 'bg-surface-amber-2 text-ink-amber-6' },
+  neutral:   { chip: 'bg-surface-gray-3 text-ink-gray-7' },
+  positive:  { chip: 'bg-surface-green-2 text-ink-green-6' },
+  attention: { chip: 'bg-surface-red-2 text-ink-red-6' },
+  pending:   { chip: 'bg-surface-amber-2 text-ink-amber-6' },
 }
 const tone = computed(() => TONES[props.tone] || TONES.neutral)
 
 const deltaClass = computed(() =>
   props.deltaDirection === 'up'
-    ? 'text-ink-green-3'
+    ? 'text-ink-green-6'
     : props.deltaDirection === 'down'
-      ? 'text-ink-red-3'
+      ? 'text-ink-red-6'
       : 'text-ink-gray-4',
 )
 
