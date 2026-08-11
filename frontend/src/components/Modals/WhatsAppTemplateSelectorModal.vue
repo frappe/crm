@@ -19,7 +19,7 @@
         <Button
           :label="__('Create New Template')"
           variant="solid"
-          @click="newWhatsappTemplate"
+          @click="newWhatsAppTemplate"
         >
           <template #prefix>
             <span class="lucide-plus h-4 w-4" aria-hidden="true" />
@@ -28,32 +28,35 @@
       </div>
       <div
         v-if="filteredTemplates.length"
-        class="mt-2 grid max-h-[560px] grid-cols-1 gap-2 overflow-y-auto sm:grid-cols-3"
+        class="mt-4 grid max-h-[560px] grid-cols-1 gap-4 overflow-y-auto p-0.5 sm:grid-cols-3"
       >
+        <!-- filled with the incoming-message surface, so a card previews the thing it sends -->
         <div
           v-for="template in filteredTemplates"
           :key="template.name"
-          class="flex h-56 cursor-pointer flex-col gap-2 rounded-lg border p-3 hover:bg-surface-gray-2"
-          @click="emit('send', template.name)"
+          class="flex h-56 cursor-pointer flex-col gap-2.5 rounded-lg border border-outline-gray-2 bg-surface-gray-1 p-3 transition-colors hover:bg-surface-gray-2"
+          @click="send(template.name)"
         >
           <div
-            class="border-b pb-2 text-base-semibold truncate"
+            class="truncate border-b border-outline-gray-2 pb-2 text-base-semibold"
             :title="template.name"
           >
             {{ template.name }}
           </div>
-          <TextEditor
-            v-if="template.message"
-            :content="template.message"
-            :editable="false"
-            editor-class="!prose-sm max-w-none !text-sm text-ink-gray-5 focus:outline-none"
-            class="flex-1 overflow-hidden"
+          <!-- the bubble's own surface and ink, one size down for a grid card -->
+          <TemplateContent
+            class="min-h-0 flex-1 text-p-sm text-ink-gray-9"
+            :header="template.header_text"
+            :body="template.message"
+            :footer="template.footer"
+            :buttons="template.buttons"
+            body-class="min-h-0 flex-1 overflow-y-auto"
           />
         </div>
       </div>
-      <div v-else class="mt-2">
+      <div v-else class="mt-4">
         <div class="flex h-56 flex-col items-center justify-center">
-          <div class="text-lg text-ink-gray-4">
+          <div class="text-lg text-ink-gray-6">
             {{ __('No Templates Found') }}
           </div>
           <Button
@@ -68,39 +71,46 @@
 </template>
 
 <script setup>
-import { TextEditor, createResource } from 'frappe-ui'
-import { ref, computed, nextTick, watch, onMounted } from 'vue'
+import { TemplateContent, useTemplates } from '@whatsapp/ui'
+import { toast } from 'frappe-ui'
+import { ref, computed, nextTick, watch } from 'vue'
 
 const props = defineProps({
   doctype: { type: String, default: '' },
+  docname: { type: String, default: '' },
+  to: { type: String, default: '' },
 })
 
 const show = defineModel({ type: Boolean })
 const searchInput = ref('')
 
-const emit = defineEmits(['send'])
+const emit = defineEmits(['sent'])
 
 const search = ref('')
 
-const templates = createResource({
-  url: 'crm.api.whatsapp.get_sendable_templates',
-  cache: ['whatsappTemplates', props.doctype],
-  params: { reference_doctype: props.doctype },
+const templates = useTemplates({
+  referenceDoctype: () => props.doctype,
+  referenceDocname: () => props.docname,
+  to: () => props.to,
 })
 
-onMounted(() => {
-  if (templates.data == null) {
-    templates.fetch()
-  }
-})
+watch(
+  () => templates.error,
+  (error) => {
+    if (error) toast.error(error.messages?.[0] || error.message || __('Error'))
+  },
+)
 
-const filteredTemplates = computed(() => {
-  return (
-    templates.data?.filter((template) => {
-      return template.name.toLowerCase().includes(search.value.toLowerCase())
-    }) ?? []
-  )
-})
+const filteredTemplates = computed(() =>
+  templates.templates.filter((template) =>
+    template.name.toLowerCase().includes(search.value.toLowerCase()),
+  ),
+)
+
+async function send(templateName) {
+  show.value = false
+  if (await templates.sendTemplate(templateName)) emit('sent')
+}
 
 function newWhatsAppTemplate() {
   show.value = false

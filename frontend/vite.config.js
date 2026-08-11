@@ -60,11 +60,16 @@ export default defineConfig(async ({ mode }) => {
         // barrel, which `export *`s components (Grid/Phone/FormLayout) that need a newer
         // frappe-ui (`frappe-ui/internals`) than this app pins.
         '@framework/ui': path.resolve(__dirname, '../../frappe/ui/src'),
+        // same reason: point at the src dir so subpath imports like
+        // `@whatsapp/ui/components/Messages` resolve to a real file
+        '@whatsapp/ui': path.resolve(__dirname, '../../whatsapp/ui/src'),
       },
       // ensure the linked framework package reuses the host app's single copy of each peer.
       // `dompurify` is an implicit dep of @framework/ui's sanitize util (not declared in its
       // package.json); dedupe resolves it to the host's copy since the symlinked source has
       // no node_modules of its own.
+      // `reka-ui` is what frappe-ui builds on and it passes state through provide/inject,
+      // so a second copy silently breaks context across a linked package's components.
       // the editor packages must resolve to one copy each: tiptap imports
       // `@tiptap/pm/model` while prosemirror-state/transform/tables import bare
       // `prosemirror-model`, so a nested install of either throws "multiple
@@ -74,6 +79,7 @@ export default defineConfig(async ({ mode }) => {
         'vue',
         'vue-router',
         'frappe-ui',
+        'reka-ui',
         'dompurify',
         '@tiptap/core',
         '@tiptap/pm',
