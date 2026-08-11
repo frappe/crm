@@ -35,6 +35,7 @@
           :you-label="__('You')"
           :reacted-by-label="__('Reacted by')"
           :reply-label="__('Reply')"
+          :replying-to-label="__('Replying to')"
           :react-label="__('React')"
           :failed-message-label="__('Failed to send message')"
           :today-label="__('Today')"
@@ -439,6 +440,7 @@
       :caption-placeholder="__('Add a caption...')"
       :send-label="__('Send')"
       :replying-to-label="__('Replying to')"
+      :dismiss-reply-label="__('Dismiss reply')"
       @send="onWhatsAppSent"
     >
       <template #leading-actions>
