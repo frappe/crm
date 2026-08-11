@@ -8,9 +8,26 @@
  *
  * Auth: quote-user.json (Administrator on cr-dev.tiberbu.app)
  * Cleanup: afterAll deletes the lead created by the chain test.
+ *
+ * Screenshots: every run clears e2e/proof/ then captures a shot at each key step.
+ * If a bug is found, fix → clear → rerun from scratch (beforeAll handles the clear).
  */
 import * as fs from 'fs'
 import { test, expect, Page } from '@playwright/test'
+
+// ── proof folder ───────────────────────────────────────────────────────────────
+const PROOF_DIR = 'e2e/proof'
+
+/** Clear proof dir once before all tests in this file, then recreate it. */
+test.beforeAll(() => {
+	if (fs.existsSync(PROOF_DIR)) fs.rmSync(PROOF_DIR, { recursive: true })
+	fs.mkdirSync(PROOF_DIR, { recursive: true })
+})
+
+/** Capture a viewport screenshot into e2e/proof/<name>.png */
+async function ss(page: Page, name: string): Promise<void> {
+	await page.screenshot({ path: `${PROOF_DIR}/${name}.png`, fullPage: false })
+}
 
 // ── constants ──────────────────────────────────────────────────────────────────
 const E2E_TS     = Date.now()
@@ -90,6 +107,7 @@ test('Full UI chain: Lead → Deal → Quote Wizard → Save Draft', async ({ pa
 		await page.goto('/crm/leads')
 		await waitCRM(page)
 		await expect(page.getByRole('button', { name: 'Create', exact: true })).toBeVisible()
+		await ss(page, '01_leads_list')
 	})
 
 	// ── 2. Create Lead via modal ─────────────────────────────────────────────
@@ -105,6 +123,8 @@ test('Full UI chain: Lead → Deal → Quote Wizard → Save Draft', async ({ pa
 		const emailInput = dialog.getByPlaceholder('Email')
 		if (await emailInput.count() > 0) await emailInput.fill(E2E_EMAIL)
 
+		await ss(page, '02_create_lead_modal')
+
 		await dialog.getByRole('button', { name: 'Create', exact: true }).click()
 
 		await page.waitForURL(/\/crm\/leads\/[A-Z]/, { timeout: 15000 })
@@ -117,6 +137,7 @@ test('Full UI chain: Lead → Deal → Quote Wizard → Save Draft', async ({ pa
 		await waitCRM(page)
 		await expect(page.getByRole('button', { name: 'Convert to Deal' })).toBeVisible({ timeout: 8000 })
 		await expect(page.locator('text=/LD-[A-Z0-9]+/').first()).toBeVisible({ timeout: 5000 })
+		await ss(page, '03_lead_detail')
 	})
 
 	// ── 4. Convert Lead → Deal ───────────────────────────────────────────────
@@ -127,6 +148,8 @@ test('Full UI chain: Lead → Deal → Quote Wizard → Save Draft', async ({ pa
 		await expect(dialog).toBeVisible({ timeout: 6000 })
 		await expect(dialog.getByText('Convert to Deal')).toBeVisible()
 
+		await ss(page, '04_convert_to_deal_modal')
+
 		await dialog.getByRole('button', { name: 'Convert', exact: true }).click()
 
 		await page.waitForURL(/\/crm\/deals\//, { timeout: 15000 })
@@ -136,12 +159,14 @@ test('Full UI chain: Lead → Deal → Quote Wizard → Save Draft', async ({ pa
 		await waitCRM(page)
 		await expect(page.locator('[class*="breadcrumb"], nav').getByText('Deals').first()
 			.or(page.getByText('Deals').first())).toBeVisible({ timeout: 8000 })
+		await ss(page, '05_deal_page')
 	})
 
 	// ── 5. Quoting tab opens ─────────────────────────────────────────────────
 	await test.step('5. Deal Quoting tab shows New Quote button', async () => {
 		await goToQuotingTab(page)
 		await expect(page.locator('button:has-text("New Quote")').first()).toBeVisible({ timeout: 6000 })
+		await ss(page, '06_quoting_tab')
 	})
 
 	// ── 6. Open wizard → Step 1 ─────────────────────────────────────────────
@@ -152,6 +177,7 @@ test('Full UI chain: Lead → Deal → Quote Wizard → Save Draft', async ({ pa
 			await expect(page.getByText(s).first()).toBeVisible()
 		}
 		await expect(page.locator('button:has-text("Back")')).toBeVisible()
+		await ss(page, '07_wizard_step1_facilities')
 	})
 
 	// ── 7. Fill Step 1 and advance ───────────────────────────────────────────
@@ -176,10 +202,12 @@ test('Full UI chain: Lead → Deal → Quote Wizard → Save Draft', async ({ pa
 		const continueBtn = page.locator('button:has-text("Continue → Add-ons")')
 		await expect(continueBtn).toBeVisible({ timeout: 4000 })
 		await expect(continueBtn).toBeEnabled()
+		await ss(page, '08_wizard_step1_filled')
 		await continueBtn.click()
 
 		await expect(page.getByText('Add-ons').first()).toBeVisible({ timeout: 5000 })
 		await expect(page.locator('button:has-text("Skip")')).toBeVisible()
+		await ss(page, '09_wizard_step2_addons')
 	})
 
 	// ── 8. Skip add-ons ──────────────────────────────────────────────────────
@@ -187,6 +215,7 @@ test('Full UI chain: Lead → Deal → Quote Wizard → Save Draft', async ({ pa
 		await expect(page.getByText('Hardware').first()).toBeVisible({ timeout: 4000 })
 		await page.locator('button:has-text("Skip")').click()
 		await expect(page.getByText('Discount & Pricing')).toBeVisible({ timeout: 5000 })
+		await ss(page, '10_wizard_step3_pricing')
 	})
 
 	// ── 9. Pricing step ──────────────────────────────────────────────────────
@@ -194,8 +223,10 @@ test('Full UI chain: Lead → Deal → Quote Wizard → Save Draft', async ({ pa
 		await page.locator('button:has-text("Annual Upfront")').click()
 		await page.waitForTimeout(200)
 		await expect(page.getByText('Grand Total Year 1')).toBeVisible()
+		await ss(page, '11_wizard_step3_annual_upfront')
 		await page.locator('button:has-text("Continue → Review")').click()
 		await expect(page.getByText('Review & Send')).toBeVisible({ timeout: 5000 })
+		await ss(page, '12_wizard_step4_review')
 	})
 
 	// ── 10. Review — document preview renders + Save Draft ───────────────────
@@ -204,12 +235,14 @@ test('Full UI chain: Lead → Deal → Quote Wizard → Save Draft', async ({ pa
 		await expect(page.getByText('QUOTATION').first()).toBeVisible()
 		await expect(page.getByText('CAREVERSE', { exact: false }).first()).toBeVisible()
 		await expect(page.getByText('Grand Total Year 1', { exact: false }).first()).toBeVisible()
+		await ss(page, '13_wizard_step4_preview')
 
 		await page.locator('button:has-text("Back")').first().click()
 		await page.waitForTimeout(600)
 
 		const dirtyDialog = page.getByRole('dialog').filter({ hasText: 'Save draft' })
 		await expect(dirtyDialog).toBeVisible({ timeout: 4000 })
+		await ss(page, '14_wizard_dirty_dialog')
 		await dirtyDialog.getByRole('button', { name: 'Discard Changes' }).click()
 
 		await expect(page.getByText('Review & Send')).toBeHidden({ timeout: 8000 })
@@ -235,6 +268,7 @@ test('Full UI chain: Lead → Deal → Quote Wizard → Save Draft', async ({ pa
 		const createdText = (await firstRow.locator('td').nth(createdIdx).innerText()).trim()
 		const hasRelative = /ago|just now|\d+\s*(min|hr|d)/.test(createdText)
 		expect(hasRelative, `Created cell: "${createdText}"`).toBe(true)
+		await ss(page, '15_quoting_tab_timestamps')
 	})
 
 	// cleanup
@@ -265,6 +299,7 @@ test.describe('UI: Timestamps in Quotes list, Quoting tab, Finance Cockpit', () 
 
 		const text = (await page.locator('table tbody tr').first().locator('td').nth(idx).innerText()).trim()
 		expect(/ago|just now|\d+\s*(min|hr|d)/.test(text), `Got: "${text}"`).toBe(true)
+		await ss(page, '16_quotes_list_timestamps')
 	})
 
 	test('Deal Quoting tab — Created column shows relative time', async ({ page }) => {
@@ -279,6 +314,7 @@ test.describe('UI: Timestamps in Quotes list, Quoting tab, Finance Cockpit', () 
 		const idx = headers.findIndex(h => /created/i.test(h))
 		const text = (await page.locator('table tbody tr').first().locator('td').nth(idx).innerText()).trim()
 		expect(/ago|just now|\d+\s*(min|hr|d)|[A-Za-z]{3}\s\d{4}/.test(text), `Got: "${text}"`).toBe(true)
+		await ss(page, '17_deal_quoting_tab_timestamps')
 	})
 
 	test('New Quote wizard — 4-step stepper and Back button', async ({ page }) => {
@@ -292,10 +328,12 @@ test.describe('UI: Timestamps in Quotes list, Quoting tab, Finance Cockpit', () 
 			await expect(page.getByText(s).first()).toBeVisible()
 		}
 		await expect(page.locator('button:has-text("Back")')).toBeVisible()
+		await ss(page, '18_wizard_stepper')
 
 		await page.locator('button:has-text("Back")').first().click()
 		await page.waitForTimeout(400)
 		await expect(page.locator('button:has-text("New Quote")').first()).toBeVisible()
+		await ss(page, '19_wizard_back_to_quoting_tab')
 	})
 
 	test('Finance Cockpit AR Invoices — Date column shows timeAgo', async ({ page }) => {
@@ -318,6 +356,7 @@ test.describe('UI: Timestamps in Quotes list, Quoting tab, Finance Cockpit', () 
 		} else {
 			await expect(page.getByText(/No invoices/)).toBeVisible({ timeout: 5000 })
 		}
+		await ss(page, '20_fc_ar_invoices')
 	})
 
 	test('Finance Cockpit Orders — Date column shows timeAgo', async ({ page }) => {
@@ -340,6 +379,7 @@ test.describe('UI: Timestamps in Quotes list, Quoting tab, Finance Cockpit', () 
 		} else {
 			await expect(page.getByText(/Orders|No sales orders/).first()).toBeVisible({ timeout: 5000 })
 		}
+		await ss(page, '21_fc_orders')
 	})
 })
 
@@ -375,6 +415,8 @@ test.describe('Finance Cockpit UX enhancements', () => {
 			.isVisible({ timeout: 5000 }).catch(() => false)
 		if (!formOpen) { test.skip(); return }
 
+		await ss(page, '22_fc_t01_invoice_form_open')
+
 		// Add a line item: set qty=1, rate=1000 to give a subtotal of 1000
 		// First "Add your first line" or "Add line" button
 		const addLineBtn = page.locator('button:has-text("Add your first line"), button:has-text("Add line")').first()
@@ -405,6 +447,7 @@ test.describe('Finance Cockpit UX enhancements', () => {
 		const footer = page.locator('.fixed.bottom-0').first()
 		const gtBefore = await footer.innerText().catch(() => '')
 		console.log('FC-T01: Grand Total before tax:', gtBefore)
+		await ss(page, '23_fc_t01_before_tax')
 
 		// Expand "Taxes & Charges" collapsible section
 		const taxSection = page.getByText('Taxes & Charges').first()
@@ -436,6 +479,7 @@ test.describe('Finance Cockpit UX enhancements', () => {
 		// Read Grand Total after adding tax — it should differ from before
 		const gtAfter = await footer.innerText().catch(() => '')
 		console.log('FC-T01: Grand Total after 16% tax:', gtAfter)
+		await ss(page, '24_fc_t01_after_tax')
 
 		// If we had a non-zero subtotal, the grand total text must have changed.
 		// Both states are valid proof of the reactive pipe working.
@@ -477,6 +521,7 @@ test.describe('Finance Cockpit UX enhancements', () => {
 			pillLabels.push(await modePills.nth(i).innerText())
 		}
 		console.log('FC-T03: visible pills:', pillLabels)
+		await ss(page, '25_fc_t03_payment_pills')
 
 		// Click "Bank Transfer" pill if present, otherwise first non-"+ More" pill
 		const bankPill = page.locator('button.rounded-full:has-text("Bank Transfer")').first()
@@ -493,10 +538,7 @@ test.describe('Finance Cockpit UX enhancements', () => {
 		// Active pill gets bg-surface-gray-4 / border-outline-gray-3
 		expect(cls, `Pill "${selectedMode}" not active after click`).toMatch(/bg-surface-gray-4|border-outline-gray-3/)
 
-		// Simulate customer change: find customer combobox and clear/change it
-		// The mode should NOT reset (FC-07 bug fix).
-		// We can't easily do a full customer change without real data, so we
-		// verify that the mode value survived the pill click and is correct.
+		// Verify that the mode value survived the pill click and is correct.
 		const modeStillActive = await page.locator(`button.rounded-full:has-text("${selectedMode}")`).first().getAttribute('class')
 		expect(modeStillActive || '').toMatch(/bg-surface-gray-4|border-outline-gray-3/)
 		console.log(`FC-T03: mode "${selectedMode}" remains selected ✓`)
@@ -508,6 +550,7 @@ test.describe('Finance Cockpit UX enhancements', () => {
 		expect(stored, 'fc_recent_modes not written to localStorage').not.toBeNull()
 		expect(stored).toContain(selectedMode)
 		console.log('FC-T03: localStorage:', stored)
+		await ss(page, '26_fc_t03_pill_selected')
 	})
 
 	// FC-T02: Payment section renders and "Review →" replaces old "Save & Submit".
@@ -546,9 +589,8 @@ test.describe('Finance Cockpit UX enhancements', () => {
 		const customerLabel = page.getByText('Customer').first()
 		await expect(customerLabel).toBeVisible({ timeout: 4000 })
 
-		// FC-10: Invoice table headers — verify sortable columns
-		// (only appear after a customer is selected — skip if no data)
 		console.log('FC-T02: Review → button confirmed, Amount Received input present ✓')
+		await ss(page, '27_fc_t02_payment_review_form')
 	})
 
 	// FC-extra: Finance Cockpit Invoices section renders with explicit summary fields
@@ -576,5 +618,6 @@ test.describe('Finance Cockpit UX enhancements', () => {
 			expect(headers.some(h => /invoice/i.test(h)), 'Invoice column missing').toBe(true)
 			expect(headers.some(h => /customer/i.test(h)), 'Customer column missing').toBe(true)
 		}
+		await ss(page, '28_fc_invoices_columns')
 	})
 })
