@@ -78,12 +78,18 @@ def get_context(context):
 
 
 def _link_field_options(doctype: str) -> list[dict]:
-	"""Existing records of `doctype` as {value, label} dropdown options. Run as the Guest
-	user so the result honours the target's permissions at every level (doctype `select`,
-	row rules, if_owner) and shows exactly what an anonymous visitor may see. We switch the
-	session to Guest rather than `get_list(user="Guest")` because the latter still derives
-	its permission *tier* from the active session, so a manager preview would be checked for
-	Guest `read` and fail on a select-only target."""
+	"""Existing records of `doctype` as {value, label} dropdown options, scoped to what an
+	anonymous visitor may see — honouring the target's permissions at every level (doctype
+	`select`, row rules, if_owner).
+
+	An actual guest is already in that context, so we query directly. Only a logged-in author
+	*previewing* the page needs the session temporarily switched to Guest (rather than
+	`get_list(user="Guest")`, which still derives its permission *tier* from the active
+	session and would check the manager for Guest `read`, failing on a select-only target).
+	That switch is destructive — `frappe.set_user()` overwrites `session.sid` with the
+	username and wipes `session.data` — and restoring only the user leaves a corrupted
+	session that gets persisted under the real sid, logging the author out on their next
+	request. So snapshot and restore sid + data as well."""
 	if not doctype or not frappe.db.exists("DocType", doctype):
 		return []
 	if not guest_can_select(doctype):
@@ -91,17 +97,30 @@ def _link_field_options(doctype: str) -> list[dict]:
 	meta = frappe.get_meta(doctype)
 	title_field = meta.title_field or "name"
 	fields = ["name"] if title_field == "name" else ["name", title_field]
-	current_user = frappe.session.user
-	try:
-		frappe.set_user("Guest")  # nosemgrep — restored in finally; see docstring
-		rows = frappe.get_list(
+
+	def _query():
+		return frappe.get_list(
 			doctype,
 			fields=fields,
 			order_by=f"{title_field} asc",
 			limit=MAX_LINK_OPTIONS,
 		)
-	finally:
-		frappe.set_user(current_user)  # nosemgrep
+
+	current_user = frappe.session.user
+	if current_user == "Guest":
+		rows = _query()
+	else:
+		saved_sid = frappe.session.sid
+		saved_data = frappe.session.data
+		try:
+			frappe.set_user("Guest")  # nosemgrep — session fully restored in finally
+			rows = _query()
+		finally:
+			frappe.set_user(current_user)
+			# set_user() clobbers sid (→ username) and wipes data; put the real ones
+			# back so the request doesn't persist a corrupted session (see #logout).
+			frappe.session.sid = saved_sid
+			frappe.session.data = saved_data
 	return [{"value": r["name"], "label": r.get(title_field) or r["name"]} for r in rows]
 
 
