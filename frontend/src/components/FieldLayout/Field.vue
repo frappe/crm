@@ -283,14 +283,44 @@
       @change="(v) => fieldChange(v, field)"
     />
     <FormControl
+<<<<<<< HEAD
       v-else
+=======
+      v-else-if="field.options === 'Phone'"
+>>>>>>> 44a0b624 (fix: render Phone field in its own layout branch)
       type="text"
       :placeholder="getPlaceholder(field)"
       :value="data[field.fieldname]"
       :disabled="Boolean(field.read_only)"
       :description="field.description"
+<<<<<<< HEAD
       @change="fieldChange($event.target.value, field)"
     />
+=======
+      :error="
+        Boolean(data[field.fieldname]) && !validatePhone(data[field.fieldname])
+          ? __('Enter a valid phone number')
+          : undefined
+      "
+      @change="fieldChange($event.target.value, field)"
+    />
+    <div v-else class="flex items-center gap-1">
+      <FormControl
+        class="flex-1"
+        type="text"
+        :placeholder="getPlaceholder(field)"
+        :value="data[field.fieldname]"
+        :disabled="Boolean(field.read_only)"
+        :description="field.description"
+        @change="fieldChange($event.target.value, field)"
+      />
+      <ArrowUpRightIcon
+        v-if="isExternalUrl(data[field.fieldname])"
+        class="h-4 w-4 shrink-0 cursor-pointer text-ink-gray-5 hover:text-ink-gray-8"
+        @click.stop="openExternalUrl(data[field.fieldname])"
+      />
+    </div>
+>>>>>>> 44a0b624 (fix: render Phone field in its own layout branch)
   </div>
 </template>
 <script setup>
