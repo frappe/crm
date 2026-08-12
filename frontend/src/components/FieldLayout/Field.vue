@@ -282,17 +282,6 @@
       :disabled="Boolean(field.read_only)"
       @change="(v) => fieldChange(v, field)"
     />
-<<<<<<< HEAD
-    <FormControl
-      v-else
-      type="text"
-      :placeholder="getPlaceholder(field)"
-      :value="data[field.fieldname]"
-      :disabled="Boolean(field.read_only)"
-      :description="field.description"
-      @change="fieldChange($event.target.value, field)"
-    />
-=======
     <div v-else class="flex items-center gap-1">
       <FormControl
         class="flex-1"
@@ -316,7 +305,6 @@
         @click.stop="openExternalUrl(data[field.fieldname])"
       />
     </div>
->>>>>>> f09f022f (fix: phone number validation in CRM call log)
   </div>
 </template>
 <script setup>
