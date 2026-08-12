@@ -358,12 +358,9 @@ const props = defineProps({
 const { brand } = getSettings()
 const { $dialog } = globalStore()
 const { reload: reloadView, getDefaultView, getView } = viewsStore()
-<<<<<<< HEAD
-const { isManager } = usersStore()
-=======
+
 const { isManager, getUser } = usersStore()
 const { organizations } = organizationsStore()
->>>>>>> fe79db42 (fix: resolve @me filters in export all records flow)
 
 const list = defineModel({ type: Object, default: () => ({}) })
 const loadMore = defineModel('loadMore', { type: Boolean })
