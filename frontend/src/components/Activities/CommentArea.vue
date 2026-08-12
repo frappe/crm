@@ -31,10 +31,9 @@
       class="rounded bg-surface-gray-1 px-3 py-[7.5px] text-base leading-6 transition-all duration-300 ease-in-out"
     >
       <template v-if="editing">
-        <TextEditor
+        <RichTextField
           :content="editContent"
-          :editable="true"
-          :editor-class="['prose-sm max-w-none min-h-[3rem]']"
+          editor-class="prose-sm max-w-none min-h-[3rem]"
           @change="editContent = $event"
         />
         <div class="mt-2 flex justify-end gap-2">
@@ -68,7 +67,8 @@
 <script setup>
 import UserAvatar from '@/components/UserAvatar.vue'
 import AttachmentItem from '@/components/AttachmentItem.vue'
-import { Dropdown, Button, TextEditor, call, toast } from 'frappe-ui'
+import RichTextField from '@/components/RichTextField.vue'
+import { Dropdown, Button, call, toast } from 'frappe-ui'
 import TimelineTimestamp from '@/components/Activities/TimelineTimestamp.vue'
 import { sanitizeHTML, ConfirmDelete } from '@/utils'
 import { sessionStore } from '@/stores/session'
