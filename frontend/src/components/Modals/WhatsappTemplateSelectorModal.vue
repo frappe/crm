@@ -42,6 +42,7 @@
           >
             {{ template.name }}
           </div>
+          <!-- content is passed through sanitizeHTML() (DOMPurify) before rendering, so v-html is safe here -->
           <!-- eslint-disable vue/no-v-html -->
           <div
             v-if="template.template"

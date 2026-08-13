@@ -106,6 +106,7 @@
           v-else-if="fieldName == 'description'"
           class="truncate text-base max-h-44"
         >
+          <!-- content is passed through sanitizeHTML() (DOMPurify) before rendering, so v-html is safe here -->
           <!-- eslint-disable vue/no-v-html -->
           <div
             v-if="getRow(itemName, fieldName).label"

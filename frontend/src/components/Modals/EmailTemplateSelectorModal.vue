@@ -34,6 +34,7 @@
           <div v-if="template.subject" class="text-sm text-ink-gray-5">
             {{ __('Subject: {0}', [template.subject]) }}
           </div>
+          <!-- content is passed through sanitizeHTML() (DOMPurify) before rendering, so v-html is safe here -->
           <!-- eslint-disable vue/no-v-html -->
           <div
             v-if="template.use_html && template.response_html"
