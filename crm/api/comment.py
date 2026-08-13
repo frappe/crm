@@ -18,6 +18,10 @@ def notify_mentions(doc):
 	Extract mentions from `content`, and notify.
 	`content` must have `HTML` content.
 	"""
+	# Comment is a core doctype: other apps write comments on their own
+	# documents, which have no lead_name/organization to read below
+	if doc.reference_doctype not in ["CRM Lead", "CRM Deal"]:
+		return
 	content = getattr(doc, "content", None)
 	if not content:
 		return
