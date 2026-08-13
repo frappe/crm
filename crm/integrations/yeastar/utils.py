@@ -5,6 +5,7 @@ from frappe.model.document import Document
 from crm.fcrm.doctype.crm_yeastar_settings.crm_yeastar_settings import (
 	CRMYeastarSettings,
 )
+from crm.integrations.api import get_contact_by_phone_number
 
 CTA = "CRM Telephony Agent"
 
@@ -53,6 +54,49 @@ def get_yeaster_agent_by_number(number: str) -> str:
 		{"yeastar": 1, "yeastar_number": number},
 		"user",
 	)
+
+
+def create_call_log(
+	call_id: str,
+	from_number: str,
+	to_number: str,
+	medium: str,
+	agent: str | None,
+	status: str = "Ringing",
+	call_type: str = "Incoming",
+) -> "Document":
+	"""Open a call log, leaving the commit to the request that opened it."""
+	call_log = frappe.new_doc("CRM Call Log")
+	call_log.id = call_id
+	call_log.to = to_number
+	call_log.medium = medium
+	call_log.type = call_type
+	call_log.status = status
+	call_log.telephony_medium = "Yeastar"
+	setattr(call_log, "from", from_number)
+
+	if call_type == "Incoming":
+		call_log.receiver = agent
+	else:
+		call_log.caller = agent
+
+	link_to_contact(from_number if call_type == "Incoming" else to_number, call_log)
+	call_log.save(ignore_permissions=True)
+
+	return call_log
+
+
+def link_to_contact(contact_number: str, call_log: "Document") -> None:
+	contact = get_contact_by_phone_number(contact_number)
+	if not contact.get("name"):
+		return
+
+	if contact.get("lead"):
+		call_log.link_with_reference_doc("CRM Lead", contact["lead"])
+	elif contact.get("deal"):
+		call_log.link_with_reference_doc("CRM Deal", contact["deal"])
+	else:
+		call_log.link_with_reference_doc("Contact", contact["name"])
 
 
 def handle_yeastar_error(

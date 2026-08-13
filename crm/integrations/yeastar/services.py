@@ -4,13 +4,12 @@ import frappe
 from frappe import _
 from frappe.utils import add_to_date, cint, get_datetime
 
-from crm.integrations.exotel.handler import create_call_log
-
 from .api_connector import APIConnector
 from .constants import (
 	ANSWERED_STATUSES,
 	CALL_STATUS_EVENT,
 	CDR_STATUS_MAP,
+	FINAL_CALL_LOG_STATUSES,
 	INCOMING_CALL_EVENT,
 	INCOMING_CALL_HOLD_SECONDS,
 	INCOMING_CALL_RESOLVED_EVENT,
@@ -21,6 +20,7 @@ from .constants import (
 	MemberStatus,
 )
 from .utils import (
+	create_call_log,
 	get_call_log,
 	get_yeastar_agents,
 	get_yeaster_number,
@@ -132,7 +132,6 @@ class CallService(APIConnector):
 				medium=callee,
 				status="Ringing",
 				call_type="Outgoing",
-				telephony_medium="Yeastar",
 				agent=frappe.session.user,
 			)
 
@@ -184,7 +183,6 @@ class CallService(APIConnector):
 				medium=event.callee,
 				status="Ringing",
 				call_type="Incoming",
-				telephony_medium="Yeastar",
 				agent=None,
 			)
 		except Exception:
@@ -218,7 +216,7 @@ class CallService(APIConnector):
 				return
 
 			call_log = get_call_log(call_id)
-			if not call_log:
+			if not call_log or call_log.status in FINAL_CALL_LOG_STATUSES:
 				return
 
 			talk_duration = cint(payload.get("talk_duration"))
