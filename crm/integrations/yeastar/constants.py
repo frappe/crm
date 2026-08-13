@@ -1,6 +1,7 @@
 from enum import StrEnum
 
 SIGNATURE_HEADER = "X-Signature"
+REPLAY_WINDOW_SECONDS = 60 * 60
 
 CALL_STATUS_EVENT = "yeastar_call_status_changed"
 INCOMING_CALL_EVENT = "yeastar_incoming_call"
@@ -64,6 +65,8 @@ class CallAction(StrEnum):
 
 
 ANSWERED_STATUSES = frozenset({MemberStatus.ANSWERED, MemberStatus.ANSWER})
+
+FINAL_CALL_LOG_STATUSES = frozenset({"Completed", "Failed", "Busy", "No Answer", "Canceled"})
 
 CDR_STATUS_MAP = {
 	"ANSWERED": "Completed",

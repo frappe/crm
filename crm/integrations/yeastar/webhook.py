@@ -3,11 +3,12 @@ import hashlib
 import hmac
 from collections.abc import Callable
 from functools import wraps
+from hashlib import sha256
 
 import frappe
 from frappe import _
 
-from .constants import SIGNATURE_HEADER, WebhookEvent
+from .constants import REPLAY_WINDOW_SECONDS, SIGNATURE_HEADER, WebhookEvent
 from .utils import yeaster_settings
 
 
@@ -32,6 +33,16 @@ def verify_signature(event: WebhookEvent) -> None:
 
 	if not provided or not hmac.compare_digest(expected, provided):
 		reject(event, _("signature does not match the secret registered for this event"))
+
+	reject_replay(event, expected)
+
+
+def reject_replay(event: WebhookEvent, signature: str) -> None:
+	"""Accept a signed body once. A resend carries the same signature and is dropped."""
+	key = frappe.cache().make_key(f"yeastar:webhook:{sha256(signature.encode()).hexdigest()}")
+
+	if not frappe.cache().set(key, 1, ex=REPLAY_WINDOW_SECONDS, nx=True):
+		reject(event, _("this body has already been accepted and will not be processed again"))
 
 
 def sign(body: bytes, secret: str) -> str:
