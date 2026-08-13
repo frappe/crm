@@ -75,9 +75,12 @@ const fields = createResource({
   transform: (data) => {
     // `description` renders as a second line in the dropdown, which has no
     // max width, so a long one stretches the whole list.
-    return data
-      .filter((f) => f.hidden == 0 && f.read_only == 0)
-      .map(({ description, ...f }) => ({ ...f, value: f.fieldname }))
+    return (
+      data
+        .filter((f) => f.hidden == 0 && f.read_only == 0)
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        .map(({ description, ...f }) => ({ ...f, value: f.fieldname }))
+    )
   },
 })
 
