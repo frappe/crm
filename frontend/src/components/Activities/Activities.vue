@@ -45,7 +45,11 @@
           :key="note.name"
           @click="modalRef.showNote(note)"
         >
-          <NoteArea v-model="all_activities" :note="note" />
+          <NoteArea
+            v-model="all_activities"
+            :note="note"
+            :modalRef="modalRef"
+          />
         </div>
       </div>
       <div v-else-if="title == 'Comments'" class="pb-5">

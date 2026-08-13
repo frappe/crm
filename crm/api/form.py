@@ -365,6 +365,9 @@ def get_form_config(name: str) -> dict:
 				"reqd": f.reqd,
 				"placeholder": f.placeholder,
 				"field_description": f.description,
+				"depends_on": f.depends_on or "",
+				"mandatory_depends_on": f.mandatory_depends_on or "",
+				"read_only_depends_on": f.read_only_depends_on or "",
 			}
 			for f in doc.web_form_fields
 		],
@@ -443,6 +446,11 @@ def save_form(name: str | None, form: dict | str) -> dict:
 					"reqd": 1 if f.get("reqd") else 0,
 					"placeholder": f.get("placeholder"),
 					"description": f.get("field_description"),
+					# conditional-logic rules authored per field in the builder (same as
+					# the framework's Web Form fields; evaluated client-side)
+					"depends_on": f.get("depends_on") or "",
+					"mandatory_depends_on": f.get("mandatory_depends_on") or "",
+					"read_only_depends_on": f.get("read_only_depends_on") or "",
 					"idx": i + 1,
 				},
 			)

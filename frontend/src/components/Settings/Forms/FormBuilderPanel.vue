@@ -560,19 +560,26 @@
                     :key="ci"
                     class="flex flex-col gap-4"
                   >
-                    <div v-for="f in col" :key="f.fieldname">
+                    <div
+                      v-show="fieldVisible(f)"
+                      v-for="f in col"
+                      :key="f.fieldname"
+                    >
                       <div
                         v-if="f.fieldtype !== 'Check'"
                         class="mb-1.5 text-sm text-ink-gray-5"
                       >
                         {{ f.label
-                        }}<span v-if="f.reqd" class="text-ink-red-5">*</span>
+                        }}<span v-if="fieldRequired(f)" class="text-ink-red-5"
+                          >*</span
+                        >
                       </div>
                       <FormControl
                         v-if="TEXTAREA_TYPES.includes(f.fieldtype)"
                         v-model="previewModel[f.fieldname]"
                         type="textarea"
                         :placeholder="f.placeholder"
+                        :disabled="fieldReadOnly(f)"
                       />
                       <FormControl
                         v-else-if="f.fieldtype === 'Select'"
@@ -580,6 +587,7 @@
                         type="select"
                         :options="selectOptions(f)"
                         :placeholder="f.placeholder || __('Select an option')"
+                        :disabled="fieldReadOnly(f)"
                       />
                       <FormControl
                         v-else-if="f.fieldtype === 'Link'"
@@ -587,6 +595,7 @@
                         type="select"
                         :options="linkSelectOptions(f)"
                         :placeholder="f.placeholder || __('Select an option')"
+                        :disabled="fieldReadOnly(f)"
                       />
                       <div
                         v-else-if="f.fieldtype === 'Check'"
@@ -595,10 +604,11 @@
                         <FormControl
                           v-model="previewModel[f.fieldname]"
                           type="checkbox"
+                          :disabled="fieldReadOnly(f)"
                         />
                         <span class="text-sm text-ink-gray-5"
                           >{{ f.label
-                          }}<span v-if="f.reqd" class="text-ink-red-5"
+                          }}<span v-if="fieldRequired(f)" class="text-ink-red-5"
                             >*</span
                           ></span
                         >
@@ -608,6 +618,7 @@
                         v-model="previewModel[f.fieldname]"
                         :type="inputType(f)"
                         :placeholder="f.placeholder"
+                        :disabled="fieldReadOnly(f)"
                       />
                       <div
                         v-if="f.field_description"
@@ -661,6 +672,7 @@ import {
 } from 'frappe-ui'
 import FieldCard from '@/components/Settings/Forms/FieldCard.vue'
 import { fieldTypeIcon } from '@/components/Settings/Forms/fieldTypeIcon'
+import { evaluateDependsOnValue } from '@/utils/expressions'
 import DragVerticalIcon from '@/components/Icons/DragVerticalIcon.vue'
 import LucideCopy from '~icons/lucide/copy'
 import Draggable from 'vuedraggable'
@@ -931,6 +943,14 @@ function onSortEnd() {
 const sectionKey = (sec) => sec.secField?.fieldname || 'sec'
 const columnKey = (col) => col.colField?.fieldname || 'col0'
 const previewModel = reactive({}) // throwaway values so the preview is interactive
+
+// preview honours the same conditional-logic rules, reusing the app's evaluator
+const evalRule = (expr, fallback) =>
+  expr ? evaluateDependsOnValue(expr, previewModel) : fallback
+const fieldVisible = (f) => evalRule(f.depends_on, true)
+const fieldRequired = (f) =>
+  f.reqd ? true : evalRule(f.mandatory_depends_on, false)
+const fieldReadOnly = (f) => evalRule(f.read_only_depends_on, false)
 const previewSubmitted = ref(false)
 
 function resetPreview() {
@@ -1055,6 +1075,9 @@ function addFieldToColumn(col, option) {
     reqd: !!af.reqd,
     placeholder: '',
     field_description: '',
+    depends_on: '',
+    mandatory_depends_on: '',
+    read_only_depends_on: '',
   })
   if (af.fieldtype === 'Link') ensureLinkMeta(af.options)
   capture('form_field_added', { field_type: af.fieldtype })
@@ -1248,6 +1271,9 @@ createResource({
       reqd: !!f.reqd,
       placeholder: f.placeholder,
       field_description: f.field_description,
+      depends_on: f.depends_on || '',
+      mandatory_depends_on: f.mandatory_depends_on || '',
+      read_only_depends_on: f.read_only_depends_on || '',
     }))
     hiddenFields.value = (doc.hidden_fields || []).map((h) => ({
       fieldname: h.fieldname,
@@ -1466,6 +1492,9 @@ async function save({ silent = false } = {}) {
           reqd: f.reqd ? 1 : 0,
           placeholder: f.placeholder,
           field_description: f.field_description,
+          depends_on: f.depends_on || '',
+          mandatory_depends_on: f.mandatory_depends_on || '',
+          read_only_depends_on: f.read_only_depends_on || '',
         })),
         hidden_fields: hiddenFields.value.map((h) => ({
           fieldname: h.fieldname,
