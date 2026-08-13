@@ -3,8 +3,8 @@
     v-if="showCallPopup"
     ref="callPopupWrapper"
     :style="style"
-    @click.stop
     class="fixed z-20"
+    @click.stop
   >
     <div
       ref="callPopupContainer"
@@ -110,27 +110,27 @@
         <ErrorMessage :message="errorMessage" class="mt-2" />
       </div>
 
-      <div class="p-4" v-show="showNote">
+      <div v-show="showNote" class="p-4">
         <div class="mb-3">
           <h3 class="text-lg font-semibold">Call Notes</h3>
         </div>
         <TextEditor
-          variant="ghost"
           ref="content"
+          variant="ghost"
           editor-class="prose-sm h-[290px] text-ink-white overflow-auto mt-1"
           :bubbleMenu="true"
           :content="note.content"
-          @change="(val) => (note.content = val)"
           :placeholder="__('Take a note...')"
+          @change="(val) => (note.content = val)"
         />
         <div class="flex flex-row justify-end gap-2 mt-3">
           <Button
             v-if="note?.content && note.content != '<p></p>'"
             size="sm"
             class="bg-surface-white !text-ink-gray-9 hover:!bg-surface-gray-3"
-            @click="saveNote"
             variant="solid"
             :label="__('Save')"
+            @click="saveNote"
           />
         </div>
       </div>
@@ -394,11 +394,13 @@ function stopAudio() {
 
   const { context, oscillator, beat } = ringtone.value
   clearInterval(beat)
+  ringtone.value = null
   try {
     oscillator.stop()
     context.close()
-  } catch {}
-  ringtone.value = null
+  } catch (error) {
+    void error
+  }
 }
 
 function setup() {
