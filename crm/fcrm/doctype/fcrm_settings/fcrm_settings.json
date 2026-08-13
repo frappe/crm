@@ -14,6 +14,11 @@
   "update_timestamp_on_new_communication",
   "auto_mark_replied_on_response",
   "auto_reopen_on_new_communication",
+  "follow_up_reminders_section",
+  "enable_follow_up_reminders",
+  "follow_up_reminder_before",
+  "follow_up_reminder_interval",
+  "send_follow_up_reminder_email",
   "activity_timeline_section",
   "crm_timeline_timestamp_format",
   "crm_timeline_sort_order",
@@ -190,6 +195,43 @@
    "fieldname": "restore_demo_data",
    "fieldtype": "Button",
    "label": "Restore Demo Data"
+  },
+  {
+   "fieldname": "follow_up_reminders_section",
+   "fieldtype": "Section Break",
+   "label": "Follow Up Reminders"
+  },
+  {
+   "default": "1",
+   "description": "Notify the users assigned to a lead or deal when its Next Follow Up is due",
+   "fieldname": "enable_follow_up_reminders",
+   "fieldtype": "Check",
+   "label": "Enable follow up reminders"
+  },
+  {
+   "default": "30",
+   "depends_on": "enable_follow_up_reminders",
+   "description": "How much ahead of the follow up time the reminder is sent",
+   "fieldname": "follow_up_reminder_before",
+   "fieldtype": "Int",
+   "label": "Remind before",
+   "non_negative": 1
+  },
+  {
+   "default": "minutes",
+   "depends_on": "enable_follow_up_reminders",
+   "fieldname": "follow_up_reminder_interval",
+   "fieldtype": "Select",
+   "label": "Remind before (unit)",
+   "options": "minutes\nhours\ndays"
+  },
+  {
+   "default": "0",
+   "depends_on": "enable_follow_up_reminders",
+   "description": "Also email the reminder, in addition to the in-app notification",
+   "fieldname": "send_follow_up_reminder_email",
+   "fieldtype": "Check",
+   "label": "Send follow up reminder email"
   },
   {
    "fieldname": "activity_timeline_section",

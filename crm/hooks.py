@@ -222,7 +222,10 @@ doc_events = {
 # ---------------
 
 scheduler_events = {
-	"all": ["crm.api.event.trigger_offset_event_notifications"],
+	"all": [
+		"crm.api.event.trigger_offset_event_notifications",
+		"crm.api.follow_up.trigger_follow_up_reminders",
+	],
 	"hourly": ["crm.api.event.trigger_hourly_event_notifications"],
 	"daily": [
 		"crm.api.event.trigger_daily_event_notifications",

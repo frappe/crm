@@ -34,9 +34,13 @@ class FCRMSettings(Document):
 		currency: DF.Link | None
 		default_calendar_view: DF.Literal["Daily", "Weekly", "Monthly"]
 		dropdown_items: DF.Table[CRMDropdownItem]
+		enable_follow_up_reminders: DF.Check
 		enable_forecasting: DF.Check
 		event_notifications: DF.Table[EventNotifications]
 		favicon: DF.Attach | None
+		follow_up_reminder_before: DF.Int
+		follow_up_reminder_interval: DF.Literal["minutes", "hours", "days"]
+		send_follow_up_reminder_email: DF.Check
 		service_provider: DF.Literal[
 			"frankfurter.app", "fawazahmed-exchange-api", "exchangerate.host", "exchangerate-api"
 		]

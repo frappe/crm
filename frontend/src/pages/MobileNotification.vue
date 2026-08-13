@@ -35,6 +35,12 @@
             :class="[n.read ? 'bg-transparent' : 'bg-surface-gray-10']"
           />
           <WhatsAppIcon v-if="n.type == 'WhatsApp'" class="size-7" />
+          <div
+            v-else-if="n.type == 'Follow Up'"
+            class="flex size-7 items-center justify-center rounded-full bg-surface-gray-2"
+          >
+            <CalendarIcon class="size-4 text-ink-gray-7" />
+          </div>
           <UserAvatar v-else :user="n.from_user.name" size="lg" />
         </div>
         <div>
@@ -70,6 +76,7 @@
 <script setup>
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
+import CalendarIcon from '@/components/Icons/CalendarIcon.vue'
 import MarkAsDoneIcon from '@/components/Icons/MarkAsDoneIcon.vue'
 import NotificationsIcon from '@/components/Icons/NotificationsIcon.vue'
 import UserAvatar from '@/components/UserAvatar.vue'

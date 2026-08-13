@@ -75,6 +75,83 @@
           />
         </div>
       </div>
+      <div class="h-px border-t mx-2 border-outline-elevation-2" />
+      <div class="flex gap-4 items-center justify-between py-3 px-2">
+        <div class="flex flex-col">
+          <div class="text-p-base-medium text-ink-gray-7 truncate">
+            {{ __('Follow up reminders') }}
+          </div>
+          <div class="text-p-sm text-ink-gray-5">
+            {{
+              __(
+                'Notify the users assigned to a lead or deal when its next follow up is due',
+              )
+            }}
+          </div>
+        </div>
+        <div>
+          <Switch
+            v-model="settings.doc.enable_follow_up_reminders"
+            size="sm"
+            @click.stop="toggle('enable_follow_up_reminders')"
+          />
+        </div>
+      </div>
+      <div
+        v-if="settings.doc.enable_follow_up_reminders"
+        class="flex gap-4 items-center justify-between py-3 px-2"
+      >
+        <div class="flex flex-col">
+          <div class="text-p-base-medium text-ink-gray-7 truncate">
+            {{ __('Remind before') }}
+          </div>
+          <div class="text-p-sm text-ink-gray-5">
+            {{ __('How far ahead of the follow up time the reminder is sent') }}
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <FormControl
+            v-model.number="settings.doc.follow_up_reminder_before"
+            type="number"
+            min="0"
+            class="w-20"
+            :placeholder="__('30')"
+            @change="save()"
+          />
+          <FormControl
+            v-model="settings.doc.follow_up_reminder_interval"
+            type="select"
+            class="w-28"
+            :options="reminderIntervalOptions"
+            :placeholder="__('minutes')"
+            @update:modelValue="save()"
+          />
+        </div>
+      </div>
+      <div
+        v-if="settings.doc.enable_follow_up_reminders"
+        class="flex gap-4 items-center justify-between py-3 px-2"
+      >
+        <div class="flex flex-col">
+          <div class="text-p-base-medium text-ink-gray-7 truncate">
+            {{ __('Email follow up reminders') }}
+          </div>
+          <div class="text-p-sm text-ink-gray-5">
+            {{
+              __(
+                'Also email the reminder, in addition to the in-app notification',
+              )
+            }}
+          </div>
+        </div>
+        <div>
+          <Switch
+            v-model="settings.doc.send_follow_up_reminder_email"
+            size="sm"
+            @click.stop="toggle('send_follow_up_reminder_email')"
+          />
+        </div>
+      </div>
       <div class="h-px border-t mx-2 border-outline-gray-modals" />
       <div class="flex gap-4 items-center justify-between py-3 px-2">
         <div class="flex flex-col">
@@ -142,6 +219,11 @@ const timestampFormatOptions = [
 const sortOrderOptions = [
   { label: __('Oldest First'), value: 'Oldest First' },
   { label: __('Newest First'), value: 'Newest First' },
+]
+const reminderIntervalOptions = [
+  { label: __('minutes'), value: 'minutes' },
+  { label: __('hours'), value: 'hours' },
+  { label: __('days'), value: 'days' },
 ]
 
 function toggle(settingKey) {

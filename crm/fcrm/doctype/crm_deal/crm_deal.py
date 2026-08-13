@@ -7,6 +7,7 @@ from frappe.desk.form.assign_to import _add as assign
 from frappe.model.document import Document
 
 from crm.api.exchange_rate import get_exchange_rate
+from crm.api.follow_up import reset_follow_up_reminder
 from crm.fcrm.doctype.crm_service_level_agreement.utils import get_sla
 from crm.fcrm.doctype.crm_status_change_log.crm_status_change_log import add_status_change_log
 from crm.fcrm.doctype.utils import add_or_remove_lost_reason_section_in_sidepanel
@@ -43,6 +44,7 @@ class CRMDeal(Document):
 		first_name: DF.Data | None
 		first_responded_on: DF.Datetime | None
 		first_response_time: DF.Duration | None
+		follow_up_reminder_sent: DF.Check
 		gender: DF.Link | None
 		industry: DF.Link | None
 		job_title: DF.Data | None
@@ -56,6 +58,7 @@ class CRMDeal(Document):
 		mobile_no: DF.Data | None
 		naming_series: DF.Literal["CRM-DEAL-.YYYY.-"]
 		net_total: DF.Currency
+		next_follow_up: DF.Datetime | None
 		next_step: DF.Data | None
 		no_of_employees: DF.Literal["1-10", "11-50", "51-200", "201-500", "501-1000", "1000+"]
 		organization: DF.Link | None
@@ -99,6 +102,7 @@ class CRMDeal(Document):
 				self.closed_date = frappe.utils.nowdate()
 		self.validate_forecasting_fields()
 		self.validate_lost_reason()
+		reset_follow_up_reminder(self)
 		self.update_exchange_rate()
 		if self.organization and (self.is_new() or self.has_value_changed("organization")):
 			self.copy_enrichment_from_organization()
@@ -335,6 +339,12 @@ class CRMDeal(Document):
 				"width": "11rem",
 			},
 			{
+				"label": "Next Follow Up",
+				"type": "Datetime",
+				"key": "next_follow_up",
+				"width": "10rem",
+			},
+			{
 				"label": "Assigned To",
 				"type": "Text",
 				"key": "_assign",
@@ -356,6 +366,7 @@ class CRMDeal(Document):
 			"currency",
 			"mobile_no",
 			"deal_owner",
+			"next_follow_up",
 			"sla_status",
 			"response_by",
 			"first_response_time",

@@ -198,11 +198,11 @@ def add_default_fields_layout(force=False):
 	sidebar_fields_layouts = {
 		"CRM Lead-Side Panel": {
 			"doctype": "CRM Lead",
-			"layout": '[{"label": "Details", "name": "details_section", "opened": true, "columns": [{"name": "column_kl92", "fields": ["organization", "company_description", "website", "territory", "industry", "no_of_employees", "job_title", "source", "lead_owner", "linkedin", "twitter", "facebook"]}]}, {"label": "Person", "name": "person_section", "opened": true, "columns": [{"name": "column_XmW2", "fields": ["salutation", "first_name", "last_name", "email", "mobile_no"]}]}]',
+			"layout": '[{"label": "Details", "name": "details_section", "opened": true, "columns": [{"name": "column_kl92", "fields": ["organization", "company_description", "website", "territory", "industry", "no_of_employees", "job_title", "source", "lead_owner", "next_follow_up", "linkedin", "twitter", "facebook"]}]}, {"label": "Person", "name": "person_section", "opened": true, "columns": [{"name": "column_XmW2", "fields": ["salutation", "first_name", "last_name", "email", "mobile_no"]}]}]',
 		},
 		"CRM Deal-Side Panel": {
 			"doctype": "CRM Deal",
-			"layout": '[{"label": "Contacts", "name": "contacts_section", "opened": true, "editable": false, "contacts": []}, {"label": "Organization Details", "name": "organization_section", "opened": true, "columns": [{"name": "column_na2Q", "fields": ["organization", "company_description", "industry", "no_of_employees", "website", "territory", "annual_revenue", "closed_date", "probability", "next_step", "deal_owner", "linkedin", "twitter", "facebook"]}]}]',
+			"layout": '[{"label": "Contacts", "name": "contacts_section", "opened": true, "editable": false, "contacts": []}, {"label": "Organization Details", "name": "organization_section", "opened": true, "columns": [{"name": "column_na2Q", "fields": ["organization", "company_description", "industry", "no_of_employees", "website", "territory", "annual_revenue", "closed_date", "probability", "next_step", "next_follow_up", "deal_owner", "linkedin", "twitter", "facebook"]}]}]',
 		},
 		"Contact-Side Panel": {
 			"doctype": "Contact",

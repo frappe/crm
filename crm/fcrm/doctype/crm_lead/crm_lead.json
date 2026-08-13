@@ -31,6 +31,8 @@
   "job_title",
   "source",
   "lead_owner",
+  "next_follow_up",
+  "follow_up_reminder_sent",
   "organization_tab",
   "section_break_uixv",
   "naming_series",
@@ -172,6 +174,22 @@
    "fieldtype": "Link",
    "label": "Lead Owner",
    "options": "User"
+  },
+  {
+   "description": "When to next reach out to this lead. The assigned users get a reminder when it is due.",
+   "fieldname": "next_follow_up",
+   "fieldtype": "Datetime",
+   "label": "Next Follow Up",
+   "search_index": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "follow_up_reminder_sent",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "Follow Up Reminder Sent",
+   "no_copy": 1,
+   "read_only": 1
   },
   {
    "fieldname": "source",

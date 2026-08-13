@@ -9,6 +9,7 @@ from frappe.desk.form.assign_to import _add as assign
 from frappe.model.document import Document
 from frappe.utils import validate_email_address
 
+from crm.api.follow_up import reset_follow_up_reminder
 from crm.fcrm.doctype.crm_service_level_agreement.utils import get_sla
 from crm.fcrm.doctype.crm_status_change_log.crm_status_change_log import (
 	add_status_change_log,
@@ -42,6 +43,7 @@ class CRMLead(Document):
 		first_name: DF.Data
 		first_responded_on: DF.Datetime | None
 		first_response_time: DF.Duration | None
+		follow_up_reminder_sent: DF.Check
 		gender: DF.Link | None
 		image: DF.AttachImage | None
 		industry: DF.Link | None
@@ -57,6 +59,7 @@ class CRMLead(Document):
 		mobile_no: DF.Data | None
 		naming_series: DF.Literal["CRM-LEAD-.YYYY.-"]
 		net_total: DF.Currency
+		next_follow_up: DF.Datetime | None
 		no_of_employees: DF.Literal["1-10", "11-50", "51-200", "201-500", "501-1000", "1000+"]
 		organization: DF.Data | None
 		phone: DF.Data | None
@@ -91,6 +94,7 @@ class CRMLead(Document):
 		self.set_title()
 		self.validate_email()
 		self.validate_lost_reason()
+		reset_follow_up_reminder(self)
 		if not self.is_new() and self.has_value_changed("lead_owner") and self.lead_owner:
 			self.share_with_agent(self.lead_owner)
 			self.assign_agent(self.lead_owner)
@@ -479,6 +483,12 @@ class CRMLead(Document):
 				"width": "11rem",
 			},
 			{
+				"label": "Next Follow Up",
+				"type": "Datetime",
+				"key": "next_follow_up",
+				"width": "10rem",
+			},
+			{
 				"label": "Assigned To",
 				"type": "Text",
 				"key": "_assign",
@@ -499,6 +509,7 @@ class CRMLead(Document):
 			"email",
 			"mobile_no",
 			"lead_owner",
+			"next_follow_up",
 			"first_name",
 			"sla_status",
 			"response_by",

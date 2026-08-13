@@ -11,6 +11,8 @@
   "naming_series",
   "organization",
   "next_step",
+  "next_follow_up",
+  "follow_up_reminder_sent",
   "column_break_ijan",
   "status",
   "deal_owner",
@@ -113,6 +115,22 @@
    "fieldname": "next_step",
    "fieldtype": "Data",
    "label": "Next Step"
+  },
+  {
+   "description": "When to next reach out on this deal. The assigned users get a reminder when it is due.",
+   "fieldname": "next_follow_up",
+   "fieldtype": "Datetime",
+   "label": "Next Follow Up",
+   "search_index": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "follow_up_reminder_sent",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "Follow Up Reminder Sent",
+   "no_copy": 1,
+   "read_only": 1
   },
   {
    "fieldname": "lead",
