@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-08-07 14:38+0000\n"
-"PO-Revision-Date: 2026-08-08 14:32\n"
+"PO-Revision-Date: 2026-08-13 15:58\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Bosnian\n"
 "MIME-Version: 1.0\n"
@@ -546,7 +546,7 @@ msgstr "Dodaj, uredi i upravljaj predlošcima e-pošte za različite CRM komunik
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:12
 msgid "Add, edit, and manage sources for automatic lead syncing to your CRM"
-msgstr "Dodaj, uredi i upravljaj izvorima za automatsku sinkronizaciju potencijalnih klijenata s vašiom Prodajnom Podrškom"
+msgstr "Dodaj, uredi i upravljaj izvorima za automatsku sinhronizaciju potencijalnih klijenata s vašiom Prodajnom Podrškom"
 
 #. Label of the address (Link) field in DocType 'CRM Organization'
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
@@ -1090,7 +1090,7 @@ msgstr "Nazad na prethodno pitanje"
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:83
 msgid "Background Sync Frequency"
-msgstr "Učestalost pozadinske sinkronizacije"
+msgstr "Učestalost pozadinske sinhronizacije"
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Task'
 #: crm/fcrm/doctype/crm_task/crm_task.json
@@ -1450,7 +1450,7 @@ msgstr "Kamera"
 
 #: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.py:28
 msgid "Can't retry sync for this without source!"
-msgstr "Ne može se ponovno pokušati sinkronizaciju bez izvora!"
+msgstr "Ne može se ponovno pokušati sinhronizaciju bez izvora!"
 
 #: frontend/src/components/Activities/CommentArea.vue:41
 #: frontend/src/components/BulkDeleteLinkedDocModal.vue:82
@@ -3486,7 +3486,7 @@ msgstr "Došlo je do greške"
 
 #: frontend/src/components/Settings/LeadSyncing/FailureLogs.vue:139
 msgid "Error syncing lead"
-msgstr "Pogreška pri sinkronizaciji potencijalnog klijenta"
+msgstr "Pogreška pri sinhronizaciji potencijalnog klijenta"
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:386
 msgid "Error syncing leads"
@@ -3731,7 +3731,7 @@ msgstr "Neuspješno"
 #. Name of a DocType
 #: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.json
 msgid "Failed Lead Sync Log"
-msgstr "Zapisnik neuspješne sinkronizacije potencijalnih klijenata"
+msgstr "Zapisnik neuspješne sinhronizacije potencijalnih klijenata"
 
 #: frontend/src/components/Modals/AddExistingUserModal.vue:111
 msgid "Failed to Add Users"
@@ -5008,7 +5008,7 @@ msgstr "Izvor sinhronizacije potencijalnih klijenata"
 
 #: frontend/src/components/Settings/Settings.vue:246
 msgid "Lead Syncing"
-msgstr "Sinkronizacija Potencijalnih Klijenata"
+msgstr "Sinhronizacija Potencijalnih Klijenata"
 
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:311
 msgid "Lead and deal visibility will no longer be restricted by the reporting tree. Are you sure?"
@@ -5024,7 +5024,7 @@ msgstr "Analiza kanala izrade potencijalnih klijenata"
 
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.js:8
 msgid "Lead sync initiated."
-msgstr "Sinkronizacija potencijalnog klijenta pokrenuta."
+msgstr "Sinhronizacija potencijalnog klijenta pokrenuta."
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:289
 msgid "Lead sync source created successfully"
@@ -5652,7 +5652,7 @@ msgstr "Novi Događaj"
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:9
 msgid "New Lead Sync Source"
-msgstr "Novi izvor sinkronizacije potencijalnih klijenata"
+msgstr "Novi izvor sinhronizacije potencijalnih klijenata"
 
 #: frontend/src/components/Activities/ActivityHeader.vue:66
 msgid "New Message"
@@ -6556,7 +6556,7 @@ msgstr "Odaberi valutu prije spremanja."
 
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.py:67
 msgid "Please select a lead gen form before syncing!"
-msgstr "Odaberi obrazac za izradu potencijalnih klijenata prije sinkronizacije!"
+msgstr "Odaberi obrazac za izradu potencijalnih klijenata prije sinhronizacije!"
 
 #: frontend/src/components/Settings/Sla/EditResponseResolutionModal.vue:88
 msgid "Please select a priority"
@@ -8351,7 +8351,7 @@ msgstr "Sinhronizacija u toku"
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:382
 msgid "Syncing started in background"
-msgstr "Sinkronizacija je započela u pozadini"
+msgstr "Sinhronizacija je započela u pozadini"
 
 #: frontend/src/components/Settings/ThemeSwitcher.vue:162
 msgid "System"
