@@ -1,10 +1,31 @@
 from enum import StrEnum
 
+SIGNATURE_HEADER = "X-Signature"
+
 CALL_STATUS_EVENT = "yeastar_call_status_changed"
 INCOMING_CALL_EVENT = "yeastar_incoming_call"
 INCOMING_CALL_RESOLVED_EVENT = "yeastar_incoming_call_resolved"
 
 INCOMING_CALL_HOLD_SECONDS = 10
+
+
+class WebhookEvent(StrEnum):
+	"""A webhook registered on the PBX portal, each with its own signing secret."""
+
+	INCOMING_CALL_REQUEST = "Incoming Call Request"
+	CALL_STATUS_CHANGED = "Call Status Changed"
+	CALL_END = "Call End"
+
+	@property
+	def secret_field(self) -> str:
+		return WEBHOOK_SECRET_FIELDS[self]
+
+
+WEBHOOK_SECRET_FIELDS = {
+	WebhookEvent.INCOMING_CALL_REQUEST: "incoming_call_secret",
+	WebhookEvent.CALL_STATUS_CHANGED: "call_status_secret",
+	WebhookEvent.CALL_END: "call_end_secret",
+}
 
 
 class MemberStatus(StrEnum):

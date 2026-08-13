@@ -11,6 +11,10 @@
   "password",
   "column_break_qkzj",
   "url",
+  "webhook_section",
+  "incoming_call_secret",
+  "call_status_secret",
+  "call_end_secret",
   "token_detail_section",
   "access_token",
   "access_token_issue",
@@ -118,6 +122,31 @@
    "fieldtype": "Datetime",
    "label": "Refresh Token Expiry",
    "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.enabled",
+   "description": "Each event registered on the PBX portal gets its own secret. Leave a secret blank and that event's webhook is rejected.",
+   "fieldname": "webhook_section",
+   "fieldtype": "Section Break",
+   "label": "Webhook"
+  },
+  {
+   "description": "Secret for the webhook registered against the Incoming Call Request event, pointing at /api/method/crm.integrations.yeastar.api.handle_incoming_call",
+   "fieldname": "incoming_call_secret",
+   "fieldtype": "Password",
+   "label": "Incoming Call Request Secret"
+  },
+  {
+   "description": "Secret for the webhook registered against the Call Status Changed event, pointing at /api/method/crm.integrations.yeastar.api.call_status_changed",
+   "fieldname": "call_status_secret",
+   "fieldtype": "Password",
+   "label": "Call Status Changed Secret"
+  },
+  {
+   "description": "Secret for the webhook registered against the Call End event, pointing at /api/method/crm.integrations.yeastar.api.update_call_log",
+   "fieldname": "call_end_secret",
+   "fieldtype": "Password",
+   "label": "Call End Secret"
   }
  ],
  "grid_page_length": 50,

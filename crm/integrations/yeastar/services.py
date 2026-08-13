@@ -232,7 +232,6 @@ class CallService(APIConnector):
 			)
 
 			call_log.save(ignore_permissions=True)
-			frappe.db.commit()
 		except Exception:
 			frappe.log_error(
 				title="Yeastar: failed to finalise call log",
