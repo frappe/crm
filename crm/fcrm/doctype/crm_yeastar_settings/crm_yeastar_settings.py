@@ -19,7 +19,10 @@ class CRMYeastarSettings(Document):
 		access_token_expire_duration: DF.Int
 		access_token_expiry: DF.Datetime | None
 		access_token_issue: DF.Datetime | None
+		call_end_secret: DF.Password | None
+		call_status_secret: DF.Password | None
 		enabled: DF.Check
+		incoming_call_secret: DF.Password | None
 		password: DF.Password | None
 		refresh_token: DF.Data | None
 		refresh_token_expire_duration: DF.Int
