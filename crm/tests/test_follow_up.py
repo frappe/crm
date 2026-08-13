@@ -1,11 +1,14 @@
 # Copyright (c) 2026, Frappe Technologies Pvt. Ltd. and Contributors
 # See license.txt
 
+from unittest.mock import patch
+
 import frappe
 from frappe.desk.form.assign_to import add as assign_add
 from frappe.tests import IntegrationTestCase
 from frappe.utils import add_to_date, now_datetime
 
+from crm.api import follow_up
 from crm.api.follow_up import (
 	get_due_records,
 	get_lead_time,
@@ -180,6 +183,55 @@ class TestFollowUpReminders(IntegrationTestCase):
 		lead.reload()
 		recipients = get_recipients("CRM Lead", frappe._dict(lead.as_dict()))
 		self.assertEqual(recipients, [lead.owner])
+
+	# failure isolation ------------------------------------------------------
+
+	def test_one_failing_recipient_does_not_cost_the_others(self):
+		good = create_test_user("follow.up.good@example.com")
+		bad = create_test_user("follow.up.bad@example.com")
+		lead = self.make_lead(next_follow_up=add_to_date(now_datetime(), minutes=10))
+		frappe.db.set_value(
+			"CRM Lead", lead.name, "_assign", frappe.as_json([bad.name, good.name]), update_modified=False
+		)
+
+		real_notify = follow_up.notify_user
+
+		def flaky(notification):
+			if notification["assigned_to"] == bad.name:
+				raise ValueError("boom")
+			return real_notify(notification)
+
+		with patch.object(follow_up, "notify_user", side_effect=flaky):
+			trigger_follow_up_reminders()
+
+		notified = [r.to_user for r in self.reminders_for("CRM Lead", lead.name)]
+		self.assertEqual(notified, [good.name])
+		# the good recipient's reminder survived, so the record is done
+		self.assertEqual(self.flag("CRM Lead", lead.name), 1)
+
+	def test_record_is_retried_when_nothing_could_be_sent(self):
+		lead = self.make_lead(next_follow_up=add_to_date(now_datetime(), minutes=10))
+
+		with patch.object(follow_up, "get_recipients", side_effect=ValueError("boom")):
+			trigger_follow_up_reminders()
+
+		self.assertEqual(self.reminders_for("CRM Lead", lead.name), [])
+		# nothing went out, so the flag stays clear and the next tick retries
+		self.assertEqual(self.flag("CRM Lead", lead.name), 0)
+
+		trigger_follow_up_reminders()
+		self.assertEqual(len(self.reminders_for("CRM Lead", lead.name)), 1)
+
+	def test_email_failure_does_not_cost_the_in_app_reminder(self):
+		frappe.db.set_single_value("FCRM Settings", "send_follow_up_reminder_email", 1)
+		frappe.clear_cache(doctype="FCRM Settings")
+		lead = self.make_lead(next_follow_up=add_to_date(now_datetime(), minutes=10))
+
+		with patch.object(follow_up, "send_reminder_email", side_effect=ValueError("boom")):
+			trigger_follow_up_reminders()
+
+		self.assertEqual(len(self.reminders_for("CRM Lead", lead.name)), 1)
+		self.assertEqual(self.flag("CRM Lead", lead.name), 1)
 
 	def test_disabled_users_are_dropped(self):
 		user = create_test_user("follow.up.gone@example.com")

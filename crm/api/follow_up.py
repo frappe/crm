@@ -59,13 +59,13 @@ def trigger_follow_up_reminders():
 	# instead of leaving records marked as reminded but never notified.
 	for doctype in FOLLOW_UP_DOCTYPES:
 		for record in get_due_records(doctype, cutoff):
-			try:
-				send_reminder(doctype, record, send_email=send_email)
-			except Exception:
-				frappe.log_error(title=f"Follow up reminder failed for {doctype} {record.name}")
-			finally:
-				# Marked either way: a reminder that failed to send is logged, but
-				# retrying it on every tick would just repeat the same failure.
+			# send_reminder isolates each recipient, so what reaches here is a
+			# failure to work out *who* to notify at all -- nothing was sent, and
+			# the flag stays clear so the next tick tries the record again.
+			if run_in_savepoint(
+				lambda record=record: send_reminder(doctype, record, send_email=send_email),
+				title=f"Follow up reminder failed for {doctype} {record.name}",
+			):
 				frappe.db.set_value(doctype, record.name, "follow_up_reminder_sent", 1, update_modified=False)
 
 
@@ -117,7 +117,13 @@ def get_due_records(doctype, cutoff):
 
 
 def send_reminder(doctype, record, send_email=False):
-	"""Notify everyone responsible for ``record`` that its follow up is due."""
+	"""Notify everyone responsible for ``record`` that its follow up is due.
+
+	The record is marked reminded once, so every recipient gets their own
+	savepoint: one user whose notification blows up must not swallow the
+	reminder for the others, and must not poison the surrounding transaction.
+	Whoever failed is left in the Error Log rather than retried forever.
+	"""
 	recipients = get_recipients(doctype, record)
 	if not recipients:
 		return
@@ -125,26 +131,63 @@ def send_reminder(doctype, record, send_email=False):
 	title = get_record_title(doctype, record)
 	follow_up_on = get_datetime(record.next_follow_up)
 
+	notified = []
 	for user in recipients:
-		notify_user(
-			{
-				# No from_user: this is the system reminding you, not a colleague.
-				# It also keeps notify_user's "don't notify yourself" guard from
-				# swallowing the reminder, which is almost always self-directed.
-				"owner": None,
-				"assigned_to": user,
-				"notification_type": "Follow Up",
-				"message": _("Follow up on {0} {1} is due").format(doctype, record.name),
-				"notification_text": get_notification_text(doctype, title, follow_up_on),
-				"reference_doctype": doctype,
-				"reference_docname": record.name,
-				"redirect_to_doctype": doctype,
-				"redirect_to_docname": record.name,
-			}
+		if run_in_savepoint(
+			lambda user=user: notify_user(
+				{
+					# No from_user: this is the system reminding you, not a
+					# colleague. It also keeps notify_user's "don't notify
+					# yourself" guard from swallowing the reminder, which is
+					# almost always self-directed.
+					"owner": None,
+					"assigned_to": user,
+					"notification_type": "Follow Up",
+					"message": _("Follow up on {0} {1} is due").format(doctype, record.name),
+					"notification_text": get_notification_text(doctype, title, follow_up_on),
+					"reference_doctype": doctype,
+					"reference_docname": record.name,
+					"redirect_to_doctype": doctype,
+					"redirect_to_docname": record.name,
+				}
+			),
+			title=f"Follow up reminder failed for {doctype} {record.name} ({user})",
+		):
+			notified.append(user)
+
+	# Email only the people whose in-app reminder actually landed, and never let
+	# a mail failure cost them that reminder -- sendmail only queues, so a raise
+	# here means the queue row itself failed.
+	if send_email and notified:
+		run_in_savepoint(
+			lambda: send_reminder_email(doctype, record, notified, title, follow_up_on),
+			title=f"Follow up reminder email failed for {doctype} {record.name}",
 		)
 
-	if send_email:
-		send_reminder_email(doctype, record, recipients, title, follow_up_on)
+
+def run_in_savepoint(fn, title):
+	"""Run ``fn``, returning whether it succeeded and undoing its writes if not.
+
+	The savepoint matters as much as the ``try``: without it a failed statement
+	leaves the surrounding transaction dirty, so the caller's later writes (the
+	``follow_up_reminder_sent`` flag, the next recipient's notification) would go
+	down with it. ``frappe.database.database.savepoint`` can't be used here
+	because it swallows the exception, and the caller needs to know.
+	"""
+	# Unique per call: these nest (a per-recipient savepoint inside the
+	# per-record one) and re-using a name would make MySQL drop the outer
+	# savepoint, so releasing it afterwards fails.
+	sp = f"crm_follow_up_{frappe.generate_hash(length=8)}"
+	frappe.db.savepoint(sp)
+	try:
+		fn()
+	except Exception:
+		frappe.db.rollback(save_point=sp)
+		frappe.log_error(title=title)
+		return False
+
+	frappe.db.release_savepoint(sp)
+	return True
 
 
 def get_recipients(doctype, record):
