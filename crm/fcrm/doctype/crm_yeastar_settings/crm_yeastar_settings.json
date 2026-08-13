@@ -7,17 +7,20 @@
  "field_order": [
   "enabled",
   "section_break_awtx",
-  "request_url",
-  "column_break_qkzj",
   "username",
   "password",
+  "column_break_qkzj",
+  "url",
   "token_detail_section",
   "access_token",
+  "access_token_issue",
   "access_token_expire_duration",
   "access_token_expiry",
   "column_break_bzuv",
   "refresh_token",
-  "refresh_token_expire_duration"
+  "refresh_token_issue",
+  "refresh_token_expire_duration",
+  "refresh_token_expiry"
  ],
  "fields": [
   {
@@ -30,13 +33,6 @@
    "depends_on": "eval:doc.enabled",
    "fieldname": "section_break_awtx",
    "fieldtype": "Section Break"
-  },
-  {
-   "description": "The full Yeastar API base URL, e.g. https://your-organization.com/openapi/v1.0",
-   "fieldname": "request_url",
-   "fieldtype": "Data",
-   "label": "Request Url",
-   "mandatory_depends_on": "eval:doc.enabled"
   },
   {
    "fieldname": "column_break_qkzj",
@@ -88,7 +84,8 @@
    "description": "In Seconds",
    "fieldname": "access_token_expire_duration",
    "fieldtype": "Int",
-   "label": "Access Token Expire Duration"
+   "label": "Access Token Expire Duration",
+   "read_only": 1
   },
   {
    "description": "In Seconds",
@@ -96,13 +93,38 @@
    "fieldtype": "Int",
    "label": "Refresh Token Expire Duration",
    "read_only": 1
+  },
+  {
+   "description": "The full Yeastar API base URL, e.g. https://your-organization.com",
+   "fieldname": "url",
+   "fieldtype": "Data",
+   "label": "Url",
+   "mandatory_depends_on": "eval:doc.enabled"
+  },
+  {
+   "fieldname": "access_token_issue",
+   "fieldtype": "Datetime",
+   "label": "Access Token Issue",
+   "read_only": 1
+  },
+  {
+   "fieldname": "refresh_token_issue",
+   "fieldtype": "Datetime",
+   "label": "Refresh Token Issue",
+   "read_only": 1
+  },
+  {
+   "fieldname": "refresh_token_expiry",
+   "fieldtype": "Datetime",
+   "label": "Refresh Token Expiry",
+   "read_only": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2026-04-09 12:03:45.608303",
+ "modified": "2026-08-12 14:36:53.441768",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Yeastar Settings",
