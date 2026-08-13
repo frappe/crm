@@ -1,14 +1,6 @@
 # Copyright (c) 2024, Frappe Technologies Pvt. Ltd. and Contributors
 # See license.txt
 
-<<<<<<< HEAD
-# import frappe
-from crm.tests import CRMTestCase as FrappeTestCase
-
-
-class TestCRMNotification(FrappeTestCase):
-	pass
-=======
 import frappe
 from frappe.tests.utils import FrappeTestCase
 
@@ -49,4 +41,3 @@ def make_notification(to_user):
 	doc = frappe.get_doc({"doctype": "CRM Notification", "to_user": to_user, "type": "Mention"})
 	doc.flags.ignore_mandatory = True
 	return doc
->>>>>>> 4123c5f3 (fix: added crm notification tests)
