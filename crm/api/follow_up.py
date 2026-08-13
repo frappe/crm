@@ -53,6 +53,10 @@ def trigger_follow_up_reminders():
 	cutoff = add_to_date(now_datetime(), **get_lead_time(settings))
 	send_email = bool(settings.get("send_follow_up_reminder_email"))
 
+	# No explicit commit: the whole run is one transaction, so a failure that
+	# escapes the per-record handler rolls back the sent flags *and* the
+	# notifications they were paired with. The next tick then re-sends cleanly
+	# instead of leaving records marked as reminded but never notified.
 	for doctype in FOLLOW_UP_DOCTYPES:
 		for record in get_due_records(doctype, cutoff):
 			try:
@@ -63,9 +67,6 @@ def trigger_follow_up_reminders():
 				# Marked either way: a reminder that failed to send is logged, but
 				# retrying it on every tick would just repeat the same failure.
 				frappe.db.set_value(doctype, record.name, "follow_up_reminder_sent", 1, update_modified=False)
-
-		# Batch job: keep the sent flags already written if a later doctype blows up.
-		frappe.db.commit()
 
 
 def get_lead_time(settings):
