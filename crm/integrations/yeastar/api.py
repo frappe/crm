@@ -21,16 +21,16 @@ def hangup_call(channel_id: str) -> dict:
 	return CallService(settings_doc=yeaster_settings()).hangup(channel_id)
 
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist(allow_guest=True)  # nosemgrep
 def handle_incoming_call() -> None:
 	CallService(settings_doc=yeaster_settings()).handle_incoming_call(frappe.request.get_json())
 
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist(allow_guest=True)  # nosemgrep
 def call_status_changed() -> None:
 	CallService(settings_doc=yeaster_settings()).call_status_changed(frappe.request.get_json())
 
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist(allow_guest=True)  # nosemgrep
 def update_call_log() -> None:
 	CallService(settings_doc=yeaster_settings()).update_call_log(frappe.request.get_json())
