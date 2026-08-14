@@ -25,7 +25,7 @@ export async function shouldCapturePersona() {
   // "telemetry is not enabled": this call gates nothing but the onboarding
   // wizard, so the safe default is to skip it, not to let a missing
   // whitelisted method surface as a server-side error on every navigation.
-  let enabled = false
+  let enabled
   try {
     const config = await call('frappe.utils.telemetry.pulse.client.boot_config')
     enabled = config?.enabled

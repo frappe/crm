@@ -17,7 +17,9 @@ vi.mock('@/stores/users', () => ({ usersStore: vi.fn() }))
 vi.mock('@/stores/session', () => ({ sessionStore: vi.fn() }))
 vi.mock('@/stores/views', () => ({ viewsStore: vi.fn() }))
 
-const { shouldCapturePersona, PERSONA_DONE_KEY } = await import('../../src/router.js')
+const { shouldCapturePersona, PERSONA_DONE_KEY } = await import(
+  '../../src/router.js'
+)
 
 describe('shouldCapturePersona', () => {
   beforeEach(() => {
@@ -66,7 +68,7 @@ describe('shouldCapturePersona', () => {
       .mockResolvedValueOnce(false) // persona_captured
       .mockRejectedValueOnce(
         new Error(
-          "ValidationError: Failed to get method for command frappe.utils.telemetry.pulse.client.boot_config",
+          'ValidationError: Failed to get method for command frappe.utils.telemetry.pulse.client.boot_config',
         ),
       )
     await expect(shouldCapturePersona()).resolves.toBe(false)
