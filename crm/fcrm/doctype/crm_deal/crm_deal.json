@@ -101,6 +101,7 @@
    "fieldname": "annual_revenue",
    "fieldtype": "Currency",
    "label": "Annual Revenue",
+   "non_negative": 1,
    "options": "currency"
   },
   {
@@ -381,6 +382,7 @@
    "fieldname": "total",
    "fieldtype": "Currency",
    "label": "Total",
+   "non_negative": 1,
    "options": "currency",
    "read_only": 1
   },
@@ -389,6 +391,7 @@
    "fieldname": "net_total",
    "fieldtype": "Currency",
    "label": "Net Total",
+   "non_negative": 1,
    "options": "currency",
    "read_only": 1
   },
@@ -400,6 +403,7 @@
    "fieldname": "deal_value",
    "fieldtype": "Currency",
    "label": "Deal Value",
+   "non_negative": 1,
    "options": "currency"
   },
   {
@@ -429,6 +433,7 @@
    "fieldname": "expected_deal_value",
    "fieldtype": "Currency",
    "label": "Expected Deal Value",
+   "non_negative": 1,
    "options": "currency"
   },
   {
