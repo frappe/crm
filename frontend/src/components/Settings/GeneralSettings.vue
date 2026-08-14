@@ -25,9 +25,13 @@
         </div>
         <div>
           <Switch
-            v-model="settings.doc.update_timestamp_on_new_communication"
+            :model-value="
+              Boolean(settings.doc.update_timestamp_on_new_communication)
+            "
             size="sm"
-            @click.stop="toggle('update_timestamp_on_new_communication')"
+            @update:model-value="
+              (value) => toggle('update_timestamp_on_new_communication', value)
+            "
           />
         </div>
       </div>
@@ -47,9 +51,11 @@
         </div>
         <div>
           <Switch
-            v-model="settings.doc.auto_mark_replied_on_response"
+            :model-value="Boolean(settings.doc.auto_mark_replied_on_response)"
             size="sm"
-            @click.stop="toggle('auto_mark_replied_on_response')"
+            @update:model-value="
+              (value) => toggle('auto_mark_replied_on_response', value)
+            "
           />
         </div>
       </div>
@@ -69,9 +75,13 @@
         </div>
         <div>
           <Switch
-            v-model="settings.doc.auto_reopen_on_new_communication"
+            :model-value="
+              Boolean(settings.doc.auto_reopen_on_new_communication)
+            "
             size="sm"
-            @click.stop="toggle('auto_reopen_on_new_communication')"
+            @update:model-value="
+              (value) => toggle('auto_reopen_on_new_communication', value)
+            "
           />
         </div>
       </div>
@@ -91,9 +101,11 @@
         </div>
         <div>
           <Switch
-            v-model="settings.doc.enable_follow_up_reminders"
+            :model-value="Boolean(settings.doc.enable_follow_up_reminders)"
             size="sm"
-            @click.stop="toggle('enable_follow_up_reminders')"
+            @update:model-value="
+              (value) => toggle('enable_follow_up_reminders', value)
+            "
           />
         </div>
       </div>
@@ -146,9 +158,11 @@
         </div>
         <div>
           <Switch
-            v-model="settings.doc.send_follow_up_reminder_email"
+            :model-value="Boolean(settings.doc.send_follow_up_reminder_email)"
             size="sm"
-            @click.stop="toggle('send_follow_up_reminder_email')"
+            @update:model-value="
+              (value) => toggle('send_follow_up_reminder_email', value)
+            "
           />
         </div>
       </div>
@@ -226,7 +240,13 @@ const reminderIntervalOptions = [
   { label: __('days'), value: 'days' },
 ]
 
-function toggle(settingKey) {
+function toggle(settingKey, value) {
+  // Frappe Check fields are 0/1, but Switch is backed by a control that only
+  // recognises real booleans. Binding the raw 0/1 leaves the two out of sync:
+  // the switch paints itself "on" from the truthy value while its own state
+  // stays unchecked, so every click emits `true` and the setting can be turned
+  // on but never off. Hence Boolean() in, 0/1 back out.
+  settings.doc[settingKey] = value ? 1 : 0
   settings.save.submit(null, {
     onSuccess: () => {
       toast.success(
