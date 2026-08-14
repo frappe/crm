@@ -56,6 +56,7 @@
    "fieldname": "annual_revenue",
    "fieldtype": "Currency",
    "label": "Annual Revenue",
+   "non_negative": 1,
    "options": "currency"
   },
   {
@@ -91,11 +92,11 @@
    "label": "Exchange Rate"
   },
   {
+   "description": "Company description discovered by Domain Enrichment.",
    "fieldname": "company_description",
    "fieldtype": "Small Text",
    "label": "Company Description",
-   "no_copy": 1,
-   "description": "Company description discovered by Domain Enrichment."
+   "no_copy": 1
   },
   {
    "depends_on": "eval:doc.linkedin",
@@ -122,8 +123,8 @@
  "image_field": "organization_logo",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-03-26 12:51:34.002222",
- "modified_by": "shariq@frappe.io",
+ "modified": "2026-08-14 10:32:49.123406",
+ "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Organization",
  "naming_rule": "By fieldname",

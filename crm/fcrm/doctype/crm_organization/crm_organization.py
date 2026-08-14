@@ -18,13 +18,17 @@ class CRMOrganization(Document):
 
 		address: DF.Link | None
 		annual_revenue: DF.Currency
+		company_description: DF.SmallText | None
 		currency: DF.Link | None
 		exchange_rate: DF.Float
+		facebook: DF.Data | None
 		industry: DF.Link | None
+		linkedin: DF.Data | None
 		no_of_employees: DF.Literal["1-10", "11-50", "51-200", "201-500", "501-1000", "1000+"]
 		organization_logo: DF.AttachImage | None
 		organization_name: DF.Data | None
 		territory: DF.Link | None
+		twitter: DF.Data | None
 		website: DF.Data | None
 	# end: auto-generated types
 

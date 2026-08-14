@@ -101,6 +101,7 @@
    "fieldname": "annual_revenue",
    "fieldtype": "Currency",
    "label": "Annual Revenue",
+   "non_negative": 1,
    "options": "currency"
   },
   {
@@ -381,6 +382,7 @@
    "fieldname": "total",
    "fieldtype": "Currency",
    "label": "Total",
+   "non_negative": 1,
    "options": "currency",
    "read_only": 1
   },
@@ -389,6 +391,7 @@
    "fieldname": "net_total",
    "fieldtype": "Currency",
    "label": "Net Total",
+   "non_negative": 1,
    "options": "currency",
    "read_only": 1
   },
@@ -400,6 +403,7 @@
    "fieldname": "deal_value",
    "fieldtype": "Currency",
    "label": "Deal Value",
+   "non_negative": 1,
    "options": "currency"
   },
   {
@@ -429,6 +433,7 @@
    "fieldname": "expected_deal_value",
    "fieldtype": "Currency",
    "label": "Expected Deal Value",
+   "non_negative": 1,
    "options": "currency"
   },
   {
@@ -477,18 +482,18 @@
    "label": "Lost Details"
   },
   {
+   "description": "Company logo discovered by Domain Enrichment.",
    "fieldname": "organization_logo",
    "fieldtype": "Attach Image",
    "label": "Organization Logo",
-   "no_copy": 1,
-   "description": "Company logo discovered by Domain Enrichment."
+   "no_copy": 1
   },
   {
+   "description": "Company description discovered by Domain Enrichment.",
    "fieldname": "company_description",
    "fieldtype": "Small Text",
    "label": "Company Description",
-   "no_copy": 1,
-   "description": "Company description discovered by Domain Enrichment."
+   "no_copy": 1
   },
   {
    "depends_on": "eval:doc.linkedin",
@@ -515,7 +520,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-04-04 12:34:10.808282",
+ "modified": "2026-08-14 10:35:43.663500",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Deal",
