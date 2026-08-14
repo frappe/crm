@@ -56,6 +56,7 @@
    "fieldname": "annual_revenue",
    "fieldtype": "Currency",
    "label": "Annual Revenue",
+   "non_negative": 1,
    "options": "currency"
   },
   {

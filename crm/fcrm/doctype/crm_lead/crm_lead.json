@@ -165,7 +165,8 @@
   {
    "fieldname": "annual_revenue",
    "fieldtype": "Currency",
-   "label": "Annual Revenue"
+   "label": "Annual Revenue",
+   "non_negative": 1
   },
   {
    "fieldname": "lead_owner",
@@ -334,6 +335,7 @@
    "fieldname": "total",
    "fieldtype": "Currency",
    "label": "Total",
+   "non_negative": 1,
    "options": "currency",
    "read_only": 1
   },
@@ -346,6 +348,7 @@
    "fieldname": "net_total",
    "fieldtype": "Currency",
    "label": "Net Total",
+   "non_negative": 1,
    "options": "currency",
    "read_only": 1
   },

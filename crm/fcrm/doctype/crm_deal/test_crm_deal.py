@@ -420,6 +420,12 @@ class TestCRMDeal(IntegrationTestCase):
 		deal.reload()
 		self.assertEqual(deal.contacts[0].is_primary, 1)
 
+	def test_negative_currency_fields_rejected(self):
+		"""Test that Currency fields reject negative values"""
+		for fieldname in ("annual_revenue", "deal_value", "expected_deal_value", "total", "net_total"):
+			with self.subTest(fieldname=fieldname), self.assertRaises(frappe.NonNegativeError):
+				create_test_deal(organization=f"Negative {fieldname}", **{fieldname: -100})
+
 
 def create_test_deal(**kwargs):
 	"""Helper function to create a CRM Deal for testing"""
