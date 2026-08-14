@@ -90,7 +90,7 @@
             class="flex items-center justify-between p-3 cursor-pointer hover:bg-surface-sidebar rounded"
             @click="() => emit('updateStep', 'edit-template', { ...template })"
           >
-            <div class="flex flex-col w-4/6 pr-5">
+            <div class="flex flex-col w-4/6 pe-5">
               <div class="text-p-base-medium text-ink-gray-7 truncate">
                 {{ template.name }}
               </div>

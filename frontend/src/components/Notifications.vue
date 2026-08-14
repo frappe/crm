@@ -16,7 +16,7 @@
         <div class="text-lg-medium text-ink-gray-8 px-4 pt-[15px] pb-3">
           {{ __('Notifications') }}
         </div>
-        <div class="flex gap-1 mr-3">
+        <div class="flex gap-1 me-3">
           <Button
             v-if="activeTab == 'all' && notifications.data?.length"
             :tooltip="__('Mark all as read')"

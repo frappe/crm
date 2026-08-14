@@ -36,7 +36,7 @@
             class="border-r border-outline-gray-2 p-2 truncate"
             :class="
               ['Int', 'Float', 'Currency', 'Percent'].includes(field.fieldtype)
-                ? 'text-right'
+                ? 'text-end'
                 : ''
             "
             :title="field.label"
@@ -167,14 +167,14 @@
                       >
                         <template #prefix>
                           <UserAvatar
-                            class="mr-2"
+                            class="me-2"
                             :user="row[field.fieldname]"
                             size="sm"
                           />
                         </template>
                         <template #item-prefix="{ option }">
                           <UserAvatar
-                            class="mr-2"
+                            class="me-2"
                             :user="option.value"
                             size="sm"
                           />
@@ -254,7 +254,7 @@
                       />
                       <FormattedInput
                         v-else-if="field.fieldtype === 'Int'"
-                        class="[&_input]:text-right"
+                        class="[&_input]:text-end"
                         type="text"
                         variant="outline"
                         :value="row[field.fieldname] || '0'"
@@ -263,7 +263,7 @@
                       />
                       <FormattedInput
                         v-else-if="field.fieldtype === 'Percent'"
-                        class="[&_input]:text-right"
+                        class="[&_input]:text-end"
                         type="text"
                         variant="outline"
                         :value="getFloatWithPrecision(field.fieldname, row)"
@@ -275,7 +275,7 @@
                       />
                       <FormattedInput
                         v-else-if="field.fieldtype === 'Float'"
-                        class="[&_input]:text-right"
+                        class="[&_input]:text-end"
                         type="text"
                         variant="outline"
                         :value="getFloatWithPrecision(field.fieldname, row)"
@@ -287,7 +287,7 @@
                       />
                       <FormattedInput
                         v-else-if="field.fieldtype === 'Currency'"
-                        class="[&_input]:text-right"
+                        class="[&_input]:text-end"
                         type="text"
                         variant="outline"
                         :value="getCurrencyWithPrecision(field.fieldname, row)"

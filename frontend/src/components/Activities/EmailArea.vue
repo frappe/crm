@@ -46,15 +46,15 @@
     <div class="flex flex-col gap-1 text-base leading-5 text-ink-gray-8">
       <div>{{ activity.data.subject }}</div>
       <div>
-        <span class="mr-1 text-ink-gray-5"> {{ __('To') }}: </span>
+        <span class="me-1 text-ink-gray-5"> {{ __('To') }}: </span>
         <span>{{ activity.data.recipients }}</span>
         <span v-if="activity.data.cc">, </span>
-        <span v-if="activity.data.cc" class="mr-1 text-ink-gray-5">
+        <span v-if="activity.data.cc" class="me-1 text-ink-gray-5">
           {{ __('CC') }}:
         </span>
         <span v-if="activity.data.cc">{{ activity.data.cc }}</span>
         <span v-if="activity.data.bcc">, </span>
-        <span v-if="activity.data.bcc" class="mr-1 text-ink-gray-5">
+        <span v-if="activity.data.bcc" class="me-1 text-ink-gray-5">
           {{ __('BCC') }}:
         </span>
         <span v-if="activity.data.bcc">{{ activity.data.bcc }}</span>

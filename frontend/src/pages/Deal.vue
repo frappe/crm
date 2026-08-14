@@ -3,7 +3,7 @@
     <template #left-header>
       <Breadcrumbs :items="breadcrumbs">
         <template #prefix="{ item }">
-          <Icon v-if="item.icon" :icon="item.icon" class="mr-2 h-4" />
+          <Icon v-if="item.icon" :icon="item.icon" class="me-2 h-4" />
         </template>
       </Breadcrumbs>
     </template>
@@ -152,7 +152,7 @@
           @afterFieldChange="reloadResources"
         >
           <template #actions="{ section }">
-            <div v-if="section.name == 'contacts_section'" class="pr-2">
+            <div v-if="section.name == 'contacts_section'" class="pe-2">
               <Link
                 value=""
                 doctype="Contact"
@@ -200,7 +200,7 @@
                   <CollapsibleSection :opened="contact.opened">
                     <template #header="{ opened, toggle }">
                       <div
-                        class="flex cursor-pointer items-center justify-between gap-2 pr-1 text-base leading-5 text-ink-gray-7"
+                        class="flex cursor-pointer items-center justify-between gap-2 pe-1 text-base leading-5 text-ink-gray-7"
                       >
                         <div
                           class="flex h-7 items-center gap-2 truncate"
@@ -216,7 +216,7 @@
                           </div>
                           <Badge
                             v-if="contact.is_primary"
-                            class="ml-2"
+                            class="ms-2"
                             variant="outline"
                             :label="__('Primary')"
                             theme="green"
@@ -254,7 +254,7 @@
                     <div class="flex flex-col gap-1.5 text-base">
                       <div
                         v-if="contact.email"
-                        class="flex items-center gap-3 pb-1.5 pl-1 pt-4 text-ink-gray-8"
+                        class="flex items-center gap-3 pb-1.5 ps-1 pt-4 text-ink-gray-8"
                       >
                         <Email2Icon class="h-4 w-4" />
                         {{ contact.email }}

@@ -29,7 +29,7 @@
         @click="beginEdit"
       >
         <span
-          class="-ml-1 inline-flex min-w-0 max-w-full items-center gap-1 rounded px-1 py-0.5 transition-colors group-hover/label:bg-surface-gray-3"
+          class="-ms-1 inline-flex min-w-0 max-w-full items-center gap-1 rounded px-1 py-0.5 transition-colors group-hover/label:bg-surface-gray-3"
         >
           <span
             class="min-w-0 truncate text-base"

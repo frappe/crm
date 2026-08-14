@@ -157,7 +157,7 @@
       >
         <template #trigger="{ open, setOpen }">
           <Button
-            class="w-full mt-2.5 mb-1 mr-5"
+            class="w-full mt-2.5 mb-1 me-5"
             :label="__('Add Column')"
             iconLeft="plus"
             @click="setOpen(!open)"

@@ -22,7 +22,7 @@
         variant: $attrs.variant,
         size: $attrs.size,
         class:
-          '!w-6 justify-start rounded-bl-none rounded-tl-none border-0 pr-0 text-xs',
+          '!w-6 justify-start rounded-bl-none rounded-tl-none border-0 pe-0 text-xs',
       }"
     />
   </div>

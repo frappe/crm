@@ -125,7 +125,7 @@
         <div>
           <Button
             v-if="getRow(itemName, 'reference_docname').label"
-            class="-ml-2"
+            class="-ms-2"
             variant="ghost"
             size="sm"
             :label="

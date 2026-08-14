@@ -52,7 +52,7 @@
 
       <div
         v-if="canEdit"
-        class="ml-auto flex gap-1 transition-opacity"
+        class="ms-auto flex gap-1 transition-opacity"
         :class="
           isHighlighted ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
         "

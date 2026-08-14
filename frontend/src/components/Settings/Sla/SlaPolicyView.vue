@@ -7,7 +7,7 @@
           icon-left="lucide-chevron-left"
           :label="slaData.sla_name || __('New SLA Policy')"
           size="md"
-          class="cursor-pointer -ml-4 hover:bg-transparent focus:bg-transparent focus:outline-none focus:ring-0 focus:ring-offset-0 focus-visible:none active:bg-transparent active:outline-none active:ring-0 active:ring-offset-0 active:text-ink-gray-5 text-ink-gray-7 text-lg-semibold hover:opacity-70 !pr-0 !max-w-96 !justify-start"
+          class="cursor-pointer -ms-4 hover:bg-transparent focus:bg-transparent focus:outline-none focus:ring-0 focus:ring-offset-0 focus-visible:none active:bg-transparent active:outline-none active:ring-0 active:ring-offset-0 active:text-ink-gray-5 text-ink-gray-7 text-lg-semibold hover:opacity-70 !pe-0 !max-w-96 !justify-start"
           @click="goBack()"
         />
         <Badge

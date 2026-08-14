@@ -25,12 +25,12 @@
               :label="event.owner.label"
               size="md"
             />
-            <span class="font-medium text-ink-gray-8 ml-1">
+            <span class="font-medium text-ink-gray-8 ms-1">
               {{ event.owner.label }}
             </span>
             <span>{{ 'has created an event' }}</span>
           </div>
-          <div class="ml-auto whitespace-nowrap">
+          <div class="ms-auto whitespace-nowrap">
             <TimelineTimestamp :date="event.creation" />
           </div>
         </div>
