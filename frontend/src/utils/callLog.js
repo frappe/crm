@@ -30,7 +30,7 @@ export function getCallLogDetail(row, log, columns = []) {
     }
   } else if (row === 'status') {
     return {
-      label: statusLabelMap[log.status],
+      label: getCallStatusLabel(log.status, log.type),
       color: statusColorMap[log.status],
     }
   } else if (['modified', 'creation'].includes(row)) {
@@ -66,8 +66,17 @@ export const statusLabelMap = {
   Queued: __('Queued'),
   Canceled: __('Canceled'),
   Ringing: __('Ringing'),
-  'No Answer': __('Missed Call'),
+  'No Answer': __('No Answer'),
   'In Progress': __('In Progress'),
+}
+
+// 'No Answer' only reads as "Missed Call" for incoming calls — an unanswered
+// outgoing call wasn't missed by the CRM user who placed it.
+export function getCallStatusLabel(status, type) {
+  if (status === 'No Answer' && type === 'Incoming') {
+    return __('Missed Call')
+  }
+  return statusLabelMap[status]
 }
 
 export const statusColorMap = {
