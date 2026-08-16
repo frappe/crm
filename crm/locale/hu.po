@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-08-07 14:38+0000\n"
-"PO-Revision-Date: 2026-08-08 14:32\n"
+"PO-Revision-Date: 2026-08-16 16:11\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Hungarian\n"
 "MIME-Version: 1.0\n"
@@ -3337,7 +3337,7 @@ msgstr "A Befejezés Dátumának a Kezdés Dátuma után kellene lennie"
 
 #: frontend/src/components/Settings/Sla/utils.js:172
 msgid "End date cannot be before start date"
-msgstr ""
+msgstr "A befejezés dátuma nem lehet korábbi a kezdő dátumnál"
 
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:189
 msgid "End time is required"
@@ -3466,7 +3466,7 @@ msgstr "Egyenlő"
 
 #: frontend/src/pages/MobileLead.vue:205
 msgid "Error Occurred"
-msgstr ""
+msgstr "Hiba történt"
 
 #: frontend/src/components/Modals/ConvertToDealModal.vue:175
 msgid "Error converting to deal: {0}"
@@ -4750,7 +4750,7 @@ msgstr "A pontos előrejelzés érdekében kötelezővé teszi az ügylet \"Vár
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:405
 msgid "Item Group"
-msgstr ""
+msgstr "Tételcsoport"
 
 #: crm/api/doc.py:806
 msgid "Items are required"
@@ -5318,7 +5318,7 @@ msgstr "Szolgáltatási szintű szerződési szabályzatok kezelése"
 #: frontend/src/components/Settings/Users.vue:240
 #: frontend/src/components/Settings/Users.vue:243
 msgid "Manager"
-msgstr ""
+msgstr "Vezető"
 
 #: frontend/src/pages/PersonaForm.vue:97
 msgid "Managing contacts and companies"
@@ -5661,7 +5661,7 @@ msgstr "Új üzenet"
 #: frontend/src/components/Activities/ActivityHeader.vue:41
 #: frontend/src/pages/Deals.vue:509 frontend/src/pages/Leads.vue:543
 msgid "New Note"
-msgstr ""
+msgstr "Új megjegyzés"
 
 #: frontend/src/components/Modals/OrganizationModal.vue:8
 msgid "New Organization"
@@ -5691,7 +5691,7 @@ msgstr "Új lap"
 #: frontend/src/components/Activities/ActivityHeader.vue:48
 #: frontend/src/pages/Deals.vue:514 frontend/src/pages/Leads.vue:548
 msgid "New Task"
-msgstr ""
+msgstr "Új feladat"
 
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:10
 msgid "New Template"
@@ -5770,7 +5770,7 @@ msgstr "Nem"
 #. Option for the 'Status' (Select) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 msgid "No Answer"
-msgstr ""
+msgstr "Nincs válasz"
 
 #: frontend/src/components/Modals/SidePanelModal.vue:51
 #: frontend/src/pages/Deal.vue:287 frontend/src/pages/MobileDeal.vue:209
@@ -7079,7 +7079,7 @@ msgstr "Válasz Mindenkinek"
 
 #: frontend/src/components/Modals/AboutModal.vue:65
 msgid "Report an Issue"
-msgstr ""
+msgstr "Hiba bejelentése"
 
 #: frontend/src/pages/PersonaForm.vue:101
 msgid "Reporting & forecasting"
@@ -7227,7 +7227,7 @@ msgstr ""
 
 #: crm/api/dashboard.py:727
 msgid "Revenue"
-msgstr ""
+msgstr "Árbevétel"
 
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:80
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:81
@@ -8325,7 +8325,7 @@ msgstr ""
 #: frontend/src/components/Settings/ERPNextSettings.vue:263
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:23
 msgid "Sync Now"
-msgstr ""
+msgstr "Szinkronizálás most"
 
 #: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.js:16
 msgid "Sync Successful, CRM Lead: {0}!"
