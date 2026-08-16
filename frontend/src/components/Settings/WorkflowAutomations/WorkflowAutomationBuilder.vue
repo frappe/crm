@@ -1,5 +1,5 @@
 <template>
-  <div class="flex h-full min-h-0 flex-col bg-surface-elevation-2">
+  <div class="relative flex h-full min-h-0 flex-col bg-surface-elevation-2">
     <div
       class="flex h-14 shrink-0 items-center justify-between border-b border-outline-gray-2 px-4"
     >
@@ -27,6 +27,13 @@
       </div>
       <div class="flex items-center gap-2">
         <Button
+          :label="__('Test Run')"
+          icon-left="lucide-flask-conical"
+          :disabled="!automationName || dirty"
+          :tooltip="dirty ? __('Save the flow before testing it') : ''"
+          @click="showTrial = true"
+        />
+        <Button
           :label="__('See Runs')"
           icon-left="lucide-history"
           :disabled="!automationName"
@@ -49,7 +56,7 @@
     <div
       ref="panes"
       class="grid min-h-0 flex-1"
-      :style="{ gridTemplateColumns: `1fr 6px ${inspectorWidth}px` }"
+      :style="{ gridTemplateColumns: paneColumns }"
     >
       <div class="relative min-h-0">
         <WorkflowFlow
@@ -58,12 +65,28 @@
           :block-groups="blocks"
           :trigger-groups="triggers"
           :selected-id="selectedId"
-          @select="selectedId = $event"
+          :inspector-open="inspectorOpen"
+          @select="selectNode"
           @add-step="addStep"
-          @pick-trigger="doc.trigger_type = $event"
+          @pick-trigger="pickTrigger"
+        />
+        <Button
+          v-if="doc.trigger_type"
+          class="absolute right-3 top-3 z-10 shadow-sm"
+          :icon="
+            inspectorOpen
+              ? 'lucide-panel-right-close'
+              : 'lucide-panel-right-open'
+          "
+          variant="subtle"
+          :aria-label="
+            inspectorOpen ? __('Close inspector') : __('Open inspector')
+          "
+          @click="inspectorOpen = !inspectorOpen"
         />
       </div>
       <div
+        v-if="inspectorOpen"
         class="cursor-col-resize bg-surface-gray-2 transition-colors hover:bg-surface-gray-4"
         role="separator"
         aria-orientation="vertical"
@@ -74,6 +97,7 @@
         @keydown.right.prevent="nudgeResize(-24)"
       />
       <div
+        v-if="inspectorOpen"
         class="min-h-0 border-l border-outline-gray-2 bg-surface-elevation-1"
       >
         <AutomationInspector
@@ -82,13 +106,28 @@
           :targets="targetsFor(selectedStep)"
           :errors="errors[selectedId] || []"
           :loading="loading"
-          @remove-step="removeSelectedStep"
+          @request-remove="confirmSelectedRemoval"
         />
       </div>
+    </div>
+    <div
+      v-if="saveError"
+      class="absolute bottom-4 left-1/2 z-10 max-w-lg -translate-x-1/2 rounded-lg border border-outline-red-2 bg-surface-red-1 px-3 py-2 text-sm text-ink-red-4 shadow-lg"
+      role="alert"
+    >
+      {{ saveError }}
     </div>
     <Dialog v-model:open="showRuns" :title="__('Automation Runs')">
       <template #default>
         <AutomationRuns :automation-name="automationName" />
+      </template>
+    </Dialog>
+    <Dialog v-model:open="showTrial" :title="__('Test Run')">
+      <template #default>
+        <AutomationTrialRun
+          :automation-name="automationName"
+          :doctype="doc.document_type"
+        />
       </template>
     </Dialog>
   </div>
@@ -97,7 +136,10 @@
 <script setup>
 import AutomationInspector from './WorkflowAutomationInspector.vue'
 import AutomationRuns from './WorkflowAutomationRuns.vue'
+import AutomationTrialRun from './WorkflowTrialRun.vue'
 import WorkflowFlow from './WorkflowFlow.vue'
+import { useKeyboardShortcuts } from '@/composables/useKeyboardShortcuts'
+import { globalStore } from '@/stores/global'
 import { blockGroups } from './workflowBlocks'
 import { aliasTargets, loadCapabilities } from './workflowCapabilities'
 import { workflowEdges, workflowNodes } from './workflowGraph'
@@ -119,6 +161,7 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['close', 'saved', 'update:dirty'])
+const { $dialog } = globalStore()
 
 const INSPECTOR_WIDTH_KEY = 'crm:automation-inspector-width'
 const MIN_INSPECTOR_WIDTH = 280
@@ -129,8 +172,11 @@ const saving = ref(false)
 const inspectorWidth = ref(storedInspectorWidth())
 const panes = ref(null)
 const showRuns = ref(false)
+const showTrial = ref(false)
+const inspectorOpen = ref(false)
 const selectedId = ref('trigger')
 const errors = reactive({})
+const saveError = ref('')
 const doc = reactive(defaultDoc())
 const savedSnapshot = ref('')
 
@@ -149,6 +195,21 @@ const blocks = computed(() => blockGroups(doc.document_type))
 const triggers = triggerGroups()
 
 const relationships = computed(() => parseJson(doc.relationships, []))
+const paneColumns = computed(() =>
+  inspectorOpen.value ? `1fr 6px ${inspectorWidth.value}px` : '1fr',
+)
+const canDeleteSelected = computed(() =>
+  selectedId.value === 'trigger'
+    ? Boolean(doc.trigger_type)
+    : Boolean(selectedStep.value),
+)
+
+useKeyboardShortcuts({
+  active: canDeleteSelected,
+  shortcuts: [
+    { keys: ['Backspace', 'Delete'], action: confirmSelectedRemoval },
+  ],
+})
 
 /** Compared against the last loaded/saved state so closing can warn about unsaved edits. */
 const dirty = computed(() => savedSnapshot.value !== JSON.stringify(payload()))
@@ -196,7 +257,6 @@ function defaultDoc() {
     title: '',
     document_type: 'CRM Lead',
     enabled: 0,
-    log_only: 0,
     trigger_type: '',
     trigger_field: '',
     from_value: '',
@@ -206,7 +266,7 @@ function defaultDoc() {
     date_offset: 0,
     date_direction: 'Before',
     cron_expression: '',
-    filters: '',
+    filters: '[]',
     condition: '',
     relationships: '[]',
     run_as: 'Automation User',
@@ -229,6 +289,7 @@ async function loadAutomation() {
     Object.assign(doc, saved, {
       actions: toTree((saved.actions || []).map(normalizeRow)),
     })
+    inspectorOpen.value = Boolean(doc.trigger_type)
   } finally {
     loading.value = false
     markClean()
@@ -291,18 +352,84 @@ function addStep({ after, branch, values }) {
   else if (branch) after.children[branch].push(created)
   else insertAfter(doc.actions, after, created)
   selectedId.value = created._id
+  inspectorOpen.value = true
+}
+
+function selectNode(id) {
+  selectedId.value = id
+  if (id !== 'trigger' || doc.trigger_type) inspectorOpen.value = true
+}
+
+function pickTrigger(triggerType) {
+  doc.trigger_type = triggerType
+  selectedId.value = 'trigger'
+  inspectorOpen.value = true
 }
 
 function removeSelectedStep() {
   if (!selectedStep.value) return
-  removeStep(doc.actions, selectedStep.value)
+  if (!removeStep(doc.actions, selectedStep.value)) return
   selectedId.value = 'trigger'
+}
+
+function confirmSelectedRemoval() {
+  if (!canDeleteSelected.value) return
+  const deletingTrigger = selectedId.value === 'trigger'
+  $dialog({
+    title: deletingTrigger ? __('Delete trigger') : __('Delete step'),
+    message: deleteMessage(deletingTrigger),
+    actions: [deleteAction(deletingTrigger)],
+  })
+}
+
+function deleteMessage(deletingTrigger) {
+  return deletingTrigger
+    ? __('Delete the trigger and all workflow steps? This cannot be undone.')
+    : __('Delete this step? This cannot be undone.')
+}
+
+function deleteAction(deletingTrigger) {
+  return {
+    label: __('Delete'),
+    variant: 'solid',
+    theme: 'red',
+    onClick: (close) => {
+      if (deletingTrigger) resetTrigger()
+      else removeSelectedStep()
+      close()
+    },
+  }
+}
+
+function resetTrigger() {
+  Object.assign(doc, emptyTriggerState())
+  selectedId.value = 'trigger'
+  inspectorOpen.value = false
+}
+
+function emptyTriggerState() {
+  return {
+    trigger_type: '',
+    trigger_field: '',
+    from_value: '',
+    to_value: '',
+    custom_event: '',
+    date_field: '',
+    date_offset: 0,
+    date_direction: 'Before',
+    cron_expression: '',
+    filters: '[]',
+    condition: '',
+    relationships: '[]',
+    actions: [],
+  }
 }
 
 async function saveAutomation() {
   saving.value = true
   clearErrors()
   try {
+    validateBeforeSave()
     const saved = props.automationName
       ? await call('frappe.client.save', { doc: payload() })
       : await call('frappe.client.insert', { doc: payload() })
@@ -311,43 +438,110 @@ async function saveAutomation() {
     emit('saved', saved)
   } catch (error) {
     attachError(error)
-    throw error
+    toast.error(saveError.value || __('Could not save automation'))
   } finally {
     saving.value = false
   }
+}
+
+function validateBeforeSave() {
+  const missing = toRows(doc.actions).find(missingRequiredField)
+  if (!missing) return
+  const message = __('Choose a field to set')
+  attachRowError(missing.idx, message)
+  throw new Error(message)
+}
+
+function missingRequiredField(row) {
+  if (row.step_type !== 'Action' || row.action_type !== 'SetFieldValue')
+    return false
+  const params = parseJson(row.params, {})
+  return !params.field && !hasValues(params.values)
 }
 
 function payload() {
   return {
     ...doc,
     title: doc.title || __('Untitled automation'),
-    relationships: JSON.stringify(relationships.value),
+    filters: normalizedJsonString(doc.filters, []),
+    relationships: JSON.stringify(normalizedRelationships()),
     actions: toRows(doc.actions).map(rowPayload),
   }
+}
+
+function normalizedRelationships() {
+  return Array.isArray(relationships.value) ? relationships.value : []
+}
+
+function normalizedJsonString(value, fallback) {
+  return JSON.stringify(parseJson(value, fallback))
 }
 
 function rowPayload(row) {
   return {
     ...row,
     doctype: 'Automation Action',
-    params: JSON.stringify(parseJson(row.params, {})),
-    related_condition: row.related_condition
-      ? JSON.stringify(parseJson(row.related_condition, {}))
-      : '',
+    params: JSON.stringify(normalizedParams(row)),
+    related_condition: normalizedRelatedCondition(row.related_condition),
   }
 }
 
+function normalizedParams(row) {
+  const params = parseJson(row.params, {})
+  if (row.action_type !== 'SetFieldValue') return params
+  if (!hasValues(params.values)) delete params.values
+  return params
+}
+
+function hasValues(value) {
+  if (!value) return false
+  if (Array.isArray(value)) return value.length > 0
+  if (typeof value === 'object') return Object.keys(value).length > 0
+  return true
+}
+
+function normalizedRelatedCondition(value) {
+  const condition = parseJson(value, null)
+  if (!condition || Array.isArray(condition) || !condition.relationship)
+    return null
+  return JSON.stringify(condition)
+}
+
 function clearErrors() {
+  saveError.value = ''
   Object.keys(errors).forEach((key) => delete errors[key])
 }
 
 /** Server errors read "Row 3: ..." - map that flattened row back onto its node. */
 function attachError(error) {
-  const message = String(error?.messages?.[0] || error?.message || error)
+  const message = errorMessage(error)
+  saveError.value = message
   const match = message.match(/Row (\d+)/)
-  const node = match && placed.value[Number(match[1]) - 1]?.node
+  if (match) return attachRowError(Number(match[1]), message)
+  const node = selectedStep.value
+  if (!node) return
+  errors[node._id] = [{ message }]
+}
+
+function attachRowError(rowIndex, message) {
+  const node = placed.value[rowIndex - 1]?.node
   if (!node) return
   errors[node._id] = [{ message }]
   selectedId.value = node._id
+}
+
+function errorMessage(error) {
+  const messages = error?.messages || error?._server_messages
+  if (Array.isArray(messages) && messages.length)
+    return cleanMessage(messages[0])
+  return cleanMessage(error?.message || error)
+}
+
+function cleanMessage(message) {
+  try {
+    return JSON.parse(message).message || String(message)
+  } catch {
+    return String(message || __('Could not save automation'))
+  }
 }
 </script>

@@ -1,6 +1,7 @@
 <template>
   <VueFlow
     :id="flowId"
+    ref="flowRoot"
     :nodes="flowNodes"
     :edges="edges"
     class="workflow-flow"
@@ -14,10 +15,10 @@
     @node-click="selectNode($event.node.id)"
     @pane-click="selectNode('trigger')"
   >
-    <Background pattern-color="#7e7e7e" :gap="24" :size="1.5" />
-    <Panel position="bottom-center">
+    <Background pattern-color="#5e5e5e" :gap="18" :size="1" />
+    <Panel position="bottom-left">
       <div
-        class="flex items-center gap-0.5 rounded-[10px] border border-outline-gray-2 bg-surface-modal p-1 shadow-lg"
+        class="flex items-center gap-0.5 rounded-[10px] border border-outline-gray-2 bg-surface-gray-1 p-1 shadow-md"
       >
         <Button
           icon="lucide-minus"
@@ -47,72 +48,94 @@
     </Panel>
     <template #node-automation="{ id, data }">
       <div class="relative">
-        <div
-          class="absolute bottom-[calc(100%+4px)] left-0 rounded px-1.5 py-0.5 text-[10px] font-medium"
-          :class="
-            isOn(id)
-              ? 'bg-surface-blue-3 text-ink-white'
-              : 'bg-surface-gray-4 text-ink-gray-8'
-          "
-        >
-          {{ data.kicker }}
-        </div>
         <div class="flex items-center">
-          <Combobox
-            :options="triggerGroups"
-            :disabled="!picksTrigger(data)"
-            trigger="button"
-            :placeholder="__('Search triggers')"
-            @update:model-value="$emit('pick-trigger', $event)"
-          >
-            <template #trigger>
-              <div
-                class="relative flex w-[260px] items-center gap-2.5 rounded-[10px] border px-3 py-2.5 shadow-sm transition-colors"
-                :class="nodeClasses(id, data)"
-                :tabindex="readonly ? -1 : 0"
-                :role="readonly ? undefined : 'button'"
-                :aria-label="`${data.kicker}: ${data.label}`"
-                @click.stop="selectNode(id)"
-                @keydown.enter="selectNode(id)"
-                @keydown.space.prevent="selectNode(id)"
-              >
-                <Handle
-                  v-if="!data.isTrigger"
-                  type="target"
-                  :position="Position.Left"
-                />
+          <div class="relative w-[212px] shrink-0">
+            <Handle
+              v-if="!data.isTrigger"
+              id="input"
+              class="workflow-port"
+              type="target"
+              :position="Position.Left"
+            />
+            <Combobox
+              :options="triggerGroups"
+              :disabled="!picksTrigger(data)"
+              trigger="button"
+              :placeholder="__('Search triggers')"
+              @update:model-value="$emit('pick-trigger', $event)"
+            >
+              <template #item-prefix />
+              <template #item-label="{ item }">
+                <WorkflowComboboxOption :item="item" />
+              </template>
+              <template #trigger>
                 <div
-                  v-if="!data.empty"
-                  class="flex size-8 shrink-0 items-center justify-center rounded-[7px] bg-surface-gray-2"
+                  class="workflow-node relative flex h-[87px] w-[212px] flex-col overflow-hidden rounded-[10px] border bg-white shadow-[0_1px_15px_2px_rgba(146,146,146,0.25)] transition-colors"
+                  :class="nodeClasses(id, data)"
+                  :tabindex="readonly ? -1 : 0"
+                  :role="readonly ? undefined : 'button'"
+                  :aria-label="`${data.kicker}: ${data.label}`"
+                  @click.stop="selectNode(id)"
+                  @keydown.enter="selectNode(id)"
+                  @keydown.space.prevent="selectNode(id)"
                 >
-                  <component
-                    :is="data.icon"
-                    class="size-[18px] text-ink-gray-6"
-                  />
-                </div>
-                <div
-                  class="min-w-0 flex-1"
-                  :class="{ 'text-center': data.empty }"
-                >
-                  <div class="truncate text-base-medium text-ink-gray-8">
-                    {{ data.label }}
+                  <div
+                    class="flex h-[47px] shrink-0 items-center gap-1.5 border-b border-[#e1e0e0] px-2"
+                  >
+                    <div
+                      v-if="!data.empty"
+                      class="flex size-[30px] shrink-0 items-center justify-center rounded-[6px] border"
+                      :class="iconChipClasses(data)"
+                    >
+                      <component
+                        :is="data.icon"
+                        class="workflow-node-icon size-5"
+                        :class="iconClasses(data)"
+                      />
+                    </div>
+                    <div
+                      class="min-w-0 flex-1 truncate text-[11px] font-medium leading-[13px] text-[#2e2e2e]"
+                      :class="{ 'text-center': data.empty }"
+                    >
+                      {{ data.label }}
+                    </div>
+                    <ErrorIcon
+                      v-if="data.error"
+                      class="size-4 shrink-0 text-ink-red-4"
+                    />
                   </div>
                   <div
-                    v-if="data.detail"
-                    class="truncate text-p-sm text-ink-gray-5"
+                    class="flex min-h-0 flex-1 items-end gap-2 px-2 py-[7px]"
                   >
-                    {{ data.detail }}
+                    <div
+                      class="line-clamp-2 min-w-0 flex-1 text-[10px] leading-3 text-[#4e4e4e]"
+                    >
+                      <template v-if="data.detail">
+                        {{ data.detail }}
+                      </template>
+                    </div>
+                    <div
+                      class="shrink-0 text-[10px] font-medium leading-3 text-[#6e6e6e]"
+                    >
+                      {{ data.kicker }}
+                    </div>
                   </div>
                 </div>
-                <ErrorIcon
-                  v-if="data.error"
-                  class="size-4 shrink-0 text-ink-red-4"
-                />
-                <Handle type="source" :position="Position.Right" />
-              </div>
-            </template>
-          </Combobox>
-          <div v-if="showAdd(data)" class="nodrag flex items-center">
+              </template>
+            </Combobox>
+            <Handle
+              v-if="hasOutgoing(id)"
+              id="output"
+              class="workflow-port"
+              type="source"
+              :position="Position.Right"
+            />
+          </div>
+          <div
+            v-if="showAdd(data)"
+            class="workflow-add-control nodrag flex items-center"
+            @click.stop
+          >
             <span class="h-px w-5 bg-outline-gray-3" />
             <Combobox
               :options="blockGroups"
@@ -121,28 +144,41 @@
               :placeholder="__('Search blocks')"
               @update:model-value="addBlock(data, null, $event)"
             >
+              <template #item-prefix />
+              <template #item-label="{ item }">
+                <WorkflowComboboxOption :item="item" />
+              </template>
               <template #trigger>
-                <Button icon="lucide-plus" :aria-label="__('Add block')" />
+                <Button
+                  icon="lucide-plus"
+                  variant="ghost"
+                  :aria-label="__('Add block')"
+                />
               </template>
             </Combobox>
           </div>
         </div>
         <div
-          v-if="data.arms && !readonly"
+          v-if="data.arms?.length && !readonly"
           class="nodrag absolute left-[calc(100%+12px)] top-1/2 flex -translate-y-1/2 flex-col gap-1.5"
+          @click.stop
         >
           <Combobox
-            v-for="arm in ['If', 'Else']"
-            :key="arm"
+            v-for="arm in data.arms"
+            :key="arm.branch"
             :options="blockGroups"
             trigger="button"
             side="right"
             :placeholder="__('Search blocks')"
-            @update:model-value="addBlock(data, arm, $event)"
+            @update:model-value="addBlock(data, arm.branch, $event)"
           >
+            <template #item-prefix />
+            <template #item-label="{ item }">
+              <WorkflowComboboxOption :item="item" />
+            </template>
             <template #trigger>
               <Button icon-left="lucide-plus" size="sm">
-                {{ data.arms[arm] }}
+                {{ arm.label }}
               </Button>
             </template>
           </Combobox>
@@ -155,9 +191,10 @@
 <script setup>
 import '@vue-flow/core/dist/style.css'
 import '@vue-flow/core/dist/theme-default.css'
-import { Handle, Panel, Position, VueFlow, useVueFlow } from '@vue-flow/core'
 import { Background } from '@vue-flow/background'
+import { Handle, Panel, Position, VueFlow, useVueFlow } from '@vue-flow/core'
 import ErrorIcon from '~icons/lucide/circle-alert'
+import WorkflowComboboxOption from './WorkflowComboboxOption.vue'
 import { Button, Combobox } from 'frappe-ui'
 import { computed, nextTick, ref, useId, watch } from 'vue'
 
@@ -167,19 +204,21 @@ const props = defineProps({
   blockGroups: { type: Array, default: () => [] },
   triggerGroups: { type: Array, default: () => [] },
   selectedId: { type: String, default: '' },
+  inspectorOpen: { type: Boolean, default: false },
   readonly: { type: Boolean, default: false },
 })
 
 const emit = defineEmits(['select', 'add-step', 'pick-trigger'])
 const flowId = useId()
-// Never zoom past 1:1 - a short flow should read at full size, not fill the pane.
+const flowRoot = ref(null)
+// Automatic fitting stays comfortably zoomed out; users can still zoom in manually.
 const fitViewOptions = {
-  padding: 0.25,
+  padding: 0.15,
   minZoom: 0.3,
-  maxZoom: 1,
+  maxZoom: 0.7,
   duration: 200,
 }
-const { fitView, viewport, zoomIn, zoomOut } = useVueFlow(flowId)
+const { fitView, setViewport, viewport, zoomIn, zoomOut } = useVueFlow(flowId)
 
 // Positions a user dragged a node to, so the computed layout stops overriding them.
 const moved = ref({})
@@ -203,13 +242,65 @@ const blocksByValue = computed(
     ),
 )
 
-watch(() => props.nodes.map((node) => node.id).join('|'), refitFlow, {
-  flush: 'post',
-})
+watch(
+  [
+    () => props.nodes.map((node) => node.id).join('|'),
+    () => props.nodes[0]?.data?.empty,
+    () => props.inspectorOpen,
+  ],
+  refitFlow,
+  { flush: 'post' },
+)
 
 async function refitFlow() {
   await nextTick()
-  await fitView(fitViewOptions)
+  await nextFrame()
+  await fitView({ ...fitViewOptions, duration: 0 })
+  if (props.nodes[0]?.data?.empty) return centerEmptyFlow()
+  await alignFlowLeft()
+  await nextFrame()
+  await keepAddControlsVisible()
+}
+
+function nextFrame() {
+  return new Promise((resolve) => requestAnimationFrame(resolve))
+}
+
+function alignFlowLeft() {
+  const zoom = viewport.value.zoom
+  const leftmost = Math.min(...flowNodes.value.map((node) => node.position.x))
+  return setViewport(
+    { ...viewport.value, x: 48 - leftmost * zoom },
+    { duration: fitViewOptions.duration },
+  )
+}
+
+function keepAddControlsVisible() {
+  const root = flowRoot.value?.$el || flowRoot.value
+  const canvas = root?.getBoundingClientRect()
+  const controls = root?.querySelectorAll('.workflow-add-control') || []
+  if (!canvas || !controls.length) return
+  const right = Math.max(
+    ...[...controls].map((item) => item.getBoundingClientRect().right),
+  )
+  const overflow = right - (canvas.right - 48)
+  if (overflow <= 0) return
+  return setViewport(
+    { ...viewport.value, x: viewport.value.x - overflow },
+    { duration: fitViewOptions.duration },
+  )
+}
+
+function centerEmptyFlow() {
+  const root = flowRoot.value?.$el || flowRoot.value
+  const canvas = root?.getBoundingClientRect()
+  const node = root?.querySelector('.vue-flow__node')?.getBoundingClientRect()
+  if (!canvas || !node) return
+  const offset = canvas.left + canvas.width / 2 - node.left - node.width / 2
+  return setViewport(
+    { ...viewport.value, x: viewport.value.x + offset },
+    { duration: fitViewOptions.duration },
+  )
 }
 
 function rememberPosition({ node }) {
@@ -240,17 +331,36 @@ function nodeClasses(id, data) {
 }
 
 function nodeSurface(id, data) {
-  if (data.empty) return 'border-dashed border-outline-gray-3 shadow-none'
+  if (data.empty) return 'border-dashed border-[#aeaeae] bg-white shadow-none'
   if (data.error) return 'border-outline-red-2 bg-surface-modal'
-  if (isOn(id))
-    return 'border-outline-blue-2 bg-surface-blue-1 ring-1 ring-outline-blue-2'
-  return 'border-outline-gray-2 bg-surface-modal hover:border-outline-gray-3'
+  if (isOn(id)) return 'border-[#6e6e6e]'
+  return 'border-[#aeaeae] hover:border-[#6e6e6e]'
 }
 
-/** A branching node grows through its arms, so it gets no "after" button of its own. */
+function iconChipClasses(data) {
+  return iconTone(data).chip
+}
+
+function iconClasses(data) {
+  return iconTone(data).icon
+}
+
+function iconTone(data) {
+  if (data.isTrigger) return ICON_TONES.trigger
+  return ICON_TONES[data.step?.step_type] || ICON_TONES.Action
+}
+
+/**
+ * Only the end of a chain offers an add button - a step that already has one after it needs
+ * no button of its own, and a branching node grows through its arms instead.
+ */
 function showAdd(data) {
-  if (props.readonly || data.arms) return false
-  return !data.isTrigger || props.nodes.length === 1
+  if (props.readonly || data.branching || data.empty) return false
+  return data.isTrigger ? props.nodes.length === 1 : data.last
+}
+
+function hasOutgoing(id) {
+  return props.edges.some((edge) => edge.source === id)
 }
 
 function addBlock(data, branch, value) {
@@ -258,12 +368,36 @@ function addBlock(data, branch, value) {
   if (!block) return
   emit('add-step', { after: data.step || null, branch, values: block.values })
 }
+
+const ICON_TONES = {
+  trigger: {
+    chip: 'bg-[#add2f5] border-[#2480cc]',
+    icon: 'text-[#2480cc]',
+  },
+  Action: {
+    chip: 'bg-[#ece5ff] border-[#9175f0]',
+    icon: 'text-[#9175f0]',
+  },
+  Wait: {
+    chip: 'bg-[#fff3c4] border-[#d99e0b]',
+    icon: 'text-[#d99e0b]',
+  },
+  WaitForEvent: {
+    chip: 'bg-[#fff3c4] border-[#d99e0b]',
+    icon: 'text-[#d99e0b]',
+  },
+  If: {
+    chip: 'bg-[#c8f3de] border-[#369768]',
+    icon: 'text-[#369768]',
+  },
+}
 </script>
 
 <style>
 .workflow-flow {
   height: 100%;
   width: 100%;
+  background: var(--surface-base);
 }
 
 .workflow-flow .vue-flow__pane {
@@ -280,5 +414,39 @@ function addBlock(data, branch, value) {
 
 .workflow-flow .vue-flow__node.dragging {
   cursor: grabbing;
+}
+
+.workflow-flow .workflow-port {
+  z-index: 20 !important;
+  width: 6px !important;
+  min-width: 6px !important;
+  height: 6px !important;
+  min-height: 6px !important;
+  border: 0 !important;
+  background: #4e4e4e !important;
+  box-shadow: none;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.workflow-flow .workflow-node-icon {
+  stroke-width: 2;
+}
+
+.workflow-flow .vue-flow__edge-path {
+  stroke: #4e4e4e;
+  stroke-width: 1;
+}
+
+.workflow-flow .vue-flow__edge-textbg {
+  fill: #fff;
+  stroke: #aeaeae;
+  stroke-width: 1px;
+}
+
+.workflow-flow .vue-flow__edge-text {
+  fill: #4e4e4e;
+  font-size: 10px;
+  font-weight: 500;
 }
 </style>

@@ -6,8 +6,8 @@
  */
 
 // The canvas runs left to right: each step is a column, an If's arms split vertically.
-const COLUMN_WIDTH = 340
-const BRANCH_OFFSET = 140
+const COLUMN_WIDTH = 300
+const BRANCH_OFFSET = 108
 
 /**
  * A wait-for-event step is stored as two rows - the wait, then an `If` reading the outcome the
@@ -27,7 +27,7 @@ export function isBranching(node) {
 export function armLabels(node) {
   return node?.step_type === 'WaitForEvent'
     ? { If: __('Event happened'), Else: __('Timed out') }
-    : { If: __('If'), Else: __('Else') }
+    : { If: __('True'), Else: __('False') }
 }
 
 function hasArms(node) {
@@ -210,9 +210,13 @@ export function listOf(tree, node) {
   return null
 }
 
-export function removeStep(tree, node) {
-  const list = listOf(tree, node)
-  if (list) list.splice(list.indexOf(node), 1)
+export function removeStep(tree, nodeOrId) {
+  const id = typeof nodeOrId === 'string' ? nodeOrId : nodeOrId?._id
+  const node = layoutSteps(tree).find(({ node }) => node._id === id)?.node
+  const list = node && listOf(tree, node)
+  if (!list) return false
+  list.splice(list.indexOf(node), 1)
+  return true
 }
 
 export function insertAfter(tree, node, step) {
