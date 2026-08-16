@@ -6,6 +6,7 @@ import WaitIcon from '~icons/lucide/timer'
 import { actionSchema } from './workflowCapabilities'
 import { summarizeCondition } from './workflowConditions'
 import { armLabels, isBranching, layoutSteps } from './workflowSteps'
+export { workflowEdges } from './workflowEdges'
 import { triggerDefinition } from './workflowTriggers'
 
 const STEP_ICONS = {
@@ -16,18 +17,35 @@ const STEP_ICONS = {
 }
 
 export function workflowNodes(doc, errors = {}) {
+  const actions = doc.actions || []
+  const tails = tailIds(actions)
   return [
     triggerNode(doc),
-    ...layoutSteps(doc.actions || []).map(({ node, position }) =>
-      stepNode(node, position, errors),
+    ...layoutSteps(actions).map(({ node, position }) =>
+      stepNode(node, position, errors, tails),
     ),
   ]
 }
 
-export function workflowEdges(actions = []) {
-  const edges = []
-  appendEdges(actions, 'trigger', null, edges)
-  return edges
+/** Ids that end a chain - only those grow the flow, so only those offer an add button. */
+function tailIds(nodes, ids = new Set()) {
+  const tail = nodes[nodes.length - 1]
+  if (tail) ids.add(tail._id)
+  nodes.forEach((node) => {
+    if (!isBranching(node)) return
+    tailIds(node.children.If, ids)
+    tailIds(node.children.Else, ids)
+  })
+  return ids
+}
+
+/** An arm only needs its own button while it is empty - after that its last step has one. */
+function openArms(node) {
+  if (!isBranching(node)) return null
+  const labels = armLabels(node)
+  return ['If', 'Else']
+    .filter((arm) => !node.children[arm].length)
+    .map((arm) => ({ branch: arm, label: labels[arm] }))
 }
 
 function triggerNode(doc) {
@@ -44,12 +62,12 @@ function triggerNode(doc) {
       label: trigger?.label || __('Start from scratch'),
       detail: doc.trigger_type
         ? __('on {0}', [doc.document_type])
-        : __('Pick what starts this automation'),
+        : __('Pick initial trigger'),
     },
   }
 }
 
-function stepNode(node, position, errors) {
+function stepNode(node, position, errors, tails = new Set()) {
   return {
     id: node._id,
     type: 'automation',
@@ -59,7 +77,10 @@ function stepNode(node, position, errors) {
       icon: STEP_ICONS[node.step_type] || ActionIcon,
       kicker: kickerFor(node),
       label: labelFor(node),
-      arms: isBranching(node) ? armLabels(node) : null,
+      detail: detailFor(node),
+      branching: isBranching(node),
+      arms: openArms(node),
+      last: tails.has(node._id),
       error: Boolean(errors[node._id]?.length),
     },
   }
@@ -106,9 +127,12 @@ function prettyEvent(event) {
 function actionLabel(node) {
   if (!node.action_type) return __('Configure action')
   const schema = actionSchema(null, node.action_type)
-  const detail = paramSummary(schema, parseParams(node))
-  const label = schema?.label || node.action_type
-  return detail ? `${label}: ${detail}` : label
+  return schema?.label || node.action_type
+}
+
+function detailFor(node) {
+  if (node.step_type !== 'Action' || !node.action_type) return ''
+  return paramSummary(actionSchema(null, node.action_type), parseParams(node))
 }
 
 const SUMMARY_FIELDTYPES = [
@@ -137,23 +161,4 @@ function parseParams(node) {
   } catch {
     return {}
   }
-}
-
-function appendEdges(nodes, sourceId, label, edges) {
-  let previous = sourceId
-  nodes.forEach((node, index) => {
-    edges.push(edge(previous, node._id, index === 0 ? label : null))
-    if (isBranching(node)) appendBranchEdges(node, edges)
-    previous = node._id
-  })
-}
-
-function appendBranchEdges(node, edges) {
-  const arms = armLabels(node)
-  appendEdges(node.children.If, node._id, arms.If, edges)
-  appendEdges(node.children.Else, node._id, arms.Else, edges)
-}
-
-function edge(source, target, label) {
-  return { id: `${source}->${target}`, source, target, label, animated: true }
 }
