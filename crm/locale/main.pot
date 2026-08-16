@@ -7,8 +7,13 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Frappe CRM VERSION\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
+<<<<<<< HEAD
 "POT-Creation-Date: 2026-07-05 10:18+0000\n"
 "PO-Revision-Date: 2026-07-05 10:18+0000\n"
+=======
+"POT-Creation-Date: 2026-08-16 09:51+0000\n"
+"PO-Revision-Date: 2026-08-16 09:51+0000\n"
+>>>>>>> 1a2c2eaa (chore: update POT file)
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: shariq@frappe.io\n"
 "MIME-Version: 1.0\n"
@@ -164,6 +169,20 @@ msgstr ""
 msgid "A new account has been created for you at {0}"
 msgstr ""
 
+<<<<<<< HEAD
+=======
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1089
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1231
+msgid "A section can have up to {0} columns"
+msgstr ""
+
+#. Description of the 'Pattern' (Data) field in DocType 'CRM Enrichment Rule
+#. Pattern'
+#: crm/domain_enrichment/doctype/crm_enrichment_rule_pattern/crm_enrichment_rule_pattern.json
+msgid "A substring (default) or a regular expression matched against the rule's match scope."
+msgstr ""
+
+>>>>>>> 1a2c2eaa (chore: update POT file)
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.py:257
 msgid "A valid call log is required."
 msgstr ""
@@ -337,6 +356,10 @@ msgstr ""
 #: frontend/src/components/ColumnSettings.vue:68
 #: frontend/src/components/FieldLayoutEditor.vue:565
 #: frontend/src/components/Kanban/KanbanView.vue:161
+<<<<<<< HEAD
+=======
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1109
+>>>>>>> 1a2c2eaa (chore: update POT file)
 msgid "Add Column"
 msgstr ""
 
@@ -487,6 +510,13 @@ msgstr ""
 msgid "Add existing system users to this CRM. Assign them a role to grant access with their current credentials."
 msgstr ""
 
+<<<<<<< HEAD
+=======
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:634
+msgid "Add fields to see them here."
+msgstr ""
+
+>>>>>>> 1a2c2eaa (chore: update POT file)
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRulesList.vue:11
 #: frontend/src/components/Settings/EmailAccountList.vue:51
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:113
@@ -696,8 +726,14 @@ msgstr ""
 msgid "Are you sure you want to discard unsaved changes to this event?"
 msgstr ""
 
+<<<<<<< HEAD
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:576
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:346
+=======
+#: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:571
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1022
+#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:360
+>>>>>>> 1a2c2eaa (chore: update POT file)
 msgid "Are you sure you want to go back? Unsaved changes will be lost."
 msgstr ""
 
@@ -1086,7 +1122,7 @@ msgstr ""
 
 #. Name of a DocType
 #: crm/fcrm/doctype/crm_dashboard/crm_dashboard.json
-#: frontend/src/pages/Dashboard.vue:307
+#: frontend/src/pages/Dashboard.vue:310
 msgid "CRM Dashboard"
 msgstr ""
 
@@ -1281,8 +1317,17 @@ msgstr ""
 msgid "Call Received By"
 msgstr ""
 
+<<<<<<< HEAD
 #: crm/integrations/api.py:158 crm/integrations/twilio/api.py:148
 #: crm/integrations/twilio/api.py:166
+=======
+#: frontend/src/components/Telephony/ExotelCallUI.vue:403
+msgid "Call connected, but the call log could not be saved. Please contact your administrator."
+msgstr ""
+
+#: crm/integrations/api.py:259 crm/integrations/twilio/api.py:174
+#: crm/integrations/twilio/api.py:192
+>>>>>>> 1a2c2eaa (chore: update POT file)
 msgid "Call log not found"
 msgstr ""
 
@@ -1405,7 +1450,15 @@ msgstr ""
 msgid "Change"
 msgstr ""
 
+<<<<<<< HEAD
 #: frontend/src/pages/Contact.vue:47 frontend/src/pages/Lead.vue:92
+=======
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1386
+msgid "Change & remove fields"
+msgstr ""
+
+#: frontend/src/pages/Contact.vue:47 frontend/src/pages/Lead.vue:98
+>>>>>>> 1a2c2eaa (chore: update POT file)
 #: frontend/src/pages/MobileContact.vue:37
 #: frontend/src/pages/MobileOrganization.vue:37
 #: frontend/src/pages/Organization.vue:47
@@ -1430,6 +1483,13 @@ msgstr ""
 msgid "Change deal status"
 msgstr ""
 
+<<<<<<< HEAD
+=======
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1378
+msgid "Change form type?"
+msgstr ""
+
+>>>>>>> 1a2c2eaa (chore: update POT file)
 #: frontend/src/components/Settings/PreferencesSettings.vue:60
 msgid "Change language of the application."
 msgstr ""
@@ -1564,7 +1624,12 @@ msgstr ""
 msgid "Color"
 msgstr ""
 
+<<<<<<< HEAD
 #: frontend/src/components/FieldLayoutEditor.vue:562
+=======
+#: frontend/src/components/FieldLayoutEditor.vue:559
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1141
+>>>>>>> 1a2c2eaa (chore: update POT file)
 msgid "Column"
 msgstr ""
 
@@ -1651,14 +1716,18 @@ msgstr ""
 msgid "Condition"
 msgstr ""
 
+#: frontend/src/components/Settings/Forms/FieldCard.vue:118
+msgid "Conditional logic"
+msgstr ""
+
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:188
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:272
 msgid "Conditions for this rule were created from"
 msgstr ""
 
 #: frontend/src/components/Settings/Profile/ProfileSettings.vue:107
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:163
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:190
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:181
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:208
 msgid "Configure"
 msgstr ""
 
@@ -1683,7 +1752,19 @@ msgid "Configure how your dashboard calculates, formats, and displays key metric
 msgstr ""
 
 #: frontend/src/components/Settings/DashboardSettings.vue:102
+<<<<<<< HEAD
 msgid "Configure the Exchange Rate Provider for your CRM"
+=======
+msgid "Configure the exchange rate provider for your CRM"
+msgstr ""
+
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:202
+msgid "Configure your Exotel telephony integration settings here"
+msgstr ""
+
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:175
+msgid "Configure your Twilio telephony integration settings here"
+>>>>>>> 1a2c2eaa (chore: update POT file)
 msgstr ""
 
 #: frontend/src/components/Settings/BrandSettings.vue:10
@@ -1854,11 +1935,62 @@ msgstr ""
 msgid "Copied to Clipboard"
 msgstr ""
 
+<<<<<<< HEAD
+=======
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:449
+msgid "Copy"
+msgstr ""
+
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:394
+#: frontend/src/components/Settings/Forms/FormsList.vue:271
+msgid "Copy link"
+msgstr ""
+
+#: frontend/src/components/Settings/Forms/FormsList.vue:228
+msgid "Could not create form"
+msgstr ""
+
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:157
+msgid "Could not create the Frappe CRM custom fields on {0} automatically. If it is running the latest ERPNext, enable <b>Frappe CRM Data Synchronization</b> in its CRM Settings, Otherwise check the Error Log."
+msgstr ""
+
+#: frontend/src/components/Modals/DealModal.vue:156
+#: frontend/src/components/Modals/LeadModal.vue:125
+#: frontend/src/components/Modals/OrganizationModal.vue:133
+msgid "Could not enrich from the website."
+msgstr ""
+
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:860
+msgid "Could not grant guest access."
+msgstr ""
+
+>>>>>>> 1a2c2eaa (chore: update POT file)
 #: frontend/src/components/Settings/Hierarchy/useRemoveNode.js:16
 msgid "Could not remove."
 msgstr ""
 
+<<<<<<< HEAD
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:469
+=======
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1521
+msgid "Could not save"
+msgstr ""
+
+#: frontend/src/components/PrimaryDropdownItem.vue:181
+#: frontend/src/components/PrimaryDropdownItem.vue:188
+msgid "Could not save, try again"
+msgstr ""
+
+#: frontend/src/components/EnrichFromWebsite.vue:99
+msgid "Could not start enrichment."
+msgstr ""
+
+#: frontend/src/components/Settings/Forms/FormsList.vue:245
+msgid "Could not update form"
+msgstr ""
+
+#: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:473
+>>>>>>> 1a2c2eaa (chore: update POT file)
 msgid "Could not update report to"
 msgstr ""
 
@@ -1905,9 +2037,15 @@ msgid "Create Lead from Incoming Emails"
 msgstr ""
 
 #: frontend/src/components/Controls/Link.vue:50
+<<<<<<< HEAD
 #: frontend/src/components/Modals/EmailTemplateSelectorModal.vue:58
 #: frontend/src/components/Modals/WhatsappTemplateSelectorModal.vue:60
 #: frontend/src/components/PrimaryDropdown.vue:41
+=======
+#: frontend/src/components/Modals/EmailTemplateSelectorModal.vue:57
+#: frontend/src/components/Modals/WhatsappTemplateSelectorModal.vue:61
+#: frontend/src/components/PrimaryDropdown.vue:49
+>>>>>>> 1a2c2eaa (chore: update POT file)
 msgid "Create New"
 msgstr ""
 
@@ -1997,7 +2135,7 @@ msgstr ""
 msgid "Custom List Actions"
 msgstr ""
 
-#: frontend/src/pages/Dashboard.vue:228
+#: frontend/src/pages/Dashboard.vue:231
 msgid "Custom Range"
 msgstr ""
 
@@ -2096,7 +2234,7 @@ msgstr ""
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:51
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:59
 #: frontend/src/components/Telephony/ExotelCallUI.vue:200
-#: frontend/src/pages/Tasks.vue:132
+#: frontend/src/pages/Tasks.vue:133
 msgid "Deal"
 msgstr ""
 
@@ -2272,7 +2410,7 @@ msgid "Defines the default currency for all records, can be overridden at the fi
 msgstr ""
 
 #: frontend/src/components/Activities/AttachmentArea.vue:131
-#: frontend/src/components/Activities/NoteArea.vue:12
+#: frontend/src/components/Activities/NoteArea.vue:17
 #: frontend/src/components/Activities/TaskArea.vue:55
 #: frontend/src/components/Activities/TaskArea.vue:63
 #: frontend/src/components/BulkDeleteLinkedDocModal.vue:8
@@ -2300,9 +2438,15 @@ msgstr ""
 #: frontend/src/pages/MobileContact.vue:277
 #: frontend/src/pages/MobileDeal.vue:522
 #: frontend/src/pages/MobileOrganization.vue:73
+<<<<<<< HEAD
 #: frontend/src/pages/MobileOrganization.vue:278
 #: frontend/src/pages/Notes.vue:44 frontend/src/pages/Organization.vue:90
 #: frontend/src/pages/Tasks.vue:363 frontend/src/utils/index.js:802
+=======
+#: frontend/src/pages/MobileOrganization.vue:279
+#: frontend/src/pages/Notes.vue:49 frontend/src/pages/Organization.vue:96
+#: frontend/src/pages/Tasks.vue:364 frontend/src/utils/index.js:823
+>>>>>>> 1a2c2eaa (chore: update POT file)
 msgid "Delete"
 msgstr ""
 
@@ -2368,7 +2512,7 @@ msgstr ""
 msgid "Delete {0} items"
 msgstr ""
 
-#: frontend/src/components/Activities/NoteArea.vue:73
+#: frontend/src/components/Activities/NoteArea.vue:81
 msgid "Deleting note..."
 msgstr ""
 
@@ -2441,9 +2585,17 @@ msgstr ""
 msgid "Disabled"
 msgstr ""
 
+<<<<<<< HEAD
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:923
 #: frontend/src/components/CommentBox.vue:74
 #: frontend/src/components/EmailEditor.vue:178
+=======
+#: crm/www/crm_form.html:241
+#: frontend/src/components/Calendar/CalendarEventPanel.vue:923
+#: frontend/src/components/CommentBox.vue:71
+#: frontend/src/components/EmailEditor.vue:165
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:640
+>>>>>>> 1a2c2eaa (chore: update POT file)
 msgid "Discard"
 msgstr ""
 
@@ -2496,7 +2648,7 @@ msgstr ""
 msgid "Document Type"
 msgstr ""
 
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:242
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:261
 msgid "Document created successfully"
 msgstr ""
 
@@ -2531,6 +2683,17 @@ msgstr ""
 msgid "Download"
 msgstr ""
 
+<<<<<<< HEAD
+=======
+#: frontend/src/components/Settings/Forms/FormsList.vue:74
+msgid "Draft"
+msgstr ""
+
+#: crm/www/crm_form.html:176
+msgid "Draft preview — only you can see this. Publish the form to make it public."
+msgstr ""
+
+>>>>>>> 1a2c2eaa (chore: update POT file)
 #: frontend/src/components/FilesUploader/FilesUploaderArea.vue:24
 msgid "Drag & Drop files here or upload from"
 msgstr ""
@@ -2646,6 +2809,7 @@ msgid "ERPNext is not integrated with the CRM"
 msgstr ""
 
 #: frontend/src/components/Activities/CommentArea.vue:94
+#: frontend/src/components/Activities/NoteArea.vue:12
 #: frontend/src/components/FieldLayout/Field.vue:110
 #: frontend/src/components/FieldLayoutEditor.vue:417
 #: frontend/src/components/FieldLayoutEditor.vue:460
@@ -2653,8 +2817,13 @@ msgstr ""
 #: frontend/src/components/PrimaryDropdownItem.vue:35
 #: frontend/src/components/Settings/Sla/SlaHolidays.vue:202
 #: frontend/src/components/Settings/Sla/SlaPriorityList.vue:188
+<<<<<<< HEAD
 #: frontend/src/components/ViewControls.vue:1090
 #: frontend/src/pages/Dashboard.vue:16
+=======
+#: frontend/src/components/ViewControls.vue:1166
+#: frontend/src/pages/Dashboard.vue:16 frontend/src/pages/Notes.vue:44
+>>>>>>> 1a2c2eaa (chore: update POT file)
 msgid "Edit"
 msgstr ""
 
@@ -2741,6 +2910,13 @@ msgstr ""
 msgid "Editing Row {0}"
 msgstr ""
 
+<<<<<<< HEAD
+=======
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:714
+msgid "Editor"
+msgstr ""
+
+>>>>>>> 1a2c2eaa (chore: update POT file)
 #. Label of the email (Data) field in DocType 'CRM Contacts'
 #. Label of the email (Data) field in DocType 'CRM Invitation'
 #. Label of the email (Data) field in DocType 'CRM Lead'
@@ -2976,12 +3152,17 @@ msgstr ""
 msgid "Enter Brand Name"
 msgstr ""
 
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:109
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:115
 msgid "Enter Exotel Number"
 msgstr ""
 
+<<<<<<< HEAD
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:134
 msgid "Enter Personal Mobile No."
+=======
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:146
+msgid "Enter Personal Mobile Number"
+>>>>>>> 1a2c2eaa (chore: update POT file)
 msgstr ""
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:74
@@ -2996,15 +3177,35 @@ msgstr ""
 msgid "Enter Value"
 msgstr ""
 
+<<<<<<< HEAD
+=======
+#: frontend/src/components/Modals/DealModal.vue:123
+#: frontend/src/components/Modals/LeadModal.vue:92
+#: frontend/src/components/Modals/OrganizationModal.vue:100
+msgid "Enter a Website first."
+msgstr ""
+
+#: frontend/src/components/FieldLayout/Field.vue:294
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:88
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:119
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:150
+msgid "Enter a valid phone number"
+msgstr ""
+
+>>>>>>> 1a2c2eaa (chore: update POT file)
 #: frontend/src/components/Settings/LeadSyncing/leadSyncSourceConfig.js:31
 msgid "Enter your Facebook Access Token"
 msgstr ""
 
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:124
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:136
 msgid "Enter your personal mobile number used by Exotel to make calls"
 msgstr ""
 
+<<<<<<< HEAD
 #: frontend/src/components/FieldLayout/Field.vue:565
+=======
+#: frontend/src/components/FieldLayout/Field.vue:599
+>>>>>>> 1a2c2eaa (chore: update POT file)
 msgid "Enter {0}"
 msgstr ""
 
@@ -3138,11 +3339,11 @@ msgstr ""
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
 #: frontend/src/components/Layouts/AppSidebar.vue:632
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:52
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:180
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:198
 msgid "Exotel"
 msgstr ""
 
-#: crm/integrations/exotel/handler.py:113
+#: crm/integrations/exotel/handler.py:124
 msgid "Exotel Exception"
 msgstr ""
 
@@ -3152,15 +3353,15 @@ msgstr ""
 
 #. Label of the exotel_number (Data) field in DocType 'CRM Telephony Agent'
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:99
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:105
 msgid "Exotel Number"
 msgstr ""
 
-#: crm/integrations/exotel/handler.py:84
+#: crm/integrations/exotel/handler.py:94
 msgid "Exotel Number Missing"
 msgstr ""
 
-#: crm/integrations/exotel/handler.py:88
+#: crm/integrations/exotel/handler.py:98
 msgid "Exotel Number {0} is not valid"
 msgstr ""
 
@@ -3288,7 +3489,7 @@ msgstr ""
 msgid "Failed to add reaction to the message"
 msgstr ""
 
-#: crm/integrations/twilio/api.py:154
+#: crm/integrations/twilio/api.py:180
 msgid "Failed to capture Twilio recording"
 msgstr ""
 
@@ -3308,7 +3509,7 @@ msgstr ""
 msgid "Failed to delete lead sync source"
 msgstr ""
 
-#: frontend/src/components/Activities/NoteArea.vue:75
+#: frontend/src/components/Activities/NoteArea.vue:83
 msgid "Failed to delete note"
 msgstr ""
 
@@ -3349,7 +3550,11 @@ msgstr ""
 msgid "Failed to send WhatsApp message"
 msgstr ""
 
+<<<<<<< HEAD
 #: frontend/src/components/Activities/Activities.vue:604
+=======
+#: frontend/src/components/Activities/Activities.vue:621
+>>>>>>> 1a2c2eaa (chore: update POT file)
 msgid "Failed to send WhatsApp template"
 msgstr ""
 
@@ -3365,7 +3570,7 @@ msgstr ""
 msgid "Failed to update Email Account, Invalid credentials"
 msgstr ""
 
-#: crm/integrations/twilio/api.py:181
+#: crm/integrations/twilio/api.py:207
 msgid "Failed to update Twilio call status"
 msgstr ""
 
@@ -3533,6 +3738,47 @@ msgstr ""
 msgid "Form Script updated successfully"
 msgstr ""
 
+<<<<<<< HEAD
+=======
+#: frontend/src/components/Settings/Forms/FormsList.vue:225
+msgid "Form created"
+msgstr ""
+
+#: frontend/src/components/Settings/Forms/FormsList.vue:256
+msgid "Form deleted"
+msgstr ""
+
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:299
+msgid "Form details"
+msgstr ""
+
+#: frontend/src/components/Settings/Forms/FormsList.vue:242
+msgid "Form published"
+msgstr ""
+
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:61
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:536
+msgid "Form title"
+msgstr ""
+
+#: frontend/src/components/Settings/Forms/FormsList.vue:242
+msgid "Form unpublished"
+msgstr ""
+
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1014
+msgid "Form updated"
+msgstr ""
+
+#: frontend/src/components/Settings/Forms/FormsList.vue:7
+#: frontend/src/components/Settings/Settings.vue:207
+msgid "Forms"
+msgstr ""
+
+#: crm/api/form.py:244 crm/api/form.py:253 crm/api/form.py:403
+msgid "Forms can only map to: {0}"
+msgstr ""
+
+>>>>>>> 1a2c2eaa (chore: update POT file)
 #. Name of a Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
 msgid "Frappe CRM"
@@ -3636,7 +3882,12 @@ msgstr ""
 msgid "GitHub Repository"
 msgstr ""
 
+<<<<<<< HEAD
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:582
+=======
+#: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:577
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1028
+>>>>>>> 1a2c2eaa (chore: update POT file)
 msgid "Go Back"
 msgstr ""
 
@@ -3656,7 +3907,15 @@ msgstr ""
 msgid "Google Ads"
 msgstr ""
 
+<<<<<<< HEAD
 #: frontend/src/components/Filter.vue:366
+=======
+#: frontend/src/components/Settings/Forms/FieldCard.vue:174
+msgid "Grant Access"
+msgstr ""
+
+#: frontend/src/components/Filter.vue:395
+>>>>>>> 1a2c2eaa (chore: update POT file)
 msgid "Greater than"
 msgstr ""
 
@@ -3685,6 +3944,22 @@ msgstr ""
 msgid "Group By: "
 msgstr ""
 
+<<<<<<< HEAD
+=======
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:857
+msgid "Guests can now select {0} records."
+msgstr ""
+
+#: frontend/src/components/Settings/Forms/FieldCard.vue:164
+msgid "Guests can't see {0} records. Grant select access to list them publicly."
+msgstr ""
+
+#. Option for the 'Match Scope' (Select) field in DocType 'CRM Enrichment Rule'
+#: crm/domain_enrichment/doctype/crm_enrichment_rule/crm_enrichment_rule.json
+msgid "HTML"
+msgstr ""
+
+>>>>>>> 1a2c2eaa (chore: update POT file)
 #: frontend/src/components/Telephony/TwilioCallUI.vue:63
 msgid "Hang Up"
 msgstr ""
@@ -3706,7 +3981,15 @@ msgstr ""
 msgid "Hidden"
 msgstr ""
 
+<<<<<<< HEAD
 #: frontend/src/components/Activities/Activities.vue:249
+=======
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:231
+msgid "Hidden required fields"
+msgstr ""
+
+#: frontend/src/components/Activities/Activities.vue:253
+>>>>>>> 1a2c2eaa (chore: update POT file)
 msgid "Hide"
 msgstr ""
 
@@ -3929,11 +4212,11 @@ msgstr ""
 msgid "Integration"
 msgstr ""
 
-#: crm/integrations/exotel/handler.py:72
+#: crm/integrations/exotel/handler.py:82
 msgid "Integration Not Enabled"
 msgstr ""
 
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:144
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:162
 msgid "Integrations"
 msgstr ""
 
@@ -3959,7 +4242,7 @@ msgstr ""
 msgid "Invalid Email or Password"
 msgstr ""
 
-#: crm/integrations/exotel/handler.py:88
+#: crm/integrations/exotel/handler.py:98
 msgid "Invalid Exotel Number"
 msgstr ""
 
@@ -3975,11 +4258,11 @@ msgstr ""
 msgid "Invalid Start Or End Time"
 msgstr ""
 
-#: crm/integrations/twilio/api.py:19
+#: crm/integrations/twilio/api.py:20
 msgid "Invalid Twilio account"
 msgstr ""
 
-#: crm/integrations/twilio/api.py:24
+#: crm/integrations/twilio/api.py:25
 msgid "Invalid Twilio application"
 msgstr ""
 
@@ -4240,7 +4523,7 @@ msgstr ""
 msgid "Last"
 msgstr ""
 
-#: frontend/src/pages/Dashboard.vue:202
+#: frontend/src/pages/Dashboard.vue:205
 msgid "Last 30 Days"
 msgstr ""
 
@@ -4248,15 +4531,15 @@ msgstr ""
 msgid "Last 6 Months"
 msgstr ""
 
-#: frontend/src/pages/Dashboard.vue:210
+#: frontend/src/pages/Dashboard.vue:213
 msgid "Last 60 Days"
 msgstr ""
 
-#: frontend/src/pages/Dashboard.vue:194
+#: frontend/src/pages/Dashboard.vue:197
 msgid "Last 7 Days"
 msgstr ""
 
-#: frontend/src/pages/Dashboard.vue:218
+#: frontend/src/pages/Dashboard.vue:221
 msgid "Last 90 Days"
 msgstr ""
 
@@ -4341,7 +4624,7 @@ msgstr ""
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:76
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:55
 #: frontend/src/components/Telephony/ExotelCallUI.vue:200
-#: frontend/src/pages/Tasks.vue:133
+#: frontend/src/pages/Tasks.vue:134
 msgid "Lead"
 msgstr ""
 
@@ -4701,6 +4984,10 @@ msgstr ""
 msgid "Mandatory fields required: {0}"
 msgstr ""
 
+#: frontend/src/components/Settings/Forms/FieldCard.vue:141
+msgid "Mandatory if"
+msgstr ""
+
 #. Option for the 'Telephony Medium' (Select) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 msgid "Manual"
@@ -4803,7 +5090,7 @@ msgstr ""
 msgid "Mobile Number"
 msgstr ""
 
-#: crm/integrations/exotel/handler.py:92
+#: crm/integrations/exotel/handler.py:102
 msgid "Mobile Number Missing"
 msgstr ""
 
@@ -5114,8 +5401,8 @@ msgstr ""
 msgid "No Results Found"
 msgstr ""
 
-#: frontend/src/components/Modals/EmailTemplateSelectorModal.vue:56
-#: frontend/src/components/Modals/WhatsappTemplateSelectorModal.vue:57
+#: frontend/src/components/Modals/EmailTemplateSelectorModal.vue:55
+#: frontend/src/components/Modals/WhatsappTemplateSelectorModal.vue:58
 msgid "No Templates Found"
 msgstr ""
 
@@ -5232,7 +5519,15 @@ msgstr ""
 msgid "Not Synced"
 msgstr ""
 
+<<<<<<< HEAD
 #: crm/fcrm/doctype/crm_deal/crm_deal.py:355
+=======
+#: crm/api/form.py:480
+msgid "Not a CRM form"
+msgstr ""
+
+#: crm/fcrm/doctype/crm_deal/crm_deal.py:380
+>>>>>>> 1a2c2eaa (chore: update POT file)
 msgid "Not allowed to add contact to Deal"
 msgstr ""
 
@@ -5304,7 +5599,7 @@ msgstr ""
 msgid "Note"
 msgstr ""
 
-#: frontend/src/components/Activities/NoteArea.vue:74
+#: frontend/src/components/Activities/NoteArea.vue:82
 msgid "Note deleted"
 msgstr ""
 
@@ -5702,8 +5997,13 @@ msgstr ""
 msgid "Persona Captured"
 msgstr ""
 
+<<<<<<< HEAD
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:120
 msgid "Personal Mobile No."
+=======
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:132
+msgid "Personal Mobile Number"
+>>>>>>> 1a2c2eaa (chore: update POT file)
 msgstr ""
 
 #. Label of the phone (Data) field in DocType 'CRM Contacts'
@@ -5803,7 +6103,7 @@ msgstr ""
 msgid "Please set an email address to send emails"
 msgstr ""
 
-#: crm/integrations/exotel/handler.py:72
+#: crm/integrations/exotel/handler.py:82
 msgid "Please setup Exotel intergration"
 msgstr ""
 
@@ -6014,6 +6314,10 @@ msgstr ""
 msgid "Read"
 msgstr ""
 
+#: frontend/src/components/Settings/Forms/FieldCard.vue:148
+msgid "Read-only if"
+msgstr ""
+
 #: crm/api/dashboard.py:940
 #: frontend/src/components/Settings/LeadSyncing/FailureLogs.vue:30
 msgid "Reason"
@@ -6146,8 +6450,14 @@ msgstr ""
 msgid "Remove Image"
 msgstr ""
 
+<<<<<<< HEAD
 #: frontend/src/components/FieldLayoutEditor.vue:577
 #: frontend/src/components/FieldLayoutEditor.vue:583
+=======
+#: frontend/src/components/FieldLayoutEditor.vue:574
+#: frontend/src/components/FieldLayoutEditor.vue:580
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1115
+>>>>>>> 1a2c2eaa (chore: update POT file)
 msgid "Remove Last Column"
 msgstr ""
 
@@ -6159,8 +6469,14 @@ msgstr ""
 msgid "Remove Photo"
 msgstr ""
 
+<<<<<<< HEAD
 #: frontend/src/components/FieldLayoutEditor.vue:480
 #: frontend/src/components/FieldLayoutEditor.vue:488
+=======
+#: frontend/src/components/FieldLayoutEditor.vue:477
+#: frontend/src/components/FieldLayoutEditor.vue:485
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1135
+>>>>>>> 1a2c2eaa (chore: update POT file)
 msgid "Remove Section"
 msgstr ""
 
@@ -6181,6 +6497,13 @@ msgstr ""
 msgid "Removed from hierarchy."
 msgstr ""
 
+<<<<<<< HEAD
+=======
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1130
+msgid "Rename"
+msgstr ""
+
+>>>>>>> 1a2c2eaa (chore: update POT file)
 #. Label of the auto_reopen_on_new_communication (Check) field in DocType 'FCRM
 #. Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
@@ -6652,7 +6975,12 @@ msgstr ""
 msgid "Search users"
 msgstr ""
 
+<<<<<<< HEAD
 #: frontend/src/components/FieldLayoutEditor.vue:457
+=======
+#: frontend/src/components/FieldLayoutEditor.vue:454
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1127
+>>>>>>> 1a2c2eaa (chore: update POT file)
 msgid "Section"
 msgstr ""
 
@@ -6725,6 +7053,20 @@ msgstr ""
 msgid "Select an Option"
 msgstr ""
 
+<<<<<<< HEAD
+=======
+#: frontend/src/components/Modals/ViewModal.vue:46
+msgid "Select an icon..."
+msgstr ""
+
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:589
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:597
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1149
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1159
+msgid "Select an option"
+msgstr ""
+
+>>>>>>> 1a2c2eaa (chore: update POT file)
 #: frontend/src/components/Settings/AssignmentRules/AssigneeRules.vue:84
 msgid "Select the assignees for {0}."
 msgstr ""
@@ -6745,7 +7087,11 @@ msgstr ""
 msgid "Select your ERPNext company to connect with"
 msgstr ""
 
+<<<<<<< HEAD
 #: frontend/src/components/FieldLayout/Field.vue:563
+=======
+#: frontend/src/components/FieldLayout/Field.vue:597
+>>>>>>> 1a2c2eaa (chore: update POT file)
 msgid "Select {0}"
 msgstr ""
 
@@ -6828,6 +7174,26 @@ msgstr ""
 msgid "Set Location"
 msgstr ""
 
+<<<<<<< HEAD
+=======
+#: crm/public/js/domain_enrichment.js:17
+#: frontend/src/components/EnrichFromWebsite.vue:80
+msgid "Set a Website on this record before enriching."
+msgstr ""
+
+#: crm/api/form.py:392
+msgid "Set a default value before publishing for: {0}"
+msgstr ""
+
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:284
+msgid "Set a default value for each field to publish this form."
+msgstr ""
+
+#: crm/domain_enrichment/api.py:58
+msgid "Set a website on this record before enriching."
+msgstr ""
+
+>>>>>>> 1a2c2eaa (chore: update POT file)
 #: frontend/src/components/FilesUploader/FilesUploader.vue:60
 msgid "Set all as private"
 msgstr ""
@@ -6858,7 +7224,7 @@ msgstr ""
 msgid "Set once the first admin completes the onboarding persona questionnaire"
 msgstr ""
 
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:102
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:108
 msgid "Set the Exotel number to be used for outgoing calls."
 msgstr ""
 
@@ -6924,7 +7290,12 @@ msgstr ""
 
 #. Label of the defaults_tab (Tab Break) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
+<<<<<<< HEAD
 #: frontend/src/components/Layouts/AppSidebar.vue:567
+=======
+#: frontend/src/components/Layouts/AppSidebar.vue:658
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:715
+>>>>>>> 1a2c2eaa (chore: update POT file)
 msgid "Settings"
 msgstr ""
 
@@ -6948,7 +7319,15 @@ msgstr ""
 msgid "Setup your password"
 msgstr ""
 
+<<<<<<< HEAD
 #: frontend/src/components/Activities/Activities.vue:249
+=======
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:716
+msgid "Share"
+msgstr ""
+
+#: frontend/src/components/Activities/Activities.vue:253
+>>>>>>> 1a2c2eaa (chore: update POT file)
 msgid "Show"
 msgstr ""
 
@@ -7213,6 +7592,46 @@ msgstr ""
 msgid "Subject: {0}"
 msgstr ""
 
+<<<<<<< HEAD
+=======
+#: crm/api/form.py:354
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:646
+msgid "Submit"
+msgstr ""
+
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:332
+msgid "Submit button label"
+msgstr ""
+
+#. Description of the 'Keyword' (Data) field in DocType 'CRM Enrichment Link
+#. Priority'
+#: crm/domain_enrichment/doctype/crm_enrichment_link_priority/crm_enrichment_link_priority.json
+msgid "Substring matched against a candidate URL/anchor to prioritise crawling it (e.g. \"about\", \"team\", \"contact\")."
+msgstr ""
+
+#. Description of the 'Pattern' (Data) field in DocType 'CRM Enrichment Skip
+#. Pattern'
+#: crm/domain_enrichment/doctype/crm_enrichment_skip_pattern/crm_enrichment_skip_pattern.json
+msgid "Substring; a candidate URL containing it is skipped during the crawl (e.g. \"/blog/\", \".pdf\", \"?\")."
+msgstr ""
+
+#. Description of the 'Skip Patterns' (Table) field in DocType 'CRM Enrichment
+#. Settings'
+#: crm/domain_enrichment/doctype/crm_enrichment_settings/crm_enrichment_settings.json
+msgid "Substrings that exclude a candidate link from the crawl."
+msgstr ""
+
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:339
+msgid "Success message"
+msgstr ""
+
+#. Label of the summary_section (Section Break) field in DocType 'CRM
+#. Enrichment Run'
+#: crm/domain_enrichment/doctype/crm_enrichment_run/crm_enrichment_run.json
+msgid "Summary"
+msgstr ""
+
+>>>>>>> 1a2c2eaa (chore: update POT file)
 #. Option for the 'Weekly Off' (Select) field in DocType 'CRM Holiday List'
 #. Option for the 'Workday' (Select) field in DocType 'CRM Service Day'
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
@@ -7236,6 +7655,13 @@ msgstr ""
 msgid "Switch between outgoing email accounts when sending emails"
 msgstr ""
 
+<<<<<<< HEAD
+=======
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1379
+msgid "Switching to {0} will remove {1} field(s) that don't exist on {0}. This can't be undone."
+msgstr ""
+
+>>>>>>> 1a2c2eaa (chore: update POT file)
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.js:6
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:23
 msgid "Sync Now"
@@ -7682,7 +8108,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
 #: frontend/src/components/Layouts/AppSidebar.vue:631
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:51
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:153
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:171
 msgid "Twilio"
 msgstr ""
 
@@ -7714,7 +8140,7 @@ msgstr ""
 msgid "Twilio Settings"
 msgstr ""
 
-#: crm/integrations/twilio/api.py:15
+#: crm/integrations/twilio/api.py:16
 msgid "Twilio configuration is missing"
 msgstr ""
 
@@ -7765,7 +8191,7 @@ msgstr ""
 msgid "Unassignment Condition"
 msgstr ""
 
-#: crm/integrations/exotel/handler.py:169
+#: crm/integrations/exotel/handler.py:190
 msgid "Unauthorized request"
 msgstr ""
 
@@ -7818,8 +8244,18 @@ msgstr ""
 msgid "Unpin View"
 msgstr ""
 
+<<<<<<< HEAD
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:575
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:345
+=======
+#: frontend/src/components/Settings/Forms/FormsList.vue:267
+msgid "Unpublish"
+msgstr ""
+
+#: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:570
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1021
+#: frontend/src/components/Settings/Sla/SlaPolicyView.vue:359
+>>>>>>> 1a2c2eaa (chore: update POT file)
 msgid "Unsaved Changes"
 msgstr ""
 
@@ -7856,8 +8292,8 @@ msgstr ""
 msgid "Update Account"
 msgstr ""
 
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:163
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:190
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:181
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:208
 msgid "Update Configuration"
 msgstr ""
 
@@ -8025,15 +8461,27 @@ msgstr ""
 msgid "Visibility"
 msgstr ""
 
+#: frontend/src/components/Settings/Forms/FieldCard.vue:134
+msgid "Visible if"
+msgstr ""
+
 #: frontend/src/pages/PersonaForm.vue:80
 msgid "Walk-ins"
 msgstr ""
 
+<<<<<<< HEAD
 #: frontend/src/components/SalesHierarchyBanner.vue:20
 msgid "We are changing how permissions work in Frappe CRM"
 msgstr ""
 
 #: frontend/src/components/Layouts/AppSidebar.vue:593
+=======
+#: crm/integrations/twilio/api.py:108
+msgid "We're unable to connect your call right now. Please try again later."
+msgstr ""
+
+#: frontend/src/components/Layouts/AppSidebar.vue:684
+>>>>>>> 1a2c2eaa (chore: update POT file)
 msgid "Web Form"
 msgstr ""
 
@@ -8227,7 +8675,7 @@ msgstr ""
 msgid "You cannot remove yourself."
 msgstr ""
 
-#: crm/integrations/exotel/handler.py:84
+#: crm/integrations/exotel/handler.py:94
 msgid "You do not have Exotel Number set in your Telephony Agent"
 msgstr ""
 
@@ -8235,7 +8683,7 @@ msgstr ""
 msgid "You do not have enough permissions to access Frappe CRM. Please contact your administrator if you believe this is an error."
 msgstr ""
 
-#: crm/integrations/exotel/handler.py:92
+#: crm/integrations/exotel/handler.py:102
 msgid "You do not have mobile number set in your Telephony Agent"
 msgstr ""
 
@@ -8267,7 +8715,19 @@ msgstr ""
 msgid "You will need a Meta developer account and an access token to sync leads from Facebook. Read more"
 msgstr ""
 
+<<<<<<< HEAD
 #: crm/api/todo.py:100
+=======
+#: crm/domain_enrichment/mapper.py:46
+msgid "YouTube"
+msgstr ""
+
+#: crm/integrations/twilio/api.py:71
+msgid "Your account is not configured with a phone number. Please contact your administrator."
+msgstr ""
+
+#: crm/api/todo.py:110
+>>>>>>> 1a2c2eaa (chore: update POT file)
 msgid "Your assignment on task {0} has been removed by {1}"
 msgstr ""
 
@@ -8332,7 +8792,7 @@ msgstr ""
 msgid "blue"
 msgstr ""
 
-#: frontend/src/components/Activities/Activities.vue:252
+#: frontend/src/components/Activities/Activities.vue:256
 msgid "changes from"
 msgstr ""
 
@@ -8560,7 +9020,17 @@ msgstr ""
 msgid "list"
 msgstr ""
 
+<<<<<<< HEAD
 #: crm/api/comment.py:39 frontend/src/components/Notifications.vue:64
+=======
+#. Option for the 'Source Key' (Select) field in DocType 'CRM Enrichment Field
+#. Mapping'
+#: crm/domain_enrichment/doctype/crm_enrichment_field_mapping/crm_enrichment_field_mapping.json
+msgid "logo"
+msgstr ""
+
+#: crm/api/comment.py:41 frontend/src/components/Notifications.vue:64
+>>>>>>> 1a2c2eaa (chore: update POT file)
 #: frontend/src/pages/MobileNotification.vue:50
 msgid "mentioned you in {0}"
 msgstr ""
@@ -8650,8 +9120,8 @@ msgstr ""
 msgid "teal"
 msgstr ""
 
-#: frontend/src/components/Activities/Activities.vue:291
-#: frontend/src/components/Activities/Activities.vue:354
+#: frontend/src/components/Activities/Activities.vue:295
+#: frontend/src/components/Activities/Activities.vue:358
 msgid "to"
 msgstr ""
 
@@ -8765,8 +9235,13 @@ msgstr ""
 msgid "{0} is an invalid email address"
 msgstr ""
 
+<<<<<<< HEAD
 #: frontend/src/components/Modals/ContactModal.vue:106
 #: frontend/src/components/Modals/ConvertToDealModal.vue:169
+=======
+#: crm/api/form.py:517 frontend/src/components/Modals/ContactModal.vue:106
+#: frontend/src/components/Modals/ConvertToDealModal.vue:171
+>>>>>>> 1a2c2eaa (chore: update POT file)
 msgid "{0} is required"
 msgstr ""
 
