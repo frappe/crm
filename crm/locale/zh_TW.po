@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-08-07 14:38+0000\n"
-"PO-Revision-Date: 2026-08-13 15:58\n"
+"PO-Revision-Date: 2026-08-16 16:11\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Chinese Traditional\n"
 "MIME-Version: 1.0\n"
@@ -20,7 +20,7 @@ msgstr ""
 
 #: frontend/src/components/ViewControls.vue:1252
 msgid " (New)"
-msgstr ""
+msgstr " (新增)"
 
 #: frontend/src/components/Filter.vue:620
 msgid "%John%"
