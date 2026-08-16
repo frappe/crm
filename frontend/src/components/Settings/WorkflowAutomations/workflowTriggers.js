@@ -1,6 +1,6 @@
 import CancelIcon from '~icons/lucide/circle-slash'
 import ChangedIcon from '~icons/lucide/pencil-line'
-import CreatedIcon from '~icons/lucide/list-plus'
+import CreatedIcon from '~icons/lucide/file-plus-corner'
 import DeletedIcon from '~icons/lucide/trash-2'
 import EventIcon from '~icons/lucide/webhook'
 import ManualIcon from '~icons/lucide/hand'

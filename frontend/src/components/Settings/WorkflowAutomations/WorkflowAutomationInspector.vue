@@ -6,13 +6,15 @@
       <div class="text-base-semibold text-ink-gray-8">
         {{ selectedStep ? __('Step') : __('Trigger') }}
       </div>
-      <Button
-        v-if="selectedStep"
-        icon="lucide-trash-2"
-        variant="ghost"
-        :aria-label="__('Remove step')"
-        @click="$emit('remove-step')"
-      />
+      <div class="flex items-center gap-1">
+        <Button
+          v-if="selectedStep || doc.trigger_type"
+          icon="lucide-trash-2"
+          variant="ghost"
+          :aria-label="selectedStep ? __('Remove step') : __('Remove trigger')"
+          @click="$emit('request-remove')"
+        />
+      </div>
     </div>
     <div class="min-h-0 flex-1 space-y-5 overflow-y-auto p-4">
       <div v-if="loading" class="flex justify-center py-8">
@@ -91,17 +93,6 @@
           doctype="User"
         />
         <SwitchField v-model="doc.enabled" :label="__('Enabled')" />
-        <SwitchField v-model="doc.log_only" :label="__('Log Only')" />
-        <SwitchField
-          v-model="doc.revalidate_on_run"
-          :label="__('Revalidate on Run')"
-        />
-        <SwitchField v-model="doc.stop_on_error" :label="__('Stop on Error')" />
-        <FormControl
-          v-model="doc.throttle_per_minute"
-          type="number"
-          :label="__('Throttle per Minute')"
-        />
       </template>
     </div>
   </div>
@@ -127,11 +118,10 @@ const props = defineProps({
   loading: { type: Boolean, default: false },
 })
 
-defineEmits(['remove-step'])
+defineEmits(['request-remove'])
 
 const docTypeFilters = { istable: 0 }
 const runAsOptions = ['Triggering User', 'Document Owner', 'Automation User']
-
 const capabilities = computed(() => capabilitiesFor(props.doc.document_type))
 const fields = computed(() => capabilities.value?.fields || [])
 const events = computed(() => capabilities.value?.custom_events || [])
