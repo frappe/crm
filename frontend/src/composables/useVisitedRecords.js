@@ -1,9 +1,11 @@
 import { useStorage } from '@vueuse/core'
+import { sessionStore } from '@/stores/session'
 
 const MAX_VISITED_RECORDS = 1000
 
 export function useVisitedRecords(doctype) {
-  const visitedRecords = useStorage(`visitedRecords:${doctype}`, [])
+  const { user } = sessionStore()
+  const visitedRecords = useStorage(`visitedRecords:${user}:${doctype}`, [])
 
   function isVisited(name) {
     return visitedRecords.value.includes(name)
