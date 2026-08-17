@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2026-08-07 14:38+0000\n"
-"PO-Revision-Date: 2026-08-08 14:31\n"
+"POT-Creation-Date: 2026-08-17 07:47+0000\n"
+"PO-Revision-Date: 2026-08-17 16:28\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: French\n"
 "MIME-Version: 1.0\n"
@@ -166,8 +166,8 @@ msgstr "Une source de synchronisation de prospects est déjà activée pour ce f
 msgid "A new account has been created for you at {0}"
 msgstr "Un nouveau compte a été créé pour vous à {0}"
 
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1066
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1208
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1089
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1231
 msgid "A section can have up to {0} columns"
 msgstr ""
 
@@ -354,7 +354,7 @@ msgstr "Ajouter un graphique"
 #: frontend/src/components/ColumnSettings.vue:68
 #: frontend/src/components/FieldLayoutEditor.vue:562
 #: frontend/src/components/Kanban/KanbanView.vue:161
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1086
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1109
 msgid "Add Column"
 msgstr "Ajouter une colonne"
 
@@ -511,7 +511,7 @@ msgstr ""
 msgid "Add existing system users to this CRM. Assign them a role to grant access with their current credentials."
 msgstr "Ajoutez des utilisateurs système existants à ce CRM. Attribuez-leur un rôle pour leur donner accès avec leurs identifiants actuels."
 
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:623
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:634
 msgid "Add fields to see them here."
 msgstr ""
 
@@ -750,7 +750,7 @@ msgid "Are you sure you want to discard unsaved changes to this event?"
 msgstr "Êtes-vous sûr(e) de vouloir abandonner les modifications non enregistrées de cet événement ?"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:571
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1002
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1022
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:360
 msgid "Are you sure you want to go back? Unsaved changes will be lost."
 msgstr "Êtes-vous sûr(e) de vouloir revenir en arrière ? Les modifications non enregistrées seront perdues."
@@ -1172,7 +1172,7 @@ msgstr "Contacts CRM"
 
 #. Name of a DocType
 #: crm/fcrm/doctype/crm_dashboard/crm_dashboard.json
-#: frontend/src/pages/Dashboard.vue:307
+#: frontend/src/pages/Dashboard.vue:310
 msgid "CRM Dashboard"
 msgstr "Tableau de bord CRM"
 
@@ -1412,8 +1412,12 @@ msgstr "Journal d'appel"
 msgid "Call Received By"
 msgstr "Appel reçu par"
 
-#: crm/integrations/api.py:259 crm/integrations/twilio/api.py:148
-#: crm/integrations/twilio/api.py:166
+#: frontend/src/components/Telephony/ExotelCallUI.vue:403
+msgid "Call connected, but the call log could not be saved. Please contact your administrator."
+msgstr ""
+
+#: crm/integrations/api.py:259 crm/integrations/twilio/api.py:174
+#: crm/integrations/twilio/api.py:192
 msgid "Call log not found"
 msgstr "Journal d'appel introuvable"
 
@@ -1475,7 +1479,7 @@ msgstr "Annuler"
 #. Option for the 'Status' (Select) field in DocType 'CRM Call Log'
 #. Option for the 'Status' (Select) field in DocType 'CRM Task'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
-#: crm/fcrm/doctype/crm_task/crm_task.json frontend/src/utils/callLog.js:67
+#: crm/fcrm/doctype/crm_task/crm_task.json frontend/src/utils/callLog.js:69
 msgid "Canceled"
 msgstr "Annulé"
 
@@ -1541,7 +1545,7 @@ msgstr "Catégorie"
 msgid "Change"
 msgstr "Changer"
 
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1360
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1386
 msgid "Change & remove fields"
 msgstr ""
 
@@ -1570,7 +1574,7 @@ msgstr "Changement de statut"
 msgid "Change deal status"
 msgstr "Modifier le statut de l'opportunité"
 
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1352
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1378
 msgid "Change form type?"
 msgstr ""
 
@@ -1714,7 +1718,7 @@ msgid "Color"
 msgstr "Couleur"
 
 #: frontend/src/components/FieldLayoutEditor.vue:559
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1118
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1141
 msgid "Column"
 msgstr "Colonne"
 
@@ -1818,7 +1822,7 @@ msgstr "Terminer l'inscription"
 #. Option for the 'Status' (Select) field in DocType 'CRM Call Log'
 #: crm/domain_enrichment/doctype/crm_enrichment_run/crm_enrichment_run.json
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
-#: frontend/src/utils/callLog.js:62
+#: frontend/src/utils/callLog.js:64
 msgid "Completed"
 msgstr "Terminé"
 
@@ -1836,14 +1840,18 @@ msgstr "Ordinateur"
 msgid "Condition"
 msgstr "Conditions"
 
+#: frontend/src/components/Settings/Forms/FieldCard.vue:118
+msgid "Conditional logic"
+msgstr ""
+
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:188
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:272
 msgid "Conditions for this rule were created from"
 msgstr "Les conditions de cette règle ont été créées depuis"
 
 #: frontend/src/components/Settings/Profile/ProfileSettings.vue:107
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:163
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:190
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:181
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:208
 msgid "Configure"
 msgstr "Configurer"
 
@@ -1871,11 +1879,11 @@ msgstr ""
 msgid "Configure the exchange rate provider for your CRM"
 msgstr ""
 
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:184
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:202
 msgid "Configure your Exotel telephony integration settings here"
 msgstr ""
 
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:157
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:175
 msgid "Configure your Twilio telephony integration settings here"
 msgstr ""
 
@@ -2057,7 +2065,7 @@ msgstr ""
 msgid "Could not enrich from the website."
 msgstr ""
 
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:848
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:860
 msgid "Could not grant guest access."
 msgstr ""
 
@@ -2065,7 +2073,7 @@ msgstr ""
 msgid "Could not remove."
 msgstr ""
 
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1492
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1521
 msgid "Could not save"
 msgstr ""
 
@@ -2152,8 +2160,8 @@ msgid "Create Missing Link"
 msgstr ""
 
 #: frontend/src/components/Controls/Link.vue:50
-#: frontend/src/components/Modals/EmailTemplateSelectorModal.vue:58
-#: frontend/src/components/Modals/WhatsappTemplateSelectorModal.vue:60
+#: frontend/src/components/Modals/EmailTemplateSelectorModal.vue:57
+#: frontend/src/components/Modals/WhatsappTemplateSelectorModal.vue:61
 #: frontend/src/components/PrimaryDropdown.vue:49
 msgid "Create New"
 msgstr "Créer Nouveau"
@@ -2262,7 +2270,7 @@ msgstr "Champs personnalisés"
 msgid "Custom List Actions"
 msgstr "Actions de liste personnalisées"
 
-#: frontend/src/pages/Dashboard.vue:228
+#: frontend/src/pages/Dashboard.vue:231
 msgid "Custom Range"
 msgstr "Plage personnalisée"
 
@@ -2361,7 +2369,7 @@ msgstr "Jour"
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:51
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:59
 #: frontend/src/components/Telephony/ExotelCallUI.vue:200
-#: frontend/src/pages/Tasks.vue:132
+#: frontend/src/pages/Tasks.vue:133
 msgid "Deal"
 msgstr "Opportunité"
 
@@ -2454,7 +2462,7 @@ msgstr "Opportunités par territoire"
 msgid "Dear {{ lead_name }}, \\n\\nThis is a reminder for the payment of {{ grand_total }}. \\n\\nThanks, \\nFrappé"
 msgstr "Cher(e) {{ lead_name }}, \\n\\nCeci est un rappel pour le paiement de {{ grand_total }}. \\n\\nCordialement, \\nFrappé"
 
-#: frontend/src/utils/callLog.js:64
+#: frontend/src/utils/callLog.js:66
 msgid "Declined"
 msgstr "Refusé"
 
@@ -2547,7 +2555,7 @@ msgid "Defines the default currency for all records, can be overridden at the fi
 msgstr "Définit la devise par défaut pour tous les enregistrements, peut être remplacée au niveau du champ"
 
 #: frontend/src/components/Activities/AttachmentArea.vue:131
-#: frontend/src/components/Activities/NoteArea.vue:12
+#: frontend/src/components/Activities/NoteArea.vue:17
 #: frontend/src/components/Activities/TaskArea.vue:55
 #: frontend/src/components/Activities/TaskArea.vue:63
 #: frontend/src/components/BulkDeleteLinkedDocModal.vue:8
@@ -2576,8 +2584,8 @@ msgstr "Définit la devise par défaut pour tous les enregistrements, peut être
 #: frontend/src/pages/MobileDeal.vue:526
 #: frontend/src/pages/MobileOrganization.vue:73
 #: frontend/src/pages/MobileOrganization.vue:279
-#: frontend/src/pages/Notes.vue:44 frontend/src/pages/Organization.vue:96
-#: frontend/src/pages/Tasks.vue:363 frontend/src/utils/index.js:823
+#: frontend/src/pages/Notes.vue:49 frontend/src/pages/Organization.vue:96
+#: frontend/src/pages/Tasks.vue:364 frontend/src/utils/index.js:823
 msgid "Delete"
 msgstr "Supprimer"
 
@@ -2643,7 +2651,7 @@ msgstr "Supprimer {0} élément(s)"
 msgid "Delete {0} items"
 msgstr "Supprimer {0} éléments"
 
-#: frontend/src/components/Activities/NoteArea.vue:73
+#: frontend/src/components/Activities/NoteArea.vue:81
 msgid "Deleting note..."
 msgstr "Suppression de la note..."
 
@@ -2734,11 +2742,11 @@ msgstr ""
 msgid "Disabled"
 msgstr "Désactivé"
 
-#: crm/www/crm_form.html:230
+#: crm/www/crm_form.html:241
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:923
 #: frontend/src/components/CommentBox.vue:71
 #: frontend/src/components/EmailEditor.vue:165
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:629
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:640
 msgid "Discard"
 msgstr "Abandonner"
 
@@ -2796,7 +2804,7 @@ msgstr "Document introuvable"
 msgid "Document Type"
 msgstr "Type de Document"
 
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:242
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:261
 msgid "Document created successfully"
 msgstr "Document créé avec succès"
 
@@ -2846,7 +2854,7 @@ msgstr "Télécharger"
 msgid "Draft"
 msgstr "Brouillon"
 
-#: crm/www/crm_form.html:166
+#: crm/www/crm_form.html:176
 msgid "Draft preview — only you can see this. Publish the form to make it public."
 msgstr ""
 
@@ -2985,6 +2993,7 @@ msgid "ERPNext is not integrated with the CRM"
 msgstr "ERPNext n'est pas intégré au CRM"
 
 #: frontend/src/components/Activities/CommentArea.vue:94
+#: frontend/src/components/Activities/NoteArea.vue:12
 #: frontend/src/components/FieldLayout/Field.vue:110
 #: frontend/src/components/FieldLayoutEditor.vue:414
 #: frontend/src/components/FieldLayoutEditor.vue:457
@@ -2995,7 +3004,7 @@ msgstr "ERPNext n'est pas intégré au CRM"
 #: frontend/src/components/Settings/Sla/SlaHolidays.vue:202
 #: frontend/src/components/Settings/Sla/SlaPriorityList.vue:188
 #: frontend/src/components/ViewControls.vue:1166
-#: frontend/src/pages/Dashboard.vue:16
+#: frontend/src/pages/Dashboard.vue:16 frontend/src/pages/Notes.vue:44
 msgid "Edit"
 msgstr "Modifier"
 
@@ -3086,7 +3095,7 @@ msgstr "Modification de l'événement"
 msgid "Editing Row {0}"
 msgstr "Modification de la ligne {0}"
 
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:702
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:714
 msgid "Editor"
 msgstr ""
 
@@ -3415,11 +3424,11 @@ msgstr "Saisir le jeton d'accès"
 msgid "Enter Brand Name"
 msgstr "Saisir le nom de la marque"
 
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:109
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:115
 msgid "Enter Exotel Number"
 msgstr "Saisir le numéro Exotel"
 
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:134
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:146
 msgid "Enter Personal Mobile Number"
 msgstr ""
 
@@ -3441,15 +3450,22 @@ msgstr "Entrez une Valeur"
 msgid "Enter a Website first."
 msgstr ""
 
+#: frontend/src/components/FieldLayout/Field.vue:294
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:88
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:119
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:150
+msgid "Enter a valid phone number"
+msgstr ""
+
 #: frontend/src/components/Settings/LeadSyncing/leadSyncSourceConfig.js:31
 msgid "Enter your Facebook Access Token"
 msgstr "Saisir votre jeton d'accès Facebook"
 
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:124
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:136
 msgid "Enter your personal mobile number used by Exotel to make calls"
 msgstr "Saisissez votre numéro de mobile personnel utilisé par Exotel pour passer des appels"
 
-#: frontend/src/components/FieldLayout/Field.vue:584
+#: frontend/src/components/FieldLayout/Field.vue:599
 msgid "Enter {0}"
 msgstr "Entrez {0}"
 
@@ -3583,11 +3599,11 @@ msgstr "Fournisseur de taux de change"
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
 #: frontend/src/components/Layouts/AppSidebar.vue:723
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:52
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:180
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:198
 msgid "Exotel"
 msgstr "Exotel"
 
-#: crm/integrations/exotel/handler.py:113
+#: crm/integrations/exotel/handler.py:124
 msgid "Exotel Exception"
 msgstr "Exception Exotel"
 
@@ -3597,15 +3613,15 @@ msgstr "Intégration Exotel désactivée"
 
 #. Label of the exotel_number (Data) field in DocType 'CRM Telephony Agent'
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:99
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:105
 msgid "Exotel Number"
 msgstr "Numéro Exotel"
 
-#: crm/integrations/exotel/handler.py:84
+#: crm/integrations/exotel/handler.py:94
 msgid "Exotel Number Missing"
 msgstr "Numéro Exotel manquant"
 
-#: crm/integrations/exotel/handler.py:88
+#: crm/integrations/exotel/handler.py:98
 msgid "Exotel Number {0} is not valid"
 msgstr "Le numéro Exotel {0} n'est pas valide"
 
@@ -3724,7 +3740,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: crm/fcrm/doctype/crm_rolling_response_time/crm_rolling_response_time.json
-#: frontend/src/utils/callLog.js:65
+#: frontend/src/utils/callLog.js:67
 msgid "Failed"
 msgstr "Échec"
 
@@ -3741,7 +3757,7 @@ msgstr "Échec de l'ajout d'utilisateurs"
 msgid "Failed to add reaction to the message"
 msgstr "Échec de l'ajout d'une réaction au message"
 
-#: crm/integrations/twilio/api.py:154
+#: crm/integrations/twilio/api.py:180
 msgid "Failed to capture Twilio recording"
 msgstr "Échec de la capture de l'enregistrement Twilio"
 
@@ -3761,7 +3777,7 @@ msgstr ""
 msgid "Failed to delete lead sync source"
 msgstr "Échec de la suppression de la source de synchronisation des Leads"
 
-#: frontend/src/components/Activities/NoteArea.vue:75
+#: frontend/src/components/Activities/NoteArea.vue:83
 msgid "Failed to delete note"
 msgstr "Échec de la suppression de la note"
 
@@ -3802,7 +3818,7 @@ msgstr "Échec de l'enregistrement du jour ouvré : {0}"
 msgid "Failed to send WhatsApp message"
 msgstr "Échec de l'envoi du message WhatsApp"
 
-#: frontend/src/components/Activities/Activities.vue:617
+#: frontend/src/components/Activities/Activities.vue:621
 msgid "Failed to send WhatsApp template"
 msgstr "Échec de l'envoi du modèle WhatsApp"
 
@@ -3818,7 +3834,7 @@ msgstr "Échec de l'envoi de l'e-mail !"
 msgid "Failed to start sync"
 msgstr ""
 
-#: crm/integrations/twilio/api.py:181
+#: crm/integrations/twilio/api.py:207
 msgid "Failed to update Twilio call status"
 msgstr "Échec de la mise à jour du statut d'appel Twilio"
 
@@ -4045,7 +4061,7 @@ msgstr ""
 msgid "Form unpublished"
 msgstr ""
 
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:994
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1014
 msgid "Form updated"
 msgstr ""
 
@@ -4054,7 +4070,7 @@ msgstr ""
 msgid "Forms"
 msgstr ""
 
-#: crm/api/form.py:244 crm/api/form.py:253 crm/api/form.py:400
+#: crm/api/form.py:244 crm/api/form.py:253 crm/api/form.py:403
 msgid "Forms can only map to: {0}"
 msgstr ""
 
@@ -4174,7 +4190,7 @@ msgid "GitHub Repository"
 msgstr "Dépôt GitHub"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:577
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1008
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1028
 msgid "Go Back"
 msgstr "Retourner"
 
@@ -4194,7 +4210,7 @@ msgstr "Vous participez ?"
 msgid "Google Ads"
 msgstr ""
 
-#: frontend/src/components/Settings/Forms/FieldCard.vue:136
+#: frontend/src/components/Settings/Forms/FieldCard.vue:174
 msgid "Grant Access"
 msgstr ""
 
@@ -4227,11 +4243,11 @@ msgstr "Champ de regroupement"
 msgid "Group By: "
 msgstr "Grouper par : "
 
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:845
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:857
 msgid "Guests can now select {0} records."
 msgstr ""
 
-#: frontend/src/components/Settings/Forms/FieldCard.vue:126
+#: frontend/src/components/Settings/Forms/FieldCard.vue:164
 msgid "Guests can't see {0} records. Grant select access to list them publicly."
 msgstr ""
 
@@ -4279,7 +4295,7 @@ msgstr "Caché"
 msgid "Hidden required fields"
 msgstr ""
 
-#: frontend/src/components/Activities/Activities.vue:249
+#: frontend/src/components/Activities/Activities.vue:253
 msgid "Hide"
 msgstr "Cacher"
 
@@ -4442,7 +4458,7 @@ msgstr "Dans"
 #. Option for the 'Status' (Select) field in DocType 'CRM Call Log'
 #. Option for the 'Status' (Select) field in DocType 'CRM Task'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
-#: crm/fcrm/doctype/crm_task/crm_task.json frontend/src/utils/callLog.js:70
+#: crm/fcrm/doctype/crm_task/crm_task.json frontend/src/utils/callLog.js:72
 msgid "In Progress"
 msgstr "En cours"
 
@@ -4500,7 +4516,7 @@ msgstr ""
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
-#: frontend/src/utils/callLog.js:63
+#: frontend/src/utils/callLog.js:65
 msgid "Initiated"
 msgstr "Initié"
 
@@ -4525,11 +4541,11 @@ msgstr ""
 msgid "Integration"
 msgstr "Intégration"
 
-#: crm/integrations/exotel/handler.py:72
+#: crm/integrations/exotel/handler.py:82
 msgid "Integration Not Enabled"
 msgstr "Intégration non activée"
 
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:144
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:162
 msgid "Integrations"
 msgstr "Intégrations"
 
@@ -4555,7 +4571,7 @@ msgstr "Adresse e-mail invalide"
 msgid "Invalid Email or Password"
 msgstr "E-mail ou mot de passe invalide"
 
-#: crm/integrations/exotel/handler.py:88
+#: crm/integrations/exotel/handler.py:98
 msgid "Invalid Exotel Number"
 msgstr "Numéro Exotel invalide"
 
@@ -4567,11 +4583,11 @@ msgstr "GeoJSON invalide"
 msgid "Invalid Start Or End Time"
 msgstr "Heure de début ou de fin invalide"
 
-#: crm/integrations/twilio/api.py:19
+#: crm/integrations/twilio/api.py:20
 msgid "Invalid Twilio account"
 msgstr "Compte Twilio invalide"
 
-#: crm/integrations/twilio/api.py:24
+#: crm/integrations/twilio/api.py:25
 msgid "Invalid Twilio application"
 msgstr "Application Twilio invalide"
 
@@ -4860,7 +4876,7 @@ msgstr "Langue et heure"
 msgid "Last"
 msgstr "Dernier"
 
-#: frontend/src/pages/Dashboard.vue:202
+#: frontend/src/pages/Dashboard.vue:205
 msgid "Last 30 Days"
 msgstr "30 derniers jours"
 
@@ -4868,15 +4884,15 @@ msgstr "30 derniers jours"
 msgid "Last 6 Months"
 msgstr "6 derniers mois"
 
-#: frontend/src/pages/Dashboard.vue:210
+#: frontend/src/pages/Dashboard.vue:213
 msgid "Last 60 Days"
 msgstr "60 derniers jours"
 
-#: frontend/src/pages/Dashboard.vue:194
+#: frontend/src/pages/Dashboard.vue:197
 msgid "Last 7 Days"
 msgstr "7 derniers jours"
 
-#: frontend/src/pages/Dashboard.vue:218
+#: frontend/src/pages/Dashboard.vue:221
 msgid "Last 90 Days"
 msgstr "90 derniers jours"
 
@@ -4961,7 +4977,7 @@ msgstr "Mise en page"
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:76
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:55
 #: frontend/src/components/Telephony/ExotelCallUI.vue:200
-#: frontend/src/pages/Tasks.vue:133
+#: frontend/src/pages/Tasks.vue:134
 msgid "Lead"
 msgstr "Lead"
 
@@ -5338,6 +5354,10 @@ msgstr "Le(s) champ(s) obligatoire(s) {0} doit/doivent être mappé(s)"
 msgid "Mandatory fields required: {0}"
 msgstr "Champs obligatoires requis : {0}"
 
+#: frontend/src/components/Settings/Forms/FieldCard.vue:141
+msgid "Mandatory if"
+msgstr ""
+
 #. Option for the 'Telephony Medium' (Select) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 msgid "Manual"
@@ -5460,7 +5480,7 @@ msgstr "Deuxième prénom"
 msgid "Minimize"
 msgstr "Réduire"
 
-#: frontend/src/utils/callLog.js:69
+#: frontend/src/utils/callLog.js:79
 msgid "Missed Call"
 msgstr "Appel manqué"
 
@@ -5489,7 +5509,7 @@ msgstr "N° Mobile."
 msgid "Mobile Number"
 msgstr "Numéro de mobile"
 
-#: crm/integrations/exotel/handler.py:92
+#: crm/integrations/exotel/handler.py:102
 msgid "Mobile Number Missing"
 msgstr "Numéro de mobile manquant"
 
@@ -5769,6 +5789,7 @@ msgstr "Non"
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
+#: frontend/src/utils/callLog.js:71
 msgid "No Answer"
 msgstr "Pas de réponse"
 
@@ -5817,8 +5838,8 @@ msgstr "Aucune priorité dans la liste"
 msgid "No Results Found"
 msgstr "Aucun résultat trouvé"
 
-#: frontend/src/components/Modals/EmailTemplateSelectorModal.vue:56
-#: frontend/src/components/Modals/WhatsappTemplateSelectorModal.vue:57
+#: frontend/src/components/Modals/EmailTemplateSelectorModal.vue:55
+#: frontend/src/components/Modals/WhatsappTemplateSelectorModal.vue:58
 msgid "No Templates Found"
 msgstr "Aucun modèle trouvé"
 
@@ -5944,7 +5965,7 @@ msgstr "Non enregistré"
 msgid "Not Synced"
 msgstr "Non synchronisé"
 
-#: crm/api/form.py:472
+#: crm/api/form.py:480
 msgid "Not a CRM form"
 msgstr ""
 
@@ -6020,7 +6041,7 @@ msgstr "Modification de la mise en page des champs non autorisée"
 msgid "Note"
 msgstr "Remarque"
 
-#: frontend/src/components/Activities/NoteArea.vue:74
+#: frontend/src/components/Activities/NoteArea.vue:82
 msgid "Note deleted"
 msgstr "Note supprimée"
 
@@ -6475,7 +6496,7 @@ msgstr "Personne"
 msgid "Persona Captured"
 msgstr ""
 
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:120
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:132
 msgid "Personal Mobile Number"
 msgstr ""
 
@@ -6586,7 +6607,7 @@ msgstr "Veuillez définir un site web à visiter"
 msgid "Please set an email address to send emails"
 msgstr "Veuillez définir une adresse e-mail pour envoyer des e-mails"
 
-#: crm/integrations/exotel/handler.py:72
+#: crm/integrations/exotel/handler.py:82
 msgid "Please setup Exotel intergration"
 msgstr "Veuillez configurer l'intégration Exotel"
 
@@ -6808,7 +6829,7 @@ msgstr "Questions"
 #. Option for the 'Status' (Select) field in DocType 'CRM Call Log'
 #: crm/domain_enrichment/doctype/crm_enrichment_run/crm_enrichment_run.json
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
-#: frontend/src/utils/callLog.js:66
+#: frontend/src/utils/callLog.js:68
 msgid "Queued"
 msgstr "En file d'attente"
 
@@ -6861,6 +6882,10 @@ msgstr ""
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
 msgid "Read"
 msgstr "Lu"
+
+#: frontend/src/components/Settings/Forms/FieldCard.vue:148
+msgid "Read-only if"
+msgstr ""
 
 #: crm/api/dashboard.py:940
 #: frontend/src/components/Settings/LeadSyncing/FailureLogs.vue:30
@@ -7014,7 +7039,7 @@ msgstr "Supprimer l'image"
 
 #: frontend/src/components/FieldLayoutEditor.vue:574
 #: frontend/src/components/FieldLayoutEditor.vue:580
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1092
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1115
 msgid "Remove Last Column"
 msgstr "Supprimer la dernière colonne"
 
@@ -7028,7 +7053,7 @@ msgstr "Supprimer la photo"
 
 #: frontend/src/components/FieldLayoutEditor.vue:477
 #: frontend/src/components/FieldLayoutEditor.vue:485
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1112
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1135
 msgid "Remove Section"
 msgstr "Supprimer la section"
 
@@ -7049,7 +7074,7 @@ msgstr ""
 msgid "Removed from hierarchy."
 msgstr ""
 
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1107
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1130
 msgid "Rename"
 msgstr "Renommer"
 
@@ -7243,7 +7268,7 @@ msgstr "Droite"
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
-#: frontend/src/utils/callLog.js:68
+#: frontend/src/utils/callLog.js:70
 msgid "Ringing"
 msgstr "Sonnerie"
 
@@ -7599,7 +7624,7 @@ msgid "Search users"
 msgstr ""
 
 #: frontend/src/components/FieldLayoutEditor.vue:454
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1104
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1127
 msgid "Section"
 msgstr "Section"
 
@@ -7692,10 +7717,10 @@ msgstr "Sélectionner une option"
 msgid "Select an icon..."
 msgstr ""
 
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:582
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:589
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1126
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1136
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:597
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1149
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1159
 msgid "Select an option"
 msgstr ""
 
@@ -7719,7 +7744,7 @@ msgstr "Choisissez d'afficher l'heure avec ou sans les secondes"
 msgid "Select your ERPNext company to connect with"
 msgstr "Sélectionnez votre entreprise ERPNext à connecter"
 
-#: frontend/src/components/FieldLayout/Field.vue:582
+#: frontend/src/components/FieldLayout/Field.vue:597
 msgid "Select {0}"
 msgstr "Sélectionnez {0}"
 
@@ -7811,7 +7836,7 @@ msgstr "Définir la localisation"
 msgid "Set a Website on this record before enriching."
 msgstr ""
 
-#: crm/api/form.py:389
+#: crm/api/form.py:392
 msgid "Set a default value before publishing for: {0}"
 msgstr ""
 
@@ -7853,7 +7878,7 @@ msgstr "Définir la localisation…"
 msgid "Set once the first admin completes the onboarding persona questionnaire"
 msgstr ""
 
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:102
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:108
 msgid "Set the Exotel number to be used for outgoing calls."
 msgstr "Définir le numéro Exotel à utiliser pour les appels sortants."
 
@@ -7920,7 +7945,7 @@ msgstr ""
 #. Label of the defaults_tab (Tab Break) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 #: frontend/src/components/Layouts/AppSidebar.vue:658
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:703
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:715
 msgid "Settings"
 msgstr "Paramètres"
 
@@ -7944,11 +7969,11 @@ msgstr "Configurez un fournisseur de taux de change autre que « Frankfurter » 
 msgid "Setup your password"
 msgstr "Configurer votre mot de passe"
 
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:704
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:716
 msgid "Share"
 msgstr "Partager"
 
-#: frontend/src/components/Activities/Activities.vue:249
+#: frontend/src/components/Activities/Activities.vue:253
 msgid "Show"
 msgstr "Afficher"
 
@@ -8258,7 +8283,7 @@ msgid "Subject: {0}"
 msgstr "Objet : {0}"
 
 #: crm/api/form.py:354
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:635
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:646
 msgid "Submit"
 msgstr "Valider"
 
@@ -8317,7 +8342,7 @@ msgstr "Basculer entre le thème clair, sombre ou système"
 msgid "Switch between outgoing email accounts when sending emails"
 msgstr "Basculer entre les comptes de messagerie sortants lors de l'envoi d'e-mails"
 
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1353
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1379
 msgid "Switching to {0} will remove {1} field(s) that don't exist on {0}. This can't be undone."
 msgstr ""
 
@@ -8848,7 +8873,7 @@ msgstr "TwiML SID"
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
 #: frontend/src/components/Layouts/AppSidebar.vue:722
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:51
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:153
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:171
 msgid "Twilio"
 msgstr "Twilio"
 
@@ -8880,7 +8905,7 @@ msgstr "Numéro Twilio"
 msgid "Twilio Settings"
 msgstr "Paramètres Twilio"
 
-#: crm/integrations/twilio/api.py:15
+#: crm/integrations/twilio/api.py:16
 msgid "Twilio configuration is missing"
 msgstr "La configuration Twilio est manquante"
 
@@ -8936,7 +8961,7 @@ msgstr ""
 msgid "Unassignment Condition"
 msgstr "Condition de désaffectation"
 
-#: crm/integrations/exotel/handler.py:169
+#: crm/integrations/exotel/handler.py:190
 msgid "Unauthorized request"
 msgstr "Requête non autorisée"
 
@@ -8990,7 +9015,7 @@ msgid "Unpublish"
 msgstr "Dépublier"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:570
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1001
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1021
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:359
 msgid "Unsaved Changes"
 msgstr "Modifications non enregistrées"
@@ -9028,8 +9053,8 @@ msgstr "Mise à jour"
 msgid "Update Account"
 msgstr "Mettre à jour le compte"
 
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:163
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:190
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:181
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:208
 msgid "Update Configuration"
 msgstr "Mettre à jour la configuration"
 
@@ -9211,8 +9236,16 @@ msgstr "Vues"
 msgid "Visibility"
 msgstr "Visibilité"
 
+#: frontend/src/components/Settings/Forms/FieldCard.vue:134
+msgid "Visible if"
+msgstr ""
+
 #: frontend/src/pages/PersonaForm.vue:80
 msgid "Walk-ins"
+msgstr ""
+
+#: crm/integrations/twilio/api.py:108
+msgid "We're unable to connect your call right now. Please try again later."
 msgstr ""
 
 #: frontend/src/components/Layouts/AppSidebar.vue:684
@@ -9443,7 +9476,7 @@ msgstr "Vous pouvez inviter plusieurs utilisateurs en séparant leurs adresses e
 msgid "You cannot remove yourself."
 msgstr "Vous ne pouvez pas vous supprimer vous-même."
 
-#: crm/integrations/exotel/handler.py:84
+#: crm/integrations/exotel/handler.py:94
 msgid "You do not have Exotel Number set in your Telephony Agent"
 msgstr "Vous n'avez pas de numéro Exotel défini dans votre agent de téléphonie"
 
@@ -9451,7 +9484,7 @@ msgstr "Vous n'avez pas de numéro Exotel défini dans votre agent de téléphon
 msgid "You do not have enough permissions to access Frappe CRM. Please contact your administrator if you believe this is an error."
 msgstr "Vous ne disposez pas des autorisations suffisantes pour accéder à Frappe CRM. Veuillez contacter votre administrateur si vous pensez qu'il s'agit d'une erreur."
 
-#: crm/integrations/exotel/handler.py:92
+#: crm/integrations/exotel/handler.py:102
 msgid "You do not have mobile number set in your Telephony Agent"
 msgstr "Vous n'avez pas de numéro de mobile défini dans votre agent de téléphonie"
 
@@ -9486,6 +9519,10 @@ msgstr "Vous aurez besoin d'un compte développeur Meta et d'un jeton d'accès p
 #: crm/domain_enrichment/mapper.py:46
 msgid "YouTube"
 msgstr "Youtube"
+
+#: crm/integrations/twilio/api.py:71
+msgid "Your account is not configured with a phone number. Please contact your administrator."
+msgstr ""
 
 #: crm/api/todo.py:110
 msgid "Your assignment on task {0} has been removed by {1}"
@@ -9552,7 +9589,7 @@ msgstr "noir"
 msgid "blue"
 msgstr "bleu"
 
-#: frontend/src/components/Activities/Activities.vue:252
+#: frontend/src/components/Activities/Activities.vue:256
 msgid "changes from"
 msgstr "modifications depuis"
 
@@ -9850,7 +9887,7 @@ msgstr "liste"
 msgid "logo"
 msgstr "logo"
 
-#: crm/api/comment.py:39 frontend/src/components/Notifications.vue:64
+#: crm/api/comment.py:41 frontend/src/components/Notifications.vue:64
 #: frontend/src/pages/MobileNotification.vue:50
 msgid "mentioned you in {0}"
 msgstr "vous a mentionné dans {0}"
@@ -9966,8 +10003,8 @@ msgstr ""
 msgid "teal"
 msgstr "sarcelle"
 
-#: frontend/src/components/Activities/Activities.vue:291
-#: frontend/src/components/Activities/Activities.vue:354
+#: frontend/src/components/Activities/Activities.vue:295
+#: frontend/src/components/Activities/Activities.vue:358
 msgid "to"
 msgstr "à"
 
@@ -10102,7 +10139,7 @@ msgstr "{0} est une valeur invalide"
 msgid "{0} is an invalid email address"
 msgstr "{0} est une adresse e-mail invalide"
 
-#: crm/api/form.py:509 frontend/src/components/Modals/ContactModal.vue:106
+#: crm/api/form.py:517 frontend/src/components/Modals/ContactModal.vue:106
 #: frontend/src/components/Modals/ConvertToDealModal.vue:171
 msgid "{0} is required"
 msgstr "{0} est requis"
