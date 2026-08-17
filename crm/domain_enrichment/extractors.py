@@ -175,6 +175,29 @@ def _meta_with_method(soup, *names):
 	return "", ""
 
 
+# Below this, a description tag is a stub (a bare company name) rather than copy.
+_MIN_META_DESC_LEN = 30
+
+
+def _meta_description(soup):
+	"""The page's description meta tag, preferring ``og:description``.
+
+	Sites with broken markup leak non-prose into ``og:description`` -- a
+	site-verification token, a bare company name -- while carrying real copy on the
+	plain ``<meta name="description">``. So a degenerate ``og:description`` yields to a
+	usable one; it is still returned when nothing better exists.
+	"""
+	fallback = ""
+	for name in ("og:description", "description"):
+		content, _name = _meta_with_method(soup, name)
+		if not content:
+			continue
+		if " " in content and len(content) >= _MIN_META_DESC_LEN:
+			return content
+		fallback = fallback or content
+	return fallback
+
+
 # A company name is usually the first chunk of a page <title>, before a separator.
 _NAME_SPLIT_RE = re.compile(r"\s*\|\s*|\s+[-–—•·]\s+|\s*:\s")
 _NAME_TAGLINE_RE = re.compile(
@@ -393,7 +416,7 @@ def extract_company_info(homepage, soup):
 			info["company_name"] = Field(_clean_company_name(homepage.title, url), url, Method.TITLE_TAG)
 
 	if not info["description"].value:
-		content, _name = _meta_with_method(soup, "og:description", "description")
+		content = _meta_description(soup)
 		if content:
 			info["description"] = Field(content, url, Method.META_TAG)
 
@@ -407,6 +430,25 @@ _NON_CONTENT_PARENTS = {"nav", "header", "footer", "aside", "form"}
 _MIN_PARAGRAPH_LEN = 80
 _MAX_PARAGRAPHS_SCANNED = 6
 
+# An About page's prose is rarely all about the company: leadership bios and
+# call-to-action blurbs sit right beside the real description, and both are dense
+# in the industry keywords the scorer rewards (a bio lists former employers and
+# sectors). Reject them outright so they cannot win.
+_BIO_RE = re.compile(
+	r"\b(?:he|she|his|her)\b"
+	r"|\bbegan (?:his|her) career\b"
+	r"|\bprior to (?:joining|founding)\b"
+	r"|\bis the (?:founder|co-founder|ceo|cto|cfo|chief|managing director|president)\b",
+	re.I,
+)
+_CTA_RE = re.compile(
+	r"^\s*(?:explore|discover|learn|find out|contact|call|browse|shop|buy|order|"
+	r"read more|get in touch|see|check out|sign up|subscribe|join)\b",
+	re.I,
+)
+# A description of the company usually speaks for it ("we"/"our") or names it.
+_FIRST_PERSON_RE = re.compile(r"\b(?:we|our|ours|us)\b", re.I)
+
 
 def _company_name_hits(text, company_name):
 	name = (company_name or "").strip()
@@ -415,11 +457,20 @@ def _company_name_hits(text, company_name):
 	return len(re.findall(rf"\b{re.escape(name)}\b", text, re.IGNORECASE))
 
 
+def _describes_company(text, company_name):
+	"""True when the paragraph speaks as/about the company rather than a person."""
+	return bool(_FIRST_PERSON_RE.search(text)) or _company_name_hits(text, company_name) > 0
+
+
 def first_paragraph(soup, industry_rules=None, company_name=""):
-	"""Best substantial body paragraph on a page. Scores up to
-	``_MAX_PARAGRAPHS_SCANNED`` qualifying ``<p>`` tags by Industry-rule keyword hits
-	(the same corpus ``classify_industry`` uses); ``company_name`` mentions only
-	break ties, never outrank keyword signal. Read-only -- does not mutate ``soup``.
+	"""Best substantial body paragraph on a page.
+
+	Scans up to ``_MAX_PARAGRAPHS_SCANNED`` qualifying ``<p>`` tags, drops leadership
+	bios and call-to-action blurbs, then ranks by Industry-rule keyword hits (the same
+	corpus ``classify_industry`` uses). Speaking as/about the company and explicit
+	``company_name`` mentions only break ties, never outrank keyword signal. Falls back
+	to the unfiltered candidates when every one was rejected, so a page that only has
+	bios still yields something. Read-only -- does not mutate ``soup``.
 	"""
 	candidates = []
 	for p in soup.find_all("p"):
@@ -434,17 +485,18 @@ def first_paragraph(soup, industry_rules=None, company_name=""):
 
 	if not candidates:
 		return ""
-	if not industry_rules:
-		return candidates[0]
+	candidates = [
+		text for text in candidates if not (_BIO_RE.search(text) or _CTA_RE.match(text))
+	] or candidates
 
 	# max() keeps the first-encountered element on ties, so document order still
 	# wins when nothing scores higher (covers the "all zero hits" case for free).
-	# Company-name hits are a separate tuple slot -- they can only break ties,
-	# never add to the industry-hit count.
+	# The trailing slots can only break ties, never add to the industry-hit count.
 	return max(
 		candidates,
 		key=lambda text: (
-			sum(rule.matches(text) for rule in industry_rules),
+			sum(rule.matches(text) for rule in industry_rules or []),
+			_describes_company(text, company_name),
 			_company_name_hits(text, company_name),
 		),
 	)
@@ -489,9 +541,8 @@ def select_description(pages, soups_by_url, industry_rules=None, company_name=""
 			)
 
 		if is_home or is_about:
-			content, _name = _meta_with_method(soup, "og:description", "description")
+			content = _meta_description(soup)
 			if content:
-				content = content.strip()
 				score = 2 if (is_home and _COMMERCE_RE.search(content)) else 4
 				consider(Field(content, page.url, Method.META_TAG), score)
 
