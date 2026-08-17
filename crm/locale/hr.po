@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2026-08-07 14:38+0000\n"
-"PO-Revision-Date: 2026-08-08 14:32\n"
+"POT-Creation-Date: 2026-08-17 07:47+0000\n"
+"PO-Revision-Date: 2026-08-17 16:28\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Croatian\n"
 "MIME-Version: 1.0\n"
@@ -166,8 +166,8 @@ msgstr "Izvor sinkronizacije potencijalnih klijenata već je omogućen za ovaj F
 msgid "A new account has been created for you at {0}"
 msgstr "Za vas je stvoren novi račun {0}"
 
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1066
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1208
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1089
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1231
 msgid "A section can have up to {0} columns"
 msgstr "Odjeljak može imati do {0} stupaca"
 
@@ -354,7 +354,7 @@ msgstr "Dodaj Grafikon"
 #: frontend/src/components/ColumnSettings.vue:68
 #: frontend/src/components/FieldLayoutEditor.vue:562
 #: frontend/src/components/Kanban/KanbanView.vue:161
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1086
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1109
 msgid "Add Column"
 msgstr "Dodaj Stupac"
 
@@ -511,7 +511,7 @@ msgstr "Dodaj izravna izvješća"
 msgid "Add existing system users to this CRM. Assign them a role to grant access with their current credentials."
 msgstr "Dodaj postojeće korisnike sustava u ovaj CRM. Dodijelite im ulogu kako biste im odobrili pristup s njihovim trenutnim akreditivima."
 
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:623
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:634
 msgid "Add fields to see them here."
 msgstr "Dodaj polja da biste ih ovdje vidjeli."
 
@@ -750,7 +750,7 @@ msgid "Are you sure you want to discard unsaved changes to this event?"
 msgstr "Jeste li sigurni da želite odbaciti nespremljene promjene ovog događaja?"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:571
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1002
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1022
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:360
 msgid "Are you sure you want to go back? Unsaved changes will be lost."
 msgstr "Jeste li sigurni da se želite vratiti? Nespremljene promjene bit će izgubljene."
@@ -1172,7 +1172,7 @@ msgstr "Kontakti"
 
 #. Name of a DocType
 #: crm/fcrm/doctype/crm_dashboard/crm_dashboard.json
-#: frontend/src/pages/Dashboard.vue:307
+#: frontend/src/pages/Dashboard.vue:310
 msgid "CRM Dashboard"
 msgstr "Nadzorna Ploča"
 
@@ -1412,8 +1412,12 @@ msgstr "Zapisnik Poziva"
 msgid "Call Received By"
 msgstr "Poziv Primljen Od"
 
-#: crm/integrations/api.py:259 crm/integrations/twilio/api.py:148
-#: crm/integrations/twilio/api.py:166
+#: frontend/src/components/Telephony/ExotelCallUI.vue:403
+msgid "Call connected, but the call log could not be saved. Please contact your administrator."
+msgstr "Poziv je uspostavljen, ali zapisnik poziva nije mogao biti spremljen. Kontaktiraj administratora."
+
+#: crm/integrations/api.py:259 crm/integrations/twilio/api.py:174
+#: crm/integrations/twilio/api.py:192
 msgid "Call log not found"
 msgstr "Zapisnik poziva nije pronađen"
 
@@ -1475,7 +1479,7 @@ msgstr "Otkaži"
 #. Option for the 'Status' (Select) field in DocType 'CRM Call Log'
 #. Option for the 'Status' (Select) field in DocType 'CRM Task'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
-#: crm/fcrm/doctype/crm_task/crm_task.json frontend/src/utils/callLog.js:67
+#: crm/fcrm/doctype/crm_task/crm_task.json frontend/src/utils/callLog.js:69
 msgid "Canceled"
 msgstr "Otkazano"
 
@@ -1541,7 +1545,7 @@ msgstr "Kategorija"
 msgid "Change"
 msgstr "Promjeni"
 
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1360
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1386
 msgid "Change & remove fields"
 msgstr "Promijeni & ukloni polja"
 
@@ -1570,7 +1574,7 @@ msgstr "Promijeni Status"
 msgid "Change deal status"
 msgstr "Promijeni status posla"
 
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1352
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1378
 msgid "Change form type?"
 msgstr "Promijeni tip obrasca?"
 
@@ -1714,7 +1718,7 @@ msgid "Color"
 msgstr "Boja"
 
 #: frontend/src/components/FieldLayoutEditor.vue:559
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1118
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1141
 msgid "Column"
 msgstr "Kolona"
 
@@ -1818,7 +1822,7 @@ msgstr "Završi Registraciju"
 #. Option for the 'Status' (Select) field in DocType 'CRM Call Log'
 #: crm/domain_enrichment/doctype/crm_enrichment_run/crm_enrichment_run.json
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
-#: frontend/src/utils/callLog.js:62
+#: frontend/src/utils/callLog.js:64
 msgid "Completed"
 msgstr "Završeno"
 
@@ -1836,14 +1840,18 @@ msgstr "Računar"
 msgid "Condition"
 msgstr "Uvjet"
 
+#: frontend/src/components/Settings/Forms/FieldCard.vue:118
+msgid "Conditional logic"
+msgstr "Uvjetna logika"
+
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:188
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:272
 msgid "Conditions for this rule were created from"
 msgstr "Uvjeti za ovo pravilo stvoreni su iz"
 
 #: frontend/src/components/Settings/Profile/ProfileSettings.vue:107
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:163
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:190
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:181
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:208
 msgid "Configure"
 msgstr "Konfiguriraj"
 
@@ -1871,11 +1879,11 @@ msgstr "Konfiguriraj postavke telefonije"
 msgid "Configure the exchange rate provider for your CRM"
 msgstr "Konfiguriši pružatelja tečaja za Podršku Prodaje"
 
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:184
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:202
 msgid "Configure your Exotel telephony integration settings here"
 msgstr "Ovdje konfigurirajte postavke integracije Exotel telefonije"
 
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:157
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:175
 msgid "Configure your Twilio telephony integration settings here"
 msgstr "Ovdje konfigurirajte postavke integracije Twilio telefonije"
 
@@ -2057,7 +2065,7 @@ msgstr "Nije moguće automatski izraditi prilagođena polja Prodajne Podrške {0
 msgid "Could not enrich from the website."
 msgstr "Kompletiranje s web stranice nije moguće."
 
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:848
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:860
 msgid "Could not grant guest access."
 msgstr "Nije moguće odobriti pristup gostu."
 
@@ -2065,7 +2073,7 @@ msgstr "Nije moguće odobriti pristup gostu."
 msgid "Could not remove."
 msgstr "Nije moguće ukloniti."
 
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1492
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1521
 msgid "Could not save"
 msgstr "Nije moguće spremiti"
 
@@ -2152,8 +2160,8 @@ msgid "Create Missing Link"
 msgstr "Izradi Nedostajući Link"
 
 #: frontend/src/components/Controls/Link.vue:50
-#: frontend/src/components/Modals/EmailTemplateSelectorModal.vue:58
-#: frontend/src/components/Modals/WhatsappTemplateSelectorModal.vue:60
+#: frontend/src/components/Modals/EmailTemplateSelectorModal.vue:57
+#: frontend/src/components/Modals/WhatsappTemplateSelectorModal.vue:61
 #: frontend/src/components/PrimaryDropdown.vue:49
 msgid "Create New"
 msgstr "Izradi"
@@ -2262,7 +2270,7 @@ msgstr "Prilagođena Polja"
 msgid "Custom List Actions"
 msgstr "Radnje Prilagođenog Popisa"
 
-#: frontend/src/pages/Dashboard.vue:228
+#: frontend/src/pages/Dashboard.vue:231
 msgid "Custom Range"
 msgstr "Zaseban Raspon"
 
@@ -2361,7 +2369,7 @@ msgstr "Dan"
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:51
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:59
 #: frontend/src/components/Telephony/ExotelCallUI.vue:200
-#: frontend/src/pages/Tasks.vue:132
+#: frontend/src/pages/Tasks.vue:133
 msgid "Deal"
 msgstr "Posao"
 
@@ -2454,7 +2462,7 @@ msgstr "Poslovi po distriktu"
 msgid "Dear {{ lead_name }}, \\n\\nThis is a reminder for the payment of {{ grand_total }}. \\n\\nThanks, \\nFrappé"
 msgstr "Poštovani {{ lead_name }}, \\n\\nOvo je podsjetnik za plaćanje {{ grand_total }}. \\n\\nHvala, \\nFrappé"
 
-#: frontend/src/utils/callLog.js:64
+#: frontend/src/utils/callLog.js:66
 msgid "Declined"
 msgstr "Odbijeno"
 
@@ -2547,7 +2555,7 @@ msgid "Defines the default currency for all records, can be overridden at the fi
 msgstr "Definira zadanu valutu za sve zapise, može se poništiti na razini polja"
 
 #: frontend/src/components/Activities/AttachmentArea.vue:131
-#: frontend/src/components/Activities/NoteArea.vue:12
+#: frontend/src/components/Activities/NoteArea.vue:17
 #: frontend/src/components/Activities/TaskArea.vue:55
 #: frontend/src/components/Activities/TaskArea.vue:63
 #: frontend/src/components/BulkDeleteLinkedDocModal.vue:8
@@ -2576,8 +2584,8 @@ msgstr "Definira zadanu valutu za sve zapise, može se poništiti na razini polj
 #: frontend/src/pages/MobileDeal.vue:526
 #: frontend/src/pages/MobileOrganization.vue:73
 #: frontend/src/pages/MobileOrganization.vue:279
-#: frontend/src/pages/Notes.vue:44 frontend/src/pages/Organization.vue:96
-#: frontend/src/pages/Tasks.vue:363 frontend/src/utils/index.js:823
+#: frontend/src/pages/Notes.vue:49 frontend/src/pages/Organization.vue:96
+#: frontend/src/pages/Tasks.vue:364 frontend/src/utils/index.js:823
 msgid "Delete"
 msgstr "Izbriši"
 
@@ -2643,7 +2651,7 @@ msgstr "Izbriši {0} artikala"
 msgid "Delete {0} items"
 msgstr "Izbriši {0} stavke"
 
-#: frontend/src/components/Activities/NoteArea.vue:73
+#: frontend/src/components/Activities/NoteArea.vue:81
 msgid "Deleting note..."
 msgstr "Brisanje bilješke..."
 
@@ -2734,11 +2742,11 @@ msgstr "Onemogući Prodajnu Hijerarhiju"
 msgid "Disabled"
 msgstr "Onemogućeno"
 
-#: crm/www/crm_form.html:230
+#: crm/www/crm_form.html:241
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:923
 #: frontend/src/components/CommentBox.vue:71
 #: frontend/src/components/EmailEditor.vue:165
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:629
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:640
 msgid "Discard"
 msgstr "Odbaci"
 
@@ -2796,7 +2804,7 @@ msgstr "Dokument nije pronađen"
 msgid "Document Type"
 msgstr "Tip Dokumenta"
 
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:242
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:261
 msgid "Document created successfully"
 msgstr "Dokument je uspješno izrađen"
 
@@ -2846,7 +2854,7 @@ msgstr "Preuzmi"
 msgid "Draft"
 msgstr "Nacrt"
 
-#: crm/www/crm_form.html:166
+#: crm/www/crm_form.html:176
 msgid "Draft preview — only you can see this. Publish the form to make it public."
 msgstr "Pregled nacrta — samo vi možete vidjeti ovo. Objavite obrazac da bi bio javno dostupan."
 
@@ -2985,6 +2993,7 @@ msgid "ERPNext is not integrated with the CRM"
 msgstr "Sistem nije integrisan sa Prodajnom Podrškom"
 
 #: frontend/src/components/Activities/CommentArea.vue:94
+#: frontend/src/components/Activities/NoteArea.vue:12
 #: frontend/src/components/FieldLayout/Field.vue:110
 #: frontend/src/components/FieldLayoutEditor.vue:414
 #: frontend/src/components/FieldLayoutEditor.vue:457
@@ -2995,7 +3004,7 @@ msgstr "Sistem nije integrisan sa Prodajnom Podrškom"
 #: frontend/src/components/Settings/Sla/SlaHolidays.vue:202
 #: frontend/src/components/Settings/Sla/SlaPriorityList.vue:188
 #: frontend/src/components/ViewControls.vue:1166
-#: frontend/src/pages/Dashboard.vue:16
+#: frontend/src/pages/Dashboard.vue:16 frontend/src/pages/Notes.vue:44
 msgid "Edit"
 msgstr "Uredi"
 
@@ -3086,7 +3095,7 @@ msgstr "Uređivanje Događaja"
 msgid "Editing Row {0}"
 msgstr "Uređivanje Reda {0}"
 
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:702
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:714
 msgid "Editor"
 msgstr "Urednik"
 
@@ -3415,11 +3424,11 @@ msgstr "Unesi Pristupni Token"
 msgid "Enter Brand Name"
 msgstr "Unesi naziv marke"
 
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:109
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:115
 msgid "Enter Exotel Number"
 msgstr "Unesi Exotel broj"
 
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:134
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:146
 msgid "Enter Personal Mobile Number"
 msgstr "Unesi osobni broj mobitela"
 
@@ -3441,15 +3450,22 @@ msgstr "Unesi Vrijednost"
 msgid "Enter a Website first."
 msgstr "Prvo unesi web stranicu."
 
+#: frontend/src/components/FieldLayout/Field.vue:294
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:88
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:119
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:150
+msgid "Enter a valid phone number"
+msgstr "Unesi važeći broj telefona"
+
 #: frontend/src/components/Settings/LeadSyncing/leadSyncSourceConfig.js:31
 msgid "Enter your Facebook Access Token"
 msgstr "Unesi Facebook Pristupni Token"
 
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:124
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:136
 msgid "Enter your personal mobile number used by Exotel to make calls"
 msgstr "Unesi osobni broj mobitela koji Exotel koristi za upućivanje poziva"
 
-#: frontend/src/components/FieldLayout/Field.vue:584
+#: frontend/src/components/FieldLayout/Field.vue:599
 msgid "Enter {0}"
 msgstr "Unesi {0}"
 
@@ -3583,11 +3599,11 @@ msgstr "Pružatelj Usluga Tečaja"
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
 #: frontend/src/components/Layouts/AppSidebar.vue:723
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:52
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:180
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:198
 msgid "Exotel"
 msgstr "Exotel"
 
-#: crm/integrations/exotel/handler.py:113
+#: crm/integrations/exotel/handler.py:124
 msgid "Exotel Exception"
 msgstr "Exotel Iznimka"
 
@@ -3597,15 +3613,15 @@ msgstr "Exotel Integracija onemogućena"
 
 #. Label of the exotel_number (Data) field in DocType 'CRM Telephony Agent'
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:99
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:105
 msgid "Exotel Number"
 msgstr "Exotel Broj"
 
-#: crm/integrations/exotel/handler.py:84
+#: crm/integrations/exotel/handler.py:94
 msgid "Exotel Number Missing"
 msgstr "Nedostaje broj Exotela"
 
-#: crm/integrations/exotel/handler.py:88
+#: crm/integrations/exotel/handler.py:98
 msgid "Exotel Number {0} is not valid"
 msgstr "Exotel broj {0} nije valjan"
 
@@ -3724,7 +3740,7 @@ msgstr "Facebooku/Instagramu Oglasi"
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: crm/fcrm/doctype/crm_rolling_response_time/crm_rolling_response_time.json
-#: frontend/src/utils/callLog.js:65
+#: frontend/src/utils/callLog.js:67
 msgid "Failed"
 msgstr "Neuspješno"
 
@@ -3741,7 +3757,7 @@ msgstr "Dodavanje korisnika nije uspjelo"
 msgid "Failed to add reaction to the message"
 msgstr "Dodavanje reakcije poruci nije uspjelo"
 
-#: crm/integrations/twilio/api.py:154
+#: crm/integrations/twilio/api.py:180
 msgid "Failed to capture Twilio recording"
 msgstr "Spremanje Twilio snimke nije uspjelo"
 
@@ -3761,7 +3777,7 @@ msgstr "Brisanje komentara nije uspjelo"
 msgid "Failed to delete lead sync source"
 msgstr "Brisanje izvora sinkronizacije potencijalnih klijenata nije uspjelo"
 
-#: frontend/src/components/Activities/NoteArea.vue:75
+#: frontend/src/components/Activities/NoteArea.vue:83
 msgid "Failed to delete note"
 msgstr "Brisanje bilješke nije uspjelo"
 
@@ -3802,7 +3818,7 @@ msgstr "Spremanje radnog dana nije uspjelo: {0}"
 msgid "Failed to send WhatsApp message"
 msgstr "Slanje WhatsApp poruke nije uspjelo"
 
-#: frontend/src/components/Activities/Activities.vue:617
+#: frontend/src/components/Activities/Activities.vue:621
 msgid "Failed to send WhatsApp template"
 msgstr "Slanje WhatsApp predloška nije uspjelo"
 
@@ -3818,7 +3834,7 @@ msgstr "Slanje e-pošte nije uspjelo!"
 msgid "Failed to start sync"
 msgstr "Pokretanje sinkronizacije nije uspjelo"
 
-#: crm/integrations/twilio/api.py:181
+#: crm/integrations/twilio/api.py:207
 msgid "Failed to update Twilio call status"
 msgstr "Ažuriranje statusa Twilio poziva nije uspjelo"
 
@@ -4045,7 +4061,7 @@ msgstr "Naslov obrasca"
 msgid "Form unpublished"
 msgstr "Objava obrasca je poništena"
 
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:994
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1014
 msgid "Form updated"
 msgstr "Obrazac ažuriran"
 
@@ -4054,7 +4070,7 @@ msgstr "Obrazac ažuriran"
 msgid "Forms"
 msgstr "Obrasci"
 
-#: crm/api/form.py:244 crm/api/form.py:253 crm/api/form.py:400
+#: crm/api/form.py:244 crm/api/form.py:253 crm/api/form.py:403
 msgid "Forms can only map to: {0}"
 msgstr "Obrasci se mogu mapirati samo na: {0}"
 
@@ -4174,7 +4190,7 @@ msgid "GitHub Repository"
 msgstr "GitHub Repozitorij"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:577
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1008
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1028
 msgid "Go Back"
 msgstr "Idi Nazad"
 
@@ -4194,7 +4210,7 @@ msgstr "Ideš?"
 msgid "Google Ads"
 msgstr "Google Oglasi"
 
-#: frontend/src/components/Settings/Forms/FieldCard.vue:136
+#: frontend/src/components/Settings/Forms/FieldCard.vue:174
 msgid "Grant Access"
 msgstr "Odobri Pristup"
 
@@ -4227,11 +4243,11 @@ msgstr "Grupiraj po Polju"
 msgid "Group By: "
 msgstr "Grupiši po: "
 
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:845
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:857
 msgid "Guests can now select {0} records."
 msgstr "Gosti sada mogu odabrati {0} zapise."
 
-#: frontend/src/components/Settings/Forms/FieldCard.vue:126
+#: frontend/src/components/Settings/Forms/FieldCard.vue:164
 msgid "Guests can't see {0} records. Grant select access to list them publicly."
 msgstr "Gosti ne mogu vidjeti {0} zapise. Dopustite odabranim osobama pristup da ih javno navedu."
 
@@ -4279,7 +4295,7 @@ msgstr "Sakriveno"
 msgid "Hidden required fields"
 msgstr "Skrivena obavezna polja"
 
-#: frontend/src/components/Activities/Activities.vue:249
+#: frontend/src/components/Activities/Activities.vue:253
 msgid "Hide"
 msgstr "Sakrij"
 
@@ -4442,7 +4458,7 @@ msgstr "U"
 #. Option for the 'Status' (Select) field in DocType 'CRM Call Log'
 #. Option for the 'Status' (Select) field in DocType 'CRM Task'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
-#: crm/fcrm/doctype/crm_task/crm_task.json frontend/src/utils/callLog.js:70
+#: crm/fcrm/doctype/crm_task/crm_task.json frontend/src/utils/callLog.js:72
 msgid "In Progress"
 msgstr "U Toku"
 
@@ -4500,7 +4516,7 @@ msgstr "Povjerenje u Industriju"
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
-#: frontend/src/utils/callLog.js:63
+#: frontend/src/utils/callLog.js:65
 msgid "Initiated"
 msgstr "Pokrenut"
 
@@ -4525,11 +4541,11 @@ msgstr "Instagram"
 msgid "Integration"
 msgstr "Integracija"
 
-#: crm/integrations/exotel/handler.py:72
+#: crm/integrations/exotel/handler.py:82
 msgid "Integration Not Enabled"
 msgstr "Integracija nije omogućena"
 
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:144
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:162
 msgid "Integrations"
 msgstr "Integracije"
 
@@ -4555,7 +4571,7 @@ msgstr "Nevažeća adresa e-pošte"
 msgid "Invalid Email or Password"
 msgstr "Nevažeća e-pošta ili lozinka"
 
-#: crm/integrations/exotel/handler.py:88
+#: crm/integrations/exotel/handler.py:98
 msgid "Invalid Exotel Number"
 msgstr "Nevažeći Exotel Broj"
 
@@ -4567,11 +4583,11 @@ msgstr "Nevažeći GeoJSON"
 msgid "Invalid Start Or End Time"
 msgstr "Nevažeće vrijeme početka ili završetka"
 
-#: crm/integrations/twilio/api.py:19
+#: crm/integrations/twilio/api.py:20
 msgid "Invalid Twilio account"
 msgstr "Nevažeći Twilio račun"
 
-#: crm/integrations/twilio/api.py:24
+#: crm/integrations/twilio/api.py:25
 msgid "Invalid Twilio application"
 msgstr "Nevažeća Twilio aplikacija"
 
@@ -4860,7 +4876,7 @@ msgstr "Jezik & Vrijeme"
 msgid "Last"
 msgstr "Posljednje"
 
-#: frontend/src/pages/Dashboard.vue:202
+#: frontend/src/pages/Dashboard.vue:205
 msgid "Last 30 Days"
 msgstr "Posljednjih 30 Dana"
 
@@ -4868,15 +4884,15 @@ msgstr "Posljednjih 30 Dana"
 msgid "Last 6 Months"
 msgstr "Poslednjih 6 Mjeseci"
 
-#: frontend/src/pages/Dashboard.vue:210
+#: frontend/src/pages/Dashboard.vue:213
 msgid "Last 60 Days"
 msgstr "Posljednjih 60 Dana"
 
-#: frontend/src/pages/Dashboard.vue:194
+#: frontend/src/pages/Dashboard.vue:197
 msgid "Last 7 Days"
 msgstr "Posljednjih 7 Dana"
 
-#: frontend/src/pages/Dashboard.vue:218
+#: frontend/src/pages/Dashboard.vue:221
 msgid "Last 90 Days"
 msgstr "Posljednjih 90 Dana"
 
@@ -4961,7 +4977,7 @@ msgstr "Izgled"
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:76
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:55
 #: frontend/src/components/Telephony/ExotelCallUI.vue:200
-#: frontend/src/pages/Tasks.vue:133
+#: frontend/src/pages/Tasks.vue:134
 msgid "Lead"
 msgstr "Potencijalni Klijent"
 
@@ -5338,6 +5354,10 @@ msgstr "Obavezna polja {0} moraju biti mapirana"
 msgid "Mandatory fields required: {0}"
 msgstr "Obavezna polja nedostaju: {0}"
 
+#: frontend/src/components/Settings/Forms/FieldCard.vue:141
+msgid "Mandatory if"
+msgstr "Obavezno ako"
+
 #. Option for the 'Telephony Medium' (Select) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 msgid "Manual"
@@ -5460,7 +5480,7 @@ msgstr "Srednje Ime"
 msgid "Minimize"
 msgstr "Minimiziraj"
 
-#: frontend/src/utils/callLog.js:69
+#: frontend/src/utils/callLog.js:79
 msgid "Missed Call"
 msgstr "Propušteni poziv"
 
@@ -5489,7 +5509,7 @@ msgstr "Broj mobilnog."
 msgid "Mobile Number"
 msgstr "Mobilni Broj"
 
-#: crm/integrations/exotel/handler.py:92
+#: crm/integrations/exotel/handler.py:102
 msgid "Mobile Number Missing"
 msgstr "Nedostaje Broj Mobitela"
 
@@ -5769,6 +5789,7 @@ msgstr "Ne"
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
+#: frontend/src/utils/callLog.js:71
 msgid "No Answer"
 msgstr "Bez Odgovora"
 
@@ -5817,8 +5838,8 @@ msgstr "Nema prioriteta na popisu"
 msgid "No Results Found"
 msgstr "Nisu pronađeni rezultati"
 
-#: frontend/src/components/Modals/EmailTemplateSelectorModal.vue:56
-#: frontend/src/components/Modals/WhatsappTemplateSelectorModal.vue:57
+#: frontend/src/components/Modals/EmailTemplateSelectorModal.vue:55
+#: frontend/src/components/Modals/WhatsappTemplateSelectorModal.vue:58
 msgid "No Templates Found"
 msgstr "Nisu pronađeni predlošci"
 
@@ -5944,7 +5965,7 @@ msgstr "Nespremljeno"
 msgid "Not Synced"
 msgstr "Nije sinkronizirano"
 
-#: crm/api/form.py:472
+#: crm/api/form.py:480
 msgid "Not a CRM form"
 msgstr "Nije obrazac Prodajne Podrške"
 
@@ -6020,7 +6041,7 @@ msgstr "Nije dopušteno mijenjati raspored polja"
 msgid "Note"
 msgstr "Napomena"
 
-#: frontend/src/components/Activities/NoteArea.vue:74
+#: frontend/src/components/Activities/NoteArea.vue:82
 msgid "Note deleted"
 msgstr "Bilješka izbrisana"
 
@@ -6475,7 +6496,7 @@ msgstr "Osoba"
 msgid "Persona Captured"
 msgstr "Persona Uhvaćena"
 
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:120
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:132
 msgid "Personal Mobile Number"
 msgstr "Osobni Broj Mobitela"
 
@@ -6586,7 +6607,7 @@ msgstr "Molimo postavite web stranicu za posjet"
 msgid "Please set an email address to send emails"
 msgstr "Molimo postavite adresu e-pošte za slanje e-poruka"
 
-#: crm/integrations/exotel/handler.py:72
+#: crm/integrations/exotel/handler.py:82
 msgid "Please setup Exotel intergration"
 msgstr "Postavi Exotel Integraciju"
 
@@ -6808,7 +6829,7 @@ msgstr "Pitanja"
 #. Option for the 'Status' (Select) field in DocType 'CRM Call Log'
 #: crm/domain_enrichment/doctype/crm_enrichment_run/crm_enrichment_run.json
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
-#: frontend/src/utils/callLog.js:66
+#: frontend/src/utils/callLog.js:68
 msgid "Queued"
 msgstr "U Redu"
 
@@ -6861,6 +6882,10 @@ msgstr "Neobrađeni JSON"
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
 msgid "Read"
 msgstr "Čitaj"
+
+#: frontend/src/components/Settings/Forms/FieldCard.vue:148
+msgid "Read-only if"
+msgstr "Samo za čitanje ako"
 
 #: crm/api/dashboard.py:940
 #: frontend/src/components/Settings/LeadSyncing/FailureLogs.vue:30
@@ -7014,7 +7039,7 @@ msgstr "Ukloni sliku"
 
 #: frontend/src/components/FieldLayoutEditor.vue:574
 #: frontend/src/components/FieldLayoutEditor.vue:580
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1092
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1115
 msgid "Remove Last Column"
 msgstr "Ukloni Zadnji Stupac"
 
@@ -7028,7 +7053,7 @@ msgstr "Ukloni Sliku"
 
 #: frontend/src/components/FieldLayoutEditor.vue:477
 #: frontend/src/components/FieldLayoutEditor.vue:485
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1112
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1135
 msgid "Remove Section"
 msgstr "Ukloni odjeljak"
 
@@ -7049,7 +7074,7 @@ msgstr "Ukloni {0} iz hijerarhije. Šta treba da se desi sa njihovim izravnim po
 msgid "Removed from hierarchy."
 msgstr "Uklonjen iz hijerarhije."
 
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1107
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1130
 msgid "Rename"
 msgstr "Preimenuj"
 
@@ -7243,7 +7268,7 @@ msgstr "Desno"
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
-#: frontend/src/utils/callLog.js:68
+#: frontend/src/utils/callLog.js:70
 msgid "Ringing"
 msgstr "Zvoni"
 
@@ -7599,7 +7624,7 @@ msgid "Search users"
 msgstr "Pretraži korisnike"
 
 #: frontend/src/components/FieldLayoutEditor.vue:454
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1104
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1127
 msgid "Section"
 msgstr "Sekcija"
 
@@ -7692,10 +7717,10 @@ msgstr "Odaberi opciju"
 msgid "Select an icon..."
 msgstr "Odaberi ikonu..."
 
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:582
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:589
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1126
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1136
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:597
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1149
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1159
 msgid "Select an option"
 msgstr "Odaberite opciju"
 
@@ -7719,7 +7744,7 @@ msgstr "Odaberite želite li prikaz vremena sa ili bez sekundi"
 msgid "Select your ERPNext company to connect with"
 msgstr "Odaberi tvrtku Sustava za povezivanje"
 
-#: frontend/src/components/FieldLayout/Field.vue:582
+#: frontend/src/components/FieldLayout/Field.vue:597
 msgid "Select {0}"
 msgstr "Odaberi {0}"
 
@@ -7811,7 +7836,7 @@ msgstr "Postavi Lokaciju"
 msgid "Set a Website on this record before enriching."
 msgstr "Postavi Web stranicu na ovaj zapis prije kompletiranja."
 
-#: crm/api/form.py:389
+#: crm/api/form.py:392
 msgid "Set a default value before publishing for: {0}"
 msgstr "Postavi standard vrijednost prije objavljivanja za: {0}"
 
@@ -7853,7 +7878,7 @@ msgstr "Postavi lokaciju…"
 msgid "Set once the first admin completes the onboarding persona questionnaire"
 msgstr "Postavlja se nakon što prvi administrator ispuni upitnik o uvodnoj personi"
 
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:102
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:108
 msgid "Set the Exotel number to be used for outgoing calls."
 msgstr "Postavi Exotel broj koji će se koristiti za odlazne pozive."
 
@@ -7920,7 +7945,7 @@ msgstr "Postavka uspješno ažurirana"
 #. Label of the defaults_tab (Tab Break) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 #: frontend/src/components/Layouts/AppSidebar.vue:658
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:703
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:715
 msgid "Settings"
 msgstr "Postavke"
 
@@ -7944,11 +7969,11 @@ msgstr "U postavkama postavite davatelja tečaja koji nije 'Frankfurter', jer za
 msgid "Setup your password"
 msgstr "Postavi lozinku"
 
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:704
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:716
 msgid "Share"
 msgstr "Dijeli"
 
-#: frontend/src/components/Activities/Activities.vue:249
+#: frontend/src/components/Activities/Activities.vue:253
 msgid "Show"
 msgstr "Prikaži"
 
@@ -8258,7 +8283,7 @@ msgid "Subject: {0}"
 msgstr "Predmet: {0}"
 
 #: crm/api/form.py:354
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:635
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:646
 msgid "Submit"
 msgstr "Rezerviši"
 
@@ -8317,7 +8342,7 @@ msgstr "Prebacivanje između svijetle, tamne ili sistemske teme"
 msgid "Switch between outgoing email accounts when sending emails"
 msgstr "Mjenjaj se između odlaznih e-mail računa prilikom slanja e-mailova"
 
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1353
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1379
 msgid "Switching to {0} will remove {1} field(s) that don't exist on {0}. This can't be undone."
 msgstr "Prebacivanjem na {0} uklonit će se polje {1} koje ne postoji na {0}. To se ne može poništiti."
 
@@ -8848,7 +8873,7 @@ msgstr "TwiML SID"
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
 #: frontend/src/components/Layouts/AppSidebar.vue:722
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:51
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:153
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:171
 msgid "Twilio"
 msgstr "Twilio"
 
@@ -8880,7 +8905,7 @@ msgstr "Twilio Broj"
 msgid "Twilio Settings"
 msgstr "Postavke Twilia"
 
-#: crm/integrations/twilio/api.py:15
+#: crm/integrations/twilio/api.py:16
 msgid "Twilio configuration is missing"
 msgstr "Nedostaje Twilio konfiguracija"
 
@@ -8936,7 +8961,7 @@ msgstr "Uvjeti poništavanja dodjele nisu važeći"
 msgid "Unassignment Condition"
 msgstr "Uvjet za oduzimanje dodjele"
 
-#: crm/integrations/exotel/handler.py:169
+#: crm/integrations/exotel/handler.py:190
 msgid "Unauthorized request"
 msgstr "Neovlašteni zahtjev"
 
@@ -8990,7 +9015,7 @@ msgid "Unpublish"
 msgstr "Poništi Objavu"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:570
-#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1001
+#: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1021
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:359
 msgid "Unsaved Changes"
 msgstr "Nespremljenje Promjene"
@@ -9028,8 +9053,8 @@ msgstr "Ažuriraj"
 msgid "Update Account"
 msgstr "Ažuriraj račun"
 
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:163
-#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:190
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:181
+#: frontend/src/components/Settings/Telephony/TelephonySettings.vue:208
 msgid "Update Configuration"
 msgstr "Ažuriraj Postavke"
 
@@ -9211,9 +9236,17 @@ msgstr "Prikazi"
 msgid "Visibility"
 msgstr "Vidljivost"
 
+#: frontend/src/components/Settings/Forms/FieldCard.vue:134
+msgid "Visible if"
+msgstr "Vidljivo ako"
+
 #: frontend/src/pages/PersonaForm.vue:80
 msgid "Walk-ins"
 msgstr "Bez najave"
+
+#: crm/integrations/twilio/api.py:108
+msgid "We're unable to connect your call right now. Please try again later."
+msgstr "Trenutno ne možemo uspostaviti vaš poziv. Pokušajte ponovo kasnije."
 
 #: frontend/src/components/Layouts/AppSidebar.vue:684
 msgid "Web Form"
@@ -9443,7 +9476,7 @@ msgstr "Možete pozvati više korisnika odvajanjem njihovih adresa e-pošte zare
 msgid "You cannot remove yourself."
 msgstr "Ne možete se sami ukloniti."
 
-#: crm/integrations/exotel/handler.py:84
+#: crm/integrations/exotel/handler.py:94
 msgid "You do not have Exotel Number set in your Telephony Agent"
 msgstr "Nemate Exotel broj postavljen u svom telefonskom agentu"
 
@@ -9451,7 +9484,7 @@ msgstr "Nemate Exotel broj postavljen u svom telefonskom agentu"
 msgid "You do not have enough permissions to access Frappe CRM. Please contact your administrator if you believe this is an error."
 msgstr "Nemate dozvolu za pristup Podrški Prodaje. Obratite se administratoru ako smatrate da je ovo pogreška."
 
-#: crm/integrations/exotel/handler.py:92
+#: crm/integrations/exotel/handler.py:102
 msgid "You do not have mobile number set in your Telephony Agent"
 msgstr "Nemate postavljen broj mobilnog telefona u svom Telefonskom Agentu"
 
@@ -9486,6 +9519,10 @@ msgstr "Trebat će vam Meta developerski račun i pristupni token za sinkronizac
 #: crm/domain_enrichment/mapper.py:46
 msgid "YouTube"
 msgstr "Youtube"
+
+#: crm/integrations/twilio/api.py:71
+msgid "Your account is not configured with a phone number. Please contact your administrator."
+msgstr "Vaš račun nije konfiguriran s telefonskim brojem. Kontaktiraj administratora."
 
 #: crm/api/todo.py:110
 msgid "Your assignment on task {0} has been removed by {1}"
@@ -9552,7 +9589,7 @@ msgstr "crna"
 msgid "blue"
 msgstr "plava"
 
-#: frontend/src/components/Activities/Activities.vue:252
+#: frontend/src/components/Activities/Activities.vue:256
 msgid "changes from"
 msgstr "promjene od"
 
@@ -9850,7 +9887,7 @@ msgstr "lista"
 msgid "logo"
 msgstr "logo"
 
-#: crm/api/comment.py:39 frontend/src/components/Notifications.vue:64
+#: crm/api/comment.py:41 frontend/src/components/Notifications.vue:64
 #: frontend/src/pages/MobileNotification.vue:50
 msgid "mentioned you in {0}"
 msgstr "spomenuo vas je u {0}"
@@ -9966,8 +10003,8 @@ msgstr "secondary_phone"
 msgid "teal"
 msgstr "plavozelena"
 
-#: frontend/src/components/Activities/Activities.vue:291
-#: frontend/src/components/Activities/Activities.vue:354
+#: frontend/src/components/Activities/Activities.vue:295
+#: frontend/src/components/Activities/Activities.vue:358
 msgid "to"
 msgstr "do"
 
@@ -10102,7 +10139,7 @@ msgstr "{0} je nevažeća vrijednost"
 msgid "{0} is an invalid email address"
 msgstr "{0} je nevažeća adresa e-pošte"
 
-#: crm/api/form.py:509 frontend/src/components/Modals/ContactModal.vue:106
+#: crm/api/form.py:517 frontend/src/components/Modals/ContactModal.vue:106
 #: frontend/src/components/Modals/ConvertToDealModal.vue:171
 msgid "{0} is required"
 msgstr "{0} je obavezan"
