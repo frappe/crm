@@ -54,7 +54,7 @@ services:
           echo "Site $$SITE_NAME already exists; skipping creation";
         else
           bench new-site "$$SITE_NAME"
-          --mariadb-user-host-login-scope='%'
+          --mariadb-user-host-login-scope='172.%.%.%'
           --db-root-username=root
           --db-root-password="$$DB_PASSWORD"
           --admin-password="$$ADMIN_PASSWORD"
@@ -74,6 +74,38 @@ services:
       configurator:
         condition: service_completed_successfully
 
+  db-access:
+    image: mariadb:11.8
+    restart: on-failure:5
+    entrypoint: ["bash", "-c"]
+    command:
+      - >
+        set -euo pipefail;
+        CONFIG="/sites/$$SITE_NAME/site_config.json";
+        DB_NAME="$$(sed -n 's/^[[:space:]]*"db_name":[[:space:]]*"\([^"]*\)".*/\1/p' "$$CONFIG")";
+        DB_USER="$$(sed -n 's/^[[:space:]]*"db_user":[[:space:]]*"\([^"]*\)".*/\1/p' "$$CONFIG")";
+        SITE_DB_PASSWORD="$$(sed -n 's/^[[:space:]]*"db_password":[[:space:]]*"\([^"]*\)".*/\1/p' "$$CONFIG")";
+        DB_USER="$${DB_USER:-$$DB_NAME}";
+        test -n "$$DB_NAME";
+        test -n "$$DB_USER";
+        test -n "$$SITE_DB_PASSWORD";
+        case "$$DB_NAME$$DB_USER" in *[!A-Za-z0-9_]*) echo "Invalid generated database name or user"; exit 1;; esac;
+        mariadb --protocol=TCP --host=db --user=root --password="$$DB_PASSWORD" --execute="
+          CREATE USER IF NOT EXISTS '$$DB_USER'@'172.%.%.%' IDENTIFIED BY '$$SITE_DB_PASSWORD';
+          ALTER USER '$$DB_USER'@'172.%.%.%' IDENTIFIED BY '$$SITE_DB_PASSWORD';
+          GRANT ALL PRIVILEGES ON \`$$DB_NAME\`.* TO '$$DB_USER'@'172.%.%.%';
+          FLUSH PRIVILEGES;";
+    environment:
+      SITE_NAME: ${SITE_NAME:?SITE_NAME is required}
+      DB_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required}
+    volumes:
+      - sites:/sites:ro
+    depends_on:
+      create-site:
+        condition: service_completed_successfully
+      db:
+        condition: service_healthy
+
   migrator:
     <<: *backend_defaults
     restart: on-failure:5
@@ -90,7 +122,7 @@ services:
       SITE_NAME: ${SITE_NAME:?SITE_NAME is required}
       MIGRATE_SITES: ${MIGRATE_SITES:-true}
     depends_on:
-      create-site:
+      db-access:
         condition: service_completed_successfully
 
   backend:

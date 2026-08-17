@@ -40,9 +40,11 @@ passwords, and deploy again. Never delete volumes from an installation that
 contains data unless a verified backup exists.
 
 Use **Preview Compose** before deployment. The one-shot services must complete
-in this order: `configurator`, `create-site`, and `migrator`. The long-running
-services then start: `backend`, `frontend`, `websocket`, both queues, scheduler,
-MariaDB, and Redis.
+in this order: `configurator`, `create-site`, `db-access`, and `migrator`.
+`db-access` keeps the generated site database user usable when Dokploy assigns
+a different private IP to each one-shot container. The long-running services
+then start: `backend`, `frontend`, `websocket`, both queues, scheduler, MariaDB,
+and Redis.
 
 ## 3. Configure the domain
 
