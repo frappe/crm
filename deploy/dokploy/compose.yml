@@ -52,7 +52,6 @@ services:
         wait-for-it -t 180 redis-queue:6379;
         SITE_CONFIG="sites/$$SITE_NAME/site_config.json";
         CREATE_SITE=true;
-        FORCE_FLAG="";
         if [ -f "$$SITE_CONFIG" ]; then
           SITE_DB_NAME="$$(sed -n 's/^[[:space:]]*"db_name":[[:space:]]*"\([^"]*\)".*/\1/p' "$$SITE_CONFIG")";
           case "$$SITE_DB_NAME" in ''|*[!A-Za-z0-9_]*) echo "Invalid site database name"; exit 1;; esac;
@@ -61,10 +60,7 @@ services:
             CREATE_SITE=false;
           else
             echo "Site config exists but database $$SITE_DB_NAME is missing; rebuilding incomplete site";
-            FORCE_FLAG="--force";
           fi;
-        elif [ -d "sites/$$SITE_NAME" ]; then
-          FORCE_FLAG="--force";
         fi;
         if [ "$$CREATE_SITE" = "false" ]; then
           echo "Site $$SITE_NAME already exists; skipping creation";
@@ -76,7 +72,7 @@ services:
           --admin-password="$$ADMIN_PASSWORD"
           --install-app crm
           --set-default
-          $$FORCE_FLAG;
+          --force;
         fi;
         bench --site "$$SITE_NAME" set-config developer_mode 0;
         bench --site "$$SITE_NAME" set-config mute_emails "$$MUTE_EMAILS";
