@@ -175,7 +175,7 @@ def _meta_with_method(soup, *names):
 	return "", ""
 
 
-# Shorter than this, a description tag holds a name, not a description.
+# Below this, a description tag is a stub (a bare company name) rather than copy.
 _MIN_META_DESC_LEN = 30
 
 
