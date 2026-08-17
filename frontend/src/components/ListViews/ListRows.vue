@@ -22,7 +22,9 @@
           v-slot="{ idx, column, item }"
           :row="row"
         >
-          <slot v-bind="{ idx, column, item, row }" />
+          <slot
+            v-bind="{ idx, column, item, row, isVisited: isVisited(row.name) }"
+          />
         </ListRow>
       </ListGroupRows>
     </div>
@@ -39,7 +41,9 @@
       v-slot="{ idx, column, item }"
       :row="row"
     >
-      <slot v-bind="{ idx, column, item, row }" />
+      <slot
+        v-bind="{ idx, column, item, row, isVisited: isVisited(row.name) }"
+      />
     </ListRow>
   </ListRows>
 </template>
@@ -48,6 +52,7 @@
 import { useStorage } from '@vueuse/core'
 import { ListRows, ListRow, ListGroupHeader, ListGroupRows } from 'frappe-ui'
 import { ref, computed, watch, onBeforeUnmount, onMounted } from 'vue'
+import { useVisitedRecords } from '@/composables/useVisitedRecords'
 
 const props = defineProps({
   rows: { type: Array, required: true },
@@ -69,6 +74,8 @@ let showGroupedRows = computed(() => {
 
 const scrollPosition = useStorage(`scrollPosition${props.doctype}`, 0)
 const scrollContainer = ref(null)
+
+const { isVisited } = useVisitedRecords(props.doctype)
 
 const handleScroll = () => {
   if (scrollContainer.value) {
