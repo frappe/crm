@@ -42,9 +42,11 @@ contains data unless a verified backup exists.
 Use **Preview Compose** before deployment. The one-shot services must complete
 in this order: `configurator`, `create-site`, `db-access`, and `migrator`.
 `db-access` keeps the generated site database user usable when Dokploy assigns
-a different private IP to each one-shot container. The long-running services
-then start: `backend`, `frontend`, `websocket`, both queues, scheduler, MariaDB,
-and Redis.
+a different private IP to each one-shot container. Site creation also verifies
+that an existing site config still has its database and rebuilds an incomplete
+fresh installation when the database was rolled back. The long-running
+services then start: `backend`, `frontend`, `websocket`, both queues, scheduler,
+MariaDB, and Redis.
 
 ## 3. Configure the domain
 

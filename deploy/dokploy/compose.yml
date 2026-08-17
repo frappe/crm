@@ -50,7 +50,23 @@ services:
         wait-for-it -t 180 db:3306;
         wait-for-it -t 180 redis-cache:6379;
         wait-for-it -t 180 redis-queue:6379;
-        if [ -f "sites/$$SITE_NAME/site_config.json" ]; then
+        SITE_CONFIG="sites/$$SITE_NAME/site_config.json";
+        CREATE_SITE=true;
+        FORCE_FLAG="";
+        if [ -f "$$SITE_CONFIG" ]; then
+          SITE_DB_NAME="$$(sed -n 's/^[[:space:]]*"db_name":[[:space:]]*"\([^"]*\)".*/\1/p' "$$SITE_CONFIG")";
+          case "$$SITE_DB_NAME" in ''|*[!A-Za-z0-9_]*) echo "Invalid site database name"; exit 1;; esac;
+          DB_EXISTS="$$(mariadb --protocol=TCP --host=db --user=root --password="$$DB_PASSWORD" --batch --skip-column-names --execute="SELECT COUNT(*) FROM information_schema.SCHEMATA WHERE SCHEMA_NAME='$$SITE_DB_NAME';")";
+          if [ "$$DB_EXISTS" = "1" ]; then
+            CREATE_SITE=false;
+          else
+            echo "Site config exists but database $$SITE_DB_NAME is missing; rebuilding incomplete site";
+            FORCE_FLAG="--force";
+          fi;
+        elif [ -d "sites/$$SITE_NAME" ]; then
+          FORCE_FLAG="--force";
+        fi;
+        if [ "$$CREATE_SITE" = "false" ]; then
           echo "Site $$SITE_NAME already exists; skipping creation";
         else
           bench new-site "$$SITE_NAME"
@@ -59,7 +75,8 @@ services:
           --db-root-password="$$DB_PASSWORD"
           --admin-password="$$ADMIN_PASSWORD"
           --install-app crm
-          --set-default;
+          --set-default
+          $$FORCE_FLAG;
         fi;
         bench --site "$$SITE_NAME" set-config developer_mode 0;
         bench --site "$$SITE_NAME" set-config mute_emails "$$MUTE_EMAILS";
@@ -208,17 +225,17 @@ services:
       - db-data:/var/lib/mysql
 
   redis-cache:
-    image: redis:8.6-alpine
+    image: redis:6.2-alpine
     restart: unless-stopped
 
   redis-queue:
-    image: redis:8.6-alpine
+    image: redis:6.2-alpine
     restart: unless-stopped
     volumes:
-      - redis-queue-data:/data
+      - redis-queue-data-v6:/data
 
 volumes:
   sites:
   logs:
   db-data:
-  redis-queue-data:
+  redis-queue-data-v6:
