@@ -549,6 +549,13 @@ const { users, getUser } = usersStore()
 const rows = defineModel({ type: Array, default: () => [] })
 const parentDoc = defineModel('parent', { type: Object, default: () => ({}) })
 
+// A new parent document does not contain empty Table fields yet. Keep the
+// model synced with the parent instead of mutating defineModel's local default,
+// otherwise the row appears to do nothing and is omitted from create payloads.
+if (!Array.isArray(rows.value)) {
+  rows.value = []
+}
+
 provide('parentDoc', parentDoc)
 provide('fieldPropertyOverrides', parentFieldPropertyOverrides)
 provide('parentFieldname', props.parentFieldname)
@@ -687,6 +694,7 @@ const toggleSelectRow = (row) => {
 }
 
 const addRow = () => {
+  const currentRows = Array.isArray(rows.value) ? rows.value : []
   const newRow = {}
   allFields.value?.forEach((field) => {
     if (field.fieldtype === 'Check') {
@@ -702,11 +710,11 @@ const addRow = () => {
   newRow.name = getRandom(10)
   showRowList.value.push(false)
   newRow['__islocal'] = true
-  newRow['idx'] = rows.value.length + 1
+  newRow['idx'] = currentRows.length + 1
   newRow['doctype'] = props.doctype
   newRow['parentfield'] = props.parentFieldname
   newRow['parenttype'] = props.parentDoctype
-  rows.value.push(newRow)
+  rows.value = [...currentRows, newRow]
   triggerOnRowAdd(newRow)
 }
 

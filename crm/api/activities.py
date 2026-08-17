@@ -447,7 +447,7 @@ def get_linked_calls(name: str):
 		)
 
 	if tasks:
-		tasks = frappe.db.get_all(
+		tasks = frappe.get_list(
 			"CRM Task",
 			filters={"name": ("in", tasks)},
 			fields=[
@@ -477,7 +477,7 @@ def get_linked_notes(name: str):
 
 
 def get_linked_tasks(name: str):
-	tasks = frappe.db.get_all(
+	tasks = frappe.get_list(
 		"CRM Task",
 		filters={"reference_docname": name},
 		fields=[

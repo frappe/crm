@@ -2,11 +2,12 @@
 # See license.txt
 
 import frappe
-from frappe.tests import IntegrationTestCase
+from frappe.tests.utils import FrappeTestCase
 
 
-class TestCRMTask(IntegrationTestCase):
+class TestCRMTask(FrappeTestCase):
 	def tearDown(self) -> None:
+		frappe.set_user("Administrator")
 		frappe.db.rollback()
 
 	def test_task_creation(self):
@@ -220,9 +221,105 @@ class TestCRMTask(IntegrationTestCase):
 		self.assertEqual(len(assignees_after), initial_count)
 		self.assertIn("Administrator", assignees_after)
 
+	def test_checklist_progress_and_completion_audit(self):
+		task = create_test_task(
+			title="Buy vegetables",
+			status="Todo",
+			checklist=[
+				{"item": "Potatoes"},
+				{"item": "Tomatoes"},
+				{"item": "Okra"},
+			],
+		)
+
+		self.assertEqual(task.total_items, 3)
+		self.assertEqual(task.completed_items, 0)
+		self.assertEqual(task.progress, 0)
+
+		task.checklist[0].status = "Completed"
+		task.save()
+		task.reload()
+		self.assertEqual(task.completed_items, 1)
+		self.assertAlmostEqual(task.progress, 33.33, places=2)
+		self.assertEqual(task.checklist[0].completed_by, "Administrator")
+		self.assertTrue(task.checklist[0].completed_on)
+
+		for item in task.checklist:
+			item.status = "Completed"
+		task.save()
+		task.reload()
+		self.assertEqual(task.progress, 100)
+		self.assertEqual(task.status, "Done")
+
+		task.checklist[1].status = "Pending"
+		task.save()
+		task.reload()
+		self.assertEqual(task.status, "In Progress")
+		self.assertIsNone(task.checklist[1].completed_by)
+		self.assertIsNone(task.checklist[1].completed_on)
+
+	def test_role_assignment_clears_individual_assignee(self):
+		task = create_test_task(
+			title="Shared sales task",
+			assignment_type="Role",
+			assigned_role="Sales User",
+			assigned_to="Administrator",
+		)
+
+		self.assertEqual(task.assignment_type, "Role")
+		self.assertEqual(task.assigned_role, "Sales User")
+		self.assertFalse(task.assigned_to)
+
+	def test_task_visibility_for_creator_assignee_and_role(self):
+		creator = make_test_user("task-creator@example.com", "Sales Manager")
+		assignee = make_test_user("task-assignee@example.com", "Sales User")
+		other_manager = make_test_user("other-manager@example.com", "Sales Manager")
+
+		frappe.set_user(creator)
+		user_task = create_test_task(title="Private user task", assigned_to=assignee)
+		role_task = create_test_task(
+			title="Sales role task",
+			assignment_type="Role",
+			assigned_role="Sales User",
+		)
+
+		self.assertTrue(frappe.has_permission("CRM Task", "read", user=user_task.owner, doc=user_task))
+		self.assertTrue(frappe.has_permission("CRM Task", "read", user=assignee, doc=user_task))
+		self.assertFalse(frappe.has_permission("CRM Task", "read", user=other_manager, doc=user_task))
+		self.assertTrue(frappe.has_permission("CRM Task", "read", user=assignee, doc=role_task))
+		self.assertFalse(frappe.has_permission("CRM Task", "read", user=other_manager, doc=role_task))
+
+		frappe.set_user(assignee)
+		visible_names = set(frappe.get_list("CRM Task", pluck="name"))
+		self.assertIn(user_task.name, visible_names)
+		self.assertIn(role_task.name, visible_names)
+
+		frappe.set_user(other_manager)
+		visible_names = set(frappe.get_list("CRM Task", pluck="name"))
+		self.assertNotIn(user_task.name, visible_names)
+		self.assertNotIn(role_task.name, visible_names)
+
 
 def create_test_task(**kwargs):
 	"""Helper function to create a CRM Task for testing"""
 	data = {"doctype": "CRM Task"}
 	data.update(kwargs)
 	return frappe.get_doc(data).insert()
+
+
+def make_test_user(email, role):
+	if frappe.db.exists("User", email):
+		user = frappe.get_doc("User", email)
+	else:
+		user = frappe.get_doc(
+			{
+				"doctype": "User",
+				"email": email,
+				"first_name": email.split("@")[0],
+				"send_welcome_email": 0,
+			}
+		).insert(ignore_permissions=True)
+	if role not in {row.role for row in user.roles}:
+		user.append("roles", {"role": role})
+		user.save(ignore_permissions=True)
+	return email

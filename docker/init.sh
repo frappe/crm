@@ -1,4 +1,4 @@
-#!bin/bash
+#!/bin/bash
 
 if [ -d "/home/frappe/frappe-bench/apps/frappe" ]; then
     echo "Bench already exists, skipping init"
@@ -22,7 +22,7 @@ bench set-redis-socketio-host redis://redis:6379
 sed -i '/redis/d' ./Procfile
 sed -i '/watch/d' ./Procfile
 
-bench get-app crm --branch main
+bench get-app crm --branch develop
 
 bench new-site crm.localhost \
     --force \
@@ -32,7 +32,7 @@ bench new-site crm.localhost \
 
 bench --site crm.localhost install-app crm
 bench --site crm.localhost set-config developer_mode 1
-bench --site crm.localhost set-config mute_emails 1
+bench --site crm.localhost set-config mute_emails 0
 bench --site crm.localhost set-config server_script_enabled 1
 bench --site crm.localhost clear-cache
 bench use crm.localhost

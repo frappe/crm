@@ -310,6 +310,14 @@ function parseRows(rows, columns = []) {
           label: task.assigned_to && getUser(task.assigned_to).full_name,
           ...(task.assigned_to && getUser(task.assigned_to)),
         }
+      } else if (row == 'progress') {
+        const completed = task.completed_items || 0
+        const total = task.total_items || 0
+        _rows[row] = {
+          label: total
+            ? `${completed}/${total} · ${Number(task.progress || 0).toFixed(0)}%`
+            : __('No checklist'),
+        }
       }
     })
     return _rows
