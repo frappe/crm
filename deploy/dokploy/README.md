@@ -32,6 +32,13 @@ Copy `.env.example` into Dokploy's **Environment** tab and replace:
 
 Do not commit real passwords to Git.
 
+MariaDB only applies `DB_PASSWORD` when its data volume is initialized for the
+first time. If an initial deployment used a placeholder password, changing the
+environment variable is not enough. For a new installation with no data, delete
+the Compose stack with **Delete volumes** enabled, recreate it with the final
+passwords, and deploy again. Never delete volumes from an installation that
+contains data unless a verified backup exists.
+
 Use **Preview Compose** before deployment. The one-shot services must complete
 in this order: `configurator`, `create-site`, and `migrator`. The long-running
 services then start: `backend`, `frontend`, `websocket`, both queues, scheduler,

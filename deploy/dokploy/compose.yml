@@ -17,6 +17,7 @@ services:
     entrypoint: ["bash", "-c"]
     command:
       - >
+        set -euo pipefail;
         ls -1 apps > sites/apps.txt;
         bench set-config -g db_host "$$DB_HOST";
         bench set-config -gp db_port "$$DB_PORT";
@@ -45,6 +46,7 @@ services:
     entrypoint: ["bash", "-c"]
     command:
       - >
+        set -euo pipefail;
         wait-for-it -t 180 db:3306;
         wait-for-it -t 180 redis-cache:6379;
         wait-for-it -t 180 redis-queue:6379;
@@ -78,6 +80,7 @@ services:
     entrypoint: ["bash", "-c"]
     command:
       - >
+        set -euo pipefail;
         if [ "$$MIGRATE_SITES" = "true" ]; then
           bench --site "$$SITE_NAME" migrate;
         else
