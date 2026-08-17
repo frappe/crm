@@ -180,13 +180,6 @@ _MIN_META_DESC_LEN = 30
 
 
 def _meta_description(soup):
-	"""The page's description meta tag, preferring ``og:description``.
-
-	Some sites put junk there -- a verification token, or just the company name --
-	while ``<meta name="description">`` has the real text. So a value that is too
-	short or has no spaces is skipped in favour of the other tag, and returned only
-	when neither tag has anything better.
-	"""
 	fallback = ""
 	for name in ("og:description", "description"):
 		content, _name = _meta_with_method(soup, name)
@@ -430,10 +423,6 @@ _NON_CONTENT_PARENTS = {"nav", "header", "footer", "aside", "form"}
 _MIN_PARAGRAPH_LEN = 80
 _MAX_PARAGRAPHS_SCANNED = 6
 
-# An About page holds more than the company description: profiles of founders and
-# staff, and lines telling the reader what to do next. Both are full of industry
-# keywords -- a profile lists the person's past employers and sectors -- so the
-# scorer picks them over the real description. Drop them.
 _BIO_RE = re.compile(
 	r"\b(?:he|she|his|her)\b"
 	r"|\bbegan (?:his|her) career\b"
