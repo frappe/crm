@@ -562,6 +562,16 @@ class TestCRMLead(IntegrationTestCase):
 		assign_add({"assign_to": ["crm.user2@example.com"], "doctype": "CRM Lead", "name": lead.name})
 		self.assertEqual(frappe.db.get_value("CRM Lead", lead.name, "lead_owner"), "crm.user2@example.com")
 
+	def test_negative_currency_fields_rejected(self):
+		"""Test that Currency fields reject negative values"""
+		for fieldname in ("annual_revenue", "total", "net_total"):
+			with self.subTest(fieldname=fieldname), self.assertRaises(frappe.NonNegativeError):
+				create_lead(
+					first_name="Negative",
+					email=f"negative.{fieldname}@example.com",
+					**{fieldname: -100},
+				)
+
 
 def create_lead(**kwargs):
 	"""Helper function to create a CRM Lead for testing"""

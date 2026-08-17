@@ -18,6 +18,8 @@ def notify_mentions(doc):
 	Extract mentions from `content`, and notify.
 	`content` must have `HTML` content.
 	"""
+	if doc.reference_doctype not in ["CRM Lead", "CRM Deal"]:
+		return
 	content = getattr(doc, "content", None)
 	if not content:
 		return

@@ -60,13 +60,14 @@
             />
           </Dropdown>
         </div>
-        <TextEditor
+        <!-- content is passed through sanitizeHTML() (DOMPurify) before rendering, so v-html is safe here -->
+        <!-- eslint-disable vue/no-v-html -->
+        <div
           v-if="note.content"
-          :content="note.content"
-          :editable="false"
-          editor-class="prose-sm text-p-sm max-w-none text-ink-gray-5 focus:outline-none"
-          class="flex-1 overflow-hidden"
+          class="prose-f prose-sm text-p-sm max-w-none text-ink-gray-5 flex-1 overflow-hidden"
+          v-html="sanitizeHTML(note.content)"
         />
+        <!-- eslint-enable vue/no-v-html -->
         <div class="mt-2 flex items-center justify-between gap-2">
           <div class="flex items-center gap-2">
             <UserAvatar :user="note.owner" size="xs" />
@@ -105,9 +106,9 @@ import ViewControls from '@/components/ViewControls.vue'
 import { useDoctypeModal } from '@/composables/doctypeModal'
 import EmptyState from '@/components/ListViews/EmptyState.vue'
 import { usersStore } from '@/stores/users'
-import { timeAgo, formatDate } from '@/utils'
+import { timeAgo, formatDate, sanitizeHTML } from '@/utils'
 import { useOnboarding, useTelemetry } from 'frappe-ui/frappe'
-import { TextEditor, call, Dropdown, Tooltip, ListFooter } from 'frappe-ui'
+import { call, Dropdown, Tooltip, ListFooter } from 'frappe-ui'
 import { ref, watch } from 'vue'
 
 const { getUser } = usersStore()
