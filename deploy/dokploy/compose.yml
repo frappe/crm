@@ -65,15 +65,7 @@ services:
         if [ "$$CREATE_SITE" = "false" ]; then
           echo "Site $$SITE_NAME already exists; skipping creation";
         else
-          bench new-site
-          --mariadb-user-host-login-scope='172.%.%.%'
-          --db-root-username=root
-          --db-root-password="$$DB_PASSWORD"
-          --admin-password="$$ADMIN_PASSWORD"
-          --install-app crm
-          --set-default
-          --force
-          "$$SITE_NAME";
+          bench new-site --mariadb-user-host-login-scope='172.%.%.%' --db-root-username=root --db-root-password="$$DB_PASSWORD" --admin-password="$$ADMIN_PASSWORD" --install-app crm --set-default --force "$$SITE_NAME";
         fi;
         bench --site "$$SITE_NAME" set-config developer_mode 0;
         bench --site "$$SITE_NAME" set-config mute_emails "$$MUTE_EMAILS";
