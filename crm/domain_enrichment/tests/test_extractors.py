@@ -80,6 +80,39 @@ class CompanyInfoTest(UnitTestCase):
 		info = extractors.extract_company_info(page, soup)
 		self.assertEqual(info["company_name"].method, Method.TITLE_TAG)
 
+	def test_degenerate_og_description_yields_to_plain_description(self):
+		# Broken markup can park a site-verification token on og:description while the
+		# plain description tag carries the real copy.
+		page, soup = fixtures.make_page(
+			"https://x.example",
+			"<html><head>"
+			"<meta property='og:description' content='JIs-hfpDlO6niGZsMes79IWdxC0A9frop'>"
+			"<meta name='description' content='Acme Organics is a manufacturer and "
+			"exporter of aroma chemicals based in Mumbai.'>"
+			"</head><body></body></html>",
+		)
+		info = extractors.extract_company_info(page, soup)
+		self.assertTrue(info["description"].value.startswith("Acme Organics is a manufacturer"))
+
+	def test_og_description_still_preferred_when_usable(self):
+		page, soup = fixtures.make_page(
+			"https://x.example",
+			"<html><head>"
+			"<meta property='og:description' content='Acme builds developer tools for teams.'>"
+			"<meta name='description' content='Some other blurb entirely for the page.'>"
+			"</head><body></body></html>",
+		)
+		info = extractors.extract_company_info(page, soup)
+		self.assertEqual(info["description"].value, "Acme builds developer tools for teams.")
+
+	def test_degenerate_description_still_used_when_nothing_better(self):
+		page, soup = fixtures.make_page(
+			"https://x.example",
+			"<html><head><meta name='description' content='Acme GmbH'></head><body></body></html>",
+		)
+		info = extractors.extract_company_info(page, soup)
+		self.assertEqual(info["description"].value, "Acme GmbH")
+
 
 class LogoResolutionTest(UnitTestCase):
 	"""extract_logo returns the link icon only; the larger social/JSON-LD image is
@@ -362,8 +395,8 @@ class FirstParagraphTest(UnitTestCase):
 		self.assertTrue(result.startswith("Putting our long-tenured"))
 
 	def test_falls_back_to_first_paragraph_when_no_industry_rules_given(self):
-		# No rules configured at all (industry_rules=None or []) -- must behave
-		# exactly like the plain "take the first qualifying paragraph" default.
+		# No rules configured at all (industry_rules=None or []) -- with nothing else
+		# to separate the candidates, document order still decides.
 		html = (
 			"<html><body><main>"
 			"<p>Putting our long-tenured investment teams on the line to earn the "
@@ -396,6 +429,83 @@ class FirstParagraphTest(UnitTestCase):
 		_page, soup = fixtures.make_page("https://acmebank.example", html)
 		result = extractors.first_paragraph(soup, industry_rules=finance_rules, company_name="Acme Bank")
 		self.assertTrue(result.startswith("Acme Bank has led the market"))
+
+	def test_leadership_bio_never_wins_over_company_description(self):
+		# An About page's founder bio is dense in industry keywords (it lists former
+		# employers and sectors), so keyword scoring alone picks it over the real
+		# description. Bios must be rejected outright.
+		finance_rules = [
+			fixtures.keyword_rule("Industry", ["insurance", "asset management"], industry="Finance")
+		]
+		html = (
+			"<html><body><main>"
+			"<p>Acme Capital is a registered portfolio manager focused on uncovering "
+			"long-term opportunities for clients across public equity markets.</p>"
+			"<p>Priya Nair is the Founder and Chief Investment Officer of Acme Capital, "
+			"where she previously led insurance and asset management mandates.</p>"
+			"</main></body></html>"
+		)
+		_page, soup = fixtures.make_page("https://acmecapital.example", html)
+		result = extractors.first_paragraph(soup, industry_rules=finance_rules)
+		self.assertTrue(result.startswith("Acme Capital is a registered portfolio manager"))
+
+	def test_call_to_action_paragraph_never_wins(self):
+		finance_rules = [fixtures.keyword_rule("Industry", ["hvac"], industry="Construction")]
+		html = (
+			"<html><body><main>"
+			"<p>Kishika Temperatures has been a leader in air conditioning maintenance "
+			"and HVAC solutions for over 30 years, serving homes across the region.</p>"
+			"<p>Explore our services to see why our HVAC and HVAC-adjacent teams are the "
+			"preferred choice for leading developers, hotels and residential projects.</p>"
+			"</main></body></html>"
+		)
+		_page, soup = fixtures.make_page("https://kishika.example", html)
+		result = extractors.first_paragraph(soup, industry_rules=finance_rules)
+		self.assertTrue(result.startswith("Kishika Temperatures has been a leader"))
+
+	def test_falls_back_to_rejected_paragraphs_when_nothing_else_qualifies(self):
+		# A page of nothing but bios must still yield a paragraph -- rejecting every
+		# candidate should not silently drop the description.
+		html = (
+			"<html><body><main>"
+			"<p>Priya Nair is the Founder of Acme Capital, where she leads the firm's "
+			"investment committee and oversees portfolio construction end to end.</p>"
+			"</main></body></html>"
+		)
+		_page, soup = fixtures.make_page("https://acmecapital.example", html)
+		self.assertTrue(extractors.first_paragraph(soup).startswith("Priya Nair is the Founder"))
+
+	def test_speaking_for_the_company_breaks_a_zero_hit_tie(self):
+		# Neither paragraph scores an industry hit: a generic essay about the sector
+		# sits first, the company's own copy second. Document order must not decide.
+		finance_rules = [fixtures.keyword_rule("Industry", ["banking"], industry="Finance")]
+		html = (
+			"<html><body><main>"
+			"<p>Over the past decade, advances in concrete technology have allowed "
+			"engineers to design mega structures that redefine infrastructure.</p>"
+			"<p>Capital RMC, established in 2016, stands at the forefront of the "
+			"construction sector, and we deliver world-class ready-mix concrete.</p>"
+			"</main></body></html>"
+		)
+		_page, soup = fixtures.make_page("https://capitalrmc.example", html)
+		result = extractors.first_paragraph(soup, industry_rules=finance_rules)
+		self.assertTrue(result.startswith("Capital RMC, established in 2016"))
+
+	def test_speaking_for_the_company_cannot_outrank_more_industry_hits(self):
+		finance_rules = [
+			fixtures.keyword_rule("Industry", ["financial institution", "banking"], industry="Finance")
+		]
+		html = (
+			"<html><body><main>"
+			"<p>A full-service financial institution built on decades of trusted "
+			"commercial and retail banking relationships across every market.</p>"
+			"<p>We are proud to serve local businesses across the region with "
+			"award-winning service and community-first values that endure.</p>"
+			"</main></body></html>"
+		)
+		_page, soup = fixtures.make_page("https://acmebank.example", html)
+		result = extractors.first_paragraph(soup, industry_rules=finance_rules)
+		self.assertTrue(result.startswith("A full-service financial institution"))
 
 	def test_company_name_mentions_cannot_outrank_more_industry_hits(self):
 		# The first paragraph scores 2 industry hits and never names the company; the
