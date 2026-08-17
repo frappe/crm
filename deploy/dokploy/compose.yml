@@ -1,0 +1,189 @@
+x-custom-image: &custom_image
+  image: ${CUSTOM_IMAGE:?CUSTOM_IMAGE is required}:${CUSTOM_TAG:-dokploy}
+  pull_policy: ${PULL_POLICY:-always}
+  platform: linux/amd64
+
+x-backend-defaults: &backend_defaults
+  <<: *custom_image
+  restart: unless-stopped
+  volumes:
+    - sites:/home/frappe/frappe-bench/sites
+    - logs:/home/frappe/frappe-bench/logs
+
+services:
+  configurator:
+    <<: *backend_defaults
+    restart: on-failure:5
+    entrypoint: ["bash", "-c"]
+    command:
+      - >
+        ls -1 apps > sites/apps.txt;
+        bench set-config -g db_host "$$DB_HOST";
+        bench set-config -gp db_port "$$DB_PORT";
+        bench set-config -g redis_cache "redis://$$REDIS_CACHE";
+        bench set-config -g redis_queue "redis://$$REDIS_QUEUE";
+        bench set-config -g redis_socketio "redis://$$REDIS_QUEUE";
+        bench set-config -gp socketio_port "$$SOCKETIO_PORT";
+        bench set-config -g chromium_path /usr/bin/chromium-headless-shell;
+    environment:
+      DB_HOST: db
+      DB_PORT: "3306"
+      REDIS_CACHE: redis-cache:6379
+      REDIS_QUEUE: redis-queue:6379
+      SOCKETIO_PORT: "9000"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis-cache:
+        condition: service_started
+      redis-queue:
+        condition: service_started
+
+  create-site:
+    <<: *backend_defaults
+    restart: on-failure:5
+    entrypoint: ["bash", "-c"]
+    command:
+      - >
+        wait-for-it -t 180 db:3306;
+        wait-for-it -t 180 redis-cache:6379;
+        wait-for-it -t 180 redis-queue:6379;
+        if [ -f "sites/$$SITE_NAME/site_config.json" ]; then
+          echo "Site $$SITE_NAME already exists; skipping creation";
+        else
+          bench new-site "$$SITE_NAME"
+          --mariadb-user-host-login-scope='%'
+          --db-root-username=root
+          --db-root-password="$$DB_PASSWORD"
+          --admin-password="$$ADMIN_PASSWORD"
+          --install-app crm
+          --set-default;
+        fi;
+        bench --site "$$SITE_NAME" set-config developer_mode 0;
+        bench --site "$$SITE_NAME" set-config mute_emails "$$MUTE_EMAILS";
+        bench --site "$$SITE_NAME" set-config host_name "https://$$SITE_NAME";
+        bench use "$$SITE_NAME";
+    environment:
+      SITE_NAME: ${SITE_NAME:?SITE_NAME is required}
+      DB_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?ADMIN_PASSWORD is required}
+      MUTE_EMAILS: ${MUTE_EMAILS:-0}
+    depends_on:
+      configurator:
+        condition: service_completed_successfully
+
+  migrator:
+    <<: *backend_defaults
+    restart: on-failure:5
+    entrypoint: ["bash", "-c"]
+    command:
+      - >
+        if [ "$$MIGRATE_SITES" = "true" ]; then
+          bench --site "$$SITE_NAME" migrate;
+        else
+          echo "Automatic migration disabled";
+        fi;
+    environment:
+      SITE_NAME: ${SITE_NAME:?SITE_NAME is required}
+      MIGRATE_SITES: ${MIGRATE_SITES:-true}
+    depends_on:
+      create-site:
+        condition: service_completed_successfully
+
+  backend:
+    <<: *backend_defaults
+    environment:
+      GUNICORN_THREADS: ${GUNICORN_THREADS:-4}
+      GUNICORN_WORKERS: ${GUNICORN_WORKERS:-2}
+      GUNICORN_TIMEOUT: ${GUNICORN_TIMEOUT:-120}
+    depends_on:
+      migrator:
+        condition: service_completed_successfully
+
+  frontend:
+    <<: *custom_image
+    restart: unless-stopped
+    command: ["nginx-entrypoint.sh"]
+    environment:
+      BACKEND: backend:8000
+      SOCKETIO: websocket:9000
+      FRAPPE_SITE_NAME_HEADER: ${SITE_NAME:?SITE_NAME is required}
+      UPSTREAM_REAL_IP_ADDRESS: ${UPSTREAM_REAL_IP_ADDRESS:-127.0.0.1}
+      UPSTREAM_REAL_IP_HEADER: ${UPSTREAM_REAL_IP_HEADER:-X-Forwarded-For}
+      UPSTREAM_REAL_IP_RECURSIVE: ${UPSTREAM_REAL_IP_RECURSIVE:-off}
+      PROXY_READ_TIMEOUT: ${PROXY_READ_TIMEOUT:-120}
+      CLIENT_MAX_BODY_SIZE: ${CLIENT_MAX_BODY_SIZE:-50m}
+    volumes:
+      - sites:/home/frappe/frappe-bench/sites
+      - logs:/home/frappe/frappe-bench/logs
+    expose:
+      - "8080"
+    depends_on:
+      backend:
+        condition: service_started
+      websocket:
+        condition: service_started
+
+  websocket:
+    <<: *backend_defaults
+    command: ["node", "/home/frappe/frappe-bench/apps/frappe/socketio.js"]
+    depends_on:
+      migrator:
+        condition: service_completed_successfully
+
+  queue-short:
+    <<: *backend_defaults
+    command: ["bench", "worker", "--queue", "short,default"]
+    depends_on:
+      migrator:
+        condition: service_completed_successfully
+
+  queue-long:
+    <<: *backend_defaults
+    command: ["bench", "worker", "--queue", "long,default,short"]
+    depends_on:
+      migrator:
+        condition: service_completed_successfully
+
+  scheduler:
+    <<: *backend_defaults
+    command: ["bench", "schedule"]
+    depends_on:
+      migrator:
+        condition: service_completed_successfully
+
+  db:
+    image: mariadb:11.8
+    restart: unless-stopped
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --skip-character-set-client-handshake
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required}
+      MARIADB_ROOT_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required}
+      MARIADB_AUTO_UPGRADE: "1"
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      start_period: 10s
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - db-data:/var/lib/mysql
+
+  redis-cache:
+    image: redis:8.6-alpine
+    restart: unless-stopped
+
+  redis-queue:
+    image: redis:8.6-alpine
+    restart: unless-stopped
+    volumes:
+      - redis-queue-data:/data
+
+volumes:
+  sites:
+  logs:
+  db-data:
+  redis-queue-data:

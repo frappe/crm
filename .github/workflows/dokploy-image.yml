@@ -1,0 +1,85 @@
+name: Build Dokploy Image
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - develop
+      - codex/advanced-task-assignment-checklist
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: dokploy-image-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build production image
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out CRM repository
+        uses: actions/checkout@v4
+
+      - name: Create custom apps definition
+        shell: bash
+        run: |
+          jq -n \
+            --arg url "https://github.com/${GITHUB_REPOSITORY}.git" \
+            --arg branch "${GITHUB_REF_NAME}" \
+            '[{"url": $url, "branch": $branch}]' > apps.json
+
+      - name: Set image name
+        id: image
+        shell: bash
+        run: echo "name=ghcr.io/${GITHUB_REPOSITORY,,}" >> "$GITHUB_OUTPUT"
+
+      - name: Check out official Frappe Docker build context
+        uses: actions/checkout@v4
+        with:
+          repository: frappe/frappe_docker
+          ref: 600744eb07e86584a7fdf3f9d5e4336c08f30f39
+          path: frappe_docker
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push production image
+        uses: docker/build-push-action@v6
+        with:
+          context: frappe_docker
+          file: frappe_docker/images/layered/Containerfile
+          platforms: linux/amd64
+          push: true
+          tags: |
+            ${{ steps.image.outputs.name }}:dokploy
+            ${{ steps.image.outputs.name }}:sha-${{ github.sha }}
+          build-args: |
+            FRAPPE_PATH=https://github.com/frappe/frappe
+            FRAPPE_BRANCH=develop
+            CACHE_BUST=${{ github.sha }}
+          secret-files: |
+            apps_json=apps.json
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Trigger Dokploy after image publication
+        env:
+          DOKPLOY_WEBHOOK_URL: ${{ secrets.DOKPLOY_WEBHOOK_URL }}
+        shell: bash
+        run: |
+          if [ -n "$DOKPLOY_WEBHOOK_URL" ]; then
+            curl --fail --silent --show-error --request POST "$DOKPLOY_WEBHOOK_URL"
+          else
+            echo "DOKPLOY_WEBHOOK_URL is not configured; deploy manually from Dokploy."
+          fi
