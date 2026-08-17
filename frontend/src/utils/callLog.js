@@ -15,11 +15,13 @@ export function getCallLogDetail(row, log, columns = []) {
     }
   } else if (row === 'caller') {
     return {
+      name: log.caller,
       label: log._caller?.label,
       image: log._caller?.image,
     }
   } else if (row === 'receiver') {
     return {
+      name: log.receiver,
       label: log._receiver?.label,
       image: log._receiver?.image,
     }
