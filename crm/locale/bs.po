@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-08-17 07:47+0000\n"
-"PO-Revision-Date: 2026-08-17 16:29\n"
+"PO-Revision-Date: 2026-08-18 16:25\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Bosnian\n"
 "MIME-Version: 1.0\n"
@@ -1414,7 +1414,7 @@ msgstr "Poziv Primljen Od"
 
 #: frontend/src/components/Telephony/ExotelCallUI.vue:403
 msgid "Call connected, but the call log could not be saved. Please contact your administrator."
-msgstr "Poziv je uspostavljen, ali zapisnik poziva nije mogao biti sačuvan. Kontaktiraj administratora."
+msgstr "Poziv je uspostavljen, ali zapisnik poziva nije mogao biti spremljen. Kontaktiraj administratora."
 
 #: crm/integrations/api.py:259 crm/integrations/twilio/api.py:174
 #: crm/integrations/twilio/api.py:192
@@ -2901,21 +2901,21 @@ msgstr "Kopiraj"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:47
 msgid "Duplicate Assignment Rule"
-msgstr "Dupliciraj Pravilo Dodjele"
+msgstr "Dupliraj Pravilo Dodjele"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:34
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:513
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:675
 msgid "Duplicate Event"
-msgstr "Dupliciraj Događaj"
+msgstr "Dupliraj Događaj"
 
 #: frontend/src/components/Settings/Sla/SlaPolicyList.vue:112
 msgid "Duplicate SLA Policy"
-msgstr "Dupliciraj Ugovor o Nivou Usluge princip"
+msgstr "Dupliraj Ugovor o Nivou Usluge princip"
 
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:10
 msgid "Duplicate Template"
-msgstr "Dupliciraj Predložak"
+msgstr "Dupliraj Predložak"
 
 #: frontend/src/components/Modals/ViewModal.vue:8
 msgid "Duplicate View"
@@ -2927,7 +2927,7 @@ msgstr "Pronađen duplikat radnog dana: {0}. Svaki radni dan treba biti jedinstv
 
 #: frontend/src/components/Modals/EventModal.vue:11
 msgid "Duplicate an Event"
-msgstr "Dupliciraj Događaj"
+msgstr "Dupliraj Događaj"
 
 #. Label of the duration (Duration) field in DocType 'CRM Call Log'
 #. Label of the duration (Duration) field in DocType 'CRM Status Change Log'
