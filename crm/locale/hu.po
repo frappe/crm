@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-08-17 07:47+0000\n"
-"PO-Revision-Date: 2026-08-17 16:28\n"
+"PO-Revision-Date: 2026-08-18 16:25\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Hungarian\n"
 "MIME-Version: 1.0\n"
@@ -1776,7 +1776,7 @@ msgstr "Kommunikációs állapotok"
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
 msgid "Company Description"
-msgstr ""
+msgstr "cégleírás"
 
 #. Label of the company_name (Data) field in DocType 'CRM Enrichment Run'
 #: crm/domain_enrichment/doctype/crm_enrichment_run/crm_enrichment_run.json
@@ -3940,7 +3940,7 @@ msgstr "Szűrők"
 
 #: frontend/src/components/Questionnaire.vue:96
 msgid "Finish"
-msgstr ""
+msgstr "Befejez"
 
 #. Label of the finished_on (Datetime) field in DocType 'CRM Enrichment Run'
 #: crm/domain_enrichment/doctype/crm_enrichment_run/crm_enrichment_run.json
@@ -7691,7 +7691,7 @@ msgstr "Típus kiválasztása"
 
 #: frontend/src/components/Settings/CalendarSettings.vue:54
 msgid "Select View"
-msgstr ""
+msgstr "Nézet kiválasztása"
 
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:15
 msgid "Select Workday"
@@ -9569,7 +9569,7 @@ msgstr "hozzárendelt egy {0} {1} számodra"
 
 #: frontend/src/components/Calendar/EventNotifications.vue:33
 msgid "at"
-msgstr ""
+msgstr "at"
 
 #: frontend/src/components/Settings/CalendarSettings.vue:221
 msgid "before at"
@@ -9657,7 +9657,7 @@ msgstr "ügyletek"
 #. Mapping'
 #: crm/domain_enrichment/doctype/crm_enrichment_field_mapping/crm_enrichment_field_mapping.json
 msgid "description"
-msgstr ""
+msgstr "description"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:190
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:274
@@ -9676,7 +9676,7 @@ msgstr "árfolyam-api"
 #. Option for the 'Service Provider' (Select) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 msgid "exchangerate.host"
-msgstr ""
+msgstr "exchangerate.host"
 
 #. Option for the 'Source Key' (Select) field in DocType 'CRM Enrichment Field
 #. Mapping'
