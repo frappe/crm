@@ -244,6 +244,7 @@ import {
   Tooltip,
 } from 'frappe-ui'
 import { sessionStore } from '@/stores/session'
+import { usersStore } from '@/stores/users'
 import { ref, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
@@ -284,6 +285,7 @@ function onColumnWidthUpdated({ width, save }, column) {
 function getLabel(label, column) {
   if (column.type === 'Duration') return formatDuration(label)
   if (column.options && isTranslatable(column.options)) return __(label)
+  if (column.options === 'User') return getUser(label)?.full_name || label
   return label
 }
 
@@ -292,6 +294,7 @@ const isLikeFilterApplied = computed(() => {
 })
 
 const { user } = sessionStore()
+const { getUser } = usersStore()
 
 function isLiked(item) {
   if (item) {

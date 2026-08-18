@@ -17,6 +17,7 @@ import { Dialogs } from '@/utils/dialogs'
 import { sessionStore } from '@/stores/session'
 import { FrappeUIProvider, setConfig, useTheme } from 'frappe-ui'
 import { computed, defineAsyncComponent, provide } from 'vue'
+import { useWindowSize } from '@vueuse/core'
 
 const session = sessionStore()
 provide('session', session)
@@ -32,8 +33,10 @@ const MobileLayout = defineAsyncComponent(
 const DesktopLayout = defineAsyncComponent(
   () => import('./components/Layouts/DesktopLayout.vue'),
 )
+
+const { width } = useWindowSize()
 const Layout = computed(() => {
-  if (window.innerWidth < 640) {
+  if (width.value < 640) {
     return MobileLayout
   } else {
     return DesktopLayout

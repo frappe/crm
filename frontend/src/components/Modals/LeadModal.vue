@@ -125,10 +125,11 @@ async function createNewLead() {
     {
       validate() {
         error.value = null
-        if (!lead.doc.first_name) {
-          error.value = __('First Name is mandatory')
-          return error.value
-        }
+        // [MUSIC-CRM OVERRIDE] Bypassing hardcoded first_name check because Campaigns don't use it
+        // if (!lead.doc.first_name) {
+        //   error.value = __('First Name is mandatory')
+        //   return error.value
+        // }
         if (lead.doc.annual_revenue) {
           if (typeof lead.doc.annual_revenue === 'string') {
             lead.doc.annual_revenue = lead.doc.annual_revenue.replace(/,/g, '')

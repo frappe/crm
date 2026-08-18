@@ -727,3 +727,11 @@ const articles = ref([
   },
 ])
 </script>
+
+<style scoped>
+:deep(.text-sm),
+:deep(.text-base),
+:deep(.text-base-medium) {
+  font-size: 14px !important;
+}
+</style>
