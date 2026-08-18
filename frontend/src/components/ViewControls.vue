@@ -129,9 +129,9 @@
       <Button icon="lucide-x" @click="customizeQuickFilter = false" />
     </div>
   </div>
-  <div v-else class="flex items-center justify-between gap-2 px-5 py-4">
+  <div v-else class="flex items-center justify-between gap-2 px-5 py-4 min-w-0">
     <FadedScrollableDiv
-      class="flex flex-1 items-center overflow-x-auto -ml-1 h-9"
+      class="flex flex-1 min-w-0 items-center overflow-x-auto -ml-1 h-9"
       orientation="horizontal"
     >
       <div
@@ -145,16 +145,16 @@
         />
       </div>
     </FadedScrollableDiv>
-    <div class="-ml-2 h-[70%] border-l" />
-    <div class="flex items-center gap-2">
+    <div class="-ml-2 h-[70%] border-l shrink-0" />
+    <div class="flex items-center gap-2 shrink-0">
       <div
         v-if="viewUpdated && route.query.view && (!view.public || isManager())"
-        class="flex items-center gap-2 border-r pr-2"
+        class="flex shrink-0 items-center gap-2 border-r pr-2"
       >
         <Button :label="__('Cancel')" @click="cancelChanges" />
         <Button :label="__('Save Changes')" @click="saveView" />
       </div>
-      <div class="flex items-center gap-2">
+      <div class="flex shrink-0 items-center gap-2">
         <Button
           :tooltip="__('Refresh')"
           icon="lucide-refresh-ccw"
