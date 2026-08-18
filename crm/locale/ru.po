@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-08-17 07:47+0000\n"
-"PO-Revision-Date: 2026-08-17 16:28\n"
+"PO-Revision-Date: 2026-08-18 16:25\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Russian\n"
 "MIME-Version: 1.0\n"
@@ -4272,7 +4272,7 @@ msgstr "Заголовок"
 
 #: crm/templates/emails/helpdesk_invitation.html:2
 msgid "Hello"
-msgstr "Привет"
+msgstr "Здравствуйте"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:130
 msgid "Help"
