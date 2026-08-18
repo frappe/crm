@@ -1,25 +1,18 @@
-import { useStorage } from '@vueuse/core'
+import { call } from 'frappe-ui'
 import { sessionStore } from '@/stores/session'
-
-const MAX_VISITED_RECORDS = 1000
 
 export function useVisitedRecords(doctype) {
   const { user } = sessionStore()
-  const visitedRecords = useStorage(`visitedRecords:${user}:${doctype}`, [])
 
-  function isVisited(name) {
-    return visitedRecords.value.includes(name)
+  function isVisited(seen) {
+    if (!seen) return false
+    let seenBy = typeof seen === 'string' ? JSON.parse(seen) : seen
+    return seenBy.includes(user)
   }
 
   function markVisited(name) {
-    if (!name || isVisited(name)) return
-    visitedRecords.value.push(name)
-    if (visitedRecords.value.length > MAX_VISITED_RECORDS) {
-      visitedRecords.value.splice(
-        0,
-        visitedRecords.value.length - MAX_VISITED_RECORDS,
-      )
-    }
+    if (!name) return
+    call('crm.api.doc.add_seen', { doctype, name })
   }
 
   return { isVisited, markVisited }

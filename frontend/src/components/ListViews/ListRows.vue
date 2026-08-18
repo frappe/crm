@@ -23,7 +23,7 @@
           :row="row"
         >
           <slot
-            v-bind="{ idx, column, item, row, isVisited: isVisited(row.name) }"
+            v-bind="{ idx, column, item, row, isVisited: isVisited(row._seen) }"
           />
         </ListRow>
       </ListGroupRows>
@@ -42,7 +42,7 @@
       :row="row"
     >
       <slot
-        v-bind="{ idx, column, item, row, isVisited: isVisited(row.name) }"
+        v-bind="{ idx, column, item, row, isVisited: isVisited(row._seen) }"
       />
     </ListRow>
   </ListRows>
