@@ -171,9 +171,8 @@ function getAliases(config) {
       import.meta.dirname,
       '../frappe-ui/frappe/index.js',
     ),
-    // subpath entries must precede the bare `frappe-ui` key: a plain string alias
-    // matches by prefix, so without these subpaths would rewrite under
-    // `.../src/index.ts`. `internals` is pulled in by @framework/ui.
+    // Subpath entries must precede the bare `frappe-ui` key because a plain
+    // string alias matches by prefix. `internals` is pulled in by @framework/ui.
     'frappe-ui/icons': path.resolve(
       import.meta.dirname,
       '../frappe-ui/icons/index.ts',
@@ -181,6 +180,10 @@ function getAliases(config) {
     'frappe-ui/editor': path.resolve(
       import.meta.dirname,
       '../frappe-ui/src/molecules/editor/index.ts',
+    ),
+    'frappe-ui/list': path.resolve(
+      import.meta.dirname,
+      '../frappe-ui/src/molecules/list/index.ts',
     ),
     'frappe-ui/editor-style.css': path.resolve(
       import.meta.dirname,
