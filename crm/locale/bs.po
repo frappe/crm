@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-08-17 07:47+0000\n"
-"PO-Revision-Date: 2026-08-18 16:25\n"
+"PO-Revision-Date: 2026-08-19 16:31\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Bosnian\n"
 "MIME-Version: 1.0\n"
@@ -2663,7 +2663,7 @@ msgstr "Demo podaci su uspješno vraćeni."
 #. Enrichment Settings'
 #: crm/domain_enrichment/doctype/crm_enrichment_settings/crm_enrichment_settings.json
 msgid "Denylist (subdomain-aware). A host that equals or is a subdomain of any entry is always rejected by the SSRF guard — e.g. blocking \"acme.com\" also blocks \"shop.acme.com\". Use it to permanently exclude internal domains, known-bad hosts, or link shorteners. Always wins over the allowlist."
-msgstr "Lista zabranjenih domena (svjesna poddomena). SSRF zaštita uvijek odbija host koji je jednak ili je poddomena bilo kojeg unosa — npr. blokiranje \"acme.com\" također blokira \"shop.acme.com\". Koristite je za trajno isključivanje internih domena, poznatih loših hostova ili skraćivača linkova. Uvijek je prioritet naspram liste dozvoljenih domena."
+msgstr "Lista zabranjenih domena (svjesna poddomena). SSRF zaštita uvijek odbija host koji je jednak ili je poddomena bilo kojeg unosa — npr. blokiranje \"acme.com\" također blokira \"shop.acme.com\". Koristi je za trajno isključivanje internih domena, poznatih loših hostova ili skraćivača linkova. Uvijek je prioritet naspram liste dozvoljenih domena."
 
 #. Label of the description (Text Editor) field in DocType 'CRM Holiday'
 #. Label of the description (Text Editor) field in DocType 'CRM Lost Reason'
