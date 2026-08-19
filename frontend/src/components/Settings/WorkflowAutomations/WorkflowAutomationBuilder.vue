@@ -87,7 +87,7 @@
       </div>
       <div
         v-if="inspectorOpen"
-        class="cursor-col-resize bg-surface-gray-2 transition-colors hover:bg-surface-gray-4"
+        class="relative cursor-col-resize bg-transparent after:absolute after:inset-y-0 after:left-1/2 after:w-px after:-translate-x-1/2 after:bg-outline-gray-2 after:transition-colors hover:after:bg-outline-gray-4"
         role="separator"
         aria-orientation="vertical"
         :aria-label="__('Resize panel')"
@@ -96,10 +96,7 @@
         @keydown.left.prevent="nudgeResize(24)"
         @keydown.right.prevent="nudgeResize(-24)"
       />
-      <div
-        v-if="inspectorOpen"
-        class="min-h-0 border-l border-outline-gray-2 bg-surface-elevation-1"
-      >
+      <div v-if="inspectorOpen" class="min-h-0 border-l">
         <AutomationInspector
           :doc="doc"
           :selected-step="selectedStep"
