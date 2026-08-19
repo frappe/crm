@@ -7,6 +7,7 @@ def get_deal_contacts(name: str):
 		"CRM Contacts",
 		filters={"parenttype": "CRM Deal", "parent": name},
 		fields=["contact", "is_primary"],
+		order_by="is_primary desc, idx asc",
 		distinct=True,
 	)
 	deal_contacts = []
