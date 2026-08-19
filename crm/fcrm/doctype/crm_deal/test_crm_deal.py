@@ -5,6 +5,7 @@ import frappe
 from frappe.desk.form.assign_to import add as assign_add
 from frappe.desk.form.assign_to import remove as assign_remove
 
+from crm.fcrm.doctype.crm_deal.api import get_deal_contacts
 from crm.fcrm.doctype.crm_deal.crm_deal import (
 	add_contact,
 	create_deal,
@@ -261,6 +262,25 @@ class TestCRMDeal(FrappeTestCase):
 				self.assertEqual(c.is_primary, 1)
 			else:
 				self.assertEqual(c.is_primary, 0)
+
+	def test_get_deal_contacts_orders_primary_first(self):
+		"""Test that get_deal_contacts pins the primary contact to the top
+		regardless of the order contacts were added in"""
+		contact1 = create_test_contact(first_name="Alpha", email="alpha@example.com")
+		contact2 = create_test_contact(first_name="Beta", email="beta@example.com")
+		contact3 = create_test_contact(first_name="Gamma", email="gamma@example.com")
+
+		deal = create_test_deal(organization="Contact Order Org")
+		deal.append("contacts", {"contact": contact1.name})
+		deal.append("contacts", {"contact": contact2.name})
+		deal.append("contacts", {"contact": contact3.name, "is_primary": 1})
+		deal.save()
+
+		contacts = get_deal_contacts(deal.name)
+
+		self.assertEqual(contacts[0]["name"], contact3.name)
+		self.assertEqual(contacts[0]["is_primary"], 1)
+		self.assertEqual([c["name"] for c in contacts[1:]], [contact1.name, contact2.name])
 
 	def test_create_deal_api(self):
 		"""Test create_deal API function"""
