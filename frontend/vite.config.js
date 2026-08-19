@@ -162,7 +162,7 @@ function getAliases(config) {
     // subpath entries must precede the bare `frappe-ui` key: a plain string alias
     // matches by prefix, so without these subpaths would rewrite under
     // `.../src/index.ts`. `internals` is pulled in by @framework/ui.
-    'frappe-ui/icons': path.resolve(__dirname, '../frappe-ui/icons/index.ts'),
+    // 'frappe-ui/icons': path.resolve(__dirname, '../frappe-ui/icons/index.ts'),
     'frappe-ui/editor': path.resolve(
       __dirname,
       '../frappe-ui/src/molecules/editor/index.ts',
