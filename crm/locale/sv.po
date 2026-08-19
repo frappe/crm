@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-08-17 07:47+0000\n"
-"PO-Revision-Date: 2026-08-17 16:28\n"
+"PO-Revision-Date: 2026-08-19 16:31\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Swedish\n"
 "MIME-Version: 1.0\n"
@@ -4059,7 +4059,7 @@ msgstr "Formulär titel"
 
 #: frontend/src/components/Settings/Forms/FormsList.vue:242
 msgid "Form unpublished"
-msgstr "Formulär har avpublicerad"
+msgstr "Formulär publicering ångradd"
 
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1014
 msgid "Form updated"
@@ -6649,7 +6649,7 @@ msgstr "Inställningar uppdaterade"
 
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:31
 msgid "Preview"
-msgstr "Förhandsgranska"
+msgstr "Förhandsvisa"
 
 #. Label of the preview_max_pages (Int) field in DocType 'CRM Enrichment
 #. Settings'
@@ -7998,7 +7998,7 @@ msgstr "Visa Lösenord"
 #: frontend/src/components/Modals/QuickEntryModal.vue:20
 #: frontend/src/components/Modals/SidePanelModal.vue:20
 msgid "Show Preview"
-msgstr "Förhandsgranska"
+msgstr "Förhandsvisa"
 
 #: frontend/src/components/Settings/GeneralSettings.vue:86
 msgid "Show timestamps in the activity timeline as relative time (5 mins ago) or an exact date & time"
@@ -9012,7 +9012,7 @@ msgstr "Lossa Vy"
 
 #: frontend/src/components/Settings/Forms/FormsList.vue:267
 msgid "Unpublish"
-msgstr "Avpublicera"
+msgstr "Ångra Publicering"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:570
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1021
