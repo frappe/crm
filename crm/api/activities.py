@@ -168,7 +168,7 @@ def get_deal_activities(name: str):
 
 	calls = calls + get_linked_calls(name).get("calls", [])
 	notes = notes + get_linked_notes(name) + get_linked_calls(name).get("notes", [])
-	tasks = tasks + get_linked_tasks(name) + get_linked_calls(name).get("tasks", [])
+	tasks = attach_linked_call_logs(tasks + get_linked_tasks(name) + get_linked_calls(name).get("tasks", []))
 	attachments = attachments + get_attachments("CRM Deal", name)
 
 	activities.sort(key=lambda x: x["creation"], reverse=True)
@@ -309,7 +309,7 @@ def get_lead_activities(name: str):
 
 	calls = get_linked_calls(name).get("calls", [])
 	notes = get_linked_notes(name) + get_linked_calls(name).get("notes", [])
-	tasks = get_linked_tasks(name) + get_linked_calls(name).get("tasks", [])
+	tasks = attach_linked_call_logs(get_linked_tasks(name) + get_linked_calls(name).get("tasks", []))
 	attachments = get_attachments("CRM Lead", name)
 
 	activities.sort(key=lambda x: x["creation"], reverse=True)
@@ -397,9 +397,14 @@ def get_linked_calls(name: str):
 		],
 	)
 
-	linked_calls = frappe.db.get_all(
+	dynamic_linked_calls = frappe.db.get_all(
 		"Dynamic Link", filters={"link_name": name, "parenttype": "CRM Call Log"}, pluck="parent"
 	)
+	# a call log carries its own task/note links regardless of whether it's tied to this
+	# lead/deal via reference_docname (the common case, e.g. calls made through the dialer)
+	# or via a Dynamic Link row - look up links for both
+	existing_call_names = {call["name"] for call in calls}
+	linked_calls = list(existing_call_names | set(dynamic_linked_calls))
 
 	notes = []
 	tasks = []
@@ -438,7 +443,12 @@ def get_linked_calls(name: str):
 			elif call.get("link_doctype") == "CRM Task":
 				tasks.append(call.link_name)
 
-		_calls = [call for call in _calls if call.get("link_doctype") not in ["FCRM Note", "CRM Task"]]
+		_calls = [
+			call
+			for call in _calls
+			if call.get("link_doctype") not in ["FCRM Note", "CRM Task"]
+			and call.get("name") not in existing_call_names
+		]
 		if _calls:
 			calls = calls + _calls
 
@@ -496,6 +506,33 @@ def get_linked_tasks(name: str):
 		],
 	)
 	return tasks or []
+
+
+def attach_linked_call_logs(tasks: list) -> list:
+	"""Attach the call log a task was created from (if any) as task["_call_log"]."""
+	if not tasks:
+		return tasks
+
+	Link = frappe.qb.DocType("Dynamic Link")
+	CallLog = frappe.qb.DocType("CRM Call Log")
+	rows = (
+		frappe.qb.from_(Link)
+		.join(CallLog)
+		.on(CallLog.name == Link.parent)
+		.select(Link.link_name, CallLog.name, CallLog.creation)
+		.where(
+			(Link.parenttype == "CRM Call Log")
+			& (Link.link_doctype == "CRM Task")
+			& (Link.link_name.isin([str(task["name"]) for task in tasks]))
+		)
+	).run(as_dict=True)
+	# link_name is stored as a string even for CRM Task's autoincrement int names
+	call_log_by_task = {str(row.link_name): {"name": row.name, "creation": row.creation} for row in rows}
+
+	for task in tasks:
+		task["_call_log"] = call_log_by_task.get(str(task["name"]))
+
+	return tasks
 
 
 def parse_attachment_log(html: str, type: str):
