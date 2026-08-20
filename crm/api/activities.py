@@ -525,9 +525,14 @@ def attach_linked_call_logs(tasks: list) -> list:
 			& (Link.link_doctype == "CRM Task")
 			& (Link.link_name.isin([str(task["name"]) for task in tasks]))
 		)
+		.orderby(CallLog.creation)
 	).run(as_dict=True)
-	# link_name is stored as a string even for CRM Task's autoincrement int names
-	call_log_by_task = {str(row.link_name): {"name": row.name, "creation": row.creation} for row in rows}
+	# link_name is stored as a string even for CRM Task's autoincrement int names.
+	# a task can end up linked to more than one call log - keep the earliest (the
+	# call that actually originated the task) rather than an arbitrary one
+	call_log_by_task = {}
+	for row in rows:
+		call_log_by_task.setdefault(str(row.link_name), {"name": row.name, "creation": row.creation})
 
 	for task in tasks:
 		task["_call_log"] = call_log_by_task.get(str(task["name"]))
