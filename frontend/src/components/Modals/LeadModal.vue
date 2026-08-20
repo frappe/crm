@@ -41,6 +41,7 @@
           <Button
             :label="__('Enrich')"
             :loading="isEnriching"
+            :loadingText="__('Enriching')"
             :disabled="!lead.doc.website"
             :tooltip="__('Fill fields from the company website')"
             iconLeft="zap"

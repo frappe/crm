@@ -69,6 +69,7 @@
           <Button
             :label="__('Enrich')"
             :loading="isEnriching"
+            :loadingText="__('Enriching')"
             :disabled="!deal.doc.website"
             :tooltip="__('Fill fields from the company website')"
             iconLeft="zap"
