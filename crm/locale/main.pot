@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Frappe CRM VERSION\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2026-08-17 09:43+0000\n"
-"PO-Revision-Date: 2026-08-17 09:43+0000\n"
+"POT-Creation-Date: 2026-08-23 09:52+0000\n"
+"PO-Revision-Date: 2026-08-23 09:52+0000\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: shariq@frappe.io\n"
 "MIME-Version: 1.0\n"
@@ -4561,7 +4561,7 @@ msgstr ""
 msgid "Minimize"
 msgstr ""
 
-#: frontend/src/utils/callLog.js:69
+#: frontend/src/utils/callLog.js:77
 msgid "Missed Call"
 msgstr ""
 
@@ -4846,6 +4846,7 @@ msgstr ""
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
+#: frontend/src/utils/callLog.js:69
 msgid "No Answer"
 msgstr ""
 
@@ -8222,7 +8223,7 @@ msgstr ""
 msgid "list"
 msgstr ""
 
-#: crm/api/comment.py:39 frontend/src/components/Notifications.vue:63
+#: crm/api/comment.py:41 frontend/src/components/Notifications.vue:63
 #: frontend/src/pages/MobileNotification.vue:50
 msgid "mentioned you in {0}"
 msgstr ""
