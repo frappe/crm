@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-08-17 07:47+0000\n"
-"PO-Revision-Date: 2026-08-21 16:53\n"
+"PO-Revision-Date: 2026-08-23 17:21\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Chinese Traditional\n"
 "MIME-Version: 1.0\n"
@@ -4905,7 +4905,7 @@ msgstr ""
 #: frontend/src/pages/Organization.vue:531
 #: frontend/src/pages/Organization.vue:559
 msgid "Last Modified"
-msgstr ""
+msgstr "上次修改時間"
 
 #: frontend/src/components/Filter.vue:686
 msgid "Last Month"
@@ -6644,7 +6644,7 @@ msgstr ""
 #: frontend/src/components/Settings/PreferencesSettings.vue:4
 #: frontend/src/components/Settings/Settings.vue:116
 msgid "Preferences"
-msgstr ""
+msgstr "偏好設定"
 
 #: frontend/src/components/Settings/PreferencesSettings.vue:115
 msgid "Preferences updated successfully"
@@ -9845,11 +9845,11 @@ msgstr "instagram"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:561
 msgid "item"
-msgstr ""
+msgstr "個項目"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:561
 msgid "items"
-msgstr ""
+msgstr "個項目"
 
 #: frontend/src/components/Modals/AddExistingUserModal.vue:29
 msgid "john@doe.com"
