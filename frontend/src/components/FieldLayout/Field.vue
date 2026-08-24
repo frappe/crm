@@ -602,13 +602,17 @@ const getAutocompleteOptions = (field) => {
         label: ({ query }) => __('Use "{0}"', [query.trim()]),
       },
       condition: ({ query }) => {
-        query = (query || '').trim()
-        if (!query) return false
-        return !options.some(
-          (opt) =>
-            String(opt.value ?? '').toLowerCase() === query.toLowerCase() ||
-            String(opt.label ?? '').toLowerCase() === query.toLowerCase(),
-        )
+        const q = (query || '').trim().toLowerCase()
+        if (!q) return false
+        return !options.some((opt) => {
+          const isObject = opt !== null && typeof opt === 'object'
+          const value = isObject ? opt.value : opt
+          const label = isObject ? opt.label : opt
+          return (
+            String(value ?? '').toLowerCase() === q ||
+            String(label ?? '').toLowerCase() === q
+          )
+        })
       },
       onClick: ({ query }) => {
         data.value[field.fieldname] = query.trim()
