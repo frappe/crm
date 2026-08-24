@@ -1,7 +1,7 @@
 # Copyright (c) 2026, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 
-"""Eight reference Automation Flows, installable on any CRM site.
+"""Nine reference Automation Flows, installable on any CRM site.
 
 	bench --site <site> execute crm.automation.reference_flows.install
 	bench --site <site> execute crm.automation.reference_flows.install --kwargs "{'enable': 1}"
@@ -67,6 +67,7 @@ def builders() -> tuple:
 		engagement_scoring,
 		qualified_conversion,
 		stalled_deal,
+		high_value_deal_watch,
 	)
 
 
@@ -391,6 +392,124 @@ def stalled_deal() -> dict:
 			),
 		],
 	}
+
+
+# ---------------------------------------------------------------------------
+# 9. A high value deal moves: route it by confidence, then check three days later
+# whether anyone actually came back.
+# ---------------------------------------------------------------------------
+HIGH_VALUE_AT = 50000
+COMMIT_PROBABILITY = 70
+QUIET_DAYS = 3
+
+
+def high_value_deal_watch() -> dict:
+	"""The whole flow is gated on deal value, so small deals never start a run at all.
+
+	Confidence decides who picks it up: a deal the rep expects to close needs a close plan,
+	one they do not needs pressure testing. Either way the wait and the silence check that
+	follow are the same, which is why they sit outside the arms.
+	"""
+	return {
+		**flow("High value deal watch", "CRM Deal", "Doc Updated"),
+		"condition": f"(doc.expected_deal_value or 0) >= {HIGH_VALUE_AT}",
+		"actions": [
+			step(1, "is_committing", "If", condition=f"(doc.probability or 0) >= {COMMIT_PROBABILITY}"),
+			assign_step(
+				2,
+				"assign_closer",
+				QUALIFIED_OWNER,
+				"High value deal at {{ doc.probability }}% - build the close plan",
+				parent=1,
+				branch="If",
+			),
+			deal_task_step(
+				3,
+				"close_plan",
+				"Build the close plan for {{ doc.organization or doc.name }}",
+				days=2,
+				parent=1,
+				branch="If",
+			),
+			assign_step(
+				4,
+				"assign_reviewer",
+				HOT_LEAD_OWNER,
+				"High value deal still at {{ doc.probability }}% - needs a second look",
+				parent=1,
+				branch="Else",
+			),
+			deal_task_step(
+				5,
+				"pressure_test",
+				"Pressure test {{ doc.organization or doc.name }}",
+				days=1,
+				parent=1,
+				branch="Else",
+			),
+			notify_step(
+				6,
+				"alert_desk",
+				"System",
+				[HOT_LEAD_OWNER],
+				"High value deal moved: {{ doc.organization or doc.name }}",
+				"<p>{{ doc.organization or doc.name }} is at {{ doc.expected_deal_value }} "
+				"and {{ doc.probability }}% confidence, closing {{ doc.expected_closure_date }}.</p>",
+			),
+			step(7, "wait_for_movement", "Wait", params={"value": QUIET_DAYS, "unit": "Days"}),
+			quiet_check_step(8, "nobody_replied"),
+			notify_step(
+				9,
+				"escalate",
+				"Email",
+				[HOT_LEAD_OWNER],
+				"No contact in {0} days: {{{{ doc.organization or doc.name }}}}".format(QUIET_DAYS),
+				"<p>Nothing has come back on a deal worth {{ doc.expected_deal_value }}. "
+				"It is worth a call before the close date.</p>",
+				parent=8,
+				branch="If",
+			),
+			# Everything here stays on the Deal: a Deal created directly has no originating
+			# Lead, and an unresolvable alias fails the run before step one.
+			nudge_step(10, "confidence_drops", "probability", -10, parent=8, branch="If"),
+			deal_task_step(
+				11,
+				"rescue_call",
+				"Call {{ doc.organization or doc.name }} - no contact in {0} days".format(QUIET_DAYS),
+				days=0,
+				parent=8,
+				branch="If",
+			),
+			nudge_step(12, "confidence_holds", "probability", 5, parent=8, branch="Else"),
+		],
+	}
+
+
+def notify_step(idx, key, channel, recipients, subject, message, **extra) -> dict:
+	return action(
+		idx,
+		key,
+		"SendNotification",
+		{"channel": channel, "recipients": recipients, "subject": subject, "message": message},
+		**extra,
+	)
+
+
+def nudge_step(idx, key, field, amount, **extra) -> dict:
+	return action(idx, key, "IncrementFieldValue", {"field": field, "amount": amount}, **extra)
+
+
+def deal_task_step(idx, key, title, days, **extra) -> dict:
+	values = {
+		"title": title,
+		"status": "Todo",
+		"priority": "High",
+		"assigned_to": "{{ doc.deal_owner or '' }}",
+		"reference_doctype": "CRM Deal",
+		"reference_docname": "{{ doc.name }}",
+		"due_date": f"{{{{ frappe.utils.add_days(frappe.utils.nowdate(), {days}) }}}}",
+	}
+	return action(idx, key, "CreateDocument", {"doctype": "CRM Task", "values": values}, **extra)
 
 
 EVENT_MATCHED = 'context.get("event", {}).get("outcome") == "Matched"'
