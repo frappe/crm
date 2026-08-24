@@ -1,5 +1,12 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
+
+// workflowCapabilities reaches frappe-ui's resource plugin, which the node test env cannot load.
+vi.mock(
+  '../../src/components/Settings/WorkflowAutomations/workflowCapabilities',
+  () => ({ actionSchema: () => null }),
+)
 import { workflowEdges } from '../../src/components/Settings/WorkflowAutomations/workflowEdges'
+import { workflowNodes } from '../../src/components/Settings/WorkflowAutomations/workflowGraph'
 import { newStep } from '../../src/components/Settings/WorkflowAutomations/workflowSteps'
 
 describe('workflow graph connectors', () => {
@@ -22,5 +29,31 @@ describe('workflow graph connectors', () => {
       [trueAction._id, joinedStep._id, null],
       [falseAction._id, joinedStep._id, null],
     ])
+  })
+})
+
+describe('continuing past a condition', () => {
+  const branchNode = (doc) =>
+    workflowNodes(doc).find((node) => node.data.branching)
+
+  it('withholds the after-branches button while an arm is empty', () => {
+    const condition = newStep({ step_type: 'If' })
+    condition.children.If.push(newStep())
+
+    const node = branchNode({ actions: [condition] })
+
+    expect(node.data.canContinue).toBe(false)
+    expect(node.data.arms.map((arm) => arm.branch)).toEqual(['Else'])
+  })
+
+  it('offers it once both arms lead somewhere', () => {
+    const condition = newStep({ step_type: 'If' })
+    condition.children.If.push(newStep())
+    condition.children.Else.push(newStep())
+
+    const node = branchNode({ actions: [condition] })
+
+    expect(node.data.canContinue).toBe(true)
+    expect(node.data.arms).toEqual([])
   })
 })

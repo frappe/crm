@@ -3,6 +3,7 @@ import {
   EVENT_MATCHED,
   layoutSteps,
   newStep,
+  removeStep,
   toRows,
   toTree,
 } from '../../src/components/Settings/WorkflowAutomations/workflowSteps'
@@ -43,6 +44,30 @@ describe('workflow layout', () => {
     )
 
     expect(ifArm.y).toBeLessThan(elseArm.y)
+  })
+})
+
+describe('step removal', () => {
+  it('removes the requested adjacent step by id', () => {
+    const first = newStep()
+    const selected = newStep()
+    const last = newStep()
+    const tree = [first, selected, last]
+
+    removeStep(tree, selected._id)
+
+    expect(tree).toEqual([first, last])
+  })
+
+  it('removes the requested nested step by id', () => {
+    const condition = newStep({ step_type: 'If' })
+    const behind = newStep()
+    const selected = newStep()
+    condition.children.If.push(behind, selected)
+
+    removeStep([condition], selected._id)
+
+    expect(condition.children.If).toEqual([behind])
   })
 })
 
