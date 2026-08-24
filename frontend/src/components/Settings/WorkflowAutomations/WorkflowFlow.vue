@@ -159,7 +159,7 @@
           </div>
         </div>
         <div
-          v-if="data.arms?.length && !readonly"
+          v-if="(data.arms?.length || data.canContinue) && !readonly"
           class="nodrag absolute left-[calc(100%+12px)] top-1/2 flex -translate-y-1/2 flex-col gap-1.5"
           @click.stop
         >
@@ -179,6 +179,24 @@
             <template #trigger>
               <Button icon-left="lucide-plus" size="sm">
                 {{ arm.label }}
+              </Button>
+            </template>
+          </Combobox>
+          <Combobox
+            v-if="data.canContinue"
+            :options="blockGroups"
+            trigger="button"
+            side="right"
+            :placeholder="__('Search blocks')"
+            @update:model-value="addBlock(data, null, $event)"
+          >
+            <template #item-prefix />
+            <template #item-label="{ item }">
+              <WorkflowComboboxOption :item="item" />
+            </template>
+            <template #trigger>
+              <Button icon-left="lucide-plus" size="sm" class="ml-6">
+                {{ __('After branches') }}
               </Button>
             </template>
           </Combobox>
@@ -246,11 +264,19 @@ watch(
   [
     () => props.nodes.map((node) => node.id).join('|'),
     () => props.nodes[0]?.data?.empty,
-    () => props.inspectorOpen,
   ],
   refitFlow,
   { flush: 'post' },
 )
+
+watch(() => props.inspectorOpen, refitAfterPanelResize, { flush: 'post' })
+
+async function refitAfterPanelResize() {
+  await nextTick()
+  await nextFrame()
+  await nextFrame()
+  return refitFlow()
+}
 
 async function refitFlow() {
   await nextTick()
@@ -351,8 +377,8 @@ function iconTone(data) {
 }
 
 /**
- * Only the end of a chain offers an add button - a step that already has one after it needs
- * no button of its own, and a branching node grows through its arms instead.
+ * Only the end of a chain offers an add button. Branching nodes use their dedicated arm and
+ * shared-continuation controls instead.
  */
 function showAdd(data) {
   if (props.readonly || data.branching || data.empty) return false
