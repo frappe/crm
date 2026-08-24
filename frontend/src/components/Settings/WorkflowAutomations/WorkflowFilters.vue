@@ -88,7 +88,7 @@ function interleave(rows) {
 
 function serialize(value) {
   const rows = props.flat ? leaves(value) : value
-  return rows.length ? JSON.stringify(rows) : ''
+  return JSON.stringify(rows)
 }
 
 function leaves(value) {

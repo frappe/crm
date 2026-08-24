@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex gap-2"
+    class="condition-row flex gap-2"
     :class="[
       {
         'items-center': !props.isGroup,
@@ -8,14 +8,14 @@
     ]"
   >
     <div
-      class="flex gap-2 w-full"
+      class="condition-main flex w-full gap-2"
       :class="[
         {
           'items-center justify-between': !props.isGroup,
         },
       ]"
     >
-      <div :class="'text-end text-base text-ink-gray-5'">
+      <div class="condition-conjunction text-end text-base text-ink-gray-5">
         <div v-if="props.itemIndex == 0" class="min-w-[66px] text-start">
           {{ __('Where') }}
         </div>
@@ -30,8 +30,11 @@
           />
         </div>
       </div>
-      <div v-if="!props.isGroup" class="flex items-center gap-2 w-full">
-        <div id="fieldname" class="w-full">
+      <div
+        v-if="!props.isGroup"
+        class="condition-fields flex w-full items-center gap-2"
+      >
+        <div class="condition-field w-full">
           <Combobox
             trigger="button"
             :options="filterableFields.data || []"
@@ -40,7 +43,7 @@
             @update:selected-option="updateField"
           />
         </div>
-        <div id="operator">
+        <div class="condition-operator">
           <FormControl
             v-if="!condition[0]"
             disabled
@@ -58,7 +61,7 @@
             @update:modelValue="updateOperator"
           />
         </div>
-        <div id="value" class="w-full">
+        <div class="condition-value w-full">
           <FormControl
             v-if="!condition[0]"
             disabled
@@ -70,7 +73,7 @@
             :is="getValueControl()"
             v-else
             v-model="condition[2]"
-            :placeholder="__('Condition')"
+            :placeholder="valuePlaceholder()"
             @change="updateValue"
           />
         </div>
@@ -90,7 +93,7 @@
         @click="show = true"
       />
     </div>
-    <div :class="'w-max'">
+    <div class="condition-actions w-max">
       <Dropdown placement="right" :options="dropdownOptions">
         <Button variant="ghost" icon="lucide-more-horizontal" />
       </Dropdown>
@@ -210,6 +213,17 @@ const updateField = (field) => {
 
 const resetConditionValue = () => {
   condition[2] = ''
+}
+
+/**
+ * A free-text operator takes the value literally, so the example shows it unquoted - people
+ * reach for quotes out of habit and then wonder why nothing ever matches.
+ */
+function valuePlaceholder() {
+  const operator = condition[1]
+  if (['like', 'not like'].includes(operator)) return __('e.g. @gmail.com')
+  if (['in', 'not in'].includes(operator)) return __('e.g. Open, Replied')
+  return __('Condition')
 }
 
 function getValueControl() {
@@ -421,3 +435,43 @@ function getDefaultValue(field) {
   return ''
 }
 </script>
+
+<style scoped>
+@container (max-width: 420px) {
+  .condition-row {
+    position: relative;
+    display: block;
+  }
+
+  .condition-main {
+    display: block;
+  }
+
+  .condition-conjunction {
+    margin-bottom: 0.5rem;
+    padding-right: 2rem;
+  }
+
+  .condition-fields {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .condition-operator,
+  .condition-value {
+    width: 100%;
+  }
+
+  .condition-operator :deep(> *),
+  .condition-value :deep(> *) {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .condition-actions {
+    position: absolute;
+    top: -0.25rem;
+    right: -0.25rem;
+  }
+}
+</style>
