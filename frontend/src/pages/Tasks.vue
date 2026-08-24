@@ -191,7 +191,7 @@
     name="Tasks"
     doctype="CRM Task"
     :docname="taskToDelete"
-    :reload="() => tasks.value.reload()"
+    :reload="() => tasks.reload()"
   />
 </template>
 
