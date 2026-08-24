@@ -166,7 +166,9 @@ router.beforeEach(async (to, from, next) => {
       await users.promise
     } catch (error) {
       console.error('Error loading users', error)
-      return next(false)
+      if (error?.exc_type !== 'PermissionError') {
+        return next()
+      }
     }
   }
 
