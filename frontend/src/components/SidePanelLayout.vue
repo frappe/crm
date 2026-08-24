@@ -99,7 +99,20 @@
                           class="flex h-7 cursor-pointer items-center px-2 py-1 text-ink-gray-5"
                         >
                           <Tooltip :text="__(field.tooltip)">
-                            <div>{{ doc[field.fieldname] }}</div>
+                            <a
+                              v-if="
+                                field.fieldtype === 'Data' &&
+                                getSafeWebsiteUrl(doc[field.fieldname])
+                              "
+                              class="truncate text-ink-gray-8 hover:underline"
+                              :href="getSafeWebsiteUrl(doc[field.fieldname])"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              @click.stop
+                            >
+                              {{ doc[field.fieldname] }}
+                            </a>
+                            <div v-else>{{ doc[field.fieldname] }}</div>
                           </Tooltip>
                         </div>
                         <PrimaryDropdown
@@ -383,7 +396,10 @@
                           @click.stop="field.link(doc[field.fieldname])"
                         />
                         <ArrowUpRightIcon
-                          v-else-if="isExternalUrl(doc[field.fieldname])"
+                          v-else-if="
+                            isExternalUrl(doc[field.fieldname]) &&
+                            !(field.fieldtype === 'Data' && field.read_only)
+                          "
                           class="h-4 w-4 shrink-0 cursor-pointer text-ink-gray-5 hover:text-ink-gray-8"
                           @click.stop="openExternalUrl(doc[field.fieldname])"
                         />
@@ -442,6 +458,7 @@ import {
   evaluateDependsOnValue,
   isNull,
   interpolateTemplate,
+  getSafeWebsiteUrl,
 } from '@/utils'
 import { flt } from '@/utils/numberFormat.js'
 import {
