@@ -11,7 +11,7 @@ app_icon_route = "/crm"
 # Apps
 # ------------------
 
-# required_apps = []
+required_apps = ["whatsapp"]
 add_to_apps_screen = [
 	{
 		"name": "crm",
