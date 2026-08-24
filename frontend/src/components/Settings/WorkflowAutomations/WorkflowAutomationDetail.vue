@@ -41,12 +41,6 @@
             variant="subtle"
           />
           <Badge
-            v-if="doc.log_only"
-            :label="__('Log Only')"
-            theme="gray"
-            variant="subtle"
-          />
-          <Badge
             v-if="doc.disabled_reason"
             :label="doc.disabled_reason"
             theme="red"
@@ -59,7 +53,7 @@
             {{ __('Flow') }}
           </h3>
           <div
-            class="h-[520px] overflow-hidden rounded border border-outline-gray-2"
+            class="h-[480px] overflow-hidden rounded border border-outline-gray-2"
           >
             <WorkflowFlow :nodes="nodes" :edges="edges" readonly />
           </div>
@@ -81,19 +75,6 @@
 
         <ReadOnlySection :title="__('Settings')">
           <ReadOnlyRow :label="__('Run As')" :value="runAsSummary" />
-          <ReadOnlyRow
-            :label="__('Stop on Error')"
-            :value="doc.stop_on_error ? __('Yes') : __('No')"
-          />
-          <ReadOnlyRow
-            :label="__('Revalidate on Run')"
-            :value="doc.revalidate_on_run ? __('Yes') : __('No')"
-          />
-          <ReadOnlyRow
-            v-if="doc.throttle_per_minute"
-            :label="__('Throttle per Minute')"
-            :value="String(doc.throttle_per_minute)"
-          />
         </ReadOnlySection>
       </div>
     </template>

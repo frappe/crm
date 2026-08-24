@@ -32,62 +32,74 @@
       </div>
     </template>
     <template #content>
-      <div v-if="automations.list.loading" class="mt-12 flex justify-center">
+      <div v-if="automations.list.loading" class="mt-10 flex justify-center">
         <LoadingIndicator class="w-4" />
       </div>
       <EmptyState
         v-else-if="!filteredAutomations.length"
         name="Workflow Automations"
         :icon="WorkflowIcon"
+        :title="__('No workflow automations yet')"
         :description="__('Add one to get started.')"
+        width="lg"
       />
-      <ListView
+      <List
         v-else
-        row-key="name"
-        :columns="columns"
-        :rows="filteredAutomations"
-        :options="listOptions"
+        class="workflow-automation-list"
+        :columns="listColumns"
+        :row-height="56"
+        divider="full"
       >
-        <template #cell="{ item, column, row }">
-          <span
-            v-if="column.key === 'title'"
-            class="truncate text-base-medium text-ink-gray-8"
-          >
-            {{ item || row.name }}
-          </span>
-          <span
-            v-else-if="column.key === 'document_type'"
-            class="truncate text-sm"
-          >
-            {{ item || __('Any document') }}
-          </span>
-          <span
-            v-else-if="column.key === 'trigger_type'"
-            class="truncate text-sm"
-          >
-            {{ triggerLabel(item) }}
-          </span>
-          <div
-            v-else
-            class="flex items-center justify-between pr-1"
-            @click.stop
-          >
-            <Switch
-              size="sm"
-              :model-value="Boolean(row.enabled)"
-              :disabled="toggling.has(row.name)"
-              @update:model-value="toggleAutomation(row, $event)"
-            />
-            <Dropdown placement="right" :options="rowOptions(row)">
-              <Button
-                icon="lucide-more-horizontal"
-                variant="ghost"
-                @click="confirmingDelete = ''"
-              />
-            </Dropdown>
-          </div>
-        </template>
-      </ListView>
+        <ListHeader class="sticky top-0 z-10 mx-3 bg-surface-elevation-2">
+          <ListHeaderCell>{{ __('Name') }}</ListHeaderCell>
+          <ListHeaderCell>{{ __('Document Type') }}</ListHeaderCell>
+          <ListHeaderCell>{{ __('Trigger') }}</ListHeaderCell>
+          <ListHeaderCell>{{ __('Enabled') }}</ListHeaderCell>
+        </ListHeader>
+        <ListRows
+          v-slot="{ item: row }"
+          :items="filteredAutomations"
+          row-key="name"
+        >
+          <ListRow :value="row.name" @click="openAutomation(row)">
+            <ListCell>
+              <span class="truncate text-base-medium text-ink-gray-7">
+                {{ row.title || row.name }}
+              </span>
+            </ListCell>
+            <ListCell>
+              <span class="truncate text-sm">
+                {{ row.document_type || __('Any document') }}
+              </span>
+            </ListCell>
+            <ListCell>
+              <span class="truncate text-sm">
+                {{ triggerLabel(row.trigger_type) }}
+              </span>
+            </ListCell>
+            <ListCell>
+              <div
+                class="flex w-full items-center justify-between pr-1"
+                @click.stop
+              >
+                <Switch
+                  size="sm"
+                  :model-value="Boolean(row.enabled)"
+                  :disabled="toggling.has(row.name)"
+                  @update:model-value="toggleAutomation(row, $event)"
+                />
+                <Dropdown placement="right" :options="rowOptions(row)">
+                  <Button
+                    icon="lucide-more-horizontal"
+                    variant="ghost"
+                    @click="confirmingDelete = ''"
+                  />
+                </Dropdown>
+              </div>
+            </ListCell>
+          </ListRow>
+        </ListRows>
+      </List>
     </template>
   </SettingsLayoutBase>
   <WorkflowAutomationDetail
@@ -124,10 +136,17 @@ import { ConfirmDelete } from '@/utils'
 import { createDialog } from '@/utils/dialogs'
 import { disableSettingModalOutsideClick } from '@/composables/settings'
 import {
+  List,
+  ListCell,
+  ListHeader,
+  ListHeaderCell,
+  ListRow,
+  ListRows,
+} from 'frappe-ui/list'
+import {
   Button,
   Dialog,
   Dropdown,
-  ListView,
   LoadingIndicator,
   Switch,
   call,
@@ -144,20 +163,12 @@ const showBuilder = ref(false)
 const dirty = ref(false)
 const toggling = reactive(new Set())
 
-const columns = [
-  { label: __('Name'), key: 'title', width: 5 },
-  { label: __('Document Type'), key: 'document_type', width: 3 },
-  { label: __('Trigger'), key: 'trigger_type', width: 2 },
-  { label: __('Enabled'), key: 'enabled', width: 2 },
+const listColumns = [
+  'minmax(0, 4fr)',
+  'minmax(0, 2fr)',
+  'minmax(0, 2fr)',
+  'minmax(0, 2fr)',
 ]
-
-const listOptions = {
-  selectable: false,
-  showTooltip: true,
-  resizeColumn: false,
-  rowHeight: 56,
-  onRowClick: openAutomation,
-}
 
 // While the builder is up, a click outside must not take the settings dialog with it.
 watch(showBuilder, (open) => (disableSettingModalOutsideClick.value = open))
@@ -171,10 +182,11 @@ const automations = createListResource({
     'document_type',
     'trigger_type',
     'enabled',
+    'creation',
     'modified',
   ],
   cache: ['workflowAutomations'],
-  orderBy: 'modified desc',
+  orderBy: 'creation desc',
   pageLength: 999,
   auto: true,
 })
@@ -183,8 +195,8 @@ const showSearch = computed(() => search.value || automations.data?.length > 9)
 
 const filteredAutomations = computed(() => {
   const rows = automations.data || []
-  if (!search.value) return rows
-  return rows.filter((row) => matchesSearch(row))
+  const matches = search.value ? rows.filter((row) => matchesSearch(row)) : rows
+  return sortByNewestCreated(matches)
 })
 
 function matchesSearch(row) {
@@ -192,6 +204,18 @@ function matchesSearch(row) {
   return [row.title, row.name, row.document_type, row.trigger_type]
     .filter(Boolean)
     .some((value) => value.toLowerCase().includes(query))
+}
+
+function sortByNewestCreated(rows) {
+  return [...rows].sort(compareCreatedDesc)
+}
+
+function compareCreatedDesc(a, b) {
+  return compareDesc(a.creation, b.creation) || compareDesc(a.name, b.name)
+}
+
+function compareDesc(a, b) {
+  return String(b || '').localeCompare(String(a || ''))
 }
 
 function newAutomation() {
@@ -293,3 +317,10 @@ async function deleteAutomation(automation) {
   reloadList()
 }
 </script>
+
+<style scoped>
+/* Match the header's rule so rows read as one table. */
+.workflow-automation-list :deep([data-slot='list-divider']) {
+  border-color: var(--outline-gray-2);
+}
+</style>
