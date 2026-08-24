@@ -30,7 +30,7 @@ def require_doctype(doctype, allowed, label):
 class AdjustLeadScore(AutomationAction):
 	action_type = "AdjustLeadScore"
 	label = "Adjust Lead Score"
-	description = "Add to or subtract from a Lead's score, with an audited reason."
+	description = "Add to or subtract from a Lead's score."
 	applicable_doctypes: ClassVar[list] = ["CRM Lead"]
 	output_schema: ClassVar[dict] = {
 		"old_value": {"fieldtype": "Int"},
@@ -92,7 +92,7 @@ class SetLeadTemperature(AutomationAction):
 class ConvertLeadToDeal(AutomationAction):
 	action_type = "ConvertLeadToDeal"
 	label = "Convert Lead to Deal"
-	description = "Convert a qualified Lead into a Deal using the CRM's own conversion logic."
+	description = "Convert a qualified Lead into a Deal."
 	applicable_doctypes: ClassVar[list] = ["CRM Lead"]
 	output_schema: ClassVar[dict] = {
 		"destination_reference": {"doctype": "CRM Deal", "cardinality": "one"},
@@ -156,7 +156,7 @@ class ConvertLeadToDeal(AutomationAction):
 class SendEmailToRecord(AutomationAction):
 	action_type = "SendCRMEmail"
 	label = "Email the Lead or Deal"
-	description = "Send an email to the record's own address and log it on its timeline."
+	description = "Send an email to the record's own address."
 	applicable_doctypes: ClassVar[list] = ["CRM Lead", "CRM Deal"]
 	output_schema: ClassVar[dict] = {"communication": {"doctype": "Communication"}}
 	params_schema: ClassVar[list] = [
