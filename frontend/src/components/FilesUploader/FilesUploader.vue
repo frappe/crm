@@ -1,12 +1,6 @@
 <template>
-  <Dialog
-    v-model="show"
-    :options="{
-      title: __('Attach'),
-      size: 'xl',
-    }"
-  >
-    <template #body-content>
+  <Dialog v-model:open="show" :title="__('Attach')" :size="'xl'">
+    <template #default>
       <FilesUploaderArea
         ref="filesUploaderArea"
         v-model="files"

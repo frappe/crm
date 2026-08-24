@@ -30,11 +30,6 @@ def execute():
 		]
 	create_custom_fields(custom_fields, ignore_validate=True)
 
-	if frappe.db.get_single_value("ERPNext CRM Settings", "is_erpnext_in_different_site"):
-		return
-
-	try:
-		from erpnext.crm.frappe_crm_api import create_custom_fields_for_frappe_crm
-	except ImportError:
-		return
-	create_custom_fields_for_frappe_crm()
+	# Latest ERPNext removed the create_custom_fields_for_frappe_crm API and creates its own
+	# fields automatically so we no longer call into ERPNext here.
+	frappe.get_single("ERPNext CRM Settings").create_custom_fields_in_frappe_crm()

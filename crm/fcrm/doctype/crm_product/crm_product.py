@@ -9,7 +9,7 @@ from crm.fcrm.doctype.crm_product.sync_utils import payload_differs
 from crm.integrations.erpnext.utils import (
 	cascade_rename,
 	in_cascade,
-	should_sync,
+	should_push_to_erpnext,
 	validate_rename_conflict,
 )
 
@@ -37,7 +37,7 @@ class CRMProduct(Document):
 	def before_insert(self):
 		if self.flags.get("ignore_erpnext_sync"):
 			return
-		if should_sync():
+		if should_push_to_erpnext():
 			frappe.throw(
 				_(
 					"ERPNext integration is active. Create an Item in ERPNext and it will appear in CRM Product automatically."
@@ -51,21 +51,12 @@ class CRMProduct(Document):
 	def set_product_name(self):
 		self.product_name = (self.product_name or self.product_code or "").strip()
 
-	def after_insert(self):
-		if self.flags.get("ignore_erpnext_sync"):
-			return
-		if not should_sync():
-			return
-		if self.get("erpnext_item_code"):
-			return
-		_create_item_from_product(self)
-
 	def on_update(self):
 		if self.flags.get("ignore_erpnext_sync"):
 			return
 		if not self.get("erpnext_item_code"):
 			return
-		if not should_sync():
+		if not should_push_to_erpnext():
 			return
 		_push_to_item(self)
 
@@ -80,7 +71,7 @@ class CRMProduct(Document):
 			return
 		if not self.get("erpnext_item_code"):
 			return
-		if not should_sync():
+		if not should_push_to_erpnext():
 			return
 		if frappe.db.sql(
 			"SELECT 1 FROM `tabQuotation Item` WHERE item_code=%s LIMIT 1",
@@ -92,29 +83,6 @@ class CRMProduct(Document):
 					"Remove the reference or delete the Item in ERPNext first."
 				).format(self.erpnext_item_code)
 			)
-
-
-def _create_item_from_product(doc):
-	if frappe.db.exists("Item", doc.product_code):
-		return
-	item = frappe.get_doc(
-		{
-			"doctype": "Item",
-			"item_code": doc.product_code,
-			"item_name": doc.product_name or doc.product_code,
-			"standard_rate": doc.standard_rate,
-			"image": doc.image,
-			"disabled": doc.disabled,
-			"description": doc.description,
-			"crm_product_code": doc.name,
-			"item_group": frappe.db.get_single_value("Stock Settings", "item_group") or "All Item Groups",
-			"stock_uom": frappe.db.get_single_value("Stock Settings", "stock_uom") or "Nos",
-			"is_stock_item": 0,
-		}
-	)
-	item.flags.ignore_crm_sync = True
-	item.insert()
-	frappe.db.set_value("CRM Product", doc.name, "erpnext_item_code", item.name)
 
 
 def _push_to_item(doc):

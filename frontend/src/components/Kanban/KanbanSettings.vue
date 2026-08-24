@@ -5,42 +5,42 @@
     :iconLeft="KanbanIcon"
     @click="showDialog = true"
   />
-  <Dialog v-model="showDialog" :options="{ title: __('Kanban Settings') }">
-    <template #body-content>
+  <Dialog v-model:open="showDialog" :title="__('Kanban Settings')">
+    <template #default>
       <div>
         <div class="text-base text-ink-gray-8 mb-2">
           {{ __('Column Field') }}
         </div>
-        <Autocomplete
+        <Combobox
           v-if="columnFields"
-          value=""
+          :model-value="null"
           :options="columnFields"
-          @change="(f) => (columnField = f)"
+          @update:selected-option="(f) => (columnField = f)"
         >
-          <template #target="{ togglePopover }">
+          <template #trigger="{ open, setOpen }">
             <Button
               class="w-full !justify-start"
               :label="columnField.label"
-              @click="togglePopover()"
+              @click="setOpen(!open)"
             />
           </template>
-        </Autocomplete>
+        </Combobox>
         <div class="text-base text-ink-gray-8 mb-2 mt-4">
           {{ __('Title Field') }}
         </div>
-        <Autocomplete
-          value=""
+        <Combobox
+          :model-value="null"
           :options="fields"
-          @change="(f) => (titleField = f)"
+          @update:selected-option="(f) => (titleField = f)"
         >
-          <template #target="{ togglePopover }">
+          <template #trigger="{ open, setOpen }">
             <Button
               class="w-full !justify-start"
               :label="titleField.label"
-              @click="togglePopover()"
+              @click="setOpen(!open)"
             />
           </template>
-        </Autocomplete>
+        </Combobox>
       </div>
       <div class="mt-4">
         <div class="text-base text-ink-gray-8 mb-2">
@@ -55,36 +55,44 @@
         >
           <template #item="{ element: field }">
             <div
-              class="px-1 py-0.5 border border-outline-gray-modals rounded text-base text-ink-gray-8 flex items-center justify-between gap-2"
+              class="px-1 py-0.5 border border-outline-elevation-2 rounded text-base text-ink-gray-8 flex items-center justify-between gap-2"
             >
               <div class="flex items-center gap-2">
                 <DragVerticalIcon class="h-3.5 cursor-grab" />
                 <div>{{ field.label }}</div>
               </div>
               <div>
-                <Button variant="ghost" icon="x" @click="removeField(field)" />
+                <Button
+                  variant="ghost"
+                  icon="lucide-x"
+                  @click="removeField(field)"
+                />
               </div>
             </div>
           </template>
         </Draggable>
-        <Autocomplete value="" :options="fields" @change="(e) => addField(e)">
-          <template #target="{ togglePopover }">
+        <Combobox
+          :model-value="null"
+          :options="fields"
+          @update:selected-option="(e) => addField(e)"
+        >
+          <template #trigger="{ open, setOpen }">
             <Button
               class="w-full mt-2"
               :label="__('Add Field')"
               iconLeft="plus"
-              @click="togglePopover()"
+              @click="setOpen(!open)"
             />
           </template>
-          <template #item-label="{ option }">
+          <template #item-label="{ item }">
             <div class="flex flex-col gap-1 text-ink-gray-9">
-              <div>{{ option.label }}</div>
+              <div>{{ item.label }}</div>
               <div class="text-ink-gray-4 text-sm">
-                {{ `${option.fieldname} - ${option.fieldtype}` }}
+                {{ `${item.fieldname} - ${item.fieldtype}` }}
               </div>
             </div>
           </template>
-        </Autocomplete>
+        </Combobox>
       </div>
     </template>
     <template #actions>
@@ -100,9 +108,8 @@
 <script setup>
 import DragVerticalIcon from '@/components/Icons/DragVerticalIcon.vue'
 import KanbanIcon from '@/components/Icons/KanbanIcon.vue'
-import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import { getMeta } from '@/stores/meta'
-import { Dialog } from 'frappe-ui'
+import { Combobox, Dialog } from 'frappe-ui'
 import Draggable from 'vuedraggable'
 import { ref, computed, nextTick } from 'vue'
 

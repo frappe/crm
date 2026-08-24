@@ -2,7 +2,7 @@
   <div class="flex h-full flex-col gap-6 py-8 px-6 text-ink-gray-8">
     <div class="flex justify-between px-2 text-ink-gray-8">
       <div class="flex flex-col gap-1">
-        <h2 class="flex gap-2 text-xl font-semibold leading-none h-5">
+        <h2 class="flex gap-2 text-2xl-semibold leading-none h-5">
           {{ __('Dashboard') }}
         </h2>
         <p class="text-p-base text-ink-gray-6">
@@ -27,7 +27,7 @@
     <div class="flex-1 flex flex-col overflow-y-auto">
       <div class="flex items-center justify-between py-3 px-2">
         <div class="flex flex-col">
-          <div class="text-p-base font-medium text-ink-gray-7 truncate">
+          <div class="text-p-base-medium text-ink-gray-7 truncate">
             {{ __('Enable Forecasting') }}
           </div>
           <div class="text-p-sm text-ink-gray-5 truncate">
@@ -42,10 +42,10 @@
           <Switch v-model="settings.doc.enable_forecasting" size="sm" />
         </div>
       </div>
-      <div class="h-px border-t mx-2 border-outline-gray-modals" />
+      <div class="h-px border-t mx-2 border-outline-elevation-2" />
       <div class="flex items-center justify-between py-3 px-2">
         <div class="flex flex-col">
-          <div class="text-p-base font-medium text-ink-gray-7 truncate">
+          <div class="text-p-base-medium text-ink-gray-7 truncate">
             {{ __('Auto Update Expected Deal Value') }}
           </div>
           <div class="text-p-sm text-ink-gray-5 truncate">
@@ -63,10 +63,10 @@
           />
         </div>
       </div>
-      <div class="h-px border-t mx-2 border-outline-gray-modals" />
+      <div class="h-px border-t mx-2 border-outline-elevation-2" />
       <div class="flex items-center justify-between gap-8 py-3 px-2">
         <div class="flex flex-col">
-          <div class="text-p-base font-medium text-ink-gray-7 truncate">
+          <div class="text-p-base-medium text-ink-gray-7 truncate">
             {{ __('Dashboard Currency') }}
           </div>
           <div class="text-p-sm text-ink-gray-5">
@@ -92,14 +92,14 @@
           />
         </div>
       </div>
-      <div class="h-px border-t mx-2 border-outline-gray-modals" />
+      <div class="h-px border-t mx-2 border-outline-elevation-2" />
       <div class="flex items-center justify-between gap-8 py-3 px-2">
         <div class="flex flex-col">
-          <div class="text-p-base font-medium text-ink-gray-7 truncate">
+          <div class="text-p-base-medium text-ink-gray-7 truncate">
             {{ __('Exchange Rate Provider') }}
           </div>
           <div class="text-p-sm text-ink-gray-5">
-            {{ __('Configure the Exchange Rate Provider for your CRM') }}
+            {{ __('Configure the exchange rate provider for your CRM') }}
           </div>
         </div>
         <div class="flex items-center gap-2">
@@ -124,25 +124,25 @@
       </div>
       <div
         v-if="requiresAccessKey"
-        class="h-px border-t mx-2 border-outline-gray-modals"
+        class="h-px border-t mx-2 border-outline-elevation-2"
       />
       <div
         v-if="requiresAccessKey"
         class="flex items-center justify-between gap-8 p-3"
       >
         <div class="flex flex-col">
-          <div class="text-p-base font-medium text-ink-gray-7 truncate">
+          <div class="text-p-base-medium text-ink-gray-7 truncate">
             {{ __('Access Key') }}
           </div>
           <div class="text-p-sm text-ink-gray-5">
             {{
-              __('Access Key for {0}. Required for fetching exchange rates.', [
+              __('Access key for {0}. Required for fetching exchange rates.', [
                 providerMeta.label,
               ])
             }}
           </div>
           <div class="text-p-sm text-ink-gray-5">
-            {{ __('You can get your Access Key from ') }}
+            {{ __('You can get your access key from ') }}
             <a
               class="hover:underline text-ink-gray-7"
               :href="providerMeta.docsUrl"
@@ -214,7 +214,7 @@ function updateSettings() {
         return errorMessage.value
       }
       if (requiresAccessKey.value && !settings.doc.access_key) {
-        errorMessage.value = __('Please enter the {0} Access Key.', [
+        errorMessage.value = __('Please enter the {0} access key.', [
           providerMeta.value.label,
         ])
         return errorMessage.value

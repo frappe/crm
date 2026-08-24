@@ -1,5 +1,6 @@
 .DS_Store
 *.pyc
+*.local.md
 *.egg-info
 *.swp
 __pycache__
@@ -11,6 +12,11 @@ crm/www/crm.html
 build
 frontend/coverage
 
+e2e/.auth
+test-results
+playwright-report
+package-lock.json
+
 .vscode
 .github/instructions
 .github/skills
@@ -20,3 +26,4 @@ CLAUDE.md
 AGENTS.md
 .claude
 .pi
+.patch

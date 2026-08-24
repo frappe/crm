@@ -1,10 +1,10 @@
 <template>
-  <Dialog v-model="show" :options="{ size: '3xl' }">
+  <Dialog v-model:open="show" :size="'3xl'">
     <template #body>
-      <div class="bg-surface-modal px-4 pb-6 pt-5 sm:px-6">
+      <div class="bg-surface-elevation-2 px-4 pb-6 pt-5 sm:px-6">
         <div class="mb-5 flex items-center justify-between">
           <div>
-            <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9">
+            <h3 class="text-3xl-semibold leading-6 text-ink-gray-9">
               {{ __('Create Lead') }}
             </h3>
           </div>
@@ -20,7 +20,7 @@
             <Button
               variant="ghost"
               class="w-7"
-              icon="x"
+              icon="lucide-x"
               @click="show = false"
             />
           </div>
@@ -38,6 +38,14 @@
             :loading="isLeadCreating"
             @click="createNewLead"
           />
+          <Button
+            :label="__('Enrich')"
+            :loading="isEnriching"
+            :disabled="!lead.doc.website"
+            :tooltip="__('Fill fields from the company website')"
+            iconLeft="zap"
+            @click="enrichFromWebsite"
+          />
         </div>
       </div>
     </template>
@@ -53,7 +61,7 @@ import { sessionStore } from '@/stores/session'
 import { isMobileView } from '@/composables/settings'
 import { showQuickEntryModal, quickEntryProps } from '@/composables/modals'
 import { useOnboarding, useTelemetry } from 'frappe-ui/frappe'
-import { createResource } from 'frappe-ui'
+import { createResource, call, toast } from 'frappe-ui'
 import { useDocument } from '@/data/document'
 import { computed, onMounted, ref, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
@@ -73,6 +81,52 @@ const error = ref(null)
 const isLeadCreating = ref(false)
 
 const { document: lead, triggerOnBeforeCreate } = useDocument('CRM Lead')
+
+const isEnriching = ref(false)
+
+// Prefill the form from the company website (Domain Enrichment) — synchronous,
+// no document is created until the user clicks Create.
+async function enrichFromWebsite() {
+  const website = (lead.doc.website || '').trim()
+  if (!website) {
+    toast.warning(__('Enter a Website first.'))
+    return
+  }
+  capture('enrichment_quick_triggered', {
+    doctype: 'CRM Lead',
+    source: 'create_modal',
+  })
+  isEnriching.value = true
+  try {
+    const { fields, notes } = await call(
+      'crm.domain_enrichment.api.enrich_preview',
+      { website, doctype: 'CRM Lead' },
+    )
+    // Fill-empty semantics: never clobber values the user already typed in the
+    // modal — only set fields that are currently empty on lead.doc.
+    const filled = Object.keys(fields || {}).filter((key) => {
+      const current = lead.doc[key]
+      if (current === undefined || current === null || current === '') {
+        lead.doc[key] = fields[key]
+        return true
+      }
+      return false
+    })
+    if (filled.length) {
+      toast.success(
+        __('Filled {0} field(s) from the website.', [filled.length]),
+      )
+    } else {
+      toast.info(
+        notes?.[0] || __('Nothing could be extracted from this website.'),
+      )
+    }
+  } catch (e) {
+    toast.error(e.messages?.[0] || __('Could not enrich from the website.'))
+  } finally {
+    isEnriching.value = false
+  }
+}
 
 const { capture } = useTelemetry()
 
@@ -141,7 +195,7 @@ async function createNewLead() {
           lead.doc.mobile_no &&
           isNaN(lead.doc.mobile_no.replace(/[-+() ]/g, ''))
         ) {
-          error.value = __('Mobile No. should be a number')
+          error.value = __('Mobile number should be a number')
           return error.value
         }
         if (lead.doc.email && !lead.doc.email.includes('@')) {

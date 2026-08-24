@@ -48,6 +48,7 @@ class ERPNextCRMSettings(Document):
 		erpnext_site_url: DF.Data | None
 		is_erpnext_in_different_site: DF.Check
 		sync_issues: DF.Table[CRMProductSyncIssue]
+		sync_products: DF.Check
 	# end: auto-generated types
 
 	def validate(self):
@@ -83,11 +84,7 @@ class ERPNextCRMSettings(Document):
 
 	def create_custom_fields(self):
 		if not self.is_erpnext_in_different_site:
-			try:
-				from erpnext.crm.frappe_crm_api import create_custom_fields_for_frappe_crm
-
-				create_custom_fields_for_frappe_crm()
-			except ImportError:
+			if not _is_erpnext_installed():
 				frappe.throw(_("ERPNext is not installed in the current site"))
 		else:
 			self.create_custom_fields_in_remote_site()
@@ -135,6 +132,16 @@ class ERPNextCRMSettings(Document):
 					"insert_after": "party_name",
 				}
 			]
+		if frappe.db.exists("DocType", "Customer"):
+			custom_fields["Customer"] = [
+				{
+					"fieldname": "crm_deal",
+					"fieldtype": "Data",
+					"label": "Frappe CRM Deal",
+					"read_only": 1,
+					"insert_after": "prospect_name",
+				}
+			]
 		_create_custom_fields(custom_fields, ignore_validate=True)
 
 	def create_custom_fields_in_remote_site(self):
@@ -142,9 +149,18 @@ class ERPNextCRMSettings(Document):
 		try:
 			client.post_api("erpnext.crm.frappe_crm_api.create_custom_fields_for_frappe_crm")
 		except Exception:
-			_log_and_throw(
-				"Error while creating custom field in ERPNext, check error log for more details",
-				f"Error while creating custom field in the remote erpnext site: {self.erpnext_site_url}",
+			frappe.log_error(
+				frappe.get_traceback(),
+				f"Could not create custom fields on remote ERPNext site: {self.erpnext_site_url}",
+			)
+			frappe.msgprint(
+				_(
+					"Could not create the Frappe CRM custom fields on {0} automatically. "
+					"If it is running the latest ERPNext, enable <b>Frappe CRM Data Synchronization</b> "
+					"in its CRM Settings, Otherwise check the Error Log."
+				).format(self.erpnext_site_url),
+				title=_("ERPNext custom fields not created"),
+				indicator="orange",
 			)
 
 	def grant_item_access_to_sales_roles(self):
@@ -236,6 +252,82 @@ def dismiss_sync_issue(issue_name: str):
 			settings.save()
 			return True
 	return False
+
+
+@frappe.whitelist()
+def get_product_sync_status():
+	if not frappe.has_permission("CRM Product", "read"):
+		return {}
+	return {
+		"products": _get_products(),
+		"items": _get_synced_items(),
+		"failed": get_open_sync_issues(),
+		"unsynced": _get_unsynced_counts(),
+	}
+
+
+def _get_unsynced_counts():
+	settings = frappe.get_single("ERPNext CRM Settings")
+	items = _count_linked("Item", "crm_product_code", is_set=False) if _can_read_items() else 0
+	return {
+		"items": items,
+		"products": frappe.db.count("CRM Product", filters={"erpnext_item_code": ["is", "not set"]}),
+		"sync_products": bool(settings.sync_products),
+	}
+
+
+def _get_products():
+	rows = frappe.get_all(
+		"CRM Product",
+		fields=["name", "product_code", "product_name", "erpnext_item_code"],
+		limit=20,
+		order_by="modified desc",
+	)
+	_set_product_item_groups(rows)
+	return {
+		"count": frappe.db.count("CRM Product"),
+		"rows": rows,
+	}
+
+
+def _get_synced_items():
+	if not _can_read_items():
+		return {"count": 0, "rows": []}
+	return {
+		"count": _count_linked("Item", "crm_product_code"),
+		"rows": frappe.get_all(
+			"Item",
+			fields=["name", "item_code", "item_name", "item_group", "crm_product_code"],
+			filters={"crm_product_code": ["is", "set"]},
+			limit=20,
+			order_by="modified desc",
+		),
+	}
+
+
+def _set_product_item_groups(rows):
+	item_codes = [row.erpnext_item_code for row in rows if row.erpnext_item_code]
+	if not item_codes or not _can_read_items():
+		return
+	item_groups = frappe.get_all(
+		"Item",
+		fields=["name", "item_group"],
+		filters={"name": ["in", item_codes]},
+	)
+	item_groups = {row.name: row.item_group for row in item_groups}
+	for row in rows:
+		row["item_group"] = item_groups.get(row.erpnext_item_code)
+
+
+def _count_linked(doctype: str, fieldname: str, is_set: bool = True):
+	if not frappe.db.has_column(doctype, fieldname):
+		return 0
+	operator = "set" if is_set else "not set"
+	return frappe.db.count(doctype, filters={fieldname: ["is", operator]})
+
+
+def _can_read_items():
+	return frappe.db.exists("DocType", "Item") and frappe.has_permission("Item", "read")
 
 
 def get_erpnext_site_client(erpnext_crm_settings):
@@ -530,7 +622,7 @@ def create_customer_from_deal(doc, erpnext_crm_settings):
 				"Error while creating customer in ERPNext, check error log for more details",
 				f"Error while creating customer in ERPNext for CRM Deal: {doc.name}",
 			)
-	except frappe.ValidationError:
+	except (frappe.ValidationError, frappe.PermissionError):
 		raise
 	except Exception:
 		_log_and_throw("Error while creating customer in ERPNext, check error log for more details")

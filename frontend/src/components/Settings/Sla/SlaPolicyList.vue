@@ -7,7 +7,7 @@
       <Button
         :label="__('New')"
         variant="solid"
-        icon-left="plus"
+        icon-left="lucide-plus"
         @click="createNewSlaPolicy"
       />
     </template>
@@ -28,7 +28,7 @@
         />
         <Button
           v-if="slaSearchQuery"
-          icon="x"
+          icon="lucide-x"
           variant="ghost"
           class="absolute right-1 top-1/2 -translate-y-1/2"
           @click="slaSearchQuery = ''"
@@ -70,13 +70,13 @@
             :key="sla.name"
           >
             <div
-              class="grid grid-cols-7 items-center gap-4 cursor-pointer hover:bg-surface-menu-bar rounded"
+              class="grid grid-cols-7 items-center gap-4 cursor-pointer hover:bg-surface-sidebar rounded"
             >
               <div
                 class="w-full pl-2 col-span-5 flex items-center h-14 gap-2"
                 @click="updateStep('view', sla, true)"
               >
-                <div class="text-base text-ink-gray-7 font-medium truncate">
+                <div class="text-base-medium text-ink-gray-7 truncate">
                   {{ sla.name }}
                 </div>
                 <Badge v-if="sla.default" color="gray" size="sm">Default</Badge>
@@ -95,7 +95,7 @@
                 <div>
                   <Dropdown placement="right" :options="dropdownOptions(sla)">
                     <Button
-                      icon="more-horizontal"
+                      icon="lucide-more-horizontal"
                       variant="ghost"
                       @click="isConfirmingDelete = false"
                     />
@@ -108,10 +108,10 @@
               class="mx-2 border-outline-gray-2"
             />
             <Dialog
-              v-model="duplicateDialog.show"
-              :options="{ title: __('Duplicate SLA Policy') }"
+              v-model:open="duplicateDialog.show"
+              :title="__('Duplicate SLA Policy')"
             >
-              <template #body-content>
+              <template #default>
                 <div class="flex flex-col gap-4">
                   <FormControl
                     v-model="duplicateDialog.name"
@@ -215,7 +215,7 @@ const duplicate = (sla) => {
         auto: true,
         onSuccess(newSlaData) {
           slaPolicyListResource.reload()
-          toast.success(__('SLA Policy Duplicated'))
+          toast.success(__('SLA policy duplicated'))
           duplicateDialog.value = {
             show: false,
             name: '',
@@ -239,7 +239,7 @@ const deleteSla = (sla) => {
 
   slaPolicyListResource.delete.submit(sla.name, {
     onSuccess: () => {
-      toast.success(__('SLA Policy Deleted'))
+      toast.success(__('SLA policy deleted'))
     },
     onError: (err) => {
       const message =
@@ -251,7 +251,7 @@ const deleteSla = (sla) => {
 
 const onToggle = (sla) => {
   if (sla.default) {
-    toast.error(__('SLA set as default cannot be disabled'))
+    toast.error(__('An SLA set as default cannot be disabled'))
     return
   }
   slaPolicyListResource.setValue.submit(
@@ -261,7 +261,7 @@ const onToggle = (sla) => {
     },
     {
       onSuccess: () => {
-        toast.success(__('SLA Policy Status Updated'))
+        toast.success(__('SLA policy status updated'))
       },
     },
   )

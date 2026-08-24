@@ -1,41 +1,45 @@
 <template>
   <Dialog
-    v-model="showSettings"
-    :options="{ size: '5xl' }"
+    v-model:open="showSettings"
+    :size="'5xl'"
     :disableOutsideClickToClose="disableSettingModalOutsideClick"
     @close="activeSettingsPage = ''"
   >
     <template #body>
-      <div class="flex h-[calc(100vh_-_8rem)] bg-surface-menu-bar">
+      <div class="flex h-[calc(100vh_-_8rem)] bg-surface-gray-1">
         <div
-          class="flex flex-col m-1 rounded-l-lg w-56 shrink-0 bg-surface-menu-bar overflow-y-auto"
+          class="flex flex-col m-1 rounded-l-lg w-56 shrink-0 bg-surface-gray-1 overflow-y-auto"
         >
           <template v-for="(tab, i) in tabs" :key="tab.label">
             <div v-if="!tab.hideLabel && i != 0" class="mx-1 mb-0.5 mt-[5px]" />
             <div
               v-if="!tab.hideLabel"
-              class="h-7.5 px-2 py-[7px] my-[3px] flex cursor-pointer gap-1.5 text-xs font-medium text-ink-gray-5 transition-all duration-300 ease-in-out sticky top-0 z-10 bg-surface-menu-bar"
+              class="h-7.5 px-2 py-[7px] my-[3px] flex cursor-pointer gap-1.5 text-xs-medium text-ink-gray-5 transition-all duration-300 ease-in-out sticky top-0 z-10 bg-surface-gray-1"
             >
               <span>{{ __(tab.label) }}</span>
             </div>
             <nav class="space-y-[3px] px-1">
-              <SidebarLink
+              <SidebarItem
                 v-for="item in tab.items"
                 :key="item.label"
-                :icon="item.icon"
                 :label="__(item.label)"
+                :active="activeTab?.label == item.label"
                 class="w-full"
                 :class="
-                  activeTab?.label == item.label
-                    ? 'bg-surface-selected shadow-sm hover:bg-surface-selected'
-                    : 'hover:bg-surface-gray-3'
+                  activeTab?.label != item.label && 'hover:!bg-surface-gray-3'
                 "
                 @click="activeSettingsPage = item.label"
-              />
+              >
+                <template #prefix>
+                  <Icon :icon="item.icon" class="size-4 text-ink-gray-7" />
+                </template>
+              </SidebarItem>
             </nav>
           </template>
         </div>
-        <div class="flex flex-col flex-1 overflow-y-auto bg-surface-modal">
+        <div
+          class="flex flex-col flex-1 overflow-y-auto bg-surface-elevation-2"
+        >
           <component :is="activeTab.component" v-if="activeTab" />
         </div>
       </div>
@@ -46,6 +50,7 @@
 import LucideLayoutDashboard from '~icons/lucide/layout-dashboard'
 import LucideNetwork from '~icons/lucide/network'
 import MonitorCogIcon from '~icons/lucide/monitor-cog'
+import LucideTextCursorInput from '~icons/lucide/text-cursor-input'
 import SlidersIcon from '@/components/Icons/SlidersIcon.vue'
 import SparkleIcon from '@/components/Icons/SparkleIcon.vue'
 import CalendarIcon from '@/components/Icons/CalendarIcon.vue'
@@ -68,12 +73,13 @@ import DefaultsSettings from '@/components/Settings/DefaultsSettings.vue'
 import BrandSettings from '@/components/Settings/BrandSettings.vue'
 import CalendarSettings from '@/components/Settings/CalendarSettings.vue'
 import HomeActions from '@/components/Settings/HomeActions.vue'
+import FormsSettings from '@/components/Settings/Forms/FormsSettings.vue'
 import GeneralSettings from '@/components/Settings/GeneralSettings.vue'
 import DashboardSettings from '@/components/Settings/DashboardSettings.vue'
 import EmailTemplatePage from '@/components/Settings/EmailTemplate/EmailTemplatePage.vue'
 import TelephonyPage from '@/components/Settings/Telephony/TelephonyPage.vue'
 import EmailConfig from '@/components/Settings/EmailConfig.vue'
-import SidebarLink from '@/components/SidebarLink.vue'
+import Icon from '@/components/Icon.vue'
 import { usersStore } from '@/stores/users'
 import {
   showSettings,
@@ -81,7 +87,7 @@ import {
   disableSettingModalOutsideClick,
 } from '@/composables/settings'
 import { isWhatsappInstalled } from '@/composables/whatsapp'
-import { Dialog, Avatar } from 'frappe-ui'
+import { Dialog, Avatar, SidebarItem } from 'frappe-ui'
 import { ref, markRaw, computed, watch, h } from 'vue'
 import AssignmentRulePage from './AssignmentRules/AssignmentRulePage.vue'
 import ShieldCheck from '~icons/lucide/shield-check'
@@ -197,6 +203,11 @@ const tabs = computed(() => {
           icon: markRaw(h(ShieldCheck)),
           component: markRaw(SlaConfig),
         },
+        {
+          label: __('Forms'),
+          component: markRaw(FormsSettings),
+          icon: markRaw(LucideTextCursorInput),
+        },
       ],
       condition: () => isManager(),
     },
@@ -206,7 +217,7 @@ const tabs = computed(() => {
         {
           label: __('Home Actions'),
           component: markRaw(HomeActions),
-          icon: 'home',
+          icon: 'house',
         },
       ],
       condition: () => isManager(),

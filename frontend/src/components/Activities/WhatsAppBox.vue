@@ -9,9 +9,9 @@
       :class="reply.type == 'Incoming' ? 'border-green-500' : 'border-blue-400'"
     >
       <div
-        class="mb-1 text-sm font-bold"
+        class="mb-1 text-sm-bold"
         :class="
-          reply.type == 'Incoming' ? 'text-ink-green-2' : 'text-ink-blue-link'
+          reply.type == 'Incoming' ? 'text-ink-green-5' : 'text-ink-blue-link'
         "
       >
         {{ reply.from_name || __('You') }}
@@ -22,7 +22,7 @@
       />
     </div>
 
-    <Button variant="ghost" icon="x" @click="reply = {}" />
+    <Button variant="ghost" icon="lucide-x" @click="reply = {}" />
   </div>
   <div class="flex items-end gap-2 px-3 py-2.5 sm:px-10" v-bind="$attrs">
     <div class="flex h-8 items-center gap-2">
@@ -30,9 +30,9 @@
         <template #default="{ openFileSelector }">
           <div class="flex items-center space-x-2">
             <Dropdown :options="uploadOptions(openFileSelector)">
-              <FeatherIcon
-                name="plus"
-                class="size-4.5 cursor-pointer text-ink-gray-5"
+              <span
+                class="lucide-plus size-4.5 cursor-pointer text-ink-gray-5"
+                aria-hidden="true"
               />
             </Dropdown>
           </div>
@@ -50,7 +50,7 @@
         "
       >
         <SmileIcon
-          class="flex size-4.5 cursor-pointer rounded-sm text-xl leading-none text-ink-gray-4"
+          class="flex size-4.5 cursor-pointer rounded-sm text-2xl leading-none text-ink-gray-4"
           @click="togglePopover"
         />
       </IconPicker>

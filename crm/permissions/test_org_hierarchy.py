@@ -86,6 +86,10 @@ class TestOrgHierarchy(IntegrationTestCase):
 		lead = make_lead("rep1@hier.test")
 		self.assertTrue(has_lead_permission(lead, "read", "Administrator"))
 
+	def test_sales_user_can_create_lead(self):
+		new_lead = frappe.get_doc({"doctype": "CRM Lead", "lead_owner": "rep1@hier.test"})
+		self.assertTrue(has_lead_permission(new_lead, "create", "rep1@hier.test"))
+
 	# ------------------------------------------------------------------
 	# Lead permissions -- ToDo-based
 	# ------------------------------------------------------------------
@@ -126,6 +130,19 @@ class TestOrgHierarchy(IntegrationTestCase):
 
 	def test_query_conditions_non_empty_for_regular_user(self):
 		self.assertTrue(get_lead_permission_query_conditions("rep1@hier.test"))
+
+	def test_report_with_child_table_field_does_not_raise(self):
+		make_lead("rep1@hier.test")
+		self.assertTrue(get_lead_permission_query_conditions("rep1@hier.test"))
+		frappe.set_user("rep1@hier.test")
+		try:
+			frappe.get_list(
+				"CRM Lead",
+				fields=["name", "`tabCRM Products`.`amount`"],
+				limit_page_length=5,
+			)
+		finally:
+			frappe.set_user("Administrator")
 
 	# ------------------------------------------------------------------
 	# Hierarchy disabled

@@ -2,7 +2,7 @@
   <Tooltip v-if="!disabled">
     <template #body>
       <div
-        class="rounded bg-surface-gray-7 py-1.5 px-2 text-xs text-ink-white shadow-xl"
+        class="rounded bg-surface-gray-10 py-1.5 px-2 text-xs text-ink-base shadow-xl"
       >
         <span class="flex items-center gap-1">
           <span>{{ label }}</span>
@@ -13,7 +13,7 @@
           >
             <KeyboardShortcut
               bg
-              class="!bg-surface-gray-5 !text-ink-gray-2 px-1"
+              class="!bg-surface-gray-8 !text-ink-gray-2 px-1"
               :combo="_combo"
             />
           </template>
@@ -24,7 +24,7 @@
           >
             <KeyboardShortcut
               bg
-              class="!bg-surface-gray-5 !text-ink-gray-2 px-1"
+              class="!bg-surface-gray-8 !text-ink-gray-2 px-1"
               :combo="alt"
             />
           </template>

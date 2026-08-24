@@ -1,13 +1,14 @@
 import frappe
-from frappe.utils import cstr
 
 from crm.integrations.erpnext.mirror_sync import MIRROR_FLAG, MirrorSync
 from crm.integrations.erpnext.utils import should_sync
 
 
 def _dedup_extra(doc) -> dict:
+	# Keep a blank applicable_for as None so dedup/find filters match the stored
+	# NULL value (an empty string would never match a NULL column).
 	return {
-		"applicable_for": cstr(doc.applicable_for),
+		"applicable_for": doc.applicable_for or None,
 		"apply_to_all_doctypes": doc.apply_to_all_doctypes,
 	}
 

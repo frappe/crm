@@ -17,7 +17,7 @@
       <div class="w-3/12">{{ __('Priority') }}</div>
       <div class="w-2/12">{{ __('Enabled') }}</div>
     </div>
-    <div class="h-px border-t mx-2 border-outline-gray-modals" />
+    <div class="h-px border-t mx-2 border-outline-elevation-2" />
     <div class="overflow-y-auto">
       <template
         v-for="(assignmentRule, i) in assignmentRulesList.data"

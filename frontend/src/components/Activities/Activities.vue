@@ -13,7 +13,7 @@
   <FadedScrollableDiv class="flex flex-col h-full overflow-y-auto">
     <div
       v-if="all_activities?.loading"
-      class="flex flex-1 flex-col items-center justify-center gap-3 text-xl font-medium text-ink-gray-4"
+      class="flex flex-1 flex-col items-center justify-center gap-3 text-2xl-medium text-ink-gray-4"
     >
       <LoadingIndicator class="h-6 w-6" />
       <span>{{ __('Loading...') }}</span>
@@ -45,7 +45,11 @@
           :key="note.name"
           @click="modalRef.showNote(note)"
         >
-          <NoteArea v-model="all_activities" :note="note" />
+          <NoteArea
+            v-model="all_activities"
+            :note="note"
+            :modalRef="modalRef"
+          />
         </div>
       </div>
       <div v-else-if="title == 'Comments'" class="pb-5">
@@ -54,13 +58,13 @@
             class="activity grid grid-cols-[30px_minmax(auto,_1fr)] gap-2 px-3 sm:gap-4 sm:px-10"
           >
             <div
-              class="z-0 relative flex justify-center before:absolute before:left-[50%] before:-z-[1] before:top-0 before:border-l before:border-outline-gray-modals"
+              class="z-0 relative flex justify-center before:absolute before:left-[50%] before:-z-[1] before:top-0 before:border-l before:border-outline-elevation-2"
               :class="
                 i != activities.length - 1 ? 'before:h-full' : 'before:h-4'
               "
             >
               <div
-                class="flex h-8 w-7 items-center justify-center bg-surface-white"
+                class="flex h-8 w-7 items-center justify-center bg-surface-base"
               >
                 <CommentIcon class="text-ink-gray-8" />
               </div>
@@ -82,17 +86,17 @@
             class="activity grid grid-cols-[30px_minmax(auto,_1fr)] gap-4 px-3 sm:px-10"
           >
             <div
-              class="z-0 relative flex justify-center before:absolute before:left-[50%] before:-z-[1] before:top-0 before:border-l before:border-outline-gray-modals"
+              class="z-0 relative flex justify-center before:absolute before:left-[50%] before:-z-[1] before:top-0 before:border-l before:border-outline-elevation-2"
               :class="
                 i != activities.length - 1 ? 'before:h-full' : 'before:h-4'
               "
             >
               <div
-                class="flex h-8 w-7 items-center justify-center bg-surface-white text-ink-gray-8"
+                class="flex h-8 w-7 items-center justify-center bg-surface-base text-ink-gray-8"
               >
                 <MissedCallIcon
                   v-if="call.status == 'No Answer'"
-                  class="text-ink-red-4"
+                  class="text-ink-red-8"
                 />
                 <DeclinedCallIcon v-else-if="call.status == 'Busy'" />
                 <component
@@ -129,16 +133,16 @@
         >
           <div
             v-if="['Activity', 'Emails'].includes(title)"
-            class="z-0 relative flex justify-center before:absolute before:left-[50%] before:-z-[1] before:top-0 before:border-l before:border-outline-gray-modals"
+            class="z-0 relative flex justify-center before:absolute before:left-[50%] before:-z-[1] before:top-0 before:border-l before:border-outline-elevation-2"
             :class="[
               i != activities.length - 1 ? 'before:h-full' : 'before:h-4',
             ]"
           >
             <div
-              class="flex h-7 w-7 items-center justify-center bg-surface-white"
+              class="flex h-7 w-7 items-center justify-center bg-surface-base"
               :class="{
                 'mt-2.5': ['communication'].includes(activity.activity_type),
-                'bg-surface-white': ['added', 'removed', 'changed'].includes(
+                'bg-surface-base': ['added', 'removed', 'changed'].includes(
                   activity.activity_type,
                 ),
                 'h-8': [
@@ -160,7 +164,7 @@
                     activity.activity_type,
                   ) && activity.status == 'No Answer'
                 "
-                class="text-ink-red-4"
+                class="text-ink-red-8"
               />
               <DeclinedCallIcon
                 v-else-if="
@@ -219,18 +223,14 @@
                   <span>{{ activity.data.file_name }}</span>
                 </a>
                 <span v-else>{{ activity.data.file_name }}</span>
-                <FeatherIcon
+                <span
                   v-if="activity.data.is_private"
-                  name="lock"
-                  class="size-3"
+                  class="lucide-lock size-3"
+                  aria-hidden="true"
                 />
               </div>
               <div class="ml-auto whitespace-nowrap">
-                <Tooltip :text="formatDate(activity.creation)">
-                  <div class="text-sm text-ink-gray-5">
-                    {{ __(timeAgo(activity.creation)) }}
-                  </div>
-                </Tooltip>
+                <TimelineTimestamp :date="activity.creation" />
               </div>
             </div>
           </div>
@@ -311,11 +311,7 @@
               </div>
 
               <div class="ml-auto whitespace-nowrap">
-                <Tooltip :text="formatDate(activity.creation)">
-                  <div class="text-sm text-ink-gray-5">
-                    {{ __(timeAgo(activity.creation)) }}
-                  </div>
-                </Tooltip>
+                <TimelineTimestamp :date="activity.creation" />
               </div>
             </div>
             <div
@@ -337,9 +333,9 @@
                   >
                     {{ __(a.data.field_label) }}
                   </span>
-                  <FeatherIcon
-                    name="arrow-right"
-                    class="mx-1 h-4 w-4 text-ink-gray-5"
+                  <span
+                    class="lucide-arrow-right mx-1 h-4 w-4 text-ink-gray-5"
+                    aria-hidden="true"
                   />
                   <span v-if="a.type">
                     {{ startCase(__(a.type)) }}
@@ -378,11 +374,7 @@
                 </div>
 
                 <div class="ml-auto whitespace-nowrap">
-                  <Tooltip :text="formatDate(a.creation)">
-                    <div class="text-sm text-ink-gray-5">
-                      {{ __(timeAgo(a.creation)) }}
-                    </div>
-                  </Tooltip>
+                  <TimelineTimestamp :date="a.creation" />
                 </div>
               </div>
             </div>
@@ -392,6 +384,8 @@
     </div>
     <div v-else-if="title == 'Data'" class="h-full flex flex-col px-3 sm:px-10">
       <DataFields
+        v-model:fieldLayoutTabIndex="fieldLayoutTabIndex"
+        v-model:fieldLayoutTabName="fieldLayoutTabName"
         :doctype="doctype"
         :docname="docname"
         @beforeSave="(data) => emit('beforeSave', data)"
@@ -487,13 +481,15 @@ import CommunicationArea from '@/components/CommunicationArea.vue'
 import WhatsappTemplateSelectorModal from '@/components/Modals/WhatsappTemplateSelectorModal.vue'
 import AllModals from '@/components/Activities/AllModals.vue'
 import FilesUploader from '@/components/FilesUploader/FilesUploader.vue'
-import { timeAgo, formatDate, startCase } from '@/utils'
+import TimelineTimestamp from '@/components/Activities/TimelineTimestamp.vue'
+import { startCase } from '@/utils'
 import { globalStore } from '@/stores/global'
 import { usersStore } from '@/stores/users'
+import { useTimelinePreferences } from '@/composables/useTimelinePreferences'
 import { whatsappEnabled } from '@/composables/whatsapp'
 import { useDocument } from '@/data/document'
 import { useTelemetry } from 'frappe-ui/frappe'
-import { Button, Tooltip, createResource, toast } from 'frappe-ui'
+import { Button, createResource, toast } from 'frappe-ui'
 import { useElementVisibility } from '@vueuse/core'
 import {
   ref,
@@ -510,6 +506,7 @@ import { useRoute } from 'vue-router'
 const { $socket } = globalStore()
 const { getUser } = usersStore()
 const { capture } = useTelemetry()
+const { isNewestFirst } = useTimelinePreferences()
 
 const props = defineProps({
   doctype: { type: String, default: 'CRM Lead' },
@@ -531,6 +528,8 @@ const doc = computed(() => _document.doc || {})
 const reload_email = ref(false)
 const modalRef = ref(null)
 const showFilesUploader = ref(false)
+const fieldLayoutTabIndex = ref(0)
+const fieldLayoutTabName = ref('')
 
 const title = computed(() => props.tabs?.[tabIndex.value]?.name || 'Activity')
 
@@ -576,9 +575,13 @@ watch(
 
 onBeforeUnmount(() => {
   $socket.off('whatsapp_message')
+  $socket.off('docinfo_update', handleDocinfoUpdate)
+  $socket.emit('doc_unsubscribe', props.doctype, props.docname)
 })
 
 onMounted(() => {
+  $socket.emit('doc_subscribe', props.doctype, props.docname)
+  $socket.on('docinfo_update', handleDocinfoUpdate)
   $socket.on('whatsapp_message', (data) => {
     if (
       data.reference_doctype === props.doctype &&
@@ -596,6 +599,15 @@ onMounted(() => {
     }
   })
 })
+
+function handleDocinfoUpdate({ doc, key }) {
+  if (key !== 'comments') return
+  if (doc.reference_doctype !== props.doctype) return
+  if (doc.reference_name !== props.docname) return
+
+  all_activities.reload()
+  _document.reload()
+}
 
 function sendTemplate(template) {
   showWhatsappTemplates.value = false
@@ -641,7 +653,7 @@ const activities = computed(() => {
     )
   } else if (title.value == 'Calls') {
     if (!all_activities.data?.calls) return []
-    return sortByCreation(all_activities.data.calls)
+    return sortByCreation(all_activities.data.calls, isNewestFirst.value)
   } else if (title.value == 'Tasks') {
     if (!all_activities.data?.tasks) return []
     return sortByModified(all_activities.data.tasks)
@@ -672,11 +684,18 @@ const activities = computed(() => {
       })
     }
   })
-  return sortByCreation(_activities)
+  return sortByCreation(_activities, isNewestFirst.value)
 })
 
-function sortByCreation(list) {
-  return list.sort((a, b) => new Date(a.creation) - new Date(b.creation))
+function sortByCreation(list, newestFirst = false) {
+  // Direction comes from the comparator operand order (like sortByModified),
+  // not .reverse(). A consistent comparator keeps .sort() idempotent, so
+  // sorting the reactive array in place doesn't re-trigger this computed.
+  return list.sort((a, b) =>
+    newestFirst
+      ? new Date(b.creation) - new Date(a.creation)
+      : new Date(a.creation) - new Date(b.creation),
+  )
 }
 function sortByModified(list) {
   return list.sort((b, a) => new Date(a.modified) - new Date(b.modified))
@@ -829,7 +848,7 @@ function scroll(hash) {
     let el
     if (!hash) {
       let e = document.getElementsByClassName('activity')
-      el = e[e.length - 1]
+      el = isNewestFirst.value ? e[0] : e[e.length - 1]
     } else {
       el = document.getElementById(hash)
     }

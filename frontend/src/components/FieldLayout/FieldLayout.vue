@@ -3,11 +3,11 @@
     class="flex flex-col"
     :class="{
       'border border-outline-gray-1 rounded-lg': hasTabs,
-      'border-outline-gray-modals': hasTabs,
+      'border-outline-elevation-2': hasTabs,
     }"
   >
     <Tabs
-      v-model="tabIndex"
+      v-model="selectedTabIndex"
       as="div"
       :tabs="processedTabs"
       :class="[
@@ -30,18 +30,25 @@
 import Section from '@/components/FieldLayout/Section.vue'
 import { useDocument } from '@/data/document'
 import { Tabs } from 'frappe-ui'
-import { ref, computed, provide } from 'vue'
+import { computed, provide, watch } from 'vue'
 
 const props = defineProps({
   tabs: { type: Array, default: () => [] },
   data: { type: Object, default: () => ({}) },
   doctype: { type: String, default: 'CRM Lead' },
+  docname: { type: String, default: '' },
   isGridRow: { type: Boolean, default: false },
   preview: { type: Boolean, default: false },
   context: { type: Object, default: null },
 })
 
-const tabIndex = ref(0)
+const tabIndex = defineModel('tabIndex', { type: Number, default: 0 })
+const tabName = defineModel('tabName', { type: String, default: '' })
+
+// The authoritative document name. Prefer the explicit docname prop (known
+// synchronously by the parent modal) over data.name, which is empty while the
+// document is still loading and would bind field changes to the wrong cache.
+const resolvedDocname = computed(() => props.docname || props.data?.name || '')
 
 // Get fieldPropertyOverrides for tab/section overrides
 let overrides = {}
@@ -49,7 +56,7 @@ if (props.context) {
   // Standalone mode: use externally managed context, skip useDocument
   overrides = computed(() => props.context?.fieldPropertyOverrides || {})
 } else if (!props.isGridRow) {
-  const { document: doc } = useDocument(props.doctype, props.data?.name)
+  const { document: doc } = useDocument(props.doctype, resolvedDocname.value)
   overrides = computed(() => doc?.fieldPropertyOverrides || {})
 } else {
   overrides = computed(() => ({}))
@@ -81,12 +88,49 @@ const hasTabs = computed(() => {
   )
 })
 
+const selectedTabIndex = computed({
+  get() {
+    if (tabName.value) {
+      const namedTabIndex = processedTabs.value.findIndex(
+        (tab) => tab.name === tabName.value,
+      )
+      if (namedTabIndex !== -1) return namedTabIndex
+    }
+    return tabIndex.value
+  },
+  set(value) {
+    tabIndex.value = value
+    tabName.value = processedTabs.value[value]?.name || ''
+  },
+})
+
+watch(
+  processedTabs,
+  (tabs) => {
+    if (!tabs.length) {
+      tabIndex.value = 0
+      tabName.value = ''
+      return
+    }
+    if (tabName.value && tabs.some((tab) => tab.name === tabName.value)) {
+      tabIndex.value = tabs.findIndex((tab) => tab.name === tabName.value)
+      return
+    }
+    if (tabIndex.value >= tabs.length) {
+      tabIndex.value = tabs.length - 1
+    }
+    tabName.value = tabs[tabIndex.value]?.name || ''
+  },
+  { immediate: true },
+)
+
 provide(
   'data',
   computed(() => props.data),
 )
 provide('hasTabs', hasTabs)
 provide('doctype', props.doctype)
+provide('docname', resolvedDocname)
 provide('preview', props.preview)
 provide('isGridRow', props.isGridRow)
 provide('fieldLayoutContext', props.context)

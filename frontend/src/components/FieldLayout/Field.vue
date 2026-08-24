@@ -14,7 +14,7 @@
           field.reqd ||
           (field.mandatory_depends_on && field.mandatory_via_depends_on)
         "
-        class="text-ink-red-2"
+        class="text-ink-red-5"
         >*</span
       >
     </div>
@@ -86,7 +86,7 @@
         "
       >
         {{ __(field.label) }}
-        <span v-if="field.mandatory" class="text-ink-red-3">*</span>
+        <span v-if="field.mandatory" class="text-ink-red-6">*</span>
       </label>
     </div>
     <div
@@ -143,7 +143,7 @@
       </template>
       <template #item-label="{ option }">
         <Tooltip :text="option.value">
-          <div class="cursor-pointer">
+          <div class="cursor-pointer text-ink-gray-9">
             {{ getUser(option.value).full_name }}
           </div>
         </Tooltip>
@@ -283,14 +283,35 @@
       @change="(v) => fieldChange(v, field)"
     />
     <FormControl
-      v-else
+      v-else-if="field.options === 'Phone'"
       type="text"
       :placeholder="getPlaceholder(field)"
       :value="data[field.fieldname]"
       :disabled="Boolean(field.read_only)"
       :description="field.description"
+      :error="
+        Boolean(data[field.fieldname]) && !validatePhone(data[field.fieldname])
+          ? __('Enter a valid phone number')
+          : undefined
+      "
       @change="fieldChange($event.target.value, field)"
     />
+    <div v-else class="flex items-center gap-1">
+      <FormControl
+        class="flex-1"
+        type="text"
+        :placeholder="getPlaceholder(field)"
+        :value="data[field.fieldname]"
+        :disabled="Boolean(field.read_only)"
+        :description="field.description"
+        @change="fieldChange($event.target.value, field)"
+      />
+      <ArrowUpRightIcon
+        v-if="isExternalUrl(data[field.fieldname])"
+        class="h-4 w-4 shrink-0 cursor-pointer text-ink-gray-5 hover:text-ink-gray-8"
+        @click.stop="openExternalUrl(data[field.fieldname])"
+      />
+    </div>
   </div>
 </template>
 <script setup>
@@ -307,6 +328,7 @@ import ButtonControl, {
   getButtonVariant,
 } from '@/components/Controls/ButtonControl.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
+import ArrowUpRightIcon from '@/components/Icons/ArrowUpRightIcon.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import TableMultiselectInput from '@/components/Controls/TableMultiselectInput.vue'
@@ -318,10 +340,14 @@ import {
   evaluateDependsOnValue,
   isNull,
   interpolateTemplate,
+  validatePhone,
 } from '@/utils'
 import { flt, formatNumber, formatCurrency } from '@/utils/numberFormat.js'
 import { getMeta } from '@/stores/meta'
-import { parseLinkFilters } from '@/utils/fieldTransforms'
+import {
+  parseLinkFilters,
+  applyStateFieldOptions,
+} from '@/utils/fieldTransforms'
 import { usersStore } from '@/stores/users'
 import { useDocument } from '@/data/document'
 
@@ -340,6 +366,7 @@ const props = defineProps({
 
 const data = inject('data')
 const doctype = inject('doctype')
+const docname = inject('docname', null)
 const preview = inject('preview')
 const isGridRow = inject('isGridRow')
 
@@ -388,13 +415,18 @@ if (standaloneContext) {
     computed(() => standaloneContext?.fieldPropertyOverrides || {}),
   )
 } else if (!isGridRow) {
+  // Bind to the document by its authoritative name (injected from FieldLayout),
+  // falling back to data.name. Using data.name alone breaks the first edit of a
+  // freshly-loaded doc: name is still empty, so changes write to the wrong
+  // (new-document) cache slot and the first save serializes the pristine doc.
+  const resolvedName = docname != null ? docname.value : data.value.name
   const {
     triggerOnChange: trigger,
     triggerButton: triggerBtn,
     triggerOnRowAdd,
     triggerOnRowRemove,
     document: doc,
-  } = useDocument(doctype, data.value.name)
+  } = useDocument(doctype, resolvedName)
   triggerOnChange = trigger
   triggerButton = triggerBtn
   formDocument.value = doc
@@ -453,6 +485,14 @@ const field = computed(() => {
   if (overrides) {
     Object.assign(field, overrides)
   }
+
+  // ── Country-driven state dropdown (e.g. India Compliance installed) ──
+  field = applyStateFieldOptions(
+    field,
+    data.value,
+    doctype,
+    window.state_options,
+  )
 
   if (field.fieldtype == 'Select' && typeof field.options === 'string') {
     field.options = field.options.split('\n').map((option) => {
@@ -570,6 +610,14 @@ const getOptions = (options) => {
   } else {
     return []
   }
+}
+
+function isExternalUrl(value) {
+  return typeof value === 'string' && /^https?:\/\//i.test(value.trim())
+}
+
+function openExternalUrl(value) {
+  window.open(value.trim(), '_blank', 'noopener,noreferrer')
 }
 
 async function handleButtonClick(field) {

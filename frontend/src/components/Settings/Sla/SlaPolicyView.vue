@@ -4,10 +4,10 @@
       <div class="flex items-center gap-2">
         <Button
           variant="ghost"
-          icon-left="chevron-left"
+          icon-left="lucide-chevron-left"
           :label="slaData.sla_name || __('New SLA Policy')"
           size="md"
-          class="cursor-pointer -ml-4 hover:bg-transparent focus:bg-transparent focus:outline-none focus:ring-0 focus:ring-offset-0 focus-visible:none active:bg-transparent active:outline-none active:ring-0 active:ring-offset-0 active:text-ink-gray-5 font-semibold text-ink-gray-7 text-lg hover:opacity-70 !pr-0 !max-w-96 !justify-start"
+          class="cursor-pointer -ml-4 hover:bg-transparent focus:bg-transparent focus:outline-none focus:ring-0 focus:ring-offset-0 focus-visible:none active:bg-transparent active:outline-none active:ring-0 active:ring-offset-0 active:text-ink-gray-5 text-ink-gray-7 text-lg-semibold hover:opacity-70 !pr-0 !max-w-96 !justify-start"
           @click="goBack()"
         />
         <Badge
@@ -26,7 +26,7 @@
           @click="toggleEnabled"
         >
           <Switch size="sm" :model-value="slaData.enabled" />
-          <span class="text-sm text-ink-gray-7 font-medium">
+          <span class="text-sm-medium text-ink-gray-7">
             {{ __('Enabled') }}
           </span>
         </div>
@@ -71,6 +71,7 @@
             <FormLabel :label="__('Apply On')" required />
             <Select
               v-model="slaData.apply_on"
+              class="w-full"
               :options="[
                 {
                   label: 'Lead',
@@ -100,7 +101,7 @@
         <hr class="my-8 border-outline-gray-2" />
         <div>
           <div class="flex flex-col gap-1">
-            <span class="text-lg font-semibold text-ink-gray-8">{{
+            <span class="text-lg-semibold text-ink-gray-8">{{
               __('Assignment conditions')
             }}</span>
             <span class="text-p-sm text-ink-gray-6">
@@ -112,7 +113,7 @@
               <Checkbox
                 :label="__('Set as default SLA')"
                 :model-value="slaData.default"
-                class="text-ink-gray-6 text-base font-medium"
+                class="text-ink-gray-6 text-base-medium"
                 @update:model-value="toggleDefaultSla"
               />
               <div v-if="isOldSla && step.data && !slaData.default">
@@ -122,7 +123,7 @@
                       class="text-sm text-ink-gray-6 flex gap-1 cursor-default"
                     >
                       {{ __('Old Conditions') }}
-                      <FeatherIcon name="info" class="size-4" />
+                      <span class="lucide-info size-4" aria-hidden="true" />
                     </div>
                   </template>
                   <template #body-main>
@@ -148,7 +149,7 @@
                   conditions from this UI.
                 </span>
                 <Button
-                  :label="__('I understand, Add Conditions')"
+                  :label="__('I understand, add conditions')"
                   variant="subtle"
                   theme="gray"
                   @click="useNewUI = true"
@@ -164,7 +165,7 @@
         <hr class="my-8 border-outline-gray-2" />
         <div>
           <div class="flex flex-col gap-1">
-            <span class="text-lg font-semibold text-ink-gray-8">
+            <span class="text-lg-semibold text-ink-gray-8">
               {{ __('Valid From') }}
             </span>
             <span class="text-p-sm text-ink-gray-6">
@@ -211,7 +212,7 @@
         <hr class="my-8 border-outline-gray-2" />
         <div>
           <div class="flex flex-col gap-1">
-            <span class="text-lg font-semibold text-ink-gray-8">
+            <span class="text-lg-semibold text-ink-gray-8">
               {{ __('Response & Follow Up') }}
             </span>
             <span class="text-p-sm text-ink-gray-6">
@@ -251,7 +252,6 @@ import {
   createResource,
   DatePicker,
   ErrorMessage,
-  FeatherIcon,
   FormControl,
   FormLabel,
   LoadingIndicator,
@@ -260,7 +260,7 @@ import {
   Switch,
   toast,
 } from 'frappe-ui'
-import { inject, onMounted, onUnmounted, ref, watch } from 'vue'
+import { inject, onUnmounted, ref, watch } from 'vue'
 import SettingsLayoutBase from '../../Layouts/SettingsLayoutBase.vue'
 import {
   resetSlaDataErrors,
@@ -270,6 +270,7 @@ import {
 } from './utils'
 import SlaAssignmentConditions from './SlaAssignmentConditions.vue'
 import { disableSettingModalOutsideClick } from '../../../composables/settings'
+import { useUnsavedChangesWarning } from '../../../composables/useUnsavedChangesWarning'
 import { convertToConditions } from '../../../utils'
 import SlaHolidays from './SlaHolidays.vue'
 import SlaPriorityList from './SlaPriorityList.vue'
@@ -338,6 +339,18 @@ if (step.value.data && step.value.fetchData) {
   getSlaResource.submit()
 } else {
   disableSettingModalOutsideClick.value = true
+
+  // SlaPriorityList fills in the default priorities only after its own fetch
+  // resolves, so snapshot the pristine form once they land instead of now
+  watch(
+    () => slaData.value.priorities.length,
+    () => {
+      initialData.value = JSON.stringify(slaData.value)
+    },
+    {
+      once: true,
+    },
+  )
 }
 
 const goBack = () => {
@@ -370,7 +383,7 @@ const goBack = () => {
 
 const toggleEnabled = () => {
   if (slaData.value.default) {
-    toast.error(__('SLA set as default cannot be disabled'))
+    toast.error(__('An SLA set as default cannot be disabled'))
     return
   }
   slaData.value.enabled = !slaData.value.enabled
@@ -426,7 +439,7 @@ const createSla = () => {
     },
     {
       onSuccess(data) {
-        toast.success(__('SLA Policy Created'))
+        toast.success(__('SLA policy created'))
         updateStep('view', data, true)
         getSlaResource.submit({
           doctype: 'CRM Service Level Agreement',
@@ -436,7 +449,7 @@ const createSla = () => {
       onError(err) {
         const message = err?.messages?.[0]
         toast.error(
-          message || __('Some error occurred while creating SLA Policy'),
+          message || __('Some error occurred while creating SLA policy'),
         )
       },
     },
@@ -496,7 +509,7 @@ const updateSla = async () => {
     await getSlaResource.reload()
   }
 
-  toast.success(__('SLA Policy Updated'))
+  toast.success(__('SLA policy updated'))
   slaPolicyListResource.reload()
 }
 
@@ -514,18 +527,9 @@ watch(
   { deep: true },
 )
 
-const beforeUnloadHandler = (event) => {
-  if (!isDirty.value) return
-  event.preventDefault()
-  event.returnValue = true
-}
-
-onMounted(() => {
-  addEventListener('beforeunload', beforeUnloadHandler)
-})
+useUnsavedChangesWarning(() => isDirty.value)
 
 onUnmounted(() => {
-  removeEventListener('beforeunload', beforeUnloadHandler)
   resetSlaDataErrors()
   disableSettingModalOutsideClick.value = false
 })

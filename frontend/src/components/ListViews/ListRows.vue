@@ -3,7 +3,7 @@
     <div v-for="group in reactivieRows" :key="group.group">
       <ListGroupHeader :group="group">
         <div
-          class="my-2 flex items-center gap-2 text-base font-medium text-ink-gray-8"
+          class="my-2 flex items-center gap-2 text-base-medium text-ink-gray-8"
         >
           <div>{{ __(group.label) }} -</div>
           <div class="flex items-center gap-1">

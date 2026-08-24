@@ -4,8 +4,8 @@
       class="flex-1 rounded-lg border cursor-pointer"
       :class="
         theme == 'light'
-          ? 'border-outline-gray-5'
-          : 'border-outline-gray-modals'
+          ? 'border-outline-gray-7'
+          : 'border-outline-elevation-2'
       "
       @click="theme = 'light'"
     >
@@ -18,7 +18,7 @@
           </div>
           <div class="flex items-start justify-between gap-2 p-2.5 pr-0 pb-1">
             <div
-              class="flex items-center flex-1 gap-1 text-xs text-ink-gray-5 font-semibold"
+              class="flex items-center flex-1 gap-1 text-xs-semibold text-ink-gray-5"
             >
               <img
                 v-if="typeof logo == 'string'"
@@ -44,7 +44,7 @@
           class="rounded-full size-3.5"
           :class="
             theme == 'light'
-              ? 'border-4 border-outline-gray-5'
+              ? 'border-4 border-outline-gray-7'
               : 'border  border-outline-gray-4'
           "
         />
@@ -53,7 +53,7 @@
     <div
       class="flex-1 rounded-lg border cursor-pointer"
       :class="
-        theme == 'dark' ? 'border-outline-gray-5' : 'border-outline-gray-modals'
+        theme == 'dark' ? 'border-outline-gray-7' : 'border-outline-elevation-2'
       "
       @click="theme = 'dark'"
     >
@@ -66,7 +66,7 @@
           </div>
           <div class="flex items-start justify-between gap-2 p-2.5 pr-0 pb-1">
             <div
-              class="flex items-center flex-1 gap-1 text-xs text-ink-gray-5 font-semibold"
+              class="flex items-center flex-1 gap-1 text-xs-semibold text-ink-gray-5"
             >
               <img
                 v-if="typeof logo == 'string'"
@@ -92,7 +92,7 @@
           class="rounded-full size-3.5"
           :class="
             theme == 'dark'
-              ? 'border-4 border-outline-gray-5'
+              ? 'border-4 border-outline-gray-7'
               : 'border border-outline-gray-4'
           "
         />
@@ -102,8 +102,8 @@
       class="flex-1 rounded-lg border cursor-pointer"
       :class="
         theme == 'system'
-          ? 'border-outline-gray-5'
-          : 'border-outline-gray-modals'
+          ? 'border-outline-gray-7'
+          : 'border-outline-elevation-2'
       "
       @click="theme = 'system'"
     >
@@ -119,7 +119,7 @@
             </div>
             <div class="flex items-start justify-between gap-2 p-2.5 pr-0 pb-1">
               <div
-                class="flex items-center flex-1 gap-1 text-xs text-ink-gray-5 font-semibold"
+                class="flex items-center flex-1 gap-1 text-xs-semibold text-ink-gray-5"
               >
                 <img
                   v-if="typeof logo == 'string'"
@@ -143,7 +143,7 @@
             </div>
             <div class="flex items-start justify-between gap-2 p-2.5 pb-3 pr-0">
               <div
-                class="flex items-center flex-1 gap-1 text-xs text-ink-gray-5 font-semibold"
+                class="flex items-center flex-1 gap-1 text-xs-semibold text-ink-gray-5"
               >
                 <img
                   v-if="typeof logo == 'string'"
@@ -165,7 +165,7 @@
           class="rounded-full size-3.5"
           :class="
             theme == 'system'
-              ? 'border-4 border-outline-gray-5'
+              ? 'border-4 border-outline-gray-7'
               : 'border border-outline-gray-4'
           "
         ></div>

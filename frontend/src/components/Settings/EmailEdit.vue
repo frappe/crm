@@ -2,7 +2,7 @@
   <div class="flex flex-col h-full gap-4">
     <!-- title and desc -->
     <div role="heading" aria-level="1" class="flex justify-between gap-1">
-      <h2 class="text-xl font-semibold text-ink-gray-8">
+      <h2 class="text-2xl-semibold text-ink-gray-8">
         {{ __('Edit Email') }}
       </h2>
     </div>
@@ -208,11 +208,11 @@ async function callSetValue(values) {
 
 function succesHandler() {
   emit('update:step', 'email-list')
-  toast.success(__('Email Account updated successfully'))
+  toast.success(__('Email account updated successfully'))
 }
 
 function errorHandler() {
   loading.value = false
-  error.value = __('Failed to update Email Account, Invalid credentials')
+  error.value = __('Failed to update email account: invalid credentials')
 }
 </script>

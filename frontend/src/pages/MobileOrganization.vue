@@ -61,12 +61,12 @@
               </component>
             </div>
             <div class="flex flex-col gap-2 truncate">
-              <div class="truncate text-lg font-medium text-ink-gray-9">
+              <div class="truncate text-lg-medium text-ink-gray-9">
                 {{ organization.doc.name }}
               </div>
               <div class="flex items-center gap-1.5">
                 <Button @click="openWebsite">
-                  <FeatherIcon name="link" class="h-4 w-4" />
+                  <span class="lucide-link h-4 w-4" aria-hidden="true" />
                 </Button>
                 <Button
                   v-if="canDelete"
@@ -98,8 +98,8 @@
           <component :is="tab.icon" v-if="tab.icon" class="h-5" />
           {{ __(tab.label) }}
           <Badge
-            class="group-hover:bg-surface-gray-7"
-            :class="[selected ? 'bg-surface-gray-7' : 'bg-gray-600']"
+            class="group-hover:bg-surface-gray-10"
+            :class="[selected ? 'bg-surface-gray-10' : 'bg-gray-600']"
             variant="solid"
             theme="gray"
             size="sm"
@@ -138,7 +138,7 @@
         />
         <div
           v-if="!rows.length && tab.name !== 'Details'"
-          class="grid flex-1 place-items-center text-xl font-medium text-ink-gray-4"
+          class="grid flex-1 place-items-center text-2xl-medium text-ink-gray-4"
         >
           <div class="flex flex-col items-center justify-center space-y-3">
             <component :is="tab.icon" class="!h-10 !w-10" />
@@ -168,11 +168,10 @@ import { usersStore } from '@/stores/users'
 import { statusesStore } from '@/stores/statuses'
 import { getView } from '@/utils/view'
 import {
-  formatDate,
-  timeAgo,
   validateIsImageFile,
   openWebsite as openExternalWebsite,
 } from '@/utils'
+import { timestampCell } from '@/composables/useTimelinePreferences'
 import {
   Breadcrumbs,
   Avatar,
@@ -243,6 +242,7 @@ const breadcrumbs = computed(() => {
     route: {
       name: 'Organization',
       params: { organizationId: props.organizationId },
+      query: route.query,
     },
   })
   return items
@@ -361,7 +361,7 @@ const deals = createListResource({
     'name',
     'organization',
     'currency',
-    'annual_revenue',
+    'deal_value',
     'status',
     'email',
     'mobile_no',
@@ -420,7 +420,7 @@ function getDealRowObject(deal) {
       label: deal.organization,
       logo: organization.doc?.organization_logo,
     },
-    annual_revenue: getFormattedCurrency('annual_revenue', deal),
+    deal_value: getFormattedCurrency('deal_value', deal),
     status: {
       label: deal.status,
       color: getDealStatus(deal.status)?.color,
@@ -431,10 +431,7 @@ function getDealRowObject(deal) {
       label: deal.deal_owner && getUser(deal.deal_owner).full_name,
       ...(deal.deal_owner && getUser(deal.deal_owner)),
     },
-    modified: {
-      label: formatDate(deal.modified),
-      timeAgo: __(timeAgo(deal.modified)),
-    },
+    modified: timestampCell(deal.modified),
   }
 }
 
@@ -452,10 +449,7 @@ function getContactRowObject(contact) {
       label: contact.company_name,
       logo: organization.doc?.organization_logo,
     },
-    modified: {
-      label: formatDate(contact.modified),
-      timeAgo: __(timeAgo(contact.modified)),
-    },
+    modified: timestampCell(contact.modified),
   }
 }
 
@@ -467,7 +461,7 @@ const dealColumns = [
   },
   {
     label: __('Amount'),
-    key: 'annual_revenue',
+    key: 'deal_value',
     align: 'right',
     width: '9rem',
   },
@@ -482,7 +476,7 @@ const dealColumns = [
     width: '12rem',
   },
   {
-    label: __('Mobile No.'),
+    label: __('Mobile Number'),
     key: 'mobile_no',
     width: '11rem',
   },

@@ -1,8 +1,8 @@
 <template>
-  <Dialog v-model="show">
-    <template #body-title>
+  <Dialog v-model:open="show">
+    <template #title>
       <h3
-        class="flex items-center gap-2 text-2xl font-semibold leading-6 text-ink-gray-9"
+        class="flex items-center gap-2 text-3xl-semibold leading-6 text-ink-gray-9"
       >
         <div>{{ __('Edit Grid Fields Layout') }}</div>
         <Badge
@@ -13,7 +13,7 @@
         />
       </h3>
     </template>
-    <template #body-content>
+    <template #default>
       <div class="mt-4">
         <div class="text-base text-ink-gray-8 mb-2">
           {{ __('Fields Order') }}
@@ -27,7 +27,7 @@
         >
           <template #item="{ element: field }">
             <div
-              class="px-1 py-0.5 bg-surface-gray-2 border border-outline-gray-modals rounded text-base text-ink-gray-8 flex items-center justify-between gap-2"
+              class="px-1 py-0.5 bg-surface-gray-2 border border-outline-elevation-2 rounded text-base text-ink-gray-8 flex items-center justify-between gap-2"
             >
               <div class="flex items-center gap-2">
                 <DragVerticalIcon class="h-3.5 cursor-grab" />
@@ -40,34 +40,38 @@
                   type="number"
                   class="w-20"
                 />
-                <Button variant="ghost" icon="x" @click="removeField(field)" />
+                <Button
+                  variant="ghost"
+                  icon="lucide-x"
+                  @click="removeField(field)"
+                />
               </div>
             </div>
           </template>
         </Draggable>
-        <Autocomplete
+        <Combobox
           v-if="dropdownFields?.length"
-          value=""
+          :model-value="null"
           :options="dropdownFields"
-          @change="(e) => addField(e)"
+          @update:selected-option="(e) => addField(e)"
         >
-          <template #target="{ togglePopover }">
+          <template #trigger="{ open, setOpen }">
             <Button
               class="w-full mt-2"
               :label="__('Add Field')"
               iconLeft="plus"
-              @click="togglePopover()"
+              @click="setOpen(!open)"
             />
           </template>
-          <template #item-label="{ option }">
+          <template #item-label="{ item }">
             <div class="flex flex-col gap-1 text-ink-gray-9">
-              <div>{{ option.label }}</div>
+              <div>{{ item.label }}</div>
               <div class="text-ink-gray-4 text-sm">
-                {{ `${option.fieldname} - ${option.fieldtype}` }}
+                {{ `${item.fieldname} - ${item.fieldtype}` }}
               </div>
             </div>
           </template>
-        </Autocomplete>
+        </Combobox>
         <ErrorMessage v-if="error" class="mt-3" :message="error" />
       </div>
     </template>
@@ -93,10 +97,9 @@
 </template>
 <script setup>
 import DragVerticalIcon from '@/components/Icons/DragVerticalIcon.vue'
-import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import { getMeta } from '@/stores/meta'
 import Draggable from 'vuedraggable'
-import { Dialog, ErrorMessage } from 'frappe-ui'
+import { Combobox, Dialog, ErrorMessage } from 'frappe-ui'
 import { ref, computed } from 'vue'
 
 const props = defineProps({
@@ -152,9 +155,11 @@ const dropdownFields = computed(() => {
     getFields({ restrictNoValueFields: false, restrictedFieldTypes }) || []
   if (!_fields.length) return []
 
-  return _fields.filter(
-    (field) => !fields.value.find((f) => f.fieldname === field.fieldname),
-  )
+  return _fields
+    .filter(
+      (field) => !fields.value.find((f) => f.fieldname === field.fieldname),
+    )
+    .map((field) => ({ ...field, value: field.fieldname }))
 })
 
 function reset() {

@@ -12,6 +12,12 @@
         v-if="organization._actions?.length"
         :actions="organization._actions"
       />
+      <EnrichFromWebsite
+        doctype="CRM Organization"
+        :docname="props.organizationId"
+        :website="organization.doc?.website"
+        @done="onEnriched"
+      />
     </template>
   </LayoutHeader>
   <div v-if="organization.doc" ref="parentRef" class="flex h-full">
@@ -71,7 +77,7 @@
                   </component>
                 </div>
                 <div class="flex flex-col gap-2 truncate">
-                  <div class="truncate text-2xl font-medium text-ink-gray-9">
+                  <div class="truncate text-3xl-medium text-ink-gray-9">
                     <span>{{ organization.doc.name }}</span>
                   </div>
                   <div
@@ -95,7 +101,7 @@
                 />
                 <Button
                   :tooltip="__('Open Website')"
-                  icon="link"
+                  icon="lucide-link"
                   @click="openWebsite"
                 />
               </div>
@@ -130,8 +136,8 @@
           <component :is="tab.icon" v-if="tab.icon" class="h-5" />
           {{ __(tab.label) }}
           <Badge
-            class="group-hover:bg-surface-gray-7"
-            :class="[selected ? 'bg-surface-gray-7' : 'bg-gray-600']"
+            class="group-hover:bg-surface-gray-10"
+            :class="[selected ? 'bg-surface-gray-10' : 'bg-gray-600']"
             variant="solid"
             theme="gray"
             size="sm"
@@ -191,6 +197,7 @@ import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
 import DeleteLinkedDocModal from '@/components/DeleteLinkedDocModal.vue'
 import CustomActions from '@/components/CustomActions.vue'
+import EnrichFromWebsite from '@/components/EnrichFromWebsite.vue'
 import { useDocument } from '@/data/document'
 import { getSettings } from '@/stores/settings'
 import { globalStore } from '@/stores/global'
@@ -199,12 +206,11 @@ import { usersStore } from '@/stores/users'
 import { statusesStore } from '@/stores/statuses'
 import { getView } from '@/utils/view'
 import {
-  formatDate,
-  timeAgo,
   validateIsImageFile,
   setupCustomizations,
   openWebsite as openExternalWebsite,
 } from '@/utils'
+import { timestampCell } from '@/composables/useTimelinePreferences'
 import {
   Breadcrumbs,
   Avatar,
@@ -250,6 +256,11 @@ const {
 
 const canDelete = computed(() => permissions.data?.permissions?.delete || false)
 
+function onEnriched() {
+  organization.reload?.()
+  sections.reload()
+}
+
 onMounted(async () => {
   if (organization.doc) await triggerOnRender()
 })
@@ -281,6 +292,7 @@ const breadcrumbs = computed(() => {
     route: {
       name: 'Organization',
       params: { organizationId: props.organizationId },
+      query: route.query,
     },
   })
   return items
@@ -391,7 +403,7 @@ const deals = createListResource({
     'name',
     'organization',
     'currency',
-    'annual_revenue',
+    'deal_value',
     'status',
     'email',
     'mobile_no',
@@ -450,7 +462,7 @@ function getDealRowObject(deal) {
       label: deal.organization,
       logo: organization.doc?.organization_logo,
     },
-    annual_revenue: getFormattedCurrency('annual_revenue', deal),
+    deal_value: getFormattedCurrency('deal_value', deal),
     status: {
       label: deal.status,
       color: getDealStatus(deal.status)?.color,
@@ -461,10 +473,7 @@ function getDealRowObject(deal) {
       label: deal.deal_owner && getUser(deal.deal_owner).full_name,
       ...(deal.deal_owner && getUser(deal.deal_owner)),
     },
-    modified: {
-      label: formatDate(deal.modified),
-      timeAgo: __(timeAgo(deal.modified)),
-    },
+    modified: timestampCell(deal.modified),
   }
 }
 
@@ -482,10 +491,7 @@ function getContactRowObject(contact) {
       label: contact.company_name,
       logo: organization.doc?.organization_logo,
     },
-    modified: {
-      label: formatDate(contact.modified),
-      timeAgo: __(timeAgo(contact.modified)),
-    },
+    modified: timestampCell(contact.modified),
   }
 }
 
@@ -497,7 +503,7 @@ const dealColumns = [
   },
   {
     label: __('Amount'),
-    key: 'annual_revenue',
+    key: 'deal_value',
     align: 'right',
     width: '9rem',
   },
@@ -512,7 +518,7 @@ const dealColumns = [
     width: '12rem',
   },
   {
-    label: __('Mobile No.'),
+    label: __('Mobile Number'),
     key: 'mobile_no',
     width: '11rem',
   },

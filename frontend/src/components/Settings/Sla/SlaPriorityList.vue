@@ -67,7 +67,7 @@
         <div class="flex justify-end">
           <Dropdown placement="right" :options="dropdownOptions(row)">
             <Button
-              icon="more-horizontal"
+              icon="lucide-more-horizontal"
               variant="ghost"
               @click="isConfirmingDelete = false"
             />
@@ -99,7 +99,7 @@
         v-if="slaData.priorities.length !== priorityOptions.length"
         variant="subtle"
         :label="__('Add Row')"
-        icon-left="plus"
+        icon-left="lucide-plus"
         @click="addRow"
       />
     </div>

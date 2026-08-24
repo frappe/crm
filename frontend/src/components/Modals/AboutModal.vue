@@ -1,11 +1,11 @@
 <template>
-  <Dialog v-model="show" :options="{ size: 'sm' }">
+  <Dialog v-model:open="show" :size="'sm'">
     <template #body>
       <div class="p-4 pt-5">
         <div class="flex justify-center">
           <div class="flex flex-col items-center">
             <CRMLogo class="mb-3 size-12" />
-            <h3 class="font-semibold text-xl text-ink-gray-9">Frappe CRM</h3>
+            <h3 class="text-2xl-semibold text-ink-gray-9">Frappe CRM</h3>
           </div>
         </div>
         <hr class="border-t my-3 mx-2" />
@@ -37,8 +37,8 @@
 </template>
 <script setup>
 import CRMLogo from '@/components/Icons/CRMLogo.vue'
+import GitHubIcon from '@/components/Icons/GitHubIcon.vue'
 import LucideGlobe from '~icons/lucide/globe'
-import LucideGitHub from '~icons/lucide/github'
 import LucideHeadset from '~icons/lucide/headset'
 import LucideBug from '~icons/lucide/bug'
 import LucideBookOpen from '~icons/lucide/book-open'
@@ -54,7 +54,7 @@ let links = [
   {
     label: __('GitHub Repository'),
     url: 'https://github.com/frappe/crm',
-    icon: LucideGitHub,
+    icon: GitHubIcon,
   },
   {
     label: __('Documentation'),

@@ -3,7 +3,7 @@
     :label="__(label)"
     :theme="theme"
     :variant="variant"
-    :icon-left="icon"
+    :icon-left="lucide - icon"
     :disabled="disabled"
     v-bind="$attrs"
     @click.stop="emit('click', $event)"

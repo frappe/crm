@@ -1,0 +1,107 @@
+name: Migration
+
+# Verifies that an existing site on the PR's base branch can `bench migrate`
+# to the PR code. Catches broken patches / schema changes before release.
+
+on:
+    pull_request:
+        paths-ignore:
+            - "**.css"
+            - "**.js"
+            - "**.md"
+            - "**.html"
+            - "**.csv"
+            - "**.po"
+            - "**.pot"
+    workflow_dispatch:
+
+concurrency:
+    group: migration-${{ github.event.number || github.ref }}
+    cancel-in-progress: true
+
+jobs:
+    migrate:
+        name: Upgrade base branch -> PR
+        runs-on: ubuntu-latest
+        timeout-minutes: 60
+
+        services:
+            mysql:
+                image: mariadb:10.6
+                env:
+                    MYSQL_ROOT_PASSWORD: root
+                ports:
+                    - 3306:3306
+                options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
+
+        env:
+            BASE_BRANCH: ${{ github.base_ref || github.ref_name }}
+            BENCH_PATH: /home/runner/frappe-bench
+
+        steps:
+            - name: Checkout PR code
+              uses: actions/checkout@v6
+              with:
+                  path: pr-crm
+
+            - name: Resolve frappe branch for base
+              id: frappe
+              run: |
+                  # Stable lanes run on frappe version-15; develop tracks frappe develop.
+                  case "$BASE_BRANCH" in
+                      main|main-hotfix) echo "branch=version-15" >> "$GITHUB_OUTPUT" ;;
+                      *)                echo "branch=develop"    >> "$GITHUB_OUTPUT" ;;
+                  esac
+
+            - name: Setup Python
+              uses: actions/setup-python@v6
+              with:
+                  python-version: "3.14"
+
+            - name: Setup Node
+              uses: actions/setup-node@v6
+              with:
+                  node-version: "24"
+
+            - name: Install system dependencies
+              run: |
+                  sudo apt update
+                  sudo apt install -y libcups2-dev redis-server mariadb-client libmariadb-dev
+                  npm install -g yarn
+
+            - name: Configure database
+              run: |
+                  echo "127.0.0.1 test_site" | sudo tee -a /etc/hosts
+                  mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL character_set_server = 'utf8mb4'"
+                  mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL collation_server = 'utf8mb4_unicode_ci'"
+                  mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "CREATE USER 'test_frappe'@'localhost' IDENTIFIED BY 'test_frappe'"
+                  mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "CREATE DATABASE test_frappe"
+                  mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "GRANT ALL PRIVILEGES ON \`test_frappe\`.* TO 'test_frappe'@'localhost'"
+                  mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "FLUSH PRIVILEGES"
+
+            - name: Init bench with frappe
+              run: |
+                  pip install frappe-bench
+                  git clone "https://github.com/frappe/frappe" --branch "${{ steps.frappe.outputs.branch }}" --depth 1 ~/frappe
+                  bench init --skip-assets --frappe-path ~/frappe --python "$(which python)" "$BENCH_PATH"
+
+            - name: Install CRM at base branch
+              working-directory: /home/runner/frappe-bench
+              run: |
+                  mkdir sites/test_site
+                  cp "${GITHUB_WORKSPACE}/pr-crm/.github/helper/site_config.json" sites/test_site/site_config.json
+                  sed -i 's/watch:/# watch:/g; s/schedule:/# schedule:/g; s/socketio:/# socketio:/g; s/redis_socketio:/# redis_socketio:/g' Procfile
+                  bench get-app crm "https://github.com/frappe/crm" --branch "$BASE_BRANCH"
+                  bench setup requirements --dev
+                  bench start &>> "$BENCH_PATH/bench_start.log" &
+                  CI=Yes bench build --app frappe &
+                  bench --site test_site reinstall --yes
+                  bench --verbose --site test_site install-app crm
+
+            - name: Upgrade CRM to PR code and migrate
+              working-directory: /home/runner/frappe-bench
+              run: |
+                  # Swap the installed (base branch) code for the PR code, keep the git dir.
+                  rsync -a --delete --exclude=".git" "${GITHUB_WORKSPACE}/pr-crm/" apps/crm/
+                  bench setup requirements --dev
+                  bench --site test_site migrate

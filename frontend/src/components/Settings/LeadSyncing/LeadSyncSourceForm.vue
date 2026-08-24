@@ -5,10 +5,10 @@
       <div class="flex gap-1 -ml-4 w-9/12">
         <Button
           variant="ghost"
-          icon-left="chevron-left"
+          icon-left="lucide-chevron-left"
           :label="isLocal ? __('New Lead Sync Source') : syncSource.name"
           size="md"
-          class="cursor-pointer hover:bg-transparent focus:bg-transparent focus:outline-none focus:ring-0 focus:ring-offset-0 focus-visible:none active:bg-transparent active:outline-none active:ring-0 active:ring-offset-0 active:text-ink-gray-5 font-semibold text-xl hover:opacity-70 !pr-0 !max-w-96 !justify-start"
+          class="cursor-pointer hover:bg-transparent focus:bg-transparent focus:outline-none focus:ring-0 focus:ring-offset-0 focus-visible:none active:bg-transparent active:outline-none active:ring-0 active:ring-offset-0 active:text-ink-gray-5 text-2xl-semibold hover:opacity-70 !pr-0 !max-w-96 !justify-start"
           @click="() => emit('updateStep', 'source-list')"
         />
       </div>
@@ -28,7 +28,7 @@
 
         <Button
           :label="isLocal ? __('Create') : __('Update')"
-          icon-left="plus"
+          icon-left="lucide-plus"
           variant="solid"
           :loading="
             sources.setValue.loading ||
@@ -50,18 +50,18 @@
           <div class="grid grid-cols-2 gap-4">
             <FormControl
               v-model="syncSource.type"
-              type="autocomplete"
+              type="combobox"
               required="true"
               :options="supportedSourceTypes"
               :label="__('Source Type')"
               :placeholder="__('Select Source Type')"
             >
-              <template v-if="syncSource.type" #prefix>
-                <component :is="syncSource.type.icon" class="mr-2 size-4" />
+              <template v-if="selectedSourceType" #prefix>
+                <component :is="selectedSourceType.icon" class="mr-2 size-4" />
               </template>
 
-              <template #item-prefix="{ option }">
-                <component :is="option.icon" class="size-4" />
+              <template #item-prefix="{ item }">
+                <component :is="item.icon" class="size-4" />
               </template>
             </FormControl>
 
@@ -253,6 +253,10 @@ const syncSource = ref({
 
 const isLocal = ref(true)
 
+const selectedSourceType = computed(() =>
+  supportedSourceTypes.find((type) => type.value === syncSource.value.type),
+)
+
 function updateSource(data) {
   sources.setValue.submit(
     {
@@ -268,7 +272,7 @@ function updateSource(data) {
         mappingFormDocResource.value.document.save.submit()
       },
       onError(e) {
-        toast.error(e.messages[0] || __('Error updating Lead Sync Source'))
+        toast.error(e.messages[0] || __('Error updating lead sync source'))
       },
     },
   )
@@ -278,16 +282,16 @@ function createSource() {
   sources.insert.submit(
     {
       ...syncSource.value,
-      type: syncSource.value.type.value,
+      type: syncSource.value.type,
     },
     {
       onSuccess: (newDoc) => {
-        toast.success(__('Lead Sync Source created successfully'))
+        toast.success(__('Lead sync source created successfully'))
         isLocal.value = false
         docResource.value = getSourceDocResource(newDoc.name)
       },
       onError(error) {
-        toast.error(error.messages[0] || __('Error creating Lead Sync Source'))
+        toast.error(error.messages[0] || __('Error creating lead sync source'))
       },
     },
   )
@@ -299,7 +303,7 @@ function createOrUpdateSource() {
   } else {
     updateSource({
       ...syncSource.value,
-      type: syncSource.value.type.value,
+      type: syncSource.value.type,
     })
   }
 }
@@ -325,9 +329,7 @@ watch(
     if (newDoc) {
       Object.assign(syncSource.value, {
         ...newDoc,
-        type:
-          supportedSourceTypes.find((type) => type.value === newDoc.type) ||
-          newDoc.type,
+        type: newDoc.type,
       })
 
       mappingFormDocResource.value = useDocument(

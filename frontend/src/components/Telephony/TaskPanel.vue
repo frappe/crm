@@ -10,7 +10,7 @@
     <TextEditor
       ref="content"
       variant="ghost"
-      editor-class="prose-sm h-[150px] text-ink-white overflow-auto"
+      editor-class="prose-sm h-[150px] text-ink-base overflow-auto"
       :bubbleMenu="true"
       :content="task.description"
       :placeholder="__('Add description...')"
@@ -21,7 +21,7 @@
         <Dropdown :options="taskStatusOptions(updateTaskStatus)">
           <Button
             :label="task.status"
-            class="bg-surface-gray-6 text-ink-white hover:bg-surface-gray-5"
+            class="bg-surface-gray-9 text-ink-base hover:bg-surface-gray-8"
           >
             <template #prefix>
               <TaskStatusIcon :status="task.status" />
@@ -31,7 +31,7 @@
         <Dropdown :options="taskPriorityOptions(updateTaskPriority)">
           <Button
             :label="task.priority"
-            class="bg-surface-gray-6 text-ink-white hover:bg-surface-gray-5"
+            class="bg-surface-gray-9 text-ink-base hover:bg-surface-gray-8"
           >
             <template #prefix>
               <TaskPriorityIcon :priority="task.priority" />
@@ -113,17 +113,17 @@ function updateTaskPriority(priority) {
 </script>
 <style scoped>
 :deep(.title input) {
-  background-color: var(--surface-gray-7);
-  caret-color: var(--ink-white);
-  color: var(--ink-white);
+  background-color: var(--surface-gray-10);
+  caret-color: var(--ink-base);
+  color: var(--ink-base);
   outline: none;
   border: none;
   padding: 0;
 }
 :deep(.datepicker input) {
-  background-color: var(--surface-gray-6);
-  caret-color: var(--ink-white);
-  color: var(--ink-white);
+  background-color: var(--surface-gray-9);
+  caret-color: var(--ink-base);
+  color: var(--ink-base);
   outline: none;
   border: none;
 }
@@ -136,12 +136,12 @@ function updateTaskPriority(priority) {
 }
 
 :deep(.user button) {
-  background-color: var(--surface-gray-6);
+  background-color: var(--surface-gray-9);
   border: none;
-  color: var(--ink-white);
+  color: var(--ink-base);
 }
 :deep(.user button:hover) {
-  background-color: var(--surface-gray-5);
+  background-color: var(--surface-gray-8);
   border: none;
 }
 :deep(.user button:focus) {

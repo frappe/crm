@@ -106,13 +106,14 @@
           v-else-if="fieldName == 'description'"
           class="truncate text-base max-h-44"
         >
-          <TextEditor
+          <!-- content is passed through sanitizeHTML() (DOMPurify) before rendering, so v-html is safe here -->
+          <!-- eslint-disable vue/no-v-html -->
+          <div
             v-if="getRow(itemName, fieldName).label"
-            :content="getRow(itemName, fieldName).label"
-            :editable="false"
-            editor-class="!prose-sm max-w-none focus:outline-none"
-            class="flex-1 overflow-hidden"
+            class="prose-f prose-sm max-w-none flex-1 overflow-hidden"
+            v-html="sanitizeHTML(getRow(itemName, fieldName).label)"
           />
+          <!-- eslint-enable vue/no-v-html -->
         </div>
         <div v-else class="truncate text-base">
           {{ getRow(itemName, fieldName).label }}
@@ -147,7 +148,7 @@
           variant="ghost"
           @click.stop.prevent
         >
-          <Button icon="more-horizontal" variant="ghost" />
+          <Button icon="lucide-more-horizontal" variant="ghost" />
         </Dropdown>
       </div>
     </template>
@@ -198,9 +199,10 @@ import KanbanView from '@/components/Kanban/KanbanView.vue'
 import { useDoctypeModal } from '@/composables/doctypeModal'
 import { getMeta } from '@/stores/meta'
 import { usersStore } from '@/stores/users'
-import { formatDate, timeAgo } from '@/utils'
+import { formatDate, sanitizeHTML } from '@/utils'
+import { timestampCell } from '@/composables/useTimelinePreferences'
 import { useOnboarding, useTelemetry } from 'frappe-ui/frappe'
-import { Tooltip, Avatar, TextEditor, Dropdown, call } from 'frappe-ui'
+import { Tooltip, Avatar, Dropdown, call } from 'frappe-ui'
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -303,10 +305,7 @@ function parseRows(rows, columns = []) {
       }
 
       if (['modified', 'creation'].includes(row)) {
-        _rows[row] = {
-          label: formatDate(task[row]),
-          timeAgo: __(timeAgo(task[row])),
-        }
+        _rows[row] = timestampCell(task[row])
       } else if (row == 'assigned_to') {
         _rows[row] = {
           label: task.assigned_to && getUser(task.assigned_to).full_name,
