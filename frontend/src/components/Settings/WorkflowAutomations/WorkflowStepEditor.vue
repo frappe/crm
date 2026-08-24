@@ -168,6 +168,14 @@
             {{ path }}
           </div>
         </div>
+        <ParamEditor
+          v-if="showAdvancedParams"
+          :action="step"
+          :schema="schema"
+          :doctype="targetDoctype"
+          :fields="fields"
+          advanced
+        />
         <RelatedCondition v-model="step.related_condition" :targets="targets" />
       </div>
     </div>
@@ -206,15 +214,16 @@ const stepTypeOptions = [
 const waitUnits = ['Seconds', 'Minutes', 'Hours', 'Days']
 const correlationPlaceholder = '{{ doc.message_id or doc.name }}'
 
+const step = computed(() => props.step)
 const showAdvanced = ref(false)
 
-const params = computed(() => stepParams(props.step))
-const suggestedKey = computed(() => defaultStepKey(props.step))
+const params = computed(() => stepParams(step.value))
+const suggestedKey = computed(() => defaultStepKey(step.value))
 
 const targetDoctype = computed(
   () =>
     props.targets.find(
-      (target) => target.alias === (props.step.target || 'trigger'),
+      (target) => target.alias === (step.value.target || 'trigger'),
     )?.doctype,
 )
 
@@ -229,16 +238,16 @@ const actionOptions = computed(() => {
     value: action.action_type,
   }))
   // Never render a chosen action as an empty select, even if its DocType is still unknown.
-  if (props.step.action_type && !actions.some(isChosen))
+  if (step.value.action_type && !actions.some(isChosen))
     options.unshift({
-      label: schema.value?.label || props.step.action_type,
-      value: props.step.action_type,
+      label: schema.value?.label || step.value.action_type,
+      value: step.value.action_type,
     })
   return options
 })
 
 function isChosen(action) {
-  return action.action_type === props.step.action_type
+  return action.action_type === step.value.action_type
 }
 
 const eventOptions = computed(
@@ -256,7 +265,7 @@ const correlationOptions = computed(() => {
 function pickEvent(name) {
   const event = eventOptions.value.find((option) => option.value === name)
   const suggested = event?.correlation_options?.[0]?.value
-  props.step.params = JSON.stringify(
+  step.value.params = JSON.stringify(
     { ...params.value, event_name: name, correlation_key: suggested || '' },
     null,
     2,
@@ -264,17 +273,21 @@ function pickEvent(name) {
 }
 
 const schema = computed(() =>
-  actionSchema(targetDoctype.value, props.step.action_type),
+  actionSchema(targetDoctype.value, step.value.action_type),
 )
 
 const outputPaths = computed(() => {
   const keys = Object.keys(schema.value?.output_schema || {})
-  const key = props.step.step_key || __('<step key>')
+  const key = step.value.step_key || __('<step key>')
   return keys.map((name) => `context.steps.${key}.${name}`)
 })
 
+const showAdvancedParams = computed(
+  () => step.value.action_type === 'SetFieldValue',
+)
+
 function setParam(name, value) {
-  props.step.params = JSON.stringify(
+  step.value.params = JSON.stringify(
     { ...params.value, [name]: value },
     null,
     2,

@@ -85,6 +85,7 @@ const emit = defineEmits(['update:modelValue', 'change'])
 const attrs = useAttrs()
 
 const valuePropPassed = computed(() => 'value' in attrs)
+const selectedOption = ref(null)
 
 const value = computed({
   get: () => {
@@ -94,10 +95,9 @@ const value = computed({
     return v
   },
   set: (val) => {
-    return (
-      val?.value &&
-      emit(valuePropPassed.value ? 'change' : 'update:modelValue', val?.value)
-    )
+    if (!val?.value) return
+    selectedOption.value = val
+    emit(valuePropPassed.value ? 'change' : 'update:modelValue', val.value)
   },
 })
 
@@ -146,6 +146,7 @@ const options = createResource({
         description: stripHtml(option.description),
       }
     })
+    retainSelectedOption(allData)
     if (!props.hideMe && props.doctype == 'User') {
       allData.unshift({
         label: '@me',
@@ -163,6 +164,13 @@ function stripHtml(html) {
     .replace(/&nbsp;/g, ' ')
     .replace(/\s+/g, ' ')
     .trim()
+}
+
+function retainSelectedOption(options) {
+  const selected = selectedOption.value
+  if (!selected || options.some((option) => option.value === selected.value))
+    return
+  options.unshift(selected)
 }
 
 function reload(val, force = false) {
@@ -186,6 +194,7 @@ function reload(val, force = false) {
 }
 
 function clearValue(close) {
+  selectedOption.value = null
   emit(valuePropPassed.value ? 'change' : 'update:modelValue', '')
   close()
 }

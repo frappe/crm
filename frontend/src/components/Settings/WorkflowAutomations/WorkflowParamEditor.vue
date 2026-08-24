@@ -1,51 +1,167 @@
 <template>
   <div class="space-y-4">
-    <template v-for="field in schemaFields" :key="field.fieldname">
-      <Link
-        v-if="field.fieldtype === 'Link'"
-        :model-value="params[field.fieldname]"
-        :doctype="field.options"
-        :label="field.label"
-        @update:model-value="setParam(field.fieldname, $event)"
-      />
-      <FormControl
-        v-else-if="field.fieldtype === 'Select'"
-        :model-value="params[field.fieldname]"
-        type="select"
-        :label="field.label"
-        :options="optionsFor(field)"
-        @update:model-value="setParam(field.fieldname, $event)"
-      />
-      <FormControl
-        v-else
-        :model-value="valueFor(field)"
-        :type="controlType(field)"
-        :label="field.label"
-        @update:model-value="
-          setParam(field.fieldname, castValue(field, $event))
-        "
-      />
+    <template v-if="isSetFieldValue && !advanced">
+      <div class="space-y-3">
+        <div
+          v-for="(row, index) in rows"
+          :key="index"
+          class="space-y-1.5 rounded border border-outline-gray-2 p-2"
+        >
+          <div class="flex items-center gap-2">
+            <Combobox
+              class="flex-1"
+              :model-value="row.field"
+              :options="availableFieldOptions(row.field)"
+              :placeholder="__('Choose field')"
+              @update:model-value="setRow(index, 'field', $event)"
+            />
+            <Button
+              v-if="rows.length > 1"
+              variant="ghost"
+              size="sm"
+              icon="lucide-trash-2"
+              :aria-label="__('Remove field')"
+              @click="removeRow(index)"
+            />
+          </div>
+          <Link
+            v-if="fieldFor(row)?.fieldtype === 'Link'"
+            :model-value="row.value"
+            :doctype="fieldFor(row).options"
+            :placeholder="__('Choose {0}', [fieldFor(row).options])"
+            @update:model-value="setRow(index, 'value', $event)"
+          />
+          <Combobox
+            v-else-if="choicesFor(row).length"
+            :model-value="row.value"
+            :options="choicesFor(row)"
+            :placeholder="__('Choose value')"
+            @update:model-value="setRow(index, 'value', $event)"
+          />
+          <FormControl
+            v-else
+            :model-value="row.value"
+            :placeholder="__('Value')"
+            @update:model-value="setRow(index, 'value', $event)"
+          />
+          <div v-if="!isPicked(row)" class="flex justify-end">
+            <FieldToken
+              :fields="fields"
+              @insert="appendRowToken(index, $event)"
+            />
+          </div>
+        </div>
+        <Button
+          variant="ghost"
+          size="sm"
+          icon-left="lucide-plus"
+          :label="__('Add field')"
+          :disabled="!rows[rows.length - 1]?.field"
+          @click="addRow"
+        />
+      </div>
+    </template>
+    <template v-else-if="isSetFieldValue && advanced">
+      <div>
+        <div class="mb-1.5 flex items-center gap-1.5">
+          <label class="block text-sm text-ink-gray-5">
+            {{ __('Field Values') }}
+          </label>
+          <Tooltip :text="fieldValuesHelp">
+            <HelpIcon class="size-3.5 text-ink-gray-5" />
+          </Tooltip>
+        </div>
+        <FormControl
+          :model-value="valueFor(valuesField)"
+          type="textarea"
+          :placeholder="fieldValuesPlaceholder"
+          @update:model-value="setParam('values', castJsonField($event))"
+        />
+        <div class="mt-1 flex justify-end">
+          <FieldToken :fields="fields" @insert="appendValuesToken" />
+        </div>
+      </div>
+    </template>
+    <template v-else>
+      <template v-for="field in schemaFields" :key="field.fieldname">
+        <WorkflowUserPicker
+          v-if="field.options_source === 'users'"
+          :model-value="arrayValue(field)"
+          :action-type="action.action_type"
+          :fieldname="field.fieldname"
+          :doctype="doctype"
+          :params="action.params"
+          :label="field.label"
+          @update:model-value="setParam(field.fieldname, $event)"
+        />
+        <Link
+          v-else-if="field.fieldtype === 'Link'"
+          :model-value="params[field.fieldname]"
+          :doctype="field.options"
+          :label="field.label"
+          @update:model-value="setParam(field.fieldname, $event)"
+        />
+        <FormControl
+          v-else-if="field.fieldtype === 'Select'"
+          :model-value="params[field.fieldname]"
+          type="select"
+          :label="field.label"
+          :options="optionsFor(field)"
+          @update:model-value="setParam(field.fieldname, $event)"
+        />
+        <div v-else>
+          <FormControl
+            :model-value="valueFor(field)"
+            :type="controlType(field)"
+            :label="field.label"
+            @update:model-value="
+              setParam(field.fieldname, castValue(field, $event))
+            "
+          />
+          <div v-if="acceptsTemplate(field)" class="mt-1 flex justify-end">
+            <FieldToken :fields="fields" @insert="appendToken(field, $event)" />
+          </div>
+        </div>
+      </template>
     </template>
   </div>
 </template>
 
 <script setup>
 import Link from '@/components/Controls/Link.vue'
-import { FormControl } from 'frappe-ui'
-import { computed } from 'vue'
+import FieldToken from './WorkflowFieldToken.vue'
+import WorkflowUserPicker from './WorkflowUserPicker.vue'
+import {
+  formatJsonFieldValue,
+  parseJsonFieldInput,
+  useFieldRows,
+} from './workflowParams'
+import HelpIcon from '~icons/lucide/circle-help'
+import { Button, Combobox, FormControl, Tooltip } from 'frappe-ui'
+import { computed, watch } from 'vue'
 
 const props = defineProps({
   action: { type: Object, required: true },
   schema: { type: Object, default: null },
   doctype: { type: String, default: '' },
   fields: { type: Array, default: () => [] },
+  advanced: { type: Boolean, default: false },
 })
 
+const action = computed(() => props.action)
+const isSetFieldValue = computed(
+  () => action.value.action_type === 'SetFieldValue',
+)
 const schemaFields = computed(() => props.schema?.params_schema || [])
+const fieldValuesHelp = __(
+  'Set more fields at once as JSON. These are applied together with the Field and Value above, in the same save.',
+)
+const fieldValuesPlaceholder = '{\n  "status": "Junk"\n}'
+const valuesField = { fieldname: 'values', fieldtype: 'JSON' }
 
 const params = computed(() => {
   try {
-    return JSON.parse(props.action.params || '{}')
+    return JSON.parse(action.value.params || '{}')
   } catch {
     return {}
   }
@@ -65,12 +181,70 @@ const docFieldOptions = computed(() => {
   }))
 })
 
+/**
+ * A value is only free text when the field it sets has no vocabulary of its own. Link and
+ * Select fields carry theirs in the schema, so offer that instead of a box the user can only
+ * get wrong - the run-time validation would reject it anyway.
+ */
+const { rows, reload, setRow, addRow, removeRow } = useFieldRows(
+  () => params.value,
+  (next) => {
+    action.value.params = JSON.stringify(next, null, 2)
+  },
+)
+
+// The inspector reuses this editor across steps, so a new step reloads the rows.
+watch(() => props.action, reload)
+
+const CHOICE_FIELDTYPES = ['Select', 'Check']
+
+function fieldFor(row) {
+  return props.fields.find((field) => field.fieldname === row.field)
+}
+
+function choicesFor(row) {
+  const field = fieldFor(row)
+  if (!field || !CHOICE_FIELDTYPES.includes(field.fieldtype)) return []
+  if (field.fieldtype === 'Check') {
+    return [
+      { label: __('Yes'), value: '1' },
+      { label: __('No'), value: '0' },
+    ]
+  }
+  return String(field.options || '')
+    .split('\n')
+    .filter(Boolean)
+    .map((option) => ({ label: option, value: option }))
+}
+
+function isPicked(row) {
+  return fieldFor(row)?.fieldtype === 'Link' || choicesFor(row).length > 0
+}
+
+// A field already set by another row would silently overwrite it, so it leaves the list.
+function availableFieldOptions(current) {
+  const taken = rows.value
+    .map((row) => row.field)
+    .filter((field) => field !== current)
+  return docFieldOptions.value.filter((option) => !taken.includes(option.value))
+}
+
+function appendRowToken(index, token) {
+  const current = rows.value[index]?.value
+  const text = typeof current === 'string' ? current : ''
+  setRow(index, 'value', `${text}${token}`)
+}
+
 function valueFor(field) {
   const value = params.value[field.fieldname]
-  if (field.fieldtype === 'JSON' && value && typeof value === 'object') {
-    return JSON.stringify(value, null, 2)
-  }
+  if (field.fieldtype === 'JSON') return formatJsonFieldValue(value)
   return Array.isArray(value) ? value.join(', ') : value
+}
+
+function arrayValue(field) {
+  const value = params.value[field.fieldname]
+  if (Array.isArray(value)) return value
+  return value ? [value] : []
 }
 
 function controlType(field) {
@@ -88,19 +262,38 @@ function castValue(field, value) {
 }
 
 function castJsonField(value) {
-  if (!value) return []
-  try {
-    return JSON.parse(value)
-  } catch {
-    return String(value)
-      .split(',')
-      .map((item) => item.trim())
-      .filter(Boolean)
-  }
+  return parseJsonFieldInput(value)
+}
+
+const TEMPLATE_FIELDTYPES = [
+  'Data',
+  'Small Text',
+  'Text',
+  'Text Editor',
+  'JSON',
+]
+
+function acceptsTemplate(field) {
+  return TEMPLATE_FIELDTYPES.includes(field.fieldtype)
+}
+
+function appendToken(field, token) {
+  const current = params.value[field.fieldname]
+  const text = typeof current === 'string' ? current : ''
+  setParam(field.fieldname, `${text}${token}`)
+}
+
+function appendValuesToken(token) {
+  const current = params.value.values
+  const text =
+    current && typeof current === 'object'
+      ? JSON.stringify(current, null, 2)
+      : String(current || '')
+  setParam('values', `${text}${token}`)
 }
 
 function setParam(fieldname, value) {
-  props.action.params = JSON.stringify(
+  action.value.params = JSON.stringify(
     { ...params.value, [fieldname]: value },
     null,
     2,
