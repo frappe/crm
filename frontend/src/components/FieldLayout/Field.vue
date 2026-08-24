@@ -602,15 +602,15 @@ const getAutocompleteOptions = (field) => {
         label: ({ query }) => __('Use "{0}"', [query.trim()]),
       },
       condition: ({ query }) => {
-        const q = (query || '').trim().toLowerCase()
+        const q = (query || '').trim()
         if (!q) return false
         return !options.some((opt) => {
           const isObject = opt !== null && typeof opt === 'object'
           const value = isObject ? opt.value : opt
           const label = isObject ? opt.label : opt
           return (
-            String(value ?? '').toLowerCase() === q ||
-            String(label ?? '').toLowerCase() === q
+            String(value ?? '') === q ||
+            String(label ?? '') === q
           )
         })
       },
