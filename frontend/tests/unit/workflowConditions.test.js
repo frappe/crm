@@ -106,6 +106,13 @@ describe('reading a condition back into filters', () => {
     expect(toFilters('')).toEqual([])
     expect(isFilterExpression('')).toBe(true)
   })
+
+  it('accepts an empty membership list while a filter row is incomplete', () => {
+    expect(toFilters('doc.status in []')).toEqual([['status', 'in', []]])
+    expect(toFilters('doc.status not in []')).toEqual([
+      ['status', 'not in', []],
+    ])
+  })
 })
 
 describe('refusing expressions it cannot represent', () => {
