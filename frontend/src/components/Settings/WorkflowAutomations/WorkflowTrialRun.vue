@@ -5,15 +5,18 @@
         v-if="doctype"
         :model-value="docname"
         :doctype="doctype"
-        :label="__('Run against')"
+        :label="__('Select a record to run a test against')"
         @update:model-value="pickDocument"
       />
-      <p class="text-xs text-ink-gray-5">
+      <p class="text-xs text-ink-gray-5 pt-2">
         {{
           __(
-            'The flow runs for real against this document, then everything it did is undone. Nothing is saved, sent or scheduled.',
+            'The flow runs for real against this document, then everything it did is undone.',
           )
         }}
+      </p>
+      <p class="text-xs text-ink-gray-5">
+        nothing is saved, sent or scheduled.
       </p>
     </div>
 
@@ -31,7 +34,7 @@
       {{ error }}
     </div>
 
-    <div v-if="result" class="space-y-2">
+    <div v-if="result" class="space-y-1">
       <div class="flex items-center gap-2">
         <Badge
           :label="__(result.status)"
@@ -43,13 +46,9 @@
         </span>
       </div>
 
-      <div
-        v-for="step in result.steps"
-        :key="step.step_idx"
-        class="rounded border border-outline-gray-2 p-3"
-      >
-        <div class="flex items-center justify-between">
-          <div class="text-base-medium text-ink-gray-8">
+      <div v-for="step in result.steps" :key="step.step_idx" class="py-1.5">
+        <div class="flex items-center justify-between gap-2">
+          <div class="truncate text-base text-ink-gray-8">
             {{ step.action_type }}
           </div>
           <Badge
@@ -59,12 +58,14 @@
           />
         </div>
 
-        <div v-if="step.message" class="mt-1 text-sm text-ink-red-4">
+        <div v-if="step.message" class="mt-0.5 text-sm text-ink-red-4">
           {{ step.message }}
         </div>
 
-        <div v-if="step.condition" class="mt-1 space-y-1">
-          <code class="block text-xs text-ink-gray-7">{{ step.condition }}</code>
+        <div v-if="step.condition" class="mt-0.5 space-y-0.5">
+          <code class="block text-xs text-ink-gray-7">{{
+            step.condition
+          }}</code>
           <div
             v-for="(value, name) in step.condition_values"
             :key="name"
@@ -74,7 +75,7 @@
           </div>
         </div>
 
-        <details v-if="step.traceback" class="mt-2">
+        <details v-if="step.traceback" class="mt-1">
           <summary class="cursor-pointer text-xs text-ink-gray-5">
             {{ __('Technical details') }}
           </summary>
