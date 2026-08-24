@@ -13,7 +13,6 @@
     "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
-    "@framework/ui": "link:../../frappe/ui",
     "@tiptap/core": "^3.26.0",
     "@tiptap/extension-paragraph": "^3.26.0",
     "@tiptap/pm": "^3.26.0",
