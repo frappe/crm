@@ -271,7 +271,7 @@ function parseContains(clause) {
 function parseMembership(clause) {
   const match = clause.match(MEMBERSHIP)
   if (!match) return null
-  const items = match[3]
+  const items = String(match[3] || '')
     .split(',')
     .map((item) => parseLiteral(item.trim()))
     .filter((item) => item !== '')
