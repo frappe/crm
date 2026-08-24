@@ -286,7 +286,6 @@ async function loadAutomation() {
     Object.assign(doc, saved, {
       actions: toTree((saved.actions || []).map(normalizeRow)),
     })
-    inspectorOpen.value = Boolean(doc.trigger_type)
   } finally {
     loading.value = false
     markClean()

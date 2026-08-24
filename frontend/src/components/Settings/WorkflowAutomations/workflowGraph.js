@@ -68,6 +68,7 @@ function triggerNode(doc) {
 }
 
 function stepNode(node, position, errors, tails = new Set()) {
+  const arms = openArms(node)
   return {
     id: node._id,
     type: 'automation',
@@ -79,7 +80,9 @@ function stepNode(node, position, errors, tails = new Set()) {
       label: labelFor(node),
       detail: detailFor(node),
       branching: isBranching(node),
-      arms: openArms(node),
+      arms,
+      // Continuing past a branch only makes sense once both arms lead somewhere.
+      canContinue: isBranching(node) && tails.has(node._id) && !arms.length,
       last: tails.has(node._id),
       error: Boolean(errors[node._id]?.length),
     },
