@@ -608,10 +608,7 @@ const getAutocompleteOptions = (field) => {
           const isObject = opt !== null && typeof opt === 'object'
           const value = isObject ? opt.value : opt
           const label = isObject ? opt.label : opt
-          return (
-            String(value ?? '') === q ||
-            String(label ?? '') === q
-          )
+          return String(value ?? '') === q || String(label ?? '') === q
         })
       },
       onClick: ({ query }) => {
