@@ -18,6 +18,14 @@
           <template #prefix><FcIcon name="copy-plus" :size="15" /></template>
           {{ flow.label }}
         </Button>
+        <Button variant="outline" theme="gray" @click="exportCsv">
+          <template #prefix><FcIcon name="download" :size="15" /></template>
+          Export CSV
+        </Button>
+        <Button variant="outline" theme="gray" @click="printAll">
+          <template #prefix><FcIcon name="printer" :size="15" /></template>
+          Print
+        </Button>
         <Button
           variant="solid"
           theme="blue"
@@ -70,6 +78,15 @@
               class="font-medium text-ink-gray-8 tabular-nums"
             >{{ formatCurrency(item, row.currency) }}</span>
             <span v-else-if="column.type === 'date'" class="text-ink-gray-6">{{ item || '—' }}</span>
+            <span v-else-if="column.type === 'timeago'" class="flex flex-col leading-tight">
+              <span class="font-medium text-ink-gray-8">{{ timeAgo(item) }}</span>
+              <span class="text-xs text-ink-gray-4">{{ item || '' }}</span>
+            </span>
+            <button
+              v-else-if="column.type === 'print-action'"
+              class="text-xs text-ink-gray-5 hover:text-ink-gray-8 px-2 py-0.5 rounded border border-outline-gray-2 hover:bg-surface-gray-2 transition-colors"
+              @click.stop="printRow(row)"
+            >Print</button>
             <span v-else class="text-ink-gray-7">{{ item ?? '—' }}</span>
           </template>
         </ListView>
@@ -259,6 +276,16 @@ const breadcrumbs = computed(() => {
   return trail
 })
 
+function timeAgo(dateStr) {
+  if (!dateStr) return '—'
+  const diff = Math.floor((Date.now() - new Date(dateStr).getTime()) / 1000)
+  if (diff < 60)        return 'just now'
+  if (diff < 3600)      return Math.floor(diff / 60) + ' min ago'
+  if (diff < 86400)     return Math.floor(diff / 3600) + ' hr ago'
+  if (diff < 86400 * 7) return Math.floor(diff / 86400) + ' d ago'
+  return new Date(dateStr).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+}
+
 function refetch() {
   listResource.fetch()
 }
@@ -311,6 +338,67 @@ function onMapped(doc) {
   seedDoc.value = doc
   activeName.value = null
   mode.value = 'new'
+}
+
+function printRow(row) {
+  window.open(
+    `/printview?doctype=${encodeURIComponent(props.doctype)}&name=${encodeURIComponent(row.name)}&trigger_print=1`,
+    '_blank',
+  )
+}
+
+function exportCsv() {
+  if (!rows.value.length) return
+  const cols = props.columns
+  const header = cols.map((c) => c.label).join(',')
+  const body = rows.value
+    .map((row) =>
+      cols
+        .map((c) => {
+          const v = row[c.key] ?? ''
+          return typeof v === 'string' && v.includes(',') ? `"${v}"` : v
+        })
+        .join(','),
+    )
+    .join('\n')
+  const blob = new Blob([header + '\n' + body], { type: 'text/csv' })
+  const a = document.createElement('a')
+  a.href = URL.createObjectURL(blob)
+  a.download = `${props.title || props.doctype}.csv`
+  a.click()
+  URL.revokeObjectURL(a.href)
+}
+
+function printAll() {
+  if (!rows.value.length) return
+  // Build an in-memory HTML table and trigger browser print
+  const cols = props.columns
+  const header = cols.map((c) => `<th>${c.label}</th>`).join('')
+  const body = rows.value
+    .map(
+      (row) =>
+        '<tr>' +
+        cols.map((c) => `<td>${row[c.key] ?? '—'}</td>`).join('') +
+        '</tr>',
+    )
+    .join('')
+  const title = props.title || props.doctype
+  const html = `<!DOCTYPE html><html><head><title>${title}</title>
+    <style>
+      body { font-family: sans-serif; font-size: 11px; margin: 16px; }
+      h2 { margin-bottom: 12px; }
+      table { width: 100%; border-collapse: collapse; }
+      th { background: #8B0C22; color: #fff; padding: 6px 8px; text-align: left; font-size: 10px; text-transform: uppercase; }
+      td { padding: 5px 8px; border-bottom: 1px solid #e5e7eb; }
+      tr:nth-child(even) td { background: #f9fafb; }
+    </style></head><body>
+    <h2>${title}</h2>
+    <table><thead><tr>${header}</tr></thead><tbody>${body}</tbody></table>
+    <script>window.onload=()=>{ window.print(); window.close() }<\/script>
+    </body></html>`
+  const win = window.open('', '_blank')
+  win.document.write(html)
+  win.document.close()
 }
 
 function onSaved(doc) {

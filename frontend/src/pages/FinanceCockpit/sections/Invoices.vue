@@ -39,34 +39,36 @@ const sectionRef = ref(null)
 const columns = [
   { key: 'name',             label: 'Invoice' },
   { key: 'customer',         label: 'Customer' },
-  { key: 'posting_date',     label: 'Date',        type: 'date' },
+  { key: 'posting_date',     label: 'Date',        type: 'timeago' },
   { key: 'due_date',         label: 'Due',         type: 'date' },
   { key: 'grand_total',      label: 'Total',       type: 'currency', align: 'right' },
   { key: 'outstanding_amount', label: 'Outstanding', type: 'currency', align: 'right' },
   { key: 'status',           label: 'Status',      type: 'status' },
 ]
 
-// Create-From: a Sales Invoice can be raised from either a submitted Quotation
-// or a submitted Sales Order via whitelisted ERPNext mappers. Each mapped,
-// unsaved invoice seeds FinanceForm for review + save.
+// Create-From flows for Sales Invoices:
+//   1. From Sales Order — standard ERPNext mapper (submitted SO → invoice)
+//   2. Receive Payment — seed an unsaved Payment Entry from a submitted invoice
 const createFrom = [
   {
-    key: 'from-quote',
-    label: 'Create from Quote',
-    sourceDoctype: 'Quotation',
-    sourceLabel: 'Quotation',
-    subtitleField: 'party_name',
-    mapMethod: 'erpnext.selling.doctype.quotation.quotation.make_sales_invoice',
-    targetDoctype: 'Sales Invoice',
-  },
-  {
     key: 'from-order',
-    label: 'Create from Order',
+    label: 'Make Invoice from Order',
     sourceDoctype: 'Sales Order',
     sourceLabel: 'Sales Order',
     subtitleField: 'customer',
     mapMethod: 'erpnext.selling.doctype.sales_order.sales_order.make_sales_invoice',
     targetDoctype: 'Sales Invoice',
+  },
+  {
+    key: 'receive-payment',
+    label: 'Receive Payment',
+    sourceDoctype: 'Sales Invoice',
+    sourceLabel: 'Sales Invoice',
+    subtitleField: 'customer',
+    // Only submitted (docstatus=1) invoices with outstanding balance are valid sources.
+    sourceFilters: [['docstatus', '=', 1], ['outstanding_amount', '>', 0]],
+    mapMethod: 'crm.finance.api.make_payment_entry_from_invoice',
+    targetDoctype: 'Payment Entry',
   },
 ]
 

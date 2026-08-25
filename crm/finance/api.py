@@ -699,7 +699,7 @@ def get_ar_invoices(company=None, filters=None, page=0, page_size=20):
     rows = erpnext_adapter.get_list(
         "Sales Invoice",
         filters=base_filters,
-        fields=["name", "customer", "posting_date", "due_date", "grand_total", "outstanding_amount", "status", "crm_deal", "crm_quote"],
+        fields=["name", "customer", "posting_date", "due_date", "grand_total", "outstanding_amount", "status", "crm_deal", "crm_quotation"],
         order_by="due_date asc",
         limit_page_length=int(page_size),
         limit_start=int(page) * int(page_size),
@@ -865,6 +865,29 @@ def create_customer_payment(company=None, customer=None, mode_of_payment=None,
         pe.submit()
     _invalidate_kpi_cache(frappe.session.user, company)
     return {"name": pe.name, "docstatus": pe.docstatus, "paid_amount": pe.paid_amount}
+
+
+@frappe.whitelist()
+def make_payment_entry_from_invoice(source_name):
+    """
+    Seed an unsaved Payment Entry from a submitted Sales Invoice.
+    Used by the Finance Cockpit CreateFromPicker (Invoices → Receive Payment).
+    Returns the unsaved Payment Entry as a dict.
+    """
+    roles = frappe.get_roles(frappe.session.user)
+    if not _has_ar_access(roles):
+        frappe.throw("Insufficient permissions", frappe.PermissionError)
+
+    from erpnext.accounts.doctype.payment_entry.payment_entry import get_payment_entry
+
+    inv = frappe.get_doc("Sales Invoice", source_name)
+    if inv.docstatus != 1:
+        frappe.throw("Only submitted Sales Invoices can receive a payment")
+    if flt(inv.outstanding_amount) <= 0:
+        frappe.throw("Invoice %s is already fully paid (outstanding: 0)" % source_name)
+
+    pe = get_payment_entry("Sales Invoice", source_name, party_amount=flt(inv.outstanding_amount))
+    return pe.as_dict()
 
 
 @frappe.whitelist()
