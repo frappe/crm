@@ -2,9 +2,9 @@
 # See license.txt
 
 import frappe
-from frappe.tests import IntegrationTestCase
 
 from crm.api import form as F
+from crm.tests import CRMTestCase as FrappeTestCase
 
 
 def make_form(route, document_type="CRM Lead", **kw):
@@ -14,7 +14,7 @@ def make_form(route, document_type="CRM Lead", **kw):
 	return F.save_form(name=None, form=payload)["name"]
 
 
-class TestFormAPI(IntegrationTestCase):
+class TestFormAPI(FrappeTestCase):
 	def tearDown(self):
 		frappe.set_user("Administrator")
 		frappe.flags.in_web_form = False
