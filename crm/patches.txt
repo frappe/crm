@@ -35,4 +35,5 @@ crm.patches.v1_0.create_custom_fields_for_quote_invoice_link
 crm.patches.v1_0.add_quotation_crm_fields
 crm.patches.v1_0.seed_network_coordinator_role
 crm.patches.v1_0.seed_negotiated_price_lists
+crm.patches.v1_0.seed_catalogue_items
 crm.patches.v1_0.add_optin_crm_lead_fields
