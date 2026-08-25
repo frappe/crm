@@ -13,6 +13,9 @@ export default defineConfig(async ({ mode }) => {
       vueJsx(),
       VitePWA({
         registerType: 'autoUpdate',
+        workbox: {
+          maximumFileSizeToCacheInBytes: 8 * 1024 * 1024,
+        },
         devOptions: {
           enabled: true,
         },
@@ -54,10 +57,13 @@ export default defineConfig(async ({ mode }) => {
     ],
     resolve: {
       alias: {
-        '@': path.resolve(__dirname, 'src'),
+        '@': path.resolve(import.meta.dirname, 'src'),
         // point at the package src dir (not index.ts) so subpath imports like
         // `@whatsapp/ui/components/Messages` resolve to a real file
-        '@whatsapp/ui': path.resolve(__dirname, '../../whatsapp/ui/src'),
+        '@whatsapp/ui': path.resolve(
+          import.meta.dirname,
+          '../../whatsapp/ui/src',
+        ),
       },
       // ensure the linked @whatsapp/ui package reuses the host app's single copy of each peer:
       // the symlinked source has no node_modules of its own, so dedupe resolves its imports
@@ -98,7 +104,7 @@ export default defineConfig(async ({ mode }) => {
       fs: {
         // allow the bench `apps/` dir so Vite can serve linked local packages
         // (frappe-ui, @whatsapp/ui) that live in sibling app repos
-        allow: [path.resolve(__dirname, '../..')],
+        allow: [path.resolve(import.meta.dirname, '../..')],
       },
     },
   }
@@ -125,10 +131,13 @@ async function importFrappeUIPlugin(isDev, config) {
     try {
       // Check if local frappe-ui has the vite plugin file
       const fs = await import('node:fs')
-      const localVitePluginPath = path.resolve(__dirname, '../frappe-ui/vite')
+      const localVitePluginPath = path.resolve(
+        import.meta.dirname,
+        '../frappe-ui/vite/index.js',
+      )
 
       if (fs.existsSync(localVitePluginPath)) {
-        const module = await import('../frappe-ui/vite')
+        const module = await import('../frappe-ui/vite/index.js')
         console.info('Local frappe-ui vite plugin found, using local plugin')
         config.resolve.alias = getAliases(config)
         return module.default
@@ -151,26 +160,32 @@ function getAliases(config) {
   return {
     ...config.resolve.alias,
     'frappe-ui/tailwind': path.resolve(
-      __dirname,
+      import.meta.dirname,
       '../frappe-ui/tailwind/preset.js',
     ),
     'frappe-ui/style.css': path.resolve(
-      __dirname,
+      import.meta.dirname,
       '../frappe-ui/src/style.css',
     ),
-    'frappe-ui/frappe': path.resolve(__dirname, '../frappe-ui/frappe/index.js'),
+    'frappe-ui/frappe': path.resolve(
+      import.meta.dirname,
+      '../frappe-ui/frappe/index.js',
+    ),
     // subpath entries must precede the bare `frappe-ui` key: a plain string alias
     // matches by prefix, so without these subpaths would rewrite under
     // `.../src/index.ts`.
-    'frappe-ui/icons': path.resolve(__dirname, '../frappe-ui/icons/index.ts'),
+    'frappe-ui/icons': path.resolve(
+      import.meta.dirname,
+      '../frappe-ui/icons/index.ts',
+    ),
     'frappe-ui/editor': path.resolve(
-      __dirname,
+      import.meta.dirname,
       '../frappe-ui/src/molecules/editor/index.ts',
     ),
     'frappe-ui/editor-style.css': path.resolve(
-      __dirname,
+      import.meta.dirname,
       '../frappe-ui/src/molecules/editor/style.css',
     ),
-    'frappe-ui': path.resolve(__dirname, '../frappe-ui/src/index.ts'),
+    'frappe-ui': path.resolve(import.meta.dirname, '../frappe-ui/src/index.ts'),
   }
 }

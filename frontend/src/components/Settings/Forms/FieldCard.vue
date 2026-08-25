@@ -48,6 +48,16 @@
           />
         </span>
       </div>
+      <Tooltip
+        v-if="guestSelectMissing"
+        :text="
+          __('Guests can\'t see {0} records yet. Open to grant access.', [
+            field.options,
+          ])
+        "
+      >
+        <LucideTriangleAlert class="h-3.5 w-3.5 shrink-0 text-ink-amber-6" />
+      </Tooltip>
       <Button
         variant="ghost"
         :tooltip="expanded ? __('Collapse') : __('Edit field')"
@@ -101,6 +111,71 @@
         :label="__('Description')"
         :placeholder="__('Helper text under the field (optional)')"
       />
+      <!-- conditional logic: show / require / lock this field based on other answers -->
+      <div class="space-y-3 border-t border-outline-gray-2 pt-3">
+        <div class="flex items-center gap-1.5">
+          <span class="text-base text-ink-gray-5">{{
+            __('Conditional logic')
+          }}</span>
+          <Tooltip
+            :text="
+              __(
+                'Frappe expression referencing other fields as doc.<fieldname>, e.g. eval:doc.country == \'India\'. Leave blank for no condition.',
+              )
+            "
+          >
+            <LucideInfo class="h-3.5 w-3.5 text-ink-gray-4" />
+          </Tooltip>
+        </div>
+        <FormControl
+          v-model="dependsOnModel"
+          type="text"
+          size="sm"
+          :label="__('Visible if')"
+          :placeholder="rulePlaceholder"
+        />
+        <FormControl
+          v-model="mandatoryDependsOnModel"
+          type="text"
+          size="sm"
+          :label="__('Mandatory if')"
+          :placeholder="rulePlaceholder"
+        />
+        <FormControl
+          v-model="readOnlyDependsOnModel"
+          type="text"
+          size="sm"
+          :label="__('Read-only if')"
+          :placeholder="rulePlaceholder"
+        />
+      </div>
+      <!-- Link field whose target isn't guest-visible: the public dropdown will be
+           empty until the author deliberately exposes those records to visitors -->
+      <div
+        v-if="guestSelectMissing"
+        class="flex items-start gap-2 rounded border border-outline-amber-2 bg-surface-amber-2 p-2.5"
+      >
+        <LucideTriangleAlert
+          class="mt-0.5 h-3.5 w-3.5 shrink-0 text-ink-amber-6"
+        />
+        <div class="flex min-w-0 flex-col items-start gap-2">
+          <p class="text-p-sm text-ink-gray-7">
+            {{
+              __(
+                "Guests can't see {0} records. Grant select access to list them publicly.",
+                [field.options],
+              )
+            }}
+          </p>
+          <Button
+            size="sm"
+            variant="outline"
+            :loading="granting"
+            :label="__('Grant Access')"
+            @click="$emit('grant-guest')"
+          />
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -113,15 +188,19 @@ import LucideX from '~icons/lucide/x'
 import LucideLock from '~icons/lucide/lock'
 import LucidePencil from '~icons/lucide/pencil'
 import LucideChevronDown from '~icons/lucide/chevron-down'
+import LucideTriangleAlert from '~icons/lucide/triangle-alert'
+import LucideInfo from '~icons/lucide/info'
 import { fieldTypeIcon, fieldTypeLabel } from './fieldTypeIcon'
 
 const props = defineProps({
   field: { type: Object, required: true },
   expanded: { type: Boolean, default: false },
   locked: { type: Boolean, default: false },
+  guestSelectMissing: { type: Boolean, default: false },
+  granting: { type: Boolean, default: false },
 })
 
-const emit = defineEmits(['open', 'toggle', 'remove', 'update'])
+const emit = defineEmits(['open', 'toggle', 'remove', 'update', 'grant-guest'])
 
 // writable proxies: never mutate the `field` prop directly — emit a patch the
 // parent applies to its own model (keeps one-way data flow / lint happy)
@@ -135,6 +214,10 @@ const labelModel = fieldModel('label')
 const reqdModel = fieldModel('reqd')
 const placeholderModel = fieldModel('placeholder')
 const descriptionModel = fieldModel('field_description')
+const dependsOnModel = fieldModel('depends_on')
+const mandatoryDependsOnModel = fieldModel('mandatory_depends_on')
+const readOnlyDependsOnModel = fieldModel('read_only_depends_on')
+const rulePlaceholder = 'eval:doc.fieldname == "value"'
 
 const editingLabel = ref(false)
 const labelInput = ref(null)

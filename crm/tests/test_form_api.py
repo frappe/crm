@@ -182,6 +182,41 @@ class TestFormAPI(IntegrationTestCase):
 		# "Qualification" is a Deal status; the guard must keep it off the Lead
 		self.assertNotEqual(lead.status, "Qualification")
 
+	# ---- field conditional logic ----
+
+	def test_save_form_persists_field_conditional_rules(self):
+		"""depends_on / mandatory_depends_on / read_only_depends_on authored per field in
+		the builder are stored on the Web Form fields and returned by get_form_config, so
+		the public page can honour them (same model as the framework's Web Form)."""
+		name = make_form(
+			"dep-rules",
+			fields=[
+				{"fieldname": "organization", "fieldtype": "Data"},
+				{"fieldname": "website", "fieldtype": "Data", "depends_on": "eval:doc.organization"},
+				{
+					"fieldname": "phone",
+					"fieldtype": "Data",
+					"mandatory_depends_on": 'eval:doc.organization == "Acme"',
+				},
+				{
+					"fieldname": "last_name",
+					"fieldtype": "Data",
+					"read_only_depends_on": "eval:doc.first_name",
+				},
+			],
+			hidden_fields=[],
+		)
+		by = {f.fieldname: f for f in frappe.get_doc("Web Form", name).web_form_fields}
+		self.assertEqual(by["website"].depends_on, "eval:doc.organization")
+		self.assertEqual(by["phone"].mandatory_depends_on, 'eval:doc.organization == "Acme"')
+		self.assertEqual(by["last_name"].read_only_depends_on, "eval:doc.first_name")
+		self.assertFalse(by["organization"].depends_on)
+
+		cfg = {f["fieldname"]: f for f in F.get_form_config(name)["fields"]}
+		self.assertEqual(cfg["website"]["depends_on"], "eval:doc.organization")
+		self.assertEqual(cfg["phone"]["mandatory_depends_on"], 'eval:doc.organization == "Acme"')
+		self.assertEqual(cfg["last_name"]["read_only_depends_on"], "eval:doc.first_name")
+
 	# ---- layout persistence ----
 
 	def test_save_without_fields_key_preserves_layout(self):
@@ -231,6 +266,64 @@ class TestFormAPI(IntegrationTestCase):
 			F.set_published(other.name, 1)
 		with self.assertRaises(frappe.ValidationError):
 			F.delete_form(other.name)
+
+	# ---- public page: Link options must not corrupt the author's session ----
+
+	def test_link_field_options_preserve_authenticated_session(self):
+		"""Rendering a Link field's guest-scoped options for a logged-in author's
+		preview must leave the author's live session untouched. Regression for the
+		preview-logout bug: frappe.set_user() overwrites session.sid (→ username) and
+		wipes session.data, so the enumerate-as-Guest path must snapshot and restore
+		them — otherwise the corrupted session is persisted under the real sid and the
+		author is demoted to Guest on their next request."""
+		from unittest.mock import patch
+
+		from crm.www import crm_form
+
+		# a realistic logged-in author session
+		frappe.set_user("Administrator")
+		frappe.session.sid = "regression_real_sid"
+		frappe.session.data = frappe._dict(
+			{
+				"user": "Administrator",
+				"sid": "regression_real_sid",
+				"data": frappe._dict({"session_expiry": "06:00:00", "csrf_token": "tok"}),
+			}
+		)
+		before_user, before_sid, before_data = (
+			frappe.session.user,
+			frappe.session.sid,
+			frappe.session.data,
+		)
+
+		# force the guest-enumeration branch (guest_can_select True); the actual
+		# query is irrelevant here — we're asserting the session dance is clean
+		with (
+			patch.object(crm_form, "guest_can_select", return_value=True),
+			patch("frappe.get_list", return_value=[]),
+		):
+			crm_form._link_field_options("CRM Industry")
+
+		self.assertEqual(frappe.session.user, before_user)
+		self.assertEqual(frappe.session.sid, before_sid)  # not mangled to the username
+		self.assertIs(frappe.session.data, before_data)  # nested data object preserved, not wiped
+		self.assertEqual(frappe.session.data.data.get("session_expiry"), "06:00:00")
+
+	def test_link_field_options_skip_switch_for_guest(self):
+		"""An anonymous visitor is already in the Guest context, so no session switch
+		happens — the query runs directly (set_user is never called)."""
+		from unittest.mock import patch
+
+		from crm.www import crm_form
+
+		frappe.set_user("Guest")
+		with (
+			patch.object(crm_form, "guest_can_select", return_value=True),
+			patch("frappe.get_list", return_value=[]),
+			patch("frappe.set_user") as mock_set_user,
+		):
+			crm_form._link_field_options("CRM Industry")
+			mock_set_user.assert_not_called()
 
 	# ---- permissions ----
 

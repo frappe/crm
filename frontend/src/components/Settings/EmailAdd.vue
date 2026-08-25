@@ -6,7 +6,7 @@
         {{ __('Setup Email') }}
       </h2>
       <p class="text-sm text-ink-gray-5">
-        {{ __('Choose the Email Service Provider you want to configure.') }}
+        {{ __('Choose the email service provider you want to configure.') }}
       </p>
     </div>
     <!-- email service provider selection -->
@@ -142,11 +142,11 @@ const addEmailRes = createResource({
     }
   },
   onSuccess: () => {
-    toast.success(__('Email Account created successfully'))
+    toast.success(__('Email account created successfully'))
     emit('update:step', 'email-list')
   },
   onError: () => {
-    error.value = __('Failed to create Email Account, Invalid credentials')
+    error.value = __('Failed to create email account: invalid credentials')
   },
 })
 

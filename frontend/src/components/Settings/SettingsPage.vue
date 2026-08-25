@@ -72,7 +72,7 @@ const props = defineProps({
   // a multi-record DocType (e.g. a specific WhatsApp Account).
   name: { type: String, default: '' },
   title: { type: String, default: '' },
-  successMessage: { type: String, default: 'Updated Successfully' },
+  successMessage: { type: String, default: 'Updated successfully' },
   back: { type: Function, default: null },
   // When true, drop the full-height/own-scroll layout so the page sizes to its
   // content and can be stacked inside a parent that owns the scroll.

@@ -154,14 +154,14 @@
                         <div
                           v-for="col in sec.columns"
                           :key="columnKey(col)"
-                          class="flex flex-1 flex-col gap-1.5 rounded border border-dashed border-outline-gray-2 bg-surface-elevation-2 p-2"
+                          class="flex min-w-0 flex-1 flex-col gap-1.5 rounded border border-dashed border-outline-gray-2 bg-surface-elevation-2 p-2"
                         >
                           <Draggable
                             :list="col.items"
                             group="wf-fields"
                             item-key="fieldname"
                             handle=".drag-handle"
-                            class="flex min-h-[34px] flex-1 flex-col gap-1.5"
+                            class="flex min-h-[34px] min-w-0 flex-1 flex-col gap-1.5"
                             ghost-class="opacity-40"
                             :force-fallback="true"
                             :fallback-on-body="false"
@@ -175,10 +175,16 @@
                                 :field="f"
                                 :expanded="expanded === f.fieldname"
                                 :locked="isMandatory(f.fieldname)"
+                                :guest-select-missing="
+                                  f.fieldtype === 'Link' &&
+                                  guestSelect[f.options] === false
+                                "
+                                :granting="!!grantingSelect[f.options]"
                                 @open="open(f)"
                                 @toggle="toggle(f)"
                                 @remove="removeField(f)"
                                 @update="(patch) => updateField(f, patch)"
+                                @grant-guest="grantGuestSelect(f.options)"
                               />
                             </template>
                           </Draggable>
@@ -196,7 +202,7 @@
                                 variant="outline"
                                 :label="__('Add Field')"
                                 icon-left="plus"
-                                @click="setOpen(!open)"
+                                @click="openFieldPicker(open, setOpen)"
                               />
                             </template>
                           </Combobox>
@@ -554,19 +560,26 @@
                     :key="ci"
                     class="flex flex-col gap-4"
                   >
-                    <div v-for="f in col" :key="f.fieldname">
+                    <div
+                      v-show="fieldVisible(f)"
+                      v-for="f in col"
+                      :key="f.fieldname"
+                    >
                       <div
                         v-if="f.fieldtype !== 'Check'"
                         class="mb-1.5 text-sm text-ink-gray-5"
                       >
                         {{ f.label
-                        }}<span v-if="f.reqd" class="text-ink-red-5">*</span>
+                        }}<span v-if="fieldRequired(f)" class="text-ink-red-5"
+                          >*</span
+                        >
                       </div>
                       <FormControl
                         v-if="TEXTAREA_TYPES.includes(f.fieldtype)"
                         v-model="previewModel[f.fieldname]"
                         type="textarea"
                         :placeholder="f.placeholder"
+                        :disabled="fieldReadOnly(f)"
                       />
                       <FormControl
                         v-else-if="f.fieldtype === 'Select'"
@@ -574,6 +587,15 @@
                         type="select"
                         :options="selectOptions(f)"
                         :placeholder="f.placeholder || __('Select an option')"
+                        :disabled="fieldReadOnly(f)"
+                      />
+                      <FormControl
+                        v-else-if="f.fieldtype === 'Link'"
+                        v-model="previewModel[f.fieldname]"
+                        type="select"
+                        :options="linkSelectOptions(f)"
+                        :placeholder="f.placeholder || __('Select an option')"
+                        :disabled="fieldReadOnly(f)"
                       />
                       <div
                         v-else-if="f.fieldtype === 'Check'"
@@ -582,10 +604,11 @@
                         <FormControl
                           v-model="previewModel[f.fieldname]"
                           type="checkbox"
+                          :disabled="fieldReadOnly(f)"
                         />
                         <span class="text-sm text-ink-gray-5"
                           >{{ f.label
-                          }}<span v-if="f.reqd" class="text-ink-red-5"
+                          }}<span v-if="fieldRequired(f)" class="text-ink-red-5"
                             >*</span
                           ></span
                         >
@@ -595,6 +618,7 @@
                         v-model="previewModel[f.fieldname]"
                         :type="inputType(f)"
                         :placeholder="f.placeholder"
+                        :disabled="fieldReadOnly(f)"
                       />
                       <div
                         v-if="f.field_description"
@@ -648,6 +672,7 @@ import {
 } from 'frappe-ui'
 import FieldCard from '@/components/Settings/Forms/FieldCard.vue'
 import { fieldTypeIcon } from '@/components/Settings/Forms/fieldTypeIcon'
+import { evaluateDependsOnValue } from '@/utils/expressions'
 import DragVerticalIcon from '@/components/Icons/DragVerticalIcon.vue'
 import LucideCopy from '~icons/lucide/copy'
 import Draggable from 'vuedraggable'
@@ -804,6 +829,45 @@ async function ensureLinkOptions(doctype) {
   }
 }
 
+// per target doctype: can a guest select it? Drives the Link-field warning in
+// FieldCard. Fail-open on error so a failed check doesn't nag.
+const guestSelect = reactive({})
+const grantingSelect = reactive({})
+async function ensureGuestSelect(doctype) {
+  if (!doctype || doctype in guestSelect) return
+  guestSelect[doctype] = true
+  try {
+    const res = await call('crm.api.form.link_field_guest_access', { doctype })
+    guestSelect[doctype] = !!res?.guest_can_select
+  } catch {
+    guestSelect[doctype] = true
+  }
+}
+// author's explicit, informed choice to expose a doctype's records to guests
+async function grantGuestSelect(doctype) {
+  if (!doctype || grantingSelect[doctype]) return
+  grantingSelect[doctype] = true
+  try {
+    const res = await call('crm.api.form.grant_guest_link_access', { doctype })
+    guestSelect[doctype] = !!res?.guest_can_select
+    if (guestSelect[doctype]) {
+      // records are now guest-visible — refresh the preview dropdown
+      delete linkOptions[doctype]
+      ensureLinkOptions(doctype)
+      toast.success(__('Guests can now select {0} records.', [doctype]))
+    }
+  } catch (e) {
+    toast.error(e?.messages?.[0] || __('Could not grant guest access.'))
+  } finally {
+    grantingSelect[doctype] = false
+  }
+}
+// resolve both the preview options and the guest-access state for a Link target
+function ensureLinkMeta(doctype) {
+  ensureLinkOptions(doctype)
+  ensureGuestSelect(doctype)
+}
+
 function newColumn(colField = null) {
   return { colField, items: [] }
 }
@@ -879,6 +943,14 @@ function onSortEnd() {
 const sectionKey = (sec) => sec.secField?.fieldname || 'sec'
 const columnKey = (col) => col.colField?.fieldname || 'col0'
 const previewModel = reactive({}) // throwaway values so the preview is interactive
+
+// preview honours the same conditional-logic rules, reusing the app's evaluator
+const evalRule = (expr, fallback) =>
+  expr ? evaluateDependsOnValue(expr, previewModel) : fallback
+const fieldVisible = (f) => evalRule(f.depends_on, true)
+const fieldRequired = (f) =>
+  f.reqd ? true : evalRule(f.mandatory_depends_on, false)
+const fieldReadOnly = (f) => evalRule(f.read_only_depends_on, false)
 const previewSubmitted = ref(false)
 
 function resetPreview() {
@@ -979,10 +1051,18 @@ function sectionFieldCount(sec) {
   return sec.columns.reduce((n, c) => n + c.items.length, 0)
 }
 
+// opening the Add Field picker collapses any open field editor
+function openFieldPicker(isOpen, setOpen) {
+  if (!isOpen) expanded.value = null
+  setOpen(!isOpen)
+}
+
 // add a field into a specific column, then re-flatten to form.fields
 function addFieldToColumn(col, option) {
   const af = option?.af || option
   if (!af?.fieldname) return
+  // a freshly added field starts collapsed, not stacked under a previously open one
+  expanded.value = null
   // re-adding a field that was moved to hidden brings it back onto the form
   hiddenFields.value = hiddenFields.value.filter(
     (h) => h.fieldname !== af.fieldname,
@@ -995,7 +1075,11 @@ function addFieldToColumn(col, option) {
     reqd: !!af.reqd,
     placeholder: '',
     field_description: '',
+    depends_on: '',
+    mandatory_depends_on: '',
+    read_only_depends_on: '',
   })
+  if (af.fieldtype === 'Link') ensureLinkMeta(af.options)
   capture('form_field_added', { field_type: af.fieldtype })
   syncFromModel()
 }
@@ -1062,6 +1146,16 @@ function optionList(f) {
 }
 function selectOptions(f) {
   const opts = optionList(f).map((o) => ({ label: o, value: o }))
+  return [{ label: __('Select an option'), value: '' }, ...opts]
+}
+// preview dropdown for a Link field — the target doctype's records, fetched lazily
+// into `linkOptions`; mirrors the public form's server-populated <select>.
+function linkSelectOptions(f) {
+  ensureLinkMeta(f.options)
+  const opts = (linkOptions[f.options] || []).map((o) => ({
+    label: o,
+    value: o,
+  }))
   return [{ label: __('Select an option'), value: '' }, ...opts]
 }
 const TEXTAREA_TYPES = [
@@ -1177,6 +1271,9 @@ createResource({
       reqd: !!f.reqd,
       placeholder: f.placeholder,
       field_description: f.field_description,
+      depends_on: f.depends_on || '',
+      mandatory_depends_on: f.mandatory_depends_on || '',
+      read_only_depends_on: f.read_only_depends_on || '',
     }))
     hiddenFields.value = (doc.hidden_fields || []).map((h) => ({
       fieldname: h.fieldname,
@@ -1187,6 +1284,10 @@ createResource({
     }))
     hiddenFields.value.forEach((h) => {
       if (h.fieldtype === 'Link') ensureLinkOptions(h.options)
+    })
+    // resolve guest-access state up front so a Link field can warn on the build tab
+    form.fields.forEach((f) => {
+      if (f.fieldtype === 'Link') ensureLinkMeta(f.options)
     })
     rebuildModel()
     // only keep auto-syncing the route if it's still an untouched default
@@ -1313,6 +1414,7 @@ async function commitDoctype(newDt, valid) {
     if (!c) return
     f.options = c.options
     if (c.reqd) f.reqd = true
+    if (f.fieldtype === 'Link') ensureLinkMeta(f.options)
   })
   // rebuild hidden fields for the new doctype: its system-hidden fields (Status,
   // with the right options + default), plus any hidden fillable-mandatory field
@@ -1390,6 +1492,9 @@ async function save({ silent = false } = {}) {
           reqd: f.reqd ? 1 : 0,
           placeholder: f.placeholder,
           field_description: f.field_description,
+          depends_on: f.depends_on || '',
+          mandatory_depends_on: f.mandatory_depends_on || '',
+          read_only_depends_on: f.read_only_depends_on || '',
         })),
         hidden_fields: hiddenFields.value.map((h) => ({
           fieldname: h.fieldname,

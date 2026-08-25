@@ -164,6 +164,9 @@ doc_events = {
 	"Contact": {
 		"validate": ["crm.api.contact.validate"],
 	},
+	"Notification Log": {
+		"before_insert": ["crm.extends.notification_log.before_insert"],
+	},
 	"ToDo": {
 		"after_insert": ["crm.api.todo.after_insert"],
 		"on_update": ["crm.api.todo.on_update"],
@@ -227,6 +230,7 @@ scheduler_events = {
 	"hourly": ["crm.api.event.trigger_hourly_event_notifications"],
 	"daily": [
 		"crm.api.event.trigger_daily_event_notifications",
+		"crm.fcrm.doctype.crm_invitation.crm_invitation.expire_invitations",
 		"crm.fcrm.doctype.crm_view_settings.crm_view_settings.clear_old_versions",
 		"crm.telemetry.capture_feature_state",
 	],

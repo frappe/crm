@@ -143,7 +143,7 @@
       </template>
       <template #item-label="{ option }">
         <Tooltip :text="option.value">
-          <div class="cursor-pointer">
+          <div class="cursor-pointer text-ink-gray-9">
             {{ getUser(option.value).full_name }}
           </div>
         </Tooltip>
@@ -282,6 +282,20 @@
       :disabled="Boolean(field.read_only)"
       @change="(v) => fieldChange(v, field)"
     />
+    <FormControl
+      v-else-if="field.options === 'Phone'"
+      type="text"
+      :placeholder="getPlaceholder(field)"
+      :value="data[field.fieldname]"
+      :disabled="Boolean(field.read_only)"
+      :description="field.description"
+      :error="
+        Boolean(data[field.fieldname]) && !validatePhone(data[field.fieldname])
+          ? __('Enter a valid phone number')
+          : undefined
+      "
+      @change="fieldChange($event.target.value, field)"
+    />
     <div v-else class="flex items-center gap-1">
       <FormControl
         class="flex-1"
@@ -326,6 +340,7 @@ import {
   evaluateDependsOnValue,
   isNull,
   interpolateTemplate,
+  validatePhone,
 } from '@/utils'
 import { flt, formatNumber, formatCurrency } from '@/utils/numberFormat.js'
 import { getMeta } from '@/stores/meta'

@@ -5,9 +5,13 @@ import re
 
 import frappe
 
-from crm.api.form import ALLOWED_DOCTYPES
+from crm.api.form import ALLOWED_DOCTYPES, guest_can_select
 
 no_cache = 1
+
+# Cap on options a Link renders into the page — a page-weight guard against a huge
+# target table, not a permission gate.
+MAX_LINK_OPTIONS = 500
 
 # bare host, optional scheme/port, optional leading "*." wildcard — rejects any
 # token containing CSP metacharacters like ";" so admin-entered domains can't
@@ -59,11 +63,69 @@ def get_context(context):
 			"reqd": int(f.reqd or 0),
 			"placeholder": f.placeholder or "",
 			"description": f.description or "",
+			# conditional-logic expressions, evaluated client-side (see crm_form.html)
+			"depends_on": f.depends_on or "",
+			"mandatory_depends_on": f.mandatory_depends_on or "",
+			"read_only_depends_on": f.read_only_depends_on or "",
 		}
 		for f in doc.web_form_fields
 	]
 	context.layout = build_layout(context.fields)
+	# Link fields render as a server-populated dropdown of existing records. Resolve
+	# resolve Link options here (keyed by fieldname) so the template stays presentation-only.
+	context.link_options = {
+		f["fieldname"]: _link_field_options(f["options"])
+		for f in context.fields
+		if f["fieldtype"] == "Link" and f["options"]
+	}
 	return context
+
+
+def _link_field_options(doctype: str) -> list[dict]:
+	"""Existing records of `doctype` as {value, label} dropdown options, scoped to what an
+	anonymous visitor may see — honouring the target's permissions at every level (doctype
+	`select`, row rules, if_owner).
+
+	An actual guest is already in that context, so we query directly. Only a logged-in author
+	*previewing* the page needs the session temporarily switched to Guest (rather than
+	`get_list(user="Guest")`, which still derives its permission *tier* from the active
+	session and would check the manager for Guest `read`, failing on a select-only target).
+	That switch is destructive — `frappe.set_user()` overwrites `session.sid` with the
+	username and wipes `session.data` — and restoring only the user leaves a corrupted
+	session that gets persisted under the real sid, logging the author out on their next
+	request. So snapshot and restore sid + data as well."""
+	if not doctype or not frappe.db.exists("DocType", doctype):
+		return []
+	if not guest_can_select(doctype):
+		return []
+	meta = frappe.get_meta(doctype)
+	title_field = meta.title_field or "name"
+	fields = ["name"] if title_field == "name" else ["name", title_field]
+
+	def _query():
+		return frappe.get_list(
+			doctype,
+			fields=fields,
+			order_by=f"{title_field} asc",
+			limit=MAX_LINK_OPTIONS,
+		)
+
+	current_user = frappe.session.user
+	if current_user == "Guest":
+		rows = _query()
+	else:
+		saved_sid = frappe.session.sid
+		saved_data = frappe.session.data
+		try:
+			frappe.set_user("Guest")  # nosemgrep — session fully restored in finally
+			rows = _query()
+		finally:
+			frappe.set_user(current_user)
+			# set_user() clobbers sid (→ username) and wipes data; put the real ones
+			# back so the request doesn't persist a corrupted session (see #logout).
+			frappe.session.sid = saved_sid
+			frappe.session.data = saved_data
+	return [{"value": r["name"], "label": r.get(title_field) or r["name"]} for r in rows]
 
 
 def set_embedding_headers(doc):
