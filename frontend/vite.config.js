@@ -189,6 +189,10 @@ function getAliases(config) {
       import.meta.dirname,
       '../frappe-ui/src/molecules/editor/style.css',
     ),
+    'frappe-ui/list-style.css': path.resolve(
+      import.meta.dirname,
+      '../frappe-ui/src/molecules/list/style.css',
+    ),
     'frappe-ui/internals': path.resolve(
       import.meta.dirname,
       '../frappe-ui/internals.ts',
