@@ -3,7 +3,7 @@
 
 import frappe
 
-from crm.integrations.api import get_all_matches_by_phone_number
+from crm.api.whatsapp import get_all_matches_by_phone_number
 
 
 def execute():
@@ -70,4 +70,3 @@ def _link_single_profile(profile_name: str, phone_number: str):
 	if needs_save:
 		profile.flags.ignore_permissions = True
 		profile.save(ignore_permissions=True)
-		frappe.db.commit()
