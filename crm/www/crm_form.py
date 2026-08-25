@@ -61,7 +61,7 @@ def get_context(context):
 			"fieldtype": f.fieldtype,
 			"options": f.options or "",
 			"reqd": int(f.reqd or 0),
-			"placeholder": f.placeholder or "",
+			"placeholder": f.get("placeholder") or "",
 			"description": f.description or "",
 			# conditional-logic expressions, evaluated client-side (see crm_form.html)
 			"depends_on": f.depends_on or "",
@@ -120,7 +120,7 @@ def _link_field_options(doctype: str) -> list[dict]:
 			frappe.set_user("Guest")  # nosemgrep — session fully restored in finally
 			rows = _query()
 		finally:
-			frappe.set_user(current_user)  # nosemgrep: restores the original user
+			frappe.set_user(current_user)  # nosemgrep, restores the original user
 			# set_user() clobbers sid (→ username) and wipes data; put the real ones
 			# back so the request doesn't persist a corrupted session (see #logout).
 			frappe.session.sid = saved_sid
