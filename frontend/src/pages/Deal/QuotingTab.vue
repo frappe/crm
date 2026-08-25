@@ -54,7 +54,7 @@
         <thead class="bg-surface-gray-1 text-xs uppercase tracking-wide text-ink-gray-5">
           <tr>
             <th class="px-4 py-2.5 text-left font-medium">{{ __('Quote #') }}</th>
-            <th class="px-4 py-2.5 text-left font-medium">{{ __('Date') }}</th>
+            <th class="px-4 py-2.5 text-left font-medium">{{ __('Created') }}</th>
             <th class="px-4 py-2.5 text-left font-medium">{{ __('Valid Until') }}</th>
             <th class="px-4 py-2.5 text-right font-medium">{{ __('Grand Total') }}</th>
             <th class="px-4 py-2.5 text-left font-medium">{{ __('Payment') }}</th>
@@ -69,7 +69,10 @@
             class="hover:bg-surface-gray-1 transition-colors"
           >
             <td class="px-4 py-3 font-medium text-ink-gray-9">{{ q.name }}</td>
-            <td class="px-4 py-3 text-ink-gray-6">{{ formatDate(q.quote_date) }}</td>
+            <td class="px-4 py-3">
+              <span class="text-ink-gray-8 font-medium">{{ timeAgo(q.creation || q.quote_date) }}</span>
+              <div class="text-xs text-ink-gray-4">{{ formatDate(q.quote_date) }}</div>
+            </td>
             <td class="px-4 py-3" :class="isExpired(q) ? 'text-red-500 font-medium' : 'text-ink-gray-6'">
               {{ formatDate(q.valid_until) }}
             </td>
@@ -92,14 +95,14 @@
                 <Button
                   v-if="q.status === 'Sent'"
                   size="sm" variant="ghost"
-                  class="text-green-600"
+                  theme="green"
                   @click="acceptQuote(q.name)"
                   :loading="actionName === q.name"
                 >{{ __('Accept') }}</Button>
                 <Button
                   v-if="q.status === 'Sent'"
                   size="sm" variant="ghost"
-                  class="text-red-500"
+                  theme="red"
                   @click="confirmReject(q.name)"
                 >{{ __('Reject') }}</Button>
                 <Button size="sm" variant="ghost" @click="downloadPdf(q.name)">{{ __('PDF') }}</Button>
@@ -230,7 +233,7 @@ async function doReject() {
 
 function downloadPdf(name) {
   window.open(
-    `/api/method/frappe.utils.print_format.download_pdf?doctype=CRM+Quote&name=${encodeURIComponent(name)}&format=CRM+Quote+Standard`,
+    `/api/method/frappe.utils.print_format.download_pdf?doctype=Quotation&name=${encodeURIComponent(name)}&format=Careverse+Quote+Standard`,
     '_blank'
   )
 }
@@ -255,13 +258,24 @@ function isExpired(q) {
 }
 
 function pillClass(q) {
-  if (isExpired(q)) return 'rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
+  const base = 'rounded-full px-2 py-0.5 text-xs font-medium'
+  if (isExpired(q)) return `${base} bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400`
   const map = {
-    Draft:    'rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600 dark:bg-gray-700 dark:text-gray-400',
-    Sent:     'rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
-    Accepted: 'rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700 dark:bg-green-900/30 dark:text-green-400',
-    Rejected: 'rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700 dark:bg-red-900/30 dark:text-red-400',
+    Draft:    `${base} bg-surface-gray-2 text-ink-gray-6 dark:bg-surface-gray-4 dark:text-ink-gray-4`,
+    Sent:     `${base} bg-surface-gray-3 text-ink-gray-8 dark:bg-surface-gray-5 dark:text-ink-gray-3`,
+    Accepted: `${base} bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400`,
+    Rejected: `${base} bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400`,
   }
   return map[q.status] || map.Draft
+}
+
+function timeAgo(dateStr) {
+  if (!dateStr) return ''
+  const diff = Math.floor((Date.now() - new Date(dateStr).getTime()) / 1000)
+  if (diff < 60)  return __('just now')
+  if (diff < 3600) return Math.floor(diff / 60) + ' ' + __('min ago')
+  if (diff < 86400) return Math.floor(diff / 3600) + ' ' + __('hr ago')
+  if (diff < 86400 * 7) return Math.floor(diff / 86400) + ' ' + __('d ago')
+  return formatDate(dateStr)
 }
 </script>

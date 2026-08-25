@@ -40,23 +40,21 @@ const sectionRef = ref(null)
 const columns = [
   { key: 'name',             label: 'Order' },
   { key: 'customer',         label: 'Customer' },
-  { key: 'transaction_date', label: 'Date',    type: 'date' },
+  { key: 'transaction_date', label: 'Date',    type: 'timeago' },
   { key: 'delivery_date',    label: 'Delivery', type: 'date' },
   { key: 'grand_total',      label: 'Total',   type: 'currency', align: 'right' },
   { key: 'status',           label: 'Status',  type: 'status' },
   { key: 'billing_status',   label: 'Billing', type: 'status' },
 ]
 
-// Create-From: ERPNext's real flow is Quotation -> Sales Order via a whitelisted
-// mapper. The picker lists submitted Quotations (company-scoped); the mapped,
-// unsaved Sales Order seeds FinanceForm for review + save.
+// Create-From: submitted Quotation (docstatus=1) → Sales Order via native ERPNext mapper.
 const createFrom = [
   {
-    key: 'from-quote',
+    key: 'from-quotation',
     label: 'Create from Quote',
     sourceDoctype: 'Quotation',
     sourceLabel: 'Quotation',
-    subtitleField: 'party_name',
+    subtitleField: 'customer_name',
     mapMethod: 'erpnext.selling.doctype.quotation.quotation.make_sales_order',
     targetDoctype: 'Sales Order',
   },

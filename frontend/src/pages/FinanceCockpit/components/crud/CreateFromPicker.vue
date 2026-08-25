@@ -94,17 +94,23 @@ let req = 0
 
 async function runQuery(query) {
   const my = ++req
-  // Company context can still be resolving on first open; without it the query
-  // would filter on an empty company and silently return nothing. Skip until set
-  // — a watcher re-runs the prefetch the moment the company resolves.
-  if (!company.value) {
-    sourceResults.value = []
-    return
+  // If the flow supplies explicit sourceFilters, use them directly (no company/docstatus
+  // defaults). Otherwise fall back to the standard company + docstatus=1 filters —
+  // but skip the company filter if the company context hasn't resolved yet.
+  let filters
+  if (props.flow.sourceFilters) {
+    filters = props.flow.sourceFilters
+  } else {
+    if (!company.value) {
+      sourceResults.value = []
+      return
+    }
+    filters = [
+      ['company', '=', company.value],
+      ['docstatus', '=', 1],
+    ]
   }
-  const filters = [
-    ['company', '=', company.value],
-    ['docstatus', '=', 1],
-  ]
+
   const subtitle = props.flow.subtitleField
   const fields = ['name']
   if (subtitle) fields.push(subtitle)
@@ -114,7 +120,7 @@ async function runQuery(query) {
     doctype: props.flow.sourceDoctype,
     filters: JSON.stringify(filters),
     fields: JSON.stringify(fields),
-    limit_page_length: 10,
+    limit_page_length: 20,
     order_by: 'modified desc',
   }
   if (query) {

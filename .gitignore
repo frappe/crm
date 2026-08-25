@@ -15,6 +15,7 @@ build
 frontend/coverage
 
 e2e/.auth
+e2e/proof
 test-results
 playwright-report
 package-lock.json

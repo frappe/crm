@@ -27,6 +27,7 @@ export default defineConfig({
 
 	use: {
 		baseURL: process.env.BASE_URL || 'http://crm.test:8000',
+		ignoreHTTPSErrors: true,
 		trace: 'on-first-retry',
 		video: 'retain-on-failure',
 		screenshot: 'only-on-failure',
@@ -46,6 +47,20 @@ export default defineConfig({
 				storageState: authFile,
 			},
 			dependencies: ['setup'],
+		},
+		// Quote Builder tests — separate auth setup for cr-dev
+		{
+			name: 'quote-setup',
+			testMatch: /quote_auth\.setup\.ts/,
+		},
+		{
+			name: 'quote-tests',
+			testMatch: /quote_builder\.spec\.ts/,
+			use: {
+				...devices['Desktop Chrome'],
+				storageState: 'e2e/.auth/quote-user.json',
+			},
+			dependencies: ['quote-setup'],
 		},
 	],
 })

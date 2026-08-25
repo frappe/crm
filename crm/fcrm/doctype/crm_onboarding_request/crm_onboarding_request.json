@@ -22,7 +22,21 @@
   "careverse_org_account",
   "notes_section",
   "notes",
-  "tech_notes"
+  "tech_notes",
+  "section_approval",
+  "network_approver_1",
+  "network_approver_1_approved",
+  "network_approver_1_at",
+  "col_break_approval",
+  "network_approver_2",
+  "network_approver_2_approved",
+  "network_approver_2_at",
+  "section_tiberbu_approval",
+  "tiberbu_approver",
+  "tiberbu_approver_approved",
+  "tiberbu_approver_at",
+  "approval_status",
+  "rejection_reason"
  ],
  "fields": [
   {
@@ -127,6 +141,91 @@
    "fieldname": "tech_notes",
    "fieldtype": "Long Text",
    "label": "Tech Notes"
+  },
+  {
+   "fieldname": "section_approval",
+   "fieldtype": "Section Break",
+   "label": "Network Approval"
+  },
+  {
+   "fieldname": "network_approver_1",
+   "fieldtype": "Link",
+   "label": "Network Approver 1",
+   "options": "User"
+  },
+  {
+   "fieldname": "network_approver_1_approved",
+   "fieldtype": "Check",
+   "label": "Approved",
+   "default": "0",
+   "read_only": 1
+  },
+  {
+   "fieldname": "network_approver_1_at",
+   "fieldtype": "Datetime",
+   "label": "Approved At",
+   "read_only": 1
+  },
+  {
+   "fieldname": "col_break_approval",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "network_approver_2",
+   "fieldtype": "Link",
+   "label": "Network Approver 2",
+   "options": "User"
+  },
+  {
+   "fieldname": "network_approver_2_approved",
+   "fieldtype": "Check",
+   "label": "Approved",
+   "default": "0",
+   "read_only": 1
+  },
+  {
+   "fieldname": "network_approver_2_at",
+   "fieldtype": "Datetime",
+   "label": "Approved At",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_tiberbu_approval",
+   "fieldtype": "Section Break",
+   "label": "Tiberbu Approval"
+  },
+  {
+   "fieldname": "tiberbu_approver",
+   "fieldtype": "Link",
+   "label": "Tiberbu Approver",
+   "options": "User"
+  },
+  {
+   "fieldname": "tiberbu_approver_approved",
+   "fieldtype": "Check",
+   "label": "Approved",
+   "default": "0",
+   "read_only": 1
+  },
+  {
+   "fieldname": "tiberbu_approver_at",
+   "fieldtype": "Datetime",
+   "label": "Approved At",
+   "read_only": 1
+  },
+  {
+   "fieldname": "approval_status",
+   "fieldtype": "Select",
+   "label": "Approval Status",
+   "options": "Pending\nPartially Approved\nApproved\nRejected",
+   "default": "Pending",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "rejection_reason",
+   "fieldtype": "Small Text",
+   "label": "Rejection Reason",
+   "depends_on": "eval:doc.approval_status == \"Rejected\""
   }
  ],
  "issingle": 0,

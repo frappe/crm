@@ -36,10 +36,11 @@ const sectionRef = ref(null)
 const columns = [
   { key: 'name', label: 'Invoice' },
   { key: 'customer', label: 'Customer' },
-  { key: 'posting_date', label: 'Date', type: 'date' },
+  { key: 'posting_date', label: 'Date', type: 'timeago' },
   { key: 'due_date', label: 'Due', type: 'date' },
   { key: 'outstanding_amount', label: 'Outstanding', type: 'currency', align: 'right' },
   { key: 'status', label: 'Status', type: 'status' },
+  { key: 'name', label: '', type: 'print-action', width: 0.4 },
 ]
 
 function listParams() {

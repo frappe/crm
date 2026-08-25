@@ -1,18 +1,15 @@
 <template>
   <!-- Full-screen quote builder overlay -->
-  <div
-    class="fixed inset-0 z-50 flex flex-col bg-white dark:bg-gray-950 overflow-hidden"
-    style="animation: slideUp 0.2s ease-out;"
-  >
+  <Transition name="qb-slide">
+    <div class="fixed inset-0 z-50 flex flex-col bg-surface-white overflow-hidden">
     <!-- Top bar -->
-    <div class="flex h-14 flex-shrink-0 items-center justify-between border-b border-outline-elevation-2 px-5">
-      <button
-        class="flex items-center gap-1.5 text-sm text-ink-gray-6 hover:text-ink-gray-9 transition-colors"
-        @click="handleBack"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    <div class="flex h-14 flex-shrink-0 items-center justify-between border-b border-outline-gray-2 px-5">
+      <Button variant="ghost" size="sm" @click="handleBack">
+        <template #prefix>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        </template>
         {{ __('Back') }}
-      </button>
+      </Button>
       <div class="flex items-center gap-3">
         <span class="text-sm font-semibold text-ink-gray-9">
           {{ quoteName ? quoteName : __('New Quote') }}
@@ -28,9 +25,9 @@
               :class="[
                 'flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold transition-colors',
                 i < currentStep
-                  ? 'bg-green-500 text-white'
+                  ? 'bg-green-500 dark:bg-green-400 text-white'
                   : i === currentStep
-                    ? 'bg-blue-600 text-white'
+                    ? 'bg-surface-blue-6 text-ink-blue-1'
                     : 'bg-surface-gray-3 text-ink-gray-4',
               ]"
             >
@@ -89,6 +86,7 @@
     </div>
 
     <!-- Unsaved-changes dialog -->
+
     <Dialog
       v-model="showDirtyDialog"
       :options="{ title: __('Save draft before leaving?'), size: 'sm' }"
@@ -102,6 +100,7 @@
       </template>
     </Dialog>
   </div>
+  </Transition>
 </template>
 
 <script setup>
@@ -215,8 +214,12 @@ function onAccepted() {
 </script>
 
 <style scoped>
-@keyframes slideUp {
-  from { transform: translateY(20px); opacity: 0; }
-  to   { transform: translateY(0);    opacity: 1; }
+.qb-slide-enter-active { transition: transform 0.18s ease-out, opacity 0.18s ease-out; }
+.qb-slide-enter-from   { transform: translateY(16px); opacity: 0; }
+.qb-slide-leave-active { transition: opacity 0.12s ease-in; }
+.qb-slide-leave-to     { opacity: 0; }
+@media (prefers-reduced-motion: reduce) {
+  .qb-slide-enter-active,
+  .qb-slide-leave-active { transition: none; }
 }
 </style>

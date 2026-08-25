@@ -1,13 +1,13 @@
 # Sprint Status
 # Project: crm (Tiberbu CRM fork)
 # Tracking: Claude Code Studio
-# Updated: 2026-08-01
+# Updated: 2026-08-25
 
 summary:
-  total: 19
+  total: 29
   ready-for-dev: 7
-  in-progress: 0
-  review: 10
+  in-progress: 2
+  review: 12
   done: 3
   cancelled: 0
 
@@ -144,3 +144,32 @@ development_status:
   # Sprint 3 — Integration + QA
   qb-s3-1-erpnext-handoff: review                   # [dev-story] accept_quote → Sales Invoice → Finance Cockpit AR; crm_deal + crm_quote fields verified
   qb-s3-2-qa-full-pass: qa               # [qa] 19/20 pass; T-UI-12 mobile fix applied (MobileDeal.vue Quoting tab); rebuild clean
+
+  # Chain: epic-optin-portal (BRD-OPTIN-001 · ADR-003 — 24 Aug 2026)
+  epic-optin-portal: in-progress
+
+  # Sprint 1 — Prerequisites (DocTypes + RBAC + price lists)
+  optin-s0-1: review        # [dev-story] DocTypes: CRM Opt-In Network + CRM Pre-Qualified Facility + CRM Opt-In Submission; bench migrate ✓ all 3 tables present
+  optin-s0-2: review        # [dev-story] Network Coordinator role + assigned_network User field + permission_query_conditions; bench migrate ✓ role+field exist, hooks.py wired
+  optin-s0-3: review        # [dev-story] Patch: 7 KEPH Items × 5 Negotiated Price Lists = 35 Item Price records; idempotent; bench migrate ✓ count=7
+
+  # Sprint 2 — API layer
+  optin-s1-1: review         # [dev-story] crm/api/optin.py: get_settings, verify_prequalified, verify_otp, get_pricing, get_terms_text, submit_async, get_job_status, save_partial, resume; _process_submission background job
+
+  # Sprint 3 — Vue wizard
+  optin-s2-1: review         # [dev-story] Vue wizard 8 steps + Frappe Web Page /opt-in shell; OTP gate, facility cards, pricing, T&C scroll-lock, commit, progress ticks, success screen
+
+  # Chain: epic-contract-signing (BRD-CONTRACT-001 · ADR-004 — 24 Aug 2026)
+  epic-contract-signing: ready-for-dev
+
+  # cs-s1-1 already done — CRM Contract + CRM Contract Signatory DocTypes migrated
+  cs-s1-1-contract-doctypes: done                  # [dev-story] CRM Contract + CRM Contract Signatory; 3-approver fields on CRM Onboarding Request; migrated
+
+  # Sprint 1 — Contract API
+  cs-s1-2-contracts-api: ready-for-dev              # [dev-story] crm/api/contracts.py: generate, request_otp, verify_otp, get_contract, sign, download_pdf; _transition() state machine
+  cs-s1-3-hooks-patches: ready-for-dev              # [dev-story] hooks.py doc_events for CRM Contract; after_migrate ensure_signing_key; patches.txt
+  cs-s1-4-pdf-print-format: ready-for-dev           # [dev-story] crm_contract_standard print format: contract body + 2 signature blocks; wkhtmltopdf
+  cs-s1-5-onboarding-approval-api: ready-for-dev    # [dev-story] crm/api/onboarding.py: approve_onboarding(slot, reject); all-3-approved → Approved; any-reject → Rejected
+
+  # Sprint 2 — Signing portal
+  cs-s2-1-signing-portal: review                    # [dev-story] Frappe Web Page /sign-contract; OtpGate reuse; SignatureCanvas (signature_pad.js); scroll-lock before canvas

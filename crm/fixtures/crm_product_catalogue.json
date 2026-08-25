@@ -6,6 +6,7 @@
   "standard_rate": 605149.06,
   "max_discount": 45.0,
   "disabled": 0,
+  "erpnext_item_code": "CV-HIMS-SUB-CORE",
   "name": "CV-HIMS-SUB-CORE"
  },
  {
@@ -15,6 +16,7 @@
   "standard_rate": 1821349.83,
   "max_discount": 45.0,
   "disabled": 0,
+  "erpnext_item_code": "CV-HIMS-SUB-ADV",
   "name": "CV-HIMS-SUB-ADV"
  },
  {
@@ -24,6 +26,7 @@
   "standard_rate": 6044783.95,
   "max_discount": 45.0,
   "disabled": 0,
+  "erpnext_item_code": "CV-HIMS-SUB-ENT",
   "name": "CV-HIMS-SUB-ENT"
  },
  {
@@ -33,6 +36,7 @@
   "standard_rate": 620000.0,
   "max_discount": 65.0,
   "disabled": 0,
+  "erpnext_item_code": "CV-HIMS-IMPL-CORE",
   "name": "CV-HIMS-IMPL-CORE"
  },
  {
@@ -42,6 +46,7 @@
   "standard_rate": 1870000.0,
   "max_discount": 65.0,
   "disabled": 0,
+  "erpnext_item_code": "CV-HIMS-IMPL-ADV",
   "name": "CV-HIMS-IMPL-ADV"
  },
  {
@@ -51,6 +56,7 @@
   "standard_rate": 6180000.0,
   "max_discount": 65.0,
   "disabled": 0,
+  "erpnext_item_code": "CV-HIMS-IMPL-ENT",
   "name": "CV-HIMS-IMPL-ENT"
  },
  {
@@ -60,6 +66,7 @@
   "standard_rate": 84000.0,
   "max_discount": 10.0,
   "disabled": 0,
+  "erpnext_item_code": "CV-HW-OPTIPLEX-7010",
   "name": "CV-HW-OPTIPLEX-7010"
  },
  {
@@ -69,6 +76,7 @@
   "standard_rate": 126000.0,
   "max_discount": 10.0,
   "disabled": 0,
+  "erpnext_item_code": "CV-HW-LATITUDE-5440",
   "name": "CV-HW-LATITUDE-5440"
  },
  {
@@ -78,6 +86,7 @@
   "standard_rate": 38888.89,
   "max_discount": 10.0,
   "disabled": 0,
+  "erpnext_item_code": "CV-HW-TAB-10",
   "name": "CV-HW-TAB-10"
  },
  {
@@ -87,6 +96,7 @@
   "standard_rate": 8100.0,
   "max_discount": 15.0,
   "disabled": 0,
+  "erpnext_item_code": "CV-SW-ENDPOINT-SEC",
   "name": "CV-SW-ENDPOINT-SEC"
  },
  {
@@ -96,6 +106,7 @@
   "standard_rate": 13885.71,
   "max_discount": 15.0,
   "disabled": 0,
+  "erpnext_item_code": "CV-SW-OFFICE-MGMT",
   "name": "CV-SW-OFFICE-MGMT"
  },
  {
@@ -105,6 +116,7 @@
   "standard_rate": 14500.0,
   "max_discount": 30.0,
   "disabled": 0,
+  "erpnext_item_code": "CV-SVC-OUT-NAIROBI",
   "name": "CV-SVC-OUT-NAIROBI"
  },
  {
@@ -114,6 +126,7 @@
   "standard_rate": 2500.0,
   "max_discount": 30.0,
   "disabled": 0,
+  "erpnext_item_code": "CV-SVC-REFRESHER-VIRT",
   "name": "CV-SVC-REFRESHER-VIRT"
  },
  {
@@ -123,6 +136,7 @@
   "standard_rate": 220000.0,
   "max_discount": 20.0,
   "disabled": 0,
+  "erpnext_item_code": "CV-SVC-ONSITE-ENGINEER",
   "name": "CV-SVC-ONSITE-ENGINEER"
  },
  {
@@ -132,6 +146,7 @@
   "standard_rate": 100000.0,
   "max_discount": 20.0,
   "disabled": 0,
+  "erpnext_item_code": "CV-SVC-PARTTIME-ENGINEER",
   "name": "CV-SVC-PARTTIME-ENGINEER"
  }
 ]
