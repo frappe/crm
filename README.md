@@ -143,6 +143,7 @@ The script will set up a production-ready instance of Frappe CRM with all the ne
 1. In the frappe-bench directory, run `bench start` and keep it running.
 1. Open a new terminal session and cd into `frappe-bench` directory and run following commands:
     ```sh
+    $ bench get-app whatsapp
     $ bench get-app crm
     $ bench new-site sitename.localhost --install-app crm
     $ bench browse sitename.localhost --user Administrator
