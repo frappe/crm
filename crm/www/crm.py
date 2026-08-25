@@ -43,8 +43,8 @@ def redirect_to_set_password():
 	user = frappe.get_doc("User", frappe.session.user)
 	link = user._reset_password()
 
-	# GET requests are rolled back, which would take the reset key with them.
-	frappe.db.commit()  # nosemgrep
+	# this is a GET request, which is rolled back unless a commit is requested
+	frappe.local.flags.commit = True
 
 	frappe.local.flags.redirect_location = link
 
