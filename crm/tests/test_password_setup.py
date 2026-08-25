@@ -1,8 +1,6 @@
 # Copyright (c) 2026, Frappe Technologies Pvt. Ltd. and Contributors
 # See license.txt
 
-from unittest.mock import patch
-
 import frappe
 from frappe.tests import IntegrationTestCase
 from frappe.utils import sha256_hash
@@ -39,6 +37,7 @@ class TestPasswordSetup(IntegrationTestCase):
 	def tearDown(self):
 		frappe.set_user("Administrator")
 		frappe.local.flags.redirect_location = None
+		frappe.local.flags.commit = False
 		frappe.db.rollback()
 
 	def make_sso_user(self):
@@ -71,15 +70,14 @@ class TestPasswordSetup(IntegrationTestCase):
 	# ---- redirect ----
 
 	def test_redirects_to_set_password_page_with_a_working_key(self):
-		with patch.object(frappe.db.__class__, "commit") as commit:
-			with self.assertRaises(frappe.Redirect) as raised:
-				redirect_to_set_password()
-
-			# the reset key is written on a GET, which is rolled back otherwise
-			self.assertTrue(commit.called)
+		with self.assertRaises(frappe.Redirect) as raised:
+			redirect_to_set_password()
 
 		# a 301 would be cached by the browser and outlive the key it points at
 		self.assertEqual(raised.exception.http_status_code, 302)
+
+		# the reset key is written on a GET, which is rolled back otherwise
+		self.assertTrue(frappe.local.flags.commit)
 
 		link = frappe.local.flags.redirect_location
 		self.assertIn("/update-password?key=", link)
@@ -103,8 +101,7 @@ class TestPasswordSetup(IntegrationTestCase):
 
 	def test_crm_page_load_redirects_a_user_without_a_password(self):
 		"""The redirect is wired into the page the user actually opens."""
-		with patch.object(frappe.db.__class__, "commit"):
-			with self.assertRaises(frappe.Redirect):
-				get_context()
+		with self.assertRaises(frappe.Redirect):
+			get_context()
 
 		self.assertIn("/update-password?key=", frappe.local.flags.redirect_location)
