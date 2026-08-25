@@ -68,9 +68,12 @@ async function getOtpAfter(since) {
 }
 
 async function shot(page, name) {
+  // Sanitise the caller-supplied label before it reaches the filesystem path:
+  // strip everything but [a-z0-9_-] so no '/' or '..' segment can escape OUT.
+  const safe = String(name).replace(/[^a-z0-9_-]/gi, '_')
   await sleep(400)
-  await page.screenshot({ path: `${OUT}/${name}.png`, fullPage: true })
-  console.log(`  ✓ ${name}.png`)
+  await page.screenshot({ path: `${OUT}/${safe}.png`, fullPage: true })
+  console.log(`  ✓ ${safe}.png`)
 }
 
 async function main() {

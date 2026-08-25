@@ -752,6 +752,12 @@ def get_terms_text(signing_token, email, network_slug, expiry, selected_mfl_code
     }
 
     rendered_html = frappe.render_template(tc_doc.terms or "", context)
+    # Content-integrity fingerprint of the rendered T&C — NOT a credential.
+    # Stored alongside the acceptance so we can prove the terms the user
+    # accepted match what was displayed. SHA-256 is the correct primitive for
+    # a fixed-length content digest; a password KDF (Argon2/PHC) is not
+    # applicable here. Credentials in this module (OTPs, signing tokens) use
+    # HMAC-SHA256 + hmac.compare_digest — see _hmac_hex().
     doc_hash = hashlib.sha256(rendered_html.encode()).hexdigest()
 
     return {
