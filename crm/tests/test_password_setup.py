@@ -38,6 +38,7 @@ class TestPasswordSetup(IntegrationTestCase):
 		frappe.set_user("Administrator")
 		frappe.local.flags.redirect_location = None
 		frappe.local.flags.commit = False
+		frappe.local.system_settings = None
 		frappe.db.rollback()
 
 	def make_sso_user(self):
@@ -64,8 +65,12 @@ class TestPasswordSetup(IntegrationTestCase):
 		self.assertFalse(needs_password_setup())
 
 	def test_does_not_need_setup_when_password_login_is_disabled(self):
-		with self.change_settings("System Settings", disable_user_pass_login=1):
-			self.assertFalse(needs_password_setup())
+		# not change_settings: it saves the doc, and validating System Settings
+		# fails on a bare site that has no language or time zone set
+		frappe.db.set_single_value("System Settings", "disable_user_pass_login", 1)
+		frappe.local.system_settings = None
+
+		self.assertFalse(needs_password_setup())
 
 	# ---- redirect ----
 
