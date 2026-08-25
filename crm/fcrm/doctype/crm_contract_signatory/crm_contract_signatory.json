@@ -1,0 +1,113 @@
+{
+ "actions": [],
+ "creation": "2026-08-24 00:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "signatory_name",
+  "signatory_email",
+  "signatory_role",
+  "status",
+  "is_witness",
+  "witnessing_for",
+  "col_break_1",
+  "signature_data",
+  "signature_ip",
+  "signed_at",
+  "section_break_otp",
+  "otp_hash",
+  "otp_expiry",
+  "otp_used"
+ ],
+ "fields": [
+  {
+   "fieldname": "signatory_name",
+   "fieldtype": "Data",
+   "label": "Signatory Name",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "signatory_email",
+   "fieldtype": "Data",
+   "label": "Signatory Email",
+   "reqd": 1
+  },
+  {
+   "fieldname": "signatory_role",
+   "fieldtype": "Select",
+   "label": "Signatory Role",
+   "options": "Facility Signatory\nFacility Witness",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Pending\nSigned\nDeclined",
+   "default": "Pending",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "is_witness",
+   "fieldtype": "Check",
+   "label": "Signing as Witness",
+   "default": "0"
+  },
+  {
+   "fieldname": "witnessing_for",
+   "fieldtype": "Data",
+   "label": "Witnessing on behalf of (Principal Name)",
+   "depends_on": "eval:doc.is_witness == 1"
+  },
+  {
+   "fieldname": "col_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "signature_data",
+   "fieldtype": "Long Text",
+   "label": "Signature Data"
+  },
+  {
+   "fieldname": "signature_ip",
+   "fieldtype": "Data",
+   "label": "Signature IP"
+  },
+  {
+   "fieldname": "signed_at",
+   "fieldtype": "Datetime",
+   "label": "Signed At"
+  },
+  {
+   "fieldname": "section_break_otp",
+   "fieldtype": "Section Break",
+   "label": "OTP"
+  },
+  {
+   "fieldname": "otp_hash",
+   "fieldtype": "Data",
+   "label": "OTP Hash"
+  },
+  {
+   "fieldname": "otp_expiry",
+   "fieldtype": "Datetime",
+   "label": "OTP Expiry"
+  },
+  {
+   "fieldname": "otp_used",
+   "fieldtype": "Check",
+   "label": "OTP Used",
+   "default": "0"
+  }
+ ],
+ "istable": 1,
+ "links": [],
+ "modified": "2026-08-24 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "FCRM",
+ "name": "CRM Contract Signatory",
+ "owner": "Administrator",
+ "permissions": []
+}
