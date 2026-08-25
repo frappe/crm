@@ -6,7 +6,7 @@
     </div>
 
     <!-- Quote preview -->
-    <div class="rounded-xl border border-outline-elevation-2 bg-surface-white dark:bg-surface-gray-1 overflow-hidden mb-6">
+    <div class="rounded-xl border border-outline-gray-2 bg-surface-white dark:bg-surface-gray-1 overflow-hidden mb-6">
       <!-- Header -->
       <div class="flex items-start justify-between bg-blue-900 px-6 py-4 text-white">
         <div>
@@ -24,15 +24,15 @@
       </div>
 
       <!-- Customer -->
-      <div class="border-b border-outline-elevation-2 px-6 py-3">
+      <div class="border-b border-outline-gray-2 px-6 py-3">
         <div class="text-xs font-semibold uppercase tracking-wide text-ink-gray-4">{{ __('Quote To') }}</div>
         <div class="mt-0.5 text-base font-bold text-ink-gray-9">{{ context.customer || dealId }}</div>
         <div v-if="context.partner" class="text-xs text-ink-gray-5">{{ __('Partner') }}: {{ context.partner }}</div>
       </div>
 
       <!-- Pricing title -->
-      <div class="border-b border-l-4 border-blue-600 bg-blue-50 px-6 py-2.5 dark:bg-blue-900/20">
-        <span class="text-xs font-bold uppercase tracking-wide text-blue-800 dark:text-blue-300">
+      <div class="border-b border-l-4 border-outline-blue-6 bg-surface-blue-1 px-6 py-2.5 dark:bg-surface-blue-2/20">
+        <span class="text-xs font-bold uppercase tracking-wide text-ink-blue-7 dark:text-ink-blue-6">
           {{ __('Pricing for Tiberbu CareVerse HIMS Solution') }} — {{ quoteData.payment_terms }}
         </span>
       </div>
@@ -92,12 +92,12 @@
       </div>
 
       <!-- Totals -->
-      <div class="flex justify-end border-t border-outline-elevation-2 px-6 py-4">
+      <div class="flex justify-end border-t border-outline-gray-2 px-6 py-4">
         <div class="w-64 space-y-1.5 text-sm">
           <div class="flex justify-between"><span class="text-ink-gray-6">{{ __('Sub Total Excl. VAT') }}</span><span>{{ fmt(computed_pricing.net_subtotal) }}</span></div>
           <div v-if="computed_pricing.discount > 0" class="flex justify-between text-red-500"><span>{{ __('Discount Applied') }}</span><span>-{{ fmt(computed_pricing.discount) }}</span></div>
           <div class="flex justify-between"><span class="text-ink-gray-6">{{ __('VAT 16%') }}</span><span>{{ fmt(computed_pricing.vat) }}</span></div>
-          <div class="my-2 border-t border-outline-elevation-2" />
+          <div class="my-2 border-t border-outline-gray-2" />
           <div class="flex justify-between rounded-lg bg-blue-900 px-3 py-2 text-white font-bold">
             <span>{{ __('Grand Total Year 1 (Incl. VAT)') }}</span>
             <span>{{ fmt(computed_pricing.grand_total) }}</span>
@@ -106,10 +106,10 @@
       </div>
 
       <!-- Renewal table -->
-      <div v-if="quoteData.contract_term_yrs > 1" class="border-t border-outline-elevation-2 px-6 py-4">
+      <div v-if="quoteData.contract_term_yrs > 1" class="border-t border-outline-gray-2 px-6 py-4">
         <div class="mb-2 text-xs font-semibold uppercase tracking-wide text-ink-gray-5">{{ __('Discounted Annual Subscription Renewal') }}</div>
         <table class="w-full text-xs">
-          <thead class="bg-gray-600 text-white"><tr>
+          <thead class="bg-blue-900 text-white"><tr>
             <th class="px-3 py-1.5 text-left">{{ __('Year') }}</th>
             <th class="px-3 py-1.5 text-right">{{ __('Excl. VAT (KES)') }}</th>
             <th class="px-3 py-1.5 text-right">{{ __('Incl. VAT (KES)') }}</th>
@@ -133,7 +133,7 @@
       </div>
 
       <!-- Notes / T&C -->
-      <div class="border-t border-outline-elevation-2 px-6 py-4 text-xs text-ink-gray-6 space-y-1">
+      <div class="border-t border-outline-gray-2 px-6 py-4 text-xs text-ink-gray-6 space-y-1">
         <div class="font-semibold uppercase tracking-wide text-ink-gray-5 mb-1.5">{{ __('Notes') }}</div>
         <div>1. {{ __('Price validity is 30 days from the date of this quotation/proposal.') }}</div>
         <div>2. {{ __('All prices are in KES. Payment shall be made in KES.') }}</div>
@@ -142,13 +142,13 @@
       </div>
 
       <!-- Signature block -->
-      <div class="border-t border-outline-elevation-2 px-6 py-4">
+      <div class="border-t border-outline-gray-2 px-6 py-4">
         <div class="text-xs font-semibold uppercase tracking-wide text-ink-gray-5 mb-3">{{ __('Customer Quotation Approval') }}</div>
         <div class="grid grid-cols-2 gap-6 text-xs">
-          <div><div class="text-ink-gray-4 mb-4">{{ __('Full Name') }}</div><div class="border-t border-gray-400 pt-1 text-ink-gray-3">__________________________</div></div>
-          <div><div class="text-ink-gray-4 mb-4">{{ __('Role / Title') }}</div><div class="border-t border-gray-400 pt-1 text-ink-gray-3">__________________________</div></div>
-          <div><div class="text-ink-gray-4 mb-4">{{ __('Signature') }}</div><div class="border-t border-gray-400 pt-1 text-ink-gray-3">__________________________</div></div>
-          <div><div class="text-ink-gray-4 mb-4">{{ __('Date') }}</div><div class="border-t border-gray-400 pt-1 text-ink-gray-3">__________________________</div></div>
+          <div><div class="text-ink-gray-4 mb-4">{{ __('Full Name') }}</div><div class="border-t border-outline-gray-3 pt-1 text-ink-gray-3">__________________________</div></div>
+          <div><div class="text-ink-gray-4 mb-4">{{ __('Role / Title') }}</div><div class="border-t border-outline-gray-3 pt-1 text-ink-gray-3">__________________________</div></div>
+          <div><div class="text-ink-gray-4 mb-4">{{ __('Signature') }}</div><div class="border-t border-outline-gray-3 pt-1 text-ink-gray-3">__________________________</div></div>
+          <div><div class="text-ink-gray-4 mb-4">{{ __('Date') }}</div><div class="border-t border-outline-gray-3 pt-1 text-ink-gray-3">__________________________</div></div>
         </div>
         <div class="mt-4 text-center text-xs font-bold uppercase tracking-widest text-ink-gray-3">PRIVATE & CONFIDENTIAL</div>
       </div>
@@ -173,8 +173,8 @@
         <!-- Sent state: Accept + Reject + Re-send -->
         <template v-if="currentStatus === 'Sent'">
           <Button variant="subtle" :loading="actionLoading === 'send'" @click="doSend">{{ __('Re-send') }}</Button>
-          <Button variant="solid" class="!bg-green-600 hover:!bg-green-700" :loading="actionLoading === 'accept'" @click="doAccept">{{ __('Accept ✓') }}</Button>
-          <Button variant="subtle" class="!text-red-600" :loading="actionLoading === 'reject'" @click="confirmRejectVisible = true">{{ __('Reject ✗') }}</Button>
+          <Button variant="solid" theme="green" :loading="actionLoading === 'accept'" @click="doAccept">{{ __('Accept ✓') }}</Button>
+          <Button variant="subtle" theme="red" :loading="actionLoading === 'reject'" @click="confirmRejectVisible = true">{{ __('Reject ✗') }}</Button>
         </template>
       </div>
     </div>
@@ -194,7 +194,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { createResource } from 'frappe-ui'
-import { Button, Dialog } from 'frappe-ui'
+import { Button, Dialog, toast } from 'frappe-ui'
 
 const TIERS = {
   Core:       { subscription: 605149.06,  impl: 620000.00  },
@@ -252,9 +252,9 @@ function addonPrice(sku) { return ADDON_META[sku]?.price || 0 }
 function addonCategory(sku) { return ADDON_META[sku]?.cat || '' }
 function tierPill(tier) {
   const map = {
-    Core:       'rounded-full bg-green-100 px-1.5 py-0.5 text-xs font-bold text-green-700',
-    Advanced:   'rounded-full bg-blue-100 px-1.5 py-0.5 text-xs font-bold text-blue-700',
-    Enterprise: 'rounded-full bg-purple-100 px-1.5 py-0.5 text-xs font-bold text-purple-700',
+    Core:       'rounded-full bg-green-100 dark:bg-green-900/30 px-1.5 py-0.5 text-xs font-bold text-green-700 dark:text-green-400',
+    Advanced:   'rounded-full bg-blue-100 dark:bg-blue-900/30 px-1.5 py-0.5 text-xs font-bold text-blue-700 dark:text-blue-400',
+    Enterprise: 'rounded-full bg-purple-100 dark:bg-purple-900/30 px-1.5 py-0.5 text-xs font-bold text-purple-700 dark:text-purple-400',
   }
   return map[tier] || map.Core
 }
@@ -353,9 +353,9 @@ async function doReject() {
 }
 
 function downloadPdf() {
-  if (!currentQuoteName.value) { alert('Save the quote first'); return }
+  if (!currentQuoteName.value) { toast.warning(__('Save the quote first')); return }
   window.open(
-    `/api/method/frappe.utils.print_format.download_pdf?doctype=CRM+Quote&name=${encodeURIComponent(currentQuoteName.value)}&format=CRM+Quote+Standard`,
+    `/api/method/frappe.utils.print_format.download_pdf?doctype=Quotation&name=${encodeURIComponent(currentQuoteName.value)}&format=Careverse+Quote+Standard`,
     '_blank'
   )
 }

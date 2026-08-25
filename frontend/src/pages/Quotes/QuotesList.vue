@@ -2,16 +2,16 @@
   <div class="flex h-full flex-col overflow-hidden">
 
     <!-- Page header -->
-    <div class="flex items-center justify-between border-b border-outline-elevation-2 px-5 py-3">
+    <div class="flex items-center justify-between border-b border-outline-gray-2 px-5 py-3">
       <h1 class="text-xl font-semibold text-ink-gray-9">{{ __('Quotes') }}</h1>
     </div>
 
     <!-- KPI bar -->
-    <div class="grid grid-cols-2 gap-3 border-b border-outline-elevation-2 px-5 py-3 sm:grid-cols-4">
+    <div class="grid grid-cols-2 gap-3 border-b border-outline-gray-2 px-5 py-3 sm:grid-cols-4">
       <div
         v-for="kpi in kpiTiles"
         :key="kpi.key"
-        class="rounded-lg border border-outline-elevation-2 bg-surface-white px-4 py-3"
+        class="rounded-lg border border-outline-gray-2 bg-surface-white px-4 py-3"
       >
         <p class="text-xs font-medium uppercase tracking-wide text-ink-gray-4">{{ __(kpi.label) }}</p>
         <p class="mt-1 text-xl font-bold text-ink-gray-9">{{ kpi.value }}</p>
@@ -19,7 +19,7 @@
     </div>
 
     <!-- Filters row -->
-    <div class="flex flex-wrap items-center gap-2 border-b border-outline-elevation-2 px-5 py-2.5">
+    <div class="flex flex-wrap items-center gap-2 border-b border-outline-gray-2 px-5 py-2.5">
       <!-- Status pills -->
       <button
         v-for="s in statuses"
@@ -39,7 +39,7 @@
           v-model="search"
           type="text"
           :placeholder="__('Search quotes...')"
-          class="rounded-md border border-outline-elevation-2 bg-surface-white px-3 py-1.5 text-sm text-ink-gray-9 placeholder-ink-gray-4 focus:border-blue-500 focus:outline-none dark:bg-surface-gray-1"
+          class="rounded-md border border-outline-gray-2 bg-surface-white px-3 py-1.5 text-sm text-ink-gray-9 placeholder-ink-gray-4 focus:border-blue-500 focus:outline-none dark:bg-surface-gray-1"
         />
         <!-- Export CSV -->
         <Button size="sm" variant="subtle" @click="exportCsv">{{ __('Export CSV') }}</Button>
@@ -66,6 +66,7 @@
             <th class="px-4 py-2.5 text-left font-medium">{{ __('Rep') }}</th>
             <th class="px-4 py-2.5 text-right font-medium">{{ __('Grand Total') }}</th>
             <th class="px-4 py-2.5 text-left font-medium">{{ __('Status') }}</th>
+            <th class="px-4 py-2.5 text-left font-medium">{{ __('Created') }}</th>
             <th class="px-4 py-2.5 text-left font-medium">{{ __('Valid Until') }}</th>
           </tr>
         </thead>
@@ -76,7 +77,7 @@
             class="cursor-pointer hover:bg-surface-gray-1 transition-colors"
             @click="openDeal(row)"
           >
-            <td class="px-5 py-3 font-medium text-blue-600">{{ row.name }}</td>
+            <td class="px-5 py-3 font-medium text-ink-blue-6">{{ row.name }}</td>
             <td class="px-4 py-3 text-ink-gray-7">{{ row.customer || '—' }}</td>
             <td class="px-4 py-3 text-ink-gray-6 text-xs">{{ row.deal }}</td>
             <td class="px-4 py-3 text-ink-gray-6 text-xs">{{ row.owner }}</td>
@@ -86,16 +87,20 @@
                 {{ isExpired(row) ? __('Expired') : __(row.status) }}
               </span>
             </td>
+            <td class="px-4 py-3">
+              <span class="text-sm font-medium text-ink-gray-8">{{ timeAgo(row.creation || row.quote_date) }}</span>
+              <div class="text-xs text-ink-gray-4">{{ formatDate(row.quote_date) }}</div>
+            </td>
             <td
               class="px-4 py-3 text-xs"
-              :class="isExpired(row) ? 'font-medium text-red-500' : 'text-ink-gray-6'"
+              :class="isExpired(row) ? 'font-medium text-red-500 dark:text-red-400' : 'text-ink-gray-6'"
             >{{ formatDate(row.valid_until) }}</td>
           </tr>
         </tbody>
       </table>
 
       <!-- Pagination -->
-      <div v-if="total > pageSize" class="flex items-center justify-between border-t border-outline-elevation-2 px-5 py-3">
+      <div v-if="total > pageSize" class="flex items-center justify-between border-t border-outline-gray-2 px-5 py-3">
         <span class="text-xs text-ink-gray-5">
           {{ __('Showing {0}–{1} of {2}', [page * pageSize + 1, Math.min((page + 1) * pageSize, total), total]) }}
         </span>
@@ -183,6 +188,16 @@ function formatDate(d) {
   return new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
 }
 
+function timeAgo(dateStr) {
+  if (!dateStr) return ''
+  const diff = Math.floor((Date.now() - new Date(dateStr).getTime()) / 1000)
+  if (diff < 60)   return __('just now')
+  if (diff < 3600)  return Math.floor(diff / 60) + ' ' + __('min ago')
+  if (diff < 86400) return Math.floor(diff / 3600) + ' ' + __('hr ago')
+  if (diff < 86400 * 7) return Math.floor(diff / 86400) + ' ' + __('d ago')
+  return formatDate(dateStr)
+}
+
 function fmtKes(v) {
   if (!v && v !== 0) return '—'
   const n = parseFloat(v)
@@ -197,12 +212,13 @@ function isExpired(row) {
 }
 
 function pillClass(row) {
-  if (isExpired(row)) return 'rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
+  const base = 'rounded-full px-2 py-0.5 text-xs font-medium'
+  if (isExpired(row)) return `${base} bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400`
   const map = {
-    Draft:    'rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600 dark:bg-gray-700 dark:text-gray-400',
-    Sent:     'rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
-    Accepted: 'rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700 dark:bg-green-900/30 dark:text-green-400',
-    Rejected: 'rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700 dark:bg-red-900/30 dark:text-red-400',
+    Draft:    `${base} bg-surface-gray-2 text-ink-gray-6 dark:bg-surface-gray-4 dark:text-ink-gray-4`,
+    Sent:     `${base} bg-surface-gray-3 text-ink-gray-8 dark:bg-surface-gray-5 dark:text-ink-gray-3`,
+    Accepted: `${base} bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400`,
+    Rejected: `${base} bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400`,
   }
   return map[row.status] || map.Draft
 }

@@ -7,7 +7,7 @@
 
     <div v-for="group in GROUPS" :key="group.key" class="mb-6">
       <h3 class="mb-3 text-xs font-semibold uppercase tracking-wide text-ink-gray-5">{{ __(group.label) }}</h3>
-      <div class="overflow-hidden rounded-xl border border-outline-elevation-2">
+      <div class="overflow-hidden rounded-xl border border-outline-gray-2">
         <table class="w-full text-sm">
           <thead class="bg-surface-gray-1 text-xs text-ink-gray-5">
             <tr>
@@ -18,10 +18,10 @@
               <th class="px-4 py-2 text-right font-medium">{{ __('Total') }}</th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-outline-elevation-2">
-            <tr v-for="product in group.products" :key="product.sku" class="transition-colors" :class="isChecked(product.sku) ? 'bg-blue-50/50 dark:bg-blue-900/10' : ''">
+          <tbody class="divide-y divide-outline-gray-2">
+            <tr v-for="product in group.products" :key="product.sku" class="transition-colors" :class="isChecked(product.sku) ? 'bg-surface-blue-1/50 dark:bg-surface-blue-2/20' : ''">
               <td class="px-3 py-2.5 text-center">
-                <input type="checkbox" :checked="isChecked(product.sku)" @change="toggleAddon(product)" class="rounded" />
+                <input type="checkbox" :checked="isChecked(product.sku)" @change="toggleAddon(product)" class="h-4 w-4 rounded accent-[var(--blue-6)] cursor-pointer" />
               </td>
               <td class="px-4 py-2.5 font-medium text-ink-gray-9">
                 {{ product.name }}
@@ -33,7 +33,7 @@
                   v-model.number="getAddon(product.sku).qty"
                   type="number"
                   min="1"
-                  class="w-20 rounded-lg border border-outline-elevation-2 bg-surface-white px-2 py-1 text-center text-sm focus:border-blue-500 focus:outline-none dark:bg-surface-gray-2"
+                  class="w-20 rounded-lg border border-outline-gray-2 bg-surface-white px-2 py-1 text-center text-sm dark:bg-surface-gray-2 focus:outline-none focus:ring-2 focus:ring-outline-blue-4"
                   @input="emit('dirty')"
                 />
                 <span v-else class="text-ink-gray-3">—</span>

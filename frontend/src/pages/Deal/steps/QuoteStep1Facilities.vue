@@ -11,26 +11,26 @@
         <div
           v-for="(facility, idx) in facilities"
           :key="idx"
-          class="rounded-xl border border-outline-elevation-2 bg-surface-white p-4 dark:bg-surface-gray-1"
+          class="rounded-xl border border-outline-gray-2 bg-surface-white p-4 dark:bg-surface-gray-1"
         >
           <!-- Facility name -->
           <div class="mb-3">
-            <label class="mb-1 block text-xs font-medium text-ink-gray-5 uppercase tracking-wide">{{ __('Facility Name') }}</label>
+            <label class="mb-1 block text-xs font-medium text-ink-gray-4 uppercase tracking-wider">{{ __('Facility Name') }}</label>
             <input
               v-model="facility.facility_name"
               type="text"
               :placeholder="__('e.g. Main Campus')"
-              class="w-full rounded-lg border border-outline-elevation-2 bg-surface-white px-3 py-2 text-sm text-ink-gray-9 placeholder-ink-gray-4 focus:border-blue-500 focus:outline-none dark:bg-surface-gray-2"
+              class="w-full rounded-lg border border-outline-gray-2 bg-surface-white px-3 py-2 text-sm text-ink-gray-9 placeholder-ink-gray-4 dark:bg-surface-gray-2 focus:outline-none focus:ring-2 focus:ring-outline-blue-4"
               @input="emit('dirty')"
             />
-            <p v-if="duplicateName(facility.facility_name, idx)" class="mt-1 text-xs text-amber-600">
+            <p v-if="duplicateName(facility.facility_name, idx)" class="mt-1 text-xs text-amber-600 dark:text-amber-400">
               {{ __('⚠ Duplicate facility name') }}
             </p>
           </div>
 
           <!-- Tier pills -->
           <div class="mb-3">
-            <label class="mb-2 block text-xs font-medium text-ink-gray-5 uppercase tracking-wide">{{ __('Package Tier') }}</label>
+            <label class="mb-2 block text-xs font-medium text-ink-gray-4 uppercase tracking-wider">{{ __('Package Tier') }}</label>
             <div class="flex flex-wrap gap-2">
               <button
                 v-for="tier in TIERS"
@@ -38,8 +38,8 @@
                 :class="[
                   'flex flex-col items-start rounded-lg border-2 px-3 py-2 text-left transition-all',
                   facility.package_tier === tier.key
-                    ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-                    : 'border-outline-elevation-2 hover:border-blue-300 bg-surface-white dark:bg-surface-gray-2',
+                    ? 'border-outline-blue-5 bg-surface-blue-1 dark:bg-surface-blue-2/20'
+                    : 'border-outline-gray-2 hover:border-outline-blue-3 bg-surface-white dark:bg-surface-gray-2',
                 ]"
                 @click="selectTier(facility, tier.key)"
               >
@@ -52,16 +52,16 @@
 
           <!-- Num users -->
           <div class="mb-3">
-            <label class="mb-1 block text-xs font-medium text-ink-gray-5 uppercase tracking-wide">{{ __('Number of Users') }}</label>
+            <label class="mb-1 block text-xs font-medium text-ink-gray-4 uppercase tracking-wider">{{ __('Number of Users') }}</label>
             <input
               v-model.number="facility.num_users"
               type="number"
               :min="tierMin(facility.package_tier)"
               :max="tierMax(facility.package_tier)"
-              class="w-32 rounded-lg border border-outline-elevation-2 bg-surface-white px-3 py-2 text-sm text-ink-gray-9 focus:border-blue-500 focus:outline-none dark:bg-surface-gray-2"
+              class="w-32 rounded-lg border border-outline-gray-2 bg-surface-white px-3 py-2 text-sm text-ink-gray-9 dark:bg-surface-gray-2 focus:outline-none focus:ring-2 focus:ring-outline-blue-4"
               @input="emit('dirty')"
             />
-            <p v-if="facility.num_users && !validUsers(facility)" class="mt-1 text-xs text-red-500">
+            <p v-if="facility.num_users && !validUsers(facility)" class="mt-1 text-xs text-red-500 dark:text-red-400">
               {{ tierRangeMsg(facility.package_tier) }}
             </p>
           </div>
@@ -71,13 +71,18 @@
             <span class="text-ink-gray-5">{{ __('Subscription') }}: <strong>{{ fmtKes(tierPrices(facility.package_tier).subscription) }}</strong></span>
             <span class="text-ink-gray-5">{{ __('Impl') }}: <strong>{{ fmtKes(tierPrices(facility.package_tier).impl) }}</strong></span>
             <span class="font-semibold text-ink-gray-9">{{ __('Line Total') }}: {{ fmtKes(lineTotal(facility)) }}</span>
-            <button
+            <Button
+              size="sm"
+              variant="ghost"
+              theme="red"
               :disabled="facilities.length <= 1"
-              class="ml-3 text-red-500 disabled:opacity-30 hover:text-red-700 transition-colors"
+              class="ml-2"
               @click="removeFacility(idx)"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
-            </button>
+              <template #icon>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+              </template>
+            </Button>
           </div>
         </div>
 
@@ -91,8 +96,8 @@
 
       <!-- Sticky sidebar -->
       <div class="hidden lg:block">
-        <div class="sticky top-5 rounded-xl border border-outline-elevation-2 bg-surface-white p-4 dark:bg-surface-gray-1">
-          <h3 class="mb-3 text-xs font-semibold uppercase tracking-wide text-ink-gray-5">{{ __('Running Subtotal') }}</h3>
+        <div class="sticky top-5 rounded-xl border border-outline-gray-2 bg-surface-white p-4 dark:bg-surface-gray-1">
+          <h3 class="mb-3 text-xs font-semibold uppercase tracking-wider text-ink-gray-4">{{ __('Running Subtotal') }}</h3>
           <div class="space-y-2 text-sm">
             <div class="flex justify-between">
               <span class="text-ink-gray-6">{{ __('Subscription') }}</span>
@@ -102,7 +107,7 @@
               <span class="text-ink-gray-6">{{ __('Implementation') }}</span>
               <span class="font-medium text-ink-gray-9">{{ fmtKes(implTotal) }}</span>
             </div>
-            <div class="my-2 border-t border-outline-elevation-2" />
+            <div class="my-2 border-t border-outline-gray-2" />
             <div class="flex justify-between font-semibold">
               <span class="text-ink-gray-9">{{ __('Subtotal') }}</span>
               <span class="text-ink-gray-9">{{ fmtKes(subscriptionTotal + implTotal) }}</span>
@@ -113,7 +118,7 @@
     </div>
 
     <!-- Mobile subtotal footer -->
-    <div class="fixed bottom-0 left-0 right-0 flex items-center justify-between border-t border-outline-elevation-2 bg-surface-white px-4 py-3 lg:hidden dark:bg-surface-gray-1">
+    <div class="fixed bottom-0 inset-x-0 z-30 flex items-center justify-between border-t border-outline-gray-2 bg-surface-white/95 backdrop-blur px-4 py-3 lg:hidden">
       <span class="text-sm font-semibold text-ink-gray-9">{{ __('Subtotal') }}: {{ fmtKes(subscriptionTotal + implTotal) }}</span>
       <Button variant="solid" :disabled="!canProceed" @click="emit('next')">{{ __('Continue →') }}</Button>
     </div>

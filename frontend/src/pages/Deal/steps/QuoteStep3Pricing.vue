@@ -8,7 +8,7 @@
       <!-- Controls -->
       <div class="space-y-6">
         <!-- Partner context -->
-        <div class="rounded-xl border border-outline-elevation-2 bg-surface-gray-1 px-4 py-3 dark:bg-surface-gray-2">
+        <div class="rounded-xl border border-outline-gray-2 bg-surface-gray-1 px-4 py-3 dark:bg-surface-gray-2">
           <div class="flex flex-wrap gap-4 text-sm">
             <span><span class="text-ink-gray-5">{{ __('Partner Tier') }}:</span> <strong class="text-ink-gray-9 ml-1">{{ context.partner_tier || 'No Partner' }}</strong></span>
             <span><span class="text-ink-gray-5">{{ __('Max SaaS Discount') }}:</span> <strong class="text-ink-gray-9 ml-1">{{ context.max_saas_discount ?? 45 }}%</strong></span>
@@ -28,31 +28,31 @@
               {{ __('SaaS Discount') }} — <span :class="saasDiscount > maxSaas ? 'text-red-500' : 'text-ink-gray-5'">{{ __('max') }} {{ maxSaas }}%</span>
             </label>
             <div class="flex items-center gap-3">
-              <input type="range" :min="0" :max="maxSaas" :value="saasDiscount" class="flex-1 accent-blue-600" @input="onSaasInput" />
+              <input type="range" :min="0" :max="maxSaas" :value="saasDiscount" class="flex-1 accent-[var(--blue-6)]" @input="onSaasInput" />
               <input
                 type="number"
                 :min="0"
                 :max="maxSaas"
                 :value="saasDiscount"
-                class="w-20 rounded-lg border border-outline-elevation-2 bg-surface-white px-2 py-1 text-center text-sm focus:border-blue-500 focus:outline-none dark:bg-surface-gray-2"
+                class="w-20 rounded-lg border border-outline-gray-2 bg-surface-white px-2 py-1 text-center text-sm dark:bg-surface-gray-2 focus:outline-none focus:ring-2 focus:ring-outline-blue-4"
                 @input="onSaasInput"
               />
               <span class="text-sm text-ink-gray-6">%</span>
             </div>
-            <p v-if="saasDiscount > maxSaas" class="mt-1 text-xs text-red-500">{{ __('Capped at {0}% ({1} tier max)', [maxSaas, context.partner_tier]) }}</p>
+            <p v-if="saasDiscount > maxSaas" class="mt-1 text-xs text-red-500 dark:text-red-400">{{ __('Capped at {0}% ({1} tier max)', [maxSaas, context.partner_tier]) }}</p>
           </div>
           <div>
             <label class="mb-2 block text-sm font-medium text-ink-gray-7">
               {{ __('Services Discount') }} — <span :class="servicesDiscount > maxServices ? 'text-red-500' : 'text-ink-gray-5'">{{ __('max') }} {{ maxServices }}%</span>
             </label>
             <div class="flex items-center gap-3">
-              <input type="range" :min="0" :max="maxServices" :value="servicesDiscount" class="flex-1 accent-blue-600" @input="onServicesInput" />
+              <input type="range" :min="0" :max="maxServices" :value="servicesDiscount" class="flex-1 accent-[var(--blue-6)]" @input="onServicesInput" />
               <input
                 type="number"
                 :min="0"
                 :max="maxServices"
                 :value="servicesDiscount"
-                class="w-20 rounded-lg border border-outline-elevation-2 bg-surface-white px-2 py-1 text-center text-sm focus:border-blue-500 focus:outline-none dark:bg-surface-gray-2"
+                class="w-20 rounded-lg border border-outline-gray-2 bg-surface-white px-2 py-1 text-center text-sm dark:bg-surface-gray-2 focus:outline-none focus:ring-2 focus:ring-outline-blue-4"
                 @input="onServicesInput"
               />
               <span class="text-sm text-ink-gray-6">%</span>
@@ -70,8 +70,8 @@
               :class="[
                 'rounded-lg border-2 px-3 py-2 text-sm font-medium transition-all',
                 paymentTerms === pt.value
-                  ? 'border-blue-500 bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400'
-                  : 'border-outline-elevation-2 bg-surface-white text-ink-gray-7 hover:border-blue-300 dark:bg-surface-gray-2',
+                  ? 'border-outline-blue-5 bg-surface-blue-1 text-ink-blue-7 dark:bg-surface-blue-2/20 dark:text-ink-blue-6'
+                  : 'border-outline-gray-2 bg-surface-white text-ink-gray-7 hover:border-outline-blue-3 dark:bg-surface-gray-2',
               ]"
               :title="pt.value === 'Monthly' ? __('Monthly billing adds a 15% surcharge') : ''"
               @click="emit('update:paymentTerms', pt.value)"
@@ -92,8 +92,8 @@
               :class="[
                 'rounded-lg border-2 px-3 py-1.5 text-sm font-medium transition-all',
                 contractTermYrs === yr
-                  ? 'border-blue-500 bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400'
-                  : 'border-outline-elevation-2 bg-surface-white text-ink-gray-7 hover:border-blue-300 dark:bg-surface-gray-2',
+                  ? 'border-outline-blue-5 bg-surface-blue-1 text-ink-blue-7 dark:bg-surface-blue-2/20 dark:text-ink-blue-6'
+                  : 'border-outline-gray-2 bg-surface-white text-ink-gray-7 hover:border-outline-blue-3 dark:bg-surface-gray-2',
               ]"
               @click="emit('update:contractTermYrs', yr)"
             >{{ yr }}{{ __('yr') }}</button>
@@ -103,24 +103,24 @@
 
       <!-- Live price summary -->
       <div class="space-y-4">
-        <div class="rounded-xl border border-outline-elevation-2 bg-surface-white p-4 dark:bg-surface-gray-1">
+        <div class="rounded-xl border border-outline-gray-2 bg-surface-white p-4 dark:bg-surface-gray-1">
           <h3 class="mb-3 text-xs font-semibold uppercase tracking-wide text-ink-gray-5">{{ __('Price Summary') }}</h3>
           <div class="space-y-2 text-sm">
             <div class="flex justify-between"><span class="text-ink-gray-6">{{ __('Subscription') }}</span><span>{{ fmtKes(pricing.sub_total) }}</span></div>
             <div class="flex justify-between"><span class="text-ink-gray-6">{{ __('Implementation') }}</span><span>{{ fmtKes(pricing.impl_total) }}</span></div>
             <div v-if="pricing.addon_total > 0" class="flex justify-between"><span class="text-ink-gray-6">{{ __('Add-ons') }}</span><span>{{ fmtKes(pricing.addon_total) }}</span></div>
             <div v-if="pricing.discount > 0" class="flex justify-between text-red-500"><span>{{ __('Discount') }}</span><span>-{{ fmtKes(pricing.discount) }}</span></div>
-            <div class="my-2 border-t border-outline-elevation-2" />
+            <div class="my-2 border-t border-outline-gray-2" />
             <div class="flex justify-between"><span class="text-ink-gray-6">{{ __('Net Subtotal (excl. VAT)') }}</span><span class="font-medium">{{ fmtKes(pricing.net_subtotal) }}</span></div>
             <div class="flex justify-between"><span class="text-ink-gray-6">{{ __('VAT 16%') }}</span><span>{{ fmtKes(pricing.vat) }}</span></div>
-            <div class="my-2 border-t border-outline-elevation-2" />
+            <div class="my-2 border-t border-outline-gray-2" />
             <div class="flex justify-between font-bold text-base"><span>{{ __('Grand Total Year 1') }}</span><span class="text-ink-gray-9">{{ fmtKes(pricing.grand_total) }}</span></div>
             <div v-if="paymentTerms === 'Monthly'" class="flex justify-between text-xs text-ink-gray-5"><span>{{ __('Monthly Equivalent') }}</span><span>{{ fmtKes(pricing.monthly) }}/mo</span></div>
           </div>
         </div>
 
         <!-- Renewal table -->
-        <div v-if="contractTermYrs > 1" class="rounded-xl border border-outline-elevation-2 overflow-hidden">
+        <div v-if="contractTermYrs > 1" class="rounded-xl border border-outline-gray-2 overflow-hidden">
           <div class="bg-surface-gray-1 px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-ink-gray-5">{{ __('5-Year Renewal Schedule') }}</div>
           <table class="w-full text-xs">
             <thead class="bg-surface-gray-1/50 text-ink-gray-5">
@@ -138,10 +138,10 @@
                 <td class="px-3 py-1.5 text-right font-medium text-ink-gray-9">{{ fmtKes(row.grand_total_incl_vat) }}</td>
                 <td v-if="paymentTerms === 'Monthly'" class="px-3 py-1.5 text-right text-ink-gray-6">{{ fmtKes(row.monthly_equivalent) }}</td>
               </tr>
-              <tr class="bg-blue-50 dark:bg-blue-900/20 font-bold">
+              <tr class="bg-surface-blue-1 dark:bg-surface-blue-2/20 font-bold">
                 <td class="px-3 py-2 text-ink-gray-9">{{ __('5-Year TCO') }}</td>
                 <td class="px-3 py-2 text-right text-ink-gray-9">{{ fmtKes(tcoExcl) }}</td>
-                <td class="px-3 py-2 text-right text-blue-700 dark:text-blue-400">{{ fmtKes(tcoIncl) }}</td>
+                <td class="px-3 py-2 text-right text-ink-blue-7 dark:text-ink-blue-6">{{ fmtKes(tcoIncl) }}</td>
                 <td v-if="paymentTerms === 'Monthly'" class="px-3 py-2"></td>
               </tr>
             </tbody>
