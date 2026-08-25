@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-08-17 07:47+0000\n"
-"PO-Revision-Date: 2026-08-23 17:21\n"
+"PO-Revision-Date: 2026-08-25 17:34\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Persian\n"
 "MIME-Version: 1.0\n"
@@ -9498,7 +9498,7 @@ msgstr "شما اجازه دسترسی به این سند را ندارید"
 
 #: crm/api/__init__.py:154
 msgid "You don't have permission to delete this attachment"
-msgstr ""
+msgstr "شما اجازه حذف این پیوست را ندارید"
 
 #: crm/api/user.py:17
 msgid "You must be logged in to change your password"
