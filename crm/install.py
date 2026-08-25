@@ -334,33 +334,48 @@ def add_web_form_custom_fields():
 	- `crm_hidden_defaults`: JSON of doctype-mandatory fields the author removed
 	  from the visible form, with the default value to apply on submission so the
 	  target record can still be created.
+	- `placeholder` on Web Form Field: standard from v16 onwards, absent on v15,
+	  so add it there to keep the builder working on both.
 	"""
+	custom_fields = {}
+
 	meta = frappe.get_meta("Web Form")
-	if meta.has_field("crm_published") and meta.has_field("crm_hidden_defaults"):
+	if not (meta.has_field("crm_published") and meta.has_field("crm_hidden_defaults")):
+		custom_fields["Web Form"] = [
+			{
+				"default": "0",
+				"fieldname": "crm_published",
+				"fieldtype": "Check",
+				"label": "CRM Published",
+				"insert_after": "published",
+				"hidden": 1,
+			},
+			{
+				"fieldname": "crm_hidden_defaults",
+				"fieldtype": "Long Text",
+				"label": "CRM Hidden Field Defaults",
+				"insert_after": "crm_published",
+				"hidden": 1,
+			},
+		]
+
+	if not frappe.get_meta("Web Form Field").has_field("placeholder"):
+		custom_fields["Web Form Field"] = [
+			{
+				"fieldname": "placeholder",
+				"fieldtype": "Data",
+				"label": "Placeholder",
+				"insert_after": "description",
+			}
+		]
+
+	if not custom_fields:
 		return
+
 	click.secho("* Installing Custom Fields in Web Form")
-	create_custom_fields(
-		{
-			"Web Form": [
-				{
-					"default": "0",
-					"fieldname": "crm_published",
-					"fieldtype": "Check",
-					"label": "CRM Published",
-					"insert_after": "published",
-					"hidden": 1,
-				},
-				{
-					"fieldname": "crm_hidden_defaults",
-					"fieldtype": "Long Text",
-					"label": "CRM Hidden Field Defaults",
-					"insert_after": "crm_published",
-					"hidden": 1,
-				},
-			]
-		}
-	)
+	create_custom_fields(custom_fields)
 	frappe.clear_cache(doctype="Web Form")
+	frappe.clear_cache(doctype="Web Form Field")
 
 
 def add_default_industries():

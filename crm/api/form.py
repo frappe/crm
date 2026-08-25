@@ -363,7 +363,7 @@ def get_form_config(name: str) -> dict:
 				"fieldtype": f.fieldtype,
 				"options": f.options,
 				"reqd": f.reqd,
-				"placeholder": f.placeholder,
+				"placeholder": f.get("placeholder"),
 				"field_description": f.description,
 				"depends_on": f.depends_on or "",
 				"mandatory_depends_on": f.mandatory_depends_on or "",
