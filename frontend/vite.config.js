@@ -136,6 +136,8 @@ export default defineConfig(async ({ mode }) => {
   config.build.rollupOptions.input = {
     main: path.resolve(__dirname, 'index.html'),
     'finance-cockpit': path.resolve(__dirname, 'finance-cockpit.html'),
+    'opt-in': path.resolve(__dirname, 'opt-in.html'),
+    'sign-contract': path.resolve(__dirname, 'sign-contract.html'),
   }
 
   return config

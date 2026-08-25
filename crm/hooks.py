@@ -159,6 +159,7 @@ permission_query_conditions = {
 	"CRM Lead": "crm.permissions.org_hierarchy.get_lead_permission_query_conditions",
 	"CRM Deal": "crm.permissions.org_hierarchy.get_deal_permission_query_conditions",
 	"CRM Notification": "crm.fcrm.doctype.crm_notification.crm_notification.get_permission_query_conditions",
+	"CRM Pre-Qualified Facility": "crm.permissions.pre_qualified.get_permission_query",
 }
 
 has_permission = {
@@ -360,12 +361,15 @@ after_migrate = [
 	"crm.domain_enrichment.install.seed_default_rules_and_mappings",
 	"crm.install.add_default_scripts",
 	"crm.install.add_web_form_custom_fields",
+	"crm.setup.optin.ensure_signing_key",
+	"crm.setup.optin.ensure_default_terms",
+	"crm.setup.optin.ensure_lead_source",
 ]
 
 fixtures = [
 	{"dt": "Role", "filters": [["name", "=", "Partner RM"]]},
 	{"dt": "Workflow", "filters": [["name", "=", "CRM Lead Approval"]]},
-	{"dt": "Print Format", "filters": [["name", "=", "CRM Quote Standard"]]},
+	{"dt": "Print Format", "filters": [["name", "in", ["CRM Quote Standard", "CRM Contract Standard"]]]},
 	{"dt": "CRM Product", "filters": [["product_code", "like", "CV-%"]]},
 ]
 
