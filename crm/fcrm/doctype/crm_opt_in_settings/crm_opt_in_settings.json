@@ -1,0 +1,75 @@
+{
+ "actions": [],
+ "creation": "2026-08-25 00:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "optin_signing_key",
+  "col_break_1",
+  "default_price_list",
+  "section_break_tc",
+  "active_tc_document",
+  "col_break_2",
+  "default_lead_owner"
+ ],
+ "fields": [
+  {
+   "fieldname": "optin_signing_key",
+   "fieldtype": "Password",
+   "label": "Opt-In Signing Key",
+   "description": "HMAC signing key for OTP and magic links. Auto-generated on first use."
+  },
+  {
+   "fieldname": "col_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "default_price_list",
+   "fieldtype": "Data",
+   "label": "Default Price List",
+   "default": "Negotiated Year 1"
+  },
+  {
+   "fieldname": "section_break_tc",
+   "fieldtype": "Section Break",
+   "label": "Terms & Conditions"
+  },
+  {
+   "fieldname": "active_tc_document",
+   "fieldtype": "Data",
+   "label": "Active T&C Document",
+   "description": "Name of the Terms and Conditions document to render for opt-in submissions"
+  },
+  {
+   "fieldname": "col_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "default_lead_owner",
+   "fieldtype": "Link",
+   "label": "Default Lead Owner",
+   "options": "User"
+  }
+ ],
+ "issingle": 1,
+ "links": [],
+ "modified": "2026-08-25 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "FCRM",
+ "name": "CRM Opt-In Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC"
+}

@@ -1,0 +1,158 @@
+{
+ "actions": [],
+ "autoname": "hash",
+ "creation": "2026-08-25 00:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "mfl_code",
+  "facility_name",
+  "keph_level",
+  "col_break_1",
+  "network",
+  "status",
+  "section_break_contact",
+  "contact_name",
+  "contact_email",
+  "contact_phone",
+  "section_break_otp",
+  "otp_hash",
+  "otp_expiry",
+  "otp_attempts"
+ ],
+ "fields": [
+  {
+   "fieldname": "mfl_code",
+   "fieldtype": "Data",
+   "label": "MFL Code",
+   "reqd": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "facility_name",
+   "fieldtype": "Data",
+   "label": "Facility Name",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "keph_level",
+   "fieldtype": "Data",
+   "label": "KEPH Level",
+   "reqd": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "col_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "network",
+   "fieldtype": "Link",
+   "label": "Network",
+   "reqd": 1,
+   "options": "CRM Opt-In Network",
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Active\nOpted In\nDeclined",
+   "default": "Active",
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "section_break_contact",
+   "fieldtype": "Section Break",
+   "label": "Contact"
+  },
+  {
+   "fieldname": "contact_name",
+   "fieldtype": "Data",
+   "label": "Contact Name",
+   "reqd": 1
+  },
+  {
+   "fieldname": "contact_email",
+   "fieldtype": "Data",
+   "label": "Contact Email",
+   "reqd": 1,
+   "options": "Email",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "contact_phone",
+   "fieldtype": "Data",
+   "label": "Contact Phone",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break_otp",
+   "fieldtype": "Section Break",
+   "label": "OTP"
+  },
+  {
+   "fieldname": "otp_hash",
+   "fieldtype": "Password",
+   "label": "OTP Hash",
+   "read_only": 1
+  },
+  {
+   "fieldname": "otp_expiry",
+   "fieldtype": "Datetime",
+   "label": "OTP Expiry",
+   "read_only": 1
+  },
+  {
+   "fieldname": "otp_attempts",
+   "fieldtype": "Int",
+   "label": "OTP Attempts",
+   "read_only": 1,
+   "default": "0"
+  }
+ ],
+ "is_submittable": 0,
+ "links": [],
+ "modified": "2026-08-25 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "FCRM",
+ "name": "CRM Pre-Qualified Facility",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "select": 1,
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "read": 1,
+   "role": "Network Coordinator",
+   "select": 1,
+   "write": 1
+  },
+  {
+   "read": 1,
+   "role": "Sales User",
+   "select": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "title_field": "facility_name",
+ "track_changes": 1
+}
