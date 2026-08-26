@@ -1219,7 +1219,7 @@ const viewActions = (view, close) => {
 }
 
 function isDefaultView(v) {
-  let defaultView = getDefaultView()
+  let defaultView = getDefaultView(route.name)
 
   if (!defaultView || !v.name) return false
 
