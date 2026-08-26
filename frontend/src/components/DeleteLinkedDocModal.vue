@@ -131,9 +131,10 @@
 </template>
 
 <script setup>
-import { createResource, call } from 'frappe-ui'
+import { createResource, call, toast } from 'frappe-ui'
 import { useRouter } from 'vue-router'
 import { computed, ref } from 'vue'
+import { markDocumentAsDeleted } from '@/data/document'
 
 const show = defineModel({ type: Boolean })
 const router = useRouter()
@@ -253,6 +254,9 @@ const deleteDoc = async () => {
     doctype: props.doctype,
     name: props.docname,
   })
+  markDocumentAsDeleted(props.doctype, props.docname)
+  toast.success(__('{0} deleted successfully', [props.doctype]))
+  show.value = false
   router.push({ name: props.name })
   props?.reload?.()
 }
