@@ -77,7 +77,7 @@ import { ref, useTemplateRef } from 'vue'
 
 const tabs = [
   { name: 'accounts', label: __('Accounts') },
-  { name: 'connection', label: __('Connection') },
+  { name: 'advanced', label: __('Advanced') },
 ]
 
 const step = ref('home')
