@@ -3,7 +3,7 @@
 import json
 
 import frappe
-from frappe import _, log
+from frappe import _
 from frappe.model.document import Document, get_controller
 from frappe.utils import parse_json
 
@@ -205,7 +205,6 @@ def set_as_default(name: str | int | None = None, type: str | None = None, docty
 		doc = create_or_update_standard_view({"type": type, "doctype": doctype, "is_default": 1})
 		name = doc.name
 
-	frappe.log(f"Setting view {name}, type {type}, doctype {doctype} as default for user {frappe.session.user}")
 	# remove default from other views of same user and same doctype
 	frappe.db.set_value(
 		"CRM View Settings",
