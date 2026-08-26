@@ -153,6 +153,31 @@ def is_whatsapp_enabled():
 	return status == "Active"
 
 
+# Link fields pointing at WhatsApp Account. Frappe refuses to delete a document that
+# any of these still reference, so these counts are what makes a delete impossible.
+ACCOUNT_LINK_FIELDS = {
+	"WhatsApp Message": "whatsapp_account",
+	"WhatsApp Profile": "whatsapp_account",
+	"WhatsApp Template": "whatsapp_account",
+	"WhatsApp Log": "account",
+}
+
+
+@frappe.whitelist()
+def get_account_usage(account: str) -> dict[str, int]:
+	"""Count what an account is still referenced by, so the UI can explain a refused
+	delete up front instead of surfacing Frappe's link-exists error."""
+	validate_access()
+
+	usage = {}
+	for doctype, fieldname in ACCOUNT_LINK_FIELDS.items():
+		if not frappe.db.exists("DocType", doctype):
+			continue
+		usage[doctype] = frappe.db.count(doctype, {fieldname: account})
+
+	return usage
+
+
 @frappe.whitelist()
 def is_whatsapp_installed():
 	if not frappe.db.exists("DocType", "WhatsApp Settings"):

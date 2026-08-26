@@ -8,6 +8,7 @@ from frappe.tests.utils import FrappeTestCase
 
 from crm.api.whatsapp import (
 	ALLOWED_WHATSAPP_ROLES,
+	get_account_usage,
 	is_whatsapp_enabled,
 	notify_agent,
 	validate,
@@ -146,6 +147,44 @@ class TestIsWhatsAppEnabled(FrappeTestCase):
 			patch("frappe.get_cached_value", side_effect=["_Test Account", "Active"]),
 		):
 			self.assertTrue(is_whatsapp_enabled())
+
+
+class TestGetAccountUsage(FrappeTestCase):
+	"""Counts what still links to an account, so the UI can explain a refused delete
+	rather than surfacing Frappe's link-exists error."""
+
+	def test_counts_each_linked_doctype(self):
+		with (
+			patch("frappe.get_roles", return_value=["System Manager"]),
+			patch("frappe.db.exists", return_value=True),
+			patch("frappe.db.count", side_effect=[12, 3, 0, 5]),
+		):
+			usage = get_account_usage("_Test Account")
+
+		self.assertEqual(
+			usage,
+			{
+				"WhatsApp Message": 12,
+				"WhatsApp Profile": 3,
+				"WhatsApp Template": 0,
+				"WhatsApp Log": 5,
+			},
+		)
+
+	def test_skips_doctypes_that_are_not_installed(self):
+		with (
+			patch("frappe.get_roles", return_value=["System Manager"]),
+			patch("frappe.db.exists", side_effect=[True, True, False, False]),
+			patch("frappe.db.count", return_value=0),
+		):
+			usage = get_account_usage("_Test Account")
+
+		self.assertEqual(set(usage), {"WhatsApp Message", "WhatsApp Profile"})
+
+	def test_raises_for_user_without_an_allowed_role(self):
+		with patch("frappe.get_roles", return_value=["All", "Guest"]):
+			with self.assertRaises(frappe.PermissionError):
+				get_account_usage("_Test Account")
 
 
 class TestValidateAccess(FrappeTestCase):

@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col gap-6" :class="embedded ? '' : 'h-full'">
-    <div class="flex justify-between">
+    <div v-if="!hideHeader" class="flex justify-between">
       <div class="flex flex-col gap-1 w-9/12">
         <div class="flex gap-1 items-center">
           <Button
@@ -19,7 +19,7 @@
             {{ title || __(doctype) }}
           </h2>
           <Badge
-            v-if="data.isDirty"
+            v-if="isDirty"
             :label="__('Not Saved')"
             variant="subtle"
             theme="orange"
@@ -27,34 +27,42 @@
         </div>
       </div>
       <div class="flex item-center space-x-2 w-3/12 justify-end">
+        <!-- Nothing to save until something changes, so don't offer it — but a
+             new record always offers Create, even before the first keystroke. -->
         <Button
-          :loading="data.save.loading"
-          :label="__('Update')"
+          v-if="isDirty || isNew"
+          :loading="saving"
+          :label="isNew ? __('Create') : __('Save')"
           variant="solid"
-          @click="data.save.submit()"
+          @click="save"
         />
       </div>
     </div>
+    <!-- p-1/-m-1 leaves the scroll box a little slack beyond the content, so a
+         focused control's ring isn't clipped by the edge it sits flush against.
+         `overflow-y-auto` clips horizontally too, which is where it shows. -->
     <div
-      v-if="!data.get.loading"
-      :class="embedded ? '' : 'flex-1 overflow-y-auto'"
+      v-if="!loading"
+      :class="embedded ? '' : 'flex-1 overflow-y-auto p-1 -m-1'"
     >
       <FieldLayout
-        v-if="data?.doc && tabs"
+        v-if="doc && tabs"
         :tabs="tabs"
-        :data="data.doc"
+        :data="doc"
         :doctype="doctype"
+        :context="newDocContext"
       />
     </div>
     <div v-else class="flex flex-1 items-center justify-center">
       <LoadingIndicator class="size-8" />
     </div>
-    <ErrorMessage :message="data.save.error" />
+    <ErrorMessage :message="error" />
   </div>
 </template>
 <script setup>
 import FieldLayout from '@/components/FieldLayout/FieldLayout.vue'
 import {
+  call,
   createDocumentResource,
   createResource,
   LoadingIndicator,
@@ -63,7 +71,7 @@ import {
   ErrorMessage,
 } from 'frappe-ui'
 import { getRandom } from '@/utils'
-import { computed } from 'vue'
+import { computed, onMounted, reactive, ref } from 'vue'
 
 const props = defineProps({
   doctype: { type: String, required: true },
@@ -71,13 +79,24 @@ const props = defineProps({
   // original use) keep working; pass an explicit name to edit one record of
   // a multi-record DocType (e.g. a specific WhatsApp Account).
   name: { type: String, default: '' },
+  // Render a blank record that is only created on save, so adding one is the
+  // same screen as editing one rather than a dialog first.
+  isNew: { type: Boolean, default: false },
   title: { type: String, default: '' },
   successMessage: { type: String, default: 'Updated successfully' },
   back: { type: Function, default: null },
   // When true, drop the full-height/own-scroll layout so the page sizes to its
   // content and can be stacked inside a parent that owns the scroll.
   embedded: { type: Boolean, default: false },
+  // When true, skip the title/Update header so a parent can own it. The parent
+  // drives saving through the exposed `save`/`isDirty`.
+  hideHeader: { type: Boolean, default: false },
+  // Fieldnames to leave out of the rendered form, for values the page owns
+  // through a purpose-built control elsewhere.
+  excludeFields: { type: Array, default: () => [] },
 })
+
+const emit = defineEmits(['created'])
 
 const fields = createResource({
   url: 'crm.api.doc.get_fields',
@@ -89,25 +108,86 @@ const fields = createResource({
   auto: true,
 })
 
-const data = createDocumentResource({
-  doctype: props.doctype,
-  name: props.name || props.doctype,
-  fields: ['*'],
-  auto: true,
-  setValue: {
-    onSuccess: () => {
-      toast.success(__(props.successMessage))
-    },
-    onError: (err) => {
-      toast.error(err.message + ': ' + err.messages[0])
-    },
-  },
+// Document resources are cached by doctype+name, so this page keeps its unsaved
+// edits when it is unmounted and remounted — which Tabs does on every switch.
+// `auto` would defeat that: the cache reloads an auto resource on every lookup,
+// overwriting the edits. Fetch once instead, only when there is nothing yet.
+const data = props.isNew
+  ? null
+  : createDocumentResource({
+      doctype: props.doctype,
+      name: props.name || props.doctype,
+      fields: ['*'],
+      auto: false,
+      setValue: {
+        onSuccess: () => {
+          toast.success(__(props.successMessage))
+        },
+        onError: (err) => {
+          toast.error(err.message + ': ' + err.messages[0])
+        },
+      },
+    })
+
+const newDoc = reactive({})
+// A record that does not exist yet has no name, and useDocument() — which is
+// where FieldLayout normally gets its change handler — does nothing without one,
+// so edits would be dropped. FieldLayout's standalone mode writes straight into
+// the bound object instead, which is what an unsaved record needs.
+const newDocContext = props.isNew ? { fieldPropertyOverrides: {} } : null
+const creating = ref(false)
+const createError = ref('')
+
+onMounted(() => {
+  if (data && !data.doc) data.get.fetch()
 })
+
+const doc = computed(() => (props.isNew ? newDoc : data?.doc))
+
+const loading = computed(() =>
+  props.isNew ? false : Boolean(data?.get?.loading) && !data?.doc,
+)
+
+const isDirty = computed(() =>
+  props.isNew ? Object.keys(newDoc).length > 0 : Boolean(data?.isDirty),
+)
+
+const saving = computed(() =>
+  props.isNew ? creating.value : Boolean(data?.save?.loading),
+)
+
+const error = computed(() =>
+  props.isNew ? createError.value : data?.save?.error,
+)
+
+async function save() {
+  if (!props.isNew) {
+    data.save.submit()
+    return
+  }
+
+  createError.value = ''
+  creating.value = true
+  try {
+    const created = await call('frappe.client.insert', {
+      doc: { doctype: props.doctype, ...newDoc },
+    })
+    toast.success(__(props.successMessage))
+    emit('created', created.name)
+  } catch (err) {
+    createError.value = err.messages?.[0] || err.message
+  } finally {
+    creating.value = false
+  }
+}
 
 const tabs = computed(() => {
   if (!fields.data) return []
   let _tabs = []
-  let fieldsData = fields.data
+  let fieldsData = fields.data.filter(
+    (field) => !props.excludeFields.includes(field.fieldname),
+  )
+  if (!fieldsData.length) return []
 
   if (fieldsData[0].type != 'Tab Break') {
     let _sections = []
@@ -153,6 +233,19 @@ const tabs = computed(() => {
     }
   })
 
+  // Excluding a field can empty the column it sat in. Columns are flex-1, so an
+  // empty one would still hold its share of the row's width.
+  _tabs.forEach((tab) =>
+    tab.sections.forEach(
+      (section) =>
+        (section.columns = section.columns.filter(
+          (column) => column.fields.length,
+        )),
+    ),
+  )
+
   return _tabs
 })
+
+defineExpose({ isDirty, saving, save })
 </script>
