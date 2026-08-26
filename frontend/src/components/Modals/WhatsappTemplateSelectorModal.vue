@@ -1,19 +1,31 @@
 <template>
-  <Dialog
-    v-model="show"
-    :options="{ title: __('WhatsApp Templates'), size: '4xl' }"
-  >
-    <template #body-content>
-      <TextInput
-        ref="searchInput"
-        v-model="search"
-        type="text"
-        :placeholder="__('Welcome Message')"
-      >
-        <template #prefix>
-          <FeatherIcon name="search" class="h-4 w-4 text-ink-gray-4" />
-        </template>
-      </TextInput>
+  <Dialog v-model:open="show" :title="__('WhatsApp Templates')" :size="'4xl'">
+    <template #default>
+      <div class="w-full flex items-center gap-2">
+        <TextInput
+          ref="searchInput"
+          v-model="search"
+          class="w-full"
+          type="text"
+          :placeholder="__('Welcome Message')"
+        >
+          <template #prefix>
+            <span
+              class="lucide-search h-4 w-4 text-ink-gray-4"
+              aria-hidden="true"
+            />
+          </template>
+        </TextInput>
+        <Button
+          :label="__('Create New Template')"
+          variant="solid"
+          @click="newWhatsappTemplate"
+        >
+          <template #prefix>
+            <span class="lucide-plus h-4 w-4" aria-hidden="true" />
+          </template>
+        </Button>
+      </div>
       <div
         v-if="filteredTemplates.length"
         class="mt-2 grid max-h-[560px] grid-cols-1 gap-2 overflow-y-auto sm:grid-cols-3"
@@ -24,22 +36,26 @@
           class="flex h-56 cursor-pointer flex-col gap-2 rounded-lg border p-3 hover:bg-surface-gray-2"
           @click="emit('send', template.name)"
         >
-          <div class="border-b pb-2 text-base font-semibold">
+          <div
+            class="border-b pb-2 text-base-semibold truncate"
+            :title="template.name"
+          >
             {{ template.name }}
           </div>
-          <TextEditor
+          <!-- content is passed through sanitizeHTML() (DOMPurify) before rendering, so v-html is safe here -->
+          <!-- eslint-disable vue/no-v-html -->
+          <div
             v-if="template.template"
-            :content="template.template"
-            :editable="false"
-            editor-class="!prose-sm max-w-none !text-sm text-ink-gray-5 focus:outline-none"
-            class="flex-1 overflow-hidden"
+            class="prose-f prose-sm max-w-none !text-sm text-ink-gray-5 flex-1 overflow-hidden"
+            v-html="sanitizeHTML(template.template)"
           />
+          <!-- eslint-enable vue/no-v-html -->
         </div>
       </div>
       <div v-else class="mt-2">
         <div class="flex h-56 flex-col items-center justify-center">
           <div class="text-lg text-ink-gray-4">
-            {{ __('No templates found') }}
+            {{ __('No Templates Found') }}
           </div>
           <Button
             :label="__('Create New')"
@@ -53,14 +69,15 @@
 </template>
 
 <script setup>
-import { TextEditor, createListResource } from 'frappe-ui'
+import { createListResource } from 'frappe-ui'
 import { ref, computed, nextTick, watch, onMounted } from 'vue'
+import { sanitizeHTML } from '@/utils'
 
 const props = defineProps({
-  doctype: String,
+  doctype: { type: String, default: '' },
 })
 
-const show = defineModel()
+const show = defineModel({ type: Boolean })
 const searchInput = ref('')
 
 const emit = defineEmits(['send'])

@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { getCurrentInstance, ref } from 'vue'
+import { getCurrentInstance } from 'vue'
 
 export const globalStore = defineStore('crm-global', () => {
   const app = getCurrentInstance()

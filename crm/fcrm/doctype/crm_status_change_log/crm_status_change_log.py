@@ -9,6 +9,27 @@ from frappe.utils import add_to_date, get_datetime
 
 
 class CRMStatusChangeLog(Document):
+	# begin: auto-generated types
+	# This code is auto-generated. Do not modify anything in this block.
+
+	from typing import TYPE_CHECKING
+
+	if TYPE_CHECKING:
+		from frappe.types import DF
+
+		duration: DF.Duration | None
+		from_date: DF.Datetime | None
+		from_type: DF.Data | None
+		last_status_change_log: DF.Link | None
+		log_owner: DF.Link | None
+		parent: DF.Data
+		parentfield: DF.Data
+		parenttype: DF.Data
+		to: DF.Data | None
+		to_date: DF.Datetime | None
+		to_type: DF.Data | None
+	# end: auto-generated types
+
 	pass
 
 

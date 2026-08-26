@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex items-center justify-between px-2 py-3 border-outline-gray-modals cursor-pointer hover:bg-surface-menu-bar rounded"
+    class="flex items-center justify-between px-2 py-3 border-outline-elevation-2 cursor-pointer hover:bg-surface-sidebar rounded"
   >
     <!-- avatar and name -->
     <div class="flex items-center justify-between gap-2">
@@ -25,10 +25,7 @@ import EmailProviderIcon from './EmailProviderIcon.vue'
 import { computed } from 'vue'
 
 const props = defineProps({
-  emailAccount: {
-    type: Object,
-    required: true,
-  },
+  emailAccount: { type: Object, required: true },
 })
 
 const badgeTitle = computed(() => {
@@ -36,7 +33,7 @@ const badgeTitle = computed(() => {
     props.emailAccount.default_incoming &&
     props.emailAccount.default_outgoing
   ) {
-    return __('Default Sending and Inbox')
+    return __('Default Sending & Inbox')
   } else if (props.emailAccount.default_incoming) {
     return __('Default Inbox')
   } else if (props.emailAccount.default_outgoing) {

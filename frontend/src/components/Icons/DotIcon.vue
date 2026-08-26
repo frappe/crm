@@ -10,10 +10,7 @@
   </svg>
 </template>
 <script setup>
-const props = defineProps({
-  radius: {
-    type: Number,
-    default: 3.5,
-  },
+defineProps({
+  radius: { type: Number, default: 3.5 },
 })
 </script>

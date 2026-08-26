@@ -10,24 +10,30 @@
  "email_append_to": 1,
  "engine": "InnoDB",
  "field_order": [
+  "person_tab",
+  "salutation",
+  "first_name",
+  "last_name",
+  "column_break_opsm",
+  "lead_name",
+  "email",
+  "mobile_no",
   "details",
   "organization",
   "website",
+  "organization_logo",
+  "company_description",
+  "linkedin",
+  "twitter",
+  "facebook",
   "territory",
   "industry",
   "job_title",
   "source",
   "lead_owner",
-  "person_tab",
-  "salutation",
-  "first_name",
-  "last_name",
-  "email",
-  "mobile_no",
   "organization_tab",
   "section_break_uixv",
   "naming_series",
-  "lead_name",
   "middle_name",
   "gender",
   "phone",
@@ -66,7 +72,10 @@
   "syncing_tab",
   "facebook_lead_id",
   "column_break_ixmu",
-  "facebook_form_id"
+  "facebook_form_id",
+  "lost_details_tab",
+  "lost_reason",
+  "lost_notes"
  ],
  "fields": [
   {
@@ -105,10 +114,10 @@
    "options": "Gender"
   },
   {
-   "default": "New",
    "fieldname": "status",
    "fieldtype": "Link",
    "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Status",
    "options": "CRM Lead Status",
    "reqd": 1,
@@ -117,6 +126,7 @@
   {
    "fieldname": "email",
    "fieldtype": "Data",
+   "in_standard_filter": 1,
    "label": "Email",
    "options": "Email",
    "search_index": 1
@@ -129,7 +139,7 @@
   {
    "fieldname": "mobile_no",
    "fieldtype": "Data",
-   "label": "Mobile No",
+   "label": "Mobile No.",
    "options": "Phone"
   },
   {
@@ -155,7 +165,8 @@
   {
    "fieldname": "annual_revenue",
    "fieldtype": "Currency",
-   "label": "Annual Revenue"
+   "label": "Annual Revenue",
+   "non_negative": 1
   },
   {
    "fieldname": "lead_owner",
@@ -185,6 +196,7 @@
   {
    "fieldname": "lead_name",
    "fieldtype": "Data",
+   "in_standard_filter": 1,
    "label": "Full Name",
    "search_index": 1
   },
@@ -202,6 +214,7 @@
   {
    "fieldname": "organization",
    "fieldtype": "Data",
+   "in_standard_filter": 1,
    "label": "Organization"
   },
   {
@@ -322,6 +335,7 @@
    "fieldname": "total",
    "fieldtype": "Currency",
    "label": "Total",
+   "non_negative": 1,
    "options": "currency",
    "read_only": 1
   },
@@ -334,6 +348,7 @@
    "fieldname": "net_total",
    "fieldtype": "Currency",
    "label": "Net Total",
+   "non_negative": 1,
    "options": "currency",
    "read_only": 1
   },
@@ -391,13 +406,69 @@
    "fieldname": "column_break_ygds",
    "fieldtype": "Column Break",
    "read_only": 1
+  },
+  {
+   "fieldname": "lost_details_tab",
+   "fieldtype": "Tab Break",
+   "label": "Lost Details"
+  },
+  {
+   "fieldname": "lost_reason",
+   "fieldtype": "Link",
+   "label": "Lost Reason",
+   "options": "CRM Lost Reason"
+  },
+  {
+   "fieldname": "lost_notes",
+   "fieldtype": "Text",
+   "label": "Lost Notes",
+   "mandatory_depends_on": "eval: doc.lost_reason == \"Other\""
+  },
+  {
+   "fieldname": "column_break_opsm",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "organization_logo",
+   "fieldtype": "Attach Image",
+   "label": "Organization Logo",
+   "no_copy": 1,
+   "description": "Company logo discovered by Domain Enrichment."
+  },
+  {
+   "fieldname": "company_description",
+   "fieldtype": "Small Text",
+   "label": "Company Description",
+   "no_copy": 1,
+   "description": "Company description discovered by Domain Enrichment."
+  },
+  {
+   "depends_on": "eval:doc.linkedin",
+   "fieldname": "linkedin",
+   "fieldtype": "Data",
+   "label": "LinkedIn",
+   "no_copy": 1
+  },
+  {
+   "depends_on": "eval:doc.twitter",
+   "fieldname": "twitter",
+   "fieldtype": "Data",
+   "label": "X (Twitter)",
+   "no_copy": 1
+  },
+  {
+   "depends_on": "eval:doc.facebook",
+   "fieldname": "facebook",
+   "fieldtype": "Data",
+   "label": "Facebook",
+   "no_copy": 1
   }
  ],
  "grid_page_length": 50,
  "image_field": "image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-11-10 21:21:50.089284",
+ "modified": "2026-04-04 12:33:17.177897",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Lead",
@@ -412,7 +483,7 @@
    "print": 1,
    "read": 1,
    "report": 1,
-   "role": "Sales User",
+   "role": "System Manager",
    "share": 1,
    "write": 1
   },
@@ -429,13 +500,16 @@
    "write": 1
   },
   {
+   "create": 1,
+   "delete": 1,
    "email": 1,
    "export": 1,
    "print": 1,
    "read": 1,
    "report": 1,
-   "role": "All",
-   "share": 1
+   "role": "Sales User",
+   "share": 1,
+   "write": 1
   }
  ],
  "row_format": "Dynamic",

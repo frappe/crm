@@ -24,7 +24,7 @@
           <template #default="{ open }">
             <Button
               v-if="doc.status"
-              :label="doc.status"
+              :label="statusLabel(doc.status)"
               :iconRight="open ? 'chevron-up' : 'chevron-down'"
             >
               <template #prefix>
@@ -54,10 +54,10 @@
   </div>
   <div v-if="doc.name" class="flex h-full overflow-hidden">
     <Tabs
-      as="div"
       v-model="tabIndex"
+      as="div"
       :tabs="tabs"
-      class="flex flex-1 overflow-auto flex-col [&_[role='tab']]:px-0 [&_[role='tablist']]:px-3 [&_[role='tablist']]:gap-7.5 [&_[role='tabpanel']:not([hidden])]:flex [&_[role='tabpanel']:not([hidden])]:grow"
+      class="flex flex-1 overflow-auto flex-col [&_[role='tab']]:px-0 [&_[role='tab']]:shrink-0 [&_[role='tablist']]:px-3 [&_[role='tablist']]:min-h-[45px] [&_[role='tablist']]:gap-7.5 [&_[role='tabpanel']:not([hidden])]:flex [&_[role='tabpanel']:not([hidden])]:grow"
     >
       <template #tab-panel="{ tab }">
         <div v-if="tab.name == 'Details'">
@@ -83,7 +83,6 @@
                   <Link
                     value=""
                     doctype="Contact"
-                    @change="(e) => addContact(e)"
                     :onCreate="
                       (value, close) => {
                         _contact = {
@@ -94,12 +93,13 @@
                         close()
                       }
                     "
+                    @change="(e) => addContact(e)"
                   >
                     <template #target="{ togglePopover }">
                       <Button
                         class="h-7 px-3"
                         variant="ghost"
-                        icon="plus"
+                        icon="lucide-plus"
                         @click="togglePopover()"
                       />
                     </template>
@@ -121,15 +121,15 @@
                     <span>{{ __('Loading...') }}</span>
                   </div>
                   <div
-                    v-else-if="section.contacts.length"
                     v-for="(contact, i) in section.contacts"
+                    v-else-if="section.contacts.length"
                     :key="contact.name"
                   >
                     <div
                       class="px-2 pb-2.5"
                       :class="[i == 0 ? 'pt-5' : 'pt-2.5']"
                     >
-                      <Section :opened="contact.opened">
+                      <CollapsibleSection :opened="contact.opened">
                         <template #header="{ opened, toggle }">
                           <div
                             class="flex cursor-pointer items-center justify-between gap-2 pr-1 text-base leading-5 text-ink-gray-7"
@@ -157,7 +157,7 @@
                             <div class="flex items-center">
                               <Dropdown :options="contactOptions(contact.name)">
                                 <Button
-                                  icon="more-horizontal"
+                                  icon="lucide-more-horizontal"
                                   class="text-ink-gray-5"
                                   variant="ghost"
                                 />
@@ -174,10 +174,10 @@
                                 <ArrowUpRightIcon class="h-4 w-4" />
                               </Button>
                               <Button variant="ghost" @click="toggle()">
-                                <FeatherIcon
-                                  name="chevron-right"
-                                  class="h-4 w-4 text-ink-gray-9 transition-all duration-300 ease-in-out"
+                                <span
+                                  class="lucide-chevron-right h-4 w-4 text-ink-gray-9 transition-all duration-300 ease-in-out"
                                   :class="{ 'rotate-90': opened }"
+                                  aria-hidden="true"
                                 />
                               </Button>
                             </div>
@@ -195,18 +195,18 @@
                             {{ contact.mobile_no }}
                           </div>
                         </div>
-                      </Section>
+                      </CollapsibleSection>
                     </div>
                     <div
                       v-if="i != section.contacts.length - 1"
-                      class="mx-2 h-px border-t border-outline-gray-modals"
+                      class="mx-2 h-px border-t border-outline-elevation-2"
                     />
                   </div>
                   <div
                     v-else
                     class="flex h-20 items-center justify-center text-base text-ink-gray-5"
                   >
-                    {{ __('No contacts added') }}
+                    {{ __('No Contacts Added') }}
                   </div>
                 </div>
               </template>
@@ -215,11 +215,11 @@
         </div>
         <Activities
           v-else
+          v-model:reload="reload"
+          v-model:tabIndex="tabIndex"
           doctype="CRM Deal"
           :docname="dealId"
           :tabs="tabs"
-          v-model:reload="reload"
-          v-model:tabIndex="tabIndex"
           @beforeSave="beforeStatusChange"
           @afterSave="reloadAssignees"
         />
@@ -259,7 +259,8 @@
   <LostReasonModal
     v-if="showLostReasonModal"
     v-model="showLostReasonModal"
-    :deal="document"
+    doctype="CRM Deal"
+    :document="document"
   />
 </template>
 <script setup>
@@ -286,23 +287,21 @@ import OrganizationModal from '@/components/Modals/OrganizationModal.vue'
 import LostReasonModal from '@/components/Modals/LostReasonModal.vue'
 import AssignTo from '@/components/AssignTo.vue'
 import ContactModal from '@/components/Modals/ContactModal.vue'
-import Section from '@/components/Section.vue'
+import CollapsibleSection from '@/components/CollapsibleSection.vue'
 import Link from '@/components/Controls/Link.vue'
 import SidePanelLayout from '@/components/SidePanelLayout.vue'
 import SLASection from '@/components/SLASection.vue'
 import CustomActions from '@/components/CustomActions.vue'
-import { setupCustomizations } from '@/utils'
+import { setupCustomizations, isTranslatable } from '@/utils'
 import { getView } from '@/utils/view'
 import { getSettings } from '@/stores/settings'
 import { globalStore } from '@/stores/global'
 import { statusesStore } from '@/stores/statuses'
 import { getMeta } from '@/stores/meta'
 import { useDocument } from '@/data/document'
-import {
-  whatsappEnabled,
-  callEnabled,
-  isMobileView,
-} from '@/composables/settings'
+import { isMobileView } from '@/composables/settings'
+import { whatsappEnabled } from '@/composables/whatsapp'
+import { callEnabled } from '@/composables/telephony'
 import { useActiveTabManager } from '@/composables/useActiveTabManager'
 import {
   createResource,
@@ -314,40 +313,46 @@ import {
   usePageMeta,
   toast,
 } from 'frappe-ui'
-import { ref, computed, h, watch } from 'vue'
+import { ref, computed, h, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 const { brand } = getSettings()
 const { $dialog, $socket } = globalStore()
 const { statusOptions, getDealStatus } = statusesStore()
 const { doctypeMeta } = getMeta('CRM Deal')
+
 const route = useRoute()
 const router = useRouter()
 
 const props = defineProps({
-  dealId: {
-    type: String,
-    required: true,
-  },
+  dealId: { type: String, required: true },
 })
 
 const errorTitle = ref('')
 const errorMessage = ref('')
 const showDeleteLinkedDocModal = ref(false)
 
-const { triggerOnChange, assignees, document, scripts, error } = useDocument(
-  'CRM Deal',
-  props.dealId,
-)
+const {
+  triggerOnChange,
+  triggerOnRender,
+  assignees,
+  document,
+  scripts,
+  error,
+} = useDocument('CRM Deal', props.dealId)
 
 const doc = computed(() => document.doc || {})
+
+onMounted(async () => {
+  if (document.doc) await triggerOnRender()
+})
 
 watch(error, (err) => {
   if (err) {
     errorTitle.value = __(
       err.exc_type == 'DoesNotExistError'
-        ? 'Document not found'
-        : 'Error occurred',
+        ? __('Document not found')
+        : __('Error occurred'),
     )
     errorMessage.value = __(err.messages?.[0] || 'An error occurred')
   } else {
@@ -402,13 +407,17 @@ const breadcrumbs = computed(() => {
 
   items.push({
     label: title.value,
-    route: { name: 'Deal', params: { dealId: props.dealId } },
+    route: {
+      name: 'Deal',
+      params: { dealId: props.dealId },
+      query: route.query,
+    },
   })
   return items
 })
 
 const title = computed(() => {
-  let t = doctypeMeta['CRM Deal']?.title_field || 'name'
+  let t = doctypeMeta.value?.title_field || 'name'
   return doc.value?.[t] || props.dealId
 })
 
@@ -533,7 +542,7 @@ function contactOptions(contact) {
 
 async function addContact(contact) {
   if (dealContacts.data?.find((c) => c.name === contact)) {
-    toast.error(__('Contact already added'))
+    toast.error(__('Contact Already Added'))
     return
   }
 
@@ -543,7 +552,7 @@ async function addContact(contact) {
   })
   if (d) {
     dealContacts.reload()
-    toast.success(__('Contact added'))
+    toast.success(__('Contact Added'))
   }
 }
 
@@ -554,7 +563,7 @@ async function removeContact(contact) {
   })
   if (d) {
     dealContacts.reload()
-    toast.success(__('Contact removed'))
+    toast.success(__('Contact Removed'))
   }
 }
 
@@ -565,7 +574,7 @@ async function setPrimaryContact(contact) {
   })
   if (d) {
     dealContacts.reload()
-    toast.success(__('Primary contact set'))
+    toast.success(__('Primary Contact Set'))
   }
 }
 
@@ -620,6 +629,11 @@ function deleteDeal() {
   showDeleteLinkedDocModal.value = true
 }
 
+function statusLabel(status) {
+  if (isTranslatable('CRM Deal Status')) return __(status)
+  return status
+}
+
 async function triggerStatusChange(value) {
   await triggerOnChange('status', value)
   setLostReason()
@@ -629,9 +643,9 @@ const showLostReasonModal = ref(false)
 
 function setLostReason() {
   if (
-    getDealStatus(doc.status).type !== 'Lost' ||
-    (doc.lost_reason && doc.lost_reason !== 'Other') ||
-    (doc.lost_reason === 'Other' && doc.lost_notes)
+    getDealStatus(doc.value.status).type !== 'Lost' ||
+    (doc.value.lost_reason && doc.value.lost_reason !== 'Other') ||
+    (doc.value.lost_reason === 'Other' && doc.value.lost_notes)
   ) {
     document.save.submit()
     return
@@ -642,7 +656,7 @@ function setLostReason() {
 
 function beforeStatusChange(data) {
   if (
-    data?.hasOwnProperty('status') &&
+    Object.hasOwn(data ?? {}, 'status') &&
     getDealStatus(data.status).type == 'Lost'
   ) {
     setLostReason()
@@ -654,7 +668,7 @@ function beforeStatusChange(data) {
 }
 
 function reloadAssignees(data) {
-  if (data?.hasOwnProperty('deal_owner')) {
+  if (Object.hasOwn(data ?? {}, 'deal_owner')) {
     assignees.reload()
   }
 }

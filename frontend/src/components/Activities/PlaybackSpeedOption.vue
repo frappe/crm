@@ -7,15 +7,15 @@
       @click="onClick"
     >
       <template v-if="active" #suffix>
-        <FeatherIcon class="size-4" name="check" />
+        <span class="lucide-check size-4" aria-hidden="true" />
       </template>
     </Button>
   </div>
 </template>
 <script setup>
-const props = defineProps({
-  label: String,
-  active: Boolean,
-  onClick: Array,
+defineProps({
+  label: { type: String, default: '' },
+  active: { type: Boolean, default: false },
+  onClick: { type: Function, default: () => {} },
 })
 </script>

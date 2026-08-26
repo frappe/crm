@@ -2,7 +2,7 @@
   <div v-show="showCallPopup" v-bind="$attrs">
     <div
       ref="callPopup"
-      class="fixed z-20 flex w-60 cursor-move select-none flex-col rounded-lg bg-surface-gray-7 p-4 text-ink-gray-2 shadow-2xl"
+      class="fixed z-20 flex w-60 cursor-move select-none flex-col rounded-lg bg-surface-gray-10 p-4 text-ink-gray-2 shadow-2xl"
       :style="style"
     >
       <div class="flex flex-row-reverse items-center gap-1">
@@ -20,7 +20,7 @@
           :class="onCall || calling ? '' : 'pulse'"
         />
         <div class="flex flex-col items-center justify-center gap-1">
-          <div class="text-xl font-medium">
+          <div class="text-2xl-medium">
             {{ contact?.full_name ?? __('Unknown') }}
           </div>
           <div class="text-sm text-ink-gray-5">{{ contact?.mobile_no }}</div>
@@ -54,13 +54,13 @@
         </Button> -->
           <Button
             class="cursor-pointer rounded-full"
-            :tooltip="__('Add a note')"
+            :tooltip="__('Add a Note')"
             :icon="NoteIcon"
-            @click="showNoteModal = true"
+            @click="openNoteModal"
           />
           <Button
-            class="rounded-full bg-surface-red-5 hover:bg-surface-red-6 rotate-[135deg] text-ink-white"
-            :tooltip="__('Hang up')"
+            class="rounded-full bg-surface-red-7 hover:bg-surface-red-8 rotate-[135deg] text-ink-base"
+            :tooltip="__('Hang Up')"
             :icon="PhoneIcon"
             @click="hangUpCall"
           />
@@ -71,9 +71,9 @@
             variant="solid"
             theme="red"
             :label="__('Cancel')"
-            @click="cancelCall"
-            class="rounded-lg text-ink-white"
+            class="rounded-lg text-ink-base"
             :disabled="callStatus == 'initiating'"
+            @click="cancelCall"
           >
             <template #prefix>
               <PhoneIcon class="rotate-[135deg]" />
@@ -86,7 +86,7 @@
             variant="solid"
             theme="green"
             :label="__('Accept')"
-            class="rounded-lg text-ink-white"
+            class="rounded-lg text-ink-base"
             :iconLeft="PhoneIcon"
             @click="acceptIncomingCall"
           />
@@ -95,7 +95,7 @@
             variant="solid"
             theme="red"
             :label="__('Reject')"
-            class="rounded-lg text-ink-white"
+            class="rounded-lg text-ink-base"
             @click="rejectIncomingCall"
           >
             <template #prefix>
@@ -108,9 +108,9 @@
   </div>
   <div
     v-show="showSmallCallWindow"
-    class="ml-2 flex cursor-pointer select-none items-center justify-between gap-3 rounded-lg bg-surface-gray-7 px-2 py-[7px] text-base text-ink-gray-2"
-    @click="toggleCallWindow"
+    class="ml-2 flex cursor-pointer select-none items-center justify-between gap-3 rounded-lg bg-surface-gray-10 px-2 py-[7px] text-base text-ink-gray-2"
     v-bind="$attrs"
+    @click="toggleCallWindow"
   >
     <div class="flex items-center gap-2">
       <Avatar
@@ -130,7 +130,7 @@
       <Button
         variant="solid"
         theme="red"
-        class="!h-6 !w-6 rounded-full rotate-[135deg] text-ink-white"
+        class="!h-6 !w-6 rounded-full rotate-[135deg] text-ink-base"
         :icon="PhoneIcon"
         @click.stop="hangUpCall"
       />
@@ -142,7 +142,7 @@
       <Button
         variant="solid"
         theme="red"
-        class="!h-6 !w-6 rounded-full rotate-[135deg] text-ink-white"
+        class="!h-6 !w-6 rounded-full rotate-[135deg] text-ink-base"
         :icon="PhoneIcon"
         @click.stop="cancelCall"
       />
@@ -151,27 +151,21 @@
       <Button
         variant="solid"
         theme="green"
-        class="pulse relative !h-6 !w-6 rounded-full animate-pulse text-ink-white"
-        :tooltip="__('Accept call')"
+        class="pulse relative !h-6 !w-6 rounded-full animate-pulse text-ink-base"
+        :tooltip="__('Accept Call')"
         :icon="PhoneIcon"
         @click.stop="acceptIncomingCall"
       />
       <Button
         variant="solid"
         theme="red"
-        class="!h-6 !w-6 rounded-full rotate-[135deg] text-ink-white"
-        :tooltip="__('Reject call')"
+        class="!h-6 !w-6 rounded-full rotate-[135deg] text-ink-base"
+        :tooltip="__('Reject Call')"
         :icon="PhoneIcon"
         @click.stop="rejectIncomingCall"
       />
     </div>
   </div>
-  <NoteModal
-    v-model="showNoteModal"
-    :note="note"
-    doctype="CRM Call Log"
-    @after="updateNote"
-  />
 </template>
 
 <script setup>
@@ -179,12 +173,15 @@ import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import MinimizeIcon from '@/components/Icons/MinimizeIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import CountUpTimer from '@/components/CountUpTimer.vue'
-import NoteModal from '@/components/Modals/NoteModal.vue'
+import { useDoctypeModal } from '@/composables/doctypeModal'
 import { Device } from '@twilio/voice-sdk'
 import { useDraggable, useWindowSize } from '@vueuse/core'
-import { capture } from '@/telemetry'
+import { useTelemetry, useOnboarding } from 'frappe-ui/frappe'
 import { Avatar, call, createResource } from 'frappe-ui'
 import { ref, watch } from 'vue'
+
+const { capture } = useTelemetry()
+const { updateOnboardingStep } = useOnboarding('frappecrm')
 
 let device = ''
 let log = ref('Connecting...')
@@ -225,20 +222,36 @@ const getContact = createResource({
   },
 })
 
-const showNoteModal = ref(false)
+const { showModal } = useDoctypeModal()
 const note = ref({
   name: '',
   title: '',
   content: '',
 })
 
-async function updateNote(_note, insert_mode = false) {
+function openNoteModal() {
+  showModal({
+    name: note.value.name || null,
+    doctype: 'CRM Call Log',
+    title: 'Call Log',
+    callbacks: {
+      afterInsert: (n) => updateNote(n, true),
+      afterUpdate: updateNote,
+    },
+  })
+}
+
+async function updateNote(_note, isInsert = false) {
   note.value = _note
-  if (insert_mode && _note.name) {
+  if (isInsert && _note.name) {
     await call('crm.integrations.api.add_note_to_call_log', {
       call_sid: _call.parameters.CallSid,
       note: _note,
     })
+    updateOnboardingStep('create_first_note')
+    capture('note_created')
+  } else {
+    capture('note_updated')
   }
 }
 
@@ -278,7 +291,7 @@ function addDeviceListeners() {
     log.value = 'Ready to make and receive calls!'
   })
 
-  device.on('unregistered', (device) => {
+  device.on('unregistered', () => {
     log.value = 'Logged out'
   })
 
@@ -332,11 +345,8 @@ function rejectIncomingCall() {
   _call.reject()
   log.value = 'Rejected incoming call'
   showCallPopup.value = false
-  if (showSmallCallWindow.value == undefined) {
-    showSmallCallWindow = false
-  } else {
-    showSmallCallWindow.value = false
-  }
+  showSmallCallWindow.value = false
+
   callStatus.value = ''
   muted.value = false
 }
@@ -358,11 +368,7 @@ function hangUpCall() {
 function handleDisconnectedIncomingCall() {
   log.value = `Call ended from handle disconnected Incoming call.`
   showCallPopup.value = false
-  if (showSmallCallWindow.value == undefined) {
-    showSmallCallWindow = false
-  } else {
-    showSmallCallWindow.value = false
-  }
+  showSmallCallWindow.value = false
   _call = null
   muted.value = false
   onCall.value = false
@@ -405,12 +411,12 @@ async function makeOutgoingCall(number) {
         calling.value = true
         onCall.value = false
       })
-      _call.on('disconnect', (conn) => {
+      _call.on('disconnect', () => {
         log.value = `Call ended from makeOutgoing call disconnect.`
         calling.value = false
         onCall.value = false
         showCallPopup.value = false
-        showSmallCallWindow = false
+        showSmallCallWindow.value = false
         _call = null
         callStatus.value = ''
         muted.value = false
@@ -426,7 +432,7 @@ async function makeOutgoingCall(number) {
         calling.value = false
         onCall.value = false
         showCallPopup.value = false
-        showSmallCallWindow = false
+        showSmallCallWindow.value = false
         _call = null
         callStatus.value = ''
         muted.value = false
@@ -448,11 +454,7 @@ async function makeOutgoingCall(number) {
 function cancelCall() {
   _call.disconnect()
   showCallPopup.value = false
-  if (showSmallCallWindow.value == undefined) {
-    showSmallCallWindow = false
-  } else {
-    showSmallCallWindow.value = false
-  }
+  showSmallCallWindow.value = false
   calling.value = false
   onCall.value = false
   callStatus.value = ''
@@ -466,11 +468,7 @@ function cancelCall() {
 
 function toggleCallWindow() {
   showCallPopup.value = !showCallPopup.value
-  if (showSmallCallWindow.value == undefined) {
-    showSmallCallWindow = !showSmallCallWindow
-  } else {
-    showSmallCallWindow.value = !showSmallCallWindow.value
-  }
+  showSmallCallWindow.value = !showSmallCallWindow.value
 }
 
 watch(

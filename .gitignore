@@ -1,5 +1,6 @@
 .DS_Store
 *.pyc
+*.local.md
 *.egg-info
 *.swp
 __pycache__
@@ -9,3 +10,20 @@ node_modules
 crm/public/frontend
 crm/www/crm.html
 build
+frontend/coverage
+
+e2e/.auth
+test-results
+playwright-report
+package-lock.json
+
+.vscode
+.github/instructions
+.github/skills
+.github/copilot-instructions.md
+
+CLAUDE.md
+AGENTS.md
+.claude
+.pi
+.patch

@@ -25,12 +25,12 @@
     doctype="CRM Call Log"
   />
   <CallLogsListView
-    ref="callLogsListView"
     v-if="callLogs.data && rows.length"
+    ref="callLogsListView"
     v-model="callLogs.data.page_length_count"
     v-model:list="callLogs"
     :rows="rows"
-    :columns="callLogs.data.columns"
+    :columns="columns"
     :options="{
       showTooltip: false,
       resizeColumn: true,
@@ -48,27 +48,14 @@
       (selections) => viewControls.updateSelections(selections)
     "
   />
-  <div
-    v-else-if="callLogs.data"
-    class="flex h-full items-center justify-center"
-  >
-    <div
-      class="flex flex-col items-center gap-3 text-xl font-medium text-ink-gray-4"
-    >
-      <PhoneIcon class="h-10 w-10" />
-      <span>{{ __('No {0} Found', [__('Logs')]) }}</span>
-    </div>
-  </div>
+  <EmptyState
+    v-else-if="callLogs.data && !rows.length"
+    name="Call Logs"
+    :icon="PhoneIcon"
+  />
   <CallLogDetailModal
     v-model="showCallLogDetailModal"
-    v-model:callLogModal="showCallLogModal"
     v-model:callLog="callLog"
-  />
-  <CallLogModal
-    v-if="showCallLogModal"
-    v-model="showCallLogModal"
-    :data="callLog.data"
-    :options="{ afterInsert: () => callLogs.reload() }"
   />
 </template>
 
@@ -79,14 +66,15 @@ import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import ViewControls from '@/components/ViewControls.vue'
 import CallLogsListView from '@/components/ListViews/CallLogsListView.vue'
+import EmptyState from '@/components/ListViews/EmptyState.vue'
 import CallLogDetailModal from '@/components/Modals/CallLogDetailModal.vue'
-import CallLogModal from '@/components/Modals/CallLogModal.vue'
+import { useDoctypeModal } from '@/composables/doctypeModal'
 import { getCallLogDetail } from '@/utils/callLog'
+import { useTelemetry } from 'frappe-ui/frappe'
 import { createResource } from 'frappe-ui'
 import { computed, ref, onMounted } from 'vue'
 
 const callLogsListView = ref(null)
-const showCallLogModal = ref(false)
 
 // callLogs data is loaded in the ViewControls component
 const callLogs = ref({})
@@ -110,6 +98,22 @@ const rows = computed(() => {
   })
 })
 
+const columns = computed(() => {
+  let _columns = callLogs.value?.data?.columns || []
+
+  // Set align right for last column
+  if (_columns.length) {
+    _columns = _columns.map((col, index) => {
+      if (index === _columns.length - 1) {
+        return { ...col, align: 'right' }
+      }
+      return col
+    })
+  }
+
+  return _columns
+})
+
 const showCallLogDetailModal = ref(false)
 const callLog = ref({})
 
@@ -123,9 +127,20 @@ function showCallLog(name) {
   })
 }
 
+const { showModal } = useDoctypeModal()
+const { capture } = useTelemetry()
+
 function createCallLog() {
-  callLog.value = {}
-  showCallLogModal.value = true
+  showModal({
+    doctype: 'CRM Call Log',
+    title: 'Call Log',
+    callbacks: {
+      afterInsert: () => {
+        capture('call_log_created')
+        callLogs.value.reload()
+      },
+    },
+  })
 }
 
 const openCallLogFromURL = () => {

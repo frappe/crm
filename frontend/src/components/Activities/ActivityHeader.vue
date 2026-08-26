@@ -1,9 +1,9 @@
 <template>
   <div
     v-if="title !== 'Data'"
-    class="mx-4 my-3 flex items-center justify-between text-lg font-medium sm:mx-10 sm:mb-4 sm:mt-8"
+    class="flex items-center justify-between text-lg-medium sm:mx-10 sm:mb-4 sm:mt-8"
   >
-    <div class="flex h-8 items-center text-xl font-semibold text-ink-gray-8">
+    <div class="flex h-8 items-center text-2xl-semibold text-ink-gray-8">
       {{ __(title) }}
     </div>
     <Button
@@ -33,7 +33,7 @@
       <template #prefix>
         <EventIcon class="h-4 w-4" />
       </template>
-      <span>{{ __('Schedule an event') }}</span>
+      <span>{{ __('Schedule an Event') }}</span>
     </Button>
     <Button
       v-else-if="title == 'Notes'"
@@ -56,7 +56,7 @@
       iconLeft="plus"
       @click="showFilesUploader = true"
     />
-    <div class="flex gap-2 shrink-0" v-else-if="title == 'WhatsApp'">
+    <div v-else-if="title == 'WhatsApp'" class="flex gap-2 shrink-0">
       <Button
         :label="__('Send Template')"
         @click="showWhatsappTemplates = true"
@@ -69,7 +69,7 @@
       />
     </div>
     <Dropdown v-else :options="defaultActions" @click.stop>
-      <template v-slot="{ open }">
+      <template #default="{ open }">
         <Button
           variant="solid"
           class="flex items-center gap-1"
@@ -92,40 +92,43 @@ import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import AttachmentIcon from '@/components/Icons/AttachmentIcon.vue'
 import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import { globalStore } from '@/stores/global'
-import { whatsappEnabled, callEnabled } from '@/composables/settings'
+import { whatsappEnabled } from '@/composables/whatsapp'
+import { callEnabled } from '@/composables/telephony'
 import { Dropdown } from 'frappe-ui'
 import { computed, h } from 'vue'
 
 const props = defineProps({
-  tabs: Array,
-  title: String,
-  doc: Object,
-  modalRef: Object,
-  emailBox: Object,
-  whatsappBox: Object,
+  tabs: { type: Array, default: () => [] },
+  title: { type: String, default: '' },
+  doc: { type: Object, default: () => ({}) },
+  modalRef: { type: Object, default: () => ({}) },
+  whatsappBox: { type: Object, default: () => ({}) },
 })
 
 const { makeCall } = globalStore()
 
-const tabIndex = defineModel()
-const showWhatsappTemplates = defineModel('showWhatsappTemplates')
-const showFilesUploader = defineModel('showFilesUploader')
+const tabIndex = defineModel({ type: Number })
+const showWhatsappTemplates = defineModel('showWhatsappTemplates', {
+  type: Boolean,
+})
+const showFilesUploader = defineModel('showFilesUploader', { type: Boolean })
+const emailBox = defineModel('emailBox', { type: Object, default: () => ({}) })
 
 const defaultActions = computed(() => {
   let actions = [
     {
       icon: h(Email2Icon, { class: 'h-4 w-4' }),
-      label: __('New Email'),
-      onClick: () => (props.emailBox.show = true),
+      label: __('Email'),
+      onClick: () => (emailBox.value.show = true),
     },
     {
       icon: h(CommentIcon, { class: 'h-4 w-4' }),
-      label: __('New Comment'),
-      onClick: () => (props.emailBox.showComment = true),
+      label: __('Comment'),
+      onClick: () => (emailBox.value.showComment = true),
     },
     {
       icon: h(EventIcon, { class: 'h-4 w-4' }),
-      label: __('Schedule an event'),
+      label: __('Schedule an Event'),
       onClick: () => props.modalRef.showEvent(),
     },
     {
@@ -141,12 +144,12 @@ const defaultActions = computed(() => {
     },
     {
       icon: h(NoteIcon, { class: 'h-4 w-4' }),
-      label: __('New Note'),
+      label: __('Note'),
       onClick: () => props.modalRef.showNote(),
     },
     {
       icon: h(TaskIcon, { class: 'h-4 w-4' }),
-      label: __('New Task'),
+      label: __('Task'),
       onClick: () => props.modalRef.showTask(),
     },
     {
@@ -156,7 +159,7 @@ const defaultActions = computed(() => {
     },
     {
       icon: h(WhatsAppIcon, { class: 'h-4 w-4' }),
-      label: __('New WhatsApp Message'),
+      label: __('WhatsApp Message'),
       onClick: () => (tabIndex.value = getTabIndex('WhatsApp')),
       condition: () => whatsappEnabled.value,
     },

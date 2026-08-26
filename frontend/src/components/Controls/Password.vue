@@ -6,21 +6,21 @@
     @keydown.meta.i.prevent="show = !show"
     @keydown.ctrl.i.prevent="show = !show"
   >
-    <template #prefix v-if="$slots.prefix">
+    <template v-if="$slots.prefix" #prefix>
       <slot name="prefix" />
     </template>
     <template #suffix>
       <Tooltip>
         <template #body>
           <div
-            class="rounded bg-surface-gray-7 py-1.5 px-2 text-xs text-ink-white shadow-xl"
+            class="rounded bg-surface-gray-10 py-1.5 px-2 text-xs text-ink-base shadow-xl"
           >
             <span class="flex items-center gap-1">
               {{ show ? __('Hide Password') : __('Show Password') }}
               <KeyboardShortcut
                 bg
                 ctrl
-                class="!bg-surface-gray-5 !text-ink-gray-2 px-1"
+                class="!bg-surface-gray-8 !text-ink-gray-2 px-1"
               >
                 <span class="font-mono leading-none tracking-widest">+I</span>
               </KeyboardShortcut>
@@ -45,14 +45,8 @@ import { FormControl, Tooltip } from 'frappe-ui'
 import { ref, computed } from 'vue'
 
 const props = defineProps({
-  modelValue: {
-    type: [String, Number],
-    default: '',
-  },
-  value: {
-    type: [String, Number],
-    default: '',
-  },
+  modelValue: { type: [String, Number], default: '' },
+  value: { type: [String, Number], default: '' },
 })
 const show = ref(false)
 const showEye = computed(() => {

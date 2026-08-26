@@ -3,13 +3,13 @@
     <!-- Header -->
     <div class="flex justify-between px-2 pt-2">
       <div class="flex flex-col gap-1 w-9/12">
-        <h2 class="flex gap-2 text-xl font-semibold leading-none h-5">
-          {{ __('Assignment rules') }}
+        <h2 class="flex gap-2 text-2xl-semibold leading-none h-5">
+          {{ __('Assignment Rules') }}
         </h2>
         <p class="text-p-base text-ink-gray-6">
           {{
             __(
-              'Assignment rules automatically assign lead/deal to the right sales user based on predefined conditions',
+              'Auto-assign leads/deals to the right sales user based on predefined conditions',
             )
           }}
         </p>
@@ -17,7 +17,7 @@
       <div class="flex item-center space-x-2 w-3/12 justify-end">
         <Button
           :label="__('New')"
-          icon-left="plus"
+          icon-left="lucide-plus"
           variant="solid"
           @click="goToNew()"
         />
@@ -25,7 +25,7 @@
     </div>
 
     <!-- Assignment rules list -->
-    <div class="overflow-y-auto">
+    <div class="flex h-full overflow-y-auto">
       <AssignmentRulesList />
     </div>
   </div>

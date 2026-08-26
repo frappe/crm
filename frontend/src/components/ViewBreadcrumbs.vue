@@ -2,9 +2,9 @@
   <div class="flex items-center">
     <router-link
       :to="{ name: routeName }"
-      class="px-0.5 py-1 text-lg font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-outline-gray-3"
+      class="px-0.5 py-1 text-lg-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-outline-gray-3"
       :class="[
-        viewControls
+        viewControls && viewControls.viewsDropdownOptions
           ? 'text-ink-gray-5 hover:text-ink-gray-7'
           : 'text-ink-gray-7',
       ]"
@@ -12,74 +12,50 @@
       {{ __(routeName) }}
     </router-link>
     <span
-      v-if="viewControls"
+      v-if="viewControls && viewControls.viewsDropdownOptions"
       class="mx-0.5 text-base text-ink-gray-4"
       aria-hidden="true"
     >
       /
     </span>
     <Dropdown
-      v-if="viewControls"
+      v-if="viewControls && viewControls.viewsDropdownOptions"
       :options="viewControls.viewsDropdownOptions"
     >
       <template #default="{ open }">
         <Button
           variant="ghost"
-          class="text-lg font-medium text-nowrap"
-          :label="__(viewControls.currentView.label)"
+          class="text-lg-medium text-nowrap"
+          :label="__(viewControls.currentView?.label)"
           :iconRight="open ? 'chevron-up' : 'chevron-down'"
         >
           <template #prefix>
-            <Icon :icon="viewControls.currentView.icon" class="h-4" />
+            <Icon :icon="viewControls.currentView?.icon" class="h-4" />
           </template>
         </Button>
       </template>
-      <template #item="{ item, close }">
-        <button
-          class="group flex text-ink-gray-6 gap-4 h-7 w-full justify-between items-center rounded px-2 text-base hover:bg-surface-gray-3"
-          @click="item.onClick"
-        >
-          <div class="flex items-center">
-            <FeatherIcon
-              v-if="item.icon && typeof item.icon === 'string'"
-              :name="item.icon"
-              class="mr-2 h-4 w-4 flex-shrink-0 text-ink-gray-7"
-              aria-hidden="true"
-            />
-            <component
-              class="mr-2 h-4 w-4 flex-shrink-0 text-ink-gray-7"
-              v-else-if="item.icon"
-              :is="item.icon"
-            />
-            <span class="whitespace-nowrap">
-              {{ item.label }}
-            </span>
-          </div>
-          <div
-            v-if="item.name"
-            class="flex flex-row-reverse gap-2 items-center min-w-11"
+      <template #item-suffix="{ item, close, selected }">
+        <div v-if="item.name" class="flex flex-row-reverse gap-2 items-center">
+          <Dropdown
+            side="right"
+            :offset="15"
+            :options="viewControls.viewActions(item, close)"
           >
-            <Dropdown
-              side="right"
-              :offset="15"
-              :options="viewControls.viewActions(item, close)"
-            >
-              <template #default>
-                <Button
-                  variant="ghost"
-                  class="!size-5 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-opacity"
-                  icon="more-horizontal"
-                  @click.stop
-                />
-              </template>
-            </Dropdown>
-            <FeatherIcon
-              v-if="isCurrentView(item)"
-              name="check"
-              class="size-4 text-ink-gray-7"
-            />
-          </div>
-        </button>
+            <template #default>
+              <Button
+                variant="ghost"
+                class="view-action-btn !size-5 opacity-0"
+                icon="lucide-more-horizontal"
+                @click.stop
+              />
+            </template>
+          </Dropdown>
+          <span
+            v-if="selected"
+            class="lucide-check size-4 text-ink-gray-7"
+            aria-hidden="true"
+          />
+        </div>
       </template>
     </Dropdown>
   </div>
@@ -88,16 +64,18 @@
 import Icon from '@/components/Icon.vue'
 import { Dropdown } from 'frappe-ui'
 
-const props = defineProps({
-  routeName: {
-    type: String,
-    required: true,
-  },
+defineProps({
+  routeName: { type: String, required: true },
 })
 
-const viewControls = defineModel()
-
-const isCurrentView = (item) => {
-  return item.name === viewControls.value.currentView.name
-}
+const viewControls = defineModel({ type: Object, default: () => ({}) })
 </script>
+
+<style scoped>
+/* frappe-ui's Menu rewrite dropped the `group` class from item rows, so
+   reveal the view actions on row hover/highlight instead of `group-hover`. */
+[data-slot='item']:hover .view-action-btn,
+[data-slot='item'][data-highlighted] .view-action-btn {
+  opacity: 1;
+}
+</style>

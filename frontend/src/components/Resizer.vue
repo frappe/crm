@@ -16,26 +16,11 @@
 import { ref } from 'vue'
 
 const props = defineProps({
-  defaultWidth: {
-    type: Number,
-    default: 352,
-  },
-  minWidth: {
-    type: Number,
-    default: 16 * 16,
-  },
-  maxWidth: {
-    type: Number,
-    default: 30 * 16,
-  },
-  side: {
-    type: String,
-    default: 'left',
-  },
-  parent: {
-    type: Object,
-    default: null,
-  },
+  defaultWidth: { type: Number, default: 352 },
+  minWidth: { type: Number, default: 16 * 16 },
+  maxWidth: { type: Number, default: 30 * 16 },
+  side: { type: String, default: 'left' },
+  parent: { type: Object, default: null },
 })
 
 const sidebarResizing = ref(false)

@@ -6,7 +6,6 @@ import { createDialog } from './utils/dialogs'
 import { initSocket } from './socket'
 import router from './router'
 import translationPlugin from './translation'
-import { posthogPlugin } from './telemetry'
 import App from './App.vue'
 
 import {
@@ -23,6 +22,11 @@ import {
   frappeRequest,
   FeatherIcon,
 } from 'frappe-ui'
+
+import { telemetryPlugin } from 'frappe-ui/frappe'
+// injects the lucide SVG sprite into the DOM so the IconPicker and lucide Icons
+// (used for view icons) can render from it
+import { spritePlugin } from 'frappe-ui/icons'
 
 let globalComponents = {
   Button,
@@ -43,13 +47,14 @@ let app = createApp(App)
 
 setConfig('resourceFetcher', frappeRequest)
 app.use(FrappeUI)
+app.use(spritePlugin)
 app.use(pinia)
 app.use(router)
 app.use(translationPlugin)
-app.use(posthogPlugin)
 for (let key in globalComponents) {
   app.component(key, globalComponents[key])
 }
+app.use(telemetryPlugin, { app_name: 'crm' })
 
 app.config.globalProperties.$dialog = createDialog
 

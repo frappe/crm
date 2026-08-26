@@ -1,5 +1,6 @@
 <template>
   <ListView
+    ref="listViewRef"
     :class="$attrs.class"
     :columns="columns"
     :rows="rows"
@@ -10,23 +11,22 @@
     }"
     row-key="reference_docname"
     @update:selections="(selections) => emit('selectionsChanged', selections)"
-    ref="listViewRef"
   >
     <ListHeader @columnWidthUpdated="emit('columnWidthUpdated')">
       <ListHeaderItem
         v-for="column in columns"
         :key="column.key"
         :item="column"
-        @columnWidthUpdated="emit('columnWidthUpdated', column)"
+        @columnWidthUpdated="(e) => onColumnWidthUpdated(e, column)"
       >
       </ListHeaderItem>
     </ListHeader>
     <div class="*:mx-0 *:sm:mx-0">
-      <ListRows :rows="rows" v-slot="{ idx, column, item, row }">
+      <ListRows v-slot="{ column, item, row }" :rows="rows">
         <ListRowItem
           :item="item"
-          @click="listViewRef.toggleRow(row['reference_docname'])"
           class="!w-full"
+          @click="listViewRef.toggleRow(row['reference_docname'])"
         >
           <template #default="{ label }">
             <div
@@ -36,9 +36,9 @@
               <span class="max-w-[90%] truncate">
                 {{ label }}
               </span>
-              <FeatherIcon
-                name="external-link"
-                class="h-4 w-4 cursor-pointer"
+              <span
+                class="lucide-external-link h-4 w-4 cursor-pointer"
+                aria-hidden="true"
                 @click.stop="viewLinkedDoc(row)"
               />
             </div>
@@ -60,23 +60,11 @@ import ListRows from '@/components/ListViews/ListRows.vue'
 import { ListView, ListHeader, ListHeaderItem, ListRowItem } from 'frappe-ui'
 import { ref } from 'vue'
 
-const props = defineProps({
-  rows: {
-    type: Array,
-    required: true,
-  },
-  columns: {
-    type: Array,
-    required: true,
-  },
-  linkedDocsResource: {
-    type: Object,
-    required: true,
-  },
-  unlinkLinkedDoc: {
-    type: Function,
-    required: true,
-  },
+defineProps({
+  rows: { type: Array, required: true },
+  columns: { type: Array, required: true },
+  linkedDocsResource: { type: Object, required: true },
+  unlinkLinkedDoc: { type: Function, required: true },
   options: {
     type: Object,
     default: () => ({
@@ -99,6 +87,11 @@ const emit = defineEmits([
 ])
 
 const listViewRef = ref(null)
+
+function onColumnWidthUpdated({ width, save }, column) {
+  column.width = width
+  if (save) emit('columnWidthUpdated', column)
+}
 
 const viewLinkedDoc = (doc) => {
   let page = ''

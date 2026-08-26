@@ -1,6 +1,10 @@
 <template>
-  <Autocomplete :options="options" value="" @change="(e) => setGroupBy(e)">
-    <template #target="{ togglePopover, isOpen }">
+  <Combobox
+    :options="options"
+    :model-value="null"
+    @update:selected-option="(e) => setGroupBy(e)"
+  >
+    <template #trigger="{ open, setOpen }">
       <Button
         :label="
           hideLabel
@@ -8,32 +12,25 @@
             : __('Group By: ') + groupByValue?.label
         "
         :iconLeft="DetailsIcon"
-        :iconRight="isOpen ? 'chevron-up' : 'chevron-down'"
-        @click="togglePopover()"
+        :iconRight="open ? 'chevron-up' : 'chevron-down'"
+        @click="setOpen(!open)"
       />
     </template>
-  </Autocomplete>
+  </Combobox>
 </template>
 <script setup>
-import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import DetailsIcon from '@/components/Icons/DetailsIcon.vue'
-import { createResource } from 'frappe-ui'
-import { ref, computed, onMounted, nextTick } from 'vue'
+import { Combobox, createResource } from 'frappe-ui'
+import { ref, computed, onMounted, nextTick, watch } from 'vue'
 
 const props = defineProps({
-  doctype: {
-    type: String,
-    required: true,
-  },
-  hideLabel: {
-    type: Boolean,
-    default: false,
-  },
+  doctype: { type: String, required: true },
+  hideLabel: { type: Boolean, default: false },
 })
 
 const emit = defineEmits(['update'])
 
-const list = defineModel()
+const list = defineModel({ type: Object, default: () => ({}) })
 
 const groupByValue = ref({
   label: '',
@@ -57,12 +54,21 @@ function setGroupBy(data) {
   nextTick(() => emit('update', data.fieldname))
 }
 
+watch(
+  () => list.value?.data?.group_by_field,
+  (val) => {
+    if (val) groupByValue.value = val
+  },
+  { immediate: true },
+)
+
 const options = computed(() => {
   if (!groupByOptions.data) return []
-  if (!list.value?.data?.group_by_field) return groupByOptions.data
-  groupByValue.value = list.value.data.group_by_field
-  return groupByOptions.data.filter(
-    (option) => option.fieldname !== groupByValue.value.fieldname,
-  )
+  let data = list.value?.data?.group_by_field
+    ? groupByOptions.data.filter(
+        (option) => option.fieldname !== groupByValue.value.fieldname,
+      )
+    : groupByOptions.data
+  return data.map((option) => ({ ...option, value: option.fieldname }))
 })
 </script>

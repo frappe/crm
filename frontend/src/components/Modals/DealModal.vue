@@ -1,10 +1,10 @@
 <template>
-  <Dialog v-model="show" :options="{ size: '3xl' }">
+  <Dialog v-model:open="show" :size="'3xl'">
     <template #body>
-      <div class="bg-surface-modal px-4 pb-6 pt-5 sm:px-6">
+      <div class="bg-surface-elevation-2 px-4 pb-6 pt-5 sm:px-6">
         <div class="mb-5 flex items-center justify-between">
           <div>
-            <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9">
+            <h3 class="text-3xl-semibold leading-6 text-ink-gray-9">
               {{ __('Create Deal') }}
             </h3>
           </div>
@@ -13,14 +13,14 @@
               v-if="isManager() && !isMobileView"
               variant="ghost"
               class="w-7"
-              :tooltip="__('Edit fields layout')"
+              :tooltip="__('Edit Fields Layout')"
               :icon="EditIcon"
               @click="openQuickEntryModal"
             />
             <Button
               variant="ghost"
               class="w-7"
-              icon="x"
+              icon="lucide-x"
               @click="show = false"
             />
           </div>
@@ -50,13 +50,12 @@
             class="h-px w-full border-t my-5"
           />
           <FieldLayout
-            ref="fieldLayoutRef"
             v-if="tabs.data?.length"
             :tabs="tabs.data"
             :data="deal.doc"
             doctype="CRM Deal"
           />
-          <ErrorMessage class="mt-4" v-if="error" :message="__(error)" />
+          <ErrorMessage v-if="error" class="mt-4" :message="__(error)" />
         </div>
       </div>
       <div class="px-4 pb-7 pt-4 sm:px-6">
@@ -66,6 +65,14 @@
             :label="__('Create')"
             :loading="isDealCreating"
             @click="createDeal"
+          />
+          <Button
+            :label="__('Enrich')"
+            :loading="isEnriching"
+            :disabled="!deal.doc.website"
+            :tooltip="__('Fill fields from the company website')"
+            iconLeft="zap"
+            @click="enrichFromWebsite"
           />
         </div>
       </div>
@@ -81,19 +88,19 @@ import { statusesStore } from '@/stores/statuses'
 import { isMobileView } from '@/composables/settings'
 import { showQuickEntryModal, quickEntryProps } from '@/composables/modals'
 import { useDocument } from '@/data/document'
-import { capture } from '@/telemetry'
-import { Switch, createResource } from 'frappe-ui'
+import { useTelemetry } from 'frappe-ui/frappe'
+import { Switch, createResource, call, toast } from 'frappe-ui'
 import { computed, ref, onMounted, nextTick, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 const props = defineProps({
-  defaults: Object,
+  defaults: { type: Object, default: () => ({}) },
 })
 
 const { getUser, isManager } = usersStore()
 const { getDealStatus, statusOptions } = statusesStore()
 
-const show = defineModel()
+const show = defineModel({ type: Boolean })
 const router = useRouter()
 const error = ref(null)
 
@@ -103,9 +110,54 @@ const hasOrganizationSections = ref(true)
 const hasContactSections = ref(true)
 
 const isDealCreating = ref(false)
+const isEnriching = ref(false)
 const chooseExistingContact = ref(false)
 const chooseExistingOrganization = ref(false)
-const fieldLayoutRef = ref(null)
+const { capture } = useTelemetry()
+
+// Prefill the form from the company website (Domain Enrichment) — synchronous,
+// no document is created until the user clicks Create.
+async function enrichFromWebsite() {
+  const website = (deal.doc.website || '').trim()
+  if (!website) {
+    toast.warning(__('Enter a Website first.'))
+    return
+  }
+  capture('enrichment_quick_triggered', {
+    doctype: 'CRM Deal',
+    source: 'create_modal',
+  })
+  isEnriching.value = true
+  try {
+    const { fields, notes } = await call(
+      'crm.domain_enrichment.api.enrich_preview',
+      { website, doctype: 'CRM Deal' },
+    )
+    // Fill-empty semantics: never clobber values the user already typed in the
+    // modal — only set fields that are currently empty on deal.doc.
+    const filled = Object.keys(fields || {}).filter((key) => {
+      const current = deal.doc[key]
+      if (current === undefined || current === null || current === '') {
+        deal.doc[key] = fields[key]
+        return true
+      }
+      return false
+    })
+    if (filled.length) {
+      toast.success(
+        __('Filled {0} field(s) from the website.', [filled.length]),
+      )
+    } else {
+      toast.info(
+        notes?.[0] || __('Nothing could be extracted from this website.'),
+      )
+    }
+  } catch (e) {
+    toast.error(e.messages?.[0] || __('Could not enrich from the website.'))
+  } finally {
+    isEnriching.value = false
+  }
+}
 
 watch(
   [chooseExistingOrganization, chooseExistingContact],
@@ -166,13 +218,7 @@ const tabs = createResource({
   },
 })
 
-const dealStatuses = computed(() => {
-  let statuses = statusOptions('deal')
-  if (!deal.doc.status) {
-    deal.doc.status = statuses[0].value
-  }
-  return statuses
-})
+const dealStatuses = computed(() => statusOptions('deal'))
 
 async function createDeal() {
   if (deal.doc.website && !deal.doc.website.startsWith('http')) {
@@ -189,7 +235,7 @@ async function createDeal() {
 
   createResource({
     url: 'crm.fcrm.doctype.crm_deal.crm_deal.create_deal',
-    params: { args: deal.doc },
+    params: { doc: deal.doc },
     auto: true,
     validate() {
       error.value = null
@@ -205,11 +251,11 @@ async function createDeal() {
         deal.doc.mobile_no &&
         isNaN(deal.doc.mobile_no.replace(/[-+() ]/g, ''))
       ) {
-        error.value = __('Mobile No should be a number')
+        error.value = __('Mobile number should be a number')
         return error.value
       }
       if (deal.doc.email && !deal.doc.email.includes('@')) {
-        error.value = __('Invalid Email')
+        error.value = __('Invalid email address')
         return error.value
       }
       if (!deal.doc.status) {
@@ -242,7 +288,7 @@ function openQuickEntryModal() {
 }
 
 onMounted(() => {
-  deal.doc = { no_of_employees: '1-10' }
+  deal.doc.no_of_employees = '1-10'
   Object.assign(deal.doc, props.defaults)
 
   if (!deal.doc.deal_owner) {

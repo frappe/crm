@@ -1,5 +1,7 @@
 import json
+
 import frappe
+
 
 def execute():
 	if not frappe.db.exists("CRM Fields Layout", {"dt": "CRM Lead", "type": "Side Panel"}):
@@ -7,6 +9,7 @@ def execute():
 
 	if not frappe.db.exists("CRM Fields Layout", {"dt": "CRM Deal", "type": "Side Panel"}):
 		create_doctype_fields_layout("CRM Deal")
+
 
 def create_doctype_fields_layout(doctype):
 	not_allowed_fieldtypes = [
@@ -53,11 +56,13 @@ def create_doctype_fields_layout(doctype):
 			sections[section].pop("fields", None)
 		section_fields.append(sections[section])
 
-	frappe.get_doc({
-		"doctype": "CRM Fields Layout",
-		"dt": doctype,
-		"type": "Side Panel",
-		"layout": json.dumps(section_fields),
-	}).insert(ignore_permissions=True)
+	frappe.get_doc(
+		{
+			"doctype": "CRM Fields Layout",
+			"dt": doctype,
+			"type": "Side Panel",
+			"layout": json.dumps(section_fields),
+		}
+	).insert(ignore_permissions=True)
 
 	return section_fields

@@ -2,19 +2,19 @@
   <Tooltip v-if="!disabled">
     <template #body>
       <div
-        class="rounded bg-surface-gray-7 py-1.5 px-2 text-xs text-ink-white shadow-xl"
+        class="rounded bg-surface-gray-10 py-1.5 px-2 text-xs text-ink-base shadow-xl"
       >
         <span class="flex items-center gap-1">
           <span>{{ label }}</span>
           <!-- Primary combos (one or many) -->
           <template
-            v-for="(combo, idx) in primaryCombosDisplay"
-            :key="'prim-' + idx + combo"
+            v-for="(_combo, idx) in primaryCombosDisplay"
+            :key="'prim-' + idx + _combo"
           >
             <KeyboardShortcut
               bg
-              class="!bg-surface-gray-5 !text-ink-gray-2 px-1"
-              :combo="combo"
+              class="!bg-surface-gray-8 !text-ink-gray-2 px-1"
+              :combo="_combo"
             />
           </template>
           <!-- Alternate combos / equivalents -->
@@ -24,7 +24,7 @@
           >
             <KeyboardShortcut
               bg
-              class="!bg-surface-gray-5 !text-ink-gray-2 px-1"
+              class="!bg-surface-gray-8 !text-ink-gray-2 px-1"
               :combo="alt"
             />
           </template>
@@ -56,6 +56,7 @@ const props = withDefaults(defineProps<Props>(), {
 const isMac = computed(() => {
   if (typeof navigator === 'undefined') return false
   const platform =
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (navigator as any).userAgentData?.platform || navigator.platform || ''
   if (/Mac|iPod|iPhone|iPad/i.test(platform)) return true
   return /Mac OS X|Macintosh|iPhone|iPad|iPod/i.test(navigator.userAgent || '')

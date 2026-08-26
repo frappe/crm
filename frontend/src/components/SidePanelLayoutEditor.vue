@@ -10,10 +10,10 @@
               class="flex max-w-fit cursor-pointer items-center gap-2 text-base leading-4 text-ink-gray-9"
               @click="section.opened = !section.opened"
             >
-              <FeatherIcon
-                name="chevron-right"
-                class="h-4 transition-all duration-300 ease-in-out"
+              <span
+                class="lucide-chevron-right h-4 transition-all duration-300 ease-in-out"
                 :class="{ 'rotate-90': section.opened }"
+                aria-hidden="true"
               />
               <div v-if="!section.editingLabel">
                 {{ __(section.label) || __('Untitled') }}
@@ -27,7 +27,7 @@
                 />
                 <Button
                   v-if="section.editingLabel"
-                  icon="check"
+                  icon="lucide-check"
                   class="!size-4 rounded-sm"
                   variant="ghost"
                   @click.stop="section.editingLabel = false"
@@ -48,7 +48,7 @@
               <Button
                 v-if="section.editable !== false"
                 class="!size-4 rounded-sm"
-                icon="x"
+                icon="lucide-x"
                 variant="ghost"
                 @click="sections.splice(sections.indexOf(section), 1)"
               />
@@ -64,7 +64,7 @@
             >
               <template #item="{ element: field }">
                 <div
-                  class="px-2.5 py-2 border border-outline-gray-modals rounded text-base leading-4 text-ink-gray-8 flex items-center justify-between gap-2"
+                  class="px-2.5 py-2 border border-outline-elevation-2 rounded text-base leading-4 text-ink-gray-8 flex items-center justify-between gap-2"
                 >
                   <div class="flex items-center gap-2">
                     <DragVerticalIcon class="h-3.5 cursor-grab" />
@@ -72,7 +72,7 @@
                   </div>
                   <Button
                     variant="ghost"
-                    icon="x"
+                    icon="lucide-x"
                     class="!size-4 rounded-sm"
                     @click="
                       section.columns[0].fields.splice(
@@ -84,33 +84,33 @@
                 </div>
               </template>
             </Draggable>
-            <Autocomplete
-              v-if="fields.data && section.editable !== false"
-              value=""
-              :options="fields.data"
-              @change="(e) => addField(section, e)"
+            <Combobox
+              v-if="section.editable !== false"
+              :model-value="null"
+              :options="fields"
+              @update:selected-option="(e) => addField(section, e)"
             >
-              <template #target="{ togglePopover }">
+              <template #trigger="{ open, setOpen }">
                 <Button
                   class="w-full h-8 mt-1.5 !bg-surface-gray-1"
                   variant="outline"
                   :label="__('Add Field')"
                   iconLeft="plus"
-                  @click="togglePopover()"
+                  @click="setOpen(!open)"
                 />
               </template>
-              <template #item-label="{ option }">
+              <template #item-label="{ item }">
                 <div class="flex flex-col gap-1 text-ink-gray-9">
-                  <div>{{ option.label }}</div>
+                  <div>{{ item.label }}</div>
                   <div class="text-ink-gray-4 text-sm">
-                    {{ `${option.fieldname} - ${option.fieldtype}` }}
+                    {{ `${item.fieldname} - ${item.fieldtype}` }}
                   </div>
                 </div>
               </template>
-            </Autocomplete>
+            </Combobox>
             <div
               v-else
-              class="flex justify-center items-center border rounded border-dashed border-outline-gray-modals p-3"
+              class="flex justify-center items-center border rounded border-dashed border-outline-elevation-2 p-3"
             >
               <div class="text-sm text-ink-gray-4">
                 {{ __('This section is not editable') }}
@@ -140,51 +140,48 @@
 </template>
 <script setup>
 import EditIcon from '@/components/Icons/EditIcon.vue'
-import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import DragVerticalIcon from '@/components/Icons/DragVerticalIcon.vue'
 import { getRandom } from '@/utils'
+import { getMeta } from '@/stores/meta'
 import Draggable from 'vuedraggable'
-import { Input, createResource } from 'frappe-ui'
-import { computed, watch } from 'vue'
+import { Combobox, Input } from 'frappe-ui'
+import { computed } from 'vue'
 
 const props = defineProps({
-  sections: Object,
-  doctype: String,
+  doctype: { type: String, default: 'CRM Lead' },
 })
+
+const sections = defineModel({ type: Array, default: () => [] })
 
 const restrictedFieldTypes = [
+  'Section Break',
+  'Column Break',
+  'Tab Break',
   'Table',
   'Table MultiSelect',
-  'Geolocation',
-  'Attach',
-  'Attach Image',
-  'HTML',
   'Signature',
+  'Image',
 ]
 
-const params = computed(() => {
-  return {
-    doctype: props.doctype,
-    restricted_fieldtypes: restrictedFieldTypes,
-    as_array: true,
-  }
-})
+const { getFields } = getMeta(props.doctype)
 
-const fields = createResource({
-  url: 'crm.api.doc.get_fields_meta',
-  params: params.value,
-  cache: ['fieldsMeta', props.doctype],
-  auto: true,
+const fields = computed(() => {
+  let _fields =
+    getFields({ restrictNoValueFields: false, restrictedFieldTypes }) || []
+  if (!_fields.length) return []
+
+  return _fields.map((field) => {
+    return {
+      label: field.label,
+      value: field.fieldname,
+      fieldname: field.fieldname,
+      fieldtype: field.fieldtype,
+    }
+  })
 })
 
 function addField(section, field) {
   if (!field) return
   section.columns[0].fields.push(field)
 }
-
-watch(
-  () => props.doctype,
-  () => fields.fetch(params.value),
-  { immediate: true },
-)
 </script>

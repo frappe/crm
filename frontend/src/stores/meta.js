@@ -1,8 +1,9 @@
 import { createResource } from 'frappe-ui'
+import { noValueFieldTypes, standardFieldsMeta } from '@/utils/model.js'
 import { formatCurrency, formatNumber } from '@/utils/numberFormat.js'
-import { reactive } from 'vue'
+import { computed, reactive } from 'vue'
 
-const doctypeMeta = reactive({})
+const doctypesMeta = reactive({})
 const userSettings = reactive({})
 
 export function getMeta(doctype) {
@@ -17,14 +18,16 @@ export function getMeta(doctype) {
     onSuccess: (res) => {
       let dtMetas = res.docs
       for (let dtMeta of dtMetas) {
-        doctypeMeta[dtMeta.name] = dtMeta
+        doctypesMeta[dtMeta.name] = dtMeta
       }
 
       userSettings[doctype] = JSON.parse(res.user_settings)
     },
   })
 
-  if (!doctypeMeta[doctype] && !meta.loading) {
+  const doctypeMeta = computed(() => doctypesMeta[doctype] || null)
+
+  if (!doctypesMeta[doctype] && !meta.loading) {
     meta.fetch()
   }
 
@@ -34,31 +37,30 @@ export function getMeta(doctype) {
   }
 
   function getFormattedFloat(fieldname, doc) {
-    let df = doctypeMeta[doctype]?.fields.find((f) => f.fieldname == fieldname)
+    let df = doctypesMeta[doctype]?.fields.find((f) => f.fieldname == fieldname)
     let precision = df?.precision || null
     return formatNumber(doc[fieldname], '', precision)
   }
 
   function getFloatWithPrecision(fieldname, doc) {
-    let df = doctypeMeta[doctype]?.fields.find((f) => f.fieldname == fieldname)
+    let df = doctypesMeta[doctype]?.fields.find((f) => f.fieldname == fieldname)
     let precision = df?.precision || null
     return formatNumber(doc[fieldname], '', precision)
   }
 
   function getCurrencyWithPrecision(fieldname, doc) {
-    let df = doctypeMeta[doctype]?.fields.find((f) => f.fieldname == fieldname)
+    let df = doctypesMeta[doctype]?.fields.find((f) => f.fieldname == fieldname)
     let precision = df?.precision || null
     return formatCurrency(doc[fieldname], '', '', precision)
   }
 
   function getFormattedCurrency(fieldname, doc, parentDoc = null) {
     let currency = window.sysdefaults.currency || 'USD'
-    let df = doctypeMeta[doctype]?.fields.find((f) => f.fieldname == fieldname)
+    let df = doctypesMeta[doctype]?.fields.find((f) => f.fieldname == fieldname)
     let precision = df?.precision || null
 
     if (df && df.options) {
       if (df.options.indexOf(':') != -1) {
-        currency = currency
         // TODO: Handle this case
       } else if (doc && doc[df.options]) {
         currency = doc[df.options]
@@ -71,38 +73,59 @@ export function getMeta(doctype) {
   }
 
   function getGridSettings() {
-    return doctypeMeta[doctype] || {}
+    return doctypeMeta.value || {}
   }
 
-  function getGridViewSettings(parentDoctype, dt = null) {
-    dt = dt || doctype
+  function getGridViewSettings(parentDoctype) {
     if (!userSettings[parentDoctype]?.['GridView']?.[doctype]) return {}
     return userSettings[parentDoctype]['GridView'][doctype]
   }
 
-  function getFields(dt = null) {
-    dt = dt || doctype
-    return doctypeMeta[dt]?.fields.map((f) => {
-      if (f.fieldtype === 'Select' && typeof f.options === 'string') {
-        f.options = f.options.split('\n').map((option) => {
-          return {
-            label: option,
-            value: option,
-          }
-        })
+  function getFields(options = {}) {
+    let {
+      dt = doctype,
+      withStandardFields = false,
+      restrictNoValueFields = true,
+      restrictedFieldTypes = [],
+    } = options
 
-        if (f.options[0]?.value !== '' && f.reqd !== 1) {
-          f.options.unshift({
-            label: '',
-            value: '',
-          })
-        }
-      }
-      if (f.fieldtype === 'Link' && f.options == 'User') {
-        f.fieldtype = 'User'
-      }
-      return f
-    })
+    let fieldsMeta =
+      doctypesMeta[dt]?.fields
+        .filter(
+          (f) =>
+            !f.hidden &&
+            (!restrictNoValueFields ||
+              !noValueFieldTypes.includes(f.fieldtype)) &&
+            (!restrictedFieldTypes.length ||
+              !restrictedFieldTypes.includes(f.fieldtype)),
+        )
+        .map((f) => {
+          if (f.fieldtype === 'Select' && typeof f.options === 'string') {
+            f.options = f.options.split('\n').map((option) => {
+              return {
+                label: option,
+                value: option,
+              }
+            })
+
+            if (f.options[0]?.value !== '' && f.reqd !== 1) {
+              f.options.unshift({
+                label: '',
+                value: '',
+              })
+            }
+          }
+          if (f.fieldtype === 'Link' && f.options == 'User') {
+            f.fieldtype = 'User'
+          }
+          return f
+        }) || []
+
+    if (withStandardFields) {
+      fieldsMeta = fieldsMeta.concat(standardFieldsMeta)
+    }
+
+    return fieldsMeta || []
   }
 
   function saveUserSettings(parentDoctype, key, value, callback) {
@@ -133,9 +156,16 @@ export function getMeta(doctype) {
     return callback?.()
   }
 
+  function isTranslatable(dt = null) {
+    dt = dt || doctype
+    let meta = doctypesMeta[dt]
+    return meta && meta.translated_doctype
+  }
+
   return {
     meta,
     doctypeMeta,
+    doctypesMeta,
     userSettings,
     getFields,
     getGridSettings,
@@ -146,5 +176,6 @@ export function getMeta(doctype) {
     getFormattedFloat,
     getFormattedPercent,
     getFormattedCurrency,
+    isTranslatable,
   }
 }

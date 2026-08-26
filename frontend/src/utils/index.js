@@ -2,8 +2,9 @@ import LucideCheck from '~icons/lucide/check'
 import TaskStatusIcon from '@/components/Icons/TaskStatusIcon.vue'
 import TaskPriorityIcon from '@/components/Icons/TaskPriorityIcon.vue'
 import { usersStore } from '@/stores/users'
-import { gemoji } from 'gemoji'
 import { getMeta } from '@/stores/meta'
+import { gemoji } from 'gemoji'
+import DOMPurify from 'dompurify'
 import { toast, dayjsLocal, dayjs, getConfig, FeatherIcon } from 'frappe-ui'
 import { h } from 'vue'
 
@@ -36,6 +37,37 @@ export function formatDate(date, format, onlyDate = false, onlyTime = false) {
   if (!date) return ''
   format = getFormat(date, format, onlyDate, onlyTime, false)
   return dayjsLocal(date).format(format)
+}
+
+export function formatDuration(totalSeconds, longForm = false) {
+  if (
+    totalSeconds === null ||
+    totalSeconds === undefined ||
+    totalSeconds === ''
+  ) {
+    return ''
+  }
+  const s = parseInt(totalSeconds, 10)
+  if (isNaN(s)) return ''
+  if (s === 0) return longForm ? '0 seconds' : '0s'
+
+  const h = Math.floor(s / 3600)
+  const m = Math.floor((s % 3600) / 60)
+  const sec = s % 60
+
+  if (longForm) {
+    const parts = []
+    if (h) parts.push(h === 1 ? '1 hour' : `${h} hours`)
+    if (m) parts.push(m === 1 ? '1 minute' : `${m} minutes`)
+    if (sec) parts.push(sec === 1 ? '1 second' : `${sec} seconds`)
+    return parts.join(' ')
+  }
+
+  const parts = []
+  if (h) parts.push(`${h}h`)
+  if (m) parts.push(`${m}m`)
+  if (sec) parts.push(`${sec}s`)
+  return parts.join(' ')
 }
 
 export function getFormat(
@@ -260,7 +292,7 @@ export function getSafeWebsiteUrl(rawUrl) {
     }
 
     return parsedUrl.href
-  } catch (_error) {
+  } catch {
     return null
   }
 }
@@ -269,7 +301,7 @@ export function openWebsite(url) {
   const safeUrl = getSafeWebsiteUrl(url)
 
   if (!safeUrl) {
-    toast.error(__('Invalid website URL'))
+    toast.error(__('Invalid Website URL'))
     return false
   }
 
@@ -287,6 +319,14 @@ export function htmlToText(html) {
   return div.textContent || div.innerText || ''
 }
 
+export function isContentEmpty(html) {
+  if (!html) return true
+  // Media/embeds are content even without text, so they post fine.
+  if (/<(img|video|iframe|table|hr)\b/i.test(html)) return false
+  // .trim() also strips U+00A0 (nbsp), so whitespace-only content reads empty.
+  return htmlToText(html).trim() === ''
+}
+
 export function startCase(str) {
   return str.charAt(0).toUpperCase() + str.slice(1)
 }
@@ -296,6 +336,19 @@ export function validateEmail(email) {
     /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
   return regExp.test(email)
 }
+
+export function validatePhone(phone) {
+  let value = String(phone).trim()
+  return /^\+?[\d\s()-]+$/.test(value) && /\d/.test(value)
+}
+
+export const isMac =
+  typeof navigator !== 'undefined' &&
+  /Mac|iPod|iPhone|iPad/i.test(
+    navigator.userAgentData?.platform || navigator.platform || '',
+  )
+
+export const submitShortcutLabel = isMac ? '⌘⏎' : 'Ctrl+⏎'
 
 export function parseAssignees(assignees) {
   let { getUser } = usersStore()
@@ -370,7 +423,7 @@ export function copyToClipboard(text) {
     document.body.removeChild(input)
   }
   function showSuccessAlert() {
-    toast.success(__('Copied to clipboard'))
+    toast.success(__('Copied to Clipboard'))
   }
 }
 
@@ -414,77 +467,20 @@ export function convertArrayToString(array) {
   return array.map((item) => item).join(',')
 }
 
-export function _eval(code, context = {}) {
-  let variable_names = Object.keys(context)
-  let variables = Object.values(context)
-  code = `let out = ${code}; return out`
-  try {
-    let expression_function = new Function(...variable_names, code)
-    return expression_function(...variables)
-  } catch (error) {
-    console.log('Error evaluating the following expression:')
-    console.error(code)
-    throw error
-  }
+export function interpolateTemplate(template, doc) {
+  if (!template) return ''
+  return template.replace(/\{\{\s*(\w+)\s*\}\}/g, (_, key) => {
+    const val = doc?.[key]
+    return val !== undefined && val !== null ? val : ''
+  })
 }
 
-export function evaluateDependsOnValue(expression, doc) {
-  if (!expression) return true
-  if (!doc) return true
-
-  let out = null
-
-  if (typeof expression === 'boolean') {
-    out = expression
-  } else if (typeof expression === 'function') {
-    out = expression(doc)
-  } else if (expression.substr(0, 5) == 'eval:') {
-    try {
-      out = _eval(expression.substr(5), { doc })
-    } catch (e) {
-      out = true
-    }
-  } else {
-    let value = doc[expression]
-    if (Array.isArray(value)) {
-      out = !!value.length
-    } else {
-      out = !!value
-    }
-  }
-
-  return out
-}
-
-export function evaluateExpression(expression, doc, parent) {
-  if (!expression) return false
-  if (!doc) return false
-
-  let out = null
-  if (typeof expression === 'boolean') {
-    out = expression
-  } else if (typeof expression === 'function') {
-    out = expression(doc)
-  } else if (expression.substr(0, 5) == 'eval:') {
-    try {
-      out = _eval(expression.substr(5), { doc, parent })
-      if (parent && parent.istable && expression.includes('is_submittable')) {
-        out = true
-      }
-    } catch (e) {
-      out = true
-    }
-  } else {
-    let value = doc[expression]
-    if (Array.isArray(value)) {
-      out = !!value.length
-    } else {
-      out = !!value
-    }
-  }
-
-  return out
-}
+// Re-export from extracted module so existing imports keep working
+export {
+  _eval,
+  evaluateDependsOnValue,
+  evaluateExpression,
+} from '@/utils/expressions'
 
 export function convertSize(size) {
   const units = ['B', 'KB', 'MB', 'GB', 'TB']
@@ -510,6 +506,19 @@ export function validateIsImageFile(file) {
   }
 }
 
+export function isNull(value) {
+  return (
+    value === undefined ||
+    value === null ||
+    value === '' ||
+    cstr(value).trim() === ''
+  )
+}
+
+export function cstr(s) {
+  return s === null ? '' : s.toString()
+}
+
 export function getRandom(len = 4) {
   let text = ''
   const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
@@ -527,12 +536,13 @@ export function runSequentially(functions) {
   }, Promise.resolve())
 }
 
-export function DropdownOption({ option, icon, selected }) {
+export function DropdownOption({ option, icon, selected, onClick }) {
   return h(
     'button',
     {
       class:
         'group flex w-full text-ink-gray-8 justify-between items-center rounded-md px-2 py-2 text-sm hover:bg-surface-gray-2',
+      onClick,
     },
     [
       h('div', { class: 'flex gap-2' }, [
@@ -553,6 +563,32 @@ export function DropdownOption({ option, icon, selected }) {
         : null,
     ],
   )
+}
+
+export function deepClone(obj) {
+  if (obj === null || typeof obj !== 'object') {
+    return obj
+  }
+
+  if (obj instanceof Date) {
+    return new Date(obj.getTime())
+  }
+
+  if (Array.isArray(obj)) {
+    return obj.map((item) => deepClone(item))
+  }
+
+  if (typeof obj === 'object') {
+    const cloned = {}
+    for (const key in obj) {
+      if (Object.hasOwn(obj, key)) {
+        cloned[key] = deepClone(obj[key])
+      }
+    }
+    return cloned
+  }
+
+  return obj
 }
 
 export function copy(obj) {
@@ -643,7 +679,8 @@ export const convertToConditions = ({ conditions, fieldPrefix }) => {
         return `(${fieldAccess} >= "${start}" and ${fieldAccess} <= "${end}")`
       }
 
-      let valueStr = ''
+      let valueStr
+
       if (op === 'in' || op === 'not in') {
         let items
         if (Array.isArray(value)) {
@@ -748,4 +785,123 @@ export function orderSensitiveEqual(a, b) {
   if (a.length !== b.length) return false
   for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return false
   return true
+}
+
+export function TemplateOption({ active, option, variant, icon, onClick }) {
+  return h(
+    'button',
+    {
+      class: [
+        active ? 'bg-surface-gray-2' : 'text-ink-gray-7',
+        'group flex w-full gap-2 items-center rounded-md px-2 py-2 text-base hover:bg-surface-gray-3',
+        variant == 'danger' ? 'text-ink-red-6 hover:bg-ink-red-1' : '',
+      ],
+      onClick: onClick,
+    },
+    [
+      icon
+        ? h(FeatherIcon, {
+            name: icon,
+            class: ['h-4 w-4 shrink-0'],
+            'aria-hidden': true,
+          })
+        : null,
+      h('span', { class: 'whitespace-nowrap' }, option),
+    ],
+  )
+}
+
+/**
+ * @param {Ref<boolean>} isConfirmingDelete - Ref to track confirmation state
+ * @param {Function} onConfirmDelete - Callback when delete is confirmed
+ * @param {string} label - Label for the delete option
+ * @returns {Array} Array of option objects for use in dropdowns
+ */
+export function ConfirmDelete({
+  isConfirmingDelete,
+  onConfirmDelete,
+  label = __('Delete'),
+}) {
+  return [
+    {
+      label,
+      component: (props) =>
+        TemplateOption({
+          option: label,
+          icon: 'trash-2',
+          active: props.active,
+          variant: 'grey',
+          onClick: (event) => {
+            event.preventDefault()
+            event.stopImmediatePropagation()
+            isConfirmingDelete.value = true
+          },
+        }),
+      condition: () => !isConfirmingDelete.value,
+    },
+    {
+      label: __('Confirm {0}', [label]),
+      component: (props) =>
+        TemplateOption({
+          option: __('Confirm {0}', [label]),
+          icon: 'trash-2',
+          active: props.active,
+          variant: 'danger',
+          onClick: () => {
+            onConfirmDelete()
+            // Reset state after confirming
+            isConfirmingDelete.value = false
+          },
+        }),
+      condition: () => isConfirmingDelete.value,
+    },
+  ]
+}
+
+export function getGridTemplateColumnsForTable(columns) {
+  let columnsWidth = columns
+    .map((col) => {
+      let width = col.width || 1
+      if (typeof width === 'number') {
+        return width + 'fr'
+      }
+      return width
+    })
+    .join(' ')
+  return columnsWidth + ' 22px'
+}
+
+export function clearCache() {
+  ;[
+    '_last_load',
+    '_version_number',
+    'metadata_version',
+    'page_info',
+    'last_visited',
+  ].forEach((key) => localStorage.removeItem(key))
+
+  for (let key in localStorage) {
+    if (
+      key.startsWith('_page:') ||
+      key.startsWith('_doctype:') ||
+      key.startsWith('preferred_breadcrumbs:')
+    ) {
+      localStorage.removeItem(key)
+    }
+  }
+}
+
+export function isTranslatable(doctype) {
+  let translatedDoctypes = window.translated_doctypes || []
+  return translatedDoctypes.includes(doctype)
+}
+
+export function sanitizeHTML(html = '', options = {}) {
+  if (typeof html !== 'string') return html
+  return DOMPurify.sanitize(html, options)
+}
+
+export function sanitizeText(text = '') {
+  if (typeof text !== 'string') return text
+  return text.replace(/\p{Cf}/gu, '')
 }

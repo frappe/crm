@@ -19,7 +19,10 @@
   "api_key",
   "twiml_sid",
   "column_break_idds",
-  "api_secret"
+  "api_secret",
+  "app_name",
+  "section_break_cghd",
+  "twilio_apps"
  ],
  "fields": [
   {
@@ -99,12 +102,27 @@
   {
    "fieldname": "column_break_yqvr",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "app_name",
+   "fieldtype": "Data",
+   "label": "App Name"
+  },
+  {
+   "fieldname": "section_break_cghd",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "twilio_apps",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Twilio Apps"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-08-19 13:36:19.823197",
+ "modified": "2026-03-06 15:56:05.387337",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Twilio Settings",

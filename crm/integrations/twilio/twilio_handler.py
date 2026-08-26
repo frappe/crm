@@ -24,8 +24,8 @@ class Twilio:
 		self.twilio_client = self.get_twilio_client()
 
 	@classmethod
-	def connect(self):
-		"""Make a twilio connection."""
+	def connect(cls):
+		"""Read CRM Twilio Settings and return a configured Twilio instance, or None if not enabled."""
 		settings = frappe.get_doc("CRM Twilio Settings")
 		if not (settings and settings.enabled):
 			return

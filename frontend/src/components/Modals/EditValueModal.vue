@@ -1,13 +1,15 @@
 <template>
-  <Dialog v-model="show" :options="{ title: __('Bulk Edit') }">
-    <template #body-content>
+  <Dialog v-model:open="show" :title="__('Bulk Edit')">
+    <template #default>
       <div class="mb-4">
         <div class="mb-1.5 text-sm text-ink-gray-5">{{ __('Field') }}</div>
-        <Autocomplete
-          :value="field.label"
-          :options="fields.data"
-          @change="(e) => changeField(e)"
+        <Combobox
+          class="w-full"
+          trigger="button"
+          :model-value="field.fieldname"
+          :options="fields.data || []"
           :placeholder="__('Source')"
+          @update:selected-option="(e) => changeField(e)"
         />
       </div>
       <div>
@@ -16,8 +18,8 @@
           :is="getValueComponent(field)"
           :value="newValue"
           size="md"
-          @change="(v) => updateValue(v)"
           :placeholder="__('Contact Us')"
+          @change="(v) => updateValue(v)"
         />
       </div>
     </template>
@@ -25,9 +27,9 @@
       <Button
         class="w-full"
         variant="solid"
-        @click="updateValues"
         :loading="loading"
         :label="__('Update {0} Records', [recordCount])"
+        @click="updateValues"
       />
     </template>
   </Dialog>
@@ -35,9 +37,9 @@
 
 <script setup>
 import Link from '@/components/Controls/Link.vue'
-import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
-import { capture } from '@/telemetry'
+import { useTelemetry } from 'frappe-ui/frappe'
 import {
+  Combobox,
   FormControl,
   call,
   createResource,
@@ -54,19 +56,15 @@ const typeEditor = ['Text Editor']
 const typeDate = ['Date', 'Datetime']
 
 const props = defineProps({
-  doctype: {
-    type: String,
-    required: true,
-  },
-  selectedValues: {
-    type: Set,
-    required: true,
-  },
+  doctype: { type: String, required: true },
+  selectedValues: { type: Set, required: true },
 })
 
-const show = defineModel()
+const show = defineModel({ type: Boolean })
 
 const emit = defineEmits(['reload'])
+
+const { capture } = useTelemetry()
 
 const fields = createResource({
   url: 'crm.api.doc.get_fields',
@@ -75,7 +73,11 @@ const fields = createResource({
     doctype: props.doctype,
   },
   transform: (data) => {
-    return data.filter((f) => f.hidden == 0 && f.read_only == 0)
+    // `description` renders as a second line in the dropdown, which has no
+    // max width, so a long one stretches the whole list.
+    return data
+      .filter((f) => f.hidden == 0 && f.read_only == 0)
+      .map(({ description, ...f }) => ({ ...f, value: f.fieldname }))
   },
 })
 
@@ -168,7 +170,7 @@ function getValueComponent(f) {
     return h(TextEditor, {
       variant: 'outline',
       editorClass:
-        '!prose-sm overflow-auto min-h-[80px] max-h-80 py-1.5 px-2 rounded border border-outline-gray-2 bg-surface-white hover:border-outline-gray-3 hover:shadow-sm focus:bg-surface-white focus:border-outline-gray-4 focus:shadow-sm focus:ring-0 focus-visible:ring-2 focus-visible:ring-outline-gray-3 text-ink-gray-8 transition-colors',
+        '!prose-sm overflow-auto min-h-[80px] max-h-80 py-1.5 px-2 rounded border border-outline-gray-2 bg-surface-base hover:border-outline-gray-3 hover:shadow-sm focus:bg-surface-base focus:border-outline-gray-4 focus:ring-0 focus-visible:ring-2 focus-visible:ring-outline-gray-3 text-ink-gray-8 transition-colors',
       bubbleMenu: true,
       content: newValue.value,
     })

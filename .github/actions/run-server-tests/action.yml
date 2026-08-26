@@ -1,0 +1,42 @@
+name: Run CRM Server Tests
+description: Execute bench tests for the CRM app with optional coverage collection.
+inputs:
+    bench-path:
+        description: Absolute path to the bench directory
+        required: false
+        default: "/home/runner/frappe-bench"
+    site:
+        description: Bench site on which to run tests
+        required: false
+        default: "test_site"
+    app:
+        description: App to test
+        required: false
+        default: "crm"
+    enable-coverage:
+        description: When true, include coverage flag during test execution
+        required: false
+        default: "true"
+    type:
+        description: Bench command type environment variable
+        required: false
+        default: "server"
+    ci-build-id:
+        description: CI build identifier propagated to bench commands
+        required: false
+runs:
+    using: composite
+    steps:
+        - name: Run Tests
+          shell: bash
+          working-directory: ${{ inputs.bench-path }}
+          env:
+              TYPE: ${{ inputs.type }}
+              CI_BUILD_ID: ${{ inputs.ci-build-id }}
+          run: |
+              bench --site "${{ inputs.site }}" set-config allow_tests true
+              if [ "${{ inputs.enable-coverage }}" = "true" ]; then
+                  bench --site "${{ inputs.site }}" run-tests --app "${{ inputs.app }}" --coverage
+              else
+                  bench --site "${{ inputs.site }}" run-tests --app "${{ inputs.app }}"
+              fi

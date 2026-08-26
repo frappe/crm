@@ -1,9 +1,9 @@
 <template>
   <div
-    class="flex p-3 items-center justify-between cursor-pointer hover:bg-surface-menu-bar rounded"
+    class="flex p-3 items-center justify-between cursor-pointer hover:bg-surface-sidebar rounded"
   >
     <div class="w-7/12" @click="updateStep('view', data)">
-      <div class="text-base text-ink-gray-7 font-medium">{{ data.name }}</div>
+      <div class="text-base-medium text-ink-gray-7">{{ data.name }}</div>
       <div
         v-if="data.description && data.description.length > 0"
         class="text-p-base w-full text-ink-gray-5 mt-0.5 whitespace-nowrap overflow-ellipsis overflow-hidden"
@@ -13,8 +13,8 @@
     </div>
     <div class="w-3/12">
       <select
+        v-model="localData.priority"
         class="w-full h-7 text-base hover:bg-surface-gray-3 rounded-md p-0 pl-2 pr-5 bg-transparent -ml-2 border-0 text-ink-gray-8 focus-visible:!ring-0 bg-none truncate"
-        v-model="data.priority"
         @update:modelValue="onPriorityChange"
         @change="onPriorityChange"
       >
@@ -35,7 +35,7 @@
       />
       <Dropdown placement="right" :options="dropdownOptions">
         <Button
-          icon="more-horizontal"
+          icon="lucide-more-horizontal"
           variant="ghost"
           @click="isConfirmingDelete = false"
         />
@@ -43,15 +43,15 @@
     </div>
   </div>
   <Dialog
-    :options="{ title: __('Duplicate Assignment Rule') }"
-    v-model="duplicateDialog.show"
+    v-model:open="duplicateDialog.show"
+    :title="__('Duplicate Assignment Rule')"
   >
-    <template #body-content>
+    <template #default>
       <div class="flex flex-col gap-4">
         <FormControl
+          v-model="duplicateDialog.name"
           :label="__('New Assignment Rule Name')"
           type="text"
-          v-model="duplicateDialog.name"
         />
       </div>
     </template>
@@ -75,21 +75,28 @@ import {
   Dialog,
   Dropdown,
   FormControl,
-  Select,
   Switch,
   toast,
 } from 'frappe-ui'
-import { inject, ref } from 'vue'
+import { useTelemetry } from 'frappe-ui/frappe'
+import { inject, ref, reactive, watch } from 'vue'
+import { ConfirmDelete } from '../../../utils'
+
+const { capture } = useTelemetry()
 
 const assignmentRulesList = inject('assignmentRulesList')
 const updateStep = inject('updateStep')
 
 const props = defineProps({
-  data: {
-    type: Object,
-    required: true,
-  },
+  data: { type: Object, required: true },
 })
+
+const localData = reactive({ ...props.data })
+watch(
+  () => props.data,
+  (val) => Object.assign(localData, val),
+  { deep: true },
+)
 
 const priorityOptions = [
   { label: 'Low', value: '0' },
@@ -133,23 +140,10 @@ const dropdownOptions = [
     },
     icon: 'copy',
   },
-  {
-    label: __('Delete'),
-    icon: 'trash-2',
-    onClick: (e) => {
-      e.preventDefault()
-      e.stopImmediatePropagation()
-      isConfirmingDelete.value = true
-    },
-    condition: () => !isConfirmingDelete.value,
-  },
-  {
-    label: __('Confirm Delete'),
-    icon: 'trash-2',
-    theme: 'red',
-    onClick: () => deleteAssignmentRule(),
-    condition: () => isConfirmingDelete.value,
-  },
+  ...ConfirmDelete({
+    onConfirmDelete: () => deleteAssignmentRule(),
+    isConfirmingDelete,
+  }),
 ]
 
 const duplicate = () => {
@@ -171,7 +165,7 @@ const duplicate = () => {
 }
 
 const onPriorityChange = () => {
-  setAssignmentRuleValue('priority', props.data.priority)
+  setAssignmentRuleValue('priority', localData.priority)
 }
 
 const onToggle = () => {
@@ -179,6 +173,7 @@ const onToggle = () => {
     toast.error(__('Cannot enable rule without adding users in it'))
     return
   }
+  capture('assignment_rule_toggled', { enabled: Boolean(props.data.disabled) })
   setAssignmentRuleValue('disabled', !props.data.disabled, 'status')
 }
 

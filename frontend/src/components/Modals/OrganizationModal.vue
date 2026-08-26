@@ -1,10 +1,10 @@
 <template>
-  <Dialog v-model="show" :options="{ size: 'xl' }">
+  <Dialog v-model:open="show" :size="'xl'">
     <template #body>
-      <div class="px-4 pt-5 pb-6 bg-surface-modal sm:px-6">
+      <div class="px-4 pt-5 pb-6 bg-surface-elevation-2 sm:px-6">
         <div class="flex items-center justify-between mb-5">
           <div>
-            <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9">
+            <h3 class="text-3xl-semibold leading-6 text-ink-gray-9">
               {{ __('New Organization') }}
             </h3>
           </div>
@@ -13,15 +13,15 @@
               v-if="isManager() && !isMobileView"
               variant="ghost"
               class="w-7"
-              :tooltip="__('Edit fields layout')"
+              :tooltip="__('Edit Fields Layout')"
               :icon="EditIcon"
               @click="openQuickEntryModal"
             />
             <Button
               variant="ghost"
               class="w-7"
+              icon="lucide-x"
               @click="show = false"
-              icon="x"
             />
           </div>
         </div>
@@ -31,7 +31,7 @@
           :data="organization.doc"
           doctype="CRM Organization"
         />
-        <ErrorMessage class="mt-8" v-if="error" :message="__(error)" />
+        <ErrorMessage v-if="error" class="mt-8" :message="__(error)" />
       </div>
       <div class="px-4 pt-4 pb-7 sm:px-6">
         <div class="space-y-2">
@@ -41,6 +41,15 @@
             :label="__('Create')"
             :loading="loading"
             @click="createOrganization"
+          />
+          <Button
+            class="w-full"
+            :label="__('Enrich')"
+            :loading="isEnriching"
+            :disabled="!organization.doc.website"
+            :tooltip="__('Fill fields from the company website')"
+            iconLeft="zap"
+            @click="enrichFromWebsite"
           />
         </div>
       </div>
@@ -53,42 +62,79 @@ import FieldLayout from '@/components/FieldLayout/FieldLayout.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import { usersStore } from '@/stores/users'
 import { isMobileView } from '@/composables/settings'
-import {
-  showQuickEntryModal,
-  quickEntryProps,
-  showAddressModal,
-  addressProps,
-} from '@/composables/modals'
+import { showQuickEntryModal, quickEntryProps } from '@/composables/modals'
 import { useDocument } from '@/data/document'
-import { capture } from '@/telemetry'
-import { call, createResource } from 'frappe-ui'
+import { useDoctypeModal } from '@/composables/doctypeModal'
+import { useTelemetry } from 'frappe-ui/frappe'
+import { call, createResource, toast } from 'frappe-ui'
 import { ref, nextTick, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 const props = defineProps({
-  data: {
-    type: Object,
-    default: () => ({}),
-  },
+  data: { type: Object, default: () => ({}) },
   options: {
     type: Object,
-    default: {
-      redirect: true,
-      afterInsert: () => {},
-    },
+    default: () => ({ redirect: true, afterInsert: () => {} }),
   },
 })
 
 const { isManager } = usersStore()
+const { capture } = useTelemetry()
 
 const router = useRouter()
-const show = defineModel()
+const show = defineModel({ type: Boolean })
 
 const loading = ref(false)
 const error = ref(null)
 
 const { document: organization, triggerOnBeforeCreate } =
   useDocument('CRM Organization')
+
+const isEnriching = ref(false)
+
+// Prefill the form from the company website (Domain Enrichment) — synchronous,
+// no document is created until the user clicks Create.
+async function enrichFromWebsite() {
+  const website = (organization.doc.website || '').trim()
+  if (!website) {
+    toast.warning(__('Enter a Website first.'))
+    return
+  }
+  capture('enrichment_quick_triggered', {
+    doctype: 'CRM Organization',
+    source: 'create_modal',
+  })
+  isEnriching.value = true
+  try {
+    const { fields, notes } = await call(
+      'crm.domain_enrichment.api.enrich_preview',
+      { website, doctype: 'CRM Organization' },
+    )
+    // Fill-empty semantics: never clobber values the user already typed in the
+    // modal — only set fields that are currently empty on organization.doc.
+    const filled = Object.keys(fields || {}).filter((key) => {
+      const current = organization.doc[key]
+      if (current === undefined || current === null || current === '') {
+        organization.doc[key] = fields[key]
+        return true
+      }
+      return false
+    })
+    if (filled.length) {
+      toast.success(
+        __('Filled {0} field(s) from the website.', [filled.length]),
+      )
+    } else {
+      toast.info(
+        notes?.[0] || __('Nothing could be extracted from this website.'),
+      )
+    }
+  } catch (e) {
+    toast.error(e.messages?.[0] || __('Could not enrich from the website.'))
+  } finally {
+    isEnriching.value = false
+  }
+}
 
 async function createOrganization() {
   loading.value = true
@@ -115,6 +161,7 @@ async function createOrganization() {
   if (doc.name) {
     capture('organization_created')
     handleOrganizationUpdate(doc)
+    organization.doc = {}
   }
 }
 
@@ -126,7 +173,7 @@ function handleOrganizationUpdate(doc) {
     })
   }
   show.value = false
-  props.options.afterInsert && props.options.afterInsert(doc)
+  props.options.afterInsert?.(doc)
 }
 
 const tabs = createResource({
@@ -142,10 +189,10 @@ const tabs = createResource({
             if (field.fieldname == 'address') {
               field.create = (value, close) => {
                 organization.doc.address = value
-                openAddressModal()
+                showAddressModal()
                 close()
               }
-              field.edit = (address) => openAddressModal(address)
+              field.edit = (address) => showAddressModal(address)
             } else if (field.fieldtype === 'Table') {
               organization.doc[field.fieldname] = []
             }
@@ -157,7 +204,7 @@ const tabs = createResource({
 })
 
 onMounted(() => {
-  organization.doc = { no_of_employees: '1-10' }
+  organization.doc.no_of_employees = '1-10'
   Object.assign(organization.doc, props.data)
 })
 
@@ -167,11 +214,18 @@ function openQuickEntryModal() {
   nextTick(() => (show.value = false))
 }
 
-function openAddressModal(_address) {
-  showAddressModal.value = true
-  addressProps.value = {
+const { showModal } = useDoctypeModal()
+
+function showAddressModal(_address) {
+  showModal({
+    name: _address || null,
     doctype: 'Address',
-    address: _address,
-  }
+    callbacks: {
+      afterInsert: (d) => {
+        capture('address_created')
+        organization.doc.address = d.name
+      },
+    },
+  })
 }
 </script>

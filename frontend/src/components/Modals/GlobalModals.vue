@@ -11,22 +11,18 @@
     v-model="showQuickEntryModal"
     v-bind="quickEntryProps"
   />
-  <AddressModal
-    v-if="showAddressModal"
-    v-model="showAddressModal"
-    v-bind="addressProps"
-  />
   <ChangePasswordModal
     v-if="showChangePasswordModal"
     v-model="showChangePasswordModal"
   />
   <AboutModal v-model="showAboutModal" />
+  <FieldLayoutDialogContainer />
 </template>
 <script setup>
+import FieldLayoutDialogContainer from '@/components/Modals/FieldLayoutDialogContainer.vue'
 import ChangePasswordModal from '@/components/Modals/ChangePasswordModal.vue'
 import CreateDocumentModal from '@/components/Modals/CreateDocumentModal.vue'
 import QuickEntryModal from '@/components/Modals/QuickEntryModal.vue'
-import AddressModal from '@/components/Modals/AddressModal.vue'
 import AboutModal from '@/components/Modals/AboutModal.vue'
 import {
   showCreateDocumentModal,
@@ -37,8 +33,6 @@ import {
 import {
   showQuickEntryModal,
   quickEntryProps,
-  showAddressModal,
-  addressProps,
   showAboutModal,
   showChangePasswordModal,
 } from '@/composables/modals'

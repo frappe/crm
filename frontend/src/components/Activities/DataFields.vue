@@ -1,20 +1,20 @@
 <template>
   <div
-    class="my-3 flex items-center justify-between text-lg font-medium sm:mb-4 sm:mt-8"
+    class="my-3 flex items-center justify-between text-lg-medium sm:mb-4 sm:mt-8"
   >
-    <div class="flex h-8 items-center text-xl font-semibold text-ink-gray-8">
+    <div class="flex h-8 items-center text-2xl-semibold text-ink-gray-8">
       {{ __('Data') }}
       <Badge
         v-if="document.isDirty"
         class="ml-3"
-        :label="'Not Saved'"
+        :label="__('Not Saved')"
         theme="orange"
       />
     </div>
     <div class="flex gap-1">
       <Button
         v-if="isManager() && !isMobileView"
-        :tooltip="__('Edit fields layout')"
+        :tooltip="__('Edit Fields Layout')"
         :icon="EditIcon"
         @click="showDataFieldsModal = true"
       />
@@ -29,7 +29,7 @@
   </div>
   <div
     v-if="document.get.loading"
-    class="flex flex-1 flex-col items-center justify-center gap-3 text-xl font-medium text-ink-gray-6"
+    class="flex flex-1 flex-col items-center justify-center gap-3 text-2xl-medium text-ink-gray-6"
   >
     <LoadingIndicator class="h-6 w-6" />
     <span>{{ __('Loading...') }}</span>
@@ -37,6 +37,8 @@
   <div v-else class="pb-8">
     <FieldLayout
       v-if="tabs.data"
+      v-model:tabIndex="fieldLayoutTabIndex"
+      v-model:tabName="fieldLayoutTabName"
       :tabs="tabs.data"
       :data="document.doc"
       :doctype="doctype"
@@ -64,20 +66,22 @@ import LoadingIndicator from '@/components/Icons/LoadingIndicator.vue'
 import { usersStore } from '@/stores/users'
 import { useDocument } from '@/data/document'
 import { isMobileView } from '@/composables/settings'
-import { ref, watch, getCurrentInstance } from 'vue'
+import { ref, watch, getCurrentInstance, computed } from 'vue'
 
 const props = defineProps({
-  doctype: {
-    type: String,
-    required: true,
-  },
-  docname: {
-    type: String,
-    required: true,
-  },
+  doctype: { type: String, required: true },
+  docname: { type: String, required: true },
 })
 
 const emit = defineEmits(['beforeSave', 'afterSave'])
+const fieldLayoutTabIndex = defineModel('fieldLayoutTabIndex', {
+  type: Number,
+  default: 0,
+})
+const fieldLayoutTabName = defineModel('fieldLayoutTabName', {
+  type: String,
+  default: '',
+})
 
 const { isManager } = usersStore()
 
@@ -87,6 +91,28 @@ const attrs = instance?.vnode?.props ?? {}
 const showDataFieldsModal = ref(false)
 
 const { document } = useDocument(props.doctype, props.docname)
+const fieldLayoutTabStorageKey = computed(
+  () => `fieldLayoutTab:${props.doctype}:${props.docname}`,
+)
+
+watch(
+  fieldLayoutTabStorageKey,
+  (key) => {
+    const tabName = sessionStorage.getItem(key)
+    if (tabName && fieldLayoutTabName.value !== tabName) {
+      fieldLayoutTabName.value = tabName
+    }
+  },
+  { immediate: true },
+)
+
+watch(fieldLayoutTabName, (tabName) => {
+  if (tabName) {
+    sessionStorage.setItem(fieldLayoutTabStorageKey.value, tabName)
+  } else {
+    sessionStorage.removeItem(fieldLayoutTabStorageKey.value)
+  }
+})
 
 const tabs = createResource({
   url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_fields_layout',

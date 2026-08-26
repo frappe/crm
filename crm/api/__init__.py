@@ -1,10 +1,12 @@
 import frappe
 from bs4 import BeautifulSoup
+from frappe import _
 from frappe.core.api.file import get_max_file_size
+from frappe.rate_limiter import rate_limit
 from frappe.translate import get_all_translations
 from frappe.utils import cstr, split_emails, validate_email_address
-from frappe.utils.modules import get_modules_from_all_apps_for_user
-from frappe.utils.telemetry import POSTHOG_HOST_FIELD, POSTHOG_PROJECT_FIELD
+
+from crm.utils import is_frappe_version
 
 
 @frappe.whitelist(allow_guest=True)
@@ -50,59 +52,72 @@ def get_user_signature():
 	return content
 
 
-@frappe.whitelist()
-def get_posthog_settings():
-	return {
-		"posthog_project_id": frappe.conf.get(POSTHOG_PROJECT_FIELD),
-		"posthog_host": frappe.conf.get(POSTHOG_HOST_FIELD),
-		"enable_telemetry": frappe.get_system_settings("enable_telemetry"),
-		"telemetry_site_age": frappe.utils.telemetry.site_age(),
-	}
-
-
 def check_app_permission():
 	if frappe.session.user == "Administrator":
 		return True
 
-	allowed_modules = get_modules_from_all_apps_for_user()
+	allowed_modules = []
+
+	if is_frappe_version("15"):
+		allowed_modules = frappe.config.get_modules_from_all_apps_for_user()
+	elif is_frappe_version("16", above=True):
+		from frappe.utils.modules import get_modules_from_all_apps_for_user
+
+		allowed_modules = get_modules_from_all_apps_for_user()
+
 	allowed_modules = [x["module_name"] for x in allowed_modules]
 	if "FCRM" not in allowed_modules:
 		return False
 
 	roles = frappe.get_roles()
-	if any(
-		role in ["System Manager", "Sales User", "Sales Manager"] for role in roles
-	):
+	if any(role in ["System Manager", "Sales User", "Sales Manager"] for role in roles):
 		return True
 
 	return False
 
 
 @frappe.whitelist(allow_guest=True)
+@rate_limit(limit=10, seconds=60 * 60)
 def accept_invitation(key: str | None = None):
 	if not key:
-		frappe.throw("Invalid or expired key")
+		frappe.throw(_("Invalid or expired key"))
 
 	result = frappe.db.get_all("CRM Invitation", filters={"key": key}, pluck="name")
 	if not result:
-		frappe.throw("Invalid or expired key")
-
+		frappe.throw(_("Invalid or expired key"))
 	invitation = frappe.get_doc("CRM Invitation", result[0])
-	invitation.accept()
+	is_new_user = invitation.accept()
 	invitation.reload()
 
+	# this is a GET request, which is rolled back unless a commit is requested
+	frappe.local.flags.commit = True
+
 	if invitation.status == "Accepted":
-		frappe.local.login_manager.login_as(invitation.email)
 		frappe.local.response["type"] = "redirect"
-		frappe.local.response["location"] = "/crm"
+		if is_new_user:
+			# a new user has no password yet, send them to the set password page
+			# which logs them in and redirects to /crm once the password is set
+			user = frappe.get_doc("User", invitation.email)
+			frappe.local.response["location"] = user._reset_password()
+		else:
+			frappe.local.login_manager.login_as(invitation.email)
+			frappe.local.response["location"] = "/crm"
 
 
 @frappe.whitelist()
 def invite_by_email(emails: str, role: str):
-	frappe.only_for(["Sales Manager", "System Manager"])
+	frappe.only_for(["Sales Manager", "System Manager"], True)
+
+	user_roles = frappe.get_roles(frappe.session.user)
+
+	if role == "System Manager" and "System Manager" not in user_roles:
+		frappe.throw(_("You are not allowed to invite System Managers"), frappe.PermissionError)
+
+	if role == "Sales Manager" and "System Manager" not in user_roles:
+		frappe.throw(_("You are not allowed to invite Sales Managers"), frappe.PermissionError)
 
 	if role not in ["System Manager", "Sales Manager", "Sales User"]:
-		frappe.throw("Cannot invite for this role")
+		frappe.throw(_("Cannot invite for this role"), frappe.PermissionError)
 
 	if not emails:
 		return
@@ -131,6 +146,20 @@ def invite_by_email(emails: str, role: str):
 		"existing_invites": existing_invites,
 		"to_invite": to_invite,
 	}
+
+
+@frappe.whitelist(methods=["DELETE", "POST"])
+def delete_attachment(doctype: str, docname: str, file_url: str):
+	if not frappe.has_permission(doctype, doc=docname, ptype="write"):
+		frappe.throw(_("You don't have permission to delete this attachment"), frappe.PermissionError)
+
+	file_name = frappe.db.get_value(
+		"File",
+		{"file_url": file_url, "attached_to_doctype": doctype, "attached_to_name": docname},
+		"name",
+	)
+	if file_name:
+		frappe.delete_doc("File", file_name)
 
 
 @frappe.whitelist()

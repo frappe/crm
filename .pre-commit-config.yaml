@@ -1,0 +1,70 @@
+exclude: "node_modules|.git"
+default_stages: [pre-commit]
+fail_fast: false
+
+repos:
+    - repo: https://github.com/pre-commit/pre-commit-hooks
+      rev: v5.0.0
+      hooks:
+          - id: trailing-whitespace
+            files: "crm.*"
+            exclude: ".*json$|.*txt$|.*csv|.*md|.*svg"
+          - id: no-commit-to-branch
+            args: ["--branch", "develop"]
+          - id: check-merge-conflict
+          - id: check-ast
+          - id: check-json
+          - id: check-toml
+          - id: check-yaml
+          - id: debug-statements
+
+    - repo: https://github.com/oxc-project/mirrors-oxlint
+      rev: v1.50.0
+      hooks:
+          - id: oxlint
+            files: ^frontend/.*\.(js|ts|vue)$
+
+    - repo: https://github.com/pre-commit/mirrors-prettier
+      rev: v3.1.0
+      hooks:
+          - id: prettier
+            files: ^frontend/.*\.(js|ts|vue|css|scss|html|json)$
+            additional_dependencies:
+                - prettier@3.2.5
+            exclude: |
+                (?x)^(
+                    crm/public/dist/.*|
+                    crm/public/frontend/.*|
+                    .*node_modules.*|
+                )$
+
+    - repo: local
+      hooks:
+          - id: eslint
+            name: eslint
+            entry: bash -c 'cd frontend && eslint --fix src/**/*.{js,ts,vue}'
+            language: node
+            files: ^frontend/.*\.(js|ts|vue)$
+            pass_filenames: false
+            additional_dependencies:
+                - "eslint@^10.0.2"
+                - "@eslint/js@^10.0.1"
+                - "typescript-eslint@^8.56.1"
+                - "eslint-plugin-vue@^10.8.0"
+                - "eslint-config-prettier@^10.1.8"
+                - "globals@^17.3.0"
+                - "vue-eslint-parser@^10.4.0"
+
+    - repo: https://github.com/astral-sh/ruff-pre-commit
+      rev: v0.8.1
+      hooks:
+          - id: ruff
+            name: "Run ruff linter and apply fixes"
+            args: ["--fix"]
+          - id: ruff-format
+            name: "Run ruff formatter"
+
+ci:
+    autoupdate_schedule: weekly
+    skip: []
+    submodules: false

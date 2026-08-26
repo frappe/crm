@@ -12,24 +12,15 @@
 import { ref, computed, onMounted } from 'vue'
 
 const props = defineProps({
-  as: {
-    type: String,
-    default: 'div',
-  },
-  maskLength: {
-    type: Number,
-    default: 30,
-  },
-  orientation: {
-    type: String,
-    default: 'vertical',
-  },
+  as: { type: String, default: 'div' },
+  maskLength: { type: Number, default: 30 },
+  orientation: { type: String, default: 'vertical' },
 })
 
 const scrollableDiv = ref(null)
 const maskStyle = ref('none')
 const side = computed(() =>
-  props.orientation == 'horizontal' ? 'right' : 'bottom'
+  props.orientation == 'horizontal' ? 'right' : 'bottom',
 )
 
 function updateMaskStyle() {
@@ -78,3 +69,12 @@ function updateMaskStyle() {
 
 onMounted(() => setTimeout(() => updateMaskStyle(), 300))
 </script>
+<style scoped>
+div {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+div::-webkit-scrollbar {
+  display: none;
+}
+</style>

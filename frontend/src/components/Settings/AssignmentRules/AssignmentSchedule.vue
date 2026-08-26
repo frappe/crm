@@ -7,7 +7,7 @@
       <div
         v-for="column in columns"
         :key="column.key"
-        class="text-gray-600 overflow-hidden whitespace-nowrap text-ellipsis"
+        class="text-ink-gray-5 overflow-hidden whitespace-nowrap text-ellipsis"
       >
         {{ __(column.label) }}
       </div>

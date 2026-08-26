@@ -102,7 +102,7 @@
         >
           {{ getRow(itemName, titleField).label }}
         </div>
-        <div class="text-ink-gray-4" v-else>{{ __('No Title') }}</div>
+        <div v-else class="text-ink-gray-4">{{ __('No Title') }}</div>
       </div>
     </template>
 
@@ -157,7 +157,10 @@
             :label="getRow(itemName, fieldName).value"
           />
         </div>
-        <div v-else-if="fieldName === '_assign'" class="flex items-center">
+        <div
+          v-else-if="fieldName === '_assign'"
+          class="flex items-center truncate"
+        >
           <MultipleAvatar
             :avatars="getRow(itemName, fieldName).label"
             size="xs"
@@ -176,17 +179,17 @@
           <span v-if="getRow(itemName, '_email_count').label">
             {{ getRow(itemName, '_email_count').label }}
           </span>
-          <span class="text-3xl leading-[0]"> &middot; </span>
+          <span class="text-4xl leading-[0]"> &middot; </span>
           <NoteIcon class="h-4 w-4" />
           <span v-if="getRow(itemName, '_note_count').label">
             {{ getRow(itemName, '_note_count').label }}
           </span>
-          <span class="text-3xl leading-[0]"> &middot; </span>
+          <span class="text-4xl leading-[0]"> &middot; </span>
           <TaskIcon class="h-4 w-4" />
           <span v-if="getRow(itemName, '_task_count').label">
             {{ getRow(itemName, '_task_count').label }}
           </span>
-          <span class="text-3xl leading-[0]"> &middot; </span>
+          <span class="text-4xl leading-[0]"> &middot; </span>
           <CommentIcon class="h-4 w-4" />
           <span v-if="getRow(itemName, '_comment_count').label">
             {{ getRow(itemName, '_comment_count').label }}
@@ -198,18 +201,18 @@
           variant="ghost"
           @click.stop.prevent
         >
-          <Button icon="plus" variant="ghost" />
+          <Button icon="lucide-plus" variant="ghost" />
         </Dropdown>
       </div>
     </template>
   </KanbanView>
   <DealsListView
-    ref="dealsListView"
     v-else-if="deals.data && rows.length"
+    ref="dealsListView"
     v-model="deals.data.page_length_count"
     v-model:list="deals"
     :rows="rows"
-    :columns="deals.data.columns"
+    :columns="columns"
     :options="{
       showTooltip: false,
       resizeColumn: true,
@@ -226,37 +229,15 @@
       (selections) => viewControls.updateSelections(selections)
     "
   />
-  <div v-else-if="deals.data" class="flex h-full items-center justify-center">
-    <div
-      class="flex flex-col items-center gap-3 text-xl font-medium text-ink-gray-4"
-    >
-      <DealsIcon class="h-10 w-10" />
-      <span>{{ __('No {0} Found', [__('Deals')]) }}</span>
-      <Button
-        :label="__('Create')"
-        iconLeft="plus"
-        @click="showDealModal = true"
-      />
-    </div>
-  </div>
+  <EmptyState
+    v-else-if="deals.data && !rows.length"
+    name="Deals"
+    :icon="DealsIcon"
+  />
   <DealModal
     v-if="showDealModal"
     v-model="showDealModal"
     :defaults="defaults"
-  />
-  <NoteModal
-    v-if="showNoteModal"
-    v-model="showNoteModal"
-    :note="note"
-    doctype="CRM Deal"
-    :doc="docname"
-  />
-  <TaskModal
-    v-if="showTaskModal"
-    v-model="showTaskModal"
-    :task="task"
-    doctype="CRM Deal"
-    :doc="docname"
   />
 </template>
 
@@ -273,18 +254,20 @@ import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import DealsListView from '@/components/ListViews/DealsListView.vue'
+import EmptyState from '@/components/ListViews/EmptyState.vue'
 import KanbanView from '@/components/Kanban/KanbanView.vue'
 import DealModal from '@/components/Modals/DealModal.vue'
-import NoteModal from '@/components/Modals/NoteModal.vue'
-import TaskModal from '@/components/Modals/TaskModal.vue'
 import ViewControls from '@/components/ViewControls.vue'
+import { useDoctypeModal } from '@/composables/doctypeModal'
 import { getMeta } from '@/stores/meta'
 import { globalStore } from '@/stores/global'
 import { usersStore } from '@/stores/users'
 import { organizationsStore } from '@/stores/organizations'
 import { statusesStore } from '@/stores/statuses'
-import { callEnabled } from '@/composables/settings'
+import { callEnabled } from '@/composables/telephony'
 import { formatDate, timeAgo, website, formatTime } from '@/utils'
+import { timestampCell } from '@/composables/useTimelinePreferences'
+import { useOnboarding, useTelemetry } from 'frappe-ui/frappe'
 import { Tooltip, Avatar, Dropdown } from 'frappe-ui'
 import { useRoute } from 'vue-router'
 import { ref, reactive, computed, h } from 'vue'
@@ -295,6 +278,9 @@ const { makeCall } = globalStore()
 const { getUser } = usersStore()
 const { getOrganization } = organizationsStore()
 const { getDealStatus } = statusesStore()
+const { updateOnboardingStep } = useOnboarding('frappecrm')
+const { capture } = useTelemetry()
+const { showModal } = useDoctypeModal()
 
 const route = useRoute()
 
@@ -337,11 +323,26 @@ const rows = computed(() => {
   }
 })
 
+const columns = computed(() => {
+  let _columns = deals.value?.data?.columns || []
+
+  if (_columns.length) {
+    _columns = _columns.map((col, index) => {
+      if (index === _columns.length - 1) {
+        return { ...col, align: 'right' }
+      }
+      return col
+    })
+  }
+
+  return _columns
+})
+
 function getGroupedByRows(listRows, groupByField, columns) {
   let groupedRows = []
 
   groupByField.options?.forEach((option) => {
-    let filteredRows = []
+    let filteredRows
 
     if (!option) {
       filteredRows = listRows.filter((row) => !row[groupByField.fieldname])
@@ -459,10 +460,7 @@ function parseRows(rows, columns = []) {
           label: getUser(user).full_name,
         }))
       } else if (['modified', 'creation'].includes(row)) {
-        _rows[row] = {
-          label: formatDate(deal[row]),
-          timeAgo: __(timeAgo(deal[row])),
-        }
+        _rows[row] = timestampCell(deal[row])
       } else if (
         ['first_response_time', 'first_responded_on', 'response_by'].includes(
           row,
@@ -522,30 +520,43 @@ function actions(itemName) {
   )
 }
 
-const docname = ref('')
-const showNoteModal = ref(false)
-const note = ref({
-  title: '',
-  content: '',
-})
-
 function showNote(name) {
-  docname.value = name
-  showNoteModal.value = true
+  showModal({
+    doctype: 'FCRM Note',
+    title: 'Note',
+    defaults: {
+      reference_doctype: 'CRM Deal',
+      reference_docname: name,
+    },
+    callbacks: {
+      afterInsert: (d) => after(d, true),
+      afterUpdate: after,
+    },
+  })
 }
 
-const showTaskModal = ref(false)
-const task = ref({
-  title: '',
-  description: '',
-  assigned_to: '',
-  due_date: '',
-  priority: 'Low',
-  status: 'Backlog',
-})
-
 function showTask(name) {
-  docname.value = name
-  showTaskModal.value = true
+  showModal({
+    doctype: 'CRM Task',
+    title: 'Task',
+    defaults: {
+      reference_doctype: 'CRM Deal',
+      reference_docname: name,
+    },
+    callbacks: {
+      afterInsert: (d) => after(d, true),
+      afterUpdate: after,
+    },
+  })
+}
+
+function after(d, isNew = false) {
+  let a = d.doctype == 'CRM Task' ? 'task' : 'note'
+  if (isNew) {
+    updateOnboardingStep('create_first_' + a)
+    capture(a + '_created')
+  } else {
+    capture(a + '_updated')
+  }
 }
 </script>

@@ -3,20 +3,20 @@
     class="flex flex-col"
     :class="{
       'border border-outline-gray-1 rounded-lg': hasTabs,
-      'border-outline-gray-modals': hasTabs,
+      'border-outline-elevation-2': hasTabs,
     }"
   >
     <Tabs
+      v-model="selectedTabIndex"
       as="div"
-      v-model="tabIndex"
-      :tabs="tabs"
-      :class="!hasTabs ? `[&_[role='tablist']]:hidden` : ''"
+      :tabs="processedTabs"
+      :class="[
+        !hasTabs ? `[&_[role='tablist']]:hidden` : '',
+        `[&_[role='tablist']::-webkit-scrollbar]:h-0 [&_[role='tab']]:shrink-0 [&_[role='tabpanel']]:overflow-visible !overflow-visible`,
+      ]"
     >
       <template #tab-panel="{ tab }">
-        <div
-          class="sections overflow-hidden"
-          :class="{ 'my-4 sm:my-5': hasTabs }"
-        >
+        <div class="sections" :class="{ 'my-4 sm:my-5': hasTabs }">
           <template v-for="section in tab.sections" :key="section.name">
             <Section :section="section" :data-name="section.name" />
           </template>
@@ -28,33 +28,101 @@
 
 <script setup>
 import Section from '@/components/FieldLayout/Section.vue'
+import { useDocument } from '@/data/document'
 import { Tabs } from 'frappe-ui'
-import { ref, computed, provide } from 'vue'
+import { computed, provide, watch } from 'vue'
 
 const props = defineProps({
-  tabs: Array,
-  data: Object,
-  doctype: {
-    type: String,
-    default: 'CRM Lead',
-  },
-  isGridRow: {
-    type: Boolean,
-    default: false,
-  },
-  preview: {
-    type: Boolean,
-    default: false,
-  },
+  tabs: { type: Array, default: () => [] },
+  data: { type: Object, default: () => ({}) },
+  doctype: { type: String, default: 'CRM Lead' },
+  docname: { type: String, default: '' },
+  isGridRow: { type: Boolean, default: false },
+  preview: { type: Boolean, default: false },
+  context: { type: Object, default: null },
 })
 
-const tabIndex = ref(0)
+const tabIndex = defineModel('tabIndex', { type: Number, default: 0 })
+const tabName = defineModel('tabName', { type: String, default: '' })
+
+// The authoritative document name. Prefer the explicit docname prop (known
+// synchronously by the parent modal) over data.name, which is empty while the
+// document is still loading and would bind field changes to the wrong cache.
+const resolvedDocname = computed(() => props.docname || props.data?.name || '')
+
+// Get fieldPropertyOverrides for tab/section overrides
+let overrides = {}
+if (props.context) {
+  // Standalone mode: use externally managed context, skip useDocument
+  overrides = computed(() => props.context?.fieldPropertyOverrides || {})
+} else if (!props.isGridRow) {
+  const { document: doc } = useDocument(props.doctype, resolvedDocname.value)
+  overrides = computed(() => doc?.fieldPropertyOverrides || {})
+} else {
+  overrides = computed(() => ({}))
+}
+
+const processedTabs = computed(() => {
+  const ov = overrides.value
+  return props.tabs
+    .map((tab) => {
+      const tabOverrides = ov[tab.name]
+      const processedTab = tabOverrides ? { ...tab, ...tabOverrides } : tab
+      return {
+        ...processedTab,
+        sections: processedTab.sections.map((section) => {
+          const sectionOverrides = ov[section.name]
+          return sectionOverrides
+            ? { ...section, ...sectionOverrides }
+            : section
+        }),
+      }
+    })
+    .filter((tab) => !tab.hidden)
+})
 
 const hasTabs = computed(() => {
   return (
-    props.tabs.length > 1 || (props.tabs.length == 1 && props.tabs[0].label)
+    processedTabs.value.length > 1 ||
+    (processedTabs.value.length == 1 && processedTabs.value[0].label)
   )
 })
+
+const selectedTabIndex = computed({
+  get() {
+    if (tabName.value) {
+      const namedTabIndex = processedTabs.value.findIndex(
+        (tab) => tab.name === tabName.value,
+      )
+      if (namedTabIndex !== -1) return namedTabIndex
+    }
+    return tabIndex.value
+  },
+  set(value) {
+    tabIndex.value = value
+    tabName.value = processedTabs.value[value]?.name || ''
+  },
+})
+
+watch(
+  processedTabs,
+  (tabs) => {
+    if (!tabs.length) {
+      tabIndex.value = 0
+      tabName.value = ''
+      return
+    }
+    if (tabName.value && tabs.some((tab) => tab.name === tabName.value)) {
+      tabIndex.value = tabs.findIndex((tab) => tab.name === tabName.value)
+      return
+    }
+    if (tabIndex.value >= tabs.length) {
+      tabIndex.value = tabs.length - 1
+    }
+    tabName.value = tabs[tabIndex.value]?.name || ''
+  },
+  { immediate: true },
+)
 
 provide(
   'data',
@@ -62,8 +130,10 @@ provide(
 )
 provide('hasTabs', hasTabs)
 provide('doctype', props.doctype)
+provide('docname', resolvedDocname)
 provide('preview', props.preview)
 provide('isGridRow', props.isGridRow)
+provide('fieldLayoutContext', props.context)
 </script>
 <style scoped>
 .section:not(:has(.field)) {

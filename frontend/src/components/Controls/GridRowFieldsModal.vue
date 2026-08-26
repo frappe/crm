@@ -1,8 +1,8 @@
 <template>
-  <Dialog v-model="show" :options="{ size: '4xl' }">
-    <template #body-title>
+  <Dialog v-model:open="show" :size="'4xl'">
+    <template #title>
       <h3
-        class="flex items-center gap-2 text-2xl font-semibold leading-6 text-ink-gray-9"
+        class="flex items-center gap-2 text-3xl-semibold leading-6 text-ink-gray-9"
       >
         <div>{{ __('Edit Grid Row Fields Layout') }}</div>
         <Badge
@@ -13,11 +13,11 @@
         />
       </h3>
     </template>
-    <template #body-content>
+    <template #default>
       <div class="flex flex-col gap-3">
         <div class="flex justify-between gap-2">
           <Button
-            :label="preview ? __('Hide preview') : __('Show preview')"
+            :label="preview ? __('Hide Preview') : __('Show Preview')"
             @click="preview = !preview"
           />
           <div class="flex flex-row-reverse gap-2">
@@ -33,15 +33,10 @@
         <div v-if="tabs?.data">
           <FieldLayoutEditor
             v-if="!preview"
-            :tabs="tabs.data"
+            v-model="tabs.data"
             :doctype="_doctype"
           />
-          <FieldLayout
-            v-else
-            :tabs="tabs.data"
-            :data="{}"
-            :preview="true"
-          />
+          <FieldLayout v-else :tabs="tabs.data" :data="{}" :preview="true" />
         </div>
       </div>
     </template>
@@ -51,24 +46,20 @@
 import FieldLayout from '@/components/FieldLayout/FieldLayout.vue'
 import FieldLayoutEditor from '@/components/FieldLayoutEditor.vue'
 import { useDebounceFn } from '@vueuse/core'
-import { capture } from '@/telemetry'
+import { useTelemetry } from 'frappe-ui/frappe'
 import { Dialog, Badge, call, createResource } from 'frappe-ui'
 import { ref, watch, onMounted, nextTick } from 'vue'
 
 const props = defineProps({
-  doctype: {
-    type: String,
-    default: 'CRM Lead',
-  },
-  parentDoctype: {
-    type: String,
-    default: '',
-  },
+  doctype: { type: String, default: 'CRM Lead' },
+  parentDoctype: { type: String, default: '' },
 })
 
 const emit = defineEmits(['reload'])
 
-const show = defineModel()
+const { capture } = useTelemetry()
+
+const show = defineModel({ type: Boolean })
 const _doctype = ref(props.doctype)
 const loading = ref(false)
 const dirty = ref(false)

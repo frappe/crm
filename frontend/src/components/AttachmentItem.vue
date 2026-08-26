@@ -13,14 +13,8 @@
         </template>
       </Button>
     </a>
-    <Dialog
-      v-model="showDialog"
-      :options="{
-        title: label,
-        size: '4xl',
-      }"
-    >
-      <template #body-content>
+    <Dialog v-model:open="showDialog" :title="label" :size="'4xl'">
+      <template #default>
         <div
           v-if="isText"
           class="prose prose-sm max-w-none whitespace-pre-wrap"
@@ -43,14 +37,8 @@ import FileSpreadsheetIcon from '@/components/Icons/FileSpreadsheetIcon.vue'
 import FileIcon from '@/components/Icons/FileIcon.vue'
 
 const props = defineProps({
-  label: {
-    type: String,
-    default: null,
-  },
-  url: {
-    type: String,
-    default: null,
-  },
+  label: { type: String, default: null },
+  url: { type: String, default: null },
 })
 
 const showDialog = ref(false)

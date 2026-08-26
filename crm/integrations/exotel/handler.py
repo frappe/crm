@@ -1,4 +1,3 @@
-import bleach
 import frappe
 import requests
 from frappe import _
@@ -46,7 +45,7 @@ def handle_request(**kwargs):
 
 		if call_log := get_call_log(call_payload):
 			update_call_log(call_payload, call_log=call_log)
-		else:
+		elif call_payload.get("Direction") == "incoming":
 			create_call_log(
 				call_id=call_payload.get("CallSid"),
 				from_number=call_payload.get("CallFrom"),
@@ -54,6 +53,16 @@ def handle_request(**kwargs):
 				medium=call_payload.get("To"),
 				status=get_call_log_status(call_payload),
 				agent=call_payload.get("AgentEmail"),
+			)
+		elif agent := frappe.request.args.get("agent"):
+			create_call_log(
+				call_id=call_payload.get("CallSid"),
+				from_number=call_payload.get("From") or call_payload.get("CallFrom"),
+				to_number=call_payload.get("DialWhomNumber") or call_payload.get("To"),
+				medium=call_payload.get("To"),
+				status=get_call_log_status(call_payload, direction=call_payload.get("Direction")),
+				agent=agent,
+				call_type="Outgoing",
 			)
 	except Exception:
 		request_log.status = "Failed"
@@ -68,7 +77,7 @@ def handle_request(**kwargs):
 
 # Outgoing Call
 @frappe.whitelist()
-def make_a_call(to_number, from_number=None, caller_id=None):
+def make_a_call(to_number: str, from_number: str | None = None, caller_id: str | None = None):
 	if not is_integration_enabled():
 		frappe.throw(_("Please setup Exotel intergration"), title=_("Integration Not Enabled"))
 
@@ -95,6 +104,7 @@ def make_a_call(to_number, from_number=None, caller_id=None):
 
 	record_call = frappe.db.get_single_value("CRM Exotel Settings", "record_call")
 
+	call_log_creation_failed = False
 	try:
 		response = requests.post(
 			endpoint,
@@ -111,22 +121,29 @@ def make_a_call(to_number, from_number=None, caller_id=None):
 		response.raise_for_status()
 	except requests.exceptions.HTTPError:
 		if exc := response.json().get("RestException"):
-			frappe.throw(bleach.linkify(exc.get("Message")), title=_("Exotel Exception"))
+			frappe.throw(exc.get("Message"), title=_("Exotel Exception"))
 	else:
 		res = response.json()
 		call_payload = res.get("Call", {})
 
-		create_call_log(
-			call_id=call_payload.get("Sid"),
-			from_number=call_payload.get("From"),
-			to_number=call_payload.get("To"),
-			medium=call_payload.get("PhoneNumberSid"),
-			call_type="Outgoing",
-			agent=frappe.session.user,
-		)
+		try:
+			create_call_log(
+				call_id=call_payload.get("Sid"),
+				from_number=call_payload.get("From"),
+				to_number=call_payload.get("To"),
+				medium=call_payload.get("PhoneNumberSid"),
+				call_type="Outgoing",
+				agent=frappe.session.user,
+			)
+		except Exception:
+			frappe.db.rollback()
+			frappe.log_error(title="Error while creating Exotel call log")
+			frappe.db.commit()
+			call_log_creation_failed = True
 
 	call_details = response.json().get("Call", {})
 	call_details["CallSid"] = call_details.get("Sid", "")
+	call_details["call_log_creation_failed"] = call_log_creation_failed
 	return call_details
 
 
@@ -152,7 +169,10 @@ def get_status_updater_url():
 	from frappe.utils.data import get_url
 
 	webhook_verify_token = frappe.db.get_single_value("CRM Exotel Settings", "webhook_verify_token")
-	return get_url(f"api/method/crm.integrations.exotel.handler.handle_request?key={webhook_verify_token}")
+	return get_url(
+		f"api/method/crm.integrations.exotel.handler.handle_request"
+		f"?key={webhook_verify_token}&agent={frappe.session.user}"
+	)
 
 
 def get_exotel_settings():
@@ -271,7 +291,11 @@ def update_call_log(call_payload, status="Ringing", call_log=None):
 			call_log.duration = (
 				call_payload.get("DialCallDuration") or call_payload.get("ConversationDuration") or 0
 			)
-			call_log.recording_url = call_payload.get("RecordingUrl") if call_payload.get("RecordingUrl") else ""
+
+			call_log.recording_url = (
+				call_payload.get("RecordingUrl") if call_payload.get("RecordingUrl") else ""
+			)
+
 			call_log.start_time = call_payload.get("StartTime")
 			call_log.end_time = call_payload.get("EndTime")
 

@@ -5,12 +5,12 @@
       <ComboboxRoot
         :model-value="tempSelection"
         :open="showOptions"
+        :ignore-filter="true"
         @update:open="(o) => (showOptions = o)"
         @update:modelValue="onSelect"
-        :ignore-filter="true"
       >
         <ComboboxAnchor
-          class="flex w-full text-base items-center gap-1 rounded border border-outline-gray-2 bg-surface-white hover:border-outline-gray-3 focus:border-outline-gray-4 focus:ring-0 focus-visible:ring-2 focus-visible:ring-outline-gray-3 px-2 py-1"
+          class="flex w-full text-base items-center gap-1 rounded border border-outline-gray-2 bg-surface-base hover:border-outline-gray-3 focus:border-outline-gray-4 focus:ring-0 focus-visible:ring-2 focus-visible:ring-outline-gray-3 px-2 py-1"
           :class="[size === 'sm' ? 'h-7' : 'h-8 ', inputClass]"
           @click="showOptions = true"
         >
@@ -24,15 +24,15 @@
             @keydown.enter.prevent="handleEnter"
             @keydown.escape.stop="showOptions = false"
           />
-          <FeatherIcon
-            name="chevron-down"
-            class="h-4 text-ink-gray-5 cursor-pointer"
+          <span
+            class="lucide-chevron-down h-4 text-ink-gray-5 cursor-pointer"
+            aria-hidden="true"
             @click.stop="showOptions = !showOptions"
           />
         </ComboboxAnchor>
         <ComboboxPortal>
           <ComboboxContent
-            class="z-10 mt-1 min-w-48 w-full max-w-md bg-surface-modal overflow-hidden rounded-lg shadow-2xl ring-1 ring-black ring-opacity-5"
+            class="z-10 mt-1 min-w-48 w-full max-w-md bg-surface-elevation-2 overflow-hidden rounded-lg shadow-2xl ring-1 ring-black ring-opacity-5"
             position="popper"
             :align="'start'"
             @openAutoFocus.prevent
@@ -42,7 +42,11 @@
               <ComboboxEmpty
                 class="flex gap-2 rounded px-2 py-1 text-base text-ink-gray-5"
               >
-                <FeatherIcon v-if="fetchContacts" name="search" class="h-4" />
+                <span
+                  v-if="fetchContacts"
+                  class="lucide-search h-4"
+                  aria-hidden="true"
+                />
                 {{ emptyStateText }}
               </ComboboxEmpty>
               <ComboboxItem
@@ -54,7 +58,7 @@
               >
                 <UserAvatar class="mr-2" :user="option.value" size="lg" />
                 <div class="flex flex-col gap-1 p-1 text-ink-gray-8">
-                  <div class="text-base font-medium">{{ option.label }}</div>
+                  <div class="text-base-medium">{{ option.label }}</div>
                   <div class="text-sm text-ink-gray-5">{{ option.value }}</div>
                 </div>
               </ComboboxItem>
@@ -67,12 +71,12 @@
     <!-- Selected Attendees -->
     <div
       v-if="values.length"
-      class="flex flex-col gap-2 mt-2 max-h-[165px] overflow-y-auto"
       ref="optionsRef"
+      class="flex flex-col gap-2 mt-2 max-h-[165px] overflow-y-auto"
     >
       <Button
-        ref="emails"
         v-for="att in values"
+        ref="emails"
         :key="att.email"
         :label="att.email"
         theme="gray"
@@ -83,14 +87,14 @@
           <UserAvatar :user="att.email" class="-ml-1 !size-5.5" />
         </template>
         <template #suffix>
-          <FeatherIcon
-            class="h-3.5"
-            name="x"
+          <span
+            class="lucide-x h-3.5"
+            aria-hidden="true"
             @click.stop="removeValue(att.email)"
           />
         </template>
       </Button>
-      <ErrorMessage class="mt-2 pl-2" v-if="error" :message="error" />
+      <ErrorMessage v-if="error" class="mt-2 pl-2" :message="error" />
     </div>
   </div>
 </template>
@@ -112,41 +116,20 @@ import { ref, computed, nextTick } from 'vue'
 import { watchDebounced } from '@vueuse/core'
 
 const props = defineProps({
-  validate: {
-    type: Function,
-    default: null,
-  },
-  variant: {
-    type: String,
-    default: 'subtle',
-  },
-  size: {
-    type: String,
-    default: 'sm',
-  },
-  placeholder: {
-    type: String,
-    default: 'Add attendee',
-  },
-  inputClass: {
-    type: String,
-    default: '',
-  },
+  validate: { type: Function, default: null },
+  variant: { type: String, default: 'subtle' },
+  size: { type: String, default: 'sm' },
+  placeholder: { type: String, default: __('Add Attendee') },
+  inputClass: { type: String, default: '' },
   errorMessage: {
     type: Function,
-    default: (value) => `${value} is an Invalid value`,
+    default: (value) => __('{0} is an Invalid value', [value]),
   },
-  fetchContacts: {
-    type: Boolean,
-    default: true,
-  },
-  existingEmails: {
-    type: Array,
-    default: () => [],
-  },
+  fetchContacts: { type: Boolean, default: true },
+  existingEmails: { type: Array, default: () => [] },
 })
 
-const values = defineModel()
+const values = defineModel({ type: Array, default: () => [] })
 
 const emails = ref([])
 const search = ref(null)
@@ -292,7 +275,7 @@ const addValue = (option) => {
     p = p.trim()
     if (!p) continue
     if (existing.has(p)) {
-      info.value = __('email already exists')
+      info.value = __('Email Already Exists')
       continue
     }
     if (props.validate && !props.validate(p)) {

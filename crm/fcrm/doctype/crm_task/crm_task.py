@@ -1,14 +1,32 @@
 # Copyright (c) 2023, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 
-import frappe
-from frappe import _
+from frappe.desk.form.assign_to import add as assign
+from frappe.desk.form.assign_to import remove as unassign
 from frappe.model.document import Document
-from frappe.desk.form.assign_to import add as assign, remove as unassign
-from crm.fcrm.doctype.crm_notification.crm_notification import notify_user
 
 
 class CRMTask(Document):
+	# begin: auto-generated types
+	# This code is auto-generated. Do not modify anything in this block.
+
+	from typing import TYPE_CHECKING
+
+	if TYPE_CHECKING:
+		from frappe.types import DF
+
+		assigned_to: DF.Link | None
+		description: DF.TextEditor | None
+		due_date: DF.Datetime | None
+		name: DF.Int | None
+		priority: DF.Literal["Low", "Medium", "High"]
+		reference_docname: DF.DynamicLink | None
+		reference_doctype: DF.Link | None
+		start_date: DF.Date | None
+		status: DF.Literal["Backlog", "Todo", "In Progress", "Done", "Canceled"]
+		title: DF.Data
+	# end: auto-generated types
+
 	def after_insert(self):
 		self.assign_to()
 
@@ -20,57 +38,59 @@ class CRMTask(Document):
 			self.unassign_from_previous_user(self.get_doc_before_save().assigned_to)
 			self.assign_to()
 
-	def unassign_from_previous_user(self, user):
-		unassign(self.doctype, self.name, user)
+	def unassign_from_previous_user(self, user: str | None):
+		if user:
+			unassign(self.doctype, self.name, user)
 
 	def assign_to(self):
 		if self.assigned_to:
-			assign({
-				"assign_to": [self.assigned_to],
-				"doctype": self.doctype,
-				"name": self.name,
-				"description": self.title or self.description,
-			})
-
+			assign(
+				{
+					"assign_to": [self.assigned_to],
+					"doctype": self.doctype,
+					"name": self.name,
+					"description": self.title or self.description,
+				}
+			)
 
 	@staticmethod
 	def default_list_data():
 		columns = [
 			{
-				'label': 'Title',
-				'type': 'Data',
-				'key': 'title',
-				'width': '16rem',
+				"label": "Title",
+				"type": "Data",
+				"key": "title",
+				"width": "16rem",
 			},
 			{
-				'label': 'Status',
-				'type': 'Select',
-				'key': 'status',
-				'width': '8rem',
+				"label": "Status",
+				"type": "Select",
+				"key": "status",
+				"width": "8rem",
 			},
 			{
-				'label': 'Priority',
-				'type': 'Select',
-				'key': 'priority',
-				'width': '8rem',
+				"label": "Priority",
+				"type": "Select",
+				"key": "priority",
+				"width": "8rem",
 			},
 			{
-				'label': 'Due Date',
-				'type': 'Date',
-				'key': 'due_date',
-				'width': '8rem',
+				"label": "Due Date",
+				"type": "Date",
+				"key": "due_date",
+				"width": "8rem",
 			},
 			{
-				'label': 'Assigned To',
-				'type': 'Link',
-				'key': 'assigned_to',
-				'width': '10rem',
+				"label": "Assigned To",
+				"type": "Link",
+				"key": "assigned_to",
+				"width": "10rem",
 			},
 			{
-				'label': 'Last Modified',
-				'type': 'Datetime',
-				'key': 'modified',
-				'width': '8rem',
+				"label": "Last Modified",
+				"type": "Datetime",
+				"key": "modified",
+				"width": "8rem",
 			},
 		]
 
@@ -86,12 +106,12 @@ class CRMTask(Document):
 			"reference_docname",
 			"modified",
 		]
-		return {'columns': columns, 'rows': rows}
+		return {"columns": columns, "rows": rows}
 
 	@staticmethod
 	def default_kanban_settings():
 		return {
 			"column_field": "status",
 			"title_field": "title",
-			"kanban_fields": '["description", "priority", "creation"]'
+			"kanban_fields": '["description", "priority", "creation"]',
 		}

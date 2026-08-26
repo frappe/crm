@@ -1,0 +1,43 @@
+name: Run Frontend Tests
+description: Install frontend dependencies and run Vitest with coverage.
+inputs:
+    node-version:
+        description: Node.js version to use
+        required: false
+        default: "24"
+    enable-coverage:
+        description: When true, run with coverage collection
+        required: false
+        default: "true"
+    working-directory:
+        description: Path to the frontend directory
+        required: false
+        default: "frontend"
+outputs:
+    coverage-path:
+        description: Path to the generated lcov coverage file
+        value: ${{ steps.set-output.outputs.coverage-path }}
+runs:
+    using: composite
+    steps:
+        - name: Install dependencies
+          shell: bash
+          working-directory: ${{ inputs.working-directory }}
+          run: yarn install --frozen-lockfile
+
+        - name: Run tests (with coverage)
+          if: inputs.enable-coverage == 'true'
+          shell: bash
+          working-directory: ${{ inputs.working-directory }}
+          run: yarn test:coverage
+
+        - name: Run tests (without coverage)
+          if: inputs.enable-coverage != 'true'
+          shell: bash
+          working-directory: ${{ inputs.working-directory }}
+          run: yarn test:run
+
+        - name: Set coverage output path
+          id: set-output
+          shell: bash
+          run: echo "coverage-path=${{ inputs.working-directory }}/coverage/lcov.info" >> "$GITHUB_OUTPUT"

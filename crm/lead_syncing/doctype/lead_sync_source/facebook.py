@@ -76,8 +76,8 @@ class FacebookSyncSource:
 		filtering = []
 		if self.last_synced_at:
 			timestamp = frappe.utils.data.get_timestamp(self.last_synced_at)
-			filtering.append({'field':'time_created','operator':'GREATER_THAN','value':timestamp})
-			params['filtering'] = frappe.as_json(filtering)
+			filtering.append({"field": "time_created", "operator": "GREATER_THAN", "value": timestamp})
+			params["filtering"] = frappe.as_json(filtering)
 
 		return make_get_request(
 			url,
@@ -93,7 +93,9 @@ class FacebookSyncSource:
 			filters={"parent": self.form_id},
 			fields=["key", "mapped_to_crm_field"],
 		)
-		self.form_questions_mapping = {q["key"]: q["mapped_to_crm_field"] for q in form_questions if q["mapped_to_crm_field"]}
+		self.form_questions_mapping = {
+			q["key"]: q["mapped_to_crm_field"] for q in form_questions if q["mapped_to_crm_field"]
+		}
 
 		return self.form_questions_mapping
 

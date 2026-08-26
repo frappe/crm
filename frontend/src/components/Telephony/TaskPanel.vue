@@ -1,27 +1,27 @@
 <template>
   <div class="h-[294px] text-base">
     <FormControl
+      v-model="task.title"
       type="text"
       variant="ghost"
       class="mb-2 title"
-      v-model="task.title"
       :placeholder="__('Schedule a task...')"
     />
     <TextEditor
-      variant="ghost"
       ref="content"
-      editor-class="prose-sm h-[150px] text-ink-white overflow-auto"
+      variant="ghost"
+      editor-class="prose-sm h-[150px] text-ink-base overflow-auto"
       :bubbleMenu="true"
       :content="task.description"
-      @change="(val) => (task.description = val)"
       :placeholder="__('Add description...')"
+      @change="(val) => (task.description = val)"
     />
     <div class="flex flex-col gap-2">
       <div class="flex gap-2">
         <Dropdown :options="taskStatusOptions(updateTaskStatus)">
           <Button
             :label="task.status"
-            class="bg-surface-gray-6 text-ink-white hover:bg-surface-gray-5"
+            class="bg-surface-gray-9 text-ink-base hover:bg-surface-gray-8"
           >
             <template #prefix>
               <TaskStatusIcon :status="task.status" />
@@ -31,7 +31,7 @@
         <Dropdown :options="taskPriorityOptions(updateTaskPriority)">
           <Button
             :label="task.priority"
-            class="bg-surface-gray-6 text-ink-white hover:bg-surface-gray-5"
+            class="bg-surface-gray-9 text-ink-base hover:bg-surface-gray-8"
           >
             <template #prefix>
               <TaskPriorityIcon :priority="task.priority" />
@@ -43,12 +43,13 @@
         class="user"
         :value="getUser(task.assigned_to).full_name"
         doctype="User"
-        @change="(option) => (task.assigned_to = option)"
         :placeholder="__('John Doe')"
         :filters="{
           name: ['in', users.data?.crmUsers?.map((user) => user.name)],
+          ignore_user_type: 1,
         }"
         :hideMe="true"
+        @change="(option) => (task.assigned_to = option)"
       >
         <template #prefix>
           <UserAvatar class="mr-2 !h-4 !w-4" :user="task.assigned_to" />
@@ -65,8 +66,8 @@
         </template>
       </Link>
       <DateTimePicker
-        class="datepicker w-36"
         v-model="task.due_date"
+        class="datepicker w-36"
         :placeholder="__('01/04/2024 11:30 PM')"
         :formatter="(date) => getFormat(date, '', true, true)"
         input-class="border-none"
@@ -82,6 +83,7 @@ import Link from '@/components/Controls/Link.vue'
 import { usersStore } from '@/stores/users'
 import { taskStatusOptions, taskPriorityOptions, getFormat } from '@/utils'
 import { TextEditor, Dropdown, Tooltip, DateTimePicker } from 'frappe-ui'
+import { reactive } from 'vue'
 
 const props = defineProps({
   task: {
@@ -97,29 +99,31 @@ const props = defineProps({
   },
 })
 
+const task = reactive(props.task)
+
 const { users, getUser } = usersStore()
 
 function updateTaskStatus(status) {
-  props.task.status = status
+  task.status = status
 }
 
 function updateTaskPriority(priority) {
-  props.task.priority = priority
+  task.priority = priority
 }
 </script>
 <style scoped>
 :deep(.title input) {
-  background-color: var(--surface-gray-7);
-  caret-color: var(--ink-white);
-  color: var(--ink-white);
+  background-color: var(--surface-gray-10);
+  caret-color: var(--ink-base);
+  color: var(--ink-base);
   outline: none;
   border: none;
   padding: 0;
 }
 :deep(.datepicker input) {
-  background-color: var(--surface-gray-6);
-  caret-color: var(--ink-white);
-  color: var(--ink-white);
+  background-color: var(--surface-gray-9);
+  caret-color: var(--ink-base);
+  color: var(--ink-base);
   outline: none;
   border: none;
 }
@@ -132,12 +136,12 @@ function updateTaskPriority(priority) {
 }
 
 :deep(.user button) {
-  background-color: var(--surface-gray-6);
+  background-color: var(--surface-gray-9);
   border: none;
-  color: var(--ink-white);
+  color: var(--ink-base);
 }
 :deep(.user button:hover) {
-  background-color: var(--surface-gray-5);
+  background-color: var(--surface-gray-8);
   border: none;
 }
 :deep(.user button:focus) {

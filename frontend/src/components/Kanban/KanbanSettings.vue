@@ -1,47 +1,46 @@
 <template>
   <Button
-    :label="__('Kanban Settings')"
-    @click="showDialog = true"
+    :label="__('Kanban settings')"
     v-bind="$attrs"
     :iconLeft="KanbanIcon"
+    @click="showDialog = true"
   />
-  <Dialog v-model="showDialog" :options="{ title: __('Kanban Settings') }">
-    <template #body-content>
+  <Dialog v-model:open="showDialog" :title="__('Kanban Settings')">
+    <template #default>
       <div>
         <div class="text-base text-ink-gray-8 mb-2">
           {{ __('Column Field') }}
         </div>
-        <Autocomplete
+        <Combobox
           v-if="columnFields"
-          value=""
+          :model-value="null"
           :options="columnFields"
-          @change="(f) => (columnField = f)"
+          @update:selected-option="(f) => (columnField = f)"
         >
-          <template #target="{ togglePopover }">
+          <template #trigger="{ open, setOpen }">
             <Button
               class="w-full !justify-start"
               :label="columnField.label"
-              @click="togglePopover()"
+              @click="setOpen(!open)"
             />
           </template>
-        </Autocomplete>
+        </Combobox>
         <div class="text-base text-ink-gray-8 mb-2 mt-4">
           {{ __('Title Field') }}
         </div>
-        <Autocomplete
-          v-if="fields.data"
-          value=""
-          :options="fields.data"
-          @change="(f) => (titleField = f)"
+        <Combobox
+          :model-value="null"
+          :options="fields"
+          @update:selected-option="(f) => (titleField = f)"
         >
-          <template #target="{ togglePopover }">
+          <template #trigger="{ open, setOpen }">
             <Button
               class="w-full !justify-start"
-              @click="togglePopover()"
               :label="titleField.label"
+              @click="setOpen(!open)"
             />
           </template>
-        </Autocomplete>
+        </Combobox>
       </div>
       <div class="mt-4">
         <div class="text-base text-ink-gray-8 mb-2">
@@ -49,56 +48,59 @@
         </div>
         <Draggable
           :list="allFields"
-          @end="reorder"
           group="fields"
           item-key="name"
           class="flex flex-col gap-1"
+          @end="reorder"
         >
           <template #item="{ element: field }">
             <div
-              class="px-1 py-0.5 border border-outline-gray-modals rounded text-base text-ink-gray-8 flex items-center justify-between gap-2"
+              class="px-1 py-0.5 border border-outline-elevation-2 rounded text-base text-ink-gray-8 flex items-center justify-between gap-2"
             >
               <div class="flex items-center gap-2">
                 <DragVerticalIcon class="h-3.5 cursor-grab" />
                 <div>{{ field.label }}</div>
               </div>
               <div>
-                <Button variant="ghost" icon="x" @click="removeField(field)" />
+                <Button
+                  variant="ghost"
+                  icon="lucide-x"
+                  @click="removeField(field)"
+                />
               </div>
             </div>
           </template>
         </Draggable>
-        <Autocomplete
-          v-if="fields.data"
-          value=""
-          :options="fields.data"
-          @change="(e) => addField(e)"
+        <Combobox
+          :model-value="null"
+          :options="fields"
+          @update:selected-option="(e) => addField(e)"
         >
-          <template #target="{ togglePopover }">
+          <template #trigger="{ open, setOpen }">
             <Button
               class="w-full mt-2"
               :label="__('Add Field')"
               iconLeft="plus"
-              @click="togglePopover()"
+              @click="setOpen(!open)"
             />
           </template>
-          <template #item-label="{ option }">
+          <template #item-label="{ item }">
             <div class="flex flex-col gap-1 text-ink-gray-9">
-              <div>{{ option.label }}</div>
+              <div>{{ item.label }}</div>
               <div class="text-ink-gray-4 text-sm">
-                {{ `${option.fieldname} - ${option.fieldtype}` }}
+                {{ `${item.fieldname} - ${item.fieldtype}` }}
               </div>
             </div>
           </template>
-        </Autocomplete>
+        </Combobox>
       </div>
     </template>
     <template #actions>
       <Button
         class="w-full"
         variant="solid"
-        @click="apply"
         :label="__('Apply')"
+        @click="apply"
       />
     </template>
   </Dialog>
@@ -106,8 +108,8 @@
 <script setup>
 import DragVerticalIcon from '@/components/Icons/DragVerticalIcon.vue'
 import KanbanIcon from '@/components/Icons/KanbanIcon.vue'
-import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
-import { Dialog, createResource } from 'frappe-ui'
+import { getMeta } from '@/stores/meta'
+import { Combobox, Dialog } from 'frappe-ui'
 import Draggable from 'vuedraggable'
 import { ref, computed, nextTick } from 'vue'
 
@@ -120,7 +122,7 @@ const props = defineProps({
 
 const emit = defineEmits(['update'])
 
-const list = defineModel()
+const list = defineModel({ type: Object })
 const showDialog = ref(false)
 
 const columnField = computed({
@@ -140,7 +142,7 @@ const titleField = computed({
     let fieldname = list.value?.data?.title_field
     if (!fieldname) return ''
 
-    return fields.data?.find((field) => field.fieldname === fieldname)
+    return fields.value?.find((field) => field.fieldname === fieldname)
   },
   set: (val) => {
     list.value.data.title_field = val.fieldname
@@ -149,17 +151,37 @@ const titleField = computed({
 
 const columnFields = computed(() => {
   return (
-    fields.data?.filter((field) =>
+    fields.value?.filter((field) =>
       ['Link', 'Select'].includes(field.fieldtype),
     ) || []
   )
 })
 
-const fields = createResource({
-  url: 'crm.api.doc.get_fields_meta',
-  params: { doctype: props.doctype, as_array: true },
-  cache: ['kanban_fields', props.doctype],
-  auto: true,
+const { getFields } = getMeta(props.doctype)
+
+const fields = computed(() => {
+  const _fields = getFields({ withStandardFields: true }) || []
+  if (!_fields.length) return []
+
+  let existingFields = []
+
+  allFields.value?.forEach((fieldname) => {
+    let field = _fields.find((f) => f.fieldname === fieldname)
+    if (field) existingFields.push(field)
+  })
+
+  return _fields
+    .filter(
+      (field) => !existingFields?.find((f) => f.fieldname === field.fieldname),
+    )
+    .map((field) => {
+      return {
+        label: field.label,
+        value: field.fieldname,
+        fieldname: field.fieldname,
+        fieldtype: field.fieldtype,
+      }
+    })
 })
 
 const allFields = computed({
@@ -171,9 +193,9 @@ const allFields = computed({
       rows = JSON.parse(rows)
     }
 
-    if (rows && fields.data) {
+    if (rows && fields.value) {
       rows = rows.map((row) => {
-        return fields.data.find((field) => field.fieldname === row) || {}
+        return fields.value.find((field) => field.fieldname === row) || {}
       })
     }
     return rows.filter((row) => row.label)

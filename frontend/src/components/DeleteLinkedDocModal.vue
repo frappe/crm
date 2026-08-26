@@ -1,10 +1,13 @@
 <template>
-  <Dialog v-model="show" :options="{ size: 'xl' }">
-    <template #body v-if="!confirmDeleteInfo.show">
-      <div class="bg-surface-modal px-4 pb-6 pt-5 sm:px-6">
+  <Dialog v-model:open="show" :size="'xl'">
+    <template #body>
+      <div
+        v-if="!confirmDeleteInfo.show"
+        class="bg-surface-elevation-2 px-4 pb-6 pt-5 sm:px-6"
+      >
         <div class="mb-6 flex items-center justify-between">
           <div>
-            <h3 class="text-2xl leading-6 text-ink-gray-9 font-semibold">
+            <h3 class="text-3xl-semibold leading-6 text-ink-gray-9">
               {{
                 linkedDocs?.length == 0
                   ? __('Delete')
@@ -13,7 +16,7 @@
             </h3>
           </div>
           <div class="flex items-center gap-1">
-            <Button variant="ghost" icon="x" @click="show = false" />
+            <Button variant="ghost" icon="lucide-x" @click="show = false" />
           </div>
         </div>
         <div>
@@ -40,11 +43,11 @@
                   width: '12rem',
                 },
               ]"
+              :linkedDocsResource="linkedDocsResource"
+              :unlinkLinkedDoc="unlinkLinkedDoc"
               @selectionsChanged="
                 (selections) => viewControls.updateSelections(selections)
               "
-              :linkedDocsResource="linkedDocsResource"
-              :unlinkLinkedDoc="unlinkLinkedDoc"
             />
           </div>
           <div v-if="linkedDocs?.length == 0" class="text-ink-gray-5 text-base">
@@ -57,14 +60,14 @@
           </div>
         </div>
       </div>
-      <div class="px-4 pb-7 pt-0 sm:px-6">
+      <div v-if="!confirmDeleteInfo.show" class="px-4 pb-7 pt-0 sm:px-6">
         <div class="flex flex-row-reverse gap-2">
           <Button
             v-if="linkedDocs?.length > 0"
             :label="
               viewControls?.selections?.length == 0
-                ? __('Delete all')
-                : __('Delete {0} item(s)', [viewControls?.selections?.length])
+                ? __('Delete All')
+                : __('Delete {0} Item(s)', [viewControls?.selections?.length])
             "
             theme="red"
             variant="solid"
@@ -75,8 +78,8 @@
             v-if="linkedDocs?.length > 0"
             :label="
               viewControls?.selections?.length == 0
-                ? __('Unlink all')
-                : __('Unlink {0} item(s)', [viewControls?.selections?.length])
+                ? __('Unlink All')
+                : __('Unlink {0} Item(s)', [viewControls?.selections?.length])
             "
             variant="subtle"
             theme="gray"
@@ -86,25 +89,26 @@
           <Button
             v-if="linkedDocs?.length == 0"
             variant="solid"
-            icon-left="trash-2"
+            icon-left="lucide-trash-2"
             :label="__('Delete')"
             :loading="isDealCreating"
-            @click="deleteDoc()"
             theme="red"
+            @click="deleteDoc()"
           />
         </div>
       </div>
-    </template>
-    <template #body v-if="confirmDeleteInfo.show">
-      <div class="bg-surface-modal px-4 pb-6 pt-5 sm:px-6">
+      <div
+        v-if="confirmDeleteInfo.show"
+        class="bg-surface-elevation-2 px-4 pb-6 pt-5 sm:px-6"
+      >
         <div class="mb-6 flex items-center justify-between">
           <div>
-            <h3 class="text-2xl leading-6 text-ink-gray-9 font-semibold">
+            <h3 class="text-3xl-semibold leading-6 text-ink-gray-9">
               {{ confirmDeleteInfo.title }}
             </h3>
           </div>
           <div class="flex items-center gap-1">
-            <Button variant="ghost" icon="x" @click="show = false" />
+            <Button variant="ghost" icon="lucide-x" @click="show = false" />
           </div>
         </div>
         <div class="text-ink-gray-5 text-base">
@@ -117,8 +121,8 @@
           <Button
             variant="solid"
             :label="confirmDeleteInfo.title"
-            @click="removeDocLinks()"
             theme="red"
+            @click="removeDocLinks()"
           />
         </div>
       </div>
@@ -131,24 +135,13 @@ import { createResource, call } from 'frappe-ui'
 import { useRouter } from 'vue-router'
 import { computed, ref } from 'vue'
 
-const show = defineModel()
+const show = defineModel({ type: Boolean })
 const router = useRouter()
 const props = defineProps({
-  name: {
-    type: String,
-    required: true,
-  },
-  doctype: {
-    type: String,
-    required: true,
-  },
-  docname: {
-    type: String,
-    required: true,
-  },
-  reload: {
-    type: Function,
-  },
+  name: { type: String, required: true },
+  doctype: { type: String, required: true },
+  docname: { type: String, required: true },
+  reload: { type: Function, default: null },
 })
 const viewControls = ref({
   selections: [],
@@ -227,7 +220,7 @@ const confirmDelete = () => {
       : viewControls.value.selections.length
   confirmDeleteInfo.value = {
     show: true,
-    title: __('Delete linked item'),
+    title: __('Delete Linked Item'),
     message: __('Are you sure you want to delete {0} linked item(s)?', [items]),
     delete: true,
   }
@@ -240,7 +233,7 @@ const confirmUnlink = () => {
       : viewControls.value.selections.length
   confirmDeleteInfo.value = {
     show: true,
-    title: __('Unlink linked item'),
+    title: __('Unlink Linked Item'),
     message: __('Are you sure you want to unlink {0} linked item(s)?', [items]),
     delete: false,
   }
