@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-08-17 07:47+0000\n"
-"PO-Revision-Date: 2026-08-19 16:31\n"
+"PO-Revision-Date: 2026-08-26 17:37\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Bosnian\n"
 "MIME-Version: 1.0\n"
@@ -1497,7 +1497,7 @@ msgstr "Nije moguće izbrisati standardne stavke {0}"
 
 #: crm/fcrm/doctype/crm_product/crm_product.py:81
 msgid "Cannot delete: linked ERPNext Item {0} is referenced by a Quotation. Remove the reference or delete the Item in ERPNext first."
-msgstr "Ne može se obrisati: povezana artikal Sistema {0} je referencirana u Ponudi. Uklonite referencu ili prvo obrišite artikal u Sistemu."
+msgstr "Ne može se obrisati: povezana artikal Sistema {0} je referencirana u Ponudi. Uklonite referencu ili prvo obriši artikal u Sistemu."
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:173
 msgid "Cannot enable rule without adding users in it"
@@ -2587,11 +2587,11 @@ msgstr "Definira standard valutu za sve zapise, koja se može poništiti na nivo
 #: frontend/src/pages/Notes.vue:49 frontend/src/pages/Organization.vue:96
 #: frontend/src/pages/Tasks.vue:364 frontend/src/utils/index.js:823
 msgid "Delete"
-msgstr "Izbriši"
+msgstr "Obriši"
 
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.js:34
 msgid "Delete & Restore"
-msgstr "Izbriši & Vrati"
+msgstr "Obriši & Vrati"
 
 #: frontend/src/components/DeleteLinkedDocModal.vue:69
 msgid "Delete All"
@@ -2600,23 +2600,23 @@ msgstr "Obriši sve"
 #: frontend/src/components/Activities/AttachmentArea.vue:54
 #: frontend/src/components/Activities/AttachmentArea.vue:127
 msgid "Delete Attachment"
-msgstr "Izbriši Prilog"
+msgstr "Obriši Prilog"
 
 #: frontend/src/pages/MobileContact.vue:280
 msgid "Delete Contact"
-msgstr "Izbriši Kontakt"
+msgstr "Obriši Kontakt"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:26
 msgid "Delete Event"
-msgstr "Izbriši Događaj"
+msgstr "Obriši Događaj"
 
 #: frontend/src/components/Settings/InviteUserPage.vue:79
 msgid "Delete Invitation"
-msgstr "Izbriši Pozivnicu"
+msgstr "Obriši Pozivnicu"
 
 #: frontend/src/components/DeleteLinkedDocModal.vue:223
 msgid "Delete Linked Item"
-msgstr "Izbriši povezanu stavku"
+msgstr "Obriši povezanu stavku"
 
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:222
 msgid "Delete Only User"
@@ -2624,24 +2624,24 @@ msgstr "Obriši Samo Korisnika"
 
 #: frontend/src/pages/MobileOrganization.vue:275
 msgid "Delete Organization"
-msgstr "Izbriši Organizaciju"
+msgstr "Obriši Organizaciju"
 
 #: frontend/src/components/Activities/TaskArea.vue:59
 msgid "Delete Task"
-msgstr "Izbriši Zadatak"
+msgstr "Obriši Zadatak"
 
 #: frontend/src/components/ViewControls.vue:1192
 #: frontend/src/components/ViewControls.vue:1200
 msgid "Delete View"
-msgstr "Izbriši Prikaz"
+msgstr "Obriši Prikaz"
 
 #: frontend/src/components/DeleteLinkedDocModal.vue:14
 msgid "Delete or unlink linked documents"
-msgstr "Izbriši ili prekini veze povezanih dokumenata"
+msgstr "Obriši ili prekini veze povezanih dokumenata"
 
 #: frontend/src/components/DeleteLinkedDocModal.vue:26
 msgid "Delete or unlink these linked documents before deleting this document"
-msgstr "Izbriši ili prekini vezu ovih povezanih dokumenata prije brisanja ovog dokumenta"
+msgstr "Obriši ili prekini vezu ovih povezanih dokumenata prije brisanja ovog dokumenta"
 
 #: frontend/src/components/DeleteLinkedDocModal.vue:70
 msgid "Delete {0} Item(s)"
@@ -8657,7 +8657,7 @@ msgstr "Ovo će izbrisati odabrane artikle i prekinuti vezu s njima. Jeste li si
 
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.js:17
 msgid "This will restore (if not exist) all the default statuses, custom fields and layouts. Delete & Restore will delete default layouts and then restore them."
-msgstr "Ovo će vratiti (ako ne postoje) sve standard statuse, prilagođena polja i rasporede. Izbriši & Vrati će izbrisati standard rasporede, a zatim ih vratiti."
+msgstr "Ovo će vratiti (ako ne postoje) sve standard statuse, prilagođena polja i rasporede. Obriši & Vrati će izbrisati standard rasporede, a zatim ih vratiti."
 
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.js:67
 msgid "This will restore the demo data. Are you sure you want to continue?"
@@ -8984,15 +8984,15 @@ msgstr "Prekini vezu"
 
 #: frontend/src/components/BulkDeleteLinkedDocModal.vue:74
 msgid "Unlink & Delete"
-msgstr "Prekini vezu & Izbriši"
+msgstr "Prekini vezu & Obriši"
 
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:214
 msgid "Unlink & Delete {0} Users"
-msgstr "Prekini vezu & Izbriši {0} Korisnika"
+msgstr "Prekini vezu & Obriši {0} Korisnika"
 
 #: frontend/src/components/BulkDeleteLinkedDocModal.vue:35
 msgid "Unlink & Delete {0} items"
-msgstr "Prekini vezu & Izbriši {0} artikala"
+msgstr "Prekini vezu & Obriši {0} artikala"
 
 #: frontend/src/components/DeleteLinkedDocModal.vue:81
 msgid "Unlink All"
