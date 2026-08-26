@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-08-17 07:47+0000\n"
-"PO-Revision-Date: 2026-08-19 16:31\n"
+"PO-Revision-Date: 2026-08-26 17:37\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Swedish\n"
 "MIME-Version: 1.0\n"
@@ -156,7 +156,7 @@ msgstr "@John, kan du kolla detta?"
 
 #: crm/fcrm/doctype/crm_lead/crm_lead.py:138
 msgid "A Lead requires either a person's name or an organization's name"
-msgstr "Potentiell Kund kräver antingen person namn eller bolag namn"
+msgstr "Potentiell Kund erfordrar antingen person namn eller bolag namn"
 
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.py:49
 msgid "A lead sync source is already enabled for this Facebook Lead Form!"
@@ -5924,7 +5924,7 @@ msgstr "Ingen {0} tillgänglig"
 
 #: frontend/src/pages/MobileContact.vue:153
 msgid "No {0} found"
-msgstr "Ingen {0} Hittades"
+msgstr "{0} hittades inte"
 
 #. Label of the no_of_employees (Select) field in DocType 'CRM Deal'
 #. Label of the no_of_employees (Select) field in DocType 'CRM Lead'
