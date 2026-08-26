@@ -15,6 +15,7 @@ excluded: a guest, one-shot portal has no use for offline caching.
 import os
 
 import frappe
+import frappe.sessions  # ensure frappe.sessions is resolvable for get_csrf_token()
 
 no_cache = 1
 base_template_path = ""  # Render standalone — no Frappe nav/header wrapper
@@ -26,8 +27,11 @@ def get_context(context):
     fd = frappe.form_dict
     context.sc_contract = fd.get("contract") or ""
     context.sc_role = fd.get("role") or ""
-    context.sc_exp = fd.get("exp") or ""
-    context.sc_tok = fd.get("tok") or ""
+    context.sc_token = fd.get("token") or ""
+    # Guest portal, but the issuer often opens the link while logged into the CRM
+    # in the same browser — that session enforces CSRF, so the token MUST be
+    # injected or frappe-ui POSTs (request_otp/verify_otp/sign) fail with CSRFTokenError.
+    context.csrf_token = frappe.sessions.get_csrf_token()
     context.signing_head = _asset_head()
     return context
 

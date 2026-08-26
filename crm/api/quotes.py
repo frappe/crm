@@ -15,41 +15,22 @@ CRM-specific data stored on Quotation via custom fields:
   contract_start_date, crm_sent, previous_version, discount_applied,
   vat_amount, renewal_schedule (Table → CRM Quote Renewal Schedule)
 
+Pricing follows ERPNext's native Item Price architecture: each line's default
+rate is the price_list_rate on the quote's selling_price_list (Standard Selling
+by default; Negotiated Year 1-5 for multi-year deals). The exec negotiates each
+line rate manually on top of that default — there is no automated tier/discount
+compute engine.
+
 Line items stored as QuotationItem rows:
-  - Subscription row: item_code = CV-HIMS-SUB-*, facility_name, package_tier, rate = subscription_net
-  - Implementation row: item_code = CV-HIMS-IMPL-*, facility_name, package_tier, rate = impl_net
-  - Addon rows: item_code = CV-HW-*/CV-SW-*/CV-SVC-*, qty, rate = unit_price
+  - item_code = an ERPNext Item, qty, rate = negotiated unit price
+  - facility_name / package_tier custom fields carry OIS provenance when present
 """
 import json
 import frappe
 from frappe.utils import nowdate, add_days, getdate, date_diff
 
-VAT_RATE         = 0.16
-MONTHLY_SURCHARGE = 0.15
-ANNUAL_TRUEUP    = 0.05
-
-TIER_CAPS = {
-	"No Partner": {"saas": 45.0, "services": 65.0},
-	"Registered":  {"saas":  5.0, "services":  5.0},
-	"Silver":      {"saas": 15.0, "services": 30.0},
-	"Gold":        {"saas": 25.0, "services": 45.0},
-	"Diamond":     {"saas": 45.0, "services": 65.0},
-}
-
-SKU_MAP = {
-	("Core",       "subscription"): "CV-HIMS-SUB-CORE",
-	("Advanced",   "subscription"): "CV-HIMS-SUB-ADV",
-	("Enterprise", "subscription"): "CV-HIMS-SUB-ENT",
-	("Core",       "impl"):         "CV-HIMS-IMPL-CORE",
-	("Advanced",   "impl"):         "CV-HIMS-IMPL-ADV",
-	("Enterprise", "impl"):         "CV-HIMS-IMPL-ENT",
-}
-
-_ADDON_CATEGORIES = {
-	"CV-HW-":  "Hardware",
-	"CV-SW-":  "Software",
-	"CV-SVC-": "Professional Services",
-}
+VAT_RATE       = 0.16
+DEFAULT_PRICE_LIST = "Standard Selling"
 
 # Frontend-facing status values derived from docstatus + crm_sent
 _STATUS_ACCEPTED = "Accepted"
@@ -62,30 +43,6 @@ _STATUS_DRAFT    = "Draft"
 
 def _is_admin(roles):
 	return "System Manager" in roles or frappe.session.user == "Administrator"
-
-
-def _get_partner_tier(partner_name):
-	if not partner_name:
-		return "No Partner"
-	partner_tier = frappe.db.get_value("CRM Partner", partner_name, "partner_tier") or "Registered"
-	return partner_tier
-
-
-def _get_caps(partner_name):
-	tier = _get_partner_tier(partner_name)
-	return TIER_CAPS.get(tier, TIER_CAPS["Registered"]), tier
-
-
-def _sku_price(sku):
-	row = frappe.get_list(
-		"CRM Product",
-		filters=[["product_code", "=", sku]],
-		fields=["standard_rate", "max_discount"],
-		limit=1,
-	)
-	if not row:
-		frappe.throw("CRM Product not found: %s" % sku)
-	return row[0].standard_rate or 0, row[0].max_discount or 0
 
 
 def _resolve_item_code(crm_sku):
@@ -102,11 +59,40 @@ def _item_uom(item_code):
 	return frappe.db.get_value("Item", item_code, "stock_uom") or "Nos"
 
 
-def _addon_category(sku):
-	for prefix, cat in _ADDON_CATEGORIES.items():
-		if sku.startswith(prefix):
-			return cat
-	return "Professional Services"
+def _get_item_price(item_code, price_list):
+	"""
+	Return the selling price_list_rate for an Item on a given Price List, honouring
+	Item Price validity dates. Falls back to the default Standard Selling list, then 0.
+	This is the single source of default line pricing (ERPNext Item Price architecture).
+	"""
+	if not item_code:
+		return 0.0
+
+	def _lookup(pl):
+		rows = frappe.get_list(
+			"Item Price",
+			filters=[
+				["item_code", "=", item_code],
+				["price_list", "=", pl],
+				["selling", "=", 1],
+			],
+			fields=["price_list_rate", "valid_from", "valid_upto"],
+			order_by="valid_from desc",
+			limit_page_length=0,
+		)
+		today = getdate(nowdate())
+		for r in rows:
+			vf = getdate(r.valid_from) if r.valid_from else None
+			vu = getdate(r.valid_upto) if r.valid_upto else None
+			if (vf is None or vf <= today) and (vu is None or vu >= today):
+				return float(r.price_list_rate or 0)
+		# no date-valid row → fall back to the newest row regardless of dates
+		return float(rows[0].price_list_rate) if rows else None
+
+	rate = _lookup(price_list) if price_list else None
+	if rate is None and price_list != DEFAULT_PRICE_LIST:
+		rate = _lookup(DEFAULT_PRICE_LIST)
+	return float(rate or 0)
 
 
 def _derive_status(doc):
@@ -122,334 +108,97 @@ def _derive_status(doc):
 
 
 def _ensure_customer(customer_name):
-	"""Create ERPNext Customer from CRM Deal organisation if not present."""
-	if not customer_name or frappe.db.exists("Customer", customer_name):
-		return customer_name or "Default Customer"
+	"""
+	Resolve an ERPNext Customer for a CRM Deal, creating it if absent. Deals with
+	no organisation fall back to a "Default Customer" that is likewise created on
+	demand — so create_quote never fails on a missing party.
+	"""
+	target = customer_name or "Default Customer"
+	if frappe.db.exists("Customer", target):
+		return target
 	try:
 		cust = frappe.get_doc({
 			"doctype": "Customer",
-			"customer_name": customer_name,
+			"customer_name": target,
 			"customer_type": "Company",
 			"customer_group": frappe.db.get_single_value("Selling Settings", "customer_group") or "All Customer Groups",
 			"territory": frappe.db.get_single_value("Selling Settings", "territory") or "All Territories",
 		})
 		cust.insert(ignore_permissions=True)  # SYSTEM-INTERNAL
 		frappe.db.commit()
+		return target
 	except Exception:
 		existing = frappe.get_list("Customer", limit=1, pluck="name")
-		customer_name = existing[0] if existing else customer_name
-	return customer_name
+		return existing[0] if existing else target
 
 
-def _compute_quote(quote_data, caps):
+def _apply_manual_rates(doc, rates):
 	"""
-	Compute all derived pricing fields from raw quote_data dict.
-	Returns updated quote_data with computed fields including renewal_schedule.
-	Raises PermissionError if any discount exceeds the partner tier cap.
+	Make the exec's manual line rates authoritative. ERPNext's set_missing_values()
+	re-fetches price_list_rate for any zero/unset rate, which would clobber a
+	deliberately negotiated rate — including a waived 0 (free line). Call this AFTER
+	set_missing_values() and BEFORE calculate_taxes_and_totals(), passing rates in
+	doc.items order, so the "purely manual" rate always wins.
 	"""
-	facilities = quote_data.get("facilities") or []
-	addons     = quote_data.get("addons") or []
-	payment_terms    = quote_data.get("payment_terms") or "Annual Upfront"
-	contract_term_yrs = int(quote_data.get("contract_term_yrs") or 1)
-	max_saas     = caps["saas"]
-	max_services = caps["services"]
+	doc.ignore_pricing_rule = 1
+	for row, rate in zip(doc.items or [], rates):
+		rate = float(rate or 0)
+		row.price_list_rate      = rate
+		row.rate                 = rate
+		row.margin_type          = ""
+		row.margin_rate_or_amount = 0
+		row.rate_with_margin     = 0
+		row.discount_percentage  = 0
+		row.discount_amount      = 0
 
-	year1_subscription_total = 0.0
-	year1_impl_total         = 0.0
-	total_discount           = 0.0
-
-	for row in facilities:
-		tier     = row.get("package_tier")
-		sub_sku  = SKU_MAP[(tier, "subscription")]
-		impl_sku = SKU_MAP[(tier, "impl")]
-
-		sub_list, _ = _sku_price(sub_sku)
-		impl_list, _ = _sku_price(impl_sku)
-
-		sub_disc  = float(row.get("subscription_discount") or 0)
-		impl_disc = float(row.get("impl_discount") or 0)
-
-		if sub_disc > max_saas:
-			frappe.throw(
-				"SaaS discount %s%% exceeds maximum allowed %s%% for this partner tier" % (sub_disc, max_saas),
-				frappe.PermissionError,
-			)
-		if impl_disc > max_services:
-			frappe.throw(
-				"Services discount %s%% exceeds maximum allowed %s%% for this partner tier" % (impl_disc, max_services),
-				frappe.PermissionError,
-			)
-
-		sub_net  = sub_list * (1 - sub_disc / 100)
-		impl_net = impl_list * (1 - impl_disc / 100)
-
-		if payment_terms == "Monthly":
-			sub_net = sub_net * (1 + MONTHLY_SURCHARGE)
-
-		row["subscription_sku"]        = sub_sku
-		row["impl_sku"]                = impl_sku
-		row["subscription_list_price"] = sub_list
-		row["impl_list_price"]         = impl_list
-		row["subscription_net"]        = round(sub_net, 2)
-		row["impl_net"]                = round(impl_net, 2)
-		row["facility_total"]          = round(sub_net + impl_net, 2)
-
-		year1_subscription_total += sub_net
-		year1_impl_total         += impl_net
-		total_discount += (
-			(sub_list - sub_list * (1 - sub_disc / 100))
-			+ (impl_list - impl_list * (1 - impl_disc / 100))
-		)
-
-	addon_total = 0.0
-	for row in addons:
-		sku   = row.get("product_sku")
-		price, _ = _sku_price(sku)
-		qty   = float(row.get("qty") or 0)
-		product_name = frappe.db.get_value("CRM Product", sku, "product_name") or sku
-		row["description"] = product_name
-		row["category"]    = _addon_category(sku)
-		row["unit_price"]  = price
-		row["total"]       = round(price * qty, 2)
-		addon_total       += row["total"]
-
-	subtotal    = round(year1_subscription_total + year1_impl_total + addon_total, 2)
-	vat         = round(subtotal * VAT_RATE, 2)
-	grand_total = round(subtotal + vat, 2)
-
-	quote_data["subtotal_excl_vat"] = subtotal
-	quote_data["discount_applied"]  = round(total_discount, 2)
-	quote_data["vat_amount"]        = vat
-	quote_data["grand_total"]       = grand_total
-
-	# Build renewal schedule
-	renewal  = []
-	base_sub = year1_subscription_total
-	if payment_terms == "Monthly":
-		base_sub = base_sub / (1 + MONTHLY_SURCHARGE)
-
-	for yr in range(1, contract_term_yrs + 1):
-		sub_yr   = base_sub * ((1 + ANNUAL_TRUEUP) ** (yr - 1))
-		impl_yr  = year1_impl_total if yr == 1 else 0.0
-		addon_yr = addon_total if yr == 1 else 0.0
-		gt_yr    = round((sub_yr + impl_yr + addon_yr) * (1 + VAT_RATE), 2)
-		monthly_eq = round(gt_yr / 12, 2) if payment_terms == "Monthly" else 0.0
-		renewal.append({
-			"year": yr,
-			"subscription_excl_vat": round(sub_yr, 2),
-			"grand_total_incl_vat":  gt_yr,
-			"monthly_equivalent":    monthly_eq,
-		})
-
-	quote_data["renewal_schedule"] = renewal
-	return quote_data
-
-
-def _build_items(computed):
-	"""Build QuotationItem rows from computed facilities + addons."""
-	items = []
-	for row in (computed.get("facilities") or []):
-		sub_item  = _resolve_item_code(row["subscription_sku"])
-		impl_item = _resolve_item_code(row["impl_sku"])
-		items.append({
-			"item_code":     sub_item,
-			"item_name":     "Careverse HMIS Subscription — %s (%s)" % (row["facility_name"], row["package_tier"]),
-			"description":   "Careverse HMIS Subscription — %s" % row["facility_name"],
-			"qty":           1,
-			"rate":          row["subscription_net"],
-			"uom":           _item_uom(sub_item),
-			"facility_name": row.get("facility_name", ""),
-			"package_tier":  row.get("package_tier", ""),
-		})
-		if (row.get("impl_net") or 0) > 0:
-			items.append({
-				"item_code":     impl_item,
-				"item_name":     "Careverse HMIS Implementation & Training — %s" % row["facility_name"],
-				"description":   "One-time implementation and training — %s" % row["facility_name"],
-				"qty":           1,
-				"rate":          row["impl_net"],
-				"uom":           _item_uom(impl_item),
-				"facility_name": row.get("facility_name", ""),
-				"package_tier":  row.get("package_tier", ""),
-			})
-	for row in (computed.get("addons") or []):
-		if (row.get("qty") or 0) > 0:
-			addon_item = _resolve_item_code(row["product_sku"])
-			items.append({
-				"item_code":   addon_item,
-				"item_name":   row.get("description") or addon_item,
-				"description": row.get("description") or "",
-				"qty":         row["qty"],
-				"rate":        row["unit_price"],
-				"uom":         _item_uom(addon_item),
-			})
-	return items
-
-
-def _items_to_facilities_addons(items):
-	"""
-	Reconstruct {facilities, addons} from QuotationItem rows for the Vue frontend.
-	Groups consecutive subscription+implementation rows by facility_name.
-	"""
-	facilities = {}
-	addons = []
-	facility_order = []
-
-	for row in (items or []):
-		fname = row.get("facility_name")
-		tier  = row.get("package_tier")
-		code  = row.get("item_code") or ""
-
-		if fname and tier:
-			if fname not in facilities:
-				facilities[fname] = {
-					"facility_name": fname,
-					"package_tier": tier,
-					"num_users": 0,
-					"subscription_sku":    "",
-					"impl_sku":            "",
-					"subscription_net":    0.0,
-					"impl_net":            0.0,
-					"subscription_discount": 0.0,
-					"impl_discount":         0.0,
-				}
-				facility_order.append(fname)
-			fac = facilities[fname]
-			if "SUB" in code:
-				fac["subscription_sku"] = code
-				fac["subscription_net"] = float(row.get("rate") or 0)
-			elif "IMPL" in code:
-				fac["impl_sku"] = code
-				fac["impl_net"] = float(row.get("rate") or 0)
-		else:
-			# Addon row
-			addons.append({
-				"product_sku": code,
-				"description": row.get("item_name") or "",
-				"qty":         float(row.get("qty") or 0),
-				"unit_price":  float(row.get("rate") or 0),
-				"total":       float(row.get("qty") or 0) * float(row.get("rate") or 0),
-				"category":    _addon_category(code),
-			})
-
-	return [facilities[n] for n in facility_order], addons
 
 
 # ── Whitelisted API methods ────────────────────────────────────────────────────
 
-@frappe.whitelist()
-def get_quote_context(deal):
-	"""Return partner tier, discount caps, customer name, and currency for the Quote Builder."""
-	doc = frappe.get_doc("CRM Deal", deal)
-	partner = None
-	caps, tier = _get_caps(partner)
-
-	partner_buy_saas = partner_buy_services = 0.0
-	if partner:
-		margin_map = {
-			"Registered": (5.0,  5.0),
-			"Silver":      (15.0, 30.0),
-			"Gold":        (25.0, 45.0),
-			"Diamond":     (40.0, 60.0),
-		}
-		partner_buy_saas, partner_buy_services = margin_map.get(tier, (0.0, 0.0))
-
-	return {
-		"partner_tier":           tier,
-		"max_saas_discount":      caps["saas"],
-		"max_services_discount":  caps["services"],
-		"partner_buy_saas_pct":   partner_buy_saas,
-		"partner_buy_services_pct": partner_buy_services,
-		"customer": doc.get("organization") or "",
-		"partner":  partner,
-		"currency": "KES",
-	}
+def _require_manager():
+	"""Gate mutating quote actions to Sales Manager / System Manager / Administrator."""
+	roles = frappe.get_roles(frappe.session.user)
+	if not (_is_admin(roles) or "Sales Manager" in roles):
+		frappe.throw("Not permitted: requires Sales Manager or System Manager", frappe.PermissionError)
 
 
 @frappe.whitelist()
-def save_quote(quote_data):
-	"""Create or update an ERPNext Quotation from the Quote Builder payload."""
-	if isinstance(quote_data, str):
-		quote_data = json.loads(quote_data)
-
-	deal = quote_data.get("deal")
+def create_quote(deal, price_list=None):
+	"""
+	Create a blank Draft Quotation for a CRM Deal and return its name. This is the
+	single entry point for starting a quote on any deal (OIS deals auto-build via
+	crm.api.optin.build_ois_quote; non-OIS deals call this). The exec then adds
+	catalogue lines and negotiates rates inline via save_quote_lines.
+	"""
+	_require_manager()
 	if not frappe.db.exists("CRM Deal", deal):
 		frappe.throw("CRM Deal not found: %s" % deal)
 
-	partner = quote_data.get("partner")
-	caps, _ = _get_caps(partner)
-	quote_data = _compute_quote(quote_data, caps)
+	price_list = price_list or DEFAULT_PRICE_LIST
+	customer_name = _ensure_customer(frappe.db.get_value("CRM Deal", deal, "organization") or "")
 
-	items = _build_items(quote_data)
-	if not items:
-		frappe.throw("Quote has no line items")
-
-	customer_name = frappe.db.get_value("CRM Deal", deal, "organization") or ""
-	customer_name = _ensure_customer(customer_name)
-
-	prev = quote_data.get("previous_version")
-	name = quote_data.get("name")
-
-	# Cancel previous version if superseding
-	if prev and frappe.db.exists("Quotation", prev):
-		old = frappe.get_doc("Quotation", prev)
-		if old.docstatus == 0:
-			old.flags.ignore_permissions = True
-			old.cancel()  # marks docstatus=2 → Rejected
-
-	if name and frappe.db.exists("Quotation", name):
-		doc = frappe.get_doc("Quotation", name)
-		if doc.docstatus != 0:
-			frappe.throw("Cannot edit a submitted or cancelled Quotation")
-
-		doc.crm_payment_terms   = quote_data.get("payment_terms") or "Annual Upfront"
-		doc.contract_term_yrs   = quote_data.get("contract_term_yrs") or 1
-		doc.contract_start_date = quote_data.get("contract_start_date")
-		doc.valid_till          = quote_data.get("valid_until") or add_days(nowdate(), 30)
-		doc.currency            = quote_data.get("currency") or "KES"
-		doc.terms               = quote_data.get("notes") or ""
-		doc.discount_applied    = quote_data["discount_applied"]
-		doc.vat_amount          = quote_data["vat_amount"]
-		doc.set("items", items)
-		doc.set("renewal_schedule", quote_data.get("renewal_schedule") or [])
-		doc.flags.ignore_permissions = True  # SYSTEM-INTERNAL
-		doc.flags.ignore_validate    = True
-		doc.set_missing_values()
-		doc.calculate_taxes_and_totals()
-		doc.save(ignore_permissions=True)
-		frappe.db.commit()
-		return {"name": doc.name, "status": _derive_status(doc)}
-
-	# New Quotation
 	doc = frappe.get_doc({
 		"doctype": "Quotation",
 		"quotation_to": "Customer",
 		"party_name":   customer_name,
 		"company":      frappe.db.get_single_value("Global Defaults", "default_company"),
-		"transaction_date": quote_data.get("quote_date") or nowdate(),
-		"valid_till":   quote_data.get("valid_until") or add_days(nowdate(), 30),
-		"currency":     quote_data.get("currency") or "KES",
+		"transaction_date": nowdate(),
+		"valid_till":   add_days(nowdate(), 30),
+		"currency":     "KES",
+		"selling_price_list": price_list,
 		"order_type":   "Sales",
 		"crm_deal":     deal,
-		"crm_partner":  partner,
-		"crm_payment_terms":   quote_data.get("payment_terms") or "Annual Upfront",
-		"contract_term_yrs":   quote_data.get("contract_term_yrs") or 1,
-		"contract_start_date": quote_data.get("contract_start_date"),
-		"previous_version":    prev,
-		"discount_applied":    quote_data["discount_applied"],
-		"vat_amount":          quote_data["vat_amount"],
-		"terms":               quote_data.get("notes") or "",
-		"items":               items,
-		"renewal_schedule":    quote_data.get("renewal_schedule") or [],
+		"crm_payment_terms": "Annual Upfront",
+		"vat_amount":   0,
+		"items":        [],
 	})
 	doc.flags.ignore_permissions = True  # SYSTEM-INTERNAL
 	doc.flags.ignore_validate    = True
-	# Let ERPNext fill conversion_rate, price_list_currency, plc_conversion_rate etc.
+	doc.flags.ignore_mandatory   = True
 	doc.set_missing_values()
-	doc.calculate_taxes_and_totals()
-	doc.insert(ignore_mandatory=True)
+	doc.insert(ignore_mandatory=True, ignore_permissions=True)
 	frappe.db.commit()
-	return {"name": doc.name, "status": _derive_status(doc)}
+	return {"name": doc.name, "status": _derive_status(doc), "price_list": price_list}
 
 
 @frappe.whitelist()
@@ -624,6 +373,7 @@ def send_quote(quote_name):
 			attachments=[{"fname": "%s.pdf" % quote_name, "fcontent": pdf_data}],
 			sender=frappe.db.get_single_value("Email Account", "email_id") or "sales@tiberbu.com",
 			sender_full_name=rep_name,
+			now=True,
 		)
 
 	frappe.db.set_value("Quotation", quote_name, "crm_sent", 1)
@@ -667,33 +417,204 @@ def reject_quote(quote_name):
 
 
 @frappe.whitelist()
-def get_quote_pdf_data(quote_name):
-	"""
-	Return Quotation data shaped like the old CRM Quote dict for the Vue frontend.
-	Items are reconstructed into {facilities, addons} arrays.
-	"""
-	doc = frappe.get_doc("Quotation", quote_name)
-	d = doc.as_dict()
+def list_price_lists():
+	"""Selling price lists offered in the quote editor's price-list selector."""
+	rows = frappe.get_list(
+		"Price List",
+		filters=[["selling", "=", 1], ["enabled", "=", 1]],
+		fields=["name", "currency"],
+		order_by="name asc",
+	)
+	return [{"value": r.name, "label": r.name, "currency": r.currency} for r in rows]
 
-	facilities, addons = _items_to_facilities_addons(
-		[r.as_dict() if hasattr(r, "as_dict") else r for r in (doc.items or [])]
+
+@frappe.whitelist()
+def set_quote_price_list(quote, price_list):
+	"""
+	Switch a Draft/Sent (docstatus=0) Quotation to another selling price list and
+	re-default every line rate from that list's Item Price (ERPNext Item Price
+	architecture). Exec-negotiated overrides are intentionally reset to the new
+	list's baseline; the exec re-negotiates from there. Recomputes totals + VAT.
+	"""
+	_require_manager()
+
+	doc = frappe.get_doc("Quotation", quote)
+	if int(doc.docstatus or 0) != 0:
+		frappe.throw("Cannot update price list on a submitted or cancelled Quotation")
+
+	doc.selling_price_list = price_list
+	# Re-baseline every line to the new list's Item Price. A true miss resolves to
+	# 0 (via _get_item_price's Standard-Selling fallback) so the exec re-enters it.
+	baseline_rates = [_get_item_price(row.item_code, price_list) for row in (doc.items or [])]
+
+	doc.flags.ignore_permissions = True  # SYSTEM-INTERNAL
+	doc.flags.ignore_validate    = True
+	doc.flags.ignore_mandatory   = True
+	doc.set_missing_values()
+	_apply_manual_rates(doc, baseline_rates)
+	doc.calculate_taxes_and_totals()
+	doc.vat_amount = round((doc.net_total or 0) * VAT_RATE, 2)
+	doc.save(ignore_permissions=True)
+	frappe.db.commit()
+
+	return {
+		"price_list":  price_list,
+		"net_total":   float(doc.net_total or 0),
+		"vat_amount":  float(doc.vat_amount or 0),
+		"grand_total": float(doc.grand_total or 0),
+	}
+
+
+@frappe.whitelist()
+def get_quote_lines(quote):
+	"""
+	Return the raw ordered QuotationItem rows of a Quotation for inline exec
+	editing on the Deal → Quoting tab. Returns exactly what is stored — so
+	OIS-sourced quotes with KEPH-level item codes render 1:1.
+	"""
+	doc = frappe.get_doc("Quotation", quote)
+
+	lines = []
+	for it in (doc.items or []):
+		qty  = float(it.qty or 0)
+		rate = float(it.rate or 0)
+		lines.append({
+			"item_code":     it.item_code,
+			"item_name":     it.item_name or it.item_code,
+			"description":   it.description or "",
+			"facility_name": it.get("facility_name") or "",
+			"package_tier":  it.get("package_tier") or "",
+			"qty":           qty,
+			"rate":          rate,
+			"amount":        float(it.amount or (qty * rate)),
+		})
+
+	net_total   = float(doc.net_total or sum(l["amount"] for l in lines))
+	vat_amount  = float(doc.get("vat_amount") or round(net_total * VAT_RATE, 2))
+	grand_total = float(doc.grand_total or round(net_total + vat_amount, 2))
+
+	return {
+		"name":          doc.name,
+		"status":        _derive_status(doc),
+		"editable":      int(doc.docstatus or 0) == 0,
+		"currency":      doc.currency or "KES",
+		"price_list":    doc.get("selling_price_list") or DEFAULT_PRICE_LIST,
+		"payment_terms": doc.get("crm_payment_terms") or "Annual Upfront",
+		"valid_until":   str(doc.valid_till or ""),
+		"lines":         lines,
+		"net_total":     round(net_total, 2),
+		"vat_amount":    round(vat_amount, 2),
+		"grand_total":   round(grand_total, 2),
+	}
+
+
+@frappe.whitelist()
+def save_quote_lines(quote, lines):
+	"""
+	Persist exec-adjusted negotiated rates / quantities / added or removed lines
+	on a Draft or Sent (docstatus=0) Quotation, then recompute totals.
+
+	Requires Sales Manager or System Manager. This is the negotiated-rate control
+	the exec uses before sending the contract — it sets QuotationItem.rate
+	directly. A line submitted with no rate defaults to the quote price list's
+	Item Price (ERPNext Item Price architecture).
+	"""
+	_require_manager()
+
+	if isinstance(lines, str):
+		lines = json.loads(lines)
+
+	doc = frappe.get_doc("Quotation", quote)
+	if int(doc.docstatus or 0) != 0:
+		frappe.throw("Cannot edit a submitted or cancelled Quotation")
+
+	price_list = doc.get("selling_price_list") or DEFAULT_PRICE_LIST
+
+	new_items = []
+	for row in (lines or []):
+		item_code = frappe.utils.cstr(row.get("item_code") or "").strip()
+		if not item_code:
+			continue
+		qty  = float(row.get("qty") or 0)
+		if qty <= 0:
+			continue
+		# Distinguish "no rate supplied" (default from Item Price) from a deliberate
+		# negotiated 0 (a waived / free line — a legitimate manual concession).
+		raw_rate = row.get("rate")
+		if raw_rate in (None, ""):
+			rate = _get_item_price(item_code, price_list)
+		else:
+			rate = float(raw_rate)
+		new_items.append({
+			"item_code":     item_code,
+			"item_name":     row.get("item_name") or item_code,
+			"description":   row.get("description") or "",
+			"qty":           qty,
+			"rate":          rate,
+			"uom":           _item_uom(item_code),
+			"facility_name": row.get("facility_name") or "",
+			"package_tier":  row.get("package_tier") or "",
+		})
+
+	if not new_items:
+		frappe.throw("Quote must have at least one valid line item")
+
+	doc.set("items", new_items)
+	doc.flags.ignore_permissions = True  # SYSTEM-INTERNAL
+	doc.flags.ignore_validate    = True
+	doc.flags.ignore_mandatory   = True  # OIS quotes are created without a price list
+	doc.set_missing_values()
+	# Manual rates are authoritative — re-apply after set_missing_values so ERPNext
+	# does not re-fetch price_list_rate over a negotiated (incl. waived 0) rate.
+	_apply_manual_rates(doc, [it["rate"] for it in new_items])
+	doc.calculate_taxes_and_totals()
+	doc.vat_amount = round((doc.net_total or 0) * VAT_RATE, 2)
+	doc.save(ignore_permissions=True)
+	frappe.db.commit()
+
+	return {
+		"name":        doc.name,
+		"status":      _derive_status(doc),
+		"net_total":   float(doc.net_total or 0),
+		"vat_amount":  float(doc.vat_amount or 0),
+		"grand_total": float(doc.grand_total or 0),
+	}
+
+
+@frappe.whitelist()
+def list_catalogue_items(search=None, price_list=None):
+	"""
+	Catalogue for the inline quote 'add line' picker, sourced from ERPNext Items
+	that carry a selling Item Price on the given (or default) price list. Each
+	item's default rate comes from Item Price — the exec then negotiates it.
+	Any sellable Item with a price is quotable, not just the 15 CRM Products.
+	"""
+	price_list = price_list or DEFAULT_PRICE_LIST
+
+	item_filters = [["disabled", "=", 0], ["is_sales_item", "=", 1]]
+	if search:
+		item_filters.append(["item_name", "like", "%%%s%%" % search])
+
+	items = frappe.get_list(
+		"Item",
+		filters=item_filters,
+		fields=["name as item_code", "item_name", "stock_uom"],
+		order_by="item_name asc",
+		limit_page_length=100,
 	)
 
-	d["deal"]           = doc.get("crm_deal")
-	d["customer"]       = doc.party_name
-	d["partner"]        = doc.get("crm_partner")
-	d["quote_date"]     = str(doc.transaction_date or "")
-	d["valid_until"]    = str(doc.valid_till or "")
-	d["payment_terms"]  = doc.get("crm_payment_terms") or "Annual Upfront"
-	d["status"]         = _derive_status(doc)
-	d["facilities"]     = facilities
-	d["addons"]         = addons
-	d["grand_total"]    = doc.grand_total
-	d["vat_amount"]     = doc.get("vat_amount") or 0
-	d["discount_applied"] = doc.get("discount_applied") or 0
-	d["notes"]          = doc.terms or ""
-
-	return d
+	out = []
+	for it in items:
+		rate = _get_item_price(it.item_code, price_list)
+		if not rate:
+			continue  # only surface items that have a sellable price
+		out.append({
+			"item_code": it.item_code,
+			"label":     it.item_name or it.item_code,
+			"uom":       it.stock_uom or "Nos",
+			"rate":      rate,
+		})
+	return out
 
 
 @frappe.whitelist()
@@ -730,4 +651,5 @@ def check_quote_expiry():
 					"Please create a new version or follow up with the customer."
 					% (q.name, q.customer, q.valid_until)
 				),
+				now=True,
 			)

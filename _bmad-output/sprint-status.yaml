@@ -1,13 +1,13 @@
 # Sprint Status
 # Project: crm (Tiberbu CRM fork)
 # Tracking: Claude Code Studio
-# Updated: 2026-08-25
+# Updated: 2026-08-26
 
 summary:
-  total: 29
-  ready-for-dev: 7
+  total: 50
+  ready-for-dev: 21
   in-progress: 2
-  review: 12
+  review: 19
   done: 3
   cancelled: 0
 
@@ -159,6 +159,13 @@ development_status:
   # Sprint 3 — Vue wizard
   optin-s2-1: review         # [dev-story] Vue wizard 8 steps + Frappe Web Page /opt-in shell; OTP gate, facility cards, pricing, T&C scroll-lock, commit, progress ticks, success screen
 
+  # Sprint 4 — UX + delivery polish (careverse_fixes 26 Aug 2026)
+  optin-s3-1: review         # [dev-story] Branded post-submission confirmation email: network logo/colour, reference badge, facilities-registered table, annual+VAT pricing summary, "what happens next" steps, help/footer — replaces plain <p> email. now=True. Proven: _confirmation_email_html renders ref+VAT total(167,040=144k*1.16)+brand+facility
+  optin-s3-2: review         # [dev-story] now=True on ALL opt-in/contract/quote sendmail (optin OTP+resume+confirmation, contracts invite+approver+OTP, quotes send+expiry) to bypass Email Queue flush delay — matches proven event.py/crm_invitation.py pattern
+  optin-s3-3: review         # [dev-story] StepLanding.vue: expand 3 value-prop pills into explained feature cards (icon+title+one-line) so user understands what they're starting; brand-tinted icons; dark/light parity
+  optin-s3-4: review         # [dev-story] CRM Opt-In Partner child DocType → partner_logos Table on CRM Opt-In Network; get_settings exposes absolute logo URLs; "Trusted by our partners" strip on wizard landing. Proven: migrate ✓ child table in DB, get_settings(demo-network) returns 2 logos
+  optin-s3-5: review         # [dev-story] Lock already-quoted facilities on the wizard: _get_quoted_facility_map correlates pre-qualified mfl_code → CRM Deal Facility → deals with a CRM Quote; verify_otp emits already_quoted+quoted_deal; get_pricing skips locked codes (server-side guard); StepFacilities.vue non-interactive locked cards (lock icon, "Already quoted on deal X" pill, excluded from Select-All), explanatory banner
+
   # Chain: epic-contract-signing (BRD-CONTRACT-001 · ADR-004 — 24 Aug 2026)
   epic-contract-signing: ready-for-dev
 
@@ -173,3 +180,47 @@ development_status:
 
   # Sprint 2 — Signing portal
   cs-s2-1-signing-portal: review                    # [dev-story] Frappe Web Page /sign-contract; OtpGate reuse; SignatureCanvas (signature_pad.js); scroll-lock before canvas
+
+  # Chain: epic-optin-handoff (gap analysis 25 Aug 2026 — exec-handoff-stories.md; maps BRD-OPTIN-001 Phase 2 + BRD-CONTRACT-001 Phases 4-5)
+  epic-optin-handoff: ready-for-dev
+
+  # Sprint 1 — Traceability spine (backend)
+  oh-s1-1-provenance-fields: review                 # [dev-story] Patch: Lead opt-in/T&C custom fields + Deal.optin_submission backlink; stop silent .set() drop — proven OIS-2026-00005: 6 Lead CF + Deal.optin_submission in meta, hash persisted, backlink==OIS, quote crm_sent=1
+  oh-s1-2-deal-lifecycle-api: review                # [dev-story] crm/api/lifecycle.py get_deal_lifecycle(deal): reverse-resolve OIS+quote+contract+signatories+onboarding+invoice — proven deal 18952 all 6 keys, bare deal all-None never-raise, non-priv→PermissionError, HTTP 200; AC-04 no db.sql/get_all
+  oh-s1-3-transition-timeline: review               # [dev-story] log_deal_event() writes comment_type=Comment on 3 transitions (OIS processed/contract generated/both-signed); track_changes=1 on CRM Onboarding Request — proven: migrate exit 0 + get_meta.track_changes==1, Version captured on save (ONB-2026-00004 0→1), deal 97111 Activity shows 3 distinct entries (screenshot /tmp/ohs13-ac02-deal-97111.png), AC-03 no f-strings. NOTE: comment_type=Comment (not Info per spec) — Salim-approved, since Info routes to docinfo.info_logs which get_deal_activities ignores
+
+  # Sprint 2 — Exec pick-up surface (frontend)
+  oh-s2-1-submissions-queue: ready-for-dev          # [dev-story] /opt-in-submissions full-page list + sidebar; list_submissions + retry_submission APIs; status filter, deal link, retry-failed
+  oh-s2-2-deal-contracting-panel: review     # [dev-story] v3 clean rewrite: QuotingTab.vue — prominent hero card (OIS ref mono, OTP Verified chip, name xl bold, role·org, email link, phone, Email Applicant btn) + facilities table + smart button Cases A/B/C (Build Quote from OIS solid btn when no quote, View/Adjust when quote exists, New Quote only on non-OIS); lifecycle fetched in QuotingTab, passed as prop to ContractingPanel; oisDoc passed as prop. ContractingPanel.vue — no internal OIS/lifecycle fetch; props: dealId+oisDoc+lifecycle; emit lifecycle-reload after generate; pre-fill from explicit facility_signatory fields > raw_json fallback; Exec Notes + Generate Contract form (7 fields, Combobox approvers) + Lifecycle strip. build clean (39s), zero hex (grep empty), Combobox not Autocomplete; screenshots /tmp/ohs22v3-hero-light.png /tmp/ohs22v3-hero-dark.png /tmp/ohs22v3-build-quote.png /tmp/ohs22v3-form.png — deal 48872 OIS-2026-00008 Thomas Mwogi visible, Build Quote from OIS btn present, signatory pre-filled
+
+  # Sprint 3 — Completion chain (backend)
+  oh-s3-1-contract-state-machine: ready-for-dev     # [dev-story] both-signed→Awaiting Internal Approval + Deal Won (D-2); all-3-approved→Fully Executed + finalize_contract (idempotent)
+  oh-s3-2-finalize-quote-pdf-email: ready-for-dev   # [dev-story] finalize_contract: _finalize_quotation submits Quotation+Sales Invoice (D-1) + executed PDF via CRM Contract Standard + email all parties incl deal contact
+  oh-s3-3-reconciliation-scheduler: ready-for-dev   # [dev-story] scheduler: re-enqueue stuck Pending/Processing OIS; create missing invoice for Accepted quotes; idempotent
+
+  # Sprint 4 — Finance posting visibility
+  oh-s4-1-finance-ar-provenance: ready-for-dev      # [dev-story] AR crm_deal/crm_quotation columns + fix RBAC-blocked exec deep link (invoices auto-submitted per D-1, no draft view)
+
+  # Chain: epic-optin-contact-us (planned 26 Aug 2026 — "no fallback" directive; BRD pending)
+  # Directive: an un-onboarded network must NOT fall through to default CareverseHIMS
+  # branding. Instead the visitor is told the network isn't onboarded and routed to
+  # their network coordinator + a Contact Us form. Requests land in the CRM for agents
+  # to confirm and promote into the Pre-Qualified list / Opt-In Network.
+  epic-optin-contact-us: ready-for-dev
+
+  cu-s1-1-contact-request-doctype: ready-for-dev    # [dev-story] CRM Contact Request DocType (facility_name, contact_name, email, phone, network_name free-text, message, status New/In Review/Added/Closed, linked_prequalified_facility, linked_network, handled_by); CRM list view + sidebar entry for agent follow-up
+  cu-s1-2-guest-api: ready-for-dev                  # [dev-story] crm/api/contact_request.py submit_contact_request (allow_guest, per-IP rate limit, branded acknowledgement email now=True); no PII leak
+  cu-s1-3-no-fallback-wizard: ready-for-dev         # [dev-story] Remove default-branding fallback: get_settings returns matched flag; unknown/disabled slug → wizard shows "Network not onboarded" state → coordinator note + Contact Us form (no CareverseHIMS default path)
+  cu-s1-4-crm-followup-actions: ready-for-dev       # [dev-story] Agent actions on CRM Contact Request: "Add to Pre-Qualified Facility" + "Add to Opt-In Network"; status transitions; audit trail
+
+  # Sprint 2 — Seamless CRM destination surfaces (context added 26 Aug 2026)
+  # RATIONALE: CRM Opt-In Network + CRM Pre-Qualified Facility currently have NO frappe-ui
+  # views (grep frontend/src = 0 hits; no router.js routes) — they are Desk-only today
+  # (/app/crm-opt-in-network, /app/crm-pre-qualified-facility). The two are relationally
+  # linked (CRM Pre-Qualified Facility.network -> CRM Opt-In Network, reqd). cu-s1-4's
+  # "promote" actions would otherwise dump agents into raw Desk forms, breaking the
+  # frappe-ui UX everywhere else in the CRM. These stories give the promote-destinations
+  # a native home so the follow-up flow is seamless end-to-end.
+  cu-s2-1-network-crm-views: ready-for-dev          # [dev-story] frappe-ui list + detail for CRM Opt-In Network: sidebar entry, /crm/opt-in-networks route, status/branding/partner-logos fields, count of linked pre-qualified facilities, RBAC (Network Coordinator scoped to assigned_network)
+  cu-s2-2-prequalified-crm-views: ready-for-dev     # [dev-story] frappe-ui list + detail for CRM Pre-Qualified Facility: /crm/pre-qualified route, filter by network, status (Active/Opted In/Declined), breadcrumb link up to parent Opt-In Network, "already quoted" indicator reusing _get_quoted_facility_map; deep-link from Contact Request promote action
+  cu-qa: ready-for-dev                              # [qa] Full contact-us flow: submit as guest → CRM record → agent promotes to Pre-Qualified → opt-in succeeds; un-onboarded slug shows no fallback; promote lands on native frappe-ui Network/Pre-Qualified views (not Desk)

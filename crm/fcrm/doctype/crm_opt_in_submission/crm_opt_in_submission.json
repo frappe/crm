@@ -9,6 +9,8 @@
   "status",
   "network_slug",
   "submitter_email",
+  "facility_signatory_name",
+  "facility_signatory_email",
   "submitted_at",
   "col_break_1",
   "lead",
@@ -46,6 +48,16 @@
    "fieldtype": "Data",
    "label": "Submitter Email",
    "in_list_view": 1
+  },
+  {
+   "fieldname": "facility_signatory_name",
+   "fieldtype": "Data",
+   "label": "Facility Signatory Name"
+  },
+  {
+   "fieldname": "facility_signatory_email",
+   "fieldtype": "Data",
+   "label": "Facility Signatory Email"
   },
   {
    "fieldname": "submitted_at",

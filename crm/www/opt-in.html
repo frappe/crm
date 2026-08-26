@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>CareverseHIMS — Self Opt-In</title>
+    <script>window.csrf_token = {{ (csrf_token or '') | tojson }};</script>
     {{ optin_head | safe }}
   </head>
   <body class="h-full">

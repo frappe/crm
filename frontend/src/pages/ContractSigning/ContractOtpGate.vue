@@ -18,10 +18,10 @@
           <line x1="12" y1="16" x2="12.01" y2="16"/>
         </svg>
       </div>
-      <h3 class="mb-2 text-lg font-semibold text-gray-900 dark:text-white">Link Invalid or Expired</h3>
+      <h3 class="mb-2 text-lg font-semibold text-gray-900 dark:text-white">{{ fatalHeading }}</h3>
       <p class="text-sm text-gray-500 dark:text-gray-400">{{ fatalError }}</p>
       <p class="mt-4 text-xs text-gray-400 dark:text-gray-500">
-        Please request a new signing link from the contract issuer.
+        {{ fatalHint }}
       </p>
     </div>
 
@@ -108,8 +108,7 @@ import { createResource } from 'frappe-ui'
 const props = defineProps({
   contract: { type: String, required: true },
   role: { type: String, required: true },
-  exp: { type: String, required: true },
-  tok: { type: String, required: true },
+  token: { type: String, required: true },
 })
 
 const emit = defineEmits(['verified'])
@@ -122,7 +121,8 @@ const resendLoading = ref(false)
 const errorMsg = ref('')
 const requestingOtp = ref(true)
 const fatalError = ref('')
-const sessionToken = ref('')
+const fatalHeading = ref('Link Invalid or Expired')
+const fatalHint = ref('Please request a new signing link from the contract issuer.')
 
 // 10-minute countdown
 const countdown = ref(600)
@@ -157,21 +157,25 @@ async function doRequestOtp() {
   requestingOtp.value = true
   fatalError.value = ''
   try {
-    const data = await requestOtpResource.fetch({
+    await requestOtpResource.fetch({
       contract: props.contract,
       role: props.role,
-      exp: props.exp,
-      tok: props.tok,
+      token: props.token,
     })
-    sessionToken.value = data.session_token || ''
     startCountdown()
     // Focus first digit input after render settles
     setTimeout(() => inputRefs.value[0]?.focus(), 100)
   } catch (err) {
-    const msg = err?.exc_type === 'AuthenticationError'
-      ? 'This signing link has expired or is invalid. Please request a new one from the contract issuer.'
-      : (err?.message || 'Failed to send verification code. Please try again.')
-    fatalError.value = msg
+    if (err?.exc_type === 'AuthenticationError') {
+      fatalHeading.value = 'Link Invalid or Expired'
+      fatalHint.value = 'Please request a new signing link from the contract issuer.'
+      fatalError.value = 'This signing link has expired or is invalid.'
+    } else {
+      // Network / CSRF / server error — NOT an expired link.
+      fatalHeading.value = 'Something went wrong'
+      fatalHint.value = 'Please refresh the page and try again, or contact the contract issuer.'
+      fatalError.value = err?.message || 'Failed to send verification code. Please try again.'
+    }
   } finally {
     requestingOtp.value = false
   }
@@ -238,17 +242,15 @@ async function handleVerify() {
   loading.value = true
   try {
     const data = await verifyOtpResource.fetch({
-      session_token: sessionToken.value,
       contract: props.contract,
       role: props.role,
+      token: props.token,
       otp: otpValue.value,
     })
     clearInterval(timer)
     emit('verified', {
       signingToken: data.signing_token,
-      signingExpiry: data.expiry,
       signatoryName: data.signatory_name,
-      signatoryRole: data.signatory_role,
     })
   } catch {
     errorMsg.value = 'Incorrect code. Please try again.'
@@ -267,13 +269,11 @@ async function handleResend() {
   resendLoading.value = true
   errorMsg.value = ''
   try {
-    const data = await requestOtpResource.fetch({
+    await requestOtpResource.fetch({
       contract: props.contract,
       role: props.role,
-      exp: props.exp,
-      tok: props.tok,
+      token: props.token,
     })
-    sessionToken.value = data.session_token || ''
     startCountdown()
     digits.value = ['', '', '', '', '', '']
     setTimeout(() => inputRefs.value[0]?.focus(), 50)

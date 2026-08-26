@@ -11,6 +11,7 @@ a guest, one-shot portal has no use for offline caching.
 import os
 
 import frappe
+import frappe.sessions  # ensure frappe.sessions is resolvable for get_csrf_token()
 
 no_cache = 1
 base_template_path = ""  # Render standalone — no Frappe nav/header wrapper
@@ -20,6 +21,9 @@ _BUILT_HTML = ("public", "frontend", "opt-in.html")
 
 def get_context(context):
     context.optin_network = frappe.form_dict.get("network") or ""
+    # Guest portal, but a logged-in operator opening it in the same browser hits
+    # CSRF enforcement — inject the token so frappe-ui POSTs don't 400.
+    context.csrf_token = frappe.sessions.get_csrf_token()
     context.optin_head = _asset_head()
     return context
 

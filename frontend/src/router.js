@@ -103,6 +103,11 @@ const routes = [
     component: () => import('@/pages/Quotes/QuotesList.vue'),
   },
   {
+    path: '/opt-in-submissions',
+    name: 'OptInSubmissions',
+    component: () => import('@/pages/OptInSubmissions.vue'),
+  },
+  {
     alias: '/call-logs',
     path: '/call-logs/view/:viewType?',
     name: 'Call Logs',

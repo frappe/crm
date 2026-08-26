@@ -14,6 +14,11 @@
   "signature_data",
   "signature_ip",
   "signed_at",
+  "section_break_tokens",
+  "invite_token",
+  "invite_expiry",
+  "signing_token",
+  "signing_expiry",
   "section_break_otp",
   "otp_hash",
   "otp_expiry",
@@ -79,6 +84,39 @@
    "fieldname": "signed_at",
    "fieldtype": "Datetime",
    "label": "Signed At"
+  },
+  {
+   "fieldname": "section_break_tokens",
+   "fieldtype": "Section Break",
+   "label": "Signing Tokens"
+  },
+  {
+   "fieldname": "invite_token",
+   "fieldtype": "Data",
+   "label": "Invitation Token",
+   "no_copy": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "invite_expiry",
+   "fieldtype": "Datetime",
+   "label": "Invitation Expiry",
+   "no_copy": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "signing_token",
+   "fieldtype": "Data",
+   "label": "Signing Session Token",
+   "no_copy": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "signing_expiry",
+   "fieldtype": "Datetime",
+   "label": "Signing Session Expiry",
+   "no_copy": 1,
+   "read_only": 1
   },
   {
    "fieldname": "section_break_otp",

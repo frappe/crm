@@ -1,17 +1,30 @@
 """
-seed_guide_data.py — Creates guide-ready CRM Quotes at every lifecycle stage
+seed_guide_data.py — Creates guide-ready Quotations at every lifecycle stage
 for the Finance Module user guide screenshots.
 
 Run via:
   bench --site cr-dev.tiberbu.app execute crm.demo.seed_guide_data.run
 """
 import frappe
-from frappe.utils import nowdate, add_days
 
 
 # ──────────────────────────────────────────────
 # Helpers
 # ──────────────────────────────────────────────
+
+def _existing_quote(deal, status):
+    """
+    Return the name of an existing Quotation for this deal at the given derived
+    status ("Draft" / "Sent" / "Accepted" / "Rejected"), else None. The engine
+    stores ERPNext Quotations (status derived from docstatus + crm_sent), so
+    idempotency must resolve status through _derive_status — not a stored field.
+    """
+    from crm.api.quotes import _derive_status
+    for name in frappe.get_list("Quotation", filters={"crm_deal": deal}, pluck="name"):
+        if _derive_status(frappe.get_doc("Quotation", name)) == status:
+            return name
+    return None
+
 
 def _find_deal_with_org(org_name):
     """Return the name of a deal whose organization matches org_name."""
@@ -29,49 +42,66 @@ def _find_any_deal():
     return deals[0].name, None if deals else (None, None)
 
 
+# Package tier → ERPNext subscription / implementation Item codes
+_TIER_SKUS = {
+    "Core":       ("CV-HIMS-SUB-CORE", "CV-HIMS-IMPL-CORE"),
+    "Advanced":   ("CV-HIMS-SUB-ADV",  "CV-HIMS-IMPL-ADV"),
+    "Enterprise": ("CV-HIMS-SUB-ENT",  "CV-HIMS-IMPL-ENT"),
+}
+
+
 def _save_quote(deal, facilities, addons, payment_terms="Annual Upfront",
                 contract_term_yrs=3, notes=None):
-    """Save a quote via the internal API, returns the doc name."""
+    """
+    Seed a Quotation via the line-item quote engine. Rates are omitted so
+    save_quote_lines defaults each line from the quote's Item Price.
+    Returns the doc name.
+    """
     import json
-    from crm.api.quotes import save_quote
+    from crm.api.quotes import create_quote, save_quote_lines
 
-    quote_data = {
-        "deal": deal,
-        "quote_date": nowdate(),
-        "valid_until": add_days(nowdate(), 30),
-        "contract_start_date": add_days(nowdate(), 14),
-        "payment_terms": payment_terms,
-        "contract_term_yrs": contract_term_yrs,
-        "currency": "KES",
-        "facilities": facilities,
-        "addons": addons,
-        "notes": notes or "",
-    }
-    result = save_quote(json.dumps(quote_data))
-    return result["name"]
+    name = create_quote(deal)["name"]
+
+    lines = []
+    for f in facilities:
+        sub_sku, impl_sku = _TIER_SKUS.get(f.get("package_tier"), _TIER_SKUS["Core"])
+        fname = f.get("facility_name", "")
+        lines.append({
+            "item_code": sub_sku, "qty": 1,
+            "item_name": f"Careverse HMIS Subscription — {fname}",
+            "facility_name": fname, "package_tier": f.get("package_tier", ""),
+        })
+        lines.append({
+            "item_code": impl_sku, "qty": 1,
+            "item_name": f"Careverse HMIS Implementation — {fname}",
+            "facility_name": fname, "package_tier": f.get("package_tier", ""),
+        })
+    for a in addons:
+        if (a.get("qty") or 0) > 0:
+            lines.append({
+                "item_code": a.get("product_sku"), "qty": a.get("qty"),
+            })
+
+    save_quote_lines(name, json.dumps(lines))
+    if notes:
+        frappe.db.set_value("Quotation", name, "terms", notes)
+        frappe.db.commit()
+    return name
 
 
 def _mark_sent(quote_name):
-    frappe.db.set_value("CRM Quote", quote_name, "status", "Sent")
-    frappe.db.set_value("CRM Quote", quote_name, "submitted_by", frappe.session.user)
-    frappe.db.commit()
+    from crm.api.quotes import send_quote
+    send_quote(quote_name)
 
 
 def _mark_accepted(quote_name):
-    from crm.integrations.erpnext.invoice_adapter import create_sales_invoice
-    doc = frappe.get_doc("CRM Quote", quote_name)
-    result = create_sales_invoice(doc)
-    invoice_name = result.get("invoice_name", "")
-    frappe.db.set_value("CRM Quote", quote_name, "status", "Accepted")
-    if invoice_name:
-        frappe.db.set_value("CRM Quote", quote_name, "erpnext_sales_invoice", invoice_name)
-    frappe.db.commit()
-    return invoice_name
+    from crm.api.quotes import accept_quote
+    return accept_quote(quote_name).get("invoice_name", "")
 
 
 def _mark_rejected(quote_name):
-    frappe.db.set_value("CRM Quote", quote_name, "status", "Rejected")
-    frappe.db.commit()
+    from crm.api.quotes import reject_quote
+    reject_quote(quote_name)
 
 
 # ──────────────────────────────────────────────
@@ -213,12 +243,7 @@ def run():
         "Kenyatta National Hospital"
     )
     if deal_knh:
-        existing = frappe.get_list(
-            "CRM Quote",
-            filters={"deal": deal_knh, "status": "Draft"},
-            pluck="name",
-            limit=1,
-        )
+        existing = _existing_quote(deal_knh, "Draft")
         if not existing:
             name = _save_quote(
                 deal=deal_knh,
@@ -234,18 +259,13 @@ def run():
             results["draft_knh"] = name
             print("Created DRAFT quote %s for Kenyatta National Hospital" % name)
         else:
-            results["draft_knh"] = existing[0]
-            print("DRAFT quote already exists for KNH: %s" % existing[0])
+            results["draft_knh"] = existing
+            print("DRAFT quote already exists for KNH: %s" % existing)
 
     # ── 2. SENT quote — Mater Hospital ───────────────────────────────────
     deal_mater = deals_by_org.get("Mater Hospital") or org_to_deal.get("Mater Hospital")
     if deal_mater:
-        existing_sent = frappe.get_list(
-            "CRM Quote",
-            filters={"deal": deal_mater, "status": "Sent"},
-            pluck="name",
-            limit=1,
-        )
+        existing_sent = _existing_quote(deal_mater, "Sent")
         if not existing_sent:
             name = _save_quote(
                 deal=deal_mater,
@@ -262,20 +282,15 @@ def run():
             results["sent_mater"] = name
             print("Created SENT quote %s for Mater Hospital" % name)
         else:
-            results["sent_mater"] = existing_sent[0]
-            print("SENT quote already exists for Mater: %s" % existing_sent[0])
+            results["sent_mater"] = existing_sent
+            print("SENT quote already exists for Mater: %s" % existing_sent)
 
     # ── 3. ACCEPTED quote → Sales Invoice — Kisumu County ────────────────
     deal_kisumu = deals_by_org.get("Kisumu County Referral Hospital") or org_to_deal.get(
         "Kisumu County Referral Hospital"
     )
     if deal_kisumu:
-        existing_accepted = frappe.get_list(
-            "CRM Quote",
-            filters={"deal": deal_kisumu, "status": "Accepted"},
-            pluck="name",
-            limit=1,
-        )
+        existing_accepted = _existing_quote(deal_kisumu, "Accepted")
         if not existing_accepted:
             name = _save_quote(
                 deal=deal_kisumu,
@@ -294,22 +309,17 @@ def run():
             results["invoice_kisumu"] = invoice
             print("Created ACCEPTED quote %s → Invoice %s for Kisumu County" % (name, invoice))
         else:
-            results["accepted_kisumu"] = existing_accepted[0]
-            inv = frappe.db.get_value("CRM Quote", existing_accepted[0], "erpnext_sales_invoice")
-            results["invoice_kisumu"] = inv
-            print("ACCEPTED quote already exists for Kisumu: %s" % existing_accepted[0])
+            from crm.api.quotes import _invoice_for_quotation
+            results["accepted_kisumu"] = existing_accepted
+            results["invoice_kisumu"] = _invoice_for_quotation(existing_accepted)
+            print("ACCEPTED quote already exists for Kisumu: %s" % existing_accepted)
 
     # ── 4. MULTI-FACILITY ACCEPTED quote — Aga Khan ───────────────────────
     deal_aga = deals_by_org.get("Aga Khan University Hospital") or org_to_deal.get(
         "Aga Khan University Hospital"
     )
     if deal_aga:
-        existing_multi = frappe.get_list(
-            "CRM Quote",
-            filters={"deal": deal_aga, "status": "Accepted"},
-            pluck="name",
-            limit=1,
-        )
+        existing_multi = _existing_quote(deal_aga, "Accepted")
         if not existing_multi:
             name = _save_quote(
                 deal=deal_aga,
@@ -328,20 +338,15 @@ def run():
             results["invoice_aga_khan"] = invoice
             print("Created ACCEPTED multi-facility quote %s for Aga Khan" % name)
         else:
-            results["accepted_aga_khan"] = existing_multi[0]
-            print("ACCEPTED quote already exists for Aga Khan: %s" % existing_multi[0])
+            results["accepted_aga_khan"] = existing_multi
+            print("ACCEPTED quote already exists for Aga Khan: %s" % existing_multi)
 
     # ── 5. SENT (awaiting acceptance) — Nairobi Women's Hospital ─────────
     deal_nwh = deals_by_org.get("Nairobi Women's Hospital") or org_to_deal.get(
         "Nairobi Women's Hospital"
     )
     if deal_nwh:
-        existing_nwh = frappe.get_list(
-            "CRM Quote",
-            filters={"deal": deal_nwh, "status": "Sent"},
-            pluck="name",
-            limit=1,
-        )
+        existing_nwh = _existing_quote(deal_nwh, "Sent")
         if not existing_nwh:
             name = _save_quote(
                 deal=deal_nwh,
@@ -358,8 +363,8 @@ def run():
             results["sent_nwh"] = name
             print("Created SENT quote %s for Nairobi Women's Hospital" % name)
         else:
-            results["sent_nwh"] = existing_nwh[0]
-            print("SENT quote already exists for NWH: %s" % existing_nwh[0])
+            results["sent_nwh"] = existing_nwh
+            print("SENT quote already exists for NWH: %s" % existing_nwh)
 
     print("\n=== Seed complete ===")
     for k, v in results.items():

@@ -128,6 +128,44 @@ def _get_network_doc(network_slug):
     return rows[0] if rows else None
 
 
+def _get_partner_logos(network_name):
+    """
+    Return the partner-logo child rows for a network as a list of dicts
+    [{partner_name, logo, website}]. Read via get_list on the child DocType so a
+    guest (get_settings is guest-facing) can never trip a read-permission check.
+    Absolute URLs are resolved so the same payload works in the browser and in
+    email HTML. Never raises.
+    """
+    if not network_name:
+        return []
+    try:
+        rows = frappe.get_list(
+            "CRM Opt-In Partner",
+            filters={
+                "parent": network_name,
+                "parenttype": "CRM Opt-In Network",
+                "parentfield": "partner_logos",
+            },
+            fields=["partner_name", "logo", "website"],
+            order_by="idx asc",
+            ignore_permissions=True,  # SYSTEM-INTERNAL
+        )
+    except Exception:
+        return []
+    logos = []
+    for row in rows:
+        logo = frappe.utils.cstr(row.get("logo") or "").strip()
+        if not logo:
+            continue
+        abs_logo = logo if logo.startswith("http") else frappe.utils.get_url(logo)
+        logos.append({
+            "partner_name": frappe.utils.cstr(row.get("partner_name") or "").strip(),
+            "logo": abs_logo,
+            "website": frappe.utils.cstr(row.get("website") or "").strip(),
+        })
+    return logos
+
+
 def _get_prequalified_record(email, network_slug):
     """Return the first Active CRM Pre-Qualified Facility for this email+network."""
     rows = frappe.get_list(
@@ -160,6 +198,52 @@ def _get_all_prequalified_records(email, network_slug):
         fields=["name", "mfl_code", "facility_name", "keph_level"],
         ignore_permissions=True,  # SYSTEM-INTERNAL
     )
+
+
+def _get_quoted_facility_map(mfl_codes):
+    """Map each mfl_code that is ALREADY linked to a CRM Deal carrying a quote
+    to that deal's name. Used to lock such facilities out of re-quoting on the
+    wizard. There is no relational link between a pre-qualified facility and a
+    deal, so correlation is by mfl_code value against CRM Deal Facility rows,
+    then filtered to deals that actually have a CRM Quote.
+
+    Returns {mfl_code: deal_name}. Guest/system path — ignore_permissions.
+    """
+    codes = [c for c in {frappe.utils.cstr(m).strip() for m in (mfl_codes or [])} if c]
+    if not codes:
+        return {}
+
+    # 1. Deal-facility rows carrying these MFL codes → their parent deals
+    deal_rows = frappe.get_list(
+        "CRM Deal Facility",
+        filters={"mfl_code": ["in", codes], "parenttype": "CRM Deal"},
+        fields=["mfl_code", "parent"],
+        ignore_permissions=True,  # SYSTEM-INTERNAL
+    )
+    deal_names = list({r.parent for r in deal_rows if r.parent})
+    if not deal_names:
+        return {}
+
+    # 2. Keep only deals that have at least one quote
+    quoted_deals = {
+        q.deal
+        for q in frappe.get_list(
+            "CRM Quote",
+            filters={"deal": ["in", deal_names]},
+            fields=["deal"],
+            ignore_permissions=True,  # SYSTEM-INTERNAL
+        )
+        if q.deal
+    }
+    if not quoted_deals:
+        return {}
+
+    # 3. First quoted deal wins per MFL code
+    result = {}
+    for r in deal_rows:
+        if r.parent in quoted_deals and r.mfl_code not in result:
+            result[r.mfl_code] = r.parent
+    return result
 
 
 def _get_client_ip():
@@ -313,6 +397,7 @@ def _send_otp_email(contact_email, otp, network=None):
         recipients=[contact_email],
         subject="Your Verification Code - %s" % otp,
         message=_otp_email_html(otp, network),
+        now=True,
     )
 
 
@@ -389,6 +474,7 @@ def get_settings(network_slug):
             "primary_colour": network_doc.get("primary_colour") or "",
             "contact_email": network_doc.get("contact_email") or "",
             "footer_legal_name": network_doc.get("footer_legal_name") or "",
+            "partner_logos": _get_partner_logos(network_doc.get("name")),
         }
         price_list = network_doc.get("price_list_override") or default_price_list
     else:
@@ -398,6 +484,7 @@ def get_settings(network_slug):
             "primary_colour": "",
             "contact_email": "",
             "footer_legal_name": "Tiberbu Healthnet Solutions",
+            "partner_logos": [],
         }
         price_list = default_price_list
 
@@ -521,11 +608,14 @@ def verify_otp(email, network_slug, otp):
     signing_token = _hmac_hex(key, msg)
 
     all_records = _get_all_prequalified_records(email, network_slug)
+    quoted_map = _get_quoted_facility_map([r.mfl_code for r in all_records])
     facilities = [
         {
             "mfl_code": r.mfl_code,
             "facility_name": r.facility_name,
             "keph_level": r.keph_level,
+            "already_quoted": bool(quoted_map.get(r.mfl_code)),
+            "quoted_deal": quoted_map.get(r.mfl_code),
         }
         for r in all_records
     ]
@@ -580,6 +670,10 @@ def get_pricing(signing_token, email, network_slug, expiry, selected_mfl_codes):
     )
     facility_map = {r.mfl_code: r for r in all_records if r.mfl_code}
 
+    # Defence-in-depth: facilities already linked+quoted to a deal are locked out
+    # of re-quoting on the wizard UI; enforce the same server-side.
+    quoted_map = _get_quoted_facility_map(list(facility_map.keys()))
+
     result_facilities = []
     subtotal_monthly = 0.0
     subtotal_annual = 0.0
@@ -587,7 +681,7 @@ def get_pricing(signing_token, email, network_slug, expiry, selected_mfl_codes):
     for mfl_code in selected_mfl_codes:
         mfl_code = frappe.utils.cstr(mfl_code)
         fac = facility_map.get(mfl_code)
-        if not fac:
+        if not fac or quoted_map.get(mfl_code):
             continue
 
         item_code = _keph_to_item_code(fac.keph_level)
@@ -964,6 +1058,7 @@ def save_partial(signing_token, email, network_slug, expiry, contact_json):
                 "<p><a href='/opt-in?resume=%s&exp=%s&tok=%s'>Continue Opt-In</a></p>"
                 "<p>This link expires in 24 hours.</p>"
             ) % (lead.name, link_expiry, resume_tok),
+            now=True,
         )
     except Exception:
         frappe.log_error(
@@ -1035,6 +1130,147 @@ def resume(lead_id, exp, tok):
     }
 
 
+def _confirmation_email_html(first_name, submission_ref, network, pricing):
+    """
+    Build the branded opt-in confirmation email (table-based layout for broad
+    email-client support). Mirrors the OTP email's brand treatment and adds the
+    facilities registered, a pricing summary (incl. 16% VAT), and next steps.
+    """
+    display_name = (network.get("display_name") if network else "") or "CareverseHIMS"
+    logo_url = (network.get("logo_url") if network else "") or ""
+    contact_email = (network.get("contact_email") if network else "") or ""
+    footer_legal = (network.get("footer_legal_name") if network else "") or ""
+    brand = _valid_brand_colour(network.get("primary_colour") if network else "")
+    tint = _hex_to_rgba(brand, "0.08")
+
+    if logo_url:
+        abs_logo = logo_url if logo_url.startswith("http") else frappe.utils.get_url(logo_url)
+        header = (
+            '<img src="%s" alt="%s" height="44" '
+            'style="max-height:44px;width:auto;border:0;outline:none;text-decoration:none" />'
+            % (abs_logo, frappe.utils.escape_html(display_name))
+        )
+    else:
+        header = (
+            '<div style="font-size:20px;font-weight:700;color:%s;'
+            'font-family:Segoe UI,Roboto,Helvetica,Arial,sans-serif">%s</div>'
+            % (brand, frappe.utils.escape_html(display_name))
+        )
+
+    # Pricing summary (subtotal + VAT + totals) computed from the pricing rows.
+    subtotal_monthly = sum(float(p.get("monthly_kes") or 0) for p in (pricing or []))
+    subtotal_annual = sum(float(p.get("annual_kes") or 0) for p in (pricing or []))
+    vat_annual = round(subtotal_annual * VAT_RATE, 2)
+    grand_annual = round(subtotal_annual + vat_annual, 2)
+    grand_monthly = round(subtotal_monthly * (1 + VAT_RATE), 2)
+
+    facilities_table = _build_pricing_table(pricing) if pricing else ""
+
+    totals_block = ""
+    if pricing:
+        totals_block = (
+            '<tr><td style="padding:4px 32px 0">'
+            '<table role="presentation" width="100%%" cellpadding="0" cellspacing="0" '
+            'style="border-collapse:collapse;font-size:13px;color:#4b5563">'
+            '<tr><td style="padding:3px 0">Subtotal (annual)</td>'
+            '<td align="right" style="padding:3px 0">KES %(sub_annual)s</td></tr>'
+            '<tr><td style="padding:3px 0">VAT (16%%)</td>'
+            '<td align="right" style="padding:3px 0">KES %(vat_annual)s</td></tr>'
+            '<tr><td style="padding:8px 0 0;font-weight:700;color:#111827;'
+            'border-top:1px solid #eceef0">Total payable (annual)</td>'
+            '<td align="right" style="padding:8px 0 0;font-weight:700;color:%(brand)s;'
+            'border-top:1px solid #eceef0">KES %(grand_annual)s</td></tr>'
+            '<tr><td colspan="2" style="padding:6px 0 0;font-size:12px;color:#9ca3af">'
+            'Approx. KES %(grand_monthly)s / month incl. VAT</td></tr>'
+            '</table></td></tr>'
+        ) % {
+            "sub_annual": _fmt_kes(subtotal_annual),
+            "vat_annual": _fmt_kes(vat_annual),
+            "grand_annual": _fmt_kes(grand_annual),
+            "grand_monthly": _fmt_kes(grand_monthly),
+            "brand": brand,
+        }
+
+    help_line = ""
+    if contact_email:
+        help_line = (
+            '<p style="font-size:12px;color:#9ca3af;margin:0 0 6px">Questions? Contact '
+            '<a href="mailto:%s" style="color:%s;text-decoration:none">%s</a></p>'
+            % (contact_email, brand, contact_email)
+        )
+    footer_bits = [b for b in (footer_legal, "Powered by Tiberbu Healthnet Solutions") if b]
+    footer_line = frappe.utils.escape_html(" · ".join(footer_bits))
+
+    facilities_section = ""
+    if facilities_table:
+        facilities_section = (
+            '<tr><td style="padding:18px 32px 0">'
+            '<div style="font-size:12px;font-weight:700;text-transform:uppercase;'
+            'letter-spacing:.04em;color:#6b7280;margin:0 0 4px">Facilities registered</div>'
+            '%s</td></tr>' % facilities_table
+        )
+
+    return """\
+<div style="background:#f4f5f6;margin:0;padding:24px 12px;font-family:Segoe UI,Roboto,Helvetica,Arial,sans-serif">
+  <table role="presentation" width="100%%" cellpadding="0" cellspacing="0" style="border-collapse:collapse">
+    <tr><td align="center">
+      <table role="presentation" width="560" cellpadding="0" cellspacing="0" style="width:560px;max-width:560px;background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 1px 4px rgba(16,24,40,0.08)">
+        <tr><td style="height:4px;line-height:4px;font-size:0;background:%(brand)s">&nbsp;</td></tr>
+        <tr><td align="center" style="padding:32px 32px 4px">%(header)s</td></tr>
+        <tr><td align="center" style="padding:14px 32px 0">
+          <div style="display:inline-flex;align-items:center;justify-content:center;width:52px;height:52px;border-radius:50%%;background:%(tint)s">
+            <span style="font-size:26px;color:%(brand)s;line-height:1">&#10003;</span>
+          </div>
+        </td></tr>
+        <tr><td align="center" style="padding:14px 32px 0">
+          <h1 style="margin:0;font-size:22px;font-weight:700;color:#111827">You're all set, %(first_name)s</h1>
+        </td></tr>
+        <tr><td align="center" style="padding:8px 32px 0">
+          <p style="margin:0;font-size:14px;line-height:1.55;color:#4b5563">
+            Thank you for opting in to <strong style="color:#111827">%(display_name)s</strong>.
+            Your registration has been received and is now with our onboarding team.
+          </p>
+        </td></tr>
+        <tr><td align="center" style="padding:18px 32px 0">
+          <div style="display:inline-block;background:%(tint)s;border:1px solid %(brand)s;border-radius:10px;padding:10px 22px">
+            <span style="font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:#6b7280">Reference</span><br/>
+            <span style="font-family:'SFMono-Regular',Menlo,Consolas,monospace;font-size:20px;font-weight:700;letter-spacing:2px;color:#111827">%(ref)s</span>
+          </div>
+        </td></tr>
+        %(facilities_section)s
+        %(totals_block)s
+        <tr><td style="padding:20px 32px 0">
+          <div style="background:%(tint)s;border-radius:10px;padding:16px 18px">
+            <div style="font-size:13px;font-weight:700;color:#111827;margin:0 0 8px">What happens next</div>
+            <table role="presentation" cellpadding="0" cellspacing="0" style="border-collapse:collapse;font-size:13px;color:#4b5563;line-height:1.5">
+              <tr><td style="padding:2px 8px 2px 0;color:%(brand)s;font-weight:700">1.</td><td style="padding:2px 0">Our onboarding team reviews your registration and prepares your contract.</td></tr>
+              <tr><td style="padding:2px 8px 2px 0;color:%(brand)s;font-weight:700">2.</td><td style="padding:2px 0">You'll receive your contract by email to review and sign online — no printing needed.</td></tr>
+              <tr><td style="padding:2px 8px 2px 0;color:%(brand)s;font-weight:700">3.</td><td style="padding:2px 0">Once signed and approved, your facilities are activated on CareverseHIMS.</td></tr>
+            </table>
+          </div>
+        </td></tr>
+        <tr><td style="padding:18px 32px 0"><div style="border-top:1px solid #eceef0;font-size:0;line-height:0">&nbsp;</div></td></tr>
+        <tr><td align="center" style="padding:16px 32px 30px">
+          %(help_line)s
+          <p style="margin:0;font-size:11px;color:#b6bcc4">%(footer_line)s</p>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</div>""" % {
+        "brand": brand,
+        "tint": tint,
+        "header": header,
+        "first_name": frappe.utils.escape_html(first_name or "there"),
+        "display_name": frappe.utils.escape_html(display_name),
+        "ref": frappe.utils.escape_html(submission_ref),
+        "facilities_section": facilities_section,
+        "totals_block": totals_block,
+        "help_line": help_line,
+        "footer_line": footer_line,
+    }
+
+
 # ---------------------------------------------------------------------------
 # Background job — NOT whitelisted
 # ---------------------------------------------------------------------------
@@ -1046,6 +1282,7 @@ def _process_submission(submission_ref):
     Updates Redis progress hash at each step.
     Marks submission Failed and logs traceback on any unhandled exception.
     """
+    frappe.set_user("Administrator")  # SYSTEM-INTERNAL: background job runs as system
     try:
         sub = frappe.get_doc("CRM Opt-In Submission", submission_ref)
         sub.status = "Processing"
@@ -1076,19 +1313,16 @@ def _process_submission(submission_ref):
         except Exception:
             lead.lead_owner = "Administrator"
 
-        # Opt-in tracking fields — set defensively via .set() in case custom fields are absent
-        for _field, _val in [
-            ("optin_network_slug", sub.network_slug),
-            ("tc_accepted", 1),
-            ("tc_document", payload.get("tc_doc_name", "")),
-            ("tc_document_hash", payload.get("tc_doc_hash", "")),
-            ("tc_accepted_at", frappe.utils.now_datetime()),
-            ("tc_ip_address", payload.get("ip_address", "")),
-        ]:
-            try:
-                lead.set(_field, _val)
-            except Exception:
-                pass
+        # Opt-in provenance / T&C fields — persisted as Custom Fields (oh-s1-1).
+        # Direct assignment: the fields now exist in the CRM Lead meta, so the
+        # ORM writes them on insert(); the prior defensive try/except .set()
+        # loop silently dropped them (gap D2) and is removed.
+        lead.optin_network_slug = sub.network_slug
+        lead.tc_accepted = 1
+        lead.tc_document = payload.get("tc_doc_name", "")
+        lead.tc_document_hash = payload.get("tc_doc_hash", "")
+        lead.tc_accepted_at = frappe.utils.now_datetime()
+        lead.tc_ip_address = payload.get("ip_address", "")
 
         # Facility child rows
         for fac in facilities:
@@ -1171,8 +1405,30 @@ def _process_submission(submission_ref):
         frappe.db.commit()
 
         sub.deal = deal_name
+        # Persist signatory contact for exec pre-fill (oh-s2-2)
+        sub.facility_signatory_name = (
+            frappe.utils.cstr(contact.get("first_name", "")).strip()
+            + " "
+            + frappe.utils.cstr(contact.get("last_name", "")).strip()
+        ).strip()
+        sub.facility_signatory_email = frappe.utils.cstr(contact.get("email", "")).strip().lower()
         sub.save(ignore_permissions=True)  # SYSTEM-INTERNAL
         frappe.db.commit()
+
+        # Forward back-link Deal -> Opt-In Submission for traceability (oh-s1-1).
+        frappe.db.set_value(
+            "CRM Deal", deal_name, "optin_submission", submission_ref
+        )  # SYSTEM-INTERNAL
+        frappe.db.commit()
+
+        # Deal transition timeline (oh-s1-3)
+        from crm.api._timeline import log_deal_event
+
+        log_deal_event(
+            deal_name,
+            "Opt-in submission %s processed — Lead %s converted to Deal"
+            % (submission_ref, lead.name),
+        )
 
         _update_job_step(submission_ref, "deal", "done", "Account set up")
 
@@ -1180,65 +1436,76 @@ def _process_submission(submission_ref):
         _update_job_step(submission_ref, "quote", "in_progress", "Generating your quote...")
 
         if pricing:
-            try:
-                existing_quotes = frappe.get_list(
-                    "Quotation",
-                    filters={"crm_deal": deal_name},
-                    fields=["name"],
-                    limit=1,
-                    ignore_permissions=True,  # SYSTEM-INTERNAL
-                )
+            # Quote creation is mandatory when pricing is present.
+            # Do NOT wrap in a bare try/except here — failures must propagate
+            # to the outer handler which sets status="Failed". A deal without
+            # a quote is a data-integrity violation, not a warn-and-continue.
+            existing_quotes = frappe.get_list(
+                "Quotation",
+                filters={"crm_deal": deal_name},
+                fields=["name"],
+                limit=1,
+                ignore_permissions=True,  # SYSTEM-INTERNAL
+            )
 
-                if existing_quotes:
-                    q = frappe.get_doc("Quotation", existing_quotes[0].name)
-                    q.items = []
-                else:
-                    # convert_to_deal does not create a Quotation; create one now
-                    from crm.api.quotes import _ensure_customer
+            if existing_quotes:
+                q = frappe.get_doc("Quotation", existing_quotes[0].name)
+                q.items = []
+            else:
+                # convert_to_deal does not create a Quotation; create one now
+                from crm.api.quotes import _ensure_customer
 
-                    customer_name = _ensure_customer(lead.organization or "")
-                    q = frappe.get_doc({
-                        "doctype": "Quotation",
-                        "quotation_to": "Customer",
-                        "party_name": customer_name,
-                        "company": frappe.db.get_single_value(
-                            "Global Defaults", "default_company"
-                        ),
-                        "transaction_date": frappe.utils.today(),
-                        "valid_till": frappe.utils.add_days(frappe.utils.today(), 30),
-                        "currency": "KES",
-                        "order_type": "Sales",
-                        "crm_deal": deal_name,
-                    })
+                customer_name = _ensure_customer(lead.organization or "")
+                q = frappe.get_doc({
+                    "doctype": "Quotation",
+                    "quotation_to": "Customer",
+                    "party_name": customer_name,
+                    "company": frappe.db.get_single_value(
+                        "Global Defaults", "default_company"
+                    ),
+                    "transaction_date": frappe.utils.today(),
+                    "valid_till": frappe.utils.add_days(frappe.utils.today(), 30),
+                    "currency": "KES",
+                    "order_type": "Sales",
+                    "crm_deal": deal_name,
+                })
 
-                for prod in pricing:
-                    q.append("items", {
-                        "item_code": frappe.utils.cstr(prod.get("item_code", "")),
-                        "item_name": "CareverseHIMS - %s" % frappe.utils.cstr(
-                            prod.get("facility_name", "")
-                        ),
-                        "description": "KEPH %s - Annual Subscription" % frappe.utils.cstr(
-                            prod.get("keph_level", "")
-                        ),
-                        "qty": 1,
-                        "rate": float(prod.get("annual_kes") or 0),
-                        "uom": "Nos",
-                    })
+            for prod in pricing:
+                q.append("items", {
+                    "item_code": frappe.utils.cstr(prod.get("item_code", "")),
+                    "item_name": "CareverseHIMS - %s" % frappe.utils.cstr(
+                        prod.get("facility_name", "")
+                    ),
+                    "description": "KEPH %s - Annual Subscription" % frappe.utils.cstr(
+                        prod.get("keph_level", "")
+                    ),
+                    "qty": 1,
+                    "rate": float(prod.get("annual_kes") or 0),
+                    "uom": "Nos",
+                })
 
-                q.flags.ignore_permissions = True  # SYSTEM-INTERNAL
-                q.flags.ignore_validate = True
-                if q.is_new():
-                    q.set_missing_values()
-                    q.insert(ignore_mandatory=True)
-                else:
-                    q.save(ignore_permissions=True)  # SYSTEM-INTERNAL
-                frappe.db.commit()
+            # (D-3) The opt-in quote is pre-Sent: the customer already
+            # accepted this exact pricing in the wizard, so it is
+            # immediately Accept-able / execution-ready without a manual
+            # Send. crm_sent=1 + docstatus=0 => frontend status "Sent".
+            q.crm_sent = 1
 
-            except Exception:
-                frappe.log_error(
-                    frappe.get_traceback(),
-                    "optin._process_submission: quote step failed for %s" % submission_ref,
-                )
+            q.flags.ignore_permissions = True  # SYSTEM-INTERNAL
+            q.flags.ignore_validate = True
+            # set_missing_values() populates the ERPNext currency fields
+            # (conversion_rate, price_list_currency, plc_conversion_rate,
+            # conversion_factor); without it q.save() on the re-process /
+            # existing-quote branch raised MandatoryError and the whole
+            # quote step was silently swallowed, so no quote ever reached
+            # the Deal. Run it on both branches and ignore any residual
+            # mandatory gaps so the pre-Sent quote is created reliably.
+            q.flags.ignore_mandatory = True
+            q.set_missing_values()
+            if q.is_new():
+                q.insert(ignore_mandatory=True)
+            else:
+                q.save(ignore_permissions=True)  # SYSTEM-INTERNAL
+            frappe.db.commit()
 
         _update_job_step(submission_ref, "quote", "done", "Draft quote ready")
 
@@ -1248,15 +1515,15 @@ def _process_submission(submission_ref):
         recipient = lead.email or ""
         if recipient:
             try:
+                network = _get_network_doc(sub.network_slug)
+                brand_name = (network.get("display_name") if network else "") or "CareverseHIMS"
                 frappe.sendmail(
                     recipients=[recipient],
-                    subject="Your CareverseHIMS Opt-In — Reference %s" % submission_ref,
-                    message=(
-                        "<p>Dear %s,</p>"
-                        "<p>Thank you for opting in to CareverseHIMS. "
-                        "Your reference number is <strong>%s</strong>.</p>"
-                        "<p>A CRM executive will contact you shortly to send your contract.</p>"
-                    ) % (lead.first_name or "there", submission_ref),
+                    subject="%s Opt-In Confirmed — Reference %s" % (brand_name, submission_ref),
+                    message=_confirmation_email_html(
+                        lead.first_name, submission_ref, network, pricing
+                    ),
+                    now=True,
                 )
                 _update_job_step(
                     submission_ref, "email", "done",
@@ -1313,3 +1580,179 @@ def _process_submission(submission_ref):
             json.dumps(data),
             expires_in_sec=3600,
         )
+
+
+# ---------------------------------------------------------------------------
+# Internal exec pick-up queue API — CRM staff, NOT guest (oh-s2-1)
+#
+# Unlike every public wizard endpoint above (allow_guest=True), these two are
+# for internal CRM staff, so they are plain @frappe.whitelist() and rely on the
+# CRM Opt-In Submission permission model (System Manager r/w/c, Sales User r).
+# ---------------------------------------------------------------------------
+
+
+@frappe.whitelist()
+def list_submissions(status=None, page=0, page_size=20):
+    """
+    Paginated queue of staged opt-in submissions for the exec pick-up surface.
+
+    Permission-scoped: frappe.get_list() is called WITHOUT ignore_permissions, so
+    the doctype permission model (System Manager r/w/c, Sales User r) governs what
+    each caller sees. Returns {"rows": [...], "total": <int>}.
+    """
+    page = int(page or 0)
+    page_size = int(page_size or 20)
+
+    filters = {}
+    if status and status != "All":
+        filters["status"] = status
+
+    rows = frappe.get_list(
+        "CRM Opt-In Submission",
+        filters=filters,
+        fields=[
+            "name", "status", "network_slug", "submitter_email",
+            "submitted_at", "lead", "deal", "has_duplicate_mfl",
+        ],
+        order_by="submitted_at desc",
+        limit_start=page * page_size,
+        limit_page_length=page_size,
+    )
+
+    # Total via a permission-scoped get_list (limit_page_length=0 => all rows) —
+    # keeps the count on the same "get_list only" path as the page read.
+    total = len(
+        frappe.get_list(
+            "CRM Opt-In Submission",
+            filters=filters,
+            fields=["name"],
+            limit_page_length=0,
+        )
+    )
+
+    return {"rows": rows, "total": total}
+
+
+@frappe.whitelist()
+def retry_submission(submission_ref):
+    """
+    Re-enqueue _process_submission for a Failed/Pending submission.
+
+    _process_submission drives status Processing -> Processed on success and
+    Failed on error (see above), so the Failed -> Processing -> Processed flow
+    holds without any change to the processor. Requires write permission.
+    """
+    submission_ref = frappe.utils.cstr(submission_ref)
+
+    if not frappe.has_permission("CRM Opt-In Submission", "write", submission_ref):
+        frappe.throw(_("Not permitted"), frappe.PermissionError)
+
+    status = frappe.db.get_value("CRM Opt-In Submission", submission_ref, "status")
+    if status not in ("Failed", "Pending"):
+        frappe.throw(_("Only failed or pending submissions can be retried."))
+
+    frappe.db.set_value("CRM Opt-In Submission", submission_ref, "status", "Processing")
+    frappe.db.commit()
+
+    # Re-enqueue exactly as submit_async does (queue/default, 300s timeout).
+    frappe.enqueue(
+        "crm.api.optin._process_submission",
+        submission_ref=submission_ref,
+        queue="default",
+        timeout=300,
+    )
+
+    return {"status": "queued"}
+
+
+@frappe.whitelist()
+def build_ois_quote(deal):
+    """
+    Create or refresh the Quotation for an OIS-sourced Deal where the quote
+    step was missed or failed during _process_submission.
+
+    Requires Sales Manager or System Manager. Idempotent — if a Quotation
+    already exists for this deal, returns its name without creating a duplicate.
+    Returns {"quote": <quotation_name>}.
+    """
+    deal = frappe.utils.cstr(deal).strip()
+
+    user = frappe.session.user
+    roles = frappe.get_roles(user)
+    if not (
+        "System Manager" in roles
+        or user == "Administrator"
+        or "Sales Manager" in roles
+    ):
+        frappe.throw(_("Not permitted"), frappe.PermissionError)
+
+    submission_ref = frappe.db.get_value("CRM Deal", deal, "optin_submission")
+    if not submission_ref:
+        frappe.throw(_("Deal has no linked Opt-In Submission"))
+
+    sub = frappe.get_doc("CRM Opt-In Submission", submission_ref)
+    payload = json.loads(sub.raw_json or "{}")
+    pricing = payload.get("pricing") or []
+
+    # Idempotent: return existing quote if one already exists for this deal
+    existing = frappe.get_list(
+        "Quotation",
+        filters={"crm_deal": deal},
+        fields=["name"],
+        limit=1,
+        ignore_permissions=True,  # SYSTEM-INTERNAL
+    )
+    if existing:
+        return {"quote": existing[0].name}
+
+    if not pricing:
+        frappe.throw(_("No pricing rows found in the submission payload"))
+
+    from crm.api.quotes import _ensure_customer
+
+    # Resolve the customer name from the linked lead's organisation
+    org_name = frappe.db.get_value("CRM Lead", sub.lead, "organization") or ""
+    customer_name = _ensure_customer(org_name)
+
+    q = frappe.get_doc({
+        "doctype": "Quotation",
+        "quotation_to": "Customer",
+        "party_name": customer_name,
+        "company": frappe.db.get_single_value("Global Defaults", "default_company"),
+        "transaction_date": frappe.utils.today(),
+        "valid_till": frappe.utils.add_days(frappe.utils.today(), 30),
+        "currency": "KES",
+        "order_type": "Sales",
+        "crm_deal": deal,
+    })
+
+    for prod in pricing:
+        q.append("items", {
+            "item_code": frappe.utils.cstr(prod.get("item_code", "")),
+            "item_name": "CareverseHIMS - %s" % frappe.utils.cstr(
+                prod.get("facility_name", "")
+            ),
+            "description": "KEPH %s - Annual Subscription" % frappe.utils.cstr(
+                prod.get("keph_level", "")
+            ),
+            "qty": 1,
+            "rate": float(prod.get("annual_kes") or 0),
+            "uom": "Nos",
+        })
+
+    # The opt-in quote is pre-Sent: the customer already accepted this pricing
+    # in the wizard, so it is immediately Accept-able without a manual Send.
+    q.crm_sent = 1
+
+    q.flags.ignore_permissions = True  # SYSTEM-INTERNAL
+    q.flags.ignore_validate = True
+    q.flags.ignore_mandatory = True
+    q.set_missing_values()
+    # ignore_validate skips the normal validate→calculate chain, so compute
+    # item amounts + net/grand totals explicitly (else grand_total stays 0).
+    q.calculate_taxes_and_totals()
+    q.vat_amount = round((q.net_total or 0) * 0.16, 2)  # 16% VAT, tracked as custom field
+    q.insert(ignore_mandatory=True)
+    frappe.db.commit()
+
+    return {"quote": q.name}

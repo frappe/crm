@@ -57,7 +57,6 @@ const props = defineProps({
   signingToken: { type: String, required: true },
   contract: { type: String, required: true },
   role: { type: String, required: true },
-  expiry: { type: [Number, String], required: true },
 })
 
 const emit = defineEmits(['scrolled-to-bottom', 'loaded'])
@@ -79,7 +78,6 @@ onMounted(async () => {
       signing_token: props.signingToken,
       contract: props.contract,
       role: props.role,
-      expiry: props.expiry,
     })
     contractHtml.value = data.contract_html || ''
     signatoryName.value = data.signatory_name || ''

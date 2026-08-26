@@ -6,32 +6,39 @@ BRD:    BRD_Contract_Signing.docx
 ADR:    ADR_Contract_Signing.docx
 
 Security model:
-- generate / download_pdf require Sales Manager or System Manager role.
+- generate / download_pdf / resend_invitation require Sales Manager or System Manager.
 - Public endpoints (request_otp, verify_otp, get_contract, sign) are guest-accessible.
-- Identity is proven by: HMAC invitation token → 6-digit OTP → HMAC signing token.
-- hmac.compare_digest() used for ALL token comparisons — never ==.
+- Identity chain: random invitation token (stored on the signatory row) → 6-digit OTP
+  → random signing-session token (stored on the row). All tokens are opaque, high-entropy
+  secrets generated with frappe.generate_hash(); none are derived from the request, so a
+  token can be regenerated at will and rotating the signing key never invalidates them.
+- hmac.compare_digest() is used for ALL token/OTP comparisons — never ==.
 
 Rules enforced:
 - frappe.get_list() for every SELECT — no frappe.db.sql() SELECTs, no frappe.get_all().
 - ignore_permissions=True only on system/scheduler paths — marked # SYSTEM-INTERNAL.
 - No f-strings in log/error messages — % formatting only.
+- All transactional email renders through crm.api._email.branded_email_html.
 """
 from __future__ import annotations
 
 import base64
 import hashlib
 import hmac
-import json
-import random
+import secrets
 import time
 
 import frappe
 from frappe import _
 
+from crm.api._email import branded_email_html, otp_code_block
+from crm.api._timeline import log_deal_event
+
 _OTP_EXPIRY_SECONDS = 600    # 10 minutes
 _SIGN_EXPIRY_SECONDS = 7200  # 2 hours
 _INVITE_EXPIRY_SECONDS = 604800  # 7 days
 _MAX_OTP_ATTEMPTS = 3
+_TOKEN_LENGTH = 48
 
 
 # ---------------------------------------------------------------------------
@@ -40,7 +47,7 @@ _MAX_OTP_ATTEMPTS = 3
 
 
 def _get_signing_key():
-    """Return the optin_signing_key; auto-generates if absent."""
+    """Return the optin_signing_key; auto-generates if absent. Used only for OTP hashing."""
     settings = frappe.get_single("CRM Opt-In Settings")
     key = settings.get_password("optin_signing_key", raise_exception=False)
     if not key:
@@ -58,9 +65,45 @@ def _hmac_hex(secret, message):
     return hmac.new(secret.encode(), message.encode(), hashlib.sha256).hexdigest()
 
 
+def _gen_token():
+    """Return an opaque, high-entropy, URL-safe token."""
+    return frappe.generate_hash(length=_TOKEN_LENGTH)
+
+
+def _network_for_contract(contract_doc):
+    """Resolve the branded-email network dict for a contract, or None. Never raises."""
+    slug = frappe.utils.cstr(getattr(contract_doc, "network_slug", "") or "").strip()
+    if not slug:
+        return None
+    try:
+        from crm.api.optin import _get_network_doc
+        return _get_network_doc(slug)
+    except Exception:
+        return None
+
+
+def _resolve_network_slug(deal):
+    """Best-effort: find the opt-in network slug for a deal via its submission. Never raises."""
+    try:
+        rows = frappe.get_list(
+            "CRM Opt-In Submission",
+            filters={"deal": deal},
+            fields=["network_slug"],
+            order_by="creation desc",
+            limit=1,
+            ignore_permissions=True,  # SYSTEM-INTERNAL
+        )
+        if rows:
+            return frappe.utils.cstr(rows[0].get("network_slug") or "").strip()
+    except Exception:
+        pass
+    return ""
+
+
 def _check_contract_rate_limit(limit=10, window=60):
     """IP-based rate limit for guest contract signing endpoints (10 req/min/IP)."""
-    ip = frappe.local.request.environ.get("REMOTE_ADDR", "unknown") if frappe.local.request else "cli"
+    request = getattr(frappe.local, "request", None)
+    ip = request.environ.get("REMOTE_ADDR", "unknown") if request else "cli"
     cache_key = "contract_rl:%s" % ip
     count = frappe.cache().get_value(cache_key) or 0
     if int(count) >= limit:
@@ -80,48 +123,6 @@ def _check_crm_role():
         frappe.throw(_("Not permitted."), frappe.PermissionError)
 
 
-def _validate_invite_token(contract, role, exp, tok):
-    """
-    Raise AuthenticationError if the HMAC invitation token is invalid or expired.
-    Token message: "{contract}:{role}:{exp}"
-    """
-    try:
-        exp_int = int(exp)
-    except (TypeError, ValueError):
-        frappe.throw(_("Invalid invitation link."), frappe.AuthenticationError)
-
-    if time.time() > exp_int:
-        frappe.throw(_("Invitation link has expired."), frappe.AuthenticationError)
-
-    key = _get_signing_key()
-    msg = "%s:%s:%s" % (contract, role, exp)
-    expected = _hmac_hex(key, msg)
-
-    if not hmac.compare_digest(expected, frappe.utils.cstr(tok)):
-        frappe.throw(_("Invalid invitation link."), frappe.AuthenticationError)
-
-
-def _validate_signing_token(signing_token, contract, role, expiry):
-    """
-    Raise AuthenticationError if the signing token is invalid or expired.
-    Token message: "{contract}:{role}:{expiry}"
-    """
-    try:
-        exp_int = int(expiry)
-    except (TypeError, ValueError):
-        frappe.throw(_("Invalid session token."), frappe.AuthenticationError)
-
-    if time.time() > exp_int:
-        frappe.throw(_("Session expired. Please request a new OTP."), frappe.AuthenticationError)
-
-    key = _get_signing_key()
-    msg = "%s:%s:%s" % (contract, role, expiry)
-    expected = _hmac_hex(key, msg)
-
-    if not hmac.compare_digest(expected, frappe.utils.cstr(signing_token)):
-        frappe.throw(_("Invalid session token."), frappe.AuthenticationError)
-
-
 def _get_signatory_row(contract_doc, role):
     """Return the first signatory child row matching role, or None."""
     for row in (contract_doc.signatories or []):
@@ -130,47 +131,101 @@ def _get_signatory_row(contract_doc, role):
     return None
 
 
+def _load_signatory(contract, role):
+    """Load the contract doc and the signatory row for role. Raise if either is missing."""
+    contract_doc = frappe.get_doc("CRM Contract", contract)
+    signatory_row = _get_signatory_row(contract_doc, role)
+    if not signatory_row:
+        frappe.throw(_("Signatory role not found in this contract."), frappe.DoesNotExistError)
+    return contract_doc, signatory_row
+
+
+def _validate_invite(signatory_row, token):
+    """Raise AuthenticationError unless token matches the stored, unexpired invite token."""
+    stored = frappe.utils.cstr(signatory_row.invite_token or "")
+    if (
+        not stored
+        or not signatory_row.invite_expiry
+        or frappe.utils.now_datetime() > signatory_row.invite_expiry
+    ):
+        frappe.throw(_("This signing link has expired."), frappe.AuthenticationError)
+    if not hmac.compare_digest(stored, frappe.utils.cstr(token)):
+        frappe.throw(_("Invalid signing link."), frappe.AuthenticationError)
+
+
+def _validate_signing(signatory_row, token):
+    """Raise AuthenticationError unless token matches the stored, unexpired signing token."""
+    stored = frappe.utils.cstr(signatory_row.signing_token or "")
+    if (
+        not stored
+        or not signatory_row.signing_expiry
+        or frappe.utils.now_datetime() > signatory_row.signing_expiry
+    ):
+        frappe.throw(_("Session expired. Please request a new code."), frappe.AuthenticationError)
+    if not hmac.compare_digest(stored, frappe.utils.cstr(token)):
+        frappe.throw(_("Verification failed."), frappe.AuthenticationError)
+
+
 def _attempts_cache_key(contract, role):
     return "contract_otp_attempts:%s:%s" % (contract, role)
 
 
-def _session_cache_key(session_token):
-    return "contract_session:%s" % session_token
-
-
-def _send_signing_invitation(contract_doc, signatory_row):
-    """
-    Build an HMAC-signed invitation link and email it to the signatory.
-    Link: /sign-contract?contract={name}&role={role}&exp={expiry}&tok={token}
-    """
-    key = _get_signing_key()
-    expiry = int(time.time()) + _INVITE_EXPIRY_SECONDS
-    role = frappe.utils.cstr(signatory_row.signatory_role)
-    tok = _hmac_hex(key, "%s:%s:%s" % (contract_doc.name, role, expiry))
-    link = "/sign-contract?contract=%s&role=%s&exp=%s&tok=%s" % (
-        contract_doc.name,
-        role.replace(" ", "+"),
-        expiry,
-        tok,
+def _signing_link(contract_name, role, token):
+    """Build the guest signing-portal URL for an invitation token."""
+    return frappe.utils.get_url(
+        "/sign-contract?contract=%s&role=%s&token=%s"
+        % (contract_name, role.replace(" ", "+"), token)
     )
+
+
+def _issue_and_send_invitation(contract_doc, signatory_row, now=True):
+    """
+    Mint a fresh invitation token on the signatory row, persist it, and email the
+    signatory a branded invitation with a Sign CTA. The caller is responsible for
+    having a saved contract_doc; this saves + commits its own token write.
+
+    now=False queues the email (email queue) instead of sending synchronously — use it
+    on guest request paths so the guest isn't blocked on third-party SMTP delivery.
+    """
+    token = _gen_token()
+    signatory_row.invite_token = token
+    signatory_row.invite_expiry = frappe.utils.add_to_date(
+        frappe.utils.now_datetime(), seconds=_INVITE_EXPIRY_SECONDS
+    )
+    contract_doc.save(ignore_permissions=True)  # SYSTEM-INTERNAL
+    frappe.db.commit()
+
+    role = frappe.utils.cstr(signatory_row.signatory_role)
+    link = _signing_link(contract_doc.name, role, token)
+    network = _network_for_contract(contract_doc)
+    name = frappe.utils.escape_html(frappe.utils.cstr(signatory_row.signatory_name))
 
     try:
         frappe.sendmail(
             recipients=[signatory_row.signatory_email],
             subject="Action Required: Sign Your CareverseHIMS Contract",
-            message=(
-                "<p>Dear %s,</p>"
-                "<p>You have been asked to sign a CareverseHIMS contract. "
-                "Please click the link below to review and sign:</p>"
-                "<p><a href='%s'>Sign Contract</a></p>"
-                "<p>This link expires in 7 days. "
-                "Do not share it with anyone.</p>"
-            ) % (frappe.utils.cstr(signatory_row.signatory_name), link),
+            message=branded_email_html(
+                network,
+                heading="Contract ready for your signature",
+                intro_html=(
+                    "<p style='margin:0 0 6px'>Dear %s,</p>"
+                    "<p style='margin:0'>You have been asked to review and sign a "
+                    "CareverseHIMS contract. Use the button below to open the secure "
+                    "signing portal — you'll confirm your identity with a one-time code.</p>"
+                    % name
+                ),
+                cta_label="Review & Sign Contract",
+                cta_url=link,
+                note_html=(
+                    "This link expires in 7 days and is unique to you — please don't share it."
+                ),
+            ),
+            now=now,
         )
     except Exception:
         frappe.log_error(
             frappe.get_traceback(),
-            "contracts._send_signing_invitation: email failed for %s / %s" % (
+            "contracts._issue_and_send_invitation: email failed for %s / %s" % (
                 contract_doc.name, role
             ),
         )
@@ -197,7 +252,8 @@ def _transition(contract_name):
         # Facility Signatory just signed — invite Facility Witness next
         witness_row = _get_signatory_row(contract, "Facility Witness")
         if witness_row and witness_row.status == "Pending":
-            _send_signing_invitation(contract, witness_row)
+            # now=False: don't block the guest's sign request on witness-invite SMTP
+            _issue_and_send_invitation(contract, witness_row, now=False)
 
     elif signed_count >= 2:
         # Both external parties have signed
@@ -205,14 +261,30 @@ def _transition(contract_name):
         # status stays "Awaiting Signatures" (the only valid Select option for this state)
         contract.save(ignore_permissions=True)  # SYSTEM-INTERNAL
         frappe.db.commit()
-        _notify_internal_approvers(contract_name, contract.deal)
+        # Enqueue: this notifies the INTERNAL approvers, not the guest who just
+        # signed. Running it inline (now=True) would block the guest's sign
+        # request on third-party SMTP delivery. The worker still sends promptly
+        # (now=True inside _notify_internal_approvers) so delivery isn't queued.
+        frappe.enqueue(
+            "crm.api.contracts._notify_internal_approvers",
+            contract_name=contract_name,
+            deal_name=contract.deal,
+            queue="short",
+            timeout=120,
+        )
+        log_deal_event(
+            contract.deal,
+            "Both facility parties signed contract %s — awaiting internal approval"
+            % contract.name,
+        )
 
 
 def _notify_internal_approvers(contract_name, deal_name):
     """
     Fetch network_approver_1, network_approver_2, tiberbu_approver from the
-    CRM Onboarding Request linked to the deal (fallback: CRM Deal custom fields).
-    Send an approval-request email to each.
+    CRM Onboarding Request linked to the deal. If no ONB record exists, logs a
+    warning and returns early — these fields do not exist on tabCRM Deal.
+    Send a branded approval-request email to each approver found.
     """
     approver_fields = ["network_approver_1", "network_approver_2", "tiberbu_approver"]
     approver_names = []
@@ -232,21 +304,25 @@ def _notify_internal_approvers(contract_name, deal_name):
                 if v:
                     approver_names.append(v)
 
-    # Fallback: CRM Deal custom fields
-    if not approver_names and deal_name:
-        deal_rows = frappe.get_list(
-            "CRM Deal",
-            filters={"name": deal_name},
-            fields=approver_fields,
-            limit=1,
-            ignore_permissions=True,  # SYSTEM-INTERNAL
+    # NOTE: approver fields live only on CRM Onboarding Request, not on CRM Deal.
+    # If no onboarding request was found, log a warning and return — do NOT attempt
+    # to query tabCRM Deal for columns that don't exist there (OperationalError).
+    if not approver_names:
+        frappe.log_error(
+            "No CRM Onboarding Request linked to deal %s; cannot notify internal approvers "
+            "for contract %s." % (deal_name, contract_name),
+            "contracts._notify_internal_approvers: no onboarding request",
         )
-        if deal_rows:
-            row = deal_rows[0]
-            for f in approver_fields:
-                v = row.get(f)
-                if v:
-                    approver_names.append(v)
+        return
+
+    network = None
+    try:
+        contract_doc = frappe.get_doc("CRM Contract", contract_name)
+        network = _network_for_contract(contract_doc)
+    except Exception:
+        pass
+
+    crm_url = frappe.utils.get_url("/crm/deals/%s" % deal_name) if deal_name else frappe.utils.get_url()
 
     for approver_user in approver_names:
         approver_user = frappe.utils.cstr(approver_user).strip()
@@ -259,13 +335,19 @@ def _notify_internal_approvers(contract_name, deal_name):
             frappe.sendmail(
                 recipients=[approver_email],
                 subject="Approval Required: CareverseHIMS Contract %s" % contract_name,
-                message=(
-                    "<p>Dear %s,</p>"
-                    "<p>A CareverseHIMS contract requires your internal approval.</p>"
-                    "<p>Contract Reference: <strong>%s</strong></p>"
-                    "<p>Both facility signatories have signed. "
-                    "Please log in to the CRM to review and approve.</p>"
-                ) % (approver_user, contract_name),
+                message=branded_email_html(
+                    network,
+                    heading="Contract awaiting your approval",
+                    intro_html=(
+                        "<p style='margin:0 0 6px'>Hello,</p>"
+                        "<p style='margin:0'>Both facility signatories have signed contract "
+                        "<strong>%s</strong>. It now requires your internal approval before it "
+                        "can be executed.</p>" % frappe.utils.escape_html(contract_name)
+                    ),
+                    cta_label="Open in CRM",
+                    cta_url=crm_url,
+                ),
+                now=True,
             )
         except Exception:
             frappe.log_error(
@@ -295,7 +377,7 @@ def generate(
 ):
     """
     Create a CRM Contract for a deal, render contract HTML from active T&C,
-    add two signatory rows, and send the HMAC invitation to the Facility Signatory.
+    add two signatory rows, and send the invitation to the Facility Signatory.
 
     Requires: Sales Manager or System Manager role.
     Returns: {contract: <name>}
@@ -350,6 +432,7 @@ def generate(
     contract.contract_html = contract_html
     contract.tc_document = tc_document
     contract.tc_document_hash = tc_document_hash
+    contract.network_slug = _resolve_network_slug(deal)
 
     # Signatory row 1: Facility Signatory
     contract.append("signatories", {
@@ -373,12 +456,57 @@ def generate(
     contract.insert(ignore_permissions=True)  # SYSTEM-INTERNAL
     frappe.db.commit()
 
-    # Send HMAC invitation to the Facility Signatory immediately
+    # Send invitation to the Facility Signatory immediately
     signatory_row = _get_signatory_row(contract, "Facility Signatory")
     if signatory_row:
-        _send_signing_invitation(contract, signatory_row)
+        _issue_and_send_invitation(contract, signatory_row)
 
+    log_deal_event(
+        deal,
+        "Contract %s generated — signing invitation sent to %s"
+        % (contract.name, facility_signatory_email),
+    )
     return {"contract": contract.name}
+
+
+@frappe.whitelist()
+def resend_invitation(contract, role):
+    """
+    Regenerate the invitation link for a still-pending signatory and re-send the
+    branded invitation email. Requires: Sales Manager or System Manager role.
+
+    Returns: {status: "sent", email: <signatory_email>}
+    """
+    _check_crm_role()
+
+    contract = frappe.utils.cstr(contract).strip()
+    role = frappe.utils.cstr(role).strip()
+
+    contract_doc, signatory_row = _load_signatory(contract, role)
+
+    if signatory_row.status != "Pending":
+        frappe.throw(
+            _("This signatory has already completed signing — nothing to resend."),
+            frappe.ValidationError,
+        )
+
+    # A witness is only invited after the principal signs; block premature resend.
+    if role == "Facility Witness":
+        principal = _get_signatory_row(contract_doc, "Facility Signatory")
+        if principal and principal.status != "Signed":
+            frappe.throw(
+                _("The witness is invited automatically once the facility signatory has signed."),
+                frappe.ValidationError,
+            )
+
+    _issue_and_send_invitation(contract_doc, signatory_row)
+
+    log_deal_event(
+        contract_doc.deal,
+        "Signing invitation for %s re-sent to %s (contract %s)"
+        % (role, signatory_row.signatory_email, contract),
+    )
+    return {"status": "sent", "email": signatory_row.signatory_email}
 
 
 @frappe.whitelist()
@@ -422,26 +550,19 @@ def download_pdf(contract):
 
 
 @frappe.whitelist(allow_guest=True)
-def request_otp(contract, role, exp, tok):
+def request_otp(contract, role, token):
     """
-    Validate HMAC invitation token, generate a 6-digit OTP, store its HMAC on the
+    Validate the invitation token, generate a 6-digit OTP, store its HMAC on the
     signatory row, and email it to the signatory.
 
-    Returns: {session_token}
-    session_token = HMAC(secret, "{contract}:{role}:{otp_expiry_ts}")
-    It is also stored in Redis so verify_otp can validate it without datetime arithmetic.
+    Returns: {status: "sent"}
     """
     _check_contract_rate_limit()
     contract = frappe.utils.cstr(contract).strip()
     role = frappe.utils.cstr(role).strip()
 
-    _validate_invite_token(contract, role, exp, tok)
-
-    contract_doc = frappe.get_doc("CRM Contract", contract)
-    signatory_row = _get_signatory_row(contract_doc, role)
-
-    if not signatory_row:
-        frappe.throw(_("Signatory role not found in this contract."), frappe.DoesNotExistError)
+    contract_doc, signatory_row = _load_signatory(contract, role)
+    _validate_invite(signatory_row, token)
 
     if signatory_row.status != "Pending":
         frappe.throw(
@@ -449,18 +570,13 @@ def request_otp(contract, role, exp, tok):
             frappe.ValidationError,
         )
 
-    # Generate 6-digit OTP
-    otp = str(random.randint(100000, 999999))
+    # Generate 6-digit OTP with a cryptographically-secure RNG (this is an auth factor)
+    otp = str(secrets.randbelow(900000) + 100000)
     key = _get_signing_key()
-    otp_hash = _hmac_hex(key, otp)
-    otp_expiry_ts = int(time.time()) + _OTP_EXPIRY_SECONDS
-    otp_expiry_dt = frappe.utils.add_to_date(
+    signatory_row.otp_hash = _hmac_hex(key, otp)
+    signatory_row.otp_expiry = frappe.utils.add_to_date(
         frappe.utils.now_datetime(), seconds=_OTP_EXPIRY_SECONDS
     )
-
-    # Persist OTP hash on the signatory row (Data field — stored as plain HMAC hex)
-    signatory_row.otp_hash = otp_hash
-    signatory_row.otp_expiry = otp_expiry_dt
     signatory_row.otp_used = 0
     contract_doc.save(ignore_permissions=True)  # SYSTEM-INTERNAL
     frappe.db.commit()
@@ -472,25 +588,27 @@ def request_otp(contract, role, exp, tok):
         expires_in_sec=_OTP_EXPIRY_SECONDS + 120,
     )
 
-    # Build session token and cache session context for verify_otp
-    session_token = _hmac_hex(key, "%s:%s:%s" % (contract, role, otp_expiry_ts))
-    frappe.cache().set_value(
-        _session_cache_key(session_token),
-        json.dumps({"contract": contract, "role": role, "expiry": otp_expiry_ts}),
-        expires_in_sec=_OTP_EXPIRY_SECONDS + 120,
-    )
-
-    # Send OTP email
+    # Send branded OTP email
+    network = _network_for_contract(contract_doc)
     try:
         frappe.sendmail(
             recipients=[signatory_row.signatory_email],
             subject="Your CareverseHIMS Contract Signing Code",
-            message=(
-                "<p>Dear %s,</p>"
-                "<p>Your contract verification code is: <strong>%s</strong></p>"
-                "<p>This code expires in 10 minutes. "
-                "Do not share it with anyone.</p>"
-            ) % (frappe.utils.cstr(signatory_row.signatory_name), otp),
+            message=branded_email_html(
+                network,
+                heading="Verify your identity",
+                intro_html=(
+                    "<p style='margin:0 0 6px'>Dear %s,</p>"
+                    "<p style='margin:0'>Use the code below to sign your CareverseHIMS "
+                    "contract.</p>"
+                    % frappe.utils.escape_html(frappe.utils.cstr(signatory_row.signatory_name))
+                ),
+                highlight_html=otp_code_block(otp, network),
+                note_html=(
+                    "This code expires in 10 minutes. Do not share it with anyone."
+                ),
+            ),
+            now=True,
         )
     except Exception:
         frappe.log_error(
@@ -498,58 +616,38 @@ def request_otp(contract, role, exp, tok):
             "contracts.request_otp: OTP email failed for %s / %s" % (contract, role),
         )
 
-    return {"session_token": session_token}
+    return {"status": "sent"}
 
 
 @frappe.whitelist(allow_guest=True)
-def verify_otp(session_token, contract, role, otp):
+def verify_otp(contract, role, token, otp):
     """
     Validate the 6-digit OTP against the stored HMAC.
-    On success: clear otp_hash, issue a short-lived signing_token.
+    On success: clear otp_hash, issue a short-lived signing-session token.
 
-    Returns: {signing_token, expiry, contract_html, signatory_name, signatory_role}
+    Returns: {signing_token, expiry, signatory_name, signatory_role}
+    The contract HTML is fetched separately via get_contract once the session token
+    is issued, so it is intentionally not returned here.
 
-    All failures raise frappe.AuthenticationError("Verification failed.") — same message always.
+    All failures raise frappe.AuthenticationError with a generic message.
     """
     _check_contract_rate_limit()
     contract = frappe.utils.cstr(contract).strip()
     role = frappe.utils.cstr(role).strip()
     otp = frappe.utils.cstr(otp).strip()
-    session_token = frappe.utils.cstr(session_token).strip()
 
-    # Validate session token via Redis cache (avoids datetime-to-timestamp conversion)
-    key = _get_signing_key()
-    session_raw = frappe.cache().get_value(_session_cache_key(session_token))
-    if not session_raw:
+    contract_doc, signatory_row = _load_signatory(contract, role)
+    _validate_invite(signatory_row, token)
+
+    if signatory_row.status != "Pending":
         frappe.throw(_("Verification failed."), frappe.AuthenticationError)
 
-    try:
-        session_data = json.loads(session_raw)
-    except Exception:
-        frappe.throw(_("Verification failed."), frappe.AuthenticationError)
-
-    # Verify contract and role match what was cached at request_otp time
+    # Check OTP expiry / reuse. otp_used blocks a consumed code even if a stale
+    # otp_hash lingers; a fresh request_otp resets it to 0.
     if (
-        session_data.get("contract") != contract
-        or session_data.get("role") != role
-    ):
-        frappe.throw(_("Verification failed."), frappe.AuthenticationError)
-
-    # Cryptographically re-verify the session token (constant-time)
-    otp_expiry_ts = session_data.get("expiry", 0)
-    expected_session = _hmac_hex(key, "%s:%s:%s" % (contract, role, otp_expiry_ts))
-    if not hmac.compare_digest(expected_session, session_token):
-        frappe.throw(_("Verification failed."), frappe.AuthenticationError)
-
-    contract_doc = frappe.get_doc("CRM Contract", contract)
-    signatory_row = _get_signatory_row(contract_doc, role)
-
-    if not signatory_row:
-        frappe.throw(_("Verification failed."), frappe.AuthenticationError)
-
-    # Check OTP expiry (DB-side guard in addition to Redis expiry)
-    if (
-        not signatory_row.otp_expiry
+        not signatory_row.otp_hash
+        or frappe.utils.cint(signatory_row.otp_used)
+        or not signatory_row.otp_expiry
         or frappe.utils.now_datetime() > signatory_row.otp_expiry
     ):
         frappe.throw(_("Verification failed."), frappe.AuthenticationError)
@@ -568,94 +666,69 @@ def verify_otp(session_token, contract, role, otp):
     )
 
     # Validate OTP HMAC — constant-time comparison
-    # otp_hash is a Data field; read directly (not get_password)
+    key = _get_signing_key()
     stored_hash = frappe.utils.cstr(signatory_row.otp_hash or "")
     expected_hash = _hmac_hex(key, otp)
 
     if not hmac.compare_digest(stored_hash, expected_hash):
         frappe.throw(_("Verification failed."), frappe.AuthenticationError)
 
-    # OTP valid — clear hash and reset attempt counter
+    # OTP valid — clear it, reset attempts, and issue a signing-session token
+    signing_token = _gen_token()
     signatory_row.otp_hash = ""
     signatory_row.otp_used = 1
+    signatory_row.signing_token = signing_token
+    signatory_row.signing_expiry = frappe.utils.add_to_date(
+        frappe.utils.now_datetime(), seconds=_SIGN_EXPIRY_SECONDS
+    )
     contract_doc.save(ignore_permissions=True)  # SYSTEM-INTERNAL
     frappe.db.commit()
     frappe.cache().set_value(attempts_key, 0, expires_in_sec=60)
-    # Invalidate the consumed session token
-    frappe.cache().delete_value(_session_cache_key(session_token))
-
-    # Issue signing token valid for 2 hours
-    signing_expiry = int(time.time()) + _SIGN_EXPIRY_SECONDS
-    signing_token = _hmac_hex(key, "%s:%s:%s" % (contract, role, signing_expiry))
 
     return {
         "signing_token": signing_token,
-        "expiry": signing_expiry,
-        "contract_html": frappe.utils.cstr(contract_doc.contract_html or ""),
+        "expiry": int(time.time()) + _SIGN_EXPIRY_SECONDS,
         "signatory_name": frappe.utils.cstr(signatory_row.signatory_name or ""),
         "signatory_role": frappe.utils.cstr(signatory_row.signatory_role or ""),
     }
 
 
 @frappe.whitelist(allow_guest=True)
-def get_contract(signing_token, contract, role, expiry):
+def get_contract(signing_token, contract, role):
     """
     Return contract HTML and signatory metadata for the signing portal.
-    Validates signing_token before returning any data.
+    Validates the signing-session token before returning any data.
 
     Returns: {contract_html, signatory_name, signatory_role, contract_date}
     """
+    _check_contract_rate_limit()
     contract = frappe.utils.cstr(contract).strip()
     role = frappe.utils.cstr(role).strip()
 
-    _validate_signing_token(signing_token, contract, role, expiry)
-
-    contract_rows = frappe.get_list(
-        "CRM Contract",
-        filters={"name": contract},
-        fields=["name", "contract_html", "contract_date"],
-        limit=1,
-        ignore_permissions=True,  # SYSTEM-INTERNAL
-    )
-    if not contract_rows:
-        frappe.throw(_("Contract not found."), frappe.DoesNotExistError)
-
-    contract_row = contract_rows[0]
-
-    sig_rows = frappe.get_list(
-        "CRM Contract Signatory",
-        filters={"parent": contract, "signatory_role": role},
-        fields=["signatory_name", "signatory_role", "status"],
-        limit=1,
-        ignore_permissions=True,  # SYSTEM-INTERNAL
-    )
-    signatory_name = sig_rows[0].get("signatory_name", "") if sig_rows else ""
+    contract_doc, signatory_row = _load_signatory(contract, role)
+    _validate_signing(signatory_row, signing_token)
 
     return {
-        "contract_html": frappe.utils.cstr(contract_row.get("contract_html") or ""),
-        "signatory_name": frappe.utils.cstr(signatory_name),
+        "contract_html": frappe.utils.cstr(contract_doc.contract_html or ""),
+        "signatory_name": frappe.utils.cstr(signatory_row.signatory_name or ""),
         "signatory_role": role,
-        "contract_date": frappe.utils.cstr(contract_row.get("contract_date") or ""),
+        "contract_date": frappe.utils.cstr(contract_doc.contract_date or ""),
     }
 
 
 @frappe.whitelist(allow_guest=True)
-def sign(signing_token, contract, role, expiry, signature_b64):
+def sign(signing_token, contract, role, signature_b64):
     """
     Record the signature on the signatory row and advance the workflow via _transition().
 
     Returns: {status: "signed"}
     """
+    _check_contract_rate_limit()
     contract = frappe.utils.cstr(contract).strip()
     role = frappe.utils.cstr(role).strip()
 
-    _validate_signing_token(signing_token, contract, role, expiry)
-
-    contract_doc = frappe.get_doc("CRM Contract", contract)
-    signatory_row = _get_signatory_row(contract_doc, role)
-
-    if not signatory_row:
-        frappe.throw(_("Signatory role not found in this contract."), frappe.DoesNotExistError)
+    contract_doc, signatory_row = _load_signatory(contract, role)
+    _validate_signing(signatory_row, signing_token)
 
     if signatory_row.status != "Pending":
         frappe.throw(
@@ -675,6 +748,8 @@ def sign(signing_token, contract, role, expiry, signature_b64):
     signatory_row.signed_at = frappe.utils.now_datetime()
     signatory_row.signature_ip = remote_addr
     signatory_row.status = "Signed"
+    # Consume the signing-session token so it can't be replayed
+    signatory_row.signing_token = ""
 
     contract_doc.save(ignore_permissions=True)  # SYSTEM-INTERNAL
     frappe.db.commit()

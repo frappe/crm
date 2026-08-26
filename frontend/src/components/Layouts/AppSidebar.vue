@@ -77,9 +77,10 @@
               <SidebarItem
                 v-for="link in section.views"
                 :key="link.key"
-                :to="link.to"
+                :to="isLinkDisabled(link) ? undefined : link.to"
                 :label="__(link.label)"
                 :active="activeItem === link.key"
+                :class="isLinkDisabled(link) ? 'pointer-events-none opacity-40' : ''"
                 @click="selectItem($event, link.key)"
               >
                 <template #prefix>
@@ -174,6 +175,7 @@
 <script setup>
 import BrushCleaningIcon from '~icons/lucide/brush-cleaning'
 import LucideLayoutDashboard from '~icons/lucide/layout-dashboard'
+import OptInIcon from '~icons/lucide/clipboard-list'
 import CRMLogo from '@/components/Icons/CRMLogo.vue'
 import InviteIcon from '@/components/Icons/InviteIcon.vue'
 import ConvertIcon from '@/components/Icons/ConvertIcon.vue'
@@ -300,6 +302,15 @@ const links = [
     to: 'Quotes',
   },
   {
+    // Exec pick-up queue for staged self opt-in submissions (oh-s2-1). Read is
+    // granted to System Manager + Sales User by the CRM Opt-In Submission
+    // doctype; `gated` renders it visible-but-disabled for anyone else.
+    label: 'Opt-In Requests',
+    icon: OptInIcon,
+    to: 'OptInSubmissions',
+    gated: true,
+  },
+  {
     label: 'Call Logs',
     icon: PhoneIcon,
     to: 'Call Logs',
@@ -324,6 +335,7 @@ const allViews = computed(() => {
           icon: link.icon,
           key: link.to,
           to: { name: link.to },
+          gated: link.gated,
         })),
     },
   ]
@@ -430,7 +442,15 @@ function toggleHelpModal() {
 
 // onboarding
 const { user } = sessionStore()
-const { users, isManager } = usersStore()
+const { users, isManager, isAdmin, isSalesUser } = usersStore()
+
+// A `gated` nav item is visible-but-disabled (never hidden — project rule) when
+// the user lacks read access. CRM Opt-In Submission grants read to System
+// Manager + Sales User; mirrors the role-helper gating already used for other
+// sidebar items (e.g. Clear Demo Data → isManager()).
+function isLinkDisabled(link) {
+  return !!link.gated && !(isAdmin() || isSalesUser())
+}
 const { isOnboardingStepsCompleted, setUp } = useOnboarding('frappecrm')
 
 async function getFirstLead() {

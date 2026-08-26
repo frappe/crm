@@ -1,6 +1,81 @@
 <template>
   <div class="flex flex-col h-full overflow-y-auto px-3 pb-3 sm:px-10 sm:pb-5">
 
+    <!-- ── APPLICANT HERO CARD (OIS deals only) ──────────────────────────── -->
+    <div
+      v-if="dealDoc?.optin_submission"
+      class="mt-4 rounded-xl border-2 border-outline-gray-2 bg-surface-white dark:bg-surface-gray-1 p-5"
+    >
+      <!-- Loading skeleton -->
+      <div v-if="oisResource.loading" class="space-y-2">
+        <div v-for="n in 4" :key="n" class="h-4 animate-pulse rounded bg-surface-gray-2" />
+      </div>
+
+      <template v-else>
+        <!-- Header row: OIS ref + OTP Verified chip -->
+        <div class="mb-3 flex flex-wrap items-center justify-between gap-2">
+          <span class="text-xs text-ink-gray-4 font-mono">{{ dealDoc.optin_submission }}</span>
+          <span class="rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700 dark:bg-green-900/30 dark:text-green-400">
+            {{ __('OTP Verified') }} ✓
+          </span>
+        </div>
+
+        <!-- Name -->
+        <p class="text-xl font-bold text-ink-gray-9">
+          {{ [oisContact?.first_name, oisContact?.last_name].filter(Boolean).join(' ') || '—' }}
+        </p>
+
+        <!-- Role · Organisation -->
+        <p v-if="oisContact?.role || oisContact?.organisation" class="mt-0.5 text-sm text-ink-gray-5">
+          {{ [oisContact?.role, oisContact?.organisation].filter(Boolean).join(' · ') }}
+        </p>
+
+        <!-- Email · Phone + Email Applicant button -->
+        <div class="mt-2 flex flex-wrap items-center justify-between gap-3">
+          <div class="flex flex-wrap items-center gap-3">
+            <a
+              v-if="oisContact?.email"
+              :href="'mailto:' + oisContact.email"
+              class="text-ink-blue-6 hover:underline font-medium text-sm"
+            >{{ oisContact.email }}</a>
+            <span v-if="oisContact?.mobile_no" class="text-ink-gray-6 text-sm">
+              {{ oisContact.mobile_no }}
+            </span>
+          </div>
+          <Button v-if="oisContact?.email" size="sm" variant="subtle" @click="emailApplicant">
+            {{ __('Email Applicant') }}
+          </Button>
+        </div>
+      </template>
+    </div>
+
+    <!-- ── FACILITIES TABLE (OIS deals only, shown when facilities exist) ── -->
+    <div
+      v-if="oisFacilities.length"
+      class="mt-3 overflow-x-auto rounded-lg border border-outline-gray-2"
+    >
+      <table class="w-full text-xs">
+        <thead class="bg-surface-gray-1 text-ink-gray-5">
+          <tr>
+            <th class="px-3 py-2 text-left font-medium">{{ __('MFL Code') }}</th>
+            <th class="px-3 py-2 text-left font-medium">{{ __('Facility Name') }}</th>
+            <th class="px-3 py-2 text-left font-medium">{{ __('KEPH Level') }}</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-outline-elevation-2">
+          <tr
+            v-for="f in oisFacilities"
+            :key="f.mfl_code"
+            class="even:bg-surface-gray-1"
+          >
+            <td class="px-3 py-2 font-mono text-ink-gray-7">{{ f.mfl_code }}</td>
+            <td class="px-3 py-2 text-ink-gray-8">{{ f.facility_name }}</td>
+            <td class="px-3 py-2 text-ink-gray-6">{{ f.keph_level }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
     <!-- Finance Cockpit handoff banner -->
     <div
       v-if="acceptedQuote"
@@ -8,21 +83,28 @@
     >
       <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 flex-shrink-0 text-green-600 dark:text-green-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
       <span class="text-sm text-green-800 dark:text-green-300">
-        Quote accepted —
+        {{ __('Quote accepted —') }}
         <strong>{{ acceptedQuote.erpnext_sales_invoice }}</strong>
-        created.
+        {{ __('created.') }}
         <a
           href="/finance-cockpit#/receivables/invoices"
           target="_blank"
           class="ml-1 underline font-medium"
-        >View in Finance Cockpit → Receivables → AR Invoices</a>
+        >{{ __('View in Finance Cockpit → Receivables → AR Invoices') }}</a>
       </span>
     </div>
 
-    <!-- Header row -->
+    <!-- ── QUOTES SECTION ─────────────────────────────────────────────────── -->
     <div class="mt-4 flex items-center justify-between">
       <h2 class="text-base font-semibold text-ink-gray-9">{{ __('Quotes') }}</h2>
-      <Button variant="solid" @click="openBuilder(null)">
+
+      <!-- Non-OIS deals: start a new blank quote (OIS deals auto-build) -->
+      <Button
+        v-if="!isOis"
+        variant="solid"
+        :loading="creating"
+        @click="createQuote"
+      >
         <template #prefix>
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         </template>
@@ -30,7 +112,41 @@
       </Button>
     </div>
 
-    <!-- Loading -->
+    <!-- ═══ OIS DEALS: inline quote (auto-built) ═══ -->
+    <template v-if="isOis">
+      <!-- Quote exists → edit negotiated pricing inline, right here -->
+      <QuotePanel
+        v-if="primaryQuoteName"
+        :deal-id="dealId"
+        :quote-name="primaryQuoteName"
+        @saved="onQuoteSaved"
+      />
+
+      <!-- No quote yet → auto-building from opt-in data -->
+      <div v-else class="mt-10 flex flex-col items-center gap-3 text-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-ink-gray-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        <div v-if="buildQuoteResource.loading" class="flex items-center gap-2 text-sm text-ink-gray-6">
+          <svg class="h-4 w-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
+          </svg>
+          {{ __('Building quote from opt-in data…') }}
+        </div>
+        <div
+          v-else-if="buildError"
+          class="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-700 dark:border-amber-700 dark:bg-amber-900/20 dark:text-amber-400"
+        >
+          {{ __('Quote could not be auto-generated — contact support.') }}
+        </div>
+        <p v-else class="text-xs text-ink-gray-4">
+          {{ __('Quote will be built from this opt-in submission.') }}
+        </p>
+      </div>
+    </template>
+
+    <!-- ═══ NON-OIS DEALS: quote list + inline editor ═══ -->
+    <template v-else>
+    <!-- Loading skeleton -->
     <div v-if="quotesResource.loading" class="mt-6 space-y-2">
       <div v-for="n in 2" :key="n" class="h-12 animate-pulse rounded-lg bg-surface-gray-2" />
     </div>
@@ -42,8 +158,10 @@
     >
       <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-ink-gray-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
       <p class="text-sm font-medium text-ink-gray-5">{{ __('No quotes yet') }}</p>
-      <p class="text-xs text-ink-gray-4">{{ __('Create a quote to send a formal proposal to this customer.') }}</p>
-      <Button class="mt-2" variant="solid" @click="openBuilder(null)">
+      <p class="text-xs text-ink-gray-4">
+        {{ __('Create a quote to send a formal proposal to this customer.') }}
+      </p>
+      <Button class="mt-2" variant="solid" :loading="creating" @click="createQuote">
         {{ __('+ Create Quote') }}
       </Button>
     </div>
@@ -66,11 +184,13 @@
           <tr
             v-for="q in quotes"
             :key="q.name"
-            class="hover:bg-surface-gray-1 transition-colors"
+            class="cursor-pointer transition-colors"
+            :class="selectedQuote === q.name ? 'bg-surface-gray-2 dark:bg-surface-gray-3' : 'hover:bg-surface-gray-1'"
+            @click="selectQuote(q.name)"
           >
             <td class="px-4 py-3 font-medium text-ink-gray-9">{{ q.name }}</td>
             <td class="px-4 py-3">
-              <span class="text-ink-gray-8 font-medium">{{ timeAgo(q.creation || q.quote_date) }}</span>
+              <span class="text-ink-gray-8 font-medium">{{ timeAgo(q.creation ?? q.quote_date) }}</span>
               <div class="text-xs text-ink-gray-4">{{ formatDate(q.quote_date) }}</div>
             </td>
             <td class="px-4 py-3" :class="isExpired(q) ? 'text-red-500 font-medium' : 'text-ink-gray-6'">
@@ -83,9 +203,9 @@
                 {{ isExpired(q) ? __('Expired') : __(q.status) }}
               </span>
             </td>
-            <td class="px-4 py-3 text-right">
+            <td class="px-4 py-3 text-right" @click.stop>
               <div class="flex items-center justify-end gap-1.5">
-                <Button size="sm" variant="ghost" @click="openBuilder(q.name)">{{ __('View') }}</Button>
+                <Button size="sm" variant="ghost" @click="selectQuote(q.name)">{{ __('Edit') }}</Button>
                 <Button
                   v-if="q.status === 'Draft' || q.status === 'Sent'"
                   size="sm" variant="ghost"
@@ -113,6 +233,16 @@
       </table>
     </div>
 
+    <!-- Inline editor for the selected quote (universal QuotePanel) -->
+    <QuotePanel
+      v-if="selectedQuote"
+      :deal-id="dealId"
+      :quote-name="selectedQuote"
+      @saved="onQuoteSaved"
+    />
+    </template>
+    <!-- ═══ end non-OIS branch ═══ -->
+
     <!-- Reject confirmation dialog -->
     <Dialog
       v-model="showRejectDialog"
@@ -131,62 +261,187 @@
       </template>
     </Dialog>
 
-    <!-- Quote builder overlay (lazy-loaded) -->
-    <QuoteBuilder
-      v-if="builderOpen"
+    <!-- Contracting panel — mounted below the quotes section -->
+    <ContractingPanel
       :deal-id="dealId"
-      :quote-name="builderQuoteName"
-      @close="onBuilderClose"
-      @saved="onBuilderClose(true)"
+      :ois-doc="oisResource.data ?? null"
+      :lifecycle="lifecycle"
+      @lifecycle-reload="onLifecycleReload"
     />
   </div>
 </template>
 
 <script setup>
-import { ref, computed, defineAsyncComponent } from 'vue'
-import { createResource } from 'frappe-ui'
-import { Button, Dialog } from 'frappe-ui'
-
-const QuoteBuilder = defineAsyncComponent(() =>
-  import('./QuoteBuilder.vue')
-)
+import { ref, computed, watch } from 'vue'
+import { useRoute } from 'vue-router'
+import { createResource, Button, Dialog, toast } from 'frappe-ui'
+import ContractingPanel from './ContractingPanel.vue'
+import QuotePanel from './QuotePanel.vue'
 
 const props = defineProps({
   dealId: { type: String, required: true },
 })
+
+const route = useRoute()
+
+// ── Deal doc ─────────────────────────────────────────────────────────────────
+
+const dealDocResource = createResource({
+  url: 'frappe.client.get',
+  makeParams: () => ({ doctype: 'CRM Deal', name: props.dealId }),
+  auto: true,
+})
+const dealDoc = computed(() => dealDocResource.data ?? null)
+
+// OIS-sourced deals render the quote inline (no wizard overlay)
+const isOis = computed(() => !!dealDoc.value?.optin_submission)
+const primaryQuoteName = computed(
+  () => quotes.value[0]?.name ?? lifecycle.value?.quotation?.name ?? null
+)
+
+function onQuoteSaved() {
+  quotesResource.reload()
+  lifecycleResource.reload()
+}
+
+// ── Lifecycle (fetched here, passed down to ContractingPanel) ─────────────────
+
+const lifecycleResource = createResource({
+  url: 'crm.api.lifecycle.get_deal_lifecycle',
+  makeParams: () => ({ deal: props.dealId }),
+  auto: true,
+})
+const lifecycle = computed(() => lifecycleResource.data ?? null)
+
+function onLifecycleReload() {
+  lifecycleResource.reload()
+}
+
+// ── OIS submission ────────────────────────────────────────────────────────────
+
+const oisResource = createResource({
+  url: 'frappe.client.get',
+  makeParams: () => ({
+    doctype: 'CRM Opt-In Submission',
+    name: dealDoc.value?.optin_submission ?? '',
+  }),
+})
+
+watch(
+  () => dealDoc.value?.optin_submission,
+  (submissionRef) => {
+    if (submissionRef) oisResource.reload()
+  },
+  { immediate: true }
+)
+
+const oisRawJson = computed(() => {
+  const raw = oisResource.data?.raw_json
+  if (!raw) return {}
+  try { return JSON.parse(raw) } catch { return {} }
+})
+
+const oisContact   = computed(() => oisRawJson.value?.contact ?? null)
+const oisFacilities = computed(() => oisRawJson.value?.facilities ?? [])
+
+// ── Email applicant ───────────────────────────────────────────────────────────
+
+function emailApplicant() {
+  const email = oisContact.value?.email
+  if (!email) return
+  const oisRef = dealDoc.value?.optin_submission ?? ''
+  const subject = `Re: Your CareverseHIMS Opt-In Application [${oisRef}]`
+  window.open(`mailto:${email}?subject=${encodeURIComponent(subject)}`, '_blank')
+}
+
+// ── Quotes ────────────────────────────────────────────────────────────────────
 
 const quotesResource = createResource({
   url: 'crm.api.quotes.list_quotes',
   makeParams: () => ({ deal: props.dealId }),
   auto: true,
 })
-
-const quotes = computed(() => quotesResource.data || [])
+const quotes = computed(() => quotesResource.data ?? [])
 
 const acceptedQuote = computed(() =>
   quotes.value.find(q => q.status === 'Accepted' && q.erpnext_sales_invoice)
 )
 
-// Builder state
-const builderOpen = ref(false)
-const builderQuoteName = ref(null)
+// ── Auto-build Quote from OIS (Case A) ───────────────────────────────────────
 
-function openBuilder(quoteName) {
-  builderQuoteName.value = quoteName
-  builderOpen.value = true
+const buildAttempted = ref(false)
+const buildError     = ref(null)
+
+const buildQuoteResource = createResource({
+  url: 'crm.api.optin.build_ois_quote',
+  onSuccess: () => {
+    quotesResource.reload()
+    lifecycleResource.reload()
+  },
+  onError: (e) => {
+    buildError.value = e?.message ?? 'Auto-build failed'
+  },
+})
+
+const shouldAutoBuild = computed(() =>
+  !!(dealDoc.value?.optin_submission && !lifecycle.value?.quotation && !quotes.value.length && !buildAttempted.value)
+)
+
+watch(shouldAutoBuild, (trigger) => {
+  if (trigger) {
+    buildAttempted.value = true
+    buildQuoteResource.submit({ deal: props.dealId })
+  }
+}, { immediate: true })
+
+// ── Inline editor selection (non-OIS) ──────────────────────────────────────────
+
+const selectedQuote = ref(null)
+
+function selectQuote(name) {
+  selectedQuote.value = name
 }
 
-function onBuilderClose(shouldReload = false) {
-  builderOpen.value = false
-  builderQuoteName.value = null
-  if (shouldReload) quotesResource.reload()
+// Honor ?quote= deep-link (from the standalone Quotes list) and default to the
+// most recent quote once the list resolves.
+watch(
+  [quotes, () => route.query.quote],
+  ([list, deepLink]) => {
+    if (isOis.value) return
+    if (deepLink && list.some(q => q.name === deepLink)) {
+      selectedQuote.value = deepLink
+    } else if (!selectedQuote.value && list.length) {
+      selectedQuote.value = list[0].name
+    }
+  },
+  { immediate: true }
+)
+
+// ── Create a new blank quote (non-OIS) ─────────────────────────────────────────
+
+const creating = ref(false)
+const createResource_ = createResource({ url: 'crm.api.quotes.create_quote' })
+
+async function createQuote() {
+  creating.value = true
+  try {
+    const res = await createResource_.submit({ deal: props.dealId })
+    await quotesResource.reload()
+    selectedQuote.value = res?.name ?? null
+    toast.success(__('Draft quote created'))
+  } catch (err) {
+    toast.error(err?.messages?.[0] ?? err?.message ?? __('Failed to create quote'))
+  } finally {
+    creating.value = false
+  }
 }
 
-// Actions
+// ── Quote actions ─────────────────────────────────────────────────────────────
+
 const sendingName = ref(null)
-const actionName = ref(null)
+const actionName  = ref(null)
 
-const sendResource = createResource({ url: 'crm.api.quotes.send_quote' })
+const sendResource   = createResource({ url: 'crm.api.quotes.send_quote' })
 const acceptResource = createResource({ url: 'crm.api.quotes.accept_quote' })
 const rejectResource = createResource({ url: 'crm.api.quotes.reject_quote' })
 
@@ -210,7 +465,6 @@ async function acceptQuote(name) {
   }
 }
 
-// Reject dialog
 const showRejectDialog = ref(false)
 const rejectTargetName = ref(null)
 
@@ -238,7 +492,8 @@ function downloadPdf(name) {
   )
 }
 
-// Helpers
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
 function formatDate(d) {
   if (!d) return '—'
   return new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
@@ -266,16 +521,16 @@ function pillClass(q) {
     Accepted: `${base} bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400`,
     Rejected: `${base} bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400`,
   }
-  return map[q.status] || map.Draft
+  return map[q.status] ?? map.Draft
 }
 
 function timeAgo(dateStr) {
   if (!dateStr) return ''
   const diff = Math.floor((Date.now() - new Date(dateStr).getTime()) / 1000)
-  if (diff < 60)  return __('just now')
-  if (diff < 3600) return Math.floor(diff / 60) + ' ' + __('min ago')
-  if (diff < 86400) return Math.floor(diff / 3600) + ' ' + __('hr ago')
-  if (diff < 86400 * 7) return Math.floor(diff / 86400) + ' ' + __('d ago')
+  if (diff < 60)        return __('just now')
+  if (diff < 3600)      return Math.floor(diff / 60)    + ' ' + __('min ago')
+  if (diff < 86400)     return Math.floor(diff / 3600)   + ' ' + __('hr ago')
+  if (diff < 86400 * 7) return Math.floor(diff / 86400)  + ' ' + __('d ago')
   return formatDate(dateStr)
 }
 </script>

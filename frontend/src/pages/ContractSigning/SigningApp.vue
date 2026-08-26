@@ -37,8 +37,7 @@
         <ContractOtpGate
           :contract="contract"
           :role="role"
-          :exp="exp"
-          :tok="tok"
+          :token="token"
           @verified="onOtpVerified"
         />
       </div>
@@ -80,7 +79,6 @@
           :signing-token="signingToken"
           :contract="contract"
           :role="role"
-          :expiry="signingExpiry"
           @scrolled-to-bottom="scrolledToBottom = true"
           @loaded="onContractLoaded"
         />
@@ -170,8 +168,7 @@ import SigningSuccess from './SigningSuccess.vue'
 const el = document.getElementById('signing-app')
 const contract = ref(el?.dataset?.contract || '')
 const role = ref(el?.dataset?.role || '')
-const exp = ref(el?.dataset?.exp || '')
-const tok = ref(el?.dataset?.tok || '')
+const token = ref(el?.dataset?.token || '')
 
 // ---------------------------------------------------------------------------
 // Screen state: 'otp' → 'sign' → 'done'
@@ -180,7 +177,6 @@ const screen = ref('otp')
 
 // Data carried from OTP gate to sign screen
 const signingToken = ref('')
-const signingExpiry = ref(0)
 const signatoryName = ref('')
 
 // Data carried from ContractView to success screen
@@ -203,9 +199,8 @@ const signResource = createResource({ url: 'crm.api.contracts.sign' })
 // Event handlers
 // ---------------------------------------------------------------------------
 
-function onOtpVerified({ signingToken: st, signingExpiry: exp, signatoryName: sn }) {
+function onOtpVerified({ signingToken: st, signatoryName: sn }) {
   signingToken.value = st
-  signingExpiry.value = exp
   signatoryName.value = sn
   screen.value = 'sign'
 }
@@ -227,7 +222,6 @@ async function handleSign() {
       signing_token: signingToken.value,
       contract: contract.value,
       role: role.value,
-      expiry: signingExpiry.value,
       signature_b64: signatureB64,
     })
     screen.value = 'done'

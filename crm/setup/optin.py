@@ -240,6 +240,245 @@ def _network_short_name(slug):
     }.get(slug, slug)
 
 
+# ---------------------------------------------------------------------------
+# Demo networks — 5 contacts, each with a named private-hospital portfolio.
+# MFL codes are in the 22001-22030 range (no overlap with existing seeds).
+# ---------------------------------------------------------------------------
+DEMO_NETWORKS = [
+    {
+        "slug": "primrose-health",
+        "display_name": "Primrose Health Network",
+        "footer_legal_name": "Primrose Health Network Limited",
+        "contact_email": "thomas@tiberbu.com",
+        "_contact": {"contact_name": "Thomas Mwogi", "contact_email": "thomas@tiberbu.com", "contact_phone": "0700000001"},
+    },
+    {
+        "slug": "covenant-health",
+        "display_name": "Covenant Health Network",
+        "footer_legal_name": "Covenant Health Network (CHAK Affiliate)",
+        "contact_email": "mmokua@chak.or.ke",
+        "_contact": {"contact_name": "Moses Mokua", "contact_email": "mmokua@chak.or.ke", "contact_phone": "0700000002"},
+    },
+    {
+        "slug": "apex-medical",
+        "display_name": "Apex Medical Network",
+        "footer_legal_name": "Apex Medical Network Limited",
+        "contact_email": "salim@tiberbu.com",
+        "_contact": {"contact_name": "Salim Mwaura", "contact_email": "salim@tiberbu.com", "contact_phone": "0700000003"},
+    },
+    {
+        "slug": "crescent-health",
+        "display_name": "Crescent Health Network",
+        "footer_legal_name": "Crescent Health Network Limited",
+        "contact_email": "abdul@kns.co.ke",
+        "_contact": {"contact_name": "Abdullahi Sheikh", "contact_email": "abdul@kns.co.ke", "contact_phone": "0700000004"},
+    },
+    {
+        "slug": "pinnacle-care",
+        "display_name": "Pinnacle Care Network",
+        "footer_legal_name": "Pinnacle Care Network Limited",
+        "contact_email": "irungu@kns.co.ke",
+        "_contact": {"contact_name": "Abubakr Irungu", "contact_email": "irungu@kns.co.ke", "contact_phone": "0700000005"},
+    },
+]
+
+DEMO_FACILITIES = {
+    "primrose-health": [
+        {"mfl_code": "22001", "facility_name": "Karen Hospital, Nairobi", "keph_level": "Level 4B"},
+        {"mfl_code": "22002", "facility_name": "Kijabe Mission Hospital, Kiambu", "keph_level": "Level 4"},
+        {"mfl_code": "22003", "facility_name": "Tenwek Hospital, Bomet", "keph_level": "Level 4"},
+        {"mfl_code": "22004", "facility_name": "Kikuyu Mission Hospital, Kiambu", "keph_level": "Level 3B"},
+        {"mfl_code": "22005", "facility_name": "St. Mary's Hospital, Mumias", "keph_level": "Level 3A"},
+    ],
+    "covenant-health": [
+        {"mfl_code": "22006", "facility_name": "Chogoria Hospital, Tharaka-Nithi", "keph_level": "Level 4"},
+        {"mfl_code": "22007", "facility_name": "AIC Litein Mission Hospital, Kericho", "keph_level": "Level 3B"},
+        {"mfl_code": "22008", "facility_name": "Kapsowar Mission Hospital, Elgeyo-Marakwet", "keph_level": "Level 3"},
+        {"mfl_code": "22009", "facility_name": "Siloam Mission Hospital, Trans Nzoia", "keph_level": "Level 3"},
+        {"mfl_code": "22010", "facility_name": "Nyang'ori Mission Hospital, Vihiga", "keph_level": "Level 2"},
+    ],
+    "apex-medical": [
+        {"mfl_code": "22011", "facility_name": "Primus International Medical Centre, Westlands", "keph_level": "Level 4"},
+        {"mfl_code": "22012", "facility_name": "Meridian Medical Centre, Upper Hill", "keph_level": "Level 3B"},
+        {"mfl_code": "22013", "facility_name": "HealthCare International, Westlands", "keph_level": "Level 3B"},
+        {"mfl_code": "22014", "facility_name": "St. Luke's Orthopaedics & Trauma Hospital, Nairobi", "keph_level": "Level 4"},
+        {"mfl_code": "22015", "facility_name": "Resolution Health Centre, Upper Hill", "keph_level": "Level 3A"},
+    ],
+    "crescent-health": [
+        {"mfl_code": "22016", "facility_name": "Premier Hospital, Mombasa", "keph_level": "Level 4"},
+        {"mfl_code": "22017", "facility_name": "Pandya Memorial Hospital, Mombasa", "keph_level": "Level 4"},
+        {"mfl_code": "22018", "facility_name": "Coast Medical Centre, Mombasa", "keph_level": "Level 3B"},
+        {"mfl_code": "22019", "facility_name": "Khadijah Hospital, Mombasa", "keph_level": "Level 3"},
+        {"mfl_code": "22020", "facility_name": "Islamic Centre Clinic, Mombasa", "keph_level": "Level 2"},
+    ],
+    "pinnacle-care": [
+        {"mfl_code": "22021", "facility_name": "Nairobi South Hospital, South B", "keph_level": "Level 4"},
+        {"mfl_code": "22022", "facility_name": "Athi River Medical Centre, Machakos", "keph_level": "Level 3B"},
+        {"mfl_code": "22023", "facility_name": "Upper Hill Medical Centre, Nairobi", "keph_level": "Level 3"},
+        {"mfl_code": "22024", "facility_name": "Langata Hospital, Nairobi", "keph_level": "Level 3A"},
+        {"mfl_code": "22025", "facility_name": "Kitengela Medical Centre, Kajiado", "keph_level": "Level 2"},
+    ],
+}
+
+
+def seed_demo_networks():
+    """
+    Upsert 5 demo opt-in networks with private Kenyan facilities, each assigned to
+    a named contact. Sends ONE summary invitation email per contact listing all their
+    facilities and the opt-in link. Idempotent; run explicitly:
+
+        bench --site cr-dev.tiberbu.app execute crm.setup.optin.seed_demo_networks
+    """
+    nets = {n["slug"]: n for n in DEMO_NETWORKS}
+
+    # Upsert networks (strip internal _contact key before save)
+    public_nets = [{k: v for k, v in n.items() if not k.startswith("_")} for n in DEMO_NETWORKS]
+    ensure_optin_networks(public_nets)
+
+    site_url = frappe.utils.get_url()
+
+    for slug, facilities in DEMO_FACILITIES.items():
+        net_meta = nets[slug]
+        contact = net_meta["_contact"]
+        for fac in facilities:
+            doc = frappe.new_doc("CRM Pre-Qualified Facility") if not frappe.get_all(
+                "CRM Pre-Qualified Facility",
+                filters={"network": slug, "mfl_code": fac["mfl_code"]},
+                pluck="name",
+                limit=1,
+            ) else frappe.get_doc(
+                "CRM Pre-Qualified Facility",
+                frappe.get_all(
+                    "CRM Pre-Qualified Facility",
+                    filters={"network": slug, "mfl_code": fac["mfl_code"]},
+                    pluck="name",
+                    limit=1,
+                )[0],
+            )
+            doc.flags.skip_invitation = True  # batch send below
+            doc.network = slug
+            doc.mfl_code = fac["mfl_code"]
+            doc.facility_name = fac["facility_name"]
+            doc.keph_level = fac["keph_level"]
+            doc.status = "Active"
+            doc.contact_name = contact["contact_name"]
+            doc.contact_email = contact["contact_email"]
+            doc.contact_phone = contact["contact_phone"]
+            doc.save(ignore_permissions=True)  # SYSTEM-INTERNAL
+
+        frappe.db.commit()
+        _send_demo_invitation(slug, nets[slug], site_url)
+
+    # Summary email to salim
+    _send_seed_summary(nets, site_url)
+
+    return {slug: len(facs) for slug, facs in DEMO_FACILITIES.items()}
+
+
+def _send_demo_invitation(slug, net_meta, site_url):
+    """Email the contact for one demo network with their facility list and opt-in link."""
+    contact = net_meta["_contact"]
+    facilities = DEMO_FACILITIES[slug]
+    network_name = net_meta["display_name"]
+    optin_url = "{}/opt-in?network={}".format(site_url, slug)
+
+    fac_rows = "".join(
+        "<li>{} (KEPH {})</li>".format(f["facility_name"], f["keph_level"])
+        for f in facilities
+    )
+
+    body = """
+<p>Dear {contact_name},</p>
+
+<p>You have been pre-qualified to join <strong>{network_name}</strong> on CareverseHIMS
+— Tiberbu's health information management platform.</p>
+
+<p>The following facilities under your account are ready for enrolment:</p>
+<ul>{fac_rows}</ul>
+
+<p>The opt-in process takes about 5 minutes per facility — verify your email, confirm
+details, review pricing, and accept the agreement.</p>
+
+<p style="margin: 24px 0;">
+  <a href="{optin_url}"
+     style="background:#b91c1c;color:#fff;padding:12px 24px;border-radius:6px;
+            text-decoration:none;font-weight:600;">
+    Start Opt-In &rarr;
+  </a>
+</p>
+
+<p>Opt-in link: <a href="{optin_url}">{optin_url}</a></p>
+
+<p>Questions? Contact us at <a href="mailto:hello@tiberbu.com">hello@tiberbu.com</a>.</p>
+
+<p>Best regards,<br/>The Tiberbu Team</p>
+""".format(
+        contact_name=contact["contact_name"],
+        network_name=network_name,
+        fac_rows=fac_rows,
+        optin_url=optin_url,
+    )
+
+    try:
+        frappe.sendmail(
+            recipients=[contact["contact_email"]],
+            subject="You've been pre-qualified: {} — CareverseHIMS".format(network_name),
+            message=body,
+            now=True,
+        )
+    except Exception:
+        frappe.log_error(frappe.get_traceback(), "seed_demo_networks: invitation email failed for {}".format(slug))
+
+
+def _send_seed_summary(nets, site_url):
+    """Send a summary of all 5 demo networks to salim@tiberbu.com."""
+    rows = ""
+    for slug, net_meta in nets.items():
+        contact = net_meta["_contact"]
+        url = "{}/opt-in?network={}".format(site_url, slug)
+        rows += (
+            "<tr>"
+            "<td style='padding:6px 12px;border:1px solid #e5e7eb;'>{}</td>"
+            "<td style='padding:6px 12px;border:1px solid #e5e7eb;'>{}</td>"
+            "<td style='padding:6px 12px;border:1px solid #e5e7eb;'>{}</td>"
+            "<td style='padding:6px 12px;border:1px solid #e5e7eb;'>"
+            "<a href='{}'>{}</a></td>"
+            "</tr>"
+        ).format(
+            net_meta["display_name"],
+            contact["contact_name"],
+            contact["contact_email"],
+            url,
+            url,
+        )
+
+    body = """
+<h2>Demo Networks Seeded</h2>
+<p>5 opt-in networks have been created and invitations dispatched.</p>
+<table style='border-collapse:collapse;width:100%;'>
+  <thead>
+    <tr style='background:#f3f4f6;'>
+      <th style='padding:6px 12px;border:1px solid #e5e7eb;text-align:left;'>Network</th>
+      <th style='padding:6px 12px;border:1px solid #e5e7eb;text-align:left;'>Contact</th>
+      <th style='padding:6px 12px;border:1px solid #e5e7eb;text-align:left;'>Email</th>
+      <th style='padding:6px 12px;border:1px solid #e5e7eb;text-align:left;'>Opt-In URL</th>
+    </tr>
+  </thead>
+  <tbody>{rows}</tbody>
+</table>
+""".format(rows=rows)
+
+    try:
+        frappe.sendmail(
+            recipients=["salim@tiberbu.com"],
+            subject="[CRM Seed] 5 Demo Networks Ready",
+            message=body,
+            now=True,
+        )
+    except Exception:
+        frappe.log_error(frappe.get_traceback(), "seed_demo_networks: summary email failed")
+
+
 def ensure_default_terms():
     """
     Ensure a Terms and Conditions document exists and is wired to

@@ -16,7 +16,9 @@
   "price_list_override",
   "col_break_2",
   "custom_header_copy",
-  "footer_legal_name"
+  "footer_legal_name",
+  "section_break_partners",
+  "partner_logos"
  ],
  "fields": [
   {
@@ -84,6 +86,18 @@
    "fieldname": "footer_legal_name",
    "fieldtype": "Data",
    "label": "Footer Legal Name"
+  },
+  {
+   "fieldname": "section_break_partners",
+   "fieldtype": "Section Break",
+   "label": "Partner Logos"
+  },
+  {
+   "fieldname": "partner_logos",
+   "fieldtype": "Table",
+   "label": "Partner Logos",
+   "options": "CRM Opt-In Partner",
+   "description": "Logos shown on the opt-in wizard landing page (\"Trusted by\" strip)."
   }
  ],
  "is_submittable": 0,

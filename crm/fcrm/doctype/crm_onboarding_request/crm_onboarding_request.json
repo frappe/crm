@@ -272,5 +272,6 @@
  "sort_field": "creation",
  "sort_order": "DESC",
  "states": [],
- "title_field": "deal"
+ "title_field": "deal",
+ "track_changes": 1
 }

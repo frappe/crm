@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>CareverseHIMS — Sign Contract</title>
+    <script>window.csrf_token = {{ (csrf_token or '') | tojson }};</script>
     {{ signing_head | safe }}
   </head>
   <body class="h-full">
@@ -12,8 +13,7 @@
       class="h-full"
       data-contract="{{ sc_contract }}"
       data-role="{{ sc_role }}"
-      data-exp="{{ sc_exp }}"
-      data-tok="{{ sc_tok }}"
+      data-token="{{ sc_token }}"
     ></div>
   </body>
 </html>
