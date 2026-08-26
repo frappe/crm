@@ -22,6 +22,7 @@ def after_install(force=False):
 	add_property_setter()
 	add_email_template_custom_fields()
 	add_email_account_custom_field()
+	add_web_form_custom_fields()
 	add_default_industries()
 	add_default_lead_sources()
 	add_default_lost_reasons()
@@ -324,6 +325,59 @@ def add_email_account_custom_field():
 		frappe.clear_cache(doctype="Email Account")
 
 
+def add_web_form_custom_fields():
+	"""CRM's own fields on the native Web Form.
+
+	- `crm_published`: separate publish flag so CRM forms are served only by the
+	  CRM's own public page (and never rendered by the framework's web form page).
+	  The native `published` is always left 0.
+	- `crm_hidden_defaults`: JSON of doctype-mandatory fields the author removed
+	  from the visible form, with the default value to apply on submission so the
+	  target record can still be created.
+	- `placeholder` on Web Form Field: standard from v16 onwards, absent on v15,
+	  so add it there to keep the builder working on both.
+	"""
+	custom_fields = {}
+
+	meta = frappe.get_meta("Web Form")
+	if not (meta.has_field("crm_published") and meta.has_field("crm_hidden_defaults")):
+		custom_fields["Web Form"] = [
+			{
+				"default": "0",
+				"fieldname": "crm_published",
+				"fieldtype": "Check",
+				"label": "CRM Published",
+				"insert_after": "published",
+				"hidden": 1,
+			},
+			{
+				"fieldname": "crm_hidden_defaults",
+				"fieldtype": "Long Text",
+				"label": "CRM Hidden Field Defaults",
+				"insert_after": "crm_published",
+				"hidden": 1,
+			},
+		]
+
+	if not frappe.get_meta("Web Form Field").has_field("placeholder"):
+		custom_fields["Web Form Field"] = [
+			{
+				"fieldname": "placeholder",
+				"fieldtype": "Data",
+				"label": "Placeholder",
+				"insert_after": "description",
+			}
+		]
+
+	if not custom_fields:
+		return
+
+	click.secho("* Installing Custom Fields in Web Form")
+	create_custom_fields(custom_fields)
+	frappe.clear_cache(doctype="Web Form")
+	frappe.clear_cache(doctype="Web Form Field")
+
+
 def add_default_industries():
 	industries = [
 		"Accounting",
@@ -403,6 +457,7 @@ def add_default_lead_sources():
 		"Walk In",
 		"Facebook",
 		"Website",
+		"Web Form",
 	]
 
 	for source in lead_sources:
