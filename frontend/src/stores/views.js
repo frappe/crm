@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { createResource } from 'frappe-ui'
-import { computed, reactive, ref } from 'vue'
+import { reactive, ref } from 'vue'
 
 export const viewsStore = defineStore('crm-views', (doctype) => {
   if (typeof doctype !== 'string') {
@@ -53,11 +53,6 @@ export const viewsStore = defineStore('crm-views', (doctype) => {
     return keys.length ? defaultViews[keys[0]] : null
   }
 
-  // Backwards-compatible alias for consumers still reading `defaultView`
-  // directly off the store (previously a single ref, now derived from the
-  // first entry in `defaultViews`). Prefer `getDefaultView(routeName)`.
-  const defaultView = computed(() => getDefaultView())
-
   function getView(view, type, doctype = null) {
     type = type || 'list'
     if (!view && doctype) {
@@ -82,7 +77,6 @@ export const viewsStore = defineStore('crm-views', (doctype) => {
 
   return {
     views,
-    defaultView,
     defaultViews,
     standardViews,
     getDefaultView,
