@@ -549,6 +549,9 @@ const all_activities = createResource({
     return { versions, calls, notes, tasks, attachments }
   },
   onSuccess: () => nextTick(() => scroll()),
+  onError: (error) => {
+    toast.error(error.messages?.[0] || __('Failed to load activities'))
+  },
 })
 
 const showWhatsappTemplates = ref(false)
