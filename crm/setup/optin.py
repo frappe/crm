@@ -302,6 +302,13 @@ DEMO_NETWORKS = [
         "contact_email": "abdul.as@gmail.com",
         "_contact": {"contact_name": "Abdullahi Sheikh", "contact_email": "abdul.as@gmail.com", "contact_phone": "0700000006"},
     },
+    {
+        "slug": "highlands-health",
+        "display_name": "Highlands Health Network",
+        "footer_legal_name": "Highlands Health Network Limited",
+        "contact_email": "salim@tiberbu.com",
+        "_contact": {"contact_name": "Salim Mwaura", "contact_email": "salim@tiberbu.com", "contact_phone": "0700000007"},
+    },
 ]
 
 DEMO_FACILITIES = {
@@ -346,6 +353,13 @@ DEMO_FACILITIES = {
         {"mfl_code": "22028", "facility_name": "Harbour View Medical Centre, Mombasa", "keph_level": "Level 3"},
         {"mfl_code": "22029", "facility_name": "Tudor Medical Centre, Mombasa", "keph_level": "Level 3A"},
         {"mfl_code": "22030", "facility_name": "Mishomoroni Medical Centre, Mombasa", "keph_level": "Level 2"},
+    ],
+    "highlands-health": [
+        {"mfl_code": "22031", "facility_name": "Nakuru Highlands Hospital, Nakuru", "keph_level": "Level 4"},
+        {"mfl_code": "22032", "facility_name": "Rift Valley Medical Centre, Nakuru", "keph_level": "Level 3B"},
+        {"mfl_code": "22033", "facility_name": "Eldoret Highlands Medical Centre, Uasin Gishu", "keph_level": "Level 3"},
+        {"mfl_code": "22034", "facility_name": "Nyahururu Medical Centre, Laikipia", "keph_level": "Level 3A"},
+        {"mfl_code": "22035", "facility_name": "Molo Cottage Medical Centre, Nakuru", "keph_level": "Level 2"},
     ],
 }
 
