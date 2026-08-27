@@ -6,25 +6,15 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "user",
   "full_name",
   "email"
  ],
  "fields": [
   {
-   "fieldname": "user",
-   "fieldtype": "Link",
-   "label": "User",
-   "options": "User",
-   "reqd": 1,
-   "in_list_view": 1
-  },
-  {
    "fieldname": "full_name",
    "fieldtype": "Data",
    "label": "Full Name",
-   "fetch_from": "user.full_name",
-   "read_only": 1,
+   "reqd": 1,
    "in_list_view": 1
   },
   {
@@ -32,8 +22,7 @@
    "fieldtype": "Data",
    "label": "Email",
    "options": "Email",
-   "fetch_from": "user.email",
-   "read_only": 1,
+   "reqd": 1,
    "in_list_view": 1
   }
  ],

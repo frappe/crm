@@ -118,8 +118,9 @@ def _resolve_user_identity(user, fallback_name="", fallback_email=""):
 
 
 def _network_signers(network_slug):
-    """Configured co-signatories for a network → [{full_name, email}]. A network's
-    name IS its slug (autoname field:slug). Read via get_list on the child DocType."""
+    """Configured co-signatories for a network → [{full_name, email}]. Network
+    signers are external people keyed by email (name + email, no Frappe User). A
+    network's name IS its slug (autoname field:slug)."""
     network_slug = frappe.utils.cstr(network_slug or "").strip()
     if not network_slug or not frappe.db.exists("CRM Opt-In Network", network_slug):
         return []
@@ -130,15 +131,18 @@ def _network_signers(network_slug):
             "parenttype": "CRM Opt-In Network",
             "parentfield": "network_signers",
         },
-        fields=["user", "full_name", "email"],
+        fields=["full_name", "email"],
         order_by="idx asc",
         ignore_permissions=True,  # SYSTEM-INTERNAL
     )
     signers = []
     for r in rows:
-        ident = _resolve_user_identity(r.get("user"), r.get("full_name"), r.get("email"))
-        if ident["email"]:
-            signers.append(ident)
+        email = frappe.utils.cstr(r.get("email") or "").strip()
+        if email:
+            signers.append({
+                "full_name": frappe.utils.cstr(r.get("full_name") or "").strip() or email,
+                "email": email,
+            })
     return signers
 
 
@@ -202,21 +206,70 @@ def _check_crm_role():
         frappe.throw(_("Not permitted."), frappe.PermissionError)
 
 
-def _get_signatory_row(contract_doc, role):
-    """Return the first signatory child row matching role, or None."""
-    for row in (contract_doc.signatories or []):
-        if row.signatory_role == role:
-            return row
-    return None
+def _get_signatory_row(contract_doc, role, row_name=None):
+    """Return the signatory child row for role, or None.
+
+    A role can legitimately repeat on one contract — a network with several
+    configured signers yields several "Network Signatory" rows. When row_name
+    (the child docname) is given, the exact row is returned so operations never
+    hit the wrong person; without it, the first row for the role is returned
+    (correct for the singular roles: facility signatory/witness, Tiberbu).
+    """
+    rows = [r for r in (contract_doc.signatories or []) if r.signatory_role == role]
+    if row_name:
+        for r in rows:
+            if r.name == row_name:
+                return r
+        return None
+    return rows[0] if rows else None
 
 
-def _load_signatory(contract, role):
+def _load_signatory(contract, role, row_name=None):
     """Load the contract doc and the signatory row for role. Raise if either is missing."""
     contract_doc = frappe.get_doc("CRM Contract", contract)
-    signatory_row = _get_signatory_row(contract_doc, role)
+    signatory_row = _get_signatory_row(contract_doc, role, row_name)
     if not signatory_row:
         frappe.throw(_("Signatory role not found in this contract."), frappe.DoesNotExistError)
     return contract_doc, signatory_row
+
+
+def _load_signatory_by_token(contract, role, token, token_field):
+    """Resolve a signatory row for the guest signing flow by matching its token.
+
+    Roles that repeat (multiple Network Signatory rows) each carry a unique
+    invite/signing token, so the token — not the role — identifies the person.
+    Falls back to the first role row when no token matches, so the downstream
+    token validator raises the usual "invalid/expired link" error unchanged.
+    """
+    contract_doc = frappe.get_doc("CRM Contract", contract)
+    rows = [r for r in (contract_doc.signatories or []) if r.signatory_role == role]
+    if not rows:
+        frappe.throw(_("Signatory role not found in this contract."), frappe.DoesNotExistError)
+    token = frappe.utils.cstr(token or "")
+    if token:
+        for r in rows:
+            stored = frappe.utils.cstr(r.get(token_field) or "")
+            if stored and hmac.compare_digest(stored, token):
+                return contract_doc, r
+    return contract_doc, rows[0]
+
+
+def _invalidate_signature(row):
+    """Void a captured signature and its signing artefacts.
+
+    Used when an edit means the signature no longer belongs to the current
+    person/terms, so the audit trail never shows a signature for a signing event
+    that no longer holds. Clears the signature image, IP, timestamp, the consumed
+    OTP and any live signing session. Invite handling is left to the caller.
+    """
+    row.signature_data = None
+    row.signature_ip = None
+    row.signed_at = None
+    row.otp_hash = None
+    row.otp_expiry = None
+    row.otp_used = 0
+    row.signing_token = None
+    row.signing_expiry = None
 
 
 def _validate_invite(signatory_row, token):
@@ -245,8 +298,10 @@ def _validate_signing(signatory_row, token):
         frappe.throw(_("Verification failed."), frappe.AuthenticationError)
 
 
-def _attempts_cache_key(contract, role):
-    return "contract_otp_attempts:%s:%s" % (contract, role)
+def _attempts_cache_key(contract, role, row_name=""):
+    # row_name disambiguates repeated roles (multiple Network Signatory rows) so
+    # each signatory has its own brute-force counter rather than a shared one.
+    return "contract_otp_attempts:%s:%s:%s" % (contract, role, row_name or "")
 
 
 def _signing_link(contract_name, role, token):
@@ -642,10 +697,13 @@ def generate(
 
 
 @frappe.whitelist()
-def resend_invitation(contract, role):
+def resend_invitation(contract, role, row_name=None):
     """
     Regenerate the invitation link for a still-pending signatory and re-send the
     branded invitation email. Requires: Sales Manager or System Manager role.
+
+    row_name (the signatory child docname) targets the exact row when a role
+    repeats (multiple Network Signatory rows); omit it for the singular roles.
 
     Returns: {status: "sent", email: <signatory_email>}
     """
@@ -653,8 +711,9 @@ def resend_invitation(contract, role):
 
     contract = frappe.utils.cstr(contract).strip()
     role = frappe.utils.cstr(role).strip()
+    row_name = frappe.utils.cstr(row_name).strip() or None
 
-    contract_doc, signatory_row = _load_signatory(contract, role)
+    contract_doc, signatory_row = _load_signatory(contract, role, row_name)
 
     if signatory_row.status != "Pending":
         frappe.throw(
@@ -683,15 +742,22 @@ def resend_invitation(contract, role):
 
 
 @frappe.whitelist()
-def update_signatory(contract, role, name, email):
+def update_signatory(contract, role, name, email, row_name=None):
     """
-    Update the name/email of a signatory who has NOT yet signed.
-    Requires: Sales Manager or System Manager role.
+    Update the name/email of a signatory. Requires: Sales Manager or System
+    Manager role.
 
-    A signed signatory is immutable. If the email changes on a signatory who was
-    already invited, the previously-issued link (bound to the old address) is
-    invalidated and a fresh invitation is sent to the new address so the link
-    always reaches the intended person.
+    row_name (the signatory child docname) targets the exact row when a role
+    repeats (multiple Network Signatory rows) — without it a repeated role would
+    resolve to the first row and could invalidate the wrong person's signature.
+    Omit it for the singular roles (facility signatory/witness, Tiberbu).
+
+    Any row is editable — Pending, Declined, or already Signed. Editing a SIGNED
+    signatory invalidates the captured signature: the signature image, IP,
+    timestamp and any consumed OTP are cleared and the row is reset to Pending so
+    the (possibly new) person signs afresh. If the row had an outstanding invite
+    OR was signed, a fresh signing link is issued and emailed to the current
+    address (invalidating the old one); otherwise the exec can Resend.
 
     Returns: {status: "updated", email, resent: bool}
     """
@@ -701,45 +767,64 @@ def update_signatory(contract, role, name, email):
     role = frappe.utils.cstr(role).strip()
     name = frappe.utils.cstr(name).strip()
     email = frappe.utils.cstr(email).strip().lower()
+    row_name = frappe.utils.cstr(row_name).strip() or None
 
     if not name or not email:
         frappe.throw(_("Signatory name and email are required."))
 
-    contract_doc, signatory_row = _load_signatory(contract, role)
+    contract_doc, signatory_row = _load_signatory(contract, role, row_name)
 
-    # Editable until signed: a Pending or Declined signatory can still be
-    # corrected/replaced. Only a Signed row is immutable (its signature is bound
-    # to the captured name/email + audit trail).
-    if signatory_row.status == "Signed":
-        frappe.throw(
-            _("This signatory has already signed and can no longer be edited."),
-            frappe.ValidationError,
-        )
-
+    was_signed = signatory_row.status == "Signed"
     email_changed = (
         frappe.utils.cstr(signatory_row.signatory_email or "").strip().lower() != email
     )
 
     signatory_row.signatory_name = name
     signatory_row.signatory_email = email
-    # A corrected non-Signed row (e.g. Declined) returns to Pending so it is no
-    # longer treated as a refusal; if the email also changed it is re-invited
-    # below, otherwise the exec can Resend. Signed rows never reach here (guarded).
+
+    # Editing a signed row means the old signature no longer belongs to this
+    # (possibly new) person — clear it and the consumed OTP so the audit trail
+    # never shows a signature for someone who did not sign the current terms.
+    if was_signed:
+        _invalidate_signature(signatory_row)
+
+    # A corrected non-Pending row (Declined, or a just-invalidated Signed one)
+    # returns to Pending so it re-enters the signing flow.
     if signatory_row.status != "Pending":
         signatory_row.status = "Pending"
-    # Keep the witness's "witnessing_for" label in sync when the principal is renamed.
+    # The facility witness attests to the facility signatory's signing event.
     if role == "Facility Signatory":
         witness = _get_signatory_row(contract_doc, "Facility Witness")
         if witness:
+            # Keep the "witnessing_for" label in sync when the principal is renamed.
             witness.witnessing_for = name
+            # If the principal's signature was just invalidated, the witness's
+            # attestation is now void — it witnessed an event that no longer
+            # exists. Reset it so it is re-invited (after the principal re-signs)
+            # and re-witnesses the fresh signature.
+            if was_signed and witness.status == "Signed":
+                _invalidate_signature(witness)
+                witness.status = "Pending"
+                witness.invite_token = None
+                witness.invite_expiry = None
 
-    # Only re-issue (which sends a fresh email) when the row already had an
-    # outstanding invitation and the destination address actually changed.
+    # A re-opened signed row means the contract is no longer fully executed —
+    # walk the contract-level state back to the awaiting stage for this party so
+    # the UI never shows "Fully Executed" alongside a Pending signatory.
+    if was_signed:
+        contract_doc.status = "Awaiting Signatures"
+        contract_doc.workflow_state = (
+            "Awaiting Counterparty Signatures"
+            if role in _COUNTERPARTY_ROLES
+            else "Awaiting Facility Signature"
+        )
+
+    # Re-issue a fresh link when the address changed on an already-invited row,
+    # or whenever a signed row was edited (they must sign again). Re-issuing mints
+    # a new token (invalidating the stale link), emails it, and saves + commits.
     already_invited = bool(signatory_row.invite_token)
     resent = False
-    if email_changed and already_invited:
-        # _issue_and_send_invitation mints a fresh token (invalidating the stale
-        # link), emails the new address, and saves + commits the doc.
+    if was_signed or (email_changed and already_invited):
         _issue_and_send_invitation(contract_doc, signatory_row)
         resent = True
     else:
@@ -818,6 +903,124 @@ def add_signatory(contract, role, name, email):
     _transition(contract)
 
     return {"status": "added", "role": role, "email": email}
+
+
+def _sync_network_signer_on_contract(contract, name, email, original_email):
+    """Reflect a network-config signer change onto a live contract's Network
+    Signatory row. Reuses the whitelisted row operations so the Signed-row
+    invalidation + re-invite semantics (see update_signatory) are identical:
+    edit the matching row (found by its original email, or by the new email when
+    the row was already renamed) or add a new Pending row when the contract has
+    none for that person yet.
+
+    The new email is matched as a fallback so a rename to an address already on
+    the contract updates that row rather than making add_signatory throw
+    "already on the contract" (which would strand the just-committed config change).
+    """
+    contract_doc = frappe.get_doc("CRM Contract", contract)
+    old_match = frappe.utils.cstr(original_email or email).strip().lower()
+    new_match = frappe.utils.cstr(email).strip().lower()
+    net_rows = [
+        r for r in (contract_doc.signatories or [])
+        if r.signatory_role == "Network Signatory"
+    ]
+    row = next(
+        (r for r in net_rows
+         if frappe.utils.cstr(r.signatory_email or "").strip().lower() == old_match),
+        None,
+    ) or next(
+        (r for r in net_rows
+         if frappe.utils.cstr(r.signatory_email or "").strip().lower() == new_match),
+        None,
+    )
+    if row:
+        update_signatory(
+            contract=contract, role="Network Signatory",
+            name=name, email=email, row_name=row.name,
+        )
+        return "updated"
+    add_signatory(contract=contract, role="Network Signatory", name=name, email=email)
+    return "added"
+
+
+@frappe.whitelist()
+def save_network_signer(network_slug, name, email, original_email="", contract=""):
+    """
+    Add, edit, or replace a Network Signatory in the NETWORK CONFIGURATION —
+    the source of truth (CRM Opt-In Network.network_signers), so the change
+    persists for every future contract for that network. Network signers are
+    external people keyed by name + email (no Frappe User). When `contract` is
+    given the change is also synced onto that live contract (see
+    _sync_network_signer_on_contract). Requires: Sales Manager or System Manager.
+
+    - original_email set → the matching config row is updated/replaced.
+    - original_email blank → a new signer is appended (deduped by email).
+
+    This is the Network counterpart to the per-contract add_signatory. The
+    Tiberbu Signatory is deliberately NOT handled here — it is a global singleton
+    in CRM Opt-In Settings and must never be overwritten from a single deal, so
+    Tiberbu add/edit stays per-contract via add_signatory / update_signatory.
+
+    Returns: {status, network_slug, email, contract_synced}
+    """
+    _check_crm_role()
+
+    network_slug = frappe.utils.cstr(network_slug).strip()
+    name = frappe.utils.cstr(name).strip()
+    email = frappe.utils.cstr(email).strip().lower()
+    original_email = frappe.utils.cstr(original_email).strip().lower()
+    contract = frappe.utils.cstr(contract).strip()
+
+    if not network_slug or not frappe.db.exists("CRM Opt-In Network", network_slug):
+        frappe.throw(_("Unknown opt-in network for this deal — cannot save a network signer."))
+    if not name or not email:
+        frappe.throw(_("Signer name and email are required."))
+
+    net = frappe.get_doc("CRM Opt-In Network", network_slug)
+    rows = net.network_signers or []
+
+    # When editing, match the config row by its original email. If the signer
+    # isn't in the config yet (e.g. it lives only on the contract), we append it —
+    # the whole point is to write it back — rather than error out.
+    target = None
+    if original_email:
+        target = next(
+            (r for r in rows
+             if frappe.utils.cstr(r.email or "").strip().lower() == original_email),
+            None,
+        )
+
+    # The new email must not collide with a DIFFERENT existing signer row.
+    for r in rows:
+        if r is target:
+            continue
+        if frappe.utils.cstr(r.email or "").strip().lower() == email:
+            frappe.throw(_("A network signer with this email already exists."))
+
+    if target:
+        target.full_name = name
+        target.email = email
+    else:
+        net.append("network_signers", {"full_name": name, "email": email})
+
+    net.save(ignore_permissions=True)  # SYSTEM-INTERNAL
+    frappe.db.commit()
+
+    contract_synced = ""
+    if contract and frappe.db.exists("CRM Contract", contract):
+        contract_synced = _sync_network_signer_on_contract(contract, name, email, original_email)
+        log_deal_event(
+            frappe.get_value("CRM Contract", contract, "deal"),
+            "Network signer %s saved to network %s config and %s on contract %s"
+            % (email, network_slug, contract_synced, contract),
+        )
+
+    return {
+        "status": "saved",
+        "network_slug": network_slug,
+        "email": email,
+        "contract_synced": contract_synced,
+    }
 
 
 @frappe.whitelist()
@@ -1134,7 +1337,7 @@ def request_otp(contract, role, token):
     contract = frappe.utils.cstr(contract).strip()
     role = frappe.utils.cstr(role).strip()
 
-    contract_doc, signatory_row = _load_signatory(contract, role)
+    contract_doc, signatory_row = _load_signatory_by_token(contract, role, token, "invite_token")
     _validate_invite(signatory_row, token)
 
     if signatory_row.status != "Pending":
@@ -1154,9 +1357,10 @@ def request_otp(contract, role, token):
     contract_doc.save(ignore_permissions=True)  # SYSTEM-INTERNAL
     frappe.db.commit()
 
-    # Reset attempt counter in Redis
+    # Reset attempt counter in Redis (keyed per-row so co-signatories sharing a
+    # role each get their own counter)
     frappe.cache().set_value(
-        _attempts_cache_key(contract, role),
+        _attempts_cache_key(contract, role, signatory_row.name),
         0,
         expires_in_sec=_OTP_EXPIRY_SECONDS + 120,
     )
@@ -1209,7 +1413,7 @@ def verify_otp(contract, role, token, otp):
     role = frappe.utils.cstr(role).strip()
     otp = frappe.utils.cstr(otp).strip()
 
-    contract_doc, signatory_row = _load_signatory(contract, role)
+    contract_doc, signatory_row = _load_signatory_by_token(contract, role, token, "invite_token")
     _validate_invite(signatory_row, token)
 
     if signatory_row.status != "Pending":
@@ -1225,8 +1429,9 @@ def verify_otp(contract, role, token, otp):
     ):
         frappe.throw(_("Verification failed."), frappe.AuthenticationError)
 
-    # Check attempt count from Redis
-    attempts_key = _attempts_cache_key(contract, role)
+    # Check attempt count from Redis (per-row so shared-role co-signatories don't
+    # share a brute-force counter)
+    attempts_key = _attempts_cache_key(contract, role, signatory_row.name)
     attempts = int(frappe.cache().get_value(attempts_key) or 0)
     if attempts >= _MAX_OTP_ATTEMPTS:
         frappe.throw(_("Verification failed."), frappe.AuthenticationError)
@@ -1278,7 +1483,9 @@ def get_contract(signing_token, contract, role):
     contract = frappe.utils.cstr(contract).strip()
     role = frappe.utils.cstr(role).strip()
 
-    contract_doc, signatory_row = _load_signatory(contract, role)
+    contract_doc, signatory_row = _load_signatory_by_token(
+        contract, role, signing_token, "signing_token"
+    )
     _validate_signing(signatory_row, signing_token)
 
     return {
@@ -1300,7 +1507,9 @@ def sign(signing_token, contract, role, signature_b64):
     contract = frappe.utils.cstr(contract).strip()
     role = frappe.utils.cstr(role).strip()
 
-    contract_doc, signatory_row = _load_signatory(contract, role)
+    contract_doc, signatory_row = _load_signatory_by_token(
+        contract, role, signing_token, "signing_token"
+    )
     _validate_signing(signatory_row, signing_token)
 
     if signatory_row.status != "Pending":
