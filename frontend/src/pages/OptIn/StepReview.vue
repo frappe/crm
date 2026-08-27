@@ -43,41 +43,56 @@
       </div>
     </div>
 
-    <!-- Facility Witness section — captured here so it flows straight onto the
-         contract the CRM team generates later (no chasing the facility for it). -->
-    <div class="mb-4 rounded-xl border border-gray-200 bg-white p-5 dark:border-gray-700 dark:bg-gray-800">
-      <div class="mb-3">
-        <h3 class="text-sm font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">
-          Facility Witness
-        </h3>
-        <p class="mt-1 text-xs text-gray-400 dark:text-gray-500">
-          A colleague at your facility who will witness the signing of your agreement.
-        </p>
-      </div>
-      <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
-        <div>
-          <label class="mb-1 block text-xs font-medium text-gray-700 dark:text-gray-300">
-            Witness Name <span class="text-red-500">*</span>
-          </label>
-          <input
-            v-model="witnessName"
-            type="text"
-            placeholder="Full legal name"
-            class="w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-transparent focus:outline-none focus:ring-2 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:placeholder-gray-500"
-          />
+    <!-- Facility Witness section — the only section on this screen that asks for
+         input, so it wears the accent-bar + tint treatment (same shell as the
+         Pricing card) to lift it out of the read-only review cards around it.
+         Captured here so it flows straight onto the contract the CRM team
+         generates later (no chasing the facility for it). -->
+    <div class="mb-4 flex overflow-hidden rounded-xl border border-gray-200 shadow-sm dark:border-gray-700">
+      <div class="w-1.5 shrink-0" style="background-color: var(--brand-primary)" />
+      <div
+        class="flex-1 p-5"
+        style="background-color: color-mix(in srgb, var(--brand-primary) 6%, transparent)"
+      >
+        <div class="mb-4">
+          <h3
+            class="text-sm font-bold uppercase tracking-wider"
+            style="color: var(--brand-primary)"
+          >
+            Facility Witness
+          </h3>
+          <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">
+            A colleague at your facility who will witness the signing of your agreement.
+            <span class="font-medium text-gray-700 dark:text-gray-200">Both fields are required.</span>
+          </p>
         </div>
-        <div>
-          <label class="mb-1 block text-xs font-medium text-gray-700 dark:text-gray-300">
-            Witness Email <span class="text-red-500">*</span>
-          </label>
-          <input
-            v-model="witnessEmail"
-            type="email"
-            placeholder="witness@hospital.or.ke"
-            :class="['w-full rounded-lg border bg-white px-3 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-transparent focus:outline-none focus:ring-2 dark:bg-gray-800 dark:text-white dark:placeholder-gray-500',
-              witnessEmailError ? 'border-red-400 dark:border-red-600' : 'border-gray-200 dark:border-gray-700']"
-          />
-          <p v-if="witnessEmailError" class="mt-1 text-xs text-red-500">{{ witnessEmailError }}</p>
+        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <div>
+            <label class="mb-1 block text-xs font-semibold text-gray-800 dark:text-gray-200">
+              Witness Name <span class="text-red-500">*</span>
+            </label>
+            <input
+              v-model="witnessName"
+              type="text"
+              placeholder="Full legal name"
+              class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-transparent focus:outline-none focus:ring-2 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-500"
+              style="--tw-ring-color: var(--brand-primary)"
+            />
+          </div>
+          <div>
+            <label class="mb-1 block text-xs font-semibold text-gray-800 dark:text-gray-200">
+              Witness Email <span class="text-red-500">*</span>
+            </label>
+            <input
+              v-model="witnessEmail"
+              type="email"
+              placeholder="witness@hospital.or.ke"
+              :class="['w-full rounded-lg border bg-white px-3 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-transparent focus:outline-none focus:ring-2 dark:bg-gray-800 dark:text-white dark:placeholder-gray-500',
+                witnessEmailError ? 'border-red-400 dark:border-red-600' : 'border-gray-300 dark:border-gray-600']"
+              style="--tw-ring-color: var(--brand-primary)"
+            />
+            <p v-if="witnessEmailError" class="mt-1 text-xs text-red-500">{{ witnessEmailError }}</p>
+          </div>
         </div>
       </div>
     </div>

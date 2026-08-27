@@ -96,19 +96,22 @@
           <label
             for="read-confirm"
             :class="[
-              'text-sm leading-snug select-none',
+              'text-sm font-medium leading-snug select-none',
               scrolledToBottom
-                ? 'cursor-pointer text-gray-700 dark:text-gray-300'
+                ? 'cursor-pointer text-gray-800 dark:text-gray-200'
                 : 'cursor-not-allowed text-gray-400 dark:text-gray-600',
             ]"
           >
             I have read and I confirm I am authorised to sign this agreement
+            <span class="text-red-500">*</span>
           </label>
         </div>
 
         <!-- Signature canvas -->
         <div class="mt-6">
-          <p class="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Your Signature</p>
+          <p class="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-800 dark:text-gray-200">
+            Your Signature <span class="text-red-500">*</span>
+          </p>
           <SignatureCanvas
             ref="canvasRef"
             :disabled="!readConfirmed"

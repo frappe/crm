@@ -31,19 +31,30 @@
         ></div>
       </div>
 
-      <!-- Scroll hint -->
+      <!-- Scroll hint — this gates the whole flow (you can't sign until you reach
+           the bottom), so it must read as an instruction, not a whisper. -->
       <p
         v-if="!reachedBottom"
-        class="mt-2 text-center text-xs text-gray-400 dark:text-gray-500"
+        class="mt-2 flex items-center justify-center gap-1.5 text-center text-sm font-medium text-gray-600 dark:text-gray-300"
       >
+        <svg
+          class="h-4 w-4 animate-bounce"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          :style="{ color: 'var(--brand-primary, #bc1823)' }"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+        </svg>
         Scroll to the bottom to continue
       </p>
 
       <!-- Signatory info -->
-      <div class="mt-4 rounded-lg border border-gray-100 bg-gray-50 p-3 dark:border-gray-700 dark:bg-gray-800">
-        <p class="text-xs text-gray-500 dark:text-gray-400">Signing as</p>
-        <p class="mt-0.5 text-sm font-semibold text-gray-900 dark:text-white">{{ signatoryName }}</p>
-        <p class="text-xs text-gray-500 dark:text-gray-400">{{ signatoryRole }}</p>
+      <div class="mt-4 rounded-lg border border-gray-200 bg-gray-50 p-3 dark:border-gray-700 dark:bg-gray-800">
+        <p class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Signing as</p>
+        <p class="mt-0.5 text-base font-semibold text-gray-900 dark:text-white">{{ signatoryName }}</p>
+        <p class="text-sm text-gray-600 dark:text-gray-300">{{ signatoryRole }}</p>
       </div>
     </template>
   </div>
