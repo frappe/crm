@@ -707,7 +707,10 @@ def update_signatory(contract, role, name, email):
 
     contract_doc, signatory_row = _load_signatory(contract, role)
 
-    if signatory_row.status != "Pending":
+    # Editable until signed: a Pending or Declined signatory can still be
+    # corrected/replaced. Only a Signed row is immutable (its signature is bound
+    # to the captured name/email + audit trail).
+    if signatory_row.status == "Signed":
         frappe.throw(
             _("This signatory has already signed and can no longer be edited."),
             frappe.ValidationError,
@@ -719,6 +722,11 @@ def update_signatory(contract, role, name, email):
 
     signatory_row.signatory_name = name
     signatory_row.signatory_email = email
+    # A corrected non-Signed row (e.g. Declined) returns to Pending so it is no
+    # longer treated as a refusal; if the email also changed it is re-invited
+    # below, otherwise the exec can Resend. Signed rows never reach here (guarded).
+    if signatory_row.status != "Pending":
+        signatory_row.status = "Pending"
     # Keep the witness's "witnessing_for" label in sync when the principal is renamed.
     if role == "Facility Signatory":
         witness = _get_signatory_row(contract_doc, "Facility Witness")
@@ -744,6 +752,72 @@ def update_signatory(contract, role, name, email):
         % (role, contract, (" — new invitation sent to %s" % email) if resent else ""),
     )
     return {"status": "updated", "email": email, "resent": resent}
+
+
+@frappe.whitelist()
+def add_signatory(contract, role, name, email):
+    """
+    Add a Network/Tiberbu co-signatory row to a contract that is missing it —
+    e.g. a contract generated before co-signatories were wired, or where the
+    network/Tiberbu configuration changed after generation.
+    Requires: Sales Manager or System Manager role.
+
+    The new row is Pending and un-invited: it is invited automatically once the
+    facility side has signed (see _transition), or the exec can Resend. A
+    Tiberbu Signatory is unique per contract; a Network Signatory is deduped on
+    email so the same person is not added twice.
+
+    Returns: {status: "added", role, email}
+    """
+    _check_crm_role()
+
+    contract = frappe.utils.cstr(contract).strip()
+    role = frappe.utils.cstr(role).strip()
+    name = frappe.utils.cstr(name).strip()
+    email = frappe.utils.cstr(email).strip().lower()
+
+    if role not in _COUNTERPARTY_ROLES:
+        frappe.throw(_("Only Network and Tiberbu co-signatories can be added here."))
+    if not name or not email:
+        frappe.throw(_("Signatory name and email are required."))
+
+    contract_doc = frappe.get_doc("CRM Contract", contract)
+
+    for row in (contract_doc.signatories or []):
+        if row.signatory_role != role:
+            continue
+        # Tiberbu is singular; a Network signer is unique by email.
+        if role == "Tiberbu Signatory" or (
+            frappe.utils.cstr(row.signatory_email or "").strip().lower() == email
+        ):
+            frappe.throw(_("This co-signatory is already on the contract."))
+
+    contract_doc.append(
+        "signatories",
+        {
+            "signatory_name": name,
+            "signatory_email": email,
+            "signatory_role": role,
+            "status": "Pending",
+            "is_witness": 0,
+        },
+    )
+    contract_doc.save(ignore_permissions=True)  # SYSTEM-INTERNAL
+    frappe.db.commit()
+
+    log_deal_event(
+        contract_doc.deal,
+        "Co-signatory %s (%s) added to contract %s" % (role, email, contract),
+    )
+
+    # If the facility side has already signed (the common legacy case — the
+    # contract predates co-signing), the new counterparty would otherwise sit
+    # Pending and un-invited forever, because invitations are only issued from
+    # _transition on a signature event. _transition is ordered + idempotent
+    # (guards on invite_token) so it safely invites the new row now if it is due.
+    _transition(contract)
+
+    return {"status": "added", "role": role, "email": email}
 
 
 @frappe.whitelist()
