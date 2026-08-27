@@ -13,7 +13,7 @@
         <div class="px-6 pt-8 text-center">
           <div
             class="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl mx-auto"
-            style="background-color: color-mix(in srgb, var(--brand-primary) 15%, transparent)"
+            style="background-color: color-mix(in srgb, var(--brand-primary, #bc1823) 15%, transparent)"
           >
             <svg
               class="h-8 w-8"
@@ -21,7 +21,7 @@
               fill="none"
               stroke="currentColor"
               stroke-width="1.5"
-              :style="{ color: 'var(--brand-primary)' }"
+              :style="{ color: 'var(--brand-primary, #bc1823)' }"
             >
               <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
             </svg>
@@ -54,7 +54,7 @@
       <div class="mb-6 text-center">
         <div
           class="mb-3 flex h-12 w-12 items-center justify-center rounded-xl mx-auto"
-          style="background-color: color-mix(in srgb, var(--brand-primary) 15%, transparent)"
+          style="background-color: color-mix(in srgb, var(--brand-primary, #bc1823) 15%, transparent)"
         >
           <svg
             class="h-6 w-6"
@@ -62,7 +62,7 @@
             fill="none"
             stroke="currentColor"
             stroke-width="1.5"
-            :style="{ color: 'var(--brand-primary)' }"
+            :style="{ color: 'var(--brand-primary, #bc1823)' }"
           >
             <path d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"/>
           </svg>
@@ -91,7 +91,7 @@
             type="checkbox"
             :disabled="!scrolledToBottom"
             class="mt-0.5 h-4 w-4 cursor-pointer rounded disabled:cursor-not-allowed disabled:opacity-50"
-            :style="readConfirmed ? 'accent-color: var(--brand-primary)' : ''"
+            :style="readConfirmed ? 'accent-color: var(--brand-primary, #bc1823)' : ''"
           />
           <label
             for="read-confirm"
@@ -121,7 +121,7 @@
           <button
             :disabled="!readConfirmed || !hasSig || signing"
             class="w-full rounded-xl px-6 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90 focus:outline-none disabled:opacity-50"
-            style="background-color: var(--brand-primary)"
+            style="background-color: var(--brand-primary, #bc1823)"
             @click="handleSign"
           >
             <span v-if="signing">Submitting…</span>

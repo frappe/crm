@@ -72,6 +72,18 @@ const reachedBottom = ref(false)
 
 const getContractResource = createResource({ url: 'crm.api.contracts.get_contract' })
 
+/**
+ * Strip document-level tags whose CSS/JS would escape this panel and restyle the
+ * page. <style> and <script> blocks are removed outright (contents and all);
+ * <html>/<head>/<body> wrappers are unwrapped so their inner body still renders.
+ */
+function sanitizeContractHtml(raw) {
+  return raw
+    .replace(/<style[\s\S]*?<\/style>/gi, '')
+    .replace(/<script[\s\S]*?<\/script>/gi, '')
+    .replace(/<\/?(?:html|head|body|meta|link|title)[^>]*>/gi, '')
+}
+
 onMounted(async () => {
   try {
     const data = await getContractResource.fetch({
@@ -79,7 +91,11 @@ onMounted(async () => {
       contract: props.contract,
       role: props.role,
     })
-    contractHtml.value = data.contract_html || ''
+    // T&C templates are sometimes authored as full HTML documents. Injected via
+    // v-html, any <style>/<script>/<head>/<body> they carry is UNSCOPED and leaks
+    // onto the whole page — which can hide the sign controls. Strip document-level
+    // tags so only the contract body is rendered, isolated to this panel.
+    contractHtml.value = sanitizeContractHtml(data.contract_html || '')
     signatoryName.value = data.signatory_name || ''
     signatoryRole.value = data.signatory_role || props.role
     contractDate.value = data.contract_date || ''

@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>CareverseHIMS — Sign Contract</title>
     <script>window.csrf_token = {{ (csrf_token or '') | tojson }};</script>
+    <style>
+      :root {
+        --brand-primary: {{ brand_primary or '#bc1823' }};
+        --brand-primary-dark: {{ brand_primary_dark or '#8f111b' }};
+      }
+    </style>
     {{ signing_head | safe }}
   </head>
   <body class="h-full">

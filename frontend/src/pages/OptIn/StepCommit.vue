@@ -121,6 +121,7 @@ async function handleCommit(committed) {
 
   const payload = {
     contact: store.contact,
+    witness: store.witness,
     facilities: store.selectedFacilities,
     pricing: store.pricing?.facilities || [],
     tc_doc_name: store.termsDocName,

@@ -1,6 +1,168 @@
 <template>
   <div class="mt-6 space-y-5 px-3 pb-6 sm:px-0">
 
+    <!-- ── DEAL PROGRESS (prominent hero) ─────────────────────────────────── -->
+    <div class="rounded-xl border border-outline-gray-2 bg-surface-white p-5 shadow-sm dark:bg-surface-gray-1">
+      <div class="mb-4 flex items-end justify-between gap-3">
+        <div>
+          <h3 class="text-base font-semibold text-ink-gray-9">{{ __('Deal Progress') }}</h3>
+          <p class="mt-0.5 text-xs text-ink-gray-5">
+            {{ __('{0} of {1} stages complete', [doneCount, stages.length]) }}
+          </p>
+        </div>
+        <span class="text-2xl font-bold leading-none text-ink-gray-9">{{ progressPct }}%</span>
+      </div>
+
+      <!-- Overall progress bar -->
+      <div class="mb-6 h-2 w-full overflow-hidden rounded-full bg-surface-gray-3">
+        <div
+          class="h-full rounded-full bg-green-500 transition-all duration-500 dark:bg-green-400"
+          :style="{ width: progressPct + '%' }"
+        />
+      </div>
+
+      <!-- Loading skeleton when lifecycle prop not yet available -->
+      <div v-if="!props.lifecycle" class="flex gap-2">
+        <div v-for="n in 6" :key="n" class="h-16 flex-1 animate-pulse rounded-lg bg-surface-gray-2" />
+      </div>
+
+      <!-- Stepper: vertical timeline on mobile, horizontal on lg -->
+      <ol v-else class="flex flex-col gap-6 lg:flex-row lg:gap-0">
+        <li
+          v-for="(st, i) in stages"
+          :key="st.key"
+          class="relative flex flex-1 items-start gap-3 lg:flex-col lg:items-center lg:gap-0 lg:text-center"
+        >
+          <!-- Connector to the previous node -->
+          <span
+            v-if="i > 0"
+            class="absolute left-4 top-[-24px] h-6 w-0.5 lg:left-auto lg:right-1/2 lg:top-4 lg:h-0.5 lg:w-full"
+            :class="stages[i - 1].state === 'done' ? 'bg-green-500 dark:bg-green-400' : 'bg-surface-gray-3'"
+          />
+
+          <!-- Node circle -->
+          <div
+            class="relative z-10 flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full border text-xs font-semibold"
+            :class="nodeClass(st.state)"
+          >
+            <svg
+              v-if="st.state === 'done'"
+              class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="3" stroke-linecap="round" stroke-linejoin="round"
+            >
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+            <svg
+              v-else-if="st.state === 'blocked'"
+              class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="3" stroke-linecap="round" stroke-linejoin="round"
+            >
+              <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+            <span v-else>{{ i + 1 }}</span>
+          </div>
+
+          <!-- Label + reference + status pill -->
+          <div class="min-w-0 lg:mt-2 lg:w-full lg:px-1">
+            <p class="text-xs font-semibold text-ink-gray-8">{{ __(st.label) }}</p>
+            <p class="truncate text-xs text-ink-gray-5" :title="st.ref || ''">{{ st.ref || '—' }}</p>
+            <span
+              class="mt-1 inline-flex items-center gap-1 rounded-full bg-surface-gray-2 px-2 py-0.5 dark:bg-surface-gray-3"
+            >
+              <span :class="statusDot(st.status)" class="h-1.5 w-1.5 flex-shrink-0 rounded-full" />
+              <span class="text-xs font-medium" :class="statusText(st.status)">{{ __(st.statusLabel) }}</span>
+            </span>
+          </div>
+        </li>
+      </ol>
+
+      <!-- Signatory detail: edit unsigned signatories, resend/regenerate links -->
+      <div
+        v-if="contractExists && lc.signatories?.length"
+        class="mt-6 border-t border-outline-gray-2 pt-4"
+      >
+        <p class="mb-2 text-xs font-medium uppercase tracking-wide text-ink-gray-4">
+          {{ __('Signatories') }}
+        </p>
+        <div class="space-y-2">
+          <div
+            v-for="s in lc.signatories"
+            :key="s.role"
+            class="rounded-lg border border-outline-gray-2 bg-surface-gray-1 p-3 dark:bg-surface-gray-2"
+          >
+            <!-- Display row -->
+            <div v-if="editingRole !== s.role" class="flex flex-wrap items-center gap-x-3 gap-y-1">
+              <span :class="statusDot(s.status)" class="h-2 w-2 flex-shrink-0 rounded-full" />
+              <div class="min-w-0">
+                <p class="truncate text-sm font-medium text-ink-gray-8">{{ s.name || __(s.role) }}</p>
+                <p class="truncate text-xs text-ink-gray-5">
+                  {{ __(s.role) }}<template v-if="s.email"> · {{ s.email }}</template>
+                </p>
+              </div>
+              <span class="ml-auto text-xs font-medium" :class="statusText(s.status)">{{ __(s.status) }}</span>
+
+              <!-- Actions for still-pending signatories -->
+              <div
+                v-if="isPending(s.status)"
+                class="flex w-full items-center gap-4 pt-1 sm:w-auto sm:basis-full sm:justify-end sm:pt-1"
+              >
+                <button
+                  type="button"
+                  class="text-xs underline text-ink-gray-6 hover:text-ink-gray-8 disabled:opacity-40 disabled:no-underline"
+                  :disabled="!canGenerate || resendingRole === s.role"
+                  :title="canGenerate ? __('Edit this signatory') : __('Sales Manager role required')"
+                  @click="startEdit(s)"
+                >
+                  {{ __('Edit') }}
+                </button>
+                <button
+                  type="button"
+                  class="text-xs underline text-ink-gray-6 hover:text-ink-gray-8 disabled:opacity-40 disabled:no-underline"
+                  :disabled="!canGenerate || resendingRole === s.role"
+                  :title="canGenerate ? __('Regenerate and re-send the signing link') : __('Sales Manager role required')"
+                  @click="doResend(s.role)"
+                >
+                  {{ resendingRole === s.role ? __('Sending…') : __('Resend link') }}
+                </button>
+              </div>
+            </div>
+
+            <!-- Inline edit form -->
+            <div v-else class="space-y-2">
+              <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                <input
+                  v-model="editName"
+                  type="text"
+                  :placeholder="__('Full legal name')"
+                  class="w-full rounded-lg border border-outline-gray-2 bg-surface-white px-3 py-2 text-sm text-ink-gray-9 placeholder-ink-gray-4 focus:outline-none focus:ring-2 focus:ring-outline-blue-4 dark:bg-surface-gray-1"
+                />
+                <input
+                  v-model="editEmail"
+                  type="email"
+                  :placeholder="__('signatory@hospital.org')"
+                  class="w-full rounded-lg border border-outline-gray-2 bg-surface-white px-3 py-2 text-sm text-ink-gray-9 placeholder-ink-gray-4 focus:outline-none focus:ring-2 focus:ring-outline-blue-4 dark:bg-surface-gray-1"
+                />
+              </div>
+              <p class="text-xs text-ink-gray-4">
+                {{ __('Changing the email invalidates the old link and re-sends a fresh one to the new address.') }}
+              </p>
+              <div class="flex items-center justify-end gap-2">
+                <Button variant="subtle" @click="cancelEdit">{{ __('Cancel') }}</Button>
+                <Button
+                  variant="solid"
+                  :loading="savingEdit"
+                  :disabled="!editName.trim() || !editEmail.trim()"
+                  @click="saveEdit(s.role)"
+                >
+                  {{ __('Save') }}
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- ── EXEC NOTES ────────────────────────────────────────────────────── -->
     <div class="rounded-lg border border-outline-gray-2 bg-surface-white p-4 dark:bg-surface-gray-1">
       <label
@@ -81,7 +243,7 @@
     <!-- Nomination form -->
     <div class="rounded-lg border border-outline-gray-2 bg-surface-white p-4 dark:bg-surface-gray-1">
       <p class="mb-4 text-xs font-medium uppercase tracking-wide text-ink-gray-4">
-        {{ __('Nominate Signatories & Approvers') }}
+        {{ __('Nominate Facility Signatory & Witness') }}
       </p>
 
       <!-- Facility Signatory -->
@@ -140,53 +302,54 @@
         </div>
       </div>
 
-      <!-- Internal approvers -->
-      <div class="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-3">
-        <div>
-          <label class="mb-1 block text-xs font-medium text-ink-gray-6">
-            {{ __('Network Approver 1') }}<span class="text-red-500">*</span>
+      <!-- Co-signatories — resolved from the network config + Opt-In Settings,
+           not nominated here. Invited automatically (7-day link) once both
+           facility parties have signed; each signs via the same OTP + pad. -->
+      <div class="mb-6">
+        <div class="mb-2 flex items-center justify-between">
+          <label class="block text-xs font-medium text-ink-gray-6">
+            {{ __('Network & Tiberbu Co-Signatories') }}
           </label>
-          <div :class="{ 'pointer-events-none opacity-50': formLocked }">
-            <Combobox
-              :model-value="networkApprover1"
-              :options="userOptions"
-              :placeholder="__('Search user...')"
-              @update:model-value="networkApprover1 = $event"
-            />
-          </div>
+          <span v-if="coSignersLoading" class="text-xs text-ink-gray-4">{{ __('Loading…') }}</span>
         </div>
-        <div>
-          <label class="mb-1 block text-xs font-medium text-ink-gray-6">
-            {{ __('Network Approver 2') }}<span class="text-red-500">*</span>
-          </label>
-          <div :class="{ 'pointer-events-none opacity-50': formLocked }">
-            <Combobox
-              :model-value="networkApprover2"
-              :options="userOptions"
-              :placeholder="__('Search user...')"
-              @update:model-value="networkApprover2 = $event"
-            />
+
+        <!-- Populated: read-only chips resolved from configuration -->
+        <div v-if="coSigners.length" class="space-y-2">
+          <div
+            v-for="(cs, i) in coSigners"
+            :key="`${cs.signer_role}:${cs.email}:${i}`"
+            class="flex items-center gap-3 rounded-lg border border-outline-gray-2 bg-surface-gray-1 px-3 py-2 dark:bg-surface-gray-2"
+          >
+            <span class="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-surface-gray-3 text-xs font-semibold text-ink-gray-7 dark:bg-surface-gray-4">
+              {{ initials(cs.full_name || cs.email) }}
+            </span>
+            <div class="min-w-0">
+              <p class="truncate text-sm font-medium text-ink-gray-8">{{ cs.full_name || cs.email }}</p>
+              <p class="truncate text-xs text-ink-gray-5">
+                {{ __(cs.signer_role) }}<template v-if="cs.email"> · {{ cs.email }}</template>
+              </p>
+            </div>
           </div>
+          <p class="text-xs text-ink-gray-4">
+            {{ __('These co-signatories are invited automatically once the facility signatory and witness have both signed.') }}
+          </p>
         </div>
-        <div>
-          <label class="mb-1 block text-xs font-medium text-ink-gray-6">
-            {{ __('Tiberbu Approver') }}<span class="text-red-500">*</span>
-          </label>
-          <div :class="{ 'pointer-events-none opacity-50': formLocked }">
-            <Combobox
-              :model-value="tiberbuApprover"
-              :options="userOptions"
-              :placeholder="__('Search user...')"
-              @update:model-value="tiberbuApprover = $event"
-            />
-          </div>
+
+        <!-- Empty: nothing configured — surfaces the config gap instead of failing silently -->
+        <div
+          v-else-if="!coSignersLoading"
+          class="rounded-lg border border-amber-200 bg-amber-50 px-4 py-2.5 dark:border-amber-800 dark:bg-amber-900/20"
+        >
+          <p class="text-xs text-amber-700 dark:text-amber-400">
+            {{ __('No Network Signatories are configured for this network, and no Tiberbu Signatory is set in Opt-In Settings. Configure them so the contract can be co-signed.') }}
+          </p>
         </div>
       </div>
 
       <!-- Action row -->
       <div class="flex flex-wrap items-center justify-end gap-3">
         <span v-if="contractExists && !successMsg" class="text-xs text-ink-gray-5">
-          {{ __('Contract already generated — see lifecycle strip below.') }}
+          {{ __('Contract already generated — see Deal Progress above.') }}
         </span>
         <Button
           v-if="contractExists"
@@ -223,119 +386,12 @@
       </div>
     </div>
 
-    <!-- ── LIFECYCLE STRIP ───────────────────────────────────────────────── -->
-    <div class="rounded-lg border border-outline-gray-2 bg-surface-white p-4 dark:bg-surface-gray-1">
-      <p class="mb-3 text-xs font-medium uppercase tracking-wide text-ink-gray-4">
-        {{ __('Deal Progress') }}
-      </p>
-
-      <!-- Loading skeleton when lifecycle prop not yet available -->
-      <div v-if="!props.lifecycle" class="flex gap-2">
-        <div v-for="n in 6" :key="n" class="h-14 flex-1 animate-pulse rounded-lg bg-surface-gray-2" />
-      </div>
-
-      <!-- Lifecycle cards grid -->
-      <div v-else class="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:flex lg:flex-row lg:gap-3">
-
-        <!-- Opt-In Submission -->
-        <div class="rounded-lg border border-outline-gray-2 bg-surface-gray-1 p-3 dark:bg-surface-gray-2">
-          <p class="mb-1 text-xs font-medium text-ink-gray-4">{{ __('Opt-In') }}</p>
-          <p class="truncate text-xs font-semibold text-ink-gray-8">
-            {{ lc.submission?.ref ?? '—' }}
-          </p>
-          <div class="mt-1.5 flex items-center gap-1">
-            <span :class="statusDot(submissionStatus)" class="h-1.5 w-1.5 flex-shrink-0 rounded-full" />
-            <span class="text-xs" :class="statusText(submissionStatus)">{{ __(submissionStatus) }}</span>
-          </div>
-        </div>
-
-        <!-- Quote -->
-        <div class="rounded-lg border border-outline-gray-2 bg-surface-gray-1 p-3 dark:bg-surface-gray-2">
-          <p class="mb-1 text-xs font-medium text-ink-gray-4">{{ __('Quote') }}</p>
-          <p class="truncate text-xs font-semibold text-ink-gray-8">
-            {{ lc.quotation?.name ?? '—' }}
-          </p>
-          <div class="mt-1.5 flex items-center gap-1">
-            <span :class="statusDot(quotationStatus)" class="h-1.5 w-1.5 flex-shrink-0 rounded-full" />
-            <span class="text-xs" :class="statusText(quotationStatus)">{{ __(quotationStatus) }}</span>
-          </div>
-        </div>
-
-        <!-- Contract -->
-        <div class="rounded-lg border border-outline-gray-2 bg-surface-gray-1 p-3 dark:bg-surface-gray-2">
-          <p class="mb-1 text-xs font-medium text-ink-gray-4">{{ __('Contract') }}</p>
-          <p class="truncate text-xs font-semibold text-ink-gray-8">
-            {{ lc.contract?.name ?? '—' }}
-          </p>
-          <div class="mt-1.5 flex items-center gap-1">
-            <span :class="statusDot(contractStatus)" class="h-1.5 w-1.5 flex-shrink-0 rounded-full" />
-            <span class="text-xs" :class="statusText(contractStatus)">{{ __(contractStatus) }}</span>
-          </div>
-        </div>
-
-        <!-- Signatories -->
-        <div class="rounded-lg border border-outline-gray-2 bg-surface-gray-1 p-3 dark:bg-surface-gray-2">
-          <p class="mb-1.5 text-xs font-medium text-ink-gray-4">{{ __('Signatories') }}</p>
-          <div v-if="!lc.signatories?.length" class="text-xs text-ink-gray-4">—</div>
-          <div v-else class="space-y-1.5">
-            <div
-              v-for="s in lc.signatories"
-              :key="s.role"
-              class="flex flex-wrap items-center gap-x-1.5 gap-y-1"
-            >
-              <span :class="statusDot(s.status)" class="h-1.5 w-1.5 flex-shrink-0 rounded-full" />
-              <span class="text-xs text-ink-gray-6">{{ __(s.role) }}</span>
-              <span class="ml-auto text-xs font-medium" :class="statusText(s.status)">
-                {{ __(s.status) }}
-              </span>
-              <!-- Resend / regenerate signing link — visible-but-disabled without permission -->
-              <button
-                v-if="(s.status || '').toLowerCase() === 'pending'"
-                type="button"
-                class="basis-full text-left text-xs underline text-ink-gray-5 hover:text-ink-gray-7 disabled:opacity-40 disabled:no-underline"
-                :disabled="!canGenerate || resendingRole === s.role"
-                :title="canGenerate ? __('Regenerate and re-send the signing link') : __('Sales Manager role required')"
-                @click="doResend(s.role)"
-              >
-                {{ resendingRole === s.role ? __('Sending…') : __('Resend link') }}
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Approval -->
-        <div class="rounded-lg border border-outline-gray-2 bg-surface-gray-1 p-3 dark:bg-surface-gray-2">
-          <p class="mb-1 text-xs font-medium text-ink-gray-4">{{ __('Approval') }}</p>
-          <p class="truncate text-xs font-semibold text-ink-gray-8">
-            {{ lc.onboarding?.name ?? '—' }}
-          </p>
-          <div class="mt-1.5 flex items-center gap-1">
-            <span :class="statusDot(approvalStatus)" class="h-1.5 w-1.5 flex-shrink-0 rounded-full" />
-            <span class="text-xs" :class="statusText(approvalStatus)">{{ __(approvalStatus) }}</span>
-          </div>
-        </div>
-
-        <!-- Invoice -->
-        <div class="rounded-lg border border-outline-gray-2 bg-surface-gray-1 p-3 dark:bg-surface-gray-2">
-          <p class="mb-1 text-xs font-medium text-ink-gray-4">{{ __('Invoice') }}</p>
-          <p class="truncate text-xs font-semibold text-ink-gray-8">
-            {{ lc.sales_invoice?.name ?? '—' }}
-          </p>
-          <div class="mt-1.5 flex items-center gap-1">
-            <span :class="statusDot(invoiceStatus)" class="h-1.5 w-1.5 flex-shrink-0 rounded-full" />
-            <span class="text-xs" :class="statusText(invoiceStatus)">{{ __(invoiceStatus) }}</span>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
   </div>
 </template>
 
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
-import { createResource, toast, Button, Combobox } from 'frappe-ui'
+import { createResource, toast, Button } from 'frappe-ui'
 import { usersStore } from '@/stores/users'
 import { sessionStore } from '@/stores/session'
 
@@ -374,30 +430,32 @@ const dealDocResource = createResource({
 const dealDoc = computed(() => dealDocResource.data ?? null)
 
 // ---------------------------------------------------------------------------
-// Users list for approver Comboboxes
+// Co-signatories — Network Signatories (per network) + Tiberbu Signatory,
+// auto-resolved from configuration. Displayed read-only; not nominated here.
 // ---------------------------------------------------------------------------
-const usersListResource = createResource({ url: 'frappe.client.get_list' })
+const coSignersResource = createResource({ url: 'crm.api.contracts.get_network_signatories' })
+const coSignersLoading  = ref(true)
 
-const userOptions = computed(() =>
-  (usersListResource.data ?? []).map((u) => ({
-    label: u.full_name ?? u.name,
-    value: u.name,
-  }))
-)
+const coSigners = computed(() => coSignersResource.data?.signers ?? [])
 
 onMounted(async () => {
   try {
-    await usersListResource.submit({
-      doctype: 'User',
-      fields: JSON.stringify(['name', 'full_name']),
-      filters: JSON.stringify([['enabled', '=', 1]]),
-      limit_page_length: 50,
-      order_by: 'full_name asc',
-    })
+    await coSignersResource.submit({ deal: props.dealId })
   } catch {
-    // non-fatal — Combobox still usable if user types a valid email
+    // non-fatal — the empty-state notice covers a failed/empty resolve
+  } finally {
+    coSignersLoading.value = false
   }
 })
+
+function initials(nameOrEmail) {
+  const s = (nameOrEmail ?? '').trim()
+  if (!s) return '?'
+  const parts = s.split(/[\s@.]+/).filter(Boolean)
+  const first = parts[0]?.[0] ?? ''
+  const second = parts.length > 1 ? (parts[1]?.[0] ?? '') : ''
+  return (first + second).toUpperCase() || '?'
+}
 
 // ---------------------------------------------------------------------------
 // OIS raw_json (parsed from prop — no fetch, parent owns the resource)
@@ -447,11 +505,8 @@ const facilitySignatoryName  = ref('')
 const facilitySignatoryEmail = ref('')
 const facilityWitnessName    = ref('')
 const facilityWitnessEmail   = ref('')
-const networkApprover1       = ref('')
-const networkApprover2       = ref('')
-const tiberbuApprover        = ref('')
 
-// Pre-fill signatory fields from oisDoc prop
+// Pre-fill signatory + witness fields from oisDoc prop
 // Priority: explicit fields > raw_json contact > empty
 watch(
   () => props.oisDoc,
@@ -467,6 +522,15 @@ watch(
     }
     if (!facilitySignatoryEmail.value) {
       facilitySignatoryEmail.value = explicitEmail || (rawContact?.email ?? '')
+    }
+
+    // Witness captured during opt-in submission — pre-fill so the exec doesn't
+    // have to re-key it (still editable before generating).
+    if (!facilityWitnessName.value) {
+      facilityWitnessName.value = (doc.facility_witness_name ?? '').trim()
+    }
+    if (!facilityWitnessEmail.value) {
+      facilityWitnessEmail.value = (doc.facility_witness_email ?? '').trim()
     }
   },
   { immediate: true }
@@ -491,10 +555,7 @@ const formValid = computed(() =>
   facilitySignatoryName.value.trim()  !== '' &&
   facilitySignatoryEmail.value.trim() !== '' &&
   facilityWitnessName.value.trim()    !== '' &&
-  facilityWitnessEmail.value.trim()   !== '' &&
-  networkApprover1.value.trim()       !== '' &&
-  networkApprover2.value.trim()       !== '' &&
-  tiberbuApprover.value.trim()        !== ''
+  facilityWitnessEmail.value.trim()   !== ''
 )
 
 // Disabled: locked, form incomplete, or no quote yet
@@ -526,9 +587,6 @@ async function doGenerate() {
       facility_signatory_email: facilitySignatoryEmail.value.trim(),
       facility_witness_name:    facilityWitnessName.value.trim(),
       facility_witness_email:   facilityWitnessEmail.value.trim(),
-      network_approver_1:       networkApprover1.value.trim(),
-      network_approver_2:       networkApprover2.value.trim(),
-      tiberbu_approver:         tiberbuApprover.value.trim(),
     })
     successMsg.value = __(
       'Contract sent — signing invitation emailed to {0}',
@@ -566,6 +624,57 @@ async function doResend(role) {
     toast.error(msg)
   } finally {
     resendingRole.value = ''
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Edit an unsigned signatory
+// ---------------------------------------------------------------------------
+const updateSignatoryResource = createResource({ url: 'crm.api.contracts.update_signatory' })
+const editingRole = ref('')
+const editName    = ref('')
+const editEmail   = ref('')
+const savingEdit  = ref(false)
+
+function isPending(status) {
+  return (status ?? '').toLowerCase() === 'pending'
+}
+
+function startEdit(s) {
+  if (!canGenerate.value) return
+  editingRole.value = s.role
+  editName.value    = s.name ?? ''
+  editEmail.value   = s.email ?? ''
+}
+
+function cancelEdit() {
+  editingRole.value = ''
+  editName.value    = ''
+  editEmail.value   = ''
+}
+
+async function saveEdit(role) {
+  if (!editName.value.trim() || !editEmail.value.trim() || savingEdit.value) return
+  savingEdit.value = true
+  try {
+    const res = await updateSignatoryResource.submit({
+      contract: lc.value.contract?.name ?? '',
+      role,
+      name:  editName.value.trim(),
+      email: editEmail.value.trim(),
+    })
+    toast.success(
+      res?.resent
+        ? __('Signatory updated — new signing link sent to {0}', [res.email])
+        : __('Signatory updated.')
+    )
+    cancelEdit()
+    emit('lifecycle-reload')
+  } catch (err) {
+    const msg = err?.messages?.[0] ?? err?.message ?? __('Could not update the signatory.')
+    toast.error(msg)
+  } finally {
+    savingEdit.value = false
   }
 }
 
@@ -624,9 +733,84 @@ const invoiceStatus    = computed(() => {
   return 'Cancelled'
 })
 
+// Signatories roll up into a single lifecycle stage.
+const signatoriesStatus = computed(() => {
+  const list = lc.value.signatories ?? []
+  if (!list.length) return 'None'
+  const signed = list.filter((s) => (s.status ?? '').toLowerCase() === 'signed').length
+  if (signed === list.length) return 'Signed'
+  if (signed > 0) return 'Awaiting Signatures'
+  return 'Pending'
+})
+
+const signatoriesSummary = computed(() => {
+  const list = lc.value.signatories ?? []
+  if (!list.length) return ''
+  const signed = list.filter((s) => (s.status ?? '').toLowerCase() === 'signed').length
+  return __('{0} of {1} signed', [signed, list.length])
+})
+
+// ---------------------------------------------------------------------------
+// Stepper model — six ordered lifecycle stages
+// ---------------------------------------------------------------------------
+const stages = computed(() =>
+  [
+    { key: 'optin',       label: 'Opt-In',      ref: lc.value.submission?.ref,     status: submissionStatus.value },
+    { key: 'quote',       label: 'Quote',       ref: lc.value.quotation?.name,     status: quotationStatus.value },
+    { key: 'contract',    label: 'Contract',    ref: lc.value.contract?.name,      status: contractStatus.value },
+    { key: 'signatories', label: 'Signatories', ref: signatoriesSummary.value,     status: signatoriesStatus.value },
+    { key: 'approval',    label: 'Approval',    ref: lc.value.onboarding?.name,    status: approvalStatus.value },
+    { key: 'invoice',     label: 'Invoice',     ref: lc.value.sales_invoice?.name, status: invoiceStatus.value },
+  ].map((s) => ({ ...s, state: stageState(s.status), statusLabel: s.status }))
+)
+
+const doneCount   = computed(() => stages.value.filter((s) => s.state === 'done').length)
+const progressPct = computed(() =>
+  stages.value.length ? Math.round((doneCount.value / stages.value.length) * 100) : 0
+)
+
 // ---------------------------------------------------------------------------
 // Status colour helpers — tokens only, never hex
 // ---------------------------------------------------------------------------
+
+const DONE_KEYS    = ['processed', 'accepted', 'signed', 'approved', 'submitted', 'fully executed', 'paid']
+const BLOCKED_KEYS = ['failed', 'rejected', 'cancelled']
+
+function isDone(status) {
+  const s = (status ?? '').toLowerCase()
+  return DONE_KEYS.some((k) => s.includes(k))
+}
+function isBlocked(status) {
+  const s = (status ?? '').toLowerCase()
+  return BLOCKED_KEYS.some((k) => s.includes(k))
+}
+function isIdle(status) {
+  const s = (status ?? '').toLowerCase()
+  return s === '' || s === 'none'
+}
+
+/**
+ * Stage node state:
+ *   done    = green (completed)
+ *   blocked = red   (failed/rejected/cancelled)
+ *   idle    = gray  (not started)
+ *   active  = amber (in progress)
+ */
+function stageState(status) {
+  if (isBlocked(status)) return 'blocked'
+  if (isDone(status)) return 'done'
+  if (isIdle(status)) return 'idle'
+  return 'active'
+}
+
+function nodeClass(state) {
+  return {
+    done:    'border-green-500 bg-green-500 text-white dark:border-green-400 dark:bg-green-400',
+    active:  'border-amber-400 bg-amber-50 text-amber-600 dark:border-amber-500 dark:bg-amber-900/20 dark:text-amber-400',
+    blocked: 'border-red-400 bg-red-50 text-red-600 dark:border-red-500 dark:bg-red-900/20 dark:text-red-400',
+    idle:    'border-outline-gray-2 bg-surface-gray-2 text-ink-gray-4',
+  }[state] ?? 'border-outline-gray-2 bg-surface-gray-2 text-ink-gray-4'
+}
 
 /**
  * Green  = done/success  (Processed, Accepted, Signed, Approved, Submitted, Fully Executed)
@@ -635,30 +819,22 @@ const invoiceStatus    = computed(() => {
  * Gray   = absent/none
  */
 function statusDot(status) {
-  const s = (status ?? '').toLowerCase()
-  if (['processed', 'accepted', 'signed', 'approved', 'submitted', 'fully executed'].some((k) => s.includes(k))) {
-    return 'bg-green-500 dark:bg-green-400'
-  }
-  if (['failed', 'rejected', 'cancelled'].some((k) => s.includes(k))) {
-    return 'bg-red-500 dark:bg-red-400'
-  }
-  if (s === 'none' || s === '') {
-    return 'bg-surface-gray-4 dark:bg-surface-gray-5'
-  }
-  return 'bg-amber-500 dark:bg-amber-400'
+  const state = stageState(status)
+  return {
+    done:    'bg-green-500 dark:bg-green-400',
+    blocked: 'bg-red-500 dark:bg-red-400',
+    idle:    'bg-surface-gray-4 dark:bg-surface-gray-5',
+    active:  'bg-amber-500 dark:bg-amber-400',
+  }[state]
 }
 
 function statusText(status) {
-  const s = (status ?? '').toLowerCase()
-  if (['processed', 'accepted', 'signed', 'approved', 'submitted', 'fully executed'].some((k) => s.includes(k))) {
-    return 'text-green-700 dark:text-green-400'
-  }
-  if (['failed', 'rejected', 'cancelled'].some((k) => s.includes(k))) {
-    return 'text-red-600 dark:text-red-400'
-  }
-  if (s === 'none' || s === '') {
-    return 'text-ink-gray-4'
-  }
-  return 'text-amber-700 dark:text-amber-400'
+  const state = stageState(status)
+  return {
+    done:    'text-green-700 dark:text-green-400',
+    blocked: 'text-red-600 dark:text-red-400',
+    idle:    'text-ink-gray-4',
+    active:  'text-amber-700 dark:text-amber-400',
+  }[state]
 }
 </script>

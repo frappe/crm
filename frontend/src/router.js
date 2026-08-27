@@ -108,6 +108,22 @@ const routes = [
     component: () => import('@/pages/OptInSubmissions.vue'),
   },
   {
+    path: '/networks',
+    name: 'Networks',
+    component: () => import('@/pages/Networks/NetworkManagement.vue'),
+  },
+  {
+    path: '/networks/:networkSlug',
+    name: 'NetworkDetail',
+    component: () => import('@/pages/Networks/NetworkDetail.vue'),
+    props: true,
+  },
+  {
+    path: '/prequalified-facilities',
+    name: 'PrequalifiedFacilities',
+    component: () => import('@/pages/PrequalifiedFacilities.vue'),
+  },
+  {
     alias: '/call-logs',
     path: '/call-logs/view/:viewType?',
     name: 'Call Logs',

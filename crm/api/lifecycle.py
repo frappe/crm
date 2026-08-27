@@ -32,7 +32,7 @@ def get_deal_lifecycle(deal: str) -> dict:
           "submission":    {"ref", "status"} | None,
           "quotation":     {"name", "status", "docstatus", "grand_total"} | None,
           "contract":      {"name", "status", "workflow_state"} | None,
-          "signatories":   [{"role", "status", "signed_at"}],
+          "signatories":   [{"role", "status", "signed_at", "name", "email"}],
           "onboarding":    {"name", "approval_status", "n1", "n2", "tiberbu"} | None,
           "sales_invoice": {"name", "docstatus", "outstanding"} | None,
         }
@@ -130,7 +130,13 @@ def _resolve_signatories(contract: str | None) -> list:
         return []
     doc = frappe.get_doc("CRM Contract", contract)
     return [
-        {"role": r.signatory_role, "status": r.status, "signed_at": r.signed_at}
+        {
+            "role": r.signatory_role,
+            "status": r.status,
+            "signed_at": r.signed_at,
+            "name": r.signatory_name,
+            "email": r.signatory_email,
+        }
         for r in doc.signatories
     ]
 

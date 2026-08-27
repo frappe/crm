@@ -136,10 +136,10 @@ PRIVATE_FACILITIES = {
 
 
 def _upsert_facility(network_slug, fac, contact):
-    """Insert or update one CRM Pre-Qualified Facility by (network, mfl_code)."""
+    """Insert or update one CRM Pre-Qualified Facility + its membership for network_slug."""
     existing = frappe.get_all(
         "CRM Pre-Qualified Facility",
-        filters={"network": network_slug, "mfl_code": fac["mfl_code"]},
+        filters={"mfl_code": fac["mfl_code"]},
         pluck="name",
         limit=1,
     )
@@ -147,15 +147,30 @@ def _upsert_facility(network_slug, fac, contact):
         doc = frappe.get_doc("CRM Pre-Qualified Facility", existing[0])
     else:
         doc = frappe.new_doc("CRM Pre-Qualified Facility")
-        doc.network = network_slug
         doc.mfl_code = fac["mfl_code"]
 
     doc.facility_name = fac["facility_name"]
     doc.keph_level = fac["keph_level"]
-    doc.status = "Active"
-    doc.contact_name = contact["contact_name"]
-    doc.contact_email = contact["contact_email"]
-    doc.contact_phone = contact["contact_phone"]
+
+    # Find or create the membership for this network
+    mem = next(
+        (m for m in (doc.memberships or []) if m.network == network_slug),
+        None,
+    )
+    if mem is None:
+        doc.append("memberships", {
+            "network": network_slug,
+            "status": "Active",
+            "contact_name": contact["contact_name"],
+            "contact_email": contact["contact_email"],
+            "contact_phone": contact["contact_phone"],
+        })
+    else:
+        mem.contact_name = contact["contact_name"]
+        mem.contact_email = contact["contact_email"]
+        mem.contact_phone = contact["contact_phone"]
+        mem.status = "Active"
+
     doc.save(ignore_permissions=True)  # SYSTEM-INTERNAL
     return doc.name
 
@@ -280,6 +295,13 @@ DEMO_NETWORKS = [
         "contact_email": "irungu@kns.co.ke",
         "_contact": {"contact_name": "Abubakr Irungu", "contact_email": "irungu@kns.co.ke", "contact_phone": "0700000005"},
     },
+    {
+        "slug": "bahari-health",
+        "display_name": "Bahari Health Network",
+        "footer_legal_name": "Bahari Health Network Limited",
+        "contact_email": "abdul.as@gmail.com",
+        "_contact": {"contact_name": "Abdullahi Sheikh", "contact_email": "abdul.as@gmail.com", "contact_phone": "0700000006"},
+    },
 ]
 
 DEMO_FACILITIES = {
@@ -318,6 +340,13 @@ DEMO_FACILITIES = {
         {"mfl_code": "22024", "facility_name": "Langata Hospital, Nairobi", "keph_level": "Level 3A"},
         {"mfl_code": "22025", "facility_name": "Kitengela Medical Centre, Kajiado", "keph_level": "Level 2"},
     ],
+    "bahari-health": [
+        {"mfl_code": "22026", "facility_name": "Mombasa Medical Centre, Mombasa", "keph_level": "Level 4"},
+        {"mfl_code": "22027", "facility_name": "Serene Hospital, Mombasa", "keph_level": "Level 3B"},
+        {"mfl_code": "22028", "facility_name": "Harbour View Medical Centre, Mombasa", "keph_level": "Level 3"},
+        {"mfl_code": "22029", "facility_name": "Tudor Medical Centre, Mombasa", "keph_level": "Level 3A"},
+        {"mfl_code": "22030", "facility_name": "Mishomoroni Medical Centre, Mombasa", "keph_level": "Level 2"},
+    ],
 }
 
 
@@ -341,30 +370,7 @@ def seed_demo_networks():
         net_meta = nets[slug]
         contact = net_meta["_contact"]
         for fac in facilities:
-            doc = frappe.new_doc("CRM Pre-Qualified Facility") if not frappe.get_all(
-                "CRM Pre-Qualified Facility",
-                filters={"network": slug, "mfl_code": fac["mfl_code"]},
-                pluck="name",
-                limit=1,
-            ) else frappe.get_doc(
-                "CRM Pre-Qualified Facility",
-                frappe.get_all(
-                    "CRM Pre-Qualified Facility",
-                    filters={"network": slug, "mfl_code": fac["mfl_code"]},
-                    pluck="name",
-                    limit=1,
-                )[0],
-            )
-            doc.flags.skip_invitation = True  # batch send below
-            doc.network = slug
-            doc.mfl_code = fac["mfl_code"]
-            doc.facility_name = fac["facility_name"]
-            doc.keph_level = fac["keph_level"]
-            doc.status = "Active"
-            doc.contact_name = contact["contact_name"]
-            doc.contact_email = contact["contact_email"]
-            doc.contact_phone = contact["contact_phone"]
-            doc.save(ignore_permissions=True)  # SYSTEM-INTERNAL
+            _upsert_facility(slug, fac, contact)
 
         frappe.db.commit()
         _send_demo_invitation(slug, nets[slug], site_url)
@@ -373,6 +379,33 @@ def seed_demo_networks():
     _send_seed_summary(nets, site_url)
 
     return {slug: len(facs) for slug, facs in DEMO_FACILITIES.items()}
+
+
+def seed_single_demo_network(slug):
+    """
+    Seed one demo network by slug (must exist in DEMO_NETWORKS/DEMO_FACILITIES),
+    upsert its facilities, and send the invitation email. Idempotent.
+
+        bench --site cr-dev.tiberbu.app execute crm.setup.optin.seed_single_demo_network --kwargs '{"slug": "bahari-health"}'
+    """
+    nets = {n["slug"]: n for n in DEMO_NETWORKS}
+    if slug not in nets:
+        raise ValueError("Unknown demo network slug: {}".format(slug))
+    if slug not in DEMO_FACILITIES:
+        raise ValueError("No facilities defined for slug: {}".format(slug))
+
+    net_meta = nets[slug]
+    public_net = {k: v for k, v in net_meta.items() if not k.startswith("_")}
+    ensure_optin_networks([public_net])
+
+    contact = net_meta["_contact"]
+    for fac in DEMO_FACILITIES[slug]:
+        _upsert_facility(slug, fac, contact)
+
+    frappe.db.commit()
+    site_url = frappe.utils.get_url()
+    _send_demo_invitation(slug, net_meta, site_url)
+    return {"network": slug, "facilities": len(DEMO_FACILITIES[slug])}
 
 
 def _send_demo_invitation(slug, net_meta, site_url):

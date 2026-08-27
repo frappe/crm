@@ -3,9 +3,9 @@
     <!-- Success icon -->
     <div
       class="mb-6 flex h-16 w-16 items-center justify-center rounded-full mx-auto"
-      style="background-color: color-mix(in srgb, var(--brand-primary) 15%, transparent)"
+      style="background-color: color-mix(in srgb, var(--brand-primary, #bc1823) 15%, transparent)"
     >
-      <svg class="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" :style="{ color: 'var(--brand-primary)' }">
+      <svg class="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" :style="{ color: 'var(--brand-primary, #bc1823)' }">
         <path d="M20 6L9 17l-5-5"/>
       </svg>
     </div>

@@ -42,7 +42,7 @@
    "fieldname": "signatory_role",
    "fieldtype": "Select",
    "label": "Signatory Role",
-   "options": "Facility Signatory\nFacility Witness",
+   "options": "Facility Signatory\nFacility Witness\nNetwork Signatory\nTiberbu Signatory",
    "reqd": 1,
    "in_list_view": 1
   },

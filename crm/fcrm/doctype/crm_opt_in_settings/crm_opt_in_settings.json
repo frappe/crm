@@ -10,7 +10,8 @@
   "section_break_tc",
   "active_tc_document",
   "col_break_2",
-  "default_lead_owner"
+  "default_lead_owner",
+  "tiberbu_signatory"
  ],
  "fields": [
   {
@@ -49,6 +50,13 @@
    "fieldtype": "Link",
    "label": "Default Lead Owner",
    "options": "User"
+  },
+  {
+   "fieldname": "tiberbu_signatory",
+   "fieldtype": "Link",
+   "label": "Tiberbu Signatory",
+   "options": "User",
+   "description": "Tiberbu-side user who co-signs every executed contract. Invited (7-day link) once both facility parties have signed; signs via the same OTP + signature-pad portal."
   }
  ],
  "issingle": 1,

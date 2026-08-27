@@ -100,6 +100,85 @@ def _resolve_network_slug(deal):
     return ""
 
 
+def _resolve_user_identity(user, fallback_name="", fallback_email=""):
+    """Resolve a User link to {full_name, email}, preferring live User values but
+    falling back to any stored/label values. Email is lower-cased. Never raises."""
+    name = frappe.utils.cstr(fallback_name or "").strip()
+    email = frappe.utils.cstr(fallback_email or "").strip().lower()
+    user = frappe.utils.cstr(user or "").strip()
+    if user:
+        try:
+            u = frappe.db.get_value("User", user, ["full_name", "email"], as_dict=True)
+            if u:
+                name = frappe.utils.cstr(u.full_name or name).strip()
+                email = frappe.utils.cstr(u.email or email).strip().lower()
+        except Exception:
+            pass
+    return {"full_name": name, "email": email}
+
+
+def _network_signers(network_slug):
+    """Configured co-signatories for a network → [{full_name, email}]. A network's
+    name IS its slug (autoname field:slug). Read via get_list on the child DocType."""
+    network_slug = frappe.utils.cstr(network_slug or "").strip()
+    if not network_slug or not frappe.db.exists("CRM Opt-In Network", network_slug):
+        return []
+    rows = frappe.get_list(
+        "CRM Network Signer",
+        filters={
+            "parent": network_slug,
+            "parenttype": "CRM Opt-In Network",
+            "parentfield": "network_signers",
+        },
+        fields=["user", "full_name", "email"],
+        order_by="idx asc",
+        ignore_permissions=True,  # SYSTEM-INTERNAL
+    )
+    signers = []
+    for r in rows:
+        ident = _resolve_user_identity(r.get("user"), r.get("full_name"), r.get("email"))
+        if ident["email"]:
+            signers.append(ident)
+    return signers
+
+
+def _tiberbu_signer():
+    """Global Tiberbu co-signatory from CRM Opt-In Settings → {full_name, email} or None."""
+    user = ""
+    # A Single always "exists" by name; read the field directly.
+    try:
+        user = frappe.utils.cstr(
+            frappe.db.get_single_value("CRM Opt-In Settings", "tiberbu_signatory") or ""
+        ).strip()
+    except Exception:
+        user = ""
+    if not user:
+        return None
+    ident = _resolve_user_identity(user)
+    return ident if ident["email"] else None
+
+
+def _facility_witness_from_deal(deal):
+    """Facility witness captured on the deal's latest opt-in submission → {name, email}."""
+    deal = frappe.utils.cstr(deal or "").strip()
+    if not deal:
+        return {"name": "", "email": ""}
+    rows = frappe.get_list(
+        "CRM Opt-In Submission",
+        filters={"deal": deal},
+        fields=["facility_witness_name", "facility_witness_email"],
+        order_by="creation desc",
+        limit=1,
+        ignore_permissions=True,  # SYSTEM-INTERNAL
+    )
+    if rows:
+        return {
+            "name": frappe.utils.cstr(rows[0].get("facility_witness_name") or "").strip(),
+            "email": frappe.utils.cstr(rows[0].get("facility_witness_email") or "").strip().lower(),
+        }
+    return {"name": "", "email": ""}
+
+
 def _check_contract_rate_limit(limit=10, window=60):
     """IP-based rate limit for guest contract signing endpoints (10 req/min/IP)."""
     request = getattr(frappe.local, "request", None)
@@ -236,47 +315,76 @@ def _issue_and_send_invitation(contract_doc, signatory_row, now=True):
 # ---------------------------------------------------------------------------
 
 
+_COUNTERPARTY_ROLES = ("Network Signatory", "Tiberbu Signatory")
+
+
 def _transition(contract_name):
     """
-    Advance the contract workflow after a signatory signs.
+    Advance the contract workflow after a signatory signs. Ordered, idempotent —
+    safe to call after every signature; each stage guards on invite_token so a
+    party is invited exactly once.
 
-    State machine (based on count of Signed rows in signatories):
-      1 signed  → Facility Signatory just signed; send Facility Witness invitation.
-      2 signed  → Both external parties signed; set workflow_state =
-                  "Awaiting Internal Approval"; notify 3 internal approvers.
+    Stages:
+      A. Facility Signatory signs        → invite Facility Witness.
+      B. Facility side complete (both     → invite EVERY Network Signatory and the
+         facility parties signed)           Tiberbu Signatory IN PARALLEL, each with
+                                            a 7-day link; they sign whenever they like
+                                            within the window (same OTP + pad portal).
+      C. All signatories signed          → status/workflow_state = "Fully Executed".
     """
     contract = frappe.get_doc("CRM Contract", contract_name)
-    signed_count = sum(1 for s in (contract.signatories or []) if s.status == "Signed")
+    sigs = list(contract.signatories or [])
+    if not sigs:
+        return
 
-    if signed_count == 1:
-        # Facility Signatory just signed — invite Facility Witness next
-        witness_row = _get_signatory_row(contract, "Facility Witness")
-        if witness_row and witness_row.status == "Pending":
-            # now=False: don't block the guest's sign request on witness-invite SMTP
-            _issue_and_send_invitation(contract, witness_row, now=False)
+    fac_sig = _get_signatory_row(contract, "Facility Signatory")
+    fac_wit = _get_signatory_row(contract, "Facility Witness")
+    fac_sig_signed = bool(fac_sig) and fac_sig.status == "Signed"
+    # A missing witness row (defensive) counts as "not blocking".
+    fac_wit_signed = (fac_wit is None) or (fac_wit.status == "Signed")
+    facility_complete = fac_sig_signed and fac_wit_signed
 
-    elif signed_count >= 2:
-        # Both external parties have signed
-        contract.workflow_state = "Awaiting Internal Approval"
-        # status stays "Awaiting Signatures" (the only valid Select option for this state)
-        contract.save(ignore_permissions=True)  # SYSTEM-INTERNAL
-        frappe.db.commit()
-        # Enqueue: this notifies the INTERNAL approvers, not the guest who just
-        # signed. Running it inline (now=True) would block the guest's sign
-        # request on third-party SMTP delivery. The worker still sends promptly
-        # (now=True inside _notify_internal_approvers) so delivery isn't queued.
-        frappe.enqueue(
-            "crm.api.contracts._notify_internal_approvers",
-            contract_name=contract_name,
-            deal_name=contract.deal,
-            queue="short",
-            timeout=120,
-        )
+    # Stage A → B: facility witness is invited only once the facility signatory signs.
+    # now=False so the guest's sign request isn't blocked on third-party SMTP.
+    if fac_sig_signed and fac_wit and fac_wit.status == "Pending" and not fac_wit.invite_token:
+        _issue_and_send_invitation(contract, fac_wit, now=False)
+
+    # Stage B → C: once both facility parties have signed, invite the network +
+    # tiberbu co-signatories in parallel. Guarded on invite_token so re-entry is safe.
+    if facility_complete:
+        invited_any = False
+        for row in sigs:
+            if (
+                row.signatory_role in _COUNTERPARTY_ROLES
+                and row.status == "Pending"
+                and not row.invite_token
+            ):
+                _issue_and_send_invitation(contract, row, now=False)
+                invited_any = True
+        if invited_any:
+            _set_contract_state(contract, "Awaiting Counterparty Signatures")
+            log_deal_event(
+                contract.deal,
+                "Both facility parties signed contract %s — network & Tiberbu "
+                "co-signatories invited (7-day link)" % contract.name,
+            )
+
+    # Done: every signatory has signed.
+    if sigs and all(s.status == "Signed" for s in sigs):
+        _set_contract_state(contract, "Fully Executed", status="Fully Executed")
         log_deal_event(
             contract.deal,
-            "Both facility parties signed contract %s — awaiting internal approval"
-            % contract.name,
+            "All parties signed contract %s — fully executed" % contract.name,
         )
+
+
+def _set_contract_state(contract, workflow_state, status=None):
+    """Persist workflow_state (and optionally status) on a contract. SYSTEM-INTERNAL."""
+    contract.workflow_state = workflow_state
+    if status:
+        contract.status = status
+    contract.save(ignore_permissions=True)  # SYSTEM-INTERNAL
+    frappe.db.commit()
 
 
 def _notify_internal_approvers(contract_name, deal_name):
@@ -364,6 +472,31 @@ def _notify_internal_approvers(contract_name, deal_name):
 
 
 @frappe.whitelist()
+def get_network_signatories(deal="", network_slug=""):
+    """
+    Resolve the co-signatories that will be seeded onto a contract: every
+    Network Signatory configured on the deal's network plus the global Tiberbu
+    Signatory. Powers the auto-populate on the Quote/Contracting page.
+
+    Requires: Sales Manager or System Manager role.
+    Returns: {network_slug, signers: [{full_name, email, signer_role}]}
+    """
+    _check_crm_role()
+
+    deal = frappe.utils.cstr(deal).strip()
+    network_slug = frappe.utils.cstr(network_slug).strip()
+    if not network_slug and deal:
+        network_slug = _resolve_network_slug(deal) or ""
+
+    signers = [dict(s, signer_role="Network Signatory") for s in _network_signers(network_slug)]
+    tb = _tiberbu_signer()
+    if tb:
+        signers.append(dict(tb, signer_role="Tiberbu Signatory"))
+
+    return {"network_slug": network_slug, "signers": signers}
+
+
+@frappe.whitelist()
 def generate(
     deal,
     quote,
@@ -376,8 +509,12 @@ def generate(
     tiberbu_approver="",
 ):
     """
-    Create a CRM Contract for a deal, render contract HTML from active T&C,
-    add two signatory rows, and send the invitation to the Facility Signatory.
+    Create a CRM Contract for a deal, render contract HTML from active T&C, and
+    seed all signatory rows: Facility Signatory, Facility Witness, every configured
+    Network Signatory, and the global Tiberbu Signatory. Only the Facility Signatory
+    is invited immediately; the rest are invited by the state machine in order
+    (see _transition). network_approver_* params are legacy no-ops — the network /
+    tiberbu co-signatories now come from configuration.
 
     Requires: Sales Manager or System Manager role.
     Returns: {contract: <name>}
@@ -393,6 +530,14 @@ def generate(
 
     if not deal:
         frappe.throw(_("Deal is required to generate a contract."))
+
+    # Witness falls back to what the facility captured on their opt-in submission,
+    # so the exec need not re-key it.
+    if not facility_witness_email or not facility_witness_name:
+        ois_witness = _facility_witness_from_deal(deal)
+        facility_witness_name = facility_witness_name or ois_witness["name"]
+        facility_witness_email = facility_witness_email or ois_witness["email"]
+
     if not facility_signatory_email or not facility_witness_email:
         frappe.throw(_("Signatory and witness email addresses are required."))
 
@@ -406,12 +551,16 @@ def generate(
         tc_name = settings.active_tc_document
         if tc_name:
             tc_doc = frappe.get_doc("Terms and Conditions", tc_name)
-            context = {
-                "deal": deal,
-                "quote": quote,
-                "facility_signatory_name": facility_signatory_name,
-                "date": frappe.utils.format_date(frappe.utils.today()),
-            }
+            # The T&C template needs the full network/contact/pricing context the
+            # customer accepted; a minimal {deal, date} context raises UndefinedError
+            # ('network' is undefined) and leaves contract_html empty.
+            from crm.api.optin import build_tc_context_for_deal
+
+            context = build_tc_context_for_deal(deal) or {}
+            context.setdefault("deal", deal)
+            context.setdefault("quote", quote)
+            context.setdefault("facility_signatory_name", facility_signatory_name)
+            context.setdefault("date", frappe.utils.format_date(frappe.utils.today()))
             contract_html = frappe.render_template(tc_doc.terms or "", context)
             tc_document = tc_name
             tc_document_hash = hashlib.sha256(contract_html.encode()).hexdigest()
@@ -432,9 +581,10 @@ def generate(
     contract.contract_html = contract_html
     contract.tc_document = tc_document
     contract.tc_document_hash = tc_document_hash
-    contract.network_slug = _resolve_network_slug(deal)
+    network_slug = _resolve_network_slug(deal)
+    contract.network_slug = network_slug
 
-    # Signatory row 1: Facility Signatory
+    # Row 1: Facility Signatory (invited immediately below).
     contract.append("signatories", {
         "signatory_name": facility_signatory_name,
         "signatory_email": facility_signatory_email,
@@ -443,7 +593,7 @@ def generate(
         "is_witness": 0,
     })
 
-    # Signatory row 2: Facility Witness
+    # Row 2: Facility Witness (invited once the facility signatory signs).
     contract.append("signatories", {
         "signatory_name": facility_witness_name,
         "signatory_email": facility_witness_email,
@@ -452,6 +602,28 @@ def generate(
         "is_witness": 1,
         "witnessing_for": facility_signatory_name,
     })
+
+    # Rows 3..N: network co-signatories from the network configuration, invited in
+    # parallel with the Tiberbu signatory once the facility side completes.
+    for signer in _network_signers(network_slug):
+        contract.append("signatories", {
+            "signatory_name": signer["full_name"] or signer["email"],
+            "signatory_email": signer["email"],
+            "signatory_role": "Network Signatory",
+            "status": "Pending",
+            "is_witness": 0,
+        })
+
+    # Row N+1: the global Tiberbu co-signatory.
+    tb = _tiberbu_signer()
+    if tb:
+        contract.append("signatories", {
+            "signatory_name": tb["full_name"] or tb["email"],
+            "signatory_email": tb["email"],
+            "signatory_role": "Tiberbu Signatory",
+            "status": "Pending",
+            "is_witness": 0,
+        })
 
     contract.insert(ignore_permissions=True)  # SYSTEM-INTERNAL
     frappe.db.commit()
@@ -490,14 +662,15 @@ def resend_invitation(contract, role):
             frappe.ValidationError,
         )
 
-    # A witness is only invited after the principal signs; block premature resend.
-    if role == "Facility Witness":
-        principal = _get_signatory_row(contract_doc, "Facility Signatory")
-        if principal and principal.status != "Signed":
-            frappe.throw(
-                _("The witness is invited automatically once the facility signatory has signed."),
-                frappe.ValidationError,
-            )
+    # Signatories are invited in order (facility signatory → witness → network +
+    # tiberbu in parallel). A row with no invite_token hasn't reached its turn yet,
+    # so there is nothing to resend — block the premature resend for every role.
+    if not signatory_row.invite_token:
+        frappe.throw(
+            _("This signatory hasn't been invited yet — they are invited "
+              "automatically once it is their turn to sign."),
+            frappe.ValidationError,
+        )
 
     _issue_and_send_invitation(contract_doc, signatory_row)
 
@@ -510,27 +683,90 @@ def resend_invitation(contract, role):
 
 
 @frappe.whitelist()
+def update_signatory(contract, role, name, email):
+    """
+    Update the name/email of a signatory who has NOT yet signed.
+    Requires: Sales Manager or System Manager role.
+
+    A signed signatory is immutable. If the email changes on a signatory who was
+    already invited, the previously-issued link (bound to the old address) is
+    invalidated and a fresh invitation is sent to the new address so the link
+    always reaches the intended person.
+
+    Returns: {status: "updated", email, resent: bool}
+    """
+    _check_crm_role()
+
+    contract = frappe.utils.cstr(contract).strip()
+    role = frappe.utils.cstr(role).strip()
+    name = frappe.utils.cstr(name).strip()
+    email = frappe.utils.cstr(email).strip().lower()
+
+    if not name or not email:
+        frappe.throw(_("Signatory name and email are required."))
+
+    contract_doc, signatory_row = _load_signatory(contract, role)
+
+    if signatory_row.status != "Pending":
+        frappe.throw(
+            _("This signatory has already signed and can no longer be edited."),
+            frappe.ValidationError,
+        )
+
+    email_changed = (
+        frappe.utils.cstr(signatory_row.signatory_email or "").strip().lower() != email
+    )
+
+    signatory_row.signatory_name = name
+    signatory_row.signatory_email = email
+    # Keep the witness's "witnessing_for" label in sync when the principal is renamed.
+    if role == "Facility Signatory":
+        witness = _get_signatory_row(contract_doc, "Facility Witness")
+        if witness:
+            witness.witnessing_for = name
+
+    # Only re-issue (which sends a fresh email) when the row already had an
+    # outstanding invitation and the destination address actually changed.
+    already_invited = bool(signatory_row.invite_token)
+    resent = False
+    if email_changed and already_invited:
+        # _issue_and_send_invitation mints a fresh token (invalidating the stale
+        # link), emails the new address, and saves + commits the doc.
+        _issue_and_send_invitation(contract_doc, signatory_row)
+        resent = True
+    else:
+        contract_doc.save(ignore_permissions=True)  # SYSTEM-INTERNAL
+        frappe.db.commit()
+
+    log_deal_event(
+        contract_doc.deal,
+        "Signatory %s updated on contract %s%s"
+        % (role, contract, (" — new invitation sent to %s" % email) if resent else ""),
+    )
+    return {"status": "updated", "email": email, "resent": resent}
+
+
+@frappe.whitelist()
 def download_pdf(contract):
     """
-    Return base64-encoded PDF of the contract HTML.
+    Return a base64-encoded PDF of the FULL executed contract:
+      1. The signed Terms & Conditions body.
+      2. A signature block — each signatory's name, role, rendered signature
+         image, timestamp and IP (or a wet-ink line where unsigned/printing).
+      3. An appended "Certificate of Completion" audit page (parties, per-signatory
+         timestamps/IPs, T&C integrity hash, execution status).
+
     Requires: Sales Manager or System Manager role.
     Returns: {pdf_b64: <base64 string>}
     """
     _check_crm_role()
 
     contract = frappe.utils.cstr(contract).strip()
-
-    contract_rows = frappe.get_list(
-        "CRM Contract",
-        filters={"name": contract},
-        fields=["name", "contract_html"],
-        limit=1,
-        ignore_permissions=True,  # SYSTEM-INTERNAL
-    )
-    if not contract_rows:
+    if not frappe.db.exists("CRM Contract", contract):
         frappe.throw(_("Contract not found."), frappe.DoesNotExistError)
 
-    html = frappe.utils.cstr(contract_rows[0].get("contract_html") or "")
+    contract_doc = frappe.get_doc("CRM Contract", contract)
+    html = _build_contract_document_html(contract_doc)
 
     try:
         from frappe.utils.pdf import get_pdf
@@ -542,6 +778,269 @@ def download_pdf(contract):
             "contracts.download_pdf: PDF generation failed for %s" % contract,
         )
         frappe.throw(_("PDF generation failed."))
+
+
+def _build_contract_document_html(contract_doc):
+    """Assemble the full print-ready executed-contract HTML (terms + signatures
+    + certificate). Kept side-effect-free so it is safe to call for preview/PDF."""
+    brand = _network_branding(contract_doc)
+    accent = brand["accent"]
+
+    # 1. Contract body. Prefer the stored (signed) HTML; regenerate from the linked
+    #    T&C for legacy contracts whose contract_html was never populated.
+    body = frappe.utils.cstr(contract_doc.contract_html or "").strip()
+    if not body:
+        body = _regenerate_contract_body(contract_doc)
+    if not body:
+        body = (
+            "<p style='color:#991b1b'>The terms for this contract are unavailable. "
+            "Please contact the issuer for the executed copy.</p>"
+        )
+
+    date_str = frappe.utils.format_date(contract_doc.contract_date) if contract_doc.contract_date else ""
+    signatures = _render_signature_block(contract_doc, accent)
+    certificate = _render_certificate_page(contract_doc, accent, date_str, brand)
+
+    # Centered, branded masthead: network logo (falls back to a wordmark), the
+    # network name, the agreement title, reference/date, and the issuer contact.
+    logo_html = (
+        "<img class='doc-logo' src='%s' alt='%s'/>"
+        % (frappe.utils.escape_html(brand["logo"]), frappe.utils.escape_html(brand["display_name"]))
+        if brand["logo"]
+        else ""
+    )
+    contact_html = (
+        "<div class='doc-contact'>%s</div>" % frappe.utils.escape_html(brand["contact_email"])
+        if brand["contact_email"]
+        else ""
+    )
+    footer_html = (
+        "<div class='doc-footer'>%s</div>" % frappe.utils.escape_html(brand["footer_legal_name"])
+        if brand["footer_legal_name"]
+        else ""
+    )
+
+    return """<!doctype html>
+<html><head><meta charset="utf-8"><style>
+  @page {{ margin: 22mm 18mm; }}
+  body {{ font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+          color: #1f2937; font-size: 12px; line-height: 1.55; }}
+  h1, h2, h3 {{ color: #111827; }}
+  .doc-header {{ text-align: center; border-bottom: 3px solid {accent};
+          padding-bottom: 16px; margin-bottom: 24px; }}
+  .doc-logo {{ max-height: 64px; max-width: 220px; margin: 0 auto 12px; display: block; }}
+  .doc-header .brand {{ font-size: 12px; letter-spacing: .12em; text-transform: uppercase;
+          color: {accent}; font-weight: 700; }}
+  .doc-header h1 {{ margin: 6px 0 4px; font-size: 22px; }}
+  .doc-meta {{ color: #6b7280; font-size: 11px; }}
+  .doc-contact {{ color: {accent}; font-size: 11px; margin-top: 5px; font-weight: 600; }}
+  .doc-footer {{ margin-top: 30px; padding-top: 12px; border-top: 1px solid #e5e7eb;
+          text-align: center; color: #9ca3af; font-size: 10px; }}
+  .contract-body {{ margin-bottom: 8px; text-align: justify; }}
+  .sig-section {{ margin-top: 28px; padding-top: 14px; border-top: 1px solid #e5e7eb; }}
+  .sig-section h2 {{ font-size: 14px; margin-bottom: 12px; text-align: center; }}
+  .sig-card {{ border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px 14px;
+          margin-bottom: 12px; page-break-inside: avoid; text-align: center; }}
+  .sig-role {{ font-size: 10px; text-transform: uppercase; letter-spacing: .06em;
+          color: {accent}; font-weight: 700; }}
+  .sig-name {{ font-size: 14px; font-weight: 600; margin: 2px 0; }}
+  .sig-img {{ height: 64px; margin: 6px auto; display: block; }}
+  .sig-line {{ border-bottom: 1px solid #9ca3af; width: 260px; height: 40px; margin: 6px auto; }}
+  .sig-meta {{ color: #6b7280; font-size: 10px; }}
+  .cert-page {{ page-break-before: always; padding-top: 6px; }}
+  .cert-title {{ text-align: center; margin-bottom: 4px; }}
+  .cert-title .brand {{ color: {accent}; font-weight: 700; letter-spacing: .12em;
+          text-transform: uppercase; font-size: 11px; }}
+  .cert-title h2 {{ font-size: 18px; margin: 4px 0; }}
+  table.cert {{ width: 100%; border-collapse: collapse; margin-top: 16px; }}
+  table.cert th, table.cert td {{ text-align: left; padding: 7px 8px; font-size: 11px;
+          border-bottom: 1px solid #e5e7eb; vertical-align: top; }}
+  table.cert th {{ color: #6b7280; text-transform: uppercase; font-size: 9px; letter-spacing: .05em; }}
+  .cert-kv {{ margin: 3px 0; font-size: 11px; }}
+  .cert-kv b {{ display: inline-block; min-width: 130px; color: #6b7280; font-weight: 600; }}
+  .hash {{ font-family: monospace; font-size: 10px; word-break: break-all; color: #374151; }}
+  .badge {{ display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 10px;
+          font-weight: 700; background: {accent}; color: #fff; }}
+</style></head><body>
+  <div class="doc-header">
+    {logo}
+    <div class="brand">{network}</div>
+    <h1>CareverseHIMS Subscription Agreement</h1>
+    <div class="doc-meta">{ref}{date_bit}</div>
+    {contact}
+  </div>
+  <div class="contract-body">{body}</div>
+  {signatures}
+  {footer}
+  {certificate}
+</body></html>""".format(
+        accent=accent,
+        logo=logo_html,
+        network=frappe.utils.escape_html(brand["display_name"]),
+        ref=frappe.utils.escape_html(contract_doc.name),
+        date_bit=(" &middot; " + frappe.utils.escape_html(date_str)) if date_str else "",
+        contact=contact_html,
+        footer=footer_html,
+        body=body,
+        signatures=signatures,
+        certificate=certificate,
+    )
+
+
+def _regenerate_contract_body(contract_doc):
+    """Re-render the T&C body for legacy contracts with an empty contract_html."""
+    tc_name = contract_doc.tc_document
+    if not tc_name and frappe.db.exists("CRM Opt-In Settings", "CRM Opt-In Settings"):
+        tc_name = frappe.get_single("CRM Opt-In Settings").active_tc_document
+    if not tc_name or not frappe.db.exists("Terms and Conditions", tc_name):
+        return ""
+    try:
+        tc_doc = frappe.get_doc("Terms and Conditions", tc_name)
+        signatory = _get_signatory_row(contract_doc, "Facility Signatory")
+        # Reuse the accepted network/contact/pricing context (see build_tc_context_for_deal);
+        # without it the template raises 'network is undefined' and yields empty terms.
+        from crm.api.optin import build_tc_context_for_deal
+
+        context = build_tc_context_for_deal(contract_doc.deal) or {}
+        context.setdefault("deal", contract_doc.deal)
+        context.setdefault("quote", contract_doc.quote)
+        context.setdefault("facility_signatory_name", signatory.signatory_name if signatory else "")
+        context.setdefault(
+            "date", frappe.utils.format_date(contract_doc.contract_date or frappe.utils.today())
+        )
+        return frappe.render_template(tc_doc.terms or "", context)
+    except Exception:
+        frappe.log_error(
+            frappe.get_traceback(),
+            "contracts.download_pdf: legacy T&C re-render failed for %s" % contract_doc.name,
+        )
+        return ""
+
+
+def _render_signature_block(contract_doc, accent):
+    """One card per signatory: rendered signature image + audit line, or a wet-ink
+    line for signatories still pending (so a printed copy can be hand-signed)."""
+    cards = []
+    for s in contract_doc.signatories or []:
+        role = frappe.utils.escape_html(s.signatory_role or "")
+        name = frappe.utils.escape_html(s.signatory_name or "")
+        if s.status == "Signed" and s.signature_data:
+            mark = "<img class='sig-img' src='%s' alt='signature'/>" % frappe.utils.cstr(s.signature_data)
+            when = frappe.utils.format_datetime(s.signed_at) if s.signed_at else ""
+            meta = "Signed electronically"
+            if when:
+                meta += " on %s" % frappe.utils.escape_html(when)
+            if s.signature_ip:
+                meta += " &middot; IP %s" % frappe.utils.escape_html(frappe.utils.cstr(s.signature_ip))
+        else:
+            mark = "<div class='sig-line'></div>"
+            meta = "Awaiting signature"
+        cards.append(
+            "<div class='sig-card'><div class='sig-role'>%s</div>"
+            "<div class='sig-name'>%s</div>%s<div class='sig-meta'>%s</div></div>"
+            % (role, name, mark, meta)
+        )
+    return "<div class='sig-section'><h2>Signatures</h2>%s</div>" % "".join(cards)
+
+
+def _render_certificate_page(contract_doc, accent, date_str, brand=None):
+    """DocuSign-style Certificate of Completion appended as a separate page."""
+    brand = brand or _network_branding(contract_doc)
+    rows = []
+    for s in contract_doc.signatories or []:
+        when = frappe.utils.format_datetime(s.signed_at) if s.signed_at else "—"
+        ip = frappe.utils.escape_html(frappe.utils.cstr(s.signature_ip or "—"))
+        rows.append(
+            "<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>"
+            % (
+                frappe.utils.escape_html(s.signatory_name or ""),
+                frappe.utils.escape_html(s.signatory_role or ""),
+                frappe.utils.escape_html(s.status or ""),
+                frappe.utils.escape_html(when),
+                ip,
+            )
+        )
+    executed = all((s.status == "Signed") for s in (contract_doc.signatories or [])) and bool(
+        contract_doc.signatories
+    )
+    status_label = "Fully Executed" if executed else frappe.utils.cstr(
+        contract_doc.workflow_state or contract_doc.status or "In Progress"
+    )
+    tc_hash = frappe.utils.escape_html(frappe.utils.cstr(contract_doc.tc_document_hash or "—"))
+
+    contact_line = (
+        "<div class='cert-kv'><b>Issuer Contact</b> %s</div>"
+        % frappe.utils.escape_html(brand["contact_email"])
+        if brand.get("contact_email")
+        else ""
+    )
+
+    return """<div class="cert-page">
+    <div class="cert-title"><div class="brand">{network}</div>
+      <h2>Certificate of Completion</h2></div>
+    <div class="cert-kv"><b>Contract</b> {ref}</div>
+    <div class="cert-kv"><b>Contract Date</b> {date}</div>
+    <div class="cert-kv"><b>Deal</b> {deal}</div>
+    {contact}
+    <div class="cert-kv"><b>Status</b> <span class="badge">{status}</span></div>
+    <table class="cert"><thead><tr>
+      <th>Signatory</th><th>Role</th><th>Status</th><th>Signed At</th><th>IP Address</th>
+    </tr></thead><tbody>{rows}</tbody></table>
+    <div class="cert-kv" style="margin-top:18px"><b>T&amp;C Integrity</b></div>
+    <div class="hash">{hash}</div>
+  </div>""".format(
+        network=frappe.utils.escape_html(brand["display_name"]),
+        ref=frappe.utils.escape_html(contract_doc.name),
+        date=frappe.utils.escape_html(date_str or "—"),
+        deal=frappe.utils.escape_html(frappe.utils.cstr(contract_doc.deal or "—")),
+        contact=contact_line,
+        status=frappe.utils.escape_html(status_label),
+        rows="".join(rows) or "<tr><td colspan='5'>No signatories.</td></tr>",
+        hash=tc_hash,
+    )
+
+
+def _network_branding(contract_doc):
+    """Resolve the network masthead for a contract: accent colour, display name,
+    logo URL, issuer contact e-mail and legal footer. Falls back through the deal's
+    latest opt-in submission for legacy contracts with no network_slug, and to the
+    Tiberbu wordmark/red when nothing is configured."""
+    import re
+
+    from crm.api.optin import _get_network_doc
+
+    slug = frappe.utils.cstr(contract_doc.network_slug or "").strip()
+    if not slug and contract_doc.deal:
+        subs = frappe.get_list(
+            "CRM Opt-In Submission",
+            filters={"deal": contract_doc.deal},
+            fields=["network_slug"],
+            order_by="creation desc",
+            limit=1,
+            ignore_permissions=True,  # SYSTEM-INTERNAL
+        )
+        if subs:
+            slug = frappe.utils.cstr(subs[0].network_slug or "").strip()
+
+    doc = _get_network_doc(slug) if slug else None
+
+    accent = frappe.utils.cstr((doc.get("primary_colour") if doc else "") or "").strip()
+    if not re.match(r"^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$", accent):
+        accent = "#bc1823"
+
+    display = frappe.utils.cstr((doc.get("display_name") if doc else "") or "").strip() or "CareverseHIMS"
+
+    logo = frappe.utils.cstr((doc.get("logo_url") if doc else "") or "").strip()
+    if logo and not logo.startswith("http"):
+        logo = frappe.utils.get_url(logo)
+
+    return {
+        "accent": accent,
+        "display_name": display,
+        "logo": logo,
+        "contact_email": frappe.utils.cstr((doc.get("contact_email") if doc else "") or "").strip(),
+        "footer_legal_name": frappe.utils.cstr((doc.get("footer_legal_name") if doc else "") or "").strip(),
+    }
 
 
 # ---------------------------------------------------------------------------

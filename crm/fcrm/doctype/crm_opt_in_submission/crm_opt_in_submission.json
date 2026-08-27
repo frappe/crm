@@ -11,6 +11,8 @@
   "submitter_email",
   "facility_signatory_name",
   "facility_signatory_email",
+  "facility_witness_name",
+  "facility_witness_email",
   "submitted_at",
   "col_break_1",
   "lead",
@@ -58,6 +60,16 @@
    "fieldname": "facility_signatory_email",
    "fieldtype": "Data",
    "label": "Facility Signatory Email"
+  },
+  {
+   "fieldname": "facility_witness_name",
+   "fieldtype": "Data",
+   "label": "Facility Witness Name"
+  },
+  {
+   "fieldname": "facility_witness_email",
+   "fieldtype": "Data",
+   "label": "Facility Witness Email"
   },
   {
    "fieldname": "submitted_at",

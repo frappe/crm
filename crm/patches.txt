@@ -38,3 +38,4 @@ crm.patches.v1_0.seed_negotiated_price_lists
 crm.patches.v1_0.seed_catalogue_items
 crm.patches.v1_0.add_optin_crm_lead_fields
 crm.patches.v1_0.add_optin_provenance_fields
+crm.patches.v1_0.migrate_facility_memberships

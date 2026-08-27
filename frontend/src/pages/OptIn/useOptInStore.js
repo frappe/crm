@@ -15,6 +15,10 @@ export const useOptInStore = defineStore('optin', {
       role: '',
     },
     otpChannel: 'email', // 'email' | 'sms' — how the verification code is delivered
+    witness: {
+      name: '',
+      email: '',
+    },
     signingToken: '',
     signingExpiry: 0,
     facilities: [],
@@ -46,6 +50,10 @@ export const useOptInStore = defineStore('optin', {
 
     setOtpChannel(channel) {
       this.otpChannel = channel === 'sms' ? 'sms' : 'email'
+    },
+
+    setWitness(witness) {
+      this.witness = { ...this.witness, ...witness }
     },
 
     setSigningToken(token, expiry) {

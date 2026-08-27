@@ -166,38 +166,72 @@ def _get_partner_logos(network_name):
     return logos
 
 
-def _get_prequalified_record(email, network_slug):
-    """Return the first Active CRM Pre-Qualified Facility for this email+network."""
-    rows = frappe.get_list(
-        "CRM Pre-Qualified Facility",
+def _get_membership(email, network_slug):
+    """
+    Return the first Active CRM Facility Membership for this email+network,
+    with its parent facility facts. Returns None if not found.
+    """
+    mem_rows = frappe.get_list(
+        "CRM Facility Membership",
         filters={
             "contact_email": email,
             "network": network_slug,
             "status": "Active",
         },
-        fields=[
-            "name", "mfl_code", "facility_name", "keph_level",
-            "contact_name", "contact_email", "contact_phone",
-            "otp_expiry", "otp_attempts",
-        ],
+        fields=["name", "parent", "contact_name", "contact_phone", "otp_expiry", "otp_attempts"],
         limit=1,
         ignore_permissions=True,  # SYSTEM-INTERNAL
     )
-    return rows[0] if rows else None
-
-
-def _get_all_prequalified_records(email, network_slug):
-    """Return all Active facilities for this email+network."""
-    return frappe.get_list(
+    if not mem_rows:
+        return None
+    mem = mem_rows[0]
+    # Fetch facility facts from parent
+    fac_rows = frappe.get_list(
         "CRM Pre-Qualified Facility",
+        filters={"name": mem.parent},
+        fields=["name", "mfl_code", "facility_name", "keph_level"],
+        limit=1,
+        ignore_permissions=True,  # SYSTEM-INTERNAL
+    )
+    if not fac_rows:
+        return None
+    fac = fac_rows[0]
+    return frappe._dict({
+        "membership_name": mem.name,
+        "facility_name_ref": fac.name,  # parent facility docname
+        "mfl_code": fac.mfl_code,
+        "facility_name": fac.facility_name,
+        "keph_level": fac.keph_level,
+        "contact_name": mem.contact_name,
+        "contact_email": email,
+        "contact_phone": mem.contact_phone,
+        "otp_expiry": mem.otp_expiry,
+        "otp_attempts": mem.otp_attempts,
+    })
+
+
+def _get_all_memberships(email, network_slug):
+    """Return all Active facilities for this email+network as a list of dicts."""
+    mem_rows = frappe.get_list(
+        "CRM Facility Membership",
         filters={
             "contact_email": email,
             "network": network_slug,
             "status": "Active",
         },
+        fields=["name", "parent"],
+        ignore_permissions=True,  # SYSTEM-INTERNAL
+    )
+    if not mem_rows:
+        return []
+    parent_names = [m.parent for m in mem_rows if m.parent]
+    fac_rows = frappe.get_list(
+        "CRM Pre-Qualified Facility",
+        filters={"name": ["in", parent_names]},
         fields=["name", "mfl_code", "facility_name", "keph_level"],
         ignore_permissions=True,  # SYSTEM-INTERNAL
     )
+    return fac_rows
 
 
 def _get_quoted_facility_map(mfl_codes):
@@ -522,7 +556,7 @@ def verify_prequalified(email, network_slug, channel="email"):
         return {"matched": False, "rate_limited": True}
     frappe.cache().set_value(rate_key, call_count + 1, expires_in_sec=600)
 
-    record = _get_prequalified_record(email, network_slug)
+    record = _get_membership(email, network_slug)
     if not record:
         return {"matched": False, "rate_limited": False}
 
@@ -532,12 +566,12 @@ def verify_prequalified(email, network_slug, channel="email"):
     otp_hash = _hmac_hex(key, otp)
     otp_expiry = frappe.utils.add_to_date(frappe.utils.now_datetime(), minutes=10)
 
-    # Persist OTP hash on the pre-qualified record
-    pqf = frappe.get_doc("CRM Pre-Qualified Facility", record.name)
-    pqf.otp_hash = otp_hash
-    pqf.otp_expiry = otp_expiry
-    pqf.otp_attempts = 0
-    pqf.save(ignore_permissions=True)  # SYSTEM-INTERNAL
+    # Persist OTP hash on the membership record
+    mem_doc = frappe.get_doc("CRM Facility Membership", record.membership_name)
+    mem_doc.otp_hash = otp_hash
+    mem_doc.otp_expiry = otp_expiry
+    mem_doc.otp_attempts = 0
+    mem_doc.save(ignore_permissions=True)  # SYSTEM-INTERNAL
     frappe.db.commit()
 
     # Dispatch OTP via the requested channel. A single enqueue on both matched and
@@ -547,8 +581,8 @@ def verify_prequalified(email, network_slug, channel="email"):
     frappe.enqueue(
         "crm.api.optin._dispatch_otp",
         channel=channel,
-        contact_email=pqf.contact_email,
-        contact_phone=pqf.contact_phone,
+        contact_email=record.contact_email,
+        contact_phone=record.contact_phone,
         otp=otp,
         network_slug=network_slug,
         queue="short",
@@ -568,12 +602,12 @@ def verify_otp(email, network_slug, otp):
     network_slug = frappe.utils.cstr(network_slug).strip()
     otp = frappe.utils.cstr(otp).strip()
 
-    record = _get_prequalified_record(email, network_slug)
+    record = _get_membership(email, network_slug)
     if not record:
         frappe.throw(_("Verification failed."), frappe.AuthenticationError)
 
     # Load full doc so we can read/write OTP fields including the Password field
-    pqf = frappe.get_doc("CRM Pre-Qualified Facility", record.name)
+    pqf = frappe.get_doc("CRM Facility Membership", record.membership_name)
 
     # 1. Lockout check — before any DB write
     if (pqf.otp_attempts or 0) >= 3:
@@ -607,7 +641,7 @@ def verify_otp(email, network_slug, otp):
     msg = "%s:%s:%s" % (email, network_slug, expiry)
     signing_token = _hmac_hex(key, msg)
 
-    all_records = _get_all_prequalified_records(email, network_slug)
+    all_records = _get_all_memberships(email, network_slug)
     quoted_map = _get_quoted_facility_map([r.mfl_code for r in all_records])
     facilities = [
         {
@@ -657,17 +691,8 @@ def get_pricing(signing_token, email, network_slug, expiry, selected_mfl_codes):
         (network_doc.get("price_list_override") if network_doc else None) or default_pl
     )
 
-    # Build MFL → facility info map from pre-qualified records
-    all_records = frappe.get_list(
-        "CRM Pre-Qualified Facility",
-        filters={
-            "contact_email": email,
-            "network": network_slug,
-            "status": "Active",
-        },
-        fields=["mfl_code", "facility_name", "keph_level"],
-        ignore_permissions=True,  # SYSTEM-INTERNAL
-    )
+    # Build MFL → facility info map from pre-qualified records via membership child table
+    all_records = _get_all_memberships(email, network_slug)
     facility_map = {r.mfl_code: r for r in all_records if r.mfl_code}
 
     # Defence-in-depth: facilities already linked+quoted to a deal are locked out
@@ -793,6 +818,61 @@ def _build_pricing_table(facilities):
     )
 
 
+def build_tc_context_for_deal(deal):
+    """Reconstruct the T&C render context (network, contact, pricing) for a deal
+    from its opt-in submission.
+
+    The Terms & Conditions Jinja template references {{ network.display_name }},
+    {{ contact.email }}, {{ pricing_table }} and {{ grand_total_*_display }}; a
+    context missing any of these raises UndefinedError. Contract generation and PDF
+    export call this so they render the SAME priced terms the customer accepted,
+    sourced from the submission's stored payload. Returns None if no submission is
+    found for the deal (caller should degrade gracefully).
+    """
+    if not deal:
+        return None
+    subs = frappe.get_list(
+        "CRM Opt-In Submission",
+        filters={"deal": deal},
+        fields=["name", "network_slug"],
+        order_by="creation desc",
+        limit=1,
+        ignore_permissions=True,  # SYSTEM-INTERNAL
+    )
+    if not subs:
+        return None
+
+    raw = frappe.db.get_value("CRM Opt-In Submission", subs[0].name, "raw_json")
+    try:
+        data = json.loads(raw) if raw else {}
+    except Exception:
+        data = {}
+
+    # The submission stores the priced facilities under "pricing" (facility_name,
+    # mfl_code, keph_level, monthly_kes, annual_kes) — the shape _build_pricing_table
+    # expects. Fall back to "facilities" for older payloads.
+    pricing = data.get("pricing") or data.get("facilities") or []
+    contact = data.get("contact") or {}
+    monthly = sum(frappe.utils.flt(f.get("monthly_kes")) for f in pricing)
+    annual = sum(frappe.utils.flt(f.get("annual_kes")) for f in pricing)
+
+    network_doc = _get_network_doc(subs[0].network_slug)
+    network_display = (network_doc.get("display_name") if network_doc else "CareverseHIMS") or "CareverseHIMS"
+
+    return {
+        "contact": {"email": frappe.utils.cstr(contact.get("email") or "")},
+        "facilities": pricing,
+        "pricing": pricing,
+        "pricing_table": _build_pricing_table(pricing),
+        "grand_total_monthly": monthly,
+        "grand_total_annual": annual,
+        "grand_total_monthly_display": _fmt_kes(monthly),
+        "grand_total_annual_display": _fmt_kes(annual),
+        "date": frappe.utils.format_date(frappe.utils.today()),
+        "network": {"display_name": network_display},
+    }
+
+
 @frappe.whitelist(allow_guest=True)
 def get_terms_text(signing_token, email, network_slug, expiry, selected_mfl_codes):
     """
@@ -913,6 +993,11 @@ def submit_async(signing_token, email, network_slug, expiry, payload_json):
     sub.status = "Pending"
     sub.network_slug = network_slug
     sub.submitter_email = email
+    # Facility witness captured in the wizard — carried here so the contract's
+    # Facility Witness row can be pre-filled at generate() without re-keying.
+    witness = payload.get("witness") or {}
+    sub.facility_witness_name = frappe.utils.cstr(witness.get("name") or "").strip()
+    sub.facility_witness_email = frappe.utils.cstr(witness.get("email") or "").strip().lower()
     sub.submitted_at = frappe.utils.now_datetime()
     sub.raw_json = payload_json
     sub.has_duplicate_mfl = 1 if has_duplicate else 0

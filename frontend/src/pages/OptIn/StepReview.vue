@@ -43,6 +43,45 @@
       </div>
     </div>
 
+    <!-- Facility Witness section — captured here so it flows straight onto the
+         contract the CRM team generates later (no chasing the facility for it). -->
+    <div class="mb-4 rounded-xl border border-gray-200 bg-white p-5 dark:border-gray-700 dark:bg-gray-800">
+      <div class="mb-3">
+        <h3 class="text-sm font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">
+          Facility Witness
+        </h3>
+        <p class="mt-1 text-xs text-gray-400 dark:text-gray-500">
+          A colleague at your facility who will witness the signing of your agreement.
+        </p>
+      </div>
+      <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <div>
+          <label class="mb-1 block text-xs font-medium text-gray-700 dark:text-gray-300">
+            Witness Name <span class="text-red-500">*</span>
+          </label>
+          <input
+            v-model="witnessName"
+            type="text"
+            placeholder="Full legal name"
+            class="w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-transparent focus:outline-none focus:ring-2 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:placeholder-gray-500"
+          />
+        </div>
+        <div>
+          <label class="mb-1 block text-xs font-medium text-gray-700 dark:text-gray-300">
+            Witness Email <span class="text-red-500">*</span>
+          </label>
+          <input
+            v-model="witnessEmail"
+            type="email"
+            placeholder="witness@hospital.or.ke"
+            :class="['w-full rounded-lg border bg-white px-3 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-transparent focus:outline-none focus:ring-2 dark:bg-gray-800 dark:text-white dark:placeholder-gray-500',
+              witnessEmailError ? 'border-red-400 dark:border-red-600' : 'border-gray-200 dark:border-gray-700']"
+          />
+          <p v-if="witnessEmailError" class="mt-1 text-xs text-red-500">{{ witnessEmailError }}</p>
+        </div>
+      </div>
+    </div>
+
     <!-- Facilities section -->
     <div class="mb-4 rounded-xl border border-gray-200 bg-white p-5 dark:border-gray-700 dark:bg-gray-800">
       <div class="mb-3 flex items-center justify-between">
@@ -121,7 +160,8 @@
         Back
       </button>
       <button
-        class="rounded-xl px-6 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+        :disabled="!witnessValid"
+        class="rounded-xl px-6 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
         style="background-color: var(--brand-primary)"
         @click="emit('continue')"
       >
@@ -132,11 +172,37 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
 import { useOptInStore } from './useOptInStore.js'
 
 const emit = defineEmits(['continue', 'back', 'edit-contact', 'edit-facilities'])
 
 const store = useOptInStore()
+
+// Witness fields write straight through to the store so the value survives
+// back-nav and rides along in the submit payload (StepCommit).
+const witnessName = computed({
+  get: () => store.witness.name,
+  set: (val) => store.setWitness({ name: val }),
+})
+const witnessEmail = computed({
+  get: () => store.witness.email,
+  set: (val) => store.setWitness({ email: val }),
+})
+
+function validEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+}
+
+const witnessEmailError = computed(() => {
+  const email = (store.witness.email || '').trim()
+  if (!email) return ''
+  return validEmail(email) ? '' : 'Please enter a valid email address.'
+})
+
+const witnessValid = computed(
+  () => (store.witness.name || '').trim() !== '' && validEmail((store.witness.email || '').trim())
+)
 
 function kephBadgeClass(keph) {
   const level = (keph || '').replace(/^Level\s+/i, '').trim().toUpperCase()

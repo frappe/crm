@@ -4,8 +4,8 @@
 # Updated: 2026-08-26
 
 summary:
-  total: 50
-  ready-for-dev: 21
+  total: 62
+  ready-for-dev: 33
   in-progress: 2
   review: 19
   done: 3
@@ -224,3 +224,32 @@ development_status:
   cu-s2-1-network-crm-views: ready-for-dev          # [dev-story] frappe-ui list + detail for CRM Opt-In Network: sidebar entry, /crm/opt-in-networks route, status/branding/partner-logos fields, count of linked pre-qualified facilities, RBAC (Network Coordinator scoped to assigned_network)
   cu-s2-2-prequalified-crm-views: ready-for-dev     # [dev-story] frappe-ui list + detail for CRM Pre-Qualified Facility: /crm/pre-qualified route, filter by network, status (Active/Opted In/Declined), breadcrumb link up to parent Opt-In Network, "already quoted" indicator reusing _get_quoted_facility_map; deep-link from Contact Request promote action
   cu-qa: ready-for-dev                              # [qa] Full contact-us flow: submit as guest → CRM record → agent promotes to Pre-Qualified → opt-in succeeds; un-onboarded slug shows no fallback; promote lands on native frappe-ui Network/Pre-Qualified views (not Desk)
+
+  # Chain: epic-network-cosign (planned 26 Aug 2026 — network-cosign-stories.md)
+  # Network side moves from an in-CRM approval gate to EXTERNAL signatories: approvers
+  # configured per network auto-populate the Quote page, opt-in captures the witness,
+  # execs edit unsigned Network Signatory rows, and EVERY signatory signs via the same
+  # OTP+signature-pad flow with NO CRM login even when they are Users. DECISION (default,
+  # confirm): network approval == network signature; only final Tiberbu execution stays
+  # internal. Refactor core is nc-s2-4 (generalize the facility→witness state machine).
+  epic-network-cosign: in-progress
+
+  # Sprint 1 — Schema
+  nc-s1-1-network-signer-child: review              # [dev-story] M: CRM Network Signer child DocType + network_signers Table on CRM Opt-In Network. PROOF: meta dump — CRM Network Signer has full_name(Data)+email(Data/Email); CRM Opt-In Network.network_signers is Table→CRM Network Signer. NOTE (model change): original spec's signer_role/user fields intentionally DROPPED — every network_signers row is treated as "Network Signatory" (role applied in code, contracts.py:491) and signers are external parties keyed by name+email, no User link (per confirmed "even users just get an email" model)
+  nc-s1-2-contract-signatory-roles: review          # [dev-story] S: extend CRM Contract Signatory.signatory_role Select. PROOF: meta dump — options = "Facility Signatory / Facility Witness / Network Signatory / Tiberbu Signatory". NOTE: "Tiberbu Signatory" replaces the spec's "Network Witness" (final Tiberbu executor per confirmed model)
+  nc-s1-3-submission-witness-fields: review         # [dev-story] S: facility_witness_name/email fields on CRM Opt-In Submission. PROOF: meta dump — facility_witness_name(Data) + facility_witness_email(Data) present alongside raw_json(Long Text)
+
+  # Sprint 2 — Backend
+  nc-s2-1-optin-witness-capture: review             # [dev-story] M: optin.py submission handler persists witness to fields + raw_json (dep nc-s1-3). PROOF: live submit_async call w/ minted signing_token — created OIS persisted facility_witness_name='Dr. Grace Wanjiru', facility_witness_email='grace.wanjiru@apex.co.ke' (lower-cased), raw_json.witness retained original casing; fixture deleted
+  nc-s2-2-get-network-signatories: review           # [dev-story] M: contracts.get_network_signatories(deal|network_slug) CRM-gated, resolves user→name/email (dep nc-s1-1). PROOF: live-exercised by Surface 2 — returns Partner RM (Network Signatory · partner-rm@tiberbu.test) + OHS12 NoPerm (Tiberbu Signatory · ohs12-noperm@example.com) for deal 71189/apex-medical; /tmp/cosign-qa/surface2-contracting-light.png
+  nc-s2-3-generate-seed-rows: review                # [dev-story] M: generate() seeds Network Signatory rows + pre-fills witness from OIS; network_approver_* params now legacy no-ops (dep nc-s1-2,nc-s2-2,nc-s1-3). PROOF: live generate(deal=71189, witness args empty) — seeded rows Facility Signatory + Facility Witness (PREFILLED from OIS: "Dr. Prefill FromOIS") + Network Signatory (Partner RM, from config) + Tiberbu Signatory (OHS12 NoPerm); only Facility Signatory invited immediately; contract+OIS-temp fixture reverted
+  nc-s2-4-state-machine-refactor: review            # [dev-story] L: generalize _transition to ordered N-signatory flow; refactor core (dep nc-s2-3). PROOF: full-lifecycle trace on throwaway contract — Awaiting Facility Signature → (fac sig signs) invite witness → (witness signs) invite Network+Tiberbu IN PARALLEL, state "Awaiting Counterparty Signatures" → (network signs) tiberbu still pending → (tiberbu signs) "Fully Executed"; re-running _transition mid-flow re-invited nobody (IDEMPOTENT True); fixture deleted
+  nc-s2-5-guest-only-signing-guard: review          # [dev-story] M: signers who are Users sign as Guest via /sign-contract, no session elevation/CRM route (dep nc-s2-4). PROOF: every signature in the nc-s2-4 lifecycle trace (incl. Network Signatory + Tiberbu Signatory, who are Users) executed verify_otp+sign with frappe.session.user=="Guest" (asserted), driven purely by the OTP-issued signing_token; endpoints are @frappe.whitelist(allow_guest=True)
+
+  # Sprint 3 — Frontend
+  nc-s3-1-wizard-witness-ui: review                 # [dev-story] M: opt-in wizard captures witness name/email → submit payload (dep nc-s2-1). PROOF: Review step "Facility Witness" card (Witness Name/Email required, gates Continue), witness rides submit payload via StepCommit; /tmp/cosign-qa/surface1-review-witness-{light,dark}.png + surface1-review-filled-{light,dark}.png
+  nc-s3-2-panel-autopopulate: review                # [dev-story] M: ContractingPanel pre-fills network signers from get_network_signatories + witness from OIS (dep nc-s2-2,nc-s2-3). PROOF: Quoting tab "Network & Tiberbu Co-Signatories" read-only chips (Partner RM/OHS12 NoPerm) + "Nominate Facility Signatory & Witness" prefill; light+dark; /tmp/cosign-qa/surface2-contracting-{light,dark}.png
+  nc-s3-3-panel-edit-network-rows: review           # [dev-story] M: ContractingPanel inline-edit Network Signatory pending rows via update_signatory (dep nc-s3-2, same file — sequence). PROOF: Signatories block — pending Network Signatory inline-edit form (name/email + "changing the email invalidates the old link…" hint, Cancel/Save) and pending Tiberbu Signatory Edit/Resend actions; /tmp/cosign-qa/surface3-inline-edit.png
+
+  # Sprint 4 — QA
+  nc-qa: review                                     # [qa] L: configure signers → opt-in witness → generate → facility+witness+network sign via OTP+pad NO login → final execution → PDF certificate lists all (dep nc-s2-5,nc-s3-1,nc-s3-3). PROOF: (1) guest signing PORTAL E2E — Playwright drove /sign-contract as an anonymous browser context (no CRM login): OTP gate → Verify Code → Review&Sign → scrolled contract → read-confirm → drew signature on pad → Confirm Signature → success screen "Your signature has been recorded." (/tmp/cosign-qa/surface4-portal-signed.png); server confirmed row status=Signed, signed_at set, signature_ip captured from HTTP request, workflow_state=Fully Executed. (2) PDF Certificate of Completion — _build_contract_document_html on a fully-executed contract signed via the real sign() path (all 4 roles) contains "Certificate of Completion", the T&C integrity hash, and every signatory (Facility Signatory, Facility Witness, Network Signatory, Tiberbu Signatory) with status=Signed + signed_at. Suite: frontend/e2e/proof/cosign_proof.spec.ts "Surface 4"; scripts /tmp/ncqa_cert_full.py, /tmp/ncqa_setup.py

@@ -3,7 +3,7 @@
     <!-- Loading state while requesting OTP -->
     <div v-if="requestingOtp" class="py-8 text-center">
       <div class="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-gray-200 dark:border-gray-700"
-        :style="{ borderTopColor: 'var(--brand-primary)' }"></div>
+        :style="{ borderTopColor: 'var(--brand-primary, #bc1823)' }"></div>
       <p class="text-sm text-gray-500 dark:text-gray-400">Sending verification code…</p>
     </div>
 
@@ -29,9 +29,9 @@
     <template v-else>
       <div
         class="mb-5 flex h-14 w-14 items-center justify-center rounded-full mx-auto"
-        style="background-color: color-mix(in srgb, var(--brand-primary) 15%, transparent)"
+        style="background-color: color-mix(in srgb, var(--brand-primary, #bc1823) 15%, transparent)"
       >
-        <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" :style="{ color: 'var(--brand-primary)' }">
+        <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" :style="{ color: 'var(--brand-primary, #bc1823)' }">
           <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/>
           <path d="M12 6v6l4 2"/>
         </svg>
@@ -56,7 +56,7 @@
             'h-12 w-10 rounded-lg border-2 bg-white text-center text-lg font-bold text-gray-900 transition focus:outline-none dark:bg-gray-800 dark:text-white',
             errorMsg
               ? 'border-red-400 dark:border-red-600'
-              : 'border-gray-200 focus:border-[color:var(--brand-primary)] dark:border-gray-700',
+              : 'border-gray-200 focus:border-[color:var(--brand-primary,#bc1823)] dark:border-gray-700',
           ]"
           @input="onInput(i, $event)"
           @keydown="onKeydown(i, $event)"
@@ -79,7 +79,7 @@
       <button
         :disabled="loading || otpValue.length < 6"
         class="mb-4 w-full rounded-xl px-6 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90 focus:outline-none disabled:opacity-50"
-        style="background-color: var(--brand-primary)"
+        style="background-color: var(--brand-primary, #bc1823)"
         @click="handleVerify"
       >
         <span v-if="loading">Verifying…</span>

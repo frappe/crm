@@ -311,6 +311,18 @@ const links = [
     gated: true,
   },
   {
+    label: 'Networks',
+    icon: OptInIcon,
+    to: 'Networks',
+    gated: true,
+  },
+  {
+    label: 'Prequalified Facilities',
+    icon: OptInIcon,
+    to: 'PrequalifiedFacilities',
+    gated: true,
+  },
+  {
     label: 'Call Logs',
     icon: PhoneIcon,
     to: 'Call Logs',

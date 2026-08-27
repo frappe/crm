@@ -5,7 +5,7 @@
       disabled
         ? 'border-gray-200 bg-gray-50 opacity-50 dark:border-gray-700 dark:bg-gray-800'
         : isActive
-          ? 'border-[color:var(--brand-primary)] bg-white'
+          ? 'border-[color:var(--brand-primary,#bc1823)] bg-white'
           : 'border-gray-200 bg-white dark:border-gray-700',
     ]"
     :style="disabled ? 'pointer-events: none; user-select: none' : ''"

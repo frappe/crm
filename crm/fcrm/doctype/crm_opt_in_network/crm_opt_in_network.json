@@ -18,7 +18,11 @@
   "custom_header_copy",
   "footer_legal_name",
   "section_break_partners",
-  "partner_logos"
+  "partner_logos",
+  "section_break_coordinators",
+  "coordinators",
+  "section_break_signers",
+  "network_signers"
  ],
  "fields": [
   {
@@ -98,11 +102,34 @@
    "label": "Partner Logos",
    "options": "CRM Opt-In Partner",
    "description": "Logos shown on the opt-in wizard landing page (\"Trusted by\" strip)."
+  },
+  {
+   "fieldname": "section_break_coordinators",
+   "fieldtype": "Section Break",
+   "label": "Network Coordinators"
+  },
+  {
+   "fieldname": "coordinators",
+   "fieldtype": "Table",
+   "label": "Coordinators",
+   "options": "CRM Network Coordinator"
+  },
+  {
+   "fieldname": "section_break_signers",
+   "fieldtype": "Section Break",
+   "label": "Network Signatories"
+  },
+  {
+   "fieldname": "network_signers",
+   "fieldtype": "Table",
+   "label": "Network Signatories",
+   "options": "CRM Network Signer",
+   "description": "Users who co-sign every contract for this network. Invited (with a 7-day link) once both facility parties have signed; they sign via the same OTP + signature-pad portal — no CRM login required."
   }
  ],
  "is_submittable": 0,
  "links": [],
- "modified": "2026-08-25 00:00:00.000000",
+ "modified": "2026-08-26 00:00:00.000000",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Opt-In Network",
