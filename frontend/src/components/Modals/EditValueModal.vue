@@ -22,6 +22,35 @@
           @change="(v) => updateValue(v)"
         />
       </div>
+      <template v-if="isLostStatus">
+        <div class="mt-4">
+          <div class="mb-1.5 text-sm text-ink-gray-5">
+            {{ __('Lost Reason') }}
+            <span class="text-ink-red-5">*</span>
+          </div>
+          <Link
+            ref="lostReasonLinkRef"
+            class="form-control flex-1 truncate"
+            :value="lostReason"
+            doctype="CRM Lost Reason"
+            :onCreate="onCreateLostReason"
+            @change="(v) => (lostReason = v)"
+          />
+        </div>
+        <div class="mt-4">
+          <div class="mb-1.5 text-sm text-ink-gray-5">
+            {{ __('Lost Notes') }}
+            <span v-if="lostReason == 'Other'" class="text-ink-red-5">*</span>
+          </div>
+          <FormControl
+            class="form-control flex-1 truncate"
+            type="textarea"
+            :value="lostNotes"
+            @change="(e) => (lostNotes = e.target.value)"
+          />
+        </div>
+      </template>
+      <ErrorMessage v-if="error" class="mt-4" :message="error" />
     </template>
     <template #actions>
       <Button
@@ -37,13 +66,24 @@
 
 <script setup>
 import Link from '@/components/Controls/Link.vue'
+<<<<<<< HEAD
 import TextEditorControl from '@/components/Controls/TextEditorControl.vue'
+=======
+import { statusesStore } from '@/stores/statuses'
+import { createDocument } from '@/composables/document'
+>>>>>>> 6bfbd08 (fix: bulk edit silently reports success when records fail to save)
 import { useTelemetry } from 'frappe-ui/frappe'
 import {
   Combobox,
   FormControl,
+  ErrorMessage,
   call,
   createResource,
+<<<<<<< HEAD
+=======
+  toast,
+  TextEditor,
+>>>>>>> 6bfbd08 (fix: bulk edit silently reports success when records fail to save)
   DatePicker,
 } from 'frappe-ui'
 import { ref, computed, onMounted, h } from 'vue'
@@ -100,12 +140,56 @@ const field = ref({
 
 const newValue = ref('')
 const loading = ref(false)
+const error = ref('')
+
+const { getLeadStatus, getDealStatus } = statusesStore()
+
+const lostReason = ref('')
+const lostNotes = ref('')
+const lostReasonLinkRef = ref(null)
+
+const isLostStatus = computed(() => {
+  if (field.value.fieldname !== 'status' || !newValue.value) return false
+  if (props.doctype === 'CRM Lead') {
+    return getLeadStatus(newValue.value)?.type === 'Lost'
+  }
+  if (props.doctype === 'CRM Deal') {
+    return getDealStatus(newValue.value)?.type === 'Lost'
+  }
+  return false
+})
+
+console.log('asim isLostStatus', isLostStatus.value)
+
+function onCreateLostReason(value, close) {
+  console.log('asim onCreateLostReason', value, close)
+  createDocument('CRM Lost Reason', { lost_reason: value }, close, (doc) => {
+    lostReason.value = doc.name
+    lostReasonLinkRef.value?.reload('', true)
+  })
+}
 
 function updateValues() {
+  error.value = ''
   let fieldVal = newValue.value
   if (field.value.fieldtype == 'Check') {
     fieldVal = fieldVal == 'Yes' ? 1 : 0
   }
+
+  let data = { [field.value.fieldname]: fieldVal || null }
+  if (isLostStatus.value) {
+    if (!lostReason.value) {
+      error.value = __('Lost Reason is required')
+      return
+    }
+    if (lostReason.value === 'Other' && !lostNotes.value) {
+      error.value = __('Lost Notes are required when Lost Reason is "Other"')
+      return
+    }
+    data.lost_reason = lostReason.value
+    data.lost_notes = lostNotes.value
+  }
+
   loading.value = true
   call(
     'frappe.desk.doctype.bulk_update.bulk_update.submit_cancel_or_update_docs',
@@ -113,11 +197,20 @@ function updateValues() {
       doctype: props.doctype,
       docnames: Array.from(props.selectedValues),
       action: 'update',
-      data: {
-        [field.value.fieldname]: fieldVal || null,
-      },
+      data,
     },
-  ).then(() => {
+  ).then((failed) => {
+    loading.value = false
+    // Response is the list of docnames that failed to save, or null when the
+    // operation was enqueued (>= 20 records).
+    if (Array.isArray(failed) && failed.length) {
+      error.value = __('Failed to update {0} record(s): {1}', [
+        failed.length,
+        failed.join(', '),
+      ])
+      emit('reload')
+      return
+    }
     field.value = {
       label: '',
       fieldtype: '',
@@ -125,15 +218,26 @@ function updateValues() {
       options: '',
     }
     newValue.value = ''
-    loading.value = false
+    lostReason.value = ''
+    lostNotes.value = ''
     show.value = false
     capture('bulk_update', { doctype: props.doctype })
     emit('reload')
+    if (!Array.isArray(failed)) {
+      toast.info(
+        __(
+          'Bulk operation is enqueued in background. Failures, if any, are recorded in Error Log.',
+        ),
+      )
+    }
   })
 }
 
 function changeField(f) {
   newValue.value = ''
+  lostReason.value = ''
+  lostNotes.value = ''
+  error.value = ''
   if (!f) return
   field.value = f
 }
