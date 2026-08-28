@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-08-17 07:47+0000\n"
-"PO-Revision-Date: 2026-08-26 17:37\n"
+"PO-Revision-Date: 2026-08-28 17:46\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Mongolian\n"
 "MIME-Version: 1.0\n"
@@ -143,7 +143,7 @@ msgstr "<b>БОГИНО ХУВААРЬ</b>"
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:94
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:95
 msgid "<p>Dear {{ lead_name }},</p>\\n\\n<p>This is a reminder for the payment of {{ grand_total }}.</p>\\n\\n<p>Thanks,</p>\\n<p>Frappé</p>"
-msgstr ""
+msgstr "<p>Эрхэм хүндэт {{ lead_name }},</p>\\n\\n<p>Энэ бол {{ grand_total }} төлбөрийн сануулга юм.</p>\\n\\n<p>Баярлалаа,</p>\\n<p>Фраппе</p>"
 
 #. Header text in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
