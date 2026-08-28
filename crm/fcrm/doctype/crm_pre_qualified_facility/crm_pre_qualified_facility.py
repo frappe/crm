@@ -10,18 +10,32 @@ class CRMPreQualifiedFacility(Document):
 
 
 def _send_facility_invitation(doc):
-    """Send a single-facility invitation email to the facility contact."""
-    try:
-        network = frappe.get_doc("CRM Opt-In Network", doc.network)
-        optin_url = "{}/opt-in?network={}".format(frappe.utils.get_url(), doc.network)
-        frappe.sendmail(
-            recipients=[doc.contact_email],
-            subject="You've been pre-qualified: {} — CareverseHIMS".format(network.display_name),
-            message=_invite_html(doc.contact_name, network.display_name, doc.facility_name, optin_url),
-            now=False,
-        )
-    except Exception:
-        frappe.log_error(frappe.get_traceback(), "CRMPreQualifiedFacility: invitation email failed")
+    """Send one invitation email per network membership on the facility.
+
+    The network and contact live on the CRM Facility Membership child rows (a
+    facility can belong to up to two networks) — NOT on the parent facility, which
+    only carries mfl_code / facility_name / keph_level. Each Active membership with
+    a contact email gets its own branded, per-network invitation.
+    """
+    for mem in (doc.memberships or []):
+        if not mem.network or not mem.contact_email:
+            continue
+        if (mem.status or "Active") != "Active":
+            continue
+        try:
+            network = frappe.get_doc("CRM Opt-In Network", mem.network)
+            # The opt-in portal keys on the network slug (verify_prequalified /
+            # get_settings filter by `slug`), not the Link docname.
+            slug = network.slug or mem.network
+            optin_url = "{}/opt-in?network={}".format(frappe.utils.get_url(), slug)
+            frappe.sendmail(
+                recipients=[mem.contact_email],
+                subject="You've been pre-qualified: {} — CareverseHIMS".format(network.display_name),
+                message=_invite_html(mem.contact_name, network.display_name, doc.facility_name, optin_url),
+                now=True,
+            )
+        except Exception:
+            frappe.log_error(frappe.get_traceback(), "CRMPreQualifiedFacility: invitation email failed")
 
 
 def _invite_html(contact_name, network_name, facility_name, optin_url):

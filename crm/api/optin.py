@@ -1525,6 +1525,20 @@ def _process_submission(submission_ref):
             # Do NOT wrap in a bare try/except here — failures must propagate
             # to the outer handler which sets status="Failed". A deal without
             # a quote is a data-integrity violation, not a warn-and-continue.
+
+            # Resolve the negotiated price list the wizard priced against
+            # (network override → settings default → seeded fallback), mirroring
+            # get_pricing(). The quote must carry THIS list, not Standard Selling.
+            _q_network = _get_network_doc(sub.network_slug)
+            try:
+                _q_settings = frappe.get_single("CRM Opt-In Settings")
+                _default_pl = _q_settings.default_price_list or "Negotiated Year 1"
+            except Exception:
+                _default_pl = "Negotiated Year 1"
+            quote_price_list = (
+                (_q_network.get("price_list_override") if _q_network else None) or _default_pl
+            )
+
             existing_quotes = frappe.get_list(
                 "Quotation",
                 filters={"crm_deal": deal_name},
@@ -1555,7 +1569,14 @@ def _process_submission(submission_ref):
                     "crm_deal": deal_name,
                 })
 
+            # Pin the negotiated price list on the quote so it overrides the
+            # Selling Settings default (Standard Selling). ignore_pricing_rule
+            # stops set_missing_values() / validate from re-deriving line rates.
+            q.selling_price_list = quote_price_list
+            q.ignore_pricing_rule = 1
+
             for prod in pricing:
+                annual_rate = float(prod.get("annual_kes") or 0)
                 q.append("items", {
                     "item_code": frappe.utils.cstr(prod.get("item_code", "")),
                     "item_name": "CareverseHIMS - %s" % frappe.utils.cstr(
@@ -1565,7 +1586,14 @@ def _process_submission(submission_ref):
                         prod.get("keph_level", "")
                     ),
                     "qty": 1,
-                    "rate": float(prod.get("annual_kes") or 0),
+                    # Line is an ANNUAL subscription; the price list stores the
+                    # MONTHLY Item Price. Pin price_list_rate to the annual figure
+                    # with zero discount so set_missing_values() (which now has a
+                    # price list to fetch from) can't back-compute a phantom
+                    # discount or overwrite the annual rate with the monthly one.
+                    "price_list_rate": annual_rate,
+                    "rate": annual_rate,
+                    "discount_percentage": 0,
                     "uom": "Nos",
                 })
 

@@ -314,6 +314,14 @@ ignore_links_on_delete = ["Failed Lead Sync Log"]
 # pin_home_page_to_landing MUST run first: it forces '/' -> index so a System User's
 # default_workspace can't resolve the root to /desk/<workspace> and slip past the guard.
 before_request = [
+	# Re-apply the SES QueueBuilder patch on every web request. The top-level
+	# import side-effect above is unreliable: in production (developer_mode off)
+	# frappe.get_hooks() serves the hooks dict from the shared redis "app_hooks"
+	# cache WITHOUT importing crm.hooks, so a freshly-started web/worker process
+	# may never run the module-level patch. apply_queue_builder_patches() is
+	# idempotent (guards on a per-class flag), so this is a cheap no-op after the
+	# first call. Kept FIRST so guard_desk_access's redirect can't short-circuit it.
+	"crm.email.queue_patch.apply_queue_builder_patches",
 	"crm.api.route_guard.pin_home_page_to_landing",
 	"crm.api.route_guard.guard_desk_access",
 ]
@@ -321,7 +329,12 @@ before_request = [
 
 # Job Events
 # ----------
-# before_job = ["crm.utils.before_job"]
+# Background jobs (enqueued OTP dispatch on the "short" queue, opt-in confirmation
+# emails, and the scheduled email-queue flush) run in long-lived RQ workers that
+# read hooks from the warm redis cache and never import crm.hooks — so without this
+# the SES patch is absent and frappe.sendmail throws OutgoingEmailError at
+# queue-build time (nothing is even queued). Idempotent; see before_request note.
+before_job = ["crm.email.queue_patch.apply_queue_builder_patches"]
 # after_job = ["crm.utils.after_job"]
 
 # User Data Protection

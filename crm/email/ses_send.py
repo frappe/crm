@@ -82,13 +82,25 @@ def _validate_runtime_config(config: AwsSesRuntimeConfig) -> None:
 			"CRM SES Settings is enabled but Sender Email is not configured.",
 			title="AWS SES Sender Missing",
 		)
-	if config.use_explicit_credentials and (
-		not config.access_key_id or not config.secret_access_key
-	):
-		frappe.throw(
-			"CRM SES Settings has explicit credential mode enabled but key/secret is incomplete.",
-			title="AWS SES Credentials Missing",
-		)
+	if config.use_explicit_credentials:
+		missing = []
+		if not config.access_key_id:
+			missing.append("Access Key ID")
+		if not config.secret_access_key:
+			# Empty here (not a decrypt error — that surfaces as InvalidToken, not this
+			# throw) means the Password field was never saved, or was cleared. The most
+			# common cause is entering the key but leaving the Secret Access Key blank.
+			missing.append("Secret Access Key")
+		if missing:
+			frappe.throw(
+				"CRM SES Settings has 'Use Explicit Credentials' enabled but "
+				+ " and ".join(missing)
+				+ " is not saved. Open CRM SES Settings, re-enter the "
+				+ " and ".join(missing)
+				+ ", and Save — or uncheck 'Use Explicit Credentials' to use the "
+				"instance IAM role / AWS profile instead.",
+				title="AWS SES Credentials Missing",
+			)
 
 
 def _should_skip_external_send_in_tests() -> bool:

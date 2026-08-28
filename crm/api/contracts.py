@@ -400,9 +400,10 @@ def _transition(contract_name):
     facility_complete = fac_sig_signed and fac_wit_signed
 
     # Stage A → B: facility witness is invited only once the facility signatory signs.
-    # now=False so the guest's sign request isn't blocked on third-party SMTP.
+    # now=True: send synchronously so the invitation is delivered via SES rather than
+    # left sitting in the Email Queue awaiting a scheduled flush.
     if fac_sig_signed and fac_wit and fac_wit.status == "Pending" and not fac_wit.invite_token:
-        _issue_and_send_invitation(contract, fac_wit, now=False)
+        _issue_and_send_invitation(contract, fac_wit, now=True)
 
     # Stage B → C: once both facility parties have signed, invite the network +
     # tiberbu co-signatories in parallel. Guarded on invite_token so re-entry is safe.
@@ -414,7 +415,7 @@ def _transition(contract_name):
                 and row.status == "Pending"
                 and not row.invite_token
             ):
-                _issue_and_send_invitation(contract, row, now=False)
+                _issue_and_send_invitation(contract, row, now=True)
                 invited_any = True
         if invited_any:
             _set_contract_state(contract, "Awaiting Counterparty Signatures")
