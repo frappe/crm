@@ -33,31 +33,16 @@
           doctype="DocType"
           :filters="docTypeFilters"
         />
-        <div>
-          <div class="mb-2 text-sm text-ink-gray-5">{{ __('Data') }}</div>
+        <div v-for="section in triggerSections" :key="section.group">
+          <div class="mb-2 text-sm text-ink-gray-5">{{ section.group }}</div>
           <button
-            v-for="trigger in documentTriggers"
+            v-for="trigger in section.options"
             :key="trigger.value"
             class="trigger-row"
             :class="{
-              'trigger-row-selected': doc.trigger_type === trigger.value,
+              'trigger-row-selected': selectedTrigger === trigger.value,
             }"
-            @click="doc.trigger_type = trigger.value"
-          >
-            <component :is="trigger.icon" class="size-4" />
-            <span class="text-sm">{{ trigger.label }}</span>
-          </button>
-        </div>
-        <div>
-          <div class="mb-2 text-sm text-ink-gray-5">{{ __('Others') }}</div>
-          <button
-            v-for="trigger in otherTriggers"
-            :key="trigger.value"
-            class="trigger-row"
-            :class="{
-              'trigger-row-selected': doc.trigger_type === trigger.value,
-            }"
-            @click="doc.trigger_type = trigger.value"
+            @click="pickTrigger(trigger.value)"
           >
             <component :is="trigger.icon" class="size-4" />
             <span class="text-sm">{{ trigger.label }}</span>
@@ -103,7 +88,11 @@ import StepEditor from './WorkflowStepEditor.vue'
 import TriggerDetails from './WorkflowTriggerDetails.vue'
 import WorkflowFilters from './WorkflowFilters.vue'
 import { capabilitiesFor } from './workflowCapabilities'
-import { documentTriggers, otherTriggers } from './workflowTriggers'
+import {
+  triggerFromValue,
+  triggerGroups,
+  triggerValue,
+} from './workflowTriggers'
 import { Button, FormControl, LoadingIndicator } from 'frappe-ui'
 import { computed } from 'vue'
 
@@ -117,6 +106,13 @@ const props = defineProps({
 defineEmits(['request-remove'])
 
 const docTypeFilters = { istable: 0 }
+const triggerSections = computed(() => triggerGroups(props.doc.document_type))
+const selectedTrigger = computed(() => triggerValue(props.doc))
+
+function pickTrigger(value) {
+  Object.assign(props.doc, triggerFromValue(value))
+}
+
 const runAsOptions = ['Triggering User', 'Document Owner', 'Automation User']
 const capabilities = computed(() => capabilitiesFor(props.doc.document_type))
 const fields = computed(() => capabilities.value?.fields || [])
