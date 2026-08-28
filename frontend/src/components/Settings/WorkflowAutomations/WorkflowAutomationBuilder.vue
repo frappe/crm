@@ -131,7 +131,7 @@ import { globalStore } from '@/stores/global'
 import { blockGroups } from './workflowBlocks'
 import { aliasTargets, loadCapabilities } from './workflowCapabilities'
 import { workflowEdges, workflowNodes } from './workflowGraph'
-import { triggerGroups } from './workflowTriggers'
+import { triggerFromValue, triggerGroups } from './workflowTriggers'
 import {
   insertAfter,
   layoutSteps,
@@ -178,7 +178,7 @@ const selectedStep = computed(() => {
 const nodes = computed(() => workflowNodes(doc, errors))
 const edges = computed(() => workflowEdges(doc.actions))
 const blocks = computed(() => blockGroups(doc.document_type))
-const triggers = triggerGroups()
+const triggers = computed(() => triggerGroups(doc.document_type))
 
 const relationships = computed(() => parseJson(doc.relationships, []))
 const paneColumns = computed(() =>
@@ -352,10 +352,15 @@ function selectNode(id) {
   if (id !== 'trigger' || doc.trigger_type) inspectorOpen.value = true
 }
 
-function pickTrigger(triggerType) {
-  doc.trigger_type = triggerType
+function pickTrigger(trigger) {
+  applyTrigger(trigger)
   selectedId.value = 'trigger'
   inspectorOpen.value = true
+}
+
+/** Event triggers store as a Custom Event; anything else clears the event it replaces. */
+function applyTrigger(value) {
+  Object.assign(doc, triggerFromValue(value))
 }
 
 function removeSelectedStep() {
