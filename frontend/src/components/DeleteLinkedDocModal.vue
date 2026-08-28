@@ -134,7 +134,11 @@
 import { createResource, call, toast } from 'frappe-ui'
 import { useRouter } from 'vue-router'
 import { computed, ref } from 'vue'
-import { markDocumentAsDeleted, unmarkDocumentAsDeleted } from '@/data/document'
+import {
+  markDocumentAsDeleted,
+  unmarkDocumentAsDeleted,
+  expireDeletionMarker,
+} from '@/data/document'
 
 const show = defineModel({ type: Boolean })
 const router = useRouter()
@@ -263,6 +267,7 @@ const deleteDoc = async () => {
     unmarkDocumentAsDeleted(props.doctype, props.docname)
     throw err
   }
+  expireDeletionMarker(props.doctype, props.docname)
   toast.success(__('{0} deleted successfully', [props.doctype]))
   show.value = false
   router.push({ name: props.name })
