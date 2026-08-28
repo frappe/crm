@@ -85,7 +85,7 @@
     <template v-else>
       <template v-for="field in schemaFields" :key="field.fieldname">
         <WorkflowUserPicker
-          v-if="picksUsers(field)"
+          v-if="field.control === 'users'"
           :model-value="arrayValue(field)"
           :action-type="action.action_type"
           :fieldname="field.fieldname"
@@ -166,13 +166,6 @@ const params = computed(() => {
     return {}
   }
 })
-
-/** Sources whose values are users, however the server narrows the list. */
-const USER_SOURCES = ['users', 'notification_recipients']
-
-function picksUsers(field) {
-  return USER_SOURCES.includes(field.options_source)
-}
 
 function optionsFor(field) {
   if (field.options_source === 'doc_fields') return docFieldOptions.value
