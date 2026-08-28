@@ -36,7 +36,8 @@
         :options="['Before', 'After']"
       />
     </template>
-    <template v-else-if="doc.trigger_type === 'Custom Event'">
+    <!-- Only for an event the trigger list does not already name. -->
+    <template v-else-if="doc.trigger_type === 'Custom Event' && !isNamedEvent">
       <FormControl
         v-model="doc.custom_event"
         type="select"
@@ -48,6 +49,7 @@
 </template>
 
 <script setup>
+import { eventTriggers, triggerValue } from './workflowTriggers'
 import { FormControl } from 'frappe-ui'
 import { computed } from 'vue'
 
@@ -56,6 +58,12 @@ const props = defineProps({
   fields: { type: Array, default: () => [] },
   events: { type: Array, default: () => [] },
 })
+
+const isNamedEvent = computed(() =>
+  eventTriggers(props.doc.document_type).some(
+    (trigger) => trigger.value === triggerValue(props.doc),
+  ),
+)
 
 const fieldOptions = computed(() => {
   return props.fields.map((field) => ({
