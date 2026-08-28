@@ -28,6 +28,12 @@ export function markDocumentAsDeleted(doctype, docname) {
   setTimeout(() => intentionallyDeletedDocs.delete(key), 10000)
 }
 
+// Called if the delete request itself fails, so a legitimate later
+// DoesNotExistError for this doc isn't silently swallowed.
+export function unmarkDocumentAsDeleted(doctype, docname) {
+  intentionallyDeletedDocs.delete(`${doctype}:${docname}`)
+}
+
 export function useDocument(doctype, docname, resourceOverrides = {}) {
   if (typeof docname === 'number') docname = String(docname)
   const { setupScript, scripts } = getScript(doctype)
