@@ -170,7 +170,7 @@ class SendEmailToRecord(AutomationAction):
 		{"fieldname": "message", "label": "Message", "fieldtype": "Text Editor"},
 		{
 			"fieldname": "sender",
-			"label": "Send As",
+			"label": "Send as",
 			"fieldtype": "Link",
 			"options": "User",
 			"description": "Leave empty to send from the default outgoing account.",
