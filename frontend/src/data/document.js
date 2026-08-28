@@ -21,10 +21,15 @@ const permissionsCache = {}
 const intentionallyDeletedDocs = new Set()
 
 export function markDocumentAsDeleted(doctype, docname) {
+  intentionallyDeletedDocs.add(`${doctype}:${docname}`)
+}
+
+// Called once the delete request has completed, so a reused docname
+// doesn't have a later, unrelated error silently swallowed. Kept separate
+// from markDocumentAsDeleted so the marker survives the full (possibly
+// slow) delete request instead of a fixed window starting before it.
+export function expireDeletionMarker(doctype, docname) {
   const key = `${doctype}:${docname}`
-  intentionallyDeletedDocs.add(key)
-  // self-expire in case the realtime event never arrives, so a reused
-  // docname doesn't have a later, unrelated error silently swallowed
   setTimeout(() => intentionallyDeletedDocs.delete(key), 10000)
 }
 
