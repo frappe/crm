@@ -25,7 +25,6 @@
         :step="selectedStep"
         :doc="doc"
         :targets="targets"
-        :errors="errors"
       />
       <template v-else>
         <Link
@@ -112,7 +111,6 @@ const props = defineProps({
   doc: { type: Object, required: true },
   selectedStep: { type: Object, default: null },
   targets: { type: Array, default: () => [] },
-  errors: { type: Array, default: () => [] },
   loading: { type: Boolean, default: false },
 })
 
