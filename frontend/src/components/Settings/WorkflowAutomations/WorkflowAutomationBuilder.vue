@@ -4,14 +4,19 @@
       class="flex h-14 shrink-0 items-center justify-between border-b border-outline-gray-2 px-4"
     >
       <div class="flex min-w-0 items-center gap-2">
-        <FormControl
-          :model-value="doc.title"
-          :aria-label="__('Automation title')"
-          :placeholder="__('Untitled automation')"
-          class="w-[min(28rem,50vw)] min-w-0"
-          @focus="$event.target.select()"
-          @update:model-value="setTitle"
-        />
+        <div
+          class="title-sizer text-base"
+          :data-value="doc.title || __('Untitled automation')"
+        >
+          <input
+            class="title-input text-ink-gray-8 placeholder:text-ink-gray-4 focus-visible:outline-none"
+            :value="doc.title"
+            :aria-label="__('Automation title')"
+            :placeholder="__('Untitled automation')"
+            @focus="$event.target.select()"
+            @input="setTitle($event.target.value)"
+          />
+        </div>
         <Badge
           v-if="!doc.enabled"
           :label="__('Draft')"
@@ -34,15 +39,15 @@
           @click="showTrial = true"
         />
         <Button
-          :label="__('See Runs')"
-          icon-left="lucide-history"
-          :disabled="!automationName"
-          @click="showRuns = true"
+          :label="doc.enabled ? __('Disable') : __('Enable')"
+          :disabled="!doc.trigger_type"
+          @click="doc.enabled = doc.enabled ? 0 : 1"
         />
         <Button
           :label="__('Save')"
           variant="solid"
           :loading="saving"
+          :disabled="!dirty"
           @click="saveAutomation"
         />
         <Button
@@ -58,7 +63,7 @@
       class="grid min-h-0 flex-1"
       :style="{ gridTemplateColumns: paneColumns }"
     >
-      <div class="relative min-h-0">
+      <div class="relative min-h-0 outline-none" autofocus tabindex="0">
         <WorkflowFlow
           :nodes="nodes"
           :edges="edges"
@@ -114,11 +119,6 @@
     >
       {{ saveError }}
     </div>
-    <Dialog v-model:open="showRuns" :title="__('Automation Runs')">
-      <template #default>
-        <AutomationRuns :automation-name="automationName" />
-      </template>
-    </Dialog>
     <Dialog v-model:open="showTrial" :title="__('Test Run')">
       <template #default>
         <AutomationTrialRun
@@ -132,7 +132,6 @@
 
 <script setup>
 import AutomationInspector from './WorkflowAutomationInspector.vue'
-import AutomationRuns from './WorkflowAutomationRuns.vue'
 import AutomationTrialRun from './WorkflowTrialRun.vue'
 import WorkflowFlow from './WorkflowFlow.vue'
 import { useKeyboardShortcuts } from '@/composables/useKeyboardShortcuts'
@@ -150,7 +149,7 @@ import {
   toRows,
   toTree,
 } from './workflowSteps'
-import { Badge, Button, Dialog, FormControl, call, toast } from 'frappe-ui'
+import { Badge, Button, Dialog, call, toast } from 'frappe-ui'
 import { computed, reactive, ref, watch } from 'vue'
 
 const props = defineProps({
@@ -168,7 +167,6 @@ const loading = ref(false)
 const saving = ref(false)
 const inspectorWidth = ref(storedInspectorWidth())
 const panes = ref(null)
-const showRuns = ref(false)
 const showTrial = ref(false)
 const inspectorOpen = ref(false)
 const selectedId = ref('trigger')
@@ -541,3 +539,47 @@ function cleanMessage(message) {
   }
 }
 </script>
+
+<style scoped>
+/* An invisible mirror of the text sets the track width, so the field is only
+   ever as wide as its content until it hits the cap and truncates. */
+.title-sizer {
+  display: inline-grid;
+  min-width: 0;
+  max-width: min(28rem, 40vw);
+}
+
+.title-sizer::after,
+.title-input {
+  grid-area: 1 / 1;
+  min-width: 6rem;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  padding: 4px 8px;
+  font: inherit;
+  letter-spacing: inherit;
+}
+
+.title-sizer::after {
+  content: attr(data-value);
+  visibility: hidden;
+  white-space: pre;
+}
+
+.title-input {
+  cursor: text;
+  overflow: hidden;
+  background: transparent;
+  outline: none;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.title-input:focus {
+  border-color: var(--outline-gray-3);
+}
+
+.title-input::selection {
+  background: var(--surface-gray-3, #e2e8f0);
+}
+</style>
