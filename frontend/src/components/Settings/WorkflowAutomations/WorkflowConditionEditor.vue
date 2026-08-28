@@ -2,17 +2,7 @@
   <div class="space-y-2">
     <div class="flex items-center justify-between gap-2">
       <label class="block text-sm text-ink-gray-5">{{ label }}</label>
-      <div class="flex items-center gap-1">
-        <Button
-          v-for="option in modes"
-          :key="option.value"
-          :label="option.label"
-          :variant="mode === option.value ? 'subtle' : 'ghost'"
-          size="sm"
-          :disabled="option.value === 'filters' && !canUseFilters"
-          @click="mode = option.value"
-        />
-      </div>
+      <TabButtons v-model="mode" :options="modes" />
     </div>
 
     <WorkflowFilters
@@ -50,7 +40,7 @@ import {
   toExpression,
   toFilters,
 } from './workflowConditions'
-import { Button, FormControl } from 'frappe-ui'
+import { FormControl, TabButtons } from 'frappe-ui'
 import { computed, ref, watch } from 'vue'
 
 const props = defineProps({
@@ -62,10 +52,10 @@ const props = defineProps({
 
 const emit = defineEmits(['update:modelValue'])
 
-const modes = [
-  { label: __('Filters'), value: 'filters' },
+const modes = computed(() => [
+  { label: __('Filters'), value: 'filters', disabled: !canUseFilters.value },
   { label: __('Expression'), value: 'expression' },
-]
+])
 
 /** Start on whichever mode can actually show what is stored. */
 const mode = ref(
