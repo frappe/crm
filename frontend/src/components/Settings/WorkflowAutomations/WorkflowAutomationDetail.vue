@@ -1,100 +1,63 @@
 <template>
-  <SettingsLayoutBase
-    :title="doc.title || __('Automation')"
-    :description="triggerSummary"
-  >
+  <SettingsLayoutBase>
     <template #title>
-      <h2 class="flex h-5 items-center gap-2 text-2xl-semibold leading-none">
+      <div class="flex items-start gap-2">
         <Button
+          class="-ml-2 shrink-0"
           variant="ghost"
           icon="lucide-chevron-left"
           :aria-label="__('Back to automations')"
           @click="$emit('back')"
         />
-        {{ doc.title || __('Automation') }}
-      </h2>
+        <div class="flex min-w-0 flex-col gap-1">
+          <div class="flex items-center gap-2">
+            <h2 class="truncate text-2xl-semibold leading-none">
+              {{ doc.title || __('Automation') }}
+            </h2>
+            <Badge
+              :label="doc.enabled ? __('Enabled') : __('Draft')"
+              :theme="doc.enabled ? 'green' : 'orange'"
+              variant="subtle"
+            />
+            <Badge
+              v-if="doc.disabled_reason"
+              :label="doc.disabled_reason"
+              theme="red"
+              variant="subtle"
+            />
+          </div>
+          <p class="text-p-base text-ink-gray-6">{{ triggerSummary }}</p>
+        </div>
+      </div>
     </template>
     <template #header-actions>
-      <div class="flex items-center gap-2">
-        <Button
-          :label="__('See Runs')"
-          icon-left="lucide-history"
-          @click="showRuns = true"
-        />
-        <Button
-          :label="__('Edit Automation')"
-          variant="solid"
-          icon-left="lucide-pencil"
-          @click="$emit('edit')"
-        />
-      </div>
+      <Button
+        :label="__('Edit Automation')"
+        variant="solid"
+        icon-left="lucide-pencil"
+        @click="$emit('edit')"
+      />
     </template>
     <template #content>
       <div v-if="loading" class="mt-12 flex justify-center">
         <LoadingIndicator class="w-4" />
       </div>
-      <div v-else class="space-y-6 pb-6">
-        <div class="flex items-center gap-2">
-          <Badge
-            :label="doc.enabled ? __('Enabled') : __('Draft')"
-            :theme="doc.enabled ? 'green' : 'orange'"
-            variant="subtle"
-          />
-          <Badge
-            v-if="doc.disabled_reason"
-            :label="doc.disabled_reason"
-            theme="red"
-            variant="subtle"
-          />
-        </div>
-
-        <section>
-          <h3 class="mb-2 text-sm-semibold uppercase text-ink-gray-5">
-            {{ __('Flow') }}
-          </h3>
-          <div
-            class="h-[480px] overflow-hidden rounded border border-outline-gray-2"
-          >
-            <WorkflowFlow :nodes="nodes" :edges="edges" readonly />
-          </div>
-        </section>
-
-        <ReadOnlySection
-          v-if="relationships.length"
-          :title="__('Related Records')"
-        >
-          <ReadOnlyRow
-            v-for="item in relationships"
-            :key="item.alias"
-            :label="item.alias"
-            :value="
-              __('{0} of {1}', [item.relationship, item.source || 'trigger'])
-            "
-          />
-        </ReadOnlySection>
-
-        <ReadOnlySection :title="__('Settings')">
-          <ReadOnlyRow :label="__('Run As')" :value="runAsSummary" />
-        </ReadOnlySection>
+      <div
+        v-else
+        class="h-full min-h-[480px] overflow-hidden rounded border border-outline-gray-2"
+      >
+        <WorkflowFlow :nodes="nodes" :edges="edges" readonly />
       </div>
     </template>
   </SettingsLayoutBase>
-  <Dialog v-model:open="showRuns" :title="__('Automation Runs')">
-    <template #default>
-      <AutomationRuns :automation-name="automationName" />
-    </template>
-  </Dialog>
 </template>
 
 <script setup>
 import SettingsLayoutBase from '@/components/Layouts/SettingsLayoutBase.vue'
-import AutomationRuns from './WorkflowAutomationRuns.vue'
-import ReadOnlyRow from './WorkflowReadOnlyRow.vue'
-import ReadOnlySection from './WorkflowReadOnlySection.vue'
 import WorkflowFlow from './WorkflowFlow.vue'
 import { workflowEdges, workflowNodes } from './workflowGraph'
 import { toTree } from './workflowSteps'
-import { Badge, Button, Dialog, LoadingIndicator, call } from 'frappe-ui'
+import { Badge, Button, LoadingIndicator, call } from 'frappe-ui'
 import { computed, reactive, ref, watch } from 'vue'
 
 const props = defineProps({
@@ -104,21 +67,12 @@ const props = defineProps({
 defineEmits(['edit', 'back'])
 
 const loading = ref(false)
-const showRuns = ref(false)
 const doc = reactive({})
 
 const tree = computed(() => toTree(doc.actions || []))
 const graphDoc = computed(() => ({ ...doc, actions: tree.value }))
 const nodes = computed(() => workflowNodes(graphDoc.value))
 const edges = computed(() => workflowEdges(tree.value))
-
-const relationships = computed(() => {
-  try {
-    return JSON.parse(doc.relationships || '[]')
-  } catch {
-    return []
-  }
-})
 
 const triggerSummary = computed(() => {
   const trigger = (doc.trigger_type || '').replace(/^Doc /, 'Record ')
@@ -133,12 +87,6 @@ const triggerSummary = computed(() => {
   if (doc.trigger_type === 'Scheduled')
     return __('Cron {0}', [doc.cron_expression])
   return trigger
-})
-
-const runAsSummary = computed(() => {
-  if (doc.run_as === 'Automation User')
-    return `${doc.run_as} (${doc.automation_user})`
-  return doc.run_as
 })
 
 watch(() => props.automationName, load, { immediate: true })
