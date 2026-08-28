@@ -171,28 +171,55 @@ MESSAGE_CORRELATIONS = [
 ]
 RECORD_CORRELATION = [{"label": "This record", "value": "{{ doc.name }}"}]
 
+# `subject` names the record an event is about, so a flow triggers on that record rather than
+# on whatever document the emitter held. Either a fixed doctype with the payload key holding
+# its name, or the payload keys for a reference that may be a Lead or a Deal.
+REFERENCE_SUBJECT = {
+	"doctype_key": "reference_doctype",
+	"name_key": "reference_name",
+	"doctypes": ["CRM Lead", "CRM Deal"],
+}
+LEAD_SUBJECT = {"doctype": "CRM Lead", "name_key": "lead"}
+DEAL_SUBJECT = {"doctype": "CRM Deal", "name_key": "deal"}
+
 automation_events = [
 	{
 		"crm.prospect_message_sent": {
 			"label": "We emailed the prospect",
+			"subject": REFERENCE_SUBJECT,
 			"correlation_options": MESSAGE_CORRELATIONS,
 		},
 		"crm.prospect_message_received": {
 			"label": "The prospect replied",
+			"subject": REFERENCE_SUBJECT,
 			"correlation_options": MESSAGE_CORRELATIONS,
 		},
-		"crm.lead_qualified": {"label": "Lead was qualified"},
+		"crm.lead_qualified": {"label": "Lead was qualified", "subject": LEAD_SUBJECT},
 		"crm.lead_converted": {
 			"label": "Lead became a deal",
+			"subject": LEAD_SUBJECT,
 			"correlation_options": RECORD_CORRELATION,
 		},
 		"crm.deal_stage_changed": {
 			"label": "Deal changed stage",
+			"subject": DEAL_SUBJECT,
 			"correlation_options": RECORD_CORRELATION,
 		},
-		"crm.deal_won": {"label": "Deal was won", "correlation_options": RECORD_CORRELATION},
-		"crm.deal_lost": {"label": "Deal was lost", "correlation_options": RECORD_CORRELATION},
-		"crm.task_overdue": {"label": "Task went overdue", "correlation_options": RECORD_CORRELATION},
+		"crm.deal_won": {
+			"label": "Deal was won",
+			"subject": DEAL_SUBJECT,
+			"correlation_options": RECORD_CORRELATION,
+		},
+		"crm.deal_lost": {
+			"label": "Deal was lost",
+			"subject": DEAL_SUBJECT,
+			"correlation_options": RECORD_CORRELATION,
+		},
+		"crm.task_overdue": {
+			"label": "Task went overdue",
+			"subject": REFERENCE_SUBJECT,
+			"correlation_options": RECORD_CORRELATION,
+		},
 	}
 ]
 
