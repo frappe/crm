@@ -10,7 +10,8 @@
     @update:query="query = $event"
   >
     <template #item-prefix="{ item }">
-      <UserAvatar :user="item.value" size="sm" />
+      <TokenIcon v-if="isToken(item.value)" class="size-4 text-ink-gray-6" />
+      <UserAvatar v-else :user="item.value" size="sm" />
     </template>
     <template #item-label="{ item }">
       <div class="truncate text-ink-gray-9">{{ item.label }}</div>
@@ -20,6 +21,7 @@
 
 <script setup>
 import UserAvatar from '@/components/UserAvatar.vue'
+import TokenIcon from '~icons/lucide/at-sign'
 import { MultiSelect, call } from 'frappe-ui'
 import { watchDebounced } from '@vueuse/core'
 import { computed, ref } from 'vue'
@@ -67,6 +69,11 @@ async function loadUsers(searchText) {
   } finally {
     if (currentRequest === requestId) loading.value = false
   }
+}
+
+/** Tokens like @owner stand for whoever the run resolves them to. */
+function isToken(value) {
+  return String(value || '').startsWith('@')
 }
 
 function fallbackOption(value) {
