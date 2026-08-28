@@ -69,6 +69,10 @@ def get_chart(
 	"""
 	Get number chart data for the dashboard.
 	"""
+	valid_chart_names = {option["value"] for options in get_chart_options().values() for option in options}
+	if name not in valid_chart_names:
+		return {"error": _("Invalid chart name")}
+
 	if not from_date or not to_date:
 		from_date = frappe.utils.get_first_day(from_date or frappe.utils.nowdate())
 		to_date = frappe.utils.get_last_day(to_date or frappe.utils.nowdate())

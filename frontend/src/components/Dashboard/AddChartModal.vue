@@ -1,10 +1,6 @@
 <template>
-  <Dialog
-    v-model="show"
-    :options="{ title: __('Add Chart') }"
-    @close="show = false"
-  >
-    <template #body-content>
+  <Dialog v-model:open="show" :title="__('Add Chart')" @close="show = false">
+    <template #default>
       <div class="flex flex-col gap-4">
         <FormControl
           v-model="chartType"
@@ -24,7 +20,12 @@
     <template #actions>
       <div class="flex items-center justify-end gap-2">
         <Button variant="outline" :label="__('Cancel')" @click="show = false" />
-        <Button variant="solid" :label="__('Add')" @click="addChart" />
+        <Button
+          variant="solid"
+          :label="__('Add')"
+          :disabled="!canAddChart"
+          @click="addChart"
+        />
       </div>
     </template>
   </Dialog>
@@ -33,8 +34,8 @@
 <script setup lang="ts">
 import { getRandom } from '@/utils'
 import { chartTypes, chartOptionsByType } from '@/composables/dashboard'
-import { createResource, Dialog, FormControl } from 'frappe-ui'
-import { ref, reactive, inject, computed } from 'vue'
+import { createResource, Dialog, FormControl, toast } from 'frappe-ui'
+import { ref, reactive, inject, computed, watch } from 'vue'
 
 const show = defineModel({
   type: Boolean,
@@ -52,10 +53,7 @@ const filters = inject('filters', reactive({ period: '', user: '' }))
 
 const chartType = ref('spacer')
 
-const selectedChart = reactive<Record<string, string>>({
-  axis_chart: 'sales_trend',
-  donut_chart: 'deals_by_stage_donut',
-})
+const selectedChart = reactive<Record<string, string>>({})
 
 const currentOptions = computed(
   () => chartOptionsByType.value[chartType.value] || [],
@@ -66,7 +64,25 @@ const currentTypeLabel = computed(
       ?.label || '',
 )
 
+watch(
+  currentOptions,
+  (options) => {
+    if (!options.length) return
+    const current = selectedChart[chartType.value]
+    if (!options.some((option) => option.value === current)) {
+      selectedChart[chartType.value] = options[0].value
+    }
+  },
+  { immediate: true },
+)
+
+const canAddChart = computed(() => {
+  if (chartType.value === 'spacer') return true
+  return Boolean(selectedChart[chartType.value])
+})
+
 async function addChart() {
+  if (!canAddChart.value) return
   show.value = false
   if (chartType.value == 'spacer') {
     items.value.push({
@@ -81,6 +97,7 @@ async function addChart() {
 
 async function getChart(type: string) {
   const name = selectedChart[type]
+  if (!name) return
 
   await createResource({
     url: 'crm.api.dashboard.get_chart',
@@ -93,6 +110,11 @@ async function getChart(type: string) {
     },
     auto: true,
     onSuccess: (data = {}) => {
+      if (data?.error) {
+        toast.error(data.error)
+        return
+      }
+
       let width = 4
       let height = 2
 
