@@ -9,6 +9,11 @@
       <Dropdown
         :options="[
           {
+            label: __('Edit'),
+            icon: 'edit-2',
+            onClick: () => modalRef.showNote(note),
+          },
+          {
             label: __('Delete'),
             icon: 'trash-2',
             onClick: () => deleteNote(note.name),
@@ -19,19 +24,20 @@
       >
         <Button
           icon="lucide-more-horizontal"
-          variant="ghosted"
+          variant="ghost"
           class="!h-6 !w-6 hover:bg-surface-gray-2"
           @click.stop.prevent
         />
       </Dropdown>
     </div>
-    <TextEditor
+    <!-- content is passed through sanitizeHTML() (DOMPurify) before rendering, so v-html is safe here -->
+    <!-- eslint-disable vue/no-v-html -->
+    <div
       v-if="note.content"
-      :content="note.content"
-      :editable="false"
-      editor-class="prose-sm text-p-sm max-w-none text-ink-gray-5 focus:outline-none"
-      class="flex-1 overflow-hidden"
+      class="prose-f prose-sm text-p-sm max-w-none text-ink-gray-5 flex-1 overflow-hidden"
+      v-html="sanitizeHTML(note.content)"
     />
+    <!-- eslint-enable vue/no-v-html -->
     <div class="mt-1 flex items-center justify-between gap-2">
       <div class="flex items-center gap-2 truncate">
         <UserAvatar :user="note.owner" size="xs" />
@@ -52,11 +58,13 @@
 <script setup>
 import UserAvatar from '@/components/UserAvatar.vue'
 import TimelineTimestamp from '@/components/Activities/TimelineTimestamp.vue'
-import { Dropdown, TextEditor, call, toast } from 'frappe-ui'
+import { Dropdown, call, toast } from 'frappe-ui'
 import { usersStore } from '@/stores/users'
+import { sanitizeHTML } from '@/utils'
 
 defineProps({
   note: { type: Object, default: () => ({}) },
+  modalRef: { type: Object, default: () => ({}) },
 })
 
 const notes = defineModel({ type: Object })

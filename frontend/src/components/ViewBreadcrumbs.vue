@@ -34,52 +34,28 @@
           </template>
         </Button>
       </template>
-      <template #item="{ item, close }">
-        <button
-          class="group flex text-ink-gray-6 gap-4 h-7 w-full justify-between items-center rounded px-2 text-base hover:bg-surface-gray-3"
-          @click="item.onClick"
-        >
-          <div class="flex items-center">
-            <FeatherIcon
-              v-if="item.icon && typeof item.icon === 'string'"
-              :name="item.icon"
-              class="mr-2 h-4 w-4 flex-shrink-0 text-ink-gray-7"
-              aria-hidden="true"
-            />
-            <component
-              :is="item.icon"
-              v-else-if="item.icon"
-              class="mr-2 h-4 w-4 flex-shrink-0 text-ink-gray-7"
-            />
-            <span class="whitespace-nowrap">
-              {{ item.label }}
-            </span>
-          </div>
-          <div
-            v-if="item.name"
-            class="flex flex-row-reverse gap-2 items-center min-w-11"
+      <template #item-suffix="{ item, close, selected }">
+        <div v-if="item.name" class="flex flex-row-reverse gap-2 items-center">
+          <Dropdown
+            side="right"
+            :offset="15"
+            :options="viewControls.viewActions(item, close)"
           >
-            <Dropdown
-              side="right"
-              :offset="15"
-              :options="viewControls.viewActions(item, close)"
-            >
-              <template #default>
-                <Button
-                  variant="ghost"
-                  class="group-hover:!w-auto !w-0 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto"
-                  icon="lucide-more-horizontal"
-                  @click.stop
-                />
-              </template>
-            </Dropdown>
-            <span
-              v-if="isCurrentView(item)"
-              class="lucide-check size-4 text-ink-gray-7"
-              aria-hidden="true"
-            />
-          </div>
-        </button>
+            <template #default>
+              <Button
+                variant="ghost"
+                class="view-action-btn !size-5 opacity-0"
+                icon="lucide-more-horizontal"
+                @click.stop
+              />
+            </template>
+          </Dropdown>
+          <span
+            v-if="selected"
+            class="lucide-check size-4 text-ink-gray-7"
+            aria-hidden="true"
+          />
+        </div>
       </template>
     </Dropdown>
   </div>
@@ -93,8 +69,13 @@ defineProps({
 })
 
 const viewControls = defineModel({ type: Object, default: () => ({}) })
-
-const isCurrentView = (item) => {
-  return item.name === viewControls.value.currentView.name
-}
 </script>
+
+<style scoped>
+/* frappe-ui's Menu rewrite dropped the `group` class from item rows, so
+   reveal the view actions on row hover/highlight instead of `group-hover`. */
+[data-slot='item']:hover .view-action-btn,
+[data-slot='item'][data-highlighted] .view-action-btn {
+  opacity: 1;
+}
+</style>

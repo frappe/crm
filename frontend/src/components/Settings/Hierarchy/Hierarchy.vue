@@ -82,7 +82,7 @@
           v-model="search"
           :placeholder="__('Search users')"
           :debounce="200"
-          class="w-1/3"
+          class="w-full"
         >
           <template #prefix>
             <span
@@ -114,7 +114,7 @@
           "
           icon="users"
         />
-        <Tree
+        <HierarchyTree
           v-for="root in visibleRoots"
           :key="root.name"
           :node="root"
@@ -138,7 +138,7 @@
               @move-to-root="(n) => reparent(n.name, null)"
             />
           </template>
-        </Tree>
+        </HierarchyTree>
       </div>
     </div>
 
@@ -245,6 +245,7 @@
 <script setup>
 import EmptyState from '@/components/ListViews/EmptyState.vue'
 import HierarchyRow from './HierarchyRow.vue'
+import HierarchyTree from './HierarchyTree.vue'
 import UserMultiSelect from './UserMultiSelect.vue'
 import { useRemoveNode } from './useRemoveNode'
 import { useDragDrop } from './useDragDrop'
@@ -258,7 +259,6 @@ import {
   LoadingIndicator,
   TextInput,
   Tooltip,
-  Tree,
   call,
   createDocumentResource,
   createListResource,
@@ -320,7 +320,7 @@ function toggleEnable(currentlyEnabled) {
             fcrmSettings.setValue.submit(
               { enable_sales_hierarchy: 0 },
               {
-                onSuccess: () => toast.success(__('Sales Hierarchy disabled')),
+                onSuccess: () => toast.success(__('Sales hierarchy disabled')),
               },
             )
             close()
@@ -331,7 +331,11 @@ function toggleEnable(currentlyEnabled) {
   } else {
     fcrmSettings.setValue.submit(
       { enable_sales_hierarchy: 1 },
-      { onSuccess: () => toast.success(__('Sales Hierarchy enabled')) },
+      {
+        onSuccess: () => {
+          toast.success(__('Sales hierarchy enabled'))
+        },
+      },
     )
   }
 }

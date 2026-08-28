@@ -33,7 +33,8 @@
   "event_notifications",
   "all_day_event_notifications",
   "dropdown_items_tab",
-  "dropdown_items"
+  "dropdown_items",
+  "persona_captured"
  ],
  "fields": [
   {
@@ -210,6 +211,14 @@
    "fieldtype": "Select",
    "label": "Timeline Sort Order",
    "options": "Oldest First\nNewest First"
+  },
+  {
+   "default": "0",
+   "description": "Set once the first admin completes the onboarding persona questionnaire",
+   "fieldname": "persona_captured",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "Persona Captured"
   }
  ],
  "index_web_pages_for_search": 1,

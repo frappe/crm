@@ -5,6 +5,7 @@ import frappe
 from frappe.tests import IntegrationTestCase
 from frappe.utils.nestedset import rebuild_tree
 
+from crm.api.activities import get_activities
 from crm.permissions.org_hierarchy import (
 	get_lead_permission_query_conditions,
 	has_deal_permission,
@@ -122,6 +123,30 @@ class TestOrgHierarchy(IntegrationTestCase):
 		self.assertFalse(has_deal_permission(deal, "read", "rep1@hier.test"))
 
 	# ------------------------------------------------------------------
+	# Deal activities
+	# ------------------------------------------------------------------
+
+	def test_deal_activities_skip_lead_the_user_cannot_read(self):
+		lead = make_lead("rep2@hier.test")
+		deal = make_deal("rep1@hier.test")
+		frappe.db.set_value("CRM Deal", deal.name, "lead", lead.name)
+
+		frappe.set_user("rep1@hier.test")
+		try:
+			activities, calls, notes, tasks, attachments = get_activities(deal.name)
+		finally:
+			frappe.set_user("Administrator")
+
+		# the deal's own timeline loads instead of the lead check failing the call
+		self.assertTrue(any(a["activity_type"] == "creation" for a in activities))
+
+		# the lead's history stays hidden
+		self.assertEqual(calls, [])
+		self.assertEqual(notes, [])
+		self.assertEqual(tasks, [])
+		self.assertEqual(attachments, [])
+
+	# ------------------------------------------------------------------
 	# Permission query conditions
 	# ------------------------------------------------------------------
 
@@ -130,6 +155,19 @@ class TestOrgHierarchy(IntegrationTestCase):
 
 	def test_query_conditions_non_empty_for_regular_user(self):
 		self.assertTrue(get_lead_permission_query_conditions("rep1@hier.test"))
+
+	def test_report_with_child_table_field_does_not_raise(self):
+		make_lead("rep1@hier.test")
+		self.assertTrue(get_lead_permission_query_conditions("rep1@hier.test"))
+		frappe.set_user("rep1@hier.test")
+		try:
+			frappe.get_list(
+				"CRM Lead",
+				fields=["name", "`tabCRM Products`.`amount`"],
+				limit_page_length=5,
+			)
+		finally:
+			frappe.set_user("Administrator")
 
 	# ------------------------------------------------------------------
 	# Hierarchy disabled

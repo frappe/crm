@@ -78,8 +78,11 @@ import {
   Switch,
   toast,
 } from 'frappe-ui'
+import { useTelemetry } from 'frappe-ui/frappe'
 import { inject, ref, reactive, watch } from 'vue'
 import { ConfirmDelete } from '../../../utils'
+
+const { capture } = useTelemetry()
 
 const assignmentRulesList = inject('assignmentRulesList')
 const updateStep = inject('updateStep')
@@ -120,7 +123,7 @@ const deleteAssignmentRule = () => {
     onSuccess: () => {
       assignmentRulesList.reload()
       isConfirmingDelete.value = false
-      toast.success(__('Assignment Rule Deleted'))
+      toast.success(__('Assignment rule deleted'))
     },
     auto: true,
   })
@@ -152,7 +155,7 @@ const duplicate = () => {
     },
     onSuccess: (data) => {
       assignmentRulesList.reload()
-      toast.success(__('Assignment Rule Duplicated'))
+      toast.success(__('Assignment rule duplicated'))
       duplicateDialog.value.show = false
       duplicateDialog.value.name = ''
       updateStep('view', data)
@@ -170,6 +173,7 @@ const onToggle = () => {
     toast.error(__('Cannot enable rule without adding users in it'))
     return
   }
+  capture('assignment_rule_toggled', { enabled: Boolean(props.data.disabled) })
   setAssignmentRuleValue('disabled', !props.data.disabled, 'status')
 }
 
@@ -184,7 +188,7 @@ const setAssignmentRuleValue = (key, value, fieldName = undefined) => {
     },
     onSuccess: () => {
       assignmentRulesList.reload()
-      toast.success(__('Assignment Rule {0} Updated', [fieldName || key]))
+      toast.success(__('Assignment rule {0} updated', [fieldName || key]))
     },
     auto: true,
   })

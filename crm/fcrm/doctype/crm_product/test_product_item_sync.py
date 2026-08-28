@@ -13,11 +13,17 @@ def enable_product_sync():
 	settings = frappe.get_single("ERPNext CRM Settings")
 	settings.enabled = 1
 	settings.is_erpnext_in_different_site = 0
+	settings.sync_products = 1
 	settings.save(ignore_permissions=True)
 
 	from crm.patches.v1_0.create_custom_fields_for_product_item_sync import execute
 
 	execute()
+
+
+def set_bidirectional_product_sync(value):
+	frappe.db.set_single_value("ERPNext CRM Settings", "sync_products", value)
+	frappe.clear_document_cache("ERPNext CRM Settings", "ERPNext CRM Settings")
 
 
 class TestReverseLinkField(FrappeTestCase):
@@ -114,6 +120,13 @@ class TestItemHooks(FrappeTestCase):
 		).insert()
 		self.assertTrue(frappe.db.exists("CRM Product", {"erpnext_item_code": "HOOK-1"}))
 		self.assertEqual(frappe.db.get_value("Item", "HOOK-1", "crm_product_code"), "HOOK-1")
+
+	def test_item_insert_syncs_to_crm_when_bidirectional_sync_is_off(self):
+		set_bidirectional_product_sync(0)
+		frappe.get_doc(
+			{"doctype": "Item", "item_code": "HOOK-PULL", "item_name": "Pull", "item_group": ITEM_GROUP}
+		).insert()
+		self.assertTrue(frappe.db.exists("CRM Product", {"erpnext_item_code": "HOOK-PULL"}))
 
 	def test_item_rename_updates_crm_product_link(self):
 		frappe.get_doc(
@@ -243,6 +256,15 @@ class TestCRMToERPNextCreate(FrappeTestCase):
 		self.assertEqual(frappe.db.get_value("Item", "PUSH-2", "standard_rate"), 25)
 		self.assertEqual(frappe.db.get_value("Item", "PUSH-2", "crm_product_code"), "PUSH-2")
 		self.assertEqual(frappe.db.get_value("CRM Product", "PUSH-2", "erpnext_item_code"), "PUSH-2")
+
+	def test_reconciliation_does_not_create_item_when_bidirectional_sync_is_off(self):
+		from crm.fcrm.doctype.crm_product.reconcile_job import run_reconciliation
+
+		set_bidirectional_product_sync(0)
+		frappe.get_doc({"doctype": "CRM Product", "product_code": "PUSH-OFF", "product_name": "Off"}).insert()
+
+		run_reconciliation()
+		self.assertFalse(frappe.db.exists("Item", "PUSH-OFF"))
 
 	def test_update_to_linked_product_pushes_to_item(self):
 		from crm.fcrm.doctype.crm_product.reconcile_job import run_reconciliation

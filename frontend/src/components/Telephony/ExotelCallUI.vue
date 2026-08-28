@@ -397,6 +397,14 @@ function makeOutgoingCall(number) {
       callStatus.value = 'Calling...'
       showCallPopup.value = true
       showSmallCallPopup.value = false
+
+      if (callDetails.call_log_creation_failed) {
+        toast.warning(
+          __(
+            'Call connected, but the call log could not be saved. Please contact your administrator.',
+          ),
+        )
+      }
     },
     onError(err) {
       toast.error(err.messages[0])

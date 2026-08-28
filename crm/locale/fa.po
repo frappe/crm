@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2026-06-22 19:37+0553\n"
-"PO-Revision-Date: 2026-06-28 20:52\n"
+"POT-Creation-Date: 2026-07-12 10:53+0000\n"
+"PO-Revision-Date: 2026-07-17 11:10\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Persian\n"
 "MIME-Version: 1.0\n"
@@ -22,7 +22,7 @@ msgstr ""
 msgid " (New)"
 msgstr " (جدید)"
 
-#: frontend/src/components/Filter.vue:587
+#: frontend/src/components/Filter.vue:591
 msgid "%John%"
 msgstr "%John%"
 
@@ -30,7 +30,7 @@ msgstr "%John%"
 msgid "(No Title)"
 msgstr "(بدون عنوان)"
 
-#: frontend/src/components/Filter.vue:577
+#: frontend/src/components/Filter.vue:581
 msgid "01/01/2022 to 01/31/2022"
 msgstr ""
 
@@ -618,6 +618,10 @@ msgstr "درآمد سالانه"
 msgid "Annual Revenue should be a number"
 msgstr "درآمد سالانه باید یک عدد باشد"
 
+#: frontend/src/pages/PersonaForm.vue:64
+msgid "Another CRM"
+msgstr ""
+
 #: frontend/src/components/Settings/LeadSyncing/FailureLogs.vue:69
 msgid "Any failed lead syncs will show up here"
 msgstr ""
@@ -1007,6 +1011,10 @@ msgstr ""
 msgid "Back to File Upload"
 msgstr ""
 
+#: frontend/src/components/Questionnaire.vue:94
+msgid "Back to previous question"
+msgstr ""
+
 #. Label of the background_sync_frequency (Select) field in DocType 'Lead Sync
 #. Source'
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
@@ -1253,6 +1261,10 @@ msgstr ""
 msgid "CSV"
 msgstr "CSV"
 
+#: frontend/src/pages/PersonaForm.vue:81
+msgid "CSV imports"
+msgstr ""
+
 #. Label of the calendar_tab (Tab Break) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 #: frontend/src/components/Settings/Settings.vue:142
@@ -1378,8 +1390,16 @@ msgstr ""
 msgid "Capture"
 msgstr "گرفتن"
 
+#: frontend/src/pages/PersonaForm.vue:122
+msgid "Capture my first lead"
+msgstr ""
+
 #: frontend/src/components/Layouts/AppSidebar.vue:591
 msgid "Capturing Leads"
+msgstr ""
+
+#: frontend/src/pages/PersonaForm.vue:90
+msgid "Capturing leads"
 msgstr ""
 
 #. Label of the category (Data) field in DocType 'Facebook Page'
@@ -1523,9 +1543,17 @@ msgstr "بستن"
 msgid "Close Panel"
 msgstr ""
 
+#: frontend/src/pages/PersonaForm.vue:126
+msgid "Close my first deal"
+msgstr ""
+
 #. Label of the closed_date (Date) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 msgid "Closed Date"
+msgstr ""
+
+#: frontend/src/pages/PersonaForm.vue:100
+msgid "Collaborating with my team"
 msgstr ""
 
 #: frontend/src/components/Layouts/AppSidebar.vue:120
@@ -1831,6 +1859,10 @@ msgstr ""
 
 #: frontend/src/utils/index.js:405
 msgid "Copied to Clipboard"
+msgstr ""
+
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:156
+msgid "Could not create the Frappe CRM custom fields on {0} automatically. If it is running the latest ERPNext, enable <b>Frappe CRM Data Synchronization</b> in its CRM Settings, Otherwise check the Error Log."
 msgstr ""
 
 #: frontend/src/components/Settings/Hierarchy/useRemoveNode.js:16
@@ -2422,7 +2454,7 @@ msgstr "دستگاه"
 #: frontend/src/components/Settings/Telephony/ExotelSettings.vue:29
 #: frontend/src/components/Settings/Telephony/TwilioSettings.vue:29
 msgid "Disable"
-msgstr "غیر فعال"
+msgstr ""
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:434
 msgid "Disable ERPNext Integration"
@@ -2632,17 +2664,21 @@ msgstr ""
 msgid "ERPNext Site URL"
 msgstr ""
 
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:161
+msgid "ERPNext custom fields not created"
+msgstr ""
+
 #: crm/fcrm/doctype/crm_product/crm_product.py:42
 msgid "ERPNext integration is active. Create an Item in ERPNext and it will appear in CRM Product automatically."
 msgstr ""
 
-#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:205
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:220
 msgid "ERPNext integration must be enabled on the same site"
 msgstr ""
 
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:70
-#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:91
-#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:508
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:87
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:523
 msgid "ERPNext is not installed in the current site"
 msgstr ""
 
@@ -2696,7 +2732,7 @@ msgstr ""
 #: frontend/src/components/Modals/LeadModal.vue:16
 #: frontend/src/components/Modals/OrganizationModal.vue:16
 msgid "Edit Fields Layout"
-msgstr ""
+msgstr "ویرایش چیدمان فیلدها"
 
 #: frontend/src/components/Controls/Grid.vue:57
 msgid "Edit Grid Fields"
@@ -2724,7 +2760,7 @@ msgstr ""
 
 #: frontend/src/components/Controls/Grid.vue:414
 msgid "Edit Row"
-msgstr ""
+msgstr "ویرایش ردیف"
 
 #: frontend/src/components/Modals/CallLogDetailModal.vue:25
 msgid "Edit Task"
@@ -2768,6 +2804,7 @@ msgstr "در حال ویرایش ردیف {0}"
 #: frontend/src/pages/MobileOrganization.vue:501
 #: frontend/src/pages/Organization.vue:503
 #: frontend/src/pages/Organization.vue:531
+#: frontend/src/pages/PersonaForm.vue:77
 msgid "Email"
 msgstr "ایمیل"
 
@@ -2825,7 +2862,7 @@ msgstr "الگوی ایمیل"
 msgid "Email Templates"
 msgstr "قالب‌های ایمیل"
 
-#: frontend/src/components/Controls/EmailMultiSelect.vue:254
+#: frontend/src/components/Controls/EmailMultiSelect.vue:256
 msgid "Email already exists"
 msgstr ""
 
@@ -3000,7 +3037,7 @@ msgstr "نام منبع را وارد کنید"
 msgid "Enter Twilio Number"
 msgstr ""
 
-#: frontend/src/components/Filter.vue:605
+#: frontend/src/components/Filter.vue:609
 msgid "Enter Value"
 msgstr "مقدار را وارد کنید"
 
@@ -3012,7 +3049,7 @@ msgstr "توکن دسترسی فیسبوک خود را وارد کنید"
 msgid "Enter your personal mobile number used by Exotel to make calls"
 msgstr ""
 
-#: frontend/src/components/FieldLayout/Field.vue:565
+#: frontend/src/components/FieldLayout/Field.vue:576
 msgid "Enter {0}"
 msgstr "{0} را وارد کنید"
 
@@ -3041,7 +3078,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:290
 msgid "Error creating Lead Sync Source"
-msgstr ""
+msgstr "خطا در ایجاد منبع همگام‌سازی سرنخ"
 
 #: frontend/src/components/Modals/CallLogDetailModal.vue:358
 msgid "Error creating lead: {0}"
@@ -3057,7 +3094,7 @@ msgstr "خطا در همگام‌سازی سرنخ‌ها"
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:271
 msgid "Error updating Lead Sync Source"
-msgstr ""
+msgstr "خطا در به‌روزرسانی منبع همگام‌سازی سرنخ"
 
 #: frontend/src/pages/Deal.vue:766 frontend/src/pages/Lead.vue:498
 #: frontend/src/pages/MobileDeal.vue:619 frontend/src/pages/MobileLead.vue:360
@@ -3252,18 +3289,22 @@ msgstr ""
 #. Name of a DocType
 #: crm/lead_syncing/doctype/facebook_lead_form_question/facebook_lead_form_question.json
 msgid "Facebook Lead Form Question"
-msgstr ""
+msgstr "سؤال فرم سرنخ فیس بوک"
 
 #. Label of the facebook_lead_id (Data) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Facebook Lead ID"
-msgstr ""
+msgstr "شناسه سرنخ فیس بوک"
 
 #. Name of a DocType
 #. Label of the facebook_page (Link) field in DocType 'Lead Sync Source'
 #: crm/lead_syncing/doctype/facebook_page/facebook_page.json
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
 msgid "Facebook Page"
+msgstr ""
+
+#: frontend/src/pages/PersonaForm.vue:74
+msgid "Facebook/Instagram Ads"
 msgstr ""
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Call Log'
@@ -3449,6 +3490,10 @@ msgstr "فیلتر"
 msgid "Filters"
 msgstr "فیلترها"
 
+#: frontend/src/components/Questionnaire.vue:96
+msgid "Finish"
+msgstr "پایان"
+
 #. Label of the first_name (Data) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: frontend/src/components/ColumnSettings.vue:103
@@ -3500,6 +3545,10 @@ msgstr "نام کوچک"
 #: frontend/src/components/Settings/DefaultsSettings.vue:92
 msgid "Float Precision"
 msgstr "دقت اعشاری"
+
+#: frontend/src/pages/PersonaForm.vue:91
+msgid "Following up consistently"
+msgstr ""
 
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:48
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:83
@@ -3652,6 +3701,10 @@ msgstr ""
 msgid "Going?"
 msgstr ""
 
+#: frontend/src/pages/PersonaForm.vue:75
+msgid "Google Ads"
+msgstr ""
+
 #: frontend/src/components/Filter.vue:366
 msgid "Greater than"
 msgstr ""
@@ -3764,11 +3817,27 @@ msgstr ""
 msgid "Hourly"
 msgstr "ساعتی"
 
+#: frontend/src/pages/PersonaForm.vue:56
+msgid "How are you managing your sales today?"
+msgstr ""
+
+#: frontend/src/pages/PersonaForm.vue:70
+msgid "How do new leads usually come to you?"
+msgstr ""
+
+#: frontend/src/pages/PersonaForm.vue:108
+msgid "How many people will use Frappe CRM?"
+msgstr ""
+
 #. Description of the 'Timeline Timestamp Format' (Select) field in DocType
 #. 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 msgid "How timestamps are shown in the activity timeline for all users"
 msgstr "چگونگی نمایش برچسب‌های زمانی در جدول زمانی فعالیت‌های کاربران"
+
+#: frontend/src/pages/PersonaForm.vue:60
+msgid "HubSpot"
+msgstr ""
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:199
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:283
@@ -3825,6 +3894,10 @@ msgstr "تصویر"
 #: frontend/src/components/ViewControls.vue:203
 msgid "Import"
 msgstr "درون‌بُرد"
+
+#: frontend/src/pages/PersonaForm.vue:121
+msgid "Import my existing data"
+msgstr ""
 
 #: frontend/src/components/Filter.vue:277
 #: frontend/src/components/Filter.vue:298
@@ -4046,6 +4119,10 @@ msgstr ""
 msgid "Invite Users"
 msgstr ""
 
+#: frontend/src/pages/PersonaForm.vue:125
+msgid "Invite my team"
+msgstr ""
+
 #: frontend/src/components/Settings/InviteUserPage.vue:10
 msgid "Invite users to access CRM. Specify their roles to control access and permissions"
 msgstr ""
@@ -4135,15 +4212,23 @@ msgid "Job Title"
 msgstr "عنوان شغلی"
 
 #: frontend/src/components/AssignToBody.vue:10
-#: frontend/src/components/Filter.vue:603
+#: frontend/src/components/Filter.vue:607
 #: frontend/src/components/Modals/AssignmentModal.vue:13
 #: frontend/src/components/Telephony/TaskPanel.vue:46
 #: frontend/src/pages/Calendar.vue:113
 msgid "John Doe"
 msgstr "John Doe"
 
-#: frontend/src/components/Filter.vue:582
+#: frontend/src/components/Filter.vue:586
 msgid "John, Jane, Doe"
+msgstr ""
+
+#: frontend/src/pages/PersonaForm.vue:127
+msgid "Just exploring"
+msgstr ""
+
+#: frontend/src/pages/PersonaForm.vue:110
+msgid "Just me"
 msgstr ""
 
 #. Label of the kanban_tab (Tab Break) field in DocType 'CRM View Settings'
@@ -4169,6 +4254,10 @@ msgstr "تنظیمات کانبان"
 
 #: frontend/src/components/Kanban/KanbanSettings.vue:3
 msgid "Kanban settings"
+msgstr ""
+
+#: frontend/src/pages/PersonaForm.vue:93
+msgid "Keeping my pipeline organized"
 msgstr ""
 
 #. Label of the key (Data) field in DocType 'CRM Invitation'
@@ -4209,7 +4298,7 @@ msgstr "آخرین"
 msgid "Last 30 Days"
 msgstr "۳۰ روز گذشته"
 
-#: frontend/src/components/Filter.vue:661
+#: frontend/src/components/Filter.vue:665
 msgid "Last 6 Months"
 msgstr "۶ ماه گذشته"
 
@@ -4233,7 +4322,7 @@ msgstr "۹۰ روز گذشته"
 msgid "Last Modified"
 msgstr "آخرین ویرایش"
 
-#: frontend/src/components/Filter.vue:653
+#: frontend/src/components/Filter.vue:657
 msgid "Last Month"
 msgstr "ماه گذشته"
 
@@ -4242,7 +4331,7 @@ msgstr "ماه گذشته"
 msgid "Last Name"
 msgstr "نام خانوادگی"
 
-#: frontend/src/components/Filter.vue:657
+#: frontend/src/components/Filter.vue:661
 msgid "Last Quarter"
 msgstr "سه ماهه گذشته"
 
@@ -4272,12 +4361,12 @@ msgstr ""
 msgid "Last Synced At"
 msgstr "آخرین همگام سازی در"
 
-#: frontend/src/components/Filter.vue:591
-#: frontend/src/components/Filter.vue:649
+#: frontend/src/components/Filter.vue:595
+#: frontend/src/components/Filter.vue:653
 msgid "Last Week"
 msgstr "هفته گذشته"
 
-#: frontend/src/components/Filter.vue:665
+#: frontend/src/components/Filter.vue:669
 msgid "Last Year"
 msgstr "سال گذشته"
 
@@ -4314,7 +4403,7 @@ msgstr "سرنخ"
 #: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.json
 #: frontend/src/components/Settings/LeadSyncing/FailureLogs.vue:40
 msgid "Lead Data"
-msgstr ""
+msgstr "داده‌های سرنخ"
 
 #. Label of the lead_details_tab (Tab Break) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
@@ -4344,12 +4433,12 @@ msgstr ""
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
 msgid "Lead Statuses"
-msgstr ""
+msgstr "وضعیت‌های سرنخ"
 
 #. Name of a DocType
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
 msgid "Lead Sync Source"
-msgstr ""
+msgstr "منبع همگام‌سازی سرنخ"
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:285
 msgid "Lead Sync Source created successfully"
@@ -4357,7 +4446,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/Settings.vue:237
 msgid "Lead Syncing"
-msgstr ""
+msgstr "همگام‌سازی سرنخ"
 
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:311
 msgid "Lead and deal visibility will no longer be restricted by the reporting tree. Are you sure?"
@@ -4373,7 +4462,7 @@ msgstr ""
 
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.js:8
 msgid "Lead sync initiated."
-msgstr ""
+msgstr "همگام‌سازی سرنخ آغاز شد."
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:175
 msgid "Lead sync source deleted successfully"
@@ -4652,6 +4741,10 @@ msgstr ""
 msgid "Manager"
 msgstr "مدیر"
 
+#: frontend/src/pages/PersonaForm.vue:97
+msgid "Managing contacts and companies"
+msgstr ""
+
 #: frontend/src/components/Modals/DoctypeModal.vue:122
 #: frontend/src/data/document.js:68
 msgid "Mandatory field error: {0}"
@@ -4797,6 +4890,10 @@ msgstr "ماهانه"
 #: frontend/src/components/ViewControls.vue:234
 msgid "More Options"
 msgstr "گزینه‌های بیشتر"
+
+#: frontend/src/pages/PersonaForm.vue:113
+msgid "More than 20"
+msgstr ""
 
 #: frontend/src/components/FieldLayoutEditor.vue:617
 msgid "Move Last Column to Next Section"
@@ -4992,15 +5089,15 @@ msgstr "{0} جدید"
 msgid "Newest First"
 msgstr "جدیدترین‌ها اول"
 
-#: frontend/src/components/Filter.vue:709
+#: frontend/src/components/Filter.vue:713
 msgid "Next 6 Months"
 msgstr "۶ ماه آینده‌"
 
-#: frontend/src/components/Filter.vue:701
+#: frontend/src/components/Filter.vue:705
 msgid "Next Month"
 msgstr "ماه آینده"
 
-#: frontend/src/components/Filter.vue:705
+#: frontend/src/components/Filter.vue:709
 msgid "Next Quarter"
 msgstr "سه‌ماهه آینده"
 
@@ -5009,13 +5106,17 @@ msgstr "سه‌ماهه آینده"
 msgid "Next Step"
 msgstr ""
 
-#: frontend/src/components/Filter.vue:697
+#: frontend/src/components/Filter.vue:701
 msgid "Next Week"
 msgstr "هفته آینده"
 
-#: frontend/src/components/Filter.vue:713
+#: frontend/src/components/Filter.vue:717
 msgid "Next Year"
 msgstr "سال آینده"
+
+#: frontend/src/components/Questionnaire.vue:95
+msgid "Next question"
+msgstr ""
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:535
 msgid "No"
@@ -5508,7 +5609,7 @@ msgstr "لوگوی سازمان"
 msgid "Organization Name"
 msgstr "نام سازمان"
 
-#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:488
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:503
 msgid "Organization or a primary Contact is required to create a customer"
 msgstr ""
 
@@ -5519,9 +5620,18 @@ msgstr ""
 msgid "Organizations"
 msgstr "سازمان ها"
 
+#: frontend/src/pages/PersonaForm.vue:124
+msgid "Organize my contacts"
+msgstr ""
+
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:151
 msgid "Organizer"
 msgstr ""
+
+#: frontend/src/pages/PersonaForm.vue:65 frontend/src/pages/PersonaForm.vue:82
+#: frontend/src/pages/PersonaForm.vue:103
+msgid "Other"
+msgstr "سایر"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:605
 msgid "Other Features"
@@ -5645,6 +5755,11 @@ msgstr ""
 msgid "Person"
 msgstr "شخص"
 
+#. Label of the persona_captured (Check) field in DocType 'FCRM Settings'
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
+msgid "Persona Captured"
+msgstr ""
+
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:120
 msgid "Personal Mobile No."
 msgstr ""
@@ -5665,6 +5780,10 @@ msgstr "تلفن"
 msgid "Phone Numbers"
 msgstr ""
 
+#: frontend/src/pages/PersonaForm.vue:78
+msgid "Phone calls"
+msgstr ""
+
 #: frontend/src/components/ViewControls.vue:1097
 msgid "Pin View"
 msgstr ""
@@ -5680,6 +5799,10 @@ msgstr ""
 
 #: frontend/src/components/ViewControls.vue:686
 msgid "Pinned Views"
+msgstr ""
+
+#: frontend/src/pages/PersonaForm.vue:63
+msgid "Pipedrive"
 msgstr ""
 
 #: frontend/src/components/Activities/AudioPlayer.vue:176
@@ -6024,6 +6147,10 @@ msgstr ""
 msgid "Referenced WhatsApp message does not exist."
 msgstr ""
 
+#: frontend/src/pages/PersonaForm.vue:79
+msgid "Referrals"
+msgstr ""
+
 #: frontend/src/components/ViewControls.vue:26
 #: frontend/src/components/ViewControls.vue:159
 #: frontend/src/pages/Dashboard.vue:10
@@ -6130,6 +6257,10 @@ msgstr ""
 msgid "Reopen lead/deal on new communication"
 msgstr ""
 
+#: frontend/src/pages/PersonaForm.vue:102
+msgid "Replacing my current CRM"
+msgstr ""
+
 #: frontend/src/components/Activities/EmailArea.vue:30
 #: frontend/src/components/CommunicationArea.vue:9
 msgid "Reply"
@@ -6142,6 +6273,10 @@ msgstr "پاسخ به همه"
 #: frontend/src/components/Modals/AboutModal.vue:65
 msgid "Report an Issue"
 msgstr "گزارش یک مشکل"
+
+#: frontend/src/pages/PersonaForm.vue:101
+msgid "Reporting & forecasting"
+msgstr ""
 
 #. Label of the reports_to (Link) field in DocType 'CRM Sales Hierarchy'
 #: crm/fcrm/doctype/crm_sales_hierarchy/crm_sales_hierarchy.json
@@ -6495,6 +6630,10 @@ msgstr "کاربر فروش"
 msgid "Sales trend"
 msgstr ""
 
+#: frontend/src/pages/PersonaForm.vue:61
+msgid "Salesforce"
+msgstr ""
+
 #: crm/api/dashboard.py:1133
 msgid "Salesperson"
 msgstr ""
@@ -6643,11 +6782,15 @@ msgstr ""
 msgid "Select a Twilio App for your CRM"
 msgstr ""
 
-#: frontend/src/components/Filter.vue:599
+#: frontend/src/components/Filter.vue:603
 msgid "Select a Value"
 msgstr ""
 
-#: frontend/src/components/Filter.vue:601
+#: frontend/src/components/Questionnaire.vue:93
+msgid "Select all that apply"
+msgstr ""
+
+#: frontend/src/components/Filter.vue:605
 msgid "Select an Option"
 msgstr ""
 
@@ -6671,7 +6814,7 @@ msgstr ""
 msgid "Select your ERPNext company to connect with"
 msgstr ""
 
-#: frontend/src/components/FieldLayout/Field.vue:563
+#: frontend/src/components/FieldLayout/Field.vue:574
 msgid "Select {0}"
 msgstr "انتخاب {0}"
 
@@ -6726,7 +6869,7 @@ msgstr "توافقنامه سطح خدمات"
 msgid "Service Provider"
 msgstr "ارائه دهنده خدمات"
 
-#: frontend/src/components/Filter.vue:589
+#: frontend/src/components/Filter.vue:593
 msgid "Set"
 msgstr "تنظیم"
 
@@ -6778,6 +6921,12 @@ msgstr ""
 msgid "Set location…"
 msgstr ""
 
+#. Description of the 'Persona Captured' (Check) field in DocType 'FCRM
+#. Settings'
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
+msgid "Set once the first admin completes the onboarding persona questionnaire"
+msgstr ""
+
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:102
 msgid "Set the Exotel number to be used for outgoing calls."
 msgstr ""
@@ -6788,6 +6937,10 @@ msgstr ""
 
 #: frontend/src/components/Settings/BrandSettings.vue:33
 msgid "Set the name of your brand. Appears in the left sidebar."
+msgstr ""
+
+#: frontend/src/pages/PersonaForm.vue:123
+msgid "Set up my sales pipeline"
 msgstr ""
 
 #: frontend/src/components/Settings/Sla/SlaHolidays.vue:9
@@ -6935,6 +7088,10 @@ msgstr ""
 msgid "Site connection validated"
 msgstr ""
 
+#: frontend/src/components/Questionnaire.vue:97
+msgid "Skip for now"
+msgstr ""
+
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:438
 msgid "Some error occurred while creating SLA Policy"
 msgstr ""
@@ -7006,6 +7163,10 @@ msgstr "منبع با موفقیت فعال شد"
 #: frontend/src/components/Dashboard/DashboardItem.vue:21
 msgid "Spacer"
 msgstr "اسپیسر"
+
+#: frontend/src/pages/PersonaForm.vue:59
+msgid "Spreadsheets"
+msgstr ""
 
 #: crm/api/dashboard.py:790 crm/api/dashboard.py:848
 msgid "Stage"
@@ -7095,6 +7256,10 @@ msgstr ""
 #: frontend/src/components/Modals/DealModal.vue:209
 #: frontend/src/components/Modals/LeadModal.vue:152
 msgid "Status is required"
+msgstr ""
+
+#: frontend/src/components/Questionnaire.vue:91
+msgid "Step {0} of {1}"
 msgstr ""
 
 #. Label of the subdomain (Data) field in DocType 'CRM Exotel Settings'
@@ -7346,19 +7511,19 @@ msgstr "پوسته"
 msgid "There can only be one default priority in Priorities table"
 msgstr ""
 
-#: frontend/src/components/Filter.vue:685
+#: frontend/src/components/Filter.vue:689
 msgid "This Month"
 msgstr "این ماه"
 
-#: frontend/src/components/Filter.vue:689
+#: frontend/src/components/Filter.vue:693
 msgid "This Quarter"
 msgstr "این سه‌ماهه"
 
-#: frontend/src/components/Filter.vue:681
+#: frontend/src/components/Filter.vue:685
 msgid "This Week"
 msgstr "این هفته"
 
-#: frontend/src/components/Filter.vue:693
+#: frontend/src/components/Filter.vue:697
 msgid "This Year"
 msgstr "امسال"
 
@@ -7369,6 +7534,10 @@ msgstr ""
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:177
 msgid "This field is required"
 msgstr "این فیلد الزامی است"
+
+#: frontend/src/pages/PersonaForm.vue:58
+msgid "This is my first CRM"
+msgstr ""
 
 #: crm/www/crm.py:31
 msgid "This method is only meant for developer mode"
@@ -7498,7 +7667,7 @@ msgstr "به کاربر"
 msgid "To know more about setting up email accounts, click"
 msgstr "برای کسب اطلاعات بیشتر در مورد تنظیم حساب‌های ایمیل، کلیک کنید"
 
-#: frontend/src/components/Filter.vue:673 frontend/src/pages/Calendar.vue:85
+#: frontend/src/components/Filter.vue:677 frontend/src/pages/Calendar.vue:85
 msgid "Today"
 msgstr "امروز"
 
@@ -7511,7 +7680,7 @@ msgstr ""
 msgid "Toggle on for Preview"
 msgstr ""
 
-#: frontend/src/components/Filter.vue:677
+#: frontend/src/components/Filter.vue:681
 msgid "Tomorrow"
 msgstr "فردا"
 
@@ -7934,6 +8103,10 @@ msgstr "بازدیدها"
 msgid "Visibility"
 msgstr "قابلیت مشاهده"
 
+#: frontend/src/pages/PersonaForm.vue:80
+msgid "Walk-ins"
+msgstr ""
+
 #: frontend/src/components/SalesHierarchyBanner.vue:20
 msgid "We are changing how permissions work in Frappe CRM"
 msgstr ""
@@ -7958,6 +8131,10 @@ msgstr ""
 #: frontend/src/components/Modals/AboutModal.vue:50
 msgid "Website"
 msgstr "وب‌سایت"
+
+#: frontend/src/pages/PersonaForm.vue:73
+msgid "Website forms"
+msgstr ""
 
 #. Option for the 'Weekly Off' (Select) field in DocType 'CRM Holiday List'
 #. Option for the 'Workday' (Select) field in DocType 'CRM Service Day'
@@ -7988,8 +8165,20 @@ msgstr "تعطیلات هفتگی"
 msgid "Welcome Message"
 msgstr "پیام خوش آمد گویی"
 
+#: frontend/src/pages/PersonaForm.vue:132
+msgid "Welcome to Frappe CRM"
+msgstr ""
+
 #: frontend/src/pages/Welcome.vue:4
 msgid "Welcome {0}, lets add your first lead"
+msgstr ""
+
+#: frontend/src/pages/PersonaForm.vue:87
+msgid "What are your biggest challenges with sales today?"
+msgstr ""
+
+#: frontend/src/pages/PersonaForm.vue:118
+msgid "What would you like to accomplish first?"
 msgstr ""
 
 #. Option for the 'Type' (Select) field in DocType 'CRM Notification'
@@ -7998,6 +8187,7 @@ msgstr ""
 #: frontend/src/components/Settings/Settings.vue:225
 #: frontend/src/pages/Deal.vue:606 frontend/src/pages/Lead.vue:458
 #: frontend/src/pages/MobileDeal.vue:478 frontend/src/pages/MobileLead.vue:325
+#: frontend/src/pages/PersonaForm.vue:76
 msgid "WhatsApp"
 msgstr "واتس اپ"
 
@@ -8057,11 +8247,11 @@ msgid "Working Hours"
 msgstr "ساعات کاری"
 
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:531
-#: frontend/src/components/Filter.vue:597
+#: frontend/src/components/Filter.vue:601
 msgid "Yes"
 msgstr "بله"
 
-#: frontend/src/components/Filter.vue:669
+#: frontend/src/components/Filter.vue:673
 msgid "Yesterday"
 msgstr "دیروز"
 
@@ -8155,11 +8345,11 @@ msgstr ""
 msgid "You will need a Meta developer account and an access token to sync leads from Facebook. Read more"
 msgstr "برای همگام‌سازی سرنخ‌ها از فیس‌بوک، به یک حساب توسعه‌دهنده متا و یک توکن دسترسی نیاز دارید. ادامه مطلب"
 
-#: crm/api/todo.py:100
+#: crm/api/todo.py:110
 msgid "Your assignment on task {0} has been removed by {1}"
 msgstr ""
 
-#: crm/api/todo.py:37 crm/api/todo.py:78
+#: crm/api/todo.py:47 crm/api/todo.py:88
 msgid "Your assignment on {0} {1} has been removed by {2}"
 msgstr "تخصیص شما در {0} {1} توسط {2} حذف شده است"
 
@@ -8175,6 +8365,10 @@ msgstr ""
 msgid "Your old conditions will be overwritten. Are you sure you want to save?"
 msgstr ""
 
+#: frontend/src/pages/PersonaForm.vue:62
+msgid "Zoho CRM"
+msgstr ""
+
 #: frontend/src/components/Activities/CommentArea.vue:9
 msgid "added a"
 msgstr ""
@@ -8186,11 +8380,11 @@ msgstr ""
 msgid "amber"
 msgstr "کهربایی"
 
-#: crm/api/todo.py:109
+#: crm/api/todo.py:119
 msgid "assigned a new task {0} to you"
 msgstr ""
 
-#: crm/api/todo.py:89
+#: crm/api/todo.py:99
 msgid "assigned a {0} {1} to you"
 msgstr ""
 
@@ -8605,7 +8799,7 @@ msgstr "{0} (قالب زمان نامعتبر)"
 msgid "{0} M"
 msgstr "{0} ماه"
 
-#: crm/api/todo.py:41
+#: crm/api/todo.py:51
 msgid "{0} assigned a {1} {2} to you"
 msgstr ""
 
@@ -8706,6 +8900,11 @@ msgstr "{0} سال پیش"
 #: frontend/src/components/Calendar/CalendarEventPanel.vue:645
 msgid "{0} yes"
 msgstr "{0} بله"
+
+#: frontend/src/components/Questionnaire.vue:92
+#, python-format
+msgid "{0}% complete"
+msgstr ""
 
 #: frontend/src/utils/scriptHelpers.js:43
 msgid "⚠️ Avoid using \"trigger\" as a field name — it conflicts with the built-in trigger() method."

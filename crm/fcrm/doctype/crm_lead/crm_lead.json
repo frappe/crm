@@ -21,6 +21,11 @@
   "details",
   "organization",
   "website",
+  "organization_logo",
+  "company_description",
+  "linkedin",
+  "twitter",
+  "facebook",
   "territory",
   "industry",
   "job_title",
@@ -160,7 +165,8 @@
   {
    "fieldname": "annual_revenue",
    "fieldtype": "Currency",
-   "label": "Annual Revenue"
+   "label": "Annual Revenue",
+   "non_negative": 1
   },
   {
    "fieldname": "lead_owner",
@@ -329,6 +335,7 @@
    "fieldname": "total",
    "fieldtype": "Currency",
    "label": "Total",
+   "non_negative": 1,
    "options": "currency",
    "read_only": 1
   },
@@ -341,6 +348,7 @@
    "fieldname": "net_total",
    "fieldtype": "Currency",
    "label": "Net Total",
+   "non_negative": 1,
    "options": "currency",
    "read_only": 1
   },
@@ -419,6 +427,41 @@
   {
    "fieldname": "column_break_opsm",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "organization_logo",
+   "fieldtype": "Attach Image",
+   "label": "Organization Logo",
+   "no_copy": 1,
+   "description": "Company logo discovered by Domain Enrichment."
+  },
+  {
+   "fieldname": "company_description",
+   "fieldtype": "Small Text",
+   "label": "Company Description",
+   "no_copy": 1,
+   "description": "Company description discovered by Domain Enrichment."
+  },
+  {
+   "depends_on": "eval:doc.linkedin",
+   "fieldname": "linkedin",
+   "fieldtype": "Data",
+   "label": "LinkedIn",
+   "no_copy": 1
+  },
+  {
+   "depends_on": "eval:doc.twitter",
+   "fieldname": "twitter",
+   "fieldtype": "Data",
+   "label": "X (Twitter)",
+   "no_copy": 1
+  },
+  {
+   "depends_on": "eval:doc.facebook",
+   "fieldname": "facebook",
+   "fieldtype": "Data",
+   "label": "Facebook",
+   "no_copy": 1
   }
  ],
  "grid_page_length": 50,

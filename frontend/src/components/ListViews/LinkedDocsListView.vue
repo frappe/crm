@@ -17,7 +17,7 @@
         v-for="column in columns"
         :key="column.key"
         :item="column"
-        @columnWidthUpdated="emit('columnWidthUpdated', column)"
+        @columnWidthUpdated="(e) => onColumnWidthUpdated(e, column)"
       >
       </ListHeaderItem>
     </ListHeader>
@@ -87,6 +87,11 @@ const emit = defineEmits([
 ])
 
 const listViewRef = ref(null)
+
+function onColumnWidthUpdated({ width, save }, column) {
+  column.width = width
+  if (save) emit('columnWidthUpdated', column)
+}
 
 const viewLinkedDoc = (doc) => {
   let page = ''

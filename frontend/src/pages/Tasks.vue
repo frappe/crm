@@ -106,13 +106,14 @@
           v-else-if="fieldName == 'description'"
           class="truncate text-base max-h-44"
         >
-          <TextEditor
+          <!-- content is passed through sanitizeHTML() (DOMPurify) before rendering, so v-html is safe here -->
+          <!-- eslint-disable vue/no-v-html -->
+          <div
             v-if="getRow(itemName, fieldName).label"
-            :content="getRow(itemName, fieldName).label"
-            :editable="false"
-            editor-class="!prose-sm max-w-none focus:outline-none"
-            class="flex-1 overflow-hidden"
+            class="prose-f prose-sm max-w-none flex-1 overflow-hidden"
+            v-html="sanitizeHTML(getRow(itemName, fieldName).label)"
           />
+          <!-- eslint-enable vue/no-v-html -->
         </div>
         <div v-else class="truncate text-base">
           {{ getRow(itemName, fieldName).label }}
@@ -145,9 +146,12 @@
           class="flex items-center gap-2"
           :options="actions(itemName)"
           variant="ghost"
-          @click.stop.prevent
         >
-          <Button icon="lucide-more-horizontal" variant="ghost" />
+          <Button
+            icon="lucide-more-horizontal"
+            variant="ghost"
+            @click.stop.prevent
+          />
         </Dropdown>
       </div>
     </template>
@@ -181,6 +185,14 @@
     name="Tasks"
     :icon="Email2Icon"
   />
+  <DeleteLinkedDocModal
+    v-if="showDeleteTaskModal"
+    v-model="showDeleteTaskModal"
+    name="Tasks"
+    doctype="CRM Task"
+    :docname="taskToDelete"
+    :reload="() => tasks.reload()"
+  />
 </template>
 
 <script setup>
@@ -195,13 +207,14 @@ import ViewControls from '@/components/ViewControls.vue'
 import TasksListView from '@/components/ListViews/TasksListView.vue'
 import EmptyState from '@/components/ListViews/EmptyState.vue'
 import KanbanView from '@/components/Kanban/KanbanView.vue'
+import DeleteLinkedDocModal from '@/components/DeleteLinkedDocModal.vue'
 import { useDoctypeModal } from '@/composables/doctypeModal'
 import { getMeta } from '@/stores/meta'
 import { usersStore } from '@/stores/users'
-import { formatDate } from '@/utils'
+import { formatDate, sanitizeHTML } from '@/utils'
 import { timestampCell } from '@/composables/useTimelinePreferences'
 import { useOnboarding, useTelemetry } from 'frappe-ui/frappe'
-import { Tooltip, Avatar, TextEditor, Dropdown, call } from 'frappe-ui'
+import { Tooltip, Avatar, Dropdown } from 'frappe-ui'
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -221,6 +234,9 @@ const loadMore = ref(1)
 const triggerResize = ref(1)
 const updatedPageCount = ref(20)
 const viewControls = ref(null)
+
+const showDeleteTaskModal = ref(false)
+const taskToDelete = ref(null)
 
 function getRow(name, field) {
   function getValue(value) {
@@ -360,21 +376,19 @@ function createTask(column) {
 function actions(name) {
   return [
     {
+      label: __('Edit'),
+      icon: 'edit-2',
+      onClick: () => showTask(name),
+    },
+    {
       label: __('Delete'),
       icon: 'trash-2',
       onClick: () => {
-        deleteTask(name)
-        tasks.value.reload()
+        taskToDelete.value = name
+        showDeleteTaskModal.value = true
       },
     },
   ]
-}
-
-async function deleteTask(name) {
-  await call('frappe.client.delete', {
-    doctype: 'CRM Task',
-    name,
-  })
 }
 
 function redirect(doctype, docname) {

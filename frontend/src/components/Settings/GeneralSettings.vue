@@ -40,7 +40,7 @@
           <div class="text-p-sm text-ink-gray-5">
             {{
               __(
-                'Automatically sets Communication Status to “Replied” for the lead or deal when a response is received. Applies only when SLA is enabled',
+                'Automatically sets communication status to “Replied” for the lead or deal when a response is received. Applies only when SLA is enabled',
               )
             }}
           </div>
@@ -62,7 +62,7 @@
           <div class="text-p-sm text-ink-gray-5">
             {{
               __(
-                'Automatically sets Communication Status to “Open” for the lead or deal when a new communication is created. Applies only when SLA is enabled',
+                'Automatically sets communication status to “Open” for the lead or deal when a new communication is created. Applies only when SLA is enabled',
               )
             }}
           </div>

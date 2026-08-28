@@ -45,7 +45,11 @@
           :key="note.name"
           @click="modalRef.showNote(note)"
         >
-          <NoteArea v-model="all_activities" :note="note" />
+          <NoteArea
+            v-model="all_activities"
+            :note="note"
+            :modalRef="modalRef"
+          />
         </div>
       </div>
       <div v-else-if="title == 'Comments'" class="pb-5">
@@ -380,6 +384,8 @@
     </div>
     <div v-else-if="title == 'Data'" class="h-full flex flex-col px-3 sm:px-10">
       <DataFields
+        v-model:fieldLayoutTabIndex="fieldLayoutTabIndex"
+        v-model:fieldLayoutTabName="fieldLayoutTabName"
         :doctype="doctype"
         :docname="docname"
         @beforeSave="(data) => emit('beforeSave', data)"
@@ -522,6 +528,8 @@ const doc = computed(() => _document.doc || {})
 const reload_email = ref(false)
 const modalRef = ref(null)
 const showFilesUploader = ref(false)
+const fieldLayoutTabIndex = ref(0)
+const fieldLayoutTabName = ref('')
 
 const title = computed(() => props.tabs?.[tabIndex.value]?.name || 'Activity')
 
@@ -541,6 +549,9 @@ const all_activities = createResource({
     return { versions, calls, notes, tasks, attachments }
   },
   onSuccess: () => nextTick(() => scroll()),
+  onError: (error) => {
+    toast.error(error.messages?.[0] || __('Failed to load activities'))
+  },
 })
 
 const showWhatsappTemplates = ref(false)
@@ -567,9 +578,13 @@ watch(
 
 onBeforeUnmount(() => {
   $socket.off('whatsapp_message')
+  $socket.off('docinfo_update', handleDocinfoUpdate)
+  $socket.emit('doc_unsubscribe', props.doctype, props.docname)
 })
 
 onMounted(() => {
+  $socket.emit('doc_subscribe', props.doctype, props.docname)
+  $socket.on('docinfo_update', handleDocinfoUpdate)
   $socket.on('whatsapp_message', (data) => {
     if (
       data.reference_doctype === props.doctype &&
@@ -587,6 +602,15 @@ onMounted(() => {
     }
   })
 })
+
+function handleDocinfoUpdate({ doc, key }) {
+  if (key !== 'comments') return
+  if (doc.reference_doctype !== props.doctype) return
+  if (doc.reference_name !== props.docname) return
+
+  all_activities.reload()
+  _document.reload()
+}
 
 function sendTemplate(template) {
   showWhatsappTemplates.value = false
