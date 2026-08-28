@@ -149,10 +149,7 @@ const isLostStatus = computed(() => {
   return false
 })
 
-console.log('asim isLostStatus', isLostStatus.value)
-
 function onCreateLostReason(value, close) {
-  console.log('asim onCreateLostReason', value, close)
   createDocument('CRM Lost Reason', { lost_reason: value }, close, (doc) => {
     lostReason.value = doc.name
     lostReasonLinkRef.value?.reload('', true)
