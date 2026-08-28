@@ -92,7 +92,6 @@
           :label="__('Automation User')"
           doctype="User"
         />
-        <SwitchField v-model="doc.enabled" :label="__('Enabled')" />
       </template>
     </div>
   </div>
@@ -102,7 +101,6 @@
 import Link from '@/components/Controls/Link.vue'
 import Relationships from './WorkflowRelationships.vue'
 import StepEditor from './WorkflowStepEditor.vue'
-import SwitchField from './WorkflowSwitchField.vue'
 import TriggerDetails from './WorkflowTriggerDetails.vue'
 import WorkflowFilters from './WorkflowFilters.vue'
 import { capabilitiesFor } from './workflowCapabilities'
