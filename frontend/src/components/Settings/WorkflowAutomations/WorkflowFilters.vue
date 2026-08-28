@@ -11,7 +11,7 @@
       :level="flat ? 3 : level"
     />
     <p v-if="flat && conditions.length > 1" class="text-xs text-ink-gray-5">
-      {{ __('A trigger runs only when every filter matches.') }}
+      {{ __('A trigger runs only when these filters match.') }}
     </p>
   </div>
 </template>
@@ -32,9 +32,7 @@ const props = defineProps({
   doctype: { type: String, default: '' },
   label: { type: String, default: () => __('Filters') },
   level: { type: Number, default: 0 },
-  // Trigger filters are evaluated by `evaluate_filters`, which only ANDs a flat list. In that
-  // mode groups are hidden (level 3) and an `or` is snapped back, so nothing is stored that
-  // the engine would quietly ignore.
+  // Hides the grouping controls (level 3). Conjunctions are still stored and honoured.
   flat: { type: Boolean, default: false },
 })
 
@@ -42,20 +40,9 @@ const emit = defineEmits(['update:modelValue'])
 
 const conditions = reactive(parse(props.modelValue))
 
-watch(
-  conditions,
-  () => {
-    if (props.flat) forceAnd(conditions)
-    emit('update:modelValue', serialize(conditions))
-  },
-  { deep: true },
-)
-
-function forceAnd(rows) {
-  rows.forEach((item, index) => {
-    if (item === 'or') rows[index] = 'and'
-  })
-}
+watch(conditions, () => emit('update:modelValue', serialize(conditions)), {
+  deep: true,
+})
 
 // Selecting another step hands this the next condition, so reload the array in place.
 watch(
@@ -67,8 +54,7 @@ watch(
 )
 
 function parse(value) {
-  const rows = read(value)
-  return props.flat ? interleave(rows) : rows
+  return interleave(read(value))
 }
 
 function read(value) {
@@ -81,19 +67,13 @@ function read(value) {
   }
 }
 
-/** A stored flat list carries no conjunctions; the builder expects them between the rows. */
+/** A list stored without conjunctions means "all of these"; the builder wants them explicit. */
 function interleave(rows) {
+  if (rows.some((row) => typeof row === 'string')) return rows
   return rows.flatMap((row, index) => (index ? ['and', row] : [row]))
 }
 
 function serialize(value) {
-  const rows = props.flat ? leaves(value) : value
-  return JSON.stringify(rows)
-}
-
-function leaves(value) {
-  return value
-    .filter((item) => Array.isArray(item))
-    .flatMap((item) => (Array.isArray(item[0]) ? leaves(item) : [item]))
+  return JSON.stringify(value)
 }
 </script>
