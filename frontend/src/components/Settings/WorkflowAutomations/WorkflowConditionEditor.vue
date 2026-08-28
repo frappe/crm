@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-2">
     <div class="flex items-center justify-between gap-2">
-      <label class="block text-sm text-ink-gray-5">{{ label }}</label>
+      <label class="block text-base text-ink-gray-5">{{ label }}</label>
       <TabButtons v-model="mode" :options="modes" />
     </div>
 
