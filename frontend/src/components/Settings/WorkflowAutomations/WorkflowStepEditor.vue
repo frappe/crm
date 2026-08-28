@@ -1,14 +1,5 @@
 <template>
   <div class="space-y-5">
-    <div
-      v-for="error in errors"
-      :key="error.message"
-      class="rounded border border-outline-red-2 bg-surface-red-1 p-2 text-sm text-ink-red-4"
-      role="alert"
-    >
-      {{ error.message }}
-    </div>
-
     <FormControl
       v-model="step.step_type"
       type="select"
@@ -201,7 +192,6 @@ const props = defineProps({
   step: { type: Object, required: true },
   doc: { type: Object, required: true },
   targets: { type: Array, default: () => [] },
-  errors: { type: Array, default: () => [] },
 })
 
 const stepTypeOptions = [
