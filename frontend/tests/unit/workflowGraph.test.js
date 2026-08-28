@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from 'vitest'
 // workflowCapabilities reaches frappe-ui's resource plugin, which the node test env cannot load.
 vi.mock(
   '../../src/components/Settings/WorkflowAutomations/workflowCapabilities',
-  () => ({ actionSchema: () => null }),
+  () => ({ actionSchema: () => null, capabilitiesFor: () => null }),
 )
 import { workflowEdges } from '../../src/components/Settings/WorkflowAutomations/workflowEdges'
 import { workflowNodes } from '../../src/components/Settings/WorkflowAutomations/workflowGraph'
