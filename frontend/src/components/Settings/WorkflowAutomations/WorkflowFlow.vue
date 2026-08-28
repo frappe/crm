@@ -160,7 +160,7 @@
         </div>
         <div
           v-if="(data.arms?.length || data.canContinue) && !readonly"
-          class="nodrag absolute left-[calc(100%+12px)] top-1/2 flex -translate-y-1/2 flex-col gap-1.5"
+          class="workflow-add-control nodrag absolute left-[calc(100%+12px)] top-1/2 flex -translate-y-1/2 flex-col gap-1.5"
           @click.stop
         >
           <Combobox
@@ -229,13 +229,15 @@ const props = defineProps({
 const emit = defineEmits(['select', 'add-step', 'pick-trigger'])
 const flowId = useId()
 const flowRoot = ref(null)
-// Automatic fitting stays comfortably zoomed out; users can still zoom in manually.
-const fitViewOptions = {
-  padding: 0.15,
+const EDGE_PADDING = 48
+
+// Fit as tight as the flow allows: a short flow can pass 100%, a long one caps there.
+const fitViewOptions = computed(() => ({
+  padding: 0.08,
   minZoom: 0.3,
-  maxZoom: 0.7,
+  maxZoom: props.nodes.length <= 3 ? 1.25 : 1,
   duration: 200,
-}
+}))
 const { fitView, setViewport, viewport, zoomIn, zoomOut } = useVueFlow(flowId)
 
 // Positions a user dragged a node to, so the computed layout stops overriding them.
@@ -281,7 +283,7 @@ async function refitAfterPanelResize() {
 async function refitFlow() {
   await nextTick()
   await nextFrame()
-  await fitView({ ...fitViewOptions, duration: 0 })
+  await fitView({ ...fitViewOptions.value, duration: 0 })
   if (props.nodes[0]?.data?.empty) return centerEmptyFlow()
   await alignFlowLeft()
   await nextFrame()
@@ -292,15 +294,18 @@ function nextFrame() {
   return new Promise((resolve) => requestAnimationFrame(resolve))
 }
 
-function alignFlowLeft() {
-  const zoom = viewport.value.zoom
+// Refitting reads back the result a frame later, so it settles instantly.
+function alignFlowLeft(zoom = viewport.value.zoom) {
   const leftmost = Math.min(...flowNodes.value.map((node) => node.position.x))
   return setViewport(
-    { ...viewport.value, x: 48 - leftmost * zoom },
-    { duration: fitViewOptions.duration },
+    { ...viewport.value, zoom, x: EDGE_PADDING - leftmost * zoom },
+    { duration: 0 },
   )
 }
 
+/** fitView only measures node bounds, so the add controls hanging off the last
+ *  node still overflow. Scale down to bring them back rather than panning away
+ *  from the left edge. */
 function keepAddControlsVisible() {
   const root = flowRoot.value?.$el || flowRoot.value
   const canvas = root?.getBoundingClientRect()
@@ -309,12 +314,15 @@ function keepAddControlsVisible() {
   const right = Math.max(
     ...[...controls].map((item) => item.getBoundingClientRect().right),
   )
-  const overflow = right - (canvas.right - 48)
-  if (overflow <= 0) return
-  return setViewport(
-    { ...viewport.value, x: viewport.value.x - overflow },
-    { duration: fitViewOptions.duration },
+  const used = right - canvas.left - EDGE_PADDING
+  const available = canvas.width - EDGE_PADDING * 2
+  if (used <= available || used <= 0) return
+  // Controls sit inside the zoomed pane, so widths scale with the zoom exactly.
+  const zoom = Math.max(
+    viewport.value.zoom * (available / used),
+    fitViewOptions.value.minZoom,
   )
+  return alignFlowLeft(zoom)
 }
 
 function centerEmptyFlow() {
@@ -325,7 +333,7 @@ function centerEmptyFlow() {
   const offset = canvas.left + canvas.width / 2 - node.left - node.width / 2
   return setViewport(
     { ...viewport.value, x: viewport.value.x + offset },
-    { duration: fitViewOptions.duration },
+    { duration: fitViewOptions.value.duration },
   )
 }
 
