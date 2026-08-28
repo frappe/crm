@@ -49,7 +49,7 @@ function openArms(node) {
 }
 
 function triggerNode(doc) {
-  const trigger = triggerDefinition(doc.trigger_type)
+  const trigger = triggerDefinition(doc)
   return {
     id: 'trigger',
     type: 'automation',
