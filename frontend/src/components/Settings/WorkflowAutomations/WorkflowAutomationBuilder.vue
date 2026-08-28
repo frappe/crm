@@ -106,18 +106,10 @@
           :doc="doc"
           :selected-step="selectedStep"
           :targets="targetsFor(selectedStep)"
-          :errors="errors[selectedId] || []"
           :loading="loading"
           @request-remove="confirmSelectedRemoval"
         />
       </div>
-    </div>
-    <div
-      v-if="saveError"
-      class="absolute bottom-4 left-1/2 z-10 max-w-lg -translate-x-1/2 rounded-lg border border-outline-red-2 bg-surface-red-1 px-3 py-2 text-sm text-ink-red-4 shadow-lg"
-      role="alert"
-    >
-      {{ saveError }}
     </div>
     <Dialog v-model:open="showTrial" :title="__('Test Run')">
       <template #default>
@@ -171,7 +163,6 @@ const showTrial = ref(false)
 const inspectorOpen = ref(false)
 const selectedId = ref('trigger')
 const errors = reactive({})
-const saveError = ref('')
 const doc = reactive(defaultDoc())
 const savedSnapshot = ref('')
 
@@ -292,6 +283,13 @@ async function loadAutomation() {
 
 function markClean() {
   savedSnapshot.value = JSON.stringify(payload())
+}
+
+/** Take the server's name and timestamp, so the next save is not a stale write. */
+function adoptSaved(saved) {
+  doc.name = saved.name
+  doc.modified = saved.modified
+  markClean()
 }
 
 function setTitle(title) {
@@ -427,12 +425,11 @@ async function saveAutomation() {
     const saved = props.automationName
       ? await call('frappe.client.save', { doc: payload() })
       : await call('frappe.client.insert', { doc: payload() })
-    markClean()
+    adoptSaved(saved)
     toast.success(__('Automation saved'))
     emit('saved', saved)
   } catch (error) {
-    attachError(error)
-    toast.error(saveError.value || __('Could not save automation'))
+    toast.error(attachError(error))
   } finally {
     saving.value = false
   }
@@ -502,19 +499,16 @@ function normalizedRelatedCondition(value) {
 }
 
 function clearErrors() {
-  saveError.value = ''
   Object.keys(errors).forEach((key) => delete errors[key])
 }
 
 /** Server errors read "Row 3: ..." - map that flattened row back onto its node. */
 function attachError(error) {
   const message = errorMessage(error)
-  saveError.value = message
   const match = message.match(/Row (\d+)/)
-  if (match) return attachRowError(Number(match[1]), message)
-  const node = selectedStep.value
-  if (!node) return
-  errors[node._id] = [{ message }]
+  if (match) attachRowError(Number(match[1]), message)
+  else if (selectedStep.value) errors[selectedStep.value._id] = [{ message }]
+  return message
 }
 
 function attachRowError(rowIndex, message) {
