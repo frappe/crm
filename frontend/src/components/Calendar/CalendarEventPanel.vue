@@ -382,9 +382,8 @@
       <div class="flex justify-between gap-3 mx-4.5 my-2.5 text-ink-gray-7">
         <DescriptionIcon class="size-4 mt-1.5" />
         <div class="flex w-full items-center gap-x-2 border rounded py-1">
-          <TextEditor
+          <RichTextField
             editor-class="!prose-sm !leading-[1.13rem] overflow-auto px-2.5 rounded placeholder-ink-gray-4 focus:bg-surface-base focus:ring-0 text-ink-gray-8 transition-colors"
-            :bubbleMenu="true"
             :content="_event.description"
             :placeholder="__('Add Description')"
             @change="
@@ -560,6 +559,7 @@ import DescriptionIcon from '@/components/Icons/DescriptionIcon.vue'
 import Attendee from '@/components/Calendar/Attendee.vue'
 import EventNotifications from '@/components/Calendar/EventNotifications.vue'
 import ShortcutTooltip from '@/components/ShortcutTooltip.vue'
+import RichTextField from '@/components/RichTextField.vue'
 import { globalStore } from '@/stores/global'
 import { sessionStore } from '@/stores/session'
 import { validateEmail, deepClone, sanitizeHTML } from '@/utils'
@@ -576,7 +576,6 @@ import {
   Switch,
   DatePicker,
   TimePicker,
-  TextEditor,
   ErrorMessage,
   Dropdown,
   dayjs,
