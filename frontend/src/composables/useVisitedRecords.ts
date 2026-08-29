@@ -1,16 +1,16 @@
 import { call } from 'frappe-ui'
 import { sessionStore } from '@/stores/session'
 
-export function useVisitedRecords(doctype) {
+export function useVisitedRecords(doctype: string) {
   const { user } = sessionStore()
 
-  function isVisited(seen) {
+  function isVisited(seen?: string | string[] | null) {
     if (!seen) return false
-    let seenBy = typeof seen === 'string' ? JSON.parse(seen) : seen
+    const seenBy = typeof seen === 'string' ? JSON.parse(seen) : seen
     return seenBy.includes(user)
   }
 
-  function markVisited(name) {
+  function markVisited(name?: string) {
     if (!name) return
     call('crm.api.doc.add_seen', { doctype, name })
   }
