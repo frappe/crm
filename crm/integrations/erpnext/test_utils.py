@@ -71,6 +71,20 @@ class TestItemRateFallback(FrappeTestCase):
 			item.get_item_price_rate = original
 		self.assertEqual(data["standard_rate"], 50)
 
+	def test_none_rate_coerces_to_zero_when_no_item_price(self):
+		from crm.integrations.erpnext import item
+
+		doc = frappe._dict(
+			name="ITM-D", stock_uom="Nos", standard_rate=None, image=None, disabled=0, description="d"
+		)
+		original = item.get_item_price_rate
+		item.get_item_price_rate = lambda code, uom=None: None
+		try:
+			data = item._catalogue_data(doc)
+		finally:
+			item.get_item_price_rate = original
+		self.assertEqual(data["standard_rate"], 0)
+
 	@unittest.skipUnless(ERPNEXT_INSTALLED, "erpnext not installed")
 	def test_get_item_price_rate_uses_default_price_list_and_general_party(self):
 		from erpnext.stock import get_item_details
