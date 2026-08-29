@@ -408,11 +408,11 @@ function getValueControl(f) {
       trigger: 'button',
       options: [
         {
-          label: 'Set',
+          label: __('Set'),
           value: 'set',
         },
         {
-          label: 'Not Set',
+          label: __('Not Set'),
           value: 'not set',
         },
       ],
