@@ -50,8 +50,11 @@ def get_deal_activities(name: str):
 	creation_text = _("created this deal")
 
 	if lead:
-		activities, calls, notes, tasks, attachments = get_lead_activities(lead)
 		creation_text = _("converted the lead to this deal")
+		# a user can have access to the deal but not the lead it came from, so
+		# skip the lead's history instead of failing the whole timeline
+		if frappe.has_permission("CRM Lead", "read", lead):
+			activities, calls, notes, tasks, attachments = get_lead_activities(lead)
 
 	activities.append(
 		{

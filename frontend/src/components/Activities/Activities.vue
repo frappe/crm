@@ -384,6 +384,8 @@
     </div>
     <div v-else-if="title == 'Data'" class="h-full flex flex-col px-3 sm:px-10">
       <DataFields
+        v-model:fieldLayoutTabIndex="fieldLayoutTabIndex"
+        v-model:fieldLayoutTabName="fieldLayoutTabName"
         :doctype="doctype"
         :docname="docname"
         @beforeSave="(data) => emit('beforeSave', data)"
@@ -526,6 +528,8 @@ const doc = computed(() => _document.doc || {})
 const reload_email = ref(false)
 const modalRef = ref(null)
 const showFilesUploader = ref(false)
+const fieldLayoutTabIndex = ref(0)
+const fieldLayoutTabName = ref('')
 
 const title = computed(() => props.tabs?.[tabIndex.value]?.name || 'Activity')
 
@@ -545,6 +549,9 @@ const all_activities = createResource({
     return { versions, calls, notes, tasks, attachments }
   },
   onSuccess: () => nextTick(() => scroll()),
+  onError: (error) => {
+    toast.error(error.messages?.[0] || __('Failed to load activities'))
+  },
 })
 
 const showWhatsappTemplates = ref(false)

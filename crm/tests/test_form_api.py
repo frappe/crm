@@ -230,6 +230,65 @@ class TestFormAPI(IntegrationTestCase):
 
 		self.assertEqual(len(F.get_form_config(name)["fields"]), before)
 
+	# ---- field allowlist ----
+
+	def test_save_form_rejects_denied_field(self):
+		"""A payload can't map an internal field the picker excludes."""
+		name = make_form("denied-field")
+		with self.assertRaises(frappe.ValidationError):
+			F.save_form(
+				name=name,
+				form={
+					"title": "D",
+					"route": "denied-field",
+					"document_type": "CRM Lead",
+					"fields": [{"fieldname": "converted", "fieldtype": "Check"}],
+					"hidden_fields": [],
+				},
+			)
+
+	def test_save_form_rejects_layout_break_shadowing_a_field(self):
+		"""A break skips the catalog check, so it must not name a real field."""
+		name = make_form("break-shadow")
+		with self.assertRaises(frappe.ValidationError):
+			F.save_form(
+				name=name,
+				form={
+					"title": "B",
+					"route": "break-shadow",
+					"document_type": "CRM Lead",
+					"fields": [{"fieldname": "converted", "fieldtype": "Section Break"}],
+					"hidden_fields": [],
+				},
+			)
+
+	def test_save_form_rejects_unknown_hidden_field(self):
+		"""Only the system-managed mandatory fields may be hidden fields."""
+		name = make_form("hidden-denied")
+		with self.assertRaises(frappe.ValidationError):
+			F.save_form(
+				name=name,
+				form={
+					"title": "H",
+					"route": "hidden-denied",
+					"document_type": "CRM Lead",
+					"fields": [{"fieldname": "first_name", "fieldtype": "Data"}],
+					"hidden_fields": [{"fieldname": "converted", "fieldtype": "Check", "default": "1"}],
+				},
+			)
+
+	def test_save_form_takes_fieldtype_from_catalog(self):
+		"""fieldtype and options come from the doctype, not the payload."""
+		name = make_form(
+			"spoof-type",
+			fields=[{"fieldname": "first_name", "fieldtype": "Attach", "options": "User"}],
+			hidden_fields=[],
+		)
+		stored = frappe.get_doc("Web Form", name).web_form_fields[0]
+		self.assertEqual(stored.fieldname, "first_name")
+		self.assertEqual(stored.fieldtype, "Data")
+		self.assertFalse(stored.options)
+
 	# ---- draft dry-run ----
 
 	def test_test_submit_validates_but_creates_nothing(self):
