@@ -19,8 +19,6 @@
     "@framework/ui": "link:../../frappe/ui",
     "@tiptap/core": "^3.26.0",
     "@tiptap/extension-paragraph": "^3.26.0",
-    "@tiptap/pm": "^3.26.0",
-    "@tiptap/vue-3": "^3.26.0",
     "@twilio/voice-sdk": "^2.10.2",
     "@vitejs/plugin-vue": "^6.0.8",
     "@vitejs/plugin-vue-jsx": "^5.1.6",
