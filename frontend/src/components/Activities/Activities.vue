@@ -12,14 +12,7 @@
     :customPane="Boolean(customTabComponent)"
   />
   <FadedScrollableDiv class="flex flex-col h-full overflow-y-auto">
-    <div
-      v-if="all_activities?.loading"
-      class="flex flex-1 flex-col items-center justify-center gap-3 text-2xl-medium text-ink-gray-4"
-    >
-      <LoadingIndicator class="h-6 w-6" />
-      <span>{{ __('Loading...') }}</span>
-    </div>
-    <div v-else-if="customTabComponent" class="flex flex-col h-full">
+    <div v-if="customTabComponent" class="flex flex-col h-full">
       <component
         :is="customTabComponent"
         :doctype="doctype"
@@ -27,6 +20,13 @@
         :doc="doc"
         :tab="currentTab"
       />
+    </div>
+    <div
+      v-else-if="all_activities?.loading"
+      class="flex flex-1 flex-col items-center justify-center gap-3 text-2xl-medium text-ink-gray-4"
+    >
+      <LoadingIndicator class="h-6 w-6" />
+      <span>{{ __('Loading...') }}</span>
     </div>
     <div v-else-if="title == 'Events'" class="h-full activity">
       <EventArea :doctype="doctype" :docname="docname" />
