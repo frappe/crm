@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-08-17 07:47+0000\n"
-"PO-Revision-Date: 2026-08-25 17:34\n"
+"PO-Revision-Date: 2026-08-30 18:22\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Persian\n"
 "MIME-Version: 1.0\n"
@@ -5400,7 +5400,7 @@ msgstr ""
 
 #: frontend/src/components/Layouts/AppSidebar.vue:668
 msgid "Masters"
-msgstr "کارشناسی ارشد"
+msgstr ""
 
 #. Label of the match_scope (Select) field in DocType 'CRM Enrichment Rule'
 #: crm/domain_enrichment/doctype/crm_enrichment_rule/crm_enrichment_rule.json
