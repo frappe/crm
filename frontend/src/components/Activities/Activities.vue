@@ -9,6 +9,7 @@
     :doc="doc"
     :whatsappBox="whatsappBox"
     :modalRef="modalRef"
+    :customPane="Boolean(customTabComponent)"
   />
   <FadedScrollableDiv class="flex flex-col h-full overflow-y-auto">
     <div
@@ -411,7 +412,10 @@
   </FadedScrollableDiv>
   <div>
     <CommunicationArea
-      v-if="['Emails', 'Comments', 'Activity'].includes(title)"
+      v-if="
+        !customTabComponent &&
+        ['Emails', 'Comments', 'Activity'].includes(title)
+      "
       ref="emailBox"
       v-model="doc"
       v-model:reload="reload_email"
@@ -419,7 +423,7 @@
       @scroll="scroll"
     />
     <WhatsAppBox
-      v-if="title == 'WhatsApp'"
+      v-if="!customTabComponent && title == 'WhatsApp'"
       ref="whatsappBox"
       v-model="doc"
       v-model:reply="replyMessage"

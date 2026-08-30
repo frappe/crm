@@ -72,8 +72,10 @@ class CRMDeal {
 
 ## How it behaves
 
-- **A tab owns its whole pane.** When a tab has a `component`, the activity
-  timeline, the empty state and the reply box are not rendered for it.
+- **A tab owns its whole pane.** When a tab has a `component`, none of the
+  built-in furniture is rendered for it: not the activity timeline, not the
+  empty state, not the reply box, and not the header's action button. That
+  holds even when you patch a built-in tab such as `Emails` or `WhatsApp`.
 - **Matching an existing name patches that tab** rather than adding a second
   one. Pushing `{ name: "Emails", label: "Inbox" }` relabels the built-in
   Emails tab and leaves everything else about it alone.

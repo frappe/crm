@@ -6,79 +6,81 @@
     <div class="flex h-8 items-center text-2xl-semibold text-ink-gray-8">
       {{ __(title) }}
     </div>
-    <Button
-      v-if="title == 'Emails'"
-      variant="solid"
-      :label="__('New Email')"
-      iconLeft="plus"
-      @click="emailBox.show = true"
-    />
-    <Button
-      v-else-if="title == 'Comments'"
-      variant="solid"
-      :label="__('New Comment')"
-      iconLeft="plus"
-      @click="emailBox.showComment = true"
-    />
-    <MultiActionButton
-      v-else-if="title == 'Calls'"
-      variant="solid"
-      :options="callActions"
-    />
-    <Button
-      v-else-if="title == 'Events'"
-      variant="solid"
-      @click="modalRef.showEvent()"
-    >
-      <template #prefix>
-        <EventIcon class="h-4 w-4" />
-      </template>
-      <span>{{ __('Schedule an Event') }}</span>
-    </Button>
-    <Button
-      v-else-if="title == 'Notes'"
-      variant="solid"
-      :label="__('New Note')"
-      iconLeft="plus"
-      @click="modalRef.showNote()"
-    />
-    <Button
-      v-else-if="title == 'Tasks'"
-      variant="solid"
-      :label="__('New Task')"
-      iconLeft="plus"
-      @click="modalRef.showTask()"
-    />
-    <Button
-      v-else-if="title == 'Attachments'"
-      variant="solid"
-      :label="__('Upload Attachment')"
-      iconLeft="plus"
-      @click="showFilesUploader = true"
-    />
-    <div v-else-if="title == 'WhatsApp'" class="flex gap-2 shrink-0">
+    <template v-if="!customPane">
       <Button
-        :label="__('Send Template')"
-        @click="showWhatsappTemplates = true"
-      />
-      <Button
+        v-if="title == 'Emails'"
         variant="solid"
-        :label="__('New Message')"
+        :label="__('New Email')"
         iconLeft="plus"
-        @click="whatsappBox.show()"
+        @click="emailBox.show = true"
       />
-    </div>
-    <Dropdown v-else :options="defaultActions" @click.stop>
-      <template #default="{ open }">
+      <Button
+        v-else-if="title == 'Comments'"
+        variant="solid"
+        :label="__('New Comment')"
+        iconLeft="plus"
+        @click="emailBox.showComment = true"
+      />
+      <MultiActionButton
+        v-else-if="title == 'Calls'"
+        variant="solid"
+        :options="callActions"
+      />
+      <Button
+        v-else-if="title == 'Events'"
+        variant="solid"
+        @click="modalRef.showEvent()"
+      >
+        <template #prefix>
+          <EventIcon class="h-4 w-4" />
+        </template>
+        <span>{{ __('Schedule an Event') }}</span>
+      </Button>
+      <Button
+        v-else-if="title == 'Notes'"
+        variant="solid"
+        :label="__('New Note')"
+        iconLeft="plus"
+        @click="modalRef.showNote()"
+      />
+      <Button
+        v-else-if="title == 'Tasks'"
+        variant="solid"
+        :label="__('New Task')"
+        iconLeft="plus"
+        @click="modalRef.showTask()"
+      />
+      <Button
+        v-else-if="title == 'Attachments'"
+        variant="solid"
+        :label="__('Upload Attachment')"
+        iconLeft="plus"
+        @click="showFilesUploader = true"
+      />
+      <div v-else-if="title == 'WhatsApp'" class="flex gap-2 shrink-0">
+        <Button
+          :label="__('Send Template')"
+          @click="showWhatsappTemplates = true"
+        />
         <Button
           variant="solid"
-          class="flex items-center gap-1"
-          :label="__('New')"
+          :label="__('New Message')"
           iconLeft="plus"
-          :iconRight="open ? 'chevron-up' : 'chevron-down'"
+          @click="whatsappBox.show()"
         />
-      </template>
-    </Dropdown>
+      </div>
+      <Dropdown v-else :options="defaultActions" @click.stop>
+        <template #default="{ open }">
+          <Button
+            variant="solid"
+            class="flex items-center gap-1"
+            :label="__('New')"
+            iconLeft="plus"
+            :iconRight="open ? 'chevron-up' : 'chevron-down'"
+          />
+        </template>
+      </Dropdown>
+    </template>
   </div>
 </template>
 <script setup>
@@ -103,6 +105,9 @@ const props = defineProps({
   doc: { type: Object, default: () => ({}) },
   modalRef: { type: Object, default: () => ({}) },
   whatsappBox: { type: Object, default: () => ({}) },
+  // A tab that brings its own component owns its whole pane, so none of the
+  // built-in, title-driven actions below apply to it.
+  customPane: { type: Boolean, default: false },
 })
 
 const { makeCall } = globalStore()
