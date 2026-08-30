@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-08-17 07:47+0000\n"
-"PO-Revision-Date: 2026-08-26 17:37\n"
+"PO-Revision-Date: 2026-08-30 18:22\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Swedish\n"
 "MIME-Version: 1.0\n"
@@ -1699,7 +1699,7 @@ msgstr "Avslutad Datum"
 
 #: frontend/src/pages/PersonaForm.vue:100
 msgid "Collaborating with my team"
-msgstr "Samarbete med team"
+msgstr "Samarbete med lag"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:138
 #: frontend/src/components/Settings/Forms/FieldCard.vue:63
@@ -2115,7 +2115,7 @@ msgstr "Sökrobot Optimering"
 #. Enrichment Settings'
 #: crm/domain_enrichment/doctype/crm_enrichment_settings/crm_enrichment_settings.json
 msgid "Crawl-ordering hints (not extraction). Links whose URL path or anchor text contain one of these are fetched first; higher weight = sooner. Lets the crawler spend its page budget on company pages (about/contact/team) before the cap. Defaults are seeded; edit or remove as needed."
-msgstr "Tips för genomsökning ordning (inte extrahering). Länkar vars URL-sökväg eller ankartext innehåller något av dessa hämtas först; högre prioritet = tidigare. Låter sökrobot använda tilldelad tid på bolag sidor (om/kontakt/team) före tid är slut. Standardvärde sprids; redigera eller ta bort efter behov."
+msgstr "Tips för genomsökning ordning (inte extrahering). Länkar vars URL-sökväg eller ankartext innehåller något av dessa hämtas först; högre prioritet = tidigare. Låter sökrobot använda tilldelad tid på bolag sidor (om/kontakt/lag) före tid är slut. Standardvärde sprids; redigera eller ta bort efter behov."
 
 #: frontend/src/components/Modals/ContactModal.vue:41
 #: frontend/src/components/Modals/CreateDocumentModal.vue:88
@@ -2856,7 +2856,7 @@ msgstr "Utkast"
 
 #: crm/www/crm_form.html:176
 msgid "Draft preview — only you can see this. Publish the form to make it public."
-msgstr "Utkast Förhandsgranskning – bara du kan se detta. Publicera formulär för att göra det offentligt."
+msgstr "Utkast Förhandsvisning – bara du kan se detta. Publicera formulär för att göra det offentligt."
 
 #: frontend/src/components/FilesUploader/FilesUploaderArea.vue:24
 msgid "Drag & Drop files here or upload from"
@@ -4316,7 +4316,7 @@ msgstr "Dölj Lösenord"
 #: frontend/src/components/Modals/QuickEntryModal.vue:20
 #: frontend/src/components/Modals/SidePanelModal.vue:20
 msgid "Hide Preview"
-msgstr "Dölj Förhandsgranskning"
+msgstr "Dölj Förhandsvisning"
 
 #: frontend/src/components/Activities/CallArea.vue:66
 msgid "Hide Recording"
@@ -4506,7 +4506,7 @@ msgstr "Branscher"
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
 msgid "Industry"
-msgstr "Industri"
+msgstr "Branch"
 
 #. Label of the industry_confidence (Float) field in DocType 'CRM Enrichment
 #. Run'
@@ -4689,7 +4689,7 @@ msgstr "Skapa Användare"
 
 #: frontend/src/pages/PersonaForm.vue:125
 msgid "Invite my team"
-msgstr "Bjud in Team"
+msgstr "Bjud in Lag"
 
 #: frontend/src/components/Settings/InviteUserPage.vue:10
 msgid "Invite users to access CRM. Specify their roles to control access and permissions"
@@ -4697,7 +4697,7 @@ msgstr "Bjud in användare att få åtkomst till Säljstöd. Ange deras roller f
 
 #: frontend/src/components/Layouts/AppSidebar.vue:472
 msgid "Invite your team"
-msgstr "Bjud in Team"
+msgstr "Bjud in Lag"
 
 #. Label of the invited_by (Link) field in DocType 'CRM Invitation'
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.json
@@ -5334,7 +5334,7 @@ msgstr "Hantera Service Nivå Avtal Principer"
 #: frontend/src/components/Settings/Users.vue:240
 #: frontend/src/components/Settings/Users.vue:243
 msgid "Manager"
-msgstr "Ansvarig"
+msgstr "Chef"
 
 #: frontend/src/pages/PersonaForm.vue:97
 msgid "Managing contacts and companies"
@@ -6472,7 +6472,7 @@ msgstr "Väntande Inbjudningar"
 #. Enrichment Settings'
 #: crm/domain_enrichment/doctype/crm_enrichment_settings/crm_enrichment_settings.json
 msgid "Per-request timeout in seconds for the preview prefill."
-msgstr "Tidsgräns per begäran i sekunder för förhandsgranskningens förifyllning."
+msgstr "Tidsgräns per begäran i sekunder för förhandsvisning av förifyllning."
 
 #. Description of the 'Request Timeout (s)' (Int) field in DocType 'CRM
 #. Enrichment Settings'
@@ -8295,7 +8295,7 @@ msgstr "Godkänn Knapp Titel"
 #. Priority'
 #: crm/domain_enrichment/doctype/crm_enrichment_link_priority/crm_enrichment_link_priority.json
 msgid "Substring matched against a candidate URL/anchor to prioritise crawling it (e.g. \"about\", \"team\", \"contact\")."
-msgstr "Delsträng som stäms av mot potentiell URL/länk text för att prioritera genomsökning av den (t.ex. ”om”, ”team”, ”kontakt”)."
+msgstr "Delsträng som stäms av mot potentiell URL/länk text för att prioritera genomsökning av den (t.ex. ”om”, ”lag”, ”kontakt”)."
 
 #. Description of the 'Pattern' (Data) field in DocType 'CRM Enrichment Skip
 #. Pattern'
@@ -9832,7 +9832,7 @@ msgstr "i {0} år"
 #. Mapping'
 #: crm/domain_enrichment/doctype/crm_enrichment_field_mapping/crm_enrichment_field_mapping.json
 msgid "industry"
-msgstr "industri"
+msgstr "Branch"
 
 #. Option for the 'Source Key' (Select) field in DocType 'CRM Enrichment Field
 #. Mapping'
