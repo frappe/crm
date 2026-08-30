@@ -18,6 +18,15 @@
       <LoadingIndicator class="h-6 w-6" />
       <span>{{ __('Loading...') }}</span>
     </div>
+    <div v-else-if="customTabComponent" class="flex flex-col h-full">
+      <component
+        :is="customTabComponent"
+        :doctype="doctype"
+        :docname="docname"
+        :doc="doc"
+        :tab="currentTab"
+      />
+    </div>
     <div v-else-if="title == 'Events'" class="h-full activity">
       <EventArea :doctype="doctype" :docname="docname" />
     </div>
@@ -532,6 +541,12 @@ const fieldLayoutTabIndex = ref(0)
 const fieldLayoutTabName = ref('')
 
 const title = computed(() => props.tabs?.[tabIndex.value]?.name || 'Activity')
+
+const currentTab = computed(() => props.tabs?.[tabIndex.value] || null)
+
+// A tab may bring its own component (see `this.tabs` in CRM Form Scripts).
+// When it does, that component replaces the whole activity pane.
+const customTabComponent = computed(() => currentTab.value?.component || null)
 
 const changeTabTo = (tabName) => {
   const tabNames = props.tabs?.map((tab) => tab.name?.toLowerCase())
