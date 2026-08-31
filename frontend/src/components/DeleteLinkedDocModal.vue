@@ -146,6 +146,7 @@ const props = defineProps({
   name: { type: String, required: true },
   doctype: { type: String, required: true },
   docname: { type: String, required: true },
+  title: { type: String, default: null },
   reload: { type: Function, default: null },
 })
 const viewControls = ref({
@@ -268,7 +269,10 @@ const deleteDoc = async () => {
     throw err
   }
   expireDeletionMarker(props.doctype, props.docname)
-  toast.success(__('{0} deleted successfully', [props.doctype]))
+  const label = props.title
+    ? `${props.docname} (${props.title})`
+    : props.docname
+  toast.success(__('{0} deleted successfully', [label]))
   show.value = false
   router.push({ name: props.name })
   props?.reload?.()
