@@ -9,6 +9,8 @@ import { createDocumentResource, createResource, toast } from 'frappe-ui'
 import { ref, reactive, getCurrentInstance } from 'vue'
 
 const documentsCache = {}
+export const deletedDocuments = new Set()
+
 const controllersCache = {}
 const assigneesCache = {}
 const permissionsCache = {}
@@ -36,9 +38,15 @@ export function useDocument(doctype, docname, resourceOverrides = {}) {
           name: docname,
           onSuccess: async () => await setupFormScript(),
           onError: (err) => {
-            error.value = err
             if (err.exc_type === 'DoesNotExistError') {
+              const key = `${doctype}:${docname}`
+              if (deletedDocuments.has(key)) {
+                return
+              }
+              error.value = err
               toast.error(__(err.messages[0] || 'Document does not exist'))
+            } else {
+              error.value = err
             }
             if (err.exc_type === 'PermissionError') {
               toast.error(
