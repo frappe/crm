@@ -174,8 +174,24 @@ doc_events = {
 		"on_update": ["crm.api.todo.on_update"],
 	},
 	"Communication": {
-		"after_insert": ["crm.utils.on_communication_insert"],
-		"on_update": ["crm.utils.on_communication_update"],
+		"after_insert": [
+			"crm.utils.on_communication_insert",
+			"crm.automation.engine.on_communication_insert",
+		],
+		"on_update": [
+			"crm.utils.on_communication_update",
+			"crm.automation.engine.on_communication_update",
+		],
+	},
+	"Tag Link": {
+		"after_insert": ["crm.automation.engine.on_tag_added"],
+		"on_trash": ["crm.automation.engine.on_tag_removed"],
+	},
+	"CRM Task": {
+		"on_update": ["crm.automation.engine.on_task_updated"],
+	},
+	"FCRM Note": {
+		"after_insert": ["crm.automation.engine.on_note_created"],
 	},
 	"Comment": {
 		"after_insert": ["crm.utils.on_comment_insert"],

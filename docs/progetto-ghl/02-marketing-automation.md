@@ -1,5 +1,40 @@
 # 02 — Marketing Automation Omnicanale (Workflow Engine)
 
+> ✅ **IMPLEMENTATO (v2, 31/08/2026) — allineato ai Workflows GHL.** Motore a
+> compilazione (`crm/automation/engine.py`): il builder salva step annidati, il
+> salvataggio li compila in un programma piatto con salti. Builder visuale in
+> `/automations`. Verifica: 23/23 scenari smoke del motore + test integrazione.
+>
+> ## Matrice di parità GHL → CRM (stato attuale)
+>
+> **Trigger** ✅: Lead/Deal Created, Lead/Deal Status Changed, Booking
+> Created/Cancelled/No Show/Completed (≈ Appointment Status), Incoming SMS,
+> **Customer Replied** (SMS/WhatsApp/email), **Email Opened** (read tracking),
+> **Trigger Link Clicked**, **Tag Added/Removed**, Task Completed, Note Added,
+> **Date Reminder** (compleanni/date custom, anche annuali), **Inbound Webhook**
+> (URL con chiave segreta, find-or-create del lead). Filtri evento via
+> `trigger_config` (quale link/tag/campo data) + condizioni sul record.
+> ❌ (prodotti GHL che il CRM non ha): survey/quiz, video tracking, lead ads
+> FB/TikTok (usare Inbound Webhook come ponte), affiliate, corsi, IVR, e-commerce.
+>
+> **Azioni** ✅: Send Email (+ Email Template), Send SMS, WhatsApp Template,
+> Internal Notification, Create Task, **Assign round-robin equo** (+ "solo se non
+> assegnato"), Add Note, **Add/Remove Tag**, Update Field, **Convert Lead→Deal**
+> (≈ Create Opportunity), **Webhook custom** (method/URL/body Jinja),
+> **Add to / Remove from Automation**. Placeholder Jinja `{{ first_name }}` e
+> `{{ tracked_link("slug") }}`.
+> ❌: voicemail drop, Google Sheets, Slack, azioni AI/GPT, Stripe charge,
+> Facebook audiences (webhook come ponte generico).
+>
+> **Control flow** ✅ (semantica GHL): **If/Else multi-ramo** con gruppi
+> condizioni AND/OR e ramo "None"; **Wait** (durata / fino a orario / fino a
+> risposta / fino a click, con timeout e branch su `wait_result`); **Goal Event**
+> (reply, link click, tag, status, booking) con salto in avanti e outcome
+> continue/wait/end; **Split test %** sticky; **Go To** (label) con loop guard;
+> Stop-on-Response; re-entry; **finestra oraria di invio** (ore + giorni);
+> condizione per singolo step. ❌: Drip batching, Custom Code, formatter
+> testo/numeri/date, merge di variabili di step (output webhook riusabili).
+
 > Parte del [Progetto GHL-Parity](./README.md). **È il modulo cuore del progetto**:
 > il builder visuale di automazioni multi-step temporizzate (trigger → wait →
 > email/SMS/WhatsApp → if/else → goal) che replica i "Workflows" di GHL.

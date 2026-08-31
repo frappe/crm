@@ -14,6 +14,7 @@
   "current_step",
   "column_break_progress",
   "wait_until",
+  "state",
   "logs_section",
   "logs"
  ],
@@ -90,6 +91,13 @@
    "fieldtype": "Table",
    "label": "Step Log",
    "options": "CRM Automation Step Log"
+  },
+  {
+   "fieldname": "state",
+   "fieldtype": "JSON",
+   "label": "State",
+   "hidden": 1,
+   "no_copy": 1
   }
  ],
  "links": [],

@@ -228,3 +228,102 @@ class TestAutomation(IntegrationTestCase):
 		self.assertEqual(enr.status, "Completed")
 		self.assertEqual(enr.logs[0].status, "Failed")
 		self.assertEqual(enr.logs[1].status, "Success")
+
+
+class TestAutomationV2(IntegrationTestCase):
+	"""GHL-aligned blocks: branches, goal, tags, tracked links, webhook trigger."""
+
+	def tearDown(self):
+		frappe.set_user("Administrator")
+		frappe.db.rollback()
+
+	def test_if_else_branching(self):
+		auto = make_automation(
+			"branch-flow",
+			[
+				{
+					"type": "if_else",
+					"branches": [
+						{
+							"condition_groups": [
+								[{"field": "email", "operator": "contains", "value": "@vip.com"}]
+							],
+							"steps": [{"type": "add_note", "comment": "VIP"}],
+						}
+					],
+					"else_steps": [{"type": "add_note", "comment": "standard"}],
+				}
+			],
+		)
+		lead = make_lead(email="boss@vip.com")
+		enr = get_enrollment(auto.name, lead.name)
+		self.assertEqual(enr.status, "Completed")
+		comments = frappe.get_all(
+			"Comment",
+			filters={"reference_doctype": "CRM Lead", "reference_name": lead.name},
+			pluck="content",
+		)
+		self.assertTrue(any("VIP" in c for c in comments))
+		self.assertFalse(any("standard" in c for c in comments))
+
+	def test_goal_wait_released_by_reply(self):
+		auto = make_automation(
+			"goal-flow",
+			[
+				{"type": "add_note", "comment": "pre"},
+				{"type": "goal", "event": "reply", "outcome": "wait"},
+				{"type": "add_note", "comment": "post"},
+			],
+		)
+		lead = make_lead(mobile_no="+390000000777")
+		enr = get_enrollment(auto.name, lead.name)
+		self.assertEqual(enr.status, "Waiting")
+
+		frappe.get_doc(
+			{
+				"doctype": "CRM SMS Message",
+				"type": "Incoming",
+				"from": lead.mobile_no,
+				"to": "+390000000000",
+				"message": "sì!",
+				"status": "Received",
+				"reference_doctype": "CRM Lead",
+				"reference_name": lead.name,
+			}
+		).insert(ignore_permissions=True)
+		enr.reload()
+		self.assertEqual(enr.status, "Completed")
+
+	def test_tag_actions_and_trigger(self):
+		listener = make_automation(
+			"tag-listener",
+			[{"type": "add_note", "comment": "taggato"}],
+			trigger_event="Tag Added",
+			trigger_config=frappe.as_json({"tag": "hot"}),
+		)
+		tagger = make_automation(
+			"tagger",
+			[{"type": "add_tag", "tag": "hot"}],
+		)
+		lead = make_lead(email="tag@example.com")
+		self.assertIsNotNone(get_enrollment(tagger.name, lead.name))
+		lead.reload()
+		self.assertIn("hot", lead.get("_user_tags") or "")
+		self.assertIsNotNone(get_enrollment(listener.name, lead.name))
+
+	def test_trigger_config_filters_by_payload(self):
+		listener = make_automation(
+			"tag-filtered",
+			[{"type": "add_note", "comment": "x"}],
+			trigger_event="Tag Added",
+			trigger_config=frappe.as_json({"tag": "cold"}),
+		)
+		make_automation("tagger2", [{"type": "add_tag", "tag": "hot"}])
+		lead = make_lead(email="tag2@example.com")
+		self.assertIsNone(get_enrollment(listener.name, lead.name))
+
+	def test_compiled_program_is_stored(self):
+		auto = make_automation("compiled", [{"type": "add_note", "comment": "x"}])
+		program = json.loads(auto.compiled_steps)
+		self.assertEqual(program[-1]["op"], "end")
+		self.assertEqual(program[0]["op"], "action")

@@ -15,7 +15,16 @@
   "description",
   "config_section",
   "trigger_condition",
-  "steps"
+  "trigger_config",
+  "steps",
+  "compiled_steps",
+  "webhook_key",
+  "window_section",
+  "time_window_enabled",
+  "window_start",
+  "column_break_window",
+  "window_end",
+  "window_days"
  ],
  "fields": [
   {
@@ -44,7 +53,7 @@
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Trigger Event",
-   "options": "Lead Created\nDeal Created\nLead Status Changed\nDeal Status Changed\nBooking Created\nBooking Cancelled\nIncoming SMS",
+   "options": "Lead Created\nDeal Created\nLead Status Changed\nDeal Status Changed\nBooking Created\nBooking Cancelled\nBooking No Show\nBooking Completed\nIncoming SMS\nCustomer Replied\nEmail Opened\nTrigger Link Clicked\nTag Added\nTag Removed\nTask Completed\nNote Added\nDate Reminder\nInbound Webhook",
    "reqd": 1
   },
   {
@@ -83,6 +92,63 @@
    "fieldtype": "JSON",
    "label": "Steps",
    "reqd": 1
+  },
+  {
+   "fieldname": "trigger_config",
+   "fieldtype": "JSON",
+   "label": "Trigger Config",
+   "description": "Event filters, e.g. {\"link\": \"promo\"} or {\"tag\": \"vip\"} or {\"date_field\": \"custom_birthday\", \"offset_days\": 1, \"direction\": \"before\", \"annual\": true}"
+  },
+  {
+   "fieldname": "compiled_steps",
+   "fieldtype": "JSON",
+   "label": "Compiled Steps",
+   "hidden": 1,
+   "read_only": 1,
+   "no_copy": 1
+  },
+  {
+   "fieldname": "webhook_key",
+   "fieldtype": "Data",
+   "label": "Webhook Key",
+   "read_only": 1,
+   "no_copy": 1,
+   "description": "Secret for the Inbound Webhook trigger URL",
+   "depends_on": "eval:doc.trigger_event==\"Inbound Webhook\""
+  },
+  {
+   "fieldname": "window_section",
+   "fieldtype": "Section Break",
+   "label": "Sending Time Window"
+  },
+  {
+   "fieldname": "time_window_enabled",
+   "fieldtype": "Check",
+   "label": "Restrict sending hours",
+   "default": "0"
+  },
+  {
+   "fieldname": "window_start",
+   "fieldtype": "Time",
+   "label": "Window Start",
+   "depends_on": "time_window_enabled"
+  },
+  {
+   "fieldname": "column_break_window",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "window_end",
+   "fieldtype": "Time",
+   "label": "Window End",
+   "depends_on": "time_window_enabled"
+  },
+  {
+   "fieldname": "window_days",
+   "fieldtype": "JSON",
+   "label": "Window Days",
+   "depends_on": "time_window_enabled",
+   "description": "e.g. [\"Monday\",\"Tuesday\",\"Wednesday\",\"Thursday\",\"Friday\"]; empty = every day"
   }
  ],
  "links": [],
