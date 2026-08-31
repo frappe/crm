@@ -46,15 +46,31 @@
         background: var(--card);
         border: 1px solid var(--border);
         border-radius: 12px;
-        max-width: 720px;
+        max-width: 860px;
         width: 100%;
-        padding: 2rem;
         height: fit-content;
+        display: grid;
+        grid-template-columns: 280px 1fr;
+        overflow: hidden;
       }
-      h1 { font-size: 1.35rem; margin: 0 0 .25rem; color: var(--ink-strong); }
-      .sub { color: var(--muted); font-size: .9rem; margin: 0 0 1.25rem; }
-      .meta { display: flex; gap: 1rem; flex-wrap: wrap; color: var(--muted); font-size: .85rem; margin-bottom: 1.5rem; }
+      @media (max-width: 720px) { .card { grid-template-columns: 1fr; } }
+      .info {
+        padding: 1.75rem 1.5rem;
+        border-right: 1px solid var(--border);
+        display: flex;
+        flex-direction: column;
+        gap: .75rem;
+      }
+      @media (max-width: 720px) { .info { border-right: 0; border-bottom: 1px solid var(--border); } }
+      .info a.back { color: var(--faint); font-size: .8rem; text-decoration: none; }
+      .info a.back:hover { color: var(--muted); }
+      h1 { font-size: 1.25rem; margin: 0; color: var(--ink-strong); }
+      .sub { color: var(--muted); font-size: .875rem; margin: 0; }
+      .meta { display: flex; flex-direction: column; gap: .5rem; color: var(--muted); font-size: .85rem; margin-top: .5rem; }
+      .meta .price { color: var(--ink-strong); font-weight: 600; font-size: 1rem; }
+      .main { padding: 1.75rem 1.5rem; }
       h2 { font-size: .95rem; margin: 1.25rem 0 .5rem; color: var(--ink-strong); }
+      h2:first-child { margin-top: 0; }
       .days, .slots { display: flex; flex-wrap: wrap; gap: .5rem; }
       button.chip {
         border: 1px solid var(--border);
@@ -82,7 +98,7 @@
         color: var(--ink);
       }
       input:focus, textarea:focus { outline: none; border-color: var(--border-focus); box-shadow: 0 0 0 3px var(--ring); }
-      .actions { margin-top: 1.25rem; display: flex; gap: .75rem; align-items: center; }
+      .actions { margin-top: 1.25rem; display: flex; gap: .75rem; align-items: center; flex-wrap: wrap; }
       button.primary {
         background: var(--accent);
         color: var(--card);
@@ -105,45 +121,51 @@
   </head>
   <body>
     <div class="card">
-      <h1>{{ title }}</h1>
-      {% if description %}<p class="sub">{{ description }}</p>{% endif %}
-      <div class="meta">
-        <span>&#128337; {{ duration }} min</span>
-        {% if location %}<span>&#128205; {{ location }}</span>{% endif %}
-        <span id="tz-label"></span>
-      </div>
-
-      <div id="manage" class="hidden">
-        <div id="manage-info" class="msg success"></div>
-        <div class="actions">
-          <button class="primary" id="btn-reschedule" type="button">Reschedule</button>
-          <button class="danger" id="btn-cancel" type="button">Cancel booking</button>
+      <div class="info">
+        <a class="back" href="/book">&larr; {{ _("All services") }}</a>
+        <h1>{{ title }}</h1>
+        {% if description %}<p class="sub">{{ description }}</p>{% endif %}
+        <div class="meta">
+          <span>&#128337; {{ duration }} min</span>
+          {% if location %}<span>&#128205; {{ location }}</span>{% endif %}
+          <span id="tz-label"></span>
+          {% if formatted_price %}<span class="price">{{ formatted_price }}</span>{% endif %}
         </div>
       </div>
 
-      <div id="picker">
-        <h2>Pick a day</h2>
-        <div class="days" id="days"></div>
-        <h2>Pick a time</h2>
-        <div class="slots" id="slots"><span class="empty">Select a day first</span></div>
-      </div>
-
-      <form id="book-form">
-        <label for="f-name">Name *</label>
-        <input id="f-name" required maxlength="140" autocomplete="name" />
-        <label for="f-email">Email *</label>
-        <input id="f-email" type="email" required maxlength="140" autocomplete="email" />
-        <label for="f-phone">Phone</label>
-        <input id="f-phone" maxlength="30" autocomplete="tel" />
-        <label for="f-notes">Notes</label>
-        <textarea id="f-notes" rows="3" maxlength="1000"></textarea>
-        <div class="actions">
-          <button class="primary" id="btn-book" type="submit">Confirm booking</button>
-          <span id="picked-label" class="empty"></span>
+      <div class="main">
+        <div id="manage" class="hidden">
+          <div id="manage-info" class="msg success"></div>
+          <div class="actions">
+            <button class="primary" id="btn-reschedule" type="button">Reschedule</button>
+            <button class="danger" id="btn-cancel" type="button">Cancel booking</button>
+          </div>
         </div>
-      </form>
 
-      <div id="msg" class="msg"></div>
+        <div id="picker">
+          <h2>Pick a day</h2>
+          <div class="days" id="days"></div>
+          <h2>Pick a time</h2>
+          <div class="slots" id="slots"><span class="empty">Select a day first</span></div>
+        </div>
+
+        <form id="book-form">
+          <label for="f-name">Name *</label>
+          <input id="f-name" required maxlength="140" autocomplete="name" />
+          <label for="f-email">Email *</label>
+          <input id="f-email" type="email" required maxlength="140" autocomplete="email" />
+          <label for="f-phone">Phone</label>
+          <input id="f-phone" maxlength="30" autocomplete="tel" />
+          <label for="f-notes">Notes</label>
+          <textarea id="f-notes" rows="3" maxlength="1000"></textarea>
+          <div class="actions">
+            <button class="primary" id="btn-book" type="submit">Confirm booking</button>
+            <span id="picked-label" class="empty"></span>
+          </div>
+        </form>
+
+        <div id="msg" class="msg"></div>
+      </div>
     </div>
 
     <script>

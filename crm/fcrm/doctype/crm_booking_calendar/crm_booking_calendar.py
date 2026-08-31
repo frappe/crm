@@ -48,6 +48,8 @@ class CRMBookingCalendar(Document):
 		buffer_after: DF.Int
 		buffer_before: DF.Int
 		calendar_name: DF.Data
+		check_google_busy: DF.Check
+		currency: DF.Link | None
 		description: DF.SmallText | None
 		distribution: DF.Literal["Round Robin"]
 		duration: DF.Int
@@ -57,7 +59,9 @@ class CRMBookingCalendar(Document):
 		max_horizon_days: DF.Int
 		members: DF.Table[CRMBookingCalendarMember]
 		min_notice_hours: DF.Int
+		price: DF.Currency
 		route: DF.Data
+		show_in_menu: DF.Check
 		slot_interval: DF.Int
 		timezone: DF.Data
 	# end: auto-generated types
@@ -187,6 +191,11 @@ class CRMBookingCalendar(Document):
 			busy.setdefault(row.agent, []).append(
 				(from_system_naive(row.starts_on) - before, from_system_naive(row.ends_on) + after)
 			)
+
+		if self.check_google_busy:
+			for user in members:
+				for interval in get_google_busy_intervals(user, start, end):
+					busy.setdefault(user, []).append((interval[0] - before, interval[1] + after))
 		return busy
 
 	def is_slot_available(self, start_utc: datetime.datetime) -> list[str]:
@@ -215,6 +224,49 @@ class CRMBookingCalendar(Document):
 		for row in rows:
 			counts[row.agent] = row.total
 		return min(free_members, key=lambda u: counts[u])
+
+
+def get_google_busy_intervals(
+	user: str, start: datetime.datetime, end: datetime.datetime
+) -> list[tuple[datetime.datetime, datetime.datetime]]:
+	"""Busy blocks from the user's connected Google Calendar via the free/busy API.
+
+	Uses the framework's per-user Google Calendar OAuth. Fails open (returns [])
+	on any error so an expired token never breaks the public booking page — the
+	error is logged for the admin.
+	"""
+	calendar_name = frappe.db.get_value("Google Calendar", {"user": user, "enabled": 1})
+	if not calendar_name:
+		return []
+	cache_key = f"gcal_busy|{calendar_name}|{start.isoformat()}|{end.isoformat()}"
+	cached = frappe.cache.get_value(cache_key)
+	if cached is not None:
+		return [(_parse_google_dt(b["start"]), _parse_google_dt(b["end"])) for b in cached]
+	try:
+		from frappe.integrations.doctype.google_calendar.google_calendar import (
+			get_google_calendar_object,
+		)
+
+		google_calendar, account = get_google_calendar_object(calendar_name)
+		body = {
+			"timeMin": start.astimezone(UTC).isoformat(),
+			"timeMax": end.astimezone(UTC).isoformat(),
+			"items": [{"id": account.google_calendar_id or "primary"}],
+		}
+		response = google_calendar.freebusy().query(body=body).execute()
+		busy = []
+		for cal in (response.get("calendars") or {}).values():
+			busy.extend(cal.get("busy") or [])
+		# short cache: keeps the booking page snappy while staying fresh
+		frappe.cache.set_value(cache_key, busy, expires_in_sec=120)
+		return [(_parse_google_dt(b["start"]), _parse_google_dt(b["end"])) for b in busy]
+	except Exception:
+		frappe.log_error(frappe.get_traceback(), f"Booking: Google free/busy failed for {user}")
+		return []
+
+
+def _parse_google_dt(value: str) -> datetime.datetime:
+	return datetime.datetime.fromisoformat(value.replace("Z", "+00:00")).astimezone(UTC)
 
 
 def _as_time(value) -> datetime.time:

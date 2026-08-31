@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ org_name }} — {{ _("Book an appointment") }}</title>
+    <meta name="robots" content="noindex" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --ink-strong: oklch(0.168 0 0);
+        --ink: oklch(0.205 0 0);
+        --muted: oklch(0.586 0 0);
+        --faint: oklch(0.683 0 0);
+        --border: oklch(0.913 0 0);
+        --border-focus: oklch(0.83 0 0);
+        --bg: oklch(0.964 0 0);
+        --card: oklch(1 0 0);
+        --accent: oklch(0.205 0 0);
+        --accent-hover: oklch(0.341 0 0);
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; }
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background: var(--bg);
+        color: var(--ink);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 2.5rem 1rem;
+      }
+      h1 { font-size: 1.5rem; margin: 0 0 .25rem; color: var(--ink-strong); text-align: center; }
+      .sub { color: var(--muted); font-size: .95rem; margin: 0 0 2rem; text-align: center; }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1rem;
+        width: 100%;
+        max-width: 920px;
+      }
+      a.service {
+        display: flex;
+        flex-direction: column;
+        gap: .5rem;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1.25rem;
+        text-decoration: none;
+        color: var(--ink);
+        transition: border-color .15s, box-shadow .15s;
+      }
+      a.service:hover { border-color: var(--border-focus); box-shadow: 0 4px 16px rgb(0 0 0 / 6%); }
+      .service h2 { font-size: 1.05rem; margin: 0; color: var(--ink-strong); }
+      .service .desc { color: var(--muted); font-size: .875rem; flex: 1; }
+      .service .meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-top: 1px solid var(--border);
+        padding-top: .75rem;
+        margin-top: .25rem;
+        font-size: .875rem;
+        color: var(--muted);
+      }
+      .service .price { font-weight: 600; color: var(--ink-strong); }
+      .service .cta {
+        margin-top: .25rem;
+        align-self: flex-start;
+        background: var(--accent);
+        color: var(--card);
+        border-radius: 8px;
+        padding: .45rem .9rem;
+        font-size: .875rem;
+        font-weight: 600;
+      }
+      a.service:hover .cta { background: var(--accent-hover); }
+    </style>
+  </head>
+  <body>
+    <h1>{{ org_name }}</h1>
+    <p class="sub">{{ _("Choose a service and pick a time that works for you.") }}</p>
+    <div class="grid">
+      {% for s in services %}
+      <a class="service" href="/book/{{ s.route }}">
+        <h2>{{ s.title }}</h2>
+        {% if s.description %}<div class="desc">{{ s.description }}</div>{% endif %}
+        <div class="meta">
+          <span>&#128337; {{ s.duration }} min</span>
+          {% if s.formatted_price %}<span class="price">{{ s.formatted_price }}</span>{% endif %}
+        </div>
+        <span class="cta">{{ _("Book now") }}</span>
+      </a>
+      {% endfor %}
+    </div>
+  </body>
+</html>

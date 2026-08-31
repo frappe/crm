@@ -48,6 +48,15 @@ def _parse_date(value: str) -> datetime.date:
 		frappe.throw(_("Invalid date: {0}").format(value))
 
 
+def _price_info(cal) -> dict:
+	if not cal.price:
+		return {"price": 0, "formatted_price": ""}
+	return {
+		"price": cal.price,
+		"formatted_price": frappe.utils.fmt_money(cal.price, currency=cal.currency or "EUR"),
+	}
+
+
 @frappe.whitelist(allow_guest=True, methods=["GET"])
 def get_calendar(route: str) -> dict:
 	"""Public configuration of a booking page."""
@@ -61,7 +70,33 @@ def get_calendar(route: str) -> dict:
 		"timezone": cal.timezone,
 		"min_date": earliest.date().isoformat(),
 		"max_date": latest.date().isoformat(),
+		**_price_info(cal),
 	}
+
+
+@frappe.whitelist(allow_guest=True, methods=["GET"])
+def list_services() -> list[dict]:
+	"""Public service menu: every enabled calendar flagged for the directory."""
+	rows = frappe.get_all(
+		"CRM Booking Calendar",
+		filters={"enabled": 1, "show_in_menu": 1},
+		fields=["name", "calendar_name", "route", "description", "duration", "location", "price", "currency"],
+		order_by="calendar_name asc",
+	)
+	return [
+		{
+			"title": row.calendar_name,
+			"route": row.route,
+			"description": row.description or "",
+			"duration": row.duration,
+			"location": row.location or "",
+			"price": row.price or 0,
+			"formatted_price": (
+				frappe.utils.fmt_money(row.price, currency=row.currency or "EUR") if row.price else ""
+			),
+		}
+		for row in rows
+	]
 
 
 @frappe.whitelist(allow_guest=True, methods=["GET"])
@@ -114,6 +149,8 @@ def book(
 			"invitee_phone": strip(invitee_phone),
 			"invitee_timezone": tz,
 			"notes": strip(notes),
+			"amount": cal.price or 0,
+			"currency": cal.currency,
 		}
 	)
 	booking.lead = _find_or_create_lead(booking)
@@ -213,7 +250,59 @@ def _public_booking(cal, booking) -> dict:
 		"location": cal.location or "",
 		"invitee_name": booking.invitee_name,
 		"invitee_timezone": booking.invitee_timezone or cal.timezone,
+		**_price_info(cal),
 	}
+
+
+# --- Google Calendar connection (per user) ---------------------------------
+
+
+@frappe.whitelist()
+def google_calendar_connection() -> dict:
+	"""State of the current user's Google Calendar link, for the Connect button."""
+	settings_ready = bool(
+		frappe.db.get_single_value("Google Settings", "enable")
+		and frappe.db.get_single_value("Google Settings", "client_id")
+	)
+	name = frappe.db.get_value("Google Calendar", {"user": frappe.session.user})
+	connected = False
+	if name:
+		doc = frappe.get_doc("Google Calendar", name)
+		try:
+			connected = bool(doc.get_password("refresh_token", raise_exception=False))
+		except Exception:
+			connected = False
+	return {"settings_ready": settings_ready, "name": name, "connected": connected}
+
+
+@frappe.whitelist(methods=["POST"])
+def setup_google_calendar() -> dict:
+	"""Ensure the current user has a Google Calendar record and return the
+	authorize endpoint the browser should visit to run the OAuth flow."""
+	state = google_calendar_connection()
+	if not state["settings_ready"]:
+		frappe.throw(
+			_("Google integration is not configured. Set Client ID/Secret in Google Settings first.")
+		)
+	name = state["name"]
+	if not name:
+		doc = frappe.get_doc(
+			{
+				"doctype": "Google Calendar",
+				"calendar_name": frappe.utils.get_fullname(frappe.session.user),
+				"user": frappe.session.user,
+				"enabled": 1,
+			}
+		)
+		doc.insert(ignore_permissions=True)
+		name = doc.name
+	from urllib.parse import quote
+
+	authorize_url = (
+		"/api/method/frappe.integrations.doctype.google_calendar.google_calendar.authorize_access"
+		f"?g_calendar={quote(name)}&reauthorize=1"
+	)
+	return {"name": name, "authorize_url": authorize_url}
 
 
 def _ensure_booking_source() -> str:
@@ -262,6 +351,9 @@ def _send_confirmation(cal, booking, rescheduled: bool = False):
 		cal.calendar_name, when
 	)
 	location_line = f"<p>{frappe.utils.escape_html(cal.location)}</p>" if cal.location else ""
+	if cal.price:
+		price = frappe.utils.fmt_money(cal.price, currency=cal.currency or "EUR")
+		location_line += f"<p>{_('Price')}: <b>{price}</b></p>"
 	message = f"""
 		<p>{_("Hi {0},").format(frappe.utils.escape_html(booking.invitee_name))}</p>
 		<p>{_("Your booking is confirmed:")}</p>

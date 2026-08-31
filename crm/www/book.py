@@ -24,6 +24,9 @@ def get_context(context):
 	context.description = cal.description or ""
 	context.duration = cal.duration
 	context.location = cal.location or ""
+	context.formatted_price = (
+		frappe.utils.fmt_money(cal.price, currency=cal.currency or "EUR") if cal.price else ""
+	)
 	# a ?token=... query switches the page into manage mode (reschedule/cancel);
 	# the token itself is validated by the guest API, never here
 	context.manage_token = frappe.form_dict.get("token") or ""

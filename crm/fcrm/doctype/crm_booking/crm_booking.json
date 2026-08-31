@@ -18,6 +18,8 @@
   "invitee_phone",
   "invitee_timezone",
   "details_section",
+  "amount",
+  "currency",
   "notes",
   "lead",
   "access_token"
@@ -127,6 +129,19 @@
    "no_copy": 1,
    "read_only": 1,
    "unique": 1
+  },
+  {
+   "fieldname": "amount",
+   "fieldtype": "Currency",
+   "label": "Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "currency",
+   "fieldtype": "Link",
+   "label": "Currency",
+   "options": "Currency",
+   "read_only": 1
   }
  ],
  "links": [],

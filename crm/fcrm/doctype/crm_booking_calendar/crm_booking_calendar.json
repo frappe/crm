@@ -13,6 +13,11 @@
   "timezone",
   "location",
   "description",
+  "pricing_section",
+  "price",
+  "column_break_price",
+  "currency",
+  "show_in_menu",
   "scheduling_section",
   "duration",
   "slot_interval",
@@ -28,7 +33,8 @@
   "members",
   "availability_section",
   "availability",
-  "holiday_list"
+  "holiday_list",
+  "check_google_busy"
  ],
  "fields": [
   {
@@ -173,6 +179,41 @@
    "fieldtype": "Link",
    "label": "Holiday List",
    "options": "CRM Holiday List"
+  },
+  {
+   "fieldname": "pricing_section",
+   "fieldtype": "Section Break",
+   "label": "Service"
+  },
+  {
+   "fieldname": "price",
+   "fieldtype": "Currency",
+   "label": "Price",
+   "description": "Shown on the public booking pages; 0 hides the price"
+  },
+  {
+   "fieldname": "column_break_price",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "currency",
+   "fieldtype": "Link",
+   "label": "Currency",
+   "options": "Currency",
+   "default": "EUR"
+  },
+  {
+   "fieldname": "show_in_menu",
+   "fieldtype": "Check",
+   "label": "Show on public services page",
+   "default": "1"
+  },
+  {
+   "fieldname": "check_google_busy",
+   "fieldtype": "Check",
+   "default": "1",
+   "label": "Block slots busy on Google Calendar",
+   "description": "Members' connected Google Calendars are checked via the free/busy API"
   }
  ],
  "links": [],

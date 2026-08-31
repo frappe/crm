@@ -4,6 +4,23 @@
       <ViewBreadcrumbs routeName="Calendar" />
     </template>
     <template #right-header>
+      <Tooltip
+        :text="
+          googleConnection.data?.connected
+            ? __('Google Calendar connected — busy slots block bookings')
+            : __('Connect your Google Calendar to block busy slots on booking pages')
+        "
+      >
+        <Button
+          :variant="googleConnection.data?.connected ? 'subtle' : 'outline'"
+          :label="
+            googleConnection.data?.connected
+              ? __('Google connected')
+              : __('Connect Google Calendar')
+          "
+          @click="connectGoogle"
+        />
+      </Tooltip>
       <ShortcutTooltip :label="__('Create Event')" combo="Mod+E">
         <Button
           variant="solid"
@@ -176,6 +193,7 @@ import { useKeyboardShortcuts } from '@/composables/useKeyboardShortcuts'
 import {
   Calendar,
   createListResource,
+  createResource,
   dayjs,
   DatePicker,
   Tooltip,
@@ -188,6 +206,29 @@ import { useRoute } from 'vue-router'
 
 const { user } = sessionStore()
 const { $dialog } = globalStore()
+
+const googleConnection = createResource({
+  url: 'crm.api.booking.google_calendar_connection',
+  cache: 'google-calendar-connection',
+  auto: true,
+})
+
+function connectGoogle() {
+  if (googleConnection.data?.connected) {
+    toast.success(__('Google Calendar is already connected'))
+    return
+  }
+  createResource({
+    url: 'crm.api.booking.setup_google_calendar',
+    auto: true,
+    onSuccess: (data) => {
+      window.location.href = data.authorize_url
+    },
+    onError: (e) => {
+      toast.error(e.messages?.[0] || __('Failed to start Google authorization'))
+    },
+  })
+}
 const { settings } = getSettings()
 const { users, getUser } = usersStore()
 const route = useRoute()

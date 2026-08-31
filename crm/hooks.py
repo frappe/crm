@@ -75,6 +75,7 @@ website_route_rules = [
 	{"from_route": "/crm/<path:app_path>", "to_route": "crm"},
 	{"from_route": "/crm-form/<route>", "to_route": "crm_form"},
 	{"from_route": "/book/<route>", "to_route": "book"},
+	{"from_route": "/book", "to_route": "book_index"},
 ]
 
 # Generators
