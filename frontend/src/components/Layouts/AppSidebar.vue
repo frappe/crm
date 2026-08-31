@@ -193,6 +193,7 @@ import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import SMSIcon from '@/components/Icons/SMSIcon.vue'
 import AutomationIcon from '@/components/Icons/AutomationIcon.vue'
 import DialpadIcon from '@/components/Icons/DialpadIcon.vue'
+import SocialIcon from '@/components/Icons/SocialIcon.vue'
 import { callEnabled } from '@/composables/telephony'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import CalendarIcon from '@/components/Icons/CalendarIcon.vue'
@@ -319,6 +320,11 @@ const links = [
     icon: DialpadIcon,
     to: 'Dialer',
     condition: () => callEnabled.value,
+  },
+  {
+    label: 'Social Planner',
+    icon: SocialIcon,
+    to: 'Social Planner',
   },
 ]
 

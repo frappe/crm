@@ -1,0 +1,71 @@
+{
+ "actions": [],
+ "creation": "2026-08-31 18:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "account",
+  "platform",
+  "override_content",
+  "status",
+  "provider_post_id",
+  "error"
+ ],
+ "fields": [
+  {
+   "fieldname": "account",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Account",
+   "options": "CRM Social Account",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "account.platform",
+   "fieldname": "platform",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Platform",
+   "read_only": 1
+  },
+  {
+   "description": "Leave empty to use the main content",
+   "fieldname": "override_content",
+   "fieldtype": "Small Text",
+   "label": "Per-network content"
+  },
+  {
+   "default": "Pending",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Status",
+   "options": "Pending\nPublished\nFailed"
+  },
+  {
+   "fieldname": "provider_post_id",
+   "fieldtype": "Data",
+   "label": "Provider Post ID",
+   "read_only": 1
+  },
+  {
+   "fieldname": "error",
+   "fieldtype": "Small Text",
+   "label": "Error",
+   "read_only": 1
+  }
+ ],
+ "istable": 1,
+ "links": [],
+ "modified": "2026-08-31 18:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "FCRM",
+ "name": "CRM Social Post Target",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

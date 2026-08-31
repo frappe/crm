@@ -52,6 +52,11 @@ const routes = [
     component: () => import('@/pages/Dialer.vue'),
   },
   {
+    path: '/social',
+    name: 'Social Planner',
+    component: () => import('@/pages/SocialPlanner.vue'),
+  },
+  {
     alias: '/leads',
     path: '/leads/view/:viewType?',
     name: 'Leads',
