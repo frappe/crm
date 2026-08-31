@@ -1,0 +1,179 @@
+{
+ "actions": [],
+ "autoname": "format:BOOK-{#####}",
+ "creation": "2026-08-31 10:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "calendar",
+  "agent",
+  "status",
+  "column_break_head",
+  "starts_on",
+  "ends_on",
+  "invitee_section",
+  "invitee_name",
+  "invitee_email",
+  "column_break_invitee",
+  "invitee_phone",
+  "invitee_timezone",
+  "details_section",
+  "notes",
+  "lead",
+  "access_token"
+ ],
+ "fields": [
+  {
+   "fieldname": "calendar",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Calendar",
+   "options": "CRM Booking Calendar",
+   "reqd": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "agent",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Agent",
+   "options": "User",
+   "reqd": 1,
+   "search_index": 1
+  },
+  {
+   "default": "Confirmed",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Status",
+   "options": "Confirmed\nCancelled\nCompleted\nNo Show",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_head",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "starts_on",
+   "fieldtype": "Datetime",
+   "in_list_view": 1,
+   "label": "Starts On",
+   "reqd": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "ends_on",
+   "fieldtype": "Datetime",
+   "label": "Ends On",
+   "reqd": 1
+  },
+  {
+   "fieldname": "invitee_section",
+   "fieldtype": "Section Break",
+   "label": "Invitee"
+  },
+  {
+   "fieldname": "invitee_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Invitee Name",
+   "reqd": 1
+  },
+  {
+   "fieldname": "invitee_email",
+   "fieldtype": "Data",
+   "label": "Invitee Email",
+   "options": "Email",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_invitee",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "invitee_phone",
+   "fieldtype": "Data",
+   "label": "Invitee Phone"
+  },
+  {
+   "description": "IANA timezone the invitee booked in; times in emails are shown in it",
+   "fieldname": "invitee_timezone",
+   "fieldtype": "Data",
+   "label": "Invitee Timezone"
+  },
+  {
+   "fieldname": "details_section",
+   "fieldtype": "Section Break",
+   "label": "Details"
+  },
+  {
+   "fieldname": "notes",
+   "fieldtype": "Small Text",
+   "label": "Notes"
+  },
+  {
+   "fieldname": "lead",
+   "fieldtype": "Link",
+   "label": "Lead",
+   "options": "CRM Lead"
+  },
+  {
+   "fieldname": "access_token",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Access Token",
+   "no_copy": 1,
+   "read_only": 1,
+   "unique": 1
+  }
+ ],
+ "links": [],
+ "modified": "2026-08-31 10:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "FCRM",
+ "name": "CRM Booking",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales User",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "starts_on",
+ "sort_order": "DESC",
+ "states": []
+}

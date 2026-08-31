@@ -1,0 +1,225 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:calendar_name",
+ "creation": "2026-08-31 10:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "calendar_name",
+  "route",
+  "enabled",
+  "column_break_head",
+  "timezone",
+  "location",
+  "description",
+  "scheduling_section",
+  "duration",
+  "slot_interval",
+  "column_break_sched",
+  "buffer_before",
+  "buffer_after",
+  "limits_section",
+  "min_notice_hours",
+  "column_break_limits",
+  "max_horizon_days",
+  "team_section",
+  "distribution",
+  "members",
+  "availability_section",
+  "availability",
+  "holiday_list"
+ ],
+ "fields": [
+  {
+   "fieldname": "calendar_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Calendar Name",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "description": "URL slug of the public booking page: /book/<route>",
+   "fieldname": "route",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Route",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "default": "1",
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "label": "Enabled"
+  },
+  {
+   "fieldname": "column_break_head",
+   "fieldtype": "Column Break"
+  },
+  {
+   "description": "IANA timezone the availability hours below are expressed in, e.g. Europe/Rome",
+   "fieldname": "timezone",
+   "fieldtype": "Data",
+   "label": "Timezone",
+   "reqd": 1
+  },
+  {
+   "description": "Shown to the invitee on the booking page and in the confirmation email (address or meeting link)",
+   "fieldname": "location",
+   "fieldtype": "Data",
+   "label": "Location / Meeting Link"
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Small Text",
+   "label": "Description"
+  },
+  {
+   "fieldname": "scheduling_section",
+   "fieldtype": "Section Break",
+   "label": "Scheduling"
+  },
+  {
+   "default": "30",
+   "description": "Meeting length in minutes",
+   "fieldname": "duration",
+   "fieldtype": "Int",
+   "label": "Duration (minutes)",
+   "reqd": 1
+  },
+  {
+   "default": "0",
+   "description": "Minutes between slot start times; 0 uses the duration",
+   "fieldname": "slot_interval",
+   "fieldtype": "Int",
+   "label": "Slot Interval (minutes)"
+  },
+  {
+   "fieldname": "column_break_sched",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "buffer_before",
+   "fieldtype": "Int",
+   "label": "Buffer Before (minutes)"
+  },
+  {
+   "default": "0",
+   "fieldname": "buffer_after",
+   "fieldtype": "Int",
+   "label": "Buffer After (minutes)"
+  },
+  {
+   "fieldname": "limits_section",
+   "fieldtype": "Section Break",
+   "label": "Limits"
+  },
+  {
+   "default": "4",
+   "description": "Earliest bookable slot, hours from now",
+   "fieldname": "min_notice_hours",
+   "fieldtype": "Int",
+   "label": "Minimum Notice (hours)"
+  },
+  {
+   "fieldname": "column_break_limits",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "30",
+   "description": "How far ahead invitees can book, in days",
+   "fieldname": "max_horizon_days",
+   "fieldtype": "Int",
+   "label": "Booking Horizon (days)"
+  },
+  {
+   "fieldname": "team_section",
+   "fieldtype": "Section Break",
+   "label": "Team"
+  },
+  {
+   "default": "Round Robin",
+   "description": "Round Robin assigns each booking to the least-booked free member",
+   "fieldname": "distribution",
+   "fieldtype": "Select",
+   "label": "Distribution",
+   "options": "Round Robin"
+  },
+  {
+   "fieldname": "members",
+   "fieldtype": "Table",
+   "label": "Members",
+   "options": "CRM Booking Calendar Member",
+   "reqd": 1
+  },
+  {
+   "fieldname": "availability_section",
+   "fieldtype": "Section Break",
+   "label": "Availability"
+  },
+  {
+   "description": "Weekly recurring hours, in the calendar timezone",
+   "fieldname": "availability",
+   "fieldtype": "Table",
+   "label": "Weekly Hours",
+   "options": "CRM Service Day",
+   "reqd": 1
+  },
+  {
+   "fieldname": "holiday_list",
+   "fieldtype": "Link",
+   "label": "Holiday List",
+   "options": "CRM Holiday List"
+  }
+ ],
+ "links": [],
+ "modified": "2026-08-31 10:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "FCRM",
+ "name": "CRM Booking Calendar",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales User",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

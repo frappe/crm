@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ title }}</title>
+    <meta name="robots" content="noindex" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        /* espresso / frappe-ui light-theme tokens (pure-neutral grays) */
+        --ink-strong: oklch(0.168 0 0);
+        --ink: oklch(0.205 0 0);
+        --muted: oklch(0.586 0 0);
+        --faint: oklch(0.683 0 0);
+        --border: oklch(0.913 0 0);
+        --border-focus: oklch(0.83 0 0);
+        --bg: oklch(0.964 0 0);
+        --card: oklch(1 0 0);
+        --field: oklch(0.964 0 0);
+        --accent: oklch(0.205 0 0);
+        --accent-hover: oklch(0.341 0 0);
+        --danger: oklch(0.507 0.165 25.286);
+        --danger-bg: oklch(0.978 0.011 17.34);
+        --success-bg: oklch(0.965 0.03 155.987);
+        --success-ink: oklch(0.506 0.118 155.358);
+        --ring: oklch(0.586 0 0 / 0.15);
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; }
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background: var(--bg);
+        color: var(--ink);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        padding: 2rem 1rem;
+      }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        max-width: 720px;
+        width: 100%;
+        padding: 2rem;
+        height: fit-content;
+      }
+      h1 { font-size: 1.35rem; margin: 0 0 .25rem; color: var(--ink-strong); }
+      .sub { color: var(--muted); font-size: .9rem; margin: 0 0 1.25rem; }
+      .meta { display: flex; gap: 1rem; flex-wrap: wrap; color: var(--muted); font-size: .85rem; margin-bottom: 1.5rem; }
+      h2 { font-size: .95rem; margin: 1.25rem 0 .5rem; color: var(--ink-strong); }
+      .days, .slots { display: flex; flex-wrap: wrap; gap: .5rem; }
+      button.chip {
+        border: 1px solid var(--border);
+        background: var(--card);
+        color: var(--ink);
+        border-radius: 8px;
+        padding: .5rem .75rem;
+        font: inherit;
+        font-size: .85rem;
+        cursor: pointer;
+      }
+      button.chip:hover { border-color: var(--border-focus); }
+      button.chip.selected { background: var(--accent); color: var(--card); border-color: var(--accent); }
+      button.chip:disabled { color: var(--faint); cursor: default; }
+      form { margin-top: 1.25rem; display: none; }
+      form.visible { display: block; }
+      label { display: block; font-size: .8rem; color: var(--muted); margin: .75rem 0 .25rem; }
+      input, textarea {
+        width: 100%;
+        border: 1px solid var(--border);
+        background: var(--field);
+        border-radius: 8px;
+        padding: .55rem .7rem;
+        font: inherit;
+        color: var(--ink);
+      }
+      input:focus, textarea:focus { outline: none; border-color: var(--border-focus); box-shadow: 0 0 0 3px var(--ring); }
+      .actions { margin-top: 1.25rem; display: flex; gap: .75rem; align-items: center; }
+      button.primary {
+        background: var(--accent);
+        color: var(--card);
+        border: none;
+        border-radius: 8px;
+        padding: .6rem 1.1rem;
+        font: inherit;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      button.primary:hover { background: var(--accent-hover); }
+      button.primary:disabled { opacity: .6; cursor: default; }
+      button.danger { background: var(--danger-bg); color: var(--danger); border: none; border-radius: 8px; padding: .6rem 1.1rem; font: inherit; cursor: pointer; }
+      .msg { margin-top: 1rem; border-radius: 8px; padding: .75rem 1rem; font-size: .9rem; display: none; }
+      .msg.error { display: block; background: var(--danger-bg); color: var(--danger); }
+      .msg.success { display: block; background: var(--success-bg); color: var(--success-ink); }
+      .hidden { display: none !important; }
+      .empty { color: var(--faint); font-size: .85rem; }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <h1>{{ title }}</h1>
+      {% if description %}<p class="sub">{{ description }}</p>{% endif %}
+      <div class="meta">
+        <span>&#128337; {{ duration }} min</span>
+        {% if location %}<span>&#128205; {{ location }}</span>{% endif %}
+        <span id="tz-label"></span>
+      </div>
+
+      <div id="manage" class="hidden">
+        <div id="manage-info" class="msg success"></div>
+        <div class="actions">
+          <button class="primary" id="btn-reschedule" type="button">Reschedule</button>
+          <button class="danger" id="btn-cancel" type="button">Cancel booking</button>
+        </div>
+      </div>
+
+      <div id="picker">
+        <h2>Pick a day</h2>
+        <div class="days" id="days"></div>
+        <h2>Pick a time</h2>
+        <div class="slots" id="slots"><span class="empty">Select a day first</span></div>
+      </div>
+
+      <form id="book-form">
+        <label for="f-name">Name *</label>
+        <input id="f-name" required maxlength="140" autocomplete="name" />
+        <label for="f-email">Email *</label>
+        <input id="f-email" type="email" required maxlength="140" autocomplete="email" />
+        <label for="f-phone">Phone</label>
+        <input id="f-phone" maxlength="30" autocomplete="tel" />
+        <label for="f-notes">Notes</label>
+        <textarea id="f-notes" rows="3" maxlength="1000"></textarea>
+        <div class="actions">
+          <button class="primary" id="btn-book" type="submit">Confirm booking</button>
+          <span id="picked-label" class="empty"></span>
+        </div>
+      </form>
+
+      <div id="msg" class="msg"></div>
+    </div>
+
+    <script>
+      const ROUTE = {{ route | tojson }};
+      const MANAGE_TOKEN = {{ manage_token | tojson }};
+      const CSRF_TOKEN = {{ csrf_token | tojson }};
+      const TZ = Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
+      const API = (m) => `/api/method/crm.api.booking.${m}`;
+
+      const el = (id) => document.getElementById(id);
+      let slotsByDay = {}, selectedDay = null, selectedSlot = null, rescheduling = false;
+
+      document.getElementById("tz-label").textContent = "\u{1F30D} " + TZ;
+
+      const fmtDay = new Intl.DateTimeFormat(undefined, { weekday: "short", day: "numeric", month: "short" });
+      const fmtTime = new Intl.DateTimeFormat(undefined, { hour: "2-digit", minute: "2-digit" });
+      const fmtFull = new Intl.DateTimeFormat(undefined, { dateStyle: "full", timeStyle: "short" });
+
+      function showMsg(text, kind) {
+        const m = el("msg");
+        m.textContent = text;
+        m.className = "msg " + kind;
+      }
+
+      async function call(method, params, post) {
+        const headers = { "Content-Type": "application/json" };
+        if (CSRF_TOKEN) headers["X-Frappe-CSRF-Token"] = CSRF_TOKEN;
+        const opts = post
+          ? { method: "POST", headers, body: JSON.stringify(params) }
+          : undefined;
+        const url = post ? API(method) : API(method) + "?" + new URLSearchParams(params);
+        const res = await fetch(url, opts);
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          let text = "Something went wrong. Please retry.";
+          try {
+            const messages = JSON.parse(data._server_messages || "[]");
+            if (messages.length) text = JSON.parse(messages[0]).message.replace(/<[^>]*>/g, "");
+          } catch (e) {}
+          throw new Error(text);
+        }
+        return data.message;
+      }
+
+      async function loadSlots() {
+        const cal = await call("get_calendar", { route: ROUTE });
+        const start = cal.min_date, end = cal.max_date;
+        const slots = await call("get_slots", { route: ROUTE, start_date: start, end_date: end });
+        slotsByDay = {};
+        for (const iso of slots) {
+          const d = new Date(iso);
+          const key = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+          (slotsByDay[key] = slotsByDay[key] || []).push(iso);
+        }
+        renderDays();
+      }
+
+      function renderDays() {
+        const days = Object.keys(slotsByDay).sort();
+        el("days").innerHTML = "";
+        if (!days.length) {
+          el("days").innerHTML = '<span class="empty">No slots available right now</span>';
+          return;
+        }
+        for (const key of days) {
+          const b = document.createElement("button");
+          b.type = "button";
+          b.className = "chip" + (key === selectedDay ? " selected" : "");
+          b.textContent = fmtDay.format(new Date(slotsByDay[key][0]));
+          b.onclick = () => { selectedDay = key; selectedSlot = null; renderDays(); renderSlots(); };
+          el("days").appendChild(b);
+        }
+      }
+
+      function renderSlots() {
+        el("slots").innerHTML = "";
+        if (!selectedDay) {
+          el("slots").innerHTML = '<span class="empty">Select a day first</span>';
+          return;
+        }
+        for (const iso of slotsByDay[selectedDay]) {
+          const b = document.createElement("button");
+          b.type = "button";
+          b.className = "chip" + (iso === selectedSlot ? " selected" : "");
+          b.textContent = fmtTime.format(new Date(iso));
+          b.onclick = () => { selectedSlot = iso; renderSlots(); onSlotPicked(); };
+          el("slots").appendChild(b);
+        }
+      }
+
+      function onSlotPicked() {
+        el("picked-label").textContent = fmtFull.format(new Date(selectedSlot));
+        if (rescheduling) {
+          doReschedule();
+        } else {
+          el("book-form").classList.add("visible");
+          el("f-name").focus();
+        }
+      }
+
+      el("book-form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        if (!selectedSlot) return showMsg("Pick a time slot first.", "error");
+        el("btn-book").disabled = true;
+        try {
+          const b = await call("book", {
+            route: ROUTE,
+            start: selectedSlot,
+            invitee_name: el("f-name").value.trim(),
+            invitee_email: el("f-email").value.trim(),
+            invitee_phone: el("f-phone").value.trim(),
+            notes: el("f-notes").value.trim(),
+            invitee_timezone: TZ,
+          }, true);
+          el("picker").classList.add("hidden");
+          el("book-form").classList.remove("visible");
+          showMsg("Booked! " + fmtFull.format(new Date(b.start)) + " — a confirmation email is on its way.", "success");
+        } catch (err) {
+          showMsg(err.message, "error");
+          loadSlots();
+        } finally {
+          el("btn-book").disabled = false;
+        }
+      });
+
+      // --- manage mode (?token=) ---
+      async function loadManage() {
+        try {
+          const b = await call("get_booking", { token: MANAGE_TOKEN });
+          el("manage").classList.remove("hidden");
+          el("picker").classList.add("hidden");
+          el("manage-info").textContent =
+            (b.status === "Confirmed" ? "Your booking: " : "Booking " + b.status.toLowerCase() + ": ") +
+            fmtFull.format(new Date(b.start));
+          if (b.status !== "Confirmed") {
+            el("btn-reschedule").classList.add("hidden");
+            el("btn-cancel").classList.add("hidden");
+          }
+        } catch (err) {
+          showMsg(err.message, "error");
+        }
+      }
+
+      el("btn-cancel")?.addEventListener("click", async () => {
+        if (!confirm("Cancel this booking?")) return;
+        try {
+          await call("cancel_booking", { token: MANAGE_TOKEN }, true);
+          el("manage-info").textContent = "Booking cancelled.";
+          el("btn-reschedule").classList.add("hidden");
+          el("btn-cancel").classList.add("hidden");
+        } catch (err) { showMsg(err.message, "error"); }
+      });
+
+      el("btn-reschedule")?.addEventListener("click", async () => {
+        rescheduling = true;
+        el("picker").classList.remove("hidden");
+        await loadSlots();
+        showMsg("Pick a new time below.", "success");
+      });
+
+      async function doReschedule() {
+        try {
+          const b = await call("reschedule_booking", { token: MANAGE_TOKEN, start: selectedSlot }, true);
+          el("picker").classList.add("hidden");
+          el("manage-info").textContent = "Your booking: " + fmtFull.format(new Date(b.start));
+          showMsg("Rescheduled! A new confirmation email is on its way.", "success");
+        } catch (err) {
+          showMsg(err.message, "error");
+          loadSlots();
+        }
+      }
+
+      if (MANAGE_TOKEN) {
+        loadManage();
+      } else {
+        loadSlots();
+      }
+    </script>
+  </body>
+</html>

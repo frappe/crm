@@ -1,5 +1,26 @@
 # 05 — Calendari e Prenotazioni (booking stile Calendly)
 
+> ✅ **MVP IMPLEMENTATO** (31/08/2026) direttamente in questo fork (modulo FCRM):
+>
+> - DocType `CRM Booking Calendar` (durata, buffer pre/post, preavviso minimo,
+>   orizzonte, timezone, membri, orari settimanali via `CRM Service Day`,
+>   holiday list) — `crm/fcrm/doctype/crm_booking_calendar/`
+> - DocType `CRM Booking` (invitato, agente, stato, token di gestione) +
+>   `CRM Booking Calendar Member`
+> - Calcolo slot server-side timezone-aware (UTC) con busy-block dai booking
+>   esistenti di tutti i calendari, buffer e round-robin least-booked
+> - API guest rate-limited: `get_calendar`, `get_slots`, `book`,
+>   `get_booking`, `cancel_booking`, `reschedule_booking` (`crm/api/booking.py`)
+> - Pagina pubblica `/book/<route>` (slot nella timezone del visitatore,
+>   form, gestione via `?token=` per reschedule/cancel) — `crm/www/book.*`
+> - Email di conferma con allegato .ics + notifica all'agente; ogni booking
+>   crea/aggancia un `CRM Lead` (source "Booking")
+> - Test: `crm/tests/test_booking.py`
+>
+> **Non ancora incluso** (prossimi passi del modulo): busy-block da Google
+> Calendar, vista di gestione nella SPA (per ora si usa il Desk), promemoria
+> SMS/sequenze (arrivano con i moduli 03/02), pagamenti alla prenotazione.
+
 > Parte del [Progetto GHL-Parity](./README.md). Obiettivo: pagine di prenotazione
 > pubbliche con disponibilità reale, round-robin di team, promemoria e sync
 > calendario esterno.
