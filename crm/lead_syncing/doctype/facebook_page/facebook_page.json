@@ -10,7 +10,11 @@
   "category",
   "column_break_eteo",
   "id",
-  "access_token"
+  "access_token",
+  "sync_enabled",
+  "webhook_subscribed",
+  "token_valid",
+  "last_webhook_at"
  ],
  "fields": [
   {
@@ -35,13 +39,41 @@
   },
   {
    "fieldname": "access_token",
-   "fieldtype": "Small Text",
-   "label": "Access Token"
+   "fieldtype": "Password",
+   "label": "Access Token",
+   "hidden": 1
   },
   {
    "fieldname": "page_name",
    "fieldtype": "Data",
    "label": "Page Name"
+  },
+  {
+   "fieldname": "sync_enabled",
+   "fieldtype": "Check",
+   "label": "Sync Enabled",
+   "default": "0",
+   "description": "Leads from this page are synced into the CRM"
+  },
+  {
+   "fieldname": "webhook_subscribed",
+   "fieldtype": "Check",
+   "label": "Webhook Subscribed",
+   "default": "0",
+   "read_only": 1
+  },
+  {
+   "fieldname": "token_valid",
+   "fieldtype": "Check",
+   "label": "Token Valid",
+   "default": "1",
+   "read_only": 1
+  },
+  {
+   "fieldname": "last_webhook_at",
+   "fieldtype": "Datetime",
+   "label": "Last Webhook At",
+   "read_only": 1
   }
  ],
  "grid_page_length": 50,

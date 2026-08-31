@@ -79,6 +79,7 @@ import DashboardSettings from '@/components/Settings/DashboardSettings.vue'
 import EmailTemplatePage from '@/components/Settings/EmailTemplate/EmailTemplatePage.vue'
 import TelephonyPage from '@/components/Settings/Telephony/TelephonyPage.vue'
 import BookingSettings from '@/components/Settings/Booking/BookingSettings.vue'
+import MetaLeadsSettings from '@/components/Settings/Meta/MetaLeadsSettings.vue'
 import SocialSettings from '@/components/Settings/Social/SocialSettings.vue'
 import TrackedLinksSettings from '@/components/Settings/TrackedLinksSettings.vue'
 import SocialIcon from '@/components/Icons/SocialIcon.vue'
@@ -268,6 +269,12 @@ const tabs = computed(() => {
           condition: () => isManager(),
         },
         {
+          label: __('Meta Lead Ads'),
+          icon: 'facebook',
+          component: markRaw(MetaLeadsSettings),
+          condition: () => isManager(),
+        },
+        {
           label: __('Lead Syncing'),
           icon: 'refresh-cw',
           component: markRaw(LeadSyncSourcePage),
@@ -302,4 +309,13 @@ function setActiveTab(tabName) {
 }
 
 watch(activeSettingsPage, (activePage) => setActiveTab(activePage))
+
+// deep link: /crm?settings=<page label> opens the modal on that page (used by
+// OAuth callbacks, e.g. the Meta Lead Ads connect flow)
+const settingsParam = new URLSearchParams(window.location.search).get('settings')
+if (settingsParam) {
+  showSettings.value = true
+  activeSettingsPage.value = settingsParam
+  setActiveTab(settingsParam)
+}
 </script>

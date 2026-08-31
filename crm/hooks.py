@@ -254,6 +254,7 @@ scheduler_events = {
 	"all": ["crm.api.event.trigger_offset_event_notifications"],
 	"hourly": ["crm.api.event.trigger_hourly_event_notifications"],
 	"daily": [
+		"crm.integrations.meta.leads.check_token_health",
 		"crm.api.event.trigger_daily_event_notifications",
 		"crm.fcrm.doctype.crm_invitation.crm_invitation.expire_invitations",
 		"crm.fcrm.doctype.crm_view_settings.crm_view_settings.clear_old_versions",
@@ -261,7 +262,10 @@ scheduler_events = {
 	],
 	"weekly": ["crm.api.event.trigger_weekly_event_notifications"],
 	"daily_long": ["crm.lead_syncing.background_sync.sync_leads_from_sources_daily"],
-	"hourly_long": ["crm.lead_syncing.background_sync.sync_leads_from_sources_hourly"],
+	"hourly_long": [
+		"crm.lead_syncing.background_sync.sync_leads_from_sources_hourly",
+		"crm.integrations.meta.leads.reconcile_synced_pages",
+	],
 	"monthly_long": ["crm.lead_syncing.background_sync.sync_leads_from_sources_monthly"],
 	"cron": {
 		"* * * * *": ["crm.automation.engine.process_due_enrollments"],

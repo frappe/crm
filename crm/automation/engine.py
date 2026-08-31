@@ -1156,7 +1156,13 @@ def _status_actually_changed(doc) -> bool:
 
 
 def on_lead_created(doc, method=None):
-	process_event("lead_created", doc)
+	# payload lets Lead Created automations filter by ad form / source via
+	# trigger_config, GHL's "Facebook Lead Form Submitted" equivalent
+	process_event(
+		"lead_created",
+		doc,
+		{"facebook_form_id": doc.get("facebook_form_id"), "source": doc.get("source")},
+	)
 
 
 def on_lead_updated(doc, method=None):

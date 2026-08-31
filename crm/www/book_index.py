@@ -16,6 +16,4 @@ def get_context(context):
 		or frappe.db.get_single_value("System Settings", "app_name")
 		or "Booking"
 	)
-	if not context.services:
-		raise frappe.DoesNotExistError
 	return context

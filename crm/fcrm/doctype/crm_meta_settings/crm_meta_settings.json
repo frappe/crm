@@ -1,0 +1,119 @@
+{
+ "actions": [],
+ "creation": "2026-08-31 20:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "app_section",
+  "app_id",
+  "column_break_app",
+  "app_secret",
+  "webhook_section",
+  "webhook_verify_token",
+  "connection_section",
+  "connected_user_name",
+  "connected_user_id",
+  "column_break_conn",
+  "user_token_expires_at",
+  "user_access_token"
+ ],
+ "fields": [
+  {
+   "fieldname": "app_section",
+   "fieldtype": "Section Break",
+   "label": "Meta App"
+  },
+  {
+   "description": "From developers.facebook.com → your app → Settings → Basic",
+   "fieldname": "app_id",
+   "fieldtype": "Data",
+   "label": "App ID"
+  },
+  {
+   "fieldname": "column_break_app",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "app_secret",
+   "fieldtype": "Password",
+   "label": "App Secret"
+  },
+  {
+   "fieldname": "webhook_section",
+   "fieldtype": "Section Break",
+   "label": "Webhook"
+  },
+  {
+   "description": "Paste this as Verify Token when configuring the Webhooks product (Page → leadgen)",
+   "fieldname": "webhook_verify_token",
+   "fieldtype": "Data",
+   "label": "Webhook Verify Token",
+   "no_copy": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "connection_section",
+   "fieldtype": "Section Break",
+   "label": "Connected Account"
+  },
+  {
+   "fieldname": "connected_user_name",
+   "fieldtype": "Data",
+   "label": "Connected User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "connected_user_id",
+   "fieldtype": "Data",
+   "label": "Connected User ID",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_conn",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "user_token_expires_at",
+   "fieldtype": "Datetime",
+   "label": "User Token Expires At",
+   "read_only": 1
+  },
+  {
+   "fieldname": "user_access_token",
+   "fieldtype": "Password",
+   "hidden": 1,
+   "label": "User Access Token"
+  }
+ ],
+ "issingle": 1,
+ "links": [],
+ "modified": "2026-08-31 20:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "FCRM",
+ "name": "CRM Meta Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "Sales Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

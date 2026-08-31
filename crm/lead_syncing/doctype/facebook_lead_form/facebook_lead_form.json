@@ -11,7 +11,9 @@
   "column_break_ahyo",
   "form_name",
   "section_break_iqhq",
-  "questions"
+  "questions",
+  "form_status",
+  "last_lead_at"
  ],
  "fields": [
   {
@@ -46,6 +48,18 @@
    "fieldtype": "Table",
    "label": "Questions",
    "options": "Facebook Lead Form Question"
+  },
+  {
+   "fieldname": "form_status",
+   "fieldtype": "Data",
+   "label": "Form Status",
+   "read_only": 1
+  },
+  {
+   "fieldname": "last_lead_at",
+   "fieldtype": "Datetime",
+   "label": "Last Lead At",
+   "read_only": 1
   }
  ],
  "grid_page_length": 50,

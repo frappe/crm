@@ -62,8 +62,22 @@ class LeadSyncSource(Document):
 		frappe.enqueue_doc(self.doctype, self.name, "_sync_leads", queue="long")
 
 	def _sync_leads(self):
-		if self.type == "Facebook" and self.access_token:
-			if not self.facebook_lead_form:
-				frappe.throw(frappe._("Please select a lead gen form before syncing!"))
+		if self.type != "Facebook":
+			return
+		if not self.facebook_lead_form:
+			frappe.throw(frappe._("Please select a lead gen form before syncing!"))
 
+		# preferred path: page token from the OAuth-connected Meta integration
+		# (paginated backfill, dedup by lead id)
+		from crm.integrations.meta.leads import backfill_form, get_page_token
+
+		page = frappe.db.get_value("Facebook Lead Form", self.facebook_lead_form, "page")
+		page_token = get_page_token(page) if page else None
+		if page_token:
+			backfill_form(self.facebook_lead_form, since=self.last_synced_at, page_token=page_token)
+			self.db_set("last_synced_at", frappe.utils.now(), update_modified=False)
+			return
+
+		# legacy path: manually pasted access token
+		if self.access_token:
 			FacebookSyncSource(self.get_password("access_token"), self.facebook_lead_form).sync()

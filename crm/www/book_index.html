@@ -87,6 +87,9 @@
   <body>
     <h1>{{ org_name }}</h1>
     <p class="sub">{{ _("Choose a service and pick a time that works for you.") }}</p>
+    {% if not services %}
+    <p class="sub">{{ _("No services are available for booking yet. Please check back soon.") }}</p>
+    {% endif %}
     <div class="grid">
       {% for s in services %}
       <a class="service" href="/book/{{ s.route }}">
