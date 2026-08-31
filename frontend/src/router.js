@@ -47,6 +47,11 @@ const routes = [
     component: () => import('@/pages/Automations.vue'),
   },
   {
+    path: '/dialer',
+    name: 'Dialer',
+    component: () => import('@/pages/Dialer.vue'),
+  },
+  {
     alias: '/leads',
     path: '/leads/view/:viewType?',
     name: 'Leads',

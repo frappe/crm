@@ -1,5 +1,20 @@
 # 08 — Roadmap, dipendenze e stime (scope ridotto, rev. 31/08/2026)
 
+> ✅ **STATO (31/08/2026, sera): MVP di TUTTE le fasi implementato e pushato.**
+>
+> - Fase 1 Booking: DocType, slot engine, pagina pubblica `/book/<route>`, email+ICS, lead auto ✅
+> - Fase 2 SMS/Inbox: `CRM SMS Message`, webhook Twilio 2-way, tab SMS su Lead/Deal, pagina `/inbox` ✅
+> - Fase 3 Automazioni: motore enrollment (`crm/automation/engine.py`), trigger/azioni/wait/stop_if/
+>   exit-on-reply, scheduler, builder visuale `/automations` (frappe-ui espresso) ✅
+> - Fase 4 Dialer: `CRM Dial Session`, coda sequenziale, esiti (disposition) loggati sul record,
+>   pagina `/dialer` che riusa la chiamata browser Twilio ✅ (voicemail drop con AMD: rimandato,
+>   richiede chiamate REST invece del Voice SDK browser)
+> - Fase 5 Provisioning: `scripts/provisioning/` (golden snapshot + provision_tenant) ✅
+>
+> Verifiche: build Vite ok, 150/150 test vitest ok, ruff pulito, test integrazione Python
+> scritti (da eseguire con `bench run-tests --app crm` su un bench reale, qui non disponibile).
+> Restano da fare sul campo: `bench migrate`, configurazione Twilio/numeri e prova end-to-end.
+
 > Parte del [Progetto GHL-Parity](./README.md). Ricalibrata sulle
 > [decisioni di scope](./README.md#-decisioni-di-scope-31082026): **Booking (05)
 > per primo**, poi SMS/inbox (03), workflow engine (02), dialer, e script di
