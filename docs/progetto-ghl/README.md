@@ -8,19 +8,32 @@
 > Ricerca condotta online ad **agosto 2026** (repo, docs ufficiali, changelog API);
 > ogni modulo cita le fonti.
 
+## ⚖️ Decisioni di scope (31/08/2026)
+
+Scope ridotto rispetto alla parità completa, su decisione del committente:
+
+- ✅ **IN SCOPE**: Workflow automation (02), SMS 2-way + inbox unificata + power
+  dialer (03), Booking/calendari (05) — **si parte dal Booking**. Del modulo 06
+  restano solo gli **script di provisioning + snapshot** (golden site) come
+  strumento interno: ogni cliente ha già il proprio site, gestito manualmente.
+- ❌ **FUORI SCOPE**: funnel builder (01), corsi/LMS (04), reputation (07),
+  canali Meta Messenger/IG (parte di 03), signup pubblico/billing/rebilling e
+  white-label aggiuntivo (parte di 06). I documenti restano come riferimento
+  se lo scope dovesse riaprirsi.
+
 ## Indice dei documenti
 
-| Doc | Modulo | Verdetto sintetico |
-|---|---|---|
-| [00](./00-analisi-stato-attuale.md) | Analisi stato attuale del repo | Non si parte da zero: Twilio Voice browser, WhatsApp, scheduler, round-robin nativi |
-| [01](./01-funnel-landing-builder.md) | Funnel & Landing Page | **Adottare Frappe Builder (MIT da v1.31)** + layer funnel custom (step, A/B, checkout Stripe) |
-| [02](./02-marketing-automation.md) | Marketing Automation | **Il cuore del progetto: da costruire** (motore enrollment Python + canvas Vue Flow); i canali esistono già |
-| [03](./03-telefonia-sms-inbox.md) | Telefonia, SMS, Inbox | SMS two-way + inbox unificata + power dialer da costruire su Twilio già integrato; Meta (FB/IG) per ultimi (App Review) |
-| [04](./04-corsi-membership.md) | Corsi & Membership | **Adottare Frappe LMS** (release-attivo, stesso stack); costruire solo drip, abbonamenti, ponte CRM |
-| [05](./05-calendari-prenotazioni.md) | Calendari & Booking | Estendere rtCamp frappe-appointment + Google Calendar sync nativo; round-robin/buffer da aggiungere |
-| [06](./06-white-label-saas.md) | White-Label / SaaS | Multi-sito bench nativo + provisioning scriptato + golden-site "snapshot"; rebilling custom; AGPL ok per reselling hosted |
-| [07](./07-reputazione-recensioni.md) | Reputation | Solo Google (GBP API, **domanda di accesso da presentare subito**); Facebook API morta (v22) → link-out |
-| [08](./08-roadmap.md) | Roadmap & effort | Fasi, dipendenze, stime |
+| Doc | Modulo | Stato | Verdetto sintetico |
+|---|---|---|---|
+| [00](./00-analisi-stato-attuale.md) | Analisi stato attuale del repo | — | Non si parte da zero: Twilio Voice browser, WhatsApp, scheduler, round-robin nativi |
+| [01](./01-funnel-landing-builder.md) | Funnel & Landing Page | ❌ fuori scope | Adottare Frappe Builder (MIT da v1.31) + layer funnel custom |
+| [02](./02-marketing-automation.md) | Marketing Automation | ✅ in scope | **Da costruire** (motore enrollment Python + canvas Vue Flow); i canali esistono già |
+| [03](./03-telefonia-sms-inbox.md) | Telefonia, SMS, Inbox | ✅ in scope (no Meta) | SMS two-way + inbox unificata + power dialer su Twilio già integrato |
+| [04](./04-corsi-membership.md) | Corsi & Membership | ❌ fuori scope | Adottare Frappe LMS; costruire solo drip/abbonamenti/ponte |
+| [05](./05-calendari-prenotazioni.md) | Calendari & Booking | ✅ **in scope, primo** | Booking pubblico con disponibilità, buffer, round-robin, reschedule/cancel |
+| [06](./06-white-label-saas.md) | White-Label / SaaS | ⚠️ solo provisioning+snapshot | Script interni per creare site clienti preconfigurati; niente billing |
+| [07](./07-reputazione-recensioni.md) | Reputation | ❌ fuori scope | Solo Google via GBP API; Facebook API morta (v22) |
+| [08](./08-roadmap.md) | Roadmap & effort | aggiornata | Fasi, dipendenze, stime — ricalibrata sullo scope ridotto |
 
 ## Architettura complessiva
 
@@ -72,11 +85,11 @@
 
 ## Azioni con lead time lungo — da avviare SUBITO
 
-Queste pratiche burocratiche durano settimane/mesi e non dipendono dal codice:
+Ricalibrate sullo scope ridotto:
 
-1. **Google Business Profile API**: domanda di Basic API Access (quota 0 di
-   default; serve profilo GBP verificato da 60+ giorni e dominio email coerente).
-2. **Meta Business Verification + App Review** per Messenger/Instagram DM
-   (modello tech provider) e per i template WhatsApp.
-3. **Twilio**: upgrade account, numeri, e A2P 10DLC se si punta al mercato USA.
-4. Registrazione dominio brand + wildcard DNS/TLS per l'infrastruttura SaaS.
+1. **Twilio**: numeri SMS-capable per i clienti, e A2P 10DLC solo se si punta al
+   mercato USA; registrazione mittente alfanumerico dove applicabile in EU.
+2. **Google OAuth (Google Calendar)**: credenziali OAuth per il busy-block dei
+   calendari di booking (già supportato dal framework).
+3. ~~GBP API, Meta Business Verification~~ — non più necessarie (reputation e
+   canali Meta fuori scope).

@@ -1,5 +1,7 @@
 # 06 — White-Label / SaaS Mode (multi-tenant)
 
+> ⚠️ **SCOPE RIDOTTO** dal 31/08/2026: di questo modulo restano solo gli script di **provisioning + snapshot** (§6.3, golden site) come strumento interno. Signup, billing, rebilling e white-label aggiuntivo sono fuori scope (vedi [decisioni](./README.md#%EF%B8%8F-decisioni-di-scope-31082026)).
+
 > Parte del [Progetto GHL-Parity](./README.md). Obiettivo: replicare la "SaaS Mode"
 > di GoHighLevel — sub-account per cliente, snapshot, rebilling con markup, brand
 > proprio — sull'infrastruttura Frappe.

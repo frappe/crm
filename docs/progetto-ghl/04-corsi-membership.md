@@ -1,5 +1,7 @@
 # 04 — Corsi, Membership e Aree Riservate
 
+> ⚠️ **FUORI SCOPE** dal 31/08/2026 (vedi [decisioni di scope](./README.md#%EF%B8%8F-decisioni-di-scope-31082026)). Conservato come riferimento.
+
 > Parte del [Progetto GHL-Parity](./README.md). Obiettivo: vendere corsi online e
 > membership (stile Teachable/Kajabi, come il modulo Memberships di GHL).
 

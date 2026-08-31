@@ -1,5 +1,7 @@
 # 01 — Funnel & Landing Page Builder
 
+> ⚠️ **FUORI SCOPE** dal 31/08/2026 (vedi [decisioni di scope](./README.md#%EF%B8%8F-decisioni-di-scope-31082026)). Conservato come riferimento.
+
 > Parte del [Progetto GHL-Parity](./README.md). Obiettivo: costruzione visuale di
 > landing page e funnel multi-step con A/B test, form di cattura lead e checkout.
 
