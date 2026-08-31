@@ -1,4 +1,5 @@
 import datetime
+import json
 from zoneinfo import ZoneInfo
 
 import frappe
@@ -412,3 +413,127 @@ def _ics_attachment(cal, booking) -> dict:
 		]
 	)
 	return {"fname": "booking.ics", "fcontent": ics}
+
+
+# --- Settings-modal administration (manager only) --------------------------
+
+MANAGER_ROLES = {"System Manager", "Sales Manager"}
+
+
+def _check_manager():
+	if not MANAGER_ROLES & set(frappe.get_roles()):
+		frappe.throw(_("Only sales managers can manage booking calendars"), frappe.PermissionError)
+
+
+@frappe.whitelist()
+def list_calendars_admin() -> list[dict]:
+	_check_manager()
+	rows = frappe.get_all(
+		"CRM Booking Calendar",
+		fields=[
+			"name",
+			"calendar_name",
+			"route",
+			"enabled",
+			"duration",
+			"timezone",
+			"price",
+			"currency",
+			"show_in_menu",
+		],
+		order_by="calendar_name asc",
+	)
+	upcoming = dict(
+		frappe.get_all(
+			"CRM Booking",
+			filters={"status": "Confirmed", "starts_on": [">=", frappe.utils.now_datetime()]},
+			fields=["calendar", "count(name) as total"],
+			group_by="calendar",
+			as_list=True,
+		)
+	)
+	for row in rows:
+		row["upcoming_count"] = upcoming.get(row.name, 0)
+	return rows
+
+
+@frappe.whitelist()
+def get_calendar_admin(name: str) -> dict:
+	_check_manager()
+	cal = frappe.get_doc("CRM Booking Calendar", name)
+	return {
+		"name": cal.name,
+		"calendar_name": cal.calendar_name,
+		"route": cal.route,
+		"enabled": cal.enabled,
+		"description": cal.description or "",
+		"location": cal.location or "",
+		"timezone": cal.timezone,
+		"duration": cal.duration,
+		"slot_interval": cal.slot_interval,
+		"buffer_before": cal.buffer_before,
+		"buffer_after": cal.buffer_after,
+		"min_notice_hours": cal.min_notice_hours,
+		"max_horizon_days": cal.max_horizon_days,
+		"price": cal.price or 0,
+		"currency": cal.currency or "EUR",
+		"show_in_menu": cal.show_in_menu,
+		"check_google_busy": cal.check_google_busy,
+		"members": [m.user for m in cal.members],
+		"availability": [
+			{"workday": a.workday, "start_time": str(a.start_time), "end_time": str(a.end_time)}
+			for a in cal.availability
+		],
+	}
+
+
+@frappe.whitelist(methods=["POST"])
+def save_calendar(calendar: dict | str, name: str | None = None) -> dict:
+	_check_manager()
+	if isinstance(calendar, str):
+		calendar = json.loads(calendar)
+
+	values = {
+		"calendar_name": (calendar.get("calendar_name") or "").strip(),
+		"route": calendar.get("route") or "",
+		"enabled": 1 if calendar.get("enabled") else 0,
+		"description": calendar.get("description") or "",
+		"location": calendar.get("location") or "",
+		"timezone": calendar.get("timezone") or "Europe/Rome",
+		"duration": int(calendar.get("duration") or 30),
+		"slot_interval": int(calendar.get("slot_interval") or 0),
+		"buffer_before": int(calendar.get("buffer_before") or 0),
+		"buffer_after": int(calendar.get("buffer_after") or 0),
+		"min_notice_hours": int(calendar.get("min_notice_hours") or 0),
+		"max_horizon_days": int(calendar.get("max_horizon_days") or 30),
+		"price": float(calendar.get("price") or 0),
+		"currency": calendar.get("currency") or "EUR",
+		"show_in_menu": 1 if calendar.get("show_in_menu") else 0,
+		"check_google_busy": 1 if calendar.get("check_google_busy") else 0,
+		"members": [{"user": u} for u in calendar.get("members") or []],
+		"availability": [
+			{
+				"workday": a.get("workday"),
+				"start_time": a.get("start_time"),
+				"end_time": a.get("end_time"),
+			}
+			for a in calendar.get("availability") or []
+		],
+	}
+	if not values["calendar_name"]:
+		frappe.throw(_("Calendar name is required"))
+
+	if name:
+		doc = frappe.get_doc("CRM Booking Calendar", name)
+		doc.update(values)
+		doc.save()
+	else:
+		doc = frappe.get_doc({"doctype": "CRM Booking Calendar", **values})
+		doc.insert()
+	return get_calendar_admin(doc.name)
+
+
+@frappe.whitelist(methods=["POST"])
+def delete_calendar(name: str) -> None:
+	_check_manager()
+	frappe.delete_doc("CRM Booking Calendar", name)

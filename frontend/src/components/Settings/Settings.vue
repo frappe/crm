@@ -78,6 +78,10 @@ import GeneralSettings from '@/components/Settings/GeneralSettings.vue'
 import DashboardSettings from '@/components/Settings/DashboardSettings.vue'
 import EmailTemplatePage from '@/components/Settings/EmailTemplate/EmailTemplatePage.vue'
 import TelephonyPage from '@/components/Settings/Telephony/TelephonyPage.vue'
+import BookingSettings from '@/components/Settings/Booking/BookingSettings.vue'
+import SocialSettings from '@/components/Settings/Social/SocialSettings.vue'
+import TrackedLinksSettings from '@/components/Settings/TrackedLinksSettings.vue'
+import SocialIcon from '@/components/Icons/SocialIcon.vue'
 import EmailConfig from '@/components/Settings/EmailConfig.vue'
 import Icon from '@/components/Icon.vue'
 import { usersStore } from '@/stores/users'
@@ -207,6 +211,27 @@ const tabs = computed(() => {
           label: __('Forms'),
           component: markRaw(FormsSettings),
           icon: markRaw(LucideTextCursorInput),
+        },
+        {
+          label: __('Tracked Links'),
+          component: markRaw(TrackedLinksSettings),
+          icon: 'link',
+        },
+      ],
+      condition: () => isManager(),
+    },
+    {
+      label: __('Booking & Social'),
+      items: [
+        {
+          label: __('Booking Calendars'),
+          icon: CalendarIcon,
+          component: markRaw(BookingSettings),
+        },
+        {
+          label: __('Social Planner'),
+          icon: SocialIcon,
+          component: markRaw(SocialSettings),
         },
       ],
       condition: () => isManager(),

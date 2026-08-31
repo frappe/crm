@@ -150,3 +150,75 @@ def cancel_post(name: str) -> dict:
 def get_provider() -> dict:
 	settings = frappe.get_cached_doc("CRM Social Settings")
 	return {"provider": settings.provider or "Manual"}
+
+
+# --- Settings-modal administration -----------------------------------------
+
+
+@frappe.whitelist()
+def get_social_settings() -> dict:
+	_check_manager()
+	settings = frappe.get_doc("CRM Social Settings")
+	return {
+		"provider": settings.provider or "Manual",
+		"postiz_url": settings.postiz_url or "",
+		"has_postiz_key": bool(settings.get_password("postiz_api_key", raise_exception=False)),
+		"has_ayrshare_key": bool(settings.get_password("ayrshare_api_key", raise_exception=False)),
+	}
+
+
+@frappe.whitelist(methods=["POST"])
+def save_social_settings(settings: dict | str) -> dict:
+	_check_manager()
+	if isinstance(settings, str):
+		settings = json.loads(settings)
+	doc = frappe.get_doc("CRM Social Settings")
+	doc.provider = settings.get("provider") or "Manual"
+	doc.postiz_url = settings.get("postiz_url") or ""
+	# passwords are write-only: empty means "keep the stored one"
+	if settings.get("postiz_api_key"):
+		doc.postiz_api_key = settings["postiz_api_key"]
+	if settings.get("ayrshare_api_key"):
+		doc.ayrshare_api_key = settings["ayrshare_api_key"]
+	doc.save()
+	frappe.clear_document_cache("CRM Social Settings", "CRM Social Settings")
+	return get_social_settings()
+
+
+@frappe.whitelist()
+def list_accounts_admin() -> list[dict]:
+	_check_manager()
+	return frappe.get_all(
+		"CRM Social Account",
+		fields=["name", "account_name", "platform", "enabled", "provider_account_id"],
+		order_by="platform asc",
+	)
+
+
+@frappe.whitelist(methods=["POST"])
+def save_account(account: dict | str, name: str | None = None) -> dict:
+	_check_manager()
+	if isinstance(account, str):
+		account = json.loads(account)
+	values = {
+		"account_name": (account.get("account_name") or "").strip(),
+		"platform": account.get("platform"),
+		"enabled": 1 if account.get("enabled", True) else 0,
+		"provider_account_id": (account.get("provider_account_id") or "").strip(),
+	}
+	if not values["account_name"]:
+		frappe.throw(_("Account name is required"))
+	if name:
+		doc = frappe.get_doc("CRM Social Account", name)
+		doc.update(values)
+		doc.save()
+	else:
+		doc = frappe.get_doc({"doctype": "CRM Social Account", **values})
+		doc.insert()
+	return {"name": doc.name}
+
+
+@frappe.whitelist(methods=["POST"])
+def delete_account(name: str) -> None:
+	_check_manager()
+	frappe.delete_doc("CRM Social Account", name)
