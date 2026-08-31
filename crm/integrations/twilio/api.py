@@ -220,3 +220,50 @@ def get_datetime_from_timestamp(timestamp):
 	system_timezone = frappe.utils.get_system_timezone()
 	converted_datetime = datetime_utc_tz.astimezone(ZoneInfo(system_timezone))
 	return frappe.utils.format_datetime(converted_datetime, "yyyy-MM-dd HH:mm:ss")
+
+
+# webhook authenticity is enforced by validate_twilio_request(); guest access itself is unchanged
+@frappe.whitelist(allow_guest=True)  # nosemgrep: guest-whitelisted-method
+def incoming_sms_handler(**kwargs):
+	"""Webhook called by Twilio when an SMS arrives on one of our numbers."""
+	args = frappe._dict(kwargs)
+	validate_twilio_request(args)
+
+	from crm.api.sms import create_sms
+
+	try:
+		create_sms(
+			type="Incoming",
+			from_number=args.From,
+			to=args.To,
+			message=args.Body or "",
+		)
+		frappe.db.commit()
+	except Exception:
+		frappe.db.rollback()
+		frappe.log_error(title="Error while creating Twilio SMS log")
+		frappe.db.commit()
+
+	# empty TwiML: no auto-reply
+	return Response("<?xml version='1.0' encoding='UTF-8'?><Response></Response>", mimetype="text/xml")
+
+
+# webhook authenticity is enforced by validate_twilio_request(); guest access itself is unchanged
+@frappe.whitelist(allow_guest=True)  # nosemgrep: guest-whitelisted-method
+def update_sms_status_info(**kwargs):
+	"""Delivery status callback for outgoing SMS."""
+	args = frappe._dict(kwargs)
+	validate_twilio_request(args)
+
+	status_map = {
+		"queued": "Queued",
+		"sent": "Sent",
+		"delivered": "Delivered",
+		"undelivered": "Undelivered",
+		"failed": "Failed",
+	}
+	status = status_map.get((args.MessageStatus or "").lower())
+	name = args.MessageSid and frappe.db.get_value("CRM SMS Message", {"message_sid": args.MessageSid})
+	if name and status:
+		frappe.db.set_value("CRM SMS Message", name, "status", status)
+		frappe.db.commit()

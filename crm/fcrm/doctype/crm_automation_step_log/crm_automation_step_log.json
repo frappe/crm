@@ -1,0 +1,52 @@
+{
+ "actions": [],
+ "creation": "2026-08-31 12:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "step_index",
+  "action",
+  "status",
+  "detail"
+ ],
+ "fields": [
+  {
+   "fieldname": "step_index",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Step"
+  },
+  {
+   "fieldname": "action",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Action"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Status",
+   "options": "Success\nFailed\nSkipped"
+  },
+  {
+   "fieldname": "detail",
+   "fieldtype": "Small Text",
+   "in_list_view": 1,
+   "label": "Detail"
+  }
+ ],
+ "istable": 1,
+ "links": [],
+ "modified": "2026-08-31 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "FCRM",
+ "name": "CRM Automation Step Log",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

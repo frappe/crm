@@ -183,11 +183,22 @@ doc_events = {
 	"WhatsApp Message": {
 		"validate": ["crm.api.whatsapp.validate"],
 		"on_update": ["crm.api.whatsapp.on_update"],
+		"after_insert": ["crm.automation.engine.on_whatsapp_received"],
+	},
+	"CRM Lead": {
+		"after_insert": ["crm.automation.engine.on_lead_created"],
+		"on_update": ["crm.automation.engine.on_lead_updated"],
 	},
 	"CRM Deal": {
 		"on_update": [
-			"crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.create_customer_in_erpnext"
+			"crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.create_customer_in_erpnext",
+			"crm.automation.engine.on_deal_updated",
 		],
+		"after_insert": ["crm.automation.engine.on_deal_created"],
+	},
+	"CRM Booking": {
+		"after_insert": ["crm.automation.engine.on_booking_created"],
+		"on_update": ["crm.automation.engine.on_booking_updated"],
 	},
 	"Sales Order": {
 		"before_validate": [
@@ -236,6 +247,7 @@ scheduler_events = {
 	"hourly_long": ["crm.lead_syncing.background_sync.sync_leads_from_sources_hourly"],
 	"monthly_long": ["crm.lead_syncing.background_sync.sync_leads_from_sources_monthly"],
 	"cron": {
+		"* * * * *": ["crm.automation.engine.process_due_enrollments"],
 		"*/5 * * * *": ["crm.lead_syncing.background_sync.sync_leads_from_sources_5_minutes"],
 		"*/10 * * * *": ["crm.lead_syncing.background_sync.sync_leads_from_sources_10_minutes"],
 		"*/15 * * * *": ["crm.lead_syncing.background_sync.sync_leads_from_sources_15_minutes"],

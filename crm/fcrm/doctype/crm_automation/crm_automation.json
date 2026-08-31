@@ -1,0 +1,133 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:title",
+ "creation": "2026-08-31 12:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "title",
+  "enabled",
+  "column_break_head",
+  "trigger_event",
+  "allow_reenrollment",
+  "exit_on_reply",
+  "description",
+  "config_section",
+  "trigger_condition",
+  "steps"
+ ],
+ "fields": [
+  {
+   "fieldname": "title",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Title",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Enabled"
+  },
+  {
+   "fieldname": "column_break_head",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "trigger_event",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Trigger Event",
+   "options": "Lead Created\nDeal Created\nLead Status Changed\nDeal Status Changed\nBooking Created\nBooking Cancelled\nIncoming SMS",
+   "reqd": 1
+  },
+  {
+   "default": "0",
+   "description": "Allow a record to enter this automation more than once",
+   "fieldname": "allow_reenrollment",
+   "fieldtype": "Check",
+   "label": "Allow Re-enrollment"
+  },
+  {
+   "default": "0",
+   "description": "End the automation for a record as soon as the contact replies (incoming SMS/WhatsApp)",
+   "fieldname": "exit_on_reply",
+   "fieldtype": "Check",
+   "label": "Exit on Reply"
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Small Text",
+   "label": "Description"
+  },
+  {
+   "fieldname": "config_section",
+   "fieldtype": "Section Break",
+   "label": "Configuration"
+  },
+  {
+   "description": "Optional condition the record must match to enroll, e.g. {\"field\": \"status\", \"operator\": \"equals\", \"value\": \"New\"}",
+   "fieldname": "trigger_condition",
+   "fieldtype": "JSON",
+   "label": "Trigger Condition"
+  },
+  {
+   "description": "Ordered list of steps; see crm/automation/engine.py for the schema",
+   "fieldname": "steps",
+   "fieldtype": "JSON",
+   "label": "Steps",
+   "reqd": 1
+  }
+ ],
+ "links": [],
+ "modified": "2026-08-31 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "FCRM",
+ "name": "CRM Automation",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales User",
+   "share": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

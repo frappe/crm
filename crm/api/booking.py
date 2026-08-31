@@ -151,14 +151,19 @@ def reschedule_booking(token: str, start: str) -> dict:
 	cal = frappe.get_doc("CRM Booking Calendar", booking.calendar)
 	start_utc = _parse_utc(start)
 
-	# free the current slot while checking the new one
-	booking.status = "Cancelled"
-	booking.save(ignore_permissions=True)
-	free_members = cal.is_slot_available(start_utc)
-	if not free_members:
-		booking.status = "Confirmed"
+	# free the current slot while checking the new one; the temporary cancel must
+	# not fire "Booking Cancelled" automations
+	frappe.flags.in_crm_automation = True
+	try:
+		booking.status = "Cancelled"
 		booking.save(ignore_permissions=True)
-		frappe.throw(_("This slot is no longer available. Please pick another one."))
+		free_members = cal.is_slot_available(start_utc)
+		if not free_members:
+			booking.status = "Confirmed"
+			booking.save(ignore_permissions=True)
+			frappe.throw(_("This slot is no longer available. Please pick another one."))
+	finally:
+		frappe.flags.in_crm_automation = False
 
 	if booking.agent not in free_members:
 		booking.agent = cal.pick_agent(free_members)
