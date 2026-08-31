@@ -190,6 +190,8 @@ import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
 import OrganizationsIcon from '@/components/Icons/OrganizationsIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
+import SMSIcon from '@/components/Icons/SMSIcon.vue'
+import AutomationIcon from '@/components/Icons/AutomationIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import CalendarIcon from '@/components/Icons/CalendarIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
@@ -277,6 +279,17 @@ const links = [
     label: 'Organizations',
     icon: OrganizationsIcon,
     to: 'Organizations',
+  },
+  {
+    label: 'Inbox',
+    icon: SMSIcon,
+    to: 'Inbox',
+  },
+  {
+    label: 'Automations',
+    icon: AutomationIcon,
+    to: 'Automations',
+    condition: () => isManager(),
   },
   {
     label: 'Notes',

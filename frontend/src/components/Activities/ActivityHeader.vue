@@ -68,6 +68,13 @@
         @click="whatsappBox.show()"
       />
     </div>
+    <Button
+      v-else-if="title == 'SMS'"
+      variant="solid"
+      :label="__('New SMS')"
+      iconLeft="plus"
+      @click="smsBox.show()"
+    />
     <Dropdown v-else :options="defaultActions" @click.stop>
       <template #default="{ open }">
         <Button
@@ -91,8 +98,10 @@ import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import AttachmentIcon from '@/components/Icons/AttachmentIcon.vue'
 import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
+import SMSIcon from '@/components/Icons/SMSIcon.vue'
 import { globalStore } from '@/stores/global'
 import { whatsappEnabled } from '@/composables/whatsapp'
+import { smsEnabled } from '@/composables/sms'
 import { callEnabled } from '@/composables/telephony'
 import { Dropdown } from 'frappe-ui'
 import { computed, h } from 'vue'
@@ -103,6 +112,7 @@ const props = defineProps({
   doc: { type: Object, default: () => ({}) },
   modalRef: { type: Object, default: () => ({}) },
   whatsappBox: { type: Object, default: () => ({}) },
+  smsBox: { type: Object, default: () => ({}) },
 })
 
 const { makeCall } = globalStore()
@@ -162,6 +172,12 @@ const defaultActions = computed(() => {
       label: __('WhatsApp Message'),
       onClick: () => (tabIndex.value = getTabIndex('WhatsApp')),
       condition: () => whatsappEnabled.value,
+    },
+    {
+      icon: h(SMSIcon, { class: 'h-4 w-4' }),
+      label: __('SMS'),
+      onClick: () => (tabIndex.value = getTabIndex('SMS')),
+      condition: () => smsEnabled.value,
     },
   ]
   return actions.filter((action) =>

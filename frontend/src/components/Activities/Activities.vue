@@ -8,6 +8,7 @@
     :title="title"
     :doc="doc"
     :whatsappBox="whatsappBox"
+    :smsBox="smsBox"
     :modalRef="modalRef"
   />
   <FadedScrollableDiv class="flex flex-col h-full overflow-y-auto">
@@ -24,7 +25,8 @@
     <div
       v-else-if="
         activities?.length ||
-        (whatsappMessages.data?.length && title == 'WhatsApp')
+        (whatsappMessages.data?.length && title == 'WhatsApp') ||
+        (smsMessages.data?.length && title == 'SMS')
       "
       class="activities"
     >
@@ -35,6 +37,9 @@
           class="px-3 sm:px-10"
           :messages="whatsappMessages.data"
         />
+      </div>
+      <div v-else-if="title == 'SMS' && smsMessages.data?.length">
+        <SMSArea class="px-3 sm:px-10" :messages="smsMessages.data" />
       </div>
       <div
         v-else-if="title == 'Notes'"
@@ -418,6 +423,14 @@
       :doctype="doctype"
       @scroll="scroll"
     />
+    <SMSBox
+      v-if="title == 'SMS'"
+      ref="smsBox"
+      v-model="doc"
+      v-model:sms="smsMessages"
+      :doctype="doctype"
+      @scroll="scroll"
+    />
   </div>
   <WhatsappTemplateSelectorModal
     v-if="whatsappEnabled"
@@ -465,6 +478,9 @@ import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import EventArea from '@/components/Activities/EventArea.vue'
 import WhatsAppArea from '@/components/Activities/WhatsAppArea.vue'
 import WhatsAppBox from '@/components/Activities/WhatsAppBox.vue'
+import SMSArea from '@/components/Activities/SMSArea.vue'
+import SMSBox from '@/components/Activities/SMSBox.vue'
+import SMSIcon from '@/components/Icons/SMSIcon.vue'
 import LoadingIndicator from '@/components/Icons/LoadingIndicator.vue'
 import EmptyState from '@/components/ListViews/EmptyState.vue'
 import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
@@ -487,6 +503,7 @@ import { globalStore } from '@/stores/global'
 import { usersStore } from '@/stores/users'
 import { useTimelinePreferences } from '@/composables/useTimelinePreferences'
 import { whatsappEnabled } from '@/composables/whatsapp'
+import { smsEnabled } from '@/composables/sms'
 import { useDocument } from '@/data/document'
 import { useTelemetry } from 'frappe-ui/frappe'
 import { Button, createResource, toast } from 'frappe-ui'
@@ -576,8 +593,29 @@ watch(
   { immediate: true },
 )
 
+const smsMessages = createResource({
+  url: 'crm.api.sms.get_sms_messages',
+  cache: ['sms_messages', props.docname],
+  params: {
+    reference_doctype: props.doctype,
+    reference_name: props.docname,
+  },
+  auto: false,
+  transform: (data) => sortByCreation(data),
+  onSuccess: () => nextTick(() => scroll()),
+})
+
+watch(
+  smsEnabled,
+  (enabled) => {
+    if (enabled) smsMessages.fetch()
+  },
+  { immediate: true },
+)
+
 onBeforeUnmount(() => {
   $socket.off('whatsapp_message')
+  $socket.off('crm_sms_message')
   $socket.off('docinfo_update', handleDocinfoUpdate)
   $socket.emit('doc_unsubscribe', props.doctype, props.docname)
 })
@@ -591,6 +629,14 @@ onMounted(() => {
       data.reference_name === props.docname
     ) {
       whatsappMessages.reload()
+    }
+  })
+  $socket.on('crm_sms_message', (data) => {
+    if (
+      data.reference_doctype === props.doctype &&
+      data.reference_name === props.docname
+    ) {
+      smsMessages.reload()
     }
   })
 
@@ -750,6 +796,8 @@ const emptyText = computed(() => {
     text = 'No Attachments Found'
   } else if (title.value == 'WhatsApp') {
     text = 'No WhatsApp Messages Found'
+  } else if (title.value == 'SMS') {
+    text = 'No SMS Found'
   }
   return text
 })
@@ -776,6 +824,8 @@ const emptyTextDescription = computed(() => {
       'No files have been attached yet. Upload files to see them here.'
   } else if (title.value == 'WhatsApp') {
     description = 'Start a conversation now!'
+  } else if (title.value == 'SMS') {
+    description = 'Send a text message now!'
   }
   return description
 })
@@ -798,6 +848,8 @@ const emptyTextIcon = computed(() => {
     icon = AttachmentIcon
   } else if (title.value == 'WhatsApp') {
     icon = WhatsAppIcon
+  } else if (title.value == 'SMS') {
+    icon = SMSIcon
   }
   return h(icon, { class: 'text-ink-gray-4' })
 })
@@ -835,6 +887,7 @@ function timelineIcon(activity_type, is_lead) {
 
 const emailBox = ref(null)
 const whatsappBox = ref(null)
+const smsBox = ref(null)
 
 watch([reload, reload_email], ([reload_value, reload_email_value]) => {
   if (reload_value || reload_email_value) {
