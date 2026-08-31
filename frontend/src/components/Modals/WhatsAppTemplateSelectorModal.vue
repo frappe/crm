@@ -38,10 +38,15 @@
           @click="send(template.name)"
         >
           <div
-            class="truncate border-b border-outline-gray-2 pb-2 text-base-semibold"
-            :title="template.name"
+            class="flex items-center gap-2 border-b border-outline-gray-2 pb-2"
+            :title="template.template_label || template.template_name"
           >
-            {{ template.name }}
+            <span class="truncate text-base-semibold">
+              {{ template.template_label || template.template_name }}
+            </span>
+            <Badge v-if="template.language" theme="gray" variant="subtle">
+              {{ template.language }}
+            </Badge>
           </div>
           <!-- the bubble's own surface and ink, one size down for a grid card -->
           <TemplateContent
@@ -72,7 +77,7 @@
 
 <script setup>
 import { TemplateContent, useTemplates } from '@whatsapp/ui'
-import { toast } from 'frappe-ui'
+import { Badge, toast } from 'frappe-ui'
 import { ref, computed, nextTick, watch } from 'vue'
 
 const props = defineProps({
@@ -101,11 +106,14 @@ watch(
   },
 )
 
-const filteredTemplates = computed(() =>
-  templates.templates.filter((template) =>
-    template.name.toLowerCase().includes(search.value.toLowerCase()),
-  ),
-)
+const filteredTemplates = computed(() => {
+  const query = search.value.toLowerCase()
+  return templates.templates.filter((template) =>
+    [template.template_label, template.template_name, template.language].some((field) =>
+      field?.toLowerCase().includes(query),
+    ),
+  )
+})
 
 async function send(templateName) {
   show.value = false
