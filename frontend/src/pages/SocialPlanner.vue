@@ -6,84 +6,163 @@
       />
     </template>
     <template #right-header>
-      <Badge :label="provider.data?.provider || '…'" theme="gray" />
       <Button
-        variant="solid"
-        :label="__('New post')"
-        iconLeft="plus"
-        @click="openComposer()"
+        v-if="isManager()"
+        variant="ghost"
+        :label="__('Profiles')"
+        iconLeft="settings"
+        @click="openSocialSettings"
       />
+      <Button variant="solid" :label="__('New post')" iconLeft="plus" @click="openComposer()" />
     </template>
   </LayoutHeader>
 
   <div class="flex-1 overflow-y-auto px-3 py-4 sm:px-5">
-    <div class="mx-auto w-full max-w-5xl">
+    <div class="mx-auto flex w-full max-w-6xl flex-col gap-4">
+      <!-- connect CTA when no profiles are configured -->
+      <div
+        v-if="accounts.fetched && !(accounts.data || []).length"
+        class="flex items-center justify-between gap-3 rounded-xl border border-outline-gray-2 bg-surface-gray-1 px-4 py-3"
+      >
+        <div class="flex flex-col">
+          <span class="text-p-base-medium text-ink-gray-8">
+            {{ __('No social profiles connected yet') }}
+          </span>
+          <span class="text-p-sm text-ink-gray-5">
+            {{ __('Connect Facebook & Instagram (or Postiz/Ayrshare) to start scheduling.') }}
+          </span>
+        </div>
+        <Button
+          v-if="isManager()"
+          variant="solid"
+          :label="__('Connect profiles')"
+          @click="openSocialSettings"
+        />
+      </div>
+
       <!-- month navigation -->
-      <div class="mb-3 flex items-center justify-between">
+      <div class="flex items-center justify-between">
         <div class="flex items-center gap-1">
           <Button variant="ghost" icon="lucide-chevron-left" @click="shiftMonth(-1)" />
-          <span class="w-40 text-center text-base font-semibold text-ink-gray-9">
+          <span class="w-44 text-center text-lg font-semibold capitalize text-ink-gray-9">
             {{ monthLabel }}
           </span>
           <Button variant="ghost" icon="lucide-chevron-right" @click="shiftMonth(1)" />
         </div>
-        <Button variant="ghost" :label="__('Today')" @click="goToday" />
+        <div class="flex items-center gap-3">
+          <div class="hidden items-center gap-3 sm:flex">
+            <span
+              v-for="legend in statusLegend"
+              :key="legend.label"
+              class="flex items-center gap-1.5 text-xs text-ink-gray-5"
+            >
+              <span class="size-2 rounded-full" :style="{ backgroundColor: legend.color }" />
+              {{ legend.label }}
+            </span>
+          </div>
+          <Button variant="outline" :label="__('Today')" @click="goToday" />
+        </div>
       </div>
 
       <!-- month grid -->
-      <div class="grid grid-cols-7 overflow-hidden rounded-lg border border-outline-gray-2">
-        <div
-          v-for="d in dayNames"
-          :key="d"
-          class="border-b border-outline-gray-2 bg-surface-gray-1 px-2 py-1 text-xs font-medium text-ink-gray-5"
-        >
-          {{ d }}
-        </div>
-        <div
-          v-for="cell in cells"
-          :key="cell.key"
-          class="min-h-[92px] cursor-pointer border-b border-r border-outline-gray-1 p-1 align-top hover:bg-surface-gray-1"
-          :class="{ 'bg-surface-gray-1/50 opacity-60': !cell.inMonth }"
-          @click="openComposer(null, cell.date)"
-        >
+      <div class="overflow-hidden rounded-xl border border-outline-gray-2 bg-surface-white shadow-sm">
+        <div class="grid grid-cols-7 border-b border-outline-gray-2 bg-surface-gray-1">
           <div
-            class="mb-1 text-xs"
-            :class="cell.isToday ? 'font-bold text-ink-gray-9' : 'text-ink-gray-5'"
+            v-for="d in dayNames"
+            :key="d"
+            class="py-2 text-center text-xs font-medium uppercase tracking-wide text-ink-gray-5"
           >
-            {{ cell.date.getDate() }}
+            {{ d }}
           </div>
-          <div class="flex flex-col gap-1">
-            <div
-              v-for="post in cell.posts"
-              :key="post.name"
-              class="truncate rounded px-1.5 py-0.5 text-xs"
-              :class="chipClass(post.status)"
-              @click.stop="openComposer(post)"
-            >
-              {{ timeOf(post.scheduled_at) }} {{ post.content }}
+        </div>
+        <div class="grid grid-cols-7">
+          <div
+            v-for="(cell, i) in cells"
+            :key="cell.key"
+            class="group relative flex min-h-[7rem] cursor-pointer flex-col gap-1 border-outline-gray-1 p-1.5 transition-colors hover:bg-surface-gray-1"
+            :class="[
+              i % 7 != 6 && 'border-r',
+              i < 35 && 'border-b',
+              !cell.inMonth && 'bg-surface-gray-1/60',
+            ]"
+            @click="openComposer(null, cell.date)"
+          >
+            <div class="flex items-center justify-between">
+              <span
+                class="flex size-6 items-center justify-center rounded-full text-xs"
+                :class="
+                  cell.isToday
+                    ? 'bg-surface-gray-7 font-semibold text-ink-white'
+                    : cell.inMonth
+                      ? 'text-ink-gray-7'
+                      : 'text-ink-gray-4'
+                "
+              >
+                {{ cell.date.getDate() }}
+              </span>
+              <span
+                class="hidden size-5 items-center justify-center rounded text-ink-gray-4 group-hover:flex"
+              >
+                <FeatherIcon name="plus" class="size-3.5" />
+              </span>
+            </div>
+            <div class="flex min-w-0 flex-col gap-1">
+              <button
+                v-for="post in cell.posts.slice(0, 3)"
+                :key="post.name"
+                class="flex min-w-0 items-center gap-1.5 rounded-md border-l-2 px-1.5 py-1 text-left text-xs leading-tight"
+                :class="chipClass(post.status)"
+                :style="{ borderLeftColor: statusColor(post.status) }"
+                @click.stop="openComposer(post)"
+              >
+                <span class="flex shrink-0 -space-x-1">
+                  <span
+                    v-for="platform in chipPlatforms(post)"
+                    :key="platform"
+                    class="size-2.5 rounded-full ring-1 ring-white"
+                    :style="{ backgroundColor: platformColor(platform) }"
+                  />
+                </span>
+                <span class="shrink-0 tabular-nums text-ink-gray-5">
+                  {{ timeOf(post.scheduled_at) }}
+                </span>
+                <span class="truncate">{{ post.content }}</span>
+              </button>
+              <button
+                v-if="cell.posts.length > 3"
+                class="rounded px-1.5 py-0.5 text-left text-xs font-medium text-ink-gray-5 hover:bg-surface-gray-2"
+                @click.stop="openDay(cell)"
+              >
+                +{{ cell.posts.length - 3 }} {{ __('more') }}
+              </button>
             </div>
           </div>
         </div>
       </div>
 
       <!-- drafts / pending -->
-      <div v-if="unscheduled.length" class="mt-6">
+      <div v-if="unscheduled.length">
         <div class="mb-2 text-base font-semibold text-ink-gray-9">
           {{ __('Drafts & pending approval') }}
         </div>
-        <div class="divide-y divide-outline-gray-1 rounded-lg border border-outline-gray-2">
+        <div class="divide-y divide-outline-gray-1 overflow-hidden rounded-xl border border-outline-gray-2">
           <div
             v-for="post in unscheduled"
             :key="post.name"
-            class="flex cursor-pointer items-center gap-3 px-3 py-2 hover:bg-surface-gray-1"
+            class="flex cursor-pointer items-center gap-3 bg-surface-white px-3 py-2.5 hover:bg-surface-gray-1"
             @click="openComposer(post)"
           >
             <Badge :label="__(post.status)" :theme="badgeTheme(post.status)" size="sm" />
             <span class="min-w-0 flex-1 truncate text-sm text-ink-gray-8">
               {{ post.content }}
             </span>
-            <span class="text-xs text-ink-gray-4">
-              {{ (post.targets || []).map((t) => t.platform).join(', ') }}
+            <span class="flex shrink-0 -space-x-1">
+              <span
+                v-for="platform in chipPlatforms(post)"
+                :key="platform"
+                class="size-3 rounded-full ring-1 ring-white"
+                :style="{ backgroundColor: platformColor(platform) }"
+              />
             </span>
           </div>
         </div>
@@ -91,17 +170,86 @@
     </div>
   </div>
 
+  <!-- day overview dialog -->
+  <Dialog v-model="showDay" :options="{ title: dayTitle, size: 'lg' }">
+    <template #body-content>
+      <div class="flex flex-col divide-y divide-outline-gray-1">
+        <div
+          v-for="post in dayPosts"
+          :key="post.name"
+          class="flex cursor-pointer items-center gap-3 py-2.5 hover:bg-surface-gray-1"
+          @click="((showDay = false), openComposer(post))"
+        >
+          <span class="w-12 shrink-0 tabular-nums text-sm text-ink-gray-5">
+            {{ timeOf(post.scheduled_at) }}
+          </span>
+          <span class="flex shrink-0 -space-x-1">
+            <span
+              v-for="platform in chipPlatforms(post)"
+              :key="platform"
+              class="size-3 rounded-full ring-1 ring-white"
+              :style="{ backgroundColor: platformColor(platform) }"
+            />
+          </span>
+          <span class="min-w-0 flex-1 truncate text-sm text-ink-gray-8">{{ post.content }}</span>
+          <Badge :label="__(post.status)" :theme="badgeTheme(post.status)" size="sm" />
+        </div>
+      </div>
+    </template>
+  </Dialog>
+
   <!-- composer dialog -->
   <Dialog v-model="showComposer" :options="{ title: composerTitle, size: 'xl' }">
     <template #body-content>
-      <div class="flex flex-col gap-3">
-        <FormControl
-          v-model="form.content"
-          type="textarea"
-          :label="__('Content')"
-          :rows="5"
-          :placeholder="__('What do you want to share?')"
-        />
+      <div class="flex flex-col gap-4">
+        <div>
+          <div class="mb-1.5 text-xs font-medium text-ink-gray-5">{{ __('Profiles') }}</div>
+          <div class="flex flex-wrap gap-1.5">
+            <button
+              v-for="account in accounts.data || []"
+              :key="account.name"
+              class="flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-sm transition-colors"
+              :class="
+                isSelected(account.name)
+                  ? 'border-outline-gray-4 bg-surface-gray-7 text-ink-white'
+                  : 'border-outline-gray-2 text-ink-gray-7 hover:bg-surface-gray-1'
+              "
+              @click="toggleAccount(account.name)"
+            >
+              <span
+                class="size-2.5 rounded-full"
+                :style="{ backgroundColor: platformColor(account.platform) }"
+              />
+              {{ account.account_name }}
+            </button>
+          </div>
+          <div
+            v-if="accounts.fetched && !(accounts.data || []).length"
+            class="flex items-center gap-2 text-sm text-ink-gray-5"
+          >
+            {{ __('No profiles connected.') }}
+            <Button
+              v-if="isManager()"
+              size="sm"
+              :label="__('Connect profiles')"
+              @click="openSocialSettings"
+            />
+          </div>
+        </div>
+
+        <div>
+          <FormControl
+            v-model="form.content"
+            type="textarea"
+            :label="__('Content')"
+            :rows="5"
+            :placeholder="__('What do you want to share?')"
+          />
+          <div class="mt-1 text-right text-xs text-ink-gray-4">
+            {{ form.content.length }} {{ __('characters') }}
+          </div>
+        </div>
+
         <div class="flex items-center gap-3">
           <FileUploader
             :fileTypes="['image/*', 'video/*']"
@@ -116,42 +264,22 @@
               />
             </template>
           </FileUploader>
-          <a
-            v-if="form.media"
-            :href="form.media"
-            target="_blank"
-            class="truncate text-sm text-ink-gray-5 underline"
-          >
-            {{ form.media.split('/').pop() }}
-          </a>
-          <Button
-            v-if="form.media"
-            variant="ghost"
-            icon="lucide-x"
-            @click="form.media = ''"
-          />
-        </div>
-
-        <div>
-          <div class="mb-1 text-xs text-ink-gray-5">{{ __('Networks') }}</div>
-          <div class="flex flex-wrap gap-1.5">
-            <Button
-              v-for="account in accounts.data || []"
-              :key="account.name"
-              size="sm"
-              :variant="isSelected(account.name) ? 'solid' : 'outline'"
-              :label="`${account.platform} · ${account.account_name}`"
-              @click="toggleAccount(account.name)"
+          <template v-if="form.media">
+            <img
+              v-if="!isVideo(form.media)"
+              :src="form.media"
+              class="h-10 w-10 rounded-md object-cover"
             />
-          </div>
-          <div v-if="!(accounts.data || []).length" class="text-sm text-ink-gray-4">
-            {{ __('No social accounts configured yet (Desk → CRM Social Account).') }}
-          </div>
+            <a :href="form.media" target="_blank" class="truncate text-sm text-ink-gray-5 underline">
+              {{ form.media.split('/').pop() }}
+            </a>
+            <Button variant="ghost" icon="lucide-x" @click="form.media = ''" />
+          </template>
         </div>
 
         <details v-if="form.targets.length" class="rounded-md border border-outline-gray-1 p-2">
           <summary class="cursor-pointer text-sm text-ink-gray-6">
-            {{ __('Customize per network (optional)') }}
+            {{ __('Customize per profile (optional)') }}
           </summary>
           <div class="mt-2 flex flex-col gap-2">
             <FormControl
@@ -167,11 +295,7 @@
         </details>
 
         <div class="grid grid-cols-2 gap-3">
-          <FormControl
-            v-model="form.scheduled_at"
-            type="datetime-local"
-            :label="__('Schedule at')"
-          />
+          <FormControl v-model="form.scheduled_at" type="datetime-local" :label="__('Schedule at')" />
           <FormControl
             v-model="form.recurrence"
             type="select"
@@ -182,6 +306,9 @@
 
         <div v-if="editingStatus" class="text-xs text-ink-gray-5">
           {{ __('Status') }}: {{ __(editingStatus) }}
+          <template v-if="targetErrors.length">
+            <div v-for="err in targetErrors" :key="err" class="mt-1 text-ink-red-4">{{ err }}</div>
+          </template>
         </div>
       </div>
     </template>
@@ -222,13 +349,16 @@
 
 <script setup>
 import LayoutHeader from '@/components/LayoutHeader.vue'
+import { showSettings, activeSettingsPage } from '@/composables/settings'
 import { usersStore } from '@/stores/users'
 import { globalStore } from '@/stores/global'
+import { platformColor } from '@/utils/social'
 import {
   createResource,
   Breadcrumbs,
   Dialog,
   FormControl,
+  FeatherIcon,
   FileUploader,
   toast,
 } from 'frappe-ui'
@@ -248,6 +378,26 @@ const dayNames = [
   __('Sat'),
   __('Sun'),
 ]
+
+const STATUS_COLORS = {
+  Scheduled: '#3b82f6',
+  'Pending Approval': '#f59e0b',
+  Published: '#22c55e',
+  Failed: '#ef4444',
+  Draft: '#9ca3af',
+  Cancelled: '#d1d5db',
+}
+
+const statusLegend = computed(() => [
+  { label: __('Scheduled'), color: STATUS_COLORS.Scheduled },
+  { label: __('Published'), color: STATUS_COLORS.Published },
+  { label: __('Pending'), color: STATUS_COLORS['Pending Approval'] },
+  { label: __('Failed'), color: STATUS_COLORS.Failed },
+])
+
+function statusColor(status) {
+  return STATUS_COLORS[status] || STATUS_COLORS.Draft
+}
 
 function startOfMonth(d) {
   return new Date(d.getFullYear(), d.getMonth(), 1)
@@ -296,6 +446,10 @@ function timeOf(dt) {
   return dt ? dt.slice(11, 16) : ''
 }
 
+function isVideo(url) {
+  return /\.(mp4|mov|m4v|webm)(\?|$)/i.test(url || '')
+}
+
 const posts = createResource({
   url: 'crm.api.social.get_posts',
   makeParams: () => {
@@ -313,11 +467,18 @@ const accounts = createResource({
   auto: true,
 })
 
-const provider = createResource({
-  url: 'crm.api.social.get_provider',
-  cache: 'crm-social-provider',
-  auto: true,
+const accountPlatform = computed(() => {
+  const map = {}
+  for (const a of accounts.data || []) map[a.name] = a.platform
+  return map
 })
+
+function chipPlatforms(post) {
+  const platforms = (post.targets || []).map(
+    (t) => t.platform || accountPlatform.value[t.account],
+  )
+  return [...new Set(platforms.filter(Boolean))].slice(0, 4)
+}
 
 const unscheduled = computed(() =>
   (posts.data || []).filter(
@@ -335,16 +496,22 @@ function goToday() {
   posts.reload()
 }
 
+function openSocialSettings() {
+  showSettings.value = true
+  activeSettingsPage.value = 'Social Planner'
+}
+
 function chipClass(status) {
   return (
     {
-      Scheduled: 'bg-surface-gray-2 text-ink-gray-8',
-      'Pending Approval': 'bg-surface-amber-2 text-ink-amber-3',
-      Published: 'bg-surface-green-2 text-ink-green-5',
-      Failed: 'bg-surface-red-2 text-ink-red-5',
-      Draft: 'bg-surface-gray-1 text-ink-gray-5 border border-dashed border-outline-gray-2',
+      Scheduled: 'bg-surface-gray-1 text-ink-gray-8 hover:bg-surface-gray-2',
+      'Pending Approval': 'bg-surface-amber-1 text-ink-amber-3 hover:bg-surface-amber-2',
+      Published: 'bg-surface-green-1 text-ink-green-4 hover:bg-surface-green-2',
+      Failed: 'bg-surface-red-1 text-ink-red-4 hover:bg-surface-red-2',
+      Draft:
+        'bg-surface-white text-ink-gray-5 border border-dashed border-outline-gray-2 hover:bg-surface-gray-1',
       Cancelled: 'bg-surface-gray-1 text-ink-gray-4 line-through',
-    }[status] || 'bg-surface-gray-2'
+    }[status] || 'bg-surface-gray-1'
   )
 }
 
@@ -361,11 +528,28 @@ function badgeTheme(status) {
   )
 }
 
+// --- day overview ---
+
+const showDay = ref(false)
+const dayTitle = ref('')
+const dayPosts = ref([])
+
+function openDay(cell) {
+  dayTitle.value = cell.date.toLocaleDateString(undefined, {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+  })
+  dayPosts.value = cell.posts
+  showDay.value = true
+}
+
 // --- composer ---
 
 const showComposer = ref(false)
 const editingName = ref(null)
 const editingStatus = ref('')
+const editingTargets = ref([])
 const form = reactive({
   content: '',
   media: '',
@@ -378,9 +562,16 @@ const composerTitle = computed(() =>
   editingName.value ? __('Edit post') : __('New post'),
 )
 
+const targetErrors = computed(() =>
+  editingTargets.value
+    .filter((t) => t.status == 'Failed' && t.error)
+    .map((t) => `${t.platform || t.account}: ${t.error}`),
+)
+
 function openComposer(post = null, date = null) {
   editingName.value = post?.name || null
   editingStatus.value = post?.status || ''
+  editingTargets.value = post?.targets || []
   form.content = post?.content || ''
   form.media = post?.media || ''
   form.recurrence = post?.recurrence || 'None'

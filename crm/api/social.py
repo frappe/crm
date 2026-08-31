@@ -159,12 +159,49 @@ def get_provider() -> dict:
 def get_social_settings() -> dict:
 	_check_manager()
 	settings = frappe.get_doc("CRM Social Settings")
+	meta = frappe.get_doc("CRM Meta Settings")
 	return {
 		"provider": settings.provider or "Manual",
 		"postiz_url": settings.postiz_url or "",
 		"has_postiz_key": bool(settings.get_password("postiz_api_key", raise_exception=False)),
 		"has_ayrshare_key": bool(settings.get_password("ayrshare_api_key", raise_exception=False)),
+		# Meta provider reuses the Meta Lead Ads connection
+		"meta_connected": bool(meta.get_password("user_access_token", raise_exception=False)),
+		"meta_connected_user": meta.connected_user_name or "",
+		"meta_has_app": bool(meta.app_id and meta.get_password("app_secret", raise_exception=False)),
+		"meta_pages": frappe.db.count("Facebook Page"),
 	}
+
+
+@frappe.whitelist(methods=["POST"])
+def import_provider_accounts() -> dict:
+	"""One-click profile connection: pull the accounts already connected on the
+	configured provider (Meta pages/IG, Postiz channels, Ayrshare networks) and
+	upsert them as CRM Social Accounts."""
+	_check_manager()
+	from crm.social import accounts as social_accounts
+
+	provider = frappe.get_cached_doc("CRM Social Settings").provider or "Manual"
+	if provider == "Meta":
+		token = frappe.get_doc("CRM Meta Settings").get_password("user_access_token", raise_exception=False)
+		if token:
+			# refresh pages + linked IG accounts from Meta first
+			from crm.integrations.meta.client import MetaAPIError
+			from crm.integrations.meta.oauth import sync_pages_and_forms
+
+			try:
+				sync_pages_and_forms(token)
+			except MetaAPIError as exc:
+				frappe.throw(_("Meta API error: {0}").format(exc))
+		result = social_accounts.sync_from_facebook_pages()
+	elif provider == "Postiz":
+		result = social_accounts.sync_from_postiz()
+	elif provider == "Ayrshare":
+		result = social_accounts.sync_from_ayrshare()
+	else:
+		frappe.throw(_("Pick a publishing provider first (Meta, Postiz or Ayrshare)"))
+	result["accounts"] = list_accounts_admin()
+	return result
 
 
 @frappe.whitelist(methods=["POST"])

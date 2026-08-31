@@ -5,6 +5,7 @@ import frappe
 from frappe.tests import IntegrationTestCase
 
 from crm.api import social as S
+from crm.social.accounts import sync_from_facebook_pages, upsert_account
 from crm.social.publisher import process_due_posts
 
 
@@ -77,3 +78,45 @@ class TestSocialPlanner(IntegrationTestCase):
 		result = S.save_post({"content": "bozza", "targets": [{"account": "Test FB"}]})
 		S.cancel_post(result["name"])
 		self.assertEqual(frappe.db.get_value("CRM Social Post", result["name"], "status"), "Cancelled")
+
+	def test_upsert_account_matches_by_provider_id(self):
+		self.assertEqual(upsert_account("Facebook", "111", "Pagina Uno"), "created")
+		self.assertEqual(upsert_account("Facebook", "111", "Pagina Uno"), "updated")
+		self.assertEqual(
+			frappe.db.count("CRM Social Account", {"platform": "Facebook", "provider_account_id": "111"}),
+			1,
+		)
+
+	def test_sync_from_facebook_pages_creates_fb_and_ig_accounts(self):
+		if not frappe.db.exists("Facebook Page", "5550001"):
+			frappe.get_doc(
+				{
+					"doctype": "Facebook Page",
+					"id": "5550001",
+					"page_name": "Agenzia Demo",
+					"instagram_account_id": "17840000001",
+					"instagram_username": "agenzia.demo",
+				}
+			).insert(ignore_permissions=True)
+
+		result = sync_from_facebook_pages()
+		self.assertGreaterEqual(result["created"] + result["updated"], 2)
+		fb = frappe.db.get_value(
+			"CRM Social Account",
+			{"platform": "Facebook", "provider_account_id": "5550001"},
+			["account_name", "facebook_page"],
+			as_dict=True,
+		)
+		self.assertEqual(fb.account_name, "Agenzia Demo")
+		self.assertEqual(fb.facebook_page, "5550001")
+		ig = frappe.db.get_value(
+			"CRM Social Account",
+			{"platform": "Instagram", "provider_account_id": "17840000001"},
+			["account_name", "facebook_page"],
+			as_dict=True,
+		)
+		self.assertEqual(ig.account_name, "@agenzia.demo")
+		self.assertEqual(ig.facebook_page, "5550001")
+		# idempotent
+		again = sync_from_facebook_pages()
+		self.assertEqual(again["created"], 0)

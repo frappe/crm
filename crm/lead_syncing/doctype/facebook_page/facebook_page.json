@@ -14,7 +14,9 @@
   "sync_enabled",
   "webhook_subscribed",
   "token_valid",
-  "last_webhook_at"
+  "last_webhook_at",
+  "instagram_account_id",
+  "instagram_username"
  ],
  "fields": [
   {
@@ -73,6 +75,19 @@
    "fieldname": "last_webhook_at",
    "fieldtype": "Datetime",
    "label": "Last Webhook At",
+   "read_only": 1
+  },
+  {
+   "description": "Instagram Business account linked to this page (used by the Social Planner)",
+   "fieldname": "instagram_account_id",
+   "fieldtype": "Data",
+   "label": "Instagram Account ID",
+   "read_only": 1
+  },
+  {
+   "fieldname": "instagram_username",
+   "fieldtype": "Data",
+   "label": "Instagram Username",
    "read_only": 1
   }
  ],

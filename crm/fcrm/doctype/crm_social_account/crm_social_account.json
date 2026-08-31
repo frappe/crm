@@ -10,7 +10,8 @@
   "platform",
   "column_break_head",
   "enabled",
-  "provider_account_id"
+  "provider_account_id",
+  "facebook_page"
  ],
  "fields": [
   {
@@ -41,10 +42,17 @@
    "label": "Enabled"
   },
   {
-   "description": "Postiz integration id or Ayrshare profile key this account maps to",
+   "description": "Meta page/IG id, Postiz integration id or Ayrshare profile key this account maps to",
    "fieldname": "provider_account_id",
    "fieldtype": "Data",
    "label": "Provider Account ID"
+  },
+  {
+   "description": "For the Meta provider: the Facebook Page whose token publishes to this account",
+   "fieldname": "facebook_page",
+   "fieldtype": "Link",
+   "label": "Facebook Page",
+   "options": "Facebook Page"
   }
  ],
  "links": [],

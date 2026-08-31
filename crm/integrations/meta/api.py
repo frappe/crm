@@ -40,7 +40,73 @@ def save_app_settings(app_id: str, app_secret: str | None = None) -> dict:
 		settings.app_secret = app_secret
 	settings.save()
 	frappe.clear_document_cache("CRM Meta Settings", "CRM Meta Settings")
-	return get_status()
+	frappe.db.commit()  # the webhook handshake below hits this site re-entrantly
+
+	# best-effort: register the app-level webhook subscription right away so
+	# nothing has to be configured by hand on developers.facebook.com
+	status = get_status()
+	try:
+		status["webhook"] = configure_webhook()
+	except Exception as exc:
+		status["webhook"] = {"configured": False, "error": str(exc)[:300]}
+	return status
+
+
+def _app_token() -> str:
+	settings = get_settings()
+	secret = settings.get_password("app_secret", raise_exception=False)
+	if not settings.app_id or not secret:
+		frappe.throw(_("Set the Meta App ID and App Secret first"))
+	return f"{settings.app_id}|{secret}"
+
+
+@frappe.whitelist(methods=["POST"])
+def configure_webhook() -> dict:
+	"""Register the Page→leadgen webhook subscription on the Meta app via API
+	(same as the Webhooks product page on developers.facebook.com).
+
+	Meta verifies the callback synchronously (GET handshake against this site),
+	so the site must be publicly reachable over HTTPS."""
+	_check_manager()
+	settings = get_settings()
+	if not settings.webhook_verify_token:
+		frappe.throw(_("Save the app settings first to generate a verify token"))
+	try:
+		graph_post(
+			f"{settings.app_id}/subscriptions",
+			_app_token(),
+			{
+				"object": "page",
+				"callback_url": get_url(WEBHOOK_PATH),
+				"fields": "leadgen",
+				"verify_token": settings.webhook_verify_token,
+				"include_values": "true",
+			},
+		)
+	except MetaAPIError as exc:
+		frappe.throw(_("Could not configure the webhook automatically: {0}").format(exc))
+	return get_webhook_subscription()
+
+
+@frappe.whitelist()
+def get_webhook_subscription() -> dict:
+	"""Current app-level webhook subscription state, straight from Meta."""
+	_check_manager()
+	try:
+		data = graph_get(f"{get_settings().app_id}/subscriptions", _app_token())
+	except MetaAPIError as exc:
+		return {"configured": False, "error": str(exc)[:300]}
+	for row in data.get("data") or []:
+		if row.get("object") != "page":
+			continue
+		fields = [f.get("name") if isinstance(f, dict) else f for f in row.get("fields") or []]
+		return {
+			"configured": bool(row.get("active", True)) and "leadgen" in fields,
+			"callback_url": row.get("callback_url") or "",
+			"fields": fields,
+			"matches_site": (row.get("callback_url") or "") == get_url(WEBHOOK_PATH),
+		}
+	return {"configured": False}
 
 
 @frappe.whitelist(methods=["POST"])

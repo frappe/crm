@@ -31,24 +31,50 @@
         <div class="mt-3 flex items-center gap-2">
           <Button :label="__('Save app')" variant="solid" @click="saveApp" />
         </div>
-        <div v-if="status.data?.webhook_url" class="mt-3 flex flex-col gap-1 text-p-sm text-ink-gray-6">
+        <div v-if="status.data?.webhook_url" class="mt-3 flex flex-col gap-2 text-p-sm text-ink-gray-6">
           <div class="flex items-center gap-2">
-            <span class="shrink-0 font-medium">{{ __('Webhook URL') }}:</span>
-            <span class="truncate">{{ status.data.webhook_url }}</span>
-            <Button variant="ghost" icon="lucide-copy" @click="copy(status.data.webhook_url)" />
-          </div>
-          <div class="flex items-center gap-2">
-            <span class="shrink-0 font-medium">{{ __('Verify token') }}:</span>
-            <span class="truncate">{{ status.data.webhook_verify_token }}</span>
-            <Button
-              variant="ghost"
-              icon="lucide-copy"
-              @click="copy(status.data.webhook_verify_token)"
+            <span class="shrink-0 font-medium">{{ __('Webhook') }}:</span>
+            <Badge
+              v-if="webhook.data?.configured && webhook.data?.matches_site"
+              :label="__('Configured automatically')"
+              theme="green"
+              size="sm"
             />
+            <template v-else>
+              <Badge :label="__('Not configured')" theme="orange" size="sm" />
+              <Button
+                size="sm"
+                :label="__('Configure automatically')"
+                :loading="configuringWebhook"
+                @click="configureWebhook"
+              />
+            </template>
           </div>
-          <span class="text-ink-gray-5">
-            {{ __('Configure them in the app under Webhooks → Page → subscribe to "leadgen".') }}
-          </span>
+          <span v-if="webhook.data?.error" class="text-ink-red-5">{{ webhook.data.error }}</span>
+          <details>
+            <summary class="cursor-pointer text-ink-gray-5">
+              {{ __('Manual configuration (fallback)') }}
+            </summary>
+            <div class="mt-1 flex flex-col gap-1">
+              <div class="flex items-center gap-2">
+                <span class="shrink-0 font-medium">{{ __('Webhook URL') }}:</span>
+                <span class="truncate">{{ status.data.webhook_url }}</span>
+                <Button variant="ghost" icon="lucide-copy" @click="copy(status.data.webhook_url)" />
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="shrink-0 font-medium">{{ __('Verify token') }}:</span>
+                <span class="truncate">{{ status.data.webhook_verify_token }}</span>
+                <Button
+                  variant="ghost"
+                  icon="lucide-copy"
+                  @click="copy(status.data.webhook_verify_token)"
+                />
+              </div>
+              <span class="text-ink-gray-5">
+                {{ __('In the app: Webhooks → Page → subscribe to "leadgen".') }}
+              </span>
+            </div>
+          </details>
         </div>
       </div>
 
@@ -250,6 +276,31 @@ const failures = createResource({
   auto: true,
 })
 
+const webhook = createResource({
+  url: 'crm.integrations.meta.api.get_webhook_subscription',
+  auto: true,
+})
+
+const configuringWebhook = ref(false)
+function configureWebhook() {
+  configuringWebhook.value = true
+  createResource({
+    url: 'crm.integrations.meta.api.configure_webhook',
+    auto: true,
+    onSuccess: (data) => {
+      configuringWebhook.value = false
+      webhook.data = data
+      data.configured
+        ? toast.success(__('Webhook configured on the Meta app'))
+        : toast.error(data.error || __('Webhook not configured'))
+    },
+    onError: (e) => {
+      configuringWebhook.value = false
+      toast.error(e.messages?.[0] || __('Could not configure the webhook'))
+    },
+  })
+}
+
 function copy(text) {
   navigator.clipboard?.writeText(text)
   toast.success(__('Copied'))
@@ -260,9 +311,15 @@ function saveApp() {
     url: 'crm.integrations.meta.api.save_app_settings',
     params: { app_id: appForm.value.app_id, app_secret: appForm.value.app_secret },
     auto: true,
-    onSuccess: () => {
+    onSuccess: (data) => {
       appForm.value.app_secret = ''
-      toast.success(__('Saved'))
+      if (data?.webhook?.configured) {
+        toast.success(__('Saved — webhook configured on the Meta app automatically'))
+        webhook.data = data.webhook
+      } else {
+        toast.success(__('Saved'))
+        webhook.reload()
+      }
       status.reload()
     },
     onError: (e) => toast.error(e.messages?.[0] || __('Failed to save')),

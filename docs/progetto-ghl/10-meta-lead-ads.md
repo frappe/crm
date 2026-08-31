@@ -49,16 +49,22 @@ Settings modal → "Meta Lead Ads"
 ### App Meta (developers.facebook.com)
 1. Prodotto **Facebook Login**: Valid OAuth redirect URI =
    `https://<site>/api/method/crm.integrations.meta.oauth.callback` (HTTPS).
-2. Prodotto **Webhooks** → oggetto **Page** → campo **leadgen**:
-   Callback = `https://<site>/api/method/crm.integrations.meta.webhook.handle`,
-   Verify Token = quello in Settings → Meta Lead Ads.
+   (Non esiste API pubblica per questa whitelist: è l'unico passo davvero
+   manuale, insieme alla creazione dell'app.)
+2. **Webhook (Page → leadgen): CONFIGURATO AUTOMATICAMENTE** al salvataggio di
+   App ID/Secret (o col bottone "Configure automatically") via
+   `POST /{app_id}/subscriptions` con l'app token — Meta verifica il callback
+   in modo sincrono, quindi il sito deve essere raggiungibile in HTTPS. La
+   configurazione manuale resta documentata in Settings come fallback.
 3. **Data Deletion Request URL** =
    `https://<site>/api/method/crm.integrations.meta.webhook.data_deletion`.
 
 ### App Review (per usare l'app con utenti esterni al team)
 - **Advanced Access** per: `pages_show_list`, `pages_read_engagement`,
   `pages_manage_metadata`, `pages_manage_ads`, `leads_retrieval`,
-  `ads_management` (+ `business_management`) — con **Business Verification**
+  `ads_management` (+ `business_management`; per il Social Planner anche
+  `pages_manage_posts`, `instagram_basic`, `instagram_content_publish`) —
+  con **Business Verification**
   dell'azienda e screencast del flusso completo (login → scelta pagina → sync).
 - **Data Use Checkup** annuale.
 - In development mode i webhook reali non arrivano: usare il

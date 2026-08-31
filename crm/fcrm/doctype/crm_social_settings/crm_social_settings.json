@@ -14,11 +14,11 @@
  "fields": [
   {
    "default": "Manual",
-   "description": "Postiz: self-hosted publishing engine (recommended). Ayrshare: paid aggregator, no app reviews. Manual: posts are only tracked, publish them yourself.",
+   "description": "Meta: publish directly to Facebook & Instagram with the built-in Meta connection (no third party). Postiz: self-hosted publishing engine for every network. Ayrshare: paid aggregator, no app reviews. Manual: posts are only tracked, publish them yourself.",
    "fieldname": "provider",
    "fieldtype": "Select",
    "label": "Publishing Provider",
-   "options": "Manual\nPostiz\nAyrshare",
+   "options": "Manual\nMeta\nPostiz\nAyrshare",
    "reqd": 1
   },
   {

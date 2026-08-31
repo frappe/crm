@@ -35,6 +35,9 @@ from crm.integrations.meta.client import (
 # - leads_retrieval: read /{form}/leads and /{leadgen_id}
 # - pages_manage_ads + ads_management: leads_retrieval dependencies (App Review pair)
 # - business_management: pages owned via Business Manager
+# - pages_manage_posts: publish to the page feed (Social Planner)
+# - instagram_basic + instagram_content_publish: publish to the linked IG
+#   Business account (Social Planner)
 SCOPES = (
 	"pages_show_list",
 	"pages_read_engagement",
@@ -43,6 +46,9 @@ SCOPES = (
 	"leads_retrieval",
 	"ads_management",
 	"business_management",
+	"pages_manage_posts",
+	"instagram_basic",
+	"instagram_content_publish",
 )
 
 MANAGER_ROLES = {"System Manager", "Sales Manager"}
@@ -141,7 +147,11 @@ def _redirect_back(error: str | None = None):
 def sync_pages_and_forms(user_token: str) -> list[dict]:
 	"""Upsert the user's pages (with long-lived page tokens) and their forms."""
 	pages = list(
-		graph_get_paginated("me/accounts", user_token, {"fields": "id,name,category,access_token,tasks"})
+		graph_get_paginated(
+			"me/accounts",
+			user_token,
+			{"fields": "id,name,category,access_token,tasks,instagram_business_account{id,username}"},
+		)
 	)
 	for page in pages:
 		upsert_page(page)
@@ -149,28 +159,35 @@ def sync_pages_and_forms(user_token: str) -> list[dict]:
 			sync_forms_for_page(page["id"], page["access_token"])
 		except MetaAPIError:
 			frappe.log_error(frappe.get_traceback(), f"Meta: form sync failed for page {page['id']}")
+
+	# make the pages (and linked IG accounts) usable by the Social Planner
+	try:
+		from crm.social.accounts import sync_from_facebook_pages
+
+		sync_from_facebook_pages()
+	except Exception:
+		frappe.log_error(frappe.get_traceback(), "Meta: social account sync failed")
 	return pages
 
 
 def upsert_page(page: dict) -> None:
+	ig = page.get("instagram_business_account") or {}
+	values = {
+		"page_name": page.get("name"),
+		"category": page.get("category"),
+		"access_token": page.get("access_token"),
+		"token_valid": 1,
+		"instagram_account_id": ig.get("id") or "",
+		"instagram_username": ig.get("username") or "",
+	}
 	if frappe.db.exists("Facebook Page", page["id"]):
 		doc = frappe.get_doc("Facebook Page", page["id"])
-		doc.page_name = page.get("name")
-		doc.category = page.get("category")
-		doc.access_token = page.get("access_token")
-		doc.token_valid = 1
+		doc.update(values)
 		doc.save(ignore_permissions=True)
 	else:
-		frappe.get_doc(
-			{
-				"doctype": "Facebook Page",
-				"id": page["id"],
-				"page_name": page.get("name"),
-				"category": page.get("category"),
-				"access_token": page.get("access_token"),
-				"token_valid": 1,
-			}
-		).insert(ignore_permissions=True)
+		frappe.get_doc({"doctype": "Facebook Page", "id": page["id"], **values}).insert(
+			ignore_permissions=True
+		)
 
 
 def sync_forms_for_page(page_id: str, page_token: str) -> None:

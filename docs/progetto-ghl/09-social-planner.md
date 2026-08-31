@@ -36,9 +36,24 @@ Bluesky. **X/Twitter NON è supportato da GHL** (abbandonato nel 2023).
 
 | Adapter | Stato | Note |
 |---|---|---|
+| **Meta (built-in)** | ✅ | pubblica DIRETTAMENTE su Facebook Page e Instagram Business con la Graph API, riusando i page token dell'OAuth Meta Lead Ads (nessun servizio terzo). FB: `/feed`, `/photos`, `/videos`; IG: container `/media` (+polling status) → `/media_publish`; IG richiede un media, video = REELS. Scope aggiunti: `pages_manage_posts`, `instagram_basic`, `instagram_content_publish`. |
 | **Manual** | ✅ | nessuna chiamata esterna: il planner traccia e "pubblica" (per test e flussi manuali) |
 | **Postiz** | ✅ | `POST {url}/public/v1/posts` con API key; `provider_account_id` = integration id |
 | **Ayrshare** | ✅ | `POST /api/post` con Bearer key; mapping piattaforme incluso |
+
+### Collegamento profili in un click (`crm/social/accounts.py`)
+
+Niente più id incollati a mano: in Settings → Social Planner il bottone
+**"Import connected profiles"** interroga il provider e fa upsert dei
+`CRM Social Account` (match per piattaforma+id):
+
+- **Meta**: pagine Facebook già connesse (+ account Instagram Business
+  collegati, letti da `instagram_business_account` in `/me/accounts`); ogni
+  account porta il link alla `Facebook Page` per il token di pubblicazione.
+- **Postiz**: `GET {url}/public/v1/integrations` (i profili si collegano
+  nella UI di Postiz, poi si importano).
+- **Ayrshare**: `GET /api/user` → `displayNames` (profilo default; i
+  profileKey multi-profilo restano manuali).
 
 ### Componenti
 
@@ -51,19 +66,23 @@ Bluesky. **X/Twitter NON è supportato da GHL** (abbandonato nel 2023).
   **ricorrenze** (clona alla prossima occorrenza) e notifica via realtime.
 - **Flusso approvazioni**: Sales User → bozza / "Request approval";
   Sales Manager → Approva/Programma/Pubblica subito.
-- Pagina **`/social`**: calendario mensile con chip colorati per stato,
-  composer (contenuto, media upload, selezione account a chip, override per
-  network, data/ora, ricorrenza), lista bozze/in approvazione.
-- Test: `crm/tests/test_social.py`.
+- Pagina **`/social`** (redesign 31/08): calendario mensile Espresso con
+  header giorni, cella "oggi" evidenziata, chip con pallini colorati per
+  piattaforma + bordo colorato per stato, overflow "+N" con dialog del
+  giorno, legenda stati, CTA "Connect profiles" se non ci sono account;
+  composer con chip profilo colorati, contatore caratteri, anteprima
+  immagine, errori per-target visibili sui post falliti.
+- Test: `crm/tests/test_social.py` (incl. sync account da pagine FB/IG).
 
 ## Setup operativo
 
-1. Subito: provider **Manual** (pianificazione+approvazioni funzionano da subito).
-2. Ponte rapido: account **Ayrshare** → API key in CRM Social Settings,
-   `profileKey` per cliente in `provider_account_id`.
-3. Regime: **Postiz self-hosted** sull'infra (Docker) + avviare SUBITO le
-   pratiche: Meta app review, TikTok audit, **LinkedIn (il collo di bottiglia:
-   partire oggi)**, Google OAuth/YouTube audit.
+1. **Percorso consigliato**: provider **Meta** → App ID/Secret in
+   Meta Lead Ads (webhook auto-configurato), "Connect with Facebook",
+   poi "Import connected profiles": FB+IG pubblicano nativamente.
+2. Per le altre reti: **Postiz self-hosted** (Docker) + avviare SUBITO le
+   pratiche (LinkedIn è il collo di bottiglia) oppure ponte **Ayrshare**
+   (zero review, `profileKey` per cliente).
+3. **Manual** resta utile per test e flussi solo-pianificazione.
 
 ## Non incluso (fase 2)
 
