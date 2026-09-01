@@ -53,7 +53,7 @@
         <ListHeader class="sticky top-0 z-10 mx-3 bg-surface-elevation-2">
           <ListHeaderCell>{{ __('Name') }}</ListHeaderCell>
           <ListHeaderCell>{{ __('Document Type') }}</ListHeaderCell>
-          <ListHeaderCell>{{ __('Trigger') }}</ListHeaderCell>
+          <ListHeaderCell>{{ __('Created By') }}</ListHeaderCell>
           <ListHeaderCell>{{ __('Enabled') }}</ListHeaderCell>
         </ListHeader>
         <ListRows
@@ -73,9 +73,12 @@
               </span>
             </ListCell>
             <ListCell>
-              <span class="truncate text-sm">
-                {{ triggerLabel(row.trigger_type) }}
-              </span>
+              <div class="flex min-w-0 items-center gap-2">
+                <UserAvatar :user="row.owner" size="sm" />
+                <span class="truncate text-sm">
+                  {{ getUser(row.owner).full_name }}
+                </span>
+              </div>
             </ListCell>
             <ListCell>
               <div
@@ -131,9 +134,11 @@ import SettingsLayoutBase from '@/components/Layouts/SettingsLayoutBase.vue'
 import EmptyState from '@/components/ListViews/EmptyState.vue'
 import WorkflowAutomationBuilder from './WorkflowAutomationBuilder.vue'
 import WorkflowAutomationDetail from './WorkflowAutomationDetail.vue'
+import UserAvatar from '@/components/UserAvatar.vue'
 import WorkflowIcon from '~icons/lucide/workflow'
 import { ConfirmDelete } from '@/utils'
 import { createDialog } from '@/utils/dialogs'
+import { usersStore } from '@/stores/users'
 import { disableSettingModalOutsideClick } from '@/composables/settings'
 import {
   List,
@@ -154,6 +159,8 @@ import {
   toast,
 } from 'frappe-ui'
 import { computed, onUnmounted, reactive, ref, watch } from 'vue'
+
+const { getUser } = usersStore()
 
 const screen = ref('list')
 const search = ref('')
@@ -180,7 +187,7 @@ const automations = createListResource({
     'name',
     'title',
     'document_type',
-    'trigger_type',
+    'owner',
     'enabled',
     'creation',
     'modified',
@@ -203,7 +210,7 @@ const filteredAutomations = computed(() => {
 
 function matchesSearch(row) {
   const query = search.value.toLowerCase()
-  return [row.title, row.name, row.document_type, row.trigger_type]
+  return [row.title, row.name, row.document_type, getUser(row.owner).full_name]
     .filter(Boolean)
     .some((value) => value.toLowerCase().includes(query))
 }
@@ -269,10 +276,6 @@ function onSaved(saved) {
 
 function reloadList() {
   automations.reload()
-}
-
-function triggerLabel(trigger) {
-  return trigger?.replace(/^Doc /, 'Record ') || __('Not set')
 }
 
 async function toggleAutomation(automation, enabled) {
