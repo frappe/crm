@@ -9,12 +9,12 @@
     :doc="doc"
     :whatsappBox="whatsappBox"
     :modalRef="modalRef"
-    :customPane="Boolean(customTabComponent)"
+    :customPane="Boolean(tabComponent)"
   />
   <FadedScrollableDiv class="flex flex-col h-full overflow-y-auto">
-    <div v-if="customTabComponent" class="flex flex-col h-full">
+    <div v-if="tabComponent" class="flex flex-col h-full">
       <component
-        :is="customTabComponent"
+        :is="tabComponent"
         :doctype="doctype"
         :docname="docname"
         :doc="doc"
@@ -412,10 +412,7 @@
   </FadedScrollableDiv>
   <div>
     <CommunicationArea
-      v-if="
-        !customTabComponent &&
-        ['Emails', 'Comments', 'Activity'].includes(title)
-      "
+      v-if="!tabComponent && ['Emails', 'Comments', 'Activity'].includes(title)"
       ref="emailBox"
       v-model="doc"
       v-model:reload="reload_email"
@@ -423,7 +420,7 @@
       @scroll="scroll"
     />
     <WhatsAppBox
-      v-if="!customTabComponent && title == 'WhatsApp'"
+      v-if="!tabComponent && title == 'WhatsApp'"
       ref="whatsappBox"
       v-model="doc"
       v-model:reply="replyMessage"
@@ -548,9 +545,7 @@ const title = computed(() => props.tabs?.[tabIndex.value]?.name || 'Activity')
 
 const currentTab = computed(() => props.tabs?.[tabIndex.value] || null)
 
-// A tab may bring its own component (see `this.tabs` in CRM Form Scripts).
-// When it does, that component replaces the whole activity pane.
-const customTabComponent = computed(() => currentTab.value?.component || null)
+const tabComponent = computed(() => currentTab.value?.component || null)
 
 const changeTabTo = (tabName) => {
   const tabNames = props.tabs?.map((tab) => tab.name?.toLowerCase())
