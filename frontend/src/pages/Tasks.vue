@@ -213,11 +213,7 @@ import { usersStore } from '@/stores/users'
 import { formatDate } from '@/utils'
 import { timestampCell } from '@/composables/useTimelinePreferences'
 import { useOnboarding, useTelemetry } from 'frappe-ui/frappe'
-<<<<<<< HEAD
-import { Tooltip, Avatar, TextEditor, Dropdown, call } from 'frappe-ui'
-=======
-import { Tooltip, Avatar, Dropdown } from 'frappe-ui'
->>>>>>> a0210a6 (fix: stop kanban three-dot click from opening edit modal, add delete confirmation and explicit edit option)
+import { Tooltip, Avatar, Dropdown, TextEditor } from 'frappe-ui'
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
