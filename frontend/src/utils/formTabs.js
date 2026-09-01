@@ -2,8 +2,8 @@
  * Merge script-contributed tabs into a page's built-in tab list.
  *
  * Built-in tabs always keep their order and identity. A script tab whose `name`
- * matches a built-in tab patches that tab in place (so a script can relabel or
- * re-icon `Emails` without redefining it); anything else is appended.
+ * matches a built-in tab patches that tab in place (so a script can relabel,
+ * re-icon or `hide` `Emails` without redefining it); anything else is appended.
  *
  * Returns a NEW array — never mutates either input.
  *
@@ -36,10 +36,17 @@ export function mergeFormTabs(baseTabs = [], scriptTabs = []) {
 }
 
 /**
- * Apply each tab's optional `condition()` guard.
+ * Apply each tab's `hide` flag and optional `condition()` guard.
  *
- * A tab with no `condition` is always kept. A `condition` that throws is
- * treated as false so one bad script tab cannot blank the whole tab bar.
+ * `hide` drops the tab outright and takes precedence over `condition`. It is
+ * how a script removes a built-in tab: pushing `{ name: 'Comments', hide: true }`
+ * patches the built-in tab through `mergeFormTabs()`, and it is filtered out
+ * here. It may also be a function, evaluated like `condition`.
+ *
+ * A tab with neither is always kept. A `condition` that throws is treated as
+ * false, a `hide` that throws as false too — a broken guard hides at most its
+ * own tab and never blanks the tab bar. Malformed entries are dropped, so
+ * whatever reaches the tab bar is renderable.
  *
  * @param {Array} tabs
  * @returns {Array}
@@ -48,7 +55,9 @@ export function filterVisibleTabs(tabs = []) {
   if (!Array.isArray(tabs)) return []
 
   return tabs.filter((tab) => {
-    if (!tab || typeof tab.condition !== 'function') return true
+    if (!tab || typeof tab !== 'object') return false
+    if (isHidden(tab)) return false
+    if (typeof tab.condition !== 'function') return true
     try {
       return Boolean(tab.condition())
     } catch (error) {
@@ -56,4 +65,14 @@ export function filterVisibleTabs(tabs = []) {
       return false
     }
   })
+}
+
+function isHidden(tab) {
+  if (typeof tab.hide !== 'function') return Boolean(tab.hide)
+  try {
+    return Boolean(tab.hide())
+  } catch (error) {
+    console.error(`CRM: tab "${tab.name}" hide threw`, error)
+    return false
+  }
 }
