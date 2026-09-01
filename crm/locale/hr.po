@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-08-30 14:29+0000\n"
-"PO-Revision-Date: 2026-08-31 18:28\n"
+"PO-Revision-Date: 2026-09-01 18:23\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Croatian\n"
 "MIME-Version: 1.0\n"
@@ -3792,7 +3792,7 @@ msgstr "Nije uspjelo preuzimanje tečaja iz {0} u {1} {2}. Provjerite internetsk
 
 #: frontend/src/components/Activities/Activities.vue:553
 msgid "Failed to load activities"
-msgstr ""
+msgstr "Učitavanje aktivnosti nije uspjelo"
 
 #: frontend/src/components/Modals/FieldLayoutDialog.vue:172
 msgid "Failed to load fields layout"
@@ -9013,7 +9013,7 @@ msgstr "Prekini vezu {0} artikla"
 
 #: crm/api/form.py:413 crm/api/form.py:427
 msgid "Unnamed field"
-msgstr ""
+msgstr "Neimenovano polje"
 
 #: frontend/src/components/ViewControls.vue:1173
 msgid "Unpin View"
@@ -10109,15 +10109,15 @@ msgstr "{0} čeka"
 
 #: crm/api/form.py:413
 msgid "{0} can't be collected by a form"
-msgstr ""
+msgstr "{0} ne može se prikupiti putem obrasca"
 
 #: crm/api/form.py:427
 msgid "{0} can't be set as a hidden field"
-msgstr ""
+msgstr "{0} ne može se postaviti kao skriveno polje"
 
 #: crm/api/form.py:408
 msgid "{0} can't be used as a layout break"
-msgstr ""
+msgstr "{0} ne može se koristiti kao prekid rasporeda"
 
 #: frontend/src/utils/index.js:158
 msgid "{0} d"
