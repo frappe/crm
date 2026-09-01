@@ -12,7 +12,7 @@
         @click="newAutomation"
       />
     </template>
-    <template #header-bottom>
+    <template v-if="showSearch" #header-bottom>
       <div class="relative">
         <Input
           :model-value="search"
@@ -190,6 +190,10 @@ const automations = createListResource({
   pageLength: 999,
   auto: true,
 })
+
+// On the template, not the div inside it: a declared slot still renders the layout's padded
+// wrapper, which leaves a gap where the search box would have been.
+const showSearch = computed(() => search.value || automations.data?.length > 9)
 
 const filteredAutomations = computed(() => {
   const rows = automations.data || []
