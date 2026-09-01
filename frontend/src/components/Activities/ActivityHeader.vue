@@ -165,7 +165,7 @@ const defaultActions = computed(() => {
     {
       icon: h(WhatsAppIcon, { class: 'h-4 w-4' }),
       label: __('WhatsApp Message'),
-      onClick: () => (tabIndex.value = getTabIndex('WhatsApp')),
+      onClick: () => switchToTab('WhatsApp'),
       condition: () => whatsappEnabled.value,
     },
   ]
@@ -174,8 +174,10 @@ const defaultActions = computed(() => {
   )
 })
 
-function getTabIndex(name) {
-  return props.tabs.findIndex((tab) => tab.name === name)
+function switchToTab(name) {
+  const index = props.tabs.findIndex((tab) => tab.name === name)
+  if (index === -1) return
+  tabIndex.value = index
 }
 
 const callActions = computed(() => {

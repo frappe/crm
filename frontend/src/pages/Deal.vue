@@ -791,10 +791,14 @@ const activities = ref(null)
 
 function openEmailBox() {
   let currentTab = tabs.value[tabIndex.value]
-  if (!['Emails', 'Comments', 'Activities'].includes(currentTab.name)) {
+  if (!['Emails', 'Comments', 'Activities'].includes(currentTab?.name)) {
     activities.value.changeTabTo('emails')
   }
-  nextTick(() => (activities.value.emailBox.show = true))
+  // The composer only exists on tabs that render it, and a form script can
+  // hide those, in which case there is nothing to open.
+  nextTick(() => {
+    if (activities.value?.emailBox) activities.value.emailBox.show = true
+  })
 }
 
 function statusLabel(status) {
