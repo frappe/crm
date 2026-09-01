@@ -300,13 +300,71 @@ function updateEnabled(automation) {
 }
 
 function rowOptions(automation) {
-  return ConfirmDelete({
-    isConfirmingDelete: computed({
-      get: () => confirmingDelete.value === automation.name,
-      set: (value) => (confirmingDelete.value = value ? automation.name : ''),
+  return [
+    {
+      label: __('Duplicate'),
+      icon: 'copy',
+      onClick: () => duplicateAutomation(automation),
+    },
+    ...ConfirmDelete({
+      isConfirmingDelete: computed({
+        get: () => confirmingDelete.value === automation.name,
+        set: (value) => (confirmingDelete.value = value ? automation.name : ''),
+      }),
+      onConfirmDelete: () => deleteAutomation(automation),
     }),
-    onConfirmDelete: () => deleteAutomation(automation),
-  })
+  ]
+}
+
+async function duplicateAutomation(automation) {
+  try {
+    const source = await call('frappe.client.get', {
+      doctype: 'Automation Flow',
+      name: automation.name,
+    })
+    await call('frappe.client.insert', { doc: copyOf(source) })
+    toast.success(__('Automation duplicated'))
+    reloadList()
+  } catch (error) {
+    toast.error(error.messages?.[0] || __('Could not duplicate automation'))
+  }
+}
+
+/** A copy starts disabled, so a half-reviewed flow never runs the moment it is saved. */
+function copyOf(source) {
+  return {
+    ...withoutIdentity(source),
+    doctype: 'Automation Flow',
+    title: nextCopyTitle(source.title),
+    enabled: 0,
+    actions: (source.actions || []).map(withoutIdentity),
+  }
+}
+
+const IDENTITY_FIELDS = [
+  'name',
+  'creation',
+  'modified',
+  'owner',
+  'modified_by',
+  'idx',
+  'parent',
+  'parentfield',
+  'parenttype',
+]
+
+function withoutIdentity(row) {
+  const copy = { ...row }
+  IDENTITY_FIELDS.forEach((field) => delete copy[field])
+  return copy
+}
+
+/** "Welcome lead sequence" -> "Welcome lead sequence (1)", skipping names already taken. */
+function nextCopyTitle(title) {
+  const taken = new Set((automations.data || []).map((row) => row.title))
+  let index = 1
+  while (taken.has(`${title} (${index})`)) index += 1
+  return `${title} (${index})`
 }
 
 async function deleteAutomation(automation) {
