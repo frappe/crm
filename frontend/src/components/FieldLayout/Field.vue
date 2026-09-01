@@ -152,7 +152,7 @@
     <Combobox
       v-else-if="field.fieldtype === 'Autocomplete'"
       v-model="data[field.fieldname]"
-      :options="getOptions(field.options)"
+      :options="getAutocompleteOptions(field)"
       :placeholder="getPlaceholder(field)"
       :disabled="Boolean(field.read_only)"
       @update:modelValue="(v) => fieldChange(v, field, data)"
@@ -610,6 +610,35 @@ const getOptions = (options) => {
   } else {
     return []
   }
+}
+
+const getAutocompleteOptions = (field) => {
+  const options = getOptions(field.options)
+  return [
+    ...options,
+    {
+      type: 'custom',
+      key: '__custom_value',
+      label: __('Use custom value'),
+      slots: {
+        label: ({ query }) => __('Use "{0}"', [query.trim()]),
+      },
+      condition: ({ query }) => {
+        const q = (query || '').trim()
+        if (!q) return false
+        return !options.some((opt) => {
+          const isObject = opt !== null && typeof opt === 'object'
+          const value = isObject ? opt.value : opt
+          const label = isObject ? opt.label : opt
+          return String(value ?? '') === q || String(label ?? '') === q
+        })
+      },
+      onClick: ({ query }) => {
+        data.value[field.fieldname] = query.trim()
+        fieldChange(query.trim(), field)
+      },
+    },
+  ]
 }
 
 function isExternalUrl(value) {
