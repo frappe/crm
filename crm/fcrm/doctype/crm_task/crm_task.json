@@ -14,11 +14,20 @@
   "reference_doctype",
   "reference_docname",
   "column_break_cqua",
+  "assignment_type",
   "assigned_to",
+  "assigned_role",
   "status",
   "due_date",
   "section_break_bzhd",
-  "description"
+  "description",
+  "checklist_section",
+  "checklist",
+  "progress_section",
+  "completed_items",
+  "column_break_progress",
+  "total_items",
+  "progress"
  ],
  "fields": [
   {
@@ -46,11 +55,30 @@
    "fieldtype": "Column Break"
   },
   {
+   "default": "User",
+   "fieldname": "assignment_type",
+   "fieldtype": "Select",
+   "in_standard_filter": 1,
+   "label": "Assignment Type",
+   "options": "User\nRole"
+  },
+  {
+   "depends_on": "eval:doc.assignment_type != 'Role'",
    "fieldname": "assigned_to",
    "fieldtype": "Link",
    "in_standard_filter": 1,
    "label": "Assigned To",
    "options": "User"
+  },
+  {
+   "depends_on": "eval:doc.assignment_type == 'Role'",
+   "fieldname": "assigned_role",
+   "fieldtype": "Link",
+   "in_standard_filter": 1,
+   "label": "Assigned Role",
+   "link_filters": "{\"desk_access\": 1, \"disabled\": 0}",
+   "mandatory_depends_on": "eval:doc.assignment_type == 'Role'",
+   "options": "Role"
   },
   {
    "fieldname": "status",
@@ -74,6 +102,47 @@
    "fieldname": "description",
    "fieldtype": "Text Editor",
    "label": "Description"
+  },
+  {
+   "fieldname": "checklist_section",
+   "fieldtype": "Section Break",
+   "label": "Checklist"
+  },
+  {
+   "fieldname": "checklist",
+   "fieldtype": "Table",
+   "label": "Checklist Items",
+   "options": "CRM Task Item"
+  },
+  {
+   "fieldname": "progress_section",
+   "fieldtype": "Section Break",
+   "label": "Progress"
+  },
+  {
+   "default": "0",
+   "fieldname": "completed_items",
+   "fieldtype": "Int",
+   "label": "Completed Items",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_progress",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "total_items",
+   "fieldtype": "Int",
+   "label": "Total Items",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "progress",
+   "fieldtype": "Percent",
+   "label": "Progress",
+   "read_only": 1
   },
   {
    "fieldname": "reference_doctype",

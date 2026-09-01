@@ -227,8 +227,9 @@ def get_call_log(name: str):
 	if call.get("links"):
 		for link in call.get("links"):
 			if link.get("link_doctype") == "CRM Task":
-				task = frappe.get_cached_doc("CRM Task", link.get("link_name")).as_dict()
-				tasks.append(task)
+				task = frappe.get_cached_doc("CRM Task", link.get("link_name"))
+				if frappe.has_permission("CRM Task", "read", doc=task):
+					tasks.append(task.as_dict())
 			elif link.get("link_doctype") == "FCRM Note":
 				note = frappe.get_cached_doc("FCRM Note", link.get("link_name")).as_dict()
 				notes.append(note)

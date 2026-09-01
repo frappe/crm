@@ -1,5 +1,9 @@
 export class CRMTask {
   onRender() {
+    if (!this.doc.assignment_type) {
+      this.doc.assignment_type = 'User'
+    }
+
     if (this.doc.reference_doctype && this.doc.reference_docname) {
       let label = this.doc.reference_doctype.replace('CRM ', '')
 
