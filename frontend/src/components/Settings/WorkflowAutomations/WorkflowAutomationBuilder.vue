@@ -5,17 +5,22 @@
     >
       <div class="flex min-w-0 items-center gap-2">
         <div
-          class="title-sizer text-base"
-          :data-value="doc.title || __('Untitled automation')"
+          class="flex min-w-0 cursor-text items-center gap-1 rounded pr-1.5 transition-colors hover:bg-surface-gray-2"
+          @focusin="selectTitle"
         >
-          <input
-            class="title-input text-ink-gray-8 placeholder:text-ink-gray-4 focus-visible:outline-none"
-            :value="doc.title"
-            :aria-label="__('Automation title')"
-            :placeholder="__('Untitled automation')"
-            @focus="$event.target.select()"
-            @input="setTitle($event.target.value)"
-          />
+          <div
+            class="title-sizer text-base"
+            :data-value="doc.title || __('Untitled automation')"
+          >
+            <TextInput
+              variant="ghost"
+              :model-value="doc.title"
+              :aria-label="__('Automation title')"
+              :placeholder="__('Untitled automation')"
+              @update:model-value="setTitle"
+            />
+          </div>
+          <EditIcon class="size-3.5 shrink-0 text-ink-gray-4" />
         </div>
         <Badge
           v-if="!doc.enabled"
@@ -141,7 +146,8 @@ import {
   toRows,
   toTree,
 } from './workflowSteps'
-import { Badge, Button, Dialog, call, toast } from 'frappe-ui'
+import EditIcon from '~icons/lucide/pencil'
+import { Badge, Button, Dialog, TextInput, call, toast } from 'frappe-ui'
 import { computed, reactive, ref, watch } from 'vue'
 
 const props = defineProps({
@@ -294,6 +300,11 @@ function adoptSaved(saved) {
 
 function setTitle(title) {
   doc.title = title
+}
+
+/** Focus lands on the inner input, so select from the wrapper the icon shares. */
+function selectTitle(event) {
+  if (event.target instanceof HTMLInputElement) event.target.select()
 }
 
 function normalizeRow(row) {
@@ -549,36 +560,28 @@ function cleanMessage(message) {
 }
 
 .title-sizer::after,
-.title-input {
+.title-sizer > * {
   grid-area: 1 / 1;
-  min-width: 6rem;
-  border: 1px solid transparent;
-  border-radius: 6px;
-  padding: 4px 8px;
-  font: inherit;
-  letter-spacing: inherit;
 }
 
+/* Matches TextInput's sm padding so the mirror and the field measure the same. */
 .title-sizer::after {
   content: attr(data-value);
   visibility: hidden;
   white-space: pre;
+  min-width: 6rem;
+  padding: 0 8px;
+  font: inherit;
+  letter-spacing: inherit;
 }
 
-.title-input {
+.title-sizer :deep(input) {
   cursor: text;
-  overflow: hidden;
   background: transparent;
-  outline: none;
   text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
-.title-input:focus {
-  border-color: var(--outline-gray-3);
-}
-
-.title-input::selection {
+.title-sizer :deep(input::selection) {
   background: var(--surface-gray-3, #e2e8f0);
 }
 </style>
