@@ -10,8 +10,9 @@
           @click="$emit('back')"
         />
         <div class="flex min-w-0 flex-col gap-1">
-          <div class="flex items-center gap-2">
-            <h2 class="truncate text-2xl-semibold leading-none">
+          <!-- min-h-7 matches the back button, so top-aligning centres them on each other. -->
+          <div class="flex min-h-7 items-center gap-2">
+            <h2 class="truncate text-2xl-semibold">
               {{ doc.title || __('Automation') }}
             </h2>
             <Badge
