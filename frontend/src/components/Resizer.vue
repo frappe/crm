@@ -24,7 +24,19 @@ const props = defineProps({
 })
 
 const sidebarResizing = ref(false)
-const sidebarWidth = ref(props.defaultWidth)
+const sidebarWidth = ref(getInitialWidth())
+
+function getInitialWidth() {
+  let storedWidth = Number(localStorage.getItem('sidebarWidth'))
+  if (
+    storedWidth &&
+    storedWidth >= props.minWidth &&
+    storedWidth <= props.maxWidth
+  ) {
+    return storedWidth
+  }
+  return props.defaultWidth
+}
 
 function startResize() {
   document.addEventListener('mousemove', resize)
