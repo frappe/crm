@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-08-30 14:29+0000\n"
-"PO-Revision-Date: 2026-08-31 18:28\n"
+"PO-Revision-Date: 2026-09-01 18:23\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Persian\n"
 "MIME-Version: 1.0\n"
@@ -3792,7 +3792,7 @@ msgstr ""
 
 #: frontend/src/components/Activities/Activities.vue:553
 msgid "Failed to load activities"
-msgstr ""
+msgstr "بارگیری فعالیت‌ها ناموفق بود"
 
 #: frontend/src/components/Modals/FieldLayoutDialog.vue:172
 msgid "Failed to load fields layout"
@@ -5465,7 +5465,7 @@ msgstr "متوسط"
 #. Option for the 'Type' (Select) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
 msgid "Mention"
-msgstr "اشاره"
+msgstr ""
 
 #: frontend/src/components/Notifications.vue:120
 msgid "Mentions"
@@ -9013,7 +9013,7 @@ msgstr ""
 
 #: crm/api/form.py:413 crm/api/form.py:427
 msgid "Unnamed field"
-msgstr ""
+msgstr "فیلد بدون نام"
 
 #: frontend/src/components/ViewControls.vue:1173
 msgid "Unpin View"
@@ -10109,15 +10109,15 @@ msgstr "{0} در انتظار"
 
 #: crm/api/form.py:413
 msgid "{0} can't be collected by a form"
-msgstr ""
+msgstr "{0} نمی‌تواند توسط یک فرم جمع‌آوری شود"
 
 #: crm/api/form.py:427
 msgid "{0} can't be set as a hidden field"
-msgstr ""
+msgstr "{0} نمی‌تواند به عنوان یک فیلد مخفی تنظیم شود"
 
 #: crm/api/form.py:408
 msgid "{0} can't be used as a layout break"
-msgstr ""
+msgstr "{0} نمی‌تواند به عنوان یک شکست در چیدمان استفاده شود"
 
 #: frontend/src/utils/index.js:158
 msgid "{0} d"
