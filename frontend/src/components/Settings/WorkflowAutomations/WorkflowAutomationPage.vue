@@ -13,7 +13,7 @@
       />
     </template>
     <template #header-bottom>
-      <div v-if="showSearch" class="relative">
+      <div class="relative">
         <Input
           :model-value="search"
           :placeholder="__('Search')"
@@ -190,8 +190,6 @@ const automations = createListResource({
   pageLength: 999,
   auto: true,
 })
-
-const showSearch = computed(() => search.value || automations.data?.length > 9)
 
 const filteredAutomations = computed(() => {
   const rows = automations.data || []
