@@ -177,14 +177,12 @@
                 })
             "
           />
-          <button
+          <WebsiteLink
             v-else-if="column.key === 'website' && item?.url"
-            type="button"
-            class="w-full truncate bg-transparent p-0 text-left text-base cursor-pointer hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-outline-gray-4 focus-visible:ring-offset-1 rounded"
-            @click.stop.prevent="openWebsite(item.url)"
-          >
-            {{ getLabel(label, column) }}
-          </button>
+            variant="label"
+            :url="item.url"
+            :label="getLabel(label, column)"
+          />
           <div
             v-else-if="label"
             class="truncate text-base"
@@ -203,11 +201,10 @@
           </div>
         </template>
         <template #suffix>
-          <span
+          <WebsiteLink
             v-if="column.key === 'website' && item?.url"
-            class="lucide-external-link h-3.5 w-3.5 shrink-0 cursor-pointer text-ink-gray-5"
-            aria-hidden="true"
-            @click.stop.prevent="openWebsite(item.url)"
+            variant="icon"
+            :url="item.url"
           />
         </template>
       </ListRowItem>
@@ -243,7 +240,8 @@ import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import RatingInput from '@/components/Controls/RatingInput.vue'
 import ListBulkActions from '@/components/ListBulkActions.vue'
 import ListRows from '@/components/ListViews/ListRows.vue'
-import { isTranslatable, formatDuration, openWebsite } from '@/utils'
+import WebsiteLink from '@/components/ListViews/WebsiteLink.vue'
+import { isTranslatable, formatDuration } from '@/utils'
 import {
   Avatar,
   ListView,
