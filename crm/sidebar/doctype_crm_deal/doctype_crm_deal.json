@@ -1,0 +1,82 @@
+{
+ "app": "crm",
+ "creation": "2026-09-02 18:44:27.377261",
+ "docstatus": 0,
+ "doctype": "Sidebar",
+ "idx": 0,
+ "items": [],
+ "link_doctype": "DocType",
+ "link_to": "CRM Deal",
+ "modified": "2026-09-02 18:44:27.377261",
+ "modified_by": "Administrator",
+ "name": "doctype_crm_deal",
+ "navigation_items": [
+  {
+   "added": 0,
+   "collapsible": 0,
+   "hidden": 0,
+   "icon": "handshake",
+   "item_type": "DocType",
+   "keep_closed": 0,
+   "key": "deals",
+   "label": "All Deals",
+   "link_doctype": "DocType",
+   "link_to": "CRM Deal",
+   "switches_app": 0
+  },
+  {
+   "added": 0,
+   "collapsible": 1,
+   "hidden": 0,
+   "item_type": "Section",
+   "keep_closed": 1,
+   "key": "deals-configure",
+   "label": "Configure",
+   "link_doctype": "",
+   "switches_app": 0
+  },
+  {
+   "added": 0,
+   "collapsible": 0,
+   "hidden": 0,
+   "item_type": "DocType",
+   "keep_closed": 0,
+   "key": "deal-statuses",
+   "label": "Statuses",
+   "link_doctype": "DocType",
+   "link_to": "CRM Deal Status",
+   "parent_key": "deals-configure",
+   "switches_app": 0
+  },
+  {
+   "added": 0,
+   "collapsible": 0,
+   "hidden": 0,
+   "item_type": "DocType",
+   "keep_closed": 0,
+   "key": "products",
+   "label": "Products",
+   "link_doctype": "DocType",
+   "link_to": "CRM Product",
+   "parent_key": "deals-configure",
+   "switches_app": 0
+  },
+  {
+   "added": 0,
+   "collapsible": 0,
+   "hidden": 0,
+   "item_type": "DocType",
+   "keep_closed": 0,
+   "key": "territories",
+   "label": "Territories",
+   "link_doctype": "DocType",
+   "link_to": "CRM Territory",
+   "parent_key": "deals-configure",
+   "switches_app": 0
+  }
+ ],
+ "owner": "Administrator",
+ "standard": 1,
+ "title": "Deals",
+ "user": ""
+}

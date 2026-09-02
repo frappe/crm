@@ -27,15 +27,30 @@ jobs:
         outputs:
             frappe-branches: ${{ steps.resolve.outputs.branches }}
         steps:
+            - name: Clone
+              uses: actions/checkout@v6
+
+            - name: Pair a working branch with frappe's branch of the same name
+              id: pair
+              if: github.base_ref != 'main' && github.base_ref != 'main-hotfix'
+              uses: ./.github/actions/resolve-frappe-branch
+              with:
+                  base: ${{ github.base_ref || github.ref_name }}
+
             - name: Resolve frappe branches from target branch
               id: resolve
               run: |
                   BASE="${{ github.base_ref || github.ref_name }}"
-                  # develop tracks frappe develop; the stable lane ships frappe 15 and 16.
-                  if [ "$BASE" = "develop" ]; then
-                      echo 'branches=["develop"]' >> "$GITHUB_OUTPUT"
-                  else
+                  # The stable lane ships frappe 15 and 16, and frappe has no `main` or
+                  # `main-hotfix` branch to pair with, so it is named rather than probed.
+                  #
+                  # Everything else runs against frappe's branch of the same name: `develop`
+                  # against develop as before, and a working branch such as `desk-v2` against
+                  # its counterpart, which is where the doctypes that branch's code needs live.
+                  if [ "$BASE" = "main" ] || [ "$BASE" = "main-hotfix" ]; then
                       echo 'branches=["version-15","version-16"]' >> "$GITHUB_OUTPUT"
+                  else
+                      echo "branches=[\"${{ steps.pair.outputs.branch }}\"]" >> "$GITHUB_OUTPUT"
                   fi
 
     test:

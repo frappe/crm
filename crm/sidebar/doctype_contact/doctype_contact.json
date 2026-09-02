@@ -1,0 +1,44 @@
+{
+ "app": "crm",
+ "creation": "2026-09-02 18:44:27.384145",
+ "docstatus": 0,
+ "doctype": "Sidebar",
+ "idx": 0,
+ "items": [],
+ "link_doctype": "DocType",
+ "link_to": "Contact",
+ "modified": "2026-09-02 18:44:27.384145",
+ "modified_by": "Administrator",
+ "name": "doctype_contact",
+ "navigation_items": [
+  {
+   "added": 0,
+   "collapsible": 0,
+   "hidden": 0,
+   "icon": "contact-round",
+   "item_type": "DocType",
+   "keep_closed": 0,
+   "key": "contacts",
+   "label": "All Contacts",
+   "link_doctype": "DocType",
+   "link_to": "Contact",
+   "switches_app": 0
+  },
+  {
+   "added": 0,
+   "collapsible": 0,
+   "hidden": 0,
+   "item_type": "DocType",
+   "keep_closed": 0,
+   "key": "call-logs",
+   "label": "Call Logs",
+   "link_doctype": "DocType",
+   "link_to": "CRM Call Log",
+   "switches_app": 0
+  }
+ ],
+ "owner": "Administrator",
+ "standard": 1,
+ "title": "Contacts",
+ "user": ""
+}

@@ -1,0 +1,82 @@
+{
+ "app": "crm",
+ "creation": "2026-09-02 18:44:27.199524",
+ "docstatus": 0,
+ "doctype": "Sidebar",
+ "idx": 0,
+ "items": [],
+ "link_doctype": "DocType",
+ "link_to": "CRM Lead",
+ "modified": "2026-09-02 18:44:27.199524",
+ "modified_by": "Administrator",
+ "name": "doctype_crm_lead",
+ "navigation_items": [
+  {
+   "added": 0,
+   "collapsible": 0,
+   "hidden": 0,
+   "icon": "users",
+   "item_type": "DocType",
+   "keep_closed": 0,
+   "key": "leads",
+   "label": "All Leads",
+   "link_doctype": "DocType",
+   "link_to": "CRM Lead",
+   "switches_app": 0
+  },
+  {
+   "added": 0,
+   "collapsible": 1,
+   "hidden": 0,
+   "item_type": "Section",
+   "keep_closed": 1,
+   "key": "leads-configure",
+   "label": "Configure",
+   "link_doctype": "",
+   "switches_app": 0
+  },
+  {
+   "added": 0,
+   "collapsible": 0,
+   "hidden": 0,
+   "item_type": "DocType",
+   "keep_closed": 0,
+   "key": "lead-statuses",
+   "label": "Statuses",
+   "link_doctype": "DocType",
+   "link_to": "CRM Lead Status",
+   "parent_key": "leads-configure",
+   "switches_app": 0
+  },
+  {
+   "added": 0,
+   "collapsible": 0,
+   "hidden": 0,
+   "item_type": "DocType",
+   "keep_closed": 0,
+   "key": "lead-sources",
+   "label": "Sources",
+   "link_doctype": "DocType",
+   "link_to": "CRM Lead Source",
+   "parent_key": "leads-configure",
+   "switches_app": 0
+  },
+  {
+   "added": 0,
+   "collapsible": 0,
+   "hidden": 0,
+   "item_type": "DocType",
+   "keep_closed": 0,
+   "key": "lost-reasons",
+   "label": "Lost Reasons",
+   "link_doctype": "DocType",
+   "link_to": "CRM Lost Reason",
+   "parent_key": "leads-configure",
+   "switches_app": 0
+  }
+ ],
+ "owner": "Administrator",
+ "standard": 1,
+ "title": "Leads",
+ "user": ""
+}
