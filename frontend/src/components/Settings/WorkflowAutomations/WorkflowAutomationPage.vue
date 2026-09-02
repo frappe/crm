@@ -73,23 +73,19 @@
               </span>
             </ListCell>
             <ListCell>
-              <div class="flex min-w-0 items-center gap-2">
+              <Tooltip :text="getUser(row.owner).full_name">
                 <UserAvatar :user="row.owner" size="sm" />
-                <span class="truncate text-sm">
-                  {{ getUser(row.owner).full_name }}
-                </span>
-              </div>
+              </Tooltip>
             </ListCell>
             <ListCell>
               <div
                 class="flex w-full items-center justify-between pr-1"
                 @click.stop
               >
-                <Switch
-                  size="sm"
-                  :model-value="Boolean(row.enabled)"
-                  :disabled="toggling.has(row.name)"
-                  @update:model-value="toggleAutomation(row, $event)"
+                <Badge
+                  :label="row.enabled ? __('Enabled') : __('Draft')"
+                  :theme="row.enabled ? 'green' : 'orange'"
+                  variant="subtle"
                 />
                 <Dropdown placement="right" :options="rowOptions(row)">
                   <Button
@@ -149,11 +145,12 @@ import {
   ListRows,
 } from 'frappe-ui/list'
 import {
+  Badge,
   Button,
   Dialog,
   Dropdown,
   LoadingIndicator,
-  Switch,
+  Tooltip,
   call,
   createListResource,
   toast,
@@ -279,6 +276,7 @@ function reloadList() {
 }
 
 async function toggleAutomation(automation, enabled) {
+  if (toggling.has(automation.name)) return
   const previous = automation.enabled
   automation.enabled = enabled ? 1 : 0
   toggling.add(automation.name)
@@ -304,6 +302,11 @@ function updateEnabled(automation) {
 
 function rowOptions(automation) {
   return [
+    {
+      label: automation.enabled ? __('Disable') : __('Enable'),
+      icon: automation.enabled ? 'toggle-left' : 'toggle-right',
+      onClick: () => toggleAutomation(automation, !automation.enabled),
+    },
     {
       label: __('Duplicate'),
       icon: 'copy',
