@@ -329,6 +329,7 @@ import ButtonControl, {
 } from '@/components/Controls/ButtonControl.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
+import ArrowUpRightIcon from '@/components/Icons/ArrowUpRightIcon.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import TableMultiselectInput from '@/components/Controls/TableMultiselectInput.vue'
 import Link from '@/components/Controls/Link.vue'
@@ -613,6 +614,14 @@ const getOptions = (options) => {
   } else {
     return []
   }
+}
+
+function isExternalUrl(value) {
+  return typeof value === 'string' && /^https?:\/\//i.test(value.trim())
+}
+
+function openExternalUrl(value) {
+  window.open(value.trim(), '_blank', 'noopener,noreferrer')
 }
 
 async function handleButtonClick(field) {
