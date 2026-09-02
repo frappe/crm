@@ -177,6 +177,12 @@
                 })
             "
           />
+          <WebsiteLink
+            v-else-if="column.key === 'website' && item?.url"
+            variant="label"
+            :url="item.url"
+            :label="getLabel(label, column)"
+          />
           <div
             v-else-if="label"
             class="truncate text-base"
@@ -196,6 +202,13 @@
           >
             {{ getLabel(label, column) }}
           </div>
+        </template>
+        <template #suffix>
+          <WebsiteLink
+            v-if="column.key === 'website' && item?.url"
+            variant="icon"
+            :url="item.url"
+          />
         </template>
       </ListRowItem>
     </ListRows>
@@ -230,6 +243,7 @@ import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import RatingInput from '@/components/Controls/RatingInput.vue'
 import ListBulkActions from '@/components/ListBulkActions.vue'
 import ListRows from '@/components/ListViews/ListRows.vue'
+import WebsiteLink from '@/components/ListViews/WebsiteLink.vue'
 import { isTranslatable, formatDuration } from '@/utils'
 import {
   Avatar,
