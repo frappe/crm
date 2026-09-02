@@ -66,12 +66,9 @@
 
 <script setup>
 import Link from '@/components/Controls/Link.vue'
-<<<<<<< HEAD
 import TextEditorControl from '@/components/Controls/TextEditorControl.vue'
-=======
 import { statusesStore } from '@/stores/statuses'
 import { createDocument } from '@/composables/document'
->>>>>>> 6bfbd08 (fix: bulk edit silently reports success when records fail to save)
 import { useTelemetry } from 'frappe-ui/frappe'
 import {
   Combobox,
@@ -79,11 +76,7 @@ import {
   ErrorMessage,
   call,
   createResource,
-<<<<<<< HEAD
-=======
   toast,
-  TextEditor,
->>>>>>> 6bfbd08 (fix: bulk edit silently reports success when records fail to save)
   DatePicker,
 } from 'frappe-ui'
 import { ref, computed, onMounted, h } from 'vue'
