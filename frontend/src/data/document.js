@@ -5,7 +5,13 @@ import { useAttachments } from '@/composables/useAttachments'
 import { showSettings, activeSettingsPage } from '@/composables/settings'
 import { runSequentially, parseAssignees, sanitizeText } from '@/utils'
 import { findMissingMandatory } from '@/utils/fieldTransforms'
-import { createDocumentResource, createResource, toast } from 'frappe-ui'
+import {
+  getFetchSource,
+  getFieldsToFetch,
+  getPendingFetchFields,
+  getSourceFieldnames,
+} from '@/utils/fetchFrom'
+import { call, createDocumentResource, createResource, toast } from 'frappe-ui'
 import { ref, reactive, getCurrentInstance } from 'vue'
 
 const documentsCache = {}
@@ -272,6 +278,57 @@ export function useDocument(doctype, docname, resourceOverrides = {}) {
     await trigger(handler)
   }
 
+  async function fetchLinkValues(linkDoctype, linkValue, sourceFieldnames) {
+    try {
+      return await call('frappe.client.get_value', {
+        doctype: linkDoctype,
+        filters: linkValue,
+        fieldname: sourceFieldnames,
+      })
+    } catch (error) {
+      // the server sets these again on save, so a failed preview can be ignored
+      console.warn('Could not fetch linked values from', linkDoctype, error)
+      return {}
+    }
+  }
+
+  function setFetchedValues(target, fields, linkValues) {
+    fields.forEach((f) => {
+      const { source } = getFetchSource(f.fetch_from)
+      target[f.fieldname] = linkValues[source] ?? null
+    })
+  }
+
+  async function applyFetchFrom(fieldname, value, row) {
+    const target = row || documentsCache[doctype][docname || ''].doc
+    const targetDoctype = row?.doctype || doctype
+    const fields = getMeta(targetDoctype).doctypeMeta.value?.fields || []
+
+    const linkDf = fields.find((f) => f.fieldname === fieldname)
+    if (typeof linkDf?.options !== 'string') return
+
+    const fieldsToFetch = getFieldsToFetch(fields, fieldname)
+    if (!fieldsToFetch.length) return
+
+    if (!value) {
+      fieldsToFetch.forEach((f) => (target[f.fieldname] = null))
+      return
+    }
+
+    const pending = getPendingFetchFields(fields, fieldname, target)
+    if (!pending.length) return
+
+    const linkValues = await fetchLinkValues(
+      linkDf.options,
+      value,
+      getSourceFieldnames(pending),
+    )
+    // frappe.client.get_value applies permissions, an unreadable link returns {}
+    if (!Object.keys(linkValues).length) return
+
+    setFetchedValues(target, pending, linkValues)
+  }
+
   async function triggerOnChange(fieldname, _value, row) {
     const value = sanitizeText(_value)
     let oldValue = null
@@ -283,6 +340,8 @@ export function useDocument(doctype, docname, resourceOverrides = {}) {
       documentsCache[doctype][docname || ''].doc[fieldname] = value
       trackOldFile(oldValue, value)
     }
+
+    await applyFetchFrom(fieldname, value, row)
 
     const handler = async function () {
       this.value = value
