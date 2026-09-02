@@ -16,22 +16,16 @@ from dataclasses import dataclass, field
 
 import frappe
 
-# DocType -> the Settings checkbox that enables enrichment for it. Single source of
-# truth shared by the manual (api) and auto-enrich (tasks) paths.
-ENABLE_FLAG_BY_DOCTYPE = {
-	"CRM Lead": "enable_lead",
-	"CRM Deal": "enable_deal",
-	"CRM Organization": "enable_organization",
-}
+# The doctypes enrichment runs on. Single source of truth shared by the manual (api)
+# and auto-enrich (tasks) paths, and the allow-list the whitelisted API checks a
+# caller-supplied doctype against.
+ENRICHABLE_DOCTYPES = ("CRM Lead", "CRM Deal", "CRM Organization")
 
 
 # Sensible fallbacks applied when the Single doctype has not been saved yet (the
 # JSON field defaults only populate a freshly-created row, which may not exist).
 DEFAULT_SETTINGS = {
 	"enabled": 1,
-	"enable_lead": 1,
-	"enable_deal": 1,
-	"enable_organization": 1,
 	"auto_enrich": 0,
 	"max_pages": 10,
 	"max_depth": 2,
@@ -43,8 +37,6 @@ DEFAULT_SETTINGS = {
 		"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
 		"(KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
 	),
-	"preview_max_pages": 1,
-	"preview_timeout": 8,
 }
 
 
@@ -66,11 +58,12 @@ def get_settings():
 
 def auto_enrich_enabled_for(doctype: str) -> bool:
 	"""True if auto-enrich-on-create should fire for ``doctype``. A cheap,
-	Settings-only check (feature enabled + auto_enrich on + this doctype enabled) --
+	Settings-only check (feature enabled + auto_enrich on + an enrichable doctype) --
 	no Rules/Mappings assembled."""
 	s = get_settings()
-	flag = ENABLE_FLAG_BY_DOCTYPE.get(doctype)
-	return bool(_setting(s, "enabled") and _setting(s, "auto_enrich") and flag and _setting(s, flag))
+	return bool(
+		_setting(s, "enabled") and _setting(s, "auto_enrich") and doctype in ENRICHABLE_DOCTYPES
+	)
 
 
 # Industry classifier thresholds. These are mechanics (how confident the winner

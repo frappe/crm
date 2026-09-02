@@ -13,7 +13,6 @@ errors/notes on the result.
 
 from __future__ import annotations
 
-from dataclasses import replace
 from urllib.parse import urlparse
 
 from . import extractors
@@ -21,10 +20,6 @@ from .config import EnrichmentConfig, get_config
 from .crawler import crawl, probe_about_pages
 from .http import build_session
 from .result import EnrichmentResult, Field, Method
-
-# A preview only needs the document <head> (JSON-LD / OG / meta), which sits near the
-# top -- cap the download well below the full run's max_download_bytes.
-PREVIEW_MAX_DOWNLOAD_BYTES = 512_000
 
 PROGRESS_STEPS = [
 	"Discovering pages",
@@ -49,55 +44,6 @@ def _normalize_website(url: str) -> str:
 	if not parsed.netloc:
 		raise ValueError(f"invalid URL: {url}")
 	return url
-
-
-def preview(website: str, cfg: EnrichmentConfig = None) -> EnrichmentResult:
-	"""Fast, metadata-only prefill for the create-record modal.
-
-	Fetches ONLY the homepage and reads ONLY the metadata the site declares about
-	itself in its ``<head>`` -- JSON-LD / Open Graph / meta tags / favicon, plus the
-	JSON-LD ``sameAs`` social links. It deliberately does NOT run the body-text
-	extractors (description body-scan, emails, phones) or the industry classifier:
-	those are the full ``run`` path's job, which fires as a background job once the
-	record is saved, so spending synchronous request time on them here is wasted work.
-
-	Homepage-only (no crawl), short timeout, small download cap. SSRF is enforced by
-	``fetch`` inside ``crawl``. Never raises -- failures land in ``result.notes``.
-	"""
-	website = _normalize_website(website)
-	cfg = cfg or get_config()
-	result = EnrichmentResult(website=website)
-
-	# Bounded fetch: short preview timeout + head-sized download cap, homepage only.
-	fetch_cfg = replace(
-		cfg,
-		settings={
-			**cfg.settings,
-			"request_timeout": cfg.setting("preview_timeout", 8),
-			"max_download_bytes": PREVIEW_MAX_DOWNLOAD_BYTES,
-			"max_pages": 1,
-			"max_depth": 0,
-		},
-	)
-
-	crawled = crawl(website, fetch_cfg)
-	homepage, home_soup = crawled[0] if crawled else (None, None)
-	if home_soup is None:
-		result.notes.append(
-			(homepage.error if homepage else "") or extractors.READABILITY_MESSAGES["unreachable"]
-		)
-		return result
-
-	# Metadata only: name / description / logo / sameAs social links from the <head>.
-	company = extractors.extract_company_info(homepage, home_soup)
-	result.company_name = company.get("company_name") or Field()
-	result.description = company.get("description") or Field()
-	result.logo = company.get("logo") or Field()
-	result.image = company.get("image") or Field()
-	result.social_profiles = extractors.extract_social_profiles(
-		[], {}, cfg.rules("Social"), extra_links=company.get("social_links")
-	)
-	return result
 
 
 def run(website: str, cfg: EnrichmentConfig = None, progress=None) -> EnrichmentResult:
@@ -144,8 +90,7 @@ def run(website: str, cfg: EnrichmentConfig = None, progress=None) -> Enrichment
 
 		# If the BFS didn't surface an About page, probe the common paths -- it's the
 		# best source of a company description (and helps industry/contacts too). Only
-		# when the page budget allows more fetches, so the synchronous preview
-		# (max_pages=1) doesn't tie up a web worker on extra probes.
+		# when the page budget allows more fetches.
 		max_pages = int(cfg.setting("max_pages", 10) or 10)
 		if home_soup and len(pages) < max_pages and not any(extractors._is_about_page(p.url) for p in pages):
 			for page, soup in probe_about_pages(
