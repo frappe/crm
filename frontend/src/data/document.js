@@ -352,11 +352,11 @@ export function useDocument(doctype, docname, resourceOverrides = {}) {
     const pending = getPendingFetchFields(fields, fieldname, target)
     if (!pending.length) return
 
-    const linkValues = await fetchLinkValues(
-      linkDf.options,
-      value,
-      getSourceFieldnames(pending),
-    )
+    const sources = getSourceFieldnames(pending)
+    const linkValues = await fetchLinkValues(linkDf.options, value, sources)
+
+    // the link may have been changed again while this request was in flight
+    if (target[fieldname] !== value) return
     // frappe.client.get_value applies permissions, an unreadable link returns {}
     if (!Object.keys(linkValues).length) return
 
