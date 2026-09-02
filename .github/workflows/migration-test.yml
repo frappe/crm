@@ -44,13 +44,25 @@ jobs:
               with:
                   path: pr-crm
 
+            # Checked out above, so the action is under `pr-crm` rather than at the workspace root.
+            - name: Pair a working branch with frappe's branch of the same name
+              id: pair
+              if: env.BASE_BRANCH != 'main' && env.BASE_BRANCH != 'main-hotfix'
+              uses: ./pr-crm/.github/actions/resolve-frappe-branch
+              with:
+                  base: ${{ github.base_ref || github.ref_name }}
+
             - name: Resolve frappe branch for base
               id: frappe
               run: |
-                  # Stable lanes run on frappe version-15; develop tracks frappe develop.
+                  # Stable lanes run on frappe version-15, and frappe has no `main` or
+                  # `main-hotfix` branch to pair with. Everything else runs against frappe's
+                  # branch of the same name: `develop` against develop as before, and a working
+                  # branch such as `desk-v2` against its counterpart, without which the base
+                  # branch's own fixtures have no doctypes to install into.
                   case "$BASE_BRANCH" in
                       main|main-hotfix) echo "branch=version-15" >> "$GITHUB_OUTPUT" ;;
-                      *)                echo "branch=develop"    >> "$GITHUB_OUTPUT" ;;
+                      *) echo "branch=${{ steps.pair.outputs.branch }}" >> "$GITHUB_OUTPUT" ;;
                   esac
 
             - name: Setup Python

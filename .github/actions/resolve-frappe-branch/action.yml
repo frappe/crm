@@ -1,0 +1,40 @@
+name: Resolve Frappe Branch
+description: >
+    Pick the frappe branch to build a bench from, given the CRM branch a workflow is running
+    against. A working branch such as `desk-v2` exists in both repositories and has to be paired
+    with its counterpart, or CRM installs against a frappe that does not have the code it needs.
+inputs:
+    base:
+        description: The CRM branch being built -- `github.base_ref` on a pull request
+        required: true
+    fallback:
+        description: The frappe branch to use when frappe has no branch of that name
+        required: false
+        default: "develop"
+outputs:
+    branch:
+        description: The frappe branch to install
+        value: ${{ steps.resolve.outputs.branch }}
+runs:
+    using: composite
+    steps:
+        - name: Resolve
+          id: resolve
+          shell: bash
+          run: |
+              BRANCH="${{ inputs.base }}"
+
+              # `--exit-code` reports 2 for a branch that is not there and 128 for a remote it
+              # could not reach. Only the first is proof of absence; keep the name on anything
+              # else, so a flaky probe cannot quietly install an unrelated frappe.
+              probe=0
+              git ls-remote --exit-code --heads "https://github.com/frappe/frappe" "$BRANCH" >/dev/null 2>&1 || probe=$?
+
+              if [ "$probe" -eq 2 ]; then
+                  echo "frappe has no branch ${BRANCH}, using ${{ inputs.fallback }}"
+                  BRANCH="${{ inputs.fallback }}"
+              elif [ "$probe" -ne 0 ]; then
+                  echo "could not reach frappe to check for branch ${BRANCH} (git ls-remote exited ${probe}), keeping it"
+              fi
+
+              echo "branch=${BRANCH}" >> "$GITHUB_OUTPUT"
