@@ -23,12 +23,6 @@
           <EditIcon class="size-3.5 shrink-0 text-ink-gray-4" />
         </div>
         <Badge
-          v-if="!doc.enabled"
-          :label="__('Draft')"
-          theme="orange"
-          variant="subtle"
-        />
-        <Badge
           v-if="dirty"
           :label="__('Unsaved')"
           theme="gray"
@@ -36,18 +30,6 @@
         />
       </div>
       <div class="flex items-center gap-2">
-        <Button
-          :label="__('Test Run')"
-          icon-left="lucide-flask-conical"
-          :disabled="!automationName || dirty"
-          :tooltip="dirty ? __('Save the flow before testing it') : ''"
-          @click="showTrial = true"
-        />
-        <Button
-          :label="doc.enabled ? __('Disable') : __('Enable')"
-          :disabled="!doc.trigger_type"
-          @click="doc.enabled = doc.enabled ? 0 : 1"
-        />
         <Button
           :label="__('Save')"
           variant="solid"
@@ -64,6 +46,33 @@
       </div>
     </div>
     <div
+      class="flex shrink-0 items-center justify-between border-b border-outline-gray-2 px-4 py-2"
+    >
+      <TabButtons v-model="tab" :options="tabOptions" />
+      <div class="flex items-center gap-2">
+        <span class="text-sm text-ink-gray-6">
+          {{ doc.enabled ? __('Enabled') : __('Disabled') }}
+        </span>
+        <Switch
+          size="sm"
+          :model-value="Boolean(doc.enabled)"
+          :disabled="!doc.trigger_type"
+          @update:model-value="doc.enabled = $event ? 1 : 0"
+        />
+      </div>
+    </div>
+    <div v-if="tab === 'test'" class="min-h-0 flex-1 overflow-y-auto p-4">
+      <AutomationTrialRun
+        v-if="canTest"
+        :automation-name="automationName"
+        :doctype="doc.document_type"
+      />
+      <p v-else class="text-sm text-ink-gray-5">
+        {{ __('Save the flow before testing it.') }}
+      </p>
+    </div>
+    <div
+      v-else
       ref="panes"
       class="grid min-h-0 flex-1"
       :style="{ gridTemplateColumns: paneColumns }"
@@ -116,14 +125,6 @@
         />
       </div>
     </div>
-    <Dialog v-model:open="showTrial" :title="__('Test Run')">
-      <template #default>
-        <AutomationTrialRun
-          :automation-name="automationName"
-          :doctype="doc.document_type"
-        />
-      </template>
-    </Dialog>
   </div>
 </template>
 
@@ -147,7 +148,15 @@ import {
   toTree,
 } from './workflowSteps'
 import EditIcon from '~icons/lucide/pencil'
-import { Badge, Button, Dialog, TextInput, call, toast } from 'frappe-ui'
+import {
+  Badge,
+  Button,
+  Switch,
+  TabButtons,
+  TextInput,
+  call,
+  toast,
+} from 'frappe-ui'
 import { computed, reactive, ref, watch } from 'vue'
 
 const props = defineProps({
@@ -165,12 +174,17 @@ const loading = ref(false)
 const saving = ref(false)
 const inspectorWidth = ref(storedInspectorWidth())
 const panes = ref(null)
-const showTrial = ref(false)
+const tab = ref('editor')
 const inspectorOpen = ref(false)
 const selectedId = ref('trigger')
 const errors = reactive({})
 const doc = reactive(defaultDoc())
 const savedSnapshot = ref('')
+
+const tabOptions = [
+  { label: __('Editor'), value: 'editor' },
+  { label: __('Test Run'), value: 'test' },
+]
 
 const placed = computed(() => layoutSteps(doc.actions))
 
@@ -205,6 +219,9 @@ useKeyboardShortcuts({
 
 /** Compared against the last loaded/saved state so closing can warn about unsaved edits. */
 const dirty = computed(() => savedSnapshot.value !== JSON.stringify(payload()))
+
+/** A trial runs the saved flow, so unsaved edits would not be what gets tested. */
+const canTest = computed(() => Boolean(props.automationName) && !dirty.value)
 
 watch(() => doc.document_type, loadTargetCapabilities, { immediate: true })
 watch(relationships, loadTargetCapabilities, { deep: true })
