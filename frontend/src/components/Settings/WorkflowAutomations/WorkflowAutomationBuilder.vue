@@ -1,5 +1,5 @@
 <template>
-  <div class="relative flex h-full min-h-0 flex-col bg-surface-elevation-2">
+  <div class="relative flex h-full min-h-0 flex-col bg-surface-base">
     <div
       class="flex h-14 shrink-0 items-center justify-between border-b border-outline-gray-2 px-4"
     >

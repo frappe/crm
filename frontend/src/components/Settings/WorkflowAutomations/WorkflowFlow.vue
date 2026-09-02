@@ -15,7 +15,7 @@
     @node-click="selectNode($event.node.id)"
     @pane-click="selectNode('trigger')"
   >
-    <Background pattern-color="#5e5e5e" :gap="18" :size="1" />
+    <Background color="var(--surface-gray-4)" :gap="40" :size="5" />
     <Panel position="bottom-left">
       <div
         class="flex items-center gap-0.5 rounded-[10px] border border-outline-gray-2 bg-surface-gray-1 p-1 shadow-md"
@@ -70,7 +70,7 @@
               </template>
               <template #trigger>
                 <div
-                  class="workflow-node relative flex h-[87px] w-[212px] flex-col overflow-hidden rounded-[10px] border bg-white shadow-[0_1px_15px_2px_rgba(146,146,146,0.25)] transition-colors"
+                  class="workflow-node relative flex h-[87px] w-[212px] flex-col overflow-hidden rounded-[10px] border bg-surface-base shadow-sm transition-colors"
                   :class="nodeClasses(id, data)"
                   :tabindex="readonly ? -1 : 0"
                   :role="readonly ? undefined : 'button'"
@@ -80,7 +80,7 @@
                   @keydown.space.prevent="selectNode(id)"
                 >
                   <div
-                    class="flex h-[47px] shrink-0 items-center gap-1.5 border-b border-[#e1e0e0] px-2"
+                    class="flex h-[47px] shrink-0 items-center gap-1.5 border-b border-outline-gray-3 px-2"
                   >
                     <div
                       v-if="!data.empty"
@@ -94,7 +94,7 @@
                       />
                     </div>
                     <div
-                      class="min-w-0 flex-1 truncate text-[11px] font-medium leading-[13px] text-[#2e2e2e]"
+                      class="min-w-0 flex-1 truncate text-[11px] font-medium leading-[13px] text-ink-gray-9"
                       :class="{ 'text-center': data.empty }"
                     >
                       {{ data.label }}
@@ -108,14 +108,14 @@
                     class="flex min-h-0 flex-1 items-end gap-2 px-2 py-[7px]"
                   >
                     <div
-                      class="line-clamp-2 min-w-0 flex-1 text-[10px] leading-3 text-[#4e4e4e]"
+                      class="line-clamp-2 min-w-0 flex-1 text-[10px] leading-3 text-ink-gray-7"
                     >
                       <template v-if="data.detail">
                         {{ data.detail }}
                       </template>
                     </div>
                     <div
-                      class="shrink-0 text-[10px] font-medium leading-3 text-[#6e6e6e]"
+                      class="shrink-0 text-[10px] font-medium leading-3 text-ink-gray-8"
                     >
                       {{ data.kicker }}
                     </div>
@@ -365,10 +365,10 @@ function nodeClasses(id, data) {
 }
 
 function nodeSurface(id, data) {
-  if (data.empty) return 'border-dashed border-[#aeaeae] bg-white shadow-none'
+  if (data.empty) return 'border-dashed border-[#aeaeae]  shadow-none'
   if (data.error) return 'border-outline-red-2 bg-surface-modal'
-  if (isOn(id)) return 'border-[#6e6e6e]'
-  return 'border-[#aeaeae] hover:border-[#6e6e6e]'
+  if (isOn(id)) return 'border-outline-gray-4'
+  return 'border-outline-gray-2    hover:border-outline-gray-5'
 }
 
 function iconChipClasses(data) {
@@ -405,24 +405,24 @@ function addBlock(data, branch, value) {
 
 const ICON_TONES = {
   trigger: {
-    chip: 'bg-[#add2f5] border-[#2480cc]',
-    icon: 'text-[#2480cc]',
+    chip: 'bg-surface-blue-3 border-outline-blue-7',
+    icon: 'text-ink-blue-7',
   },
   Action: {
-    chip: 'bg-[#ece5ff] border-[#9175f0]',
-    icon: 'text-[#9175f0]',
+    chip: 'bg-surface-violet-3 border-outline-violet-7',
+    icon: 'text-ink-violet-7',
   },
   Wait: {
-    chip: 'bg-[#fff3c4] border-[#d99e0b]',
-    icon: 'text-[#d99e0b]',
+    chip: 'bg-surface-amber-3 border-outline-amber-7',
+    icon: 'text-ink-amber-7',
   },
   WaitForEvent: {
-    chip: 'bg-[#fff3c4] border-[#d99e0b]',
-    icon: 'text-[#d99e0b]',
+    chip: 'bg-surface-amber-3 border-outline-amber-7',
+    icon: 'text-ink-amber-7',
   },
   If: {
-    chip: 'bg-[#c8f3de] border-[#369768]',
-    icon: 'text-[#369768]',
+    chip: 'bg-surface-green-3 border-outline-green-7',
+    icon: 'text-ink-green-7',
   },
 }
 </script>
