@@ -1,0 +1,56 @@
+{
+ "app": "crm",
+ "creation": "2026-09-02 18:44:27.388186",
+ "docstatus": 0,
+ "doctype": "Sidebar",
+ "idx": 0,
+ "items": [],
+ "link_doctype": "DocType",
+ "link_to": "CRM Organization",
+ "modified": "2026-09-02 18:53:12.409196",
+ "modified_by": "Administrator",
+ "name": "doctype_crm_organization",
+ "navigation_items": [
+  {
+   "added": 0,
+   "collapsible": 0,
+   "hidden": 0,
+   "icon": "building-2",
+   "item_type": "DocType",
+   "keep_closed": 0,
+   "key": "organizations",
+   "label": "All Organizations",
+   "link_doctype": "DocType",
+   "link_to": "CRM Organization",
+   "switches_app": 0
+  },
+  {
+   "added": 0,
+   "collapsible": 1,
+   "hidden": 0,
+   "item_type": "Section",
+   "keep_closed": 1,
+   "key": "organizations-configure",
+   "label": "Configure",
+   "link_doctype": "",
+   "switches_app": 0
+  },
+  {
+   "added": 0,
+   "collapsible": 0,
+   "hidden": 0,
+   "item_type": "DocType",
+   "keep_closed": 0,
+   "key": "industries",
+   "label": "Industries",
+   "link_doctype": "DocType",
+   "link_to": "CRM Industry",
+   "parent_key": "organizations-configure",
+   "switches_app": 0
+  }
+ ],
+ "owner": "Administrator",
+ "standard": 1,
+ "title": "Organizations",
+ "user": ""
+}
