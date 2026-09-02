@@ -13,6 +13,32 @@ const controllersCache = {}
 const assigneesCache = {}
 const permissionsCache = {}
 
+// Deleting a doc triggers a realtime `doc_update` event (sent by the
+// framework as part of `delete_doc`), which makes the still-mounted document
+// resource refetch and hit a DoesNotExistError right as we're navigating
+// away. Docs marked here have that one expected error swallowed instead of
+// surfaced as an error page.
+const intentionallyDeletedDocs = new Set()
+
+export function markDocumentAsDeleted(doctype, docname) {
+  intentionallyDeletedDocs.add(`${doctype}:${docname}`)
+}
+
+// Called once the delete request has completed, so a reused docname
+// doesn't have a later, unrelated error silently swallowed. Kept separate
+// from markDocumentAsDeleted so the marker survives the full (possibly
+// slow) delete request instead of a fixed window starting before it.
+export function expireDeletionMarker(doctype, docname) {
+  const key = `${doctype}:${docname}`
+  setTimeout(() => intentionallyDeletedDocs.delete(key), 10000)
+}
+
+// Called if the delete request itself fails, so a legitimate later
+// DoesNotExistError for this doc isn't silently swallowed.
+export function unmarkDocumentAsDeleted(doctype, docname) {
+  intentionallyDeletedDocs.delete(`${doctype}:${docname}`)
+}
+
 export function useDocument(doctype, docname, resourceOverrides = {}) {
   if (typeof docname === 'number') docname = String(docname)
   const { setupScript, scripts } = getScript(doctype)
@@ -36,6 +62,14 @@ export function useDocument(doctype, docname, resourceOverrides = {}) {
           name: docname,
           onSuccess: async () => await setupFormScript(),
           onError: (err) => {
+            const deletionKey = `${doctype}:${docname}`
+            if (
+              err.exc_type === 'DoesNotExistError' &&
+              intentionallyDeletedDocs.has(deletionKey)
+            ) {
+              intentionallyDeletedDocs.delete(deletionKey)
+              return
+            }
             error.value = err
             if (err.exc_type === 'DoesNotExistError') {
               toast.error(__(err.messages[0] || 'Document does not exist'))
