@@ -15,8 +15,8 @@ from crm.integrations.api import get_contact_by_phone_number
 # https://support.exotel.com/support/solutions/articles/48283-working-with-passthru-applet
 
 
-# Incoming Call
-@frappe.whitelist(allow_guest=True)
+# webhook authenticity is enforced by validate_request(); guest access itself is unchanged
+@frappe.whitelist(allow_guest=True)  # nosemgrep: guest-whitelisted-method
 def handle_request(**kwargs):
 	validate_request()
 	if not is_integration_enabled():
