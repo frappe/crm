@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-08-30 14:29+0000\n"
-"PO-Revision-Date: 2026-08-31 18:28\n"
+"PO-Revision-Date: 2026-09-02 18:33\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Chinese Traditional\n"
 "MIME-Version: 1.0\n"
@@ -156,7 +156,7 @@ msgstr "@John，可以請您確認一下這個嗎？"
 
 #: crm/fcrm/doctype/crm_lead/crm_lead.py:138
 msgid "A Lead requires either a person's name or an organization's name"
-msgstr "个人姓名或机构名称是线索的必填信息"
+msgstr ""
 
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.py:49
 msgid "A lead sync source is already enabled for this Facebook Lead Form!"
