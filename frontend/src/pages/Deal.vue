@@ -325,6 +325,7 @@
     v-model="showDeleteLinkedDocModal"
     :doctype="'CRM Deal'"
     :docname="dealId"
+    :title="doc.organization"
     name="Deals"
   />
   <LostReasonModal
@@ -405,6 +406,7 @@ import {
 import { useRoute, useRouter } from 'vue-router'
 import { useActiveTabManager } from '@/composables/useActiveTabManager'
 import { useUnsavedChangesWarning } from '@/composables/useUnsavedChangesWarning'
+import { useVisitedRecords } from '@/composables/useVisitedRecords'
 
 const { on } = useBroadcast()
 const { brand } = getSettings()
@@ -446,10 +448,10 @@ watch(error, (err) => {
   if (err) {
     errorTitle.value = __(
       err.exc_type == 'DoesNotExistError'
-        ? 'Document Not Found'
-        : 'Error Occurred',
+        ? __('Document Not Found')
+        : __('Error Occurred'),
     )
-    errorMessage.value = __(err.messages?.[0] || 'An Error Occurred')
+    errorMessage.value = __(err.messages?.[0] || __('An Error Occurred'))
   } else {
     errorTitle.value = ''
     errorMessage.value = ''
@@ -496,11 +498,14 @@ watch(
 
 const organization = computed(() => organizationDocument.value?.doc || {})
 
+const { markVisited } = useVisitedRecords('CRM Deal')
+
 onMounted(async () => {
   $socket.on('crm_customer_created', () => {
     toast.success(__('Customer Created Successfully'))
   })
   if (document.doc) await triggerOnRender()
+  markVisited(props.dealId)
 })
 
 onBeforeUnmount(() => {

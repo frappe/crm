@@ -139,11 +139,8 @@
       </div>
       <div class="body flex-1">
         <div v-if="showNote">
-          <TextEditor
-            ref="content"
-            variant="ghost"
+          <RichTextField
             editor-class="prose-sm h-[290px] text-ink-base overflow-auto mt-1"
-            :bubbleMenu="true"
             :content="note.content"
             :placeholder="__('Take a note...')"
             @change="(val) => (note.content = val)"
@@ -235,10 +232,11 @@ import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import TaskPanel from '@/components/Telephony/TaskPanel.vue'
 import CountUpTimer from '@/components/CountUpTimer.vue'
+import RichTextField from '@/components/RichTextField.vue'
 import { globalStore } from '@/stores/global'
 import { sessionStore } from '@/stores/session'
 import { useDraggable, useWindowSize } from '@vueuse/core'
-import { TextEditor, Avatar, Button, createResource, toast } from 'frappe-ui'
+import { Avatar, Button, createResource, toast } from 'frappe-ui'
 import { ref, onBeforeUnmount, watch, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -397,6 +395,14 @@ function makeOutgoingCall(number) {
       callStatus.value = 'Calling...'
       showCallPopup.value = true
       showSmallCallPopup.value = false
+
+      if (callDetails.call_log_creation_failed) {
+        toast.warning(
+          __(
+            'Call connected, but the call log could not be saved. Please contact your administrator.',
+          ),
+        )
+      }
     },
     onError(err) {
       toast.error(err.messages[0])
