@@ -1,20 +1,37 @@
 <template>
-  <TextEditor
-    :content="value"
+  <Editor
+    v-model="content"
+    :extensions="extensions"
     :placeholder="placeholder"
     :editable="!disabled"
-    :editor-class="editorClasses"
-    :fixed-menu="disabled ? false : fixedMenu"
-    :bubble-menu="bubbleMenu"
-    v-bind="$attrs"
+    :upload-function="(file) => uploadFile(file)"
     @change="onContentChange"
     @blur="onBlur"
-  />
+  >
+    <EditorFixedMenu
+      v-if="fixedMenu && !disabled"
+      :items="fullToolbar"
+      class="w-full overflow-x-auto rounded-t-lg border border-outline-gray-2 p-1"
+    />
+    <EditorBubbleMenu v-if="bubbleMenu" :items="bubbleToolbar" />
+    <EditorContent :class="editorClasses" />
+  </Editor>
 </template>
 
 <script setup>
-import { TextEditor } from 'frappe-ui'
-import { computed, ref } from 'vue'
+import {
+  Editor,
+  EditorContent,
+  EditorFixedMenu,
+  EditorBubbleMenu,
+} from 'frappe-ui/editor'
+import {
+  buildEditorExtensions,
+  fullToolbar,
+  bubbleToolbar,
+  uploadFile,
+} from '@/components/editor/config'
+import { computed, ref, watch } from 'vue'
 
 const props = defineProps({
   value: { type: String, default: '' },
@@ -75,17 +92,25 @@ const editorClasses = computed(() => {
   ]
 })
 
-const latestContent = ref(props.value)
+const extensions = buildEditorExtensions()
+
+const content = ref(props.value ?? '')
 const isDirty = ref(false)
 
+watch(
+  () => props.value,
+  (val) => {
+    content.value = val ?? ''
+  },
+)
+
 function onContentChange(val) {
-  latestContent.value = val
   if (val !== (props.value ?? '')) isDirty.value = true
 }
 
 function onBlur() {
   if (!isDirty.value) return
   isDirty.value = false
-  emit('change', latestContent.value)
+  emit('change', content.value)
 }
 </script>

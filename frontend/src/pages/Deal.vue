@@ -325,6 +325,7 @@
     v-model="showDeleteLinkedDocModal"
     :doctype="'CRM Deal'"
     :docname="dealId"
+    :title="doc.organization"
     name="Deals"
   />
   <LostReasonModal
@@ -446,10 +447,10 @@ watch(error, (err) => {
   if (err) {
     errorTitle.value = __(
       err.exc_type == 'DoesNotExistError'
-        ? 'Document Not Found'
-        : 'Error Occurred',
+        ? __('Document Not Found')
+        : __('Error Occurred'),
     )
-    errorMessage.value = __(err.messages?.[0] || 'An Error Occurred')
+    errorMessage.value = __(err.messages?.[0] || __('An Error Occurred'))
   } else {
     errorTitle.value = ''
     errorMessage.value = ''

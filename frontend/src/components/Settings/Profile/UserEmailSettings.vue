@@ -36,11 +36,10 @@
             {{ __('Manage your email signature') }}
           </span>
         </div>
-        <TextEditor
+        <RichTextField
           editor-class="prose-sm min-h-28 max-w-full border rounded-b-lg border-t-0 p-2 border-outline-elevation-2"
           :content="user.doc.email_signature"
           placeholder="Type something..."
-          :bubbleMenu="true"
           :fixed-menu="true"
           @change="(val) => (user.doc.email_signature = val)"
         />
@@ -118,13 +117,13 @@
 </template>
 <script setup>
 import { useKeyboardShortcuts } from '@/composables/useKeyboardShortcuts'
+import RichTextField from '@/components/RichTextField.vue'
 import {
   Badge,
   Button,
   Combobox,
   createDocumentResource,
   createListResource,
-  TextEditor,
   toast,
 } from 'frappe-ui'
 import { computed, inject } from 'vue'
