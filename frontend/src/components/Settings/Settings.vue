@@ -75,6 +75,7 @@ import CalendarSettings from '@/components/Settings/CalendarSettings.vue'
 import HomeActions from '@/components/Settings/HomeActions.vue'
 import FormsSettings from '@/components/Settings/Forms/FormsSettings.vue'
 import GeneralSettings from '@/components/Settings/GeneralSettings.vue'
+import EnrichmentSettings from '@/components/Settings/EnrichmentSettings.vue'
 import DashboardSettings from '@/components/Settings/DashboardSettings.vue'
 import EmailTemplatePage from '@/components/Settings/EmailTemplate/EmailTemplatePage.vue'
 import TelephonyPage from '@/components/Settings/Telephony/TelephonyPage.vue'
@@ -91,6 +92,7 @@ import { Dialog, Avatar, SidebarItem } from 'frappe-ui'
 import { ref, markRaw, computed, watch, h } from 'vue'
 import AssignmentRulePage from './AssignmentRules/AssignmentRulePage.vue'
 import ShieldCheck from '~icons/lucide/shield-check'
+import LucideZap from '~icons/lucide/zap'
 import SlaConfig from './Sla/SlaConfig.vue'
 
 const { isManager, getUser } = usersStore()
@@ -207,6 +209,11 @@ const tabs = computed(() => {
           label: __('Forms'),
           component: markRaw(FormsSettings),
           icon: markRaw(LucideTextCursorInput),
+        },
+        {
+          label: __('Enrichment'),
+          component: markRaw(EnrichmentSettings),
+          icon: markRaw(LucideZap),
         },
       ],
       condition: () => isManager(),
