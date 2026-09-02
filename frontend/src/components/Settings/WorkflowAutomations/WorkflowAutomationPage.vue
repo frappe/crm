@@ -53,8 +53,8 @@
         <ListHeader class="sticky top-0 z-10 mx-3 bg-surface-elevation-2">
           <ListHeaderCell>{{ __('Name') }}</ListHeaderCell>
           <ListHeaderCell>{{ __('Document Type') }}</ListHeaderCell>
+          <ListHeaderCell>{{ __('Status') }}</ListHeaderCell>
           <ListHeaderCell>{{ __('Created By') }}</ListHeaderCell>
-          <ListHeaderCell>{{ __('Enabled') }}</ListHeaderCell>
         </ListHeader>
         <ListRows
           v-slot="{ item: row }"
@@ -72,25 +72,27 @@
                 {{ row.document_type || __('Any document') }}
               </span>
             </ListCell>
+
             <ListCell>
-              <Tooltip :text="getUser(row.owner).full_name">
-                <UserAvatar :user="row.owner" size="sm" />
-              </Tooltip>
+              <Badge
+                :label="row.enabled ? __('Enabled') : __('Draft')"
+                :theme="row.enabled ? 'green' : 'orange'"
+                variant="subtle"
+              />
             </ListCell>
             <ListCell>
               <div
                 class="flex w-full items-center justify-between pr-1"
                 @click.stop
               >
-                <Badge
-                  :label="row.enabled ? __('Enabled') : __('Draft')"
-                  :theme="row.enabled ? 'green' : 'orange'"
-                  variant="subtle"
-                />
+                <Tooltip :text="getUser(row.owner).full_name">
+                  <UserAvatar :user="row.owner" size="sm" />
+                </Tooltip>
                 <Dropdown placement="right" :options="rowOptions(row)">
                   <Button
                     icon="lucide-more-horizontal"
                     variant="ghost"
+                    class="ml-auto"
                     @click="confirmingDelete = ''"
                   />
                 </Dropdown>
@@ -170,8 +172,8 @@ const toggling = reactive(new Set())
 const listColumns = [
   'minmax(0, 4fr)',
   'minmax(0, 2fr)',
-  'minmax(0, 2fr)',
-  'minmax(0, 2fr)',
+  'minmax(0, 1.5fr)',
+  'minmax(0, 1.5fr)',
 ]
 
 // While the builder is up, a click outside must not take the settings dialog with it.
@@ -191,7 +193,7 @@ const automations = createListResource({
   ],
   cache: ['workflowAutomations'],
   orderBy: 'creation desc',
-  pageLength: 999,
+  pageLength: 99,
   auto: true,
 })
 
