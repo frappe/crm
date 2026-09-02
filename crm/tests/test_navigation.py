@@ -65,16 +65,18 @@ class TestCRMNavigation(IntegrationTestCase):
 	def test_a_linked_item_names_a_sidebar_this_app_ships(self):
 		"""A typo in `link_to` costs the item its panel and nothing else, so nothing reports it.
 
-		`Sidebar` declares the `Derived From Children` permission rule, so an item naming an
-		address that resolves to no rows is dropped by the server's own cascade -- silently, and
-		correctly, because that is also what an emptied sidebar has to do.
+		Read off the **shipped rows**, not the resolved payload. `Sidebar` declares the
+		`Derived From Children` permission rule, so an item naming an address that resolves to no
+		rows is dropped by the server's own cascade -- silently, and correctly, because that is
+		also what an emptied sidebar has to do. Asserting against the resolved list would
+		therefore be asserting that the cascade works, which is frappe's test and not this one.
 		"""
-		navigation = resolve_navigation("crm")
-		linked = [item for item in navigation["rail"] if item["item_type"] == "Sidebar"]
+		linked = [row for row in shipped("Rail", "crm") if row.item_type == "Sidebar"]
+		addresses = set(frappe.get_all("Sidebar", filters={"app": "crm", "standard": 1}, pluck="name"))
 
-		self.assertEqual(len(linked), len(SIDEBARS))
-		for item in linked:
-			self.assertIn(item["link_to"], navigation["sidebars"])
+		self.assertEqual({row.link_to for row in linked}, set(SIDEBARS))
+		for row in linked:
+			self.assertIn(row.link_to, addresses, row.key)
 
 	def test_the_independent_items_open_nothing(self):
 		rail = {item["key"]: item for item in resolve_navigation("crm")["rail"]}
@@ -82,14 +84,27 @@ class TestCRMNavigation(IntegrationTestCase):
 		for key in INDEPENDENT:
 			self.assertEqual(rail[key]["item_type"], "DocType")
 
-	def test_every_destination_is_a_doctype_this_site_has(self):
-		"""A row naming a doctype that is gone is dropped by the filter, not refused at import."""
-		navigation = resolve_navigation("crm")
-		rows = [*navigation["rail"], *(row for rows in navigation["sidebars"].values() for row in rows)]
+	def test_the_containers_are_the_rail_and_its_four_sidebars(self):
+		"""What `every_container()` finds, which four tests below iterate and would otherwise
+		pass over in silence if the fixtures had not been imported at all."""
+		self.assertEqual(
+			set(every_container()),
+			{("Rail", "crm")} | {("Sidebar", address) for address in SIDEBARS},
+		)
 
-		for row in rows:
-			if row["item_type"] == "DocType":
-				self.assertTrue(frappe.db.exists("DocType", row["link_to"]), row["key"])
+	def test_every_destination_is_a_doctype_this_site_has(self):
+		"""Read off the shipped rows rather than the resolved payload, which has already dropped
+		any row it could not place.
+
+		A typo cannot get this far: `link_to` is a Dynamic Link, so `_validate_links` refuses the
+		row at import with `Could not find Row #N: Link To` -- checked, not assumed. What is left
+		for this to catch is a doctype removed *after* the rows were imported, which arrives as a
+		quietly shorter sidebar and nothing else.
+		"""
+		for container, address in every_container():
+			for row in shipped(container, address):
+				if row.item_type == "DocType":
+					self.assertTrue(frappe.db.exists("DocType", row.link_to), f"{address}/{row.key}")
 
 	def test_no_destination_sits_in_two_of_crm_s_sidebars(self):
 		"""A CRM convention for now, NOT a rule about navigation. See the note below.
@@ -104,25 +119,50 @@ class TestCRMNavigation(IntegrationTestCase):
 		CRM therefore ships each destination once while that is the behaviour. This test is the
 		guard on that choice, and it should be deleted -- not weakened -- once one address in two
 		panels resolves to the panel the reader is in.
+
+		Read off the shipped rows: a destination the reader cannot open is gone from the resolved
+		payload, so a duplicate could hide behind a permission rather than be reported.
 		"""
-		sidebars = resolve_navigation("crm")["sidebars"]
 		seen: dict[tuple[str, str], str] = {}
 
-		for address, rows in sidebars.items():
-			for row in rows:
-				if row["item_type"] != "DocType":
+		for container, address in every_container():
+			# The rail is not one of the panels this is about, and it carries `DocType` rows of
+			# its own -- Tasks and Notes -- which would otherwise be counted as destinations.
+			if container != "Sidebar":
+				continue
+			for row in shipped(container, address):
+				if row.item_type != "DocType":
 					continue
-				destination = (row["link_doctype"], row["link_to"])
-				self.assertNotIn(destination, seen, f"{row['link_to']} is also in {seen.get(destination)}")
+				destination = (row.link_doctype, row.link_to)
+				self.assertNotIn(destination, seen, f"{row.link_to} is also in {seen.get(destination)}")
 				seen[destination] = address
 
 	def test_keys_are_unique_within_each_container(self):
 		"""Every site and user edit is filed against a key, so two rows sharing one collide."""
-		navigation = resolve_navigation("crm")
+		for container, address in every_container():
+			keys = [row.key for row in shipped(container, address)]
+			self.assertEqual(len(keys), len(set(keys)), address)
 
-		for rows in (navigation["rail"], *navigation["sidebars"].values()):
-			keys = [row["key"] for row in rows]
-			self.assertEqual(len(keys), len(set(keys)))
+	def test_no_section_is_shipped_over_nothing(self):
+		"""A heading with no rows under it is dropped by the cascade at read time, so shipping one
+		would mean shipping a row that can never render. Left out at authoring instead -- and read
+		here off the shipped rows, since the cascade would have hidden it either way."""
+		for container, address in every_container():
+			rows = shipped(container, address)
+			parents = {row.parent_key for row in rows}
+			for row in rows:
+				if row.item_type == "Section":
+					self.assertIn(row.key, parents, f"{address}/{row.key}")
+
+	def test_every_parent_key_names_a_section_beside_it(self):
+		"""A row filed under a heading that is not there loses its nesting silently: the resolver
+		promotes an orphan to the top level rather than dropping it."""
+		for container, address in every_container():
+			rows = shipped(container, address)
+			sections = {row.key for row in rows if row.item_type == "Section"}
+			for row in rows:
+				if row.parent_key:
+					self.assertIn(row.parent_key, sections, f"{address}/{row.key}")
 
 	def test_a_configure_section_drops_when_its_doctypes_are_unreadable(self):
 		"""The section cascade, on the first shipped section on this branch.
@@ -237,6 +277,33 @@ class TestCRMNavigation(IntegrationTestCase):
 			"frappe.shell.doctypes.get_readable_doctypes",
 			return_value={name for name in readable if name not in exclude},
 		)
+
+
+def every_container() -> list[tuple[str, str]]:
+	"""Every standard record CRM ships, as `(doctype, name)`."""
+	return [("Rail", "crm")] + [
+		("Sidebar", name)
+		for name in frappe.get_all("Sidebar", filters={"app": "crm", "standard": 1}, pluck="name")
+	]
+
+
+def shipped(container: str, address: str) -> list:
+	"""The rows as authored, before the resolver has filtered or cascaded anything away.
+
+	The distinction matters for every fixture assertion above: `resolve_navigation` drops a row
+	naming a doctype that is gone, a heading over nothing and a linked item whose sidebar
+	emptied. Read against its output, a test for those is asserting that the resolver works.
+	"""
+	return frappe.get_all(
+		"Navigation Item",
+		filters={
+			"parenttype": container,
+			"parent": address,
+			"parentfield": "items" if container == "Rail" else "navigation_items",
+		},
+		fields=["key", "parent_key", "item_type", "link_doctype", "link_to"],
+		order_by="idx asc",
+	)
 
 
 def reimport_shipped_rail():
