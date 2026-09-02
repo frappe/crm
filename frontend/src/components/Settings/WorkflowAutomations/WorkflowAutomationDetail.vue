@@ -33,7 +33,7 @@
     </template>
     <template #header-actions>
       <Button
-        :label="__('Edit Automation')"
+        :label="__('Edit')"
         variant="solid"
         icon-left="lucide-pencil"
         @click="$emit('edit')"
