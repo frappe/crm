@@ -53,6 +53,9 @@
             <MultipleAvatar
               :avatars="item"
               size="sm"
+              :label-class="
+                isVisited ? 'text-ink-gray-6' : 'font-medium text-ink-gray-9'
+              "
               @click="
                 (event) =>
                   emit('applyFilter', {
@@ -102,6 +105,9 @@
               ].includes(column.key)
             "
             class="truncate text-base"
+            :class="
+              isVisited ? 'text-ink-gray-6' : 'font-medium text-ink-gray-9'
+            "
             @click="
               (event) =>
                 emit('applyFilter', {
@@ -156,7 +162,15 @@
             >
               <HeartIcon
                 class="h-4 w-4"
-                :class="isLiked(item) ? 'fill-red-500 text-red-500' : ''"
+                :class="
+                  isLiked(item)
+                    ? isVisited
+                      ? 'fill-red-400 text-red-400'
+                      : 'fill-red-500 text-red-500'
+                    : isVisited
+                      ? 'text-ink-gray-6'
+                      : 'text-ink-gray-9'
+                "
               />
             </Button>
           </div>
