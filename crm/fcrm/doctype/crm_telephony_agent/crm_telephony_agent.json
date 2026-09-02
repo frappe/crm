@@ -40,6 +40,7 @@
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Mobile No.",
+   "options": "Phone",
    "read_only": 1
   },
   {
@@ -53,7 +54,8 @@
   {
    "fieldname": "exotel_number",
    "fieldtype": "Data",
-   "label": "Exotel Number"
+   "label": "Exotel Number",
+   "options": "Phone"
   },
   {
    "fieldname": "section_break_phlq",
@@ -70,7 +72,8 @@
   {
    "fieldname": "twilio_number",
    "fieldtype": "Data",
-   "label": "Twilio Number"
+   "label": "Twilio Number",
+   "options": "Phone"
   },
   {
    "fieldname": "phone_nos",
@@ -94,7 +97,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-03-12 13:52:36.481382",
+ "modified": "2026-08-04 19:22:17.000846",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Telephony Agent",
