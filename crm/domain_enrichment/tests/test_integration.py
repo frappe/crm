@@ -5,7 +5,7 @@
 
 Covers: seeder idempotency, the mapper write-policies against real CRM
 Lead/Deal/Organization docs, the single Run writer, API permission/allow-list
-enforcement + preview rate-limit, and the link-time Organization -> Lead/Deal copy.
+enforcement + rate-limit, and the link-time Organization -> Lead/Deal copy.
 
 All tests are network-free: wherever a crawl would happen the pipeline / fetch is
 monkeypatched to return a canned EnrichmentResult, so nothing leaves the box.
@@ -168,10 +168,10 @@ class ApiPermissionTest(IntegrationTestCase):
 			enrich("CRM Organization", org.name)
 
 	def test_enrich_routes_are_rate_limited(self):
-		# enrich / retry / enrich_preview each carry rate_limit(limit=ENRICH_RATE_LIMIT).
+		# enrich / retry each carry rate_limit(limit=ENRICH_RATE_LIMIT).
 		from crm.domain_enrichment import api
 
-		for fn in (api.enrich, api.retry, api.enrich_preview):
+		for fn in (api.enrich, api.retry):
 			self.assertTrue(hasattr(fn, "__wrapped__"), fn.__name__)
 
 
@@ -224,14 +224,12 @@ class CrossRecordCopyTest(IntegrationTestCase):
 
 
 class AutoEnrichOnCreateTest(IntegrationTestCase):
-	"""The after_insert auto-enrich hook (Organization + Deal), gated by Settings."""
+	"""The after_insert auto-enrich hook (Lead, Deal, Organization), gated by Settings."""
 
 	def _settings(self, **overrides):
 		s = {
 			"enabled": 1,
 			"auto_enrich": 1,
-			"enable_organization": 1,
-			"enable_deal": 1,
 			"request_timeout": 10,
 			"max_pages": 10,
 		}
@@ -253,6 +251,13 @@ class AutoEnrichOnCreateTest(IntegrationTestCase):
 			tasks.auto_enrich_on_create(doc)
 		return enq
 
+	def test_enqueues_for_new_lead(self):
+		enq = self._run(self._doc("CRM Lead", name="L1"), self._settings())
+		enq.assert_called_once()
+		kwargs = enq.call_args.kwargs
+		self.assertEqual(kwargs["reference_doctype"], "CRM Lead")
+		self.assertEqual(kwargs["job_id"], "domain-enrich-CRM Lead-L1")
+
 	def test_enqueues_for_new_deal(self):
 		enq = self._run(self._doc("CRM Deal", name="D1"), self._settings())
 		enq.assert_called_once()
@@ -270,8 +275,12 @@ class AutoEnrichOnCreateTest(IntegrationTestCase):
 		enq = self._run(self._doc("CRM Deal"), self._settings(auto_enrich=0))
 		enq.assert_not_called()
 
-	def test_skips_when_doctype_disabled(self):
-		enq = self._run(self._doc("CRM Deal"), self._settings(enable_deal=0))
+	def test_skips_when_feature_disabled(self):
+		enq = self._run(self._doc("CRM Deal"), self._settings(enabled=0))
+		enq.assert_not_called()
+
+	def test_skips_doctype_outside_the_allow_list(self):
+		enq = self._run(self._doc("CRM Task"), self._settings())
 		enq.assert_not_called()
 
 	def test_skips_without_website(self):

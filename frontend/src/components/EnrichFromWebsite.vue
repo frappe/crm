@@ -78,10 +78,7 @@ async function enrich() {
     return
   }
 
-  capture('enrichment_quick_triggered', {
-    doctype: props.doctype,
-    source: 'detail',
-  })
+  capture('enrichment_triggered', { doctype: props.doctype })
   running.value = true
   // Subscribe before enqueueing so we never miss the completion event.
   $socket.on(EVENT, onProgress)
