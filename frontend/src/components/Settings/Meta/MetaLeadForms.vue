@@ -72,12 +72,18 @@
                   :key="form.name"
                   class="flex items-center justify-between gap-3 py-1.5"
                 >
-                  <div class="min-w-0">
+                  <div class="flex min-w-0 items-center gap-2">
                     <span class="truncate text-p-base text-ink-gray-7">{{ form.form_name }}</span>
-                    <span class="ml-2 text-p-sm text-ink-gray-4">
+                    <span class="shrink-0 text-p-sm text-ink-gray-4">
                       {{ form.lead_count }} {{ __('leads') }}
                       <template v-if="form.form_status"> · {{ form.form_status }}</template>
                     </span>
+                    <Badge
+                      v-if="form.unmapped_questions"
+                      :label="__('{0} to map', [form.unmapped_questions])"
+                      theme="orange"
+                      size="sm"
+                    />
                   </div>
                   <div class="flex shrink-0 gap-1">
                     <Button :label="__('Map fields')" size="sm" @click="openMapping(form.name)" />
@@ -136,10 +142,19 @@
       <div class="flex flex-col gap-2">
         <div class="mb-1 text-p-sm text-ink-gray-5">
           {{ __('Map every form question to a CRM Lead field. First name is required.') }}
+          {{ __('Answers you leave unmapped are not lost: they are saved as a note on the lead.') }}
         </div>
         <div v-for="q in mappingQuestions" :key="q.key" class="grid grid-cols-2 items-center gap-3">
           <div class="min-w-0">
-            <div class="truncate text-p-base text-ink-gray-8">{{ q.label || q.key }}</div>
+            <div class="flex items-center gap-2">
+              <span class="truncate text-p-base text-ink-gray-8">{{ q.label || q.key }}</span>
+              <Badge
+                v-if="!q.mapped_to_crm_field"
+                :label="__('not mapped')"
+                theme="orange"
+                size="sm"
+              />
+            </div>
             <div class="text-p-sm text-ink-gray-4">{{ q.type }}</div>
           </div>
           <FormControl v-model="q.mapped_to_crm_field" type="select" :options="leadFieldOptions" />

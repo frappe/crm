@@ -77,6 +77,19 @@ class TestMetaLeads(IntegrationTestCase):
 		self.assertEqual(lead.source, "Facebook")
 		self.assertEqual(lead.facebook_form_id, "990001")
 
+	def test_unmapped_answers_are_kept_as_a_note(self):
+		make_form()
+		lead = sample_lead("7770010")
+		store_lead(lead, "990001")
+		name = frappe.db.get_value("CRM Lead", {"facebook_lead_id": "7770010"})
+		# custom_q has no mapped field: its answer must survive somewhere
+		comments = frappe.get_all(
+			"Comment",
+			filters={"reference_doctype": "CRM Lead", "reference_name": name},
+			pluck="content",
+		)
+		self.assertTrue(any("risposta" in (c or "") for c in comments))
+
 	def test_store_lead_is_idempotent(self):
 		make_form()
 		self.assertEqual(store_lead(sample_lead("7770002"), "990001"), "created")

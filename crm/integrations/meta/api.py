@@ -189,10 +189,19 @@ def get_pages() -> list[dict]:
 			as_list=True,
 		)
 	)
+	unmapped = {}
+	for row in frappe.get_all(
+		"Facebook Lead Form Question",
+		fields=["parent", "mapped_to_crm_field"],
+	):
+		if not row.mapped_to_crm_field:
+			unmapped[row.parent] = unmapped.get(row.parent, 0) + 1
+
 	for page in pages:
 		page["forms"] = forms_by_page.get(page.name, [])
 		for form in page["forms"]:
 			form["lead_count"] = lead_counts.get(form.name, 0)
+			form["unmapped_questions"] = unmapped.get(form.name, 0)
 	return pages
 
 

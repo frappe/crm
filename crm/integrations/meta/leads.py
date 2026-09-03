@@ -106,11 +106,18 @@ def store_lead(lead: dict, form_id: str | None) -> str:
 		return "duplicate"
 
 	mapping = get_question_mapping(form_id)
+	labels = get_question_labels(form_id)
 	values: dict = {}
+	unmapped: list[tuple[str, str]] = []
 	for item in lead.get("field_data") or []:
-		crm_field = mapping.get(item.get("name"))
+		key = item.get("name")
 		raw_values = item.get("values") or []
-		if not crm_field or not raw_values:
+		if not raw_values:
+			continue
+		crm_field = mapping.get(key)
+		if not crm_field:
+			# an answer nobody mapped is still the customer talking: keep it
+			unmapped.append((labels.get(key) or key, ", ".join(str(v) for v in raw_values)))
 			continue
 		values[crm_field] = normalize_value(crm_field, raw_values[0])
 
@@ -142,7 +149,9 @@ def store_lead(lead: dict, form_id: str | None) -> str:
 		}
 	)
 	try:
-		frappe.get_doc(values).insert(ignore_permissions=True)
+		doc = frappe.get_doc(values).insert(ignore_permissions=True)
+		if unmapped:
+			_note_unmapped_answers(doc, unmapped)
 		if form_id:
 			frappe.db.set_value(
 				"Facebook Lead Form", form_id, "last_lead_at", frappe.utils.now(), update_modified=False
@@ -153,6 +162,27 @@ def store_lead(lead: dict, form_id: str | None) -> str:
 	except Exception:
 		_log_failure(lead, form_id, frappe.get_traceback())
 		return "failed"
+
+
+def _note_unmapped_answers(lead_doc, answers: list[tuple[str, str]]) -> None:
+	"""Park the answers with no CRM field on the lead, instead of dropping them."""
+	lines = "".join(
+		f"<li><b>{frappe.utils.escape_html(q)}</b>: {frappe.utils.escape_html(a)}</li>" for q, a in answers
+	)
+	try:
+		lead_doc.add_comment(
+			"Comment",
+			_("Form answers with no mapped field:") + f"<ul>{lines}</ul>",
+		)
+	except Exception:
+		frappe.log_error(frappe.get_traceback(), "Meta: could not record unmapped answers")
+
+
+def get_question_labels(form_id: str | None) -> dict:
+	if not form_id:
+		return {}
+	rows = frappe.get_all("Facebook Lead Form Question", filters={"parent": form_id}, fields=["key", "label"])
+	return {row.key: row.label for row in rows if row.label}
 
 
 def get_question_mapping(form_id: str | None) -> dict:
