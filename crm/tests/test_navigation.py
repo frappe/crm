@@ -26,7 +26,12 @@ SIDEBARS = {
 	"doctype_crm_lead": ("leads", "leads-configure", "lead-statuses", "lead-sources", "lost-reasons"),
 	"doctype_crm_deal": ("deals", "deals-configure", "deal-statuses", "products", "territories"),
 	"doctype_contact": ("contacts", "call-logs"),
-	"doctype_crm_organization": ("organizations", "organizations-configure", "industries"),
+	"doctype_crm_organization": (
+		"organizations",
+		"organizations-configure",
+		"industries",
+		"territories",
+	),
 }
 
 # The two rail items that open no sidebar. Charter point 1 makes independent a first-class
@@ -106,36 +111,34 @@ class TestCRMNavigation(IntegrationTestCase):
 				if row.item_type == "DocType":
 					self.assertTrue(frappe.db.exists("DocType", row.link_to), f"{address}/{row.key}")
 
-	def test_no_destination_sits_in_two_of_crm_s_sidebars(self):
-		"""A CRM convention for now, NOT a rule about navigation. See the note below.
+	def test_crm_territory_is_listed_in_both_the_panels_it_belongs_to(self):
+		"""The replacement for the guard that said the opposite. See the note.
 
-		Putting one destination in two panels is ordinary and legitimate -- ERPNext has 101 rows
-		linking outside their own module. But today an address resolves to exactly one panel: it
-		is matched against every destination the payload can be standing on, the deepest cover
-		wins, and equal covers tie-break on rail order, top to bottom. So `CRM Territory` under
-		both Deals and Organizations meant clicking it in the Organizations panel moved the
-		reader to Deals, with nothing warning either the author or the reader.
+		CRM used to ship each destination exactly once, because an address resolved to exactly
+		one panel: the deepest cover won and equal covers tie-broke on rail order, so clicking
+		Territories in the Organizations panel moved the reader to Deals. `CRM Territory` was
+		removed from Organizations rather than the behaviour being fixed, and a test guarded
+		that removal.
 
-		CRM therefore ships each destination once while that is the behaviour. This test is the
-		guard on that choice, and it should be deleted -- not weakened -- once one address in two
-		panels resolves to the panel the reader is in.
+		The reader now keeps the panel they are in, so a destination may be listed in as many
+		panels as it belongs in. This asserts the restored row rather than merely allowing it,
+		so the thinning is not quietly redone by someone reading the old convention.
 
-		Read off the shipped rows: a destination the reader cannot open is gone from the resolved
-		payload, so a duplicate could hide behind a permission rather than be reported.
+		Read off the shipped rows: a destination the reader cannot open is gone from the
+		resolved payload, so the row could hide behind a permission rather than be reported.
 		"""
-		seen: dict[tuple[str, str], str] = {}
+		panels = set()
 
 		for container, address in every_container():
 			# The rail is not one of the panels this is about, and it carries `DocType` rows of
-			# its own -- Tasks and Notes -- which would otherwise be counted as destinations.
+			# its own -- Tasks and Notes.
 			if container != "Sidebar":
 				continue
 			for row in shipped(container, address):
-				if row.item_type != "DocType":
-					continue
-				destination = (row.link_doctype, row.link_to)
-				self.assertNotIn(destination, seen, f"{row.link_to} is also in {seen.get(destination)}")
-				seen[destination] = address
+				if (row.link_doctype, row.link_to) == ("DocType", "CRM Territory"):
+					panels.add(address)
+
+		self.assertEqual(panels, {"doctype_crm_deal", "doctype_crm_organization"})
 
 	def test_keys_are_unique_within_each_container(self):
 		"""Every site and user edit is filed against a key, so two rows sharing one collide."""
