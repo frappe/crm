@@ -29,7 +29,7 @@
             {{ __('No social profiles connected yet') }}
           </span>
           <span class="text-p-sm text-ink-gray-5">
-            {{ __('Connect Facebook & Instagram (or Postiz/Ayrshare) to start scheduling.') }}
+            {{ __('Connect Facebook & Instagram to start scheduling.') }}
           </span>
         </div>
         <Button

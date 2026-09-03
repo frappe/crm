@@ -2,12 +2,12 @@
   <div class="flex h-full flex-col gap-6 overflow-y-auto py-8 px-6 text-ink-gray-8">
     <div class="flex flex-col gap-1 px-2">
       <h2 class="flex gap-2 text-2xl-semibold leading-none h-5">
-        {{ __('Meta Lead Ads') }}
+        {{ __('Meta') }}
       </h2>
       <p class="text-p-base text-ink-gray-6">
         {{
           __(
-            'Facebook & Instagram lead forms: connect your account, pick pages, map fields — leads arrive in real time.',
+            'One connection to Facebook & Instagram: lead forms arrive in real time, and the Social Planner publishes through it.',
           )
         }}
       </p>

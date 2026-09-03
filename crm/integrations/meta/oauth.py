@@ -137,7 +137,7 @@ def callback(code: str | None = None, state: str | None = None, **kwargs):
 
 
 def _redirect_back(error: str | None = None):
-	target = "/crm?settings=" + quote("Meta Lead Ads")
+	target = "/crm?settings=" + quote("Meta")
 	if error:
 		target += f"&meta_error={quote(error[:300])}"
 	frappe.local.response["type"] = "redirect"

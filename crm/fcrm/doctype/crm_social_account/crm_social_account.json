@@ -28,7 +28,7 @@
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Platform",
-   "options": "Facebook\nInstagram\nLinkedIn\nTikTok\nYouTube\nPinterest\nGoogle Business Profile\nThreads\nBluesky\nX",
+   "options": "Facebook\nInstagram",
    "reqd": 1
   },
   {
@@ -42,13 +42,14 @@
    "label": "Enabled"
   },
   {
-   "description": "Meta page/IG id, Postiz integration id or Ayrshare profile key this account maps to",
+   "description": "Facebook Page ID, or Instagram Business account ID (filled by the import)",
    "fieldname": "provider_account_id",
    "fieldtype": "Data",
-   "label": "Provider Account ID"
+   "label": "Provider Account ID",
+   "read_only": 1
   },
   {
-   "description": "For the Meta provider: the Facebook Page whose token publishes to this account",
+   "description": "The Facebook Page whose token publishes to this profile",
    "fieldname": "facebook_page",
    "fieldtype": "Link",
    "label": "Facebook Page",

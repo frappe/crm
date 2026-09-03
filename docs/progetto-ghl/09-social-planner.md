@@ -1,90 +1,70 @@
-# 09 — Social Planner (agenda social stile GHL)
+# 09 — Social Planner (agenda social)
 
-> ✅ **MVP IMPLEMENTATO (31/08/2026)**, aggiunto allo scope su richiesta.
-> Basato su ricerca dalle guide GHL e dalle API di publishing (agosto 2026).
+> ✅ **IMPLEMENTATO**. Semplificato il 03/09/2026: **un solo modo per
+> pubblicare**, direttamente da Frappe verso Meta. Postiz, Ayrshare e il
+> provider "Manual" sono stati rimossi (con patch che elimina
+> `CRM Social Settings` dai site esistenti).
 
-## Cosa fa GHL (spec di parità)
+## Come funziona
 
-Social Planner: composer multi-network con personalizzazione per piattaforma,
-calendario (mese/settimana/lista), stati bozza/approvazione/programmato,
-post ricorrenti, bulk CSV (90 post), RSS-to-post, gestione commenti, analytics
-per post. Reti 2026: FB, IG, Threads, LinkedIn, GBP, TikTok, YouTube, Pinterest,
-Bluesky. **X/Twitter NON è supportato da GHL** (abbandonato nel 2023).
+Frappe pubblica da sé con la **Graph API**, riusando i page token ottenuti
+dall'unica connessione Meta (Settings → Meta, la stessa dei Lead Ads):
 
-## Fatti chiave della ricerca (determinano l'architettura)
+| Destinazione | Chiamata |
+|---|---|
+| Facebook Page — solo testo | `POST /{page}/feed` |
+| Facebook Page — immagine | `POST /{page}/photos` |
+| Facebook Page — video | `POST /{page}/videos` |
+| Instagram Business | `POST /{ig}/media` (container) → polling `status_code` fino a `FINISHED` → `POST /{ig}/media_publish` |
 
-- **Le app review sono il vero costo**, non il codice: Meta (business
-  verification + advanced access, settimane), **LinkedIn Community Management
-  API 1–4 mesi e solo entità legali**, TikTok audit (senza audit i post escono
-  SELF_ONLY), YouTube upload forzati privati senza audit + quota 6 upload/dì,
-  GBP localPosts vive ancora sull'endpoint legacy v4 (rischio sunset).
-- **[Postiz](https://github.com/gitroomhq/postiz-app)** (AGPL, ~35k stelle,
-  attivissimo) è self-hostabile con **API REST pubblica**
-  ([docs](https://docs.postiz.com/public-api)): può fare da **motore di
-  pubblicazione headless** — le app dei network le crei tu una volta a livello
-  agenzia, gli OAuth/retry/media pipeline li gestisce Postiz.
-- **[Ayrshare](https://www.ayrshare.com)** (aggregatore a pagamento, da
-  ~$149/mese): usa le SUE app già approvate → **zero app review, live in un
-  giorno**. Perfetto come ponte iniziale.
-- Mixpost Pro ($299 una tantum) è l'alternativa a Postiz; Lite (MIT) troppo
-  limitato.
+Instagram richiede sempre un media; i video vengono pubblicati come **Reels**.
+Scope OAuth aggiunti per la pubblicazione: `pages_manage_posts`,
+`instagram_basic`, `instagram_content_publish`.
 
-## Architettura implementata
+## Collegamento profili (zero id da incollare)
 
-**Frontend e dati in Frappe, pubblicazione via adapter pluggabili** (scelta in
-`CRM Social Settings`):
+Settings → Social Planner → **"Import profiles"**
+(`crm.api.social.import_accounts`): rinfresca le pagine da Meta e crea un
+`CRM Social Account` per ogni pagina Facebook e per ogni account Instagram
+Business collegato (letto da `instagram_business_account` in `/me/accounts`).
+L'upsert è idempotente (match per piattaforma + id) e ogni profilo tiene il
+link alla `Facebook Page` da cui prende il token per pubblicare.
+L'import parte anche in automatico al termine dell'OAuth Meta.
 
-| Adapter | Stato | Note |
-|---|---|---|
-| **Meta (built-in)** | ✅ | pubblica DIRETTAMENTE su Facebook Page e Instagram Business con la Graph API, riusando i page token dell'OAuth Meta Lead Ads (nessun servizio terzo). FB: `/feed`, `/photos`, `/videos`; IG: container `/media` (+polling status) → `/media_publish`; IG richiede un media, video = REELS. Scope aggiunti: `pages_manage_posts`, `instagram_basic`, `instagram_content_publish`. |
-| **Manual** | ✅ | nessuna chiamata esterna: il planner traccia e "pubblica" (per test e flussi manuali) |
-| **Postiz** | ✅ | `POST {url}/public/v1/posts` con API key; `provider_account_id` = integration id |
-| **Ayrshare** | ✅ | `POST /api/post` con Bearer key; mapping piattaforme incluso |
+## Componenti
 
-### Collegamento profili in un click (`crm/social/accounts.py`)
-
-Niente più id incollati a mano: in Settings → Social Planner il bottone
-**"Import connected profiles"** interroga il provider e fa upsert dei
-`CRM Social Account` (match per piattaforma+id):
-
-- **Meta**: pagine Facebook già connesse (+ account Instagram Business
-  collegati, letti da `instagram_business_account` in `/me/accounts`); ogni
-  account porta il link alla `Facebook Page` per il token di pubblicazione.
-- **Postiz**: `GET {url}/public/v1/integrations` (i profili si collegano
-  nella UI di Postiz, poi si importano).
-- **Ayrshare**: `GET /api/user` → `displayNames` (profilo default; i
-  profileKey multi-profilo restano manuali).
-
-### Componenti
-
-- DocType: `CRM Social Settings` (single: provider+credenziali),
-  `CRM Social Account` (piattaforma + id provider), `CRM Social Post`
-  (contenuto, media, stato, schedule, ricorrenza, approvazioni) +
-  child `CRM Social Post Target` (account, override per network, esito).
-- Scheduler ogni 2 minuti (`crm.social.publisher.process_due_posts`):
-  pubblica i post Scheduled scaduti, aggiorna esiti per target, gestisce le
-  **ricorrenze** (clona alla prossima occorrenza) e notifica via realtime.
+- DocType: `CRM Social Account` (piattaforma Facebook/Instagram, id e pagina
+  in sola lettura: li scrive l'import), `CRM Social Post` (contenuto, media,
+  stato, schedule, ricorrenza, approvazioni) + child `CRM Social Post Target`
+  (profilo, override per profilo, esito).
+- `crm/social/publisher.py`: pubblicazione + scheduler ogni 2 minuti
+  (`process_due_posts`), esiti per target, **ricorrenze** (clona la prossima
+  occorrenza), notifica realtime.
+- `crm/social/accounts.py`: import/upsert dei profili dalle pagine Meta.
 - **Flusso approvazioni**: Sales User → bozza / "Request approval";
-  Sales Manager → Approva/Programma/Pubblica subito.
-- Pagina **`/social`** (redesign 31/08): calendario mensile Espresso con
-  header giorni, cella "oggi" evidenziata, chip con pallini colorati per
-  piattaforma + bordo colorato per stato, overflow "+N" con dialog del
-  giorno, legenda stati, CTA "Connect profiles" se non ci sono account;
-  composer con chip profilo colorati, contatore caratteri, anteprima
-  immagine, errori per-target visibili sui post falliti.
-- Test: `crm/tests/test_social.py` (incl. sync account da pagine FB/IG).
+  Sales Manager → Approva / Programma / Pubblica subito.
+- Pagina **`/social`**: calendario mensile Espresso (header giorni, oggi
+  evidenziato, chip con pallino per piattaforma e bordo colorato per stato,
+  overflow "+N" con dialog del giorno, legenda, CTA "Connect profiles");
+  composer con chip profilo, contatore caratteri, anteprima media, errori
+  per-target sui post falliti.
+- Test: `crm/tests/test_social.py` (pubblicazione, fallimento con errore,
+  ricorrenza, import profili FB/IG, IG senza media).
 
-## Setup operativo
+## Setup
 
-1. **Percorso consigliato**: provider **Meta** → App ID/Secret in
-   Meta Lead Ads (webhook auto-configurato), "Connect with Facebook",
-   poi "Import connected profiles": FB+IG pubblicano nativamente.
-2. Per le altre reti: **Postiz self-hosted** (Docker) + avviare SUBITO le
-   pratiche (LinkedIn è il collo di bottiglia) oppure ponte **Ayrshare**
-   (zero review, `profileKey` per cliente).
-3. **Manual** resta utile per test e flussi solo-pianificazione.
+1. Settings → **Meta**: App ID/Secret (il webhook leadgen si configura da solo).
+2. **"Connect with Facebook"** → autorizza pagine e account IG collegati.
+3. Settings → **Social Planner** → **"Import profiles"**.
+4. Si pubblica.
 
-## Non incluso (fase 2)
+## Limiti noti
 
-Bulk CSV, RSS-to-post, gestione commenti, analytics per post (Postiz/Ayrshare
-le espongono via API), viste settimana/lista.
+- **Solo Facebook e Instagram.** LinkedIn, TikTok, YouTube, GBP, Threads,
+  Bluesky richiederebbero ognuno app e review dedicate (LinkedIn Community
+  Management API: 1–4 mesi, solo entità legali; TikTok audit; YouTube audit
+  con quota 6 upload/giorno). Da valutare come fase 2, se servono davvero.
+- Instagram: niente pubblicazione di caroselli/storie (solo post singolo e
+  Reels), come da limiti della Content Publishing API.
+- Non incluso: bulk CSV, RSS-to-post, gestione commenti, analytics per post,
+  viste settimana/lista.

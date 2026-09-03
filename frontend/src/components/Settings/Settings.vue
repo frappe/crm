@@ -269,7 +269,7 @@ const tabs = computed(() => {
           condition: () => isManager(),
         },
         {
-          label: __('Meta Lead Ads'),
+          label: __('Meta'),
           icon: 'facebook',
           component: markRaw(MetaLeadsSettings),
           condition: () => isManager(),

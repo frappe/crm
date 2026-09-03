@@ -1,78 +1,44 @@
 # Copyright (c) 2026, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 
-"""Pluggable social publishing adapters.
+"""Social publishing — directly to Meta, from Frappe.
 
-The Social Planner UI/doctypes are provider-agnostic; publishing goes through
-one of these adapters, chosen in CRM Social Settings:
+There is exactly one publishing path: the Meta Graph API, using the page
+tokens obtained by the Meta connection (Settings → Meta). No third-party
+service is involved.
 
-- Meta    — built-in: publishes directly to Facebook Pages and their linked
-            Instagram Business accounts with the Graph API, reusing the page
-            tokens obtained by the Meta OAuth connection (no third party).
-- Postiz  — self-hosted open-source engine, public REST API
-            (https://docs.postiz.com/public-api). One agency-level instance,
-            per-network OAuth handled by Postiz.
-- Ayrshare — paid aggregator (https://www.ayrshare.com), zero app reviews:
-            fastest path to networks Meta does not cover.
-- Manual  — no external call: the post is marked published and the team posts
-            it by hand (also useful for testing the planner itself).
+- Facebook Page: /feed (text), /photos (image), /videos (video)
+- Instagram Business: /media (container) → wait for processing → /media_publish
+  (Instagram always requires a media file; videos are published as Reels)
 """
 
-import datetime
 import time
 
 import frappe
-import requests
 from frappe import _
 from frappe.utils import get_url
 
-TIMEOUT = 30
+VIDEO_EXTENSIONS = (".mp4", ".mov", ".m4v")
 
 
 class PublishError(Exception):
 	pass
 
 
-def get_settings():
-	return frappe.get_cached_doc("CRM Social Settings")
-
-
 def publish_target(post, target) -> str:
-	"""Publish one post to one account; returns the provider post id."""
-	settings = get_settings()
-	provider = settings.provider or "Manual"
-	content = target.override_content or post.content
-	media_url = get_url(post.media) if post.media else None
-	if provider == "Meta":
-		return _publish_meta(target, content, media_url)
-	if provider == "Postiz":
-		return _publish_postiz(settings, target, content, media_url, post)
-	if provider == "Ayrshare":
-		return _publish_ayrshare(settings, target, content, media_url, post)
-	return "manual"
-
-
-# --- Meta (direct Graph API) ------------------------------------------------
-
-VIDEO_EXTENSIONS = (".mp4", ".mov", ".m4v")
-
-
-def _publish_meta(target, content, media_url) -> str:
+	"""Publish one post to one profile; returns the provider post id."""
 	from crm.integrations.meta.client import MetaAPIError, graph_post
 
+	content = target.override_content or post.content
+	media_url = get_url(post.media) if post.media else None
+
 	account = frappe.get_doc("CRM Social Account", target.account)
-	if account.platform not in ("Facebook", "Instagram"):
-		raise PublishError(
-			_("The built-in Meta provider only publishes to Facebook and Instagram ({0} selected)").format(
-				account.platform
-			)
-		)
-	page_id = account.facebook_page or (account.platform == "Facebook" and account.provider_account_id)
+	page_id = account.facebook_page or account.provider_account_id
 	token = page_id and frappe.get_doc("Facebook Page", page_id).get_password(
 		"access_token", raise_exception=False
 	)
 	if not token:
-		raise PublishError(_("No Facebook page token for this account — reconnect Facebook in Settings"))
+		raise PublishError(_("No Facebook page token for this profile — reconnect Facebook in Settings"))
 
 	is_video = bool(media_url) and media_url.lower().split("?")[0].endswith(VIDEO_EXTENSIONS)
 	try:
@@ -86,12 +52,11 @@ def _publish_meta(target, content, media_url) -> str:
 				result = graph_post(f"{fb_id}/feed", token, {"message": content})
 			return str(result.get("id") or result.get("post_id") or "ok")
 
-		# Instagram: create a media container, wait until processed, publish it
 		ig_id = account.provider_account_id
 		if not ig_id:
-			raise PublishError(_("No Instagram account id — re-import accounts in Settings"))
+			raise PublishError(_("No Instagram account id — re-import profiles in Settings"))
 		if not media_url:
-			raise PublishError(_("Instagram requires an image or video"))
+			raise PublishError(_("Instagram requires an image or a video"))
 		params = (
 			{"media_type": "REELS", "video_url": media_url, "caption": content}
 			if is_video
@@ -107,6 +72,7 @@ def _publish_meta(target, content, media_url) -> str:
 
 
 def _wait_for_ig_container(container_id, token, tries=10, delay=3):
+	"""Instagram processes uploads asynchronously: publish only once FINISHED."""
 	from crm.integrations.meta.client import graph_get
 
 	for attempt in range(tries):
@@ -118,76 +84,6 @@ def _wait_for_ig_container(container_id, token, tries=10, delay=3):
 		if attempt < tries - 1:
 			time.sleep(delay)
 	raise PublishError(_("Instagram media processing timed out — retry in a minute"))
-
-
-def _publish_postiz(settings, target, content, media_url, post) -> str:
-	base = (settings.postiz_url or "").rstrip("/")
-	api_key = settings.get_password("postiz_api_key", raise_exception=False)
-	if not base or not api_key:
-		raise PublishError(_("Postiz URL/API key not configured"))
-	if not target.get("provider_account_id"):
-		raise PublishError(_("Account has no Postiz integration id"))
-
-	headers = {"Authorization": api_key, "Content-Type": "application/json"}
-	value = [{"content": content}]
-	if media_url:
-		value[0]["image"] = [{"path": media_url}]
-	body = {
-		"type": "now",
-		"date": datetime.datetime.utcnow().isoformat() + "Z",
-		"posts": [
-			{
-				"integration": {"id": target.provider_account_id},
-				"value": value,
-			}
-		],
-	}
-	response = requests.post(f"{base}/public/v1/posts", json=body, headers=headers, timeout=TIMEOUT)
-	if response.status_code >= 300:
-		raise PublishError(f"Postiz {response.status_code}: {response.text[:300]}")
-	data = response.json() if response.text else {}
-	if isinstance(data, list) and data:
-		return str(data[0].get("postId") or data[0].get("id") or "ok")
-	return str(data.get("id") or "ok") if isinstance(data, dict) else "ok"
-
-
-AYRSHARE_PLATFORMS = {
-	"Facebook": "facebook",
-	"Instagram": "instagram",
-	"LinkedIn": "linkedin",
-	"TikTok": "tiktok",
-	"YouTube": "youtube",
-	"Pinterest": "pinterest",
-	"Google Business Profile": "gmb",
-	"Threads": "threads",
-	"Bluesky": "bluesky",
-	"X": "twitter",
-}
-
-
-def _publish_ayrshare(settings, target, content, media_url, post) -> str:
-	api_key = settings.get_password("ayrshare_api_key", raise_exception=False)
-	if not api_key:
-		raise PublishError(_("Ayrshare API key not configured"))
-	platform = AYRSHARE_PLATFORMS.get(target.get("platform"))
-	if not platform:
-		raise PublishError(_("Platform not supported by Ayrshare: {0}").format(target.get("platform")))
-
-	body = {"post": content, "platforms": [platform]}
-	if media_url:
-		body["mediaUrls"] = [media_url]
-	if target.get("provider_account_id"):
-		body["profileKey"] = target.provider_account_id
-	response = requests.post(
-		"https://app.ayrshare.com/api/post",
-		json=body,
-		headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
-		timeout=TIMEOUT,
-	)
-	data = response.json() if response.text else {}
-	if response.status_code >= 300 or data.get("status") == "error":
-		raise PublishError(f"Ayrshare {response.status_code}: {str(data)[:300]}")
-	return str(data.get("id") or "ok")
 
 
 # ---------------------------------------------------------------------------

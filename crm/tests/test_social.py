@@ -1,6 +1,8 @@
 # Copyright (c) 2026, Frappe Technologies Pvt. Ltd. and Contributors
 # See license.txt
 
+from unittest.mock import patch
+
 import frappe
 from frappe.tests import IntegrationTestCase
 
@@ -34,12 +36,8 @@ class TestSocialPlanner(IntegrationTestCase):
 		with self.assertRaises(frappe.ValidationError):
 			S.save_post({"content": "ciao", "status": "Scheduled", "targets": [{"account": "Test FB"}]})
 
-	def test_manual_provider_publishes_due_post(self):
+	def test_due_post_is_published(self):
 		make_account()
-		settings = frappe.get_doc("CRM Social Settings")
-		settings.provider = "Manual"
-		settings.save()
-
 		result = S.save_post(
 			{
 				"content": "post di prova",
@@ -48,15 +46,33 @@ class TestSocialPlanner(IntegrationTestCase):
 				"targets": [{"account": "Test FB"}],
 			}
 		)
-		process_due_posts()
+		with patch("crm.social.publisher.publish_target", return_value="fb_1"):
+			process_due_posts()
 		doc = frappe.get_doc("CRM Social Post", result["name"])
 		self.assertEqual(doc.status, "Published")
 		self.assertEqual(doc.targets[0].status, "Published")
+		self.assertEqual(doc.targets[0].provider_post_id, "fb_1")
 		self.assertTrue(doc.published_at)
+
+	def test_failed_target_marks_post_failed_with_error(self):
+		make_account()
+		result = S.save_post(
+			{
+				"content": "fallisce",
+				"status": "Scheduled",
+				"scheduled_at": frappe.utils.add_to_date(frappe.utils.now_datetime(), hours=-1),
+				"targets": [{"account": "Test FB"}],
+			}
+		)
+		with patch("crm.social.publisher.publish_target", side_effect=Exception("token scaduto")):
+			process_due_posts()
+		doc = frappe.get_doc("CRM Social Post", result["name"])
+		self.assertEqual(doc.status, "Failed")
+		self.assertEqual(doc.targets[0].status, "Failed")
+		self.assertIn("token scaduto", doc.targets[0].error)
 
 	def test_recurrence_clones_next_occurrence(self):
 		make_account()
-		frappe.get_doc("CRM Social Settings").db_set("provider", "Manual")
 		result = S.save_post(
 			{
 				"content": "ricorrente",
@@ -66,7 +82,8 @@ class TestSocialPlanner(IntegrationTestCase):
 				"targets": [{"account": "Test FB"}],
 			}
 		)
-		process_due_posts()
+		with patch("crm.social.publisher.publish_target", return_value="fb_2"):
+			process_due_posts()
 		clones = frappe.get_all(
 			"CRM Social Post", filters={"content": "ricorrente", "status": "Scheduled"}, pluck="name"
 		)
@@ -87,7 +104,7 @@ class TestSocialPlanner(IntegrationTestCase):
 			1,
 		)
 
-	def test_sync_from_facebook_pages_creates_fb_and_ig_accounts(self):
+	def test_sync_from_facebook_pages_creates_fb_and_ig_profiles(self):
 		if not frappe.db.exists("Facebook Page", "5550001"):
 			frappe.get_doc(
 				{
@@ -120,3 +137,21 @@ class TestSocialPlanner(IntegrationTestCase):
 		# idempotent
 		again = sync_from_facebook_pages()
 		self.assertEqual(again["created"], 0)
+
+	def test_instagram_without_media_fails(self):
+		account = make_account("Test IG", "Instagram")
+		account.provider_account_id = "17840000009"
+		account.facebook_page = None
+		account.save()
+		result = S.save_post(
+			{
+				"content": "senza media",
+				"status": "Scheduled",
+				"scheduled_at": frappe.utils.add_to_date(frappe.utils.now_datetime(), hours=-1),
+				"targets": [{"account": "Test IG"}],
+			}
+		)
+		process_due_posts()
+		doc = frappe.get_doc("CRM Social Post", result["name"])
+		self.assertEqual(doc.status, "Failed")
+		self.assertTrue(doc.targets[0].error)

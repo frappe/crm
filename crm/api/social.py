@@ -146,80 +146,42 @@ def cancel_post(name: str) -> dict:
 	return {"name": doc.name, "status": doc.status}
 
 
-@frappe.whitelist()
-def get_provider() -> dict:
-	settings = frappe.get_cached_doc("CRM Social Settings")
-	return {"provider": settings.provider or "Manual"}
-
-
 # --- Settings-modal administration -----------------------------------------
 
 
 @frappe.whitelist()
-def get_social_settings() -> dict:
+def get_connection() -> dict:
+	"""Publishing runs on the Meta connection: report its state."""
 	_check_manager()
-	settings = frappe.get_doc("CRM Social Settings")
 	meta = frappe.get_doc("CRM Meta Settings")
 	return {
-		"provider": settings.provider or "Manual",
-		"postiz_url": settings.postiz_url or "",
-		"has_postiz_key": bool(settings.get_password("postiz_api_key", raise_exception=False)),
-		"has_ayrshare_key": bool(settings.get_password("ayrshare_api_key", raise_exception=False)),
-		# Meta provider reuses the Meta Lead Ads connection
-		"meta_connected": bool(meta.get_password("user_access_token", raise_exception=False)),
-		"meta_connected_user": meta.connected_user_name or "",
-		"meta_has_app": bool(meta.app_id and meta.get_password("app_secret", raise_exception=False)),
-		"meta_pages": frappe.db.count("Facebook Page"),
+		"has_app": bool(meta.app_id and meta.get_password("app_secret", raise_exception=False)),
+		"connected": bool(meta.get_password("user_access_token", raise_exception=False)),
+		"connected_user": meta.connected_user_name or "",
+		"pages": frappe.db.count("Facebook Page"),
 	}
 
 
 @frappe.whitelist(methods=["POST"])
-def import_provider_accounts() -> dict:
-	"""One-click profile connection: pull the accounts already connected on the
-	configured provider (Meta pages/IG, Postiz channels, Ayrshare networks) and
-	upsert them as CRM Social Accounts."""
+def import_accounts() -> dict:
+	"""One-click profile connection: refresh the pages from Meta and turn them
+	(plus their linked Instagram accounts) into publishable profiles."""
 	_check_manager()
-	from crm.social import accounts as social_accounts
+	from crm.social.accounts import sync_from_facebook_pages
 
-	provider = frappe.get_cached_doc("CRM Social Settings").provider or "Manual"
-	if provider == "Meta":
-		token = frappe.get_doc("CRM Meta Settings").get_password("user_access_token", raise_exception=False)
-		if token:
-			# refresh pages + linked IG accounts from Meta first
-			from crm.integrations.meta.client import MetaAPIError
-			from crm.integrations.meta.oauth import sync_pages_and_forms
+	token = frappe.get_doc("CRM Meta Settings").get_password("user_access_token", raise_exception=False)
+	if token:
+		from crm.integrations.meta.client import MetaAPIError
+		from crm.integrations.meta.oauth import sync_pages_and_forms
 
-			try:
-				sync_pages_and_forms(token)
-			except MetaAPIError as exc:
-				frappe.throw(_("Meta API error: {0}").format(exc))
-		result = social_accounts.sync_from_facebook_pages()
-	elif provider == "Postiz":
-		result = social_accounts.sync_from_postiz()
-	elif provider == "Ayrshare":
-		result = social_accounts.sync_from_ayrshare()
-	else:
-		frappe.throw(_("Pick a publishing provider first (Meta, Postiz or Ayrshare)"))
+		try:
+			sync_pages_and_forms(token)
+		except MetaAPIError as exc:
+			frappe.throw(_("Meta API error: {0}").format(exc))
+
+	result = sync_from_facebook_pages()
 	result["accounts"] = list_accounts_admin()
 	return result
-
-
-@frappe.whitelist(methods=["POST"])
-def save_social_settings(settings: dict | str) -> dict:
-	_check_manager()
-	if isinstance(settings, str):
-		settings = json.loads(settings)
-	doc = frappe.get_doc("CRM Social Settings")
-	doc.provider = settings.get("provider") or "Manual"
-	doc.postiz_url = settings.get("postiz_url") or ""
-	# passwords are write-only: empty means "keep the stored one"
-	if settings.get("postiz_api_key"):
-		doc.postiz_api_key = settings["postiz_api_key"]
-	if settings.get("ayrshare_api_key"):
-		doc.ayrshare_api_key = settings["ayrshare_api_key"]
-	doc.save()
-	frappe.clear_document_cache("CRM Social Settings", "CRM Social Settings")
-	return get_social_settings()
 
 
 @frappe.whitelist()
@@ -233,26 +195,12 @@ def list_accounts_admin() -> list[dict]:
 
 
 @frappe.whitelist(methods=["POST"])
-def save_account(account: dict | str, name: str | None = None) -> dict:
+def set_account_enabled(name: str, enabled: bool) -> dict:
 	_check_manager()
-	if isinstance(account, str):
-		account = json.loads(account)
-	values = {
-		"account_name": (account.get("account_name") or "").strip(),
-		"platform": account.get("platform"),
-		"enabled": 1 if account.get("enabled", True) else 0,
-		"provider_account_id": (account.get("provider_account_id") or "").strip(),
-	}
-	if not values["account_name"]:
-		frappe.throw(_("Account name is required"))
-	if name:
-		doc = frappe.get_doc("CRM Social Account", name)
-		doc.update(values)
-		doc.save()
-	else:
-		doc = frappe.get_doc({"doctype": "CRM Social Account", **values})
-		doc.insert()
-	return {"name": doc.name}
+	doc = frappe.get_doc("CRM Social Account", name)
+	doc.enabled = 1 if frappe.utils.sbool(enabled) else 0
+	doc.save()
+	return {"name": doc.name, "enabled": doc.enabled}
 
 
 @frappe.whitelist(methods=["POST"])
