@@ -187,12 +187,28 @@ I nomi dei campi vengono letti dal doctype installato invece che dati per
 scontati: con una release diversa di frappe_whatsapp l'interfaccia si adatta
 invece di rompersi.
 
+### Variabili dei template
+
+Un template con `{{1}}`, `{{2}}`… non si può inviare alla cieca. Quando lo si
+sceglie in chat, il CRM legge quante variabili ha
+(`get_template_placeholders`) e chiede i valori mostrando l'anteprima del
+messaggio; i valori vengono salvati sul messaggio, così la timeline mostra il
+testo **davvero** partito. Nelle automazioni lo stesso blocco accetta un valore
+per variabile, e ognuno passa da `render()`: si può scrivere
+`{{ first_name }}` e prenderlo dal record.
+
 **Fase 2 — quel che resta**
 - finestra 24h: avviso in chat quando serve un template per riaprire;
-- azione "Invia WhatsApp" nelle automazioni (oggi c'è solo il trigger);
-- sincronizzazione dello stato di approvazione dei template via webhook
+- header con media (immagine/video/documento) e bottoni nei template: l'editor
+  fa header di testo, corpo e footer;
+- valori di esempio per le variabili in fase di invio a Meta (li chiede in
+  revisione per i template con placeholder);
+- sincronizzazione dello stato di approvazione via webhook
   `message_template_status_update` (oggi lo stato si aggiorna quando
   frappe_whatsapp lo rilegge).
+
+> L'azione **"Invia template WhatsApp" nelle automazioni c'è già** dal lavoro
+> sul motore (`step_send_whatsapp_template`): non era da fare.
 
 ## Nota sui costi
 

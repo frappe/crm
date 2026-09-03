@@ -308,6 +308,25 @@
             :label="__('Template')"
             :options="withEmpty(meta.data?.whatsapp_templates)"
           />
+          <div>
+            <div class="mb-1 flex items-center justify-between">
+              <span class="text-xs text-ink-gray-5">{{ __('Template variables') }}</span>
+              <Button size="sm" variant="ghost" :label="__('Add')" @click="addTemplateParameter" />
+            </div>
+            <FormControl
+              v-for="(value, index) in stepDraft.template_parameters || []"
+              :key="index"
+              :modelValue="value"
+              type="text"
+              class="mb-1.5"
+              :label="variableLabel(index)"
+              :placeholder="placeholderHint"
+              @update:modelValue="(v) => (stepDraft.template_parameters[index] = v)"
+            />
+            <p class="text-xs text-ink-gray-4">
+              {{ __('Leave empty if the template has no variables.') }}
+            </p>
+          </div>
         </template>
         <template v-else-if="stepDraft.type == 'create_task'">
           <FormControl v-model="stepDraft.title" type="text" :label="__('Task title')" />

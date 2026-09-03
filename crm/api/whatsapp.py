@@ -1,4 +1,5 @@
 import json
+import re
 
 import frappe
 from frappe import _
@@ -296,7 +297,20 @@ def create_whatsapp_message(
 
 
 @frappe.whitelist()
-def send_whatsapp_template(reference_doctype: str, reference_name: str, template: str, to: str):
+def send_whatsapp_template(
+	reference_doctype: str,
+	reference_name: str,
+	template: str,
+	to: str,
+	template_parameters: list | str | None = None,
+	template_header_parameters: list | str | None = None,
+):
+	"""Send an approved template.
+
+	`template_parameters` are the values for the {{1}}, {{2}}… placeholders, in
+	order. When they are given they are stored on the message, so the text that
+	actually left is what the timeline shows later.
+	"""
 	validate_access(reference_doctype, reference_name)
 	doc = frappe.new_doc("WhatsApp Message")
 	doc.update(
@@ -311,8 +325,36 @@ def send_whatsapp_template(reference_doctype: str, reference_name: str, template
 			"to": to,
 		}
 	)
+	for fieldname, value in (
+		("template_parameters", template_parameters),
+		("template_header_parameters", template_header_parameters),
+	):
+		values = json.loads(value) if isinstance(value, str) else value
+		if values:
+			doc.set(fieldname, json.dumps(values))
 	doc.insert(ignore_permissions=True)
 	return doc.name
+
+
+@frappe.whitelist()
+def get_template_placeholders(template: str) -> dict:
+	"""How many variables a template needs, so the sender can fill them in."""
+	validate_access()
+	if not frappe.db.exists("WhatsApp Templates", template):
+		frappe.throw(_("Template not found"), frappe.DoesNotExistError)
+	doc = frappe.get_doc("WhatsApp Templates", template)
+
+	def count(text):
+		return len(set(re.findall(r"{{\s*(\d+)\s*}}", text or "")))
+
+	return {
+		"name": doc.name,
+		"template": doc.get("template") or "",
+		"header": doc.get("header") or "",
+		"footer": doc.get("footer") or "",
+		"body_count": count(doc.get("template")),
+		"header_count": count(doc.get("header")),
+	}
 
 
 @frappe.whitelist()

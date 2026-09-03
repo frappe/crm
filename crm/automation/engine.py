@@ -15,7 +15,7 @@ Builder step schema (ordered list; every step may carry "label" for go_to and
   Communication:
     {"type": "send_email", "subject", "message", "email_template"?}
     {"type": "send_sms", "message"}
-    {"type": "send_whatsapp_template", "template"}
+    {"type": "send_whatsapp_template", "template", "template_parameters"?: [..]}
     {"type": "notify", "message"}
   CRM:
     {"type": "create_task", "title", "due_in_days", "assigned_to"?}
@@ -760,11 +760,14 @@ def step_send_whatsapp_template(step, ref_doc) -> str:
 		return _("Skipped: record has no phone number")
 	from crm.api.whatsapp import send_whatsapp_template
 
+	# each value goes through render(), so a step can pass {{ first_name }}
+	parameters = [render(value, ref_doc) for value in (step.get("template_parameters") or [])]
 	send_whatsapp_template(
 		reference_doctype=ref_doc.doctype,
 		reference_name=ref_doc.name,
 		template=step.get("template"),
 		to=number,
+		template_parameters=parameters or None,
 	)
 	return _("WhatsApp template {0} sent to {1}").format(step.get("template"), number)
 

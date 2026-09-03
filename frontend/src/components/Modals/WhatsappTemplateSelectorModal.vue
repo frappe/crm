@@ -34,7 +34,7 @@
           v-for="template in filteredTemplates"
           :key="template.name"
           class="flex h-56 cursor-pointer flex-col gap-2 rounded-lg border p-3 hover:bg-surface-gray-2"
-          @click="emit('send', template.name)"
+          @click="pick(template)"
         >
           <div
             class="border-b pb-2 text-base-semibold truncate"
@@ -66,10 +66,38 @@
       </div>
     </template>
   </Dialog>
+
+  <!-- a template with {{n}} placeholders cannot be sent blind: ask for the
+       values, and show the message exactly as it will leave -->
+  <Dialog v-model="showVariables" :options="{ title: __('Fill in the template'), size: 'lg' }">
+    <template #body-content>
+      <div class="flex flex-col gap-3">
+        <div class="rounded-md bg-surface-gray-1 p-3 text-p-base text-ink-gray-7 whitespace-pre-line">
+          {{ preview }}
+        </div>
+        <FormControl
+          v-for="(value, index) in variables"
+          :key="index"
+          v-model="variables[index]"
+          type="text"
+          :label="placeholderLabel(index)"
+        />
+      </div>
+    </template>
+    <template #actions>
+      <Button
+        class="w-full"
+        variant="solid"
+        :label="__('Send')"
+        :disabled="variables.some((v) => !v)"
+        @click="sendWithVariables"
+      />
+    </template>
+  </Dialog>
 </template>
 
 <script setup>
-import { createListResource } from 'frappe-ui'
+import { createListResource, createResource, Dialog, FormControl, toast } from 'frappe-ui'
 import { ref, computed, nextTick, watch, onMounted } from 'vue'
 import { sanitizeHTML } from '@/utils'
 import { showSettings, activeSettingsPage } from '@/composables/settings'
@@ -108,6 +136,43 @@ const filteredTemplates = computed(() => {
     }) ?? []
   )
 })
+
+const showVariables = ref(false)
+const variables = ref([])
+const preview = ref('')
+const pending = ref(null)
+
+function placeholderLabel(index) {
+  return __('Value for {0}', ['{{' + (index + 1) + '}}'])
+}
+
+function pick(template) {
+  createResource({
+    url: 'crm.api.whatsapp.get_template_placeholders',
+    params: { template: template.name },
+    auto: true,
+    onSuccess: (data) => {
+      const count = data.body_count || 0
+      if (!count) {
+        emit('send', template.name)
+        return
+      }
+      pending.value = template.name
+      variables.value = Array.from({ length: count }, () => '')
+      preview.value = data.template
+      show.value = false
+      showVariables.value = true
+    },
+    // if the lookup fails, fall back to sending as before rather than blocking
+    onError: () => emit('send', template.name),
+  })
+}
+
+function sendWithVariables() {
+  showVariables.value = false
+  emit('send', pending.value, [...variables.value])
+  pending.value = null
+}
 
 function newWhatsappTemplate() {
   show.value = false

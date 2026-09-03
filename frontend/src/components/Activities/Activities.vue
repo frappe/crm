@@ -436,7 +436,7 @@
     v-if="whatsappEnabled"
     v-model="showWhatsappTemplates"
     :doctype="doctype"
-    @send="(t) => sendTemplate(t)"
+    @send="(t, params) => sendTemplate(t, params)"
   />
   <AllModals
     ref="modalRef"
@@ -658,7 +658,7 @@ function handleDocinfoUpdate({ doc, key }) {
   _document.reload()
 }
 
-function sendTemplate(template) {
+function sendTemplate(template, templateParameters) {
   showWhatsappTemplates.value = false
   capture('send_whatsapp_template', { doctype: props.doctype })
   createResource({
@@ -668,6 +668,7 @@ function sendTemplate(template) {
       reference_name: props.docname,
       to: doc.value.mobile_no,
       template,
+      template_parameters: templateParameters || null,
     },
     auto: true,
     onError: (error) => {
