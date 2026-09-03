@@ -161,6 +161,18 @@ composer, il contatore mostra la durata, si preme stop e la nota vocale viene
 caricata e inviata come messaggio audio. Se il browser non lo supporta o il
 microfono è negato, lo dice invece di fallire in silenzio.
 
+## Una sola strada
+
+Settings → WhatsApp ha **solo** il flusso di connessione: nessun form dove
+incollare token e phone number id, nessuna configurazione alternativa. Un
+numero entra nel CRM in un modo solo — Connetti, QR, fatto.
+
+Questo significa che finché l'Embedded Signup non è disponibile (app non
+ancora approvata, o `whatsapp_signup_config_id` mancante) il bottone resta
+disabilitato e non c'è ripiego dentro il CRM. Per l'agenzia non è un blocco:
+i doctype restano raggiungibili dal Desk (`/app/whatsapp-account`) come per
+qualsiasi cosa in Frappe. Ma non è una strada offerta al cliente.
+
 ## Template: si creano nel CRM
 
 Prima il bottone "Create New Template" apriva il **form grezzo del Desk**

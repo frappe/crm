@@ -83,32 +83,16 @@
             {{ __('Removing a number here does not affect the WhatsApp Business app on the phone.') }}
           </p>
         </div>
-
-        <!-- the plain doctype form is still the way in for a number that was
-             not connected through us (own token, or another provider) -->
-        <div class="mt-6 border-t border-outline-gray-1 pt-4">
-          <Button
-            variant="ghost"
-            :label="showAdvanced ? __('Hide advanced settings') : __('Advanced settings')"
-            :iconLeft="showAdvanced ? 'chevron-down' : 'chevron-right'"
-            @click="showAdvanced = !showAdvanced"
-          />
-          <div v-if="showAdvanced" class="mt-3">
-            <SettingsPage doctype="WhatsApp Settings" />
-          </div>
-        </div>
       </template>
     </div>
   </div>
 </template>
 
 <script setup>
-import SettingsPage from '@/components/Settings/SettingsPage.vue'
 import { createResource, toast } from 'frappe-ui'
 import { ref } from 'vue'
 
 const connecting = ref(false)
-const showAdvanced = ref(false)
 
 const status = createResource({
   url: 'crm.integrations.whatsapp.api.get_status',
