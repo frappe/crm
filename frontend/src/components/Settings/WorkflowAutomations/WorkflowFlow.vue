@@ -70,8 +70,11 @@
               </template>
               <template #trigger>
                 <div
-                  class="workflow-node relative flex h-[87px] w-[212px] flex-col overflow-hidden rounded-[10px] border bg-surface-base shadow-sm transition-colors"
-                  :class="nodeClasses(id, data)"
+                  class="workflow-node relative flex h-[87px] w-[212px] flex-col overflow-hidden rounded-[10px] border bg-surface-base shadow-sm transition-all"
+                  :class="[
+                    nodeClasses(id, data),
+                    { 'opacity-40': data.dimmed },
+                  ]"
                   :tabindex="readonly ? -1 : 0"
                   :role="readonly ? undefined : 'button'"
                   :aria-label="`${data.kicker}: ${data.label}`"
@@ -99,8 +102,25 @@
                     >
                       {{ data.label }}
                     </div>
+                    <Badge
+                      v-if="data.forced"
+                      :label="__('Forced')"
+                      theme="orange"
+                      variant="subtle"
+                    />
+                    <Spinner
+                      v-if="data.status === 'running'"
+                      size="sm"
+                      class="shrink-0 text-ink-gray-7"
+                    />
+                    <component
+                      :is="RUN_ICONS[data.status]"
+                      v-else-if="RUN_ICONS[data.status]"
+                      class="size-4 shrink-0"
+                      :class="RUN_COLORS[data.status]"
+                    />
                     <ErrorIcon
-                      v-if="data.error"
+                      v-else-if="data.error"
                       class="size-4 shrink-0 text-ink-red-4"
                     />
                   </div>
@@ -159,6 +179,21 @@
           </div>
         </div>
         <div
+          v-if="data.retryArms?.length"
+          class="workflow-add-control nodrag absolute left-0 top-[calc(100%+8px)] flex gap-1.5"
+          @click.stop
+        >
+          <Button
+            v-for="arm in data.retryArms"
+            :key="arm.branch"
+            size="sm"
+            icon-left="lucide-play"
+            @click="$emit('run-branch', arm)"
+          >
+            {{ __('Run {0}', [arm.label]) }}
+          </Button>
+        </div>
+        <div
           v-if="(data.arms?.length || data.canContinue) && !readonly"
           class="workflow-add-control nodrag absolute left-[calc(100%+12px)] top-1/2 flex -translate-y-1/2 flex-col gap-1.5"
           @click.stop
@@ -212,8 +247,12 @@ import '@vue-flow/core/dist/theme-default.css'
 import { Background } from '@vue-flow/background'
 import { Handle, Panel, Position, VueFlow, useVueFlow } from '@vue-flow/core'
 import ErrorIcon from '~icons/lucide/circle-alert'
+import FailedIcon from '~icons/lucide/circle-x'
+import SkippedIcon from '~icons/lucide/circle-minus'
+import SuccessIcon from '~icons/lucide/circle-check'
+import WaitingIcon from '~icons/lucide/clock'
 import WorkflowComboboxOption from './WorkflowComboboxOption.vue'
-import { Button, Combobox } from 'frappe-ui'
+import { Badge, Button, Combobox, Spinner } from 'frappe-ui'
 import { computed, nextTick, ref, useId, watch } from 'vue'
 
 const props = defineProps({
@@ -226,7 +265,22 @@ const props = defineProps({
   readonly: { type: Boolean, default: false },
 })
 
-const emit = defineEmits(['select', 'add-step', 'pick-trigger'])
+const emit = defineEmits(['select', 'add-step', 'pick-trigger', 'run-branch'])
+
+// How a trial run's outcome reads on the node it belongs to.
+const RUN_ICONS = {
+  Success: SuccessIcon,
+  Skipped: SkippedIcon,
+  Failed: FailedIcon,
+  Waiting: WaitingIcon,
+}
+
+const RUN_COLORS = {
+  Success: 'text-ink-green-5',
+  Skipped: 'text-ink-gray-4',
+  Failed: 'text-ink-red-5',
+  Waiting: 'text-ink-amber-6',
+}
 const flowId = useId()
 const flowRoot = ref(null)
 const EDGE_PADDING = 48
@@ -366,8 +420,10 @@ function nodeClasses(id, data) {
 
 function nodeSurface(id, data) {
   if (data.empty) return 'border-dashed border-[#aeaeae]  shadow-none'
+  if (data.status === 'Failed') return 'border-outline-red-2 bg-surface-modal'
+  if (data.status === 'running') return 'border-outline-gray-5 shadow-md'
   if (data.error) return 'border-outline-red-2 bg-surface-modal'
-  if (isOn(id)) return 'border-outline-gray-4'
+  if (isOn(id)) return 'border-outline-gray-5'
   return 'border-outline-gray-2    hover:border-outline-gray-5'
 }
 
