@@ -130,11 +130,39 @@ def add_task_to_call_log(call_sid: str, task: dict):
 		)
 		_task.save(ignore_permissions=True)
 
+	_unlink_task_from_other_call_logs(_task.name, call_sid)
+
 	call_log = frappe.get_doc("CRM Call Log", call_sid)
 	call_log.link_with_reference_doc("CRM Task", _task.name)
 	call_log.save(ignore_permissions=True)
 
 	return _task
+
+
+def _unlink_task_from_other_call_logs(task_name: str, keep_call_log: str):
+	"""A task should be claimed by at most one call log - the one it's being linked to
+	now. Without this, a task linked to more than one call log has no reliable way to
+	say which call it actually originated from (both Dynamic Link's creation and
+	modified timestamps are unusable for that: creation is copied from the parent call
+	log, and modified is rewritten whenever the parent is saved for any reason)."""
+	other_call_logs = frappe.get_all(
+		"Dynamic Link",
+		filters={
+			"link_doctype": "CRM Task",
+			"link_name": task_name,
+			"parenttype": "CRM Call Log",
+			"parent": ("!=", keep_call_log),
+		},
+		pluck="parent",
+	)
+	for call_log_name in other_call_logs:
+		other_call_log = frappe.get_doc("CRM Call Log", call_log_name)
+		other_call_log.links = [
+			link
+			for link in other_call_log.links
+			if not (link.link_doctype == "CRM Task" and link.link_name == str(task_name))
+		]
+		other_call_log.save(ignore_permissions=True)
 
 
 @frappe.whitelist()

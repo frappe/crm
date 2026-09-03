@@ -525,11 +525,15 @@ def attach_linked_call_logs(tasks: list) -> list:
 			& (Link.link_doctype == "CRM Task")
 			& (Link.link_name.isin([str(task["name"]) for task in tasks]))
 		)
-		.orderby(CallLog.creation)
+		.orderby(Link.creation)
 	).run(as_dict=True)
 	# link_name is stored as a string even for CRM Task's autoincrement int names.
-	# a task can end up linked to more than one call log - keep the earliest (the
-	# call that actually originated the task) rather than an arbitrary one
+	# add_task_to_call_log() only ever lets one call log claim a given task going
+	# forward, so this should never see more than one row per task for links made
+	# after that guard shipped. Sites with pre-existing duplicate links (see the
+	# dedupe_task_call_log_links patch) may still have more than one row here until
+	# that patch runs, so order by Link.creation (the first call the task was linked
+	# to) and let setdefault keep only that one.
 	call_log_by_task = {}
 	for row in rows:
 		call_log_by_task.setdefault(str(row.link_name), {"name": row.name, "creation": row.creation})
