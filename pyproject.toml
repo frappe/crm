@@ -29,7 +29,10 @@ build-backend = "flit_core.buildapi"
 # package_name = "~=1.1.0"
 
 [tool.bench.frappe-dependencies]
-frappe = ">=16.0.0-dev,<=17.0.0-dev"
+# `<=17.0.0-dev` was rejected: a prerelease upper bound implies >=17.0.0, which
+# puts the ceiling below the floor. A stable exclusive ceiling says the same
+# thing without the contradiction — any 16.x, nothing from 17.
+frappe = ">=16.0.0-dev,<17.0.0"
 
 [tool.bench.assets]
 build_dir = "./frontend"
