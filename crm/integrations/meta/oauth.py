@@ -65,6 +65,24 @@ SCOPES = (
 	"instagram_content_publish",
 )
 
+
+def scopes() -> tuple[str, ...]:
+	"""What to ask Facebook for.
+
+	A permission the app does not carry makes the whole login dialog fail with
+	"Invalid Scopes" — one missing use case and nobody can connect at all. So
+	`meta_scopes` in the site config can narrow the list while the app is still
+	being set up (e.g. leads only, before the Page and Instagram use cases are
+	added). Remove the key once the app has everything.
+	"""
+	configured = frappe.conf.get("meta_scopes")
+	if configured:
+		return (
+			tuple(configured) if isinstance(configured, list | tuple) else tuple(str(configured).split(","))
+		)
+	return SCOPES
+
+
 MANAGER_ROLES = {"System Manager", "Sales Manager"}
 
 
@@ -145,7 +163,7 @@ def get_login_url() -> dict:
 	if config_id:
 		params["config_id"] = config_id
 	else:
-		params["scope"] = ",".join(SCOPES)
+		params["scope"] = ",".join(scopes())
 	return {"login_url": f"https://www.facebook.com/v23.0/dialog/oauth?{urlencode(params)}"}
 
 

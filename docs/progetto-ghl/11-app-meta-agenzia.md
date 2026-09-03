@@ -107,6 +107,26 @@ quelli restano ognuno nel proprio site.
    (App roles → Add people), ed è normale.
 8. **App Review**: avviarla subito, è la parte lunga (settimane).
 
+### "Invalid Scopes" al login
+
+Se il dialog di Facebook si apre ma dice *Invalid Scopes*, l'app **non ha lo
+use case** che porta con sé quei permessi: chiedere un permesso che l'app non
+possiede fa fallire **l'intero login**, non solo quella funzione.
+
+I permessi si dividono così:
+
+| Serve per | Permessi | Use case |
+|---|---|---|
+| Lead dai form | `pages_show_list`, `pages_read_engagement`, `pages_manage_ads`, `leads_retrieval`, `ads_management`, `business_management` | *Capture & manage ad leads with Marketing API* |
+| Webhook lead in tempo reale | **`pages_manage_metadata`** | gestione Pagina — **non è opzionale**: è ciò che iscrive la pagina al webhook `leadgen` |
+| Social Planner (Facebook) | `pages_manage_posts` | gestione Pagina |
+| Social Planner (Instagram) | `instagram_basic`, `instagram_content_publish` | Instagram |
+
+Come ripiego, `meta_scopes` nel config del site restringe la lista richiesta,
+così ci si collega lo stesso mentre l'app viene completata (i lead arrivano
+comunque dal backfill e dalla riconciliazione, ma senza `pages_manage_metadata`
+niente webhook in tempo reale). Togliere la chiave quando l'app ha tutto.
+
 ## Configurazione (una volta sola, sul bench)
 
 `common_site_config.json` — vale per **tutti** i site:
