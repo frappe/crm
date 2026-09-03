@@ -3,8 +3,9 @@ import frappe
 
 def execute():
 	"""A task should belong to at most one call log, but that rule was only enforced
-	going forward once `_unlink_task_from_other_call_logs` shipped. Clean up any task
-	that was already linked to more than one call log before then.
+	going forward once `add_task_to_call_log` started claiming a task's call log link
+	solely at creation time. Clean up any task that was already linked to more than
+	one call log before then.
 
 	Dynamic Link.creation can't tell us which link came first: Frappe copies a new
 	child row's `creation` from its parent document's own `creation` whenever the

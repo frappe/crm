@@ -228,8 +228,10 @@ class TestIntegrations(IntegrationTestCase):
 		self.assertEqual(task.status, "In Progress")
 		self.assertEqual(task.priority, "High")
 
-	def test_add_task_to_call_log_unlinks_task_from_other_call_logs(self):
-		"""Test add_task_to_call_log keeps a task linked to only its latest call log"""
+	def test_add_task_to_call_log_keeps_the_originating_call_on_update(self):
+		"""Test updating an existing task through a different call's panel doesn't
+		reassign which call it originated from - there's no UI action for that, so an
+		update arriving under a different call_sid is stale client state, not intent."""
 		first_call = create_test_call_log()
 		second_call = create_test_call_log()
 
@@ -240,8 +242,8 @@ class TestIntegrations(IntegrationTestCase):
 		}
 		task = add_task_to_call_log(first_call.name, task_data)
 
-		# link the same task to a second call log
-		add_task_to_call_log(second_call.name, {**task_data, "name": task.name})
+		# submit an update for the same task through a second call log's panel
+		add_task_to_call_log(second_call.name, {**task_data, "name": task.name, "status": "In Progress"})
 
 		first_call.reload()
 		second_call.reload()
@@ -249,8 +251,12 @@ class TestIntegrations(IntegrationTestCase):
 		first_call_tasks = [link.link_name for link in first_call.links if link.link_doctype == "CRM Task"]
 		second_call_tasks = [link.link_name for link in second_call.links if link.link_doctype == "CRM Task"]
 
-		self.assertNotIn(str(task.name), first_call_tasks)
-		self.assertIn(str(task.name), second_call_tasks)
+		self.assertIn(str(task.name), first_call_tasks)
+		self.assertNotIn(str(task.name), second_call_tasks)
+
+		# the task's own fields still get updated
+		task.reload()
+		self.assertEqual(task.status, "In Progress")
 
 	def test_get_contact_by_phone_number_finds_contact(self):
 		"""Test get_contact_by_phone_number finds existing contact"""
