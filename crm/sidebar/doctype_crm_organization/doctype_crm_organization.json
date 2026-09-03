@@ -7,7 +7,7 @@
  "items": [],
  "link_doctype": "DocType",
  "link_to": "CRM Organization",
- "modified": "2026-09-02 18:53:12.409196",
+ "modified": "2026-09-03 12:10:44.512038",
  "modified_by": "Administrator",
  "name": "doctype_crm_organization",
  "navigation_items": [
@@ -45,6 +45,19 @@
    "label": "Industries",
    "link_doctype": "DocType",
    "link_to": "CRM Industry",
+   "parent_key": "organizations-configure",
+   "switches_app": 0
+  },
+  {
+   "added": 0,
+   "collapsible": 0,
+   "hidden": 0,
+   "item_type": "DocType",
+   "keep_closed": 0,
+   "key": "territories",
+   "label": "Territories",
+   "link_doctype": "DocType",
+   "link_to": "CRM Territory",
    "parent_key": "organizations-configure",
    "switches_app": 0
   }
