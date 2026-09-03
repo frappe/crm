@@ -58,17 +58,29 @@ quella pagina.
 1. **developers.facebook.com → My Apps → Create app.**
    - *App name*: **lo vedono i clienti nel popup di login** — mettere il nome
      commerciale dell'agenzia, non "test".
-   - *Use case*: **Other** → tipo **Business**. Attenzione: gli use case
-     **non si possono più rimuovere** dopo la creazione.
+   - *Use case*: **"Capture & manage ad leads with Marketing API"**
+     (`Other` è in dismissione). Porta con sé `ads_management` e
+     `leads_retrieval`. Gli use case **non si possono rimuovere** dopo la
+     creazione, ma se ne possono **aggiungere** di compatibili: quello per la
+     gestione della Pagina (`pages_manage_posts`) e Instagram
+     (`instagram_content_publish`) si aggiungono dopo, per il Social Planner.
+     I permessi *opzionali* di ogni use case si aggiungono/tolgono liberamente
+     in development.
    - *Business portfolio*: collegare il Business Manager dell'agenzia (serve
      poi per la Business Verification).
 2. **App settings → Basic**: copiare **App ID** e **App Secret**. Compilare
    Privacy Policy URL e Terms of Service (obbligatori per l'App Review).
-3. **Prodotti → Facebook Login → Settings → Valid OAuth Redirect URIs**:
+3. **Facebook Login → Settings → Valid OAuth Redirect URIs**:
    incollare il callback dell'**hub** (una riga; se ne possono aggiungere
    altre in seguito, es. quando nasce un hub definitivo):
    `https://<hub>/api/method/crm.integrations.meta.oauth.callback`
 4. **Config del site** (sotto): App ID, secret, relay secret, hub URL.
+   Se l'app ha **Facebook Login for Business** (tipico delle app create con gli
+   use case) invece del Login classico, il dialog vuole una *configurazione*
+   salvata al posto della lista di scope: creala in
+   **Facebook Login for Business → Configurations** con i permessi elencati in
+   fondo, e metti il suo id in `meta_login_config_id`. Se c'è il Login classico
+   non serve: il CRM manda gli scope da solo.
 5. **Webhook**: nel CRM **dell'hub**, Settings → Meta → "Configure
    automatically". Il CRM registra `Page → leadgen` da solo; il site deve
    essere raggiungibile in HTTPS perché Meta verifica il callback sul momento.

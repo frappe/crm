@@ -133,9 +133,16 @@ def get_login_url() -> dict:
 		"client_id": get_app_id(),
 		"redirect_uri": _redirect_uri(),
 		"state": state,
-		"scope": ",".join(SCOPES),
 		"response_type": "code",
 	}
+	# Apps created with the use-case wizard get "Facebook Login for Business",
+	# which asks for a saved configuration (config_id) instead of a scope list.
+	# Classic Facebook Login still takes scopes: support both.
+	config_id = frappe.conf.get("meta_login_config_id")
+	if config_id:
+		params["config_id"] = config_id
+	else:
+		params["scope"] = ",".join(SCOPES)
 	return {"login_url": f"https://www.facebook.com/v23.0/dialog/oauth?{urlencode(params)}"}
 
 
