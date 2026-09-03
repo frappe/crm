@@ -4,8 +4,14 @@
 import frappe
 from frappe import _
 from frappe.model.document import Document, get_controller
+from frappe.utils import cint
 
+from crm.api.doc import COUNT_NAME
 from crm.api.session import CRM_ALLOWED_ROLES
+
+# Upper bound for a single page of segment leads, so a crafted request cannot ask the
+# server to materialise the whole membership at once.
+MAX_PAGE_LENGTH = 100
 
 
 class CRMLeadSegment(Document):
@@ -159,6 +165,22 @@ def remove_leads(segment: str, leads: str | list) -> dict:
 	return {"removed": removed, "total": len(doc.leads)}
 
 
+def validate_order_by(order_by: str, allowed_fields: list) -> str:
+	"""Allowlist `order_by` against the fields the list actually renders.
+
+	order_by reaches the query builder as SQL text. Frappe screens it for subqueries and a
+	denylist of functions, but this endpoint is reachable from the web, so pin it to a known
+	field plus a direction rather than leaning on that denylist.
+	"""
+	field, _sep, direction = (order_by or "").strip().partition(" ")
+	direction = direction.strip().lower() or "desc"
+
+	if field not in allowed_fields or direction not in ("asc", "desc"):
+		frappe.throw(_("Invalid sort order: {0}").format(order_by))
+
+	return f"{field} {direction}"
+
+
 @frappe.whitelist()
 def get_segment_leads(
 	segment: str, start: int = 0, page_length: int = 20, order_by: str = "modified desc"
@@ -169,6 +191,10 @@ def get_segment_leads(
 
 	list_data = get_controller("CRM Lead").default_list_data()
 
+	start = max(cint(start), 0)
+	page_length = min(max(cint(page_length), 1), MAX_PAGE_LENGTH)
+	order_by = validate_order_by(order_by, list_data.get("rows"))
+
 	names = frappe.get_all(
 		"CRM Lead Segment Leads",
 		filters={"parent": segment, "parenttype": "CRM Lead Segment"},
@@ -176,10 +202,16 @@ def get_segment_leads(
 	)
 
 	data = []
+	total_count = 0
 	if names:
+		lead_filters = {"name": ["in", names]}
+		# Counted through get_list, not from the membership rows: get_all above bypasses
+		# permissions, so counting its result would disclose how many members of this
+		# segment the reader is not allowed to see, and would break pagination for them.
+		total_count = frappe.get_list("CRM Lead", filters=lead_filters, fields=[COUNT_NAME])[0].total_count
 		data = frappe.get_list(
 			"CRM Lead",
-			filters={"name": ["in", names]},
+			filters=lead_filters,
 			fields=list_data.get("rows"),
 			order_by=order_by,
 			offset=start,
@@ -189,6 +221,6 @@ def get_segment_leads(
 	return {
 		"data": data,
 		"columns": list_data.get("columns"),
-		"total_count": len(names),
+		"total_count": total_count,
 		"row_count": len(data),
 	}

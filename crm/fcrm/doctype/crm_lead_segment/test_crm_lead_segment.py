@@ -5,6 +5,7 @@ import frappe
 from frappe.tests import IntegrationTestCase
 
 from crm.fcrm.doctype.crm_lead_segment.crm_lead_segment import (
+	MAX_PAGE_LENGTH,
 	add_leads,
 	get_segment_leads,
 	remove_leads,
@@ -143,6 +144,40 @@ class TestCRMLeadSegment(IntegrationTestCase):
 		self.assertEqual(page["total_count"], 3)
 		self.assertEqual(page["row_count"], 2)
 		self.assertTrue(any(column["key"] == "lead_name" for column in page["columns"]))
+
+	def test_total_count_excludes_leads_the_reader_cannot_see(self):
+		"""total_count must come from the permission-filtered query, not the membership rows."""
+		segment = create_test_segment()
+		add_leads(segment.name, [create_test_lead().name, create_test_lead().name])
+		membership_rows = frappe.db.count("CRM Lead Segment Leads", {"parent": segment.name})
+
+		# A Sales User outside any sales hierarchy, with no leads assigned to them, so
+		# org_hierarchy's permission query conditions hide every lead in the segment.
+		frappe.set_user(CRM_USER)
+		result = get_segment_leads(segment.name)
+
+		self.assertEqual(membership_rows, 2)
+		self.assertEqual(len(result["data"]), 0)
+		# Would be 2 if counted from the membership rows, disclosing the hidden leads.
+		self.assertEqual(result["total_count"], 0)
+
+	def test_get_segment_leads_rejects_an_unknown_sort_field(self):
+		segment = create_test_segment()
+
+		with self.assertRaises(frappe.ValidationError):
+			get_segment_leads(segment.name, order_by="(select 1) asc")
+
+		with self.assertRaises(frappe.ValidationError):
+			get_segment_leads(segment.name, order_by="modified sideways")
+
+	def test_get_segment_leads_caps_page_length(self):
+		leads = [create_test_lead() for _ in range(3)]
+		segment = create_test_segment()
+		add_leads(segment.name, [lead.name for lead in leads])
+
+		result = get_segment_leads(segment.name, page_length=10_000_000)
+
+		self.assertLessEqual(result["row_count"], MAX_PAGE_LENGTH)
 
 	def test_add_leads_is_not_allowed_without_write_permission(self):
 		lead = create_test_lead()
