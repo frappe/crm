@@ -498,7 +498,7 @@ function goToday() {
 
 function openSocialSettings() {
   showSettings.value = true
-  activeSettingsPage.value = 'Social Planner'
+  activeSettingsPage.value = 'Social profiles'
 }
 
 function chipClass(status) {

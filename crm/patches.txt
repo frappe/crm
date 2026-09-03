@@ -31,3 +31,4 @@ crm.patches.v1_0.set_persona_captured_for_existing_sites
 crm.patches.v1_0.add_enrichment_fields_to_layouts
 crm.patches.v1_0.reorder_address_quick_entry_layout
 crm.patches.v1_0.remove_crm_social_settings
+crm.patches.v1_0.remove_lead_sync_source

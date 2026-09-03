@@ -85,11 +85,27 @@ L'hint è mostrato anche nella pagina Settings.
 Leadgen: ~4800 × lead generati (90gg) chiamate/24h per pagina; usare i page token
 (bucket separati); backoff sui codici 4/17/32/613/80001.
 
-## Compatibilità
+## Un solo sistema (03/09/2026)
 
-Il vecchio flusso `Lead Sync Source` (token manuale + polling) resta funzionante:
-se la pagina del form è collegata via OAuth usa automaticamente il nuovo motore
-paginato; altrimenti ricade sul token incollato (legacy).
+Il vecchio `Lead Sync Source` — token incollato a mano + polling ogni 5/10/15
+minuti — **è stato rimosso**: doctype, scheduler, pagina Settings "Lead Syncing"
+e il modulo `background_sync`. I lead dai form arrivano **solo** dal motore Meta
+(OAuth → webhook real-time → riconciliazione oraria → backfill 90 giorni).
+Una patch elimina il doctype dai site esistenti; i log di errore ora puntano al
+**form** invece che alla vecchia sorgente, e il "riprova" reimporta col motore
+nuovo.
+
+### Le voci nel menu Settings
+
+Un gruppo solo, **"Meta & Messaging"**, in ordine di dipendenza:
+
+| Voce | A cosa serve |
+|---|---|
+| **Meta connection** | l'unica connessione: app, webhook, "Connetti con Facebook". Alimenta tutto il resto |
+| **Lead forms** | quali pagine sincronizzano i lead e come le domande mappano sui campi |
+| **Social profiles** | i profili su cui pubblica il Social Planner |
+| **WhatsApp** | il numero collegato col QR |
+| **WhatsApp Templates** | i modelli e il loro stato di approvazione |
 
 ## Test
 

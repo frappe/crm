@@ -4,8 +4,6 @@
 import frappe
 from frappe.model.document import Document
 
-from crm.lead_syncing.doctype.lead_sync_source.facebook import FacebookSyncSource
-
 
 class FailedLeadSyncLog(Document):
 	# begin: auto-generated types
@@ -17,24 +15,24 @@ class FailedLeadSyncLog(Document):
 		from frappe.types import DF
 
 		lead_data: DF.Code | None
-		source: DF.Link | None
+		form: DF.Link | None
 		traceback: DF.Code | None
 		type: DF.Literal["Duplicate", "Failure", "Synced"]
 	# end: auto-generated types
 
 	@frappe.whitelist()
 	def retry_sync(self):
-		if not self.source:
-			frappe.throw(frappe._("Can't retry sync for this without source!"))
+		"""Re-import this lead through the Meta engine."""
+		from crm.integrations.meta.leads import store_lead
 
-		source = frappe.get_cached_doc("Lead Sync Source", self.source)
-		if source.type != "Facebook":
-			frappe.throw(frappe._("Not implemented yet!"))
+		lead_data = frappe.parse_json(self.lead_data)
+		form_id = self.form or lead_data.get("form_id")
+		if not form_id:
+			frappe.throw(frappe._("This log has no form to retry against"))
 
-		crm_lead = FacebookSyncSource(
-			source.get_password("access_token"), source.facebook_lead_form
-		).sync_single_lead(frappe.parse_json(self.lead_data), raise_exception=True)
-
+		result = store_lead(lead_data, form_id)
+		if result == "failed":
+			frappe.throw(frappe._("The lead could not be imported, see the newest log"))
 		self.type = "Synced"
 		self.save()
-		return crm_lead
+		return result

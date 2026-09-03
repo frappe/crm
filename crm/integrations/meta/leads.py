@@ -185,13 +185,12 @@ def _ensure_source(source_name: str) -> str:
 
 def _log_failure(lead_data: dict, form_id: str | None, traceback: str):
 	try:
-		source = frappe.db.get_value("Lead Sync Source", {"facebook_lead_form": form_id}) if form_id else None
 		frappe.get_doc(
 			{
 				"doctype": "Failed Lead Sync Log",
 				"type": "Failure",
 				"lead_data": frappe.as_json(lead_data),
-				"source": source,
+				"form": form_id,
 				"traceback": traceback,
 			}
 		).insert(ignore_permissions=True)

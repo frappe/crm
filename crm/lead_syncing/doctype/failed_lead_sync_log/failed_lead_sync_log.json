@@ -7,7 +7,7 @@
  "field_order": [
   "type",
   "column_break_dhay",
-  "source",
+  "form",
   "section_break_fhot",
   "lead_data",
   "section_break_knec",
@@ -36,12 +36,12 @@
    "fieldtype": "Column Break"
   },
   {
-   "fieldname": "source",
+   "fieldname": "form",
    "fieldtype": "Link",
    "in_list_view": 1,
    "in_standard_filter": 1,
-   "label": "Source",
-   "options": "Lead Sync Source",
+   "label": "Lead Form",
+   "options": "Facebook Lead Form",
    "read_only": 1
   },
   {

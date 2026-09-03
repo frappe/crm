@@ -69,7 +69,6 @@ import PreferencesSettings from '@/components/Settings/PreferencesSettings.vue'
 import WhatsAppSettings from '@/components/Settings/WhatsAppSettings.vue'
 import WhatsAppTemplates from '@/components/Settings/WhatsAppTemplates.vue'
 import ERPNextSettings from '@/components/Settings/ERPNextSettings.vue'
-import LeadSyncSourcePage from '@/components/Settings/LeadSyncing/LeadSyncSourcePage.vue'
 import DefaultsSettings from '@/components/Settings/DefaultsSettings.vue'
 import BrandSettings from '@/components/Settings/BrandSettings.vue'
 import CalendarSettings from '@/components/Settings/CalendarSettings.vue'
@@ -80,7 +79,8 @@ import DashboardSettings from '@/components/Settings/DashboardSettings.vue'
 import EmailTemplatePage from '@/components/Settings/EmailTemplate/EmailTemplatePage.vue'
 import TelephonyPage from '@/components/Settings/Telephony/TelephonyPage.vue'
 import BookingSettings from '@/components/Settings/Booking/BookingSettings.vue'
-import MetaLeadsSettings from '@/components/Settings/Meta/MetaLeadsSettings.vue'
+import MetaConnection from '@/components/Settings/Meta/MetaConnection.vue'
+import MetaLeadForms from '@/components/Settings/Meta/MetaLeadForms.vue'
 import SocialSettings from '@/components/Settings/Social/SocialSettings.vue'
 import TrackedLinksSettings from '@/components/Settings/TrackedLinksSettings.vue'
 import SocialIcon from '@/components/Icons/SocialIcon.vue'
@@ -223,17 +223,46 @@ const tabs = computed(() => {
       condition: () => isManager(),
     },
     {
-      label: __('Booking & Social'),
+      label: __('Booking'),
       items: [
         {
           label: __('Booking Calendars'),
           icon: CalendarIcon,
           component: markRaw(BookingSettings),
         },
+      ],
+      condition: () => isManager(),
+    },
+    {
+      // one connection, three things it feeds — kept together and in order
+      label: __('Meta & Messaging'),
+      items: [
         {
-          label: __('Social Planner'),
+          label: __('Meta connection'),
+          icon: 'facebook',
+          component: markRaw(MetaConnection),
+        },
+        {
+          label: __('Lead forms'),
+          icon: markRaw(LucideTextCursorInput),
+          component: markRaw(MetaLeadForms),
+        },
+        {
+          label: __('Social profiles'),
           icon: SocialIcon,
           component: markRaw(SocialSettings),
+        },
+        {
+          label: __('WhatsApp'),
+          icon: WhatsAppIcon,
+          component: markRaw(WhatsAppSettings),
+          condition: () => isWhatsappInstalled.value,
+        },
+        {
+          label: __('WhatsApp Templates'),
+          icon: EmailTemplateIcon,
+          component: markRaw(WhatsAppTemplates),
+          condition: () => isWhatsappInstalled.value,
         },
       ],
       condition: () => isManager(),
@@ -258,33 +287,9 @@ const tabs = computed(() => {
           component: markRaw(TelephonyPage),
         },
         {
-          label: __('WhatsApp'),
-          icon: WhatsAppIcon,
-          component: markRaw(WhatsAppSettings),
-          condition: () => isWhatsappInstalled.value && isManager(),
-        },
-        {
-          label: __('WhatsApp Templates'),
-          icon: EmailTemplateIcon,
-          component: markRaw(WhatsAppTemplates),
-          condition: () => isWhatsappInstalled.value && isManager(),
-        },
-        {
           label: __('ERPNext'),
           icon: ERPNextIcon,
           component: markRaw(ERPNextSettings),
-          condition: () => isManager(),
-        },
-        {
-          label: __('Meta'),
-          icon: 'facebook',
-          component: markRaw(MetaLeadsSettings),
-          condition: () => isManager(),
-        },
-        {
-          label: __('Lead Syncing'),
-          icon: 'refresh-cw',
-          component: markRaw(LeadSyncSourcePage),
           condition: () => isManager(),
         },
       ],

@@ -219,7 +219,7 @@ def _relay_to_site(site: str, code: str | None, state: str, kwargs: dict):
 
 
 def _redirect_back(error: str | None = None):
-	target = "/crm?settings=" + quote("Meta")
+	target = "/crm?settings=" + quote("Meta connection")
 	if error:
 		target += f"&meta_error={quote(error[:300])}"
 	frappe.local.response["type"] = "redirect"

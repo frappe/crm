@@ -125,7 +125,7 @@ const accounts = createResource({
 })
 
 function goToMetaSettings() {
-  activeSettingsPage.value = 'Meta'
+  activeSettingsPage.value = 'Meta connection'
 }
 
 function connectFacebook() {

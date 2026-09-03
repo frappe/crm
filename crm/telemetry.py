@@ -23,13 +23,12 @@ def capture_feature_state():
 
 
 def lead_sync_state() -> dict:
-	sources = frappe.get_all("Lead Sync Source", fields=["type", "enabled"])
-	enabled_types = {s.type for s in sources if s.enabled}
+	# leads come from the Meta integration only: a page with sync on is the signal
+	synced_pages = frappe.db.count("Facebook Page", {"sync_enabled": 1})
 
 	return {
-		"lead_sync_enabled": bool(enabled_types),
-		"lead_sync_sources": len(sources),
-		"lead_sync_source_types": sorted(enabled_types),
+		"lead_sync_enabled": bool(synced_pages),
+		"lead_sync_pages": synced_pages,
 		"leads_synced_total": count_synced_leads(),
 		"leads_synced_30d": count_synced_leads(days=30),
 	}
