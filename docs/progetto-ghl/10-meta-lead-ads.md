@@ -46,6 +46,10 @@ Settings modal → "Meta Lead Ads"
 
 ## Checklist di produzione (dalle guide ufficiali)
 
+> **Un'app sola per tutti i clienti**: vedi
+> [11-app-meta-agenzia.md](11-app-meta-agenzia.md). Quello che segue vale per
+> l'app dell'agenzia (configurata una volta) o per un site singolo con app propria.
+
 ### App Meta (developers.facebook.com)
 1. Prodotto **Facebook Login**: Valid OAuth redirect URI =
    `https://<site>/api/method/crm.integrations.meta.oauth.callback` (HTTPS).

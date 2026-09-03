@@ -224,10 +224,9 @@ def reconcile_synced_pages() -> None:
 
 def check_token_health() -> None:
 	"""Daily: verify page tokens still work; flag pages and notify managers."""
-	from crm.integrations.meta.client import debug_token
+	from crm.integrations.meta.client import debug_token, get_app_id
 
-	settings = frappe.get_cached_doc("CRM Meta Settings")
-	if not settings.app_id:
+	if not get_app_id():
 		return
 	broken = []
 	for page in frappe.get_all("Facebook Page", filters={"sync_enabled": 1}, pluck="name"):

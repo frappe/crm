@@ -32,12 +32,35 @@ def get_settings():
 	return frappe.get_cached_doc("CRM Meta Settings")
 
 
+def get_app_id() -> str:
+	"""App ID of the Meta app.
+
+	Site config wins over the per-site doctype: an agency runs ONE reviewed Meta
+	app for every client site (`meta_app_id`/`meta_app_secret` in
+	common_site_config.json), so the client never sees developer credentials.
+	"""
+	return frappe.conf.get("meta_app_id") or get_settings().app_id or ""
+
+
+def get_app_secret() -> str:
+	return (
+		frappe.conf.get("meta_app_secret")
+		or get_settings().get_password("app_secret", raise_exception=False)
+		or ""
+	)
+
+
+def is_managed_app() -> bool:
+	"""True when the app credentials come from the bench, not from this site."""
+	return bool(frappe.conf.get("meta_app_id") and frappe.conf.get("meta_app_secret"))
+
+
 def graph_url(endpoint: str) -> str:
 	return f"{GRAPH_BASE}/{GRAPH_VERSION}/{endpoint.lstrip('/')}"
 
 
 def appsecret_proof(token: str) -> str | None:
-	secret = get_settings().get_password("app_secret", raise_exception=False)
+	secret = get_app_secret()
 	if not secret:
 		return None
 	return hmac.new(secret.encode(), token.encode(), hashlib.sha256).hexdigest()
@@ -108,14 +131,13 @@ def graph_get_paginated(endpoint: str, token: str, params: dict | None = None, m
 
 
 def exchange_code_for_token(code: str, redirect_uri: str) -> dict:
-	settings = get_settings()
 	return graph_request(
 		"GET",
 		"oauth/access_token",
 		token="",
 		params={
-			"client_id": settings.app_id,
-			"client_secret": settings.get_password("app_secret"),
+			"client_id": get_app_id(),
+			"client_secret": get_app_secret(),
 			"redirect_uri": redirect_uri,
 			"code": code,
 		},
@@ -123,21 +145,19 @@ def exchange_code_for_token(code: str, redirect_uri: str) -> dict:
 
 
 def exchange_for_long_lived_token(short_token: str) -> dict:
-	settings = get_settings()
 	return graph_request(
 		"GET",
 		"oauth/access_token",
 		token="",
 		params={
 			"grant_type": "fb_exchange_token",
-			"client_id": settings.app_id,
-			"client_secret": settings.get_password("app_secret"),
+			"client_id": get_app_id(),
+			"client_secret": get_app_secret(),
 			"fb_exchange_token": short_token,
 		},
 	)
 
 
 def debug_token(token: str) -> dict:
-	settings = get_settings()
-	app_token = f"{settings.app_id}|{settings.get_password('app_secret')}"
+	app_token = f"{get_app_id()}|{get_app_secret()}"
 	return graph_get("debug_token", app_token, {"input_token": token}).get("data", {})

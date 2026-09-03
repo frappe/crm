@@ -7,9 +7,10 @@ import hmac
 import frappe
 from frappe.tests import IntegrationTestCase
 
+from crm.integrations.meta import relay as R
 from crm.integrations.meta import webhook as W
 from crm.integrations.meta.leads import normalize_value, store_lead
-from crm.integrations.meta.oauth import merge_questions
+from crm.integrations.meta.oauth import _parse_state, _sign_state, merge_questions
 
 
 def make_form(form_id="990001", page_id="880001"):
@@ -126,3 +127,64 @@ class TestMetaLeads(IntegrationTestCase):
 		self.assertTrue(W._valid_signature(good, body))
 		self.assertFalse(W._valid_signature("sha256=deadbeef", body))
 		self.assertFalse(W._valid_signature(None, body))
+
+
+class TestMetaSharedApp(IntegrationTestCase):
+	"""One agency app serving many client sites: signed state + page routing."""
+
+	def tearDown(self):
+		frappe.local.conf.pop("meta_relay_secret", None)
+		frappe.local.conf.pop("meta_hub_url", None)
+		frappe.db.rollback()
+
+	def test_state_roundtrip_and_tamper(self):
+		import base64
+		import json as _json
+		import time as _time
+
+		payload = _json.dumps({"u": "a@b.c", "t": int(_time.time()), "site": "https://cliente.it"})
+		state = f"{base64.urlsafe_b64encode(payload.encode()).decode()}.{_sign_state(payload)}"
+		parsed = _parse_state(state)
+		self.assertEqual(parsed["site"], "https://cliente.it")
+		# a forged destination does not verify
+		forged = _json.dumps({"u": "a@b.c", "t": int(_time.time()), "site": "https://evil.example"})
+		bad = f"{base64.urlsafe_b64encode(forged.encode()).decode()}.{_sign_state(payload)}"
+		self.assertIsNone(_parse_state(bad))
+		self.assertIsNone(_parse_state("garbage"))
+
+	def test_expired_state_is_rejected(self):
+		import base64
+		import json as _json
+
+		payload = _json.dumps({"u": "a@b.c", "t": 1, "site": "https://cliente.it"})
+		state = f"{base64.urlsafe_b64encode(payload.encode()).decode()}.{_sign_state(payload)}"
+		self.assertIsNone(_parse_state(state))
+
+	def test_relay_signature(self):
+		frappe.local.conf["meta_relay_secret"] = "shared"
+		body = b'{"object":"page"}'
+		self.assertTrue(R.valid_relay_signature(R.sign(body), body))
+		self.assertFalse(R.valid_relay_signature("nope", body))
+		self.assertFalse(R.valid_relay_signature(None, body))
+
+	def test_relay_signature_needs_configured_secret(self):
+		body = b'{"object":"page"}'
+		signature = "a" * 64
+		self.assertFalse(R.valid_relay_signature(signature, body))
+
+	def test_route_for_returns_none_for_own_site(self):
+		frappe.get_doc(
+			{
+				"doctype": "Meta Page Route",
+				"page_id": "880777",
+				"site_url": frappe.utils.get_url(),
+			}
+		).insert(ignore_permissions=True)
+		self.assertIsNone(R.route_for("880777"))
+		self.assertIsNone(R.route_for(""))
+
+	def test_route_for_returns_other_site(self):
+		frappe.get_doc(
+			{"doctype": "Meta Page Route", "page_id": "880888", "site_url": "https://cliente.it/"}
+		).insert(ignore_permissions=True)
+		self.assertEqual(R.route_for("880888"), "https://cliente.it")

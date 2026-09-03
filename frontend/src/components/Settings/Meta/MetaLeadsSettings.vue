@@ -14,8 +14,17 @@
     </div>
 
     <div class="flex flex-col gap-4 px-2">
-      <!-- step 1: app credentials -->
-      <div class="rounded-lg border border-outline-gray-2 p-4">
+      <!-- managed: the app belongs to the provider, nothing to configure -->
+      <div
+        v-if="managed"
+        class="flex items-center gap-2 rounded-lg bg-surface-gray-1 p-3 text-p-sm text-ink-gray-6"
+      >
+        <FeatherIcon name="shield-check" class="size-4 shrink-0 text-ink-gray-5" />
+        {{ __('The Meta app and its webhook are managed for you — just connect your account.') }}
+      </div>
+
+      <!-- step 1: app credentials (self-hosted app only) -->
+      <div v-if="!managed" class="rounded-lg border border-outline-gray-2 p-4">
         <div class="mb-2 text-p-base-medium text-ink-gray-7">
           1. {{ __('Meta App (developers.facebook.com)') }}
         </div>
@@ -82,7 +91,7 @@
       <div class="flex items-center justify-between rounded-lg border border-outline-gray-2 p-4">
         <div class="flex flex-col">
           <span class="text-p-base-medium text-ink-gray-7">
-            2.
+            {{ managed ? '1.' : '2.' }}
             {{
               status.data?.connected
                 ? __('Connected as {0}', [status.data.connected_user_name])
@@ -118,7 +127,7 @@
       <!-- step 3: pages & forms -->
       <div class="rounded-lg border border-outline-gray-2 p-4">
         <div class="mb-2 text-p-base-medium text-ink-gray-7">
-          3. {{ __('Pages & lead forms') }}
+          {{ managed ? '2.' : '3.' }} {{ __('Pages & lead forms') }}
         </div>
         <div v-if="pages.data?.length" class="flex flex-col gap-3">
           <div
@@ -251,7 +260,7 @@
 </template>
 
 <script setup>
-import { createResource, Dialog, FormControl, Switch, toast } from 'frappe-ui'
+import { createResource, Dialog, FeatherIcon, FormControl, Switch, toast } from 'frappe-ui'
 import { ref, computed } from 'vue'
 
 const metaError = ref(new URLSearchParams(window.location.search).get('meta_error') || '')
@@ -265,6 +274,9 @@ const status = createResource({
     appForm.value.app_id = data.app_id
   },
 })
+
+// the app (and its single webhook) is provided centrally: hide developer setup
+const managed = computed(() => Boolean(status.data?.managed))
 
 const pages = createResource({
   url: 'crm.integrations.meta.api.get_pages',

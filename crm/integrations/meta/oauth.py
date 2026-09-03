@@ -1,11 +1,22 @@
 # Copyright (c) 2026, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 
-"""Facebook Login (authorization-code flow) for the Lead Ads integration.
+"""Facebook Login (authorization-code flow) for the Meta integration.
 
 Flow: Settings modal → `get_login_url` → user authorizes on facebook.com →
 Meta redirects the browser to `callback` → code→token→long-lived token →
 pages + forms are synced. State is HMAC-signed to prevent CSRF.
+
+**One app, many client sites.** Meta requires every redirect URI to be an exact
+match against the app's whitelist and supports no wildcards, so an agency app
+serving one Frappe site per client cannot whitelist them all. Meta's documented
+answer is to send every login through a small number of whitelisted URIs and
+carry the destination in `state` (developers.facebook.com/docs/facebook-login/security).
+That is the hub: with `meta_hub_url` in the site config, the login uses the
+hub's callback as redirect_uri and the hub relays the authorization code back
+to the site named in the signed state, which redeems it with the shared app
+secret. Without `meta_hub_url` nothing changes: the site is its own callback
+and must be whitelisted individually.
 """
 
 import base64
@@ -23,10 +34,13 @@ from crm.integrations.meta.client import (
 	MetaAPIError,
 	exchange_code_for_token,
 	exchange_for_long_lived_token,
-	get_settings,
+	get_app_id,
+	get_app_secret,
 	graph_get,
 	graph_get_paginated,
 )
+
+CALLBACK_PATH = "/api/method/crm.integrations.meta.oauth.callback"
 
 # Minimal production scope set for reading leads + subscribing pages:
 # - pages_show_list: list the user's pages (/me/accounts)
@@ -59,27 +73,54 @@ def _check_manager():
 		frappe.throw(_("Only sales managers can manage the Meta integration"), frappe.PermissionError)
 
 
+def hub_url() -> str:
+	"""Base URL of the site whose callback is whitelisted on the Meta app."""
+	return (frappe.conf.get("meta_hub_url") or "").rstrip("/")
+
+
 def _redirect_uri() -> str:
-	return get_url("/api/method/crm.integrations.meta.oauth.callback")
+	"""What Meta redirects to — the hub when there is one, else this site."""
+	return (hub_url() + CALLBACK_PATH) if hub_url() else get_url(CALLBACK_PATH)
 
 
 def _sign_state(payload: str) -> str:
-	secret = (frappe.local.conf.get("encryption_key") or frappe.local.site).encode()
-	return hmac.new(secret, payload.encode(), hashlib.sha256).hexdigest()[:24]
+	"""Sign with the relay secret when sites share one app, so the hub and the
+	destination site can both verify the state; otherwise stay site-local."""
+	secret = (
+		frappe.conf.get("meta_relay_secret") or frappe.local.conf.get("encryption_key") or frappe.local.site
+	)
+	return hmac.new(secret.encode(), payload.encode(), hashlib.sha256).hexdigest()[:24]
+
+
+def _parse_state(state: str | None) -> dict | None:
+	"""Verified state payload, or None when missing/forged/expired."""
+	if not state or "." not in state:
+		return None
+	try:
+		encoded, signature = state.rsplit(".", 1)
+		payload = base64.urlsafe_b64decode(encoded.encode()).decode()
+		if not hmac.compare_digest(signature, _sign_state(payload)):
+			return None
+		parsed = json.loads(payload)
+	except Exception:
+		return None
+	if int(time.time()) - int(parsed.get("t") or 0) > 600:
+		return None
+	return parsed
 
 
 @frappe.whitelist()
 def get_login_url() -> dict:
 	"""The facebook.com dialog URL the browser should visit to connect."""
 	_check_manager()
-	settings = get_settings()
-	if not settings.app_id or not settings.get_password("app_secret", raise_exception=False):
+	if not get_app_id() or not get_app_secret():
 		frappe.throw(_("Set the Meta App ID and App Secret first"))
 
-	payload = json.dumps({"u": frappe.session.user, "t": int(time.time())})
+	# `site` tells the hub which site to hand the authorization code back to
+	payload = json.dumps({"u": frappe.session.user, "t": int(time.time()), "site": get_url().rstrip("/")})
 	state = f"{base64.urlsafe_b64encode(payload.encode()).decode()}.{_sign_state(payload)}"
 	params = {
-		"client_id": settings.app_id,
+		"client_id": get_app_id(),
 		"redirect_uri": _redirect_uri(),
 		"state": state,
 		"scope": ",".join(SCOPES),
@@ -88,23 +129,27 @@ def get_login_url() -> dict:
 	return {"login_url": f"https://www.facebook.com/v23.0/dialog/oauth?{urlencode(params)}"}
 
 
-@frappe.whitelist(methods=["GET"])
+@frappe.whitelist(allow_guest=True, methods=["GET"])  # nosemgrep: guest-whitelisted-method
 def callback(code: str | None = None, state: str | None = None, **kwargs):
-	"""OAuth redirect target: runs in the connecting user's browser session."""
+	"""OAuth redirect target.
+
+	Guest-accessible because the hub receives this redirect in the browser of a
+	user who is logged into THEIR site, not into the hub. Nothing is trusted
+	from the query string: the state must carry a valid HMAC (only sites sharing
+	the relay secret can mint one) and, once on the destination site, the
+	session still has to belong to a sales manager.
+	"""
+	parsed = _parse_state(state)
+	if parsed and (parsed.get("site") or "").rstrip("/") != get_url().rstrip("/"):
+		# we are the hub: hand the code to the site that started the login
+		_relay_to_site(parsed["site"], code, state, kwargs)
+		return
+
 	_check_manager()
 	if not code or not state:
 		_redirect_back(error=kwargs.get("error_description") or _("Authorization was cancelled"))
 		return
-
-	try:
-		encoded, signature = state.rsplit(".", 1)
-		payload = base64.urlsafe_b64decode(encoded.encode()).decode()
-		if not hmac.compare_digest(signature, _sign_state(payload)):
-			frappe.throw(_("Invalid state"))
-		parsed = json.loads(payload)
-		if int(time.time()) - int(parsed.get("t") or 0) > 600:
-			frappe.throw(_("Login expired, please retry"))
-	except Exception:
+	if not parsed:
 		_redirect_back(error=_("Invalid or expired login attempt"))
 		return
 
@@ -134,6 +179,23 @@ def callback(code: str | None = None, state: str | None = None, **kwargs):
 	except Exception:
 		frappe.log_error(frappe.get_traceback(), "Meta OAuth callback failed")
 		_redirect_back(error=_("Connection failed, see error log"))
+
+
+def _relay_to_site(site: str, code: str | None, state: str, kwargs: dict):
+	"""Hub → client site: forward the authorization code, nothing else.
+
+	The code is single-use and worthless without the app secret, which only our
+	own sites hold. The destination is taken from the signed state, so this is
+	not an open redirect.
+	"""
+	params = {"state": state}
+	if code:
+		params["code"] = code
+	for key in ("error", "error_description", "error_reason"):
+		if kwargs.get(key):
+			params[key] = kwargs[key]
+	frappe.local.response["type"] = "redirect"
+	frappe.local.response["location"] = f"{site.rstrip('/')}{CALLBACK_PATH}?{urlencode(params)}"
 
 
 def _redirect_back(error: str | None = None):

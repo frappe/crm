@@ -9,9 +9,17 @@ import frappe
 from frappe import _
 from frappe.utils import get_url
 
-from crm.integrations.meta.client import MetaAPIError, get_settings, graph_get, graph_post
+from crm.integrations.meta.client import (
+	MetaAPIError,
+	get_app_id,
+	get_app_secret,
+	get_settings,
+	graph_get,
+	graph_post,
+	is_managed_app,
+)
 from crm.integrations.meta.leads import backfill_form, get_page_token
-from crm.integrations.meta.oauth import _check_manager, sync_pages_and_forms
+from crm.integrations.meta.oauth import _check_manager, hub_url, sync_pages_and_forms
 
 WEBHOOK_PATH = "/api/method/crm.integrations.meta.webhook.handle"
 
@@ -21,8 +29,12 @@ def get_status() -> dict:
 	_check_manager()
 	settings = get_settings()
 	return {
-		"app_id": settings.app_id or "",
-		"has_app_secret": bool(settings.get_password("app_secret", raise_exception=False)),
+		"app_id": get_app_id(),
+		"has_app_secret": bool(get_app_secret()),
+		# managed: the app belongs to the provider and is shared by every client
+		# site, so this site shows no developer credentials and no webhook setup
+		"managed": is_managed_app(),
+		"hub": hub_url(),
 		"webhook_url": get_url(WEBHOOK_PATH),
 		"webhook_verify_token": settings.webhook_verify_token or "",
 		"connected": bool(settings.get_password("user_access_token", raise_exception=False)),
@@ -34,6 +46,8 @@ def get_status() -> dict:
 @frappe.whitelist(methods=["POST"])
 def save_app_settings(app_id: str, app_secret: str | None = None) -> dict:
 	_check_manager()
+	if is_managed_app():
+		frappe.throw(_("The Meta app is managed by your provider and cannot be changed here"))
 	settings = frappe.get_doc("CRM Meta Settings")
 	settings.app_id = (app_id or "").strip()
 	if app_secret:  # write-only: empty keeps the stored secret
@@ -53,11 +67,9 @@ def save_app_settings(app_id: str, app_secret: str | None = None) -> dict:
 
 
 def _app_token() -> str:
-	settings = get_settings()
-	secret = settings.get_password("app_secret", raise_exception=False)
-	if not settings.app_id or not secret:
+	if not get_app_id() or not get_app_secret():
 		frappe.throw(_("Set the Meta App ID and App Secret first"))
-	return f"{settings.app_id}|{secret}"
+	return f"{get_app_id()}|{get_app_secret()}"
 
 
 @frappe.whitelist(methods=["POST"])
@@ -69,11 +81,15 @@ def configure_webhook() -> dict:
 	so the site must be publicly reachable over HTTPS."""
 	_check_manager()
 	settings = get_settings()
+	if hub_url():
+		# one shared app has a single callback: the hub owns it, and it fans
+		# notifications out to the client site that owns each page
+		frappe.throw(_("The webhook is configured centrally by your provider"))
 	if not settings.webhook_verify_token:
 		frappe.throw(_("Save the app settings first to generate a verify token"))
 	try:
 		graph_post(
-			f"{settings.app_id}/subscriptions",
+			f"{get_app_id()}/subscriptions",
 			_app_token(),
 			{
 				"object": "page",
@@ -92,8 +108,10 @@ def configure_webhook() -> dict:
 def get_webhook_subscription() -> dict:
 	"""Current app-level webhook subscription state, straight from Meta."""
 	_check_manager()
+	if hub_url():
+		return {"configured": True, "managed_by_hub": True, "callback_url": hub_url() + WEBHOOK_PATH}
 	try:
-		data = graph_get(f"{get_settings().app_id}/subscriptions", _app_token())
+		data = graph_get(f"{get_app_id()}/subscriptions", _app_token())
 	except MetaAPIError as exc:
 		return {"configured": False, "error": str(exc)[:300]}
 	for row in data.get("data") or []:
@@ -203,6 +221,12 @@ def set_page_sync(page_id: str, enabled: bool) -> dict:
 	page.sync_enabled = 1 if enabled else 0
 	page.webhook_subscribed = subscribed
 	page.save(ignore_permissions=True)
+
+	if enabled:
+		# tell the hub that leads for this page belong to this site
+		from crm.integrations.meta.relay import claim_page
+
+		claim_page(page_id)
 	return {"sync_enabled": page.sync_enabled, "webhook_subscribed": page.webhook_subscribed}
 
 
