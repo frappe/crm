@@ -20,15 +20,23 @@
         class="flex items-center gap-2 rounded-lg bg-surface-gray-1 p-3 text-p-sm text-ink-gray-6"
       >
         <FeatherIcon name="shield-check" class="size-4 shrink-0 text-ink-gray-5" />
-        {{ __('The Meta app and its webhook are managed for you — just connect your account.') }}
+        {{
+          isHub
+            ? __('The Meta app is provided centrally; this site owns its webhook.')
+            : __('The Meta app and its webhook are managed for you — just connect your account.')
+        }}
       </div>
 
-      <!-- step 1: app credentials (self-hosted app only) -->
-      <div v-if="!managed" class="rounded-lg border border-outline-gray-2 p-4">
-        <div class="mb-2 text-p-base-medium text-ink-gray-7">
+      <!-- step 1: the Meta app — hidden when the app is provided centrally and
+           this site is not the one that owns its callbacks -->
+      <div v-if="!managed || isHub" class="rounded-lg border border-outline-gray-2 p-4">
+        <div v-if="!managed" class="mb-2 text-p-base-medium text-ink-gray-7">
           1. {{ __('Meta App (developers.facebook.com)') }}
         </div>
-        <div class="grid grid-cols-2 gap-3">
+        <div v-else class="mb-2 text-p-base-medium text-ink-gray-7">
+          {{ __('Webhook (this site receives the leads of every connected site)') }}
+        </div>
+        <div v-if="!managed" class="grid grid-cols-2 gap-3">
           <FormControl v-model="appForm.app_id" type="text" :label="__('App ID')" />
           <FormControl
             v-model="appForm.app_secret"
@@ -37,7 +45,7 @@
             :placeholder="status.data?.has_app_secret ? __('•••••• (saved — type to replace)') : ''"
           />
         </div>
-        <div class="mt-3 flex items-center gap-2">
+        <div v-if="!managed" class="mt-3 flex items-center gap-2">
           <Button :label="__('Save app')" variant="solid" @click="saveApp" />
         </div>
         <div v-if="status.data?.webhook_url" class="mt-3 flex flex-col gap-2 text-p-sm text-ink-gray-6">
@@ -277,6 +285,8 @@ const status = createResource({
 
 // the app (and its single webhook) is provided centrally: hide developer setup
 const managed = computed(() => Boolean(status.data?.managed))
+// only the site that owns the app's callbacks configures the webhook
+const isHub = computed(() => Boolean(status.data?.is_hub))
 
 const pages = createResource({
   url: 'crm.integrations.meta.api.get_pages',

@@ -19,7 +19,7 @@ from crm.integrations.meta.client import (
 	is_managed_app,
 )
 from crm.integrations.meta.leads import backfill_form, get_page_token
-from crm.integrations.meta.oauth import _check_manager, hub_url, sync_pages_and_forms
+from crm.integrations.meta.oauth import _check_manager, hub_url, is_hub, sync_pages_and_forms
 
 WEBHOOK_PATH = "/api/method/crm.integrations.meta.webhook.handle"
 
@@ -35,6 +35,8 @@ def get_status() -> dict:
 		# site, so this site shows no developer credentials and no webhook setup
 		"managed": is_managed_app(),
 		"hub": hub_url(),
+		# this site owns the app's callbacks (single-site setup, or the hub)
+		"is_hub": is_hub(),
 		"webhook_url": get_url(WEBHOOK_PATH),
 		"webhook_verify_token": settings.webhook_verify_token or "",
 		"connected": bool(settings.get_password("user_access_token", raise_exception=False)),
@@ -81,7 +83,7 @@ def configure_webhook() -> dict:
 	so the site must be publicly reachable over HTTPS."""
 	_check_manager()
 	settings = get_settings()
-	if hub_url():
+	if not is_hub():
 		# one shared app has a single callback: the hub owns it, and it fans
 		# notifications out to the client site that owns each page
 		frappe.throw(_("The webhook is configured centrally by your provider"))
@@ -108,7 +110,7 @@ def configure_webhook() -> dict:
 def get_webhook_subscription() -> dict:
 	"""Current app-level webhook subscription state, straight from Meta."""
 	_check_manager()
-	if hub_url():
+	if not is_hub():
 		return {"configured": True, "managed_by_hub": True, "callback_url": hub_url() + WEBHOOK_PATH}
 	try:
 		data = graph_get(f"{get_app_id()}/subscriptions", _app_token())

@@ -53,6 +53,33 @@ La tabella si popola da sola: quando un cliente attiva "Sync leads" su una
 pagina, il suo site chiama l'hub (`register_page_route`, firmato) e rivendica
 quella pagina.
 
+## Creazione dell'app, passo per passo
+
+1. **developers.facebook.com → My Apps → Create app.**
+   - *App name*: **lo vedono i clienti nel popup di login** — mettere il nome
+     commerciale dell'agenzia, non "test".
+   - *Use case*: **Other** → tipo **Business**. Attenzione: gli use case
+     **non si possono più rimuovere** dopo la creazione.
+   - *Business portfolio*: collegare il Business Manager dell'agenzia (serve
+     poi per la Business Verification).
+2. **App settings → Basic**: copiare **App ID** e **App Secret**. Compilare
+   Privacy Policy URL e Terms of Service (obbligatori per l'App Review).
+3. **Prodotti → Facebook Login → Settings → Valid OAuth Redirect URIs**:
+   incollare il callback dell'**hub** (una riga; se ne possono aggiungere
+   altre in seguito, es. quando nasce un hub definitivo):
+   `https://<hub>/api/method/crm.integrations.meta.oauth.callback`
+4. **Config del site** (sotto): App ID, secret, relay secret, hub URL.
+5. **Webhook**: nel CRM **dell'hub**, Settings → Meta → "Configure
+   automatically". Il CRM registra `Page → leadgen` da solo; il site deve
+   essere raggiungibile in HTTPS perché Meta verifica il callback sul momento.
+6. **App settings → Advanced → Data Deletion Request URL**:
+   `https://<hub>/api/method/crm.integrations.meta.webhook.data_deletion`
+7. **Prova end-to-end**: Settings → Meta → "Connetti con Facebook" → attivare
+   "Sync leads" su una pagina → bottone **"Test lead"** sul form.
+   In development mode funziona solo con gli account del team dell'app
+   (App roles → Add people), ed è normale.
+8. **App Review**: avviarla subito, è la parte lunga (settimane).
+
 ## Configurazione (una volta sola, sul bench)
 
 `common_site_config.json` — vale per **tutti** i site:

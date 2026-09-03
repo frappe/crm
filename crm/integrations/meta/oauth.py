@@ -78,6 +78,16 @@ def hub_url() -> str:
 	return (frappe.conf.get("meta_hub_url") or "").rstrip("/")
 
 
+def is_hub() -> bool:
+	"""True when THIS site owns the app's callbacks.
+
+	The hub may perfectly well be a client site too (a one-site setup, or the
+	agency's own CRM), so `meta_hub_url` pointing at ourselves still means we
+	are the hub — and we keep the webhook controls.
+	"""
+	return not hub_url() or hub_url() == get_url().rstrip("/")
+
+
 def _redirect_uri() -> str:
 	"""What Meta redirects to — the hub when there is one, else this site."""
 	return (hub_url() + CALLBACK_PATH) if hub_url() else get_url(CALLBACK_PATH)
