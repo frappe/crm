@@ -4,12 +4,20 @@
       class="flex h-14 shrink-0 items-center justify-between border-b border-outline-gray-2 px-4"
     >
       <div class="flex min-w-0 items-center gap-2">
+        <Breadcrumbs class="automation-breadcrumbs" :items="breadcrumbs">
+          <template #prefix>
+            <WorkflowIcon class="mr-1.5 size-4 text-ink-gray-5" />
+          </template>
+        </Breadcrumbs>
+        <span class="text-ink-gray-5 text-sm-semibold" aria-hidden="true"
+          >/</span
+        >
         <div
           class="flex min-w-0 cursor-text items-center gap-1 rounded pr-1.5 transition-colors hover:bg-surface-gray-2"
-          @focusin="selectTitle"
+          @focus="selectTitle"
         >
           <div
-            class="title-sizer text-base"
+            class="title-sizer font-semibold text-ink-gray-7 -mr-2.5"
             :data-value="doc.title || __('Untitled automation')"
           >
             <TextInput
@@ -20,12 +28,19 @@
               @update:model-value="setTitle"
             />
           </div>
-          <EditIcon class="size-3.5 shrink-0 text-ink-gray-4" />
         </div>
         <Badge
           v-if="dirty"
+          size="md"
           :label="__('Unsaved')"
-          theme="gray"
+          theme="amber"
+          variant="subtle"
+        />
+        <Badge
+          v-if="doc.enabled"
+          size="md"
+          :label="__('Enabled')"
+          theme="green"
           variant="subtle"
         />
       </div>
@@ -61,11 +76,11 @@
         />
       </div>
     </div>
-    <div v-if="tab === 'test'" class="min-h-0 flex-1 overflow-y-auto p-4">
+    <div v-if="tab === 'test'" class="min-h-0 flex-1 p-4">
       <AutomationTrialRun
         v-if="canTest"
         :automation-name="automationName"
-        :doctype="doc.document_type"
+        :doc="doc"
       />
       <p v-else class="text-sm text-ink-gray-5">
         {{ __('Save the flow before testing it.') }}
@@ -147,9 +162,9 @@ import {
   toRows,
   toTree,
 } from './workflowSteps'
-import EditIcon from '~icons/lucide/pencil'
 import {
   Badge,
+  Breadcrumbs,
   Button,
   Switch,
   TabButtons,
@@ -157,6 +172,7 @@ import {
   call,
   toast,
 } from 'frappe-ui'
+import WorkflowIcon from '~icons/lucide/workflow'
 import { computed, reactive, ref, watch } from 'vue'
 
 const props = defineProps({
@@ -184,6 +200,13 @@ const savedSnapshot = ref('')
 const tabOptions = [
   { label: __('Editor'), value: 'editor' },
   { label: __('Test Run'), value: 'test' },
+]
+
+const breadcrumbs = [
+  {
+    label: __('Workflow Automation'),
+    onClick: () => emit('close'),
+  },
 ]
 
 const placed = computed(() => layoutSteps(doc.actions))
@@ -573,7 +596,12 @@ function cleanMessage(message) {
 .title-sizer {
   display: inline-grid;
   min-width: 0;
-  max-width: min(28rem, 40vw);
+  max-width: min(20rem, 40vw);
+}
+
+.automation-breadcrumbs :deep(a),
+.automation-breadcrumbs :deep(button) {
+  @apply text-sm-medium;
 }
 
 .title-sizer::after,
@@ -587,8 +615,9 @@ function cleanMessage(message) {
   visibility: hidden;
   white-space: pre;
   min-width: 6rem;
-  padding: 0 8px;
+  padding: 0 0.5px;
   font: inherit;
+  font-weight: semibold;
   letter-spacing: inherit;
 }
 
