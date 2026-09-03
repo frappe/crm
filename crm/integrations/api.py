@@ -72,11 +72,33 @@ def set_default_calling_medium(medium: str):
 	return get_user_default_calling_medium()
 
 
+def _get_call_log_lead_or_deal(call_log):
+	"""Resolve the Lead/Deal a call log currently belongs to.
+
+	Telephony integrations (Twilio, Exotel) link a call log to its Lead/Deal
+	only via the "links" child table (CRMCallLog.link_with_reference_doc) -
+	they never populate reference_doctype/reference_docname directly. So the
+	links table is checked first, falling back to the direct reference
+	fields for call logs that do have them set.
+	"""
+	for link in call_log.get("links") or []:
+		if link.link_doctype in ("CRM Lead", "CRM Deal"):
+			return link.link_doctype, link.link_name
+
+	if call_log.reference_doctype in ("CRM Lead", "CRM Deal"):
+		return call_log.reference_doctype, call_log.reference_docname
+
+	return None, None
+
+
 @frappe.whitelist()
 def add_note_to_call_log(call_sid: str, note: dict):
 	"""Add/Update note to call log based on call sid."""
 	if not frappe.has_permission("CRM Call Log", "write", call_sid):
 		frappe.throw(_("Not permitted"), frappe.PermissionError)
+
+	call_log = frappe.get_cached_doc("CRM Call Log", call_sid)
+	reference_doctype, reference_docname = _get_call_log_lead_or_deal(call_log)
 
 	_note = None
 	if not note.get("name"):
@@ -85,12 +107,21 @@ def add_note_to_call_log(call_sid: str, note: dict):
 				"doctype": "FCRM Note",
 				"title": note.get("title", "Call Note"),
 				"content": note.get("content"),
+				"reference_doctype": reference_doctype,
+				"reference_docname": reference_docname,
 			}
 		).insert(ignore_permissions=True)
 	else:
-		_note = frappe.set_value("FCRM Note", note.get("name"), "content", note.get("content"))
+		# The note is already inserted by the caller (DoctypeModal.vue's own
+		# frappe.client.insert) by the time this runs, so this is the branch
+		# that actually fires for a note created from the call log UI - it
+		# must set the reference here, not just in the dead insert branch above.
+		_note = frappe.get_doc("FCRM Note", note.get("name"))
+		_note.content = note.get("content")
+		_note.reference_doctype = reference_doctype
+		_note.reference_docname = reference_docname
+		_note.save(ignore_permissions=True)
 
-	call_log = frappe.get_cached_doc("CRM Call Log", call_sid)
 	call_log.link_with_reference_doc("FCRM Note", _note.name)
 	call_log.save(ignore_permissions=True)
 
@@ -103,6 +134,9 @@ def add_task_to_call_log(call_sid: str, task: dict):
 	if not frappe.has_permission("CRM Call Log", "write", call_sid):
 		frappe.throw(_("Not permitted"), frappe.PermissionError)
 
+	call_log = frappe.get_doc("CRM Call Log", call_sid)
+	reference_doctype, reference_docname = _get_call_log_lead_or_deal(call_log)
+
 	_task = None
 	if not task.get("name"):
 		_task = frappe.get_doc(
@@ -114,9 +148,15 @@ def add_task_to_call_log(call_sid: str, task: dict):
 				"due_date": task.get("due_date"),
 				"status": task.get("status"),
 				"priority": task.get("priority"),
+				"reference_doctype": reference_doctype,
+				"reference_docname": reference_docname,
 			}
 		).insert(ignore_permissions=True)
 	else:
+		# The task is already inserted by the caller (DoctypeModal.vue's own
+		# frappe.client.insert) by the time this runs, so this is the branch
+		# that actually fires for a task created from the call log UI - it
+		# must set the reference here, not just in the dead insert branch above.
 		_task = frappe.get_doc("CRM Task", task.get("name"))
 		_task.update(
 			{
@@ -126,11 +166,12 @@ def add_task_to_call_log(call_sid: str, task: dict):
 				"due_date": task.get("due_date"),
 				"status": task.get("status"),
 				"priority": task.get("priority"),
+				"reference_doctype": reference_doctype,
+				"reference_docname": reference_docname,
 			}
 		)
 		_task.save(ignore_permissions=True)
 
-	call_log = frappe.get_doc("CRM Call Log", call_sid)
 	call_log.link_with_reference_doc("CRM Task", _task.name)
 	call_log.save(ignore_permissions=True)
 

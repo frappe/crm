@@ -165,6 +165,23 @@ class TestIntegrations(IntegrationTestCase):
 		note.reload()
 		self.assertEqual(note.content, "Updated content with more details")
 
+	def test_add_note_to_call_log_sets_reference_on_already_inserted_note(self):
+		"""The CallLogDetailModal UI flow inserts the note itself (via
+		frappe.client.insert, with no reference_doctype/docname) *before*
+		calling add_note_to_call_log, so `note` always already has a `name`
+		by the time this runs - the "existing note" branch, not the "new
+		note" branch, is what actually fires in production and must set the
+		reference."""
+		lead = frappe.get_doc({"doctype": "CRM Lead", "first_name": "John", "last_name": "Doe"}).insert()
+		call_log = create_test_call_log(reference_doctype="CRM Lead", reference_docname=lead.name)
+		note = frappe.get_doc({"doctype": "FCRM Note", "title": "Call Note", "content": "..."}).insert()
+
+		add_note_to_call_log(call_log.name, {"name": note.name, "content": "..."})
+
+		note.reload()
+		self.assertEqual(note.reference_doctype, "CRM Lead")
+		self.assertEqual(note.reference_docname, lead.name)
+
 	def test_add_task_to_call_log_creates_new_task(self):
 		"""Test add_task_to_call_log creates new task and links it to call log"""
 		# Create a test call log
@@ -227,6 +244,40 @@ class TestIntegrations(IntegrationTestCase):
 		self.assertEqual(task.description, "Updated description")
 		self.assertEqual(task.status, "In Progress")
 		self.assertEqual(task.priority, "High")
+
+	def test_add_task_to_call_log_sets_reference_on_already_inserted_task(self):
+		"""The CallLogDetailModal UI flow inserts the task itself (via
+		frappe.client.insert, with no reference_doctype/docname) *before*
+		calling add_task_to_call_log, so `task` always already has a `name`
+		by the time this runs - the "existing task" branch, not the "new
+		task" branch, is what actually fires in production and must set the
+		reference."""
+		deal = frappe.get_doc({"doctype": "CRM Deal"}).insert()
+		call_log = create_test_call_log(reference_doctype="CRM Deal", reference_docname=deal.name)
+		task = frappe.get_doc({"doctype": "CRM Task", "title": "Follow up", "status": "Todo"}).insert()
+
+		add_task_to_call_log(call_log.name, {"name": task.name, "title": "Follow up", "status": "Todo"})
+
+		task.reload()
+		self.assertEqual(task.reference_doctype, "CRM Deal")
+		self.assertEqual(task.reference_docname, deal.name)
+
+	def test_add_task_to_call_log_resolves_lead_linked_via_links_table(self):
+		"""Telephony integrations (Twilio/Exotel) link a call log to its Lead/Deal
+		only through the links table, never via reference_doctype/reference_docname
+		directly - a task created from such a call log must still follow that
+		Lead."""
+		lead = frappe.get_doc({"doctype": "CRM Lead", "first_name": "John", "last_name": "Doe"}).insert()
+		call_log = create_test_call_log()
+		call_log.link_with_reference_doc("CRM Lead", lead.name)
+		call_log.save()
+		task = frappe.get_doc({"doctype": "CRM Task", "title": "Follow up", "status": "Todo"}).insert()
+
+		add_task_to_call_log(call_log.name, {"name": task.name, "title": "Follow up", "status": "Todo"})
+
+		task.reload()
+		self.assertEqual(task.reference_doctype, "CRM Lead")
+		self.assertEqual(task.reference_docname, lead.name)
 
 	def test_get_contact_by_phone_number_finds_contact(self):
 		"""Test get_contact_by_phone_number finds existing contact"""
