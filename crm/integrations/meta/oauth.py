@@ -126,8 +126,11 @@ def get_login_url() -> dict:
 	if not get_app_id() or not get_app_secret():
 		frappe.throw(_("Set the Meta App ID and App Secret first"))
 
-	# `site` tells the hub which site to hand the authorization code back to
-	payload = json.dumps({"u": frappe.session.user, "t": int(time.time()), "site": get_url().rstrip("/")})
+	# `site` tells the hub which site to hand the authorization code back to.
+	# Nothing else goes in: the state travels through facebook.com in the query
+	# string, so it carries no personal data (the CRM user is already known from
+	# the session on the site that completes the flow).
+	payload = json.dumps({"t": int(time.time()), "site": get_url().rstrip("/")})
 	state = f"{base64.urlsafe_b64encode(payload.encode()).decode()}.{_sign_state(payload)}"
 	params = {
 		"client_id": get_app_id(),

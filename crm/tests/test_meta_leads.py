@@ -142,12 +142,12 @@ class TestMetaSharedApp(IntegrationTestCase):
 		import json as _json
 		import time as _time
 
-		payload = _json.dumps({"u": "a@b.c", "t": int(_time.time()), "site": "https://cliente.it"})
+		payload = _json.dumps({"t": int(_time.time()), "site": "https://cliente.it"})
 		state = f"{base64.urlsafe_b64encode(payload.encode()).decode()}.{_sign_state(payload)}"
 		parsed = _parse_state(state)
 		self.assertEqual(parsed["site"], "https://cliente.it")
 		# a forged destination does not verify
-		forged = _json.dumps({"u": "a@b.c", "t": int(_time.time()), "site": "https://evil.example"})
+		forged = _json.dumps({"t": int(_time.time()), "site": "https://evil.example"})
 		bad = f"{base64.urlsafe_b64encode(forged.encode()).decode()}.{_sign_state(payload)}"
 		self.assertIsNone(_parse_state(bad))
 		self.assertIsNone(_parse_state("garbage"))
@@ -156,7 +156,7 @@ class TestMetaSharedApp(IntegrationTestCase):
 		import base64
 		import json as _json
 
-		payload = _json.dumps({"u": "a@b.c", "t": 1, "site": "https://cliente.it"})
+		payload = _json.dumps({"t": 1, "site": "https://cliente.it"})
 		state = f"{base64.urlsafe_b64encode(payload.encode()).decode()}.{_sign_state(payload)}"
 		self.assertIsNone(_parse_state(state))
 
