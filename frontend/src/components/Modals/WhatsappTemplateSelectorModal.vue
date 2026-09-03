@@ -72,6 +72,7 @@
 import { createListResource } from 'frappe-ui'
 import { ref, computed, nextTick, watch, onMounted } from 'vue'
 import { sanitizeHTML } from '@/utils'
+import { showSettings, activeSettingsPage } from '@/composables/settings'
 
 const props = defineProps({
   doctype: { type: String, default: '' },
@@ -110,7 +111,9 @@ const filteredTemplates = computed(() => {
 
 function newWhatsappTemplate() {
   show.value = false
-  window.open('/app/whatsapp-templates/new')
+  // templates are created in the CRM now, not in the Desk form
+  showSettings.value = true
+  activeSettingsPage.value = 'WhatsApp Templates'
 }
 
 watch(show, (value) => value && nextTick(() => searchInput.value?.el?.focus()))

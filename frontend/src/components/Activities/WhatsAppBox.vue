@@ -38,6 +38,23 @@
           </div>
         </template>
       </FileUploader>
+      <button
+        v-if="!recording"
+        class="lucide-mic size-4.5 cursor-pointer text-ink-gray-5"
+        :title="__('Record a voice message')"
+        aria-hidden="true"
+        @click="startRecording"
+      />
+      <button
+        v-else
+        class="lucide-square size-4.5 cursor-pointer text-ink-red-5"
+        :title="__('Stop and send')"
+        aria-hidden="true"
+        @click="stopRecording"
+      />
+      <span v-if="recording" class="text-sm tabular-nums text-ink-red-5">
+        {{ recordingLabel }}
+      </span>
       <IconPicker
         v-slot="{ togglePopover }"
         v-model="emoji"
@@ -81,7 +98,7 @@ import {
   Dropdown,
   toast,
 } from 'frappe-ui'
-import { ref, nextTick, watch } from 'vue'
+import { ref, computed, nextTick, watch, onBeforeUnmount } from 'vue'
 
 const props = defineProps({
   doctype: { type: String, default: '' },
@@ -100,6 +117,77 @@ const emoji = ref('')
 const content = ref('')
 const placeholder = ref(__('Type your message here...'))
 const fileType = ref('')
+
+// --- voice messages ---------------------------------------------------------
+// Recorded in the browser with MediaRecorder, uploaded like any other file and
+// sent as an audio message, so it lands in the same chat as everything else.
+const recording = ref(false)
+const recordingSeconds = ref(0)
+let recorder = null
+let chunks = []
+let ticker = null
+
+const recordingLabel = computed(() => {
+  const seconds = recordingSeconds.value
+  return `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`
+})
+
+async function startRecording() {
+  if (!navigator.mediaDevices?.getUserMedia || typeof MediaRecorder === 'undefined') {
+    toast.error(__('This browser cannot record audio'))
+    return
+  }
+  let stream
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+  } catch (e) {
+    toast.error(__('Microphone access was denied'))
+    return
+  }
+  chunks = []
+  recorder = new MediaRecorder(stream)
+  recorder.ondataavailable = (event) => event.data.size && chunks.push(event.data)
+  recorder.onstop = async () => {
+    stream.getTracks().forEach((track) => track.stop())
+    clearInterval(ticker)
+    recording.value = false
+    if (!chunks.length) return
+    await uploadRecording(new Blob(chunks, { type: recorder.mimeType || 'audio/webm' }))
+  }
+  recorder.start()
+  recording.value = true
+  recordingSeconds.value = 0
+  ticker = setInterval(() => (recordingSeconds.value += 1), 1000)
+  capture('whatsapp_record_audio')
+}
+
+function stopRecording() {
+  if (recorder && recorder.state !== 'inactive') recorder.stop()
+}
+
+async function uploadRecording(blob) {
+  const extension = (blob.type.split('/')[1] || 'webm').split(';')[0]
+  const form = new FormData()
+  form.append('file', blob, `voice-${Date.now()}.${extension}`)
+  form.append('is_private', 1)
+  form.append('doctype', props.doctype)
+  form.append('docname', doc.value.name)
+  try {
+    const response = await fetch('/api/method/upload_file', {
+      method: 'POST',
+      headers: { 'X-Frappe-CSRF-Token': window.csrf_token },
+      body: form,
+    })
+    const data = await response.json()
+    const fileUrl = data?.message?.file_url
+    if (!fileUrl) throw new Error('no file_url')
+    whatsapp.value.attach = fileUrl
+    whatsapp.value.content_type = 'audio'
+    sendWhatsAppMessage()
+  } catch (e) {
+    toast.error(__('Could not send the voice message'))
+  }
+}
 
 function show() {
   nextTick(() => textareaRef.value.el.focus())
@@ -172,8 +260,21 @@ function uploadOptions(openFileSelector) {
         openFileSelector('video/*')
       },
     },
+    {
+      label: __('Upload Audio'),
+      icon: 'mic',
+      onClick: () => {
+        fileType.value = 'audio'
+        openFileSelector('audio/*')
+      },
+    },
   ]
 }
+
+onBeforeUnmount(() => {
+  clearInterval(ticker)
+  if (recorder && recorder.state !== 'inactive') recorder.stop()
+})
 
 watch(reply, (value) => {
   if (value?.message) {

@@ -143,10 +143,44 @@ scappare.
 **Config aggiuntiva** (oltre a quelle di `11-app-meta-agenzia.md`):
 `whatsapp_signup_config_id` = l'id della configurazione Embedded Signup v4.
 
-**Fase 2 — rifiniture**
-- gestione template dal CRM (creazione e stato di approvazione);
+## Cosa si può fare in chat (verificato sul codice)
+
+| | Ricezione | Invio |
+|---|---|---|
+| Testo, emoji | ✅ | ✅ |
+| Immagini | ✅ | ✅ |
+| Video | ✅ | ✅ |
+| Documenti | ✅ | ✅ |
+| Audio | ✅ ascolto in chat | ✅ upload **e registrazione vocale dal browser** |
+| Reazioni | ✅ | ✅ |
+| Risposte a un messaggio | ✅ | ✅ |
+| Messaggi da template | ✅ (resi con le variabili sostituite) | ✅ selettore template |
+
+La **registrazione vocale** usa `MediaRecorder`: si preme il microfono nel
+composer, il contatore mostra la durata, si preme stop e la nota vocale viene
+caricata e inviata come messaggio audio. Se il browser non lo supporta o il
+microfono è negato, lo dice invece di fallire in silenzio.
+
+## Template: si creano nel CRM
+
+Prima il bottone "Create New Template" apriva il **form grezzo del Desk**
+(`/app/whatsapp-templates/new`): fuori dal gestionale e incomprensibile per un
+cliente. Ora c'è **Settings → WhatsApp Templates**: elenco con lo stato di
+approvazione (Approvato / In attesa / Rifiutato), creazione e modifica con
+categoria, lingua, header, corpo con le variabili `{{1}}` e footer. Il
+salvataggio inoltra il template a Meta per la revisione — è frappe_whatsapp a
+parlare con Meta, noi mettiamo l'interfaccia sopra.
+
+I nomi dei campi vengono letti dal doctype installato invece che dati per
+scontati: con una release diversa di frappe_whatsapp l'interfaccia si adatta
+invece di rompersi.
+
+**Fase 2 — quel che resta**
 - finestra 24h: avviso in chat quando serve un template per riaprire;
-- azione "Invia WhatsApp" nelle automazioni (oggi c'è solo il trigger).
+- azione "Invia WhatsApp" nelle automazioni (oggi c'è solo il trigger);
+- sincronizzazione dello stato di approvazione dei template via webhook
+  `message_template_status_update` (oggi lo stato si aggiorna quando
+  frappe_whatsapp lo rilegge).
 
 ## Nota sui costi
 
