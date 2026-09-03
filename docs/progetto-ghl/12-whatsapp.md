@@ -53,16 +53,42 @@ Il code dura 30 secondi: per questo l'hub **scambia lui** e passa il token al
 site via server-to-server, invece di rimbalzare il code nel browser come
 facciamo per Facebook.
 
-### Webhook
+### Webhook: i flussi sono simmetrici
 
 Come per i lead, la sottoscrizione è **a livello di app**: tutti i messaggi di
-tutti i clienti arrivano all'hub, che li smista guardando il `phone_number_id`.
-Si riusa il registro già esistente (`Meta Page Route` → una tabella gemella per
-i numeri) e la firma `X-CRM-Relay-Signature`.
+tutti i clienti arrivano all'hub, che li smista per WABA (o `phone_number_id`).
 
-Campi da sottoscrivere: `messages` (messaggi in entrata e stati di consegna) e
-**`account_update`**, obbligatorio: è quello che segnala il completamento
-dell'Embedded Signup.
+Ma la Coexistence aggiunge tre campi che una normale integrazione Cloud API non
+vede mai — ed è qui che sta la sincronizzazione bidirezionale:
+
+| Campo | Cosa porta | Chi lo capisce |
+|---|---|---|
+| `messages` | messaggi in arrivo dai clienti + stati di consegna | **frappe_whatsapp** |
+| `smb_message_echoes` | i messaggi che l'azienda scrive **dal telefono** | **nostro** |
+| `history` | fino a 6 mesi di conversazioni passate, a chunk | **nostro** |
+| `smb_app_state_sync` | la rubrica dell'azienda | **nostro** |
+| `account_update` | esito dell'Embedded Signup, stato dell'account | **nostro** |
+
+`frappe_whatsapp` conosce solo `messages`: senza gestire gli altri, **quello che
+il cliente scrive dal telefono non comparirebbe nel CRM** — cioè verrebbe a
+mancare metà della promessa. Perciò l'hub **spacchetta ogni entry per campo**:
+`messages` va all'endpoint di frappe_whatsapp (rifirmato con l'app secret, così
+lo valida come una consegna Meta normale), il resto al nostro
+(`receive_events`, firmato col relay secret) che li trasforma in
+`WhatsApp Message`.
+
+⚠️ Gli echo vengono scritti con `db_insert()`, **non** con `insert()`: un
+messaggio Outgoing inserito normalmente farebbe partire l'invio via API a
+frappe_whatsapp, e il messaggio — già partito dal telefono — verrebbe recapitato
+due volte.
+
+### Session logging
+
+Meta richiede che l'Embedded Signup sia implementato **con session logging**.
+La pagina dell'hub riporta ogni passo (`WA_EMBEDDED_SIGNUP`, avvii, annulli con
+`current_step`, errori) a `log_session_event`, che li registra nel doctype
+**`WhatsApp Signup Session`**: un onboarding che si pianta diventa assistibile
+invece che un mistero.
 
 ## Cosa serve lato Meta (da fare in quest'ordine)
 

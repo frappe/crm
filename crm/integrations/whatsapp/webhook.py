@@ -27,10 +27,13 @@ import requests
 from werkzeug.wrappers import Response
 
 from crm.integrations.meta.client import get_app_secret, get_settings
+from crm.integrations.meta.relay import sign as relay_sign
 
 TIMEOUT = 15
 # frappe_whatsapp's own endpoint: it turns the payload into WhatsApp Message docs
 DOWNSTREAM_PATH = "/api/method/frappe_whatsapp.utils.webhook.webhook"
+# ours, for the Coexistence fields frappe_whatsapp does not know
+COEXISTENCE_PATH = "/api/method/crm.integrations.whatsapp.api.receive_events"
 
 
 @frappe.whitelist(allow_guest=True)  # nosemgrep: guest-whitelisted-method
@@ -66,14 +69,30 @@ def _receive(request):
 			site = route_for(entry)
 			if not site:
 				continue
-			frappe.enqueue(
-				"crm.integrations.whatsapp.webhook.forward",
-				queue="short",
-				site=site,
-				entry=entry,
-			)
+			# `messages` is the only field frappe_whatsapp understands; the
+			# Coexistence ones (echoes from the phone, chat history, contacts)
+			# go to our own handler on the same site
+			for kind, part in split_entry(entry):
+				frappe.enqueue(
+					"crm.integrations.whatsapp.webhook.forward",
+					queue="short",
+					site=site,
+					entry=part,
+					kind=kind,
+				)
 	frappe.db.commit()
 	return Response("ok", mimetype="text/plain")
+
+
+def split_entry(entry: dict) -> list[tuple[str, dict]]:
+	"""Split one entry into a downstream part and a coexistence part."""
+	from crm.integrations.whatsapp.coexistence import COEXISTENCE_FIELDS
+
+	buckets: dict[str, list] = {"messages": [], "coexistence": []}
+	for change in entry.get("changes") or []:
+		key = "coexistence" if change.get("field") in COEXISTENCE_FIELDS else "messages"
+		buckets[key].append(change)
+	return [(kind, {**entry, "changes": changes}) for kind, changes in buckets.items() if changes]
 
 
 def valid_signature(header: str | None, raw_body: bytes) -> bool:
@@ -103,23 +122,32 @@ def route_for(entry: dict) -> str | None:
 	return site.rstrip("/")
 
 
-def forward(site: str, entry: dict) -> None:
+def forward(site: str, entry: dict, kind: str = "messages") -> None:
 	"""Deliver one account's notification to the CRM that owns it.
 
-	Signed with the app secret so the destination validates it as a normal Meta
-	delivery — the hub is invisible to the receiving app.
+	`messages` goes to frappe_whatsapp's own endpoint, signed with the app secret
+	so it validates the delivery as a normal Meta one — the hub stays invisible.
+	The Coexistence fields go to our handler, signed with the relay secret.
 	"""
-	secret = get_app_secret()
-	if not secret:
-		frappe.log_error("No Meta app secret configured", "WhatsApp relay: cannot sign")
-		return
 	body = json.dumps({"object": "whatsapp_business_account", "entry": [entry]}).encode()
-	signature = "sha256=" + hmac.new(secret.encode(), body, hashlib.sha256).hexdigest()
+
+	if kind == "coexistence":
+		path, headers = COEXISTENCE_PATH, {"X-CRM-Relay-Signature": relay_sign(body)}
+	else:
+		secret = get_app_secret()
+		if not secret:
+			frappe.log_error("No Meta app secret configured", "WhatsApp relay: cannot sign")
+			return
+		path = DOWNSTREAM_PATH
+		headers = {
+			"X-Hub-Signature-256": "sha256=" + hmac.new(secret.encode(), body, hashlib.sha256).hexdigest()
+		}
+
 	try:
 		response = requests.post(
-			f"{site}{DOWNSTREAM_PATH}",
+			f"{site}{path}",
 			data=body,
-			headers={"Content-Type": "application/json", "X-Hub-Signature-256": signature},
+			headers={"Content-Type": "application/json", **headers},
 			timeout=TIMEOUT,
 		)
 		if response.status_code >= 300:

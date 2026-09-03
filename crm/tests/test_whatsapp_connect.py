@@ -16,6 +16,7 @@ import time
 import frappe
 from frappe.tests import IntegrationTestCase
 
+from crm.integrations.whatsapp import coexistence as C
 from crm.integrations.whatsapp import signup as S
 from crm.integrations.whatsapp import webhook as W
 
@@ -102,3 +103,43 @@ class TestWhatsAppWebhookRouting(IntegrationTestCase):
 		self.assertTrue(W.valid_signature(good, body))
 		self.assertFalse(W.valid_signature("sha256=deadbeef", body))
 		self.assertFalse(W.valid_signature(None, body))
+
+
+class TestCoexistenceRouting(IntegrationTestCase):
+	"""The Coexistence fields must not be sent to frappe_whatsapp, which only
+	understands `messages`."""
+
+	def test_split_entry_separates_the_two_worlds(self):
+		entry = {
+			"id": "WABA20",
+			"changes": [
+				{"field": "messages", "value": {"a": 1}},
+				{"field": "smb_message_echoes", "value": {"b": 2}},
+				{"field": "history", "value": {"c": 3}},
+			],
+		}
+		parts = dict(W.split_entry(entry))
+		self.assertEqual([c["field"] for c in parts["messages"]["changes"]], ["messages"])
+		self.assertEqual(
+			[c["field"] for c in parts["coexistence"]["changes"]],
+			["smb_message_echoes", "history"],
+		)
+
+	def test_split_entry_with_only_messages_has_no_coexistence_part(self):
+		entry = {"id": "WABA21", "changes": [{"field": "messages", "value": {}}]}
+		self.assertEqual([kind for kind, _ in W.split_entry(entry)], ["messages"])
+
+	def test_message_body_reads_the_common_types(self):
+		self.assertEqual(C.message_body({"type": "text", "text": {"body": "ciao"}}), ("ciao", "text"))
+		self.assertEqual(
+			C.message_body({"type": "reaction", "reaction": {"emoji": "👍"}}), ("👍", "reaction")
+		)
+		self.assertEqual(C.message_body({"type": "image", "image": {"caption": "foto"}}), ("foto", "image"))
+		self.assertEqual(C.message_body({"type": "image", "image": {}}), ("[image]", "image"))
+
+	def test_business_number_is_normalised(self):
+		self.assertEqual(
+			C.business_number({"metadata": {"display_phone_number": "+393331234567"}}),
+			"393331234567",
+		)
+		self.assertEqual(C.business_number({}), "")

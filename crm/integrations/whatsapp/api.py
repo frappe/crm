@@ -146,6 +146,40 @@ def upsert_account(data: dict) -> str:
 	return doc.name
 
 
+@frappe.whitelist(allow_guest=True, methods=["POST"])  # nosemgrep: guest-whitelisted-method
+def receive_events():
+	"""Hub → this site: the Coexistence webhooks frappe_whatsapp cannot read.
+
+	Messages the business sends from its phone, imported chat history and the
+	contact list. Authenticated by the relay signature over the exact body.
+	"""
+	raw_body = frappe.request.get_data() or b""
+	if not valid_relay_signature(frappe.request.headers.get("X-CRM-Relay-Signature"), raw_body):
+		return Response("invalid signature", status=403, mimetype="text/plain")
+
+	try:
+		payload = json.loads(raw_body)
+	except ValueError:
+		return Response("bad payload", status=400, mimetype="text/plain")
+
+	if not whatsapp_installed():
+		return Response("whatsapp app not installed", status=400, mimetype="text/plain")
+
+	from crm.integrations.whatsapp.coexistence import ingest_entry
+
+	tally = {"echoes": 0, "history": 0, "contacts": 0}
+	for entry in payload.get("entry") or []:
+		try:
+			counts = ingest_entry(entry)
+		except Exception:
+			frappe.log_error(frappe.get_traceback(), "WhatsApp: coexistence ingest failed")
+			continue
+		for key, value in counts.items():
+			tally[key] += value
+	frappe.db.commit()
+	return Response(json.dumps({"ok": True, **tally}), mimetype="application/json")
+
+
 @frappe.whitelist(methods=["POST"])
 def set_default_account(name: str) -> dict:
 	_check_manager()

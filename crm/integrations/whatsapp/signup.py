@@ -79,6 +79,50 @@ def allowed_site(site: str) -> bool:
 	return site.rstrip("/") in [s.rstrip("/") for s in allowed]
 
 
+OUTCOME_BY_EVENT = {
+	"FINISH": "Completed",
+	"FINISH_ONLY_WABA": "Completed",
+	"FINISH_WHATSAPP_BUSINESS_APP_ONBOARDING": "Completed",
+	"CANCEL": "Cancelled",
+	"ERROR": "Error",
+}
+
+
+@frappe.whitelist(allow_guest=True, methods=["POST"])  # nosemgrep: guest-whitelisted-method
+def log_session_event(state: str, event: str, data: str | dict | None = None) -> dict:
+	"""Session logging — Meta requires Embedded Signup to be implemented with it.
+
+	The hub page reports every step the business customer goes through, so an
+	onboarding that stalls or is abandoned can actually be supported instead of
+	guessed at. Nothing here is trusted: the state carries the signature, and
+	only the fields we know are stored.
+	"""
+	parsed = parse_state(state)
+	if not parsed:
+		return {"ok": False}
+	if isinstance(data, str):
+		try:
+			data = json.loads(data)
+		except ValueError:
+			data = {"raw": data[:500]}
+	data = data or {}
+
+	frappe.get_doc(
+		{
+			"doctype": "WhatsApp Signup Session",
+			"site_url": parsed["site"],
+			"event": (event or "")[:140],
+			"current_step": (data.get("current_step") or "")[:140],
+			"waba_id": data.get("waba_id") or "",
+			"phone_number_id": data.get("phone_number_id") or "",
+			"outcome": OUTCOME_BY_EVENT.get(event, "In Progress"),
+			"details": json.dumps(data)[:5000],
+		}
+	).insert(ignore_permissions=True)
+	frappe.db.commit()
+	return {"ok": True}
+
+
 @frappe.whitelist(allow_guest=True, methods=["POST"])  # nosemgrep: guest-whitelisted-method
 def complete_signup(state: str, code: str, waba_id: str, phone_number_id: str) -> dict:
 	"""Called by the hub page as soon as Embedded Signup finishes.
@@ -100,6 +144,12 @@ def complete_signup(state: str, code: str, waba_id: str, phone_number_id: str) -
 	claim_route(waba_id, phone_number_id, number.get("display_phone_number"), site)
 	subscribe_waba(waba_id, token)
 	deliver_to_site(site, token, waba_id, phone_number_id, number)
+
+	log_session_event(
+		state,
+		"CONNECTED",
+		{"waba_id": waba_id, "phone_number_id": phone_number_id, "current_step": "delivered"},
+	)
 	return {"ok": True, "site": site}
 
 
@@ -135,7 +185,12 @@ def describe_number(phone_number_id: str, token: str) -> dict:
 
 
 def subscribe_waba(waba_id: str, token: str) -> None:
-	"""Subscribe the app to this WhatsApp Business account's webhooks."""
+	"""Subscribe the app to this WhatsApp Business account's webhooks.
+
+	Coexistence needs more than `messages`: without `smb_message_echoes` the CRM
+	never sees what the business writes from its phone, and without `history` the
+	past conversations are never imported.
+	"""
 	try:
 		graph_post(f"{waba_id}/subscribed_apps", token, {})
 	except MetaAPIError:

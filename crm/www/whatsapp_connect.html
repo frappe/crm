@@ -62,14 +62,29 @@
 		statusEl.style.color = isError ? '#b91c1c' : '#525252';
 	}
 
-	// Embedded Signup reports the chosen assets through a window message
+	// session logging: Meta requires Embedded Signup to be implemented with it,
+	// and it is what makes a stalled onboarding supportable instead of a mystery
+	function logEvent(event, data) {
+		try {
+			navigator.sendBeacon(
+				'/api/method/crm.integrations.whatsapp.signup.log_session_event',
+				new Blob([JSON.stringify({ state: state, event: event, data: data || {} })], {
+					type: 'application/json',
+				})
+			);
+		} catch (e) { /* logging must never block the flow */ }
+	}
+
+	// Embedded Signup reports every step through a window message
 	window.addEventListener('message', function (event) {
 		if (!event.origin.endsWith('facebook.com')) return;
 		let data;
 		try { data = JSON.parse(event.data); } catch (e) { return; }
 		if (data.type !== 'WA_EMBEDDED_SIGNUP') return;
+		const detail = data.data || {};
+		logEvent(data.event || 'STEP', detail);
 		if (data.event === 'FINISH' || data.event === 'FINISH_ONLY_WABA') {
-			signupData = data.data || data;
+			signupData = detail;
 		} else if (data.event === 'CANCEL') {
 			say({{ _("Connection cancelled.") | tojson }}, true);
 			button.disabled = false;
@@ -79,14 +94,17 @@
 	button.addEventListener('click', function () {
 		button.disabled = true;
 		say({{ _("Opening WhatsApp setup…") | tojson }});
+		logEvent('STARTED', { current_step: 'launch' });
 		FB.login(function (response) {
 			const code = response.authResponse && response.authResponse.code;
 			if (!code) {
+				logEvent('CANCEL', { current_step: 'login' });
 				say({{ _("Connection cancelled.") | tojson }}, true);
 				button.disabled = false;
 				return;
 			}
 			if (!signupData || !signupData.waba_id || !signupData.phone_number_id) {
+				logEvent('ERROR', { current_step: 'no_assets_returned' });
 				say({{ _("WhatsApp did not return an account. Please retry.") | tojson }}, true);
 				button.disabled = false;
 				return;
@@ -110,6 +128,7 @@
 					window.location.href = returnUrl;
 				})
 				.catch(function () {
+					logEvent('ERROR', { current_step: 'exchange_failed' });
 					say({{ _("Could not complete the connection. Please retry.") | tojson }}, true);
 					button.disabled = false;
 				});
