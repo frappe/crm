@@ -67,6 +67,16 @@ function triggerNode(doc) {
   }
 }
 
+/** How a step reads on a card: its icon and the three lines around it. */
+export function stepPresentation(node) {
+  return {
+    icon: STEP_ICONS[node.step_type] || ActionIcon,
+    kicker: kickerFor(node),
+    label: labelFor(node),
+    detail: detailFor(node),
+  }
+}
+
 function stepNode(node, position, errors, tails = new Set()) {
   const arms = openArms(node)
   return {
@@ -75,10 +85,7 @@ function stepNode(node, position, errors, tails = new Set()) {
     position,
     data: {
       step: node,
-      icon: STEP_ICONS[node.step_type] || ActionIcon,
-      kicker: kickerFor(node),
-      label: labelFor(node),
-      detail: detailFor(node),
+      ...stepPresentation(node),
       branching: isBranching(node),
       arms,
       // Continuing past a branch only makes sense once both arms lead somewhere.
