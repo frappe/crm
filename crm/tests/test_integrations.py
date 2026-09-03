@@ -279,6 +279,30 @@ class TestIntegrations(IntegrationTestCase):
 		self.assertEqual(task.reference_doctype, "CRM Lead")
 		self.assertEqual(task.reference_docname, lead.name)
 
+	def test_add_task_to_call_log_follows_most_recently_linked_lead(self):
+		"""The links table is append-only, so if a call log ever accumulates
+		more than one Lead link (e.g. re-matched to a different Lead later),
+		the most recently added one must win - matching what
+		crm_call_log.parse_call_log resolves as the call log's current Lead
+		for display."""
+		first_lead = frappe.get_doc(
+			{"doctype": "CRM Lead", "first_name": "First", "last_name": "Lead"}
+		).insert()
+		second_lead = frappe.get_doc(
+			{"doctype": "CRM Lead", "first_name": "Second", "last_name": "Lead"}
+		).insert()
+		call_log = create_test_call_log()
+		call_log.link_with_reference_doc("CRM Lead", first_lead.name)
+		call_log.link_with_reference_doc("CRM Lead", second_lead.name)
+		call_log.save()
+		task = frappe.get_doc({"doctype": "CRM Task", "title": "Follow up", "status": "Todo"}).insert()
+
+		add_task_to_call_log(call_log.name, {"name": task.name, "title": "Follow up", "status": "Todo"})
+
+		task.reload()
+		self.assertEqual(task.reference_doctype, "CRM Lead")
+		self.assertEqual(task.reference_docname, second_lead.name)
+
 	def test_get_contact_by_phone_number_finds_contact(self):
 		"""Test get_contact_by_phone_number finds existing contact"""
 		# Create a test contact - use exact match by storing what will be searched

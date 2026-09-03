@@ -77,17 +77,25 @@ def _get_call_log_lead_or_deal(call_log):
 
 	Telephony integrations (Twilio, Exotel) link a call log to its Lead/Deal
 	only via the "links" child table (CRMCallLog.link_with_reference_doc) -
-	they never populate reference_doctype/reference_docname directly. So the
-	links table is checked first, falling back to the direct reference
-	fields for call logs that do have them set.
+	they never populate reference_doctype/reference_docname directly. The
+	links table is append-only, so if it ever accumulates more than one
+	Lead/Deal entry, the most recently added one wins - mirroring
+	crm_call_log.parse_call_log, which resolves the same "_lead"/"_deal"
+	the UI displays by letting later links overwrite earlier ones.
 	"""
+	lead = call_log.reference_docname if call_log.reference_doctype == "CRM Lead" else None
+	deal = call_log.reference_docname if call_log.reference_doctype == "CRM Deal" else None
+
 	for link in call_log.get("links") or []:
-		if link.link_doctype in ("CRM Lead", "CRM Deal"):
-			return link.link_doctype, link.link_name
+		if link.link_doctype == "CRM Lead":
+			lead = link.link_name
+		elif link.link_doctype == "CRM Deal":
+			deal = link.link_name
 
-	if call_log.reference_doctype in ("CRM Lead", "CRM Deal"):
-		return call_log.reference_doctype, call_log.reference_docname
-
+	if lead:
+		return "CRM Lead", lead
+	if deal:
+		return "CRM Deal", deal
 	return None, None
 
 
