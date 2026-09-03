@@ -135,6 +135,7 @@ class TestMetaSharedApp(IntegrationTestCase):
 	def tearDown(self):
 		frappe.local.conf.pop("meta_relay_secret", None)
 		frappe.local.conf.pop("meta_hub_url", None)
+		frappe.local.conf.pop("meta_relay_sites", None)
 		frappe.db.rollback()
 
 	def test_state_roundtrip_and_tamper(self):
@@ -182,6 +183,27 @@ class TestMetaSharedApp(IntegrationTestCase):
 		).insert(ignore_permissions=True)
 		self.assertIsNone(R.route_for("880777"))
 		self.assertIsNone(R.route_for(""))
+
+	def test_claim_refuses_takeover_of_another_site(self):
+		frappe.local.conf["meta_relay_secret"] = "shared"
+		frappe.get_doc(
+			{"doctype": "Meta Page Route", "page_id": "880999", "site_url": "https://primo.it"}
+		).insert(ignore_permissions=True)
+
+		ts = str(int(__import__("time").time()))
+		signature = R.sign(f"880999|https://ladro.it|{ts}".encode())
+		response = R.register_page_route("880999", "https://ladro.it", ts, signature)
+		self.assertEqual(response.status_code, 409)
+		self.assertEqual(frappe.db.get_value("Meta Page Route", "880999", "site_url"), "https://primo.it")
+
+	def test_claim_refuses_site_outside_allowlist(self):
+		frappe.local.conf["meta_relay_secret"] = "shared"
+		frappe.local.conf["meta_relay_sites"] = ["https://buono.it"]
+		ts = str(int(__import__("time").time()))
+		signature = R.sign(f"881000|https://ignoto.it|{ts}".encode())
+		response = R.register_page_route("881000", "https://ignoto.it", ts, signature)
+		self.assertEqual(response.status_code, 403)
+		self.assertFalse(frappe.db.exists("Meta Page Route", "881000"))
 
 	def test_route_for_returns_other_site(self):
 		frappe.get_doc(

@@ -53,6 +53,21 @@ La tabella si popola da sola: quando un cliente attiva "Sync leads" su una
 pagina, il suo site chiama l'hub (`register_page_route`, firmato) e rivendica
 quella pagina.
 
+**Chi può rivendicare una pagina.** Il segreto di relay sta nel config di tutti
+i site: chi lo legge potrebbe puntare i lead altrui su un site proprio. Perciò
+la rivendicazione ha tre difese:
+1. richiesta firmata col relay secret;
+2. `meta_relay_sites` (opzionale, nel config dell'hub): elenco chiuso dei site
+   ammessi a rivendicare — **impostalo in produzione**;
+3. una pagina già assegnata **non** viene riassegnata in silenzio: il tentativo
+   è respinto (409) e finisce nell'error log. Per spostare una pagina da un site
+   a un altro si cancella prima il suo `Meta Page Route` sull'hub.
+
+### Cosa vede l'hub
+
+Solo `page_id → site_url`. Nessun token, nessun lead, nessun dato dei clienti:
+quelli restano ognuno nel proprio site.
+
 ## Creazione dell'app, passo per passo
 
 1. **developers.facebook.com → My Apps → Create app.**

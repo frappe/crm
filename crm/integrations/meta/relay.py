@@ -84,8 +84,15 @@ def forward(site: str, payload: dict) -> None:
 def register_page_route(page_id: str, site: str, ts: str, signature: str):
 	"""Client site → hub: 'leads for this page belong to me'.
 
-	Called whenever a client enables lead sync for a page. Authenticated with
-	the shared relay secret, so only sites of our own bench can claim a page.
+	Called whenever a client enables lead sync for a page. Three defences, because
+	whoever holds the relay secret could otherwise point another client's leads at
+	a site of their own:
+
+	1. the request is signed with the shared relay secret;
+	2. `meta_relay_sites`, when set, is the closed list of sites allowed to claim;
+	3. a page already routed elsewhere is NOT silently reassigned — the takeover
+	   is refused and logged, so a hijack cannot pass unnoticed. Move a page
+	   between sites by deleting its Meta Page Route on the hub first.
 	"""
 	if not relay_secret():
 		return Response("relay not configured", status=400, mimetype="text/plain")
@@ -96,9 +103,21 @@ def register_page_route(page_id: str, site: str, ts: str, signature: str):
 		return Response("invalid signature", status=403, mimetype="text/plain")
 
 	site = site.rstrip("/")
-	if frappe.db.exists("Meta Page Route", page_id):
-		frappe.db.set_value("Meta Page Route", page_id, "site_url", site)
-	else:
+	allowed = frappe.conf.get("meta_relay_sites")
+	if allowed and site not in [s.rstrip("/") for s in allowed]:
+		frappe.log_error(f"Page {page_id} claimed by unlisted site {site}", "Meta relay: claim refused")
+		frappe.db.commit()
+		return Response("site not allowed", status=403, mimetype="text/plain")
+
+	current = frappe.db.get_value("Meta Page Route", page_id, "site_url")
+	if current and current.rstrip("/") != site:
+		frappe.log_error(
+			f"Page {page_id} is routed to {current}; {site} tried to take it over",
+			"Meta relay: takeover refused",
+		)
+		frappe.db.commit()
+		return Response("page already claimed", status=409, mimetype="text/plain")
+	if not current:
 		frappe.get_doc({"doctype": "Meta Page Route", "page_id": page_id, "site_url": site}).insert(
 			ignore_permissions=True
 		)
