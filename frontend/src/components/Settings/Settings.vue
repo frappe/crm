@@ -79,6 +79,7 @@ import DashboardSettings from '@/components/Settings/DashboardSettings.vue'
 import EmailTemplatePage from '@/components/Settings/EmailTemplate/EmailTemplatePage.vue'
 import TelephonyPage from '@/components/Settings/Telephony/TelephonyPage.vue'
 import BookingSettings from '@/components/Settings/Booking/BookingSettings.vue'
+import GoogleCalendarSettings from '@/components/Settings/GoogleCalendarSettings.vue'
 import MetaConnection from '@/components/Settings/Meta/MetaConnection.vue'
 import MetaLeadForms from '@/components/Settings/Meta/MetaLeadForms.vue'
 import SocialSettings from '@/components/Settings/Social/SocialSettings.vue'
@@ -229,9 +230,15 @@ const tabs = computed(() => {
           label: __('Booking Calendars'),
           icon: CalendarIcon,
           component: markRaw(BookingSettings),
+          condition: () => isManager(),
+        },
+        {
+          // per user, not per site: everyone connects their own calendar
+          label: __('Google Calendar'),
+          icon: CalendarIcon,
+          component: markRaw(GoogleCalendarSettings),
         },
       ],
-      condition: () => isManager(),
     },
     {
       // one connection, three things it feeds — kept together and in order

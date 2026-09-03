@@ -208,7 +208,7 @@ const meta = createResource({
 })
 
 const googleConnection = createResource({
-  url: 'crm.api.booking.google_calendar_connection',
+  url: 'crm.integrations.google.api.get_status',
   cache: 'google-calendar-connection',
   auto: true,
 })
@@ -219,9 +219,9 @@ function connectGoogle() {
     return
   }
   createResource({
-    url: 'crm.api.booking.setup_google_calendar',
+    url: 'crm.integrations.google.oauth.get_login_url',
     auto: true,
-    onSuccess: (data) => (window.location.href = data.authorize_url),
+    onSuccess: (data) => (window.location.href = data.login_url),
     onError: (e) =>
       toast.error(e.messages?.[0] || __('Failed to start Google authorization')),
   })
