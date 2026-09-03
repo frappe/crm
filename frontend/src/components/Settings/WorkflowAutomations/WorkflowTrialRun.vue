@@ -1,9 +1,10 @@
 <template>
-  <div class="mx-auto flex h-full min-h-0 max-w-3xl flex-col gap-4">
+  <div class="flex h-full min-h-0 flex-col gap-3">
     <div class="flex items-end gap-2">
       <div class="min-w-0 flex-1 space-y-1.5">
         <Link
           v-if="doc.document_type"
+          class="max-w-sm"
           :model-value="docname"
           :doctype="doc.document_type"
           :label="__('Run against')"
@@ -47,77 +48,60 @@
         :theme="playing ? 'blue' : STATUS_THEMES[summary.status] || 'gray'"
         variant="subtle"
       />
+      <span class="shrink-0 text-sm text-ink-gray-6">
+        {{ __('{0} of {1} steps ran', [ranCount, stepCount]) }}
+      </span>
       <span
         v-if="summary.error_summary"
         class="truncate text-sm text-ink-red-5"
       >
         {{ summary.error_summary }}
       </span>
-      <span v-else class="text-sm text-ink-gray-6">
-        {{ __('{0} of {1} steps ran', [ranCount, stepCount]) }}
-      </span>
+      <Button
+        v-if="failures.length"
+        class="ml-auto shrink-0"
+        variant="ghost"
+        size="sm"
+        :label="showFailures ? __('Hide details') : __('Show details')"
+        @click="showFailures = !showFailures"
+      />
     </div>
 
-    <div class="min-h-0 flex-1 overflow-y-auto pb-4">
-      <div
-        v-if="!doc.actions?.length"
-        class="py-10 text-center text-sm text-ink-gray-5"
-      >
-        {{ __('This flow has no steps to run.') }}
-      </div>
-      <div v-else class="space-y-3">
-        <div class="flex items-start gap-2">
-          <div class="flex w-5 shrink-0 justify-center pt-2.5">
-            <span class="mt-1.5 size-1.5 rounded-full bg-surface-gray-4" />
-          </div>
-          <div
-            class="min-w-0 flex-1 rounded-[10px] border border-outline-gray-2 bg-surface-gray-1 px-3 py-2"
-          >
-            <div class="flex items-center gap-2">
-              <div
-                class="flex size-[26px] shrink-0 items-center justify-center rounded-[6px] border border-outline-gray-2"
-              >
-                <component :is="trigger.icon" class="size-4 text-ink-gray-7" />
-              </div>
-              <div class="min-w-0 flex-1">
-                <div class="truncate text-base-medium text-ink-gray-8">
-                  {{ trigger.label }}
-                </div>
-                <div class="truncate text-xs text-ink-gray-5">
-                  {{ docname || doc.document_type || __('No document') }}
-                </div>
-              </div>
-              <span class="shrink-0 text-xs text-ink-gray-5">
-                {{ __('Trigger') }}
-              </span>
-            </div>
-          </div>
+    <div
+      v-if="showFailures && failures.length"
+      class="max-h-40 shrink-0 space-y-2 overflow-y-auto rounded-lg border border-outline-red-2 p-3"
+    >
+      <div v-for="step in failures" :key="step.step_key" class="space-y-1">
+        <div class="text-sm-medium text-ink-gray-8">{{ stepLabel(step) }}</div>
+        <div v-if="step.message" class="text-xs text-ink-red-5">
+          {{ step.message }}
         </div>
-
-        <WorkflowTrialStep
-          v-for="step in doc.actions"
-          :key="step._id"
-          :node="step"
-          :outcomes="outcomes"
-          :active-key="activeKey"
-          :taken="taken"
-          :overrides="overrides"
-          :row-idx="rowIdx"
-          :playing="playing"
-          :finished="finished"
-          @run-branch="runBranch"
-        />
+        <pre
+          v-if="traceOf(step)"
+          class="overflow-x-auto text-xs text-ink-gray-6"
+          >{{ traceOf(step) }}</pre
+        >
       </div>
+    </div>
+
+    <div
+      class="min-h-0 flex-1 overflow-hidden rounded-lg border border-outline-gray-2"
+    >
+      <WorkflowFlow
+        :nodes="nodes"
+        :edges="edges"
+        readonly
+        @run-branch="runBranch"
+      />
     </div>
   </div>
 </template>
 
 <script setup>
 import Link from '@/components/Controls/Link.vue'
-import TriggerIcon from '~icons/lucide/play'
-import WorkflowTrialStep from './WorkflowTrialStep.vue'
-import { toRows } from './workflowSteps'
-import { triggerDefinition } from './workflowTriggers'
+import WorkflowFlow from './WorkflowFlow.vue'
+import { workflowEdges, workflowNodes } from './workflowGraph'
+import { armLabels, isBranching, toRows } from './workflowSteps'
 import { Badge, Button, call } from 'frappe-ui'
 import { computed, onUnmounted, reactive, ref } from 'vue'
 
@@ -142,6 +126,7 @@ const MAX_HOLD = 1500
 const docname = ref('')
 const running = ref(false)
 const playing = ref(false)
+const showFailures = ref(false)
 const error = ref('')
 const summary = ref(null)
 const activeKey = ref('')
@@ -154,13 +139,7 @@ let playToken = 0
 
 onUnmounted(() => (playToken += 1))
 
-const trigger = computed(() => {
-  const definition = triggerDefinition(props.doc)
-  return {
-    icon: definition?.icon || TriggerIcon,
-    label: definition?.label || __('Manual run'),
-  }
-})
+const finished = computed(() => Boolean(summary.value) && !playing.value)
 
 /** Trace entries are keyed by step key; branch arms by the row index of their `If`. */
 const rowIdx = computed(() => {
@@ -171,25 +150,108 @@ const rowIdx = computed(() => {
   return map
 })
 
-/** Counted over the blocks on screen, not the rows behind them - a wait is one of each. */
-const stepCount = computed(() => countNodes(props.doc.actions || []))
-
-const ranCount = computed(
-  () => Object.keys(outcomes).filter((key) => nodeFor(key)).length,
+/** Every step, with the arm it sits in resolved against the arm the run took. */
+const states = computed(() =>
+  walkStates(props.doc.actions || [], false, new Map()),
 )
 
-function countNodes(nodes) {
-  return nodes.reduce(
-    (total, node) =>
-      total +
-      1 +
-      countNodes(node.children?.If || []) +
-      countNodes(node.children?.Else || []),
-    0,
-  )
+const stepKeys = computed(
+  () => new Set([...states.value.values()].map(({ node }) => node.step_key)),
+)
+
+const nodes = computed(() =>
+  workflowNodes(props.doc).map((node) =>
+    node.data.isTrigger ? triggerNode(node) : stepNode(node),
+  ),
+)
+
+const edges = computed(() =>
+  workflowEdges(props.doc.actions).map((edge) =>
+    states.value.get(edge.target)?.offPath ? offPathEdge(edge) : edge,
+  ),
+)
+
+const stepCount = computed(() => states.value.size)
+
+const ranCount = computed(
+  () => Object.keys(outcomes).filter((key) => stepKeys.value.has(key)).length,
+)
+
+const failures = computed(() =>
+  Object.values(outcomes).filter((step) => step.status === 'Failed'),
+)
+
+function walkStates(nodes, offPath, states) {
+  nodes.forEach((node) => {
+    states.set(node._id, { node, offPath })
+    if (!isBranching(node)) return
+    const chosen = taken[String(branchIdx(node))]
+    ;['If', 'Else'].forEach((arm) =>
+      walkStates(
+        node.children[arm],
+        offPath || Boolean(chosen && chosen !== arm),
+        states,
+      ),
+    )
+  })
+  return states
 }
 
-const finished = computed(() => Boolean(summary.value) && !playing.value)
+/** The `If` row that decides a node's arms - for a wait, the outcome row folded into it. */
+function branchIdx(node) {
+  return rowIdx.value[node._outcomeKey || node.step_key]
+}
+
+function triggerNode(node) {
+  return {
+    ...node,
+    data: { ...node.data, detail: docname.value || node.data.detail },
+  }
+}
+
+function stepNode(node) {
+  const step = node.data.step
+  const outcome = outcomes[step.step_key]
+  return {
+    ...node,
+    data: {
+      ...node.data,
+      status: activeKey.value === step.step_key ? 'running' : outcome?.status,
+      detail: outcome ? outcome.message || outcome.detail : node.data.detail,
+      dimmed:
+        states.value.get(node.id)?.offPath || (finished.value && !outcome),
+      forced: Boolean(overrides[String(branchIdx(step))]),
+      retryArms: retryArms(step),
+    },
+  }
+}
+
+/** The arm this record did not reach, offered so the other path can still be tried. */
+function retryArms(step) {
+  const chosen = taken[String(branchIdx(step))]
+  if (!isBranching(step) || !chosen || !finished.value) return []
+  const labels = armLabels(step)
+  return ['If', 'Else']
+    .filter((arm) => arm !== chosen && step.children[arm].length)
+    .map((arm) => ({ branch: arm, label: labels[arm], idx: branchIdx(step) }))
+}
+
+/** A run that fell over before its first step records itself against a `setup` key. */
+function stepLabel(step) {
+  return step.step_key === 'setup' ? __('Before the first step') : step.step_key
+}
+
+/** A step failure carries a traceback of its own; a setup failure only has its detail. */
+function traceOf(step) {
+  return step.traceback || (step.message ? '' : step.detail)
+}
+
+function offPathEdge(edge) {
+  return {
+    ...edge,
+    style: { ...edge.style, stroke: '#C7C7C7', strokeDasharray: '4 4' },
+  }
+}
 
 function pickDocument(value) {
   docname.value = value
@@ -199,6 +261,7 @@ function pickDocument(value) {
 function reset() {
   playToken += 1
   playing.value = false
+  showFailures.value = false
   activeKey.value = ''
   summary.value = null
   result = null
@@ -206,8 +269,8 @@ function reset() {
   Object.keys(taken).forEach((key) => delete taken[key])
 }
 
-function runBranch({ idx, arm }) {
-  overrides[String(idx)] = arm
+function runBranch({ idx, branch }) {
+  overrides[String(idx)] = branch
   run({ keepOverrides: true })
 }
 
@@ -241,16 +304,15 @@ function clearOverrides() {
   Object.keys(overrides).forEach((key) => delete overrides[key])
 }
 
-/** Reveal the trace a step at a time, holding each block for as long as it took to run. */
+/** Reveal the trace a step at a time, holding each node for as long as it took to run. */
 async function playback(run) {
   const token = ++playToken
   summary.value = run
   playing.value = true
   for (const entry of run.steps || []) {
-    const node = nodeFor(entry.step_key)
-    if (node) {
+    if (stepKeys.value.has(entry.step_key)) {
       activeKey.value = entry.step_key
-      await hold(holdFor(entry, node))
+      await hold(holdFor(entry))
       if (token !== playToken) return
     }
     reveal(entry, run)
@@ -273,24 +335,13 @@ function reveal(entry, run) {
   if (branch) taken[String(entry.step_idx + 1)] = branch
 }
 
-function holdFor(entry, node) {
-  if (node.step_type === 'Wait' || node.step_type === 'WaitForEvent')
-    return WAIT_HOLD
+function holdFor(entry) {
+  const type = entry.action_type
+  if (type === 'Wait' || type === 'WaitForEvent') return WAIT_HOLD
   return Math.min(Math.max(entry.duration_ms || 0, MIN_HOLD), MAX_HOLD)
 }
 
 function hold(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms))
-}
-
-function nodeFor(key, nodes = props.doc.actions || []) {
-  for (const node of nodes) {
-    if (node.step_key === key) return node
-    const child =
-      nodeFor(key, node.children?.If || []) ||
-      nodeFor(key, node.children?.Else || [])
-    if (child) return child
-  }
-  return null
 }
 </script>
