@@ -1,0 +1,125 @@
+{% extends "templates/web.html" %}
+
+{% block title %}{{ _("Connect WhatsApp") }}{% endblock %}
+
+{% block page_content %}
+<style>
+	.wa-wrap { max-width: 32rem; margin: 4rem auto; padding: 0 1rem; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, sans-serif; color: #171717; }
+	.wa-card { border: 1px solid #e5e7eb; border-radius: 12px; padding: 1.75rem; background: #fff; }
+	.wa-title { font-size: 1.35rem; font-weight: 600; margin: 0 0 .5rem; }
+	.wa-text { color: #525252; line-height: 1.55; margin: 0 0 1rem; }
+	.wa-steps { color: #525252; line-height: 1.7; padding-left: 1.1rem; margin: 0 0 1.5rem; }
+	.wa-btn { background: #25D366; color: #fff; border: 0; border-radius: 8px; padding: .7rem 1.15rem; font-size: .95rem; font-weight: 600; cursor: pointer; }
+	.wa-btn[disabled] { opacity: .55; cursor: default; }
+	.wa-error { background: #fef2f2; color: #b91c1c; border-radius: 8px; padding: .75rem 1rem; line-height: 1.5; }
+	.wa-status { margin-top: 1rem; color: #525252; }
+	.wa-site { color: #737373; font-size: .85rem; margin-top: 1.25rem; word-break: break-all; }
+</style>
+
+<div class="wa-wrap">
+	<div class="wa-card">
+		{% if error %}
+			<h1 class="wa-title">{{ _("Cannot connect") }}</h1>
+			<div class="wa-error">{{ error }}</div>
+		{% else %}
+			<h1 class="wa-title">{{ _("Connect WhatsApp Business") }}</h1>
+			<p class="wa-text">
+				{{ _("You will keep using WhatsApp on your phone as always. Messages will also appear in your CRM, and the last months of conversations are imported.") }}
+			</p>
+			<ol class="wa-steps">
+				<li>{{ _("Pick the business and the phone number you use on WhatsApp.") }}</li>
+				<li>{{ _("Scan the QR code with the WhatsApp Business app on that phone.") }}</li>
+				<li>{{ _("Choose whether to bring your chat history across.") }}</li>
+			</ol>
+			<button class="wa-btn" id="wa-connect">{{ _("Start") }}</button>
+			<div class="wa-status" id="wa-status"></div>
+			<div class="wa-site">{{ _("Connecting to") }}: {{ site_label }}</div>
+		{% endif %}
+	</div>
+</div>
+
+{% if not error %}
+<script>
+	window.fbAsyncInit = function () {
+		FB.init({ appId: {{ app_id | tojson }}, cookie: true, xfbml: false, version: 'v23.0' });
+	};
+	(function (d, s, id) {
+		var js, fjs = d.getElementsByTagName(s)[0];
+		if (d.getElementById(id)) return;
+		js = d.createElement(s); js.id = id;
+		js.src = 'https://connect.facebook.net/en_US/sdk.js';
+		fjs.parentNode.insertBefore(js, fjs);
+	})(document, 'script', 'facebook-jssdk');
+
+	const state = {{ state | tojson }};
+	const returnUrl = {{ return_url | tojson }};
+	const statusEl = document.getElementById('wa-status');
+	const button = document.getElementById('wa-connect');
+	let signupData = null;
+
+	function say(message, isError) {
+		statusEl.textContent = message;
+		statusEl.style.color = isError ? '#b91c1c' : '#525252';
+	}
+
+	// Embedded Signup reports the chosen assets through a window message
+	window.addEventListener('message', function (event) {
+		if (!event.origin.endsWith('facebook.com')) return;
+		let data;
+		try { data = JSON.parse(event.data); } catch (e) { return; }
+		if (data.type !== 'WA_EMBEDDED_SIGNUP') return;
+		if (data.event === 'FINISH' || data.event === 'FINISH_ONLY_WABA') {
+			signupData = data.data || data;
+		} else if (data.event === 'CANCEL') {
+			say({{ _("Connection cancelled.") | tojson }}, true);
+			button.disabled = false;
+		}
+	});
+
+	button.addEventListener('click', function () {
+		button.disabled = true;
+		say({{ _("Opening WhatsApp setup…") | tojson }});
+		FB.login(function (response) {
+			const code = response.authResponse && response.authResponse.code;
+			if (!code) {
+				say({{ _("Connection cancelled.") | tojson }}, true);
+				button.disabled = false;
+				return;
+			}
+			if (!signupData || !signupData.waba_id || !signupData.phone_number_id) {
+				say({{ _("WhatsApp did not return an account. Please retry.") | tojson }}, true);
+				button.disabled = false;
+				return;
+			}
+			say({{ _("Finishing up…") | tojson }});
+			// the code expires in 30 seconds: redeem it server-side right away
+			fetch('/api/method/crm.integrations.whatsapp.signup.complete_signup', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					state: state,
+					code: code,
+					waba_id: signupData.waba_id,
+					phone_number_id: signupData.phone_number_id,
+				}),
+			})
+				.then(function (r) { return r.json().then(function (b) { return { ok: r.ok, body: b }; }); })
+				.then(function (result) {
+					if (!result.ok) throw new Error((result.body && result.body.exc_type) || 'error');
+					say({{ _("Connected. Taking you back to your CRM…") | tojson }});
+					window.location.href = returnUrl;
+				})
+				.catch(function () {
+					say({{ _("Could not complete the connection. Please retry.") | tojson }}, true);
+					button.disabled = false;
+				});
+		}, {
+			config_id: {{ config_id | tojson }},
+			response_type: 'code',
+			override_default_response_type: true,
+			extras: { setup: {}, featureType: 'whatsapp_business_app_onboarding' },
+		});
+	});
+</script>
+{% endif %}
+{% endblock %}

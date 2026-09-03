@@ -1,8 +1,8 @@
 # 12 — WhatsApp Business, connesso dal cliente in un click
 
-> 📐 **PROGETTO (03/09/2026)** — non ancora implementato. Verificato sulle
-> guide Meta di settembre 2026. C'è un **prerequisito bloccante** (programma
-> Tech Provider) che va avviato prima di scrivere codice: vedi in fondo.
+> ✅ **FASE 1 IMPLEMENTATA (03/09/2026)** — onboarding completo. Verificato
+> sulle guide Meta di settembre 2026. Resta un **prerequisito bloccante lato
+> Meta** (programma Tech Provider) prima di poterlo provare davvero: vedi sotto.
 
 ## L'obiettivo
 
@@ -95,13 +95,27 @@ scappare.
 
 ## Piano di lavoro
 
-**Fase 1 — onboarding (il grosso del valore)**
-- pagina `/whatsapp-connect` sull'hub con l'Embedded Signup v4;
-- scambio del code e consegna firmata al site del cliente;
-- creazione automatica del `WhatsApp Account` + sottoscrizione ai webhook;
-- registro numeri sull'hub e relay dei messaggi (riuso del meccanismo dei lead,
-  con le stesse difese: elenco chiuso dei site, niente riassegnazione silenziosa);
-- Settings → WhatsApp riscritto: stato connessione, numero, QR, disconnetti.
+**Fase 1 — onboarding ✅ fatta**
+- `crm/www/whatsapp_connect.*` — pagina `/whatsapp-connect` sull'hub con
+  l'Embedded Signup v4 (JS SDK, `featureType: whatsapp_business_app_onboarding`
+  per la Coexistence), raggiunta con uno state firmato;
+- `crm/integrations/whatsapp/signup.py` — scambio del code entro i 30 secondi,
+  lettura del numero, sottoscrizione della WABA, consegna firmata al site;
+- `crm/integrations/whatsapp/api.py` — il site riceve le credenziali e crea da
+  sé il `WhatsApp Account` di frappe_whatsapp (scrivendo **solo i campi che
+  quella versione ha davvero**, per non rompersi con release diverse) e lo
+  imposta come account di invio;
+- `crm/integrations/whatsapp/webhook.py` — l'hub spacchetta il payload per
+  account e lo **rifirma con l'app secret**: il site di destinazione lo valida
+  come una consegna Meta normale, quindi frappe_whatsapp lo elabora senza
+  sapere che esiste un hub;
+- doctype `Meta WhatsApp Route` (WABA → site), con le stesse difese delle
+  pagine: elenco chiuso dei site e nessuna riassegnazione silenziosa;
+- Settings → WhatsApp: stato, numeri, scelta del numero di invio, disconnessione;
+- test: `crm/tests/test_whatsapp_connect.py`.
+
+**Config aggiuntiva** (oltre a quelle di `11-app-meta-agenzia.md`):
+`whatsapp_signup_config_id` = l'id della configurazione Embedded Signup v4.
 
 **Fase 2 — rifiniture**
 - gestione template dal CRM (creazione e stato di approvazione);

@@ -1,0 +1,73 @@
+{
+ "actions": [],
+ "autoname": "field:waba_id",
+ "creation": "2026-09-03 12:00:00.000000",
+ "description": "Hub-only routing table: which client site owns a WhatsApp Business account, so messages delivered to the shared app reach the right CRM.",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "waba_id",
+  "phone_number_id",
+  "display_phone_number",
+  "site_url",
+  "last_forwarded_at"
+ ],
+ "fields": [
+  {
+   "fieldname": "waba_id",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "WhatsApp Business Account ID",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "phone_number_id",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Business Phone Number ID"
+  },
+  {
+   "fieldname": "display_phone_number",
+   "fieldtype": "Data",
+   "label": "Phone Number"
+  },
+  {
+   "fieldname": "site_url",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Site URL",
+   "reqd": 1
+  },
+  {
+   "fieldname": "last_forwarded_at",
+   "fieldtype": "Datetime",
+   "label": "Last Forwarded At",
+   "read_only": 1
+  }
+ ],
+ "links": [],
+ "modified": "2026-09-03 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "FCRM",
+ "name": "Meta WhatsApp Route",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
