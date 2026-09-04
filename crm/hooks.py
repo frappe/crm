@@ -19,6 +19,7 @@ add_to_apps_screen = [
 		"title": "CRM",
 		"route": "/crm",
 		"has_permission": "crm.api.check_app_permission",
+		"desk_route": "/desk/frappe-crm",
 	}
 ]
 
