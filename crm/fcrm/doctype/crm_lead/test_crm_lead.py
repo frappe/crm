@@ -512,6 +512,22 @@ class TestCRMLead(IntegrationTestCase):
 		self.assertEqual(deal.annual_revenue, 750000)
 		self.assertEqual(deal.job_title, "CEO")
 
+	def test_no_of_employees_propagated_to_organization_on_conversion(self):
+		"""Test that no_of_employees on lead is copied to the organization created on conversion"""
+		lead = create_lead(
+			first_name="Employees",
+			last_name="Test",
+			email="employeestest@example.com",
+			organization="Employees Test Inc",
+			no_of_employees="201-500",
+		)
+
+		deal_name = lead.convert_to_deal()
+		deal = frappe.get_doc("CRM Deal", deal_name)
+
+		org = frappe.get_doc("CRM Organization", deal.organization)
+		self.assertEqual(org.no_of_employees, "201-500")
+
 	def test_custom_fields_copied_to_deal_by_label(self):
 		"""Custom Lead fields map to matching custom Deal fields."""
 		create_lead_deal_custom_fields()

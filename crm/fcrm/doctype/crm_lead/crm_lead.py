@@ -268,6 +268,7 @@ class CRMLead(Document):
 				"territory": self.territory,
 				"industry": self.industry,
 				"annual_revenue": self.annual_revenue,
+				"no_of_employees": self.no_of_employees,
 			}
 		)
 		organization.insert(ignore_permissions=True)
