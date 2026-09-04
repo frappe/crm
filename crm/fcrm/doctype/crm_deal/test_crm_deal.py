@@ -430,6 +430,29 @@ class TestCRMDeal(IntegrationTestCase):
 			settings.enable_forecasting = original_value
 			settings.save()
 
+	def test_assign_agent_respects_permissions(self):
+		"""assign_agent must not bypass the acting user's permissions on the deal"""
+		deal = create_test_deal(organization="Assign Permission Org", status="Qualification")
+
+		if not frappe.db.exists("User", "no-crm-access@example.com"):
+			frappe.get_doc(
+				{
+					"doctype": "User",
+					"email": "no-crm-access@example.com",
+					"first_name": "No",
+					"last_name": "Access",
+				}
+			).insert(ignore_permissions=True)
+
+		try:
+			frappe.set_user("no-crm-access@example.com")
+			with self.assertRaises(frappe.PermissionError):
+				deal.assign_agent("Administrator")
+		finally:
+			frappe.set_user("Administrator")
+
+		self.assertNotIn("Administrator", deal.get_assigned_users())
+
 	def test_single_contact_auto_primary(self):
 		"""Test that single contact is automatically set as primary"""
 		contact = create_test_contact(first_name="Auto", email="auto@example.com")
