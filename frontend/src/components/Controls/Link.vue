@@ -8,7 +8,7 @@
       v-model="value"
       :options="options.data"
       :size="attrs.size || 'sm'"
-      :variant="attrs.variant"
+      :variant="props.variant"
       :placeholder="attrs.placeholder"
       :disabled="attrs.disabled"
       :placement="attrs.placement"
@@ -78,6 +78,7 @@ const props = defineProps({
   filters: { type: [Array, Object, String], default: () => [] },
   modelValue: { type: String, default: '' },
   hideMe: { type: Boolean, default: false },
+  variant: { type: String, default: 'subtle' },
 })
 
 const emit = defineEmits(['update:modelValue', 'change'])
