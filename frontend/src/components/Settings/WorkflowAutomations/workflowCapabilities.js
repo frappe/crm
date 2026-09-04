@@ -9,6 +9,13 @@ import { reactive } from 'vue'
 const cache = reactive({})
 const pending = new Set()
 
+/**
+ * What this builder offers of an action's params, where it offers less than the framework
+ * defines. A script step is pointed at a Server Script here; Python is written and reviewed
+ * in the desk, where the roles that may author it live.
+ */
+const OFFERED_PARAMS = { RunScript: ['server_script'] }
+
 export function capabilitiesFor(doctype) {
   return doctype ? cache[doctype] || null : null
 }
@@ -17,14 +24,31 @@ export async function loadCapabilities(doctype) {
   if (!doctype || cache[doctype] || pending.has(doctype)) return
   pending.add(doctype)
   try {
-    cache[doctype] = await call(
-      'frappe.automation_engine.api.get_automation_capabilities',
-      {
+    cache[doctype] = offeredHere(
+      await call('frappe.automation_engine.api.get_automation_capabilities', {
         doctype,
-      },
+      }),
     )
   } finally {
     pending.delete(doctype)
+  }
+}
+
+function offeredHere(capabilities) {
+  return {
+    ...capabilities,
+    actions: (capabilities.actions || []).map(offeredParams),
+  }
+}
+
+function offeredParams(action) {
+  const offered = OFFERED_PARAMS[action.action_type]
+  if (!offered) return action
+  return {
+    ...action,
+    params_schema: (action.params_schema || []).filter((param) =>
+      offered.includes(param.fieldname),
+    ),
   }
 }
 
