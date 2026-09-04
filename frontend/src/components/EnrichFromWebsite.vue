@@ -1,21 +1,18 @@
 <template>
-  <!-- While running, show only a spinner (no crawl details). -->
+  <!-- While running, the spinner replaces the icon (no crawl details). -->
   <Button
-    :label="running ? '' : __('Enrich')"
+    :label="__('Enrich')"
     :loading="running"
-    :disabled="running"
+    :loadingText="__('Enriching')"
     :tooltip="running ? __('Enriching…') : __('Enrich from website')"
+    iconLeft="zap"
     @click="enrich"
-  >
-    <template v-if="!running" #prefix>
-      <FeatherIcon name="zap" class="h-4 w-4" />
-    </template>
-  </Button>
+  />
 </template>
 
 <script setup>
 import { ref, onBeforeUnmount } from 'vue'
-import { Button, FeatherIcon, call, toast } from 'frappe-ui'
+import { Button, call, toast } from 'frappe-ui'
 import { useTelemetry } from 'frappe-ui/frappe'
 import { globalStore } from '@/stores/global'
 import { organizationsStore } from '@/stores/organizations'
@@ -81,10 +78,7 @@ async function enrich() {
     return
   }
 
-  capture('enrichment_quick_triggered', {
-    doctype: props.doctype,
-    source: 'detail',
-  })
+  capture('enrichment_triggered', { doctype: props.doctype })
   running.value = true
   // Subscribe before enqueueing so we never miss the completion event.
   $socket.on(EVENT, onProgress)
