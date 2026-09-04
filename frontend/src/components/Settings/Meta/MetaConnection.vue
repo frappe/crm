@@ -122,7 +122,7 @@
           <Button
             :variant="status.data?.connected ? 'outline' : 'solid'"
             :label="status.data?.connected ? __('Reconnect') : __('Connect with Facebook')"
-            @click="connect"
+            @click="connect()"
           />
           <Button
             v-if="status.data?.connected"
@@ -130,6 +130,67 @@
             :label="__('Disconnect')"
             @click="disconnect"
           />
+        </div>
+      </div>
+
+      <!-- which Pages Facebook actually shared: the dialog, not the CRM,
+           decides this, and granting none still reports a successful login -->
+      <div
+        v-if="status.data?.connected"
+        class="flex flex-col gap-3 rounded-lg border border-outline-gray-2 p-4"
+      >
+        <div class="flex items-center justify-between gap-3">
+          <span class="text-p-base-medium text-ink-gray-7">
+            {{ __('Pages shared with the CRM') }}
+          </span>
+          <Button
+            :label="__('Choose pages')"
+            :loading="choosing"
+            @click="connect(true)"
+          />
+        </div>
+
+        <div v-if="pages.length" class="flex flex-col gap-1.5">
+          <div
+            v-for="page in pages"
+            :key="page.name"
+            class="flex items-center gap-2 text-p-sm text-ink-gray-6"
+          >
+            <FeatherIcon name="facebook" class="size-4 shrink-0 text-ink-gray-5" />
+            <span class="truncate text-ink-gray-8">{{ page.page_name || page.name }}</span>
+            <Badge
+              v-if="page.instagram_username"
+              :label="'@' + page.instagram_username"
+              theme="gray"
+              size="sm"
+            />
+            <Badge
+              v-if="page.sync_enabled"
+              :label="__('Leads on')"
+              theme="green"
+              size="sm"
+            />
+          </div>
+          <span class="mt-1 text-p-sm text-ink-gray-5">
+            {{
+              __(
+                'Missing one? "Choose pages" reopens the Facebook window: without it Facebook skips the picker and keeps the earlier choice.',
+              )
+            }}
+          </span>
+        </div>
+
+        <div v-else class="flex flex-col gap-1 text-p-sm">
+          <span class="text-ink-red-5">
+            {{ __('Facebook shared no Page with the CRM.') }}
+          </span>
+          <span class="text-ink-gray-5">
+            {{
+              __(
+                'The login worked but no Page was selected. Press "Choose pages" and tick the Pages you want in the Facebook window — you must be an administrator of them.',
+              )
+            }}
+          </span>
         </div>
       </div>
 
@@ -145,7 +206,7 @@
 
 <script setup>
 import { activeSettingsPage } from '@/composables/settings'
-import { createResource, FeatherIcon, FormControl, toast } from 'frappe-ui'
+import { Badge, createResource, FeatherIcon, FormControl, toast } from 'frappe-ui'
 import { ref, computed } from 'vue'
 
 const metaError = ref(new URLSearchParams(window.location.search).get('meta_error') || '')
@@ -171,6 +232,9 @@ const webhook = createResource({
 
 const configuringWebhook = ref(false)
 const refreshing = ref(false)
+const choosing = ref(false)
+
+const pages = computed(() => status.data?.pages || [])
 
 function go(page) {
   activeSettingsPage.value = page
@@ -220,12 +284,17 @@ function configureWebhook() {
   })
 }
 
-function connect() {
+function connect(rerequest = false) {
+  if (rerequest) choosing.value = true
   createResource({
     url: 'crm.integrations.meta.oauth.get_login_url',
+    params: { rerequest: rerequest ? 1 : 0 },
     auto: true,
     onSuccess: (data) => (window.location.href = data.login_url),
-    onError: (e) => toast.error(e.messages?.[0] || __('Failed to start login')),
+    onError: (e) => {
+      choosing.value = false
+      toast.error(e.messages?.[0] || __('Failed to start login'))
+    },
   })
 }
 

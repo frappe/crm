@@ -42,6 +42,14 @@ def get_status() -> dict:
 		"connected": bool(settings.get_password("user_access_token", raise_exception=False)),
 		"connected_user_name": settings.connected_user_name or "",
 		"user_token_expires_at": str(settings.user_token_expires_at or ""),
+		# what Facebook actually shared: the dialog decides which Pages the app
+		# can see, and a login that granted none looks exactly like a successful
+		# one unless we say so here
+		"pages": frappe.get_all(
+			"Facebook Page",
+			fields=["name", "page_name", "instagram_username", "sync_enabled"],
+			order_by="page_name asc",
+		),
 	}
 
 

@@ -138,8 +138,14 @@ def _parse_state(state: str | None) -> dict | None:
 
 
 @frappe.whitelist()
-def get_login_url() -> dict:
-	"""The facebook.com dialog URL the browser should visit to connect."""
+def get_login_url(rerequest: bool = False) -> dict:
+	"""The facebook.com dialog URL the browser should visit to connect.
+
+	`rerequest` forces Facebook to show the dialog again. Without it, a user who
+	has already authorised the app is bounced straight back with no consent
+	screen — and therefore no page picker, so there is no way to add a Page that
+	was left out the first time.
+	"""
 	_check_manager()
 	if not get_app_id() or not get_app_secret():
 		frappe.throw(_("Set the Meta App ID and App Secret first"))
@@ -164,6 +170,8 @@ def get_login_url() -> dict:
 		params["config_id"] = config_id
 	else:
 		params["scope"] = ",".join(scopes())
+	if rerequest:
+		params["auth_type"] = "rerequest"
 	return {"login_url": f"https://www.facebook.com/v23.0/dialog/oauth?{urlencode(params)}"}
 
 

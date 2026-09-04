@@ -136,6 +136,23 @@ lead:
 
 Il Social Planner resta muto finché non si toglie la chiave e l'app ha tutto.
 
+### "Mi sono collegato ma non mi ha chiesto quali pagine"
+
+Il dialog di Facebook mostra il selettore delle Pagine **solo la prima volta**
+che quell'utente autorizza quell'app. Alle autorizzazioni successive Facebook
+rimanda indietro subito, senza schermata di consenso e senza selettore: la
+scelta fatta la prima volta resta valida in silenzio.
+
+Perciò Settings → *Meta connection* mostra, sotto l'account, **le Pagine che
+Facebook ha effettivamente condiviso** (con l'account Instagram collegato, se
+c'è) e il bottone **"Scegli le pagine"**, che riapre il dialog con
+`auth_type=rerequest` per aggiungerne o toglierne. Se la lista è vuota il login
+è comunque riuscito, ma nessuna Pagina è stata selezionata: si deve esserne
+amministratori e spuntarla nella finestra di Facebook.
+
+Quali Pagine sincronizzare per i lead resta invece una scelta del CRM, in
+Settings → *Lead forms* (interruttore "Sync leads" per Pagina).
+
 ## Configurazione (una volta sola, sul bench)
 
 `common_site_config.json` — vale per **tutti** i site:
