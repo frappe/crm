@@ -7,6 +7,7 @@
       :key="doctype"
       :conditions="conditions"
       :doctype="doctype"
+      :variant="variant"
       :is-child="true"
       :level="flat ? 3 : level"
     />
@@ -30,6 +31,7 @@ import { reactive, watch } from 'vue'
 const props = defineProps({
   modelValue: { type: [String, Array], default: '' },
   doctype: { type: String, default: '' },
+  variant: { type: String, default: 'subtle' },
   label: { type: String, default: () => __('Filters') },
   level: { type: Number, default: 0 },
   // Hides the grouping controls (level 3). Conjunctions are still stored and honoured.

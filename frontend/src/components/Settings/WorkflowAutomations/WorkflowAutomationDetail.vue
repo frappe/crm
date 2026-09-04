@@ -18,8 +18,14 @@
             <Badge
               :label="doc.enabled ? __('Enabled') : __('Draft')"
               :theme="doc.enabled ? 'green' : 'orange'"
-              variant="subtle"
-            />
+              variant="outline"
+            >
+              <template #prefix>
+                <IndicatorIcon
+                  :class="doc.enabled ? 'text-green-500' : 'text-orange-500'"
+                />
+              </template>
+            </Badge>
             <Badge
               v-if="doc.disabled_reason"
               :label="doc.disabled_reason"
@@ -27,7 +33,6 @@
               variant="subtle"
             />
           </div>
-          <p class="text-p-base text-ink-gray-6">{{ triggerSummary }}</p>
         </div>
       </div>
     </template>
@@ -55,6 +60,7 @@
 
 <script setup>
 import SettingsLayoutBase from '@/components/Layouts/SettingsLayoutBase.vue'
+import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import WorkflowFlow from './WorkflowFlow.vue'
 import { workflowEdges, workflowNodes } from './workflowGraph'
 import { toTree } from './workflowSteps'
@@ -74,21 +80,6 @@ const tree = computed(() => toTree(doc.actions || []))
 const graphDoc = computed(() => ({ ...doc, actions: tree.value }))
 const nodes = computed(() => workflowNodes(graphDoc.value))
 const edges = computed(() => workflowEdges(tree.value))
-
-const triggerSummary = computed(() => {
-  const trigger = (doc.trigger_type || '').replace(/^Doc /, 'Record ')
-  if (doc.trigger_type === 'Field Value Changed') {
-    return __('{0} changes to {1}', [
-      doc.trigger_field,
-      doc.to_value || __('any value'),
-    ])
-  }
-  if (doc.trigger_type === 'Custom Event')
-    return __('Event {0}', [doc.custom_event])
-  if (doc.trigger_type === 'Scheduled')
-    return __('Cron {0}', [doc.cron_expression])
-  return trigger
-})
 
 watch(() => props.automationName, load, { immediate: true })
 
