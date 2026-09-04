@@ -1,5 +1,5 @@
 <template>
-  <div class="relative flex h-full min-h-0 flex-col bg-surface-base">
+  <div class="relative flex h-full min-h-0 flex-col bg-surface-gray-1">
     <div
       class="flex h-14 shrink-0 items-center justify-between border-b border-outline-gray-2 px-4"
     >
@@ -29,6 +29,11 @@
             />
           </div>
         </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <span v-if="saveState" class="text-sm text-ink-gray-5">
+          {{ saveState }}
+        </span>
         <Badge
           v-if="dirty"
           size="md"
@@ -40,11 +45,7 @@
             <IndicatorIcon class="text-amber-500" />
           </template>
         </Badge>
-      </div>
-      <div class="flex items-center gap-2">
-        <span v-if="saveState" class="text-sm text-ink-gray-5">
-          {{ saveState }}
-        </span>
+
         <Button
           :label="__('Save')"
           variant="solid"
@@ -256,7 +257,7 @@ const {
   flush: flushHistory,
   reset: resetHistory,
   absorb: absorbHistory,
-} = useUndoHistory(doc, applySnapshot)
+} = useUndoHistory(doc, applySnapshot, { ignore: ['enabled'] })
 
 useKeyboardShortcuts({
   shortcuts: [

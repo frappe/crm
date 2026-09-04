@@ -1,12 +1,19 @@
 <template>
   <div class="space-y-5">
-    <FormControl
+    <Combobox
       v-model="step.step_type"
-      type="select"
       variant="outline"
+      side="bottom"
       :label="__('Step Type')"
       :options="stepTypeOptions"
-    />
+    >
+      <template #item-prefix="{ item }">
+        <WorkflowComboboxIcon :item="item" />
+      </template>
+      <template #item-label="{ item }">
+        <WorkflowComboboxOption :item="item" />
+      </template>
+    </Combobox>
 
     <template v-if="step.step_type === 'If'">
       <ConditionEditor
@@ -89,14 +96,21 @@
     </template>
 
     <template v-else>
-      <FormControl
+      <Combobox
         v-model="step.action_type"
-        type="select"
         variant="outline"
+        side="bottom"
         :label="__('Action')"
         :options="actionOptions"
         :placeholder="__('Choose what this step does')"
-      />
+      >
+        <template #item-prefix="{ item }">
+          <WorkflowComboboxIcon :item="item" />
+        </template>
+        <template #item-label="{ item }">
+          <WorkflowComboboxOption :item="item" />
+        </template>
+      </Combobox>
       <TargetPicker
         v-if="targets.length > 1"
         v-model="step.target"
@@ -181,6 +195,9 @@ import ConditionEditor from './WorkflowConditionEditor.vue'
 import ParamEditor from './WorkflowParamEditor.vue'
 import RelatedCondition from './WorkflowRelatedCondition.vue'
 import TargetPicker from './WorkflowTargetPicker.vue'
+import WorkflowComboboxIcon from './WorkflowComboboxIcon.vue'
+import WorkflowComboboxOption from './WorkflowComboboxOption.vue'
+import { actionIcon, stepTypeIcon } from './workflowIcons'
 import {
   actionSchema,
   capabilitiesFor,
@@ -188,7 +205,7 @@ import {
 } from './workflowCapabilities'
 import { defaultStepKey } from './workflowSteps'
 import ChevronIcon from '~icons/lucide/chevron-right'
-import { FormControl } from 'frappe-ui'
+import { Combobox, FormControl } from 'frappe-ui'
 import { computed, ref } from 'vue'
 
 const props = defineProps({
@@ -202,7 +219,7 @@ const stepTypeOptions = [
   { label: __('Wait'), value: 'Wait' },
   { label: __('Wait for event'), value: 'WaitForEvent' },
   { label: __('If / Else'), value: 'If' },
-]
+].map((option) => ({ ...option, ...stepTypeIcon(option.value) }))
 
 const waitUnits = ['Seconds', 'Minutes', 'Hours', 'Days']
 const correlationPlaceholder = '{{ doc.message_id or doc.name }}'
@@ -226,18 +243,22 @@ const fields = computed(
 
 const actionOptions = computed(() => {
   const actions = capabilitiesFor(targetDoctype.value)?.actions || []
-  const options = actions.map((action) => ({
-    label: action.label,
-    value: action.action_type,
-  }))
+  const options = actions.map((action) =>
+    actionOption(action.action_type, action.label),
+  )
   // Never render a chosen action as an empty select, even if its DocType is still unknown.
   if (step.value.action_type && !actions.some(isChosen))
-    options.unshift({
-      label: schema.value?.label || step.value.action_type,
-      value: step.value.action_type,
-    })
+    options.unshift(actionOption(step.value.action_type, schema.value?.label))
   return options
 })
+
+function actionOption(actionType, label) {
+  return {
+    value: actionType,
+    label: label || actionType,
+    ...actionIcon(actionType),
+  }
+}
 
 function isChosen(action) {
   return action.action_type === step.value.action_type
