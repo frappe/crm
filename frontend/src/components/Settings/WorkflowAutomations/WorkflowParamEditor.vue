@@ -98,6 +98,7 @@
           v-else-if="field.fieldtype === 'Link'"
           :model-value="params[field.fieldname]"
           :doctype="field.options"
+          :filters="field.link_filters || {}"
           :label="field.label"
           @update:model-value="setParam(field.fieldname, $event)"
         />
@@ -152,7 +153,30 @@ const action = computed(() => props.action)
 const isSetFieldValue = computed(
   () => action.value.action_type === 'SetFieldValue',
 )
-const schemaFields = computed(() => props.schema?.params_schema || [])
+/**
+ * Two params that stand in for each other - a linked Server Script or one written here - are
+ * declared as a pair in the schema, and only the one in use is worth showing.
+ */
+const exclusions = computed(() => {
+  const map = {}
+  ;(props.schema?.params_schema || []).forEach((field) => {
+    if (!field.exclusive_with) return
+    ;(map[field.fieldname] ||= []).push(field.exclusive_with)
+    ;(map[field.exclusive_with] ||= []).push(field.fieldname)
+  })
+  return map
+})
+
+const schemaFields = computed(() =>
+  (props.schema?.params_schema || []).filter(
+    (field) => !(exclusions.value[field.fieldname] || []).some(isFilled),
+  ),
+)
+
+function isFilled(fieldname) {
+  const value = params.value[fieldname]
+  return value !== undefined && value !== null && value !== ''
+}
 const fieldValuesHelp = __(
   'Set more fields at once as JSON. These are applied together with the Field and Value above, in the same save.',
 )
