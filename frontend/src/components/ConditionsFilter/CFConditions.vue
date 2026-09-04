@@ -13,6 +13,7 @@
         :conjunction="getConjunction()"
         :disableAddCondition="props.disableAddCondition"
         :doctype="props.doctype"
+        :variant="props.variant"
         @remove="removeCondition(condition)"
         @unGroupConditions="unGroupConditions(condition)"
         @toggleConjunction="toggleConjunction"
@@ -44,6 +45,7 @@ const props = defineProps({
   level: { type: Number, default: 0 },
   disableAddCondition: { type: Boolean, default: false },
   doctype: { type: String, required: true },
+  variant: { type: String, default: 'subtle' },
 })
 
 const conditions = reactive(props.conditions)
