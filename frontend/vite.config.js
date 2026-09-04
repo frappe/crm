@@ -59,18 +59,17 @@ export default defineConfig(async ({ mode }) => {
       alias: {
         '@': path.resolve(import.meta.dirname, 'src'),
         // point at the package src dir (not index.ts) so subpath imports like
-        // `@framework/ui/components/Notifications` resolve. Importing subpaths avoids the
-        // barrel, which `export *`s components (Grid/Phone/FormLayout) that need a newer
-        // frappe-ui (`frappe-ui/internals`) than this app pins.
-        '@framework/ui': path.resolve(
+        // `@whatsapp/ui/components/Messages` resolve to a real file
+        '@whatsapp/ui': path.resolve(
           import.meta.dirname,
-          '../../frappe/ui/src',
+          '../../whatsapp/ui/src',
         ),
       },
-      // ensure the linked framework package reuses the host app's single copy of each peer.
-      // `dompurify` is an implicit dep of @framework/ui's sanitize util (not declared in its
-      // package.json); dedupe resolves it to the host's copy since the symlinked source has
-      // no node_modules of its own.
+      // ensure the linked @whatsapp/ui package reuses the host app's single copy of each peer:
+      // the symlinked source has no node_modules of its own, so dedupe resolves its imports
+      // (`dompurify`, and the peers below) to the host's copy.
+      // `reka-ui` is what frappe-ui builds on and it passes state through provide/inject,
+      // so a second copy silently breaks context across a linked package's components.
       // the editor packages must resolve to one copy each: tiptap imports
       // `@tiptap/pm/model` while prosemirror-state/transform/tables import bare
       // `prosemirror-model`, so a nested install of either throws "multiple
@@ -80,6 +79,7 @@ export default defineConfig(async ({ mode }) => {
         'vue',
         'vue-router',
         'frappe-ui',
+        'reka-ui',
         'dompurify',
         '@tiptap/core',
         '@tiptap/pm',
@@ -103,7 +103,7 @@ export default defineConfig(async ({ mode }) => {
     server: {
       fs: {
         // allow the bench `apps/` dir so Vite can serve linked local packages
-        // (frappe-ui, @framework/ui) that live in sibling app repos
+        // (frappe-ui, @whatsapp/ui) that live in sibling app repos
         allow: [path.resolve(import.meta.dirname, '../..')],
       },
     },
@@ -173,7 +173,7 @@ function getAliases(config) {
     ),
     // subpath entries must precede the bare `frappe-ui` key: a plain string alias
     // matches by prefix, so without these subpaths would rewrite under
-    // `.../src/index.ts`. `internals` is pulled in by @framework/ui.
+    // `.../src/index.ts`.
     'frappe-ui/icons': path.resolve(
       import.meta.dirname,
       '../frappe-ui/icons/index.ts',
@@ -185,10 +185,6 @@ function getAliases(config) {
     'frappe-ui/editor-style.css': path.resolve(
       import.meta.dirname,
       '../frappe-ui/src/molecules/editor/style.css',
-    ),
-    'frappe-ui/internals': path.resolve(
-      import.meta.dirname,
-      '../frappe-ui/internals.ts',
     ),
     'frappe-ui': path.resolve(import.meta.dirname, '../frappe-ui/src/index.ts'),
   }
