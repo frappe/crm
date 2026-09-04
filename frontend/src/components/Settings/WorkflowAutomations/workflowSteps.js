@@ -126,6 +126,29 @@ function scrub(text) {
     .toLowerCase()
 }
 
+/**
+ * Stamp the identity a save handed back onto the tree it came from. A step added in this
+ * session has no key until `toRows` invents one, and the run trace is keyed by those names.
+ */
+export function adoptRowKeys(tree, rows) {
+  takeRowKeys(tree, [...rows])
+}
+
+/** Walks the tree in the order `appendRows` wrote it, so rows line up with nodes. */
+function takeRowKeys(nodes, queue) {
+  nodes.forEach((node) => {
+    const row = queue.shift()
+    if (!row) return
+    node.step_key = row.step_key
+    node.idx = row.idx
+    if (!isBranching(node) || !hasArms(node)) return
+    if (node.step_type === 'WaitForEvent')
+      node._outcomeKey = queue.shift()?.step_key
+    takeRowKeys(node.children.If, queue)
+    takeRowKeys(node.children.Else, queue)
+  })
+}
+
 function appendRows(nodes, rows, parentIdx, branch, taken = new Set()) {
   nodes.forEach((node) => {
     const { children, ...row } = node
