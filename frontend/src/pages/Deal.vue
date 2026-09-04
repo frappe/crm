@@ -156,6 +156,15 @@
               <Link
                 value=""
                 doctype="Contact"
+                :grouping="
+                  doc.organization
+                    ? {
+                        filters: { company_name: doc.organization },
+                        label: __('Contacts at {0}', [doc.organization]),
+                        otherLabel: __('Other contacts'),
+                      }
+                    : null
+                "
                 :onCreate="
                   (value, close) => {
                     _contact = {
