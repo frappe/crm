@@ -7,17 +7,10 @@
           class="max-w-sm"
           :model-value="docname"
           :doctype="doc.document_type"
-          :label="__('Run against')"
+          :label="__('Select a record')"
           :placeholder="__('Pick a {0}', [doc.document_type])"
           @update:model-value="pickDocument"
         />
-        <p class="text-xs text-ink-gray-5">
-          {{
-            __(
-              'The flow runs for real against this record, then everything it did is undone. Nothing is saved, sent or scheduled.',
-            )
-          }}
-        </p>
       </div>
       <Button
         v-if="playing"
