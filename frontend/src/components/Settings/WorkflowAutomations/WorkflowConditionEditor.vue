@@ -9,12 +9,14 @@
       v-if="mode === 'filters'"
       :model-value="filters"
       :doctype="doctype"
+      :variant="variant"
       :label="''"
       @update:model-value="setFilters"
     />
     <FormControl
       v-else
       type="textarea"
+      :variant="variant"
       :model-value="modelValue"
       :placeholder="placeholder"
       @update:model-value="$emit('update:modelValue', $event)"
@@ -46,6 +48,7 @@ import { computed, ref, watch } from 'vue'
 const props = defineProps({
   modelValue: { type: String, default: '' },
   doctype: { type: String, default: '' },
+  variant: { type: String, default: 'subtle' },
   label: { type: String, default: () => __('Condition') },
   placeholder: { type: String, default: '' },
 })

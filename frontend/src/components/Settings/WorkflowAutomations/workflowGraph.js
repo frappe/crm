@@ -6,6 +6,7 @@ import WaitIcon from '~icons/lucide/timer'
 import { actionSchema } from './workflowCapabilities'
 import { summarizeCondition } from './workflowConditions'
 import { armLabels, isBranching, layoutSteps } from './workflowSteps'
+import { stepIssue, triggerIssue } from './workflowValidation'
 export { workflowEdges } from './workflowEdges'
 import { triggerDefinition } from './workflowTriggers'
 
@@ -63,6 +64,7 @@ function triggerNode(doc) {
       detail: doc.trigger_type
         ? __('on {0}', [doc.document_type])
         : __('Pick initial trigger'),
+      incomplete: triggerIssue(doc),
     },
   }
 }
@@ -92,6 +94,7 @@ function stepNode(node, position, errors, tails = new Set()) {
       canContinue: isBranching(node) && tails.has(node._id) && !arms.length,
       last: tails.has(node._id),
       error: Boolean(errors[node._id]?.length),
+      incomplete: stepIssue(node),
     },
   }
 }

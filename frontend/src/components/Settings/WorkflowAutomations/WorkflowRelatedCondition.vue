@@ -24,6 +24,7 @@
       <FormControl
         :model-value="condition.type"
         type="select"
+        variant="outline"
         :label="__('Check')"
         :options="operatorOptions"
         @update:model-value="update('type', $event)"
@@ -31,6 +32,7 @@
       <FormControl
         :model-value="condition.source"
         type="select"
+        variant="outline"
         :label="__('Of record')"
         :options="sourceOptions"
         @update:model-value="update('source', $event)"
@@ -38,6 +40,7 @@
       <FormControl
         :model-value="condition.relationship"
         type="select"
+        variant="outline"
         :label="__('Related')"
         :options="relationshipOptions"
         @update:model-value="update('relationship', $event)"
@@ -46,6 +49,7 @@
         <FormControl
           :model-value="condition.comparison"
           type="select"
+          variant="outline"
           class="w-24"
           :label="__('Is')"
           :options="['=', '!=', '>', '>=', '<', '<=']"
@@ -54,6 +58,7 @@
         <FormControl
           :model-value="condition.value"
           type="number"
+          variant="outline"
           class="flex-1"
           :label="__('Count')"
           @update:model-value="update('value', Number($event))"
@@ -62,6 +67,7 @@
       <WorkflowFilters
         :model-value="condition.filters || []"
         :doctype="relatedDoctype"
+        variant="outline"
         :label="__('Filters')"
         flat
         @update:model-value="updateFilters($event)"

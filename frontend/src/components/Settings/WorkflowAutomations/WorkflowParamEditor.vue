@@ -10,6 +10,7 @@
           <div class="flex items-center gap-2">
             <Combobox
               class="flex-1"
+              variant="outline"
               :model-value="row.field"
               :options="availableFieldOptions(row.field)"
               :placeholder="__('Choose field')"
@@ -26,6 +27,7 @@
           </div>
           <Link
             v-if="fieldFor(row)?.fieldtype === 'Link'"
+            variant="outline"
             :model-value="row.value"
             :doctype="fieldFor(row).options"
             :placeholder="__('Choose {0}', [fieldFor(row).options])"
@@ -33,6 +35,7 @@
           />
           <Combobox
             v-else-if="choicesFor(row).length"
+            variant="outline"
             :model-value="row.value"
             :options="choicesFor(row)"
             :placeholder="__('Choose value')"
@@ -40,6 +43,7 @@
           />
           <FormControl
             v-else
+            variant="outline"
             :model-value="row.value"
             :placeholder="__('Value')"
             @update:model-value="setRow(index, 'value', $event)"
@@ -74,6 +78,7 @@
         <FormControl
           :model-value="valueFor(valuesField)"
           type="textarea"
+          variant="outline"
           :placeholder="fieldValuesPlaceholder"
           @update:model-value="setParam('values', castJsonField($event))"
         />
@@ -92,20 +97,37 @@
           :doctype="doctype"
           :params="action.params"
           :label="field.label"
+          variant="outline"
           @update:model-value="setParam(field.fieldname, $event)"
         />
-        <Link
-          v-else-if="field.fieldtype === 'Link'"
-          :model-value="params[field.fieldname]"
-          :doctype="field.options"
-          :filters="field.link_filters || {}"
-          :label="field.label"
-          @update:model-value="setParam(field.fieldname, $event)"
-        />
+        <div v-else-if="field.fieldtype === 'Link'">
+          <FormControl
+            v-if="isTemplate(field)"
+            :model-value="params[field.fieldname]"
+            type="text"
+            variant="outline"
+            :label="field.label"
+            :placeholder="__('Clear to pick a record instead')"
+            @update:model-value="setParam(field.fieldname, $event)"
+          />
+          <Link
+            v-else
+            :model-value="params[field.fieldname]"
+            :doctype="field.options"
+            :filters="field.link_filters || {}"
+            :label="field.label"
+            variant="outline"
+            @update:model-value="setParam(field.fieldname, $event)"
+          />
+          <div v-if="field.templatable" class="mt-1 flex justify-end">
+            <FieldToken :fields="fields" @insert="appendToken(field, $event)" />
+          </div>
+        </div>
         <FormControl
           v-else-if="field.fieldtype === 'Select'"
           :model-value="params[field.fieldname]"
           type="select"
+          variant="outline"
           :label="field.label"
           :options="optionsFor(field)"
           @update:model-value="setParam(field.fieldname, $event)"
@@ -115,6 +137,7 @@
             :model-value="valueFor(field)"
             :type="controlType(field)"
             :label="field.label"
+            variant="outline"
             @update:model-value="
               setParam(field.fieldname, castValue(field, $event))
             "
@@ -310,6 +333,15 @@ const TEMPLATE_FIELDTYPES = [
 
 function acceptsTemplate(field) {
   return TEMPLATE_FIELDTYPES.includes(field.fieldtype)
+}
+
+/**
+ * A templatable Link holds either a record name or a template, and only one control can show
+ * both: the picker offers names that exist, so a template swaps it for a plain box until the
+ * box is cleared.
+ */
+function isTemplate(field) {
+  return String(params.value[field.fieldname] || '').includes('{{')
 }
 
 function appendToken(field, token) {

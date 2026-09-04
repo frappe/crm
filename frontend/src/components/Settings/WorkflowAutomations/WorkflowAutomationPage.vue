@@ -77,8 +77,14 @@
               <Badge
                 :label="row.enabled ? __('Enabled') : __('Draft')"
                 :theme="row.enabled ? 'green' : 'orange'"
-                variant="subtle"
-              />
+                variant="outline"
+              >
+                <template #prefix>
+                  <IndicatorIcon
+                    :class="row.enabled ? 'text-green-500' : 'text-orange-500'"
+                  />
+                </template>
+              </Badge>
             </ListCell>
             <ListCell>
               <div
@@ -132,6 +138,7 @@ import SettingsLayoutBase from '@/components/Layouts/SettingsLayoutBase.vue'
 import EmptyState from '@/components/ListViews/EmptyState.vue'
 import WorkflowAutomationBuilder from './WorkflowAutomationBuilder.vue'
 import WorkflowAutomationDetail from './WorkflowAutomationDetail.vue'
+import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import WorkflowIcon from '~icons/lucide/workflow'
 import { ConfirmDelete } from '@/utils'
