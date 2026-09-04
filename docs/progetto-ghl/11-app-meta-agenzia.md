@@ -109,23 +109,32 @@ quelli restano ognuno nel proprio site.
 
 ### "Invalid Scopes" al login
 
-Se il dialog di Facebook si apre ma dice *Invalid Scopes*, l'app **non ha lo
-use case** che porta con sé quei permessi: chiedere un permesso che l'app non
-possiede fa fallire **l'intero login**, non solo quella funzione.
+Se il dialog di Facebook si apre ma dice *Invalid Scopes*, l'app **non conosce**
+uno dei permessi richiesti: chiederne uno che l'app non ha fa fallire **l'intero
+login**, non solo quella funzione.
 
-I permessi si dividono così:
+I permessi non si aggiungono uno per uno: si aggiungono i **casi d'uso** (la
+lista fissa in *App → Casi d'uso*), e ogni caso d'uso porta con sé i suoi
+permessi — alcuni obbligatori, altri opzionali da spuntare dentro il caso d'uso
+stesso.
 
-| Serve per | Permessi | Use case |
+| Serve per | Permessi | Dove si prendono |
 |---|---|---|
 | Lead dai form | `pages_show_list`, `pages_read_engagement`, `pages_manage_ads`, `leads_retrieval`, `ads_management`, `business_management` | *Capture & manage ad leads with Marketing API* |
-| Webhook lead in tempo reale | **`pages_manage_metadata`** | gestione Pagina — **non è opzionale**: è ciò che iscrive la pagina al webhook `leadgen` |
-| Social Planner (Facebook) | `pages_manage_posts` | gestione Pagina |
-| Social Planner (Instagram) | `instagram_basic`, `instagram_content_publish` | Instagram |
+| Webhook lead in tempo reale | `pages_manage_metadata` | **stesso caso d'uso dei lead**, fra i permessi opzionali da spuntare — è ciò che iscrive la pagina al webhook `leadgen` |
+| Social Planner (Facebook) | `pages_manage_posts` | *Manage everything on your Page* (Page Management API) |
+| Social Planner (Instagram) | `instagram_basic`, `instagram_content_publish` | *Instagram API with Facebook Login* — **non** la variante *with Instagram Login*, che dà `instagram_business_*` e non funziona con il nostro flusso (login Facebook → Pagina → account IG collegato) |
 
-Come ripiego, `meta_scopes` nel config del site restringe la lista richiesta,
-così ci si collega lo stesso mentre l'app viene completata (i lead arrivano
-comunque dal backfill e dalla riconciliazione, ma senza `pages_manage_metadata`
-niente webhook in tempo reale). Togliere la chiave quando l'app ha tutto.
+Finché mancano i casi d'uso della pubblicazione, `meta_scopes` nel config del
+site restringe la lista richiesta, così il collegamento funziona subito per i
+lead:
+
+```json
+"meta_scopes": ["pages_show_list", "pages_read_engagement", "pages_manage_metadata",
+                "pages_manage_ads", "leads_retrieval", "ads_management", "business_management"]
+```
+
+Il Social Planner resta muto finché non si toglie la chiave e l'app ha tutto.
 
 ## Configurazione (una volta sola, sul bench)
 
