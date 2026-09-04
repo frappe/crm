@@ -60,7 +60,8 @@ export function useActiveTabManager(tabs, storageKey) {
   const tabIndex = ref(getActiveTab())
 
   watch(tabIndex, (tabIndexValue) => {
-    let currentTab = tabs.value?.[tabIndexValue].name
+    let currentTab = tabs.value?.[tabIndexValue]?.name
+    if (!currentTab) return
     setActiveTabInUrl(currentTab)
     preserveLastVisitedTab(currentTab)
   })
@@ -74,8 +75,8 @@ export function useActiveTabManager(tabs, storageKey) {
       let index = findTabIndex(tabName)
       if (index === -1) index = 0
 
-      let currentTab = tabs.value?.[index].name
-      preserveLastVisitedTab(currentTab)
+      let currentTab = tabs.value?.[index]?.name
+      if (currentTab) preserveLastVisitedTab(currentTab)
       tabIndex.value = index
     },
   )

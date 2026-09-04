@@ -281,6 +281,7 @@ import { globalStore } from '@/stores/global'
 import { statusesStore } from '@/stores/statuses'
 import { getMeta } from '@/stores/meta'
 import { useDocument } from '@/data/document'
+import { mergeFormTabs, filterVisibleTabs } from '@/utils/formTabs'
 import { whatsappEnabled } from '@/composables/whatsapp'
 import { callEnabled } from '@/composables/telephony'
 import {
@@ -479,7 +480,7 @@ const tabs = computed(() => {
       condition: () => whatsappEnabled.value,
     },
   ]
-  return tabOptions.filter((tab) => (tab.condition ? tab.condition() : true))
+  return filterVisibleTabs(mergeFormTabs(tabOptions, document.tabs))
 })
 
 const { tabIndex, changeTabTo } = useActiveTabManager(tabs, 'lastLeadTab')
@@ -525,10 +526,14 @@ function deleteLead() {
 
 function openEmailBox() {
   let currentTab = tabs.value[tabIndex.value]
-  if (!['Emails', 'Comments', 'Activities'].includes(currentTab.name)) {
+  if (!['Emails', 'Comments', 'Activities'].includes(currentTab?.name)) {
     activities.value.changeTabTo('emails')
   }
-  nextTick(() => (activities.value.emailBox.show = true))
+  // The composer only exists on tabs that render it, and a form script can
+  // hide those, in which case there is nothing to open.
+  nextTick(() => {
+    if (activities.value?.emailBox) activities.value.emailBox.show = true
+  })
 }
 
 function statusLabel(status) {

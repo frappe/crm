@@ -9,10 +9,20 @@
     :doc="doc"
     :whatsappBox="whatsappBox"
     :modalRef="modalRef"
+    :customPane="Boolean(tabComponent)"
   />
   <FadedScrollableDiv class="flex flex-col h-full overflow-y-auto">
+    <div v-if="tabComponent" class="flex flex-col h-full">
+      <component
+        :is="tabComponent"
+        :doctype="doctype"
+        :docname="docname"
+        :doc="doc"
+        :tab="currentTab"
+      />
+    </div>
     <div
-      v-if="all_activities?.loading"
+      v-else-if="all_activities?.loading"
       class="flex flex-1 flex-col items-center justify-center gap-3 text-2xl-medium text-ink-gray-4"
     >
       <LoadingIndicator class="h-6 w-6" />
@@ -402,7 +412,7 @@
   </FadedScrollableDiv>
   <div>
     <CommunicationArea
-      v-if="['Emails', 'Comments', 'Activity'].includes(title)"
+      v-if="!tabComponent && ['Emails', 'Comments', 'Activity'].includes(title)"
       ref="emailBox"
       v-model="doc"
       v-model:reload="reload_email"
@@ -410,7 +420,7 @@
       @scroll="scroll"
     />
     <WhatsAppBox
-      v-if="title == 'WhatsApp'"
+      v-if="!tabComponent && title == 'WhatsApp'"
       ref="whatsappBox"
       v-model="doc"
       v-model:reply="replyMessage"
@@ -532,6 +542,10 @@ const fieldLayoutTabIndex = ref(0)
 const fieldLayoutTabName = ref('')
 
 const title = computed(() => props.tabs?.[tabIndex.value]?.name || 'Activity')
+
+const currentTab = computed(() => props.tabs?.[tabIndex.value] || null)
+
+const tabComponent = computed(() => currentTab.value?.component || null)
 
 const changeTabTo = (tabName) => {
   const tabNames = props.tabs?.map((tab) => tab.name?.toLowerCase())
