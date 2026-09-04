@@ -30,17 +30,17 @@
           </div>
         </div>
         <Badge
-          v-if="dirty"
-          size="md"
-          :label="__('Unsaved')"
-          theme="amber"
-          variant="subtle"
-        />
-        <Badge
           v-if="doc.enabled"
           size="md"
           :label="__('Enabled')"
           theme="green"
+          variant="subtle"
+        />
+        <Badge
+          v-if="dirty"
+          size="md"
+          :label="__('Unsaved')"
+          theme="amber"
           variant="subtle"
         />
       </div>
@@ -154,6 +154,7 @@ import { aliasTargets, loadCapabilities } from './workflowCapabilities'
 import { workflowEdges, workflowNodes } from './workflowGraph'
 import { triggerFromValue, triggerGroups } from './workflowTriggers'
 import {
+  adoptRowKeys,
   insertAfter,
   layoutSteps,
   newStep,
@@ -331,10 +332,11 @@ function markClean() {
   savedSnapshot.value = JSON.stringify(payload())
 }
 
-/** Take the server's name and timestamp, so the next save is not a stale write. */
+/** Take the server's name, timestamp and step keys, so the next save is not a stale write. */
 function adoptSaved(saved) {
   doc.name = saved.name
   doc.modified = saved.modified
+  adoptRowKeys(doc.actions, saved.actions || [])
   markClean()
 }
 
