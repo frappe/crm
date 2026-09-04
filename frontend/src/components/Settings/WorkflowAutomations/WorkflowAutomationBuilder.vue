@@ -30,21 +30,21 @@
           </div>
         </div>
         <Badge
-          v-if="doc.enabled"
-          size="md"
-          :label="__('Enabled')"
-          theme="green"
-          variant="subtle"
-        />
-        <Badge
           v-if="dirty"
           size="md"
           :label="__('Unsaved')"
           theme="amber"
-          variant="subtle"
-        />
+          variant="outline"
+        >
+          <template #prefix>
+            <IndicatorIcon class="text-amber-500" />
+          </template>
+        </Badge>
       </div>
       <div class="flex items-center gap-2">
+        <span v-if="saveState" class="text-sm text-ink-gray-5">
+          {{ saveState }}
+        </span>
         <Button
           :label="__('Save')"
           variant="solid"
@@ -100,9 +100,15 @@
           :trigger-groups="triggers"
           :selected-id="selectedId"
           :inspector-open="inspectorOpen"
+          :can-delete="canDeleteSelected"
+          :can-undo="canUndo"
+          :can-redo="canRedo"
           @select="selectNode"
           @add-step="addStep"
           @pick-trigger="pickTrigger"
+          @request-remove="confirmSelectedRemoval"
+          @undo="undo"
+          @redo="redo"
         />
         <Button
           v-if="doc.trigger_type"
@@ -136,7 +142,6 @@
           :selected-step="selectedStep"
           :targets="targetsFor(selectedStep)"
           :loading="loading"
-          @request-remove="confirmSelectedRemoval"
         />
       </div>
     </div>
@@ -148,11 +153,19 @@ import AutomationInspector from './WorkflowAutomationInspector.vue'
 import AutomationTrialRun from './WorkflowTrialRun.vue'
 import WorkflowFlow from './WorkflowFlow.vue'
 import { useKeyboardShortcuts } from '@/composables/useKeyboardShortcuts'
+import { useUndoHistory } from '@/composables/useUndoHistory'
 import { globalStore } from '@/stores/global'
+import { timeAgo } from '@/utils'
+import { useNow } from '@vueuse/core'
 import { blockGroups } from './workflowBlocks'
 import { aliasTargets, loadCapabilities } from './workflowCapabilities'
-import { workflowEdges, workflowNodes } from './workflowGraph'
+import { stepPresentation, workflowEdges, workflowNodes } from './workflowGraph'
 import { triggerFromValue, triggerGroups } from './workflowTriggers'
+import {
+  firstBlockingRow,
+  hasValues,
+  setFieldIssue,
+} from './workflowValidation'
 import {
   adoptRowKeys,
   insertAfter,
@@ -174,6 +187,7 @@ import {
   toast,
 } from 'frappe-ui'
 import WorkflowIcon from '~icons/lucide/workflow'
+import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import { computed, reactive, ref, watch } from 'vue'
 
 const props = defineProps({
@@ -234,15 +248,40 @@ const canDeleteSelected = computed(() =>
     : Boolean(selectedStep.value),
 )
 
+const {
+  canUndo,
+  canRedo,
+  undo,
+  redo,
+  flush: flushHistory,
+  reset: resetHistory,
+  absorb: absorbHistory,
+} = useUndoHistory(doc, applySnapshot)
+
 useKeyboardShortcuts({
-  active: canDeleteSelected,
   shortcuts: [
-    { keys: ['Backspace', 'Delete'], action: confirmSelectedRemoval },
+    {
+      keys: ['Backspace', 'Delete'],
+      guard: () => canDeleteSelected.value,
+      action: confirmSelectedRemoval,
+    },
+    { match: isUndoKey, action: undo },
+    { match: isRedoKey, action: redo },
   ],
 })
 
 /** Compared against the last loaded/saved state so closing can warn about unsaved edits. */
 const dirty = computed(() => savedSnapshot.value !== JSON.stringify(payload()))
+
+/** Ticks so "Saved 2 minutes ago" keeps counting while the builder stays open. */
+const now = useNow({ interval: 30000 })
+
+const saveState = computed(() => {
+  if (saving.value) return __('Saving...')
+  // Reading the clock keeps the relative time recomputing as it ticks.
+  if (dirty.value || !doc.modified || !now.value) return ''
+  return __('Saved {0}', [timeAgo(doc.modified)])
+})
 
 /** A trial runs the saved flow, so unsaved edits would not be what gets tested. */
 const canTest = computed(() => Boolean(props.automationName) && !dirty.value)
@@ -325,6 +364,7 @@ async function loadAutomation() {
   } finally {
     loading.value = false
     markClean()
+    resetHistory()
   }
 }
 
@@ -338,6 +378,7 @@ function adoptSaved(saved) {
   doc.modified = saved.modified
   adoptRowKeys(doc.actions, saved.actions || [])
   markClean()
+  absorbHistory()
 }
 
 function setTitle(title) {
@@ -400,6 +441,37 @@ function addStep({ after, branch, values }) {
   inspectorOpen.value = true
 }
 
+/** Restoring replaces the whole document, so the canvas rebuilds from the snapshot. */
+function applySnapshot(snapshot) {
+  Object.assign(doc, snapshot)
+  clearErrors()
+  keepSelectionValid()
+}
+
+/** A step back can remove the selected step; the trigger is always there to fall back on. */
+function keepSelectionValid() {
+  if (selectedId.value === 'trigger') return
+  if (placed.value.some((item) => item.node._id === selectedId.value)) return
+  selectedId.value = 'trigger'
+}
+
+function isUndoKey(event) {
+  return withModifier(event) && !event.shiftKey && isKey(event, 'z')
+}
+
+function isRedoKey(event) {
+  if (!withModifier(event)) return false
+  return isKey(event, 'y') || (event.shiftKey && isKey(event, 'z'))
+}
+
+function withModifier(event) {
+  return event.metaKey || event.ctrlKey
+}
+
+function isKey(event, key) {
+  return event.key.toLowerCase() === key
+}
+
 function selectNode(id) {
   selectedId.value = id
   if (id !== 'trigger' || doc.trigger_type) inspectorOpen.value = true
@@ -427,15 +499,16 @@ function confirmSelectedRemoval() {
   const deletingTrigger = selectedId.value === 'trigger'
   $dialog({
     title: deletingTrigger ? __('Delete trigger') : __('Delete step'),
+    size: 'sm',
     message: deleteMessage(deletingTrigger),
-    actions: [deleteAction(deletingTrigger)],
+    actions: [{ label: 'Cancel' }, deleteAction(deletingTrigger)],
   })
 }
 
 function deleteMessage(deletingTrigger) {
   return deletingTrigger
-    ? __('Delete the trigger and all workflow steps? This cannot be undone.')
-    : __('Delete this step? This cannot be undone.')
+    ? __('Are you sure you want to delete the trigger and all workflow steps?')
+    : __('Are you sure you want to delete this step?')
 }
 
 function deleteAction(deletingTrigger) {
@@ -476,6 +549,7 @@ function emptyTriggerState() {
 }
 
 async function saveAutomation() {
+  flushHistory()
   saving.value = true
   clearErrors()
   try {
@@ -494,18 +568,20 @@ async function saveAutomation() {
 }
 
 function validateBeforeSave() {
-  const missing = toRows(doc.actions).find(missingRequiredField)
+  const missing = firstBlockingRow(doc.actions)
   if (!missing) return
-  const message = __('Choose a field to set')
+  const message = describeIssue(missing, setFieldIssue(missing))
   attachRowError(missing.idx, message)
   throw new Error(message)
 }
 
-function missingRequiredField(row) {
-  if (row.step_type !== 'Action' || row.action_type !== 'SetFieldValue')
-    return false
-  const params = parseJson(row.params, {})
-  return !params.field && !hasValues(params.values)
+/** Names the step the same way the canvas and the run log do, so it is findable. */
+function describeIssue(row, issue) {
+  return __('Step {0} ({1}): {2}', [
+    row.idx,
+    stepPresentation(row).label,
+    issue,
+  ])
 }
 
 function payload() {
@@ -540,13 +616,6 @@ function normalizedParams(row) {
   if (row.action_type !== 'SetFieldValue') return params
   if (!hasValues(params.values)) delete params.values
   return params
-}
-
-function hasValues(value) {
-  if (!value) return false
-  if (Array.isArray(value)) return value.length > 0
-  if (typeof value === 'object') return Object.keys(value).length > 0
-  return true
 }
 
 function normalizedRelatedCondition(value) {
