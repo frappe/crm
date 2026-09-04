@@ -135,13 +135,13 @@
       <template #prefix>
         <UserAvatar
           v-if="data[field.fieldname]"
-          class="mr-2"
+          class="me-2"
           :user="data[field.fieldname]"
           size="sm"
         />
       </template>
       <template #item-prefix="{ option }">
-        <UserAvatar class="mr-2" :user="option.value" size="sm" />
+        <UserAvatar class="me-2" :user="option.value" size="sm" />
       </template>
       <template #item-label="{ option }">
         <Tooltip :text="option.value">

@@ -10,10 +10,10 @@
       </div>
       <div class="grid min-h-[28px] items-center">
         <Tooltip v-if="s.tooltipText" :text="__(s.tooltipText)">
-          <div class="ml-2 cursor-pointer">
+          <div class="ms-2 cursor-pointer">
             <Badge
               v-if="s.type == 'Badge'"
-              class="-ml-1"
+              class="-ms-1"
               :label="s.value"
               variant="subtle"
               :theme="s.color"

@@ -82,10 +82,10 @@
       </template>
     </ItemListRow>
 
-    <!-- pl-8 = the row's px-2 + prefix + gap, so it lines up with the label -->
+    <!-- ps-8 = the row's px-2 + prefix + gap, so it lines up with the label -->
     <ErrorMessage
       v-if="errorMessage"
-      class="pl-8 pr-2 pt-1"
+      class="ps-8 pe-2 pt-1"
       :message="errorMessage"
     />
   </div>

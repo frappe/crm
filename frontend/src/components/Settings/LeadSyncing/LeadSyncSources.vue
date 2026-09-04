@@ -63,13 +63,13 @@
             class="flex items-center justify-between p-3 cursor-pointer hover:bg-surface-sidebar rounded"
             @click="() => emit('updateStep', 'edit-source', { ...source })"
           >
-            <div class="flex flex-col w-4/6 pr-5">
+            <div class="flex flex-col w-4/6 pe-5">
               <div class="text-p-base-medium text-ink-gray-7 truncate">
                 {{ source.name }}
               </div>
             </div>
 
-            <div class="flex flex-col w-1/6 pr-5">
+            <div class="flex flex-col w-1/6 pe-5">
               <div class="text-p-base-medium text-ink-gray-7 truncate">
                 {{ source.type }}
               </div>

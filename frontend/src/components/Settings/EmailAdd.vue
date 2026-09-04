@@ -71,7 +71,7 @@
             </div>
           </template>
         </div>
-        <ErrorMessage class="ml-1" :message="error" />
+        <ErrorMessage class="ms-1" :message="error" />
       </div>
     </div>
     <!-- action button -->

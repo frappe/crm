@@ -23,7 +23,7 @@
   <!-- Has value -->
   <div
     v-else
-    :class="[containerClasses, '!pr-1', 'cursor-pointer']"
+    :class="[containerClasses, '!pe-1', 'cursor-pointer']"
     @click="openModal"
   >
     <span

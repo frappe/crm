@@ -14,7 +14,7 @@
         >
           <div class="w-full">
             <button
-              class="relative flex h-7 w-full items-center justify-between gap-2 rounded px-2 py-1 transition-colors pr-7"
+              class="relative flex h-7 w-full items-center justify-between gap-2 rounded px-2 py-1 transition-colors pe-7"
               :class="inputClasses"
               @click="() => !disabled && togglePopover()"
             >
@@ -29,7 +29,7 @@
               </div>
               <div
                 v-else
-                class="absolute text-ink-gray-4 text-left truncate w-full pr-7"
+                class="absolute text-ink-gray-4 text-start truncate w-full pe-7"
               >
                 {{ placeholder || '' }}
               </div>

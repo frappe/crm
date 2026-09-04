@@ -80,7 +80,7 @@
               </div>
               <div v-else class="flex items-center justify-between gap-2">
                 <div class="flex items-center gap-2">
-                  <div class="w-13 pl-2 text-end text-base text-ink-gray-5">
+                  <div class="w-13 ps-2 text-end text-base text-ink-gray-5">
                     {{ i == 0 ? __('Where') : __('And') }}
                   </div>
                   <div id="fieldname" class="!min-w-[140px]">

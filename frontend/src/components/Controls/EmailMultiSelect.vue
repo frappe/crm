@@ -77,7 +77,7 @@
                   class="text-base leading-none text-ink-gray-7 rounded flex items-center px-2 py-1 relative select-none data-[highlighted]:outline-none data-[highlighted]:bg-surface-gray-3 cursor-pointer"
                   @mousedown.prevent="onSelect(option.value)"
                 >
-                  <UserAvatar class="mr-2" :user="option.value" size="lg" />
+                  <UserAvatar class="me-2" :user="option.value" size="lg" />
                   <div class="flex flex-col gap-1 p-1 text-ink-gray-8">
                     <div class="text-base-medium">{{ option.label }}</div>
                     <div class="text-sm text-ink-gray-5">
@@ -91,10 +91,10 @@
         </ComboboxRoot>
       </div>
     </div>
-    <ErrorMessage v-if="error" class="mt-2 pl-2" :message="error" />
+    <ErrorMessage v-if="error" class="mt-2 ps-2" :message="error" />
     <div
       v-if="info"
-      class="whitespace-pre-line text-sm text-ink-blue-6 mt-2 pl-2"
+      class="whitespace-pre-line text-sm text-ink-blue-6 mt-2 ps-2"
     >
       {{ info }}
     </div>

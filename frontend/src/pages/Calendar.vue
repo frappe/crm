@@ -95,7 +95,7 @@
             <!-- View Buttons -->
             <FormControl
               type="select"
-              class="mr-1 w-24"
+              class="me-1 w-24"
               :modelValue="activeView"
               :options="[
                 { label: __('Day'), value: 'Day' },
@@ -119,10 +119,10 @@
               @change="(option) => updateUser(option)"
             >
               <template #prefix>
-                <UserAvatar class="mr-2 !h-4 !w-4" :user="currentUser" />
+                <UserAvatar class="me-2 !h-4 !w-4" :user="currentUser" />
               </template>
               <template #item-prefix="{ option }">
-                <UserAvatar class="mr-2" :user="option.value" size="sm" />
+                <UserAvatar class="me-2" :user="option.value" size="sm" />
               </template>
               <template #item-label="{ option }">
                 <Tooltip :text="option.value">

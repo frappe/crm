@@ -21,7 +21,7 @@
   </div>
 
   <!-- Has value -->
-  <div v-else :class="[containerClasses, '!pr-1']">
+  <div v-else :class="[containerClasses, '!pe-1']">
     <span
       class="lucide-paperclip size-4"
       :class="[iconClasses, 'text-ink-gray-7']"
@@ -54,7 +54,7 @@
     </Tooltip>
     <button
       v-if="!disabled"
-      class="ml-auto flex h-5 w-5 shrink-0 items-center justify-center rounded text-ink-gray-4 hover:bg-surface-gray-2 hover:text-ink-gray-7 dark:hover:bg-surface-gray-4"
+      class="ms-auto flex h-5 w-5 shrink-0 items-center justify-center rounded text-ink-gray-4 hover:bg-surface-gray-2 hover:text-ink-gray-7 dark:hover:bg-surface-gray-4"
       :title="__('Clear')"
       @click.prevent="clearAttachment"
     >

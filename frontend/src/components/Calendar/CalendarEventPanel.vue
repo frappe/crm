@@ -137,12 +137,12 @@
             <div class="text-p-base">{{ attendees }}</div>
           </div>
         </div>
-        <div class="flex flex-col gap-2 -ml-1">
+        <div class="flex flex-col gap-2 -ms-1">
           <Button
             :key="_event.owner"
             variant="ghost"
             theme="gray"
-            class="rounded-full w-fit !h-8.5 !pr-3"
+            class="rounded-full w-fit !h-8.5 !pe-3"
             :tooltip="__('Owner: {0}', [_event.owner?.label])"
           >
             <template #default>
@@ -153,7 +153,7 @@
             </template>
             <template #prefix>
               <div class="relative">
-                <UserAvatar :user="_event.owner?.value" class="-ml-1 !size-5" />
+                <UserAvatar :user="_event.owner?.value" class="-ms-1 !size-5" />
                 <div
                   v-if="_event.attending"
                   class="flex items-center justify-center absolute -bottom-[2px] -right-[2px] ring-1 ring-outline-base size-2.5 rounded-full"
@@ -195,7 +195,7 @@
           >
             <template #prefix>
               <div class="relative">
-                <UserAvatar :user="att.email" class="-ml-1 !size-5" />
+                <UserAvatar :user="att.email" class="-ms-1 !size-5" />
                 <div
                   v-if="att.attending"
                   class="flex items-center justify-center absolute -bottom-[2px] -right-[2px] ring-1 ring-outline-base size-2.5 rounded-full"
@@ -263,7 +263,7 @@
     <!-- Event new, duplicate & edit -->
     <div v-else class="flex flex-col flex-1 overflow-y-auto">
       <div class="flex gap-2 items-center px-4.5 py-3">
-        <Dropdown class="ml-1" :options="colors">
+        <Dropdown class="ms-1" :options="colors">
           <div
             class="flex items-center justify-center size-8 shrink-0 border border-outline-gray-2 bg-surface-base hover:border-outline-gray-3 hover:shadow-sm rounded cursor-pointer"
           >
@@ -290,7 +290,7 @@
       <div class="flex justify-between py-2.5 px-4.5 text-ink-gray-6">
         <div class="flex items-center">
           <Switch v-model="_event.isFullDay" @update:model-value="sync" />
-          <div class="ml-2">
+          <div class="ms-2">
             {{ __('All Day') }}
           </div>
         </div>
