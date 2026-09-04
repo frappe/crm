@@ -3,6 +3,7 @@
     <FormControl
       v-model="step.step_type"
       type="select"
+      variant="outline"
       :label="__('Step Type')"
       :options="stepTypeOptions"
     />
@@ -11,16 +12,10 @@
       <ConditionEditor
         v-model="step.step_condition"
         :doctype="targetDoctype"
+        variant="outline"
         :label="__('Condition')"
         :placeholder="__('doc.status == \'Qualified\'')"
       />
-      <div class="text-xs text-ink-gray-5">
-        {{
-          __(
-            'Steps added under the If and Else arms run only when this decides that way.',
-          )
-        }}
-      </div>
     </template>
 
     <template v-else-if="step.step_type === 'Wait'">
@@ -28,6 +23,7 @@
         <FormControl
           :model-value="params.value"
           type="number"
+          variant="outline"
           class="w-24 shrink-0"
           :label="__('Wait')"
           @update:model-value="setParam('value', Number($event))"
@@ -35,6 +31,7 @@
         <FormControl
           :model-value="params.unit || 'Minutes'"
           type="select"
+          variant="outline"
           class="min-w-0 flex-1"
           :label="__('Unit')"
           :options="waitUnits"
@@ -47,6 +44,7 @@
       <FormControl
         :model-value="params.event_name"
         type="select"
+        variant="outline"
         :label="__('Wait for')"
         :options="eventOptions"
         :placeholder="__('Choose an event')"
@@ -56,6 +54,7 @@
         v-if="correlationOptions.length"
         :model-value="params.correlation_key"
         type="select"
+        variant="outline"
         :label="__('Belonging to')"
         :options="correlationOptions"
         @update:model-value="setParam('correlation_key', $event)"
@@ -63,17 +62,16 @@
       <FormControl
         v-else
         :model-value="params.correlation_key"
+        variant="outline"
         :label="__('Belonging to')"
         :placeholder="correlationPlaceholder"
         @update:model-value="setParam('correlation_key', $event)"
       />
-      <div class="text-xs text-ink-gray-5">
-        {{ __('Only the event raised for this record resumes the run.') }}
-      </div>
       <div class="flex items-start gap-2">
         <FormControl
           :model-value="params.timeout_value"
           type="number"
+          variant="outline"
           class="w-24 shrink-0"
           :label="__('Timeout')"
           @update:model-value="setParam('timeout_value', Number($event))"
@@ -81,6 +79,7 @@
         <FormControl
           :model-value="params.timeout_unit || 'Days'"
           type="select"
+          variant="outline"
           class="min-w-0 flex-1"
           :label="__('Unit')"
           :options="waitUnits"
@@ -93,6 +92,7 @@
       <FormControl
         v-model="step.action_type"
         type="select"
+        variant="outline"
         :label="__('Action')"
         :options="actionOptions"
         :placeholder="__('Choose what this step does')"
@@ -115,6 +115,7 @@
       v-if="step.step_type !== 'If'"
       v-model="step.step_condition"
       :doctype="targetDoctype"
+      variant="outline"
       :label="__('Only run when')"
       :placeholder="__('doc.status == \'Open\'')"
     />
@@ -131,6 +132,7 @@
       <div v-if="showAdvanced" class="mt-4 space-y-5">
         <FormControl
           v-model="step.step_key"
+          variant="outline"
           :label="__('Step name')"
           :placeholder="suggestedKey"
           :description="
@@ -140,6 +142,7 @@
         <FormControl
           v-if="schema?.output_schema"
           v-model="step.output_alias"
+          variant="outline"
           :label="__('Name the result')"
           :placeholder="__('deal')"
           :description="__('Lets a later step act on what this one produced.')"

@@ -3,6 +3,7 @@
     <FormControl
       :model-value="modelValue || 'trigger'"
       type="select"
+      variant="outline"
       :label="label"
       :options="options"
       @update:model-value="$emit('update:modelValue', $event)"

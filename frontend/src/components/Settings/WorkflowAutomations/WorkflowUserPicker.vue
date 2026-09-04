@@ -2,6 +2,7 @@
   <MultiSelect
     :model-value="modelValue"
     :label="label"
+    variant="outline"
     :options="options"
     :loading="loading"
     :placeholder="__('Select users')"

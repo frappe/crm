@@ -24,6 +24,7 @@
       <div class="flex items-center gap-2">
         <FormControl
           :model-value="item.alias"
+          variant="outline"
           class="flex-1"
           :placeholder="__('alias, e.g. lead')"
           @update:model-value="update(index, 'alias', $event)"
@@ -37,6 +38,7 @@
       </div>
       <FormControl
         :model-value="item.source || 'trigger'"
+        variant="outline"
         type="select"
         :label="__('From')"
         :options="sourceOptions(index)"
@@ -44,6 +46,7 @@
       />
       <FormControl
         :model-value="item.relationship"
+        variant="outline"
         type="select"
         :label="__('Relationship')"
         :options="relationshipOptions(item, index)"
@@ -52,6 +55,7 @@
       <FormControl
         v-if="choicesFor(item, index).length > 1"
         :model-value="item.target_doctype"
+        variant="outline"
         type="select"
         :label="__('Record type')"
         :options="choicesFor(item, index)"
