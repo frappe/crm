@@ -153,15 +153,11 @@ const action = computed(() => props.action)
 const isSetFieldValue = computed(
   () => action.value.action_type === 'SetFieldValue',
 )
-// Python is authored and reviewed in the desk, and pointed at from here: the CRM builder
-// offers the Server Script picker of a script step, never the box to write one in.
-const NEVER_SHOWN = { RunScript: ['script'] }
-
 /**
- * Two params that stand in for each other - a linked Server Script or one written here - are
- * declared as a pair in the schema, and only the one in use is worth showing.
+ * What each param stands in for, from the pairs the schema declares - a linked Server Script
+ * and one written by hand, say. Both directions, so either half knows about the other.
  */
-const exclusions = computed(() => {
+const standIns = computed(() => {
   const map = {}
   ;(props.schema?.params_schema || []).forEach((field) => {
     if (!field.exclusive_with) return
@@ -171,17 +167,20 @@ const exclusions = computed(() => {
   return map
 })
 
-const hiddenHere = computed(() => NEVER_SHOWN[action.value.action_type] || [])
-
 const schemaFields = computed(() =>
   (props.schema?.params_schema || []).filter(isShown),
 )
 
-/** A param hidden here never stands in for anything: a written script cannot hide the picker. */
+/** A param gives way to the one it stands in for while that one is on screen and filled. */
 function isShown(field) {
-  if (hiddenHere.value.includes(field.fieldname)) return false
-  return !(exclusions.value[field.fieldname] || []).some(
-    (other) => !hiddenHere.value.includes(other) && isFilled(other),
+  return !(standIns.value[field.fieldname] || []).some(
+    (other) => isInSchema(other) && isFilled(other),
+  )
+}
+
+function isInSchema(fieldname) {
+  return (props.schema?.params_schema || []).some(
+    (field) => field.fieldname === fieldname,
   )
 }
 
@@ -330,10 +329,10 @@ function appendValuesToken(token) {
 
 function setParam(fieldname, value) {
   const next = { ...params.value, [fieldname]: value }
-  // Filling one of an exclusive pair clears the other, including one this builder does not
-  // show: a flow that carries a written script accepts a linked one without a rejected save.
+  // What a param stands in for goes when it is filled, whether or not this builder shows it:
+  // a flow carrying a written script takes a linked one without the save being rejected.
   if (value)
-    (exclusions.value[fieldname] || []).forEach((other) => delete next[other])
+    (standIns.value[fieldname] || []).forEach((other) => delete next[other])
   action.value.params = JSON.stringify(next, null, 2)
 }
 </script>
