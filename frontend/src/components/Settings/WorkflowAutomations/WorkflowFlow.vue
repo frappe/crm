@@ -10,16 +10,36 @@
     :nodes-connectable="false"
     :elements-selectable="!readonly"
     :pan-on-drag="true"
-    @nodes-initialized="refitFlow"
+    @nodes-initialized="() => refitFlow()"
     @node-drag-stop="rememberPosition"
     @node-click="selectNode($event.node.id)"
     @pane-click="selectNode('trigger')"
   >
-    <Background color="var(--surface-gray-4)" :gap="40" :size="5" />
-    <Panel position="bottom-left">
+    <Background color="var(--surface-gray-4)" :gap="20" :size="3" />
+    <Panel position="bottom-center">
       <div
         class="flex items-center gap-0.5 rounded-[10px] border border-outline-gray-2 bg-surface-gray-1 p-1 shadow-md"
       >
+        <template v-if="!readonly">
+          <Button
+            icon="lucide-undo-2"
+            variant="ghost"
+            :disabled="!canUndo"
+            :aria-label="__('Undo')"
+            @click="$emit('undo')"
+          />
+          <Button
+            icon="lucide-redo-2"
+            variant="ghost"
+            :disabled="!canRedo"
+            :aria-label="__('Redo')"
+            @click="$emit('redo')"
+          />
+          <span
+            class="mx-1 h-5 w-px border-l border-outline-gray-2"
+            aria-hidden="true"
+          />
+        </template>
         <Button
           icon="lucide-minus"
           variant="ghost"
@@ -37,12 +57,24 @@
           :aria-label="__('Zoom in')"
           @click="zoomIn({ duration: 150 })"
         />
-        <span class="mx-0.5 h-4 w-px bg-outline-gray-2" />
+        <span
+          class="mx-1 h-5 w-px border-l border-outline-gray-2"
+          aria-hidden="true"
+        />
         <Button
           icon="lucide-maximize"
           variant="ghost"
           :aria-label="__('Fit entire flow')"
           @click="refitFlow"
+        />
+        <Button
+          v-if="canDelete"
+          icon="lucide-trash-2"
+          variant="ghost"
+          :aria-label="
+            selectedId === 'trigger' ? __('Remove trigger') : __('Remove step')
+          "
+          @click.stop="$emit('request-remove')"
         />
       </div>
     </Panel>
@@ -123,6 +155,14 @@
                       v-else-if="data.error"
                       class="size-4 shrink-0 text-ink-red-4"
                     />
+                    <Tooltip
+                      v-else-if="data.incomplete"
+                      :text="data.incomplete"
+                    >
+                      <IncompleteIcon
+                        class="size-4 shrink-0 text-ink-amber-6"
+                      />
+                    </Tooltip>
                   </div>
                   <div
                     class="flex min-h-0 flex-1 items-end gap-2 px-2 py-[7px]"
@@ -247,12 +287,13 @@ import '@vue-flow/core/dist/theme-default.css'
 import { Background } from '@vue-flow/background'
 import { Handle, Panel, Position, VueFlow, useVueFlow } from '@vue-flow/core'
 import ErrorIcon from '~icons/lucide/circle-alert'
+import IncompleteIcon from '~icons/lucide/triangle-alert'
 import FailedIcon from '~icons/lucide/circle-x'
 import SkippedIcon from '~icons/lucide/circle-minus'
 import SuccessIcon from '~icons/lucide/circle-check'
 import WaitingIcon from '~icons/lucide/clock'
 import WorkflowComboboxOption from './WorkflowComboboxOption.vue'
-import { Badge, Button, Combobox, Spinner } from 'frappe-ui'
+import { Badge, Button, Combobox, Spinner, Tooltip } from 'frappe-ui'
 import { computed, nextTick, ref, useId, watch } from 'vue'
 
 const props = defineProps({
@@ -262,10 +303,21 @@ const props = defineProps({
   triggerGroups: { type: Array, default: () => [] },
   selectedId: { type: String, default: '' },
   inspectorOpen: { type: Boolean, default: false },
+  canDelete: { type: Boolean, default: false },
+  canUndo: { type: Boolean, default: false },
+  canRedo: { type: Boolean, default: false },
   readonly: { type: Boolean, default: false },
 })
 
-const emit = defineEmits(['select', 'add-step', 'pick-trigger', 'run-branch'])
+const emit = defineEmits([
+  'select',
+  'add-step',
+  'pick-trigger',
+  'request-remove',
+  'run-branch',
+  'undo',
+  'redo',
+])
 
 // How a trial run's outcome reads on the node it belongs to.
 const RUN_ICONS = {
@@ -284,12 +336,15 @@ const RUN_COLORS = {
 const flowId = useId()
 const flowRoot = ref(null)
 const EDGE_PADDING = 48
+const isBlankFlow = computed(
+  () => props.nodes.length === 1 && props.nodes[0]?.data?.empty,
+)
 
 // Fit as tight as the flow allows: a short flow can pass 100%, a long one caps there.
 const fitViewOptions = computed(() => ({
   padding: 0.08,
   minZoom: 0.3,
-  maxZoom: props.nodes.length <= 3 ? 1.25 : 1,
+  maxZoom: isBlankFlow.value ? 1.1 : props.nodes.length <= 3 ? 1.25 : 1,
   duration: 200,
 }))
 const { fitView, setViewport, viewport, zoomIn, zoomOut } = useVueFlow(flowId)
@@ -321,7 +376,10 @@ watch(
     () => props.nodes.map((node) => node.id).join('|'),
     () => props.nodes[0]?.data?.empty,
   ],
-  refitFlow,
+  (current, previous) => {
+    const animateLeft = previous?.[1] === true && current[1] === false
+    refitFlow(animateLeft)
+  },
   { flush: 'post' },
 )
 
@@ -334,9 +392,10 @@ async function refitAfterPanelResize() {
   return refitFlow()
 }
 
-async function refitFlow() {
+async function refitFlow(animateLeft = false) {
   await nextTick()
   await nextFrame()
+  if (animateLeft) return animateFlowLeft()
   await fitView({ ...fitViewOptions.value, duration: 0 })
   if (props.nodes[0]?.data?.empty) return centerEmptyFlow()
   await alignFlowLeft()
@@ -344,16 +403,20 @@ async function refitFlow() {
   await keepAddControlsVisible()
 }
 
+function animateFlowLeft() {
+  return alignFlowLeft(viewport.value.zoom, fitViewOptions.value.duration)
+}
+
 function nextFrame() {
   return new Promise((resolve) => requestAnimationFrame(resolve))
 }
 
 // Refitting reads back the result a frame later, so it settles instantly.
-function alignFlowLeft(zoom = viewport.value.zoom) {
+function alignFlowLeft(zoom = viewport.value.zoom, duration = 0) {
   const leftmost = Math.min(...flowNodes.value.map((node) => node.position.x))
   return setViewport(
     { ...viewport.value, zoom, x: EDGE_PADDING - leftmost * zoom },
-    { duration: 0 },
+    { duration },
   )
 }
 
@@ -384,10 +447,17 @@ function centerEmptyFlow() {
   const canvas = root?.getBoundingClientRect()
   const node = root?.querySelector('.vue-flow__node')?.getBoundingClientRect()
   if (!canvas || !node) return
-  const offset = canvas.left + canvas.width / 2 - node.left - node.width / 2
+  const horizontalOffset =
+    canvas.left + canvas.width / 2 - node.left - node.width / 2
+  const verticalOffset =
+    canvas.top + canvas.height * 0.3 - node.top - node.height / 2
   return setViewport(
-    { ...viewport.value, x: viewport.value.x + offset },
-    { duration: fitViewOptions.value.duration },
+    {
+      ...viewport.value,
+      x: viewport.value.x + horizontalOffset,
+      y: viewport.value.y + verticalOffset,
+    },
+    { duration: 0 },
   )
 }
 
@@ -419,12 +489,15 @@ function nodeClasses(id, data) {
 }
 
 function nodeSurface(id, data) {
-  if (data.empty) return 'border-dashed border-[#aeaeae]  shadow-none'
-  if (data.status === 'Failed') return 'border-outline-red-2 bg-surface-modal'
+  if (data.empty) return 'border-dashed border-outline-gray-3 shadow-none'
+  if (data.status === 'Failed')
+    return 'border-outline-red-2 bg-surface-modal shadow-sm'
   if (data.status === 'running') return 'border-outline-gray-5 shadow-md'
-  if (data.error) return 'border-outline-red-2 bg-surface-modal'
-  if (isOn(id)) return 'border-outline-gray-5'
-  return 'border-outline-gray-2    hover:border-outline-gray-5'
+  if (data.error) return 'border-outline-red-2 bg-surface-modal shadow-sm'
+  if (isOn(id)) return 'border-outline-gray-8 shadow-sm shadow-surface-base'
+  if (data.incomplete)
+    return 'border-outline-amber-2 shadow-md hover:border-outline-gray-8'
+  return 'border-outline-gray-2 shadow-md hover:border-outline-gray-8'
 }
 
 function iconChipClasses(data) {
@@ -506,14 +579,32 @@ const ICON_TONES = {
   cursor: grabbing;
 }
 
+.workflow-flow .workflow-node {
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.16);
+}
+
+/* A faint black shadow reads as nothing on the dark canvas. */
+[data-theme='dark'] .workflow-flow .workflow-node {
+  box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.6);
+}
+
+.workflow-flow .workflow-node.shadow-none {
+  box-shadow: none;
+}
+
+.workflow-flow .workflow-node.shadow-md {
+  box-shadow: var(--elevation-md);
+}
+
 .workflow-flow .workflow-port {
   z-index: 20 !important;
+  top: calc(50% + 4px);
   width: 6px !important;
   min-width: 6px !important;
   height: 6px !important;
   min-height: 6px !important;
   border: 0 !important;
-  background: #4e4e4e !important;
+  background: var(--ink-gray-5) !important;
   box-shadow: none;
   opacity: 1 !important;
   visibility: visible !important;
@@ -524,18 +615,18 @@ const ICON_TONES = {
 }
 
 .workflow-flow .vue-flow__edge-path {
-  stroke: #4e4e4e;
+  stroke: var(--ink-gray-4);
   stroke-width: 1;
 }
 
 .workflow-flow .vue-flow__edge-textbg {
-  fill: #fff;
-  stroke: #aeaeae;
+  fill: var(--surface-base);
+  stroke: var(--outline-gray-2);
   stroke-width: 1px;
 }
 
 .workflow-flow .vue-flow__edge-text {
-  fill: #4e4e4e;
+  fill: var(--ink-gray-6);
   font-size: 10px;
   font-weight: 500;
 }
