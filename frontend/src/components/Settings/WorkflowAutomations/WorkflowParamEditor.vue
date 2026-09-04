@@ -153,6 +153,10 @@ const action = computed(() => props.action)
 const isSetFieldValue = computed(
   () => action.value.action_type === 'SetFieldValue',
 )
+// Python is authored and reviewed in the desk, and pointed at from here: the CRM builder
+// offers the Server Script picker of a script step, never the box to write one in.
+const NEVER_SHOWN = { RunScript: ['script'] }
+
 /**
  * Two params that stand in for each other - a linked Server Script or one written here - are
  * declared as a pair in the schema, and only the one in use is worth showing.
@@ -167,11 +171,19 @@ const exclusions = computed(() => {
   return map
 })
 
+const hiddenHere = computed(() => NEVER_SHOWN[action.value.action_type] || [])
+
 const schemaFields = computed(() =>
-  (props.schema?.params_schema || []).filter(
-    (field) => !(exclusions.value[field.fieldname] || []).some(isFilled),
-  ),
+  (props.schema?.params_schema || []).filter(isShown),
 )
+
+/** A param hidden here never stands in for anything: a written script cannot hide the picker. */
+function isShown(field) {
+  if (hiddenHere.value.includes(field.fieldname)) return false
+  return !(exclusions.value[field.fieldname] || []).some(
+    (other) => !hiddenHere.value.includes(other) && isFilled(other),
+  )
+}
 
 function isFilled(fieldname) {
   const value = params.value[fieldname]
@@ -317,10 +329,11 @@ function appendValuesToken(token) {
 }
 
 function setParam(fieldname, value) {
-  action.value.params = JSON.stringify(
-    { ...params.value, [fieldname]: value },
-    null,
-    2,
-  )
+  const next = { ...params.value, [fieldname]: value }
+  // Filling one of an exclusive pair clears the other, including one this builder does not
+  // show: a flow that carries a written script accepts a linked one without a rejected save.
+  if (value)
+    (exclusions.value[fieldname] || []).forEach((other) => delete next[other])
+  action.value.params = JSON.stringify(next, null, 2)
 }
 </script>
