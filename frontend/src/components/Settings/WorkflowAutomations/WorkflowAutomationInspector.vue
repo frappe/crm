@@ -1,5 +1,5 @@
 <template>
-  <div class="flex h-full min-h-0 flex-col bg-surface-gray-1">
+  <div class="flex h-full min-h-0 flex-col bg-surface-base">
     <div
       class="flex h-12 shrink-0 items-center justify-between border-b border-outline-gray-2 px-4"
     >
