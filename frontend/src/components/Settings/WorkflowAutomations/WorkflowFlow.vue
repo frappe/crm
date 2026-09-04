@@ -71,6 +71,7 @@
           v-if="canDelete"
           icon="lucide-trash-2"
           variant="ghost"
+          class="text-ink-red-6"
           :aria-label="
             selectedId === 'trigger' ? __('Remove trigger') : __('Remove step')
           "
@@ -96,7 +97,9 @@
               :placeholder="__('Search triggers')"
               @update:model-value="$emit('pick-trigger', $event)"
             >
-              <template #item-prefix />
+              <template #item-prefix="{ item }">
+                <WorkflowComboboxIcon :item="item" />
+              </template>
               <template #item-label="{ item }">
                 <WorkflowComboboxOption :item="item" />
               </template>
@@ -120,12 +123,12 @@
                     <div
                       v-if="!data.empty"
                       class="flex size-[30px] shrink-0 items-center justify-center rounded-[6px] border"
-                      :class="iconChipClasses(data)"
+                      :class="data.chip"
                     >
                       <component
                         :is="data.icon"
                         class="workflow-node-icon size-5"
-                        :class="iconClasses(data)"
+                        :class="data.tone"
                       />
                     </div>
                     <div
@@ -204,7 +207,9 @@
               :placeholder="__('Search blocks')"
               @update:model-value="addBlock(data, null, $event)"
             >
-              <template #item-prefix />
+              <template #item-prefix="{ item }">
+                <WorkflowComboboxIcon :item="item" />
+              </template>
               <template #item-label="{ item }">
                 <WorkflowComboboxOption :item="item" />
               </template>
@@ -247,7 +252,9 @@
             :placeholder="__('Search blocks')"
             @update:model-value="addBlock(data, arm.branch, $event)"
           >
-            <template #item-prefix />
+            <template #item-prefix="{ item }">
+              <WorkflowComboboxIcon :item="item" />
+            </template>
             <template #item-label="{ item }">
               <WorkflowComboboxOption :item="item" />
             </template>
@@ -265,7 +272,9 @@
             :placeholder="__('Search blocks')"
             @update:model-value="addBlock(data, null, $event)"
           >
-            <template #item-prefix />
+            <template #item-prefix="{ item }">
+              <WorkflowComboboxIcon :item="item" />
+            </template>
             <template #item-label="{ item }">
               <WorkflowComboboxOption :item="item" />
             </template>
@@ -292,6 +301,7 @@ import FailedIcon from '~icons/lucide/circle-x'
 import SkippedIcon from '~icons/lucide/circle-minus'
 import SuccessIcon from '~icons/lucide/circle-check'
 import WaitingIcon from '~icons/lucide/clock'
+import WorkflowComboboxIcon from './WorkflowComboboxIcon.vue'
 import WorkflowComboboxOption from './WorkflowComboboxOption.vue'
 import { Badge, Button, Combobox, Spinner, Tooltip } from 'frappe-ui'
 import { computed, nextTick, ref, useId, watch } from 'vue'
@@ -500,19 +510,6 @@ function nodeSurface(id, data) {
   return 'border-outline-gray-2 shadow-md hover:border-outline-gray-8'
 }
 
-function iconChipClasses(data) {
-  return iconTone(data).chip
-}
-
-function iconClasses(data) {
-  return iconTone(data).icon
-}
-
-function iconTone(data) {
-  if (data.isTrigger) return ICON_TONES.trigger
-  return ICON_TONES[data.step?.step_type] || ICON_TONES.Action
-}
-
 /**
  * Only the end of a chain offers an add button. Branching nodes use their dedicated arm and
  * shared-continuation controls instead.
@@ -530,29 +527,6 @@ function addBlock(data, branch, value) {
   const block = blocksByValue.value.get(value)
   if (!block) return
   emit('add-step', { after: data.step || null, branch, values: block.values })
-}
-
-const ICON_TONES = {
-  trigger: {
-    chip: 'bg-surface-blue-3 border-outline-blue-7',
-    icon: 'text-ink-blue-7',
-  },
-  Action: {
-    chip: 'bg-surface-violet-3 border-outline-violet-7',
-    icon: 'text-ink-violet-7',
-  },
-  Wait: {
-    chip: 'bg-surface-amber-3 border-outline-amber-7',
-    icon: 'text-ink-amber-7',
-  },
-  WaitForEvent: {
-    chip: 'bg-surface-amber-3 border-outline-amber-7',
-    icon: 'text-ink-amber-7',
-  },
-  If: {
-    chip: 'bg-surface-green-3 border-outline-green-7',
-    icon: 'text-ink-green-7',
-  },
 }
 </script>
 
