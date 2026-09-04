@@ -179,10 +179,20 @@ async function createNewLead() {
     {
       validate() {
         error.value = null
-        if (!lead.doc.first_name) {
+        const firstName = lead.doc.first_name?.trim()
+
+        if (!firstName) {
           error.value = __('First Name is mandatory')
           return error.value
         }
+
+        if (!/[\p{L}]/u.test(firstName)) {
+          error.value = __('First Name must contain at least one letter')
+          return error.value
+        }
+        
+        lead.doc.first_name = firstName
+
         if (lead.doc.annual_revenue) {
           if (typeof lead.doc.annual_revenue === 'string') {
             lead.doc.annual_revenue = lead.doc.annual_revenue.replace(/,/g, '')
