@@ -8,7 +8,7 @@ const COALESCE_MS = 400
  * than through a mutation layer, so a single deep watch is what covers all of them.
  */
 export function useUndoHistory(state, apply, options = {}) {
-  const { limit = HISTORY_LIMIT, coalesce = COALESCE_MS } = options
+  const { limit = HISTORY_LIMIT, coalesce = COALESCE_MS, ignore = [] } = options
   const past = ref([])
   const future = ref([])
   let present = read()
@@ -17,8 +17,11 @@ export function useUndoHistory(state, apply, options = {}) {
   watch(state, schedule, { deep: true })
   onScopeDispose(clearTimer)
 
+  /** Ignored keys stay out of the snapshot, so they neither record a step nor get restored. */
   function read() {
-    return JSON.stringify(state)
+    const snapshot = { ...state }
+    ignore.forEach((key) => delete snapshot[key])
+    return JSON.stringify(snapshot)
   }
 
   function clearTimer() {
