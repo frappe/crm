@@ -1,19 +1,10 @@
 <template>
-  <div class="flex h-full min-h-0 flex-col">
+  <div class="flex h-full min-h-0 flex-col bg-surface-gray-1">
     <div
       class="flex h-12 shrink-0 items-center justify-between border-b border-outline-gray-2 px-4"
     >
       <div class="text-base-semibold text-ink-gray-8">
         {{ selectedStep ? __('Step') : __('Trigger') }}
-      </div>
-      <div class="flex items-center gap-1">
-        <Button
-          v-if="selectedStep || doc.trigger_type"
-          icon="lucide-trash-2"
-          variant="ghost"
-          :aria-label="selectedStep ? __('Remove step') : __('Remove trigger')"
-          @click="$emit('request-remove')"
-        />
       </div>
     </div>
     <div class="min-h-0 flex-1 space-y-5 overflow-y-auto p-4">
@@ -29,12 +20,13 @@
       <template v-else>
         <Link
           v-model="doc.document_type"
-          label="Doctype"
+          label="DocType"
+          variant="outline"
           doctype="DocType"
           :filters="docTypeFilters"
         />
         <div v-for="section in triggerSections" :key="section.group">
-          <div class="mb-2 text-sm text-ink-gray-5">{{ section.group }}</div>
+          <div class="mb-2 text-base text-ink-gray-5">{{ section.group }}</div>
           <button
             v-for="trigger in section.options"
             :key="trigger.value"
@@ -56,17 +48,20 @@
         <WorkflowFilters
           v-model="doc.filters"
           :doctype="doc.document_type"
+          variant="outline"
           flat
         />
-        <FormControl
+        <ConditionEditor
           v-model="doc.condition"
-          type="textarea"
+          :doctype="doc.document_type"
           :label="__('Condition')"
+          variant="outline"
           :placeholder="__('doc.status == \'Open\'')"
         />
         <FormControl
           v-model="doc.run_as"
           type="select"
+          variant="outline"
           :label="__('Run As')"
           :options="runAsOptions"
         />
@@ -74,6 +69,7 @@
           v-if="doc.run_as === 'Automation User'"
           v-model="doc.automation_user"
           :label="__('Automation User')"
+          variant="outline"
           doctype="User"
         />
       </template>
@@ -83,6 +79,7 @@
 
 <script setup>
 import Link from '@/components/Controls/Link.vue'
+import ConditionEditor from './WorkflowConditionEditor.vue'
 import Relationships from './WorkflowRelationships.vue'
 import StepEditor from './WorkflowStepEditor.vue'
 import TriggerDetails from './WorkflowTriggerDetails.vue'
@@ -93,7 +90,7 @@ import {
   triggerGroups,
   triggerValue,
 } from './workflowTriggers'
-import { Button, FormControl, LoadingIndicator } from 'frappe-ui'
+import { FormControl, LoadingIndicator } from 'frappe-ui'
 import { computed } from 'vue'
 
 const props = defineProps({
@@ -102,8 +99,6 @@ const props = defineProps({
   targets: { type: Array, default: () => [] },
   loading: { type: Boolean, default: false },
 })
-
-defineEmits(['request-remove'])
 
 const docTypeFilters = { istable: 0 }
 const triggerSections = computed(() => triggerGroups(props.doc.document_type))
@@ -135,6 +130,6 @@ const events = computed(() => capabilities.value?.custom_events || [])
 
 .trigger-row:hover,
 .trigger-row-selected {
-  background: var(--surface-gray-2);
+  background: var(--surface-gray-4);
 }
 </style>
