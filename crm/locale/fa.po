@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-08-30 14:29+0000\n"
-"PO-Revision-Date: 2026-09-05 19:40\n"
+"PO-Revision-Date: 2026-09-06 19:39\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Persian\n"
 "MIME-Version: 1.0\n"
@@ -7791,7 +7791,7 @@ msgstr ""
 
 #: frontend/src/components/CommunicationArea.vue:275
 msgid "Sending email..."
-msgstr ""
+msgstr "ارسال ایمیل..."
 
 #. Option for the 'Type' (Select) field in DocType 'CRM Dropdown Item'
 #: crm/fcrm/doctype/crm_dropdown_item/crm_dropdown_item.json
