@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-08-30 14:29+0000\n"
-"PO-Revision-Date: 2026-08-31 18:28\n"
+"PO-Revision-Date: 2026-09-06 19:39\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Bosnian\n"
 "MIME-Version: 1.0\n"
@@ -2036,7 +2036,7 @@ msgstr "Pretvoreno"
 
 #: frontend/src/components/ListBulkActions.vue:94
 msgid "Converted Successfully"
-msgstr "Konvertirano"
+msgstr "Pretvoreno"
 
 #: frontend/src/utils/index.js:426
 msgid "Copied to Clipboard"
