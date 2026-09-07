@@ -2,61 +2,69 @@
   <div class="space-y-4">
     <template v-if="doc.trigger_type === 'Field Value Changed'">
       <FormControl
-        v-model="doc.trigger_field"
+        :model-value="doc.trigger_field"
         variant="outline"
         type="select"
         :label="__('Trigger Field')"
         :options="fieldOptions"
+        @update:model-value="patch('trigger_field', $event)"
       />
       <FormControl
-        v-model="doc.from_value"
+        :model-value="doc.from_value"
         variant="outline"
         :label="__('From Value')"
+        @update:model-value="patch('from_value', $event)"
       />
       <FormControl
-        v-model="doc.to_value"
+        :model-value="doc.to_value"
         variant="outline"
         :label="__('To Value')"
+        @update:model-value="patch('to_value', $event)"
       />
     </template>
     <template v-else-if="doc.trigger_type === 'Scheduled'">
       <FormControl
-        v-model="doc.cron_expression"
+        :model-value="doc.cron_expression"
         variant="outline"
         :label="__('Cron Expression')"
         placeholder="0 9 * * *"
+        @update:model-value="patch('cron_expression', $event)"
       />
     </template>
     <template v-else-if="doc.trigger_type === 'Date Based'">
       <FormControl
-        v-model="doc.date_field"
+        :model-value="doc.date_field"
         variant="outline"
         type="select"
         :label="__('Date Field')"
         :options="dateFieldOptions"
+        @update:model-value="patch('date_field', $event)"
       />
       <FormControl
-        v-model="doc.date_offset"
+        :model-value="doc.date_offset"
         variant="outline"
         type="number"
         :label="__('Date Offset')"
+        @update:model-value="patch('date_offset', $event)"
       />
       <FormControl
-        v-model="doc.date_direction"
+        :model-value="doc.date_direction"
         variant="outline"
         type="select"
         :label="__('Date Direction')"
         :options="['Before', 'After']"
+        @update:model-value="patch('date_direction', $event)"
       />
     </template>
     <!-- Only for an event the trigger list does not already name. -->
     <template v-else-if="doc.trigger_type === 'Custom Event' && !isNamedEvent">
       <FormControl
-        v-model="doc.custom_event"
+        :model-value="doc.custom_event"
         variant="outline"
         type="select"
         :label="__('Custom Event')"
         :options="events"
+        @update:model-value="patch('custom_event', $event)"
       />
     </template>
   </div>
@@ -72,6 +80,13 @@ const props = defineProps({
   fields: { type: Array, default: () => [] },
   events: { type: Array, default: () => [] },
 })
+
+const emit = defineEmits(['update'])
+
+/** The builder owns the document, so a changed field travels back up to it. */
+function patch(field, value) {
+  emit('update', { [field]: value })
+}
 
 const isNamedEvent = computed(() =>
   eventTriggers(props.doc.document_type).some(
