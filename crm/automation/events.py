@@ -13,11 +13,13 @@ more than once is safe for flows: the outbox deduplicates a pending row per docu
 
 import frappe
 from frappe.automation_engine import emit, is_enabled
-from frappe.utils import add_to_date, now
+from frappe.utils import add_to_date, get_datetime, now
 
 CRM_REFERENCE_DOCTYPES = ("CRM Lead", "CRM Deal")
 QUALIFIED_STATUS = "Qualified"
 OVERDUE_STATUSES = ("Done", "Canceled")
+OVERDUE_SWEEP_KEY = "crm_last_overdue_task_sweep"
+OVERDUE_SWEEP_MAX_LOOKBACK_HOURS = 24
 
 # name -> payload keys, documented for flow authors and the builder.
 EVENTS = {
@@ -90,19 +92,34 @@ def emit_lead_converted(lead, deal, contact=None, organization=None):
 
 
 def emit_overdue_tasks():
-	"""Hourly sweep: emit once for each task that fell due in the last hour."""
+	"""Hourly sweep: emit once for each task that fell due since the last sweep."""
 	if not _enabled():
 		return
+	until = now()
 	tasks = frappe.get_all(
 		"CRM Task",
 		filters={
 			"status": ("not in", OVERDUE_STATUSES),
-			"due_date": ("between", [add_to_date(now(), hours=-1), now()]),
+			"due_date": ("between", [_sweep_start(until), until]),
 		},
 		fields=["name", "reference_doctype", "reference_docname", "due_date"],
 	)
 	for task in tasks:
 		_emit_overdue_task(task)
+	frappe.db.set_default(OVERDUE_SWEEP_KEY, until)
+
+
+def _sweep_start(until):
+	"""Resume where the last sweep stopped, so a delayed scheduler skips no window.
+
+	The lookback is capped: a site whose scheduler was off for a month should pick up
+	where automations still make sense, not emit a month of overdue tasks at once.
+	"""
+	floor = add_to_date(until, hours=-OVERDUE_SWEEP_MAX_LOOKBACK_HOURS)
+	last = frappe.db.get_default(OVERDUE_SWEEP_KEY)
+	if not last:
+		return add_to_date(until, hours=-1)
+	return max(get_datetime(last), get_datetime(floor))
 
 
 def _emit_overdue_task(task):
