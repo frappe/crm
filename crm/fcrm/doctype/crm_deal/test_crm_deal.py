@@ -335,6 +335,21 @@ class TestCRMDeal(IntegrationTestCase):
 		deal = frappe.get_doc("CRM Deal", deal_name)
 		self.assertEqual(deal.organization, org.name)
 
+	def test_create_deal_api_propagates_no_of_employees(self):
+		"""Test that no_of_employees is copied onto the organization create_deal creates"""
+		deal_name = create_deal(
+			{
+				"organization_name": "Employees Test Org",
+				"no_of_employees": "51-200",
+				"first_name": "Employees",
+				"email": "employeestest@example.com",
+			}
+		)
+
+		deal = frappe.get_doc("CRM Deal", deal_name)
+		org = frappe.get_doc("CRM Organization", deal.organization)
+		self.assertEqual(org.no_of_employees, "51-200")
+
 	def test_create_deal_with_existing_contact(self):
 		"""Test create_deal with existing contact"""
 		# Create contact first

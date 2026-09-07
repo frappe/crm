@@ -425,6 +425,7 @@ def create_organization(doc):
 			"territory": doc.get("territory"),
 			"industry": doc.get("industry"),
 			"annual_revenue": doc.get("annual_revenue"),
+			"no_of_employees": doc.get("no_of_employees"),
 		}
 	)
 	organization.insert(ignore_permissions=True)
