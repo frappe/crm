@@ -254,6 +254,26 @@ class TestCRMCallLog(IntegrationTestCase):
 		self.assertIn("_tasks", result)
 		self.assertIn("_notes", result)
 
+	def test_get_call_log_denies_user_without_read_access(self):
+		"""A logged in user with no call log access must not be able to read one"""
+		call = create_test_call_log(type="Outgoing", status="Completed")
+
+		if not frappe.db.exists("User", "no-roles-user@example.com"):
+			frappe.get_doc(
+				{
+					"doctype": "User",
+					"email": "no-roles-user@example.com",
+					"first_name": "No Roles",
+				}
+			).insert(ignore_permissions=True)
+
+		frappe.set_user("no-roles-user@example.com")
+		try:
+			with self.assertRaises(frappe.PermissionError):
+				get_call_log(call.name)
+		finally:
+			frappe.set_user("Administrator")
+
 	def test_get_call_log_with_reference_lead(self):
 		"""Test get_call_log API with reference to CRM Lead"""
 		lead = frappe.get_doc(
