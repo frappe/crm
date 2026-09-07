@@ -447,6 +447,43 @@ class TestCRMDeal(IntegrationTestCase):
 				create_test_deal(organization=f"Negative {fieldname}", **{fieldname: -100})
 
 
+class TestGetDealContacts(IntegrationTestCase):
+	def tearDown(self) -> None:
+		frappe.set_user("Administrator")
+		frappe.db.rollback()
+
+	def test_get_deal_contacts_requires_read_permission(self):
+		"""A user without read access on the deal must not get its contact PII"""
+		contact = create_test_contact(
+			first_name="Alice",
+			last_name="Confidential",
+			email="alice@example.com",
+			mobile_no="+919000000000",
+		)
+		deal = create_test_deal(organization="Perm Test Org")
+		deal.append("contacts", {"contact": contact.name})
+		deal.save()
+
+		self.assertEqual(get_deal_contacts(deal.name)[0]["name"], contact.name)
+
+		frappe.set_user(create_test_user_without_deal_access())
+		with self.assertRaises(frappe.PermissionError):
+			get_deal_contacts(deal.name)
+
+
+def create_test_user_without_deal_access():
+	"""Create (or reuse) a user with no role granting access to CRM Deal"""
+	email = "deal-noperm@example.com"
+	if not frappe.db.exists("User", email):
+		user = frappe.new_doc("User")
+		user.email = email
+		user.first_name = "No"
+		user.last_name = "Perm"
+		user.send_welcome_email = 0
+		user.insert(ignore_permissions=True)
+	return email
+
+
 def create_test_deal(**kwargs):
 	"""Helper function to create a CRM Deal for testing"""
 	# Create organization if provided as string
