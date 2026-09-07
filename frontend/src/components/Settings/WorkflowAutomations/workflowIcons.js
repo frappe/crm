@@ -79,7 +79,7 @@ const ACTION_STYLES = {
 }
 
 const STEP_STYLES = {
-  Action: { icon: ActionIcon, ...TONES.cyan },
+  Action: { icon: ActionIcon, ...TONES.blue },
   Wait: { icon: WaitIcon, ...TONES.amber },
   WaitForEvent: { icon: EventIcon, ...TONES.amber },
   If: { icon: BranchIcon, ...TONES.green },
