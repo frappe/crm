@@ -246,7 +246,7 @@ def get_permitted_docs(doctype: str, names: list[str]) -> list[dict]:
 	if not names or not frappe.has_permission(doctype, "read"):
 		return []
 
-	docs = frappe.get_list(doctype, filters={"name": ("in", names)}, fields=["*"])
+	docs = frappe.get_list(doctype, filters={"name": ("in", names)}, fields=["*"], limit=len(names))
 	return sorted(docs, key=lambda doc: names.index(str(doc.name)))
 
 

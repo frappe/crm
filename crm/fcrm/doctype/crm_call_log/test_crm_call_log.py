@@ -373,6 +373,26 @@ class TestCRMCallLog(FrappeTestCase):
 		self.assertEqual(len(result["_tasks"]), 1)
 		self.assertEqual(result["_tasks"][0]["name"], task.name)
 
+	def test_get_call_log_returns_all_linked_tasks_beyond_default_page_length(self):
+		"""Linked records must not be cut off by the framework's default list page length"""
+		call = create_test_call_log()
+		task_count = 25
+
+		for i in range(task_count):
+			task = frappe.get_doc(
+				{
+					"doctype": "CRM Task",
+					"title": f"Follow up {i}",
+					"assigned_to": "Administrator",
+				}
+			).insert()
+			call.link_with_reference_doc("CRM Task", task.name)
+		call.save()
+
+		result = get_call_log(call.name)
+
+		self.assertEqual(len(result["_tasks"]), task_count)
+
 	def test_create_lead_from_call_log_basic(self):
 		"""Test creating a lead from call log"""
 		call = create_test_call_log(
