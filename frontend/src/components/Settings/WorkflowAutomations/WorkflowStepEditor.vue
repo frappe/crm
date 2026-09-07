@@ -198,6 +198,7 @@ import TargetPicker from './WorkflowTargetPicker.vue'
 import WorkflowComboboxIcon from './WorkflowComboboxIcon.vue'
 import WorkflowComboboxOption from './WorkflowComboboxOption.vue'
 import { actionIcon, stepTypeIcon } from './workflowIcons'
+import { groupActionsByApp } from './workflowBlocks'
 import {
   actionSchema,
   capabilitiesFor,
@@ -241,15 +242,17 @@ const fields = computed(
   () => capabilitiesFor(targetDoctype.value)?.fields || [],
 )
 
-const actionOptions = computed(() => {
-  const actions = capabilitiesFor(targetDoctype.value)?.actions || []
-  const options = actions.map((action) =>
+const actionOptions = computed(() =>
+  groupActionsByApp(availableActions.value, (action) =>
     actionOption(action.action_type, action.label),
-  )
-  // Never render a chosen action as an empty select, even if its DocType is still unknown.
-  if (step.value.action_type && !actions.some(isChosen))
-    options.unshift(actionOption(step.value.action_type, schema.value?.label))
-  return options
+  ),
+)
+
+// Never render a chosen action as an empty field, even if its DocType is still unknown.
+const availableActions = computed(() => {
+  const actions = capabilitiesFor(targetDoctype.value)?.actions || []
+  if (!step.value.action_type || actions.some(isChosen)) return actions
+  return [schema.value || { action_type: step.value.action_type }, ...actions]
 })
 
 function actionOption(actionType, label) {
