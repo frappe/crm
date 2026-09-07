@@ -274,6 +274,36 @@ class TestCRMCallLog(FrappeTestCase):
 		finally:
 			frappe.set_user("Administrator")
 
+	def test_get_call_log_hides_lead_user_cannot_read(self):
+		"""A user who can read the call log but not its lead must not receive the lead id"""
+		lead = frappe.get_doc(
+			{
+				"doctype": "CRM Lead",
+				"first_name": "Restricted Lead",
+				"lead_owner": "Administrator",
+			}
+		).insert()
+		call = create_test_call_log(reference_doctype="CRM Lead", reference_docname=lead.name)
+
+		if not frappe.db.exists("User", "sales-user@example.com"):
+			frappe.get_doc(
+				{
+					"doctype": "User",
+					"email": "sales-user@example.com",
+					"first_name": "Sales",
+					"roles": [{"role": "Sales User"}],
+				}
+			).insert(ignore_permissions=True)
+
+		frappe.set_user("sales-user@example.com")
+		try:
+			result = get_call_log(call.name)
+		finally:
+			frappe.set_user("Administrator")
+
+		self.assertEqual(result["name"], call.name)
+		self.assertNotIn("_lead", result)
+
 	def test_get_call_log_with_reference_lead(self):
 		"""Test get_call_log API with reference to CRM Lead"""
 		lead = frappe.get_doc(
