@@ -1,10 +1,11 @@
-<template>
+<template class="bg-surface-base">
   <div class="flex h-full min-h-0 flex-col gap-3">
     <div class="flex items-end gap-2">
       <div class="min-w-0 flex-1 space-y-1.5">
         <Link
           v-if="doc.document_type"
           class="max-w-sm"
+          variant="outline"
           :model-value="docname"
           :doctype="doc.document_type"
           :label="__('Select a record')"
