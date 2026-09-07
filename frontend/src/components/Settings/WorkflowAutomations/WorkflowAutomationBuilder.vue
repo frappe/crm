@@ -143,6 +143,7 @@
           :selected-step="selectedStep"
           :targets="targetsFor(selectedStep)"
           :loading="loading"
+          @update="patchDoc"
         />
       </div>
     </div>
@@ -240,6 +241,11 @@ const blocks = computed(() => blockGroups(doc.document_type))
 const triggers = computed(() => triggerGroups(doc.document_type))
 
 const relationships = computed(() => parseJson(doc.relationships, []))
+
+/** Every alias a step can target, outputs of steps the flow gained included. */
+const flowTargets = computed(() =>
+  aliasTargets(doc.document_type, relationships.value, toRows(doc.actions)),
+)
 const paneColumns = computed(() =>
   inspectorOpen.value ? `1fr 6px ${inspectorWidth.value}px` : '1fr',
 )
@@ -287,8 +293,7 @@ const saveState = computed(() => {
 /** A trial runs the saved flow, so unsaved edits would not be what gets tested. */
 const canTest = computed(() => Boolean(props.automationName) && !dirty.value)
 
-watch(() => doc.document_type, loadTargetCapabilities, { immediate: true })
-watch(relationships, loadTargetCapabilities, { deep: true })
+watch(flowTargets, loadTargetCapabilities, { immediate: true, deep: true })
 watch(dirty, (value) => emit('update:dirty', value), { immediate: true })
 
 loadAutomation()
@@ -417,11 +422,7 @@ function parseJson(value, fallback) {
 
 /** Load capabilities for the trigger DocType and every alias a step can target. */
 function loadTargetCapabilities() {
-  aliasTargets(
-    doc.document_type,
-    relationships.value,
-    toRows(doc.actions),
-  ).forEach((target) => loadCapabilities(target.doctype))
+  flowTargets.value.forEach((target) => loadCapabilities(target.doctype))
 }
 
 function targetsFor(step) {
@@ -440,6 +441,11 @@ function addStep({ after, branch, values }) {
   else insertAfter(doc.actions, after, created)
   selectedId.value = created._id
   inspectorOpen.value = true
+}
+
+/** The inspector reports its edits rather than writing into the document it is shown. */
+function patchDoc(values) {
+  Object.assign(doc, values)
 }
 
 /** Restoring replaces the whole document, so the canvas rebuilds from the snapshot. */
