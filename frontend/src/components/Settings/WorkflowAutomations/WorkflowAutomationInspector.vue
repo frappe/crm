@@ -19,11 +19,12 @@
       />
       <template v-else>
         <Link
-          v-model="doc.document_type"
+          :model-value="doc.document_type"
           label="DocType"
           variant="outline"
           doctype="DocType"
           :filters="docTypeFilters"
+          @update:model-value="patch({ document_type: $event })"
         />
         <div v-for="section in triggerSections" :key="section.group">
           <div class="mb-2 text-base text-ink-gray-5">{{ section.group }}</div>
@@ -40,37 +41,47 @@
             <span class="text-sm">{{ trigger.label }}</span>
           </button>
         </div>
-        <TriggerDetails :doc="doc" :fields="fields" :events="events" />
+        <TriggerDetails
+          :doc="doc"
+          :fields="fields"
+          :events="events"
+          @update="patch"
+        />
         <Relationships
-          v-model="doc.relationships"
+          :model-value="doc.relationships"
           :document-type="doc.document_type"
+          @update:model-value="patch({ relationships: $event })"
         />
         <WorkflowFilters
-          v-model="doc.filters"
+          :model-value="doc.filters"
           :doctype="doc.document_type"
           variant="outline"
           flat
+          @update:model-value="patch({ filters: $event })"
         />
         <ConditionEditor
-          v-model="doc.condition"
+          :model-value="doc.condition"
           :doctype="doc.document_type"
           :label="__('Condition')"
           variant="outline"
           :placeholder="__('doc.status == \'Open\'')"
+          @update:model-value="patch({ condition: $event })"
         />
         <FormControl
-          v-model="doc.run_as"
+          :model-value="doc.run_as"
           type="select"
           variant="outline"
           :label="__('Run As')"
           :options="runAsOptions"
+          @update:model-value="patch({ run_as: $event })"
         />
         <Link
           v-if="doc.run_as === 'Automation User'"
-          v-model="doc.automation_user"
+          :model-value="doc.automation_user"
           :label="__('Automation User')"
           variant="outline"
           doctype="User"
+          @update:model-value="patch({ automation_user: $event })"
         />
       </template>
     </div>
@@ -100,12 +111,19 @@ const props = defineProps({
   loading: { type: Boolean, default: false },
 })
 
+const emit = defineEmits(['update'])
+
 const docTypeFilters = { istable: 0 }
 const triggerSections = computed(() => triggerGroups(props.doc.document_type))
 const selectedTrigger = computed(() => triggerValue(props.doc))
 
 function pickTrigger(value) {
-  Object.assign(props.doc, triggerFromValue(value))
+  patch(triggerFromValue(value))
+}
+
+/** The builder owns the document; edits here travel back up to it. */
+function patch(values) {
+  emit('update', values)
 }
 
 const runAsOptions = ['Triggering User', 'Document Owner', 'Automation User']
