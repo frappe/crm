@@ -36,13 +36,35 @@ const flowBlocks = [
   },
 ]
 
-/** Flow control first, then every action the trigger DocType registers. */
+/** Flow control first, then every action the trigger DocType registers, by app. */
 export function blockGroups(doctype) {
-  const actions = (capabilitiesFor(doctype)?.actions || []).map(actionBlock)
+  const actions = capabilitiesFor(doctype)?.actions || []
   return [
     { group: __('Flow'), options: flowBlocks },
-    { group: __('Actions'), options: actions },
+    ...groupActionsByApp(actions, actionBlock),
   ].filter((group) => group.options.length)
+}
+
+/** Which app an action came from is the only grouping a long list of them can carry. */
+export function groupActionsByApp(actions, toOption) {
+  const groups = new Map()
+  actions.forEach((action) => {
+    const name = groupLabel(action)
+    if (!groups.has(name)) groups.set(name, [])
+    groups.get(name).push(toOption(action))
+  })
+  return [...groups].map(([group, options]) => ({ group, options }))
+}
+
+/** The framework's actions are the built-in ones; every other app goes by its own name. */
+function groupLabel(action) {
+  if (action.app === 'frappe') return __('Core')
+  return shortTitle(action.app_title) || action.app || __('Other')
+}
+
+/** App titles carry a vendor prefix the group header does not need. */
+function shortTitle(title) {
+  return (title || '').replace(/^Frappe\s+/, '')
 }
 
 function actionBlock(action) {
