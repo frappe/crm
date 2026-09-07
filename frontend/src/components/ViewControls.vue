@@ -1019,6 +1019,15 @@ function updateKanbanSettings(data) {
       name: data.item,
       fieldname: view.value.column_field,
       value: data.to,
+    }).catch((error) => {
+      toast.error(
+        error.messages?.[0] || __('Could not update the record.'),
+      )
+      // Revert the optimistic drag-and-drop move in the UI since the
+      // server rejected the change (e.g. a mandatory field like
+      // lost_reason is missing) — otherwise the card stays shown in the
+      // wrong column with no indication that nothing was actually saved.
+      list.value.reload()
     })
     return
   }
