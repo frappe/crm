@@ -128,7 +128,7 @@
       </div>
       <div
         v-if="inspectorOpen"
-        class="relative cursor-col-resize bg-transparent after:absolute after:inset-y-0 after:left-1/2 after:w-px after:-translate-x-1/2 after:bg-outline-gray-2 after:transition-colors hover:after:bg-outline-gray-4"
+        class="relative cursor-col-resize bg-surface-base after:absolute after:inset-y-0 after:left-1/2 after:w-px after:-translate-x-1/2 after:bg-outline-gray-2 after:transition-colors hover:after:bg-outline-gray-4"
         role="separator"
         aria-orientation="vertical"
         :aria-label="__('Resize panel')"
