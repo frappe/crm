@@ -130,6 +130,6 @@ const events = computed(() => capabilities.value?.custom_events || [])
 
 .trigger-row:hover,
 .trigger-row-selected {
-  background: var(--surface-gray-4);
+  background: var(--surface-gray-3);
 }
 </style>
