@@ -588,8 +588,6 @@ const getOptions = (options) => {
   }
 }
 
-<<<<<<< HEAD
-=======
 const getAutocompleteOptions = (field) => {
   const options = getOptions(field.options)
   return [
@@ -627,7 +625,6 @@ function openExternalUrl(value) {
   window.open(value.trim(), '_blank', 'noopener,noreferrer')
 }
 
->>>>>>> 27439a4 (feat: allow custom values in Autocomplete fields)
 async function handleButtonClick(field) {
   if (typeof field.click === 'function') {
     return await field.click(data.value)
