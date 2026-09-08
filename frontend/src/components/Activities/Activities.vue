@@ -604,7 +604,10 @@ onMounted(() => {
 })
 
 function handleDocinfoUpdate({ doc, key }) {
-  if (key !== 'comments') return
+  // 'comments' covers comment activity; 'communications' covers new/updated
+  // emails (e.g. a reply arriving, or a read-receipt coming in) so the
+  // timeline reflects them live instead of only after a manual reload.
+  if (key !== 'comments' && key !== 'communications') return
   if (doc.reference_doctype !== props.doctype) return
   if (doc.reference_name !== props.docname) return
 
