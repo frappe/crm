@@ -503,6 +503,20 @@ class FirstParagraphTest(UnitTestCase):
 		_page, soup = fixtures.make_page("https://acmelabs.example", html)
 		self.assertTrue(extractors.first_paragraph(soup).startswith("Acme Labs is the founder"))
 
+	def test_overview_speaking_for_the_company_is_never_a_profile(self):
+		# Two pronouns in copy that says "our" is still the company talking about
+		# itself, not a staff profile.
+		html = (
+			"<html><body><main>"
+			"<p>Over the past decade, advances in warehouse robotics have reshaped how "
+			"goods move between suppliers and consumers around the world.</p>"
+			"<p>Acme Robotics builds warehouse automation. Jane Doe founded it in 2015; "
+			"she leads our engineering team and her designs power every product.</p>"
+			"</main></body></html>"
+		)
+		_page, soup = fixtures.make_page("https://acmerobotics.example", html)
+		self.assertTrue(extractors.first_paragraph(soup).startswith("Acme Robotics builds"))
+
 	def test_repeated_pronouns_mark_a_profile(self):
 		html = (
 			"<html><body><main>"

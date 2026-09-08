@@ -431,8 +431,9 @@ _NON_CONTENT_PARENTS = {"nav", "header", "footer", "aside", "form"}
 _MIN_PARAGRAPH_LEN = 80
 _MAX_PARAGRAPHS_SCANNED = 6
 
-# A staff profile: a career phrase, or a job title plus a pronoun, or repeated
-# pronouns. A company overview that mentions its founder once passes.
+# Company copy speaks for itself ("we"/"our"). A staff profile is written in the
+# third person: a career phrase, a job title plus a pronoun, or repeated pronouns.
+_FIRST_PERSON_RE = re.compile(r"\b(?:we|our|ours|us)\b", re.I)
 _PRONOUN_RE = re.compile(r"\b(?:he|she|his|her)\b", re.I)
 _CAREER_RE = re.compile(r"\bbegan (?:his|her) career\b|\bprior to (?:joining|founding)\b", re.I)
 _TITLE_RE = re.compile(
@@ -443,8 +444,6 @@ _CTA_RE = re.compile(
 	r"read more|get in touch|see|check out|sign up|subscribe|join)\b",
 	re.I,
 )
-# A description of the company usually speaks for it ("we"/"our") or names it.
-_FIRST_PERSON_RE = re.compile(r"\b(?:we|our|ours|us)\b", re.I)
 
 
 def _company_name_hits(text, company_name):
@@ -455,10 +454,12 @@ def _company_name_hits(text, company_name):
 
 
 def _is_staff_profile(text):
-	pronouns = len(_PRONOUN_RE.findall(text))
-	if _CAREER_RE.search(text) or pronouns >= 2:
+	if _CAREER_RE.search(text):
 		return True
-	return bool(_TITLE_RE.search(text)) and pronouns >= 1
+	if _FIRST_PERSON_RE.search(text):
+		return False
+	pronouns = len(_PRONOUN_RE.findall(text))
+	return pronouns >= 2 or (pronouns >= 1 and bool(_TITLE_RE.search(text)))
 
 
 def _describes_company(text, company_name):
