@@ -61,9 +61,7 @@ def auto_enrich_enabled_for(doctype: str) -> bool:
 	Settings-only check (feature enabled + auto_enrich on + an enrichable doctype) --
 	no Rules/Mappings assembled."""
 	s = get_settings()
-	return bool(
-		_setting(s, "enabled") and _setting(s, "auto_enrich") and doctype in ENRICHABLE_DOCTYPES
-	)
+	return bool(_setting(s, "enabled") and _setting(s, "auto_enrich") and doctype in ENRICHABLE_DOCTYPES)
 
 
 # Industry classifier thresholds. These are mechanics (how confident the winner

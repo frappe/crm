@@ -179,13 +179,21 @@ def _meta_with_method(soup, *names):
 _MIN_META_DESC_LEN = 30
 
 
+def _is_description_copy(content):
+	"""False for a stub or a verification token. Scripts that do not space
+	their words (CJK, Thai) are never ASCII-only, so they still count as copy."""
+	if len(content) < _MIN_META_DESC_LEN:
+		return False
+	return " " in content or not content.isascii()
+
+
 def _meta_description(soup):
 	fallback = ""
 	for name in ("og:description", "description"):
 		content, _name = _meta_with_method(soup, name)
 		if not content:
 			continue
-		if " " in content and len(content) >= _MIN_META_DESC_LEN:
+		if _is_description_copy(content):
 			return content
 		fallback = fallback or content
 	return fallback
@@ -423,12 +431,12 @@ _NON_CONTENT_PARENTS = {"nav", "header", "footer", "aside", "form"}
 _MIN_PARAGRAPH_LEN = 80
 _MAX_PARAGRAPHS_SCANNED = 6
 
-_BIO_RE = re.compile(
-	r"\b(?:he|she|his|her)\b"
-	r"|\bbegan (?:his|her) career\b"
-	r"|\bprior to (?:joining|founding)\b"
-	r"|\bis the (?:founder|co-founder|ceo|cto|cfo|chief|managing director|president)\b",
-	re.I,
+# A staff profile: a career phrase, or a job title plus a pronoun, or repeated
+# pronouns. A company overview that mentions its founder once passes.
+_PRONOUN_RE = re.compile(r"\b(?:he|she|his|her)\b", re.I)
+_CAREER_RE = re.compile(r"\bbegan (?:his|her) career\b|\bprior to (?:joining|founding)\b", re.I)
+_TITLE_RE = re.compile(
+	r"\bis the (?:founder|co-founder|ceo|cto|cfo|chief|managing director|president)\b", re.I
 )
 _CTA_RE = re.compile(
 	r"^\s*(?:explore|discover|learn|find out|contact|call|browse|shop|buy|order|"
@@ -444,6 +452,13 @@ def _company_name_hits(text, company_name):
 	if not name:
 		return 0
 	return len(re.findall(rf"\b{re.escape(name)}\b", text, re.IGNORECASE))
+
+
+def _is_staff_profile(text):
+	pronouns = len(_PRONOUN_RE.findall(text))
+	if _CAREER_RE.search(text) or pronouns >= 2:
+		return True
+	return bool(_TITLE_RE.search(text)) and pronouns >= 1
 
 
 def _describes_company(text, company_name):
@@ -475,7 +490,7 @@ def first_paragraph(soup, industry_rules=None, company_name=""):
 	if not candidates:
 		return ""
 	candidates = [
-		text for text in candidates if not (_BIO_RE.search(text) or _CTA_RE.match(text))
+		text for text in candidates if not (_is_staff_profile(text) or _CTA_RE.match(text))
 	] or candidates
 
 	# max() keeps the first-encountered element on ties, so document order still
