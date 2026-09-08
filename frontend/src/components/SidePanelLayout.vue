@@ -399,6 +399,11 @@
                       </div>
                     </div>
                   </div>
+                  <AddressDisplay
+                    v-if="field.visible && isAddressField(field)"
+                    class="mb-1 px-3"
+                    :name="doc[field.fieldname]"
+                  />
                 </template>
               </FadedScrollableDiv>
             </slot>
@@ -430,6 +435,7 @@ import PrimaryDropdown from '@/components/PrimaryDropdown.vue'
 import FadedScrollableDiv from '@/components/FadedScrollableDiv.vue'
 import ArrowUpRightIcon from '@/components/Icons/ArrowUpRightIcon.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
+import AddressDisplay from '@/components/AddressDisplay.vue'
 import Link from '@/components/Controls/Link.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import SidePanelModal from '@/components/Modals/SidePanelModal.vue'
@@ -661,6 +667,10 @@ function firstVisibleIndex() {
 const textareaFieldtypes = ['Small Text', 'Text', 'Long Text', 'Code']
 function isTextareaField(field) {
   return textareaFieldtypes.includes(field.fieldtype)
+}
+
+function isAddressField(field) {
+  return field.fieldtype === 'Link' && field.options === 'Address'
 }
 
 function ratingMax(field) {
