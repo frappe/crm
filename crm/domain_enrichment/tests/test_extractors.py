@@ -113,6 +113,20 @@ class CompanyInfoTest(UnitTestCase):
 		info = extractors.extract_company_info(page, soup)
 		self.assertEqual(info["description"].value, "Acme GmbH")
 
+	def test_unspaced_script_description_beats_token(self):
+		# Japanese copy has no ASCII spaces, so a space check alone would mistake it
+		# for a token and keep the og:description token instead.
+		copy = "株式会社アクメは東京を拠点に産業用ロボットの設計・製造・販売を手がける専門メーカーです。"
+		page, soup = fixtures.make_page(
+			"https://x.example",
+			"<html><head>"
+			"<meta property='og:description' content='JIs-hfpDlO6niGZsMes79IWdxC0A9frop'>"
+			f"<meta name='description' content='{copy}'>"
+			"</head><body></body></html>",
+		)
+		info = extractors.extract_company_info(page, soup)
+		self.assertEqual(info["description"].value, copy)
+
 
 class LogoResolutionTest(UnitTestCase):
 	"""extract_logo returns the link icon only; the larger social/JSON-LD image is
@@ -462,6 +476,44 @@ class FirstParagraphTest(UnitTestCase):
 		_page, soup = fixtures.make_page("https://kishika.example", html)
 		result = extractors.first_paragraph(soup, industry_rules=finance_rules)
 		self.assertTrue(result.startswith("Kishika Temperatures has been a leader"))
+
+	def test_overview_mentioning_founder_once_is_not_a_profile(self):
+		# A company overview may name its founder with a single pronoun. That is
+		# not a staff profile and must still win over a generic sector essay.
+		html = (
+			"<html><body><main>"
+			"<p>Over the past decade, advances in warehouse robotics have reshaped how "
+			"goods move between suppliers and consumers around the world.</p>"
+			"<p>Acme Robotics builds warehouse automation for retailers. Founded by "
+			"Jane Doe in 2015, she still leads our engineering team today.</p>"
+			"</main></body></html>"
+		)
+		_page, soup = fixtures.make_page("https://acmerobotics.example", html)
+		self.assertTrue(extractors.first_paragraph(soup).startswith("Acme Robotics builds"))
+
+	def test_company_described_as_founder_of_something_is_not_a_profile(self):
+		html = (
+			"<html><body><main>"
+			"<p>Over the past decade, advances in open hardware have reshaped how "
+			"engineers share designs and collaborate across company lines.</p>"
+			"<p>Acme Labs is the founder of the Open Hardware Alliance, and we design "
+			"reference boards used by hundreds of member companies worldwide.</p>"
+			"</main></body></html>"
+		)
+		_page, soup = fixtures.make_page("https://acmelabs.example", html)
+		self.assertTrue(extractors.first_paragraph(soup).startswith("Acme Labs is the founder"))
+
+	def test_repeated_pronouns_mark_a_profile(self):
+		html = (
+			"<html><body><main>"
+			"<p>Priya Nair joined the firm in 2010. She oversees every client mandate "
+			"and her research has been cited across the industry for years.</p>"
+			"<p>Acme Capital is a registered portfolio manager focused on uncovering "
+			"long-term opportunities for clients across public equity markets.</p>"
+			"</main></body></html>"
+		)
+		_page, soup = fixtures.make_page("https://acmecapital.example", html)
+		self.assertTrue(extractors.first_paragraph(soup).startswith("Acme Capital is a registered"))
 
 	def test_falls_back_to_rejected_paragraphs_when_nothing_else_qualifies(self):
 		# A page of nothing but bios must still yield a paragraph -- rejecting every
