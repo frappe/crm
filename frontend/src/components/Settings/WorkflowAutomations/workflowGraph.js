@@ -46,7 +46,7 @@ function triggerNode(doc) {
     position: { x: 0, y: 0 },
     data: {
       ...TRIGGER_STYLE,
-      icon: trigger?.icon || TRIGGER_STYLE.icon,
+      ...(trigger || {}),
       isTrigger: true,
       empty: !doc.trigger_type,
       kicker: __('Trigger'),
