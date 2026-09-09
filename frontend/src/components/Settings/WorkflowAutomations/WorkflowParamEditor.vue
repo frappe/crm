@@ -194,11 +194,20 @@ const schemaFields = computed(() =>
   (props.schema?.params_schema || []).filter(isShown),
 )
 
-/** A param gives way to the one it stands in for while that one is on screen and filled. */
+/** A param gives way to the one it stands in for while that one is on screen and filled, and
+    a param that only applies to one branch of a choice waits for that branch. */
 function isShown(field) {
-  return !(standIns.value[field.fieldname] || []).some(
+  const givenWay = (standIns.value[field.fieldname] || []).some(
     (other) => isInSchema(other) && isFilled(other),
   )
+  return !givenWay && appliesHere(field)
+}
+
+function appliesHere(field) {
+  return Object.entries(field.visible_when || {}).every(([other, wanted]) => {
+    const value = params.value[other]
+    return Array.isArray(wanted) ? wanted.includes(value) : value === wanted
+  })
 }
 
 function isInSchema(fieldname) {
