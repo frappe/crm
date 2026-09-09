@@ -16,7 +16,7 @@ import WaitIcon from '~icons/lucide/timer'
 import WebhookIcon from '~icons/lucide/webhook'
 
 /** `tone` colours a bare glyph in a list; `chip` is the tile it sits in on a node card. */
-const TONES = {
+export const ICON_TONES = {
   blue: {
     tone: 'text-ink-blue-7',
     chip: 'bg-surface-blue-3 border-outline-blue-7',
@@ -65,27 +65,28 @@ const TONES = {
 
 /** One icon and tone per action, so a list of them is scannable rather than eleven zaps. */
 const ACTION_STYLES = {
-  SetFieldValue: { icon: SetFieldIcon, ...TONES.blue },
-  IncrementFieldValue: { icon: IncrementIcon, ...TONES.cyan },
-  CreateDocument: { icon: CreateIcon, ...TONES.green },
-  SendNotification: { icon: NotifyIcon, ...TONES.teal },
-  AssignToUser: { icon: AssignIcon, ...TONES.violet },
-  CallWebhook: { icon: WebhookIcon, ...TONES.pink },
-  RunScript: { icon: ScriptIcon, ...TONES.gray },
-  AdjustLeadScore: { icon: ScoreIcon, ...TONES.orange },
-  SetLeadTemperature: { icon: TemperatureIcon, ...TONES.red },
-  ConvertLeadToDeal: { icon: ConvertIcon, ...TONES.purple },
-  SendCRMEmail: { icon: EmailIcon, ...TONES.violet },
+  SetFieldValue: { icon: SetFieldIcon, ...ICON_TONES.blue },
+  IncrementFieldValue: { icon: IncrementIcon, ...ICON_TONES.cyan },
+  CreateDocument: { icon: CreateIcon, ...ICON_TONES.green },
+  SendNotification: { icon: NotifyIcon, ...ICON_TONES.teal },
+  SendCRMNotification: { icon: NotifyIcon, ...ICON_TONES.teal },
+  AssignToUser: { icon: AssignIcon, ...ICON_TONES.violet },
+  CallWebhook: { icon: WebhookIcon, ...ICON_TONES.pink },
+  RunScript: { icon: ScriptIcon, ...ICON_TONES.gray },
+  AdjustLeadScore: { icon: ScoreIcon, ...ICON_TONES.orange },
+  SetLeadTemperature: { icon: TemperatureIcon, ...ICON_TONES.red },
+  ConvertLeadToDeal: { icon: ConvertIcon, ...ICON_TONES.purple },
+  SendCRMEmail: { icon: EmailIcon, ...ICON_TONES.violet },
 }
 
 const STEP_STYLES = {
-  Action: { icon: ActionIcon, ...TONES.blue },
-  Wait: { icon: WaitIcon, ...TONES.amber },
-  WaitForEvent: { icon: EventIcon, ...TONES.amber },
-  If: { icon: BranchIcon, ...TONES.green },
+  Action: { icon: ActionIcon, ...ICON_TONES.blue },
+  Wait: { icon: WaitIcon, ...ICON_TONES.amber },
+  WaitForEvent: { icon: EventIcon, ...ICON_TONES.amber },
+  If: { icon: BranchIcon, ...ICON_TONES.green },
 }
 
-export const TRIGGER_STYLE = { icon: TriggerIcon, ...TONES.blue }
+export const TRIGGER_STYLE = { icon: TriggerIcon, ...ICON_TONES.blue }
 
 export function actionIcon(actionType) {
   return ACTION_STYLES[actionType] || STEP_STYLES.Action
