@@ -183,8 +183,13 @@ function row(entry) {
   }
 
   /* The add button belongs to the rows above it, not a row of its own. */
-  :deep([data-slot='add-condition']) {
+  :deep([data-slot='condition-group']:has(> ul) > div) {
     margin-top: -0.5rem;
+  }
+
+  /* A group with nothing in it yet is all button, so the button takes the middle. */
+  :deep([data-slot='condition-group']:not(:has(> ul)) > div) {
+    justify-content: center;
   }
 
   :deep([data-slot='condition-field'] button) {
