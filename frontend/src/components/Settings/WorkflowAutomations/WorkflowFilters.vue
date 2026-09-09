@@ -147,9 +147,15 @@ function row(entry) {
     grid-template-columns: minmax(0, 1fr) !important;
   }
 
+  /* Field and operator share the first line, the field taking the wider share;
+     the value gets the line under them. */
   :deep([data-slot='condition-leaf']) {
     grid-column: span 1 !important;
-    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr) !important;
+  }
+
+  :deep([data-slot='condition-value']) {
+    grid-column: 1 / -1;
   }
 
   /* The cell centres its word for a row that sits beside it; stacked, it leads. */
