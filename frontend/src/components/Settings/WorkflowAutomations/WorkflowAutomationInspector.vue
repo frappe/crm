@@ -53,7 +53,6 @@
         <WorkflowFilters
           :model-value="doc.filters"
           :doctype="doc.document_type"
-          variant="outline"
           flat
           @update:model-value="patch({ filters: $event })"
         />
