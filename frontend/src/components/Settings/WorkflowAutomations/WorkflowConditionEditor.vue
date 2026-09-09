@@ -9,7 +9,6 @@
       v-if="mode === 'filters'"
       :model-value="filters"
       :doctype="doctype"
-      :variant="variant"
       :label="''"
       @update:model-value="setFilters"
     />
