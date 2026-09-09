@@ -172,9 +172,19 @@ function row(entry) {
     display: none;
   }
 
-  /* The cell centres its word for a row that sits beside it; stacked, it leads. */
+  /* The cell centres its word for a row that sits beside it; stacked, it leads
+     the row and needs the gap the grid only gives its columns. */
+  :deep([data-slot='condition-group'] li > :first-child) {
+    margin-bottom: 0.5rem;
+  }
+
   :deep([data-slot='condition-group'] li > :first-child > div) {
     justify-content: flex-start;
+  }
+
+  /* The add button belongs to the rows above it, not a row of its own. */
+  :deep([data-slot='add-condition']) {
+    margin-top: -0.5rem;
   }
 
   :deep([data-slot='condition-field'] button) {
@@ -191,6 +201,14 @@ function row(entry) {
     position: absolute;
     right: -0.25rem;
     top: -0.25rem;
+  }
+
+  /* A group's own menu drops onto the add-condition line under its card, so the
+     two controls for that level share a row instead of stacking. */
+  :deep(li:has([data-slot='condition-group']) > :nth-child(3)) {
+    position: absolute;
+    right: 0;
+    bottom: -2.25rem;
   }
 }
 </style>
