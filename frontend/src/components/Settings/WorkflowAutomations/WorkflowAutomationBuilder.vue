@@ -1,106 +1,107 @@
 <template>
-  <div class="relative flex h-full min-h-0 flex-col bg-surface-gray-1">
+  <div class="flex h-full min-h-0 bg-surface-base p-2">
     <div
-      class="flex h-14 shrink-0 items-center justify-between border-b border-outline-gray-2 px-4"
+      class="automation-card flex min-w-0 flex-1 flex-col overflow-hidden rounded-lg bg-surface-gray-1 shadow-sm ring-1 ring-outline-gray-1"
     >
-      <div class="flex min-w-0 items-center gap-2">
-        <Breadcrumbs class="automation-breadcrumbs" :items="breadcrumbs">
-          <template #prefix>
-            <WorkflowIcon class="mr-1.5 size-4 text-ink-gray-5" />
-          </template>
-        </Breadcrumbs>
-        <span class="text-ink-gray-5 text-sm-semibold" aria-hidden="true"
-          >/</span
-        >
-        <div
-          class="flex min-w-0 cursor-text items-center gap-1 rounded pr-1.5 transition-colors hover:bg-surface-gray-2"
-          @focus="selectTitle"
-        >
-          <div
-            class="title-sizer font-semibold text-ink-gray-7 -mr-2.5"
-            :data-value="doc.title || __('Untitled automation')"
+      <div
+        class="flex h-14 shrink-0 items-center justify-between border-b border-outline-gray-2 px-4"
+      >
+        <div class="flex min-w-0 items-center gap-2">
+          <Breadcrumbs class="automation-breadcrumbs" :items="breadcrumbs">
+            <template #prefix>
+              <WorkflowIcon class="mr-1.5 size-4 text-ink-gray-5" />
+            </template>
+          </Breadcrumbs>
+          <span class="text-ink-gray-5 text-sm-semibold" aria-hidden="true"
+            >/</span
           >
-            <TextInput
-              variant="ghost"
-              :model-value="doc.title"
-              :aria-label="__('Automation title')"
-              :placeholder="__('Untitled automation')"
-              @update:model-value="setTitle"
-            />
+          <div
+            class="flex min-w-0 cursor-text items-center gap-1 rounded pr-1.5 transition-colors hover:bg-surface-gray-2"
+            @focus="selectTitle"
+          >
+            <div
+              class="title-sizer font-semibold text-ink-gray-7 -mr-2.5"
+              :data-value="doc.title || __('Untitled automation')"
+            >
+              <TextInput
+                variant="ghost"
+                :model-value="doc.title"
+                :aria-label="__('Automation title')"
+                :placeholder="__('Untitled automation')"
+                @update:model-value="setTitle"
+              />
+            </div>
           </div>
         </div>
-      </div>
-      <div class="flex items-center gap-2">
-        <span v-if="saveState" class="text-sm text-ink-gray-5">
-          {{ saveState }}
-        </span>
-        <Badge
-          v-if="dirty"
-          size="md"
-          :label="__('Unsaved')"
-          theme="amber"
-          variant="outline"
-        >
-          <template #prefix>
-            <IndicatorIcon class="text-amber-500" />
-          </template>
-        </Badge>
+        <div class="flex items-center gap-2">
+          <span v-if="saveState" class="text-sm text-ink-gray-5">
+            {{ saveState }}
+          </span>
+          <Badge
+            v-if="dirty"
+            size="md"
+            :label="__('Unsaved')"
+            theme="amber"
+            variant="outline"
+          >
+            <template #prefix>
+              <IndicatorIcon class="text-amber-500" />
+            </template>
+          </Badge>
 
-        <Button
-          :label="__('Save')"
-          variant="solid"
-          :loading="saving"
-          :disabled="!dirty"
-          @click="saveAutomation"
-        />
-        <Button
-          icon="lucide-x"
-          variant="ghost"
-          :aria-label="__('Close')"
-          @click="$emit('close')"
-        />
+          <Button
+            :label="__('Save')"
+            variant="solid"
+            :loading="saving"
+            :disabled="!dirty"
+            @click="saveAutomation"
+          />
+          <Button
+            icon="lucide-x"
+            variant="ghost"
+            :aria-label="__('Close')"
+            @click="$emit('close')"
+          />
+        </div>
       </div>
-    </div>
-    <div
-      class="flex shrink-0 items-center justify-between border-b border-outline-gray-2 px-4 py-2"
-    >
-      <TabButtons v-model="tab" :options="tabOptions" />
-      <div class="flex items-center gap-2">
-        <span class="text-sm text-ink-gray-6">
-          {{ doc.enabled ? __('Enabled') : __('Disabled') }}
-        </span>
-        <Switch
-          size="sm"
-          :model-value="Boolean(doc.enabled)"
-          :disabled="!doc.trigger_type"
-          @update:model-value="doc.enabled = $event ? 1 : 0"
-        />
+      <div
+        class="flex shrink-0 items-center justify-between border-b border-outline-gray-2 px-4 py-2"
+      >
+        <TabButtons v-model="tab" :options="tabOptions" />
+        <div class="flex items-center gap-2">
+          <span class="text-sm text-ink-gray-6">
+            {{ doc.enabled ? __('Enabled') : __('Disabled') }}
+          </span>
+          <Switch
+            size="sm"
+            :model-value="Boolean(doc.enabled)"
+            :disabled="!doc.trigger_type"
+            @update:model-value="doc.enabled = $event ? 1 : 0"
+          />
+        </div>
       </div>
-    </div>
-    <div v-if="tab === 'test'" class="min-h-0 flex-1 p-4">
-      <AutomationTrialRun
-        v-if="canTest"
-        :automation-name="automationName"
-        :doc="doc"
-      />
-      <p v-else class="text-sm text-ink-gray-5">
-        {{ __('Save the flow before testing it.') }}
-      </p>
-    </div>
-    <div
-      v-else
-      ref="panes"
-      class="grid min-h-0 flex-1"
-      :style="{ gridTemplateColumns: paneColumns }"
-    >
-      <div class="relative min-h-0 outline-none" autofocus tabindex="0">
+      <div v-if="tab === 'test'" class="min-h-0 flex-1 p-4">
+        <AutomationTrialRun
+          v-if="canTest"
+          :automation-name="automationName"
+          :doc="doc"
+        />
+        <p v-else class="text-sm text-ink-gray-5">
+          {{ __('Save the flow before testing it.') }}
+        </p>
+      </div>
+      <div
+        v-else
+        class="relative min-h-0 flex-1 outline-none"
+        autofocus
+        tabindex="0"
+      >
         <WorkflowFlow
           :nodes="nodes"
           :edges="edges"
           :block-groups="blocks"
           :trigger-groups="triggers"
           :selected-id="selectedId"
-          :inspector-open="inspectorOpen"
           :can-delete="canDeleteSelected"
           :can-undo="canUndo"
           :can-redo="canRedo"
@@ -113,31 +114,31 @@
         />
         <Button
           v-if="doc.trigger_type"
-          class="absolute right-3 top-3 z-10 shadow-sm"
-          :icon="
-            inspectorOpen
-              ? 'lucide-panel-right-close'
-              : 'lucide-panel-right-open'
-          "
+          class="absolute right-3 top-3 z-10 shadow-sm transition-transform active:scale-95"
           variant="subtle"
           :aria-label="
             inspectorOpen ? __('Close inspector') : __('Open inspector')
           "
+          :aria-expanded="inspectorOpen"
           @click="inspectorOpen = !inspectorOpen"
-        />
+        >
+          <template #icon>
+            <CollapseIcon
+              class="size-4 transition-transform duration-200 ease-out"
+              :class="{ 'rotate-180': inspectorOpen }"
+            />
+          </template>
+        </Button>
       </div>
+    </div>
+    <div
+      class="min-h-0 shrink-0 overflow-hidden transition-[width,margin,opacity] duration-200 ease-out motion-reduce:transition-none"
+      :class="showInspector ? 'ml-2 w-[340px]' : 'ml-0 w-0 opacity-0'"
+      :aria-hidden="!showInspector"
+    >
       <div
-        v-if="inspectorOpen"
-        class="relative cursor-col-resize bg-surface-base after:absolute after:inset-y-0 after:left-1/2 after:w-px after:-translate-x-1/2 after:bg-outline-gray-2 after:transition-colors hover:after:bg-outline-gray-4"
-        role="separator"
-        aria-orientation="vertical"
-        :aria-label="__('Resize panel')"
-        tabindex="0"
-        @mousedown.prevent="startResize"
-        @keydown.left.prevent="nudgeResize(24)"
-        @keydown.right.prevent="nudgeResize(-24)"
-      />
-      <div v-if="inspectorOpen" class="min-h-0 border-l">
+        class="automation-card h-full w-[340px] overflow-hidden rounded-lg bg-surface-base"
+      >
         <AutomationInspector
           :doc="doc"
           :selected-step="selectedStep"
@@ -189,6 +190,7 @@ import {
   toast,
 } from 'frappe-ui'
 import WorkflowIcon from '~icons/lucide/workflow'
+import CollapseIcon from '~icons/lucide/chevrons-left'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import { computed, reactive, ref, watch } from 'vue'
 
@@ -199,14 +201,8 @@ const props = defineProps({
 const emit = defineEmits(['close', 'saved', 'update:dirty'])
 const { $dialog } = globalStore()
 
-const INSPECTOR_WIDTH_KEY = 'crm:automation-inspector-width'
-const MIN_INSPECTOR_WIDTH = 280
-const MAX_INSPECTOR_WIDTH = 720
-
 const loading = ref(false)
 const saving = ref(false)
-const inspectorWidth = ref(storedInspectorWidth())
-const panes = ref(null)
 const tab = ref('editor')
 const inspectorOpen = ref(false)
 const selectedId = ref('trigger')
@@ -246,8 +242,9 @@ const relationships = computed(() => parseJson(doc.relationships, []))
 const flowTargets = computed(() =>
   aliasTargets(doc.document_type, relationships.value, toRows(doc.actions)),
 )
-const paneColumns = computed(() =>
-  inspectorOpen.value ? `1fr 6px ${inspectorWidth.value}px` : '1fr',
+/** Kept mounted while hidden so the panel can slide out instead of vanishing. */
+const showInspector = computed(
+  () => tab.value === 'editor' && inspectorOpen.value,
 )
 const canDeleteSelected = computed(() =>
   selectedId.value === 'trigger'
@@ -297,37 +294,6 @@ watch(flowTargets, loadTargetCapabilities, { immediate: true, deep: true })
 watch(dirty, (value) => emit('update:dirty', value), { immediate: true })
 
 loadAutomation()
-
-function storedInspectorWidth() {
-  return clampWidth(Number(localStorage.getItem(INSPECTOR_WIDTH_KEY)) || 340)
-}
-
-function clampWidth(width) {
-  return Math.min(Math.max(width, MIN_INSPECTOR_WIDTH), MAX_INSPECTOR_WIDTH)
-}
-
-function setInspectorWidth(width) {
-  inspectorWidth.value = clampWidth(width)
-  localStorage.setItem(INSPECTOR_WIDTH_KEY, String(inspectorWidth.value))
-}
-
-function nudgeResize(step) {
-  setInspectorWidth(inspectorWidth.value + step)
-}
-
-/** Measured from the panes' own right edge - the builder is inset inside a dialog. */
-function startResize() {
-  const right = panes.value.getBoundingClientRect().right
-  const onMove = (event) => setInspectorWidth(right - event.clientX)
-  const onUp = () => {
-    window.removeEventListener('mousemove', onMove)
-    window.removeEventListener('mouseup', onUp)
-    document.body.style.userSelect = ''
-  }
-  document.body.style.userSelect = 'none'
-  window.addEventListener('mousemove', onMove)
-  window.addEventListener('mouseup', onUp)
-}
 
 function defaultDoc() {
   return {
@@ -669,6 +635,24 @@ function cleanMessage(message) {
 </script>
 
 <style scoped>
+/* Both panes rise into place when the builder opens. */
+.automation-card {
+  animation: card-in 220ms ease-out both;
+}
+
+@keyframes card-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.995);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .automation-card {
+    animation: none;
+  }
+}
+
 /* An invisible mirror of the text sets the track width, so the field is only
    ever as wide as its content until it hits the cap and truncates. */
 .title-sizer {
