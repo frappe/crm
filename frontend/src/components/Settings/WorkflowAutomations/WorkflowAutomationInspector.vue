@@ -35,7 +35,11 @@
             }"
             @click="pickTrigger(trigger.value)"
           >
-            <component :is="trigger.icon" class="size-4" />
+            <component
+              :is="trigger.icon"
+              class="size-4"
+              :class="trigger.tone"
+            />
             <span class="text-sm">{{ trigger.label }}</span>
           </button>
         </div>
