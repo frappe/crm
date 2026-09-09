@@ -9,7 +9,7 @@
       :model-value="tree"
       :doctype="doctype"
       :max-depth="flat ? 0 : 2"
-      bordered="root"
+      bordered="all"
       @update:model-value="store"
     />
     <!-- The builder's empty state is a box of its own; this is the card every other
@@ -158,6 +158,20 @@ function row(entry) {
     grid-column: 1 / -1;
   }
 
+  /* The bracket joins rows that sit side by side; stacked, it is a stray tick. */
+  :deep([data-slot='condition-group'] li > :first-child > span) {
+    display: none;
+  }
+
+  /* A group's card opens with its own "Where", so the row's copy above it is noise. */
+  :deep(
+      [data-slot='condition-group']
+        li:first-child:has([data-slot='condition-group'])
+        > :first-child
+    ) {
+    display: none;
+  }
+
   /* The cell centres its word for a row that sits beside it; stacked, it leads. */
   :deep([data-slot='condition-group'] li > :first-child > div) {
     justify-content: flex-start;
@@ -168,7 +182,12 @@ function row(entry) {
     max-width: 100%;
   }
 
-  :deep([data-slot='condition-actions']) {
+  /* A row's menu rides its top corner, except on a row holding a group: there the
+     card's own first row already has one, and two in a corner read as one control. */
+  :deep(
+      li:not(:has([data-slot='condition-group']))
+        [data-slot='condition-actions']
+    ) {
     position: absolute;
     right: -0.25rem;
     top: -0.25rem;
