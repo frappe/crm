@@ -67,7 +67,6 @@
       <WorkflowFilters
         :model-value="condition.filters || []"
         :doctype="relatedDoctype"
-        variant="outline"
         :label="__('Filters')"
         flat
         @update:model-value="updateFilters($event)"
