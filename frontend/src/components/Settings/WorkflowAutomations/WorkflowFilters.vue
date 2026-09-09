@@ -1,63 +1,47 @@
 <template>
   <div class="space-y-2">
-    <label v-if="label" class="block text-sm text-ink-gray-5">{{
-      label
-    }}</label>
-    <CFConditions
+    <ConditionBuilder
       :key="doctype"
-      :conditions="conditions"
+      :model-value="tree"
       :doctype="doctype"
-      :variant="variant"
-      :is-child="true"
-      :level="flat ? 3 : level"
+      :label="label || undefined"
+      :max-depth="flat ? 0 : 2"
+      bordered="none"
+      @update:model-value="store"
     />
-    <p v-if="flat && conditions.length > 1" class="text-xs text-ink-gray-5">
+    <p
+      v-if="flat && tree.conditions.length > 1"
+      class="text-xs text-ink-gray-5"
+    >
       {{ __('A trigger runs only when these filters match.') }}
     </p>
   </div>
 </template>
 
 <script setup>
-import CFConditions from '@/components/ConditionsFilter/CFConditions.vue'
-import { reactive, watch } from 'vue'
+import {
+  ConditionBuilder,
+  fromFrappeConditions,
+  toFrappeConditions,
+} from '@framework/ui/components/ConditionBuilder'
+import { computed } from 'vue'
 
 /**
- * The list view's condition builder, reused as-is: it already resolves the DocType's real
- * fields and picks a control per fieldtype, so a value is chosen rather than typed.
- *
- * It edits its `conditions` array in place instead of emitting, so this keeps one reactive
- * array and mirrors it out as JSON whenever it changes.
+ * The framework's condition builder, bound to the interleaved array the flow stores:
+ * leaf rows `[field, operator, value]` with "and" / "or" between them, and a nested
+ * list wherever rows were grouped.
  */
 const props = defineProps({
   modelValue: { type: [String, Array], default: '' },
   doctype: { type: String, default: '' },
-  variant: { type: String, default: 'subtle' },
   label: { type: String, default: () => __('Filters') },
-  level: { type: Number, default: 0 },
-  // Hides the grouping controls (level 3). Conjunctions are still stored and honoured.
+  // Hides the grouping controls. Conjunctions are still stored and honoured.
   flat: { type: Boolean, default: false },
 })
 
 const emit = defineEmits(['update:modelValue'])
 
-const conditions = reactive(parse(props.modelValue))
-
-watch(conditions, () => emit('update:modelValue', serialize(conditions)), {
-  deep: true,
-})
-
-// Selecting another step hands this the next condition, so reload the array in place.
-watch(
-  () => props.modelValue,
-  (value) => {
-    if (serialize(conditions) === serialize(parse(value))) return
-    conditions.splice(0, conditions.length, ...parse(value))
-  },
-)
-
-function parse(value) {
-  return interleave(read(value))
-}
+const tree = computed(() => fromFrappeConditions(read(props.modelValue)))
 
 function read(value) {
   if (Array.isArray(value)) return value
@@ -69,13 +53,20 @@ function read(value) {
   }
 }
 
-/** A list stored without conjunctions means "all of these"; the builder wants them explicit. */
-function interleave(rows) {
-  if (rows.some((row) => typeof row === 'string')) return rows
-  return rows.flatMap((row, index) => (index ? ['and', row] : [row]))
+function store(next) {
+  emit('update:modelValue', JSON.stringify(toFrappeConditions(next).map(row)))
 }
 
-function serialize(value) {
-  return JSON.stringify(value)
+/** The builder names its operators; frappe's filter grammar wants its own tokens. */
+const TOKENS = { equals: '=', 'not equals': '!=' }
+
+function row(entry) {
+  if (typeof entry === 'string') return entry
+  if (Array.isArray(entry[0])) return entry.map(row)
+  const [fieldname, operator, value] = entry
+  // "is not set" is "is" read the other way round, and "is" is all frappe knows.
+  if (operator === 'is not')
+    return [fieldname, 'is', value === 'set' ? 'not set' : 'set']
+  return [fieldname, TOKENS[operator] || operator, value]
 }
 </script>
