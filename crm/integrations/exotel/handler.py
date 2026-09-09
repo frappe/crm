@@ -250,6 +250,7 @@ def get_call_log(call_payload):
 
 # Exotel reports call status in lowercase, hyphenated form. Map it onto the
 # options of the CRM Call Log status field, which is a mandatory Select.
+# https://support.exotel.com/support/solutions/articles/27323-call-status
 EXOTEL_CALL_STATUSES = {
 	"initiated": "Initiated",
 	"ringing": "Ringing",
@@ -265,6 +266,8 @@ EXOTEL_CALL_STATUSES = {
 
 # Exotel sends these when a leg never connected, eg. the caller hung up before
 # an agent picked up. There is no status to record, not an unknown one.
+# Leg2Status is documented as empty when there is no second leg:
+# https://support.exotel.com/support/solutions/articles/27323-call-status
 EXOTEL_EMPTY_STATUSES = ("", "null", "none", "undefined")
 
 
