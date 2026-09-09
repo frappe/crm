@@ -20,7 +20,7 @@
                   class="font-medium text-ink-gray-8 mb-1 cursor-pointer"
                   @click="openEvent(alert)"
                 >
-                  {{ alert.notification.subject || 'Event Notification' }}
+                  {{ alert.notification.subject || __('Event Notification') }}
                 </div>
                 <div class="text-ink-gray-6">
                   {{ formatEventTime(alert.notification) }}

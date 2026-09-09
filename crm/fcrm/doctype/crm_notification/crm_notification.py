@@ -49,7 +49,10 @@ def has_permission(doc, ptype, user):
 	if user == "Administrator" or "System Manager" in frappe.get_roles(user):
 		return True
 
-	if ptype == "create" or not doc.to_user:
+	if ptype == "create":
+		return False
+
+	if not doc.to_user:
 		return True
 
 	return doc.to_user == user

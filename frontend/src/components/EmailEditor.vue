@@ -296,19 +296,22 @@ function removeAttachment(attachment) {
 const showEmailTemplateSelectorModal = ref(false)
 
 async function applyEmailTemplate(template) {
+  let doc = modelValue.value
+
   let data = await call(
     'frappe.email.doctype.email_template.email_template.get_email_template',
     {
       template_name: template.name,
-      doc: modelValue.value,
+      // fields are the template context, so nesting doc lets {{ doc.field }} work too
+      doc: { ...doc, doc },
     },
   )
 
-  if (template.subject) {
+  if (data.subject) {
     subject.value = data.subject
   }
 
-  if (template.response) {
+  if (data.message) {
     content.value = data.message
   }
   showEmailTemplateSelectorModal.value = false

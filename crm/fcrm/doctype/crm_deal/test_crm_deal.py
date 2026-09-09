@@ -6,6 +6,7 @@ from frappe.desk.form.assign_to import add as assign_add
 from frappe.desk.form.assign_to import remove as assign_remove
 from frappe.tests import IntegrationTestCase
 
+from crm.fcrm.doctype.crm_deal.api import get_deal_contacts
 from crm.fcrm.doctype.crm_deal.crm_deal import (
 	add_contact,
 	create_deal,
@@ -262,6 +263,25 @@ class TestCRMDeal(IntegrationTestCase):
 			else:
 				self.assertEqual(c.is_primary, 0)
 
+	def test_get_deal_contacts_orders_primary_first(self):
+		"""Test that get_deal_contacts pins the primary contact to the top
+		regardless of the order contacts were added in"""
+		contact1 = create_test_contact(first_name="Alpha", email="alpha@example.com")
+		contact2 = create_test_contact(first_name="Beta", email="beta@example.com")
+		contact3 = create_test_contact(first_name="Gamma", email="gamma@example.com")
+
+		deal = create_test_deal(organization="Contact Order Org")
+		deal.append("contacts", {"contact": contact1.name})
+		deal.append("contacts", {"contact": contact2.name})
+		deal.append("contacts", {"contact": contact3.name, "is_primary": 1})
+		deal.save()
+
+		contacts = get_deal_contacts(deal.name)
+
+		self.assertEqual(contacts[0]["name"], contact3.name)
+		self.assertEqual(contacts[0]["is_primary"], 1)
+		self.assertEqual([c["name"] for c in contacts[1:]], [contact1.name, contact2.name])
+
 	def test_create_deal_api(self):
 		"""Test create_deal API function"""
 		deal_name = create_deal(
@@ -314,6 +334,21 @@ class TestCRMDeal(IntegrationTestCase):
 
 		deal = frappe.get_doc("CRM Deal", deal_name)
 		self.assertEqual(deal.organization, org.name)
+
+	def test_create_deal_api_propagates_no_of_employees(self):
+		"""Test that no_of_employees is copied onto the organization create_deal creates"""
+		deal_name = create_deal(
+			{
+				"organization_name": "Employees Test Org",
+				"no_of_employees": "51-200",
+				"first_name": "Employees",
+				"email": "employeestest@example.com",
+			}
+		)
+
+		deal = frappe.get_doc("CRM Deal", deal_name)
+		org = frappe.get_doc("CRM Organization", deal.organization)
+		self.assertEqual(org.no_of_employees, "51-200")
 
 	def test_create_deal_with_existing_contact(self):
 		"""Test create_deal with existing contact"""
@@ -419,6 +454,49 @@ class TestCRMDeal(IntegrationTestCase):
 
 		deal.reload()
 		self.assertEqual(deal.contacts[0].is_primary, 1)
+
+	def test_negative_currency_fields_rejected(self):
+		"""Test that Currency fields reject negative values"""
+		for fieldname in ("annual_revenue", "deal_value", "expected_deal_value", "total", "net_total"):
+			with self.subTest(fieldname=fieldname), self.assertRaises(frappe.NonNegativeError):
+				create_test_deal(organization=f"Negative {fieldname}", **{fieldname: -100})
+
+
+class TestGetDealContacts(IntegrationTestCase):
+	def tearDown(self) -> None:
+		frappe.set_user("Administrator")
+		frappe.db.rollback()
+
+	def test_get_deal_contacts_requires_read_permission(self):
+		"""A user without read access on the deal must not get its contact PII"""
+		contact = create_test_contact(
+			first_name="Alice",
+			last_name="Confidential",
+			email="alice@example.com",
+			mobile_no="+919000000000",
+		)
+		deal = create_test_deal(organization="Perm Test Org")
+		deal.append("contacts", {"contact": contact.name})
+		deal.save()
+
+		self.assertEqual(get_deal_contacts(deal.name)[0]["name"], contact.name)
+
+		frappe.set_user(create_test_user_without_deal_access())
+		with self.assertRaises(frappe.PermissionError):
+			get_deal_contacts(deal.name)
+
+
+def create_test_user_without_deal_access():
+	"""Create (or reuse) a user with no role granting access to CRM Deal"""
+	email = "deal-noperm@example.com"
+	if not frappe.db.exists("User", email):
+		user = frappe.new_doc("User")
+		user.email = email
+		user.first_name = "No"
+		user.last_name = "Perm"
+		user.send_welcome_email = 0
+		user.insert(ignore_permissions=True)
+	return email
 
 
 def create_test_deal(**kwargs):

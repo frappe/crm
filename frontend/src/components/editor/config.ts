@@ -18,6 +18,7 @@ import {
   InlineCode,
   HorizontalRule,
   InsertTable,
+  Strike,
   type MenuItem,
 } from 'frappe-ui/editor'
 import { useFileUpload } from 'frappe-ui'
@@ -79,6 +80,10 @@ export const fullToolbar: MenuItem[] = [
   HorizontalRule,
   InsertTable,
 ]
+
+/** Compact toolbar for inline/ghost fields (generic form fields, grid rows) —
+ *  shown in a floating bubble on text selection rather than a fixed bar. */
+export const bubbleToolbar: MenuItem[] = [Bold, Italic, Strike, InsertLink]
 
 /** Upload handler for images/files dropped or pasted into an editor. */
 export function uploadFile(

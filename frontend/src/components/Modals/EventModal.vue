@@ -172,9 +172,8 @@
             {{ __('Description') }}
           </div>
           <div class="w-9/12">
-            <TextEditor
+            <RichTextField
               editor-class="!prose-sm overflow-auto min-h-[80px] max-h-80 py-1.5 px-2 rounded border border-outline-gray-2 placeholder-ink-gray-4 hover:border-outline-gray-3 hover:border-outline-elevation-2 hover:shadow-sm focus:bg-surface-base focus:border-outline-gray-4 focus:ring-0 focus-visible:ring-2 focus-visible:ring-outline-gray-3 text-ink-gray-8 transition-colors"
-              :bubbleMenu="true"
               :content="_event.description"
               :placeholder="__('Add Description.')"
               @change="(val) => (_event.description = val)"
@@ -230,9 +229,9 @@
 <script setup>
 import EventNotifications from '@/components/Calendar/EventNotifications.vue'
 import Attendee from '@/components/Calendar/Attendee.vue'
+import RichTextField from '@/components/RichTextField.vue'
 import {
   Switch,
-  TextEditor,
   ErrorMessage,
   Dialog,
   DatePicker,

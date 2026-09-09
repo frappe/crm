@@ -420,7 +420,7 @@ function parseRows(rows, columns = []) {
           logo: getOrganization(deal.organization)?.organization_logo,
         }
       } else if (row === 'website') {
-        _rows[row] = website(deal.website)
+        _rows[row] = { label: website(deal.website), url: deal.website }
       } else if (row == 'status') {
         _rows[row] = {
           label: deal.status,

@@ -61,6 +61,97 @@ def get_dashboard(from_date: str | None = None, to_date: str | None = None, user
 	return layout
 
 
+#: Chart types that accept contributed options via the crm_dashboard_charts
+#: hook. Deliberately excludes "chart_types" itself — contributing an
+#: entirely new top-level chart type would also need DashboardItem.vue to
+#: know how to render it, which this hook does not attempt to solve.
+CONTRIBUTABLE_CHART_TYPES = ("number_chart", "axis_chart", "donut_chart")
+
+
+def get_core_chart_options():
+	"""
+	CRM's own built-in chart options, grouped by chart type. Every "value" here
+	must have a matching get_<value>(from_date, to_date, user) function in this
+	module.
+	"""
+	return {
+		"chart_types": [
+			{"label": _("Spacer"), "value": "spacer"},
+			{"label": _("Number Chart"), "value": "number_chart"},
+			{"label": _("Axis Chart"), "value": "axis_chart"},
+			{"label": _("Donut Chart"), "value": "donut_chart"},
+		],
+		"number_chart": [
+			{"label": _("Total Leads"), "value": "total_leads"},
+			{"label": _("Ongoing Deals"), "value": "ongoing_deals"},
+			{"label": _("Avg Ongoing Deal Value"), "value": "average_ongoing_deal_value"},
+			{"label": _("Won Deals"), "value": "won_deals"},
+			{"label": _("Avg Won Deal Value"), "value": "average_won_deal_value"},
+			{"label": _("Avg Deal Value"), "value": "average_deal_value"},
+			{"label": _("Avg Time to Close a Lead"), "value": "average_time_to_close_a_lead"},
+			{"label": _("Avg Time to Close a Deal"), "value": "average_time_to_close_a_deal"},
+		],
+		"axis_chart": [
+			{"label": _("Sales Trend"), "value": "sales_trend"},
+			{"label": _("Forecasted Revenue"), "value": "forecasted_revenue"},
+			{"label": _("Funnel Conversion"), "value": "funnel_conversion"},
+			{"label": _("Deals by Ongoing & Won Stage"), "value": "deals_by_stage_axis"},
+			{"label": _("Lost Deal Reasons"), "value": "lost_deal_reasons"},
+			{"label": _("Deals by Territory"), "value": "deals_by_territory"},
+			{"label": _("Deals by Salesperson"), "value": "deals_by_salesperson"},
+		],
+		"donut_chart": [
+			{"label": _("Deals by Stage"), "value": "deals_by_stage_donut"},
+			{"label": _("Leads by Source"), "value": "leads_by_source"},
+			{"label": _("Deals by Source"), "value": "deals_by_source"},
+		],
+	}
+
+
+def get_contributed_charts():
+	"""
+	Charts contributed by other apps via the crm_dashboard_charts hook, grouped
+	by chart type and validated. Each app's hooks.py declares:
+
+		crm_dashboard_charts = {
+			"number_chart": [
+				{"label": "Total Calls", "value": "total_calls", "resolver": "app.api.dashboard.get_total_calls"},
+			],
+		}
+
+	Every contributing app's list is merged (not "last one wins" — see
+	frappe.append_hook), so multiple apps can extend the same chart type
+	without clobbering each other. resolver is a dotted path to a
+	get_<name>(from_date, to_date, user) function, and does not need to live
+	in this module — that's the whole point of the hook.
+	"""
+	core_values = {
+		option["value"]
+		for chart_type in CONTRIBUTABLE_CHART_TYPES
+		for option in get_core_chart_options()[chart_type]
+	}
+
+	contributed = {chart_type: [] for chart_type in CONTRIBUTABLE_CHART_TYPES}
+	seen_values = set(core_values)
+
+	for chart_type, options in frappe.get_hooks("crm_dashboard_charts", default={}).items():
+		if chart_type not in CONTRIBUTABLE_CHART_TYPES:
+			continue
+		for option in options:
+			value = option.get("value")
+			resolver = option.get("resolver")
+			label = option.get("label")
+			if not value or not resolver or not label or value in seen_values:
+				# Missing fields, or a core/earlier-app chart name — core (and
+				# whichever app registered first) always wins; never let a
+				# later app's contribution shadow an existing chart.
+				continue
+			seen_values.add(value)
+			contributed[chart_type].append({"label": label, "value": value, "resolver": resolver})
+
+	return contributed
+
+
 @frappe.whitelist()
 @sales_user_only
 def get_chart(
@@ -69,6 +160,11 @@ def get_chart(
 	"""
 	Get number chart data for the dashboard.
 	"""
+	options = get_chart_options()
+	valid_chart_names = {option["value"] for values in options.values() for option in values}
+	if name not in valid_chart_names:
+		return {"error": _("Invalid chart name")}
+
 	if not from_date or not to_date:
 		from_date = frappe.utils.get_first_day(from_date or frappe.utils.nowdate())
 		to_date = frappe.utils.get_last_day(to_date or frappe.utils.nowdate())
@@ -84,8 +180,31 @@ def get_chart(
 	if hasattr(frappe.get_attr("crm.api.dashboard"), method_name):
 		method = getattr(frappe.get_attr("crm.api.dashboard"), method_name)
 		return method(from_date, to_date, user)
-	else:
-		return {"error": _("Invalid chart name")}
+
+	contributed = get_contributed_charts()
+	for chart_type in CONTRIBUTABLE_CHART_TYPES:
+		for option in contributed[chart_type]:
+			if option["value"] == name:
+				return frappe.get_attr(option["resolver"])(from_date, to_date, user)
+
+	return {"error": _("Invalid chart name")}
+
+
+@frappe.whitelist()
+@sales_user_only
+def get_chart_options():
+	"""
+	Return the selectable options for the "Add Chart" dialog, grouped by chart
+	type — CRM's own built-in charts plus anything contributed via the
+	crm_dashboard_charts hook.
+	"""
+	options = get_core_chart_options()
+	contributed = get_contributed_charts()
+	for chart_type in CONTRIBUTABLE_CHART_TYPES:
+		options[chart_type] = options[chart_type] + [
+			{"label": option["label"], "value": option["value"]} for option in contributed[chart_type]
+		]
+	return options
 
 
 def get_total_leads(from_date: str | None = None, to_date: str | None = None, user: str | None = None):

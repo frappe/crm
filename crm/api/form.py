@@ -72,6 +72,8 @@ DENIED_FIELDNAMES = (
 	"facebook_lead_id",
 )
 
+LAYOUT_BREAKS = ("Section Break", "Column Break")
+
 # Starting layout of a brand-new form, per target doctype: labelled sections,
 # each a list of columns, each column a list of fieldnames. A sensible
 # contact-capture starting point the author can then edit.
@@ -365,6 +367,9 @@ def get_form_config(name: str) -> dict:
 				"reqd": f.reqd,
 				"placeholder": f.placeholder,
 				"field_description": f.description,
+				"depends_on": f.depends_on or "",
+				"mandatory_depends_on": f.mandatory_depends_on or "",
+				"read_only_depends_on": f.read_only_depends_on or "",
 			}
 			for f in doc.web_form_fields
 		],
@@ -387,6 +392,41 @@ def _assert_hidden_defaults_set(hidden: list[dict]):
 	]
 	if missing:
 		frappe.throw(_("Set a default value before publishing for: {0}").format(", ".join(missing)))
+
+
+def _validated_visible_fields(document_type: str, fields: list[dict]) -> list[dict]:
+	"""Re-apply the catalog the picker filters by: `accept()` lets a public visitor
+	write anything listed in `web_form_fields`."""
+	meta = frappe.get_meta(document_type)
+	catalog = {f["fieldname"]: f for f in _mappable_fields(document_type)}
+	rows = []
+	for f in fields:
+		fieldname = f.get("fieldname")
+		if f.get("fieldtype") in LAYOUT_BREAKS:
+			# a break carries no data, but `accept()` still writes any row naming a field
+			if meta.has_field(fieldname):
+				frappe.throw(_("{0} can't be used as a layout break").format(fieldname))
+			rows.append(f)
+			continue
+		allowed = catalog.get(fieldname)
+		if not allowed:
+			frappe.throw(_("{0} can't be collected by a form").format(fieldname or _("Unnamed field")))
+		rows.append({**f, "fieldtype": allowed["fieldtype"], "options": allowed["options"]})
+	return rows
+
+
+def _validated_hidden_fields(document_type: str, hidden: list[dict]) -> list[dict]:
+	"""Same gate for the hidden section: `_apply_hidden_defaults` writes these onto
+	every submission."""
+	catalog = {h["fieldname"]: h for h in _seed_hidden_fields(document_type)}
+	rows = []
+	for h in hidden:
+		fieldname = h.get("fieldname")
+		allowed = catalog.get(fieldname)
+		if not allowed:
+			frappe.throw(_("{0} can't be set as a hidden field").format(fieldname or _("Unnamed field")))
+		rows.append({**h, "fieldtype": allowed["fieldtype"], "options": allowed["options"]})
+	return rows
 
 
 @frappe.whitelist()
@@ -431,6 +471,7 @@ def save_form(name: str | None, form: dict | str) -> dict:
 	# only rewrite the layout when fields were actually sent — an update that omits
 	# `fields` (e.g. a settings-only save) must not wipe the existing layout
 	if fields is not None:
+		fields = _validated_visible_fields(form["document_type"], fields)
 		doc.set("web_form_fields", [])
 		for i, f in enumerate(fields):
 			doc.append(
@@ -443,6 +484,11 @@ def save_form(name: str | None, form: dict | str) -> dict:
 					"reqd": 1 if f.get("reqd") else 0,
 					"placeholder": f.get("placeholder"),
 					"description": f.get("field_description"),
+					# conditional-logic rules authored per field in the builder (same as
+					# the framework's Web Form fields; evaluated client-side)
+					"depends_on": f.get("depends_on") or "",
+					"mandatory_depends_on": f.get("mandatory_depends_on") or "",
+					"read_only_depends_on": f.get("read_only_depends_on") or "",
 					"idx": i + 1,
 				},
 			)
@@ -455,7 +501,7 @@ def save_form(name: str | None, form: dict | str) -> dict:
 		hidden = _seed_hidden_fields(form["document_type"])
 	if isinstance(hidden, str):
 		hidden = json.loads(hidden or "[]")
-	hidden = hidden or []
+	hidden = _validated_hidden_fields(form["document_type"], hidden or [])
 	if doc.crm_published:
 		_assert_hidden_defaults_set(hidden)
 	doc.crm_hidden_defaults = json.dumps(hidden) if hidden else ""

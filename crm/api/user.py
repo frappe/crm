@@ -46,6 +46,68 @@ def change_password(old_password: str, new_password: str):
 	return _("Password Updated Successfully")
 
 
+def needs_password_setup() -> bool:
+	"""Whether the session user has no password of their own and must set one.
+
+	True for users provisioned without a password — the Frappe Cloud site owner,
+	users created by a script — who are logged into a session they never
+	authenticated for and so have no way back in once it expires.
+
+	Users who sign in through SSO are excluded: having no password is the
+	correct state for them, not something to fix.
+	"""
+	user = frappe.session.user
+
+	# Checked first: it is the discriminating one, and it short-circuits the
+	# other queries for everyone who already has a password — which is almost
+	# everyone, on every CRM page load.
+	if has_password(user):
+		return False
+
+	if frappe.get_system_settings("disable_user_pass_login"):
+		return False
+
+	# Every user carries a `frappe` provider row (Frappe issues one on insert
+	# so the site can act as an identity provider), so only other providers
+	# mean the user actually signs in through SSO.
+	if frappe.db.exists(
+		"User Social Login",
+		{
+			"parenttype": "User",
+			"parent": user,
+			"provider": ["!=", "frappe"],
+			"userid": ["is", "set"],
+		},
+	):
+		return False
+
+	return True
+
+
+def has_password(user: str) -> bool:
+	"""Whether a password is stored for the user.
+
+	User passwords are hashed rows in `__Auth` with `encrypted = 0`, so
+	`get_decrypted_password` (which only looks at encrypted rows) cannot answer
+	this — hence the direct query.
+	"""
+	Auth = frappe.qb.Table("__Auth")
+
+	return bool(
+		(
+			frappe.qb.from_(Auth)
+			.select(Auth.name)
+			.where(
+				(Auth.doctype == "User")
+				& (Auth.name == user)
+				& (Auth.fieldname == "password")
+				& (Auth.encrypted == 0)
+			)
+			.limit(1)
+		).run()
+	)
+
+
 @frappe.whitelist()
 def add_existing_users(users: str | list, role: str = "Sales User"):
 	"""

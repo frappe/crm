@@ -54,7 +54,7 @@ class Twilio:
 
 	@classmethod
 	def safe_identity(cls, identity: str):
-		"""Create a safe identity by replacing unsupported special charaters `@` with (at)).
+		"""Create a safe identity by replacing unsupported special characters `@` with (at)).
 		Twilio Client JS fails to make a call connection if identity has special characters like @, [, / etc)
 		https://www.twilio.com/docs/voice/client/errors (#31105)
 		"""

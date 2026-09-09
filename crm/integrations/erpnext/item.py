@@ -39,6 +39,9 @@ def _catalogue_data(doc) -> dict:
 	rate = get_item_price_rate(doc.name, doc.get("stock_uom"))
 	if rate is not None:
 		data["standard_rate"] = rate
+	# standard_rate is a NOT NULL Currency column and frappe.db.set_value writes
+	# raw values (no flt coercion, unlike doc.insert), so never pass None through
+	data["standard_rate"] = frappe.utils.flt(data["standard_rate"])
 	return data
 
 
