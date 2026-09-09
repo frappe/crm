@@ -5,13 +5,45 @@ import { useAttachments } from '@/composables/useAttachments'
 import { showSettings, activeSettingsPage } from '@/composables/settings'
 import { runSequentially, parseAssignees, sanitizeText } from '@/utils'
 import { findMissingMandatory } from '@/utils/fieldTransforms'
-import { createDocumentResource, createResource, toast } from 'frappe-ui'
+import {
+  getFetchSource,
+  getFieldsToFetch,
+  getPendingFetchFields,
+  getSourceFieldnames,
+} from '@/utils/fetchFrom'
+import { call, createDocumentResource, createResource, toast } from 'frappe-ui'
 import { ref, reactive, getCurrentInstance } from 'vue'
 
 const documentsCache = {}
 const controllersCache = {}
 const assigneesCache = {}
 const permissionsCache = {}
+
+// Deleting a doc triggers a realtime `doc_update` event (sent by the
+// framework as part of `delete_doc`), which makes the still-mounted document
+// resource refetch and hit a DoesNotExistError right as we're navigating
+// away. Docs marked here have that one expected error swallowed instead of
+// surfaced as an error page.
+const intentionallyDeletedDocs = new Set()
+
+export function markDocumentAsDeleted(doctype, docname) {
+  intentionallyDeletedDocs.add(`${doctype}:${docname}`)
+}
+
+// Called once the delete request has completed, so a reused docname
+// doesn't have a later, unrelated error silently swallowed. Kept separate
+// from markDocumentAsDeleted so the marker survives the full (possibly
+// slow) delete request instead of a fixed window starting before it.
+export function expireDeletionMarker(doctype, docname) {
+  const key = `${doctype}:${docname}`
+  setTimeout(() => intentionallyDeletedDocs.delete(key), 10000)
+}
+
+// Called if the delete request itself fails, so a legitimate later
+// DoesNotExistError for this doc isn't silently swallowed.
+export function unmarkDocumentAsDeleted(doctype, docname) {
+  intentionallyDeletedDocs.delete(`${doctype}:${docname}`)
+}
 
 export function useDocument(doctype, docname, resourceOverrides = {}) {
   if (typeof docname === 'number') docname = String(docname)
@@ -36,6 +68,14 @@ export function useDocument(doctype, docname, resourceOverrides = {}) {
           name: docname,
           onSuccess: async () => await setupFormScript(),
           onError: (err) => {
+            const deletionKey = `${doctype}:${docname}`
+            if (
+              err.exc_type === 'DoesNotExistError' &&
+              intentionallyDeletedDocs.has(deletionKey)
+            ) {
+              intentionallyDeletedDocs.delete(deletionKey)
+              return
+            }
             error.value = err
             if (err.exc_type === 'DoesNotExistError') {
               toast.error(__(err.messages[0] || 'Document does not exist'))
@@ -272,6 +312,57 @@ export function useDocument(doctype, docname, resourceOverrides = {}) {
     await trigger(handler)
   }
 
+  async function fetchLinkValues(linkDoctype, linkValue, sourceFieldnames) {
+    try {
+      return await call('frappe.client.get_value', {
+        doctype: linkDoctype,
+        filters: linkValue,
+        fieldname: sourceFieldnames,
+      })
+    } catch (error) {
+      // the server sets these again on save, so a failed preview can be ignored
+      console.warn('Could not fetch linked values from', linkDoctype, error)
+      return {}
+    }
+  }
+
+  function setFetchedValues(target, fields, linkValues) {
+    fields.forEach((f) => {
+      const { source } = getFetchSource(f.fetch_from)
+      target[f.fieldname] = linkValues[source] ?? null
+    })
+  }
+
+  async function applyFetchFrom(fieldname, value, row) {
+    const target = row || documentsCache[doctype][docname || ''].doc
+    const targetDoctype = row?.doctype || doctype
+    const fields = getMeta(targetDoctype).doctypeMeta.value?.fields || []
+
+    const linkDf = fields.find((f) => f.fieldname === fieldname)
+    if (typeof linkDf?.options !== 'string') return
+
+    const fieldsToFetch = getFieldsToFetch(fields, fieldname)
+    if (!fieldsToFetch.length) return
+
+    if (!value) {
+      fieldsToFetch.forEach((f) => (target[f.fieldname] = null))
+      return
+    }
+
+    const pending = getPendingFetchFields(fields, fieldname, target)
+    if (!pending.length) return
+
+    const sources = getSourceFieldnames(pending)
+    const linkValues = await fetchLinkValues(linkDf.options, value, sources)
+
+    // the link may have been changed again while this request was in flight
+    if (target[fieldname] !== value) return
+    // frappe.client.get_value applies permissions, an unreadable link returns {}
+    if (!Object.keys(linkValues).length) return
+
+    setFetchedValues(target, pending, linkValues)
+  }
+
   async function triggerOnChange(fieldname, _value, row) {
     const value = sanitizeText(_value)
     let oldValue = null
@@ -283,6 +374,8 @@ export function useDocument(doctype, docname, resourceOverrides = {}) {
       documentsCache[doctype][docname || ''].doc[fieldname] = value
       trackOldFile(oldValue, value)
     }
+
+    await applyFetchFrom(fieldname, value, row)
 
     const handler = async function () {
       this.value = value

@@ -75,6 +75,12 @@ class CRMLead(Document):
 		website: DF.Data | None
 	# end: auto-generated types
 
+	def before_insert(self):
+		# apply CRM enrichment (source/contact) when created via a web form
+		from crm.api.form import enrich_form_submission
+
+		enrich_form_submission(self)
+
 	def before_validate(self):
 		self.set_sla()
 
@@ -256,6 +262,7 @@ class CRMLead(Document):
 				"territory": self.territory,
 				"industry": self.industry,
 				"annual_revenue": self.annual_revenue,
+				"no_of_employees": self.no_of_employees,
 			}
 		)
 		organization.insert(ignore_permissions=True)

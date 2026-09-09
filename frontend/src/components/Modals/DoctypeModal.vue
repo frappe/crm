@@ -122,7 +122,7 @@ const _create = createResource({
       error.value = __('Mandatory field error: {0}', [fieldName])
       return
     }
-    error.value = err.messages?.[0] || 'Could not create document'
+    error.value = err.messages?.[0] || __('Could not create document')
   },
 })
 
@@ -144,7 +144,7 @@ function update() {
       show.value = false
     },
     onError: (err) => {
-      error.value = err.messages?.[0] || 'Could not update document'
+      error.value = err.messages?.[0] || __('Could not update document')
     },
   })
 }
