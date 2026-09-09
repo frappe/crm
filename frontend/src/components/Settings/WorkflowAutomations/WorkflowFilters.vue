@@ -192,23 +192,21 @@ function row(entry) {
     max-width: 100%;
   }
 
-  /* A row's menu rides its top corner, except on a row holding a group: there the
-     card's own first row already has one, and two in a corner read as one control. */
-  :deep(
-      li:not(:has([data-slot='condition-group']))
-        [data-slot='condition-actions']
-    ) {
+  /* The actions cell is a row of the grid, so leaving an empty one below every
+     condition is what put a blank band under each. Lift the cell out of the flow,
+     not just the menu inside it. */
+  :deep(li:not(:has([data-slot='condition-group'])) > :nth-child(3)) {
     position: absolute;
     right: -0.25rem;
     top: -0.25rem;
   }
 
-  /* A group's own menu drops onto the add-condition line under its card, so the
-     two controls for that level share a row instead of stacking. */
+  /* A group's own menu sits on its card's add-condition line: anywhere above that
+     it lands beside a row's menu and the pair reads as one control. */
   :deep(li:has([data-slot='condition-group']) > :nth-child(3)) {
     position: absolute;
-    right: 0;
-    bottom: -2.25rem;
+    right: 0.75rem;
+    bottom: 0.75rem;
   }
 }
 </style>
