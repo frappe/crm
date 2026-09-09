@@ -304,6 +304,7 @@ import WaitingIcon from '~icons/lucide/clock'
 import WorkflowComboboxIcon from './WorkflowComboboxIcon.vue'
 import WorkflowComboboxOption from './WorkflowComboboxOption.vue'
 import { Badge, Button, Combobox, Spinner, Tooltip } from 'frappe-ui'
+import { useDebounceFn, useResizeObserver } from '@vueuse/core'
 import { computed, nextTick, ref, useId, watch } from 'vue'
 
 const props = defineProps({
@@ -312,7 +313,6 @@ const props = defineProps({
   blockGroups: { type: Array, default: () => [] },
   triggerGroups: { type: Array, default: () => [] },
   selectedId: { type: String, default: '' },
-  inspectorOpen: { type: Boolean, default: false },
   canDelete: { type: Boolean, default: false },
   canUndo: { type: Boolean, default: false },
   canRedo: { type: Boolean, default: false },
@@ -393,14 +393,12 @@ watch(
   { flush: 'post' },
 )
 
-watch(() => props.inspectorOpen, refitAfterPanelResize, { flush: 'post' })
-
-async function refitAfterPanelResize() {
-  await nextTick()
-  await nextFrame()
-  await nextFrame()
-  return refitFlow()
-}
+/** The inspector slides in and out, so the pane keeps resizing - refit once it
+    settles rather than against a mid-animation width. */
+const refitAfterResize = useDebounceFn(() => refitFlow(), 80)
+useResizeObserver(flowRoot, ([entry]) => {
+  if (entry.contentRect.width) refitAfterResize()
+})
 
 async function refitFlow(animateLeft = false) {
   await nextTick()
