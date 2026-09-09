@@ -729,8 +729,10 @@ const dealContacts = createResource({
   params: { name: props.dealId },
   cache: ['deal_contacts', props.dealId],
   transform: (data) => {
-    data.forEach((contact) => {
-      contact.opened = false
+    // get_deal_contacts orders primary first, so expanding the first contact
+    // surfaces the most relevant email and phone without a click.
+    data.forEach((contact, index) => {
+      contact.opened = index === 0
     })
     return data
   },
