@@ -344,9 +344,11 @@ function markClean() {
   savedSnapshot.value = JSON.stringify(payload())
 }
 
-/** Take the server's name, timestamp and step keys, so the next save is not a stale write. */
+/** Take the server's name, timestamps and step keys, so the next save is not a stale write. */
 function adoptSaved(saved) {
   doc.name = saved.name
+  doc.creation = saved.creation
+  doc.owner = saved.owner
   doc.modified = saved.modified
   adoptRowKeys(doc.actions, saved.actions || [])
   markClean()
