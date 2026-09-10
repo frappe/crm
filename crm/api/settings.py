@@ -81,6 +81,10 @@ email_service_config = {
 		"smtp_server": "smtp.sendgrid.net",
 		"smtp_port": 587,
 	},
+	"Brevo": {
+		"smtp_server": "smtp-relay.brevo.com",
+		"smtp_port": 587,
+	},
 	"SparkPost": {
 		"smtp_server": "smtp.sparkpostmail.com",
 	},
