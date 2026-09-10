@@ -1,0 +1,104 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-09-10 00:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "general_section",
+  "enabled",
+  "auto_enrich",
+  "column_break_general",
+  "api_token",
+  "request_timeout",
+  "mappings_section",
+  "field_mappings"
+ ],
+ "fields": [
+  {
+   "fieldname": "general_section",
+   "fieldtype": "Section Break",
+   "label": "General"
+  },
+  {
+   "default": "0",
+   "description": "Master switch for the CNPJ Registry Enrichment feature.",
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "label": "Enabled"
+  },
+  {
+   "default": "0",
+   "depends_on": "enabled",
+   "description": "Automatically enrich a new CRM Lead or Organization in the background as soon as it is created (requires a valid CNPJ in Tax ID). When off, enrichment is triggered manually with the Enrich button.",
+   "fieldname": "auto_enrich",
+   "fieldtype": "Check",
+   "label": "Auto-enrich new records"
+  },
+  {
+   "fieldname": "column_break_general",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "enabled",
+   "description": "The CPF.CNPJ API token. Stored encrypted.",
+   "fieldname": "api_token",
+   "fieldtype": "Password",
+   "label": "API Token",
+   "mandatory_depends_on": "eval:doc.enabled"
+  },
+  {
+   "default": "15",
+   "description": "Per-request timeout in seconds.",
+   "fieldname": "request_timeout",
+   "fieldtype": "Int",
+   "label": "Request Timeout (s)"
+  },
+  {
+   "fieldname": "mappings_section",
+   "fieldtype": "Section Break",
+   "label": "Field Mappings"
+  },
+  {
+   "description": "How each registry value is written onto CRM Lead / Organization fields. Defaults are seeded on install; edit, disable or add rows as needed.",
+   "fieldname": "field_mappings",
+   "fieldtype": "Table",
+   "label": "Field Mappings",
+   "options": "CRM Registry Enrichment Field Mapping"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2026-09-10 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Registry Enrichment",
+ "name": "CRM Registry Enrichment Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "Sales Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

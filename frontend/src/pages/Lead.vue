@@ -22,6 +22,12 @@
         :website="doc.website"
         @done="onEnriched"
       />
+      <EnrichFromDocument
+        doctype="CRM Lead"
+        :docname="leadId"
+        :taxId="doc.tax_id"
+        @done="onEnriched"
+      />
       <AssignTo v-model="assignees.data" doctype="CRM Lead" :docname="leadId" />
       <Dropdown
         v-if="doc && document.statuses"
@@ -268,6 +274,7 @@ import SLASection from '@/components/SLASection.vue'
 import CustomActions from '@/components/CustomActions.vue'
 import ConvertToDealModal from '@/components/Modals/ConvertToDealModal.vue'
 import EnrichFromWebsite from '@/components/EnrichFromWebsite.vue'
+import EnrichFromDocument from '@/components/EnrichFromDocument.vue'
 import {
   openWebsite,
   setupCustomizations,

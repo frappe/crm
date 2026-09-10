@@ -108,6 +108,11 @@ class CRMLead(Document):
 
 		auto_enrich_on_create(self)
 
+		# Auto-enrich a new Lead from its CNPJ (best-effort, background job).
+		from crm.registry_enrichment.tasks import auto_enrich_on_create as registry_auto_enrich_on_create
+
+		registry_auto_enrich_on_create(self)
+
 	def before_save(self):
 		self.apply_sla()
 

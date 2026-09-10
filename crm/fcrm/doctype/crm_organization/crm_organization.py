@@ -37,6 +37,11 @@ class CRMOrganization(Document):
 
 		auto_enrich_on_create(self)
 
+		# Auto-enrich a new Organization from its CNPJ (best-effort, background job).
+		from crm.registry_enrichment.tasks import auto_enrich_on_create as registry_auto_enrich_on_create
+
+		registry_auto_enrich_on_create(self)
+
 	def update_exchange_rate(self):
 		if self.has_value_changed("currency") or not self.exchange_rate:
 			system_currency = frappe.db.get_single_value("FCRM Settings", "currency") or "USD"

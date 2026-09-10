@@ -1,0 +1,90 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-09-10 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "enabled",
+  "source_key",
+  "column_break_main",
+  "target_doctype",
+  "target_fieldname",
+  "policy_section",
+  "write_policy",
+  "create_missing_link"
+ ],
+ "fields": [
+  {
+   "default": "1",
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Enabled"
+  },
+  {
+   "description": "The registry value to read.",
+   "fieldname": "source_key",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Source Key",
+   "options": "legal_name\ntrade_name\ntax_id\nregistration_status\nregistration_status_date\nopening_date\nlegal_nature\ncompany_size\nshare_capital\ntax_regime\nsimples_nacional\nindustry\nindustry_section\nemail\nphone\nmobile_no\naddress",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_main",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "target_doctype",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Target Doctype",
+   "options": "CRM Organization\nCRM Lead",
+   "reqd": 1
+  },
+  {
+   "description": "The fieldname on the target doctype to write the value to.",
+   "fieldname": "target_fieldname",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Target Fieldname",
+   "reqd": 1
+  },
+  {
+   "fieldname": "policy_section",
+   "fieldtype": "Section Break",
+   "label": "Write Policy"
+  },
+  {
+   "default": "Fill if empty",
+   "description": "Fill if empty: only write when the field is blank. Always refresh: overwrite on every run (never clears a value to empty).",
+   "fieldname": "write_policy",
+   "fieldtype": "Select",
+   "label": "Write Policy",
+   "options": "Fill if empty\nAlways refresh",
+   "reqd": 1
+  },
+  {
+   "default": "0",
+   "description": "If the value names a missing linked record (e.g. a CRM Industry), create it. Opt-in only.",
+   "fieldname": "create_missing_link",
+   "fieldtype": "Check",
+   "label": "Create Missing Link"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-09-10 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Registry Enrichment",
+ "name": "CRM Registry Enrichment Field Mapping",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}
