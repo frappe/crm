@@ -1,7 +1,7 @@
 from unittest.mock import patch
 
 import frappe
-from frappe.tests import IntegrationTestCase
+from crm.tests import CRMTestCase as IntegrationTestCase
 
 from crm.extends.notification_log import before_insert, get_crm_route
 
