@@ -1222,12 +1222,6 @@
     style-mod "^4.1.0"
     w3c-keyname "^2.2.4"
 
-<<<<<<< HEAD
-"@emnapi/core@1.9.2":
-  version "1.9.2"
-  resolved "https://registry.yarnpkg.com/@emnapi/core/-/core-1.9.2.tgz#3870265ecffc7352d01ead62d8d83d8358a2d034"
-  integrity sha512-UC+ZhH3XtczQYfOlu3lNEkdW/p4dsJ1r/bP7H8+rhao3TTTMO1ATq/4DdIi23XuGoFY+Cz0JmCbdVl0hz9jZcA==
-=======
 "@cropper/element-canvas@^2.1.1":
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/@cropper/element-canvas/-/element-canvas-2.1.1.tgz#9dff3608a407b4c92bb634be1eb9016d262a5ed7"
@@ -1331,7 +1325,6 @@
   version "2.0.0-alpha.3"
   resolved "https://registry.yarnpkg.com/@emnapi/core/-/core-2.0.0-alpha.3.tgz#049ace671f30274d6a4d161d3b771138b862f704"
   integrity sha512-AZypUeJ/yByuxyS7BlSNRDOMLMlROYtjYdIAuBmJssVz1UJDSeYxLrdizhXCFYhedC5bqd/ASy8EuNXbVVXp9g==
->>>>>>> 27c62bd2 (chore: refresh frontend dependency lockfile)
   dependencies:
     "@emnapi/wasi-threads" "2.0.1"
     tslib "^2.4.0"

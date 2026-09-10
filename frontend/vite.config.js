@@ -186,23 +186,10 @@ function getAliases(config) {
       import.meta.dirname,
       '../frappe-ui/src/molecules/editor/style.css',
     ),
-<<<<<<< HEAD
-    'frappe-ui/internals': path.resolve(__dirname, '../frappe-ui/internals.ts'),
-    'frappe-ui/icons': path.resolve(__dirname, '../frappe-ui/icons/index.ts'),
-    'frappe-ui': path.resolve(__dirname, '../frappe-ui/src/index.ts'),
-=======
     'frappe-ui/internals': path.resolve(
       import.meta.dirname,
       '../frappe-ui/internals.ts',
     ),
-<<<<<<< HEAD
-    'frappe-ui': path.resolve(
-      import.meta.dirname,
-      '../frappe-ui/src/index.ts',
-    ),
->>>>>>> 9eb64bb7 (chore: update Vite configuration for Vite 8)
-=======
     'frappe-ui': path.resolve(import.meta.dirname, '../frappe-ui/src/index.ts'),
->>>>>>> 9f15321d (chore: formatting)
   }
 }
