@@ -422,7 +422,7 @@ class TestCRMDeal(FrappeTestCase):
 		self.assertEqual(deal.contacts[0].is_primary, 1)
 
 
-class TestGetDealContacts(IntegrationTestCase):
+class TestGetDealContacts(FrappeTestCase):
 	def tearDown(self) -> None:
 		frappe.set_user("Administrator")
 		frappe.db.rollback()
