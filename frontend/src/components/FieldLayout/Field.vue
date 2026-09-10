@@ -289,6 +289,20 @@
       :disabled="Boolean(field.disabled)"
       @change="(v) => fieldChange(v, field)"
     />
+    <FormControl
+      v-else-if="field.options === 'Phone'"
+      type="text"
+      :placeholder="getPlaceholder(field)"
+      :value="data[field.fieldname]"
+      :disabled="Boolean(field.disabled)"
+      :description="field.description"
+      :error="
+        Boolean(data[field.fieldname]) && !validatePhone(data[field.fieldname])
+          ? __('Enter a valid phone number')
+          : undefined
+      "
+      @change="fieldChange($event.target.value, field)"
+    />
     <div v-else class="flex items-center gap-1">
       <FormControl
         class="flex-1"
@@ -297,13 +311,6 @@
         :value="data[field.fieldname]"
         :disabled="Boolean(field.disabled)"
         :description="field.description"
-        :error="
-          field.options === 'Phone' &&
-          Boolean(data[field.fieldname]) &&
-          !validatePhone(data[field.fieldname])
-            ? __('Enter a valid phone number')
-            : undefined
-        "
         @change="fieldChange($event.target.value, field)"
       />
       <ArrowUpRightIcon
