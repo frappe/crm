@@ -37,8 +37,8 @@
 </template>
 <script setup>
 import CRMLogo from '@/components/Icons/CRMLogo.vue'
+import GitHubIcon from '@/components/Icons/GitHubIcon.vue'
 import LucideGlobe from '~icons/lucide/globe'
-import LucideGitHub from '~icons/lucide/github'
 import LucideHeadset from '~icons/lucide/headset'
 import LucideBug from '~icons/lucide/bug'
 import LucideBookOpen from '~icons/lucide/book-open'
@@ -54,7 +54,7 @@ let links = [
   {
     label: __('GitHub Repository'),
     url: 'https://github.com/frappe/crm',
-    icon: LucideGitHub,
+    icon: GitHubIcon,
   },
   {
     label: __('Documentation'),

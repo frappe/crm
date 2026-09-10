@@ -438,7 +438,7 @@
               <span class="text-center text-p-base text-ink-gray-6">
                 {{
                   __(
-                    'Enable the integration to create quotations and auto create customers in ERPNext.',
+                    'Enable the integration to create quotations and more in ERPNext.',
                   )
                 }}
               </span>
@@ -766,7 +766,7 @@ const validateSiteConnection = () => {
     try {
       new URL(erpnext_site_url)
     } catch {
-      error = __('Invalid Site URL')
+      error = __('Invalid site URL')
     }
   }
 

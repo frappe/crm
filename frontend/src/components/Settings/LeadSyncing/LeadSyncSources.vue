@@ -42,7 +42,7 @@
     <EmptyState
       v-if="!sources.loading && !sources.data?.length"
       name="Lead Sources"
-      description="Manage your lead sources here. Add new sources to start syncing leads automatically."
+      description="Add and manage your lead sources here."
       icon="refresh-cw"
     />
 

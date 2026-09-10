@@ -511,15 +511,17 @@ function getParams() {
   }
 }
 
-list.value = createResource({
+let listResource
+
+listResource = createResource({
   url: 'crm.api.doc.get_data',
   params: getParams(),
   cache: [props.doctype, route.query.view, route.params.viewType],
   auto: true,
   onSuccess(data) {
     let cv = getView(route.query.view, route.params.viewType, props.doctype)
-    let params = list.value.params ? list.value.params : getParams()
-    list.value.params = params
+    let params = listResource.params || getParams()
+    listResource.params = params
     defaultParams.value = {
       doctype: props.doctype,
       filters: params.filters,
@@ -542,15 +544,20 @@ list.value = createResource({
   },
 })
 
-// createResource leaves `params` null until a fetch passes them explicitly
-list.value.params = getParams()
+list.value = listResource
+listResource.params = getParams()
 
 const isLoading = computed(() => list.value?.loading)
 
+function getListParams() {
+  if (!listResource.params) listResource.params = getParams()
+  return listResource.params
+}
+
 function reload() {
   if (isLoading.value) return
-  list.value.params = getParams()
-  list.value.reload()
+  listResource.params = getParams()
+  listResource.reload()
 }
 
 const showExportDialog = ref(false)
@@ -796,11 +803,12 @@ const quickFilterOptions = computed(() => {
 
 const quickFilterList = computed(() => {
   let filters = quickFilters.data || []
+  let params = getListParams()
 
   filters.forEach((filter) => {
     filter['value'] = filter.fieldtype == 'Check' ? false : ''
-    if (list.value.params?.filters[filter.fieldname]) {
-      let value = list.value.params.filters[filter.fieldname]
+    if (params?.filters?.[filter.fieldname]) {
+      let value = params.filters[filter.fieldname]
       if (Array.isArray(value)) {
         if (
           (['Check', 'Select', 'Link', 'Date', 'Datetime'].includes(
@@ -842,7 +850,7 @@ function setupNewQuickFilters(filters) {
 }
 
 function applyQuickFilter(filter, value) {
-  let filters = { ...list.value.params.filters }
+  let filters = { ...getListParams().filters }
   let field = filter.fieldname
   if (value) {
     if (
@@ -865,10 +873,10 @@ function updateFilter(filters) {
   if (!defaultParams.value) {
     defaultParams.value = getParams()
   }
-  list.value.params = defaultParams.value
-  list.value.params.filters = filters
+  listResource.params = defaultParams.value
+  listResource.params.filters = filters
   view.value.filters = filters
-  list.value.reload()
+  listResource.reload()
 
   if (!route.query.view) {
     createOrUpdateStandardView()
@@ -1292,7 +1300,7 @@ function applyFilter({ event, idx, column, item, firstColumn }) {
   event.stopPropagation()
   event.preventDefault()
 
-  let filters = { ...list.value.params.filters }
+  let filters = { ...getListParams().filters }
 
   let value = item.name ?? item.label ?? item
 
@@ -1317,7 +1325,7 @@ function applyFilter({ event, idx, column, item, firstColumn }) {
 }
 
 function applyLikeFilter() {
-  let filters = { ...list.value.params.filters }
+  let filters = { ...getListParams().filters }
   if (!filters._liked_by) {
     filters['_liked_by'] = ['LIKE', '%@me%']
   } else {

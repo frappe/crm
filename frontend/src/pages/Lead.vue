@@ -223,6 +223,7 @@
     v-model="showDeleteLinkedDocModal"
     :doctype="'CRM Lead'"
     :docname="leadId"
+    :title="doc.lead_name"
     name="Leads"
   />
   <LostReasonModal
@@ -289,6 +290,8 @@ import {
 import { ref, computed, watch, nextTick, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useActiveTabManager } from '@/composables/useActiveTabManager'
+import { useUnsavedChangesWarning } from '@/composables/useUnsavedChangesWarning'
+import { useVisitedRecords } from '@/composables/useVisitedRecords'
 
 const { brand } = getSettings()
 const { $dialog, $socket, makeCall } = globalStore()
@@ -324,18 +327,23 @@ const canDelete = computed(() => permissions.data?.permissions?.delete || false)
 
 const doc = computed(() => document.doc || {})
 
+useUnsavedChangesWarning(() => document.isDirty)
+
+const { markVisited } = useVisitedRecords('CRM Lead')
+
 onMounted(async () => {
   if (document.doc) await triggerOnRender()
+  markVisited(props.leadId)
 })
 
 watch(error, (err) => {
   if (err) {
     errorTitle.value = __(
       err.exc_type == 'DoesNotExistError'
-        ? 'Document not found'
-        : 'Error occurred',
+        ? __('Document not found')
+        : __('Error occurred'),
     )
-    errorMessage.value = __(err.messages?.[0] || 'An error occurred')
+    errorMessage.value = __(err.messages?.[0] || __('An error occurred'))
   } else {
     errorTitle.value = ''
     errorMessage.value = ''

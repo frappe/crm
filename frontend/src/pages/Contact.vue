@@ -402,7 +402,7 @@ const dealColumns = [
     width: '12rem',
   },
   {
-    label: __('Mobile No.'),
+    label: __('Mobile Number'),
     key: 'mobile_no',
     width: '11rem',
   },
