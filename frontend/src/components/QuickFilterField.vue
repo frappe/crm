@@ -37,10 +37,12 @@
   />
   <FormControl
     v-else
-    v-model="filter.value"
+    v-model="draft"
     type="text"
     :placeholder="filter.label"
-    @input.stop="debouncedFn(filter, $event.target.value)"
+    @focus="focused = true"
+    @blur="focused = false"
+    @input.stop="onTextInput($event.target.value)"
   />
 </template>
 <script setup>
@@ -48,7 +50,7 @@ import Link from '@/components/Controls/Link.vue'
 import { FormControl, DatePicker, DateTimePicker } from 'frappe-ui'
 import { getFormat } from '@/utils'
 import { useDebounceFn } from '@vueuse/core'
-import { reactive, watch } from 'vue'
+import { computed, reactive, ref, watch } from 'vue'
 
 const props = defineProps({
   filter: { type: Object, required: true },
@@ -58,15 +60,37 @@ const filter = reactive(props.filter)
 
 const emit = defineEmits(['applyQuickFilter'])
 
+// Text filters are debounced, so between a keystroke and the list response the
+// typed text is newer than `filter.value` — which the parent re-derives from
+// the list's *applied* filters every time a response lands. Copying that back
+// mid-edit wipes whatever was typed since the last commit (#2113), so the input
+// owns a local draft and only follows the parent while the user isn't editing.
+const draft = ref(props.filter.value ?? '')
+const focused = ref(false)
+const commitPending = ref(false)
+const editing = computed(() => focused.value || commitPending.value)
+
 watch(
   () => props.filter,
-  (newFilter) => Object.assign(filter, newFilter),
+  (newFilter) => {
+    Object.assign(filter, newFilter)
+    if (!editing.value) draft.value = newFilter.value ?? ''
+  },
   { deep: true },
 )
 
+// `commitPending` outlives blur on purpose: the debounce keeps running after the
+// input loses focus, so without it a response landing in that gap would revert
+// the text the user just finished typing.
 const debouncedFn = useDebounceFn((f, value) => {
+  commitPending.value = false
   emit('applyQuickFilter', f, value)
 }, 500)
+
+function onTextInput(value) {
+  commitPending.value = true
+  debouncedFn(filter, value)
+}
 
 function updateFilter(f, value) {
   emit('applyQuickFilter', f, value)
