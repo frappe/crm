@@ -167,7 +167,6 @@ router.beforeEach(async (to, from, next) => {
     }
   }
 
-<<<<<<< HEAD
   const isAdminUser = isLoggedIn && (isAdmin() || user === 'Administrator')
 
   // Only admins who haven't finished may reach the wizard, even via direct URL.
@@ -199,13 +198,8 @@ router.beforeEach(async (to, from, next) => {
   }
 
   if (isLoggedIn && to.name !== 'Not Permitted' && !isCrmUser()) {
-=======
-  const crmUserCheck = isCrmUser()
-
-  if (isLoggedIn && to.name !== 'Not Permitted' && !crmUserCheck) {
->>>>>>> aa9e192 (fix: abort stale navigation on rapid refresh to prevent not-permitted redirect loop)
     next({ name: 'Not Permitted' })
-  } else if (to.name === 'Not Permitted' && isLoggedIn && crmUserCheck) {
+  } else if (to.name === 'Not Permitted' && isLoggedIn && isCrmUser()) {
     next({ name: 'Home' })
   } else if (to.name === 'Home' && isLoggedIn) {
     const { views, getDefaultView } = viewsStore()
