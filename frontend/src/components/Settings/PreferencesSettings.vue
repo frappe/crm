@@ -112,7 +112,7 @@ function save() {
 
   user.save.submit(null, {
     onSuccess: () => {
-      toast.success(__('Preferences Updated Successfully'))
+      toast.success(__('Preferences updated successfully'))
       if (refreshRequired.value) {
         window.location.reload()
       }

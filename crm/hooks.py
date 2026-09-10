@@ -70,6 +70,7 @@ doctype_js = {
 
 website_route_rules = [
 	{"from_route": "/crm/<path:app_path>", "to_route": "crm"},
+	{"from_route": "/crm-form/<route>", "to_route": "crm_form"},
 ]
 
 # Generators
@@ -134,11 +135,13 @@ before_uninstall = "crm.uninstall.before_uninstall"
 permission_query_conditions = {
 	"CRM Lead": "crm.permissions.org_hierarchy.get_lead_permission_query_conditions",
 	"CRM Deal": "crm.permissions.org_hierarchy.get_deal_permission_query_conditions",
+	"CRM Notification": "crm.fcrm.doctype.crm_notification.crm_notification.get_permission_query_conditions",
 }
 
 has_permission = {
 	"CRM Lead": "crm.permissions.org_hierarchy.has_lead_permission",
 	"CRM Deal": "crm.permissions.org_hierarchy.has_deal_permission",
+	"CRM Notification": "crm.fcrm.doctype.crm_notification.crm_notification.has_permission",
 }
 
 # DocType Class
@@ -159,6 +162,7 @@ doc_events = {
 		"validate": ["crm.api.contact.validate"],
 	},
 	"ToDo": {
+		"validate": ["crm.api.todo.validate"],
 		"after_insert": ["crm.api.todo.after_insert"],
 		"on_update": ["crm.api.todo.on_update"],
 	},
@@ -214,7 +218,6 @@ doc_events = {
 
 scheduler_events = {
 	"daily": [
-		"crm.api.event.trigger_daily_event_notifications",
 		"crm.fcrm.doctype.crm_invitation.crm_invitation.expire_invitations",
 		"crm.fcrm.doctype.crm_view_settings.crm_view_settings.clear_old_versions",
 		"crm.telemetry.capture_feature_state",
@@ -302,6 +305,7 @@ after_migrate = [
 	"crm.fcrm.doctype.fcrm_settings.fcrm_settings.after_migrate",
 	"crm.api.whatsapp.add_roles",
 	"crm.install.add_default_scripts",
+	"crm.install.add_web_form_custom_fields",
 ]
 
 standard_dropdown_items = [

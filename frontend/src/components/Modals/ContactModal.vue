@@ -114,7 +114,7 @@ function validateRequiredFields() {
     _contact.doc.mobile_no &&
     isNaN(_contact.doc.mobile_no.replace(/[-+() ]/g, ''))
   ) {
-    return __('Mobile No. should be a number')
+    return __('Mobile number should be a number')
   }
 
   return null

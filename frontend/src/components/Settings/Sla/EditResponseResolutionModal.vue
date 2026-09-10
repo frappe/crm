@@ -85,13 +85,13 @@ const priorityData = ref({
 
 const validateForm = () => {
   if (!priorityData.value.priority) {
-    toast.error(__('Please select a Priority'))
+    toast.error(__('Please select a priority'))
     return false
   }
 
   const responseTime = parseInt(priorityData.value.first_response_time)
   if (isNaN(responseTime) || responseTime <= 0) {
-    toast.error(__('Response Time is required'))
+    toast.error(__('Response time is required'))
     return false
   }
 

@@ -215,7 +215,7 @@ const duplicate = (sla) => {
         auto: true,
         onSuccess(newSlaData) {
           slaPolicyListResource.reload()
-          toast.success(__('SLA Policy Duplicated'))
+          toast.success(__('SLA policy duplicated'))
           duplicateDialog.value = {
             show: false,
             name: '',
@@ -239,7 +239,7 @@ const deleteSla = (sla) => {
 
   slaPolicyListResource.delete.submit(sla.name, {
     onSuccess: () => {
-      toast.success(__('SLA Policy Deleted'))
+      toast.success(__('SLA policy deleted'))
     },
     onError: (err) => {
       const message =
@@ -251,7 +251,7 @@ const deleteSla = (sla) => {
 
 const onToggle = (sla) => {
   if (sla.default) {
-    toast.error(__('SLA set as default cannot be disabled'))
+    toast.error(__('An SLA set as default cannot be disabled'))
     return
   }
   slaPolicyListResource.setValue.submit(
@@ -261,7 +261,7 @@ const onToggle = (sla) => {
     },
     {
       onSuccess: () => {
-        toast.success(__('SLA Policy Status Updated'))
+        toast.success(__('SLA policy status updated'))
       },
     },
   )

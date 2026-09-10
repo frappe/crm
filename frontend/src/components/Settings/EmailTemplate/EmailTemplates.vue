@@ -211,7 +211,7 @@ function deleteTemplate(template) {
   confirmDelete.value = false
   templates.delete.submit(template.name, {
     onSuccess: () => {
-      toast.success(__('Template Deleted Successfully'))
+      toast.success(__('Template deleted successfully'))
     },
     onError: (error) => {
       toast.error(error.messages[0] || __('Failed to delete template'))
