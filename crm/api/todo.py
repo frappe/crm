@@ -5,6 +5,7 @@ from crm.fcrm.doctype.crm_notification.crm_notification import notify_user
 
 
 def validate(doc, method):
+	"""Require write access when directly assigning a CRM lead or deal."""
 	# assign_to and assignment rules insert with ignore_permissions after their
 	# own permission check.
 	if (
