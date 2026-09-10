@@ -102,10 +102,8 @@
             {{ __('Content') }}
             <span class="text-ink-red-6">*</span>
           </div>
-          <TextEditor
-            ref="content"
+          <RichTextField
             editor-class="!prose-sm max-w-full overflow-auto min-h-[180px] max-h-80 py-1.5 px-2 rounded border border-[--surface-gray-2] bg-surface-gray-2 placeholder-ink-gray-4 hover:border-outline-elevation-2 hover:bg-surface-gray-3 hover:shadow-sm focus:bg-surface-base focus:border-outline-gray-4 focus:ring-0 focus-visible:ring-2 focus-visible:ring-outline-gray-3 text-ink-gray-8 transition-colors"
-            :bubbleMenu="true"
             :content="template.response"
             :placeholder="
               __(
@@ -124,7 +122,8 @@
 </template>
 <script setup>
 import { useBroadcast } from '@/composables/useBroadcast'
-import { TextEditor, FormControl, Switch, toast } from 'frappe-ui'
+import RichTextField from '@/components/RichTextField.vue'
+import { FormControl, Switch, toast } from 'frappe-ui'
 import { inject, onMounted, ref } from 'vue'
 
 const props = defineProps({

@@ -70,6 +70,7 @@ doctype_js = {
 
 website_route_rules = [
 	{"from_route": "/crm/<path:app_path>", "to_route": "crm"},
+	{"from_route": "/crm-form/<route>", "to_route": "crm_form"},
 ]
 
 # Generators
@@ -161,6 +162,7 @@ doc_events = {
 		"validate": ["crm.api.contact.validate"],
 	},
 	"ToDo": {
+		"validate": ["crm.api.todo.validate"],
 		"after_insert": ["crm.api.todo.after_insert"],
 		"on_update": ["crm.api.todo.on_update"],
 	},
@@ -303,6 +305,7 @@ after_migrate = [
 	"crm.fcrm.doctype.fcrm_settings.fcrm_settings.after_migrate",
 	"crm.api.whatsapp.add_roles",
 	"crm.install.add_default_scripts",
+	"crm.install.add_web_form_custom_fields",
 ]
 
 standard_dropdown_items = [
