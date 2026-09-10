@@ -168,6 +168,7 @@ doc_events = {
 		"before_insert": ["crm.extends.notification_log.before_insert"],
 	},
 	"ToDo": {
+		"validate": ["crm.api.todo.validate"],
 		"after_insert": ["crm.api.todo.after_insert"],
 		"on_update": ["crm.api.todo.on_update"],
 	},
