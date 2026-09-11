@@ -18,9 +18,6 @@
       <LoadingIndicator class="h-6 w-6" />
       <span>{{ __('Loading...') }}</span>
     </div>
-    <div v-else-if="title == 'Events'" class="h-full activity">
-      <EventArea :doctype="doctype" :docname="docname" />
-    </div>
     <div
       v-else-if="
         activities?.length ||
@@ -456,13 +453,11 @@ import UserAvatar from '@/components/UserAvatar.vue'
 import ActivityIcon from '@/components/Icons/ActivityIcon.vue'
 import EmailIcon from '@/components/Icons/EmailIcon.vue'
 import DetailsIcon from '@/components/Icons/DetailsIcon.vue'
-import CalendarIcon from '@/components/Icons/CalendarIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import AttachmentIcon from '@/components/Icons/AttachmentIcon.vue'
 import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
-import EventArea from '@/components/Activities/EventArea.vue'
 import WhatsAppArea from '@/components/Activities/WhatsAppArea.vue'
 import WhatsAppBox from '@/components/Activities/WhatsAppBox.vue'
 import LoadingIndicator from '@/components/Icons/LoadingIndicator.vue'
@@ -825,9 +820,6 @@ function timelineIcon(activity_type, is_lead) {
     case 'comment':
       icon = CommentIcon
       break
-    case 'event':
-      icon = CalendarIcon
-      break
     case 'incoming_call':
       icon = InboundCallIcon
       break
@@ -857,7 +849,7 @@ watch([reload, reload_email], ([reload_value, reload_email_value]) => {
 })
 
 function scroll(hash) {
-  if (['tasks', 'notes', 'events'].includes(route.hash?.slice(1))) return
+  if (['tasks', 'notes'].includes(route.hash?.slice(1))) return
   setTimeout(() => {
     let el
     if (!hash) {
