@@ -422,7 +422,7 @@ class TestCRMLead(FrappeTestCase):
 	def test_cannot_convert_lost_lead_to_deal(self):
 		"""Lost leads cannot be converted to deals."""
 		if not frappe.db.exists("CRM Lost Reason", "Not interested"):
-			frappe.get_doc({"doctype": "CRM Lost Reason", "reason": "Not interested"}).insert()
+			frappe.get_doc({"doctype": "CRM Lost Reason", "lost_reason": "Not interested"}).insert()
 
 		for status in ("Junk", "Unqualified"):
 			with self.subTest(status=status):
