@@ -34,6 +34,22 @@
               <TaskPriorityIcon class="!h-2 !w-2" :priority="task.priority" />
               {{ task.priority }}
             </div>
+            <template v-if="task._call_log">
+              <div class="flex items-center justify-center">
+                <DotIcon class="h-2.5 w-2.5 text-ink-gray-5" :radius="2" />
+              </div>
+              <Tooltip
+                :text="
+                  __('From a call on {0}', [
+                    formatDate(task._call_log.creation, 'D MMM, hh:mm a'),
+                  ])
+                "
+              >
+                <div class="flex items-center gap-1">
+                  <PhoneIcon class="h-3 w-3" />
+                </div>
+              </Tooltip>
+            </template>
           </div>
         </div>
         <div class="flex items-center gap-1">
@@ -95,6 +111,7 @@ import CalendarIcon from '@/components/Icons/CalendarIcon.vue'
 import TaskStatusIcon from '@/components/Icons/TaskStatusIcon.vue'
 import TaskPriorityIcon from '@/components/Icons/TaskPriorityIcon.vue'
 import DotIcon from '@/components/Icons/DotIcon.vue'
+import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import { formatDate, taskStatusOptions } from '@/utils'
 import { usersStore } from '@/stores/users'
