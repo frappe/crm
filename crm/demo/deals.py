@@ -61,7 +61,7 @@ def create_demo_deals(lead_names, demo_users):
 			"deal_value": 55000,
 			"probability": 0,
 			"deal_owner": session_user,
-			"lost_reason": "Budget constraints",
+			"lost_reason": "Budget Constraints",
 			"lost_notes": "Q2 budget was cut. Leo said they would revisit in Q4 once headcount hiring is complete. Added to nurture sequence.",
 		},
 	)
