@@ -934,10 +934,8 @@ function applyQuickFilter(filter, value, onSettled) {
     } else {
       filters[field] = ['LIKE', `%${value}%`]
     }
-    filter['value'] = value
   } else {
     delete filters[field]
-    filter['value'] = ''
   }
   updateFilter(filters).finally(() => onSettled?.())
 }
