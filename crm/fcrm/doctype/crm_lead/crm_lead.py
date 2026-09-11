@@ -9,6 +9,7 @@ from frappe.desk.form.assign_to import _add as assign
 from frappe.model.document import Document
 from frappe.utils import validate_email_address
 
+from crm.automation.events import emit_lead_converted
 from crm.fcrm.doctype.crm_service_level_agreement.utils import get_sla
 from crm.fcrm.doctype.crm_status_change_log.crm_status_change_log import (
 	add_status_change_log,
@@ -51,6 +52,8 @@ class CRMLead(Document):
 		last_response_time: DF.Duration | None
 		lead_name: DF.Data | None
 		lead_owner: DF.Link | None
+		lead_score: DF.Int
+		lead_temperature: DF.Literal["", "Cold", "Warm", "Hot"]
 		lost_notes: DF.Text | None
 		lost_reason: DF.Link | None
 		middle_name: DF.Data | None
@@ -527,22 +530,58 @@ def convert_to_deal(
 	deal: str | dict | None = None,
 	existing_contact: str | None = None,
 	existing_organization: str | None = None,
+	if_converted: str = "Create",
 ):
-	if not (doc and doc.flags.get("ignore_permissions")) and not frappe.has_permission(
-		"CRM Lead", "write", lead
-	):
+	"""Convert a Lead into a Deal.
+
+	`if_converted` decides what an already-converted Lead does: "Create" (the interactive
+	default) makes another Deal, "Return Existing" replays the first one - which is what makes
+	an automation retry idempotent - and "Fail" refuses.
+	"""
+	validate_conversion_access(lead, doc)
+	lead = lock_lead(lead)
+	existing = existing_deal(lead.name)
+	if existing and if_converted != "Create":
+		return settle_converted(lead, existing, if_converted)
+
+	contact = lead.create_contact(existing_contact, False)
+	organization = lead.create_organization(existing_organization)
+	new_deal = lead.create_deal(contact, organization, deal)
+	mark_converted(lead)
+	emit_lead_converted(lead, new_deal, contact, organization)
+	return new_deal
+
+
+def validate_conversion_access(lead: str, doc: Document | None = None):
+	if doc and doc.flags.get("ignore_permissions"):
+		return
+	if not frappe.has_permission("CRM Lead", "write", lead):
 		frappe.throw(_("Not allowed to convert Lead to Deal"), frappe.PermissionError)
 
-	lead = frappe.get_cached_doc("CRM Lead", lead)
+
+def lock_lead(lead: str):
+	"""Serialize concurrent conversions of the same Lead before reading its state."""
+	table = frappe.qb.DocType("CRM Lead")
+	frappe.qb.from_(table).select(table.name).where(table.name == lead).for_update().run()
+	return frappe.get_doc("CRM Lead", lead)
+
+
+def existing_deal(lead: str) -> str | None:
+	return frappe.db.get_value("CRM Deal", {"lead": lead}, "name")
+
+
+def settle_converted(lead, deal: str, if_converted: str) -> str:
+	if if_converted == "Fail":
+		frappe.throw(_("Lead {0} is already converted to Deal {1}").format(lead.name, deal))
+	return deal
+
+
+def mark_converted(lead):
 	if frappe.db.exists("CRM Lead Status", "Qualified"):
 		lead.db_set("status", "Qualified")
 	lead.db_set("converted", 1)
 	if lead.sla and frappe.db.exists("CRM Communication Status", "Replied"):
 		lead.db_set("communication_status", "Replied")
-	contact = lead.create_contact(existing_contact, False)
-	organization = lead.create_organization(existing_organization)
-	_deal = lead.create_deal(contact, organization, deal)
-	return _deal
 
 
 def get_deal_fieldname(field, deal_meta):

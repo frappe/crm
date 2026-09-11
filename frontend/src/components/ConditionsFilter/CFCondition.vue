@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex gap-2"
+    class="condition-row flex gap-2"
     :class="[
       {
         'items-center': !props.isGroup,
@@ -8,14 +8,14 @@
     ]"
   >
     <div
-      class="flex gap-2 w-full"
+      class="condition-main flex w-full gap-2"
       :class="[
         {
           'items-center justify-between': !props.isGroup,
         },
       ]"
     >
-      <div :class="'text-end text-base text-ink-gray-5'">
+      <div class="condition-conjunction text-end text-base text-ink-gray-5">
         <div v-if="props.itemIndex == 0" class="min-w-[66px] text-start">
           {{ __('Where') }}
         </div>
@@ -30,21 +30,26 @@
           />
         </div>
       </div>
-      <div v-if="!props.isGroup" class="flex items-center gap-2 w-full">
-        <div id="fieldname" class="w-full">
+      <div
+        v-if="!props.isGroup"
+        class="condition-fields flex w-full items-center gap-2"
+      >
+        <div class="condition-field w-full">
           <Combobox
             trigger="button"
+            :variant="props.variant"
             :options="filterableFields.data || []"
             :model-value="condition[0]"
             :placeholder="__('Field')"
             @update:selected-option="updateField"
           />
         </div>
-        <div id="operator">
+        <div class="condition-operator">
           <FormControl
             v-if="!condition[0]"
             disabled
             type="text"
+            :variant="props.variant"
             :placeholder="__('Operator')"
             class="w-[100px]"
           />
@@ -53,16 +58,18 @@
             v-model="condition[1]"
             :disabled="!condition[0]"
             type="select"
+            :variant="props.variant"
             :options="getOperators()"
             class="w-max min-w-[100px] text-ink-gray-8"
             @update:modelValue="updateOperator"
           />
         </div>
-        <div id="value" class="w-full">
+        <div class="condition-value w-full">
           <FormControl
             v-if="!condition[0]"
             disabled
             type="text"
+            :variant="props.variant"
             :placeholder="__('Condition')"
             class="w-full"
           />
@@ -70,7 +77,7 @@
             :is="getValueControl()"
             v-else
             v-model="condition[2]"
-            :placeholder="__('Condition')"
+            :placeholder="valuePlaceholder()"
             @change="updateValue"
           />
         </div>
@@ -82,6 +89,7 @@
         :level="props.level"
         :disableAddCondition="props.disableAddCondition"
         :doctype="props.doctype"
+        :variant="props.variant"
       />
       <Button
         v-if="props.isGroup && (props.level == 2 || props.level == 4)"
@@ -90,7 +98,7 @@
         @click="show = true"
       />
     </div>
-    <div :class="'w-max'">
+    <div class="condition-actions w-max">
       <Dropdown placement="right" :options="dropdownOptions">
         <Button variant="ghost" icon="lucide-more-horizontal" />
       </Dropdown>
@@ -104,6 +112,7 @@
         :level="props.level"
         :disableAddCondition="props.disableAddCondition"
         :doctype="props.doctype"
+        :variant="props.variant"
       />
     </template>
   </Dialog>
@@ -145,6 +154,7 @@ const props = defineProps({
   conjunction: { type: String, default: 'and' },
   disableAddCondition: { type: Boolean, default: false },
   doctype: { type: String, default: '' },
+  variant: { type: String, default: 'subtle' },
 })
 
 const condition = reactive(props.condition)
@@ -212,6 +222,17 @@ const resetConditionValue = () => {
   condition[2] = ''
 }
 
+/**
+ * A free-text operator takes the value literally, so the example shows it unquoted - people
+ * reach for quotes out of habit and then wonder why nothing ever matches.
+ */
+function valuePlaceholder() {
+  const operator = condition[1]
+  if (['like', 'not like'].includes(operator)) return __('e.g. @gmail.com')
+  if (['in', 'not in'].includes(operator)) return __('e.g. Open, Replied')
+  return __('Condition')
+}
+
 function getValueControl() {
   const [field, operator] = condition
   if (!field) return null
@@ -221,6 +242,7 @@ function getValueControl() {
   if (operator == 'is') {
     return h(FormControl, {
       type: 'select',
+      variant: props.variant,
       options: [
         {
           label: 'Set',
@@ -233,12 +255,13 @@ function getValueControl() {
       ],
     })
   } else if (['like', 'not like', 'in', 'not in'].includes(operator)) {
-    return h(FormControl, { type: 'text' })
+    return h(FormControl, { type: 'text', variant: props.variant })
   } else if (typeSelect.includes(fieldtype) || typeCheck.includes(fieldtype)) {
     const _options =
       fieldtype == 'Check' ? ['Yes', 'No'] : getSelectOptions(options)
     return h(FormControl, {
       type: 'select',
+      variant: props.variant,
       options: _options.map((o) => ({
         label: o,
         value: o,
@@ -246,21 +269,27 @@ function getValueControl() {
     })
   } else if (typeLink.includes(fieldtype)) {
     if (fieldtype == 'Dynamic Link') {
-      return h(FormControl, { type: 'text' })
+      return h(FormControl, { type: 'text', variant: props.variant })
     }
     return h(Link, {
       class: 'form-control',
       doctype: options,
+      variant: props.variant,
       value: condition[2],
     })
   } else if (typeNumber.includes(fieldtype)) {
-    return h(FormControl, { type: 'number' })
+    return h(FormControl, { type: 'number', variant: props.variant })
   } else if (typeDate.includes(fieldtype) && operator == 'between') {
-    return h(DateRangePicker, { value: condition[2], iconLeft: '' })
+    return h(DateRangePicker, {
+      value: condition[2],
+      iconLeft: '',
+      variant: props.variant,
+    })
   } else if (typeDate.includes(fieldtype)) {
     return h(fieldtype == 'Date' ? DatePicker : DateTimePicker, {
       value: condition[2],
       iconLeft: '',
+      variant: props.variant,
     })
   } else if (typeRating.includes(fieldtype)) {
     return h(Rating, {
@@ -269,7 +298,7 @@ function getValueControl() {
       'update:modelValue': (v) => updateValue(v),
     })
   } else {
-    return h(FormControl, { type: 'text' })
+    return h(FormControl, { type: 'text', variant: props.variant })
   }
 }
 
@@ -421,3 +450,43 @@ function getDefaultValue(field) {
   return ''
 }
 </script>
+
+<style scoped>
+@container (max-width: 420px) {
+  .condition-row {
+    position: relative;
+    display: block;
+  }
+
+  .condition-main {
+    display: block;
+  }
+
+  .condition-conjunction {
+    margin-bottom: 0.5rem;
+    padding-right: 2rem;
+  }
+
+  .condition-fields {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .condition-operator,
+  .condition-value {
+    width: 100%;
+  }
+
+  .condition-operator :deep(> *),
+  .condition-value :deep(> *) {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .condition-actions {
+    position: absolute;
+    top: -0.25rem;
+    right: -0.25rem;
+  }
+}
+</style>

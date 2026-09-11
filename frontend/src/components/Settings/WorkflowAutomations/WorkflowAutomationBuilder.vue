@@ -1,0 +1,697 @@
+<template>
+  <div class="flex h-full min-h-0 bg-surface-base p-2">
+    <div
+      class="automation-card flex min-w-0 flex-1 flex-col overflow-hidden rounded-lg bg-surface-gray-1 shadow-sm ring-1 ring-outline-gray-1"
+    >
+      <div
+        class="flex h-14 shrink-0 items-center justify-between border-b border-outline-gray-2 px-4"
+      >
+        <div class="flex min-w-0 items-center gap-2">
+          <Breadcrumbs class="automation-breadcrumbs" :items="breadcrumbs">
+            <template #prefix>
+              <WorkflowIcon class="mr-1.5 size-4 text-ink-gray-5" />
+            </template>
+          </Breadcrumbs>
+          <span class="text-ink-gray-5 text-sm-semibold" aria-hidden="true"
+            >/</span
+          >
+          <div
+            class="flex min-w-0 cursor-text items-center gap-1 rounded pr-1.5 transition-colors hover:bg-surface-gray-2"
+            @focus="selectTitle"
+          >
+            <div
+              class="title-sizer font-semibold text-ink-gray-7 -mr-2.5"
+              :data-value="doc.title || __('Untitled automation')"
+            >
+              <TextInput
+                variant="ghost"
+                :model-value="doc.title"
+                :aria-label="__('Automation title')"
+                :placeholder="__('Untitled automation')"
+                @update:model-value="setTitle"
+              />
+            </div>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <span v-if="saveState" class="text-sm text-ink-gray-5">
+            {{ saveState }}
+          </span>
+          <Badge
+            v-if="dirty"
+            size="md"
+            :label="__('Unsaved')"
+            theme="amber"
+            variant="outline"
+          >
+            <template #prefix>
+              <IndicatorIcon class="text-amber-500" />
+            </template>
+          </Badge>
+
+          <Button
+            :label="__('Save')"
+            variant="solid"
+            :loading="saving"
+            :disabled="!dirty"
+            @click="saveAutomation"
+          />
+          <Button
+            icon="lucide-x"
+            variant="ghost"
+            :aria-label="__('Close')"
+            @click="$emit('close')"
+          />
+        </div>
+      </div>
+      <div
+        class="flex shrink-0 items-center justify-between border-b border-outline-gray-2 px-4 py-2"
+      >
+        <TabButtons v-model="tab" :options="tabOptions" />
+        <div class="flex items-center gap-2">
+          <span class="text-sm text-ink-gray-6">
+            {{ doc.enabled ? __('Enabled') : __('Disabled') }}
+          </span>
+          <Switch
+            size="sm"
+            :model-value="Boolean(doc.enabled)"
+            :disabled="!doc.trigger_type"
+            @update:model-value="doc.enabled = $event ? 1 : 0"
+          />
+        </div>
+      </div>
+      <div v-if="tab === 'test'" class="min-h-0 flex-1 p-4">
+        <AutomationTrialRun
+          v-if="canTest"
+          :automation-name="automationName"
+          :doc="doc"
+        />
+        <p v-else class="text-sm text-ink-gray-5">
+          {{ __('Save the flow before testing it.') }}
+        </p>
+      </div>
+      <div
+        v-else
+        class="relative min-h-0 flex-1 outline-none"
+        autofocus
+        tabindex="0"
+      >
+        <WorkflowFlow
+          :nodes="nodes"
+          :edges="edges"
+          :block-groups="blocks"
+          :trigger-groups="triggers"
+          :selected-id="selectedId"
+          :can-delete="canDeleteSelected"
+          :can-undo="canUndo"
+          :can-redo="canRedo"
+          @select="selectNode"
+          @add-step="addStep"
+          @pick-trigger="pickTrigger"
+          @request-remove="confirmSelectedRemoval"
+          @undo="undo"
+          @redo="redo"
+        />
+        <Button
+          v-if="doc.trigger_type"
+          class="absolute right-3 top-3 z-10 shadow-sm transition-transform active:scale-95"
+          variant="subtle"
+          :aria-label="
+            inspectorOpen ? __('Close inspector') : __('Open inspector')
+          "
+          :aria-expanded="inspectorOpen"
+          @click="inspectorOpen = !inspectorOpen"
+        >
+          <template #icon>
+            <CollapseIcon
+              class="size-4 transition-transform duration-200 ease-out"
+              :class="{ 'rotate-180': inspectorOpen }"
+            />
+          </template>
+        </Button>
+      </div>
+    </div>
+    <div
+      class="min-h-0 shrink-0 overflow-hidden transition-[width,margin,opacity] duration-200 ease-out motion-reduce:transition-none"
+      :class="showInspector ? 'ml-2 w-[340px]' : 'ml-0 w-0 opacity-0'"
+      :aria-hidden="!showInspector"
+    >
+      <div
+        class="automation-card h-full w-[340px] overflow-hidden rounded-lg bg-surface-base"
+      >
+        <AutomationInspector
+          :doc="doc"
+          :selected-step="selectedStep"
+          :targets="targetsFor(selectedStep)"
+          :loading="loading"
+          @update="patchDoc"
+        />
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import AutomationInspector from './WorkflowAutomationInspector.vue'
+import AutomationTrialRun from './WorkflowTrialRun.vue'
+import WorkflowFlow from './WorkflowFlow.vue'
+import { useKeyboardShortcuts } from '@/composables/useKeyboardShortcuts'
+import { useUndoHistory } from '@/composables/useUndoHistory'
+import { globalStore } from '@/stores/global'
+import { timeAgo } from '@/utils'
+import { useNow } from '@vueuse/core'
+import { blockGroups } from './workflowBlocks'
+import { aliasTargets, loadCapabilities } from './workflowCapabilities'
+import { stepPresentation, workflowEdges, workflowNodes } from './workflowGraph'
+import { triggerFromValue, triggerGroups } from './workflowTriggers'
+import {
+  firstBlockingRow,
+  hasValues,
+  setFieldIssue,
+} from './workflowValidation'
+import {
+  adoptRowKeys,
+  insertAfter,
+  layoutSteps,
+  newStep,
+  removeStep,
+  stepsBefore,
+  toRows,
+  toTree,
+} from './workflowSteps'
+import {
+  Badge,
+  Breadcrumbs,
+  Button,
+  Switch,
+  TabButtons,
+  TextInput,
+  call,
+  toast,
+} from 'frappe-ui'
+import WorkflowIcon from '~icons/lucide/workflow'
+import CollapseIcon from '~icons/lucide/chevrons-left'
+import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
+import { computed, reactive, ref, watch } from 'vue'
+
+const props = defineProps({
+  automationName: { type: String, default: '' },
+})
+
+const emit = defineEmits(['close', 'saved', 'update:dirty'])
+const { $dialog } = globalStore()
+
+const loading = ref(false)
+const saving = ref(false)
+const tab = ref('editor')
+const inspectorOpen = ref(false)
+const selectedId = ref('trigger')
+const errors = reactive({})
+const doc = reactive(defaultDoc())
+const savedSnapshot = ref('')
+
+const tabOptions = [
+  { label: __('Editor'), value: 'editor' },
+  { label: __('Test Run'), value: 'test' },
+]
+
+const breadcrumbs = [
+  {
+    label: __('Workflow Automation'),
+    onClick: () => emit('close'),
+  },
+]
+
+const placed = computed(() => layoutSteps(doc.actions))
+
+const selectedStep = computed(() => {
+  return (
+    placed.value.find((item) => item.node._id === selectedId.value)?.node ||
+    null
+  )
+})
+
+const nodes = computed(() => workflowNodes(doc, errors))
+const edges = computed(() => workflowEdges(doc.actions))
+const blocks = computed(() => blockGroups(doc.document_type))
+const triggers = computed(() => triggerGroups(doc.document_type))
+
+const relationships = computed(() => parseJson(doc.relationships, []))
+
+/** Every alias a step can target, outputs of steps the flow gained included. */
+const flowTargets = computed(() =>
+  aliasTargets(doc.document_type, relationships.value, toRows(doc.actions)),
+)
+/** Kept mounted while hidden so the panel can slide out instead of vanishing. */
+const showInspector = computed(
+  () => tab.value === 'editor' && inspectorOpen.value,
+)
+const canDeleteSelected = computed(() =>
+  selectedId.value === 'trigger'
+    ? Boolean(doc.trigger_type)
+    : Boolean(selectedStep.value),
+)
+
+const {
+  canUndo,
+  canRedo,
+  undo,
+  redo,
+  flush: flushHistory,
+  reset: resetHistory,
+  absorb: absorbHistory,
+} = useUndoHistory(doc, applySnapshot, { ignore: ['enabled'] })
+
+useKeyboardShortcuts({
+  shortcuts: [
+    {
+      keys: ['Backspace', 'Delete'],
+      guard: () => canDeleteSelected.value,
+      action: confirmSelectedRemoval,
+    },
+    { match: isUndoKey, action: undo },
+    { match: isRedoKey, action: redo },
+  ],
+})
+
+/** Compared against the last loaded/saved state so closing can warn about unsaved edits. */
+const dirty = computed(() => savedSnapshot.value !== JSON.stringify(payload()))
+
+/** Ticks so "Saved 2 minutes ago" keeps counting while the builder stays open. */
+const now = useNow({ interval: 30000 })
+
+const saveState = computed(() => {
+  if (saving.value) return __('Saving...')
+  // Reading the clock keeps the relative time recomputing as it ticks.
+  if (dirty.value || !doc.modified || !now.value) return ''
+  return __('Saved {0}', [timeAgo(doc.modified)])
+})
+
+/** A trial runs the saved flow, so unsaved edits would not be what gets tested. */
+const canTest = computed(() => Boolean(props.automationName) && !dirty.value)
+
+watch(flowTargets, loadTargetCapabilities, { immediate: true, deep: true })
+watch(dirty, (value) => emit('update:dirty', value), { immediate: true })
+
+loadAutomation()
+
+function defaultDoc() {
+  return {
+    doctype: 'Automation Flow',
+    title: '',
+    document_type: 'CRM Lead',
+    enabled: 0,
+    trigger_type: '',
+    trigger_field: '',
+    from_value: '',
+    to_value: '',
+    custom_event: '',
+    date_field: '',
+    date_offset: 0,
+    date_direction: 'Before',
+    cron_expression: '',
+    filters: '[]',
+    condition: '',
+    relationships: '[]',
+    run_as: 'Automation User',
+    automation_user: '',
+    revalidate_on_run: 0,
+    actions: [],
+    stop_on_error: 1,
+    throttle_per_minute: 0,
+  }
+}
+
+async function loadAutomation() {
+  if (!props.automationName) return markClean()
+  loading.value = true
+  try {
+    const saved = await call('frappe.client.get', {
+      doctype: 'Automation Flow',
+      name: props.automationName,
+    })
+    Object.assign(doc, saved, {
+      actions: toTree((saved.actions || []).map(normalizeRow)),
+    })
+  } finally {
+    loading.value = false
+    markClean()
+    resetHistory()
+  }
+}
+
+function markClean() {
+  savedSnapshot.value = JSON.stringify(payload())
+}
+
+/** Take the server's name, timestamps and step keys, so the next save is not a stale write. */
+function adoptSaved(saved) {
+  doc.name = saved.name
+  doc.creation = saved.creation
+  doc.owner = saved.owner
+  doc.modified = saved.modified
+  adoptRowKeys(doc.actions, saved.actions || [])
+  markClean()
+  absorbHistory()
+}
+
+function setTitle(title) {
+  doc.title = title
+}
+
+/** Focus lands on the inner input, so select from the wrapper the icon shares. */
+function selectTitle(event) {
+  if (event.target instanceof HTMLInputElement) event.target.select()
+}
+
+function normalizeRow(row) {
+  return {
+    ...row,
+    step_type: row.step_type || 'Action',
+    params: stringify(row.params),
+    related_condition: stringify(row.related_condition, ''),
+  }
+}
+
+function stringify(value, fallback = '{}') {
+  if (!value) return fallback
+  return typeof value === 'string' ? value : JSON.stringify(value, null, 2)
+}
+
+function parseJson(value, fallback) {
+  if (!value) return fallback
+  if (typeof value !== 'string') return value
+  try {
+    return JSON.parse(value)
+  } catch {
+    return fallback
+  }
+}
+
+/** Load capabilities for the trigger DocType and every alias a step can target. */
+function loadTargetCapabilities() {
+  flowTargets.value.forEach((target) => loadCapabilities(target.doctype))
+}
+
+function targetsFor(step) {
+  if (!step) return []
+  return aliasTargets(
+    doc.document_type,
+    relationships.value,
+    stepsBefore(doc.actions, step),
+  )
+}
+
+function addStep({ after, branch, values }) {
+  const created = newStep(values)
+  if (!after) doc.actions.push(created)
+  else if (branch) after.children[branch].push(created)
+  else insertAfter(doc.actions, after, created)
+  selectedId.value = created._id
+  inspectorOpen.value = true
+}
+
+/** The inspector reports its edits rather than writing into the document it is shown. */
+function patchDoc(values) {
+  Object.assign(doc, values)
+}
+
+/** Restoring replaces the whole document, so the canvas rebuilds from the snapshot. */
+function applySnapshot(snapshot) {
+  Object.assign(doc, snapshot)
+  clearErrors()
+  keepSelectionValid()
+}
+
+/** A step back can remove the selected step; the trigger is always there to fall back on. */
+function keepSelectionValid() {
+  if (selectedId.value === 'trigger') return
+  if (placed.value.some((item) => item.node._id === selectedId.value)) return
+  selectedId.value = 'trigger'
+}
+
+function isUndoKey(event) {
+  return withModifier(event) && !event.shiftKey && isKey(event, 'z')
+}
+
+function isRedoKey(event) {
+  if (!withModifier(event)) return false
+  return isKey(event, 'y') || (event.shiftKey && isKey(event, 'z'))
+}
+
+function withModifier(event) {
+  return event.metaKey || event.ctrlKey
+}
+
+function isKey(event, key) {
+  return event.key.toLowerCase() === key
+}
+
+function selectNode(id) {
+  selectedId.value = id
+  if (id !== 'trigger' || doc.trigger_type) inspectorOpen.value = true
+}
+
+function pickTrigger(trigger) {
+  applyTrigger(trigger)
+  selectedId.value = 'trigger'
+  inspectorOpen.value = true
+}
+
+/** Event triggers store as a Custom Event; anything else clears the event it replaces. */
+function applyTrigger(value) {
+  Object.assign(doc, triggerFromValue(value))
+}
+
+function removeSelectedStep() {
+  if (!selectedStep.value) return
+  if (!removeStep(doc.actions, selectedStep.value)) return
+  selectedId.value = 'trigger'
+}
+
+function confirmSelectedRemoval() {
+  if (!canDeleteSelected.value) return
+  const deletingTrigger = selectedId.value === 'trigger'
+  $dialog({
+    title: deletingTrigger ? __('Delete trigger') : __('Delete step'),
+    size: 'sm',
+    message: deleteMessage(deletingTrigger),
+    actions: [{ label: 'Cancel' }, deleteAction(deletingTrigger)],
+  })
+}
+
+function deleteMessage(deletingTrigger) {
+  return deletingTrigger
+    ? __('Are you sure you want to delete the trigger and all workflow steps?')
+    : __('Are you sure you want to delete this step?')
+}
+
+function deleteAction(deletingTrigger) {
+  return {
+    label: __('Delete'),
+    variant: 'solid',
+    theme: 'red',
+    onClick: (close) => {
+      if (deletingTrigger) resetTrigger()
+      else removeSelectedStep()
+      close()
+    },
+  }
+}
+
+function resetTrigger() {
+  Object.assign(doc, emptyTriggerState())
+  selectedId.value = 'trigger'
+  inspectorOpen.value = false
+}
+
+function emptyTriggerState() {
+  return {
+    trigger_type: '',
+    trigger_field: '',
+    from_value: '',
+    to_value: '',
+    custom_event: '',
+    date_field: '',
+    date_offset: 0,
+    date_direction: 'Before',
+    cron_expression: '',
+    filters: '[]',
+    condition: '',
+    relationships: '[]',
+    actions: [],
+  }
+}
+
+async function saveAutomation() {
+  flushHistory()
+  saving.value = true
+  clearErrors()
+  try {
+    validateBeforeSave()
+    const saved = props.automationName
+      ? await call('frappe.client.save', { doc: payload() })
+      : await call('frappe.client.insert', { doc: payload() })
+    adoptSaved(saved)
+    toast.success(__('Automation saved'))
+    emit('saved', saved)
+  } catch (error) {
+    toast.error(attachError(error))
+  } finally {
+    saving.value = false
+  }
+}
+
+function validateBeforeSave() {
+  const missing = firstBlockingRow(doc.actions)
+  if (!missing) return
+  const message = describeIssue(missing, setFieldIssue(missing))
+  attachRowError(missing.idx, message)
+  throw new Error(message)
+}
+
+/** Names the step the same way the canvas and the run log do, so it is findable. */
+function describeIssue(row, issue) {
+  return __('Step {0} ({1}): {2}', [
+    row.idx,
+    stepPresentation(row).label,
+    issue,
+  ])
+}
+
+function payload() {
+  return {
+    ...doc,
+    title: doc.title || __('Untitled automation'),
+    filters: normalizedJsonString(doc.filters, []),
+    relationships: JSON.stringify(normalizedRelationships()),
+    actions: toRows(doc.actions).map(rowPayload),
+  }
+}
+
+function normalizedRelationships() {
+  return Array.isArray(relationships.value) ? relationships.value : []
+}
+
+function normalizedJsonString(value, fallback) {
+  return JSON.stringify(parseJson(value, fallback))
+}
+
+function rowPayload(row) {
+  return {
+    ...row,
+    doctype: 'Automation Action',
+    params: JSON.stringify(normalizedParams(row)),
+    related_condition: normalizedRelatedCondition(row.related_condition),
+  }
+}
+
+function normalizedParams(row) {
+  const params = parseJson(row.params, {})
+  if (row.action_type !== 'SetFieldValue') return params
+  if (!hasValues(params.values)) delete params.values
+  return params
+}
+
+function normalizedRelatedCondition(value) {
+  const condition = parseJson(value, null)
+  if (!condition || Array.isArray(condition) || !condition.relationship)
+    return null
+  return JSON.stringify(condition)
+}
+
+function clearErrors() {
+  Object.keys(errors).forEach((key) => delete errors[key])
+}
+
+/** Server errors read "Row 3: ..." - map that flattened row back onto its node. */
+function attachError(error) {
+  const message = errorMessage(error)
+  const match = message.match(/Row (\d+)/)
+  if (match) attachRowError(Number(match[1]), message)
+  else if (selectedStep.value) errors[selectedStep.value._id] = [{ message }]
+  return message
+}
+
+function attachRowError(rowIndex, message) {
+  const node = placed.value[rowIndex - 1]?.node
+  if (!node) return
+  errors[node._id] = [{ message }]
+  selectedId.value = node._id
+}
+
+function errorMessage(error) {
+  const messages = error?.messages || error?._server_messages
+  if (Array.isArray(messages) && messages.length)
+    return cleanMessage(messages[0])
+  return cleanMessage(error?.message || error)
+}
+
+function cleanMessage(message) {
+  try {
+    return JSON.parse(message).message || String(message)
+  } catch {
+    return String(message || __('Could not save automation'))
+  }
+}
+</script>
+
+<style scoped>
+/* Both panes rise into place when the builder opens. */
+.automation-card {
+  animation: card-in 220ms ease-out both;
+}
+
+@keyframes card-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.995);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .automation-card {
+    animation: none;
+  }
+}
+
+/* An invisible mirror of the text sets the track width, so the field is only
+   ever as wide as its content until it hits the cap and truncates. */
+.title-sizer {
+  display: inline-grid;
+  min-width: 0;
+  max-width: min(20rem, 40vw);
+}
+
+.automation-breadcrumbs :deep(a),
+.automation-breadcrumbs :deep(button) {
+  @apply text-sm-medium;
+}
+
+.title-sizer::after,
+.title-sizer > * {
+  grid-area: 1 / 1;
+}
+
+/* Matches TextInput's sm padding so the mirror and the field measure the same. */
+.title-sizer::after {
+  content: attr(data-value);
+  visibility: hidden;
+  white-space: pre;
+  min-width: 6rem;
+  padding: 0 0.5px;
+  font: inherit;
+  font-weight: semibold;
+  letter-spacing: inherit;
+}
+
+.title-sizer :deep(input) {
+  cursor: text;
+  background: transparent;
+  text-overflow: ellipsis;
+}
+
+.title-sizer :deep(input::selection) {
+  background: var(--surface-gray-3, #e2e8f0);
+}
+</style>
