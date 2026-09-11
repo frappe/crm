@@ -419,6 +419,18 @@ class TestCRMLead(FrappeTestCase):
 		self.assertEqual(org.organization_name, "API Test Corp")
 		self.assertEqual(org.annual_revenue, 300000)
 
+	def test_cannot_convert_lost_lead_to_deal(self):
+		"""Lost leads cannot be converted to deals."""
+		for status in ("Junk", "Unqualified"):
+			with self.subTest(status=status):
+				lead = create_lead(first_name=status, status=status, lost_reason="Not interested")
+				with self.assertRaisesRegex(
+					frappe.ValidationError, f"Cannot convert a lead with status {status}"
+				):
+					convert_to_deal(lead=lead.name)
+				lead.reload()
+				self.assertFalse(lead.converted)
+
 	def test_convert_to_deal_api_with_existing_records(self):
 		"""Test convert_to_deal API with existing contact and organization parameters"""
 		# Create existing contact
