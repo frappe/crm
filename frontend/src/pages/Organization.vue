@@ -154,15 +154,47 @@
           :columns="columns"
           :options="{ selectable: false, showTooltip: false }"
         />
-        <ContactsListView
-          v-if="tab.label === 'Contacts' && rows.length"
-          class="mt-4"
-          :rows="rows"
-          :columns="columns"
-          :options="{ selectable: false, showTooltip: false }"
-        />
+        <div
+          v-else-if="tab.label === 'Contacts'"
+          class="flex flex-1 flex-col overflow-hidden"
+        >
+          <div class="flex justify-end px-5">
+            <Link
+              value=""
+              doctype="Contact"
+              :filters="{ company_name: ['!=', props.organizationId] }"
+              :onCreate="
+                (value, close) => {
+                  _contact = {
+                    first_name: value,
+                    company_name: props.organizationId,
+                  }
+                  showContactModal = true
+                  close()
+                }
+              "
+              @change="(contact) => addContact(contact)"
+            >
+              <template #target="{ togglePopover }">
+                <Button
+                  :label="__('Add Contact')"
+                  iconLeft="plus"
+                  @click="togglePopover()"
+                />
+              </template>
+            </Link>
+          </div>
+          <ContactsListView
+            v-if="rows.length"
+            class="mt-4"
+            :rows="rows"
+            :columns="columns"
+            :options="{ selectable: false, showTooltip: false }"
+          />
+          <EmptyState v-else :icon="tab.icon" :name="__(tab.label)" />
+        </div>
         <EmptyState
-          v-if="!rows.length"
+          v-if="tab.label === 'Deals' && !rows.length"
           :icon="tab.icon"
           :name="__(tab.label)"
         />
@@ -181,6 +213,12 @@
     :docname="props.organizationId"
     name="Organizations"
   />
+  <ContactModal
+    v-if="showContactModal"
+    v-model="showContactModal"
+    :contact="_contact"
+    :options="{ redirect: false, afterInsert: () => contacts.reload() }"
+  />
 </template>
 
 <script setup>
@@ -196,6 +234,8 @@ import CameraIcon from '@/components/Icons/CameraIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
 import DeleteLinkedDocModal from '@/components/DeleteLinkedDocModal.vue'
+import ContactModal from '@/components/Modals/ContactModal.vue'
+import Link from '@/components/Controls/Link.vue'
 import CustomActions from '@/components/CustomActions.vue'
 import EnrichFromWebsite from '@/components/EnrichFromWebsite.vue'
 import { useDocument } from '@/data/document'
@@ -246,6 +286,8 @@ const errorTitle = ref('')
 const errorMessage = ref('')
 
 const showDeleteLinkedDocModal = ref(false)
+const showContactModal = ref(false)
+const _contact = ref({})
 
 const {
   document: organization,
@@ -438,6 +480,21 @@ const contacts = createListResource({
   pageLength: 20,
   auto: true,
 })
+
+// Links an existing contact to this organization; `Contact.company_name` is
+// the only tie between the two, and until now it could only be set from the
+// contact's own page.
+async function addContact(contact) {
+  if (!contact) return
+  await call('frappe.client.set_value', {
+    doctype: 'Contact',
+    name: contact,
+    fieldname: 'company_name',
+    value: props.organizationId,
+  })
+  contacts.reload()
+  toast.success(__('Contact added to {0}', [props.organizationId]))
+}
 
 const rows = computed(() => {
   let list = !tabIndex.value ? deals : contacts
