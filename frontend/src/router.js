@@ -264,24 +264,36 @@ router.beforeEach(async (to, from, next) => {
       const doctype = doctypeMap[to.name]
       let defaultViewType = 'list'
 
-      let globalDefault = getDefaultView()
-      if (globalDefault && globalDefault.route_name === to.name) {
-        defaultViewType = globalDefault.type || 'list'
-        if (globalDefault.name && !globalDefault.is_standard) {
-          next({
-            name: to.name,
-            params: { viewType: defaultViewType },
-            query: { ...to.query, view: globalDefault.name },
-          })
-          return
-        }
-      }
-
+      // Check the doctype-scoped standard view first: standardViews is keyed
+      // by `${doctype} ${viewType}`, so it unambiguously reflects the default
+      // configured for *this* doctype. getDefaultView() returns a single
+      // value shared across every doctype in the CRM (it's overwritten by
+      // whichever view with is_default=1 is processed last across the whole
+      // app) and can point at another doctype's default view entirely, so it
+      // is only used as a fallback when this doctype has no standard default
+      // of its own.
+      let matchedStandardDefault = false
       for (const viewType of standardViewTypes) {
         const standardView = standardViews.value?.[doctype + ' ' + viewType]
         if (standardView?.is_default) {
           defaultViewType = viewType
+          matchedStandardDefault = true
           break
+        }
+      }
+
+      if (!matchedStandardDefault) {
+        let globalDefault = getDefaultView()
+        if (globalDefault && globalDefault.route_name === to.name) {
+          defaultViewType = globalDefault.type || 'list'
+          if (globalDefault.name && !globalDefault.is_standard) {
+            next({
+              name: to.name,
+              params: { viewType: defaultViewType },
+              query: { ...to.query, view: globalDefault.name },
+            })
+            return
+          }
         }
       }
 
