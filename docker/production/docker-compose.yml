@@ -1,0 +1,216 @@
+# Production stack for Frappe CRM.
+#
+# Unlike ../docker-compose.yml (which is a development bench that builds itself
+# at startup), this stack runs the prebuilt ghcr.io/frappe/crm image, so the web
+# service binds its port within seconds of boot instead of after a ~20 minute
+# `bench init`. That is what makes it survivable under a platform health check.
+#
+# Copy .env.example to .env and edit it before deploying.
+
+x-crm-image: &crm_image
+  image: ghcr.io/frappe/crm:${CRM_VERSION:-stable}
+
+x-backend-env: &backend_env
+  DB_HOST: db
+  DB_PORT: "3306"
+  MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?set DB_ROOT_PASSWORD in .env}
+  MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?set DB_ROOT_PASSWORD in .env}
+
+x-bench-volumes: &bench_volumes
+  - sites:/home/frappe/frappe-bench/sites
+  - logs:/home/frappe/frappe-bench/logs
+
+services:
+  # The primary service. This is the one to point the platform health check at.
+  frontend:
+    <<: *crm_image
+    command: ["nginx-entrypoint.sh"]
+    environment:
+      BACKEND: backend:8000
+      SOCKETIO: websocket:9000
+      # Pinning this to the site name makes Frappe resolve every request to that
+      # site regardless of the Host header. Without it, a health probe hitting a
+      # raw IP or an internal hostname gets "Site does not exist" and fails.
+      FRAPPE_SITE_NAME_HEADER: ${SITE_NAME:-crm.localhost}
+      UPSTREAM_REAL_IP_ADDRESS: 127.0.0.1
+      UPSTREAM_REAL_IP_HEADER: X-Forwarded-For
+      UPSTREAM_REAL_IP_RECURSIVE: "off"
+      PROXY_READ_TIMEOUT: 120
+      CLIENT_MAX_BODY_SIZE: 50m
+    volumes: *bench_volumes
+    ports:
+      # nginx always listens on 8080 inside the container; only the published
+      # port changes. Set CRM_HTTP_PORT to whatever the platform probes.
+      - "${CRM_HTTP_PORT:-8052}:8080"
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - python3 -c "import urllib.request; urllib.request.urlopen('http://localhost:8080/api/method/ping')"
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      # First boot has to wait for create-site to finish. Give it room, and set
+      # the platform's own grace period to at least this much.
+      start_period: 300s
+    depends_on:
+      - backend
+      - websocket
+    restart: unless-stopped
+
+  backend:
+    <<: *crm_image
+    environment: *backend_env
+    volumes: *bench_volumes
+    depends_on:
+      configurator:
+        condition: service_completed_successfully
+    restart: unless-stopped
+
+  websocket:
+    <<: *crm_image
+    command: ["node", "/home/frappe/frappe-bench/apps/frappe/socketio.js"]
+    environment:
+      FRAPPE_REDIS_CACHE: redis://redis-cache:6379
+      FRAPPE_REDIS_QUEUE: redis://redis-queue:6379
+    volumes: *bench_volumes
+    depends_on:
+      configurator:
+        condition: service_completed_successfully
+    restart: unless-stopped
+
+  queue-short:
+    <<: *crm_image
+    command: ["bench", "worker", "--queue", "short,default"]
+    environment:
+      FRAPPE_REDIS_CACHE: redis://redis-cache:6379
+      FRAPPE_REDIS_QUEUE: redis://redis-queue:6379
+    volumes: *bench_volumes
+    depends_on:
+      configurator:
+        condition: service_completed_successfully
+    restart: unless-stopped
+
+  queue-long:
+    <<: *crm_image
+    command: ["bench", "worker", "--queue", "long,default,short"]
+    environment:
+      FRAPPE_REDIS_CACHE: redis://redis-cache:6379
+      FRAPPE_REDIS_QUEUE: redis://redis-queue:6379
+    volumes: *bench_volumes
+    depends_on:
+      configurator:
+        condition: service_completed_successfully
+    restart: unless-stopped
+
+  scheduler:
+    <<: *crm_image
+    command: ["bench", "schedule"]
+    volumes: *bench_volumes
+    depends_on:
+      configurator:
+        condition: service_completed_successfully
+    restart: unless-stopped
+
+  # One-shot: writes common_site_config.json into the sites volume.
+  configurator:
+    <<: *crm_image
+    entrypoint: ["bash", "-c"]
+    command:
+      - >
+        ls -1 apps > sites/apps.txt;
+        bench set-config -g db_host $$DB_HOST;
+        bench set-config -gp db_port $$DB_PORT;
+        bench set-config -g redis_cache "redis://$$REDIS_CACHE";
+        bench set-config -g redis_queue "redis://$$REDIS_QUEUE";
+        bench set-config -g redis_socketio "redis://$$REDIS_QUEUE";
+        bench set-config -gp socketio_port $$SOCKETIO_PORT;
+    environment:
+      DB_HOST: db
+      DB_PORT: "3306"
+      REDIS_CACHE: redis-cache:6379
+      REDIS_QUEUE: redis-queue:6379
+      SOCKETIO_PORT: "9000"
+    volumes: *bench_volumes
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: "no"
+
+  # One-shot: creates the site on first deploy, no-ops on every deploy after.
+  create-site:
+    <<: *crm_image
+    entrypoint: ["bash", "-c"]
+    command:
+      - >
+        wait-for-it -t 120 db:3306;
+        wait-for-it -t 120 redis-cache:6379;
+        wait-for-it -t 120 redis-queue:6379;
+        export start=`date +%s`;
+        until [[ -n `grep -hs ^ sites/common_site_config.json | jq -r ".db_host // empty"` ]] && \
+          [[ -n `grep -hs ^ sites/common_site_config.json | jq -r ".redis_cache // empty"` ]] && \
+          [[ -n `grep -hs ^ sites/common_site_config.json | jq -r ".redis_queue // empty"` ]];
+        do
+          echo "Waiting for sites/common_site_config.json to be created";
+          sleep 5;
+          if (( `date +%s`-start > 120 )); then
+            echo "could not find sites/common_site_config.json with required keys";
+            exit 1
+          fi
+        done;
+        echo "sites/common_site_config.json found";
+        if [ -d "sites/$$SITE_NAME" ]; then
+          echo "Site $$SITE_NAME already exists, skipping creation";
+        else
+          bench new-site \
+            --mariadb-user-host-login-scope='%' \
+            --db-root-username=root \
+            --db-root-password=$$MARIADB_ROOT_PASSWORD \
+            --admin-password=$$ADMIN_PASSWORD \
+            --install-app crm \
+            --set-default $$SITE_NAME;
+        fi;
+    environment:
+      <<: *backend_env
+      SITE_NAME: ${SITE_NAME:-crm.localhost}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?set ADMIN_PASSWORD in .env}
+    volumes: *bench_volumes
+    depends_on:
+      configurator:
+        condition: service_completed_successfully
+    restart: "no"
+
+  db:
+    image: mariadb:10.6
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --skip-character-set-client-handshake
+      - --skip-innodb-read-only-compressed
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?set DB_ROOT_PASSWORD in .env}
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?set DB_ROOT_PASSWORD in .env}
+    volumes:
+      - db-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      start_period: 15s
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  redis-cache:
+    image: redis:6.2-alpine
+    restart: unless-stopped
+
+  redis-queue:
+    image: redis:6.2-alpine
+    volumes:
+      - redis-queue-data:/data
+    restart: unless-stopped
+
+volumes:
+  db-data:
+  redis-queue-data:
+  sites:
+  logs:
