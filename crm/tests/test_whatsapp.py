@@ -6,7 +6,49 @@ from unittest.mock import MagicMock, patch
 import frappe
 from frappe.tests.utils import FrappeTestCase
 
-from crm.api.whatsapp import notify_agent, validate
+from crm.api.whatsapp import create_whatsapp_message, notify_agent, validate
+
+
+class TestWhatsAppMessageCreation(FrappeTestCase):
+	def test_text_message_is_preserved(self):
+		doc = MagicMock()
+		with (
+			patch("crm.api.whatsapp.validate_access"),
+			patch("frappe.new_doc", return_value=doc),
+		):
+			create_whatsapp_message("CRM Lead", "LEAD-0001", "Hello", "+15551234567", "", "")
+
+		self.assertEqual(doc.update.call_args.args[0]["message"], "Hello")
+		self.assertEqual(doc.update.call_args.args[0]["content_type"], "text")
+
+	def test_media_message_keeps_caption_separate_from_attachment(self):
+		for content_type in ("image", "video", "document"):
+			for caption in ("", None, "Here is the requested file"):
+				with self.subTest(content_type=content_type, caption=caption):
+					doc = MagicMock()
+					doc.name = "MESSAGE-0001"
+					attachment = "/files/customer-upload.png"
+					with (
+						patch("crm.api.whatsapp.validate_access") as validate_access,
+						patch("frappe.new_doc", return_value=doc),
+					):
+						name = create_whatsapp_message(
+							"CRM Lead", "LEAD-0001", caption, "+15551234567", attachment, "", content_type
+						)
+
+					validate_access.assert_called_once_with("CRM Lead", "LEAD-0001")
+					doc.update.assert_called_once_with(
+						{
+							"reference_doctype": "CRM Lead",
+							"reference_name": "LEAD-0001",
+							"message": caption or "",
+							"to": "+15551234567",
+							"attach": attachment,
+							"content_type": content_type,
+						}
+					)
+					doc.insert.assert_called_once_with(ignore_permissions=True)
+					self.assertEqual(name, doc.name)
 
 
 class TestWhatsAppHooks(FrappeTestCase):
