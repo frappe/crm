@@ -7,7 +7,7 @@ import { viewsStore } from '@/stores/views'
 let personaChecked = false
 export const PERSONA_DONE_KEY = 'crm_persona_captured'
 
-async function shouldCapturePersona() {
+export async function shouldCapturePersona() {
   // Client-side flag guards against re-prompting if the server persist failed.
   if (localStorage.getItem(PERSONA_DONE_KEY)) return false
   const captured = await call('frappe.client.get_single_value', {
@@ -16,8 +16,22 @@ async function shouldCapturePersona() {
   })
   if (captured) return false
   // The wizard only feeds telemetry; skip it entirely if the user opted out.
-  const { enabled } =
-    (await call('frappe.utils.telemetry.pulse.client.boot_config')) || {}
+  //
+  // boot_config is whitelisted on newer Frappe (the pulse telemetry client's
+  // replacement for is_enabled), but is_enabled itself stopped being
+  // whitelisted on the same release — so there is no single endpoint that
+  // exists on both an older stable site and a newer one. Rather than pick a
+  // version to break, treat "can't tell if telemetry is enabled" as
+  // "telemetry is not enabled": this call gates nothing but the onboarding
+  // wizard, so the safe default is to skip it, not to let a missing
+  // whitelisted method surface as a server-side error on every navigation.
+  let enabled
+  try {
+    const config = await call('frappe.utils.telemetry.pulse.client.boot_config')
+    enabled = config?.enabled
+  } catch {
+    enabled = false
+  }
   return !!enabled
 }
 
