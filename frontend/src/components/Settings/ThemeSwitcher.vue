@@ -23,6 +23,7 @@
               <img
                 v-if="typeof logo == 'string'"
                 :src="logo"
+                alt=""
                 class="size-5 object-cover"
               />
               <component :is="logo" v-else class="size-5 shrink-0 rounded" />
@@ -71,6 +72,7 @@
               <img
                 v-if="typeof logo == 'string'"
                 :src="logo"
+                alt=""
                 class="size-5 object-cover"
               />
               <component :is="logo" v-else class="size-5 shrink-0 rounded" />
