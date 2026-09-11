@@ -24,8 +24,12 @@ ENRICHABLE_DOCTYPES = ("CRM Organization", "CRM Lead")
 # The CNPJ package used in phase 1 (package 6 / CNPJ D: the richest CNPJ package).
 CNPJ_PACKAGE = 6
 
-# Fallback per-request timeout (seconds) when Settings has not been saved yet.
+# Fallback per-request timeout (seconds) when Settings has not been saved yet, plus the
+# supported band. Settings.validate enforces the band on save; the clamp here (and in the
+# client) is a defensive net for any value that predates the validation or arrives raw.
 DEFAULT_TIMEOUT = 15
+MIN_TIMEOUT = 1
+MAX_TIMEOUT = 60
 
 
 @dataclass
@@ -56,9 +60,12 @@ def get_token() -> str:
 
 
 def get_timeout() -> int:
-	"""The configured per-request timeout in seconds, falling back to the default."""
+	"""The configured per-request timeout in seconds, clamped to the supported band and
+	falling back to the default when unset."""
 	value = get_settings().get("request_timeout")
-	return int(value) if value else DEFAULT_TIMEOUT
+	if not value:
+		return DEFAULT_TIMEOUT
+	return max(MIN_TIMEOUT, min(int(value), MAX_TIMEOUT))
 
 
 def auto_enrich_enabled_for(doctype: str) -> bool:

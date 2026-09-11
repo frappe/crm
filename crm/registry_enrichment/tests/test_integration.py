@@ -17,7 +17,7 @@ from unittest import mock
 import frappe
 from frappe.tests import IntegrationTestCase
 
-from crm.registry_enrichment import api, client, install, tasks
+from crm.registry_enrichment import api, client, config, install, permissions, tasks
 from crm.registry_enrichment.tests.fixtures import cnpj_package6
 
 VALID_CNPJ = "12.345.678/0001-95"
@@ -307,3 +307,209 @@ class SeedDefaultsIdempotencyTest(IntegrationTestCase):
 		# Running the seeder twice must not duplicate mapping rows.
 		settings.reload()
 		self.assertEqual(len(settings.field_mappings), len(install.FIELD_MAPPINGS))
+
+
+class RunPermissionScopeTest(IntegrationTestCase):
+	"""Finding 1: a Run must never widen visibility beyond its referenced record."""
+
+	def tearDown(self):
+		frappe.set_user("Administrator")
+		frappe.db.rollback()
+
+	def _run_for_org(self):
+		org = _new_org()
+		return frappe.get_doc(
+			"CRM Registry Enrichment Run",
+			tasks.write_run("CRM Organization", org.name, "12345678000195", "Queued"),
+		)
+
+	def test_sales_user_role_removed_from_run(self):
+		# Sales User was dropped from the doctype permissions entirely, so a user without a
+		# management role cannot read any Run regardless of the referenced record.
+		run = self._run_for_org()
+		self.assertFalse(
+			frappe.has_permission("CRM Registry Enrichment Run", "read", run.name, user=_make_minimal_user())
+		)
+
+	def test_system_manager_reads_run(self):
+		run = self._run_for_org()
+		self.assertTrue(frappe.has_permission("CRM Registry Enrichment Run", "read", run.name))
+
+	def test_has_permission_scopes_to_referenced_record(self):
+		# The controller hook allows a read only when the caller can read the referenced doc.
+		run = self._run_for_org()
+		user = _make_minimal_user()
+		with mock.patch.object(permissions.frappe, "has_permission", return_value=False):
+			self.assertFalse(permissions.has_permission(run, "read", user=user))
+		with mock.patch.object(permissions.frappe, "has_permission", return_value=True):
+			self.assertTrue(permissions.has_permission(run, "read", user=user))
+
+	def test_has_permission_defers_for_non_read_ptype(self):
+		# Controllers may only deny; write/delete are left to the role permissions.
+		run = self._run_for_org()
+		self.assertTrue(permissions.has_permission(run, "write", user=_make_minimal_user()))
+
+	def test_query_conditions_scope_by_owner(self):
+		self.assertEqual(permissions.get_permission_query_conditions("Administrator"), "")
+		condition = permissions.get_permission_query_conditions(_make_minimal_user())
+		self.assertIn("owner", condition)
+
+
+class QueueRunRowLockTest(IntegrationTestCase):
+	"""Finding 2: run creation is serialized by a row lock on the target record so
+	concurrent requests cannot strand a run, without any manual commit."""
+
+	def setUp(self):
+		_ensure_settings()
+
+	def tearDown(self):
+		frappe.db.rollback()
+
+	def test_locks_target_row_before_lookup(self):
+		# The target record's row is locked (SELECT ... FOR UPDATE) before find_inflight_run,
+		# so the find-then-create window is serialized inside the request transaction.
+		org = _new_org()
+		events = []
+		real_get_value = api.frappe.db.get_value
+		real_find = tasks.find_inflight_run
+
+		def spy_get_value(doctype, filters=None, *args, **kwargs):
+			if doctype == "CRM Organization" and filters == org.name and kwargs.get("for_update"):
+				events.append("lock")
+			return real_get_value(doctype, filters, *args, **kwargs)
+
+		def spy_find(*args, **kwargs):
+			events.append("find")
+			return real_find(*args, **kwargs)
+
+		with mock.patch.object(api.frappe.db, "get_value", side_effect=spy_get_value):
+			with mock.patch.object(tasks, "find_inflight_run", side_effect=spy_find):
+				with mock.patch.object(tasks.frappe, "enqueue"):
+					api.enrich("CRM Organization", org.name)
+
+		self.assertIn("lock", events)
+		self.assertIn("find", events)
+		self.assertLess(events.index("lock"), events.index("find"))
+
+	def test_second_request_reuses_run_under_lock(self):
+		# Once a Queued run exists, a following request reuses it under the row lock instead
+		# of inserting a second row for the deduplicated job.
+		org = _new_org()
+		with mock.patch.object(tasks.frappe, "enqueue") as enq:
+			first = api.enrich("CRM Organization", org.name)
+			second = api.enrich("CRM Organization", org.name)
+		self.assertEqual(first["run"], second["run"])
+		enq.assert_called_once()
+
+
+class ApiArgumentValidationTest(IntegrationTestCase):
+	"""Finding 3: caller-supplied arguments must be non-empty strings before any use."""
+
+	def tearDown(self):
+		frappe.db.rollback()
+
+	def test_require_str_rejects_non_string(self):
+		for bad in (123, None, 0, [], {}):
+			with self.assertRaises(frappe.ValidationError):
+				api._require_str(bad, "X")
+
+	def test_require_str_rejects_empty(self):
+		for bad in ("", "   "):
+			with self.assertRaises(frappe.ValidationError):
+				api._require_str(bad, "X")
+
+	def test_require_str_returns_valid_value(self):
+		self.assertEqual(api._require_str("ok", "X"), "ok")
+
+	def test_enrich_rejects_blank_reference(self):
+		_ensure_settings()
+		with self.assertRaises(frappe.ValidationError):
+			api.enrich("", "CRM-1")
+		with self.assertRaises(frappe.ValidationError):
+			api.enrich("CRM Organization", "   ")
+
+	def test_retry_rejects_blank_run(self):
+		with self.assertRaises(frappe.ValidationError):
+			api.retry("   ")
+
+
+class TimeoutBoundsTest(IntegrationTestCase):
+	"""Finding 4: request_timeout is bounded on save and clamped defensively downstream."""
+
+	def tearDown(self):
+		frappe.db.rollback()
+
+	def test_settings_rejects_out_of_band(self):
+		for bad in (-1, 61, 3600):
+			settings = frappe.get_doc("CRM Registry Enrichment Settings")
+			settings.request_timeout = bad
+			with self.assertRaises(frappe.ValidationError):
+				settings.save(ignore_permissions=True)
+
+	def test_settings_accepts_in_band(self):
+		for ok in (0, 1, 15, 60):
+			settings = frappe.get_doc("CRM Registry Enrichment Settings")
+			settings.request_timeout = ok
+			settings.save(ignore_permissions=True)
+
+	def test_config_get_timeout_clamps(self):
+		class _Fake:
+			def __init__(self, value):
+				self._value = value
+
+			def get(self, _key):
+				return self._value
+
+		cases = ((3600, 60), (-5, 1), (30, 30), (0, config.DEFAULT_TIMEOUT))
+		for stored, expected in cases:
+			with mock.patch.object(config, "get_settings", return_value=_Fake(stored)):
+				self.assertEqual(config.get_timeout(), expected)
+
+	def test_client_fetch_clamps_timeout(self):
+		for given, expected in ((3600, 60), (-5, 1), (30, 30), (0, client.DEFAULT_TIMEOUT)):
+			with mock.patch.object(client, "_session") as session:
+				session.return_value.get.side_effect = RuntimeError("stop")
+				with self.assertRaises(client.RegistryLookupError):
+					client.fetch("12345678000195", 6, "token", timeout=given)
+				self.assertEqual(session.return_value.get.call_args.kwargs["timeout"], expected)
+
+
+class RunPermissionBranchTest(IntegrationTestCase):
+	"""Finding 1: cover the allow branches of the controller hook."""
+
+	def tearDown(self):
+		frappe.set_user("Administrator")
+		frappe.db.rollback()
+
+	def test_system_manager_bypasses_reference_scope(self):
+		org = _new_org()
+		run = frappe.get_doc(
+			"CRM Registry Enrichment Run",
+			tasks.write_run("CRM Organization", org.name, "12345678000195", "Queued"),
+		)
+		# A System Manager is allowed without touching the referenced record.
+		with mock.patch.object(permissions.frappe, "has_permission") as ref:
+			self.assertTrue(permissions.has_permission(run, "read", user="Administrator"))
+		ref.assert_not_called()
+
+	def test_allows_when_run_has_no_reference(self):
+		orphan = frappe._dict(reference_doctype=None, reference_name=None)
+		self.assertTrue(permissions.has_permission(orphan, "read", user=_make_minimal_user()))
+
+
+class RetryReenqueueTest(IntegrationTestCase):
+	"""Finding 2/3: retry re-runs a stored run through the atomic queue path."""
+
+	def setUp(self):
+		_ensure_settings()
+
+	def tearDown(self):
+		frappe.db.rollback()
+
+	def test_retry_reenqueues_from_run(self):
+		org = _new_org()
+		source = tasks.write_run("CRM Organization", org.name, "12345678000195", "Failed")
+		with mock.patch.object(tasks.frappe, "enqueue") as enq:
+			result = api.retry(source)
+		self.assertTrue(result["queued"])
+		enq.assert_called_once()

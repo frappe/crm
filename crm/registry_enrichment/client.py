@@ -27,6 +27,11 @@ from frappe import _
 
 BASE_URL = "https://api.cpfcnpj.com.br"
 DEFAULT_TIMEOUT = 15
+# Supported per-request timeout band. Settings.validate enforces it on save; the clamp in
+# fetch is a defensive net so a stale or raw value can never make a call fail outright or
+# pin a worker far beyond the intended limit.
+MIN_TIMEOUT = 1
+MAX_TIMEOUT = 60
 
 # Hard cap on the response body we will read (1 MiB). A real package-6 payload is a few
 # KiB; anything larger is a misbehaving endpoint or a probe, so we stop reading and fail
@@ -146,12 +151,13 @@ def fetch(document: str, package: int, token: str, timeout: int = DEFAULT_TIMEOU
 	the API code rather than the HTTP status alone.
 	"""
 	url = f"{BASE_URL}/{token}/{package}/{document}"
+	timeout = max(MIN_TIMEOUT, min(int(timeout or DEFAULT_TIMEOUT), MAX_TIMEOUT))
 	try:
 		# allow_redirects=False: the host is fixed, so a redirect is never legitimate and
 		# must not be chased. stream=True lets us cap the body before buffering it.
 		response = _session().get(
 			url,
-			timeout=timeout or DEFAULT_TIMEOUT,
+			timeout=timeout,
 			allow_redirects=False,
 			stream=True,
 		)

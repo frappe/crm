@@ -31,6 +31,16 @@ ENRICH_RATE_LIMIT = 10
 STATUS_RATE_LIMIT = 60
 
 
+def _require_str(value, label: str) -> str:
+	"""Reject anything that is not a non-empty string before it reaches the ORM or the
+	permission APIs. Whitelisted arguments arrive from the client, so a missing or
+	wrong-typed value is a caller error, surfaced as a user-friendly ``ValidationError``
+	rather than a downstream ``AttributeError`` or a silent empty lookup."""
+	if not isinstance(value, str) or not value.strip():
+		frappe.throw(_("{0} must be a non-empty string.").format(label), frappe.ValidationError)
+	return value
+
+
 def _guard(reference_doctype: str, reference_name: str):
 	"""Shared validation for the enqueue paths: feature enabled + token present, the
 	phase-1 allow-list, a ``write`` permission check, and a valid CNPJ in ``tax_id``.
@@ -69,7 +79,19 @@ def _queue_run(reference_doctype: str, reference_name: str, document: str) -> di
 	If a Run is already in flight for this record (an auto-fire or a concurrent click),
 	it is reused rather than pre-creating a second Queued row: the shared per-doc
 	``job_id`` would dedupe the second enqueue and leave that row orphaned.
+
+	The find-then-create window is serialized per record with a row lock on the target
+	record (``SELECT ... FOR UPDATE`` via ``for_update=True``), taken inside the request
+	transaction. A second concurrent request blocks on that lock until the first request
+	commits at the end of its call; it then observes the first request's Queued Run via
+	``find_inflight_run`` and reuses it, so no manual commit is issued from this endpoint.
 	"""
+	# Lock the target record's row before the in-flight lookup. The lock is held by the
+	# request transaction until it commits at the end of the request, which serializes the
+	# find-then-create window: a concurrent request waits here and then sees the Queued Run
+	# the first request created, instead of inserting a second row for the deduplicated job.
+	frappe.db.get_value(reference_doctype, reference_name, "name", for_update=True)
+
 	existing = tasks.find_inflight_run(reference_doctype, reference_name)
 	if existing:
 		return {"queued": True, "run": existing}
@@ -87,6 +109,8 @@ def enrich(reference_doctype: str, reference_name: str) -> dict:
 	Returns ``{queued: bool, run: str}`` where ``run`` names the Queued Run created for
 	the frontend to track.
 	"""
+	reference_doctype = _require_str(reference_doctype, _("Reference DocType"))
+	reference_name = _require_str(reference_name, _("Reference Name"))
 	doc = _guard(reference_doctype, reference_name)
 	document = normalize_document(doc.get("tax_id") or "")
 	return _queue_run(reference_doctype, reference_name, document)
@@ -103,6 +127,7 @@ def retry(run: str) -> dict:
 	caller cannot re-run against a Run they are not allowed to see. Returns
 	``{queued: bool, run: str}`` naming the fresh Queued Run.
 	"""
+	run = _require_str(run, _("Run"))
 	if not frappe.has_permission("CRM Registry Enrichment Run", "read", run):
 		raise frappe.PermissionError
 

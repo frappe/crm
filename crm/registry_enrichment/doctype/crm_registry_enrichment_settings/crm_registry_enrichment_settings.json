@@ -49,7 +49,7 @@
   },
   {
    "default": "15",
-   "description": "Per-request timeout in seconds.",
+   "description": "Per-request timeout in seconds (1 to 60).",
    "fieldname": "request_timeout",
    "fieldtype": "Int",
    "label": "Request Timeout (s)"
