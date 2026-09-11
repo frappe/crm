@@ -52,7 +52,7 @@
                     </div>
                     <div class="font-medium text-ink-gray-7">{{ e.title }}</div>
                   </div>
-                  <div class="text-ink-gray-6 ml-1">
+                  <div class="text-ink-gray-6 ms-1">
                     {{ formattedDateTime(e) }}
                   </div>
                 </div>

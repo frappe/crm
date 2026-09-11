@@ -24,7 +24,7 @@
         <OrganizationsIcon class="h-4 w-4" />
         <label class="block text-base">{{ __('Organization') }}</label>
       </div>
-      <div class="ml-6 text-ink-gray-9">
+      <div class="ms-6 text-ink-gray-9">
         <div class="flex items-center justify-between text-base">
           <div>{{ __('Choose Existing') }}</div>
           <Switch v-model="existingOrganizationChecked" />
@@ -50,7 +50,7 @@
         <ContactsIcon class="h-4 w-4" />
         <label class="block text-base">{{ __('Contact') }}</label>
       </div>
-      <div class="ml-6 text-ink-gray-9">
+      <div class="ms-6 text-ink-gray-9">
         <div class="flex items-center justify-between text-base">
           <div>{{ __('Choose Existing') }}</div>
           <Switch v-model="existingContactChecked" />

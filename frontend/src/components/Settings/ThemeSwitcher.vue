@@ -9,14 +9,14 @@
       "
       @click="theme = 'light'"
     >
-      <div class="pl-5 pt-3.5 bg-surface-gray-2 rounded-t-[10.5px]">
+      <div class="ps-5 pt-3.5 bg-surface-gray-2 rounded-t-[10.5px]">
         <div class="bg-white rounded-tl-sm">
           <div class="flex gap-[3px] py-[3px] px-1 border-b border-gray-100">
             <div class="size-1.5 bg-[#FF5F57] rounded-full"></div>
             <div class="size-1.5 bg-[#FEBC2D] rounded-full"></div>
             <div class="size-1.5 bg-[#28C840] rounded-full"></div>
           </div>
-          <div class="flex items-start justify-between gap-2 p-2.5 pr-0 pb-1">
+          <div class="flex items-start justify-between gap-2 p-2.5 pe-0 pb-1">
             <div
               class="flex items-center flex-1 gap-1 text-xs-semibold text-ink-gray-5"
             >
@@ -57,14 +57,14 @@
       "
       @click="theme = 'dark'"
     >
-      <div class="pl-5 pt-3.5 bg-surface-gray-2 rounded-t-[10.5px]">
+      <div class="ps-5 pt-3.5 bg-surface-gray-2 rounded-t-[10.5px]">
         <div class="bg-gray-900 rounded-tl-sm">
           <div class="flex gap-[3px] py-[3px] px-1 border-b border-gray-800">
             <div class="size-1.5 bg-[#FF5F57] rounded-full"></div>
             <div class="size-1.5 bg-[#FEBC2D] rounded-full"></div>
             <div class="size-1.5 bg-[#28C840] rounded-full"></div>
           </div>
-          <div class="flex items-start justify-between gap-2 p-2.5 pr-0 pb-1">
+          <div class="flex items-start justify-between gap-2 p-2.5 pe-0 pb-1">
             <div
               class="flex items-center flex-1 gap-1 text-xs-semibold text-ink-gray-5"
             >
@@ -109,7 +109,7 @@
     >
       <div class="flex">
         <div
-          class="flex flex-1 pl-5 pt-3.5 bg-surface-gray-2 rounded-tl-[10.5px]"
+          class="flex flex-1 ps-5 pt-3.5 bg-surface-gray-2 rounded-tl-[10.5px]"
         >
           <div class="bg-white rounded-tl-sm w-full">
             <div class="flex gap-[3px] py-[3px] px-1 border-b border-gray-100">
@@ -117,7 +117,7 @@
               <div class="size-1.5 bg-[#FEBC2D] rounded-full"></div>
               <div class="size-1.5 bg-[#28C840] rounded-full"></div>
             </div>
-            <div class="flex items-start justify-between gap-2 p-2.5 pr-0 pb-1">
+            <div class="flex items-start justify-between gap-2 p-2.5 pe-0 pb-1">
               <div
                 class="flex items-center flex-1 gap-1 text-xs-semibold text-ink-gray-5"
               >
@@ -133,7 +133,7 @@
           </div>
         </div>
         <div
-          class="flex flex-1 pl-5 pt-3.5 bg-surface-gray-3 rounded-tr-[10.5px]"
+          class="flex flex-1 ps-5 pt-3.5 bg-surface-gray-3 rounded-tr-[10.5px]"
         >
           <div class="bg-gray-900 rounded-tl-sm w-full">
             <div class="flex gap-[3px] py-[3px] px-1 border-b border-gray-800">
@@ -141,7 +141,7 @@
               <div class="size-1.5 bg-[#FEBC2D] rounded-full"></div>
               <div class="size-1.5 bg-[#28C840] rounded-full"></div>
             </div>
-            <div class="flex items-start justify-between gap-2 p-2.5 pb-3 pr-0">
+            <div class="flex items-start justify-between gap-2 p-2.5 pb-3 pe-0">
               <div
                 class="flex items-center flex-1 gap-1 text-xs-semibold text-ink-gray-5"
               >

@@ -52,7 +52,7 @@
           </span>
         </div>
         <CheckIcon
-          class="size-4 shrink-0 ml-auto"
+          class="size-4 shrink-0 ms-auto"
           :class="isSelected(user) ? 'opacity-100' : 'opacity-0'"
         />
       </li>

@@ -32,7 +32,7 @@
     </div>
 
     <div v-if="telephonyAgent.doc" class="flex-1 flex flex-col overflow-y-auto">
-      <div class="flex items-center justify-between gap-8 py-3 pl-2 pr-1">
+      <div class="flex items-center justify-between gap-8 py-3 ps-2 pe-1">
         <div class="flex flex-col">
           <div class="text-p-base-medium text-ink-gray-7 truncate">
             {{ __('Default Medium') }}
@@ -67,7 +67,7 @@
       />
       <div
         v-if="isEnabled('twilio')"
-        class="flex items-center justify-between gap-8 py-3 pl-2 pr-1"
+        class="flex items-center justify-between gap-8 py-3 ps-2 pe-1"
       >
         <div class="flex flex-col">
           <div class="text-p-base-medium text-ink-gray-7 truncate">
@@ -98,7 +98,7 @@
       />
       <div
         v-if="isEnabled('exotel')"
-        class="flex items-center justify-between gap-8 py-3 pl-2 pr-1"
+        class="flex items-center justify-between gap-8 py-3 ps-2 pe-1"
       >
         <div class="flex flex-col">
           <div class="text-p-base-medium text-ink-gray-7 truncate">
@@ -125,7 +125,7 @@
       </div>
       <div
         v-if="isEnabled('exotel')"
-        class="flex items-center justify-between gap-8 py-3 pl-2 pr-1"
+        class="flex items-center justify-between gap-8 py-3 ps-2 pe-1"
       >
         <div class="flex flex-col">
           <div class="text-p-base-medium text-ink-gray-7 truncate">

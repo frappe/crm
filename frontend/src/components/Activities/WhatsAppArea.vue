@@ -12,7 +12,7 @@
     >
       <div
         :id="whatsapp.name"
-        class="group/message relative max-w-[90%] rounded-md bg-surface-gray-1 text-ink-gray-9 p-1.5 pl-2 text-base shadow-sm"
+        class="group/message relative max-w-[90%] rounded-md bg-surface-gray-1 text-ink-gray-9 p-1.5 ps-2 text-base shadow-sm"
       >
         <Badge
           v-if="whatsapp.status == 'failed'"
@@ -53,7 +53,7 @@
         <div class="flex gap-2 justify-between">
           <div
             v-if="whatsapp.status != 'failed'"
-            class="absolute -right-0.5 -top-0.5 flex cursor-pointer gap-1 rounded-full bg-surface-base pb-2 pl-2 pr-1.5 pt-1.5 opacity-0 group-hover/message:opacity-100"
+            class="absolute -right-0.5 -top-0.5 flex cursor-pointer gap-1 rounded-full bg-surface-base pb-2 ps-2 pe-1.5 pt-1.5 opacity-0 group-hover/message:opacity-100"
             :style="{
               background:
                 'radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 1) 35%, rgba(238, 130, 238, 0) 100%)',

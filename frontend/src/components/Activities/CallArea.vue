@@ -7,7 +7,7 @@
           :label="call._caller.label"
           size="md"
         />
-        <span class="font-medium text-ink-gray-8 ml-1">
+        <span class="font-medium text-ink-gray-8 ms-1">
           {{ call._caller.label }}
         </span>
         <span>{{
@@ -16,7 +16,7 @@
             : __('has made a call')
         }}</span>
       </div>
-      <div class="ml-auto whitespace-nowrap">
+      <div class="ms-auto whitespace-nowrap">
         <TimelineTimestamp :date="call.creation" />
       </div>
     </div>

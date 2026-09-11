@@ -56,7 +56,7 @@
                 class="text-base leading-none text-ink-gray-7 rounded flex items-center px-2 py-1 relative select-none data-[highlighted]:outline-none data-[highlighted]:bg-surface-gray-3 cursor-pointer"
                 @mousedown.prevent="onSelect(option.value, option)"
               >
-                <UserAvatar class="mr-2" :user="option.value" size="lg" />
+                <UserAvatar class="me-2" :user="option.value" size="lg" />
                 <div class="flex flex-col gap-1 p-1 text-ink-gray-8">
                   <div class="text-base-medium">{{ option.label }}</div>
                   <div class="text-sm text-ink-gray-5">{{ option.value }}</div>
@@ -84,7 +84,7 @@
         :tooltip="getTooltip(att.email)"
       >
         <template #prefix>
-          <UserAvatar :user="att.email" class="-ml-1 !size-5.5" />
+          <UserAvatar :user="att.email" class="-ms-1 !size-5.5" />
         </template>
         <template #suffix>
           <span
@@ -94,7 +94,7 @@
           />
         </template>
       </Button>
-      <ErrorMessage v-if="error" class="mt-2 pl-2" :message="error" />
+      <ErrorMessage v-if="error" class="mt-2 ps-2" :message="error" />
     </div>
   </div>
 </template>

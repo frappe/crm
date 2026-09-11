@@ -31,7 +31,7 @@
               @click.stop
             >
               <UserAvatar :user="assignee.name" size="sm" />
-              <div class="ml-1">{{ getUser(assignee.name).full_name }}</div>
+              <div class="ms-1">{{ getUser(assignee.name).full_name }}</div>
               <Button
                 variant="ghost"
                 class="rounded-full !size-4 m-1"
@@ -49,7 +49,7 @@
         </div>
       </template>
       <template #item-prefix="{ option }">
-        <UserAvatar class="mr-2" :user="option.value" size="sm" />
+        <UserAvatar class="me-2" :user="option.value" size="sm" />
       </template>
       <template #item-label="{ option }">
         <Tooltip :text="option.value">

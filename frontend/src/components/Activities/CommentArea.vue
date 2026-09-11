@@ -2,7 +2,7 @@
   <div :id="activity.name">
     <div class="mb-1 flex items-center justify-stretch gap-2 py-1 text-base">
       <div class="inline-flex items-center flex-wrap gap-1 text-ink-gray-5">
-        <UserAvatar class="mr-1" :user="activity.owner" size="md" />
+        <UserAvatar class="me-1" :user="activity.owner" size="md" />
         <span class="font-medium text-ink-gray-8">
           {{ activity.owner_name }}
         </span>
@@ -11,7 +11,7 @@
           {{ __('comment') }}
         </span>
       </div>
-      <div class="ml-auto flex items-center gap-1 whitespace-nowrap">
+      <div class="ms-auto flex items-center gap-1 whitespace-nowrap">
         <TimelineTimestamp :date="activity.creation" />
         <Dropdown
           v-if="isOwner && !editing"

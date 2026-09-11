@@ -51,7 +51,7 @@
         :button="{
           label: __(preset),
           class:
-            '!w-full justify-start [&>span]:mr-auto [&>svg]:text-ink-gray-5',
+            '!w-full justify-start [&>span]:me-auto [&>svg]:text-ink-gray-5',
           variant: 'outline',
           iconRight: 'chevron-down',
           iconLeft: 'calendar',
@@ -79,7 +79,7 @@
         "
       >
         <template #prefix>
-          <LucideCalendar class="size-4 text-ink-gray-5 mr-2" />
+          <LucideCalendar class="size-4 text-ink-gray-5 me-2" />
         </template>
       </DateRangePicker>
       <Link
@@ -99,13 +99,13 @@
         <template #prefix>
           <UserAvatar
             v-if="filters.user"
-            class="mr-2"
+            class="me-2"
             :user="filters.user"
             size="sm"
           />
         </template>
         <template #item-prefix="{ option }">
-          <UserAvatar class="mr-2" :user="option.value" size="sm" />
+          <UserAvatar class="me-2" :user="option.value" size="sm" />
         </template>
         <template #item-label="{ option }">
           <Tooltip :text="option.value">

@@ -33,7 +33,7 @@
         <div v-if="tabs.data?.[0]?.sections" class="flex gap-4">
           <SidePanelLayoutEditor
             v-model="tabs.data[0].sections"
-            class="flex flex-1 flex-col pr-2"
+            class="flex flex-1 flex-col pe-2"
             :doctype="_doctype"
           />
           <div v-if="preview" class="flex flex-1 flex-col border rounded">

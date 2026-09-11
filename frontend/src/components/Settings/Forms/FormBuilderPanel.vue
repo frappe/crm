@@ -8,7 +8,7 @@
           icon-left="lucide-chevron-left"
           :label="form.title || __('Untitled')"
           size="md"
-          class="-ml-4 cursor-pointer !max-w-96 !justify-start !pr-0 text-lg-semibold text-ink-gray-7 no-underline hover:bg-transparent hover:no-underline hover:opacity-70 focus:bg-transparent focus:outline-none focus:ring-0"
+          class="-ms-4 cursor-pointer !max-w-96 !justify-start !pe-0 text-lg-semibold text-ink-gray-7 no-underline hover:bg-transparent hover:no-underline hover:opacity-70 focus:bg-transparent focus:outline-none focus:ring-0"
           @click="goBack"
         />
         <Badge
@@ -441,7 +441,7 @@
                       <textarea
                         readonly
                         rows="3"
-                        class="w-full resize-none rounded-md border border-outline-gray-2 bg-surface-gray-1 py-2 pl-3 pr-10 font-mono text-xs text-ink-gray-7 focus:border-outline-gray-4 focus:outline-none focus:ring-0 focus-visible:outline-none"
+                        class="w-full resize-none rounded-md border border-outline-gray-2 bg-surface-gray-1 py-2 ps-3 pe-10 font-mono text-xs text-ink-gray-7 focus:border-outline-gray-4 focus:outline-none focus:ring-0 focus-visible:outline-none"
                         :value="iframeSnippet"
                       />
                       <button

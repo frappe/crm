@@ -19,7 +19,7 @@
                 <Button
                   v-if="section.showEditButton"
                   variant="ghost"
-                  class="w-7 mr-2"
+                  class="w-7 me-2"
                   :icon="EditIcon"
                   @click="showSidePanelModal = true"
                 />
@@ -160,14 +160,14 @@
                         >
                           <template v-if="doc[field.fieldname]" #prefix>
                             <UserAvatar
-                              class="mr-1.5"
+                              class="me-1.5"
                               :user="doc[field.fieldname]"
                               size="sm"
                             />
                           </template>
                           <template #item-prefix="{ option }">
                             <UserAvatar
-                              class="mr-1.5"
+                              class="me-1.5"
                               :user="option.value"
                               size="sm"
                             />
@@ -302,7 +302,7 @@
                         <!-- Frappe stores Rating as a 0-1 fraction; Rating works in star units -->
                         <Rating
                           v-else-if="field.fieldtype === 'Rating'"
-                          class="pl-[10px]"
+                          class="ps-[10px]"
                           :step="0.5"
                           :modelValue="
                             (doc[field.fieldname] || 0) * ratingMax(field)
@@ -356,7 +356,7 @@
                           variant="ghost"
                           :fixed-menu="false"
                           :bubble-menu="true"
-                          editorClass="w-full !min-h-[38px] !h-[38px] ml-1"
+                          editorClass="w-full !min-h-[38px] !h-[38px] ms-1"
                           :value="doc[field.fieldname]"
                           :placeholder="field.placeholder"
                           :disabled="Boolean(field.read_only)"
@@ -372,7 +372,7 @@
                           @change.stop="fieldChange($event.target.value, field)"
                         />
                       </div>
-                      <div class="ml-1">
+                      <div class="ms-1">
                         <ArrowUpRightIcon
                           v-if="
                             field.fieldtype === 'Link' &&

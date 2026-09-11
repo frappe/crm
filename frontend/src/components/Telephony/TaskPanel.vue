@@ -49,10 +49,10 @@
         @change="(option) => (task.assigned_to = option)"
       >
         <template #prefix>
-          <UserAvatar class="mr-2 !h-4 !w-4" :user="task.assigned_to" />
+          <UserAvatar class="me-2 !h-4 !w-4" :user="task.assigned_to" />
         </template>
         <template #item-prefix="{ option }">
-          <UserAvatar class="mr-2" :user="option.value" size="sm" />
+          <UserAvatar class="me-2" :user="option.value" size="sm" />
         </template>
         <template #item-label="{ option }">
           <Tooltip :text="option.value">

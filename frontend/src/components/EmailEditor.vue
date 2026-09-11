@@ -27,7 +27,7 @@
           class="mx-4 flex items-center gap-2"
           :class="from.length ? '' : 'border-t pt-2.5'"
         >
-          <span class="text-xs text-ink-gray-4 mr-2">{{ __('TO') }}:</span>
+          <span class="text-xs text-ink-gray-4 me-2">{{ __('TO') }}:</span>
           <EmailMultiSelect
             v-model="toEmails"
             class="flex-1"

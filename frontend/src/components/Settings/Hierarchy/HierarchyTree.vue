@@ -27,7 +27,7 @@
       </div>
 
       <slot name="label" v-bind="{ node, hasChildren, isCollapsed }">
-        <div class="text-base truncate" :class="hasChildren ? '' : 'pl-3.5'">
+        <div class="text-base truncate" :class="hasChildren ? '' : 'ps-3.5'">
           {{ node.label }}
         </div>
       </slot>

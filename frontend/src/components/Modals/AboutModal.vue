@@ -20,7 +20,7 @@
             <component
               :is="link.icon"
               v-if="link.icon"
-              class="size-4 mr-2 text-ink-gray-7"
+              class="size-4 me-2 text-ink-gray-7"
             />
             <span class="text-base text-ink-gray-8">
               {{ link.label }}

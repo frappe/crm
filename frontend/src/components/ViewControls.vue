@@ -52,7 +52,7 @@
       </div>
       <div
         v-if="viewUpdated && route.query.view && (!view.public || isManager())"
-        class="flex flex-row-reverse items-center gap-2 border-r pr-2"
+        class="flex flex-row-reverse items-center gap-2 border-r pe-2"
       >
         <Button :label="__('Cancel')" @click="cancelChanges" />
         <Button :label="__('Save Changes')" @click="saveView" />
@@ -63,9 +63,9 @@
     v-else-if="customizeQuickFilter"
     class="flex items-center justify-between gap-2 p-5"
   >
-    <div class="flex flex-1 items-center overflow-hidden pl-1 gap-2">
+    <div class="flex flex-1 items-center overflow-hidden ps-1 gap-2">
       <FadedScrollableDiv
-        class="flex overflow-x-auto -ml-1"
+        class="flex overflow-x-auto -ms-1"
         orientation="horizontal"
       >
         <Draggable
@@ -102,7 +102,7 @@
         >
           <template #trigger="{ open, setOpen }">
             <Button
-              class="whitespace-nowrap mr-2"
+              class="whitespace-nowrap me-2"
               variant="ghost"
               :label="__('Add Filter')"
               iconLeft="plus"
@@ -119,7 +119,7 @@
         </Combobox>
       </div>
     </div>
-    <div class="-ml-2 h-[70%] border-l" />
+    <div class="-ms-2 h-[70%] border-l" />
     <div class="flex gap-1">
       <Button
         :label="__('Save')"
@@ -131,7 +131,7 @@
   </div>
   <div v-else class="flex items-center justify-between gap-2 px-5 py-4">
     <FadedScrollableDiv
-      class="flex flex-1 items-center overflow-x-auto -ml-1 h-9"
+      class="flex flex-1 items-center overflow-x-auto -ms-1 h-9"
       orientation="horizontal"
     >
       <div
@@ -145,11 +145,11 @@
         />
       </div>
     </FadedScrollableDiv>
-    <div class="-ml-2 h-[70%] border-l" />
+    <div class="-ms-2 h-[70%] border-l" />
     <div class="flex items-center gap-2">
       <div
         v-if="viewUpdated && route.query.view && (!view.public || isManager())"
-        class="flex items-center gap-2 border-r pr-2"
+        class="flex items-center gap-2 border-r pe-2"
       >
         <Button :label="__('Cancel')" @click="cancelChanges" />
         <Button :label="__('Save Changes')" @click="saveView" />

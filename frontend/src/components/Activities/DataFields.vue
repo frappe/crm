@@ -6,7 +6,7 @@
       {{ __('Data') }}
       <Badge
         v-if="document.isDirty"
-        class="ml-3"
+        class="ms-3"
         :label="__('Not Saved')"
         theme="orange"
       />

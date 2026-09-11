@@ -1,6 +1,6 @@
 <template>
-  <div class="flex pr-3">
-    <div class="z-20 ml-2 flex items-center justify-center">
+  <div class="flex pe-3">
+    <div class="z-20 ms-2 flex items-center justify-center">
       <Button
         class="size-7"
         variant="ghost"
@@ -11,7 +11,7 @@
     </div>
     <div id="app-header" class="flex-1" />
   </div>
-  <CallUI class="mr-3 mt-2" />
+  <CallUI class="me-3 mt-2" />
 </template>
 
 <script setup>

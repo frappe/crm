@@ -1,11 +1,11 @@
 <template>
   <LayoutHeader>
     <header
-      class="relative flex h-10.5 items-center justify-between gap-2 py-2.5 pl-2"
+      class="relative flex h-10.5 items-center justify-between gap-2 py-2.5 ps-2"
     >
       <Breadcrumbs :items="breadcrumbs">
         <template #prefix="{ item }">
-          <Icon v-if="item.icon" :icon="item.icon" class="mr-2 h-4" />
+          <Icon v-if="item.icon" :icon="item.icon" class="me-2 h-4" />
         </template>
       </Breadcrumbs>
       <div class="absolute right-0">

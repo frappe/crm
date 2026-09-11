@@ -3,7 +3,7 @@
     <template #left-header>
       <Breadcrumbs :items="breadcrumbs">
         <template #prefix="{ item }">
-          <Icon v-if="item.icon" :icon="item.icon" class="mr-2 h-4" />
+          <Icon v-if="item.icon" :icon="item.icon" class="me-2 h-4" />
         </template>
       </Breadcrumbs>
     </template>

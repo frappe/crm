@@ -41,7 +41,7 @@
             <template #suffix>
               <Badge
                 v-if="unreadNotificationsCount"
-                class="mr-2"
+                class="me-2"
                 :label="unreadNotificationsCount"
                 variant="subtle"
               />
@@ -65,7 +65,7 @@
               >
                 <span class="flex items-center gap-1.5">
                   <span
-                    class="lucide-chevron-right -ml-0.5 size-4 shrink-0 text-ink-gray-9 transition-transform duration-300 ease-in-out"
+                    class="lucide-chevron-right -ms-0.5 size-4 shrink-0 text-ink-gray-9 transition-transform duration-300 ease-in-out"
                     :class="{ 'rotate-90': opened }"
                     aria-hidden="true"
                   />

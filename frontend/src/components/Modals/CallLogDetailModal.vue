@@ -69,7 +69,7 @@
                   :label="field.value.caller.label"
                   size="sm"
                 />
-                <div class="ml-1 flex flex-col gap-1">
+                <div class="ms-1 flex flex-col gap-1">
                   {{ field.value.caller.label }}
                 </div>
                 <span
@@ -81,7 +81,7 @@
                   :label="field.value.receiver.label"
                   size="sm"
                 />
-                <div class="ml-1 flex flex-col gap-1">
+                <div class="ms-1 flex flex-col gap-1">
                   {{ field.value.receiver.label }}
                 </div>
               </div>
