@@ -16,7 +16,7 @@
           >
             <QuickFilterField
               :filter="filter"
-              @applyQuickFilter="(f, v) => applyQuickFilter(f, v)"
+              @applyQuickFilter="applyQuickFilter"
             />
           </div>
         </FadedScrollableDiv>
@@ -154,7 +154,7 @@
       >
         <QuickFilterField
           :filter="filter"
-          @applyQuickFilter="(f, v) => applyQuickFilter(f, v)"
+          @applyQuickFilter="applyQuickFilter"
         />
       </div>
     </FadedScrollableDiv>
@@ -921,7 +921,9 @@ function setupNewQuickFilters(filters) {
   }))
 }
 
-function applyQuickFilter(filter, value) {
+// `onSettled` lets a text quick filter hold its draft until this apply — list
+// reload and view save included — has fully landed (see QuickFilterField).
+function applyQuickFilter(filter, value, onSettled) {
   let filters = { ...getListParams().filters }
   let field = filter.fieldname
   if (value) {
@@ -937,7 +939,7 @@ function applyQuickFilter(filter, value) {
     delete filters[field]
     filter['value'] = ''
   }
-  updateFilter(filters)
+  updateFilter(filters).finally(() => onSettled?.())
 }
 
 function updateFilter(filters) {
@@ -948,11 +950,12 @@ function updateFilter(filters) {
   listResource.params = defaultParams.value
   listResource.params.filters = filters
   view.value.filters = filters
-  listResource.reload()
+  let pending = [listResource.reload()]
 
   if (!route.query.view) {
-    createOrUpdateStandardView()
+    pending.push(createOrUpdateStandardView())
   }
+  return Promise.all(pending)
 }
 
 function updateSort(order_by) {
@@ -1101,13 +1104,16 @@ function loadMoreKanban(columnName) {
 function createOrUpdateStandardView() {
   if (route.query.view) return
   view.value.doctype = props.doctype
-  call(
+  return call(
     'crm.fcrm.doctype.crm_view_settings.crm_view_settings.create_or_update_standard_view',
     {
       view: view.value,
     },
   ).then(() => {
-    reloadView()
+    // Settle only once the views store has re-read the saved view: the
+    // `getView` watcher rebuilds the list params from it, so until then the
+    // filters shown can still flip back to the previously saved ones.
+    let refreshed = reloadView()
     view.value = {
       label: view.value.label,
       type: view.value.type || 'list',
@@ -1126,6 +1132,7 @@ function createOrUpdateStandardView() {
       load_default_columns: view.value.load_default_columns,
     }
     viewUpdated.value = false
+    return refreshed
   })
 }
 

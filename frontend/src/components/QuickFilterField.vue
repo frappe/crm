@@ -67,8 +67,12 @@ const emit = defineEmits(['applyQuickFilter'])
 // owns a local draft and only follows the parent while the user isn't editing.
 const draft = ref(props.filter.value ?? '')
 const focused = ref(false)
-const commitPending = ref(false)
-const editing = computed(() => focused.value || commitPending.value)
+const debouncePending = ref(false)
+// Applies emitted to the parent that it hasn't reported back as settled yet.
+const pendingApplies = ref(0)
+const editing = computed(
+  () => focused.value || debouncePending.value || pendingApplies.value > 0,
+)
 
 watch(
   () => props.filter,
@@ -79,16 +83,24 @@ watch(
   { deep: true },
 )
 
-// `commitPending` outlives blur on purpose: the debounce keeps running after the
-// input loses focus, so without it a response landing in that gap would revert
-// the text the user just finished typing.
+// The edit stays pending past blur, and past the debounce firing: applying a
+// filter also saves the view and re-reads it, and an *earlier* apply finishing
+// that round trip late rebuilds `filter.value` from a stale view. Until the
+// parent reports every apply as settled, whatever the prop carries is older
+// than the draft, so it's only re-synced once the last one has landed.
 const debouncedFn = useDebounceFn((f, value) => {
-  commitPending.value = false
-  emit('applyQuickFilter', f, value)
+  debouncePending.value = false
+  pendingApplies.value++
+  emit('applyQuickFilter', f, value, onApplySettled)
 }, 500)
 
+function onApplySettled() {
+  pendingApplies.value--
+  if (!editing.value) draft.value = props.filter.value ?? ''
+}
+
 function onTextInput(value) {
-  commitPending.value = true
+  debouncePending.value = true
   debouncedFn(filter, value)
 }
 
