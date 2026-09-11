@@ -298,6 +298,60 @@
       </div>
     </template>
   </Dialog>
+  <Dialog
+    v-model:open="showLostReasonPrompt"
+    :title="__('Lost Reason')"
+    @close="cancelLostReasonPrompt"
+  >
+    <template #default>
+      <div class="mb-4 text-p-base text-ink-gray-7">
+        {{
+          __('Please provide a reason for marking this {0} as lost', [
+            doctype.toLowerCase().replace('crm ', ''),
+          ])
+        }}
+      </div>
+      <div class="flex flex-col gap-3">
+        <div>
+          <div class="mb-2 text-sm text-ink-gray-5">
+            {{ __('Lost Reason') }}
+            <span class="text-ink-red-5">*</span>
+          </div>
+          <Link
+            class="form-control flex-1 truncate"
+            :value="lostReasonValue"
+            doctype="CRM Lost Reason"
+            @change="(v) => (lostReasonValue = v)"
+          />
+        </div>
+        <div>
+          <div class="mb-2 text-sm text-ink-gray-5">
+            {{ __('Lost Notes') }}
+            <span v-if="lostReasonValue == 'Other'" class="text-ink-red-5">*</span>
+          </div>
+          <FormControl
+            class="form-control flex-1 truncate"
+            type="textarea"
+            :value="lostNotesValue"
+            @change="(e) => (lostNotesValue = e.target.value)"
+          />
+        </div>
+      </div>
+    </template>
+    <template #actions>
+      <div class="flex justify-between items-center gap-2">
+        <div><ErrorMessage :message="lostReasonPromptError" /></div>
+        <div class="flex gap-2">
+          <Button :label="__('Cancel')" @click="cancelLostReasonPrompt" />
+          <Button
+            variant="solid"
+            :label="__('Save')"
+            @click="saveLostReasonPrompt"
+          />
+        </div>
+      </div>
+    </template>
+  </Dialog>
 </template>
 <script setup>
 import Icon from '@/components/Icon.vue'
@@ -350,6 +404,7 @@ import { isMobileView } from '@/composables/settings'
 import Draggable from 'vuedraggable'
 import _ from 'lodash'
 import ImportIcon from '~icons/lucide/import'
+import Link from '@/components/Controls/Link.vue'
 
 const props = defineProps({
   doctype: { type: String, required: true },
@@ -596,6 +651,67 @@ const showExportDialog = ref(false)
 const export_type = ref('Excel')
 const export_all = ref(false)
 const selectedRows = ref([])
+
+const showLostReasonPrompt = ref(false)
+const lostReasonItem = ref(null)
+const lostReasonTo = ref(null)
+const lostReasonValue = ref('')
+const lostNotesValue = ref('')
+const lostReasonPromptError = ref('')
+
+function openLostReasonPrompt(item, to) {
+  lostReasonItem.value = item
+  lostReasonTo.value = to
+  lostReasonValue.value = ''
+  lostNotesValue.value = ''
+  lostReasonPromptError.value = ''
+  showLostReasonPrompt.value = true
+}
+
+function cancelLostReasonPrompt() {
+  showLostReasonPrompt.value = false
+  // The card was optimistically moved by the drag-and-drop before we
+  // knew a reason was required — put the board back the way it was.
+  list.value.reload()
+}
+
+function saveLostReasonPrompt() {
+  if (!lostReasonValue.value) {
+    lostReasonPromptError.value = __('Lost Reason is required')
+    return
+  }
+  if (lostReasonValue.value === 'Other' && !lostNotesValue.value) {
+    lostReasonPromptError.value = __(
+      'Lost Notes are required when Lost Reason is "Other"',
+    )
+    return
+  }
+
+  // Set the reason first (while the record is still in its previous,
+  // non-"lost" status so the mandatory-reason validation doesn't apply
+  // yet), then move it to the target status in a second call.
+  call('frappe.client.set_value', {
+    doctype: props.doctype,
+    name: lostReasonItem.value,
+    fieldname: { lost_reason: lostReasonValue.value, lost_notes: lostNotesValue.value },
+  })
+    .then(() =>
+      call('frappe.client.set_value', {
+        doctype: props.doctype,
+        name: lostReasonItem.value,
+        fieldname: view.value.column_field,
+        value: lostReasonTo.value,
+      }),
+    )
+    .then(() => {
+      showLostReasonPrompt.value = false
+      list.value.reload()
+    })
+    .catch((error) => {
+      lostReasonPromptError.value =
+        error.messages?.[0] || __('Could not update the record.')
+    })
+}
 
 function updateSelections(selections) {
   selectedRows.value = Array.from(selections)
@@ -1012,14 +1128,73 @@ function persistCustomView() {
   })
 }
 
-function updateKanbanSettings(data) {
+const lostTypeStatusCache = {}
+
+// Some Kanban-grouped doctypes (CRM Lead, CRM Deal) require a "lost reason"
+// before a record can be saved with a status whose type is "Lost" — see
+// validate_lost_reason() on those controllers. Dropping a card straight into
+// such a column would otherwise always fail server-side. Look this up once
+// per status doctype and cache it so the check below is synchronous.
+async function getLostTypeStatuses(statusDoctype) {
+  if (!statusDoctype) return new Set()
+  if (lostTypeStatusCache[statusDoctype]) return lostTypeStatusCache[statusDoctype]
+
+  const promise = call('frappe.client.get_list', {
+    doctype: statusDoctype,
+    filters: { type: 'Lost' },
+    fields: ['name'],
+    limit_page_length: 0,
+  })
+    .then((rows) => new Set((rows || []).map((r) => r.name)))
+    .catch(() => new Set())
+
+  lostTypeStatusCache[statusDoctype] = promise
+  return promise
+}
+
+function getColumnFieldOptions() {
+  const field = (list.value.data?.fields || []).find(
+    (f) => f.fieldname === view.value.column_field,
+  )
+  return field?.options
+}
+
+async function updateKanbanSettings(data) {
   if (data.item && data.to) {
+    const lostStatuses = await getLostTypeStatuses(getColumnFieldOptions())
+    if (lostStatuses.has(data.to)) {
+      // Skip straight to the reason prompt instead of attempting (and
+      // always failing) a plain status update first.
+      openLostReasonPrompt(data.item, data.to)
+      return
+    }
+
     call('frappe.client.set_value', {
       doctype: props.doctype,
       name: data.item,
       fieldname: view.value.column_field,
       value: data.to,
     })
+      .then(() => {
+        // Refresh so the board reflects the record's true state — some
+        // status changes trigger server-side side effects (e.g. this app's
+        // automation that converts a "lost" Lead into a Contact and
+        // removes it from the list) that the optimistic drag-and-drop
+        // move has no way of knowing about on its own.
+        list.value.reload()
+      })
+      .catch((error) => {
+        const message = error.messages?.[0] || ''
+        if (/reason|raison/i.test(message)) {
+          openLostReasonPrompt(data.item, data.to)
+          return
+        }
+        toast.error(message || __('Could not update the record.'))
+        // Revert the optimistic drag-and-drop move in the UI since the
+        // server rejected the change — otherwise the card stays shown in
+        // the wrong column with no indication that nothing was saved.
+        list.value.reload()
+      })
     return
   }
 
