@@ -100,20 +100,29 @@ def find_inflight_run(reference_doctype: str, reference_name: str) -> str | None
 		return None
 	cutoff = frappe.utils.add_to_date(frappe.utils.now_datetime(), minutes=-INFLIGHT_TIMEOUT_MINUTES)
 	live = None
+	stale = []
 	for row in rows:
 		if live is None and frappe.utils.get_datetime(row.modified) >= cutoff:
 			live = row.name
 			continue
-		frappe.db.set_value(
-			"CRM Registry Enrichment Run",
-			row.name,
-			{
-				"status": "Failed",
-				"error": _("Timed out waiting for the background worker."),
-				"finished_at": frappe.utils.now_datetime(),
-			},
-			update_modified=True,
-		)
+		# Collect stale Run names here and fail them all in one statement after the loop,
+		# so the database is never touched inside the loop.
+		stale.append(row.name)
+	if stale:
+		# One bulk update instead of a write per stale Run. Mirrors the core bulk-update
+		# pattern (Email Queue, Workflow Action), which sets modified and modified_by
+		# explicitly, matching the touch the previous per-row update_modified=True did.
+		now = frappe.utils.now_datetime()
+		Run = frappe.qb.DocType("CRM Registry Enrichment Run")
+		(
+			frappe.qb.update(Run)
+			.set(Run.status, "Failed")
+			.set(Run.error, _("Timed out waiting for the background worker."))
+			.set(Run.finished_at, now)
+			.set(Run.modified, now)
+			.set(Run.modified_by, frappe.session.user)
+			.where(Run.name.isin(stale))
+		).run()
 	return live
 
 

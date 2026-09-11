@@ -289,6 +289,45 @@ class QueueRunReuseTest(IntegrationTestCase):
 			frappe.db.get_value("CRM Registry Enrichment Run", second["run"], "status"), "Queued"
 		)
 
+	def test_multiple_stale_inflight_runs_failed_in_single_update(self):
+		# Several stale in-flight Runs for the same record must all be failed in ONE database
+		# statement (no write per Run inside the loop), with no live Run adopted.
+		org = _new_org()
+		first = tasks.write_run("CRM Organization", org.name, "12345678000195", "Queued")
+		second = tasks.write_run("CRM Organization", org.name, "12345678000195", "Running")
+		stale = frappe.utils.add_to_date(
+			frappe.utils.now_datetime(), minutes=-(tasks.INFLIGHT_TIMEOUT_MINUTES + 1)
+		)
+		for name in (first, second):
+			frappe.db.set_value("CRM Registry Enrichment Run", name, "modified", stale, update_modified=False)
+
+		# Spy on the query builder entry point to prove exactly one update statement is issued
+		# for both stale Runs, rather than one per Run.
+		real_update = tasks.frappe.qb.update
+		update_calls = []
+
+		def counting_update(*args, **kwargs):
+			update_calls.append(args)
+			return real_update(*args, **kwargs)
+
+		with mock.patch.object(tasks.frappe.qb, "update", side_effect=counting_update):
+			result = tasks.find_inflight_run("CRM Organization", org.name)
+
+		# No Run is within the freshness window, so none is adopted as live.
+		self.assertIsNone(result)
+		# One bulk update covered both stale Runs.
+		self.assertEqual(len(update_calls), 1)
+		for name in (first, second):
+			row = frappe.db.get_value(
+				"CRM Registry Enrichment Run",
+				name,
+				["status", "error", "finished_at"],
+				as_dict=True,
+			)
+			self.assertEqual(row.status, "Failed")
+			self.assertEqual(row.error, "Timed out waiting for the background worker.")
+			self.assertTrue(row.finished_at)
+
 
 class LinkMasterCaseTest(IntegrationTestCase):
 	def tearDown(self):
