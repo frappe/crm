@@ -388,7 +388,10 @@ class RunPermissionScopeTest(IntegrationTestCase):
 		condition = permissions.get_permission_query_conditions(scoped)
 		self.assertNotIn("owner", condition)
 		self.assertIn("reference_doctype", condition)
-		self.assertIn("reference_name in (select name from", condition)
+		# The query builder renders the subquery with uppercase keywords and backtick-quoted
+		# identifiers; this asserts the same meaning (reference_name matched against a
+		# subquery over the referenced table) in the builder's form.
+		self.assertIn("`reference_name` IN (SELECT `name` FROM", condition)
 
 	def test_query_conditions_deny_all_without_readable_reference(self):
 		# A user who cannot read any referenced doctype sees no Run at all.
