@@ -867,33 +867,39 @@ const quickFilterOptions = computed(() => {
   return options
 })
 
+// Derives a fresh list rather than writing `value` back into `quickFilters.data`.
+// This re-runs on every list response, so mutating the shared filter objects let
+// a stale value reach into whatever was being typed (#2113).
 const quickFilterList = computed(() => {
   let filters = quickFilters.data || []
   let params = getListParams()
 
-  filters.forEach((filter) => {
-    filter['value'] = filter.fieldtype == 'Check' ? false : ''
-    if (params?.filters?.[filter.fieldname]) {
-      let value = params.filters[filter.fieldname]
-      if (Array.isArray(value)) {
-        if (
-          (['Check', 'Select', 'Link', 'Date', 'Datetime'].includes(
-            filter.fieldtype,
-          ) &&
-            value[0]?.toLowerCase() == 'like') ||
-          value[0]?.toLowerCase() != 'like'
-        )
-          return
-        filter['value'] = value[1]?.replace(/%/g, '')
-      } else if (typeof value == 'boolean') {
-        filter['value'] = value
+  return filters.map((filter) => {
+    let value = filter.fieldtype == 'Check' ? false : ''
+    let appliedValue = params?.filters?.[filter.fieldname]
+
+    if (appliedValue) {
+      if (Array.isArray(appliedValue)) {
+        // Only a LIKE on a free-text field carries a value the input can show.
+        let isTextField = ![
+          'Check',
+          'Select',
+          'Link',
+          'Date',
+          'Datetime',
+        ].includes(filter.fieldtype)
+        if (appliedValue[0]?.toLowerCase() == 'like' && isTextField) {
+          value = appliedValue[1]?.replace(/%/g, '')
+        }
+      } else if (typeof appliedValue == 'boolean') {
+        value = appliedValue
       } else {
-        filter['value'] = value?.replace(/%/g, '')
+        value = appliedValue?.replace(/%/g, '')
       }
     }
-  })
 
-  return filters
+    return { ...filter, value }
+  })
 })
 
 const quickFilters = createResource({
