@@ -10,19 +10,27 @@ who cannot see the referenced Lead/Organization cannot read its Run either.
 
 ``has_permission`` gates single-document access (form view, the ``retry`` endpoint's
 ``read`` check): a read is allowed only when the user can read the referenced record.
-``get_permission_query_conditions`` gates the list/report view, which never invokes the
-controller hook per row. System Manager keeps full visibility; every other reader is
-scoped to the runs they own, the documented simple-and-correct choice over a generic
-cross-doctype subquery (the exact per-record gate is enforced by ``has_permission``).
+``get_permission_query_conditions`` gates the list/report/export view, which never invokes
+the controller hook per row. System Manager keeps full visibility; every other reader is
+scoped to the records they can currently read, by matching each Run against a subquery on
+its referenced doctype that carries that user's live permission scope. Ownership is not
+used: a manager who created a Run and later lost access to the referenced record stops
+seeing the Run, because the subquery reflects current access rather than who created it.
 """
 
 from __future__ import annotations
 
 import frappe
+import frappe.desk.reportview
+
+from crm.registry_enrichment.config import ENRICHABLE_DOCTYPES
 
 # ptypes that expose the run's stored registry data. Everything else (write, delete,
 # create) is left to the role permissions, which already restrict it to System Manager.
 _READ_PTYPES = frozenset({"read", "email", "print", "export", "report", "share"})
+
+# The Run doctype table, from a module constant (never from user input).
+_RUN_TABLE = "`tabCRM Registry Enrichment Run`"
 
 
 def has_permission(doc, ptype=None, user=None, **kwargs):
@@ -48,9 +56,51 @@ def has_permission(doc, ptype=None, user=None, **kwargs):
 
 
 def get_permission_query_conditions(user=None, **kwargs):
-	"""List/report scope: full visibility for System Manager, owned runs otherwise."""
+	"""List/report/export scope: bind every Run to current access on its referenced record.
+
+	System Manager (and Administrator) read everything. For any other reader, a Run is
+	visible only when its referenced record is one the user can currently read: for each
+	enrichable doctype the user can read, the Run is matched against a subquery over that
+	doctype carrying the user's live permission scope (the same match conditions the
+	doctype's own list query applies). This scopes by current access, not by who created
+	the Run, so revoking access to the referenced record also hides its Run. When the user
+	can read none of the referenced doctypes, every row is denied.
+
+	No value is interpolated into SQL as a raw string: literals pass through
+	``frappe.db.escape`` and table names come from module constants.
+	"""
 	user = user or frappe.session.user
-	if "System Manager" in frappe.get_roles(user):
+	if user == "Administrator" or "System Manager" in frappe.get_roles(user):
 		return ""
 
-	return f"`tabCRM Registry Enrichment Run`.owner = {frappe.db.escape(user)}"
+	clauses = []
+	for doctype in ENRICHABLE_DOCTYPES:
+		if not frappe.has_permission(doctype, "read", user=user):
+			# The user cannot read this doctype at all, so no Run referencing it is visible.
+			continue
+
+		# The user's current permission scope on the referenced doctype, as a namespaced
+		# SQL fragment. An empty string means unrestricted read, so the subquery selects
+		# every record of that doctype; otherwise it filters to the readable ones.
+		match = frappe.desk.reportview.build_match_conditions(doctype, user=user, as_condition=True)
+		subquery = "select name from `tab" + doctype + "`"
+		if match:
+			subquery += " where " + match
+
+		clauses.append(
+			"("
+			+ _RUN_TABLE
+			+ ".reference_doctype = "
+			+ frappe.db.escape(doctype, percent=False)
+			+ " and "
+			+ _RUN_TABLE
+			+ ".reference_name in ("
+			+ subquery
+			+ "))"
+		)
+
+	if not clauses:
+		# No referenced doctype is readable: deny every row (never fall back to ownership).
+		return "1=0"
+
+	return " or ".join(clauses)

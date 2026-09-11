@@ -70,6 +70,35 @@ def _make_minimal_user():
 	return email
 
 
+def _make_scoped_user(email, allowed_org=None):
+	"""A Sales Manager user, optionally restricted to a single CRM Organization.
+
+	A User Permission is the mechanism by which a manager loses access to a record: with
+	one in place the user reads only ``allowed_org`` (and records linked to it), so it
+	models "created a Run, then lost access to its referenced record".
+	"""
+	if not frappe.db.exists("User", email):
+		user = frappe.new_doc("User")
+		user.email = email
+		user.first_name = "Scoped"
+		user.send_welcome_email = 0
+		user.append("roles", {"role": "Sales Manager"})
+		user.insert(ignore_permissions=True)
+	if allowed_org and not frappe.db.exists(
+		"User Permission",
+		{"user": email, "allow": "CRM Organization", "for_value": allowed_org},
+	):
+		frappe.get_doc(
+			{
+				"doctype": "User Permission",
+				"user": email,
+				"allow": "CRM Organization",
+				"for_value": allowed_org,
+			}
+		).insert(ignore_permissions=True)
+	return email
+
+
 class ApiGuardTest(IntegrationTestCase):
 	def tearDown(self):
 		frappe.set_user("Administrator")
@@ -349,10 +378,69 @@ class RunPermissionScopeTest(IntegrationTestCase):
 		run = self._run_for_org()
 		self.assertTrue(permissions.has_permission(run, "write", user=_make_minimal_user()))
 
-	def test_query_conditions_scope_by_owner(self):
+	def test_query_conditions_scope_by_reference_not_owner(self):
+		# System Manager reads everything; the condition scopes by the referenced record,
+		# never by ownership.
 		self.assertEqual(permissions.get_permission_query_conditions("Administrator"), "")
-		condition = permissions.get_permission_query_conditions(_make_minimal_user())
-		self.assertIn("owner", condition)
+
+		org = _new_org()
+		scoped = _make_scoped_user("re-cond@example.com", allowed_org=org.name)
+		condition = permissions.get_permission_query_conditions(scoped)
+		self.assertNotIn("owner", condition)
+		self.assertIn("reference_doctype", condition)
+		self.assertIn("reference_name in (select name from", condition)
+
+	def test_query_conditions_deny_all_without_readable_reference(self):
+		# A user who cannot read any referenced doctype sees no Run at all.
+		self.assertEqual(permissions.get_permission_query_conditions(_make_minimal_user()), "1=0")
+
+
+class RunQueryScopeTest(IntegrationTestCase):
+	"""Finding 1 (list/report/export): the list query binds each Run to current access on
+	its referenced record, run through real users with ``frappe.get_list``."""
+
+	def tearDown(self):
+		frappe.set_user("Administrator")
+		frappe.db.rollback()
+
+	def _run_owned_by(self, org_name, owner):
+		run = tasks.write_run("CRM Organization", org_name, "12345678000195", "Queued")
+		frappe.db.set_value("CRM Registry Enrichment Run", run, "owner", owner, update_modified=False)
+		return run
+
+	def _listed_names(self):
+		return {row.name for row in frappe.get_list("CRM Registry Enrichment Run", limit_page_length=0)}
+
+	def test_owner_without_current_access_cannot_list_run(self):
+		# The scoped user OWNS both runs but keeps access only to `allowed`; the run for the
+		# record they can no longer read must not appear, even though they created it.
+		allowed = _new_org()
+		denied = _new_org()
+		email = _make_scoped_user("re-scoped@example.com", allowed_org=allowed.name)
+		run_allowed = self._run_owned_by(allowed.name, email)
+		run_denied = self._run_owned_by(denied.name, email)
+
+		frappe.set_user(email)
+		names = self._listed_names()
+		self.assertIn(run_allowed, names)
+		self.assertNotIn(run_denied, names)
+
+	def test_system_manager_lists_run_regardless_of_owner(self):
+		org = _new_org()
+		run = self._run_owned_by(org.name, _make_minimal_user())
+		# Administrator (System Manager) is not scoped and sees the run.
+		self.assertIn(run, self._listed_names())
+
+	def test_single_quote_reference_name_is_escaped(self):
+		# The organization name (its primary key, and the value build_match_conditions
+		# inlines) carries a single quote: the query must run without error and still return
+		# the run, proving the value is escaped rather than breaking or injecting.
+		org = _new_org(organization_name="O'Reilly Registry " + frappe.generate_hash(length=4))
+		email = _make_scoped_user("re-quote@example.com", allowed_org=org.name)
+		run = self._run_owned_by(org.name, email)
+
+		frappe.set_user(email)
+		self.assertIn(run, self._listed_names())
 
 
 class QueueRunRowLockTest(IntegrationTestCase):
