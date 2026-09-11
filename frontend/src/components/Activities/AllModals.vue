@@ -1,9 +1,6 @@
-<<<<<<< HEAD
 <template>
   <div></div>
 </template>
-=======
->>>>>>> 30a1f04 (chore: remove calendar feature from frontend)
 <script setup>
 import { useDoctypeModal } from '@/composables/doctypeModal'
 import { useOnboarding, useTelemetry } from 'frappe-ui/frappe'

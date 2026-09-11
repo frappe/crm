@@ -72,7 +72,6 @@
           </div>
         </RouterLink>
       </div>
-<<<<<<< HEAD
       <EmptyState
         v-else
         title="No New Notifications"
@@ -80,9 +79,6 @@
         :icon="NotificationsIcon"
         width="lg"
       />
-=======
-      <div v-else class="flex h-full"></div>
->>>>>>> 30a1f04 (chore: remove calendar feature from frontend)
     </div>
   </div>
 </template>
@@ -107,15 +103,6 @@ const { $socket } = globalStore()
 const { mark_as_read, toggle, mark_doc_as_read } = notificationsStore()
 const { capture } = useTelemetry()
 
-<<<<<<< HEAD
-=======
-const activeTab = ref('all')
-const tabs = [
-  { label: __('All'), value: 'all' },
-  // { label: __('Mentions'), value: 'mentions' },
-]
-
->>>>>>> 30a1f04 (chore: remove calendar feature from frontend)
 const target = ref(null)
 onClickOutside(
   target,
@@ -142,13 +129,9 @@ onBeforeUnmount(() => {
 })
 
 onMounted(() => {
-<<<<<<< HEAD
   $socket.on('crm_notification', () => {
     notifications.reload()
   })
-=======
-  $socket.on('crm_notification', () => notifications.reload())
->>>>>>> 30a1f04 (chore: remove calendar feature from frontend)
 })
 
 function getRoute(notification) {
