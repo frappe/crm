@@ -6,7 +6,7 @@
     <Autocomplete
       ref="autocomplete"
       v-model="value"
-      :options="options.data"
+      :options="mergedOptions"
       :size="attrs.size || 'sm'"
       :variant="attrs.variant"
       :placeholder="attrs.placeholder"
@@ -70,7 +70,7 @@
 import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import { isTranslatable } from '@/utils'
 import { watchDebounced } from '@vueuse/core'
-import { createResource } from 'frappe-ui'
+import { createResource, call } from 'frappe-ui'
 import { useAttrs, computed, ref } from 'vue'
 
 const props = defineProps({
@@ -155,6 +155,62 @@ const options = createResource({
     return allData
   },
 })
+
+// The `options` list only ever holds the first page of search_link results
+// (unfiltered or matching the in-progress query). When the bound value isn't
+// in that page - the common case for a specific record in a large doctype -
+// Autocomplete's displayValue() can't find a label and falls back to the raw
+// docname. Fetch the label for the current value specifically and merge it
+// in at render time so the control never shows a raw docname when a title
+// is available.
+//
+// `resolvedOption` is per-instance, local state - it must NOT be written
+// into `options.data` directly. `options` is a cache-keyed `createResource`
+// (see the `cache:` option below), so with matching [doctype, text, hideMe,
+// filters] it's the *same* shared object across every Link instance (e.g.
+// every row of a Grid.vue column) - mutating `.data` on it would leak one
+// instance's resolved value into every other instance's dropdown. Merging
+// at read time via `mergedOptions` avoids that, and as a side benefit stays
+// correct even after `options.data` is wholesale-replaced by `reload()`
+// (e.g. triggered by a `filters` reference change elsewhere) since the
+// merge re-runs on every read instead of being clobbered once.
+const resolvedOption = ref(null)
+
+const mergedOptions = computed(() => {
+  const base = options.data || []
+  if (resolvedOption.value && !base.some((o) => o.value === resolvedOption.value.value)) {
+    return [resolvedOption.value, ...base]
+  }
+  return base
+})
+
+watchDebounced(
+  () => [value.value, props.doctype],
+  ([val]) => ensureSelectedLabel(val),
+  { debounce: 100, immediate: true },
+)
+
+async function ensureSelectedLabel(val) {
+  if (!val || !props.doctype) {
+    resolvedOption.value = null
+    return
+  }
+  if (resolvedOption.value?.value === val) return
+  resolvedOption.value = null
+  if (options.data?.some((o) => o.value === val)) return
+  let data = await call('frappe.desk.search.search_link', {
+    txt: val,
+    doctype: props.doctype,
+    filters: props.filters,
+  }).catch(() => null)
+  let match = data?.find((d) => d.value === val)
+  if (!match || val !== value.value) return
+  resolvedOption.value = {
+    label: match.label || match.value,
+    value: match.value,
+    description: stripHtml(match.description),
+  }
+}
 
 function stripHtml(html) {
   if (!html) return ''
