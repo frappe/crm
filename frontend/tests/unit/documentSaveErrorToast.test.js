@@ -49,11 +49,16 @@ import { useDocument } from '@/data/document'
 describe('useDocument setValue.onError toasts', () => {
   let onError
 
+  // useDocument caches the resource per docname, so set it up once and
+  // reuse the captured handler across tests.
+  beforeAll(() => {
+    useDocument('CRM Lead', 'CRM-LEAD-TEST')
+    onError = captured.options.setValue.onError
+  })
+
   beforeEach(() => {
     toast.error.mockClear()
     vi.spyOn(console, 'error').mockImplementation(() => {})
-    useDocument('CRM Lead', `CRM-LEAD-${Math.random()}`)
-    onError = captured.options.setValue.onError
   })
 
   afterEach(() => {
