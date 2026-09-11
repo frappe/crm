@@ -204,7 +204,7 @@ const {
 
 const doc = computed(() => document.doc || {})
 const isLeadConversionDisabled = computed(
-  () => getLeadStatus(doc.value.status)?.type === 'Lost',
+  () => doc.value.status && getLeadStatus(doc.value.status)?.type === 'Lost',
 )
 
 const { markVisited } = useVisitedRecords('CRM Lead')
