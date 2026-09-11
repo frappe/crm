@@ -56,19 +56,12 @@
       iconLeft="plus"
       @click="showFilesUploader = true"
     />
-    <div v-else-if="title == 'WhatsApp'" class="flex gap-2 shrink-0">
-      <Button
-        :label="__('Send Template')"
-        @click="showWhatsappTemplates = true"
-      />
-      <Button
-        variant="solid"
-        :label="__('New Message')"
-        iconLeft="plus"
-        @click="whatsappBox.show()"
-      />
-    </div>
-    <Dropdown v-else :options="defaultActions" @click.stop>
+    <!-- WhatsApp composes from the input itself, so the header offers no action here -->
+    <Dropdown
+      v-else-if="title != 'WhatsApp'"
+      :options="defaultActions"
+      @click.stop
+    >
       <template #default="{ open }">
         <Button
           variant="solid"
@@ -102,15 +95,11 @@ const props = defineProps({
   title: { type: String, default: '' },
   doc: { type: Object, default: () => ({}) },
   modalRef: { type: Object, default: () => ({}) },
-  whatsappBox: { type: Object, default: () => ({}) },
 })
 
 const { makeCall } = globalStore()
 
 const tabIndex = defineModel({ type: Number })
-const showWhatsappTemplates = defineModel('showWhatsappTemplates', {
-  type: Boolean,
-})
 const showFilesUploader = defineModel('showFilesUploader', { type: Boolean })
 const emailBox = defineModel('emailBox', { type: Object, default: () => ({}) })
 

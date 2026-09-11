@@ -91,6 +91,7 @@ jobs:
                   mkdir sites/test_site
                   cp "${GITHUB_WORKSPACE}/pr-crm/.github/helper/site_config.json" sites/test_site/site_config.json
                   sed -i 's/watch:/# watch:/g; s/schedule:/# schedule:/g; s/socketio:/# socketio:/g; s/redis_socketio:/# redis_socketio:/g' Procfile
+                  bench get-app whatsapp
                   bench get-app crm "https://github.com/frappe/crm" --branch "$BASE_BRANCH"
                   bench setup requirements --dev
                   bench start &>> "$BENCH_PATH/bench_start.log" &

@@ -30,6 +30,7 @@ build-backend = "flit_core.buildapi"
 
 [tool.bench.frappe-dependencies]
 frappe = ">=16.0.0-dev,<=17.0.0-dev"
+whatsapp = ">=1.0.0,<2.0.0"
 
 [tool.bench.assets]
 build_dir = "./frontend"
