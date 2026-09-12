@@ -26,7 +26,7 @@
           v-if="linkField"
           class="form-control flex-1 truncate cursor-text"
           :value="query"
-          :filters="filters"
+          :filters="linkFilters"
           :doctype="linkField.options"
           :onCreate="create"
           :hideMe="true"
@@ -49,10 +49,12 @@
 import Link from '@/components/Controls/Link.vue'
 import { createDocument } from '@/composables/document'
 import { getMeta } from '@/stores/meta'
+import { tableMultiselectFilters } from '@/utils/tableMultiselectFilters'
 import { ref, computed, nextTick } from 'vue'
 
 const props = defineProps({
   doctype: { type: String, required: true },
+  filters: { type: [Array, Object, String], default: () => [] },
   errorMessage: {
     type: Function,
     default: (value) => `${value} is an Invalid value`,
@@ -71,9 +73,9 @@ const query = ref('')
 
 const linkField = ref('')
 
-const filters = computed(() => {
+const linkFilters = computed(() => {
   if (!linkField.value) return []
-  return { name: ['not in', parsedValues.value] }
+  return tableMultiselectFilters(props.filters, parsedValues.value)
 })
 
 const parsedValues = computed(() => {
