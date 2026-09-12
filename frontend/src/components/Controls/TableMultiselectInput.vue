@@ -1,7 +1,7 @@
 <template>
   <div>
     <div
-      class="group flex flex-wrap gap-1 min-h-20 p-1.5 rounded text-base bg-surface-gray-2 hover:bg-surface-gray-3 focus:border-outline-gray-4 focus:ring-0 focus-visible:ring-2 focus-visible:ring-outline-gray-3 text-ink-gray-8 transition-colors w-full"
+      class="group relative flex flex-wrap gap-1 min-h-20 p-1.5 rounded text-base bg-surface-gray-2 hover:bg-surface-gray-3 focus:border-outline-gray-4 focus:ring-0 focus-visible:ring-2 focus-visible:ring-outline-gray-3 text-ink-gray-8 transition-colors w-full"
     >
       <Button
         v-for="value in parsedValues"
@@ -10,7 +10,7 @@
         :label="value"
         theme="gray"
         variant="subtle"
-        class="rounded bg-surface-base hover:!bg-surface-gray-1 focus-visible:ring-outline-gray-4"
+        class="relative z-10 rounded bg-surface-base hover:!bg-surface-gray-1 focus-visible:ring-outline-gray-4"
         @keydown.delete.capture.stop="removeLastValue"
       >
         <template #suffix>
@@ -34,7 +34,9 @@
         >
           <template #target="{ togglePopover }">
             <button
-              class="w-full h-7 cursor-text"
+              type="button"
+              :aria-label="__('Add value')"
+              class="absolute inset-0 h-full w-full cursor-text rounded"
               @click.stop="togglePopover"
             />
           </template>
