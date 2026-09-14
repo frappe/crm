@@ -8,6 +8,33 @@
           <Icon v-if="item.icon" :icon="item.icon" class="mr-2 h-4" />
         </template>
       </Breadcrumbs>
+      <!-- The tab row is too narrow on phones, so the action lives up here -->
+      <Link
+        v-if="tabs[tabIndex]?.label === 'Contacts'"
+        class="pr-2"
+        value=""
+        doctype="Contact"
+        :filters="{ company_name: ['!=', props.organizationId] }"
+        :onCreate="
+          (value, close) => {
+            _contact = {
+              first_name: value,
+              company_name: props.organizationId,
+            }
+            showContactModal = true
+            close()
+          }
+        "
+        @change="(contact) => addContact(contact)"
+      >
+        <template #target="{ togglePopover }">
+          <Button
+            :tooltip="__('Add Contact')"
+            icon="plus"
+            @click="togglePopover()"
+          />
+        </template>
+      </Link>
     </header>
   </LayoutHeader>
   <div v-if="organization.doc" class="flex flex-col h-full overflow-hidden">
@@ -129,32 +156,6 @@
           :columns="columns"
           :options="{ selectable: false, showTooltip: false }"
         />
-        <div v-if="tab.label === 'Contacts'" class="flex justify-end px-3 pt-3">
-          <Link
-            value=""
-            doctype="Contact"
-            :filters="{ company_name: ['!=', props.organizationId] }"
-            :onCreate="
-              (value, close) => {
-                _contact = {
-                  first_name: value,
-                  company_name: props.organizationId,
-                }
-                showContactModal = true
-                close()
-              }
-            "
-            @change="(contact) => addContact(contact)"
-          >
-            <template #target="{ togglePopover }">
-              <Button
-                :label="__('Add Contact')"
-                iconLeft="plus"
-                @click="togglePopover()"
-              />
-            </template>
-          </Link>
-        </div>
         <ContactsListView
           v-if="tab.label === 'Contacts' && rows.length"
           class="mt-4"
