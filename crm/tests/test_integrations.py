@@ -1,6 +1,8 @@
 # Copyright (c) 2024, Frappe Technologies Pvt. Ltd. and Contributors
 # See license.txt
 
+from unittest.mock import patch
+
 import frappe
 
 from crm.integrations.api import (
@@ -18,6 +20,7 @@ from crm.tests import CRMTestCase as FrappeTestCase
 from crm.integrations.exotel.handler import (
 	EXOTEL_CALL_STATUSES,
 	get_call_log_status,
+	handle_request,
 	normalize_call_status,
 )
 >>>>>>> 0035fb2 (fix: map Exotel call statuses to valid Call Log options)
@@ -552,6 +555,32 @@ class TestExotelCallStatus(IntegrationTestCase):
 		"""Caller hung up before any agent leg connected"""
 		status = get_call_log_status({"CallType": "client-hangup", "DialCallStatus": "null"})
 		self.assertIsNone(status)
+
+	def test_first_event_without_status_still_creates_call_log(self):
+		"""Status is mandatory on the call log, but a status-less first event must not be dropped.
+
+		Frappe fills an unset Select with its first option on insert, so the log
+		comes out as "Initiated" rather than failing the mandatory check.
+		"""
+		call_sid = "test-exotel-no-status"
+		frappe.db.delete("CRM Call Log", {"id": call_sid})
+		frappe.db.set_single_value("CRM Exotel Settings", "enabled", 1)
+		frappe.db.set_single_value("CRM Exotel Settings", "webhook_verify_token", "test-token")
+		self.addCleanup(frappe.db.delete, "CRM Call Log", {"id": call_sid})
+
+		request = frappe._dict(args={"key": "test-token"}, headers={})
+		with patch.object(frappe.local, "request", request, create=True):
+			handle_request(
+				CallSid=call_sid,
+				Direction="incoming",
+				CallFrom="+0987654321",
+				To="+1234567890",
+				DialWhomNumber="+1234567890",
+				CallType="client-hangup",
+				DialCallStatus="null",
+			)
+
+		self.assertEqual(frappe.db.get_value("CRM Call Log", {"id": call_sid}, "status"), "Initiated")
 
 	def test_incoming_call_type_overrides_are_preserved(self):
 		cases = [
