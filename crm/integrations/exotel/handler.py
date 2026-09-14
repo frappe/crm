@@ -210,7 +210,7 @@ def create_call_log(
 	call_log.to = to_number
 	call_log.medium = medium
 	call_log.type = call_type
-	call_log.status = status or "Ringing"
+	call_log.status = status
 	call_log.telephony_medium = "Exotel"
 	setattr(call_log, "from", from_number)
 
@@ -280,7 +280,14 @@ def normalize_call_status(status):
 	if status in EXOTEL_EMPTY_STATUSES:
 		return None
 
-	return EXOTEL_CALL_STATUSES.get(status)
+	if status not in EXOTEL_CALL_STATUSES:
+		frappe.log_error(
+			title="Unknown Exotel call status",
+			message=f"Exotel sent call status {status!r}, which is not in EXOTEL_CALL_STATUSES",
+		)
+		return None
+
+	return EXOTEL_CALL_STATUSES[status]
 
 
 def get_call_log_status(call_payload, direction="inbound"):
