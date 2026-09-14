@@ -122,77 +122,77 @@
         />
       </div>
     </Resizer>
-    <Tabs
-      v-model="activeTab"
-      as="div"
-      :tabs="tabs"
-      class="flex flex-1 overflow-hidden flex-col [&_[role='tablist']]:gap-7.5 [&_[role='tablist']]:px-5 [&_[role='tablist']::-webkit-scrollbar]:h-0 [&_[role='tablist']]:min-h-[45px] [&>[role='tabpanel']:not([hidden])]:flex [&>[role='tabpanel']:not([hidden])]:grow [&>[data-slot=tab-list]]:overflow-x-auto [&_[data-slot=tab-indicator]]:translate-y-0 [&>[data-slot=tab-panel]]:min-h-0 [&>[data-slot=tab-panel]]:flex-col [&>[data-slot=tab-panel]]:overflow-auto"
-    >
-      <template #tab-label="{ tab }">{{ __(tab.label) }}</template>
-      <template #tab-suffix="{ tab, active }">
-        <Badge
-          :class="[active ? 'bg-surface-gray-10' : 'bg-gray-600']"
-          variant="solid"
-          theme="gray"
-          size="sm"
+    <div class="relative flex flex-1 flex-col overflow-hidden">
+      <!-- Sits in the tab row (right corner) since Tabs has no trailing slot -->
+      <div
+        v-if="activeTab === 'contacts'"
+        class="absolute right-5 top-0 z-10 flex h-[45px] items-center"
+      >
+        <Link
+          value=""
+          doctype="Contact"
+          :filters="{ company_name: ['!=', props.organizationId] }"
+          :onCreate="
+            (value, close) => {
+              _contact = {
+                first_name: value,
+                company_name: props.organizationId,
+              }
+              showContactModal = true
+              close()
+            }
+          "
+          @change="(contact) => addContact(contact)"
         >
-          {{ tab.count }}
-        </Badge>
-      </template>
-      <template #tab-panel="{ tab }">
-        <DealsListView
-          v-if="tab.label === 'Deals' && rows.length"
-          class="mt-4"
-          :rows="rows"
-          :columns="columns"
-          :options="{ selectable: false, showTooltip: false }"
-        />
-        <div
-          v-else-if="tab.label === 'Contacts'"
-          class="flex flex-1 flex-col overflow-hidden"
-        >
-          <div class="flex justify-end px-5">
-            <Link
-              value=""
-              doctype="Contact"
-              :filters="{ company_name: ['!=', props.organizationId] }"
-              :onCreate="
-                (value, close) => {
-                  _contact = {
-                    first_name: value,
-                    company_name: props.organizationId,
-                  }
-                  showContactModal = true
-                  close()
-                }
-              "
-              @change="(contact) => addContact(contact)"
-            >
-              <template #target="{ togglePopover }">
-                <Button
-                  :label="__('Add Contact')"
-                  iconLeft="lucide-plus"
-                  @click="togglePopover()"
-                />
-              </template>
-            </Link>
-          </div>
-          <ContactsListView
-            v-if="rows.length"
+          <template #target="{ togglePopover }">
+            <Button
+              :label="__('Add Contact')"
+              iconLeft="lucide-plus"
+              @click="togglePopover()"
+            />
+          </template>
+        </Link>
+      </div>
+      <Tabs
+        v-model="activeTab"
+        as="div"
+        :tabs="tabs"
+        class="flex flex-1 overflow-hidden flex-col [&_[role='tablist']]:gap-7.5 [&_[role='tablist']]:px-5 [&_[role='tablist']::-webkit-scrollbar]:h-0 [&_[role='tablist']]:min-h-[45px] [&>[role='tabpanel']:not([hidden])]:flex [&>[role='tabpanel']:not([hidden])]:grow [&>[data-slot=tab-list]]:overflow-x-auto [&_[data-slot=tab-indicator]]:translate-y-0 [&>[data-slot=tab-panel]]:min-h-0 [&>[data-slot=tab-panel]]:flex-col [&>[data-slot=tab-panel]]:overflow-auto"
+      >
+        <template #tab-label="{ tab }">{{ __(tab.label) }}</template>
+        <template #tab-suffix="{ tab, active }">
+          <Badge
+            :class="[active ? 'bg-surface-gray-10' : 'bg-gray-600']"
+            variant="solid"
+            theme="gray"
+            size="sm"
+          >
+            {{ tab.count }}
+          </Badge>
+        </template>
+        <template #tab-panel="{ tab }">
+          <DealsListView
+            v-if="tab.label === 'Deals' && rows.length"
             class="mt-4"
             :rows="rows"
             :columns="columns"
             :options="{ selectable: false, showTooltip: false }"
           />
-          <EmptyState v-else :icon="tab.iconLeft" :name="__(tab.label)" />
-        </div>
-        <EmptyState
-          v-if="tab.label === 'Deals' && !rows.length"
-          :icon="tab.iconLeft"
-          :name="__(tab.label)"
-        />
-      </template>
-    </Tabs>
+          <ContactsListView
+            v-if="tab.label === 'Contacts' && rows.length"
+            class="mt-4"
+            :rows="rows"
+            :columns="columns"
+            :options="{ selectable: false, showTooltip: false }"
+          />
+          <EmptyState
+            v-if="!rows.length"
+            :icon="tab.iconLeft"
+            :name="__(tab.label)"
+          />
+        </template>
+      </Tabs>
+    </div>
   </div>
   <ErrorPage
     v-else-if="errorTitle"
