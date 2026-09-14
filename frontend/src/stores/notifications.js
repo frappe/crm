@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { createResource } from 'frappe-ui'
 import { computed, ref } from 'vue'
+import { formatCompactNumber } from '@/utils/numberFormat.js'
 
 export const visible = ref(false)
 
@@ -10,9 +11,10 @@ export const notifications = createResource({
   auto: true,
 })
 
-export const unreadNotificationsCount = computed(
-  () => notifications.data?.filter((n) => !n.read).length || 0,
-)
+export const unreadNotificationsCount = computed(() => {
+  const count = notifications.data?.filter((n) => !n.read).length || 0
+  return count ? formatCompactNumber(count) : 0
+})
 
 export const notificationsStore = defineStore('crm-notifications', () => {
   const mark_as_read = createResource({

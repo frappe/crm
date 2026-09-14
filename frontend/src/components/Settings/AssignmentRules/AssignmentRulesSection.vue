@@ -16,7 +16,7 @@
       }
     "
   >
-    <FeatherIcon name="plus" class="h-4" />
+    <span class="lucide-plus h-4" aria-hidden="true" />
     {{ __('Add a Condition') }}
   </div>
   <div class="flex items-center justify-between mt-2">
@@ -34,7 +34,7 @@
 </template>
 
 <script setup>
-import { Button, Dropdown, ErrorMessage, FeatherIcon } from 'frappe-ui'
+import { Button, Dropdown, ErrorMessage } from 'frappe-ui'
 import { watchDebounced } from '@vueuse/core'
 import { validateConditions } from '@/utils'
 import CFConditions from '../../ConditionsFilter/CFConditions.vue'

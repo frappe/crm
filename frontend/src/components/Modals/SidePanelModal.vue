@@ -1,8 +1,8 @@
 <template>
-  <Dialog v-model="show" :options="{ size: '3xl' }">
-    <template #body-title>
+  <Dialog v-model:open="show" :size="'3xl'">
+    <template #title>
       <h3
-        class="flex items-center gap-2 text-2xl font-semibold leading-6 text-ink-gray-9"
+        class="flex items-center gap-2 text-3xl-semibold leading-6 text-ink-gray-9"
       >
         <div>{{ __('Edit Field Layout') }}</div>
         <Badge
@@ -13,7 +13,7 @@
         />
       </h3>
     </template>
-    <template #body-content>
+    <template #default>
       <div class="flex flex-col gap-5.5">
         <div class="flex justify-between gap-2">
           <Button

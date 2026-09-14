@@ -15,20 +15,20 @@
     </div>
     <div
       v-else-if="item.type == 'spacer'"
-      class="rounded bg-surface-white h-full overflow-hidden text-ink-gray-5 flex items-center justify-center"
+      class="rounded bg-surface-base h-full overflow-hidden text-ink-gray-5 flex items-center justify-center"
       :class="editing ? 'border border-dashed border-outline-gray-2' : ''"
     >
       {{ editing ? __('Spacer') : '' }}
     </div>
     <div
       v-else-if="item.type == 'axis_chart'"
-      class="h-full w-full rounded-md bg-surface-white shadow"
+      class="h-full w-full rounded-md bg-surface-base shadow"
     >
       <AxisChart v-if="item.data" :config="item.data" />
     </div>
     <div
       v-else-if="item.type == 'donut_chart'"
-      class="h-full w-full rounded-md bg-surface-white shadow overflow-hidden"
+      class="h-full w-full rounded-md bg-surface-base shadow overflow-hidden"
     >
       <DonutChart v-if="item.data" :config="item.data" />
     </div>

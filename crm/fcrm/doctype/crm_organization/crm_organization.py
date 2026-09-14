@@ -31,6 +31,12 @@ class CRMOrganization(Document):
 	def validate(self):
 		self.update_exchange_rate()
 
+	def after_insert(self):
+		# Auto-enrich a new Organization from its website (best-effort, background job).
+		from crm.domain_enrichment.tasks import auto_enrich_on_create
+
+		auto_enrich_on_create(self)
+
 	def update_exchange_rate(self):
 		if self.has_value_changed("currency") or not self.exchange_rate:
 			system_currency = frappe.db.get_single_value("FCRM Settings", "currency") or "USD"

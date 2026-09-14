@@ -4,14 +4,26 @@ from frappe import _
 from crm.fcrm.doctype.crm_notification.crm_notification import notify_user
 
 
+def validate(doc, method):
+	"""Require write access when directly assigning a CRM lead or deal."""
+	# assign_to and assignment rules insert with ignore_permissions after their
+	# own permission check.
+	if (
+		doc.is_new()
+		and doc.reference_type in ["CRM Lead", "CRM Deal"]
+		and doc.reference_name
+		and not doc.flags.ignore_permissions
+	):
+		frappe.get_doc(doc.reference_type, doc.reference_name).check_permission("write")
+
+
 def after_insert(doc, method):
 	if doc.reference_type in ["CRM Lead", "CRM Deal"] and doc.reference_name and doc.allocated_to:
 		fieldname = "lead_owner" if doc.reference_type == "CRM Lead" else "deal_owner"
-		owner = frappe.db.get_value(doc.reference_type, doc.reference_name, fieldname)
-		if not owner:
-			frappe.db.set_value(
-				doc.reference_type, doc.reference_name, fieldname, doc.allocated_to, update_modified=False
-			)
+		# Mirror assign_to: the latest assignment owns the record, overriding any prior owner.
+		frappe.db.set_value(
+			doc.reference_type, doc.reference_name, fieldname, doc.allocated_to, update_modified=False
+		)
 
 	if doc.reference_type in ["CRM Lead", "CRM Deal", "CRM Task"] and doc.reference_name and doc.allocated_to:
 		notify_assigned_user(doc)
@@ -26,6 +38,17 @@ def on_update(doc, method):
 		and doc.allocated_to
 	):
 		notify_assigned_user(doc, is_cancelled=True)
+		clear_owner_on_unassign(doc)
+
+
+def clear_owner_on_unassign(doc):
+	# Owner concept only exists for Lead/Deal, not Task.
+	if doc.reference_type not in ["CRM Lead", "CRM Deal"]:
+		return
+	fieldname = "lead_owner" if doc.reference_type == "CRM Lead" else "deal_owner"
+	# Mirror assign_to: cancelling an assignment clears the owner. Wrinkle (accepted):
+	# removing one of several manual co-assignees also clears, since owner is single-valued.
+	frappe.db.set_value(doc.reference_type, doc.reference_name, fieldname, None, update_modified=False)
 
 
 def notify_assigned_user(doc, is_cancelled=False):

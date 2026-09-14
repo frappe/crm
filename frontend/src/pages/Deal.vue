@@ -16,6 +16,12 @@
         v-if="document.actions?.length"
         :actions="document.actions"
       />
+      <EnrichFromWebsite
+        doctype="CRM Deal"
+        :docname="dealId"
+        :website="doc.website"
+        @done="onEnriched"
+      />
       <AssignTo v-model="assignees.data" doctype="CRM Deal" :docname="dealId" />
       <Dropdown
         v-if="doc && document.statuses"
@@ -41,7 +47,7 @@
       v-model="tabIndex"
       as="div"
       :tabs="tabs"
-      class="flex flex-1 overflow-hidden flex-col [&_[role='tab']]:px-0 [&_[role='tab']]:shrink-0 [&_[role='tablist']]:px-5 [&_[role='tablist']]:min-h-[45px] [&_[role='tablist']]:gap-7.5 [&_[role='tabpanel']:not([hidden])]:flex [&_[role='tabpanel']:not([hidden])]:grow"
+      class="flex flex-1 overflow-hidden flex-col [&_[role='tab']]:px-0 [&_[role='tab']]:shrink-0 [&_[role='tablist']]:px-5 [&_[role='tablist']::-webkit-scrollbar]:h-0 [&_[role='tablist']]:min-h-[45px] [&_[role='tablist']]:gap-7.5 [&_[role='tabpanel']:not([hidden])]:flex [&_[role='tabpanel']:not([hidden])]:grow"
     >
       <template #tab-panel>
         <Activities
@@ -58,7 +64,7 @@
     </Tabs>
     <Resizer side="right" class="flex flex-col justify-between border-l">
       <div
-        class="flex h-[45px] cursor-copy items-center border-b px-5 py-2.5 text-lg font-medium text-ink-gray-9"
+        class="flex h-[45px] cursor-copy items-center border-b px-5 py-2.5 text-lg-medium text-ink-gray-9"
         @click="copyToClipboard(dealId)"
       >
         {{ __(dealId) }}
@@ -70,13 +76,13 @@
               size="3xl"
               class="size-12"
               :label="title"
-              :image="organization?.organization_logo"
+              :image="doc.organization_logo || organization?.organization_logo"
             />
           </div>
         </Tooltip>
         <div class="flex flex-col gap-2.5 truncate text-ink-gray-9">
           <Tooltip :text="organization?.name || __('Set an Organization')">
-            <div class="truncate text-2xl font-medium">
+            <div class="truncate text-3xl-medium">
               {{ title }}
             </div>
           </Tooltip>
@@ -120,7 +126,7 @@
               v-if="canDelete"
               :tooltip="__('Delete')"
               variant="subtle"
-              icon="trash-2"
+              icon="lucide-trash-2"
               theme="red"
               @click="deleteDeal"
             />
@@ -166,7 +172,7 @@
                   <Button
                     class="h-7 px-3"
                     variant="ghost"
-                    icon="plus"
+                    icon="lucide-plus"
                     @click="togglePopover()"
                   />
                 </template>
@@ -219,7 +225,7 @@
                         <div class="flex items-center">
                           <Dropdown :options="contactOptions(contact)">
                             <Button
-                              icon="more-horizontal"
+                              icon="lucide-more-horizontal"
                               class="text-ink-gray-5"
                               variant="ghost"
                             />
@@ -239,7 +245,7 @@
                             variant="ghost"
                             class="transition-all duration-300 ease-in-out"
                             :class="{ 'rotate-90': opened }"
-                            icon="chevron-right"
+                            icon="lucide-chevron-right"
                             @click="toggle()"
                           />
                         </div>
@@ -271,7 +277,7 @@
                 </div>
                 <div
                   v-if="i != dealContacts.data.length - 1"
-                  class="mx-2 h-px border-t border-outline-gray-modals"
+                  class="mx-2 h-px border-t border-outline-elevation-2"
                 />
               </div>
               <div
@@ -325,6 +331,7 @@
     v-model="showDeleteLinkedDocModal"
     :doctype="'CRM Deal'"
     :docname="dealId"
+    :title="doc.organization"
     name="Deals"
   />
   <LostReasonModal
@@ -345,7 +352,6 @@ import EmailIcon from '@/components/Icons/EmailIcon.vue'
 import Email2Icon from '@/components/Icons/Email2Icon.vue'
 import CommentIcon from '@/components/Icons/CommentIcon.vue'
 import DetailsIcon from '@/components/Icons/DetailsIcon.vue'
-import EventIcon from '@/components/Icons/EventIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
@@ -367,6 +373,7 @@ import CollapsibleSection from '@/components/CollapsibleSection.vue'
 import SidePanelLayout from '@/components/SidePanelLayout.vue'
 import SLASection from '@/components/SLASection.vue'
 import CustomActions from '@/components/CustomActions.vue'
+import EnrichFromWebsite from '@/components/EnrichFromWebsite.vue'
 import {
   openWebsite,
   setupCustomizations,
@@ -379,7 +386,8 @@ import { globalStore } from '@/stores/global'
 import { statusesStore } from '@/stores/statuses'
 import { getMeta } from '@/stores/meta'
 import { useDocument } from '@/data/document'
-import { whatsappEnabled, callEnabled } from '@/composables/settings'
+import { whatsappEnabled } from '@/composables/whatsapp'
+import { callEnabled } from '@/composables/telephony'
 import { useBroadcast } from '@/composables/useBroadcast'
 import {
   createResource,
@@ -404,6 +412,8 @@ import {
 } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useActiveTabManager } from '@/composables/useActiveTabManager'
+import { useUnsavedChangesWarning } from '@/composables/useUnsavedChangesWarning'
+import { useVisitedRecords } from '@/composables/useVisitedRecords'
 
 const { on } = useBroadcast()
 const { brand } = getSettings()
@@ -425,21 +435,30 @@ const errorTitle = ref('')
 const errorMessage = ref('')
 const showDeleteLinkedDocModal = ref(false)
 
-const { triggerOnChange, assignees, permissions, document, scripts, error } =
-  useDocument('CRM Deal', props.dealId)
+const {
+  triggerOnChange,
+  triggerOnRender,
+  assignees,
+  permissions,
+  document,
+  scripts,
+  error,
+} = useDocument('CRM Deal', props.dealId)
 
 const canDelete = computed(() => permissions.data?.permissions?.delete || false)
 
 const doc = computed(() => document.doc || {})
 
+useUnsavedChangesWarning(() => document.isDirty)
+
 watch(error, (err) => {
   if (err) {
     errorTitle.value = __(
       err.exc_type == 'DoesNotExistError'
-        ? 'Document Not Found'
-        : 'Error Occurred',
+        ? __('Document Not Found')
+        : __('Error Occurred'),
     )
-    errorMessage.value = __(err.messages?.[0] || 'An Error Occurred')
+    errorMessage.value = __(err.messages?.[0] || __('An Error Occurred'))
   } else {
     errorTitle.value = ''
     errorMessage.value = ''
@@ -486,10 +505,14 @@ watch(
 
 const organization = computed(() => organizationDocument.value?.doc || {})
 
-onMounted(() => {
+const { markVisited } = useVisitedRecords('CRM Deal')
+
+onMounted(async () => {
   $socket.on('crm_customer_created', () => {
     toast.success(__('Customer Created Successfully'))
   })
+  if (document.doc) await triggerOnRender()
+  markVisited(props.dealId)
 })
 
 onBeforeUnmount(() => {
@@ -521,7 +544,11 @@ const breadcrumbs = computed(() => {
 
   items.push({
     label: title.value,
-    route: { name: 'Deal', params: { dealId: props.dealId } },
+    route: {
+      name: 'Deal',
+      params: { dealId: props.dealId },
+      query: route.query,
+    },
   })
   return items
 })
@@ -566,11 +593,6 @@ const tabs = computed(() => {
       name: 'Data',
       label: __('Data'),
       icon: DetailsIcon,
-    },
-    {
-      name: 'Events',
-      label: __('Events'),
-      icon: EventIcon,
     },
     {
       name: 'Calls',
@@ -701,8 +723,10 @@ const dealContacts = createResource({
   params: { name: props.dealId },
   cache: ['deal_contacts', props.dealId],
   transform: (data) => {
-    data.forEach((contact) => {
-      contact.opened = false
+    // get_deal_contacts orders primary first, so expanding the first contact
+    // surfaces the most relevant email and phone without a click.
+    data.forEach((contact, index) => {
+      contact.opened = index === 0
     })
     return data
   },
@@ -748,13 +772,12 @@ function updateField(name, value) {
 
   document.save.submit(null, {
     onSuccess: () => (reload.value = true),
-    onError: (err) => {
+    onError: () => {
       if (Array.isArray(name)) {
         name.forEach((field) => (doc.value[field] = oldValues[field]))
       } else {
         doc.value[name] = oldValues
       }
-      toast.error(err.messages?.[0] || __('Error updating field'))
     },
   })
 }
@@ -806,6 +829,11 @@ function beforeStatusChange(data) {
       onSuccess: () => reloadResources(data),
     })
   }
+}
+
+function onEnriched() {
+  document.reload?.()
+  sections.reload()
 }
 
 function reloadResources(data) {

@@ -16,6 +16,12 @@
         v-if="document.actions?.length"
         :actions="document.actions"
       />
+      <EnrichFromWebsite
+        doctype="CRM Lead"
+        :docname="leadId"
+        :website="doc.website"
+        @done="onEnriched"
+      />
       <AssignTo v-model="assignees.data" doctype="CRM Lead" :docname="leadId" />
       <Dropdown
         v-if="doc && document.statuses"
@@ -34,18 +40,26 @@
           </Button>
         </template>
       </Dropdown>
-      <Button
-        :label="__('Convert to Deal')"
-        variant="solid"
-        @click="showConvertToDealModal = true"
-      />
+      <Tooltip
+        :disabled="!isLeadConversionDisabled"
+        :text="__('Cannot convert a lost lead to deal')"
+      >
+        <div class="inline-flex">
+          <Button
+            :label="__('Convert to Deal')"
+            variant="solid"
+            :disabled="isLeadConversionDisabled"
+            @click="showConvertToDealModal = true"
+          />
+        </div>
+      </Tooltip>
     </template>
   </LayoutHeader>
   <div v-if="doc.name" class="flex h-full overflow-hidden">
     <Tabs
       v-model="tabIndex"
       :tabs="tabs"
-      class="flex flex-1 overflow-hidden flex-col [&_[role='tab']]:px-0 [&_[role='tab']]:shrink-0 [&_[role='tablist']]:px-5 [&_[role='tablist']]:min-h-[45px] [&_[role='tablist']]:gap-7.5 [&_[role='tabpanel']:not([hidden])]:flex [&_[role='tabpanel']:not([hidden])]:grow"
+      class="flex flex-1 overflow-hidden flex-col [&_[role='tab']]:px-0 [&_[role='tab']]:shrink-0 [&_[role='tablist']]:px-5 [&_[role='tablist']::-webkit-scrollbar]:h-0 [&_[role='tablist']]:min-h-[45px] [&_[role='tablist']]:gap-7.5 [&_[role='tabpanel']:not([hidden])]:flex [&_[role='tabpanel']:not([hidden])]:grow"
     >
       <template #tab-panel>
         <Activities
@@ -62,7 +76,7 @@
     </Tabs>
     <Resizer class="flex flex-col justify-between border-l" side="right">
       <div
-        class="flex h-[45px] cursor-copy items-center border-b px-5 py-2.5 text-lg font-medium text-ink-gray-9"
+        class="flex h-[45px] cursor-copy items-center border-b px-5 py-2.5 text-lg-medium text-ink-gray-9"
         @click="copyToClipboard(leadId)"
       >
         {{ __(leadId) }}
@@ -78,7 +92,7 @@
                 size="3xl"
                 class="size-12"
                 :label="title"
-                :image="doc.image"
+                :image="doc.image || doc.organization_logo"
               />
               <component
                 :is="doc.image ? Dropdown : 'div'"
@@ -117,7 +131,7 @@
             </div>
             <div class="flex flex-col gap-2.5 truncate">
               <Tooltip :text="doc.lead_name || __('Set First Name')">
-                <div class="truncate text-2xl font-medium text-ink-gray-9">
+                <div class="truncate text-3xl-medium text-ink-gray-9">
                   {{ title }}
                 </div>
               </Tooltip>
@@ -168,7 +182,7 @@
                   :tooltip="__('Delete')"
                   variant="subtle"
                   theme="red"
-                  icon="trash-2"
+                  icon="lucide-trash-2"
                   @click="deleteLead"
                 />
               </div>
@@ -223,6 +237,7 @@
     v-model="showDeleteLinkedDocModal"
     :doctype="'CRM Lead'"
     :docname="leadId"
+    :title="doc.lead_name"
     name="Leads"
   />
   <LostReasonModal
@@ -242,7 +257,6 @@ import EmailIcon from '@/components/Icons/EmailIcon.vue'
 import Email2Icon from '@/components/Icons/Email2Icon.vue'
 import CommentIcon from '@/components/Icons/CommentIcon.vue'
 import DetailsIcon from '@/components/Icons/DetailsIcon.vue'
-import EventIcon from '@/components/Icons/EventIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
@@ -260,6 +274,7 @@ import SidePanelLayout from '@/components/SidePanelLayout.vue'
 import SLASection from '@/components/SLASection.vue'
 import CustomActions from '@/components/CustomActions.vue'
 import ConvertToDealModal from '@/components/Modals/ConvertToDealModal.vue'
+import EnrichFromWebsite from '@/components/EnrichFromWebsite.vue'
 import {
   openWebsite,
   setupCustomizations,
@@ -273,7 +288,8 @@ import { globalStore } from '@/stores/global'
 import { statusesStore } from '@/stores/statuses'
 import { getMeta } from '@/stores/meta'
 import { useDocument } from '@/data/document'
-import { whatsappEnabled, callEnabled } from '@/composables/settings'
+import { whatsappEnabled } from '@/composables/whatsapp'
+import { callEnabled } from '@/composables/telephony'
 import {
   createResource,
   FileUploader,
@@ -286,9 +302,11 @@ import {
   usePageMeta,
   toast,
 } from 'frappe-ui'
-import { ref, computed, watch, nextTick } from 'vue'
+import { ref, computed, watch, nextTick, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useActiveTabManager } from '@/composables/useActiveTabManager'
+import { useUnsavedChangesWarning } from '@/composables/useUnsavedChangesWarning'
+import { useVisitedRecords } from '@/composables/useVisitedRecords'
 
 const { brand } = getSettings()
 const { $dialog, $socket, makeCall } = globalStore()
@@ -310,21 +328,40 @@ const showDeleteLinkedDocModal = ref(false)
 const showConvertToDealModal = ref(false)
 const showFilesUploader = ref(false)
 
-const { triggerOnChange, assignees, permissions, document, scripts, error } =
-  useDocument('CRM Lead', props.leadId)
+const {
+  triggerOnChange,
+  triggerOnRender,
+  assignees,
+  permissions,
+  document,
+  scripts,
+  error,
+} = useDocument('CRM Lead', props.leadId)
 
 const canDelete = computed(() => permissions.data?.permissions?.delete || false)
 
 const doc = computed(() => document.doc || {})
+const isLeadConversionDisabled = computed(
+  () => doc.value.status && getLeadStatus(doc.value.status)?.type === 'Lost',
+)
+
+useUnsavedChangesWarning(() => document.isDirty)
+
+const { markVisited } = useVisitedRecords('CRM Lead')
+
+onMounted(async () => {
+  if (document.doc) await triggerOnRender()
+  markVisited(props.leadId)
+})
 
 watch(error, (err) => {
   if (err) {
     errorTitle.value = __(
       err.exc_type == 'DoesNotExistError'
-        ? 'Document not found'
-        : 'Error occurred',
+        ? __('Document not found')
+        : __('Error occurred'),
     )
-    errorMessage.value = __(err.messages?.[0] || 'An error occurred')
+    errorMessage.value = __(err.messages?.[0] || __('An error occurred'))
   } else {
     errorTitle.value = ''
     errorMessage.value = ''
@@ -373,7 +410,11 @@ const breadcrumbs = computed(() => {
 
   items.push({
     label: title.value,
-    route: { name: 'Lead', params: { leadId: props.leadId } },
+    route: {
+      name: 'Lead',
+      params: { leadId: props.leadId },
+      query: route.query,
+    },
   })
   return items
 })
@@ -415,11 +456,6 @@ const tabs = computed(() => {
       name: 'Data',
       label: __('Data'),
       icon: DetailsIcon,
-    },
-    {
-      name: 'Events',
-      label: __('Events'),
-      icon: EventIcon,
     },
     {
       name: 'Calls',
@@ -477,13 +513,12 @@ function updateField(name, value) {
 
   document.save.submit(null, {
     onSuccess: () => (reload.value = true),
-    onError: (err) => {
+    onError: () => {
       if (Array.isArray(name)) {
         name.forEach((field) => (doc.value[field] = oldValues[field]))
       } else {
         doc.value[name] = oldValues
       }
-      toast.error(err.messages?.[0] || __('Error updating field'))
     },
   })
 }
@@ -533,6 +568,11 @@ function beforeStatusChange(data) {
       onSuccess: () => reloadResources(data),
     })
   }
+}
+
+function onEnriched() {
+  document.reload?.()
+  sections.reload()
 }
 
 function reloadResources(data) {

@@ -5,11 +5,11 @@
     :class="[
       section.hideBorder
         ? 'pt-4'
-        : 'border-t border-outline-gray-modals mt-5 pt-5',
+        : 'border-t border-outline-elevation-2 mt-5 pt-5',
     ]"
   >
     <CollapsibleSection
-      class="flex sm:flex-row flex-col gap-4 text-lg font-medium"
+      class="flex sm:flex-row flex-col gap-4 text-lg-medium"
       :class="{ 'px-3 sm:px-5': hasTabs }"
       :labelClass="['text-lg font-medium', { 'px-3 sm:px-5': hasTabs }]"
       :label="section.label"

@@ -1,10 +1,11 @@
 <template>
   <Dialog
-    v-model="show"
-    :options="{ title: __('Assign To'), size: 'xl' }"
+    v-model:open="show"
+    :title="__('Assign To')"
+    :size="'xl'"
     @close="() => (assignees = [...oldAssignees])"
   >
-    <template #body-content>
+    <template #default>
       <Link
         class="form-control"
         value=""
@@ -30,7 +31,7 @@
             >
               <div>
                 <div
-                  class="flex items-center text-sm text-ink-gray-6 border border-outline-gray-1 bg-surface-white rounded-full hover:bg-surface-white !p-0.5"
+                  class="flex items-center text-sm text-ink-gray-6 border border-outline-gray-1 bg-surface-base rounded-full hover:bg-surface-base !p-0.5"
                   @click.stop
                 >
                   <UserAvatar :user="assignee.name" size="sm" />
@@ -41,7 +42,10 @@
                     @click.stop="removeValue(assignee.name)"
                   >
                     <template #icon>
-                      <FeatherIcon name="x" class="h-3 w-3 text-ink-gray-6" />
+                      <span
+                        class="lucide-x h-3 w-3 text-ink-gray-6"
+                        aria-hidden="true"
+                      />
                     </template>
                   </Button>
                 </div>

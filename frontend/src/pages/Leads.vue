@@ -205,17 +205,17 @@
           <span v-if="getRow(itemName, '_email_count').label">
             {{ getRow(itemName, '_email_count').label }}
           </span>
-          <span class="text-3xl leading-[0]"> &middot; </span>
+          <span class="text-4xl leading-[0]"> &middot; </span>
           <NoteIcon class="h-4 w-4" />
           <span v-if="getRow(itemName, '_note_count').label">
             {{ getRow(itemName, '_note_count').label }}
           </span>
-          <span class="text-3xl leading-[0]"> &middot; </span>
+          <span class="text-4xl leading-[0]"> &middot; </span>
           <TaskIcon class="h-4 w-4" />
           <span v-if="getRow(itemName, '_task_count').label">
             {{ getRow(itemName, '_task_count').label }}
           </span>
-          <span class="text-3xl leading-[0]"> &middot; </span>
+          <span class="text-4xl leading-[0]"> &middot; </span>
           <CommentIcon class="h-4 w-4" />
           <span v-if="getRow(itemName, '_comment_count').label">
             {{ getRow(itemName, '_comment_count').label }}
@@ -227,7 +227,7 @@
           variant="ghost"
           @click.stop.prevent
         >
-          <Button icon="plus" variant="ghost" />
+          <Button icon="lucide-plus" variant="ghost" />
         </Dropdown>
       </div>
     </template>
@@ -265,20 +265,6 @@
     v-model="showLeadModal"
     :defaults="defaults"
   />
-  <NoteModal
-    v-if="showNoteModal"
-    v-model="showNoteModal"
-    :note="note"
-    doctype="CRM Lead"
-    :doc="docname"
-  />
-  <TaskModal
-    v-if="showTaskModal"
-    v-model="showTaskModal"
-    :task="task"
-    doctype="CRM Lead"
-    :doc="docname"
-  />
 </template>
 
 <script setup>
@@ -297,15 +283,17 @@ import LeadsListView from '@/components/ListViews/LeadsListView.vue'
 import EmptyState from '@/components/ListViews/EmptyState.vue'
 import KanbanView from '@/components/Kanban/KanbanView.vue'
 import LeadModal from '@/components/Modals/LeadModal.vue'
-import NoteModal from '@/components/Modals/NoteModal.vue'
-import TaskModal from '@/components/Modals/TaskModal.vue'
 import ViewControls from '@/components/ViewControls.vue'
+import { useDoctypeModal } from '@/composables/doctypeModal'
 import { getMeta } from '@/stores/meta'
 import { globalStore } from '@/stores/global'
 import { usersStore } from '@/stores/users'
 import { statusesStore } from '@/stores/statuses'
-import { callEnabled } from '@/composables/settings'
+import { callEnabled } from '@/composables/telephony'
+import { useBroadcast } from '@/composables/useBroadcast'
 import { formatDate, timeAgo, website, formatTime } from '@/utils'
+import { timestampCell } from '@/composables/useTimelinePreferences'
+import { useOnboarding, useTelemetry } from 'frappe-ui/frappe'
 import { Avatar, Tooltip, Dropdown } from 'frappe-ui'
 import { useRoute } from 'vue-router'
 import { ref, computed, reactive, h } from 'vue'
@@ -315,11 +303,19 @@ const { getFormattedPercent, getFormattedFloat, getFormattedCurrency } =
 const { makeCall } = globalStore()
 const { getUser } = usersStore()
 const { getLeadStatus } = statusesStore()
+const { on } = useBroadcast()
+const { updateOnboardingStep } = useOnboarding('frappecrm')
+const { capture } = useTelemetry()
+const { showModal } = useDoctypeModal()
 
 const route = useRoute()
 
 const leadsListView = ref(null)
 const showLeadModal = ref(false)
+
+on('trigger_lead_create', (data) => {
+  showLeadModal.value = Boolean(data)
+})
 
 const defaults = reactive({})
 
@@ -458,7 +454,7 @@ function parseRows(rows, columns = []) {
       } else if (row == 'organization') {
         _rows[row] = lead.organization
       } else if (row === 'website') {
-        _rows[row] = website(lead.website)
+        _rows[row] = { label: website(lead.website), url: lead.website }
       } else if (row == 'status') {
         _rows[row] = {
           label: lead.status,
@@ -498,10 +494,7 @@ function parseRows(rows, columns = []) {
           label: getUser(user).full_name,
         }))
       } else if (['modified', 'creation'].includes(row)) {
-        _rows[row] = {
-          label: formatDate(lead[row]),
-          timeAgo: __(timeAgo(lead[row])),
-        }
+        _rows[row] = timestampCell(lead[row])
       } else if (
         ['first_response_time', 'first_responded_on', 'response_by'].includes(
           row,
@@ -561,30 +554,43 @@ function actions(itemName) {
   )
 }
 
-const docname = ref('')
-const showNoteModal = ref(false)
-const note = ref({
-  title: '',
-  content: '',
-})
-
 function showNote(name) {
-  docname.value = name
-  showNoteModal.value = true
+  showModal({
+    doctype: 'FCRM Note',
+    title: 'Note',
+    defaults: {
+      reference_doctype: 'CRM Lead',
+      reference_docname: name,
+    },
+    callbacks: {
+      afterInsert: (d) => after(d, true),
+      afterUpdate: after,
+    },
+  })
 }
 
-const showTaskModal = ref(false)
-const task = ref({
-  title: '',
-  description: '',
-  assigned_to: '',
-  due_date: '',
-  priority: 'Low',
-  status: 'Backlog',
-})
-
 function showTask(name) {
-  docname.value = name
-  showTaskModal.value = true
+  showModal({
+    doctype: 'CRM Task',
+    title: 'Task',
+    defaults: {
+      reference_doctype: 'CRM Lead',
+      reference_docname: name,
+    },
+    callbacks: {
+      afterInsert: (d) => after(d, true),
+      afterUpdate: after,
+    },
+  })
+}
+
+function after(d, isNew = false) {
+  let a = d.doctype == 'FCRM Note' ? 'note' : 'task'
+  if (isNew) {
+    updateOnboardingStep('create_first_' + a)
+    capture(a + '_created')
+  } else {
+    capture(a + '_updated')
+  }
 }
 </script>

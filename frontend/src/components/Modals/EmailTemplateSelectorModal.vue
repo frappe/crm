@@ -1,9 +1,6 @@
 <template>
-  <Dialog
-    v-model="show"
-    :options="{ title: __('Email Templates'), size: '4xl' }"
-  >
-    <template #body-content>
+  <Dialog v-model:open="show" :title="__('Email Templates')" :size="'4xl'">
+    <template #default>
       <div class="flex items-center gap-2">
         <TextInput
           ref="searchInput"
@@ -13,10 +10,13 @@
           :placeholder="__('Payment Reminder')"
         >
           <template #prefix>
-            <FeatherIcon name="search" class="h-4 w-4 text-ink-gray-4" />
+            <span
+              class="lucide-search h-4 w-4 text-ink-gray-4"
+              aria-hidden="true"
+            />
           </template>
         </TextInput>
-        <Button :label="__('Create')" icon-left="plus" @click="create" />
+        <Button :label="__('Create')" icon-left="lucide-plus" @click="create" />
       </div>
       <div
         v-if="filteredTemplates.length"
@@ -28,26 +28,25 @@
           class="flex h-56 cursor-pointer flex-col gap-2 rounded-lg border p-3 hover:bg-surface-gray-2"
           @click="emit('apply', template)"
         >
-          <div class="border-b pb-2 text-base font-semibold">
+          <div class="border-b pb-2 text-base-semibold">
             {{ template.name }}
           </div>
           <div v-if="template.subject" class="text-sm text-ink-gray-5">
             {{ __('Subject: {0}', [template.subject]) }}
           </div>
-          <TextEditor
+          <!-- content is passed through sanitizeHTML() (DOMPurify) before rendering, so v-html is safe here -->
+          <!-- eslint-disable vue/no-v-html -->
+          <div
             v-if="template.use_html && template.response_html"
-            :content="template.response_html"
-            :editable="false"
-            editor-class="!prose-sm max-w-none !text-sm text-ink-gray-5 focus:outline-none"
-            class="flex-1 overflow-hidden"
+            class="prose-f prose-sm max-w-none !text-sm text-ink-gray-5 flex-1 overflow-hidden"
+            v-html="sanitizeHTML(template.response_html)"
           />
-          <TextEditor
+          <div
             v-else-if="template.response"
-            :content="template.response"
-            :editable="false"
-            editor-class="!prose-sm max-w-none !text-sm text-ink-gray-5 focus:outline-none"
-            class="flex-1 overflow-hidden"
+            class="prose-f prose-sm max-w-none !text-sm text-ink-gray-5 flex-1 overflow-hidden"
+            v-html="sanitizeHTML(template.response)"
           />
+          <!-- eslint-enable vue/no-v-html -->
         </div>
       </div>
       <div v-else class="mt-2">
@@ -65,7 +64,8 @@
 <script setup>
 import { showSettings, activeSettingsPage } from '@/composables/settings'
 import { useBroadcast } from '@/composables/useBroadcast'
-import { TextEditor, createListResource } from 'frappe-ui'
+import { createListResource } from 'frappe-ui'
+import { sanitizeHTML } from '@/utils'
 import { ref, computed, nextTick, watch, onMounted } from 'vue'
 
 const props = defineProps({

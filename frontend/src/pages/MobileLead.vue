@@ -50,11 +50,19 @@
         v-if="document.actions?.length"
         :actions="document.actions"
       />
-      <Button
-        :label="__('Convert')"
-        variant="solid"
-        @click="showConvertToDealModal = true"
-      />
+      <Tooltip
+        :disabled="!isLeadConversionDisabled"
+        :text="__('Cannot convert a lost lead to deal')"
+      >
+        <div class="inline-flex">
+          <Button
+            :label="__('Convert')"
+            variant="solid"
+            :disabled="isLeadConversionDisabled"
+            @click="showConvertToDealModal = true"
+          />
+        </div>
+      </Tooltip>
     </div>
   </div>
   <div v-if="doc.name" class="flex h-full overflow-hidden">
@@ -113,6 +121,7 @@
     v-model="showDeleteLinkedDocModal"
     :doctype="'CRM Lead'"
     :docname="leadId"
+    :title="doc.lead_name"
     name="Leads"
   />
   <LostReasonModal
@@ -150,18 +159,21 @@ import { globalStore } from '@/stores/global'
 import { statusesStore } from '@/stores/statuses'
 import { getMeta } from '@/stores/meta'
 import { useDocument } from '@/data/document'
-import { whatsappEnabled, isMobileView } from '@/composables/settings'
+import { isMobileView } from '@/composables/settings'
+import { whatsappEnabled } from '@/composables/whatsapp'
 import { useActiveTabManager } from '@/composables/useActiveTabManager'
+import { useVisitedRecords } from '@/composables/useVisitedRecords'
 import {
   createResource,
   Dropdown,
+  Tooltip,
   Tabs,
   Breadcrumbs,
   call,
   usePageMeta,
   toast,
 } from 'frappe-ui'
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import ConvertToDealModal from '@/components/Modals/ConvertToDealModal.vue'
 
@@ -181,12 +193,26 @@ const errorTitle = ref('')
 const errorMessage = ref('')
 const showDeleteLinkedDocModal = ref(false)
 
-const { triggerOnChange, assignees, document, scripts, error } = useDocument(
-  'CRM Lead',
-  props.leadId,
-)
+const {
+  triggerOnChange,
+  triggerOnRender,
+  assignees,
+  document,
+  scripts,
+  error,
+} = useDocument('CRM Lead', props.leadId)
 
 const doc = computed(() => document.doc || {})
+const isLeadConversionDisabled = computed(
+  () => doc.value.status && getLeadStatus(doc.value.status)?.type === 'Lost',
+)
+
+const { markVisited } = useVisitedRecords('CRM Lead')
+
+onMounted(async () => {
+  if (document.doc) await triggerOnRender()
+  markVisited(props.leadId)
+})
 
 watch(error, (err) => {
   if (err) {
@@ -246,7 +272,11 @@ const breadcrumbs = computed(() => {
 
   items.push({
     label: title.value,
-    route: { name: 'Lead', params: { leadId: props.leadId } },
+    route: {
+      name: 'Lead',
+      params: { leadId: props.leadId },
+      query: route.query,
+    },
   })
   return items
 })
@@ -342,13 +372,12 @@ function updateField(name, value) {
 
   document.save.submit(null, {
     onSuccess: () => (reload.value = true),
-    onError: (err) => {
+    onError: () => {
       if (Array.isArray(name)) {
         name.forEach((field) => (doc.value[field] = oldValues[field]))
       } else {
         doc.value[name] = oldValues
       }
-      toast.error(err.messages?.[0] || __('Error updating field'))
     },
   })
 }

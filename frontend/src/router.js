@@ -1,7 +1,25 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { call } from 'frappe-ui'
 import { usersStore } from '@/stores/users'
 import { sessionStore } from '@/stores/session'
 import { viewsStore } from '@/stores/views'
+
+let personaChecked = false
+export const PERSONA_DONE_KEY = 'crm_persona_captured'
+
+async function shouldCapturePersona() {
+  // Client-side flag guards against re-prompting if the server persist failed.
+  if (localStorage.getItem(PERSONA_DONE_KEY)) return false
+  const captured = await call('frappe.client.get_single_value', {
+    doctype: 'FCRM Settings',
+    field: 'persona_captured',
+  })
+  if (captured) return false
+  // The wizard only feeds telemetry; skip it entirely if the user opted out.
+  const { enabled } =
+    (await call('frappe.utils.telemetry.pulse.client.boot_config')) || {}
+  return !!enabled
+}
 
 const routes = [
   {
@@ -85,11 +103,6 @@ const routes = [
     component: () => import('@/pages/CallLogs.vue'),
   },
   {
-    path: '/calendar',
-    name: 'Calendar',
-    component: () => import('@/pages/Calendar.vue'),
-  },
-  {
     path: '/data-import',
     name: 'DataImportList',
     component: () => import('@/pages/DataImport.vue'),
@@ -110,6 +123,11 @@ const routes = [
     path: '/welcome',
     name: 'Welcome',
     component: () => import('@/pages/Welcome.vue'),
+  },
+  {
+    path: '/onboarding',
+    name: 'Onboarding',
+    component: () => import('@/pages/PersonaForm.vue'),
   },
   {
     path: '/:invalidpath',
@@ -133,19 +151,56 @@ let router = createRouter({
 })
 
 router.beforeEach(async (to, from, next) => {
-  const { isLoggedIn } = sessionStore()
-  const { users, isCrmUser } = usersStore()
+  router.previousRoute = from
+
+  const { isLoggedIn, user } = sessionStore()
+  const { users, isCrmUser, isAdmin } = usersStore()
 
   if (isLoggedIn && !users.fetched) {
     try {
       await users.promise
     } catch (error) {
       console.error('Error loading users', error)
+      if (error?.exc_type !== 'PermissionError') {
+        return next(false)
+      }
+    }
+  }
+
+  const isAdminUser = isLoggedIn && (isAdmin() || user === 'Administrator')
+
+  // Only admins who haven't finished may reach the wizard, even via direct URL.
+  if (isLoggedIn && to.name === 'Onboarding') {
+    try {
+      if (!isAdminUser || !(await shouldCapturePersona())) {
+        return next({ name: 'Home' })
+      }
+    } catch {
+      return next({ name: 'Home' })
+    }
+  }
+
+  if (
+    isLoggedIn &&
+    isCrmUser() &&
+    !personaChecked &&
+    to.name !== 'Onboarding' &&
+    isAdminUser
+  ) {
+    personaChecked = true
+    try {
+      if (await shouldCapturePersona()) {
+        return next({ name: 'Onboarding' })
+      }
+    } catch (error) {
+      // fail open
     }
   }
 
   if (isLoggedIn && to.name !== 'Not Permitted' && !isCrmUser()) {
     next({ name: 'Not Permitted' })
+  } else if (to.name === 'Not Permitted' && isLoggedIn && isCrmUser()) {
+    next({ name: 'Home' })
   } else if (to.name === 'Home' && isLoggedIn) {
     const { views, getDefaultView } = viewsStore()
     await views.promise
@@ -209,8 +264,8 @@ router.beforeEach(async (to, from, next) => {
       const doctype = doctypeMap[to.name]
       let defaultViewType = 'list'
 
-      let globalDefault = getDefaultView()
-      if (globalDefault && globalDefault.route_name === to.name) {
+      let globalDefault = getDefaultView(to.name)
+      if (globalDefault) {
         defaultViewType = globalDefault.type || 'list'
         if (globalDefault.name && !globalDefault.is_standard) {
           next({

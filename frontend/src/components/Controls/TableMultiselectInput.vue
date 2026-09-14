@@ -10,13 +10,13 @@
         :label="value"
         theme="gray"
         variant="subtle"
-        class="rounded bg-surface-white hover:!bg-surface-gray-1 focus-visible:ring-outline-gray-4"
+        class="rounded bg-surface-base hover:!bg-surface-gray-1 focus-visible:ring-outline-gray-4"
         @keydown.delete.capture.stop="removeLastValue"
       >
         <template #suffix>
-          <FeatherIcon
-            class="h-3.5"
-            name="x"
+          <span
+            class="lucide-x h-3.5"
+            aria-hidden="true"
             @click.stop="removeValue(value)"
           />
         </template>
@@ -28,6 +28,7 @@
           :value="query"
           :filters="filters"
           :doctype="linkField.options"
+          :onCreate="create"
           :hideMe="true"
           @change="(v) => addValue(v)"
         >
@@ -46,6 +47,7 @@
 
 <script setup>
 import Link from '@/components/Controls/Link.vue'
+import { createDocument } from '@/composables/document'
 import { getMeta } from '@/stores/meta'
 import { ref, computed, nextTick } from 'vue'
 
@@ -88,8 +90,9 @@ const getLinkField = () => {
       ['Link', 'User'].includes(df.fieldtype),
     )
     if (!linkField.value) {
-      error.value =
-        'Table MultiSelect requires a Table with atleast one Link field'
+      error.value = __(
+        'Table MultiSelect requires a Table with at least one Link field',
+      )
     }
   }
   return linkField.value
@@ -99,7 +102,7 @@ const addValue = (value) => {
   error.value = null
 
   if (values.value.some((row) => row[linkField.value.fieldname] === value)) {
-    error.value = 'Value already exists'
+    error.value = __('Value already exists')
     return
   }
 
@@ -135,5 +138,12 @@ const removeLastValue = () => {
   } else {
     valueRef?.focus()
   }
+}
+
+function create(value, close) {
+  const callback = (d) => {
+    if (d) addValue(d.name)
+  }
+  createDocument(linkField.value.options, value, close, callback)
 }
 </script>

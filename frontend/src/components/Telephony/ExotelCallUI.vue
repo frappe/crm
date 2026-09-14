@@ -2,11 +2,11 @@
   <div>
     <div
       v-show="showSmallCallPopup"
-      class="ml-2 flex cursor-pointer select-none items-center justify-between gap-1 rounded-full bg-surface-gray-7 px-2 py-[7px] text-base text-ink-gray-2"
+      class="ml-2 flex cursor-pointer select-none items-center justify-between gap-1 rounded-full bg-surface-gray-10 px-2 py-[7px] text-base text-ink-gray-2"
       @click="toggleCallPopup"
     >
       <div
-        class="flex justify-center items-center size-5 rounded-full bg-surface-gray-6 shrink-0 mr-1"
+        class="flex justify-center items-center size-5 rounded-full bg-surface-gray-9 shrink-0 mr-1"
       >
         <Avatar
           v-if="contact?.image"
@@ -39,7 +39,7 @@
     </div>
     <div
       v-show="showCallPopup"
-      class="fixed z-20 w-[280px] min-h-44 flex gap-2 flex-col rounded-lg bg-surface-gray-7 p-4 pt-2.5 text-ink-gray-2 shadow-2xl"
+      class="fixed z-20 w-[280px] min-h-44 flex gap-2 flex-col rounded-lg bg-surface-gray-10 p-4 pt-2.5 text-ink-gray-2 shadow-2xl"
       :style="style"
       @click.stop
     >
@@ -60,7 +60,7 @@
             />
             <div
               v-else
-              class="flex justify-center items-center size-7 rounded-full bg-surface-gray-6 shrink-0"
+              class="flex justify-center items-center size-7 rounded-full bg-surface-gray-9 shrink-0"
             >
               <AvatarIcon class="size-3" />
             </div>
@@ -122,7 +122,7 @@
 
         <div class="flex">
           <Button
-            class="bg-surface-gray-7 text-ink-white hover:bg-surface-gray-6 shrink-0 cursor-pointer"
+            class="bg-surface-gray-10 text-ink-base hover:bg-surface-gray-9 shrink-0 cursor-pointer"
             :tooltip="__('Minimize')"
             :icon="MinimizeIcon"
             size="md"
@@ -130,8 +130,8 @@
           />
           <Button
             v-if="callStatus == 'Call ended' || callStatus == 'No answer'"
-            class="bg-surface-gray-7 text-ink-white hover:bg-surface-gray-6 shrink-0"
-            icon="x"
+            class="bg-surface-gray-10 text-ink-base hover:bg-surface-gray-9 shrink-0"
+            icon="lucide-x"
             size="md"
             @click="closeCallPopup"
           />
@@ -139,11 +139,8 @@
       </div>
       <div class="body flex-1">
         <div v-if="showNote">
-          <TextEditor
-            ref="content"
-            variant="ghost"
-            editor-class="prose-sm h-[290px] text-ink-white overflow-auto mt-1"
-            :bubbleMenu="true"
+          <RichTextField
+            editor-class="prose-sm h-[290px] text-ink-base overflow-auto mt-1"
             :content="note.content"
             :placeholder="__('Take a note...')"
             @change="(val) => (note.content = val)"
@@ -159,19 +156,19 @@
           />
           <div
             v-else
-            class="flex justify-center items-center size-8 rounded-full bg-surface-gray-6"
+            class="flex justify-center items-center size-8 rounded-full bg-surface-gray-9"
           >
             <AvatarIcon class="size-4" />
           </div>
           <div v-if="contact?.full_name" class="flex flex-col gap-1">
-            <div class="text-lg font-medium leading-5">
+            <div class="text-lg-medium leading-5">
               {{ contact.full_name }}
             </div>
             <div class="text-base text-ink-gray-6 leading-4">
               {{ contact.mobile_no }}
             </div>
           </div>
-          <div v-else class="text-lg font-medium leading-5">
+          <div v-else class="text-lg-medium leading-5">
             {{ contact.mobile_no }}
           </div>
         </div>
@@ -179,14 +176,14 @@
       <div class="footer flex justify-between gap-2">
         <div class="flex gap-2">
           <Button
-            class="bg-surface-gray-6 text-ink-white hover:bg-surface-gray-5"
+            class="bg-surface-gray-9 text-ink-base hover:bg-surface-gray-8"
             :tooltip="__('Add a Note')"
             size="md"
             :icon="NoteIcon"
             @click="showNoteWindow"
           />
           <Button
-            class="bg-surface-gray-6 text-ink-white hover:bg-surface-gray-5"
+            class="bg-surface-gray-9 text-ink-base hover:bg-surface-gray-8"
             size="md"
             :tooltip="__('Add a Task')"
             :icon="TaskIcon"
@@ -194,7 +191,7 @@
           />
           <Button
             v-if="contact.deal || contact.lead"
-            class="bg-surface-gray-6 text-ink-white hover:bg-surface-gray-5"
+            class="bg-surface-gray-9 text-ink-base hover:bg-surface-gray-8"
             size="md"
             :iconRight="ArrowUpRightIcon"
             :label="contact.deal ? __('Deal') : __('Lead')"
@@ -204,7 +201,7 @@
 
         <Button
           v-if="(note.name || task.name) && dirty"
-          class="bg-surface-white !text-ink-gray-9 hover:!bg-surface-gray-3"
+          class="bg-surface-base !text-ink-gray-9 hover:!bg-surface-gray-3"
           variant="solid"
           :label="__('Update')"
           size="md"
@@ -216,7 +213,7 @@
             !note.name &&
             !task.name
           "
-          class="bg-surface-white !text-ink-gray-9 hover:!bg-surface-gray-3"
+          class="bg-surface-base !text-ink-gray-9 hover:!bg-surface-gray-3"
           variant="solid"
           :label="__('Save')"
           size="md"
@@ -235,10 +232,11 @@ import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import TaskPanel from '@/components/Telephony/TaskPanel.vue'
 import CountUpTimer from '@/components/CountUpTimer.vue'
+import RichTextField from '@/components/RichTextField.vue'
 import { globalStore } from '@/stores/global'
 import { sessionStore } from '@/stores/session'
 import { useDraggable, useWindowSize } from '@vueuse/core'
-import { TextEditor, Avatar, Button, createResource, toast } from 'frappe-ui'
+import { Avatar, Button, createResource, toast } from 'frappe-ui'
 import { ref, onBeforeUnmount, watch, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -397,6 +395,14 @@ function makeOutgoingCall(number) {
       callStatus.value = 'Calling...'
       showCallPopup.value = true
       showSmallCallPopup.value = false
+
+      if (callDetails.call_log_creation_failed) {
+        toast.warning(
+          __(
+            'Call connected, but the call log could not be saved. Please contact your administrator.',
+          ),
+        )
+      }
     },
     onError(err) {
       toast.error(err.messages[0])
@@ -564,6 +570,6 @@ defineExpose({ makeOutgoingCall, setup })
 }
 
 :deep(.ProseMirror) {
-  caret-color: var(--ink-white);
+  caret-color: var(--ink-base);
 }
 </style>

@@ -19,7 +19,7 @@
       rx="1"
       transform="rotate(-45 0.792893 0)"
       fill="currentColor"
-      class="stroke stroke-ink-white"
+      class="stroke stroke-ink-base"
     />
   </svg>
 </template>

@@ -14,7 +14,7 @@
           :label="avatars[0].label"
           :size="size"
         />
-        <div class="truncate">{{ avatars[0].label }}</div>
+        <div class="truncate" :class="labelClass">{{ avatars[0].label }}</div>
       </div>
     </Tooltip>
     <Tooltip
@@ -24,7 +24,7 @@
       :text="avatar.name"
     >
       <Avatar
-        class="user-avatar -mr-1.5 transform ring-2 ring-outline-white transition hover:z-10 hover:scale-110"
+        class="user-avatar -mr-1.5 transform ring-2 ring-outline-base transition hover:z-10 hover:scale-110"
         shape="circle"
         :image="avatar.image"
         :label="avatar.label"
@@ -41,6 +41,7 @@ import { computed } from 'vue'
 const props = defineProps({
   avatars: { type: Array, default: () => [] },
   size: { type: String, default: 'md' },
+  labelClass: { type: String, default: '' },
 })
 const reverseAvatars = computed(() => [...props.avatars].reverse())
 </script>

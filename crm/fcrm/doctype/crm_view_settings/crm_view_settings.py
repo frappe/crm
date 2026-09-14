@@ -205,10 +205,10 @@ def set_as_default(name: str | int | None = None, type: str | None = None, docty
 		doc = create_or_update_standard_view({"type": type, "doctype": doctype, "is_default": 1})
 		name = doc.name
 
-	# remove default from other views of same user
+	# remove default from other views of same user and same doctype
 	frappe.db.set_value(
 		"CRM View Settings",
-		{"name": ("!=", name), "user": frappe.session.user, "is_default": 1},
+		{"name": ("!=", name), "user": frappe.session.user, "is_default": 1, "dt": doctype},
 		"is_default",
 		0,
 	)
@@ -303,6 +303,18 @@ def fetch_and_update_kanban_columns(name: str | int):
 	doc.kanban_columns = json.dumps(existing_columns)
 	doc.save(ignore_permissions=True)
 	return doc.kanban_columns
+
+
+def clear_old_versions(days=14):
+	from frappe.utils import add_days, now_datetime
+
+	frappe.db.delete(
+		"Version",
+		{
+			"ref_doctype": "CRM View Settings",
+			"creation": ("<", add_days(now_datetime(), -days)),
+		},
+	)
 
 
 def get_route_name(doctype):

@@ -1,10 +1,10 @@
 <template>
-  <Dialog v-model="show" :options="{ size: 'xl' }">
+  <Dialog v-model:open="show" :size="'xl'">
     <template #body>
-      <div class="bg-surface-modal px-4 pb-6 pt-5 sm:px-6">
+      <div class="bg-surface-elevation-2 px-4 pb-6 pt-5 sm:px-6">
         <div class="mb-5 flex items-center justify-between">
           <div>
-            <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9">
+            <h3 class="text-3xl-semibold leading-6 text-ink-gray-9">
               {{ __('New Contact') }}
             </h3>
           </div>
@@ -20,7 +20,7 @@
             <Button
               variant="ghost"
               class="w-7"
-              icon="x"
+              icon="lucide-x"
               @click="show = false"
             />
           </div>
@@ -53,14 +53,10 @@ import FieldLayout from '@/components/FieldLayout/FieldLayout.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import { usersStore } from '@/stores/users'
 import { isMobileView } from '@/composables/settings'
-import {
-  showQuickEntryModal,
-  quickEntryProps,
-  showAddressModal,
-  addressProps,
-} from '@/composables/modals'
+import { showQuickEntryModal, quickEntryProps } from '@/composables/modals'
 import { useDocument } from '@/data/document'
 import { evaluateDependsOnValue } from '@/utils'
+import { useDoctypeModal } from '@/composables/doctypeModal'
 import { useTelemetry } from 'frappe-ui/frappe'
 import { createResource } from 'frappe-ui'
 import { ref, nextTick, onMounted } from 'vue'
@@ -118,7 +114,7 @@ function validateRequiredFields() {
     _contact.doc.mobile_no &&
     isNaN(_contact.doc.mobile_no.replace(/[-+() ]/g, ''))
   ) {
-    return __('Mobile No. should be a number')
+    return __('Mobile number should be a number')
   }
 
   return null
@@ -129,6 +125,7 @@ const insertContact = createResource({
   onSuccess: (doc) => {
     capture('contact_created')
     handleContactUpdate(doc)
+    _contact.doc = {}
   },
   onError: (err) => {
     error.value = err.error?.messages?.[0]
@@ -197,10 +194,10 @@ const tabs = createResource({
             } else if (field.fieldname == 'address') {
               field.create = (value, close) => {
                 _contact.doc.address = value
-                openAddressModal()
+                showAddressModal()
                 close()
               }
-              field.edit = (address) => openAddressModal(address)
+              field.edit = (address) => showAddressModal(address)
             } else if (field.fieldtype === 'Table') {
               _contact.doc[field.fieldname] = []
             }
@@ -225,13 +222,19 @@ function openQuickEntryModal() {
   nextTick(() => (show.value = false))
 }
 
-function openAddressModal(_address) {
-  showAddressModal.value = true
-  addressProps.value = {
+const { showModal } = useDoctypeModal()
+
+function showAddressModal(_address) {
+  showModal({
+    name: _address || null,
     doctype: 'Address',
-    address: _address,
-  }
-  nextTick(() => (show.value = false))
+    callbacks: {
+      afterInsert: (d) => {
+        capture('address_created')
+        _contact.doc.address = d.name
+      },
+    },
+  })
 }
 </script>
 

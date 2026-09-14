@@ -1,10 +1,10 @@
 <template>
-  <Dialog v-model="show" :options="{ size: 'xl' }">
+  <Dialog v-model:open="show" :size="'xl'">
     <template #body>
-      <div class="px-4 pt-5 pb-6 bg-surface-modal sm:px-6">
+      <div class="px-4 pt-5 pb-6 bg-surface-elevation-2 sm:px-6">
         <div class="flex items-center justify-between mb-5">
           <div>
-            <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9">
+            <h3 class="text-3xl-semibold leading-6 text-ink-gray-9">
               {{ __('New Organization') }}
             </h3>
           </div>
@@ -20,7 +20,7 @@
             <Button
               variant="ghost"
               class="w-7"
-              icon="x"
+              icon="lucide-x"
               @click="show = false"
             />
           </div>
@@ -53,13 +53,9 @@ import FieldLayout from '@/components/FieldLayout/FieldLayout.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import { usersStore } from '@/stores/users'
 import { isMobileView } from '@/composables/settings'
-import {
-  showQuickEntryModal,
-  quickEntryProps,
-  showAddressModal,
-  addressProps,
-} from '@/composables/modals'
+import { showQuickEntryModal, quickEntryProps } from '@/composables/modals'
 import { useDocument } from '@/data/document'
+import { useDoctypeModal } from '@/composables/doctypeModal'
 import { useTelemetry } from 'frappe-ui/frappe'
 import { call, createResource } from 'frappe-ui'
 import { ref, nextTick, onMounted } from 'vue'
@@ -110,6 +106,7 @@ async function createOrganization() {
   if (doc.name) {
     capture('organization_created')
     handleOrganizationUpdate(doc)
+    organization.doc = {}
   }
 }
 
@@ -137,10 +134,10 @@ const tabs = createResource({
             if (field.fieldname == 'address') {
               field.create = (value, close) => {
                 organization.doc.address = value
-                openAddressModal()
+                showAddressModal()
                 close()
               }
-              field.edit = (address) => openAddressModal(address)
+              field.edit = (address) => showAddressModal(address)
             } else if (field.fieldtype === 'Table') {
               organization.doc[field.fieldname] = []
             }
@@ -152,7 +149,9 @@ const tabs = createResource({
 })
 
 onMounted(() => {
-  organization.doc.no_of_employees = '1-10'
+  if (!props.data?.no_of_employees) {
+    organization.doc.no_of_employees = '1-10'
+  }
   Object.assign(organization.doc, props.data)
 })
 
@@ -162,11 +161,18 @@ function openQuickEntryModal() {
   nextTick(() => (show.value = false))
 }
 
-function openAddressModal(_address) {
-  showAddressModal.value = true
-  addressProps.value = {
+const { showModal } = useDoctypeModal()
+
+function showAddressModal(_address) {
+  showModal({
+    name: _address || null,
     doctype: 'Address',
-    address: _address,
-  }
+    callbacks: {
+      afterInsert: (d) => {
+        capture('address_created')
+        organization.doc.address = d.name
+      },
+    },
+  })
 }
 </script>

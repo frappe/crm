@@ -7,12 +7,12 @@
       <div class="flex items-center gap-2">
         <Button
           variant="ghost"
-          icon-left="chevron-left"
+          icon-left="lucide-chevron-left"
           :label="
             assignmentRuleData.assignmentRuleName || __('New Assignment Rule')
           "
           size="md"
-          class="cursor-pointer -ml-4 hover:bg-transparent focus:bg-transparent focus:outline-none focus:ring-0 focus:ring-offset-0 focus-visible:none active:bg-transparent active:outline-none active:ring-0 active:ring-offset-0 active:text-ink-gray-5 font-semibold text-xl hover:opacity-70 !pr-0 !max-w-96 !justify-start"
+          class="cursor-pointer -ml-4 hover:bg-transparent focus:bg-transparent focus:outline-none focus:ring-0 focus:ring-offset-0 focus-visible:none active:bg-transparent active:outline-none active:ring-0 active:ring-offset-0 active:text-ink-gray-5 text-2xl-semibold hover:opacity-70 !pr-0 !max-w-96 !justify-start"
           @click="goBack()"
         />
         <Badge
@@ -65,7 +65,7 @@
           <Popover>
             <template #target="{ togglePopover }">
               <div
-                class="flex items-center justify-between text-base rounded h-7 py-1.5 pl-2 pr-2 border border-outline-gray-2 bg-surface-gray-2 placeholder-ink-gray-4 hover:border-outline-gray-modals hover:bg-surface-gray-3 focus:bg-surface-white focus:border-outline-gray-4 focus:shadow-sm focus:ring-0 focus-visible:ring-2 focus-visible:ring-outline-gray-3 text-ink-gray-8 transition-colors w-full dark:[color-scheme:dark] cursor-default"
+                class="flex items-center justify-between text-base rounded h-7 py-1.5 pl-2 pr-2 border border-outline-gray-2 bg-surface-gray-2 placeholder-ink-gray-4 hover:border-outline-elevation-2 hover:bg-surface-gray-3 focus:bg-surface-base focus:border-outline-gray-4 focus:ring-0 focus-visible:ring-2 focus-visible:ring-outline-gray-3 text-ink-gray-8 transition-colors w-full dark:[color-scheme:dark] cursor-default"
                 @click="togglePopover()"
               >
                 <div>
@@ -75,7 +75,7 @@
                     )?.label
                   }}
                 </div>
-                <FeatherIcon name="chevron-down" class="size-4" />
+                <span class="lucide-chevron-down size-4" aria-hidden="true" />
               </div>
             </template>
             <template #body="{ togglePopover }">
@@ -94,10 +94,10 @@
                   "
                 >
                   {{ option.label }}
-                  <FeatherIcon
+                  <span
                     v-if="assignmentRuleData.priority == option.value"
-                    name="check"
-                    class="size-4"
+                    class="lucide-check size-4"
+                    aria-hidden="true"
                   />
                 </div>
               </div>
@@ -141,7 +141,7 @@
       <hr class="my-8" />
       <div>
         <div class="flex flex-col gap-1">
-          <span class="text-lg font-semibold text-ink-gray-8">{{
+          <span class="text-lg-semibold text-ink-gray-8">{{
             __('Assignment Condition')
           }}</span>
           <div class="flex items-center justify-between gap-6">
@@ -165,7 +165,7 @@
                     class="text-sm text-ink-gray-6 flex gap-1 cursor-default text-nowrap items-center"
                   >
                     <span>{{ __('Old Condition') }}</span>
-                    <FeatherIcon name="info" class="size-4" />
+                    <span class="lucide-info size-4" aria-hidden="true" />
                   </div>
                 </template>
                 <template #body-main>
@@ -196,7 +196,7 @@
               }}
             </span>
             <Button
-              :label="__('I understand, Add Conditions')"
+              :label="__('I understand, add conditions')"
               variant="subtle"
               theme="gray"
               @click="useNewUI = true"
@@ -220,7 +220,7 @@
       <hr class="my-8" />
       <div>
         <div class="flex flex-col gap-1">
-          <span class="text-lg font-semibold text-ink-gray-8">{{
+          <span class="text-lg-semibold text-ink-gray-8">{{
             __('Unassignment Condition')
           }}</span>
           <div class="flex items-center justify-between gap-6">
@@ -249,7 +249,7 @@
                     class="text-sm text-ink-gray-6 flex gap-1 cursor-default text-nowrap items-center"
                   >
                     <span> {{ __('Old Condition') }} </span>
-                    <FeatherIcon name="info" class="size-4" />
+                    <span class="lucide-info size-4" aria-hidden="true" />
                   </div>
                 </template>
                 <template #body-main>
@@ -280,7 +280,7 @@
               }}
             </span>
             <Button
-              :label="__('I understand, Add Conditions')"
+              :label="__('I understand, add conditions')"
               variant="subtle"
               theme="gray"
               @click="useNewUI = true"
@@ -298,7 +298,7 @@
       <hr class="my-8" />
       <div>
         <div class="flex flex-col gap-1">
-          <span class="text-lg font-semibold text-ink-gray-8">{{
+          <span class="text-lg-semibold text-ink-gray-8">{{
             __('Assignment Schedule')
           }}</span>
           <span class="text-p-sm text-ink-gray-6">
@@ -343,26 +343,21 @@ import {
   toast,
   ConfirmDialog,
 } from 'frappe-ui'
-import {
-  onMounted,
-  onUnmounted,
-  ref,
-  inject,
-  watch,
-  provide,
-  computed,
-} from 'vue'
+import { useTelemetry } from 'frappe-ui/frappe'
+import { onUnmounted, ref, inject, watch, provide, computed } from 'vue'
 import AssignmentRulesSection from './AssignmentRulesSection.vue'
 import AssignmentSchedule from './AssignmentSchedule.vue'
 import AssigneeRules from './AssigneeRules.vue'
 import { globalStore } from '@/stores/global'
 import { disableSettingModalOutsideClick } from '@/composables/settings'
+import { useUnsavedChangesWarning } from '@/composables/useUnsavedChangesWarning'
 import { convertToConditions, validateConditions } from '@/utils'
 
 const isDirty = ref(false)
 const initialData = ref(null)
 const isLoading = ref(false)
 const updateStep = inject('updateStep')
+const { capture } = useTelemetry()
 const step = inject('step')
 const { $dialog } = globalStore()
 
@@ -432,11 +427,11 @@ const validateAssignmentRule = (key, skipConditionCheck = false) => {
         assignmentRuleErrors.value.assignCondition =
           assignmentRuleData.value.assignConditionJson?.length > 0
             ? ''
-            : __('Assign Condition is required')
+            : __('Assign condition is required')
 
         if (!validateConditions(assignmentRuleData.value.assignConditionJson)) {
           assignmentRuleErrors.value.assignConditionError = __(
-            'Assign Conditions are invalid',
+            'Assign conditions are invalid',
           )
         } else {
           assignmentRuleErrors.value.assignConditionError = ''
@@ -452,7 +447,7 @@ const validateAssignmentRule = (key, skipConditionCheck = false) => {
           !validateConditions(assignmentRuleData.value.unassignConditionJson)
         ) {
           assignmentRuleErrors.value.unassignConditionError = __(
-            'Unassign Conditions are invalid',
+            'Unassign conditions are invalid',
           )
         } else {
           assignmentRuleErrors.value.unassignConditionError = ''
@@ -695,7 +690,10 @@ const createAssignmentRule = () => {
         })
         .then(() => {
           isLoading.value = false
-          toast.success(__('Assignment Rule Created'))
+          capture('assignment_rule_created', {
+            doctype: assignmentRuleData.value.documentType,
+          })
+          toast.success(__('Assignment rule created'))
         })
       updateStep('view', data)
     },
@@ -777,7 +775,7 @@ const updateAssignmentRule = async () => {
     getAssignmentRuleData.reload()
   }
   isLoading.value = false
-  toast.success(__('Assignment Rule Updated'))
+  toast.success(__('Assignment rule updated'))
 }
 
 watch(
@@ -794,20 +792,11 @@ watch(
   { deep: true },
 )
 
-const beforeUnloadHandler = (event) => {
-  if (!isDirty.value) return
-  event.preventDefault()
-  event.returnValue = true
-}
-
-onMounted(() => {
-  addEventListener('beforeunload', beforeUnloadHandler)
-})
+useUnsavedChangesWarning(() => isDirty.value)
 
 onUnmounted(() => {
   resetAssignmentRuleErrors()
   resetAssignmentRuleData()
-  removeEventListener('beforeunload', beforeUnloadHandler)
   disableSettingModalOutsideClick.value = false
 })
 </script>

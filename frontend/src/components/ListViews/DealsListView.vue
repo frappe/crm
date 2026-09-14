@@ -24,21 +24,23 @@
         v-for="column in columns"
         :key="column.key"
         :item="column"
-        @columnWidthUpdated="emit('columnWidthUpdated', column)"
+        @columnWidthUpdated="(e) => onColumnWidthUpdated(e, column)"
       >
         <Button
           v-if="column.key == '_liked_by'"
-          variant="ghosted"
+          variant="ghost"
           class="!h-4"
-          :class="isLikeFilterApplied ? 'fill-red-500' : 'fill-white'"
           @click="() => emit('applyLikeFilter')"
         >
-          <HeartIcon class="h-4 w-4" />
+          <HeartIcon
+            class="h-4 w-4"
+            :class="isLikeFilterApplied ? 'fill-red-500 text-red-500' : ''"
+          />
         </Button>
       </ListHeaderItem>
     </ListHeader>
     <ListRows
-      v-slot="{ idx, column, item, row }"
+      v-slot="{ idx, column, item, row, isVisited }"
       :rows="rows"
       doctype="CRM Deal"
     >
@@ -51,6 +53,9 @@
             <MultipleAvatar
               :avatars="item"
               size="sm"
+              :label-class="
+                isVisited ? 'text-ink-gray-6' : 'font-medium text-ink-gray-9'
+              "
               @click="
                 (event) =>
                   emit('applyFilter', {
@@ -87,18 +92,6 @@
           <div v-else-if="column.key === 'mobile_no' && item">
             <PhoneIcon class="h-4 w-4" />
           </div>
-          <div v-else-if="column.key === '_liked_by'">
-            <Button
-              v-if="column.key == '_liked_by'"
-              variant="ghosted"
-              :class="isLiked(item) ? 'fill-red-500' : 'fill-white'"
-              @click.stop.prevent="
-                () => emit('likeDoc', { name: row.name, liked: isLiked(item) })
-              "
-            >
-              <HeartIcon class="h-4 w-4" />
-            </Button>
-          </div>
         </template>
         <template #default="{ label }">
           <div
@@ -112,6 +105,9 @@
               ].includes(column.key)
             "
             class="truncate text-base"
+            :class="
+              isVisited ? 'text-ink-gray-6' : 'font-medium text-ink-gray-9'
+            "
             @click="
               (event) =>
                 emit('applyFilter', {
@@ -157,6 +153,27 @@
               class="text-ink-gray-9"
             />
           </div>
+          <div v-else-if="column.key === '_liked_by'">
+            <Button
+              variant="ghost"
+              @click.stop.prevent="
+                () => emit('likeDoc', { name: row.name, liked: isLiked(item) })
+              "
+            >
+              <HeartIcon
+                class="h-4 w-4"
+                :class="
+                  isLiked(item)
+                    ? isVisited
+                      ? 'fill-red-400 text-red-400'
+                      : 'fill-red-500 text-red-500'
+                    : isVisited
+                      ? 'text-ink-gray-6'
+                      : 'text-ink-gray-9'
+                "
+              />
+            </Button>
+          </div>
           <RatingInput
             v-else-if="column.type === 'Rating'"
             :value="item"
@@ -174,9 +191,18 @@
                 })
             "
           />
+          <WebsiteLink
+            v-else-if="column.key === 'website' && item?.url"
+            variant="label"
+            :url="item.url"
+            :label="getLabel(label, column)"
+          />
           <div
             v-else-if="label"
             class="truncate text-base"
+            :class="
+              isVisited ? 'text-ink-gray-6' : 'font-medium text-ink-gray-9'
+            "
             @click="
               (event) =>
                 emit('applyFilter', {
@@ -191,6 +217,13 @@
             {{ getLabel(label, column) }}
           </div>
         </template>
+        <template #suffix>
+          <WebsiteLink
+            v-if="column.key === 'website' && item?.url"
+            variant="icon"
+            :url="item.url"
+          />
+        </template>
       </ListRowItem>
     </ListRows>
     <ListSelectBanner>
@@ -198,7 +231,7 @@
         <Dropdown
           :options="listBulkActionsRef.bulkActions(selections, unselectAll)"
         >
-          <Button icon="more-horizontal" variant="ghost" />
+          <Button icon="lucide-more-horizontal" variant="ghost" />
         </Dropdown>
       </template>
     </ListSelectBanner>
@@ -224,6 +257,7 @@ import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import RatingInput from '@/components/Controls/RatingInput.vue'
 import ListBulkActions from '@/components/ListBulkActions.vue'
 import ListRows from '@/components/ListViews/ListRows.vue'
+import WebsiteLink from '@/components/ListViews/WebsiteLink.vue'
 import { isTranslatable, formatDuration } from '@/utils'
 import {
   Avatar,
@@ -269,6 +303,11 @@ const route = useRoute()
 
 const pageLengthCount = defineModel({ type: Number })
 const list = defineModel('list', { type: Object })
+
+function onColumnWidthUpdated({ width, save }, column) {
+  column.width = width
+  if (save) emit('columnWidthUpdated', column)
+}
 
 function getLabel(label, column) {
   if (column.type === 'Duration') return formatDuration(label)

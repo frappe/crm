@@ -99,7 +99,7 @@
                       <Button
                         class="h-7 px-3"
                         variant="ghost"
-                        icon="plus"
+                        icon="lucide-plus"
                         @click="togglePopover()"
                       />
                     </template>
@@ -157,7 +157,7 @@
                             <div class="flex items-center">
                               <Dropdown :options="contactOptions(contact.name)">
                                 <Button
-                                  icon="more-horizontal"
+                                  icon="lucide-more-horizontal"
                                   class="text-ink-gray-5"
                                   variant="ghost"
                                 />
@@ -174,10 +174,10 @@
                                 <ArrowUpRightIcon class="h-4 w-4" />
                               </Button>
                               <Button variant="ghost" @click="toggle()">
-                                <FeatherIcon
-                                  name="chevron-right"
-                                  class="h-4 w-4 text-ink-gray-9 transition-all duration-300 ease-in-out"
+                                <span
+                                  class="lucide-chevron-right h-4 w-4 text-ink-gray-9 transition-all duration-300 ease-in-out"
                                   :class="{ 'rotate-90': opened }"
+                                  aria-hidden="true"
                                 />
                               </Button>
                             </div>
@@ -199,7 +199,7 @@
                     </div>
                     <div
                       v-if="i != section.contacts.length - 1"
-                      class="mx-2 h-px border-t border-outline-gray-modals"
+                      class="mx-2 h-px border-t border-outline-elevation-2"
                     />
                   </div>
                   <div
@@ -254,6 +254,7 @@
     v-model="showDeleteLinkedDocModal"
     :doctype="'CRM Deal'"
     :docname="dealId"
+    :title="doc.organization"
     name="Deals"
   />
   <LostReasonModal
@@ -299,12 +300,11 @@ import { globalStore } from '@/stores/global'
 import { statusesStore } from '@/stores/statuses'
 import { getMeta } from '@/stores/meta'
 import { useDocument } from '@/data/document'
-import {
-  whatsappEnabled,
-  callEnabled,
-  isMobileView,
-} from '@/composables/settings'
+import { isMobileView } from '@/composables/settings'
+import { whatsappEnabled } from '@/composables/whatsapp'
+import { callEnabled } from '@/composables/telephony'
 import { useActiveTabManager } from '@/composables/useActiveTabManager'
+import { useVisitedRecords } from '@/composables/useVisitedRecords'
 import {
   createResource,
   Dropdown,
@@ -315,13 +315,14 @@ import {
   usePageMeta,
   toast,
 } from 'frappe-ui'
-import { ref, computed, h, watch } from 'vue'
+import { ref, computed, h, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 const { brand } = getSettings()
 const { $dialog, $socket } = globalStore()
 const { statusOptions, getDealStatus } = statusesStore()
 const { doctypeMeta } = getMeta('CRM Deal')
+
 const route = useRoute()
 const router = useRouter()
 
@@ -333,12 +334,23 @@ const errorTitle = ref('')
 const errorMessage = ref('')
 const showDeleteLinkedDocModal = ref(false)
 
-const { triggerOnChange, assignees, document, scripts, error } = useDocument(
-  'CRM Deal',
-  props.dealId,
-)
+const {
+  triggerOnChange,
+  triggerOnRender,
+  assignees,
+  document,
+  scripts,
+  error,
+} = useDocument('CRM Deal', props.dealId)
 
 const doc = computed(() => document.doc || {})
+
+const { markVisited } = useVisitedRecords('CRM Deal')
+
+onMounted(async () => {
+  if (document.doc) await triggerOnRender()
+  markVisited(props.dealId)
+})
 
 watch(error, (err) => {
   if (err) {
@@ -400,7 +412,11 @@ const breadcrumbs = computed(() => {
 
   items.push({
     label: title.value,
-    route: { name: 'Deal', params: { dealId: props.dealId } },
+    route: {
+      name: 'Deal',
+      params: { dealId: props.dealId },
+      query: route.query,
+    },
   })
   return items
 })
@@ -577,7 +593,9 @@ const dealContacts = createResource({
       (section) => section.name == 'contacts_section',
     )
     if (!contactSection) return
-    contactSection.contacts = data.map((contact) => {
+    // get_deal_contacts orders primary first, so expanding the first contact
+    // surfaces the most relevant email and phone without a click.
+    contactSection.contacts = data.map((contact, index) => {
       return {
         name: contact.name,
         full_name: contact.full_name,
@@ -585,7 +603,7 @@ const dealContacts = createResource({
         mobile_no: contact.mobile_no,
         image: contact.image,
         is_primary: contact.is_primary,
-        opened: false,
+        opened: index === 0,
       }
     })
   },
@@ -603,13 +621,12 @@ function updateField(name, value) {
 
   document.save.submit(null, {
     onSuccess: () => (reload.value = true),
-    onError: (err) => {
+    onError: () => {
       if (Array.isArray(name)) {
         name.forEach((field) => (doc.value[field] = oldValues[field]))
       } else {
         doc.value[name] = oldValues
       }
-      toast.error(err.messages?.[0] || __('Error updating field'))
     },
   })
 }

@@ -1,10 +1,10 @@
 <template>
-  <Dialog v-model="show" :options="dialogOptions">
-    <template #body>
-      <div class="bg-surface-modal px-4 pb-6 pt-5 sm:px-6">
+  <Dialog v-model:open="show" :size="dialogOptions.size" bare>
+    <template #default>
+      <div class="bg-surface-elevation-2 px-4 pb-6 pt-5 sm:px-6">
         <div class="mb-5 flex items-center justify-between">
           <div>
-            <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9">
+            <h3 class="text-3xl-semibold leading-6 text-ink-gray-9">
               {{ __(dialogOptions.title) || __('Untitled') }}
             </h3>
           </div>
@@ -20,7 +20,7 @@
             <Button
               variant="ghost"
               class="w-7"
-              icon="x"
+              icon="lucide-x"
               @click="show = false"
             />
           </div>
@@ -101,6 +101,33 @@ const tabs = createResource({
   auto: true,
 })
 
+watch(
+  [tabs, doctypeMeta],
+  () => {
+    if (!tabs.data || !doctypeMeta.value) return
+
+    if (doctypeMeta.value?.autoname?.toLowerCase() === 'prompt') {
+      let hasNewNameField = tabs.data.some((tab) =>
+        tab.sections.some((section) =>
+          section.columns.some((column) =>
+            column.fields.some((field) => field.fieldname === '__newname'),
+          ),
+        ),
+      )
+
+      if (!hasNewNameField) {
+        tabs.data[0].sections[0].columns[0].fields.unshift({
+          fieldname: '__newname',
+          label: __('Name'),
+          fieldtype: 'Data',
+          reqd: 1,
+        })
+      }
+    }
+  },
+  { immediate: true, deep: true },
+)
+
 async function create() {
   loading.value = true
   error.value = null
@@ -128,6 +155,7 @@ async function create() {
   loading.value = false
   show.value = false
   emit('callback', doc)
+  _data.doc = {}
 }
 
 watch(

@@ -1,10 +1,10 @@
 <template>
-  <Dialog v-model="show" :options="{ size: '3xl' }">
+  <Dialog v-model:open="show" :size="'3xl'">
     <template #body>
-      <div class="bg-surface-modal px-4 pb-6 pt-5 sm:px-6">
+      <div class="bg-surface-elevation-2 px-4 pb-6 pt-5 sm:px-6">
         <div class="mb-5 flex items-center justify-between">
           <div>
-            <h3 class="text-2xl font-semibold leading-6 text-ink-gray-9">
+            <h3 class="text-3xl-semibold leading-6 text-ink-gray-9">
               {{ __('Create Lead') }}
             </h3>
           </div>
@@ -20,7 +20,7 @@
             <Button
               variant="ghost"
               class="w-7"
-              icon="x"
+              icon="lucide-x"
               @click="show = false"
             />
           </div>
@@ -141,7 +141,7 @@ async function createNewLead() {
           lead.doc.mobile_no &&
           isNaN(lead.doc.mobile_no.replace(/[-+() ]/g, ''))
         ) {
-          error.value = __('Mobile No. should be a number')
+          error.value = __('Mobile number should be a number')
           return error.value
         }
         if (lead.doc.email && !lead.doc.email.includes('@')) {
@@ -158,6 +158,7 @@ async function createNewLead() {
         capture('lead_created')
         isLeadCreating.value = false
         show.value = false
+        lead.doc = {}
         router.push({ name: 'Lead', params: { leadId: data.name } })
         updateOnboardingStep('create_first_lead', true, false, () => {
           localStorage.setItem('firstLead' + user, data.name)

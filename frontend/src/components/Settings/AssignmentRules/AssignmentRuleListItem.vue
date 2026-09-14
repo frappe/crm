@@ -1,9 +1,9 @@
 <template>
   <div
-    class="flex p-3 items-center justify-between cursor-pointer hover:bg-surface-menu-bar rounded"
+    class="flex p-3 items-center justify-between cursor-pointer hover:bg-surface-sidebar rounded"
   >
     <div class="w-7/12" @click="updateStep('view', data)">
-      <div class="text-base text-ink-gray-7 font-medium">{{ data.name }}</div>
+      <div class="text-base-medium text-ink-gray-7">{{ data.name }}</div>
       <div
         v-if="data.description && data.description.length > 0"
         class="text-p-base w-full text-ink-gray-5 mt-0.5 whitespace-nowrap overflow-ellipsis overflow-hidden"
@@ -35,7 +35,7 @@
       />
       <Dropdown placement="right" :options="dropdownOptions">
         <Button
-          icon="more-horizontal"
+          icon="lucide-more-horizontal"
           variant="ghost"
           @click="isConfirmingDelete = false"
         />
@@ -43,10 +43,10 @@
     </div>
   </div>
   <Dialog
-    v-model="duplicateDialog.show"
-    :options="{ title: __('Duplicate Assignment Rule') }"
+    v-model:open="duplicateDialog.show"
+    :title="__('Duplicate Assignment Rule')"
   >
-    <template #body-content>
+    <template #default>
       <div class="flex flex-col gap-4">
         <FormControl
           v-model="duplicateDialog.name"
@@ -78,8 +78,11 @@ import {
   Switch,
   toast,
 } from 'frappe-ui'
+import { useTelemetry } from 'frappe-ui/frappe'
 import { inject, ref, reactive, watch } from 'vue'
 import { ConfirmDelete } from '../../../utils'
+
+const { capture } = useTelemetry()
 
 const assignmentRulesList = inject('assignmentRulesList')
 const updateStep = inject('updateStep')
@@ -120,7 +123,7 @@ const deleteAssignmentRule = () => {
     onSuccess: () => {
       assignmentRulesList.reload()
       isConfirmingDelete.value = false
-      toast.success(__('Assignment Rule Deleted'))
+      toast.success(__('Assignment rule deleted'))
     },
     auto: true,
   })
@@ -152,7 +155,7 @@ const duplicate = () => {
     },
     onSuccess: (data) => {
       assignmentRulesList.reload()
-      toast.success(__('Assignment Rule Duplicated'))
+      toast.success(__('Assignment rule duplicated'))
       duplicateDialog.value.show = false
       duplicateDialog.value.name = ''
       updateStep('view', data)
@@ -170,6 +173,7 @@ const onToggle = () => {
     toast.error(__('Cannot enable rule without adding users in it'))
     return
   }
+  capture('assignment_rule_toggled', { enabled: Boolean(props.data.disabled) })
   setAssignmentRuleValue('disabled', !props.data.disabled, 'status')
 }
 
@@ -184,7 +188,7 @@ const setAssignmentRuleValue = (key, value, fieldName = undefined) => {
     },
     onSuccess: () => {
       assignmentRulesList.reload()
-      toast.success(__('Assignment Rule {0} Updated', [fieldName || key]))
+      toast.success(__('Assignment rule {0} updated', [fieldName || key]))
     },
     auto: true,
   })

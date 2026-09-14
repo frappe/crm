@@ -24,7 +24,7 @@
         <Dropdown v-if="s.type == 'Select'" :options="s.options">
           <template #default="{ open }">
             <Button
-              class="form-control bg-surface-white hover:bg-surface-white"
+              class="form-control bg-surface-base hover:bg-surface-base"
               :label="s.value"
               :iconRight="open ? 'chevron-up' : 'chevron-down'"
             />

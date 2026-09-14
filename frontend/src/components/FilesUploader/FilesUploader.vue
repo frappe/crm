@@ -1,12 +1,6 @@
 <template>
-  <Dialog
-    v-model="show"
-    :options="{
-      title: __('Attach'),
-      size: 'xl',
-    }"
-  >
-    <template #body-content>
+  <Dialog v-model:open="show" :title="__('Attach')" :size="'xl'">
+    <template #default>
       <FilesUploaderArea
         ref="filesUploaderArea"
         v-model="files"
@@ -107,6 +101,7 @@ import { ref, computed } from 'vue'
 const props = defineProps({
   doctype: { type: String, required: true },
   docname: { type: String, required: true },
+  fieldname: { type: String, default: '' },
   options: {
     type: Object,
     default: () => ({
@@ -116,6 +111,7 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['after'])
+// 'after' payload: array of uploaded file objects (each has file_url, file_name, name, ...)
 
 const show = defineModel({ type: Boolean })
 
@@ -168,6 +164,7 @@ function uploadViaWebLink() {
 
 const uploader = ref(null)
 const fileUploadStarted = ref(false)
+const uploadedFiles = ref([])
 
 function attachFile(file, i) {
   const args = {
@@ -178,6 +175,7 @@ function attachFile(file, i) {
     folder: props.options.folder,
     doctype: props.doctype,
     docname: props.docname,
+    fieldname: props.fieldname,
   }
 
   uploader.value = new FilesUploadHandler()
@@ -192,7 +190,7 @@ function attachFile(file, i) {
   })
   uploader.value.on('error', (error) => {
     file.uploading = false
-    file.errorMessage = error || 'Error Uploading File'
+    file.errorMessage = error || __('Error Uploading File')
   })
   uploader.value.on('finish', () => {
     file.uploading = false
@@ -200,17 +198,20 @@ function attachFile(file, i) {
 
   uploader.value
     .upload(file, args || {})
-    .then(() => {
+    .then((response) => {
+      uploadedFiles.value.push(response)
       if (i === files.value.length - 1) {
+        const uploaded = uploadedFiles.value.slice()
+        uploadedFiles.value = []
         files.value = []
         show.value = false
         fileUploadStarted.value = false
-        emit('after')
+        emit('after', uploaded)
       }
     })
     .catch((error) => {
       file.uploading = false
-      let errorMessage = 'Error Uploading File'
+      let errorMessage = __('Error Uploading File')
       if (error?._server_messages) {
         errorMessage = JSON.parse(JSON.parse(error._server_messages)[0]).message
       } else if (error?.exc) {

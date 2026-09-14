@@ -106,13 +106,14 @@
           v-else-if="fieldName == 'description'"
           class="truncate text-base max-h-44"
         >
-          <TextEditor
+          <!-- content is passed through sanitizeHTML() (DOMPurify) before rendering, so v-html is safe here -->
+          <!-- eslint-disable vue/no-v-html -->
+          <div
             v-if="getRow(itemName, fieldName).label"
-            :content="getRow(itemName, fieldName).label"
-            :editable="false"
-            editor-class="!prose-sm max-w-none focus:outline-none"
-            class="flex-1 overflow-hidden"
+            class="prose-f prose-sm max-w-none flex-1 overflow-hidden"
+            v-html="sanitizeHTML(getRow(itemName, fieldName).label)"
           />
+          <!-- eslint-enable vue/no-v-html -->
         </div>
         <div v-else class="truncate text-base">
           {{ getRow(itemName, fieldName).label }}
@@ -145,9 +146,12 @@
           class="flex items-center gap-2"
           :options="actions(itemName)"
           variant="ghost"
-          @click.stop.prevent
         >
-          <Button icon="more-horizontal" variant="ghost" />
+          <Button
+            icon="lucide-more-horizontal"
+            variant="ghost"
+            @click.stop.prevent
+          />
         </Dropdown>
       </div>
     </template>
@@ -181,11 +185,13 @@
     name="Tasks"
     :icon="Email2Icon"
   />
-  <TaskModal
-    v-if="showTaskModal"
-    v-model="showTaskModal"
-    v-model:reloadTasks="tasks"
-    :task="task"
+  <DeleteLinkedDocModal
+    v-if="showDeleteTaskModal"
+    v-model="showDeleteTaskModal"
+    name="Tasks"
+    doctype="CRM Task"
+    :docname="taskToDelete"
+    :reload="() => tasks.reload()"
   />
 </template>
 
@@ -201,17 +207,22 @@ import ViewControls from '@/components/ViewControls.vue'
 import TasksListView from '@/components/ListViews/TasksListView.vue'
 import EmptyState from '@/components/ListViews/EmptyState.vue'
 import KanbanView from '@/components/Kanban/KanbanView.vue'
-import TaskModal from '@/components/Modals/TaskModal.vue'
+import DeleteLinkedDocModal from '@/components/DeleteLinkedDocModal.vue'
+import { useDoctypeModal } from '@/composables/doctypeModal'
 import { getMeta } from '@/stores/meta'
 import { usersStore } from '@/stores/users'
-import { formatDate, timeAgo } from '@/utils'
-import { Tooltip, Avatar, TextEditor, Dropdown, call } from 'frappe-ui'
+import { formatDate, sanitizeHTML } from '@/utils'
+import { timestampCell } from '@/composables/useTimelinePreferences'
+import { useOnboarding, useTelemetry } from 'frappe-ui/frappe'
+import { Tooltip, Avatar, Dropdown } from 'frappe-ui'
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 const { getFormattedPercent, getFormattedFloat, getFormattedCurrency } =
   getMeta('CRM Task')
 const { getUser } = usersStore()
+const { updateOnboardingStep } = useOnboarding('frappecrm')
+const { capture } = useTelemetry()
 
 const router = useRouter()
 
@@ -223,6 +234,9 @@ const loadMore = ref(1)
 const triggerResize = ref(1)
 const updatedPageCount = ref(20)
 const viewControls = ref(null)
+
+const showDeleteTaskModal = ref(false)
+const taskToDelete = ref(null)
 
 function getRow(name, field) {
   function getValue(value) {
@@ -306,10 +320,7 @@ function parseRows(rows, columns = []) {
       }
 
       if (['modified', 'creation'].includes(row)) {
-        _rows[row] = {
-          label: formatDate(task[row]),
-          timeAgo: __(timeAgo(task[row])),
-        }
+        _rows[row] = timestampCell(task[row])
       } else if (row == 'assigned_to') {
         _rows[row] = {
           label: task.assigned_to && getUser(task.assigned_to).full_name,
@@ -321,77 +332,63 @@ function parseRows(rows, columns = []) {
   })
 }
 
-const showTaskModal = ref(false)
+const { showModal } = useDoctypeModal()
 
-const task = ref({
-  name: '',
-  title: '',
-  description: '',
-  assigned_to: '',
-  due_date: '',
-  status: 'Backlog',
-  priority: 'Low',
-  reference_doctype: 'CRM Lead',
-  reference_docname: '',
-})
+const taskCallbacks = {
+  afterInsert: () => {
+    tasks.value.reload()
+    updateOnboardingStep('create_first_task')
+    capture('task_created')
+  },
+  afterUpdate: () => {
+    tasks.value.reload()
+    capture('task_updated')
+  },
+}
 
 function showTask(name) {
-  let t = rows.value?.find((row) => row.name === name)
-  task.value = {
-    name: t.name,
-    title: t.title,
-    description: t.description,
-    assigned_to: t.assigned_to?.name || '',
-    due_date: t.due_date,
-    status: t.status,
-    priority: t.priority,
-    reference_doctype: t.reference_doctype,
-    reference_docname: t.reference_docname,
-  }
-  showTaskModal.value = true
+  showModal({
+    name,
+    doctype: 'CRM Task',
+    title: 'Task',
+    callbacks: taskCallbacks,
+  })
 }
 
 function createTask(column) {
-  task.value = {
-    name: '',
-    title: '',
-    description: '',
-    assigned_to: '',
-    due_date: '',
-    status: 'Backlog',
-    priority: 'Low',
-    reference_doctype: 'CRM Lead',
-    reference_docname: '',
-  }
+  const defaults = { status: 'Backlog', priority: 'Low' }
 
-  if (column.column?.name) {
+  if (column?.column?.name) {
     let column_field = tasks.value.params.column_field
     if (column_field) {
-      task.value[column_field] = column.column.name
+      defaults[column_field] = column.column.name
     }
   }
 
-  showTaskModal.value = true
+  showModal({
+    doctype: 'CRM Task',
+    title: 'Task',
+    defaults: defaults,
+    callbacks: taskCallbacks,
+  })
 }
 
 function actions(name) {
   return [
     {
+      label: __('Edit'),
+      icon: 'edit-2',
+      onClick: () => showTask(name),
+    },
+    {
       label: __('Delete'),
       icon: 'trash-2',
       onClick: () => {
-        deletetask(name)
-        tasks.value.reload()
+        taskToDelete.value = name
+        showDeleteTaskModal.value = true
       },
     },
   ]
-}
-
-async function deletetask(name) {
-  await call('frappe.client.delete', {
-    doctype: 'CRM Task',
-    name,
-  })
 }
 
 function redirect(doctype, docname) {

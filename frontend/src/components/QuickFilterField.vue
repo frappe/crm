@@ -28,6 +28,11 @@
     class="border-none"
     :value="filter.value"
     :placeholder="filter.label"
+    :format="
+      filter.fieldtype === 'Date'
+        ? getFormat('', '', true, false, false)
+        : getFormat('', '', true, true, false)
+    "
     @change="(v) => updateFilter(filter, v)"
   />
   <FormControl
@@ -41,6 +46,7 @@
 <script setup>
 import Link from '@/components/Controls/Link.vue'
 import { FormControl, DatePicker, DateTimePicker } from 'frappe-ui'
+import { getFormat } from '@/utils'
 import { useDebounceFn } from '@vueuse/core'
 import { reactive, watch } from 'vue'
 

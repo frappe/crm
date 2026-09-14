@@ -4,14 +4,14 @@
       <template #target="{ togglePopover }">
         <Button
           variant="subtle"
-          icon-left="plus"
+          icon-left="lucide-plus"
           :label="__('Add Assignee')"
           @click="togglePopover()"
         />
       </template>
       <template #body="{ togglePopover }">
         <div
-          class="mt-1 rounded-lg bg-surface-white py-1 text-base shadow-2xl w-60"
+          class="mt-1 rounded-lg bg-surface-base py-1 text-base shadow-2xl w-60"
         >
           <div class="relative px-1.5 pt-0.5">
             <ComboboxInput
@@ -27,7 +27,7 @@
               class="absolute right-1.5 inline-flex h-7 w-7 items-center justify-center"
               @click="query = ''"
             >
-              <FeatherIcon name="x" class="w-4" />
+              <span class="lucide-x w-4" aria-hidden="true" />
             </button>
           </div>
           <ComboboxOptions class="my-2 max-h-64 overflow-y-auto px-1.5" static>
@@ -75,7 +75,7 @@
           <div class="border-t p-1.5 pb-0.5 *:w-full">
             <Button
               variant="ghost"
-              icon-left="plus"
+              icon-left="lucide-plus"
               class="w-full"
               :label="__('Invite Agent')"
               @click="

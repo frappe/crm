@@ -1,0 +1,66 @@
+{
+ "actions": [],
+ "autoname": "autoincrement",
+ "creation": "2026-05-24 12:18:55.660189",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "product",
+  "kind",
+  "detail",
+  "detected_on",
+  "dismissed"
+ ],
+ "fields": [
+  {
+   "fieldname": "product",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Product",
+   "options": "CRM Product",
+   "read_only": 1
+  },
+  {
+   "fieldname": "kind",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Kind",
+   "options": "unlinked_orphan",
+   "read_only": 1
+  },
+  {
+   "fieldname": "detail",
+   "fieldtype": "Small Text",
+   "label": "Detail",
+   "read_only": 1
+  },
+  {
+   "default": "now",
+   "fieldname": "detected_on",
+   "fieldtype": "Datetime",
+   "label": "Detected On",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "dismissed",
+   "fieldtype": "Check",
+   "label": "Dismissed"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-05-27 09:22:48.995255",
+ "modified_by": "Administrator",
+ "module": "FCRM",
+ "name": "CRM Product Sync Issue",
+ "naming_rule": "Autoincrement",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

@@ -2,6 +2,9 @@
 # See license.txt
 
 import frappe
+from frappe.custom.doctype.custom_field.custom_field import create_custom_fields
+from frappe.desk.form.assign_to import add as assign_add
+from frappe.desk.form.assign_to import remove as assign_remove
 from frappe.tests import IntegrationTestCase
 
 from crm.fcrm.doctype.crm_lead.crm_lead import convert_to_deal
@@ -296,6 +299,29 @@ class TestCRMLead(IntegrationTestCase):
 			lead2.create_contact()
 		self.assertIn("Contact already exists", str(context.exception))
 
+	def test_contact_not_reused_when_only_phone_matches(self):
+		"""A different person sharing only a phone must not be reused as the contact"""
+		lead1 = create_lead(
+			first_name="Jane",
+			last_name="Doe",
+			email="frappe@example.com",
+			mobile_no="+910000000099",
+		)
+		existing_contact = lead1.create_contact()
+
+		# Different person, no email, but the same mobile number
+		lead2 = create_lead(
+			first_name="John",
+			last_name="Doe",
+			mobile_no="+910000000099",
+		)
+		contact_name = lead2.create_contact()
+
+		self.assertNotEqual(contact_name, existing_contact)
+		contact = frappe.get_doc("Contact", contact_name)
+		self.assertEqual(contact.first_name, "John")
+		self.assertEqual(contact.last_name, "Doe")
+
 	def test_convert_lead_to_deal(self):
 		"""Test converting a lead to a deal with new contact and organization"""
 		lead = create_lead(
@@ -416,6 +442,21 @@ class TestCRMLead(IntegrationTestCase):
 		self.assertEqual(org.organization_name, "API Test Corp")
 		self.assertEqual(org.annual_revenue, 300000)
 
+	def test_cannot_convert_lost_lead_to_deal(self):
+		"""Lost leads cannot be converted to deals."""
+		if not frappe.db.exists("CRM Lost Reason", "Not interested"):
+			frappe.get_doc({"doctype": "CRM Lost Reason", "lost_reason": "Not interested"}).insert()
+
+		for status in ("Junk", "Unqualified"):
+			with self.subTest(status=status):
+				lead = create_lead(first_name=status, status=status, lost_reason="Not interested")
+				with self.assertRaisesRegex(
+					frappe.ValidationError, f"Cannot convert a lead with status {status}"
+				):
+					convert_to_deal(lead=lead.name)
+				lead.reload()
+				self.assertFalse(lead.converted)
+
 	def test_convert_to_deal_api_with_existing_records(self):
 		"""Test convert_to_deal API with existing contact and organization parameters"""
 		# Create existing contact
@@ -486,6 +527,36 @@ class TestCRMLead(IntegrationTestCase):
 		self.assertEqual(deal.annual_revenue, 750000)
 		self.assertEqual(deal.job_title, "CEO")
 
+	def test_no_of_employees_propagated_to_organization_on_conversion(self):
+		"""Test that no_of_employees on lead is copied to the organization created on conversion"""
+		lead = create_lead(
+			first_name="Employees",
+			last_name="Test",
+			email="employeestest@example.com",
+			organization="Employees Test Inc",
+			no_of_employees="201-500",
+		)
+
+		deal_name = lead.convert_to_deal()
+		deal = frappe.get_doc("CRM Deal", deal_name)
+
+		org = frappe.get_doc("CRM Organization", deal.organization)
+		self.assertEqual(org.no_of_employees, "201-500")
+
+	def test_custom_fields_copied_to_deal_by_label(self):
+		"""Custom Lead fields map to matching custom Deal fields."""
+		create_lead_deal_custom_fields()
+		lead = create_lead(
+			first_name="Custom",
+			organization="Custom Field Inc",
+			custom_lead_conversion_region="North",
+		)
+
+		deal_name = lead.convert_to_deal()
+		deal = frappe.get_doc("CRM Deal", deal_name)
+
+		self.assertEqual(deal.custom_deal_conversion_region, "North")
+
 	def test_assignees_transferred_on_conversion(self):
 		"""Test that additional assignees are transferred from lead to deal on conversion"""
 		lead = create_lead(
@@ -507,9 +578,55 @@ class TestCRMLead(IntegrationTestCase):
 		self.assertIn("Administrator", deal_assignees)
 		self.assertIn("crm.user1@example.com", deal_assignees)
 
+	def test_owner_cleared_on_unassign(self):
+		"""Unassigning the current owner clears lead_owner"""
+		lead = create_lead(first_name="Owner", lead_owner="crm.user1@example.com")
+		self.assertEqual(lead.lead_owner, "crm.user1@example.com")
+
+		assign_remove("CRM Lead", lead.name, "crm.user1@example.com")
+
+		self.assertIsNone(frappe.db.get_value("CRM Lead", lead.name, "lead_owner"))
+
+	def test_assignment_overrides_owner(self):
+		"""A new assignment takes ownership even when an owner already exists (newest owns)."""
+		lead = create_lead(first_name="Override", lead_owner="crm.user1@example.com")
+		assign_add({"assign_to": ["crm.user2@example.com"], "doctype": "CRM Lead", "name": lead.name})
+		self.assertEqual(frappe.db.get_value("CRM Lead", lead.name, "lead_owner"), "crm.user2@example.com")
+
+	def test_negative_currency_fields_rejected(self):
+		"""Test that Currency fields reject negative values"""
+		for fieldname in ("annual_revenue", "total", "net_total"):
+			with self.subTest(fieldname=fieldname), self.assertRaises(frappe.NonNegativeError):
+				create_lead(
+					first_name="Negative",
+					email=f"negative.{fieldname}@example.com",
+					**{fieldname: -100},
+				)
+
 
 def create_lead(**kwargs):
 	"""Helper function to create a CRM Lead for testing"""
 	data = {"doctype": "CRM Lead"}
 	data.update(kwargs)
 	return frappe.get_doc(data).insert()
+
+
+def create_lead_deal_custom_fields():
+	create_custom_fields(
+		{
+			"CRM Lead": [conversion_region_field("custom_lead_conversion_region")],
+			"CRM Deal": [conversion_region_field("custom_deal_conversion_region")],
+		},
+		ignore_validate=True,
+	)
+	frappe.clear_cache(doctype="CRM Lead")
+	frappe.clear_cache(doctype="CRM Deal")
+
+
+def conversion_region_field(fieldname):
+	return {
+		"fieldname": fieldname,
+		"fieldtype": "Data",
+		"insert_after": "source",
+		"label": "Conversion Region",
+	}

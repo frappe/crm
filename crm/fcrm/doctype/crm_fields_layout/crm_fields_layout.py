@@ -4,6 +4,7 @@
 import json
 
 import frappe
+from frappe import _
 from frappe.model.document import Document
 from frappe.utils import random_string
 
@@ -182,7 +183,7 @@ def get_field_obj(field):
 		field["placeholder"] = field.get("placeholder") or "Select " + field.label + "..."
 	elif field.fieldtype == "Select" and field.options:
 		field["placeholder"] = field.get("placeholder") or "Select " + field.label + "..."
-		field["options"] = [{"label": option, "value": option} for option in field.options.split("\n")]
+		field["options"] = [{"label": _(option), "value": option} for option in field.options.split("\n")]
 
 	if field.read_only:
 		field["tooltip"] = "This field is read only and cannot be edited."
@@ -192,6 +193,9 @@ def get_field_obj(field):
 
 @frappe.whitelist()
 def save_fields_layout(doctype: str, type: str, layout: str):
+	if not frappe.has_permission("CRM Fields Layout", "write"):
+		frappe.throw(_("Not permitted to modify fields layout"), frappe.PermissionError)
+
 	if frappe.db.exists("CRM Fields Layout", {"dt": doctype, "type": type}):
 		doc = frappe.get_doc("CRM Fields Layout", {"dt": doctype, "type": type})
 	else:
@@ -204,7 +208,7 @@ def save_fields_layout(doctype: str, type: str, layout: str):
 			"layout": layout,
 		}
 	)
-	doc.save(ignore_permissions=True)
+	doc.save()
 
 	return doc.layout
 

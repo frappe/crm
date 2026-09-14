@@ -103,7 +103,7 @@ export function validateSlaData(key, skipConditionCheck = false) {
     switch (field) {
       case 'sla_name':
         if (!slaData.value.sla_name?.trim()) {
-          slaDataErrors.value.sla_name = __('SLA Policy Name is required')
+          slaDataErrors.value.sla_name = __('SLA policy name is required')
         } else {
           slaDataErrors.value.sla_name = ''
         }
@@ -122,7 +122,7 @@ export function validateSlaData(key, skipConditionCheck = false) {
             const priorityNum = index + 1
             if (!priority.priority?.trim()) {
               prioritiesError.push(
-                __('Priority {0}: Priority Name is required', [priorityNum]),
+                __('Priority {0}: priority name is required', [priorityNum]),
               )
             }
             if (
@@ -130,7 +130,7 @@ export function validateSlaData(key, skipConditionCheck = false) {
               priority.first_response_time == 0
             ) {
               prioritiesError.push(
-                __('Priority {0}: Response Time is required', [priorityNum]),
+                __('Priority {0}: response time is required', [priorityNum]),
               )
             }
           })
@@ -158,7 +158,7 @@ export function validateSlaData(key, skipConditionCheck = false) {
           new Date(slaData.value.end_date) < new Date(slaData.value.start_date)
         ) {
           slaDataErrors.value.start_date = __(
-            'Start Date cannot be after end date',
+            'Start date cannot be after end date',
           )
         } else {
           slaDataErrors.value.start_date = ''
@@ -170,7 +170,7 @@ export function validateSlaData(key, skipConditionCheck = false) {
           new Date(slaData.value.end_date) < new Date(slaData.value.start_date)
         ) {
           slaDataErrors.value.end_date = __(
-            'End Date cannot be before start date',
+            'End date cannot be before start date',
           )
         } else {
           slaDataErrors.value.end_date = ''
@@ -202,7 +202,7 @@ export function validateSlaData(key, skipConditionCheck = false) {
 
         if (!validWorkdays?.length) {
           slaDataErrors.value.working_hours = __(
-            'At least one valid Workday with Workday, Start Time, and End Time is required',
+            'At least one valid workday with a day, start time, and end time is required',
           )
         } else {
           // Check for duplicate workdays
@@ -258,7 +258,7 @@ export function validateSlaData(key, skipConditionCheck = false) {
 
           if (invalidTimeRanges.length > 0) {
             slaDataErrors.value.working_hours = __(
-              `End Time must be after Start Time for: {0}`,
+              `End time must be after start time for: {0}`,
               [invalidTimeRanges.join(', ')],
             )
           } else {

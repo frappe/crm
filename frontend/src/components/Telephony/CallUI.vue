@@ -2,19 +2,17 @@
   <TwilioCallUI ref="twilio" />
   <ExotelCallUI ref="exotel" />
   <Dialog
-    v-model="show"
-    :options="{
-      title: __('Make Call'),
-      actions: [
-        {
-          label: __('Call using {0}', [callMedium]),
-          variant: 'solid',
-          onClick: makeCallUsing,
-        },
-      ],
-    }"
+    v-model:open="show"
+    :title="__('Make Call')"
+    :actions="[
+      {
+        label: __('Call using {0}', [callMedium]),
+        variant: 'solid',
+        onClick: makeCallUsing,
+      },
+    ]"
   >
-    <template #body-content>
+    <template #default>
       <div class="flex flex-col gap-4">
         <FormControl
           v-model="mobileNumber"
@@ -47,16 +45,13 @@
 <script setup>
 import TwilioCallUI from '@/components/Telephony/TwilioCallUI.vue'
 import ExotelCallUI from '@/components/Telephony/ExotelCallUI.vue'
-import {
-  twilioEnabled,
-  exotelEnabled,
-  defaultCallingMedium,
-} from '@/composables/settings'
+import { defaultCallingMedium, useTelephony } from '@/composables/telephony'
 import { globalStore } from '@/stores/global'
 import { FormControl, call, toast } from 'frappe-ui'
-import { nextTick, ref, watch } from 'vue'
+import { computed, nextTick, ref, watch } from 'vue'
 
 const { setMakeCall } = globalStore()
+const { isEnabled, isAnyEnabled } = useTelephony()
 
 const twilio = ref(null)
 const exotel = ref(null)
@@ -67,18 +62,21 @@ const isDefaultMedium = ref(false)
 const show = ref(false)
 const mobileNumber = ref('')
 
+const enabledIntegrations = computed(() =>
+  [
+    { key: 'twilio', label: 'Twilio', ref: twilio },
+    { key: 'exotel', label: 'Exotel', ref: exotel },
+  ].filter(({ key }) => isEnabled(key)),
+)
+
 function makeCall(number) {
-  if (
-    twilioEnabled.value &&
-    exotelEnabled.value &&
-    !defaultCallingMedium.value
-  ) {
+  if (enabledIntegrations.value.length > 1 && !defaultCallingMedium.value) {
     mobileNumber.value = number
     show.value = true
     return
   }
 
-  callMedium.value = twilioEnabled.value ? 'Twilio' : 'Exotel'
+  callMedium.value = enabledIntegrations.value[0]?.label ?? 'Twilio'
   if (defaultCallingMedium.value) {
     callMedium.value = defaultCallingMedium.value
   }
@@ -114,21 +112,20 @@ async function setDefaultCallingMedium() {
 }
 
 watch(
-  [twilioEnabled, exotelEnabled],
-  ([twilioValue, exotelValue]) =>
+  isAnyEnabled,
+  () =>
     nextTick(() => {
-      if (twilioValue) {
-        twilio.value.setup()
-        callMedium.value = 'Twilio'
+      for (const {
+        key,
+        label,
+        ref: integrationRef,
+      } of enabledIntegrations.value) {
+        integrationRef.value.setup()
+        callMedium.value = label
       }
 
-      if (exotelValue) {
-        exotel.value.setup()
-        callMedium.value = 'Exotel'
-      }
-
-      if (twilioValue || exotelValue) {
-        callMedium.value = 'Twilio'
+      if (isAnyEnabled.value) {
+        callMedium.value = enabledIntegrations.value[0]?.label ?? 'Twilio'
         setMakeCall(makeCall)
       }
     }),

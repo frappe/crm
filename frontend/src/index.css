@@ -22,3 +22,10 @@
 			prose-th:relative;
   }
 }
+
+/* Reka menu content (e.g. the kebab menu inside PrimaryDropdown) portals to
+   <body> without a z-index, so it falls behind frappe-ui Popover content
+   (z-[100]). Lift menus above popovers so nested menus stay visible. */
+.menu-content {
+  z-index: 101;
+}

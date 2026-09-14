@@ -1,9 +1,9 @@
 <template>
   <div
     v-if="title !== 'Data'"
-    class="mx-4 my-3 flex items-center justify-between text-lg font-medium sm:mx-10 sm:mb-4 sm:mt-8"
+    class="flex items-center justify-between text-lg-medium sm:mx-10 sm:mb-4 sm:mt-8"
   >
-    <div class="flex h-8 items-center text-xl font-semibold text-ink-gray-8">
+    <div class="flex h-8 items-center text-2xl-semibold text-ink-gray-8">
       {{ __(title) }}
     </div>
     <Button
@@ -25,16 +25,6 @@
       variant="solid"
       :options="callActions"
     />
-    <Button
-      v-else-if="title == 'Events'"
-      variant="solid"
-      @click="modalRef.showEvent()"
-    >
-      <template #prefix>
-        <EventIcon class="h-4 w-4" />
-      </template>
-      <span>{{ __('Schedule an Event') }}</span>
-    </Button>
     <Button
       v-else-if="title == 'Notes'"
       variant="solid"
@@ -85,14 +75,14 @@
 import MultiActionButton from '@/components/MultiActionButton.vue'
 import Email2Icon from '@/components/Icons/Email2Icon.vue'
 import CommentIcon from '@/components/Icons/CommentIcon.vue'
-import EventIcon from '@/components/Icons/EventIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import AttachmentIcon from '@/components/Icons/AttachmentIcon.vue'
 import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import { globalStore } from '@/stores/global'
-import { whatsappEnabled, callEnabled } from '@/composables/settings'
+import { whatsappEnabled } from '@/composables/whatsapp'
+import { callEnabled } from '@/composables/telephony'
 import { Dropdown } from 'frappe-ui'
 import { computed, h } from 'vue'
 
@@ -124,11 +114,6 @@ const defaultActions = computed(() => {
       icon: h(CommentIcon, { class: 'h-4 w-4' }),
       label: __('Comment'),
       onClick: () => (emailBox.value.showComment = true),
-    },
-    {
-      icon: h(EventIcon, { class: 'h-4 w-4' }),
-      label: __('Schedule an Event'),
-      onClick: () => props.modalRef.showEvent(),
     },
     {
       icon: h(PhoneIcon, { class: 'h-4 w-4' }),

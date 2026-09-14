@@ -9,7 +9,9 @@
 **Simplify Sales, Amplify Relationships**
 
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/frappe/crm)](https://github.com/frappe/crm/releases)
-
+[![Frontend](https://github.com/frappe/crm/actions/workflows/frontend-tests.yml/badge.svg)](https://github.com/frappe/crm/actions/workflows/frontend-tests.yml)
+[![Migration](https://github.com/frappe/crm/actions/workflows/migration-test.yml/badge.svg)](https://github.com/frappe/crm/actions/workflows/migration-test.yml)
+[![Server](https://github.com/frappe/crm/actions/workflows/server-tests.yml/badge.svg)](https://github.com/frappe/crm/actions/workflows/server-tests.yml)
 <div>
     <picture>
         <source media="(prefers-color-scheme: dark)" srcset=".github/screenshots/FrappeCRMHeroImage.png">
@@ -17,7 +19,7 @@
     </picture>
 </div>
 
-[Live Demo](https://frappecrm-demo.frappe.cloud/api/method/crm.api.live_demo.login) - [Website](https://frappe.io/crm) - [Documentation](https://docs.frappe.io/crm)
+[Live Demo](https://frappecrm-demo.frappe.cloud/#login) - [Website](https://frappe.io/crm) - [Documentation](https://docs.frappe.io/crm)
 
 </div>
 

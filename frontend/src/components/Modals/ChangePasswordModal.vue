@@ -1,7 +1,18 @@
 <template>
-  <Dialog v-model="show" :options="{ title: __('Change Password') }">
-    <template #body-content>
+  <Dialog v-model:open="show" :title="__('Change Password')">
+    <template #default>
       <div class="flex flex-col gap-4">
+        <div>
+          <Password
+            v-model="currentPassword"
+            :placeholder="__('Current Password')"
+            maxLength="50"
+          >
+            <template #prefix>
+              <LockKeyhole class="size-4 text-ink-gray-4" />
+            </template>
+          </Password>
+        </div>
         <div>
           <Password
             v-model="newPassword"
@@ -34,8 +45,8 @@
             class="text-sm text-ink-gray-5"
             :class="
               confirmPasswordMessage === __('Passwords match')
-                ? 'text-ink-green-3'
-                : 'text-ink-red-3'
+                ? 'text-ink-green-6'
+                : 'text-ink-red-6'
             "
           >
             {{ confirmPasswordMessage }}
@@ -46,6 +57,7 @@
           variant="solid"
           :label="__('Update')"
           :disabled="
+            !currentPassword ||
             !newPassword ||
             !confirmPassword ||
             newPassword !== confirmPassword ||
@@ -63,34 +75,35 @@ import LockKeyhole from '~icons/lucide/lock-keyhole'
 import { Dialog, toast, createResource, Password } from 'frappe-ui'
 import { useOnboarding } from 'frappe-ui/frappe'
 import { ref, watch } from 'vue'
-import { usersStore } from '@/stores/users'
 
 const show = defineModel({ type: Boolean })
 
-const { getUser } = usersStore()
 const { updateOnboardingStep } = useOnboarding('frappecrm')
 
+const currentPassword = ref('')
 const newPassword = ref('')
 const confirmPassword = ref('')
 const confirmPasswordMessage = ref('')
 
 const updatePassword = createResource({
-  url: 'frappe.client.set_value',
+  url: 'crm.api.user.change_password',
   makeParams() {
     return {
-      doctype: 'User',
-      name: getUser().name,
-      fieldname: 'new_password',
-      value: newPassword.value,
+      old_password: currentPassword.value,
+      new_password: newPassword.value,
     }
   },
   onSuccess: () => {
     updateOnboardingStep('setup_your_password')
     toast.success(__('Password updated successfully'))
     show.value = false
+    currentPassword.value = ''
     newPassword.value = ''
     confirmPassword.value = ''
     confirmPasswordMessage.value = ''
+  },
+  onError: (err) => {
+    toast.error(err.messages?.[0] || __('Failed to update password'))
   },
 })
 
@@ -99,13 +112,24 @@ function isStrongPassword(password) {
   return regex.test(password)
 }
 
-watch([newPassword, confirmPassword], () => {
+watch([currentPassword, newPassword, confirmPassword], () => {
   confirmPasswordMessage.value = ''
 
-  if (newPassword.value.length < 8) {
+  if (
+    currentPassword.value &&
+    newPassword.value &&
+    currentPassword.value === newPassword.value
+  ) {
+    confirmPasswordMessage.value = __(
+      'New password cannot be the same as current password',
+    )
+    return
+  }
+
+  if (newPassword.value && newPassword.value.length < 8) {
     confirmPasswordMessage.value = __('Password must be at least 8 characters')
     return
-  } else if (!isStrongPassword(newPassword.value)) {
+  } else if (newPassword.value && !isStrongPassword(newPassword.value)) {
     confirmPasswordMessage.value = __(
       'Password must contain lowercase, uppercase, number, and symbol',
     )

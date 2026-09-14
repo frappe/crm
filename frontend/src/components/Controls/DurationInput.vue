@@ -12,7 +12,7 @@
   <p
     v-if="errorMessage || attrs.description"
     class="mt-1.5"
-    :class="[sizeClass, errorMessage ? 'text-ink-red-3' : 'text-ink-gray-5']"
+    :class="[sizeClass, errorMessage ? 'text-ink-red-6' : 'text-ink-gray-5']"
   >
     {{ errorMessage || attrs.description }}
   </p>

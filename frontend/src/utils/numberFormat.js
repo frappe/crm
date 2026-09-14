@@ -159,6 +159,13 @@ export function formatNumber(v, format, decimals) {
   return (isNegative ? '-' : '') + part[0] + part[1]
 }
 
+export function formatCompactNumber(value, maximumFractionDigits = 1) {
+  return new Intl.NumberFormat('en-US', {
+    notation: 'compact',
+    maximumFractionDigits,
+  }).format(flt(value))
+}
+
 export function formatCurrency(value, format, currency = 'USD', precision = 2) {
   value = value == null || value === '' ? 0 : value
 
