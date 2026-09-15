@@ -1,16 +1,8 @@
 # Copyright (c) 2023, Frappe Technologies Pvt. Ltd. and Contributors
 # See license.txt
 
-<<<<<<< HEAD
-# import frappe
-from crm.tests import CRMTestCase as FrappeTestCase
-
-
-class TestCRMViewSettings(FrappeTestCase):
-	pass
-=======
 import frappe
-from frappe.tests import IntegrationTestCase
+from crm.tests import CRMTestCase as FrappeTestCase
 
 from crm.fcrm.doctype.crm_view_settings.crm_view_settings import set_as_default
 
@@ -52,4 +44,3 @@ class TestCRMViewSettings(IntegrationTestCase):
 		set_as_default(name=leads.name)
 
 		self.assertEqual(frappe.db.get_value("CRM View Settings", deals.name, "is_default"), 1)
->>>>>>> 3f7fa6c (test: cover home default view priority and name-only set_as_default)
