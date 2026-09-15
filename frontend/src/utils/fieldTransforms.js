@@ -54,7 +54,7 @@ export function processField(rawField, options = {}) {
   // 4. Select options: string → array
   if (field.fieldtype === 'Select' && typeof field.options === 'string') {
     field.options = field.options.split('\n').map((option) => ({
-      label: option,
+      label: __(option),
       value: option,
     }))
 

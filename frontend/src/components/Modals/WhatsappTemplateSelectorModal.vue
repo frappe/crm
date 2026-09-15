@@ -42,13 +42,14 @@
           >
             {{ template.name }}
           </div>
-          <TextEditor
+          <!-- content is passed through sanitizeHTML() (DOMPurify) before rendering, so v-html is safe here -->
+          <!-- eslint-disable vue/no-v-html -->
+          <div
             v-if="template.template"
-            :content="template.template"
-            :editable="false"
-            editor-class="!prose-sm max-w-none !text-sm text-ink-gray-5 focus:outline-none"
-            class="flex-1 overflow-hidden"
+            class="prose-f prose-sm max-w-none !text-sm text-ink-gray-5 flex-1 overflow-hidden"
+            v-html="sanitizeHTML(template.template)"
           />
+          <!-- eslint-enable vue/no-v-html -->
         </div>
       </div>
       <div v-else class="mt-2">
@@ -68,8 +69,9 @@
 </template>
 
 <script setup>
-import { TextEditor, createListResource } from 'frappe-ui'
+import { createListResource } from 'frappe-ui'
 import { ref, computed, nextTick, watch, onMounted } from 'vue'
+import { sanitizeHTML } from '@/utils'
 
 const props = defineProps({
   doctype: { type: String, default: '' },

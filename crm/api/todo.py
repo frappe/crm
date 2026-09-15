@@ -4,6 +4,19 @@ from frappe import _
 from crm.fcrm.doctype.crm_notification.crm_notification import notify_user
 
 
+def validate(doc, method):
+	"""Require write access when directly assigning a CRM lead or deal."""
+	# assign_to and assignment rules insert with ignore_permissions after their
+	# own permission check.
+	if (
+		doc.is_new()
+		and doc.reference_type in ["CRM Lead", "CRM Deal"]
+		and doc.reference_name
+		and not doc.flags.ignore_permissions
+	):
+		frappe.get_doc(doc.reference_type, doc.reference_name).check_permission("write")
+
+
 def after_insert(doc, method):
 	if doc.reference_type in ["CRM Lead", "CRM Deal"] and doc.reference_name and doc.allocated_to:
 		fieldname = "lead_owner" if doc.reference_type == "CRM Lead" else "deal_owner"

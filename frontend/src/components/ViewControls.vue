@@ -4,13 +4,29 @@
     class="flex flex-col justify-between gap-2 sm:px-5 px-3 py-4"
   >
     <div class="flex flex-col gap-2">
-      <div class="flex items-center justify-between gap-2 overflow-x-auto">
-        <div class="flex gap-2">
-          <Filter
-            v-model="list"
-            :doctype="doctype"
-            :default_filters="filters"
-            @update="updateFilter"
+      <div class="flex items-center justify-between gap-2">
+        <FadedScrollableDiv
+          class="flex flex-1 items-center overflow-x-auto -ml-1 h-9"
+          orientation="horizontal"
+        >
+          <div
+            v-for="filter in quickFilterList"
+            :key="filter.fieldname"
+            class="m-1 min-w-36"
+          >
+            <QuickFilterField
+              :filter="filter"
+              @applyQuickFilter="(f, v) => applyQuickFilter(f, v)"
+            />
+          </div>
+        </FadedScrollableDiv>
+        <div class="-ml-2 h-[70%] border-l" />
+        <div class="flex shrink-0 gap-2">
+          <Button
+            :tooltip="__('Refresh')"
+            icon="lucide-refresh-ccw"
+            :loading="isLoading"
+            @click="reload()"
           />
           <GroupBy
             v-if="route.params.viewType === 'group_by'"
@@ -19,14 +35,11 @@
             :hideLabel="isMobileView"
             @update="updateGroupBy"
           />
-        </div>
-
-        <div class="flex gap-2">
-          <Button
-            :tooltip="__('Refresh')"
-            icon="lucide-refresh-ccw"
-            :loading="isLoading"
-            @click="reload()"
+          <Filter
+            v-model="list"
+            :doctype="doctype"
+            :default_filters="filters"
+            @update="updateFilter"
           />
           <SortBy
             v-if="route.params.viewType !== 'kanban'"
@@ -358,7 +371,8 @@ const props = defineProps({
 const { brand } = getSettings()
 const { $dialog } = globalStore()
 const { reload: reloadView, getDefaultView, getView } = viewsStore()
-const { isManager } = usersStore()
+
+const { isManager, getUser } = usersStore()
 
 const list = defineModel({ type: Object, default: () => ({}) })
 const loadMore = defineModel('loadMore', { type: Boolean })
@@ -571,11 +585,32 @@ function updateSelections(selections) {
 
 async function exportRows() {
   let fields = JSON.stringify(list.value.data.columns.map((f) => f.key))
-
-  let filters = JSON.stringify({
+  const userId = getUser()?.name
+  let filters = {
     ...props.filters,
     ...list.value.params.filters,
-  })
+  }
+
+  // Only resolve @me placeholders when we know the current user; otherwise
+  // leave filters untouched rather than emitting undefined / "%undefined%".
+  if (userId) {
+    Object.keys(filters).forEach((key) => {
+      const value = filters[key]
+
+      // Handle direct filter format: { owner: "@me" }
+      if (value === '@me') {
+        filters[key] = userId
+        return
+      }
+      if (!Array.isArray(value)) return
+      // Handle all operator-based filter format: { owner: ["=", "@me"], _assign: ["LIKE", "%@me%"] }
+      filters[key] = value.map((entry) =>
+        entry === '@me' ? userId : entry === '%@me%' ? `%${userId}%` : entry,
+      )
+    })
+  }
+
+  filters = JSON.stringify(filters)
 
   let order_by = list.value.params.order_by
   let page_length = list.value.params.page_length
@@ -1174,7 +1209,7 @@ const viewActions = (view, close) => {
 }
 
 function isDefaultView(v) {
-  let defaultView = getDefaultView()
+  let defaultView = getDefaultView(route.name)
 
   if (!defaultView || !v.name) return false
 

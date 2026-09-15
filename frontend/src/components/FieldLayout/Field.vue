@@ -154,7 +154,7 @@
     <Combobox
       v-else-if="field.fieldtype === 'Autocomplete'"
       v-model="data[field.fieldname]"
-      :options="getOptions(field.options)"
+      :options="getAutocompleteOptions(field)"
       :placeholder="getPlaceholder(field)"
       :disabled="Boolean(field.disabled)"
       @update:modelValue="(v) => fieldChange(v, field, data)"
@@ -289,6 +289,20 @@
       :disabled="Boolean(field.disabled)"
       @change="(v) => fieldChange(v, field)"
     />
+    <FormControl
+      v-else-if="field.options === 'Phone'"
+      type="text"
+      :placeholder="getPlaceholder(field)"
+      :value="data[field.fieldname]"
+      :disabled="Boolean(field.disabled)"
+      :description="field.description"
+      :error="
+        Boolean(data[field.fieldname]) && !validatePhone(data[field.fieldname])
+          ? __('Enter a valid phone number')
+          : undefined
+      "
+      @change="fieldChange($event.target.value, field)"
+    />
     <div v-else class="flex items-center gap-1">
       <FormControl
         class="flex-1"
@@ -297,13 +311,6 @@
         :value="data[field.fieldname]"
         :disabled="Boolean(field.disabled)"
         :description="field.description"
-        :error="
-          field.options === 'Phone' &&
-          Boolean(data[field.fieldname]) &&
-          !validatePhone(data[field.fieldname])
-            ? __('Enter a valid phone number')
-            : undefined
-        "
         @change="fieldChange($event.target.value, field)"
       />
       <ArrowUpRightIcon
@@ -496,7 +503,7 @@ const field = computed(() => {
 
   if (field.fieldtype == 'Select' && typeof field.options === 'string') {
     field.options = field.options.split('\n').map((option) => {
-      return { label: option, value: option }
+      return { label: __(option), value: option }
     })
 
     if (field.options[0].value !== '' && !field.reqd) {
@@ -609,11 +616,40 @@ const getOptions = (options) => {
     return options
   } else if (typeof options === 'string') {
     return options.split('\n').map((option) => {
-      return { label: option, value: option }
+      return { label: __(option), value: option }
     })
   } else {
     return []
   }
+}
+
+const getAutocompleteOptions = (field) => {
+  const options = getOptions(field.options)
+  return [
+    ...options,
+    {
+      type: 'custom',
+      key: '__custom_value',
+      label: __('Use custom value'),
+      slots: {
+        label: ({ query }) => __('Use "{0}"', [query.trim()]),
+      },
+      condition: ({ query }) => {
+        const q = (query || '').trim()
+        if (!q) return false
+        return !options.some((opt) => {
+          const isObject = opt !== null && typeof opt === 'object'
+          const value = isObject ? opt.value : opt
+          const label = isObject ? opt.label : opt
+          return String(value ?? '') === q || String(label ?? '') === q
+        })
+      },
+      onClick: ({ query }) => {
+        data.value[field.fieldname] = query.trim()
+        fieldChange(query.trim(), field)
+      },
+    },
+  ]
 }
 
 function isExternalUrl(value) {

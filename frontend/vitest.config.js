@@ -7,7 +7,7 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'happy-dom',
-    root: __dirname,
+    root: import.meta.dirname,
     setupFiles: ['./tests/setup.js'],
     include: ['tests/**/*.test.js', 'src/**/*.test.js'],
     coverage: {
@@ -24,7 +24,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, 'src'),
+      '@': path.resolve(import.meta.dirname, 'src'),
     },
   },
 })

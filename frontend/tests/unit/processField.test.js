@@ -51,6 +51,28 @@ describe('processField', () => {
     ])
   })
 
+  it('translates Select option labels but keeps raw values', () => {
+    const original = globalThis.__
+    const dictionary = { Billing: 'Rozliczeniowy', Shipping: 'Wysyłkowy' }
+    globalThis.__ = (msg) => dictionary[msg] || msg
+    try {
+      const raw = {
+        fieldname: 'address_type',
+        fieldtype: 'Select',
+        options: 'Billing\nShipping\nOffice',
+        reqd: 1,
+      }
+      const result = processField(raw)
+      expect(result.options).toEqual([
+        { label: 'Rozliczeniowy', value: 'Billing' },
+        { label: 'Wysyłkowy', value: 'Shipping' },
+        { label: 'Office', value: 'Office' },
+      ])
+    } finally {
+      globalThis.__ = original
+    }
+  })
+
   it('prepends blank option for non-required Select', () => {
     const raw = {
       fieldname: 'priority',

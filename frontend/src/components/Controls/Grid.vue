@@ -785,7 +785,7 @@ const getOptions = (options) => {
     return options
   } else if (typeof options === 'string') {
     return options.split('\n').map((option) => {
-      return { label: option, value: option }
+      return { label: __(option), value: option }
     })
   } else {
     return []

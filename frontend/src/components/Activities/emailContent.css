@@ -1,0 +1,126 @@
+@config '../../../tailwind.email.config.js';
+
+@tailwind base;
+@tailwind components;
+
+@layer components {
+  .prose-f {
+    @apply break-all
+      max-w-none
+      prose
+      prose-code:break-all
+      prose-code:whitespace-pre-wrap
+      prose-img:border
+      prose-img:rounded-lg
+      prose-sm
+      prose-table:table-fixed
+      prose-td:border
+      prose-td:border-outline-gray-2
+      prose-td:p-2
+      prose-td:relative
+      prose-th:bg-surface-gray-2
+      prose-th:border
+      prose-th:border-outline-gray-2
+      prose-th:p-2
+      prose-th:relative;
+  }
+}
+
+:root {
+  --bg-surface-gray-3: #ededed;
+  --bg-surface-gray-4: #e2e2e2;
+}
+
+[data-theme='dark'] {
+  --bg-surface-gray-3: #343434;
+  --bg-surface-gray-4: #424242;
+}
+
+.replied-content .collapse {
+  display: flex;
+  visibility: visible;
+  width: 23px;
+  height: 12px;
+  margin: 10px 0;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+  background: var(--bg-surface-gray-3);
+  font-size: larger;
+  font-weight: 700;
+  line-height: 0.1;
+}
+
+.replied-content .collapse:hover {
+  background: var(--bg-surface-gray-4);
+}
+
+.replied-content .collapse + input,
+.replied-content .collapse + input + div {
+  display: none;
+}
+
+.replied-content .collapse + input:checked + div {
+  display: block;
+}
+
+.email-content {
+  word-break: break-word;
+}
+
+.email-content
+  :is(:where(table):not(:where([class~='not-prose'], [class~='not-prose'] *))) {
+  table-layout: auto;
+}
+
+.email-content
+  :where(table):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+  width: unset;
+  margin-top: unset;
+  margin-bottom: unset;
+  table-layout: auto;
+  text-align: unset;
+  font-size: unset;
+  line-height: unset;
+}
+
+.email-content
+  :where(tbody tr):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+  border-bottom-width: 0;
+  border-bottom-color: transparent;
+}
+
+.email-content
+  :is(:where(td):not(:where([class~='not-prose'], [class~='not-prose'] *))) {
+  position: unset;
+  border-width: 0;
+  border-color: transparent;
+  padding: 0;
+}
+
+.email-content
+  :where(tbody td):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+  vertical-align: revert;
+}
+
+.email-content
+  :is(:where(img):not(:where([class~='not-prose'], [class~='not-prose'] *))) {
+  border-width: 0;
+}
+
+.email-content
+  :where(img):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+  margin: 0;
+}
+
+.email-content
+  :where(blockquote p:first-of-type):not(
+    :where([class~='not-prose'], [class~='not-prose'] *)
+  )::before,
+.email-content
+  :where(blockquote p:last-of-type):not(
+    :where([class~='not-prose'], [class~='not-prose'] *)
+  )::after {
+  content: none;
+}
