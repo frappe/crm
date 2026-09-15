@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2026-09-06 13:03+0000\n"
-"PO-Revision-Date: 2026-09-07 19:56\n"
+"POT-Creation-Date: 2026-09-13 13:52+0000\n"
+"PO-Revision-Date: 2026-09-15 21:32\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Mongolian\n"
 "MIME-Version: 1.0\n"
@@ -18,17 +18,13 @@ msgstr ""
 "X-Crowdin-File-ID: 97\n"
 "Language: mn_MN\n"
 
-#: frontend/src/components/ViewControls.vue:1260
+#: frontend/src/components/ViewControls.vue:1273
 msgid " (New)"
 msgstr " (Шинэ)"
 
 #: frontend/src/components/Filter.vue:629
 msgid "%John%"
 msgstr "%John%"
-
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:66
-msgid "(No Title)"
-msgstr "(Гарчиггүй)"
 
 #: frontend/src/components/Filter.vue:619
 msgid "01/01/2022 to 01/31/2022"
@@ -38,21 +34,9 @@ msgstr "2022/01/01 - 2022/01/31 хүртэл"
 msgid "01/04/2024 11:30 PM"
 msgstr "2024/04/01 23:30"
 
-#: frontend/src/components/Calendar/EventNotifications.vue:39
-msgid "08:00 AM"
-msgstr "Өглөөний 08:00 цагт"
-
-#: frontend/src/components/Settings/CalendarSettings.vue:226
-msgid "08:00 pm"
-msgstr "20:00 цагт"
-
 #: frontend/src/utils/index.js:204
 msgid "1 hour ago"
 msgstr "1 цагийн өмнө"
-
-#: frontend/src/composables/event.js:207
-msgid "1 hr"
-msgstr "1 цаг"
 
 #: frontend/src/utils/index.js:200
 msgid "1 minute ago"
@@ -177,13 +161,9 @@ msgstr "Нэг хэсэг {0} хүртэлх баганатай байж бол�
 msgid "A substring (default) or a regular expression matched against the rule's match scope."
 msgstr "Дэд тэмдэгт мөр (анхдагч) эсвэл дүрмийн тохирлын хүрээтэй таарсан ердийн илэрхийлэл."
 
-#: crm/fcrm/doctype/crm_call_log/crm_call_log.py:257
+#: crm/fcrm/doctype/crm_call_log/crm_call_log.py:265
 msgid "A valid call log is required."
 msgstr "Хүчинтэй дуудлагын бүртгэл шаардлагатай."
-
-#: crm/domain_enrichment/api.py:112
-msgid "A website is required."
-msgstr "Вэбсайт шаардлагатай."
 
 #: frontend/src/components/Settings/Hierarchy/useDragDrop.js:69
 msgid "A {0} cannot report to a {1}"
@@ -300,18 +280,18 @@ msgstr "Дансны SID"
 msgid "Account name is required"
 msgstr "Дансны нэр шаардлагатай"
 
-#: frontend/src/components/Settings/Settings.vue:181
+#: frontend/src/components/Settings/Settings.vue:176
 msgid "Accounts"
 msgstr "Дансууд"
 
 #: frontend/src/components/CustomActions.vue:76
-#: frontend/src/components/ViewControls.vue:764
-#: frontend/src/components/ViewControls.vue:1152
+#: frontend/src/components/ViewControls.vue:777
+#: frontend/src/components/ViewControls.vue:1165
 msgid "Actions"
 msgstr "Үйлдлүүд"
 
-#: frontend/src/pages/Deal.vue:580 frontend/src/pages/Lead.vue:432
-#: frontend/src/pages/MobileDeal.vue:446 frontend/src/pages/MobileLead.vue:294
+#: frontend/src/pages/Deal.vue:579 frontend/src/pages/Lead.vue:442
+#: frontend/src/pages/MobileDeal.vue:446 frontend/src/pages/MobileLead.vue:306
 msgid "Activity"
 msgstr "Үйл ажиллагаа"
 
@@ -338,10 +318,6 @@ msgstr "Бүртгэл нэмэх"
 #: frontend/src/components/Settings/AssignmentRules/AssigneeSearch.vue:8
 msgid "Add Assignee"
 msgstr "Даалгавар өгөгч нэмэх"
-
-#: frontend/src/components/Calendar/Attendee.vue:122
-msgid "Add Attendee"
-msgstr "Оролцогч нэмэх"
 
 #: crm/fcrm/doctype/crm_product/crm_product_list.js:3
 msgid "Add CRM Product"
@@ -373,14 +349,6 @@ msgstr "Нөхцөл нэмэх"
 msgid "Add Condition Group"
 msgstr "Нөхцөл байдлын бүлэг нэмэх"
 
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:388
-msgid "Add Description"
-msgstr "Тайлбар нэмэх"
-
-#: frontend/src/components/Modals/EventModal.vue:178
-msgid "Add Description."
-msgstr "Тодорхойлолт нэмэх."
-
 #: frontend/src/components/Settings/Profile/UserEmailSettings.vue:99
 msgid "Add Email"
 msgstr "Имэйл нэмэх"
@@ -399,18 +367,9 @@ msgid "Add Field"
 msgstr "Талбар нэмэх"
 
 #: frontend/src/components/Filter.vue:141
-#: frontend/src/components/ViewControls.vue:107
+#: frontend/src/components/ViewControls.vue:120
 msgid "Add Filter"
 msgstr "Шүүлтүүр нэмэх"
-
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:429
-msgid "Add Lead or Deal"
-msgstr "Лид эсвэл Хямдрал нэмэх"
-
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:377
-#: frontend/src/components/Modals/EventModal.vue:166
-msgid "Add Location"
-msgstr "Байршил нэмэх"
 
 #: frontend/src/pages/Contact.vue:352
 msgid "Add Mobile Number..."
@@ -419,14 +378,6 @@ msgstr "Гар утасны дугаар нэмэх..."
 #: frontend/src/components/Modals/CallLogDetailModal.vue:20
 msgid "Add Note"
 msgstr "Тэмдэглэл нэмэх"
-
-#: frontend/src/components/Calendar/EventNotifications.vue:67
-#: frontend/src/components/Calendar/EventNotifications.vue:128
-#: frontend/src/components/Calendar/EventNotifications.vue:232
-#: frontend/src/components/Settings/CalendarSettings.vue:143
-#: frontend/src/components/Settings/CalendarSettings.vue:243
-msgid "Add Notification"
-msgstr "Мэдэгдэл нэмэх"
 
 #: frontend/src/pages/Contact.vue:353
 msgid "Add Organization..."
@@ -536,7 +487,7 @@ msgstr "Эхний хариу үйлдэл гэх мэт дэмжлэгийн ч
 msgid "Add to Holidays"
 msgstr "Баярын өдрүүдэд нэмэх"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:555
+#: frontend/src/components/Layouts/AppSidebar.vue:548
 msgid "Add your first comment"
 msgstr "Анхны сэтгэгдлээ нэмнэ үү"
 
@@ -568,25 +519,15 @@ msgstr "Админ"
 msgid "Agent is unavailable to take the call, please call after some time."
 msgstr "Агент дуудлага авах боломжгүй тул хэсэг хугацааны дараа залгаарай."
 
-#: frontend/src/components/Notifications.vue:118
+#: frontend/src/components/Notifications.vue:112
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:75
 #: frontend/src/components/Settings/Users.vue:84
 msgid "All"
 msgstr "Бүгд"
 
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:294
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:939
-#: frontend/src/components/EventNotificationPopup.vue:93
-#: frontend/src/components/EventNotificationsArea.vue:188
-#: frontend/src/components/Modals/EventModal.vue:71
-#: frontend/src/composables/event.js:166
-msgid "All Day"
-msgstr "Бүтэн өдөржин"
-
 #. Label of the all_day_event_notifications (Table) field in DocType 'FCRM
 #. Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
-#: frontend/src/components/Settings/CalendarSettings.vue:158
 msgid "All Day Event Notifications"
 msgstr "Бүтэн өдрийн турш үйл явдлын мэдэгдэл"
 
@@ -631,7 +572,7 @@ msgstr "Дүн"
 msgid "Amount after discount"
 msgstr "Хөнгөлөлтийн дараах дүн"
 
-#: frontend/src/pages/Deal.vue:462
+#: frontend/src/pages/Deal.vue:461
 msgid "An Error Occurred"
 msgstr ""
 
@@ -642,7 +583,7 @@ msgstr "Анхдагчаар тохируулсан SLA-г идэвхгүй бо
 
 #: frontend/src/components/Modals/FieldLayoutDialog.vue:277
 #: frontend/src/data/script.js:78 frontend/src/data/script.js:79
-#: frontend/src/pages/Lead.vue:354
+#: frontend/src/pages/Lead.vue:364
 msgid "An error occurred"
 msgstr "Алдаа гарлаа"
 
@@ -673,8 +614,8 @@ msgstr "Мөн"
 msgid "Annual Revenue"
 msgstr "Жилийн орлого"
 
-#: frontend/src/components/Modals/DealModal.vue:246
-#: frontend/src/components/Modals/LeadModal.vue:190
+#: frontend/src/components/Modals/DealModal.vue:193
+#: frontend/src/components/Modals/LeadModal.vue:136
 msgid "Annual Revenue should be a number"
 msgstr "Жилийн орлого нь тоон үзүүлэлттэй байх ёстой"
 
@@ -733,11 +674,6 @@ msgstr "Та энэ хавсралтыг устгахдаа итгэлтэй б�
 msgid "Are you sure you want to delete this contact?"
 msgstr "Та энэ харилцагчийг устгахдаа итгэлтэй байна уу?"
 
-#: frontend/src/components/Modals/EventModal.vue:467
-#: frontend/src/pages/Calendar.vue:409
-msgid "Are you sure you want to delete this event?"
-msgstr "Та энэ үйл явдлыг устгахдаа итгэлтэй байна уу?"
-
 #: frontend/src/pages/MobileOrganization.vue:276
 msgid "Are you sure you want to delete this organization?"
 msgstr "Та энэ байгууллагыг устгахдаа итгэлтэй байна уу?"
@@ -749,10 +685,6 @@ msgstr "Та энэ ажлыг устгахдаа итгэлтэй байна у
 #: frontend/src/components/DeleteLinkedDocModal.vue:230
 msgid "Are you sure you want to delete {0} linked item(s)?"
 msgstr "Та {0} холбоотой зүйл(үүд)-ийг устгахдаа итгэлтэй байна уу?"
-
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:911
-msgid "Are you sure you want to discard unsaved changes to this event?"
-msgstr "Та энэ үйл явдлын хадгалагдаагүй өөрчлөлтүүдийг устгахдаа итгэлтэй байна уу?"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:571
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1022
@@ -841,13 +773,13 @@ msgstr "Даалгаврын өдрүүд шаардлагатай"
 
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
-#: frontend/src/components/Layouts/AppSidebar.vue:703
+#: frontend/src/components/Layouts/AppSidebar.vue:696
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRulesList.vue:16
 msgid "Assignment Rule"
 msgstr "Даалгаврын дүрэм"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRules.vue:7
-#: frontend/src/components/Settings/Settings.vue:197
+#: frontend/src/components/Settings/Settings.vue:192
 msgid "Assignment Rules"
 msgstr "Даалгаврын дүрэм"
 
@@ -902,7 +834,7 @@ msgstr "Хавсаргах"
 
 #: frontend/src/components/CommentBox.vue:49
 #: frontend/src/components/EmailEditor.vue:143 frontend/src/pages/Deal.vue:120
-#: frontend/src/pages/Lead.vue:167
+#: frontend/src/pages/Lead.vue:175
 msgid "Attach a File"
 msgstr "Файл хавсаргах"
 
@@ -910,18 +842,10 @@ msgstr "Файл хавсаргах"
 msgid "Attach file…"
 msgstr "Файл хавсаргах…"
 
-#: frontend/src/pages/Deal.vue:620 frontend/src/pages/Lead.vue:472
-#: frontend/src/pages/MobileDeal.vue:482 frontend/src/pages/MobileLead.vue:329
+#: frontend/src/pages/Deal.vue:614 frontend/src/pages/Lead.vue:477
+#: frontend/src/pages/MobileDeal.vue:482 frontend/src/pages/MobileLead.vue:341
 msgid "Attachments"
 msgstr "Хавсралтууд"
-
-#: frontend/src/components/Modals/EventModal.vue:120
-msgid "Attendees"
-msgstr "Оролцогчид"
-
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:868
-msgid "Attending status updated"
-msgstr "Ирцийн статусыг шинэчилсэн"
 
 #. Label of the auth_token (Password) field in DocType 'CRM Twilio Settings'
 #: crm/fcrm/doctype/crm_twilio_settings/crm_twilio_settings.json
@@ -949,8 +873,9 @@ msgstr "Урьдчилан тодорхойлсон нөхцөл дээр үнд
 
 #. Label of the auto_enrich (Check) field in DocType 'CRM Enrichment Settings'
 #: crm/domain_enrichment/doctype/crm_enrichment_settings/crm_enrichment_settings.json
-msgid "Auto-enrich new Organizations"
-msgstr "Автоматаар баяжуулах шинэ байгууллагууд"
+#: frontend/src/components/Settings/EnrichmentSettings.vue:43
+msgid "Auto-enrich new records"
+msgstr ""
 
 #. Description of the 'Condition' (Code) field in DocType 'CRM Service Level
 #. Agreement'
@@ -958,11 +883,11 @@ msgstr "Автоматаар баяжуулах шинэ байгууллагу�
 msgid "Auto-generated from the portal view — do not edit directly unless you know what you're doing! "
 msgstr "Портал харагдацаас автоматаар үүсгэгдсэн — юу хийж байгаагаа мэдэхгүй л бол шууд засварлаж болохгүй! "
 
-#. Description of the 'Auto-enrich new Organizations' (Check) field in DocType
-#. 'CRM Enrichment Settings'
+#. Description of the 'Auto-enrich new records' (Check) field in DocType 'CRM
+#. Enrichment Settings'
 #: crm/domain_enrichment/doctype/crm_enrichment_settings/crm_enrichment_settings.json
-msgid "Automatically enrich a CRM Organization in the background as soon as it is created (requires a website). When off, enrichment is triggered manually via the Enrich button."
-msgstr "CRM байгууллагыг үүсгэсэн даруйд нь автоматаар ар талд нь баяжуулна (вэбсайт шаардлагатай). Унтраалттай үед баяжуулах функцийг Баяжуулах товчлуураар гараар идэвхжүүлнэ."
+msgid "Automatically enrich a new CRM Lead, Deal or Organization in the background as soon as it is created (requires a website on the record). Only applies to the doctypes enabled above. When off, enrichment is triggered manually with the Enrich button."
+msgstr ""
 
 #. Description of the 'Reopen lead/deal on new communication' (Check) field in
 #. DocType 'FCRM Settings'
@@ -997,7 +922,7 @@ msgstr "Хямдралтай холбоотой бүтээгдэхүүний н�
 msgid "Automation"
 msgstr "Автоматжуулалт"
 
-#: frontend/src/components/Settings/Settings.vue:194
+#: frontend/src/components/Settings/Settings.vue:189
 msgid "Automation & Rules"
 msgstr "Автоматжуулалт ба дүрэм"
 
@@ -1105,7 +1030,7 @@ msgstr "Дутуу ажлын цаг"
 msgid "Basic settings for this form."
 msgstr "Энэ маягтын үндсэн тохиргоо."
 
-#: frontend/src/components/Activities/Activities.vue:766
+#: frontend/src/components/Activities/Activities.vue:764
 msgid "Be the first to add one."
 msgstr ""
 
@@ -1393,7 +1318,7 @@ msgstr "CRM Twilio тохиргоо"
 msgid "CRM View Settings"
 msgstr "CRM Харах Тохиргоо"
 
-#: frontend/src/components/ViewControls.vue:286
+#: frontend/src/components/ViewControls.vue:299
 msgid "CSV"
 msgstr "CSV"
 
@@ -1403,19 +1328,14 @@ msgstr "CSV импорт"
 
 #. Label of the calendar_tab (Tab Break) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
-#: frontend/src/components/Settings/Settings.vue:146
 msgid "Calendar"
 msgstr "Хуанли"
-
-#: frontend/src/components/Settings/CalendarSettings.vue:8
-msgid "Calendar Settings"
-msgstr "Календарийн тохиргоо"
 
 #: frontend/src/components/Modals/CallLogDetailModal.vue:9
 msgid "Call Details"
 msgstr "Дуудлагын дэлгэрэнгүй мэдээлэл"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:677
+#: frontend/src/components/Layouts/AppSidebar.vue:670
 msgid "Call Log"
 msgstr "Дуудлагын бүртгэл"
 
@@ -1437,10 +1357,6 @@ msgstr "Дуудлагын жагсаалт олдсонгүй"
 msgid "Call using {0}"
 msgstr "{0} ашиглан залгах"
 
-#: frontend/src/components/Modals/EventModal.vue:63
-msgid "Call with John Doe"
-msgstr "Жон Доутай утсаар холбогдоно уу"
-
 #. Label of the caller (Link) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 msgid "Caller"
@@ -1455,8 +1371,8 @@ msgstr "Дунд түвшинг дуудаж байна"
 msgid "Calling..."
 msgstr "Залгаж байна..."
 
-#: frontend/src/pages/Deal.vue:605 frontend/src/pages/Lead.vue:457
-#: frontend/src/pages/MobileDeal.vue:466 frontend/src/pages/MobileLead.vue:314
+#: frontend/src/pages/Deal.vue:599 frontend/src/pages/Lead.vue:462
+#: frontend/src/pages/MobileDeal.vue:466 frontend/src/pages/MobileLead.vue:326
 msgid "Calls"
 msgstr "Дуудлага"
 
@@ -1470,20 +1386,18 @@ msgstr "Эх сурвалжгүйгээр үүнийг дахин синк хи�
 
 #: frontend/src/components/Activities/CommentArea.vue:40
 #: frontend/src/components/BulkDeleteLinkedDocModal.vue:82
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:916
 #: frontend/src/components/ColumnSettings.vue:123
 #: frontend/src/components/Controls/GeolocationControl.vue:60
 #: frontend/src/components/Dashboard/AddChartModal.vue:22
 #: frontend/src/components/DeleteLinkedDocModal.vue:119
 #: frontend/src/components/Modals/AssignmentModal.vue:74
-#: frontend/src/components/Modals/EventModal.vue:206
 #: frontend/src/components/Modals/LostReasonModal.vue:44
 #: frontend/src/components/PrimaryDropdownItem.vue:77
 #: frontend/src/components/Settings/Sla/EditResponseResolutionModal.vue:48
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:75
 #: frontend/src/components/Telephony/TwilioCallUI.vue:73
-#: frontend/src/components/ViewControls.vue:57
-#: frontend/src/components/ViewControls.vue:154
+#: frontend/src/components/ViewControls.vue:70
+#: frontend/src/components/ViewControls.vue:167
 #: frontend/src/pages/Dashboard.vue:32
 msgid "Cancel"
 msgstr "Цуцлах"
@@ -1502,6 +1416,14 @@ msgstr "Энэ үүргийг оноож чадахгүй байна"
 #: frontend/src/components/Settings/Users.vue:123
 msgid "Cannot change role of user with Admin access"
 msgstr "Админ хандалттай хэрэглэгчийн үүргийг өөрчлөх боломжгүй"
+
+#: crm/fcrm/doctype/crm_lead/crm_lead.py:538
+msgid "Cannot convert a lead with status {0}"
+msgstr ""
+
+#: frontend/src/pages/Lead.vue:45 frontend/src/pages/MobileLead.vue:55
+msgid "Cannot convert a lost lead to deal"
+msgstr ""
 
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.py:70
 msgid "Cannot delete standard items {0}"
@@ -1539,7 +1461,7 @@ msgstr "Вэбсайт дээрээ оруулсан олон нийтийн м�
 msgid "Capture my first lead"
 msgstr "Миний анхны тэргүүлэгчийг авах"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:682
+#: frontend/src/components/Layouts/AppSidebar.vue:675
 msgid "Capturing Leads"
 msgstr "Лийдүүдийг татах"
 
@@ -1553,7 +1475,7 @@ msgid "Category"
 msgstr "Ангилал"
 
 #: frontend/src/components/Controls/ImageUploader.vue:14
-#: frontend/src/components/Layouts/AppSidebar.vue:609
+#: frontend/src/components/Layouts/AppSidebar.vue:602
 msgid "Change"
 msgstr "Өөрчлөлт"
 
@@ -1561,7 +1483,7 @@ msgstr "Өөрчлөлт"
 msgid "Change & remove fields"
 msgstr "Талбаруудыг өөрчлөх болон устгах"
 
-#: frontend/src/pages/Contact.vue:47 frontend/src/pages/Lead.vue:98
+#: frontend/src/pages/Contact.vue:47 frontend/src/pages/Lead.vue:106
 #: frontend/src/pages/MobileContact.vue:37
 #: frontend/src/pages/MobileOrganization.vue:37
 #: frontend/src/pages/Organization.vue:53
@@ -1581,8 +1503,8 @@ msgstr "Зураг өөрчлөх"
 msgid "Change Status"
 msgstr "Статусаа өөрчлөх"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:599
-#: frontend/src/components/Layouts/AppSidebar.vue:608
+#: frontend/src/components/Layouts/AppSidebar.vue:592
+#: frontend/src/components/Layouts/AppSidebar.vue:601
 msgid "Change deal status"
 msgstr "Хэлэлцээрийн статусыг өөрчлөх"
 
@@ -1696,10 +1618,6 @@ msgstr "Нэрийг нь өөрчлөхийн тулд дарна уу"
 msgid "Close"
 msgstr "Хаах"
 
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:39
-msgid "Close Panel"
-msgstr "Самбарыг хаах"
-
 #: frontend/src/pages/PersonaForm.vue:126
 msgid "Close my first deal"
 msgstr "Миний анхны хэлэлцээрийг хаах"
@@ -1748,10 +1666,10 @@ msgstr "Баганууд"
 
 #. Label of the comment (Link) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
-#: frontend/src/components/Activities/ActivityHeader.vue:126
+#: frontend/src/components/Activities/ActivityHeader.vue:115
 #: frontend/src/components/CommentBox.vue:75
 #: frontend/src/components/CommunicationArea.vue:15
-#: frontend/src/components/Layouts/AppSidebar.vue:700
+#: frontend/src/components/Layouts/AppSidebar.vue:693
 msgid "Comment"
 msgstr "Сэтгэгдэл"
 
@@ -1759,8 +1677,8 @@ msgstr "Сэтгэгдэл"
 msgid "Comment sent"
 msgstr "Сэтгэгдэл илгээгдсэн"
 
-#: frontend/src/pages/Deal.vue:590 frontend/src/pages/Lead.vue:442
-#: frontend/src/pages/MobileDeal.vue:456 frontend/src/pages/MobileLead.vue:304
+#: frontend/src/pages/Deal.vue:589 frontend/src/pages/Lead.vue:452
+#: frontend/src/pages/MobileDeal.vue:456 frontend/src/pages/MobileLead.vue:316
 msgid "Comments"
 msgstr "Сэтгэгдэл"
 
@@ -1903,10 +1821,6 @@ msgstr "Twilio утасны интеграцийн тохиргоогоо энд
 msgid "Configure your brand name, logo and favicon"
 msgstr "Брэндийн нэр, лого болон фавиконоо тохируулна уу"
 
-#: frontend/src/components/Settings/CalendarSettings.vue:12
-msgid "Configure your calendar settings, including the default view and event notifications"
-msgstr "Анхдагч харагдац болон үйл явдлын мэдэгдлүүд зэрэг хуанлийн тохиргоогоо тохируулна уу"
-
 #: frontend/src/composables/demoData.js:26
 #: frontend/src/composables/frappecloud.js:29
 msgid "Confirm"
@@ -1942,20 +1856,20 @@ msgstr "Имэйлээ холбоно уу"
 #. Label of the contact (Link) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_contacts/crm_contacts.json
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
-#: frontend/src/components/Layouts/AppSidebar.vue:673
+#: frontend/src/components/Layouts/AppSidebar.vue:666
 #: frontend/src/components/Modals/ConvertToDealModal.vue:51
 msgid "Contact"
 msgstr "Холбоо барих"
 
-#: frontend/src/pages/Deal.vue:701 frontend/src/pages/MobileDeal.vue:560
+#: frontend/src/pages/Deal.vue:695 frontend/src/pages/MobileDeal.vue:560
 msgid "Contact Added"
 msgstr "Харилцагч нэмэгдлээ"
 
-#: frontend/src/pages/Deal.vue:691 frontend/src/pages/MobileDeal.vue:550
+#: frontend/src/pages/Deal.vue:685 frontend/src/pages/MobileDeal.vue:550
 msgid "Contact Already Added"
 msgstr "Харилцагч аль хэдийн нэмэгдсэн"
 
-#: crm/fcrm/doctype/crm_lead/crm_lead.py:332
+#: crm/fcrm/doctype/crm_lead/crm_lead.py:333
 msgid "Contact Already Exists"
 msgstr "Харилцагч аль хэдийн байна"
 
@@ -1963,7 +1877,7 @@ msgstr "Харилцагч аль хэдийн байна"
 msgid "Contact Image Updated"
 msgstr "Харилцагчийн зургийг шинэчилсэн"
 
-#: frontend/src/pages/Deal.vue:712 frontend/src/pages/MobileDeal.vue:571
+#: frontend/src/pages/Deal.vue:706 frontend/src/pages/MobileDeal.vue:571
 msgid "Contact Removed"
 msgstr "Харилцагчийг устгасан"
 
@@ -1975,7 +1889,7 @@ msgstr "Дэмжлэгтэй холбоо барих"
 msgid "Contact Us"
 msgstr "Холбоо барих"
 
-#: crm/fcrm/doctype/crm_lead/crm_lead.py:331
+#: crm/fcrm/doctype/crm_lead/crm_lead.py:332
 msgid "Contact already exists with Email: {0}"
 msgstr "Имэйл хаягтай харилцагч аль хэдийн байна: {0}"
 
@@ -2022,22 +1936,22 @@ msgstr "Контент шаардлагатай"
 msgid "Controls how numbers are displayed (e.g., commas, decimal separators)"
 msgstr "Тоонуудыг хэрхэн харуулахыг хянадаг (жишээ нь, таслал, аравтын бутархай тусгаарлагч)"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:494
+#: frontend/src/components/Layouts/AppSidebar.vue:487
 #: frontend/src/components/ListBulkActions.vue:86
 #: frontend/src/components/Modals/ConvertToDealModal.vue:83
-#: frontend/src/pages/MobileLead.vue:54
+#: frontend/src/pages/MobileLead.vue:59
 msgid "Convert"
 msgstr "Хөрвүүлэх"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:485
-#: frontend/src/components/Layouts/AppSidebar.vue:493
+#: frontend/src/components/Layouts/AppSidebar.vue:478
+#: frontend/src/components/Layouts/AppSidebar.vue:486
 msgid "Convert lead to deal"
 msgstr "Лийдийг тохиролцоо болгон хувиргах"
 
 #: frontend/src/components/ListBulkActions.vue:78
 #: frontend/src/components/ListBulkActions.vue:195
 #: frontend/src/components/Modals/ConvertToDealModal.vue:7
-#: frontend/src/pages/Lead.vue:44
+#: frontend/src/pages/Lead.vue:49
 msgid "Convert to Deal"
 msgstr "Хямдрал руу хөрвүүлэх"
 
@@ -2075,12 +1989,6 @@ msgstr "Маягт үүсгэж чадсангүй"
 msgid "Could not create the Frappe CRM custom fields on {0} automatically. If it is running the latest ERPNext, enable <b>Frappe CRM Data Synchronization</b> in its CRM Settings, Otherwise check the Error Log."
 msgstr "{0} дээр Frappe CRM-ийн өөрчлөн тохируулсан талбаруудыг автоматаар үүсгэж чадсангүй. Хэрэв энэ нь хамгийн сүүлийн үеийн ERPNext-ийг ажиллуулж байгаа бол CRM тохиргоондоо <b>Frappe CRM өгөгдлийн синхрончлол</b> -г идэвхжүүлнэ үү. Үгүй бол алдааны бүртгэлийг шалгана уу."
 
-#: frontend/src/components/Modals/DealModal.vue:156
-#: frontend/src/components/Modals/LeadModal.vue:125
-#: frontend/src/components/Modals/OrganizationModal.vue:133
-msgid "Could not enrich from the website."
-msgstr "Вэбсайтаас баяжуулж чадсангүй."
-
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:860
 msgid "Could not grant guest access."
 msgstr "Зочны хандалтыг олгож чадсангүй."
@@ -2093,6 +2001,7 @@ msgstr ""
 msgid "Could not remove."
 msgstr "Арилгаж чадсангүй."
 
+#: frontend/src/components/Settings/EnrichmentSettings.vue:87
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1521
 msgid "Could not save"
 msgstr "Хадгалж чадсангүй"
@@ -2102,7 +2011,7 @@ msgstr "Хадгалж чадсангүй"
 msgid "Could not save, try again"
 msgstr "Хадгалж чадсангүй, дахин оролдоно уу"
 
-#: frontend/src/components/EnrichFromWebsite.vue:99
+#: frontend/src/components/EnrichFromWebsite.vue:93
 msgid "Could not start enrichment."
 msgstr "Баяжуулалтыг эхлүүлж чадсангүй."
 
@@ -2146,27 +2055,21 @@ msgstr "Мөлхөгчийн дарааллын зөвлөмжүүд (гарга
 #: frontend/src/components/Modals/DealModal.vue:65
 #: frontend/src/components/Modals/DoctypeModal.vue:52
 #: frontend/src/components/Modals/EmailTemplateSelectorModal.vue:19
-#: frontend/src/components/Modals/EventModal.vue:214
 #: frontend/src/components/Modals/LeadModal.vue:37
 #: frontend/src/components/Modals/OrganizationModal.vue:41
 #: frontend/src/components/Modals/ViewModal.vue:63
 #: frontend/src/components/Settings/EmailAdd.vue:86
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:30
-#: frontend/src/pages/Calendar.vue:10 frontend/src/pages/CallLogs.vue:13
-#: frontend/src/pages/Contacts.vue:13 frontend/src/pages/Deals.vue:13
-#: frontend/src/pages/Leads.vue:13 frontend/src/pages/Notes.vue:9
-#: frontend/src/pages/Organizations.vue:13 frontend/src/pages/Tasks.vue:13
+#: frontend/src/pages/CallLogs.vue:13 frontend/src/pages/Contacts.vue:13
+#: frontend/src/pages/Deals.vue:13 frontend/src/pages/Leads.vue:13
+#: frontend/src/pages/Notes.vue:9 frontend/src/pages/Organizations.vue:13
+#: frontend/src/pages/Tasks.vue:13
 msgid "Create"
 msgstr "Үүсгэх"
 
 #: frontend/src/components/Modals/DealModal.vue:8
 msgid "Create Deal"
 msgstr "Хэлэлцээр үүсгэх"
-
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:513
-#: frontend/src/pages/Calendar.vue:7
-msgid "Create Event"
-msgstr "Арга хэмжээ үүсгэх"
 
 #: frontend/src/components/Modals/CallLogDetailModal.vue:163
 #: frontend/src/components/Modals/LeadModal.vue:8
@@ -2199,13 +2102,9 @@ msgid "Create New Template"
 msgstr "Шинэ загвар үүсгэх"
 
 #: frontend/src/components/Modals/ViewModal.vue:9
-#: frontend/src/components/ViewControls.vue:768
+#: frontend/src/components/ViewControls.vue:781
 msgid "Create View"
 msgstr "Харагдац үүсгэх"
-
-#: frontend/src/components/Modals/EventModal.vue:12
-msgid "Create an Event"
-msgstr "Арга хэмжээ үүсгэх"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:274
 msgid "Create customer in ERPNext when the deal status is changed"
@@ -2235,15 +2134,15 @@ msgstr "ERPNext дээр бүтээгдэхүүнүүдийг зүйл болг�
 msgid "Create quotation button on deal page and auto customer creation on deal status change will be disabled. Are you sure?"
 msgstr "Хэлэлцээрийн хуудсан дээрх үнийн санал үүсгэх товчлуур болон хэлцлийн төлөв өөрчлөгдөхөд автоматаар хэрэглэгч үүсгэх функц идэвхгүй болно. Та итгэлтэй байна уу?"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:460
+#: frontend/src/components/Layouts/AppSidebar.vue:453
 msgid "Create your first lead"
 msgstr "Анхны боломжит хэрэглэгчээ үүсгээрэй"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:534
+#: frontend/src/components/Layouts/AppSidebar.vue:527
 msgid "Create your first note"
 msgstr "Анхны тэмдэглэлээ үүсгээрэй"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:513
+#: frontend/src/components/Layouts/AppSidebar.vue:506
 msgid "Create your first task"
 msgstr "Эхний даалгавраа үүсгээрэй"
 
@@ -2278,19 +2177,19 @@ msgstr "Одоогийн дүрс тэмдэг"
 msgid "Current pipeline distribution"
 msgstr "Одоогийн дамжуулах хоолойн тархалт"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:712
+#: frontend/src/components/Layouts/AppSidebar.vue:705
 msgid "Custom Actions"
 msgstr "Захиалгат үйлдлүүд"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:662
+#: frontend/src/components/Layouts/AppSidebar.vue:655
 msgid "Custom Branding"
 msgstr "Захиалгат брэндинг"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:711
+#: frontend/src/components/Layouts/AppSidebar.vue:704
 msgid "Custom Fields"
 msgstr "Захиалгат талбарууд"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:714
+#: frontend/src/components/Layouts/AppSidebar.vue:707
 msgid "Custom List Actions"
 msgstr "Захиалгат жагсаалтын үйлдлүүд"
 
@@ -2298,20 +2197,20 @@ msgstr "Захиалгат жагсаалтын үйлдлүүд"
 msgid "Custom Range"
 msgstr "Захиалгат хүрээ"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:713
+#: frontend/src/components/Layouts/AppSidebar.vue:706
 msgid "Custom Statuses"
 msgstr "Захиалгат статусууд"
 
-#: frontend/src/pages/Deal.vue:513
+#: frontend/src/pages/Deal.vue:512
 msgid "Customer Created Successfully"
 msgstr "Хэрэглэгчийг амжилттай үүсгэсэн"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:708
+#: frontend/src/components/Layouts/AppSidebar.vue:701
 #: frontend/src/components/Settings/Settings.vue:215
 msgid "Customization"
 msgstr "Тохируулга"
 
-#: frontend/src/components/ViewControls.vue:223
+#: frontend/src/components/ViewControls.vue:236
 msgid "Customize Quick Filters"
 msgstr "Түргэн шүүлтүүрийг тохируулах"
 
@@ -2321,7 +2220,6 @@ msgstr "Түргэн шүүлтүүрийг тохируулах"
 #. Sync Source'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
-#: frontend/src/components/Settings/CalendarSettings.vue:50
 msgid "Daily"
 msgstr "Өдөр бүр"
 
@@ -2351,9 +2249,9 @@ msgid "Dashboard settings updated successfully"
 msgstr "Хяналтын самбарын тохиргоог амжилттай шинэчиллээ"
 
 #: frontend/src/components/Activities/DataFields.vue:6
-#: frontend/src/components/Layouts/AppSidebar.vue:701
-#: frontend/src/pages/Deal.vue:595 frontend/src/pages/Lead.vue:447
-#: frontend/src/pages/MobileDeal.vue:461 frontend/src/pages/MobileLead.vue:309
+#: frontend/src/components/Layouts/AppSidebar.vue:694
+#: frontend/src/pages/Deal.vue:594 frontend/src/pages/Lead.vue:457
+#: frontend/src/pages/MobileDeal.vue:461 frontend/src/pages/MobileLead.vue:321
 msgid "Data"
 msgstr "Өгөгдөл"
 
@@ -2371,21 +2269,15 @@ msgstr "Өгөгдөл импортлох"
 msgid "Date"
 msgstr "Огноо"
 
-#: frontend/src/components/Modals/EventModal.vue:78
-msgid "Date & Time"
-msgstr "Огноо ба цаг"
-
 #: frontend/src/components/Settings/DefaultsSettings.vue:111
 msgid "Date Format"
 msgstr "Огнооны формат"
 
 #: frontend/src/components/Settings/Sla/SlaHolidays.vue:214
-#: frontend/src/pages/Calendar.vue:101
 msgid "Day"
 msgstr "Өдөр"
 
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:424
-#: frontend/src/components/Layouts/AppSidebar.vue:672
+#: frontend/src/components/Layouts/AppSidebar.vue:665
 #: frontend/src/components/Settings/AssignmentRules/AssigneeRules.vue:20
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:50
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:58
@@ -2435,7 +2327,7 @@ msgstr "Хэлэлцээрийн үнэ цэнэ"
 
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
-#: frontend/src/pages/Deal.vue:529 frontend/src/pages/MobileContact.vue:309
+#: frontend/src/pages/Deal.vue:528 frontend/src/pages/MobileContact.vue:309
 #: frontend/src/pages/MobileDeal.vue:396
 #: frontend/src/pages/MobileOrganization.vue:344
 msgid "Deals"
@@ -2549,10 +2441,6 @@ msgstr "{0}-д зориулсан Үйлчилгээний түвшний анх
 msgid "Default Values"
 msgstr "Анхдагч утгууд"
 
-#: frontend/src/components/Settings/CalendarSettings.vue:34
-msgid "Default View"
-msgstr "Анхдагч харагдац"
-
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:41
 msgid "Default calling medium for logged-in user"
 msgstr "Нэвтэрсэн хэрэглэгчийн анхдагч дуудлагын хэрэгсэл"
@@ -2591,19 +2479,16 @@ msgstr "Бүх бичлэгийн анхдагч валютыг тодорхой
 #: frontend/src/components/DeleteLinkedDocModal.vue:93
 #: frontend/src/components/Kanban/KanbanView.vue:235
 #: frontend/src/components/ListBulkActions.vue:177
-#: frontend/src/components/Modals/EventModal.vue:466
-#: frontend/src/components/Modals/EventModal.vue:470
 #: frontend/src/components/PrimaryDropdownItem.vue:60
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:184
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:231
 #: frontend/src/components/Settings/Hierarchy/HierarchyRow.vue:166
 #: frontend/src/components/Settings/Sla/EditResponseResolutionModal.vue:39
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:66
-#: frontend/src/components/ViewControls.vue:1204
-#: frontend/src/components/ViewControls.vue:1215
-#: frontend/src/pages/Calendar.vue:408 frontend/src/pages/Calendar.vue:412
+#: frontend/src/components/ViewControls.vue:1217
+#: frontend/src/components/ViewControls.vue:1228
 #: frontend/src/pages/Contact.vue:99 frontend/src/pages/Deal.vue:127
-#: frontend/src/pages/Lead.vue:174 frontend/src/pages/MobileContact.vue:80
+#: frontend/src/pages/Lead.vue:182 frontend/src/pages/MobileContact.vue:80
 #: frontend/src/pages/MobileContact.vue:284
 #: frontend/src/pages/MobileDeal.vue:531
 #: frontend/src/pages/MobileOrganization.vue:73
@@ -2630,10 +2515,6 @@ msgstr "Хавсралтыг устгах"
 msgid "Delete Contact"
 msgstr "Харилцагчийг устгах"
 
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:26
-msgid "Delete Event"
-msgstr "Үйл явдлыг устгах"
-
 #: frontend/src/components/Settings/InviteUserPage.vue:79
 msgid "Delete Invitation"
 msgstr "Урилгыг устгах"
@@ -2654,8 +2535,8 @@ msgstr "Байгууллагыг устгах"
 msgid "Delete Task"
 msgstr "Даалгаврыг устгах"
 
-#: frontend/src/components/ViewControls.vue:1200
-#: frontend/src/components/ViewControls.vue:1208
+#: frontend/src/components/ViewControls.vue:1213
+#: frontend/src/components/ViewControls.vue:1221
 msgid "Delete View"
 msgstr "Харагдацыг устгах"
 
@@ -2697,8 +2578,6 @@ msgstr "Татгалзах жагсаалт (дэд домэйн-мэдээлэ�
 #: crm/fcrm/doctype/crm_lost_reason/crm_lost_reason.json
 #: crm/fcrm/doctype/crm_product/crm_product.json
 #: crm/fcrm/doctype/crm_task/crm_task.json
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:254
-#: frontend/src/components/Modals/EventModal.vue:172
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:113
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:114
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:599
@@ -2725,7 +2604,7 @@ msgstr "Дэлгэрэнгүй"
 #: crm/fcrm/doctype/crm_lead_source/crm_lead_source.json
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:197
 #: frontend/src/pages/MobileContact.vue:304
-#: frontend/src/pages/MobileDeal.vue:440 frontend/src/pages/MobileLead.vue:288
+#: frontend/src/pages/MobileDeal.vue:440 frontend/src/pages/MobileLead.vue:300
 #: frontend/src/pages/MobileOrganization.vue:339
 msgid "Details"
 msgstr "Дэлгэрэнгүй мэдээлэл"
@@ -2766,9 +2645,7 @@ msgstr "Борлуулалтын шатлалыг идэвхгүй болгох"
 msgid "Disabled"
 msgstr "Хөгжлийн бэрхшээлтэй"
 
-#: crm/www/crm_form.html:241
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:922
-#: frontend/src/components/CommentBox.vue:71
+#: crm/www/crm_form.html:241 frontend/src/components/CommentBox.vue:71
 #: frontend/src/components/EmailEditor.vue:165
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:640
 msgid "Discard"
@@ -2778,10 +2655,6 @@ msgstr "Хаях"
 #: frontend/src/components/Settings/Telephony/TwilioSettings.vue:25
 msgid "Discard Changes"
 msgstr "Өөрчлөлтүүдийг цуцлах"
-
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:910
-msgid "Discard Unsaved Changes?"
-msgstr "Хадгалаагүй өөрчлөлтүүдийг устгах уу?"
 
 #. Label of the discount_percentage (Percent) field in DocType 'CRM Products'
 #: crm/fcrm/doctype/crm_products/crm_products.json
@@ -2819,7 +2692,7 @@ msgstr "Doctype шаардлагатай"
 msgid "Document ID, not the full name"
 msgstr "Бүтэн нэр биш, баримт бичгийн дугаар"
 
-#: frontend/src/pages/Deal.vue:459 frontend/src/pages/MobileLead.vue:209
+#: frontend/src/pages/Deal.vue:458 frontend/src/pages/MobileLead.vue:221
 msgid "Document Not Found"
 msgstr "Баримт бичиг олдсонгүй"
 
@@ -2836,7 +2709,7 @@ msgstr "Баримт бичгийг амжилттай үүсгэсэн"
 msgid "Document does not exist"
 msgstr "Баримт бичиг байхгүй байна"
 
-#: crm/api/activities.py:20 frontend/src/pages/Lead.vue:351
+#: crm/api/activities.py:21 frontend/src/pages/Lead.vue:361
 #: frontend/src/pages/MobileDeal.vue:359
 msgid "Document not found"
 msgstr "Баримт бичиг олдсонгүй"
@@ -2870,7 +2743,7 @@ msgid "Donut Chart"
 msgstr "Донат график"
 
 #: frontend/src/components/Activities/AudioPlayer.vue:166
-#: frontend/src/components/ViewControls.vue:268
+#: frontend/src/components/ViewControls.vue:281
 msgid "Download"
 msgstr "Татаж авах"
 
@@ -2910,7 +2783,6 @@ msgstr "Эцсийн хугацаа"
 
 #. Option for the 'Type' (Select) field in DocType 'Failed Lead Sync Log'
 #: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.json
-#: frontend/src/components/Modals/EventModal.vue:213
 #: frontend/src/components/Modals/ViewModal.vue:62
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:65
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:134
@@ -2919,19 +2791,13 @@ msgstr "Эцсийн хугацаа"
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:186
 #: frontend/src/components/Settings/Sla/SlaPolicyList.vue:133
 #: frontend/src/components/Settings/Sla/SlaPolicyList.vue:183
-#: frontend/src/components/ViewControls.vue:1156
+#: frontend/src/components/ViewControls.vue:1169
 msgid "Duplicate"
 msgstr "Хуулбарлах"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:47
 msgid "Duplicate Assignment Rule"
 msgstr "Давхардсан даалгаврын дүрэм"
-
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:34
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:512
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:674
-msgid "Duplicate Event"
-msgstr "Давхардсан үйл явдал"
 
 #: frontend/src/components/Settings/Sla/SlaPolicyList.vue:112
 msgid "Duplicate SLA Policy"
@@ -2949,10 +2815,6 @@ msgstr "Давхардсан харагдац"
 msgid "Duplicate Workday found: {0}. Each Workday should be unique."
 msgstr "Давхардсан ажлын өдөр олдлоо: {0}. Ажлын өдөр бүр өвөрмөц байх ёстой."
 
-#: frontend/src/components/Modals/EventModal.vue:11
-msgid "Duplicate an Event"
-msgstr "Үйл явдлыг хуулбарлах"
-
 #. Label of the duration (Duration) field in DocType 'CRM Call Log'
 #. Label of the duration (Duration) field in DocType 'CRM Status Change Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
@@ -2960,7 +2822,7 @@ msgstr "Үйл явдлыг хуулбарлах"
 msgid "Duration"
 msgstr "Үргэлжлэх хугацаа"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:725
+#: frontend/src/components/Layouts/AppSidebar.vue:718
 #: frontend/src/components/Settings/Settings.vue:240
 msgid "ERPNext"
 msgstr "ERPNext"
@@ -3027,7 +2889,7 @@ msgstr "ERPNext нь CRM-тэй нэгтгэгдээгүй байна"
 #: frontend/src/components/Settings/Forms/FormsList.vue:262
 #: frontend/src/components/Settings/Sla/SlaHolidays.vue:202
 #: frontend/src/components/Settings/Sla/SlaPriorityList.vue:188
-#: frontend/src/components/ViewControls.vue:1174
+#: frontend/src/components/ViewControls.vue:1187
 #: frontend/src/pages/Dashboard.vue:16 frontend/src/pages/Notes.vue:44
 #: frontend/src/pages/Tasks.vue:379
 msgid "Edit"
@@ -3044,10 +2906,6 @@ msgstr "Өгөгдлийн талбарын байршлыг засах"
 #: frontend/src/components/Settings/EmailEdit.vue:6
 msgid "Edit Email"
 msgstr "И-мэйл засах"
-
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:19
-msgid "Edit Event"
-msgstr "Арга хэмжээг засах"
 
 #: frontend/src/components/Modals/SidePanelModal.vue:7
 msgid "Edit Field Layout"
@@ -3104,17 +2962,9 @@ msgstr "Засах Харагдац"
 msgid "Edit Workday"
 msgstr "Ажлын өдрийг засах"
 
-#: frontend/src/components/Modals/EventModal.vue:9
-msgid "Edit an Event"
-msgstr "Үйл явдлыг засах"
-
 #: frontend/src/components/Settings/Forms/FieldCard.vue:63
 msgid "Edit field"
 msgstr "Засах талбар"
-
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:672
-msgid "Editing Event"
-msgstr "Арга хэмжээг засварлаж байна"
 
 #: frontend/src/components/Controls/GridRowModal.vue:8
 msgid "Editing Row {0}"
@@ -3131,13 +2981,9 @@ msgstr "Редактор"
 #: crm/fcrm/doctype/crm_contacts/crm_contacts.json
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
-#: frontend/src/components/Activities/ActivityHeader.vue:121
-#: frontend/src/components/Calendar/EventNotifications.vue:26
-#: frontend/src/components/Calendar/EventNotifications.vue:94
-#: frontend/src/components/Settings/CalendarSettings.vue:89
-#: frontend/src/components/Settings/CalendarSettings.vue:188
+#: frontend/src/components/Activities/ActivityHeader.vue:110
 #: frontend/src/components/Settings/Profile/UserEmailSettings.vue:67
-#: frontend/src/components/Settings/Settings.vue:178
+#: frontend/src/components/Settings/Settings.vue:173
 #: frontend/src/pages/Contact.vue:400 frontend/src/pages/MobileContact.vue:392
 #: frontend/src/pages/MobileOrganization.vue:474
 #: frontend/src/pages/MobileOrganization.vue:502
@@ -3155,11 +3001,7 @@ msgstr "Имэйл хаяг"
 msgid "Email Accounts"
 msgstr "И-мэйл хаягууд"
 
-#: frontend/src/components/Calendar/Attendee.vue:278
-msgid "Email Already Exists"
-msgstr "Имэйл аль хэдийн байна"
-
-#: frontend/src/components/Layouts/AppSidebar.vue:699
+#: frontend/src/components/Layouts/AppSidebar.vue:692
 msgid "Email Communication"
 msgstr "Имэйл харилцаа холбоо"
 
@@ -3184,7 +3026,7 @@ msgstr "Имэйл илгээсэн хаяг"
 msgid "Email Settings"
 msgstr "И-мэйл тохиргоо"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:678
+#: frontend/src/components/Layouts/AppSidebar.vue:671
 msgid "Email Template"
 msgstr "Имэйл загвар"
 
@@ -3214,8 +3056,8 @@ msgid "Email settings updated successfully"
 msgstr "И-мэйл тохиргоог амжилттай шинэчиллээ"
 
 #: frontend/src/components/Settings/Profile/UserEmailSettings.vue:50
-#: frontend/src/pages/Deal.vue:585 frontend/src/pages/Lead.vue:437
-#: frontend/src/pages/MobileDeal.vue:451 frontend/src/pages/MobileLead.vue:299
+#: frontend/src/pages/Deal.vue:584 frontend/src/pages/Lead.vue:447
+#: frontend/src/pages/MobileDeal.vue:451 frontend/src/pages/MobileLead.vue:311
 msgid "Emails"
 msgstr "Имэйлүүд"
 
@@ -3288,21 +3130,9 @@ msgstr "CRM-ээсээ шууд дуудлага хийх болон хүлээ�
 msgid "Enable call recording for incoming and outgoing calls"
 msgstr "Ирж буй болон гарч буй дуудлагын дуудлагын бичлэгийг идэвхжүүлэх"
 
-#. Label of the enable_deal (Check) field in DocType 'CRM Enrichment Settings'
-#: crm/domain_enrichment/doctype/crm_enrichment_settings/crm_enrichment_settings.json
-msgid "Enable for CRM Deal"
-msgstr "CRM хэлэлцээрийг идэвхжүүлэх"
-
-#. Label of the enable_lead (Check) field in DocType 'CRM Enrichment Settings'
-#: crm/domain_enrichment/doctype/crm_enrichment_settings/crm_enrichment_settings.json
-msgid "Enable for CRM Lead"
-msgstr "CRM удирдагчдад идэвхжүүлэх"
-
-#. Label of the enable_organization (Check) field in DocType 'CRM Enrichment
-#. Settings'
-#: crm/domain_enrichment/doctype/crm_enrichment_settings/crm_enrichment_settings.json
-msgid "Enable for CRM Organization"
-msgstr "CRM байгууллагад идэвхжүүлэх"
+#: frontend/src/components/Settings/EnrichmentSettings.vue:22
+msgid "Enable enrichment"
+msgstr ""
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:440
 msgid "Enable the integration to create quotations and more in ERPNext."
@@ -3336,12 +3166,6 @@ msgstr "ERPNext дээр үнийн санал болон бусад зүйли�
 msgid "Enabled"
 msgstr "Идэвхжүүлсэн"
 
-#. Label of the enabled_doctypes_section (Section Break) field in DocType 'CRM
-#. Enrichment Settings'
-#: crm/domain_enrichment/doctype/crm_enrichment_settings/crm_enrichment_settings.json
-msgid "Enabled Doctypes"
-msgstr "Идэвхжүүлсэн Doctypes"
-
 #. Label of the enabled (Check) field in DocType 'Lead Sync Source'
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
 msgid "Enabled?"
@@ -3357,17 +3181,11 @@ msgstr "Дуусах огноо"
 #. Label of the end_time (Time) field in DocType 'CRM Service Day'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 #: crm/fcrm/doctype/crm_service_day/crm_service_day.json
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:346
-#: frontend/src/components/Modals/EventModal.vue:112
 #: frontend/src/components/Settings/Sla/SlaHolidays.vue:224
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:45
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:46
 msgid "End Time"
 msgstr "Дуусах цаг"
-
-#: frontend/src/composables/event.js:250
-msgid "End Time Should Be After Start Time"
-msgstr "Дуусах цаг эхлэх цагаас хойш байх ёстой"
 
 #: frontend/src/components/Settings/Sla/utils.js:172
 msgid "End date cannot be before start date"
@@ -3386,11 +3204,12 @@ msgid "End time must be after start time for: {0}"
 msgstr "Дуусах цаг нь эхлэх цагаас хойш байх ёстой: {0}"
 
 #: frontend/src/components/EnrichFromWebsite.vue:4
-#: frontend/src/components/Modals/DealModal.vue:70
-#: frontend/src/components/Modals/LeadModal.vue:42
-#: frontend/src/components/Modals/OrganizationModal.vue:47
 msgid "Enrich"
 msgstr "Баяжуулах"
+
+#: frontend/src/components/Settings/EnrichmentSettings.vue:46
+msgid "Enrich a new record as soon as it is created"
+msgstr ""
 
 #: crm/public/js/domain_enrichment.js:12
 msgid "Enrich from Website"
@@ -3400,13 +3219,22 @@ msgstr "Вэбсайтаас баяжуулах"
 msgid "Enrich from website"
 msgstr "Вэбсайтаас баяжуулах"
 
-#: frontend/src/components/EnrichFromWebsite.vue:64
+#: frontend/src/components/EnrichFromWebsite.vue:61
 msgid "Enriched. Filled: {0}"
 msgstr "Баяжуулсан. Дүүргэсэн: {0}"
+
+#: frontend/src/components/EnrichFromWebsite.vue:6
+msgid "Enriching"
+msgstr "Баяжуулах"
 
 #: frontend/src/components/EnrichFromWebsite.vue:7
 msgid "Enriching…"
 msgstr "Баяжуулах…"
+
+#: frontend/src/components/Settings/EnrichmentSettings.vue:5
+#: frontend/src/components/Settings/Settings.vue:207
+msgid "Enrichment"
+msgstr ""
 
 #: crm/domain_enrichment/doctype/crm_enrichment_run/crm_enrichment_run.js:47
 #: crm/public/js/domain_enrichment.js:60
@@ -3421,11 +3249,11 @@ msgstr "Баяжуулалт дууссан"
 msgid "Enrichment complete — a new run was created"
 msgstr "Баяжуулалт дууссан — шинэ хувилбар үүсгэсэн"
 
-#: frontend/src/components/EnrichFromWebsite.vue:69
+#: frontend/src/components/EnrichFromWebsite.vue:66
 msgid "Enrichment complete."
 msgstr "Баяжуулалт дууссан."
 
-#: frontend/src/components/EnrichFromWebsite.vue:74
+#: frontend/src/components/EnrichFromWebsite.vue:71
 msgid "Enrichment failed."
 msgstr "Баяжуулалт амжилтгүй болсон."
 
@@ -3433,7 +3261,7 @@ msgstr "Баяжуулалт амжилтгүй болсон."
 msgid "Enrichment failed. Check the error log."
 msgstr "Баяжуулах ажиллагаа амжилтгүй боллоо. Алдааны бүртгэлийг шалгана уу."
 
-#: crm/domain_enrichment/api.py:49 crm/domain_enrichment/api.py:117
+#: crm/domain_enrichment/api.py:44
 msgid "Enrichment is not enabled for {0}."
 msgstr "{0}-д баяжуулахыг идэвхжүүлээгүй байна."
 
@@ -3469,12 +3297,6 @@ msgstr "Твилиогийн дугаарыг оруулна уу"
 msgid "Enter Value"
 msgstr "Утга оруулна уу"
 
-#: frontend/src/components/Modals/DealModal.vue:123
-#: frontend/src/components/Modals/LeadModal.vue:92
-#: frontend/src/components/Modals/OrganizationModal.vue:100
-msgid "Enter a Website first."
-msgstr "Эхлээд вэбсайт оруулна уу."
-
 #: frontend/src/components/FieldLayout/Field.vue:301
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:88
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:119
@@ -3505,7 +3327,7 @@ msgstr "{0} гэж оруулна уу"
 msgid "Equals"
 msgstr "Тэнцүү"
 
-#: frontend/src/pages/Deal.vue:460 frontend/src/pages/MobileLead.vue:210
+#: frontend/src/pages/Deal.vue:459 frontend/src/pages/MobileLead.vue:222
 msgid "Error Occurred"
 msgstr "Алдаа гарлаа"
 
@@ -3526,7 +3348,7 @@ msgstr "Лийд синкийн эх үүсвэрийг үүсгэхэд алд�
 msgid "Error creating lead: {0}"
 msgstr "Харилцагчийн жагсаалт үүсгэхэд алдаа гарлаа: {0}"
 
-#: frontend/src/pages/Lead.vue:352 frontend/src/pages/MobileDeal.vue:360
+#: frontend/src/pages/Lead.vue:362 frontend/src/pages/MobileDeal.vue:360
 msgid "Error occurred"
 msgstr "Алдаа гарлаа"
 
@@ -3538,8 +3360,8 @@ msgstr "Харилцагчийн холболтыг синк хийх алдаа
 msgid "Error syncing leads"
 msgstr "Лимитүүдийг синк хийх алдаа гарлаа"
 
-#: frontend/src/pages/Deal.vue:785 frontend/src/pages/Lead.vue:517
-#: frontend/src/pages/MobileDeal.vue:628 frontend/src/pages/MobileLead.vue:369
+#: frontend/src/pages/Deal.vue:781 frontend/src/pages/Lead.vue:522
+#: frontend/src/pages/MobileDeal.vue:630 frontend/src/pages/MobileLead.vue:381
 msgid "Error updating field"
 msgstr "Талбарыг шинэчлэхэд алдаа гарлаа"
 
@@ -3547,40 +3369,10 @@ msgstr "Талбарыг шинэчлэхэд алдаа гарлаа"
 msgid "Error updating lead sync source"
 msgstr "Харилцагчийн синхрончлолын эх сурвалжийг шинэчлэхэд алдаа гарлаа"
 
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:671
-msgid "Event Details"
-msgstr "Арга хэмжээний дэлгэрэнгүй мэдээлэл"
-
-#: frontend/src/components/Modals/EventModal.vue:425
-msgid "Event ID is required"
-msgstr "Үйл явдлын дугаар шаардлагатай"
-
-#: frontend/src/components/EventNotificationPopup.vue:23
-msgid "Event Notification"
-msgstr ""
-
 #. Label of the event_notifications (Table) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
-#: frontend/src/components/Settings/CalendarSettings.vue:62
 msgid "Event Notifications"
 msgstr "Үйл явдлын мэдэгдэл"
-
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:285
-msgid "Event Title"
-msgstr "Арга хэмжээний гарчиг"
-
-#: frontend/src/pages/Calendar.vue:339
-msgid "Event created successfully"
-msgstr "Арга хэмжээг амжилттай үүсгэсэн"
-
-#: frontend/src/pages/Calendar.vue:418
-msgid "Event deleted successfully"
-msgstr "Үйл явдлыг амжилттай устгасан"
-
-#: frontend/src/components/Notifications.vue:119
-#: frontend/src/pages/Deal.vue:600 frontend/src/pages/Lead.vue:452
-msgid "Events"
-msgstr "Үйл явдлууд"
 
 #. Option for the 'Background Sync Frequency' (Select) field in DocType 'Lead
 #. Sync Source'
@@ -3607,8 +3399,8 @@ msgstr "5 минут тутамд"
 msgid "Exact"
 msgstr "Яг"
 
-#: frontend/src/components/ViewControls.vue:282
-#: frontend/src/components/ViewControls.vue:290
+#: frontend/src/components/ViewControls.vue:295
+#: frontend/src/components/ViewControls.vue:303
 msgid "Excel"
 msgstr "Excel"
 
@@ -3631,7 +3423,7 @@ msgstr "Валютын ханшийн үйлчилгээ үзүүлэгч"
 #. Agent'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
-#: frontend/src/components/Layouts/AppSidebar.vue:723
+#: frontend/src/components/Layouts/AppSidebar.vue:716
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:52
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:198
 msgid "Exotel"
@@ -3690,16 +3482,16 @@ msgstr "Хүлээгдэж буй хэлцлийн үнэ шаардлагата
 msgid "Expired"
 msgstr "Хугацаа нь дууссан"
 
-#: frontend/src/components/ViewControls.vue:215
-#: frontend/src/components/ViewControls.vue:265
+#: frontend/src/components/ViewControls.vue:228
+#: frontend/src/components/ViewControls.vue:278
 msgid "Export"
 msgstr "Экспортлох"
 
-#: frontend/src/components/ViewControls.vue:278
+#: frontend/src/components/ViewControls.vue:291
 msgid "Export Type"
 msgstr "Экспортын төрөл"
 
-#: frontend/src/components/ViewControls.vue:296
+#: frontend/src/components/ViewControls.vue:309
 msgid "Export all {0} record(s)"
 msgstr "Бүх {0} бичлэгийг экспортлох"
 
@@ -3823,7 +3615,7 @@ msgstr "Загварыг устгаж чадсангүй"
 msgid "Failed to fetch exchange rate from {0} to {1} on {2}. Please check your internet connection or try again later."
 msgstr "{2}дээрх {0} -с {1} хүртэлх ханшийг дуудаж чадсангүй. Интернэт холболтоо шалгах эсвэл дараа дахин оролдоно уу."
 
-#: frontend/src/components/Activities/Activities.vue:553
+#: frontend/src/components/Activities/Activities.vue:548
 msgid "Failed to load activities"
 msgstr ""
 
@@ -3856,7 +3648,7 @@ msgstr "Ажлын өдрийг хадгалахад алдаа гарлаа: {0
 msgid "Failed to send WhatsApp message"
 msgstr "WhatsApp мессеж илгээж чадсангүй"
 
-#: frontend/src/components/Activities/Activities.vue:628
+#: frontend/src/components/Activities/Activities.vue:626
 msgid "Failed to send WhatsApp template"
 msgstr "WhatsApp загварыг илгээж чадсангүй"
 
@@ -3875,10 +3667,6 @@ msgstr "Синкийг эхлүүлж чадсангүй"
 #: crm/integrations/twilio/api.py:207
 msgid "Failed to update Twilio call status"
 msgstr "Twilio дуудлагын төлөвийг шинэчилж чадсангүй"
-
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:873
-msgid "Failed to update attending status"
-msgstr "Ирэх статусыг шинэчилж чадсангүй"
 
 #: frontend/src/components/Activities/CommentArea.vue:130
 msgid "Failed to update comment"
@@ -3942,12 +3730,6 @@ msgstr "Зөвхөн {1} файл байршуулахыг зөвшөөрсөн 
 msgid "File \"{0}\" was skipped because only {1} uploads are allowed for DocType \"{2}\""
 msgstr "DocType \"{2} \" файлд зөвхөн {1} файл байршуулахыг зөвшөөрсөн тул \"{0}\" файлыг алгассан."
 
-#: frontend/src/components/Modals/DealModal.vue:73
-#: frontend/src/components/Modals/LeadModal.vue:45
-#: frontend/src/components/Modals/OrganizationModal.vue:50
-msgid "Fill fields from the company website"
-msgstr "Компанийн вэбсайтаас талбаруудыг бөглөнө үү"
-
 #. Option for the 'Write Policy' (Select) field in DocType 'CRM Enrichment
 #. Field Mapping'
 #: crm/domain_enrichment/doctype/crm_enrichment_field_mapping/crm_enrichment_field_mapping.json
@@ -3960,11 +3742,9 @@ msgstr "Хоосон бол бөглөнө үү"
 msgid "Fill if empty: only write when the field is blank. Always refresh: overwrite on every run (for fully enrichment-derived fields). Override defaults: write even when the current value is a known default (see Default Values)."
 msgstr "Хоосон бол бөглөнө үү: зөвхөн талбар хоосон үед л бичнэ. Үргэлж шинэчлэх: ажиллуулах бүрт дарж бичнэ (бүрэн баяжуулахаас гаралтай талбаруудын хувьд). Анхдагч утгуудыг дарж бичнэ: одоогийн утга нь мэдэгдэж буй анхдагч утга байсан ч бичнэ (Анхдагч утгуудыг үзнэ үү)."
 
-#: frontend/src/components/Modals/DealModal.vue:148
-#: frontend/src/components/Modals/LeadModal.vue:117
-#: frontend/src/components/Modals/OrganizationModal.vue:125
-msgid "Filled {0} field(s) from the website."
-msgstr "Вэбсайтаас {0} талбарыг бөглөсөн."
+#: frontend/src/components/Settings/EnrichmentSettings.vue:8
+msgid "Fill in company details from a record’s website"
+msgstr ""
 
 #: frontend/src/components/Filter.vue:6
 msgid "Filter"
@@ -3995,7 +3775,7 @@ msgstr "Дууссан огноо"
 msgid "First Name"
 msgstr "Өөрийн нэр"
 
-#: frontend/src/components/Modals/LeadModal.vue:183
+#: frontend/src/components/Modals/LeadModal.vue:129
 msgid "First Name is mandatory"
 msgstr "Өөрийн нэр заавал байх ёстой"
 
@@ -4046,10 +3826,6 @@ msgstr "Тогтмол дагаж мөрдөх"
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:48
 msgid "For"
 msgstr "Учир нь"
-
-#: frontend/src/components/Settings/CalendarSettings.vue:163
-msgid "For all-day events, <b>set a time</b> to send reminders before the event starts"
-msgstr "Бүтэн өдрийн турш үргэлжлэх арга хэмжээний хувьд <b>арга хэмжээ эхлэхээс өмнө сануулга илгээх цагийг</b> тохируулна уу"
 
 #: crm/api/dashboard.py:96
 msgid "Forecasted Revenue"
@@ -4104,7 +3880,7 @@ msgid "Form updated"
 msgstr "Маягтыг шинэчилсэн"
 
 #: frontend/src/components/Settings/Forms/FormsList.vue:7
-#: frontend/src/components/Settings/Settings.vue:207
+#: frontend/src/components/Settings/Settings.vue:202
 msgid "Forms"
 msgstr "Маягтууд"
 
@@ -4117,7 +3893,7 @@ msgstr "Маягтууд зөвхөн дараах руу холбож болн�
 msgid "Frappe CRM"
 msgstr "Frappe CRM"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:729
+#: frontend/src/components/Layouts/AppSidebar.vue:722
 msgid "Frappe CRM mobile"
 msgstr "Frappe CRM гар утас"
 
@@ -4191,10 +3967,6 @@ msgstr "Юүлүүрийн хөрвүүлэлт"
 msgid "Funnel conversion"
 msgstr "Юүлүүр хөрвүүлэлт"
 
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:299
-msgid "GMT+5:30"
-msgstr "GMT+5:30"
-
 #. Label of the gender (Link) field in DocType 'CRM Contacts'
 #. Label of the gender (Link) field in DocType 'CRM Deal'
 #. Label of the gender (Link) field in DocType 'CRM Lead'
@@ -4236,13 +4008,9 @@ msgstr "Буцах"
 msgid "Go to Invite Page"
 msgstr "Урилгын хуудас руу очих"
 
-#: frontend/src/pages/Deal.vue:110 frontend/src/pages/Lead.vue:157
+#: frontend/src/pages/Deal.vue:110 frontend/src/pages/Lead.vue:165
 msgid "Go to Website"
 msgstr "Вэбсайт руу очих"
-
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:523
-msgid "Going?"
-msgstr "Очих уу?"
 
 #: frontend/src/pages/PersonaForm.vue:75
 msgid "Google Ads"
@@ -4267,8 +4035,8 @@ msgstr "Торны мөр"
 
 #. Label of the group_by_tab (Tab Break) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
-#: frontend/src/components/ViewControls.vue:396
-#: frontend/src/components/ViewControls.vue:681 frontend/src/utils/view.js:16
+#: frontend/src/components/ViewControls.vue:409
+#: frontend/src/components/ViewControls.vue:694 frontend/src/utils/view.js:16
 msgid "Group By"
 msgstr "Бүлэглэх"
 
@@ -4333,7 +4101,7 @@ msgstr "Нуугдсан"
 msgid "Hidden required fields"
 msgstr "Заавал бөглөх талбаруудыг нуусан"
 
-#: frontend/src/components/Activities/Activities.vue:253
+#: frontend/src/components/Activities/Activities.vue:250
 msgid "Hide"
 msgstr "Нуух"
 
@@ -4383,7 +4151,7 @@ msgstr "Амралтын жагсаалтын нэр"
 msgid "Holidays"
 msgstr "Баярын өдрүүд"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:663
+#: frontend/src/components/Layouts/AppSidebar.vue:656
 #: frontend/src/components/Settings/HomeActions.vue:7
 #: frontend/src/components/Settings/Settings.vue:218
 msgid "Home Actions"
@@ -4477,7 +4245,7 @@ msgstr "Хэрэв утга нь байхгүй холбогдсон бичлэ�
 msgid "Image"
 msgstr "Зураг"
 
-#: frontend/src/components/ViewControls.vue:203
+#: frontend/src/components/ViewControls.vue:216
 msgid "Import"
 msgstr "Импорт"
 
@@ -4575,7 +4343,7 @@ msgstr "Эможи оруулах"
 msgid "Instagram"
 msgstr "Инстаграм"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:719
+#: frontend/src/components/Layouts/AppSidebar.vue:712
 msgid "Integration"
 msgstr "Интеграци"
 
@@ -4592,8 +4360,8 @@ msgctxt "FCRM"
 msgid "Integrations"
 msgstr "Интеграцчилалууд"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:650
-#: frontend/src/components/Layouts/AppSidebar.vue:653
+#: frontend/src/components/Layouts/AppSidebar.vue:643
+#: frontend/src/components/Layouts/AppSidebar.vue:646
 msgid "Introduction"
 msgstr "Танилцуулга"
 
@@ -4616,10 +4384,6 @@ msgstr "Буруу Эксотелийн дугаар"
 #: frontend/src/components/Controls/GeolocationControl.vue:122
 msgid "Invalid GeoJSON"
 msgstr "Буруу GeoJSON"
-
-#: frontend/src/composables/event.js:247
-msgid "Invalid Start Or End Time"
-msgstr "Эхлэх эсвэл дуусах цаг буруу"
 
 #: crm/integrations/twilio/api.py:20
 msgid "Invalid Twilio account"
@@ -4649,8 +4413,8 @@ msgstr "Буруу итгэмжлэлүүд"
 msgid "Invalid email ID"
 msgstr "Буруу имэйл хаяг"
 
-#: frontend/src/components/Modals/DealModal.vue:258
-#: frontend/src/components/Modals/LeadModal.vue:202
+#: frontend/src/components/Modals/DealModal.vue:205
+#: frontend/src/components/Modals/LeadModal.vue:148
 msgid "Invalid email address"
 msgstr "Буруу имэйл хаяг"
 
@@ -4674,7 +4438,7 @@ msgstr "Буруу формат. Туршаад үзээрэй: 1 цаг 30 ми
 msgid "Invalid format. Try: 1h 30m 45s, 1:30:45, 90s"
 msgstr "Буруу формат. Туршаад үзээрэй: 1 цаг 30 минут 45 секунд, 1:30:45, 90 секунд"
 
-#: crm/fcrm/doctype/crm_call_log/crm_call_log.py:269
+#: crm/fcrm/doctype/crm_call_log/crm_call_log.py:277
 msgid "Invalid lead details supplied."
 msgstr "Буруу утасны мэдээлэл өгсөн байна."
 
@@ -4717,11 +4481,11 @@ msgstr "Имэйлээр урих"
 msgid "Invite New User"
 msgstr "Шинэ хэрэглэгч урих"
 
-#: frontend/src/components/Settings/Settings.vue:163
+#: frontend/src/components/Settings/Settings.vue:158
 msgid "Invite User"
 msgstr "Хэрэглэгч урих"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:664
+#: frontend/src/components/Layouts/AppSidebar.vue:657
 msgid "Invite Users"
 msgstr "Хэрэглэгчдийг урих"
 
@@ -4733,7 +4497,7 @@ msgstr "Миний багийг урих"
 msgid "Invite users to access CRM. Specify their roles to control access and permissions"
 msgstr "Хэрэглэгчдийг CRM-д хандахыг урих. Хандалт болон зөвшөөрлийг хянахын тулд тэдний үүргийг тодорхойл."
 
-#: frontend/src/components/Layouts/AppSidebar.vue:472
+#: frontend/src/components/Layouts/AppSidebar.vue:465
 msgid "Invite your team"
 msgstr "Багаа урь"
 
@@ -4830,7 +4594,6 @@ msgstr "Албан тушаал"
 #: frontend/src/components/Filter.vue:645
 #: frontend/src/components/Modals/AssignmentModal.vue:13
 #: frontend/src/components/Telephony/TaskPanel.vue:43
-#: frontend/src/pages/Calendar.vue:113
 msgid "John Doe"
 msgstr "Жон Дое"
 
@@ -4848,8 +4611,8 @@ msgstr "Зөвхөн би"
 
 #. Label of the kanban_tab (Tab Break) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
-#: frontend/src/components/ViewControls.vue:401
-#: frontend/src/components/ViewControls.vue:670 frontend/src/utils/view.js:20
+#: frontend/src/components/ViewControls.vue:414
+#: frontend/src/components/ViewControls.vue:683 frontend/src/utils/view.js:20
 msgid "Kanban"
 msgstr "Канбан"
 
@@ -5008,8 +4771,7 @@ msgstr "Байршил"
 
 #. Label of the lead (Link) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:420
-#: frontend/src/components/Layouts/AppSidebar.vue:671
+#: frontend/src/components/Layouts/AppSidebar.vue:664
 #: frontend/src/components/Settings/AssignmentRules/AssigneeRules.vue:19
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:54
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:76
@@ -5068,7 +4830,7 @@ msgstr "Лийд Синк хийх"
 msgid "Lead and deal visibility will no longer be restricted by the reporting tree. Are you sure?"
 msgstr "Харилцагчид болон хэлцлийн харагдах байдал нь цаашид тайлагнах модоор хязгаарлагдахгүй. Та итгэлтэй байна уу?"
 
-#: crm/fcrm/doctype/crm_call_log/crm_call_log.py:287
+#: crm/fcrm/doctype/crm_call_log/crm_call_log.py:295
 msgid "Lead from call {0}"
 msgstr "{0} дуудлагаас ирсэн харилцагч"
 
@@ -5094,8 +4856,8 @@ msgstr "Хэлэлцээрийн хөрвүүлэлтийн хоолой руу 
 
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
-#: frontend/src/pages/InvalidPage.vue:9 frontend/src/pages/Lead.vue:384
-#: frontend/src/pages/MobileLead.vue:244
+#: frontend/src/pages/InvalidPage.vue:9 frontend/src/pages/Lead.vue:394
+#: frontend/src/pages/MobileLead.vue:256
 msgid "Leads"
 msgstr "Лийдүүд"
 
@@ -5158,10 +4920,6 @@ msgstr "Холбоосын тэргүүлэх дараалал"
 msgid "Linked Item {0} no longer exists"
 msgstr "Холбоотой {0} зүйл байхгүй болсон"
 
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:403
-msgid "Linked With"
-msgstr "Холбоотой"
-
 #. Label of the linkedin (Data) field in DocType 'CRM Deal'
 #. Label of the linkedin (Data) field in DocType 'CRM Lead'
 #. Label of the linkedin (Data) field in DocType 'CRM Organization'
@@ -5180,8 +4938,8 @@ msgstr "Холбоосууд"
 #. Label of the list_tab (Tab Break) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_form_script/crm_form_script.json
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
-#: frontend/src/components/ViewControls.vue:391
-#: frontend/src/components/ViewControls.vue:659 frontend/src/utils/view.js:12
+#: frontend/src/components/ViewControls.vue:404
+#: frontend/src/components/ViewControls.vue:672 frontend/src/utils/view.js:12
 msgid "List"
 msgstr "Жагсаалт"
 
@@ -5209,10 +4967,6 @@ msgstr "Илүү ихийг ачаалах"
 msgid "Loading..."
 msgstr "Ачааллаж байна..."
 
-#: frontend/src/components/Modals/EventModal.vue:158
-msgid "Location"
-msgstr "Байршил"
-
 #. Label of the log_tab (Tab Break) field in DocType 'CRM Deal'
 #. Label of the log_tab (Tab Break) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
@@ -5224,8 +4978,8 @@ msgstr "Лог"
 msgid "Log ID"
 msgstr "Лог ID"
 
-#: frontend/src/components/Activities/ActivityHeader.vue:136
-#: frontend/src/components/Activities/ActivityHeader.vue:179
+#: frontend/src/components/Activities/ActivityHeader.vue:120
+#: frontend/src/components/Activities/ActivityHeader.vue:163
 msgid "Log a Call"
 msgstr "Дуудлага бүртгэх"
 
@@ -5307,19 +5061,19 @@ msgid "Make Call"
 msgstr "Дуудлага хийх"
 
 #: frontend/src/components/Activities/AttachmentArea.vue:39
-#: frontend/src/components/ViewControls.vue:1189
+#: frontend/src/components/ViewControls.vue:1202
 msgid "Make Private"
 msgstr "Хувийн болгох"
 
 #: frontend/src/components/Activities/AttachmentArea.vue:39
-#: frontend/src/components/ViewControls.vue:1189
+#: frontend/src/components/ViewControls.vue:1202
 msgid "Make Public"
 msgstr "Олон нийтэд ил болгох"
 
-#: frontend/src/components/Activities/ActivityHeader.vue:141
-#: frontend/src/components/Activities/ActivityHeader.vue:184
+#: frontend/src/components/Activities/ActivityHeader.vue:125
+#: frontend/src/components/Activities/ActivityHeader.vue:168
 #: frontend/src/pages/Deal.vue:92 frontend/src/pages/Deals.vue:503
-#: frontend/src/pages/Lead.vue:133 frontend/src/pages/Leads.vue:537
+#: frontend/src/pages/Lead.vue:141 frontend/src/pages/Leads.vue:537
 #: frontend/src/pages/MobileContact.vue:73
 msgid "Make a Call"
 msgstr "Дуудлага хийх"
@@ -5440,7 +5194,7 @@ msgstr "Хариулт дээр хариулагдсан гэж тэмдэглэ
 msgid "Master switch for the Domain Enrichment feature."
 msgstr "Домэйн баяжуулах функцийн мастер унтраалга."
 
-#: frontend/src/components/Layouts/AppSidebar.vue:668
+#: frontend/src/components/Layouts/AppSidebar.vue:661
 msgid "Masters"
 msgstr "Мастерс"
 
@@ -5483,15 +5237,6 @@ msgstr "Нүүр хуудаснаас дагасан холбоосын хамг
 msgid "Maximum number of pages crawled per enrichment."
 msgstr "Баяжуулалт бүрт мөлхөх хуудасны дээд хэмжээ."
 
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:313
-#: frontend/src/components/Modals/EventModal.vue:86
-msgid "May 1, 2025"
-msgstr "2025 оны 5-р сарын 1"
-
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:538
-msgid "Maybe"
-msgstr "Магадгүй"
-
 #. Label of the medium (Data) field in DocType 'CRM Call Log'
 #. Option for the 'Priority' (Select) field in DocType 'CRM Task'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
@@ -5504,7 +5249,7 @@ msgstr "Дунд зэрэг"
 msgid "Mention"
 msgstr "Дурдалт"
 
-#: frontend/src/components/Notifications.vue:120
+#: frontend/src/components/Notifications.vue:113
 msgid "Mentions"
 msgstr "Дурдалтууд"
 
@@ -5530,7 +5275,7 @@ msgstr "Аваагүй дуудлага"
 msgid "Missing mandatory fields: {0}"
 msgstr "Заавал бөглөх талбарууд дутуу байна: {0}"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:732
+#: frontend/src/components/Layouts/AppSidebar.vue:725
 msgid "Mobile App Installation"
 msgstr "Гар утасны аппликейшн суулгах"
 
@@ -5556,8 +5301,8 @@ msgid "Mobile Number Missing"
 msgstr "Гар утасны дугаар алга байна"
 
 #: frontend/src/components/Modals/ContactModal.vue:117
-#: frontend/src/components/Modals/DealModal.vue:254
-#: frontend/src/components/Modals/LeadModal.vue:198
+#: frontend/src/components/Modals/DealModal.vue:201
+#: frontend/src/components/Modals/LeadModal.vue:144
 msgid "Mobile number should be a number"
 msgstr "Гар утасны дугаар нь тоо байх ёстой"
 
@@ -5568,7 +5313,7 @@ msgstr "Гар утасны дугаар нь тоо байх ёстой"
 msgid "Monday"
 msgstr "Даваа гараг"
 
-#: crm/api/dashboard.py:840 frontend/src/pages/Calendar.vue:103
+#: crm/api/dashboard.py:840
 msgid "Month"
 msgstr "Сар"
 
@@ -5578,12 +5323,10 @@ msgstr "Сар"
 #. Sync Source'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.json
-#: frontend/src/components/Settings/CalendarSettings.vue:52
 msgid "Monthly"
 msgstr "Сар бүр"
 
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:465
-#: frontend/src/components/ViewControls.vue:234
+#: frontend/src/components/ViewControls.vue:247
 msgid "More Options"
 msgstr "Бусад сонголтууд"
 
@@ -5643,7 +5386,7 @@ msgstr "Миний нээлттэй хямдралууд"
 #: frontend/src/components/Settings/LeadSyncing/leadSyncSourceConfig.js:23
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:62
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:63
-#: frontend/src/components/ViewControls.vue:848
+#: frontend/src/components/ViewControls.vue:861
 #: frontend/src/pages/MobileOrganization.vue:497
 #: frontend/src/pages/Organization.vue:539
 msgid "Name"
@@ -5678,7 +5421,7 @@ msgstr "Цэвэр дүн"
 msgid "Net Total"
 msgstr "Цэвэр нийт дүн"
 
-#: frontend/src/components/Activities/ActivityHeader.vue:76
+#: frontend/src/components/Activities/ActivityHeader.vue:66
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRules.vue:19
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:19
 #: frontend/src/components/Settings/Forms/FormsList.vue:19
@@ -5708,19 +5451,15 @@ msgstr "Шинэ харилцагч"
 msgid "New Email"
 msgstr "Шинэ имэйл"
 
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:673
-msgid "New Event"
-msgstr "Шинэ арга хэмжээ"
-
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:9
 msgid "New Lead Sync Source"
 msgstr "Шинэ Лийд Синк Эх үүсвэр"
 
-#: frontend/src/components/Activities/ActivityHeader.vue:66
+#: frontend/src/components/Activities/ActivityHeader.vue:56
 msgid "New Message"
 msgstr "Шинэ мессеж"
 
-#: frontend/src/components/Activities/ActivityHeader.vue:41
+#: frontend/src/components/Activities/ActivityHeader.vue:31
 #: frontend/src/pages/Deals.vue:509 frontend/src/pages/Leads.vue:543
 msgid "New Note"
 msgstr "Шинэ тэмдэглэл"
@@ -5750,7 +5489,7 @@ msgstr "Шинэ хэсэг"
 msgid "New Tab"
 msgstr "Шинэ таб"
 
-#: frontend/src/components/Activities/ActivityHeader.vue:48
+#: frontend/src/components/Activities/ActivityHeader.vue:38
 #: frontend/src/pages/Deals.vue:514 frontend/src/pages/Leads.vue:548
 msgid "New Task"
 msgstr "Шинэ даалгавар"
@@ -5825,11 +5564,7 @@ msgstr "Дараа жил"
 msgid "Next question"
 msgstr "Дараагийн асуулт"
 
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:534
-msgid "No"
-msgstr "Үгүй"
-
-#: frontend/src/components/Activities/Activities.vue:736
+#: frontend/src/components/Activities/Activities.vue:734
 msgid "No Activities Found"
 msgstr ""
 
@@ -5839,15 +5574,15 @@ msgstr ""
 msgid "No Answer"
 msgstr "Хариулт алга"
 
-#: frontend/src/components/Activities/Activities.vue:750
+#: frontend/src/components/Activities/Activities.vue:748
 msgid "No Attachments Found"
 msgstr ""
 
-#: frontend/src/components/Activities/Activities.vue:744
+#: frontend/src/components/Activities/Activities.vue:742
 msgid "No Call History"
 msgstr ""
 
-#: frontend/src/components/Activities/Activities.vue:740
+#: frontend/src/components/Activities/Activities.vue:738
 msgid "No Comments Found"
 msgstr ""
 
@@ -5860,7 +5595,7 @@ msgstr "Харилцагч нэмэгдээгүй"
 msgid "No Data"
 msgstr "Өгөгдөл байхгүй"
 
-#: frontend/src/components/Activities/Activities.vue:742
+#: frontend/src/components/Activities/Activities.vue:740
 msgid "No Data Fields Added Yet"
 msgstr ""
 
@@ -5868,13 +5603,9 @@ msgstr ""
 msgid "No Details Added"
 msgstr "Дэлгэрэнгүй мэдээлэл нэмэгдээгүй"
 
-#: frontend/src/components/Activities/Activities.vue:738
+#: frontend/src/components/Activities/Activities.vue:736
 msgid "No Emails Found"
 msgstr ""
-
-#: frontend/src/components/Activities/EventArea.vue:73
-msgid "No Events Scheduled"
-msgstr "Төлөвлөсөн арга хэмжээ байхгүй"
 
 #: frontend/src/components/Settings/LeadSyncing/FailureLogs.vue:68
 msgid "No Failure Logs Found"
@@ -5884,7 +5615,7 @@ msgstr "Алдааны бүртгэл олдсонгүй"
 msgid "No Label"
 msgstr "Шошго байхгүй"
 
-#: frontend/src/pages/Deal.vue:751
+#: frontend/src/pages/Deal.vue:747
 msgid "No Mobile Number Set"
 msgstr "Гар утасны дугаар тохируулагдаагүй байна"
 
@@ -5892,11 +5623,11 @@ msgstr "Гар утасны дугаар тохируулагдаагүй бай
 msgid "No New Notifications"
 msgstr "Шинэ мэдэгдэл алга"
 
-#: frontend/src/components/Activities/Activities.vue:746
+#: frontend/src/components/Activities/Activities.vue:744
 msgid "No Notes Found"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:746
+#: frontend/src/pages/Deal.vue:742
 msgid "No Primary Contact Set"
 msgstr "Үндсэн харилцагч тохируулагдаагүй байна"
 
@@ -5908,7 +5639,7 @@ msgstr "Жагсаалтад тэргүүлэх чиглэл байхгүй"
 msgid "No Results Found"
 msgstr "Илэрц олдсонгүй"
 
-#: frontend/src/components/Activities/Activities.vue:748
+#: frontend/src/components/Activities/Activities.vue:746
 msgid "No Tasks Found"
 msgstr ""
 
@@ -5936,7 +5667,7 @@ msgstr "Вэбсайт байхгүй"
 msgid "No Website Found"
 msgstr "Вэбсайт олдсонгүй"
 
-#: frontend/src/components/Activities/Activities.vue:752
+#: frontend/src/components/Activities/Activities.vue:750
 msgid "No WhatsApp Messages Found"
 msgstr ""
 
@@ -5953,7 +5684,7 @@ msgstr "Өөрчлөлт хийгээгүй"
 msgid "No companies found in the given site"
 msgstr "Тухайн сайтаас ямар ч компани олдсонгүй"
 
-#: frontend/src/components/Activities/Activities.vue:768
+#: frontend/src/components/Activities/Activities.vue:766
 msgid "No data fields have been added yet."
 msgstr ""
 
@@ -5961,15 +5692,11 @@ msgstr ""
 msgid "No domains added. The embed will only work on this site until you add one."
 msgstr "Домэйн нэмээгүй. Та нэгийг нэмэх хүртэл энэ сайтад зөвхөн домэйн нэмэх боломжтой."
 
-#: frontend/src/components/Activities/Activities.vue:762
+#: frontend/src/components/Activities/Activities.vue:760
 msgid "No emails found in your inbox. New messages will appear here soon."
 msgstr ""
 
-#: frontend/src/components/Activities/EventArea.vue:75
-msgid "No events coming up. Create a new one to keep things on track."
-msgstr "Үйл явдал удахгүй болох гэж байна. Үйл явдлыг хэвийн байлгахын тулд шинээр үйл явдал үүсгэнэ үү."
-
-#: frontend/src/components/Activities/Activities.vue:782
+#: frontend/src/components/Activities/Activities.vue:780
 msgid "No files have been attached yet. Upload files to see them here."
 msgstr ""
 
@@ -5981,11 +5708,10 @@ msgstr "Амралтын жагсаалт олдсонгүй"
 msgid "No matching users"
 msgstr "Таарах хэрэглэгч алга"
 
-#: frontend/src/components/Activities/Activities.vue:770
+#: frontend/src/components/Activities/Activities.vue:768
 msgid "No recent calls to display. Log a call or call someone now!"
 msgstr ""
 
-#: frontend/src/components/Calendar/Attendee.vue:215
 #: frontend/src/components/Controls/EmailMultiSelect.vue:133
 #: frontend/src/components/frappe-ui/Autocomplete.vue:119
 msgid "No results found"
@@ -6071,7 +5797,7 @@ msgstr "CRM маягт биш"
 msgid "Not allowed to add contact to Deal"
 msgstr "Хямдралд холбоо барих хүн нэмэхийг зөвшөөрөөгүй"
 
-#: crm/fcrm/doctype/crm_lead/crm_lead.py:533
+#: crm/fcrm/doctype/crm_lead/crm_lead.py:534
 msgid "Not allowed to convert Lead to Deal"
 msgstr "Лийдийг Хямдрал болгон хөрвүүлэхийг зөвшөөрөөгүй"
 
@@ -6112,8 +5838,10 @@ msgstr "Дотор биш"
 msgid "Not like"
 msgstr "Тийм биш"
 
-#: crm/api/activities.py:25 crm/api/activities.py:182 crm/api/contact.py:34
+#: crm/api/activities.py:26 crm/api/activities.py:180 crm/api/contact.py:34
 #: crm/api/contact.py:70 crm/api/contact.py:91 crm/api/form.py:239
+#: crm/fcrm/doctype/crm_call_log/crm_call_log.py:192
+#: crm/fcrm/doctype/crm_deal/api.py:8
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.py:133
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.py:162
 #: crm/integrations/api.py:79 crm/integrations/api.py:104
@@ -6134,8 +5862,8 @@ msgstr "Талбарын байршлыг өөрчлөхийг зөвшөөрө�
 
 #. Label of the note (Link) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
-#: frontend/src/components/Activities/ActivityHeader.vue:147
-#: frontend/src/components/Layouts/AppSidebar.vue:675
+#: frontend/src/components/Activities/ActivityHeader.vue:131
+#: frontend/src/components/Layouts/AppSidebar.vue:668
 msgid "Note"
 msgstr "Тэмдэглэл"
 
@@ -6145,8 +5873,8 @@ msgstr "Тэмдэглэлийг устгасан"
 
 #. Label of the notes (Small Text) field in DocType 'CRM Enrichment Run'
 #: crm/domain_enrichment/doctype/crm_enrichment_run/crm_enrichment_run.json
-#: frontend/src/pages/Deal.vue:615 frontend/src/pages/Lead.vue:467
-#: frontend/src/pages/MobileDeal.vue:477 frontend/src/pages/MobileLead.vue:324
+#: frontend/src/pages/Deal.vue:609 frontend/src/pages/Lead.vue:472
+#: frontend/src/pages/MobileDeal.vue:477 frontend/src/pages/MobileLead.vue:336
 msgid "Notes"
 msgstr "Тэмдэглэл"
 
@@ -6154,28 +5882,16 @@ msgstr "Тэмдэглэл"
 msgid "Notes View"
 msgstr "Тэмдэглэл харах"
 
-#: frontend/src/components/Modals/DealModal.vue:152
-#: frontend/src/components/Modals/LeadModal.vue:121
-#: frontend/src/components/Modals/OrganizationModal.vue:129
-msgid "Nothing could be extracted from this website."
-msgstr "Энэ вэбсайтаас юу ч гаргаж авч чадсангүй."
-
-#: frontend/src/components/Activities/Activities.vue:774
+#: frontend/src/components/Activities/Activities.vue:772
 msgid "Nothing here for now. Add a note to keep track of things."
 msgstr ""
 
-#: frontend/src/components/Activities/Activities.vue:778
+#: frontend/src/components/Activities/Activities.vue:776
 msgid "Nothing to do at the moment. Start organizing by adding one here."
 msgstr ""
 
 #: frontend/src/components/Activities/EmailArea.vue:15
-#: frontend/src/components/Calendar/EventNotifications.vue:22
-#: frontend/src/components/Calendar/EventNotifications.vue:90
-#: frontend/src/components/Layouts/AppSidebar.vue:704
-#: frontend/src/components/Settings/CalendarSettings.vue:85
-#: frontend/src/components/Settings/CalendarSettings.vue:93
-#: frontend/src/components/Settings/CalendarSettings.vue:184
-#: frontend/src/components/Settings/CalendarSettings.vue:192
+#: frontend/src/components/Layouts/AppSidebar.vue:697
 msgid "Notification"
 msgstr "Мэдэгдэл"
 
@@ -6197,7 +5913,6 @@ msgid "Notification Type Doctype"
 msgstr "Мэдэгдлийн төрөл Doctype"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:27
-#: frontend/src/components/Modals/EventModal.vue:186
 #: frontend/src/components/Notifications.vue:17
 #: frontend/src/pages/MobileNotification.vue:7
 msgid "Notifications"
@@ -6342,7 +6057,6 @@ msgid "Open {0}"
 msgstr "{0}-г нээх"
 
 #: frontend/src/components/ConditionsFilter/CFCondition.vue:48
-#: frontend/src/pages/Calendar.vue:105
 msgid "Operator"
 msgstr "Оператор"
 
@@ -6352,7 +6066,7 @@ msgstr "Заавал биш"
 
 #: frontend/src/components/Kanban/KanbanView.vue:231
 #: frontend/src/components/Modals/CallLogDetailModal.vue:16
-#: frontend/src/components/ViewControls.vue:199
+#: frontend/src/components/ViewControls.vue:212
 msgid "Options"
 msgstr "Сонголтууд"
 
@@ -6381,7 +6095,7 @@ msgstr "Бүх хэрэглэгчдийн цагийн хуваарь дахь �
 #. Label of the organization (Data) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
-#: frontend/src/components/Layouts/AppSidebar.vue:674
+#: frontend/src/components/Layouts/AppSidebar.vue:667
 #: frontend/src/components/Modals/ConvertToDealModal.vue:25
 #: frontend/src/pages/Contact.vue:348 frontend/src/pages/Contact.vue:384
 #: frontend/src/pages/MobileContact.vue:376
@@ -6431,16 +6145,12 @@ msgstr "Байгууллагууд"
 msgid "Organize my contacts"
 msgstr "Харилцагчдыг минь цэгцлэх"
 
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:151
-msgid "Organizer"
-msgstr "Зохион байгуулагч"
-
 #: frontend/src/pages/PersonaForm.vue:65 frontend/src/pages/PersonaForm.vue:82
 #: frontend/src/pages/PersonaForm.vue:103
 msgid "Other"
 msgstr "Бусад"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:696
+#: frontend/src/components/Layouts/AppSidebar.vue:689
 msgid "Other Features"
 msgstr "Бусад онцлогууд"
 
@@ -6469,10 +6179,6 @@ msgstr "Анхдагч утгуудыг дарж бичих"
 msgid "Owner"
 msgstr "Эзэмшигч"
 
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:146
-msgid "Owner: {0}"
-msgstr "Эзэмшигч: {0}"
-
 #. Label of the page (Link) field in DocType 'Facebook Lead Form'
 #: crm/lead_syncing/doctype/facebook_lead_form/facebook_lead_form.json
 msgid "Page"
@@ -6482,12 +6188,6 @@ msgstr "Хуудас"
 #: crm/lead_syncing/doctype/facebook_page/facebook_page.json
 msgid "Page Name"
 msgstr "Хуудасны нэр"
-
-#. Description of the 'Preview Max Pages' (Int) field in DocType 'CRM
-#. Enrichment Settings'
-#: crm/domain_enrichment/doctype/crm_enrichment_settings/crm_enrichment_settings.json
-msgid "Pages crawled for the fast, synchronous create-time prefill."
-msgstr "Хуудаснууд хурдан, синхрон үүсгэх хугацааны урьдчилсан дүүргэлтийг хийхийн тулд мөлхөж байсан."
 
 #. Label of the parent_crm_territory (Link) field in DocType 'CRM Territory'
 #: crm/fcrm/doctype/crm_territory/crm_territory.json
@@ -6573,12 +6273,6 @@ msgstr "Хүлээгдэж буй"
 msgid "Pending Invites"
 msgstr "Хүлээгдэж буй урилгууд"
 
-#. Description of the 'Preview Timeout (s)' (Int) field in DocType 'CRM
-#. Enrichment Settings'
-#: crm/domain_enrichment/doctype/crm_enrichment_settings/crm_enrichment_settings.json
-msgid "Per-request timeout in seconds for the preview prefill."
-msgstr "Урьдчилан харах урьдчилсан бөглөлтийн хүсэлт бүрийн хугацаа секундээр."
-
 #. Description of the 'Request Timeout (s)' (Int) field in DocType 'CRM
 #. Enrichment Settings'
 #: crm/domain_enrichment/doctype/crm_enrichment_settings/crm_enrichment_settings.json
@@ -6631,7 +6325,7 @@ msgstr "Утасны дуудлага"
 msgid "Phones Found"
 msgstr "Утаснууд олдсон"
 
-#: frontend/src/components/ViewControls.vue:1181
+#: frontend/src/components/ViewControls.vue:1194
 msgid "Pin View"
 msgstr "Пин харах"
 
@@ -6640,11 +6334,11 @@ msgstr "Пин харах"
 msgid "Pinned"
 msgstr "Тэмдэглэгдсэн"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:692
+#: frontend/src/components/Layouts/AppSidebar.vue:685
 msgid "Pinned View"
 msgstr "Бэхэлсэн Харагдац"
 
-#: frontend/src/components/ViewControls.vue:757
+#: frontend/src/components/ViewControls.vue:770
 msgid "Pinned Views"
 msgstr "Бэхлэгдсэн Үзэлтүүд"
 
@@ -6700,15 +6394,15 @@ msgstr "Одоо байгаа байгууллагыг сонгоно уу"
 msgid "Please select weekly off day"
 msgstr "Долоо хоногийн амралтын өдрийг сонгоно уу"
 
-#: frontend/src/pages/Lead.vue:140
+#: frontend/src/pages/Lead.vue:148
 msgid "Please set a mobile number to make calls"
 msgstr "Дуудлага хийхийн тулд гар утасны дугаар тохируулна уу"
 
-#: frontend/src/pages/Deal.vue:115 frontend/src/pages/Lead.vue:162
+#: frontend/src/pages/Deal.vue:115 frontend/src/pages/Lead.vue:170
 msgid "Please set a website to visit"
 msgstr "Зочлох вэбсайтаа тохируулна уу"
 
-#: frontend/src/pages/Deal.vue:104 frontend/src/pages/Lead.vue:152
+#: frontend/src/pages/Deal.vue:104 frontend/src/pages/Lead.vue:160
 msgid "Please set an email address to send emails"
 msgstr "Имэйл илгээх имэйл хаяг тохируулна уу"
 
@@ -6756,18 +6450,6 @@ msgstr "Тохиргоог амжилттай шинэчиллээ"
 msgid "Preview"
 msgstr "Урьдчилан харах"
 
-#. Label of the preview_max_pages (Int) field in DocType 'CRM Enrichment
-#. Settings'
-#: crm/domain_enrichment/doctype/crm_enrichment_settings/crm_enrichment_settings.json
-msgid "Preview Max Pages"
-msgstr "Хамгийн их хуудсыг урьдчилан харах"
-
-#. Label of the preview_timeout (Int) field in DocType 'CRM Enrichment
-#. Settings'
-#: crm/domain_enrichment/doctype/crm_enrichment_settings/crm_enrichment_settings.json
-msgid "Preview Timeout (s)"
-msgstr "Урьдчилан харах хугацаа (ууд)"
-
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:530
 msgid "Preview again"
 msgstr "Дахин урьдчилан харах"
@@ -6777,7 +6459,7 @@ msgstr "Дахин урьдчилан харах"
 msgid "Primary"
 msgstr "Үндсэн"
 
-#: frontend/src/pages/Deal.vue:723 frontend/src/pages/MobileDeal.vue:582
+#: frontend/src/pages/Deal.vue:717 frontend/src/pages/MobileDeal.vue:582
 msgid "Primary Contact Set"
 msgstr "Үндсэн харилцагчийн багц"
 
@@ -6827,16 +6509,9 @@ msgstr "Нэн тэргүүний зорилт {0}: хариу өгөх хуга
 
 #. Label of the private (Check) field in DocType 'CRM Dashboard'
 #: crm/fcrm/doctype/crm_dashboard/crm_dashboard.json
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:478
 #: frontend/src/components/FilesUploader/FilesUploaderArea.vue:93
-#: frontend/src/components/Modals/EventModal.vue:143
 msgid "Private"
 msgstr "Хувийн"
-
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:487
-#: frontend/src/components/Modals/EventModal.vue:152
-msgid "Private or Public"
-msgstr "Хувийн эсвэл нийтийн"
 
 #. Label of the probability (Percent) field in DocType 'CRM Deal'
 #. Label of the probability (Percent) field in DocType 'CRM Deal Status'
@@ -6882,7 +6557,7 @@ msgstr "Бүтээгдэхүүний синк эхэлсэн."
 msgid "Products"
 msgstr "Бүтээгдэхүүнүүд"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:661
+#: frontend/src/components/Layouts/AppSidebar.vue:654
 #: frontend/src/components/Settings/Profile/ProfileSettings.vue:4
 #: frontend/src/components/Settings/Settings.vue:106
 msgid "Profile"
@@ -6898,16 +6573,14 @@ msgstr "Хэлэлцээрийн магадлал дээр үндэслэсэн 
 
 #. Label of the public (Check) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:482
-#: frontend/src/components/Modals/EventModal.vue:147
 msgid "Public"
 msgstr "Олон нийтийн"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:691
+#: frontend/src/components/Layouts/AppSidebar.vue:684
 msgid "Public View"
 msgstr "Олон нийтийн харагдац"
 
-#: frontend/src/components/ViewControls.vue:751
+#: frontend/src/components/ViewControls.vue:764
 msgid "Public Views"
 msgstr "Олон нийтийн үзэл бодол"
 
@@ -6948,7 +6621,7 @@ msgstr "Дараалалд…"
 msgid "Quick Entry"
 msgstr "Түргэн оруулга"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:715
+#: frontend/src/components/Layouts/AppSidebar.vue:708
 msgid "Quick Entry Layout"
 msgstr "Түргэн оруулгын зохион байгуулалт"
 
@@ -6957,13 +6630,7 @@ msgstr "Түргэн оруулгын зохион байгуулалт"
 msgid "Quick Filters"
 msgstr "Түргэн шүүлтүүрүүд"
 
-#. Label of the preview_section (Section Break) field in DocType 'CRM
-#. Enrichment Settings'
-#: crm/domain_enrichment/doctype/crm_enrichment_settings/crm_enrichment_settings.json
-msgid "Quick Prefill (Preview)"
-msgstr "Хурдан урьдчилж бөглөх (Урьдчилж харах)"
-
-#: frontend/src/components/ViewControls.vue:812
+#: frontend/src/components/ViewControls.vue:825
 msgid "Quick filters updated successfully"
 msgstr "Түргэн шүүлтүүрүүд амжилттай шинэчлэгдэв"
 
@@ -7078,7 +6745,7 @@ msgid "Referrals"
 msgstr "Лавлагаа"
 
 #: frontend/src/components/ViewControls.vue:26
-#: frontend/src/components/ViewControls.vue:159
+#: frontend/src/components/ViewControls.vue:172
 #: frontend/src/pages/Dashboard.vue:10
 msgid "Refresh"
 msgstr "Шинэчлэх"
@@ -7111,10 +6778,6 @@ msgstr "Хамаатан садан"
 msgid "Reload Columns"
 msgstr "Багануудыг дахин ачаалах"
 
-#: frontend/src/components/Settings/CalendarSettings.vue:67
-msgid "Reminders will be sent <b>before the event starts</b>, based on the configured time"
-msgstr "Тохируулсан цагт үндэслэн арга хэмжээ эхлэхээс <b>өмнө</b>сануулга илгээнэ."
-
 #: frontend/src/components/ConditionsFilter/CFCondition.vue:176
 #: frontend/src/components/Controls/ImageUploader.vue:21
 #: frontend/src/components/FieldLayoutEditor.vue:434
@@ -7123,7 +6786,7 @@ msgstr "Тохируулсан цагт үндэслэн арга хэмжээ �
 #: frontend/src/components/Settings/Forms/FieldCard.vue:73
 #: frontend/src/components/Settings/Profile/UserEmailSettings.vue:83
 #: frontend/src/components/Settings/Users.vue:221
-#: frontend/src/pages/Deal.vue:672
+#: frontend/src/pages/Deal.vue:666
 msgid "Remove"
 msgstr "Хасах"
 
@@ -7135,7 +6798,7 @@ msgstr "Бүгдийг нь устгах"
 msgid "Remove Group"
 msgstr "Бүлгийг устгах"
 
-#: frontend/src/pages/Contact.vue:53 frontend/src/pages/Lead.vue:104
+#: frontend/src/pages/Contact.vue:53 frontend/src/pages/Lead.vue:112
 #: frontend/src/pages/MobileContact.vue:43
 #: frontend/src/pages/MobileOrganization.vue:43
 #: frontend/src/pages/Organization.vue:59
@@ -7470,7 +7133,7 @@ msgstr "SLA Бүтээл"
 msgid "SLA Name"
 msgstr "Үйлчилгээний гэрээний нэр"
 
-#: frontend/src/components/Settings/Settings.vue:202
+#: frontend/src/components/Settings/Settings.vue:197
 #: frontend/src/components/Settings/Sla/SlaPolicyList.vue:3
 msgid "SLA Policies"
 msgstr "Үйлчилгээний аюулгүй байдлын бодлого"
@@ -7517,7 +7180,7 @@ msgid "SUBJECT"
 msgstr "СЭДЭВ"
 
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:7
-#: frontend/src/components/Settings/Settings.vue:169
+#: frontend/src/components/Settings/Settings.vue:164
 msgid "Sales Hierarchy"
 msgstr "Борлуулалтын шатлал"
 
@@ -7648,7 +7311,6 @@ msgid "Saturday"
 msgstr "Бямба гараг"
 
 #: frontend/src/components/Activities/CommentArea.vue:43
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:510
 #: frontend/src/components/Controls/GeolocationControl.vue:66
 #: frontend/src/components/Controls/GridFieldsEditorModal.vue:88
 #: frontend/src/components/Controls/GridRowFieldsModal.vue:26
@@ -7667,33 +7329,28 @@ msgstr "Бямба гараг"
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:34
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:78
 #: frontend/src/components/Telephony/ExotelCallUI.vue:218
-#: frontend/src/components/ViewControls.vue:125
+#: frontend/src/components/ViewControls.vue:138
 #: frontend/src/pages/Dashboard.vue:36
 msgid "Save"
 msgstr "Хадгалах"
 
 #: frontend/src/components/Modals/ViewModal.vue:60
-#: frontend/src/components/ViewControls.vue:58
-#: frontend/src/components/ViewControls.vue:155
+#: frontend/src/components/ViewControls.vue:71
+#: frontend/src/components/ViewControls.vue:168
 msgid "Save Changes"
 msgstr "Өөрчлөлтийг хадгалах"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:690
+#: frontend/src/components/Layouts/AppSidebar.vue:683
 msgid "Saved View"
 msgstr "Хадгалсан харагдац"
 
-#: frontend/src/components/ViewControls.vue:745
+#: frontend/src/components/ViewControls.vue:758
 msgid "Saved Views"
 msgstr "Хадгалсан үзэлтүүд"
 
 #: frontend/src/components/Telephony/TaskPanel.vue:8
 msgid "Schedule a task..."
 msgstr "Даалгавар төлөвлөх..."
-
-#: frontend/src/components/Activities/ActivityHeader.vue:36
-#: frontend/src/components/Activities/ActivityHeader.vue:131
-msgid "Schedule an Event"
-msgstr "Арга хэмжээ төлөвлөх"
 
 #. Description of the 'Weight' (Float) field in DocType 'CRM Enrichment Rule'
 #: crm/domain_enrichment/doctype/crm_enrichment_rule/crm_enrichment_rule.json
@@ -7737,10 +7394,6 @@ msgstr "Хэсэг"
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:126
 msgid "Section title"
 msgstr "Хэсгийн гарчиг"
-
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:232
-msgid "See All Participants"
-msgstr "Бүх оролцогчдыг харах"
 
 #: crm/domain_enrichment/doctype/crm_enrichment_run/crm_enrichment_run.js:48
 #: crm/public/js/domain_enrichment.js:61
@@ -7793,15 +7446,6 @@ msgstr "Хүрээг сонгох"
 msgid "Select Source Type"
 msgstr "Эх сурвалжийн төрлийг сонгоно уу"
 
-#: frontend/src/components/Calendar/EventNotifications.vue:31
-#: frontend/src/components/Calendar/EventNotifications.vue:99
-msgid "Select Type"
-msgstr "Төрөл сонгох"
-
-#: frontend/src/components/Settings/CalendarSettings.vue:54
-msgid "Select View"
-msgstr "Харах сонголтыг сонгох"
-
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:15
 msgid "Select Workday"
 msgstr "Ажлын өдрийг сонгох"
@@ -7841,10 +7485,6 @@ msgstr "{0}-д зориулсан даалгавар гүйцэтгэгчдий�
 msgid "Select the deal status to trigger the auto customer creation in ERPNext"
 msgstr "ERPNext дээр автоматаар хэрэглэгч үүсгэхийг идэвхжүүлэхийн тулд тохиролцооны төлөвийг сонгоно уу"
 
-#: frontend/src/components/Settings/CalendarSettings.vue:38
-msgid "Select the default view for your calendar. This will be the initial view when you open the calendar"
-msgstr "Хуанлидаа анхдагч харагдацыг сонгоно уу. Энэ нь та хуанли нээх үед анхны харагдац байх болно."
-
 #: frontend/src/components/Settings/DefaultsSettings.vue:131
 msgid "Select whether to display time with or without seconds"
 msgstr "Цагийг секундтэй эсвэл секундгүйгээр харуулах эсэхийг сонгоно уу"
@@ -7869,15 +7509,15 @@ msgstr "Урилга илгээх"
 msgid "Send Invites To"
 msgstr "Урилга илгээх"
 
-#: frontend/src/components/Activities/ActivityHeader.vue:61
+#: frontend/src/components/Activities/ActivityHeader.vue:51
 msgid "Send Template"
 msgstr "Загвар илгээх"
 
-#: frontend/src/pages/Deal.vue:98 frontend/src/pages/Lead.vue:146
+#: frontend/src/pages/Deal.vue:98 frontend/src/pages/Lead.vue:154
 msgid "Send an Email"
 msgstr "Имэйл илгээх"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:577
+#: frontend/src/components/Layouts/AppSidebar.vue:570
 msgid "Send email"
 msgstr "Имэйл илгээх"
 
@@ -7907,7 +7547,7 @@ msgstr "Тусгаарлагч"
 msgid "Series"
 msgstr "Цуврал"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:702
+#: frontend/src/components/Layouts/AppSidebar.vue:695
 msgid "Service Level Agreement"
 msgstr "Үйлчилгээний түвшний гэрээ"
 
@@ -7921,7 +7561,7 @@ msgstr "Үйлчилгээ үзүүлэгч"
 msgid "Set"
 msgstr "Тохиргоо"
 
-#: frontend/src/components/ViewControls.vue:1166
+#: frontend/src/components/ViewControls.vue:1179
 msgid "Set As Default"
 msgstr "Анхдагчаар тохируулах"
 
@@ -7933,7 +7573,7 @@ msgstr "Валют тохируулах"
 msgid "Set Default Priority"
 msgstr "Анхдагч тэргүүлэх чиглэлийг тохируулах"
 
-#: frontend/src/pages/Lead.vue:125
+#: frontend/src/pages/Lead.vue:133
 msgid "Set First Name"
 msgstr "Нэрээ тохируулна уу"
 
@@ -7942,7 +7582,7 @@ msgid "Set Location"
 msgstr "Байршлыг тохируулах"
 
 #: crm/public/js/domain_enrichment.js:17
-#: frontend/src/components/EnrichFromWebsite.vue:80
+#: frontend/src/components/EnrichFromWebsite.vue:77
 msgid "Set a Website on this record before enriching."
 msgstr "Баяжуулахаасаа өмнө вэбсайтаа энэ дээд амжилтад хүргэ."
 
@@ -7954,7 +7594,7 @@ msgstr "Нийтлэхийн өмнө анхдагч утгыг тохируул
 msgid "Set a default value for each field to publish this form."
 msgstr "Энэ маягтыг нийтлэхийн тулд талбар бүрт анхдагч утгыг тохируулна уу."
 
-#: crm/domain_enrichment/api.py:58
+#: crm/domain_enrichment/api.py:53
 msgid "Set a website on this record before enriching."
 msgstr "Баяжуулахаасаа өмнө вэбсайтаа энэ дээд амжилтад хүргэ."
 
@@ -7970,7 +7610,7 @@ msgstr "Бүгдийг нь олон нийтэд нээлттэй болгож 
 msgid "Set an Organization"
 msgstr "Байгууллага тохируулах"
 
-#: frontend/src/pages/Deal.vue:680 frontend/src/pages/MobileDeal.vue:539
+#: frontend/src/pages/Deal.vue:674 frontend/src/pages/MobileDeal.vue:539
 msgid "Set as Primary Contact"
 msgstr "Үндсэн харилцагчаар тохируулах"
 
@@ -8008,14 +7648,16 @@ msgstr "Борлуулалтын шугамаа тохируулах"
 msgid "Set working days, hours, and holidays by selecting a predefined schedule or creating a new one"
 msgstr "Урьдчилан тодорхойлсон хуваарь сонгох эсвэл шинээр үүсгэх замаар ажлын өдөр, цаг, амралтын өдрүүдийг тохируулна уу"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:654
+#: frontend/src/components/Layouts/AppSidebar.vue:647
 msgid "Setting Up"
 msgstr "Тохируулж байна"
 
+#: frontend/src/components/Settings/EnrichmentSettings.vue:85
 #: frontend/src/components/Settings/GeneralSettings.vue:153
 msgid "Setting disabled successfully"
 msgstr "Тохиргоог амжилттай идэвхгүй болгосон"
 
+#: frontend/src/components/Settings/EnrichmentSettings.vue:84
 #: frontend/src/components/Settings/GeneralSettings.vue:152
 msgid "Setting enabled successfully"
 msgstr "Тохиргоог амжилттай идэвхжүүлсэн"
@@ -8054,7 +7696,7 @@ msgstr "Тохиргоог амжилттай шинэчиллээ"
 
 #. Label of the defaults_tab (Tab Break) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
-#: frontend/src/components/Layouts/AppSidebar.vue:658
+#: frontend/src/components/Layouts/AppSidebar.vue:651
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:715
 msgid "Settings"
 msgstr "Тохиргоо"
@@ -8075,7 +7717,7 @@ msgstr "Имэйл тохируулах"
 msgid "Setup the Exchange Rate Provider other than 'Frankfurter' in settings, as default provider does not support currency conversion for {0} to {1}."
 msgstr "Анхдагч үйлчилгээ үзүүлэгч нь {0} -с {1} руу хөрвүүлэх валютыг дэмждэггүй тул тохиргоонд 'Frankfurter'-с өөр валютын ханшийн үйлчилгээ үзүүлэгчийг тохируулна уу."
 
-#: frontend/src/components/Layouts/AppSidebar.vue:449
+#: frontend/src/components/Layouts/AppSidebar.vue:442
 msgid "Setup your password"
 msgstr "Нууц үгээ тохируулна уу"
 
@@ -8083,7 +7725,7 @@ msgstr "Нууц үгээ тохируулна уу"
 msgid "Share"
 msgstr "Хуваалцах"
 
-#: frontend/src/components/Activities/Activities.vue:253
+#: frontend/src/components/Activities/Activities.vue:250
 msgid "Show"
 msgstr "Шоу"
 
@@ -8094,10 +7736,6 @@ msgstr "Хил хязгаарыг харуулах"
 #: frontend/src/components/FieldLayoutEditor.vue:467
 msgid "Show Label"
 msgstr "Шошгыг харуулах"
-
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:240
-msgid "Show Less"
-msgstr "Бага харуулах"
 
 #: frontend/src/components/Controls/Password.vue:19
 msgid "Show Password"
@@ -8284,13 +7922,9 @@ msgstr "Стандарт маягтын скриптийг өөрчлөх бол
 msgid "Standard Selling Rate"
 msgstr "Стандарт борлуулалтын ханш"
 
-#: frontend/src/components/ViewControls.vue:709
+#: frontend/src/components/ViewControls.vue:722
 msgid "Standard Views"
 msgstr "Стандарт үзэмжүүд"
-
-#: frontend/src/composables/event.js:242
-msgid "Start & End Time Are Required"
-msgstr "Эхлэх болон дуусах цаг шаардлагатай"
 
 #. Label of the start_date (Date) field in DocType 'CRM Service Level
 #. Agreement'
@@ -8305,15 +7939,13 @@ msgstr "Эхлэх огноо"
 #. Label of the start_time (Time) field in DocType 'CRM Service Day'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 #: crm/fcrm/doctype/crm_service_day/crm_service_day.json
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:338
-#: frontend/src/components/Modals/EventModal.vue:103
 #: frontend/src/components/Settings/Sla/SlaHolidays.vue:219
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:31
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:32
 msgid "Start Time"
 msgstr "Эхлэх цаг"
 
-#: frontend/src/components/Activities/Activities.vue:786
+#: frontend/src/components/Activities/Activities.vue:784
 msgid "Start a conversation now!"
 msgstr ""
 
@@ -8368,8 +8000,8 @@ msgstr "Статус"
 msgid "Status Change Log"
 msgstr "Статусын өөрчлөлтийн бүртгэл"
 
-#: frontend/src/components/Modals/DealModal.vue:262
-#: frontend/src/components/Modals/LeadModal.vue:206
+#: frontend/src/components/Modals/DealModal.vue:209
+#: frontend/src/components/Modals/LeadModal.vue:152
 msgid "Status is required"
 msgstr "Төлөв шаардлагатай"
 
@@ -8582,13 +8214,13 @@ msgstr "Зорилтот утга"
 
 #. Option for the 'Type' (Select) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
-#: frontend/src/components/Activities/ActivityHeader.vue:152
-#: frontend/src/components/Layouts/AppSidebar.vue:676
+#: frontend/src/components/Activities/ActivityHeader.vue:136
+#: frontend/src/components/Layouts/AppSidebar.vue:669
 msgid "Task"
 msgstr "Даалгавар"
 
-#: frontend/src/pages/Deal.vue:610 frontend/src/pages/Lead.vue:462
-#: frontend/src/pages/MobileDeal.vue:472 frontend/src/pages/MobileLead.vue:319
+#: frontend/src/pages/Deal.vue:604 frontend/src/pages/Lead.vue:467
+#: frontend/src/pages/MobileDeal.vue:472 frontend/src/pages/MobileLead.vue:331
 msgid "Tasks"
 msgstr "Даалгаварууд"
 
@@ -8633,7 +8265,7 @@ msgstr "Загварын нэрийг амжилттай өөрчилсөн"
 msgid "Template updated successfully"
 msgstr "Загварыг амжилттай шинэчиллээ"
 
-#: frontend/src/components/Settings/Settings.vue:187
+#: frontend/src/components/Settings/Settings.vue:182
 msgid "Templates"
 msgstr "Загварууд"
 
@@ -8710,7 +8342,7 @@ msgstr "Энэ дүрэм тохирч байх үед тодорхойлогд�
 msgid "Theme"
 msgstr "Сэдэв"
 
-#: frontend/src/components/Activities/Activities.vue:758
+#: frontend/src/components/Activities/Activities.vue:756
 msgid "There are no activities to display here. Go ahead and make some changes."
 msgstr ""
 
@@ -8758,7 +8390,7 @@ msgstr "Энэ бол миний анхны CRM систем"
 msgid "This method is only meant for developer mode"
 msgstr "Энэ арга нь зөвхөн хөгжүүлэгчийн горимд зориулагдсан"
 
-#: crm/domain_enrichment/api.py:88
+#: crm/domain_enrichment/api.py:83
 msgid "This run has no linked record to re-enrich."
 msgstr "Энэ бүтээлд дахин баяжуулах холбоостой бичлэг байхгүй байна."
 
@@ -8841,7 +8473,6 @@ msgstr "Цаг хугацаа"
 #. Label of the title (Data) field in DocType 'FCRM Note'
 #: crm/fcrm/doctype/crm_task/crm_task.json
 #: crm/fcrm/doctype/fcrm_note/fcrm_note.json
-#: frontend/src/components/Modals/EventModal.vue:43
 #: frontend/src/components/Settings/Forms/FormsList.vue:98
 msgid "Title"
 msgstr "Гарчиг"
@@ -8855,11 +8486,6 @@ msgstr "Гарчгийн талбар"
 #: frontend/src/components/Settings/Forms/FormsList.vue:212
 msgid "Title and route are required"
 msgstr "Гарчиг болон маршрут шаардлагатай"
-
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:822
-#: frontend/src/components/Modals/EventModal.vue:375
-msgid "Title is required"
-msgstr "Гарчиг шаардлагатай"
 
 #. Label of the to (Data) field in DocType 'CRM Status Change Log'
 #: crm/fcrm/doctype/crm_status_change_log/crm_status_change_log.json
@@ -8897,7 +8523,7 @@ msgstr "Хэрэглэгч рүү"
 msgid "To know more about setting up email accounts, click"
 msgstr "Имэйл бүртгэл тохируулах талаар дэлгэрэнгүй мэдээлэл авахыг хүсвэл дарна уу"
 
-#: frontend/src/components/Filter.vue:715 frontend/src/pages/Calendar.vue:85
+#: frontend/src/components/Filter.vue:715
 msgid "Today"
 msgstr "Өнөөдөр"
 
@@ -8984,6 +8610,10 @@ msgstr "Мягмар гараг"
 msgid "Turn into a Group"
 msgstr "Бүлэг болгон хувиргах"
 
+#: frontend/src/components/Settings/EnrichmentSettings.vue:26
+msgid "Turn on enrichment for this site. When off, the Enrich button is hidden and no record is enriched"
+msgstr ""
+
 #. Label of the twiml_sid (Data) field in DocType 'CRM Twilio Settings'
 #: crm/fcrm/doctype/crm_twilio_settings/crm_twilio_settings.json
 msgid "TwiML SID"
@@ -8994,7 +8624,7 @@ msgstr "TwiML SID"
 #. Agent'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
-#: frontend/src/components/Layouts/AppSidebar.vue:722
+#: frontend/src/components/Layouts/AppSidebar.vue:715
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:51
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:171
 msgid "Twilio"
@@ -9057,10 +8687,6 @@ msgstr "Twilio тохиргоо байхгүй байна"
 #: frontend/src/components/Settings/LeadSyncing/FailureLogs.vue:116
 msgid "Type"
 msgstr "Төрөл"
-
-#: frontend/src/components/Calendar/Attendee.vue:216
-msgid "Type an email address to add attendee"
-msgstr "Оролцогч нэмэхийн тулд имэйл хаягаа оруулна уу"
 
 #: frontend/src/components/Activities/WhatsAppBox.vue:101
 msgid "Type your message here..."
@@ -9133,7 +8759,7 @@ msgstr "{0} Зүйл(үүд)-ийн холбоосыг салгах"
 msgid "Unnamed field"
 msgstr ""
 
-#: frontend/src/components/ViewControls.vue:1181
+#: frontend/src/components/ViewControls.vue:1194
 msgid "Unpin View"
 msgstr "Харагдацыг нээлгэх"
 
@@ -9159,9 +8785,7 @@ msgstr "Гарчиггүй"
 #: frontend/src/components/Modals/AssignmentModal.vue:84
 #: frontend/src/components/Modals/ChangePasswordModal.vue:58
 #: frontend/src/components/Modals/DoctypeModal.vue:52
-#: frontend/src/components/Modals/EventModal.vue:211
 #: frontend/src/components/Settings/BrandSettings.vue:16
-#: frontend/src/components/Settings/CalendarSettings.vue:21
 #: frontend/src/components/Settings/DashboardSettings.vue:19
 #: frontend/src/components/Settings/DefaultsSettings.vue:19
 #: frontend/src/components/Settings/ERPNextSettings.vue:41
@@ -9215,8 +8839,8 @@ msgstr "Шинэчилсэн тайлангууд"
 msgid "Upload"
 msgstr "Байршуулах"
 
-#: frontend/src/components/Activities/ActivityHeader.vue:55
-#: frontend/src/components/Activities/ActivityHeader.vue:157
+#: frontend/src/components/Activities/ActivityHeader.vue:45
+#: frontend/src/components/Activities/ActivityHeader.vue:141
 msgid "Upload Attachment"
 msgstr "Хавсралтыг байршуулах"
 
@@ -9225,7 +8849,7 @@ msgid "Upload Document"
 msgstr "Баримт бичгийг байршуулах"
 
 #: frontend/src/components/Activities/WhatsAppBox.vue:160
-#: frontend/src/pages/Contact.vue:48 frontend/src/pages/Lead.vue:99
+#: frontend/src/pages/Contact.vue:48 frontend/src/pages/Lead.vue:107
 #: frontend/src/pages/MobileContact.vue:38
 #: frontend/src/pages/MobileOrganization.vue:38
 #: frontend/src/pages/Organization.vue:54
@@ -9281,7 +8905,7 @@ msgstr "Хэрэглэгчийн Агент"
 msgid "User Configuration"
 msgstr "Хэрэглэгчийн тохиргоо"
 
-#: frontend/src/components/Settings/Settings.vue:154
+#: frontend/src/components/Settings/Settings.vue:149
 msgid "User Management"
 msgstr "Хэрэглэгчийн удирдлага"
 
@@ -9312,7 +8936,7 @@ msgstr "Хэрэглэгч {0} нь аль хэдийн шатлалын зан�
 
 #: frontend/src/components/Modals/AddExistingUserModal.vue:20
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:603
-#: frontend/src/components/Settings/Settings.vue:157
+#: frontend/src/components/Settings/Settings.vue:152
 #: frontend/src/components/Settings/Users.vue:7
 msgid "Users"
 msgstr "Хэрэглэгчид"
@@ -9367,13 +8991,9 @@ msgstr "Нэрийг харах"
 msgid "View documentation"
 msgstr "Баримт бичгийг харах"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:687
+#: frontend/src/components/Layouts/AppSidebar.vue:680
 msgid "Views"
 msgstr "Үзсэн тоо"
-
-#: frontend/src/components/Modals/EventModal.vue:134
-msgid "Visibility"
-msgstr "Харагдах байдал"
 
 #: frontend/src/components/Settings/Forms/FieldCard.vue:134
 msgid "Visible if"
@@ -9387,7 +9007,7 @@ msgstr "Албадан ирж үйлчлүүлэх"
 msgid "We're unable to connect your call right now. Please try again later."
 msgstr "Бид таны дуудлагыг одоогоор холбох боломжгүй байна. Дараа дахин оролдоно уу."
 
-#: frontend/src/components/Layouts/AppSidebar.vue:684
+#: frontend/src/components/Layouts/AppSidebar.vue:677
 msgid "Web Form"
 msgstr "Вэб маягт"
 
@@ -9419,14 +9039,9 @@ msgstr "Вэбсайтын маягтууд"
 msgid "Wednesday"
 msgstr "Лхагва гараг"
 
-#: frontend/src/pages/Calendar.vue:102
-msgid "Week"
-msgstr "Долоо хоног"
-
 #. Option for the 'Default Calendar View' (Select) field in DocType 'FCRM
 #. Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
-#: frontend/src/components/Settings/CalendarSettings.vue:51
 msgid "Weekly"
 msgstr "Долоо хоног бүр"
 
@@ -9466,15 +9081,15 @@ msgstr "Та хамгийн түрүүнд юу хийхийг хүсэж бай
 
 #. Option for the 'Type' (Select) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
-#: frontend/src/components/Layouts/AppSidebar.vue:724
+#: frontend/src/components/Layouts/AppSidebar.vue:717
 #: frontend/src/components/Settings/Settings.vue:234
-#: frontend/src/pages/Deal.vue:625 frontend/src/pages/Lead.vue:477
-#: frontend/src/pages/MobileDeal.vue:487 frontend/src/pages/MobileLead.vue:334
+#: frontend/src/pages/Deal.vue:619 frontend/src/pages/Lead.vue:482
+#: frontend/src/pages/MobileDeal.vue:487 frontend/src/pages/MobileLead.vue:346
 #: frontend/src/pages/PersonaForm.vue:76
 msgid "WhatsApp"
 msgstr "Ватсап"
 
-#: frontend/src/components/Activities/ActivityHeader.vue:162
+#: frontend/src/components/Activities/ActivityHeader.vue:146
 msgid "WhatsApp Message"
 msgstr "WhatsApp мессеж"
 
@@ -9552,7 +9167,6 @@ msgstr "Бодлого бичих"
 msgid "X (Twitter)"
 msgstr "X (Твиттер)"
 
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:530
 #: frontend/src/components/Filter.vue:639
 msgid "Yes"
 msgstr "Тийм"
@@ -9583,15 +9197,11 @@ msgstr "Та CRM нөөцөд хандах эрхгүй."
 msgid "You are not permitted to access this resource."
 msgstr "Та энэ нөөцөд хандах эрхгүй."
 
-#: crm/fcrm/doctype/crm_call_log/crm_call_log.py:265
+#: crm/fcrm/doctype/crm_call_log/crm_call_log.py:273
 msgid "You are not permitted to create leads."
 msgstr "Та лийд үүсгэхийг зөвшөөрөхгүй."
 
-#: crm/domain_enrichment/api.py:126
-msgid "You are not permitted to create {0}."
-msgstr "Та {0} үүсгэхийг зөвшөөрөөгүй."
-
-#: crm/fcrm/doctype/crm_call_log/crm_call_log.py:262
+#: crm/fcrm/doctype/crm_call_log/crm_call_log.py:270
 msgid "You are not permitted to update this call log."
 msgstr "Та энэ дуудлагын бүртгэлийг шинэчлэх зөвшөөрөлгүй байна."
 
@@ -9663,11 +9273,11 @@ msgstr "YouTube"
 msgid "Your account is not configured with a phone number. Please contact your administrator."
 msgstr "Таны бүртгэл утасны дугаараар тохируулагдаагүй байна. Админтайгаа холбогдоно уу."
 
-#: crm/api/todo.py:110
+#: crm/api/todo.py:123
 msgid "Your assignment on task {0} has been removed by {1}"
 msgstr "{0} даалгавар дээрх таны даалгаврыг {1} устгасан"
 
-#: crm/api/todo.py:47 crm/api/todo.py:88
+#: crm/api/todo.py:60 crm/api/todo.py:101
 msgid "Your assignment on {0} {1} has been removed by {2}"
 msgstr "{0} {1} дээрх таны даалгаврыг {2} устгасан байна"
 
@@ -9698,21 +9308,13 @@ msgstr "нэмсэн"
 msgid "amber"
 msgstr "хув"
 
-#: crm/api/todo.py:119
+#: crm/api/todo.py:132
 msgid "assigned a new task {0} to you"
 msgstr "танд {0} шинэ даалгавар оноолоо"
 
-#: crm/api/todo.py:99
+#: crm/api/todo.py:112
 msgid "assigned a {0} {1} to you"
 msgstr "Танд {0} {1} оноогдсон"
-
-#: frontend/src/components/Calendar/EventNotifications.vue:33
-msgid "at"
-msgstr "дээр"
-
-#: frontend/src/components/Settings/CalendarSettings.vue:221
-msgid "before at"
-msgstr "өмнө нь"
 
 #. Option for the 'Color' (Select) field in DocType 'CRM Deal Status'
 #. Option for the 'Color' (Select) field in DocType 'CRM Lead Status'
@@ -9728,7 +9330,7 @@ msgstr "хар"
 msgid "blue"
 msgstr "цэнхэр"
 
-#: frontend/src/components/Activities/Activities.vue:256
+#: frontend/src/components/Activities/Activities.vue:253
 msgid "changes from"
 msgstr "өөрчлөлтүүд"
 
@@ -9746,15 +9348,15 @@ msgstr "компанийн_нэр"
 msgid "contact-sales"
 msgstr "холбоо барих борлуулалт"
 
-#: crm/api/activities.py:53
+#: crm/api/activities.py:51
 msgid "converted the lead to this deal"
 msgstr "энэ хэлэлцээрт тэргүүлэгч болсон"
 
-#: crm/api/activities.py:50
+#: crm/api/activities.py:48
 msgid "created this deal"
 msgstr "энэ хэлэлцээрийг үүсгэсэн"
 
-#: crm/api/activities.py:205
+#: crm/api/activities.py:200
 msgid "created this lead"
 msgstr "энэ тэргүүлэгчийг үүсгэсэн"
 
@@ -9764,28 +9366,6 @@ msgstr "энэ тэргүүлэгчийг үүсгэсэн"
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
 msgid "cyan"
 msgstr "хөх ягаан"
-
-#: frontend/src/components/Calendar/EventNotifications.vue:244
-#: frontend/src/components/Settings/CalendarSettings.vue:120
-#: frontend/src/components/Settings/CalendarSettings.vue:209
-msgid "day"
-msgstr "өдөр"
-
-#: frontend/src/components/Calendar/EventNotifications.vue:175
-#: frontend/src/components/Calendar/EventNotifications.vue:194
-msgid "day before"
-msgstr "өмнөх өдөр"
-
-#: frontend/src/components/Calendar/EventNotifications.vue:244
-#: frontend/src/components/Settings/CalendarSettings.vue:120
-#: frontend/src/components/Settings/CalendarSettings.vue:209
-msgid "days"
-msgstr "өдрүүд"
-
-#: frontend/src/components/Calendar/EventNotifications.vue:175
-#: frontend/src/components/Calendar/EventNotifications.vue:194
-msgid "days before"
-msgstr "хэдэн өдрийн өмнө"
 
 #: frontend/src/components/Settings/AssignmentRules/AssigneeRules.vue:135
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:375
@@ -9880,24 +9460,6 @@ msgstr "гараа сунгасан"
 #: frontend/src/components/Settings/EmailEdit.vue:25
 msgid "here"
 msgstr "энд"
-
-#: frontend/src/components/Calendar/EventNotifications.vue:241
-#: frontend/src/components/Settings/CalendarSettings.vue:116
-msgid "hour"
-msgstr "цаг"
-
-#: frontend/src/components/Calendar/EventNotifications.vue:190
-msgid "hour before"
-msgstr "цагийн өмнө"
-
-#: frontend/src/components/Calendar/EventNotifications.vue:241
-#: frontend/src/components/Settings/CalendarSettings.vue:116
-msgid "hours"
-msgstr "цаг"
-
-#: frontend/src/components/Calendar/EventNotifications.vue:190
-msgid "hours before"
-msgstr "хэдэн цагийн өмнө"
 
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:349
 msgid "https://example.com/thank-you"
@@ -10031,28 +9593,6 @@ msgstr "лого"
 msgid "mentioned you in {0}"
 msgstr "таныг {0} дотор дурдсан"
 
-#: frontend/src/components/Calendar/EventNotifications.vue:238
-#: frontend/src/components/Settings/CalendarSettings.vue:112
-msgid "minute"
-msgstr "минут"
-
-#: frontend/src/components/Calendar/EventNotifications.vue:186
-msgid "minute before"
-msgstr "минутын өмнө"
-
-#: frontend/src/components/Calendar/EventNotifications.vue:59
-#: frontend/src/components/Calendar/EventNotifications.vue:120
-#: frontend/src/components/Calendar/EventNotifications.vue:238
-#: frontend/src/components/Settings/CalendarSettings.vue:112
-#: frontend/src/components/Settings/CalendarSettings.vue:128
-#: frontend/src/components/Settings/CalendarSettings.vue:217
-msgid "minutes"
-msgstr "минут"
-
-#: frontend/src/components/Calendar/EventNotifications.vue:186
-msgid "minutes before"
-msgstr "минутын өмнө"
-
 #: frontend/src/components/FieldLayoutEditor.vue:510
 msgid "next"
 msgstr "дараагийн"
@@ -10061,7 +9601,7 @@ msgstr "дараагийн"
 msgid "now"
 msgstr "одоо"
 
-#: crm/api/activities.py:112 crm/api/activities.py:253
+#: crm/api/activities.py:110 crm/api/activities.py:248
 msgid "old_value"
 msgstr "хуучин_утга"
 
@@ -10142,8 +9682,8 @@ msgstr "хоёрдогч_утас"
 msgid "teal"
 msgstr "нил ягаан"
 
-#: frontend/src/components/Activities/Activities.vue:295
-#: frontend/src/components/Activities/Activities.vue:358
+#: frontend/src/components/Activities/Activities.vue:292
+#: frontend/src/components/Activities/Activities.vue:355
 msgid "to"
 msgstr "руу"
 
@@ -10162,7 +9702,7 @@ msgstr "твиттер"
 msgid "unlinked_orphan"
 msgstr "холбоогүй_өнчин"
 
-#: crm/api/activities.py:109 crm/api/activities.py:250
+#: crm/api/activities.py:107 crm/api/activities.py:245
 msgid "value"
 msgstr "үнэ цэнэ"
 
@@ -10172,28 +9712,6 @@ msgstr "үнэ цэнэ"
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
 msgid "violet"
 msgstr "нил ягаан"
-
-#: frontend/src/components/Calendar/EventNotifications.vue:247
-#: frontend/src/components/Settings/CalendarSettings.vue:124
-#: frontend/src/components/Settings/CalendarSettings.vue:213
-msgid "week"
-msgstr "долоо хоног"
-
-#: frontend/src/components/Calendar/EventNotifications.vue:179
-#: frontend/src/components/Calendar/EventNotifications.vue:198
-msgid "week before"
-msgstr "долоо хоногийн өмнө"
-
-#: frontend/src/components/Calendar/EventNotifications.vue:247
-#: frontend/src/components/Settings/CalendarSettings.vue:124
-#: frontend/src/components/Settings/CalendarSettings.vue:213
-msgid "weeks"
-msgstr "долоо хоног"
-
-#: frontend/src/components/Calendar/EventNotifications.vue:179
-#: frontend/src/components/Calendar/EventNotifications.vue:198
-msgid "weeks before"
-msgstr "долоо хоногийн өмнө"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:193
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:277
@@ -10225,17 +9743,9 @@ msgstr "{0} (Цагийн формат буруу байна)"
 msgid "{0} M"
 msgstr "{0} М"
 
-#: crm/api/todo.py:51
+#: crm/api/todo.py:64
 msgid "{0} assigned a {1} {2} to you"
 msgstr "{0} танд {1} {2} оноожээ"
-
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:135
-msgid "{0} attendees"
-msgstr "{0} оролцогчид"
-
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:654
-msgid "{0} awaiting"
-msgstr "{0} хүлээж байна"
 
 #: crm/api/form.py:413
 msgid "{0} can't be collected by a form"
@@ -10273,24 +9783,14 @@ msgstr "{0} талбар байхгүй {1}"
 msgid "{0} hours ago"
 msgstr "{0} цагийн өмнө"
 
-#: frontend/src/composables/event.js:207
-msgid "{0} hrs"
-msgstr "{0} цаг"
-
 #: frontend/src/components/Controls/EmailMultiSelect.vue:131
 msgid "{0} is an Invalid Value"
 msgstr "{0} нь буруу утга байна"
 
-#: frontend/src/components/Calendar/Attendee.vue:126
-msgid "{0} is an Invalid value"
-msgstr "{0} нь буруу утга байна"
-
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:368
 #: frontend/src/components/EmailEditor.vue:38
 #: frontend/src/components/EmailEditor.vue:74
 #: frontend/src/components/EmailEditor.vue:88
 #: frontend/src/components/Modals/AddExistingUserModal.vue:37
-#: frontend/src/components/Modals/EventModal.vue:127
 msgid "{0} is an invalid email address"
 msgstr "{0} нь хүчингүй имэйл хаяг байна"
 
@@ -10307,14 +9807,6 @@ msgstr "{0} нь CRM маягт дээрх холбох боломжтой та�
 msgid "{0} m"
 msgstr "{0} м"
 
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:650
-msgid "{0} maybe"
-msgstr "{0} магадгүй"
-
-#: frontend/src/composables/event.js:201
-msgid "{0} mins"
-msgstr "{0} минут"
-
 #: frontend/src/utils/index.js:202
 msgid "{0} minutes ago"
 msgstr "{0} минутын өмнө"
@@ -10322,10 +9814,6 @@ msgstr "{0} минутын өмнө"
 #: frontend/src/utils/index.js:221
 msgid "{0} months ago"
 msgstr "{0} сарын өмнө"
-
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:646
-msgid "{0} no"
-msgstr "{0} үгүй"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:569
 msgid "{0} not yet synced"
@@ -10350,10 +9838,6 @@ msgstr "{0} у"
 #: frontend/src/utils/index.js:225
 msgid "{0} years ago"
 msgstr "{0} жилийн өмнө"
-
-#: frontend/src/components/Calendar/CalendarEventPanel.vue:644
-msgid "{0} yes"
-msgstr "{0} тийм"
 
 #: frontend/src/components/Questionnaire.vue:92
 #, python-format
