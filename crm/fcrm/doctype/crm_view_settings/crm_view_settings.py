@@ -182,19 +182,51 @@ def sync_default_columns(view):
 	columns = []
 
 	if view.type == "kanban" and view.column_field:
-		field_meta = frappe.get_meta(doctype).get_field(view.column_field)
-		if field_meta.fieldtype == "Link":
-			columns = frappe.get_all(
-				field_meta.options,
-				fields=["name"],
-				order_by="modified asc",
-			)
-		elif field_meta.fieldtype == "Select":
-			columns = [{"name": option} for option in field_meta.options.split("\n")]
+		columns = get_kanban_column_options(doctype, view.column_field)
 	elif hasattr(list, "default_list_data"):
 		columns = list.default_list_data().get("columns")
 
 	return columns
+
+
+def get_kanban_column_options(doctype, column_field):
+	field_meta = frappe.get_meta(doctype).get_field(column_field)
+	if not field_meta:
+		return []
+
+	if field_meta.fieldtype == "Link":
+		options_meta = frappe.get_meta(field_meta.options)
+		order_by = "position asc" if options_meta.get_field("position") else "modified asc"
+		return frappe.get_all(field_meta.options, fields=["name"], order_by=order_by)
+
+	if field_meta.fieldtype == "Select":
+		return [{"name": option} for option in field_meta.options.split("\n") if option]
+
+	return []
+
+
+def reconcile_kanban_columns(existing_columns, current_columns, hide_new=False):
+	"""Keep saved column settings while syncing names with the field's current options."""
+	current_by_name = {column.get("name"): column for column in current_columns if column.get("name")}
+	reconciled = []
+	seen = set()
+
+	for column in existing_columns:
+		name = column.get("name")
+		if not name or name in seen or name not in current_by_name:
+			continue
+		reconciled.append(column)
+		seen.add(name)
+
+	for name, column in current_by_name.items():
+		if name in seen:
+			continue
+		new_column = dict(column)
+		if hide_new:
+			new_column["delete"] = True
+		reconciled.append(new_column)
+
+	return reconciled
 
 
 @frappe.whitelist()
@@ -295,10 +327,7 @@ def fetch_and_update_kanban_columns(name: str | int):
 
 	new_columns = sync_default_columns(doc)
 	existing_columns = parse_json(doc.kanban_columns or "[]")
-	existing_column_names = [column.get("name") for column in existing_columns]
-	for column in new_columns:
-		if column.get("name") not in existing_column_names:
-			existing_columns.append({"name": column.get("name"), "delete": True})
+	existing_columns = reconcile_kanban_columns(existing_columns, new_columns, hide_new=True)
 
 	doc.kanban_columns = json.dumps(existing_columns)
 	doc.save(ignore_permissions=True)
