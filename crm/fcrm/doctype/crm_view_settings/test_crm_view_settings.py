@@ -2,9 +2,9 @@
 # See license.txt
 
 import frappe
-from crm.tests import CRMTestCase as FrappeTestCase
 
 from crm.fcrm.doctype.crm_view_settings.crm_view_settings import set_as_default
+from crm.tests import CRMTestCase as FrappeTestCase
 
 
 class TestCRMViewSettings(FrappeTestCase):
