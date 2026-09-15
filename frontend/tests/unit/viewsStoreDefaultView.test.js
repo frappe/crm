@@ -26,8 +26,8 @@ async function storeWithViews(views) {
 
 describe('viewsStore.getDefaultView', () => {
   beforeEach(() => {
-    setActivePinia(createPinia())
     vi.resetModules()
+    setActivePinia(createPinia())
   })
 
   it('returns the default for the requested route', async () => {
