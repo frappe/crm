@@ -46,11 +46,24 @@ export const viewsStore = defineStore('crm-views', (doctype) => {
     },
   })
 
+  const homeRoutePriority = [
+    'Leads',
+    'Deals',
+    'Contacts',
+    'Organizations',
+    'Notes',
+    'Tasks',
+    'Call Logs',
+  ]
+
   function getDefaultView(routeName = null) {
     if (routeName) return defaultViews[routeName] || null
-    // Fallback for Home redirect: return first registered default
-    const keys = Object.keys(defaultViews)
-    return keys.length ? defaultViews[keys[0]] : null
+    const candidates = [
+      ...homeRoutePriority,
+      ...Object.keys(defaultViews).sort(),
+    ]
+    const route = candidates.find((r) => defaultViews[r])
+    return route ? defaultViews[route] : null
   }
 
   function getView(view, type, doctype = null) {
