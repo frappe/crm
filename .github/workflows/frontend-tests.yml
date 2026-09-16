@@ -28,6 +28,15 @@ jobs:
         steps:
             - uses: actions/checkout@v4
 
+            # frontend/package.json links `@framework/ui` to a sibling frappe checkout
+            # (link:../../frappe/ui); without it, anything importing from @framework/ui
+            # fails to resolve.
+            - uses: actions/checkout@v4
+              with:
+                  repository: frappe/frappe
+                  ref: develop
+                  path: ../frappe
+
             - uses: actions/setup-node@v4
               with:
                   node-version: "24"
@@ -49,6 +58,13 @@ jobs:
 
         steps:
             - uses: actions/checkout@v4
+
+            # see the lint job: @framework/ui links to a sibling frappe checkout
+            - uses: actions/checkout@v4
+              with:
+                  repository: frappe/frappe
+                  ref: develop
+                  path: ../frappe
 
             - uses: actions/setup-node@v4
               with:
