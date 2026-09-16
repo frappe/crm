@@ -42,7 +42,7 @@
             size="md"
             :label="__('Unsaved')"
             theme="amber"
-            variant="outline"
+            variant="subtle"
           >
             <template #prefix>
               <IndicatorIcon class="text-amber-500" />

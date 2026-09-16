@@ -18,7 +18,7 @@
             <Badge
               :label="doc.enabled ? __('Enabled') : __('Draft')"
               :theme="doc.enabled ? 'green' : 'orange'"
-              variant="outline"
+              variant="subtle"
             >
               <template #prefix>
                 <IndicatorIcon

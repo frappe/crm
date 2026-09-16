@@ -176,6 +176,10 @@ const action = computed(() => props.action)
 const isSetFieldValue = computed(
   () => action.value.action_type === 'SetFieldValue',
 )
+const isIncrement = computed(
+  () => action.value.action_type === 'IncrementFieldValue',
+)
+const NUMERIC_FIELDTYPES = ['Int', 'Float', 'Currency', 'Percent']
 /**
  * What each param stands in for, from the pairs the schema declares - a linked Server Script
  * and one written by hand, say. Both directions, so either half knows about the other.
@@ -235,7 +239,14 @@ const params = computed(() => {
 })
 
 function optionsFor(field) {
-  if (field.options_source === 'doc_fields') return docFieldOptions.value
+  if (field.options_source === 'doc_fields') {
+    // Incrementing only makes sense on a number, and the run-time validation rejects the rest.
+    return isIncrement.value
+      ? docFieldOptions.value.filter((option) =>
+          NUMERIC_FIELDTYPES.includes(option.fieldtype),
+        )
+      : docFieldOptions.value
+  }
   return String(field.options || '')
     .split('\n')
     .filter(Boolean)
@@ -245,6 +256,7 @@ const docFieldOptions = computed(() => {
   return props.fields.map((field) => ({
     label: field.label || field.fieldname,
     value: field.fieldname,
+    fieldtype: field.fieldtype,
   }))
 })
 
