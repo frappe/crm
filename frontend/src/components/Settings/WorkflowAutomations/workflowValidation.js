@@ -36,7 +36,7 @@ function actionIssue(step) {
   return missingParamIssue(step)
 }
 
-export function setFieldIssue(step) {
+function setFieldIssue(step) {
   const params = stepParams(step)
   return params.field || hasValues(params.values)
     ? ''
@@ -47,18 +47,15 @@ function missingParamIssue(step) {
   const params = stepParams(step)
   const missing = (actionSchema(null, step.action_type)?.params_schema || [])
     .filter((param) => param.reqd)
-    .find((param) => isBlank(params[param.fieldname]))
+    .find((param) => isEmpty(params[param.fieldname]))
   return missing ? __('{0} is required', [missing.label]) : ''
 }
 
 /** The first row the flow cannot run, so a save can point at the step that blocks it. */
 export function firstBlockingRow(actions) {
-  return toRows(actions).find(
-    (row) =>
-      row.step_type === 'Action' &&
-      row.action_type === 'SetFieldValue' &&
-      setFieldIssue(row),
-  )
+  return toRows(actions)
+    .map((row) => ({ row, issue: stepIssue(row) }))
+    .find(({ issue }) => issue)
 }
 
 export function hasValues(value) {
@@ -70,4 +67,12 @@ export function hasValues(value) {
 
 function isBlank(value) {
   return value === undefined || value === null || value === ''
+}
+
+/** A JSON param reaches here as a list, an object, or the JSON text the builder saved -
+    an empty one of any of those is still an unanswered required field. */
+function isEmpty(value) {
+  if (isBlank(value)) return true
+  if (typeof value === 'object') return !hasValues(value)
+  return ['[]', '{}'].includes(String(value).trim())
 }
