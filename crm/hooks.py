@@ -364,3 +364,6 @@ standard_dropdown_items = [
 		"is_standard": 1,
 	},
 ]
+
+# Names a stored Client Script imports; see frappe/frontend/COMPATIBILITY.md.
+import_map = {"crm/lib": "./frontend/lib/index.js"}
