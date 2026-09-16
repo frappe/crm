@@ -6,6 +6,7 @@
         variant="outline"
         type="select"
         :label="__('Trigger Field')"
+        required
         :options="fieldOptions"
         @update:model-value="patch('trigger_field', $event)"
       />
@@ -27,6 +28,7 @@
         :model-value="doc.cron_expression"
         variant="outline"
         :label="__('Cron Expression')"
+        required
         placeholder="0 9 * * *"
         @update:model-value="patch('cron_expression', $event)"
       />
@@ -37,6 +39,7 @@
         variant="outline"
         type="select"
         :label="__('Date Field')"
+        required
         :options="dateFieldOptions"
         @update:model-value="patch('date_field', $event)"
       />
@@ -63,6 +66,7 @@
         variant="outline"
         type="select"
         :label="__('Custom Event')"
+        required
         :options="events"
         @update:model-value="patch('custom_event', $event)"
       />
