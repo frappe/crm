@@ -181,7 +181,7 @@ function setDefault(account) {
 }
 
 async function confirmDeleteAccount(account) {
-  let usage = {}
+  let usage
   try {
     usage = await call('crm.api.whatsapp.get_account_usage', {
       account: account.name,
