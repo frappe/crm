@@ -540,11 +540,11 @@ def convert_to_deal(
 	"""
 	validate_conversion_access(lead, doc)
 	lead = lock_lead(lead)
-	if frappe.get_cached_value("CRM Lead Status", lead.status, "type") == "Lost":
-		frappe.throw(_("Cannot convert a lead with status {0}").format(lead.status))
 	existing = existing_deal(lead.name)
 	if existing and if_converted != "Create":
 		return settle_converted(lead, existing, if_converted)
+	if frappe.get_cached_value("CRM Lead Status", lead.status, "type") == "Lost":
+		frappe.throw(_("Cannot convert a lead with status {0}").format(lead.status))
 
 	contact = lead.create_contact(existing_contact, False)
 	organization = lead.create_organization(existing_organization)
@@ -559,6 +559,7 @@ def validate_conversion_access(lead: str, doc: Document | None = None):
 		return
 	if not frappe.has_permission("CRM Lead", "write", lead):
 		frappe.throw(_("Not allowed to convert Lead to Deal"), frappe.PermissionError)
+
 
 def lock_lead(lead: str):
 	"""Serialize concurrent conversions of the same Lead before reading its state."""
