@@ -81,6 +81,8 @@ export default defineConfig(async ({ mode }) => {
         'vue-router',
         'frappe-ui',
         'dompurify',
+        // ConditionBuilder's drag handles; resolved from the host for the same reason
+        'vuedraggable',
         '@tiptap/core',
         '@tiptap/pm',
         '@tiptap/vue-3',
