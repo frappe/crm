@@ -162,13 +162,9 @@ import { timeAgo } from '@/utils'
 import { useNow } from '@vueuse/core'
 import { blockGroups } from './workflowBlocks'
 import { aliasTargets, loadCapabilities } from './workflowCapabilities'
-import { stepPresentation, workflowEdges, workflowNodes } from './workflowGraph'
+import { workflowEdges, workflowNodes } from './workflowGraph'
 import { triggerFromValue, triggerGroups } from './workflowTriggers'
-import {
-  firstBlockingRow,
-  hasValues,
-  setFieldIssue,
-} from './workflowValidation'
+import { firstBlockingRow, hasValues, triggerIssue } from './workflowValidation'
 import {
   adoptRowKeys,
   insertAfter,
@@ -543,20 +539,12 @@ async function saveAutomation() {
 }
 
 function validateBeforeSave() {
-  const missing = firstBlockingRow(doc.actions)
-  if (!missing) return
-  const message = describeIssue(missing, setFieldIssue(missing))
-  attachRowError(missing.idx, message)
-  throw new Error(message)
-}
-
-/** Names the step the same way the canvas and the run log do, so it is findable. */
-function describeIssue(row, issue) {
-  return __('Step {0} ({1}): {2}', [
-    row.idx,
-    stepPresentation(row).label,
-    issue,
-  ])
+  const trigger = triggerIssue(doc)
+  if (trigger) throw new Error(trigger)
+  const blocking = firstBlockingRow(doc.actions)
+  if (!blocking) return
+  attachRowError(blocking.row.idx, blocking.issue)
+  throw new Error(blocking.issue)
 }
 
 function payload() {
@@ -604,10 +592,12 @@ function clearErrors() {
   Object.keys(errors).forEach((key) => delete errors[key])
 }
 
-/** Server errors read "Row 3: ..." - map that flattened row back onto its node. */
+/** Server errors read "Row 3: ..." - that points the error at its node, and the node being
+    marked is what tells the user where it is, so the prefix leaves the message. */
 function attachError(error) {
-  const message = errorMessage(error)
-  const match = message.match(/Row (\d+)/)
+  const raw = errorMessage(error)
+  const match = raw.match(/^Row (\d+):\s*/)
+  const message = match ? raw.slice(match[0].length) : raw
   if (match) attachRowError(Number(match[1]), message)
   else if (selectedStep.value) errors[selectedStep.value._id] = [{ message }]
   return message
