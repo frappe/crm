@@ -17,14 +17,10 @@
           </template>
         </TextInput>
         <Button
-          :label="__('Create New Template')"
-          variant="solid"
+          :label="__('Create')"
+          icon-left="lucide-plus"
           @click="newWhatsAppTemplate"
-        >
-          <template #prefix>
-            <span class="lucide-plus h-4 w-4" aria-hidden="true" />
-          </template>
-        </Button>
+        />
       </div>
       <div
         v-if="filteredTemplates.length"
@@ -35,7 +31,10 @@
           v-for="template in filteredTemplates"
           :key="template.name"
           class="flex h-56 cursor-pointer flex-col gap-2.5 rounded-lg border border-outline-gray-2 bg-surface-gray-1 p-3 transition-colors hover:bg-surface-gray-2"
-          @click="send(template.name)"
+          :class="{
+            'ring-2 ring-outline-gray-4': selected?.name === template.name,
+          }"
+          @click="selected = template"
         >
           <div
             class="flex items-center gap-2 border-b border-outline-gray-2 pb-2"
@@ -51,8 +50,8 @@
           <!-- the bubble's own surface and ink, one size down for a grid card -->
           <TemplateContent
             class="min-h-0 flex-1 text-p-sm text-ink-gray-9"
-            :header="template.header_text"
-            :body="template.message"
+            :header="fill(template, template.header_text)"
+            :body="fill(template, template.message)"
             :footer="template.footer"
             :buttons="template.buttons"
             body-class="min-h-0 flex-1 overflow-y-auto"
@@ -71,18 +70,32 @@
           />
         </div>
       </div>
+      <!-- in the body rather than `#actions`, whose padding leaves a band of space under the grid -->
+      <div class="mt-4 flex items-center justify-between gap-4">
+        <ErrorMessage :message="sendError || missingRecipientError" />
+        <Button
+          class="ml-auto"
+          :label="__('Send')"
+          variant="solid"
+          icon-left="lucide-send"
+          :disabled="!selected || !to"
+          :loading="sending"
+          @click="send"
+        />
+      </div>
     </template>
   </Dialog>
 </template>
 
 <script setup>
 import { TemplateContent, useTemplates } from '@whatsapp/ui'
-import { Badge, toast } from 'frappe-ui'
+import { Badge, ErrorMessage, toast } from 'frappe-ui'
 import { ref, computed, nextTick, watch } from 'vue'
 
 const props = defineProps({
   doctype: { type: String, default: '' },
   docname: { type: String, default: '' },
+  doc: { type: Object, default: () => ({}) },
   to: { type: String, default: '' },
 })
 
@@ -92,6 +105,9 @@ const searchInput = ref('')
 const emit = defineEmits(['sent'])
 
 const search = ref('')
+const selected = ref(null)
+const sending = ref(false)
+const sendError = ref('')
 
 const templates = useTemplates({
   referenceDoctype: () => props.doctype,
@@ -99,25 +115,53 @@ const templates = useTemplates({
   to: () => props.to,
 })
 
-watch(
-  () => templates.error,
-  (error) => {
-    if (error) toast.error(error.messages?.[0] || error.message || __('Error'))
-  },
+const missingRecipientError = computed(() =>
+  props.to ? '' : __('Add a mobile number to send a template.'),
 )
+
+const errorMessage = computed(() => {
+  const error = templates.error
+  if (!error) return ''
+  return error.messages?.[0] || error.message || __('Error')
+})
+
+watch(errorMessage, (message) => {
+  if (message && !sending.value) toast.error(message)
+})
 
 const filteredTemplates = computed(() => {
   const query = search.value.toLowerCase()
   return templates.templates.filter((template) =>
-    [template.template_label, template.template_name, template.language].some((field) =>
-      field?.toLowerCase().includes(query),
+    [template.template_label, template.template_name, template.language].some(
+      (field) => field?.toLowerCase().includes(query),
     ),
   )
 })
 
-async function send(templateName) {
+// Mirrors the server's substitution: `{{name}}` becomes the mapped field's value, and an
+// unmapped variable is left as written so the preview never hides a gap.
+function fill(template, text) {
+  const fields = Object.fromEntries(
+    (template.template_variables ?? [])
+      .filter((variable) => variable.variable_field)
+      .map((variable) => [variable.variable_name, variable.variable_field]),
+  )
+  return text?.replace(/\{\{\s*(\w+)\s*\}\}/g, (match, name) =>
+    name in fields ? String(props.doc[fields[name]] ?? '') : match,
+  )
+}
+
+async function send() {
+  sending.value = true
+  sendError.value = ''
+  const sent = await templates.sendTemplate(selected.value.name)
+  sending.value = false
+  if (!sent) {
+    sendError.value = errorMessage.value
+    return
+  }
   show.value = false
-  if (await templates.sendTemplate(templateName)) emit('sent')
+  emit('sent')
 }
 
 function newWhatsAppTemplate() {
@@ -125,5 +169,14 @@ function newWhatsAppTemplate() {
   window.open('/app/whatsapp-template/new')
 }
 
-watch(show, (value) => value && nextTick(() => searchInput.value?.el?.focus()))
+watch(selected, () => (sendError.value = ''))
+
+watch(show, (value) => {
+  if (value) {
+    nextTick(() => searchInput.value?.el?.focus())
+    return
+  }
+  selected.value = null
+  search.value = ''
+})
 </script>

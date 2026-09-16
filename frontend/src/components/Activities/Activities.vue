@@ -433,8 +433,18 @@
       :doctype="doctype"
       @scroll="scroll"
     />
+    <div
+      v-if="title == 'WhatsApp' && !hasMobileNumber"
+      class="mx-3 mb-2.5 flex items-center gap-2 rounded-lg bg-surface-gray-2 px-3 py-2 text-sm text-ink-gray-7 sm:mx-10"
+    >
+      <span
+        class="lucide-info size-4 shrink-0 text-ink-amber-6"
+        aria-hidden="true"
+      />
+      {{ __('Add a mobile number to send WhatsApp messages.') }}
+    </div>
     <MessageInput
-      v-if="title == 'WhatsApp'"
+      v-else-if="title == 'WhatsApp'"
       v-bind="messages"
       class="mx-3 mb-2.5 sm:mx-10"
       :sender-name="senderName"
@@ -464,6 +474,7 @@
     v-model="showWhatsAppTemplates"
     :doctype="doctype"
     :docname="docname"
+    :doc="doc"
     :to="doc.mobile_no"
     @sent="onTemplateSent"
   />
@@ -594,6 +605,7 @@ const all_activities = createResource({
 })
 
 const showWhatsAppTemplates = ref(false)
+const hasMobileNumber = computed(() => Boolean(doc.value?.mobile_no))
 
 const references = computed(() => {
   const list = [[props.doctype, props.docname]]
@@ -781,7 +793,9 @@ const emptyText = computed(() => {
   } else if (title.value == 'Attachments') {
     text = 'No Attachments Found'
   } else if (title.value == 'WhatsApp') {
-    text = 'No WhatsApp Messages Found'
+    text = hasMobileNumber.value
+      ? 'No WhatsApp Messages Found'
+      : __('No Mobile Number')
   }
   return text
 })
@@ -807,7 +821,9 @@ const emptyTextDescription = computed(() => {
     description =
       'No files have been attached yet. Upload files to see them here.'
   } else if (title.value == 'WhatsApp') {
-    description = 'Start a conversation now!'
+    description = hasMobileNumber.value
+      ? 'Start a conversation now!'
+      : __('Add a mobile number to start a WhatsApp conversation.')
   }
   return description
 })
