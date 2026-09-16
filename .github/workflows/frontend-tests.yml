@@ -30,12 +30,13 @@ jobs:
 
             # frontend/package.json links `@framework/ui` to a sibling frappe checkout
             # (link:../../frappe/ui); without it, anything importing from @framework/ui
-            # fails to resolve.
-            - uses: actions/checkout@v4
-              with:
-                  repository: frappe/frappe
-                  ref: develop
-                  path: ../frappe
+            # fails to resolve. actions/checkout cannot place a repo outside the
+            # workspace, and only the `ui` package is needed.
+            - name: Clone frappe for @framework/ui
+              run: |
+                  git clone --depth 1 --branch develop --filter=blob:none --sparse \
+                      https://github.com/frappe/frappe "$GITHUB_WORKSPACE/../frappe"
+                  git -C "$GITHUB_WORKSPACE/../frappe" sparse-checkout set ui
 
             - uses: actions/setup-node@v4
               with:
@@ -60,11 +61,11 @@ jobs:
             - uses: actions/checkout@v4
 
             # see the lint job: @framework/ui links to a sibling frappe checkout
-            - uses: actions/checkout@v4
-              with:
-                  repository: frappe/frappe
-                  ref: develop
-                  path: ../frappe
+            - name: Clone frappe for @framework/ui
+              run: |
+                  git clone --depth 1 --branch develop --filter=blob:none --sparse \
+                      https://github.com/frappe/frappe "$GITHUB_WORKSPACE/../frappe"
+                  git -C "$GITHUB_WORKSPACE/../frappe" sparse-checkout set ui
 
             - uses: actions/setup-node@v4
               with:
