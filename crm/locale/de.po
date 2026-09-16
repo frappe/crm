@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-09-13 13:52+0000\n"
-"PO-Revision-Date: 2026-09-15 21:31\n"
+"PO-Revision-Date: 2026-09-16 22:21\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: German\n"
 "MIME-Version: 1.0\n"
@@ -1400,7 +1400,7 @@ msgstr ""
 #: frontend/src/components/ViewControls.vue:167
 #: frontend/src/pages/Dashboard.vue:32
 msgid "Cancel"
-msgstr "Abbrechen"
+msgstr ""
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Call Log'
 #. Option for the 'Status' (Select) field in DocType 'CRM Task'
