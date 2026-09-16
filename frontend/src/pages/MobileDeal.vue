@@ -293,7 +293,7 @@ import Link from '@/components/Controls/Link.vue'
 import SidePanelLayout from '@/components/SidePanelLayout.vue'
 import SLASection from '@/components/SLASection.vue'
 import CustomActions from '@/components/CustomActions.vue'
-import { setupCustomizations, isTranslatable } from '@/utils'
+import { setupCustomizations } from '@/utils'
 import { getView } from '@/utils/view'
 import { getSettings } from '@/stores/settings'
 import { globalStore } from '@/stores/global'
@@ -637,8 +637,7 @@ function deleteDeal() {
 }
 
 function statusLabel(status) {
-  if (isTranslatable('CRM Deal Status')) return __(status)
-  return status
+  return __(status)
 }
 
 async function triggerStatusChange(value) {

@@ -50,6 +50,8 @@ def get_fields_layout(doctype: str, type: str, parent_doctype: str | None = None
 	allowed_fields = []
 	for tab in tabs:
 		for section in tab.get("sections"):
+			if section.get("label"):
+				section["label"] = _(section["label"])
 			if "columns" not in section:
 				continue
 			for column in section.get("columns"):
@@ -78,6 +80,8 @@ def get_fields_layout(doctype: str, type: str, parent_doctype: str | None = None
 					if field:
 						field = field.as_dict()
 						handle_perm_level_restrictions(field, doctype, parent_doctype)
+						if field.get("label"):
+							field["label"] = _(field["label"])
 						column["fields"][column.get("fields").index(field["fieldname"])] = field
 
 						# remove field from required_fields if it is already present
@@ -131,13 +135,20 @@ def get_sidepanel_sections(doctype: str):
 
 	for section in layout:
 		section["name"] = section.get("name") or section.get("label")
+		if section.get("label"):
+			section["label"] = _(section["label"])
 		for column in section.get("columns") if section.get("columns") else []:
 			for field in column.get("fields") if column.get("fields") else []:
 				field_obj = next((f for f in fields if f.fieldname == field), None)
 				if field_obj:
 					field_obj = field_obj.as_dict()
 					handle_perm_level_restrictions(field_obj, doctype)
-					column["fields"][column.get("fields").index(field)] = get_field_obj(field_obj)
+					field_obj = get_field_obj(field_obj)
+					if field_obj.get("label"):
+						field_obj["label"] = _(field_obj["label"])
+					if field_obj.get("placeholder"):
+						field_obj["placeholder"] = _(field_obj["placeholder"])
+					column["fields"][column.get("fields").index(field)] = field_obj
 
 	fields_meta = {}
 	for field in fields:

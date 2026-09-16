@@ -423,7 +423,7 @@ function parseRows(rows, columns = []) {
         _rows[row] = website(deal.website)
       } else if (row == 'status') {
         _rows[row] = {
-          label: deal.status,
+          label: __(deal.status),
           color: getDealStatus(deal.status)?.color,
         }
       } else if (row == 'sla_status') {

@@ -273,7 +273,6 @@ import {
   setupCustomizations,
   copyToClipboard,
   validateIsImageFile,
-  isTranslatable,
 } from '@/utils'
 import { getView } from '@/utils/view'
 import { getSettings } from '@/stores/settings'
@@ -530,8 +529,7 @@ function openEmailBox() {
 }
 
 function statusLabel(status) {
-  if (isTranslatable('CRM Lead Status')) return __(status)
-  return status
+  return __(status)
 }
 
 const showLostReasonModal = ref(false)
