@@ -39,7 +39,6 @@ def install(enable: int = 0):
 		flow = build()
 		flow["enabled"] = frappe.utils.cint(enable)
 		print("installed:", replace_flow(flow))
-	frappe.db.commit()
 
 
 def uninstall():
@@ -54,7 +53,6 @@ def uninstall():
 			continue
 		frappe.delete_doc("Automation Flow", name, force=True, ignore_permissions=True)
 		print("removed:", title)
-	frappe.db.commit()
 
 
 def builders() -> tuple:
@@ -454,7 +452,7 @@ def high_value_deal_watch() -> dict:
 				[HOT_LEAD_OWNER],
 				"High value deal moved: {{ doc.organization or doc.name }}",
 				"<p>{{ doc.organization or doc.name }} is at {{ doc.expected_deal_value }} "
-				"and {{ doc.probability }}% confidence, closing {{ doc.expected_closure_date }}.</p>",
+				+ "and {{ doc.probability }}% confidence, closing {{ doc.expected_closure_date }}.</p>",
 			),
 			step(7, "wait_for_movement", "Wait", params={"value": QUIET_DAYS, "unit": "Days"}),
 			quiet_check_step(8, "nobody_replied"),
@@ -465,7 +463,7 @@ def high_value_deal_watch() -> dict:
 				[HOT_LEAD_OWNER],
 				"No contact in {0} days: {{{{ doc.organization or doc.name }}}}".format(QUIET_DAYS),
 				"<p>Nothing has come back on a deal worth {{ doc.expected_deal_value }}. "
-				"It is worth a call before the close date.</p>",
+				+ "It is worth a call before the close date.</p>",
 				parent=8,
 				branch="If",
 			),
