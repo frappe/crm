@@ -2,6 +2,13 @@
   <div class="-mx-[2px] space-y-1.5 px-[2px]">
     <label v-if="attrs.label" class="block" :class="labelClasses">
       {{ __(attrs.label) }}
+      <span
+        v-if="required"
+        class="select-none text-ink-red-6"
+        aria-hidden="true"
+      >
+        *
+      </span>
     </label>
     <Autocomplete
       ref="autocomplete"
@@ -79,6 +86,7 @@ const props = defineProps({
   modelValue: { type: String, default: '' },
   hideMe: { type: Boolean, default: false },
   variant: { type: String, default: 'subtle' },
+  required: { type: Boolean, default: false },
 })
 
 const emit = defineEmits(['update:modelValue', 'change'])
