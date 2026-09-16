@@ -128,7 +128,7 @@
         iconLeft="plus"
         @click="
           sections.push({
-            label: __('New Section'),
+            label: 'New Section',
             opened: true,
             name: 'section_' + getRandom(),
             columns: [{ name: 'column_' + getRandom(), fields: [] }],

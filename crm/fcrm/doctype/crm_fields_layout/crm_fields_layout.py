@@ -47,11 +47,12 @@ def get_fields_layout(doctype: str, type: str, parent_doctype: str | None = None
 	if not has_tabs:
 		tabs = [{"name": "first_tab", "sections": tabs}]
 
+	# Do not translate section labels here. The layout editor saves this
+	# payload as-is, so _(label) would persist locale-specific strings for
+	# every user. CollapsibleSection / SidePanelLayoutEditor translate on render.
 	allowed_fields = []
 	for tab in tabs:
 		for section in tab.get("sections"):
-			if section.get("label"):
-				section["label"] = _(section["label"])
 			if "columns" not in section:
 				continue
 			for column in section.get("columns"):
