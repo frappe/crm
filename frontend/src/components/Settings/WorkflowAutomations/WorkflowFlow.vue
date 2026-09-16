@@ -259,7 +259,11 @@
               <WorkflowComboboxOption :item="item" />
             </template>
             <template #trigger>
-              <Button icon-left="lucide-plus" size="sm">
+              <Button
+                icon-left="lucide-plus"
+                size="sm"
+                :class="arm.branch === 'Else' ? 'mt-2' : ''"
+              >
                 {{ arm.label }}
               </Button>
             </template>
