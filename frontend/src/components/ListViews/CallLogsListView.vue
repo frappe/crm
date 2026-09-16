@@ -187,7 +187,6 @@ import HeartIcon from '@/components/Icons/HeartIcon.vue'
 import ListBulkActions from '@/components/ListBulkActions.vue'
 import ListRows from '@/components/ListViews/ListRows.vue'
 import RatingInput from '@/components/Controls/RatingInput.vue'
-import { isTranslatable } from '@/utils'
 import {
   Avatar,
   ListView,
@@ -237,7 +236,7 @@ function onColumnWidthUpdated({ width, save }, column) {
 }
 
 function getLabel(label, column) {
-  if (column.options && isTranslatable(column.options)) return __(label)
+  if (typeof label === 'string') return __(label)
   return label
 }
 

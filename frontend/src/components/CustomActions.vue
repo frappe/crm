@@ -3,7 +3,7 @@
     <Button
       v-for="action in normalActions"
       :key="action.label"
-      :label="action.label"
+      :label="__(action.label)"
       @click="action.onClick(close)"
     >
       <template v-if="action.icon" #prefix>

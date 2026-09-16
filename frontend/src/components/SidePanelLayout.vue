@@ -510,6 +510,12 @@ const _sections = computed(() => {
 function parsedField(field) {
   // Clone to avoid mutating the cached layout data
   field = { ...field }
+  if (field.label) {
+    field.label = __(field.label)
+  }
+  if (field.placeholder) {
+    field.placeholder = __(field.placeholder)
+  }
 
   // Merge script property overrides
   const overrides = document.fieldPropertyOverrides?.[field.fieldname]
