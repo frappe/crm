@@ -45,6 +45,7 @@ jobs:
       - name: Set Image Tag
         run: |
           echo "IMAGE_TAG=stable" >> $GITHUB_ENV
+          echo "IMAGE_NAME=${GITHUB_REPOSITORY,,}" >> $GITHUB_ENV
 
       - uses: actions/checkout@v4
         with:
@@ -58,8 +59,8 @@ jobs:
           context: builds
           file: builds/images/layered/Containerfile
           tags: >
-            ghcr.io/${{ github.repository }}:${{ github.ref_name }},
-            ghcr.io/${{ github.repository }}:${{ env.IMAGE_TAG }}
+            ghcr.io/${{ env.IMAGE_NAME }}:${{ github.ref_name }},
+            ghcr.io/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
           build-args: |
             "FRAPPE_BRANCH=${{ env.FRAPPE_BRANCH }}"
             "APPS_JSON_BASE64=${{ env.APPS_JSON_BASE64 }}"
