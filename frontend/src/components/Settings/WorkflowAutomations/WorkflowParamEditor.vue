@@ -97,6 +97,7 @@
           :doctype="doctype"
           :params="action.params"
           :label="field.label"
+          :required="Boolean(field.reqd)"
           variant="outline"
           @update:model-value="setParam(field.fieldname, $event)"
         />
@@ -107,6 +108,7 @@
             type="text"
             variant="outline"
             :label="field.label"
+            :required="Boolean(field.reqd)"
             :placeholder="__('Clear to pick a record instead')"
             @update:model-value="setParam(field.fieldname, $event)"
           />
@@ -116,6 +118,7 @@
             :doctype="field.options"
             :filters="field.link_filters || {}"
             :label="field.label"
+            :required="Boolean(field.reqd)"
             variant="outline"
             @update:model-value="setParam(field.fieldname, $event)"
           />
@@ -129,6 +132,7 @@
           type="select"
           variant="outline"
           :label="field.label"
+          :required="Boolean(field.reqd)"
           :options="optionsFor(field)"
           @update:model-value="setParam(field.fieldname, $event)"
         />
@@ -137,6 +141,7 @@
             :model-value="valueFor(field)"
             :type="controlType(field)"
             :label="field.label"
+            :required="Boolean(field.reqd)"
             variant="outline"
             @update:model-value="
               setParam(field.fieldname, castValue(field, $event))
