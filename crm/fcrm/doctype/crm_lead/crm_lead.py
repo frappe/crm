@@ -2,12 +2,14 @@
 # For license information, please see license.txt
 
 import json
+import re
 
 import frappe
 from frappe import _
 from frappe.desk.form.assign_to import _add as assign
 from frappe.model.document import Document
 from frappe.utils import validate_email_address
+from pypika.terms import Function
 
 from crm.fcrm.doctype.crm_service_level_agreement.utils import get_sla
 from crm.fcrm.doctype.crm_status_change_log.crm_status_change_log import (
@@ -605,6 +607,10 @@ MERGE_SKIP_FIELDS = {
 
 MERGE_SKIP_FIELDTYPES = {*frappe.model.no_value_fields, *frappe.model.table_fields}
 
+# Numbers shorter than this are only matched exactly; longer ones match when one is a
+# suffix of the other, so "+91 98765 43210" and "9876543210" count as the same number.
+PHONE_MIN_DIGITS = 7
+
 
 @frappe.whitelist()
 def get_duplicate_leads(lead: str):
@@ -612,23 +618,66 @@ def get_duplicate_leads(lead: str):
 	doc = frappe.get_cached_doc("CRM Lead", lead)
 	doc.check_permission("read")
 
-	or_filters = []
-	if doc.email:
-		or_filters.append(["email", "=", doc.email])
-	for number in {doc.mobile_no, doc.phone} - {None, ""}:
-		or_filters.append(["mobile_no", "=", number])
-		or_filters.append(["phone", "=", number])
-
-	if not or_filters:
+	numbers = {normalize_phone(n) for n in (doc.mobile_no, doc.phone)} - {""}
+	if not doc.email and not numbers:
 		return []
 
-	return frappe.get_list(
+	candidates = get_duplicate_lead_candidates(doc, numbers)
+	if not candidates:
+		return []
+
+	leads = frappe.get_list(
 		"CRM Lead",
-		filters={"name": ["!=", doc.name], "converted": 0},
-		or_filters=or_filters,
+		filters={"name": ["in", candidates]},
 		fields=["name", "lead_name", "email", "mobile_no", "phone", "status", "organization", "modified"],
 		order_by="modified desc",
 	)
+	return [
+		d
+		for d in leads
+		if (doc.email and d.email == doc.email)
+		or any(phones_match(n, d.mobile_no) or phones_match(n, d.phone) for n in numbers)
+	]
+
+
+def get_duplicate_lead_candidates(doc, numbers):
+	"""Prefilter in SQL on exact email or on the last digits of a phone number."""
+	Lead = frappe.qb.DocType("CRM Lead")
+	condition = None
+	if doc.email:
+		condition = Lead.email == doc.email
+	for number in numbers:
+		suffix = f"%{number[-PHONE_MIN_DIGITS:]}"
+		for column in (Lead.mobile_no, Lead.phone):
+			match = digits_only(column).like(suffix)
+			condition = match if condition is None else condition | match
+
+	return (
+		frappe.qb.from_(Lead)
+		.select(Lead.name)
+		.where((Lead.name != doc.name) & (Lead.converted == 0) & condition)
+		.run(pluck=True)
+	)
+
+
+def digits_only(column):
+	args = [column, "[^0-9]", ""]
+	if frappe.db.db_type == "postgres":
+		args.append("g")
+	return Function("REGEXP_REPLACE", *args)
+
+
+def normalize_phone(number):
+	return re.sub(r"\D", "", number or "")
+
+
+def phones_match(a, b):
+	a, b = normalize_phone(a), normalize_phone(b)
+	if not a or not b:
+		return False
+	if len(a) < PHONE_MIN_DIGITS or len(b) < PHONE_MIN_DIGITS:
+		return a == b
+	return a.endswith(b) or b.endswith(a)
 
 
 @frappe.whitelist()

@@ -610,13 +610,33 @@ class TestCRMLead(IntegrationTestCase):
 
 	def test_get_duplicate_leads_matches_email_and_phone(self):
 		"""Duplicates are found by email, or by a number in either phone field, and exclude self"""
-		lead = create_lead(first_name="Dup", email="dup@example.com", mobile_no="+1111")
+		lead = create_lead(first_name="Dup", email="dup@example.com", mobile_no="+1 555 010 1111")
 		by_email = create_lead(first_name="ByEmail", email="dup@example.com")
-		by_phone = create_lead(first_name="ByPhone", phone="+1111")
-		create_lead(first_name="Unrelated", email="other@example.com", mobile_no="+2222")
+		by_phone = create_lead(first_name="ByPhone", phone="+1 555 010 1111")
+		create_lead(first_name="Unrelated", email="other@example.com", mobile_no="+1 555 010 2222")
 
 		names = {d.name for d in get_duplicate_leads(lead.name)}
 		self.assertEqual(names, {by_email.name, by_phone.name})
+
+	def test_get_duplicate_leads_ignores_phone_formatting(self):
+		"""Spaces, dashes, brackets and a country code prefix do not hide a duplicate"""
+		lead = create_lead(first_name="Dup", mobile_no="+91 98765 43210")
+		formatted = create_lead(first_name="Formatted", mobile_no="(98765) 432-10")
+		no_country_code = create_lead(first_name="Local", phone="9876543210")
+		create_lead(first_name="OtherCountry", mobile_no="+44 98765 43210")
+		create_lead(first_name="Different", mobile_no="+91 98765 43211")
+
+		names = {d.name for d in get_duplicate_leads(lead.name)}
+		self.assertEqual(names, {formatted.name, no_country_code.name})
+
+	def test_get_duplicate_leads_short_numbers_match_exactly(self):
+		"""Short numbers never match on a shared suffix"""
+		lead = create_lead(first_name="Short", mobile_no="12345")
+		same = create_lead(first_name="Same", phone="12345")
+		create_lead(first_name="Longer", mobile_no="9912345")
+
+		names = {d.name for d in get_duplicate_leads(lead.name)}
+		self.assertEqual(names, {same.name})
 
 	def test_get_duplicate_leads_ignores_converted(self):
 		"""Converted leads are not reported as duplicates"""
