@@ -178,6 +178,13 @@
                 />
 
                 <Button
+                  v-if="canWrite && !doc.converted"
+                  :tooltip="__('Merge with another lead')"
+                  icon="lucide-git-merge"
+                  @click="showMergeLeadModal = true"
+                />
+
+                <Button
                   v-if="canDelete"
                   :tooltip="__('Delete')"
                   variant="subtle"
@@ -191,6 +198,18 @@
           </div>
         </template>
       </FileUploader>
+      <div
+        v-if="duplicates.data?.length"
+        class="flex items-center justify-between gap-2 border-b bg-surface-amber-1 px-5 py-2.5 text-base text-ink-amber-3"
+      >
+        <div class="flex items-center gap-2">
+          <Icon icon="lucide-copy" class="h-4 w-4 shrink-0" />
+          {{
+            __('{0} possible duplicate lead(s) found', [duplicates.data.length])
+          }}
+        </div>
+        <Button :label="__('Review')" @click="showMergeLeadModal = true" />
+      </div>
       <SLASection
         v-if="doc.sla_status"
         v-model="doc"
@@ -220,6 +239,13 @@
     v-if="showConvertToDealModal"
     v-model="showConvertToDealModal"
     :lead="doc"
+  />
+  <MergeLeadModal
+    v-if="showMergeLeadModal"
+    v-model="showMergeLeadModal"
+    :lead="doc"
+    :duplicates="duplicates.data || []"
+    @merged="onMerged"
   />
   <FilesUploader
     v-model="showFilesUploader"
@@ -274,6 +300,7 @@ import SidePanelLayout from '@/components/SidePanelLayout.vue'
 import SLASection from '@/components/SLASection.vue'
 import CustomActions from '@/components/CustomActions.vue'
 import ConvertToDealModal from '@/components/Modals/ConvertToDealModal.vue'
+import MergeLeadModal from '@/components/Modals/MergeLeadModal.vue'
 import EnrichFromWebsite from '@/components/EnrichFromWebsite.vue'
 import {
   openWebsite,
@@ -326,6 +353,7 @@ const errorTitle = ref('')
 const errorMessage = ref('')
 const showDeleteLinkedDocModal = ref(false)
 const showConvertToDealModal = ref(false)
+const showMergeLeadModal = ref(false)
 const showFilesUploader = ref(false)
 
 const {
@@ -339,6 +367,7 @@ const {
 } = useDocument('CRM Lead', props.leadId)
 
 const canDelete = computed(() => permissions.data?.permissions?.delete || false)
+const canWrite = computed(() => permissions.data?.permissions?.write || false)
 
 const doc = computed(() => document.doc || {})
 const isLeadConversionDisabled = computed(
@@ -527,6 +556,22 @@ function deleteLead() {
   showDeleteLinkedDocModal.value = true
 }
 
+const duplicates = createResource({
+  url: 'crm.fcrm.doctype.crm_lead.crm_lead.get_duplicate_leads',
+  params: { lead: props.leadId },
+  auto: true,
+})
+
+function onMerged(target) {
+  if (target !== props.leadId) {
+    router.push({ name: 'Lead', params: { leadId: target } })
+    return
+  }
+  document.reload?.()
+  duplicates.reload()
+  activities.value?.all_activities?.reload()
+}
+
 function openEmailBox() {
   let currentTab = tabs.value[tabIndex.value]
   if (!['Emails', 'Comments', 'Activities'].includes(currentTab.name)) {
@@ -578,6 +623,11 @@ function onEnriched() {
 function reloadResources(data) {
   if (Object.hasOwn(data ?? {}, 'lead_owner')) {
     assignees.reload()
+  }
+  if (
+    ['email', 'mobile_no', 'phone'].some((f) => Object.hasOwn(data ?? {}, f))
+  ) {
+    duplicates.reload()
   }
   if (
     Object.hasOwn(data ?? {}, 'status') &&

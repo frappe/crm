@@ -580,3 +580,126 @@ def is_custom_field(field):
 		or (field.fieldname or "").startswith("custom_")
 		or field.name == f"{field.parent}-{field.fieldname}"
 	)
+
+
+# Fields that are derived, system-managed or only meaningful on the lead that owns them;
+# they are never offered as a choice when merging two leads.
+MERGE_SKIP_FIELDS = {
+	"naming_series",
+	"converted",
+	"lead_name",
+	"sla",
+	"sla_creation",
+	"sla_status",
+	"response_by",
+	"first_response_time",
+	"first_responded_on",
+	"communication_status",
+	"rolling_responses",
+	"last_response_time",
+	"last_responded_on",
+	"status_change_log",
+	"total",
+	"net_total",
+}
+
+MERGE_SKIP_FIELDTYPES = {*frappe.model.no_value_fields, *frappe.model.table_fields}
+
+
+@frappe.whitelist()
+def get_duplicate_leads(lead: str):
+	"""Return unconverted leads sharing an email or phone number with ``lead``."""
+	doc = frappe.get_cached_doc("CRM Lead", lead)
+	doc.check_permission("read")
+
+	or_filters = []
+	if doc.email:
+		or_filters.append(["email", "=", doc.email])
+	for number in {doc.mobile_no, doc.phone} - {None, ""}:
+		or_filters.append(["mobile_no", "=", number])
+		or_filters.append(["phone", "=", number])
+
+	if not or_filters:
+		return []
+
+	return frappe.get_list(
+		"CRM Lead",
+		filters={"name": ["!=", doc.name], "converted": 0},
+		or_filters=or_filters,
+		fields=["name", "lead_name", "email", "mobile_no", "phone", "status", "organization", "modified"],
+		order_by="modified desc",
+	)
+
+
+@frappe.whitelist()
+def get_lead_merge_fields(source: str, target: str):
+	"""Return the fields whose values differ between ``source`` and ``target``."""
+	source_doc = frappe.get_cached_doc("CRM Lead", source)
+	target_doc = frappe.get_cached_doc("CRM Lead", target)
+	source_doc.check_permission("read")
+	target_doc.check_permission("read")
+
+	fields = []
+	for df in get_mergeable_fields():
+		source_value = source_doc.get(df.fieldname)
+		target_value = target_doc.get(df.fieldname)
+		if (source_value or None) == (target_value or None):
+			continue
+		fields.append(
+			{
+				"fieldname": df.fieldname,
+				"label": _(df.label),
+				"fieldtype": df.fieldtype,
+				"source_value": source_value,
+				"target_value": target_value,
+				"source_display": frappe.format(source_value, df) if source_value else "",
+				"target_display": frappe.format(target_value, df) if target_value else "",
+			}
+		)
+	return fields
+
+
+@frappe.whitelist()
+def merge_leads(source: str, target: str, values: str | dict | None = None):
+	"""Merge ``source`` into ``target`` and delete ``source``.
+
+	``values`` are field values (taken from ``source``) to set on ``target`` before
+	the merge. Linked deals, tasks, notes, calls, emails, comments, assignments and
+	attachments of ``source`` are moved to ``target`` by ``frappe.rename_doc``.
+	"""
+	if source == target:
+		frappe.throw(_("Cannot merge a lead into itself"))
+
+	source_doc = frappe.get_doc("CRM Lead", source)
+	target_doc = frappe.get_doc("CRM Lead", target)
+	for doc in (source_doc, target_doc):
+		doc.check_permission("write")
+		if doc.converted:
+			frappe.throw(
+				_("Lead {0} is already converted to a deal and cannot be merged").format(
+					frappe.bold(doc.name)
+				)
+			)
+
+	if isinstance(values, str):
+		values = frappe.parse_json(values)
+	if values:
+		mergeable = {df.fieldname for df in get_mergeable_fields()}
+		for fieldname, value in values.items():
+			if fieldname in mergeable:
+				target_doc.set(fieldname, value)
+		target_doc.save()
+
+	frappe.rename_doc("CRM Lead", source, target, merge=True, force=True)
+	return target
+
+
+def get_mergeable_fields():
+	return [
+		df
+		for df in frappe.get_meta("CRM Lead").fields
+		if df.fieldname not in MERGE_SKIP_FIELDS
+		and df.fieldtype not in MERGE_SKIP_FIELDTYPES
+		and not df.read_only
+		and not df.hidden
+	]
