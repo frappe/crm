@@ -12,7 +12,7 @@ RESTRICTED_VALUE = "salary is 100000"
 
 
 class TestActivityPermlevel(IntegrationTestCase):
-	"""A permlevel-restricted field is hidden on the form layout, so its values
+	"""Modified:: A permlevel-restricted field is hidden on the form layout, so its values
 	must not leak through the activity timeline either (frappe/crm#805).
 
 	  rep@permlevel.test  -- Sales User, owns the lead, no permlevel 1 access
