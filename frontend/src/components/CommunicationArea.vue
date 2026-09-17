@@ -204,7 +204,13 @@ const emailEmpty = computed(
 )
 
 async function sendMail() {
-  let fromEmail = newEmailEditor.value.fromEmail || getUser().email
+  let fromOptions = newEmailEditor.value.from || []
+  let isPermittedFromEmail = fromOptions.length
+    ? fromOptions.some((f) => f.value === newEmailEditor.value.fromEmail)
+    : newEmailEditor.value.fromEmail === getUser().email
+  let fromEmail = isPermittedFromEmail
+    ? newEmailEditor.value.fromEmail
+    : getUser().email
   let recipients = newEmailEditor.value.toEmails
   let subject = newEmailEditor.value.subject
   let cc = newEmailEditor.value.ccEmails || []
