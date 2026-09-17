@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  build:
+    name: Test
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    env:
+      MOMENTIC_API_KEY: ${{ secrets.MOMENTIC_API_KEY }}
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.12.0
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Install browsers
+        run: npx momentic install-browsers --all
+
+      - name: Test
+        run: npx momentic run
+
+      - name: Upload results
+        if: always()
+        run: npx momentic results upload test-results
