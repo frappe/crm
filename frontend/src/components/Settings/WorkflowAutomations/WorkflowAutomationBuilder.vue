@@ -69,9 +69,7 @@
       >
         <TabButtons v-model="tab" :options="tabOptions" />
         <div class="flex items-center gap-2">
-          <span class="text-sm text-ink-gray-6">
-            {{ doc.enabled ? __('Enabled') : __('Disabled') }}
-          </span>
+          <span class="text-sm text-ink-gray-6"> {{ __('Enabled') }} </span>
           <Switch
             size="sm"
             :model-value="Boolean(doc.enabled)"
