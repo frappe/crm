@@ -154,6 +154,7 @@ import { ref, computed, reactive, watch } from 'vue'
 const props = defineProps({
   lead: { type: Object, required: true },
   duplicates: { type: Array, default: () => [] },
+  otherLead: { type: String, default: '' },
 })
 
 const emit = defineEmits(['merged'])
@@ -161,7 +162,8 @@ const emit = defineEmits(['merged'])
 const show = defineModel({ type: Boolean })
 
 const otherLead = ref(
-  props.duplicates.length === 1 ? props.duplicates[0].name : '',
+  props.otherLead ||
+    (props.duplicates.length === 1 ? props.duplicates[0].name : ''),
 )
 const keepThis = ref(false)
 const choices = reactive({})

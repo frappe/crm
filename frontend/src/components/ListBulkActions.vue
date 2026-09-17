@@ -28,11 +28,19 @@
     :items="showDeleteDocModal.items"
     :reload="reload"
   />
+  <MergeLeadModal
+    v-if="showMergeLeadModal"
+    v-model="showMergeLeadModal"
+    :lead="{ name: mergeLeads[0] }"
+    :otherLead="mergeLeads[1]"
+    @merged="() => reload()"
+  />
 </template>
 
 <script setup>
 import EditValueModal from '@/components/Modals/EditValueModal.vue'
 import AssignmentModal from '@/components/Modals/AssignmentModal.vue'
+import MergeLeadModal from '@/components/Modals/MergeLeadModal.vue'
 import { setupListCustomizations } from '@/utils'
 import { globalStore } from '@/stores/global'
 import { useTelemetry } from 'frappe-ui/frappe'
@@ -120,6 +128,15 @@ function deleteValues(selections, unselectAll) {
   }
 }
 
+const showMergeLeadModal = ref(false)
+const mergeLeads = ref([])
+
+function mergeSelectedLeads(selections, unselectAll) {
+  mergeLeads.value = Array.from(selections)
+  showMergeLeadModal.value = true
+  unselectAllAction.value = unselectAll
+}
+
 const showAssignmentModal = ref(false)
 const bulkAssignees = ref([])
 
@@ -195,6 +212,12 @@ function bulkActions(selections, unselectAll) {
       label: __('Convert to Deal'),
       onClick: () => convertToDeal(selections, unselectAll),
     })
+    if (selections.size === 2) {
+      actions.push({
+        label: __('Merge'),
+        onClick: () => mergeSelectedLeads(selections, unselectAll),
+      })
+    }
   }
 
   customBulkActions.value.forEach((action) => {
@@ -222,6 +245,7 @@ function reload(unselectAll) {
     showDeleteModal: false,
     docname: null,
   }
+  showMergeLeadModal.value = false
 
   unselectAllAction.value?.()
   unselectAll?.()
