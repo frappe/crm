@@ -144,6 +144,7 @@ def update_user_role(user: str, new_role: str):
 		frappe.throw(_("Cannot assign this role"))
 
 	user_doc = frappe.get_doc("User", user)
+	validate_no_role_profile(user_doc)
 	target_roles = [d.role for d in user_doc.roles]
 	target_is_system_manager = "System Manager" in target_roles
 
@@ -198,10 +199,7 @@ def remove_crm_roles_from_user(user: str):
 	if "System Manager" in roles and not current_user_is_system_manager:
 		frappe.throw(_("Only System Managers can modify other System Managers"), frappe.PermissionError)
 
-	if user_doc.get("role_profiles") or user_doc.get("role_profile_name"):
-		return frappe.throw(
-			_("User {0} cannot be removed as it has a Role Profile assigned to it.").format(user)
-		)
+	validate_no_role_profile(user_doc)
 
 	if "Sales User" in roles:
 		remove_roles(user_doc, "Sales User")
@@ -218,6 +216,21 @@ def remove_crm_roles_from_user(user: str):
 		frappe.delete_doc("CRM Sales Hierarchy", node_name, ignore_permissions=True)
 
 	frappe.msgprint(_("User {0} has been removed from CRM roles.").format(user))
+
+
+def validate_no_role_profile(user_doc):
+	"""
+	Throw if the user's roles are governed by a Role Profile.
+	User.validate() re-derives `roles` from the assigned Role Profile on every save,
+	so any role appended or removed here would be silently reverted.
+	"""
+	if user_doc.get("role_profiles") or user_doc.get("role_profile_name"):
+		frappe.throw(
+			_("Roles of user {0} are managed by a Role Profile. Update the Role Profile instead.").format(
+				frappe.bold(user_doc.name)
+			),
+			title=_("Role Profile Assigned"),
+		)
 
 
 def remove_roles(self, *roles):
