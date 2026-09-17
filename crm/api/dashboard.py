@@ -601,9 +601,9 @@ def get_average_time_to_close_a_lead(
 		"title": _("Avg. time to close a lead"),
 		"tooltip": _("Average time taken from lead creation to deal closure"),
 		"value": current_avg_lead,
-		"suffix": " days",
+		"suffix": " " + _("days"),
 		"delta": delta_lead,
-		"deltaSuffix": " days",
+		"deltaSuffix": " " + _("days"),
 		"negativeIsBetter": True,
 	}
 
@@ -664,9 +664,9 @@ def get_average_time_to_close_a_deal(
 		"title": _("Avg. time to close a deal"),
 		"tooltip": _("Average time taken from deal creation to deal closure"),
 		"value": current_avg_deal,
-		"suffix": " days",
+		"suffix": " " + _("days"),
 		"delta": delta_deal,
-		"deltaSuffix": " days",
+		"deltaSuffix": " " + _("days"),
 		"negativeIsBetter": True,
 	}
 
@@ -766,9 +766,24 @@ def get_sales_trend(from_date: str | None = None, to_date: str | None = None, us
 			"title": _("Count"),
 		},
 		"series": [
-			{"name": "leads", "type": "line", "showDataPoints": True},
-			{"name": "deals", "type": "line", "showDataPoints": True},
-			{"name": "won_deals", "type": "line", "showDataPoints": True},
+			{
+				"name": "leads",
+				"type": "line",
+				"showDataPoints": True,
+				"echartOptions": {"name": _("Leads")},
+			},
+			{
+				"name": "deals",
+				"type": "line",
+				"showDataPoints": True,
+				"echartOptions": {"name": _("Deals")},
+			},
+			{
+				"name": "won_deals",
+				"type": "line",
+				"showDataPoints": True,
+				"echartOptions": {"name": _("Won Deals")},
+			},
 		],
 	}
 
@@ -846,8 +861,18 @@ def get_forecasted_revenue(from_date: str | None = None, to_date: str | None = N
 			"title": _("Revenue") + f" ({get_base_currency_symbol()})",
 		},
 		"series": [
-			{"name": "forecasted", "type": "line", "showDataPoints": True},
-			{"name": "actual", "type": "line", "showDataPoints": True},
+			{
+				"name": "forecasted",
+				"type": "line",
+				"showDataPoints": True,
+				"echartOptions": {"name": _("Forecasted")},
+			},
+			{
+				"name": "actual",
+				"type": "line",
+				"showDataPoints": True,
+				"echartOptions": {"name": _("Actual")},
+			},
 		],
 	}
 
@@ -919,6 +944,7 @@ def get_funnel_conversion(from_date: str | None = None, to_date: str | None = No
 				"name": "count",
 				"type": "bar",
 				"echartOptions": {
+					"name": _("Count"),
 					"colorBy": "data",
 				},
 			},
@@ -970,7 +996,7 @@ def get_deals_by_stage_axis(
 		},
 		"yAxis": {"title": _("Count")},
 		"series": [
-			{"name": "count", "type": "bar"},
+			{"name": "count", "type": "bar", "echartOptions": {"name": _("Count")}},
 		],
 	}
 
@@ -1064,7 +1090,7 @@ def get_lost_deal_reasons(from_date: str | None = None, to_date: str | None = No
 			"title": _("Count"),
 		},
 		"series": [
-			{"name": "count", "type": "bar"},
+			{"name": "count", "type": "bar", "echartOptions": {"name": _("Count")}},
 		],
 	}
 
@@ -1197,8 +1223,14 @@ def get_deals_by_territory(from_date: str | None = None, to_date: str | None = N
 			"title": _("Deal value") + f" ({get_base_currency_symbol()})",
 		},
 		"series": [
-			{"name": "deals", "type": "bar"},
-			{"name": "value", "type": "line", "showDataPoints": True, "axis": "y2"},
+			{"name": "deals", "type": "bar", "echartOptions": {"name": _("Deals")}},
+			{
+				"name": "value",
+				"type": "line",
+				"showDataPoints": True,
+				"axis": "y2",
+				"echartOptions": {"name": _("Deal value")},
+			},
 		],
 	}
 
@@ -1260,8 +1292,14 @@ def get_deals_by_salesperson(
 			"title": _("Deal value") + f" ({get_base_currency_symbol()})",
 		},
 		"series": [
-			{"name": "deals", "type": "bar"},
-			{"name": "value", "type": "line", "showDataPoints": True, "axis": "y2"},
+			{"name": "deals", "type": "bar", "echartOptions": {"name": _("Deals")}},
+			{
+				"name": "value",
+				"type": "line",
+				"showDataPoints": True,
+				"axis": "y2",
+				"echartOptions": {"name": _("Deal value")},
+			},
 		],
 	}
 
