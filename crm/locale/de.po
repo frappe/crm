@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-09-13 13:52+0000\n"
-"PO-Revision-Date: 2026-09-16 22:21\n"
+"PO-Revision-Date: 2026-09-18 23:10\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: German\n"
 "MIME-Version: 1.0\n"
@@ -28,7 +28,7 @@ msgstr ""
 
 #: frontend/src/components/Filter.vue:619
 msgid "01/01/2022 to 01/31/2022"
-msgstr ""
+msgstr "01.01.2022 bis 01/31/2022"
 
 #: frontend/src/components/Telephony/TaskPanel.vue:68
 msgid "01/04/2024 11:30 PM"
@@ -199,11 +199,11 @@ msgstr "API-Schlüssel"
 #: frontend/src/components/Settings/ERPNextSettings.vue:774
 #: frontend/src/components/Settings/emailConfig.js:192
 msgid "API key is required"
-msgstr ""
+msgstr "API-Schlüssel ist erforderlich"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:777
 msgid "API secret is required"
-msgstr ""
+msgstr "API-Geheimnis ist erforderlich"
 
 #: frontend/src/components/Telephony/TwilioCallUI.vue:88
 msgid "Accept"
@@ -211,7 +211,7 @@ msgstr "Annehmen"
 
 #: frontend/src/components/Telephony/TwilioCallUI.vue:155
 msgid "Accept Call"
-msgstr ""
+msgstr "Anruf annehmen"
 
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.js:7
 msgid "Accept Invitation"
@@ -229,7 +229,7 @@ msgstr "Angenommen am"
 
 #: frontend/src/pages/NotPermitted.vue:7
 msgid "Access Denied"
-msgstr ""
+msgstr "Zugriff verweigert"
 
 #. Label of the access_key (Data) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
@@ -252,7 +252,7 @@ msgstr "Zugriffstoken"
 
 #: crm/lead_syncing/doctype/lead_sync_source/facebook.py:145
 msgid "Access token is required"
-msgstr ""
+msgstr "Access-Token ist erforderlich"
 
 #. Label of the account_id (Data) field in DocType 'Facebook Page'
 #: crm/lead_syncing/doctype/facebook_page/facebook_page.json
@@ -261,7 +261,7 @@ msgstr "Konto-ID"
 
 #: frontend/src/components/Settings/Profile/ProfileSettings.vue:91
 msgid "Account Info & Security"
-msgstr ""
+msgstr "Kontoinformation & Sicherheit"
 
 #: frontend/src/components/Settings/emailConfig.js:13
 msgid "Account Name"
@@ -278,7 +278,7 @@ msgstr "Konto-SID"
 
 #: frontend/src/components/Settings/emailConfig.js:178
 msgid "Account name is required"
-msgstr ""
+msgstr "Kontoname erforderlich"
 
 #: frontend/src/components/Settings/Settings.vue:176
 msgid "Accounts"
@@ -299,7 +299,7 @@ msgstr "Aktivität"
 #. 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 msgid "Activity Timeline"
-msgstr ""
+msgstr "Aktivitäts-Zeitleiste"
 
 #: frontend/src/components/Dashboard/AddChartModal.vue:25
 #: frontend/src/components/Modals/AddExistingUserModal.vue:55
@@ -309,11 +309,11 @@ msgstr "Hinzufügen"
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:162
 #: frontend/src/components/Settings/Hierarchy/HierarchyRow.vue:85
 msgid "Add ({0})"
-msgstr ""
+msgstr "Hinzufügen ({0})"
 
 #: frontend/src/components/Settings/EmailAccountList.vue:19
 msgid "Add Account"
-msgstr ""
+msgstr "Konto hinzufügen"
 
 #: frontend/src/components/Settings/AssignmentRules/AssigneeSearch.vue:8
 msgid "Add Assignee"
@@ -321,11 +321,11 @@ msgstr ""
 
 #: crm/fcrm/doctype/crm_product/crm_product_list.js:3
 msgid "Add CRM Product"
-msgstr ""
+msgstr "CRM Produkt hinzufügen"
 
 #: frontend/src/components/Dashboard/AddChartModal.vue:2
 msgid "Add Chart"
-msgstr ""
+msgstr "Diagramm hinzufügen"
 
 #: frontend/src/components/ColumnSettings.vue:68
 #: frontend/src/components/FieldLayoutEditor.vue:562
@@ -341,7 +341,7 @@ msgstr "Spalte hinzufügen"
 #: frontend/src/components/Settings/Sla/SlaAssignmentConditions.vue:26
 #: frontend/src/components/Settings/Sla/SlaAssignmentConditions.vue:63
 msgid "Add Condition"
-msgstr ""
+msgstr "Bedingung hinzufügen"
 
 #: frontend/src/components/ConditionsFilter/CFConditions.vue:81
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRulesSection.vue:71
@@ -351,12 +351,12 @@ msgstr ""
 
 #: frontend/src/components/Settings/Profile/UserEmailSettings.vue:99
 msgid "Add Email"
-msgstr ""
+msgstr "E-Mail hinzufügen"
 
 #: frontend/src/components/Modals/AddExistingUserModal.vue:4
 #: frontend/src/components/Settings/Users.vue:21
 msgid "Add Existing User"
-msgstr ""
+msgstr "Vorhandenen Benutzer hinzufügen"
 
 #: frontend/src/components/Controls/GridFieldsEditorModal.vue:61
 #: frontend/src/components/FieldLayoutEditor.vue:227
@@ -373,15 +373,15 @@ msgstr "Filter hinzufügen"
 
 #: frontend/src/pages/Contact.vue:352
 msgid "Add Mobile Number..."
-msgstr ""
+msgstr "Mobilfunknummer hinzufügen..."
 
 #: frontend/src/components/Modals/CallLogDetailModal.vue:20
 msgid "Add Note"
-msgstr ""
+msgstr "Notiz hinzufügen"
 
 #: frontend/src/pages/Contact.vue:353
 msgid "Add Organization..."
-msgstr ""
+msgstr "Organisation hinzufügen..."
 
 #: frontend/src/components/Controls/Grid.vue:458
 #: frontend/src/components/Settings/Sla/SlaHolidays.vue:163
@@ -391,7 +391,7 @@ msgstr "Zeile hinzufügen"
 
 #: frontend/src/pages/Welcome.vue:24
 msgid "Add Sample Data"
-msgstr ""
+msgstr "Beispieldaten hinzufügen"
 
 #: frontend/src/components/FieldLayoutEditor.vue:259
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:218
@@ -409,7 +409,7 @@ msgstr "Registerkarte hinzufügen"
 
 #: frontend/src/components/Modals/CallLogDetailModal.vue:25
 msgid "Add Task"
-msgstr ""
+msgstr "Aufgabe hinzufügen"
 
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:36
 msgid "Add User"
@@ -417,7 +417,7 @@ msgstr "Benutzer hinzufügen"
 
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:159
 msgid "Add Users"
-msgstr ""
+msgstr "Benutzer hinzufügen"
 
 #. Label of the add_weekly_holidays_section (Section Break) field in DocType
 #. 'CRM Holiday List'
@@ -427,7 +427,7 @@ msgstr "Wöchentlich freie Tage hinzufügen"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRulesSection.vue:20
 msgid "Add a Condition"
-msgstr ""
+msgstr "Eine Bedingung hinzufügen"
 
 #: frontend/src/components/Settings/Sla/SlaAssignmentConditions.vue:15
 msgid "Add a Custom Condition"
@@ -440,7 +440,7 @@ msgstr "Notiz hinzufügen"
 
 #: frontend/src/components/Telephony/ExotelCallUI.vue:188
 msgid "Add a Task"
-msgstr ""
+msgstr "Aufgabe hinzufügen"
 
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:69
 msgid "Add a description to help people fill out this form"
@@ -460,7 +460,7 @@ msgstr ""
 
 #: frontend/src/components/Modals/AddExistingUserModal.vue:12
 msgid "Add existing system users to this CRM. Assign them a role to grant access with their current credentials."
-msgstr ""
+msgstr "Fügen Sie bestehende Benutzer zu diesem CRM hinzu. Weisen Sie ihnen eine Rolle zu, um ihnen mit ihren aktuellen Anmeldedaten Zugriff zu gewähren."
 
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:634
 msgid "Add fields to see them here."
@@ -489,11 +489,11 @@ msgstr "Zu arbeitsfreien Tagen hinzufügen"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:548
 msgid "Add your first comment"
-msgstr ""
+msgstr "Fügen Sie Ihren ersten Kommentar hinzu"
 
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:11
 msgid "Add, edit, and manage email templates for various CRM communications"
-msgstr ""
+msgstr "Hinzufügen, Bearbeiten und Verwalten von E-Mail-Vorlagen für verschiedene CRM-Kommunikationen"
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:12
 msgid "Add, edit, and manage sources for automatic lead syncing to your CRM"
@@ -557,7 +557,7 @@ msgstr ""
 #. Field Mapping'
 #: crm/domain_enrichment/doctype/crm_enrichment_field_mapping/crm_enrichment_field_mapping.json
 msgid "Always refresh"
-msgstr ""
+msgstr "Immer neu laden"
 
 #. Label of the amount (Currency) field in DocType 'CRM Products'
 #: crm/fcrm/doctype/crm_products/crm_products.json
@@ -570,7 +570,7 @@ msgstr "Betrag"
 #. Description of the 'Net Amount' (Currency) field in DocType 'CRM Products'
 #: crm/fcrm/doctype/crm_products/crm_products.json
 msgid "Amount after discount"
-msgstr ""
+msgstr "Betrag nach Rabatt"
 
 #: frontend/src/pages/Deal.vue:461
 msgid "An Error Occurred"
@@ -585,7 +585,7 @@ msgstr ""
 #: frontend/src/data/script.js:78 frontend/src/data/script.js:79
 #: frontend/src/pages/Lead.vue:364
 msgid "An error occurred"
-msgstr ""
+msgstr "Ein Fehler ist aufgetreten"
 
 #: frontend/src/data/document.js:117
 msgid "An error occurred while updating the document"
@@ -634,7 +634,7 @@ msgstr "App-Name"
 
 #: frontend/src/components/Settings/PreferencesSettings.vue:16
 msgid "Appearance"
-msgstr ""
+msgstr "Erscheinungsbild"
 
 #: frontend/src/components/Settings/BrandSettings.vue:65
 msgid "Appears in the left sidebar. Recommended size is 32x32 px in PNG or SVG"
@@ -725,7 +725,7 @@ msgstr "Zuweisen zu"
 
 #: frontend/src/components/AssignToBody.vue:67
 msgid "Assign To Me"
-msgstr ""
+msgstr "Mir zuweisen"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:430
 msgid "Assign condition is required"
@@ -761,7 +761,7 @@ msgstr ""
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:600
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:601
 msgid "Assignment Condition"
-msgstr ""
+msgstr "Zuweisungsbedingung"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:604
 msgid "Assignment Days"
@@ -789,11 +789,11 @@ msgstr ""
 
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:105
 msgid "Assignment conditions"
-msgstr ""
+msgstr "Zuweisungsbedingungen"
 
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:307
 msgid "Assignment conditions are invalid or corrupt, recreate the conditions."
-msgstr ""
+msgstr "Die Zuweisungsbedingungen sind ungültig oder fehlerhaft. Bitte erstellen Sie die Bedingungen neu."
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:696
 msgid "Assignment rule created"
@@ -821,7 +821,7 @@ msgstr "Mindestens ein Feld ist erforderlich"
 
 #: frontend/src/components/Settings/Sla/utils.js:116
 msgid "At least one priority is required"
-msgstr ""
+msgstr "Mindestens eine Priorität ist erforderlich"
 
 #: frontend/src/components/Settings/Sla/utils.js:204
 msgid "At least one valid workday with a day, start time, and end time is required"
@@ -836,11 +836,11 @@ msgstr "Anhängen"
 #: frontend/src/components/EmailEditor.vue:143 frontend/src/pages/Deal.vue:120
 #: frontend/src/pages/Lead.vue:175
 msgid "Attach a File"
-msgstr ""
+msgstr "Datei anhängen"
 
 #: frontend/src/components/Controls/AttachControl.vue:14
 msgid "Attach file…"
-msgstr ""
+msgstr "Datei anhängen..."
 
 #: frontend/src/pages/Deal.vue:614 frontend/src/pages/Lead.vue:477
 #: frontend/src/pages/MobileDeal.vue:482 frontend/src/pages/MobileLead.vue:341
@@ -855,17 +855,17 @@ msgstr "Authentifizierungstoken"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:270
 msgid "Auto Create Customer"
-msgstr ""
+msgstr "Kunde automatisch erstellen"
 
 #: frontend/src/components/Settings/DashboardSettings.vue:49
 msgid "Auto Update Expected Deal Value"
-msgstr ""
+msgstr "Erwarteter Deal-Wert automatisch aktualisieren"
 
 #. Label of the auto_update_expected_deal_value (Check) field in DocType 'FCRM
 #. Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 msgid "Auto update Expected Deal Value"
-msgstr ""
+msgstr "Erwarteter Deal-Wert automatisch aktualisieren"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRules.vue:11
 msgid "Auto-assign leads/deals to the right sales user based on predefined conditions"
@@ -914,7 +914,7 @@ msgstr ""
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 #: frontend/src/components/Settings/DashboardSettings.vue:53
 msgid "Automatically update \"Expected Deal Value\" based on the total value of associated products in a deal"
-msgstr ""
+msgstr "Automatische Aktualisierung des „Erwarteten Deal-Werts“ basierend auf dem Gesamtwert der zugehörigen Produkte in einem Deal"
 
 #. Label of the automation_section (Section Break) field in DocType 'CRM
 #. Enrichment Settings'
@@ -1042,7 +1042,7 @@ msgstr "Zwischen"
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.json
 #: frontend/src/components/Settings/ERPNextSettings.vue:216
 msgid "Bidirectional Product Sync"
-msgstr ""
+msgstr "Bidirektionale Produktsynchronisierung"
 
 #. Label of the blocked_domains_section (Section Break) field in DocType 'CRM
 #. Enrichment Settings'
@@ -1246,17 +1246,17 @@ msgstr ""
 #. Name of a DocType
 #: crm/fcrm/doctype/crm_product/crm_product.json
 msgid "CRM Product"
-msgstr ""
+msgstr "CRM-Produkt"
 
 #. Name of a DocType
 #: crm/fcrm/doctype/crm_product_sync_issue/crm_product_sync_issue.json
 msgid "CRM Product Sync Issue"
-msgstr ""
+msgstr "CRM-Produkt-Sync-Problem"
 
 #. Name of a DocType
 #: crm/fcrm/doctype/crm_products/crm_products.json
 msgid "CRM Products"
-msgstr ""
+msgstr "CRM-Produkte"
 
 #. Name of a DocType
 #: crm/fcrm/doctype/crm_rolling_response_time/crm_rolling_response_time.json
@@ -1271,12 +1271,12 @@ msgstr ""
 #. Name of a DocType
 #: crm/fcrm/doctype/crm_service_day/crm_service_day.json
 msgid "CRM Service Day"
-msgstr ""
+msgstr "CRM Servicetag"
 
 #. Name of a DocType
 #: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.json
 msgid "CRM Service Level Agreement"
-msgstr ""
+msgstr "CRM Dienstleistungsvereinbarung"
 
 #. Name of a DocType
 #: crm/fcrm/doctype/crm_service_level_priority/crm_service_level_priority.json
@@ -1301,7 +1301,7 @@ msgstr ""
 #. Name of a DocType
 #: crm/fcrm/doctype/crm_telephony_phone/crm_telephony_phone.json
 msgid "CRM Telephony Phone"
-msgstr ""
+msgstr "CRM Telefonie"
 
 #. Name of a DocType
 #: crm/fcrm/doctype/crm_territory/crm_territory.json
@@ -1431,7 +1431,7 @@ msgstr "Standardelemente können nicht gelöscht werden {0}"
 
 #: crm/fcrm/doctype/crm_product/crm_product.py:81
 msgid "Cannot delete: linked ERPNext Item {0} is referenced by a Quotation. Remove the reference or delete the Item in ERPNext first."
-msgstr ""
+msgstr "Löschen nicht möglich: Der verknüpfte ERPNext-Artikel {0} wird von einem Angebot referenziert. Entfernen Sie die Referenz oder löschen Sie zuerst den Artikel in ERPNext."
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:173
 msgid "Cannot enable rule without adding users in it"
@@ -2128,7 +2128,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_product/crm_product_list.js:10
 #: frontend/src/composables/document.js:32
 msgid "Create products as Items in ERPNext"
-msgstr ""
+msgstr "Erstellen Sie Produkte als Artikel in ERPNext"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:661
 msgid "Create quotation button on deal page and auto customer creation on deal status change will be disabled. Are you sure?"
@@ -2596,7 +2596,7 @@ msgstr "Schreibtisch"
 #. Label of the detail (Small Text) field in DocType 'CRM Product Sync Issue'
 #: crm/fcrm/doctype/crm_product_sync_issue/crm_product_sync_issue.json
 msgid "Detail"
-msgstr ""
+msgstr "Detail"
 
 #. Label of the details (Tab Break) field in DocType 'CRM Lead'
 #. Label of the details (Text Editor) field in DocType 'CRM Lead Source'
@@ -2613,7 +2613,7 @@ msgstr "Details"
 #. Issue'
 #: crm/fcrm/doctype/crm_product_sync_issue/crm_product_sync_issue.json
 msgid "Detected On"
-msgstr ""
+msgstr "Erkannt am"
 
 #. Label of the call_receiving_device (Select) field in DocType 'CRM Telephony
 #. Agent'
@@ -2669,7 +2669,7 @@ msgstr "Rabattbetrag"
 #. Label of the dismissed (Check) field in DocType 'CRM Product Sync Issue'
 #: crm/fcrm/doctype/crm_product_sync_issue/crm_product_sync_issue.json
 msgid "Dismissed"
-msgstr ""
+msgstr "Abgelehnt"
 
 #: frontend/src/components/Settings/DefaultsSettings.vue:114
 msgid "Display format for dates across the system"
@@ -2834,7 +2834,7 @@ msgstr "ERPNext CRM-Einstellungen"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:220
 msgid "ERPNext Items always sync into CRM Products. Turn this on to also sync CRM Product changes back to ERPNext Items."
-msgstr ""
+msgstr "ERPNext-Artikel werden stets mit den CRM-Produkten synchronisiert. Aktivieren Sie diese Option, um Änderungen an den CRM-Produkten ebenfalls zurück in die ERPNext-Artikel zu synchronisieren."
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:3
 #: frontend/src/components/Settings/ERPNextSettings.vue:9
@@ -2858,7 +2858,7 @@ msgstr ""
 
 #: crm/fcrm/doctype/crm_product/crm_product.py:42
 msgid "ERPNext integration is active. Create an Item in ERPNext and it will appear in CRM Product automatically."
-msgstr ""
+msgstr "Die ERPNext-Integration ist aktiviert. Wenn Sie einen Artikel in ERPNext anlegen, wird dieser automatisch im CRM-Produkt angezeigt."
 
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:221
 msgid "ERPNext integration must be enabled on the same site"
@@ -4653,7 +4653,7 @@ msgstr ""
 #. Label of the kind (Select) field in DocType 'CRM Product Sync Issue'
 #: crm/fcrm/doctype/crm_product_sync_issue/crm_product_sync_issue.json
 msgid "Kind"
-msgstr ""
+msgstr "Art"
 
 #. Label of the label (Data) field in DocType 'CRM Dropdown Item'
 #. Label of the label (Data) field in DocType 'CRM View Settings'
@@ -4918,7 +4918,7 @@ msgstr ""
 
 #: crm/fcrm/doctype/crm_product/reconcile_job.py:79
 msgid "Linked Item {0} no longer exists"
-msgstr ""
+msgstr "Der verlinkte Artikel {0} existiert nicht mehr"
 
 #. Label of the linkedin (Data) field in DocType 'CRM Deal'
 #. Label of the linkedin (Data) field in DocType 'CRM Lead'
@@ -6440,7 +6440,7 @@ msgstr "Position"
 #: frontend/src/components/Settings/PreferencesSettings.vue:4
 #: frontend/src/components/Settings/Settings.vue:116
 msgid "Preferences"
-msgstr ""
+msgstr "Einstellungen"
 
 #: frontend/src/components/Settings/PreferencesSettings.vue:115
 msgid "Preferences updated successfully"
@@ -6530,19 +6530,19 @@ msgstr "Produkt"
 #. Label of the product_code (Data) field in DocType 'CRM Product'
 #: crm/fcrm/doctype/crm_product/crm_product.json
 msgid "Product Code"
-msgstr ""
+msgstr "Produktcode"
 
 #. Label of the product_name (Data) field in DocType 'CRM Product'
 #. Label of the product_name (Data) field in DocType 'CRM Products'
 #: crm/fcrm/doctype/crm_product/crm_product.json
 #: crm/fcrm/doctype/crm_products/crm_products.json
 msgid "Product Name"
-msgstr ""
+msgstr "Produktname"
 
 #. Label of the sync_issues (Table) field in DocType 'ERPNext CRM Settings'
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.json
 msgid "Product Sync Issues"
-msgstr ""
+msgstr "Produkt-Sync-Problem"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:497
 msgid "Product sync started."
@@ -7099,7 +7099,7 @@ msgstr "Regeltyp"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:248
 msgid "Run a manual bi-directional sync between ERPNext Items and CRM Products."
-msgstr ""
+msgstr "Führt eine manuelle bidirektionale Synchronisierung zwischen ERPNext-Artikeln und CRM-Produkten durch."
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:251
 msgid "Run a manual synchronization to pull the latest Items from ERPNext."
@@ -8348,7 +8348,7 @@ msgstr ""
 
 #: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.js:29
 msgid "There can only be one default priority in Priorities table"
-msgstr ""
+msgstr "Es kann nur eine Standardpriorität in der Prioritätentabelle geben"
 
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:236
 msgid "These fields aren't shown to users. Default values are used when the form is submitted."
@@ -8874,7 +8874,7 @@ msgstr ""
 
 #: crm/fcrm/doctype/crm_product/crm_product.py:45
 msgid "Use ERPNext to Create Products"
-msgstr ""
+msgstr "Verwenden Sie ERPNext, um Produkte zu erstellen"
 
 #. Label of the use_sitemap (Check) field in DocType 'CRM Enrichment Settings'
 #: crm/domain_enrichment/doctype/crm_enrichment_settings/crm_enrichment_settings.json
