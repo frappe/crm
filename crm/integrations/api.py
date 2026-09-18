@@ -99,11 +99,17 @@ def add_note_to_call_log(call_sid: str, note: dict):
 
 @frappe.whitelist()
 def add_task_to_call_log(call_sid: str, task: dict):
-	"""Add/Update task to call log based on call sid."""
+	"""Add/Update task to call log based on call sid.
+
+	A task's call log link is only ever set here on creation - updating an existing
+	task never touches it, even if submitted through a different call's panel. The
+	telephony widgets don't offer a "move this task to another call" action, so an
+	update arriving under a different call_sid is stale client state (e.g. a task ref
+	held over from a previous call), not an intentional reassignment. Once a task is
+	created linking it to at most one call log, that stays its origin."""
 	if not frappe.has_permission("CRM Call Log", "write", call_sid):
 		frappe.throw(_("Not permitted"), frappe.PermissionError)
 
-	_task = None
 	if not task.get("name"):
 		_task = frappe.get_doc(
 			{
@@ -116,6 +122,10 @@ def add_task_to_call_log(call_sid: str, task: dict):
 				"priority": task.get("priority"),
 			}
 		).insert(ignore_permissions=True)
+
+		call_log = frappe.get_doc("CRM Call Log", call_sid)
+		call_log.link_with_reference_doc("CRM Task", _task.name)
+		call_log.save(ignore_permissions=True)
 	else:
 		_task = frappe.get_doc("CRM Task", task.get("name"))
 		_task.update(
@@ -129,10 +139,6 @@ def add_task_to_call_log(call_sid: str, task: dict):
 			}
 		)
 		_task.save(ignore_permissions=True)
-
-	call_log = frappe.get_doc("CRM Call Log", call_sid)
-	call_log.link_with_reference_doc("CRM Task", _task.name)
-	call_log.save(ignore_permissions=True)
 
 	return _task
 
