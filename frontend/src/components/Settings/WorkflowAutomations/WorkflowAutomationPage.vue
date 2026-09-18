@@ -74,17 +74,20 @@
             </ListCell>
 
             <ListCell>
-              <Badge
-                :label="row.enabled ? __('Enabled') : __('Draft')"
-                :theme="row.enabled ? 'green' : 'orange'"
-                variant="outline"
-              >
-                <template #prefix>
-                  <IndicatorIcon
-                    :class="row.enabled ? 'text-green-500' : 'text-orange-500'"
-                  />
-                </template>
-              </Badge>
+              <div class="flex items-center gap-2" @click.stop>
+                <Switch
+                  size="sm"
+                  :model-value="Boolean(row.enabled)"
+                  :disabled="toggling.has(row.name)"
+                  :aria-label="__('Enabled')"
+                  @update:model-value="toggleAutomation(row, $event)"
+                />
+                <Badge
+                  :label="row.enabled ? __('Enabled') : __('Draft')"
+                  :theme="row.enabled ? 'green' : 'orange'"
+                  variant="outline"
+                />
+              </div>
             </ListCell>
             <ListCell>
               <div
@@ -138,7 +141,6 @@ import SettingsLayoutBase from '@/components/Layouts/SettingsLayoutBase.vue'
 import EmptyState from '@/components/ListViews/EmptyState.vue'
 import WorkflowAutomationBuilder from './WorkflowAutomationBuilder.vue'
 import WorkflowAutomationDetail from './WorkflowAutomationDetail.vue'
-import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import WorkflowIcon from '~icons/lucide/workflow'
 import { ConfirmDelete } from '@/utils'
@@ -159,6 +161,7 @@ import {
   Dialog,
   Dropdown,
   LoadingIndicator,
+  Switch,
   Tooltip,
   call,
   createListResource,
@@ -311,11 +314,6 @@ function updateEnabled(automation) {
 
 function rowOptions(automation) {
   return [
-    {
-      label: automation.enabled ? __('Disable') : __('Enable'),
-      icon: automation.enabled ? 'toggle-left' : 'toggle-right',
-      onClick: () => toggleAutomation(automation, !automation.enabled),
-    },
     {
       label: __('Duplicate'),
       icon: 'copy',
