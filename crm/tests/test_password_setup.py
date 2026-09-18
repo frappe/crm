@@ -64,6 +64,11 @@ class TestPasswordSetup(CRMTestCase):
 
 		self.assertFalse(needs_password_setup())
 
+	def test_does_not_need_setup_for_ldap_user(self):
+		frappe.db.set_single_value("LDAP Settings", "enabled", 1)
+
+		self.assertFalse(needs_password_setup())
+
 	def test_does_not_need_setup_when_password_login_is_disabled(self):
 		# not change_settings: it saves the doc, and validating System Settings
 		# fails on a bare site that has no language or time zone set
