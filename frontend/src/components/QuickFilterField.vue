@@ -2,7 +2,7 @@
   <FormControl
     v-if="filter.fieldtype == 'Check'"
     v-model="filter.value"
-    :label="filter.label"
+    :label="__(filter.label)"
     type="checkbox"
     @change.stop="updateFilter(filter, $event.target.checked)"
   />
@@ -11,15 +11,15 @@
     v-model="filter.value"
     class="form-control cursor-pointer [&_select]:cursor-pointer"
     type="select"
-    :options="filter.options"
-    :placeholder="filter.label"
+    :options="selectOptions"
+    :placeholder="__(filter.label)"
     @update:modelValue="updateFilter(filter, $event)"
   />
   <Link
     v-else-if="filter.fieldtype === 'Link'"
     :value="filter.value"
     :doctype="filter.options"
-    :placeholder="filter.label"
+    :placeholder="__(filter.label)"
     @change="(data) => updateFilter(filter, data)"
   />
   <component
@@ -27,7 +27,7 @@
     v-else-if="['Date', 'Datetime'].includes(filter.fieldtype)"
     class="border-none"
     :value="filter.value"
-    :placeholder="filter.label"
+    :placeholder="__(filter.label)"
     :format="
       filter.fieldtype === 'Date'
         ? getFormat('', '', true, false, false)
@@ -39,7 +39,7 @@
     v-else
     v-model="filter.value"
     type="text"
-    :placeholder="filter.label"
+    :placeholder="__(filter.label)"
     @input.stop="debouncedFn(filter, $event.target.value)"
   />
 </template>
@@ -48,7 +48,7 @@ import Link from '@/components/Controls/Link.vue'
 import { FormControl, DatePicker, DateTimePicker } from 'frappe-ui'
 import { getFormat } from '@/utils'
 import { useDebounceFn } from '@vueuse/core'
-import { reactive, watch } from 'vue'
+import { computed, reactive, watch } from 'vue'
 
 const props = defineProps({
   filter: { type: Object, required: true },
@@ -63,6 +63,23 @@ watch(
   (newFilter) => Object.assign(filter, newFilter),
   { deep: true },
 )
+
+const selectOptions = computed(() => {
+  const opts = filter.options
+  if (!Array.isArray(opts)) return opts
+  return opts.map((option) => {
+    if (typeof option === 'string') {
+      return { label: __(option), value: option }
+    }
+    if (option && typeof option === 'object') {
+      return {
+        ...option,
+        label: option.label ? __(option.label) : option.label,
+      }
+    }
+    return option
+  })
+})
 
 const debouncedFn = useDebounceFn((f, value) => {
   emit('applyQuickFilter', f, value)

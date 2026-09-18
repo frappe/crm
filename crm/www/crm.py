@@ -10,6 +10,19 @@ from frappe.utils.telemetry import capture
 
 no_cache = 1
 
+# Keep in sync with frappe.utils.is_rtl / frontend/src/utils/rtl.js
+RTL_LANGUAGES = ("ar", "he", "fa", "ps")
+
+
+def is_rtl_language(lang=None):
+	lang = lang or getattr(frappe.local, "lang", None) or "en"
+	base = str(lang).split("-", 1)[0].split("_", 1)[0].lower()
+	return base in RTL_LANGUAGES
+
+
+def get_layout_direction(lang=None):
+	return "rtl" if is_rtl_language(lang) else "ltr"
+
 
 def get_context():
 	from crm.api import check_app_permission
@@ -22,6 +35,8 @@ def get_context():
 	frappe.db.commit()
 	context = frappe._dict()
 	context.boot = get_boot()
+	context.lang = context.boot.lang
+	context.layout_direction = context.boot.layout_direction
 	if frappe.session.user != "Guest":
 		capture("active_site", "crm")
 	return context
@@ -74,6 +89,8 @@ def get_boot():
 			"csrf_token": frappe.sessions.get_csrf_token(),
 			"setup_complete": cint(frappe.get_system_settings("setup_complete")),
 			"sysdefaults": frappe.defaults.get_defaults(),
+			"lang": frappe.local.lang or "en",
+			"layout_direction": get_layout_direction(),
 			"is_demo_site": frappe.conf.get("is_demo_site"),
 			"demo_data_created": frappe.db.get_default("crm_demo_data_created") == "1",
 			"is_fc_site": is_fc_site(),
