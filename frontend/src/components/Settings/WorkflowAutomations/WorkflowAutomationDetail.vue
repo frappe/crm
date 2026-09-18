@@ -19,13 +19,7 @@
               :label="doc.enabled ? __('Enabled') : __('Draft')"
               :theme="doc.enabled ? 'green' : 'orange'"
               variant="subtle"
-            >
-              <template #prefix>
-                <IndicatorIcon
-                  :class="doc.enabled ? 'text-green-500' : 'text-orange-500'"
-                />
-              </template>
-            </Badge>
+            />
             <Badge
               v-if="doc.disabled_reason"
               :label="doc.disabled_reason"
@@ -60,7 +54,6 @@
 
 <script setup>
 import SettingsLayoutBase from '@/components/Layouts/SettingsLayoutBase.vue'
-import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import WorkflowFlow from './WorkflowFlow.vue'
 import { workflowEdges, workflowNodes } from './workflowGraph'
 import { toTree } from './workflowSteps'
