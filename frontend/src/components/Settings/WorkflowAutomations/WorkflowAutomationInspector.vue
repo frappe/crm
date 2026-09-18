@@ -49,11 +49,6 @@
           :events="events"
           @update="patch"
         />
-        <Relationships
-          :model-value="doc.relationships"
-          :document-type="doc.document_type"
-          @update:model-value="patch({ relationships: $event })"
-        />
         <WorkflowFilters
           :model-value="doc.filters"
           :doctype="doc.document_type"
@@ -92,7 +87,6 @@
 <script setup>
 import Link from '@/components/Controls/Link.vue'
 import ConditionEditor from './WorkflowConditionEditor.vue'
-import Relationships from './WorkflowRelationships.vue'
 import StepEditor from './WorkflowStepEditor.vue'
 import TriggerDetails from './WorkflowTriggerDetails.vue'
 import WorkflowFilters from './WorkflowFilters.vue'
