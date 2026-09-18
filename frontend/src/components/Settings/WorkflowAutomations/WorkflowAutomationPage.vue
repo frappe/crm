@@ -54,6 +54,7 @@
           <ListHeaderCell>{{ __('Name') }}</ListHeaderCell>
           <ListHeaderCell>{{ __('Document Type') }}</ListHeaderCell>
           <ListHeaderCell>{{ __('Status') }}</ListHeaderCell>
+          <ListHeaderCell>{{ __('Enabled') }}</ListHeaderCell>
           <ListHeaderCell>{{ __('Created By') }}</ListHeaderCell>
         </ListHeader>
         <ListRows
@@ -74,18 +75,20 @@
             </ListCell>
 
             <ListCell>
-              <div class="flex items-center gap-2" @click.stop>
+              <Badge
+                :label="row.enabled ? __('Enabled') : __('Draft')"
+                :theme="row.enabled ? 'green' : 'orange'"
+                variant="outline"
+              />
+            </ListCell>
+            <ListCell>
+              <div @click.stop>
                 <Switch
                   size="sm"
                   :model-value="Boolean(row.enabled)"
                   :disabled="toggling.has(row.name)"
                   :aria-label="__('Enabled')"
                   @update:model-value="toggleAutomation(row, $event)"
-                />
-                <Badge
-                  :label="row.enabled ? __('Enabled') : __('Draft')"
-                  :theme="row.enabled ? 'green' : 'orange'"
-                  variant="outline"
                 />
               </div>
             </ListCell>
@@ -182,7 +185,8 @@ const toggling = reactive(new Set())
 const listColumns = [
   'minmax(0, 4fr)',
   'minmax(0, 2fr)',
-  'minmax(0, 1.5fr)',
+  'minmax(0, 1.3fr)',
+  'minmax(0, 1fr)',
   'minmax(0, 1.5fr)',
 ]
 
