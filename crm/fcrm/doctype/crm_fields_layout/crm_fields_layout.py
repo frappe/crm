@@ -72,23 +72,27 @@ def get_fields_layout(doctype: str, type: str, parent_doctype: str | None = None
 			if section.get("columns"):
 				section["columns"] = [column for column in section.get("columns") if column]
 			for column in section.get("columns") if section.get("columns") else []:
-				column["fields"] = [field for field in column.get("fields") if field]
-				for field in column.get("fields") if column.get("fields") else []:
-					field = next((f for f in fields if f.fieldname == field), None)
-					if field:
-						field = field.as_dict()
-						handle_perm_level_restrictions(field, doctype, parent_doctype)
-						column["fields"][column.get("fields").index(field["fieldname"])] = field
+				resolved_fields = []
+				for fieldname in column.get("fields") or []:
+					field = next((f for f in fields if f.fieldname == fieldname), None)
+					if not field:
+						# fieldname no longer exists on the doctype (e.g. a deleted custom field)
+						continue
 
-						# remove field from required_fields if it is already present
-						if (
-							type == "Required Fields"
-							and field.reqd
-							and any(f.get("fieldname") == field.get("fieldname") for f in required_fields)
-						):
-							required_fields = [
-								f for f in required_fields if f.get("fieldname") != field.get("fieldname")
-							]
+					field = field.as_dict()
+					handle_perm_level_restrictions(field, doctype, parent_doctype)
+					resolved_fields.append(field)
+
+					# remove field from required_fields if it is already present
+					if (
+						type == "Required Fields"
+						and field.reqd
+						and any(f.get("fieldname") == field.get("fieldname") for f in required_fields)
+					):
+						required_fields = [
+							f for f in required_fields if f.get("fieldname") != field.get("fieldname")
+						]
+				column["fields"] = resolved_fields
 
 	if type == "Required Fields" and required_fields and tabs:
 		tabs[-1].get("sections").append(
@@ -132,12 +136,17 @@ def get_sidepanel_sections(doctype: str):
 	for section in layout:
 		section["name"] = section.get("name") or section.get("label")
 		for column in section.get("columns") if section.get("columns") else []:
-			for field in column.get("fields") if column.get("fields") else []:
-				field_obj = next((f for f in fields if f.fieldname == field), None)
-				if field_obj:
-					field_obj = field_obj.as_dict()
-					handle_perm_level_restrictions(field_obj, doctype)
-					column["fields"][column.get("fields").index(field)] = get_field_obj(field_obj)
+			resolved_fields = []
+			for fieldname in column.get("fields") or []:
+				field_obj = next((f for f in fields if f.fieldname == fieldname), None)
+				if not field_obj:
+					# fieldname no longer exists on the doctype (e.g. a deleted custom field)
+					continue
+
+				field_obj = field_obj.as_dict()
+				handle_perm_level_restrictions(field_obj, doctype)
+				resolved_fields.append(get_field_obj(field_obj))
+			column["fields"] = resolved_fields
 
 	fields_meta = {}
 	for field in fields:
