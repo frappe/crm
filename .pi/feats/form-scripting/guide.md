@@ -767,7 +767,7 @@ class CRMLead {
 		// Change label
 		this.setFieldProperty('annual_revenue', 'label', 'Revenue (USD)')
 
-		// Set Link filters
+		// Set Link filters (also supported on Table MultiSelect fields)
 		this.setFieldProperty('lead_owner', 'link_filters', { enabled: 1 })
 
 		// Hide a section or tab
