@@ -285,7 +285,7 @@ def create_whatsapp_message(
 		{
 			"reference_doctype": reference_doctype,
 			"reference_name": reference_name,
-			"message": message or attach,
+			"message": message or "",
 			"to": to,
 			"attach": attach,
 			"content_type": content_type,
