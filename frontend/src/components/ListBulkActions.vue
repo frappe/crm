@@ -28,11 +28,18 @@
     :items="showDeleteDocModal.items"
     :reload="reload"
   />
+  <AddToSegmentModal
+    v-if="showAddToSegmentModal"
+    v-model="showAddToSegmentModal"
+    :leads="selectedValues"
+    @reload="reload"
+  />
 </template>
 
 <script setup>
 import EditValueModal from '@/components/Modals/EditValueModal.vue'
 import AssignmentModal from '@/components/Modals/AssignmentModal.vue'
+import AddToSegmentModal from '@/components/Modals/AddToSegmentModal.vue'
 import { setupListCustomizations } from '@/utils'
 import { globalStore } from '@/stores/global'
 import { useTelemetry } from 'frappe-ui/frappe'
@@ -120,6 +127,15 @@ function deleteValues(selections, unselectAll) {
   }
 }
 
+const showAddToSegmentModal = ref(false)
+
+function addToSegment(selections, unselectAll) {
+  capture('bulk_add_to_segment')
+  selectedValues.value = selections
+  unselectAllAction.value = unselectAll
+  showAddToSegmentModal.value = true
+}
+
 const showAssignmentModal = ref(false)
 const bulkAssignees = ref([])
 
@@ -194,6 +210,10 @@ function bulkActions(selections, unselectAll) {
     actions.push({
       label: __('Convert to Deal'),
       onClick: () => convertToDeal(selections, unselectAll),
+    })
+    actions.push({
+      label: __('Add to Segment'),
+      onClick: () => addToSegment(selections, unselectAll),
     })
   }
 

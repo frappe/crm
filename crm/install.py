@@ -193,6 +193,10 @@ def add_default_fields_layout(force=False):
 			"doctype": "CRM Task",
 			"layout": '[{"name":"first_tab","sections":[{"name":"details_section","columns":[{"name":"column_X9sG","fields":["title","description"]}]},{"name":"assignment_section","columns":[{"name":"column_9XjK","fields":["priority","due_date"]},{"name":"column_7s8n","fields":["assigned_to","status"]}],"hideBorder":true}]}]',
 		},
+		"CRM Lead Segment-Quick Entry": {
+			"doctype": "CRM Lead Segment",
+			"layout": '[{"name":"details_section","columns":[{"name":"column_sgm1","fields":["segment_name","description"]},{"name":"column_sgm2","fields":["assigned_to"]}]}]',
+		},
 	}
 
 	sidebar_fields_layouts = {
