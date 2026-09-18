@@ -561,8 +561,8 @@ listResource = createResource({
       kanban_fields: data.kanban_fields,
       columns: data.columns,
       rows: data.rows,
-      page_length: params.page_length,
-      page_length_count: params.page_length_count,
+      page_length: data.page_length,
+      page_length_count: data.page_length_count,
     }
   },
 })
