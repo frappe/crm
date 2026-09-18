@@ -5,6 +5,7 @@ import path from 'path'
 export default defineConfig({
   plugins: [vue()],
   test: {
+    server: { deps: { inline: ['frappe-ui'] } },
     globals: true,
     environment: 'happy-dom',
     root: import.meta.dirname,
