@@ -31,12 +31,11 @@
                 @update:model-value="setTitle"
               />
             </div>
+            <span class="select-none text-ink-red-6" aria-hidden="true">*</span>
+            <span class="sr-only">{{ __('(required)') }}</span>
           </div>
         </div>
         <div class="flex items-center gap-2">
-          <span v-if="saveState" class="text-sm text-ink-gray-5">
-            {{ saveState }}
-          </span>
           <Badge
             v-if="dirty"
             size="md"
@@ -100,6 +99,7 @@
           :block-groups="blocks"
           :trigger-groups="triggers"
           :selected-id="selectedId"
+          :dim-unselected="showInspector"
           :can-delete="canDeleteSelected"
           :can-undo="canUndo"
           :can-redo="canRedo"
@@ -156,8 +156,6 @@ import WorkflowFlow from './WorkflowFlow.vue'
 import { useKeyboardShortcuts } from '@/composables/useKeyboardShortcuts'
 import { useUndoHistory } from '@/composables/useUndoHistory'
 import { globalStore } from '@/stores/global'
-import { timeAgo } from '@/utils'
-import { useNow } from '@vueuse/core'
 import { blockGroups } from './workflowBlocks'
 import { aliasTargets, loadCapabilities } from './workflowCapabilities'
 import { workflowEdges, workflowNodes } from './workflowGraph'
@@ -270,16 +268,6 @@ useKeyboardShortcuts({
 
 /** Compared against the last loaded/saved state so closing can warn about unsaved edits. */
 const dirty = computed(() => savedSnapshot.value !== JSON.stringify(payload()))
-
-/** Ticks so "Saved 2 minutes ago" keeps counting while the builder stays open. */
-const now = useNow({ interval: 30000 })
-
-const saveState = computed(() => {
-  if (saving.value) return __('Saving...')
-  // Reading the clock keeps the relative time recomputing as it ticks.
-  if (dirty.value || !doc.modified || !now.value) return ''
-  return __('Saved {0}', [timeAgo(doc.modified)])
-})
 
 /** A trial runs the saved flow, so unsaved edits would not be what gets tested. */
 const canTest = computed(() => Boolean(props.automationName) && !dirty.value)
