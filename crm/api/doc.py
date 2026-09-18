@@ -855,3 +855,24 @@ def delete_bulk_docs(doctype: str, items: str | list, delete_linked: bool = Fals
 	else:
 		delete_bulk(doctype, items)
 	return "success"
+
+
+@frappe.whitelist()
+def get_email_template_attachments(template_name: str):
+	"""Files attached to an Email Template (via the standard Frappe
+	attachment mechanism), so the email composer can attach them
+	automatically when the template is applied."""
+
+	if not frappe.db.exists("Email Template", template_name):
+		return []
+
+	frappe.has_permission("Email Template", "read", doc=template_name, throw=True)
+
+	return frappe.get_all(
+		"File",
+		filters={
+			"attached_to_doctype": "Email Template",
+			"attached_to_name": template_name,
+		},
+		fields=["name", "file_name", "file_url"],
+	)

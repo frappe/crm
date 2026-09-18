@@ -314,6 +314,22 @@ async function applyEmailTemplate(template) {
   if (data.message) {
     content.value = data.message
   }
+
+  // Attach any files that were uploaded to the template itself (via the
+  // standard attachment sidebar on the Email Template record), so a
+  // template can carry its own PDFs/attachments without re-uploading them
+  // by hand every time it's used.
+  call('crm.api.doc.get_email_template_attachments', {
+    template_name: template.name,
+  }).then((files) => {
+    const alreadyAttached = new Set(attachments.value.map((a) => a.file_url))
+    for (const file of files || []) {
+      if (!alreadyAttached.has(file.file_url)) {
+        attachments.value.push(file)
+      }
+    }
+  })
+
   showEmailTemplateSelectorModal.value = false
   capture('email_template_applied', { doctype: props.doctype })
 }
