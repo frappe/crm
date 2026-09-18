@@ -16,7 +16,7 @@
           >
             <QuickFilterField
               :filter="filter"
-              @applyQuickFilter="(f, v) => applyQuickFilter(f, v)"
+              @applyQuickFilter="applyQuickFilter"
             />
           </div>
         </FadedScrollableDiv>
@@ -154,7 +154,7 @@
       >
         <QuickFilterField
           :filter="filter"
-          @applyQuickFilter="(f, v) => applyQuickFilter(f, v)"
+          @applyQuickFilter="applyQuickFilter"
         />
       </div>
     </FadedScrollableDiv>
@@ -867,33 +867,39 @@ const quickFilterOptions = computed(() => {
   return options
 })
 
+// Derives a fresh list rather than writing `value` back into `quickFilters.data`.
+// This re-runs on every list response, so mutating the shared filter objects let
+// a stale value reach into whatever was being typed (#2113).
 const quickFilterList = computed(() => {
   let filters = quickFilters.data || []
   let params = getListParams()
 
-  filters.forEach((filter) => {
-    filter['value'] = filter.fieldtype == 'Check' ? false : ''
-    if (params?.filters?.[filter.fieldname]) {
-      let value = params.filters[filter.fieldname]
-      if (Array.isArray(value)) {
-        if (
-          (['Check', 'Select', 'Link', 'Date', 'Datetime'].includes(
-            filter.fieldtype,
-          ) &&
-            value[0]?.toLowerCase() == 'like') ||
-          value[0]?.toLowerCase() != 'like'
-        )
-          return
-        filter['value'] = value[1]?.replace(/%/g, '')
-      } else if (typeof value == 'boolean') {
-        filter['value'] = value
+  return filters.map((filter) => {
+    let value = filter.fieldtype == 'Check' ? false : ''
+    let appliedValue = params?.filters?.[filter.fieldname]
+
+    if (appliedValue) {
+      if (Array.isArray(appliedValue)) {
+        // Only a LIKE on a free-text field carries a value the input can show.
+        let isTextField = ![
+          'Check',
+          'Select',
+          'Link',
+          'Date',
+          'Datetime',
+        ].includes(filter.fieldtype)
+        if (appliedValue[0]?.toLowerCase() == 'like' && isTextField) {
+          value = appliedValue[1]?.replace(/%/g, '')
+        }
+      } else if (typeof appliedValue == 'boolean') {
+        value = appliedValue
       } else {
-        filter['value'] = value?.replace(/%/g, '')
+        value = appliedValue?.replace(/%/g, '')
       }
     }
-  })
 
-  return filters
+    return { ...filter, value }
+  })
 })
 
 const quickFilters = createResource({
@@ -915,7 +921,9 @@ function setupNewQuickFilters(filters) {
   }))
 }
 
-function applyQuickFilter(filter, value) {
+// `onSettled` lets a text quick filter hold its draft until this apply — list
+// reload and view save included — has fully landed (see QuickFilterField).
+function applyQuickFilter(filter, value, onSettled) {
   let filters = { ...getListParams().filters }
   let field = filter.fieldname
   if (value) {
@@ -926,12 +934,10 @@ function applyQuickFilter(filter, value) {
     } else {
       filters[field] = ['LIKE', `%${value}%`]
     }
-    filter['value'] = value
   } else {
     delete filters[field]
-    filter['value'] = ''
   }
-  updateFilter(filters)
+  updateFilter(filters).finally(() => onSettled?.())
 }
 
 function updateFilter(filters) {
@@ -942,11 +948,12 @@ function updateFilter(filters) {
   listResource.params = defaultParams.value
   listResource.params.filters = filters
   view.value.filters = filters
-  listResource.reload()
+  let pending = [listResource.reload()]
 
   if (!route.query.view) {
-    createOrUpdateStandardView()
+    pending.push(createOrUpdateStandardView())
   }
+  return Promise.all(pending)
 }
 
 function updateSort(order_by) {
@@ -1095,13 +1102,16 @@ function loadMoreKanban(columnName) {
 function createOrUpdateStandardView() {
   if (route.query.view) return
   view.value.doctype = props.doctype
-  call(
+  return call(
     'crm.fcrm.doctype.crm_view_settings.crm_view_settings.create_or_update_standard_view',
     {
       view: view.value,
     },
   ).then(() => {
-    reloadView()
+    // Settle only once the views store has re-read the saved view: the
+    // `getView` watcher rebuilds the list params from it, so until then the
+    // filters shown can still flip back to the previously saved ones.
+    let refreshed = reloadView()
     view.value = {
       label: view.value.label,
       type: view.value.type || 'list',
@@ -1120,6 +1130,7 @@ function createOrUpdateStandardView() {
       load_default_columns: view.value.load_default_columns,
     }
     viewUpdated.value = false
+    return refreshed
   })
 }
 

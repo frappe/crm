@@ -37,10 +37,12 @@
   />
   <FormControl
     v-else
-    v-model="filter.value"
+    v-model="draft"
     type="text"
     :placeholder="filter.label"
-    @input.stop="debouncedFn(filter, $event.target.value)"
+    @focus="focused = true"
+    @blur="focused = false"
+    @input.stop="onTextInput($event.target.value)"
   />
 </template>
 <script setup>
@@ -48,7 +50,7 @@ import Link from '@/components/Controls/Link.vue'
 import { FormControl, DatePicker, DateTimePicker } from 'frappe-ui'
 import { getFormat } from '@/utils'
 import { useDebounceFn } from '@vueuse/core'
-import { reactive, watch } from 'vue'
+import { computed, reactive, ref, watch } from 'vue'
 
 const props = defineProps({
   filter: { type: Object, required: true },
@@ -58,15 +60,49 @@ const filter = reactive(props.filter)
 
 const emit = defineEmits(['applyQuickFilter'])
 
+// Text filters are debounced, so between a keystroke and the list response the
+// typed text is newer than `filter.value` — which the parent re-derives from
+// the list's *applied* filters every time a response lands. Copying that back
+// mid-edit wipes whatever was typed since the last commit (#2113), so the input
+// owns a local draft and only follows the parent while the user isn't editing.
+const draft = ref(props.filter.value ?? '')
+const focused = ref(false)
+const debouncePending = ref(false)
+// Applies emitted to the parent that it hasn't reported back as settled yet.
+const pendingApplies = ref(0)
+const editing = computed(
+  () => focused.value || debouncePending.value || pendingApplies.value > 0,
+)
+
 watch(
   () => props.filter,
-  (newFilter) => Object.assign(filter, newFilter),
+  (newFilter) => {
+    Object.assign(filter, newFilter)
+    if (!editing.value) draft.value = newFilter.value ?? ''
+  },
   { deep: true },
 )
 
+// The edit stays pending past blur, and past the debounce firing: applying a
+// filter also saves the view and re-reads it, and an *earlier* apply finishing
+// that round trip late rebuilds `filter.value` from a stale view. Until the
+// parent reports every apply as settled, whatever the prop carries is older
+// than the draft, so it's only re-synced once the last one has landed.
 const debouncedFn = useDebounceFn((f, value) => {
-  emit('applyQuickFilter', f, value)
+  debouncePending.value = false
+  pendingApplies.value++
+  emit('applyQuickFilter', f, value, onApplySettled)
 }, 500)
+
+function onApplySettled() {
+  pendingApplies.value--
+  if (!editing.value) draft.value = props.filter.value ?? ''
+}
+
+function onTextInput(value) {
+  debouncePending.value = true
+  debouncedFn(filter, value)
+}
 
 function updateFilter(f, value) {
   emit('applyQuickFilter', f, value)
