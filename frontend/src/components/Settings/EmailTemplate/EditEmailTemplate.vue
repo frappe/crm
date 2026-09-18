@@ -43,6 +43,7 @@
           <FormControl
             v-model="template.reference_doctype"
             type="select"
+            side="bottom"
             size="md"
             :label="__('For')"
             :options="[
@@ -73,6 +74,7 @@
         <FormControl
           v-model="template.content_type"
           type="select"
+          side="bottom"
           size="md"
           :label="__('Content Type')"
           default="Rich Text"
