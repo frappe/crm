@@ -31,9 +31,11 @@
                 @update:model-value="setTitle"
               />
             </div>
-            <span class="select-none text-ink-red-6" aria-hidden="true">*</span>
-            <span class="sr-only">{{ __('(required)') }}</span>
           </div>
+          <span class="-ml-1.5 select-none text-ink-red-6" aria-hidden="true"
+            >*</span
+          >
+          <span class="sr-only">{{ __('(required)') }}</span>
         </div>
         <div class="flex items-center gap-2">
           <Badge
