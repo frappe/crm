@@ -2,16 +2,46 @@ import { evaluateExpression } from '@/utils/expressions'
 
 /**
  * Safely parse link_filters which can be a JSON string or already an object.
- * Returns the parsed object or null.
+ * Returns the parsed filters in the `{ fieldname: [operator, value] }` form
+ * expected by `frappe.desk.search.search_link`, or null.
+ *
+ * Frappe stores link_filters as a list of tuples
+ * (`[["User", "user_type", "=", "System User"]]`), so list input is
+ * converted to the mapping form — same as Desk's `parse_filters()`.
  */
 export function parseLinkFilters(linkFilters) {
   if (!linkFilters) return null
-  if (typeof linkFilters === 'object') return linkFilters
+  if (typeof linkFilters === 'object') return normalizeLinkFilters(linkFilters)
   try {
-    return JSON.parse(linkFilters)
+    return normalizeLinkFilters(JSON.parse(linkFilters))
   } catch {
     return null
   }
+}
+
+/**
+ * Convert list-form link filters to the mapping form.
+ * Accepts `[doctype, fieldname, operator, value]` (the stored format,
+ * where `doctype` may be a dynamic-link descriptor object) or
+ * `[fieldname, operator, value]`. Non-list input is returned as-is.
+ *
+ * `eval:` values need the current document context, which is not
+ * available here, so those conditions are skipped rather than sent to
+ * the server as a literal string.
+ */
+export function normalizeLinkFilters(linkFilters) {
+  if (!Array.isArray(linkFilters)) return linkFilters
+
+  const filters = {}
+  for (const condition of linkFilters) {
+    if (!Array.isArray(condition)) continue
+    const [fieldname, operator, value] =
+      condition.length >= 4 ? condition.slice(1) : condition
+    if (!fieldname || typeof fieldname !== 'string') continue
+    if (typeof value === 'string' && value.startsWith('eval:')) continue
+    filters[fieldname] = [operator, value]
+  }
+  return filters
 }
 
 /**
