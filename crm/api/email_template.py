@@ -10,7 +10,7 @@ from jinja2.exceptions import TemplateError
 
 
 @frappe.whitelist()
-def get_email_template(template_name, doc, sender=None):
+def get_email_template(template_name: str, doc: dict | str, sender: str | None = None) -> dict:
 	"""Render an email template, surfacing Jinja errors as a user-facing message.
 
 	When a template references something that isn't in the context (e.g.
