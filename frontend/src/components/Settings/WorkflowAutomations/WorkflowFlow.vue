@@ -108,7 +108,7 @@
                   class="workflow-node relative flex h-[87px] w-[212px] flex-col overflow-hidden rounded-[10px] border bg-surface-base shadow-sm transition-all"
                   :class="[
                     nodeClasses(id, data),
-                    { 'opacity-40': data.dimmed },
+                    { 'opacity-40': data.dimmed || isFaded(id, data) },
                   ]"
                   :tabindex="readonly ? -1 : 0"
                   :role="readonly ? undefined : 'button'"
@@ -317,6 +317,7 @@ const props = defineProps({
   blockGroups: { type: Array, default: () => [] },
   triggerGroups: { type: Array, default: () => [] },
   selectedId: { type: String, default: '' },
+  dimUnselected: { type: Boolean, default: false },
   canDelete: { type: Boolean, default: false },
   canUndo: { type: Boolean, default: false },
   canRedo: { type: Boolean, default: false },
@@ -484,6 +485,12 @@ function selectNode(id) {
 /** Until a trigger is chosen the start block is the picker itself, as in the empty state. */
 function picksTrigger(data) {
   return Boolean(data.empty) && !props.readonly
+}
+
+/** While a block is being inspected the rest of the flow steps back, as a trial run does. */
+function isFaded(id, data) {
+  if (!props.dimUnselected || data.empty) return false
+  return Boolean(props.selectedId) && props.selectedId !== id
 }
 
 function isOn(id) {
