@@ -192,6 +192,7 @@
                               : doc[field.options]
                           "
                           :filters="field.filters"
+                          :grouping="field.grouping"
                           :placeholder="field.placeholder"
                           :onCreate="field.create"
                           @change="(v) => fieldChange(v, field)"
@@ -434,7 +435,10 @@ import Link from '@/components/Controls/Link.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import SidePanelModal from '@/components/Modals/SidePanelModal.vue'
 import { getMeta } from '@/stores/meta'
-import { parseLinkFilters } from '@/utils/fieldTransforms'
+import {
+  parseLinkFilters,
+  applyContactOrganizationGrouping,
+} from '@/utils/fieldTransforms'
 import { usersStore } from '@/stores/users'
 import { isMobileView } from '@/composables/settings'
 import {
@@ -535,6 +539,8 @@ function parsedField(field) {
       ...(parseLinkFilters(field.link_filters) || {}),
     })
   }
+
+  field = applyContactOrganizationGrouping(field, doc.value, props.doctype)
 
   const read_only_via_depends_on = evaluateDependsOnValue(
     field.read_only_depends_on,
