@@ -10,6 +10,7 @@ from crm.api.exchange_rate import get_exchange_rate
 from crm.fcrm.doctype.crm_service_level_agreement.utils import get_sla
 from crm.fcrm.doctype.crm_status_change_log.crm_status_change_log import add_status_change_log
 from crm.fcrm.doctype.utils import add_or_remove_lost_reason_section_in_sidepanel
+from crm.utils import get_base_currency
 
 
 class CRMDeal(Document):
@@ -291,7 +292,7 @@ class CRMDeal(Document):
 
 	def update_exchange_rate(self):
 		if self.has_value_changed("currency") or not self.exchange_rate:
-			system_currency = frappe.db.get_single_value("FCRM Settings", "currency") or "USD"
+			system_currency = get_base_currency()
 			exchange_rate = 1
 			if self.currency and self.currency != system_currency:
 				exchange_rate = get_exchange_rate(self.currency, system_currency)

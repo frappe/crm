@@ -7,7 +7,7 @@ from frappe.query_builder.functions import Avg, Coalesce, Count, Date, DateForma
 from pypika.functions import Function
 
 from crm.fcrm.doctype.crm_dashboard.crm_dashboard import create_default_manager_dashboard
-from crm.utils import sales_user_only
+from crm.utils import get_base_currency, sales_user_only
 
 
 # Custom function for TIMESTAMPDIFF (MySQL/MariaDB)
@@ -1268,9 +1268,9 @@ def get_deals_by_salesperson(
 
 def get_base_currency_symbol():
 	"""
-	Get the base currency symbol from the system settings.
+	Get the symbol of the CRM base currency.
 	"""
-	base_currency = frappe.db.get_single_value("FCRM Settings", "currency") or "USD"
+	base_currency = get_base_currency()
 	return frappe.db.get_value("Currency", base_currency, "symbol") or ""
 
 
