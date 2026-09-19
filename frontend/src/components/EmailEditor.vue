@@ -193,7 +193,7 @@ import {
   fullToolbar,
   uploadFile,
 } from '@/components/editor/config'
-import { FileUploader, call, FormControl } from 'frappe-ui'
+import { FileUploader, call, FormControl, toast } from 'frappe-ui'
 import {
   Editor,
   EditorContent,
@@ -298,14 +298,18 @@ const showEmailTemplateSelectorModal = ref(false)
 async function applyEmailTemplate(template) {
   let doc = modelValue.value
 
-  let data = await call(
-    'frappe.email.doctype.email_template.email_template.get_email_template',
-    {
+  let data
+  try {
+    data = await call('crm.api.email_template.get_email_template', {
       template_name: template.name,
       // fields are the template context, so nesting doc lets {{ doc.field }} work too
       doc: { ...doc, doc },
-    },
-  )
+    })
+  } catch (error) {
+    // e.g. template references a variable that isn't in the context
+    toast.error(error.messages?.[0] || __('Could not apply email template'))
+    return
+  }
 
   if (data.subject) {
     subject.value = data.subject
