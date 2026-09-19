@@ -572,10 +572,13 @@ def link_deal_addresses_to_customer(deal_name, customer_name, erpnext_crm_settin
 				for link in address_doc.links
 			)
 			if not already_linked:
-				address_doc.append("links", {
-					"link_doctype": "Customer",
-					"link_name": customer_name,
-				})
+				address_doc.append(
+					"links",
+					{
+						"link_doctype": "Customer",
+						"link_name": customer_name,
+					},
+				)
 				address_doc.save(ignore_permissions=True)
 		except Exception:
 			frappe.log_error(
