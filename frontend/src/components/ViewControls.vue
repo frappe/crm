@@ -339,6 +339,7 @@ import { usersStore } from '@/stores/users'
 import { organizationsStore } from '@/stores/organizations'
 import { getMeta } from '@/stores/meta'
 import { isEmoji } from '@/utils'
+import { resolvePageLength } from '@/utils/view'
 import {
   Combobox,
   Tooltip,
@@ -461,8 +462,12 @@ const view = ref({
   public: false,
 })
 
-const pageLength = computed(() => list.value?.data?.page_length || 20)
-const pageLengthCount = computed(() => list.value?.data?.page_length_count || 20)
+const pageLength = computed(() =>
+  resolvePageLength(list.value?.data?.page_length),
+)
+const pageLengthCount = computed(() =>
+  resolvePageLength(list.value?.data?.page_length_count),
+)
 
 watch(loadMore, (value) => {
   if (!value) return
