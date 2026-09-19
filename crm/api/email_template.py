@@ -6,6 +6,7 @@ from frappe import _
 from frappe.email.doctype.email_template.email_template import (
 	get_email_template as _get_email_template,
 )
+from frappe.utils import validate_email_address
 from jinja2.exceptions import TemplateError
 
 
@@ -18,6 +19,17 @@ def get_email_template(template_name: str, doc: dict | str, sender: str | None =
 	and re-raises the Jinja error, which the client can only show as a 500.
 	Replace that with a short validation error naming the template and the reason.
 	"""
+	if isinstance(doc, str):
+		doc = frappe.parse_json(doc)
+	if not isinstance(doc, dict):
+		frappe.throw(_("Invalid document context"))
+
+	if not frappe.db.exists("Email Template", template_name):
+		frappe.throw(_("Email Template {0} not found").format(template_name), frappe.DoesNotExistError)
+
+	if sender and not validate_email_address(sender):
+		frappe.throw(_("Invalid sender email address"))
+
 	try:
 		return _get_email_template(template_name, doc, sender=sender)
 	except TemplateError as e:
