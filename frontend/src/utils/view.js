@@ -33,3 +33,20 @@ export function getView(view, type, doctype) {
   }
   return viewDetails || standardView(viewType)
 }
+
+export const DEFAULT_PAGE_LENGTH = 20
+
+/**
+ * Page size for a list request, defaulting when there is nothing to read yet.
+ *
+ * List views take their page size from the previous response, so on a cold
+ * load the value is undefined. Left as-is it survives into the next "load
+ * more", where `page_length + page_length_count` becomes NaN and serialises to
+ * null -- which get_data rejects, since null overrides the Python default.
+ */
+export function resolvePageLength(value) {
+  const count = Number(value)
+  return Number.isFinite(count) && count > 0
+    ? Math.floor(count)
+    : DEFAULT_PAGE_LENGTH
+}
