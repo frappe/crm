@@ -461,8 +461,8 @@ const view = ref({
   public: false,
 })
 
-const pageLength = computed(() => list.value?.data?.page_length)
-const pageLengthCount = computed(() => list.value?.data?.page_length_count)
+const pageLength = computed(() => list.value?.data?.page_length || 20)
+const pageLengthCount = computed(() => list.value?.data?.page_length_count || 20)
 
 watch(loadMore, (value) => {
   if (!value) return
