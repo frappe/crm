@@ -1,4 +1,4 @@
-import { evaluateExpression } from '@/utils/expressions'
+import { _eval, evaluateExpression } from '@/utils/expressions'
 
 /**
  * Safely parse link_filters which can be a JSON string or already an object.
@@ -9,11 +9,13 @@ import { evaluateExpression } from '@/utils/expressions'
  * (`[["User", "user_type", "=", "System User"]]`), so list input is
  * converted to the mapping form — same as Desk's `parse_filters()`.
  */
-export function parseLinkFilters(linkFilters) {
+export function parseLinkFilters(linkFilters, context = {}) {
   if (!linkFilters) return null
-  if (typeof linkFilters === 'object') return normalizeLinkFilters(linkFilters)
+  if (typeof linkFilters === 'object') {
+    return normalizeLinkFilters(linkFilters, context)
+  }
   try {
-    return normalizeLinkFilters(JSON.parse(linkFilters))
+    return normalizeLinkFilters(JSON.parse(linkFilters), context)
   } catch {
     return null
   }
@@ -25,20 +27,32 @@ export function parseLinkFilters(linkFilters) {
  * where `doctype` may be a dynamic-link descriptor object) or
  * `[fieldname, operator, value]`. Non-list input is returned as-is.
  *
- * `eval:` values need the current document context, which is not
- * available here, so those conditions are skipped rather than sent to
- * the server as a literal string.
+ * `eval:` values are evaluated against `context.doc` / `context.parent`
+ * (same as Desk's `parse_filters()`). A condition whose expression cannot
+ * be evaluated is skipped rather than sent to the server as a literal string.
+ *
+ * @param {Array|object} linkFilters
+ * @param {object} [context]
+ * @param {object} [context.doc] - the document the field belongs to
+ * @param {object} [context.parent] - parent document, for grid rows
  */
-export function normalizeLinkFilters(linkFilters) {
+export function normalizeLinkFilters(linkFilters, context = {}) {
   if (!Array.isArray(linkFilters)) return linkFilters
 
+  const { doc, parent } = context
   const filters = {}
   for (const condition of linkFilters) {
     if (!Array.isArray(condition)) continue
-    const [fieldname, operator, value] =
+    let [fieldname, operator, value] =
       condition.length >= 4 ? condition.slice(1) : condition
     if (!fieldname || typeof fieldname !== 'string') continue
-    if (typeof value === 'string' && value.startsWith('eval:')) continue
+    if (typeof value === 'string' && value.startsWith('eval:')) {
+      try {
+        value = _eval(value.slice(5), { doc, parent })
+      } catch {
+        continue
+      }
+    }
     filters[fieldname] = [operator, value]
   }
   return filters

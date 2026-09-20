@@ -36,6 +36,14 @@ describe('parseLinkFilters', () => {
   it('returns an empty mapping for an empty list', () => {
     expect(parseLinkFilters('[]')).toEqual({})
   })
+
+  it('passes the context through for eval: conditions', () => {
+    expect(
+      parseLinkFilters('[["User","company","=","eval:doc.company"]]', {
+        doc: { company: 'ACME' },
+      }),
+    ).toEqual({ company: ['=', 'ACME'] })
+  })
 })
 
 describe('normalizeLinkFilters', () => {
@@ -73,10 +81,36 @@ describe('normalizeLinkFilters', () => {
     ).toEqual({ name: ['in', ['CRM Lead', 'CRM Deal']] })
   })
 
-  it('skips eval: conditions and malformed entries', () => {
+  it('evaluates eval: conditions against the doc', () => {
+    expect(
+      normalizeLinkFilters([['User', 'company', '=', 'eval:doc.company']], {
+        doc: { company: 'ACME' },
+      }),
+    ).toEqual({ company: ['=', 'ACME'] })
+  })
+
+  it('exposes the parent doc to eval: conditions', () => {
+    expect(
+      normalizeLinkFilters(
+        [['CRM Deal', 'organization', '=', 'eval:parent.organization']],
+        { doc: {}, parent: { organization: 'Frappe' } },
+      ),
+    ).toEqual({ organization: ['=', 'Frappe'] })
+  })
+
+  it('skips eval: conditions that cannot be evaluated', () => {
+    // no doc in context → `doc.company` throws → condition dropped
     expect(
       normalizeLinkFilters([
         ['User', 'company', '=', 'eval:doc.company'],
+        ['User', 'enabled', '=', 1],
+      ]),
+    ).toEqual({ enabled: ['=', 1] })
+  })
+
+  it('skips malformed entries', () => {
+    expect(
+      normalizeLinkFilters([
         'not a condition',
         [],
         ['User', 'enabled', '=', 1],

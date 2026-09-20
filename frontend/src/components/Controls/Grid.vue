@@ -636,18 +636,21 @@ function getFieldObj(field) {
     }
   }
 
+  // Field objects are shared across rows, so only the parent doc is known here
+  const linkFilterContext = { parent: parentDoc.value }
+
   if (field.fieldtype === 'Link' && field.options === 'User') {
     field.fieldtype = 'User'
     field.link_filters = JSON.stringify({
       name: ['in', users.data.crmUsers?.map((user) => user.name)],
       ignore_user_type: 1,
-      ...(parseLinkFilters(field.link_filters) || {}),
+      ...(parseLinkFilters(field.link_filters, linkFilterContext) || {}),
     })
   }
 
   const fieldObjWithFilters = {
     ...field,
-    filters: parseLinkFilters(field.link_filters),
+    filters: parseLinkFilters(field.link_filters, linkFilterContext),
     placeholder: field.placeholder || field.label,
   }
 
