@@ -408,15 +408,21 @@ def get_data(
 			if (column_field in filters and filters.get(column_field) != kc.get("name")) or kc.get("delete"):
 				column_data = []
 			else:
+<<<<<<< HEAD
 				column_filters.update(filters.copy())
 				page_length = 20
 
 				if kc.get("page_length"):
 					page_length = kc.get("page_length")
+=======
+				# don't shadow the top-level page_length: the response echoes it
+				# and the client reuses it for list / group_by views
+				column_page_length = kc.get("page_length", 20)
+>>>>>>> 7685736 (fix: make "Load More" in list views advance the page instead of re-fetching)
 
 				if order:
 					column_data = get_records_based_on_order(
-						doctype, rows, column_filters, page_length, order
+						doctype, rows, column_filters, column_page_length, order
 					)
 				else:
 					column_data = frappe.get_list(
@@ -424,7 +430,7 @@ def get_data(
 						fields=rows,
 						filters=convert_filter_to_tuple(doctype, column_filters),
 						order_by=order_by,
-						page_length=page_length,
+						page_length=column_page_length,
 					)
 
 				new_filters = filters.copy()
