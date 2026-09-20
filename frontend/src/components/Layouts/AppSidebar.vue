@@ -172,6 +172,7 @@ import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import CollapseSidebar from '@/components/Icons/CollapseSidebar.vue'
 import NotificationsIcon from '@/components/Icons/NotificationsIcon.vue'
 import HelpIcon from '@/components/Icons/HelpIcon.vue'
+import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import SidebarLink from '@/components/SidebarLink.vue'
 import Notifications from '@/components/Notifications.vue'
 import Settings from '@/components/Settings/Settings.vue'
@@ -184,6 +185,7 @@ import { usersStore } from '@/stores/users'
 import { sessionStore } from '@/stores/session'
 import { showSettings, activeSettingsPage } from '@/composables/settings'
 import { showChangePasswordModal } from '@/composables/modals'
+import { whatsappEnabled } from '@/composables/whatsapp'
 import { useBroadcast } from '@/composables/useBroadcast.js'
 import { FeatherIcon, call } from 'frappe-ui'
 import {
@@ -238,6 +240,12 @@ const links = [
     label: 'Deals',
     icon: DealsIcon,
     to: 'Deals',
+  },
+  {
+    label: 'WA Leads',
+    icon: WhatsAppIcon,
+    to: 'WA Leads',
+    condition: () => whatsappEnabled.value,
   },
   {
     label: 'Notes',

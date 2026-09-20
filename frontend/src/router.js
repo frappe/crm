@@ -37,6 +37,12 @@ const routes = [
     component: () => import('@/pages/Deals.vue'),
   },
   {
+    path: '/wa-leads/:profile?',
+    name: 'WA Leads',
+    component: () => import('@/pages/WALeads.vue'),
+    props: true,
+  },
+  {
     path: '/deals/:dealId',
     name: 'Deal',
     component: () => import(`@/pages/${handleMobileView('Deal')}.vue`),
