@@ -12,6 +12,8 @@ export default {
     // linked @whatsapp/ui source — its icons are `lucide-*` utility classes, and an
     // unscanned linked package fails silently: no error, every icon renders as blank space
     '../../whatsapp/ui/src/**/*.{vue,js,ts,jsx,tsx}',
+    // linked @framework/ui source, for the Grid and Link the account form uses
+    '../../frappe/ui/src/**/*.{vue,js,ts,jsx,tsx}',
   ],
   safelist: [
     '!text-gray-700',

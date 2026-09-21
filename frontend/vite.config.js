@@ -64,6 +64,12 @@ export default defineConfig(async ({ mode }) => {
           import.meta.dirname,
           '../../whatsapp/ui/src',
         ),
+        // same shape for @framework/ui: its account form pieces (Grid, Link) are
+        // what @whatsapp/ui's AccountForm is built on
+        '@framework/ui': path.resolve(
+          import.meta.dirname,
+          '../../frappe/ui/src',
+        ),
       },
       // ensure the linked @whatsapp/ui package reuses the host app's single copy of each peer:
       // the symlinked source has no node_modules of its own, so dedupe resolves its imports
@@ -103,7 +109,7 @@ export default defineConfig(async ({ mode }) => {
     server: {
       fs: {
         // allow the bench `apps/` dir so Vite can serve linked local packages
-        // (frappe-ui, @whatsapp/ui) that live in sibling app repos
+        // (frappe-ui, @whatsapp/ui, @framework/ui) that live in sibling app repos
         allow: [path.resolve(import.meta.dirname, '../..')],
       },
     },
@@ -185,6 +191,16 @@ function getAliases(config) {
     'frappe-ui/editor-style.css': path.resolve(
       import.meta.dirname,
       '../frappe-ui/src/molecules/editor/style.css',
+    ),
+    // `experimental` and `code-editor` are pulled in by @framework/ui's Grid
+    // and FormLayout
+    'frappe-ui/experimental': path.resolve(
+      import.meta.dirname,
+      '../frappe-ui/experimental.ts',
+    ),
+    'frappe-ui/code-editor': path.resolve(
+      import.meta.dirname,
+      '../frappe-ui/src/components/CodeEditor/index.ts',
     ),
     'frappe-ui': path.resolve(import.meta.dirname, '../frappe-ui/src/index.ts'),
   }
