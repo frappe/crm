@@ -3,7 +3,7 @@
 
 import frappe
 
-from crm.api.whatsapp import get_all_matches_by_phone_number
+from crm.integrations.api import find_by_phone
 
 
 def execute():
@@ -42,7 +42,7 @@ def _link_single_profile(profile_name: str, phone_number: str):
 	if not phone_number:
 		return
 
-	matches = get_all_matches_by_phone_number(phone_number)
+	matches = find_by_phone(phone_number)
 	if not matches:
 		return
 

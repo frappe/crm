@@ -1,4 +1,5 @@
 import functools
+import re
 
 import frappe
 import phonenumbers
@@ -9,11 +10,60 @@ from frappe.utils import floor, now
 from phonenumbers import NumberParseException
 from phonenumbers import PhoneNumberFormat as PNF
 
+FALLBACK_REGION = "IN"
 
-def parse_phone_number(phone_number: str, default_country: str = "IN"):
+
+def get_default_region() -> str:
+	"""ISO 3166 alpha-2 region used to parse numbers typed without a country code,
+	taken from the site's System Settings country."""
+	country = frappe.db.get_single_value("System Settings", "country")
+	if not country:
+		return FALLBACK_REGION
+	from frappe.geo.country_info import get_country_info
+
+	code = get_country_info(country).get("code")
+	return code.upper() if code else FALLBACK_REGION
+
+
+def normalize_phone(phone_number: str | None, region: str | None = None) -> str:
+	"""Canonical E.164 form of a phone number, so numbers typed in different formats
+	compare equal. A number that cannot be parsed as valid keeps its digits behind a
+	plus sign, which is still stable across spacing and punctuation."""
+	if not phone_number:
+		return ""
+	raw = phone_number.strip()
+	digits = re.sub(r"\D", "", raw)
+	if not digits:
+		return ""
+
+	region = region or get_default_region()
+	for candidate in (raw, f"+{digits}"):
+		try:
+			parsed = phonenumbers.parse(candidate, region)
+		except NumberParseException:
+			continue
+		if phonenumbers.is_valid_number(parsed):
+			return phonenumbers.format_number(parsed, PNF.E164)
+	return f"+{digits}"
+
+
+def phone_search_digits(phone_number: str, region: str | None = None) -> str:
+	"""Digits to prefilter phone columns with SQL LIKE before comparing normalized values:
+	the national number when the number is valid, otherwise every digit."""
+	region = region or get_default_region()
+	try:
+		parsed = phonenumbers.parse(phone_number, region)
+		if phonenumbers.is_valid_number(parsed):
+			return str(parsed.national_number)
+	except NumberParseException:
+		pass
+	return re.sub(r"\D", "", phone_number or "")
+
+
+def parse_phone_number(phone_number: str, default_country: str | None = None):
 	try:
 		# Parse the number
-		number = phonenumbers.parse(phone_number, default_country)
+		number = phonenumbers.parse(phone_number, default_country or get_default_region())
 
 		# Get various information about the number
 		result = {
@@ -36,7 +86,9 @@ def parse_phone_number(phone_number: str, default_country: str = "IN"):
 		return {"success": False, "error": str(e)}
 
 
-def are_same_phone_number(number1: str, number2: str, default_region: str = "IN", validate: bool = True):
+def are_same_phone_number(
+	number1: str, number2: str, default_region: str | None = None, validate: bool = True
+):
 	"""
 	Check if two phone numbers are the same, regardless of their format.
 
@@ -48,6 +100,7 @@ def are_same_phone_number(number1: str, number2: str, default_region: str = "IN"
 	Returns:
 	    bool: True if numbers are same, False otherwise
 	"""
+	default_region = default_region or get_default_region()
 	try:
 		# Parse both numbers
 		parsed1 = phonenumbers.parse(number1, default_region)
