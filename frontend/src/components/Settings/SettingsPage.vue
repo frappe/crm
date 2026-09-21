@@ -27,12 +27,11 @@
         </div>
       </div>
       <div class="flex item-center space-x-2 w-3/12 justify-end">
-        <!-- Nothing to save until something changes, so don't offer it — but a
-             new record always offers Create, even before the first keystroke. -->
+        <!-- Nothing to save until something changes, so don't offer it. -->
         <Button
-          v-if="isDirty || isNew"
+          v-if="isDirty"
           :loading="saving"
-          :label="isNew ? __('Create') : __('Save')"
+          :label="__('Save')"
           variant="solid"
           @click="save"
         />
@@ -50,7 +49,6 @@
         :tabs="tabs"
         :data="doc"
         :doctype="doctype"
-        :context="newDocContext"
       />
     </div>
     <div v-else class="flex flex-1 items-center justify-center">
@@ -62,7 +60,6 @@
 <script setup>
 import FieldLayout from '@/components/FieldLayout/FieldLayout.vue'
 import {
-  call,
   createDocumentResource,
   createResource,
   LoadingIndicator,
@@ -71,17 +68,10 @@ import {
   ErrorMessage,
 } from 'frappe-ui'
 import { getRandom } from '@/utils'
-import { computed, onMounted, reactive, ref } from 'vue'
+import { computed, onMounted } from 'vue'
 
 const props = defineProps({
   doctype: { type: String, required: true },
-  // Record to load. Defaults to the doctype name so Single DocTypes (the
-  // original use) keep working; pass an explicit name to edit one record of
-  // a multi-record DocType (e.g. a specific WhatsApp Account).
-  name: { type: String, default: '' },
-  // Render a blank record that is only created on save, so adding one is the
-  // same screen as editing one rather than a dialog first.
-  isNew: { type: Boolean, default: false },
   title: { type: String, default: '' },
   successMessage: { type: String, default: 'Updated successfully' },
   back: { type: Function, default: null },
@@ -95,8 +85,6 @@ const props = defineProps({
   // through a purpose-built control elsewhere.
   excludeFields: { type: Array, default: () => [] },
 })
-
-const emit = defineEmits(['created'])
 
 const fields = createResource({
   url: 'crm.api.doc.get_fields',
@@ -112,73 +100,33 @@ const fields = createResource({
 // edits when it is unmounted and remounted — which Tabs does on every switch.
 // `auto` would defeat that: the cache reloads an auto resource on every lookup,
 // overwriting the edits. Fetch once instead, only when there is nothing yet.
-const data = props.isNew
-  ? null
-  : createDocumentResource({
-      doctype: props.doctype,
-      name: props.name || props.doctype,
-      fields: ['*'],
-      auto: false,
-      setValue: {
-        onSuccess: () => {
-          toast.success(__(props.successMessage))
-        },
-        onError: (err) => {
-          toast.error(err.message + ': ' + err.messages[0])
-        },
-      },
-    })
-
-const newDoc = reactive({})
-// A record that does not exist yet has no name, and useDocument() — which is
-// where FieldLayout normally gets its change handler — does nothing without one,
-// so edits would be dropped. FieldLayout's standalone mode writes straight into
-// the bound object instead, which is what an unsaved record needs.
-const newDocContext = props.isNew ? { fieldPropertyOverrides: {} } : null
-const creating = ref(false)
-const createError = ref('')
-
-onMounted(() => {
-  if (data && !data.doc) data.get.fetch()
+const data = createDocumentResource({
+  doctype: props.doctype,
+  name: props.doctype,
+  fields: ['*'],
+  auto: false,
+  setValue: {
+    onSuccess: () => {
+      toast.success(__(props.successMessage))
+    },
+    onError: (err) => {
+      toast.error(err.message + ': ' + err.messages[0])
+    },
+  },
 })
 
-const doc = computed(() => (props.isNew ? newDoc : data?.doc))
+onMounted(() => {
+  if (!data.doc) data.get.fetch()
+})
 
-const loading = computed(() =>
-  props.isNew ? false : Boolean(data?.get?.loading) && !data?.doc,
-)
+const doc = computed(() => data.doc)
+const loading = computed(() => Boolean(data.get.loading) && !data.doc)
+const isDirty = computed(() => Boolean(data.isDirty))
+const saving = computed(() => Boolean(data.save.loading))
+const error = computed(() => data.save.error)
 
-const isDirty = computed(() =>
-  props.isNew ? Object.keys(newDoc).length > 0 : Boolean(data?.isDirty),
-)
-
-const saving = computed(() =>
-  props.isNew ? creating.value : Boolean(data?.save?.loading),
-)
-
-const error = computed(() =>
-  props.isNew ? createError.value : data?.save?.error,
-)
-
-async function save() {
-  if (!props.isNew) {
-    data.save.submit()
-    return
-  }
-
-  createError.value = ''
-  creating.value = true
-  try {
-    const created = await call('frappe.client.insert', {
-      doc: { doctype: props.doctype, ...newDoc },
-    })
-    toast.success(__(props.successMessage))
-    emit('created', created.name)
-  } catch (err) {
-    createError.value = err.messages?.[0] || err.message
-  } finally {
-    creating.value = false
-  }
+function save() {
+  data.save.submit()
 }
 
 const tabs = computed(() => {

@@ -1,15 +1,10 @@
 <template>
   <!-- Adding an account is the same screen as editing one, just unsaved. -->
-  <SettingsPage
+  <WhatsAppAccountPage
     v-if="step === 'account'"
     :key="accountName || 'new'"
-    doctype="WhatsApp Account"
     :name="accountName"
-    :is-new="!accountName"
-    :title="accountName || __('New Account')"
-    :success-message="accountName ? 'Account updated' : 'Account created'"
-    :back="showAccounts"
-    class="p-6"
+    @back="showAccounts"
     @created="showAccounts"
   />
   <div v-else class="wa-tabs flex h-full flex-col text-ink-gray-8">
@@ -72,6 +67,7 @@
 <script setup>
 import SettingsPage from '@/components/Settings/SettingsPage.vue'
 import WhatsAppAccountList from '@/components/Settings/WhatsAppAccountList.vue'
+import WhatsAppAccountPage from '@/components/Settings/WhatsAppAccountPage.vue'
 import { Tabs } from 'frappe-ui'
 import { ref, useTemplateRef } from 'vue'
 
