@@ -20,9 +20,8 @@ def lead_list(**kwargs):
 
 
 class TestListPageLength(IntegrationTestCase):
-	"""The client rebuilds its list params from the `page_length` /
-	`page_length_count` the server echoes back, so the response must carry
-	the top-level values that were requested (see #2835)."""
+	"""The response must echo the top-level `page_length` /
+	`page_length_count` that were requested, not a kanban column's (see #2835)."""
 
 	def setUp(self):
 		frappe.set_user("Administrator")

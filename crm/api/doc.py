@@ -426,8 +426,7 @@ def get_data(
 			if kc.get("delete"):
 				column_data = []
 			else:
-				# don't shadow the top-level page_length: the response echoes it
-				# and the client reuses it for list / group_by views
+				# don't shadow the top-level page_length echoed in the response
 				column_page_length = kc.get("page_length", 20)
 
 				if order:
