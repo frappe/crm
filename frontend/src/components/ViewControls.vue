@@ -452,9 +452,7 @@ const view = ref({
   public: false,
 })
 
-// Mirrors the get_data default. On a cold load there is no previous response
-// to read from, and an undefined page_length would turn the first "Load More"
-// into NaN -> null, which get_data rejects.
+// mirrors the get_data default; undefined would make "Load More" send null
 const DEFAULT_PAGE_LENGTH = 20
 
 const pageLength = computed(
@@ -561,8 +559,8 @@ listResource = createResource({
       kanban_fields: data.kanban_fields,
       columns: data.columns,
       rows: data.rows,
-      page_length: data.page_length,
-      page_length_count: data.page_length_count,
+      page_length: params.page_length,
+      page_length_count: params.page_length_count,
     }
   },
 })
