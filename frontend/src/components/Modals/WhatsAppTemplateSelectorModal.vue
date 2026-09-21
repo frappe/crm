@@ -17,6 +17,7 @@
           </template>
         </TextInput>
         <Button
+          v-if="isManager()"
           :label="__('Create')"
           icon-left="lucide-plus"
           @click="newWhatsAppTemplate"
@@ -88,6 +89,9 @@
 </template>
 
 <script setup>
+import { showSettings, activeSettingsPage } from '@/composables/settings'
+import { useBroadcast } from '@/composables/useBroadcast'
+import { usersStore } from '@/stores/users'
 import { TemplateContent, useTemplates } from '@whatsapp/ui'
 import { Badge, ErrorMessage, toast } from 'frappe-ui'
 import { ref, computed, nextTick, watch } from 'vue'
@@ -100,6 +104,8 @@ const props = defineProps({
 })
 
 const show = defineModel({ type: Boolean })
+const { isManager } = usersStore()
+const { send: broadcast } = useBroadcast()
 const searchInput = ref('')
 
 const emit = defineEmits(['sent'])
@@ -164,9 +170,15 @@ async function send() {
   emit('sent')
 }
 
+// Only managers see the WhatsApp settings page, which is why the button is gated.
 function newWhatsAppTemplate() {
   show.value = false
-  window.open('/app/whatsapp-template/new')
+  showSettings.value = true
+  activeSettingsPage.value = 'WhatsApp'
+  broadcast('whatsapp_template_page', {
+    page: 'new-template',
+    reference_doctype: props.doctype,
+  })
 }
 
 watch(selected, () => (sendError.value = ''))

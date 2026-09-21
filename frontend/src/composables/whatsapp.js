@@ -21,3 +21,15 @@ createResource({
     isWhatsAppInstalled.value = Boolean(data)
   },
 })
+
+// Meta's review outcome for a template, as a Badge theme.
+const TEMPLATE_STATUS_THEMES = {
+  Approved: 'green',
+  Pending: 'orange',
+  Rejected: 'red',
+  Deleted: 'gray',
+}
+
+export function templateStatusTheme(status) {
+  return TEMPLATE_STATUS_THEMES[status] || 'gray'
+}
