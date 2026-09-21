@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2026-09-13 13:52+0000\n"
-"PO-Revision-Date: 2026-09-15 21:31\n"
+"POT-Creation-Date: 2026-09-20 13:39+0000\n"
+"PO-Revision-Date: 2026-09-21 23:42\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Serbian (Cyrillic)\n"
 "MIME-Version: 1.0\n"
@@ -487,7 +487,7 @@ msgstr "Додај временске циљеве за кључне тачке,
 msgid "Add to Holidays"
 msgstr "Додај у празнике"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:548
+#: frontend/src/components/Layouts/AppSidebar.vue:558
 msgid "Add your first comment"
 msgstr "Додајте свој први коментар"
 
@@ -773,7 +773,7 @@ msgstr "Дани додељивања су обавезни"
 
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
-#: frontend/src/components/Layouts/AppSidebar.vue:696
+#: frontend/src/components/Layouts/AppSidebar.vue:706
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRulesList.vue:16
 msgid "Assignment Rule"
 msgstr "Правило доделе задатка"
@@ -1335,7 +1335,7 @@ msgstr "Календар"
 msgid "Call Details"
 msgstr "Детаљи позива"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:670
+#: frontend/src/components/Layouts/AppSidebar.vue:680
 msgid "Call Log"
 msgstr "Евиденција позива"
 
@@ -1409,7 +1409,7 @@ msgstr "Откажи"
 msgid "Canceled"
 msgstr "Отказано"
 
-#: crm/api/user.py:144
+#: crm/api/user.py:147
 msgid "Cannot assign this role"
 msgstr "Није могуће доделити ову улогу"
 
@@ -1461,7 +1461,7 @@ msgstr ""
 msgid "Capture my first lead"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:675
+#: frontend/src/components/Layouts/AppSidebar.vue:685
 msgid "Capturing Leads"
 msgstr "Прикупљање потенцијалних клијената"
 
@@ -1475,7 +1475,7 @@ msgid "Category"
 msgstr "Категорија"
 
 #: frontend/src/components/Controls/ImageUploader.vue:14
-#: frontend/src/components/Layouts/AppSidebar.vue:602
+#: frontend/src/components/Layouts/AppSidebar.vue:612
 msgid "Change"
 msgstr "Промена"
 
@@ -1503,8 +1503,8 @@ msgstr "Промени фотографију"
 msgid "Change Status"
 msgstr "Промени статус"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:592
-#: frontend/src/components/Layouts/AppSidebar.vue:601
+#: frontend/src/components/Layouts/AppSidebar.vue:602
+#: frontend/src/components/Layouts/AppSidebar.vue:611
 msgid "Change deal status"
 msgstr "Промени статус пословне прилике"
 
@@ -1669,7 +1669,7 @@ msgstr "Колоне"
 #: frontend/src/components/Activities/ActivityHeader.vue:115
 #: frontend/src/components/CommentBox.vue:75
 #: frontend/src/components/CommunicationArea.vue:15
-#: frontend/src/components/Layouts/AppSidebar.vue:693
+#: frontend/src/components/Layouts/AppSidebar.vue:703
 msgid "Comment"
 msgstr "Коментар"
 
@@ -1856,7 +1856,7 @@ msgstr "Повежите свој имејл"
 #. Label of the contact (Link) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_contacts/crm_contacts.json
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
-#: frontend/src/components/Layouts/AppSidebar.vue:666
+#: frontend/src/components/Layouts/AppSidebar.vue:676
 #: frontend/src/components/Modals/ConvertToDealModal.vue:51
 msgid "Contact"
 msgstr "Контакт"
@@ -1936,15 +1936,15 @@ msgstr "Садржај је обавезан"
 msgid "Controls how numbers are displayed (e.g., commas, decimal separators)"
 msgstr "Контролише начин приказа бројева (нпр. зарези, децимални сепаратори)"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:487
+#: frontend/src/components/Layouts/AppSidebar.vue:497
 #: frontend/src/components/ListBulkActions.vue:86
 #: frontend/src/components/Modals/ConvertToDealModal.vue:83
 #: frontend/src/pages/MobileLead.vue:59
 msgid "Convert"
 msgstr "Пребаци"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:478
-#: frontend/src/components/Layouts/AppSidebar.vue:486
+#: frontend/src/components/Layouts/AppSidebar.vue:488
+#: frontend/src/components/Layouts/AppSidebar.vue:496
 msgid "Convert lead to deal"
 msgstr "Пребаци потенцијалног клијента у пословну прилику"
 
@@ -2134,15 +2134,15 @@ msgstr ""
 msgid "Create quotation button on deal page and auto customer creation on deal status change will be disabled. Are you sure?"
 msgstr "Дугме за креирање понуда на страници пословне прилике и аутоматско креирање клијента при промени статуса биће онемогућени. Да ли сте сигурни?"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:453
+#: frontend/src/components/Layouts/AppSidebar.vue:463
 msgid "Create your first lead"
 msgstr "Креирај свог првог потенцијалног клијента"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:527
+#: frontend/src/components/Layouts/AppSidebar.vue:537
 msgid "Create your first note"
 msgstr "Креирај своју прву белешку"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:506
+#: frontend/src/components/Layouts/AppSidebar.vue:516
 msgid "Create your first task"
 msgstr "Креирај свој први задатак"
 
@@ -2177,19 +2177,19 @@ msgstr ""
 msgid "Current pipeline distribution"
 msgstr "Тренутна расподела продајног тока"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:705
+#: frontend/src/components/Layouts/AppSidebar.vue:715
 msgid "Custom Actions"
 msgstr "Прилагођене радње"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:655
+#: frontend/src/components/Layouts/AppSidebar.vue:665
 msgid "Custom Branding"
 msgstr "Прилагођено брендирање"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:704
+#: frontend/src/components/Layouts/AppSidebar.vue:714
 msgid "Custom Fields"
 msgstr "Прилагођена поља"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:707
+#: frontend/src/components/Layouts/AppSidebar.vue:717
 msgid "Custom List Actions"
 msgstr "Прилагођена листа радњи"
 
@@ -2197,7 +2197,7 @@ msgstr "Прилагођена листа радњи"
 msgid "Custom Range"
 msgstr "Прилагођени опсег"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:706
+#: frontend/src/components/Layouts/AppSidebar.vue:716
 msgid "Custom Statuses"
 msgstr "Прилагођени статуси"
 
@@ -2205,7 +2205,7 @@ msgstr "Прилагођени статуси"
 msgid "Customer Created Successfully"
 msgstr "Клијент је успешно креиран"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:701
+#: frontend/src/components/Layouts/AppSidebar.vue:711
 #: frontend/src/components/Settings/Settings.vue:215
 msgid "Customization"
 msgstr "Прилагођавање"
@@ -2249,7 +2249,7 @@ msgid "Dashboard settings updated successfully"
 msgstr "Подешавања контролне табле су успешно ажурирана"
 
 #: frontend/src/components/Activities/DataFields.vue:6
-#: frontend/src/components/Layouts/AppSidebar.vue:694
+#: frontend/src/components/Layouts/AppSidebar.vue:704
 #: frontend/src/pages/Deal.vue:594 frontend/src/pages/Lead.vue:457
 #: frontend/src/pages/MobileDeal.vue:461 frontend/src/pages/MobileLead.vue:321
 msgid "Data"
@@ -2277,7 +2277,7 @@ msgstr "Формат датума"
 msgid "Day"
 msgstr "Дан"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:665
+#: frontend/src/components/Layouts/AppSidebar.vue:675
 #: frontend/src/components/Settings/AssignmentRules/AssigneeRules.vue:20
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:50
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:58
@@ -2822,7 +2822,7 @@ msgstr "Пронађен је дуплирани радни дан: {0}. Сва�
 msgid "Duration"
 msgstr "Трајање"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:718
+#: frontend/src/components/Layouts/AppSidebar.vue:728
 #: frontend/src/components/Settings/Settings.vue:240
 msgid "ERPNext"
 msgstr "ERPNext"
@@ -3001,7 +3001,7 @@ msgstr "Имејл налог"
 msgid "Email Accounts"
 msgstr "Имејл налози"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:692
+#: frontend/src/components/Layouts/AppSidebar.vue:702
 msgid "Email Communication"
 msgstr "Имејл комуникација"
 
@@ -3026,7 +3026,7 @@ msgstr "Имејл послат у"
 msgid "Email Settings"
 msgstr "Имејл подешавања"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:671
+#: frontend/src/components/Layouts/AppSidebar.vue:681
 msgid "Email Template"
 msgstr "Имејл шаблон"
 
@@ -3360,11 +3360,6 @@ msgstr "Грешка при синхронизацији потенцијалн�
 msgid "Error syncing leads"
 msgstr "Грешка приликом синхронизације потенцијалних клијената"
 
-#: frontend/src/pages/Deal.vue:781 frontend/src/pages/Lead.vue:522
-#: frontend/src/pages/MobileDeal.vue:630 frontend/src/pages/MobileLead.vue:381
-msgid "Error updating field"
-msgstr "Грешка приликом ажурирања поља"
-
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:275
 msgid "Error updating lead sync source"
 msgstr ""
@@ -3423,7 +3418,7 @@ msgstr "Провајдер девизних курсева"
 #. Agent'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
-#: frontend/src/components/Layouts/AppSidebar.vue:716
+#: frontend/src/components/Layouts/AppSidebar.vue:726
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:52
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:198
 msgid "Exotel"
@@ -3893,7 +3888,7 @@ msgstr ""
 msgid "Frappe CRM"
 msgstr "Frappe CRM"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:722
+#: frontend/src/components/Layouts/AppSidebar.vue:732
 msgid "Frappe CRM mobile"
 msgstr "Frappe CRM мобилна апликација"
 
@@ -4151,7 +4146,7 @@ msgstr "Назив листе празника"
 msgid "Holidays"
 msgstr "Празници"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:656
+#: frontend/src/components/Layouts/AppSidebar.vue:666
 #: frontend/src/components/Settings/HomeActions.vue:7
 #: frontend/src/components/Settings/Settings.vue:218
 msgid "Home Actions"
@@ -4343,7 +4338,7 @@ msgstr "Убаци емоџи"
 msgid "Instagram"
 msgstr "Instagram"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:712
+#: frontend/src/components/Layouts/AppSidebar.vue:722
 msgid "Integration"
 msgstr "Интеграција"
 
@@ -4360,8 +4355,8 @@ msgctxt "FCRM"
 msgid "Integrations"
 msgstr "Интеграције"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:643
-#: frontend/src/components/Layouts/AppSidebar.vue:646
+#: frontend/src/components/Layouts/AppSidebar.vue:653
+#: frontend/src/components/Layouts/AppSidebar.vue:656
 msgid "Introduction"
 msgstr "Увод"
 
@@ -4485,7 +4480,7 @@ msgstr "Позовите новог корисника"
 msgid "Invite User"
 msgstr "Позовите корисника"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:657
+#: frontend/src/components/Layouts/AppSidebar.vue:667
 msgid "Invite Users"
 msgstr "Позовите кориснике"
 
@@ -4497,7 +4492,7 @@ msgstr ""
 msgid "Invite users to access CRM. Specify their roles to control access and permissions"
 msgstr "Позовите кориснике да приступе CRM. Наведите њихове улоге ради контроле приступа и дозвола"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:465
+#: frontend/src/components/Layouts/AppSidebar.vue:475
 msgid "Invite your team"
 msgstr "Позовите свој тим"
 
@@ -4771,7 +4766,7 @@ msgstr "Распоред"
 
 #. Label of the lead (Link) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
-#: frontend/src/components/Layouts/AppSidebar.vue:664
+#: frontend/src/components/Layouts/AppSidebar.vue:674
 #: frontend/src/components/Settings/AssignmentRules/AssigneeRules.vue:19
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:54
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:76
@@ -5194,7 +5189,7 @@ msgstr "Означи потенцијалног клијента / послов�
 msgid "Master switch for the Domain Enrichment feature."
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:661
+#: frontend/src/components/Layouts/AppSidebar.vue:671
 msgid "Masters"
 msgstr "Мастер подаци"
 
@@ -5275,7 +5270,7 @@ msgstr "Пропуштен позив"
 msgid "Missing mandatory fields: {0}"
 msgstr "Недостају обавезна поља: {0}"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:725
+#: frontend/src/components/Layouts/AppSidebar.vue:735
 msgid "Mobile App Installation"
 msgstr "Инсталација мобилне апликације"
 
@@ -5863,7 +5858,7 @@ msgstr "Није дозвољено мењати распоред поља"
 #. Label of the note (Link) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 #: frontend/src/components/Activities/ActivityHeader.vue:131
-#: frontend/src/components/Layouts/AppSidebar.vue:668
+#: frontend/src/components/Layouts/AppSidebar.vue:678
 msgid "Note"
 msgstr "Белешка"
 
@@ -5891,7 +5886,7 @@ msgid "Nothing to do at the moment. Start organizing by adding one here."
 msgstr ""
 
 #: frontend/src/components/Activities/EmailArea.vue:15
-#: frontend/src/components/Layouts/AppSidebar.vue:697
+#: frontend/src/components/Layouts/AppSidebar.vue:707
 msgid "Notification"
 msgstr "Обавештење"
 
@@ -6000,15 +5995,15 @@ msgstr "Текуће пословне прилике"
 msgid "Ongoing deals"
 msgstr "Текуће пословне прилике"
 
-#: crm/api/user.py:124 crm/api/user.py:157
+#: crm/api/user.py:127 crm/api/user.py:160
 msgid "Only System Managers can assign the Sales Manager role"
 msgstr "Искључиво систем менаџери могу доделити улогу менаџера продаје"
 
-#: crm/api/user.py:121 crm/api/user.py:151
+#: crm/api/user.py:124 crm/api/user.py:154
 msgid "Only System Managers can assign the System Manager role"
 msgstr "Искључиво систем менаџери могу доделити улогу систем менаџера"
 
-#: crm/api/user.py:154 crm/api/user.py:199
+#: crm/api/user.py:157 crm/api/user.py:202
 msgid "Only System Managers can modify other System Managers"
 msgstr "Искључиво систем менаџери могу мењати друге систем менаџере"
 
@@ -6095,7 +6090,7 @@ msgstr ""
 #. Label of the organization (Data) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
-#: frontend/src/components/Layouts/AppSidebar.vue:667
+#: frontend/src/components/Layouts/AppSidebar.vue:677
 #: frontend/src/components/Modals/ConvertToDealModal.vue:25
 #: frontend/src/pages/Contact.vue:348 frontend/src/pages/Contact.vue:384
 #: frontend/src/pages/MobileContact.vue:376
@@ -6150,7 +6145,7 @@ msgstr ""
 msgid "Other"
 msgstr "Остало"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:689
+#: frontend/src/components/Layouts/AppSidebar.vue:699
 msgid "Other Features"
 msgstr "Остале функционалности"
 
@@ -6334,7 +6329,7 @@ msgstr "Фиксирај приказ"
 msgid "Pinned"
 msgstr "Фиксирано"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:685
+#: frontend/src/components/Layouts/AppSidebar.vue:695
 msgid "Pinned View"
 msgstr "Фиксирани приказ"
 
@@ -6557,7 +6552,7 @@ msgstr ""
 msgid "Products"
 msgstr "Производи"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:654
+#: frontend/src/components/Layouts/AppSidebar.vue:664
 #: frontend/src/components/Settings/Profile/ProfileSettings.vue:4
 #: frontend/src/components/Settings/Settings.vue:106
 msgid "Profile"
@@ -6576,7 +6571,7 @@ msgstr "Очекивани наспрам стварних прихода на �
 msgid "Public"
 msgstr "Јавни"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:684
+#: frontend/src/components/Layouts/AppSidebar.vue:694
 msgid "Public View"
 msgstr "Јавни приказ"
 
@@ -6621,7 +6616,7 @@ msgstr ""
 msgid "Quick Entry"
 msgstr "Брзи унос"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:708
+#: frontend/src/components/Layouts/AppSidebar.vue:718
 msgid "Quick Entry Layout"
 msgstr "Распоред за брзи унос"
 
@@ -6830,7 +6825,7 @@ msgstr "Уклони одељак"
 msgid "Remove Tab"
 msgstr "Уклони картицу"
 
-#: crm/api/user.py:173
+#: crm/api/user.py:176
 msgid "Remove this user from the sales hierarchy before changing their role to Sales User"
 msgstr ""
 
@@ -7340,7 +7335,7 @@ msgstr "Сачувај"
 msgid "Save Changes"
 msgstr "Сачувај промене"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:683
+#: frontend/src/components/Layouts/AppSidebar.vue:693
 msgid "Saved View"
 msgstr "Сачувани приказ"
 
@@ -7517,7 +7512,7 @@ msgstr "Пошаљите шаблон"
 msgid "Send an Email"
 msgstr "Пошаљи имејл"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:570
+#: frontend/src/components/Layouts/AppSidebar.vue:580
 msgid "Send email"
 msgstr "Пошаљи имејл"
 
@@ -7547,7 +7542,7 @@ msgstr "Сепаратор"
 msgid "Series"
 msgstr "Серија"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:695
+#: frontend/src/components/Layouts/AppSidebar.vue:705
 msgid "Service Level Agreement"
 msgstr "Споразум о нивоу услуге"
 
@@ -7648,7 +7643,7 @@ msgstr ""
 msgid "Set working days, hours, and holidays by selecting a predefined schedule or creating a new one"
 msgstr "Поставите радне дане, радно време и празнике избором унапред дефинисаног распореда или креирањем новог"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:647
+#: frontend/src/components/Layouts/AppSidebar.vue:657
 msgid "Setting Up"
 msgstr "Постављање"
 
@@ -7696,7 +7691,7 @@ msgstr ""
 
 #. Label of the defaults_tab (Tab Break) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
-#: frontend/src/components/Layouts/AppSidebar.vue:651
+#: frontend/src/components/Layouts/AppSidebar.vue:661
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:715
 msgid "Settings"
 msgstr "Подешавања"
@@ -7717,7 +7712,7 @@ msgstr "Подесите имејл"
 msgid "Setup the Exchange Rate Provider other than 'Frankfurter' in settings, as default provider does not support currency conversion for {0} to {1}."
 msgstr "Поставите провајдера девизног курса који није 'Frankfurter' у подешавањима, јер подразумевани провајдер не подржава конверзију валута са {0} у {1}."
 
-#: frontend/src/components/Layouts/AppSidebar.vue:442
+#: frontend/src/components/Layouts/AppSidebar.vue:452
 msgid "Setup your password"
 msgstr "Поставите Вашу лозинку"
 
@@ -8215,7 +8210,7 @@ msgstr ""
 #. Option for the 'Type' (Select) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
 #: frontend/src/components/Activities/ActivityHeader.vue:136
-#: frontend/src/components/Layouts/AppSidebar.vue:669
+#: frontend/src/components/Layouts/AppSidebar.vue:679
 msgid "Task"
 msgstr "Задатак"
 
@@ -8624,7 +8619,7 @@ msgstr "TwiML SID"
 #. Agent'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
-#: frontend/src/components/Layouts/AppSidebar.vue:715
+#: frontend/src/components/Layouts/AppSidebar.vue:725
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:51
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:171
 msgid "Twilio"
@@ -8918,7 +8913,7 @@ msgstr "Корисничко име"
 msgid "User added to hierarchy"
 msgstr ""
 
-#: crm/api/user.py:203
+#: crm/api/user.py:206
 msgid "User {0} cannot be removed as it has a Role Profile assigned to it."
 msgstr "Корисник {0} не може бити уклоњен јер му је додељен профил улоге."
 
@@ -8926,7 +8921,7 @@ msgstr "Корисник {0} не може бити уклоњен јер му �
 msgid "User {0} has been removed"
 msgstr "Корисник {0} је уклоњен"
 
-#: crm/api/user.py:220
+#: crm/api/user.py:223
 msgid "User {0} has been removed from CRM roles."
 msgstr "Корисник {0} је уклоњен из CRM улога."
 
@@ -8991,7 +8986,7 @@ msgstr "Назив приказа"
 msgid "View documentation"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:680
+#: frontend/src/components/Layouts/AppSidebar.vue:690
 msgid "Views"
 msgstr "Прегледи"
 
@@ -9007,7 +9002,7 @@ msgstr ""
 msgid "We're unable to connect your call right now. Please try again later."
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:677
+#: frontend/src/components/Layouts/AppSidebar.vue:687
 msgid "Web Form"
 msgstr "Веб-образац"
 
@@ -9081,7 +9076,7 @@ msgstr ""
 
 #. Option for the 'Type' (Select) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
-#: frontend/src/components/Layouts/AppSidebar.vue:717
+#: frontend/src/components/Layouts/AppSidebar.vue:727
 #: frontend/src/components/Settings/Settings.vue:234
 #: frontend/src/pages/Deal.vue:619 frontend/src/pages/Lead.vue:482
 #: frontend/src/pages/MobileDeal.vue:487 frontend/src/pages/MobileLead.vue:346
@@ -9221,7 +9216,7 @@ msgstr "Свој кључ за приступ можете добити са "
 msgid "You can invite multiple users by comma separating their email addresses"
 msgstr "Можете позвати више корисника тако што ћете њихове имејл адресе раздвојити зарезима"
 
-#: crm/api/user.py:191
+#: crm/api/user.py:194
 msgid "You cannot remove yourself."
 msgstr "Не можете сами себе уклонити."
 
