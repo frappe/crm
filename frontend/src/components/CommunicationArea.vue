@@ -92,6 +92,7 @@ import CommentBox from '@/components/CommentBox.vue'
 import CommentIcon from '@/components/Icons/CommentIcon.vue'
 import Email2Icon from '@/components/Icons/Email2Icon.vue'
 import { isContentEmpty } from '@/utils'
+import { resolveFromEmail } from '@/utils/emailFrom'
 import { usersStore } from '@/stores/users'
 import { useStorage } from '@vueuse/core'
 import { useOnboarding, useTelemetry } from 'frappe-ui/frappe'
@@ -204,13 +205,11 @@ const emailEmpty = computed(
 )
 
 async function sendMail() {
-  let fromOptions = newEmailEditor.value.from || []
-  let isPermittedFromEmail = fromOptions.length
-    ? fromOptions.some((f) => f.value === newEmailEditor.value.fromEmail)
-    : newEmailEditor.value.fromEmail === getUser().email
-  let fromEmail = isPermittedFromEmail
-    ? newEmailEditor.value.fromEmail
-    : getUser().email
+  let fromEmail = resolveFromEmail(
+    newEmailEditor.value.from,
+    newEmailEditor.value.fromEmail,
+    getUser().email,
+  )
   let recipients = newEmailEditor.value.toEmails
   let subject = newEmailEditor.value.subject
   let cc = newEmailEditor.value.ccEmails || []
@@ -219,7 +218,7 @@ async function sendMail() {
   if (attachments.value.length) {
     capture('email_attachments_added')
   }
-  await call('frappe.core.doctype.communication.email.make', {
+  await call('crm.api.communication.send_email', {
     recipients: recipients.join(', '),
     attachments: attachments.value.map((x) => x.name),
     cc: cc.join(', '),

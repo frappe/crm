@@ -272,7 +272,7 @@ const from = computed(() => {
     }
   })
 
-  if (emails.length == 1 && emails[0].email_id === sessionUser) return []
+  if (emails.length == 1 && emails[0].value === sessionUser) return []
 
   return emails
 })
