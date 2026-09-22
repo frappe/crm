@@ -1,17 +1,20 @@
 <template>
   <div class="-mx-[2px] space-y-1.5 px-[2px]">
-    <label v-if="attrs.label" class="block" :class="labelClasses">
+    <label
+      v-if="attrs.label"
+      class="block"
+      :class="labelClasses"
+      :for="controlId"
+    >
       {{ __(attrs.label) }}
-      <span
-        v-if="required"
-        class="select-none text-ink-red-6"
-        aria-hidden="true"
-      >
-        *
-      </span>
+      <template v-if="required">
+        <span class="select-none text-ink-red-6" aria-hidden="true">*</span>
+        <span class="sr-only">{{ __('(required)') }}</span>
+      </template>
     </label>
     <Autocomplete
       ref="autocomplete"
+      :button-id="controlId"
       v-model="value"
       :options="options.data"
       :size="attrs.size || 'sm'"
@@ -78,7 +81,7 @@ import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import { isTranslatable } from '@/utils'
 import { watchDebounced } from '@vueuse/core'
 import { createResource } from 'frappe-ui'
-import { useAttrs, computed, ref } from 'vue'
+import { useAttrs, computed, ref, useId } from 'vue'
 
 const props = defineProps({
   doctype: { type: String, required: true },
@@ -92,6 +95,7 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue', 'change'])
 
 const attrs = useAttrs()
+const controlId = useId()
 
 const valuePropPassed = computed(() => 'value' in attrs)
 const selectedOption = ref(null)
