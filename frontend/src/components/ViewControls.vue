@@ -311,6 +311,13 @@
       </div>
     </template>
   </Dialog>
+  <LostReasonModal
+    v-if="showKanbanLostReasonModal"
+    v-model="showKanbanLostReasonModal"
+    :doctype="props.doctype"
+    @save="confirmKanbanLostReason"
+    @cancel="cancelKanbanLostReason"
+  />
 </template>
 <script setup>
 import Icon from '@/components/Icon.vue'
@@ -332,11 +339,13 @@ import GroupBy from '@/components/GroupBy.vue'
 import FadedScrollableDiv from '@/components/FadedScrollableDiv.vue'
 import ColumnSettings from '@/components/ColumnSettings.vue'
 import KanbanSettings from '@/components/Kanban/KanbanSettings.vue'
+import LostReasonModal from '@/components/Modals/LostReasonModal.vue'
 import { getSettings } from '@/stores/settings'
 import { globalStore } from '@/stores/global'
 import { viewsStore } from '@/stores/views'
 import { usersStore } from '@/stores/users'
 import { organizationsStore } from '@/stores/organizations'
+import { statusesStore } from '@/stores/statuses'
 import { getMeta } from '@/stores/meta'
 import { isEmoji } from '@/utils'
 import {
@@ -382,6 +391,10 @@ const { $dialog, $socket } = globalStore()
 const { reload: reloadView, getDefaultView, getView } = viewsStore()
 const { isManager, getUser } = usersStore()
 const { organizations } = organizationsStore()
+const { getLeadStatus, getDealStatus } = statusesStore()
+
+const showKanbanLostReasonModal = ref(false)
+const pendingKanbanMove = ref(null)
 
 const list = defineModel({ type: Object, default: () => ({}) })
 const loadMore = defineModel('loadMore', { type: Boolean })
@@ -1025,14 +1038,82 @@ function persistCustomView() {
   })
 }
 
+function getKanbanStatusType(status) {
+  if (props.doctype === 'CRM Lead') return getLeadStatus(status)?.type
+  if (props.doctype === 'CRM Deal') return getDealStatus(status)?.type
+  return null
+}
+
+function revertKanbanCardMove(data) {
+  let columns = list.value?.data?.data
+  if (!data?.from || !columns) return
+
+  let toColumn = columns.find((col) => col.column.name === data.to)
+  let fromColumn = columns.find((col) => col.column.name === data.from)
+  if (!toColumn || !fromColumn) return
+
+  let index = toColumn.data.findIndex((row) => row.name === data.item)
+  if (index === -1) return
+
+  let [row] = toColumn.data.splice(index, 1)
+  let restoreAt = Math.min(data.fromIndex ?? 0, fromColumn.data.length)
+  fromColumn.data.splice(restoreAt, 0, row)
+}
+
+function persistKanbanColumnOrder(kanbanColumns) {
+  if (!kanbanColumns) return
+  viewUpdated.value = true
+  if (!defaultParams.value) {
+    defaultParams.value = getParams()
+  }
+  list.value.params = defaultParams.value
+  list.value.params.kanban_columns = kanbanColumns
+  view.value.kanban_columns = kanbanColumns
+  if (!route.query.view) {
+    createOrUpdateStandardView()
+  }
+}
+
+function moveKanbanCard(data, fields) {
+  call('frappe.client.set_value', {
+    doctype: props.doctype,
+    name: data.item,
+    fieldname: fields,
+  })
+    .then(() => {
+      persistKanbanColumnOrder(data.kanban_columns)
+    })
+    .catch(() => {
+      toast.error(__('Could not move the card. Reverting.'))
+      revertKanbanCardMove(data)
+    })
+}
+
+function confirmKanbanLostReason(payload) {
+  let data = pendingKanbanMove.value
+  pendingKanbanMove.value = null
+  if (!data) return
+  moveKanbanCard(data, { [view.value.column_field]: data.to, ...payload })
+}
+
+function cancelKanbanLostReason() {
+  let data = pendingKanbanMove.value
+  pendingKanbanMove.value = null
+  toast.info(__('Move cancelled: a lost reason is required for this status.'))
+  revertKanbanCardMove(data)
+}
+
 function updateKanbanSettings(data) {
   if (data.item && data.to) {
-    call('frappe.client.set_value', {
-      doctype: props.doctype,
-      name: data.item,
-      fieldname: view.value.column_field,
-      value: data.to,
-    })
+    if (
+      view.value.column_field === 'status' &&
+      getKanbanStatusType(data.to) === 'Lost'
+    ) {
+      pendingKanbanMove.value = data
+      showKanbanLostReasonModal.value = true
+      return
+    }
+    moveKanbanCard(data, { [view.value.column_field]: data.to })
     return
   }
 
