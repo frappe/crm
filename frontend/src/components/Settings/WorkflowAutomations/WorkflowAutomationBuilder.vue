@@ -135,6 +135,7 @@
       class="min-h-0 shrink-0 overflow-hidden transition-[width,margin,opacity] duration-200 ease-out motion-reduce:transition-none"
       :class="showInspector ? 'ml-2 w-[340px]' : 'ml-0 w-0 opacity-0'"
       :aria-hidden="!showInspector"
+      :inert="!showInspector"
     >
       <div
         class="automation-card h-full w-[340px] overflow-hidden rounded-lg bg-surface-base"
