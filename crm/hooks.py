@@ -155,6 +155,7 @@ automation_actions = [
 	"crm.automation.actions.SetLeadTemperature",
 	"crm.automation.actions.ConvertLeadToDeal",
 	"crm.automation.actions.SendEmailToRecord",
+	"crm.automation.actions.SendCRMNotification",
 ]
 
 # Correlation options are the keys `crm.automation.events` actually emits, offered to the
