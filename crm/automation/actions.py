@@ -11,7 +11,13 @@ from typing import ClassVar
 
 import frappe
 from frappe import _
-from frappe.automation_engine.actions.base import AutomationAction, AutomationParamError
+from frappe.automation_engine.actions.base import (
+	USER_CONTROL,
+	AutomationAction,
+	AutomationParamError,
+	render_value,
+)
+from frappe.automation_engine.actions.core import resolve_recipients
 
 from crm.automation.scoring import adjust_lead_score, set_lead_temperature, temperature_options
 from crm.fcrm.doctype.crm_lead.crm_lead import convert_to_deal, existing_deal
@@ -25,6 +31,28 @@ def require_doctype(doctype, allowed, label):
 			_("{0} must act on {1}, not {2}").format(label, " or ".join(allowed), doctype),
 			fieldname="target",
 		)
+
+
+def as_list(value) -> list:
+	"""A JSON param reaches an action as a list, as the JSON text the builder saved, or as one
+	bare value; iterating the text form would send one character per recipient."""
+	if not value:
+		return []
+	if isinstance(value, str):
+		parsed = frappe.parse_json(value) if value.strip().startswith("[") else value
+		return list(parsed) if isinstance(parsed, list) else [parsed]
+	return list(value) if isinstance(value, list | tuple) else [value]
+
+
+def parse_overrides(overrides) -> dict:
+	"""Field overrides reach the action as a dict or as the JSON text the builder saved."""
+	if isinstance(overrides, str):
+		overrides = frappe.parse_json(overrides)
+	if not overrides:
+		return {}
+	if not isinstance(overrides, dict):
+		raise AutomationParamError(_("Deal field overrides must be a JSON object"), fieldname="deal")
+	return overrides
 
 
 class AdjustLeadScore(AutomationAction):
@@ -112,12 +140,14 @@ class ConvertLeadToDeal(AutomationAction):
 			"label": "Existing Contact",
 			"fieldtype": "Link",
 			"options": "Contact",
+			"templatable": 1,
 		},
 		{
 			"fieldname": "existing_organization",
 			"label": "Existing Organization",
 			"fieldtype": "Link",
 			"options": "CRM Organization",
+			"templatable": 1,
 		},
 		{"fieldname": "deal", "label": "Deal Field Overrides", "fieldtype": "JSON"},
 	]
@@ -126,6 +156,14 @@ class ConvertLeadToDeal(AutomationAction):
 		require_doctype(doctype, ["CRM Lead"], self.label)
 		if params.get("if_converted") not in (None, "", "Return Existing", "Fail"):
 			raise AutomationParamError(_("Unsupported conversion policy"), fieldname="if_converted")
+		self._validate_overrides(params.get("deal"))
+
+	def _validate_overrides(self, overrides):
+		"""A misspelt Deal field is silently dropped at run time, so catch it in the builder."""
+		meta = frappe.get_meta("CRM Deal")
+		for fieldname in parse_overrides(overrides):
+			if not meta.has_field(fieldname):
+				raise AutomationParamError(_("CRM Deal has no field {0}").format(fieldname), fieldname="deal")
 
 	def output_doctype(self, params):
 		return "CRM Deal"
@@ -135,12 +173,16 @@ class ConvertLeadToDeal(AutomationAction):
 		reused = existing_deal(doc.name)
 		deal = convert_to_deal(
 			doc.name,
-			deal=params.get("deal"),
-			existing_contact=params.get("existing_contact"),
-			existing_organization=params.get("existing_organization"),
+			deal=self._overrides(doc, params, context),
+			existing_contact=render_value(params.get("existing_contact"), doc, context),
+			existing_organization=render_value(params.get("existing_organization"), doc, context),
 			if_converted=params.get("if_converted") or "Return Existing",
 		)
 		return self._result(doc, deal, reused)
+
+	def _overrides(self, doc, params, context) -> dict:
+		overrides = parse_overrides(params.get("deal"))
+		return {field: render_value(value, doc, context) for field, value in overrides.items()}
 
 	def _result(self, lead, deal, reused) -> dict:
 		deal_doc = frappe.get_doc("CRM Deal", deal)
@@ -218,11 +260,80 @@ class SendEmailToRecord(AutomationAction):
 		# everywhere else in Frappe.
 		template = frappe.get_doc("Email Template", params["email_template"])
 		context = {"doc": doc, "target": doc}
-		body = template.response_html if template.use_html else template.response
-		return (
-			frappe.render_template(template.subject, context),
-			frappe.render_template(body or "", context),
-		)
+		return template.get_formatted_subject(context), template.get_formatted_response(context)
 
 
-CRM_ACTIONS = [AdjustLeadScore, SetLeadTemperature, ConvertLeadToDeal, SendEmailToRecord]
+class SendCRMNotification(AutomationAction):
+	action_type = "SendCRMNotification"
+	label = "Notify in CRM"
+	description = "Send an in-app notification to CRM's notification bell."
+	applicable_doctypes: ClassVar[list] = ["CRM Lead", "CRM Deal"]
+	params_schema: ClassVar[list] = [
+		{
+			"fieldname": "recipients",
+			"label": "Recipients",
+			"fieldtype": "JSON",
+			"reqd": 1,
+			"control": USER_CONTROL,
+			"options_source": "notification_recipients",
+		},
+		{
+			"fieldname": "notification_text",
+			"label": "Notification",
+			"fieldtype": "Data",
+			"reqd": 1,
+			"templatable": True,
+			"description": "The line shown in the notification list.",
+		},
+		{
+			"fieldname": "message",
+			"label": "Message",
+			"fieldtype": "Text Editor",
+			"templatable": True,
+		},
+	]
+
+	def validate(self, params, doctype):
+		require_doctype(doctype, self.applicable_doctypes, self.label)
+		if not as_list(params.get("recipients")):
+			raise AutomationParamError(_("At least one recipient is required"), fieldname="recipients")
+		if not params.get("notification_text"):
+			raise AutomationParamError(_("Write the notification text"), fieldname="notification_text")
+
+	def execute(self, doc, params, context):
+		require_doctype(doc and doc.doctype, self.applicable_doctypes, self.label)
+		recipients = resolve_recipients(as_list(params.get("recipients")), doc)
+		if not recipients:
+			return _("No recipients to notify")
+		text = render_value(params.get("notification_text") or "", doc, context)
+		message = render_value(params.get("message") or "", doc, context)
+		for user in recipients:
+			self._notify(doc, user, text, message)
+		return _("Notified {0}").format(", ".join(recipients))
+
+	def _notify(self, doc, user, text, message):
+		"""Written straight rather than through `notify_user`, which drops a notification a user
+		would send themselves - an automation notifies whoever the flow names, the actor included."""
+		frappe.get_doc(
+			{
+				"doctype": "CRM Notification",
+				"from_user": frappe.session.user,
+				"to_user": user,
+				"type": "Automation",
+				"notification_text": text,
+				"message": message,
+				"notification_type_doctype": doc.doctype,
+				"notification_type_doc": doc.name,
+				"reference_doctype": doc.doctype,
+				"reference_name": doc.name,
+			}
+		).insert(ignore_permissions=True)
+
+
+CRM_ACTIONS = [
+	AdjustLeadScore,
+	SetLeadTemperature,
+	ConvertLeadToDeal,
+	SendEmailToRecord,
+	SendCRMNotification,
+]
