@@ -79,6 +79,7 @@ import AttachmentItem from '@/components/AttachmentItem.vue'
 import EmailContent from '@/components/Activities/EmailContent.vue'
 import { Badge } from 'frappe-ui'
 import TimelineTimestamp from '@/components/Activities/TimelineTimestamp.vue'
+import { matchReceivingMailbox } from '@/utils/emailFrom'
 import { reactive, computed } from 'vue'
 
 const props = defineProps({
@@ -93,6 +94,10 @@ function reply(email, reply_all = false) {
   let editor = emailBox.editor
   let message = email.content
   let recipients = email.recipients.split(',').map((r) => r.trim())
+  let receivingMailbox = matchReceivingMailbox(editor.from, recipients)
+  if (receivingMailbox) {
+    editor.fromEmail = receivingMailbox
+  }
   editor.toEmails = [email.sender]
   editor.cc = editor.bcc = false
   editor.ccEmails = []
