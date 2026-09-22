@@ -2,7 +2,7 @@
 export default {
 	theme: {
 		extend: {
-			colors: { 'crm-brand': '#0d9488' },
+			colors: { 'crm-brand': '#0f766e' },
 		},
 	},
 	plugins: [],
