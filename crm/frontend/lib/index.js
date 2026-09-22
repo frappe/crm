@@ -1,9 +1,10 @@
 // Published as `crm/lib` through the import_map hook; a stored Client Script imports it by name.
 import { h } from 'vue'
+import { __ } from 'frappe/i18n'
 
-/** One line for a deal: its name and its raw status. The desk publishes no translation function yet. */
+/** One line for a deal: its name and its status in the reader's language. */
 export function formatDeal(doc) {
-	return `${doc.name} · ${doc.status}`
+	return `${doc.name} · ${__(doc.status)}`
 }
 
 /** A chip in CRM's brand colour that prefixes `label` with `crm/lib:`; takes one prop, `label`. */
