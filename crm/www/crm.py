@@ -15,12 +15,22 @@ RTL_LANGUAGES = ("ar", "he", "fa", "ps")
 
 
 def is_rtl_language(lang=None):
+	"""Return whether the language is written right to left.
+
+	`lang` may include a region (`ar-SA`, `ar_EG`); only the language code is
+	checked against `RTL_LANGUAGES`. When omitted, the current request language
+	is used, falling back to English.
+	"""
 	lang = lang or getattr(frappe.local, "lang", None) or "en"
 	base = str(lang).split("-", 1)[0].split("_", 1)[0].lower()
 	return base in RTL_LANGUAGES
 
 
 def get_layout_direction(lang=None):
+	"""Return `rtl` or `ltr` for the CRM document direction.
+
+	Language resolution matches `is_rtl_language`.
+	"""
 	return "rtl" if is_rtl_language(lang) else "ltr"
 
 
