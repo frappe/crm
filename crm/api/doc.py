@@ -428,11 +428,12 @@ def get_data(
 			if kc.get("delete"):
 				column_data = []
 			else:
-				page_length = kc.get("page_length", 20)
+				# don't shadow the top-level page_length echoed in the response
+				column_page_length = kc.get("page_length", 20)
 
 				if order:
 					column_data = get_records_based_on_order(
-						doctype, rows, column_filters, page_length, order
+						doctype, rows, column_filters, column_page_length, order
 					)
 				else:
 					column_data = frappe.get_list(
@@ -440,7 +441,7 @@ def get_data(
 						fields=rows,
 						filters=column_filters,
 						order_by=order_by,
-						page_length=page_length,
+						page_length=column_page_length,
 					)
 
 				all_count = frappe.get_list(
