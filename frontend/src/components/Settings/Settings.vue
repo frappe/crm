@@ -48,6 +48,7 @@
 </template>
 <script setup>
 import LucideLayoutDashboard from '~icons/lucide/layout-dashboard'
+import LucideFileText from '~icons/lucide/file-text'
 import LucideNetwork from '~icons/lucide/network'
 import LucideWorkflow from '~icons/lucide/workflow'
 import MonitorCogIcon from '~icons/lucide/monitor-cog'
@@ -77,6 +78,7 @@ import GeneralSettings from '@/components/Settings/GeneralSettings.vue'
 import EnrichmentSettings from '@/components/Settings/EnrichmentSettings.vue'
 import DashboardSettings from '@/components/Settings/DashboardSettings.vue'
 import WorkflowAutomationPage from '@/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue'
+import ReportSettings from '@/components/Settings/ReportSettings.vue'
 import EmailTemplatePage from '@/components/Settings/EmailTemplate/EmailTemplatePage.vue'
 import TelephonyPage from '@/components/Settings/Telephony/TelephonyPage.vue'
 import EmailConfig from '@/components/Settings/EmailConfig.vue'
@@ -118,6 +120,11 @@ const tabs = computed(() => {
           label: __('Preferences'),
           icon: SlidersIcon,
           component: markRaw(PreferencesSettings),
+        },
+        {
+          label: __('Reports'),
+          icon: LucideFileText,
+          component: markRaw(ReportSettings),
         },
       ],
     },
