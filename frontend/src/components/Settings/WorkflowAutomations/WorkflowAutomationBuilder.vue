@@ -255,7 +255,11 @@ const {
   flush: flushHistory,
   reset: resetHistory,
   absorb: absorbHistory,
-} = useUndoHistory(doc, applySnapshot, { ignore: ['enabled'] })
+} = useUndoHistory(doc, applySnapshot, {
+  // The server owns these: restoring the `modified` a step back carried would make the next
+  // save a stale write, which the server rejects.
+  ignore: ['enabled', 'name', 'creation', 'owner', 'modified'],
+})
 
 useKeyboardShortcuts({
   shortcuts: [
