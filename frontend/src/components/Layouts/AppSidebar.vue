@@ -519,7 +519,7 @@ const steps = reactive([
   },
   {
     name: 'create_first_web_form',
-    title: __('Add a web form to capture leads'),
+    title: __('Capture leads with a form'),
     icon: markRaw(WebsiteIcon),
     completed: false,
     onClick: () => {
