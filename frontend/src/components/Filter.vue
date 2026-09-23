@@ -176,6 +176,10 @@ import {
 import { h, computed, onMounted } from 'vue'
 import { isMobileView } from '@/composables/settings'
 import { getFormat } from '@/utils'
+import {
+  isMultiValueFilter,
+  toFilterValueArray,
+} from '@/utils/fieldTransforms'
 
 const typeCheck = ['Check']
 const typeLink = ['Link', 'Dynamic Link']
@@ -291,8 +295,8 @@ function convertFilters(data, allFilters) {
         field,
         fieldname: key,
         operator,
-        value: isMultiValue(field, operator)
-          ? toValueArray(value[1])
+        value: isMultiValueFilter(field, operator)
+          ? toFilterValueArray(value[1])
           : value[1],
       })
     }
@@ -435,7 +439,7 @@ function getValueControl(f) {
       modelValue: f.value,
       'onUpdate:modelValue': (v) => updateValue(v, f),
     })
-  } else if (isMultiValue(field, operator)) {
+  } else if (isMultiValueFilter(field, operator)) {
     if (typeLink.includes(fieldtype)) {
       return h(LinkMultiSelect, {
         doctype: options,
@@ -499,31 +503,8 @@ function getValueControl(f) {
   }
 }
 
-// `in` / `not in` pick several values at once, so Select, Check and Link
-// fields render a multi-select instead of a comma-separated text input.
-// Dynamic Link has no fixed target doctype, so it stays a text input.
-function isMultiValue(field, operator) {
-  if (!['in', 'not in'].includes(operator)) return false
-  return (
-    typeSelect.includes(field?.fieldtype) ||
-    typeCheck.includes(field?.fieldtype) ||
-    field?.fieldtype === 'Link'
-  )
-}
-
-// a filter restored from a saved view can still hold the legacy
-// "Open,Qualified" string, and an empty selection round-trips as ['']
-function toValueArray(value) {
-  if (Array.isArray(value)) return value.filter(Boolean)
-  if (!value) return []
-  return String(value)
-    .split(',')
-    .map((v) => v.trim())
-    .filter(Boolean)
-}
-
 function getDefaultValue(field, operator) {
-  if (isMultiValue(field, operator)) {
+  if (isMultiValueFilter(field, operator)) {
     return []
   }
   if (typeSelect.includes(field.fieldtype)) {
@@ -666,7 +647,7 @@ function placeholder(f) {
   if (f.operator === 'between') {
     return __('01/01/2022 to 01/31/2022')
   } else if (f.operator === 'in' || f.operator === 'not in') {
-    if (isMultiValue(f.field, f.operator)) {
+    if (isMultiValueFilter(f.field, f.operator)) {
       return __('Select values')
     }
     if (typeNumber.includes(f.field.fieldtype)) {
