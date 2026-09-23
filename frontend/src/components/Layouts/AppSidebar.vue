@@ -425,67 +425,68 @@ const { isOnboardingStepsCompleted, setUp } = useOnboarding('frappecrm')
 // The onboarding composable persists the checklist as a positional
 // [{name, completed}] list, seeds it from the current steps ONLY when empty,
 // and never adds newly introduced steps to an existing list. So once a step is
-// added (e.g. create_first_web_form), any browser with a saved list is missing
-// it — skip/complete/reset become no-ops (findIndex returns -1) and the total
-// is wrong.
+// added (e.g. create_first_web_form), a saved list is missing it — skip / reset
+// / complete become no-ops (findIndex returns -1) and the total is wrong.
 //
-// Reconcile the persisted list against the current steps BY NAME, preserving
-// the completion of steps that survive, adding new ones (incomplete) and
-// dropping removed ones. The onboarding status is shared server-side across a
-// user's browsers, so we read/write it there (not behind a per-browser version
-// flag, which would let a second browser wipe shared progress). This is
-// idempotent: an already-aligned list is left untouched, so it is safe to run
-// on every load and nothing is ever reset.
+// Reconcile the saved list to the current steps while never losing progress:
+//   - operate on localStorage, the copy the composable actually reads on load
+//     (checking the server instead would let a reconciled browser and a stale
+//     browser keep overwriting each other);
+//   - order the currently-visible steps to match the UI and preserve their
+//     completion by name; new steps start incomplete;
+//   - keep steps that are saved but not currently visible (e.g. role-only steps
+//     when the role is temporarily absent) so a role change can't erase them;
+//   - skip entirely once onboarding is finished, so a completed checklist is
+//     never rewritten or reopened.
+// It is idempotent: an already-reconciled list produces no change.
 const ONBOARDING_KEY = 'frappecrm_onboarding_status'
 
 async function reconcileOnboarding(currentSteps) {
-  const currentNames = currentSteps.map((s) => s.name)
-
-  // Server copy is the shared source of truth across the user's browsers.
-  let persisted
+  // `user` is the unwrapped session user id string (Pinia unwraps the ref on
+  // destructure) — the same key the composable uses. Not user.value.
+  let store
   try {
-    const status = await call('frappe.onboarding.get_onboarding_status')
-    persisted = status?.[ONBOARDING_KEY] || []
+    store = JSON.parse(localStorage.getItem('onboardingStatus') || '{}')
   } catch {
     return
   }
-  // Empty: let the composable seed it from the current steps as usual.
-  if (!persisted.length) return
+  const persisted = store?.[user]?.[ONBOARDING_KEY]
+  if (!persisted?.length) return // composable seeds an empty list itself
+  if (persisted.every((s) => s.completed)) return // finished: leave untouched
 
-  const persistedNames = persisted.map((s) => s.name)
-  const aligned =
-    currentNames.length === persistedNames.length &&
-    currentNames.every((n, i) => n === persistedNames[i])
-  if (aligned) return
-
-  // Rebuild to the current steps, keeping completion for steps that survive.
-  const doneByName = Object.fromEntries(
-    persisted.map((s) => [s.name, s.completed]),
-  )
-  const rebuilt = currentSteps.map((s) => ({
+  const doneByName = new Map(persisted.map((s) => [s.name, s.completed]))
+  const currentNames = new Set(currentSteps.map((s) => s.name))
+  const visible = currentSteps.map((s) => ({
     name: s.name,
-    completed: !!doneByName[s.name],
+    completed: doneByName.get(s.name) ?? false,
   }))
+  // Preserve saved-but-not-visible steps (e.g. manager-only steps for a user
+  // whose role was removed) so their completion survives role changes.
+  const hidden = persisted.filter((s) => !currentNames.has(s.name))
+  const merged = [...visible, ...hidden]
+
+  const unchanged =
+    merged.length === persisted.length &&
+    merged.every(
+      (m, i) =>
+        persisted[i]?.name === m.name &&
+        persisted[i]?.completed === m.completed,
+    )
+  if (unchanged) return
+
+  store[user][ONBOARDING_KEY] = merged
   try {
+    localStorage.setItem('onboardingStatus', JSON.stringify(store))
     await call('frappe.onboarding.update_user_onboarding_status', {
-      steps: JSON.stringify(rebuilt),
+      steps: JSON.stringify(merged),
       appName: 'frappecrm',
     })
   } catch {
     return
   }
-  // Mirror into localStorage (what the composable reads on load) and reload so
-  // it picks up the reconciled list. Runs once: the next load is aligned.
-  // `user` is the unwrapped session user id string (Pinia unwraps the ref on
-  // destructure) — the same key the composable uses. Not user.value.
-  try {
-    const store = JSON.parse(localStorage.getItem('onboardingStatus') || '{}')
-    if (!store[user]) store[user] = {}
-    store[user][ONBOARDING_KEY] = rebuilt
-    localStorage.setItem('onboardingStatus', JSON.stringify(store))
-  } catch {
-    // ignore malformed local storage; the server copy is already reconciled
-  }
+  // Reload once so the composable re-reads the reconciled list. Only reached
+  // while onboarding is unfinished (completed users returned above), so a
+  // finished checklist is never reopened.
   window.location.reload()
 }
 
