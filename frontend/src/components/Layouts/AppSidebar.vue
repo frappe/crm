@@ -427,44 +427,65 @@ const { isOnboardingStepsCompleted, setUp } = useOnboarding('frappecrm')
 // and never adds newly introduced steps to an existing list. So once a step is
 // added (e.g. create_first_web_form), any browser with a saved list is missing
 // it — skip/complete/reset become no-ops (findIndex returns -1) and the total
-// is wrong. Trying to patch the saved list in place is unreliable because the
-// server copy, the localStorage copy and the composable's in-memory copy all
-// diverge. Instead, bump ONBOARDING_STEPS_VERSION whenever the step set changes:
-// on a version change we clear the saved checklist (local) so the composable
-// reseeds cleanly from the CURRENT steps on reload — its own seed path, which is
-// always role-correct and includes every current step. Runs once per version.
+// is wrong.
+//
+// Reconcile the persisted list against the current steps BY NAME, preserving
+// the completion of steps that survive, adding new ones (incomplete) and
+// dropping removed ones. The onboarding status is shared server-side across a
+// user's browsers, so we read/write it there (not behind a per-browser version
+// flag, which would let a second browser wipe shared progress). This is
+// idempotent: an already-aligned list is left untouched, so it is safe to run
+// on every load and nothing is ever reset.
 const ONBOARDING_KEY = 'frappecrm_onboarding_status'
-const ONBOARDING_STEPS_VERSION = '3-webform'
 
-async function resetStaleOnboarding() {
-  // `user` is the unwrapped session user id string (Pinia unwraps the ref on
-  // destructure) — the same key the onboarding composable builds its storage
-  // keys from. Do NOT use user.value here; that is undefined.
-  const vKey = 'crmOnboardingStepsVersion' + user
-  if (localStorage.getItem(vKey) === ONBOARDING_STEPS_VERSION) return
-  // Clear BOTH the local and the server checklist, in order, before reloading.
-  // Clearing only local is not enough: on reload the composable refetches the
-  // server copy and restores the stale list. Await the server clear so the
-  // post-reload refetch sees an empty list and reseeds from the current steps.
+async function reconcileOnboarding(currentSteps) {
+  const currentNames = currentSteps.map((s) => s.name)
+
+  // Server copy is the shared source of truth across the user's browsers.
+  let persisted = []
   try {
-    const store = JSON.parse(localStorage.getItem('onboardingStatus') || '{}')
-    if (store?.[user]) {
-      delete store[user][ONBOARDING_KEY]
-      localStorage.setItem('onboardingStatus', JSON.stringify(store))
-    }
+    const status = await call('frappe.onboarding.get_onboarding_status')
+    persisted = status?.[ONBOARDING_KEY] || []
   } catch (e) {
-    // ignore malformed storage; the server clear below still reseeds clean
+    return
   }
-  localStorage.removeItem('isOnboardingStepsCompleted' + 'frappecrm' + user)
+  // Empty: let the composable seed it from the current steps as usual.
+  if (!persisted.length) return
+
+  const persistedNames = persisted.map((s) => s.name)
+  const aligned =
+    currentNames.length === persistedNames.length &&
+    currentNames.every((n, i) => n === persistedNames[i])
+  if (aligned) return
+
+  // Rebuild to the current steps, keeping completion for steps that survive.
+  const doneByName = Object.fromEntries(
+    persisted.map((s) => [s.name, s.completed]),
+  )
+  const rebuilt = currentSteps.map((s) => ({
+    name: s.name,
+    completed: !!doneByName[s.name],
+  }))
   try {
     await call('frappe.onboarding.update_user_onboarding_status', {
-      steps: JSON.stringify([]),
+      steps: JSON.stringify(rebuilt),
       appName: 'frappecrm',
     })
   } catch (e) {
-    // best effort; a clean local copy still lets the reload reseed
+    return
   }
-  localStorage.setItem(vKey, ONBOARDING_STEPS_VERSION)
+  // Mirror into localStorage (what the composable reads on load) and reload so
+  // it picks up the reconciled list. Runs once: the next load is aligned.
+  // `user` is the unwrapped session user id string (Pinia unwraps the ref on
+  // destructure) — the same key the composable uses. Not user.value.
+  try {
+    const store = JSON.parse(localStorage.getItem('onboardingStatus') || '{}')
+    if (!store[user]) store[user] = {}
+    store[user][ONBOARDING_KEY] = rebuilt
+    localStorage.setItem('onboardingStatus', JSON.stringify(store))
+  } catch (e) {
+    // ignore malformed local storage; the server copy is already reconciled
+  }
   window.location.reload()
 }
 
@@ -694,10 +715,9 @@ onMounted(async () => {
     return true
   })
 
-  // On a step-set version change this clears the stale checklist (local +
-  // server) and reloads once; on the next load it returns early and setUp
-  // reseeds from the current steps.
-  await resetStaleOnboarding()
+  // Bring an existing saved checklist in line with the current steps (adds
+  // newly introduced steps, preserves completion). No-op when already aligned.
+  await reconcileOnboarding(filteredSteps)
   setUp(filteredSteps)
 })
 
